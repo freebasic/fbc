@@ -164,7 +164,7 @@ declare sub tre_regaparams_default(byval params as regaparams_t ptr)
 type tre_char_t as wstring
 
 type tre_str_source
-	get_next_char as function(byval c as wstring ptr, byval pos_add as ulong ptr, byval context as any ptr) as long
+	get_next_char as function(byval c as tre_char_t ptr, byval pos_add as ulong ptr, byval context as any ptr) as long
 	rewind as sub(byval pos as uinteger, byval context as any ptr)
 	compare as function(byval pos1 as uinteger, byval pos2 as uinteger, byval len as uinteger, byval context as any ptr) as long
 	context as any ptr

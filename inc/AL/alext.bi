@@ -186,7 +186,7 @@ const ALC_5POINT1_SOFT = &h1504
 const ALC_6POINT1_SOFT = &h1505
 const ALC_7POINT1_SOFT = &h1506
 
-type LPALCLOOPBACKOPENDEVICESOFT as function(byval as const zstring ptr) as ALCdevice ptr
+type LPALCLOOPBACKOPENDEVICESOFT as function(byval as const ALCchar ptr) as ALCdevice ptr
 type LPALCISRENDERFORMATSUPPORTEDSOFT as function(byval as ALCdevice ptr, byval as ALCsizei, byval as ALCenum, byval as ALCenum) as ALCboolean
 type LPALCRENDERSAMPLESSOFT as sub(byval as ALCdevice ptr, byval as ALCvoid ptr, byval as ALCsizei)
 

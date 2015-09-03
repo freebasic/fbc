@@ -742,7 +742,7 @@ end type
 type xcb_xkb_string8_t as zstring
 
 type xcb_xkb_string8_iterator_t
-	data as zstring ptr
+	data as xcb_xkb_string8_t ptr
 	as long rem
 	index as long
 end type
@@ -2650,7 +2650,7 @@ declare function xcb_xkb_row_keys_iterator(byval R as const xcb_xkb_row_t ptr) a
 declare sub xcb_xkb_row_next(byval i as xcb_xkb_row_iterator_t ptr)
 declare function xcb_xkb_row_end(byval i as xcb_xkb_row_iterator_t) as xcb_generic_iterator_t
 declare function xcb_xkb_listing_sizeof(byval _buffer as const any ptr) as long
-declare function xcb_xkb_listing_string(byval R as const xcb_xkb_listing_t ptr) as zstring ptr
+declare function xcb_xkb_listing_string(byval R as const xcb_xkb_listing_t ptr) as xcb_xkb_string8_t ptr
 declare function xcb_xkb_listing_string_length(byval R as const xcb_xkb_listing_t ptr) as long
 declare function xcb_xkb_listing_string_end(byval R as const xcb_xkb_listing_t ptr) as xcb_generic_iterator_t
 declare sub xcb_xkb_listing_next(byval i as xcb_xkb_listing_iterator_t ptr)
@@ -2998,7 +2998,7 @@ declare function xcb_xkb_get_kbd_by_name_reply(byval c as xcb_connection_t ptr, 
 declare function xcb_xkb_get_device_info_sizeof(byval _buffer as const any ptr) as long
 declare function xcb_xkb_get_device_info(byval c as xcb_connection_t ptr, byval deviceSpec as xcb_xkb_device_spec_t, byval wanted as ushort, byval allButtons as ubyte, byval firstButton as ubyte, byval nButtons as ubyte, byval ledClass as xcb_xkb_led_class_spec_t, byval ledID as xcb_xkb_id_spec_t) as xcb_xkb_get_device_info_cookie_t
 declare function xcb_xkb_get_device_info_unchecked(byval c as xcb_connection_t ptr, byval deviceSpec as xcb_xkb_device_spec_t, byval wanted as ushort, byval allButtons as ubyte, byval firstButton as ubyte, byval nButtons as ubyte, byval ledClass as xcb_xkb_led_class_spec_t, byval ledID as xcb_xkb_id_spec_t) as xcb_xkb_get_device_info_cookie_t
-declare function xcb_xkb_get_device_info_name(byval R as const xcb_xkb_get_device_info_reply_t ptr) as zstring ptr
+declare function xcb_xkb_get_device_info_name(byval R as const xcb_xkb_get_device_info_reply_t ptr) as xcb_xkb_string8_t ptr
 declare function xcb_xkb_get_device_info_name_length(byval R as const xcb_xkb_get_device_info_reply_t ptr) as long
 declare function xcb_xkb_get_device_info_name_end(byval R as const xcb_xkb_get_device_info_reply_t ptr) as xcb_generic_iterator_t
 declare function xcb_xkb_get_device_info_btn_actions(byval R as const xcb_xkb_get_device_info_reply_t ptr) as xcb_xkb_action_t ptr
@@ -3011,8 +3011,8 @@ declare function xcb_xkb_set_device_info_sizeof(byval _buffer as const any ptr) 
 declare function xcb_xkb_set_device_info_checked(byval c as xcb_connection_t ptr, byval deviceSpec as xcb_xkb_device_spec_t, byval firstBtn as ubyte, byval nBtns as ubyte, byval change as ushort, byval nDeviceLedFBs as ushort, byval btnActions as const xcb_xkb_action_t ptr, byval leds as const xcb_xkb_device_led_info_t ptr) as xcb_void_cookie_t
 declare function xcb_xkb_set_device_info(byval c as xcb_connection_t ptr, byval deviceSpec as xcb_xkb_device_spec_t, byval firstBtn as ubyte, byval nBtns as ubyte, byval change as ushort, byval nDeviceLedFBs as ushort, byval btnActions as const xcb_xkb_action_t ptr, byval leds as const xcb_xkb_device_led_info_t ptr) as xcb_void_cookie_t
 declare function xcb_xkb_set_debugging_flags_sizeof(byval _buffer as const any ptr) as long
-declare function xcb_xkb_set_debugging_flags(byval c as xcb_connection_t ptr, byval msgLength as ushort, byval affectFlags as ulong, byval flags as ulong, byval affectCtrls as ulong, byval ctrls as ulong, byval message as const zstring ptr) as xcb_xkb_set_debugging_flags_cookie_t
-declare function xcb_xkb_set_debugging_flags_unchecked(byval c as xcb_connection_t ptr, byval msgLength as ushort, byval affectFlags as ulong, byval flags as ulong, byval affectCtrls as ulong, byval ctrls as ulong, byval message as const zstring ptr) as xcb_xkb_set_debugging_flags_cookie_t
+declare function xcb_xkb_set_debugging_flags(byval c as xcb_connection_t ptr, byval msgLength as ushort, byval affectFlags as ulong, byval flags as ulong, byval affectCtrls as ulong, byval ctrls as ulong, byval message as const xcb_xkb_string8_t ptr) as xcb_xkb_set_debugging_flags_cookie_t
+declare function xcb_xkb_set_debugging_flags_unchecked(byval c as xcb_connection_t ptr, byval msgLength as ushort, byval affectFlags as ulong, byval flags as ulong, byval affectCtrls as ulong, byval ctrls as ulong, byval message as const xcb_xkb_string8_t ptr) as xcb_xkb_set_debugging_flags_cookie_t
 declare function xcb_xkb_set_debugging_flags_reply(byval c as xcb_connection_t ptr, byval cookie as xcb_xkb_set_debugging_flags_cookie_t, byval e as xcb_generic_error_t ptr ptr) as xcb_xkb_set_debugging_flags_reply_t ptr
 
 end extern

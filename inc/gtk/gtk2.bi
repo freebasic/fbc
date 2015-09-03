@@ -607,7 +607,7 @@ declare function gtk_accel_group_get_modifier_mask(byval accel_group as GtkAccel
 declare sub gtk_accel_group_lock(byval accel_group as GtkAccelGroup ptr)
 declare sub gtk_accel_group_unlock(byval accel_group as GtkAccelGroup ptr)
 declare sub gtk_accel_group_connect(byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval accel_flags as GtkAccelFlags, byval closure as GClosure ptr)
-declare sub gtk_accel_group_connect_by_path(byval accel_group as GtkAccelGroup ptr, byval accel_path as const zstring ptr, byval closure as GClosure ptr)
+declare sub gtk_accel_group_connect_by_path(byval accel_group as GtkAccelGroup ptr, byval accel_path as const gchar ptr, byval closure as GClosure ptr)
 declare function gtk_accel_group_disconnect(byval accel_group as GtkAccelGroup ptr, byval closure as GClosure ptr) as gboolean
 declare function gtk_accel_group_disconnect_key(byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType) as gboolean
 declare function gtk_accel_group_activate(byval accel_group as GtkAccelGroup ptr, byval accel_quark as GQuark, byval acceleratable as GObject ptr, byval accel_key as guint, byval accel_mods as GdkModifierType) as gboolean
@@ -618,9 +618,9 @@ declare function gtk_accel_groups_from_object(byval object as GObject ptr) as GS
 declare function gtk_accel_group_find(byval accel_group as GtkAccelGroup ptr, byval find_func as GtkAccelGroupFindFunc, byval data as gpointer) as GtkAccelKey ptr
 declare function gtk_accel_group_from_accel_closure(byval closure as GClosure ptr) as GtkAccelGroup ptr
 declare function gtk_accelerator_valid(byval keyval as guint, byval modifiers as GdkModifierType) as gboolean
-declare sub gtk_accelerator_parse(byval accelerator as const zstring ptr, byval accelerator_key as guint ptr, byval accelerator_mods as GdkModifierType ptr)
-declare function gtk_accelerator_name(byval accelerator_key as guint, byval accelerator_mods as GdkModifierType) as zstring ptr
-declare function gtk_accelerator_get_label(byval accelerator_key as guint, byval accelerator_mods as GdkModifierType) as zstring ptr
+declare sub gtk_accelerator_parse(byval accelerator as const gchar ptr, byval accelerator_key as guint ptr, byval accelerator_mods as GdkModifierType ptr)
+declare function gtk_accelerator_name(byval accelerator_key as guint, byval accelerator_mods as GdkModifierType) as gchar ptr
+declare function gtk_accelerator_get_label(byval accelerator_key as guint, byval accelerator_mods as GdkModifierType) as gchar ptr
 declare sub gtk_accelerator_set_default_mod_mask(byval default_mod_mask as GdkModifierType)
 declare function gtk_accelerator_get_default_mod_mask() as guint
 declare function gtk_accel_group_query(byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval n_entries as guint ptr) as GtkAccelGroupEntry ptr
@@ -881,7 +881,7 @@ type GtkArg as _GtkArg
 type GtkObject as _GtkObject
 type GtkFunction as function(byval data as gpointer) as gboolean
 type GtkCallbackMarshal as sub(byval object as GtkObject ptr, byval data as gpointer, byval n_args as guint, byval args as GtkArg ptr)
-type GtkTranslateFunc as function(byval path as const zstring ptr, byval func_data as gpointer) as zstring ptr
+type GtkTranslateFunc as function(byval path as const gchar ptr, byval func_data as gpointer) as gchar ptr
 
 #define GTK_TYPE_INVALID G_TYPE_INVALID
 #define GTK_TYPE_NONE G_TYPE_NONE
@@ -938,7 +938,7 @@ union _GtkArg_d
 	ulong_data as gulong
 	float_data as gfloat
 	double_data as gdouble
-	string_data as zstring ptr
+	string_data as gchar ptr
 	object_data as GtkObject ptr
 	pointer_data as gpointer
 	signal_data as _GtkArg_d_signal_data
@@ -946,7 +946,7 @@ end union
 
 type _GtkArg
 	as GType type
-	name as zstring ptr
+	name as gchar ptr
 	d as _GtkArg_d
 end type
 
@@ -966,7 +966,7 @@ end type
 #define GTK_VALUE_OBJECT(a) (a).d.object_data
 #define GTK_VALUE_POINTER(a) (a).d.pointer_data
 #define GTK_VALUE_SIGNAL(a) (a).d.signal_data
-#define GTK_RETLOC_CHAR(a) cptr(zstring ptr, (a).d.pointer_data)
+#define GTK_RETLOC_CHAR(a) cptr(gchar ptr, (a).d.pointer_data)
 #define GTK_RETLOC_UCHAR(a) cptr(guchar ptr, (a).d.pointer_data)
 #define GTK_RETLOC_BOOL(a) cptr(gboolean ptr, (a).d.pointer_data)
 #define GTK_RETLOC_INT(a) cptr(gint ptr, (a).d.pointer_data)
@@ -975,7 +975,7 @@ end type
 #define GTK_RETLOC_ULONG(a) cptr(gulong ptr, (a).d.pointer_data)
 #define GTK_RETLOC_FLOAT(a) cptr(gfloat ptr, (a).d.pointer_data)
 #define GTK_RETLOC_DOUBLE(a) cptr(gdouble ptr, (a).d.pointer_data)
-#define GTK_RETLOC_STRING(a) cptr(zstring ptr ptr, (a).d.pointer_data)
+#define GTK_RETLOC_STRING(a) cptr(gchar ptr ptr, (a).d.pointer_data)
 #define GTK_RETLOC_ENUM(a) cptr(gint ptr, (a).d.pointer_data)
 #define GTK_RETLOC_FLAGS(a) cptr(guint ptr, (a).d.pointer_data)
 #define GTK_RETLOC_BOXED(a) cptr(gpointer ptr, (a).d.pointer_data)
@@ -984,7 +984,7 @@ end type
 type GtkTypeInfo as _GtkTypeInfo
 
 type _GtkTypeInfo
-	type_name as zstring ptr
+	type_name as gchar ptr
 	object_size as guint
 	class_size as guint
 	class_init_func as GtkClassInitFunc
@@ -1008,8 +1008,8 @@ type GtkFlagValue as GFlagsValue
 
 declare function gtk_type_enum_get_values(byval enum_type as GtkType) as GtkEnumValue ptr
 declare function gtk_type_flags_get_values(byval flags_type as GtkType) as GtkFlagValue ptr
-declare function gtk_type_enum_find_value(byval enum_type as GtkType, byval value_name as const zstring ptr) as GtkEnumValue ptr
-declare function gtk_type_flags_find_value(byval flags_type as GtkType, byval value_name as const zstring ptr) as GtkFlagValue ptr
+declare function gtk_type_enum_find_value(byval enum_type as GtkType, byval value_name as const gchar ptr) as GtkEnumValue ptr
+declare function gtk_type_flags_find_value(byval flags_type as GtkType, byval value_name as const gchar ptr) as GtkFlagValue ptr
 #define __GTK_DEBUG_H__
 
 type GtkDebugFlag as long
@@ -1074,16 +1074,16 @@ end type
 declare function gtk_object_get_type() as GType
 declare sub gtk_object_sink(byval object as GtkObject ptr)
 declare sub gtk_object_destroy(byval object as GtkObject ptr)
-declare function gtk_object_new(byval type as GType, byval first_property_name as const zstring ptr, ...) as GtkObject ptr
+declare function gtk_object_new(byval type as GType, byval first_property_name as const gchar ptr, ...) as GtkObject ptr
 declare function gtk_object_ref(byval object as GtkObject ptr) as GtkObject ptr
 declare sub gtk_object_unref(byval object as GtkObject ptr)
 declare sub gtk_object_weakref(byval object as GtkObject ptr, byval notify as GDestroyNotify, byval data as gpointer)
 declare sub gtk_object_weakunref(byval object as GtkObject ptr, byval notify as GDestroyNotify, byval data as gpointer)
-declare sub gtk_object_set_data(byval object as GtkObject ptr, byval key as const zstring ptr, byval data as gpointer)
-declare sub gtk_object_set_data_full(byval object as GtkObject ptr, byval key as const zstring ptr, byval data as gpointer, byval destroy as GDestroyNotify)
-declare sub gtk_object_remove_data(byval object as GtkObject ptr, byval key as const zstring ptr)
-declare function gtk_object_get_data(byval object as GtkObject ptr, byval key as const zstring ptr) as gpointer
-declare sub gtk_object_remove_no_notify(byval object as GtkObject ptr, byval key as const zstring ptr)
+declare sub gtk_object_set_data(byval object as GtkObject ptr, byval key as const gchar ptr, byval data as gpointer)
+declare sub gtk_object_set_data_full(byval object as GtkObject ptr, byval key as const gchar ptr, byval data as gpointer, byval destroy as GDestroyNotify)
+declare sub gtk_object_remove_data(byval object as GtkObject ptr, byval key as const gchar ptr)
+declare function gtk_object_get_data(byval object as GtkObject ptr, byval key as const gchar ptr) as gpointer
+declare sub gtk_object_remove_no_notify(byval object as GtkObject ptr, byval key as const gchar ptr)
 declare sub gtk_object_set_user_data(byval object as GtkObject ptr, byval data as gpointer)
 declare function gtk_object_get_user_data(byval object as GtkObject ptr) as gpointer
 declare sub gtk_object_set_data_by_id(byval object as GtkObject ptr, byval data_id as GQuark, byval data as gpointer)
@@ -1091,8 +1091,8 @@ declare sub gtk_object_set_data_by_id_full(byval object as GtkObject ptr, byval 
 declare function gtk_object_get_data_by_id(byval object as GtkObject ptr, byval data_id as GQuark) as gpointer
 declare sub gtk_object_remove_data_by_id(byval object as GtkObject ptr, byval data_id as GQuark)
 declare sub gtk_object_remove_no_notify_by_id(byval object as GtkObject ptr, byval key_id as GQuark)
-declare function gtk_object_data_try_key alias "g_quark_try_string"(byval string as const zstring ptr) as GQuark
-declare function gtk_object_data_force_id alias "g_quark_from_string"(byval string as const zstring ptr) as GQuark
+declare function gtk_object_data_try_key alias "g_quark_try_string"(byval string as const gchar ptr) as GQuark
+declare function gtk_object_data_force_id alias "g_quark_from_string"(byval string as const gchar ptr) as GQuark
 
 type GtkArgFlags as long
 enum
@@ -1104,9 +1104,9 @@ enum
 end enum
 
 const GTK_ARG_READWRITE = GTK_ARG_READABLE or GTK_ARG_WRITABLE
-declare sub gtk_object_get(byval object as GtkObject ptr, byval first_property_name as const zstring ptr, ...)
-declare sub gtk_object_set(byval object as GtkObject ptr, byval first_property_name as const zstring ptr, ...)
-declare sub gtk_object_add_arg_type(byval arg_name as const zstring ptr, byval arg_type as GType, byval arg_flags as guint, byval arg_id as guint)
+declare sub gtk_object_get(byval object as GtkObject ptr, byval first_property_name as const gchar ptr, ...)
+declare sub gtk_object_set(byval object as GtkObject ptr, byval first_property_name as const gchar ptr, ...)
+declare sub gtk_object_add_arg_type(byval arg_name as const gchar ptr, byval arg_type as GType, byval arg_flags as guint, byval arg_id as guint)
 
 #define __GTK_ADJUSTMENT_H__
 #define GTK_TYPE_ADJUSTMENT gtk_adjustment_get_type()
@@ -1224,29 +1224,29 @@ type _GtkStyleClass
 	clone as function(byval style as GtkStyle ptr) as GtkStyle ptr
 	init_from_rc as sub(byval style as GtkStyle ptr, byval rc_style as GtkRcStyle ptr)
 	set_background as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType)
-	render_icon as function(byval style as GtkStyle ptr, byval source as const GtkIconSource ptr, byval direction as GtkTextDirection, byval state as GtkStateType, byval size as GtkIconSize, byval widget as GtkWidget ptr, byval detail as const zstring ptr) as GdkPixbuf ptr
-	draw_hline as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x1 as gint, byval x2 as gint, byval y as gint)
-	draw_vline as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval y1_ as gint, byval y2_ as gint, byval x as gint)
-	draw_shadow as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-	draw_polygon as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval point as GdkPoint ptr, byval npoints as gint, byval fill as gboolean)
-	draw_arrow as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval arrow_type as GtkArrowType, byval fill as gboolean, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-	draw_diamond as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-	draw_string as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval string as const zstring ptr)
-	draw_box as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-	draw_flat_box as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-	draw_check as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-	draw_option as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-	draw_tab as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-	draw_shadow_gap as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval gap_side as GtkPositionType, byval gap_x as gint, byval gap_width as gint)
-	draw_box_gap as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval gap_side as GtkPositionType, byval gap_x as gint, byval gap_width as gint)
-	draw_extension as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval gap_side as GtkPositionType)
-	draw_focus as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-	draw_slider as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval orientation as GtkOrientation)
-	draw_handle as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval orientation as GtkOrientation)
-	draw_expander as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval expander_style as GtkExpanderStyle)
-	draw_layout as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval use_text as gboolean, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval layout as PangoLayout ptr)
-	draw_resize_grip as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval edge as GdkWindowEdge, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-	draw_spinner as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval step as guint, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+	render_icon as function(byval style as GtkStyle ptr, byval source as const GtkIconSource ptr, byval direction as GtkTextDirection, byval state as GtkStateType, byval size as GtkIconSize, byval widget as GtkWidget ptr, byval detail as const gchar ptr) as GdkPixbuf ptr
+	draw_hline as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x1 as gint, byval x2 as gint, byval y as gint)
+	draw_vline as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval y1_ as gint, byval y2_ as gint, byval x as gint)
+	draw_shadow as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+	draw_polygon as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval point as GdkPoint ptr, byval npoints as gint, byval fill as gboolean)
+	draw_arrow as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval arrow_type as GtkArrowType, byval fill as gboolean, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+	draw_diamond as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+	draw_string as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval string as const gchar ptr)
+	draw_box as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+	draw_flat_box as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+	draw_check as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+	draw_option as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+	draw_tab as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+	draw_shadow_gap as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval gap_side as GtkPositionType, byval gap_x as gint, byval gap_width as gint)
+	draw_box_gap as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval gap_side as GtkPositionType, byval gap_x as gint, byval gap_width as gint)
+	draw_extension as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval gap_side as GtkPositionType)
+	draw_focus as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+	draw_slider as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval orientation as GtkOrientation)
+	draw_handle as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval orientation as GtkOrientation)
+	draw_expander as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval expander_style as GtkExpanderStyle)
+	draw_layout as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval use_text as gboolean, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval layout as PangoLayout ptr)
+	draw_resize_grip as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval edge as GdkWindowEdge, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+	draw_spinner as sub(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval step as guint, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 	_gtk_reserved3 as sub()
@@ -1278,9 +1278,9 @@ declare function gtk_style_get_font(byval style as GtkStyle ptr) as GdkFont ptr
 declare sub gtk_style_set_font(byval style as GtkStyle ptr, byval font as GdkFont ptr)
 declare sub gtk_style_set_background(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType)
 declare sub gtk_style_apply_default_background(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval set_bg as gboolean, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare function gtk_style_lookup_icon_set(byval style as GtkStyle ptr, byval stock_id as const zstring ptr) as GtkIconSet ptr
-declare function gtk_style_lookup_color(byval style as GtkStyle ptr, byval color_name as const zstring ptr, byval color as GdkColor ptr) as gboolean
-declare function gtk_style_render_icon(byval style as GtkStyle ptr, byval source as const GtkIconSource ptr, byval direction as GtkTextDirection, byval state as GtkStateType, byval size as GtkIconSize, byval widget as GtkWidget ptr, byval detail as const zstring ptr) as GdkPixbuf ptr
+declare function gtk_style_lookup_icon_set(byval style as GtkStyle ptr, byval stock_id as const gchar ptr) as GtkIconSet ptr
+declare function gtk_style_lookup_color(byval style as GtkStyle ptr, byval color_name as const gchar ptr, byval color as GdkColor ptr) as gboolean
+declare function gtk_style_render_icon(byval style as GtkStyle ptr, byval source as const GtkIconSource ptr, byval direction as GtkTextDirection, byval state as GtkStateType, byval size as GtkIconSize, byval widget as GtkWidget ptr, byval detail as const gchar ptr) as GdkPixbuf ptr
 declare sub gtk_draw_hline(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval x1 as gint, byval x2 as gint, byval y as gint)
 declare sub gtk_draw_vline(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval y1_ as gint, byval y2_ as gint, byval x as gint)
 declare sub gtk_draw_shadow(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
@@ -1301,40 +1301,40 @@ declare sub gtk_draw_handle(byval style as GtkStyle ptr, byval window as GdkWind
 declare sub gtk_draw_expander(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval x as gint, byval y as gint, byval expander_style as GtkExpanderStyle)
 declare sub gtk_draw_layout(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval use_text as gboolean, byval x as gint, byval y as gint, byval layout as PangoLayout ptr)
 declare sub gtk_draw_resize_grip(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval edge as GdkWindowEdge, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gtk_paint_hline(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x1 as gint, byval x2 as gint, byval y as gint)
-declare sub gtk_paint_vline(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval y1_ as gint, byval y2_ as gint, byval x as gint)
-declare sub gtk_paint_shadow(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gtk_paint_polygon(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval points as const GdkPoint ptr, byval n_points as gint, byval fill as gboolean)
-declare sub gtk_paint_arrow(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval arrow_type as GtkArrowType, byval fill as gboolean, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gtk_paint_diamond(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gtk_paint_box(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gtk_paint_flat_box(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gtk_paint_check(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gtk_paint_option(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gtk_paint_tab(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gtk_paint_shadow_gap(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval gap_side as GtkPositionType, byval gap_x as gint, byval gap_width as gint)
-declare sub gtk_paint_box_gap(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval gap_side as GtkPositionType, byval gap_x as gint, byval gap_width as gint)
-declare sub gtk_paint_extension(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval gap_side as GtkPositionType)
-declare sub gtk_paint_focus(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gtk_paint_slider(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval orientation as GtkOrientation)
-declare sub gtk_paint_handle(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval orientation as GtkOrientation)
-declare sub gtk_paint_expander(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval expander_style as GtkExpanderStyle)
-declare sub gtk_paint_layout(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval use_text as gboolean, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval layout as PangoLayout ptr)
-declare sub gtk_paint_resize_grip(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval edge as GdkWindowEdge, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gtk_paint_spinner(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval step as guint, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gtk_paint_hline(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x1 as gint, byval x2 as gint, byval y as gint)
+declare sub gtk_paint_vline(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval y1_ as gint, byval y2_ as gint, byval x as gint)
+declare sub gtk_paint_shadow(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gtk_paint_polygon(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval points as const GdkPoint ptr, byval n_points as gint, byval fill as gboolean)
+declare sub gtk_paint_arrow(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval arrow_type as GtkArrowType, byval fill as gboolean, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gtk_paint_diamond(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gtk_paint_box(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gtk_paint_flat_box(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gtk_paint_check(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gtk_paint_option(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gtk_paint_tab(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gtk_paint_shadow_gap(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval gap_side as GtkPositionType, byval gap_x as gint, byval gap_width as gint)
+declare sub gtk_paint_box_gap(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval gap_side as GtkPositionType, byval gap_x as gint, byval gap_width as gint)
+declare sub gtk_paint_extension(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval gap_side as GtkPositionType)
+declare sub gtk_paint_focus(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gtk_paint_slider(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval orientation as GtkOrientation)
+declare sub gtk_paint_handle(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval orientation as GtkOrientation)
+declare sub gtk_paint_expander(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval expander_style as GtkExpanderStyle)
+declare sub gtk_paint_layout(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval use_text as gboolean, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval layout as PangoLayout ptr)
+declare sub gtk_paint_resize_grip(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval edge as GdkWindowEdge, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gtk_paint_spinner(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval step as guint, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
 declare function gtk_border_get_type() as GType
 declare function gtk_border_new() as GtkBorder ptr
 declare function gtk_border_copy(byval border_ as const GtkBorder ptr) as GtkBorder ptr
 declare sub gtk_border_free(byval border_ as GtkBorder ptr)
-declare sub gtk_style_get_style_property(byval style as GtkStyle ptr, byval widget_type as GType, byval property_name as const zstring ptr, byval value as GValue ptr)
-declare sub gtk_style_get_valist(byval style as GtkStyle ptr, byval widget_type as GType, byval first_property_name as const zstring ptr, byval var_args as va_list)
-declare sub gtk_style_get(byval style as GtkStyle ptr, byval widget_type as GType, byval first_property_name as const zstring ptr, ...)
+declare sub gtk_style_get_style_property(byval style as GtkStyle ptr, byval widget_type as GType, byval property_name as const gchar ptr, byval value as GValue ptr)
+declare sub gtk_style_get_valist(byval style as GtkStyle ptr, byval widget_type as GType, byval first_property_name as const gchar ptr, byval var_args as va_list)
+declare sub gtk_style_get(byval style as GtkStyle ptr, byval widget_type as GType, byval first_property_name as const gchar ptr, ...)
 declare function _gtk_style_peek_property_value(byval style as GtkStyle ptr, byval widget_type as GType, byval pspec as GParamSpec ptr, byval parser as GtkRcPropertyParser) as const GValue ptr
 declare sub _gtk_style_init_for_settings(byval style as GtkStyle ptr, byval settings as GtkSettings ptr)
 declare sub _gtk_style_shade(byval a as const GdkColor ptr, byval b as GdkColor ptr, byval k as gdouble)
 #define gtk_style_apply_default_pixmap(s, gw, st, a, x, y, w, h) gtk_style_apply_default_background(s, gw, 1, st, a, x, y, w, h)
-declare sub gtk_draw_string(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval x as gint, byval y as gint, byval string as const zstring ptr)
-declare sub gtk_paint_string(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const zstring ptr, byval x as gint, byval y as gint, byval string as const zstring ptr)
+declare sub gtk_draw_string(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval x as gint, byval y as gint, byval string as const gchar ptr)
+declare sub gtk_paint_string(byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as const GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as const gchar ptr, byval x as gint, byval y as gint, byval string as const gchar ptr)
 declare sub gtk_draw_insertion_cursor(byval widget as GtkWidget ptr, byval drawable as GdkDrawable ptr, byval area as const GdkRectangle ptr, byval location as const GdkRectangle ptr, byval is_primary as gboolean, byval direction as GtkTextDirection, byval draw_arrow as gboolean)
 declare function _gtk_widget_get_cursor_gc(byval widget as GtkWidget ptr) as GdkGC ptr
 declare sub _gtk_widget_get_cursor_color(byval widget as GtkWidget ptr, byval color as GdkColor ptr)
@@ -1362,8 +1362,8 @@ end enum
 
 type _GtkRcStyle
 	parent_instance as GObject
-	name as zstring ptr
-	bg_pixmap_name(0 to 4) as zstring ptr
+	name as gchar ptr
+	bg_pixmap_name(0 to 4) as gchar ptr
 	font_desc as PangoFontDescription ptr
 	color_flags(0 to 4) as GtkRcFlags
 	fg(0 to 4) as GdkColor
@@ -1391,49 +1391,49 @@ type _GtkRcStyleClass
 end type
 
 declare sub _gtk_rc_init()
-declare function _gtk_rc_parse_widget_class_path(byval pattern as const zstring ptr) as GSList ptr
+declare function _gtk_rc_parse_widget_class_path(byval pattern as const gchar ptr) as GSList ptr
 declare sub _gtk_rc_free_widget_class_path(byval list as GSList ptr)
-declare function _gtk_rc_match_widget_class(byval list as GSList ptr, byval length as gint, byval path as zstring ptr, byval path_reversed as zstring ptr) as gboolean
+declare function _gtk_rc_match_widget_class(byval list as GSList ptr, byval length as gint, byval path as gchar ptr, byval path_reversed as gchar ptr) as gboolean
 
 #ifdef __FB_UNIX__
-	declare sub gtk_rc_add_default_file(byval filename as const zstring ptr)
-	declare sub gtk_rc_set_default_files(byval filenames as zstring ptr ptr)
+	declare sub gtk_rc_add_default_file(byval filename as const gchar ptr)
+	declare sub gtk_rc_set_default_files(byval filenames as gchar ptr ptr)
 #else
-	declare sub gtk_rc_add_default_file_utf8(byval filename as const zstring ptr)
-	declare sub gtk_rc_add_default_file alias "gtk_rc_add_default_file_utf8"(byval filename as const zstring ptr)
-	declare sub gtk_rc_set_default_files_utf8(byval filenames as zstring ptr ptr)
-	declare sub gtk_rc_set_default_files alias "gtk_rc_set_default_files_utf8"(byval filenames as zstring ptr ptr)
+	declare sub gtk_rc_add_default_file_utf8(byval filename as const gchar ptr)
+	declare sub gtk_rc_add_default_file alias "gtk_rc_add_default_file_utf8"(byval filename as const gchar ptr)
+	declare sub gtk_rc_set_default_files_utf8(byval filenames as gchar ptr ptr)
+	declare sub gtk_rc_set_default_files alias "gtk_rc_set_default_files_utf8"(byval filenames as gchar ptr ptr)
 #endif
 
-declare function gtk_rc_get_default_files() as zstring ptr ptr
+declare function gtk_rc_get_default_files() as gchar ptr ptr
 declare function gtk_rc_get_style(byval widget as GtkWidget ptr) as GtkStyle ptr
 declare function gtk_rc_get_style_by_paths(byval settings as GtkSettings ptr, byval widget_path as const zstring ptr, byval class_path as const zstring ptr, byval type as GType) as GtkStyle ptr
 declare function gtk_rc_reparse_all_for_settings(byval settings as GtkSettings ptr, byval force_load as gboolean) as gboolean
 declare sub gtk_rc_reset_styles(byval settings as GtkSettings ptr)
-declare function gtk_rc_find_pixmap_in_path(byval settings as GtkSettings ptr, byval scanner as GScanner ptr, byval pixmap_file as const zstring ptr) as zstring ptr
+declare function gtk_rc_find_pixmap_in_path(byval settings as GtkSettings ptr, byval scanner as GScanner ptr, byval pixmap_file as const gchar ptr) as gchar ptr
 
 #ifdef __FB_UNIX__
-	declare sub gtk_rc_parse(byval filename as const zstring ptr)
+	declare sub gtk_rc_parse(byval filename as const gchar ptr)
 #else
-	declare sub gtk_rc_parse_utf8(byval filename as const zstring ptr)
-	declare sub gtk_rc_parse alias "gtk_rc_parse_utf8"(byval filename as const zstring ptr)
+	declare sub gtk_rc_parse_utf8(byval filename as const gchar ptr)
+	declare sub gtk_rc_parse alias "gtk_rc_parse_utf8"(byval filename as const gchar ptr)
 #endif
 
-declare sub gtk_rc_parse_string(byval rc_string as const zstring ptr)
+declare sub gtk_rc_parse_string(byval rc_string as const gchar ptr)
 declare function gtk_rc_reparse_all() as gboolean
-declare sub gtk_rc_add_widget_name_style(byval rc_style as GtkRcStyle ptr, byval pattern as const zstring ptr)
-declare sub gtk_rc_add_widget_class_style(byval rc_style as GtkRcStyle ptr, byval pattern as const zstring ptr)
-declare sub gtk_rc_add_class_style(byval rc_style as GtkRcStyle ptr, byval pattern as const zstring ptr)
+declare sub gtk_rc_add_widget_name_style(byval rc_style as GtkRcStyle ptr, byval pattern as const gchar ptr)
+declare sub gtk_rc_add_widget_class_style(byval rc_style as GtkRcStyle ptr, byval pattern as const gchar ptr)
+declare sub gtk_rc_add_class_style(byval rc_style as GtkRcStyle ptr, byval pattern as const gchar ptr)
 declare function gtk_rc_style_get_type() as GType
 declare function gtk_rc_style_new() as GtkRcStyle ptr
 declare function gtk_rc_style_copy(byval orig as GtkRcStyle ptr) as GtkRcStyle ptr
 declare sub gtk_rc_style_ref(byval rc_style as GtkRcStyle ptr)
 declare sub gtk_rc_style_unref(byval rc_style as GtkRcStyle ptr)
-declare function gtk_rc_find_module_in_path(byval module_file as const zstring ptr) as zstring ptr
-declare function gtk_rc_get_theme_dir() as zstring ptr
-declare function gtk_rc_get_module_dir() as zstring ptr
-declare function gtk_rc_get_im_module_path() as zstring ptr
-declare function gtk_rc_get_im_module_file() as zstring ptr
+declare function gtk_rc_find_module_in_path(byval module_file as const gchar ptr) as gchar ptr
+declare function gtk_rc_get_theme_dir() as gchar ptr
+declare function gtk_rc_get_module_dir() as gchar ptr
+declare function gtk_rc_get_im_module_path() as gchar ptr
+declare function gtk_rc_get_im_module_file() as gchar ptr
 
 type GtkRcTokenType as long
 enum
@@ -1488,7 +1488,7 @@ declare function gtk_rc_parse_priority(byval scanner as GScanner ptr, byval prio
 type _GtkRcProperty
 	type_name as GQuark
 	property_name as GQuark
-	origin as zstring ptr
+	origin as gchar ptr
 	value as GValue
 end type
 
@@ -1496,7 +1496,7 @@ declare function _gtk_rc_style_lookup_rc_property(byval rc_style as GtkRcStyle p
 declare sub _gtk_rc_style_set_rc_property(byval rc_style as GtkRcStyle ptr, byval property as GtkRcProperty ptr)
 declare sub _gtk_rc_style_unset_rc_property(byval rc_style as GtkRcStyle ptr, byval type_name as GQuark, byval property_name as GQuark)
 declare function _gtk_rc_style_get_color_hashes(byval rc_style as GtkRcStyle ptr) as GSList ptr
-declare function _gtk_rc_context_get_default_font_name(byval settings as GtkSettings ptr) as const zstring ptr
+declare function _gtk_rc_context_get_default_font_name(byval settings as GtkSettings ptr) as const gchar ptr
 declare sub _gtk_rc_context_destroy(byval settings as GtkSettings ptr)
 
 #define GTK_TYPE_SETTINGS gtk_settings_get_type()
@@ -1523,7 +1523,7 @@ type _GtkSettingsClass
 end type
 
 type _GtkSettingsValue
-	origin as zstring ptr
+	origin as gchar ptr
 	value as GValue
 end type
 
@@ -1537,11 +1537,11 @@ declare function gtk_rc_property_parse_enum(byval pspec as const GParamSpec ptr,
 declare function gtk_rc_property_parse_flags(byval pspec as const GParamSpec ptr, byval gstring as const GString ptr, byval property_value as GValue ptr) as gboolean
 declare function gtk_rc_property_parse_requisition(byval pspec as const GParamSpec ptr, byval gstring as const GString ptr, byval property_value as GValue ptr) as gboolean
 declare function gtk_rc_property_parse_border(byval pspec as const GParamSpec ptr, byval gstring as const GString ptr, byval property_value as GValue ptr) as gboolean
-declare sub gtk_settings_set_property_value(byval settings as GtkSettings ptr, byval name as const zstring ptr, byval svalue as const GtkSettingsValue ptr)
-declare sub gtk_settings_set_string_property(byval settings as GtkSettings ptr, byval name as const zstring ptr, byval v_string as const zstring ptr, byval origin as const zstring ptr)
-declare sub gtk_settings_set_long_property(byval settings as GtkSettings ptr, byval name as const zstring ptr, byval v_long as glong, byval origin as const zstring ptr)
-declare sub gtk_settings_set_double_property(byval settings as GtkSettings ptr, byval name as const zstring ptr, byval v_double as gdouble, byval origin as const zstring ptr)
-declare sub _gtk_settings_set_property_value_from_rc(byval settings as GtkSettings ptr, byval name as const zstring ptr, byval svalue as const GtkSettingsValue ptr)
+declare sub gtk_settings_set_property_value(byval settings as GtkSettings ptr, byval name as const gchar ptr, byval svalue as const GtkSettingsValue ptr)
+declare sub gtk_settings_set_string_property(byval settings as GtkSettings ptr, byval name as const gchar ptr, byval v_string as const gchar ptr, byval origin as const gchar ptr)
+declare sub gtk_settings_set_long_property(byval settings as GtkSettings ptr, byval name as const gchar ptr, byval v_long as glong, byval origin as const gchar ptr)
+declare sub gtk_settings_set_double_property(byval settings as GtkSettings ptr, byval name as const gchar ptr, byval v_double as gdouble, byval origin as const gchar ptr)
+declare sub _gtk_settings_set_property_value_from_rc(byval settings as GtkSettings ptr, byval name as const gchar ptr, byval svalue as const GtkSettingsValue ptr)
 declare sub _gtk_settings_reset_rc_values(byval settings as GtkSettings ptr)
 declare sub _gtk_settings_handle_event(byval event as GdkEventSetting ptr)
 declare function _gtk_rc_property_parser_from_type(byval type as GType) as GtkRcPropertyParser
@@ -1630,7 +1630,7 @@ type _GtkWidget
 	private_flags as guint16
 	state as guint8
 	saved_state as guint8
-	name as zstring ptr
+	name as gchar ptr
 	style as GtkStyle ptr
 	requisition as GtkRequisition
 	allocation as GtkAllocation
@@ -1729,12 +1729,12 @@ type _GtkWidgetShapeInfo
 end type
 
 declare function gtk_widget_get_type() as GType
-declare function gtk_widget_new(byval type as GType, byval first_property_name as const zstring ptr, ...) as GtkWidget ptr
+declare function gtk_widget_new(byval type as GType, byval first_property_name as const gchar ptr, ...) as GtkWidget ptr
 declare sub gtk_widget_destroy(byval widget as GtkWidget ptr)
 declare sub gtk_widget_destroyed(byval widget as GtkWidget ptr, byval widget_pointer as GtkWidget ptr ptr)
 declare function gtk_widget_ref(byval widget as GtkWidget ptr) as GtkWidget ptr
 declare sub gtk_widget_unref(byval widget as GtkWidget ptr)
-declare sub gtk_widget_set(byval widget as GtkWidget ptr, byval first_property_name as const zstring ptr, ...)
+declare sub gtk_widget_set(byval widget as GtkWidget ptr, byval first_property_name as const gchar ptr, ...)
 declare sub gtk_widget_hide_all(byval widget as GtkWidget ptr)
 declare sub gtk_widget_unparent(byval widget as GtkWidget ptr)
 declare sub gtk_widget_show(byval widget as GtkWidget ptr)
@@ -1757,10 +1757,10 @@ declare sub gtk_widget_draw(byval widget as GtkWidget ptr, byval area as const G
 declare sub gtk_widget_size_request(byval widget as GtkWidget ptr, byval requisition as GtkRequisition ptr)
 declare sub gtk_widget_size_allocate(byval widget as GtkWidget ptr, byval allocation as GtkAllocation ptr)
 declare sub gtk_widget_get_child_requisition(byval widget as GtkWidget ptr, byval requisition as GtkRequisition ptr)
-declare sub gtk_widget_add_accelerator(byval widget as GtkWidget ptr, byval accel_signal as const zstring ptr, byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval accel_flags as GtkAccelFlags)
+declare sub gtk_widget_add_accelerator(byval widget as GtkWidget ptr, byval accel_signal as const gchar ptr, byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval accel_flags as GtkAccelFlags)
 declare function gtk_widget_remove_accelerator(byval widget as GtkWidget ptr, byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType) as gboolean
-declare sub gtk_widget_set_accel_path(byval widget as GtkWidget ptr, byval accel_path as const zstring ptr, byval accel_group as GtkAccelGroup ptr)
-declare function _gtk_widget_get_accel_path(byval widget as GtkWidget ptr, byval locked as gboolean ptr) as const zstring ptr
+declare sub gtk_widget_set_accel_path(byval widget as GtkWidget ptr, byval accel_path as const gchar ptr, byval accel_group as GtkAccelGroup ptr)
+declare function _gtk_widget_get_accel_path(byval widget as GtkWidget ptr, byval locked as gboolean ptr) as const gchar ptr
 declare function gtk_widget_list_accel_closures(byval widget as GtkWidget ptr) as GList ptr
 declare function gtk_widget_can_activate_accel(byval widget as GtkWidget ptr, byval signal_id as guint) as gboolean
 declare function gtk_widget_mnemonic_activate(byval widget as GtkWidget ptr, byval group_cycling as gboolean) as gboolean
@@ -1773,7 +1773,7 @@ declare sub gtk_widget_reparent(byval widget as GtkWidget ptr, byval new_parent 
 declare function gtk_widget_intersect(byval widget as GtkWidget ptr, byval area as const GdkRectangle ptr, byval intersection as GdkRectangle ptr) as gboolean
 declare function gtk_widget_region_intersect(byval widget as GtkWidget ptr, byval region as const GdkRegion ptr) as GdkRegion ptr
 declare sub gtk_widget_freeze_child_notify(byval widget as GtkWidget ptr)
-declare sub gtk_widget_child_notify(byval widget as GtkWidget ptr, byval child_property as const zstring ptr)
+declare sub gtk_widget_child_notify(byval widget as GtkWidget ptr, byval child_property as const gchar ptr)
 declare sub gtk_widget_thaw_child_notify(byval widget as GtkWidget ptr)
 declare sub gtk_widget_set_can_focus(byval widget as GtkWidget ptr, byval can_focus as gboolean)
 declare function gtk_widget_get_can_focus(byval widget as GtkWidget ptr) as gboolean
@@ -1787,8 +1787,8 @@ declare sub gtk_widget_grab_default(byval widget as GtkWidget ptr)
 declare sub gtk_widget_set_receives_default(byval widget as GtkWidget ptr, byval receives_default as gboolean)
 declare function gtk_widget_get_receives_default(byval widget as GtkWidget ptr) as gboolean
 declare function gtk_widget_has_grab_ alias "gtk_widget_has_grab"(byval widget as GtkWidget ptr) as gboolean
-declare sub gtk_widget_set_name(byval widget as GtkWidget ptr, byval name as const zstring ptr)
-declare function gtk_widget_get_name(byval widget as GtkWidget ptr) as const zstring ptr
+declare sub gtk_widget_set_name(byval widget as GtkWidget ptr, byval name as const gchar ptr)
+declare function gtk_widget_get_name(byval widget as GtkWidget ptr) as const gchar ptr
 declare sub gtk_widget_set_state(byval widget as GtkWidget ptr, byval state as GtkStateType)
 declare function gtk_widget_get_state(byval widget as GtkWidget ptr) as GtkStateType
 declare sub gtk_widget_set_sensitive(byval widget as GtkWidget ptr, byval sensitive as gboolean)
@@ -1872,10 +1872,10 @@ declare sub gtk_widget_modify_font(byval widget as GtkWidget ptr, byval font_des
 #define gtk_widget_restore_default_style(widget) gtk_widget_set_style(widget, NULL)
 declare function gtk_widget_create_pango_context(byval widget as GtkWidget ptr) as PangoContext ptr
 declare function gtk_widget_get_pango_context(byval widget as GtkWidget ptr) as PangoContext ptr
-declare function gtk_widget_create_pango_layout(byval widget as GtkWidget ptr, byval text as const zstring ptr) as PangoLayout ptr
-declare function gtk_widget_render_icon(byval widget as GtkWidget ptr, byval stock_id as const zstring ptr, byval size as GtkIconSize, byval detail as const zstring ptr) as GdkPixbuf ptr
-declare sub gtk_widget_set_composite_name(byval widget as GtkWidget ptr, byval name as const zstring ptr)
-declare function gtk_widget_get_composite_name(byval widget as GtkWidget ptr) as zstring ptr
+declare function gtk_widget_create_pango_layout(byval widget as GtkWidget ptr, byval text as const gchar ptr) as PangoLayout ptr
+declare function gtk_widget_render_icon(byval widget as GtkWidget ptr, byval stock_id as const gchar ptr, byval size as GtkIconSize, byval detail as const gchar ptr) as GdkPixbuf ptr
+declare sub gtk_widget_set_composite_name(byval widget as GtkWidget ptr, byval name as const gchar ptr)
+declare function gtk_widget_get_composite_name(byval widget as GtkWidget ptr) as gchar ptr
 declare sub gtk_widget_reset_rc_styles(byval widget as GtkWidget ptr)
 declare sub gtk_widget_push_colormap(byval cmap as GdkColormap ptr)
 declare sub gtk_widget_push_composite_child()
@@ -1883,11 +1883,11 @@ declare sub gtk_widget_pop_composite_child()
 declare sub gtk_widget_pop_colormap()
 declare sub gtk_widget_class_install_style_property(byval klass as GtkWidgetClass ptr, byval pspec as GParamSpec ptr)
 declare sub gtk_widget_class_install_style_property_parser(byval klass as GtkWidgetClass ptr, byval pspec as GParamSpec ptr, byval parser as GtkRcPropertyParser)
-declare function gtk_widget_class_find_style_property(byval klass as GtkWidgetClass ptr, byval property_name as const zstring ptr) as GParamSpec ptr
+declare function gtk_widget_class_find_style_property(byval klass as GtkWidgetClass ptr, byval property_name as const gchar ptr) as GParamSpec ptr
 declare function gtk_widget_class_list_style_properties(byval klass as GtkWidgetClass ptr, byval n_properties as guint ptr) as GParamSpec ptr ptr
-declare sub gtk_widget_style_get_property(byval widget as GtkWidget ptr, byval property_name as const zstring ptr, byval value as GValue ptr)
-declare sub gtk_widget_style_get_valist(byval widget as GtkWidget ptr, byval first_property_name as const zstring ptr, byval var_args as va_list)
-declare sub gtk_widget_style_get(byval widget as GtkWidget ptr, byval first_property_name as const zstring ptr, ...)
+declare sub gtk_widget_style_get_property(byval widget as GtkWidget ptr, byval property_name as const gchar ptr, byval value as GValue ptr)
+declare sub gtk_widget_style_get_valist(byval widget as GtkWidget ptr, byval first_property_name as const gchar ptr, byval var_args as va_list)
+declare sub gtk_widget_style_get(byval widget as GtkWidget ptr, byval first_property_name as const gchar ptr, ...)
 declare sub gtk_widget_set_default_colormap(byval colormap as GdkColormap ptr)
 declare function gtk_widget_get_default_style() as GtkStyle ptr
 declare function gtk_widget_get_default_colormap() as GdkColormap ptr
@@ -1900,18 +1900,18 @@ declare function gtk_widget_is_composited(byval widget as GtkWidget ptr) as gboo
 declare sub gtk_widget_shape_combine_mask(byval widget as GtkWidget ptr, byval shape_mask as GdkBitmap ptr, byval offset_x as gint, byval offset_y as gint)
 declare sub gtk_widget_input_shape_combine_mask(byval widget as GtkWidget ptr, byval shape_mask as GdkBitmap ptr, byval offset_x as gint, byval offset_y as gint)
 declare sub gtk_widget_reset_shapes(byval widget as GtkWidget ptr)
-declare sub gtk_widget_path(byval widget as GtkWidget ptr, byval path_length as guint ptr, byval path as zstring ptr ptr, byval path_reversed as zstring ptr ptr)
-declare sub gtk_widget_class_path(byval widget as GtkWidget ptr, byval path_length as guint ptr, byval path as zstring ptr ptr, byval path_reversed as zstring ptr ptr)
+declare sub gtk_widget_path(byval widget as GtkWidget ptr, byval path_length as guint ptr, byval path as gchar ptr ptr, byval path_reversed as gchar ptr ptr)
+declare sub gtk_widget_class_path(byval widget as GtkWidget ptr, byval path_length as guint ptr, byval path as gchar ptr ptr, byval path_reversed as gchar ptr ptr)
 declare function gtk_widget_list_mnemonic_labels(byval widget as GtkWidget ptr) as GList ptr
 declare sub gtk_widget_add_mnemonic_label(byval widget as GtkWidget ptr, byval label as GtkWidget ptr)
 declare sub gtk_widget_remove_mnemonic_label(byval widget as GtkWidget ptr, byval label as GtkWidget ptr)
 declare sub gtk_widget_set_tooltip_window(byval widget as GtkWidget ptr, byval custom_window as GtkWindow ptr)
 declare function gtk_widget_get_tooltip_window(byval widget as GtkWidget ptr) as GtkWindow ptr
 declare sub gtk_widget_trigger_tooltip_query(byval widget as GtkWidget ptr)
-declare sub gtk_widget_set_tooltip_text(byval widget as GtkWidget ptr, byval text as const zstring ptr)
-declare function gtk_widget_get_tooltip_text(byval widget as GtkWidget ptr) as zstring ptr
-declare sub gtk_widget_set_tooltip_markup(byval widget as GtkWidget ptr, byval markup as const zstring ptr)
-declare function gtk_widget_get_tooltip_markup(byval widget as GtkWidget ptr) as zstring ptr
+declare sub gtk_widget_set_tooltip_text(byval widget as GtkWidget ptr, byval text as const gchar ptr)
+declare function gtk_widget_get_tooltip_text(byval widget as GtkWidget ptr) as gchar ptr
+declare sub gtk_widget_set_tooltip_markup(byval widget as GtkWidget ptr, byval markup as const gchar ptr)
+declare function gtk_widget_get_tooltip_markup(byval widget as GtkWidget ptr) as gchar ptr
 declare sub gtk_widget_set_has_tooltip(byval widget as GtkWidget ptr, byval has_tooltip as gboolean)
 declare function gtk_widget_get_has_tooltip(byval widget as GtkWidget ptr) as gboolean
 declare function gtk_requisition_get_type() as GType
@@ -1960,7 +1960,7 @@ type _GtkContainerClass
 	forall as sub(byval container as GtkContainer ptr, byval include_internals as gboolean, byval callback as GtkCallback, byval callback_data as gpointer)
 	set_focus_child as sub(byval container as GtkContainer ptr, byval widget as GtkWidget ptr)
 	child_type as function(byval container as GtkContainer ptr) as GType
-	composite_name as function(byval container as GtkContainer ptr, byval child as GtkWidget ptr) as zstring ptr
+	composite_name as function(byval container as GtkContainer ptr, byval child as GtkWidget ptr) as gchar ptr
 	set_child_property as sub(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval property_id as guint, byval value as const GValue ptr, byval pspec as GParamSpec ptr)
 	get_child_property as sub(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval property_id as guint, byval value as GValue ptr, byval pspec as GParamSpec ptr)
 	_gtk_reserved1 as sub()
@@ -1995,20 +1995,20 @@ declare function gtk_container_get_focus_hadjustment(byval container as GtkConta
 declare sub gtk_container_resize_children(byval container as GtkContainer ptr)
 declare function gtk_container_child_type(byval container as GtkContainer ptr) as GType
 declare sub gtk_container_class_install_child_property(byval cclass as GtkContainerClass ptr, byval property_id as guint, byval pspec as GParamSpec ptr)
-declare function gtk_container_class_find_child_property(byval cclass as GObjectClass ptr, byval property_name as const zstring ptr) as GParamSpec ptr
+declare function gtk_container_class_find_child_property(byval cclass as GObjectClass ptr, byval property_name as const gchar ptr) as GParamSpec ptr
 declare function gtk_container_class_list_child_properties(byval cclass as GObjectClass ptr, byval n_properties as guint ptr) as GParamSpec ptr ptr
-declare sub gtk_container_add_with_properties(byval container as GtkContainer ptr, byval widget as GtkWidget ptr, byval first_prop_name as const zstring ptr, ...)
-declare sub gtk_container_child_set(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_prop_name as const zstring ptr, ...)
-declare sub gtk_container_child_get(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_prop_name as const zstring ptr, ...)
-declare sub gtk_container_child_set_valist(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_property_name as const zstring ptr, byval var_args as va_list)
-declare sub gtk_container_child_get_valist(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_property_name as const zstring ptr, byval var_args as va_list)
-declare sub gtk_container_child_set_property(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval property_name as const zstring ptr, byval value as const GValue ptr)
-declare sub gtk_container_child_get_property(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval property_name as const zstring ptr, byval value as GValue ptr)
+declare sub gtk_container_add_with_properties(byval container as GtkContainer ptr, byval widget as GtkWidget ptr, byval first_prop_name as const gchar ptr, ...)
+declare sub gtk_container_child_set(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_prop_name as const gchar ptr, ...)
+declare sub gtk_container_child_get(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_prop_name as const gchar ptr, ...)
+declare sub gtk_container_child_set_valist(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_property_name as const gchar ptr, byval var_args as va_list)
+declare sub gtk_container_child_get_valist(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval first_property_name as const gchar ptr, byval var_args as va_list)
+declare sub gtk_container_child_set_property(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval property_name as const gchar ptr, byval value as const GValue ptr)
+declare sub gtk_container_child_get_property(byval container as GtkContainer ptr, byval child as GtkWidget ptr, byval property_name as const gchar ptr, byval value as GValue ptr)
 #define GTK_CONTAINER_WARN_INVALID_CHILD_PROPERTY_ID(object, property_id, pspec) G_OBJECT_WARN_INVALID_PSPEC((object), "child property id", (property_id), (pspec))
 declare sub gtk_container_forall(byval container as GtkContainer ptr, byval callback as GtkCallback, byval callback_data as gpointer)
 declare sub _gtk_container_queue_resize(byval container as GtkContainer ptr)
 declare sub _gtk_container_clear_resize_widgets(byval container as GtkContainer ptr)
-declare function _gtk_container_child_composite_name(byval container as GtkContainer ptr, byval child as GtkWidget ptr) as zstring ptr
+declare function _gtk_container_child_composite_name(byval container as GtkContainer ptr, byval child as GtkWidget ptr) as gchar ptr
 declare sub _gtk_container_dequeue_resize_handler(byval container as GtkContainer ptr)
 declare function _gtk_container_focus_sort(byval container as GtkContainer ptr, byval children as GList ptr, byval direction as GtkDirectionType, byval old_focus as GtkWidget ptr) as GList ptr
 declare sub gtk_container_border_width alias "gtk_container_set_border_width"(byval container as GtkContainer ptr, byval border_width as guint)
@@ -2047,10 +2047,10 @@ type GtkWindowGroupClass as _GtkWindowGroupClass
 
 type _GtkWindow
 	bin as GtkBin
-	title as zstring ptr
-	wmclass_name as zstring ptr
-	wmclass_class as zstring ptr
-	wm_role as zstring ptr
+	title as gchar ptr
+	wmclass_name as gchar ptr
+	wmclass_class as gchar ptr
+	wm_role as gchar ptr
 	focus_widget as GtkWidget ptr
 	default_widget as GtkWidget ptr
 	transient_parent as GtkWindow ptr
@@ -2123,12 +2123,12 @@ end type
 
 declare function gtk_window_get_type() as GType
 declare function gtk_window_new(byval type as GtkWindowType) as GtkWidget ptr
-declare sub gtk_window_set_title(byval window as GtkWindow ptr, byval title as const zstring ptr)
-declare function gtk_window_get_title(byval window as GtkWindow ptr) as const zstring ptr
-declare sub gtk_window_set_wmclass(byval window as GtkWindow ptr, byval wmclass_name as const zstring ptr, byval wmclass_class as const zstring ptr)
-declare sub gtk_window_set_role(byval window as GtkWindow ptr, byval role as const zstring ptr)
-declare sub gtk_window_set_startup_id(byval window as GtkWindow ptr, byval startup_id as const zstring ptr)
-declare function gtk_window_get_role(byval window as GtkWindow ptr) as const zstring ptr
+declare sub gtk_window_set_title(byval window as GtkWindow ptr, byval title as const gchar ptr)
+declare function gtk_window_get_title(byval window as GtkWindow ptr) as const gchar ptr
+declare sub gtk_window_set_wmclass(byval window as GtkWindow ptr, byval wmclass_name as const gchar ptr, byval wmclass_class as const gchar ptr)
+declare sub gtk_window_set_role(byval window as GtkWindow ptr, byval role as const gchar ptr)
+declare sub gtk_window_set_startup_id(byval window as GtkWindow ptr, byval startup_id as const gchar ptr)
+declare function gtk_window_get_role(byval window as GtkWindow ptr) as const gchar ptr
 declare sub gtk_window_add_accel_group(byval window as GtkWindow ptr, byval accel_group as GtkAccelGroup ptr)
 declare sub gtk_window_remove_accel_group(byval window as GtkWindow ptr, byval accel_group as GtkAccelGroup ptr)
 declare sub gtk_window_set_position(byval window as GtkWindow ptr, byval position as GtkWindowPosition)
@@ -2178,28 +2178,28 @@ declare function gtk_window_get_deletable(byval window as GtkWindow ptr) as gboo
 declare sub gtk_window_set_icon_list(byval window as GtkWindow ptr, byval list as GList ptr)
 declare function gtk_window_get_icon_list(byval window as GtkWindow ptr) as GList ptr
 declare sub gtk_window_set_icon(byval window as GtkWindow ptr, byval icon as GdkPixbuf ptr)
-declare sub gtk_window_set_icon_name(byval window as GtkWindow ptr, byval name as const zstring ptr)
+declare sub gtk_window_set_icon_name(byval window as GtkWindow ptr, byval name as const gchar ptr)
 
 #ifdef __FB_UNIX__
-	declare function gtk_window_set_icon_from_file(byval window as GtkWindow ptr, byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
+	declare function gtk_window_set_icon_from_file(byval window as GtkWindow ptr, byval filename as const gchar ptr, byval err as GError ptr ptr) as gboolean
 #else
-	declare function gtk_window_set_icon_from_file_utf8(byval window as GtkWindow ptr, byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
-	declare function gtk_window_set_icon_from_file alias "gtk_window_set_icon_from_file_utf8"(byval window as GtkWindow ptr, byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
+	declare function gtk_window_set_icon_from_file_utf8(byval window as GtkWindow ptr, byval filename as const gchar ptr, byval err as GError ptr ptr) as gboolean
+	declare function gtk_window_set_icon_from_file alias "gtk_window_set_icon_from_file_utf8"(byval window as GtkWindow ptr, byval filename as const gchar ptr, byval err as GError ptr ptr) as gboolean
 #endif
 
 declare function gtk_window_get_icon(byval window as GtkWindow ptr) as GdkPixbuf ptr
-declare function gtk_window_get_icon_name(byval window as GtkWindow ptr) as const zstring ptr
+declare function gtk_window_get_icon_name(byval window as GtkWindow ptr) as const gchar ptr
 declare sub gtk_window_set_default_icon_list(byval list as GList ptr)
 declare function gtk_window_get_default_icon_list() as GList ptr
 declare sub gtk_window_set_default_icon(byval icon as GdkPixbuf ptr)
-declare sub gtk_window_set_default_icon_name(byval name as const zstring ptr)
-declare function gtk_window_get_default_icon_name() as const zstring ptr
+declare sub gtk_window_set_default_icon_name(byval name as const gchar ptr)
+declare function gtk_window_get_default_icon_name() as const gchar ptr
 
 #ifdef __FB_UNIX__
-	declare function gtk_window_set_default_icon_from_file(byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
+	declare function gtk_window_set_default_icon_from_file(byval filename as const gchar ptr, byval err as GError ptr ptr) as gboolean
 #else
-	declare function gtk_window_set_default_icon_from_file_utf8(byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
-	declare function gtk_window_set_default_icon_from_file alias "gtk_window_set_default_icon_from_file_utf8"(byval filename as const zstring ptr, byval err as GError ptr ptr) as gboolean
+	declare function gtk_window_set_default_icon_from_file_utf8(byval filename as const gchar ptr, byval err as GError ptr ptr) as gboolean
+	declare function gtk_window_set_default_icon_from_file alias "gtk_window_set_default_icon_from_file_utf8"(byval filename as const gchar ptr, byval err as GError ptr ptr) as gboolean
 #endif
 
 declare sub gtk_window_set_auto_startup_notification(byval setting as gboolean)
@@ -2235,7 +2235,7 @@ declare sub gtk_window_resize(byval window as GtkWindow ptr, byval width as gint
 declare sub gtk_window_get_size(byval window as GtkWindow ptr, byval width as gint ptr, byval height as gint ptr)
 declare sub gtk_window_move(byval window as GtkWindow ptr, byval x as gint, byval y as gint)
 declare sub gtk_window_get_position(byval window as GtkWindow ptr, byval root_x as gint ptr, byval root_y as gint ptr)
-declare function gtk_window_parse_geometry(byval window as GtkWindow ptr, byval geometry as const zstring ptr) as gboolean
+declare function gtk_window_parse_geometry(byval window as GtkWindow ptr, byval geometry as const gchar ptr) as gboolean
 declare function gtk_window_get_group(byval window as GtkWindow ptr) as GtkWindowGroup ptr
 declare function gtk_window_has_group(byval window as GtkWindow ptr) as gboolean
 declare sub gtk_window_reshow_with_initial_size(byval window as GtkWindow ptr)
@@ -2309,10 +2309,10 @@ end type
 
 declare function gtk_dialog_get_type() as GType
 declare function gtk_dialog_new() as GtkWidget ptr
-declare function gtk_dialog_new_with_buttons(byval title as const zstring ptr, byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval first_button_text as const zstring ptr, ...) as GtkWidget ptr
+declare function gtk_dialog_new_with_buttons(byval title as const gchar ptr, byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval first_button_text as const gchar ptr, ...) as GtkWidget ptr
 declare sub gtk_dialog_add_action_widget(byval dialog as GtkDialog ptr, byval child as GtkWidget ptr, byval response_id as gint)
-declare function gtk_dialog_add_button(byval dialog as GtkDialog ptr, byval button_text as const zstring ptr, byval response_id as gint) as GtkWidget ptr
-declare sub gtk_dialog_add_buttons(byval dialog as GtkDialog ptr, byval first_button_text as const zstring ptr, ...)
+declare function gtk_dialog_add_button(byval dialog as GtkDialog ptr, byval button_text as const gchar ptr, byval response_id as gint) as GtkWidget ptr
+declare sub gtk_dialog_add_buttons(byval dialog as GtkDialog ptr, byval first_button_text as const gchar ptr, ...)
 declare sub gtk_dialog_set_response_sensitive(byval dialog as GtkDialog ptr, byval response_id as gint, byval setting as gboolean)
 declare sub gtk_dialog_set_default_response(byval dialog as GtkDialog ptr, byval response_id as gint)
 declare function gtk_dialog_get_widget_for_response(byval dialog as GtkDialog ptr, byval response_id as gint) as GtkWidget ptr
@@ -2344,7 +2344,7 @@ end type
 
 type _GtkAboutDialogClass
 	parent_class as GtkDialogClass
-	activate_link as function(byval dialog as GtkAboutDialog ptr, byval uri as const zstring ptr) as gboolean
+	activate_link as function(byval dialog as GtkAboutDialog ptr, byval uri as const gchar ptr) as gboolean
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 	_gtk_reserved3 as sub()
@@ -2352,38 +2352,38 @@ end type
 
 declare function gtk_about_dialog_get_type() as GType
 declare function gtk_about_dialog_new() as GtkWidget ptr
-declare sub gtk_show_about_dialog(byval parent as GtkWindow ptr, byval first_property_name as const zstring ptr, ...)
-declare function gtk_about_dialog_get_name(byval about as GtkAboutDialog ptr) as const zstring ptr
-declare sub gtk_about_dialog_set_name(byval about as GtkAboutDialog ptr, byval name as const zstring ptr)
-declare function gtk_about_dialog_get_program_name(byval about as GtkAboutDialog ptr) as const zstring ptr
-declare sub gtk_about_dialog_set_program_name(byval about as GtkAboutDialog ptr, byval name as const zstring ptr)
-declare function gtk_about_dialog_get_version(byval about as GtkAboutDialog ptr) as const zstring ptr
-declare sub gtk_about_dialog_set_version(byval about as GtkAboutDialog ptr, byval version as const zstring ptr)
-declare function gtk_about_dialog_get_copyright(byval about as GtkAboutDialog ptr) as const zstring ptr
-declare sub gtk_about_dialog_set_copyright(byval about as GtkAboutDialog ptr, byval copyright as const zstring ptr)
-declare function gtk_about_dialog_get_comments(byval about as GtkAboutDialog ptr) as const zstring ptr
-declare sub gtk_about_dialog_set_comments(byval about as GtkAboutDialog ptr, byval comments as const zstring ptr)
-declare function gtk_about_dialog_get_license(byval about as GtkAboutDialog ptr) as const zstring ptr
-declare sub gtk_about_dialog_set_license(byval about as GtkAboutDialog ptr, byval license as const zstring ptr)
+declare sub gtk_show_about_dialog(byval parent as GtkWindow ptr, byval first_property_name as const gchar ptr, ...)
+declare function gtk_about_dialog_get_name(byval about as GtkAboutDialog ptr) as const gchar ptr
+declare sub gtk_about_dialog_set_name(byval about as GtkAboutDialog ptr, byval name as const gchar ptr)
+declare function gtk_about_dialog_get_program_name(byval about as GtkAboutDialog ptr) as const gchar ptr
+declare sub gtk_about_dialog_set_program_name(byval about as GtkAboutDialog ptr, byval name as const gchar ptr)
+declare function gtk_about_dialog_get_version(byval about as GtkAboutDialog ptr) as const gchar ptr
+declare sub gtk_about_dialog_set_version(byval about as GtkAboutDialog ptr, byval version as const gchar ptr)
+declare function gtk_about_dialog_get_copyright(byval about as GtkAboutDialog ptr) as const gchar ptr
+declare sub gtk_about_dialog_set_copyright(byval about as GtkAboutDialog ptr, byval copyright as const gchar ptr)
+declare function gtk_about_dialog_get_comments(byval about as GtkAboutDialog ptr) as const gchar ptr
+declare sub gtk_about_dialog_set_comments(byval about as GtkAboutDialog ptr, byval comments as const gchar ptr)
+declare function gtk_about_dialog_get_license(byval about as GtkAboutDialog ptr) as const gchar ptr
+declare sub gtk_about_dialog_set_license(byval about as GtkAboutDialog ptr, byval license as const gchar ptr)
 declare function gtk_about_dialog_get_wrap_license(byval about as GtkAboutDialog ptr) as gboolean
 declare sub gtk_about_dialog_set_wrap_license(byval about as GtkAboutDialog ptr, byval wrap_license as gboolean)
-declare function gtk_about_dialog_get_website(byval about as GtkAboutDialog ptr) as const zstring ptr
-declare sub gtk_about_dialog_set_website(byval about as GtkAboutDialog ptr, byval website as const zstring ptr)
-declare function gtk_about_dialog_get_website_label(byval about as GtkAboutDialog ptr) as const zstring ptr
-declare sub gtk_about_dialog_set_website_label(byval about as GtkAboutDialog ptr, byval website_label as const zstring ptr)
-declare function gtk_about_dialog_get_authors(byval about as GtkAboutDialog ptr) as const zstring const ptr ptr
-declare sub gtk_about_dialog_set_authors(byval about as GtkAboutDialog ptr, byval authors as const zstring ptr ptr)
-declare function gtk_about_dialog_get_documenters(byval about as GtkAboutDialog ptr) as const zstring const ptr ptr
-declare sub gtk_about_dialog_set_documenters(byval about as GtkAboutDialog ptr, byval documenters as const zstring ptr ptr)
-declare function gtk_about_dialog_get_artists(byval about as GtkAboutDialog ptr) as const zstring const ptr ptr
-declare sub gtk_about_dialog_set_artists(byval about as GtkAboutDialog ptr, byval artists as const zstring ptr ptr)
-declare function gtk_about_dialog_get_translator_credits(byval about as GtkAboutDialog ptr) as const zstring ptr
-declare sub gtk_about_dialog_set_translator_credits(byval about as GtkAboutDialog ptr, byval translator_credits as const zstring ptr)
+declare function gtk_about_dialog_get_website(byval about as GtkAboutDialog ptr) as const gchar ptr
+declare sub gtk_about_dialog_set_website(byval about as GtkAboutDialog ptr, byval website as const gchar ptr)
+declare function gtk_about_dialog_get_website_label(byval about as GtkAboutDialog ptr) as const gchar ptr
+declare sub gtk_about_dialog_set_website_label(byval about as GtkAboutDialog ptr, byval website_label as const gchar ptr)
+declare function gtk_about_dialog_get_authors(byval about as GtkAboutDialog ptr) as const gchar const ptr ptr
+declare sub gtk_about_dialog_set_authors(byval about as GtkAboutDialog ptr, byval authors as const gchar ptr ptr)
+declare function gtk_about_dialog_get_documenters(byval about as GtkAboutDialog ptr) as const gchar const ptr ptr
+declare sub gtk_about_dialog_set_documenters(byval about as GtkAboutDialog ptr, byval documenters as const gchar ptr ptr)
+declare function gtk_about_dialog_get_artists(byval about as GtkAboutDialog ptr) as const gchar const ptr ptr
+declare sub gtk_about_dialog_set_artists(byval about as GtkAboutDialog ptr, byval artists as const gchar ptr ptr)
+declare function gtk_about_dialog_get_translator_credits(byval about as GtkAboutDialog ptr) as const gchar ptr
+declare sub gtk_about_dialog_set_translator_credits(byval about as GtkAboutDialog ptr, byval translator_credits as const gchar ptr)
 declare function gtk_about_dialog_get_logo(byval about as GtkAboutDialog ptr) as GdkPixbuf ptr
 declare sub gtk_about_dialog_set_logo(byval about as GtkAboutDialog ptr, byval logo as GdkPixbuf ptr)
-declare function gtk_about_dialog_get_logo_icon_name(byval about as GtkAboutDialog ptr) as const zstring ptr
-declare sub gtk_about_dialog_set_logo_icon_name(byval about as GtkAboutDialog ptr, byval icon_name as const zstring ptr)
-type GtkAboutDialogActivateLinkFunc as sub(byval about as GtkAboutDialog ptr, byval link_ as const zstring ptr, byval data as gpointer)
+declare function gtk_about_dialog_get_logo_icon_name(byval about as GtkAboutDialog ptr) as const gchar ptr
+declare sub gtk_about_dialog_set_logo_icon_name(byval about as GtkAboutDialog ptr, byval icon_name as const gchar ptr)
+type GtkAboutDialogActivateLinkFunc as sub(byval about as GtkAboutDialog ptr, byval link_ as const gchar ptr, byval data as gpointer)
 declare function gtk_about_dialog_set_email_hook(byval func as GtkAboutDialogActivateLinkFunc, byval data as gpointer, byval destroy as GDestroyNotify) as GtkAboutDialogActivateLinkFunc
 declare function gtk_about_dialog_set_url_hook(byval func as GtkAboutDialogActivateLinkFunc, byval data as gpointer, byval destroy as GDestroyNotify) as GtkAboutDialogActivateLinkFunc
 
@@ -2498,7 +2498,7 @@ type _GtkMenu
 	parent_menu_item as GtkWidget ptr
 	old_active_menu_item as GtkWidget ptr
 	accel_group as GtkAccelGroup ptr
-	accel_path as zstring ptr
+	accel_path as gchar ptr
 	position_func as GtkMenuPositionFunc
 	position_func_data as gpointer
 	toggle_size as guint
@@ -2542,15 +2542,15 @@ declare function gtk_menu_get_active(byval menu as GtkMenu ptr) as GtkWidget ptr
 declare sub gtk_menu_set_active(byval menu as GtkMenu ptr, byval index_ as guint)
 declare sub gtk_menu_set_accel_group(byval menu as GtkMenu ptr, byval accel_group as GtkAccelGroup ptr)
 declare function gtk_menu_get_accel_group(byval menu as GtkMenu ptr) as GtkAccelGroup ptr
-declare sub gtk_menu_set_accel_path(byval menu as GtkMenu ptr, byval accel_path as const zstring ptr)
-declare function gtk_menu_get_accel_path(byval menu as GtkMenu ptr) as const zstring ptr
+declare sub gtk_menu_set_accel_path(byval menu as GtkMenu ptr, byval accel_path as const gchar ptr)
+declare function gtk_menu_get_accel_path(byval menu as GtkMenu ptr) as const gchar ptr
 declare sub gtk_menu_attach_to_widget(byval menu as GtkMenu ptr, byval attach_widget as GtkWidget ptr, byval detacher as GtkMenuDetachFunc)
 declare sub gtk_menu_detach(byval menu as GtkMenu ptr)
 declare function gtk_menu_get_attach_widget(byval menu as GtkMenu ptr) as GtkWidget ptr
 declare sub gtk_menu_set_tearoff_state(byval menu as GtkMenu ptr, byval torn_off as gboolean)
 declare function gtk_menu_get_tearoff_state(byval menu as GtkMenu ptr) as gboolean
-declare sub gtk_menu_set_title(byval menu as GtkMenu ptr, byval title as const zstring ptr)
-declare function gtk_menu_get_title(byval menu as GtkMenu ptr) as const zstring ptr
+declare sub gtk_menu_set_title(byval menu as GtkMenu ptr, byval title as const gchar ptr)
+declare function gtk_menu_get_title(byval menu as GtkMenu ptr) as const gchar ptr
 declare sub gtk_menu_reorder_child(byval menu as GtkMenu ptr, byval child as GtkWidget ptr, byval position as gint)
 declare sub gtk_menu_set_screen(byval menu as GtkMenu ptr, byval screen as GdkScreen ptr)
 declare sub gtk_menu_attach(byval menu as GtkMenu ptr, byval child as GtkWidget ptr, byval left_attach as guint, byval right_attach as guint, byval top_attach as guint, byval bottom_attach as guint)
@@ -2576,7 +2576,7 @@ type GtkLabelSelectionInfo as _GtkLabelSelectionInfo
 
 type _GtkLabel
 	misc as GtkMisc
-	label as zstring ptr
+	label as gchar ptr
 	jtype : 2 as guint
 	wrap : 1 as guint
 	use_underline : 1 as guint
@@ -2589,7 +2589,7 @@ type _GtkLabel
 	pattern_set : 1 as guint
 	track_links : 1 as guint
 	mnemonic_keyval as guint
-	text as zstring ptr
+	text as gchar ptr
 	attrs as PangoAttrList ptr
 	effective_attrs as PangoAttrList ptr
 	layout as PangoLayout ptr
@@ -2603,31 +2603,31 @@ type _GtkLabelClass
 	move_cursor as sub(byval label as GtkLabel ptr, byval step as GtkMovementStep, byval count as gint, byval extend_selection as gboolean)
 	copy_clipboard as sub(byval label as GtkLabel ptr)
 	populate_popup as sub(byval label as GtkLabel ptr, byval menu as GtkMenu ptr)
-	activate_link as function(byval label as GtkLabel ptr, byval uri as const zstring ptr) as gboolean
+	activate_link as function(byval label as GtkLabel ptr, byval uri as const gchar ptr) as gboolean
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 	_gtk_reserved3 as sub()
 end type
 
 declare function gtk_label_get_type() as GType
-declare function gtk_label_new(byval str as const zstring ptr) as GtkWidget ptr
-declare function gtk_label_new_with_mnemonic(byval str as const zstring ptr) as GtkWidget ptr
-declare sub gtk_label_set_text(byval label as GtkLabel ptr, byval str as const zstring ptr)
-declare function gtk_label_get_text(byval label as GtkLabel ptr) as const zstring ptr
+declare function gtk_label_new(byval str as const gchar ptr) as GtkWidget ptr
+declare function gtk_label_new_with_mnemonic(byval str as const gchar ptr) as GtkWidget ptr
+declare sub gtk_label_set_text(byval label as GtkLabel ptr, byval str as const gchar ptr)
+declare function gtk_label_get_text(byval label as GtkLabel ptr) as const gchar ptr
 declare sub gtk_label_set_attributes(byval label as GtkLabel ptr, byval attrs as PangoAttrList ptr)
 declare function gtk_label_get_attributes(byval label as GtkLabel ptr) as PangoAttrList ptr
-declare sub gtk_label_set_label(byval label as GtkLabel ptr, byval str as const zstring ptr)
-declare function gtk_label_get_label(byval label as GtkLabel ptr) as const zstring ptr
-declare sub gtk_label_set_markup(byval label as GtkLabel ptr, byval str as const zstring ptr)
+declare sub gtk_label_set_label(byval label as GtkLabel ptr, byval str as const gchar ptr)
+declare function gtk_label_get_label(byval label as GtkLabel ptr) as const gchar ptr
+declare sub gtk_label_set_markup(byval label as GtkLabel ptr, byval str as const gchar ptr)
 declare sub gtk_label_set_use_markup(byval label as GtkLabel ptr, byval setting as gboolean)
 declare function gtk_label_get_use_markup(byval label as GtkLabel ptr) as gboolean
 declare sub gtk_label_set_use_underline(byval label as GtkLabel ptr, byval setting as gboolean)
 declare function gtk_label_get_use_underline(byval label as GtkLabel ptr) as gboolean
-declare sub gtk_label_set_markup_with_mnemonic(byval label as GtkLabel ptr, byval str as const zstring ptr)
+declare sub gtk_label_set_markup_with_mnemonic(byval label as GtkLabel ptr, byval str as const gchar ptr)
 declare function gtk_label_get_mnemonic_keyval(byval label as GtkLabel ptr) as guint
 declare sub gtk_label_set_mnemonic_widget(byval label as GtkLabel ptr, byval widget as GtkWidget ptr)
 declare function gtk_label_get_mnemonic_widget(byval label as GtkLabel ptr) as GtkWidget ptr
-declare sub gtk_label_set_text_with_mnemonic(byval label as GtkLabel ptr, byval str as const zstring ptr)
+declare sub gtk_label_set_text_with_mnemonic(byval label as GtkLabel ptr, byval str as const gchar ptr)
 declare sub gtk_label_set_justify(byval label as GtkLabel ptr, byval jtype as GtkJustification)
 declare function gtk_label_get_justify(byval label as GtkLabel ptr) as GtkJustification
 declare sub gtk_label_set_ellipsize(byval label as GtkLabel ptr, byval mode as PangoEllipsizeMode)
@@ -2636,7 +2636,7 @@ declare sub gtk_label_set_width_chars(byval label as GtkLabel ptr, byval n_chars
 declare function gtk_label_get_width_chars(byval label as GtkLabel ptr) as gint
 declare sub gtk_label_set_max_width_chars(byval label as GtkLabel ptr, byval n_chars as gint)
 declare function gtk_label_get_max_width_chars(byval label as GtkLabel ptr) as gint
-declare sub gtk_label_set_pattern(byval label as GtkLabel ptr, byval pattern as const zstring ptr)
+declare sub gtk_label_set_pattern(byval label as GtkLabel ptr, byval pattern as const gchar ptr)
 declare sub gtk_label_set_line_wrap(byval label as GtkLabel ptr, byval wrap as gboolean)
 declare function gtk_label_get_line_wrap(byval label as GtkLabel ptr) as gboolean
 declare sub gtk_label_set_line_wrap_mode(byval label as GtkLabel ptr, byval wrap_mode as PangoWrapMode)
@@ -2651,12 +2651,12 @@ declare function gtk_label_get_layout(byval label as GtkLabel ptr) as PangoLayou
 declare sub gtk_label_get_layout_offsets(byval label as GtkLabel ptr, byval x as gint ptr, byval y as gint ptr)
 declare sub gtk_label_set_single_line_mode(byval label as GtkLabel ptr, byval single_line_mode as gboolean)
 declare function gtk_label_get_single_line_mode(byval label as GtkLabel ptr) as gboolean
-declare function gtk_label_get_current_uri(byval label as GtkLabel ptr) as const zstring ptr
+declare function gtk_label_get_current_uri(byval label as GtkLabel ptr) as const gchar ptr
 declare sub gtk_label_set_track_visited_links(byval label as GtkLabel ptr, byval track_links as gboolean)
 declare function gtk_label_get_track_visited_links(byval label as GtkLabel ptr) as gboolean
-declare sub gtk_label_set alias "gtk_label_set_text"(byval label as GtkLabel ptr, byval str as const zstring ptr)
-declare sub gtk_label_get(byval label as GtkLabel ptr, byval str as zstring ptr ptr)
-declare function gtk_label_parse_uline(byval label as GtkLabel ptr, byval string as const zstring ptr) as guint
+declare sub gtk_label_set alias "gtk_label_set_text"(byval label as GtkLabel ptr, byval str as const gchar ptr)
+declare sub gtk_label_get(byval label as GtkLabel ptr, byval str as gchar ptr ptr)
+declare function gtk_label_parse_uline(byval label as GtkLabel ptr, byval string as const gchar ptr) as guint
 declare sub _gtk_label_mnemonics_visible_apply_recursively(byval widget as GtkWidget ptr, byval mnemonics_visible as gboolean)
 
 #define GTK_TYPE_ACCEL_LABEL gtk_accel_label_get_type()
@@ -2675,19 +2675,19 @@ type _GtkAccelLabel
 	accel_widget as GtkWidget ptr
 	accel_closure as GClosure ptr
 	accel_group as GtkAccelGroup ptr
-	accel_string as zstring ptr
+	accel_string as gchar ptr
 	accel_string_width as guint16
 end type
 
 type _GtkAccelLabelClass
 	parent_class as GtkLabelClass
-	signal_quote1 as zstring ptr
-	signal_quote2 as zstring ptr
-	mod_name_shift as zstring ptr
-	mod_name_control as zstring ptr
-	mod_name_alt as zstring ptr
-	mod_separator as zstring ptr
-	accel_seperator as zstring ptr
+	signal_quote1 as gchar ptr
+	signal_quote2 as gchar ptr
+	mod_name_shift as gchar ptr
+	mod_name_control as gchar ptr
+	mod_name_alt as gchar ptr
+	mod_separator as gchar ptr
+	accel_seperator as gchar ptr
 	latin1_to_char : 1 as guint
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
@@ -2696,14 +2696,14 @@ type _GtkAccelLabelClass
 end type
 
 declare function gtk_accel_label_get_type() as GType
-declare function gtk_accel_label_new(byval string as const zstring ptr) as GtkWidget ptr
+declare function gtk_accel_label_new(byval string as const gchar ptr) as GtkWidget ptr
 declare function gtk_accel_label_get_accel_widget(byval accel_label as GtkAccelLabel ptr) as GtkWidget ptr
 declare function gtk_accel_label_get_accel_width(byval accel_label as GtkAccelLabel ptr) as guint
 declare function gtk_accel_label_accelerator_width alias "gtk_accel_label_get_accel_width"(byval accel_label as GtkAccelLabel ptr) as guint
 declare sub gtk_accel_label_set_accel_widget(byval accel_label as GtkAccelLabel ptr, byval accel_widget as GtkWidget ptr)
 declare sub gtk_accel_label_set_accel_closure(byval accel_label as GtkAccelLabel ptr, byval accel_closure as GClosure ptr)
 declare function gtk_accel_label_refetch(byval accel_label as GtkAccelLabel ptr) as gboolean
-declare function _gtk_accel_label_class_get_accelerator_label(byval klass as GtkAccelLabelClass ptr, byval accelerator_key as guint, byval accelerator_mods as GdkModifierType) as zstring ptr
+declare function _gtk_accel_label_class_get_accelerator_label(byval klass as GtkAccelLabelClass ptr, byval accelerator_key as guint, byval accelerator_mods as GdkModifierType) as gchar ptr
 
 #define __GTK_ACCEL_MAP_H__
 #define GTK_TYPE_ACCEL_MAP gtk_accel_map_get_type()
@@ -2715,36 +2715,36 @@ declare function _gtk_accel_label_class_get_accelerator_label(byval klass as Gtk
 
 type GtkAccelMap as _GtkAccelMap
 type GtkAccelMapClass as _GtkAccelMapClass
-type GtkAccelMapForeach as sub(byval data as gpointer, byval accel_path as const zstring ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval changed as gboolean)
+type GtkAccelMapForeach as sub(byval data as gpointer, byval accel_path as const gchar ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval changed as gboolean)
 
-declare sub gtk_accel_map_add_entry(byval accel_path as const zstring ptr, byval accel_key as guint, byval accel_mods as GdkModifierType)
-declare function gtk_accel_map_lookup_entry(byval accel_path as const zstring ptr, byval key as GtkAccelKey ptr) as gboolean
-declare function gtk_accel_map_change_entry(byval accel_path as const zstring ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval replace as gboolean) as gboolean
+declare sub gtk_accel_map_add_entry(byval accel_path as const gchar ptr, byval accel_key as guint, byval accel_mods as GdkModifierType)
+declare function gtk_accel_map_lookup_entry(byval accel_path as const gchar ptr, byval key as GtkAccelKey ptr) as gboolean
+declare function gtk_accel_map_change_entry(byval accel_path as const gchar ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval replace as gboolean) as gboolean
 
 #ifdef __FB_UNIX__
-	declare sub gtk_accel_map_load(byval file_name as const zstring ptr)
-	declare sub gtk_accel_map_save(byval file_name as const zstring ptr)
+	declare sub gtk_accel_map_load(byval file_name as const gchar ptr)
+	declare sub gtk_accel_map_save(byval file_name as const gchar ptr)
 #else
-	declare sub gtk_accel_map_load_utf8(byval file_name as const zstring ptr)
-	declare sub gtk_accel_map_load alias "gtk_accel_map_load_utf8"(byval file_name as const zstring ptr)
-	declare sub gtk_accel_map_save_utf8(byval file_name as const zstring ptr)
-	declare sub gtk_accel_map_save alias "gtk_accel_map_save_utf8"(byval file_name as const zstring ptr)
+	declare sub gtk_accel_map_load_utf8(byval file_name as const gchar ptr)
+	declare sub gtk_accel_map_load alias "gtk_accel_map_load_utf8"(byval file_name as const gchar ptr)
+	declare sub gtk_accel_map_save_utf8(byval file_name as const gchar ptr)
+	declare sub gtk_accel_map_save alias "gtk_accel_map_save_utf8"(byval file_name as const gchar ptr)
 #endif
 
 declare sub gtk_accel_map_foreach(byval data as gpointer, byval foreach_func as GtkAccelMapForeach)
 declare sub gtk_accel_map_load_fd(byval fd as gint)
 declare sub gtk_accel_map_load_scanner(byval scanner as GScanner ptr)
 declare sub gtk_accel_map_save_fd(byval fd as gint)
-declare sub gtk_accel_map_lock_path(byval accel_path as const zstring ptr)
-declare sub gtk_accel_map_unlock_path(byval accel_path as const zstring ptr)
-declare sub gtk_accel_map_add_filter(byval filter_pattern as const zstring ptr)
+declare sub gtk_accel_map_lock_path(byval accel_path as const gchar ptr)
+declare sub gtk_accel_map_unlock_path(byval accel_path as const gchar ptr)
+declare sub gtk_accel_map_add_filter(byval filter_pattern as const gchar ptr)
 declare sub gtk_accel_map_foreach_unfiltered(byval data as gpointer, byval foreach_func as GtkAccelMapForeach)
 declare function gtk_accel_map_get_type() as GType
 declare function gtk_accel_map_get() as GtkAccelMap ptr
 declare sub _gtk_accel_map_init()
-declare sub _gtk_accel_map_add_group(byval accel_path as const zstring ptr, byval accel_group as GtkAccelGroup ptr)
-declare sub _gtk_accel_map_remove_group(byval accel_path as const zstring ptr, byval accel_group as GtkAccelGroup ptr)
-declare function _gtk_accel_path_is_valid(byval accel_path as const zstring ptr) as gboolean
+declare sub _gtk_accel_map_add_group(byval accel_path as const gchar ptr, byval accel_group as GtkAccelGroup ptr)
+declare sub _gtk_accel_map_remove_group(byval accel_path as const gchar ptr, byval accel_group as GtkAccelGroup ptr)
+declare function _gtk_accel_path_is_valid(byval accel_path as const gchar ptr) as gboolean
 
 #define __GTK_ACCESSIBLE_H__
 #define GTK_TYPE_ACCESSIBLE gtk_accessible_get_type()
@@ -2808,8 +2808,8 @@ type _GtkActionClass
 end type
 
 declare function gtk_action_get_type() as GType
-declare function gtk_action_new(byval name as const zstring ptr, byval label as const zstring ptr, byval tooltip as const zstring ptr, byval stock_id as const zstring ptr) as GtkAction ptr
-declare function gtk_action_get_name(byval action as GtkAction ptr) as const zstring ptr
+declare function gtk_action_new(byval name as const gchar ptr, byval label as const gchar ptr, byval tooltip as const gchar ptr, byval stock_id as const gchar ptr) as GtkAction ptr
+declare function gtk_action_get_name(byval action as GtkAction ptr) as const gchar ptr
 declare function gtk_action_is_sensitive(byval action as GtkAction ptr) as gboolean
 declare function gtk_action_get_sensitive(byval action as GtkAction ptr) as gboolean
 declare sub gtk_action_set_sensitive(byval action as GtkAction ptr, byval sensitive as gboolean)
@@ -2824,7 +2824,7 @@ declare function gtk_action_create_menu(byval action as GtkAction ptr) as GtkWid
 declare function gtk_action_get_proxies(byval action as GtkAction ptr) as GSList ptr
 declare sub gtk_action_connect_accelerator(byval action as GtkAction ptr)
 declare sub gtk_action_disconnect_accelerator(byval action as GtkAction ptr)
-declare function gtk_action_get_accel_path(byval action as GtkAction ptr) as const zstring ptr
+declare function gtk_action_get_accel_path(byval action as GtkAction ptr) as const gchar ptr
 declare function gtk_action_get_accel_closure(byval action as GtkAction ptr) as GClosure ptr
 declare function gtk_widget_get_action(byval widget as GtkWidget ptr) as GtkAction ptr
 declare sub gtk_action_connect_proxy(byval action as GtkAction ptr, byval proxy as GtkWidget ptr)
@@ -2836,21 +2836,21 @@ declare sub gtk_action_unblock_activate(byval action as GtkAction ptr)
 declare sub _gtk_action_add_to_proxy_list(byval action as GtkAction ptr, byval proxy as GtkWidget ptr)
 declare sub _gtk_action_remove_from_proxy_list(byval action as GtkAction ptr, byval proxy as GtkWidget ptr)
 declare sub _gtk_action_emit_activate(byval action as GtkAction ptr)
-declare sub gtk_action_set_accel_path(byval action as GtkAction ptr, byval accel_path as const zstring ptr)
+declare sub gtk_action_set_accel_path(byval action as GtkAction ptr, byval accel_path as const gchar ptr)
 declare sub gtk_action_set_accel_group(byval action as GtkAction ptr, byval accel_group as GtkAccelGroup ptr)
 declare sub _gtk_action_sync_menu_visible(byval action as GtkAction ptr, byval proxy as GtkWidget ptr, byval empty as gboolean)
-declare sub gtk_action_set_label(byval action as GtkAction ptr, byval label as const zstring ptr)
-declare function gtk_action_get_label(byval action as GtkAction ptr) as const zstring ptr
-declare sub gtk_action_set_short_label(byval action as GtkAction ptr, byval short_label as const zstring ptr)
-declare function gtk_action_get_short_label(byval action as GtkAction ptr) as const zstring ptr
-declare sub gtk_action_set_tooltip(byval action as GtkAction ptr, byval tooltip as const zstring ptr)
-declare function gtk_action_get_tooltip(byval action as GtkAction ptr) as const zstring ptr
-declare sub gtk_action_set_stock_id(byval action as GtkAction ptr, byval stock_id as const zstring ptr)
-declare function gtk_action_get_stock_id(byval action as GtkAction ptr) as const zstring ptr
+declare sub gtk_action_set_label(byval action as GtkAction ptr, byval label as const gchar ptr)
+declare function gtk_action_get_label(byval action as GtkAction ptr) as const gchar ptr
+declare sub gtk_action_set_short_label(byval action as GtkAction ptr, byval short_label as const gchar ptr)
+declare function gtk_action_get_short_label(byval action as GtkAction ptr) as const gchar ptr
+declare sub gtk_action_set_tooltip(byval action as GtkAction ptr, byval tooltip as const gchar ptr)
+declare function gtk_action_get_tooltip(byval action as GtkAction ptr) as const gchar ptr
+declare sub gtk_action_set_stock_id(byval action as GtkAction ptr, byval stock_id as const gchar ptr)
+declare function gtk_action_get_stock_id(byval action as GtkAction ptr) as const gchar ptr
 declare sub gtk_action_set_gicon(byval action as GtkAction ptr, byval icon as GIcon ptr)
 declare function gtk_action_get_gicon(byval action as GtkAction ptr) as GIcon ptr
-declare sub gtk_action_set_icon_name(byval action as GtkAction ptr, byval icon_name as const zstring ptr)
-declare function gtk_action_get_icon_name(byval action as GtkAction ptr) as const zstring ptr
+declare sub gtk_action_set_icon_name(byval action as GtkAction ptr, byval icon_name as const gchar ptr)
+declare function gtk_action_get_icon_name(byval action as GtkAction ptr) as const gchar ptr
 declare sub gtk_action_set_visible_horizontal(byval action as GtkAction ptr, byval visible_horizontal as gboolean)
 declare function gtk_action_get_visible_horizontal(byval action as GtkAction ptr) as gboolean
 declare sub gtk_action_set_visible_vertical(byval action as GtkAction ptr, byval visible_vertical as gboolean)
@@ -2882,7 +2882,7 @@ end type
 
 type _GtkActionGroupClass
 	parent_class as GObjectClass
-	get_action as function(byval action_group as GtkActionGroup ptr, byval action_name as const zstring ptr) as GtkAction ptr
+	get_action as function(byval action_group as GtkActionGroup ptr, byval action_name as const gchar ptr) as GtkAction ptr
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 	_gtk_reserved3 as sub()
@@ -2890,44 +2890,44 @@ type _GtkActionGroupClass
 end type
 
 type _GtkActionEntry
-	name as const zstring ptr
-	stock_id as const zstring ptr
-	label as const zstring ptr
-	accelerator as const zstring ptr
-	tooltip as const zstring ptr
+	name as const gchar ptr
+	stock_id as const gchar ptr
+	label as const gchar ptr
+	accelerator as const gchar ptr
+	tooltip as const gchar ptr
 	callback as GCallback
 end type
 
 type _GtkToggleActionEntry
-	name as const zstring ptr
-	stock_id as const zstring ptr
-	label as const zstring ptr
-	accelerator as const zstring ptr
-	tooltip as const zstring ptr
+	name as const gchar ptr
+	stock_id as const gchar ptr
+	label as const gchar ptr
+	accelerator as const gchar ptr
+	tooltip as const gchar ptr
 	callback as GCallback
 	is_active as gboolean
 end type
 
 type _GtkRadioActionEntry
-	name as const zstring ptr
-	stock_id as const zstring ptr
-	label as const zstring ptr
-	accelerator as const zstring ptr
-	tooltip as const zstring ptr
+	name as const gchar ptr
+	stock_id as const gchar ptr
+	label as const gchar ptr
+	accelerator as const gchar ptr
+	tooltip as const gchar ptr
 	value as gint
 end type
 
 declare function gtk_action_group_get_type() as GType
-declare function gtk_action_group_new(byval name as const zstring ptr) as GtkActionGroup ptr
-declare function gtk_action_group_get_name(byval action_group as GtkActionGroup ptr) as const zstring ptr
+declare function gtk_action_group_new(byval name as const gchar ptr) as GtkActionGroup ptr
+declare function gtk_action_group_get_name(byval action_group as GtkActionGroup ptr) as const gchar ptr
 declare function gtk_action_group_get_sensitive(byval action_group as GtkActionGroup ptr) as gboolean
 declare sub gtk_action_group_set_sensitive(byval action_group as GtkActionGroup ptr, byval sensitive as gboolean)
 declare function gtk_action_group_get_visible(byval action_group as GtkActionGroup ptr) as gboolean
 declare sub gtk_action_group_set_visible(byval action_group as GtkActionGroup ptr, byval visible as gboolean)
-declare function gtk_action_group_get_action(byval action_group as GtkActionGroup ptr, byval action_name as const zstring ptr) as GtkAction ptr
+declare function gtk_action_group_get_action(byval action_group as GtkActionGroup ptr, byval action_name as const gchar ptr) as GtkAction ptr
 declare function gtk_action_group_list_actions(byval action_group as GtkActionGroup ptr) as GList ptr
 declare sub gtk_action_group_add_action(byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr)
-declare sub gtk_action_group_add_action_with_accel(byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr, byval accelerator as const zstring ptr)
+declare sub gtk_action_group_add_action_with_accel(byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr, byval accelerator as const gchar ptr)
 declare sub gtk_action_group_remove_action(byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr)
 declare sub gtk_action_group_add_actions(byval action_group as GtkActionGroup ptr, byval entries as const GtkActionEntry ptr, byval n_entries as guint, byval user_data as gpointer)
 declare sub gtk_action_group_add_toggle_actions(byval action_group as GtkActionGroup ptr, byval entries as const GtkToggleActionEntry ptr, byval n_entries as guint, byval user_data as gpointer)
@@ -2936,8 +2936,8 @@ declare sub gtk_action_group_add_actions_full(byval action_group as GtkActionGro
 declare sub gtk_action_group_add_toggle_actions_full(byval action_group as GtkActionGroup ptr, byval entries as const GtkToggleActionEntry ptr, byval n_entries as guint, byval user_data as gpointer, byval destroy as GDestroyNotify)
 declare sub gtk_action_group_add_radio_actions_full(byval action_group as GtkActionGroup ptr, byval entries as const GtkRadioActionEntry ptr, byval n_entries as guint, byval value as gint, byval on_change as GCallback, byval user_data as gpointer, byval destroy as GDestroyNotify)
 declare sub gtk_action_group_set_translate_func(byval action_group as GtkActionGroup ptr, byval func as GtkTranslateFunc, byval data as gpointer, byval notify as GDestroyNotify)
-declare sub gtk_action_group_set_translation_domain(byval action_group as GtkActionGroup ptr, byval domain as const zstring ptr)
-declare function gtk_action_group_translate_string(byval action_group as GtkActionGroup ptr, byval string as const zstring ptr) as const zstring ptr
+declare sub gtk_action_group_set_translation_domain(byval action_group as GtkActionGroup ptr, byval domain as const gchar ptr)
+declare function gtk_action_group_translate_string(byval action_group as GtkActionGroup ptr, byval string as const gchar ptr) as const gchar ptr
 declare sub _gtk_action_group_emit_connect_proxy(byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr, byval proxy as GtkWidget ptr)
 declare sub _gtk_action_group_emit_disconnect_proxy(byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr, byval proxy as GtkWidget ptr)
 declare sub _gtk_action_group_emit_pre_activate(byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr)
@@ -2954,7 +2954,7 @@ type GtkActivatableIface as _GtkActivatableIface
 
 type _GtkActivatableIface
 	g_iface as GTypeInterface
-	update as sub(byval activatable as GtkActivatable ptr, byval action as GtkAction ptr, byval property_name as const zstring ptr)
+	update as sub(byval activatable as GtkActivatable ptr, byval action as GtkAction ptr, byval property_name as const gchar ptr)
 	sync_action_properties as sub(byval activatable as GtkActivatable ptr, byval action as GtkAction ptr)
 end type
 
@@ -3046,9 +3046,9 @@ type _GtkFrameClass
 end type
 
 declare function gtk_frame_get_type() as GType
-declare function gtk_frame_new(byval label as const zstring ptr) as GtkWidget ptr
-declare sub gtk_frame_set_label(byval frame as GtkFrame ptr, byval label as const zstring ptr)
-declare function gtk_frame_get_label(byval frame as GtkFrame ptr) as const zstring ptr
+declare function gtk_frame_new(byval label as const gchar ptr) as GtkWidget ptr
+declare sub gtk_frame_set_label(byval frame as GtkFrame ptr, byval label as const gchar ptr)
+declare function gtk_frame_get_label(byval frame as GtkFrame ptr) as const gchar ptr
 declare sub gtk_frame_set_label_widget(byval frame as GtkFrame ptr, byval label_widget as GtkWidget ptr)
 declare function gtk_frame_get_label_widget(byval frame as GtkFrame ptr) as GtkWidget ptr
 declare sub gtk_frame_set_label_align(byval frame as GtkFrame ptr, byval xalign as gfloat, byval yalign as gfloat)
@@ -3079,7 +3079,7 @@ type _GtkAspectFrameClass
 end type
 
 declare function gtk_aspect_frame_get_type() as GType
-declare function gtk_aspect_frame_new(byval label as const zstring ptr, byval xalign as gfloat, byval yalign as gfloat, byval ratio as gfloat, byval obey_child as gboolean) as GtkWidget ptr
+declare function gtk_aspect_frame_new(byval label as const gchar ptr, byval xalign as gfloat, byval yalign as gfloat, byval ratio as gfloat, byval obey_child as gboolean) as GtkWidget ptr
 declare sub gtk_aspect_frame_set(byval aspect_frame as GtkAspectFrame ptr, byval xalign as gfloat, byval yalign as gfloat, byval ratio as gfloat, byval obey_child as gboolean)
 
 #define __GTK_ASSISTANT_H__
@@ -3140,8 +3140,8 @@ declare function gtk_assistant_insert_page(byval assistant as GtkAssistant ptr, 
 declare sub gtk_assistant_set_forward_page_func(byval assistant as GtkAssistant ptr, byval page_func as GtkAssistantPageFunc, byval data as gpointer, byval destroy as GDestroyNotify)
 declare sub gtk_assistant_set_page_type(byval assistant as GtkAssistant ptr, byval page as GtkWidget ptr, byval type as GtkAssistantPageType)
 declare function gtk_assistant_get_page_type(byval assistant as GtkAssistant ptr, byval page as GtkWidget ptr) as GtkAssistantPageType
-declare sub gtk_assistant_set_page_title(byval assistant as GtkAssistant ptr, byval page as GtkWidget ptr, byval title as const zstring ptr)
-declare function gtk_assistant_get_page_title(byval assistant as GtkAssistant ptr, byval page as GtkWidget ptr) as const zstring ptr
+declare sub gtk_assistant_set_page_title(byval assistant as GtkAssistant ptr, byval page as GtkWidget ptr, byval title as const gchar ptr)
+declare function gtk_assistant_get_page_title(byval assistant as GtkAssistant ptr, byval page as GtkWidget ptr) as const gchar ptr
 declare sub gtk_assistant_set_page_header_image(byval assistant as GtkAssistant ptr, byval page as GtkWidget ptr, byval pixbuf as GdkPixbuf ptr)
 declare function gtk_assistant_get_page_header_image(byval assistant as GtkAssistant ptr, byval page as GtkWidget ptr) as GdkPixbuf ptr
 declare sub gtk_assistant_set_page_side_image(byval assistant as GtkAssistant ptr, byval page as GtkWidget ptr, byval pixbuf as GdkPixbuf ptr)
@@ -3246,7 +3246,7 @@ type GtkBindingSignal as _GtkBindingSignal
 type GtkBindingArg as _GtkBindingArg
 
 type _GtkBindingSet
-	set_name as zstring ptr
+	set_name as gchar ptr
 	priority as gint
 	widget_path_pspecs as GSList ptr
 	widget_class_pspecs as GSList ptr
@@ -3271,7 +3271,7 @@ end type
 union _GtkBindingArg_d
 	long_data as glong
 	double_data as gdouble
-	string_data as zstring ptr
+	string_data as gchar ptr
 end union
 
 type _GtkBindingArg
@@ -3281,14 +3281,14 @@ end type
 
 type _GtkBindingSignal
 	next as GtkBindingSignal ptr
-	signal_name as zstring ptr
+	signal_name as gchar ptr
 	n_args as guint
 	args as GtkBindingArg ptr
 end type
 
-declare function gtk_binding_set_new(byval set_name as const zstring ptr) as GtkBindingSet ptr
+declare function gtk_binding_set_new(byval set_name as const gchar ptr) as GtkBindingSet ptr
 declare function gtk_binding_set_by_class(byval object_class as gpointer) as GtkBindingSet ptr
-declare function gtk_binding_set_find(byval set_name as const zstring ptr) as GtkBindingSet ptr
+declare function gtk_binding_set_find(byval set_name as const gchar ptr) as GtkBindingSet ptr
 declare function gtk_bindings_activate(byval object as GtkObject ptr, byval keyval as guint, byval modifiers as GdkModifierType) as gboolean
 declare function gtk_bindings_activate_event(byval object as GtkObject ptr, byval event as GdkEventKey ptr) as gboolean
 declare function gtk_binding_set_activate(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType, byval object as GtkObject ptr) as gboolean
@@ -3296,13 +3296,13 @@ declare sub gtk_binding_entry_clear(byval binding_set as GtkBindingSet ptr, byva
 declare sub gtk_binding_entry_add alias "gtk_binding_entry_clear"(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType)
 declare function gtk_binding_parse_binding(byval scanner as GScanner ptr) as guint
 declare sub gtk_binding_entry_skip(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType)
-declare sub gtk_binding_entry_add_signal(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType, byval signal_name as const zstring ptr, byval n_args as guint, ...)
-declare sub gtk_binding_entry_add_signall(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType, byval signal_name as const zstring ptr, byval binding_args as GSList ptr)
+declare sub gtk_binding_entry_add_signal(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType, byval signal_name as const gchar ptr, byval n_args as guint, ...)
+declare sub gtk_binding_entry_add_signall(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType, byval signal_name as const gchar ptr, byval binding_args as GSList ptr)
 declare sub gtk_binding_entry_remove(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType)
-declare sub gtk_binding_set_add_path(byval binding_set as GtkBindingSet ptr, byval path_type as GtkPathType, byval path_pattern as const zstring ptr, byval priority as GtkPathPriorityType)
+declare sub gtk_binding_set_add_path(byval binding_set as GtkBindingSet ptr, byval path_type as GtkPathType, byval path_pattern as const gchar ptr, byval priority as GtkPathPriorityType)
 declare function _gtk_binding_parse_binding(byval scanner as GScanner ptr) as guint
 declare sub _gtk_binding_reset_parsed()
-declare sub _gtk_binding_entry_add_signall(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType, byval signal_name as const zstring ptr, byval binding_args as GSList ptr)
+declare sub _gtk_binding_entry_add_signall(byval binding_set as GtkBindingSet ptr, byval keyval as guint, byval modifiers as GdkModifierType, byval signal_name as const gchar ptr, byval binding_args as GSList ptr)
 
 #define __GTK_BUILDABLE_H__
 #define __GTK_BUILDER_H__
@@ -3351,22 +3351,22 @@ type _GtkBuilderClass
 	_gtk_reserved8 as sub()
 end type
 
-type GtkBuilderConnectFunc as sub(byval builder as GtkBuilder ptr, byval object as GObject ptr, byval signal_name as const zstring ptr, byval handler_name as const zstring ptr, byval connect_object as GObject ptr, byval flags as GConnectFlags, byval user_data as gpointer)
+type GtkBuilderConnectFunc as sub(byval builder as GtkBuilder ptr, byval object as GObject ptr, byval signal_name as const gchar ptr, byval handler_name as const gchar ptr, byval connect_object as GObject ptr, byval flags as GConnectFlags, byval user_data as gpointer)
 declare function gtk_builder_get_type() as GType
 declare function gtk_builder_new() as GtkBuilder ptr
-declare function gtk_builder_add_from_file(byval builder as GtkBuilder ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as guint
-declare function gtk_builder_add_from_string(byval builder as GtkBuilder ptr, byval buffer as const zstring ptr, byval length as gsize, byval error as GError ptr ptr) as guint
-declare function gtk_builder_add_objects_from_file(byval builder as GtkBuilder ptr, byval filename as const zstring ptr, byval object_ids as zstring ptr ptr, byval error as GError ptr ptr) as guint
-declare function gtk_builder_add_objects_from_string(byval builder as GtkBuilder ptr, byval buffer as const zstring ptr, byval length as gsize, byval object_ids as zstring ptr ptr, byval error as GError ptr ptr) as guint
-declare function gtk_builder_get_object(byval builder as GtkBuilder ptr, byval name as const zstring ptr) as GObject ptr
+declare function gtk_builder_add_from_file(byval builder as GtkBuilder ptr, byval filename as const gchar ptr, byval error as GError ptr ptr) as guint
+declare function gtk_builder_add_from_string(byval builder as GtkBuilder ptr, byval buffer as const gchar ptr, byval length as gsize, byval error as GError ptr ptr) as guint
+declare function gtk_builder_add_objects_from_file(byval builder as GtkBuilder ptr, byval filename as const gchar ptr, byval object_ids as gchar ptr ptr, byval error as GError ptr ptr) as guint
+declare function gtk_builder_add_objects_from_string(byval builder as GtkBuilder ptr, byval buffer as const gchar ptr, byval length as gsize, byval object_ids as gchar ptr ptr, byval error as GError ptr ptr) as guint
+declare function gtk_builder_get_object(byval builder as GtkBuilder ptr, byval name as const gchar ptr) as GObject ptr
 declare function gtk_builder_get_objects(byval builder as GtkBuilder ptr) as GSList ptr
 declare sub gtk_builder_connect_signals(byval builder as GtkBuilder ptr, byval user_data as gpointer)
 declare sub gtk_builder_connect_signals_full(byval builder as GtkBuilder ptr, byval func as GtkBuilderConnectFunc, byval user_data as gpointer)
-declare sub gtk_builder_set_translation_domain(byval builder as GtkBuilder ptr, byval domain as const zstring ptr)
-declare function gtk_builder_get_translation_domain(byval builder as GtkBuilder ptr) as const zstring ptr
+declare sub gtk_builder_set_translation_domain(byval builder as GtkBuilder ptr, byval domain as const gchar ptr)
+declare function gtk_builder_get_translation_domain(byval builder as GtkBuilder ptr) as const gchar ptr
 declare function gtk_builder_get_type_from_name(byval builder as GtkBuilder ptr, byval type_name as const zstring ptr) as GType
-declare function gtk_builder_value_from_string(byval builder as GtkBuilder ptr, byval pspec as GParamSpec ptr, byval string as const zstring ptr, byval value as GValue ptr, byval error as GError ptr ptr) as gboolean
-declare function gtk_builder_value_from_string_type(byval builder as GtkBuilder ptr, byval type as GType, byval string as const zstring ptr, byval value as GValue ptr, byval error as GError ptr ptr) as gboolean
+declare function gtk_builder_value_from_string(byval builder as GtkBuilder ptr, byval pspec as GParamSpec ptr, byval string as const gchar ptr, byval value as GValue ptr, byval error as GError ptr ptr) as gboolean
+declare function gtk_builder_value_from_string_type(byval builder as GtkBuilder ptr, byval type as GType, byval string as const gchar ptr, byval value as GValue ptr, byval error as GError ptr ptr) as gboolean
 
 #define GTK_BUILDER_WARN_INVALID_CHILD_TYPE(object, type) g_warning("'%s' is not a valid child type of '%s'", type, g_type_name(G_OBJECT_TYPE(object)))
 #define GTK_TYPE_BUILDABLE gtk_buildable_get_type()
@@ -3379,29 +3379,29 @@ type GtkBuildableIface as _GtkBuildableIface
 
 type _GtkBuildableIface
 	g_iface as GTypeInterface
-	set_name as sub(byval buildable as GtkBuildable ptr, byval name as const zstring ptr)
-	get_name as function(byval buildable as GtkBuildable ptr) as const zstring ptr
-	add_child as sub(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval type as const zstring ptr)
-	set_buildable_property as sub(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval name as const zstring ptr, byval value as const GValue ptr)
-	construct_child as function(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval name as const zstring ptr) as GObject ptr
-	custom_tag_start as function(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const zstring ptr, byval parser as GMarkupParser ptr, byval data as gpointer ptr) as gboolean
-	custom_tag_end as sub(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const zstring ptr, byval data as gpointer ptr)
-	custom_finished as sub(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const zstring ptr, byval data as gpointer)
+	set_name as sub(byval buildable as GtkBuildable ptr, byval name as const gchar ptr)
+	get_name as function(byval buildable as GtkBuildable ptr) as const gchar ptr
+	add_child as sub(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval type as const gchar ptr)
+	set_buildable_property as sub(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval name as const gchar ptr, byval value as const GValue ptr)
+	construct_child as function(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval name as const gchar ptr) as GObject ptr
+	custom_tag_start as function(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const gchar ptr, byval parser as GMarkupParser ptr, byval data as gpointer ptr) as gboolean
+	custom_tag_end as sub(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const gchar ptr, byval data as gpointer ptr)
+	custom_finished as sub(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const gchar ptr, byval data as gpointer)
 	parser_finished as sub(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr)
-	get_internal_child as function(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval childname as const zstring ptr) as GObject ptr
+	get_internal_child as function(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval childname as const gchar ptr) as GObject ptr
 end type
 
 declare function gtk_buildable_get_type() as GType
-declare sub gtk_buildable_set_name(byval buildable as GtkBuildable ptr, byval name as const zstring ptr)
-declare function gtk_buildable_get_name(byval buildable as GtkBuildable ptr) as const zstring ptr
-declare sub gtk_buildable_add_child(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval type as const zstring ptr)
-declare sub gtk_buildable_set_buildable_property(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval name as const zstring ptr, byval value as const GValue ptr)
-declare function gtk_buildable_construct_child(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval name as const zstring ptr) as GObject ptr
-declare function gtk_buildable_custom_tag_start(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const zstring ptr, byval parser as GMarkupParser ptr, byval data as gpointer ptr) as gboolean
-declare sub gtk_buildable_custom_tag_end(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const zstring ptr, byval data as gpointer ptr)
-declare sub gtk_buildable_custom_finished(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const zstring ptr, byval data as gpointer)
+declare sub gtk_buildable_set_name(byval buildable as GtkBuildable ptr, byval name as const gchar ptr)
+declare function gtk_buildable_get_name(byval buildable as GtkBuildable ptr) as const gchar ptr
+declare sub gtk_buildable_add_child(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval type as const gchar ptr)
+declare sub gtk_buildable_set_buildable_property(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval name as const gchar ptr, byval value as const GValue ptr)
+declare function gtk_buildable_construct_child(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval name as const gchar ptr) as GObject ptr
+declare function gtk_buildable_custom_tag_start(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const gchar ptr, byval parser as GMarkupParser ptr, byval data as gpointer ptr) as gboolean
+declare sub gtk_buildable_custom_tag_end(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const gchar ptr, byval data as gpointer ptr)
+declare sub gtk_buildable_custom_finished(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const gchar ptr, byval data as gpointer)
 declare sub gtk_buildable_parser_finished(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr)
-declare function gtk_buildable_get_internal_child(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval childname as const zstring ptr) as GObject ptr
+declare function gtk_buildable_get_internal_child(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval childname as const gchar ptr) as GObject ptr
 
 #define __GTK_BUTTON_H__
 #define __GTK_IMAGE_H__
@@ -3436,7 +3436,7 @@ type _GtkImagePixbufData
 end type
 
 type _GtkImageStockData
-	stock_id as zstring ptr
+	stock_id as gchar ptr
 end type
 
 type _GtkImageIconSetData
@@ -3450,7 +3450,7 @@ type _GtkImageAnimationData
 end type
 
 type _GtkImageIconNameData
-	icon_name as zstring ptr
+	icon_name as gchar ptr
 	pixbuf as GdkPixbuf ptr
 	theme_change_id as guint
 end type
@@ -3507,44 +3507,44 @@ declare function gtk_image_new_from_pixmap(byval pixmap as GdkPixmap ptr, byval 
 declare function gtk_image_new_from_image(byval image as GdkImage ptr, byval mask as GdkBitmap ptr) as GtkWidget ptr
 
 #ifdef __FB_UNIX__
-	declare function gtk_image_new_from_file(byval filename as const zstring ptr) as GtkWidget ptr
+	declare function gtk_image_new_from_file(byval filename as const gchar ptr) as GtkWidget ptr
 #else
-	declare function gtk_image_new_from_file_utf8(byval filename as const zstring ptr) as GtkWidget ptr
-	declare function gtk_image_new_from_file alias "gtk_image_new_from_file_utf8"(byval filename as const zstring ptr) as GtkWidget ptr
+	declare function gtk_image_new_from_file_utf8(byval filename as const gchar ptr) as GtkWidget ptr
+	declare function gtk_image_new_from_file alias "gtk_image_new_from_file_utf8"(byval filename as const gchar ptr) as GtkWidget ptr
 #endif
 
 declare function gtk_image_new_from_pixbuf(byval pixbuf as GdkPixbuf ptr) as GtkWidget ptr
-declare function gtk_image_new_from_stock(byval stock_id as const zstring ptr, byval size as GtkIconSize) as GtkWidget ptr
+declare function gtk_image_new_from_stock(byval stock_id as const gchar ptr, byval size as GtkIconSize) as GtkWidget ptr
 declare function gtk_image_new_from_icon_set(byval icon_set as GtkIconSet ptr, byval size as GtkIconSize) as GtkWidget ptr
 declare function gtk_image_new_from_animation(byval animation as GdkPixbufAnimation ptr) as GtkWidget ptr
-declare function gtk_image_new_from_icon_name(byval icon_name as const zstring ptr, byval size as GtkIconSize) as GtkWidget ptr
+declare function gtk_image_new_from_icon_name(byval icon_name as const gchar ptr, byval size as GtkIconSize) as GtkWidget ptr
 declare function gtk_image_new_from_gicon(byval icon as GIcon ptr, byval size as GtkIconSize) as GtkWidget ptr
 declare sub gtk_image_clear(byval image as GtkImage ptr)
 declare sub gtk_image_set_from_pixmap(byval image as GtkImage ptr, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
 declare sub gtk_image_set_from_image(byval image as GtkImage ptr, byval gdk_image as GdkImage ptr, byval mask as GdkBitmap ptr)
 
 #ifdef __FB_UNIX__
-	declare sub gtk_image_set_from_file(byval image as GtkImage ptr, byval filename as const zstring ptr)
+	declare sub gtk_image_set_from_file(byval image as GtkImage ptr, byval filename as const gchar ptr)
 #else
-	declare sub gtk_image_set_from_file_utf8(byval image as GtkImage ptr, byval filename as const zstring ptr)
-	declare sub gtk_image_set_from_file alias "gtk_image_set_from_file_utf8"(byval image as GtkImage ptr, byval filename as const zstring ptr)
+	declare sub gtk_image_set_from_file_utf8(byval image as GtkImage ptr, byval filename as const gchar ptr)
+	declare sub gtk_image_set_from_file alias "gtk_image_set_from_file_utf8"(byval image as GtkImage ptr, byval filename as const gchar ptr)
 #endif
 
 declare sub gtk_image_set_from_pixbuf(byval image as GtkImage ptr, byval pixbuf as GdkPixbuf ptr)
-declare sub gtk_image_set_from_stock(byval image as GtkImage ptr, byval stock_id as const zstring ptr, byval size as GtkIconSize)
+declare sub gtk_image_set_from_stock(byval image as GtkImage ptr, byval stock_id as const gchar ptr, byval size as GtkIconSize)
 declare sub gtk_image_set_from_icon_set(byval image as GtkImage ptr, byval icon_set as GtkIconSet ptr, byval size as GtkIconSize)
 declare sub gtk_image_set_from_animation(byval image as GtkImage ptr, byval animation as GdkPixbufAnimation ptr)
-declare sub gtk_image_set_from_icon_name(byval image as GtkImage ptr, byval icon_name as const zstring ptr, byval size as GtkIconSize)
+declare sub gtk_image_set_from_icon_name(byval image as GtkImage ptr, byval icon_name as const gchar ptr, byval size as GtkIconSize)
 declare sub gtk_image_set_from_gicon(byval image as GtkImage ptr, byval icon as GIcon ptr, byval size as GtkIconSize)
 declare sub gtk_image_set_pixel_size(byval image as GtkImage ptr, byval pixel_size as gint)
 declare function gtk_image_get_storage_type(byval image as GtkImage ptr) as GtkImageType
 declare sub gtk_image_get_pixmap(byval image as GtkImage ptr, byval pixmap as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr)
 declare sub gtk_image_get_image(byval image as GtkImage ptr, byval gdk_image as GdkImage ptr ptr, byval mask as GdkBitmap ptr ptr)
 declare function gtk_image_get_pixbuf(byval image as GtkImage ptr) as GdkPixbuf ptr
-declare sub gtk_image_get_stock(byval image as GtkImage ptr, byval stock_id as zstring ptr ptr, byval size as GtkIconSize ptr)
+declare sub gtk_image_get_stock(byval image as GtkImage ptr, byval stock_id as gchar ptr ptr, byval size as GtkIconSize ptr)
 declare sub gtk_image_get_icon_set(byval image as GtkImage ptr, byval icon_set as GtkIconSet ptr ptr, byval size as GtkIconSize ptr)
 declare function gtk_image_get_animation(byval image as GtkImage ptr) as GdkPixbufAnimation ptr
-declare sub gtk_image_get_icon_name(byval image as GtkImage ptr, byval icon_name as const zstring ptr ptr, byval size as GtkIconSize ptr)
+declare sub gtk_image_get_icon_name(byval image as GtkImage ptr, byval icon_name as const gchar ptr ptr, byval size as GtkIconSize ptr)
 declare sub gtk_image_get_gicon(byval image as GtkImage ptr, byval gicon as GIcon ptr ptr, byval size as GtkIconSize ptr)
 declare function gtk_image_get_pixel_size(byval image as GtkImage ptr) as gint
 declare sub gtk_image_set(byval image as GtkImage ptr, byval val as GdkImage ptr, byval mask as GdkBitmap ptr)
@@ -3562,7 +3562,7 @@ type GtkButtonClass as _GtkButtonClass
 type _GtkButton
 	bin as GtkBin
 	event_window as GdkWindow ptr
-	label_text as zstring ptr
+	label_text as gchar ptr
 	activate_timeout as guint
 	constructed : 1 as guint
 	in_button : 1 as guint
@@ -3591,9 +3591,9 @@ end type
 
 declare function gtk_button_get_type() as GType
 declare function gtk_button_new() as GtkWidget ptr
-declare function gtk_button_new_with_label(byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_button_new_from_stock(byval stock_id as const zstring ptr) as GtkWidget ptr
-declare function gtk_button_new_with_mnemonic(byval label as const zstring ptr) as GtkWidget ptr
+declare function gtk_button_new_with_label(byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_button_new_from_stock(byval stock_id as const gchar ptr) as GtkWidget ptr
+declare function gtk_button_new_with_mnemonic(byval label as const gchar ptr) as GtkWidget ptr
 declare sub gtk_button_pressed(byval button as GtkButton ptr)
 declare sub gtk_button_released(byval button as GtkButton ptr)
 declare sub gtk_button_clicked(byval button as GtkButton ptr)
@@ -3601,8 +3601,8 @@ declare sub gtk_button_enter(byval button as GtkButton ptr)
 declare sub gtk_button_leave(byval button as GtkButton ptr)
 declare sub gtk_button_set_relief(byval button as GtkButton ptr, byval newstyle as GtkReliefStyle)
 declare function gtk_button_get_relief(byval button as GtkButton ptr) as GtkReliefStyle
-declare sub gtk_button_set_label(byval button as GtkButton ptr, byval label as const zstring ptr)
-declare function gtk_button_get_label(byval button as GtkButton ptr) as const zstring ptr
+declare sub gtk_button_set_label(byval button as GtkButton ptr, byval label as const gchar ptr)
+declare function gtk_button_get_label(byval button as GtkButton ptr) as const gchar ptr
 declare sub gtk_button_set_use_underline(byval button as GtkButton ptr, byval use_underline as gboolean)
 declare function gtk_button_get_use_underline(byval button as GtkButton ptr) as gboolean
 declare sub gtk_button_set_use_stock(byval button as GtkButton ptr, byval use_stock as gboolean)
@@ -3617,7 +3617,7 @@ declare sub gtk_button_set_image_position(byval button as GtkButton ptr, byval p
 declare function gtk_button_get_image_position(byval button as GtkButton ptr) as GtkPositionType
 declare function gtk_button_get_event_window(byval button as GtkButton ptr) as GdkWindow ptr
 declare sub _gtk_button_set_depressed(byval button as GtkButton ptr, byval depressed as gboolean)
-declare sub _gtk_button_paint(byval button as GtkButton ptr, byval area as const GdkRectangle ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval main_detail as const zstring ptr, byval default_detail as const zstring ptr)
+declare sub _gtk_button_paint(byval button as GtkButton ptr, byval area as const GdkRectangle ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval main_detail as const gchar ptr, byval default_detail as const gchar ptr)
 
 #define __GTK_CALENDAR_H__
 #define __GTK_SIGNAL_H__
@@ -3712,16 +3712,16 @@ declare sub gtk_signal_default_marshaller alias "g_cclosure_marshal_VOID__VOID"(
 #define gtk_signal_handler_pending(object, signal_id, may_be_blocked) g_signal_has_handler_pending((object), (signal_id), 0, (may_be_blocked))
 #define gtk_signal_handler_pending_by_func(object, signal_id, may_be_blocked, func, data) (g_signal_handler_find((object), cast(GSignalMatchType, ((G_SIGNAL_MATCH_ID or G_SIGNAL_MATCH_FUNC) or G_SIGNAL_MATCH_DATA) or iif((may_be_blocked), 0, G_SIGNAL_MATCH_UNBLOCKED)), (signal_id), 0, 0, (func), (data)) <> 0)
 
-declare function gtk_signal_newv(byval name as const zstring ptr, byval signal_flags as GtkSignalRunType, byval object_type as GType, byval function_offset as guint, byval marshaller as GSignalCMarshaller, byval return_val as GType, byval n_args as guint, byval args as GType ptr) as guint
-declare function gtk_signal_new(byval name as const zstring ptr, byval signal_flags as GtkSignalRunType, byval object_type as GType, byval function_offset as guint, byval marshaller as GSignalCMarshaller, byval return_val as GType, byval n_args as guint, ...) as guint
-declare sub gtk_signal_emit_stop_by_name(byval object as GtkObject ptr, byval name as const zstring ptr)
-declare sub gtk_signal_connect_object_while_alive(byval object as GtkObject ptr, byval name as const zstring ptr, byval func as GCallback, byval alive_object as GtkObject ptr)
-declare sub gtk_signal_connect_while_alive(byval object as GtkObject ptr, byval name as const zstring ptr, byval func as GCallback, byval func_data as gpointer, byval alive_object as GtkObject ptr)
-declare function gtk_signal_connect_full(byval object as GtkObject ptr, byval name as const zstring ptr, byval func as GCallback, byval unsupported as GtkCallbackMarshal, byval data as gpointer, byval destroy_func as GDestroyNotify, byval object_signal as gint, byval after as gint) as gulong
+declare function gtk_signal_newv(byval name as const gchar ptr, byval signal_flags as GtkSignalRunType, byval object_type as GType, byval function_offset as guint, byval marshaller as GSignalCMarshaller, byval return_val as GType, byval n_args as guint, byval args as GType ptr) as guint
+declare function gtk_signal_new(byval name as const gchar ptr, byval signal_flags as GtkSignalRunType, byval object_type as GType, byval function_offset as guint, byval marshaller as GSignalCMarshaller, byval return_val as GType, byval n_args as guint, ...) as guint
+declare sub gtk_signal_emit_stop_by_name(byval object as GtkObject ptr, byval name as const gchar ptr)
+declare sub gtk_signal_connect_object_while_alive(byval object as GtkObject ptr, byval name as const gchar ptr, byval func as GCallback, byval alive_object as GtkObject ptr)
+declare sub gtk_signal_connect_while_alive(byval object as GtkObject ptr, byval name as const gchar ptr, byval func as GCallback, byval func_data as gpointer, byval alive_object as GtkObject ptr)
+declare function gtk_signal_connect_full(byval object as GtkObject ptr, byval name as const gchar ptr, byval func as GCallback, byval unsupported as GtkCallbackMarshal, byval data as gpointer, byval destroy_func as GDestroyNotify, byval object_signal as gint, byval after as gint) as gulong
 declare sub gtk_signal_emitv(byval object as GtkObject ptr, byval signal_id as guint, byval args as GtkArg ptr)
 declare sub gtk_signal_emit(byval object as GtkObject ptr, byval signal_id as guint, ...)
-declare sub gtk_signal_emit_by_name(byval object as GtkObject ptr, byval name as const zstring ptr, ...)
-declare sub gtk_signal_emitv_by_name(byval object as GtkObject ptr, byval name as const zstring ptr, byval args as GtkArg ptr)
+declare sub gtk_signal_emit_by_name(byval object as GtkObject ptr, byval name as const gchar ptr, ...)
+declare sub gtk_signal_emitv_by_name(byval object as GtkObject ptr, byval name as const gchar ptr, byval args as GtkArg ptr)
 declare sub gtk_signal_compat_matched(byval object as GtkObject ptr, byval func as GCallback, byval data as gpointer, byval match as GSignalMatchType, byval action as guint)
 
 #define GTK_TYPE_CALENDAR gtk_calendar_get_type()
@@ -3745,7 +3745,7 @@ enum
 	GTK_CALENDAR_SHOW_DETAILS = 1 shl 5
 end enum
 
-type GtkCalendarDetailFunc as function(byval calendar as GtkCalendar ptr, byval year as guint, byval month as guint, byval day as guint, byval user_data as gpointer) as zstring ptr
+type GtkCalendarDetailFunc as function(byval calendar as GtkCalendar ptr, byval year as guint, byval month as guint, byval day as guint, byval user_data as gpointer) as gchar ptr
 
 type _GtkCalendar
 	widget as GtkWidget
@@ -3873,10 +3873,10 @@ type _GtkCellRendererClass
 	parent_class as GtkObjectClass
 	get_size as sub(byval cell as GtkCellRenderer ptr, byval widget as GtkWidget ptr, byval cell_area as GdkRectangle ptr, byval x_offset as gint ptr, byval y_offset as gint ptr, byval width as gint ptr, byval height as gint ptr)
 	render as sub(byval cell as GtkCellRenderer ptr, byval window as GdkDrawable ptr, byval widget as GtkWidget ptr, byval background_area as GdkRectangle ptr, byval cell_area as GdkRectangle ptr, byval expose_area as GdkRectangle ptr, byval flags as GtkCellRendererState)
-	activate as function(byval cell as GtkCellRenderer ptr, byval event as GdkEvent ptr, byval widget as GtkWidget ptr, byval path as const zstring ptr, byval background_area as GdkRectangle ptr, byval cell_area as GdkRectangle ptr, byval flags as GtkCellRendererState) as gboolean
-	start_editing as function(byval cell as GtkCellRenderer ptr, byval event as GdkEvent ptr, byval widget as GtkWidget ptr, byval path as const zstring ptr, byval background_area as GdkRectangle ptr, byval cell_area as GdkRectangle ptr, byval flags as GtkCellRendererState) as GtkCellEditable ptr
+	activate as function(byval cell as GtkCellRenderer ptr, byval event as GdkEvent ptr, byval widget as GtkWidget ptr, byval path as const gchar ptr, byval background_area as GdkRectangle ptr, byval cell_area as GdkRectangle ptr, byval flags as GtkCellRendererState) as gboolean
+	start_editing as function(byval cell as GtkCellRenderer ptr, byval event as GdkEvent ptr, byval widget as GtkWidget ptr, byval path as const gchar ptr, byval background_area as GdkRectangle ptr, byval cell_area as GdkRectangle ptr, byval flags as GtkCellRendererState) as GtkCellEditable ptr
 	editing_canceled as sub(byval cell as GtkCellRenderer ptr)
-	editing_started as sub(byval cell as GtkCellRenderer ptr, byval editable as GtkCellEditable ptr, byval path as const zstring ptr)
+	editing_started as sub(byval cell as GtkCellRenderer ptr, byval editable as GtkCellEditable ptr, byval path as const gchar ptr)
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 end type
@@ -3884,8 +3884,8 @@ end type
 declare function gtk_cell_renderer_get_type() as GType
 declare sub gtk_cell_renderer_get_size(byval cell as GtkCellRenderer ptr, byval widget as GtkWidget ptr, byval cell_area as const GdkRectangle ptr, byval x_offset as gint ptr, byval y_offset as gint ptr, byval width as gint ptr, byval height as gint ptr)
 declare sub gtk_cell_renderer_render(byval cell as GtkCellRenderer ptr, byval window as GdkWindow ptr, byval widget as GtkWidget ptr, byval background_area as const GdkRectangle ptr, byval cell_area as const GdkRectangle ptr, byval expose_area as const GdkRectangle ptr, byval flags as GtkCellRendererState)
-declare function gtk_cell_renderer_activate(byval cell as GtkCellRenderer ptr, byval event as GdkEvent ptr, byval widget as GtkWidget ptr, byval path as const zstring ptr, byval background_area as const GdkRectangle ptr, byval cell_area as const GdkRectangle ptr, byval flags as GtkCellRendererState) as gboolean
-declare function gtk_cell_renderer_start_editing(byval cell as GtkCellRenderer ptr, byval event as GdkEvent ptr, byval widget as GtkWidget ptr, byval path as const zstring ptr, byval background_area as const GdkRectangle ptr, byval cell_area as const GdkRectangle ptr, byval flags as GtkCellRendererState) as GtkCellEditable ptr
+declare function gtk_cell_renderer_activate(byval cell as GtkCellRenderer ptr, byval event as GdkEvent ptr, byval widget as GtkWidget ptr, byval path as const gchar ptr, byval background_area as const GdkRectangle ptr, byval cell_area as const GdkRectangle ptr, byval flags as GtkCellRendererState) as gboolean
+declare function gtk_cell_renderer_start_editing(byval cell as GtkCellRenderer ptr, byval event as GdkEvent ptr, byval widget as GtkWidget ptr, byval path as const gchar ptr, byval background_area as const GdkRectangle ptr, byval cell_area as const GdkRectangle ptr, byval flags as GtkCellRendererState) as GtkCellEditable ptr
 declare sub gtk_cell_renderer_set_fixed_size(byval cell as GtkCellRenderer ptr, byval width as gint, byval height as gint)
 declare sub gtk_cell_renderer_get_fixed_size(byval cell as GtkCellRenderer ptr, byval width as gint ptr, byval height as gint ptr)
 declare sub gtk_cell_renderer_set_alignment(byval cell as GtkCellRenderer ptr, byval xalign as gfloat, byval yalign as gfloat)
@@ -3953,9 +3953,9 @@ type _GtkTreeModelIface
 end type
 
 declare function gtk_tree_path_new() as GtkTreePath ptr
-declare function gtk_tree_path_new_from_string(byval path as const zstring ptr) as GtkTreePath ptr
+declare function gtk_tree_path_new_from_string(byval path as const gchar ptr) as GtkTreePath ptr
 declare function gtk_tree_path_new_from_indices(byval first_index as gint, ...) as GtkTreePath ptr
-declare function gtk_tree_path_to_string(byval path as GtkTreePath ptr) as zstring ptr
+declare function gtk_tree_path_to_string(byval path as GtkTreePath ptr) as gchar ptr
 declare function gtk_tree_path_new_first() as GtkTreePath ptr
 declare sub gtk_tree_path_append_index(byval path as GtkTreePath ptr, byval index_ as gint)
 declare sub gtk_tree_path_prepend_index(byval path as GtkTreePath ptr, byval index_ as gint)
@@ -3992,8 +3992,8 @@ declare function gtk_tree_model_get_flags(byval tree_model as GtkTreeModel ptr) 
 declare function gtk_tree_model_get_n_columns(byval tree_model as GtkTreeModel ptr) as gint
 declare function gtk_tree_model_get_column_type(byval tree_model as GtkTreeModel ptr, byval index_ as gint) as GType
 declare function gtk_tree_model_get_iter(byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr, byval path as GtkTreePath ptr) as gboolean
-declare function gtk_tree_model_get_iter_from_string(byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr, byval path_string as const zstring ptr) as gboolean
-declare function gtk_tree_model_get_string_from_iter(byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr) as zstring ptr
+declare function gtk_tree_model_get_iter_from_string(byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr, byval path_string as const gchar ptr) as gboolean
+declare function gtk_tree_model_get_string_from_iter(byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr) as gchar ptr
 declare function gtk_tree_model_get_iter_first(byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr) as gboolean
 declare function gtk_tree_model_get_path(byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr) as GtkTreePath ptr
 declare sub gtk_tree_model_get_value(byval tree_model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr, byval column as gint, byval value as GValue ptr)
@@ -4089,7 +4089,7 @@ type _GtkTreeViewColumn
 	max_width as gint
 	drag_x as gint
 	drag_y as gint
-	title as zstring ptr
+	title as gchar ptr
 	cell_list as GList ptr
 	sort_clicked_signal as guint
 	sort_column_changed_signal as guint
@@ -4117,12 +4117,12 @@ end type
 
 declare function gtk_tree_view_column_get_type() as GType
 declare function gtk_tree_view_column_new() as GtkTreeViewColumn ptr
-declare function gtk_tree_view_column_new_with_attributes(byval title as const zstring ptr, byval cell as GtkCellRenderer ptr, ...) as GtkTreeViewColumn ptr
+declare function gtk_tree_view_column_new_with_attributes(byval title as const gchar ptr, byval cell as GtkCellRenderer ptr, ...) as GtkTreeViewColumn ptr
 declare sub gtk_tree_view_column_pack_start(byval tree_column as GtkTreeViewColumn ptr, byval cell as GtkCellRenderer ptr, byval expand as gboolean)
 declare sub gtk_tree_view_column_pack_end(byval tree_column as GtkTreeViewColumn ptr, byval cell as GtkCellRenderer ptr, byval expand as gboolean)
 declare sub gtk_tree_view_column_clear(byval tree_column as GtkTreeViewColumn ptr)
 declare function gtk_tree_view_column_get_cell_renderers(byval tree_column as GtkTreeViewColumn ptr) as GList ptr
-declare sub gtk_tree_view_column_add_attribute(byval tree_column as GtkTreeViewColumn ptr, byval cell_renderer as GtkCellRenderer ptr, byval attribute as const zstring ptr, byval column as gint)
+declare sub gtk_tree_view_column_add_attribute(byval tree_column as GtkTreeViewColumn ptr, byval cell_renderer as GtkCellRenderer ptr, byval attribute as const gchar ptr, byval column as gint)
 declare sub gtk_tree_view_column_set_attributes(byval tree_column as GtkTreeViewColumn ptr, byval cell_renderer as GtkCellRenderer ptr, ...)
 declare sub gtk_tree_view_column_set_cell_data_func(byval tree_column as GtkTreeViewColumn ptr, byval cell_renderer as GtkCellRenderer ptr, byval func as GtkTreeCellDataFunc, byval func_data as gpointer, byval destroy as GDestroyNotify)
 declare sub gtk_tree_view_column_clear_attributes(byval tree_column as GtkTreeViewColumn ptr, byval cell_renderer as GtkCellRenderer ptr)
@@ -4142,8 +4142,8 @@ declare function gtk_tree_view_column_get_min_width(byval tree_column as GtkTree
 declare sub gtk_tree_view_column_set_max_width(byval tree_column as GtkTreeViewColumn ptr, byval max_width as gint)
 declare function gtk_tree_view_column_get_max_width(byval tree_column as GtkTreeViewColumn ptr) as gint
 declare sub gtk_tree_view_column_clicked(byval tree_column as GtkTreeViewColumn ptr)
-declare sub gtk_tree_view_column_set_title(byval tree_column as GtkTreeViewColumn ptr, byval title as const zstring ptr)
-declare function gtk_tree_view_column_get_title(byval tree_column as GtkTreeViewColumn ptr) as const zstring ptr
+declare sub gtk_tree_view_column_set_title(byval tree_column as GtkTreeViewColumn ptr, byval title as const gchar ptr)
+declare function gtk_tree_view_column_get_title(byval tree_column as GtkTreeViewColumn ptr) as const gchar ptr
 declare sub gtk_tree_view_column_set_expand(byval tree_column as GtkTreeViewColumn ptr, byval expand as gboolean)
 declare function gtk_tree_view_column_get_expand(byval tree_column as GtkTreeViewColumn ptr) as gboolean
 declare sub gtk_tree_view_column_set_clickable(byval tree_column as GtkTreeViewColumn ptr, byval clickable as gboolean)
@@ -4182,7 +4182,7 @@ type _GtkCellLayoutIface
 	pack_start as sub(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr, byval expand as gboolean)
 	pack_end as sub(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr, byval expand as gboolean)
 	clear as sub(byval cell_layout as GtkCellLayout ptr)
-	add_attribute as sub(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr, byval attribute as const zstring ptr, byval column as gint)
+	add_attribute as sub(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr, byval attribute as const gchar ptr, byval column as gint)
 	set_cell_data_func as sub(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr, byval func as GtkCellLayoutDataFunc, byval func_data as gpointer, byval destroy as GDestroyNotify)
 	clear_attributes as sub(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr)
 	reorder as sub(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr, byval position as gint)
@@ -4195,13 +4195,13 @@ declare sub gtk_cell_layout_pack_end(byval cell_layout as GtkCellLayout ptr, byv
 declare function gtk_cell_layout_get_cells(byval cell_layout as GtkCellLayout ptr) as GList ptr
 declare sub gtk_cell_layout_clear(byval cell_layout as GtkCellLayout ptr)
 declare sub gtk_cell_layout_set_attributes(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr, ...)
-declare sub gtk_cell_layout_add_attribute(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr, byval attribute as const zstring ptr, byval column as gint)
+declare sub gtk_cell_layout_add_attribute(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr, byval attribute as const gchar ptr, byval column as gint)
 declare sub gtk_cell_layout_set_cell_data_func(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr, byval func as GtkCellLayoutDataFunc, byval func_data as gpointer, byval destroy as GDestroyNotify)
 declare sub gtk_cell_layout_clear_attributes(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr)
 declare sub gtk_cell_layout_reorder(byval cell_layout as GtkCellLayout ptr, byval cell as GtkCellRenderer ptr, byval position as gint)
-declare function _gtk_cell_layout_buildable_custom_tag_start(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const zstring ptr, byval parser as GMarkupParser ptr, byval data as gpointer ptr) as gboolean
-declare sub _gtk_cell_layout_buildable_custom_tag_end(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const zstring ptr, byval data as gpointer ptr)
-declare sub _gtk_cell_layout_buildable_add_child(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval type as const zstring ptr)
+declare function _gtk_cell_layout_buildable_custom_tag_start(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const gchar ptr, byval parser as GMarkupParser ptr, byval data as gpointer ptr) as gboolean
+declare sub _gtk_cell_layout_buildable_custom_tag_end(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval tagname as const gchar ptr, byval data as gpointer ptr)
+declare sub _gtk_cell_layout_buildable_add_child(byval buildable as GtkBuildable ptr, byval builder as GtkBuilder ptr, byval child as GObject ptr, byval type as const gchar ptr)
 
 #define __GTK_CELL_RENDERER_ACCEL_H__
 #define __GTK_CELL_RENDERER_TEXT_H__
@@ -4216,7 +4216,7 @@ type GtkCellRendererTextClass as _GtkCellRendererTextClass
 
 type _GtkCellRendererText
 	parent as GtkCellRenderer
-	text as zstring ptr
+	text as gchar ptr
 	font as PangoFontDescription ptr
 	font_scale as gdouble
 	foreground as PangoColor
@@ -4239,7 +4239,7 @@ end type
 
 type _GtkCellRendererTextClass
 	parent_class as GtkCellRendererClass
-	edited as sub(byval cell_renderer_text as GtkCellRendererText ptr, byval path as const zstring ptr, byval new_text as const zstring ptr)
+	edited as sub(byval cell_renderer_text as GtkCellRendererText ptr, byval path as const gchar ptr, byval new_text as const gchar ptr)
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 	_gtk_reserved3 as sub()
@@ -4278,8 +4278,8 @@ end type
 
 type _GtkCellRendererAccelClass
 	parent_class as GtkCellRendererTextClass
-	accel_edited as sub(byval accel as GtkCellRendererAccel ptr, byval path_string as const zstring ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval hardware_keycode as guint)
-	accel_cleared as sub(byval accel as GtkCellRendererAccel ptr, byval path_string as const zstring ptr)
+	accel_edited as sub(byval accel as GtkCellRendererAccel ptr, byval path_string as const gchar ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval hardware_keycode as guint)
+	accel_cleared as sub(byval accel as GtkCellRendererAccel ptr, byval path_string as const gchar ptr)
 	_gtk_reserved0 as sub()
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
@@ -4435,7 +4435,7 @@ end type
 
 type _GtkCellRendererToggleClass
 	parent_class as GtkCellRendererClass
-	toggled as sub(byval cell_renderer_toggle as GtkCellRendererToggle ptr, byval path as const zstring ptr)
+	toggled as sub(byval cell_renderer_toggle as GtkCellRendererToggle ptr, byval path as const gchar ptr)
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 	_gtk_reserved3 as sub()
@@ -4474,8 +4474,8 @@ end type
 
 declare function gtk_cell_view_get_type() as GType
 declare function gtk_cell_view_new() as GtkWidget ptr
-declare function gtk_cell_view_new_with_text(byval text as const zstring ptr) as GtkWidget ptr
-declare function gtk_cell_view_new_with_markup(byval markup as const zstring ptr) as GtkWidget ptr
+declare function gtk_cell_view_new_with_text(byval text as const gchar ptr) as GtkWidget ptr
+declare function gtk_cell_view_new_with_markup(byval markup as const gchar ptr) as GtkWidget ptr
 declare function gtk_cell_view_new_with_pixbuf(byval pixbuf as GdkPixbuf ptr) as GtkWidget ptr
 declare sub gtk_cell_view_set_model(byval cell_view as GtkCellView ptr, byval model as GtkTreeModel ptr)
 declare function gtk_cell_view_get_model(byval cell_view as GtkCellView ptr) as GtkTreeModel ptr
@@ -4514,8 +4514,8 @@ end type
 
 declare function gtk_toggle_button_get_type() as GType
 declare function gtk_toggle_button_new() as GtkWidget ptr
-declare function gtk_toggle_button_new_with_label(byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_toggle_button_new_with_mnemonic(byval label as const zstring ptr) as GtkWidget ptr
+declare function gtk_toggle_button_new_with_label(byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_toggle_button_new_with_mnemonic(byval label as const gchar ptr) as GtkWidget ptr
 declare sub gtk_toggle_button_set_mode(byval toggle_button as GtkToggleButton ptr, byval draw_indicator as gboolean)
 declare function gtk_toggle_button_get_mode(byval toggle_button as GtkToggleButton ptr) as gboolean
 declare sub gtk_toggle_button_set_active(byval toggle_button as GtkToggleButton ptr, byval is_active as gboolean)
@@ -4549,8 +4549,8 @@ end type
 
 declare function gtk_check_button_get_type() as GType
 declare function gtk_check_button_new() as GtkWidget ptr
-declare function gtk_check_button_new_with_label(byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_check_button_new_with_mnemonic(byval label as const zstring ptr) as GtkWidget ptr
+declare function gtk_check_button_new_with_label(byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_check_button_new_with_mnemonic(byval label as const gchar ptr) as GtkWidget ptr
 declare sub _gtk_check_button_get_props(byval check_button as GtkCheckButton ptr, byval indicator_size as gint ptr, byval indicator_spacing as gint ptr)
 
 #define __GTK_CHECK_MENU_ITEM_H__
@@ -4600,7 +4600,7 @@ type _GtkMenuItem
 	event_window as GdkWindow ptr
 	toggle_size as guint16
 	accelerator_width as guint16
-	accel_path as zstring ptr
+	accel_path as gchar ptr
 	show_submenu_indicator : 1 as guint
 	submenu_placement : 1 as guint
 	submenu_direction : 1 as guint
@@ -4617,16 +4617,16 @@ type _GtkMenuItemClass
 	activate_item as sub(byval menu_item as GtkMenuItem ptr)
 	toggle_size_request as sub(byval menu_item as GtkMenuItem ptr, byval requisition as gint ptr)
 	toggle_size_allocate as sub(byval menu_item as GtkMenuItem ptr, byval allocation as gint)
-	set_label as sub(byval menu_item as GtkMenuItem ptr, byval label as const zstring ptr)
-	get_label as function(byval menu_item as GtkMenuItem ptr) as const zstring ptr
+	set_label as sub(byval menu_item as GtkMenuItem ptr, byval label as const gchar ptr)
+	get_label as function(byval menu_item as GtkMenuItem ptr) as const gchar ptr
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 end type
 
 declare function gtk_menu_item_get_type() as GType
 declare function gtk_menu_item_new() as GtkWidget ptr
-declare function gtk_menu_item_new_with_label(byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_menu_item_new_with_mnemonic(byval label as const zstring ptr) as GtkWidget ptr
+declare function gtk_menu_item_new_with_label(byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_menu_item_new_with_mnemonic(byval label as const gchar ptr) as GtkWidget ptr
 declare sub gtk_menu_item_set_submenu(byval menu_item as GtkMenuItem ptr, byval submenu as GtkWidget ptr)
 declare function gtk_menu_item_get_submenu(byval menu_item as GtkMenuItem ptr) as GtkWidget ptr
 declare sub gtk_menu_item_select(byval menu_item as GtkMenuItem ptr)
@@ -4636,13 +4636,13 @@ declare sub gtk_menu_item_toggle_size_request(byval menu_item as GtkMenuItem ptr
 declare sub gtk_menu_item_toggle_size_allocate(byval menu_item as GtkMenuItem ptr, byval allocation as gint)
 declare sub gtk_menu_item_set_right_justified(byval menu_item as GtkMenuItem ptr, byval right_justified as gboolean)
 declare function gtk_menu_item_get_right_justified(byval menu_item as GtkMenuItem ptr) as gboolean
-declare sub gtk_menu_item_set_accel_path(byval menu_item as GtkMenuItem ptr, byval accel_path as const zstring ptr)
-declare function gtk_menu_item_get_accel_path(byval menu_item as GtkMenuItem ptr) as const zstring ptr
-declare sub gtk_menu_item_set_label(byval menu_item as GtkMenuItem ptr, byval label as const zstring ptr)
-declare function gtk_menu_item_get_label(byval menu_item as GtkMenuItem ptr) as const zstring ptr
+declare sub gtk_menu_item_set_accel_path(byval menu_item as GtkMenuItem ptr, byval accel_path as const gchar ptr)
+declare function gtk_menu_item_get_accel_path(byval menu_item as GtkMenuItem ptr) as const gchar ptr
+declare sub gtk_menu_item_set_label(byval menu_item as GtkMenuItem ptr, byval label as const gchar ptr)
+declare function gtk_menu_item_get_label(byval menu_item as GtkMenuItem ptr) as const gchar ptr
 declare sub gtk_menu_item_set_use_underline(byval menu_item as GtkMenuItem ptr, byval setting as gboolean)
 declare function gtk_menu_item_get_use_underline(byval menu_item as GtkMenuItem ptr) as gboolean
-declare sub _gtk_menu_item_refresh_accel_path(byval menu_item as GtkMenuItem ptr, byval prefix as const zstring ptr, byval accel_group as GtkAccelGroup ptr, byval group_changed as gboolean)
+declare sub _gtk_menu_item_refresh_accel_path(byval menu_item as GtkMenuItem ptr, byval prefix as const gchar ptr, byval accel_group as GtkAccelGroup ptr, byval group_changed as gboolean)
 declare function _gtk_menu_item_is_selectable(byval menu_item as GtkWidget ptr) as gboolean
 declare sub _gtk_menu_item_popup_submenu(byval menu_item as GtkWidget ptr, byval with_delay as gboolean)
 declare sub _gtk_menu_item_popdown_submenu(byval menu_item as GtkWidget ptr)
@@ -4678,8 +4678,8 @@ end type
 
 declare function gtk_check_menu_item_get_type() as GType
 declare function gtk_check_menu_item_new() as GtkWidget ptr
-declare function gtk_check_menu_item_new_with_label(byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_check_menu_item_new_with_mnemonic(byval label as const zstring ptr) as GtkWidget ptr
+declare function gtk_check_menu_item_new_with_label(byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_check_menu_item_new_with_mnemonic(byval label as const gchar ptr) as GtkWidget ptr
 declare sub gtk_check_menu_item_set_active(byval check_menu_item as GtkCheckMenuItem ptr, byval is_active as gboolean)
 declare function gtk_check_menu_item_get_active(byval check_menu_item as GtkCheckMenuItem ptr) as gboolean
 declare sub gtk_check_menu_item_toggled(byval check_menu_item as GtkCheckMenuItem ptr)
@@ -4751,7 +4751,7 @@ type _GtkTextTagClass
 end type
 
 declare function gtk_text_tag_get_type() as GType
-declare function gtk_text_tag_new(byval name as const zstring ptr) as GtkTextTag ptr
+declare function gtk_text_tag_new(byval name as const gchar ptr) as GtkTextTag ptr
 declare function gtk_text_tag_get_priority(byval tag as GtkTextTag ptr) as gint
 declare sub gtk_text_tag_set_priority(byval tag as GtkTextTag ptr, byval priority as gint)
 declare function gtk_text_tag_event(byval tag as GtkTextTag ptr, byval event_object as GObject ptr, byval event as GdkEvent ptr, byval iter as const GtkTextIter ptr) as gboolean
@@ -4874,10 +4874,10 @@ declare function gtk_text_iter_get_line_index(byval iter as const GtkTextIter pt
 declare function gtk_text_iter_get_visible_line_offset(byval iter as const GtkTextIter ptr) as gint
 declare function gtk_text_iter_get_visible_line_index(byval iter as const GtkTextIter ptr) as gint
 declare function gtk_text_iter_get_char(byval iter as const GtkTextIter ptr) as gunichar
-declare function gtk_text_iter_get_slice(byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr) as zstring ptr
-declare function gtk_text_iter_get_text(byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr) as zstring ptr
-declare function gtk_text_iter_get_visible_slice(byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr) as zstring ptr
-declare function gtk_text_iter_get_visible_text(byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr) as zstring ptr
+declare function gtk_text_iter_get_slice(byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr) as gchar ptr
+declare function gtk_text_iter_get_text(byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr) as gchar ptr
+declare function gtk_text_iter_get_visible_slice(byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr) as gchar ptr
+declare function gtk_text_iter_get_visible_text(byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr) as gchar ptr
 declare function gtk_text_iter_get_pixbuf(byval iter as const GtkTextIter ptr) as GdkPixbuf ptr
 declare function gtk_text_iter_get_marks(byval iter as const GtkTextIter ptr) as GSList ptr
 declare function gtk_text_iter_get_child_anchor(byval iter as const GtkTextIter ptr) as GtkTextChildAnchor ptr
@@ -4949,8 +4949,8 @@ declare function gtk_text_iter_backward_to_tag_toggle(byval iter as GtkTextIter 
 type GtkTextCharPredicate as function(byval ch as gunichar, byval user_data as gpointer) as gboolean
 declare function gtk_text_iter_forward_find_char(byval iter as GtkTextIter ptr, byval pred as GtkTextCharPredicate, byval user_data as gpointer, byval limit as const GtkTextIter ptr) as gboolean
 declare function gtk_text_iter_backward_find_char(byval iter as GtkTextIter ptr, byval pred as GtkTextCharPredicate, byval user_data as gpointer, byval limit as const GtkTextIter ptr) as gboolean
-declare function gtk_text_iter_forward_search(byval iter as const GtkTextIter ptr, byval str as const zstring ptr, byval flags as GtkTextSearchFlags, byval match_start as GtkTextIter ptr, byval match_end as GtkTextIter ptr, byval limit as const GtkTextIter ptr) as gboolean
-declare function gtk_text_iter_backward_search(byval iter as const GtkTextIter ptr, byval str as const zstring ptr, byval flags as GtkTextSearchFlags, byval match_start as GtkTextIter ptr, byval match_end as GtkTextIter ptr, byval limit as const GtkTextIter ptr) as gboolean
+declare function gtk_text_iter_forward_search(byval iter as const GtkTextIter ptr, byval str as const gchar ptr, byval flags as GtkTextSearchFlags, byval match_start as GtkTextIter ptr, byval match_end as GtkTextIter ptr, byval limit as const GtkTextIter ptr) as gboolean
+declare function gtk_text_iter_backward_search(byval iter as const GtkTextIter ptr, byval str as const gchar ptr, byval flags as GtkTextSearchFlags, byval match_start as GtkTextIter ptr, byval match_end as GtkTextIter ptr, byval limit as const GtkTextIter ptr) as gboolean
 declare function gtk_text_iter_equal(byval lhs as const GtkTextIter ptr, byval rhs as const GtkTextIter ptr) as gboolean
 declare function gtk_text_iter_compare(byval lhs as const GtkTextIter ptr, byval rhs as const GtkTextIter ptr) as gint
 declare function gtk_text_iter_in_range(byval iter as const GtkTextIter ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr) as gboolean
@@ -4971,7 +4971,7 @@ type _GtkSelectionData
 end type
 
 type _GtkTargetEntry
-	target as zstring ptr
+	target as gchar ptr
 	flags as guint
 	info as guint
 end type
@@ -5016,12 +5016,12 @@ declare function gtk_selection_data_get_data(byval selection_data as GtkSelectio
 declare function gtk_selection_data_get_length(byval selection_data as GtkSelectionData ptr) as gint
 declare function gtk_selection_data_get_display(byval selection_data as GtkSelectionData ptr) as GdkDisplay ptr
 declare sub gtk_selection_data_set(byval selection_data as GtkSelectionData ptr, byval type as GdkAtom, byval format as gint, byval data as const guchar ptr, byval length as gint)
-declare function gtk_selection_data_set_text(byval selection_data as GtkSelectionData ptr, byval str as const zstring ptr, byval len as gint) as gboolean
+declare function gtk_selection_data_set_text(byval selection_data as GtkSelectionData ptr, byval str as const gchar ptr, byval len as gint) as gboolean
 declare function gtk_selection_data_get_text(byval selection_data as GtkSelectionData ptr) as guchar ptr
 declare function gtk_selection_data_set_pixbuf(byval selection_data as GtkSelectionData ptr, byval pixbuf as GdkPixbuf ptr) as gboolean
 declare function gtk_selection_data_get_pixbuf(byval selection_data as GtkSelectionData ptr) as GdkPixbuf ptr
-declare function gtk_selection_data_set_uris(byval selection_data as GtkSelectionData ptr, byval uris as zstring ptr ptr) as gboolean
-declare function gtk_selection_data_get_uris(byval selection_data as GtkSelectionData ptr) as zstring ptr ptr
+declare function gtk_selection_data_set_uris(byval selection_data as GtkSelectionData ptr, byval uris as gchar ptr ptr) as gboolean
+declare function gtk_selection_data_get_uris(byval selection_data as GtkSelectionData ptr) as gchar ptr ptr
 declare function gtk_selection_data_get_targets(byval selection_data as GtkSelectionData ptr, byval targets as GdkAtom ptr ptr, byval n_atoms as gint ptr) as gboolean
 declare function gtk_selection_data_targets_include_text(byval selection_data as GtkSelectionData ptr) as gboolean
 declare function gtk_selection_data_targets_include_rich_text(byval selection_data as GtkSelectionData ptr, byval buffer as GtkTextBuffer ptr) as gboolean
@@ -5047,10 +5047,10 @@ declare function gtk_target_list_get_type() as GType
 #define GTK_IS_CLIPBOARD(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), GTK_TYPE_CLIPBOARD)
 
 type GtkClipboardReceivedFunc as sub(byval clipboard as GtkClipboard ptr, byval selection_data as GtkSelectionData ptr, byval data as gpointer)
-type GtkClipboardTextReceivedFunc as sub(byval clipboard as GtkClipboard ptr, byval text as const zstring ptr, byval data as gpointer)
+type GtkClipboardTextReceivedFunc as sub(byval clipboard as GtkClipboard ptr, byval text as const gchar ptr, byval data as gpointer)
 type GtkClipboardRichTextReceivedFunc as sub(byval clipboard as GtkClipboard ptr, byval format as GdkAtom, byval text as const guint8 ptr, byval length as gsize, byval data as gpointer)
 type GtkClipboardImageReceivedFunc as sub(byval clipboard as GtkClipboard ptr, byval pixbuf as GdkPixbuf ptr, byval data as gpointer)
-type GtkClipboardURIReceivedFunc as sub(byval clipboard as GtkClipboard ptr, byval uris as zstring ptr ptr, byval data as gpointer)
+type GtkClipboardURIReceivedFunc as sub(byval clipboard as GtkClipboard ptr, byval uris as gchar ptr ptr, byval data as gpointer)
 type GtkClipboardTargetsReceivedFunc as sub(byval clipboard as GtkClipboard ptr, byval atoms as GdkAtom ptr, byval n_atoms as gint, byval data as gpointer)
 type GtkClipboardGetFunc as sub(byval clipboard as GtkClipboard ptr, byval selection_data as GtkSelectionData ptr, byval info as guint, byval user_data_or_owner as gpointer)
 type GtkClipboardClearFunc as sub(byval clipboard as GtkClipboard ptr, byval user_data_or_owner as gpointer)
@@ -5063,7 +5063,7 @@ declare function gtk_clipboard_set_with_data(byval clipboard as GtkClipboard ptr
 declare function gtk_clipboard_set_with_owner(byval clipboard as GtkClipboard ptr, byval targets as const GtkTargetEntry ptr, byval n_targets as guint, byval get_func as GtkClipboardGetFunc, byval clear_func as GtkClipboardClearFunc, byval owner as GObject ptr) as gboolean
 declare function gtk_clipboard_get_owner(byval clipboard as GtkClipboard ptr) as GObject ptr
 declare sub gtk_clipboard_clear(byval clipboard as GtkClipboard ptr)
-declare sub gtk_clipboard_set_text(byval clipboard as GtkClipboard ptr, byval text as const zstring ptr, byval len as gint)
+declare sub gtk_clipboard_set_text(byval clipboard as GtkClipboard ptr, byval text as const gchar ptr, byval len as gint)
 declare sub gtk_clipboard_set_image(byval clipboard as GtkClipboard ptr, byval pixbuf as GdkPixbuf ptr)
 declare sub gtk_clipboard_request_contents(byval clipboard as GtkClipboard ptr, byval target as GdkAtom, byval callback as GtkClipboardReceivedFunc, byval user_data as gpointer)
 declare sub gtk_clipboard_request_text(byval clipboard as GtkClipboard ptr, byval callback as GtkClipboardTextReceivedFunc, byval user_data as gpointer)
@@ -5072,10 +5072,10 @@ declare sub gtk_clipboard_request_image(byval clipboard as GtkClipboard ptr, byv
 declare sub gtk_clipboard_request_uris(byval clipboard as GtkClipboard ptr, byval callback as GtkClipboardURIReceivedFunc, byval user_data as gpointer)
 declare sub gtk_clipboard_request_targets(byval clipboard as GtkClipboard ptr, byval callback as GtkClipboardTargetsReceivedFunc, byval user_data as gpointer)
 declare function gtk_clipboard_wait_for_contents(byval clipboard as GtkClipboard ptr, byval target as GdkAtom) as GtkSelectionData ptr
-declare function gtk_clipboard_wait_for_text(byval clipboard as GtkClipboard ptr) as zstring ptr
+declare function gtk_clipboard_wait_for_text(byval clipboard as GtkClipboard ptr) as gchar ptr
 declare function gtk_clipboard_wait_for_rich_text(byval clipboard as GtkClipboard ptr, byval buffer as GtkTextBuffer ptr, byval format as GdkAtom ptr, byval length as gsize ptr) as guint8 ptr
 declare function gtk_clipboard_wait_for_image(byval clipboard as GtkClipboard ptr) as GdkPixbuf ptr
-declare function gtk_clipboard_wait_for_uris(byval clipboard as GtkClipboard ptr) as zstring ptr ptr
+declare function gtk_clipboard_wait_for_uris(byval clipboard as GtkClipboard ptr) as gchar ptr ptr
 declare function gtk_clipboard_wait_for_targets(byval clipboard as GtkClipboard ptr, byval targets as GdkAtom ptr ptr, byval n_targets as gint ptr) as gboolean
 declare function gtk_clipboard_wait_is_text_available(byval clipboard as GtkClipboard ptr) as gboolean
 declare function gtk_clipboard_wait_is_rich_text_available(byval clipboard as GtkClipboard ptr, byval buffer as GtkTextBuffer ptr) as gboolean
@@ -5122,8 +5122,8 @@ declare sub gtk_color_button_get_color(byval color_button as GtkColorButton ptr,
 declare function gtk_color_button_get_alpha(byval color_button as GtkColorButton ptr) as guint16
 declare sub gtk_color_button_set_use_alpha(byval color_button as GtkColorButton ptr, byval use_alpha as gboolean)
 declare function gtk_color_button_get_use_alpha(byval color_button as GtkColorButton ptr) as gboolean
-declare sub gtk_color_button_set_title(byval color_button as GtkColorButton ptr, byval title as const zstring ptr)
-declare function gtk_color_button_get_title(byval color_button as GtkColorButton ptr) as const zstring ptr
+declare sub gtk_color_button_set_title(byval color_button as GtkColorButton ptr, byval title as const gchar ptr)
+declare function gtk_color_button_get_title(byval color_button as GtkColorButton ptr) as const gchar ptr
 
 #define __GTK_COLOR_SELECTION_H__
 #define __GTK_VBOX_H__
@@ -5187,8 +5187,8 @@ declare sub gtk_color_selection_set_previous_alpha(byval colorsel as GtkColorSel
 declare sub gtk_color_selection_get_previous_color(byval colorsel as GtkColorSelection ptr, byval color as GdkColor ptr)
 declare function gtk_color_selection_get_previous_alpha(byval colorsel as GtkColorSelection ptr) as guint16
 declare function gtk_color_selection_is_adjusting(byval colorsel as GtkColorSelection ptr) as gboolean
-declare function gtk_color_selection_palette_from_string(byval str as const zstring ptr, byval colors as GdkColor ptr ptr, byval n_colors as gint ptr) as gboolean
-declare function gtk_color_selection_palette_to_string(byval colors as const GdkColor ptr, byval n_colors as gint) as zstring ptr
+declare function gtk_color_selection_palette_from_string(byval str as const gchar ptr, byval colors as GdkColor ptr ptr, byval n_colors as gint ptr) as gboolean
+declare function gtk_color_selection_palette_to_string(byval colors as const GdkColor ptr, byval n_colors as gint) as gchar ptr
 declare function gtk_color_selection_set_change_palette_hook(byval func as GtkColorSelectionChangePaletteFunc) as GtkColorSelectionChangePaletteFunc
 declare function gtk_color_selection_set_change_palette_with_screen_hook(byval func as GtkColorSelectionChangePaletteWithScreenFunc) as GtkColorSelectionChangePaletteWithScreenFunc
 declare sub gtk_color_selection_set_color(byval colorsel as GtkColorSelection ptr, byval color as gdouble ptr)
@@ -5222,7 +5222,7 @@ type _GtkColorSelectionDialogClass
 end type
 
 declare function gtk_color_selection_dialog_get_type() as GType
-declare function gtk_color_selection_dialog_new(byval title as const zstring ptr) as GtkWidget ptr
+declare function gtk_color_selection_dialog_new(byval title as const gchar ptr) as GtkWidget ptr
 declare function gtk_color_selection_dialog_get_color_selection(byval colorsel as GtkColorSelectionDialog ptr) as GtkWidget ptr
 
 #define __GTK_COMBO_BOX_H__
@@ -5270,14 +5270,14 @@ declare sub gtk_drag_source_add_image_targets(byval widget as GtkWidget ptr)
 declare sub gtk_drag_source_add_uri_targets(byval widget as GtkWidget ptr)
 declare sub gtk_drag_source_set_icon(byval widget as GtkWidget ptr, byval colormap as GdkColormap ptr, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
 declare sub gtk_drag_source_set_icon_pixbuf(byval widget as GtkWidget ptr, byval pixbuf as GdkPixbuf ptr)
-declare sub gtk_drag_source_set_icon_stock(byval widget as GtkWidget ptr, byval stock_id as const zstring ptr)
-declare sub gtk_drag_source_set_icon_name(byval widget as GtkWidget ptr, byval icon_name as const zstring ptr)
+declare sub gtk_drag_source_set_icon_stock(byval widget as GtkWidget ptr, byval stock_id as const gchar ptr)
+declare sub gtk_drag_source_set_icon_name(byval widget as GtkWidget ptr, byval icon_name as const gchar ptr)
 declare function gtk_drag_begin(byval widget as GtkWidget ptr, byval targets as GtkTargetList ptr, byval actions as GdkDragAction, byval button as gint, byval event as GdkEvent ptr) as GdkDragContext ptr
 declare sub gtk_drag_set_icon_widget(byval context as GdkDragContext ptr, byval widget as GtkWidget ptr, byval hot_x as gint, byval hot_y as gint)
 declare sub gtk_drag_set_icon_pixmap(byval context as GdkDragContext ptr, byval colormap as GdkColormap ptr, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr, byval hot_x as gint, byval hot_y as gint)
 declare sub gtk_drag_set_icon_pixbuf(byval context as GdkDragContext ptr, byval pixbuf as GdkPixbuf ptr, byval hot_x as gint, byval hot_y as gint)
-declare sub gtk_drag_set_icon_stock(byval context as GdkDragContext ptr, byval stock_id as const zstring ptr, byval hot_x as gint, byval hot_y as gint)
-declare sub gtk_drag_set_icon_name(byval context as GdkDragContext ptr, byval icon_name as const zstring ptr, byval hot_x as gint, byval hot_y as gint)
+declare sub gtk_drag_set_icon_stock(byval context as GdkDragContext ptr, byval stock_id as const gchar ptr, byval hot_x as gint, byval hot_y as gint)
+declare sub gtk_drag_set_icon_name(byval context as GdkDragContext ptr, byval icon_name as const gchar ptr, byval hot_x as gint, byval hot_y as gint)
 declare sub gtk_drag_set_icon_default(byval context as GdkDragContext ptr)
 declare function gtk_drag_check_threshold(byval widget as GtkWidget ptr, byval start_x as gint, byval start_y as gint, byval current_x as gint, byval current_y as gint) as gboolean
 declare sub _gtk_drag_source_handle_event(byval widget as GtkWidget ptr, byval event as GdkEvent ptr)
@@ -5297,12 +5297,12 @@ type GtkEditableClass as _GtkEditableClass
 
 type _GtkEditableClass
 	base_iface as GTypeInterface
-	insert_text as sub(byval editable as GtkEditable ptr, byval text as const zstring ptr, byval length as gint, byval position as gint ptr)
+	insert_text as sub(byval editable as GtkEditable ptr, byval text as const gchar ptr, byval length as gint, byval position as gint ptr)
 	delete_text as sub(byval editable as GtkEditable ptr, byval start_pos as gint, byval end_pos as gint)
 	changed as sub(byval editable as GtkEditable ptr)
-	do_insert_text as sub(byval editable as GtkEditable ptr, byval text as const zstring ptr, byval length as gint, byval position as gint ptr)
+	do_insert_text as sub(byval editable as GtkEditable ptr, byval text as const gchar ptr, byval length as gint, byval position as gint ptr)
 	do_delete_text as sub(byval editable as GtkEditable ptr, byval start_pos as gint, byval end_pos as gint)
-	get_chars as function(byval editable as GtkEditable ptr, byval start_pos as gint, byval end_pos as gint) as zstring ptr
+	get_chars as function(byval editable as GtkEditable ptr, byval start_pos as gint, byval end_pos as gint) as gchar ptr
 	set_selection_bounds as sub(byval editable as GtkEditable ptr, byval start_pos as gint, byval end_pos as gint)
 	get_selection_bounds as function(byval editable as GtkEditable ptr, byval start_pos as gint ptr, byval end_pos as gint ptr) as gboolean
 	set_position as sub(byval editable as GtkEditable ptr, byval position as gint)
@@ -5312,9 +5312,9 @@ end type
 declare function gtk_editable_get_type() as GType
 declare sub gtk_editable_select_region(byval editable as GtkEditable ptr, byval start_pos as gint, byval end_pos as gint)
 declare function gtk_editable_get_selection_bounds(byval editable as GtkEditable ptr, byval start_pos as gint ptr, byval end_pos as gint ptr) as gboolean
-declare sub gtk_editable_insert_text(byval editable as GtkEditable ptr, byval new_text as const zstring ptr, byval new_text_length as gint, byval position as gint ptr)
+declare sub gtk_editable_insert_text(byval editable as GtkEditable ptr, byval new_text as const gchar ptr, byval new_text_length as gint, byval position as gint ptr)
 declare sub gtk_editable_delete_text(byval editable as GtkEditable ptr, byval start_pos as gint, byval end_pos as gint)
-declare function gtk_editable_get_chars(byval editable as GtkEditable ptr, byval start_pos as gint, byval end_pos as gint) as zstring ptr
+declare function gtk_editable_get_chars(byval editable as GtkEditable ptr, byval start_pos as gint, byval end_pos as gint) as gchar ptr
 declare sub gtk_editable_cut_clipboard(byval editable as GtkEditable ptr)
 declare sub gtk_editable_copy_clipboard(byval editable as GtkEditable ptr)
 declare sub gtk_editable_paste_clipboard(byval editable as GtkEditable ptr)
@@ -5343,19 +5343,19 @@ type _GtkIMContextClass
 	preedit_start as sub(byval context as GtkIMContext ptr)
 	preedit_end as sub(byval context as GtkIMContext ptr)
 	preedit_changed as sub(byval context as GtkIMContext ptr)
-	commit as sub(byval context as GtkIMContext ptr, byval str as const zstring ptr)
+	commit as sub(byval context as GtkIMContext ptr, byval str as const gchar ptr)
 	retrieve_surrounding as function(byval context as GtkIMContext ptr) as gboolean
 	delete_surrounding as function(byval context as GtkIMContext ptr, byval offset as gint, byval n_chars as gint) as gboolean
 	set_client_window as sub(byval context as GtkIMContext ptr, byval window as GdkWindow ptr)
-	get_preedit_string as sub(byval context as GtkIMContext ptr, byval str as zstring ptr ptr, byval attrs as PangoAttrList ptr ptr, byval cursor_pos as gint ptr)
+	get_preedit_string as sub(byval context as GtkIMContext ptr, byval str as gchar ptr ptr, byval attrs as PangoAttrList ptr ptr, byval cursor_pos as gint ptr)
 	filter_keypress as function(byval context as GtkIMContext ptr, byval event as GdkEventKey ptr) as gboolean
 	focus_in as sub(byval context as GtkIMContext ptr)
 	focus_out as sub(byval context as GtkIMContext ptr)
 	reset as sub(byval context as GtkIMContext ptr)
 	set_cursor_location as sub(byval context as GtkIMContext ptr, byval area as GdkRectangle ptr)
 	set_use_preedit as sub(byval context as GtkIMContext ptr, byval use_preedit as gboolean)
-	set_surrounding as sub(byval context as GtkIMContext ptr, byval text as const zstring ptr, byval len as gint, byval cursor_index as gint)
-	get_surrounding as function(byval context as GtkIMContext ptr, byval text as zstring ptr ptr, byval cursor_index as gint ptr) as gboolean
+	set_surrounding as sub(byval context as GtkIMContext ptr, byval text as const gchar ptr, byval len as gint, byval cursor_index as gint)
+	get_surrounding as function(byval context as GtkIMContext ptr, byval text as gchar ptr ptr, byval cursor_index as gint ptr) as gboolean
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 	_gtk_reserved3 as sub()
@@ -5366,15 +5366,15 @@ end type
 
 declare function gtk_im_context_get_type() as GType
 declare sub gtk_im_context_set_client_window(byval context as GtkIMContext ptr, byval window as GdkWindow ptr)
-declare sub gtk_im_context_get_preedit_string(byval context as GtkIMContext ptr, byval str as zstring ptr ptr, byval attrs as PangoAttrList ptr ptr, byval cursor_pos as gint ptr)
+declare sub gtk_im_context_get_preedit_string(byval context as GtkIMContext ptr, byval str as gchar ptr ptr, byval attrs as PangoAttrList ptr ptr, byval cursor_pos as gint ptr)
 declare function gtk_im_context_filter_keypress(byval context as GtkIMContext ptr, byval event as GdkEventKey ptr) as gboolean
 declare sub gtk_im_context_focus_in(byval context as GtkIMContext ptr)
 declare sub gtk_im_context_focus_out(byval context as GtkIMContext ptr)
 declare sub gtk_im_context_reset(byval context as GtkIMContext ptr)
 declare sub gtk_im_context_set_cursor_location(byval context as GtkIMContext ptr, byval area as const GdkRectangle ptr)
 declare sub gtk_im_context_set_use_preedit(byval context as GtkIMContext ptr, byval use_preedit as gboolean)
-declare sub gtk_im_context_set_surrounding(byval context as GtkIMContext ptr, byval text as const zstring ptr, byval len as gint, byval cursor_index as gint)
-declare function gtk_im_context_get_surrounding(byval context as GtkIMContext ptr, byval text as zstring ptr ptr, byval cursor_index as gint ptr) as gboolean
+declare sub gtk_im_context_set_surrounding(byval context as GtkIMContext ptr, byval text as const gchar ptr, byval len as gint, byval cursor_index as gint)
+declare function gtk_im_context_get_surrounding(byval context as GtkIMContext ptr, byval text as gchar ptr ptr, byval cursor_index as gint ptr) as gboolean
 declare function gtk_im_context_delete_surrounding(byval context as GtkIMContext ptr, byval offset as gint, byval n_chars as gint) as gboolean
 
 #define __GTK_ENTRY_BUFFER_H__
@@ -5397,11 +5397,11 @@ end type
 
 type _GtkEntryBufferClass
 	parent_class as GObjectClass
-	inserted_text as sub(byval buffer as GtkEntryBuffer ptr, byval position as guint, byval chars as const zstring ptr, byval n_chars as guint)
+	inserted_text as sub(byval buffer as GtkEntryBuffer ptr, byval position as guint, byval chars as const gchar ptr, byval n_chars as guint)
 	deleted_text as sub(byval buffer as GtkEntryBuffer ptr, byval position as guint, byval n_chars as guint)
-	get_text as function(byval buffer as GtkEntryBuffer ptr, byval n_bytes as gsize ptr) as const zstring ptr
+	get_text as function(byval buffer as GtkEntryBuffer ptr, byval n_bytes as gsize ptr) as const gchar ptr
 	get_length as function(byval buffer as GtkEntryBuffer ptr) as guint
-	insert_text as function(byval buffer as GtkEntryBuffer ptr, byval position as guint, byval chars as const zstring ptr, byval n_chars as guint) as guint
+	insert_text as function(byval buffer as GtkEntryBuffer ptr, byval position as guint, byval chars as const gchar ptr, byval n_chars as guint) as guint
 	delete_text as function(byval buffer as GtkEntryBuffer ptr, byval position as guint, byval n_chars as guint) as guint
 	_gtk_reserved0 as sub()
 	_gtk_reserved1 as sub()
@@ -5412,16 +5412,16 @@ type _GtkEntryBufferClass
 end type
 
 declare function gtk_entry_buffer_get_type() as GType
-declare function gtk_entry_buffer_new(byval initial_chars as const zstring ptr, byval n_initial_chars as gint) as GtkEntryBuffer ptr
+declare function gtk_entry_buffer_new(byval initial_chars as const gchar ptr, byval n_initial_chars as gint) as GtkEntryBuffer ptr
 declare function gtk_entry_buffer_get_bytes(byval buffer as GtkEntryBuffer ptr) as gsize
 declare function gtk_entry_buffer_get_length(byval buffer as GtkEntryBuffer ptr) as guint
-declare function gtk_entry_buffer_get_text(byval buffer as GtkEntryBuffer ptr) as const zstring ptr
-declare sub gtk_entry_buffer_set_text(byval buffer as GtkEntryBuffer ptr, byval chars as const zstring ptr, byval n_chars as gint)
+declare function gtk_entry_buffer_get_text(byval buffer as GtkEntryBuffer ptr) as const gchar ptr
+declare sub gtk_entry_buffer_set_text(byval buffer as GtkEntryBuffer ptr, byval chars as const gchar ptr, byval n_chars as gint)
 declare sub gtk_entry_buffer_set_max_length(byval buffer as GtkEntryBuffer ptr, byval max_length as gint)
 declare function gtk_entry_buffer_get_max_length(byval buffer as GtkEntryBuffer ptr) as gint
-declare function gtk_entry_buffer_insert_text(byval buffer as GtkEntryBuffer ptr, byval position as guint, byval chars as const zstring ptr, byval n_chars as gint) as guint
+declare function gtk_entry_buffer_insert_text(byval buffer as GtkEntryBuffer ptr, byval position as guint, byval chars as const gchar ptr, byval n_chars as gint) as guint
 declare function gtk_entry_buffer_delete_text(byval buffer as GtkEntryBuffer ptr, byval position as guint, byval n_chars as gint) as guint
-declare sub gtk_entry_buffer_emit_inserted_text(byval buffer as GtkEntryBuffer ptr, byval position as guint, byval chars as const zstring ptr, byval n_chars as guint)
+declare sub gtk_entry_buffer_emit_inserted_text(byval buffer as GtkEntryBuffer ptr, byval position as guint, byval chars as const gchar ptr, byval n_chars as guint)
 declare sub gtk_entry_buffer_emit_deleted_text(byval buffer as GtkEntryBuffer ptr, byval position as guint, byval n_chars as guint)
 
 #define __GTK_ENTRY_COMPLETION_H__
@@ -5533,7 +5533,7 @@ declare sub gtk_tree_model_filter_clear_cache(byval filter as GtkTreeModelFilter
 type GtkEntryCompletion as _GtkEntryCompletion
 type GtkEntryCompletionClass as _GtkEntryCompletionClass
 type GtkEntryCompletionPrivate as _GtkEntryCompletionPrivate
-type GtkEntryCompletionMatchFunc as function(byval completion as GtkEntryCompletion ptr, byval key as const zstring ptr, byval iter as GtkTreeIter ptr, byval user_data as gpointer) as gboolean
+type GtkEntryCompletionMatchFunc as function(byval completion as GtkEntryCompletion ptr, byval key as const gchar ptr, byval iter as GtkTreeIter ptr, byval user_data as gpointer) as gboolean
 
 type _GtkEntryCompletion
 	parent_instance as GObject
@@ -5544,7 +5544,7 @@ type _GtkEntryCompletionClass
 	parent_class as GObjectClass
 	match_selected as function(byval completion as GtkEntryCompletion ptr, byval model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr) as gboolean
 	action_activated as sub(byval completion as GtkEntryCompletion ptr, byval index_ as gint)
-	insert_prefix as function(byval completion as GtkEntryCompletion ptr, byval prefix as const zstring ptr) as gboolean
+	insert_prefix as function(byval completion as GtkEntryCompletion ptr, byval prefix as const gchar ptr) as gboolean
 	cursor_on_match as function(byval completion as GtkEntryCompletion ptr, byval model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr) as gboolean
 	_gtk_reserved0 as sub()
 	_gtk_reserved1 as sub()
@@ -5560,8 +5560,8 @@ declare sub gtk_entry_completion_set_minimum_key_length(byval completion as GtkE
 declare function gtk_entry_completion_get_minimum_key_length(byval completion as GtkEntryCompletion ptr) as gint
 declare sub gtk_entry_completion_complete(byval completion as GtkEntryCompletion ptr)
 declare sub gtk_entry_completion_insert_prefix(byval completion as GtkEntryCompletion ptr)
-declare sub gtk_entry_completion_insert_action_text(byval completion as GtkEntryCompletion ptr, byval index_ as gint, byval text as const zstring ptr)
-declare sub gtk_entry_completion_insert_action_markup(byval completion as GtkEntryCompletion ptr, byval index_ as gint, byval markup as const zstring ptr)
+declare sub gtk_entry_completion_insert_action_text(byval completion as GtkEntryCompletion ptr, byval index_ as gint, byval text as const gchar ptr)
+declare sub gtk_entry_completion_insert_action_markup(byval completion as GtkEntryCompletion ptr, byval index_ as gint, byval markup as const gchar ptr)
 declare sub gtk_entry_completion_delete_action(byval completion as GtkEntryCompletion ptr, byval index_ as gint)
 declare sub gtk_entry_completion_set_inline_completion(byval completion as GtkEntryCompletion ptr, byval inline_completion as gboolean)
 declare function gtk_entry_completion_get_inline_completion(byval completion as GtkEntryCompletion ptr) as gboolean
@@ -5573,7 +5573,7 @@ declare sub gtk_entry_completion_set_popup_set_width(byval completion as GtkEntr
 declare function gtk_entry_completion_get_popup_set_width(byval completion as GtkEntryCompletion ptr) as gboolean
 declare sub gtk_entry_completion_set_popup_single_match(byval completion as GtkEntryCompletion ptr, byval popup_single_match as gboolean)
 declare function gtk_entry_completion_get_popup_single_match(byval completion as GtkEntryCompletion ptr) as gboolean
-declare function gtk_entry_completion_get_completion_prefix(byval completion as GtkEntryCompletion ptr) as const zstring ptr
+declare function gtk_entry_completion_get_completion_prefix(byval completion as GtkEntryCompletion ptr) as const gchar ptr
 declare sub gtk_entry_completion_set_text_column(byval completion as GtkEntryCompletion ptr, byval column as gint)
 declare function gtk_entry_completion_get_text_column(byval completion as GtkEntryCompletion ptr) as gint
 
@@ -5595,7 +5595,7 @@ type GtkEntryClass as _GtkEntryClass
 
 type _GtkEntry
 	widget as GtkWidget
-	text as zstring ptr
+	text as gchar ptr
 	editable : 1 as guint
 	visible : 1 as guint
 	overwrite_mode : 1 as guint
@@ -5643,7 +5643,7 @@ type _GtkEntryClass
 	populate_popup as sub(byval entry as GtkEntry ptr, byval menu as GtkMenu ptr)
 	activate as sub(byval entry as GtkEntry ptr)
 	move_cursor as sub(byval entry as GtkEntry ptr, byval step as GtkMovementStep, byval count as gint, byval extend_selection as gboolean)
-	insert_at_cursor as sub(byval entry as GtkEntry ptr, byval str as const zstring ptr)
+	insert_at_cursor as sub(byval entry as GtkEntry ptr, byval str as const gchar ptr)
 	delete_from_cursor as sub(byval entry as GtkEntry ptr, byval type as GtkDeleteType, byval count as gint)
 	backspace as sub(byval entry as GtkEntry ptr)
 	cut_clipboard as sub(byval entry as GtkEntry ptr)
@@ -5679,8 +5679,8 @@ declare sub gtk_entry_set_activates_default(byval entry as GtkEntry ptr, byval s
 declare function gtk_entry_get_activates_default(byval entry as GtkEntry ptr) as gboolean
 declare sub gtk_entry_set_width_chars(byval entry as GtkEntry ptr, byval n_chars as gint)
 declare function gtk_entry_get_width_chars(byval entry as GtkEntry ptr) as gint
-declare sub gtk_entry_set_text(byval entry as GtkEntry ptr, byval text as const zstring ptr)
-declare function gtk_entry_get_text(byval entry as GtkEntry ptr) as const zstring ptr
+declare sub gtk_entry_set_text(byval entry as GtkEntry ptr, byval text as const gchar ptr)
+declare function gtk_entry_get_text(byval entry as GtkEntry ptr) as const gchar ptr
 declare function gtk_entry_get_layout(byval entry as GtkEntry ptr) as PangoLayout ptr
 declare sub gtk_entry_get_layout_offsets(byval entry as GtkEntry ptr, byval x as gint ptr, byval y as gint ptr)
 declare sub gtk_entry_set_alignment(byval entry as GtkEntry ptr, byval xalign as gfloat)
@@ -5697,31 +5697,31 @@ declare sub gtk_entry_set_progress_pulse_step(byval entry as GtkEntry ptr, byval
 declare function gtk_entry_get_progress_pulse_step(byval entry as GtkEntry ptr) as gdouble
 declare sub gtk_entry_progress_pulse(byval entry as GtkEntry ptr)
 declare sub gtk_entry_set_icon_from_pixbuf(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval pixbuf as GdkPixbuf ptr)
-declare sub gtk_entry_set_icon_from_stock(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval stock_id as const zstring ptr)
-declare sub gtk_entry_set_icon_from_icon_name(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval icon_name as const zstring ptr)
+declare sub gtk_entry_set_icon_from_stock(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval stock_id as const gchar ptr)
+declare sub gtk_entry_set_icon_from_icon_name(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval icon_name as const gchar ptr)
 declare sub gtk_entry_set_icon_from_gicon(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval icon as GIcon ptr)
 declare function gtk_entry_get_icon_storage_type(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as GtkImageType
 declare function gtk_entry_get_icon_pixbuf(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as GdkPixbuf ptr
-declare function gtk_entry_get_icon_stock(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as const zstring ptr
-declare function gtk_entry_get_icon_name(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as const zstring ptr
+declare function gtk_entry_get_icon_stock(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as const gchar ptr
+declare function gtk_entry_get_icon_name(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as const gchar ptr
 declare function gtk_entry_get_icon_gicon(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as GIcon ptr
 declare sub gtk_entry_set_icon_activatable(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval activatable as gboolean)
 declare function gtk_entry_get_icon_activatable(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as gboolean
 declare sub gtk_entry_set_icon_sensitive(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval sensitive as gboolean)
 declare function gtk_entry_get_icon_sensitive(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as gboolean
 declare function gtk_entry_get_icon_at_pos(byval entry as GtkEntry ptr, byval x as gint, byval y as gint) as gint
-declare sub gtk_entry_set_icon_tooltip_text(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval tooltip as const zstring ptr)
-declare function gtk_entry_get_icon_tooltip_text(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as zstring ptr
-declare sub gtk_entry_set_icon_tooltip_markup(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval tooltip as const zstring ptr)
-declare function gtk_entry_get_icon_tooltip_markup(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as zstring ptr
+declare sub gtk_entry_set_icon_tooltip_text(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval tooltip as const gchar ptr)
+declare function gtk_entry_get_icon_tooltip_text(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as gchar ptr
+declare sub gtk_entry_set_icon_tooltip_markup(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval tooltip as const gchar ptr)
+declare function gtk_entry_get_icon_tooltip_markup(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as gchar ptr
 declare sub gtk_entry_set_icon_drag_source(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition, byval target_list as GtkTargetList ptr, byval actions as GdkDragAction)
 declare function gtk_entry_get_current_icon_drag_source(byval entry as GtkEntry ptr) as gint
 declare function gtk_entry_get_icon_window(byval entry as GtkEntry ptr, byval icon_pos as GtkEntryIconPosition) as GdkWindow ptr
 declare function gtk_entry_im_context_filter_keypress(byval entry as GtkEntry ptr, byval event as GdkEventKey ptr) as gboolean
 declare sub gtk_entry_reset_im_context(byval entry as GtkEntry ptr)
 declare function gtk_entry_new_with_max_length(byval max as gint) as GtkWidget ptr
-declare sub gtk_entry_append_text(byval entry as GtkEntry ptr, byval text as const zstring ptr)
-declare sub gtk_entry_prepend_text(byval entry as GtkEntry ptr, byval text as const zstring ptr)
+declare sub gtk_entry_append_text(byval entry as GtkEntry ptr, byval text as const gchar ptr)
+declare sub gtk_entry_prepend_text(byval entry as GtkEntry ptr, byval text as const gchar ptr)
 declare sub gtk_entry_set_position(byval entry as GtkEntry ptr, byval position as gint)
 declare sub gtk_entry_select_region(byval entry as GtkEntry ptr, byval start as gint, byval end as gint)
 declare sub gtk_entry_set_editable(byval entry as GtkEntry ptr, byval editable as gboolean)
@@ -5779,7 +5779,7 @@ end type
 
 type GtkTreeViewColumnDropFunc as function(byval tree_view as GtkTreeView ptr, byval column as GtkTreeViewColumn ptr, byval prev_column as GtkTreeViewColumn ptr, byval next_column as GtkTreeViewColumn ptr, byval data as gpointer) as gboolean
 type GtkTreeViewMappingFunc as sub(byval tree_view as GtkTreeView ptr, byval path as GtkTreePath ptr, byval user_data as gpointer)
-type GtkTreeViewSearchEqualFunc as function(byval model as GtkTreeModel ptr, byval column as gint, byval key as const zstring ptr, byval iter as GtkTreeIter ptr, byval search_data as gpointer) as gboolean
+type GtkTreeViewSearchEqualFunc as function(byval model as GtkTreeModel ptr, byval column as gint, byval key as const gchar ptr, byval iter as GtkTreeIter ptr, byval search_data as gpointer) as gboolean
 type GtkTreeViewRowSeparatorFunc as function(byval model as GtkTreeModel ptr, byval iter as GtkTreeIter ptr, byval data as gpointer) as gboolean
 type GtkTreeViewSearchPositionFunc as sub(byval tree_view as GtkTreeView ptr, byval search_dialog as GtkWidget ptr, byval user_data as gpointer)
 
@@ -5803,8 +5803,8 @@ declare function gtk_tree_view_get_rules_hint(byval tree_view as GtkTreeView ptr
 declare function gtk_tree_view_append_column(byval tree_view as GtkTreeView ptr, byval column as GtkTreeViewColumn ptr) as gint
 declare function gtk_tree_view_remove_column(byval tree_view as GtkTreeView ptr, byval column as GtkTreeViewColumn ptr) as gint
 declare function gtk_tree_view_insert_column(byval tree_view as GtkTreeView ptr, byval column as GtkTreeViewColumn ptr, byval position as gint) as gint
-declare function gtk_tree_view_insert_column_with_attributes(byval tree_view as GtkTreeView ptr, byval position as gint, byval title as const zstring ptr, byval cell as GtkCellRenderer ptr, ...) as gint
-declare function gtk_tree_view_insert_column_with_data_func(byval tree_view as GtkTreeView ptr, byval position as gint, byval title as const zstring ptr, byval cell as GtkCellRenderer ptr, byval func as GtkTreeCellDataFunc, byval data as gpointer, byval dnotify as GDestroyNotify) as gint
+declare function gtk_tree_view_insert_column_with_attributes(byval tree_view as GtkTreeView ptr, byval position as gint, byval title as const gchar ptr, byval cell as GtkCellRenderer ptr, ...) as gint
+declare function gtk_tree_view_insert_column_with_data_func(byval tree_view as GtkTreeView ptr, byval position as gint, byval title as const gchar ptr, byval cell as GtkCellRenderer ptr, byval func as GtkTreeCellDataFunc, byval data as gpointer, byval dnotify as GDestroyNotify) as gint
 declare function gtk_tree_view_get_column(byval tree_view as GtkTreeView ptr, byval n as gint) as GtkTreeViewColumn ptr
 declare function gtk_tree_view_get_columns(byval tree_view as GtkTreeView ptr) as GList ptr
 declare sub gtk_tree_view_move_column_after(byval tree_view as GtkTreeView ptr, byval column as GtkTreeViewColumn ptr, byval base_column as GtkTreeViewColumn ptr)
@@ -5904,7 +5904,7 @@ end type
 type _GtkComboBoxClass
 	parent_class as GtkBinClass
 	changed as sub(byval combo_box as GtkComboBox ptr)
-	get_active_text as function(byval combo_box as GtkComboBox ptr) as zstring ptr
+	get_active_text as function(byval combo_box as GtkComboBox ptr) as gchar ptr
 	_gtk_reserved0 as sub()
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
@@ -5923,8 +5923,8 @@ declare function gtk_combo_box_get_column_span_column(byval combo_box as GtkComb
 declare sub gtk_combo_box_set_column_span_column(byval combo_box as GtkComboBox ptr, byval column_span as gint)
 declare function gtk_combo_box_get_add_tearoffs(byval combo_box as GtkComboBox ptr) as gboolean
 declare sub gtk_combo_box_set_add_tearoffs(byval combo_box as GtkComboBox ptr, byval add_tearoffs as gboolean)
-declare function gtk_combo_box_get_title(byval combo_box as GtkComboBox ptr) as const zstring ptr
-declare sub gtk_combo_box_set_title(byval combo_box as GtkComboBox ptr, byval title as const zstring ptr)
+declare function gtk_combo_box_get_title(byval combo_box as GtkComboBox ptr) as const gchar ptr
+declare sub gtk_combo_box_set_title(byval combo_box as GtkComboBox ptr, byval title as const gchar ptr)
 declare function gtk_combo_box_get_focus_on_click(byval combo as GtkComboBox ptr) as gboolean
 declare sub gtk_combo_box_set_focus_on_click(byval combo as GtkComboBox ptr, byval focus_on_click as gboolean)
 declare function gtk_combo_box_get_active(byval combo_box as GtkComboBox ptr) as gint
@@ -5941,11 +5941,11 @@ declare function gtk_combo_box_get_has_entry(byval combo_box as GtkComboBox ptr)
 declare sub gtk_combo_box_set_entry_text_column(byval combo_box as GtkComboBox ptr, byval text_column as gint)
 declare function gtk_combo_box_get_entry_text_column(byval combo_box as GtkComboBox ptr) as gint
 declare function gtk_combo_box_new_text() as GtkWidget ptr
-declare sub gtk_combo_box_append_text(byval combo_box as GtkComboBox ptr, byval text as const zstring ptr)
-declare sub gtk_combo_box_insert_text(byval combo_box as GtkComboBox ptr, byval position as gint, byval text as const zstring ptr)
-declare sub gtk_combo_box_prepend_text(byval combo_box as GtkComboBox ptr, byval text as const zstring ptr)
+declare sub gtk_combo_box_append_text(byval combo_box as GtkComboBox ptr, byval text as const gchar ptr)
+declare sub gtk_combo_box_insert_text(byval combo_box as GtkComboBox ptr, byval position as gint, byval text as const gchar ptr)
+declare sub gtk_combo_box_prepend_text(byval combo_box as GtkComboBox ptr, byval text as const gchar ptr)
 declare sub gtk_combo_box_remove_text(byval combo_box as GtkComboBox ptr, byval position as gint)
-declare function gtk_combo_box_get_active_text(byval combo_box as GtkComboBox ptr) as zstring ptr
+declare function gtk_combo_box_get_active_text(byval combo_box as GtkComboBox ptr) as gchar ptr
 declare sub gtk_combo_box_popup(byval combo_box as GtkComboBox ptr)
 declare sub gtk_combo_box_popdown(byval combo_box as GtkComboBox ptr)
 declare function gtk_combo_box_get_popup_accessible(byval combo_box as GtkComboBox ptr) as AtkObject ptr
@@ -6010,11 +6010,11 @@ end type
 declare function gtk_combo_box_text_get_type() as GType
 declare function gtk_combo_box_text_new() as GtkWidget ptr
 declare function gtk_combo_box_text_new_with_entry() as GtkWidget ptr
-declare sub gtk_combo_box_text_append_text(byval combo_box as GtkComboBoxText ptr, byval text as const zstring ptr)
-declare sub gtk_combo_box_text_insert_text(byval combo_box as GtkComboBoxText ptr, byval position as gint, byval text as const zstring ptr)
-declare sub gtk_combo_box_text_prepend_text(byval combo_box as GtkComboBoxText ptr, byval text as const zstring ptr)
+declare sub gtk_combo_box_text_append_text(byval combo_box as GtkComboBoxText ptr, byval text as const gchar ptr)
+declare sub gtk_combo_box_text_insert_text(byval combo_box as GtkComboBoxText ptr, byval position as gint, byval text as const gchar ptr)
+declare sub gtk_combo_box_text_prepend_text(byval combo_box as GtkComboBoxText ptr, byval text as const gchar ptr)
 declare sub gtk_combo_box_text_remove(byval combo_box as GtkComboBoxText ptr, byval position as gint)
-declare function gtk_combo_box_text_get_active_text(byval combo_box as GtkComboBoxText ptr) as zstring ptr
+declare function gtk_combo_box_text_get_active_text(byval combo_box as GtkComboBoxText ptr) as gchar ptr
 
 #define __GTK_DRAWING_AREA_H__
 #define GTK_TYPE_DRAWING_AREA gtk_drawing_area_get_type()
@@ -6091,14 +6091,14 @@ type _GtkExpanderClass
 end type
 
 declare function gtk_expander_get_type() as GType
-declare function gtk_expander_new(byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_expander_new_with_mnemonic(byval label as const zstring ptr) as GtkWidget ptr
+declare function gtk_expander_new(byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_expander_new_with_mnemonic(byval label as const gchar ptr) as GtkWidget ptr
 declare sub gtk_expander_set_expanded(byval expander as GtkExpander ptr, byval expanded as gboolean)
 declare function gtk_expander_get_expanded(byval expander as GtkExpander ptr) as gboolean
 declare sub gtk_expander_set_spacing(byval expander as GtkExpander ptr, byval spacing as gint)
 declare function gtk_expander_get_spacing(byval expander as GtkExpander ptr) as gint
-declare sub gtk_expander_set_label(byval expander as GtkExpander ptr, byval label as const zstring ptr)
-declare function gtk_expander_get_label(byval expander as GtkExpander ptr) as const zstring ptr
+declare sub gtk_expander_set_label(byval expander as GtkExpander ptr, byval label as const gchar ptr)
+declare function gtk_expander_get_label(byval expander as GtkExpander ptr) as const gchar ptr
 declare sub gtk_expander_set_use_underline(byval expander as GtkExpander ptr, byval use_underline as gboolean)
 declare function gtk_expander_get_use_underline(byval expander as GtkExpander ptr) as gboolean
 declare sub gtk_expander_set_use_markup(byval expander as GtkExpander ptr, byval use_markup as gboolean)
@@ -6162,18 +6162,18 @@ type GtkFileFilterFunc as function(byval filter_info as const GtkFileFilterInfo 
 
 type _GtkFileFilterInfo
 	contains as GtkFileFilterFlags
-	filename as const zstring ptr
-	uri as const zstring ptr
-	display_name as const zstring ptr
-	mime_type as const zstring ptr
+	filename as const gchar ptr
+	uri as const gchar ptr
+	display_name as const gchar ptr
+	mime_type as const gchar ptr
 end type
 
 declare function gtk_file_filter_get_type() as GType
 declare function gtk_file_filter_new() as GtkFileFilter ptr
-declare sub gtk_file_filter_set_name(byval filter as GtkFileFilter ptr, byval name as const zstring ptr)
-declare function gtk_file_filter_get_name(byval filter as GtkFileFilter ptr) as const zstring ptr
-declare sub gtk_file_filter_add_mime_type(byval filter as GtkFileFilter ptr, byval mime_type as const zstring ptr)
-declare sub gtk_file_filter_add_pattern(byval filter as GtkFileFilter ptr, byval pattern as const zstring ptr)
+declare sub gtk_file_filter_set_name(byval filter as GtkFileFilter ptr, byval name as const gchar ptr)
+declare function gtk_file_filter_get_name(byval filter as GtkFileFilter ptr) as const gchar ptr
+declare sub gtk_file_filter_add_mime_type(byval filter as GtkFileFilter ptr, byval mime_type as const gchar ptr)
+declare sub gtk_file_filter_add_pattern(byval filter as GtkFileFilter ptr, byval pattern as const gchar ptr)
 declare sub gtk_file_filter_add_pixbuf_formats(byval filter as GtkFileFilter ptr)
 declare sub gtk_file_filter_add_custom(byval filter as GtkFileFilter ptr, byval needed as GtkFileFilterFlags, byval func as GtkFileFilterFunc, byval data as gpointer, byval notify as GDestroyNotify)
 declare function gtk_file_filter_get_needed(byval filter as GtkFileFilter ptr) as GtkFileFilterFlags
@@ -6223,16 +6223,16 @@ declare sub gtk_file_chooser_set_do_overwrite_confirmation(byval chooser as GtkF
 declare function gtk_file_chooser_get_do_overwrite_confirmation(byval chooser as GtkFileChooser ptr) as gboolean
 declare sub gtk_file_chooser_set_create_folders(byval chooser as GtkFileChooser ptr, byval create_folders as gboolean)
 declare function gtk_file_chooser_get_create_folders(byval chooser as GtkFileChooser ptr) as gboolean
-declare sub gtk_file_chooser_set_current_name(byval chooser as GtkFileChooser ptr, byval name as const zstring ptr)
+declare sub gtk_file_chooser_set_current_name(byval chooser as GtkFileChooser ptr, byval name as const gchar ptr)
 
 #ifdef __FB_UNIX__
-	declare function gtk_file_chooser_get_filename(byval chooser as GtkFileChooser ptr) as zstring ptr
+	declare function gtk_file_chooser_get_filename(byval chooser as GtkFileChooser ptr) as gchar ptr
 	declare function gtk_file_chooser_set_filename(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
 	declare function gtk_file_chooser_select_filename(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
 	declare sub gtk_file_chooser_unselect_filename(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr)
 #else
-	declare function gtk_file_chooser_get_filename_utf8(byval chooser as GtkFileChooser ptr) as zstring ptr
-	declare function gtk_file_chooser_get_filename alias "gtk_file_chooser_get_filename_utf8"(byval chooser as GtkFileChooser ptr) as zstring ptr
+	declare function gtk_file_chooser_get_filename_utf8(byval chooser as GtkFileChooser ptr) as gchar ptr
+	declare function gtk_file_chooser_get_filename alias "gtk_file_chooser_get_filename_utf8"(byval chooser as GtkFileChooser ptr) as gchar ptr
 	declare function gtk_file_chooser_set_filename_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
 	declare function gtk_file_chooser_set_filename alias "gtk_file_chooser_set_filename_utf8"(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
 	declare function gtk_file_chooser_select_filename_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
@@ -6246,24 +6246,24 @@ declare sub gtk_file_chooser_unselect_all(byval chooser as GtkFileChooser ptr)
 
 #ifdef __FB_UNIX__
 	declare function gtk_file_chooser_get_filenames(byval chooser as GtkFileChooser ptr) as GSList ptr
-	declare function gtk_file_chooser_set_current_folder(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
-	declare function gtk_file_chooser_get_current_folder(byval chooser as GtkFileChooser ptr) as zstring ptr
+	declare function gtk_file_chooser_set_current_folder(byval chooser as GtkFileChooser ptr, byval filename as const gchar ptr) as gboolean
+	declare function gtk_file_chooser_get_current_folder(byval chooser as GtkFileChooser ptr) as gchar ptr
 #else
 	declare function gtk_file_chooser_get_filenames_utf8(byval chooser as GtkFileChooser ptr) as GSList ptr
 	declare function gtk_file_chooser_get_filenames alias "gtk_file_chooser_get_filenames_utf8"(byval chooser as GtkFileChooser ptr) as GSList ptr
-	declare function gtk_file_chooser_set_current_folder_utf8(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
-	declare function gtk_file_chooser_set_current_folder alias "gtk_file_chooser_set_current_folder_utf8"(byval chooser as GtkFileChooser ptr, byval filename as const zstring ptr) as gboolean
-	declare function gtk_file_chooser_get_current_folder_utf8(byval chooser as GtkFileChooser ptr) as zstring ptr
-	declare function gtk_file_chooser_get_current_folder alias "gtk_file_chooser_get_current_folder_utf8"(byval chooser as GtkFileChooser ptr) as zstring ptr
+	declare function gtk_file_chooser_set_current_folder_utf8(byval chooser as GtkFileChooser ptr, byval filename as const gchar ptr) as gboolean
+	declare function gtk_file_chooser_set_current_folder alias "gtk_file_chooser_set_current_folder_utf8"(byval chooser as GtkFileChooser ptr, byval filename as const gchar ptr) as gboolean
+	declare function gtk_file_chooser_get_current_folder_utf8(byval chooser as GtkFileChooser ptr) as gchar ptr
+	declare function gtk_file_chooser_get_current_folder alias "gtk_file_chooser_get_current_folder_utf8"(byval chooser as GtkFileChooser ptr) as gchar ptr
 #endif
 
-declare function gtk_file_chooser_get_uri(byval chooser as GtkFileChooser ptr) as zstring ptr
+declare function gtk_file_chooser_get_uri(byval chooser as GtkFileChooser ptr) as gchar ptr
 declare function gtk_file_chooser_set_uri(byval chooser as GtkFileChooser ptr, byval uri as const zstring ptr) as gboolean
 declare function gtk_file_chooser_select_uri(byval chooser as GtkFileChooser ptr, byval uri as const zstring ptr) as gboolean
 declare sub gtk_file_chooser_unselect_uri(byval chooser as GtkFileChooser ptr, byval uri as const zstring ptr)
 declare function gtk_file_chooser_get_uris(byval chooser as GtkFileChooser ptr) as GSList ptr
-declare function gtk_file_chooser_set_current_folder_uri(byval chooser as GtkFileChooser ptr, byval uri as const zstring ptr) as gboolean
-declare function gtk_file_chooser_get_current_folder_uri(byval chooser as GtkFileChooser ptr) as zstring ptr
+declare function gtk_file_chooser_set_current_folder_uri(byval chooser as GtkFileChooser ptr, byval uri as const gchar ptr) as gboolean
+declare function gtk_file_chooser_get_current_folder_uri(byval chooser as GtkFileChooser ptr) as gchar ptr
 declare function gtk_file_chooser_get_file(byval chooser as GtkFileChooser ptr) as GFile ptr
 declare function gtk_file_chooser_set_file(byval chooser as GtkFileChooser ptr, byval file as GFile ptr, byval error as GError ptr ptr) as gboolean
 declare function gtk_file_chooser_select_file(byval chooser as GtkFileChooser ptr, byval file as GFile ptr, byval error as GError ptr ptr) as gboolean
@@ -6362,11 +6362,11 @@ type _GtkFileChooserButtonClass
 end type
 
 declare function gtk_file_chooser_button_get_type() as GType
-declare function gtk_file_chooser_button_new(byval title as const zstring ptr, byval action as GtkFileChooserAction) as GtkWidget ptr
-declare function gtk_file_chooser_button_new_with_backend(byval title as const zstring ptr, byval action as GtkFileChooserAction, byval backend as const zstring ptr) as GtkWidget ptr
+declare function gtk_file_chooser_button_new(byval title as const gchar ptr, byval action as GtkFileChooserAction) as GtkWidget ptr
+declare function gtk_file_chooser_button_new_with_backend(byval title as const gchar ptr, byval action as GtkFileChooserAction, byval backend as const gchar ptr) as GtkWidget ptr
 declare function gtk_file_chooser_button_new_with_dialog(byval dialog as GtkWidget ptr) as GtkWidget ptr
-declare function gtk_file_chooser_button_get_title(byval button as GtkFileChooserButton ptr) as const zstring ptr
-declare sub gtk_file_chooser_button_set_title(byval button as GtkFileChooserButton ptr, byval title as const zstring ptr)
+declare function gtk_file_chooser_button_get_title(byval button as GtkFileChooserButton ptr) as const gchar ptr
+declare sub gtk_file_chooser_button_set_title(byval button as GtkFileChooserButton ptr, byval title as const gchar ptr)
 declare function gtk_file_chooser_button_get_width_chars(byval button as GtkFileChooserButton ptr) as gint
 declare sub gtk_file_chooser_button_set_width_chars(byval button as GtkFileChooserButton ptr, byval n_chars as gint)
 declare function gtk_file_chooser_button_get_focus_on_click(byval button as GtkFileChooserButton ptr) as gboolean
@@ -6394,8 +6394,8 @@ type _GtkFileChooserDialogClass
 end type
 
 declare function gtk_file_chooser_dialog_get_type() as GType
-declare function gtk_file_chooser_dialog_new(byval title as const zstring ptr, byval parent as GtkWindow ptr, byval action as GtkFileChooserAction, byval first_button_text as const zstring ptr, ...) as GtkWidget ptr
-declare function gtk_file_chooser_dialog_new_with_backend(byval title as const zstring ptr, byval parent as GtkWindow ptr, byval action as GtkFileChooserAction, byval backend as const zstring ptr, byval first_button_text as const zstring ptr, ...) as GtkWidget ptr
+declare function gtk_file_chooser_dialog_new(byval title as const gchar ptr, byval parent as GtkWindow ptr, byval action as GtkFileChooserAction, byval first_button_text as const gchar ptr, ...) as GtkWidget ptr
+declare function gtk_file_chooser_dialog_new_with_backend(byval title as const gchar ptr, byval parent as GtkWindow ptr, byval action as GtkFileChooserAction, byval backend as const gchar ptr, byval first_button_text as const gchar ptr, ...) as GtkWidget ptr
 
 #define __GTK_FILE_CHOOSER_WIDGET_H__
 #define GTK_TYPE_FILE_CHOOSER_WIDGET gtk_file_chooser_widget_get_type()
@@ -6420,7 +6420,7 @@ end type
 
 declare function gtk_file_chooser_widget_get_type() as GType
 declare function gtk_file_chooser_widget_new(byval action as GtkFileChooserAction) as GtkWidget ptr
-declare function gtk_file_chooser_widget_new_with_backend(byval action as GtkFileChooserAction, byval backend as const zstring ptr) as GtkWidget ptr
+declare function gtk_file_chooser_widget_new_with_backend(byval action as GtkFileChooserAction, byval backend as const gchar ptr) as GtkWidget ptr
 
 #define __GTK_FONT_BUTTON_H__
 #define GTK_TYPE_FONT_BUTTON gtk_font_button_get_type()
@@ -6450,15 +6450,15 @@ end type
 
 declare function gtk_font_button_get_type() as GType
 declare function gtk_font_button_new() as GtkWidget ptr
-declare function gtk_font_button_new_with_font(byval fontname as const zstring ptr) as GtkWidget ptr
-declare function gtk_font_button_get_title(byval font_button as GtkFontButton ptr) as const zstring ptr
-declare sub gtk_font_button_set_title(byval font_button as GtkFontButton ptr, byval title as const zstring ptr)
+declare function gtk_font_button_new_with_font(byval fontname as const gchar ptr) as GtkWidget ptr
+declare function gtk_font_button_get_title(byval font_button as GtkFontButton ptr) as const gchar ptr
+declare sub gtk_font_button_set_title(byval font_button as GtkFontButton ptr, byval title as const gchar ptr)
 declare function gtk_font_button_get_use_font(byval font_button as GtkFontButton ptr) as gboolean
 declare sub gtk_font_button_set_use_font(byval font_button as GtkFontButton ptr, byval use_font as gboolean)
 declare function gtk_font_button_get_use_size(byval font_button as GtkFontButton ptr) as gboolean
 declare sub gtk_font_button_set_use_size(byval font_button as GtkFontButton ptr, byval use_size as gboolean)
-declare function gtk_font_button_get_font_name(byval font_button as GtkFontButton ptr) as const zstring ptr
-declare function gtk_font_button_set_font_name(byval font_button as GtkFontButton ptr, byval fontname as const zstring ptr) as gboolean
+declare function gtk_font_button_get_font_name(byval font_button as GtkFontButton ptr) as const gchar ptr
+declare function gtk_font_button_set_font_name(byval font_button as GtkFontButton ptr, byval fontname as const gchar ptr) as gboolean
 declare function gtk_font_button_get_show_style(byval font_button as GtkFontButton ptr) as gboolean
 declare sub gtk_font_button_set_show_style(byval font_button as GtkFontButton ptr, byval show_style as gboolean)
 declare function gtk_font_button_get_show_size(byval font_button as GtkFontButton ptr) as gboolean
@@ -6539,22 +6539,22 @@ declare function gtk_font_selection_get_preview_entry(byval fontsel as GtkFontSe
 declare function gtk_font_selection_get_family(byval fontsel as GtkFontSelection ptr) as PangoFontFamily ptr
 declare function gtk_font_selection_get_face(byval fontsel as GtkFontSelection ptr) as PangoFontFace ptr
 declare function gtk_font_selection_get_size(byval fontsel as GtkFontSelection ptr) as gint
-declare function gtk_font_selection_get_font_name(byval fontsel as GtkFontSelection ptr) as zstring ptr
+declare function gtk_font_selection_get_font_name(byval fontsel as GtkFontSelection ptr) as gchar ptr
 declare function gtk_font_selection_get_font(byval fontsel as GtkFontSelection ptr) as GdkFont ptr
-declare function gtk_font_selection_set_font_name(byval fontsel as GtkFontSelection ptr, byval fontname as const zstring ptr) as gboolean
-declare function gtk_font_selection_get_preview_text(byval fontsel as GtkFontSelection ptr) as const zstring ptr
-declare sub gtk_font_selection_set_preview_text(byval fontsel as GtkFontSelection ptr, byval text as const zstring ptr)
+declare function gtk_font_selection_set_font_name(byval fontsel as GtkFontSelection ptr, byval fontname as const gchar ptr) as gboolean
+declare function gtk_font_selection_get_preview_text(byval fontsel as GtkFontSelection ptr) as const gchar ptr
+declare sub gtk_font_selection_set_preview_text(byval fontsel as GtkFontSelection ptr, byval text as const gchar ptr)
 declare function gtk_font_selection_dialog_get_type() as GType
-declare function gtk_font_selection_dialog_new(byval title as const zstring ptr) as GtkWidget ptr
+declare function gtk_font_selection_dialog_new(byval title as const gchar ptr) as GtkWidget ptr
 declare function gtk_font_selection_dialog_get_ok_button(byval fsd as GtkFontSelectionDialog ptr) as GtkWidget ptr
 declare function gtk_font_selection_dialog_get_apply_button(byval fsd as GtkFontSelectionDialog ptr) as GtkWidget ptr
 declare function gtk_font_selection_dialog_get_cancel_button(byval fsd as GtkFontSelectionDialog ptr) as GtkWidget ptr
 declare function gtk_font_selection_dialog_get_font_selection(byval fsd as GtkFontSelectionDialog ptr) as GtkWidget ptr
-declare function gtk_font_selection_dialog_get_font_name(byval fsd as GtkFontSelectionDialog ptr) as zstring ptr
+declare function gtk_font_selection_dialog_get_font_name(byval fsd as GtkFontSelectionDialog ptr) as gchar ptr
 declare function gtk_font_selection_dialog_get_font(byval fsd as GtkFontSelectionDialog ptr) as GdkFont ptr
-declare function gtk_font_selection_dialog_set_font_name(byval fsd as GtkFontSelectionDialog ptr, byval fontname as const zstring ptr) as gboolean
-declare function gtk_font_selection_dialog_get_preview_text(byval fsd as GtkFontSelectionDialog ptr) as const zstring ptr
-declare sub gtk_font_selection_dialog_set_preview_text(byval fsd as GtkFontSelectionDialog ptr, byval text as const zstring ptr)
+declare function gtk_font_selection_dialog_set_font_name(byval fsd as GtkFontSelectionDialog ptr, byval fontname as const gchar ptr) as gboolean
+declare function gtk_font_selection_dialog_get_preview_text(byval fsd as GtkFontSelectionDialog ptr) as const gchar ptr
+declare sub gtk_font_selection_dialog_set_preview_text(byval fsd as GtkFontSelectionDialog ptr, byval text as const gchar ptr)
 #define __GTK_GC_H__
 declare function gtk_gc_get(byval depth as gint, byval colormap as GdkColormap ptr, byval values as GdkGCValues ptr, byval values_mask as GdkGCValuesMask) as GdkGC ptr
 declare sub gtk_gc_release(byval gc as GdkGC ptr)
@@ -6758,8 +6758,8 @@ type _GtkRulerClass
 end type
 
 type _GtkRulerMetric
-	metric_name as zstring ptr
-	abbrev as zstring ptr
+	metric_name as gchar ptr
+	abbrev as gchar ptr
 	pixels_per_unit as gdouble
 	ruler_scale(0 to 9) as gdouble
 	subdivide(0 to 4) as gint
@@ -6837,8 +6837,8 @@ end type
 
 type _GtkRangeClass
 	parent_class as GtkWidgetClass
-	slider_detail as zstring ptr
-	stepper_detail as zstring ptr
+	slider_detail as gchar ptr
+	stepper_detail as gchar ptr
 	value_changed as sub(byval range as GtkRange ptr)
 	adjust_bounds as sub(byval range as GtkRange ptr, byval new_value as gdouble)
 	move_slider as sub(byval range as GtkRange ptr, byval scroll as GtkScrollType)
@@ -6902,7 +6902,7 @@ end type
 
 type _GtkScaleClass
 	parent_class as GtkRangeClass
-	format_value as function(byval scale as GtkScale ptr, byval value as gdouble) as zstring ptr
+	format_value as function(byval scale as GtkScale ptr, byval value as gdouble) as gchar ptr
 	draw_value as sub(byval scale as GtkScale ptr)
 	get_layout_offsets as sub(byval scale as GtkScale ptr, byval x as gint ptr, byval y as gint ptr)
 	_gtk_reserved1 as sub()
@@ -6919,11 +6919,11 @@ declare sub gtk_scale_set_value_pos(byval scale as GtkScale ptr, byval pos as Gt
 declare function gtk_scale_get_value_pos(byval scale as GtkScale ptr) as GtkPositionType
 declare function gtk_scale_get_layout(byval scale as GtkScale ptr) as PangoLayout ptr
 declare sub gtk_scale_get_layout_offsets(byval scale as GtkScale ptr, byval x as gint ptr, byval y as gint ptr)
-declare sub gtk_scale_add_mark(byval scale as GtkScale ptr, byval value as gdouble, byval position as GtkPositionType, byval markup as const zstring ptr)
+declare sub gtk_scale_add_mark(byval scale as GtkScale ptr, byval value as gdouble, byval position as GtkPositionType, byval markup as const gchar ptr)
 declare sub gtk_scale_clear_marks(byval scale as GtkScale ptr)
 declare sub _gtk_scale_clear_layout(byval scale as GtkScale ptr)
 declare sub _gtk_scale_get_value_size(byval scale as GtkScale ptr, byval width as gint ptr, byval height as gint ptr)
-declare function _gtk_scale_format_value(byval scale as GtkScale ptr, byval value as gdouble) as zstring ptr
+declare function _gtk_scale_format_value(byval scale as GtkScale ptr, byval value as gdouble) as gchar ptr
 
 #define GTK_TYPE_HSCALE gtk_hscale_get_type()
 #define GTK_HSCALE(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_HSCALE, GtkHScale)
@@ -7089,17 +7089,17 @@ end type
 
 declare function gtk_icon_factory_get_type() as GType
 declare function gtk_icon_factory_new() as GtkIconFactory ptr
-declare sub gtk_icon_factory_add(byval factory as GtkIconFactory ptr, byval stock_id as const zstring ptr, byval icon_set as GtkIconSet ptr)
-declare function gtk_icon_factory_lookup(byval factory as GtkIconFactory ptr, byval stock_id as const zstring ptr) as GtkIconSet ptr
+declare sub gtk_icon_factory_add(byval factory as GtkIconFactory ptr, byval stock_id as const gchar ptr, byval icon_set as GtkIconSet ptr)
+declare function gtk_icon_factory_lookup(byval factory as GtkIconFactory ptr, byval stock_id as const gchar ptr) as GtkIconSet ptr
 declare sub gtk_icon_factory_add_default(byval factory as GtkIconFactory ptr)
 declare sub gtk_icon_factory_remove_default(byval factory as GtkIconFactory ptr)
-declare function gtk_icon_factory_lookup_default(byval stock_id as const zstring ptr) as GtkIconSet ptr
+declare function gtk_icon_factory_lookup_default(byval stock_id as const gchar ptr) as GtkIconSet ptr
 declare function gtk_icon_size_lookup(byval size as GtkIconSize, byval width as gint ptr, byval height as gint ptr) as gboolean
 declare function gtk_icon_size_lookup_for_settings(byval settings as GtkSettings ptr, byval size as GtkIconSize, byval width as gint ptr, byval height as gint ptr) as gboolean
-declare function gtk_icon_size_register(byval name as const zstring ptr, byval width as gint, byval height as gint) as GtkIconSize
-declare sub gtk_icon_size_register_alias(byval alias as const zstring ptr, byval target as GtkIconSize)
-declare function gtk_icon_size_from_name(byval name as const zstring ptr) as GtkIconSize
-declare function gtk_icon_size_get_name(byval size as GtkIconSize) as const zstring ptr
+declare function gtk_icon_size_register(byval name as const gchar ptr, byval width as gint, byval height as gint) as GtkIconSize
+declare sub gtk_icon_size_register_alias(byval alias as const gchar ptr, byval target as GtkIconSize)
+declare function gtk_icon_size_from_name(byval name as const gchar ptr) as GtkIconSize
+declare function gtk_icon_size_get_name(byval size as GtkIconSize) as const gchar ptr
 declare function gtk_icon_set_get_type() as GType
 declare function gtk_icon_set_new() as GtkIconSet ptr
 declare function gtk_icon_set_new_from_pixbuf(byval pixbuf as GdkPixbuf ptr) as GtkIconSet ptr
@@ -7115,23 +7115,23 @@ declare function gtk_icon_source_copy(byval source as const GtkIconSource ptr) a
 declare sub gtk_icon_source_free(byval source as GtkIconSource ptr)
 
 #ifdef __FB_UNIX__
-	declare sub gtk_icon_source_set_filename(byval source as GtkIconSource ptr, byval filename as const zstring ptr)
+	declare sub gtk_icon_source_set_filename(byval source as GtkIconSource ptr, byval filename as const gchar ptr)
 #else
-	declare sub gtk_icon_source_set_filename_utf8(byval source as GtkIconSource ptr, byval filename as const zstring ptr)
-	declare sub gtk_icon_source_set_filename alias "gtk_icon_source_set_filename_utf8"(byval source as GtkIconSource ptr, byval filename as const zstring ptr)
+	declare sub gtk_icon_source_set_filename_utf8(byval source as GtkIconSource ptr, byval filename as const gchar ptr)
+	declare sub gtk_icon_source_set_filename alias "gtk_icon_source_set_filename_utf8"(byval source as GtkIconSource ptr, byval filename as const gchar ptr)
 #endif
 
-declare sub gtk_icon_source_set_icon_name(byval source as GtkIconSource ptr, byval icon_name as const zstring ptr)
+declare sub gtk_icon_source_set_icon_name(byval source as GtkIconSource ptr, byval icon_name as const gchar ptr)
 declare sub gtk_icon_source_set_pixbuf(byval source as GtkIconSource ptr, byval pixbuf as GdkPixbuf ptr)
 
 #ifdef __FB_UNIX__
-	declare function gtk_icon_source_get_filename(byval source as const GtkIconSource ptr) as const zstring ptr
+	declare function gtk_icon_source_get_filename(byval source as const GtkIconSource ptr) as const gchar ptr
 #else
-	declare function gtk_icon_source_get_filename_utf8(byval source as const GtkIconSource ptr) as const zstring ptr
-	declare function gtk_icon_source_get_filename alias "gtk_icon_source_get_filename_utf8"(byval source as const GtkIconSource ptr) as const zstring ptr
+	declare function gtk_icon_source_get_filename_utf8(byval source as const GtkIconSource ptr) as const gchar ptr
+	declare function gtk_icon_source_get_filename alias "gtk_icon_source_get_filename_utf8"(byval source as const GtkIconSource ptr) as const gchar ptr
 #endif
 
-declare function gtk_icon_source_get_icon_name(byval source as const GtkIconSource ptr) as const zstring ptr
+declare function gtk_icon_source_get_icon_name(byval source as const GtkIconSource ptr) as const gchar ptr
 declare function gtk_icon_source_get_pixbuf(byval source as const GtkIconSource ptr) as GdkPixbuf ptr
 declare sub gtk_icon_source_set_direction_wildcarded(byval source as GtkIconSource ptr, byval setting as gboolean)
 declare sub gtk_icon_source_set_state_wildcarded(byval source as GtkIconSource ptr, byval setting as gboolean)
@@ -7198,33 +7198,33 @@ declare function gtk_icon_theme_get_for_screen(byval screen as GdkScreen ptr) as
 declare sub gtk_icon_theme_set_screen(byval icon_theme as GtkIconTheme ptr, byval screen as GdkScreen ptr)
 
 #ifdef __FB_UNIX__
-	declare sub gtk_icon_theme_set_search_path(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr ptr, byval n_elements as gint)
-	declare sub gtk_icon_theme_get_search_path(byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr ptr ptr, byval n_elements as gint ptr)
-	declare sub gtk_icon_theme_append_search_path(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
-	declare sub gtk_icon_theme_prepend_search_path(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
+	declare sub gtk_icon_theme_set_search_path(byval icon_theme as GtkIconTheme ptr, byval path as const gchar ptr ptr, byval n_elements as gint)
+	declare sub gtk_icon_theme_get_search_path(byval icon_theme as GtkIconTheme ptr, byval path as gchar ptr ptr ptr, byval n_elements as gint ptr)
+	declare sub gtk_icon_theme_append_search_path(byval icon_theme as GtkIconTheme ptr, byval path as const gchar ptr)
+	declare sub gtk_icon_theme_prepend_search_path(byval icon_theme as GtkIconTheme ptr, byval path as const gchar ptr)
 #else
-	declare sub gtk_icon_theme_set_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr ptr, byval n_elements as gint)
-	declare sub gtk_icon_theme_set_search_path alias "gtk_icon_theme_set_search_path_utf8"(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr ptr, byval n_elements as gint)
-	declare sub gtk_icon_theme_get_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr ptr ptr, byval n_elements as gint ptr)
-	declare sub gtk_icon_theme_get_search_path alias "gtk_icon_theme_get_search_path_utf8"(byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr ptr ptr, byval n_elements as gint ptr)
-	declare sub gtk_icon_theme_append_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
-	declare sub gtk_icon_theme_append_search_path alias "gtk_icon_theme_append_search_path_utf8"(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
-	declare sub gtk_icon_theme_prepend_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
-	declare sub gtk_icon_theme_prepend_search_path alias "gtk_icon_theme_prepend_search_path_utf8"(byval icon_theme as GtkIconTheme ptr, byval path as const zstring ptr)
+	declare sub gtk_icon_theme_set_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const gchar ptr ptr, byval n_elements as gint)
+	declare sub gtk_icon_theme_set_search_path alias "gtk_icon_theme_set_search_path_utf8"(byval icon_theme as GtkIconTheme ptr, byval path as const gchar ptr ptr, byval n_elements as gint)
+	declare sub gtk_icon_theme_get_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as gchar ptr ptr ptr, byval n_elements as gint ptr)
+	declare sub gtk_icon_theme_get_search_path alias "gtk_icon_theme_get_search_path_utf8"(byval icon_theme as GtkIconTheme ptr, byval path as gchar ptr ptr ptr, byval n_elements as gint ptr)
+	declare sub gtk_icon_theme_append_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const gchar ptr)
+	declare sub gtk_icon_theme_append_search_path alias "gtk_icon_theme_append_search_path_utf8"(byval icon_theme as GtkIconTheme ptr, byval path as const gchar ptr)
+	declare sub gtk_icon_theme_prepend_search_path_utf8(byval icon_theme as GtkIconTheme ptr, byval path as const gchar ptr)
+	declare sub gtk_icon_theme_prepend_search_path alias "gtk_icon_theme_prepend_search_path_utf8"(byval icon_theme as GtkIconTheme ptr, byval path as const gchar ptr)
 #endif
 
-declare sub gtk_icon_theme_set_custom_theme(byval icon_theme as GtkIconTheme ptr, byval theme_name as const zstring ptr)
-declare function gtk_icon_theme_has_icon(byval icon_theme as GtkIconTheme ptr, byval icon_name as const zstring ptr) as gboolean
-declare function gtk_icon_theme_get_icon_sizes(byval icon_theme as GtkIconTheme ptr, byval icon_name as const zstring ptr) as gint ptr
-declare function gtk_icon_theme_lookup_icon(byval icon_theme as GtkIconTheme ptr, byval icon_name as const zstring ptr, byval size as gint, byval flags as GtkIconLookupFlags) as GtkIconInfo ptr
-declare function gtk_icon_theme_choose_icon(byval icon_theme as GtkIconTheme ptr, byval icon_names as const zstring ptr ptr, byval size as gint, byval flags as GtkIconLookupFlags) as GtkIconInfo ptr
-declare function gtk_icon_theme_load_icon(byval icon_theme as GtkIconTheme ptr, byval icon_name as const zstring ptr, byval size as gint, byval flags as GtkIconLookupFlags, byval error as GError ptr ptr) as GdkPixbuf ptr
+declare sub gtk_icon_theme_set_custom_theme(byval icon_theme as GtkIconTheme ptr, byval theme_name as const gchar ptr)
+declare function gtk_icon_theme_has_icon(byval icon_theme as GtkIconTheme ptr, byval icon_name as const gchar ptr) as gboolean
+declare function gtk_icon_theme_get_icon_sizes(byval icon_theme as GtkIconTheme ptr, byval icon_name as const gchar ptr) as gint ptr
+declare function gtk_icon_theme_lookup_icon(byval icon_theme as GtkIconTheme ptr, byval icon_name as const gchar ptr, byval size as gint, byval flags as GtkIconLookupFlags) as GtkIconInfo ptr
+declare function gtk_icon_theme_choose_icon(byval icon_theme as GtkIconTheme ptr, byval icon_names as const gchar ptr ptr, byval size as gint, byval flags as GtkIconLookupFlags) as GtkIconInfo ptr
+declare function gtk_icon_theme_load_icon(byval icon_theme as GtkIconTheme ptr, byval icon_name as const gchar ptr, byval size as gint, byval flags as GtkIconLookupFlags, byval error as GError ptr ptr) as GdkPixbuf ptr
 declare function gtk_icon_theme_lookup_by_gicon(byval icon_theme as GtkIconTheme ptr, byval icon as GIcon ptr, byval size as gint, byval flags as GtkIconLookupFlags) as GtkIconInfo ptr
-declare function gtk_icon_theme_list_icons(byval icon_theme as GtkIconTheme ptr, byval context as const zstring ptr) as GList ptr
+declare function gtk_icon_theme_list_icons(byval icon_theme as GtkIconTheme ptr, byval context as const gchar ptr) as GList ptr
 declare function gtk_icon_theme_list_contexts(byval icon_theme as GtkIconTheme ptr) as GList ptr
 declare function gtk_icon_theme_get_example_icon_name(byval icon_theme as GtkIconTheme ptr) as zstring ptr
 declare function gtk_icon_theme_rescan_if_needed(byval icon_theme as GtkIconTheme ptr) as gboolean
-declare sub gtk_icon_theme_add_builtin_icon(byval icon_name as const zstring ptr, byval size as gint, byval pixbuf as GdkPixbuf ptr)
+declare sub gtk_icon_theme_add_builtin_icon(byval icon_name as const gchar ptr, byval size as gint, byval pixbuf as GdkPixbuf ptr)
 declare function gtk_icon_info_get_type() as GType
 declare function gtk_icon_info_copy(byval icon_info as GtkIconInfo ptr) as GtkIconInfo ptr
 declare sub gtk_icon_info_free(byval icon_info as GtkIconInfo ptr)
@@ -7232,10 +7232,10 @@ declare function gtk_icon_info_new_for_pixbuf(byval icon_theme as GtkIconTheme p
 declare function gtk_icon_info_get_base_size(byval icon_info as GtkIconInfo ptr) as gint
 
 #ifdef __FB_UNIX__
-	declare function gtk_icon_info_get_filename(byval icon_info as GtkIconInfo ptr) as const zstring ptr
+	declare function gtk_icon_info_get_filename(byval icon_info as GtkIconInfo ptr) as const gchar ptr
 #else
-	declare function gtk_icon_info_get_filename_utf8(byval icon_info as GtkIconInfo ptr) as const zstring ptr
-	declare function gtk_icon_info_get_filename alias "gtk_icon_info_get_filename_utf8"(byval icon_info as GtkIconInfo ptr) as const zstring ptr
+	declare function gtk_icon_info_get_filename_utf8(byval icon_info as GtkIconInfo ptr) as const gchar ptr
+	declare function gtk_icon_info_get_filename alias "gtk_icon_info_get_filename_utf8"(byval icon_info as GtkIconInfo ptr) as const gchar ptr
 #endif
 
 declare function gtk_icon_info_get_builtin_pixbuf(byval icon_info as GtkIconInfo ptr) as GdkPixbuf ptr
@@ -7243,7 +7243,7 @@ declare function gtk_icon_info_load_icon(byval icon_info as GtkIconInfo ptr, byv
 declare sub gtk_icon_info_set_raw_coordinates(byval icon_info as GtkIconInfo ptr, byval raw_coordinates as gboolean)
 declare function gtk_icon_info_get_embedded_rect(byval icon_info as GtkIconInfo ptr, byval rectangle as GdkRectangle ptr) as gboolean
 declare function gtk_icon_info_get_attach_points(byval icon_info as GtkIconInfo ptr, byval points as GdkPoint ptr ptr, byval n_points as gint ptr) as gboolean
-declare function gtk_icon_info_get_display_name(byval icon_info as GtkIconInfo ptr) as const zstring ptr
+declare function gtk_icon_info_get_display_name(byval icon_info as GtkIconInfo ptr) as const gchar ptr
 declare sub _gtk_icon_theme_check_reload(byval display as GdkDisplay ptr)
 declare sub _gtk_icon_theme_ensure_builtin_cache()
 
@@ -7254,11 +7254,11 @@ declare sub _gtk_icon_theme_ensure_builtin_cache()
 #define GTK_IS_TOOLTIP(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), GTK_TYPE_TOOLTIP)
 
 declare function gtk_tooltip_get_type() as GType
-declare sub gtk_tooltip_set_markup(byval tooltip as GtkTooltip ptr, byval markup as const zstring ptr)
-declare sub gtk_tooltip_set_text(byval tooltip as GtkTooltip ptr, byval text as const zstring ptr)
+declare sub gtk_tooltip_set_markup(byval tooltip as GtkTooltip ptr, byval markup as const gchar ptr)
+declare sub gtk_tooltip_set_text(byval tooltip as GtkTooltip ptr, byval text as const gchar ptr)
 declare sub gtk_tooltip_set_icon(byval tooltip as GtkTooltip ptr, byval pixbuf as GdkPixbuf ptr)
-declare sub gtk_tooltip_set_icon_from_stock(byval tooltip as GtkTooltip ptr, byval stock_id as const zstring ptr, byval size as GtkIconSize)
-declare sub gtk_tooltip_set_icon_from_icon_name(byval tooltip as GtkTooltip ptr, byval icon_name as const zstring ptr, byval size as GtkIconSize)
+declare sub gtk_tooltip_set_icon_from_stock(byval tooltip as GtkTooltip ptr, byval stock_id as const gchar ptr, byval size as GtkIconSize)
+declare sub gtk_tooltip_set_icon_from_icon_name(byval tooltip as GtkTooltip ptr, byval icon_name as const gchar ptr, byval size as GtkIconSize)
 declare sub gtk_tooltip_set_icon_from_gicon(byval tooltip as GtkTooltip ptr, byval gicon as GIcon ptr, byval size as GtkIconSize)
 declare sub gtk_tooltip_set_custom(byval tooltip as GtkTooltip ptr, byval custom_widget as GtkWidget ptr)
 declare sub gtk_tooltip_set_tip_area(byval tooltip as GtkTooltip ptr, byval rect as const GdkRectangle ptr)
@@ -7395,9 +7395,9 @@ end type
 
 declare function gtk_image_menu_item_get_type() as GType
 declare function gtk_image_menu_item_new() as GtkWidget ptr
-declare function gtk_image_menu_item_new_with_label(byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_image_menu_item_new_with_mnemonic(byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_image_menu_item_new_from_stock(byval stock_id as const zstring ptr, byval accel_group as GtkAccelGroup ptr) as GtkWidget ptr
+declare function gtk_image_menu_item_new_with_label(byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_image_menu_item_new_with_mnemonic(byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_image_menu_item_new_from_stock(byval stock_id as const gchar ptr, byval accel_group as GtkAccelGroup ptr) as GtkWidget ptr
 declare sub gtk_image_menu_item_set_always_show_image(byval image_menu_item as GtkImageMenuItem ptr, byval always_show as gboolean)
 declare function gtk_image_menu_item_get_always_show_image(byval image_menu_item as GtkImageMenuItem ptr) as gboolean
 declare sub gtk_image_menu_item_set_image(byval image_menu_item as GtkImageMenuItem ptr, byval image as GtkWidget ptr)
@@ -7451,7 +7451,7 @@ type _GtkIMMulticontext
 	object as GtkIMContext
 	slave as GtkIMContext ptr
 	priv as GtkIMMulticontextPrivate ptr
-	context_id as zstring ptr
+	context_id as gchar ptr
 end type
 
 type _GtkIMMulticontextClass
@@ -7499,12 +7499,12 @@ end type
 
 declare function gtk_info_bar_get_type() as GType
 declare function gtk_info_bar_new() as GtkWidget ptr
-declare function gtk_info_bar_new_with_buttons(byval first_button_text as const zstring ptr, ...) as GtkWidget ptr
+declare function gtk_info_bar_new_with_buttons(byval first_button_text as const gchar ptr, ...) as GtkWidget ptr
 declare function gtk_info_bar_get_action_area(byval info_bar as GtkInfoBar ptr) as GtkWidget ptr
 declare function gtk_info_bar_get_content_area(byval info_bar as GtkInfoBar ptr) as GtkWidget ptr
 declare sub gtk_info_bar_add_action_widget(byval info_bar as GtkInfoBar ptr, byval child as GtkWidget ptr, byval response_id as gint)
-declare function gtk_info_bar_add_button(byval info_bar as GtkInfoBar ptr, byval button_text as const zstring ptr, byval response_id as gint) as GtkWidget ptr
-declare sub gtk_info_bar_add_buttons(byval info_bar as GtkInfoBar ptr, byval first_button_text as const zstring ptr, ...)
+declare function gtk_info_bar_add_button(byval info_bar as GtkInfoBar ptr, byval button_text as const gchar ptr, byval response_id as gint) as GtkWidget ptr
+declare sub gtk_info_bar_add_buttons(byval info_bar as GtkInfoBar ptr, byval first_button_text as const gchar ptr, ...)
 declare sub gtk_info_bar_set_response_sensitive(byval info_bar as GtkInfoBar ptr, byval response_id as gint, byval setting as gboolean)
 declare sub gtk_info_bar_set_default_response(byval info_bar as GtkInfoBar ptr, byval response_id as gint)
 declare sub gtk_info_bar_response(byval info_bar as GtkInfoBar ptr, byval response_id as gint)
@@ -7599,7 +7599,7 @@ declare sub gtk_layout_thaw(byval layout as GtkLayout ptr)
 type GtkLinkButton as _GtkLinkButton
 type GtkLinkButtonClass as _GtkLinkButtonClass
 type GtkLinkButtonPrivate as _GtkLinkButtonPrivate
-type GtkLinkButtonUriFunc as sub(byval button as GtkLinkButton ptr, byval link_ as const zstring ptr, byval user_data as gpointer)
+type GtkLinkButtonUriFunc as sub(byval button as GtkLinkButton ptr, byval link_ as const gchar ptr, byval user_data as gpointer)
 
 type _GtkLinkButton
 	parent_instance as GtkButton
@@ -7615,10 +7615,10 @@ type _GtkLinkButtonClass
 end type
 
 declare function gtk_link_button_get_type() as GType
-declare function gtk_link_button_new(byval uri as const zstring ptr) as GtkWidget ptr
-declare function gtk_link_button_new_with_label(byval uri as const zstring ptr, byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_link_button_get_uri(byval link_button as GtkLinkButton ptr) as const zstring ptr
-declare sub gtk_link_button_set_uri(byval link_button as GtkLinkButton ptr, byval uri as const zstring ptr)
+declare function gtk_link_button_new(byval uri as const gchar ptr) as GtkWidget ptr
+declare function gtk_link_button_new_with_label(byval uri as const gchar ptr, byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_link_button_get_uri(byval link_button as GtkLinkButton ptr) as const gchar ptr
+declare sub gtk_link_button_set_uri(byval link_button as GtkLinkButton ptr, byval uri as const gchar ptr)
 declare function gtk_link_button_set_uri_hook(byval func as GtkLinkButtonUriFunc, byval data as gpointer, byval destroy as GDestroyNotify) as GtkLinkButtonUriFunc
 declare function gtk_link_button_get_visited(byval link_button as GtkLinkButton ptr) as gboolean
 declare sub gtk_link_button_set_visited(byval link_button as GtkLinkButton ptr, byval visited as gboolean)
@@ -7646,7 +7646,7 @@ type GtkKeySnoopFunc as function(byval grab_widget as GtkWidget ptr, byval event
 	extern gtk_interface_age_ alias "gtk_interface_age" as const guint
 #endif
 
-declare function gtk_check_version_ alias "gtk_check_version"(byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as const zstring ptr
+declare function gtk_check_version_ alias "gtk_check_version"(byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as const gchar ptr
 declare function gtk_parse_args(byval argc as long ptr, byval argv as zstring ptr ptr ptr) as gboolean
 
 #ifdef __FB_UNIX__
@@ -7668,7 +7668,7 @@ declare function gtk_get_option_group(byval open_default_display as gboolean) as
 #endif
 
 declare sub gtk_exit(byval error_code as gint)
-declare function gtk_set_locale() as zstring ptr
+declare function gtk_set_locale() as gchar ptr
 declare sub gtk_disable_setlocale()
 declare function gtk_get_default_language() as PangoLanguage ptr
 declare function gtk_events_pending() as gboolean
@@ -7707,7 +7707,7 @@ declare function gtk_get_current_event_state(byval state as GdkModifierType ptr)
 declare function gtk_get_event_widget(byval event as GdkEvent ptr) as GtkWidget ptr
 declare sub gtk_propagate_event(byval widget as GtkWidget ptr, byval event as GdkEvent ptr)
 declare function _gtk_boolean_handled_accumulator(byval ihint as GSignalInvocationHint ptr, byval return_accu as GValue ptr, byval handler_return as const GValue ptr, byval dummy as gpointer) as gboolean
-declare function _gtk_get_lc_ctype() as zstring ptr
+declare function _gtk_get_lc_ctype() as gchar ptr
 declare function _gtk_module_has_mixed_deps(byval module as GModule ptr) as gboolean
 
 #define __GTK_MENU_BAR_H__
@@ -7761,8 +7761,8 @@ type GtkTooltipsData as _GtkTooltipsData
 type _GtkTooltipsData
 	tooltips as GtkTooltips ptr
 	widget as GtkWidget ptr
-	tip_text as zstring ptr
-	tip_private as zstring ptr
+	tip_text as gchar ptr
+	tip_private as gchar ptr
 end type
 
 type _GtkTooltips
@@ -7792,7 +7792,7 @@ declare function gtk_tooltips_new() as GtkTooltips ptr
 declare sub gtk_tooltips_enable(byval tooltips as GtkTooltips ptr)
 declare sub gtk_tooltips_disable(byval tooltips as GtkTooltips ptr)
 declare sub gtk_tooltips_set_delay(byval tooltips as GtkTooltips ptr, byval delay as guint)
-declare sub gtk_tooltips_set_tip(byval tooltips as GtkTooltips ptr, byval widget as GtkWidget ptr, byval tip_text as const zstring ptr, byval tip_private as const zstring ptr)
+declare sub gtk_tooltips_set_tip(byval tooltips as GtkTooltips ptr, byval widget as GtkWidget ptr, byval tip_text as const gchar ptr, byval tip_private as const gchar ptr)
 declare function gtk_tooltips_data_get(byval widget as GtkWidget ptr) as GtkTooltipsData ptr
 declare sub gtk_tooltips_force_window(byval tooltips as GtkTooltips ptr)
 declare function gtk_tooltips_get_info_from_tip_window(byval tip_window as GtkWindow ptr, byval tooltips as GtkTooltips ptr ptr, byval current_widget as GtkWidget ptr ptr) as gboolean
@@ -7866,7 +7866,7 @@ type _GtkToolItemClass
 	parent_class as GtkBinClass
 	create_menu_proxy as function(byval tool_item as GtkToolItem ptr) as gboolean
 	toolbar_reconfigured as sub(byval tool_item as GtkToolItem ptr)
-	set_tooltip as function(byval tool_item as GtkToolItem ptr, byval tooltips as GtkTooltips ptr, byval tip_text as const zstring ptr, byval tip_private as const zstring ptr) as gboolean
+	set_tooltip as function(byval tool_item as GtkToolItem ptr, byval tooltips as GtkTooltips ptr, byval tip_text as const gchar ptr, byval tip_private as const gchar ptr) as gboolean
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 	_gtk_reserved3 as sub()
@@ -7879,9 +7879,9 @@ declare sub gtk_tool_item_set_homogeneous(byval tool_item as GtkToolItem ptr, by
 declare function gtk_tool_item_get_homogeneous(byval tool_item as GtkToolItem ptr) as gboolean
 declare sub gtk_tool_item_set_expand(byval tool_item as GtkToolItem ptr, byval expand as gboolean)
 declare function gtk_tool_item_get_expand(byval tool_item as GtkToolItem ptr) as gboolean
-declare sub gtk_tool_item_set_tooltip(byval tool_item as GtkToolItem ptr, byval tooltips as GtkTooltips ptr, byval tip_text as const zstring ptr, byval tip_private as const zstring ptr)
-declare sub gtk_tool_item_set_tooltip_text(byval tool_item as GtkToolItem ptr, byval text as const zstring ptr)
-declare sub gtk_tool_item_set_tooltip_markup(byval tool_item as GtkToolItem ptr, byval markup as const zstring ptr)
+declare sub gtk_tool_item_set_tooltip(byval tool_item as GtkToolItem ptr, byval tooltips as GtkTooltips ptr, byval tip_text as const gchar ptr, byval tip_private as const gchar ptr)
+declare sub gtk_tool_item_set_tooltip_text(byval tool_item as GtkToolItem ptr, byval text as const gchar ptr)
+declare sub gtk_tool_item_set_tooltip_markup(byval tool_item as GtkToolItem ptr, byval markup as const gchar ptr)
 declare sub gtk_tool_item_set_use_drag_window(byval tool_item as GtkToolItem ptr, byval use_drag_window as gboolean)
 declare function gtk_tool_item_get_use_drag_window(byval tool_item as GtkToolItem ptr) as gboolean
 declare sub gtk_tool_item_set_visible_horizontal(byval tool_item as GtkToolItem ptr, byval visible_horizontal as gboolean)
@@ -7899,8 +7899,8 @@ declare function gtk_tool_item_get_text_alignment(byval tool_item as GtkToolItem
 declare function gtk_tool_item_get_text_orientation(byval tool_item as GtkToolItem ptr) as GtkOrientation
 declare function gtk_tool_item_get_text_size_group(byval tool_item as GtkToolItem ptr) as GtkSizeGroup ptr
 declare function gtk_tool_item_retrieve_proxy_menu_item(byval tool_item as GtkToolItem ptr) as GtkWidget ptr
-declare function gtk_tool_item_get_proxy_menu_item(byval tool_item as GtkToolItem ptr, byval menu_item_id as const zstring ptr) as GtkWidget ptr
-declare sub gtk_tool_item_set_proxy_menu_item(byval tool_item as GtkToolItem ptr, byval menu_item_id as const zstring ptr, byval menu_item as GtkWidget ptr)
+declare function gtk_tool_item_get_proxy_menu_item(byval tool_item as GtkToolItem ptr, byval menu_item_id as const gchar ptr) as GtkWidget ptr
+declare sub gtk_tool_item_set_proxy_menu_item(byval tool_item as GtkToolItem ptr, byval menu_item_id as const gchar ptr, byval menu_item as GtkWidget ptr)
 declare sub gtk_tool_item_rebuild_menu(byval tool_item as GtkToolItem ptr)
 declare sub gtk_tool_item_toolbar_reconfigured(byval tool_item as GtkToolItem ptr)
 declare function _gtk_tool_item_create_menu_proxy(byval tool_item as GtkToolItem ptr) as gboolean
@@ -7932,16 +7932,16 @@ type _GtkToolButtonClass
 end type
 
 declare function gtk_tool_button_get_type() as GType
-declare function gtk_tool_button_new(byval icon_widget as GtkWidget ptr, byval label as const zstring ptr) as GtkToolItem ptr
-declare function gtk_tool_button_new_from_stock(byval stock_id as const zstring ptr) as GtkToolItem ptr
-declare sub gtk_tool_button_set_label(byval button as GtkToolButton ptr, byval label as const zstring ptr)
-declare function gtk_tool_button_get_label(byval button as GtkToolButton ptr) as const zstring ptr
+declare function gtk_tool_button_new(byval icon_widget as GtkWidget ptr, byval label as const gchar ptr) as GtkToolItem ptr
+declare function gtk_tool_button_new_from_stock(byval stock_id as const gchar ptr) as GtkToolItem ptr
+declare sub gtk_tool_button_set_label(byval button as GtkToolButton ptr, byval label as const gchar ptr)
+declare function gtk_tool_button_get_label(byval button as GtkToolButton ptr) as const gchar ptr
 declare sub gtk_tool_button_set_use_underline(byval button as GtkToolButton ptr, byval use_underline as gboolean)
 declare function gtk_tool_button_get_use_underline(byval button as GtkToolButton ptr) as gboolean
-declare sub gtk_tool_button_set_stock_id(byval button as GtkToolButton ptr, byval stock_id as const zstring ptr)
-declare function gtk_tool_button_get_stock_id(byval button as GtkToolButton ptr) as const zstring ptr
-declare sub gtk_tool_button_set_icon_name(byval button as GtkToolButton ptr, byval icon_name as const zstring ptr)
-declare function gtk_tool_button_get_icon_name(byval button as GtkToolButton ptr) as const zstring ptr
+declare sub gtk_tool_button_set_stock_id(byval button as GtkToolButton ptr, byval stock_id as const gchar ptr)
+declare function gtk_tool_button_get_stock_id(byval button as GtkToolButton ptr) as const gchar ptr
+declare sub gtk_tool_button_set_icon_name(byval button as GtkToolButton ptr, byval icon_name as const gchar ptr)
+declare function gtk_tool_button_get_icon_name(byval button as GtkToolButton ptr) as const gchar ptr
 declare sub gtk_tool_button_set_icon_widget(byval button as GtkToolButton ptr, byval icon_widget as GtkWidget ptr)
 declare function gtk_tool_button_get_icon_widget(byval button as GtkToolButton ptr) as GtkWidget ptr
 declare sub gtk_tool_button_set_label_widget(byval button as GtkToolButton ptr, byval label_widget as GtkWidget ptr)
@@ -7974,13 +7974,13 @@ type _GtkMenuToolButtonClass
 end type
 
 declare function gtk_menu_tool_button_get_type() as GType
-declare function gtk_menu_tool_button_new(byval icon_widget as GtkWidget ptr, byval label as const zstring ptr) as GtkToolItem ptr
-declare function gtk_menu_tool_button_new_from_stock(byval stock_id as const zstring ptr) as GtkToolItem ptr
+declare function gtk_menu_tool_button_new(byval icon_widget as GtkWidget ptr, byval label as const gchar ptr) as GtkToolItem ptr
+declare function gtk_menu_tool_button_new_from_stock(byval stock_id as const gchar ptr) as GtkToolItem ptr
 declare sub gtk_menu_tool_button_set_menu(byval button as GtkMenuToolButton ptr, byval menu as GtkWidget ptr)
 declare function gtk_menu_tool_button_get_menu(byval button as GtkMenuToolButton ptr) as GtkWidget ptr
-declare sub gtk_menu_tool_button_set_arrow_tooltip(byval button as GtkMenuToolButton ptr, byval tooltips as GtkTooltips ptr, byval tip_text as const zstring ptr, byval tip_private as const zstring ptr)
-declare sub gtk_menu_tool_button_set_arrow_tooltip_text(byval button as GtkMenuToolButton ptr, byval text as const zstring ptr)
-declare sub gtk_menu_tool_button_set_arrow_tooltip_markup(byval button as GtkMenuToolButton ptr, byval markup as const zstring ptr)
+declare sub gtk_menu_tool_button_set_arrow_tooltip(byval button as GtkMenuToolButton ptr, byval tooltips as GtkTooltips ptr, byval tip_text as const gchar ptr, byval tip_private as const gchar ptr)
+declare sub gtk_menu_tool_button_set_arrow_tooltip_text(byval button as GtkMenuToolButton ptr, byval text as const gchar ptr)
+declare sub gtk_menu_tool_button_set_arrow_tooltip_markup(byval button as GtkMenuToolButton ptr, byval markup as const gchar ptr)
 
 #define __GTK_MESSAGE_DIALOG_H__
 #define GTK_TYPE_MESSAGE_DIALOG gtk_message_dialog_get_type()
@@ -8017,20 +8017,20 @@ enum
 end enum
 
 declare function gtk_message_dialog_get_type() as GType
-declare function gtk_message_dialog_new(byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval type as GtkMessageType, byval buttons as GtkButtonsType, byval message_format as const zstring ptr, ...) as GtkWidget ptr
-declare function gtk_message_dialog_new_with_markup(byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval type as GtkMessageType, byval buttons as GtkButtonsType, byval message_format as const zstring ptr, ...) as GtkWidget ptr
+declare function gtk_message_dialog_new(byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval type as GtkMessageType, byval buttons as GtkButtonsType, byval message_format as const gchar ptr, ...) as GtkWidget ptr
+declare function gtk_message_dialog_new_with_markup(byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval type as GtkMessageType, byval buttons as GtkButtonsType, byval message_format as const gchar ptr, ...) as GtkWidget ptr
 declare sub gtk_message_dialog_set_image(byval dialog as GtkMessageDialog ptr, byval image as GtkWidget ptr)
 declare function gtk_message_dialog_get_image(byval dialog as GtkMessageDialog ptr) as GtkWidget ptr
-declare sub gtk_message_dialog_set_markup(byval message_dialog as GtkMessageDialog ptr, byval str as const zstring ptr)
-declare sub gtk_message_dialog_format_secondary_text(byval message_dialog as GtkMessageDialog ptr, byval message_format as const zstring ptr, ...)
-declare sub gtk_message_dialog_format_secondary_markup(byval message_dialog as GtkMessageDialog ptr, byval message_format as const zstring ptr, ...)
+declare sub gtk_message_dialog_set_markup(byval message_dialog as GtkMessageDialog ptr, byval str as const gchar ptr)
+declare sub gtk_message_dialog_format_secondary_text(byval message_dialog as GtkMessageDialog ptr, byval message_format as const gchar ptr, ...)
+declare sub gtk_message_dialog_format_secondary_markup(byval message_dialog as GtkMessageDialog ptr, byval message_format as const gchar ptr, ...)
 declare function gtk_message_dialog_get_message_area(byval message_dialog as GtkMessageDialog ptr) as GtkWidget ptr
 #define __GTK_MODULES_H__
-declare function _gtk_find_module(byval name as const zstring ptr, byval type as const zstring ptr) as zstring ptr
-declare function _gtk_get_module_path(byval type as const zstring ptr) as zstring ptr ptr
-declare sub _gtk_modules_init(byval argc as gint ptr, byval argv as zstring ptr ptr ptr, byval gtk_modules_args as const zstring ptr)
-declare sub _gtk_modules_settings_changed(byval settings as GtkSettings ptr, byval modules as const zstring ptr)
-type GtkModuleInitFunc as sub(byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
+declare function _gtk_find_module(byval name as const gchar ptr, byval type as const gchar ptr) as gchar ptr
+declare function _gtk_get_module_path(byval type as const gchar ptr) as gchar ptr ptr
+declare sub _gtk_modules_init(byval argc as gint ptr, byval argv as gchar ptr ptr ptr, byval gtk_modules_args as const gchar ptr)
+declare sub _gtk_modules_settings_changed(byval settings as GtkSettings ptr, byval modules as const gchar ptr)
+type GtkModuleInitFunc as sub(byval argc as gint ptr, byval argv as gchar ptr ptr ptr)
 type GtkModuleDisplayInitFunc as sub(byval display as GdkDisplay ptr)
 
 #define __GTK_MOUNT_OPERATION_H__
@@ -8141,8 +8141,8 @@ declare sub gtk_notebook_set_group_id(byval notebook as GtkNotebook ptr, byval g
 declare function gtk_notebook_get_group_id(byval notebook as GtkNotebook ptr) as gint
 declare sub gtk_notebook_set_group(byval notebook as GtkNotebook ptr, byval group as gpointer)
 declare function gtk_notebook_get_group(byval notebook as GtkNotebook ptr) as gpointer
-declare sub gtk_notebook_set_group_name(byval notebook as GtkNotebook ptr, byval group_name as const zstring ptr)
-declare function gtk_notebook_get_group_name(byval notebook as GtkNotebook ptr) as const zstring ptr
+declare sub gtk_notebook_set_group_name(byval notebook as GtkNotebook ptr, byval group_name as const gchar ptr)
+declare function gtk_notebook_get_group_name(byval notebook as GtkNotebook ptr) as const gchar ptr
 declare function gtk_notebook_get_current_page(byval notebook as GtkNotebook ptr) as gint
 declare function gtk_notebook_get_nth_page(byval notebook as GtkNotebook ptr, byval page_num as gint) as GtkWidget ptr
 declare function gtk_notebook_get_n_pages(byval notebook as GtkNotebook ptr) as gint
@@ -8168,12 +8168,12 @@ declare sub gtk_notebook_popup_enable(byval notebook as GtkNotebook ptr)
 declare sub gtk_notebook_popup_disable(byval notebook as GtkNotebook ptr)
 declare function gtk_notebook_get_tab_label(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as GtkWidget ptr
 declare sub gtk_notebook_set_tab_label(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr)
-declare sub gtk_notebook_set_tab_label_text(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_text as const zstring ptr)
-declare function gtk_notebook_get_tab_label_text(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as const zstring ptr
+declare sub gtk_notebook_set_tab_label_text(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_text as const gchar ptr)
+declare function gtk_notebook_get_tab_label_text(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as const gchar ptr
 declare function gtk_notebook_get_menu_label(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as GtkWidget ptr
 declare sub gtk_notebook_set_menu_label(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval menu_label as GtkWidget ptr)
-declare sub gtk_notebook_set_menu_label_text(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval menu_text as const zstring ptr)
-declare function gtk_notebook_get_menu_label_text(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as const zstring ptr
+declare sub gtk_notebook_set_menu_label_text(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval menu_text as const gchar ptr)
+declare function gtk_notebook_get_menu_label_text(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as const gchar ptr
 declare sub gtk_notebook_query_tab_label_packing(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval expand as gboolean ptr, byval fill as gboolean ptr, byval pack_type as GtkPackType ptr)
 declare sub gtk_notebook_set_tab_label_packing(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval expand as gboolean, byval fill as gboolean, byval pack_type as GtkPackType)
 declare sub gtk_notebook_reorder_child(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval position as gint)
@@ -8240,16 +8240,16 @@ type GtkPaperSize as _GtkPaperSize
 #define GTK_PAPER_NAME_LEGAL "na_legal"
 
 declare function gtk_paper_size_get_type() as GType
-declare function gtk_paper_size_new(byval name as const zstring ptr) as GtkPaperSize ptr
-declare function gtk_paper_size_new_from_ppd(byval ppd_name as const zstring ptr, byval ppd_display_name as const zstring ptr, byval width as gdouble, byval height as gdouble) as GtkPaperSize ptr
-declare function gtk_paper_size_new_custom(byval name as const zstring ptr, byval display_name as const zstring ptr, byval width as gdouble, byval height as gdouble, byval unit as GtkUnit) as GtkPaperSize ptr
+declare function gtk_paper_size_new(byval name as const gchar ptr) as GtkPaperSize ptr
+declare function gtk_paper_size_new_from_ppd(byval ppd_name as const gchar ptr, byval ppd_display_name as const gchar ptr, byval width as gdouble, byval height as gdouble) as GtkPaperSize ptr
+declare function gtk_paper_size_new_custom(byval name as const gchar ptr, byval display_name as const gchar ptr, byval width as gdouble, byval height as gdouble, byval unit as GtkUnit) as GtkPaperSize ptr
 declare function gtk_paper_size_copy(byval other as GtkPaperSize ptr) as GtkPaperSize ptr
 declare sub gtk_paper_size_free(byval size as GtkPaperSize ptr)
 declare function gtk_paper_size_is_equal(byval size1 as GtkPaperSize ptr, byval size2 as GtkPaperSize ptr) as gboolean
 declare function gtk_paper_size_get_paper_sizes(byval include_custom as gboolean) as GList ptr
-declare function gtk_paper_size_get_name(byval size as GtkPaperSize ptr) as const zstring ptr
-declare function gtk_paper_size_get_display_name(byval size as GtkPaperSize ptr) as const zstring ptr
-declare function gtk_paper_size_get_ppd_name(byval size as GtkPaperSize ptr) as const zstring ptr
+declare function gtk_paper_size_get_name(byval size as GtkPaperSize ptr) as const gchar ptr
+declare function gtk_paper_size_get_display_name(byval size as GtkPaperSize ptr) as const gchar ptr
+declare function gtk_paper_size_get_ppd_name(byval size as GtkPaperSize ptr) as const gchar ptr
 declare function gtk_paper_size_get_width(byval size as GtkPaperSize ptr, byval unit as GtkUnit) as gdouble
 declare function gtk_paper_size_get_height(byval size as GtkPaperSize ptr, byval unit as GtkUnit) as gdouble
 declare function gtk_paper_size_is_custom(byval size as GtkPaperSize ptr) as gboolean
@@ -8258,9 +8258,9 @@ declare function gtk_paper_size_get_default_top_margin(byval size as GtkPaperSiz
 declare function gtk_paper_size_get_default_bottom_margin(byval size as GtkPaperSize ptr, byval unit as GtkUnit) as gdouble
 declare function gtk_paper_size_get_default_left_margin(byval size as GtkPaperSize ptr, byval unit as GtkUnit) as gdouble
 declare function gtk_paper_size_get_default_right_margin(byval size as GtkPaperSize ptr, byval unit as GtkUnit) as gdouble
-declare function gtk_paper_size_get_default() as const zstring ptr
-declare function gtk_paper_size_new_from_key_file(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval error as GError ptr ptr) as GtkPaperSize ptr
-declare sub gtk_paper_size_to_key_file(byval size as GtkPaperSize ptr, byval key_file as GKeyFile ptr, byval group_name as const zstring ptr)
+declare function gtk_paper_size_get_default() as const gchar ptr
+declare function gtk_paper_size_new_from_key_file(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval error as GError ptr ptr) as GtkPaperSize ptr
+declare sub gtk_paper_size_to_key_file(byval size as GtkPaperSize ptr, byval key_file as GKeyFile ptr, byval group_name as const gchar ptr)
 type GtkPageSetup as _GtkPageSetup
 
 #define GTK_TYPE_PAGE_SETUP gtk_page_setup_get_type()
@@ -8287,12 +8287,12 @@ declare function gtk_page_setup_get_paper_width(byval setup as GtkPageSetup ptr,
 declare function gtk_page_setup_get_paper_height(byval setup as GtkPageSetup ptr, byval unit as GtkUnit) as gdouble
 declare function gtk_page_setup_get_page_width(byval setup as GtkPageSetup ptr, byval unit as GtkUnit) as gdouble
 declare function gtk_page_setup_get_page_height(byval setup as GtkPageSetup ptr, byval unit as GtkUnit) as gdouble
-declare function gtk_page_setup_new_from_file(byval file_name as const zstring ptr, byval error as GError ptr ptr) as GtkPageSetup ptr
+declare function gtk_page_setup_new_from_file(byval file_name as const gchar ptr, byval error as GError ptr ptr) as GtkPageSetup ptr
 declare function gtk_page_setup_load_file(byval setup as GtkPageSetup ptr, byval file_name as const zstring ptr, byval error as GError ptr ptr) as gboolean
 declare function gtk_page_setup_to_file(byval setup as GtkPageSetup ptr, byval file_name as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function gtk_page_setup_new_from_key_file(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval error as GError ptr ptr) as GtkPageSetup ptr
-declare function gtk_page_setup_load_key_file(byval setup as GtkPageSetup ptr, byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare sub gtk_page_setup_to_key_file(byval setup as GtkPageSetup ptr, byval key_file as GKeyFile ptr, byval group_name as const zstring ptr)
+declare function gtk_page_setup_new_from_key_file(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval error as GError ptr ptr) as GtkPageSetup ptr
+declare function gtk_page_setup_load_key_file(byval setup as GtkPageSetup ptr, byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare sub gtk_page_setup_to_key_file(byval setup as GtkPageSetup ptr, byval key_file as GKeyFile ptr, byval group_name as const gchar ptr)
 
 #define __GTK_PLUG_H__
 #define __GTK_SOCKET_H__
@@ -8404,7 +8404,7 @@ type GtkPrintSettings as _GtkPrintSettings
 #define GTK_TYPE_PRINT_SETTINGS gtk_print_settings_get_type()
 #define GTK_PRINT_SETTINGS(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_PRINT_SETTINGS, GtkPrintSettings)
 #define GTK_IS_PRINT_SETTINGS(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), GTK_TYPE_PRINT_SETTINGS)
-type GtkPrintSettingsFunc as sub(byval key as const zstring ptr, byval value as const zstring ptr, byval user_data as gpointer)
+type GtkPrintSettingsFunc as sub(byval key as const gchar ptr, byval value as const gchar ptr, byval user_data as gpointer)
 type GtkPageRange as _GtkPageRange
 
 type _GtkPageRange
@@ -8415,27 +8415,27 @@ end type
 declare function gtk_print_settings_get_type() as GType
 declare function gtk_print_settings_new() as GtkPrintSettings ptr
 declare function gtk_print_settings_copy(byval other as GtkPrintSettings ptr) as GtkPrintSettings ptr
-declare function gtk_print_settings_new_from_file(byval file_name as const zstring ptr, byval error as GError ptr ptr) as GtkPrintSettings ptr
-declare function gtk_print_settings_load_file(byval settings as GtkPrintSettings ptr, byval file_name as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function gtk_print_settings_to_file(byval settings as GtkPrintSettings ptr, byval file_name as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function gtk_print_settings_new_from_key_file(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval error as GError ptr ptr) as GtkPrintSettings ptr
-declare function gtk_print_settings_load_key_file(byval settings as GtkPrintSettings ptr, byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare sub gtk_print_settings_to_key_file(byval settings as GtkPrintSettings ptr, byval key_file as GKeyFile ptr, byval group_name as const zstring ptr)
-declare function gtk_print_settings_has_key(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr) as gboolean
-declare function gtk_print_settings_get(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr) as const zstring ptr
-declare sub gtk_print_settings_set(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr, byval value as const zstring ptr)
-declare sub gtk_print_settings_unset(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr)
+declare function gtk_print_settings_new_from_file(byval file_name as const gchar ptr, byval error as GError ptr ptr) as GtkPrintSettings ptr
+declare function gtk_print_settings_load_file(byval settings as GtkPrintSettings ptr, byval file_name as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function gtk_print_settings_to_file(byval settings as GtkPrintSettings ptr, byval file_name as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function gtk_print_settings_new_from_key_file(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval error as GError ptr ptr) as GtkPrintSettings ptr
+declare function gtk_print_settings_load_key_file(byval settings as GtkPrintSettings ptr, byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare sub gtk_print_settings_to_key_file(byval settings as GtkPrintSettings ptr, byval key_file as GKeyFile ptr, byval group_name as const gchar ptr)
+declare function gtk_print_settings_has_key(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr) as gboolean
+declare function gtk_print_settings_get(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr) as const gchar ptr
+declare sub gtk_print_settings_set(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr, byval value as const gchar ptr)
+declare sub gtk_print_settings_unset(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr)
 declare sub gtk_print_settings_foreach(byval settings as GtkPrintSettings ptr, byval func as GtkPrintSettingsFunc, byval user_data as gpointer)
-declare function gtk_print_settings_get_bool(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr) as gboolean
-declare sub gtk_print_settings_set_bool(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr, byval value as gboolean)
-declare function gtk_print_settings_get_double(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr) as gdouble
-declare function gtk_print_settings_get_double_with_default(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr, byval def as gdouble) as gdouble
-declare sub gtk_print_settings_set_double(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr, byval value as gdouble)
-declare function gtk_print_settings_get_length(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr, byval unit as GtkUnit) as gdouble
-declare sub gtk_print_settings_set_length(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr, byval value as gdouble, byval unit as GtkUnit)
-declare function gtk_print_settings_get_int(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr) as gint
-declare function gtk_print_settings_get_int_with_default(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr, byval def as gint) as gint
-declare sub gtk_print_settings_set_int(byval settings as GtkPrintSettings ptr, byval key as const zstring ptr, byval value as gint)
+declare function gtk_print_settings_get_bool(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr) as gboolean
+declare sub gtk_print_settings_set_bool(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr, byval value as gboolean)
+declare function gtk_print_settings_get_double(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr) as gdouble
+declare function gtk_print_settings_get_double_with_default(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr, byval def as gdouble) as gdouble
+declare sub gtk_print_settings_set_double(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr, byval value as gdouble)
+declare function gtk_print_settings_get_length(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr, byval unit as GtkUnit) as gdouble
+declare sub gtk_print_settings_set_length(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr, byval value as gdouble, byval unit as GtkUnit)
+declare function gtk_print_settings_get_int(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr) as gint
+declare function gtk_print_settings_get_int_with_default(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr, byval def as gint) as gint
+declare sub gtk_print_settings_set_int(byval settings as GtkPrintSettings ptr, byval key as const gchar ptr, byval value as gint)
 
 #define GTK_PRINT_SETTINGS_PRINTER "printer"
 #define GTK_PRINT_SETTINGS_ORIENTATION "orientation"
@@ -8468,8 +8468,8 @@ declare sub gtk_print_settings_set_int(byval settings as GtkPrintSettings ptr, b
 #define GTK_PRINT_SETTINGS_WIN32_DRIVER_VERSION "win32-driver-version"
 #define GTK_PRINT_SETTINGS_WIN32_DRIVER_EXTRA "win32-driver-extra"
 
-declare function gtk_print_settings_get_printer(byval settings as GtkPrintSettings ptr) as const zstring ptr
-declare sub gtk_print_settings_set_printer(byval settings as GtkPrintSettings ptr, byval printer as const zstring ptr)
+declare function gtk_print_settings_get_printer(byval settings as GtkPrintSettings ptr) as const gchar ptr
+declare sub gtk_print_settings_set_printer(byval settings as GtkPrintSettings ptr, byval printer as const gchar ptr)
 declare function gtk_print_settings_get_orientation(byval settings as GtkPrintSettings ptr) as GtkPageOrientation
 declare sub gtk_print_settings_set_orientation(byval settings as GtkPrintSettings ptr, byval orientation as GtkPageOrientation)
 declare function gtk_print_settings_get_paper_size(byval settings as GtkPrintSettings ptr) as GtkPaperSize ptr
@@ -8509,16 +8509,16 @@ declare function gtk_print_settings_get_page_ranges(byval settings as GtkPrintSe
 declare sub gtk_print_settings_set_page_ranges(byval settings as GtkPrintSettings ptr, byval page_ranges as GtkPageRange ptr, byval num_ranges as gint)
 declare function gtk_print_settings_get_page_set(byval settings as GtkPrintSettings ptr) as GtkPageSet
 declare sub gtk_print_settings_set_page_set(byval settings as GtkPrintSettings ptr, byval page_set as GtkPageSet)
-declare function gtk_print_settings_get_default_source(byval settings as GtkPrintSettings ptr) as const zstring ptr
-declare sub gtk_print_settings_set_default_source(byval settings as GtkPrintSettings ptr, byval default_source as const zstring ptr)
-declare function gtk_print_settings_get_media_type(byval settings as GtkPrintSettings ptr) as const zstring ptr
-declare sub gtk_print_settings_set_media_type(byval settings as GtkPrintSettings ptr, byval media_type as const zstring ptr)
-declare function gtk_print_settings_get_dither(byval settings as GtkPrintSettings ptr) as const zstring ptr
-declare sub gtk_print_settings_set_dither(byval settings as GtkPrintSettings ptr, byval dither as const zstring ptr)
-declare function gtk_print_settings_get_finishings(byval settings as GtkPrintSettings ptr) as const zstring ptr
-declare sub gtk_print_settings_set_finishings(byval settings as GtkPrintSettings ptr, byval finishings as const zstring ptr)
-declare function gtk_print_settings_get_output_bin(byval settings as GtkPrintSettings ptr) as const zstring ptr
-declare sub gtk_print_settings_set_output_bin(byval settings as GtkPrintSettings ptr, byval output_bin as const zstring ptr)
+declare function gtk_print_settings_get_default_source(byval settings as GtkPrintSettings ptr) as const gchar ptr
+declare sub gtk_print_settings_set_default_source(byval settings as GtkPrintSettings ptr, byval default_source as const gchar ptr)
+declare function gtk_print_settings_get_media_type(byval settings as GtkPrintSettings ptr) as const gchar ptr
+declare sub gtk_print_settings_set_media_type(byval settings as GtkPrintSettings ptr, byval media_type as const gchar ptr)
+declare function gtk_print_settings_get_dither(byval settings as GtkPrintSettings ptr) as const gchar ptr
+declare sub gtk_print_settings_set_dither(byval settings as GtkPrintSettings ptr, byval dither as const gchar ptr)
+declare function gtk_print_settings_get_finishings(byval settings as GtkPrintSettings ptr) as const gchar ptr
+declare sub gtk_print_settings_set_finishings(byval settings as GtkPrintSettings ptr, byval finishings as const gchar ptr)
+declare function gtk_print_settings_get_output_bin(byval settings as GtkPrintSettings ptr) as const gchar ptr
+declare sub gtk_print_settings_set_output_bin(byval settings as GtkPrintSettings ptr, byval output_bin as const gchar ptr)
 
 #define __GTK_PRINT_OPERATION_PREVIEW_H__
 #define GTK_TYPE_PRINT_OPERATION_PREVIEW gtk_print_operation_preview_get_type()
@@ -8632,20 +8632,20 @@ declare sub gtk_print_operation_set_default_page_setup(byval op as GtkPrintOpera
 declare function gtk_print_operation_get_default_page_setup(byval op as GtkPrintOperation ptr) as GtkPageSetup ptr
 declare sub gtk_print_operation_set_print_settings(byval op as GtkPrintOperation ptr, byval print_settings as GtkPrintSettings ptr)
 declare function gtk_print_operation_get_print_settings(byval op as GtkPrintOperation ptr) as GtkPrintSettings ptr
-declare sub gtk_print_operation_set_job_name(byval op as GtkPrintOperation ptr, byval job_name as const zstring ptr)
+declare sub gtk_print_operation_set_job_name(byval op as GtkPrintOperation ptr, byval job_name as const gchar ptr)
 declare sub gtk_print_operation_set_n_pages(byval op as GtkPrintOperation ptr, byval n_pages as gint)
 declare sub gtk_print_operation_set_current_page(byval op as GtkPrintOperation ptr, byval current_page as gint)
 declare sub gtk_print_operation_set_use_full_page(byval op as GtkPrintOperation ptr, byval full_page as gboolean)
 declare sub gtk_print_operation_set_unit(byval op as GtkPrintOperation ptr, byval unit as GtkUnit)
-declare sub gtk_print_operation_set_export_filename(byval op as GtkPrintOperation ptr, byval filename as const zstring ptr)
+declare sub gtk_print_operation_set_export_filename(byval op as GtkPrintOperation ptr, byval filename as const gchar ptr)
 declare sub gtk_print_operation_set_track_print_status(byval op as GtkPrintOperation ptr, byval track_status as gboolean)
 declare sub gtk_print_operation_set_show_progress(byval op as GtkPrintOperation ptr, byval show_progress as gboolean)
 declare sub gtk_print_operation_set_allow_async(byval op as GtkPrintOperation ptr, byval allow_async as gboolean)
-declare sub gtk_print_operation_set_custom_tab_label(byval op as GtkPrintOperation ptr, byval label as const zstring ptr)
+declare sub gtk_print_operation_set_custom_tab_label(byval op as GtkPrintOperation ptr, byval label as const gchar ptr)
 declare function gtk_print_operation_run(byval op as GtkPrintOperation ptr, byval action as GtkPrintOperationAction, byval parent as GtkWindow ptr, byval error as GError ptr ptr) as GtkPrintOperationResult
 declare sub gtk_print_operation_get_error(byval op as GtkPrintOperation ptr, byval error as GError ptr ptr)
 declare function gtk_print_operation_get_status(byval op as GtkPrintOperation ptr) as GtkPrintStatus
-declare function gtk_print_operation_get_status_string(byval op as GtkPrintOperation ptr) as const zstring ptr
+declare function gtk_print_operation_get_status_string(byval op as GtkPrintOperation ptr) as const gchar ptr
 declare function gtk_print_operation_is_finished(byval op as GtkPrintOperation ptr) as gboolean
 declare sub gtk_print_operation_cancel(byval op as GtkPrintOperation ptr)
 declare sub gtk_print_operation_draw_page_finish(byval op as GtkPrintOperation ptr)
@@ -8676,7 +8676,7 @@ type _GtkProgress
 	widget as GtkWidget
 	adjustment as GtkAdjustment ptr
 	offscreen_pixmap as GdkPixmap ptr
-	format as zstring ptr
+	format as gchar ptr
 	x_align as gfloat
 	y_align as gfloat
 	show_text : 1 as guint
@@ -8698,15 +8698,15 @@ end type
 declare function gtk_progress_get_type() as GType
 declare sub gtk_progress_set_show_text(byval progress as GtkProgress ptr, byval show_text as gboolean)
 declare sub gtk_progress_set_text_alignment(byval progress as GtkProgress ptr, byval x_align as gfloat, byval y_align as gfloat)
-declare sub gtk_progress_set_format_string(byval progress as GtkProgress ptr, byval format as const zstring ptr)
+declare sub gtk_progress_set_format_string(byval progress as GtkProgress ptr, byval format as const gchar ptr)
 declare sub gtk_progress_set_adjustment(byval progress as GtkProgress ptr, byval adjustment as GtkAdjustment ptr)
 declare sub gtk_progress_configure(byval progress as GtkProgress ptr, byval value as gdouble, byval min as gdouble, byval max as gdouble)
 declare sub gtk_progress_set_percentage(byval progress as GtkProgress ptr, byval percentage as gdouble)
 declare sub gtk_progress_set_value(byval progress as GtkProgress ptr, byval value as gdouble)
 declare function gtk_progress_get_value(byval progress as GtkProgress ptr) as gdouble
 declare sub gtk_progress_set_activity_mode(byval progress as GtkProgress ptr, byval activity_mode as gboolean)
-declare function gtk_progress_get_current_text(byval progress as GtkProgress ptr) as zstring ptr
-declare function gtk_progress_get_text_from_value(byval progress as GtkProgress ptr, byval value as gdouble) as zstring ptr
+declare function gtk_progress_get_current_text(byval progress as GtkProgress ptr) as gchar ptr
+declare function gtk_progress_get_text_from_value(byval progress as GtkProgress ptr, byval value as gdouble) as gchar ptr
 declare function gtk_progress_get_current_percentage(byval progress as GtkProgress ptr) as gdouble
 declare function gtk_progress_get_percentage_from_value(byval progress as GtkProgress ptr, byval value as gdouble) as gdouble
 
@@ -8759,11 +8759,11 @@ end type
 declare function gtk_progress_bar_get_type() as GType
 declare function gtk_progress_bar_new() as GtkWidget ptr
 declare sub gtk_progress_bar_pulse(byval pbar as GtkProgressBar ptr)
-declare sub gtk_progress_bar_set_text(byval pbar as GtkProgressBar ptr, byval text as const zstring ptr)
+declare sub gtk_progress_bar_set_text(byval pbar as GtkProgressBar ptr, byval text as const gchar ptr)
 declare sub gtk_progress_bar_set_fraction(byval pbar as GtkProgressBar ptr, byval fraction as gdouble)
 declare sub gtk_progress_bar_set_pulse_step(byval pbar as GtkProgressBar ptr, byval fraction as gdouble)
 declare sub gtk_progress_bar_set_orientation(byval pbar as GtkProgressBar ptr, byval orientation as GtkProgressBarOrientation)
-declare function gtk_progress_bar_get_text(byval pbar as GtkProgressBar ptr) as const zstring ptr
+declare function gtk_progress_bar_get_text(byval pbar as GtkProgressBar ptr) as const gchar ptr
 declare function gtk_progress_bar_get_fraction(byval pbar as GtkProgressBar ptr) as gdouble
 declare function gtk_progress_bar_get_pulse_step(byval pbar as GtkProgressBar ptr) as gdouble
 declare function gtk_progress_bar_get_orientation(byval pbar as GtkProgressBar ptr) as GtkProgressBarOrientation
@@ -8804,7 +8804,7 @@ type _GtkToggleActionClass
 end type
 
 declare function gtk_toggle_action_get_type() as GType
-declare function gtk_toggle_action_new(byval name as const zstring ptr, byval label as const zstring ptr, byval tooltip as const zstring ptr, byval stock_id as const zstring ptr) as GtkToggleAction ptr
+declare function gtk_toggle_action_new(byval name as const gchar ptr, byval label as const gchar ptr, byval tooltip as const gchar ptr, byval stock_id as const gchar ptr) as GtkToggleAction ptr
 declare sub gtk_toggle_action_toggled(byval action as GtkToggleAction ptr)
 declare sub gtk_toggle_action_set_active(byval action as GtkToggleAction ptr, byval is_active as gboolean)
 declare function gtk_toggle_action_get_active(byval action as GtkToggleAction ptr) as gboolean
@@ -8837,7 +8837,7 @@ type _GtkRadioActionClass
 end type
 
 declare function gtk_radio_action_get_type() as GType
-declare function gtk_radio_action_new(byval name as const zstring ptr, byval label as const zstring ptr, byval tooltip as const zstring ptr, byval stock_id as const zstring ptr, byval value as gint) as GtkRadioAction ptr
+declare function gtk_radio_action_new(byval name as const gchar ptr, byval label as const gchar ptr, byval tooltip as const gchar ptr, byval stock_id as const gchar ptr, byval value as gint) as GtkRadioAction ptr
 declare function gtk_radio_action_get_group(byval action as GtkRadioAction ptr) as GSList ptr
 declare sub gtk_radio_action_set_group(byval action as GtkRadioAction ptr, byval group as GSList ptr)
 declare function gtk_radio_action_get_current_value(byval action as GtkRadioAction ptr) as gint
@@ -8869,10 +8869,10 @@ end type
 declare function gtk_radio_button_get_type() as GType
 declare function gtk_radio_button_new(byval group as GSList ptr) as GtkWidget ptr
 declare function gtk_radio_button_new_from_widget(byval radio_group_member as GtkRadioButton ptr) as GtkWidget ptr
-declare function gtk_radio_button_new_with_label(byval group as GSList ptr, byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_radio_button_new_with_label_from_widget(byval radio_group_member as GtkRadioButton ptr, byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_radio_button_new_with_mnemonic(byval group as GSList ptr, byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_radio_button_new_with_mnemonic_from_widget(byval radio_group_member as GtkRadioButton ptr, byval label as const zstring ptr) as GtkWidget ptr
+declare function gtk_radio_button_new_with_label(byval group as GSList ptr, byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_radio_button_new_with_label_from_widget(byval radio_group_member as GtkRadioButton ptr, byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_radio_button_new_with_mnemonic(byval group as GSList ptr, byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_radio_button_new_with_mnemonic_from_widget(byval radio_group_member as GtkRadioButton ptr, byval label as const gchar ptr) as GtkWidget ptr
 declare function gtk_radio_button_get_group(byval radio_button as GtkRadioButton ptr) as GSList ptr
 declare sub gtk_radio_button_set_group(byval radio_button as GtkRadioButton ptr, byval group as GSList ptr)
 declare function gtk_radio_button_group alias "gtk_radio_button_get_group"(byval radio_button as GtkRadioButton ptr) as GSList ptr
@@ -8902,11 +8902,11 @@ end type
 
 declare function gtk_radio_menu_item_get_type() as GType
 declare function gtk_radio_menu_item_new(byval group as GSList ptr) as GtkWidget ptr
-declare function gtk_radio_menu_item_new_with_label(byval group as GSList ptr, byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_radio_menu_item_new_with_mnemonic(byval group as GSList ptr, byval label as const zstring ptr) as GtkWidget ptr
+declare function gtk_radio_menu_item_new_with_label(byval group as GSList ptr, byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_radio_menu_item_new_with_mnemonic(byval group as GSList ptr, byval label as const gchar ptr) as GtkWidget ptr
 declare function gtk_radio_menu_item_new_from_widget(byval group as GtkRadioMenuItem ptr) as GtkWidget ptr
-declare function gtk_radio_menu_item_new_with_mnemonic_from_widget(byval group as GtkRadioMenuItem ptr, byval label as const zstring ptr) as GtkWidget ptr
-declare function gtk_radio_menu_item_new_with_label_from_widget(byval group as GtkRadioMenuItem ptr, byval label as const zstring ptr) as GtkWidget ptr
+declare function gtk_radio_menu_item_new_with_mnemonic_from_widget(byval group as GtkRadioMenuItem ptr, byval label as const gchar ptr) as GtkWidget ptr
+declare function gtk_radio_menu_item_new_with_label_from_widget(byval group as GtkRadioMenuItem ptr, byval label as const gchar ptr) as GtkWidget ptr
 declare function gtk_radio_menu_item_get_group(byval radio_menu_item as GtkRadioMenuItem ptr) as GSList ptr
 declare sub gtk_radio_menu_item_set_group(byval radio_menu_item as GtkRadioMenuItem ptr, byval group as GSList ptr)
 declare function gtk_radio_menu_item_group alias "gtk_radio_menu_item_get_group"(byval radio_menu_item as GtkRadioMenuItem ptr) as GSList ptr
@@ -8940,7 +8940,7 @@ end type
 
 declare function gtk_toggle_tool_button_get_type() as GType
 declare function gtk_toggle_tool_button_new() as GtkToolItem ptr
-declare function gtk_toggle_tool_button_new_from_stock(byval stock_id as const zstring ptr) as GtkToolItem ptr
+declare function gtk_toggle_tool_button_new_from_stock(byval stock_id as const gchar ptr) as GtkToolItem ptr
 declare sub gtk_toggle_tool_button_set_active(byval button as GtkToggleToolButton ptr, byval is_active as gboolean)
 declare function gtk_toggle_tool_button_get_active(byval button as GtkToggleToolButton ptr) as gboolean
 
@@ -8967,9 +8967,9 @@ end type
 
 declare function gtk_radio_tool_button_get_type() as GType
 declare function gtk_radio_tool_button_new(byval group as GSList ptr) as GtkToolItem ptr
-declare function gtk_radio_tool_button_new_from_stock(byval group as GSList ptr, byval stock_id as const zstring ptr) as GtkToolItem ptr
+declare function gtk_radio_tool_button_new_from_stock(byval group as GSList ptr, byval stock_id as const gchar ptr) as GtkToolItem ptr
 declare function gtk_radio_tool_button_new_from_widget(byval group as GtkRadioToolButton ptr) as GtkToolItem ptr
-declare function gtk_radio_tool_button_new_with_stock_from_widget(byval group as GtkRadioToolButton ptr, byval stock_id as const zstring ptr) as GtkToolItem ptr
+declare function gtk_radio_tool_button_new_with_stock_from_widget(byval group as GtkRadioToolButton ptr, byval stock_id as const gchar ptr) as GtkToolItem ptr
 declare function gtk_radio_tool_button_get_group(byval button as GtkRadioToolButton ptr) as GSList ptr
 declare sub gtk_radio_tool_button_set_group(byval button as GtkRadioToolButton ptr, byval group as GSList ptr)
 
@@ -8990,12 +8990,12 @@ type GtkRecentManagerClass as _GtkRecentManagerClass
 type GtkRecentManagerPrivate as _GtkRecentManagerPrivate
 
 type _GtkRecentData
-	display_name as zstring ptr
-	description as zstring ptr
-	mime_type as zstring ptr
-	app_name as zstring ptr
-	app_exec as zstring ptr
-	groups as zstring ptr ptr
+	display_name as gchar ptr
+	description as gchar ptr
+	mime_type as gchar ptr
+	app_name as gchar ptr
+	app_exec as gchar ptr
+	groups as gchar ptr ptr
 	is_private as gboolean
 end type
 
@@ -9031,12 +9031,12 @@ declare function gtk_recent_manager_new() as GtkRecentManager ptr
 declare function gtk_recent_manager_get_default() as GtkRecentManager ptr
 declare function gtk_recent_manager_get_for_screen(byval screen as GdkScreen ptr) as GtkRecentManager ptr
 declare sub gtk_recent_manager_set_screen(byval manager as GtkRecentManager ptr, byval screen as GdkScreen ptr)
-declare function gtk_recent_manager_add_item(byval manager as GtkRecentManager ptr, byval uri as const zstring ptr) as gboolean
-declare function gtk_recent_manager_add_full(byval manager as GtkRecentManager ptr, byval uri as const zstring ptr, byval recent_data as const GtkRecentData ptr) as gboolean
-declare function gtk_recent_manager_remove_item(byval manager as GtkRecentManager ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function gtk_recent_manager_lookup_item(byval manager as GtkRecentManager ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as GtkRecentInfo ptr
-declare function gtk_recent_manager_has_item(byval manager as GtkRecentManager ptr, byval uri as const zstring ptr) as gboolean
-declare function gtk_recent_manager_move_item(byval manager as GtkRecentManager ptr, byval uri as const zstring ptr, byval new_uri as const zstring ptr, byval error as GError ptr ptr) as gboolean
+declare function gtk_recent_manager_add_item(byval manager as GtkRecentManager ptr, byval uri as const gchar ptr) as gboolean
+declare function gtk_recent_manager_add_full(byval manager as GtkRecentManager ptr, byval uri as const gchar ptr, byval recent_data as const GtkRecentData ptr) as gboolean
+declare function gtk_recent_manager_remove_item(byval manager as GtkRecentManager ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function gtk_recent_manager_lookup_item(byval manager as GtkRecentManager ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as GtkRecentInfo ptr
+declare function gtk_recent_manager_has_item(byval manager as GtkRecentManager ptr, byval uri as const gchar ptr) as gboolean
+declare function gtk_recent_manager_move_item(byval manager as GtkRecentManager ptr, byval uri as const gchar ptr, byval new_uri as const gchar ptr, byval error as GError ptr ptr) as gboolean
 declare sub gtk_recent_manager_set_limit(byval manager as GtkRecentManager ptr, byval limit as gint)
 declare function gtk_recent_manager_get_limit(byval manager as GtkRecentManager ptr) as gint
 declare function gtk_recent_manager_get_items(byval manager as GtkRecentManager ptr) as GList ptr
@@ -9044,23 +9044,23 @@ declare function gtk_recent_manager_purge_items(byval manager as GtkRecentManage
 declare function gtk_recent_info_get_type() as GType
 declare function gtk_recent_info_ref(byval info as GtkRecentInfo ptr) as GtkRecentInfo ptr
 declare sub gtk_recent_info_unref(byval info as GtkRecentInfo ptr)
-declare function gtk_recent_info_get_uri(byval info as GtkRecentInfo ptr) as const zstring ptr
-declare function gtk_recent_info_get_display_name(byval info as GtkRecentInfo ptr) as const zstring ptr
-declare function gtk_recent_info_get_description(byval info as GtkRecentInfo ptr) as const zstring ptr
-declare function gtk_recent_info_get_mime_type(byval info as GtkRecentInfo ptr) as const zstring ptr
+declare function gtk_recent_info_get_uri(byval info as GtkRecentInfo ptr) as const gchar ptr
+declare function gtk_recent_info_get_display_name(byval info as GtkRecentInfo ptr) as const gchar ptr
+declare function gtk_recent_info_get_description(byval info as GtkRecentInfo ptr) as const gchar ptr
+declare function gtk_recent_info_get_mime_type(byval info as GtkRecentInfo ptr) as const gchar ptr
 declare function gtk_recent_info_get_added(byval info as GtkRecentInfo ptr) as time_t
 declare function gtk_recent_info_get_modified(byval info as GtkRecentInfo ptr) as time_t
 declare function gtk_recent_info_get_visited(byval info as GtkRecentInfo ptr) as time_t
 declare function gtk_recent_info_get_private_hint(byval info as GtkRecentInfo ptr) as gboolean
-declare function gtk_recent_info_get_application_info(byval info as GtkRecentInfo ptr, byval app_name as const zstring ptr, byval app_exec as const zstring ptr ptr, byval count as guint ptr, byval time_ as time_t ptr) as gboolean
-declare function gtk_recent_info_get_applications(byval info as GtkRecentInfo ptr, byval length as gsize ptr) as zstring ptr ptr
-declare function gtk_recent_info_last_application(byval info as GtkRecentInfo ptr) as zstring ptr
-declare function gtk_recent_info_has_application(byval info as GtkRecentInfo ptr, byval app_name as const zstring ptr) as gboolean
-declare function gtk_recent_info_get_groups(byval info as GtkRecentInfo ptr, byval length as gsize ptr) as zstring ptr ptr
-declare function gtk_recent_info_has_group(byval info as GtkRecentInfo ptr, byval group_name as const zstring ptr) as gboolean
+declare function gtk_recent_info_get_application_info(byval info as GtkRecentInfo ptr, byval app_name as const gchar ptr, byval app_exec as const gchar ptr ptr, byval count as guint ptr, byval time_ as time_t ptr) as gboolean
+declare function gtk_recent_info_get_applications(byval info as GtkRecentInfo ptr, byval length as gsize ptr) as gchar ptr ptr
+declare function gtk_recent_info_last_application(byval info as GtkRecentInfo ptr) as gchar ptr
+declare function gtk_recent_info_has_application(byval info as GtkRecentInfo ptr, byval app_name as const gchar ptr) as gboolean
+declare function gtk_recent_info_get_groups(byval info as GtkRecentInfo ptr, byval length as gsize ptr) as gchar ptr ptr
+declare function gtk_recent_info_has_group(byval info as GtkRecentInfo ptr, byval group_name as const gchar ptr) as gboolean
 declare function gtk_recent_info_get_icon(byval info as GtkRecentInfo ptr, byval size as gint) as GdkPixbuf ptr
-declare function gtk_recent_info_get_short_name(byval info as GtkRecentInfo ptr) as zstring ptr
-declare function gtk_recent_info_get_uri_display(byval info as GtkRecentInfo ptr) as zstring ptr
+declare function gtk_recent_info_get_short_name(byval info as GtkRecentInfo ptr) as gchar ptr
+declare function gtk_recent_info_get_uri_display(byval info as GtkRecentInfo ptr) as gchar ptr
 declare function gtk_recent_info_get_age(byval info as GtkRecentInfo ptr) as gint
 declare function gtk_recent_info_is_local(byval info as GtkRecentInfo ptr) as gboolean
 declare function gtk_recent_info_exists(byval info as GtkRecentInfo ptr) as gboolean
@@ -9088,8 +9088,8 @@ type _GtkRecentActionClass
 end type
 
 declare function gtk_recent_action_get_type() as GType
-declare function gtk_recent_action_new(byval name as const zstring ptr, byval label as const zstring ptr, byval tooltip as const zstring ptr, byval stock_id as const zstring ptr) as GtkAction ptr
-declare function gtk_recent_action_new_for_manager(byval name as const zstring ptr, byval label as const zstring ptr, byval tooltip as const zstring ptr, byval stock_id as const zstring ptr, byval manager as GtkRecentManager ptr) as GtkAction ptr
+declare function gtk_recent_action_new(byval name as const gchar ptr, byval label as const gchar ptr, byval tooltip as const gchar ptr, byval stock_id as const gchar ptr) as GtkAction ptr
+declare function gtk_recent_action_new_for_manager(byval name as const gchar ptr, byval label as const gchar ptr, byval tooltip as const gchar ptr, byval stock_id as const gchar ptr, byval manager as GtkRecentManager ptr) as GtkAction ptr
 declare function gtk_recent_action_get_show_numbers(byval action as GtkRecentAction ptr) as gboolean
 declare sub gtk_recent_action_set_show_numbers(byval action as GtkRecentAction ptr, byval show_numbers as gboolean)
 
@@ -9115,23 +9115,23 @@ type GtkRecentFilterFunc as function(byval filter_info as const GtkRecentFilterI
 
 type _GtkRecentFilterInfo
 	contains as GtkRecentFilterFlags
-	uri as const zstring ptr
-	display_name as const zstring ptr
-	mime_type as const zstring ptr
-	applications as const zstring ptr ptr
-	groups as const zstring ptr ptr
+	uri as const gchar ptr
+	display_name as const gchar ptr
+	mime_type as const gchar ptr
+	applications as const gchar ptr ptr
+	groups as const gchar ptr ptr
 	age as gint
 end type
 
 declare function gtk_recent_filter_get_type() as GType
 declare function gtk_recent_filter_new() as GtkRecentFilter ptr
-declare sub gtk_recent_filter_set_name(byval filter as GtkRecentFilter ptr, byval name as const zstring ptr)
-declare function gtk_recent_filter_get_name(byval filter as GtkRecentFilter ptr) as const zstring ptr
-declare sub gtk_recent_filter_add_mime_type(byval filter as GtkRecentFilter ptr, byval mime_type as const zstring ptr)
-declare sub gtk_recent_filter_add_pattern(byval filter as GtkRecentFilter ptr, byval pattern as const zstring ptr)
+declare sub gtk_recent_filter_set_name(byval filter as GtkRecentFilter ptr, byval name as const gchar ptr)
+declare function gtk_recent_filter_get_name(byval filter as GtkRecentFilter ptr) as const gchar ptr
+declare sub gtk_recent_filter_add_mime_type(byval filter as GtkRecentFilter ptr, byval mime_type as const gchar ptr)
+declare sub gtk_recent_filter_add_pattern(byval filter as GtkRecentFilter ptr, byval pattern as const gchar ptr)
 declare sub gtk_recent_filter_add_pixbuf_formats(byval filter as GtkRecentFilter ptr)
-declare sub gtk_recent_filter_add_application(byval filter as GtkRecentFilter ptr, byval application as const zstring ptr)
-declare sub gtk_recent_filter_add_group(byval filter as GtkRecentFilter ptr, byval group as const zstring ptr)
+declare sub gtk_recent_filter_add_application(byval filter as GtkRecentFilter ptr, byval application as const gchar ptr)
+declare sub gtk_recent_filter_add_group(byval filter as GtkRecentFilter ptr, byval group as const gchar ptr)
 declare sub gtk_recent_filter_add_age(byval filter as GtkRecentFilter ptr, byval days as gint)
 declare sub gtk_recent_filter_add_custom(byval filter as GtkRecentFilter ptr, byval needed as GtkRecentFilterFlags, byval func as GtkRecentFilterFunc, byval data as gpointer, byval data_destroy as GDestroyNotify)
 declare function gtk_recent_filter_get_needed(byval filter as GtkRecentFilter ptr) as GtkRecentFilterFlags
@@ -9165,10 +9165,10 @@ declare function gtk_recent_chooser_error_quark() as GQuark
 
 type _GtkRecentChooserIface
 	base_iface as GTypeInterface
-	set_current_uri as function(byval chooser as GtkRecentChooser ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as gboolean
-	get_current_uri as function(byval chooser as GtkRecentChooser ptr) as zstring ptr
-	select_uri as function(byval chooser as GtkRecentChooser ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as gboolean
-	unselect_uri as sub(byval chooser as GtkRecentChooser ptr, byval uri as const zstring ptr)
+	set_current_uri as function(byval chooser as GtkRecentChooser ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as gboolean
+	get_current_uri as function(byval chooser as GtkRecentChooser ptr) as gchar ptr
+	select_uri as function(byval chooser as GtkRecentChooser ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as gboolean
+	unselect_uri as sub(byval chooser as GtkRecentChooser ptr, byval uri as const gchar ptr)
 	select_all as sub(byval chooser as GtkRecentChooser ptr)
 	unselect_all as sub(byval chooser as GtkRecentChooser ptr)
 	get_items as function(byval chooser as GtkRecentChooser ptr) as GList ptr
@@ -9201,15 +9201,15 @@ declare function gtk_recent_chooser_get_show_icons(byval chooser as GtkRecentCho
 declare sub gtk_recent_chooser_set_sort_type(byval chooser as GtkRecentChooser ptr, byval sort_type as GtkRecentSortType)
 declare function gtk_recent_chooser_get_sort_type(byval chooser as GtkRecentChooser ptr) as GtkRecentSortType
 declare sub gtk_recent_chooser_set_sort_func(byval chooser as GtkRecentChooser ptr, byval sort_func as GtkRecentSortFunc, byval sort_data as gpointer, byval data_destroy as GDestroyNotify)
-declare function gtk_recent_chooser_set_current_uri(byval chooser as GtkRecentChooser ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function gtk_recent_chooser_get_current_uri(byval chooser as GtkRecentChooser ptr) as zstring ptr
+declare function gtk_recent_chooser_set_current_uri(byval chooser as GtkRecentChooser ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function gtk_recent_chooser_get_current_uri(byval chooser as GtkRecentChooser ptr) as gchar ptr
 declare function gtk_recent_chooser_get_current_item(byval chooser as GtkRecentChooser ptr) as GtkRecentInfo ptr
-declare function gtk_recent_chooser_select_uri(byval chooser as GtkRecentChooser ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare sub gtk_recent_chooser_unselect_uri(byval chooser as GtkRecentChooser ptr, byval uri as const zstring ptr)
+declare function gtk_recent_chooser_select_uri(byval chooser as GtkRecentChooser ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare sub gtk_recent_chooser_unselect_uri(byval chooser as GtkRecentChooser ptr, byval uri as const gchar ptr)
 declare sub gtk_recent_chooser_select_all(byval chooser as GtkRecentChooser ptr)
 declare sub gtk_recent_chooser_unselect_all(byval chooser as GtkRecentChooser ptr)
 declare function gtk_recent_chooser_get_items(byval chooser as GtkRecentChooser ptr) as GList ptr
-declare function gtk_recent_chooser_get_uris(byval chooser as GtkRecentChooser ptr, byval length as gsize ptr) as zstring ptr ptr
+declare function gtk_recent_chooser_get_uris(byval chooser as GtkRecentChooser ptr, byval length as gsize ptr) as gchar ptr ptr
 declare sub gtk_recent_chooser_add_filter(byval chooser as GtkRecentChooser ptr, byval filter as GtkRecentFilter ptr)
 declare sub gtk_recent_chooser_remove_filter(byval chooser as GtkRecentChooser ptr, byval filter as GtkRecentFilter ptr)
 declare function gtk_recent_chooser_list_filters(byval chooser as GtkRecentChooser ptr) as GSList ptr
@@ -9238,8 +9238,8 @@ type _GtkRecentChooserDialogClass
 end type
 
 declare function gtk_recent_chooser_dialog_get_type() as GType
-declare function gtk_recent_chooser_dialog_new(byval title as const zstring ptr, byval parent as GtkWindow ptr, byval first_button_text as const zstring ptr, ...) as GtkWidget ptr
-declare function gtk_recent_chooser_dialog_new_for_manager(byval title as const zstring ptr, byval parent as GtkWindow ptr, byval manager as GtkRecentManager ptr, byval first_button_text as const zstring ptr, ...) as GtkWidget ptr
+declare function gtk_recent_chooser_dialog_new(byval title as const gchar ptr, byval parent as GtkWindow ptr, byval first_button_text as const gchar ptr, ...) as GtkWidget ptr
+declare function gtk_recent_chooser_dialog_new_for_manager(byval title as const gchar ptr, byval parent as GtkWindow ptr, byval manager as GtkRecentManager ptr, byval first_button_text as const gchar ptr, ...) as GtkWidget ptr
 
 #define __GTK_RECENT_CHOOSER_MENU_H__
 #define GTK_TYPE_RECENT_CHOOSER_MENU gtk_recent_chooser_menu_get_type()
@@ -9326,8 +9326,8 @@ type _GtkScaleButtonClass
 end type
 
 declare function gtk_scale_button_get_type() as GType
-declare function gtk_scale_button_new(byval size as GtkIconSize, byval min as gdouble, byval max as gdouble, byval step as gdouble, byval icons as const zstring ptr ptr) as GtkWidget ptr
-declare sub gtk_scale_button_set_icons(byval button as GtkScaleButton ptr, byval icons as const zstring ptr ptr)
+declare function gtk_scale_button_new(byval size as GtkIconSize, byval min as gdouble, byval max as gdouble, byval step as gdouble, byval icons as const gchar ptr ptr) as GtkWidget ptr
+declare sub gtk_scale_button_set_icons(byval button as GtkScaleButton ptr, byval icons as const gchar ptr ptr)
 declare function gtk_scale_button_get_value(byval button as GtkScaleButton ptr) as gdouble
 declare sub gtk_scale_button_set_value(byval button as GtkScaleButton ptr, byval value as gdouble)
 declare function gtk_scale_button_get_adjustment(byval button as GtkScaleButton ptr) as GtkAdjustment ptr
@@ -9495,7 +9495,7 @@ declare function gtk_separator_tool_item_new() as GtkToolItem ptr
 declare function gtk_separator_tool_item_get_draw(byval item as GtkSeparatorToolItem ptr) as gboolean
 declare sub gtk_separator_tool_item_set_draw(byval item as GtkSeparatorToolItem ptr, byval draw as gboolean)
 #define __GTK_SHOW_H__
-declare function gtk_show_uri(byval screen as GdkScreen ptr, byval uri as const zstring ptr, byval timestamp as guint32, byval error as GError ptr ptr) as gboolean
+declare function gtk_show_uri(byval screen as GdkScreen ptr, byval uri as const gchar ptr, byval timestamp as guint32, byval error as GError ptr ptr) as gboolean
 
 #define __GTK_SPIN_BUTTON_H__
 #define GTK_TYPE_SPIN_BUTTON gtk_spin_button_get_type()
@@ -9635,8 +9635,8 @@ end type
 type _GtkStatusbarClass
 	parent_class as GtkHBoxClass
 	reserved as gpointer
-	text_pushed as sub(byval statusbar as GtkStatusbar ptr, byval context_id as guint, byval text as const zstring ptr)
-	text_popped as sub(byval statusbar as GtkStatusbar ptr, byval context_id as guint, byval text as const zstring ptr)
+	text_pushed as sub(byval statusbar as GtkStatusbar ptr, byval context_id as guint, byval text as const gchar ptr)
+	text_popped as sub(byval statusbar as GtkStatusbar ptr, byval context_id as guint, byval text as const gchar ptr)
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 	_gtk_reserved3 as sub()
@@ -9645,8 +9645,8 @@ end type
 
 declare function gtk_statusbar_get_type() as GType
 declare function gtk_statusbar_new() as GtkWidget ptr
-declare function gtk_statusbar_get_context_id(byval statusbar as GtkStatusbar ptr, byval context_description as const zstring ptr) as guint
-declare function gtk_statusbar_push(byval statusbar as GtkStatusbar ptr, byval context_id as guint, byval text as const zstring ptr) as guint
+declare function gtk_statusbar_get_context_id(byval statusbar as GtkStatusbar ptr, byval context_description as const gchar ptr) as guint
+declare function gtk_statusbar_push(byval statusbar as GtkStatusbar ptr, byval context_id as guint, byval text as const gchar ptr) as guint
 declare sub gtk_statusbar_pop(byval statusbar as GtkStatusbar ptr, byval context_id as guint)
 declare sub gtk_statusbar_remove(byval statusbar as GtkStatusbar ptr, byval context_id as guint, byval message_id as guint)
 declare sub gtk_statusbar_remove_all(byval statusbar as GtkStatusbar ptr, byval context_id as guint)
@@ -9687,30 +9687,30 @@ end type
 declare function gtk_status_icon_get_type() as GType
 declare function gtk_status_icon_new() as GtkStatusIcon ptr
 declare function gtk_status_icon_new_from_pixbuf(byval pixbuf as GdkPixbuf ptr) as GtkStatusIcon ptr
-declare function gtk_status_icon_new_from_file(byval filename as const zstring ptr) as GtkStatusIcon ptr
-declare function gtk_status_icon_new_from_stock(byval stock_id as const zstring ptr) as GtkStatusIcon ptr
-declare function gtk_status_icon_new_from_icon_name(byval icon_name as const zstring ptr) as GtkStatusIcon ptr
+declare function gtk_status_icon_new_from_file(byval filename as const gchar ptr) as GtkStatusIcon ptr
+declare function gtk_status_icon_new_from_stock(byval stock_id as const gchar ptr) as GtkStatusIcon ptr
+declare function gtk_status_icon_new_from_icon_name(byval icon_name as const gchar ptr) as GtkStatusIcon ptr
 declare function gtk_status_icon_new_from_gicon(byval icon as GIcon ptr) as GtkStatusIcon ptr
 declare sub gtk_status_icon_set_from_pixbuf(byval status_icon as GtkStatusIcon ptr, byval pixbuf as GdkPixbuf ptr)
-declare sub gtk_status_icon_set_from_file(byval status_icon as GtkStatusIcon ptr, byval filename as const zstring ptr)
-declare sub gtk_status_icon_set_from_stock(byval status_icon as GtkStatusIcon ptr, byval stock_id as const zstring ptr)
-declare sub gtk_status_icon_set_from_icon_name(byval status_icon as GtkStatusIcon ptr, byval icon_name as const zstring ptr)
+declare sub gtk_status_icon_set_from_file(byval status_icon as GtkStatusIcon ptr, byval filename as const gchar ptr)
+declare sub gtk_status_icon_set_from_stock(byval status_icon as GtkStatusIcon ptr, byval stock_id as const gchar ptr)
+declare sub gtk_status_icon_set_from_icon_name(byval status_icon as GtkStatusIcon ptr, byval icon_name as const gchar ptr)
 declare sub gtk_status_icon_set_from_gicon(byval status_icon as GtkStatusIcon ptr, byval icon as GIcon ptr)
 declare function gtk_status_icon_get_storage_type(byval status_icon as GtkStatusIcon ptr) as GtkImageType
 declare function gtk_status_icon_get_pixbuf(byval status_icon as GtkStatusIcon ptr) as GdkPixbuf ptr
-declare function gtk_status_icon_get_stock(byval status_icon as GtkStatusIcon ptr) as const zstring ptr
-declare function gtk_status_icon_get_icon_name(byval status_icon as GtkStatusIcon ptr) as const zstring ptr
+declare function gtk_status_icon_get_stock(byval status_icon as GtkStatusIcon ptr) as const gchar ptr
+declare function gtk_status_icon_get_icon_name(byval status_icon as GtkStatusIcon ptr) as const gchar ptr
 declare function gtk_status_icon_get_gicon(byval status_icon as GtkStatusIcon ptr) as GIcon ptr
 declare function gtk_status_icon_get_size(byval status_icon as GtkStatusIcon ptr) as gint
 declare sub gtk_status_icon_set_screen(byval status_icon as GtkStatusIcon ptr, byval screen as GdkScreen ptr)
 declare function gtk_status_icon_get_screen(byval status_icon as GtkStatusIcon ptr) as GdkScreen ptr
-declare sub gtk_status_icon_set_tooltip(byval status_icon as GtkStatusIcon ptr, byval tooltip_text as const zstring ptr)
+declare sub gtk_status_icon_set_tooltip(byval status_icon as GtkStatusIcon ptr, byval tooltip_text as const gchar ptr)
 declare sub gtk_status_icon_set_has_tooltip(byval status_icon as GtkStatusIcon ptr, byval has_tooltip as gboolean)
-declare sub gtk_status_icon_set_tooltip_text(byval status_icon as GtkStatusIcon ptr, byval text as const zstring ptr)
-declare sub gtk_status_icon_set_tooltip_markup(byval status_icon as GtkStatusIcon ptr, byval markup as const zstring ptr)
-declare sub gtk_status_icon_set_title(byval status_icon as GtkStatusIcon ptr, byval title as const zstring ptr)
-declare function gtk_status_icon_get_title(byval status_icon as GtkStatusIcon ptr) as const zstring ptr
-declare sub gtk_status_icon_set_name(byval status_icon as GtkStatusIcon ptr, byval name as const zstring ptr)
+declare sub gtk_status_icon_set_tooltip_text(byval status_icon as GtkStatusIcon ptr, byval text as const gchar ptr)
+declare sub gtk_status_icon_set_tooltip_markup(byval status_icon as GtkStatusIcon ptr, byval markup as const gchar ptr)
+declare sub gtk_status_icon_set_title(byval status_icon as GtkStatusIcon ptr, byval title as const gchar ptr)
+declare function gtk_status_icon_get_title(byval status_icon as GtkStatusIcon ptr) as const gchar ptr
+declare sub gtk_status_icon_set_name(byval status_icon as GtkStatusIcon ptr, byval name as const gchar ptr)
 declare sub gtk_status_icon_set_visible(byval status_icon as GtkStatusIcon ptr, byval visible as gboolean)
 declare function gtk_status_icon_get_visible(byval status_icon as GtkStatusIcon ptr) as gboolean
 declare sub gtk_status_icon_set_blinking(byval status_icon as GtkStatusIcon ptr, byval blinking as gboolean)
@@ -9719,27 +9719,27 @@ declare function gtk_status_icon_is_embedded(byval status_icon as GtkStatusIcon 
 declare sub gtk_status_icon_position_menu(byval menu as GtkMenu ptr, byval x as gint ptr, byval y as gint ptr, byval push_in as gboolean ptr, byval user_data as gpointer)
 declare function gtk_status_icon_get_geometry(byval status_icon as GtkStatusIcon ptr, byval screen as GdkScreen ptr ptr, byval area as GdkRectangle ptr, byval orientation as GtkOrientation ptr) as gboolean
 declare function gtk_status_icon_get_has_tooltip(byval status_icon as GtkStatusIcon ptr) as gboolean
-declare function gtk_status_icon_get_tooltip_text(byval status_icon as GtkStatusIcon ptr) as zstring ptr
-declare function gtk_status_icon_get_tooltip_markup(byval status_icon as GtkStatusIcon ptr) as zstring ptr
+declare function gtk_status_icon_get_tooltip_text(byval status_icon as GtkStatusIcon ptr) as gchar ptr
+declare function gtk_status_icon_get_tooltip_markup(byval status_icon as GtkStatusIcon ptr) as gchar ptr
 declare function gtk_status_icon_get_x11_window_id(byval status_icon as GtkStatusIcon ptr) as guint32
 #define __GTK_STOCK_H__
 type GtkStockItem as _GtkStockItem
 
 type _GtkStockItem
-	stock_id as zstring ptr
-	label as zstring ptr
+	stock_id as gchar ptr
+	label as gchar ptr
 	modifier as GdkModifierType
 	keyval as guint
-	translation_domain as zstring ptr
+	translation_domain as gchar ptr
 end type
 
 declare sub gtk_stock_add_ alias "gtk_stock_add"(byval items as const GtkStockItem ptr, byval n_items as guint)
 declare sub gtk_stock_add_static(byval items as const GtkStockItem ptr, byval n_items as guint)
-declare function gtk_stock_lookup(byval stock_id as const zstring ptr, byval item as GtkStockItem ptr) as gboolean
+declare function gtk_stock_lookup(byval stock_id as const gchar ptr, byval item as GtkStockItem ptr) as gboolean
 declare function gtk_stock_list_ids() as GSList ptr
 declare function gtk_stock_item_copy(byval item as const GtkStockItem ptr) as GtkStockItem ptr
 declare sub gtk_stock_item_free(byval item as GtkStockItem ptr)
-declare sub gtk_stock_set_translate_func(byval domain as const zstring ptr, byval func as GtkTranslateFunc, byval data as gpointer, byval notify as GDestroyNotify)
+declare sub gtk_stock_set_translate_func(byval domain as const gchar ptr, byval func as GtkTranslateFunc, byval data as gpointer, byval notify as GDestroyNotify)
 
 #define GTK_STOCK_ABOUT "gtk-about"
 #define GTK_STOCK_ADD "gtk-add"
@@ -9978,7 +9978,7 @@ declare function gtk_text_tag_table_get_type() as GType
 declare function gtk_text_tag_table_new() as GtkTextTagTable ptr
 declare sub gtk_text_tag_table_add(byval table as GtkTextTagTable ptr, byval tag as GtkTextTag ptr)
 declare sub gtk_text_tag_table_remove(byval table as GtkTextTagTable ptr, byval tag as GtkTextTag ptr)
-declare function gtk_text_tag_table_lookup(byval table as GtkTextTagTable ptr, byval name as const zstring ptr) as GtkTextTag ptr
+declare function gtk_text_tag_table_lookup(byval table as GtkTextTagTable ptr, byval name as const gchar ptr) as GtkTextTag ptr
 declare sub gtk_text_tag_table_foreach(byval table as GtkTextTagTable ptr, byval func as GtkTextTagTableForeach, byval data as gpointer)
 declare function gtk_text_tag_table_get_size(byval table as GtkTextTagTable ptr) as gint
 declare sub _gtk_text_tag_table_add_buffer(byval table as GtkTextTagTable ptr, byval buffer as gpointer)
@@ -10010,8 +10010,8 @@ end type
 declare function gtk_text_mark_get_type() as GType
 declare sub gtk_text_mark_set_visible(byval mark as GtkTextMark ptr, byval setting as gboolean)
 declare function gtk_text_mark_get_visible(byval mark as GtkTextMark ptr) as gboolean
-declare function gtk_text_mark_new(byval name as const zstring ptr, byval left_gravity as gboolean) as GtkTextMark ptr
-declare function gtk_text_mark_get_name(byval mark as GtkTextMark ptr) as const zstring ptr
+declare function gtk_text_mark_new(byval name as const gchar ptr, byval left_gravity as gboolean) as GtkTextMark ptr
+declare function gtk_text_mark_get_name(byval mark as GtkTextMark ptr) as const gchar ptr
 declare function gtk_text_mark_get_deleted(byval mark as GtkTextMark ptr) as gboolean
 declare function gtk_text_mark_get_buffer(byval mark as GtkTextMark ptr) as GtkTextBuffer ptr
 declare function gtk_text_mark_get_left_gravity(byval mark as GtkTextMark ptr) as gboolean
@@ -10047,7 +10047,7 @@ end type
 
 type _GtkTextBufferClass
 	parent_class as GObjectClass
-	insert_text as sub(byval buffer as GtkTextBuffer ptr, byval pos as GtkTextIter ptr, byval text as const zstring ptr, byval length as gint)
+	insert_text as sub(byval buffer as GtkTextBuffer ptr, byval pos as GtkTextIter ptr, byval text as const gchar ptr, byval length as gint)
 	insert_pixbuf as sub(byval buffer as GtkTextBuffer ptr, byval pos as GtkTextIter ptr, byval pixbuf as GdkPixbuf ptr)
 	insert_child_anchor as sub(byval buffer as GtkTextBuffer ptr, byval pos as GtkTextIter ptr, byval anchor as GtkTextChildAnchor ptr)
 	delete_range as sub(byval buffer as GtkTextBuffer ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr)
@@ -10072,40 +10072,40 @@ declare function gtk_text_buffer_new(byval table as GtkTextTagTable ptr) as GtkT
 declare function gtk_text_buffer_get_line_count(byval buffer as GtkTextBuffer ptr) as gint
 declare function gtk_text_buffer_get_char_count(byval buffer as GtkTextBuffer ptr) as gint
 declare function gtk_text_buffer_get_tag_table(byval buffer as GtkTextBuffer ptr) as GtkTextTagTable ptr
-declare sub gtk_text_buffer_set_text(byval buffer as GtkTextBuffer ptr, byval text as const zstring ptr, byval len as gint)
-declare sub gtk_text_buffer_insert(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as const zstring ptr, byval len as gint)
-declare sub gtk_text_buffer_insert_at_cursor(byval buffer as GtkTextBuffer ptr, byval text as const zstring ptr, byval len as gint)
-declare function gtk_text_buffer_insert_interactive(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as const zstring ptr, byval len as gint, byval default_editable as gboolean) as gboolean
-declare function gtk_text_buffer_insert_interactive_at_cursor(byval buffer as GtkTextBuffer ptr, byval text as const zstring ptr, byval len as gint, byval default_editable as gboolean) as gboolean
+declare sub gtk_text_buffer_set_text(byval buffer as GtkTextBuffer ptr, byval text as const gchar ptr, byval len as gint)
+declare sub gtk_text_buffer_insert(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as const gchar ptr, byval len as gint)
+declare sub gtk_text_buffer_insert_at_cursor(byval buffer as GtkTextBuffer ptr, byval text as const gchar ptr, byval len as gint)
+declare function gtk_text_buffer_insert_interactive(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as const gchar ptr, byval len as gint, byval default_editable as gboolean) as gboolean
+declare function gtk_text_buffer_insert_interactive_at_cursor(byval buffer as GtkTextBuffer ptr, byval text as const gchar ptr, byval len as gint, byval default_editable as gboolean) as gboolean
 declare sub gtk_text_buffer_insert_range(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr)
 declare function gtk_text_buffer_insert_range_interactive(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr, byval default_editable as gboolean) as gboolean
-declare sub gtk_text_buffer_insert_with_tags(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as const zstring ptr, byval len as gint, byval first_tag as GtkTextTag ptr, ...)
-declare sub gtk_text_buffer_insert_with_tags_by_name(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as const zstring ptr, byval len as gint, byval first_tag_name as const zstring ptr, ...)
+declare sub gtk_text_buffer_insert_with_tags(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as const gchar ptr, byval len as gint, byval first_tag as GtkTextTag ptr, ...)
+declare sub gtk_text_buffer_insert_with_tags_by_name(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as const gchar ptr, byval len as gint, byval first_tag_name as const gchar ptr, ...)
 declare sub gtk_text_buffer_delete(byval buffer as GtkTextBuffer ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr)
 declare function gtk_text_buffer_delete_interactive(byval buffer as GtkTextBuffer ptr, byval start_iter as GtkTextIter ptr, byval end_iter as GtkTextIter ptr, byval default_editable as gboolean) as gboolean
 declare function gtk_text_buffer_backspace(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval interactive as gboolean, byval default_editable as gboolean) as gboolean
-declare function gtk_text_buffer_get_text(byval buffer as GtkTextBuffer ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr, byval include_hidden_chars as gboolean) as zstring ptr
-declare function gtk_text_buffer_get_slice(byval buffer as GtkTextBuffer ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr, byval include_hidden_chars as gboolean) as zstring ptr
+declare function gtk_text_buffer_get_text(byval buffer as GtkTextBuffer ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr, byval include_hidden_chars as gboolean) as gchar ptr
+declare function gtk_text_buffer_get_slice(byval buffer as GtkTextBuffer ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr, byval include_hidden_chars as gboolean) as gchar ptr
 declare sub gtk_text_buffer_insert_pixbuf(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval pixbuf as GdkPixbuf ptr)
 declare sub gtk_text_buffer_insert_child_anchor(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval anchor as GtkTextChildAnchor ptr)
 declare function gtk_text_buffer_create_child_anchor(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr) as GtkTextChildAnchor ptr
 declare sub gtk_text_buffer_add_mark(byval buffer as GtkTextBuffer ptr, byval mark as GtkTextMark ptr, byval where as const GtkTextIter ptr)
-declare function gtk_text_buffer_create_mark(byval buffer as GtkTextBuffer ptr, byval mark_name as const zstring ptr, byval where as const GtkTextIter ptr, byval left_gravity as gboolean) as GtkTextMark ptr
+declare function gtk_text_buffer_create_mark(byval buffer as GtkTextBuffer ptr, byval mark_name as const gchar ptr, byval where as const GtkTextIter ptr, byval left_gravity as gboolean) as GtkTextMark ptr
 declare sub gtk_text_buffer_move_mark(byval buffer as GtkTextBuffer ptr, byval mark as GtkTextMark ptr, byval where as const GtkTextIter ptr)
 declare sub gtk_text_buffer_delete_mark(byval buffer as GtkTextBuffer ptr, byval mark as GtkTextMark ptr)
-declare function gtk_text_buffer_get_mark(byval buffer as GtkTextBuffer ptr, byval name as const zstring ptr) as GtkTextMark ptr
-declare sub gtk_text_buffer_move_mark_by_name(byval buffer as GtkTextBuffer ptr, byval name as const zstring ptr, byval where as const GtkTextIter ptr)
-declare sub gtk_text_buffer_delete_mark_by_name(byval buffer as GtkTextBuffer ptr, byval name as const zstring ptr)
+declare function gtk_text_buffer_get_mark(byval buffer as GtkTextBuffer ptr, byval name as const gchar ptr) as GtkTextMark ptr
+declare sub gtk_text_buffer_move_mark_by_name(byval buffer as GtkTextBuffer ptr, byval name as const gchar ptr, byval where as const GtkTextIter ptr)
+declare sub gtk_text_buffer_delete_mark_by_name(byval buffer as GtkTextBuffer ptr, byval name as const gchar ptr)
 declare function gtk_text_buffer_get_insert(byval buffer as GtkTextBuffer ptr) as GtkTextMark ptr
 declare function gtk_text_buffer_get_selection_bound(byval buffer as GtkTextBuffer ptr) as GtkTextMark ptr
 declare sub gtk_text_buffer_place_cursor(byval buffer as GtkTextBuffer ptr, byval where as const GtkTextIter ptr)
 declare sub gtk_text_buffer_select_range(byval buffer as GtkTextBuffer ptr, byval ins as const GtkTextIter ptr, byval bound as const GtkTextIter ptr)
 declare sub gtk_text_buffer_apply_tag(byval buffer as GtkTextBuffer ptr, byval tag as GtkTextTag ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr)
 declare sub gtk_text_buffer_remove_tag(byval buffer as GtkTextBuffer ptr, byval tag as GtkTextTag ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr)
-declare sub gtk_text_buffer_apply_tag_by_name(byval buffer as GtkTextBuffer ptr, byval name as const zstring ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr)
-declare sub gtk_text_buffer_remove_tag_by_name(byval buffer as GtkTextBuffer ptr, byval name as const zstring ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr)
+declare sub gtk_text_buffer_apply_tag_by_name(byval buffer as GtkTextBuffer ptr, byval name as const gchar ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr)
+declare sub gtk_text_buffer_remove_tag_by_name(byval buffer as GtkTextBuffer ptr, byval name as const gchar ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr)
 declare sub gtk_text_buffer_remove_all_tags(byval buffer as GtkTextBuffer ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr)
-declare function gtk_text_buffer_create_tag(byval buffer as GtkTextBuffer ptr, byval tag_name as const zstring ptr, byval first_property_name as const zstring ptr, ...) as GtkTextTag ptr
+declare function gtk_text_buffer_create_tag(byval buffer as GtkTextBuffer ptr, byval tag_name as const gchar ptr, byval first_property_name as const gchar ptr, ...) as GtkTextTag ptr
 declare sub gtk_text_buffer_get_iter_at_line_offset(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval line_number as gint, byval char_offset as gint)
 declare sub gtk_text_buffer_get_iter_at_line_index(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval line_number as gint, byval byte_index as gint)
 declare sub gtk_text_buffer_get_iter_at_offset(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval char_offset as gint)
@@ -10136,10 +10136,10 @@ declare sub _gtk_text_buffer_notify_will_remove_tag(byval buffer as GtkTextBuffe
 #define __GTK_TEXT_BUFFER_RICH_TEXT_H__
 type GtkTextBufferSerializeFunc as function(byval register_buffer as GtkTextBuffer ptr, byval content_buffer as GtkTextBuffer ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr, byval length as gsize ptr, byval user_data as gpointer) as guint8 ptr
 type GtkTextBufferDeserializeFunc as function(byval register_buffer as GtkTextBuffer ptr, byval content_buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval data as const guint8 ptr, byval length as gsize, byval create_tags as gboolean, byval user_data as gpointer, byval error as GError ptr ptr) as gboolean
-declare function gtk_text_buffer_register_serialize_format(byval buffer as GtkTextBuffer ptr, byval mime_type as const zstring ptr, byval function as GtkTextBufferSerializeFunc, byval user_data as gpointer, byval user_data_destroy as GDestroyNotify) as GdkAtom
-declare function gtk_text_buffer_register_serialize_tagset(byval buffer as GtkTextBuffer ptr, byval tagset_name as const zstring ptr) as GdkAtom
-declare function gtk_text_buffer_register_deserialize_format(byval buffer as GtkTextBuffer ptr, byval mime_type as const zstring ptr, byval function as GtkTextBufferDeserializeFunc, byval user_data as gpointer, byval user_data_destroy as GDestroyNotify) as GdkAtom
-declare function gtk_text_buffer_register_deserialize_tagset(byval buffer as GtkTextBuffer ptr, byval tagset_name as const zstring ptr) as GdkAtom
+declare function gtk_text_buffer_register_serialize_format(byval buffer as GtkTextBuffer ptr, byval mime_type as const gchar ptr, byval function as GtkTextBufferSerializeFunc, byval user_data as gpointer, byval user_data_destroy as GDestroyNotify) as GdkAtom
+declare function gtk_text_buffer_register_serialize_tagset(byval buffer as GtkTextBuffer ptr, byval tagset_name as const gchar ptr) as GdkAtom
+declare function gtk_text_buffer_register_deserialize_format(byval buffer as GtkTextBuffer ptr, byval mime_type as const gchar ptr, byval function as GtkTextBufferDeserializeFunc, byval user_data as gpointer, byval user_data_destroy as GDestroyNotify) as GdkAtom
+declare function gtk_text_buffer_register_deserialize_tagset(byval buffer as GtkTextBuffer ptr, byval tagset_name as const gchar ptr) as GdkAtom
 declare sub gtk_text_buffer_unregister_serialize_format(byval buffer as GtkTextBuffer ptr, byval format as GdkAtom)
 declare sub gtk_text_buffer_unregister_deserialize_format(byval buffer as GtkTextBuffer ptr, byval format as GdkAtom)
 declare sub gtk_text_buffer_deserialize_set_can_create_tags(byval buffer as GtkTextBuffer ptr, byval format as GdkAtom, byval can_create_tags as gboolean)
@@ -10233,7 +10233,7 @@ type _GtkTextViewClass
 	move_cursor as sub(byval text_view as GtkTextView ptr, byval step as GtkMovementStep, byval count as gint, byval extend_selection as gboolean)
 	page_horizontally as sub(byval text_view as GtkTextView ptr, byval count as gint, byval extend_selection as gboolean)
 	set_anchor as sub(byval text_view as GtkTextView ptr)
-	insert_at_cursor as sub(byval text_view as GtkTextView ptr, byval str as const zstring ptr)
+	insert_at_cursor as sub(byval text_view as GtkTextView ptr, byval str as const gchar ptr)
 	delete_from_cursor as sub(byval text_view as GtkTextView ptr, byval type as GtkDeleteType, byval count as gint)
 	backspace as sub(byval text_view as GtkTextView ptr)
 	cut_clipboard as sub(byval text_view as GtkTextView ptr)
@@ -10420,7 +10420,7 @@ declare sub gtk_toolbar_unset_icon_size(byval toolbar as GtkToolbar ptr)
 declare function gtk_toolbar_get_relief_style(byval toolbar as GtkToolbar ptr) as GtkReliefStyle
 declare function gtk_toolbar_get_drop_index(byval toolbar as GtkToolbar ptr, byval x as gint, byval y as gint) as gint
 declare sub gtk_toolbar_set_drop_highlight_item(byval toolbar as GtkToolbar ptr, byval tool_item as GtkToolItem ptr, byval index_ as gint)
-declare function _gtk_toolbar_elide_underscores(byval original as const zstring ptr) as zstring ptr
+declare function _gtk_toolbar_elide_underscores(byval original as const gchar ptr) as gchar ptr
 declare sub _gtk_toolbar_paint_space_line(byval widget as GtkWidget ptr, byval toolbar as GtkToolbar ptr, byval area as const GdkRectangle ptr, byval allocation as const GtkAllocation ptr)
 declare function _gtk_toolbar_get_default_space_size() as gint
 declare function gtk_toolbar_get_orientation(byval toolbar as GtkToolbar ptr) as GtkOrientation
@@ -10430,7 +10430,7 @@ declare sub gtk_toolbar_set_tooltips(byval toolbar as GtkToolbar ptr, byval enab
 declare function gtk_toolbar_append_item(byval toolbar as GtkToolbar ptr, byval text as const zstring ptr, byval tooltip_text as const zstring ptr, byval tooltip_private_text as const zstring ptr, byval icon as GtkWidget ptr, byval callback as GCallback, byval user_data as gpointer) as GtkWidget ptr
 declare function gtk_toolbar_prepend_item(byval toolbar as GtkToolbar ptr, byval text as const zstring ptr, byval tooltip_text as const zstring ptr, byval tooltip_private_text as const zstring ptr, byval icon as GtkWidget ptr, byval callback as GCallback, byval user_data as gpointer) as GtkWidget ptr
 declare function gtk_toolbar_insert_item(byval toolbar as GtkToolbar ptr, byval text as const zstring ptr, byval tooltip_text as const zstring ptr, byval tooltip_private_text as const zstring ptr, byval icon as GtkWidget ptr, byval callback as GCallback, byval user_data as gpointer, byval position as gint) as GtkWidget ptr
-declare function gtk_toolbar_insert_stock(byval toolbar as GtkToolbar ptr, byval stock_id as const zstring ptr, byval tooltip_text as const zstring ptr, byval tooltip_private_text as const zstring ptr, byval callback as GCallback, byval user_data as gpointer, byval position as gint) as GtkWidget ptr
+declare function gtk_toolbar_insert_stock(byval toolbar as GtkToolbar ptr, byval stock_id as const gchar ptr, byval tooltip_text as const zstring ptr, byval tooltip_private_text as const zstring ptr, byval callback as GCallback, byval user_data as gpointer, byval position as gint) as GtkWidget ptr
 declare sub gtk_toolbar_append_space(byval toolbar as GtkToolbar ptr)
 declare sub gtk_toolbar_prepend_space(byval toolbar as GtkToolbar ptr)
 declare sub gtk_toolbar_insert_space(byval toolbar as GtkToolbar ptr, byval position as gint)
@@ -10464,13 +10464,13 @@ type _GtkToolItemGroupClass
 end type
 
 declare function gtk_tool_item_group_get_type() as GType
-declare function gtk_tool_item_group_new(byval label as const zstring ptr) as GtkWidget ptr
-declare sub gtk_tool_item_group_set_label(byval group as GtkToolItemGroup ptr, byval label as const zstring ptr)
+declare function gtk_tool_item_group_new(byval label as const gchar ptr) as GtkWidget ptr
+declare sub gtk_tool_item_group_set_label(byval group as GtkToolItemGroup ptr, byval label as const gchar ptr)
 declare sub gtk_tool_item_group_set_label_widget(byval group as GtkToolItemGroup ptr, byval label_widget as GtkWidget ptr)
 declare sub gtk_tool_item_group_set_collapsed(byval group as GtkToolItemGroup ptr, byval collapsed as gboolean)
 declare sub gtk_tool_item_group_set_ellipsize(byval group as GtkToolItemGroup ptr, byval ellipsize as PangoEllipsizeMode)
 declare sub gtk_tool_item_group_set_header_relief(byval group as GtkToolItemGroup ptr, byval style as GtkReliefStyle)
-declare function gtk_tool_item_group_get_label(byval group as GtkToolItemGroup ptr) as const zstring ptr
+declare function gtk_tool_item_group_get_label(byval group as GtkToolItemGroup ptr) as const gchar ptr
 declare function gtk_tool_item_group_get_label_widget(byval group as GtkToolItemGroup ptr) as GtkWidget ptr
 declare function gtk_tool_item_group_get_collapsed(byval group as GtkToolItemGroup ptr) as gboolean
 declare function gtk_tool_item_group_get_ellipsize(byval group as GtkToolItemGroup ptr) as PangoEllipsizeMode
@@ -10575,19 +10575,19 @@ declare function gtk_tool_shell_get_text_size_group(byval shell as GtkToolShell 
 declare sub gtk_test_init(byval argcp as long ptr, byval argvp as zstring ptr ptr ptr, ...)
 declare sub gtk_test_register_all_types()
 declare function gtk_test_list_all_types(byval n_types as guint ptr) as const GType ptr
-declare function gtk_test_find_widget(byval widget as GtkWidget ptr, byval label_pattern as const zstring ptr, byval widget_type as GType) as GtkWidget ptr
-declare function gtk_test_create_widget(byval widget_type as GType, byval first_property_name as const zstring ptr, ...) as GtkWidget ptr
-declare function gtk_test_create_simple_window(byval window_title as const zstring ptr, byval dialog_text as const zstring ptr) as GtkWidget ptr
-declare function gtk_test_display_button_window(byval window_title as const zstring ptr, byval dialog_text as const zstring ptr, ...) as GtkWidget ptr
+declare function gtk_test_find_widget(byval widget as GtkWidget ptr, byval label_pattern as const gchar ptr, byval widget_type as GType) as GtkWidget ptr
+declare function gtk_test_create_widget(byval widget_type as GType, byval first_property_name as const gchar ptr, ...) as GtkWidget ptr
+declare function gtk_test_create_simple_window(byval window_title as const gchar ptr, byval dialog_text as const gchar ptr) as GtkWidget ptr
+declare function gtk_test_display_button_window(byval window_title as const gchar ptr, byval dialog_text as const gchar ptr, ...) as GtkWidget ptr
 declare sub gtk_test_slider_set_perc(byval widget as GtkWidget ptr, byval percentage as double)
 declare function gtk_test_slider_get_value(byval widget as GtkWidget ptr) as double
 declare function gtk_test_spin_button_click(byval spinner as GtkSpinButton ptr, byval button as guint, byval upwards as gboolean) as gboolean
 declare function gtk_test_widget_click(byval widget as GtkWidget ptr, byval button as guint, byval modifiers as GdkModifierType) as gboolean
 declare function gtk_test_widget_send_key(byval widget as GtkWidget ptr, byval keyval as guint, byval modifiers as GdkModifierType) as gboolean
-declare sub gtk_test_text_set(byval widget as GtkWidget ptr, byval string as const zstring ptr)
-declare function gtk_test_text_get(byval widget as GtkWidget ptr) as zstring ptr
+declare sub gtk_test_text_set(byval widget as GtkWidget ptr, byval string as const gchar ptr)
+declare function gtk_test_text_get(byval widget as GtkWidget ptr) as gchar ptr
 declare function gtk_test_find_sibling(byval base_widget as GtkWidget ptr, byval widget_type as GType) as GtkWidget ptr
-declare function gtk_test_find_label(byval widget as GtkWidget ptr, byval label_pattern as const zstring ptr) as GtkWidget ptr
+declare function gtk_test_find_label(byval widget as GtkWidget ptr, byval label_pattern as const gchar ptr) as GtkWidget ptr
 
 #define __GTK_TREE_DND_H__
 #define GTK_TYPE_TREE_DRAG_SOURCE gtk_tree_drag_source_get_type()
@@ -10811,8 +10811,8 @@ type _GtkUIManagerClass
 	disconnect_proxy as sub(byval merge as GtkUIManager ptr, byval action as GtkAction ptr, byval proxy as GtkWidget ptr)
 	pre_activate as sub(byval merge as GtkUIManager ptr, byval action as GtkAction ptr)
 	post_activate as sub(byval merge as GtkUIManager ptr, byval action as GtkAction ptr)
-	get_widget as function(byval manager as GtkUIManager ptr, byval path as const zstring ptr) as GtkWidget ptr
-	get_action as function(byval manager as GtkUIManager ptr, byval path as const zstring ptr) as GtkAction ptr
+	get_widget as function(byval manager as GtkUIManager ptr, byval path as const gchar ptr) as GtkWidget ptr
+	get_action as function(byval manager as GtkUIManager ptr, byval path as const gchar ptr) as GtkAction ptr
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 end type
@@ -10840,21 +10840,21 @@ declare sub gtk_ui_manager_insert_action_group(byval self as GtkUIManager ptr, b
 declare sub gtk_ui_manager_remove_action_group(byval self as GtkUIManager ptr, byval action_group as GtkActionGroup ptr)
 declare function gtk_ui_manager_get_action_groups(byval self as GtkUIManager ptr) as GList ptr
 declare function gtk_ui_manager_get_accel_group(byval self as GtkUIManager ptr) as GtkAccelGroup ptr
-declare function gtk_ui_manager_get_widget(byval self as GtkUIManager ptr, byval path as const zstring ptr) as GtkWidget ptr
+declare function gtk_ui_manager_get_widget(byval self as GtkUIManager ptr, byval path as const gchar ptr) as GtkWidget ptr
 declare function gtk_ui_manager_get_toplevels(byval self as GtkUIManager ptr, byval types as GtkUIManagerItemType) as GSList ptr
-declare function gtk_ui_manager_get_action(byval self as GtkUIManager ptr, byval path as const zstring ptr) as GtkAction ptr
-declare function gtk_ui_manager_add_ui_from_string(byval self as GtkUIManager ptr, byval buffer as const zstring ptr, byval length as gssize, byval error as GError ptr ptr) as guint
+declare function gtk_ui_manager_get_action(byval self as GtkUIManager ptr, byval path as const gchar ptr) as GtkAction ptr
+declare function gtk_ui_manager_add_ui_from_string(byval self as GtkUIManager ptr, byval buffer as const gchar ptr, byval length as gssize, byval error as GError ptr ptr) as guint
 
 #ifdef __FB_UNIX__
-	declare function gtk_ui_manager_add_ui_from_file(byval self as GtkUIManager ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as guint
+	declare function gtk_ui_manager_add_ui_from_file(byval self as GtkUIManager ptr, byval filename as const gchar ptr, byval error as GError ptr ptr) as guint
 #else
-	declare function gtk_ui_manager_add_ui_from_file_utf8(byval self as GtkUIManager ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as guint
-	declare function gtk_ui_manager_add_ui_from_file alias "gtk_ui_manager_add_ui_from_file_utf8"(byval self as GtkUIManager ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as guint
+	declare function gtk_ui_manager_add_ui_from_file_utf8(byval self as GtkUIManager ptr, byval filename as const gchar ptr, byval error as GError ptr ptr) as guint
+	declare function gtk_ui_manager_add_ui_from_file alias "gtk_ui_manager_add_ui_from_file_utf8"(byval self as GtkUIManager ptr, byval filename as const gchar ptr, byval error as GError ptr ptr) as guint
 #endif
 
-declare sub gtk_ui_manager_add_ui(byval self as GtkUIManager ptr, byval merge_id as guint, byval path as const zstring ptr, byval name as const zstring ptr, byval action as const zstring ptr, byval type as GtkUIManagerItemType, byval top as gboolean)
+declare sub gtk_ui_manager_add_ui(byval self as GtkUIManager ptr, byval merge_id as guint, byval path as const gchar ptr, byval name as const gchar ptr, byval action as const gchar ptr, byval type as GtkUIManagerItemType, byval top as gboolean)
 declare sub gtk_ui_manager_remove_ui(byval self as GtkUIManager ptr, byval merge_id as guint)
-declare function gtk_ui_manager_get_ui(byval self as GtkUIManager ptr) as zstring ptr
+declare function gtk_ui_manager_get_ui(byval self as GtkUIManager ptr) as gchar ptr
 declare sub gtk_ui_manager_ensure_update(byval self as GtkUIManager ptr)
 declare function gtk_ui_manager_new_merge_id(byval self as GtkUIManager ptr) as guint
 
@@ -11163,14 +11163,14 @@ type _GtkCListClass
 	clear as sub(byval clist as GtkCList ptr)
 	fake_unselect_all as sub(byval clist as GtkCList ptr, byval row as gint)
 	sort_list as sub(byval clist as GtkCList ptr)
-	insert_row as function(byval clist as GtkCList ptr, byval row as gint, byval text as zstring ptr ptr) as gint
+	insert_row as function(byval clist as GtkCList ptr, byval row as gint, byval text as gchar ptr ptr) as gint
 	remove_row as sub(byval clist as GtkCList ptr, byval row as gint)
-	set_cell_contents as sub(byval clist as GtkCList ptr, byval clist_row as GtkCListRow ptr, byval column as gint, byval type as GtkCellType, byval text as const zstring ptr, byval spacing as guint8, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
+	set_cell_contents as sub(byval clist as GtkCList ptr, byval clist_row as GtkCListRow ptr, byval column as gint, byval type as GtkCellType, byval text as const gchar ptr, byval spacing as guint8, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
 	cell_size_request as sub(byval clist as GtkCList ptr, byval clist_row as GtkCListRow ptr, byval column as gint, byval requisition as GtkRequisition ptr)
 end type
 
 type _GtkCListColumn
-	title as zstring ptr
+	title as gchar ptr
 	area as GdkRectangle
 	button as GtkWidget ptr
 	window as GdkWindow ptr
@@ -11203,7 +11203,7 @@ type _GtkCellText
 	vertical as gint16
 	horizontal as gint16
 	style as GtkStyle ptr
-	text as zstring ptr
+	text as gchar ptr
 end type
 
 type _GtkCellPixmap
@@ -11220,7 +11220,7 @@ type _GtkCellPixText
 	vertical as gint16
 	horizontal as gint16
 	style as GtkStyle ptr
-	text as zstring ptr
+	text as gchar ptr
 	spacing as guint8
 	pixmap as GdkPixmap ptr
 	mask as GdkBitmap ptr
@@ -11240,14 +11240,14 @@ type _GtkCell_u_pm
 end type
 
 type _GtkCell_u_pt
-	text as zstring ptr
+	text as gchar ptr
 	spacing as guint8
 	pixmap as GdkPixmap ptr
 	mask as GdkBitmap ptr
 end type
 
 union _GtkCell_u
-	text as zstring ptr
+	text as gchar ptr
 	pm as _GtkCell_u_pm
 	pt as _GtkCell_u_pt
 	widget as GtkWidget ptr
@@ -11263,7 +11263,7 @@ end type
 
 declare function gtk_clist_get_type() as GType
 declare function gtk_clist_new(byval columns as gint) as GtkWidget ptr
-declare function gtk_clist_new_with_titles(byval columns as gint, byval titles as zstring ptr ptr) as GtkWidget ptr
+declare function gtk_clist_new_with_titles(byval columns as gint, byval titles as gchar ptr ptr) as GtkWidget ptr
 declare sub gtk_clist_set_hadjustment(byval clist as GtkCList ptr, byval adjustment as GtkAdjustment ptr)
 declare sub gtk_clist_set_vadjustment(byval clist as GtkCList ptr, byval adjustment as GtkAdjustment ptr)
 declare function gtk_clist_get_hadjustment(byval clist as GtkCList ptr) as GtkAdjustment ptr
@@ -11281,8 +11281,8 @@ declare sub gtk_clist_column_title_active(byval clist as GtkCList ptr, byval col
 declare sub gtk_clist_column_title_passive(byval clist as GtkCList ptr, byval column as gint)
 declare sub gtk_clist_column_titles_active(byval clist as GtkCList ptr)
 declare sub gtk_clist_column_titles_passive(byval clist as GtkCList ptr)
-declare sub gtk_clist_set_column_title(byval clist as GtkCList ptr, byval column as gint, byval title as const zstring ptr)
-declare function gtk_clist_get_column_title(byval clist as GtkCList ptr, byval column as gint) as zstring ptr
+declare sub gtk_clist_set_column_title(byval clist as GtkCList ptr, byval column as gint, byval title as const gchar ptr)
+declare function gtk_clist_get_column_title(byval clist as GtkCList ptr, byval column as gint) as gchar ptr
 declare sub gtk_clist_set_column_widget(byval clist as GtkCList ptr, byval column as gint, byval widget as GtkWidget ptr)
 declare function gtk_clist_get_column_widget(byval clist as GtkCList ptr, byval column as gint) as GtkWidget ptr
 declare sub gtk_clist_set_column_justification(byval clist as GtkCList ptr, byval column as gint, byval justification as GtkJustification)
@@ -11298,12 +11298,12 @@ declare sub gtk_clist_set_row_height(byval clist as GtkCList ptr, byval height a
 declare sub gtk_clist_moveto(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval row_align as gfloat, byval col_align as gfloat)
 declare function gtk_clist_row_is_visible(byval clist as GtkCList ptr, byval row as gint) as GtkVisibility
 declare function gtk_clist_get_cell_type(byval clist as GtkCList ptr, byval row as gint, byval column as gint) as GtkCellType
-declare sub gtk_clist_set_text(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as const zstring ptr)
-declare function gtk_clist_get_text(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as zstring ptr ptr) as gint
+declare sub gtk_clist_set_text(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as const gchar ptr)
+declare function gtk_clist_get_text(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as gchar ptr ptr) as gint
 declare sub gtk_clist_set_pixmap(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
 declare function gtk_clist_get_pixmap(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval pixmap as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr) as gint
-declare sub gtk_clist_set_pixtext(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as const zstring ptr, byval spacing as guint8, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
-declare function gtk_clist_get_pixtext(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as zstring ptr ptr, byval spacing as guint8 ptr, byval pixmap as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr) as gint
+declare sub gtk_clist_set_pixtext(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as const gchar ptr, byval spacing as guint8, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
+declare function gtk_clist_get_pixtext(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval text as gchar ptr ptr, byval spacing as guint8 ptr, byval pixmap as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr) as gint
 declare sub gtk_clist_set_foreground(byval clist as GtkCList ptr, byval row as gint, byval color as const GdkColor ptr)
 declare sub gtk_clist_set_background(byval clist as GtkCList ptr, byval row as gint, byval color as const GdkColor ptr)
 declare sub gtk_clist_set_cell_style(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval style as GtkStyle ptr)
@@ -11313,9 +11313,9 @@ declare function gtk_clist_get_row_style(byval clist as GtkCList ptr, byval row 
 declare sub gtk_clist_set_shift(byval clist as GtkCList ptr, byval row as gint, byval column as gint, byval vertical as gint, byval horizontal as gint)
 declare sub gtk_clist_set_selectable(byval clist as GtkCList ptr, byval row as gint, byval selectable as gboolean)
 declare function gtk_clist_get_selectable(byval clist as GtkCList ptr, byval row as gint) as gboolean
-declare function gtk_clist_prepend(byval clist as GtkCList ptr, byval text as zstring ptr ptr) as gint
-declare function gtk_clist_append(byval clist as GtkCList ptr, byval text as zstring ptr ptr) as gint
-declare function gtk_clist_insert(byval clist as GtkCList ptr, byval row as gint, byval text as zstring ptr ptr) as gint
+declare function gtk_clist_prepend(byval clist as GtkCList ptr, byval text as gchar ptr ptr) as gint
+declare function gtk_clist_append(byval clist as GtkCList ptr, byval text as gchar ptr ptr) as gint
+declare function gtk_clist_insert(byval clist as GtkCList ptr, byval row as gint, byval text as gchar ptr ptr) as gint
 declare sub gtk_clist_remove(byval clist as GtkCList ptr, byval row as gint)
 declare sub gtk_clist_set_row_data(byval clist as GtkCList ptr, byval row as gint, byval data as gpointer)
 declare sub gtk_clist_set_row_data_full(byval clist as GtkCList ptr, byval row as gint, byval data as gpointer, byval destroy as GDestroyNotify)
@@ -11379,7 +11379,7 @@ declare sub gtk_combo_set_value_in_list(byval combo as GtkCombo ptr, byval val a
 declare sub gtk_combo_set_use_arrows(byval combo as GtkCombo ptr, byval val as gboolean)
 declare sub gtk_combo_set_use_arrows_always(byval combo as GtkCombo ptr, byval val as gboolean)
 declare sub gtk_combo_set_case_sensitive(byval combo as GtkCombo ptr, byval val as gboolean)
-declare sub gtk_combo_set_item_string(byval combo as GtkCombo ptr, byval item as GtkItem ptr, byval item_value as const zstring ptr)
+declare sub gtk_combo_set_item_string(byval combo as GtkCombo ptr, byval item as GtkItem ptr, byval item_value as const gchar ptr)
 declare sub gtk_combo_set_popdown_strings(byval combo as GtkCombo ptr, byval strings as GList ptr)
 declare sub gtk_combo_disable_activate(byval combo as GtkCombo ptr)
 
@@ -11479,9 +11479,9 @@ type _GtkCTreeNode
 end type
 
 declare function gtk_ctree_get_type() as GType
-declare function gtk_ctree_new_with_titles(byval columns as gint, byval tree_column as gint, byval titles as zstring ptr ptr) as GtkWidget ptr
+declare function gtk_ctree_new_with_titles(byval columns as gint, byval tree_column as gint, byval titles as gchar ptr ptr) as GtkWidget ptr
 declare function gtk_ctree_new(byval columns as gint, byval tree_column as gint) as GtkWidget ptr
-declare function gtk_ctree_insert_node(byval ctree as GtkCTree ptr, byval parent as GtkCTreeNode ptr, byval sibling as GtkCTreeNode ptr, byval text as zstring ptr ptr, byval spacing as guint8, byval pixmap_closed as GdkPixmap ptr, byval mask_closed as GdkBitmap ptr, byval pixmap_opened as GdkPixmap ptr, byval mask_opened as GdkBitmap ptr, byval is_leaf as gboolean, byval expanded as gboolean) as GtkCTreeNode ptr
+declare function gtk_ctree_insert_node(byval ctree as GtkCTree ptr, byval parent as GtkCTreeNode ptr, byval sibling as GtkCTreeNode ptr, byval text as gchar ptr ptr, byval spacing as guint8, byval pixmap_closed as GdkPixmap ptr, byval mask_closed as GdkBitmap ptr, byval pixmap_opened as GdkPixmap ptr, byval mask_opened as GdkBitmap ptr, byval is_leaf as gboolean, byval expanded as gboolean) as GtkCTreeNode ptr
 declare sub gtk_ctree_remove_node(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr)
 declare function gtk_ctree_insert_gnode(byval ctree as GtkCTree ptr, byval parent as GtkCTreeNode ptr, byval sibling as GtkCTreeNode ptr, byval gnode as GNode ptr, byval func as GtkCTreeGNodeFunc, byval data as gpointer) as GtkCTreeNode ptr
 declare function gtk_ctree_export_to_gnode(byval ctree as GtkCTree ptr, byval parent as GNode ptr, byval sibling as GNode ptr, byval node as GtkCTreeNode ptr, byval func as GtkCTreeGNodeFunc, byval data as gpointer) as GNode ptr
@@ -11514,18 +11514,18 @@ declare sub gtk_ctree_select_recursive(byval ctree as GtkCTree ptr, byval node a
 declare sub gtk_ctree_unselect(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr)
 declare sub gtk_ctree_unselect_recursive(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr)
 declare sub gtk_ctree_real_select_recursive(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval state as gint)
-declare sub gtk_ctree_node_set_text(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint, byval text as const zstring ptr)
+declare sub gtk_ctree_node_set_text(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint, byval text as const gchar ptr)
 declare sub gtk_ctree_node_set_pixmap(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
-declare sub gtk_ctree_node_set_pixtext(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint, byval text as const zstring ptr, byval spacing as guint8, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
-declare sub gtk_ctree_set_node_info(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval text as const zstring ptr, byval spacing as guint8, byval pixmap_closed as GdkPixmap ptr, byval mask_closed as GdkBitmap ptr, byval pixmap_opened as GdkPixmap ptr, byval mask_opened as GdkBitmap ptr, byval is_leaf as gboolean, byval expanded as gboolean)
+declare sub gtk_ctree_node_set_pixtext(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint, byval text as const gchar ptr, byval spacing as guint8, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
+declare sub gtk_ctree_set_node_info(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval text as const gchar ptr, byval spacing as guint8, byval pixmap_closed as GdkPixmap ptr, byval mask_closed as GdkBitmap ptr, byval pixmap_opened as GdkPixmap ptr, byval mask_opened as GdkBitmap ptr, byval is_leaf as gboolean, byval expanded as gboolean)
 declare sub gtk_ctree_node_set_shift(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint, byval vertical as gint, byval horizontal as gint)
 declare sub gtk_ctree_node_set_selectable(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval selectable as gboolean)
 declare function gtk_ctree_node_get_selectable(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr) as gboolean
 declare function gtk_ctree_node_get_cell_type(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint) as GtkCellType
-declare function gtk_ctree_node_get_text(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint, byval text as zstring ptr ptr) as gboolean
+declare function gtk_ctree_node_get_text(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint, byval text as gchar ptr ptr) as gboolean
 declare function gtk_ctree_node_get_pixmap(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint, byval pixmap as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr) as gboolean
-declare function gtk_ctree_node_get_pixtext(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint, byval text as zstring ptr ptr, byval spacing as guint8 ptr, byval pixmap as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr) as gboolean
-declare function gtk_ctree_get_node_info(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval text as zstring ptr ptr, byval spacing as guint8 ptr, byval pixmap_closed as GdkPixmap ptr ptr, byval mask_closed as GdkBitmap ptr ptr, byval pixmap_opened as GdkPixmap ptr ptr, byval mask_opened as GdkBitmap ptr ptr, byval is_leaf as gboolean ptr, byval expanded as gboolean ptr) as gboolean
+declare function gtk_ctree_node_get_pixtext(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint, byval text as gchar ptr ptr, byval spacing as guint8 ptr, byval pixmap as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr) as gboolean
+declare function gtk_ctree_get_node_info(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval text as gchar ptr ptr, byval spacing as guint8 ptr, byval pixmap_closed as GdkPixmap ptr ptr, byval mask_closed as GdkBitmap ptr ptr, byval pixmap_opened as GdkPixmap ptr ptr, byval mask_opened as GdkBitmap ptr ptr, byval is_leaf as gboolean ptr, byval expanded as gboolean ptr) as gboolean
 declare sub gtk_ctree_node_set_row_style(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval style as GtkStyle ptr)
 declare function gtk_ctree_node_get_row_style(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr) as GtkStyle ptr
 declare sub gtk_ctree_node_set_cell_style(byval ctree as GtkCTree ptr, byval node as GtkCTreeNode ptr, byval column as gint, byval style as GtkStyle ptr)
@@ -11619,7 +11619,7 @@ type _GtkFileSelection
 	history_list as GList ptr
 	fileop_dialog as GtkWidget ptr
 	fileop_entry as GtkWidget ptr
-	fileop_file as zstring ptr
+	fileop_file as gchar ptr
 	cmpl_state as gpointer
 	fileop_c_dir as GtkWidget ptr
 	fileop_del_file as GtkWidget ptr
@@ -11627,7 +11627,7 @@ type _GtkFileSelection
 	button_area as GtkWidget ptr
 	action_area as GtkWidget ptr
 	selected_names as GPtrArray ptr
-	last_selected as zstring ptr
+	last_selected as gchar ptr
 end type
 
 type _GtkFileSelectionClass
@@ -11639,27 +11639,27 @@ type _GtkFileSelectionClass
 end type
 
 declare function gtk_file_selection_get_type() as GType
-declare function gtk_file_selection_new(byval title as const zstring ptr) as GtkWidget ptr
+declare function gtk_file_selection_new(byval title as const gchar ptr) as GtkWidget ptr
 
 #ifdef __FB_UNIX__
-	declare sub gtk_file_selection_set_filename(byval filesel as GtkFileSelection ptr, byval filename as const zstring ptr)
-	declare function gtk_file_selection_get_filename(byval filesel as GtkFileSelection ptr) as const zstring ptr
+	declare sub gtk_file_selection_set_filename(byval filesel as GtkFileSelection ptr, byval filename as const gchar ptr)
+	declare function gtk_file_selection_get_filename(byval filesel as GtkFileSelection ptr) as const gchar ptr
 #else
-	declare sub gtk_file_selection_set_filename_utf8(byval filesel as GtkFileSelection ptr, byval filename as const zstring ptr)
-	declare sub gtk_file_selection_set_filename alias "gtk_file_selection_set_filename_utf8"(byval filesel as GtkFileSelection ptr, byval filename as const zstring ptr)
-	declare function gtk_file_selection_get_filename_utf8(byval filesel as GtkFileSelection ptr) as const zstring ptr
-	declare function gtk_file_selection_get_filename alias "gtk_file_selection_get_filename_utf8"(byval filesel as GtkFileSelection ptr) as const zstring ptr
+	declare sub gtk_file_selection_set_filename_utf8(byval filesel as GtkFileSelection ptr, byval filename as const gchar ptr)
+	declare sub gtk_file_selection_set_filename alias "gtk_file_selection_set_filename_utf8"(byval filesel as GtkFileSelection ptr, byval filename as const gchar ptr)
+	declare function gtk_file_selection_get_filename_utf8(byval filesel as GtkFileSelection ptr) as const gchar ptr
+	declare function gtk_file_selection_get_filename alias "gtk_file_selection_get_filename_utf8"(byval filesel as GtkFileSelection ptr) as const gchar ptr
 #endif
 
-declare sub gtk_file_selection_complete(byval filesel as GtkFileSelection ptr, byval pattern as const zstring ptr)
+declare sub gtk_file_selection_complete(byval filesel as GtkFileSelection ptr, byval pattern as const gchar ptr)
 declare sub gtk_file_selection_show_fileop_buttons(byval filesel as GtkFileSelection ptr)
 declare sub gtk_file_selection_hide_fileop_buttons(byval filesel as GtkFileSelection ptr)
 
 #ifdef __FB_UNIX__
-	declare function gtk_file_selection_get_selections(byval filesel as GtkFileSelection ptr) as zstring ptr ptr
+	declare function gtk_file_selection_get_selections(byval filesel as GtkFileSelection ptr) as gchar ptr ptr
 #else
-	declare function gtk_file_selection_get_selections_utf8(byval filesel as GtkFileSelection ptr) as zstring ptr ptr
-	declare function gtk_file_selection_get_selections alias "gtk_file_selection_get_selections_utf8"(byval filesel as GtkFileSelection ptr) as zstring ptr ptr
+	declare function gtk_file_selection_get_selections_utf8(byval filesel as GtkFileSelection ptr) as gchar ptr ptr
+	declare function gtk_file_selection_get_selections alias "gtk_file_selection_get_selections_utf8"(byval filesel as GtkFileSelection ptr) as gchar ptr ptr
 #endif
 
 declare sub gtk_file_selection_set_select_multiple(byval filesel as GtkFileSelection ptr, byval select_multiple as gboolean)
@@ -11730,7 +11730,7 @@ end type
 declare function gtk_input_dialog_get_type() as GType
 declare function gtk_input_dialog_new() as GtkWidget ptr
 #define __GTK_ITEM_FACTORY_H__
-type GtkPrintFunc as sub(byval func_data as gpointer, byval str as const zstring ptr)
+type GtkPrintFunc as sub(byval func_data as gpointer, byval str as const gchar ptr)
 type GtkItemFactoryCallback as sub()
 type GtkItemFactoryCallback1 as sub(byval callback_data as gpointer, byval callback_action as guint, byval widget as GtkWidget ptr)
 
@@ -11748,7 +11748,7 @@ type GtkItemFactoryItem as _GtkItemFactoryItem
 
 type _GtkItemFactory
 	object as GtkObject
-	path as zstring ptr
+	path as gchar ptr
 	accel_group as GtkAccelGroup ptr
 	widget as GtkWidget ptr
 	items as GSList ptr
@@ -11767,32 +11767,32 @@ type _GtkItemFactoryClass
 end type
 
 type _GtkItemFactoryEntry
-	path as zstring ptr
-	accelerator as zstring ptr
+	path as gchar ptr
+	accelerator as gchar ptr
 	callback as GtkItemFactoryCallback
 	callback_action as guint
-	item_type as zstring ptr
+	item_type as gchar ptr
 	extra_data as gconstpointer
 end type
 
 type _GtkItemFactoryItem
-	path as zstring ptr
+	path as gchar ptr
 	widgets as GSList ptr
 end type
 
 declare function gtk_item_factory_get_type() as GType
-declare function gtk_item_factory_new(byval container_type as GType, byval path as const zstring ptr, byval accel_group as GtkAccelGroup ptr) as GtkItemFactory ptr
-declare sub gtk_item_factory_construct(byval ifactory as GtkItemFactory ptr, byval container_type as GType, byval path as const zstring ptr, byval accel_group as GtkAccelGroup ptr)
-declare sub gtk_item_factory_add_foreign(byval accel_widget as GtkWidget ptr, byval full_path as const zstring ptr, byval accel_group as GtkAccelGroup ptr, byval keyval as guint, byval modifiers as GdkModifierType)
+declare function gtk_item_factory_new(byval container_type as GType, byval path as const gchar ptr, byval accel_group as GtkAccelGroup ptr) as GtkItemFactory ptr
+declare sub gtk_item_factory_construct(byval ifactory as GtkItemFactory ptr, byval container_type as GType, byval path as const gchar ptr, byval accel_group as GtkAccelGroup ptr)
+declare sub gtk_item_factory_add_foreign(byval accel_widget as GtkWidget ptr, byval full_path as const gchar ptr, byval accel_group as GtkAccelGroup ptr, byval keyval as guint, byval modifiers as GdkModifierType)
 declare function gtk_item_factory_from_widget(byval widget as GtkWidget ptr) as GtkItemFactory ptr
-declare function gtk_item_factory_path_from_widget(byval widget as GtkWidget ptr) as const zstring ptr
-declare function gtk_item_factory_get_item(byval ifactory as GtkItemFactory ptr, byval path as const zstring ptr) as GtkWidget ptr
-declare function gtk_item_factory_get_widget(byval ifactory as GtkItemFactory ptr, byval path as const zstring ptr) as GtkWidget ptr
+declare function gtk_item_factory_path_from_widget(byval widget as GtkWidget ptr) as const gchar ptr
+declare function gtk_item_factory_get_item(byval ifactory as GtkItemFactory ptr, byval path as const gchar ptr) as GtkWidget ptr
+declare function gtk_item_factory_get_widget(byval ifactory as GtkItemFactory ptr, byval path as const gchar ptr) as GtkWidget ptr
 declare function gtk_item_factory_get_widget_by_action(byval ifactory as GtkItemFactory ptr, byval action as guint) as GtkWidget ptr
 declare function gtk_item_factory_get_item_by_action(byval ifactory as GtkItemFactory ptr, byval action as guint) as GtkWidget ptr
 declare sub gtk_item_factory_create_item(byval ifactory as GtkItemFactory ptr, byval entry as GtkItemFactoryEntry ptr, byval callback_data as gpointer, byval callback_type as guint)
 declare sub gtk_item_factory_create_items(byval ifactory as GtkItemFactory ptr, byval n_entries as guint, byval entries as GtkItemFactoryEntry ptr, byval callback_data as gpointer)
-declare sub gtk_item_factory_delete_item(byval ifactory as GtkItemFactory ptr, byval path as const zstring ptr)
+declare sub gtk_item_factory_delete_item(byval ifactory as GtkItemFactory ptr, byval path as const gchar ptr)
 declare sub gtk_item_factory_delete_entry(byval ifactory as GtkItemFactory ptr, byval entry as GtkItemFactoryEntry ptr)
 declare sub gtk_item_factory_delete_entries(byval ifactory as GtkItemFactory ptr, byval n_entries as guint, byval entries as GtkItemFactoryEntry ptr)
 declare sub gtk_item_factory_popup(byval ifactory as GtkItemFactory ptr, byval x as guint, byval y as guint, byval mouse_button as guint, byval time_ as guint32)
@@ -11803,8 +11803,8 @@ declare sub gtk_item_factory_set_translate_func(byval ifactory as GtkItemFactory
 type GtkMenuCallback as sub(byval widget as GtkWidget ptr, byval user_data as gpointer)
 
 type GtkMenuEntry
-	path as zstring ptr
-	accelerator as zstring ptr
+	path as gchar ptr
+	accelerator as gchar ptr
 	callback as GtkMenuCallback
 	callback_data as gpointer
 	widget as GtkWidget ptr
@@ -11812,9 +11812,9 @@ end type
 
 type GtkItemFactoryCallback2 as sub(byval widget as GtkWidget ptr, byval callback_data as gpointer, byval callback_action as guint)
 declare sub gtk_item_factory_create_items_ac(byval ifactory as GtkItemFactory ptr, byval n_entries as guint, byval entries as GtkItemFactoryEntry ptr, byval callback_data as gpointer, byval callback_type as guint)
-declare function gtk_item_factory_from_path(byval path as const zstring ptr) as GtkItemFactory ptr
+declare function gtk_item_factory_from_path(byval path as const gchar ptr) as GtkItemFactory ptr
 declare sub gtk_item_factory_create_menu_entries(byval n_entries as guint, byval entries as GtkMenuEntry ptr)
-declare sub gtk_item_factories_path_delete(byval ifactory_path as const zstring ptr, byval path as const zstring ptr)
+declare sub gtk_item_factories_path_delete(byval ifactory_path as const gchar ptr, byval path as const gchar ptr)
 
 #define __GTK_LIST_H__
 #define GTK_TYPE_LIST gtk_list_get_type()
@@ -11908,7 +11908,7 @@ end type
 
 declare function gtk_list_item_get_type() as GType
 declare function gtk_list_item_new() as GtkWidget ptr
-declare function gtk_list_item_new_with_label(byval label as const zstring ptr) as GtkWidget ptr
+declare function gtk_list_item_new_with_label(byval label as const gchar ptr) as GtkWidget ptr
 declare sub gtk_list_item_select(byval list_item as GtkListItem ptr)
 declare sub gtk_list_item_deselect(byval list_item as GtkListItem ptr)
 
@@ -11932,7 +11932,7 @@ type _GtkOldEditable
 	has_selection : 1 as guint
 	editable : 1 as guint
 	visible : 1 as guint
-	clipboard_text as zstring ptr
+	clipboard_text as gchar ptr
 end type
 
 type _GtkOldEditableClass
@@ -11951,7 +11951,7 @@ type _GtkOldEditableClass
 	copy_clipboard as sub(byval editable as GtkOldEditable ptr)
 	paste_clipboard as sub(byval editable as GtkOldEditable ptr)
 	update_text as sub(byval editable as GtkOldEditable ptr, byval start_pos as gint, byval end_pos as gint)
-	get_chars as function(byval editable as GtkOldEditable ptr, byval start_pos as gint, byval end_pos as gint) as zstring ptr
+	get_chars as function(byval editable as GtkOldEditable ptr, byval start_pos as gint, byval end_pos as gint) as gchar ptr
 	set_selection as sub(byval editable as GtkOldEditable ptr, byval start_pos as gint, byval end_pos as gint)
 	set_position as sub(byval editable as GtkOldEditable ptr, byval position as gint)
 end type
@@ -12066,8 +12066,8 @@ type _GtkTipsQuery
 	label as GtkLabel
 	emit_always : 1 as guint
 	in_query : 1 as guint
-	label_inactive as zstring ptr
-	label_no_tip as zstring ptr
+	label_inactive as gchar ptr
+	label_no_tip as gchar ptr
 	caller as GtkWidget ptr
 	last_crossed as GtkWidget ptr
 	query_cursor as GdkCursor ptr
@@ -12077,8 +12077,8 @@ type _GtkTipsQueryClass
 	parent_class as GtkLabelClass
 	start_query as sub(byval tips_query as GtkTipsQuery ptr)
 	stop_query as sub(byval tips_query as GtkTipsQuery ptr)
-	widget_entered as sub(byval tips_query as GtkTipsQuery ptr, byval widget as GtkWidget ptr, byval tip_text as const zstring ptr, byval tip_private as const zstring ptr)
-	widget_selected as function(byval tips_query as GtkTipsQuery ptr, byval widget as GtkWidget ptr, byval tip_text as const zstring ptr, byval tip_private as const zstring ptr, byval event as GdkEventButton ptr) as gint
+	widget_entered as sub(byval tips_query as GtkTipsQuery ptr, byval widget as GtkWidget ptr, byval tip_text as const gchar ptr, byval tip_private as const gchar ptr)
+	widget_selected as function(byval tips_query as GtkTipsQuery ptr, byval widget as GtkWidget ptr, byval tip_text as const gchar ptr, byval tip_private as const gchar ptr, byval event as GdkEventButton ptr) as gint
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 	_gtk_reserved3 as sub()
@@ -12090,7 +12090,7 @@ declare function gtk_tips_query_new() as GtkWidget ptr
 declare sub gtk_tips_query_start_query(byval tips_query as GtkTipsQuery ptr)
 declare sub gtk_tips_query_stop_query(byval tips_query as GtkTipsQuery ptr)
 declare sub gtk_tips_query_set_caller(byval tips_query as GtkTipsQuery ptr, byval caller as GtkWidget ptr)
-declare sub gtk_tips_query_set_labels(byval tips_query as GtkTipsQuery ptr, byval label_inactive as const zstring ptr, byval label_no_tip as const zstring ptr)
+declare sub gtk_tips_query_set_labels(byval tips_query as GtkTipsQuery ptr, byval label_inactive as const gchar ptr, byval label_no_tip as const gchar ptr)
 #undef __GTK_H_INSIDE__
 
 end extern

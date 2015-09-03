@@ -619,7 +619,7 @@ type PFNGLSTENCILOPSEPARATEPROC as sub(byval face as GLenum, byval sfail as GLen
 type PFNGLSTENCILFUNCSEPARATEPROC as sub(byval face as GLenum, byval func as GLenum, byval ref as GLint, byval mask as GLuint)
 type PFNGLSTENCILMASKSEPARATEPROC as sub(byval face as GLenum, byval mask as GLuint)
 type PFNGLATTACHSHADERPROC as sub(byval program as GLuint, byval shader as GLuint)
-type PFNGLBINDATTRIBLOCATIONPROC as sub(byval program as GLuint, byval index as GLuint, byval name as const zstring ptr)
+type PFNGLBINDATTRIBLOCATIONPROC as sub(byval program as GLuint, byval index as GLuint, byval name as const GLchar ptr)
 type PFNGLCOMPILESHADERPROC as sub(byval shader as GLuint)
 type PFNGLCREATEPROGRAMPROC as function() as GLuint
 type PFNGLCREATESHADERPROC as function(byval type as GLenum) as GLuint
@@ -628,16 +628,16 @@ type PFNGLDELETESHADERPROC as sub(byval shader as GLuint)
 type PFNGLDETACHSHADERPROC as sub(byval program as GLuint, byval shader as GLuint)
 type PFNGLDISABLEVERTEXATTRIBARRAYPROC as sub(byval index as GLuint)
 type PFNGLENABLEVERTEXATTRIBARRAYPROC as sub(byval index as GLuint)
-type PFNGLGETACTIVEATTRIBPROC as sub(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as zstring ptr)
-type PFNGLGETACTIVEUNIFORMPROC as sub(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as zstring ptr)
+type PFNGLGETACTIVEATTRIBPROC as sub(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as GLchar ptr)
+type PFNGLGETACTIVEUNIFORMPROC as sub(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as GLchar ptr)
 type PFNGLGETATTACHEDSHADERSPROC as sub(byval program as GLuint, byval maxCount as GLsizei, byval count as GLsizei ptr, byval shaders as GLuint ptr)
-type PFNGLGETATTRIBLOCATIONPROC as function(byval program as GLuint, byval name as const zstring ptr) as GLint
+type PFNGLGETATTRIBLOCATIONPROC as function(byval program as GLuint, byval name as const GLchar ptr) as GLint
 type PFNGLGETPROGRAMIVPROC as sub(byval program as GLuint, byval pname as GLenum, byval params as GLint ptr)
-type PFNGLGETPROGRAMINFOLOGPROC as sub(byval program as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval infoLog as zstring ptr)
+type PFNGLGETPROGRAMINFOLOGPROC as sub(byval program as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval infoLog as GLchar ptr)
 type PFNGLGETSHADERIVPROC as sub(byval shader as GLuint, byval pname as GLenum, byval params as GLint ptr)
-type PFNGLGETSHADERINFOLOGPROC as sub(byval shader as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval infoLog as zstring ptr)
-type PFNGLGETSHADERSOURCEPROC as sub(byval shader as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval source as zstring ptr)
-type PFNGLGETUNIFORMLOCATIONPROC as function(byval program as GLuint, byval name as const zstring ptr) as GLint
+type PFNGLGETSHADERINFOLOGPROC as sub(byval shader as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval infoLog as GLchar ptr)
+type PFNGLGETSHADERSOURCEPROC as sub(byval shader as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval source as GLchar ptr)
+type PFNGLGETUNIFORMLOCATIONPROC as function(byval program as GLuint, byval name as const GLchar ptr) as GLint
 type PFNGLGETUNIFORMFVPROC as sub(byval program as GLuint, byval location as GLint, byval params as GLfloat ptr)
 type PFNGLGETUNIFORMIVPROC as sub(byval program as GLuint, byval location as GLint, byval params as GLint ptr)
 type PFNGLGETVERTEXATTRIBDVPROC as sub(byval index as GLuint, byval pname as GLenum, byval params as GLdouble ptr)
@@ -647,7 +647,7 @@ type PFNGLGETVERTEXATTRIBPOINTERVPROC as sub(byval index as GLuint, byval pname 
 type PFNGLISPROGRAMPROC as function(byval program as GLuint) as GLboolean
 type PFNGLISSHADERPROC as function(byval shader as GLuint) as GLboolean
 type PFNGLLINKPROGRAMPROC as sub(byval program as GLuint)
-type PFNGLSHADERSOURCEPROC as sub(byval shader as GLuint, byval count as GLsizei, byval string as const zstring const ptr ptr, byval length as const GLint ptr)
+type PFNGLSHADERSOURCEPROC as sub(byval shader as GLuint, byval count as GLsizei, byval string as const GLchar const ptr ptr, byval length as const GLint ptr)
 type PFNGLUSEPROGRAMPROC as sub(byval program as GLuint)
 type PFNGLUNIFORM1FPROC as sub(byval location as GLint, byval v0 as GLfloat)
 type PFNGLUNIFORM2FPROC as sub(byval location as GLint, byval v0 as GLfloat, byval v1 as GLfloat)
@@ -714,7 +714,7 @@ type PFNGLVERTEXATTRIBPOINTERPROC as sub(byval index as GLuint, byval size as GL
 	declare sub glStencilFuncSeparate(byval face as GLenum, byval func as GLenum, byval ref as GLint, byval mask as GLuint)
 	declare sub glStencilMaskSeparate(byval face as GLenum, byval mask as GLuint)
 	declare sub glAttachShader(byval program as GLuint, byval shader as GLuint)
-	declare sub glBindAttribLocation(byval program as GLuint, byval index as GLuint, byval name as const zstring ptr)
+	declare sub glBindAttribLocation(byval program as GLuint, byval index as GLuint, byval name as const GLchar ptr)
 	declare sub glCompileShader(byval shader as GLuint)
 	declare function glCreateProgram() as GLuint
 	declare function glCreateShader(byval type as GLenum) as GLuint
@@ -723,16 +723,16 @@ type PFNGLVERTEXATTRIBPOINTERPROC as sub(byval index as GLuint, byval size as GL
 	declare sub glDetachShader(byval program as GLuint, byval shader as GLuint)
 	declare sub glDisableVertexAttribArray(byval index as GLuint)
 	declare sub glEnableVertexAttribArray(byval index as GLuint)
-	declare sub glGetActiveAttrib(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as zstring ptr)
-	declare sub glGetActiveUniform(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as zstring ptr)
+	declare sub glGetActiveAttrib(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as GLchar ptr)
+	declare sub glGetActiveUniform(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as GLchar ptr)
 	declare sub glGetAttachedShaders(byval program as GLuint, byval maxCount as GLsizei, byval count as GLsizei ptr, byval shaders as GLuint ptr)
-	declare function glGetAttribLocation(byval program as GLuint, byval name as const zstring ptr) as GLint
+	declare function glGetAttribLocation(byval program as GLuint, byval name as const GLchar ptr) as GLint
 	declare sub glGetProgramiv(byval program as GLuint, byval pname as GLenum, byval params as GLint ptr)
-	declare sub glGetProgramInfoLog(byval program as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval infoLog as zstring ptr)
+	declare sub glGetProgramInfoLog(byval program as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval infoLog as GLchar ptr)
 	declare sub glGetShaderiv(byval shader as GLuint, byval pname as GLenum, byval params as GLint ptr)
-	declare sub glGetShaderInfoLog(byval shader as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval infoLog as zstring ptr)
-	declare sub glGetShaderSource(byval shader as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval source as zstring ptr)
-	declare function glGetUniformLocation(byval program as GLuint, byval name as const zstring ptr) as GLint
+	declare sub glGetShaderInfoLog(byval shader as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval infoLog as GLchar ptr)
+	declare sub glGetShaderSource(byval shader as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval source as GLchar ptr)
+	declare function glGetUniformLocation(byval program as GLuint, byval name as const GLchar ptr) as GLint
 	declare sub glGetUniformfv(byval program as GLuint, byval location as GLint, byval params as GLfloat ptr)
 	declare sub glGetUniformiv(byval program as GLuint, byval location as GLint, byval params as GLint ptr)
 	declare sub glGetVertexAttribdv(byval index as GLuint, byval pname as GLenum, byval params as GLdouble ptr)
@@ -742,7 +742,7 @@ type PFNGLVERTEXATTRIBPOINTERPROC as sub(byval index as GLuint, byval size as GL
 	declare function glIsProgram(byval program as GLuint) as GLboolean
 	declare function glIsShader(byval shader as GLuint) as GLboolean
 	declare sub glLinkProgram(byval program as GLuint)
-	declare sub glShaderSource(byval shader as GLuint, byval count as GLsizei, byval string as const zstring const ptr ptr, byval length as const GLint ptr)
+	declare sub glShaderSource(byval shader as GLuint, byval count as GLsizei, byval string as const GLchar const ptr ptr, byval length as const GLint ptr)
 	declare sub glUseProgram(byval program as GLuint)
 	declare sub glUniform1f(byval location as GLint, byval v0 as GLfloat)
 	declare sub glUniform2f(byval location as GLint, byval v0 as GLfloat, byval v1 as GLfloat)
@@ -1078,8 +1078,8 @@ type PFNGLBEGINTRANSFORMFEEDBACKPROC as sub(byval primitiveMode as GLenum)
 type PFNGLENDTRANSFORMFEEDBACKPROC as sub()
 type PFNGLBINDBUFFERRANGEPROC as sub(byval target as GLenum, byval index as GLuint, byval buffer as GLuint, byval offset as GLintptr, byval size as GLsizeiptr)
 type PFNGLBINDBUFFERBASEPROC as sub(byval target as GLenum, byval index as GLuint, byval buffer as GLuint)
-type PFNGLTRANSFORMFEEDBACKVARYINGSPROC as sub(byval program as GLuint, byval count as GLsizei, byval varyings as const zstring const ptr ptr, byval bufferMode as GLenum)
-type PFNGLGETTRANSFORMFEEDBACKVARYINGPROC as sub(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLsizei ptr, byval type as GLenum ptr, byval name as zstring ptr)
+type PFNGLTRANSFORMFEEDBACKVARYINGSPROC as sub(byval program as GLuint, byval count as GLsizei, byval varyings as const GLchar const ptr ptr, byval bufferMode as GLenum)
+type PFNGLGETTRANSFORMFEEDBACKVARYINGPROC as sub(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLsizei ptr, byval type as GLenum ptr, byval name as GLchar ptr)
 type PFNGLCLAMPCOLORPROC as sub(byval target as GLenum, byval clamp as GLenum)
 type PFNGLBEGINCONDITIONALRENDERPROC as sub(byval id as GLuint, byval mode as GLenum)
 type PFNGLENDCONDITIONALRENDERPROC as sub()
@@ -1107,8 +1107,8 @@ type PFNGLVERTEXATTRIBI4SVPROC as sub(byval index as GLuint, byval v as const GL
 type PFNGLVERTEXATTRIBI4UBVPROC as sub(byval index as GLuint, byval v as const GLubyte ptr)
 type PFNGLVERTEXATTRIBI4USVPROC as sub(byval index as GLuint, byval v as const GLushort ptr)
 type PFNGLGETUNIFORMUIVPROC as sub(byval program as GLuint, byval location as GLint, byval params as GLuint ptr)
-type PFNGLBINDFRAGDATALOCATIONPROC as sub(byval program as GLuint, byval color as GLuint, byval name as const zstring ptr)
-type PFNGLGETFRAGDATALOCATIONPROC as function(byval program as GLuint, byval name as const zstring ptr) as GLint
+type PFNGLBINDFRAGDATALOCATIONPROC as sub(byval program as GLuint, byval color as GLuint, byval name as const GLchar ptr)
+type PFNGLGETFRAGDATALOCATIONPROC as function(byval program as GLuint, byval name as const GLchar ptr) as GLint
 type PFNGLUNIFORM1UIPROC as sub(byval location as GLint, byval v0 as GLuint)
 type PFNGLUNIFORM2UIPROC as sub(byval location as GLint, byval v0 as GLuint, byval v1 as GLuint)
 type PFNGLUNIFORM3UIPROC as sub(byval location as GLint, byval v0 as GLuint, byval v1 as GLuint, byval v2 as GLuint)
@@ -1164,8 +1164,8 @@ type PFNGLISVERTEXARRAYPROC as function(byval array as GLuint) as GLboolean
 	declare sub glEndTransformFeedback()
 	declare sub glBindBufferRange(byval target as GLenum, byval index as GLuint, byval buffer as GLuint, byval offset as GLintptr, byval size as GLsizeiptr)
 	declare sub glBindBufferBase(byval target as GLenum, byval index as GLuint, byval buffer as GLuint)
-	declare sub glTransformFeedbackVaryings(byval program as GLuint, byval count as GLsizei, byval varyings as const zstring const ptr ptr, byval bufferMode as GLenum)
-	declare sub glGetTransformFeedbackVarying(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLsizei ptr, byval type as GLenum ptr, byval name as zstring ptr)
+	declare sub glTransformFeedbackVaryings(byval program as GLuint, byval count as GLsizei, byval varyings as const GLchar const ptr ptr, byval bufferMode as GLenum)
+	declare sub glGetTransformFeedbackVarying(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLsizei ptr, byval type as GLenum ptr, byval name as GLchar ptr)
 	declare sub glClampColor(byval target as GLenum, byval clamp as GLenum)
 	declare sub glBeginConditionalRender(byval id as GLuint, byval mode as GLenum)
 	declare sub glEndConditionalRender()
@@ -1193,8 +1193,8 @@ type PFNGLISVERTEXARRAYPROC as function(byval array as GLuint) as GLboolean
 	declare sub glVertexAttribI4ubv(byval index as GLuint, byval v as const GLubyte ptr)
 	declare sub glVertexAttribI4usv(byval index as GLuint, byval v as const GLushort ptr)
 	declare sub glGetUniformuiv(byval program as GLuint, byval location as GLint, byval params as GLuint ptr)
-	declare sub glBindFragDataLocation(byval program as GLuint, byval color as GLuint, byval name as const zstring ptr)
-	declare function glGetFragDataLocation(byval program as GLuint, byval name as const zstring ptr) as GLint
+	declare sub glBindFragDataLocation(byval program as GLuint, byval color as GLuint, byval name as const GLchar ptr)
+	declare function glGetFragDataLocation(byval program as GLuint, byval name as const GLchar ptr) as GLint
 	declare sub glUniform1ui(byval location as GLint, byval v0 as GLuint)
 	declare sub glUniform2ui(byval location as GLint, byval v0 as GLuint, byval v1 as GLuint)
 	declare sub glUniform3ui(byval location as GLint, byval v0 as GLuint, byval v1 as GLuint, byval v2 as GLuint)
@@ -1308,12 +1308,12 @@ type PFNGLDRAWELEMENTSINSTANCEDPROC as sub(byval mode as GLenum, byval count as 
 type PFNGLTEXBUFFERPROC as sub(byval target as GLenum, byval internalformat as GLenum, byval buffer as GLuint)
 type PFNGLPRIMITIVERESTARTINDEXPROC as sub(byval index as GLuint)
 type PFNGLCOPYBUFFERSUBDATAPROC as sub(byval readTarget as GLenum, byval writeTarget as GLenum, byval readOffset as GLintptr, byval writeOffset as GLintptr, byval size as GLsizeiptr)
-type PFNGLGETUNIFORMINDICESPROC as sub(byval program as GLuint, byval uniformCount as GLsizei, byval uniformNames as const zstring const ptr ptr, byval uniformIndices as GLuint ptr)
+type PFNGLGETUNIFORMINDICESPROC as sub(byval program as GLuint, byval uniformCount as GLsizei, byval uniformNames as const GLchar const ptr ptr, byval uniformIndices as GLuint ptr)
 type PFNGLGETACTIVEUNIFORMSIVPROC as sub(byval program as GLuint, byval uniformCount as GLsizei, byval uniformIndices as const GLuint ptr, byval pname as GLenum, byval params as GLint ptr)
-type PFNGLGETACTIVEUNIFORMNAMEPROC as sub(byval program as GLuint, byval uniformIndex as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval uniformName as zstring ptr)
-type PFNGLGETUNIFORMBLOCKINDEXPROC as function(byval program as GLuint, byval uniformBlockName as const zstring ptr) as GLuint
+type PFNGLGETACTIVEUNIFORMNAMEPROC as sub(byval program as GLuint, byval uniformIndex as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval uniformName as GLchar ptr)
+type PFNGLGETUNIFORMBLOCKINDEXPROC as function(byval program as GLuint, byval uniformBlockName as const GLchar ptr) as GLuint
 type PFNGLGETACTIVEUNIFORMBLOCKIVPROC as sub(byval program as GLuint, byval uniformBlockIndex as GLuint, byval pname as GLenum, byval params as GLint ptr)
-type PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC as sub(byval program as GLuint, byval uniformBlockIndex as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval uniformBlockName as zstring ptr)
+type PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC as sub(byval program as GLuint, byval uniformBlockIndex as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval uniformBlockName as GLchar ptr)
 type PFNGLUNIFORMBLOCKBINDINGPROC as sub(byval program as GLuint, byval uniformBlockIndex as GLuint, byval uniformBlockBinding as GLuint)
 
 #ifdef GL_GLEXT_PROTOTYPES
@@ -1322,12 +1322,12 @@ type PFNGLUNIFORMBLOCKBINDINGPROC as sub(byval program as GLuint, byval uniformB
 	declare sub glTexBuffer(byval target as GLenum, byval internalformat as GLenum, byval buffer as GLuint)
 	declare sub glPrimitiveRestartIndex(byval index as GLuint)
 	declare sub glCopyBufferSubData(byval readTarget as GLenum, byval writeTarget as GLenum, byval readOffset as GLintptr, byval writeOffset as GLintptr, byval size as GLsizeiptr)
-	declare sub glGetUniformIndices(byval program as GLuint, byval uniformCount as GLsizei, byval uniformNames as const zstring const ptr ptr, byval uniformIndices as GLuint ptr)
+	declare sub glGetUniformIndices(byval program as GLuint, byval uniformCount as GLsizei, byval uniformNames as const GLchar const ptr ptr, byval uniformIndices as GLuint ptr)
 	declare sub glGetActiveUniformsiv(byval program as GLuint, byval uniformCount as GLsizei, byval uniformIndices as const GLuint ptr, byval pname as GLenum, byval params as GLint ptr)
-	declare sub glGetActiveUniformName(byval program as GLuint, byval uniformIndex as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval uniformName as zstring ptr)
-	declare function glGetUniformBlockIndex(byval program as GLuint, byval uniformBlockName as const zstring ptr) as GLuint
+	declare sub glGetActiveUniformName(byval program as GLuint, byval uniformIndex as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval uniformName as GLchar ptr)
+	declare function glGetUniformBlockIndex(byval program as GLuint, byval uniformBlockName as const GLchar ptr) as GLuint
 	declare sub glGetActiveUniformBlockiv(byval program as GLuint, byval uniformBlockIndex as GLuint, byval pname as GLenum, byval params as GLint ptr)
-	declare sub glGetActiveUniformBlockName(byval program as GLuint, byval uniformBlockIndex as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval uniformBlockName as zstring ptr)
+	declare sub glGetActiveUniformBlockName(byval program as GLuint, byval uniformBlockIndex as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval uniformBlockName as GLchar ptr)
 	declare sub glUniformBlockBinding(byval program as GLuint, byval uniformBlockIndex as GLuint, byval uniformBlockBinding as GLuint)
 #endif
 
@@ -1461,8 +1461,8 @@ const GL_TIME_ELAPSED = &h88BF
 const GL_TIMESTAMP = &h8E28
 const GL_INT_2_10_10_10_REV = &h8D9F
 
-type PFNGLBINDFRAGDATALOCATIONINDEXEDPROC as sub(byval program as GLuint, byval colorNumber as GLuint, byval index as GLuint, byval name as const zstring ptr)
-type PFNGLGETFRAGDATAINDEXPROC as function(byval program as GLuint, byval name as const zstring ptr) as GLint
+type PFNGLBINDFRAGDATALOCATIONINDEXEDPROC as sub(byval program as GLuint, byval colorNumber as GLuint, byval index as GLuint, byval name as const GLchar ptr)
+type PFNGLGETFRAGDATAINDEXPROC as function(byval program as GLuint, byval name as const GLchar ptr) as GLint
 type PFNGLGENSAMPLERSPROC as sub(byval count as GLsizei, byval samplers as GLuint ptr)
 type PFNGLDELETESAMPLERSPROC as sub(byval count as GLsizei, byval samplers as const GLuint ptr)
 type PFNGLISSAMPLERPROC as function(byval sampler as GLuint) as GLboolean
@@ -1521,8 +1521,8 @@ type PFNGLSECONDARYCOLORP3UIPROC as sub(byval type as GLenum, byval color as GLu
 type PFNGLSECONDARYCOLORP3UIVPROC as sub(byval type as GLenum, byval color as const GLuint ptr)
 
 #ifdef GL_GLEXT_PROTOTYPES
-	declare sub glBindFragDataLocationIndexed(byval program as GLuint, byval colorNumber as GLuint, byval index as GLuint, byval name as const zstring ptr)
-	declare function glGetFragDataIndex(byval program as GLuint, byval name as const zstring ptr) as GLint
+	declare sub glBindFragDataLocationIndexed(byval program as GLuint, byval colorNumber as GLuint, byval index as GLuint, byval name as const GLchar ptr)
+	declare function glGetFragDataIndex(byval program as GLuint, byval name as const GLchar ptr) as GLint
 	declare sub glGenSamplers(byval count as GLsizei, byval samplers as GLuint ptr)
 	declare sub glDeleteSamplers(byval count as GLsizei, byval samplers as const GLuint ptr)
 	declare function glIsSampler(byval sampler as GLuint) as GLboolean
@@ -1685,11 +1685,11 @@ type PFNGLUNIFORMMATRIX3X4DVPROC as sub(byval location as GLint, byval count as 
 type PFNGLUNIFORMMATRIX4X2DVPROC as sub(byval location as GLint, byval count as GLsizei, byval transpose as GLboolean, byval value as const GLdouble ptr)
 type PFNGLUNIFORMMATRIX4X3DVPROC as sub(byval location as GLint, byval count as GLsizei, byval transpose as GLboolean, byval value as const GLdouble ptr)
 type PFNGLGETUNIFORMDVPROC as sub(byval program as GLuint, byval location as GLint, byval params as GLdouble ptr)
-type PFNGLGETSUBROUTINEUNIFORMLOCATIONPROC as function(byval program as GLuint, byval shadertype as GLenum, byval name as const zstring ptr) as GLint
-type PFNGLGETSUBROUTINEINDEXPROC as function(byval program as GLuint, byval shadertype as GLenum, byval name as const zstring ptr) as GLuint
+type PFNGLGETSUBROUTINEUNIFORMLOCATIONPROC as function(byval program as GLuint, byval shadertype as GLenum, byval name as const GLchar ptr) as GLint
+type PFNGLGETSUBROUTINEINDEXPROC as function(byval program as GLuint, byval shadertype as GLenum, byval name as const GLchar ptr) as GLuint
 type PFNGLGETACTIVESUBROUTINEUNIFORMIVPROC as sub(byval program as GLuint, byval shadertype as GLenum, byval index as GLuint, byval pname as GLenum, byval values as GLint ptr)
-type PFNGLGETACTIVESUBROUTINEUNIFORMNAMEPROC as sub(byval program as GLuint, byval shadertype as GLenum, byval index as GLuint, byval bufsize as GLsizei, byval length as GLsizei ptr, byval name as zstring ptr)
-type PFNGLGETACTIVESUBROUTINENAMEPROC as sub(byval program as GLuint, byval shadertype as GLenum, byval index as GLuint, byval bufsize as GLsizei, byval length as GLsizei ptr, byval name as zstring ptr)
+type PFNGLGETACTIVESUBROUTINEUNIFORMNAMEPROC as sub(byval program as GLuint, byval shadertype as GLenum, byval index as GLuint, byval bufsize as GLsizei, byval length as GLsizei ptr, byval name as GLchar ptr)
+type PFNGLGETACTIVESUBROUTINENAMEPROC as sub(byval program as GLuint, byval shadertype as GLenum, byval index as GLuint, byval bufsize as GLsizei, byval length as GLsizei ptr, byval name as GLchar ptr)
 type PFNGLUNIFORMSUBROUTINESUIVPROC as sub(byval shadertype as GLenum, byval count as GLsizei, byval indices as const GLuint ptr)
 type PFNGLGETUNIFORMSUBROUTINEUIVPROC as sub(byval shadertype as GLenum, byval location as GLint, byval params as GLuint ptr)
 type PFNGLGETPROGRAMSTAGEIVPROC as sub(byval program as GLuint, byval shadertype as GLenum, byval pname as GLenum, byval values as GLint ptr)
@@ -1733,11 +1733,11 @@ type PFNGLGETQUERYINDEXEDIVPROC as sub(byval target as GLenum, byval index as GL
 	declare sub glUniformMatrix4x2dv(byval location as GLint, byval count as GLsizei, byval transpose as GLboolean, byval value as const GLdouble ptr)
 	declare sub glUniformMatrix4x3dv(byval location as GLint, byval count as GLsizei, byval transpose as GLboolean, byval value as const GLdouble ptr)
 	declare sub glGetUniformdv(byval program as GLuint, byval location as GLint, byval params as GLdouble ptr)
-	declare function glGetSubroutineUniformLocation(byval program as GLuint, byval shadertype as GLenum, byval name as const zstring ptr) as GLint
-	declare function glGetSubroutineIndex(byval program as GLuint, byval shadertype as GLenum, byval name as const zstring ptr) as GLuint
+	declare function glGetSubroutineUniformLocation(byval program as GLuint, byval shadertype as GLenum, byval name as const GLchar ptr) as GLint
+	declare function glGetSubroutineIndex(byval program as GLuint, byval shadertype as GLenum, byval name as const GLchar ptr) as GLuint
 	declare sub glGetActiveSubroutineUniformiv(byval program as GLuint, byval shadertype as GLenum, byval index as GLuint, byval pname as GLenum, byval values as GLint ptr)
-	declare sub glGetActiveSubroutineUniformName(byval program as GLuint, byval shadertype as GLenum, byval index as GLuint, byval bufsize as GLsizei, byval length as GLsizei ptr, byval name as zstring ptr)
-	declare sub glGetActiveSubroutineName(byval program as GLuint, byval shadertype as GLenum, byval index as GLuint, byval bufsize as GLsizei, byval length as GLsizei ptr, byval name as zstring ptr)
+	declare sub glGetActiveSubroutineUniformName(byval program as GLuint, byval shadertype as GLenum, byval index as GLuint, byval bufsize as GLsizei, byval length as GLsizei ptr, byval name as GLchar ptr)
+	declare sub glGetActiveSubroutineName(byval program as GLuint, byval shadertype as GLenum, byval index as GLuint, byval bufsize as GLsizei, byval length as GLsizei ptr, byval name as GLchar ptr)
 	declare sub glUniformSubroutinesuiv(byval shadertype as GLenum, byval count as GLsizei, byval indices as const GLuint ptr)
 	declare sub glGetUniformSubroutineuiv(byval shadertype as GLenum, byval location as GLint, byval params as GLuint ptr)
 	declare sub glGetProgramStageiv(byval program as GLuint, byval shadertype as GLenum, byval pname as GLenum, byval values as GLint ptr)
@@ -1803,7 +1803,7 @@ type PFNGLPROGRAMBINARYPROC as sub(byval program as GLuint, byval binaryFormat a
 type PFNGLPROGRAMPARAMETERIPROC as sub(byval program as GLuint, byval pname as GLenum, byval value as GLint)
 type PFNGLUSEPROGRAMSTAGESPROC as sub(byval pipeline as GLuint, byval stages as GLbitfield, byval program as GLuint)
 type PFNGLACTIVESHADERPROGRAMPROC as sub(byval pipeline as GLuint, byval program as GLuint)
-type PFNGLCREATESHADERPROGRAMVPROC as function(byval type as GLenum, byval count as GLsizei, byval strings as const zstring const ptr ptr) as GLuint
+type PFNGLCREATESHADERPROGRAMVPROC as function(byval type as GLenum, byval count as GLsizei, byval strings as const GLchar const ptr ptr) as GLuint
 type PFNGLBINDPROGRAMPIPELINEPROC as sub(byval pipeline as GLuint)
 type PFNGLDELETEPROGRAMPIPELINESPROC as sub(byval n as GLsizei, byval pipelines as const GLuint ptr)
 type PFNGLGENPROGRAMPIPELINESPROC as sub(byval n as GLsizei, byval pipelines as GLuint ptr)
@@ -1860,7 +1860,7 @@ type PFNGLPROGRAMUNIFORMMATRIX4X2DVPROC as sub(byval program as GLuint, byval lo
 type PFNGLPROGRAMUNIFORMMATRIX3X4DVPROC as sub(byval program as GLuint, byval location as GLint, byval count as GLsizei, byval transpose as GLboolean, byval value as const GLdouble ptr)
 type PFNGLPROGRAMUNIFORMMATRIX4X3DVPROC as sub(byval program as GLuint, byval location as GLint, byval count as GLsizei, byval transpose as GLboolean, byval value as const GLdouble ptr)
 type PFNGLVALIDATEPROGRAMPIPELINEPROC as sub(byval pipeline as GLuint)
-type PFNGLGETPROGRAMPIPELINEINFOLOGPROC as sub(byval pipeline as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval infoLog as zstring ptr)
+type PFNGLGETPROGRAMPIPELINEINFOLOGPROC as sub(byval pipeline as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval infoLog as GLchar ptr)
 type PFNGLVERTEXATTRIBL1DPROC as sub(byval index as GLuint, byval x as GLdouble)
 type PFNGLVERTEXATTRIBL2DPROC as sub(byval index as GLuint, byval x as GLdouble, byval y as GLdouble)
 type PFNGLVERTEXATTRIBL3DPROC as sub(byval index as GLuint, byval x as GLdouble, byval y as GLdouble, byval z as GLdouble)
@@ -1893,7 +1893,7 @@ type PFNGLGETDOUBLEI_VPROC as sub(byval target as GLenum, byval index as GLuint,
 	declare sub glProgramParameteri(byval program as GLuint, byval pname as GLenum, byval value as GLint)
 	declare sub glUseProgramStages(byval pipeline as GLuint, byval stages as GLbitfield, byval program as GLuint)
 	declare sub glActiveShaderProgram(byval pipeline as GLuint, byval program as GLuint)
-	declare function glCreateShaderProgramv(byval type as GLenum, byval count as GLsizei, byval strings as const zstring const ptr ptr) as GLuint
+	declare function glCreateShaderProgramv(byval type as GLenum, byval count as GLsizei, byval strings as const GLchar const ptr ptr) as GLuint
 	declare sub glBindProgramPipeline(byval pipeline as GLuint)
 	declare sub glDeleteProgramPipelines(byval n as GLsizei, byval pipelines as const GLuint ptr)
 	declare sub glGenProgramPipelines(byval n as GLsizei, byval pipelines as GLuint ptr)
@@ -1950,7 +1950,7 @@ type PFNGLGETDOUBLEI_VPROC as sub(byval target as GLenum, byval index as GLuint,
 	declare sub glProgramUniformMatrix3x4dv(byval program as GLuint, byval location as GLint, byval count as GLsizei, byval transpose as GLboolean, byval value as const GLdouble ptr)
 	declare sub glProgramUniformMatrix4x3dv(byval program as GLuint, byval location as GLint, byval count as GLsizei, byval transpose as GLboolean, byval value as const GLdouble ptr)
 	declare sub glValidateProgramPipeline(byval pipeline as GLuint)
-	declare sub glGetProgramPipelineInfoLog(byval pipeline as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval infoLog as zstring ptr)
+	declare sub glGetProgramPipelineInfoLog(byval pipeline as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval infoLog as GLchar ptr)
 	declare sub glVertexAttribL1d(byval index as GLuint, byval x as GLdouble)
 	declare sub glVertexAttribL2d(byval index as GLuint, byval x as GLdouble, byval y as GLdouble)
 	declare sub glVertexAttribL3d(byval index as GLuint, byval x as GLdouble, byval y as GLdouble, byval z as GLdouble)
@@ -2116,7 +2116,7 @@ type PFNGLDRAWTRANSFORMFEEDBACKSTREAMINSTANCEDPROC as sub(byval mode as GLenum, 
 #endif
 
 const GL_VERSION_4_3 = 1
-type GLDEBUGPROC as sub(byval source as GLenum, byval type as GLenum, byval id as GLuint, byval severity as GLenum, byval length as GLsizei, byval message as const zstring ptr, byval userParam as const any ptr)
+type GLDEBUGPROC as sub(byval source as GLenum, byval type as GLenum, byval id as GLuint, byval severity as GLenum, byval length as GLsizei, byval message as const GLchar ptr, byval userParam as const any ptr)
 const GL_NUM_SHADING_LANGUAGE_VERSIONS = &h82E9
 const GL_VERTEX_ATTRIB_ARRAY_LONG = &h874E
 const GL_COMPRESSED_RGB8_ETC2 = &h9274
@@ -2394,11 +2394,11 @@ type PFNGLINVALIDATESUBFRAMEBUFFERPROC as sub(byval target as GLenum, byval numA
 type PFNGLMULTIDRAWARRAYSINDIRECTPROC as sub(byval mode as GLenum, byval indirect as const any ptr, byval drawcount as GLsizei, byval stride as GLsizei)
 type PFNGLMULTIDRAWELEMENTSINDIRECTPROC as sub(byval mode as GLenum, byval type as GLenum, byval indirect as const any ptr, byval drawcount as GLsizei, byval stride as GLsizei)
 type PFNGLGETPROGRAMINTERFACEIVPROC as sub(byval program as GLuint, byval programInterface as GLenum, byval pname as GLenum, byval params as GLint ptr)
-type PFNGLGETPROGRAMRESOURCEINDEXPROC as function(byval program as GLuint, byval programInterface as GLenum, byval name as const zstring ptr) as GLuint
-type PFNGLGETPROGRAMRESOURCENAMEPROC as sub(byval program as GLuint, byval programInterface as GLenum, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval name as zstring ptr)
+type PFNGLGETPROGRAMRESOURCEINDEXPROC as function(byval program as GLuint, byval programInterface as GLenum, byval name as const GLchar ptr) as GLuint
+type PFNGLGETPROGRAMRESOURCENAMEPROC as sub(byval program as GLuint, byval programInterface as GLenum, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval name as GLchar ptr)
 type PFNGLGETPROGRAMRESOURCEIVPROC as sub(byval program as GLuint, byval programInterface as GLenum, byval index as GLuint, byval propCount as GLsizei, byval props as const GLenum ptr, byval bufSize as GLsizei, byval length as GLsizei ptr, byval params as GLint ptr)
-type PFNGLGETPROGRAMRESOURCELOCATIONPROC as function(byval program as GLuint, byval programInterface as GLenum, byval name as const zstring ptr) as GLint
-type PFNGLGETPROGRAMRESOURCELOCATIONINDEXPROC as function(byval program as GLuint, byval programInterface as GLenum, byval name as const zstring ptr) as GLint
+type PFNGLGETPROGRAMRESOURCELOCATIONPROC as function(byval program as GLuint, byval programInterface as GLenum, byval name as const GLchar ptr) as GLint
+type PFNGLGETPROGRAMRESOURCELOCATIONINDEXPROC as function(byval program as GLuint, byval programInterface as GLenum, byval name as const GLchar ptr) as GLint
 type PFNGLSHADERSTORAGEBLOCKBINDINGPROC as sub(byval program as GLuint, byval storageBlockIndex as GLuint, byval storageBlockBinding as GLuint)
 type PFNGLTEXBUFFERRANGEPROC as sub(byval target as GLenum, byval internalformat as GLenum, byval buffer as GLuint, byval offset as GLintptr, byval size as GLsizeiptr)
 type PFNGLTEXSTORAGE2DMULTISAMPLEPROC as sub(byval target as GLenum, byval samples as GLsizei, byval internalformat as GLenum, byval width as GLsizei, byval height as GLsizei, byval fixedsamplelocations as GLboolean)
@@ -2411,15 +2411,15 @@ type PFNGLVERTEXATTRIBLFORMATPROC as sub(byval attribindex as GLuint, byval size
 type PFNGLVERTEXATTRIBBINDINGPROC as sub(byval attribindex as GLuint, byval bindingindex as GLuint)
 type PFNGLVERTEXBINDINGDIVISORPROC as sub(byval bindingindex as GLuint, byval divisor as GLuint)
 type PFNGLDEBUGMESSAGECONTROLPROC as sub(byval source as GLenum, byval type as GLenum, byval severity as GLenum, byval count as GLsizei, byval ids as const GLuint ptr, byval enabled as GLboolean)
-type PFNGLDEBUGMESSAGEINSERTPROC as sub(byval source as GLenum, byval type as GLenum, byval id as GLuint, byval severity as GLenum, byval length as GLsizei, byval buf as const zstring ptr)
+type PFNGLDEBUGMESSAGEINSERTPROC as sub(byval source as GLenum, byval type as GLenum, byval id as GLuint, byval severity as GLenum, byval length as GLsizei, byval buf as const GLchar ptr)
 type PFNGLDEBUGMESSAGECALLBACKPROC as sub(byval callback as GLDEBUGPROC, byval userParam as const any ptr)
-type PFNGLGETDEBUGMESSAGELOGPROC as function(byval count as GLuint, byval bufSize as GLsizei, byval sources as GLenum ptr, byval types as GLenum ptr, byval ids as GLuint ptr, byval severities as GLenum ptr, byval lengths as GLsizei ptr, byval messageLog as zstring ptr) as GLuint
-type PFNGLPUSHDEBUGGROUPPROC as sub(byval source as GLenum, byval id as GLuint, byval length as GLsizei, byval message as const zstring ptr)
+type PFNGLGETDEBUGMESSAGELOGPROC as function(byval count as GLuint, byval bufSize as GLsizei, byval sources as GLenum ptr, byval types as GLenum ptr, byval ids as GLuint ptr, byval severities as GLenum ptr, byval lengths as GLsizei ptr, byval messageLog as GLchar ptr) as GLuint
+type PFNGLPUSHDEBUGGROUPPROC as sub(byval source as GLenum, byval id as GLuint, byval length as GLsizei, byval message as const GLchar ptr)
 type PFNGLPOPDEBUGGROUPPROC as sub()
-type PFNGLOBJECTLABELPROC as sub(byval identifier as GLenum, byval name as GLuint, byval length as GLsizei, byval label as const zstring ptr)
-type PFNGLGETOBJECTLABELPROC as sub(byval identifier as GLenum, byval name as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval label as zstring ptr)
-type PFNGLOBJECTPTRLABELPROC as sub(byval ptr as const any ptr, byval length as GLsizei, byval label as const zstring ptr)
-type PFNGLGETOBJECTPTRLABELPROC as sub(byval ptr as const any ptr, byval bufSize as GLsizei, byval length as GLsizei ptr, byval label as zstring ptr)
+type PFNGLOBJECTLABELPROC as sub(byval identifier as GLenum, byval name as GLuint, byval length as GLsizei, byval label as const GLchar ptr)
+type PFNGLGETOBJECTLABELPROC as sub(byval identifier as GLenum, byval name as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval label as GLchar ptr)
+type PFNGLOBJECTPTRLABELPROC as sub(byval ptr as const any ptr, byval length as GLsizei, byval label as const GLchar ptr)
+type PFNGLGETOBJECTPTRLABELPROC as sub(byval ptr as const any ptr, byval bufSize as GLsizei, byval length as GLsizei ptr, byval label as GLchar ptr)
 
 #ifdef GL_GLEXT_PROTOTYPES
 	declare sub glClearBufferData(byval target as GLenum, byval internalformat as GLenum, byval format as GLenum, byval type as GLenum, byval data as const any ptr)
@@ -2439,11 +2439,11 @@ type PFNGLGETOBJECTPTRLABELPROC as sub(byval ptr as const any ptr, byval bufSize
 	declare sub glMultiDrawArraysIndirect(byval mode as GLenum, byval indirect as const any ptr, byval drawcount as GLsizei, byval stride as GLsizei)
 	declare sub glMultiDrawElementsIndirect(byval mode as GLenum, byval type as GLenum, byval indirect as const any ptr, byval drawcount as GLsizei, byval stride as GLsizei)
 	declare sub glGetProgramInterfaceiv(byval program as GLuint, byval programInterface as GLenum, byval pname as GLenum, byval params as GLint ptr)
-	declare function glGetProgramResourceIndex(byval program as GLuint, byval programInterface as GLenum, byval name as const zstring ptr) as GLuint
-	declare sub glGetProgramResourceName(byval program as GLuint, byval programInterface as GLenum, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval name as zstring ptr)
+	declare function glGetProgramResourceIndex(byval program as GLuint, byval programInterface as GLenum, byval name as const GLchar ptr) as GLuint
+	declare sub glGetProgramResourceName(byval program as GLuint, byval programInterface as GLenum, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval name as GLchar ptr)
 	declare sub glGetProgramResourceiv(byval program as GLuint, byval programInterface as GLenum, byval index as GLuint, byval propCount as GLsizei, byval props as const GLenum ptr, byval bufSize as GLsizei, byval length as GLsizei ptr, byval params as GLint ptr)
-	declare function glGetProgramResourceLocation(byval program as GLuint, byval programInterface as GLenum, byval name as const zstring ptr) as GLint
-	declare function glGetProgramResourceLocationIndex(byval program as GLuint, byval programInterface as GLenum, byval name as const zstring ptr) as GLint
+	declare function glGetProgramResourceLocation(byval program as GLuint, byval programInterface as GLenum, byval name as const GLchar ptr) as GLint
+	declare function glGetProgramResourceLocationIndex(byval program as GLuint, byval programInterface as GLenum, byval name as const GLchar ptr) as GLint
 	declare sub glShaderStorageBlockBinding(byval program as GLuint, byval storageBlockIndex as GLuint, byval storageBlockBinding as GLuint)
 	declare sub glTexBufferRange(byval target as GLenum, byval internalformat as GLenum, byval buffer as GLuint, byval offset as GLintptr, byval size as GLsizeiptr)
 	declare sub glTexStorage2DMultisample(byval target as GLenum, byval samples as GLsizei, byval internalformat as GLenum, byval width as GLsizei, byval height as GLsizei, byval fixedsamplelocations as GLboolean)
@@ -2456,15 +2456,15 @@ type PFNGLGETOBJECTPTRLABELPROC as sub(byval ptr as const any ptr, byval bufSize
 	declare sub glVertexAttribBinding(byval attribindex as GLuint, byval bindingindex as GLuint)
 	declare sub glVertexBindingDivisor(byval bindingindex as GLuint, byval divisor as GLuint)
 	declare sub glDebugMessageControl(byval source as GLenum, byval type as GLenum, byval severity as GLenum, byval count as GLsizei, byval ids as const GLuint ptr, byval enabled as GLboolean)
-	declare sub glDebugMessageInsert(byval source as GLenum, byval type as GLenum, byval id as GLuint, byval severity as GLenum, byval length as GLsizei, byval buf as const zstring ptr)
+	declare sub glDebugMessageInsert(byval source as GLenum, byval type as GLenum, byval id as GLuint, byval severity as GLenum, byval length as GLsizei, byval buf as const GLchar ptr)
 	declare sub glDebugMessageCallback(byval callback as GLDEBUGPROC, byval userParam as const any ptr)
-	declare function glGetDebugMessageLog(byval count as GLuint, byval bufSize as GLsizei, byval sources as GLenum ptr, byval types as GLenum ptr, byval ids as GLuint ptr, byval severities as GLenum ptr, byval lengths as GLsizei ptr, byval messageLog as zstring ptr) as GLuint
-	declare sub glPushDebugGroup(byval source as GLenum, byval id as GLuint, byval length as GLsizei, byval message as const zstring ptr)
+	declare function glGetDebugMessageLog(byval count as GLuint, byval bufSize as GLsizei, byval sources as GLenum ptr, byval types as GLenum ptr, byval ids as GLuint ptr, byval severities as GLenum ptr, byval lengths as GLsizei ptr, byval messageLog as GLchar ptr) as GLuint
+	declare sub glPushDebugGroup(byval source as GLenum, byval id as GLuint, byval length as GLsizei, byval message as const GLchar ptr)
 	declare sub glPopDebugGroup()
-	declare sub glObjectLabel(byval identifier as GLenum, byval name as GLuint, byval length as GLsizei, byval label as const zstring ptr)
-	declare sub glGetObjectLabel(byval identifier as GLenum, byval name as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval label as zstring ptr)
-	declare sub glObjectPtrLabel(byval ptr as const any ptr, byval length as GLsizei, byval label as const zstring ptr)
-	declare sub glGetObjectPtrLabel(byval ptr as const any ptr, byval bufSize as GLsizei, byval length as GLsizei ptr, byval label as zstring ptr)
+	declare sub glObjectLabel(byval identifier as GLenum, byval name as GLuint, byval length as GLsizei, byval label as const GLchar ptr)
+	declare sub glGetObjectLabel(byval identifier as GLenum, byval name as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval label as GLchar ptr)
+	declare sub glObjectPtrLabel(byval ptr as const any ptr, byval length as GLsizei, byval label as const GLchar ptr)
+	declare sub glGetObjectPtrLabel(byval ptr as const any ptr, byval bufSize as GLsizei, byval length as GLsizei ptr, byval label as GLchar ptr)
 #endif
 
 const GL_VERSION_4_4 = 1
@@ -2877,7 +2877,7 @@ const GL_ARB_copy_buffer = 1
 const GL_ARB_copy_image = 1
 const GL_ARB_cull_distance = 1
 const GL_ARB_debug_output = 1
-type GLDEBUGPROCARB as sub(byval source as GLenum, byval type as GLenum, byval id as GLuint, byval severity as GLenum, byval length as GLsizei, byval message as const zstring ptr, byval userParam as const any ptr)
+type GLDEBUGPROCARB as sub(byval source as GLenum, byval type as GLenum, byval id as GLuint, byval severity as GLenum, byval length as GLsizei, byval message as const GLchar ptr, byval userParam as const any ptr)
 const GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB = &h8242
 const GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH_ARB = &h8243
 const GL_DEBUG_CALLBACK_FUNCTION_ARB = &h8244
@@ -2902,15 +2902,15 @@ const GL_DEBUG_SEVERITY_MEDIUM_ARB = &h9147
 const GL_DEBUG_SEVERITY_LOW_ARB = &h9148
 
 type PFNGLDEBUGMESSAGECONTROLARBPROC as sub(byval source as GLenum, byval type as GLenum, byval severity as GLenum, byval count as GLsizei, byval ids as const GLuint ptr, byval enabled as GLboolean)
-type PFNGLDEBUGMESSAGEINSERTARBPROC as sub(byval source as GLenum, byval type as GLenum, byval id as GLuint, byval severity as GLenum, byval length as GLsizei, byval buf as const zstring ptr)
+type PFNGLDEBUGMESSAGEINSERTARBPROC as sub(byval source as GLenum, byval type as GLenum, byval id as GLuint, byval severity as GLenum, byval length as GLsizei, byval buf as const GLchar ptr)
 type PFNGLDEBUGMESSAGECALLBACKARBPROC as sub(byval callback as GLDEBUGPROCARB, byval userParam as const any ptr)
-type PFNGLGETDEBUGMESSAGELOGARBPROC as function(byval count as GLuint, byval bufSize as GLsizei, byval sources as GLenum ptr, byval types as GLenum ptr, byval ids as GLuint ptr, byval severities as GLenum ptr, byval lengths as GLsizei ptr, byval messageLog as zstring ptr) as GLuint
+type PFNGLGETDEBUGMESSAGELOGARBPROC as function(byval count as GLuint, byval bufSize as GLsizei, byval sources as GLenum ptr, byval types as GLenum ptr, byval ids as GLuint ptr, byval severities as GLenum ptr, byval lengths as GLsizei ptr, byval messageLog as GLchar ptr) as GLuint
 
 #ifdef GL_GLEXT_PROTOTYPES
 	declare sub glDebugMessageControlARB(byval source as GLenum, byval type as GLenum, byval severity as GLenum, byval count as GLsizei, byval ids as const GLuint ptr, byval enabled as GLboolean)
-	declare sub glDebugMessageInsertARB(byval source as GLenum, byval type as GLenum, byval id as GLuint, byval severity as GLenum, byval length as GLsizei, byval buf as const zstring ptr)
+	declare sub glDebugMessageInsertARB(byval source as GLenum, byval type as GLenum, byval id as GLuint, byval severity as GLenum, byval length as GLsizei, byval buf as const GLchar ptr)
 	declare sub glDebugMessageCallbackARB(byval callback as GLDEBUGPROCARB, byval userParam as const any ptr)
-	declare function glGetDebugMessageLogARB(byval count as GLuint, byval bufSize as GLsizei, byval sources as GLenum ptr, byval types as GLenum ptr, byval ids as GLuint ptr, byval severities as GLenum ptr, byval lengths as GLsizei ptr, byval messageLog as zstring ptr) as GLuint
+	declare function glGetDebugMessageLogARB(byval count as GLuint, byval bufSize as GLsizei, byval sources as GLenum ptr, byval types as GLenum ptr, byval ids as GLuint ptr, byval severities as GLenum ptr, byval lengths as GLsizei ptr, byval messageLog as GLchar ptr) as GLuint
 #endif
 
 const GL_ARB_depth_buffer_float = 1
@@ -3639,7 +3639,7 @@ type PFNGLDELETEOBJECTARBPROC as sub(byval obj as GLhandleARB)
 type PFNGLGETHANDLEARBPROC as function(byval pname as GLenum) as GLhandleARB
 type PFNGLDETACHOBJECTARBPROC as sub(byval containerObj as GLhandleARB, byval attachedObj as GLhandleARB)
 type PFNGLCREATESHADEROBJECTARBPROC as function(byval shaderType as GLenum) as GLhandleARB
-type PFNGLSHADERSOURCEARBPROC as sub(byval shaderObj as GLhandleARB, byval count as GLsizei, byval string as const zstring ptr ptr, byval length as const GLint ptr)
+type PFNGLSHADERSOURCEARBPROC as sub(byval shaderObj as GLhandleARB, byval count as GLsizei, byval string as const GLcharARB ptr ptr, byval length as const GLint ptr)
 type PFNGLCOMPILESHADERARBPROC as sub(byval shaderObj as GLhandleARB)
 type PFNGLCREATEPROGRAMOBJECTARBPROC as function() as GLhandleARB
 type PFNGLATTACHOBJECTARBPROC as sub(byval containerObj as GLhandleARB, byval obj as GLhandleARB)
@@ -3667,20 +3667,20 @@ type PFNGLUNIFORMMATRIX3FVARBPROC as sub(byval location as GLint, byval count as
 type PFNGLUNIFORMMATRIX4FVARBPROC as sub(byval location as GLint, byval count as GLsizei, byval transpose as GLboolean, byval value as const GLfloat ptr)
 type PFNGLGETOBJECTPARAMETERFVARBPROC as sub(byval obj as GLhandleARB, byval pname as GLenum, byval params as GLfloat ptr)
 type PFNGLGETOBJECTPARAMETERIVARBPROC as sub(byval obj as GLhandleARB, byval pname as GLenum, byval params as GLint ptr)
-type PFNGLGETINFOLOGARBPROC as sub(byval obj as GLhandleARB, byval maxLength as GLsizei, byval length as GLsizei ptr, byval infoLog as zstring ptr)
+type PFNGLGETINFOLOGARBPROC as sub(byval obj as GLhandleARB, byval maxLength as GLsizei, byval length as GLsizei ptr, byval infoLog as GLcharARB ptr)
 type PFNGLGETATTACHEDOBJECTSARBPROC as sub(byval containerObj as GLhandleARB, byval maxCount as GLsizei, byval count as GLsizei ptr, byval obj as GLhandleARB ptr)
-type PFNGLGETUNIFORMLOCATIONARBPROC as function(byval programObj as GLhandleARB, byval name as const zstring ptr) as GLint
-type PFNGLGETACTIVEUNIFORMARBPROC as sub(byval programObj as GLhandleARB, byval index as GLuint, byval maxLength as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as zstring ptr)
+type PFNGLGETUNIFORMLOCATIONARBPROC as function(byval programObj as GLhandleARB, byval name as const GLcharARB ptr) as GLint
+type PFNGLGETACTIVEUNIFORMARBPROC as sub(byval programObj as GLhandleARB, byval index as GLuint, byval maxLength as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as GLcharARB ptr)
 type PFNGLGETUNIFORMFVARBPROC as sub(byval programObj as GLhandleARB, byval location as GLint, byval params as GLfloat ptr)
 type PFNGLGETUNIFORMIVARBPROC as sub(byval programObj as GLhandleARB, byval location as GLint, byval params as GLint ptr)
-type PFNGLGETSHADERSOURCEARBPROC as sub(byval obj as GLhandleARB, byval maxLength as GLsizei, byval length as GLsizei ptr, byval source as zstring ptr)
+type PFNGLGETSHADERSOURCEARBPROC as sub(byval obj as GLhandleARB, byval maxLength as GLsizei, byval length as GLsizei ptr, byval source as GLcharARB ptr)
 
 #ifdef GL_GLEXT_PROTOTYPES
 	declare sub glDeleteObjectARB(byval obj as GLhandleARB)
 	declare function glGetHandleARB(byval pname as GLenum) as GLhandleARB
 	declare sub glDetachObjectARB(byval containerObj as GLhandleARB, byval attachedObj as GLhandleARB)
 	declare function glCreateShaderObjectARB(byval shaderType as GLenum) as GLhandleARB
-	declare sub glShaderSourceARB(byval shaderObj as GLhandleARB, byval count as GLsizei, byval string as const zstring ptr ptr, byval length as const GLint ptr)
+	declare sub glShaderSourceARB(byval shaderObj as GLhandleARB, byval count as GLsizei, byval string as const GLcharARB ptr ptr, byval length as const GLint ptr)
 	declare sub glCompileShaderARB(byval shaderObj as GLhandleARB)
 	declare function glCreateProgramObjectARB() as GLhandleARB
 	declare sub glAttachObjectARB(byval containerObj as GLhandleARB, byval obj as GLhandleARB)
@@ -3708,13 +3708,13 @@ type PFNGLGETSHADERSOURCEARBPROC as sub(byval obj as GLhandleARB, byval maxLengt
 	declare sub glUniformMatrix4fvARB(byval location as GLint, byval count as GLsizei, byval transpose as GLboolean, byval value as const GLfloat ptr)
 	declare sub glGetObjectParameterfvARB(byval obj as GLhandleARB, byval pname as GLenum, byval params as GLfloat ptr)
 	declare sub glGetObjectParameterivARB(byval obj as GLhandleARB, byval pname as GLenum, byval params as GLint ptr)
-	declare sub glGetInfoLogARB(byval obj as GLhandleARB, byval maxLength as GLsizei, byval length as GLsizei ptr, byval infoLog as zstring ptr)
+	declare sub glGetInfoLogARB(byval obj as GLhandleARB, byval maxLength as GLsizei, byval length as GLsizei ptr, byval infoLog as GLcharARB ptr)
 	declare sub glGetAttachedObjectsARB(byval containerObj as GLhandleARB, byval maxCount as GLsizei, byval count as GLsizei ptr, byval obj as GLhandleARB ptr)
-	declare function glGetUniformLocationARB(byval programObj as GLhandleARB, byval name as const zstring ptr) as GLint
-	declare sub glGetActiveUniformARB(byval programObj as GLhandleARB, byval index as GLuint, byval maxLength as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as zstring ptr)
+	declare function glGetUniformLocationARB(byval programObj as GLhandleARB, byval name as const GLcharARB ptr) as GLint
+	declare sub glGetActiveUniformARB(byval programObj as GLhandleARB, byval index as GLuint, byval maxLength as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as GLcharARB ptr)
 	declare sub glGetUniformfvARB(byval programObj as GLhandleARB, byval location as GLint, byval params as GLfloat ptr)
 	declare sub glGetUniformivARB(byval programObj as GLhandleARB, byval location as GLint, byval params as GLint ptr)
-	declare sub glGetShaderSourceARB(byval obj as GLhandleARB, byval maxLength as GLsizei, byval length as GLsizei ptr, byval source as zstring ptr)
+	declare sub glGetShaderSourceARB(byval obj as GLhandleARB, byval maxLength as GLsizei, byval length as GLsizei ptr, byval source as GLcharARB ptr)
 #endif
 
 const GL_ARB_shader_precision = 1
@@ -3731,20 +3731,20 @@ const GL_SHADER_INCLUDE_ARB = &h8DAE
 const GL_NAMED_STRING_LENGTH_ARB = &h8DE9
 const GL_NAMED_STRING_TYPE_ARB = &h8DEA
 
-type PFNGLNAMEDSTRINGARBPROC as sub(byval type as GLenum, byval namelen as GLint, byval name as const zstring ptr, byval stringlen as GLint, byval string as const zstring ptr)
-type PFNGLDELETENAMEDSTRINGARBPROC as sub(byval namelen as GLint, byval name as const zstring ptr)
-type PFNGLCOMPILESHADERINCLUDEARBPROC as sub(byval shader as GLuint, byval count as GLsizei, byval path as const zstring const ptr ptr, byval length as const GLint ptr)
-type PFNGLISNAMEDSTRINGARBPROC as function(byval namelen as GLint, byval name as const zstring ptr) as GLboolean
-type PFNGLGETNAMEDSTRINGARBPROC as sub(byval namelen as GLint, byval name as const zstring ptr, byval bufSize as GLsizei, byval stringlen as GLint ptr, byval string as zstring ptr)
-type PFNGLGETNAMEDSTRINGIVARBPROC as sub(byval namelen as GLint, byval name as const zstring ptr, byval pname as GLenum, byval params as GLint ptr)
+type PFNGLNAMEDSTRINGARBPROC as sub(byval type as GLenum, byval namelen as GLint, byval name as const GLchar ptr, byval stringlen as GLint, byval string as const GLchar ptr)
+type PFNGLDELETENAMEDSTRINGARBPROC as sub(byval namelen as GLint, byval name as const GLchar ptr)
+type PFNGLCOMPILESHADERINCLUDEARBPROC as sub(byval shader as GLuint, byval count as GLsizei, byval path as const GLchar const ptr ptr, byval length as const GLint ptr)
+type PFNGLISNAMEDSTRINGARBPROC as function(byval namelen as GLint, byval name as const GLchar ptr) as GLboolean
+type PFNGLGETNAMEDSTRINGARBPROC as sub(byval namelen as GLint, byval name as const GLchar ptr, byval bufSize as GLsizei, byval stringlen as GLint ptr, byval string as GLchar ptr)
+type PFNGLGETNAMEDSTRINGIVARBPROC as sub(byval namelen as GLint, byval name as const GLchar ptr, byval pname as GLenum, byval params as GLint ptr)
 
 #ifdef GL_GLEXT_PROTOTYPES
-	declare sub glNamedStringARB(byval type as GLenum, byval namelen as GLint, byval name as const zstring ptr, byval stringlen as GLint, byval string as const zstring ptr)
-	declare sub glDeleteNamedStringARB(byval namelen as GLint, byval name as const zstring ptr)
-	declare sub glCompileShaderIncludeARB(byval shader as GLuint, byval count as GLsizei, byval path as const zstring const ptr ptr, byval length as const GLint ptr)
-	declare function glIsNamedStringARB(byval namelen as GLint, byval name as const zstring ptr) as GLboolean
-	declare sub glGetNamedStringARB(byval namelen as GLint, byval name as const zstring ptr, byval bufSize as GLsizei, byval stringlen as GLint ptr, byval string as zstring ptr)
-	declare sub glGetNamedStringivARB(byval namelen as GLint, byval name as const zstring ptr, byval pname as GLenum, byval params as GLint ptr)
+	declare sub glNamedStringARB(byval type as GLenum, byval namelen as GLint, byval name as const GLchar ptr, byval stringlen as GLint, byval string as const GLchar ptr)
+	declare sub glDeleteNamedStringARB(byval namelen as GLint, byval name as const GLchar ptr)
+	declare sub glCompileShaderIncludeARB(byval shader as GLuint, byval count as GLsizei, byval path as const GLchar const ptr ptr, byval length as const GLint ptr)
+	declare function glIsNamedStringARB(byval namelen as GLint, byval name as const GLchar ptr) as GLboolean
+	declare sub glGetNamedStringARB(byval namelen as GLint, byval name as const GLchar ptr, byval bufSize as GLsizei, byval stringlen as GLint ptr, byval string as GLchar ptr)
+	declare sub glGetNamedStringivARB(byval namelen as GLint, byval name as const GLchar ptr, byval pname as GLenum, byval params as GLint ptr)
 #endif
 
 const GL_ARB_shading_language_packing = 1
@@ -4212,14 +4212,14 @@ const GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS_ARB = &h8B4D
 const GL_OBJECT_ACTIVE_ATTRIBUTES_ARB = &h8B89
 const GL_OBJECT_ACTIVE_ATTRIBUTE_MAX_LENGTH_ARB = &h8B8A
 
-type PFNGLBINDATTRIBLOCATIONARBPROC as sub(byval programObj as GLhandleARB, byval index as GLuint, byval name as const zstring ptr)
-type PFNGLGETACTIVEATTRIBARBPROC as sub(byval programObj as GLhandleARB, byval index as GLuint, byval maxLength as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as zstring ptr)
-type PFNGLGETATTRIBLOCATIONARBPROC as function(byval programObj as GLhandleARB, byval name as const zstring ptr) as GLint
+type PFNGLBINDATTRIBLOCATIONARBPROC as sub(byval programObj as GLhandleARB, byval index as GLuint, byval name as const GLcharARB ptr)
+type PFNGLGETACTIVEATTRIBARBPROC as sub(byval programObj as GLhandleARB, byval index as GLuint, byval maxLength as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as GLcharARB ptr)
+type PFNGLGETATTRIBLOCATIONARBPROC as function(byval programObj as GLhandleARB, byval name as const GLcharARB ptr) as GLint
 
 #ifdef GL_GLEXT_PROTOTYPES
-	declare sub glBindAttribLocationARB(byval programObj as GLhandleARB, byval index as GLuint, byval name as const zstring ptr)
-	declare sub glGetActiveAttribARB(byval programObj as GLhandleARB, byval index as GLuint, byval maxLength as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as zstring ptr)
-	declare function glGetAttribLocationARB(byval programObj as GLhandleARB, byval name as const zstring ptr) as GLint
+	declare sub glBindAttribLocationARB(byval programObj as GLhandleARB, byval index as GLuint, byval name as const GLcharARB ptr)
+	declare sub glGetActiveAttribARB(byval programObj as GLhandleARB, byval index as GLuint, byval maxLength as GLsizei, byval length as GLsizei ptr, byval size as GLint ptr, byval type as GLenum ptr, byval name as GLcharARB ptr)
+	declare function glGetAttribLocationARB(byval programObj as GLhandleARB, byval name as const GLcharARB ptr) as GLint
 #endif
 
 const GL_ARB_vertex_type_10f_11f_11f_rev = 1
@@ -4647,7 +4647,7 @@ const GL_FACTOR_MIN_AMD = &h901C
 const GL_FACTOR_MAX_AMD = &h901D
 const GL_AMD_conservative_depth = 1
 const GL_AMD_debug_output = 1
-type GLDEBUGPROCAMD as sub(byval id as GLuint, byval category as GLenum, byval severity as GLenum, byval length as GLsizei, byval message as const zstring ptr, byval userParam as any ptr)
+type GLDEBUGPROCAMD as sub(byval id as GLuint, byval category as GLenum, byval severity as GLenum, byval length as GLsizei, byval message as const GLchar ptr, byval userParam as any ptr)
 const GL_MAX_DEBUG_MESSAGE_LENGTH_AMD = &h9143
 const GL_MAX_DEBUG_LOGGED_MESSAGES_AMD = &h9144
 const GL_DEBUG_LOGGED_MESSAGES_AMD = &h9145
@@ -4664,15 +4664,15 @@ const GL_DEBUG_CATEGORY_APPLICATION_AMD = &h914F
 const GL_DEBUG_CATEGORY_OTHER_AMD = &h9150
 
 type PFNGLDEBUGMESSAGEENABLEAMDPROC as sub(byval category as GLenum, byval severity as GLenum, byval count as GLsizei, byval ids as const GLuint ptr, byval enabled as GLboolean)
-type PFNGLDEBUGMESSAGEINSERTAMDPROC as sub(byval category as GLenum, byval severity as GLenum, byval id as GLuint, byval length as GLsizei, byval buf as const zstring ptr)
+type PFNGLDEBUGMESSAGEINSERTAMDPROC as sub(byval category as GLenum, byval severity as GLenum, byval id as GLuint, byval length as GLsizei, byval buf as const GLchar ptr)
 type PFNGLDEBUGMESSAGECALLBACKAMDPROC as sub(byval callback as GLDEBUGPROCAMD, byval userParam as any ptr)
-type PFNGLGETDEBUGMESSAGELOGAMDPROC as function(byval count as GLuint, byval bufsize as GLsizei, byval categories as GLenum ptr, byval severities as GLuint ptr, byval ids as GLuint ptr, byval lengths as GLsizei ptr, byval message as zstring ptr) as GLuint
+type PFNGLGETDEBUGMESSAGELOGAMDPROC as function(byval count as GLuint, byval bufsize as GLsizei, byval categories as GLenum ptr, byval severities as GLuint ptr, byval ids as GLuint ptr, byval lengths as GLsizei ptr, byval message as GLchar ptr) as GLuint
 
 #ifdef GL_GLEXT_PROTOTYPES
 	declare sub glDebugMessageEnableAMD(byval category as GLenum, byval severity as GLenum, byval count as GLsizei, byval ids as const GLuint ptr, byval enabled as GLboolean)
-	declare sub glDebugMessageInsertAMD(byval category as GLenum, byval severity as GLenum, byval id as GLuint, byval length as GLsizei, byval buf as const zstring ptr)
+	declare sub glDebugMessageInsertAMD(byval category as GLenum, byval severity as GLenum, byval id as GLuint, byval length as GLsizei, byval buf as const GLchar ptr)
 	declare sub glDebugMessageCallbackAMD(byval callback as GLDEBUGPROCAMD, byval userParam as any ptr)
-	declare function glGetDebugMessageLogAMD(byval count as GLuint, byval bufsize as GLsizei, byval categories as GLenum ptr, byval severities as GLuint ptr, byval ids as GLuint ptr, byval lengths as GLsizei ptr, byval message as zstring ptr) as GLuint
+	declare function glGetDebugMessageLogAMD(byval count as GLuint, byval bufsize as GLsizei, byval categories as GLenum ptr, byval severities as GLuint ptr, byval ids as GLuint ptr, byval lengths as GLsizei ptr, byval message as GLchar ptr) as GLuint
 #endif
 
 const GL_AMD_depth_clamp_separate = 1
@@ -4855,8 +4855,8 @@ const GL_PERFMON_RESULT_AMD = &h8BC6
 
 type PFNGLGETPERFMONITORGROUPSAMDPROC as sub(byval numGroups as GLint ptr, byval groupsSize as GLsizei, byval groups as GLuint ptr)
 type PFNGLGETPERFMONITORCOUNTERSAMDPROC as sub(byval group as GLuint, byval numCounters as GLint ptr, byval maxActiveCounters as GLint ptr, byval counterSize as GLsizei, byval counters as GLuint ptr)
-type PFNGLGETPERFMONITORGROUPSTRINGAMDPROC as sub(byval group as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval groupString as zstring ptr)
-type PFNGLGETPERFMONITORCOUNTERSTRINGAMDPROC as sub(byval group as GLuint, byval counter as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval counterString as zstring ptr)
+type PFNGLGETPERFMONITORGROUPSTRINGAMDPROC as sub(byval group as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval groupString as GLchar ptr)
+type PFNGLGETPERFMONITORCOUNTERSTRINGAMDPROC as sub(byval group as GLuint, byval counter as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval counterString as GLchar ptr)
 type PFNGLGETPERFMONITORCOUNTERINFOAMDPROC as sub(byval group as GLuint, byval counter as GLuint, byval pname as GLenum, byval data as any ptr)
 type PFNGLGENPERFMONITORSAMDPROC as sub(byval n as GLsizei, byval monitors as GLuint ptr)
 type PFNGLDELETEPERFMONITORSAMDPROC as sub(byval n as GLsizei, byval monitors as GLuint ptr)
@@ -4868,8 +4868,8 @@ type PFNGLGETPERFMONITORCOUNTERDATAAMDPROC as sub(byval monitor as GLuint, byval
 #ifdef GL_GLEXT_PROTOTYPES
 	declare sub glGetPerfMonitorGroupsAMD(byval numGroups as GLint ptr, byval groupsSize as GLsizei, byval groups as GLuint ptr)
 	declare sub glGetPerfMonitorCountersAMD(byval group as GLuint, byval numCounters as GLint ptr, byval maxActiveCounters as GLint ptr, byval counterSize as GLsizei, byval counters as GLuint ptr)
-	declare sub glGetPerfMonitorGroupStringAMD(byval group as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval groupString as zstring ptr)
-	declare sub glGetPerfMonitorCounterStringAMD(byval group as GLuint, byval counter as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval counterString as zstring ptr)
+	declare sub glGetPerfMonitorGroupStringAMD(byval group as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval groupString as GLchar ptr)
+	declare sub glGetPerfMonitorCounterStringAMD(byval group as GLuint, byval counter as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval counterString as GLchar ptr)
 	declare sub glGetPerfMonitorCounterInfoAMD(byval group as GLuint, byval counter as GLuint, byval pname as GLenum, byval data as any ptr)
 	declare sub glGenPerfMonitorsAMD(byval n as GLsizei, byval monitors as GLuint ptr)
 	declare sub glDeletePerfMonitorsAMD(byval n as GLsizei, byval monitors as GLuint ptr)
@@ -5802,22 +5802,22 @@ const GL_SHADER_OBJECT_EXT = &h8B48
 const GL_BUFFER_OBJECT_EXT = &h9151
 const GL_QUERY_OBJECT_EXT = &h9153
 const GL_VERTEX_ARRAY_OBJECT_EXT = &h9154
-type PFNGLLABELOBJECTEXTPROC as sub(byval type as GLenum, byval object as GLuint, byval length as GLsizei, byval label as const zstring ptr)
-type PFNGLGETOBJECTLABELEXTPROC as sub(byval type as GLenum, byval object as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval label as zstring ptr)
+type PFNGLLABELOBJECTEXTPROC as sub(byval type as GLenum, byval object as GLuint, byval length as GLsizei, byval label as const GLchar ptr)
+type PFNGLGETOBJECTLABELEXTPROC as sub(byval type as GLenum, byval object as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval label as GLchar ptr)
 
 #ifdef GL_GLEXT_PROTOTYPES
-	declare sub glLabelObjectEXT(byval type as GLenum, byval object as GLuint, byval length as GLsizei, byval label as const zstring ptr)
-	declare sub glGetObjectLabelEXT(byval type as GLenum, byval object as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval label as zstring ptr)
+	declare sub glLabelObjectEXT(byval type as GLenum, byval object as GLuint, byval length as GLsizei, byval label as const GLchar ptr)
+	declare sub glGetObjectLabelEXT(byval type as GLenum, byval object as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval label as GLchar ptr)
 #endif
 
 const GL_EXT_debug_marker = 1
-type PFNGLINSERTEVENTMARKEREXTPROC as sub(byval length as GLsizei, byval marker as const zstring ptr)
-type PFNGLPUSHGROUPMARKEREXTPROC as sub(byval length as GLsizei, byval marker as const zstring ptr)
+type PFNGLINSERTEVENTMARKEREXTPROC as sub(byval length as GLsizei, byval marker as const GLchar ptr)
+type PFNGLPUSHGROUPMARKEREXTPROC as sub(byval length as GLsizei, byval marker as const GLchar ptr)
 type PFNGLPOPGROUPMARKEREXTPROC as sub()
 
 #ifdef GL_GLEXT_PROTOTYPES
-	declare sub glInsertEventMarkerEXT(byval length as GLsizei, byval marker as const zstring ptr)
-	declare sub glPushGroupMarkerEXT(byval length as GLsizei, byval marker as const zstring ptr)
+	declare sub glInsertEventMarkerEXT(byval length as GLsizei, byval marker as const GLchar ptr)
+	declare sub glPushGroupMarkerEXT(byval length as GLsizei, byval marker as const GLchar ptr)
 	declare sub glPopGroupMarkerEXT()
 #endif
 
@@ -6583,8 +6583,8 @@ const GL_MIN_PROGRAM_TEXEL_OFFSET_EXT = &h8904
 const GL_MAX_PROGRAM_TEXEL_OFFSET_EXT = &h8905
 
 type PFNGLGETUNIFORMUIVEXTPROC as sub(byval program as GLuint, byval location as GLint, byval params as GLuint ptr)
-type PFNGLBINDFRAGDATALOCATIONEXTPROC as sub(byval program as GLuint, byval color as GLuint, byval name as const zstring ptr)
-type PFNGLGETFRAGDATALOCATIONEXTPROC as function(byval program as GLuint, byval name as const zstring ptr) as GLint
+type PFNGLBINDFRAGDATALOCATIONEXTPROC as sub(byval program as GLuint, byval color as GLuint, byval name as const GLchar ptr)
+type PFNGLGETFRAGDATALOCATIONEXTPROC as function(byval program as GLuint, byval name as const GLchar ptr) as GLint
 type PFNGLUNIFORM1UIEXTPROC as sub(byval location as GLint, byval v0 as GLuint)
 type PFNGLUNIFORM2UIEXTPROC as sub(byval location as GLint, byval v0 as GLuint, byval v1 as GLuint)
 type PFNGLUNIFORM3UIEXTPROC as sub(byval location as GLint, byval v0 as GLuint, byval v1 as GLuint, byval v2 as GLuint)
@@ -6596,8 +6596,8 @@ type PFNGLUNIFORM4UIVEXTPROC as sub(byval location as GLint, byval count as GLsi
 
 #ifdef GL_GLEXT_PROTOTYPES
 	declare sub glGetUniformuivEXT(byval program as GLuint, byval location as GLint, byval params as GLuint ptr)
-	declare sub glBindFragDataLocationEXT(byval program as GLuint, byval color as GLuint, byval name as const zstring ptr)
-	declare function glGetFragDataLocationEXT(byval program as GLuint, byval name as const zstring ptr) as GLint
+	declare sub glBindFragDataLocationEXT(byval program as GLuint, byval color as GLuint, byval name as const GLchar ptr)
+	declare function glGetFragDataLocationEXT(byval program as GLuint, byval name as const GLchar ptr) as GLint
 	declare sub glUniform1uiEXT(byval location as GLint, byval v0 as GLuint)
 	declare sub glUniform2uiEXT(byval location as GLint, byval v0 as GLuint, byval v1 as GLuint)
 	declare sub glUniform3uiEXT(byval location as GLint, byval v0 as GLuint, byval v1 as GLuint, byval v2 as GLuint)
@@ -6892,12 +6892,12 @@ const GL_EXT_separate_shader_objects = 1
 const GL_ACTIVE_PROGRAM_EXT = &h8B8D
 type PFNGLUSESHADERPROGRAMEXTPROC as sub(byval type as GLenum, byval program as GLuint)
 type PFNGLACTIVEPROGRAMEXTPROC as sub(byval program as GLuint)
-type PFNGLCREATESHADERPROGRAMEXTPROC as function(byval type as GLenum, byval string as const zstring ptr) as GLuint
+type PFNGLCREATESHADERPROGRAMEXTPROC as function(byval type as GLenum, byval string as const GLchar ptr) as GLuint
 
 #ifdef GL_GLEXT_PROTOTYPES
 	declare sub glUseShaderProgramEXT(byval type as GLenum, byval program as GLuint)
 	declare sub glActiveProgramEXT(byval program as GLuint)
-	declare function glCreateShaderProgramEXT(byval type as GLenum, byval string as const zstring ptr) as GLuint
+	declare function glCreateShaderProgramEXT(byval type as GLenum, byval string as const GLchar ptr) as GLuint
 #endif
 
 const GL_EXT_separate_specular_color = 1
@@ -7336,8 +7336,8 @@ type PFNGLENDTRANSFORMFEEDBACKEXTPROC as sub()
 type PFNGLBINDBUFFERRANGEEXTPROC as sub(byval target as GLenum, byval index as GLuint, byval buffer as GLuint, byval offset as GLintptr, byval size as GLsizeiptr)
 type PFNGLBINDBUFFEROFFSETEXTPROC as sub(byval target as GLenum, byval index as GLuint, byval buffer as GLuint, byval offset as GLintptr)
 type PFNGLBINDBUFFERBASEEXTPROC as sub(byval target as GLenum, byval index as GLuint, byval buffer as GLuint)
-type PFNGLTRANSFORMFEEDBACKVARYINGSEXTPROC as sub(byval program as GLuint, byval count as GLsizei, byval varyings as const zstring const ptr ptr, byval bufferMode as GLenum)
-type PFNGLGETTRANSFORMFEEDBACKVARYINGEXTPROC as sub(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLsizei ptr, byval type as GLenum ptr, byval name as zstring ptr)
+type PFNGLTRANSFORMFEEDBACKVARYINGSEXTPROC as sub(byval program as GLuint, byval count as GLsizei, byval varyings as const GLchar const ptr ptr, byval bufferMode as GLenum)
+type PFNGLGETTRANSFORMFEEDBACKVARYINGEXTPROC as sub(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLsizei ptr, byval type as GLenum ptr, byval name as GLchar ptr)
 
 #ifdef GL_GLEXT_PROTOTYPES
 	declare sub glBeginTransformFeedbackEXT(byval primitiveMode as GLenum)
@@ -7345,8 +7345,8 @@ type PFNGLGETTRANSFORMFEEDBACKVARYINGEXTPROC as sub(byval program as GLuint, byv
 	declare sub glBindBufferRangeEXT(byval target as GLenum, byval index as GLuint, byval buffer as GLuint, byval offset as GLintptr, byval size as GLsizeiptr)
 	declare sub glBindBufferOffsetEXT(byval target as GLenum, byval index as GLuint, byval buffer as GLuint, byval offset as GLintptr)
 	declare sub glBindBufferBaseEXT(byval target as GLenum, byval index as GLuint, byval buffer as GLuint)
-	declare sub glTransformFeedbackVaryingsEXT(byval program as GLuint, byval count as GLsizei, byval varyings as const zstring const ptr ptr, byval bufferMode as GLenum)
-	declare sub glGetTransformFeedbackVaryingEXT(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLsizei ptr, byval type as GLenum ptr, byval name as zstring ptr)
+	declare sub glTransformFeedbackVaryingsEXT(byval program as GLuint, byval count as GLsizei, byval varyings as const GLchar const ptr ptr, byval bufferMode as GLenum)
+	declare sub glGetTransformFeedbackVaryingEXT(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLsizei ptr, byval type as GLenum ptr, byval name as GLchar ptr)
 #endif
 
 const GL_EXT_vertex_array_bgra = 1
@@ -7824,10 +7824,10 @@ type PFNGLDELETEPERFQUERYINTELPROC as sub(byval queryHandle as GLuint)
 type PFNGLENDPERFQUERYINTELPROC as sub(byval queryHandle as GLuint)
 type PFNGLGETFIRSTPERFQUERYIDINTELPROC as sub(byval queryId as GLuint ptr)
 type PFNGLGETNEXTPERFQUERYIDINTELPROC as sub(byval queryId as GLuint, byval nextQueryId as GLuint ptr)
-type PFNGLGETPERFCOUNTERINFOINTELPROC as sub(byval queryId as GLuint, byval counterId as GLuint, byval counterNameLength as GLuint, byval counterName as zstring ptr, byval counterDescLength as GLuint, byval counterDesc as zstring ptr, byval counterOffset as GLuint ptr, byval counterDataSize as GLuint ptr, byval counterTypeEnum as GLuint ptr, byval counterDataTypeEnum as GLuint ptr, byval rawCounterMaxValue as GLuint64 ptr)
+type PFNGLGETPERFCOUNTERINFOINTELPROC as sub(byval queryId as GLuint, byval counterId as GLuint, byval counterNameLength as GLuint, byval counterName as GLchar ptr, byval counterDescLength as GLuint, byval counterDesc as GLchar ptr, byval counterOffset as GLuint ptr, byval counterDataSize as GLuint ptr, byval counterTypeEnum as GLuint ptr, byval counterDataTypeEnum as GLuint ptr, byval rawCounterMaxValue as GLuint64 ptr)
 type PFNGLGETPERFQUERYDATAINTELPROC as sub(byval queryHandle as GLuint, byval flags as GLuint, byval dataSize as GLsizei, byval data as GLvoid ptr, byval bytesWritten as GLuint ptr)
-type PFNGLGETPERFQUERYIDBYNAMEINTELPROC as sub(byval queryName as zstring ptr, byval queryId as GLuint ptr)
-type PFNGLGETPERFQUERYINFOINTELPROC as sub(byval queryId as GLuint, byval queryNameLength as GLuint, byval queryName as zstring ptr, byval dataSize as GLuint ptr, byval noCounters as GLuint ptr, byval noInstances as GLuint ptr, byval capsMask as GLuint ptr)
+type PFNGLGETPERFQUERYIDBYNAMEINTELPROC as sub(byval queryName as GLchar ptr, byval queryId as GLuint ptr)
+type PFNGLGETPERFQUERYINFOINTELPROC as sub(byval queryId as GLuint, byval queryNameLength as GLuint, byval queryName as GLchar ptr, byval dataSize as GLuint ptr, byval noCounters as GLuint ptr, byval noInstances as GLuint ptr, byval capsMask as GLuint ptr)
 
 #ifdef GL_GLEXT_PROTOTYPES
 	declare sub glBeginPerfQueryINTEL(byval queryHandle as GLuint)
@@ -7836,10 +7836,10 @@ type PFNGLGETPERFQUERYINFOINTELPROC as sub(byval queryId as GLuint, byval queryN
 	declare sub glEndPerfQueryINTEL(byval queryHandle as GLuint)
 	declare sub glGetFirstPerfQueryIdINTEL(byval queryId as GLuint ptr)
 	declare sub glGetNextPerfQueryIdINTEL(byval queryId as GLuint, byval nextQueryId as GLuint ptr)
-	declare sub glGetPerfCounterInfoINTEL(byval queryId as GLuint, byval counterId as GLuint, byval counterNameLength as GLuint, byval counterName as zstring ptr, byval counterDescLength as GLuint, byval counterDesc as zstring ptr, byval counterOffset as GLuint ptr, byval counterDataSize as GLuint ptr, byval counterTypeEnum as GLuint ptr, byval counterDataTypeEnum as GLuint ptr, byval rawCounterMaxValue as GLuint64 ptr)
+	declare sub glGetPerfCounterInfoINTEL(byval queryId as GLuint, byval counterId as GLuint, byval counterNameLength as GLuint, byval counterName as GLchar ptr, byval counterDescLength as GLuint, byval counterDesc as GLchar ptr, byval counterOffset as GLuint ptr, byval counterDataSize as GLuint ptr, byval counterTypeEnum as GLuint ptr, byval counterDataTypeEnum as GLuint ptr, byval rawCounterMaxValue as GLuint64 ptr)
 	declare sub glGetPerfQueryDataINTEL(byval queryHandle as GLuint, byval flags as GLuint, byval dataSize as GLsizei, byval data as GLvoid ptr, byval bytesWritten as GLuint ptr)
-	declare sub glGetPerfQueryIdByNameINTEL(byval queryName as zstring ptr, byval queryId as GLuint ptr)
-	declare sub glGetPerfQueryInfoINTEL(byval queryId as GLuint, byval queryNameLength as GLuint, byval queryName as zstring ptr, byval dataSize as GLuint ptr, byval noCounters as GLuint ptr, byval noInstances as GLuint ptr, byval capsMask as GLuint ptr)
+	declare sub glGetPerfQueryIdByNameINTEL(byval queryName as GLchar ptr, byval queryId as GLuint ptr)
+	declare sub glGetPerfQueryInfoINTEL(byval queryId as GLuint, byval queryNameLength as GLuint, byval queryName as GLchar ptr, byval dataSize as GLuint ptr, byval noCounters as GLuint ptr, byval noInstances as GLuint ptr, byval capsMask as GLuint ptr)
 #endif
 
 const GL_MESAX_texture_stack = 1
@@ -9245,9 +9245,9 @@ type PFNGLBINDBUFFERRANGENVPROC as sub(byval target as GLenum, byval index as GL
 type PFNGLBINDBUFFEROFFSETNVPROC as sub(byval target as GLenum, byval index as GLuint, byval buffer as GLuint, byval offset as GLintptr)
 type PFNGLBINDBUFFERBASENVPROC as sub(byval target as GLenum, byval index as GLuint, byval buffer as GLuint)
 type PFNGLTRANSFORMFEEDBACKVARYINGSNVPROC as sub(byval program as GLuint, byval count as GLsizei, byval locations as const GLint ptr, byval bufferMode as GLenum)
-type PFNGLACTIVEVARYINGNVPROC as sub(byval program as GLuint, byval name as const zstring ptr)
-type PFNGLGETVARYINGLOCATIONNVPROC as function(byval program as GLuint, byval name as const zstring ptr) as GLint
-type PFNGLGETACTIVEVARYINGNVPROC as sub(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLsizei ptr, byval type as GLenum ptr, byval name as zstring ptr)
+type PFNGLACTIVEVARYINGNVPROC as sub(byval program as GLuint, byval name as const GLchar ptr)
+type PFNGLGETVARYINGLOCATIONNVPROC as function(byval program as GLuint, byval name as const GLchar ptr) as GLint
+type PFNGLGETACTIVEVARYINGNVPROC as sub(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLsizei ptr, byval type as GLenum ptr, byval name as GLchar ptr)
 type PFNGLGETTRANSFORMFEEDBACKVARYINGNVPROC as sub(byval program as GLuint, byval index as GLuint, byval location as GLint ptr)
 type PFNGLTRANSFORMFEEDBACKSTREAMATTRIBSNVPROC as sub(byval count as GLsizei, byval attribs as const GLint ptr, byval nbuffers as GLsizei, byval bufstreams as const GLint ptr, byval bufferMode as GLenum)
 
@@ -9259,9 +9259,9 @@ type PFNGLTRANSFORMFEEDBACKSTREAMATTRIBSNVPROC as sub(byval count as GLsizei, by
 	declare sub glBindBufferOffsetNV(byval target as GLenum, byval index as GLuint, byval buffer as GLuint, byval offset as GLintptr)
 	declare sub glBindBufferBaseNV(byval target as GLenum, byval index as GLuint, byval buffer as GLuint)
 	declare sub glTransformFeedbackVaryingsNV(byval program as GLuint, byval count as GLsizei, byval locations as const GLint ptr, byval bufferMode as GLenum)
-	declare sub glActiveVaryingNV(byval program as GLuint, byval name as const zstring ptr)
-	declare function glGetVaryingLocationNV(byval program as GLuint, byval name as const zstring ptr) as GLint
-	declare sub glGetActiveVaryingNV(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLsizei ptr, byval type as GLenum ptr, byval name as zstring ptr)
+	declare sub glActiveVaryingNV(byval program as GLuint, byval name as const GLchar ptr)
+	declare function glGetVaryingLocationNV(byval program as GLuint, byval name as const GLchar ptr) as GLint
+	declare sub glGetActiveVaryingNV(byval program as GLuint, byval index as GLuint, byval bufSize as GLsizei, byval length as GLsizei ptr, byval size as GLsizei ptr, byval type as GLenum ptr, byval name as GLchar ptr)
 	declare sub glGetTransformFeedbackVaryingNV(byval program as GLuint, byval index as GLuint, byval location as GLint ptr)
 	declare sub glTransformFeedbackStreamAttribsNV(byval count as GLsizei, byval attribs as const GLint ptr, byval nbuffers as GLsizei, byval bufstreams as const GLint ptr, byval bufferMode as GLenum)
 #endif

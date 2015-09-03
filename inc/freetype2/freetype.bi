@@ -108,8 +108,8 @@ type FT_FaceRec_
 	face_flags as FT_Long
 	style_flags as FT_Long
 	num_glyphs as FT_Long
-	family_name as zstring ptr
-	style_name as zstring ptr
+	family_name as FT_String ptr
+	style_name as FT_String ptr
 	num_fixed_sizes as FT_Int
 	available_sizes as FT_Bitmap_Size ptr
 	num_charmaps as FT_Int
@@ -238,7 +238,7 @@ type FT_Open_Args_
 	flags as FT_UInt
 	memory_base as const FT_Byte ptr
 	memory_size as FT_Long
-	pathname as zstring ptr
+	pathname as FT_String ptr
 	stream as FT_Stream
 	driver as FT_Module
 	num_params as FT_Int
@@ -341,7 +341,7 @@ declare function FT_Get_Charmap_Index(byval charmap as FT_CharMap) as FT_Int
 declare function FT_Get_Char_Index(byval face as FT_Face, byval charcode as FT_ULong) as FT_UInt
 declare function FT_Get_First_Char(byval face as FT_Face, byval agindex as FT_UInt ptr) as FT_ULong
 declare function FT_Get_Next_Char(byval face as FT_Face, byval char_code as FT_ULong, byval agindex as FT_UInt ptr) as FT_ULong
-declare function FT_Get_Name_Index(byval face as FT_Face, byval glyph_name as zstring ptr) as FT_UInt
+declare function FT_Get_Name_Index(byval face as FT_Face, byval glyph_name as FT_String ptr) as FT_UInt
 
 const FT_SUBGLYPH_FLAG_ARGS_ARE_WORDS = 1
 const FT_SUBGLYPH_FLAG_ARGS_ARE_XY_VALUES = 2

@@ -71,7 +71,7 @@ extern xcb_x_print_id as xcb_extension_t
 type xcb_x_print_string8_t as zstring
 
 type xcb_x_print_string8_iterator_t
-	data as zstring ptr
+	data as xcb_x_print_string8_t ptr
 	as long rem
 	index as long
 end type
@@ -563,13 +563,13 @@ end type
 
 declare sub xcb_x_print_string8_next(byval i as xcb_x_print_string8_iterator_t ptr)
 declare function xcb_x_print_string8_end(byval i as xcb_x_print_string8_iterator_t) as xcb_generic_iterator_t
-declare function xcb_x_print_printer_serialize(byval _buffer as any ptr ptr, byval _aux as const xcb_x_print_printer_t ptr, byval name as const zstring ptr, byval description as const zstring ptr) as long
+declare function xcb_x_print_printer_serialize(byval _buffer as any ptr ptr, byval _aux as const xcb_x_print_printer_t ptr, byval name as const xcb_x_print_string8_t ptr, byval description as const xcb_x_print_string8_t ptr) as long
 declare function xcb_x_print_printer_unserialize(byval _buffer as const any ptr, byval _aux as xcb_x_print_printer_t ptr ptr) as long
 declare function xcb_x_print_printer_sizeof(byval _buffer as const any ptr) as long
-declare function xcb_x_print_printer_name(byval R as const xcb_x_print_printer_t ptr) as zstring ptr
+declare function xcb_x_print_printer_name(byval R as const xcb_x_print_printer_t ptr) as xcb_x_print_string8_t ptr
 declare function xcb_x_print_printer_name_length(byval R as const xcb_x_print_printer_t ptr) as long
 declare function xcb_x_print_printer_name_end(byval R as const xcb_x_print_printer_t ptr) as xcb_generic_iterator_t
-declare function xcb_x_print_printer_description(byval R as const xcb_x_print_printer_t ptr) as zstring ptr
+declare function xcb_x_print_printer_description(byval R as const xcb_x_print_printer_t ptr) as xcb_x_print_string8_t ptr
 declare function xcb_x_print_printer_description_length(byval R as const xcb_x_print_printer_t ptr) as long
 declare function xcb_x_print_printer_description_end(byval R as const xcb_x_print_printer_t ptr) as xcb_generic_iterator_t
 declare sub xcb_x_print_printer_next(byval i as xcb_x_print_printer_iterator_t ptr)
@@ -580,16 +580,16 @@ declare function xcb_x_print_print_query_version(byval c as xcb_connection_t ptr
 declare function xcb_x_print_print_query_version_unchecked(byval c as xcb_connection_t ptr) as xcb_x_print_print_query_version_cookie_t
 declare function xcb_x_print_print_query_version_reply(byval c as xcb_connection_t ptr, byval cookie as xcb_x_print_print_query_version_cookie_t, byval e as xcb_generic_error_t ptr ptr) as xcb_x_print_print_query_version_reply_t ptr
 declare function xcb_x_print_print_get_printer_list_sizeof(byval _buffer as const any ptr) as long
-declare function xcb_x_print_print_get_printer_list(byval c as xcb_connection_t ptr, byval printerNameLen as ulong, byval localeLen as ulong, byval printer_name as const zstring ptr, byval locale as const zstring ptr) as xcb_x_print_print_get_printer_list_cookie_t
-declare function xcb_x_print_print_get_printer_list_unchecked(byval c as xcb_connection_t ptr, byval printerNameLen as ulong, byval localeLen as ulong, byval printer_name as const zstring ptr, byval locale as const zstring ptr) as xcb_x_print_print_get_printer_list_cookie_t
+declare function xcb_x_print_print_get_printer_list(byval c as xcb_connection_t ptr, byval printerNameLen as ulong, byval localeLen as ulong, byval printer_name as const xcb_x_print_string8_t ptr, byval locale as const xcb_x_print_string8_t ptr) as xcb_x_print_print_get_printer_list_cookie_t
+declare function xcb_x_print_print_get_printer_list_unchecked(byval c as xcb_connection_t ptr, byval printerNameLen as ulong, byval localeLen as ulong, byval printer_name as const xcb_x_print_string8_t ptr, byval locale as const xcb_x_print_string8_t ptr) as xcb_x_print_print_get_printer_list_cookie_t
 declare function xcb_x_print_print_get_printer_list_printers_length(byval R as const xcb_x_print_print_get_printer_list_reply_t ptr) as long
 declare function xcb_x_print_print_get_printer_list_printers_iterator(byval R as const xcb_x_print_print_get_printer_list_reply_t ptr) as xcb_x_print_printer_iterator_t
 declare function xcb_x_print_print_get_printer_list_reply(byval c as xcb_connection_t ptr, byval cookie as xcb_x_print_print_get_printer_list_cookie_t, byval e as xcb_generic_error_t ptr ptr) as xcb_x_print_print_get_printer_list_reply_t ptr
 declare function xcb_x_print_print_rehash_printer_list_checked(byval c as xcb_connection_t ptr) as xcb_void_cookie_t
 declare function xcb_x_print_print_rehash_printer_list(byval c as xcb_connection_t ptr) as xcb_void_cookie_t
 declare function xcb_x_print_create_context_sizeof(byval _buffer as const any ptr) as long
-declare function xcb_x_print_create_context_checked(byval c as xcb_connection_t ptr, byval context_id as ulong, byval printerNameLen as ulong, byval localeLen as ulong, byval printerName as const zstring ptr, byval locale as const zstring ptr) as xcb_void_cookie_t
-declare function xcb_x_print_create_context(byval c as xcb_connection_t ptr, byval context_id as ulong, byval printerNameLen as ulong, byval localeLen as ulong, byval printerName as const zstring ptr, byval locale as const zstring ptr) as xcb_void_cookie_t
+declare function xcb_x_print_create_context_checked(byval c as xcb_connection_t ptr, byval context_id as ulong, byval printerNameLen as ulong, byval localeLen as ulong, byval printerName as const xcb_x_print_string8_t ptr, byval locale as const xcb_x_print_string8_t ptr) as xcb_void_cookie_t
+declare function xcb_x_print_create_context(byval c as xcb_connection_t ptr, byval context_id as ulong, byval printerNameLen as ulong, byval localeLen as ulong, byval printerName as const xcb_x_print_string8_t ptr, byval locale as const xcb_x_print_string8_t ptr) as xcb_void_cookie_t
 declare function xcb_x_print_print_set_context_checked(byval c as xcb_connection_t ptr, byval context as ulong) as xcb_void_cookie_t
 declare function xcb_x_print_print_set_context(byval c as xcb_connection_t ptr, byval context as ulong) as xcb_void_cookie_t
 declare function xcb_x_print_print_get_context(byval c as xcb_connection_t ptr) as xcb_x_print_print_get_context_cookie_t
@@ -609,8 +609,8 @@ declare function xcb_x_print_print_start_doc(byval c as xcb_connection_t ptr, by
 declare function xcb_x_print_print_end_doc_checked(byval c as xcb_connection_t ptr, byval cancel as ubyte) as xcb_void_cookie_t
 declare function xcb_x_print_print_end_doc(byval c as xcb_connection_t ptr, byval cancel as ubyte) as xcb_void_cookie_t
 declare function xcb_x_print_print_put_document_data_sizeof(byval _buffer as const any ptr, byval doc_format_len as ulong, byval options_len as ulong) as long
-declare function xcb_x_print_print_put_document_data_checked(byval c as xcb_connection_t ptr, byval drawable as xcb_drawable_t, byval len_data as ulong, byval len_fmt as ushort, byval len_options as ushort, byval data as const ubyte ptr, byval doc_format_len as ulong, byval doc_format as const zstring ptr, byval options_len as ulong, byval options as const zstring ptr) as xcb_void_cookie_t
-declare function xcb_x_print_print_put_document_data(byval c as xcb_connection_t ptr, byval drawable as xcb_drawable_t, byval len_data as ulong, byval len_fmt as ushort, byval len_options as ushort, byval data as const ubyte ptr, byval doc_format_len as ulong, byval doc_format as const zstring ptr, byval options_len as ulong, byval options as const zstring ptr) as xcb_void_cookie_t
+declare function xcb_x_print_print_put_document_data_checked(byval c as xcb_connection_t ptr, byval drawable as xcb_drawable_t, byval len_data as ulong, byval len_fmt as ushort, byval len_options as ushort, byval data as const ubyte ptr, byval doc_format_len as ulong, byval doc_format as const xcb_x_print_string8_t ptr, byval options_len as ulong, byval options as const xcb_x_print_string8_t ptr) as xcb_void_cookie_t
+declare function xcb_x_print_print_put_document_data(byval c as xcb_connection_t ptr, byval drawable as xcb_drawable_t, byval len_data as ulong, byval len_fmt as ushort, byval len_options as ushort, byval data as const ubyte ptr, byval doc_format_len as ulong, byval doc_format as const xcb_x_print_string8_t ptr, byval options_len as ulong, byval options as const xcb_x_print_string8_t ptr) as xcb_void_cookie_t
 declare function xcb_x_print_print_get_document_data_sizeof(byval _buffer as const any ptr) as long
 declare function xcb_x_print_print_get_document_data(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t, byval max_bytes as ulong) as xcb_x_print_print_get_document_data_cookie_t
 declare function xcb_x_print_print_get_document_data_unchecked(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t, byval max_bytes as ulong) as xcb_x_print_print_get_document_data_cookie_t
@@ -640,20 +640,20 @@ declare function xcb_x_print_print_input_selected_reply(byval c as xcb_connectio
 declare function xcb_x_print_print_get_attributes_sizeof(byval _buffer as const any ptr) as long
 declare function xcb_x_print_print_get_attributes(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t, byval pool as ubyte) as xcb_x_print_print_get_attributes_cookie_t
 declare function xcb_x_print_print_get_attributes_unchecked(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t, byval pool as ubyte) as xcb_x_print_print_get_attributes_cookie_t
-declare function xcb_x_print_print_get_attributes_attributes(byval R as const xcb_x_print_print_get_attributes_reply_t ptr) as zstring ptr
+declare function xcb_x_print_print_get_attributes_attributes(byval R as const xcb_x_print_print_get_attributes_reply_t ptr) as xcb_x_print_string8_t ptr
 declare function xcb_x_print_print_get_attributes_attributes_length(byval R as const xcb_x_print_print_get_attributes_reply_t ptr) as long
 declare function xcb_x_print_print_get_attributes_attributes_end(byval R as const xcb_x_print_print_get_attributes_reply_t ptr) as xcb_generic_iterator_t
 declare function xcb_x_print_print_get_attributes_reply(byval c as xcb_connection_t ptr, byval cookie as xcb_x_print_print_get_attributes_cookie_t, byval e as xcb_generic_error_t ptr ptr) as xcb_x_print_print_get_attributes_reply_t ptr
 declare function xcb_x_print_print_get_one_attributes_sizeof(byval _buffer as const any ptr) as long
-declare function xcb_x_print_print_get_one_attributes(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t, byval nameLen as ulong, byval pool as ubyte, byval name as const zstring ptr) as xcb_x_print_print_get_one_attributes_cookie_t
-declare function xcb_x_print_print_get_one_attributes_unchecked(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t, byval nameLen as ulong, byval pool as ubyte, byval name as const zstring ptr) as xcb_x_print_print_get_one_attributes_cookie_t
-declare function xcb_x_print_print_get_one_attributes_value(byval R as const xcb_x_print_print_get_one_attributes_reply_t ptr) as zstring ptr
+declare function xcb_x_print_print_get_one_attributes(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t, byval nameLen as ulong, byval pool as ubyte, byval name as const xcb_x_print_string8_t ptr) as xcb_x_print_print_get_one_attributes_cookie_t
+declare function xcb_x_print_print_get_one_attributes_unchecked(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t, byval nameLen as ulong, byval pool as ubyte, byval name as const xcb_x_print_string8_t ptr) as xcb_x_print_print_get_one_attributes_cookie_t
+declare function xcb_x_print_print_get_one_attributes_value(byval R as const xcb_x_print_print_get_one_attributes_reply_t ptr) as xcb_x_print_string8_t ptr
 declare function xcb_x_print_print_get_one_attributes_value_length(byval R as const xcb_x_print_print_get_one_attributes_reply_t ptr) as long
 declare function xcb_x_print_print_get_one_attributes_value_end(byval R as const xcb_x_print_print_get_one_attributes_reply_t ptr) as xcb_generic_iterator_t
 declare function xcb_x_print_print_get_one_attributes_reply(byval c as xcb_connection_t ptr, byval cookie as xcb_x_print_print_get_one_attributes_cookie_t, byval e as xcb_generic_error_t ptr ptr) as xcb_x_print_print_get_one_attributes_reply_t ptr
 declare function xcb_x_print_print_set_attributes_sizeof(byval _buffer as const any ptr, byval attributes_len as ulong) as long
-declare function xcb_x_print_print_set_attributes_checked(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t, byval stringLen as ulong, byval pool as ubyte, byval rule as ubyte, byval attributes_len as ulong, byval attributes as const zstring ptr) as xcb_void_cookie_t
-declare function xcb_x_print_print_set_attributes(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t, byval stringLen as ulong, byval pool as ubyte, byval rule as ubyte, byval attributes_len as ulong, byval attributes as const zstring ptr) as xcb_void_cookie_t
+declare function xcb_x_print_print_set_attributes_checked(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t, byval stringLen as ulong, byval pool as ubyte, byval rule as ubyte, byval attributes_len as ulong, byval attributes as const xcb_x_print_string8_t ptr) as xcb_void_cookie_t
+declare function xcb_x_print_print_set_attributes(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t, byval stringLen as ulong, byval pool as ubyte, byval rule as ubyte, byval attributes_len as ulong, byval attributes as const xcb_x_print_string8_t ptr) as xcb_void_cookie_t
 declare function xcb_x_print_print_get_page_dimensions(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t) as xcb_x_print_print_get_page_dimensions_cookie_t
 declare function xcb_x_print_print_get_page_dimensions_unchecked(byval c as xcb_connection_t ptr, byval context as xcb_x_print_pcontext_t) as xcb_x_print_print_get_page_dimensions_cookie_t
 declare function xcb_x_print_print_get_page_dimensions_reply(byval c as xcb_connection_t ptr, byval cookie as xcb_x_print_print_get_page_dimensions_cookie_t, byval e as xcb_generic_error_t ptr ptr) as xcb_x_print_print_get_page_dimensions_reply_t ptr

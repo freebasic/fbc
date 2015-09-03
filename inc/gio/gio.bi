@@ -874,7 +874,7 @@ type GDBusObjectProxy as _GDBusObjectProxy
 type GDBusObjectManager as _GDBusObjectManager
 type GDBusObjectManagerClient as _GDBusObjectManagerClient
 type GDBusObjectManagerServer as _GDBusObjectManagerServer
-type GDBusProxyTypeFunc as function(byval manager as GDBusObjectManagerClient ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval user_data as gpointer) as GType
+type GDBusProxyTypeFunc as function(byval manager as GDBusObjectManagerClient ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval user_data as gpointer) as GType
 type GTestDBus as _GTestDBus
 type GSubprocess as _GSubprocess
 type GSubprocessLauncher as _GSubprocessLauncher
@@ -888,7 +888,7 @@ type GActionInterface as _GActionInterface
 
 type _GActionInterface
 	g_iface as GTypeInterface
-	get_name as function(byval action as GAction ptr) as const zstring ptr
+	get_name as function(byval action as GAction ptr) as const gchar ptr
 	get_parameter_type as function(byval action as GAction ptr) as const GVariantType ptr
 	get_state_type as function(byval action as GAction ptr) as const GVariantType ptr
 	get_state_hint as function(byval action as GAction ptr) as GVariant ptr
@@ -899,7 +899,7 @@ type _GActionInterface
 end type
 
 declare function g_action_get_type() as GType
-declare function g_action_get_name(byval action as GAction ptr) as const zstring ptr
+declare function g_action_get_name(byval action as GAction ptr) as const gchar ptr
 declare function g_action_get_parameter_type(byval action as GAction ptr) as const GVariantType ptr
 declare function g_action_get_state_type(byval action as GAction ptr) as const GVariantType ptr
 declare function g_action_get_state_hint(byval action as GAction ptr) as GVariant ptr
@@ -907,9 +907,9 @@ declare function g_action_get_enabled(byval action as GAction ptr) as gboolean
 declare function g_action_get_state(byval action as GAction ptr) as GVariant ptr
 declare sub g_action_change_state(byval action as GAction ptr, byval value as GVariant ptr)
 declare sub g_action_activate(byval action as GAction ptr, byval parameter as GVariant ptr)
-declare function g_action_name_is_valid(byval action_name as const zstring ptr) as gboolean
-declare function g_action_parse_detailed_name(byval detailed_name as const zstring ptr, byval action_name as zstring ptr ptr, byval target_value as GVariant ptr ptr, byval error as GError ptr ptr) as gboolean
-declare function g_action_print_detailed_name(byval action_name as const zstring ptr, byval target_value as GVariant ptr) as zstring ptr
+declare function g_action_name_is_valid(byval action_name as const gchar ptr) as gboolean
+declare function g_action_parse_detailed_name(byval detailed_name as const gchar ptr, byval action_name as gchar ptr ptr, byval target_value as GVariant ptr ptr, byval error as GError ptr ptr) as gboolean
+declare function g_action_print_detailed_name(byval action_name as const gchar ptr, byval target_value as GVariant ptr) as gchar ptr
 
 #define __G_ACTION_GROUP_H__
 #define G_TYPE_ACTION_GROUP g_action_group_get_type()
@@ -920,39 +920,39 @@ type GActionGroupInterface as _GActionGroupInterface
 
 type _GActionGroupInterface
 	g_iface as GTypeInterface
-	has_action as function(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr) as gboolean
-	list_actions as function(byval action_group as GActionGroup ptr) as zstring ptr ptr
-	get_action_enabled as function(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr) as gboolean
-	get_action_parameter_type as function(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr) as const GVariantType ptr
-	get_action_state_type as function(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr) as const GVariantType ptr
-	get_action_state_hint as function(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr) as GVariant ptr
-	get_action_state as function(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr) as GVariant ptr
-	change_action_state as sub(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr, byval value as GVariant ptr)
-	activate_action as sub(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr, byval parameter as GVariant ptr)
-	action_added as sub(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr)
-	action_removed as sub(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr)
-	action_enabled_changed as sub(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr, byval enabled as gboolean)
-	action_state_changed as sub(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr, byval state as GVariant ptr)
-	query_action as function(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr, byval enabled as gboolean ptr, byval parameter_type as const GVariantType ptr ptr, byval state_type as const GVariantType ptr ptr, byval state_hint as GVariant ptr ptr, byval state as GVariant ptr ptr) as gboolean
+	has_action as function(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr) as gboolean
+	list_actions as function(byval action_group as GActionGroup ptr) as gchar ptr ptr
+	get_action_enabled as function(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr) as gboolean
+	get_action_parameter_type as function(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr) as const GVariantType ptr
+	get_action_state_type as function(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr) as const GVariantType ptr
+	get_action_state_hint as function(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr) as GVariant ptr
+	get_action_state as function(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr) as GVariant ptr
+	change_action_state as sub(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr, byval value as GVariant ptr)
+	activate_action as sub(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr, byval parameter as GVariant ptr)
+	action_added as sub(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr)
+	action_removed as sub(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr)
+	action_enabled_changed as sub(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr, byval enabled as gboolean)
+	action_state_changed as sub(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr, byval state as GVariant ptr)
+	query_action as function(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr, byval enabled as gboolean ptr, byval parameter_type as const GVariantType ptr ptr, byval state_type as const GVariantType ptr ptr, byval state_hint as GVariant ptr ptr, byval state as GVariant ptr ptr) as gboolean
 end type
 
 declare function g_action_group_get_type() as GType
-declare function g_action_group_has_action(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr) as gboolean
-declare function g_action_group_list_actions(byval action_group as GActionGroup ptr) as zstring ptr ptr
-declare function g_action_group_get_action_parameter_type(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr) as const GVariantType ptr
-declare function g_action_group_get_action_state_type(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr) as const GVariantType ptr
-declare function g_action_group_get_action_state_hint(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr) as GVariant ptr
-declare function g_action_group_get_action_enabled(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr) as gboolean
-declare function g_action_group_get_action_state(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr) as GVariant ptr
-declare sub g_action_group_change_action_state(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr, byval value as GVariant ptr)
-declare sub g_action_group_activate_action(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr, byval parameter as GVariant ptr)
-declare sub g_action_group_action_added(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr)
-declare sub g_action_group_action_removed(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr)
-declare sub g_action_group_action_enabled_changed(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr, byval enabled as gboolean)
-declare sub g_action_group_action_state_changed(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr, byval state as GVariant ptr)
-declare function g_action_group_query_action(byval action_group as GActionGroup ptr, byval action_name as const zstring ptr, byval enabled as gboolean ptr, byval parameter_type as const GVariantType ptr ptr, byval state_type as const GVariantType ptr ptr, byval state_hint as GVariant ptr ptr, byval state as GVariant ptr ptr) as gboolean
+declare function g_action_group_has_action(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr) as gboolean
+declare function g_action_group_list_actions(byval action_group as GActionGroup ptr) as gchar ptr ptr
+declare function g_action_group_get_action_parameter_type(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr) as const GVariantType ptr
+declare function g_action_group_get_action_state_type(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr) as const GVariantType ptr
+declare function g_action_group_get_action_state_hint(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr) as GVariant ptr
+declare function g_action_group_get_action_enabled(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr) as gboolean
+declare function g_action_group_get_action_state(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr) as GVariant ptr
+declare sub g_action_group_change_action_state(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr, byval value as GVariant ptr)
+declare sub g_action_group_activate_action(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr, byval parameter as GVariant ptr)
+declare sub g_action_group_action_added(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr)
+declare sub g_action_group_action_removed(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr)
+declare sub g_action_group_action_enabled_changed(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr, byval enabled as gboolean)
+declare sub g_action_group_action_state_changed(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr, byval state as GVariant ptr)
+declare function g_action_group_query_action(byval action_group as GActionGroup ptr, byval action_name as const gchar ptr, byval enabled as gboolean ptr, byval parameter_type as const GVariantType ptr ptr, byval state_type as const GVariantType ptr ptr, byval state_hint as GVariant ptr ptr, byval state as GVariant ptr ptr) as gboolean
 #define __G_ACTION_GROUP_EXPORTER_H__
-declare function g_dbus_connection_export_action_group(byval connection as GDBusConnection ptr, byval object_path as const zstring ptr, byval action_group as GActionGroup ptr, byval error as GError ptr ptr) as guint
+declare function g_dbus_connection_export_action_group(byval connection as GDBusConnection ptr, byval object_path as const gchar ptr, byval action_group as GActionGroup ptr, byval error as GError ptr ptr) as guint
 declare sub g_dbus_connection_unexport_action_group(byval connection as GDBusConnection ptr, byval export_id as guint)
 
 #define __G_ACTION_MAP_H__
@@ -965,24 +965,24 @@ type GActionEntry as _GActionEntry
 
 type _GActionMapInterface
 	g_iface as GTypeInterface
-	lookup_action as function(byval action_map as GActionMap ptr, byval action_name as const zstring ptr) as GAction ptr
+	lookup_action as function(byval action_map as GActionMap ptr, byval action_name as const gchar ptr) as GAction ptr
 	add_action as sub(byval action_map as GActionMap ptr, byval action as GAction ptr)
-	remove_action as sub(byval action_map as GActionMap ptr, byval action_name as const zstring ptr)
+	remove_action as sub(byval action_map as GActionMap ptr, byval action_name as const gchar ptr)
 end type
 
 type _GActionEntry
-	name as const zstring ptr
+	name as const gchar ptr
 	activate as sub(byval action as GSimpleAction ptr, byval parameter as GVariant ptr, byval user_data as gpointer)
-	parameter_type as const zstring ptr
-	state as const zstring ptr
+	parameter_type as const gchar ptr
+	state as const gchar ptr
 	change_state as sub(byval action as GSimpleAction ptr, byval value as GVariant ptr, byval user_data as gpointer)
 	padding(0 to 2) as gsize
 end type
 
 declare function g_action_map_get_type() as GType
-declare function g_action_map_lookup_action(byval action_map as GActionMap ptr, byval action_name as const zstring ptr) as GAction ptr
+declare function g_action_map_lookup_action(byval action_map as GActionMap ptr, byval action_name as const gchar ptr) as GAction ptr
 declare sub g_action_map_add_action(byval action_map as GActionMap ptr, byval action as GAction ptr)
-declare sub g_action_map_remove_action(byval action_map as GActionMap ptr, byval action_name as const zstring ptr)
+declare sub g_action_map_remove_action(byval action_map as GActionMap ptr, byval action_name as const gchar ptr)
 declare sub g_action_map_add_action_entries(byval action_map as GActionMap ptr, byval entries as const GActionEntry ptr, byval n_entries as gint, byval user_data as gpointer)
 
 #define __G_APP_INFO_H__
@@ -1055,8 +1055,8 @@ declare function g_app_info_delete(byval appinfo as GAppInfo ptr) as gboolean
 declare function g_app_info_set_as_last_used_for_type(byval appinfo as GAppInfo ptr, byval content_type as const zstring ptr, byval error as GError ptr ptr) as gboolean
 declare function g_app_info_get_all() as GList ptr
 declare function g_app_info_get_all_for_type(byval content_type as const zstring ptr) as GList ptr
-declare function g_app_info_get_recommended_for_type(byval content_type as const zstring ptr) as GList ptr
-declare function g_app_info_get_fallback_for_type(byval content_type as const zstring ptr) as GList ptr
+declare function g_app_info_get_recommended_for_type(byval content_type as const gchar ptr) as GList ptr
+declare function g_app_info_get_fallback_for_type(byval content_type as const gchar ptr) as GList ptr
 declare sub g_app_info_reset_type_associations(byval content_type as const zstring ptr)
 declare function g_app_info_get_default_for_type(byval content_type as const zstring ptr, byval must_support_uris as gboolean) as GAppInfo ptr
 declare function g_app_info_get_default_for_uri_scheme(byval uri_scheme as const zstring ptr) as GAppInfo ptr
@@ -1113,34 +1113,34 @@ type _GApplicationClass
 	parent_class as GObjectClass
 	startup as sub(byval application as GApplication ptr)
 	activate as sub(byval application as GApplication ptr)
-	open as sub(byval application as GApplication ptr, byval files as GFile ptr ptr, byval n_files as gint, byval hint as const zstring ptr)
+	open as sub(byval application as GApplication ptr, byval files as GFile ptr ptr, byval n_files as gint, byval hint as const gchar ptr)
 	command_line as function(byval application as GApplication ptr, byval command_line as GApplicationCommandLine ptr) as long
-	local_command_line as function(byval application as GApplication ptr, byval arguments as zstring ptr ptr ptr, byval exit_status as long ptr) as gboolean
+	local_command_line as function(byval application as GApplication ptr, byval arguments as gchar ptr ptr ptr, byval exit_status as long ptr) as gboolean
 	before_emit as sub(byval application as GApplication ptr, byval platform_data as GVariant ptr)
 	after_emit as sub(byval application as GApplication ptr, byval platform_data as GVariant ptr)
 	add_platform_data as sub(byval application as GApplication ptr, byval builder as GVariantBuilder ptr)
 	quit_mainloop as sub(byval application as GApplication ptr)
 	run_mainloop as sub(byval application as GApplication ptr)
 	shutdown as sub(byval application as GApplication ptr)
-	dbus_register as function(byval application as GApplication ptr, byval connection as GDBusConnection ptr, byval object_path as const zstring ptr, byval error as GError ptr ptr) as gboolean
-	dbus_unregister as sub(byval application as GApplication ptr, byval connection as GDBusConnection ptr, byval object_path as const zstring ptr)
+	dbus_register as function(byval application as GApplication ptr, byval connection as GDBusConnection ptr, byval object_path as const gchar ptr, byval error as GError ptr ptr) as gboolean
+	dbus_unregister as sub(byval application as GApplication ptr, byval connection as GDBusConnection ptr, byval object_path as const gchar ptr)
 	handle_local_options as function(byval application as GApplication ptr, byval options as GVariantDict ptr) as gint
 	padding(0 to 7) as gpointer
 end type
 
 declare function g_application_get_type() as GType
-declare function g_application_id_is_valid(byval application_id as const zstring ptr) as gboolean
-declare function g_application_new(byval application_id as const zstring ptr, byval flags as GApplicationFlags) as GApplication ptr
-declare function g_application_get_application_id(byval application as GApplication ptr) as const zstring ptr
-declare sub g_application_set_application_id(byval application as GApplication ptr, byval application_id as const zstring ptr)
+declare function g_application_id_is_valid(byval application_id as const gchar ptr) as gboolean
+declare function g_application_new(byval application_id as const gchar ptr, byval flags as GApplicationFlags) as GApplication ptr
+declare function g_application_get_application_id(byval application as GApplication ptr) as const gchar ptr
+declare sub g_application_set_application_id(byval application as GApplication ptr, byval application_id as const gchar ptr)
 declare function g_application_get_dbus_connection(byval application as GApplication ptr) as GDBusConnection ptr
-declare function g_application_get_dbus_object_path(byval application as GApplication ptr) as const zstring ptr
+declare function g_application_get_dbus_object_path(byval application as GApplication ptr) as const gchar ptr
 declare function g_application_get_inactivity_timeout(byval application as GApplication ptr) as guint
 declare sub g_application_set_inactivity_timeout(byval application as GApplication ptr, byval inactivity_timeout as guint)
 declare function g_application_get_flags(byval application as GApplication ptr) as GApplicationFlags
 declare sub g_application_set_flags(byval application as GApplication ptr, byval flags as GApplicationFlags)
-declare function g_application_get_resource_base_path(byval application as GApplication ptr) as const zstring ptr
-declare sub g_application_set_resource_base_path(byval application as GApplication ptr, byval resource_path as const zstring ptr)
+declare function g_application_get_resource_base_path(byval application as GApplication ptr) as const gchar ptr
+declare sub g_application_set_resource_base_path(byval application as GApplication ptr, byval resource_path as const gchar ptr)
 declare sub g_application_set_action_group(byval application as GApplication ptr, byval action_group as GActionGroup ptr)
 declare sub g_application_add_main_option_entries(byval application as GApplication ptr, byval entries as const GOptionEntry ptr)
 declare sub g_application_add_main_option(byval application as GApplication ptr, byval long_name as const zstring ptr, byval short_name as byte, byval flags as GOptionFlags, byval arg as GOptionArg, byval description as const zstring ptr, byval arg_description as const zstring ptr)
@@ -1151,15 +1151,15 @@ declare function g_application_register(byval application as GApplication ptr, b
 declare sub g_application_hold(byval application as GApplication ptr)
 declare sub g_application_release(byval application as GApplication ptr)
 declare sub g_application_activate(byval application as GApplication ptr)
-declare sub g_application_open(byval application as GApplication ptr, byval files as GFile ptr ptr, byval n_files as gint, byval hint as const zstring ptr)
+declare sub g_application_open(byval application as GApplication ptr, byval files as GFile ptr ptr, byval n_files as gint, byval hint as const gchar ptr)
 declare function g_application_run(byval application as GApplication ptr, byval argc as long, byval argv as zstring ptr ptr) as long
 declare sub g_application_quit(byval application as GApplication ptr)
 declare function g_application_get_default() as GApplication ptr
 declare sub g_application_set_default(byval application as GApplication ptr)
 declare sub g_application_mark_busy(byval application as GApplication ptr)
 declare sub g_application_unmark_busy(byval application as GApplication ptr)
-declare sub g_application_send_notification(byval application as GApplication ptr, byval id as const zstring ptr, byval notification as GNotification ptr)
-declare sub g_application_withdraw_notification(byval application as GApplication ptr, byval id as const zstring ptr)
+declare sub g_application_send_notification(byval application as GApplication ptr, byval id as const gchar ptr, byval notification as GNotification ptr)
+declare sub g_application_withdraw_notification(byval application as GApplication ptr, byval id as const gchar ptr)
 
 #define __G_APPLICATION_COMMAND_LINE_H__
 #define G_TYPE_APPLICATION_COMMAND_LINE g_application_command_line_get_type()
@@ -1178,26 +1178,26 @@ end type
 
 type _GApplicationCommandLineClass
 	parent_class as GObjectClass
-	print_literal as sub(byval cmdline as GApplicationCommandLine ptr, byval message as const zstring ptr)
-	printerr_literal as sub(byval cmdline as GApplicationCommandLine ptr, byval message as const zstring ptr)
+	print_literal as sub(byval cmdline as GApplicationCommandLine ptr, byval message as const gchar ptr)
+	printerr_literal as sub(byval cmdline as GApplicationCommandLine ptr, byval message as const gchar ptr)
 	get_stdin as function(byval cmdline as GApplicationCommandLine ptr) as GInputStream ptr
 	padding(0 to 10) as gpointer
 end type
 
 declare function g_application_command_line_get_type() as GType
-declare function g_application_command_line_get_arguments(byval cmdline as GApplicationCommandLine ptr, byval argc as long ptr) as zstring ptr ptr
+declare function g_application_command_line_get_arguments(byval cmdline as GApplicationCommandLine ptr, byval argc as long ptr) as gchar ptr ptr
 declare function g_application_command_line_get_options_dict(byval cmdline as GApplicationCommandLine ptr) as GVariantDict ptr
 declare function g_application_command_line_get_stdin(byval cmdline as GApplicationCommandLine ptr) as GInputStream ptr
-declare function g_application_command_line_get_environ(byval cmdline as GApplicationCommandLine ptr) as const zstring const ptr ptr
-declare function g_application_command_line_getenv(byval cmdline as GApplicationCommandLine ptr, byval name as const zstring ptr) as const zstring ptr
-declare function g_application_command_line_get_cwd(byval cmdline as GApplicationCommandLine ptr) as const zstring ptr
+declare function g_application_command_line_get_environ(byval cmdline as GApplicationCommandLine ptr) as const gchar const ptr ptr
+declare function g_application_command_line_getenv(byval cmdline as GApplicationCommandLine ptr, byval name as const gchar ptr) as const gchar ptr
+declare function g_application_command_line_get_cwd(byval cmdline as GApplicationCommandLine ptr) as const gchar ptr
 declare function g_application_command_line_get_is_remote(byval cmdline as GApplicationCommandLine ptr) as gboolean
-declare sub g_application_command_line_print(byval cmdline as GApplicationCommandLine ptr, byval format as const zstring ptr, ...)
-declare sub g_application_command_line_printerr(byval cmdline as GApplicationCommandLine ptr, byval format as const zstring ptr, ...)
+declare sub g_application_command_line_print(byval cmdline as GApplicationCommandLine ptr, byval format as const gchar ptr, ...)
+declare sub g_application_command_line_printerr(byval cmdline as GApplicationCommandLine ptr, byval format as const gchar ptr, ...)
 declare function g_application_command_line_get_exit_status(byval cmdline as GApplicationCommandLine ptr) as long
 declare sub g_application_command_line_set_exit_status(byval cmdline as GApplicationCommandLine ptr, byval exit_status as long)
 declare function g_application_command_line_get_platform_data(byval cmdline as GApplicationCommandLine ptr) as GVariant ptr
-declare function g_application_command_line_create_file_for_arg(byval cmdline as GApplicationCommandLine ptr, byval arg as const zstring ptr) as GFile ptr
+declare function g_application_command_line_create_file_for_arg(byval cmdline as GApplicationCommandLine ptr, byval arg as const gchar ptr) as GFile ptr
 
 #define __G_ASYNC_INITABLE_H__
 #define __G_INITABLE_H__
@@ -1215,9 +1215,9 @@ end type
 
 declare function g_initable_get_type() as GType
 declare function g_initable_init(byval initable as GInitable ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gboolean
-declare function g_initable_new(byval object_type as GType, byval cancellable as GCancellable ptr, byval error as GError ptr ptr, byval first_property_name as const zstring ptr, ...) as gpointer
+declare function g_initable_new(byval object_type as GType, byval cancellable as GCancellable ptr, byval error as GError ptr ptr, byval first_property_name as const gchar ptr, ...) as gpointer
 declare function g_initable_newv(byval object_type as GType, byval n_parameters as guint, byval parameters as GParameter ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gpointer
-declare function g_initable_new_valist(byval object_type as GType, byval first_property_name as const zstring ptr, byval var_args as va_list, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GObject ptr
+declare function g_initable_new_valist(byval object_type as GType, byval first_property_name as const gchar ptr, byval var_args as va_list, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GObject ptr
 
 #define G_TYPE_ASYNC_INITABLE g_async_initable_get_type()
 #define G_ASYNC_INITABLE(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), G_TYPE_ASYNC_INITABLE, GAsyncInitable)
@@ -1235,9 +1235,9 @@ end type
 declare function g_async_initable_get_type() as GType
 declare sub g_async_initable_init_async(byval initable as GAsyncInitable ptr, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_async_initable_init_finish(byval initable as GAsyncInitable ptr, byval res as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
-declare sub g_async_initable_new_async(byval object_type as GType, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer, byval first_property_name as const zstring ptr, ...)
+declare sub g_async_initable_new_async(byval object_type as GType, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer, byval first_property_name as const gchar ptr, ...)
 declare sub g_async_initable_newv_async(byval object_type as GType, byval n_parameters as guint, byval parameters as GParameter ptr, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
-declare sub g_async_initable_new_valist_async(byval object_type as GType, byval first_property_name as const zstring ptr, byval var_args as va_list, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare sub g_async_initable_new_valist_async(byval object_type as GType, byval first_property_name as const gchar ptr, byval var_args as va_list, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_async_initable_new_finish(byval initable as GAsyncInitable ptr, byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GObject ptr
 
 #define __G_ASYNC_RESULT_H__
@@ -1422,8 +1422,8 @@ end type
 declare function g_output_stream_get_type() as GType
 declare function g_output_stream_write(byval stream as GOutputStream ptr, byval buffer as const any ptr, byval count as gsize, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
 declare function g_output_stream_write_all(byval stream as GOutputStream ptr, byval buffer as const any ptr, byval count as gsize, byval bytes_written as gsize ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gboolean
-declare function g_output_stream_printf(byval stream as GOutputStream ptr, byval bytes_written as gsize ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr, byval format as const zstring ptr, ...) as gboolean
-declare function g_output_stream_vprintf(byval stream as GOutputStream ptr, byval bytes_written as gsize ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr, byval format as const zstring ptr, byval args as va_list) as gboolean
+declare function g_output_stream_printf(byval stream as GOutputStream ptr, byval bytes_written as gsize ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr, byval format as const gchar ptr, ...) as gboolean
+declare function g_output_stream_vprintf(byval stream as GOutputStream ptr, byval bytes_written as gsize ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr, byval format as const gchar ptr, byval args as va_list) as gboolean
 declare function g_output_stream_write_bytes(byval stream as GOutputStream ptr, byval bytes as GBytes ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
 declare function g_output_stream_splice(byval stream as GOutputStream ptr, byval source as GInputStream ptr, byval flags as GOutputStreamSpliceFlags, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
 declare function g_output_stream_flush(byval stream as GOutputStream ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gboolean
@@ -1578,23 +1578,23 @@ type _GCharsetConverterClass
 end type
 
 declare function g_charset_converter_get_type() as GType
-declare function g_charset_converter_new(byval to_charset as const zstring ptr, byval from_charset as const zstring ptr, byval error as GError ptr ptr) as GCharsetConverter ptr
+declare function g_charset_converter_new(byval to_charset as const gchar ptr, byval from_charset as const gchar ptr, byval error as GError ptr ptr) as GCharsetConverter ptr
 declare sub g_charset_converter_set_use_fallback(byval converter as GCharsetConverter ptr, byval use_fallback as gboolean)
 declare function g_charset_converter_get_use_fallback(byval converter as GCharsetConverter ptr) as gboolean
 declare function g_charset_converter_get_num_fallbacks(byval converter as GCharsetConverter ptr) as guint
 #define __G_CONTENT_TYPE_H__
-declare function g_content_type_equals(byval type1 as const zstring ptr, byval type2 as const zstring ptr) as gboolean
-declare function g_content_type_is_a(byval type as const zstring ptr, byval supertype as const zstring ptr) as gboolean
-declare function g_content_type_is_unknown(byval type as const zstring ptr) as gboolean
-declare function g_content_type_get_description(byval type as const zstring ptr) as zstring ptr
-declare function g_content_type_get_mime_type(byval type as const zstring ptr) as zstring ptr
-declare function g_content_type_get_icon(byval type as const zstring ptr) as GIcon ptr
-declare function g_content_type_get_symbolic_icon(byval type as const zstring ptr) as GIcon ptr
-declare function g_content_type_get_generic_icon_name(byval type as const zstring ptr) as zstring ptr
-declare function g_content_type_can_be_executable(byval type as const zstring ptr) as gboolean
-declare function g_content_type_from_mime_type(byval mime_type as const zstring ptr) as zstring ptr
-declare function g_content_type_guess(byval filename as const zstring ptr, byval data as const guchar ptr, byval data_size as gsize, byval result_uncertain as gboolean ptr) as zstring ptr
-declare function g_content_type_guess_for_tree(byval root as GFile ptr) as zstring ptr ptr
+declare function g_content_type_equals(byval type1 as const gchar ptr, byval type2 as const gchar ptr) as gboolean
+declare function g_content_type_is_a(byval type as const gchar ptr, byval supertype as const gchar ptr) as gboolean
+declare function g_content_type_is_unknown(byval type as const gchar ptr) as gboolean
+declare function g_content_type_get_description(byval type as const gchar ptr) as gchar ptr
+declare function g_content_type_get_mime_type(byval type as const gchar ptr) as gchar ptr
+declare function g_content_type_get_icon(byval type as const gchar ptr) as GIcon ptr
+declare function g_content_type_get_symbolic_icon(byval type as const gchar ptr) as GIcon ptr
+declare function g_content_type_get_generic_icon_name(byval type as const gchar ptr) as gchar ptr
+declare function g_content_type_can_be_executable(byval type as const gchar ptr) as gboolean
+declare function g_content_type_from_mime_type(byval mime_type as const gchar ptr) as gchar ptr
+declare function g_content_type_guess(byval filename as const gchar ptr, byval data as const guchar ptr, byval data_size as gsize, byval result_uncertain as gboolean ptr) as gchar ptr
+declare function g_content_type_guess_for_tree(byval root as GFile ptr) as gchar ptr ptr
 declare function g_content_types_get_registered() as GList ptr
 
 #define __G_CONVERTER_INPUT_STREAM_H__
@@ -1664,7 +1664,7 @@ type GCredentialsClass as _GCredentialsClass
 
 declare function g_credentials_get_type() as GType
 declare function g_credentials_new() as GCredentials ptr
-declare function g_credentials_to_string(byval credentials as GCredentials ptr) as zstring ptr
+declare function g_credentials_to_string(byval credentials as GCredentials ptr) as gchar ptr
 declare function g_credentials_get_native(byval credentials as GCredentials ptr, byval native_type as GCredentialsType) as gpointer
 declare sub g_credentials_set_native(byval credentials as GCredentials ptr, byval native_type as GCredentialsType, byval native as gpointer)
 declare function g_credentials_is_same_user(byval credentials as GCredentials ptr, byval other_credentials as GCredentials ptr, byval error as GError ptr ptr) as gboolean
@@ -1717,11 +1717,11 @@ declare function g_data_input_stream_read_line_utf8(byval stream as GDataInputSt
 declare sub g_data_input_stream_read_line_async(byval stream as GDataInputStream ptr, byval io_priority as gint, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_data_input_stream_read_line_finish(byval stream as GDataInputStream ptr, byval result as GAsyncResult ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr
 declare function g_data_input_stream_read_line_finish_utf8(byval stream as GDataInputStream ptr, byval result as GAsyncResult ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_data_input_stream_read_until(byval stream as GDataInputStream ptr, byval stop_chars as const zstring ptr, byval length as gsize ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as zstring ptr
-declare sub g_data_input_stream_read_until_async(byval stream as GDataInputStream ptr, byval stop_chars as const zstring ptr, byval io_priority as gint, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_data_input_stream_read_until(byval stream as GDataInputStream ptr, byval stop_chars as const gchar ptr, byval length as gsize ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as zstring ptr
+declare sub g_data_input_stream_read_until_async(byval stream as GDataInputStream ptr, byval stop_chars as const gchar ptr, byval io_priority as gint, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_data_input_stream_read_until_finish(byval stream as GDataInputStream ptr, byval result as GAsyncResult ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_data_input_stream_read_upto(byval stream as GDataInputStream ptr, byval stop_chars as const zstring ptr, byval stop_chars_len as gssize, byval length as gsize ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as zstring ptr
-declare sub g_data_input_stream_read_upto_async(byval stream as GDataInputStream ptr, byval stop_chars as const zstring ptr, byval stop_chars_len as gssize, byval io_priority as gint, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_data_input_stream_read_upto(byval stream as GDataInputStream ptr, byval stop_chars as const gchar ptr, byval stop_chars_len as gssize, byval length as gsize ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as zstring ptr
+declare sub g_data_input_stream_read_upto_async(byval stream as GDataInputStream ptr, byval stop_chars as const gchar ptr, byval stop_chars_len as gssize, byval io_priority as gint, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_data_input_stream_read_upto_finish(byval stream as GDataInputStream ptr, byval result as GAsyncResult ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr
 
 #define __G_DATA_OUTPUT_STREAM_H__
@@ -1763,13 +1763,13 @@ declare function g_data_output_stream_put_int64(byval stream as GDataOutputStrea
 declare function g_data_output_stream_put_uint64(byval stream as GDataOutputStream ptr, byval data as guint64, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gboolean
 declare function g_data_output_stream_put_string(byval stream as GDataOutputStream ptr, byval str as const zstring ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gboolean
 #define __G_DBUS_ADDRESS_H__
-declare function g_dbus_address_escape_value(byval string as const zstring ptr) as zstring ptr
-declare function g_dbus_is_address(byval string as const zstring ptr) as gboolean
-declare function g_dbus_is_supported_address(byval string as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare sub g_dbus_address_get_stream(byval address as const zstring ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
-declare function g_dbus_address_get_stream_finish(byval res as GAsyncResult ptr, byval out_guid as zstring ptr ptr, byval error as GError ptr ptr) as GIOStream ptr
-declare function g_dbus_address_get_stream_sync(byval address as const zstring ptr, byval out_guid as zstring ptr ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GIOStream ptr
-declare function g_dbus_address_get_for_bus_sync(byval bus_type as GBusType, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as zstring ptr
+declare function g_dbus_address_escape_value(byval string as const gchar ptr) as gchar ptr
+declare function g_dbus_is_address(byval string as const gchar ptr) as gboolean
+declare function g_dbus_is_supported_address(byval string as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare sub g_dbus_address_get_stream(byval address as const gchar ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_dbus_address_get_stream_finish(byval res as GAsyncResult ptr, byval out_guid as gchar ptr ptr, byval error as GError ptr ptr) as GIOStream ptr
+declare function g_dbus_address_get_stream_sync(byval address as const gchar ptr, byval out_guid as gchar ptr ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GIOStream ptr
+declare function g_dbus_address_get_for_bus_sync(byval bus_type as GBusType, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gchar ptr
 
 #define __G_DBUS_AUTH_OBSERVER_H__
 #define G_TYPE_DBUS_AUTH_OBSERVER g_dbus_auth_observer_get_type()
@@ -1779,7 +1779,7 @@ declare function g_dbus_address_get_for_bus_sync(byval bus_type as GBusType, byv
 declare function g_dbus_auth_observer_get_type() as GType
 declare function g_dbus_auth_observer_new() as GDBusAuthObserver ptr
 declare function g_dbus_auth_observer_authorize_authenticated_peer(byval observer as GDBusAuthObserver ptr, byval stream as GIOStream ptr, byval credentials as GCredentials ptr) as gboolean
-declare function g_dbus_auth_observer_allow_mechanism(byval observer as GDBusAuthObserver ptr, byval mechanism as const zstring ptr) as gboolean
+declare function g_dbus_auth_observer_allow_mechanism(byval observer as GDBusAuthObserver ptr, byval mechanism as const gchar ptr) as gboolean
 
 #define __G_DBUS_CONNECTION_H__
 #define G_TYPE_DBUS_CONNECTION g_dbus_connection_get_type()
@@ -1790,17 +1790,17 @@ declare function g_dbus_connection_get_type() as GType
 declare sub g_bus_get(byval bus_type as GBusType, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_bus_get_finish(byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GDBusConnection ptr
 declare function g_bus_get_sync(byval bus_type as GBusType, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusConnection ptr
-declare sub g_dbus_connection_new(byval stream as GIOStream ptr, byval guid as const zstring ptr, byval flags as GDBusConnectionFlags, byval observer as GDBusAuthObserver ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare sub g_dbus_connection_new(byval stream as GIOStream ptr, byval guid as const gchar ptr, byval flags as GDBusConnectionFlags, byval observer as GDBusAuthObserver ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_dbus_connection_new_finish(byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GDBusConnection ptr
-declare function g_dbus_connection_new_sync(byval stream as GIOStream ptr, byval guid as const zstring ptr, byval flags as GDBusConnectionFlags, byval observer as GDBusAuthObserver ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusConnection ptr
-declare sub g_dbus_connection_new_for_address(byval address as const zstring ptr, byval flags as GDBusConnectionFlags, byval observer as GDBusAuthObserver ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_dbus_connection_new_sync(byval stream as GIOStream ptr, byval guid as const gchar ptr, byval flags as GDBusConnectionFlags, byval observer as GDBusAuthObserver ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusConnection ptr
+declare sub g_dbus_connection_new_for_address(byval address as const gchar ptr, byval flags as GDBusConnectionFlags, byval observer as GDBusAuthObserver ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_dbus_connection_new_for_address_finish(byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GDBusConnection ptr
-declare function g_dbus_connection_new_for_address_sync(byval address as const zstring ptr, byval flags as GDBusConnectionFlags, byval observer as GDBusAuthObserver ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusConnection ptr
+declare function g_dbus_connection_new_for_address_sync(byval address as const gchar ptr, byval flags as GDBusConnectionFlags, byval observer as GDBusAuthObserver ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusConnection ptr
 declare sub g_dbus_connection_start_message_processing(byval connection as GDBusConnection ptr)
 declare function g_dbus_connection_is_closed(byval connection as GDBusConnection ptr) as gboolean
 declare function g_dbus_connection_get_stream(byval connection as GDBusConnection ptr) as GIOStream ptr
-declare function g_dbus_connection_get_guid(byval connection as GDBusConnection ptr) as const zstring ptr
-declare function g_dbus_connection_get_unique_name(byval connection as GDBusConnection ptr) as const zstring ptr
+declare function g_dbus_connection_get_guid(byval connection as GDBusConnection ptr) as const gchar ptr
+declare function g_dbus_connection_get_unique_name(byval connection as GDBusConnection ptr) as const gchar ptr
 declare function g_dbus_connection_get_peer_credentials(byval connection as GDBusConnection ptr) as GCredentials ptr
 declare function g_dbus_connection_get_last_serial(byval connection as GDBusConnection ptr) as guint32
 declare function g_dbus_connection_get_exit_on_close(byval connection as GDBusConnection ptr) as gboolean
@@ -1816,17 +1816,17 @@ declare function g_dbus_connection_send_message(byval connection as GDBusConnect
 declare sub g_dbus_connection_send_message_with_reply(byval connection as GDBusConnection ptr, byval message as GDBusMessage ptr, byval flags as GDBusSendMessageFlags, byval timeout_msec as gint, byval out_serial as guint32 ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_dbus_connection_send_message_with_reply_finish(byval connection as GDBusConnection ptr, byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GDBusMessage ptr
 declare function g_dbus_connection_send_message_with_reply_sync(byval connection as GDBusConnection ptr, byval message as GDBusMessage ptr, byval flags as GDBusSendMessageFlags, byval timeout_msec as gint, byval out_serial as guint32 ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusMessage ptr
-declare function g_dbus_connection_emit_signal(byval connection as GDBusConnection ptr, byval destination_bus_name as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval signal_name as const zstring ptr, byval parameters as GVariant ptr, byval error as GError ptr ptr) as gboolean
-declare sub g_dbus_connection_call(byval connection as GDBusConnection ptr, byval bus_name as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval method_name as const zstring ptr, byval parameters as GVariant ptr, byval reply_type as const GVariantType ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_dbus_connection_emit_signal(byval connection as GDBusConnection ptr, byval destination_bus_name as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval signal_name as const gchar ptr, byval parameters as GVariant ptr, byval error as GError ptr ptr) as gboolean
+declare sub g_dbus_connection_call(byval connection as GDBusConnection ptr, byval bus_name as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval method_name as const gchar ptr, byval parameters as GVariant ptr, byval reply_type as const GVariantType ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_dbus_connection_call_finish(byval connection as GDBusConnection ptr, byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GVariant ptr
-declare function g_dbus_connection_call_sync(byval connection as GDBusConnection ptr, byval bus_name as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval method_name as const zstring ptr, byval parameters as GVariant ptr, byval reply_type as const GVariantType ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GVariant ptr
-declare sub g_dbus_connection_call_with_unix_fd_list(byval connection as GDBusConnection ptr, byval bus_name as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval method_name as const zstring ptr, byval parameters as GVariant ptr, byval reply_type as const GVariantType ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval fd_list as GUnixFDList ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_dbus_connection_call_sync(byval connection as GDBusConnection ptr, byval bus_name as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval method_name as const gchar ptr, byval parameters as GVariant ptr, byval reply_type as const GVariantType ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GVariant ptr
+declare sub g_dbus_connection_call_with_unix_fd_list(byval connection as GDBusConnection ptr, byval bus_name as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval method_name as const gchar ptr, byval parameters as GVariant ptr, byval reply_type as const GVariantType ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval fd_list as GUnixFDList ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_dbus_connection_call_with_unix_fd_list_finish(byval connection as GDBusConnection ptr, byval out_fd_list as GUnixFDList ptr ptr, byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GVariant ptr
-declare function g_dbus_connection_call_with_unix_fd_list_sync(byval connection as GDBusConnection ptr, byval bus_name as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval method_name as const zstring ptr, byval parameters as GVariant ptr, byval reply_type as const GVariantType ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval fd_list as GUnixFDList ptr, byval out_fd_list as GUnixFDList ptr ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GVariant ptr
+declare function g_dbus_connection_call_with_unix_fd_list_sync(byval connection as GDBusConnection ptr, byval bus_name as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval method_name as const gchar ptr, byval parameters as GVariant ptr, byval reply_type as const GVariantType ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval fd_list as GUnixFDList ptr, byval out_fd_list as GUnixFDList ptr ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GVariant ptr
 
-type GDBusInterfaceMethodCallFunc as sub(byval connection as GDBusConnection ptr, byval sender as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval method_name as const zstring ptr, byval parameters as GVariant ptr, byval invocation as GDBusMethodInvocation ptr, byval user_data as gpointer)
-type GDBusInterfaceGetPropertyFunc as function(byval connection as GDBusConnection ptr, byval sender as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval property_name as const zstring ptr, byval error as GError ptr ptr, byval user_data as gpointer) as GVariant ptr
-type GDBusInterfaceSetPropertyFunc as function(byval connection as GDBusConnection ptr, byval sender as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval property_name as const zstring ptr, byval value as GVariant ptr, byval error as GError ptr ptr, byval user_data as gpointer) as gboolean
+type GDBusInterfaceMethodCallFunc as sub(byval connection as GDBusConnection ptr, byval sender as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval method_name as const gchar ptr, byval parameters as GVariant ptr, byval invocation as GDBusMethodInvocation ptr, byval user_data as gpointer)
+type GDBusInterfaceGetPropertyFunc as function(byval connection as GDBusConnection ptr, byval sender as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval property_name as const gchar ptr, byval error as GError ptr ptr, byval user_data as gpointer) as GVariant ptr
+type GDBusInterfaceSetPropertyFunc as function(byval connection as GDBusConnection ptr, byval sender as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval property_name as const gchar ptr, byval value as GVariant ptr, byval error as GError ptr ptr, byval user_data as gpointer) as gboolean
 
 type _GDBusInterfaceVTable
 	method_call as GDBusInterfaceMethodCallFunc
@@ -1835,11 +1835,11 @@ type _GDBusInterfaceVTable
 	padding(0 to 7) as gpointer
 end type
 
-declare function g_dbus_connection_register_object(byval connection as GDBusConnection ptr, byval object_path as const zstring ptr, byval interface_info as GDBusInterfaceInfo ptr, byval vtable as const GDBusInterfaceVTable ptr, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify, byval error as GError ptr ptr) as guint
+declare function g_dbus_connection_register_object(byval connection as GDBusConnection ptr, byval object_path as const gchar ptr, byval interface_info as GDBusInterfaceInfo ptr, byval vtable as const GDBusInterfaceVTable ptr, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify, byval error as GError ptr ptr) as guint
 declare function g_dbus_connection_unregister_object(byval connection as GDBusConnection ptr, byval registration_id as guint) as gboolean
-type GDBusSubtreeEnumerateFunc as function(byval connection as GDBusConnection ptr, byval sender as const zstring ptr, byval object_path as const zstring ptr, byval user_data as gpointer) as zstring ptr ptr
-type GDBusSubtreeIntrospectFunc as function(byval connection as GDBusConnection ptr, byval sender as const zstring ptr, byval object_path as const zstring ptr, byval node as const zstring ptr, byval user_data as gpointer) as GDBusInterfaceInfo ptr ptr
-type GDBusSubtreeDispatchFunc as function(byval connection as GDBusConnection ptr, byval sender as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval node as const zstring ptr, byval out_user_data as gpointer ptr, byval user_data as gpointer) as const GDBusInterfaceVTable ptr
+type GDBusSubtreeEnumerateFunc as function(byval connection as GDBusConnection ptr, byval sender as const gchar ptr, byval object_path as const gchar ptr, byval user_data as gpointer) as gchar ptr ptr
+type GDBusSubtreeIntrospectFunc as function(byval connection as GDBusConnection ptr, byval sender as const gchar ptr, byval object_path as const gchar ptr, byval node as const gchar ptr, byval user_data as gpointer) as GDBusInterfaceInfo ptr ptr
+type GDBusSubtreeDispatchFunc as function(byval connection as GDBusConnection ptr, byval sender as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval node as const gchar ptr, byval out_user_data as gpointer ptr, byval user_data as gpointer) as const GDBusInterfaceVTable ptr
 
 type _GDBusSubtreeVTable
 	enumerate as GDBusSubtreeEnumerateFunc
@@ -1848,10 +1848,10 @@ type _GDBusSubtreeVTable
 	padding(0 to 7) as gpointer
 end type
 
-declare function g_dbus_connection_register_subtree(byval connection as GDBusConnection ptr, byval object_path as const zstring ptr, byval vtable as const GDBusSubtreeVTable ptr, byval flags as GDBusSubtreeFlags, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify, byval error as GError ptr ptr) as guint
+declare function g_dbus_connection_register_subtree(byval connection as GDBusConnection ptr, byval object_path as const gchar ptr, byval vtable as const GDBusSubtreeVTable ptr, byval flags as GDBusSubtreeFlags, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify, byval error as GError ptr ptr) as guint
 declare function g_dbus_connection_unregister_subtree(byval connection as GDBusConnection ptr, byval registration_id as guint) as gboolean
-type GDBusSignalCallback as sub(byval connection as GDBusConnection ptr, byval sender_name as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval signal_name as const zstring ptr, byval parameters as GVariant ptr, byval user_data as gpointer)
-declare function g_dbus_connection_signal_subscribe(byval connection as GDBusConnection ptr, byval sender as const zstring ptr, byval interface_name as const zstring ptr, byval member as const zstring ptr, byval object_path as const zstring ptr, byval arg0 as const zstring ptr, byval flags as GDBusSignalFlags, byval callback as GDBusSignalCallback, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify) as guint
+type GDBusSignalCallback as sub(byval connection as GDBusConnection ptr, byval sender_name as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval signal_name as const gchar ptr, byval parameters as GVariant ptr, byval user_data as gpointer)
+declare function g_dbus_connection_signal_subscribe(byval connection as GDBusConnection ptr, byval sender as const gchar ptr, byval interface_name as const gchar ptr, byval member as const gchar ptr, byval object_path as const gchar ptr, byval arg0 as const gchar ptr, byval flags as GDBusSignalFlags, byval callback as GDBusSignalCallback, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify) as guint
 declare sub g_dbus_connection_signal_unsubscribe(byval connection as GDBusConnection ptr, byval subscription_id as guint)
 type GDBusMessageFilterFunction as function(byval connection as GDBusConnection ptr, byval message as GDBusMessage ptr, byval incoming as gboolean, byval user_data as gpointer) as GDBusMessage ptr
 declare function g_dbus_connection_add_filter(byval connection as GDBusConnection ptr, byval filter_function as GDBusMessageFilterFunction, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify) as guint
@@ -1860,40 +1860,40 @@ declare sub g_dbus_connection_remove_filter(byval connection as GDBusConnection 
 #define G_DBUS_ERROR g_dbus_error_quark()
 declare function g_dbus_error_quark() as GQuark
 declare function g_dbus_error_is_remote_error(byval error as const GError ptr) as gboolean
-declare function g_dbus_error_get_remote_error(byval error as const GError ptr) as zstring ptr
+declare function g_dbus_error_get_remote_error(byval error as const GError ptr) as gchar ptr
 declare function g_dbus_error_strip_remote_error(byval error as GError ptr) as gboolean
 
 type _GDBusErrorEntry
 	error_code as gint
-	dbus_error_name as const zstring ptr
+	dbus_error_name as const gchar ptr
 end type
 
-declare function g_dbus_error_register_error(byval error_domain as GQuark, byval error_code as gint, byval dbus_error_name as const zstring ptr) as gboolean
-declare function g_dbus_error_unregister_error(byval error_domain as GQuark, byval error_code as gint, byval dbus_error_name as const zstring ptr) as gboolean
-declare sub g_dbus_error_register_error_domain(byval error_domain_quark_name as const zstring ptr, byval quark_volatile as gsize ptr, byval entries as const GDBusErrorEntry ptr, byval num_entries as guint)
-declare function g_dbus_error_new_for_dbus_error(byval dbus_error_name as const zstring ptr, byval dbus_error_message as const zstring ptr) as GError ptr
-declare sub g_dbus_error_set_dbus_error(byval error as GError ptr ptr, byval dbus_error_name as const zstring ptr, byval dbus_error_message as const zstring ptr, byval format as const zstring ptr, ...)
-declare sub g_dbus_error_set_dbus_error_valist(byval error as GError ptr ptr, byval dbus_error_name as const zstring ptr, byval dbus_error_message as const zstring ptr, byval format as const zstring ptr, byval var_args as va_list)
-declare function g_dbus_error_encode_gerror(byval error as const GError ptr) as zstring ptr
+declare function g_dbus_error_register_error(byval error_domain as GQuark, byval error_code as gint, byval dbus_error_name as const gchar ptr) as gboolean
+declare function g_dbus_error_unregister_error(byval error_domain as GQuark, byval error_code as gint, byval dbus_error_name as const gchar ptr) as gboolean
+declare sub g_dbus_error_register_error_domain(byval error_domain_quark_name as const gchar ptr, byval quark_volatile as gsize ptr, byval entries as const GDBusErrorEntry ptr, byval num_entries as guint)
+declare function g_dbus_error_new_for_dbus_error(byval dbus_error_name as const gchar ptr, byval dbus_error_message as const gchar ptr) as GError ptr
+declare sub g_dbus_error_set_dbus_error(byval error as GError ptr ptr, byval dbus_error_name as const gchar ptr, byval dbus_error_message as const gchar ptr, byval format as const gchar ptr, ...)
+declare sub g_dbus_error_set_dbus_error_valist(byval error as GError ptr ptr, byval dbus_error_name as const gchar ptr, byval dbus_error_message as const gchar ptr, byval format as const gchar ptr, byval var_args as va_list)
+declare function g_dbus_error_encode_gerror(byval error as const GError ptr) as gchar ptr
 #define __G_DBUS_INTROSPECTION_H__
 
 type _GDBusAnnotationInfo
 	ref_count as gint
-	key as zstring ptr
-	value as zstring ptr
+	key as gchar ptr
+	value as gchar ptr
 	annotations as GDBusAnnotationInfo ptr ptr
 end type
 
 type _GDBusArgInfo
 	ref_count as gint
-	name as zstring ptr
-	signature as zstring ptr
+	name as gchar ptr
+	signature as gchar ptr
 	annotations as GDBusAnnotationInfo ptr ptr
 end type
 
 type _GDBusMethodInfo
 	ref_count as gint
-	name as zstring ptr
+	name as gchar ptr
 	in_args as GDBusArgInfo ptr ptr
 	out_args as GDBusArgInfo ptr ptr
 	annotations as GDBusAnnotationInfo ptr ptr
@@ -1901,22 +1901,22 @@ end type
 
 type _GDBusSignalInfo
 	ref_count as gint
-	name as zstring ptr
+	name as gchar ptr
 	args as GDBusArgInfo ptr ptr
 	annotations as GDBusAnnotationInfo ptr ptr
 end type
 
 type _GDBusPropertyInfo
 	ref_count as gint
-	name as zstring ptr
-	signature as zstring ptr
+	name as gchar ptr
+	signature as gchar ptr
 	flags as GDBusPropertyInfoFlags
 	annotations as GDBusAnnotationInfo ptr ptr
 end type
 
 type _GDBusInterfaceInfo
 	ref_count as gint
-	name as zstring ptr
+	name as gchar ptr
 	methods as GDBusMethodInfo ptr ptr
 	signals as GDBusSignalInfo ptr ptr
 	properties as GDBusPropertyInfo ptr ptr
@@ -1925,21 +1925,21 @@ end type
 
 type _GDBusNodeInfo
 	ref_count as gint
-	path as zstring ptr
+	path as gchar ptr
 	interfaces as GDBusInterfaceInfo ptr ptr
 	nodes as GDBusNodeInfo ptr ptr
 	annotations as GDBusAnnotationInfo ptr ptr
 end type
 
-declare function g_dbus_annotation_info_lookup(byval annotations as GDBusAnnotationInfo ptr ptr, byval name as const zstring ptr) as const zstring ptr
-declare function g_dbus_interface_info_lookup_method(byval info as GDBusInterfaceInfo ptr, byval name as const zstring ptr) as GDBusMethodInfo ptr
-declare function g_dbus_interface_info_lookup_signal(byval info as GDBusInterfaceInfo ptr, byval name as const zstring ptr) as GDBusSignalInfo ptr
-declare function g_dbus_interface_info_lookup_property(byval info as GDBusInterfaceInfo ptr, byval name as const zstring ptr) as GDBusPropertyInfo ptr
+declare function g_dbus_annotation_info_lookup(byval annotations as GDBusAnnotationInfo ptr ptr, byval name as const gchar ptr) as const gchar ptr
+declare function g_dbus_interface_info_lookup_method(byval info as GDBusInterfaceInfo ptr, byval name as const gchar ptr) as GDBusMethodInfo ptr
+declare function g_dbus_interface_info_lookup_signal(byval info as GDBusInterfaceInfo ptr, byval name as const gchar ptr) as GDBusSignalInfo ptr
+declare function g_dbus_interface_info_lookup_property(byval info as GDBusInterfaceInfo ptr, byval name as const gchar ptr) as GDBusPropertyInfo ptr
 declare sub g_dbus_interface_info_cache_build(byval info as GDBusInterfaceInfo ptr)
 declare sub g_dbus_interface_info_cache_release(byval info as GDBusInterfaceInfo ptr)
 declare sub g_dbus_interface_info_generate_xml(byval info as GDBusInterfaceInfo ptr, byval indent as guint, byval string_builder as GString ptr)
-declare function g_dbus_node_info_new_for_xml(byval xml_data as const zstring ptr, byval error as GError ptr ptr) as GDBusNodeInfo ptr
-declare function g_dbus_node_info_lookup_interface(byval info as GDBusNodeInfo ptr, byval name as const zstring ptr) as GDBusInterfaceInfo ptr
+declare function g_dbus_node_info_new_for_xml(byval xml_data as const gchar ptr, byval error as GError ptr ptr) as GDBusNodeInfo ptr
+declare function g_dbus_node_info_lookup_interface(byval info as GDBusNodeInfo ptr, byval name as const gchar ptr) as GDBusInterfaceInfo ptr
 declare sub g_dbus_node_info_generate_xml(byval info as GDBusNodeInfo ptr, byval indent as guint, byval string_builder as GString ptr)
 declare function g_dbus_node_info_ref(byval info as GDBusNodeInfo ptr) as GDBusNodeInfo ptr
 declare function g_dbus_interface_info_ref(byval info as GDBusInterfaceInfo ptr) as GDBusInterfaceInfo ptr
@@ -1979,13 +1979,13 @@ declare function g_dbus_annotation_info_get_type() as GType
 
 declare function g_dbus_message_get_type() as GType
 declare function g_dbus_message_new() as GDBusMessage ptr
-declare function g_dbus_message_new_signal(byval path as const zstring ptr, byval interface_ as const zstring ptr, byval signal as const zstring ptr) as GDBusMessage ptr
-declare function g_dbus_message_new_method_call(byval name as const zstring ptr, byval path as const zstring ptr, byval interface_ as const zstring ptr, byval method as const zstring ptr) as GDBusMessage ptr
+declare function g_dbus_message_new_signal(byval path as const gchar ptr, byval interface_ as const gchar ptr, byval signal as const gchar ptr) as GDBusMessage ptr
+declare function g_dbus_message_new_method_call(byval name as const gchar ptr, byval path as const gchar ptr, byval interface_ as const gchar ptr, byval method as const gchar ptr) as GDBusMessage ptr
 declare function g_dbus_message_new_method_reply(byval method_call_message as GDBusMessage ptr) as GDBusMessage ptr
-declare function g_dbus_message_new_method_error(byval method_call_message as GDBusMessage ptr, byval error_name as const zstring ptr, byval error_message_format as const zstring ptr, ...) as GDBusMessage ptr
-declare function g_dbus_message_new_method_error_valist(byval method_call_message as GDBusMessage ptr, byval error_name as const zstring ptr, byval error_message_format as const zstring ptr, byval var_args as va_list) as GDBusMessage ptr
-declare function g_dbus_message_new_method_error_literal(byval method_call_message as GDBusMessage ptr, byval error_name as const zstring ptr, byval error_message as const zstring ptr) as GDBusMessage ptr
-declare function g_dbus_message_print(byval message as GDBusMessage ptr, byval indent as guint) as zstring ptr
+declare function g_dbus_message_new_method_error(byval method_call_message as GDBusMessage ptr, byval error_name as const gchar ptr, byval error_message_format as const gchar ptr, ...) as GDBusMessage ptr
+declare function g_dbus_message_new_method_error_valist(byval method_call_message as GDBusMessage ptr, byval error_name as const gchar ptr, byval error_message_format as const gchar ptr, byval var_args as va_list) as GDBusMessage ptr
+declare function g_dbus_message_new_method_error_literal(byval method_call_message as GDBusMessage ptr, byval error_name as const gchar ptr, byval error_message as const gchar ptr) as GDBusMessage ptr
+declare function g_dbus_message_print(byval message as GDBusMessage ptr, byval indent as guint) as gchar ptr
 declare function g_dbus_message_get_locked(byval message as GDBusMessage ptr) as gboolean
 declare sub g_dbus_message_lock(byval message as GDBusMessage ptr)
 declare function g_dbus_message_copy(byval message as GDBusMessage ptr, byval error as GError ptr ptr) as GDBusMessage ptr
@@ -2006,23 +2006,23 @@ declare function g_dbus_message_get_unix_fd_list(byval message as GDBusMessage p
 declare sub g_dbus_message_set_unix_fd_list(byval message as GDBusMessage ptr, byval fd_list as GUnixFDList ptr)
 declare function g_dbus_message_get_reply_serial(byval message as GDBusMessage ptr) as guint32
 declare sub g_dbus_message_set_reply_serial(byval message as GDBusMessage ptr, byval value as guint32)
-declare function g_dbus_message_get_interface(byval message as GDBusMessage ptr) as const zstring ptr
-declare sub g_dbus_message_set_interface(byval message as GDBusMessage ptr, byval value as const zstring ptr)
-declare function g_dbus_message_get_member(byval message as GDBusMessage ptr) as const zstring ptr
-declare sub g_dbus_message_set_member(byval message as GDBusMessage ptr, byval value as const zstring ptr)
-declare function g_dbus_message_get_path(byval message as GDBusMessage ptr) as const zstring ptr
-declare sub g_dbus_message_set_path(byval message as GDBusMessage ptr, byval value as const zstring ptr)
-declare function g_dbus_message_get_sender(byval message as GDBusMessage ptr) as const zstring ptr
-declare sub g_dbus_message_set_sender(byval message as GDBusMessage ptr, byval value as const zstring ptr)
-declare function g_dbus_message_get_destination(byval message as GDBusMessage ptr) as const zstring ptr
-declare sub g_dbus_message_set_destination(byval message as GDBusMessage ptr, byval value as const zstring ptr)
-declare function g_dbus_message_get_error_name(byval message as GDBusMessage ptr) as const zstring ptr
-declare sub g_dbus_message_set_error_name(byval message as GDBusMessage ptr, byval value as const zstring ptr)
-declare function g_dbus_message_get_signature(byval message as GDBusMessage ptr) as const zstring ptr
-declare sub g_dbus_message_set_signature(byval message as GDBusMessage ptr, byval value as const zstring ptr)
+declare function g_dbus_message_get_interface(byval message as GDBusMessage ptr) as const gchar ptr
+declare sub g_dbus_message_set_interface(byval message as GDBusMessage ptr, byval value as const gchar ptr)
+declare function g_dbus_message_get_member(byval message as GDBusMessage ptr) as const gchar ptr
+declare sub g_dbus_message_set_member(byval message as GDBusMessage ptr, byval value as const gchar ptr)
+declare function g_dbus_message_get_path(byval message as GDBusMessage ptr) as const gchar ptr
+declare sub g_dbus_message_set_path(byval message as GDBusMessage ptr, byval value as const gchar ptr)
+declare function g_dbus_message_get_sender(byval message as GDBusMessage ptr) as const gchar ptr
+declare sub g_dbus_message_set_sender(byval message as GDBusMessage ptr, byval value as const gchar ptr)
+declare function g_dbus_message_get_destination(byval message as GDBusMessage ptr) as const gchar ptr
+declare sub g_dbus_message_set_destination(byval message as GDBusMessage ptr, byval value as const gchar ptr)
+declare function g_dbus_message_get_error_name(byval message as GDBusMessage ptr) as const gchar ptr
+declare sub g_dbus_message_set_error_name(byval message as GDBusMessage ptr, byval value as const gchar ptr)
+declare function g_dbus_message_get_signature(byval message as GDBusMessage ptr) as const gchar ptr
+declare sub g_dbus_message_set_signature(byval message as GDBusMessage ptr, byval value as const gchar ptr)
 declare function g_dbus_message_get_num_unix_fds(byval message as GDBusMessage ptr) as guint32
 declare sub g_dbus_message_set_num_unix_fds(byval message as GDBusMessage ptr, byval value as guint32)
-declare function g_dbus_message_get_arg0(byval message as GDBusMessage ptr) as const zstring ptr
+declare function g_dbus_message_get_arg0(byval message as GDBusMessage ptr) as const gchar ptr
 declare function g_dbus_message_new_from_blob(byval blob as guchar ptr, byval blob_len as gsize, byval capabilities as GDBusCapabilityFlags, byval error as GError ptr ptr) as GDBusMessage ptr
 declare function g_dbus_message_bytes_needed(byval blob as guchar ptr, byval blob_len as gsize, byval error as GError ptr ptr) as gssize
 declare function g_dbus_message_to_blob(byval message as GDBusMessage ptr, byval out_size as gsize ptr, byval capabilities as GDBusCapabilityFlags, byval error as GError ptr ptr) as guchar ptr
@@ -2034,10 +2034,10 @@ declare function g_dbus_message_to_gerror(byval message as GDBusMessage ptr, byv
 #define G_IS_DBUS_METHOD_INVOCATION(o) G_TYPE_CHECK_INSTANCE_TYPE((o), G_TYPE_DBUS_METHOD_INVOCATION)
 
 declare function g_dbus_method_invocation_get_type() as GType
-declare function g_dbus_method_invocation_get_sender(byval invocation as GDBusMethodInvocation ptr) as const zstring ptr
-declare function g_dbus_method_invocation_get_object_path(byval invocation as GDBusMethodInvocation ptr) as const zstring ptr
-declare function g_dbus_method_invocation_get_interface_name(byval invocation as GDBusMethodInvocation ptr) as const zstring ptr
-declare function g_dbus_method_invocation_get_method_name(byval invocation as GDBusMethodInvocation ptr) as const zstring ptr
+declare function g_dbus_method_invocation_get_sender(byval invocation as GDBusMethodInvocation ptr) as const gchar ptr
+declare function g_dbus_method_invocation_get_object_path(byval invocation as GDBusMethodInvocation ptr) as const gchar ptr
+declare function g_dbus_method_invocation_get_interface_name(byval invocation as GDBusMethodInvocation ptr) as const gchar ptr
+declare function g_dbus_method_invocation_get_method_name(byval invocation as GDBusMethodInvocation ptr) as const gchar ptr
 declare function g_dbus_method_invocation_get_method_info(byval invocation as GDBusMethodInvocation ptr) as const GDBusMethodInfo ptr
 declare function g_dbus_method_invocation_get_property_info(byval invocation as GDBusMethodInvocation ptr) as const GDBusPropertyInfo ptr
 declare function g_dbus_method_invocation_get_connection(byval invocation as GDBusMethodInvocation ptr) as GDBusConnection ptr
@@ -2046,30 +2046,30 @@ declare function g_dbus_method_invocation_get_parameters(byval invocation as GDB
 declare function g_dbus_method_invocation_get_user_data(byval invocation as GDBusMethodInvocation ptr) as gpointer
 declare sub g_dbus_method_invocation_return_value(byval invocation as GDBusMethodInvocation ptr, byval parameters as GVariant ptr)
 declare sub g_dbus_method_invocation_return_value_with_unix_fd_list(byval invocation as GDBusMethodInvocation ptr, byval parameters as GVariant ptr, byval fd_list as GUnixFDList ptr)
-declare sub g_dbus_method_invocation_return_error(byval invocation as GDBusMethodInvocation ptr, byval domain as GQuark, byval code as gint, byval format as const zstring ptr, ...)
-declare sub g_dbus_method_invocation_return_error_valist(byval invocation as GDBusMethodInvocation ptr, byval domain as GQuark, byval code as gint, byval format as const zstring ptr, byval var_args as va_list)
-declare sub g_dbus_method_invocation_return_error_literal(byval invocation as GDBusMethodInvocation ptr, byval domain as GQuark, byval code as gint, byval message as const zstring ptr)
+declare sub g_dbus_method_invocation_return_error(byval invocation as GDBusMethodInvocation ptr, byval domain as GQuark, byval code as gint, byval format as const gchar ptr, ...)
+declare sub g_dbus_method_invocation_return_error_valist(byval invocation as GDBusMethodInvocation ptr, byval domain as GQuark, byval code as gint, byval format as const gchar ptr, byval var_args as va_list)
+declare sub g_dbus_method_invocation_return_error_literal(byval invocation as GDBusMethodInvocation ptr, byval domain as GQuark, byval code as gint, byval message as const gchar ptr)
 declare sub g_dbus_method_invocation_return_gerror(byval invocation as GDBusMethodInvocation ptr, byval error as const GError ptr)
 declare sub g_dbus_method_invocation_take_error(byval invocation as GDBusMethodInvocation ptr, byval error as GError ptr)
-declare sub g_dbus_method_invocation_return_dbus_error(byval invocation as GDBusMethodInvocation ptr, byval error_name as const zstring ptr, byval error_message as const zstring ptr)
+declare sub g_dbus_method_invocation_return_dbus_error(byval invocation as GDBusMethodInvocation ptr, byval error_name as const gchar ptr, byval error_message as const gchar ptr)
 #define __G_DBUS_NAME_OWNING_H__
 
-type GBusAcquiredCallback as sub(byval connection as GDBusConnection ptr, byval name as const zstring ptr, byval user_data as gpointer)
-type GBusNameAcquiredCallback as sub(byval connection as GDBusConnection ptr, byval name as const zstring ptr, byval user_data as gpointer)
-type GBusNameLostCallback as sub(byval connection as GDBusConnection ptr, byval name as const zstring ptr, byval user_data as gpointer)
+type GBusAcquiredCallback as sub(byval connection as GDBusConnection ptr, byval name as const gchar ptr, byval user_data as gpointer)
+type GBusNameAcquiredCallback as sub(byval connection as GDBusConnection ptr, byval name as const gchar ptr, byval user_data as gpointer)
+type GBusNameLostCallback as sub(byval connection as GDBusConnection ptr, byval name as const gchar ptr, byval user_data as gpointer)
 
-declare function g_bus_own_name(byval bus_type as GBusType, byval name as const zstring ptr, byval flags as GBusNameOwnerFlags, byval bus_acquired_handler as GBusAcquiredCallback, byval name_acquired_handler as GBusNameAcquiredCallback, byval name_lost_handler as GBusNameLostCallback, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify) as guint
-declare function g_bus_own_name_on_connection(byval connection as GDBusConnection ptr, byval name as const zstring ptr, byval flags as GBusNameOwnerFlags, byval name_acquired_handler as GBusNameAcquiredCallback, byval name_lost_handler as GBusNameLostCallback, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify) as guint
-declare function g_bus_own_name_with_closures(byval bus_type as GBusType, byval name as const zstring ptr, byval flags as GBusNameOwnerFlags, byval bus_acquired_closure as GClosure ptr, byval name_acquired_closure as GClosure ptr, byval name_lost_closure as GClosure ptr) as guint
-declare function g_bus_own_name_on_connection_with_closures(byval connection as GDBusConnection ptr, byval name as const zstring ptr, byval flags as GBusNameOwnerFlags, byval name_acquired_closure as GClosure ptr, byval name_lost_closure as GClosure ptr) as guint
+declare function g_bus_own_name(byval bus_type as GBusType, byval name as const gchar ptr, byval flags as GBusNameOwnerFlags, byval bus_acquired_handler as GBusAcquiredCallback, byval name_acquired_handler as GBusNameAcquiredCallback, byval name_lost_handler as GBusNameLostCallback, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify) as guint
+declare function g_bus_own_name_on_connection(byval connection as GDBusConnection ptr, byval name as const gchar ptr, byval flags as GBusNameOwnerFlags, byval name_acquired_handler as GBusNameAcquiredCallback, byval name_lost_handler as GBusNameLostCallback, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify) as guint
+declare function g_bus_own_name_with_closures(byval bus_type as GBusType, byval name as const gchar ptr, byval flags as GBusNameOwnerFlags, byval bus_acquired_closure as GClosure ptr, byval name_acquired_closure as GClosure ptr, byval name_lost_closure as GClosure ptr) as guint
+declare function g_bus_own_name_on_connection_with_closures(byval connection as GDBusConnection ptr, byval name as const gchar ptr, byval flags as GBusNameOwnerFlags, byval name_acquired_closure as GClosure ptr, byval name_lost_closure as GClosure ptr) as guint
 declare sub g_bus_unown_name(byval owner_id as guint)
 #define __G_DBUS_NAME_WATCHING_H__
-type GBusNameAppearedCallback as sub(byval connection as GDBusConnection ptr, byval name as const zstring ptr, byval name_owner as const zstring ptr, byval user_data as gpointer)
-type GBusNameVanishedCallback as sub(byval connection as GDBusConnection ptr, byval name as const zstring ptr, byval user_data as gpointer)
-declare function g_bus_watch_name(byval bus_type as GBusType, byval name as const zstring ptr, byval flags as GBusNameWatcherFlags, byval name_appeared_handler as GBusNameAppearedCallback, byval name_vanished_handler as GBusNameVanishedCallback, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify) as guint
-declare function g_bus_watch_name_on_connection(byval connection as GDBusConnection ptr, byval name as const zstring ptr, byval flags as GBusNameWatcherFlags, byval name_appeared_handler as GBusNameAppearedCallback, byval name_vanished_handler as GBusNameVanishedCallback, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify) as guint
-declare function g_bus_watch_name_with_closures(byval bus_type as GBusType, byval name as const zstring ptr, byval flags as GBusNameWatcherFlags, byval name_appeared_closure as GClosure ptr, byval name_vanished_closure as GClosure ptr) as guint
-declare function g_bus_watch_name_on_connection_with_closures(byval connection as GDBusConnection ptr, byval name as const zstring ptr, byval flags as GBusNameWatcherFlags, byval name_appeared_closure as GClosure ptr, byval name_vanished_closure as GClosure ptr) as guint
+type GBusNameAppearedCallback as sub(byval connection as GDBusConnection ptr, byval name as const gchar ptr, byval name_owner as const gchar ptr, byval user_data as gpointer)
+type GBusNameVanishedCallback as sub(byval connection as GDBusConnection ptr, byval name as const gchar ptr, byval user_data as gpointer)
+declare function g_bus_watch_name(byval bus_type as GBusType, byval name as const gchar ptr, byval flags as GBusNameWatcherFlags, byval name_appeared_handler as GBusNameAppearedCallback, byval name_vanished_handler as GBusNameVanishedCallback, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify) as guint
+declare function g_bus_watch_name_on_connection(byval connection as GDBusConnection ptr, byval name as const gchar ptr, byval flags as GBusNameWatcherFlags, byval name_appeared_handler as GBusNameAppearedCallback, byval name_vanished_handler as GBusNameVanishedCallback, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify) as guint
+declare function g_bus_watch_name_with_closures(byval bus_type as GBusType, byval name as const gchar ptr, byval flags as GBusNameWatcherFlags, byval name_appeared_closure as GClosure ptr, byval name_vanished_closure as GClosure ptr) as guint
+declare function g_bus_watch_name_on_connection_with_closures(byval connection as GDBusConnection ptr, byval name as const gchar ptr, byval flags as GBusNameWatcherFlags, byval name_appeared_closure as GClosure ptr, byval name_vanished_closure as GClosure ptr) as guint
 declare sub g_bus_unwatch_name(byval watcher_id as guint)
 
 #define __G_DBUS_PROXY_H__
@@ -2089,37 +2089,37 @@ end type
 
 type _GDBusProxyClass
 	parent_class as GObjectClass
-	g_properties_changed as sub(byval proxy as GDBusProxy ptr, byval changed_properties as GVariant ptr, byval invalidated_properties as const zstring const ptr ptr)
-	g_signal as sub(byval proxy as GDBusProxy ptr, byval sender_name as const zstring ptr, byval signal_name as const zstring ptr, byval parameters as GVariant ptr)
+	g_properties_changed as sub(byval proxy as GDBusProxy ptr, byval changed_properties as GVariant ptr, byval invalidated_properties as const gchar const ptr ptr)
+	g_signal as sub(byval proxy as GDBusProxy ptr, byval sender_name as const gchar ptr, byval signal_name as const gchar ptr, byval parameters as GVariant ptr)
 	padding(0 to 31) as gpointer
 end type
 
 declare function g_dbus_proxy_get_type() as GType
-declare sub g_dbus_proxy_new(byval connection as GDBusConnection ptr, byval flags as GDBusProxyFlags, byval info as GDBusInterfaceInfo ptr, byval name as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare sub g_dbus_proxy_new(byval connection as GDBusConnection ptr, byval flags as GDBusProxyFlags, byval info as GDBusInterfaceInfo ptr, byval name as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_dbus_proxy_new_finish(byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GDBusProxy ptr
-declare function g_dbus_proxy_new_sync(byval connection as GDBusConnection ptr, byval flags as GDBusProxyFlags, byval info as GDBusInterfaceInfo ptr, byval name as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusProxy ptr
-declare sub g_dbus_proxy_new_for_bus(byval bus_type as GBusType, byval flags as GDBusProxyFlags, byval info as GDBusInterfaceInfo ptr, byval name as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_dbus_proxy_new_sync(byval connection as GDBusConnection ptr, byval flags as GDBusProxyFlags, byval info as GDBusInterfaceInfo ptr, byval name as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusProxy ptr
+declare sub g_dbus_proxy_new_for_bus(byval bus_type as GBusType, byval flags as GDBusProxyFlags, byval info as GDBusInterfaceInfo ptr, byval name as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_dbus_proxy_new_for_bus_finish(byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GDBusProxy ptr
-declare function g_dbus_proxy_new_for_bus_sync(byval bus_type as GBusType, byval flags as GDBusProxyFlags, byval info as GDBusInterfaceInfo ptr, byval name as const zstring ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusProxy ptr
+declare function g_dbus_proxy_new_for_bus_sync(byval bus_type as GBusType, byval flags as GDBusProxyFlags, byval info as GDBusInterfaceInfo ptr, byval name as const gchar ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusProxy ptr
 declare function g_dbus_proxy_get_connection(byval proxy as GDBusProxy ptr) as GDBusConnection ptr
 declare function g_dbus_proxy_get_flags(byval proxy as GDBusProxy ptr) as GDBusProxyFlags
-declare function g_dbus_proxy_get_name(byval proxy as GDBusProxy ptr) as const zstring ptr
-declare function g_dbus_proxy_get_name_owner(byval proxy as GDBusProxy ptr) as zstring ptr
-declare function g_dbus_proxy_get_object_path(byval proxy as GDBusProxy ptr) as const zstring ptr
-declare function g_dbus_proxy_get_interface_name(byval proxy as GDBusProxy ptr) as const zstring ptr
+declare function g_dbus_proxy_get_name(byval proxy as GDBusProxy ptr) as const gchar ptr
+declare function g_dbus_proxy_get_name_owner(byval proxy as GDBusProxy ptr) as gchar ptr
+declare function g_dbus_proxy_get_object_path(byval proxy as GDBusProxy ptr) as const gchar ptr
+declare function g_dbus_proxy_get_interface_name(byval proxy as GDBusProxy ptr) as const gchar ptr
 declare function g_dbus_proxy_get_default_timeout(byval proxy as GDBusProxy ptr) as gint
 declare sub g_dbus_proxy_set_default_timeout(byval proxy as GDBusProxy ptr, byval timeout_msec as gint)
 declare function g_dbus_proxy_get_interface_info(byval proxy as GDBusProxy ptr) as GDBusInterfaceInfo ptr
 declare sub g_dbus_proxy_set_interface_info(byval proxy as GDBusProxy ptr, byval info as GDBusInterfaceInfo ptr)
-declare function g_dbus_proxy_get_cached_property(byval proxy as GDBusProxy ptr, byval property_name as const zstring ptr) as GVariant ptr
-declare sub g_dbus_proxy_set_cached_property(byval proxy as GDBusProxy ptr, byval property_name as const zstring ptr, byval value as GVariant ptr)
-declare function g_dbus_proxy_get_cached_property_names(byval proxy as GDBusProxy ptr) as zstring ptr ptr
-declare sub g_dbus_proxy_call(byval proxy as GDBusProxy ptr, byval method_name as const zstring ptr, byval parameters as GVariant ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_dbus_proxy_get_cached_property(byval proxy as GDBusProxy ptr, byval property_name as const gchar ptr) as GVariant ptr
+declare sub g_dbus_proxy_set_cached_property(byval proxy as GDBusProxy ptr, byval property_name as const gchar ptr, byval value as GVariant ptr)
+declare function g_dbus_proxy_get_cached_property_names(byval proxy as GDBusProxy ptr) as gchar ptr ptr
+declare sub g_dbus_proxy_call(byval proxy as GDBusProxy ptr, byval method_name as const gchar ptr, byval parameters as GVariant ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_dbus_proxy_call_finish(byval proxy as GDBusProxy ptr, byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GVariant ptr
-declare function g_dbus_proxy_call_sync(byval proxy as GDBusProxy ptr, byval method_name as const zstring ptr, byval parameters as GVariant ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GVariant ptr
-declare sub g_dbus_proxy_call_with_unix_fd_list(byval proxy as GDBusProxy ptr, byval method_name as const zstring ptr, byval parameters as GVariant ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval fd_list as GUnixFDList ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_dbus_proxy_call_sync(byval proxy as GDBusProxy ptr, byval method_name as const gchar ptr, byval parameters as GVariant ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GVariant ptr
+declare sub g_dbus_proxy_call_with_unix_fd_list(byval proxy as GDBusProxy ptr, byval method_name as const gchar ptr, byval parameters as GVariant ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval fd_list as GUnixFDList ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_dbus_proxy_call_with_unix_fd_list_finish(byval proxy as GDBusProxy ptr, byval out_fd_list as GUnixFDList ptr ptr, byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GVariant ptr
-declare function g_dbus_proxy_call_with_unix_fd_list_sync(byval proxy as GDBusProxy ptr, byval method_name as const zstring ptr, byval parameters as GVariant ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval fd_list as GUnixFDList ptr, byval out_fd_list as GUnixFDList ptr ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GVariant ptr
+declare function g_dbus_proxy_call_with_unix_fd_list_sync(byval proxy as GDBusProxy ptr, byval method_name as const gchar ptr, byval parameters as GVariant ptr, byval flags as GDBusCallFlags, byval timeout_msec as gint, byval fd_list as GUnixFDList ptr, byval out_fd_list as GUnixFDList ptr ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GVariant ptr
 
 #define __G_DBUS_SERVER_H__
 #define G_TYPE_DBUS_SERVER g_dbus_server_get_type()
@@ -2127,20 +2127,20 @@ declare function g_dbus_proxy_call_with_unix_fd_list_sync(byval proxy as GDBusPr
 #define G_IS_DBUS_SERVER(o) G_TYPE_CHECK_INSTANCE_TYPE((o), G_TYPE_DBUS_SERVER)
 
 declare function g_dbus_server_get_type() as GType
-declare function g_dbus_server_new_sync(byval address as const zstring ptr, byval flags as GDBusServerFlags, byval guid as const zstring ptr, byval observer as GDBusAuthObserver ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusServer ptr
-declare function g_dbus_server_get_client_address(byval server as GDBusServer ptr) as const zstring ptr
-declare function g_dbus_server_get_guid(byval server as GDBusServer ptr) as const zstring ptr
+declare function g_dbus_server_new_sync(byval address as const gchar ptr, byval flags as GDBusServerFlags, byval guid as const gchar ptr, byval observer as GDBusAuthObserver ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusServer ptr
+declare function g_dbus_server_get_client_address(byval server as GDBusServer ptr) as const gchar ptr
+declare function g_dbus_server_get_guid(byval server as GDBusServer ptr) as const gchar ptr
 declare function g_dbus_server_get_flags(byval server as GDBusServer ptr) as GDBusServerFlags
 declare sub g_dbus_server_start(byval server as GDBusServer ptr)
 declare sub g_dbus_server_stop(byval server as GDBusServer ptr)
 declare function g_dbus_server_is_active(byval server as GDBusServer ptr) as gboolean
 #define __G_DBUS_UTILS_H__
-declare function g_dbus_is_guid(byval string as const zstring ptr) as gboolean
-declare function g_dbus_generate_guid() as zstring ptr
-declare function g_dbus_is_name(byval string as const zstring ptr) as gboolean
-declare function g_dbus_is_unique_name(byval string as const zstring ptr) as gboolean
-declare function g_dbus_is_member_name(byval string as const zstring ptr) as gboolean
-declare function g_dbus_is_interface_name(byval string as const zstring ptr) as gboolean
+declare function g_dbus_is_guid(byval string as const gchar ptr) as gboolean
+declare function g_dbus_generate_guid() as gchar ptr
+declare function g_dbus_is_name(byval string as const gchar ptr) as gboolean
+declare function g_dbus_is_unique_name(byval string as const gchar ptr) as gboolean
+declare function g_dbus_is_member_name(byval string as const gchar ptr) as gboolean
+declare function g_dbus_is_interface_name(byval string as const gchar ptr) as gboolean
 declare sub g_dbus_gvariant_to_gvalue(byval value as GVariant ptr, byval out_gvalue as GValue ptr)
 declare function g_dbus_gvalue_to_gvariant(byval gvalue as const GValue ptr, byval type as const GVariantType ptr) as GVariant ptr
 
@@ -2182,7 +2182,7 @@ type _GDriveIface
 	stop_button as sub(byval drive as GDrive ptr)
 	eject_with_operation as sub(byval drive as GDrive ptr, byval flags as GMountUnmountFlags, byval mount_operation as GMountOperation ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 	eject_with_operation_finish as function(byval drive as GDrive ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
-	get_sort_key as function(byval drive as GDrive ptr) as const zstring ptr
+	get_sort_key as function(byval drive as GDrive ptr) as const gchar ptr
 	get_symbolic_icon as function(byval drive as GDrive ptr) as GIcon ptr
 end type
 
@@ -2213,7 +2213,7 @@ declare sub g_drive_stop(byval drive as GDrive ptr, byval flags as GMountUnmount
 declare function g_drive_stop_finish(byval drive as GDrive ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
 declare sub g_drive_eject_with_operation(byval drive as GDrive ptr, byval flags as GMountUnmountFlags, byval mount_operation as GMountOperation ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_drive_eject_with_operation_finish(byval drive as GDrive ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
-declare function g_drive_get_sort_key(byval drive as GDrive ptr) as const zstring ptr
+declare function g_drive_get_sort_key(byval drive as GDrive ptr) as const gchar ptr
 
 #define __G_EMBLEMED_ICON_H__
 #define __G_ICON_H__
@@ -2228,15 +2228,15 @@ type _GIconIface
 	hash as function(byval icon as GIcon ptr) as guint
 	equal as function(byval icon1 as GIcon ptr, byval icon2 as GIcon ptr) as gboolean
 	to_tokens as function(byval icon as GIcon ptr, byval tokens as GPtrArray ptr, byval out_version as gint ptr) as gboolean
-	from_tokens as function(byval tokens as zstring ptr ptr, byval num_tokens as gint, byval version as gint, byval error as GError ptr ptr) as GIcon ptr
+	from_tokens as function(byval tokens as gchar ptr ptr, byval num_tokens as gint, byval version as gint, byval error as GError ptr ptr) as GIcon ptr
 	serialize as function(byval icon as GIcon ptr) as GVariant ptr
 end type
 
 declare function g_icon_get_type() as GType
 declare function g_icon_hash(byval icon as gconstpointer) as guint
 declare function g_icon_equal(byval icon1 as GIcon ptr, byval icon2 as GIcon ptr) as gboolean
-declare function g_icon_to_string(byval icon as GIcon ptr) as zstring ptr
-declare function g_icon_new_for_string(byval str as const zstring ptr, byval error as GError ptr ptr) as GIcon ptr
+declare function g_icon_to_string(byval icon as GIcon ptr) as gchar ptr
+declare function g_icon_new_for_string(byval str as const gchar ptr, byval error as GError ptr ptr) as GIcon ptr
 declare function g_icon_serialize(byval icon as GIcon ptr) as GVariant ptr
 declare function g_icon_deserialize(byval value as GVariant ptr) as GIcon ptr
 
@@ -2467,7 +2467,7 @@ declare function g_file_get_type() as GType
 declare function g_file_new_for_path(byval path as const zstring ptr) as GFile ptr
 declare function g_file_new_for_uri(byval uri as const zstring ptr) as GFile ptr
 declare function g_file_new_for_commandline_arg(byval arg as const zstring ptr) as GFile ptr
-declare function g_file_new_for_commandline_arg_and_cwd(byval arg as const zstring ptr, byval cwd as const zstring ptr) as GFile ptr
+declare function g_file_new_for_commandline_arg_and_cwd(byval arg as const gchar ptr, byval cwd as const gchar ptr) as GFile ptr
 declare function g_file_new_tmp(byval tmpl as const zstring ptr, byval iostream as GFileIOStream ptr ptr, byval error as GError ptr ptr) as GFile ptr
 declare function g_file_parse_name(byval parse_name as const zstring ptr) as GFile ptr
 declare function g_file_dup(byval file as GFile ptr) as GFile ptr
@@ -3006,17 +3006,17 @@ end type
 
 type _GInetAddressClass
 	parent_class as GObjectClass
-	to_string as function(byval address as GInetAddress ptr) as zstring ptr
+	to_string as function(byval address as GInetAddress ptr) as gchar ptr
 	to_bytes as function(byval address as GInetAddress ptr) as const guint8 ptr
 end type
 
 declare function g_inet_address_get_type() as GType
-declare function g_inet_address_new_from_string(byval string as const zstring ptr) as GInetAddress ptr
+declare function g_inet_address_new_from_string(byval string as const gchar ptr) as GInetAddress ptr
 declare function g_inet_address_new_from_bytes(byval bytes as const guint8 ptr, byval family as GSocketFamily) as GInetAddress ptr
 declare function g_inet_address_new_loopback(byval family as GSocketFamily) as GInetAddress ptr
 declare function g_inet_address_new_any(byval family as GSocketFamily) as GInetAddress ptr
 declare function g_inet_address_equal(byval address as GInetAddress ptr, byval other_address as GInetAddress ptr) as gboolean
-declare function g_inet_address_to_string(byval address as GInetAddress ptr) as zstring ptr
+declare function g_inet_address_to_string(byval address as GInetAddress ptr) as gchar ptr
 declare function g_inet_address_to_bytes(byval address as GInetAddress ptr) as const guint8 ptr
 declare function g_inet_address_get_native_size(byval address as GInetAddress ptr) as gsize
 declare function g_inet_address_get_family(byval address as GInetAddress ptr) as GSocketFamily
@@ -3052,8 +3052,8 @@ end type
 
 declare function g_inet_address_mask_get_type() as GType
 declare function g_inet_address_mask_new(byval addr as GInetAddress ptr, byval length as guint, byval error as GError ptr ptr) as GInetAddressMask ptr
-declare function g_inet_address_mask_new_from_string(byval mask_string as const zstring ptr, byval error as GError ptr ptr) as GInetAddressMask ptr
-declare function g_inet_address_mask_to_string(byval mask as GInetAddressMask ptr) as zstring ptr
+declare function g_inet_address_mask_new_from_string(byval mask_string as const gchar ptr, byval error as GError ptr ptr) as GInetAddressMask ptr
+declare function g_inet_address_mask_to_string(byval mask as GInetAddressMask ptr) as gchar ptr
 declare function g_inet_address_mask_get_family(byval mask as GInetAddressMask ptr) as GSocketFamily
 declare function g_inet_address_mask_get_address(byval mask as GInetAddressMask ptr) as GInetAddress ptr
 declare function g_inet_address_mask_get_length(byval mask as GInetAddressMask ptr) as guint
@@ -3265,7 +3265,7 @@ declare function g_settings_bind_flags_get_type() as GType
 type GIOModuleScope as _GIOModuleScope
 declare function g_io_module_scope_new(byval flags as GIOModuleScopeFlags) as GIOModuleScope ptr
 declare sub g_io_module_scope_free(byval scope as GIOModuleScope ptr)
-declare sub g_io_module_scope_block(byval scope as GIOModuleScope ptr, byval basename as const zstring ptr)
+declare sub g_io_module_scope_block(byval scope as GIOModuleScope ptr, byval basename as const gchar ptr)
 
 #define G_IO_TYPE_MODULE g_io_module_get_type()
 #define G_IO_MODULE(o) G_TYPE_CHECK_INSTANCE_CAST((o), G_IO_TYPE_MODULE, GIOModule)
@@ -3276,11 +3276,11 @@ declare sub g_io_module_scope_block(byval scope as GIOModuleScope ptr, byval bas
 type GIOModuleClass as _GIOModuleClass
 
 declare function g_io_module_get_type() as GType
-declare function g_io_module_new(byval filename as const zstring ptr) as GIOModule ptr
+declare function g_io_module_new(byval filename as const gchar ptr) as GIOModule ptr
 declare sub g_io_modules_scan_all_in_directory(byval dirname as const zstring ptr)
-declare function g_io_modules_load_all_in_directory(byval dirname as const zstring ptr) as GList ptr
-declare sub g_io_modules_scan_all_in_directory_with_scope(byval dirname as const zstring ptr, byval scope as GIOModuleScope ptr)
-declare function g_io_modules_load_all_in_directory_with_scope(byval dirname as const zstring ptr, byval scope as GIOModuleScope ptr) as GList ptr
+declare function g_io_modules_load_all_in_directory(byval dirname as const gchar ptr) as GList ptr
+declare sub g_io_modules_scan_all_in_directory_with_scope(byval dirname as const gchar ptr, byval scope as GIOModuleScope ptr)
+declare function g_io_modules_load_all_in_directory_with_scope(byval dirname as const gchar ptr, byval scope as GIOModuleScope ptr) as GList ptr
 declare function g_io_extension_point_register(byval name as const zstring ptr) as GIOExtensionPoint ptr
 declare function g_io_extension_point_lookup(byval name as const zstring ptr) as GIOExtensionPoint ptr
 declare sub g_io_extension_point_set_required_type(byval extension_point as GIOExtensionPoint ptr, byval type as GType)
@@ -3411,15 +3411,15 @@ type _GMountIface
 	remount as sub(byval mount as GMount ptr, byval flags as GMountMountFlags, byval mount_operation as GMountOperation ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 	remount_finish as function(byval mount as GMount ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
 	guess_content_type as sub(byval mount as GMount ptr, byval force_rescan as gboolean, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
-	guess_content_type_finish as function(byval mount as GMount ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as zstring ptr ptr
-	guess_content_type_sync as function(byval mount as GMount ptr, byval force_rescan as gboolean, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as zstring ptr ptr
+	guess_content_type_finish as function(byval mount as GMount ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gchar ptr ptr
+	guess_content_type_sync as function(byval mount as GMount ptr, byval force_rescan as gboolean, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gchar ptr ptr
 	pre_unmount as sub(byval mount as GMount ptr)
 	unmount_with_operation as sub(byval mount as GMount ptr, byval flags as GMountUnmountFlags, byval mount_operation as GMountOperation ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 	unmount_with_operation_finish as function(byval mount as GMount ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
 	eject_with_operation as sub(byval mount as GMount ptr, byval flags as GMountUnmountFlags, byval mount_operation as GMountOperation ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 	eject_with_operation_finish as function(byval mount as GMount ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
 	get_default_location as function(byval mount as GMount ptr) as GFile ptr
-	get_sort_key as function(byval mount as GMount ptr) as const zstring ptr
+	get_sort_key as function(byval mount as GMount ptr) as const gchar ptr
 	get_symbolic_icon as function(byval mount as GMount ptr) as GIcon ptr
 end type
 
@@ -3441,8 +3441,8 @@ declare function g_mount_eject_finish(byval mount as GMount ptr, byval result as
 declare sub g_mount_remount(byval mount as GMount ptr, byval flags as GMountMountFlags, byval mount_operation as GMountOperation ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_mount_remount_finish(byval mount as GMount ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
 declare sub g_mount_guess_content_type(byval mount as GMount ptr, byval force_rescan as gboolean, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
-declare function g_mount_guess_content_type_finish(byval mount as GMount ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as zstring ptr ptr
-declare function g_mount_guess_content_type_sync(byval mount as GMount ptr, byval force_rescan as gboolean, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as zstring ptr ptr
+declare function g_mount_guess_content_type_finish(byval mount as GMount ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gchar ptr ptr
+declare function g_mount_guess_content_type_sync(byval mount as GMount ptr, byval force_rescan as gboolean, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gchar ptr ptr
 declare function g_mount_is_shadowed(byval mount as GMount ptr) as gboolean
 declare sub g_mount_shadow(byval mount as GMount ptr)
 declare sub g_mount_unshadow(byval mount as GMount ptr)
@@ -3450,7 +3450,7 @@ declare sub g_mount_unmount_with_operation(byval mount as GMount ptr, byval flag
 declare function g_mount_unmount_with_operation_finish(byval mount as GMount ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
 declare sub g_mount_eject_with_operation(byval mount as GMount ptr, byval flags as GMountUnmountFlags, byval mount_operation as GMountOperation ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_mount_eject_with_operation_finish(byval mount as GMount ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
-declare function g_mount_get_sort_key(byval mount as GMount ptr) as const zstring ptr
+declare function g_mount_get_sort_key(byval mount as GMount ptr) as const gchar ptr
 
 #define __G_MOUNT_OPERATION_H__
 #define G_TYPE_MOUNT_OPERATION g_mount_operation_get_type()
@@ -3473,8 +3473,8 @@ type _GMountOperationClass
 	ask_question as sub(byval op as GMountOperation ptr, byval message as const zstring ptr, byval choices as const zstring ptr ptr)
 	reply as sub(byval op as GMountOperation ptr, byval result as GMountOperationResult)
 	aborted as sub(byval op as GMountOperation ptr)
-	show_processes as sub(byval op as GMountOperation ptr, byval message as const zstring ptr, byval processes as GArray ptr, byval choices as const zstring ptr ptr)
-	show_unmount_progress as sub(byval op as GMountOperation ptr, byval message as const zstring ptr, byval time_left as gint64, byval bytes_left as gint64)
+	show_processes as sub(byval op as GMountOperation ptr, byval message as const gchar ptr, byval processes as GArray ptr, byval choices as const gchar ptr ptr)
+	show_unmount_progress as sub(byval op as GMountOperation ptr, byval message as const gchar ptr, byval time_left as gint64, byval bytes_left as gint64)
 	_g_reserved1 as sub()
 	_g_reserved2 as sub()
 	_g_reserved3 as sub()
@@ -3595,12 +3595,12 @@ type _GNetworkAddressClass
 end type
 
 declare function g_network_address_get_type() as GType
-declare function g_network_address_new(byval hostname as const zstring ptr, byval port as guint16) as GSocketConnectable ptr
-declare function g_network_address_parse(byval host_and_port as const zstring ptr, byval default_port as guint16, byval error as GError ptr ptr) as GSocketConnectable ptr
-declare function g_network_address_parse_uri(byval uri as const zstring ptr, byval default_port as guint16, byval error as GError ptr ptr) as GSocketConnectable ptr
-declare function g_network_address_get_hostname(byval addr as GNetworkAddress ptr) as const zstring ptr
+declare function g_network_address_new(byval hostname as const gchar ptr, byval port as guint16) as GSocketConnectable ptr
+declare function g_network_address_parse(byval host_and_port as const gchar ptr, byval default_port as guint16, byval error as GError ptr ptr) as GSocketConnectable ptr
+declare function g_network_address_parse_uri(byval uri as const gchar ptr, byval default_port as guint16, byval error as GError ptr ptr) as GSocketConnectable ptr
+declare function g_network_address_get_hostname(byval addr as GNetworkAddress ptr) as const gchar ptr
 declare function g_network_address_get_port(byval addr as GNetworkAddress ptr) as guint16
-declare function g_network_address_get_scheme(byval addr as GNetworkAddress ptr) as const zstring ptr
+declare function g_network_address_get_scheme(byval addr as GNetworkAddress ptr) as const gchar ptr
 
 #define __G_NETWORK_MONITOR_H__
 #define G_NETWORK_MONITOR_EXTENSION_POINT_NAME "gio-network-monitor"
@@ -3645,12 +3645,12 @@ type _GNetworkServiceClass
 end type
 
 declare function g_network_service_get_type() as GType
-declare function g_network_service_new(byval service as const zstring ptr, byval protocol as const zstring ptr, byval domain as const zstring ptr) as GSocketConnectable ptr
-declare function g_network_service_get_service(byval srv as GNetworkService ptr) as const zstring ptr
-declare function g_network_service_get_protocol(byval srv as GNetworkService ptr) as const zstring ptr
-declare function g_network_service_get_domain(byval srv as GNetworkService ptr) as const zstring ptr
-declare function g_network_service_get_scheme(byval srv as GNetworkService ptr) as const zstring ptr
-declare sub g_network_service_set_scheme(byval srv as GNetworkService ptr, byval scheme as const zstring ptr)
+declare function g_network_service_new(byval service as const gchar ptr, byval protocol as const gchar ptr, byval domain as const gchar ptr) as GSocketConnectable ptr
+declare function g_network_service_get_service(byval srv as GNetworkService ptr) as const gchar ptr
+declare function g_network_service_get_protocol(byval srv as GNetworkService ptr) as const gchar ptr
+declare function g_network_service_get_domain(byval srv as GNetworkService ptr) as const gchar ptr
+declare function g_network_service_get_scheme(byval srv as GNetworkService ptr) as const gchar ptr
+declare sub g_network_service_set_scheme(byval srv as GNetworkService ptr, byval scheme as const gchar ptr)
 
 #define __G_PERMISSION_H__
 #define G_TYPE_PERMISSION g_permission_get_type()
@@ -3743,7 +3743,7 @@ declare function g_pollable_stream_write_all(byval stream as GOutputStream ptr, 
 #define G_PROPERTY_ACTION(inst) G_TYPE_CHECK_INSTANCE_CAST((inst), G_TYPE_PROPERTY_ACTION, GPropertyAction)
 #define G_IS_PROPERTY_ACTION(inst) G_TYPE_CHECK_INSTANCE_TYPE((inst), G_TYPE_PROPERTY_ACTION)
 declare function g_property_action_get_type() as GType
-declare function g_property_action_new(byval name as const zstring ptr, byval object as gpointer, byval property_name as const zstring ptr) as GPropertyAction ptr
+declare function g_property_action_new(byval name as const gchar ptr, byval object as gpointer, byval property_name as const gchar ptr) as GPropertyAction ptr
 #define __G_PROXY_H__
 #define G_TYPE_PROXY g_proxy_get_type()
 #define G_PROXY(o) G_TYPE_CHECK_INSTANCE_CAST((o), G_TYPE_PROXY, GProxy)
@@ -3761,7 +3761,7 @@ type _GProxyInterface
 end type
 
 declare function g_proxy_get_type() as GType
-declare function g_proxy_get_default_for_protocol(byval protocol as const zstring ptr) as GProxy ptr
+declare function g_proxy_get_default_for_protocol(byval protocol as const gchar ptr) as GProxy ptr
 declare function g_proxy_connect(byval proxy as GProxy ptr, byval connection as GIOStream ptr, byval proxy_address as GProxyAddress ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GIOStream ptr
 declare sub g_proxy_connect_async(byval proxy as GProxy ptr, byval connection as GIOStream ptr, byval proxy_address as GProxyAddress ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_proxy_connect_finish(byval proxy as GProxy ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GIOStream ptr
@@ -3787,14 +3787,14 @@ type _GProxyAddressClass
 end type
 
 declare function g_proxy_address_get_type() as GType
-declare function g_proxy_address_new(byval inetaddr as GInetAddress ptr, byval port as guint16, byval protocol as const zstring ptr, byval dest_hostname as const zstring ptr, byval dest_port as guint16, byval username as const zstring ptr, byval password as const zstring ptr) as GSocketAddress ptr
-declare function g_proxy_address_get_protocol(byval proxy as GProxyAddress ptr) as const zstring ptr
-declare function g_proxy_address_get_destination_protocol(byval proxy as GProxyAddress ptr) as const zstring ptr
-declare function g_proxy_address_get_destination_hostname(byval proxy as GProxyAddress ptr) as const zstring ptr
+declare function g_proxy_address_new(byval inetaddr as GInetAddress ptr, byval port as guint16, byval protocol as const gchar ptr, byval dest_hostname as const gchar ptr, byval dest_port as guint16, byval username as const gchar ptr, byval password as const gchar ptr) as GSocketAddress ptr
+declare function g_proxy_address_get_protocol(byval proxy as GProxyAddress ptr) as const gchar ptr
+declare function g_proxy_address_get_destination_protocol(byval proxy as GProxyAddress ptr) as const gchar ptr
+declare function g_proxy_address_get_destination_hostname(byval proxy as GProxyAddress ptr) as const gchar ptr
 declare function g_proxy_address_get_destination_port(byval proxy as GProxyAddress ptr) as guint16
-declare function g_proxy_address_get_username(byval proxy as GProxyAddress ptr) as const zstring ptr
-declare function g_proxy_address_get_password(byval proxy as GProxyAddress ptr) as const zstring ptr
-declare function g_proxy_address_get_uri(byval proxy as GProxyAddress ptr) as const zstring ptr
+declare function g_proxy_address_get_username(byval proxy as GProxyAddress ptr) as const gchar ptr
+declare function g_proxy_address_get_password(byval proxy as GProxyAddress ptr) as const gchar ptr
+declare function g_proxy_address_get_uri(byval proxy as GProxyAddress ptr) as const gchar ptr
 
 #define __G_PROXY_ADDRESS_ENUMERATOR_H__
 #define __G_SOCKET_ADDRESS_ENUMERATOR_H__
@@ -3859,17 +3859,17 @@ type GProxyResolverInterface as _GProxyResolverInterface
 type _GProxyResolverInterface
 	g_iface as GTypeInterface
 	is_supported as function(byval resolver as GProxyResolver ptr) as gboolean
-	lookup as function(byval resolver as GProxyResolver ptr, byval uri as const zstring ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as zstring ptr ptr
-	lookup_async as sub(byval resolver as GProxyResolver ptr, byval uri as const zstring ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
-	lookup_finish as function(byval resolver as GProxyResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as zstring ptr ptr
+	lookup as function(byval resolver as GProxyResolver ptr, byval uri as const gchar ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gchar ptr ptr
+	lookup_async as sub(byval resolver as GProxyResolver ptr, byval uri as const gchar ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+	lookup_finish as function(byval resolver as GProxyResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gchar ptr ptr
 end type
 
 declare function g_proxy_resolver_get_type() as GType
 declare function g_proxy_resolver_get_default() as GProxyResolver ptr
 declare function g_proxy_resolver_is_supported(byval resolver as GProxyResolver ptr) as gboolean
-declare function g_proxy_resolver_lookup(byval resolver as GProxyResolver ptr, byval uri as const zstring ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as zstring ptr ptr
-declare sub g_proxy_resolver_lookup_async(byval resolver as GProxyResolver ptr, byval uri as const zstring ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
-declare function g_proxy_resolver_lookup_finish(byval resolver as GProxyResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as zstring ptr ptr
+declare function g_proxy_resolver_lookup(byval resolver as GProxyResolver ptr, byval uri as const gchar ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gchar ptr ptr
+declare sub g_proxy_resolver_lookup_async(byval resolver as GProxyResolver ptr, byval uri as const gchar ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_proxy_resolver_lookup_finish(byval resolver as GProxyResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gchar ptr ptr
 
 #define __G_RESOLVER_H__
 #define G_TYPE_RESOLVER g_resolver_get_type()
@@ -3889,17 +3889,17 @@ end type
 type _GResolverClass
 	parent_class as GObjectClass
 	reload as sub(byval resolver as GResolver ptr)
-	lookup_by_name as function(byval resolver as GResolver ptr, byval hostname as const zstring ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GList ptr
-	lookup_by_name_async as sub(byval resolver as GResolver ptr, byval hostname as const zstring ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+	lookup_by_name as function(byval resolver as GResolver ptr, byval hostname as const gchar ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GList ptr
+	lookup_by_name_async as sub(byval resolver as GResolver ptr, byval hostname as const gchar ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 	lookup_by_name_finish as function(byval resolver as GResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GList ptr
-	lookup_by_address as function(byval resolver as GResolver ptr, byval address as GInetAddress ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as zstring ptr
+	lookup_by_address as function(byval resolver as GResolver ptr, byval address as GInetAddress ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gchar ptr
 	lookup_by_address_async as sub(byval resolver as GResolver ptr, byval address as GInetAddress ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
-	lookup_by_address_finish as function(byval resolver as GResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as zstring ptr
-	lookup_service as function(byval resolver as GResolver ptr, byval rrname as const zstring ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GList ptr
-	lookup_service_async as sub(byval resolver as GResolver ptr, byval rrname as const zstring ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+	lookup_by_address_finish as function(byval resolver as GResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gchar ptr
+	lookup_service as function(byval resolver as GResolver ptr, byval rrname as const gchar ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GList ptr
+	lookup_service_async as sub(byval resolver as GResolver ptr, byval rrname as const gchar ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 	lookup_service_finish as function(byval resolver as GResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GList ptr
-	lookup_records as function(byval resolver as GResolver ptr, byval rrname as const zstring ptr, byval record_type as GResolverRecordType, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GList ptr
-	lookup_records_async as sub(byval resolver as GResolver ptr, byval rrname as const zstring ptr, byval record_type as GResolverRecordType, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+	lookup_records as function(byval resolver as GResolver ptr, byval rrname as const gchar ptr, byval record_type as GResolverRecordType, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GList ptr
+	lookup_records_async as sub(byval resolver as GResolver ptr, byval rrname as const gchar ptr, byval record_type as GResolverRecordType, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 	lookup_records_finish as function(byval resolver as GResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GList ptr
 	_g_reserved4 as sub()
 	_g_reserved5 as sub()
@@ -3909,18 +3909,18 @@ end type
 declare function g_resolver_get_type() as GType
 declare function g_resolver_get_default() as GResolver ptr
 declare sub g_resolver_set_default(byval resolver as GResolver ptr)
-declare function g_resolver_lookup_by_name(byval resolver as GResolver ptr, byval hostname as const zstring ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GList ptr
-declare sub g_resolver_lookup_by_name_async(byval resolver as GResolver ptr, byval hostname as const zstring ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_resolver_lookup_by_name(byval resolver as GResolver ptr, byval hostname as const gchar ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GList ptr
+declare sub g_resolver_lookup_by_name_async(byval resolver as GResolver ptr, byval hostname as const gchar ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_resolver_lookup_by_name_finish(byval resolver as GResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GList ptr
 declare sub g_resolver_free_addresses(byval addresses as GList ptr)
-declare function g_resolver_lookup_by_address(byval resolver as GResolver ptr, byval address as GInetAddress ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as zstring ptr
+declare function g_resolver_lookup_by_address(byval resolver as GResolver ptr, byval address as GInetAddress ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gchar ptr
 declare sub g_resolver_lookup_by_address_async(byval resolver as GResolver ptr, byval address as GInetAddress ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
-declare function g_resolver_lookup_by_address_finish(byval resolver as GResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_resolver_lookup_service(byval resolver as GResolver ptr, byval service as const zstring ptr, byval protocol as const zstring ptr, byval domain as const zstring ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GList ptr
-declare sub g_resolver_lookup_service_async(byval resolver as GResolver ptr, byval service as const zstring ptr, byval protocol as const zstring ptr, byval domain as const zstring ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_resolver_lookup_by_address_finish(byval resolver as GResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_resolver_lookup_service(byval resolver as GResolver ptr, byval service as const gchar ptr, byval protocol as const gchar ptr, byval domain as const gchar ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GList ptr
+declare sub g_resolver_lookup_service_async(byval resolver as GResolver ptr, byval service as const gchar ptr, byval protocol as const gchar ptr, byval domain as const gchar ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_resolver_lookup_service_finish(byval resolver as GResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GList ptr
-declare function g_resolver_lookup_records(byval resolver as GResolver ptr, byval rrname as const zstring ptr, byval record_type as GResolverRecordType, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GList ptr
-declare sub g_resolver_lookup_records_async(byval resolver as GResolver ptr, byval rrname as const zstring ptr, byval record_type as GResolverRecordType, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_resolver_lookup_records(byval resolver as GResolver ptr, byval rrname as const gchar ptr, byval record_type as GResolverRecordType, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GList ptr
+declare sub g_resolver_lookup_records_async(byval resolver as GResolver ptr, byval rrname as const gchar ptr, byval record_type as GResolverRecordType, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_resolver_lookup_records_finish(byval resolver as GResolver ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GList ptr
 declare sub g_resolver_free_targets(byval targets as GList ptr)
 #define G_RESOLVER_ERROR g_resolver_error_quark()
@@ -3944,7 +3944,7 @@ declare function g_resource_get_type() as GType
 declare function g_resource_new_from_data(byval data as GBytes ptr, byval error as GError ptr ptr) as GResource ptr
 declare function g_resource_ref(byval resource as GResource ptr) as GResource ptr
 declare sub g_resource_unref(byval resource as GResource ptr)
-declare function g_resource_load(byval filename as const zstring ptr, byval error as GError ptr ptr) as GResource ptr
+declare function g_resource_load(byval filename as const gchar ptr, byval error as GError ptr ptr) as GResource ptr
 declare function g_resource_open_stream(byval resource as GResource ptr, byval path as const zstring ptr, byval lookup_flags as GResourceLookupFlags, byval error as GError ptr ptr) as GInputStream ptr
 declare function g_resource_lookup_data(byval resource as GResource ptr, byval path as const zstring ptr, byval lookup_flags as GResourceLookupFlags, byval error as GError ptr ptr) as GBytes ptr
 declare function g_resource_enumerate_children(byval resource as GResource ptr, byval path as const zstring ptr, byval lookup_flags as GResourceLookupFlags, byval error as GError ptr ptr) as zstring ptr ptr
@@ -3992,17 +3992,17 @@ declare function g_settings_schema_source_get_type() as GType
 declare function g_settings_schema_source_get_default() as GSettingsSchemaSource ptr
 declare function g_settings_schema_source_ref(byval source as GSettingsSchemaSource ptr) as GSettingsSchemaSource ptr
 declare sub g_settings_schema_source_unref(byval source as GSettingsSchemaSource ptr)
-declare function g_settings_schema_source_new_from_directory(byval directory as const zstring ptr, byval parent as GSettingsSchemaSource ptr, byval trusted as gboolean, byval error as GError ptr ptr) as GSettingsSchemaSource ptr
-declare function g_settings_schema_source_lookup(byval source as GSettingsSchemaSource ptr, byval schema_id as const zstring ptr, byval recursive as gboolean) as GSettingsSchema ptr
-declare sub g_settings_schema_source_list_schemas(byval source as GSettingsSchemaSource ptr, byval recursive as gboolean, byval non_relocatable as zstring ptr ptr ptr, byval relocatable as zstring ptr ptr ptr)
+declare function g_settings_schema_source_new_from_directory(byval directory as const gchar ptr, byval parent as GSettingsSchemaSource ptr, byval trusted as gboolean, byval error as GError ptr ptr) as GSettingsSchemaSource ptr
+declare function g_settings_schema_source_lookup(byval source as GSettingsSchemaSource ptr, byval schema_id as const gchar ptr, byval recursive as gboolean) as GSettingsSchema ptr
+declare sub g_settings_schema_source_list_schemas(byval source as GSettingsSchemaSource ptr, byval recursive as gboolean, byval non_relocatable as gchar ptr ptr ptr, byval relocatable as gchar ptr ptr ptr)
 #define G_TYPE_SETTINGS_SCHEMA g_settings_schema_get_type()
 declare function g_settings_schema_get_type() as GType
 declare function g_settings_schema_ref(byval schema as GSettingsSchema ptr) as GSettingsSchema ptr
 declare sub g_settings_schema_unref(byval schema as GSettingsSchema ptr)
-declare function g_settings_schema_get_id(byval schema as GSettingsSchema ptr) as const zstring ptr
-declare function g_settings_schema_get_path(byval schema as GSettingsSchema ptr) as const zstring ptr
-declare function g_settings_schema_get_key(byval schema as GSettingsSchema ptr, byval name as const zstring ptr) as GSettingsSchemaKey ptr
-declare function g_settings_schema_has_key(byval schema as GSettingsSchema ptr, byval name as const zstring ptr) as gboolean
+declare function g_settings_schema_get_id(byval schema as GSettingsSchema ptr) as const gchar ptr
+declare function g_settings_schema_get_path(byval schema as GSettingsSchema ptr) as const gchar ptr
+declare function g_settings_schema_get_key(byval schema as GSettingsSchema ptr, byval name as const gchar ptr) as GSettingsSchemaKey ptr
+declare function g_settings_schema_has_key(byval schema as GSettingsSchema ptr, byval name as const gchar ptr) as gboolean
 #define G_TYPE_SETTINGS_SCHEMA_KEY g_settings_schema_key_get_type()
 declare function g_settings_schema_key_get_type() as GType
 declare function g_settings_schema_key_ref(byval key as GSettingsSchemaKey ptr) as GSettingsSchemaKey ptr
@@ -4011,8 +4011,8 @@ declare function g_settings_schema_key_get_value_type(byval key as GSettingsSche
 declare function g_settings_schema_key_get_default_value(byval key as GSettingsSchemaKey ptr) as GVariant ptr
 declare function g_settings_schema_key_get_range(byval key as GSettingsSchemaKey ptr) as GVariant ptr
 declare function g_settings_schema_key_range_check(byval key as GSettingsSchemaKey ptr, byval value as GVariant ptr) as gboolean
-declare function g_settings_schema_key_get_summary(byval key as GSettingsSchemaKey ptr) as const zstring ptr
-declare function g_settings_schema_key_get_description(byval key as GSettingsSchemaKey ptr) as const zstring ptr
+declare function g_settings_schema_key_get_summary(byval key as GSettingsSchemaKey ptr) as const gchar ptr
+declare function g_settings_schema_key_get_description(byval key as GSettingsSchemaKey ptr) as const gchar ptr
 
 #define __G_SETTINGS_H__
 #define G_TYPE_SETTINGS g_settings_get_type()
@@ -4026,8 +4026,8 @@ type GSettingsClass as _GSettingsClass
 
 type _GSettingsClass
 	parent_class as GObjectClass
-	writable_changed as sub(byval settings as GSettings ptr, byval key as const zstring ptr)
-	changed as sub(byval settings as GSettings ptr, byval key as const zstring ptr)
+	writable_changed as sub(byval settings as GSettings ptr, byval key as const gchar ptr)
+	changed as sub(byval settings as GSettings ptr, byval key as const gchar ptr)
 	writable_change_event as function(byval settings as GSettings ptr, byval key as GQuark) as gboolean
 	change_event as function(byval settings as GSettings ptr, byval keys as const GQuark ptr, byval n_keys as gint) as gboolean
 	padding(0 to 19) as gpointer
@@ -4039,42 +4039,42 @@ type _GSettings
 end type
 
 declare function g_settings_get_type() as GType
-declare function g_settings_list_schemas() as const zstring const ptr ptr
-declare function g_settings_list_relocatable_schemas() as const zstring const ptr ptr
-declare function g_settings_new(byval schema_id as const zstring ptr) as GSettings ptr
-declare function g_settings_new_with_path(byval schema_id as const zstring ptr, byval path as const zstring ptr) as GSettings ptr
-declare function g_settings_new_with_backend(byval schema_id as const zstring ptr, byval backend as GSettingsBackend ptr) as GSettings ptr
-declare function g_settings_new_with_backend_and_path(byval schema_id as const zstring ptr, byval backend as GSettingsBackend ptr, byval path as const zstring ptr) as GSettings ptr
-declare function g_settings_new_full(byval schema as GSettingsSchema ptr, byval backend as GSettingsBackend ptr, byval path as const zstring ptr) as GSettings ptr
-declare function g_settings_list_children(byval settings as GSettings ptr) as zstring ptr ptr
-declare function g_settings_list_keys(byval settings as GSettings ptr) as zstring ptr ptr
-declare function g_settings_get_range(byval settings as GSettings ptr, byval key as const zstring ptr) as GVariant ptr
-declare function g_settings_range_check(byval settings as GSettings ptr, byval key as const zstring ptr, byval value as GVariant ptr) as gboolean
-declare function g_settings_set_value(byval settings as GSettings ptr, byval key as const zstring ptr, byval value as GVariant ptr) as gboolean
-declare function g_settings_get_value(byval settings as GSettings ptr, byval key as const zstring ptr) as GVariant ptr
-declare function g_settings_get_user_value(byval settings as GSettings ptr, byval key as const zstring ptr) as GVariant ptr
-declare function g_settings_get_default_value(byval settings as GSettings ptr, byval key as const zstring ptr) as GVariant ptr
-declare function g_settings_set(byval settings as GSettings ptr, byval key as const zstring ptr, byval format as const zstring ptr, ...) as gboolean
-declare sub g_settings_get(byval settings as GSettings ptr, byval key as const zstring ptr, byval format as const zstring ptr, ...)
-declare sub g_settings_reset(byval settings as GSettings ptr, byval key as const zstring ptr)
-declare function g_settings_get_int(byval settings as GSettings ptr, byval key as const zstring ptr) as gint
-declare function g_settings_set_int(byval settings as GSettings ptr, byval key as const zstring ptr, byval value as gint) as gboolean
-declare function g_settings_get_uint(byval settings as GSettings ptr, byval key as const zstring ptr) as guint
-declare function g_settings_set_uint(byval settings as GSettings ptr, byval key as const zstring ptr, byval value as guint) as gboolean
-declare function g_settings_get_string(byval settings as GSettings ptr, byval key as const zstring ptr) as zstring ptr
-declare function g_settings_set_string(byval settings as GSettings ptr, byval key as const zstring ptr, byval value as const zstring ptr) as gboolean
-declare function g_settings_get_boolean(byval settings as GSettings ptr, byval key as const zstring ptr) as gboolean
-declare function g_settings_set_boolean(byval settings as GSettings ptr, byval key as const zstring ptr, byval value as gboolean) as gboolean
-declare function g_settings_get_double(byval settings as GSettings ptr, byval key as const zstring ptr) as gdouble
-declare function g_settings_set_double(byval settings as GSettings ptr, byval key as const zstring ptr, byval value as gdouble) as gboolean
-declare function g_settings_get_strv(byval settings as GSettings ptr, byval key as const zstring ptr) as zstring ptr ptr
-declare function g_settings_set_strv(byval settings as GSettings ptr, byval key as const zstring ptr, byval value as const zstring const ptr ptr) as gboolean
-declare function g_settings_get_enum(byval settings as GSettings ptr, byval key as const zstring ptr) as gint
-declare function g_settings_set_enum(byval settings as GSettings ptr, byval key as const zstring ptr, byval value as gint) as gboolean
-declare function g_settings_get_flags(byval settings as GSettings ptr, byval key as const zstring ptr) as guint
-declare function g_settings_set_flags(byval settings as GSettings ptr, byval key as const zstring ptr, byval value as guint) as gboolean
-declare function g_settings_get_child(byval settings as GSettings ptr, byval name as const zstring ptr) as GSettings ptr
-declare function g_settings_is_writable(byval settings as GSettings ptr, byval name as const zstring ptr) as gboolean
+declare function g_settings_list_schemas() as const gchar const ptr ptr
+declare function g_settings_list_relocatable_schemas() as const gchar const ptr ptr
+declare function g_settings_new(byval schema_id as const gchar ptr) as GSettings ptr
+declare function g_settings_new_with_path(byval schema_id as const gchar ptr, byval path as const gchar ptr) as GSettings ptr
+declare function g_settings_new_with_backend(byval schema_id as const gchar ptr, byval backend as GSettingsBackend ptr) as GSettings ptr
+declare function g_settings_new_with_backend_and_path(byval schema_id as const gchar ptr, byval backend as GSettingsBackend ptr, byval path as const gchar ptr) as GSettings ptr
+declare function g_settings_new_full(byval schema as GSettingsSchema ptr, byval backend as GSettingsBackend ptr, byval path as const gchar ptr) as GSettings ptr
+declare function g_settings_list_children(byval settings as GSettings ptr) as gchar ptr ptr
+declare function g_settings_list_keys(byval settings as GSettings ptr) as gchar ptr ptr
+declare function g_settings_get_range(byval settings as GSettings ptr, byval key as const gchar ptr) as GVariant ptr
+declare function g_settings_range_check(byval settings as GSettings ptr, byval key as const gchar ptr, byval value as GVariant ptr) as gboolean
+declare function g_settings_set_value(byval settings as GSettings ptr, byval key as const gchar ptr, byval value as GVariant ptr) as gboolean
+declare function g_settings_get_value(byval settings as GSettings ptr, byval key as const gchar ptr) as GVariant ptr
+declare function g_settings_get_user_value(byval settings as GSettings ptr, byval key as const gchar ptr) as GVariant ptr
+declare function g_settings_get_default_value(byval settings as GSettings ptr, byval key as const gchar ptr) as GVariant ptr
+declare function g_settings_set(byval settings as GSettings ptr, byval key as const gchar ptr, byval format as const gchar ptr, ...) as gboolean
+declare sub g_settings_get(byval settings as GSettings ptr, byval key as const gchar ptr, byval format as const gchar ptr, ...)
+declare sub g_settings_reset(byval settings as GSettings ptr, byval key as const gchar ptr)
+declare function g_settings_get_int(byval settings as GSettings ptr, byval key as const gchar ptr) as gint
+declare function g_settings_set_int(byval settings as GSettings ptr, byval key as const gchar ptr, byval value as gint) as gboolean
+declare function g_settings_get_uint(byval settings as GSettings ptr, byval key as const gchar ptr) as guint
+declare function g_settings_set_uint(byval settings as GSettings ptr, byval key as const gchar ptr, byval value as guint) as gboolean
+declare function g_settings_get_string(byval settings as GSettings ptr, byval key as const gchar ptr) as gchar ptr
+declare function g_settings_set_string(byval settings as GSettings ptr, byval key as const gchar ptr, byval value as const gchar ptr) as gboolean
+declare function g_settings_get_boolean(byval settings as GSettings ptr, byval key as const gchar ptr) as gboolean
+declare function g_settings_set_boolean(byval settings as GSettings ptr, byval key as const gchar ptr, byval value as gboolean) as gboolean
+declare function g_settings_get_double(byval settings as GSettings ptr, byval key as const gchar ptr) as gdouble
+declare function g_settings_set_double(byval settings as GSettings ptr, byval key as const gchar ptr, byval value as gdouble) as gboolean
+declare function g_settings_get_strv(byval settings as GSettings ptr, byval key as const gchar ptr) as gchar ptr ptr
+declare function g_settings_set_strv(byval settings as GSettings ptr, byval key as const gchar ptr, byval value as const gchar const ptr ptr) as gboolean
+declare function g_settings_get_enum(byval settings as GSettings ptr, byval key as const gchar ptr) as gint
+declare function g_settings_set_enum(byval settings as GSettings ptr, byval key as const gchar ptr, byval value as gint) as gboolean
+declare function g_settings_get_flags(byval settings as GSettings ptr, byval key as const gchar ptr) as guint
+declare function g_settings_set_flags(byval settings as GSettings ptr, byval key as const gchar ptr, byval value as guint) as gboolean
+declare function g_settings_get_child(byval settings as GSettings ptr, byval name as const gchar ptr) as GSettings ptr
+declare function g_settings_is_writable(byval settings as GSettings ptr, byval name as const gchar ptr) as gboolean
 declare sub g_settings_delay(byval settings as GSettings ptr)
 declare sub g_settings_apply(byval settings as GSettings ptr)
 declare sub g_settings_revert(byval settings as GSettings ptr)
@@ -4095,12 +4095,12 @@ enum
 	G_SETTINGS_BIND_INVERT_BOOLEAN = 1 shl 4
 end enum
 
-declare sub g_settings_bind(byval settings as GSettings ptr, byval key as const zstring ptr, byval object as gpointer, byval property as const zstring ptr, byval flags as GSettingsBindFlags)
-declare sub g_settings_bind_with_mapping(byval settings as GSettings ptr, byval key as const zstring ptr, byval object as gpointer, byval property as const zstring ptr, byval flags as GSettingsBindFlags, byval get_mapping as GSettingsBindGetMapping, byval set_mapping as GSettingsBindSetMapping, byval user_data as gpointer, byval destroy as GDestroyNotify)
-declare sub g_settings_bind_writable(byval settings as GSettings ptr, byval key as const zstring ptr, byval object as gpointer, byval property as const zstring ptr, byval inverted as gboolean)
-declare sub g_settings_unbind(byval object as gpointer, byval property as const zstring ptr)
-declare function g_settings_create_action(byval settings as GSettings ptr, byval key as const zstring ptr) as GAction ptr
-declare function g_settings_get_mapped(byval settings as GSettings ptr, byval key as const zstring ptr, byval mapping as GSettingsGetMapping, byval user_data as gpointer) as gpointer
+declare sub g_settings_bind(byval settings as GSettings ptr, byval key as const gchar ptr, byval object as gpointer, byval property as const gchar ptr, byval flags as GSettingsBindFlags)
+declare sub g_settings_bind_with_mapping(byval settings as GSettings ptr, byval key as const gchar ptr, byval object as gpointer, byval property as const gchar ptr, byval flags as GSettingsBindFlags, byval get_mapping as GSettingsBindGetMapping, byval set_mapping as GSettingsBindSetMapping, byval user_data as gpointer, byval destroy as GDestroyNotify)
+declare sub g_settings_bind_writable(byval settings as GSettings ptr, byval key as const gchar ptr, byval object as gpointer, byval property as const gchar ptr, byval inverted as gboolean)
+declare sub g_settings_unbind(byval object as gpointer, byval property as const gchar ptr)
+declare function g_settings_create_action(byval settings as GSettings ptr, byval key as const gchar ptr) as GAction ptr
+declare function g_settings_get_mapped(byval settings as GSettings ptr, byval key as const gchar ptr, byval mapping as GSettingsGetMapping, byval user_data as gpointer) as gpointer
 
 #define __G_SIMPLE_ACTION_H__
 #define G_TYPE_SIMPLE_ACTION g_simple_action_get_type()
@@ -4108,8 +4108,8 @@ declare function g_settings_get_mapped(byval settings as GSettings ptr, byval ke
 #define G_IS_SIMPLE_ACTION(inst) G_TYPE_CHECK_INSTANCE_TYPE((inst), G_TYPE_SIMPLE_ACTION)
 
 declare function g_simple_action_get_type() as GType
-declare function g_simple_action_new(byval name as const zstring ptr, byval parameter_type as const GVariantType ptr) as GSimpleAction ptr
-declare function g_simple_action_new_stateful(byval name as const zstring ptr, byval parameter_type as const GVariantType ptr, byval state as GVariant ptr) as GSimpleAction ptr
+declare function g_simple_action_new(byval name as const gchar ptr, byval parameter_type as const GVariantType ptr) as GSimpleAction ptr
+declare function g_simple_action_new_stateful(byval name as const gchar ptr, byval parameter_type as const GVariantType ptr, byval state as GVariant ptr) as GSimpleAction ptr
 declare sub g_simple_action_set_enabled(byval simple as GSimpleAction ptr, byval enabled as gboolean)
 declare sub g_simple_action_set_state(byval simple as GSimpleAction ptr, byval value as GVariant ptr)
 
@@ -4135,9 +4135,9 @@ end type
 
 declare function g_simple_action_group_get_type() as GType
 declare function g_simple_action_group_new() as GSimpleActionGroup ptr
-declare function g_simple_action_group_lookup(byval simple as GSimpleActionGroup ptr, byval action_name as const zstring ptr) as GAction ptr
+declare function g_simple_action_group_lookup(byval simple as GSimpleActionGroup ptr, byval action_name as const gchar ptr) as GAction ptr
 declare sub g_simple_action_group_insert(byval simple as GSimpleActionGroup ptr, byval action as GAction ptr)
-declare sub g_simple_action_group_remove(byval simple as GSimpleActionGroup ptr, byval action_name as const zstring ptr)
+declare sub g_simple_action_group_remove(byval simple as GSimpleActionGroup ptr, byval action_name as const gchar ptr)
 declare sub g_simple_action_group_add_entries(byval simple as GSimpleActionGroup ptr, byval entries as const GActionEntry ptr, byval n_entries as gint, byval user_data as gpointer)
 
 #define __G_SIMPLE_ASYNC_RESULT_H__
@@ -4227,18 +4227,18 @@ declare sub g_socket_client_set_tls_validation_flags(byval client as GSocketClie
 declare function g_socket_client_get_proxy_resolver(byval client as GSocketClient ptr) as GProxyResolver ptr
 declare sub g_socket_client_set_proxy_resolver(byval client as GSocketClient ptr, byval proxy_resolver as GProxyResolver ptr)
 declare function g_socket_client_connect(byval client as GSocketClient ptr, byval connectable as GSocketConnectable ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GSocketConnection ptr
-declare function g_socket_client_connect_to_host(byval client as GSocketClient ptr, byval host_and_port as const zstring ptr, byval default_port as guint16, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GSocketConnection ptr
-declare function g_socket_client_connect_to_service(byval client as GSocketClient ptr, byval domain as const zstring ptr, byval service as const zstring ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GSocketConnection ptr
-declare function g_socket_client_connect_to_uri(byval client as GSocketClient ptr, byval uri as const zstring ptr, byval default_port as guint16, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GSocketConnection ptr
+declare function g_socket_client_connect_to_host(byval client as GSocketClient ptr, byval host_and_port as const gchar ptr, byval default_port as guint16, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GSocketConnection ptr
+declare function g_socket_client_connect_to_service(byval client as GSocketClient ptr, byval domain as const gchar ptr, byval service as const gchar ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GSocketConnection ptr
+declare function g_socket_client_connect_to_uri(byval client as GSocketClient ptr, byval uri as const gchar ptr, byval default_port as guint16, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GSocketConnection ptr
 declare sub g_socket_client_connect_async(byval client as GSocketClient ptr, byval connectable as GSocketConnectable ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_socket_client_connect_finish(byval client as GSocketClient ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GSocketConnection ptr
-declare sub g_socket_client_connect_to_host_async(byval client as GSocketClient ptr, byval host_and_port as const zstring ptr, byval default_port as guint16, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare sub g_socket_client_connect_to_host_async(byval client as GSocketClient ptr, byval host_and_port as const gchar ptr, byval default_port as guint16, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_socket_client_connect_to_host_finish(byval client as GSocketClient ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GSocketConnection ptr
-declare sub g_socket_client_connect_to_service_async(byval client as GSocketClient ptr, byval domain as const zstring ptr, byval service as const zstring ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare sub g_socket_client_connect_to_service_async(byval client as GSocketClient ptr, byval domain as const gchar ptr, byval service as const gchar ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_socket_client_connect_to_service_finish(byval client as GSocketClient ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GSocketConnection ptr
-declare sub g_socket_client_connect_to_uri_async(byval client as GSocketClient ptr, byval uri as const zstring ptr, byval default_port as guint16, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare sub g_socket_client_connect_to_uri_async(byval client as GSocketClient ptr, byval uri as const gchar ptr, byval default_port as guint16, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_socket_client_connect_to_uri_finish(byval client as GSocketClient ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GSocketConnection ptr
-declare sub g_socket_client_add_application_proxy(byval client as GSocketClient ptr, byval protocol as const zstring ptr)
+declare sub g_socket_client_add_application_proxy(byval client as GSocketClient ptr, byval protocol as const gchar ptr)
 
 #define __G_SOCKET_CONNECTABLE_H__
 #define G_TYPE_SOCKET_CONNECTABLE g_socket_connectable_get_type()
@@ -4314,8 +4314,8 @@ declare function g_socket_get_multicast_ttl(byval socket as GSocket ptr) as guin
 declare sub g_socket_set_multicast_ttl(byval socket as GSocket ptr, byval ttl as guint)
 declare function g_socket_is_connected(byval socket as GSocket ptr) as gboolean
 declare function g_socket_bind(byval socket as GSocket ptr, byval address as GSocketAddress ptr, byval allow_reuse as gboolean, byval error as GError ptr ptr) as gboolean
-declare function g_socket_join_multicast_group(byval socket as GSocket ptr, byval group as GInetAddress ptr, byval source_specific as gboolean, byval iface as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_socket_leave_multicast_group(byval socket as GSocket ptr, byval group as GInetAddress ptr, byval source_specific as gboolean, byval iface as const zstring ptr, byval error as GError ptr ptr) as gboolean
+declare function g_socket_join_multicast_group(byval socket as GSocket ptr, byval group as GInetAddress ptr, byval source_specific as gboolean, byval iface as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function g_socket_leave_multicast_group(byval socket as GSocket ptr, byval group as GInetAddress ptr, byval source_specific as gboolean, byval iface as const gchar ptr, byval error as GError ptr ptr) as gboolean
 declare function g_socket_connect(byval socket as GSocket ptr, byval address as GSocketAddress ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gboolean
 declare function g_socket_check_connect_result(byval socket as GSocket ptr, byval error as GError ptr ptr) as gboolean
 declare function g_socket_get_available_bytes(byval socket as GSocket ptr) as gssize
@@ -4324,10 +4324,10 @@ declare function g_socket_condition_wait(byval socket as GSocket ptr, byval cond
 declare function g_socket_condition_timed_wait(byval socket as GSocket ptr, byval condition as GIOCondition, byval timeout as gint64, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gboolean
 declare function g_socket_accept(byval socket as GSocket ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GSocket ptr
 declare function g_socket_listen(byval socket as GSocket ptr, byval error as GError ptr ptr) as gboolean
-declare function g_socket_receive(byval socket as GSocket ptr, byval buffer as zstring ptr, byval size as gsize, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
-declare function g_socket_receive_from(byval socket as GSocket ptr, byval address as GSocketAddress ptr ptr, byval buffer as zstring ptr, byval size as gsize, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
-declare function g_socket_send(byval socket as GSocket ptr, byval buffer as const zstring ptr, byval size as gsize, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
-declare function g_socket_send_to(byval socket as GSocket ptr, byval address as GSocketAddress ptr, byval buffer as const zstring ptr, byval size as gsize, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
+declare function g_socket_receive(byval socket as GSocket ptr, byval buffer as gchar ptr, byval size as gsize, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
+declare function g_socket_receive_from(byval socket as GSocket ptr, byval address as GSocketAddress ptr ptr, byval buffer as gchar ptr, byval size as gsize, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
+declare function g_socket_send(byval socket as GSocket ptr, byval buffer as const gchar ptr, byval size as gsize, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
+declare function g_socket_send_to(byval socket as GSocket ptr, byval address as GSocketAddress ptr, byval buffer as const gchar ptr, byval size as gsize, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
 declare function g_socket_receive_message(byval socket as GSocket ptr, byval address as GSocketAddress ptr ptr, byval vectors as GInputVector ptr, byval num_vectors as gint, byval messages as GSocketControlMessage ptr ptr ptr, byval num_messages as gint ptr, byval flags as gint ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
 declare function g_socket_send_message(byval socket as GSocket ptr, byval address as GSocketAddress ptr, byval vectors as GOutputVector ptr, byval num_vectors as gint, byval messages as GSocketControlMessage ptr ptr, byval num_messages as gint, byval flags as gint, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
 declare function g_socket_close(byval socket as GSocket ptr, byval error as GError ptr ptr) as gboolean
@@ -4336,8 +4336,8 @@ declare function g_socket_is_closed(byval socket as GSocket ptr) as gboolean
 declare function g_socket_create_source(byval socket as GSocket ptr, byval condition as GIOCondition, byval cancellable as GCancellable ptr) as GSource ptr
 declare function g_socket_speaks_ipv4(byval socket as GSocket ptr) as gboolean
 declare function g_socket_get_credentials(byval socket as GSocket ptr, byval error as GError ptr ptr) as GCredentials ptr
-declare function g_socket_receive_with_blocking(byval socket as GSocket ptr, byval buffer as zstring ptr, byval size as gsize, byval blocking as gboolean, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
-declare function g_socket_send_with_blocking(byval socket as GSocket ptr, byval buffer as const zstring ptr, byval size as gsize, byval blocking as gboolean, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
+declare function g_socket_receive_with_blocking(byval socket as GSocket ptr, byval buffer as gchar ptr, byval size as gsize, byval blocking as gboolean, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
+declare function g_socket_send_with_blocking(byval socket as GSocket ptr, byval buffer as const gchar ptr, byval size as gsize, byval blocking as gboolean, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
 declare function g_socket_get_option(byval socket as GSocket ptr, byval level as gint, byval optname as gint, byval value as gint ptr, byval error as GError ptr ptr) as gboolean
 declare function g_socket_set_option(byval socket as GSocket ptr, byval level as gint, byval optname as gint, byval value as gint, byval error as GError ptr ptr) as gboolean
 
@@ -4488,10 +4488,10 @@ declare function g_socket_service_is_active(byval service as GSocketService ptr)
 #define __G_SRV_TARGET_H__
 declare function g_srv_target_get_type() as GType
 #define G_TYPE_SRV_TARGET g_srv_target_get_type()
-declare function g_srv_target_new(byval hostname as const zstring ptr, byval port as guint16, byval priority as guint16, byval weight as guint16) as GSrvTarget ptr
+declare function g_srv_target_new(byval hostname as const gchar ptr, byval port as guint16, byval priority as guint16, byval weight as guint16) as GSrvTarget ptr
 declare function g_srv_target_copy(byval target as GSrvTarget ptr) as GSrvTarget ptr
 declare sub g_srv_target_free(byval target as GSrvTarget ptr)
-declare function g_srv_target_get_hostname(byval target as GSrvTarget ptr) as const zstring ptr
+declare function g_srv_target_get_hostname(byval target as GSrvTarget ptr) as const gchar ptr
 declare function g_srv_target_get_port(byval target as GSrvTarget ptr) as guint16
 declare function g_srv_target_get_priority(byval target as GSrvTarget ptr) as guint16
 declare function g_srv_target_get_weight(byval target as GSrvTarget ptr) as guint16
@@ -4524,10 +4524,10 @@ type _GSimpleProxyResolverClass
 end type
 
 declare function g_simple_proxy_resolver_get_type() as GType
-declare function g_simple_proxy_resolver_new(byval default_proxy as const zstring ptr, byval ignore_hosts as zstring ptr ptr) as GProxyResolver ptr
-declare sub g_simple_proxy_resolver_set_default_proxy(byval resolver as GSimpleProxyResolver ptr, byval default_proxy as const zstring ptr)
-declare sub g_simple_proxy_resolver_set_ignore_hosts(byval resolver as GSimpleProxyResolver ptr, byval ignore_hosts as zstring ptr ptr)
-declare sub g_simple_proxy_resolver_set_uri_proxy(byval resolver as GSimpleProxyResolver ptr, byval uri_scheme as const zstring ptr, byval proxy as const zstring ptr)
+declare function g_simple_proxy_resolver_new(byval default_proxy as const gchar ptr, byval ignore_hosts as gchar ptr ptr) as GProxyResolver ptr
+declare sub g_simple_proxy_resolver_set_default_proxy(byval resolver as GSimpleProxyResolver ptr, byval default_proxy as const gchar ptr)
+declare sub g_simple_proxy_resolver_set_ignore_hosts(byval resolver as GSimpleProxyResolver ptr, byval ignore_hosts as gchar ptr ptr)
+declare sub g_simple_proxy_resolver_set_uri_proxy(byval resolver as GSimpleProxyResolver ptr, byval uri_scheme as const gchar ptr, byval proxy as const gchar ptr)
 
 #define __G_TASK_H__
 #define G_TYPE_TASK g_task_get_type()
@@ -4577,12 +4577,12 @@ declare function g_task_had_error(byval task as GTask ptr) as gboolean
 #define G_IS_SUBPROCESS(o) G_TYPE_CHECK_INSTANCE_TYPE((o), G_TYPE_SUBPROCESS)
 
 declare function g_subprocess_get_type() as GType
-declare function g_subprocess_new(byval flags as GSubprocessFlags, byval error as GError ptr ptr, byval argv0 as const zstring ptr, ...) as GSubprocess ptr
-declare function g_subprocess_newv(byval argv as const zstring const ptr ptr, byval flags as GSubprocessFlags, byval error as GError ptr ptr) as GSubprocess ptr
+declare function g_subprocess_new(byval flags as GSubprocessFlags, byval error as GError ptr ptr, byval argv0 as const gchar ptr, ...) as GSubprocess ptr
+declare function g_subprocess_newv(byval argv as const gchar const ptr ptr, byval flags as GSubprocessFlags, byval error as GError ptr ptr) as GSubprocess ptr
 declare function g_subprocess_get_stdin_pipe(byval subprocess as GSubprocess ptr) as GOutputStream ptr
 declare function g_subprocess_get_stdout_pipe(byval subprocess as GSubprocess ptr) as GInputStream ptr
 declare function g_subprocess_get_stderr_pipe(byval subprocess as GSubprocess ptr) as GInputStream ptr
-declare function g_subprocess_get_identifier(byval subprocess as GSubprocess ptr) as const zstring ptr
+declare function g_subprocess_get_identifier(byval subprocess as GSubprocess ptr) as const gchar ptr
 
 #ifdef __FB_UNIX__
 	declare sub g_subprocess_send_signal(byval subprocess as GSubprocess ptr, byval signal_num as gint)
@@ -4615,21 +4615,21 @@ declare function g_subprocess_communicate_utf8_finish(byval subprocess as GSubpr
 
 declare function g_subprocess_launcher_get_type() as GType
 declare function g_subprocess_launcher_new(byval flags as GSubprocessFlags) as GSubprocessLauncher ptr
-declare function g_subprocess_launcher_spawn(byval self as GSubprocessLauncher ptr, byval error as GError ptr ptr, byval argv0 as const zstring ptr, ...) as GSubprocess ptr
-declare function g_subprocess_launcher_spawnv(byval self as GSubprocessLauncher ptr, byval argv as const zstring const ptr ptr, byval error as GError ptr ptr) as GSubprocess ptr
-declare sub g_subprocess_launcher_set_environ(byval self as GSubprocessLauncher ptr, byval env as zstring ptr ptr)
-declare sub g_subprocess_launcher_setenv(byval self as GSubprocessLauncher ptr, byval variable as const zstring ptr, byval value as const zstring ptr, byval overwrite as gboolean)
-declare sub g_subprocess_launcher_unsetenv(byval self as GSubprocessLauncher ptr, byval variable as const zstring ptr)
-declare function g_subprocess_launcher_getenv(byval self as GSubprocessLauncher ptr, byval variable as const zstring ptr) as const zstring ptr
-declare sub g_subprocess_launcher_set_cwd(byval self as GSubprocessLauncher ptr, byval cwd as const zstring ptr)
+declare function g_subprocess_launcher_spawn(byval self as GSubprocessLauncher ptr, byval error as GError ptr ptr, byval argv0 as const gchar ptr, ...) as GSubprocess ptr
+declare function g_subprocess_launcher_spawnv(byval self as GSubprocessLauncher ptr, byval argv as const gchar const ptr ptr, byval error as GError ptr ptr) as GSubprocess ptr
+declare sub g_subprocess_launcher_set_environ(byval self as GSubprocessLauncher ptr, byval env as gchar ptr ptr)
+declare sub g_subprocess_launcher_setenv(byval self as GSubprocessLauncher ptr, byval variable as const gchar ptr, byval value as const gchar ptr, byval overwrite as gboolean)
+declare sub g_subprocess_launcher_unsetenv(byval self as GSubprocessLauncher ptr, byval variable as const gchar ptr)
+declare function g_subprocess_launcher_getenv(byval self as GSubprocessLauncher ptr, byval variable as const gchar ptr) as const gchar ptr
+declare sub g_subprocess_launcher_set_cwd(byval self as GSubprocessLauncher ptr, byval cwd as const gchar ptr)
 declare sub g_subprocess_launcher_set_flags(byval self as GSubprocessLauncher ptr, byval flags as GSubprocessFlags)
 
 #ifdef __FB_UNIX__
-	declare sub g_subprocess_launcher_set_stdin_file_path(byval self as GSubprocessLauncher ptr, byval path as const zstring ptr)
+	declare sub g_subprocess_launcher_set_stdin_file_path(byval self as GSubprocessLauncher ptr, byval path as const gchar ptr)
 	declare sub g_subprocess_launcher_take_stdin_fd(byval self as GSubprocessLauncher ptr, byval fd as gint)
-	declare sub g_subprocess_launcher_set_stdout_file_path(byval self as GSubprocessLauncher ptr, byval path as const zstring ptr)
+	declare sub g_subprocess_launcher_set_stdout_file_path(byval self as GSubprocessLauncher ptr, byval path as const gchar ptr)
 	declare sub g_subprocess_launcher_take_stdout_fd(byval self as GSubprocessLauncher ptr, byval fd as gint)
-	declare sub g_subprocess_launcher_set_stderr_file_path(byval self as GSubprocessLauncher ptr, byval path as const zstring ptr)
+	declare sub g_subprocess_launcher_set_stderr_file_path(byval self as GSubprocessLauncher ptr, byval path as const gchar ptr)
 	declare sub g_subprocess_launcher_take_stderr_fd(byval self as GSubprocessLauncher ptr, byval fd as gint)
 	declare sub g_subprocess_launcher_take_fd(byval self as GSubprocessLauncher ptr, byval source_fd as gint, byval target_fd as gint)
 	declare sub g_subprocess_launcher_set_child_setup(byval self as GSubprocessLauncher ptr, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval destroy_notify as GDestroyNotify)
@@ -4689,8 +4689,8 @@ declare function g_tcp_wrapper_connection_get_base_io_stream(byval conn as GTcpW
 declare function g_test_dbus_get_type() as GType
 declare function g_test_dbus_new(byval flags as GTestDBusFlags) as GTestDBus ptr
 declare function g_test_dbus_get_flags(byval self as GTestDBus ptr) as GTestDBusFlags
-declare function g_test_dbus_get_bus_address(byval self as GTestDBus ptr) as const zstring ptr
-declare sub g_test_dbus_add_service_dir(byval self as GTestDBus ptr, byval path as const zstring ptr)
+declare function g_test_dbus_get_bus_address(byval self as GTestDBus ptr) as const gchar ptr
+declare sub g_test_dbus_add_service_dir(byval self as GTestDBus ptr, byval path as const gchar ptr)
 declare sub g_test_dbus_up(byval self as GTestDBus ptr)
 declare sub g_test_dbus_stop(byval self as GTestDBus ptr)
 declare sub g_test_dbus_down(byval self as GTestDBus ptr)
@@ -4711,7 +4711,7 @@ declare function g_themed_icon_new_with_default_fallbacks(byval iconname as cons
 declare function g_themed_icon_new_from_names(byval iconnames as zstring ptr ptr, byval len as long) as GIcon ptr
 declare sub g_themed_icon_prepend_name(byval icon as GThemedIcon ptr, byval iconname as const zstring ptr)
 declare sub g_themed_icon_append_name(byval icon as GThemedIcon ptr, byval iconname as const zstring ptr)
-declare function g_themed_icon_get_names(byval icon as GThemedIcon ptr) as const zstring const ptr ptr
+declare function g_themed_icon_get_names(byval icon as GThemedIcon ptr) as const gchar const ptr ptr
 
 #define __G_THREADED_SOCKET_SERVICE_H__
 #define G_TYPE_THREADED_SOCKET_SERVICE g_threaded_socket_service_get_type()
@@ -4790,10 +4790,10 @@ type _GTlsCertificateClass
 end type
 
 declare function g_tls_certificate_get_type() as GType
-declare function g_tls_certificate_new_from_pem(byval data as const zstring ptr, byval length as gssize, byval error as GError ptr ptr) as GTlsCertificate ptr
-declare function g_tls_certificate_new_from_file(byval file as const zstring ptr, byval error as GError ptr ptr) as GTlsCertificate ptr
-declare function g_tls_certificate_new_from_files(byval cert_file as const zstring ptr, byval key_file as const zstring ptr, byval error as GError ptr ptr) as GTlsCertificate ptr
-declare function g_tls_certificate_list_new_from_file(byval file as const zstring ptr, byval error as GError ptr ptr) as GList ptr
+declare function g_tls_certificate_new_from_pem(byval data as const gchar ptr, byval length as gssize, byval error as GError ptr ptr) as GTlsCertificate ptr
+declare function g_tls_certificate_new_from_file(byval file as const gchar ptr, byval error as GError ptr ptr) as GTlsCertificate ptr
+declare function g_tls_certificate_new_from_files(byval cert_file as const gchar ptr, byval key_file as const gchar ptr, byval error as GError ptr ptr) as GTlsCertificate ptr
+declare function g_tls_certificate_list_new_from_file(byval file as const gchar ptr, byval error as GError ptr ptr) as GList ptr
 declare function g_tls_certificate_get_issuer(byval cert as GTlsCertificate ptr) as GTlsCertificate ptr
 declare function g_tls_certificate_verify(byval cert as GTlsCertificate ptr, byval identity as GSocketConnectable ptr, byval trusted_ca as GTlsCertificate ptr) as GTlsCertificateFlags
 declare function g_tls_certificate_is_same(byval cert_one as GTlsCertificate ptr, byval cert_two as GTlsCertificate ptr) as gboolean
@@ -4884,12 +4884,12 @@ end type
 
 type _GTlsDatabaseClass
 	parent_class as GObjectClass
-	verify_chain as function(byval self as GTlsDatabase ptr, byval chain as GTlsCertificate ptr, byval purpose as const zstring ptr, byval identity as GSocketConnectable ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseVerifyFlags, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GTlsCertificateFlags
-	verify_chain_async as sub(byval self as GTlsDatabase ptr, byval chain as GTlsCertificate ptr, byval purpose as const zstring ptr, byval identity as GSocketConnectable ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseVerifyFlags, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+	verify_chain as function(byval self as GTlsDatabase ptr, byval chain as GTlsCertificate ptr, byval purpose as const gchar ptr, byval identity as GSocketConnectable ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseVerifyFlags, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GTlsCertificateFlags
+	verify_chain_async as sub(byval self as GTlsDatabase ptr, byval chain as GTlsCertificate ptr, byval purpose as const gchar ptr, byval identity as GSocketConnectable ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseVerifyFlags, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 	verify_chain_finish as function(byval self as GTlsDatabase ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GTlsCertificateFlags
-	create_certificate_handle as function(byval self as GTlsDatabase ptr, byval certificate as GTlsCertificate ptr) as zstring ptr
-	lookup_certificate_for_handle as function(byval self as GTlsDatabase ptr, byval handle as const zstring ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseLookupFlags, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GTlsCertificate ptr
-	lookup_certificate_for_handle_async as sub(byval self as GTlsDatabase ptr, byval handle as const zstring ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseLookupFlags, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+	create_certificate_handle as function(byval self as GTlsDatabase ptr, byval certificate as GTlsCertificate ptr) as gchar ptr
+	lookup_certificate_for_handle as function(byval self as GTlsDatabase ptr, byval handle as const gchar ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseLookupFlags, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GTlsCertificate ptr
+	lookup_certificate_for_handle_async as sub(byval self as GTlsDatabase ptr, byval handle as const gchar ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseLookupFlags, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 	lookup_certificate_for_handle_finish as function(byval self as GTlsDatabase ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GTlsCertificate ptr
 	lookup_certificate_issuer as function(byval self as GTlsDatabase ptr, byval certificate as GTlsCertificate ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseLookupFlags, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GTlsCertificate ptr
 	lookup_certificate_issuer_async as sub(byval self as GTlsDatabase ptr, byval certificate as GTlsCertificate ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseLookupFlags, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
@@ -4901,12 +4901,12 @@ type _GTlsDatabaseClass
 end type
 
 declare function g_tls_database_get_type() as GType
-declare function g_tls_database_verify_chain(byval self as GTlsDatabase ptr, byval chain as GTlsCertificate ptr, byval purpose as const zstring ptr, byval identity as GSocketConnectable ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseVerifyFlags, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GTlsCertificateFlags
-declare sub g_tls_database_verify_chain_async(byval self as GTlsDatabase ptr, byval chain as GTlsCertificate ptr, byval purpose as const zstring ptr, byval identity as GSocketConnectable ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseVerifyFlags, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_tls_database_verify_chain(byval self as GTlsDatabase ptr, byval chain as GTlsCertificate ptr, byval purpose as const gchar ptr, byval identity as GSocketConnectable ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseVerifyFlags, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GTlsCertificateFlags
+declare sub g_tls_database_verify_chain_async(byval self as GTlsDatabase ptr, byval chain as GTlsCertificate ptr, byval purpose as const gchar ptr, byval identity as GSocketConnectable ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseVerifyFlags, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_tls_database_verify_chain_finish(byval self as GTlsDatabase ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GTlsCertificateFlags
-declare function g_tls_database_create_certificate_handle(byval self as GTlsDatabase ptr, byval certificate as GTlsCertificate ptr) as zstring ptr
-declare function g_tls_database_lookup_certificate_for_handle(byval self as GTlsDatabase ptr, byval handle as const zstring ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseLookupFlags, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GTlsCertificate ptr
-declare sub g_tls_database_lookup_certificate_for_handle_async(byval self as GTlsDatabase ptr, byval handle as const zstring ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseLookupFlags, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_tls_database_create_certificate_handle(byval self as GTlsDatabase ptr, byval certificate as GTlsCertificate ptr) as gchar ptr
+declare function g_tls_database_lookup_certificate_for_handle(byval self as GTlsDatabase ptr, byval handle as const gchar ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseLookupFlags, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GTlsCertificate ptr
+declare sub g_tls_database_lookup_certificate_for_handle_async(byval self as GTlsDatabase ptr, byval handle as const gchar ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseLookupFlags, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_tls_database_lookup_certificate_for_handle_finish(byval self as GTlsDatabase ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GTlsCertificate ptr
 declare function g_tls_database_lookup_certificate_issuer(byval self as GTlsDatabase ptr, byval certificate as GTlsCertificate ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseLookupFlags, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GTlsCertificate ptr
 declare sub g_tls_database_lookup_certificate_issuer_async(byval self as GTlsDatabase ptr, byval certificate as GTlsCertificate ptr, byval interaction as GTlsInteraction ptr, byval flags as GTlsDatabaseLookupFlags, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
@@ -4928,7 +4928,7 @@ type _GTlsFileDatabaseInterface
 end type
 
 declare function g_tls_file_database_get_type() as GType
-declare function g_tls_file_database_new(byval anchors as const zstring ptr, byval error as GError ptr ptr) as GTlsDatabase ptr
+declare function g_tls_file_database_new(byval anchors as const gchar ptr, byval error as GError ptr ptr) as GTlsDatabase ptr
 #define __G_TLS_INTERACTION_H__
 #define G_TYPE_TLS_INTERACTION g_tls_interaction_get_type()
 #define G_TLS_INTERACTION(o) G_TYPE_CHECK_INSTANCE_CAST((o), G_TYPE_TLS_INTERACTION, GTlsInteraction)
@@ -4997,21 +4997,21 @@ type _GTlsPasswordClass
 	parent_class as GObjectClass
 	get_value as function(byval password as GTlsPassword ptr, byval length as gsize ptr) as const guchar ptr
 	set_value as sub(byval password as GTlsPassword ptr, byval value as guchar ptr, byval length as gssize, byval destroy as GDestroyNotify)
-	get_default_warning as function(byval password as GTlsPassword ptr) as const zstring ptr
+	get_default_warning as function(byval password as GTlsPassword ptr) as const gchar ptr
 	padding(0 to 3) as gpointer
 end type
 
 declare function g_tls_password_get_type() as GType
-declare function g_tls_password_new(byval flags as GTlsPasswordFlags, byval description as const zstring ptr) as GTlsPassword ptr
+declare function g_tls_password_new(byval flags as GTlsPasswordFlags, byval description as const gchar ptr) as GTlsPassword ptr
 declare function g_tls_password_get_value(byval password as GTlsPassword ptr, byval length as gsize ptr) as const guchar ptr
 declare sub g_tls_password_set_value(byval password as GTlsPassword ptr, byval value as const guchar ptr, byval length as gssize)
 declare sub g_tls_password_set_value_full(byval password as GTlsPassword ptr, byval value as guchar ptr, byval length as gssize, byval destroy as GDestroyNotify)
 declare function g_tls_password_get_flags(byval password as GTlsPassword ptr) as GTlsPasswordFlags
 declare sub g_tls_password_set_flags(byval password as GTlsPassword ptr, byval flags as GTlsPasswordFlags)
-declare function g_tls_password_get_description(byval password as GTlsPassword ptr) as const zstring ptr
-declare sub g_tls_password_set_description(byval password as GTlsPassword ptr, byval description as const zstring ptr)
-declare function g_tls_password_get_warning(byval password as GTlsPassword ptr) as const zstring ptr
-declare sub g_tls_password_set_warning(byval password as GTlsPassword ptr, byval warning as const zstring ptr)
+declare function g_tls_password_get_description(byval password as GTlsPassword ptr) as const gchar ptr
+declare sub g_tls_password_set_description(byval password as GTlsPassword ptr, byval description as const gchar ptr)
+declare function g_tls_password_get_warning(byval password as GTlsPassword ptr) as const gchar ptr
+declare sub g_tls_password_set_warning(byval password as GTlsPassword ptr, byval warning as const gchar ptr)
 
 #define __G_VFS_H__
 #define G_TYPE_VFS g_vfs_get_type()
@@ -5032,7 +5032,7 @@ type _GVfsClass
 	is_active as function(byval vfs as GVfs ptr) as gboolean
 	get_file_for_path as function(byval vfs as GVfs ptr, byval path as const zstring ptr) as GFile ptr
 	get_file_for_uri as function(byval vfs as GVfs ptr, byval uri as const zstring ptr) as GFile ptr
-	get_supported_uri_schemes as function(byval vfs as GVfs ptr) as const zstring const ptr ptr
+	get_supported_uri_schemes as function(byval vfs as GVfs ptr) as const gchar const ptr ptr
 	parse_name as function(byval vfs as GVfs ptr, byval parse_name as const zstring ptr) as GFile ptr
 	local_file_add_info as sub(byval vfs as GVfs ptr, byval filename as const zstring ptr, byval device as guint64, byval attribute_matcher as GFileAttributeMatcher ptr, byval info as GFileInfo ptr, byval cancellable as GCancellable ptr, byval extra_data as gpointer ptr, byval free_extra_data as GDestroyNotify ptr)
 	add_writable_namespaces as sub(byval vfs as GVfs ptr, byval list as GFileAttributeInfoList ptr)
@@ -5052,7 +5052,7 @@ declare function g_vfs_get_type() as GType
 declare function g_vfs_is_active(byval vfs as GVfs ptr) as gboolean
 declare function g_vfs_get_file_for_path(byval vfs as GVfs ptr, byval path as const zstring ptr) as GFile ptr
 declare function g_vfs_get_file_for_uri(byval vfs as GVfs ptr, byval uri as const zstring ptr) as GFile ptr
-declare function g_vfs_get_supported_uri_schemes(byval vfs as GVfs ptr) as const zstring const ptr ptr
+declare function g_vfs_get_supported_uri_schemes(byval vfs as GVfs ptr) as const gchar const ptr ptr
 declare function g_vfs_parse_name(byval vfs as GVfs ptr, byval parse_name as const zstring ptr) as GFile ptr
 declare function g_vfs_get_default() as GVfs ptr
 declare function g_vfs_get_local() as GVfs ptr
@@ -5091,7 +5091,7 @@ type _GVolumeIface
 	get_activation_root as function(byval volume as GVolume ptr) as GFile ptr
 	eject_with_operation as sub(byval volume as GVolume ptr, byval flags as GMountUnmountFlags, byval mount_operation as GMountOperation ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 	eject_with_operation_finish as function(byval volume as GVolume ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
-	get_sort_key as function(byval volume as GVolume ptr) as const zstring ptr
+	get_sort_key as function(byval volume as GVolume ptr) as const gchar ptr
 	get_symbolic_icon as function(byval volume as GVolume ptr) as GIcon ptr
 end type
 
@@ -5114,7 +5114,7 @@ declare function g_volume_enumerate_identifiers(byval volume as GVolume ptr) as 
 declare function g_volume_get_activation_root(byval volume as GVolume ptr) as GFile ptr
 declare sub g_volume_eject_with_operation(byval volume as GVolume ptr, byval flags as GMountUnmountFlags, byval mount_operation as GMountOperation ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_volume_eject_with_operation_finish(byval volume as GVolume ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
-declare function g_volume_get_sort_key(byval volume as GVolume ptr) as const zstring ptr
+declare function g_volume_get_sort_key(byval volume as GVolume ptr) as const gchar ptr
 
 #define __G_ZLIB_COMPRESSOR_H__
 #define G_TYPE_ZLIB_COMPRESSOR g_zlib_compressor_get_type()
@@ -5205,13 +5205,13 @@ declare function g_dbus_interface_skeleton_get_info(byval interface_ as GDBusInt
 declare function g_dbus_interface_skeleton_get_vtable(byval interface_ as GDBusInterfaceSkeleton ptr) as GDBusInterfaceVTable ptr
 declare function g_dbus_interface_skeleton_get_properties(byval interface_ as GDBusInterfaceSkeleton ptr) as GVariant ptr
 declare sub g_dbus_interface_skeleton_flush(byval interface_ as GDBusInterfaceSkeleton ptr)
-declare function g_dbus_interface_skeleton_export(byval interface_ as GDBusInterfaceSkeleton ptr, byval connection as GDBusConnection ptr, byval object_path as const zstring ptr, byval error as GError ptr ptr) as gboolean
+declare function g_dbus_interface_skeleton_export(byval interface_ as GDBusInterfaceSkeleton ptr, byval connection as GDBusConnection ptr, byval object_path as const gchar ptr, byval error as GError ptr ptr) as gboolean
 declare sub g_dbus_interface_skeleton_unexport(byval interface_ as GDBusInterfaceSkeleton ptr)
 declare sub g_dbus_interface_skeleton_unexport_from_connection(byval interface_ as GDBusInterfaceSkeleton ptr, byval connection as GDBusConnection ptr)
 declare function g_dbus_interface_skeleton_get_connection(byval interface_ as GDBusInterfaceSkeleton ptr) as GDBusConnection ptr
 declare function g_dbus_interface_skeleton_get_connections(byval interface_ as GDBusInterfaceSkeleton ptr) as GList ptr
 declare function g_dbus_interface_skeleton_has_connection(byval interface_ as GDBusInterfaceSkeleton ptr, byval connection as GDBusConnection ptr) as gboolean
-declare function g_dbus_interface_skeleton_get_object_path(byval interface_ as GDBusInterfaceSkeleton ptr) as const zstring ptr
+declare function g_dbus_interface_skeleton_get_object_path(byval interface_ as GDBusInterfaceSkeleton ptr) as const gchar ptr
 
 #define __G_DBUS_OBJECT_H__
 #define G_TYPE_DBUS_OBJECT g_dbus_object_get_type()
@@ -5222,17 +5222,17 @@ type GDBusObjectIface as _GDBusObjectIface
 
 type _GDBusObjectIface
 	parent_iface as GTypeInterface
-	get_object_path as function(byval object as GDBusObject ptr) as const zstring ptr
+	get_object_path as function(byval object as GDBusObject ptr) as const gchar ptr
 	get_interfaces as function(byval object as GDBusObject ptr) as GList ptr
-	get_interface as function(byval object as GDBusObject ptr, byval interface_name as const zstring ptr) as GDBusInterface ptr
+	get_interface as function(byval object as GDBusObject ptr, byval interface_name as const gchar ptr) as GDBusInterface ptr
 	interface_added as sub(byval object as GDBusObject ptr, byval interface_ as GDBusInterface ptr)
 	interface_removed as sub(byval object as GDBusObject ptr, byval interface_ as GDBusInterface ptr)
 end type
 
 declare function g_dbus_object_get_type() as GType
-declare function g_dbus_object_get_object_path(byval object as GDBusObject ptr) as const zstring ptr
+declare function g_dbus_object_get_object_path(byval object as GDBusObject ptr) as const gchar ptr
 declare function g_dbus_object_get_interfaces(byval object as GDBusObject ptr) as GList ptr
-declare function g_dbus_object_get_interface(byval object as GDBusObject ptr, byval interface_name as const zstring ptr) as GDBusInterface ptr
+declare function g_dbus_object_get_interface(byval object as GDBusObject ptr, byval interface_name as const gchar ptr) as GDBusInterface ptr
 
 #define __G_DBUS_OBJECT_SKELETON_H__
 #define G_TYPE_DBUS_OBJECT_SKELETON g_dbus_object_skeleton_get_type()
@@ -5256,12 +5256,12 @@ type _GDBusObjectSkeletonClass
 end type
 
 declare function g_dbus_object_skeleton_get_type() as GType
-declare function g_dbus_object_skeleton_new(byval object_path as const zstring ptr) as GDBusObjectSkeleton ptr
+declare function g_dbus_object_skeleton_new(byval object_path as const gchar ptr) as GDBusObjectSkeleton ptr
 declare sub g_dbus_object_skeleton_flush(byval object as GDBusObjectSkeleton ptr)
 declare sub g_dbus_object_skeleton_add_interface(byval object as GDBusObjectSkeleton ptr, byval interface_ as GDBusInterfaceSkeleton ptr)
 declare sub g_dbus_object_skeleton_remove_interface(byval object as GDBusObjectSkeleton ptr, byval interface_ as GDBusInterfaceSkeleton ptr)
-declare sub g_dbus_object_skeleton_remove_interface_by_name(byval object as GDBusObjectSkeleton ptr, byval interface_name as const zstring ptr)
-declare sub g_dbus_object_skeleton_set_object_path(byval object as GDBusObjectSkeleton ptr, byval object_path as const zstring ptr)
+declare sub g_dbus_object_skeleton_remove_interface_by_name(byval object as GDBusObjectSkeleton ptr, byval interface_name as const gchar ptr)
+declare sub g_dbus_object_skeleton_set_object_path(byval object as GDBusObjectSkeleton ptr, byval object_path as const gchar ptr)
 
 #define __G_DBUS_OBJECT_PROXY_H__
 #define G_TYPE_DBUS_OBJECT_PROXY g_dbus_object_proxy_get_type()
@@ -5284,7 +5284,7 @@ type _GDBusObjectProxyClass
 end type
 
 declare function g_dbus_object_proxy_get_type() as GType
-declare function g_dbus_object_proxy_new(byval connection as GDBusConnection ptr, byval object_path as const zstring ptr) as GDBusObjectProxy ptr
+declare function g_dbus_object_proxy_new(byval connection as GDBusConnection ptr, byval object_path as const gchar ptr) as GDBusObjectProxy ptr
 declare function g_dbus_object_proxy_get_connection(byval proxy as GDBusObjectProxy ptr) as GDBusConnection ptr
 
 #define __G_DBUS_OBJECT_MANAGER_H__
@@ -5296,10 +5296,10 @@ type GDBusObjectManagerIface as _GDBusObjectManagerIface
 
 type _GDBusObjectManagerIface
 	parent_iface as GTypeInterface
-	get_object_path as function(byval manager as GDBusObjectManager ptr) as const zstring ptr
+	get_object_path as function(byval manager as GDBusObjectManager ptr) as const gchar ptr
 	get_objects as function(byval manager as GDBusObjectManager ptr) as GList ptr
-	get_object as function(byval manager as GDBusObjectManager ptr, byval object_path as const zstring ptr) as GDBusObject ptr
-	get_interface as function(byval manager as GDBusObjectManager ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr) as GDBusInterface ptr
+	get_object as function(byval manager as GDBusObjectManager ptr, byval object_path as const gchar ptr) as GDBusObject ptr
+	get_interface as function(byval manager as GDBusObjectManager ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr) as GDBusInterface ptr
 	object_added as sub(byval manager as GDBusObjectManager ptr, byval object as GDBusObject ptr)
 	object_removed as sub(byval manager as GDBusObjectManager ptr, byval object as GDBusObject ptr)
 	interface_added as sub(byval manager as GDBusObjectManager ptr, byval object as GDBusObject ptr, byval interface_ as GDBusInterface ptr)
@@ -5307,10 +5307,10 @@ type _GDBusObjectManagerIface
 end type
 
 declare function g_dbus_object_manager_get_type() as GType
-declare function g_dbus_object_manager_get_object_path(byval manager as GDBusObjectManager ptr) as const zstring ptr
+declare function g_dbus_object_manager_get_object_path(byval manager as GDBusObjectManager ptr) as const gchar ptr
 declare function g_dbus_object_manager_get_objects(byval manager as GDBusObjectManager ptr) as GList ptr
-declare function g_dbus_object_manager_get_object(byval manager as GDBusObjectManager ptr, byval object_path as const zstring ptr) as GDBusObject ptr
-declare function g_dbus_object_manager_get_interface(byval manager as GDBusObjectManager ptr, byval object_path as const zstring ptr, byval interface_name as const zstring ptr) as GDBusInterface ptr
+declare function g_dbus_object_manager_get_object(byval manager as GDBusObjectManager ptr, byval object_path as const gchar ptr) as GDBusObject ptr
+declare function g_dbus_object_manager_get_interface(byval manager as GDBusObjectManager ptr, byval object_path as const gchar ptr, byval interface_name as const gchar ptr) as GDBusInterface ptr
 
 #define __G_DBUS_OBJECT_MANAGER_CLIENT_H__
 #define G_TYPE_DBUS_OBJECT_MANAGER_CLIENT g_dbus_object_manager_client_get_type()
@@ -5329,22 +5329,22 @@ end type
 
 type _GDBusObjectManagerClientClass
 	parent_class as GObjectClass
-	interface_proxy_signal as sub(byval manager as GDBusObjectManagerClient ptr, byval object_proxy as GDBusObjectProxy ptr, byval interface_proxy as GDBusProxy ptr, byval sender_name as const zstring ptr, byval signal_name as const zstring ptr, byval parameters as GVariant ptr)
-	interface_proxy_properties_changed as sub(byval manager as GDBusObjectManagerClient ptr, byval object_proxy as GDBusObjectProxy ptr, byval interface_proxy as GDBusProxy ptr, byval changed_properties as GVariant ptr, byval invalidated_properties as const zstring const ptr ptr)
+	interface_proxy_signal as sub(byval manager as GDBusObjectManagerClient ptr, byval object_proxy as GDBusObjectProxy ptr, byval interface_proxy as GDBusProxy ptr, byval sender_name as const gchar ptr, byval signal_name as const gchar ptr, byval parameters as GVariant ptr)
+	interface_proxy_properties_changed as sub(byval manager as GDBusObjectManagerClient ptr, byval object_proxy as GDBusObjectProxy ptr, byval interface_proxy as GDBusProxy ptr, byval changed_properties as GVariant ptr, byval invalidated_properties as const gchar const ptr ptr)
 	padding(0 to 7) as gpointer
 end type
 
 declare function g_dbus_object_manager_client_get_type() as GType
-declare sub g_dbus_object_manager_client_new(byval connection as GDBusConnection ptr, byval flags as GDBusObjectManagerClientFlags, byval name as const zstring ptr, byval object_path as const zstring ptr, byval get_proxy_type_func as GDBusProxyTypeFunc, byval get_proxy_type_user_data as gpointer, byval get_proxy_type_destroy_notify as GDestroyNotify, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare sub g_dbus_object_manager_client_new(byval connection as GDBusConnection ptr, byval flags as GDBusObjectManagerClientFlags, byval name as const gchar ptr, byval object_path as const gchar ptr, byval get_proxy_type_func as GDBusProxyTypeFunc, byval get_proxy_type_user_data as gpointer, byval get_proxy_type_destroy_notify as GDestroyNotify, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_dbus_object_manager_client_new_finish(byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GDBusObjectManager ptr
-declare function g_dbus_object_manager_client_new_sync(byval connection as GDBusConnection ptr, byval flags as GDBusObjectManagerClientFlags, byval name as const zstring ptr, byval object_path as const zstring ptr, byval get_proxy_type_func as GDBusProxyTypeFunc, byval get_proxy_type_user_data as gpointer, byval get_proxy_type_destroy_notify as GDestroyNotify, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusObjectManager ptr
-declare sub g_dbus_object_manager_client_new_for_bus(byval bus_type as GBusType, byval flags as GDBusObjectManagerClientFlags, byval name as const zstring ptr, byval object_path as const zstring ptr, byval get_proxy_type_func as GDBusProxyTypeFunc, byval get_proxy_type_user_data as gpointer, byval get_proxy_type_destroy_notify as GDestroyNotify, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_dbus_object_manager_client_new_sync(byval connection as GDBusConnection ptr, byval flags as GDBusObjectManagerClientFlags, byval name as const gchar ptr, byval object_path as const gchar ptr, byval get_proxy_type_func as GDBusProxyTypeFunc, byval get_proxy_type_user_data as gpointer, byval get_proxy_type_destroy_notify as GDestroyNotify, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusObjectManager ptr
+declare sub g_dbus_object_manager_client_new_for_bus(byval bus_type as GBusType, byval flags as GDBusObjectManagerClientFlags, byval name as const gchar ptr, byval object_path as const gchar ptr, byval get_proxy_type_func as GDBusProxyTypeFunc, byval get_proxy_type_user_data as gpointer, byval get_proxy_type_destroy_notify as GDestroyNotify, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_dbus_object_manager_client_new_for_bus_finish(byval res as GAsyncResult ptr, byval error as GError ptr ptr) as GDBusObjectManager ptr
-declare function g_dbus_object_manager_client_new_for_bus_sync(byval bus_type as GBusType, byval flags as GDBusObjectManagerClientFlags, byval name as const zstring ptr, byval object_path as const zstring ptr, byval get_proxy_type_func as GDBusProxyTypeFunc, byval get_proxy_type_user_data as gpointer, byval get_proxy_type_destroy_notify as GDestroyNotify, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusObjectManager ptr
+declare function g_dbus_object_manager_client_new_for_bus_sync(byval bus_type as GBusType, byval flags as GDBusObjectManagerClientFlags, byval name as const gchar ptr, byval object_path as const gchar ptr, byval get_proxy_type_func as GDBusProxyTypeFunc, byval get_proxy_type_user_data as gpointer, byval get_proxy_type_destroy_notify as GDestroyNotify, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GDBusObjectManager ptr
 declare function g_dbus_object_manager_client_get_connection(byval manager as GDBusObjectManagerClient ptr) as GDBusConnection ptr
 declare function g_dbus_object_manager_client_get_flags(byval manager as GDBusObjectManagerClient ptr) as GDBusObjectManagerClientFlags
-declare function g_dbus_object_manager_client_get_name(byval manager as GDBusObjectManagerClient ptr) as const zstring ptr
-declare function g_dbus_object_manager_client_get_name_owner(byval manager as GDBusObjectManagerClient ptr) as zstring ptr
+declare function g_dbus_object_manager_client_get_name(byval manager as GDBusObjectManagerClient ptr) as const gchar ptr
+declare function g_dbus_object_manager_client_get_name_owner(byval manager as GDBusObjectManagerClient ptr) as gchar ptr
 
 #define __G_DBUS_OBJECT_MANAGER_SERVER_H__
 #define G_TYPE_DBUS_OBJECT_MANAGER_SERVER g_dbus_object_manager_server_get_type()
@@ -5367,13 +5367,13 @@ type _GDBusObjectManagerServerClass
 end type
 
 declare function g_dbus_object_manager_server_get_type() as GType
-declare function g_dbus_object_manager_server_new(byval object_path as const zstring ptr) as GDBusObjectManagerServer ptr
+declare function g_dbus_object_manager_server_new(byval object_path as const gchar ptr) as GDBusObjectManagerServer ptr
 declare function g_dbus_object_manager_server_get_connection(byval manager as GDBusObjectManagerServer ptr) as GDBusConnection ptr
 declare sub g_dbus_object_manager_server_set_connection(byval manager as GDBusObjectManagerServer ptr, byval connection as GDBusConnection ptr)
 declare sub g_dbus_object_manager_server_export(byval manager as GDBusObjectManagerServer ptr, byval object as GDBusObjectSkeleton ptr)
 declare sub g_dbus_object_manager_server_export_uniquely(byval manager as GDBusObjectManagerServer ptr, byval object as GDBusObjectSkeleton ptr)
 declare function g_dbus_object_manager_server_is_exported(byval manager as GDBusObjectManagerServer ptr, byval object as GDBusObjectSkeleton ptr) as gboolean
-declare function g_dbus_object_manager_server_unexport(byval manager as GDBusObjectManagerServer ptr, byval object_path as const zstring ptr) as gboolean
+declare function g_dbus_object_manager_server_unexport(byval manager as GDBusObjectManagerServer ptr, byval object_path as const gchar ptr) as gboolean
 
 #define __G_DBUS_ACTION_GROUP_H__
 #define G_TYPE_DBUS_ACTION_GROUP g_dbus_action_group_get_type()
@@ -5383,7 +5383,7 @@ declare function g_dbus_object_manager_server_unexport(byval manager as GDBusObj
 #define G_IS_DBUS_ACTION_GROUP_CLASS(class) G_TYPE_CHECK_CLASS_TYPE((class), G_TYPE_DBUS_ACTION_GROUP)
 #define G_DBUS_ACTION_GROUP_GET_CLASS(inst) G_TYPE_INSTANCE_GET_CLASS((inst), G_TYPE_DBUS_ACTION_GROUP, GDBusActionGroupClass)
 declare function g_dbus_action_group_get_type() as GType
-declare function g_dbus_action_group_get(byval connection as GDBusConnection ptr, byval bus_name as const zstring ptr, byval object_path as const zstring ptr) as GDBusActionGroup ptr
+declare function g_dbus_action_group_get(byval connection as GDBusConnection ptr, byval bus_name as const gchar ptr, byval object_path as const gchar ptr) as GDBusActionGroup ptr
 #define __G_REMOTE_ACTION_GROUP_H__
 #define G_TYPE_REMOTE_ACTION_GROUP g_remote_action_group_get_type()
 #define G_REMOTE_ACTION_GROUP(inst) G_TYPE_CHECK_INSTANCE_CAST((inst), G_TYPE_REMOTE_ACTION_GROUP, GRemoteActionGroup)
@@ -5393,13 +5393,13 @@ type GRemoteActionGroupInterface as _GRemoteActionGroupInterface
 
 type _GRemoteActionGroupInterface
 	g_iface as GTypeInterface
-	activate_action_full as sub(byval remote as GRemoteActionGroup ptr, byval action_name as const zstring ptr, byval parameter as GVariant ptr, byval platform_data as GVariant ptr)
-	change_action_state_full as sub(byval remote as GRemoteActionGroup ptr, byval action_name as const zstring ptr, byval value as GVariant ptr, byval platform_data as GVariant ptr)
+	activate_action_full as sub(byval remote as GRemoteActionGroup ptr, byval action_name as const gchar ptr, byval parameter as GVariant ptr, byval platform_data as GVariant ptr)
+	change_action_state_full as sub(byval remote as GRemoteActionGroup ptr, byval action_name as const gchar ptr, byval value as GVariant ptr, byval platform_data as GVariant ptr)
 end type
 
 declare function g_remote_action_group_get_type() as GType
-declare sub g_remote_action_group_activate_action_full(byval remote as GRemoteActionGroup ptr, byval action_name as const zstring ptr, byval parameter as GVariant ptr, byval platform_data as GVariant ptr)
-declare sub g_remote_action_group_change_action_state_full(byval remote as GRemoteActionGroup ptr, byval action_name as const zstring ptr, byval value as GVariant ptr, byval platform_data as GVariant ptr)
+declare sub g_remote_action_group_activate_action_full(byval remote as GRemoteActionGroup ptr, byval action_name as const gchar ptr, byval parameter as GVariant ptr, byval platform_data as GVariant ptr)
+declare sub g_remote_action_group_change_action_state_full(byval remote as GRemoteActionGroup ptr, byval action_name as const gchar ptr, byval value as GVariant ptr, byval platform_data as GVariant ptr)
 
 #define __G_MENU_MODEL_H__
 #define G_MENU_ATTRIBUTE_ACTION "action"
@@ -5436,20 +5436,20 @@ type _GMenuModelClass
 	get_n_items as function(byval model as GMenuModel ptr) as gint
 	get_item_attributes as sub(byval model as GMenuModel ptr, byval item_index as gint, byval attributes as GHashTable ptr ptr)
 	iterate_item_attributes as function(byval model as GMenuModel ptr, byval item_index as gint) as GMenuAttributeIter ptr
-	get_item_attribute_value as function(byval model as GMenuModel ptr, byval item_index as gint, byval attribute as const zstring ptr, byval expected_type as const GVariantType ptr) as GVariant ptr
+	get_item_attribute_value as function(byval model as GMenuModel ptr, byval item_index as gint, byval attribute as const gchar ptr, byval expected_type as const GVariantType ptr) as GVariant ptr
 	get_item_links as sub(byval model as GMenuModel ptr, byval item_index as gint, byval links as GHashTable ptr ptr)
 	iterate_item_links as function(byval model as GMenuModel ptr, byval item_index as gint) as GMenuLinkIter ptr
-	get_item_link as function(byval model as GMenuModel ptr, byval item_index as gint, byval link as const zstring ptr) as GMenuModel ptr
+	get_item_link as function(byval model as GMenuModel ptr, byval item_index as gint, byval link as const gchar ptr) as GMenuModel ptr
 end type
 
 declare function g_menu_model_get_type() as GType
 declare function g_menu_model_is_mutable(byval model as GMenuModel ptr) as gboolean
 declare function g_menu_model_get_n_items(byval model as GMenuModel ptr) as gint
 declare function g_menu_model_iterate_item_attributes(byval model as GMenuModel ptr, byval item_index as gint) as GMenuAttributeIter ptr
-declare function g_menu_model_get_item_attribute_value(byval model as GMenuModel ptr, byval item_index as gint, byval attribute as const zstring ptr, byval expected_type as const GVariantType ptr) as GVariant ptr
-declare function g_menu_model_get_item_attribute(byval model as GMenuModel ptr, byval item_index as gint, byval attribute as const zstring ptr, byval format_string as const zstring ptr, ...) as gboolean
+declare function g_menu_model_get_item_attribute_value(byval model as GMenuModel ptr, byval item_index as gint, byval attribute as const gchar ptr, byval expected_type as const GVariantType ptr) as GVariant ptr
+declare function g_menu_model_get_item_attribute(byval model as GMenuModel ptr, byval item_index as gint, byval attribute as const gchar ptr, byval format_string as const gchar ptr, ...) as gboolean
 declare function g_menu_model_iterate_item_links(byval model as GMenuModel ptr, byval item_index as gint) as GMenuLinkIter ptr
-declare function g_menu_model_get_item_link(byval model as GMenuModel ptr, byval item_index as gint, byval link as const zstring ptr) as GMenuModel ptr
+declare function g_menu_model_get_item_link(byval model as GMenuModel ptr, byval item_index as gint, byval link as const gchar ptr) as GMenuModel ptr
 declare sub g_menu_model_items_changed(byval model as GMenuModel ptr, byval position as gint, byval removed as gint, byval added as gint)
 
 #define G_TYPE_MENU_ATTRIBUTE_ITER g_menu_attribute_iter_get_type()
@@ -5466,13 +5466,13 @@ end type
 
 type _GMenuAttributeIterClass
 	parent_class as GObjectClass
-	get_next as function(byval iter as GMenuAttributeIter ptr, byval out_name as const zstring ptr ptr, byval value as GVariant ptr ptr) as gboolean
+	get_next as function(byval iter as GMenuAttributeIter ptr, byval out_name as const gchar ptr ptr, byval value as GVariant ptr ptr) as gboolean
 end type
 
 declare function g_menu_attribute_iter_get_type() as GType
-declare function g_menu_attribute_iter_get_next(byval iter as GMenuAttributeIter ptr, byval out_name as const zstring ptr ptr, byval value as GVariant ptr ptr) as gboolean
+declare function g_menu_attribute_iter_get_next(byval iter as GMenuAttributeIter ptr, byval out_name as const gchar ptr ptr, byval value as GVariant ptr ptr) as gboolean
 declare function g_menu_attribute_iter_next(byval iter as GMenuAttributeIter ptr) as gboolean
-declare function g_menu_attribute_iter_get_name(byval iter as GMenuAttributeIter ptr) as const zstring ptr
+declare function g_menu_attribute_iter_get_name(byval iter as GMenuAttributeIter ptr) as const gchar ptr
 declare function g_menu_attribute_iter_get_value(byval iter as GMenuAttributeIter ptr) as GVariant ptr
 
 #define G_TYPE_MENU_LINK_ITER g_menu_link_iter_get_type()
@@ -5489,13 +5489,13 @@ end type
 
 type _GMenuLinkIterClass
 	parent_class as GObjectClass
-	get_next as function(byval iter as GMenuLinkIter ptr, byval out_link as const zstring ptr ptr, byval value as GMenuModel ptr ptr) as gboolean
+	get_next as function(byval iter as GMenuLinkIter ptr, byval out_link as const gchar ptr ptr, byval value as GMenuModel ptr ptr) as gboolean
 end type
 
 declare function g_menu_link_iter_get_type() as GType
-declare function g_menu_link_iter_get_next(byval iter as GMenuLinkIter ptr, byval out_link as const zstring ptr ptr, byval value as GMenuModel ptr ptr) as gboolean
+declare function g_menu_link_iter_get_next(byval iter as GMenuLinkIter ptr, byval out_link as const gchar ptr ptr, byval value as GMenuModel ptr ptr) as gboolean
 declare function g_menu_link_iter_next(byval iter as GMenuLinkIter ptr) as gboolean
-declare function g_menu_link_iter_get_name(byval iter as GMenuLinkIter ptr) as const zstring ptr
+declare function g_menu_link_iter_get_name(byval iter as GMenuLinkIter ptr) as const gchar ptr
 declare function g_menu_link_iter_get_value(byval iter as GMenuLinkIter ptr) as GMenuModel ptr
 
 #define __G_MENU_H__
@@ -5516,35 +5516,35 @@ declare sub g_menu_prepend_item(byval menu as GMenu ptr, byval item as GMenuItem
 declare sub g_menu_append_item(byval menu as GMenu ptr, byval item as GMenuItem ptr)
 declare sub g_menu_remove(byval menu as GMenu ptr, byval position as gint)
 declare sub g_menu_remove_all(byval menu as GMenu ptr)
-declare sub g_menu_insert(byval menu as GMenu ptr, byval position as gint, byval label as const zstring ptr, byval detailed_action as const zstring ptr)
-declare sub g_menu_prepend(byval menu as GMenu ptr, byval label as const zstring ptr, byval detailed_action as const zstring ptr)
-declare sub g_menu_append(byval menu as GMenu ptr, byval label as const zstring ptr, byval detailed_action as const zstring ptr)
-declare sub g_menu_insert_section(byval menu as GMenu ptr, byval position as gint, byval label as const zstring ptr, byval section as GMenuModel ptr)
-declare sub g_menu_prepend_section(byval menu as GMenu ptr, byval label as const zstring ptr, byval section as GMenuModel ptr)
-declare sub g_menu_append_section(byval menu as GMenu ptr, byval label as const zstring ptr, byval section as GMenuModel ptr)
-declare sub g_menu_insert_submenu(byval menu as GMenu ptr, byval position as gint, byval label as const zstring ptr, byval submenu as GMenuModel ptr)
-declare sub g_menu_prepend_submenu(byval menu as GMenu ptr, byval label as const zstring ptr, byval submenu as GMenuModel ptr)
-declare sub g_menu_append_submenu(byval menu as GMenu ptr, byval label as const zstring ptr, byval submenu as GMenuModel ptr)
+declare sub g_menu_insert(byval menu as GMenu ptr, byval position as gint, byval label as const gchar ptr, byval detailed_action as const gchar ptr)
+declare sub g_menu_prepend(byval menu as GMenu ptr, byval label as const gchar ptr, byval detailed_action as const gchar ptr)
+declare sub g_menu_append(byval menu as GMenu ptr, byval label as const gchar ptr, byval detailed_action as const gchar ptr)
+declare sub g_menu_insert_section(byval menu as GMenu ptr, byval position as gint, byval label as const gchar ptr, byval section as GMenuModel ptr)
+declare sub g_menu_prepend_section(byval menu as GMenu ptr, byval label as const gchar ptr, byval section as GMenuModel ptr)
+declare sub g_menu_append_section(byval menu as GMenu ptr, byval label as const gchar ptr, byval section as GMenuModel ptr)
+declare sub g_menu_insert_submenu(byval menu as GMenu ptr, byval position as gint, byval label as const gchar ptr, byval submenu as GMenuModel ptr)
+declare sub g_menu_prepend_submenu(byval menu as GMenu ptr, byval label as const gchar ptr, byval submenu as GMenuModel ptr)
+declare sub g_menu_append_submenu(byval menu as GMenu ptr, byval label as const gchar ptr, byval submenu as GMenuModel ptr)
 declare function g_menu_item_get_type() as GType
-declare function g_menu_item_new(byval label as const zstring ptr, byval detailed_action as const zstring ptr) as GMenuItem ptr
+declare function g_menu_item_new(byval label as const gchar ptr, byval detailed_action as const gchar ptr) as GMenuItem ptr
 declare function g_menu_item_new_from_model(byval model as GMenuModel ptr, byval item_index as gint) as GMenuItem ptr
-declare function g_menu_item_new_submenu(byval label as const zstring ptr, byval submenu as GMenuModel ptr) as GMenuItem ptr
-declare function g_menu_item_new_section(byval label as const zstring ptr, byval section as GMenuModel ptr) as GMenuItem ptr
-declare function g_menu_item_get_attribute_value(byval menu_item as GMenuItem ptr, byval attribute as const zstring ptr, byval expected_type as const GVariantType ptr) as GVariant ptr
-declare function g_menu_item_get_attribute(byval menu_item as GMenuItem ptr, byval attribute as const zstring ptr, byval format_string as const zstring ptr, ...) as gboolean
-declare function g_menu_item_get_link(byval menu_item as GMenuItem ptr, byval link as const zstring ptr) as GMenuModel ptr
-declare sub g_menu_item_set_attribute_value(byval menu_item as GMenuItem ptr, byval attribute as const zstring ptr, byval value as GVariant ptr)
-declare sub g_menu_item_set_attribute(byval menu_item as GMenuItem ptr, byval attribute as const zstring ptr, byval format_string as const zstring ptr, ...)
-declare sub g_menu_item_set_link(byval menu_item as GMenuItem ptr, byval link as const zstring ptr, byval model as GMenuModel ptr)
-declare sub g_menu_item_set_label(byval menu_item as GMenuItem ptr, byval label as const zstring ptr)
+declare function g_menu_item_new_submenu(byval label as const gchar ptr, byval submenu as GMenuModel ptr) as GMenuItem ptr
+declare function g_menu_item_new_section(byval label as const gchar ptr, byval section as GMenuModel ptr) as GMenuItem ptr
+declare function g_menu_item_get_attribute_value(byval menu_item as GMenuItem ptr, byval attribute as const gchar ptr, byval expected_type as const GVariantType ptr) as GVariant ptr
+declare function g_menu_item_get_attribute(byval menu_item as GMenuItem ptr, byval attribute as const gchar ptr, byval format_string as const gchar ptr, ...) as gboolean
+declare function g_menu_item_get_link(byval menu_item as GMenuItem ptr, byval link as const gchar ptr) as GMenuModel ptr
+declare sub g_menu_item_set_attribute_value(byval menu_item as GMenuItem ptr, byval attribute as const gchar ptr, byval value as GVariant ptr)
+declare sub g_menu_item_set_attribute(byval menu_item as GMenuItem ptr, byval attribute as const gchar ptr, byval format_string as const gchar ptr, ...)
+declare sub g_menu_item_set_link(byval menu_item as GMenuItem ptr, byval link as const gchar ptr, byval model as GMenuModel ptr)
+declare sub g_menu_item_set_label(byval menu_item as GMenuItem ptr, byval label as const gchar ptr)
 declare sub g_menu_item_set_submenu(byval menu_item as GMenuItem ptr, byval submenu as GMenuModel ptr)
 declare sub g_menu_item_set_section(byval menu_item as GMenuItem ptr, byval section as GMenuModel ptr)
-declare sub g_menu_item_set_action_and_target_value(byval menu_item as GMenuItem ptr, byval action as const zstring ptr, byval target_value as GVariant ptr)
-declare sub g_menu_item_set_action_and_target(byval menu_item as GMenuItem ptr, byval action as const zstring ptr, byval format_string as const zstring ptr, ...)
-declare sub g_menu_item_set_detailed_action(byval menu_item as GMenuItem ptr, byval detailed_action as const zstring ptr)
+declare sub g_menu_item_set_action_and_target_value(byval menu_item as GMenuItem ptr, byval action as const gchar ptr, byval target_value as GVariant ptr)
+declare sub g_menu_item_set_action_and_target(byval menu_item as GMenuItem ptr, byval action as const gchar ptr, byval format_string as const gchar ptr, ...)
+declare sub g_menu_item_set_detailed_action(byval menu_item as GMenuItem ptr, byval detailed_action as const gchar ptr)
 declare sub g_menu_item_set_icon(byval menu_item as GMenuItem ptr, byval icon as GIcon ptr)
 #define __G_MENU_EXPORTER_H__
-declare function g_dbus_connection_export_menu_model(byval connection as GDBusConnection ptr, byval object_path as const zstring ptr, byval menu as GMenuModel ptr, byval error as GError ptr ptr) as guint
+declare function g_dbus_connection_export_menu_model(byval connection as GDBusConnection ptr, byval object_path as const gchar ptr, byval menu as GMenuModel ptr, byval error as GError ptr ptr) as guint
 declare sub g_dbus_connection_unexport_menu_model(byval connection as GDBusConnection ptr, byval export_id as guint)
 
 #define __G_DBUS_MENU_MODEL_H__
@@ -5553,25 +5553,25 @@ declare sub g_dbus_connection_unexport_menu_model(byval connection as GDBusConne
 #define G_IS_DBUS_MENU_MODEL(inst) G_TYPE_CHECK_INSTANCE_TYPE((inst), G_TYPE_DBUS_MENU_MODEL)
 type GDBusMenuModel as _GDBusMenuModel
 declare function g_dbus_menu_model_get_type() as GType
-declare function g_dbus_menu_model_get(byval connection as GDBusConnection ptr, byval bus_name as const zstring ptr, byval object_path as const zstring ptr) as GDBusMenuModel ptr
+declare function g_dbus_menu_model_get(byval connection as GDBusConnection ptr, byval bus_name as const gchar ptr, byval object_path as const gchar ptr) as GDBusMenuModel ptr
 #define __G_NOTIFICATION_H__
 #define G_TYPE_NOTIFICATION g_notification_get_type()
 #define G_NOTIFICATION(o) G_TYPE_CHECK_INSTANCE_CAST((o), G_TYPE_NOTIFICATION, GNotification)
 #define G_IS_NOTIFICATION(o) G_TYPE_CHECK_INSTANCE_TYPE((o), G_TYPE_NOTIFICATION)
 
 declare function g_notification_get_type() as GType
-declare function g_notification_new(byval title as const zstring ptr) as GNotification ptr
-declare sub g_notification_set_title(byval notification as GNotification ptr, byval title as const zstring ptr)
-declare sub g_notification_set_body(byval notification as GNotification ptr, byval body as const zstring ptr)
+declare function g_notification_new(byval title as const gchar ptr) as GNotification ptr
+declare sub g_notification_set_title(byval notification as GNotification ptr, byval title as const gchar ptr)
+declare sub g_notification_set_body(byval notification as GNotification ptr, byval body as const gchar ptr)
 declare sub g_notification_set_icon(byval notification as GNotification ptr, byval icon as GIcon ptr)
 declare sub g_notification_set_urgent(byval notification as GNotification ptr, byval urgent as gboolean)
 declare sub g_notification_set_priority(byval notification as GNotification ptr, byval priority as GNotificationPriority)
-declare sub g_notification_add_button(byval notification as GNotification ptr, byval label as const zstring ptr, byval detailed_action as const zstring ptr)
-declare sub g_notification_add_button_with_target(byval notification as GNotification ptr, byval label as const zstring ptr, byval action as const zstring ptr, byval target_format as const zstring ptr, ...)
-declare sub g_notification_add_button_with_target_value(byval notification as GNotification ptr, byval label as const zstring ptr, byval action as const zstring ptr, byval target as GVariant ptr)
-declare sub g_notification_set_default_action(byval notification as GNotification ptr, byval detailed_action as const zstring ptr)
-declare sub g_notification_set_default_action_and_target(byval notification as GNotification ptr, byval action as const zstring ptr, byval target_format as const zstring ptr, ...)
-declare sub g_notification_set_default_action_and_target_value(byval notification as GNotification ptr, byval action as const zstring ptr, byval target as GVariant ptr)
+declare sub g_notification_add_button(byval notification as GNotification ptr, byval label as const gchar ptr, byval detailed_action as const gchar ptr)
+declare sub g_notification_add_button_with_target(byval notification as GNotification ptr, byval label as const gchar ptr, byval action as const gchar ptr, byval target_format as const gchar ptr, ...)
+declare sub g_notification_add_button_with_target_value(byval notification as GNotification ptr, byval label as const gchar ptr, byval action as const gchar ptr, byval target as GVariant ptr)
+declare sub g_notification_set_default_action(byval notification as GNotification ptr, byval detailed_action as const gchar ptr)
+declare sub g_notification_set_default_action_and_target(byval notification as GNotification ptr, byval action as const gchar ptr, byval target_format as const gchar ptr, ...)
+declare sub g_notification_set_default_action_and_target_value(byval notification as GNotification ptr, byval action as const gchar ptr, byval target as GVariant ptr)
 #undef __GIO_GIO_H_INSIDE__
 
 end extern

@@ -298,7 +298,7 @@ enum
 end enum
 
 declare function pango_unichar_direction(byval ch as gunichar) as PangoDirection
-declare function pango_find_base_dir(byval text as const zstring ptr, byval length as gint) as PangoDirection
+declare function pango_find_base_dir(byval text as const gchar ptr, byval length as gint) as PangoDirection
 declare function pango_get_mirror_char(byval ch as gunichar, byval mirrored_ch as gunichar ptr) as gboolean
 type PangoFontDescription as _PangoFontDescription
 type PangoFontMetrics as _PangoFontMetrics
@@ -462,7 +462,7 @@ declare function pango_color_get_type() as GType
 declare function pango_color_copy(byval src as const PangoColor ptr) as PangoColor ptr
 declare sub pango_color_free(byval color as PangoColor ptr)
 declare function pango_color_parse(byval color as PangoColor ptr, byval spec as const zstring ptr) as gboolean
-declare function pango_color_to_string(byval color as const PangoColor ptr) as zstring ptr
+declare function pango_color_to_string(byval color as const PangoColor ptr) as gchar ptr
 
 type PangoAttribute as _PangoAttribute
 type PangoAttrClass as _PangoAttrClass
@@ -578,7 +578,7 @@ type _PangoAttrFontDesc
 	desc as PangoFontDescription ptr
 end type
 
-declare function pango_attr_type_register(byval name as const zstring ptr) as PangoAttrType
+declare function pango_attr_type_register(byval name as const gchar ptr) as PangoAttrType
 declare function pango_attr_type_get_name(byval type as PangoAttrType) as const zstring ptr
 declare sub pango_attribute_init(byval attr as PangoAttribute ptr, byval klass as const PangoAttrClass ptr)
 declare function pango_attribute_copy(byval attr as const PangoAttribute ptr) as PangoAttribute ptr
@@ -677,8 +677,8 @@ type _PangoLogAttr
 	is_word_boundary : 1 as guint
 end type
 
-declare sub pango_break(byval text as const zstring ptr, byval length as long, byval analysis as PangoAnalysis ptr, byval attrs as PangoLogAttr ptr, byval attrs_len as long)
-declare sub pango_find_paragraph_boundary(byval text as const zstring ptr, byval length as gint, byval paragraph_delimiter_index as gint ptr, byval next_paragraph_start as gint ptr)
+declare sub pango_break(byval text as const gchar ptr, byval length as long, byval analysis as PangoAnalysis ptr, byval attrs as PangoLogAttr ptr, byval attrs_len as long)
+declare sub pango_find_paragraph_boundary(byval text as const gchar ptr, byval length as gint, byval paragraph_delimiter_index as gint ptr, byval next_paragraph_start as gint ptr)
 declare sub pango_get_log_attrs(byval text as const zstring ptr, byval length as long, byval level as long, byval language as PangoLanguage ptr, byval log_attrs as PangoLogAttr ptr, byval attrs_len as long)
 
 #define __PANGO_CONTEXT_H__
@@ -785,8 +785,8 @@ declare sub pango_glyph_string_extents_range(byval glyphs as PangoGlyphString pt
 declare sub pango_glyph_string_get_logical_widths(byval glyphs as PangoGlyphString ptr, byval text as const zstring ptr, byval length as long, byval embedding_level as long, byval logical_widths as long ptr)
 declare sub pango_glyph_string_index_to_x(byval glyphs as PangoGlyphString ptr, byval text as zstring ptr, byval length as long, byval analysis as PangoAnalysis ptr, byval index_ as long, byval trailing as gboolean, byval x_pos as long ptr)
 declare sub pango_glyph_string_x_to_index(byval glyphs as PangoGlyphString ptr, byval text as zstring ptr, byval length as long, byval analysis as PangoAnalysis ptr, byval x_pos as long, byval index_ as long ptr, byval trailing as long ptr)
-declare sub pango_shape(byval text as const zstring ptr, byval length as gint, byval analysis as const PangoAnalysis ptr, byval glyphs as PangoGlyphString ptr)
-declare sub pango_shape_full(byval item_text as const zstring ptr, byval item_length as gint, byval paragraph_text as const zstring ptr, byval paragraph_length as gint, byval analysis as const PangoAnalysis ptr, byval glyphs as PangoGlyphString ptr)
+declare sub pango_shape(byval text as const gchar ptr, byval length as gint, byval analysis as const PangoAnalysis ptr, byval glyphs as PangoGlyphString ptr)
+declare sub pango_shape_full(byval item_text as const gchar ptr, byval item_length as gint, byval paragraph_text as const gchar ptr, byval paragraph_length as gint, byval analysis as const PangoAnalysis ptr, byval glyphs as PangoGlyphString ptr)
 declare function pango_reorder_items(byval logical_items as GList ptr) as GList ptr
 #define __PANGO_ENUM_TYPES_H__
 declare function pango_attr_type_get_type() as GType
@@ -851,7 +851,7 @@ type PangoGlyphItemIter as _PangoGlyphItemIter
 
 type _PangoGlyphItemIter
 	glyph_item as PangoGlyphItem ptr
-	text as const zstring ptr
+	text as const gchar ptr
 	start_glyph as long
 	start_index as long
 	start_char as long
@@ -1103,7 +1103,7 @@ declare function pango_parse_variant(byval str as const zstring ptr, byval varia
 declare function pango_parse_weight(byval str as const zstring ptr, byval weight as PangoWeight ptr, byval warn as gboolean) as gboolean
 declare function pango_parse_stretch(byval str as const zstring ptr, byval stretch as PangoStretch ptr, byval warn as gboolean) as gboolean
 declare sub pango_quantize_line_geometry(byval thickness as long ptr, byval position as long ptr)
-declare function pango_log2vis_get_embedding_levels(byval text as const zstring ptr, byval length as long, byval pbase_dir as PangoDirection ptr) as guint8 ptr
+declare function pango_log2vis_get_embedding_levels(byval text as const gchar ptr, byval length as long, byval pbase_dir as PangoDirection ptr) as guint8 ptr
 declare function pango_is_zero_width(byval ch as gunichar) as gboolean
 
 #define PANGO_VERSION_ENCODE(major, minor, micro) ((((major) * 10000) + ((minor) * 100)) + ((micro) * 1))
