@@ -176,10 +176,10 @@ type SQLGUID as GUID
 	type BOOKMARK as SQLUINTEGER
 #endif
 
-type SQLWCHAR as wstring
+type SQLWCHAR as wchar_t
 
 #ifdef UNICODE
-	type SQLTCHAR as wstring
+	type SQLTCHAR as SQLWCHAR
 #else
 	type SQLTCHAR as SQLCHAR
 #endif
