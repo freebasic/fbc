@@ -1,13 +1,49 @@
+'' FreeBASIC binding for flite-2.0.0-release
 ''
+'' based on the C header files:
+''                     Language Technologies Institute                      
+''                        Carnegie Mellon University                        
+''                         Copyright (c) 1999-2014                          
+''                           All Rights Reserved.                           
+''                                                                          
+''     Permission is hereby granted, free of charge, to use and distribute  
+''     this software and its documentation without restriction, including   
+''     without limitation the rights to use, copy, modify, merge, publish,  
+''     distribute, sublicense, and/or sell copies of this work, and to      
+''     permit persons to whom this work is furnished to do so, subject to   
+''     the following conditions:                                            
+''      1. The code must retain the above copyright notice, this list of    
+''         conditions and the following disclaimer.                         
+''      2. Any modifications must be clearly marked as such.                
+''      3. Original authors' names are not deleted.                         
+''      4. The authors' names are not used to endorse or promote products   
+''         derived from this software without specific prior written        
+''         permission.                                                      
+''                                                                          
+''     CARNEGIE MELLON UNIVERSITY AND THE CONTRIBUTORS TO THIS WORK         
+''     DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING      
+''     ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT   
+''     SHALL CARNEGIE MELLON UNIVERSITY NOR THE CONTRIBUTORS BE LIABLE      
+''     FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    
+''     WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN   
+''     AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,          
+''     ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF       
+''     THIS SOFTWARE.                                                       
 ''
-'' cst_relation -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __cst_relation_bi__
-#define __cst_relation_bi__
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
+#pragma once
+
+#include once "cst_file.bi"
+#include once "cst_val.bi"
+#include once "cst_features.bi"
+#include once "cst_item.bi"
+#include once "cst_utterance.bi"
+
+extern "C"
+
+#define _CST_RELATION_H__
 
 type cst_relation_struct
 	name as zstring ptr
@@ -17,14 +53,14 @@ type cst_relation_struct
 	tail as cst_item ptr
 end type
 
-declare function new_relation cdecl alias "new_relation" (byval name as zstring ptr, byval u as cst_utterance ptr) as cst_relation ptr
-declare sub delete_relation cdecl alias "delete_relation" (byval r as cst_relation ptr)
-declare function relation_head cdecl alias "relation_head" (byval r as cst_relation ptr) as cst_item ptr
-declare function relation_tail cdecl alias "relation_tail" (byval r as cst_relation ptr) as cst_item ptr
-declare function relation_name cdecl alias "relation_name" (byval r as cst_relation ptr) as zstring ptr
-declare function relation_append cdecl alias "relation_append" (byval r as cst_relation ptr, byval i as cst_item ptr) as cst_item ptr
-declare function relation_prepend cdecl alias "relation_prepend" (byval r as cst_relation ptr, byval i as cst_item ptr) as cst_item ptr
-declare function relation_load cdecl alias "relation_load" (byval r as cst_relation ptr, byval filename as zstring ptr) as integer
-declare function relation_save cdecl alias "relation_save" (byval r as cst_relation ptr, byval filename as zstring ptr) as integer
+declare function new_relation(byval name as const zstring ptr, byval u as cst_utterance ptr) as cst_relation ptr
+declare sub delete_relation(byval r as cst_relation ptr)
+declare function relation_head(byval r as cst_relation ptr) as cst_item ptr
+declare function relation_tail(byval r as cst_relation ptr) as cst_item ptr
+declare function relation_name(byval r as cst_relation ptr) as const zstring ptr
+declare function relation_append(byval r as cst_relation ptr, byval i as cst_item ptr) as cst_item ptr
+declare function relation_prepend(byval r as cst_relation ptr, byval i as cst_item ptr) as cst_item ptr
+declare function relation_load(byval r as cst_relation ptr, byval filename as const zstring ptr) as long
+declare function relation_save(byval r as cst_relation ptr, byval filename as const zstring ptr) as long
 
-#endif
+end extern
