@@ -1,5 +1,7 @@
 #include once "gdsl/gdsl.bi"
-const NULL = 0
+#ifndef NULL
+	const NULL = 0
+#endif
 
 dim shared keywords(0 to ...) as zstring ptr = _
 { _
