@@ -36,6 +36,7 @@ Version 1.04.0
 - New binding for Expat 2.1.0, with 64bit support
 - New binding for FLite 2.0.0, with 64bit support
 - New binding for FreeImage 3.17.0, with 64bit support
+- New binding for GD 2.1.1, with 64bit support
 
 [fixed]
 - False-positive "ambigious sizeof" warnings if the identifier could refer only to a type or procedure (in that case it should already be fairly clear that the type will be chosen, not the procedure, because sizeof() can't be applied to procedures at all), or if an expression such as "array(0)" is given to sizeof() (i.e. something that starts with an identifier but is followed by further tokens that clarify that it's not refering to a type)
