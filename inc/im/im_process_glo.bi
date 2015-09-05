@@ -1,25 +1,48 @@
+'' FreeBASIC binding for im-3.9.1
 ''
+'' based on the C header files:
+''   Copyright (C) 1994-2014 Tecgraf, PUC-Rio.                                
+''                                                                            
+''   Permission is hereby granted, free of charge, to any person obtaining    
+''   a copy of this software and associated documentation files (the          
+''   "Software"), to deal in the Software without restriction, including      
+''   without limitation the rights to use, copy, modify, merge, publish,      
+''   distribute, sublicense, and/or sell copies of the Software, and to       
+''   permit persons to whom the Software is furnished to do so, subject to    
+''   the following conditions:                                                
+''                                                                            
+''   The above copyright notice and this permission notice shall be           
+''   included in all copies or substantial portions of the Software.          
+''                                                                            
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,          
+''   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF       
+''   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   
+''   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY     
+''   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,     
+''   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE        
+''   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                   
 ''
-'' im_process_glo -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __im_process_glo_bi__
-#define __im_process_glo_bi__
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-declare function imProcessHoughLines cdecl alias "imProcessHoughLines" (byval src_image as imImage ptr, byval dst_image as imImage ptr) as integer
-declare function imProcessHoughLinesDraw cdecl alias "imProcessHoughLinesDraw" (byval src_image as imImage ptr, byval hough as imImage ptr, byval hough_points as imImage ptr, byval dst_image as imImage ptr) as integer
-declare sub imProcessCrossCorrelation cdecl alias "imProcessCrossCorrelation" (byval src_image1 as imImage ptr, byval src_image2 as imImage ptr, byval dst_image as imImage ptr)
-declare sub imProcessAutoCorrelation cdecl alias "imProcessAutoCorrelation" (byval src_image as imImage ptr, byval dst_image as imImage ptr)
-declare sub imProcessDistanceTransform cdecl alias "imProcessDistanceTransform" (byval src_image as imImage ptr, byval dst_image as imImage ptr)
-declare sub imProcessRegionalMaximum cdecl alias "imProcessRegionalMaximum" (byval src_image as imImage ptr, byval dst_image as imImage ptr)
-declare sub imProcessFFT cdecl alias "imProcessFFT" (byval src_image as imImage ptr, byval dst_image as imImage ptr)
-declare sub imProcessIFFT cdecl alias "imProcessIFFT" (byval src_image as imImage ptr, byval dst_image as imImage ptr)
-declare sub imProcessFFTraw cdecl alias "imProcessFFTraw" (byval image as imImage ptr, byval inverse as integer, byval center as integer, byval normalize as integer)
-declare sub imProcessSwapQuadrants cdecl alias "imProcessSwapQuadrants" (byval image as imImage ptr, byval center2origin as integer)
-declare function imProcessOpenMPSetMinCount cdecl alias "imProcessOpenMPSetMinCount" (byval min_count as integer) as integer
-declare function imProcessOpenMPSetNumThreads cdecl alias "imProcessOpenMPSetNumThreads" (byval count as integer) as integer
+#pragma once
 
-#endif
+#include once "im_image.bi"
+
+extern "C"
+
+#define __IM_PROCESS_GLO_H
+declare function imProcessHoughLines(byval src_image as const imImage ptr, byval dst_image as imImage ptr) as long
+declare function imProcessHoughLinesDraw(byval src_image as const imImage ptr, byval hough as const imImage ptr, byval hough_points as const imImage ptr, byval dst_image as imImage ptr) as long
+declare sub imProcessCrossCorrelation(byval src_image1 as const imImage ptr, byval src_image2 as const imImage ptr, byval dst_image as imImage ptr)
+declare sub imProcessAutoCorrelation(byval src_image as const imImage ptr, byval dst_image as imImage ptr)
+declare sub imProcessDistanceTransform(byval src_image as const imImage ptr, byval dst_image as imImage ptr)
+declare sub imProcessRegionalMaximum(byval src_image as const imImage ptr, byval dst_image as imImage ptr)
+declare sub imProcessFFT(byval src_image as const imImage ptr, byval dst_image as imImage ptr)
+declare sub imProcessIFFT(byval src_image as const imImage ptr, byval dst_image as imImage ptr)
+declare sub imProcessFFTraw(byval image as imImage ptr, byval inverse as long, byval center as long, byval normalize as long)
+declare sub imProcessSwapQuadrants(byval image as imImage ptr, byval center2origin as long)
+declare function imProcessOpenMPSetMinCount(byval min_count as long) as long
+declare function imProcessOpenMPSetNumThreads(byval count as long) as long
+
+end extern
