@@ -67,7 +67,7 @@ declare function AutoWrap alias "dhAutoWrap"(byval invokeType as long, byval pvR
 #define DISPATCH_OBJ(objName) dim as IDispatch ptr objName = NULL
 #define dhFreeString(string) SysFreeString(cast(BSTR, string))
 #macro SAFE_RELEASE(pObj)
-	if (pObj) then
+	if pObj then
 		(pObj)->lpVtbl->Release(pObj)
 		(pObj) = NULL
 	end if

@@ -139,7 +139,7 @@ declare function _IcePaMagicCookie1Proc(byval as IceConn, byval as IcePointer pt
 			_iceConn->inbufptr += _bytes
 		else
 			_pData = malloc(_bytes)
-			if (_pData) then
+			if _pData then
 				_IceRead(_iceConn, _bytes, _pData)
 			else
 				_IceReadSkip(_iceConn, _bytes)
