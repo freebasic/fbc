@@ -1,4 +1,4 @@
-'' FreeBASIC binding for atk-2.14.0
+'' FreeBASIC binding for atk-2.16.0
 ''
 '' based on the C header files:
 ''   ATK -  Accessibility Toolkit
@@ -44,9 +44,9 @@ extern "C"
 #define __ATK_OBJECT_H__
 #define __ATK_VERSION_H__
 const ATK_MAJOR_VERSION = 2
-const ATK_MINOR_VERSION = 14
+const ATK_MINOR_VERSION = 16
 const ATK_MICRO_VERSION = 0
-const ATK_BINARY_AGE = 21410
+const ATK_BINARY_AGE = 21610
 const ATK_INTERFACE_AGE = 1
 #define ATK_CHECK_VERSION(major, minor, micro) (((ATK_MAJOR_VERSION > (major)) orelse ((ATK_MAJOR_VERSION = (major)) andalso (ATK_MINOR_VERSION > (minor)))) orelse (((ATK_MAJOR_VERSION = (major)) andalso (ATK_MINOR_VERSION = (minor))) andalso (ATK_MICRO_VERSION >= (micro))))
 #define ATK_VERSION_2_2 G_ENCODE_VERSION(2, 2)
@@ -112,6 +112,8 @@ enum
 	ATK_STATE_VISITED
 	ATK_STATE_CHECKABLE
 	ATK_STATE_HAS_POPUP
+	ATK_STATE_HAS_TOOLTIP
+	ATK_STATE_READ_ONLY
 	ATK_STATE_LAST_DEFINED
 end enum
 
@@ -262,6 +264,11 @@ enum
 	ATK_ROLE_DESCRIPTION_LIST
 	ATK_ROLE_DESCRIPTION_TERM
 	ATK_ROLE_DESCRIPTION_VALUE
+	ATK_ROLE_STATIC
+	ATK_ROLE_MATH_FRACTION
+	ATK_ROLE_MATH_ROOT
+	ATK_ROLE_SUBSCRIPT
+	ATK_ROLE_SUPERSCRIPT
 	ATK_ROLE_LAST_DEFINED
 end enum
 

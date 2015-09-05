@@ -1,4 +1,4 @@
-'' FreeBASIC binding for gtk+-2.24.27
+'' FreeBASIC binding for gtk+-2.24.28
 ''
 '' based on the C header files:
 ''   GDK - The GIMP Drawing Kit

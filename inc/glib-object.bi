@@ -1,4 +1,4 @@
-'' FreeBASIC binding for glib-2.42.2
+'' FreeBASIC binding for glib-2.44.1
 ''
 '' based on the C header files:
 ''   GObject - GLib Type, Object, Parameter and Signal Library
@@ -38,6 +38,7 @@
 ''     procedure g_type_check_value => g_type_check_value_
 ''     procedure g_value_init => g_value_init_
 ''     procedure g_clear_object => g_clear_object_
+''     procedure g_set_object => g_set_object_
 ''     procedure g_param_spec_char => g_param_spec_char_
 ''     procedure g_param_spec_uchar => g_param_spec_uchar_
 ''     procedure g_param_spec_boolean => g_param_spec_boolean_
@@ -170,7 +171,8 @@ enum
 	G_TYPE_DEBUG_NONE = 0
 	G_TYPE_DEBUG_OBJECTS = 1 shl 0
 	G_TYPE_DEBUG_SIGNALS = 1 shl 1
-	G_TYPE_DEBUG_MASK = &h03
+	G_TYPE_DEBUG_INSTANCE_COUNT = 1 shl 2
+	G_TYPE_DEBUG_MASK = &h07
 end enum
 
 declare sub g_type_init()
@@ -197,6 +199,7 @@ declare function g_type_interfaces(byval type as GType, byval n_interfaces as gu
 declare sub g_type_set_qdata(byval type as GType, byval quark as GQuark, byval data as gpointer)
 declare function g_type_get_qdata(byval type as GType, byval quark as GQuark) as gpointer
 declare sub g_type_query(byval type as GType, byval query as GTypeQuery ptr)
+declare function g_type_get_instance_count(byval type as GType) as long
 
 type GBaseInitFunc as sub(byval g_class as gpointer)
 type GBaseFinalizeFunc as sub(byval g_class as gpointer)
@@ -273,6 +276,45 @@ declare function g_type_class_get_private_ alias "g_type_class_get_private"(byva
 declare function g_type_class_get_instance_private_offset(byval g_class as gpointer) as gint
 declare sub g_type_ensure(byval type as GType)
 declare function g_type_get_type_registration_serial() as guint
+#macro G_DECLARE_FINAL_TYPE(ModuleObjName, module_obj_name, MODULE, OBJ_NAME, ParentName)
+	extern "C"
+		declare function module_obj_name##_get_type() as GType
+		type ModuleObjName as _##ModuleObjName
+		type ModuleObjName##Class
+			parent_class as ParentName##Class
+		end type
+		_GLIB_DEFINE_AUTOPTR_CHAINUP(ModuleObjName, ParentName)
+		#define MODULE##_##OBJ_NAME(ptr_) cptr(ModuleObjName ptr, G_TYPE_CHECK_INSTANCE_CAST(ptr_, module_obj_name##_get_type(), ModuleObjName))
+		#define MODULE##_IS_##OBJ_NAME(ptr_) cast(gboolean, G_TYPE_CHECK_INSTANCE_TYPE(ptr_, module_obj_name##_get_type()))
+	end extern
+#endmacro
+#macro G_DECLARE_DERIVABLE_TYPE(ModuleObjName, module_obj_name, MODULE, OBJ_NAME, ParentName)
+	extern "C"
+		declare function module_obj_name##_get_type() as GType
+		type ModuleObjName as _##ModuleObjName
+		type ModuleObjName##Class as _##ModuleObjName##Class
+		type _##ModuleObjName
+			parent_instance as ParentName
+		end type
+		_GLIB_DEFINE_AUTOPTR_CHAINUP(ModuleObjName, ParentName)
+		#define MODULE##_##OBJ_NAME(ptr_) cptr(ModuleObjName ptr, G_TYPE_CHECK_INSTANCE_CAST(ptr_, module_obj_name##_get_type(), ModuleObjName))
+		#define MODULE##_##OBJ_NAME##_CLASS(ptr_) cptr(ModuleObjName##Class ptr, G_TYPE_CHECK_CLASS_CAST(ptr_, module_obj_name##_get_type(), ModuleObjName##Class))
+		#define MODULE##_IS_##OBJ_NAME(ptr_) cast(gboolean, G_TYPE_CHECK_INSTANCE_TYPE(ptr_, module_obj_name##_get_type()))
+		#define MODULE##_IS_##OBJ_NAME##_CLASS(ptr_) cast(gboolean, G_TYPE_CHECK_CLASS_TYPE(ptr_, module_obj_name##_get_type()))
+		#define MODULE##_##OBJ_NAME##_GET_CLASS(ptr_) cptr(ModuleObjName##Class ptr, G_TYPE_INSTANCE_GET_CLASS(ptr_, module_obj_name##_get_type(), ModuleObjName##Class))
+	end extern
+#endmacro
+#macro G_DECLARE_INTERFACE(ModuleObjName, module_obj_name, MODULE, OBJ_NAME, PrerequisiteName)
+	extern "C"
+		declare function module_obj_name##_get_type() as GType
+		type ModuleObjName as _##ModuleObjName
+		type ModuleObjName##Interface as _##ModuleObjName##Interface
+		_GLIB_DEFINE_AUTOPTR_CHAINUP(ModuleObjName, PrerequisiteName)
+		#define MODULE##_##OBJ_NAME(ptr_) cptr(ModuleObjName ptr, G_TYPE_CHECK_INSTANCE_CAST(ptr_, module_obj_name##_get_type(), ModuleObjName))
+		#define MODULE##_IS_##OBJ_NAME(ptr_) cast(gboolean, G_TYPE_CHECK_INSTANCE_TYPE(ptr_, module_obj_name##_get_type()))
+		#define MODULE##_##OBJ_NAME##_GET_IFACE(ptr_) cptr(ModuleObjName##Interface ptr, G_TYPE_INSTANCE_GET_INTERFACE(ptr_, module_obj_name##_get_type(), ModuleObjName##Interface))
+	end extern
+#endmacro
 #define G_DEFINE_TYPE(TN, t_n, T_P) G_DEFINE_TYPE_EXTENDED(TN, t_n, T_P, 0, )
 #macro G_DEFINE_TYPE_WITH_CODE(TN, t_n, T_P, _C_)
 	_G_DEFINE_TYPE_EXTENDED_BEGIN(TN, t_n, T_P, 0)
@@ -339,7 +381,7 @@ declare function g_type_get_type_registration_serial() as guint
 		dim shared as gpointer type_name##_parent_class = NULL
 		dim shared as gint TypeName##_private_offset
 		_G_DEFINE_TYPE_EXTENDED_CLASS_INIT(TypeName, type_name)
-		private function type_name##_get_instance_private(byval self as TypeName ptr) as gpointer
+		private function type_name##_get_instance_private(byval self as const TypeName ptr) as gpointer
 			return G_STRUCT_MEMBER_P(self, TypeName##_private_offset)
 		end function
 		function type_name##_get_type() as GType
@@ -873,6 +915,7 @@ declare sub _g_signals_destroy(byval itype as GType)
 #define G_TYPE_MAPPED_FILE g_mapped_file_get_type()
 #define G_TYPE_THREAD g_thread_get_type()
 #define G_TYPE_CHECKSUM g_checksum_get_type()
+#define G_TYPE_OPTION_GROUP g_option_group_get_type()
 
 declare function g_date_get_type() as GType
 declare function g_strv_get_type() as GType
@@ -901,6 +944,7 @@ declare function g_thread_get_type() as GType
 declare function g_checksum_get_type() as GType
 declare function g_markup_parse_context_get_type() as GType
 declare function g_mapped_file_get_type() as GType
+declare function g_option_group_get_type() as GType
 declare function g_variant_get_gtype() as GType
 type GStrv as gchar ptr ptr
 #define G_TYPE_IS_BOXED(type) (G_TYPE_FUNDAMENTAL(type) = G_TYPE_BOXED)
@@ -1041,12 +1085,28 @@ declare function g_object_compat_control(byval what as gsize, byval data as gpoi
 		dim _glib__object as GObject ptr = cptr(GObject ptr, (object))
 		dim _glib__pspec as GParamSpec ptr = cptr(GParamSpec ptr, (pspec))
 		dim _glib__property_id as guint = (property_id)
-		g_warning("%s:%u: invalid %s id %u for ""%s"" of type '%s' in '%s'", __FILE__, __LINE__, (pname), _glib__property_id, _glib__pspec->name, g_type_name(G_PARAM_SPEC_TYPE(_glib__pspec)), G_OBJECT_TYPE_NAME(_glib__object))
+		g_warning("%s:%d: invalid %s id %u for ""%s"" of type '%s' in '%s'", __FILE__, __LINE__, (pname), _glib__property_id, _glib__pspec->name, g_type_name(G_PARAM_SPEC_TYPE(_glib__pspec)), G_OBJECT_TYPE_NAME(_glib__object))
 	end scope
 #endmacro
 #define G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec) G_OBJECT_WARN_INVALID_PSPEC((object), "property", (property_id), (pspec))
 declare sub g_clear_object_ alias "g_clear_object"(byval object_ptr as GObject ptr ptr)
 #define g_clear_object(object_ptr) g_clear_pointer((object_ptr), g_object_unref)
+
+private function g_set_object_ alias "g_set_object"(byval object_ptr as GObject ptr ptr, byval new_object as GObject ptr) as gboolean
+	if (*object_ptr) = new_object then
+		return 0
+	end if
+	if new_object <> cptr(any ptr, 0) then
+		g_object_ref(new_object)
+	end if
+	if (*object_ptr) <> cptr(any ptr, 0) then
+		g_object_unref(*object_ptr)
+	end if
+	(*object_ptr) = new_object
+	return -(0 = 0)
+end function
+
+#define g_set_object(object_ptr, new_object) g_set_object_(cptr(GObject ptr ptr, (object_ptr)), cptr(GObject ptr, (new_object)))
 
 union GWeakRef_priv
 	p as gpointer
@@ -1619,6 +1679,33 @@ declare function g_strdup_value_contents(byval value as const GValue ptr) as gch
 declare sub g_value_take_string(byval value as GValue ptr, byval v_string as gchar ptr)
 declare sub g_value_set_string_take_ownership(byval value as GValue ptr, byval v_string as gchar ptr)
 type gchararray as gchar ptr
+
+private sub glib_auto_cleanup_GStrv(byval _ptr as GStrv ptr)
+	if (*_ptr) <> cptr(any ptr, 0) then
+		g_strfreev(*_ptr)
+	end if
+end sub
+
+type GObject_autoptr as GObject ptr
+
+private sub glib_autoptr_cleanup_GObject(byval _ptr as GObject ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GInitiallyUnowned_autoptr as GInitiallyUnowned ptr
+
+private sub glib_autoptr_cleanup_GInitiallyUnowned(byval _ptr as GInitiallyUnowned ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+private sub glib_auto_cleanup_GValue(byval _ptr as GValue ptr)
+	g_value_unset(_ptr)
+end sub
+
 #undef __GLIB_GOBJECT_H_INSIDE__
 
 end extern

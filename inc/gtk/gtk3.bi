@@ -1,4 +1,4 @@
-'' FreeBASIC binding for gtk+-3.14.10
+'' FreeBASIC binding for gtk+-3.16.6
 ''
 '' based on the C header files:
 ''   GTK - The GIMP Toolkit
@@ -986,6 +986,8 @@ declare sub gtk_widget_class_set_template_from_resource(byval widget_class as Gt
 declare sub gtk_widget_class_bind_template_callback_full(byval widget_class as GtkWidgetClass ptr, byval callback_name as const gchar ptr, byval callback_symbol as GCallback)
 declare sub gtk_widget_class_set_connect_func(byval widget_class as GtkWidgetClass ptr, byval connect_func as GtkBuilderConnectFunc, byval connect_data as gpointer, byval connect_data_destroy as GDestroyNotify)
 declare sub gtk_widget_class_bind_template_child_full(byval widget_class as GtkWidgetClass ptr, byval name as const gchar ptr, byval internal_child as gboolean, byval struct_offset as gssize)
+declare function gtk_widget_get_action_group(byval widget as GtkWidget ptr, byval prefix as const gchar ptr) as GActionGroup ptr
+declare function gtk_widget_list_action_prefixes(byval widget as GtkWidget ptr) as const gchar ptr ptr
 
 #define GTK_TYPE_APPLICATION gtk_application_get_type()
 #define GTK_APPLICATION(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_APPLICATION, GtkApplication)
@@ -1320,6 +1322,7 @@ declare function gtk_window_get_has_resize_grip(byval window as GtkWindow ptr) a
 declare function gtk_window_resize_grip_is_visible(byval window as GtkWindow ptr) as gboolean
 declare function gtk_window_get_resize_grip_area(byval window as GtkWindow ptr, byval rect as GdkRectangle ptr) as gboolean
 declare sub gtk_window_set_titlebar(byval window as GtkWindow ptr, byval titlebar as GtkWidget ptr)
+declare function gtk_window_get_titlebar(byval window as GtkWindow ptr) as GtkWidget ptr
 declare function gtk_window_is_maximized(byval window as GtkWindow ptr) as gboolean
 declare sub gtk_window_set_interactive_debugging(byval enable as gboolean)
 
@@ -1696,6 +1699,10 @@ declare function gtk_label_get_single_line_mode(byval label as GtkLabel ptr) as 
 declare function gtk_label_get_current_uri(byval label as GtkLabel ptr) as const gchar ptr
 declare sub gtk_label_set_track_visited_links(byval label as GtkLabel ptr, byval track_links as gboolean)
 declare function gtk_label_get_track_visited_links(byval label as GtkLabel ptr) as gboolean
+declare sub gtk_label_set_xalign(byval label as GtkLabel ptr, byval xalign as gfloat)
+declare function gtk_label_get_xalign(byval label as GtkLabel ptr) as gfloat
+declare sub gtk_label_set_yalign(byval label as GtkLabel ptr, byval yalign as gfloat)
+declare function gtk_label_get_yalign(byval label as GtkLabel ptr) as gfloat
 
 #define GTK_TYPE_ACCEL_LABEL gtk_accel_label_get_type()
 #define GTK_ACCEL_LABEL(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_ACCEL_LABEL, GtkAccelLabel)
@@ -2511,8 +2518,10 @@ type _GtkTextAttributes
 	invisible : 1 as guint
 	bg_full_height : 1 as guint
 	editable : 1 as guint
+	no_fallback : 1 as guint
 	pg_bg_rgba as GdkRGBA ptr
-	padding(0 to 2) as guint
+	letter_spacing as gint
+	padding(0 to 1) as guint
 end type
 
 declare function gtk_text_attributes_new() as GtkTextAttributes ptr
@@ -2821,6 +2830,7 @@ declare sub gtk_drag_source_set_icon_name(byval widget as GtkWidget ptr, byval i
 declare sub gtk_drag_source_set_icon_gicon(byval widget as GtkWidget ptr, byval icon as GIcon ptr)
 declare function gtk_drag_begin_with_coordinates(byval widget as GtkWidget ptr, byval targets as GtkTargetList ptr, byval actions as GdkDragAction, byval button as gint, byval event as GdkEvent ptr, byval x as gint, byval y as gint) as GdkDragContext ptr
 declare function gtk_drag_begin(byval widget as GtkWidget ptr, byval targets as GtkTargetList ptr, byval actions as GdkDragAction, byval button as gint, byval event as GdkEvent ptr) as GdkDragContext ptr
+declare sub gtk_drag_cancel(byval context as GdkDragContext ptr)
 declare sub gtk_drag_set_icon_widget(byval context as GdkDragContext ptr, byval widget as GtkWidget ptr, byval hot_x as gint, byval hot_y as gint)
 declare sub gtk_drag_set_icon_pixbuf(byval context as GdkDragContext ptr, byval pixbuf as GdkPixbuf ptr, byval hot_x as gint, byval hot_y as gint)
 declare sub gtk_drag_set_icon_stock(byval context as GdkDragContext ptr, byval stock_id as const gchar ptr, byval hot_x as gint, byval hot_y as gint)
@@ -3310,6 +3320,7 @@ declare sub gtk_entry_set_attributes(byval entry as GtkEntry ptr, byval attrs as
 declare function gtk_entry_get_attributes(byval entry as GtkEntry ptr) as PangoAttrList ptr
 declare sub gtk_entry_set_tabs(byval entry as GtkEntry ptr, byval tabs as PangoTabArray ptr)
 declare function gtk_entry_get_tabs(byval entry as GtkEntry ptr) as PangoTabArray ptr
+declare sub gtk_entry_grab_focus_without_selecting(byval entry as GtkEntry ptr)
 
 type GtkTreeViewDropPosition as long
 enum
@@ -4504,7 +4515,6 @@ declare function gtk_toggle_button_get_active(byval toggle_button as GtkToggleBu
 declare sub gtk_toggle_button_toggled(byval toggle_button as GtkToggleButton ptr)
 declare sub gtk_toggle_button_set_inconsistent(byval toggle_button as GtkToggleButton ptr, byval setting as gboolean)
 declare function gtk_toggle_button_get_inconsistent(byval toggle_button as GtkToggleButton ptr) as gboolean
-declare sub _gtk_toggle_button_set_active(byval toggle_button as GtkToggleButton ptr, byval is_active as gboolean)
 
 #define GTK_TYPE_CHECK_BUTTON gtk_check_button_get_type()
 #define GTK_CHECK_BUTTON(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_CHECK_BUTTON, GtkCheckButton)
@@ -4647,6 +4657,7 @@ type GtkClipboardClearFunc as sub(byval clipboard as GtkClipboard ptr, byval use
 declare function gtk_clipboard_get_type() as GType
 declare function gtk_clipboard_get_for_display(byval display as GdkDisplay ptr, byval selection as GdkAtom) as GtkClipboard ptr
 declare function gtk_clipboard_get(byval selection as GdkAtom) as GtkClipboard ptr
+declare function gtk_clipboard_get_default(byval display as GdkDisplay ptr) as GtkClipboard ptr
 declare function gtk_clipboard_get_display(byval clipboard as GtkClipboard ptr) as GdkDisplay ptr
 declare function gtk_clipboard_set_with_data(byval clipboard as GtkClipboard ptr, byval targets as const GtkTargetEntry ptr, byval n_targets as guint, byval get_func as GtkClipboardGetFunc, byval clear_func as GtkClipboardClearFunc, byval user_data as gpointer) as gboolean
 declare function gtk_clipboard_set_with_owner(byval clipboard as GtkClipboard ptr, byval targets as const GtkTargetEntry ptr, byval n_targets as guint, byval get_func as GtkClipboardGetFunc, byval clear_func as GtkClipboardClearFunc, byval owner as GObject ptr) as gboolean
@@ -4911,6 +4922,7 @@ declare function gtk_css_provider_to_string(byval provider as GtkCssProvider ptr
 declare function gtk_css_provider_load_from_data(byval css_provider as GtkCssProvider ptr, byval data as const gchar ptr, byval length as gssize, byval error as GError ptr ptr) as gboolean
 declare function gtk_css_provider_load_from_file(byval css_provider as GtkCssProvider ptr, byval file as GFile ptr, byval error as GError ptr ptr) as gboolean
 declare function gtk_css_provider_load_from_path(byval css_provider as GtkCssProvider ptr, byval path as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare sub gtk_css_provider_load_from_resource(byval css_provider as GtkCssProvider ptr, byval resource_path as const gchar ptr)
 declare function gtk_css_provider_get_default() as GtkCssProvider ptr
 declare function gtk_css_provider_get_named(byval name as const gchar ptr, byval variant as const gchar ptr) as GtkCssProvider ptr
 #define __GTK_DEBUG_H__
@@ -5691,6 +5703,47 @@ declare function gtk_gesture_zoom_get_type() as GType
 declare function gtk_gesture_zoom_new(byval widget as GtkWidget ptr) as GtkGesture ptr
 declare function gtk_gesture_zoom_get_scale_delta(byval gesture as GtkGestureZoom ptr) as gdouble
 
+#define __GTK_GL_AREA_H__
+#define GTK_TYPE_GL_AREA gtk_gl_area_get_type()
+#define GTK_GL_AREA(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_GL_AREA, GtkGLArea)
+#define GTK_IS_GL_AREA(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), GTK_TYPE_GL_AREA)
+#define GTK_GL_AREA_CLASS(klass) G_TYPE_CHECK_CLASS_CAST((klass), GTK_TYPE_GL_AREA, GtkGLAreaClass)
+#define GTK_IS_GL_AREA_CLASS(klass) G_TYPE_CHECK_CLASS_TYPE((klass), GTK_TYPE_GL_AREA)
+#define GTK_GL_AREA_GET_CLASS(obj) G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_GL_AREA, GtkGLAreaClass)
+type GtkGLArea as _GtkGLArea
+type GtkGLAreaClass as _GtkGLAreaClass
+
+type _GtkGLArea
+	parent_instance as GtkWidget
+end type
+
+type _GtkGLAreaClass
+	parent_class as GtkWidgetClass
+	render as function(byval area as GtkGLArea ptr, byval context as GdkGLContext ptr) as gboolean
+	resize as sub(byval area as GtkGLArea ptr, byval width as long, byval height as long)
+	create_context as function(byval area as GtkGLArea ptr) as GdkGLContext ptr
+	_padding(0 to 5) as gpointer
+end type
+
+declare function gtk_gl_area_get_type() as GType
+declare function gtk_gl_area_new() as GtkWidget ptr
+declare sub gtk_gl_area_set_required_version(byval area as GtkGLArea ptr, byval major as gint, byval minor as gint)
+declare sub gtk_gl_area_get_required_version(byval area as GtkGLArea ptr, byval major as gint ptr, byval minor as gint ptr)
+declare function gtk_gl_area_get_has_alpha(byval area as GtkGLArea ptr) as gboolean
+declare sub gtk_gl_area_set_has_alpha(byval area as GtkGLArea ptr, byval has_alpha as gboolean)
+declare function gtk_gl_area_get_has_depth_buffer(byval area as GtkGLArea ptr) as gboolean
+declare sub gtk_gl_area_set_has_depth_buffer(byval area as GtkGLArea ptr, byval has_depth_buffer as gboolean)
+declare function gtk_gl_area_get_has_stencil_buffer(byval area as GtkGLArea ptr) as gboolean
+declare sub gtk_gl_area_set_has_stencil_buffer(byval area as GtkGLArea ptr, byval has_stencil_buffer as gboolean)
+declare function gtk_gl_area_get_auto_render(byval area as GtkGLArea ptr) as gboolean
+declare sub gtk_gl_area_set_auto_render(byval area as GtkGLArea ptr, byval auto_render as gboolean)
+declare sub gtk_gl_area_queue_render(byval area as GtkGLArea ptr)
+declare function gtk_gl_area_get_context(byval area as GtkGLArea ptr) as GdkGLContext ptr
+declare sub gtk_gl_area_make_current(byval area as GtkGLArea ptr)
+declare sub gtk_gl_area_attach_buffers(byval area as GtkGLArea ptr)
+declare sub gtk_gl_area_set_error(byval area as GtkGLArea ptr, byval error as const GError ptr)
+declare function gtk_gl_area_get_error(byval area as GtkGLArea ptr) as GError ptr
+
 #define __GTK_GRID_H__
 #define GTK_TYPE_GRID gtk_grid_get_type()
 #define GTK_GRID(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_GRID, GtkGrid)
@@ -5966,6 +6019,7 @@ end type
 #define GTK_STYLE_CLASS_CELL "cell"
 #define GTK_STYLE_CLASS_DIM_LABEL "dim-label"
 #define GTK_STYLE_CLASS_ENTRY "entry"
+#define GTK_STYLE_CLASS_LABEL "label"
 #define GTK_STYLE_CLASS_COMBOBOX_ENTRY "combobox-entry"
 #define GTK_STYLE_CLASS_BUTTON "button"
 #define GTK_STYLE_CLASS_LIST "list"
@@ -5978,11 +6032,13 @@ end type
 #define GTK_STYLE_CLASS_TOOLTIP "tooltip"
 #define GTK_STYLE_CLASS_MENU "menu"
 #define GTK_STYLE_CLASS_CONTEXT_MENU "context-menu"
+#define GTK_STYLE_CLASS_TOUCH_SELECTION "touch-selection"
 #define GTK_STYLE_CLASS_MENUBAR "menubar"
 #define GTK_STYLE_CLASS_MENUITEM "menuitem"
 #define GTK_STYLE_CLASS_TOOLBAR "toolbar"
 #define GTK_STYLE_CLASS_PRIMARY_TOOLBAR "primary-toolbar"
 #define GTK_STYLE_CLASS_INLINE_TOOLBAR "inline-toolbar"
+#define GTK_STYLE_CLASS_STATUSBAR "statusbar"
 #define GTK_STYLE_CLASS_RADIO "radio"
 #define GTK_STYLE_CLASS_CHECK "check"
 #define GTK_STYLE_CLASS_DEFAULT "default"
@@ -6040,6 +6096,10 @@ end type
 #define GTK_STYLE_CLASS_FLAT "flat"
 #define GTK_STYLE_CLASS_READ_ONLY "read-only"
 #define GTK_STYLE_CLASS_OVERSHOOT "overshoot"
+#define GTK_STYLE_CLASS_UNDERSHOOT "undershoot"
+#define GTK_STYLE_CLASS_PAPER "paper"
+#define GTK_STYLE_CLASS_MONOSPACE "monospace"
+#define GTK_STYLE_CLASS_WIDE "wide"
 #define GTK_STYLE_REGION_ROW "row"
 #define GTK_STYLE_REGION_COLUMN "column"
 #define GTK_STYLE_REGION_COLUMN_HEADER "column-header"
@@ -6104,23 +6164,6 @@ declare sub gtk_style_context_get_margin(byval context as GtkStyleContext ptr, b
 declare sub gtk_style_context_invalidate(byval context as GtkStyleContext ptr)
 declare sub gtk_style_context_reset_widgets(byval screen as GdkScreen ptr)
 declare sub gtk_style_context_set_background(byval context as GtkStyleContext ptr, byval window as GdkWindow ptr)
-declare sub gtk_render_check(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
-declare sub gtk_render_option(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
-declare sub gtk_render_arrow(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval angle as gdouble, byval x as gdouble, byval y as gdouble, byval size as gdouble)
-declare sub gtk_render_background(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
-declare sub gtk_render_frame(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
-declare sub gtk_render_expander(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
-declare sub gtk_render_focus(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
-declare sub gtk_render_layout(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval layout as PangoLayout ptr)
-declare sub gtk_render_line(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x0 as gdouble, byval y0 as gdouble, byval x1 as gdouble, byval y1 as gdouble)
-declare sub gtk_render_slider(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble, byval orientation as GtkOrientation)
-declare sub gtk_render_frame_gap(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble, byval gap_side as GtkPositionType, byval xy0_gap as gdouble, byval xy1_gap as gdouble)
-declare sub gtk_render_extension(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble, byval gap_side as GtkPositionType)
-declare sub gtk_render_handle(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
-declare sub gtk_render_activity(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
-declare function gtk_render_icon_pixbuf(byval context as GtkStyleContext ptr, byval source as const GtkIconSource ptr, byval size as GtkIconSize) as GdkPixbuf ptr
-declare sub gtk_render_icon(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval pixbuf as GdkPixbuf ptr, byval x as gdouble, byval y as gdouble)
-declare sub gtk_render_icon_surface(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval surface as cairo_surface_t ptr, byval x as gdouble, byval y as gdouble)
 declare sub gtk_render_insertion_cursor(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval layout as PangoLayout ptr, byval index as long, byval direction as PangoDirection)
 declare sub gtk_draw_insertion_cursor(byval widget as GtkWidget ptr, byval cr as cairo_t ptr, byval location as const GdkRectangle ptr, byval is_primary as gboolean, byval direction as GtkTextDirection, byval draw_arrow as gboolean)
 
@@ -6247,12 +6290,6 @@ declare sub gtk_tooltip_set_icon_from_gicon(byval tooltip as GtkTooltip ptr, byv
 declare sub gtk_tooltip_set_custom(byval tooltip as GtkTooltip ptr, byval custom_widget as GtkWidget ptr)
 declare sub gtk_tooltip_set_tip_area(byval tooltip as GtkTooltip ptr, byval rect as const GdkRectangle ptr)
 declare sub gtk_tooltip_trigger_tooltip_query(byval display as GdkDisplay ptr)
-declare sub _gtk_tooltip_focus_in(byval widget as GtkWidget ptr)
-declare sub _gtk_tooltip_focus_out(byval widget as GtkWidget ptr)
-declare sub _gtk_tooltip_toggle_keyboard_mode(byval widget as GtkWidget ptr)
-declare sub _gtk_tooltip_handle_event(byval event as GdkEvent ptr)
-declare sub _gtk_tooltip_hide(byval widget as GtkWidget ptr)
-declare function _gtk_widget_find_at_coords(byval window as GdkWindow ptr, byval window_x as gint, byval window_y as gint, byval widget_x as gint ptr, byval widget_y as gint ptr) as GtkWidget ptr
 
 #define GTK_TYPE_ICON_VIEW gtk_icon_view_get_type()
 #define GTK_ICON_VIEW(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_ICON_VIEW, GtkIconView)
@@ -6670,6 +6707,7 @@ end type
 type GtkListBoxFilterFunc as function(byval row as GtkListBoxRow ptr, byval user_data as gpointer) as gboolean
 type GtkListBoxSortFunc as function(byval row1 as GtkListBoxRow ptr, byval row2 as GtkListBoxRow ptr, byval user_data as gpointer) as gint
 type GtkListBoxUpdateHeaderFunc as sub(byval row as GtkListBoxRow ptr, byval before as GtkListBoxRow ptr, byval user_data as gpointer)
+type GtkListBoxCreateWidgetFunc as function(byval item as gpointer, byval user_data as gpointer) as GtkWidget ptr
 
 declare function gtk_list_box_row_get_type() as GType
 declare function gtk_list_box_row_new() as GtkWidget ptr
@@ -6711,6 +6749,7 @@ declare function gtk_list_box_get_activate_on_single_click(byval box as GtkListB
 declare sub gtk_list_box_drag_unhighlight_row(byval box as GtkListBox ptr)
 declare sub gtk_list_box_drag_highlight_row(byval box as GtkListBox ptr, byval row as GtkListBoxRow ptr)
 declare function gtk_list_box_new() as GtkWidget ptr
+declare sub gtk_list_box_bind_model(byval box as GtkListBox ptr, byval model as GListModel ptr, byval create_widget_func as GtkListBoxCreateWidgetFunc, byval user_data as gpointer, byval user_data_free_func as GDestroyNotify)
 
 #define __GTK_LOCK_BUTTON_H__
 #define GTK_TYPE_LOCK_BUTTON gtk_lock_button_get_type()
@@ -6871,6 +6910,8 @@ declare function gtk_popover_get_position(byval popover as GtkPopover ptr) as Gt
 declare sub gtk_popover_set_modal(byval popover as GtkPopover ptr, byval modal as gboolean)
 declare function gtk_popover_get_modal(byval popover as GtkPopover ptr) as gboolean
 declare sub gtk_popover_bind_model(byval popover as GtkPopover ptr, byval model as GMenuModel ptr, byval action_namespace as const gchar ptr)
+declare sub gtk_popover_set_transitions_enabled(byval popover as GtkPopover ptr, byval transitions_enabled as gboolean)
+declare function gtk_popover_get_transitions_enabled(byval popover as GtkPopover ptr) as gboolean
 
 #define GTK_TYPE_MENU_BUTTON gtk_menu_button_get_type()
 #define GTK_MENU_BUTTON(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_MENU_BUTTON, GtkMenuButton)
@@ -7126,10 +7167,25 @@ declare sub gtk_message_dialog_set_markup(byval message_dialog as GtkMessageDial
 declare sub gtk_message_dialog_format_secondary_text(byval message_dialog as GtkMessageDialog ptr, byval message_format as const gchar ptr, ...)
 declare sub gtk_message_dialog_format_secondary_markup(byval message_dialog as GtkMessageDialog ptr, byval message_format as const gchar ptr, ...)
 declare function gtk_message_dialog_get_message_area(byval message_dialog as GtkMessageDialog ptr) as GtkWidget ptr
+
+#define __GTK_MODEL_BUTTON_H__
+#define GTK_TYPE_MODEL_BUTTON gtk_model_button_get_type()
+#define GTK_MODEL_BUTTON(inst) G_TYPE_CHECK_INSTANCE_CAST((inst), GTK_TYPE_MODEL_BUTTON, GtkModelButton)
+#define GTK_IS_MODEL_BUTTON(inst) G_TYPE_CHECK_INSTANCE_TYPE((inst), GTK_TYPE_MODEL_BUTTON)
+type GtkModelButton as _GtkModelButton
+
+type GtkButtonRole as long
+enum
+	GTK_BUTTON_ROLE_NORMAL
+	GTK_BUTTON_ROLE_CHECK
+	GTK_BUTTON_ROLE_RADIO
+end enum
+
+declare function gtk_model_button_get_type() as GType
+declare function gtk_model_button_new() as GtkWidget ptr
 #define __GTK_MODULES_H__
 type GtkModuleInitFunc as sub(byval argc as gint ptr, byval argv as gchar ptr ptr ptr)
 type GtkModuleDisplayInitFunc as sub(byval display as GdkDisplay ptr)
-
 #define __GTK_MOUNT_OPERATION_H__
 #define GTK_TYPE_MOUNT_OPERATION gtk_mount_operation_get_type()
 #define GTK_MOUNT_OPERATION(o) G_TYPE_CHECK_INSTANCE_CAST((o), GTK_TYPE_MOUNT_OPERATION, GtkMountOperation)
@@ -7252,6 +7308,7 @@ declare function gtk_notebook_get_tab_reorderable(byval notebook as GtkNotebook 
 declare sub gtk_notebook_set_tab_reorderable(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval reorderable as gboolean)
 declare function gtk_notebook_get_tab_detachable(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as gboolean
 declare sub gtk_notebook_set_tab_detachable(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval detachable as gboolean)
+declare sub gtk_notebook_detach_tab(byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr)
 declare function gtk_notebook_get_action_widget(byval notebook as GtkNotebook ptr, byval pack_type as GtkPackType) as GtkWidget ptr
 declare sub gtk_notebook_set_action_widget(byval notebook as GtkNotebook ptr, byval widget as GtkWidget ptr, byval pack_type as GtkPackType)
 
@@ -7349,6 +7406,7 @@ type GtkPaperSize as _GtkPaperSize
 declare function gtk_paper_size_get_type() as GType
 declare function gtk_paper_size_new(byval name as const gchar ptr) as GtkPaperSize ptr
 declare function gtk_paper_size_new_from_ppd(byval ppd_name as const gchar ptr, byval ppd_display_name as const gchar ptr, byval width as gdouble, byval height as gdouble) as GtkPaperSize ptr
+declare function gtk_paper_size_new_from_ipp(byval ipp_name as const gchar ptr, byval width as gdouble, byval height as gdouble) as GtkPaperSize ptr
 declare function gtk_paper_size_new_custom(byval name as const gchar ptr, byval display_name as const gchar ptr, byval width as gdouble, byval height as gdouble, byval unit as GtkUnit) as GtkPaperSize ptr
 declare function gtk_paper_size_copy(byval other as GtkPaperSize ptr) as GtkPaperSize ptr
 declare sub gtk_paper_size_free(byval size as GtkPaperSize ptr)
@@ -7360,6 +7418,7 @@ declare function gtk_paper_size_get_ppd_name(byval size as GtkPaperSize ptr) as 
 declare function gtk_paper_size_get_width(byval size as GtkPaperSize ptr, byval unit as GtkUnit) as gdouble
 declare function gtk_paper_size_get_height(byval size as GtkPaperSize ptr, byval unit as GtkUnit) as gdouble
 declare function gtk_paper_size_is_custom(byval size as GtkPaperSize ptr) as gboolean
+declare function gtk_paper_size_is_ipp(byval size as GtkPaperSize ptr) as gboolean
 declare sub gtk_paper_size_set_size(byval size as GtkPaperSize ptr, byval width as gdouble, byval height as gdouble, byval unit as GtkUnit)
 declare function gtk_paper_size_get_default_top_margin(byval size as GtkPaperSize ptr, byval unit as GtkUnit) as gdouble
 declare function gtk_paper_size_get_default_bottom_margin(byval size as GtkPaperSize ptr, byval unit as GtkUnit) as gdouble
@@ -7443,6 +7502,8 @@ declare sub gtk_paned_set_position(byval paned as GtkPaned ptr, byval position a
 declare function gtk_paned_get_child1(byval paned as GtkPaned ptr) as GtkWidget ptr
 declare function gtk_paned_get_child2(byval paned as GtkPaned ptr) as GtkWidget ptr
 declare function gtk_paned_get_handle_window(byval paned as GtkPaned ptr) as GdkWindow ptr
+declare sub gtk_paned_set_wide_handle(byval paned as GtkPaned ptr, byval wide as gboolean)
+declare function gtk_paned_get_wide_handle(byval paned as GtkPaned ptr) as gboolean
 
 #define __GTK_PLACES_SIDEBAR_H__
 #define GTK_TYPE_PLACES_SIDEBAR gtk_places_sidebar_get_type()
@@ -7479,6 +7540,25 @@ declare sub gtk_places_sidebar_add_shortcut(byval sidebar as GtkPlacesSidebar pt
 declare sub gtk_places_sidebar_remove_shortcut(byval sidebar as GtkPlacesSidebar ptr, byval location as GFile ptr)
 declare function gtk_places_sidebar_list_shortcuts(byval sidebar as GtkPlacesSidebar ptr) as GSList ptr
 declare function gtk_places_sidebar_get_nth_bookmark(byval sidebar as GtkPlacesSidebar ptr, byval n as gint) as GFile ptr
+
+#define __GTK_POPOVER_MENU_H__
+#define GTK_TYPE_POPOVER_MENU gtk_popover_menu_get_type()
+#define GTK_POPOVER_MENU(o) G_TYPE_CHECK_INSTANCE_CAST((o), GTK_TYPE_POPOVER_MENU, GtkPopoverMenu)
+#define GTK_POPOVER_MENU_CLASS(c) G_TYPE_CHECK_CLASS_CAST((c), GTK_TYPE_POPOVER_MENU, GtkPopoverMenuClass)
+#define GTK_IS_POPOVER_MENU(o) G_TYPE_CHECK_INSTANCE_TYPE((o), GTK_TYPE_POPOVER_MENU)
+#define GTK_IS_POPOVER_MENU_CLASS(o) G_TYPE_CHECK_CLASS_TYPE((o), GTK_TYPE_POPOVER_MENU)
+#define GTK_POPOVER_MENU_GET_CLASS(o) G_TYPE_INSTANCE_GET_CLASS((o), GTK_TYPE_POPOVER_MENU, GtkPopoverMenuClass)
+type GtkPopoverMenu as _GtkPopoverMenu
+type GtkPopoverMenuClass as _GtkPopoverMenuClass
+
+type _GtkPopoverMenuClass
+	parent_class as GtkPopoverClass
+	reserved(0 to 9) as gpointer
+end type
+
+declare function gtk_popover_menu_get_type() as GType
+declare function gtk_popover_menu_new() as GtkWidget ptr
+declare sub gtk_popover_menu_open_submenu(byval popover as GtkPopoverMenu ptr, byval name as const gchar ptr)
 #define __GTK_PRINT_CONTEXT_H__
 type GtkPrintContext as _GtkPrintContext
 
@@ -8305,6 +8385,24 @@ end type
 declare function gtk_recent_chooser_widget_get_type() as GType
 declare function gtk_recent_chooser_widget_new() as GtkWidget ptr
 declare function gtk_recent_chooser_widget_new_for_manager(byval manager as GtkRecentManager ptr) as GtkWidget ptr
+#define __GTK_RENDER_H__
+declare sub gtk_render_check(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
+declare sub gtk_render_option(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
+declare sub gtk_render_arrow(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval angle as gdouble, byval x as gdouble, byval y as gdouble, byval size as gdouble)
+declare sub gtk_render_background(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
+declare sub gtk_render_frame(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
+declare sub gtk_render_expander(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
+declare sub gtk_render_focus(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
+declare sub gtk_render_layout(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval layout as PangoLayout ptr)
+declare sub gtk_render_line(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x0 as gdouble, byval y0 as gdouble, byval x1 as gdouble, byval y1 as gdouble)
+declare sub gtk_render_slider(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble, byval orientation as GtkOrientation)
+declare sub gtk_render_frame_gap(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble, byval gap_side as GtkPositionType, byval xy0_gap as gdouble, byval xy1_gap as gdouble)
+declare sub gtk_render_extension(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble, byval gap_side as GtkPositionType)
+declare sub gtk_render_handle(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
+declare sub gtk_render_activity(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval x as gdouble, byval y as gdouble, byval width as gdouble, byval height as gdouble)
+declare function gtk_render_icon_pixbuf(byval context as GtkStyleContext ptr, byval source as const GtkIconSource ptr, byval size as GtkIconSize) as GdkPixbuf ptr
+declare sub gtk_render_icon(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval pixbuf as GdkPixbuf ptr, byval x as gdouble, byval y as gdouble)
+declare sub gtk_render_icon_surface(byval context as GtkStyleContext ptr, byval cr as cairo_t ptr, byval surface as cairo_surface_t ptr, byval x as gdouble, byval y as gdouble)
 
 #define __GTK_REVEALER_H__
 #define GTK_TYPE_REVEALER gtk_revealer_get_type()
@@ -8435,6 +8533,7 @@ type GtkScrollableInterface as _GtkScrollableInterface
 
 type _GtkScrollableInterface
 	base_iface as GTypeInterface
+	get_border as function(byval scrollable as GtkScrollable ptr, byval border as GtkBorder ptr) as gboolean
 end type
 
 declare function gtk_scrollable_get_type() as GType
@@ -8446,6 +8545,7 @@ declare function gtk_scrollable_get_hscroll_policy(byval scrollable as GtkScroll
 declare sub gtk_scrollable_set_hscroll_policy(byval scrollable as GtkScrollable ptr, byval policy as GtkScrollablePolicy)
 declare function gtk_scrollable_get_vscroll_policy(byval scrollable as GtkScrollable ptr) as GtkScrollablePolicy
 declare sub gtk_scrollable_set_vscroll_policy(byval scrollable as GtkScrollable ptr, byval policy as GtkScrollablePolicy)
+declare function gtk_scrollable_get_border(byval scrollable as GtkScrollable ptr, byval border as GtkBorder ptr) as gboolean
 
 #define __GTK_SCROLLBAR_H__
 #define GTK_TYPE_SCROLLBAR gtk_scrollbar_get_type()
@@ -8512,6 +8612,7 @@ enum
 	GTK_POLICY_ALWAYS
 	GTK_POLICY_AUTOMATIC
 	GTK_POLICY_NEVER
+	GTK_POLICY_EXTERNAL
 end enum
 
 declare function gtk_scrolled_window_get_type() as GType
@@ -8538,7 +8639,8 @@ declare sub gtk_scrolled_window_set_kinetic_scrolling(byval scrolled_window as G
 declare function gtk_scrolled_window_get_kinetic_scrolling(byval scrolled_window as GtkScrolledWindow ptr) as gboolean
 declare sub gtk_scrolled_window_set_capture_button_press(byval scrolled_window as GtkScrolledWindow ptr, byval capture_button_press as gboolean)
 declare function gtk_scrolled_window_get_capture_button_press(byval scrolled_window as GtkScrolledWindow ptr) as gboolean
-declare function _gtk_scrolled_window_get_scrollbar_spacing(byval scrolled_window as GtkScrolledWindow ptr) as gint
+declare sub gtk_scrolled_window_set_overlay_scrolling(byval scrolled_window as GtkScrolledWindow ptr, byval overlay_scrolling as gboolean)
+declare function gtk_scrolled_window_get_overlay_scrolling(byval scrolled_window as GtkScrolledWindow ptr) as gboolean
 
 #define __GTK_SEARCH_BAR_H__
 #define GTK_TYPE_SEARCH_BAR gtk_search_bar_get_type()
@@ -8588,13 +8690,15 @@ end type
 type _GtkSearchEntryClass
 	parent_class as GtkEntryClass
 	search_changed as sub(byval entry as GtkSearchEntry ptr)
-	_gtk_reserved1 as sub()
-	_gtk_reserved2 as sub()
-	_gtk_reserved3 as sub()
+	next_match as sub(byval entry as GtkSearchEntry ptr)
+	previous_match as sub(byval entry as GtkSearchEntry ptr)
+	stop_search as sub(byval entry as GtkSearchEntry ptr)
 end type
 
 declare function gtk_search_entry_get_type() as GType
 declare function gtk_search_entry_new() as GtkWidget ptr
+declare function gtk_search_entry_handle_event(byval entry as GtkSearchEntry ptr, byval event as GdkEvent ptr) as gboolean
+
 #define __GTK_SEPARATOR_H__
 #define GTK_TYPE_SEPARATOR gtk_separator_get_type()
 #define GTK_SEPARATOR(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_SEPARATOR, GtkSeparator)
@@ -8722,6 +8826,99 @@ declare sub gtk_settings_set_long_property(byval settings as GtkSettings ptr, by
 declare sub gtk_settings_set_double_property(byval settings as GtkSettings ptr, byval name as const gchar ptr, byval v_double as gdouble, byval origin as const gchar ptr)
 #define __GTK_SHOW_H__
 declare function gtk_show_uri(byval screen as GdkScreen ptr, byval uri as const gchar ptr, byval timestamp as guint32, byval error as GError ptr ptr) as gboolean
+
+#define __GTK_STACK_SIDEBAR_H__
+#define __GTK_STACK_H__
+#define GTK_TYPE_STACK gtk_stack_get_type()
+#define GTK_STACK(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_STACK, GtkStack)
+#define GTK_STACK_CLASS(klass) G_TYPE_CHECK_CLASS_CAST((klass), GTK_TYPE_STACK, GtkStackClass)
+#define GTK_IS_STACK(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), GTK_TYPE_STACK)
+#define GTK_IS_STACK_CLASS(klass) G_TYPE_CHECK_CLASS_TYPE((klass), GTK_TYPE_STACK)
+#define GTK_STACK_GET_CLASS(obj) G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_STACK, GtkStackClass)
+type GtkStack as _GtkStack
+type GtkStackClass as _GtkStackClass
+
+type GtkStackTransitionType as long
+enum
+	GTK_STACK_TRANSITION_TYPE_NONE
+	GTK_STACK_TRANSITION_TYPE_CROSSFADE
+	GTK_STACK_TRANSITION_TYPE_SLIDE_RIGHT
+	GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT
+	GTK_STACK_TRANSITION_TYPE_SLIDE_UP
+	GTK_STACK_TRANSITION_TYPE_SLIDE_DOWN
+	GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT
+	GTK_STACK_TRANSITION_TYPE_SLIDE_UP_DOWN
+	GTK_STACK_TRANSITION_TYPE_OVER_UP
+	GTK_STACK_TRANSITION_TYPE_OVER_DOWN
+	GTK_STACK_TRANSITION_TYPE_OVER_LEFT
+	GTK_STACK_TRANSITION_TYPE_OVER_RIGHT
+	GTK_STACK_TRANSITION_TYPE_UNDER_UP
+	GTK_STACK_TRANSITION_TYPE_UNDER_DOWN
+	GTK_STACK_TRANSITION_TYPE_UNDER_LEFT
+	GTK_STACK_TRANSITION_TYPE_UNDER_RIGHT
+	GTK_STACK_TRANSITION_TYPE_OVER_UP_DOWN
+	GTK_STACK_TRANSITION_TYPE_OVER_DOWN_UP
+	GTK_STACK_TRANSITION_TYPE_OVER_LEFT_RIGHT
+	GTK_STACK_TRANSITION_TYPE_OVER_RIGHT_LEFT
+end enum
+
+type _GtkStack
+	parent_instance as GtkContainer
+end type
+
+type _GtkStackClass
+	parent_class as GtkContainerClass
+end type
+
+declare function gtk_stack_get_type() as GType
+declare function gtk_stack_new() as GtkWidget ptr
+declare sub gtk_stack_add_named(byval stack as GtkStack ptr, byval child as GtkWidget ptr, byval name as const gchar ptr)
+declare sub gtk_stack_add_titled(byval stack as GtkStack ptr, byval child as GtkWidget ptr, byval name as const gchar ptr, byval title as const gchar ptr)
+declare function gtk_stack_get_child_by_name(byval stack as GtkStack ptr, byval name as const gchar ptr) as GtkWidget ptr
+declare sub gtk_stack_set_visible_child(byval stack as GtkStack ptr, byval child as GtkWidget ptr)
+declare function gtk_stack_get_visible_child(byval stack as GtkStack ptr) as GtkWidget ptr
+declare sub gtk_stack_set_visible_child_name(byval stack as GtkStack ptr, byval name as const gchar ptr)
+declare function gtk_stack_get_visible_child_name(byval stack as GtkStack ptr) as const gchar ptr
+declare sub gtk_stack_set_visible_child_full(byval stack as GtkStack ptr, byval name as const gchar ptr, byval transition as GtkStackTransitionType)
+declare sub gtk_stack_set_homogeneous(byval stack as GtkStack ptr, byval homogeneous as gboolean)
+declare function gtk_stack_get_homogeneous(byval stack as GtkStack ptr) as gboolean
+declare sub gtk_stack_set_hhomogeneous(byval stack as GtkStack ptr, byval hhomogeneous as gboolean)
+declare function gtk_stack_get_hhomogeneous(byval stack as GtkStack ptr) as gboolean
+declare sub gtk_stack_set_vhomogeneous(byval stack as GtkStack ptr, byval vhomogeneous as gboolean)
+declare function gtk_stack_get_vhomogeneous(byval stack as GtkStack ptr) as gboolean
+declare sub gtk_stack_set_transition_duration(byval stack as GtkStack ptr, byval duration as guint)
+declare function gtk_stack_get_transition_duration(byval stack as GtkStack ptr) as guint
+declare sub gtk_stack_set_transition_type(byval stack as GtkStack ptr, byval transition as GtkStackTransitionType)
+declare function gtk_stack_get_transition_type(byval stack as GtkStack ptr) as GtkStackTransitionType
+declare function gtk_stack_get_transition_running(byval stack as GtkStack ptr) as gboolean
+
+#define GTK_TYPE_STACK_SIDEBAR gtk_stack_sidebar_get_type()
+#define GTK_STACK_SIDEBAR(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_STACK_SIDEBAR, GtkStackSidebar)
+#define GTK_IS_STACK_SIDEBAR(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), GTK_TYPE_STACK_SIDEBAR)
+#define GTK_STACK_SIDEBAR_CLASS(klass) G_TYPE_CHECK_CLASS_CAST((klass), GTK_TYPE_STACK_SIDEBAR, GtkStackSidebarClass)
+#define GTK_IS_STACK_SIDEBAR_CLASS(klass) G_TYPE_CHECK_CLASS_TYPE((klass), GTK_TYPE_STACK_SIDEBAR)
+#define GTK_STACK_SIDEBAR_GET_CLASS(obj) G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_STACK_SIDEBAR, GtkStackSidebarClass)
+
+type GtkStackSidebar as _GtkStackSidebar
+type GtkStackSidebarPrivate as _GtkStackSidebarPrivate
+type GtkStackSidebarClass as _GtkStackSidebarClass
+
+type _GtkStackSidebar
+	parent as GtkBin
+end type
+
+type _GtkStackSidebarClass
+	parent_class as GtkBinClass
+	_gtk_reserved1 as sub()
+	_gtk_reserved2 as sub()
+	_gtk_reserved3 as sub()
+	_gtk_reserved4 as sub()
+end type
+
+declare function gtk_stack_sidebar_get_type() as GType
+declare function gtk_stack_sidebar_new() as GtkWidget ptr
+declare sub gtk_stack_sidebar_set_stack(byval sidebar as GtkStackSidebar ptr, byval stack as GtkStack ptr)
+declare function gtk_stack_sidebar_get_stack(byval sidebar as GtkStackSidebar ptr) as GtkStack ptr
 #define __GTK_SIZE_REQUEST_H__
 type GtkRequestedSize as _GtkRequestedSize
 
@@ -8836,66 +9033,6 @@ declare function gtk_spinner_get_type() as GType
 declare function gtk_spinner_new() as GtkWidget ptr
 declare sub gtk_spinner_start(byval spinner as GtkSpinner ptr)
 declare sub gtk_spinner_stop(byval spinner as GtkSpinner ptr)
-
-#define __GTK_STACK_H__
-#define GTK_TYPE_STACK gtk_stack_get_type()
-#define GTK_STACK(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GTK_TYPE_STACK, GtkStack)
-#define GTK_STACK_CLASS(klass) G_TYPE_CHECK_CLASS_CAST((klass), GTK_TYPE_STACK, GtkStackClass)
-#define GTK_IS_STACK(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), GTK_TYPE_STACK)
-#define GTK_IS_STACK_CLASS(klass) G_TYPE_CHECK_CLASS_TYPE((klass), GTK_TYPE_STACK)
-#define GTK_STACK_GET_CLASS(obj) G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_STACK, GtkStackClass)
-type GtkStack as _GtkStack
-type GtkStackClass as _GtkStackClass
-
-type GtkStackTransitionType as long
-enum
-	GTK_STACK_TRANSITION_TYPE_NONE
-	GTK_STACK_TRANSITION_TYPE_CROSSFADE
-	GTK_STACK_TRANSITION_TYPE_SLIDE_RIGHT
-	GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT
-	GTK_STACK_TRANSITION_TYPE_SLIDE_UP
-	GTK_STACK_TRANSITION_TYPE_SLIDE_DOWN
-	GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT
-	GTK_STACK_TRANSITION_TYPE_SLIDE_UP_DOWN
-	GTK_STACK_TRANSITION_TYPE_OVER_UP
-	GTK_STACK_TRANSITION_TYPE_OVER_DOWN
-	GTK_STACK_TRANSITION_TYPE_OVER_LEFT
-	GTK_STACK_TRANSITION_TYPE_OVER_RIGHT
-	GTK_STACK_TRANSITION_TYPE_UNDER_UP
-	GTK_STACK_TRANSITION_TYPE_UNDER_DOWN
-	GTK_STACK_TRANSITION_TYPE_UNDER_LEFT
-	GTK_STACK_TRANSITION_TYPE_UNDER_RIGHT
-	GTK_STACK_TRANSITION_TYPE_OVER_UP_DOWN
-	GTK_STACK_TRANSITION_TYPE_OVER_DOWN_UP
-	GTK_STACK_TRANSITION_TYPE_OVER_LEFT_RIGHT
-	GTK_STACK_TRANSITION_TYPE_OVER_RIGHT_LEFT
-end enum
-
-type _GtkStack
-	parent_instance as GtkContainer
-end type
-
-type _GtkStackClass
-	parent_class as GtkContainerClass
-end type
-
-declare function gtk_stack_get_type() as GType
-declare function gtk_stack_new() as GtkWidget ptr
-declare sub gtk_stack_add_named(byval stack as GtkStack ptr, byval child as GtkWidget ptr, byval name as const gchar ptr)
-declare sub gtk_stack_add_titled(byval stack as GtkStack ptr, byval child as GtkWidget ptr, byval name as const gchar ptr, byval title as const gchar ptr)
-declare function gtk_stack_get_child_by_name(byval stack as GtkStack ptr, byval name as const gchar ptr) as GtkWidget ptr
-declare sub gtk_stack_set_visible_child(byval stack as GtkStack ptr, byval child as GtkWidget ptr)
-declare function gtk_stack_get_visible_child(byval stack as GtkStack ptr) as GtkWidget ptr
-declare sub gtk_stack_set_visible_child_name(byval stack as GtkStack ptr, byval name as const gchar ptr)
-declare function gtk_stack_get_visible_child_name(byval stack as GtkStack ptr) as const gchar ptr
-declare sub gtk_stack_set_visible_child_full(byval stack as GtkStack ptr, byval name as const gchar ptr, byval transition as GtkStackTransitionType)
-declare sub gtk_stack_set_homogeneous(byval stack as GtkStack ptr, byval homogeneous as gboolean)
-declare function gtk_stack_get_homogeneous(byval stack as GtkStack ptr) as gboolean
-declare sub gtk_stack_set_transition_duration(byval stack as GtkStack ptr, byval duration as guint)
-declare function gtk_stack_get_transition_duration(byval stack as GtkStack ptr) as guint
-declare sub gtk_stack_set_transition_type(byval stack as GtkStack ptr, byval transition as GtkStackTransitionType)
-declare function gtk_stack_get_transition_type(byval stack as GtkStack ptr) as GtkStackTransitionType
-declare function gtk_stack_get_transition_running(byval stack as GtkStack ptr) as gboolean
 
 #define __GTK_STACK_SWITCHER_H__
 #define GTK_TYPE_STACK_SWITCHER gtk_stack_switcher_get_type()
@@ -9123,6 +9260,7 @@ declare sub gtk_text_buffer_insert_range(byval buffer as GtkTextBuffer ptr, byva
 declare function gtk_text_buffer_insert_range_interactive(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval start as const GtkTextIter ptr, byval end as const GtkTextIter ptr, byval default_editable as gboolean) as gboolean
 declare sub gtk_text_buffer_insert_with_tags(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as const gchar ptr, byval len as gint, byval first_tag as GtkTextTag ptr, ...)
 declare sub gtk_text_buffer_insert_with_tags_by_name(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval text as const gchar ptr, byval len as gint, byval first_tag_name as const gchar ptr, ...)
+declare sub gtk_text_buffer_insert_markup(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval markup as const gchar ptr, byval len as gint)
 declare sub gtk_text_buffer_delete(byval buffer as GtkTextBuffer ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr)
 declare function gtk_text_buffer_delete_interactive(byval buffer as GtkTextBuffer ptr, byval start_iter as GtkTextIter ptr, byval end_iter as GtkTextIter ptr, byval default_editable as gboolean) as gboolean
 declare function gtk_text_buffer_backspace(byval buffer as GtkTextBuffer ptr, byval iter as GtkTextIter ptr, byval interactive as gboolean, byval default_editable as gboolean) as gboolean
@@ -9219,6 +9357,12 @@ enum
 	GTK_TEXT_VIEW_LAYER_ABOVE
 end enum
 
+type GtkTextExtendSelection as long
+enum
+	GTK_TEXT_EXTEND_SELECTION_WORD
+	GTK_TEXT_EXTEND_SELECTION_LINE
+end enum
+
 const GTK_TEXT_VIEW_PRIORITY_VALIDATE = GDK_PRIORITY_REDRAW + 5
 type GtkTextView as _GtkTextView
 type GtkTextViewPrivate as _GtkTextViewPrivate
@@ -9243,12 +9387,12 @@ type _GtkTextViewClass
 	toggle_overwrite as sub(byval text_view as GtkTextView ptr)
 	create_buffer as function(byval text_view as GtkTextView ptr) as GtkTextBuffer ptr
 	draw_layer as sub(byval text_view as GtkTextView ptr, byval layer as GtkTextViewLayer, byval cr as cairo_t ptr)
+	extend_selection as function(byval text_view as GtkTextView ptr, byval granularity as GtkTextExtendSelection, byval location as const GtkTextIter ptr, byval start as GtkTextIter ptr, byval end as GtkTextIter ptr) as gboolean
 	_gtk_reserved1 as sub()
 	_gtk_reserved2 as sub()
 	_gtk_reserved3 as sub()
 	_gtk_reserved4 as sub()
 	_gtk_reserved5 as sub()
-	_gtk_reserved6 as sub()
 end type
 
 declare function gtk_text_view_get_type() as GType
@@ -9318,6 +9462,8 @@ declare sub gtk_text_view_set_input_purpose(byval text_view as GtkTextView ptr, 
 declare function gtk_text_view_get_input_purpose(byval text_view as GtkTextView ptr) as GtkInputPurpose
 declare sub gtk_text_view_set_input_hints(byval text_view as GtkTextView ptr, byval hints as GtkInputHints)
 declare function gtk_text_view_get_input_hints(byval text_view as GtkTextView ptr) as GtkInputHints
+declare sub gtk_text_view_set_monospace(byval text_view as GtkTextView ptr, byval monospace as gboolean)
+declare function gtk_text_view_get_monospace(byval text_view as GtkTextView ptr) as gboolean
 
 #define __GTK_TOOLBAR_H__
 #define GTK_TYPE_TOOLBAR gtk_toolbar_get_type()
@@ -9849,6 +9995,8 @@ declare function gtk_arrow_placement_get_type() as GType
 #define GTK_TYPE_ARROW_PLACEMENT gtk_arrow_placement_get_type()
 declare function gtk_buttons_type_get_type() as GType
 #define GTK_TYPE_BUTTONS_TYPE gtk_buttons_type_get_type()
+declare function gtk_button_role_get_type() as GType
+#define GTK_TYPE_BUTTON_ROLE gtk_button_role_get_type()
 declare function gtk_notebook_tab_get_type() as GType
 #define GTK_TYPE_NOTEBOOK_TAB gtk_notebook_tab_get_type()
 declare function gtk_places_open_flags_get_type() as GType
@@ -9889,6 +10037,8 @@ declare function gtk_text_window_type_get_type() as GType
 #define GTK_TYPE_TEXT_WINDOW_TYPE gtk_text_window_type_get_type()
 declare function gtk_text_view_layer_get_type() as GType
 #define GTK_TYPE_TEXT_VIEW_LAYER gtk_text_view_layer_get_type()
+declare function gtk_text_extend_selection_get_type() as GType
+#define GTK_TYPE_TEXT_EXTEND_SELECTION gtk_text_extend_selection_get_type()
 declare function gtk_toolbar_space_style_get_type() as GType
 #define GTK_TYPE_TOOLBAR_SPACE_STYLE gtk_toolbar_space_style_get_type()
 declare function gtk_tool_palette_drag_targets_get_type() as GType
@@ -9922,10 +10072,10 @@ declare function gtk_ui_manager_item_type_get_type() as GType
 #define GTK_TYPE_UI_MANAGER_ITEM_TYPE gtk_ui_manager_item_type_get_type()
 #define __GTK_VERSION_H__
 const GTK_MAJOR_VERSION = 3
-const GTK_MINOR_VERSION = 14
-const GTK_MICRO_VERSION = 10
-const GTK_BINARY_AGE = 1410
-const GTK_INTERFACE_AGE = 10
+const GTK_MINOR_VERSION = 16
+const GTK_MICRO_VERSION = 6
+const GTK_BINARY_AGE = 1606
+const GTK_INTERFACE_AGE = 6
 #define GTK_CHECK_VERSION(major, minor, micro) (((GTK_MAJOR_VERSION > (major)) orelse ((GTK_MAJOR_VERSION = (major)) andalso (GTK_MINOR_VERSION > (minor)))) orelse (((GTK_MAJOR_VERSION = (major)) andalso (GTK_MINOR_VERSION = (minor))) andalso (GTK_MICRO_VERSION >= (micro))))
 #define __GTK_VIEWPORT_H__
 #define GTK_TYPE_VIEWPORT gtk_viewport_get_type()
@@ -11695,6 +11845,1574 @@ end type
 
 declare function gtk_vseparator_get_type() as GType
 declare function gtk_vseparator_new() as GtkWidget ptr
+type GtkAboutDialog_autoptr as GtkAboutDialog ptr
+
+private sub glib_autoptr_cleanup_GtkAboutDialog(byval _ptr as GtkAboutDialog ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkAccelGroup_autoptr as GtkAccelGroup ptr
+
+private sub glib_autoptr_cleanup_GtkAccelGroup(byval _ptr as GtkAccelGroup ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkAccelLabel_autoptr as GtkAccelLabel ptr
+
+private sub glib_autoptr_cleanup_GtkAccelLabel(byval _ptr as GtkAccelLabel ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkAccelMap_autoptr as GtkAccelMap ptr
+
+private sub glib_autoptr_cleanup_GtkAccelMap(byval _ptr as GtkAccelMap ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkAccessible_autoptr as GtkAccessible ptr
+
+private sub glib_autoptr_cleanup_GtkAccessible(byval _ptr as GtkAccessible ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkActionBar_autoptr as GtkActionBar ptr
+
+private sub glib_autoptr_cleanup_GtkActionBar(byval _ptr as GtkActionBar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkActionable_autoptr as GtkActionable ptr
+
+private sub glib_autoptr_cleanup_GtkActionable(byval _ptr as GtkActionable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkAdjustment_autoptr as GtkAdjustment ptr
+
+private sub glib_autoptr_cleanup_GtkAdjustment(byval _ptr as GtkAdjustment ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkAppChooser_autoptr as GtkAppChooser ptr
+
+private sub glib_autoptr_cleanup_GtkAppChooser(byval _ptr as GtkAppChooser ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkAppChooserButton_autoptr as GtkAppChooserButton ptr
+
+private sub glib_autoptr_cleanup_GtkAppChooserButton(byval _ptr as GtkAppChooserButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkAppChooserDialog_autoptr as GtkAppChooserDialog ptr
+
+private sub glib_autoptr_cleanup_GtkAppChooserDialog(byval _ptr as GtkAppChooserDialog ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkAppChooserWidget_autoptr as GtkAppChooserWidget ptr
+
+private sub glib_autoptr_cleanup_GtkAppChooserWidget(byval _ptr as GtkAppChooserWidget ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkApplication_autoptr as GtkApplication ptr
+
+private sub glib_autoptr_cleanup_GtkApplication(byval _ptr as GtkApplication ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkApplicationWindow_autoptr as GtkApplicationWindow ptr
+
+private sub glib_autoptr_cleanup_GtkApplicationWindow(byval _ptr as GtkApplicationWindow ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkAspectFrame_autoptr as GtkAspectFrame ptr
+
+private sub glib_autoptr_cleanup_GtkAspectFrame(byval _ptr as GtkAspectFrame ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkAssistant_autoptr as GtkAssistant ptr
+
+private sub glib_autoptr_cleanup_GtkAssistant(byval _ptr as GtkAssistant ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkBin_autoptr as GtkBin ptr
+
+private sub glib_autoptr_cleanup_GtkBin(byval _ptr as GtkBin ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkBox_autoptr as GtkBox ptr
+
+private sub glib_autoptr_cleanup_GtkBox(byval _ptr as GtkBox ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkBuildable_autoptr as GtkBuildable ptr
+
+private sub glib_autoptr_cleanup_GtkBuildable(byval _ptr as GtkBuildable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkBuilder_autoptr as GtkBuilder ptr
+
+private sub glib_autoptr_cleanup_GtkBuilder(byval _ptr as GtkBuilder ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkButton_autoptr as GtkButton ptr
+
+private sub glib_autoptr_cleanup_GtkButton(byval _ptr as GtkButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkButtonBox_autoptr as GtkButtonBox ptr
+
+private sub glib_autoptr_cleanup_GtkButtonBox(byval _ptr as GtkButtonBox ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCalendar_autoptr as GtkCalendar ptr
+
+private sub glib_autoptr_cleanup_GtkCalendar(byval _ptr as GtkCalendar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellArea_autoptr as GtkCellArea ptr
+
+private sub glib_autoptr_cleanup_GtkCellArea(byval _ptr as GtkCellArea ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellAreaBox_autoptr as GtkCellAreaBox ptr
+
+private sub glib_autoptr_cleanup_GtkCellAreaBox(byval _ptr as GtkCellAreaBox ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellAreaContext_autoptr as GtkCellAreaContext ptr
+
+private sub glib_autoptr_cleanup_GtkCellAreaContext(byval _ptr as GtkCellAreaContext ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellEditable_autoptr as GtkCellEditable ptr
+
+private sub glib_autoptr_cleanup_GtkCellEditable(byval _ptr as GtkCellEditable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellLayout_autoptr as GtkCellLayout ptr
+
+private sub glib_autoptr_cleanup_GtkCellLayout(byval _ptr as GtkCellLayout ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellRenderer_autoptr as GtkCellRenderer ptr
+
+private sub glib_autoptr_cleanup_GtkCellRenderer(byval _ptr as GtkCellRenderer ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellRendererAccel_autoptr as GtkCellRendererAccel ptr
+
+private sub glib_autoptr_cleanup_GtkCellRendererAccel(byval _ptr as GtkCellRendererAccel ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellRendererCombo_autoptr as GtkCellRendererCombo ptr
+
+private sub glib_autoptr_cleanup_GtkCellRendererCombo(byval _ptr as GtkCellRendererCombo ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellRendererPixbuf_autoptr as GtkCellRendererPixbuf ptr
+
+private sub glib_autoptr_cleanup_GtkCellRendererPixbuf(byval _ptr as GtkCellRendererPixbuf ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellRendererProgress_autoptr as GtkCellRendererProgress ptr
+
+private sub glib_autoptr_cleanup_GtkCellRendererProgress(byval _ptr as GtkCellRendererProgress ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellRendererSpin_autoptr as GtkCellRendererSpin ptr
+
+private sub glib_autoptr_cleanup_GtkCellRendererSpin(byval _ptr as GtkCellRendererSpin ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellRendererSpinner_autoptr as GtkCellRendererSpinner ptr
+
+private sub glib_autoptr_cleanup_GtkCellRendererSpinner(byval _ptr as GtkCellRendererSpinner ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellRendererText_autoptr as GtkCellRendererText ptr
+
+private sub glib_autoptr_cleanup_GtkCellRendererText(byval _ptr as GtkCellRendererText ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellRendererToggle_autoptr as GtkCellRendererToggle ptr
+
+private sub glib_autoptr_cleanup_GtkCellRendererToggle(byval _ptr as GtkCellRendererToggle ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCellView_autoptr as GtkCellView ptr
+
+private sub glib_autoptr_cleanup_GtkCellView(byval _ptr as GtkCellView ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCheckButton_autoptr as GtkCheckButton ptr
+
+private sub glib_autoptr_cleanup_GtkCheckButton(byval _ptr as GtkCheckButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCheckMenuItem_autoptr as GtkCheckMenuItem ptr
+
+private sub glib_autoptr_cleanup_GtkCheckMenuItem(byval _ptr as GtkCheckMenuItem ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkClipboard_autoptr as GtkClipboard ptr
+
+private sub glib_autoptr_cleanup_GtkClipboard(byval _ptr as GtkClipboard ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkColorButton_autoptr as GtkColorButton ptr
+
+private sub glib_autoptr_cleanup_GtkColorButton(byval _ptr as GtkColorButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkColorChooser_autoptr as GtkColorChooser ptr
+
+private sub glib_autoptr_cleanup_GtkColorChooser(byval _ptr as GtkColorChooser ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkColorChooserDialog_autoptr as GtkColorChooserDialog ptr
+
+private sub glib_autoptr_cleanup_GtkColorChooserDialog(byval _ptr as GtkColorChooserDialog ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkColorChooserWidget_autoptr as GtkColorChooserWidget ptr
+
+private sub glib_autoptr_cleanup_GtkColorChooserWidget(byval _ptr as GtkColorChooserWidget ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkComboBox_autoptr as GtkComboBox ptr
+
+private sub glib_autoptr_cleanup_GtkComboBox(byval _ptr as GtkComboBox ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkComboBoxText_autoptr as GtkComboBoxText ptr
+
+private sub glib_autoptr_cleanup_GtkComboBoxText(byval _ptr as GtkComboBoxText ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkContainer_autoptr as GtkContainer ptr
+
+private sub glib_autoptr_cleanup_GtkContainer(byval _ptr as GtkContainer ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkCssProvider_autoptr as GtkCssProvider ptr
+
+private sub glib_autoptr_cleanup_GtkCssProvider(byval _ptr as GtkCssProvider ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkDialog_autoptr as GtkDialog ptr
+
+private sub glib_autoptr_cleanup_GtkDialog(byval _ptr as GtkDialog ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkDrawingArea_autoptr as GtkDrawingArea ptr
+
+private sub glib_autoptr_cleanup_GtkDrawingArea(byval _ptr as GtkDrawingArea ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkEditable_autoptr as GtkEditable ptr
+
+private sub glib_autoptr_cleanup_GtkEditable(byval _ptr as GtkEditable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkEntry_autoptr as GtkEntry ptr
+
+private sub glib_autoptr_cleanup_GtkEntry(byval _ptr as GtkEntry ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkEntryBuffer_autoptr as GtkEntryBuffer ptr
+
+private sub glib_autoptr_cleanup_GtkEntryBuffer(byval _ptr as GtkEntryBuffer ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkEntryCompletion_autoptr as GtkEntryCompletion ptr
+
+private sub glib_autoptr_cleanup_GtkEntryCompletion(byval _ptr as GtkEntryCompletion ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkEventBox_autoptr as GtkEventBox ptr
+
+private sub glib_autoptr_cleanup_GtkEventBox(byval _ptr as GtkEventBox ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkEventController_autoptr as GtkEventController ptr
+
+private sub glib_autoptr_cleanup_GtkEventController(byval _ptr as GtkEventController ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkExpander_autoptr as GtkExpander ptr
+
+private sub glib_autoptr_cleanup_GtkExpander(byval _ptr as GtkExpander ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkFileChooserButton_autoptr as GtkFileChooserButton ptr
+
+private sub glib_autoptr_cleanup_GtkFileChooserButton(byval _ptr as GtkFileChooserButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkFileChooserDialog_autoptr as GtkFileChooserDialog ptr
+
+private sub glib_autoptr_cleanup_GtkFileChooserDialog(byval _ptr as GtkFileChooserDialog ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkFileChooserWidget_autoptr as GtkFileChooserWidget ptr
+
+private sub glib_autoptr_cleanup_GtkFileChooserWidget(byval _ptr as GtkFileChooserWidget ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkFileFilter_autoptr as GtkFileFilter ptr
+
+private sub glib_autoptr_cleanup_GtkFileFilter(byval _ptr as GtkFileFilter ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkFixed_autoptr as GtkFixed ptr
+
+private sub glib_autoptr_cleanup_GtkFixed(byval _ptr as GtkFixed ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkFlowBox_autoptr as GtkFlowBox ptr
+
+private sub glib_autoptr_cleanup_GtkFlowBox(byval _ptr as GtkFlowBox ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkFlowBoxChild_autoptr as GtkFlowBoxChild ptr
+
+private sub glib_autoptr_cleanup_GtkFlowBoxChild(byval _ptr as GtkFlowBoxChild ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkFontButton_autoptr as GtkFontButton ptr
+
+private sub glib_autoptr_cleanup_GtkFontButton(byval _ptr as GtkFontButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkFontChooser_autoptr as GtkFontChooser ptr
+
+private sub glib_autoptr_cleanup_GtkFontChooser(byval _ptr as GtkFontChooser ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkFontChooserDialog_autoptr as GtkFontChooserDialog ptr
+
+private sub glib_autoptr_cleanup_GtkFontChooserDialog(byval _ptr as GtkFontChooserDialog ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkFontChooserWidget_autoptr as GtkFontChooserWidget ptr
+
+private sub glib_autoptr_cleanup_GtkFontChooserWidget(byval _ptr as GtkFontChooserWidget ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkFrame_autoptr as GtkFrame ptr
+
+private sub glib_autoptr_cleanup_GtkFrame(byval _ptr as GtkFrame ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkGLArea_autoptr as GtkGLArea ptr
+
+private sub glib_autoptr_cleanup_GtkGLArea(byval _ptr as GtkGLArea ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkGesture_autoptr as GtkGesture ptr
+
+private sub glib_autoptr_cleanup_GtkGesture(byval _ptr as GtkGesture ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkGestureDrag_autoptr as GtkGestureDrag ptr
+
+private sub glib_autoptr_cleanup_GtkGestureDrag(byval _ptr as GtkGestureDrag ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkGestureLongPress_autoptr as GtkGestureLongPress ptr
+
+private sub glib_autoptr_cleanup_GtkGestureLongPress(byval _ptr as GtkGestureLongPress ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkGestureMultiPress_autoptr as GtkGestureMultiPress ptr
+
+private sub glib_autoptr_cleanup_GtkGestureMultiPress(byval _ptr as GtkGestureMultiPress ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkGesturePan_autoptr as GtkGesturePan ptr
+
+private sub glib_autoptr_cleanup_GtkGesturePan(byval _ptr as GtkGesturePan ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkGestureRotate_autoptr as GtkGestureRotate ptr
+
+private sub glib_autoptr_cleanup_GtkGestureRotate(byval _ptr as GtkGestureRotate ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkGestureSingle_autoptr as GtkGestureSingle ptr
+
+private sub glib_autoptr_cleanup_GtkGestureSingle(byval _ptr as GtkGestureSingle ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkGestureSwipe_autoptr as GtkGestureSwipe ptr
+
+private sub glib_autoptr_cleanup_GtkGestureSwipe(byval _ptr as GtkGestureSwipe ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkGestureZoom_autoptr as GtkGestureZoom ptr
+
+private sub glib_autoptr_cleanup_GtkGestureZoom(byval _ptr as GtkGestureZoom ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkGrid_autoptr as GtkGrid ptr
+
+private sub glib_autoptr_cleanup_GtkGrid(byval _ptr as GtkGrid ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkHeaderBar_autoptr as GtkHeaderBar ptr
+
+private sub glib_autoptr_cleanup_GtkHeaderBar(byval _ptr as GtkHeaderBar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkIMContext_autoptr as GtkIMContext ptr
+
+private sub glib_autoptr_cleanup_GtkIMContext(byval _ptr as GtkIMContext ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkIMContextSimple_autoptr as GtkIMContextSimple ptr
+
+private sub glib_autoptr_cleanup_GtkIMContextSimple(byval _ptr as GtkIMContextSimple ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkIMMulticontext_autoptr as GtkIMMulticontext ptr
+
+private sub glib_autoptr_cleanup_GtkIMMulticontext(byval _ptr as GtkIMMulticontext ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkIconInfo_autoptr as GtkIconInfo ptr
+
+private sub glib_autoptr_cleanup_GtkIconInfo(byval _ptr as GtkIconInfo ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkIconTheme_autoptr as GtkIconTheme ptr
+
+private sub glib_autoptr_cleanup_GtkIconTheme(byval _ptr as GtkIconTheme ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkIconView_autoptr as GtkIconView ptr
+
+private sub glib_autoptr_cleanup_GtkIconView(byval _ptr as GtkIconView ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkImage_autoptr as GtkImage ptr
+
+private sub glib_autoptr_cleanup_GtkImage(byval _ptr as GtkImage ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkInfoBar_autoptr as GtkInfoBar ptr
+
+private sub glib_autoptr_cleanup_GtkInfoBar(byval _ptr as GtkInfoBar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkInvisible_autoptr as GtkInvisible ptr
+
+private sub glib_autoptr_cleanup_GtkInvisible(byval _ptr as GtkInvisible ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkLabel_autoptr as GtkLabel ptr
+
+private sub glib_autoptr_cleanup_GtkLabel(byval _ptr as GtkLabel ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkLayout_autoptr as GtkLayout ptr
+
+private sub glib_autoptr_cleanup_GtkLayout(byval _ptr as GtkLayout ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkLevelBar_autoptr as GtkLevelBar ptr
+
+private sub glib_autoptr_cleanup_GtkLevelBar(byval _ptr as GtkLevelBar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkLinkButton_autoptr as GtkLinkButton ptr
+
+private sub glib_autoptr_cleanup_GtkLinkButton(byval _ptr as GtkLinkButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkListBox_autoptr as GtkListBox ptr
+
+private sub glib_autoptr_cleanup_GtkListBox(byval _ptr as GtkListBox ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkListBoxRow_autoptr as GtkListBoxRow ptr
+
+private sub glib_autoptr_cleanup_GtkListBoxRow(byval _ptr as GtkListBoxRow ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkListStore_autoptr as GtkListStore ptr
+
+private sub glib_autoptr_cleanup_GtkListStore(byval _ptr as GtkListStore ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkLockButton_autoptr as GtkLockButton ptr
+
+private sub glib_autoptr_cleanup_GtkLockButton(byval _ptr as GtkLockButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkMenu_autoptr as GtkMenu ptr
+
+private sub glib_autoptr_cleanup_GtkMenu(byval _ptr as GtkMenu ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkMenuBar_autoptr as GtkMenuBar ptr
+
+private sub glib_autoptr_cleanup_GtkMenuBar(byval _ptr as GtkMenuBar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkMenuButton_autoptr as GtkMenuButton ptr
+
+private sub glib_autoptr_cleanup_GtkMenuButton(byval _ptr as GtkMenuButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkMenuItem_autoptr as GtkMenuItem ptr
+
+private sub glib_autoptr_cleanup_GtkMenuItem(byval _ptr as GtkMenuItem ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkMenuShell_autoptr as GtkMenuShell ptr
+
+private sub glib_autoptr_cleanup_GtkMenuShell(byval _ptr as GtkMenuShell ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkMenuToolButton_autoptr as GtkMenuToolButton ptr
+
+private sub glib_autoptr_cleanup_GtkMenuToolButton(byval _ptr as GtkMenuToolButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkMessageDialog_autoptr as GtkMessageDialog ptr
+
+private sub glib_autoptr_cleanup_GtkMessageDialog(byval _ptr as GtkMessageDialog ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkMountOperation_autoptr as GtkMountOperation ptr
+
+private sub glib_autoptr_cleanup_GtkMountOperation(byval _ptr as GtkMountOperation ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkNotebook_autoptr as GtkNotebook ptr
+
+private sub glib_autoptr_cleanup_GtkNotebook(byval _ptr as GtkNotebook ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkOffscreenWindow_autoptr as GtkOffscreenWindow ptr
+
+private sub glib_autoptr_cleanup_GtkOffscreenWindow(byval _ptr as GtkOffscreenWindow ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkOrientable_autoptr as GtkOrientable ptr
+
+private sub glib_autoptr_cleanup_GtkOrientable(byval _ptr as GtkOrientable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkOverlay_autoptr as GtkOverlay ptr
+
+private sub glib_autoptr_cleanup_GtkOverlay(byval _ptr as GtkOverlay ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkPageSetup_autoptr as GtkPageSetup ptr
+
+private sub glib_autoptr_cleanup_GtkPageSetup(byval _ptr as GtkPageSetup ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkPaned_autoptr as GtkPaned ptr
+
+private sub glib_autoptr_cleanup_GtkPaned(byval _ptr as GtkPaned ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkPlacesSidebar_autoptr as GtkPlacesSidebar ptr
+
+private sub glib_autoptr_cleanup_GtkPlacesSidebar(byval _ptr as GtkPlacesSidebar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkPopover_autoptr as GtkPopover ptr
+
+private sub glib_autoptr_cleanup_GtkPopover(byval _ptr as GtkPopover ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkPopoverMenu_autoptr as GtkPopoverMenu ptr
+
+private sub glib_autoptr_cleanup_GtkPopoverMenu(byval _ptr as GtkPopoverMenu ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkPrintContext_autoptr as GtkPrintContext ptr
+
+private sub glib_autoptr_cleanup_GtkPrintContext(byval _ptr as GtkPrintContext ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkPrintOperation_autoptr as GtkPrintOperation ptr
+
+private sub glib_autoptr_cleanup_GtkPrintOperation(byval _ptr as GtkPrintOperation ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkPrintOperationPreview_autoptr as GtkPrintOperationPreview ptr
+
+private sub glib_autoptr_cleanup_GtkPrintOperationPreview(byval _ptr as GtkPrintOperationPreview ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkPrintSettings_autoptr as GtkPrintSettings ptr
+
+private sub glib_autoptr_cleanup_GtkPrintSettings(byval _ptr as GtkPrintSettings ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkProgressBar_autoptr as GtkProgressBar ptr
+
+private sub glib_autoptr_cleanup_GtkProgressBar(byval _ptr as GtkProgressBar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkRadioButton_autoptr as GtkRadioButton ptr
+
+private sub glib_autoptr_cleanup_GtkRadioButton(byval _ptr as GtkRadioButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkRadioMenuItem_autoptr as GtkRadioMenuItem ptr
+
+private sub glib_autoptr_cleanup_GtkRadioMenuItem(byval _ptr as GtkRadioMenuItem ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkRadioToolButton_autoptr as GtkRadioToolButton ptr
+
+private sub glib_autoptr_cleanup_GtkRadioToolButton(byval _ptr as GtkRadioToolButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkRange_autoptr as GtkRange ptr
+
+private sub glib_autoptr_cleanup_GtkRange(byval _ptr as GtkRange ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkRcStyle_autoptr as GtkRcStyle ptr
+
+private sub glib_autoptr_cleanup_GtkRcStyle(byval _ptr as GtkRcStyle ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkRecentChooser_autoptr as GtkRecentChooser ptr
+
+private sub glib_autoptr_cleanup_GtkRecentChooser(byval _ptr as GtkRecentChooser ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkRecentChooserDialog_autoptr as GtkRecentChooserDialog ptr
+
+private sub glib_autoptr_cleanup_GtkRecentChooserDialog(byval _ptr as GtkRecentChooserDialog ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkRecentChooserMenu_autoptr as GtkRecentChooserMenu ptr
+
+private sub glib_autoptr_cleanup_GtkRecentChooserMenu(byval _ptr as GtkRecentChooserMenu ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkRecentChooserWidget_autoptr as GtkRecentChooserWidget ptr
+
+private sub glib_autoptr_cleanup_GtkRecentChooserWidget(byval _ptr as GtkRecentChooserWidget ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkRecentFilter_autoptr as GtkRecentFilter ptr
+
+private sub glib_autoptr_cleanup_GtkRecentFilter(byval _ptr as GtkRecentFilter ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkRecentManager_autoptr as GtkRecentManager ptr
+
+private sub glib_autoptr_cleanup_GtkRecentManager(byval _ptr as GtkRecentManager ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkRevealer_autoptr as GtkRevealer ptr
+
+private sub glib_autoptr_cleanup_GtkRevealer(byval _ptr as GtkRevealer ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkScale_autoptr as GtkScale ptr
+
+private sub glib_autoptr_cleanup_GtkScale(byval _ptr as GtkScale ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkScaleButton_autoptr as GtkScaleButton ptr
+
+private sub glib_autoptr_cleanup_GtkScaleButton(byval _ptr as GtkScaleButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkScrollable_autoptr as GtkScrollable ptr
+
+private sub glib_autoptr_cleanup_GtkScrollable(byval _ptr as GtkScrollable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkScrollbar_autoptr as GtkScrollbar ptr
+
+private sub glib_autoptr_cleanup_GtkScrollbar(byval _ptr as GtkScrollbar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkScrolledWindow_autoptr as GtkScrolledWindow ptr
+
+private sub glib_autoptr_cleanup_GtkScrolledWindow(byval _ptr as GtkScrolledWindow ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkSearchBar_autoptr as GtkSearchBar ptr
+
+private sub glib_autoptr_cleanup_GtkSearchBar(byval _ptr as GtkSearchBar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkSearchEntry_autoptr as GtkSearchEntry ptr
+
+private sub glib_autoptr_cleanup_GtkSearchEntry(byval _ptr as GtkSearchEntry ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkSeparator_autoptr as GtkSeparator ptr
+
+private sub glib_autoptr_cleanup_GtkSeparator(byval _ptr as GtkSeparator ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkSeparatorMenuItem_autoptr as GtkSeparatorMenuItem ptr
+
+private sub glib_autoptr_cleanup_GtkSeparatorMenuItem(byval _ptr as GtkSeparatorMenuItem ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkSeparatorToolItem_autoptr as GtkSeparatorToolItem ptr
+
+private sub glib_autoptr_cleanup_GtkSeparatorToolItem(byval _ptr as GtkSeparatorToolItem ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkSettings_autoptr as GtkSettings ptr
+
+private sub glib_autoptr_cleanup_GtkSettings(byval _ptr as GtkSettings ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkStackSidebar_autoptr as GtkStackSidebar ptr
+
+private sub glib_autoptr_cleanup_GtkStackSidebar(byval _ptr as GtkStackSidebar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkSizeGroup_autoptr as GtkSizeGroup ptr
+
+private sub glib_autoptr_cleanup_GtkSizeGroup(byval _ptr as GtkSizeGroup ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkSpinButton_autoptr as GtkSpinButton ptr
+
+private sub glib_autoptr_cleanup_GtkSpinButton(byval _ptr as GtkSpinButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkSpinner_autoptr as GtkSpinner ptr
+
+private sub glib_autoptr_cleanup_GtkSpinner(byval _ptr as GtkSpinner ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkStack_autoptr as GtkStack ptr
+
+private sub glib_autoptr_cleanup_GtkStack(byval _ptr as GtkStack ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkStackSwitcher_autoptr as GtkStackSwitcher ptr
+
+private sub glib_autoptr_cleanup_GtkStackSwitcher(byval _ptr as GtkStackSwitcher ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkStatusbar_autoptr as GtkStatusbar ptr
+
+private sub glib_autoptr_cleanup_GtkStatusbar(byval _ptr as GtkStatusbar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkStyle_autoptr as GtkStyle ptr
+
+private sub glib_autoptr_cleanup_GtkStyle(byval _ptr as GtkStyle ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkStyleContext_autoptr as GtkStyleContext ptr
+
+private sub glib_autoptr_cleanup_GtkStyleContext(byval _ptr as GtkStyleContext ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkStyleProperties_autoptr as GtkStyleProperties ptr
+
+private sub glib_autoptr_cleanup_GtkStyleProperties(byval _ptr as GtkStyleProperties ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkStyleProvider_autoptr as GtkStyleProvider ptr
+
+private sub glib_autoptr_cleanup_GtkStyleProvider(byval _ptr as GtkStyleProvider ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkSwitch_autoptr as GtkSwitch ptr
+
+private sub glib_autoptr_cleanup_GtkSwitch(byval _ptr as GtkSwitch ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTextBuffer_autoptr as GtkTextBuffer ptr
+
+private sub glib_autoptr_cleanup_GtkTextBuffer(byval _ptr as GtkTextBuffer ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTextChildAnchor_autoptr as GtkTextChildAnchor ptr
+
+private sub glib_autoptr_cleanup_GtkTextChildAnchor(byval _ptr as GtkTextChildAnchor ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTextMark_autoptr as GtkTextMark ptr
+
+private sub glib_autoptr_cleanup_GtkTextMark(byval _ptr as GtkTextMark ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTextTag_autoptr as GtkTextTag ptr
+
+private sub glib_autoptr_cleanup_GtkTextTag(byval _ptr as GtkTextTag ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTextTagTable_autoptr as GtkTextTagTable ptr
+
+private sub glib_autoptr_cleanup_GtkTextTagTable(byval _ptr as GtkTextTagTable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTextView_autoptr as GtkTextView ptr
+
+private sub glib_autoptr_cleanup_GtkTextView(byval _ptr as GtkTextView ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkToggleButton_autoptr as GtkToggleButton ptr
+
+private sub glib_autoptr_cleanup_GtkToggleButton(byval _ptr as GtkToggleButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkToggleToolButton_autoptr as GtkToggleToolButton ptr
+
+private sub glib_autoptr_cleanup_GtkToggleToolButton(byval _ptr as GtkToggleToolButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkToolButton_autoptr as GtkToolButton ptr
+
+private sub glib_autoptr_cleanup_GtkToolButton(byval _ptr as GtkToolButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkToolItem_autoptr as GtkToolItem ptr
+
+private sub glib_autoptr_cleanup_GtkToolItem(byval _ptr as GtkToolItem ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkToolItemGroup_autoptr as GtkToolItemGroup ptr
+
+private sub glib_autoptr_cleanup_GtkToolItemGroup(byval _ptr as GtkToolItemGroup ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkToolPalette_autoptr as GtkToolPalette ptr
+
+private sub glib_autoptr_cleanup_GtkToolPalette(byval _ptr as GtkToolPalette ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkToolShell_autoptr as GtkToolShell ptr
+
+private sub glib_autoptr_cleanup_GtkToolShell(byval _ptr as GtkToolShell ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkToolbar_autoptr as GtkToolbar ptr
+
+private sub glib_autoptr_cleanup_GtkToolbar(byval _ptr as GtkToolbar ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTooltip_autoptr as GtkTooltip ptr
+
+private sub glib_autoptr_cleanup_GtkTooltip(byval _ptr as GtkTooltip ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTreeDragDest_autoptr as GtkTreeDragDest ptr
+
+private sub glib_autoptr_cleanup_GtkTreeDragDest(byval _ptr as GtkTreeDragDest ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTreeDragSource_autoptr as GtkTreeDragSource ptr
+
+private sub glib_autoptr_cleanup_GtkTreeDragSource(byval _ptr as GtkTreeDragSource ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTreeModel_autoptr as GtkTreeModel ptr
+
+private sub glib_autoptr_cleanup_GtkTreeModel(byval _ptr as GtkTreeModel ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTreeModelFilter_autoptr as GtkTreeModelFilter ptr
+
+private sub glib_autoptr_cleanup_GtkTreeModelFilter(byval _ptr as GtkTreeModelFilter ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTreeModelSort_autoptr as GtkTreeModelSort ptr
+
+private sub glib_autoptr_cleanup_GtkTreeModelSort(byval _ptr as GtkTreeModelSort ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTreeSelection_autoptr as GtkTreeSelection ptr
+
+private sub glib_autoptr_cleanup_GtkTreeSelection(byval _ptr as GtkTreeSelection ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTreeSortable_autoptr as GtkTreeSortable ptr
+
+private sub glib_autoptr_cleanup_GtkTreeSortable(byval _ptr as GtkTreeSortable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTreeStore_autoptr as GtkTreeStore ptr
+
+private sub glib_autoptr_cleanup_GtkTreeStore(byval _ptr as GtkTreeStore ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTreeView_autoptr as GtkTreeView ptr
+
+private sub glib_autoptr_cleanup_GtkTreeView(byval _ptr as GtkTreeView ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkTreeViewColumn_autoptr as GtkTreeViewColumn ptr
+
+private sub glib_autoptr_cleanup_GtkTreeViewColumn(byval _ptr as GtkTreeViewColumn ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkViewport_autoptr as GtkViewport ptr
+
+private sub glib_autoptr_cleanup_GtkViewport(byval _ptr as GtkViewport ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkVolumeButton_autoptr as GtkVolumeButton ptr
+
+private sub glib_autoptr_cleanup_GtkVolumeButton(byval _ptr as GtkVolumeButton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkWidget_autoptr as GtkWidget ptr
+
+private sub glib_autoptr_cleanup_GtkWidget(byval _ptr as GtkWidget ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkWindow_autoptr as GtkWindow ptr
+
+private sub glib_autoptr_cleanup_GtkWindow(byval _ptr as GtkWindow ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkWindowGroup_autoptr as GtkWindowGroup ptr
+
+private sub glib_autoptr_cleanup_GtkWindowGroup(byval _ptr as GtkWindowGroup ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GtkBorder_autoptr as GtkBorder ptr
+
+private sub glib_autoptr_cleanup_GtkBorder(byval _ptr as GtkBorder ptr ptr)
+	if *_ptr then
+		gtk_border_free(*_ptr)
+	end if
+end sub
+
+type GtkPaperSize_autoptr as GtkPaperSize ptr
+
+private sub glib_autoptr_cleanup_GtkPaperSize(byval _ptr as GtkPaperSize ptr ptr)
+	if *_ptr then
+		gtk_paper_size_free(*_ptr)
+	end if
+end sub
+
+type GtkRequisition_autoptr as GtkRequisition ptr
+
+private sub glib_autoptr_cleanup_GtkRequisition(byval _ptr as GtkRequisition ptr ptr)
+	if *_ptr then
+		gtk_requisition_free(*_ptr)
+	end if
+end sub
+
+type GtkSelectionData_autoptr as GtkSelectionData ptr
+
+private sub glib_autoptr_cleanup_GtkSelectionData(byval _ptr as GtkSelectionData ptr ptr)
+	if *_ptr then
+		gtk_selection_data_free(*_ptr)
+	end if
+end sub
+
+type GtkTargetList_autoptr as GtkTargetList ptr
+
+private sub glib_autoptr_cleanup_GtkTargetList(byval _ptr as GtkTargetList ptr ptr)
+	if *_ptr then
+		gtk_target_list_unref(*_ptr)
+	end if
+end sub
+
+type GtkTextAttributes_autoptr as GtkTextAttributes ptr
+
+private sub glib_autoptr_cleanup_GtkTextAttributes(byval _ptr as GtkTextAttributes ptr ptr)
+	if *_ptr then
+		gtk_text_attributes_unref(*_ptr)
+	end if
+end sub
+
+type GtkTextIter_autoptr as GtkTextIter ptr
+
+private sub glib_autoptr_cleanup_GtkTextIter(byval _ptr as GtkTextIter ptr ptr)
+	if *_ptr then
+		gtk_text_iter_free(*_ptr)
+	end if
+end sub
+
+type GtkTreeIter_autoptr as GtkTreeIter ptr
+
+private sub glib_autoptr_cleanup_GtkTreeIter(byval _ptr as GtkTreeIter ptr ptr)
+	if *_ptr then
+		gtk_tree_iter_free(*_ptr)
+	end if
+end sub
+
+type GtkTreeRowReference_autoptr as GtkTreeRowReference ptr
+
+private sub glib_autoptr_cleanup_GtkTreeRowReference(byval _ptr as GtkTreeRowReference ptr ptr)
+	if *_ptr then
+		gtk_tree_row_reference_free(*_ptr)
+	end if
+end sub
+
+type GtkWidgetPath_autoptr as GtkWidgetPath ptr
+
+private sub glib_autoptr_cleanup_GtkWidgetPath(byval _ptr as GtkWidgetPath ptr ptr)
+	if *_ptr then
+		gtk_widget_path_unref(*_ptr)
+	end if
+end sub
+
 #undef __GTK_H_INSIDE__
 
 end extern

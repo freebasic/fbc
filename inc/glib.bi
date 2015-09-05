@@ -1,4 +1,4 @@
-'' FreeBASIC binding for glib-2.42.2
+'' FreeBASIC binding for glib-2.44.1
 ''
 '' based on the C header files:
 ''   GLIB - Library of useful routines for C programming
@@ -59,6 +59,7 @@
 ''     procedure g_atomic_pointer_or => g_atomic_pointer_or_
 ''     procedure g_atomic_pointer_xor => g_atomic_pointer_xor_
 ''     #ifdef __FB_WIN32__
+''         procedure g_atexit => g_atexit_
 ''         procedure g_filename_to_utf8 => g_filename_to_utf8_
 ''         procedure g_filename_from_utf8 => g_filename_from_utf8_
 ''         procedure g_filename_from_uri => g_filename_from_uri_
@@ -79,9 +80,9 @@
 ''         procedure g_file_open_tmp => g_file_open_tmp_
 ''         procedure g_get_current_dir => g_get_current_dir_
 ''     #endif
+''     procedure g_steal_pointer => g_steal_pointer_
 ''     procedure g_source_remove => g_source_remove_
 ''     #ifdef __FB_WIN32__
-''         procedure g_atexit => g_atexit_
 ''         procedure g_io_channel_new_file => g_io_channel_new_file_
 ''     #endif
 ''     #define G_QUEUE_INIT => G_QUEUE_INIT_
@@ -148,6 +149,43 @@ extern "C"
 #define G_STRUCT_MEMBER(member_type, struct_p, struct_offset) (*cptr(member_type ptr, G_STRUCT_MEMBER_P((struct_p), (struct_offset))))
 #define G_LIKELY(expr) (expr)
 #define G_UNLIKELY(expr) (expr)
+#define _GLIB_AUTOPTR_FUNC_NAME(TypeName) glib_autoptr_cleanup_##TypeName
+#define _GLIB_AUTOPTR_TYPENAME(TypeName) TypeName##_autoptr
+#define _GLIB_AUTO_FUNC_NAME(TypeName) glib_auto_cleanup_##TypeName
+#macro _GLIB_DEFINE_AUTOPTR_CHAINUP(ModuleObjName, ParentName)
+	extern "C"
+		type _GLIB_AUTOPTR_TYPENAME(ModuleObjName) as ModuleObjName ptr
+		private sub _GLIB_AUTOPTR_FUNC_NAME(ModuleObjName)(byval _ptr as ModuleObjName ptr ptr)
+			_GLIB_AUTOPTR_FUNC_NAME(ParentName)(cptr(ParentName ptr ptr, _ptr))
+		end sub
+	end extern
+#endmacro
+#macro G_DEFINE_AUTOPTR_CLEANUP_FUNC(TypeName, func)
+	extern "C"
+		type _GLIB_AUTOPTR_TYPENAME(TypeName) as TypeName ptr
+		private sub _GLIB_AUTOPTR_FUNC_NAME(TypeName)(byval _ptr as TypeName ptr ptr)
+			if *_ptr then
+				func(*_ptr)
+			end if
+		end sub
+	end extern
+#endmacro
+#macro G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TypeName, func)
+	extern "C"
+		private sub _GLIB_AUTO_FUNC_NAME(TypeName)(byval _ptr as TypeName ptr)
+			func(_ptr)
+		end sub
+	end extern
+#endmacro
+#macro G_DEFINE_AUTO_CLEANUP_FREE_FUNC(TypeName, func, none)
+	extern "C"
+		private sub _GLIB_AUTO_FUNC_NAME(TypeName)(byval _ptr as TypeName ptr)
+			if *_ptr <> none
+				func(*_ptr)
+			end if
+		end sub
+	end extern
+#endmacro
 #define __G_VERSION_MACROS_H__
 #define G_ENCODE_VERSION(major, minor) (((major) shl 16) or ((minor) shl 8))
 #define GLIB_VERSION_2_26 G_ENCODE_VERSION(2, 26)
@@ -161,10 +199,14 @@ extern "C"
 #define GLIB_VERSION_2_42 G_ENCODE_VERSION(2, 42)
 #define GLIB_VERSION_CUR_STABLE G_ENCODE_VERSION(GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION)
 #define GLIB_VERSION_PREV_STABLE G_ENCODE_VERSION(GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION - 2)
+#define GLIB_VERSION_2_44 G_ENCODE_VERSION(2, 44)
 #define GLIB_VERSION_MIN_REQUIRED GLIB_VERSION_CUR_STABLE
 #undef GLIB_VERSION_MAX_ALLOWED
 #define GLIB_VERSION_MAX_ALLOWED GLIB_VERSION_CUR_STABLE
 #define GLIB_AVAILABLE_IN_ALL _GLIB_EXTERN
+#define GLIB_DEPRECATED_IN_2_44 GLIB_DEPRECATED
+#define GLIB_DEPRECATED_IN_2_44_FOR(f) GLIB_DEPRECATED_FOR(f)
+#define GLIB_AVAILABLE_IN_2_44 _GLIB_EXTERN
 
 type gchar as zstring
 type gshort as short
@@ -437,6 +479,99 @@ declare sub g_propagate_error(byval dest as GError ptr ptr, byval src as GError 
 declare sub g_clear_error(byval err as GError ptr ptr)
 declare sub g_prefix_error(byval err as GError ptr ptr, byval format as const gchar ptr, ...)
 declare sub g_propagate_prefixed_error(byval dest as GError ptr ptr, byval src as GError ptr, byval format as const gchar ptr, ...)
+#define __G_UTILS_H__
+declare function g_get_user_name() as const gchar ptr
+declare function g_get_real_name() as const gchar ptr
+declare function g_get_home_dir() as const gchar ptr
+declare function g_get_tmp_dir() as const gchar ptr
+declare function g_get_host_name() as const gchar ptr
+declare function g_get_prgname() as const gchar ptr
+declare sub g_set_prgname(byval prgname as const gchar ptr)
+declare function g_get_application_name() as const gchar ptr
+declare sub g_set_application_name(byval application_name as const gchar ptr)
+declare sub g_reload_user_special_dirs_cache()
+declare function g_get_user_data_dir() as const gchar ptr
+declare function g_get_user_config_dir() as const gchar ptr
+declare function g_get_user_cache_dir() as const gchar ptr
+declare function g_get_system_data_dirs() as const gchar const ptr ptr
+
+#ifdef __FB_WIN32__
+	declare function g_win32_get_system_data_dirs_for_module(byval address_of_function as sub()) as const gchar const ptr ptr
+#endif
+
+declare function g_get_system_config_dirs() as const gchar const ptr ptr
+declare function g_get_user_runtime_dir() as const gchar ptr
+
+type GUserDirectory as long
+enum
+	G_USER_DIRECTORY_DESKTOP
+	G_USER_DIRECTORY_DOCUMENTS
+	G_USER_DIRECTORY_DOWNLOAD
+	G_USER_DIRECTORY_MUSIC
+	G_USER_DIRECTORY_PICTURES
+	G_USER_DIRECTORY_PUBLIC_SHARE
+	G_USER_DIRECTORY_TEMPLATES
+	G_USER_DIRECTORY_VIDEOS
+	G_USER_N_DIRECTORIES
+end enum
+
+declare function g_get_user_special_dir(byval directory as GUserDirectory) as const gchar ptr
+type GDebugKey as _GDebugKey
+
+type _GDebugKey
+	key as const gchar ptr
+	value as guint
+end type
+
+declare function g_parse_debug_string(byval string as const gchar ptr, byval keys as const GDebugKey ptr, byval nkeys as guint) as guint
+declare function g_snprintf(byval string as gchar ptr, byval n as gulong, byval format as const gchar ptr, ...) as gint
+declare function g_vsnprintf(byval string as gchar ptr, byval n as gulong, byval format as const gchar ptr, byval args as va_list) as gint
+declare sub g_nullify_pointer(byval nullify_location as gpointer ptr)
+
+type GFormatSizeFlags as long
+enum
+	G_FORMAT_SIZE_DEFAULT = 0
+	G_FORMAT_SIZE_LONG_FORMAT = 1 shl 0
+	G_FORMAT_SIZE_IEC_UNITS = 1 shl 1
+end enum
+
+declare function g_format_size_full(byval size as guint64, byval flags as GFormatSizeFlags) as gchar ptr
+declare function g_format_size(byval size as guint64) as gchar ptr
+declare function g_format_size_for_display(byval size as goffset) as gchar ptr
+type GVoidFunc as sub()
+
+#ifdef __FB_UNIX__
+	declare sub g_atexit(byval func as GVoidFunc)
+#else
+	declare sub g_atexit_ alias "g_atexit"(byval func as GVoidFunc)
+	#define g_atexit(func) atexit(func)
+#endif
+
+declare function g_find_program_in_path(byval program as const gchar ptr) as gchar ptr
+declare function g_bit_nth_lsf(byval mask as gulong, byval nth_bit as gint) as gint
+declare function g_bit_nth_msf(byval mask as gulong, byval nth_bit as gint) as gint
+declare function g_bit_storage(byval number as gulong) as guint
+
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
+	#macro G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
+		dim shared dll_name as zstring ptr
+		function DllMain stdcall alias "DllMain"(byval hinstDLL as HINSTANCE, byval fdwReason as DWORD, byval lpvReserved as LPVOID) as BOOL
+			dim wcbfr as wstring * 1000
+			dim tem as zstring ptr
+			select case fdwReason
+			case DLL_PROCESS_ATTACH
+				GetModuleFileNameW(cast(HMODULE, hinstDLL), wcbfr, 1000)
+				tem = g_utf16_to_utf8(wcbfr, -1, NULL, NULL, NULL)
+				dll_name = g_path_get_basename(tem)
+				g_free(tem)
+			end select
+			return CTRUE
+		end function
+	#endmacro
+#else
+	#define G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
+#endif
+
 #define G_THREAD_ERROR g_thread_error_quark()
 declare function g_thread_error_quark() as GQuark
 
@@ -541,6 +676,17 @@ declare function g_once_init_enter(byval location as any ptr) as gboolean
 declare sub g_once_init_leave(byval location as any ptr, byval result as gsize)
 #define g_once(once, func, arg) iif((once)->status = G_ONCE_STATUS_READY, (once)->retval, g_once_impl((once), (func), (arg)))
 declare function g_get_num_processors() as guint
+type GMutexLocker as any
+
+private function g_mutex_locker_new(byval mutex as GMutex ptr) as GMutexLocker ptr
+	g_mutex_lock(mutex)
+	return cptr(GMutexLocker ptr, mutex)
+end function
+
+private sub g_mutex_locker_free(byval locker as GMutexLocker ptr)
+	g_mutex_unlock(cptr(GMutex ptr, locker))
+end sub
+
 type GAsyncQueue as _GAsyncQueue
 declare function g_async_queue_new() as GAsyncQueue ptr
 declare function g_async_queue_new_full(byval item_free_func as GDestroyNotify) as GAsyncQueue ptr
@@ -1164,9 +1310,18 @@ declare function g_realloc_n(byval mem as gpointer, byval n_blocks as gsize, byv
 declare function g_try_malloc_n(byval n_blocks as gsize, byval n_block_bytes as gsize) as gpointer
 declare function g_try_malloc0_n(byval n_blocks as gsize, byval n_block_bytes as gsize) as gpointer
 declare function g_try_realloc_n(byval mem as gpointer, byval n_blocks as gsize, byval n_block_bytes as gsize) as gpointer
+
+private function g_steal_pointer_ alias "g_steal_pointer"(byval pp as gpointer) as gpointer
+	dim ptr_ as gpointer ptr = cptr(gpointer ptr, pp)
+	dim ref as gpointer
+	ref = *ptr_
+	(*ptr_) = cptr(any ptr, 0)
+	return ref
+end function
+
+#define g_steal_pointer(pp) iif(0, *(pp), g_steal_pointer_(pp))
 #define _G_NEW(struct_type, n_structs, func) cptr(struct_type ptr, g_##func##_n((n_structs), sizeof(struct_type)))
 #define _G_RENEW(struct_type, mem, n_structs, func) cptr(struct_type ptr, g_##func##_n(mem, (n_structs), sizeof(struct_type)))
-
 #define g_new(struct_type, n_structs) _G_NEW(struct_type, n_structs, malloc)
 #define g_new0(struct_type, n_structs) _G_NEW(struct_type, n_structs, malloc0)
 #define g_renew(struct_type, mem, n_structs) _G_RENEW(struct_type, mem, n_structs, realloc)
@@ -1996,99 +2151,6 @@ declare function g_utf8_collate(byval str1 as const gchar ptr, byval str2 as con
 declare function g_utf8_collate_key(byval str as const gchar ptr, byval len as gssize) as gchar ptr
 declare function g_utf8_collate_key_for_filename(byval str as const gchar ptr, byval len as gssize) as gchar ptr
 declare function _g_utf8_make_valid(byval name as const gchar ptr) as gchar ptr
-#define __G_UTILS_H__
-declare function g_get_user_name() as const gchar ptr
-declare function g_get_real_name() as const gchar ptr
-declare function g_get_home_dir() as const gchar ptr
-declare function g_get_tmp_dir() as const gchar ptr
-declare function g_get_host_name() as const gchar ptr
-declare function g_get_prgname() as const gchar ptr
-declare sub g_set_prgname(byval prgname as const gchar ptr)
-declare function g_get_application_name() as const gchar ptr
-declare sub g_set_application_name(byval application_name as const gchar ptr)
-declare sub g_reload_user_special_dirs_cache()
-declare function g_get_user_data_dir() as const gchar ptr
-declare function g_get_user_config_dir() as const gchar ptr
-declare function g_get_user_cache_dir() as const gchar ptr
-declare function g_get_system_data_dirs() as const gchar const ptr ptr
-
-#ifdef __FB_WIN32__
-	declare function g_win32_get_system_data_dirs_for_module(byval address_of_function as sub()) as const gchar const ptr ptr
-#endif
-
-declare function g_get_system_config_dirs() as const gchar const ptr ptr
-declare function g_get_user_runtime_dir() as const gchar ptr
-
-type GUserDirectory as long
-enum
-	G_USER_DIRECTORY_DESKTOP
-	G_USER_DIRECTORY_DOCUMENTS
-	G_USER_DIRECTORY_DOWNLOAD
-	G_USER_DIRECTORY_MUSIC
-	G_USER_DIRECTORY_PICTURES
-	G_USER_DIRECTORY_PUBLIC_SHARE
-	G_USER_DIRECTORY_TEMPLATES
-	G_USER_DIRECTORY_VIDEOS
-	G_USER_N_DIRECTORIES
-end enum
-
-declare function g_get_user_special_dir(byval directory as GUserDirectory) as const gchar ptr
-type GDebugKey as _GDebugKey
-
-type _GDebugKey
-	key as const gchar ptr
-	value as guint
-end type
-
-declare function g_parse_debug_string(byval string as const gchar ptr, byval keys as const GDebugKey ptr, byval nkeys as guint) as guint
-declare function g_snprintf(byval string as gchar ptr, byval n as gulong, byval format as const gchar ptr, ...) as gint
-declare function g_vsnprintf(byval string as gchar ptr, byval n as gulong, byval format as const gchar ptr, byval args as va_list) as gint
-declare sub g_nullify_pointer(byval nullify_location as gpointer ptr)
-
-type GFormatSizeFlags as long
-enum
-	G_FORMAT_SIZE_DEFAULT = 0
-	G_FORMAT_SIZE_LONG_FORMAT = 1 shl 0
-	G_FORMAT_SIZE_IEC_UNITS = 1 shl 1
-end enum
-
-declare function g_format_size_full(byval size as guint64, byval flags as GFormatSizeFlags) as gchar ptr
-declare function g_format_size(byval size as guint64) as gchar ptr
-declare function g_format_size_for_display(byval size as goffset) as gchar ptr
-type GVoidFunc as sub()
-
-#ifdef __FB_UNIX__
-	declare sub g_atexit(byval func as GVoidFunc)
-#else
-	declare sub g_atexit_ alias "g_atexit"(byval func as GVoidFunc)
-	#define g_atexit(func) atexit(func)
-#endif
-
-declare function g_find_program_in_path(byval program as const gchar ptr) as gchar ptr
-declare function g_bit_nth_lsf(byval mask as gulong, byval nth_bit as gint) as gint
-declare function g_bit_nth_msf(byval mask as gulong, byval nth_bit as gint) as gint
-declare function g_bit_storage(byval number as gulong) as guint
-
-#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
-	#macro G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
-		dim shared dll_name as zstring ptr
-		function DllMain stdcall alias "DllMain"(byval hinstDLL as HINSTANCE, byval fdwReason as DWORD, byval lpvReserved as LPVOID) as BOOL
-			dim wcbfr as wstring * 1000
-			dim tem as zstring ptr
-			select case fdwReason
-			case DLL_PROCESS_ATTACH
-				GetModuleFileNameW(cast(HMODULE, hinstDLL), wcbfr, 1000)
-				tem = g_utf16_to_utf8(wcbfr, -1, NULL, NULL, NULL)
-				dll_name = g_path_get_basename(tem)
-				g_free(tem)
-			end select
-			return CTRUE
-		end function
-	#endmacro
-#else
-	#define G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
-#endif
-
 type GString as _GString
 
 type _GString
@@ -2608,6 +2670,8 @@ declare sub g_option_context_set_help_enabled(byval context as GOptionContext pt
 declare function g_option_context_get_help_enabled(byval context as GOptionContext ptr) as gboolean
 declare sub g_option_context_set_ignore_unknown_options(byval context as GOptionContext ptr, byval ignore_unknown as gboolean)
 declare function g_option_context_get_ignore_unknown_options(byval context as GOptionContext ptr) as gboolean
+declare sub g_option_context_set_strict_posix(byval context as GOptionContext ptr, byval strict_posix as gboolean)
+declare function g_option_context_get_strict_posix(byval context as GOptionContext ptr) as gboolean
 declare sub g_option_context_add_main_entries(byval context as GOptionContext ptr, byval entries as const GOptionEntry ptr, byval translation_domain as const gchar ptr)
 declare function g_option_context_parse(byval context as GOptionContext ptr, byval argc as gint ptr, byval argv as gchar ptr ptr ptr, byval error as GError ptr ptr) as gboolean
 declare function g_option_context_parse_strv(byval context as GOptionContext ptr, byval arguments as gchar ptr ptr ptr, byval error as GError ptr ptr) as gboolean
@@ -2621,6 +2685,8 @@ declare function g_option_group_new(byval name as const gchar ptr, byval descrip
 declare sub g_option_group_set_parse_hooks(byval group as GOptionGroup ptr, byval pre_parse_func as GOptionParseFunc, byval post_parse_func as GOptionParseFunc)
 declare sub g_option_group_set_error_hook(byval group as GOptionGroup ptr, byval error_func as GOptionErrorFunc)
 declare sub g_option_group_free(byval group as GOptionGroup ptr)
+declare function g_option_group_ref(byval group as GOptionGroup ptr) as GOptionGroup ptr
+declare sub g_option_group_unref(byval group as GOptionGroup ptr)
 declare sub g_option_group_add_entries(byval group as GOptionGroup ptr, byval entries as const GOptionEntry ptr)
 declare sub g_option_group_set_translate_func(byval group as GOptionGroup ptr, byval func as GTranslateFunc, byval data as gpointer, byval destroy_notify as GDestroyNotify)
 declare sub g_option_group_set_translation_domain(byval group as GOptionGroup ptr, byval domain as const gchar ptr)
@@ -3258,6 +3324,7 @@ declare function g_stpcpy(byval dest as gchar ptr, byval src as const zstring pt
 declare function g_str_to_ascii(byval str as const gchar ptr, byval from_locale as const gchar ptr) as gchar ptr
 declare function g_str_tokenize_and_fold(byval string as const gchar ptr, byval translit_locale as const gchar ptr, byval ascii_alternates as gchar ptr ptr ptr) as gchar ptr ptr
 declare function g_str_match_string(byval search_term as const gchar ptr, byval potential_hit as const gchar ptr, byval accept_alternates as gboolean) as gboolean
+declare function g_strv_contains(byval strv as const gchar const ptr ptr, byval str as const gchar ptr) as gboolean
 #define __G_STRINGCHUNK_H__
 type GStringChunk as _GStringChunk
 declare function g_string_chunk_new(byval size as gsize) as GStringChunk ptr
@@ -3318,7 +3385,7 @@ type GTestFixtureFunc as sub(byval fixture as gpointer, byval user_data as gcons
 #endmacro
 
 #macro g_assert_no_error(err)
-	if (err) then
+	if err then
 		g_assertion_message_error(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, #err, err, 0, 0)
 	end if
 #endmacro
@@ -3902,6 +3969,17 @@ declare function glib_check_version_ alias "glib_check_version"(byval required_m
 	#endif
 #endif
 
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
+	type GWin32OSType as long
+	enum
+		G_WIN32_OS_ANY
+		G_WIN32_OS_WORKSTATION
+		G_WIN32_OS_SERVER
+	end enum
+
+	declare function g_win32_check_windows_version(byval major as const gint, byval minor as const gint, byval spver as const gint, byval os_type as const GWin32OSType) as gboolean
+#endif
+
 #define __G_ALLOCATOR_H__
 type GAllocator as _GAllocator
 type GMemChunk as _GMemChunk
@@ -4148,6 +4226,370 @@ declare sub g_mutex_free(byval mutex as GMutex ptr)
 declare function g_cond_new() as GCond ptr
 declare sub g_cond_free(byval cond as GCond ptr)
 declare function g_cond_timed_wait(byval cond as GCond ptr, byval mutex as GMutex ptr, byval timeval as GTimeVal ptr) as gboolean
+
+private sub g_autoptr_cleanup_generic_gfree(byval p as any ptr)
+	dim pp as any ptr ptr = cptr(any ptr ptr, p)
+	if *pp then
+		g_free(*pp)
+	end if
+end sub
+
+type GAsyncQueue_autoptr as GAsyncQueue ptr
+
+private sub glib_autoptr_cleanup_GAsyncQueue(byval _ptr as GAsyncQueue ptr ptr)
+	if *_ptr then
+		g_async_queue_unref(*_ptr)
+	end if
+end sub
+
+type GBookmarkFile_autoptr as GBookmarkFile ptr
+
+private sub glib_autoptr_cleanup_GBookmarkFile(byval _ptr as GBookmarkFile ptr ptr)
+	if *_ptr then
+		g_bookmark_file_free(*_ptr)
+	end if
+end sub
+
+type GBytes_autoptr as GBytes ptr
+
+private sub glib_autoptr_cleanup_GBytes(byval _ptr as GBytes ptr ptr)
+	if *_ptr then
+		g_bytes_unref(*_ptr)
+	end if
+end sub
+
+type GChecksum_autoptr as GChecksum ptr
+
+private sub glib_autoptr_cleanup_GChecksum(byval _ptr as GChecksum ptr ptr)
+	if *_ptr then
+		g_checksum_free(*_ptr)
+	end if
+end sub
+
+type GDateTime_autoptr as GDateTime ptr
+
+private sub glib_autoptr_cleanup_GDateTime(byval _ptr as GDateTime ptr ptr)
+	if *_ptr then
+		g_date_time_unref(*_ptr)
+	end if
+end sub
+
+type GDir_autoptr as GDir ptr
+
+private sub glib_autoptr_cleanup_GDir(byval _ptr as GDir ptr ptr)
+	if *_ptr then
+		g_dir_close(*_ptr)
+	end if
+end sub
+
+type GError_autoptr as GError ptr
+
+private sub glib_autoptr_cleanup_GError(byval _ptr as GError ptr ptr)
+	if *_ptr then
+		g_error_free(*_ptr)
+	end if
+end sub
+
+type GHashTable_autoptr as GHashTable ptr
+
+private sub glib_autoptr_cleanup_GHashTable(byval _ptr as GHashTable ptr ptr)
+	if *_ptr then
+		g_hash_table_unref(*_ptr)
+	end if
+end sub
+
+type GHmac_autoptr as GHmac ptr
+
+private sub glib_autoptr_cleanup_GHmac(byval _ptr as GHmac ptr ptr)
+	if *_ptr then
+		g_hmac_unref(*_ptr)
+	end if
+end sub
+
+type GIOChannel_autoptr as GIOChannel ptr
+
+private sub glib_autoptr_cleanup_GIOChannel(byval _ptr as GIOChannel ptr ptr)
+	if *_ptr then
+		g_io_channel_unref(*_ptr)
+	end if
+end sub
+
+type GKeyFile_autoptr as GKeyFile ptr
+
+private sub glib_autoptr_cleanup_GKeyFile(byval _ptr as GKeyFile ptr ptr)
+	if *_ptr then
+		g_key_file_unref(*_ptr)
+	end if
+end sub
+
+type GList_autoptr as GList ptr
+
+private sub glib_autoptr_cleanup_GList(byval _ptr as GList ptr ptr)
+	if *_ptr then
+		g_list_free(*_ptr)
+	end if
+end sub
+
+type GArray_autoptr as GArray ptr
+
+private sub glib_autoptr_cleanup_GArray(byval _ptr as GArray ptr ptr)
+	if *_ptr then
+		g_array_unref(*_ptr)
+	end if
+end sub
+
+type GPtrArray_autoptr as GPtrArray ptr
+
+private sub glib_autoptr_cleanup_GPtrArray(byval _ptr as GPtrArray ptr ptr)
+	if *_ptr then
+		g_ptr_array_unref(*_ptr)
+	end if
+end sub
+
+type GByteArray_autoptr as GByteArray ptr
+
+private sub glib_autoptr_cleanup_GByteArray(byval _ptr as GByteArray ptr ptr)
+	if *_ptr then
+		g_byte_array_unref(*_ptr)
+	end if
+end sub
+
+type GMainContext_autoptr as GMainContext ptr
+
+private sub glib_autoptr_cleanup_GMainContext(byval _ptr as GMainContext ptr ptr)
+	if *_ptr then
+		g_main_context_unref(*_ptr)
+	end if
+end sub
+
+type GMainLoop_autoptr as GMainLoop ptr
+
+private sub glib_autoptr_cleanup_GMainLoop(byval _ptr as GMainLoop ptr ptr)
+	if *_ptr then
+		g_main_loop_unref(*_ptr)
+	end if
+end sub
+
+type GSource_autoptr as GSource ptr
+
+private sub glib_autoptr_cleanup_GSource(byval _ptr as GSource ptr ptr)
+	if *_ptr then
+		g_source_unref(*_ptr)
+	end if
+end sub
+
+type GMappedFile_autoptr as GMappedFile ptr
+
+private sub glib_autoptr_cleanup_GMappedFile(byval _ptr as GMappedFile ptr ptr)
+	if *_ptr then
+		g_mapped_file_unref(*_ptr)
+	end if
+end sub
+
+type GMarkupParseContext_autoptr as GMarkupParseContext ptr
+
+private sub glib_autoptr_cleanup_GMarkupParseContext(byval _ptr as GMarkupParseContext ptr ptr)
+	if *_ptr then
+		g_markup_parse_context_unref(*_ptr)
+	end if
+end sub
+
+type GNode_autoptr as GNode ptr
+
+private sub glib_autoptr_cleanup_GNode(byval _ptr as GNode ptr ptr)
+	if *_ptr then
+		g_node_destroy(*_ptr)
+	end if
+end sub
+
+type GOptionContext_autoptr as GOptionContext ptr
+
+private sub glib_autoptr_cleanup_GOptionContext(byval _ptr as GOptionContext ptr ptr)
+	if *_ptr then
+		g_option_context_free(*_ptr)
+	end if
+end sub
+
+type GOptionGroup_autoptr as GOptionGroup ptr
+
+private sub glib_autoptr_cleanup_GOptionGroup(byval _ptr as GOptionGroup ptr ptr)
+	if *_ptr then
+		g_option_group_unref(*_ptr)
+	end if
+end sub
+
+type GPatternSpec_autoptr as GPatternSpec ptr
+
+private sub glib_autoptr_cleanup_GPatternSpec(byval _ptr as GPatternSpec ptr ptr)
+	if *_ptr then
+		g_pattern_spec_free(*_ptr)
+	end if
+end sub
+
+type GQueue_autoptr as GQueue ptr
+
+private sub glib_autoptr_cleanup_GQueue(byval _ptr as GQueue ptr ptr)
+	if *_ptr then
+		g_queue_free(*_ptr)
+	end if
+end sub
+
+private sub glib_auto_cleanup_GQueue(byval _ptr as GQueue ptr)
+	g_queue_clear(_ptr)
+end sub
+
+type GRand_autoptr as GRand ptr
+
+private sub glib_autoptr_cleanup_GRand(byval _ptr as GRand ptr ptr)
+	if *_ptr then
+		g_rand_free(*_ptr)
+	end if
+end sub
+
+type GRegex_autoptr as GRegex ptr
+
+private sub glib_autoptr_cleanup_GRegex(byval _ptr as GRegex ptr ptr)
+	if *_ptr then
+		g_regex_unref(*_ptr)
+	end if
+end sub
+
+type GMatchInfo_autoptr as GMatchInfo ptr
+
+private sub glib_autoptr_cleanup_GMatchInfo(byval _ptr as GMatchInfo ptr ptr)
+	if *_ptr then
+		g_match_info_unref(*_ptr)
+	end if
+end sub
+
+type GScanner_autoptr as GScanner ptr
+
+private sub glib_autoptr_cleanup_GScanner(byval _ptr as GScanner ptr ptr)
+	if *_ptr then
+		g_scanner_destroy(*_ptr)
+	end if
+end sub
+
+type GSequence_autoptr as GSequence ptr
+
+private sub glib_autoptr_cleanup_GSequence(byval _ptr as GSequence ptr ptr)
+	if *_ptr then
+		g_sequence_free(*_ptr)
+	end if
+end sub
+
+type GSList_autoptr as GSList ptr
+
+private sub glib_autoptr_cleanup_GSList(byval _ptr as GSList ptr ptr)
+	if *_ptr then
+		g_slist_free(*_ptr)
+	end if
+end sub
+
+type GStringChunk_autoptr as GStringChunk ptr
+
+private sub glib_autoptr_cleanup_GStringChunk(byval _ptr as GStringChunk ptr ptr)
+	if *_ptr then
+		g_string_chunk_free(*_ptr)
+	end if
+end sub
+
+type GThread_autoptr as GThread ptr
+
+private sub glib_autoptr_cleanup_GThread(byval _ptr as GThread ptr ptr)
+	if *_ptr then
+		g_thread_unref(*_ptr)
+	end if
+end sub
+
+private sub glib_auto_cleanup_GMutex(byval _ptr as GMutex ptr)
+	g_mutex_clear(_ptr)
+end sub
+
+type GMutexLocker_autoptr as GMutexLocker ptr
+
+private sub glib_autoptr_cleanup_GMutexLocker(byval _ptr as GMutexLocker ptr ptr)
+	if *_ptr then
+		g_mutex_locker_free(*_ptr)
+	end if
+end sub
+
+private sub glib_auto_cleanup_GCond(byval _ptr as GCond ptr)
+	g_cond_clear(_ptr)
+end sub
+
+type GTimer_autoptr as GTimer ptr
+
+private sub glib_autoptr_cleanup_GTimer(byval _ptr as GTimer ptr ptr)
+	if *_ptr then
+		g_timer_destroy(*_ptr)
+	end if
+end sub
+
+type GTimeZone_autoptr as GTimeZone ptr
+
+private sub glib_autoptr_cleanup_GTimeZone(byval _ptr as GTimeZone ptr ptr)
+	if *_ptr then
+		g_time_zone_unref(*_ptr)
+	end if
+end sub
+
+type GTree_autoptr as GTree ptr
+
+private sub glib_autoptr_cleanup_GTree(byval _ptr as GTree ptr ptr)
+	if *_ptr then
+		g_tree_unref(*_ptr)
+	end if
+end sub
+
+type GVariant_autoptr as GVariant ptr
+
+private sub glib_autoptr_cleanup_GVariant(byval _ptr as GVariant ptr ptr)
+	if *_ptr then
+		g_variant_unref(*_ptr)
+	end if
+end sub
+
+type GVariantBuilder_autoptr as GVariantBuilder ptr
+
+private sub glib_autoptr_cleanup_GVariantBuilder(byval _ptr as GVariantBuilder ptr ptr)
+	if *_ptr then
+		g_variant_builder_unref(*_ptr)
+	end if
+end sub
+
+private sub glib_auto_cleanup_GVariantBuilder(byval _ptr as GVariantBuilder ptr)
+	g_variant_builder_clear(_ptr)
+end sub
+
+type GVariantIter_autoptr as GVariantIter ptr
+
+private sub glib_autoptr_cleanup_GVariantIter(byval _ptr as GVariantIter ptr ptr)
+	if *_ptr then
+		g_variant_iter_free(*_ptr)
+	end if
+end sub
+
+type GVariantDict_autoptr as GVariantDict ptr
+
+private sub glib_autoptr_cleanup_GVariantDict(byval _ptr as GVariantDict ptr ptr)
+	if *_ptr then
+		g_variant_dict_unref(*_ptr)
+	end if
+end sub
+
+private sub glib_auto_cleanup_GVariantDict(byval _ptr as GVariantDict ptr)
+	g_variant_dict_clear(_ptr)
+end sub
+
+type GVariantType_autoptr as GVariantType ptr
+
+private sub glib_autoptr_cleanup_GVariantType(byval _ptr as GVariantType ptr ptr)
+	if *_ptr then
+		g_variant_type_free(*_ptr)
+	end if
+end sub
+
 #undef __GLIB_H_INSIDE__
 
 end extern

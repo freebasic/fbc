@@ -1,4 +1,4 @@
-'' FreeBASIC binding for glib-2.42.2
+'' FreeBASIC binding for glib-2.44.1
 ''
 '' based on the C header files:
 ''   GLIB - Library of useful routines for C programming
@@ -192,8 +192,8 @@ type goffset as gint64
 
 #define g_memmove(dest, src, len) scope : memmove((dest), (src), (len)) : end scope
 const GLIB_MAJOR_VERSION = 2
-const GLIB_MINOR_VERSION = 42
-const GLIB_MICRO_VERSION = 2
+const GLIB_MINOR_VERSION = 44
+const GLIB_MICRO_VERSION = 1
 
 #ifdef __FB_UNIX__
 	#define G_OS_UNIX

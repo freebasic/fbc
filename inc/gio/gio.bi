@@ -1,4 +1,4 @@
-'' FreeBASIC binding for glib-2.42.2
+'' FreeBASIC binding for glib-2.44.1
 ''
 '' based on the C header files:
 ''   GIO - GLib Input, Output and Streaming Library
@@ -259,6 +259,8 @@ enum
 	G_IO_ERROR_PROXY_NEED_AUTH
 	G_IO_ERROR_PROXY_NOT_ALLOWED
 	G_IO_ERROR_BROKEN_PIPE
+	G_IO_ERROR_CONNECTION_CLOSED = G_IO_ERROR_BROKEN_PIPE
+	G_IO_ERROR_NOT_CONNECTED
 end enum
 
 type GAskPasswordFlags as long
@@ -720,6 +722,14 @@ enum
 	G_NOTIFICATION_PRIORITY_URGENT
 end enum
 
+type GNetworkConnectivity as long
+enum
+	G_NETWORK_CONNECTIVITY_LOCAL = 1
+	G_NETWORK_CONNECTIVITY_LIMITED = 2
+	G_NETWORK_CONNECTIVITY_PORTAL = 3
+	G_NETWORK_CONNECTIVITY_FULL = 4
+end enum
+
 type GAppLaunchContext as _GAppLaunchContext
 type GAppInfo as _GAppInfo
 type GAsyncResult as _GAsyncResult
@@ -788,6 +798,7 @@ type GNetworkMonitor as _GNetworkMonitor
 type GNetworkService as _GNetworkService
 type GOutputStream as _GOutputStream
 type GIOStream as _GIOStream
+type GSimpleIOStream as _GSimpleIOStream
 type GPollableInputStream as _GPollableInputStream
 type GPollableOutputStream as _GPollableOutputStream
 type GResolver as _GResolver
@@ -843,6 +854,17 @@ type GOutputVector as _GOutputVector
 type _GOutputVector
 	buffer as gconstpointer
 	size as gsize
+end type
+
+type GOutputMessage as _GOutputMessage
+
+type _GOutputMessage
+	address as GSocketAddress ptr
+	vectors as GOutputVector ptr
+	num_vectors as guint
+	bytes_sent as guint
+	control_messages as GSocketControlMessage ptr ptr
+	num_control_messages as guint
 end type
 
 type GCredentials as _GCredentials
@@ -1158,8 +1180,11 @@ declare function g_application_get_default() as GApplication ptr
 declare sub g_application_set_default(byval application as GApplication ptr)
 declare sub g_application_mark_busy(byval application as GApplication ptr)
 declare sub g_application_unmark_busy(byval application as GApplication ptr)
+declare function g_application_get_is_busy(byval application as GApplication ptr) as gboolean
 declare sub g_application_send_notification(byval application as GApplication ptr, byval id as const gchar ptr, byval notification as GNotification ptr)
 declare sub g_application_withdraw_notification(byval application as GApplication ptr, byval id as const gchar ptr)
+declare sub g_application_bind_busy_property(byval application as GApplication ptr, byval object as gpointer, byval property as const gchar ptr)
+declare sub g_application_unbind_busy_property(byval application as GApplication ptr, byval object as gpointer, byval property as const gchar ptr)
 
 #define __G_APPLICATION_COMMAND_LINE_H__
 #define G_TYPE_APPLICATION_COMMAND_LINE g_application_command_line_get_type()
@@ -1303,6 +1328,8 @@ declare function g_input_stream_skip(byval stream as GInputStream ptr, byval cou
 declare function g_input_stream_close(byval stream as GInputStream ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gboolean
 declare sub g_input_stream_read_async(byval stream as GInputStream ptr, byval buffer as any ptr, byval count as gsize, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_input_stream_read_finish(byval stream as GInputStream ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gssize
+declare sub g_input_stream_read_all_async(byval stream as GInputStream ptr, byval buffer as any ptr, byval count as gsize, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_input_stream_read_all_finish(byval stream as GInputStream ptr, byval result as GAsyncResult ptr, byval bytes_read as gsize ptr, byval error as GError ptr ptr) as gboolean
 declare sub g_input_stream_read_bytes_async(byval stream as GInputStream ptr, byval count as gsize, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_input_stream_read_bytes_finish(byval stream as GInputStream ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as GBytes ptr
 declare sub g_input_stream_skip_async(byval stream as GInputStream ptr, byval count as gsize, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
@@ -1430,6 +1457,8 @@ declare function g_output_stream_flush(byval stream as GOutputStream ptr, byval 
 declare function g_output_stream_close(byval stream as GOutputStream ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gboolean
 declare sub g_output_stream_write_async(byval stream as GOutputStream ptr, byval buffer as const any ptr, byval count as gsize, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_output_stream_write_finish(byval stream as GOutputStream ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gssize
+declare sub g_output_stream_write_all_async(byval stream as GOutputStream ptr, byval buffer as const any ptr, byval count as gsize, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
+declare function g_output_stream_write_all_finish(byval stream as GOutputStream ptr, byval result as GAsyncResult ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gboolean
 declare sub g_output_stream_write_bytes_async(byval stream as GOutputStream ptr, byval bytes as GBytes ptr, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_output_stream_write_bytes_finish(byval stream as GOutputStream ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gssize
 declare sub g_output_stream_splice_async(byval stream as GOutputStream ptr, byval source as GInputStream ptr, byval flags as GOutputStreamSpliceFlags, byval io_priority as long, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
@@ -2348,6 +2377,7 @@ declare function g_file_enumerator_has_pending(byval enumerator as GFileEnumerat
 declare sub g_file_enumerator_set_pending(byval enumerator as GFileEnumerator ptr, byval pending as gboolean)
 declare function g_file_enumerator_get_container(byval enumerator as GFileEnumerator ptr) as GFile ptr
 declare function g_file_enumerator_get_child(byval enumerator as GFileEnumerator ptr, byval info as GFileInfo ptr) as GFile ptr
+declare function g_file_enumerator_iterate(byval direnum as GFileEnumerator ptr, byval out_info as GFileInfo ptr ptr, byval out_child as GFile ptr ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gboolean
 
 #define __G_FILE_H__
 #define G_TYPE_FILE g_file_get_type()
@@ -3259,6 +3289,8 @@ declare function g_subprocess_flags_get_type() as GType
 #define G_TYPE_SUBPROCESS_FLAGS g_subprocess_flags_get_type()
 declare function g_notification_priority_get_type() as GType
 #define G_TYPE_NOTIFICATION_PRIORITY g_notification_priority_get_type()
+declare function g_network_connectivity_get_type() as GType
+#define G_TYPE_NETWORK_CONNECTIVITY g_network_connectivity_get_type()
 declare function g_settings_bind_flags_get_type() as GType
 #define G_TYPE_SETTINGS_BIND_FLAGS g_settings_bind_flags_get_type()
 #define __G_IO_MODULE_H__
@@ -3596,6 +3628,7 @@ end type
 
 declare function g_network_address_get_type() as GType
 declare function g_network_address_new(byval hostname as const gchar ptr, byval port as guint16) as GSocketConnectable ptr
+declare function g_network_address_new_loopback(byval port as guint16) as GSocketConnectable ptr
 declare function g_network_address_parse(byval host_and_port as const gchar ptr, byval default_port as guint16, byval error as GError ptr ptr) as GSocketConnectable ptr
 declare function g_network_address_parse_uri(byval uri as const gchar ptr, byval default_port as guint16, byval error as GError ptr ptr) as GSocketConnectable ptr
 declare function g_network_address_get_hostname(byval addr as GNetworkAddress ptr) as const gchar ptr
@@ -3621,6 +3654,7 @@ end type
 declare function g_network_monitor_get_type() as GType
 declare function g_network_monitor_get_default() as GNetworkMonitor ptr
 declare function g_network_monitor_get_network_available(byval monitor as GNetworkMonitor ptr) as gboolean
+declare function g_network_monitor_get_connectivity(byval monitor as GNetworkMonitor ptr) as GNetworkConnectivity
 declare function g_network_monitor_can_reach(byval monitor as GNetworkMonitor ptr, byval connectable as GSocketConnectable ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gboolean
 declare sub g_network_monitor_can_reach_async(byval monitor as GNetworkMonitor ptr, byval connectable as GSocketConnectable ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function g_network_monitor_can_reach_finish(byval monitor as GNetworkMonitor ptr, byval result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
@@ -4003,6 +4037,7 @@ declare function g_settings_schema_get_id(byval schema as GSettingsSchema ptr) a
 declare function g_settings_schema_get_path(byval schema as GSettingsSchema ptr) as const gchar ptr
 declare function g_settings_schema_get_key(byval schema as GSettingsSchema ptr, byval name as const gchar ptr) as GSettingsSchemaKey ptr
 declare function g_settings_schema_has_key(byval schema as GSettingsSchema ptr, byval name as const gchar ptr) as gboolean
+declare function g_settings_schema_list_children(byval schema as GSettingsSchema ptr) as gchar ptr ptr
 #define G_TYPE_SETTINGS_SCHEMA_KEY g_settings_schema_key_get_type()
 declare function g_settings_schema_key_get_type() as GType
 declare function g_settings_schema_key_ref(byval key as GSettingsSchemaKey ptr) as GSettingsSchemaKey ptr
@@ -4011,6 +4046,7 @@ declare function g_settings_schema_key_get_value_type(byval key as GSettingsSche
 declare function g_settings_schema_key_get_default_value(byval key as GSettingsSchemaKey ptr) as GVariant ptr
 declare function g_settings_schema_key_get_range(byval key as GSettingsSchemaKey ptr) as GVariant ptr
 declare function g_settings_schema_key_range_check(byval key as GSettingsSchemaKey ptr, byval value as GVariant ptr) as gboolean
+declare function g_settings_schema_key_get_name(byval key as GSettingsSchemaKey ptr) as const gchar ptr
 declare function g_settings_schema_key_get_summary(byval key as GSettingsSchemaKey ptr) as const gchar ptr
 declare function g_settings_schema_key_get_description(byval key as GSettingsSchemaKey ptr) as const gchar ptr
 
@@ -4112,6 +4148,7 @@ declare function g_simple_action_new(byval name as const gchar ptr, byval parame
 declare function g_simple_action_new_stateful(byval name as const gchar ptr, byval parameter_type as const GVariantType ptr, byval state as GVariant ptr) as GSimpleAction ptr
 declare sub g_simple_action_set_enabled(byval simple as GSimpleAction ptr, byval enabled as gboolean)
 declare sub g_simple_action_set_state(byval simple as GSimpleAction ptr, byval value as GVariant ptr)
+declare sub g_simple_action_set_state_hint(byval simple as GSimpleAction ptr, byval state_hint as GVariant ptr)
 
 #define __G_SIMPLE_ACTION_GROUP_H__
 #define G_TYPE_SIMPLE_ACTION_GROUP g_simple_action_group_get_type()
@@ -4176,6 +4213,12 @@ declare sub g_simple_async_report_error_in_idle(byval object as GObject ptr, byv
 declare sub g_simple_async_report_gerror_in_idle(byval object as GObject ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer, byval error as const GError ptr)
 declare sub g_simple_async_report_take_gerror_in_idle(byval object as GObject ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer, byval error as GError ptr)
 
+#define __G_SIMPLE_IO_STREAM_H__
+#define G_TYPE_SIMPLE_IO_STREAM g_simple_io_stream_get_type()
+#define G_SIMPLE_IO_STREAM(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), G_TYPE_SIMPLE_IO_STREAM, GSimpleIOStream)
+#define G_IS_SIMPLE_IO_STREAM(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), G_TYPE_SIMPLE_IO_STREAM)
+declare function g_simple_io_stream_get_type() as GType
+declare function g_simple_io_stream_new(byval input_stream as GInputStream ptr, byval output_stream as GOutputStream ptr) as GIOStream ptr
 #define __G_SIMPLE_PERMISSION_H__
 #define G_TYPE_SIMPLE_PERMISSION g_simple_permission_get_type()
 #define G_SIMPLE_PERMISSION(inst) G_TYPE_CHECK_INSTANCE_CAST((inst), G_TYPE_SIMPLE_PERMISSION, GSimplePermission)
@@ -4330,6 +4373,7 @@ declare function g_socket_send(byval socket as GSocket ptr, byval buffer as cons
 declare function g_socket_send_to(byval socket as GSocket ptr, byval address as GSocketAddress ptr, byval buffer as const gchar ptr, byval size as gsize, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
 declare function g_socket_receive_message(byval socket as GSocket ptr, byval address as GSocketAddress ptr ptr, byval vectors as GInputVector ptr, byval num_vectors as gint, byval messages as GSocketControlMessage ptr ptr ptr, byval num_messages as gint ptr, byval flags as gint ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
 declare function g_socket_send_message(byval socket as GSocket ptr, byval address as GSocketAddress ptr, byval vectors as GOutputVector ptr, byval num_vectors as gint, byval messages as GSocketControlMessage ptr ptr, byval num_messages as gint, byval flags as gint, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gssize
+declare function g_socket_send_messages(byval socket as GSocket ptr, byval messages as GOutputMessage ptr, byval num_messages as guint, byval flags as gint, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as gint
 declare function g_socket_close(byval socket as GSocket ptr, byval error as GError ptr ptr) as gboolean
 declare function g_socket_shutdown(byval socket as GSocket ptr, byval shutdown_read as gboolean, byval shutdown_write as gboolean, byval error as GError ptr ptr) as gboolean
 declare function g_socket_is_closed(byval socket as GSocket ptr) as gboolean
@@ -4570,6 +4614,7 @@ declare function g_task_propagate_pointer(byval task as GTask ptr, byval error a
 declare function g_task_propagate_boolean(byval task as GTask ptr, byval error as GError ptr ptr) as gboolean
 declare function g_task_propagate_int(byval task as GTask ptr, byval error as GError ptr ptr) as gssize
 declare function g_task_had_error(byval task as GTask ptr) as gboolean
+declare function g_task_get_completed(byval task as GTask ptr) as gboolean
 
 #define __G_SUBPROCESS_H__
 #define G_TYPE_SUBPROCESS g_subprocess_get_type()
@@ -5572,6 +5617,1058 @@ declare sub g_notification_add_button_with_target_value(byval notification as GN
 declare sub g_notification_set_default_action(byval notification as GNotification ptr, byval detailed_action as const gchar ptr)
 declare sub g_notification_set_default_action_and_target(byval notification as GNotification ptr, byval action as const gchar ptr, byval target_format as const gchar ptr, ...)
 declare sub g_notification_set_default_action_and_target_value(byval notification as GNotification ptr, byval action as const gchar ptr, byval target as GVariant ptr)
+#define __G_LIST_MODEL_H__
+#define G_TYPE_LIST_MODEL g_list_model_get_type()
+declare function g_list_model_get_type() as GType
+
+type GListModel as _GListModel
+type GListModelInterface as _GListModelInterface
+type GListModel_autoptr as GListModel ptr
+
+private sub glib_autoptr_cleanup_GListModel(byval _ptr as GListModel ptr ptr)
+	glib_autoptr_cleanup_GObject(cptr(GObject ptr ptr, _ptr))
+end sub
+
+#define G_LIST_MODEL(ptr_) cptr(GListModel ptr, g_type_check_instance_cast_(cptr(GTypeInstance ptr, (ptr_)), g_list_model_get_type()))
+#define G_IS_LIST_MODEL(ptr_) cast(gboolean, G_TYPE_CHECK_INSTANCE_TYPE((ptr_), g_list_model_get_type()))
+#define G_LIST_MODEL_GET_IFACE(ptr_) cptr(GListModelInterface ptr, g_type_interface_peek(cptr(GTypeInstance ptr, (ptr_))->g_class, g_list_model_get_type()))
+
+type _GListModelInterface
+	g_iface as GTypeInterface
+	get_item_type as function(byval list as GListModel ptr) as GType
+	get_n_items as function(byval list as GListModel ptr) as guint
+	get_item as function(byval list as GListModel ptr, byval position as guint) as gpointer
+end type
+
+declare function g_list_model_get_item_type(byval list as GListModel ptr) as GType
+declare function g_list_model_get_n_items(byval list as GListModel ptr) as guint
+declare function g_list_model_get_item(byval list as GListModel ptr, byval position as guint) as gpointer
+declare function g_list_model_get_object(byval list as GListModel ptr, byval position as guint) as GObject ptr
+declare sub g_list_model_items_changed(byval list as GListModel ptr, byval position as guint, byval removed as guint, byval added as guint)
+#define __G_LIST_STORE_H__
+#define G_TYPE_LIST_STORE g_list_store_get_type()
+declare function g_list_store_get_type() as GType
+type GListStore as _GListStore
+
+type GListStoreClass
+	parent_class as GObjectClass
+end type
+
+type GListStore_autoptr as GListStore ptr
+
+private sub glib_autoptr_cleanup_GListStore(byval _ptr as GListStore ptr ptr)
+	glib_autoptr_cleanup_GObject(cptr(GObject ptr ptr, _ptr))
+end sub
+
+#define G_LIST_STORE(ptr_) cptr(GListStore ptr, g_type_check_instance_cast_(cptr(GTypeInstance ptr, (ptr_)), g_list_store_get_type()))
+#define G_IS_LIST_STORE(ptr_) cast(gboolean, G_TYPE_CHECK_INSTANCE_TYPE((ptr_), g_list_store_get_type()))
+declare function g_list_store_new(byval item_type as GType) as GListStore ptr
+declare sub g_list_store_insert(byval store as GListStore ptr, byval position as guint, byval item as gpointer)
+declare function g_list_store_insert_sorted(byval store as GListStore ptr, byval item as gpointer, byval compare_func as GCompareDataFunc, byval user_data as gpointer) as guint
+declare sub g_list_store_append(byval store as GListStore ptr, byval item as gpointer)
+declare sub g_list_store_remove(byval store as GListStore ptr, byval position as guint)
+declare sub g_list_store_remove_all(byval store as GListStore ptr)
+declare sub g_list_store_splice(byval store as GListStore ptr, byval position as guint, byval n_removals as guint, byval additions as gpointer ptr, byval n_additions as guint)
+type GAction_autoptr as GAction ptr
+
+private sub glib_autoptr_cleanup_GAction(byval _ptr as GAction ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GActionMap_autoptr as GActionMap ptr
+
+private sub glib_autoptr_cleanup_GActionMap(byval _ptr as GActionMap ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GAppInfo_autoptr as GAppInfo ptr
+
+private sub glib_autoptr_cleanup_GAppInfo(byval _ptr as GAppInfo ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GAppLaunchContext_autoptr as GAppLaunchContext ptr
+
+private sub glib_autoptr_cleanup_GAppLaunchContext(byval _ptr as GAppLaunchContext ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GAppInfoMonitor_autoptr as GAppInfoMonitor ptr
+
+private sub glib_autoptr_cleanup_GAppInfoMonitor(byval _ptr as GAppInfoMonitor ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GApplicationCommandLine_autoptr as GApplicationCommandLine ptr
+
+private sub glib_autoptr_cleanup_GApplicationCommandLine(byval _ptr as GApplicationCommandLine ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GApplication_autoptr as GApplication ptr
+
+private sub glib_autoptr_cleanup_GApplication(byval _ptr as GApplication ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GAsyncInitable_autoptr as GAsyncInitable ptr
+
+private sub glib_autoptr_cleanup_GAsyncInitable(byval _ptr as GAsyncInitable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GAsyncResult_autoptr as GAsyncResult ptr
+
+private sub glib_autoptr_cleanup_GAsyncResult(byval _ptr as GAsyncResult ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GBufferedInputStream_autoptr as GBufferedInputStream ptr
+
+private sub glib_autoptr_cleanup_GBufferedInputStream(byval _ptr as GBufferedInputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GBufferedOutputStream_autoptr as GBufferedOutputStream ptr
+
+private sub glib_autoptr_cleanup_GBufferedOutputStream(byval _ptr as GBufferedOutputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GBytesIcon_autoptr as GBytesIcon ptr
+
+private sub glib_autoptr_cleanup_GBytesIcon(byval _ptr as GBytesIcon ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GCancellable_autoptr as GCancellable ptr
+
+private sub glib_autoptr_cleanup_GCancellable(byval _ptr as GCancellable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GCharsetConverter_autoptr as GCharsetConverter ptr
+
+private sub glib_autoptr_cleanup_GCharsetConverter(byval _ptr as GCharsetConverter ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GConverter_autoptr as GConverter ptr
+
+private sub glib_autoptr_cleanup_GConverter(byval _ptr as GConverter ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GConverterInputStream_autoptr as GConverterInputStream ptr
+
+private sub glib_autoptr_cleanup_GConverterInputStream(byval _ptr as GConverterInputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GConverterOutputStream_autoptr as GConverterOutputStream ptr
+
+private sub glib_autoptr_cleanup_GConverterOutputStream(byval _ptr as GConverterOutputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GCredentials_autoptr as GCredentials ptr
+
+private sub glib_autoptr_cleanup_GCredentials(byval _ptr as GCredentials ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDataInputStream_autoptr as GDataInputStream ptr
+
+private sub glib_autoptr_cleanup_GDataInputStream(byval _ptr as GDataInputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDataOutputStream_autoptr as GDataOutputStream ptr
+
+private sub glib_autoptr_cleanup_GDataOutputStream(byval _ptr as GDataOutputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusActionGroup_autoptr as GDBusActionGroup ptr
+
+private sub glib_autoptr_cleanup_GDBusActionGroup(byval _ptr as GDBusActionGroup ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusAuthObserver_autoptr as GDBusAuthObserver ptr
+
+private sub glib_autoptr_cleanup_GDBusAuthObserver(byval _ptr as GDBusAuthObserver ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusConnection_autoptr as GDBusConnection ptr
+
+private sub glib_autoptr_cleanup_GDBusConnection(byval _ptr as GDBusConnection ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusInterface_autoptr as GDBusInterface ptr
+
+private sub glib_autoptr_cleanup_GDBusInterface(byval _ptr as GDBusInterface ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusInterfaceSkeleton_autoptr as GDBusInterfaceSkeleton ptr
+
+private sub glib_autoptr_cleanup_GDBusInterfaceSkeleton(byval _ptr as GDBusInterfaceSkeleton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusMenuModel_autoptr as GDBusMenuModel ptr
+
+private sub glib_autoptr_cleanup_GDBusMenuModel(byval _ptr as GDBusMenuModel ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusMessage_autoptr as GDBusMessage ptr
+
+private sub glib_autoptr_cleanup_GDBusMessage(byval _ptr as GDBusMessage ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusMethodInvocation_autoptr as GDBusMethodInvocation ptr
+
+private sub glib_autoptr_cleanup_GDBusMethodInvocation(byval _ptr as GDBusMethodInvocation ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusNodeInfo_autoptr as GDBusNodeInfo ptr
+
+private sub glib_autoptr_cleanup_GDBusNodeInfo(byval _ptr as GDBusNodeInfo ptr ptr)
+	if *_ptr then
+		g_dbus_node_info_unref(*_ptr)
+	end if
+end sub
+
+type GDBusObject_autoptr as GDBusObject ptr
+
+private sub glib_autoptr_cleanup_GDBusObject(byval _ptr as GDBusObject ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusObjectManagerClient_autoptr as GDBusObjectManagerClient ptr
+
+private sub glib_autoptr_cleanup_GDBusObjectManagerClient(byval _ptr as GDBusObjectManagerClient ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusObjectManager_autoptr as GDBusObjectManager ptr
+
+private sub glib_autoptr_cleanup_GDBusObjectManager(byval _ptr as GDBusObjectManager ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusObjectManagerServer_autoptr as GDBusObjectManagerServer ptr
+
+private sub glib_autoptr_cleanup_GDBusObjectManagerServer(byval _ptr as GDBusObjectManagerServer ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusObjectProxy_autoptr as GDBusObjectProxy ptr
+
+private sub glib_autoptr_cleanup_GDBusObjectProxy(byval _ptr as GDBusObjectProxy ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusObjectSkeleton_autoptr as GDBusObjectSkeleton ptr
+
+private sub glib_autoptr_cleanup_GDBusObjectSkeleton(byval _ptr as GDBusObjectSkeleton ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusProxy_autoptr as GDBusProxy ptr
+
+private sub glib_autoptr_cleanup_GDBusProxy(byval _ptr as GDBusProxy ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDBusServer_autoptr as GDBusServer ptr
+
+private sub glib_autoptr_cleanup_GDBusServer(byval _ptr as GDBusServer ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GDrive_autoptr as GDrive ptr
+
+private sub glib_autoptr_cleanup_GDrive(byval _ptr as GDrive ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GEmblemedIcon_autoptr as GEmblemedIcon ptr
+
+private sub glib_autoptr_cleanup_GEmblemedIcon(byval _ptr as GEmblemedIcon ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GEmblem_autoptr as GEmblem ptr
+
+private sub glib_autoptr_cleanup_GEmblem(byval _ptr as GEmblem ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GFileEnumerator_autoptr as GFileEnumerator ptr
+
+private sub glib_autoptr_cleanup_GFileEnumerator(byval _ptr as GFileEnumerator ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GFile_autoptr as GFile ptr
+
+private sub glib_autoptr_cleanup_GFile(byval _ptr as GFile ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GFileIcon_autoptr as GFileIcon ptr
+
+private sub glib_autoptr_cleanup_GFileIcon(byval _ptr as GFileIcon ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GFileInfo_autoptr as GFileInfo ptr
+
+private sub glib_autoptr_cleanup_GFileInfo(byval _ptr as GFileInfo ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GFileInputStream_autoptr as GFileInputStream ptr
+
+private sub glib_autoptr_cleanup_GFileInputStream(byval _ptr as GFileInputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GFileIOStream_autoptr as GFileIOStream ptr
+
+private sub glib_autoptr_cleanup_GFileIOStream(byval _ptr as GFileIOStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GFileMonitor_autoptr as GFileMonitor ptr
+
+private sub glib_autoptr_cleanup_GFileMonitor(byval _ptr as GFileMonitor ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GFilenameCompleter_autoptr as GFilenameCompleter ptr
+
+private sub glib_autoptr_cleanup_GFilenameCompleter(byval _ptr as GFilenameCompleter ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GFileOutputStream_autoptr as GFileOutputStream ptr
+
+private sub glib_autoptr_cleanup_GFileOutputStream(byval _ptr as GFileOutputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GFilterInputStream_autoptr as GFilterInputStream ptr
+
+private sub glib_autoptr_cleanup_GFilterInputStream(byval _ptr as GFilterInputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GFilterOutputStream_autoptr as GFilterOutputStream ptr
+
+private sub glib_autoptr_cleanup_GFilterOutputStream(byval _ptr as GFilterOutputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GIcon_autoptr as GIcon ptr
+
+private sub glib_autoptr_cleanup_GIcon(byval _ptr as GIcon ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GInetAddress_autoptr as GInetAddress ptr
+
+private sub glib_autoptr_cleanup_GInetAddress(byval _ptr as GInetAddress ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GInetAddressMask_autoptr as GInetAddressMask ptr
+
+private sub glib_autoptr_cleanup_GInetAddressMask(byval _ptr as GInetAddressMask ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GInetSocketAddress_autoptr as GInetSocketAddress ptr
+
+private sub glib_autoptr_cleanup_GInetSocketAddress(byval _ptr as GInetSocketAddress ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GInitable_autoptr as GInitable ptr
+
+private sub glib_autoptr_cleanup_GInitable(byval _ptr as GInitable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GInputStream_autoptr as GInputStream ptr
+
+private sub glib_autoptr_cleanup_GInputStream(byval _ptr as GInputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GIOModule_autoptr as GIOModule ptr
+
+private sub glib_autoptr_cleanup_GIOModule(byval _ptr as GIOModule ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GIOStream_autoptr as GIOStream ptr
+
+private sub glib_autoptr_cleanup_GIOStream(byval _ptr as GIOStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GLoadableIcon_autoptr as GLoadableIcon ptr
+
+private sub glib_autoptr_cleanup_GLoadableIcon(byval _ptr as GLoadableIcon ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GMemoryInputStream_autoptr as GMemoryInputStream ptr
+
+private sub glib_autoptr_cleanup_GMemoryInputStream(byval _ptr as GMemoryInputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GMemoryOutputStream_autoptr as GMemoryOutputStream ptr
+
+private sub glib_autoptr_cleanup_GMemoryOutputStream(byval _ptr as GMemoryOutputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GMenu_autoptr as GMenu ptr
+
+private sub glib_autoptr_cleanup_GMenu(byval _ptr as GMenu ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GMenuItem_autoptr as GMenuItem ptr
+
+private sub glib_autoptr_cleanup_GMenuItem(byval _ptr as GMenuItem ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GMenuModel_autoptr as GMenuModel ptr
+
+private sub glib_autoptr_cleanup_GMenuModel(byval _ptr as GMenuModel ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GMenuAttributeIter_autoptr as GMenuAttributeIter ptr
+
+private sub glib_autoptr_cleanup_GMenuAttributeIter(byval _ptr as GMenuAttributeIter ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GMenuLinkIter_autoptr as GMenuLinkIter ptr
+
+private sub glib_autoptr_cleanup_GMenuLinkIter(byval _ptr as GMenuLinkIter ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GMount_autoptr as GMount ptr
+
+private sub glib_autoptr_cleanup_GMount(byval _ptr as GMount ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GMountOperation_autoptr as GMountOperation ptr
+
+private sub glib_autoptr_cleanup_GMountOperation(byval _ptr as GMountOperation ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GNativeVolumeMonitor_autoptr as GNativeVolumeMonitor ptr
+
+private sub glib_autoptr_cleanup_GNativeVolumeMonitor(byval _ptr as GNativeVolumeMonitor ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GNetworkAddress_autoptr as GNetworkAddress ptr
+
+private sub glib_autoptr_cleanup_GNetworkAddress(byval _ptr as GNetworkAddress ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GNetworkMonitor_autoptr as GNetworkMonitor ptr
+
+private sub glib_autoptr_cleanup_GNetworkMonitor(byval _ptr as GNetworkMonitor ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GNetworkService_autoptr as GNetworkService ptr
+
+private sub glib_autoptr_cleanup_GNetworkService(byval _ptr as GNetworkService ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GNotification_autoptr as GNotification ptr
+
+private sub glib_autoptr_cleanup_GNotification(byval _ptr as GNotification ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GOutputStream_autoptr as GOutputStream ptr
+
+private sub glib_autoptr_cleanup_GOutputStream(byval _ptr as GOutputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GPermission_autoptr as GPermission ptr
+
+private sub glib_autoptr_cleanup_GPermission(byval _ptr as GPermission ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GPollableInputStream_autoptr as GPollableInputStream ptr
+
+private sub glib_autoptr_cleanup_GPollableInputStream(byval _ptr as GPollableInputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GPollableOutputStream_autoptr as GPollableOutputStream ptr
+
+private sub glib_autoptr_cleanup_GPollableOutputStream(byval _ptr as GPollableOutputStream ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GPropertyAction_autoptr as GPropertyAction ptr
+
+private sub glib_autoptr_cleanup_GPropertyAction(byval _ptr as GPropertyAction ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GProxyAddressEnumerator_autoptr as GProxyAddressEnumerator ptr
+
+private sub glib_autoptr_cleanup_GProxyAddressEnumerator(byval _ptr as GProxyAddressEnumerator ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GProxyAddress_autoptr as GProxyAddress ptr
+
+private sub glib_autoptr_cleanup_GProxyAddress(byval _ptr as GProxyAddress ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GProxy_autoptr as GProxy ptr
+
+private sub glib_autoptr_cleanup_GProxy(byval _ptr as GProxy ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GProxyResolver_autoptr as GProxyResolver ptr
+
+private sub glib_autoptr_cleanup_GProxyResolver(byval _ptr as GProxyResolver ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GRemoteActionGroup_autoptr as GRemoteActionGroup ptr
+
+private sub glib_autoptr_cleanup_GRemoteActionGroup(byval _ptr as GRemoteActionGroup ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GResolver_autoptr as GResolver ptr
+
+private sub glib_autoptr_cleanup_GResolver(byval _ptr as GResolver ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSeekable_autoptr as GSeekable ptr
+
+private sub glib_autoptr_cleanup_GSeekable(byval _ptr as GSeekable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSettingsBackend_autoptr as GSettingsBackend ptr
+
+private sub glib_autoptr_cleanup_GSettingsBackend(byval _ptr as GSettingsBackend ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSettingsSchema_autoptr as GSettingsSchema ptr
+
+private sub glib_autoptr_cleanup_GSettingsSchema(byval _ptr as GSettingsSchema ptr ptr)
+	if *_ptr then
+		g_settings_schema_unref(*_ptr)
+	end if
+end sub
+
+type GSettings_autoptr as GSettings ptr
+
+private sub glib_autoptr_cleanup_GSettings(byval _ptr as GSettings ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSimpleActionGroup_autoptr as GSimpleActionGroup ptr
+
+private sub glib_autoptr_cleanup_GSimpleActionGroup(byval _ptr as GSimpleActionGroup ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSimpleAction_autoptr as GSimpleAction ptr
+
+private sub glib_autoptr_cleanup_GSimpleAction(byval _ptr as GSimpleAction ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSimpleAsyncResult_autoptr as GSimpleAsyncResult ptr
+
+private sub glib_autoptr_cleanup_GSimpleAsyncResult(byval _ptr as GSimpleAsyncResult ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSimplePermission_autoptr as GSimplePermission ptr
+
+private sub glib_autoptr_cleanup_GSimplePermission(byval _ptr as GSimplePermission ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSimpleProxyResolver_autoptr as GSimpleProxyResolver ptr
+
+private sub glib_autoptr_cleanup_GSimpleProxyResolver(byval _ptr as GSimpleProxyResolver ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSocketAddressEnumerator_autoptr as GSocketAddressEnumerator ptr
+
+private sub glib_autoptr_cleanup_GSocketAddressEnumerator(byval _ptr as GSocketAddressEnumerator ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSocketAddress_autoptr as GSocketAddress ptr
+
+private sub glib_autoptr_cleanup_GSocketAddress(byval _ptr as GSocketAddress ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSocketClient_autoptr as GSocketClient ptr
+
+private sub glib_autoptr_cleanup_GSocketClient(byval _ptr as GSocketClient ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSocketConnectable_autoptr as GSocketConnectable ptr
+
+private sub glib_autoptr_cleanup_GSocketConnectable(byval _ptr as GSocketConnectable ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSocketConnection_autoptr as GSocketConnection ptr
+
+private sub glib_autoptr_cleanup_GSocketConnection(byval _ptr as GSocketConnection ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSocketControlMessage_autoptr as GSocketControlMessage ptr
+
+private sub glib_autoptr_cleanup_GSocketControlMessage(byval _ptr as GSocketControlMessage ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSocket_autoptr as GSocket ptr
+
+private sub glib_autoptr_cleanup_GSocket(byval _ptr as GSocket ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSocketListener_autoptr as GSocketListener ptr
+
+private sub glib_autoptr_cleanup_GSocketListener(byval _ptr as GSocketListener ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSocketService_autoptr as GSocketService ptr
+
+private sub glib_autoptr_cleanup_GSocketService(byval _ptr as GSocketService ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSubprocess_autoptr as GSubprocess ptr
+
+private sub glib_autoptr_cleanup_GSubprocess(byval _ptr as GSubprocess ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GSubprocessLauncher_autoptr as GSubprocessLauncher ptr
+
+private sub glib_autoptr_cleanup_GSubprocessLauncher(byval _ptr as GSubprocessLauncher ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTask_autoptr as GTask ptr
+
+private sub glib_autoptr_cleanup_GTask(byval _ptr as GTask ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTcpConnection_autoptr as GTcpConnection ptr
+
+private sub glib_autoptr_cleanup_GTcpConnection(byval _ptr as GTcpConnection ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTcpWrapperConnection_autoptr as GTcpWrapperConnection ptr
+
+private sub glib_autoptr_cleanup_GTcpWrapperConnection(byval _ptr as GTcpWrapperConnection ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTestDBus_autoptr as GTestDBus ptr
+
+private sub glib_autoptr_cleanup_GTestDBus(byval _ptr as GTestDBus ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GThemedIcon_autoptr as GThemedIcon ptr
+
+private sub glib_autoptr_cleanup_GThemedIcon(byval _ptr as GThemedIcon ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GThreadedSocketService_autoptr as GThreadedSocketService ptr
+
+private sub glib_autoptr_cleanup_GThreadedSocketService(byval _ptr as GThreadedSocketService ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTlsBackend_autoptr as GTlsBackend ptr
+
+private sub glib_autoptr_cleanup_GTlsBackend(byval _ptr as GTlsBackend ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTlsCertificate_autoptr as GTlsCertificate ptr
+
+private sub glib_autoptr_cleanup_GTlsCertificate(byval _ptr as GTlsCertificate ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTlsClientConnection_autoptr as GTlsClientConnection ptr
+
+private sub glib_autoptr_cleanup_GTlsClientConnection(byval _ptr as GTlsClientConnection ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTlsConnection_autoptr as GTlsConnection ptr
+
+private sub glib_autoptr_cleanup_GTlsConnection(byval _ptr as GTlsConnection ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTlsDatabase_autoptr as GTlsDatabase ptr
+
+private sub glib_autoptr_cleanup_GTlsDatabase(byval _ptr as GTlsDatabase ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTlsFileDatabase_autoptr as GTlsFileDatabase ptr
+
+private sub glib_autoptr_cleanup_GTlsFileDatabase(byval _ptr as GTlsFileDatabase ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTlsInteraction_autoptr as GTlsInteraction ptr
+
+private sub glib_autoptr_cleanup_GTlsInteraction(byval _ptr as GTlsInteraction ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTlsPassword_autoptr as GTlsPassword ptr
+
+private sub glib_autoptr_cleanup_GTlsPassword(byval _ptr as GTlsPassword ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GTlsServerConnection_autoptr as GTlsServerConnection ptr
+
+private sub glib_autoptr_cleanup_GTlsServerConnection(byval _ptr as GTlsServerConnection ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GVfs_autoptr as GVfs ptr
+
+private sub glib_autoptr_cleanup_GVfs(byval _ptr as GVfs ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GVolume_autoptr as GVolume ptr
+
+private sub glib_autoptr_cleanup_GVolume(byval _ptr as GVolume ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GVolumeMonitor_autoptr as GVolumeMonitor ptr
+
+private sub glib_autoptr_cleanup_GVolumeMonitor(byval _ptr as GVolumeMonitor ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GZlibCompressor_autoptr as GZlibCompressor ptr
+
+private sub glib_autoptr_cleanup_GZlibCompressor(byval _ptr as GZlibCompressor ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GZlibDecompressor_autoptr as GZlibDecompressor ptr
+
+private sub glib_autoptr_cleanup_GZlibDecompressor(byval _ptr as GZlibDecompressor ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
 #undef __GIO_GIO_H_INSIDE__
 
 end extern

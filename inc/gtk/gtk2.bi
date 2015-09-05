@@ -1,4 +1,4 @@
-'' FreeBASIC binding for gtk+-2.24.27
+'' FreeBASIC binding for gtk+-2.24.28
 ''
 '' based on the C header files:
 ''   GTK - The GIMP Toolkit
@@ -10887,9 +10887,9 @@ declare function _gtk_vbutton_box_get_layout_default() as GtkButtonBoxStyle
 #define __GTK_VERSION_H__
 const GTK_MAJOR_VERSION = 2
 const GTK_MINOR_VERSION = 24
-const GTK_MICRO_VERSION = 27
-const GTK_BINARY_AGE = 2427
-const GTK_INTERFACE_AGE = 27
+const GTK_MICRO_VERSION = 28
+const GTK_BINARY_AGE = 2428
+const GTK_INTERFACE_AGE = 28
 #define GTK_CHECK_VERSION(major, minor, micro) (((GTK_MAJOR_VERSION > (major)) orelse ((GTK_MAJOR_VERSION = (major)) andalso (GTK_MINOR_VERSION > (minor)))) orelse (((GTK_MAJOR_VERSION = (major)) andalso (GTK_MINOR_VERSION = (minor))) andalso (GTK_MICRO_VERSION >= (micro))))
 #define __GTK_VOLUME_BUTTON_H__
 #define GTK_TYPE_VOLUME_BUTTON gtk_volume_button_get_type()
