@@ -84,6 +84,8 @@ Version 1.04.0
 - #761: crt/string.bi and win/shlwapi.bi can now be used together - they use #undefs to override each-other (e.g. strcpy() vs StrCpy()), whichever is #included last wins.
 - Windows API binding: The NM_* constants from win/commctrl.bi are now adjusted to work on 64bit.
 - X11 binding: X11's boolean typedef was errornously translated as string type in some places - it is now preserved, named "XBoolean", and translated as byte as intended.
+- GTK+ 2 binding: GtkCurve structure was translated incorrectly (i.e. wrong sizeof())
+- 1.02.0 regression: Windows API binding: The LPRGLPVOID typedef and related ones were omitted from win/dplay.bi due to a translation bug
 
 
 Version 1.03.0

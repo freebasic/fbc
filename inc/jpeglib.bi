@@ -427,7 +427,7 @@ type jpeg_decompress_struct
 	input_iMCU_row as JDIMENSION
 	output_scan_number as long
 	output_iMCU_row as JDIMENSION
-	coef_bits(0 to 63) as long ptr
+	coef_bits as long ptr
 	quant_tbl_ptrs(0 to 3) as JQUANT_TBL ptr
 	dc_huff_tbl_ptrs(0 to 3) as JHUFF_TBL ptr
 	ac_huff_tbl_ptrs(0 to 3) as JHUFF_TBL ptr
