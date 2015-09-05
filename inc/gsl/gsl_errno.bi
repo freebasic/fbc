@@ -1,21 +1,41 @@
+'' FreeBASIC binding for gsl-1.16
 ''
+'' based on the C header files:
+''   err/gsl_errno.h
 ''
-'' gsl_errno -- header translated with help of SWIG FB wrapper
+''   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2007 Gerard Jungman, Brian Gough
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+''   This program is free software; you can redistribute it and/or modify
+''   it under the terms of the GNU General Public License as published by
+''   the Free Software Foundation; either version 3 of the License, or (at
+''   your option) any later version.
 ''
+''   This program is distributed in the hope that it will be useful, but
+''   WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   General Public License for more details.
 ''
-#ifndef __gsl_errno_bi__
-#define __gsl_errno_bi__
+''   You should have received a copy of the GNU General Public License
+''   along with this program; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-#include once "gsl_types.bi"
+#pragma once
 
-#ifndef FILE
-type FILE as any ptr
-#endif
+#include once "crt/stdio.bi"
+#include once "crt/errno.bi"
+#include once "gsl/gsl_types.bi"
 
-enum 
+'' The following symbols have been renamed:
+''     #define GSL_ERROR => GSL_ERROR_
+
+extern "C"
+
+#define __GSL_ERRNO_H__
+
+enum
 	GSL_SUCCESS = 0
 	GSL_FAILURE = -1
 	GSL_CONTINUE = -2
@@ -53,20 +73,37 @@ enum
 	GSL_EOF = 32
 end enum
 
-extern "c"
-declare sub gsl_error (byval reason as zstring ptr, byval file as zstring ptr, byval line as integer, byval gsl_errno as integer)
-declare sub gsl_stream_printf (byval label as zstring ptr, byval file as zstring ptr, byval line as integer, byval reason as zstring ptr)
-declare function gsl_strerror (byval gsl_errno as integer) as zstring ptr
+declare sub gsl_error(byval reason as const zstring ptr, byval file as const zstring ptr, byval line as long, byval gsl_errno as long)
+declare sub gsl_stream_printf(byval label as const zstring ptr, byval file as const zstring ptr, byval line as long, byval reason as const zstring ptr)
+declare function gsl_strerror(byval gsl_errno as const long) as const zstring ptr
+declare function gsl_set_error_handler(byval new_handler as sub(byval reason as const zstring ptr, byval file as const zstring ptr, byval line as long, byval gsl_errno as long)) as sub(byval reason as const zstring ptr, byval file as const zstring ptr, byval line as long, byval gsl_errno as long)
+declare function gsl_set_error_handler_off() as sub(byval reason as const zstring ptr, byval file as const zstring ptr, byval line as long, byval gsl_errno as long)
+declare function gsl_set_stream_handler(byval new_handler as sub(byval label as const zstring ptr, byval file as const zstring ptr, byval line as long, byval reason as const zstring ptr)) as sub(byval label as const zstring ptr, byval file as const zstring ptr, byval line as long, byval reason as const zstring ptr)
+declare function gsl_set_stream(byval new_stream as FILE ptr) as FILE ptr
+
+#macro GSL_ERROR_(reason, gsl_errno)
+	scope
+		gsl_error(reason, __FILE__, __LINE__, gsl_errno)
+		return gsl_errno
+	end scope
+#endmacro
+#macro GSL_ERROR_VAL(reason, gsl_errno, value)
+	scope
+		gsl_error(reason, __FILE__, __LINE__, gsl_errno)
+		return value
+	end scope
+#endmacro
+#macro GSL_ERROR_VOID(reason, gsl_errno)
+	scope
+		gsl_error(reason, __FILE__, __LINE__, gsl_errno)
+		return
+	end scope
+#endmacro
+#define GSL_ERROR_NULL(reason, gsl_errno) GSL_ERROR_VAL(reason, gsl_errno, 0)
+#define GSL_ERROR_SELECT_2(a, b) iif((a) <> GSL_SUCCESS, (a), iif((b) <> GSL_SUCCESS, (b), GSL_SUCCESS))
+#define GSL_ERROR_SELECT_3(a, b, c) iif((a) <> GSL_SUCCESS, (a), GSL_ERROR_SELECT_2(b, c))
+#define GSL_ERROR_SELECT_4(a, b, c, d) iif((a) <> GSL_SUCCESS, (a), GSL_ERROR_SELECT_3(b, c, d))
+#define GSL_ERROR_SELECT_5(a, b, c, d, e) iif((a) <> GSL_SUCCESS, (a), GSL_ERROR_SELECT_4(b, c, d, e))
+#define GSL_STATUS_UPDATE(sp, s) scope : if (s) <> GSL_SUCCESS then : *(sp) = (s) : end if : end scope
+
 end extern
-
-type gsl_error_handler_t as any
-type gsl_stream_handler_t as any
-
-extern "c"
-declare function gsl_set_error_handler (byval new_handler as gsl_error_handler_t ptr) as gsl_error_handler_t ptr
-declare function gsl_set_error_handler_off () as gsl_error_handler_t ptr
-declare function gsl_set_stream_handler (byval new_handler as gsl_stream_handler_t ptr) as gsl_stream_handler_t ptr
-declare function gsl_set_stream (byval new_stream as FILE ptr) as FILE ptr
-end extern
-
-#endif

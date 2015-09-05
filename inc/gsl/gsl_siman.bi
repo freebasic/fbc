@@ -1,28 +1,46 @@
+'' FreeBASIC binding for gsl-1.16
 ''
+'' based on the C header files:
+''   siman/gsl_siman.h
 ''
-'' gsl_siman -- header translated with help of SWIG FB wrapper
+''   Copyright (C) 1996, 1997, 1998, 1999, 2000 Mark Galassi
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+''   This program is free software; you can redistribute it and/or modify
+''   it under the terms of the GNU General Public License as published by
+''   the Free Software Foundation; either version 3 of the License, or (at
+''   your option) any later version.
 ''
+''   This program is distributed in the hope that it will be useful, but
+''   WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   General Public License for more details.
 ''
-#ifndef __gsl_siman_bi__
-#define __gsl_siman_bi__
+''   You should have received a copy of the GNU General Public License
+''   along with this program; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-#include once "gsl_rng.bi"
-#include once "gsl_types.bi"
+#pragma once
 
-type gsl_siman_Efunc_t as function cdecl(byval as any ptr) as double
-type gsl_siman_step_t as sub cdecl(byval as gsl_rng ptr, byval as any ptr, byval as double)
-type gsl_siman_metric_t as function cdecl(byval as any ptr, byval as any ptr) as double
-type gsl_siman_print_t as sub cdecl(byval as any ptr)
-type gsl_siman_copy_t as sub cdecl(byval as any ptr, byval as any ptr)
-type gsl_siman_copy_construct_t as sub cdecl(byval as any ptr)
-type gsl_siman_destroy_t as sub cdecl(byval as any ptr)
+#include once "crt/stdlib.bi"
+#include once "gsl/gsl_rng.bi"
+
+extern "C"
+
+#define __GSL_SIMAN_H__
+type gsl_siman_Efunc_t as function(byval xp as any ptr) as double
+type gsl_siman_step_t as sub(byval r as const gsl_rng ptr, byval xp as any ptr, byval step_size as double)
+type gsl_siman_metric_t as function(byval xp as any ptr, byval yp as any ptr) as double
+type gsl_siman_print_t as sub(byval xp as any ptr)
+type gsl_siman_copy_t as sub(byval source as any ptr, byval dest as any ptr)
+type gsl_siman_copy_construct_t as function(byval xp as any ptr) as any ptr
+type gsl_siman_destroy_t as sub(byval xp as any ptr)
 
 type gsl_siman_params_t
-	n_tries as integer
-	iters_fixed_T as integer
+	n_tries as long
+	iters_fixed_T as long
 	step_size as double
 	k as double
 	t_initial as double
@@ -30,9 +48,7 @@ type gsl_siman_params_t
 	t_min as double
 end type
 
-extern "c"
-declare sub gsl_siman_solve (byval r as gsl_rng ptr, byval x0_p as any ptr, byval Ef as gsl_siman_Efunc_t, byval take_step as gsl_siman_step_t, byval distance as gsl_siman_metric_t, byval print_position as gsl_siman_print_t, byval copyfunc as gsl_siman_copy_t, byval copy_constructor as gsl_siman_copy_construct_t, byval destructor as gsl_siman_destroy_t, byval element_size as integer, byval params as gsl_siman_params_t)
-declare sub gsl_siman_solve_many (byval r as gsl_rng ptr, byval x0_p as any ptr, byval Ef as gsl_siman_Efunc_t, byval take_step as gsl_siman_step_t, byval distance as gsl_siman_metric_t, byval print_position as gsl_siman_print_t, byval element_size as integer, byval params as gsl_siman_params_t)
-end extern
+declare sub gsl_siman_solve(byval r as const gsl_rng ptr, byval x0_p as any ptr, byval Ef as gsl_siman_Efunc_t, byval take_step as gsl_siman_step_t, byval distance as gsl_siman_metric_t, byval print_position as gsl_siman_print_t, byval copyfunc as gsl_siman_copy_t, byval copy_constructor as gsl_siman_copy_construct_t, byval destructor as gsl_siman_destroy_t, byval element_size as uinteger, byval params as gsl_siman_params_t)
+declare sub gsl_siman_solve_many(byval r as const gsl_rng ptr, byval x0_p as any ptr, byval Ef as gsl_siman_Efunc_t, byval take_step as gsl_siman_step_t, byval distance as gsl_siman_metric_t, byval print_position as gsl_siman_print_t, byval element_size as uinteger, byval params as gsl_siman_params_t)
 
-#endif
+end extern
