@@ -50,7 +50,6 @@
 type stat as stat_  '' TODO: remove as soon as fbc's CRT headers define it
 
 '' The following symbols have been renamed:
-''     undef TRUE => CTRUE
 ''     constant TRUE => CTRUE
 ''     #if __BFD_VER__ <= 218
 ''         constant DYNAMIC => DYNAMIC_
@@ -217,7 +216,7 @@ end enum
 
 type symindex as culong
 type reloc_howto_type as const reloc_howto_struct
-#define BFD_NO_MORE_SYMBOLS cast(symindex, not 0)
+const BFD_NO_MORE_SYMBOLS = cast(symindex, not 0)
 #define bfd_get_section(x) (x)->section
 #define bfd_get_output_section(x) (x)->section->output_section
 #define bfd_set_section(x, y) scope : (x)->section = (y) : end scope
@@ -1127,7 +1126,7 @@ const SEC_LINK_DUPLICATES_DISCARD = &h0
 	const SEC_LINK_DUPLICATES_SAME_SIZE = &h80000
 #endif
 
-#define SEC_LINK_DUPLICATES_SAME_CONTENTS (SEC_LINK_DUPLICATES_ONE_ONLY or SEC_LINK_DUPLICATES_SAME_SIZE)
+const SEC_LINK_DUPLICATES_SAME_CONTENTS = SEC_LINK_DUPLICATES_ONE_ONLY or SEC_LINK_DUPLICATES_SAME_SIZE
 
 #if __BFD_VER__ <= 218
 	const SEC_LINKER_CREATED = &h200000
@@ -1832,20 +1831,20 @@ const bfd_mach_mipsisa64r2 = 65
 	const bfd_mach_i386_i386 = 1 shl 2
 	const bfd_mach_x86_64 = 1 shl 3
 	const bfd_mach_x64_32 = 1 shl 4
-	#define bfd_mach_i386_i386_intel_syntax (bfd_mach_i386_i386 or bfd_mach_i386_intel_syntax)
-	#define bfd_mach_x86_64_intel_syntax (bfd_mach_x86_64 or bfd_mach_i386_intel_syntax)
-	#define bfd_mach_x64_32_intel_syntax (bfd_mach_x64_32 or bfd_mach_i386_intel_syntax)
+	const bfd_mach_i386_i386_intel_syntax = bfd_mach_i386_i386 or bfd_mach_i386_intel_syntax
+	const bfd_mach_x86_64_intel_syntax = bfd_mach_x86_64 or bfd_mach_i386_intel_syntax
+	const bfd_mach_x64_32_intel_syntax = bfd_mach_x64_32 or bfd_mach_i386_intel_syntax
 	const bfd_mach_l1om = 1 shl 5
-	#define bfd_mach_l1om_intel_syntax (bfd_mach_l1om or bfd_mach_i386_intel_syntax)
+	const bfd_mach_l1om_intel_syntax = bfd_mach_l1om or bfd_mach_i386_intel_syntax
 	const bfd_mach_k1om = 1 shl 6
-	#define bfd_mach_k1om_intel_syntax (bfd_mach_k1om or bfd_mach_i386_intel_syntax)
+	const bfd_mach_k1om_intel_syntax = bfd_mach_k1om or bfd_mach_i386_intel_syntax
 #endif
 
 #if __BFD_VER__ >= 224
 	const bfd_mach_i386_nacl = 1 shl 7
-	#define bfd_mach_i386_i386_nacl (bfd_mach_i386_i386 or bfd_mach_i386_nacl)
-	#define bfd_mach_x86_64_nacl (bfd_mach_x86_64 or bfd_mach_i386_nacl)
-	#define bfd_mach_x64_32_nacl (bfd_mach_x64_32 or bfd_mach_i386_nacl)
+	const bfd_mach_i386_i386_nacl = bfd_mach_i386_i386 or bfd_mach_i386_nacl
+	const bfd_mach_x86_64_nacl = bfd_mach_x86_64 or bfd_mach_i386_nacl
+	const bfd_mach_x64_32_nacl = bfd_mach_x64_32 or bfd_mach_i386_nacl
 #endif
 
 const bfd_mach_h8300 = 1
@@ -5393,8 +5392,8 @@ end type
 #endif
 
 #if __BFD_VER__ >= 221
-	#define BFD_FLAGS_SAVED (((BFD_IN_MEMORY or BFD_COMPRESS) or BFD_DECOMPRESS) or BFD_PLUGIN)
-	#define BFD_FLAGS_FOR_BFD_USE_MASK ((((((BFD_IN_MEMORY or BFD_COMPRESS) or BFD_DECOMPRESS) or BFD_LINKER_CREATED) or BFD_PLUGIN) or BFD_TRADITIONAL_FORMAT) or BFD_DETERMINISTIC_OUTPUT)
+	const BFD_FLAGS_SAVED = ((BFD_IN_MEMORY or BFD_COMPRESS) or BFD_DECOMPRESS) or BFD_PLUGIN
+	const BFD_FLAGS_FOR_BFD_USE_MASK = (((((BFD_IN_MEMORY or BFD_COMPRESS) or BFD_DECOMPRESS) or BFD_LINKER_CREATED) or BFD_PLUGIN) or BFD_TRADITIONAL_FORMAT) or BFD_DETERMINISTIC_OUTPUT
 #endif
 
 #if __BFD_VER__ = 225

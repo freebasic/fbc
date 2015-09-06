@@ -1,33 +1,66 @@
+'' FreeBASIC binding for flite-2.0.0-release
 ''
+'' based on the C header files:
+''                     Language Technologies Institute                      
+''                        Carnegie Mellon University                        
+''                         Copyright (c) 1999-2014                          
+''                           All Rights Reserved.                           
+''                                                                          
+''     Permission is hereby granted, free of charge, to use and distribute  
+''     this software and its documentation without restriction, including   
+''     without limitation the rights to use, copy, modify, merge, publish,  
+''     distribute, sublicense, and/or sell copies of this work, and to      
+''     permit persons to whom this work is furnished to do so, subject to   
+''     the following conditions:                                            
+''      1. The code must retain the above copyright notice, this list of    
+''         conditions and the following disclaimer.                         
+''      2. Any modifications must be clearly marked as such.                
+''      3. Original authors' names are not deleted.                         
+''      4. The authors' names are not used to endorse or promote products   
+''         derived from this software without specific prior written        
+''         permission.                                                      
+''                                                                          
+''     CARNEGIE MELLON UNIVERSITY AND THE CONTRIBUTORS TO THIS WORK         
+''     DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING      
+''     ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT   
+''     SHALL CARNEGIE MELLON UNIVERSITY NOR THE CONTRIBUTORS BE LIABLE      
+''     FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    
+''     WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN   
+''     AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,          
+''     ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF       
+''     THIS SOFTWARE.                                                       
 ''
-'' cst_viterbi -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __cst_viterbi_bi__
-#define __cst_viterbi_bi__
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
+
+#pragma once
+
+#include once "cst_file.bi"
+#include once "cst_math.bi"
+#include once "cst_utterance.bi"
+
+extern "C"
+
+#define _CST_VITERBI_H__
 
 type cst_vit_cand_struct
-	score as integer
+	score as long
 	val as cst_val ptr
-	ival as integer
-	pos as integer
+	ival as long
+	pos as long
 	item as cst_item ptr
 	next as cst_vit_cand_struct ptr
 end type
 
 type cst_vit_cand as cst_vit_cand_struct
-
-declare function new_vit_cand cdecl alias "new_vit_cand" () as cst_vit_cand ptr
-declare sub vit_cand_set cdecl alias "vit_cand_set" (byval vc as cst_vit_cand ptr, byval val as cst_val ptr)
-declare sub vit_cand_set_int cdecl alias "vit_cand_set_int" (byval vc as cst_vit_cand ptr, byval ival as integer)
-declare sub delete_vit_cand cdecl alias "delete_vit_cand" (byval vc as cst_vit_cand ptr)
+declare function new_vit_cand() as cst_vit_cand ptr
+declare sub vit_cand_set(byval vc as cst_vit_cand ptr, byval val as cst_val ptr)
+declare sub vit_cand_set_int(byval vc as cst_vit_cand ptr, byval ival as long)
+declare sub delete_vit_cand(byval vc as cst_vit_cand ptr)
 
 type cst_vit_path_struct
-	score as integer
-	state as integer
+	score as long
+	state as long
 	cand as cst_vit_cand ptr
 	f as cst_features ptr
 	from as cst_vit_path_struct ptr
@@ -35,14 +68,13 @@ type cst_vit_path_struct
 end type
 
 type cst_vit_path as cst_vit_path_struct
-
-declare function new_vit_path cdecl alias "new_vit_path" () as cst_vit_path ptr
-declare sub delete_vit_path cdecl alias "delete_vit_path" (byval vp as cst_vit_path ptr)
+declare function new_vit_path() as cst_vit_path ptr
+declare sub delete_vit_path(byval vp as cst_vit_path ptr)
 
 type cst_vit_point_struct
 	item as cst_item ptr
-	num_states as integer
-	num_paths as integer
+	num_states as long
+	num_paths as long
 	cands as cst_vit_cand ptr
 	paths as cst_vit_path ptr
 	state_paths as cst_vit_path ptr ptr
@@ -50,30 +82,25 @@ type cst_vit_point_struct
 end type
 
 type cst_vit_point as cst_vit_point_struct
-
-declare function new_vit_point cdecl alias "new_vit_point" () as cst_vit_point ptr
-declare sub delete_vit_point cdecl alias "delete_vit_point" (byval vp as cst_vit_point ptr)
-
-type cst_vit_cand_f_t as cst_vit_cand
-type cst_vit_path_f_t as cst_vit_path
+declare function new_vit_point() as cst_vit_point ptr
+declare sub delete_vit_point(byval vp as cst_vit_point ptr)
 
 type cst_viterbi_struct
-	num_states as integer
-	cand_func as cst_vit_cand_f_t ptr
-	path_func as cst_vit_path_f_t ptr
-	big_is_good as integer
+	num_states as long
+	cand_func as function(byval s as cst_item ptr, byval vd as cst_viterbi_struct ptr) as cst_vit_cand ptr
+	path_func as function(byval p as cst_vit_path ptr, byval c as cst_vit_cand ptr, byval vd as cst_viterbi_struct ptr) as cst_vit_path ptr
+	big_is_good as long
 	timeline as cst_vit_point ptr
 	last_point as cst_vit_point ptr
 	f as cst_features ptr
 end type
 
 type cst_viterbi as cst_viterbi_struct
+declare function new_viterbi(byval cand_func as function(byval s as cst_item ptr, byval vd as cst_viterbi_struct ptr) as cst_vit_cand ptr, byval path_func as function(byval p as cst_vit_path ptr, byval c as cst_vit_cand ptr, byval vd as cst_viterbi_struct ptr) as cst_vit_path ptr) as cst_viterbi ptr
+declare sub delete_viterbi(byval vd as cst_viterbi ptr)
+declare sub viterbi_initialise(byval vd as cst_viterbi ptr, byval r as cst_relation ptr)
+declare sub viterbi_decode(byval vd as cst_viterbi ptr)
+declare function viterbi_result(byval vd as cst_viterbi ptr, byval n as const zstring ptr) as long
+declare sub viterbi_copy_feature(byval vd as cst_viterbi ptr, byval featname as const zstring ptr)
 
-declare function new_viterbi cdecl alias "new_viterbi" (byval cand_func as cst_vit_cand_f_t ptr, byval path_func as cst_vit_path_f_t ptr) as cst_viterbi ptr
-declare sub delete_viterbi cdecl alias "delete_viterbi" (byval vd as cst_viterbi ptr)
-declare sub viterbi_initialise cdecl alias "viterbi_initialise" (byval vd as cst_viterbi ptr, byval r as cst_relation ptr)
-declare sub viterbi_decode cdecl alias "viterbi_decode" (byval vd as cst_viterbi ptr)
-declare function viterbi_result cdecl alias "viterbi_result" (byval vd as cst_viterbi ptr, byval n as zstring ptr) as integer
-declare sub viterbi_copy_feature cdecl alias "viterbi_copy_feature" (byval vd as cst_viterbi ptr, byval featname as zstring ptr)
-
-#endif
+end extern

@@ -144,24 +144,24 @@ declare sub gdk_pixbuf_fill(byval pixbuf as GdkPixbuf ptr, byval pixel as guint3
 	declare function gdk_pixbuf_savev alias "gdk_pixbuf_savev_utf8"(byval pixbuf as GdkPixbuf ptr, byval filename as const zstring ptr, byval type as const zstring ptr, byval option_keys as zstring ptr ptr, byval option_values as zstring ptr ptr, byval error as GError ptr ptr) as gboolean
 #endif
 
-type GdkPixbufSaveFunc as function(byval buf as const zstring ptr, byval count as gsize, byval error as GError ptr ptr, byval data as gpointer) as gboolean
+type GdkPixbufSaveFunc as function(byval buf as const gchar ptr, byval count as gsize, byval error as GError ptr ptr, byval data as gpointer) as gboolean
 declare function gdk_pixbuf_save_to_callback(byval pixbuf as GdkPixbuf ptr, byval save_func as GdkPixbufSaveFunc, byval user_data as gpointer, byval type as const zstring ptr, byval error as GError ptr ptr, ...) as gboolean
 declare function gdk_pixbuf_save_to_callbackv(byval pixbuf as GdkPixbuf ptr, byval save_func as GdkPixbufSaveFunc, byval user_data as gpointer, byval type as const zstring ptr, byval option_keys as zstring ptr ptr, byval option_values as zstring ptr ptr, byval error as GError ptr ptr) as gboolean
-declare function gdk_pixbuf_save_to_buffer(byval pixbuf as GdkPixbuf ptr, byval buffer as zstring ptr ptr, byval buffer_size as gsize ptr, byval type as const zstring ptr, byval error as GError ptr ptr, ...) as gboolean
-declare function gdk_pixbuf_save_to_bufferv(byval pixbuf as GdkPixbuf ptr, byval buffer as zstring ptr ptr, byval buffer_size as gsize ptr, byval type as const zstring ptr, byval option_keys as zstring ptr ptr, byval option_values as zstring ptr ptr, byval error as GError ptr ptr) as gboolean
+declare function gdk_pixbuf_save_to_buffer(byval pixbuf as GdkPixbuf ptr, byval buffer as gchar ptr ptr, byval buffer_size as gsize ptr, byval type as const zstring ptr, byval error as GError ptr ptr, ...) as gboolean
+declare function gdk_pixbuf_save_to_bufferv(byval pixbuf as GdkPixbuf ptr, byval buffer as gchar ptr ptr, byval buffer_size as gsize ptr, byval type as const zstring ptr, byval option_keys as zstring ptr ptr, byval option_values as zstring ptr ptr, byval error as GError ptr ptr) as gboolean
 declare function gdk_pixbuf_new_from_stream(byval stream as GInputStream ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GdkPixbuf ptr
 declare sub gdk_pixbuf_new_from_stream_async(byval stream as GInputStream ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function gdk_pixbuf_new_from_stream_finish(byval async_result as GAsyncResult ptr, byval error as GError ptr ptr) as GdkPixbuf ptr
 declare function gdk_pixbuf_new_from_stream_at_scale(byval stream as GInputStream ptr, byval width as gint, byval height as gint, byval preserve_aspect_ratio as gboolean, byval cancellable as GCancellable ptr, byval error as GError ptr ptr) as GdkPixbuf ptr
 declare sub gdk_pixbuf_new_from_stream_at_scale_async(byval stream as GInputStream ptr, byval width as gint, byval height as gint, byval preserve_aspect_ratio as gboolean, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer)
 declare function gdk_pixbuf_save_to_stream(byval pixbuf as GdkPixbuf ptr, byval stream as GOutputStream ptr, byval type as const zstring ptr, byval cancellable as GCancellable ptr, byval error as GError ptr ptr, ...) as gboolean
-declare sub gdk_pixbuf_save_to_stream_async(byval pixbuf as GdkPixbuf ptr, byval stream as GOutputStream ptr, byval type as const zstring ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer, ...)
+declare sub gdk_pixbuf_save_to_stream_async(byval pixbuf as GdkPixbuf ptr, byval stream as GOutputStream ptr, byval type as const gchar ptr, byval cancellable as GCancellable ptr, byval callback as GAsyncReadyCallback, byval user_data as gpointer, ...)
 declare function gdk_pixbuf_save_to_stream_finish(byval async_result as GAsyncResult ptr, byval error as GError ptr ptr) as gboolean
 declare function gdk_pixbuf_add_alpha(byval pixbuf as const GdkPixbuf ptr, byval substitute_color as gboolean, byval r as guchar, byval g as guchar, byval b as guchar) as GdkPixbuf ptr
 declare sub gdk_pixbuf_copy_area(byval src_pixbuf as const GdkPixbuf ptr, byval src_x as long, byval src_y as long, byval width as long, byval height as long, byval dest_pixbuf as GdkPixbuf ptr, byval dest_x as long, byval dest_y as long)
 declare sub gdk_pixbuf_saturate_and_pixelate(byval src as const GdkPixbuf ptr, byval dest as GdkPixbuf ptr, byval saturation as gfloat, byval pixelate as gboolean)
 declare function gdk_pixbuf_apply_embedded_orientation(byval src as GdkPixbuf ptr) as GdkPixbuf ptr
-declare function gdk_pixbuf_get_option(byval pixbuf as GdkPixbuf ptr, byval key as const zstring ptr) as const zstring ptr
+declare function gdk_pixbuf_get_option(byval pixbuf as GdkPixbuf ptr, byval key as const gchar ptr) as const gchar ptr
 #define GDK_PIXBUF_TRANSFORM_H
 
 type GdkInterpType as long
@@ -243,16 +243,16 @@ declare function gdk_pixbuf_simple_anim_get_loop(byval animation as GdkPixbufSim
 type GdkPixbufFormat as _GdkPixbufFormat
 declare function gdk_pixbuf_format_get_type() as GType
 declare function gdk_pixbuf_get_formats() as GSList ptr
-declare function gdk_pixbuf_format_get_name(byval format as GdkPixbufFormat ptr) as zstring ptr
-declare function gdk_pixbuf_format_get_description(byval format as GdkPixbufFormat ptr) as zstring ptr
-declare function gdk_pixbuf_format_get_mime_types(byval format as GdkPixbufFormat ptr) as zstring ptr ptr
-declare function gdk_pixbuf_format_get_extensions(byval format as GdkPixbufFormat ptr) as zstring ptr ptr
+declare function gdk_pixbuf_format_get_name(byval format as GdkPixbufFormat ptr) as gchar ptr
+declare function gdk_pixbuf_format_get_description(byval format as GdkPixbufFormat ptr) as gchar ptr
+declare function gdk_pixbuf_format_get_mime_types(byval format as GdkPixbufFormat ptr) as gchar ptr ptr
+declare function gdk_pixbuf_format_get_extensions(byval format as GdkPixbufFormat ptr) as gchar ptr ptr
 declare function gdk_pixbuf_format_is_writable(byval format as GdkPixbufFormat ptr) as gboolean
 declare function gdk_pixbuf_format_is_scalable(byval format as GdkPixbufFormat ptr) as gboolean
 declare function gdk_pixbuf_format_is_disabled(byval format as GdkPixbufFormat ptr) as gboolean
 declare sub gdk_pixbuf_format_set_disabled(byval format as GdkPixbufFormat ptr, byval disabled as gboolean)
-declare function gdk_pixbuf_format_get_license(byval format as GdkPixbufFormat ptr) as zstring ptr
-declare function gdk_pixbuf_get_file_info(byval filename as const zstring ptr, byval width as gint ptr, byval height as gint ptr) as GdkPixbufFormat ptr
+declare function gdk_pixbuf_format_get_license(byval format as GdkPixbufFormat ptr) as gchar ptr
+declare function gdk_pixbuf_get_file_info(byval filename as const gchar ptr, byval width as gint ptr, byval height as gint ptr) as GdkPixbufFormat ptr
 declare function gdk_pixbuf_format_copy(byval format as const GdkPixbufFormat ptr) as GdkPixbufFormat ptr
 declare sub gdk_pixbuf_format_free(byval format as GdkPixbufFormat ptr)
 

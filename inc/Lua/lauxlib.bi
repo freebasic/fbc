@@ -34,7 +34,7 @@
 extern "C"
 
 #define lauxlib_h
-#define LUA_ERRFILE (LUA_ERRERR + 1)
+const LUA_ERRFILE = LUA_ERRERR + 1
 
 type luaL_Reg
 	name as const zstring ptr

@@ -35,6 +35,6 @@
 
 extern "C"
 
-declare sub XmuRegisterExternalAgent(byval w as Widget, byval data as XtPointer, byval event as XEvent ptr, byval cont as zstring ptr)
+declare sub XmuRegisterExternalAgent(byval w as Widget, byval data as XtPointer, byval event as XEvent ptr, byval cont as XBoolean ptr)
 
 end extern

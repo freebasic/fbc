@@ -77,7 +77,6 @@
 #endif
 
 '' The following symbols have been renamed:
-''     undef MID => AL_MID
 ''     #define MID => AL_MID
 ''     #define EMPTY_STRING => EMPTY_STRING_
 ''     #define SYSTEM_NONE => SYSTEM_NONE_
@@ -303,7 +302,7 @@ const FA_LABEL = 8
 const FA_DIREC = 16
 const FA_ARCH = 32
 const FA_NONE = 0
-#define FA_ALL (not FA_NONE)
+const FA_ALL = not FA_NONE
 
 #ifdef __FB_UNIX__
 	declare function _alemu_stricmp(byval s1 as const zstring ptr, byval s2 as const zstring ptr) as long
@@ -1557,18 +1556,18 @@ const COLORCONV_32A_TO_24 = &h800000
 const COLORCONV_DITHER_PAL = &h1000000
 const COLORCONV_DITHER_HI = &h2000000
 const COLORCONV_KEEP_TRANS = &h4000000
-#define COLORCONV_DITHER (COLORCONV_DITHER_PAL or COLORCONV_DITHER_HI)
-#define COLORCONV_EXPAND_256 (((COLORCONV_8_TO_15 or COLORCONV_8_TO_16) or COLORCONV_8_TO_24) or COLORCONV_8_TO_32)
-#define COLORCONV_REDUCE_TO_256 ((((COLORCONV_15_TO_8 or COLORCONV_16_TO_8) or COLORCONV_24_TO_8) or COLORCONV_32_TO_8) or COLORCONV_32A_TO_8)
+const COLORCONV_DITHER = COLORCONV_DITHER_PAL or COLORCONV_DITHER_HI
+const COLORCONV_EXPAND_256 = ((COLORCONV_8_TO_15 or COLORCONV_8_TO_16) or COLORCONV_8_TO_24) or COLORCONV_8_TO_32
+const COLORCONV_REDUCE_TO_256 = (((COLORCONV_15_TO_8 or COLORCONV_16_TO_8) or COLORCONV_24_TO_8) or COLORCONV_32_TO_8) or COLORCONV_32A_TO_8
 const COLORCONV_EXPAND_15_TO_16 = COLORCONV_15_TO_16
 const COLORCONV_REDUCE_16_TO_15 = COLORCONV_16_TO_15
-#define COLORCONV_EXPAND_HI_TO_TRUE (((COLORCONV_15_TO_24 or COLORCONV_15_TO_32) or COLORCONV_16_TO_24) or COLORCONV_16_TO_32)
-#define COLORCONV_REDUCE_TRUE_TO_HI (((COLORCONV_24_TO_15 or COLORCONV_24_TO_16) or COLORCONV_32_TO_15) or COLORCONV_32_TO_16)
-#define COLORCONV_24_EQUALS_32 (COLORCONV_24_TO_32 or COLORCONV_32_TO_24)
-#define COLORCONV_TOTAL (((((((((COLORCONV_EXPAND_256 or COLORCONV_REDUCE_TO_256) or COLORCONV_EXPAND_15_TO_16) or COLORCONV_REDUCE_16_TO_15) or COLORCONV_EXPAND_HI_TO_TRUE) or COLORCONV_REDUCE_TRUE_TO_HI) or COLORCONV_24_EQUALS_32) or COLORCONV_32A_TO_15) or COLORCONV_32A_TO_16) or COLORCONV_32A_TO_24)
-#define COLORCONV_PARTIAL ((COLORCONV_EXPAND_15_TO_16 or COLORCONV_REDUCE_16_TO_15) or COLORCONV_24_EQUALS_32)
-#define COLORCONV_MOST ((((COLORCONV_EXPAND_15_TO_16 or COLORCONV_REDUCE_16_TO_15) or COLORCONV_EXPAND_HI_TO_TRUE) or COLORCONV_REDUCE_TRUE_TO_HI) or COLORCONV_24_EQUALS_32)
-#define COLORCONV_KEEP_ALPHA (COLORCONV_TOTAL and (not (((COLORCONV_32A_TO_8 or COLORCONV_32A_TO_15) or COLORCONV_32A_TO_16) or COLORCONV_32A_TO_24)))
+const COLORCONV_EXPAND_HI_TO_TRUE = ((COLORCONV_15_TO_24 or COLORCONV_15_TO_32) or COLORCONV_16_TO_24) or COLORCONV_16_TO_32
+const COLORCONV_REDUCE_TRUE_TO_HI = ((COLORCONV_24_TO_15 or COLORCONV_24_TO_16) or COLORCONV_32_TO_15) or COLORCONV_32_TO_16
+const COLORCONV_24_EQUALS_32 = COLORCONV_24_TO_32 or COLORCONV_32_TO_24
+const COLORCONV_TOTAL = ((((((((COLORCONV_EXPAND_256 or COLORCONV_REDUCE_TO_256) or COLORCONV_EXPAND_15_TO_16) or COLORCONV_REDUCE_16_TO_15) or COLORCONV_EXPAND_HI_TO_TRUE) or COLORCONV_REDUCE_TRUE_TO_HI) or COLORCONV_24_EQUALS_32) or COLORCONV_32A_TO_15) or COLORCONV_32A_TO_16) or COLORCONV_32A_TO_24
+const COLORCONV_PARTIAL = (COLORCONV_EXPAND_15_TO_16 or COLORCONV_REDUCE_16_TO_15) or COLORCONV_24_EQUALS_32
+const COLORCONV_MOST = (((COLORCONV_EXPAND_15_TO_16 or COLORCONV_REDUCE_16_TO_15) or COLORCONV_EXPAND_HI_TO_TRUE) or COLORCONV_REDUCE_TRUE_TO_HI) or COLORCONV_24_EQUALS_32
+const COLORCONV_KEEP_ALPHA = COLORCONV_TOTAL and (not (((COLORCONV_32A_TO_8 or COLORCONV_32A_TO_15) or COLORCONV_32A_TO_16) or COLORCONV_32A_TO_24))
 
 declare function get_gfx_mode_list(byval card as long) as GFX_MODE_LIST ptr
 declare sub destroy_gfx_mode_list(byval gfx_mode_list as GFX_MODE_LIST ptr)
@@ -2771,11 +2770,11 @@ const JOY_HAT_UP = 4
 declare function initialise_joystick() as long
 
 #if defined(__FB_WIN32__) and (not defined(ALLEGRO_STATICLINK))
-	extern import black_pallete alias "black_palette" as RGB
-	extern import desktop_pallete alias "desktop_palette" as RGB
+	extern import black_pallete(0 to 255) alias "black_palette" as RGB
+	extern import desktop_pallete(0 to 255) alias "desktop_palette" as RGB
 #else
-	extern black_pallete alias "black_palette" as RGB
-	extern desktop_pallete alias "desktop_palette" as RGB
+	extern black_pallete(0 to 255) alias "black_palette" as RGB
+	extern desktop_pallete(0 to 255) alias "desktop_palette" as RGB
 #endif
 
 declare sub set_pallete alias "set_palette"(byval p as const RGB ptr)
@@ -2784,10 +2783,10 @@ declare sub set_pallete_range alias "set_palette_range"(byval p as const RGB ptr
 declare sub get_pallete_range alias "get_palette_range"(byval p as RGB ptr, byval from as long, byval to as long)
 
 #if defined(__FB_WIN32__) and (not defined(ALLEGRO_STATICLINK))
-	extern import fli_pallete alias "fli_palette" as RGB
+	extern import fli_pallete(0 to 255) alias "fli_palette" as RGB
 	extern import pallete_color alias "palette_color" as long ptr
 #else
-	extern fli_pallete alias "fli_palette" as RGB
+	extern fli_pallete(0 to 255) alias "fli_palette" as RGB
 	extern pallete_color alias "palette_color" as long ptr
 #endif
 

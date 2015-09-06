@@ -85,7 +85,7 @@ const xvmc_DestroySubpicture = 7
 const xvmc_ListSubpictureTypes = 8
 const xvmc_GetDRInfo = 9
 const xvmc_LastRequest = xvmc_GetDRInfo
-#define xvmcNumRequest (xvmc_LastRequest + 1)
+const xvmcNumRequest = xvmc_LastRequest + 1
 
 type xvmcSurfaceInfo_
 	surface_type_id as CARD32

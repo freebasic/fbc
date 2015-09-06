@@ -1,94 +1,122 @@
+'' FreeBASIC binding for gsl-1.16
 ''
+'' based on the C header files:
+''   ode-initval/gsl_odeiv.h
 ''
-'' gsl_odeiv -- header translated with help of SWIG FB wrapper
+''   Copyright (C) 1996, 1997, 1998, 1999, 2000 Gerard Jungman
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+''   This program is free software; you can redistribute it and/or modify
+''   it under the terms of the GNU General Public License as published by
+''   the Free Software Foundation; either version 3 of the License, or (at
+''   your option) any later version.
 ''
+''   This program is distributed in the hope that it will be useful, but
+''   WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   General Public License for more details.
 ''
-#ifndef __gsl_odeiv_bi__
-#define __gsl_odeiv_bi__
+''   You should have received a copy of the GNU General Public License
+''   along with this program; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-#include once "gsl_types.bi"
+#pragma once
+
+#include once "crt/long.bi"
+#include once "crt/stdio.bi"
+#include once "crt/stdlib.bi"
+#include once "gsl/gsl_types.bi"
+
+extern "C"
+
+#define __GSL_ODEIV_H__
 
 type gsl_odeiv_system
-	function as function cdecl(byval as double, byval as double ptr, byval as double ptr, byval as any ptr) as integer
-	jacobian as function cdecl(byval as double, byval as double ptr, byval as double ptr, byval as double ptr, byval as any ptr) as integer
-	dimension as integer
+	function as function(byval t as double, byval y as const double ptr, byval dydt as double ptr, byval params as any ptr) as long
+	jacobian as function(byval t as double, byval y as const double ptr, byval dfdy as double ptr, byval dfdt as double ptr, byval params as any ptr) as long
+	dimension as uinteger
 	params as any ptr
 end type
 
 type gsl_odeiv_step_type
-	name as byte ptr
-	can_use_dydt_in as integer
-	gives_exact_dydt_out as integer
-	alloc as sub cdecl(byval as integer)
-	apply as function cdecl(byval as any ptr, byval as integer, byval as double, byval as double, byval as double ptr, byval as double ptr, byval as double ptr, byval as double ptr, byval as gsl_odeiv_system ptr) as integer
-	reset as function cdecl(byval as any ptr, byval as integer) as integer
-	order as function cdecl(byval as any ptr) as uinteger
-	free as sub cdecl(byval as any ptr)
+	name as const zstring ptr
+	can_use_dydt_in as long
+	gives_exact_dydt_out as long
+	alloc as function(byval dim as uinteger) as any ptr
+	apply as function(byval state as any ptr, byval dim as uinteger, byval t as double, byval h as double, byval y as double ptr, byval yerr as double ptr, byval dydt_in as const double ptr, byval dydt_out as double ptr, byval dydt as const gsl_odeiv_system ptr) as long
+	reset as function(byval state as any ptr, byval dim as uinteger) as long
+	order as function(byval state as any ptr) as ulong
+	free as sub(byval state as any ptr)
 end type
 
 type gsl_odeiv_step
-	type as gsl_odeiv_step_type ptr
-	dimension as integer
+	as const gsl_odeiv_step_type ptr type
+	dimension as uinteger
 	state as any ptr
 end type
 
-extern "c"
-declare function gsl_odeiv_step_alloc (byval T as gsl_odeiv_step_type ptr, byval dim as integer) as gsl_odeiv_step ptr
-declare function gsl_odeiv_step_reset (byval s as gsl_odeiv_step ptr) as integer
-declare sub gsl_odeiv_step_free (byval s as gsl_odeiv_step ptr)
-declare function gsl_odeiv_step_name (byval as gsl_odeiv_step ptr) as zstring ptr
-declare function gsl_odeiv_step_order (byval s as gsl_odeiv_step ptr) as uinteger
-declare function gsl_odeiv_step_apply (byval as gsl_odeiv_step ptr, byval t as double, byval h as double, byval y as double ptr, byval yerr as double ptr, byval dydt_in as double ptr, byval dydt_out as double ptr, byval dydt as gsl_odeiv_system ptr) as integer
-end extern
+extern gsl_odeiv_step_rk2 as const gsl_odeiv_step_type ptr
+extern gsl_odeiv_step_rk4 as const gsl_odeiv_step_type ptr
+extern gsl_odeiv_step_rkf45 as const gsl_odeiv_step_type ptr
+extern gsl_odeiv_step_rkck as const gsl_odeiv_step_type ptr
+extern gsl_odeiv_step_rk8pd as const gsl_odeiv_step_type ptr
+extern gsl_odeiv_step_rk2imp as const gsl_odeiv_step_type ptr
+extern gsl_odeiv_step_rk2simp as const gsl_odeiv_step_type ptr
+extern gsl_odeiv_step_rk4imp as const gsl_odeiv_step_type ptr
+extern gsl_odeiv_step_bsimp as const gsl_odeiv_step_type ptr
+extern gsl_odeiv_step_gear1 as const gsl_odeiv_step_type ptr
+extern gsl_odeiv_step_gear2 as const gsl_odeiv_step_type ptr
+
+declare function gsl_odeiv_step_alloc(byval T as const gsl_odeiv_step_type ptr, byval dim as uinteger) as gsl_odeiv_step ptr
+declare function gsl_odeiv_step_reset(byval s as gsl_odeiv_step ptr) as long
+declare sub gsl_odeiv_step_free(byval s as gsl_odeiv_step ptr)
+declare function gsl_odeiv_step_name(byval s as const gsl_odeiv_step ptr) as const zstring ptr
+declare function gsl_odeiv_step_order(byval s as const gsl_odeiv_step ptr) as ulong
+declare function gsl_odeiv_step_apply(byval s as gsl_odeiv_step ptr, byval t as double, byval h as double, byval y as double ptr, byval yerr as double ptr, byval dydt_in as const double ptr, byval dydt_out as double ptr, byval dydt as const gsl_odeiv_system ptr) as long
 
 type gsl_odeiv_control_type
-	name as byte ptr
-	alloc as sub cdecl()
-	init as function cdecl(byval as any ptr, byval as double, byval as double, byval as double, byval as double) as integer
-	hadjust as function cdecl(byval as any ptr, byval as integer, byval as uinteger, byval as double ptr, byval as double ptr, byval as double ptr, byval as double ptr) as integer
-	free as sub cdecl(byval as any ptr)
+	name as const zstring ptr
+	alloc as function() as any ptr
+	init as function(byval state as any ptr, byval eps_abs as double, byval eps_rel as double, byval a_y as double, byval a_dydt as double) as long
+	hadjust as function(byval state as any ptr, byval dim as uinteger, byval ord as ulong, byval y as const double ptr, byval yerr as const double ptr, byval yp as const double ptr, byval h as double ptr) as long
+	free as sub(byval state as any ptr)
 end type
 
 type gsl_odeiv_control
-	type as gsl_odeiv_control_type ptr
+	as const gsl_odeiv_control_type ptr type
 	state as any ptr
 end type
 
-#define GSL_ODEIV_HADJ_INC 1
-#define GSL_ODEIV_HADJ_NIL 0
-#define GSL_ODEIV_HADJ_DEC (-1)
+const GSL_ODEIV_HADJ_INC = 1
+const GSL_ODEIV_HADJ_NIL = 0
+const GSL_ODEIV_HADJ_DEC = -1
 
-extern "c"
-declare function gsl_odeiv_control_alloc (byval T as gsl_odeiv_control_type ptr) as gsl_odeiv_control ptr
-declare function gsl_odeiv_control_init (byval c as gsl_odeiv_control ptr, byval eps_abs as double, byval eps_rel as double, byval a_y as double, byval a_dydt as double) as integer
-declare sub gsl_odeiv_control_free (byval c as gsl_odeiv_control ptr)
-declare function gsl_odeiv_control_hadjust (byval c as gsl_odeiv_control ptr, byval s as gsl_odeiv_step ptr, byval y0 as double ptr, byval yerr as double ptr, byval dydt as double ptr, byval h as double ptr) as integer
-declare function gsl_odeiv_control_name (byval c as gsl_odeiv_control ptr) as zstring ptr
-declare function gsl_odeiv_control_standard_new (byval eps_abs as double, byval eps_rel as double, byval a_y as double, byval a_dydt as double) as gsl_odeiv_control ptr
-declare function gsl_odeiv_control_y_new (byval eps_abs as double, byval eps_rel as double) as gsl_odeiv_control ptr
-declare function gsl_odeiv_control_yp_new (byval eps_abs as double, byval eps_rel as double) as gsl_odeiv_control ptr
-declare function gsl_odeiv_control_scaled_new (byval eps_abs as double, byval eps_rel as double, byval a_y as double, byval a_dydt as double, byval scale_abs as double ptr, byval dim as integer) as gsl_odeiv_control ptr
-end extern
+declare function gsl_odeiv_control_alloc(byval T as const gsl_odeiv_control_type ptr) as gsl_odeiv_control ptr
+declare function gsl_odeiv_control_init(byval c as gsl_odeiv_control ptr, byval eps_abs as double, byval eps_rel as double, byval a_y as double, byval a_dydt as double) as long
+declare sub gsl_odeiv_control_free(byval c as gsl_odeiv_control ptr)
+declare function gsl_odeiv_control_hadjust(byval c as gsl_odeiv_control ptr, byval s as gsl_odeiv_step ptr, byval y as const double ptr, byval yerr as const double ptr, byval dydt as const double ptr, byval h as double ptr) as long
+declare function gsl_odeiv_control_name(byval c as const gsl_odeiv_control ptr) as const zstring ptr
+declare function gsl_odeiv_control_standard_new(byval eps_abs as double, byval eps_rel as double, byval a_y as double, byval a_dydt as double) as gsl_odeiv_control ptr
+declare function gsl_odeiv_control_y_new(byval eps_abs as double, byval eps_rel as double) as gsl_odeiv_control ptr
+declare function gsl_odeiv_control_yp_new(byval eps_abs as double, byval eps_rel as double) as gsl_odeiv_control ptr
+declare function gsl_odeiv_control_scaled_new(byval eps_abs as double, byval eps_rel as double, byval a_y as double, byval a_dydt as double, byval scale_abs as const double ptr, byval dim as uinteger) as gsl_odeiv_control ptr
 
 type gsl_odeiv_evolve
-	dimension as integer
+	dimension as uinteger
 	y0 as double ptr
 	yerr as double ptr
 	dydt_in as double ptr
 	dydt_out as double ptr
 	last_step as double
-	count as uinteger
-	failed_steps as uinteger
+	count as culong
+	failed_steps as culong
 end type
 
-extern "c"
-declare function gsl_odeiv_evolve_alloc (byval dim as integer) as gsl_odeiv_evolve ptr
-declare function gsl_odeiv_evolve_apply (byval as gsl_odeiv_evolve ptr, byval con as gsl_odeiv_control ptr, byval step as gsl_odeiv_step ptr, byval dydt as gsl_odeiv_system ptr, byval t as double ptr, byval t1 as double, byval h as double ptr, byval y as double ptr) as integer
-declare function gsl_odeiv_evolve_reset (byval as gsl_odeiv_evolve ptr) as integer
-declare sub gsl_odeiv_evolve_free (byval as gsl_odeiv_evolve ptr)
-end extern
+declare function gsl_odeiv_evolve_alloc(byval dim as uinteger) as gsl_odeiv_evolve ptr
+declare function gsl_odeiv_evolve_apply(byval e as gsl_odeiv_evolve ptr, byval con as gsl_odeiv_control ptr, byval step as gsl_odeiv_step ptr, byval dydt as const gsl_odeiv_system ptr, byval t as double ptr, byval t1 as double, byval h as double ptr, byval y as double ptr) as long
+declare function gsl_odeiv_evolve_reset(byval e as gsl_odeiv_evolve ptr) as long
+declare sub gsl_odeiv_evolve_free(byval e as gsl_odeiv_evolve ptr)
 
-#endif
+end extern

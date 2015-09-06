@@ -103,7 +103,7 @@ const PResizeInc = cast(clong, 1) shl 6
 const PAspect = cast(clong, 1) shl 7
 const PBaseSize = cast(clong, 1) shl 8
 const PWinGravity = cast(clong, 1) shl 9
-#define PAllHints (((((PPosition or PSize) or PMinSize) or PMaxSize) or PResizeInc) or PAspect)
+const PAllHints = ((((PPosition or PSize) or PMinSize) or PMaxSize) or PResizeInc) or PAspect
 
 type XWMHints
 	flags as clong
@@ -124,7 +124,7 @@ const IconWindowHint = cast(clong, 1) shl 3
 const IconPositionHint = cast(clong, 1) shl 4
 const IconMaskHint = cast(clong, 1) shl 5
 const WindowGroupHint = cast(clong, 1) shl 6
-#define AllHints ((((((InputHint or StateHint) or IconPixmapHint) or IconWindowHint) or IconPositionHint) or IconMaskHint) or WindowGroupHint)
+const AllHints = (((((InputHint or StateHint) or IconPixmapHint) or IconWindowHint) or IconPositionHint) or IconMaskHint) or WindowGroupHint
 const XUrgencyHint = cast(clong, 1) shl 8
 const WithdrawnState = 0
 const NormalState = 1
@@ -229,7 +229,7 @@ type XStandardColormap
 	killid as XID
 end type
 
-#define ReleaseByFreeingColormap cast(XID, cast(clong, 1))
+const ReleaseByFreeingColormap = cast(XID, cast(clong, 1))
 const BitmapSuccess = 0
 const BitmapOpenFailed = 1
 const BitmapFileInvalid = 2

@@ -1,4 +1,4 @@
-'' FreeBASIC binding for atk-2.14.0
+'' FreeBASIC binding for atk-2.16.0
 ''
 '' based on the C header files:
 ''   ATK -  Accessibility Toolkit
@@ -44,9 +44,9 @@ extern "C"
 #define __ATK_OBJECT_H__
 #define __ATK_VERSION_H__
 const ATK_MAJOR_VERSION = 2
-const ATK_MINOR_VERSION = 14
+const ATK_MINOR_VERSION = 16
 const ATK_MICRO_VERSION = 0
-const ATK_BINARY_AGE = 21410
+const ATK_BINARY_AGE = 21610
 const ATK_INTERFACE_AGE = 1
 #define ATK_CHECK_VERSION(major, minor, micro) (((ATK_MAJOR_VERSION > (major)) orelse ((ATK_MAJOR_VERSION = (major)) andalso (ATK_MINOR_VERSION > (minor)))) orelse (((ATK_MAJOR_VERSION = (major)) andalso (ATK_MINOR_VERSION = (minor))) andalso (ATK_MICRO_VERSION >= (micro))))
 #define ATK_VERSION_2_2 G_ENCODE_VERSION(2, 2)
@@ -112,13 +112,15 @@ enum
 	ATK_STATE_VISITED
 	ATK_STATE_CHECKABLE
 	ATK_STATE_HAS_POPUP
+	ATK_STATE_HAS_TOOLTIP
+	ATK_STATE_READ_ONLY
 	ATK_STATE_LAST_DEFINED
 end enum
 
 type AtkState as guint64
-declare function atk_state_type_register(byval name as const zstring ptr) as AtkStateType
-declare function atk_state_type_get_name(byval type as AtkStateType) as const zstring ptr
-declare function atk_state_type_for_name(byval name as const zstring ptr) as AtkStateType
+declare function atk_state_type_register(byval name as const gchar ptr) as AtkStateType
+declare function atk_state_type_get_name(byval type as AtkStateType) as const gchar ptr
+declare function atk_state_type_for_name(byval name as const gchar ptr) as AtkStateType
 #define __ATK_RELATION_TYPE_H__
 
 type AtkRelationType as long
@@ -262,6 +264,11 @@ enum
 	ATK_ROLE_DESCRIPTION_LIST
 	ATK_ROLE_DESCRIPTION_TERM
 	ATK_ROLE_DESCRIPTION_VALUE
+	ATK_ROLE_STATIC
+	ATK_ROLE_MATH_FRACTION
+	ATK_ROLE_MATH_ROOT
+	ATK_ROLE_SUBSCRIPT
+	ATK_ROLE_SUPERSCRIPT
 	ATK_ROLE_LAST_DEFINED
 end enum
 
@@ -281,8 +288,8 @@ type AtkAttributeSet as GSList
 type AtkAttribute as _AtkAttribute
 
 type _AtkAttribute
-	name as zstring ptr
-	value as zstring ptr
+	name as gchar ptr
+	value as gchar ptr
 end type
 
 #define ATK_TYPE_OBJECT atk_object_get_type()
@@ -304,7 +311,7 @@ type AtkRelationSet as _AtkRelationSet
 type AtkStateSet as _AtkStateSet
 
 type _AtkPropertyValues
-	property_name as const zstring ptr
+	property_name as const gchar ptr
 	old_value as GValue
 	new_value as GValue
 end type
@@ -315,8 +322,8 @@ type AtkPropertyChangeHandler as sub(byval obj as AtkObject ptr, byval vals as A
 
 type _AtkObject
 	parent as GObject
-	description as zstring ptr
-	name as zstring ptr
+	description as gchar ptr
+	name as gchar ptr
 	accessible_parent as AtkObject ptr
 	role as AtkRole
 	relation_set as AtkRelationSet ptr
@@ -325,8 +332,8 @@ end type
 
 type _AtkObjectClass
 	parent as GObjectClass
-	get_name as function(byval accessible as AtkObject ptr) as const zstring ptr
-	get_description as function(byval accessible as AtkObject ptr) as const zstring ptr
+	get_name as function(byval accessible as AtkObject ptr) as const gchar ptr
+	get_description as function(byval accessible as AtkObject ptr) as const gchar ptr
 	get_parent as function(byval accessible as AtkObject ptr) as AtkObject ptr
 	get_n_children as function(byval accessible as AtkObject ptr) as gint
 	ref_child as function(byval accessible as AtkObject ptr, byval i as gint) as AtkObject ptr
@@ -336,8 +343,8 @@ type _AtkObjectClass
 	get_layer as function(byval accessible as AtkObject ptr) as AtkLayer
 	get_mdi_zorder as function(byval accessible as AtkObject ptr) as gint
 	ref_state_set as function(byval accessible as AtkObject ptr) as AtkStateSet ptr
-	set_name as sub(byval accessible as AtkObject ptr, byval name as const zstring ptr)
-	set_description as sub(byval accessible as AtkObject ptr, byval description as const zstring ptr)
+	set_name as sub(byval accessible as AtkObject ptr, byval name as const gchar ptr)
+	set_description as sub(byval accessible as AtkObject ptr, byval description as const gchar ptr)
 	set_parent as sub(byval accessible as AtkObject ptr, byval parent as AtkObject ptr)
 	set_role as sub(byval accessible as AtkObject ptr, byval role as AtkRole)
 	connect_property_change_handler as function(byval accessible as AtkObject ptr, byval handler as AtkPropertyChangeHandler ptr) as guint
@@ -346,11 +353,11 @@ type _AtkObjectClass
 	children_changed as sub(byval accessible as AtkObject ptr, byval change_index as guint, byval changed_child as gpointer)
 	focus_event as sub(byval accessible as AtkObject ptr, byval focus_in as gboolean)
 	property_change as sub(byval accessible as AtkObject ptr, byval values as AtkPropertyValues ptr)
-	state_change as sub(byval accessible as AtkObject ptr, byval name as const zstring ptr, byval state_set as gboolean)
+	state_change as sub(byval accessible as AtkObject ptr, byval name as const gchar ptr, byval state_set as gboolean)
 	visible_data_changed as sub(byval accessible as AtkObject ptr)
 	active_descendant_changed as sub(byval accessible as AtkObject ptr, byval child as gpointer ptr)
 	get_attributes as function(byval accessible as AtkObject ptr) as AtkAttributeSet ptr
-	get_object_locale as function(byval accessible as AtkObject ptr) as const zstring ptr
+	get_object_locale as function(byval accessible as AtkObject ptr) as const gchar ptr
 	pad1 as AtkFunction
 end type
 
@@ -363,8 +370,8 @@ end type
 
 declare function atk_implementor_get_type() as GType
 declare function atk_implementor_ref_accessible(byval implementor as AtkImplementor ptr) as AtkObject ptr
-declare function atk_object_get_name(byval accessible as AtkObject ptr) as const zstring ptr
-declare function atk_object_get_description(byval accessible as AtkObject ptr) as const zstring ptr
+declare function atk_object_get_name(byval accessible as AtkObject ptr) as const gchar ptr
+declare function atk_object_get_description(byval accessible as AtkObject ptr) as const gchar ptr
 declare function atk_object_get_parent(byval accessible as AtkObject ptr) as AtkObject ptr
 declare function atk_object_peek_parent(byval accessible as AtkObject ptr) as AtkObject ptr
 declare function atk_object_get_n_accessible_children(byval accessible as AtkObject ptr) as gint
@@ -376,21 +383,21 @@ declare function atk_object_get_mdi_zorder(byval accessible as AtkObject ptr) as
 declare function atk_object_get_attributes(byval accessible as AtkObject ptr) as AtkAttributeSet ptr
 declare function atk_object_ref_state_set(byval accessible as AtkObject ptr) as AtkStateSet ptr
 declare function atk_object_get_index_in_parent(byval accessible as AtkObject ptr) as gint
-declare sub atk_object_set_name(byval accessible as AtkObject ptr, byval name as const zstring ptr)
-declare sub atk_object_set_description(byval accessible as AtkObject ptr, byval description as const zstring ptr)
+declare sub atk_object_set_name(byval accessible as AtkObject ptr, byval name as const gchar ptr)
+declare sub atk_object_set_description(byval accessible as AtkObject ptr, byval description as const gchar ptr)
 declare sub atk_object_set_parent(byval accessible as AtkObject ptr, byval parent as AtkObject ptr)
 declare sub atk_object_set_role(byval accessible as AtkObject ptr, byval role as AtkRole)
 declare function atk_object_connect_property_change_handler(byval accessible as AtkObject ptr, byval handler as AtkPropertyChangeHandler ptr) as guint
 declare sub atk_object_remove_property_change_handler(byval accessible as AtkObject ptr, byval handler_id as guint)
 declare sub atk_object_notify_state_change(byval accessible as AtkObject ptr, byval state as AtkState, byval value as gboolean)
 declare sub atk_object_initialize(byval accessible as AtkObject ptr, byval data as gpointer)
-declare function atk_role_get_name(byval role as AtkRole) as const zstring ptr
-declare function atk_role_for_name(byval name as const zstring ptr) as AtkRole
+declare function atk_role_get_name(byval role as AtkRole) as const gchar ptr
+declare function atk_role_for_name(byval name as const gchar ptr) as AtkRole
 declare function atk_object_add_relationship(byval object as AtkObject ptr, byval relationship as AtkRelationType, byval target as AtkObject ptr) as gboolean
 declare function atk_object_remove_relationship(byval object as AtkObject ptr, byval relationship as AtkRelationType, byval target as AtkObject ptr) as gboolean
-declare function atk_role_get_localized_name(byval role as AtkRole) as const zstring ptr
-declare function atk_role_register(byval name as const zstring ptr) as AtkRole
-declare function atk_object_get_object_locale(byval accessible as AtkObject ptr) as const zstring ptr
+declare function atk_role_get_localized_name(byval role as AtkRole) as const gchar ptr
+declare function atk_role_register(byval name as const gchar ptr) as AtkRole
+declare function atk_object_get_object_locale(byval accessible as AtkObject ptr) as const gchar ptr
 
 #define __ATK_ACTION_H__
 #define ATK_TYPE_ACTION atk_action_get_type()
@@ -405,21 +412,21 @@ type _AtkActionIface
 	parent as GTypeInterface
 	do_action as function(byval action as AtkAction ptr, byval i as gint) as gboolean
 	get_n_actions as function(byval action as AtkAction ptr) as gint
-	get_description as function(byval action as AtkAction ptr, byval i as gint) as const zstring ptr
-	get_name as function(byval action as AtkAction ptr, byval i as gint) as const zstring ptr
-	get_keybinding as function(byval action as AtkAction ptr, byval i as gint) as const zstring ptr
-	set_description as function(byval action as AtkAction ptr, byval i as gint, byval desc as const zstring ptr) as gboolean
-	get_localized_name as function(byval action as AtkAction ptr, byval i as gint) as const zstring ptr
+	get_description as function(byval action as AtkAction ptr, byval i as gint) as const gchar ptr
+	get_name as function(byval action as AtkAction ptr, byval i as gint) as const gchar ptr
+	get_keybinding as function(byval action as AtkAction ptr, byval i as gint) as const gchar ptr
+	set_description as function(byval action as AtkAction ptr, byval i as gint, byval desc as const gchar ptr) as gboolean
+	get_localized_name as function(byval action as AtkAction ptr, byval i as gint) as const gchar ptr
 end type
 
 declare function atk_action_get_type() as GType
 declare function atk_action_do_action(byval action as AtkAction ptr, byval i as gint) as gboolean
 declare function atk_action_get_n_actions(byval action as AtkAction ptr) as gint
-declare function atk_action_get_description(byval action as AtkAction ptr, byval i as gint) as const zstring ptr
-declare function atk_action_get_name(byval action as AtkAction ptr, byval i as gint) as const zstring ptr
-declare function atk_action_get_keybinding(byval action as AtkAction ptr, byval i as gint) as const zstring ptr
-declare function atk_action_set_description(byval action as AtkAction ptr, byval i as gint, byval desc as const zstring ptr) as gboolean
-declare function atk_action_get_localized_name(byval action as AtkAction ptr, byval i as gint) as const zstring ptr
+declare function atk_action_get_description(byval action as AtkAction ptr, byval i as gint) as const gchar ptr
+declare function atk_action_get_name(byval action as AtkAction ptr, byval i as gint) as const gchar ptr
+declare function atk_action_get_keybinding(byval action as AtkAction ptr, byval i as gint) as const gchar ptr
+declare function atk_action_set_description(byval action as AtkAction ptr, byval i as gint, byval desc as const gchar ptr) as gboolean
+declare function atk_action_get_localized_name(byval action as AtkAction ptr, byval i as gint) as const gchar ptr
 
 #define __ATK_COMPONENT_H__
 #define __ATK_UTIL_H__
@@ -443,7 +450,7 @@ type _AtkKeyEventStruct
 	state as guint
 	keyval as guint
 	length as gint
-	string as zstring ptr
+	string as gchar ptr
 	keycode as guint16
 	timestamp as guint32
 end type
@@ -461,13 +468,13 @@ end type
 
 type _AtkUtilClass
 	parent as GObjectClass
-	add_global_event_listener as function(byval listener as GSignalEmissionHook, byval event_type as const zstring ptr) as guint
+	add_global_event_listener as function(byval listener as GSignalEmissionHook, byval event_type as const gchar ptr) as guint
 	remove_global_event_listener as sub(byval listener_id as guint)
 	add_key_event_listener as function(byval listener as AtkKeySnoopFunc, byval data as gpointer) as guint
 	remove_key_event_listener as sub(byval listener_id as guint)
 	get_root as function() as AtkObject ptr
-	get_toolkit_name as function() as const zstring ptr
-	get_toolkit_version as function() as const zstring ptr
+	get_toolkit_name as function() as const gchar ptr
+	get_toolkit_version as function() as const gchar ptr
 end type
 
 declare function atk_util_get_type() as GType
@@ -482,15 +489,15 @@ declare function atk_add_focus_tracker(byval focus_tracker as AtkEventListener) 
 declare sub atk_remove_focus_tracker(byval tracker_id as guint)
 declare sub atk_focus_tracker_init(byval init as AtkEventListenerInit)
 declare sub atk_focus_tracker_notify(byval object as AtkObject ptr)
-declare function atk_add_global_event_listener(byval listener as GSignalEmissionHook, byval event_type as const zstring ptr) as guint
+declare function atk_add_global_event_listener(byval listener as GSignalEmissionHook, byval event_type as const gchar ptr) as guint
 declare sub atk_remove_global_event_listener(byval listener_id as guint)
 declare function atk_add_key_event_listener(byval listener as AtkKeySnoopFunc, byval data as gpointer) as guint
 declare sub atk_remove_key_event_listener(byval listener_id as guint)
 declare function atk_get_root() as AtkObject ptr
 declare function atk_get_focus_object() as AtkObject ptr
-declare function atk_get_toolkit_name() as const zstring ptr
-declare function atk_get_toolkit_version() as const zstring ptr
-declare function atk_get_version() as const zstring ptr
+declare function atk_get_toolkit_name() as const gchar ptr
+declare function atk_get_toolkit_version() as const gchar ptr
+declare function atk_get_version() as const gchar ptr
 #define ATK_DEFINE_TYPE(TN, t_n, T_P) ATK_DEFINE_TYPE_EXTENDED(TN, t_n, T_P, 0, )
 #macro ATK_DEFINE_TYPE_WITH_CODE(TN, t_n, T_P, _C_)
 	_ATK_DEFINE_TYPE_EXTENDED_BEGIN(TN, t_n, T_P, 0)
@@ -618,23 +625,23 @@ type AtkDocumentIface as _AtkDocumentIface
 
 type _AtkDocumentIface
 	parent as GTypeInterface
-	get_document_type as function(byval document as AtkDocument ptr) as const zstring ptr
+	get_document_type as function(byval document as AtkDocument ptr) as const gchar ptr
 	get_document as function(byval document as AtkDocument ptr) as gpointer
-	get_document_locale as function(byval document as AtkDocument ptr) as const zstring ptr
+	get_document_locale as function(byval document as AtkDocument ptr) as const gchar ptr
 	get_document_attributes as function(byval document as AtkDocument ptr) as AtkAttributeSet ptr
-	get_document_attribute_value as function(byval document as AtkDocument ptr, byval attribute_name as const zstring ptr) as const zstring ptr
-	set_document_attribute as function(byval document as AtkDocument ptr, byval attribute_name as const zstring ptr, byval attribute_value as const zstring ptr) as gboolean
+	get_document_attribute_value as function(byval document as AtkDocument ptr, byval attribute_name as const gchar ptr) as const gchar ptr
+	set_document_attribute as function(byval document as AtkDocument ptr, byval attribute_name as const gchar ptr, byval attribute_value as const gchar ptr) as gboolean
 	get_current_page_number as function(byval document as AtkDocument ptr) as gint
 	get_page_count as function(byval document as AtkDocument ptr) as gint
 end type
 
 declare function atk_document_get_type() as GType
-declare function atk_document_get_document_type(byval document as AtkDocument ptr) as const zstring ptr
+declare function atk_document_get_document_type(byval document as AtkDocument ptr) as const gchar ptr
 declare function atk_document_get_document(byval document as AtkDocument ptr) as gpointer
-declare function atk_document_get_locale(byval document as AtkDocument ptr) as const zstring ptr
+declare function atk_document_get_locale(byval document as AtkDocument ptr) as const gchar ptr
 declare function atk_document_get_attributes(byval document as AtkDocument ptr) as AtkAttributeSet ptr
-declare function atk_document_get_attribute_value(byval document as AtkDocument ptr, byval attribute_name as const zstring ptr) as const zstring ptr
-declare function atk_document_set_attribute_value(byval document as AtkDocument ptr, byval attribute_name as const zstring ptr, byval attribute_value as const zstring ptr) as gboolean
+declare function atk_document_get_attribute_value(byval document as AtkDocument ptr, byval attribute_name as const gchar ptr) as const gchar ptr
+declare function atk_document_set_attribute_value(byval document as AtkDocument ptr, byval attribute_name as const gchar ptr, byval attribute_value as const gchar ptr) as gboolean
 declare function atk_document_get_current_page_number(byval document as AtkDocument ptr) as gint
 declare function atk_document_get_page_count(byval document as AtkDocument ptr) as gint
 #define __ATK_EDITABLE_TEXT_H__
@@ -673,7 +680,7 @@ enum
 	ATK_TEXT_ATTR_LAST_DEFINED
 end enum
 
-declare function atk_text_attribute_register(byval name as const zstring ptr) as AtkTextAttribute
+declare function atk_text_attribute_register(byval name as const gchar ptr) as AtkTextAttribute
 #define ATK_TYPE_TEXT atk_text_get_type()
 #define ATK_IS_TEXT(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), ATK_TYPE_TEXT)
 #define ATK_TEXT(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), ATK_TYPE_TEXT, AtkText)
@@ -717,7 +724,7 @@ type _AtkTextRange
 	bounds as AtkTextRectangle
 	start_offset as gint
 	end_offset as gint
-	content as zstring ptr
+	content as gchar ptr
 end type
 
 declare function atk_text_range_get_type() as GType
@@ -732,11 +739,11 @@ end enum
 
 type _AtkTextIface
 	parent as GTypeInterface
-	get_text as function(byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint) as zstring ptr
-	get_text_after_offset as function(byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
-	get_text_at_offset as function(byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
+	get_text as function(byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint) as gchar ptr
+	get_text_after_offset as function(byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as gchar ptr
+	get_text_at_offset as function(byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as gchar ptr
 	get_character_at_offset as function(byval text as AtkText ptr, byval offset as gint) as gunichar
-	get_text_before_offset as function(byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
+	get_text_before_offset as function(byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as gchar ptr
 	get_caret_offset as function(byval text as AtkText ptr) as gint
 	get_run_attributes as function(byval text as AtkText ptr, byval offset as gint, byval start_offset as gint ptr, byval end_offset as gint ptr) as AtkAttributeSet ptr
 	get_default_attributes as function(byval text as AtkText ptr) as AtkAttributeSet ptr
@@ -744,7 +751,7 @@ type _AtkTextIface
 	get_character_count as function(byval text as AtkText ptr) as gint
 	get_offset_at_point as function(byval text as AtkText ptr, byval x as gint, byval y as gint, byval coords as AtkCoordType) as gint
 	get_n_selections as function(byval text as AtkText ptr) as gint
-	get_selection as function(byval text as AtkText ptr, byval selection_num as gint, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
+	get_selection as function(byval text as AtkText ptr, byval selection_num as gint, byval start_offset as gint ptr, byval end_offset as gint ptr) as gchar ptr
 	add_selection as function(byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint) as gboolean
 	remove_selection as function(byval text as AtkText ptr, byval selection_num as gint) as gboolean
 	set_selection as function(byval text as AtkText ptr, byval selection_num as gint, byval start_offset as gint, byval end_offset as gint) as gboolean
@@ -755,16 +762,16 @@ type _AtkTextIface
 	text_attributes_changed as sub(byval text as AtkText ptr)
 	get_range_extents as sub(byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint, byval coord_type as AtkCoordType, byval rect as AtkTextRectangle ptr)
 	get_bounded_ranges as function(byval text as AtkText ptr, byval rect as AtkTextRectangle ptr, byval coord_type as AtkCoordType, byval x_clip_type as AtkTextClipType, byval y_clip_type as AtkTextClipType) as AtkTextRange ptr ptr
-	get_string_at_offset as function(byval text as AtkText ptr, byval offset as gint, byval granularity as AtkTextGranularity, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
+	get_string_at_offset as function(byval text as AtkText ptr, byval offset as gint, byval granularity as AtkTextGranularity, byval start_offset as gint ptr, byval end_offset as gint ptr) as gchar ptr
 end type
 
 declare function atk_text_get_type() as GType
-declare function atk_text_get_text(byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint) as zstring ptr
+declare function atk_text_get_text(byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint) as gchar ptr
 declare function atk_text_get_character_at_offset(byval text as AtkText ptr, byval offset as gint) as gunichar
-declare function atk_text_get_text_after_offset(byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
-declare function atk_text_get_text_at_offset(byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
-declare function atk_text_get_text_before_offset(byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
-declare function atk_text_get_string_at_offset(byval text as AtkText ptr, byval offset as gint, byval granularity as AtkTextGranularity, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
+declare function atk_text_get_text_after_offset(byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as gchar ptr
+declare function atk_text_get_text_at_offset(byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as gchar ptr
+declare function atk_text_get_text_before_offset(byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as gchar ptr
+declare function atk_text_get_string_at_offset(byval text as AtkText ptr, byval offset as gint, byval granularity as AtkTextGranularity, byval start_offset as gint ptr, byval end_offset as gint ptr) as gchar ptr
 declare function atk_text_get_caret_offset(byval text as AtkText ptr) as gint
 declare sub atk_text_get_character_extents(byval text as AtkText ptr, byval offset as gint, byval x as gint ptr, byval y as gint ptr, byval width as gint ptr, byval height as gint ptr, byval coords as AtkCoordType)
 declare function atk_text_get_run_attributes(byval text as AtkText ptr, byval offset as gint, byval start_offset as gint ptr, byval end_offset as gint ptr) as AtkAttributeSet ptr
@@ -772,7 +779,7 @@ declare function atk_text_get_default_attributes(byval text as AtkText ptr) as A
 declare function atk_text_get_character_count(byval text as AtkText ptr) as gint
 declare function atk_text_get_offset_at_point(byval text as AtkText ptr, byval x as gint, byval y as gint, byval coords as AtkCoordType) as gint
 declare function atk_text_get_n_selections(byval text as AtkText ptr) as gint
-declare function atk_text_get_selection(byval text as AtkText ptr, byval selection_num as gint, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
+declare function atk_text_get_selection(byval text as AtkText ptr, byval selection_num as gint, byval start_offset as gint ptr, byval end_offset as gint ptr) as gchar ptr
 declare function atk_text_add_selection(byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint) as gboolean
 declare function atk_text_remove_selection(byval text as AtkText ptr, byval selection_num as gint) as gboolean
 declare function atk_text_set_selection(byval text as AtkText ptr, byval selection_num as gint, byval start_offset as gint, byval end_offset as gint) as gboolean
@@ -781,9 +788,9 @@ declare sub atk_text_get_range_extents(byval text as AtkText ptr, byval start_of
 declare function atk_text_get_bounded_ranges(byval text as AtkText ptr, byval rect as AtkTextRectangle ptr, byval coord_type as AtkCoordType, byval x_clip_type as AtkTextClipType, byval y_clip_type as AtkTextClipType) as AtkTextRange ptr ptr
 declare sub atk_text_free_ranges(byval ranges as AtkTextRange ptr ptr)
 declare sub atk_attribute_set_free(byval attrib_set as AtkAttributeSet ptr)
-declare function atk_text_attribute_get_name(byval attr as AtkTextAttribute) as const zstring ptr
-declare function atk_text_attribute_for_name(byval name as const zstring ptr) as AtkTextAttribute
-declare function atk_text_attribute_get_value(byval attr as AtkTextAttribute, byval index_ as gint) as const zstring ptr
+declare function atk_text_attribute_get_name(byval attr as AtkTextAttribute) as const gchar ptr
+declare function atk_text_attribute_for_name(byval name as const gchar ptr) as AtkTextAttribute
+declare function atk_text_attribute_get_value(byval attr as AtkTextAttribute, byval index_ as gint) as const gchar ptr
 
 #define ATK_TYPE_EDITABLE_TEXT atk_editable_text_get_type()
 #define ATK_IS_EDITABLE_TEXT(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), ATK_TYPE_EDITABLE_TEXT)
@@ -796,8 +803,8 @@ type AtkEditableTextIface as _AtkEditableTextIface
 type _AtkEditableTextIface
 	parent_interface as GTypeInterface
 	set_run_attributes as function(byval text as AtkEditableText ptr, byval attrib_set as AtkAttributeSet ptr, byval start_offset as gint, byval end_offset as gint) as gboolean
-	set_text_contents as sub(byval text as AtkEditableText ptr, byval string as const zstring ptr)
-	insert_text as sub(byval text as AtkEditableText ptr, byval string as const zstring ptr, byval length as gint, byval position as gint ptr)
+	set_text_contents as sub(byval text as AtkEditableText ptr, byval string as const gchar ptr)
+	insert_text as sub(byval text as AtkEditableText ptr, byval string as const gchar ptr, byval length as gint, byval position as gint ptr)
 	copy_text as sub(byval text as AtkEditableText ptr, byval start_pos as gint, byval end_pos as gint)
 	cut_text as sub(byval text as AtkEditableText ptr, byval start_pos as gint, byval end_pos as gint)
 	delete_text as sub(byval text as AtkEditableText ptr, byval start_pos as gint, byval end_pos as gint)
@@ -806,8 +813,8 @@ end type
 
 declare function atk_editable_text_get_type() as GType
 declare function atk_editable_text_set_run_attributes(byval text as AtkEditableText ptr, byval attrib_set as AtkAttributeSet ptr, byval start_offset as gint, byval end_offset as gint) as gboolean
-declare sub atk_editable_text_set_text_contents(byval text as AtkEditableText ptr, byval string as const zstring ptr)
-declare sub atk_editable_text_insert_text(byval text as AtkEditableText ptr, byval string as const zstring ptr, byval length as gint, byval position as gint ptr)
+declare sub atk_editable_text_set_text_contents(byval text as AtkEditableText ptr, byval string as const gchar ptr)
+declare sub atk_editable_text_insert_text(byval text as AtkEditableText ptr, byval string as const gchar ptr, byval length as gint, byval position as gint ptr)
 declare sub atk_editable_text_copy_text(byval text as AtkEditableText ptr, byval start_pos as gint, byval end_pos as gint)
 declare sub atk_editable_text_cut_text(byval text as AtkEditableText ptr, byval start_pos as gint, byval end_pos as gint)
 declare sub atk_editable_text_delete_text(byval text as AtkEditableText ptr, byval start_pos as gint, byval end_pos as gint)
@@ -884,7 +891,7 @@ end type
 
 type _AtkHyperlinkClass
 	parent as GObjectClass
-	get_uri as function(byval link_ as AtkHyperlink ptr, byval i as gint) as zstring ptr
+	get_uri as function(byval link_ as AtkHyperlink ptr, byval i as gint) as gchar ptr
 	get_object as function(byval link_ as AtkHyperlink ptr, byval i as gint) as AtkObject ptr
 	get_end_index as function(byval link_ as AtkHyperlink ptr) as gint
 	get_start_index as function(byval link_ as AtkHyperlink ptr) as gint
@@ -897,7 +904,7 @@ type _AtkHyperlinkClass
 end type
 
 declare function atk_hyperlink_get_type() as GType
-declare function atk_hyperlink_get_uri(byval link_ as AtkHyperlink ptr, byval i as gint) as zstring ptr
+declare function atk_hyperlink_get_uri(byval link_ as AtkHyperlink ptr, byval i as gint) as gchar ptr
 declare function atk_hyperlink_get_object(byval link_ as AtkHyperlink ptr, byval i as gint) as AtkObject ptr
 declare function atk_hyperlink_get_end_index(byval link_ as AtkHyperlink ptr) as gint
 declare function atk_hyperlink_get_start_index(byval link_ as AtkHyperlink ptr) as gint
@@ -956,18 +963,18 @@ type AtkImageIface as _AtkImageIface
 type _AtkImageIface
 	parent as GTypeInterface
 	get_image_position as sub(byval image as AtkImage ptr, byval x as gint ptr, byval y as gint ptr, byval coord_type as AtkCoordType)
-	get_image_description as function(byval image as AtkImage ptr) as const zstring ptr
+	get_image_description as function(byval image as AtkImage ptr) as const gchar ptr
 	get_image_size as sub(byval image as AtkImage ptr, byval width as gint ptr, byval height as gint ptr)
-	set_image_description as function(byval image as AtkImage ptr, byval description as const zstring ptr) as gboolean
-	get_image_locale as function(byval image as AtkImage ptr) as const zstring ptr
+	set_image_description as function(byval image as AtkImage ptr, byval description as const gchar ptr) as gboolean
+	get_image_locale as function(byval image as AtkImage ptr) as const gchar ptr
 end type
 
 declare function atk_image_get_type() as GType
-declare function atk_image_get_image_description(byval image as AtkImage ptr) as const zstring ptr
+declare function atk_image_get_image_description(byval image as AtkImage ptr) as const gchar ptr
 declare sub atk_image_get_image_size(byval image as AtkImage ptr, byval width as gint ptr, byval height as gint ptr)
-declare function atk_image_set_image_description(byval image as AtkImage ptr, byval description as const zstring ptr) as gboolean
+declare function atk_image_set_image_description(byval image as AtkImage ptr, byval description as const gchar ptr) as gboolean
 declare sub atk_image_get_image_position(byval image as AtkImage ptr, byval x as gint ptr, byval y as gint ptr, byval coord_type as AtkCoordType)
-declare function atk_image_get_image_locale(byval image as AtkImage ptr) as const zstring ptr
+declare function atk_image_get_image_locale(byval image as AtkImage ptr) as const gchar ptr
 
 #define __ATK_NO_OP_OBJECT_H__
 #define ATK_TYPE_NO_OP_OBJECT atk_no_op_object_get_type()
@@ -1056,11 +1063,11 @@ declare function atk_plug_get_type() as GType
 
 type _AtkPlugClass
 	parent_class as AtkObjectClass
-	get_object_id as function(byval obj as AtkPlug ptr) as zstring ptr
+	get_object_id as function(byval obj as AtkPlug ptr) as gchar ptr
 end type
 
 declare function atk_plug_new() as AtkObject ptr
-declare function atk_plug_get_id(byval plug as AtkPlug ptr) as zstring ptr
+declare function atk_plug_get_id(byval plug as AtkPlug ptr) as gchar ptr
 #define __ATK_RANGE_H__
 #define ATK_TYPE_RANGE atk_range_get_type()
 type AtkRange as _AtkRange
@@ -1069,8 +1076,8 @@ declare function atk_range_copy(byval src as AtkRange ptr) as AtkRange ptr
 declare sub atk_range_free(byval range as AtkRange ptr)
 declare function atk_range_get_lower_limit(byval range as AtkRange ptr) as gdouble
 declare function atk_range_get_upper_limit(byval range as AtkRange ptr) as gdouble
-declare function atk_range_get_description(byval range as AtkRange ptr) as const zstring ptr
-declare function atk_range_new(byval lower_limit as gdouble, byval upper_limit as gdouble, byval description as const zstring ptr) as AtkRange ptr
+declare function atk_range_get_description(byval range as AtkRange ptr) as const gchar ptr
+declare function atk_range_new(byval lower_limit as gdouble, byval upper_limit as gdouble, byval description as const gchar ptr) as AtkRange ptr
 
 #define __ATK_REGISTRY_H__
 #define ATK_TYPE_REGISTRY atk_registry_get_type()
@@ -1119,9 +1126,9 @@ type _AtkRelationClass
 end type
 
 declare function atk_relation_get_type() as GType
-declare function atk_relation_type_register(byval name as const zstring ptr) as AtkRelationType
-declare function atk_relation_type_get_name(byval type as AtkRelationType) as const zstring ptr
-declare function atk_relation_type_for_name(byval name as const zstring ptr) as AtkRelationType
+declare function atk_relation_type_register(byval name as const gchar ptr) as AtkRelationType
+declare function atk_relation_type_get_name(byval type as AtkRelationType) as const gchar ptr
+declare function atk_relation_type_for_name(byval name as const gchar ptr) as AtkRelationType
 declare function atk_relation_new(byval targets as AtkObject ptr ptr, byval n_targets as gint, byval relationship as AtkRelationType) as AtkRelation ptr
 declare function atk_relation_get_relation_type(byval relation as AtkRelation ptr) as AtkRelationType
 declare function atk_relation_get_target(byval relation as AtkRelation ptr) as GPtrArray ptr
@@ -1201,18 +1208,18 @@ type AtkSocketClass as _AtkSocketClass
 
 type _AtkSocket
 	parent as AtkObject
-	embedded_plug_id as zstring ptr
+	embedded_plug_id as gchar ptr
 end type
 
 declare function atk_socket_get_type() as GType
 
 type _AtkSocketClass
 	parent_class as AtkObjectClass
-	embed as sub(byval obj as AtkSocket ptr, byval plug_id as zstring ptr)
+	embed as sub(byval obj as AtkSocket ptr, byval plug_id as gchar ptr)
 end type
 
 declare function atk_socket_new() as AtkObject ptr
-declare sub atk_socket_embed(byval obj as AtkSocket ptr, byval plug_id as zstring ptr)
+declare sub atk_socket_embed(byval obj as AtkSocket ptr, byval plug_id as gchar ptr)
 declare function atk_socket_is_occupied(byval obj as AtkSocket ptr) as gboolean
 
 #define __ATK_STATE_SET_H__
@@ -1257,9 +1264,9 @@ type AtkStreamableContentIface as _AtkStreamableContentIface
 type _AtkStreamableContentIface
 	parent as GTypeInterface
 	get_n_mime_types as function(byval streamable as AtkStreamableContent ptr) as gint
-	get_mime_type as function(byval streamable as AtkStreamableContent ptr, byval i as gint) as const zstring ptr
-	get_stream as function(byval streamable as AtkStreamableContent ptr, byval mime_type as const zstring ptr) as GIOChannel ptr
-	get_uri as function(byval streamable as AtkStreamableContent ptr, byval mime_type as const zstring ptr) as const zstring ptr
+	get_mime_type as function(byval streamable as AtkStreamableContent ptr, byval i as gint) as const gchar ptr
+	get_stream as function(byval streamable as AtkStreamableContent ptr, byval mime_type as const gchar ptr) as GIOChannel ptr
+	get_uri as function(byval streamable as AtkStreamableContent ptr, byval mime_type as const gchar ptr) as const gchar ptr
 	pad1 as AtkFunction
 	pad2 as AtkFunction
 	pad3 as AtkFunction
@@ -1267,9 +1274,9 @@ end type
 
 declare function atk_streamable_content_get_type() as GType
 declare function atk_streamable_content_get_n_mime_types(byval streamable as AtkStreamableContent ptr) as gint
-declare function atk_streamable_content_get_mime_type(byval streamable as AtkStreamableContent ptr, byval i as gint) as const zstring ptr
-declare function atk_streamable_content_get_stream(byval streamable as AtkStreamableContent ptr, byval mime_type as const zstring ptr) as GIOChannel ptr
-declare function atk_streamable_content_get_uri(byval streamable as AtkStreamableContent ptr, byval mime_type as const zstring ptr) as const zstring ptr
+declare function atk_streamable_content_get_mime_type(byval streamable as AtkStreamableContent ptr, byval i as gint) as const gchar ptr
+declare function atk_streamable_content_get_stream(byval streamable as AtkStreamableContent ptr, byval mime_type as const gchar ptr) as GIOChannel ptr
+declare function atk_streamable_content_get_uri(byval streamable as AtkStreamableContent ptr, byval mime_type as const gchar ptr) as const gchar ptr
 
 #define __ATK_TABLE_H__
 #define ATK_TYPE_TABLE atk_table_get_type()
@@ -1291,15 +1298,15 @@ type _AtkTableIface
 	get_column_extent_at as function(byval table as AtkTable ptr, byval row as gint, byval column as gint) as gint
 	get_row_extent_at as function(byval table as AtkTable ptr, byval row as gint, byval column as gint) as gint
 	get_caption as function(byval table as AtkTable ptr) as AtkObject ptr
-	get_column_description as function(byval table as AtkTable ptr, byval column as gint) as const zstring ptr
+	get_column_description as function(byval table as AtkTable ptr, byval column as gint) as const gchar ptr
 	get_column_header as function(byval table as AtkTable ptr, byval column as gint) as AtkObject ptr
-	get_row_description as function(byval table as AtkTable ptr, byval row as gint) as const zstring ptr
+	get_row_description as function(byval table as AtkTable ptr, byval row as gint) as const gchar ptr
 	get_row_header as function(byval table as AtkTable ptr, byval row as gint) as AtkObject ptr
 	get_summary as function(byval table as AtkTable ptr) as AtkObject ptr
 	set_caption as sub(byval table as AtkTable ptr, byval caption as AtkObject ptr)
-	set_column_description as sub(byval table as AtkTable ptr, byval column as gint, byval description as const zstring ptr)
+	set_column_description as sub(byval table as AtkTable ptr, byval column as gint, byval description as const gchar ptr)
 	set_column_header as sub(byval table as AtkTable ptr, byval column as gint, byval header as AtkObject ptr)
-	set_row_description as sub(byval table as AtkTable ptr, byval row as gint, byval description as const zstring ptr)
+	set_row_description as sub(byval table as AtkTable ptr, byval row as gint, byval description as const gchar ptr)
 	set_row_header as sub(byval table as AtkTable ptr, byval row as gint, byval header as AtkObject ptr)
 	set_summary as sub(byval table as AtkTable ptr, byval accessible as AtkObject ptr)
 	get_selected_columns as function(byval table as AtkTable ptr, byval selected as gint ptr ptr) as gint
@@ -1330,15 +1337,15 @@ declare function atk_table_get_n_rows(byval table as AtkTable ptr) as gint
 declare function atk_table_get_column_extent_at(byval table as AtkTable ptr, byval row as gint, byval column as gint) as gint
 declare function atk_table_get_row_extent_at(byval table as AtkTable ptr, byval row as gint, byval column as gint) as gint
 declare function atk_table_get_caption(byval table as AtkTable ptr) as AtkObject ptr
-declare function atk_table_get_column_description(byval table as AtkTable ptr, byval column as gint) as const zstring ptr
+declare function atk_table_get_column_description(byval table as AtkTable ptr, byval column as gint) as const gchar ptr
 declare function atk_table_get_column_header(byval table as AtkTable ptr, byval column as gint) as AtkObject ptr
-declare function atk_table_get_row_description(byval table as AtkTable ptr, byval row as gint) as const zstring ptr
+declare function atk_table_get_row_description(byval table as AtkTable ptr, byval row as gint) as const gchar ptr
 declare function atk_table_get_row_header(byval table as AtkTable ptr, byval row as gint) as AtkObject ptr
 declare function atk_table_get_summary(byval table as AtkTable ptr) as AtkObject ptr
 declare sub atk_table_set_caption(byval table as AtkTable ptr, byval caption as AtkObject ptr)
-declare sub atk_table_set_column_description(byval table as AtkTable ptr, byval column as gint, byval description as const zstring ptr)
+declare sub atk_table_set_column_description(byval table as AtkTable ptr, byval column as gint, byval description as const gchar ptr)
 declare sub atk_table_set_column_header(byval table as AtkTable ptr, byval column as gint, byval header as AtkObject ptr)
-declare sub atk_table_set_row_description(byval table as AtkTable ptr, byval row as gint, byval description as const zstring ptr)
+declare sub atk_table_set_row_description(byval table as AtkTable ptr, byval row as gint, byval description as const gchar ptr)
 declare sub atk_table_set_row_header(byval table as AtkTable ptr, byval row as gint, byval header as AtkObject ptr)
 declare sub atk_table_set_summary(byval table as AtkTable ptr, byval accessible as AtkObject ptr)
 declare function atk_table_get_selected_columns(byval table as AtkTable ptr, byval selected as gint ptr ptr) as gint
@@ -1449,7 +1456,7 @@ type _AtkValueIface
 	get_minimum_value as sub(byval obj as AtkValue ptr, byval value as GValue ptr)
 	set_current_value as function(byval obj as AtkValue ptr, byval value as const GValue ptr) as gboolean
 	get_minimum_increment as sub(byval obj as AtkValue ptr, byval value as GValue ptr)
-	get_value_and_text as sub(byval obj as AtkValue ptr, byval value as gdouble ptr, byval text as zstring ptr ptr)
+	get_value_and_text as sub(byval obj as AtkValue ptr, byval value as gdouble ptr, byval text as gchar ptr ptr)
 	get_range as function(byval obj as AtkValue ptr) as AtkRange ptr
 	get_increment as function(byval obj as AtkValue ptr) as gdouble
 	get_sub_ranges as function(byval obj as AtkValue ptr) as GSList ptr
@@ -1462,13 +1469,13 @@ declare sub atk_value_get_maximum_value(byval obj as AtkValue ptr, byval value a
 declare sub atk_value_get_minimum_value(byval obj as AtkValue ptr, byval value as GValue ptr)
 declare function atk_value_set_current_value(byval obj as AtkValue ptr, byval value as const GValue ptr) as gboolean
 declare sub atk_value_get_minimum_increment(byval obj as AtkValue ptr, byval value as GValue ptr)
-declare sub atk_value_get_value_and_text(byval obj as AtkValue ptr, byval value as gdouble ptr, byval text as zstring ptr ptr)
+declare sub atk_value_get_value_and_text(byval obj as AtkValue ptr, byval value as gdouble ptr, byval text as gchar ptr ptr)
 declare function atk_value_get_range(byval obj as AtkValue ptr) as AtkRange ptr
 declare function atk_value_get_increment(byval obj as AtkValue ptr) as gdouble
 declare function atk_value_get_sub_ranges(byval obj as AtkValue ptr) as GSList ptr
 declare sub atk_value_set_value(byval obj as AtkValue ptr, byval new_value as const gdouble)
-declare function atk_value_type_get_name(byval value_type as AtkValueType) as const zstring ptr
-declare function atk_value_type_get_localized_name(byval value_type as AtkValueType) as const zstring ptr
+declare function atk_value_type_get_name(byval value_type as AtkValueType) as const gchar ptr
+declare function atk_value_type_get_localized_name(byval value_type as AtkValueType) as const gchar ptr
 
 #define __ATK_WINDOW_H__
 #define ATK_TYPE_WINDOW atk_window_get_type()

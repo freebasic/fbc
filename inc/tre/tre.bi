@@ -86,36 +86,30 @@ const TRE_H = 1
 	end enum
 
 	const REG_EXTENDED = 1
-	#define REG_ICASE (REG_EXTENDED shl 1)
-	#define REG_NEWLINE (REG_ICASE shl 1)
-	#define REG_NOSUB (REG_NEWLINE shl 1)
+	const REG_ICASE = REG_EXTENDED shl 1
+	const REG_NEWLINE = REG_ICASE shl 1
+	const REG_NOSUB = REG_NEWLINE shl 1
 #endif
 
 const REG_BASIC = 0
 
 #ifndef TRE_USE_SYSTEM_REGEX_H
-	#define REG_LITERAL (REG_NOSUB shl 1)
+	const REG_LITERAL = REG_NOSUB shl 1
 #endif
 
-#define REG_RIGHT_ASSOC (REG_LITERAL shl 1)
-#define REG_UNGREEDY (REG_RIGHT_ASSOC shl 1)
+const REG_RIGHT_ASSOC = REG_LITERAL shl 1
+const REG_UNGREEDY = REG_RIGHT_ASSOC shl 1
 
 #ifdef TRE_USE_SYSTEM_REGEX_H
 	const REG_APPROX_MATCHER = &h1000
 #else
 	const REG_NOTBOL = 1
-	#define REG_NOTEOL (REG_NOTBOL shl 1)
-	#define REG_APPROX_MATCHER (REG_NOTEOL shl 1)
+	const REG_NOTEOL = REG_NOTBOL shl 1
+	const REG_APPROX_MATCHER = REG_NOTEOL shl 1
 #endif
 
-#define REG_BACKTRACKING_MATCHER (REG_APPROX_MATCHER shl 1)
-
-#ifdef TRE_USE_SYSTEM_REGEX_H
-	const REG_NOSPEC = REG_LITERAL
-#else
-	#define REG_NOSPEC REG_LITERAL
-#endif
-
+const REG_BACKTRACKING_MATCHER = REG_APPROX_MATCHER shl 1
+const REG_NOSPEC = REG_LITERAL
 #undef RE_DUP_MAX
 const RE_DUP_MAX = 255
 
@@ -170,7 +164,7 @@ declare sub tre_regaparams_default(byval params as regaparams_t ptr)
 type tre_char_t as wstring
 
 type tre_str_source
-	get_next_char as function(byval c as wstring ptr, byval pos_add as ulong ptr, byval context as any ptr) as long
+	get_next_char as function(byval c as tre_char_t ptr, byval pos_add as ulong ptr, byval context as any ptr) as long
 	rewind as sub(byval pos as uinteger, byval context as any ptr)
 	compare as function(byval pos1 as uinteger, byval pos2 as uinteger, byval len as uinteger, byval context as any ptr) as long
 	context as any ptr

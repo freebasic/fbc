@@ -30,8 +30,8 @@
 extern "Windows"
 
 #define __D3DX9MATH_H__
-#define D3DX_PI cast(FLOAT, 3.141592654)
-#define D3DX_1BYPI cast(FLOAT, 0.318309886)
+const D3DX_PI = cast(FLOAT, 3.141592654)
+const D3DX_1BYPI = cast(FLOAT, 0.318309886)
 const D3DXSH_MINORDER = 2
 const D3DXSH_MAXORDER = 6
 #define D3DXToRadian(degree) ((degree) * (D3DX_PI / 180.0f))

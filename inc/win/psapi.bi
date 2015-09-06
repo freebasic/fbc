@@ -32,7 +32,7 @@ extern "Windows"
 const LIST_MODULES_DEFAULT = &h0
 const LIST_MODULES_32BIT = &h01
 const LIST_MODULES_64BIT = &h02
-#define LIST_MODULES_ALL (LIST_MODULES_32BIT or LIST_MODULES_64BIT)
+const LIST_MODULES_ALL = LIST_MODULES_32BIT or LIST_MODULES_64BIT
 
 declare function EnumProcesses(byval lpidProcess as DWORD ptr, byval cb as DWORD, byval cbNeeded as DWORD ptr) as WINBOOL
 declare function EnumProcessModules(byval hProcess as HANDLE, byval lphModule as HMODULE ptr, byval cb as DWORD, byval lpcbNeeded as LPDWORD) as WINBOOL

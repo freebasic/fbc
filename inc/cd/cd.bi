@@ -366,7 +366,7 @@ enum
 	CD_STRIKEOUT = 8
 end enum
 
-#define CD_BOLD_ITALIC (CD_BOLD or CD_ITALIC)
+const CD_BOLD_ITALIC = CD_BOLD or CD_ITALIC
 
 enum
 	CD_SMALL = 8
@@ -431,8 +431,8 @@ const CD_SIM_POLYLINE = &h0040
 const CD_SIM_POLYGON = &h0080
 const CD_SIM_TEXT = &h0100
 const CD_SIM_ALL = &hFFFF
-#define CD_SIM_LINES (((CD_SIM_LINE or CD_SIM_RECT) or CD_SIM_ARC) or CD_SIM_POLYLINE)
-#define CD_SIM_FILLS (((CD_SIM_BOX or CD_SIM_SECTOR) or CD_SIM_CHORD) or CD_SIM_POLYGON)
+const CD_SIM_LINES = ((CD_SIM_LINE or CD_SIM_RECT) or CD_SIM_ARC) or CD_SIM_POLYLINE
+const CD_SIM_FILLS = ((CD_SIM_BOX or CD_SIM_SECTOR) or CD_SIM_CHORD) or CD_SIM_POLYGON
 const CD_RED = cast(clong, &hFF0000)
 const CD_DARK_RED = cast(clong, &h800000)
 const CD_GREEN = cast(clong, &h00FF00)

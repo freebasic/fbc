@@ -111,8 +111,8 @@ extern XtCXtToolkitError as String_
 
 declare sub _XtAllocError(byval as String_)
 declare sub _XtCompileResourceList(byval as XtResourceList, byval as Cardinal)
-declare function _XtMakeGeometryRequest(byval as Widget, byval as XtWidgetGeometry ptr, byval as XtWidgetGeometry ptr, byval as zstring ptr) as XtGeometryResult
-declare function _XtIsHookObject(byval as Widget) as byte
+declare function _XtMakeGeometryRequest(byval as Widget, byval as XtWidgetGeometry ptr, byval as XtWidgetGeometry ptr, byval as XBoolean ptr) as XtGeometryResult
+declare function _XtIsHookObject(byval as Widget) as XBoolean
 declare sub _XtAddShellToHookObj(byval as Widget)
 declare sub _XtGClistFree(byval dpy as Display ptr, byval pd as XtPerDisplay)
 #define CALLGEOTAT(f)

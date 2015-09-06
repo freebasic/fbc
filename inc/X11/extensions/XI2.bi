@@ -154,29 +154,29 @@ const XI_RawTouchEnd = 24
 const XI_BarrierHit = 25
 const XI_BarrierLeave = 26
 const XI_LASTEVENT = XI_BarrierLeave
-#define XI_DeviceChangedMask (1 shl XI_DeviceChanged)
-#define XI_KeyPressMask (1 shl XI_KeyPress)
-#define XI_KeyReleaseMask (1 shl XI_KeyRelease)
-#define XI_ButtonPressMask (1 shl XI_ButtonPress)
-#define XI_ButtonReleaseMask (1 shl XI_ButtonRelease)
-#define XI_MotionMask (1 shl XI_Motion)
-#define XI_EnterMask (1 shl XI_Enter)
-#define XI_LeaveMask (1 shl XI_Leave)
-#define XI_FocusInMask (1 shl XI_FocusIn)
-#define XI_FocusOutMask (1 shl XI_FocusOut)
-#define XI_HierarchyChangedMask (1 shl XI_HierarchyChanged)
-#define XI_PropertyEventMask (1 shl XI_PropertyEvent)
-#define XI_RawKeyPressMask (1 shl XI_RawKeyPress)
-#define XI_RawKeyReleaseMask (1 shl XI_RawKeyRelease)
-#define XI_RawButtonPressMask (1 shl XI_RawButtonPress)
-#define XI_RawButtonReleaseMask (1 shl XI_RawButtonRelease)
-#define XI_RawMotionMask (1 shl XI_RawMotion)
-#define XI_TouchBeginMask (1 shl XI_TouchBegin)
-#define XI_TouchEndMask (1 shl XI_TouchEnd)
-#define XI_TouchOwnershipChangedMask (1 shl XI_TouchOwnership)
-#define XI_TouchUpdateMask (1 shl XI_TouchUpdate)
-#define XI_RawTouchBeginMask (1 shl XI_RawTouchBegin)
-#define XI_RawTouchEndMask (1 shl XI_RawTouchEnd)
-#define XI_RawTouchUpdateMask (1 shl XI_RawTouchUpdate)
-#define XI_BarrierHitMask (1 shl XI_BarrierHit)
-#define XI_BarrierLeaveMask (1 shl XI_BarrierLeave)
+const XI_DeviceChangedMask = 1 shl XI_DeviceChanged
+const XI_KeyPressMask = 1 shl XI_KeyPress
+const XI_KeyReleaseMask = 1 shl XI_KeyRelease
+const XI_ButtonPressMask = 1 shl XI_ButtonPress
+const XI_ButtonReleaseMask = 1 shl XI_ButtonRelease
+const XI_MotionMask = 1 shl XI_Motion
+const XI_EnterMask = 1 shl XI_Enter
+const XI_LeaveMask = 1 shl XI_Leave
+const XI_FocusInMask = 1 shl XI_FocusIn
+const XI_FocusOutMask = 1 shl XI_FocusOut
+const XI_HierarchyChangedMask = 1 shl XI_HierarchyChanged
+const XI_PropertyEventMask = 1 shl XI_PropertyEvent
+const XI_RawKeyPressMask = 1 shl XI_RawKeyPress
+const XI_RawKeyReleaseMask = 1 shl XI_RawKeyRelease
+const XI_RawButtonPressMask = 1 shl XI_RawButtonPress
+const XI_RawButtonReleaseMask = 1 shl XI_RawButtonRelease
+const XI_RawMotionMask = 1 shl XI_RawMotion
+const XI_TouchBeginMask = 1 shl XI_TouchBegin
+const XI_TouchEndMask = 1 shl XI_TouchEnd
+const XI_TouchOwnershipChangedMask = 1 shl XI_TouchOwnership
+const XI_TouchUpdateMask = 1 shl XI_TouchUpdate
+const XI_RawTouchBeginMask = 1 shl XI_RawTouchBegin
+const XI_RawTouchEndMask = 1 shl XI_RawTouchEnd
+const XI_RawTouchUpdateMask = 1 shl XI_RawTouchUpdate
+const XI_BarrierHitMask = 1 shl XI_BarrierHit
+const XI_BarrierLeaveMask = 1 shl XI_BarrierLeave

@@ -128,7 +128,7 @@ const AL_EXPONENT_DISTANCE_CLAMPED = &hD006
 declare sub alEnable(byval capability as ALenum)
 declare sub alDisable(byval capability as ALenum)
 declare function alIsEnabled(byval capability as ALenum) as ALboolean
-declare function alGetString(byval param as ALenum) as const zstring ptr
+declare function alGetString(byval param as ALenum) as const ALchar ptr
 declare sub alGetBooleanv(byval param as ALenum, byval values as ALboolean ptr)
 declare sub alGetIntegerv(byval param as ALenum, byval values as ALint ptr)
 declare sub alGetFloatv(byval param as ALenum, byval values as ALfloat ptr)
@@ -138,9 +138,9 @@ declare function alGetInteger(byval param as ALenum) as ALint
 declare function alGetFloat(byval param as ALenum) as ALfloat
 declare function alGetDouble(byval param as ALenum) as ALdouble
 declare function alGetError() as ALenum
-declare function alIsExtensionPresent(byval extname as const zstring ptr) as ALboolean
-declare function alGetProcAddress(byval fname as const zstring ptr) as any ptr
-declare function alGetEnumValue(byval ename as const zstring ptr) as ALenum
+declare function alIsExtensionPresent(byval extname as const ALchar ptr) as ALboolean
+declare function alGetProcAddress(byval fname as const ALchar ptr) as any ptr
+declare function alGetEnumValue(byval ename as const ALchar ptr) as ALenum
 declare sub alListenerf(byval param as ALenum, byval value as ALfloat)
 declare sub alListener3f(byval param as ALenum, byval value1 as ALfloat, byval value2 as ALfloat, byval value3 as ALfloat)
 declare sub alListenerfv(byval param as ALenum, byval values as const ALfloat ptr)
@@ -198,7 +198,7 @@ declare sub alGetBufferiv(byval buffer as ALuint, byval param as ALenum, byval v
 type LPALENABLE as sub(byval capability as ALenum)
 type LPALDISABLE as sub(byval capability as ALenum)
 type LPALISENABLED as function(byval capability as ALenum) as ALboolean
-type LPALGETSTRING as function(byval param as ALenum) as const zstring ptr
+type LPALGETSTRING as function(byval param as ALenum) as const ALchar ptr
 type LPALGETBOOLEANV as sub(byval param as ALenum, byval values as ALboolean ptr)
 type LPALGETINTEGERV as sub(byval param as ALenum, byval values as ALint ptr)
 type LPALGETFLOATV as sub(byval param as ALenum, byval values as ALfloat ptr)
@@ -208,9 +208,9 @@ type LPALGETINTEGER as function(byval param as ALenum) as ALint
 type LPALGETFLOAT as function(byval param as ALenum) as ALfloat
 type LPALGETDOUBLE as function(byval param as ALenum) as ALdouble
 type LPALGETERROR as function() as ALenum
-type LPALISEXTENSIONPRESENT as function(byval extname as const zstring ptr) as ALboolean
-type LPALGETPROCADDRESS as function(byval fname as const zstring ptr) as any ptr
-type LPALGETENUMVALUE as function(byval ename as const zstring ptr) as ALenum
+type LPALISEXTENSIONPRESENT as function(byval extname as const ALchar ptr) as ALboolean
+type LPALGETPROCADDRESS as function(byval fname as const ALchar ptr) as any ptr
+type LPALGETENUMVALUE as function(byval ename as const ALchar ptr) as ALenum
 type LPALLISTENERF as sub(byval param as ALenum, byval value as ALfloat)
 type LPALLISTENER3F as sub(byval param as ALenum, byval value1 as ALfloat, byval value2 as ALfloat, byval value3 as ALfloat)
 type LPALLISTENERFV as sub(byval param as ALenum, byval values as const ALfloat ptr)

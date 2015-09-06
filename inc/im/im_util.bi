@@ -1,51 +1,88 @@
+'' FreeBASIC binding for im-3.9.1
 ''
+'' based on the C header files:
+''   Copyright (C) 1994-2014 Tecgraf, PUC-Rio.                                
+''                                                                            
+''   Permission is hereby granted, free of charge, to any person obtaining    
+''   a copy of this software and associated documentation files (the          
+''   "Software"), to deal in the Software without restriction, including      
+''   without limitation the rights to use, copy, modify, merge, publish,      
+''   distribute, sublicense, and/or sell copies of the Software, and to       
+''   permit persons to whom the Software is furnished to do so, subject to    
+''   the following conditions:                                                
+''                                                                            
+''   The above copyright notice and this permission notice shall be           
+''   included in all copies or substantial portions of the Software.          
+''                                                                            
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,          
+''   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF       
+''   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   
+''   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY     
+''   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,     
+''   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE        
+''   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                   
 ''
-'' im_util -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __im_util_bi__
-#define __im_util_bi__
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-declare function imStrEqual cdecl alias "imStrEqual" (byval str1 as zstring ptr, byval str2 as zstring ptr) as integer
-declare function imStrNLen cdecl alias "imStrNLen" (byval str as zstring ptr, byval max_len as integer) as integer
-declare function imStrCheck cdecl alias "imStrCheck" (byval data as any ptr, byval count as integer) as integer
-declare function imImageDataSize cdecl alias "imImageDataSize" (byval width as integer, byval height as integer, byval color_mode as integer, byval data_type as integer) as integer
-declare function imImageLineSize cdecl alias "imImageLineSize" (byval width as integer, byval color_mode as integer, byval data_type as integer) as integer
-declare function imImageLineCount cdecl alias "imImageLineCount" (byval width as integer, byval color_mode as integer) as integer
-declare function imImageCheckFormat cdecl alias "imImageCheckFormat" (byval color_mode as integer, byval data_type as integer) as integer
-declare function imColorEncode cdecl alias "imColorEncode" (byval red as ubyte, byval green as ubyte, byval blue as ubyte) as integer
-declare sub imColorDecode cdecl alias "imColorDecode" (byval red as ubyte ptr, byval green as ubyte ptr, byval blue as ubyte ptr, byval color as integer)
-declare function imColorModeSpaceName cdecl alias "imColorModeSpaceName" (byval color_mode as integer) as zstring ptr
-declare function imColorModeDepth cdecl alias "imColorModeDepth" (byval color_mode as integer) as integer
-declare function imColorModeToBitmap cdecl alias "imColorModeToBitmap" (byval color_mode as integer) as integer
-declare function imColorModeIsBitmap cdecl alias "imColorModeIsBitmap" (byval color_mode as integer, byval data_type as integer) as integer
+#pragma once
 
-#define IM_MAXDEPTH 5
+#include once "crt/long.bi"
 
+extern "C"
+
+#define __IM_UTIL_H
+#define IM_MIN(_a, _b) iif(_a < _b, _a, _b)
+#define IM_MAX(_a, _b) iif(_a > _b, _a, _b)
+
+declare function imStrEqual(byval str1 as const zstring ptr, byval str2 as const zstring ptr) as long
+declare function imStrNLen(byval str as const zstring ptr, byval max_len as long) as long
+declare function imStrCheck(byval data as const any ptr, byval count as long) as long
+declare function imImageDataSize(byval width as long, byval height as long, byval color_mode as long, byval data_type as long) as long
+declare function imImageLineSize(byval width as long, byval color_mode as long, byval data_type as long) as long
+declare function imImageLineCount(byval width as long, byval color_mode as long) as long
+declare function imImageCheckFormat(byval color_mode as long, byval data_type as long) as long
+declare function imColorEncode(byval red as ubyte, byval green as ubyte, byval blue as ubyte) as clong
+declare sub imColorDecode(byval red as ubyte ptr, byval green as ubyte ptr, byval blue as ubyte ptr, byval color as clong)
+declare function imColorModeSpaceName(byval color_mode as long) as const zstring ptr
+declare function imColorModeDepth(byval color_mode as long) as long
+
+#define imColorModeSpace(_cm) (_cm and &hFF)
+#define imColorModeMatch(_cm1, _cm2) (imColorModeSpace(_cm1) = imColorModeSpace(_cm2))
+#define imColorModeHasAlpha(_cm) (_cm and IM_ALPHA)
+#define imColorModeIsPacked(_cm) (_cm and IM_PACKED)
+#define imColorModeIsTopDown(_cm) (_cm and IM_TOPDOWN)
+declare function imColorModeToBitmap(byval color_mode as long) as long
+declare function imColorModeIsBitmap(byval color_mode as long, byval data_type as long) as long
+const IM_MAXDEPTH = 5
 type imbyte as ubyte
 type imushort as ushort
+#define IM_BYTECROP(_v) iif(_v < 0, 0, iif(_v > 255, 255, _v))
+#define IM_FLOATCROP(_v) iif(_v < 0, 0, iif(_v > 1.0f, 1.0f, _v))
+#define IM_CROPMAX(_v, _max) iif(_v < 0, 0, iif(_v > _max, _max, _v))
+#define IM_CROPMINMAX(_v, _min, _max) iif(_v < _min, _min, iif(_v > _max, _max, _v))
 
-declare function imDataTypeSize cdecl alias "imDataTypeSize" (byval data_type as integer) as integer
-declare function imDataTypeName cdecl alias "imDataTypeName" (byval data_type as integer) as zstring ptr
-declare function imDataTypeIntMax cdecl alias "imDataTypeIntMax" (byval data_type as integer) as uinteger
-declare function imDataTypeIntMin cdecl alias "imDataTypeIntMin" (byval data_type as integer) as integer
+declare function imDataTypeSize(byval data_type as long) as long
+declare function imDataTypeName(byval data_type as long) as const zstring ptr
+declare function imDataTypeIntMax(byval data_type as long) as culong
+declare function imDataTypeIntMin(byval data_type as long) as clong
 
-enum imByteOrder
+type imByteOrder as long
+enum
 	IM_LITTLEENDIAN
 	IM_BIGENDIAN
 end enum
 
-declare function imBinCPUByteOrder cdecl alias "imBinCPUByteOrder" () as integer
-declare sub imBinSwapBytes cdecl alias "imBinSwapBytes" (byval data as any ptr, byval count as integer, byval size as integer)
-declare sub imBinSwapBytes2 cdecl alias "imBinSwapBytes2" (byval data as any ptr, byval count as integer)
-declare sub imBinSwapBytes4 cdecl alias "imBinSwapBytes4" (byval data as any ptr, byval count as integer)
-declare sub imBinSwapBytes8 cdecl alias "imBinSwapBytes8" (byval data as any ptr, byval count as integer)
-declare function imCompressDataZ cdecl alias "imCompressDataZ" (byval src_data as any ptr, byval src_size as integer, byval dst_data as any ptr, byval dst_size as integer, byval zip_quality as integer) as integer
-declare function imCompressDataUnZ cdecl alias "imCompressDataUnZ" (byval src_data as any ptr, byval src_size as integer, byval dst_data as any ptr, byval dst_size as integer) as integer
-declare function imCompressDataLZF cdecl alias "imCompressDataLZF" (byval src_data as any ptr, byval src_size as integer, byval dst_data as any ptr, byval dst_size as integer, byval zip_quality as integer) as integer
-declare function imCompressDataUnLZF cdecl alias "imCompressDataUnLZF" (byval src_data as any ptr, byval src_size as integer, byval dst_data as any ptr, byval dst_size as integer) as integer
+declare function imBinCPUByteOrder() as long
+declare sub imBinSwapBytes(byval data as any ptr, byval count as long, byval size as long)
+declare sub imBinSwapBytes2(byval data as any ptr, byval count as long)
+declare sub imBinSwapBytes4(byval data as any ptr, byval count as long)
+declare sub imBinSwapBytes8(byval data as any ptr, byval count as long)
+declare function imCompressDataZ(byval src_data as const any ptr, byval src_size as long, byval dst_data as any ptr, byval dst_size as long, byval zip_quality as long) as long
+declare function imCompressDataUnZ(byval src_data as const any ptr, byval src_size as long, byval dst_data as any ptr, byval dst_size as long) as long
+declare function imCompressDataLZF(byval src_data as const any ptr, byval src_size as long, byval dst_data as any ptr, byval dst_size as long) as long
+declare function imCompressDataUnLZF(byval src_data as const any ptr, byval src_size as long, byval dst_data as any ptr, byval dst_size as long) as long
+declare function imCompressDataLZO(byval src_data as const any ptr, byval src_size as long, byval dst_data as any ptr, byval dst_size as long) as long
+declare function imCompressDataUnLZO(byval src_data as const any ptr, byval src_size as long, byval dst_data as any ptr, byval dst_size as long) as long
 
-#endif
+end extern

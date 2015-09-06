@@ -1,49 +1,40 @@
-/' Copyright (c) 2007 Scott Lembcke
- ' 
- ' Permission is hereby granted, free of charge, to any person obtaining a copy
- ' of this software and associated documentation files (the "Software"), to deal
- ' in the Software without restriction, including without limitation the rights
- ' to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- ' copies of the Software, and to permit persons to whom the Software is
- ' furnished to do so, subject to the following conditions:
- ' 
- ' The above copyright notice and this permission notice shall be included in
- ' all copies or substantial portions of the Software.
- ' 
- ' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- ' IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- ' FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- ' AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- ' LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- ' OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- ' SOFTWARE.
- '/
+'' FreeBASIC binding for Chipmunk-7.0.1
+''
+'' based on the C header files:
+''   Copyright (c) 2007-2015 Scott Lembcke and Howling Moon Software
+''
+''   Permission is hereby granted, free of charge, to any person obtaining a copy
+''   of this software and associated documentation files (the "Software"), to deal
+''   in the Software without restriction, including without limitation the rights
+''   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+''   copies of the Software, and to permit persons to whom the Software is
+''   furnished to do so, subject to the following conditions:
+''
+''   The above copyright notice and this permission notice shall be included in
+''   all copies or substantial portions of the Software.
+''
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+''   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+''   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+''   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+''   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+''   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+''   SOFTWARE.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-
-
-/' This header defines a number of "unsafe" operations on Chipmunk objects.
- ' In this case "unsafe" is referring to operations which may reduce the
- ' physical accuracy or numerical stability of the simulation, but will not
- ' cause crashes.
- '
- ' The prime example is mutating collision shapes. Chipmunk does not support
- ' this directly. Mutating shapes using this API will caused objects in contact
- ' to be pushed apart using Chipmunk's overlap solver, but not using real
- ' persistent velocities. Probably not what you meant, but perhaps close enough.
- '/
-
-#ifndef CHIPMUNK_UNSAFE_HEADER
-#define CHIPMUNK_UNSAFE_HEADER -1
-
+#pragma once
 
 extern "C"
 
-declare sub cpCircleShapeSetRadius( byval shape as cpShape ptr, byval radius as cpFloat )
-declare sub cpCircleShapeSetCenter( byval shape as cpShape ptr, byval center as cpVect )
-
-declare sub cpSegmentShapeSetEndpoints( byval shape as cpShape ptr, byval a as cpVect, byval b as cpVect )
-declare sub cpSegmentShapeSetRadius( byval shape as cpShape ptr, byval radius as cpFloat )
+#define CHIPMUNK_UNSAFE_H
+declare sub cpCircleShapeSetRadius(byval shape as cpShape ptr, byval radius as cpFloat)
+declare sub cpCircleShapeSetOffset(byval shape as cpShape ptr, byval offset as cpVect)
+declare sub cpSegmentShapeSetEndpoints(byval shape as cpShape ptr, byval a as cpVect, byval b as cpVect)
+declare sub cpSegmentShapeSetRadius(byval shape as cpShape ptr, byval radius as cpFloat)
+declare sub cpPolyShapeSetVerts(byval shape as cpShape ptr, byval count as long, byval verts as cpVect ptr, byval transform as cpTransform)
+declare sub cpPolyShapeSetVertsRaw(byval shape as cpShape ptr, byval count as long, byval verts as cpVect ptr)
+declare sub cpPolyShapeSetRadius(byval shape as cpShape ptr, byval radius as cpFloat)
 
 end extern
-
-#endif

@@ -44,7 +44,7 @@ declare function DefScreenSaverProc(byval hWnd as HWND, byval msg as UINT, byval
 declare function ScreenSaverConfigureDialog(byval hDlg as HWND, byval message as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as WINBOOL
 declare function RegisterDialogClasses(byval hInst as HANDLE) as WINBOOL
 
-#define WS_GT (WS_GROUP or WS_TABSTOP)
+const WS_GT = WS_GROUP or WS_TABSTOP
 const MAXFILELEN = 13
 const TITLEBARNAMELEN = 40
 const APPNAMEBUFFERLEN = 40

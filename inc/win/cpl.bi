@@ -20,8 +20,8 @@
 extern "Windows"
 
 #define _INC_CPL
-#define WM_CPL_LAUNCH (WM_USER + 1000)
-#define WM_CPL_LAUNCHED (WM_USER + 1001)
+const WM_CPL_LAUNCH = WM_USER + 1000
+const WM_CPL_LAUNCHED = WM_USER + 1001
 const CPL_DYNAMIC_RES = 0
 const CPL_INIT = 1
 const CPL_GETCOUNT = 2

@@ -61,9 +61,9 @@ extern "C"
 declare function Xpermalloc(byval as ulong) as zstring ptr
 type XrmQuark as long
 type XrmQuarkList as long ptr
-#define NULLQUARK cast(XrmQuark, 0)
+const NULLQUARK = cast(XrmQuark, 0)
 type XrmString as zstring ptr
-#define NULLSTRING cast(XrmString, 0)
+const NULLSTRING = cast(XrmString, 0)
 declare function XrmStringToQuark(byval as const zstring ptr) as XrmQuark
 declare function XrmPermStringToQuark(byval as const zstring ptr) as XrmQuark
 declare function XrmQuarkToString(byval as XrmQuark) as XrmString

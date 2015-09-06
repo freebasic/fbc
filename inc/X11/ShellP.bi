@@ -89,21 +89,21 @@ type ShellPart
 	geometry as zstring ptr
 	create_popup_child_proc as XtCreatePopupChildProc
 	grab_kind as XtGrabKind
-	spring_loaded as byte
-	popped_up as byte
-	allow_shell_resize as byte
-	client_specified as byte
-	save_under as byte
-	override_redirect as byte
+	spring_loaded as XBoolean
+	popped_up as XBoolean
+	allow_shell_resize as XBoolean
+	client_specified as XBoolean
+	save_under as XBoolean
+	override_redirect as XBoolean
 	popup_callback as XtCallbackList
 	popdown_callback as XtCallbackList
 	visual as Visual ptr
 end type
 
-const _XtShellPositionValid = cbyte(1 shl 0)
-const _XtShellNotReparented = cbyte(1 shl 1)
-const _XtShellPPositionOK = cbyte(1 shl 2)
-const _XtShellGeometryParsed = cbyte(1 shl 3)
+const _XtShellPositionValid = cast(XBoolean, 1 shl 0)
+const _XtShellNotReparented = cast(XBoolean, 1 shl 1)
+const _XtShellPPositionOK = cast(XBoolean, 1 shl 2)
+const _XtShellGeometryParsed = cast(XBoolean, 1 shl 3)
 
 type ShellRec
 	core as CorePart
@@ -178,9 +178,9 @@ end type
 type WMShellPart
 	title as zstring ptr
 	wm_timeout as long
-	wait_for_wm as byte
-	transient as byte
-	urgency as byte
+	wait_for_wm as XBoolean
+	transient as XBoolean
+	urgency as XBoolean
 	client_leader as Widget
 	window_role as String_
 	size_hints as _OldXSizeHints
@@ -255,7 +255,7 @@ extern topLevelShellClassRec as TopLevelShellClassRec
 
 type TopLevelShellPart
 	icon_name as zstring ptr
-	iconic as byte
+	iconic as XBoolean
 	icon_name_encoding as XAtom
 end type
 
@@ -338,7 +338,7 @@ type SessionShellPart
 	program_path as String_
 	restart_style as ubyte
 	checkpoint_state as ubyte
-	join_session as byte
+	join_session as XBoolean
 	save_callbacks as XtCallbackList
 	interact_callbacks as XtCallbackList
 	cancel_callbacks as XtCallbackList

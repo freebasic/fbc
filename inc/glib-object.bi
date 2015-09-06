@@ -1,4 +1,4 @@
-'' FreeBASIC binding for glib-2.42.2
+'' FreeBASIC binding for glib-2.44.1
 ''
 '' based on the C header files:
 ''   GObject - GLib Type, Object, Parameter and Signal Library
@@ -38,6 +38,7 @@
 ''     procedure g_type_check_value => g_type_check_value_
 ''     procedure g_value_init => g_value_init_
 ''     procedure g_clear_object => g_clear_object_
+''     procedure g_set_object => g_set_object_
 ''     procedure g_param_spec_char => g_param_spec_char_
 ''     procedure g_param_spec_uchar => g_param_spec_uchar_
 ''     procedure g_param_spec_boolean => g_param_spec_boolean_
@@ -144,7 +145,7 @@ end type
 
 type _GTypeQuery
 	as GType type
-	type_name as const zstring ptr
+	type_name as const gchar ptr
 	class_size as guint
 	instance_size as guint
 end type
@@ -170,14 +171,15 @@ enum
 	G_TYPE_DEBUG_NONE = 0
 	G_TYPE_DEBUG_OBJECTS = 1 shl 0
 	G_TYPE_DEBUG_SIGNALS = 1 shl 1
-	G_TYPE_DEBUG_MASK = &h03
+	G_TYPE_DEBUG_INSTANCE_COUNT = 1 shl 2
+	G_TYPE_DEBUG_MASK = &h07
 end enum
 
 declare sub g_type_init()
 declare sub g_type_init_with_debug_flags(byval debug_flags as GTypeDebugFlags)
-declare function g_type_name(byval type as GType) as const zstring ptr
+declare function g_type_name(byval type as GType) as const gchar ptr
 declare function g_type_qname(byval type as GType) as GQuark
-declare function g_type_from_name(byval name as const zstring ptr) as GType
+declare function g_type_from_name(byval name as const gchar ptr) as GType
 declare function g_type_parent(byval type as GType) as GType
 declare function g_type_depth(byval type as GType) as guint
 declare function g_type_next_base(byval leaf_type as GType, byval root_type as GType) as GType
@@ -197,6 +199,7 @@ declare function g_type_interfaces(byval type as GType, byval n_interfaces as gu
 declare sub g_type_set_qdata(byval type as GType, byval quark as GQuark, byval data as gpointer)
 declare function g_type_get_qdata(byval type as GType, byval quark as GQuark) as gpointer
 declare sub g_type_query(byval type as GType, byval query as GTypeQuery ptr)
+declare function g_type_get_instance_count(byval type as GType) as long
 
 type GBaseInitFunc as sub(byval g_class as gpointer)
 type GBaseFinalizeFunc as sub(byval g_class as gpointer)
@@ -250,16 +253,16 @@ type _GTypeValueTable
 	value_free as sub(byval value as GValue ptr)
 	value_copy as sub(byval src_value as const GValue ptr, byval dest_value as GValue ptr)
 	value_peek_pointer as function(byval value as const GValue ptr) as gpointer
-	collect_format as const zstring ptr
-	collect_value as function(byval value as GValue ptr, byval n_collect_values as guint, byval collect_values as GTypeCValue ptr, byval collect_flags as guint) as zstring ptr
-	lcopy_format as const zstring ptr
-	lcopy_value as function(byval value as const GValue ptr, byval n_collect_values as guint, byval collect_values as GTypeCValue ptr, byval collect_flags as guint) as zstring ptr
+	collect_format as const gchar ptr
+	collect_value as function(byval value as GValue ptr, byval n_collect_values as guint, byval collect_values as GTypeCValue ptr, byval collect_flags as guint) as gchar ptr
+	lcopy_format as const gchar ptr
+	lcopy_value as function(byval value as const GValue ptr, byval n_collect_values as guint, byval collect_values as GTypeCValue ptr, byval collect_flags as guint) as gchar ptr
 end type
 
-declare function g_type_register_static(byval parent_type as GType, byval type_name as const zstring ptr, byval info as const GTypeInfo ptr, byval flags as GTypeFlags) as GType
-declare function g_type_register_static_simple(byval parent_type as GType, byval type_name as const zstring ptr, byval class_size as guint, byval class_init as GClassInitFunc, byval instance_size as guint, byval instance_init as GInstanceInitFunc, byval flags as GTypeFlags) as GType
-declare function g_type_register_dynamic(byval parent_type as GType, byval type_name as const zstring ptr, byval plugin as GTypePlugin ptr, byval flags as GTypeFlags) as GType
-declare function g_type_register_fundamental(byval type_id as GType, byval type_name as const zstring ptr, byval info as const GTypeInfo ptr, byval finfo as const GTypeFundamentalInfo ptr, byval flags as GTypeFlags) as GType
+declare function g_type_register_static(byval parent_type as GType, byval type_name as const gchar ptr, byval info as const GTypeInfo ptr, byval flags as GTypeFlags) as GType
+declare function g_type_register_static_simple(byval parent_type as GType, byval type_name as const gchar ptr, byval class_size as guint, byval class_init as GClassInitFunc, byval instance_size as guint, byval instance_init as GInstanceInitFunc, byval flags as GTypeFlags) as GType
+declare function g_type_register_dynamic(byval parent_type as GType, byval type_name as const gchar ptr, byval plugin as GTypePlugin ptr, byval flags as GTypeFlags) as GType
+declare function g_type_register_fundamental(byval type_id as GType, byval type_name as const gchar ptr, byval info as const GTypeInfo ptr, byval finfo as const GTypeFundamentalInfo ptr, byval flags as GTypeFlags) as GType
 declare sub g_type_add_interface_static(byval instance_type as GType, byval interface_type as GType, byval info as const GInterfaceInfo ptr)
 declare sub g_type_add_interface_dynamic(byval instance_type as GType, byval interface_type as GType, byval plugin as GTypePlugin ptr)
 declare sub g_type_interface_add_prerequisite(byval interface_type as GType, byval prerequisite_type as GType)
@@ -273,6 +276,45 @@ declare function g_type_class_get_private_ alias "g_type_class_get_private"(byva
 declare function g_type_class_get_instance_private_offset(byval g_class as gpointer) as gint
 declare sub g_type_ensure(byval type as GType)
 declare function g_type_get_type_registration_serial() as guint
+#macro G_DECLARE_FINAL_TYPE(ModuleObjName, module_obj_name, MODULE, OBJ_NAME, ParentName)
+	extern "C"
+		declare function module_obj_name##_get_type() as GType
+		type ModuleObjName as _##ModuleObjName
+		type ModuleObjName##Class
+			parent_class as ParentName##Class
+		end type
+		_GLIB_DEFINE_AUTOPTR_CHAINUP(ModuleObjName, ParentName)
+		#define MODULE##_##OBJ_NAME(ptr_) cptr(ModuleObjName ptr, G_TYPE_CHECK_INSTANCE_CAST(ptr_, module_obj_name##_get_type(), ModuleObjName))
+		#define MODULE##_IS_##OBJ_NAME(ptr_) cast(gboolean, G_TYPE_CHECK_INSTANCE_TYPE(ptr_, module_obj_name##_get_type()))
+	end extern
+#endmacro
+#macro G_DECLARE_DERIVABLE_TYPE(ModuleObjName, module_obj_name, MODULE, OBJ_NAME, ParentName)
+	extern "C"
+		declare function module_obj_name##_get_type() as GType
+		type ModuleObjName as _##ModuleObjName
+		type ModuleObjName##Class as _##ModuleObjName##Class
+		type _##ModuleObjName
+			parent_instance as ParentName
+		end type
+		_GLIB_DEFINE_AUTOPTR_CHAINUP(ModuleObjName, ParentName)
+		#define MODULE##_##OBJ_NAME(ptr_) cptr(ModuleObjName ptr, G_TYPE_CHECK_INSTANCE_CAST(ptr_, module_obj_name##_get_type(), ModuleObjName))
+		#define MODULE##_##OBJ_NAME##_CLASS(ptr_) cptr(ModuleObjName##Class ptr, G_TYPE_CHECK_CLASS_CAST(ptr_, module_obj_name##_get_type(), ModuleObjName##Class))
+		#define MODULE##_IS_##OBJ_NAME(ptr_) cast(gboolean, G_TYPE_CHECK_INSTANCE_TYPE(ptr_, module_obj_name##_get_type()))
+		#define MODULE##_IS_##OBJ_NAME##_CLASS(ptr_) cast(gboolean, G_TYPE_CHECK_CLASS_TYPE(ptr_, module_obj_name##_get_type()))
+		#define MODULE##_##OBJ_NAME##_GET_CLASS(ptr_) cptr(ModuleObjName##Class ptr, G_TYPE_INSTANCE_GET_CLASS(ptr_, module_obj_name##_get_type(), ModuleObjName##Class))
+	end extern
+#endmacro
+#macro G_DECLARE_INTERFACE(ModuleObjName, module_obj_name, MODULE, OBJ_NAME, PrerequisiteName)
+	extern "C"
+		declare function module_obj_name##_get_type() as GType
+		type ModuleObjName as _##ModuleObjName
+		type ModuleObjName##Interface as _##ModuleObjName##Interface
+		_GLIB_DEFINE_AUTOPTR_CHAINUP(ModuleObjName, PrerequisiteName)
+		#define MODULE##_##OBJ_NAME(ptr_) cptr(ModuleObjName ptr, G_TYPE_CHECK_INSTANCE_CAST(ptr_, module_obj_name##_get_type(), ModuleObjName))
+		#define MODULE##_IS_##OBJ_NAME(ptr_) cast(gboolean, G_TYPE_CHECK_INSTANCE_TYPE(ptr_, module_obj_name##_get_type()))
+		#define MODULE##_##OBJ_NAME##_GET_IFACE(ptr_) cptr(ModuleObjName##Interface ptr, G_TYPE_INSTANCE_GET_INTERFACE(ptr_, module_obj_name##_get_type(), ModuleObjName##Interface))
+	end extern
+#endmacro
 #define G_DEFINE_TYPE(TN, t_n, T_P) G_DEFINE_TYPE_EXTENDED(TN, t_n, T_P, 0, )
 #macro G_DEFINE_TYPE_WITH_CODE(TN, t_n, T_P, _C_)
 	_G_DEFINE_TYPE_EXTENDED_BEGIN(TN, t_n, T_P, 0)
@@ -339,7 +381,7 @@ declare function g_type_get_type_registration_serial() as guint
 		dim shared as gpointer type_name##_parent_class = NULL
 		dim shared as gint TypeName##_private_offset
 		_G_DEFINE_TYPE_EXTENDED_CLASS_INIT(TypeName, type_name)
-		private function type_name##_get_instance_private(byval self as TypeName ptr) as gpointer
+		private function type_name##_get_instance_private(byval self as const TypeName ptr) as gpointer
 			return G_STRUCT_MEMBER_P(self, TypeName##_private_offset)
 		end function
 		function type_name##_get_type() as GType
@@ -451,8 +493,8 @@ declare function g_type_check_is_value_type(byval type as GType) as gboolean
 declare function g_type_check_value_ alias "g_type_check_value"(byval value as GValue ptr) as gboolean
 declare function g_type_check_value_holds(byval value as GValue ptr, byval type as GType) as gboolean
 declare function g_type_test_flags(byval type as GType, byval flags as guint) as gboolean
-declare function g_type_name_from_instance(byval instance as GTypeInstance ptr) as const zstring ptr
-declare function g_type_name_from_class(byval g_class as GTypeClass ptr) as const zstring ptr
+declare function g_type_name_from_instance(byval instance as GTypeInstance ptr) as const gchar ptr
+declare function g_type_name_from_class(byval g_class as GTypeClass ptr) as const gchar ptr
 
 #define _G_TYPE_CIC(ip, gt, ct) cptr(ct ptr, g_type_check_instance_cast_(cptr(GTypeInstance ptr, ip), gt))
 #define _G_TYPE_CCC(cp, gt, ct) cptr(ct ptr, g_type_check_class_cast_(cptr(GTypeClass ptr, cp), gt))
@@ -479,7 +521,7 @@ declare function g_type_name_from_class(byval g_class as GTypeClass ptr) as cons
 		iif(cptr(GValue ptr, vl)->g_type = gt, _
 			CTRUE, _
 			g_type_check_value_holds(cptr(GValue ptr, vl), gt)))
-#define G_TYPE_FLAG_RESERVED_ID_BIT cast(GType, 1 shl 0)
+const G_TYPE_FLAG_RESERVED_ID_BIT = cast(GType, 1 shl 0)
 #define __G_VALUE_H__
 #define G_TYPE_IS_VALUE(type) g_type_check_is_value_type(type)
 #define G_IS_VALUE(value) G_TYPE_CHECK_VALUE(value)
@@ -548,7 +590,7 @@ enum
 	G_PARAM_DEPRECATED = 1 shl 31
 end enum
 
-#define G_PARAM_STATIC_STRINGS ((G_PARAM_STATIC_NAME or G_PARAM_STATIC_NICK) or G_PARAM_STATIC_BLURB)
+const G_PARAM_STATIC_STRINGS = (G_PARAM_STATIC_NAME or G_PARAM_STATIC_NICK) or G_PARAM_STATIC_BLURB
 const G_PARAM_MASK = &h000000ff
 const G_PARAM_USER_SHIFT = 8
 
@@ -559,12 +601,12 @@ type GParamSpecPool as _GParamSpecPool
 
 type _GParamSpec
 	g_type_instance as GTypeInstance
-	name as const zstring ptr
+	name as const gchar ptr
 	flags as GParamFlags
 	value_type as GType
 	owner_type as GType
-	_nick as zstring ptr
-	_blurb as zstring ptr
+	_nick as gchar ptr
+	_blurb as gchar ptr
 	qdata as GData ptr
 	ref_count as guint
 	param_id as guint
@@ -581,7 +623,7 @@ type _GParamSpecClass
 end type
 
 type _GParameter
-	name as const zstring ptr
+	name as const gchar ptr
 	value as GValue
 end type
 
@@ -599,9 +641,9 @@ declare function g_param_value_defaults(byval pspec as GParamSpec ptr, byval val
 declare function g_param_value_validate(byval pspec as GParamSpec ptr, byval value as GValue ptr) as gboolean
 declare function g_param_value_convert(byval pspec as GParamSpec ptr, byval src_value as const GValue ptr, byval dest_value as GValue ptr, byval strict_validation as gboolean) as gboolean
 declare function g_param_values_cmp(byval pspec as GParamSpec ptr, byval value1 as const GValue ptr, byval value2 as const GValue ptr) as gint
-declare function g_param_spec_get_name(byval pspec as GParamSpec ptr) as const zstring ptr
-declare function g_param_spec_get_nick(byval pspec as GParamSpec ptr) as const zstring ptr
-declare function g_param_spec_get_blurb(byval pspec as GParamSpec ptr) as const zstring ptr
+declare function g_param_spec_get_name(byval pspec as GParamSpec ptr) as const gchar ptr
+declare function g_param_spec_get_nick(byval pspec as GParamSpec ptr) as const gchar ptr
+declare function g_param_spec_get_blurb(byval pspec as GParamSpec ptr) as const gchar ptr
 declare sub g_value_set_param(byval value as GValue ptr, byval param as GParamSpec ptr)
 declare function g_value_get_param(byval value as const GValue ptr) as GParamSpec ptr
 declare function g_value_dup_param(byval value as const GValue ptr) as GParamSpec ptr
@@ -621,13 +663,13 @@ type _GParamSpecTypeInfo
 	values_cmp as function(byval pspec as GParamSpec ptr, byval value1 as const GValue ptr, byval value2 as const GValue ptr) as gint
 end type
 
-declare function g_param_type_register_static(byval name as const zstring ptr, byval pspec_info as const GParamSpecTypeInfo ptr) as GType
-declare function _g_param_type_register_static_constant(byval name as const zstring ptr, byval pspec_info as const GParamSpecTypeInfo ptr, byval opt_type as GType) as GType
-declare function g_param_spec_internal(byval param_type as GType, byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval flags as GParamFlags) as gpointer
+declare function g_param_type_register_static(byval name as const gchar ptr, byval pspec_info as const GParamSpecTypeInfo ptr) as GType
+declare function _g_param_type_register_static_constant(byval name as const gchar ptr, byval pspec_info as const GParamSpecTypeInfo ptr, byval opt_type as GType) as GType
+declare function g_param_spec_internal(byval param_type as GType, byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval flags as GParamFlags) as gpointer
 declare function g_param_spec_pool_new(byval type_prefixing as gboolean) as GParamSpecPool ptr
 declare sub g_param_spec_pool_insert(byval pool as GParamSpecPool ptr, byval pspec as GParamSpec ptr, byval owner_type as GType)
 declare sub g_param_spec_pool_remove(byval pool as GParamSpecPool ptr, byval pspec as GParamSpec ptr)
-declare function g_param_spec_pool_lookup(byval pool as GParamSpecPool ptr, byval param_name as const zstring ptr, byval owner_type as GType, byval walk_ancestors as gboolean) as GParamSpec ptr
+declare function g_param_spec_pool_lookup(byval pool as GParamSpecPool ptr, byval param_name as const gchar ptr, byval owner_type as GType, byval walk_ancestors as gboolean) as GParamSpec ptr
 declare function g_param_spec_pool_list_owned(byval pool as GParamSpecPool ptr, byval owner_type as GType) as GList ptr
 declare function g_param_spec_pool_list(byval pool as GParamSpecPool ptr, byval owner_type as GType, byval n_pspecs_p as guint ptr) as GParamSpec ptr ptr
 
@@ -777,7 +819,7 @@ enum
 end enum
 
 const G_SIGNAL_MATCH_MASK = &h3f
-#define G_SIGNAL_TYPE_STATIC_SCOPE G_TYPE_FLAG_RESERVED_ID_BIT
+const G_SIGNAL_TYPE_STATIC_SCOPE = G_TYPE_FLAG_RESERVED_ID_BIT
 
 type _GSignalInvocationHint
 	signal_id as guint
@@ -787,7 +829,7 @@ end type
 
 type _GSignalQuery
 	signal_id as guint
-	signal_name as const zstring ptr
+	signal_name as const gchar ptr
 	itype as GType
 	signal_flags as GSignalFlags
 	return_type as GType
@@ -795,29 +837,29 @@ type _GSignalQuery
 	param_types as const GType ptr
 end type
 
-declare function g_signal_newv(byval signal_name as const zstring ptr, byval itype as GType, byval signal_flags as GSignalFlags, byval class_closure as GClosure ptr, byval accumulator as GSignalAccumulator, byval accu_data as gpointer, byval c_marshaller as GSignalCMarshaller, byval return_type as GType, byval n_params as guint, byval param_types as GType ptr) as guint
-declare function g_signal_new_valist(byval signal_name as const zstring ptr, byval itype as GType, byval signal_flags as GSignalFlags, byval class_closure as GClosure ptr, byval accumulator as GSignalAccumulator, byval accu_data as gpointer, byval c_marshaller as GSignalCMarshaller, byval return_type as GType, byval n_params as guint, byval args as va_list) as guint
-declare function g_signal_new(byval signal_name as const zstring ptr, byval itype as GType, byval signal_flags as GSignalFlags, byval class_offset as guint, byval accumulator as GSignalAccumulator, byval accu_data as gpointer, byval c_marshaller as GSignalCMarshaller, byval return_type as GType, byval n_params as guint, ...) as guint
-declare function g_signal_new_class_handler(byval signal_name as const zstring ptr, byval itype as GType, byval signal_flags as GSignalFlags, byval class_handler as GCallback, byval accumulator as GSignalAccumulator, byval accu_data as gpointer, byval c_marshaller as GSignalCMarshaller, byval return_type as GType, byval n_params as guint, ...) as guint
+declare function g_signal_newv(byval signal_name as const gchar ptr, byval itype as GType, byval signal_flags as GSignalFlags, byval class_closure as GClosure ptr, byval accumulator as GSignalAccumulator, byval accu_data as gpointer, byval c_marshaller as GSignalCMarshaller, byval return_type as GType, byval n_params as guint, byval param_types as GType ptr) as guint
+declare function g_signal_new_valist(byval signal_name as const gchar ptr, byval itype as GType, byval signal_flags as GSignalFlags, byval class_closure as GClosure ptr, byval accumulator as GSignalAccumulator, byval accu_data as gpointer, byval c_marshaller as GSignalCMarshaller, byval return_type as GType, byval n_params as guint, byval args as va_list) as guint
+declare function g_signal_new(byval signal_name as const gchar ptr, byval itype as GType, byval signal_flags as GSignalFlags, byval class_offset as guint, byval accumulator as GSignalAccumulator, byval accu_data as gpointer, byval c_marshaller as GSignalCMarshaller, byval return_type as GType, byval n_params as guint, ...) as guint
+declare function g_signal_new_class_handler(byval signal_name as const gchar ptr, byval itype as GType, byval signal_flags as GSignalFlags, byval class_handler as GCallback, byval accumulator as GSignalAccumulator, byval accu_data as gpointer, byval c_marshaller as GSignalCMarshaller, byval return_type as GType, byval n_params as guint, ...) as guint
 declare sub g_signal_set_va_marshaller(byval signal_id as guint, byval instance_type as GType, byval va_marshaller as GSignalCVaMarshaller)
 declare sub g_signal_emitv(byval instance_and_params as const GValue ptr, byval signal_id as guint, byval detail as GQuark, byval return_value as GValue ptr)
 declare sub g_signal_emit_valist(byval instance as gpointer, byval signal_id as guint, byval detail as GQuark, byval var_args as va_list)
 declare sub g_signal_emit(byval instance as gpointer, byval signal_id as guint, byval detail as GQuark, ...)
-declare sub g_signal_emit_by_name(byval instance as gpointer, byval detailed_signal as const zstring ptr, ...)
-declare function g_signal_lookup(byval name as const zstring ptr, byval itype as GType) as guint
-declare function g_signal_name(byval signal_id as guint) as const zstring ptr
+declare sub g_signal_emit_by_name(byval instance as gpointer, byval detailed_signal as const gchar ptr, ...)
+declare function g_signal_lookup(byval name as const gchar ptr, byval itype as GType) as guint
+declare function g_signal_name(byval signal_id as guint) as const gchar ptr
 declare sub g_signal_query(byval signal_id as guint, byval query as GSignalQuery ptr)
 declare function g_signal_list_ids(byval itype as GType, byval n_ids as guint ptr) as guint ptr
-declare function g_signal_parse_name(byval detailed_signal as const zstring ptr, byval itype as GType, byval signal_id_p as guint ptr, byval detail_p as GQuark ptr, byval force_detail_quark as gboolean) as gboolean
+declare function g_signal_parse_name(byval detailed_signal as const gchar ptr, byval itype as GType, byval signal_id_p as guint ptr, byval detail_p as GQuark ptr, byval force_detail_quark as gboolean) as gboolean
 declare function g_signal_get_invocation_hint(byval instance as gpointer) as GSignalInvocationHint ptr
 declare sub g_signal_stop_emission(byval instance as gpointer, byval signal_id as guint, byval detail as GQuark)
-declare sub g_signal_stop_emission_by_name(byval instance as gpointer, byval detailed_signal as const zstring ptr)
+declare sub g_signal_stop_emission_by_name(byval instance as gpointer, byval detailed_signal as const gchar ptr)
 declare function g_signal_add_emission_hook(byval signal_id as guint, byval detail as GQuark, byval hook_func as GSignalEmissionHook, byval hook_data as gpointer, byval data_destroy as GDestroyNotify) as gulong
 declare sub g_signal_remove_emission_hook(byval signal_id as guint, byval hook_id as gulong)
 declare function g_signal_has_handler_pending(byval instance as gpointer, byval signal_id as guint, byval detail as GQuark, byval may_be_blocked as gboolean) as gboolean
 declare function g_signal_connect_closure_by_id(byval instance as gpointer, byval signal_id as guint, byval detail as GQuark, byval closure as GClosure ptr, byval after as gboolean) as gulong
-declare function g_signal_connect_closure(byval instance as gpointer, byval detailed_signal as const zstring ptr, byval closure as GClosure ptr, byval after as gboolean) as gulong
-declare function g_signal_connect_data(byval instance as gpointer, byval detailed_signal as const zstring ptr, byval c_handler as GCallback, byval data as gpointer, byval destroy_data as GClosureNotify, byval connect_flags as GConnectFlags) as gulong
+declare function g_signal_connect_closure(byval instance as gpointer, byval detailed_signal as const gchar ptr, byval closure as GClosure ptr, byval after as gboolean) as gulong
+declare function g_signal_connect_data(byval instance as gpointer, byval detailed_signal as const gchar ptr, byval c_handler as GCallback, byval data as gpointer, byval destroy_data as GClosureNotify, byval connect_flags as GConnectFlags) as gulong
 declare sub g_signal_handler_block(byval instance as gpointer, byval handler_id as gulong)
 declare sub g_signal_handler_unblock(byval instance as gpointer, byval handler_id as gulong)
 declare sub g_signal_handler_disconnect(byval instance as gpointer, byval handler_id as gulong)
@@ -827,7 +869,7 @@ declare function g_signal_handlers_block_matched(byval instance as gpointer, byv
 declare function g_signal_handlers_unblock_matched(byval instance as gpointer, byval mask as GSignalMatchType, byval signal_id as guint, byval detail as GQuark, byval closure as GClosure ptr, byval func as gpointer, byval data as gpointer) as guint
 declare function g_signal_handlers_disconnect_matched(byval instance as gpointer, byval mask as GSignalMatchType, byval signal_id as guint, byval detail as GQuark, byval closure as GClosure ptr, byval func as gpointer, byval data as gpointer) as guint
 declare sub g_signal_override_class_closure(byval signal_id as guint, byval instance_type as GType, byval class_closure as GClosure ptr)
-declare sub g_signal_override_class_handler(byval signal_name as const zstring ptr, byval instance_type as GType, byval class_handler as GCallback)
+declare sub g_signal_override_class_handler(byval signal_name as const gchar ptr, byval instance_type as GType, byval class_handler as GCallback)
 declare sub g_signal_chain_from_overridden(byval instance_and_params as const GValue ptr, byval return_value as GValue ptr)
 declare sub g_signal_chain_from_overridden_handler(byval instance as gpointer, ...)
 
@@ -873,6 +915,7 @@ declare sub _g_signals_destroy(byval itype as GType)
 #define G_TYPE_MAPPED_FILE g_mapped_file_get_type()
 #define G_TYPE_THREAD g_thread_get_type()
 #define G_TYPE_CHECKSUM g_checksum_get_type()
+#define G_TYPE_OPTION_GROUP g_option_group_get_type()
 
 declare function g_date_get_type() as GType
 declare function g_strv_get_type() as GType
@@ -901,8 +944,9 @@ declare function g_thread_get_type() as GType
 declare function g_checksum_get_type() as GType
 declare function g_markup_parse_context_get_type() as GType
 declare function g_mapped_file_get_type() as GType
+declare function g_option_group_get_type() as GType
 declare function g_variant_get_gtype() as GType
-type GStrv as zstring ptr ptr
+type GStrv as gchar ptr ptr
 #define G_TYPE_IS_BOXED(type) (G_TYPE_FUNDAMENTAL(type) = G_TYPE_BOXED)
 #define G_VALUE_HOLDS_BOXED(value) G_TYPE_CHECK_VALUE_TYPE((value), G_TYPE_BOXED)
 type GBoxedCopyFunc as function(byval boxed as gpointer) as gpointer
@@ -915,7 +959,7 @@ declare sub g_value_take_boxed(byval value as GValue ptr, byval v_boxed as gcons
 declare sub g_value_set_boxed_take_ownership(byval value as GValue ptr, byval v_boxed as gconstpointer)
 declare function g_value_get_boxed(byval value as const GValue ptr) as gpointer
 declare function g_value_dup_boxed(byval value as const GValue ptr) as gpointer
-declare function g_boxed_type_register_static(byval name as const zstring ptr, byval boxed_copy as GBoxedCopyFunc, byval boxed_free as GBoxedFreeFunc) as GType
+declare function g_boxed_type_register_static(byval name as const gchar ptr, byval boxed_copy as GBoxedCopyFunc, byval boxed_free as GBoxedFreeFunc) as GType
 #define G_TYPE_CLOSURE g_closure_get_type()
 #define G_TYPE_VALUE g_value_get_type()
 declare function g_closure_get_type() as GType
@@ -977,27 +1021,27 @@ end type
 
 declare function g_initially_unowned_get_type() as GType
 declare sub g_object_class_install_property(byval oclass as GObjectClass ptr, byval property_id as guint, byval pspec as GParamSpec ptr)
-declare function g_object_class_find_property(byval oclass as GObjectClass ptr, byval property_name as const zstring ptr) as GParamSpec ptr
+declare function g_object_class_find_property(byval oclass as GObjectClass ptr, byval property_name as const gchar ptr) as GParamSpec ptr
 declare function g_object_class_list_properties(byval oclass as GObjectClass ptr, byval n_properties as guint ptr) as GParamSpec ptr ptr
-declare sub g_object_class_override_property(byval oclass as GObjectClass ptr, byval property_id as guint, byval name as const zstring ptr)
+declare sub g_object_class_override_property(byval oclass as GObjectClass ptr, byval property_id as guint, byval name as const gchar ptr)
 declare sub g_object_class_install_properties(byval oclass as GObjectClass ptr, byval n_pspecs as guint, byval pspecs as GParamSpec ptr ptr)
 declare sub g_object_interface_install_property(byval g_iface as gpointer, byval pspec as GParamSpec ptr)
-declare function g_object_interface_find_property(byval g_iface as gpointer, byval property_name as const zstring ptr) as GParamSpec ptr
+declare function g_object_interface_find_property(byval g_iface as gpointer, byval property_name as const gchar ptr) as GParamSpec ptr
 declare function g_object_interface_list_properties(byval g_iface as gpointer, byval n_properties_p as guint ptr) as GParamSpec ptr ptr
 declare function g_object_get_type() as GType
-declare function g_object_new(byval object_type as GType, byval first_property_name as const zstring ptr, ...) as gpointer
+declare function g_object_new(byval object_type as GType, byval first_property_name as const gchar ptr, ...) as gpointer
 declare function g_object_newv(byval object_type as GType, byval n_parameters as guint, byval parameters as GParameter ptr) as gpointer
-declare function g_object_new_valist(byval object_type as GType, byval first_property_name as const zstring ptr, byval var_args as va_list) as GObject ptr
-declare sub g_object_set(byval object as gpointer, byval first_property_name as const zstring ptr, ...)
-declare sub g_object_get(byval object as gpointer, byval first_property_name as const zstring ptr, ...)
-declare function g_object_connect(byval object as gpointer, byval signal_spec as const zstring ptr, ...) as gpointer
-declare sub g_object_disconnect(byval object as gpointer, byval signal_spec as const zstring ptr, ...)
-declare sub g_object_set_valist(byval object as GObject ptr, byval first_property_name as const zstring ptr, byval var_args as va_list)
-declare sub g_object_get_valist(byval object as GObject ptr, byval first_property_name as const zstring ptr, byval var_args as va_list)
-declare sub g_object_set_property(byval object as GObject ptr, byval property_name as const zstring ptr, byval value as const GValue ptr)
-declare sub g_object_get_property(byval object as GObject ptr, byval property_name as const zstring ptr, byval value as GValue ptr)
+declare function g_object_new_valist(byval object_type as GType, byval first_property_name as const gchar ptr, byval var_args as va_list) as GObject ptr
+declare sub g_object_set(byval object as gpointer, byval first_property_name as const gchar ptr, ...)
+declare sub g_object_get(byval object as gpointer, byval first_property_name as const gchar ptr, ...)
+declare function g_object_connect(byval object as gpointer, byval signal_spec as const gchar ptr, ...) as gpointer
+declare sub g_object_disconnect(byval object as gpointer, byval signal_spec as const gchar ptr, ...)
+declare sub g_object_set_valist(byval object as GObject ptr, byval first_property_name as const gchar ptr, byval var_args as va_list)
+declare sub g_object_get_valist(byval object as GObject ptr, byval first_property_name as const gchar ptr, byval var_args as va_list)
+declare sub g_object_set_property(byval object as GObject ptr, byval property_name as const gchar ptr, byval value as const GValue ptr)
+declare sub g_object_get_property(byval object as GObject ptr, byval property_name as const gchar ptr, byval value as GValue ptr)
 declare sub g_object_freeze_notify(byval object as GObject ptr)
-declare sub g_object_notify(byval object as GObject ptr, byval property_name as const zstring ptr)
+declare sub g_object_notify(byval object as GObject ptr, byval property_name as const gchar ptr)
 declare sub g_object_notify_by_pspec(byval object as GObject ptr, byval pspec as GParamSpec ptr)
 declare sub g_object_thaw_notify(byval object as GObject ptr)
 declare function g_object_is_floating(byval object as gpointer) as gboolean
@@ -1017,12 +1061,12 @@ declare sub g_object_set_qdata_full(byval object as GObject ptr, byval quark as 
 declare function g_object_steal_qdata(byval object as GObject ptr, byval quark as GQuark) as gpointer
 declare function g_object_dup_qdata(byval object as GObject ptr, byval quark as GQuark, byval dup_func as GDuplicateFunc, byval user_data as gpointer) as gpointer
 declare function g_object_replace_qdata(byval object as GObject ptr, byval quark as GQuark, byval oldval as gpointer, byval newval as gpointer, byval destroy as GDestroyNotify, byval old_destroy as GDestroyNotify ptr) as gboolean
-declare function g_object_get_data(byval object as GObject ptr, byval key as const zstring ptr) as gpointer
-declare sub g_object_set_data(byval object as GObject ptr, byval key as const zstring ptr, byval data as gpointer)
-declare sub g_object_set_data_full(byval object as GObject ptr, byval key as const zstring ptr, byval data as gpointer, byval destroy as GDestroyNotify)
-declare function g_object_steal_data(byval object as GObject ptr, byval key as const zstring ptr) as gpointer
-declare function g_object_dup_data(byval object as GObject ptr, byval key as const zstring ptr, byval dup_func as GDuplicateFunc, byval user_data as gpointer) as gpointer
-declare function g_object_replace_data(byval object as GObject ptr, byval key as const zstring ptr, byval oldval as gpointer, byval newval as gpointer, byval destroy as GDestroyNotify, byval old_destroy as GDestroyNotify ptr) as gboolean
+declare function g_object_get_data(byval object as GObject ptr, byval key as const gchar ptr) as gpointer
+declare sub g_object_set_data(byval object as GObject ptr, byval key as const gchar ptr, byval data as gpointer)
+declare sub g_object_set_data_full(byval object as GObject ptr, byval key as const gchar ptr, byval data as gpointer, byval destroy as GDestroyNotify)
+declare function g_object_steal_data(byval object as GObject ptr, byval key as const gchar ptr) as gpointer
+declare function g_object_dup_data(byval object as GObject ptr, byval key as const gchar ptr, byval dup_func as GDuplicateFunc, byval user_data as gpointer) as gpointer
+declare function g_object_replace_data(byval object as GObject ptr, byval key as const gchar ptr, byval oldval as gpointer, byval newval as gpointer, byval destroy as GDestroyNotify, byval old_destroy as GDestroyNotify ptr) as gboolean
 declare sub g_object_watch_closure(byval object as GObject ptr, byval closure as GClosure ptr)
 declare function g_cclosure_new_object(byval callback_func as GCallback, byval object as GObject ptr) as GClosure ptr
 declare function g_cclosure_new_object_swap(byval callback_func as GCallback, byval object as GObject ptr) as GClosure ptr
@@ -1030,7 +1074,7 @@ declare function g_closure_new_object(byval sizeof_closure as guint, byval objec
 declare sub g_value_set_object(byval value as GValue ptr, byval v_object as gpointer)
 declare function g_value_get_object(byval value as const GValue ptr) as gpointer
 declare function g_value_dup_object(byval value as const GValue ptr) as gpointer
-declare function g_signal_connect_object(byval instance as gpointer, byval detailed_signal as const zstring ptr, byval c_handler as GCallback, byval gobject as gpointer, byval connect_flags as GConnectFlags) as gulong
+declare function g_signal_connect_object(byval instance as gpointer, byval detailed_signal as const gchar ptr, byval c_handler as GCallback, byval gobject as gpointer, byval connect_flags as GConnectFlags) as gulong
 declare sub g_object_force_floating(byval object as GObject ptr)
 declare sub g_object_run_dispose(byval object as GObject ptr)
 declare sub g_value_take_object(byval value as GValue ptr, byval v_object as gpointer)
@@ -1041,12 +1085,28 @@ declare function g_object_compat_control(byval what as gsize, byval data as gpoi
 		dim _glib__object as GObject ptr = cptr(GObject ptr, (object))
 		dim _glib__pspec as GParamSpec ptr = cptr(GParamSpec ptr, (pspec))
 		dim _glib__property_id as guint = (property_id)
-		g_warning("%s:%u: invalid %s id %u for ""%s"" of type '%s' in '%s'", __FILE__, __LINE__, (pname), _glib__property_id, _glib__pspec->name, g_type_name(G_PARAM_SPEC_TYPE(_glib__pspec)), G_OBJECT_TYPE_NAME(_glib__object))
+		g_warning("%s:%d: invalid %s id %u for ""%s"" of type '%s' in '%s'", __FILE__, __LINE__, (pname), _glib__property_id, _glib__pspec->name, g_type_name(G_PARAM_SPEC_TYPE(_glib__pspec)), G_OBJECT_TYPE_NAME(_glib__object))
 	end scope
 #endmacro
 #define G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec) G_OBJECT_WARN_INVALID_PSPEC((object), "property", (property_id), (pspec))
 declare sub g_clear_object_ alias "g_clear_object"(byval object_ptr as GObject ptr ptr)
 #define g_clear_object(object_ptr) g_clear_pointer((object_ptr), g_object_unref)
+
+private function g_set_object_ alias "g_set_object"(byval object_ptr as GObject ptr ptr, byval new_object as GObject ptr) as gboolean
+	if (*object_ptr) = new_object then
+		return 0
+	end if
+	if new_object <> cptr(any ptr, 0) then
+		g_object_ref(new_object)
+	end if
+	if (*object_ptr) <> cptr(any ptr, 0) then
+		g_object_unref(*object_ptr)
+	end if
+	(*object_ptr) = new_object
+	return -(0 = 0)
+end function
+
+#define g_set_object(object_ptr, new_object) g_set_object_(cptr(GObject ptr ptr, (object_ptr)), cptr(GObject ptr, (new_object)))
 
 union GWeakRef_priv
 	p as gpointer
@@ -1081,12 +1141,12 @@ declare function g_binding_get_type() as GType
 declare function g_binding_get_flags(byval binding as GBinding ptr) as GBindingFlags
 declare function g_binding_get_source(byval binding as GBinding ptr) as GObject ptr
 declare function g_binding_get_target(byval binding as GBinding ptr) as GObject ptr
-declare function g_binding_get_source_property(byval binding as GBinding ptr) as const zstring ptr
-declare function g_binding_get_target_property(byval binding as GBinding ptr) as const zstring ptr
+declare function g_binding_get_source_property(byval binding as GBinding ptr) as const gchar ptr
+declare function g_binding_get_target_property(byval binding as GBinding ptr) as const gchar ptr
 declare sub g_binding_unbind(byval binding as GBinding ptr)
-declare function g_object_bind_property(byval source as gpointer, byval source_property as const zstring ptr, byval target as gpointer, byval target_property as const zstring ptr, byval flags as GBindingFlags) as GBinding ptr
-declare function g_object_bind_property_full(byval source as gpointer, byval source_property as const zstring ptr, byval target as gpointer, byval target_property as const zstring ptr, byval flags as GBindingFlags, byval transform_to as GBindingTransformFunc, byval transform_from as GBindingTransformFunc, byval user_data as gpointer, byval notify as GDestroyNotify) as GBinding ptr
-declare function g_object_bind_property_with_closures(byval source as gpointer, byval source_property as const zstring ptr, byval target as gpointer, byval target_property as const zstring ptr, byval flags as GBindingFlags, byval transform_to as GClosure ptr, byval transform_from as GClosure ptr) as GBinding ptr
+declare function g_object_bind_property(byval source as gpointer, byval source_property as const gchar ptr, byval target as gpointer, byval target_property as const gchar ptr, byval flags as GBindingFlags) as GBinding ptr
+declare function g_object_bind_property_full(byval source as gpointer, byval source_property as const gchar ptr, byval target as gpointer, byval target_property as const gchar ptr, byval flags as GBindingFlags, byval transform_to as GBindingTransformFunc, byval transform_from as GBindingTransformFunc, byval user_data as gpointer, byval notify as GDestroyNotify) as GBinding ptr
+declare function g_object_bind_property_with_closures(byval source as gpointer, byval source_property as const gchar ptr, byval target as gpointer, byval target_property as const gchar ptr, byval flags as GBindingFlags, byval transform_to as GClosure ptr, byval transform_from as GClosure ptr) as GBinding ptr
 
 #define __G_ENUMS_H__
 #define G_TYPE_IS_ENUM(type) (G_TYPE_FUNDAMENTAL(type) = G_TYPE_ENUM)
@@ -1124,28 +1184,28 @@ end type
 
 type _GEnumValue
 	value as gint
-	value_name as const zstring ptr
-	value_nick as const zstring ptr
+	value_name as const gchar ptr
+	value_nick as const gchar ptr
 end type
 
 type _GFlagsValue
 	value as guint
-	value_name as const zstring ptr
-	value_nick as const zstring ptr
+	value_name as const gchar ptr
+	value_nick as const gchar ptr
 end type
 
 declare function g_enum_get_value(byval enum_class as GEnumClass ptr, byval value as gint) as GEnumValue ptr
-declare function g_enum_get_value_by_name(byval enum_class as GEnumClass ptr, byval name as const zstring ptr) as GEnumValue ptr
-declare function g_enum_get_value_by_nick(byval enum_class as GEnumClass ptr, byval nick as const zstring ptr) as GEnumValue ptr
+declare function g_enum_get_value_by_name(byval enum_class as GEnumClass ptr, byval name as const gchar ptr) as GEnumValue ptr
+declare function g_enum_get_value_by_nick(byval enum_class as GEnumClass ptr, byval nick as const gchar ptr) as GEnumValue ptr
 declare function g_flags_get_first_value(byval flags_class as GFlagsClass ptr, byval value as guint) as GFlagsValue ptr
-declare function g_flags_get_value_by_name(byval flags_class as GFlagsClass ptr, byval name as const zstring ptr) as GFlagsValue ptr
-declare function g_flags_get_value_by_nick(byval flags_class as GFlagsClass ptr, byval nick as const zstring ptr) as GFlagsValue ptr
+declare function g_flags_get_value_by_name(byval flags_class as GFlagsClass ptr, byval name as const gchar ptr) as GFlagsValue ptr
+declare function g_flags_get_value_by_nick(byval flags_class as GFlagsClass ptr, byval nick as const gchar ptr) as GFlagsValue ptr
 declare sub g_value_set_enum(byval value as GValue ptr, byval v_enum as gint)
 declare function g_value_get_enum(byval value as const GValue ptr) as gint
 declare sub g_value_set_flags(byval value as GValue ptr, byval v_flags as guint)
 declare function g_value_get_flags(byval value as const GValue ptr) as guint
-declare function g_enum_register_static(byval name as const zstring ptr, byval const_static_values as const GEnumValue ptr) as GType
-declare function g_flags_register_static(byval name as const zstring ptr, byval const_static_values as const GFlagsValue ptr) as GType
+declare function g_enum_register_static(byval name as const gchar ptr, byval const_static_values as const GEnumValue ptr) as GType
+declare function g_flags_register_static(byval name as const gchar ptr, byval const_static_values as const GFlagsValue ptr) as GType
 declare sub g_enum_complete_type_info(byval g_enum_type as GType, byval info as GTypeInfo ptr, byval const_values as const GEnumValue ptr)
 declare sub g_flags_complete_type_info(byval g_flags_type as GType, byval info as GTypeInfo ptr, byval const_values as const GFlagsValue ptr)
 
@@ -1340,9 +1400,9 @@ end type
 
 type _GParamSpecString
 	parent_instance as GParamSpec
-	default_value as zstring ptr
-	cset_first as zstring ptr
-	cset_nth as zstring ptr
+	default_value as gchar ptr
+	cset_first as gchar ptr
+	cset_nth as gchar ptr
 	substitutor as byte
 	null_fold_if_empty : 1 as guint
 	ensure_non_null : 1 as guint
@@ -1387,29 +1447,29 @@ type _GParamSpecVariant
 	padding(0 to 3) as gpointer
 end type
 
-declare function g_param_spec_char_ alias "g_param_spec_char"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval minimum as gint8, byval maximum as gint8, byval default_value as gint8, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_uchar_ alias "g_param_spec_uchar"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval minimum as guint8, byval maximum as guint8, byval default_value as guint8, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_boolean_ alias "g_param_spec_boolean"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval default_value as gboolean, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_int_ alias "g_param_spec_int"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval minimum as gint, byval maximum as gint, byval default_value as gint, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_uint_ alias "g_param_spec_uint"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval minimum as guint, byval maximum as guint, byval default_value as guint, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_long_ alias "g_param_spec_long"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval minimum as glong, byval maximum as glong, byval default_value as glong, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_ulong_ alias "g_param_spec_ulong"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval minimum as gulong, byval maximum as gulong, byval default_value as gulong, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_int64_ alias "g_param_spec_int64"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval minimum as gint64, byval maximum as gint64, byval default_value as gint64, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_uint64_ alias "g_param_spec_uint64"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval minimum as guint64, byval maximum as guint64, byval default_value as guint64, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_unichar_ alias "g_param_spec_unichar"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval default_value as gunichar, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_enum_ alias "g_param_spec_enum"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval enum_type as GType, byval default_value as gint, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_flags_ alias "g_param_spec_flags"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval flags_type as GType, byval default_value as guint, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_float_ alias "g_param_spec_float"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval minimum as gfloat, byval maximum as gfloat, byval default_value as gfloat, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_double_ alias "g_param_spec_double"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval minimum as gdouble, byval maximum as gdouble, byval default_value as gdouble, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_string_ alias "g_param_spec_string"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval default_value as const zstring ptr, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_param_ alias "g_param_spec_param"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval param_type as GType, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_boxed_ alias "g_param_spec_boxed"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval boxed_type as GType, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_pointer_ alias "g_param_spec_pointer"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_value_array_ alias "g_param_spec_value_array"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval element_spec as GParamSpec ptr, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_object_ alias "g_param_spec_object"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval object_type as GType, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_override_ alias "g_param_spec_override"(byval name as const zstring ptr, byval overridden as GParamSpec ptr) as GParamSpec ptr
-declare function g_param_spec_gtype_ alias "g_param_spec_gtype"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval is_a_type as GType, byval flags as GParamFlags) as GParamSpec ptr
-declare function g_param_spec_variant_ alias "g_param_spec_variant"(byval name as const zstring ptr, byval nick as const zstring ptr, byval blurb as const zstring ptr, byval type as const GVariantType ptr, byval default_value as GVariant ptr, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_char_ alias "g_param_spec_char"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval minimum as gint8, byval maximum as gint8, byval default_value as gint8, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_uchar_ alias "g_param_spec_uchar"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval minimum as guint8, byval maximum as guint8, byval default_value as guint8, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_boolean_ alias "g_param_spec_boolean"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval default_value as gboolean, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_int_ alias "g_param_spec_int"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval minimum as gint, byval maximum as gint, byval default_value as gint, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_uint_ alias "g_param_spec_uint"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval minimum as guint, byval maximum as guint, byval default_value as guint, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_long_ alias "g_param_spec_long"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval minimum as glong, byval maximum as glong, byval default_value as glong, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_ulong_ alias "g_param_spec_ulong"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval minimum as gulong, byval maximum as gulong, byval default_value as gulong, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_int64_ alias "g_param_spec_int64"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval minimum as gint64, byval maximum as gint64, byval default_value as gint64, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_uint64_ alias "g_param_spec_uint64"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval minimum as guint64, byval maximum as guint64, byval default_value as guint64, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_unichar_ alias "g_param_spec_unichar"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval default_value as gunichar, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_enum_ alias "g_param_spec_enum"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval enum_type as GType, byval default_value as gint, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_flags_ alias "g_param_spec_flags"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval flags_type as GType, byval default_value as guint, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_float_ alias "g_param_spec_float"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval minimum as gfloat, byval maximum as gfloat, byval default_value as gfloat, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_double_ alias "g_param_spec_double"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval minimum as gdouble, byval maximum as gdouble, byval default_value as gdouble, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_string_ alias "g_param_spec_string"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval default_value as const gchar ptr, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_param_ alias "g_param_spec_param"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval param_type as GType, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_boxed_ alias "g_param_spec_boxed"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval boxed_type as GType, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_pointer_ alias "g_param_spec_pointer"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_value_array_ alias "g_param_spec_value_array"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval element_spec as GParamSpec ptr, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_object_ alias "g_param_spec_object"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval object_type as GType, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_override_ alias "g_param_spec_override"(byval name as const gchar ptr, byval overridden as GParamSpec ptr) as GParamSpec ptr
+declare function g_param_spec_gtype_ alias "g_param_spec_gtype"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval is_a_type as GType, byval flags as GParamFlags) as GParamSpec ptr
+declare function g_param_spec_variant_ alias "g_param_spec_variant"(byval name as const gchar ptr, byval nick as const gchar ptr, byval blurb as const gchar ptr, byval type as const GVariantType ptr, byval default_value as GVariant ptr, byval flags as GParamFlags) as GParamSpec ptr
 
 #if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 	extern import g_param_spec_types as GType ptr
@@ -1435,7 +1495,7 @@ type _GTypeModule
 	use_count as guint
 	type_infos as GSList ptr
 	interface_infos as GSList ptr
-	name as zstring ptr
+	name as gchar ptr
 end type
 
 type _GTypeModuleClass
@@ -1506,11 +1566,11 @@ end type
 declare function g_type_module_get_type() as GType
 declare function g_type_module_use(byval module as GTypeModule ptr) as gboolean
 declare sub g_type_module_unuse(byval module as GTypeModule ptr)
-declare sub g_type_module_set_name(byval module as GTypeModule ptr, byval name as const zstring ptr)
-declare function g_type_module_register_type(byval module as GTypeModule ptr, byval parent_type as GType, byval type_name as const zstring ptr, byval type_info as const GTypeInfo ptr, byval flags as GTypeFlags) as GType
+declare sub g_type_module_set_name(byval module as GTypeModule ptr, byval name as const gchar ptr)
+declare function g_type_module_register_type(byval module as GTypeModule ptr, byval parent_type as GType, byval type_name as const gchar ptr, byval type_info as const GTypeInfo ptr, byval flags as GTypeFlags) as GType
 declare sub g_type_module_add_interface(byval module as GTypeModule ptr, byval instance_type as GType, byval interface_type as GType, byval interface_info as const GInterfaceInfo ptr)
-declare function g_type_module_register_enum(byval module as GTypeModule ptr, byval name as const zstring ptr, byval const_static_values as const GEnumValue ptr) as GType
-declare function g_type_module_register_flags(byval module as GTypeModule ptr, byval name as const zstring ptr, byval const_static_values as const GFlagsValue ptr) as GType
+declare function g_type_module_register_enum(byval module as GTypeModule ptr, byval name as const gchar ptr, byval const_static_values as const GEnumValue ptr) as GType
+declare function g_type_module_register_flags(byval module as GTypeModule ptr, byval name as const gchar ptr, byval const_static_values as const GFlagsValue ptr) as GType
 #define __G_TYPE_PLUGIN_H__
 #define G_TYPE_TYPE_PLUGIN g_type_plugin_get_type()
 #define G_TYPE_PLUGIN(inst) G_TYPE_CHECK_INSTANCE_CAST((inst), G_TYPE_TYPE_PLUGIN, GTypePlugin)
@@ -1601,10 +1661,10 @@ declare sub g_value_set_float(byval value as GValue ptr, byval v_float as gfloat
 declare function g_value_get_float(byval value as const GValue ptr) as gfloat
 declare sub g_value_set_double(byval value as GValue ptr, byval v_double as gdouble)
 declare function g_value_get_double(byval value as const GValue ptr) as gdouble
-declare sub g_value_set_string(byval value as GValue ptr, byval v_string as const zstring ptr)
-declare sub g_value_set_static_string(byval value as GValue ptr, byval v_string as const zstring ptr)
-declare function g_value_get_string(byval value as const GValue ptr) as const zstring ptr
-declare function g_value_dup_string(byval value as const GValue ptr) as zstring ptr
+declare sub g_value_set_string(byval value as GValue ptr, byval v_string as const gchar ptr)
+declare sub g_value_set_static_string(byval value as GValue ptr, byval v_string as const gchar ptr)
+declare function g_value_get_string(byval value as const GValue ptr) as const gchar ptr
+declare function g_value_dup_string(byval value as const GValue ptr) as gchar ptr
 declare sub g_value_set_pointer(byval value as GValue ptr, byval v_pointer as gpointer)
 declare function g_value_get_pointer(byval value as const GValue ptr) as gpointer
 declare function g_gtype_get_type() as GType
@@ -1614,11 +1674,38 @@ declare sub g_value_set_variant(byval value as GValue ptr, byval variant as GVar
 declare sub g_value_take_variant(byval value as GValue ptr, byval variant as GVariant ptr)
 declare function g_value_get_variant(byval value as const GValue ptr) as GVariant ptr
 declare function g_value_dup_variant(byval value as const GValue ptr) as GVariant ptr
-declare function g_pointer_type_register_static(byval name as const zstring ptr) as GType
-declare function g_strdup_value_contents(byval value as const GValue ptr) as zstring ptr
-declare sub g_value_take_string(byval value as GValue ptr, byval v_string as zstring ptr)
-declare sub g_value_set_string_take_ownership(byval value as GValue ptr, byval v_string as zstring ptr)
-type gchararray as zstring ptr
+declare function g_pointer_type_register_static(byval name as const gchar ptr) as GType
+declare function g_strdup_value_contents(byval value as const GValue ptr) as gchar ptr
+declare sub g_value_take_string(byval value as GValue ptr, byval v_string as gchar ptr)
+declare sub g_value_set_string_take_ownership(byval value as GValue ptr, byval v_string as gchar ptr)
+type gchararray as gchar ptr
+
+private sub glib_auto_cleanup_GStrv(byval _ptr as GStrv ptr)
+	if (*_ptr) <> cptr(any ptr, 0) then
+		g_strfreev(*_ptr)
+	end if
+end sub
+
+type GObject_autoptr as GObject ptr
+
+private sub glib_autoptr_cleanup_GObject(byval _ptr as GObject ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GInitiallyUnowned_autoptr as GInitiallyUnowned ptr
+
+private sub glib_autoptr_cleanup_GInitiallyUnowned(byval _ptr as GInitiallyUnowned ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+private sub glib_auto_cleanup_GValue(byval _ptr as GValue ptr)
+	g_value_unset(_ptr)
+end sub
+
 #undef __GLIB_GOBJECT_H_INSIDE__
 
 end extern

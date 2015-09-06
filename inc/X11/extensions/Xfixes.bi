@@ -37,7 +37,7 @@ extern "C"
 
 #define _XFIXES_H_
 const XFIXES_REVISION = 1
-#define XFIXES_VERSION (((XFIXES_MAJOR * 10000) + (XFIXES_MINOR * 100)) + XFIXES_REVISION)
+const XFIXES_VERSION = ((XFIXES_MAJOR * 10000) + (XFIXES_MINOR * 100)) + XFIXES_REVISION
 
 type XFixesSelectionNotifyEvent
 	as long type

@@ -46,13 +46,13 @@ declare sub XmuCvtFunctionToCallback(byval args as XrmValue ptr, byval num_args 
 #define XtEdefault "default"
 
 declare sub XmuCvtStringToBackingStore(byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr)
-declare function XmuCvtBackingStoreToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as byte
+declare function XmuCvtBackingStoreToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as XBoolean
 declare sub XmuCvtStringToCursor(byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr)
 
 #define XtRColorCursor "ColorCursor"
 #define XtNpointerColor "pointerColor"
 #define XtNpointerColorBackground "pointerColorBackground"
-declare function XmuCvtStringToColorCursor(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as byte
+declare function XmuCvtStringToColorCursor(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as XBoolean
 type XtGravity as long
 #define XtEForget "forget"
 #define XtENorthWest "northwest"
@@ -67,7 +67,7 @@ type XtGravity as long
 #define XtEStatic "static"
 #define XtEUnmap "unmap"
 declare sub XmuCvtStringToGravity(byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr)
-declare function XmuCvtGravityToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as byte
+declare function XmuCvtGravityToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as XBoolean
 
 type XtJustify as long
 enum
@@ -82,10 +82,10 @@ end enum
 #define XtEtop "top"
 #define XtEbottom "bottom"
 declare sub XmuCvtStringToJustify(byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr)
-declare function XmuCvtJustifyToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as byte
+declare function XmuCvtJustifyToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as XBoolean
 #define XtRLong "Long"
 declare sub XmuCvtStringToLong(byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr)
-declare function XmuCvtLongToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as byte
+declare function XmuCvtLongToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as XBoolean
 
 type XtOrientation as long
 enum
@@ -94,7 +94,7 @@ enum
 end enum
 
 declare sub XmuCvtStringToOrientation(byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr)
-declare function XmuCvtOrientationToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as byte
+declare function XmuCvtOrientationToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as XBoolean
 declare sub XmuCvtStringToBitmap(byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr)
 
 #define XtRShapeStyle "ShapeStyle"
@@ -107,11 +107,11 @@ const XmuShapeOval = 2
 const XmuShapeEllipse = 3
 const XmuShapeRoundedRectangle = 4
 
-declare function XmuCvtStringToShapeStyle(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as byte
-declare function XmuCvtShapeStyleToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as byte
-declare function XmuReshapeWidget(byval w as Widget, byval shape_style as long, byval corner_width as long, byval corner_height as long) as byte
+declare function XmuCvtStringToShapeStyle(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as XBoolean
+declare function XmuCvtShapeStyleToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr, byval converter_data as XtPointer ptr) as XBoolean
+declare function XmuReshapeWidget(byval w as Widget, byval shape_style as long, byval corner_width as long, byval corner_height as long) as XBoolean
 declare sub XmuCvtStringToWidget(byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValuePtr, byval toVal as XrmValuePtr)
-declare function XmuNewCvtStringToWidget(byval display as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValue ptr, byval toVal as XrmValue ptr, byval converter_data as XtPointer ptr) as byte
-declare function XmuCvtWidgetToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValue ptr, byval toVal as XrmValue ptr, byval converter_data as XtPointer ptr) as byte
+declare function XmuNewCvtStringToWidget(byval display as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValue ptr, byval toVal as XrmValue ptr, byval converter_data as XtPointer ptr) as XBoolean
+declare function XmuCvtWidgetToString(byval dpy as Display ptr, byval args as XrmValue ptr, byval num_args as Cardinal ptr, byval fromVal as XrmValue ptr, byval toVal as XrmValue ptr, byval converter_data as XtPointer ptr) as XBoolean
 
 end extern

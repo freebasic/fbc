@@ -312,14 +312,14 @@ const BASS_SPEAKER_REAR2 = &h4000000
 #define BASS_SPEAKER_N(n) ((n) shl 24)
 const BASS_SPEAKER_LEFT = &h10000000
 const BASS_SPEAKER_RIGHT = &h20000000
-#define BASS_SPEAKER_FRONTLEFT (BASS_SPEAKER_FRONT or BASS_SPEAKER_LEFT)
-#define BASS_SPEAKER_FRONTRIGHT (BASS_SPEAKER_FRONT or BASS_SPEAKER_RIGHT)
-#define BASS_SPEAKER_REARLEFT (BASS_SPEAKER_REAR or BASS_SPEAKER_LEFT)
-#define BASS_SPEAKER_REARRIGHT (BASS_SPEAKER_REAR or BASS_SPEAKER_RIGHT)
-#define BASS_SPEAKER_CENTER (BASS_SPEAKER_CENLFE or BASS_SPEAKER_LEFT)
-#define BASS_SPEAKER_LFE (BASS_SPEAKER_CENLFE or BASS_SPEAKER_RIGHT)
-#define BASS_SPEAKER_REAR2LEFT (BASS_SPEAKER_REAR2 or BASS_SPEAKER_LEFT)
-#define BASS_SPEAKER_REAR2RIGHT (BASS_SPEAKER_REAR2 or BASS_SPEAKER_RIGHT)
+const BASS_SPEAKER_FRONTLEFT = BASS_SPEAKER_FRONT or BASS_SPEAKER_LEFT
+const BASS_SPEAKER_FRONTRIGHT = BASS_SPEAKER_FRONT or BASS_SPEAKER_RIGHT
+const BASS_SPEAKER_REARLEFT = BASS_SPEAKER_REAR or BASS_SPEAKER_LEFT
+const BASS_SPEAKER_REARRIGHT = BASS_SPEAKER_REAR or BASS_SPEAKER_RIGHT
+const BASS_SPEAKER_CENTER = BASS_SPEAKER_CENLFE or BASS_SPEAKER_LEFT
+const BASS_SPEAKER_LFE = BASS_SPEAKER_CENLFE or BASS_SPEAKER_RIGHT
+const BASS_SPEAKER_REAR2LEFT = BASS_SPEAKER_REAR2 or BASS_SPEAKER_LEFT
+const BASS_SPEAKER_REAR2RIGHT = BASS_SPEAKER_REAR2 or BASS_SPEAKER_RIGHT
 const BASS_ASYNCFILE = &h40000000
 const BASS_UNICODE = &h80000000
 const BASS_RECORD_PAUSE = &h8000
@@ -445,15 +445,8 @@ end enum
 #define EAX_PRESET_DIZZY EAX_ENVIRONMENT_DIZZY, 0.139f, 17.234f, 0.666f
 #define EAX_PRESET_PSYCHOTIC EAX_ENVIRONMENT_PSYCHOTIC, 0.486f, 7.563f, 0.806f
 const BASS_STREAMPROC_END = &h80000000
-
-#if defined(__FB_WIN32__) and (not defined(__FB_64BIT__))
-	#define STREAMPROC_DUMMY cptr(function stdcall(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, 0)
-	#define STREAMPROC_PUSH cptr(function stdcall(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, -1)
-#else
-	#define STREAMPROC_DUMMY cptr(function cdecl(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, 0)
-	#define STREAMPROC_PUSH cptr(function cdecl(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, -1)
-#endif
-
+const STREAMPROC_DUMMY = cptr(function(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, 0)
+const STREAMPROC_PUSH = cptr(function(byval handle as HSTREAM, byval buffer as any ptr, byval length as DWORD, byval user as any ptr) as DWORD, -1)
 const STREAMFILE_NOBUFFER = 0
 const STREAMFILE_BUFFER = 1
 const STREAMFILE_BUFFERPUSH = 2

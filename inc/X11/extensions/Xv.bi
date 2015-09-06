@@ -42,8 +42,8 @@ type XvEncodingID as XID
 const XvNone = 0
 const XvInput = 0
 const XvOutput = 1
-#define XvInputMask (cast(clong, 1) shl XvInput)
-#define XvOutputMask (cast(clong, 1) shl XvOutput)
+const XvInputMask = cast(clong, 1) shl XvInput
+const XvOutputMask = cast(clong, 1) shl XvOutput
 const XvVideoMask = &h00000004
 const XvStillMask = &h00000008
 const XvImageMask = &h00000010
@@ -66,13 +66,13 @@ const XvBusy = 2
 const XvPreempted = 3
 const XvHardError = 4
 const XvLastReason = 4
-#define XvNumReasons (XvLastReason + 1)
-#define XvStartedMask (cast(clong, 1) shl XvStarted)
-#define XvStoppedMask (cast(clong, 1) shl XvStopped)
-#define XvBusyMask (cast(clong, 1) shl XvBusy)
-#define XvPreemptedMask (cast(clong, 1) shl XvPreempted)
-#define XvHardErrorMask (cast(clong, 1) shl XvHardError)
-#define XvAnyReasonMask ((cast(clong, 1) shl XvNumReasons) - 1)
+const XvNumReasons = XvLastReason + 1
+const XvStartedMask = cast(clong, 1) shl XvStarted
+const XvStoppedMask = cast(clong, 1) shl XvStopped
+const XvBusyMask = cast(clong, 1) shl XvBusy
+const XvPreemptedMask = cast(clong, 1) shl XvPreempted
+const XvHardErrorMask = cast(clong, 1) shl XvHardError
+const XvAnyReasonMask = (cast(clong, 1) shl XvNumReasons) - 1
 const XvNoReasonMask = 0
 const XvBadPort = 0
 const XvBadEncoding = 1

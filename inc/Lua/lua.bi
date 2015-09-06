@@ -43,8 +43,8 @@
 
 '' The following symbols have been renamed:
 ''     typedef LUA_NUMBER => LUA_NUMBER_
-''     typedef LUA_UNSIGNED => LUA_UNSIGNED_
 ''     typedef LUA_INTEGER => LUA_INTEGER_
+''     typedef LUA_UNSIGNED => LUA_UNSIGNED_
 ''     typedef LUA_KCONTEXT => LUA_KCONTEXT_
 ''     #define LUA_VERSION => LUA_VERSION_
 ''     constant LUA_YIELD => LUA_YIELD_
@@ -181,7 +181,7 @@ const LUA_VERSION_NUM = 503
 #define LUA_AUTHORS "R. Ierusalimschy, L. H. de Figueiredo, W. Celes"
 #define LUA_SIGNATURE !"\27Lua"
 const LUA_MULTRET = -1
-#define LUA_REGISTRYINDEX ((-LUAI_MAXSTACK) - 1000)
+const LUA_REGISTRYINDEX = (-LUAI_MAXSTACK) - 1000
 #define lua_upvalueindex(i) (LUA_REGISTRYINDEX - (i))
 const LUA_OK = 0
 const LUA_YIELD_ = 1
@@ -388,10 +388,10 @@ const LUA_HOOKRET = 1
 const LUA_HOOKLINE = 2
 const LUA_HOOKCOUNT = 3
 const LUA_HOOKTAILCALL = 4
-#define LUA_MASKCALL (1 shl LUA_HOOKCALL)
-#define LUA_MASKRET (1 shl LUA_HOOKRET)
-#define LUA_MASKLINE (1 shl LUA_HOOKLINE)
-#define LUA_MASKCOUNT (1 shl LUA_HOOKCOUNT)
+const LUA_MASKCALL = 1 shl LUA_HOOKCALL
+const LUA_MASKRET = 1 shl LUA_HOOKRET
+const LUA_MASKLINE = 1 shl LUA_HOOKLINE
+const LUA_MASKCOUNT = 1 shl LUA_HOOKCOUNT
 type lua_Debug as lua_Debug_
 type lua_Hook as sub(byval L as lua_State ptr, byval ar as lua_Debug ptr)
 

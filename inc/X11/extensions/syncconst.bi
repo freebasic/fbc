@@ -38,12 +38,12 @@ const SYNC_MAJOR_VERSION = 3
 const SYNC_MINOR_VERSION = 1
 const XSyncCounterNotify = 0
 const XSyncAlarmNotify = 1
-#define XSyncAlarmNotifyMask (cast(clong, 1) shl XSyncAlarmNotify)
+const XSyncAlarmNotifyMask = cast(clong, 1) shl XSyncAlarmNotify
 const XSyncNumberEvents = cast(clong, 2)
 const XSyncBadCounter = cast(clong, 0)
 const XSyncBadAlarm = cast(clong, 1)
 const XSyncBadFence = cast(clong, 2)
-#define XSyncNumberErrors (XSyncBadFence + 1)
+const XSyncNumberErrors = XSyncBadFence + 1
 const XSyncCACounter = cast(clong, 1) shl 0
 const XSyncCAValueType = cast(clong, 1) shl 1
 const XSyncCAValue = cast(clong, 1) shl 2

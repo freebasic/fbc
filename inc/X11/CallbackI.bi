@@ -70,7 +70,7 @@ type InternalCallbackRec
 end type
 
 type InternalCallbackList as InternalCallbackRec ptr
-type _XtConditionProc as function(byval as XtPointer) as byte
+type _XtConditionProc as function(byval as XtPointer) as XBoolean
 declare sub _XtAddCallback(byval as InternalCallbackList ptr, byval as XtCallbackProc, byval as XtPointer)
 declare sub _XtAddCallbackOnce(byval as InternalCallbackList ptr, byval as XtCallbackProc, byval as XtPointer)
 declare function _XtCompileCallbackList(byval as XtCallbackList) as InternalCallbackList

@@ -39,7 +39,7 @@ extern "C"
 const XpmFormat = 3
 const XpmVersion = 4
 const XpmRevision = 11
-#define XpmIncludeVersion ((((XpmFormat * 100) + XpmVersion) * 100) + XpmRevision)
+const XpmIncludeVersion = (((XpmFormat * 100) + XpmVersion) * 100) + XpmRevision
 const XpmColorError = 1
 const XpmSuccess = 0
 const XpmOpenFailed = -1

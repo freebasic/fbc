@@ -301,7 +301,7 @@ end type
 #define IDirect3DRM3_CreateClippedVisual(p, ab) (p)->lpVtbl->CreateClippedVisual(p, a, b)
 #define IDirect3DRM3_SetOptions(p, a) (p)->lpVtbl->SetOptions(p, a)
 #define IDirect3DRM3_GetOptions(p, a) (p)->lpVtbl->GetOptions(p, a)
-#define D3DRM_OK DD_OK
+const D3DRM_OK = DD_OK
 #define D3DRMERR_BADOBJECT MAKE_DDHRESULT(781)
 #define D3DRMERR_BADTYPE MAKE_DDHRESULT(782)
 #define D3DRMERR_BADALLOC MAKE_DDHRESULT(783)

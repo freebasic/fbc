@@ -1,4 +1,4 @@
-'' FreeBASIC binding for gtk+-3.14.10
+'' FreeBASIC binding for gtk+-3.16.6
 ''
 '' based on the C header files:
 ''   GDK - The GIMP Drawing Kit
@@ -398,8 +398,8 @@ extern "C"
 
 #define __GDK_VERSION_MACROS_H__
 const GDK_MAJOR_VERSION = 3
-const GDK_MINOR_VERSION = 14
-const GDK_MICRO_VERSION = 10
+const GDK_MINOR_VERSION = 16
+const GDK_MICRO_VERSION = 6
 #define GDK_VERSION_3_0 G_ENCODE_VERSION(3, 0)
 #define GDK_VERSION_3_2 G_ENCODE_VERSION(3, 2)
 #define GDK_VERSION_3_4 G_ENCODE_VERSION(3, 4)
@@ -408,6 +408,7 @@ const GDK_MICRO_VERSION = 10
 #define GDK_VERSION_3_10 G_ENCODE_VERSION(3, 10)
 #define GDK_VERSION_3_12 G_ENCODE_VERSION(3, 12)
 #define GDK_VERSION_3_14 G_ENCODE_VERSION(3, 14)
+#define GDK_VERSION_3_16 G_ENCODE_VERSION(3, 16)
 #define GDK_VERSION_CUR_STABLE G_ENCODE_VERSION(GDK_MAJOR_VERSION, GDK_MINOR_VERSION)
 #define GDK_VERSION_PREV_STABLE G_ENCODE_VERSION(GDK_MAJOR_VERSION, GDK_MINOR_VERSION - 2)
 #define GDK_VERSION_MIN_REQUIRED GDK_VERSION_CUR_STABLE
@@ -447,6 +448,7 @@ type GdkScreen as _GdkScreen
 type GdkWindow as _GdkWindow
 type GdkKeymap as _GdkKeymap
 type GdkAppLaunchContext as _GdkAppLaunchContext
+type GdkGLContext as _GdkGLContext
 
 type GdkByteOrder as long
 enum
@@ -516,6 +518,7 @@ enum
 	GDK_GRAB_INVALID_TIME = 2
 	GDK_GRAB_NOT_VIEWABLE = 3
 	GDK_GRAB_FROZEN = 4
+	GDK_GRAB_FAILED = 5
 end enum
 
 type GdkGrabOwnership as long
@@ -557,6 +560,13 @@ type _GdkPoint
 	x as gint
 	y as gint
 end type
+
+type GdkGLError as long
+enum
+	GDK_GL_ERROR_NOT_AVAILABLE
+	GDK_GL_ERROR_UNSUPPORTED_FORMAT
+	GDK_GL_ERROR_UNSUPPORTED_PROFILE
+end enum
 
 #define __GDK_SCREEN_H__
 #define __GDK_DISPLAY_H__
@@ -613,7 +623,7 @@ type _GdkTimeCoord
 end type
 
 declare function gdk_device_get_type() as GType
-declare function gdk_device_get_name(byval device as GdkDevice ptr) as const zstring ptr
+declare function gdk_device_get_name(byval device as GdkDevice ptr) as const gchar ptr
 declare function gdk_device_get_has_cursor(byval device as GdkDevice ptr) as gboolean
 declare function gdk_device_get_source(byval device as GdkDevice ptr) as GdkInputSource
 declare function gdk_device_get_mode(byval device as GdkDevice ptr) as GdkInputMode
@@ -643,6 +653,8 @@ declare sub gdk_device_ungrab(byval device as GdkDevice ptr, byval time_ as guin
 declare sub gdk_device_warp(byval device as GdkDevice ptr, byval screen as GdkScreen ptr, byval x as gint, byval y as gint)
 declare function gdk_device_grab_info_libgtk_only(byval display as GdkDisplay ptr, byval device as GdkDevice ptr, byval grab_window as GdkWindow ptr ptr, byval owner_events as gboolean ptr) as gboolean
 declare function gdk_device_get_last_event_window(byval device as GdkDevice ptr) as GdkWindow ptr
+declare function gdk_device_get_vendor_id(byval device as GdkDevice ptr) as const gchar ptr
+declare function gdk_device_get_product_id(byval device as GdkDevice ptr) as const gchar ptr
 
 #define GDK_TYPE_DRAG_CONTEXT gdk_drag_context_get_type()
 #define GDK_DRAG_CONTEXT(object) G_TYPE_CHECK_INSTANCE_CAST((object), GDK_TYPE_DRAG_CONTEXT, GdkDragContext)
@@ -695,9 +707,9 @@ declare function gdk_drag_drop_succeeded(byval context as GdkDragContext ptr) as
 #define GDK_TYPE_EVENT gdk_event_get_type()
 #define GDK_TYPE_EVENT_SEQUENCE gdk_event_sequence_get_type()
 const GDK_PRIORITY_EVENTS = G_PRIORITY_DEFAULT
-#define GDK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
+const GDK_PRIORITY_REDRAW = G_PRIORITY_HIGH_IDLE + 20
 const GDK_EVENT_PROPAGATE = FALSE
-#define GDK_EVENT_STOP CTRUE
+const GDK_EVENT_STOP = CTRUE
 const GDK_BUTTON_PRIMARY = 1
 const GDK_BUTTON_MIDDLE = 2
 const GDK_BUTTON_SECONDARY = 3
@@ -947,7 +959,7 @@ type _GdkEventKey
 	state as guint
 	keyval as guint
 	length as gint
-	string as zstring ptr
+	string as gchar ptr
 	hardware_keycode as guint16
 	group as guint8
 	is_modifier : 1 as guint
@@ -1120,7 +1132,7 @@ declare function gdk_event_get_event_sequence(byval event as const GdkEvent ptr)
 declare function gdk_event_get_event_type(byval event as const GdkEvent ptr) as GdkEventType
 declare sub gdk_set_show_events(byval show_events as gboolean)
 declare function gdk_get_show_events() as gboolean
-declare function gdk_setting_get(byval name as const zstring ptr, byval value as GValue ptr) as gboolean
+declare function gdk_setting_get(byval name as const gchar ptr, byval value as GValue ptr) as gboolean
 
 #define __GDK_DEVICE_MANAGER_H__
 #define GDK_TYPE_DEVICE_MANAGER gdk_device_manager_get_type()
@@ -1138,8 +1150,8 @@ declare function gdk_device_manager_get_client_pointer(byval device_manager as G
 #define GDK_DISPLAY_OBJECT(object) GDK_DISPLAY(object)
 
 declare function gdk_display_get_type() as GType
-declare function gdk_display_open(byval display_name as const zstring ptr) as GdkDisplay ptr
-declare function gdk_display_get_name(byval display as GdkDisplay ptr) as const zstring ptr
+declare function gdk_display_open(byval display_name as const gchar ptr) as GdkDisplay ptr
+declare function gdk_display_get_name(byval display as GdkDisplay ptr) as const gchar ptr
 declare function gdk_display_get_n_screens(byval display as GdkDisplay ptr) as gint
 declare function gdk_display_get_screen(byval display as GdkDisplay ptr, byval screen_num as gint) as GdkScreen ptr
 declare function gdk_display_get_default_screen(byval display as GdkDisplay ptr) as GdkScreen ptr
@@ -1176,7 +1188,7 @@ declare sub gdk_display_store_clipboard(byval display as GdkDisplay ptr, byval c
 declare function gdk_display_supports_shapes(byval display as GdkDisplay ptr) as gboolean
 declare function gdk_display_supports_input_shapes(byval display as GdkDisplay ptr) as gboolean
 declare function gdk_display_supports_composite(byval display as GdkDisplay ptr) as gboolean
-declare sub gdk_display_notify_startup_complete(byval display as GdkDisplay ptr, byval startup_id as const zstring ptr)
+declare sub gdk_display_notify_startup_complete(byval display as GdkDisplay ptr, byval startup_id as const gchar ptr)
 declare function gdk_display_get_device_manager(byval display as GdkDisplay ptr) as GdkDeviceManager ptr
 declare function gdk_display_get_app_launch_context(byval display as GdkDisplay ptr) as GdkAppLaunchContext ptr
 
@@ -1197,7 +1209,7 @@ declare function gdk_screen_get_width_mm(byval screen as GdkScreen ptr) as gint
 declare function gdk_screen_get_height_mm(byval screen as GdkScreen ptr) as gint
 declare function gdk_screen_list_visuals(byval screen as GdkScreen ptr) as GList ptr
 declare function gdk_screen_get_toplevel_windows(byval screen as GdkScreen ptr) as GList ptr
-declare function gdk_screen_make_display_name(byval screen as GdkScreen ptr) as zstring ptr
+declare function gdk_screen_make_display_name(byval screen as GdkScreen ptr) as gchar ptr
 declare function gdk_screen_get_n_monitors(byval screen as GdkScreen ptr) as gint
 declare function gdk_screen_get_primary_monitor(byval screen as GdkScreen ptr) as gint
 declare sub gdk_screen_get_monitor_geometry(byval screen as GdkScreen ptr, byval monitor_num as gint, byval dest as GdkRectangle ptr)
@@ -1206,10 +1218,10 @@ declare function gdk_screen_get_monitor_at_point(byval screen as GdkScreen ptr, 
 declare function gdk_screen_get_monitor_at_window(byval screen as GdkScreen ptr, byval window as GdkWindow ptr) as gint
 declare function gdk_screen_get_monitor_width_mm(byval screen as GdkScreen ptr, byval monitor_num as gint) as gint
 declare function gdk_screen_get_monitor_height_mm(byval screen as GdkScreen ptr, byval monitor_num as gint) as gint
-declare function gdk_screen_get_monitor_plug_name(byval screen as GdkScreen ptr, byval monitor_num as gint) as zstring ptr
+declare function gdk_screen_get_monitor_plug_name(byval screen as GdkScreen ptr, byval monitor_num as gint) as gchar ptr
 declare function gdk_screen_get_monitor_scale_factor(byval screen as GdkScreen ptr, byval monitor_num as gint) as gint
 declare function gdk_screen_get_default() as GdkScreen ptr
-declare function gdk_screen_get_setting(byval screen as GdkScreen ptr, byval name as const zstring ptr, byval value as GValue ptr) as gboolean
+declare function gdk_screen_get_setting(byval screen as GdkScreen ptr, byval name as const gchar ptr, byval value as GValue ptr) as gboolean
 declare sub gdk_screen_set_font_options(byval screen as GdkScreen ptr, byval options as const cairo_font_options_t ptr)
 declare function gdk_screen_get_font_options(byval screen as GdkScreen ptr) as const cairo_font_options_t ptr
 declare sub gdk_screen_set_resolution(byval screen as GdkScreen ptr, byval dpi as gdouble)
@@ -1245,8 +1257,8 @@ declare function gdk_color_copy(byval color as const GdkColor ptr) as GdkColor p
 declare sub gdk_color_free(byval color as GdkColor ptr)
 declare function gdk_color_hash(byval color as const GdkColor ptr) as guint
 declare function gdk_color_equal(byval colora as const GdkColor ptr, byval colorb as const GdkColor ptr) as gboolean
-declare function gdk_color_parse(byval spec as const zstring ptr, byval color as GdkColor ptr) as gboolean
-declare function gdk_color_to_string(byval color as const GdkColor ptr) as zstring ptr
+declare function gdk_color_parse(byval spec as const gchar ptr, byval color as GdkColor ptr) as gboolean
+declare function gdk_color_to_string(byval color as const GdkColor ptr) as gchar ptr
 #define __GDK_RGBA_H__
 
 type _GdkRGBA
@@ -1262,8 +1274,8 @@ declare function gdk_rgba_copy(byval rgba_ as const GdkRGBA ptr) as GdkRGBA ptr
 declare sub gdk_rgba_free(byval rgba_ as GdkRGBA ptr)
 declare function gdk_rgba_hash(byval p as gconstpointer) as guint
 declare function gdk_rgba_equal(byval p1 as gconstpointer, byval p2 as gconstpointer) as gboolean
-declare function gdk_rgba_parse(byval rgba_ as GdkRGBA ptr, byval spec as const zstring ptr) as gboolean
-declare function gdk_rgba_to_string(byval rgba_ as const GdkRGBA ptr) as zstring ptr
+declare function gdk_rgba_parse(byval rgba_ as GdkRGBA ptr, byval spec as const gchar ptr) as gboolean
+declare function gdk_rgba_to_string(byval rgba_ as const GdkRGBA ptr) as gchar ptr
 #define __GDK_PIXBUF_H__
 declare function gdk_pixbuf_get_from_window(byval window as GdkWindow ptr, byval src_x as gint, byval src_y as gint, byval width as gint, byval height as gint) as GdkPixbuf ptr
 declare function gdk_pixbuf_get_from_surface(byval surface as cairo_surface_t ptr, byval src_x as gint, byval src_y as gint, byval width as gint, byval height as gint) as GdkPixbuf ptr
@@ -1277,6 +1289,7 @@ declare sub gdk_cairo_region(byval cr as cairo_t ptr, byval region as const cair
 declare function gdk_cairo_region_create_from_surface(byval surface as cairo_surface_t ptr) as cairo_region_t ptr
 declare sub gdk_cairo_set_source_color(byval cr as cairo_t ptr, byval color as const GdkColor ptr)
 declare function gdk_cairo_surface_create_from_pixbuf(byval pixbuf as const GdkPixbuf ptr, byval scale as long, byval for_window as GdkWindow ptr) as cairo_surface_t ptr
+declare sub gdk_cairo_draw_from_gl(byval cr as cairo_t ptr, byval window as GdkWindow ptr, byval source as long, byval source_type as long, byval buffer_scale as long, byval x as long, byval y as long, byval width as long, byval height as long)
 
 #define __GDK_CURSOR_H__
 #define GDK_TYPE_CURSOR gdk_cursor_get_type()
@@ -1372,7 +1385,7 @@ declare function gdk_cursor_new_for_display(byval display as GdkDisplay ptr, byv
 declare function gdk_cursor_new(byval cursor_type as GdkCursorType) as GdkCursor ptr
 declare function gdk_cursor_new_from_pixbuf(byval display as GdkDisplay ptr, byval pixbuf as GdkPixbuf ptr, byval x as gint, byval y as gint) as GdkCursor ptr
 declare function gdk_cursor_new_from_surface(byval display as GdkDisplay ptr, byval surface as cairo_surface_t ptr, byval x as gdouble, byval y as gdouble) as GdkCursor ptr
-declare function gdk_cursor_new_from_name(byval display as GdkDisplay ptr, byval name as const zstring ptr) as GdkCursor ptr
+declare function gdk_cursor_new_from_name(byval display as GdkDisplay ptr, byval name as const gchar ptr) as GdkCursor ptr
 declare function gdk_cursor_get_display(byval cursor as GdkCursor ptr) as GdkDisplay ptr
 declare function gdk_cursor_ref(byval cursor as GdkCursor ptr) as GdkCursor ptr
 declare sub gdk_cursor_unref(byval cursor as GdkCursor ptr)
@@ -1390,7 +1403,7 @@ declare function gdk_display_manager_get() as GdkDisplayManager ptr
 declare function gdk_display_manager_get_default_display(byval manager as GdkDisplayManager ptr) as GdkDisplay ptr
 declare sub gdk_display_manager_set_default_display(byval manager as GdkDisplayManager ptr, byval display as GdkDisplay ptr)
 declare function gdk_display_manager_list_displays(byval manager as GdkDisplayManager ptr) as GSList ptr
-declare function gdk_display_manager_open_display(byval manager as GdkDisplayManager ptr, byval name as const zstring ptr) as GdkDisplay ptr
+declare function gdk_display_manager_open_display(byval manager as GdkDisplayManager ptr, byval name as const gchar ptr) as GdkDisplay ptr
 #define __GDK_ENUM_TYPES_H__
 declare function gdk_cursor_type_get_type() as GType
 #define GDK_TYPE_CURSOR_TYPE gdk_cursor_type_get_type()
@@ -1444,6 +1457,8 @@ declare function gdk_grab_ownership_get_type() as GType
 #define GDK_TYPE_GRAB_OWNERSHIP gdk_grab_ownership_get_type()
 declare function gdk_event_mask_get_type() as GType
 #define GDK_TYPE_EVENT_MASK gdk_event_mask_get_type()
+declare function gdk_gl_error_get_type() as GType
+#define GDK_TYPE_GL_ERROR gdk_gl_error_get_type()
 declare function gdk_visual_type_get_type() as GType
 #define GDK_TYPE_VISUAL_TYPE gdk_visual_type_get_type()
 declare function gdk_window_window_class_get_type() as GType
@@ -1514,6 +1529,29 @@ declare function gdk_frame_clock_get_history_start(byval frame_clock as GdkFrame
 declare function gdk_frame_clock_get_timings(byval frame_clock as GdkFrameClock ptr, byval frame_counter as gint64) as GdkFrameTimings ptr
 declare function gdk_frame_clock_get_current_timings(byval frame_clock as GdkFrameClock ptr) as GdkFrameTimings ptr
 declare sub gdk_frame_clock_get_refresh_info(byval frame_clock as GdkFrameClock ptr, byval base_time as gint64, byval refresh_interval_return as gint64 ptr, byval presentation_time_return as gint64 ptr)
+
+#define __GDK_GL_CONTEXT_H__
+#define GDK_TYPE_GL_CONTEXT gdk_gl_context_get_type()
+#define GDK_GL_CONTEXT(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), GDK_TYPE_GL_CONTEXT, GdkGLContext)
+#define GDK_IS_GL_CONTEXT(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), GDK_TYPE_GL_CONTEXT)
+#define GDK_GL_ERROR gdk_gl_error_quark()
+
+declare function gdk_gl_error_quark() as GQuark
+declare function gdk_gl_context_get_type() as GType
+declare function gdk_gl_context_get_display(byval context as GdkGLContext ptr) as GdkDisplay ptr
+declare function gdk_gl_context_get_window(byval context as GdkGLContext ptr) as GdkWindow ptr
+declare function gdk_gl_context_get_shared_context(byval context as GdkGLContext ptr) as GdkGLContext ptr
+declare sub gdk_gl_context_get_version(byval context as GdkGLContext ptr, byval major as long ptr, byval minor as long ptr)
+declare sub gdk_gl_context_set_required_version(byval context as GdkGLContext ptr, byval major as long, byval minor as long)
+declare sub gdk_gl_context_get_required_version(byval context as GdkGLContext ptr, byval major as long ptr, byval minor as long ptr)
+declare sub gdk_gl_context_set_debug_enabled(byval context as GdkGLContext ptr, byval enabled as gboolean)
+declare function gdk_gl_context_get_debug_enabled(byval context as GdkGLContext ptr) as gboolean
+declare sub gdk_gl_context_set_forward_compatible(byval context as GdkGLContext ptr, byval compatible as gboolean)
+declare function gdk_gl_context_get_forward_compatible(byval context as GdkGLContext ptr) as gboolean
+declare function gdk_gl_context_realize(byval context as GdkGLContext ptr, byval error as GError ptr ptr) as gboolean
+declare sub gdk_gl_context_make_current(byval context as GdkGLContext ptr)
+declare function gdk_gl_context_get_current() as GdkGLContext ptr
+declare sub gdk_gl_context_clear_current()
 #define __GDK_KEYS_H__
 type GdkKeymapKey as _GdkKeymapKey
 
@@ -1542,8 +1580,8 @@ declare function gdk_keymap_get_modifier_state(byval keymap as GdkKeymap ptr) as
 declare sub gdk_keymap_add_virtual_modifiers(byval keymap as GdkKeymap ptr, byval state as GdkModifierType ptr)
 declare function gdk_keymap_map_virtual_modifiers(byval keymap as GdkKeymap ptr, byval state as GdkModifierType ptr) as gboolean
 declare function gdk_keymap_get_modifier_mask(byval keymap as GdkKeymap ptr, byval intent as GdkModifierIntent) as GdkModifierType
-declare function gdk_keyval_name(byval keyval as guint) as zstring ptr
-declare function gdk_keyval_from_name(byval keyval_name as const zstring ptr) as guint
+declare function gdk_keyval_name(byval keyval as guint) as gchar ptr
+declare function gdk_keyval_from_name(byval keyval_name as const gchar ptr) as guint
 declare sub gdk_keyval_convert_case(byval symbol as guint, byval lower as guint ptr, byval upper as guint ptr)
 declare function gdk_keyval_to_upper(byval keyval as guint) as guint
 declare function gdk_keyval_to_lower(byval keyval as guint) as guint
@@ -3824,20 +3862,20 @@ const GDK_KEY_LogGrabInfo = &h1008fe25
 #define __GDK_MAIN_H__
 const GDK_PRIORITY_EVENTS = G_PRIORITY_DEFAULT
 
-declare sub gdk_parse_args(byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
-declare sub gdk_init(byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
-declare function gdk_init_check(byval argc as gint ptr, byval argv as zstring ptr ptr ptr) as gboolean
+declare sub gdk_parse_args(byval argc as gint ptr, byval argv as gchar ptr ptr ptr)
+declare sub gdk_init(byval argc as gint ptr, byval argv as gchar ptr ptr ptr)
+declare function gdk_init_check(byval argc as gint ptr, byval argv as gchar ptr ptr ptr) as gboolean
 declare sub gdk_add_option_entries_libgtk_only(byval group as GOptionGroup ptr)
 declare sub gdk_pre_parse_libgtk_only()
-declare function gdk_get_program_class() as const zstring ptr
-declare sub gdk_set_program_class(byval program_class as const zstring ptr)
+declare function gdk_get_program_class() as const gchar ptr
+declare sub gdk_set_program_class(byval program_class as const gchar ptr)
 declare sub gdk_notify_startup_complete()
-declare sub gdk_notify_startup_complete_with_id(byval startup_id as const zstring ptr)
+declare sub gdk_notify_startup_complete_with_id(byval startup_id as const gchar ptr)
 declare sub gdk_error_trap_push()
 declare function gdk_error_trap_pop() as gint
 declare sub gdk_error_trap_pop_ignored()
-declare function gdk_get_display_arg_name() as const zstring ptr
-declare function gdk_get_display() as zstring ptr
+declare function gdk_get_display_arg_name() as const gchar ptr
+declare function gdk_get_display() as gchar ptr
 declare function gdk_pointer_grab(byval window as GdkWindow ptr, byval owner_events as gboolean, byval event_mask as GdkEventMask, byval confine_to as GdkWindow ptr, byval cursor as GdkCursor ptr, byval time_ as guint32) as GdkGrabStatus
 declare function gdk_keyboard_grab(byval window as GdkWindow ptr, byval owner_events as gboolean, byval time_ as guint32) as GdkGrabStatus
 declare sub gdk_pointer_ungrab(byval time_ as guint32)
@@ -3851,7 +3889,7 @@ declare sub gdk_set_double_click_time(byval msec as guint)
 declare sub gdk_beep()
 declare sub gdk_flush()
 declare sub gdk_disable_multidevice()
-declare sub gdk_set_allowed_backends(byval backends as const zstring ptr)
+declare sub gdk_set_allowed_backends(byval backends as const gchar ptr)
 #define __GDK_PANGO_H__
 declare function gdk_pango_context_get_for_screen(byval screen as GdkScreen ptr) as PangoContext ptr
 declare function gdk_pango_context_get() as PangoContext ptr
@@ -3866,14 +3904,14 @@ enum
 	GDK_PROP_MODE_APPEND
 end enum
 
-declare function gdk_atom_intern(byval atom_name as const zstring ptr, byval only_if_exists as gboolean) as GdkAtom
-declare function gdk_atom_intern_static_string(byval atom_name as const zstring ptr) as GdkAtom
-declare function gdk_atom_name(byval atom as GdkAtom) as zstring ptr
+declare function gdk_atom_intern(byval atom_name as const gchar ptr, byval only_if_exists as gboolean) as GdkAtom
+declare function gdk_atom_intern_static_string(byval atom_name as const gchar ptr) as GdkAtom
+declare function gdk_atom_name(byval atom as GdkAtom) as gchar ptr
 declare function gdk_property_get(byval window as GdkWindow ptr, byval property as GdkAtom, byval type as GdkAtom, byval offset as gulong, byval length as gulong, byval pdelete as gint, byval actual_property_type as GdkAtom ptr, byval actual_format as gint ptr, byval actual_length as gint ptr, byval data as guchar ptr ptr) as gboolean
 declare sub gdk_property_change(byval window as GdkWindow ptr, byval property as GdkAtom, byval type as GdkAtom, byval format as gint, byval mode as GdkPropMode, byval data as const guchar ptr, byval nelements as gint)
 declare sub gdk_property_delete(byval window as GdkWindow ptr, byval property as GdkAtom)
-declare function gdk_text_property_to_utf8_list_for_display(byval display as GdkDisplay ptr, byval encoding as GdkAtom, byval format as gint, byval text as const guchar ptr, byval length as gint, byval list as zstring ptr ptr ptr) as gint
-declare function gdk_utf8_to_string_target(byval str as const zstring ptr) as zstring ptr
+declare function gdk_text_property_to_utf8_list_for_display(byval display as GdkDisplay ptr, byval encoding as GdkAtom, byval format as gint, byval text as const guchar ptr, byval length as gint, byval list as gchar ptr ptr ptr) as gint
+declare function gdk_utf8_to_string_target(byval str as const gchar ptr) as gchar ptr
 #define __GDK_RECTANGLE_H__
 declare function gdk_rectangle_intersect(byval src1 as const GdkRectangle ptr, byval src2 as const GdkRectangle ptr, byval dest as GdkRectangle ptr) as gboolean
 declare sub gdk_rectangle_union(byval src1 as const GdkRectangle ptr, byval src2 as const GdkRectangle ptr, byval dest as GdkRectangle ptr)
@@ -4027,7 +4065,7 @@ enum
 end enum
 
 type _GdkWindowAttr
-	title as zstring ptr
+	title as gchar ptr
 	event_mask as gint
 	x as gint
 	y as gint
@@ -4037,8 +4075,8 @@ type _GdkWindowAttr
 	visual as GdkVisual ptr
 	window_type as GdkWindowType
 	cursor as GdkCursor ptr
-	wmclass_name as zstring ptr
-	wmclass_class as zstring ptr
+	wmclass_name as gchar ptr
+	wmclass_class as gchar ptr
 	override_redirect as gboolean
 	type_hint as GdkWindowTypeHint
 end type
@@ -4141,12 +4179,13 @@ declare sub gdk_window_set_geometry_hints(byval window as GdkWindow ptr, byval g
 declare function gdk_window_get_clip_region(byval window as GdkWindow ptr) as cairo_region_t ptr
 declare function gdk_window_get_visible_region(byval window as GdkWindow ptr) as cairo_region_t ptr
 declare sub gdk_window_begin_paint_rect(byval window as GdkWindow ptr, byval rectangle as const GdkRectangle ptr)
+declare sub gdk_window_mark_paint_from_clip(byval window as GdkWindow ptr, byval cr as cairo_t ptr)
 declare sub gdk_window_begin_paint_region(byval window as GdkWindow ptr, byval region as const cairo_region_t ptr)
 declare sub gdk_window_end_paint(byval window as GdkWindow ptr)
 declare sub gdk_window_flush(byval window as GdkWindow ptr)
-declare sub gdk_window_set_title(byval window as GdkWindow ptr, byval title as const zstring ptr)
-declare sub gdk_window_set_role(byval window as GdkWindow ptr, byval role as const zstring ptr)
-declare sub gdk_window_set_startup_id(byval window as GdkWindow ptr, byval startup_id as const zstring ptr)
+declare sub gdk_window_set_title(byval window as GdkWindow ptr, byval title as const gchar ptr)
+declare sub gdk_window_set_role(byval window as GdkWindow ptr, byval role as const gchar ptr)
+declare sub gdk_window_set_startup_id(byval window as GdkWindow ptr, byval startup_id as const gchar ptr)
 declare sub gdk_window_set_transient_for(byval window as GdkWindow ptr, byval parent as GdkWindow ptr)
 declare sub gdk_window_set_background(byval window as GdkWindow ptr, byval color as const GdkColor ptr)
 declare sub gdk_window_set_background_rgba(byval window as GdkWindow ptr, byval rgba_ as const GdkRGBA ptr)
@@ -4185,7 +4224,7 @@ declare function gdk_window_get_device_events(byval window as GdkWindow ptr, byv
 declare sub gdk_window_set_source_events(byval window as GdkWindow ptr, byval source as GdkInputSource, byval event_mask as GdkEventMask)
 declare function gdk_window_get_source_events(byval window as GdkWindow ptr, byval source as GdkInputSource) as GdkEventMask
 declare sub gdk_window_set_icon_list(byval window as GdkWindow ptr, byval pixbufs as GList ptr)
-declare sub gdk_window_set_icon_name(byval window as GdkWindow ptr, byval name as const zstring ptr)
+declare sub gdk_window_set_icon_name(byval window as GdkWindow ptr, byval name as const gchar ptr)
 declare sub gdk_window_set_group(byval window as GdkWindow ptr, byval leader as GdkWindow ptr)
 declare function gdk_window_get_group(byval window as GdkWindow ptr) as GdkWindow ptr
 declare sub gdk_window_set_decorations(byval window as GdkWindow ptr, byval decorations as GdkWMDecoration)
@@ -4241,6 +4280,7 @@ declare sub gdk_window_set_event_compression(byval window as GdkWindow ptr, byva
 declare function gdk_window_get_event_compression(byval window as GdkWindow ptr) as gboolean
 declare sub gdk_window_set_shadow_width(byval window as GdkWindow ptr, byval left as gint, byval right as gint, byval top as gint, byval bottom as gint)
 declare function gdk_window_show_window_menu(byval window as GdkWindow ptr, byval event as GdkEvent ptr) as gboolean
+declare function gdk_window_create_gl_context(byval window as GdkWindow ptr, byval error as GError ptr ptr) as GdkGLContext ptr
 declare sub gdk_test_render_sync(byval window as GdkWindow ptr)
 declare function gdk_test_simulate_key(byval window as GdkWindow ptr, byval x as gint, byval y as gint, byval keyval as guint, byval modifiers as GdkModifierType, byval key_pressrelease as GdkEventType) as gboolean
 declare function gdk_test_simulate_button(byval window as GdkWindow ptr, byval x as gint, byval y as gint, byval button as guint, byval modifiers as GdkModifierType, byval button_pressrelease as GdkEventType) as gboolean
@@ -4291,6 +4331,134 @@ declare function gdk_visual_get_bits_per_rgb(byval visual as GdkVisual ptr) as g
 declare sub gdk_visual_get_red_pixel_details(byval visual as GdkVisual ptr, byval mask as guint32 ptr, byval shift as gint ptr, byval precision as gint ptr)
 declare sub gdk_visual_get_green_pixel_details(byval visual as GdkVisual ptr, byval mask as guint32 ptr, byval shift as gint ptr, byval precision as gint ptr)
 declare sub gdk_visual_get_blue_pixel_details(byval visual as GdkVisual ptr, byval mask as guint32 ptr, byval shift as gint ptr, byval precision as gint ptr)
+type GdkAppLaunchContext_autoptr as GdkAppLaunchContext ptr
+
+private sub glib_autoptr_cleanup_GdkAppLaunchContext(byval _ptr as GdkAppLaunchContext ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkCursor_autoptr as GdkCursor ptr
+
+private sub glib_autoptr_cleanup_GdkCursor(byval _ptr as GdkCursor ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkDevice_autoptr as GdkDevice ptr
+
+private sub glib_autoptr_cleanup_GdkDevice(byval _ptr as GdkDevice ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkDeviceManager_autoptr as GdkDeviceManager ptr
+
+private sub glib_autoptr_cleanup_GdkDeviceManager(byval _ptr as GdkDeviceManager ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkDisplay_autoptr as GdkDisplay ptr
+
+private sub glib_autoptr_cleanup_GdkDisplay(byval _ptr as GdkDisplay ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkDisplayManager_autoptr as GdkDisplayManager ptr
+
+private sub glib_autoptr_cleanup_GdkDisplayManager(byval _ptr as GdkDisplayManager ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkDragContext_autoptr as GdkDragContext ptr
+
+private sub glib_autoptr_cleanup_GdkDragContext(byval _ptr as GdkDragContext ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkFrameClock_autoptr as GdkFrameClock ptr
+
+private sub glib_autoptr_cleanup_GdkFrameClock(byval _ptr as GdkFrameClock ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkGLContext_autoptr as GdkGLContext ptr
+
+private sub glib_autoptr_cleanup_GdkGLContext(byval _ptr as GdkGLContext ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkKeymap_autoptr as GdkKeymap ptr
+
+private sub glib_autoptr_cleanup_GdkKeymap(byval _ptr as GdkKeymap ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkScreen_autoptr as GdkScreen ptr
+
+private sub glib_autoptr_cleanup_GdkScreen(byval _ptr as GdkScreen ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkVisual_autoptr as GdkVisual ptr
+
+private sub glib_autoptr_cleanup_GdkVisual(byval _ptr as GdkVisual ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkWindow_autoptr as GdkWindow ptr
+
+private sub glib_autoptr_cleanup_GdkWindow(byval _ptr as GdkWindow ptr ptr)
+	if *_ptr then
+		g_object_unref(*_ptr)
+	end if
+end sub
+
+type GdkEvent_autoptr as GdkEvent ptr
+
+private sub glib_autoptr_cleanup_GdkEvent(byval _ptr as GdkEvent ptr ptr)
+	if *_ptr then
+		gdk_event_free(*_ptr)
+	end if
+end sub
+
+type GdkFrameTimings_autoptr as GdkFrameTimings ptr
+
+private sub glib_autoptr_cleanup_GdkFrameTimings(byval _ptr as GdkFrameTimings ptr ptr)
+	if *_ptr then
+		gdk_frame_timings_unref(*_ptr)
+	end if
+end sub
+
+type GdkRGBA_autoptr as GdkRGBA ptr
+
+private sub glib_autoptr_cleanup_GdkRGBA(byval _ptr as GdkRGBA ptr ptr)
+	if *_ptr then
+		gdk_rgba_free(*_ptr)
+	end if
+end sub
+
 #undef __GDK_H_INSIDE__
 
 end extern

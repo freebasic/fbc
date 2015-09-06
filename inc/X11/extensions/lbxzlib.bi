@@ -35,7 +35,7 @@ const ZLIB_STRCOMP_OPT_LEN = 7
 const ZLIB_PACKET_HDRLEN = 2
 const ZLIB_MAX_DATALEN = &hfff
 const ZLIB_MAX_PLAIN = 270
-#define ZLIB_MAX_OUTLEN (ZLIB_MAX_PLAIN shl 1)
+const ZLIB_MAX_OUTLEN = ZLIB_MAX_PLAIN shl 1
 const ZLIB_COMPRESS_FLAG = &h80
 const ZLIB_DATALEN_MASK = &h0f
 #macro ZLIB_PUT_PKTHDR(p, len, compflag)

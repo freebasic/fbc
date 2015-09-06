@@ -292,7 +292,7 @@ const FOF_NORECURSION = &h1000
 const FOF_NO_CONNECTED_ELEMENTS = &h2000
 const FOF_WANTNUKEWARNING = &h4000
 const FOF_NORECURSEREPARSE = &h8000
-#define FOF_NO_UI (((FOF_SILENT or FOF_NOCONFIRMATION) or FOF_NOERRORUI) or FOF_NOCONFIRMMKDIR)
+const FOF_NO_UI = ((FOF_SILENT or FOF_NOCONFIRMATION) or FOF_NOERRORUI) or FOF_NOCONFIRMMKDIR
 type FILEOP_FLAGS as WORD
 const PO_DELETE = &h0013
 const PO_RENAME = &h0014
@@ -849,17 +849,17 @@ type PNOTIFYICONDATAW as _NOTIFYICONDATAW ptr
 	#define NOTIFYICONDATA_V3_SIZE NOTIFYICONDATAA_V3_SIZE
 #endif
 
-#define NIN_SELECT (WM_USER + 0)
+const NIN_SELECT = WM_USER + 0
 const NINF_KEY = &h1
-#define NIN_KEYSELECT (NIN_SELECT or NINF_KEY)
-#define NIN_BALLOONSHOW (WM_USER + 2)
-#define NIN_BALLOONHIDE (WM_USER + 3)
-#define NIN_BALLOONTIMEOUT (WM_USER + 4)
-#define NIN_BALLOONUSERCLICK (WM_USER + 5)
+const NIN_KEYSELECT = NIN_SELECT or NINF_KEY
+const NIN_BALLOONSHOW = WM_USER + 2
+const NIN_BALLOONHIDE = WM_USER + 3
+const NIN_BALLOONTIMEOUT = WM_USER + 4
+const NIN_BALLOONUSERCLICK = WM_USER + 5
 
 #if _WIN32_WINNT = &h0602
-	#define NIN_POPUPOPEN (WM_USER + 6)
-	#define NIN_POPUPCLOSE (WM_USER + 7)
+	const NIN_POPUPOPEN = WM_USER + 6
+	const NIN_POPUPCLOSE = WM_USER + 7
 #endif
 
 const NIM_ADD = &h00000000
@@ -1138,7 +1138,7 @@ declare function SHGetFileInfoW(byval pszPath as LPCWSTR, byval dwFileAttributes
 		SIID_MAX_ICONS = 175
 	end enum
 
-	#define SIID_INVALID cast(SHSTOCKICONID, -1)
+	const SIID_INVALID = cast(SHSTOCKICONID, -1)
 	declare function SHGetStockIconInfo(byval siid as SHSTOCKICONID, byval uFlags as UINT, byval psii as SHSTOCKICONINFO ptr) as HRESULT
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	declare function SHGetFileInfo alias "SHGetFileInfoA"(byval pszPath as LPCSTR, byval dwFileAttributes as DWORD, byval psfi as SHFILEINFOA ptr, byval cbFileInfo as UINT, byval uFlags as UINT) as DWORD_PTR
@@ -1322,7 +1322,7 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 #if _WIN32_WINNT = &h0602
 	#define WC_NETADDRESS wstr("msctls_netaddress")
 	declare function InitNetworkAddressControl() as WINBOOL
-	#define NCM_GETADDRESS (WM_USER + 1)
+	const NCM_GETADDRESS = WM_USER + 1
 	#define NetAddr_GetAddress(hwnd, pv) cast(HRESULT, SNDMSG(hwnd, NCM_GETADDRESS, 0, cast(LPARAM, pv)))
 	type NET_ADDRESS_INFO_ as NET_ADDRESS_INFO__
 
@@ -1334,11 +1334,11 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 
 	type NC_ADDRESS as tagNC_ADDRESS
 	type PNC_ADDRESS as tagNC_ADDRESS ptr
-	#define NCM_SETALLOWTYPE (WM_USER + 2)
+	const NCM_SETALLOWTYPE = WM_USER + 2
 	#define NetAddr_SetAllowType(hwnd, addrMask) cast(HRESULT, SNDMSG(hwnd, NCM_SETALLOWTYPE, cast(WPARAM, addrMask), 0))
-	#define NCM_GETALLOWTYPE (WM_USER + 3)
+	const NCM_GETALLOWTYPE = WM_USER + 3
 	#define NetAddr_GetAllowType(hwnd) cast(DWORD, SNDMSG(hwnd, NCM_GETALLOWTYPE, 0, 0))
-	#define NCM_DISPLAYERRORTIP (WM_USER + 4)
+	const NCM_DISPLAYERRORTIP = WM_USER + 4
 	#define NetAddr_DisplayErrorTip(hwnd) cast(HRESULT, SNDMSG(hwnd, NCM_DISPLAYERRORTIP, 0, 0))
 	declare function SHGetDriveMedia(byval pszDrive as PCWSTR, byval pdwMediaContent as DWORD ptr) as HRESULT
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0400)

@@ -67,7 +67,7 @@ const X_XFixesHideCursor = 29
 const X_XFixesShowCursor = 30
 const X_XFixesCreatePointerBarrier = 31
 const X_XFixesDestroyPointerBarrier = 32
-#define XFixesNumberRequests (X_XFixesDestroyPointerBarrier + 1)
+const XFixesNumberRequests = X_XFixesDestroyPointerBarrier + 1
 const XFixesSelectionNotify = 0
 const XFixesSetSelectionOwnerNotify = 0
 const XFixesSelectionWindowDestroyNotify = 1
@@ -81,7 +81,7 @@ const XFixesDisplayCursorNotifyMask = cast(clong, 1) shl 0
 const XFixesNumberEvents = 2
 const BadRegion = 0
 const BadBarrier = 1
-#define XFixesNumberErrors (BadBarrier + 1)
+const XFixesNumberErrors = BadBarrier + 1
 const SaveSetNearest = 0
 const SaveSetRoot = 1
 const SaveSetMap = 0

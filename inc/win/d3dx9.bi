@@ -38,11 +38,11 @@
 #include once "d3dx9tex.bi"
 
 #define __D3DX9_H__
-#define D3DX_DEFAULT cast(UINT, -1)
-#define D3DX_DEFAULT_NONPOW2 cast(UINT, -2)
+const D3DX_DEFAULT = cast(UINT, -1)
+const D3DX_DEFAULT_NONPOW2 = cast(UINT, -2)
 #define D3DX_DEFAULT_FLOAT FLT_MAX
-#define D3DX_FROM_FILE cast(UINT, -3)
-#define D3DFMT_FROM_FILE cast(D3DFORMAT, -3)
+const D3DX_FROM_FILE = cast(UINT, -3)
+const D3DFMT_FROM_FILE = cast(D3DFORMAT, -3)
 const _FACDD = &h876
 #define MAKE_DDHRESULT(code) MAKE_HRESULT(1, _FACDD, code)
 

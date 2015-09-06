@@ -49,4 +49,4 @@ const DBE_MAJOR_VERSION = 1
 const DBE_MINOR_VERSION = 0
 const DbeNumberEvents = 0
 const DbeBadBuffer = 0
-#define DbeNumberErrors (DbeBadBuffer + 1)
+const DbeNumberErrors = DbeBadBuffer + 1

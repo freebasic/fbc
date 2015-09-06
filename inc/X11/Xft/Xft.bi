@@ -40,8 +40,8 @@ extern "C"
 const XFT_MAJOR = 2
 const XFT_MINOR = 3
 const XFT_REVISION = 2
-#define XFT_VERSION (((XFT_MAJOR * 10000) + (XFT_MINOR * 100)) + XFT_REVISION)
-#define XftVersion XFT_VERSION
+const XFT_VERSION = ((XFT_MAJOR * 10000) + (XFT_MINOR * 100)) + XFT_REVISION
+const XftVersion = XFT_VERSION
 #define XFT_CORE "core"
 #define XFT_RENDER "render"
 #define XFT_XLFD "xlfd"

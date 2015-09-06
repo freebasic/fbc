@@ -44,7 +44,7 @@ type FcBool as long
 const FC_MAJOR = 2
 const FC_MINOR = 11
 const FC_REVISION = 1
-#define FC_VERSION (((FC_MAJOR * 10000) + (FC_MINOR * 100)) + FC_REVISION)
+const FC_VERSION = ((FC_MAJOR * 10000) + (FC_MINOR * 100)) + FC_REVISION
 #define FC_CACHE_VERSION "4"
 const FcTrue = 1
 const FcFalse = 0
@@ -342,7 +342,7 @@ declare function FcCharSetIntersectCount(byval a as const FcCharSet ptr, byval b
 declare function FcCharSetSubtractCount(byval a as const FcCharSet ptr, byval b as const FcCharSet ptr) as FcChar32
 declare function FcCharSetIsSubset(byval a as const FcCharSet ptr, byval b as const FcCharSet ptr) as FcBool
 const FC_CHARSET_MAP_SIZE = 256 / 32
-#define FC_CHARSET_DONE cast(FcChar32, -1)
+const FC_CHARSET_DONE = cast(FcChar32, -1)
 declare function FcCharSetFirstPage(byval a as const FcCharSet ptr, byval map as FcChar32 ptr, byval next as FcChar32 ptr) as FcChar32
 declare function FcCharSetNextPage(byval a as const FcCharSet ptr, byval map as FcChar32 ptr, byval next as FcChar32 ptr) as FcChar32
 declare function FcCharSetCoverage(byval a as const FcCharSet ptr, byval page as FcChar32, byval result as FcChar32 ptr) as FcChar32

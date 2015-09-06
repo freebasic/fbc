@@ -74,17 +74,17 @@ type XrmResourceList as XrmResource ptr
 type XtVersionType as culong
 const XT_VERSION = 11
 const XT_REVISION = 6
-#define XtVersion ((XT_VERSION * 1000) + XT_REVISION)
+const XtVersion = (XT_VERSION * 1000) + XT_REVISION
 const XtVersionDontCheck = 0
 
 type XtProc as sub()
 type XtWidgetClassProc as sub(byval as WidgetClass)
 type XtWidgetProc as sub(byval as Widget)
-type XtAcceptFocusProc as function(byval as Widget, byval as Time ptr) as byte
+type XtAcceptFocusProc as function(byval as Widget, byval as Time ptr) as XBoolean
 type XtArgsProc as sub(byval as Widget, byval as ArgList, byval as Cardinal ptr)
 type XtInitProc as sub(byval as Widget, byval as Widget, byval as ArgList, byval as Cardinal ptr)
-type XtSetValuesFunc as function(byval as Widget, byval as Widget, byval as Widget, byval as ArgList, byval as Cardinal ptr) as byte
-type XtArgsFunc as function(byval as Widget, byval as ArgList, byval as Cardinal ptr) as byte
+type XtSetValuesFunc as function(byval as Widget, byval as Widget, byval as Widget, byval as ArgList, byval as Cardinal ptr) as XBoolean
+type XtArgsFunc as function(byval as Widget, byval as ArgList, byval as Cardinal ptr) as XBoolean
 type XtAlmostProc as sub(byval as Widget, byval as Widget, byval as XtWidgetGeometry ptr, byval as XtWidgetGeometry ptr)
 type XtExposeProc as sub(byval as Widget, byval as XEvent ptr, byval as Region)
 
@@ -154,7 +154,7 @@ type XtTM as _XtTMRec ptr
 
 declare function _XtWindowedAncestor(byval as Widget) as Widget
 declare sub _XtInherit()
-declare sub _XtHandleFocus(byval as Widget, byval as XtPointer, byval as XEvent ptr, byval as zstring ptr)
+declare sub _XtHandleFocus(byval as Widget, byval as XtPointer, byval as XEvent ptr, byval as XBoolean ptr)
 declare sub XtCreateWindow(byval as Widget, byval as ulong, byval as Visual ptr, byval as XtValueMask, byval as XSetWindowAttributes ptr)
 declare sub XtResizeWidget(byval as Widget, byval as Dimension, byval as Dimension, byval as Dimension)
 declare sub XtMoveWidget(byval as Widget, byval as Position, byval as Position)

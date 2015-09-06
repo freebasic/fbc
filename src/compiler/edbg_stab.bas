@@ -50,10 +50,11 @@ declare function hGetDataType _
 	dim shared ctx as EDBGCTX
 
 	'' same order as FB_DATATYPE
+	'' Mapping dtype => stabs type tag (t*) as declared in the strings in the stabsTb()
 	dim shared remapTB(0 to FB_DATATYPES-1) as integer = _
 	{ _
 		 7, _									'' void
-		15, _                                   '' boolean
+		16, _                                   '' boolean
 		 2, _                                   '' byte
 		 3, _                                   '' ubyte
 		 4, _                                   '' char
@@ -73,7 +74,7 @@ declare function hGetDataType _
 		14 _                                    '' fix-len string
 	}
 
-	dim shared stabsTb(0 to 16) as const zstring ptr = _
+	dim shared stabsTb(0 to ...) as const zstring ptr = _
 	{ _
 		@"integer:t1=-1", _
 		@"void:t7=-11", _
@@ -89,7 +90,7 @@ declare function hGetDataType _
 		@"double:t12=-13", _
 		@"string:t13=s12data:15,0,32;len:1,32,32;size:1,64,32;;", _
 		@"fixstr:t14=-2", _
-		@"pchar:t15=*4;", _
+		@"pchar:t15=*4;", _  '' used for the data ptr in the string:t13 declaration only
 		@"boolean:t16=@s8;-16" _
 	}
 

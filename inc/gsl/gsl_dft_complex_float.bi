@@ -1,24 +1,40 @@
+'' FreeBASIC binding for gsl-1.16
 ''
+'' based on the C header files:
+''   fft/gsl_dft_complex_float.h
 ''
-'' gsl_dft_complex_float -- header translated with help of SWIG FB wrapper
+''   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2007 Brian Gough
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+''   This program is free software; you can redistribute it and/or modify
+''   it under the terms of the GNU General Public License as published by
+''   the Free Software Foundation; either version 3 of the License, or (at
+''   your option) any later version.
 ''
+''   This program is distributed in the hope that it will be useful, but
+''   WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   General Public License for more details.
 ''
-#ifndef __gsl_dft_complex_float_bi__
-#define __gsl_dft_complex_float_bi__
+''   You should have received a copy of the GNU General Public License
+''   along with this program; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-#include once "gsl_math.bi"
-#include once "gsl_complex.bi"
-#include once "gsl_fft.bi"
-#include once "gsl_types.bi"
+#pragma once
 
-extern "c"
-declare function gsl_dft_complex_float_forward (byval data as single ptr, byval stride as integer, byval n as integer, byval result as single ptr) as integer
-declare function gsl_dft_complex_float_backward (byval data as single ptr, byval stride as integer, byval n as integer, byval result as single ptr) as integer
-declare function gsl_dft_complex_float_inverse (byval data as single ptr, byval stride as integer, byval n as integer, byval result as single ptr) as integer
-declare function gsl_dft_complex_float_transform (byval data as single ptr, byval stride as integer, byval n as integer, byval result as single ptr, byval sign as gsl_fft_direction) as integer
+#include once "crt/stddef.bi"
+#include once "gsl/gsl_math.bi"
+#include once "gsl/gsl_complex.bi"
+#include once "gsl/gsl_fft.bi"
+
+extern "C"
+
+#define __GSL_DFT_COMPLEX_FLOAT_H__
+declare function gsl_dft_complex_float_forward(byval data as const single ptr, byval stride as const uinteger, byval n as const uinteger, byval result as single ptr) as long
+declare function gsl_dft_complex_float_backward(byval data as const single ptr, byval stride as const uinteger, byval n as const uinteger, byval result as single ptr) as long
+declare function gsl_dft_complex_float_inverse(byval data as const single ptr, byval stride as const uinteger, byval n as const uinteger, byval result as single ptr) as long
+declare function gsl_dft_complex_float_transform(byval data as const single ptr, byval stride as const uinteger, byval n as const uinteger, byval result as single ptr, byval sign as const gsl_fft_direction) as long
+
 end extern
-
-#endif

@@ -1,22 +1,38 @@
+'' FreeBASIC binding for gsl-1.16
 ''
+'' based on the C header files:
+''   permutation/gsl_permute_vector_complex_long_double.h
 ''
-'' gsl_permute_vector_complex_long_double -- header translated with help of SWIG FB wrapper
+''   Copyright (C) 1996, 1997, 1998, 1999, 2000, 2007 Brian Gough
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+''   This program is free software; you can redistribute it and/or modify
+''   it under the terms of the GNU General Public License as published by
+''   the Free Software Foundation; either version 3 of the License, or (at
+''   your option) any later version.
 ''
+''   This program is distributed in the hope that it will be useful, but
+''   WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+''   General Public License for more details.
 ''
-#ifndef __gsl_permute_vector_complex_long_double_bi__
-#define __gsl_permute_vector_complex_long_double_bi__
+''   You should have received a copy of the GNU General Public License
+''   along with this program; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-#include once "gsl_errno.bi"
-#include once "gsl_permutation.bi"
-#include once "gsl_vector_complex_long_double.bi"
-#include once "gsl_types.bi"
+#pragma once
 
-extern "c"
-declare function gsl_permute_vector_complex_long_double (byval p as gsl_permutation ptr, byval v as gsl_vector_complex_long_double ptr) as integer
-declare function gsl_permute_vector_complex_long_double_inverse (byval p as gsl_permutation ptr, byval v as gsl_vector_complex_long_double ptr) as integer
+#include once "crt/stdlib.bi"
+#include once "gsl/gsl_errno.bi"
+#include once "gsl/gsl_permutation.bi"
+#include once "gsl/gsl_vector_complex_long_double.bi"
+
+extern "C"
+
+#define __GSL_PERMUTE_VECTOR_COMPLEX_LONG_DOUBLE_H__
+declare function gsl_permute_vector_complex_long_double(byval p as const gsl_permutation ptr, byval v as gsl_vector_complex_long_double ptr) as long
+declare function gsl_permute_vector_complex_long_double_inverse(byval p as const gsl_permutation ptr, byval v as gsl_vector_complex_long_double ptr) as long
+
 end extern
-
-#endif

@@ -96,7 +96,7 @@ declare function CreateStdAccessibleProxyW(byval hwnd as HWND, byval pClassName 
 	declare function CreateStdAccessibleProxy alias "CreateStdAccessibleProxyW"(byval hwnd as HWND, byval pClassName as LPCWSTR, byval idObject as LONG, byval riid as const IID const ptr, byval ppvObject as any ptr ptr) as HRESULT
 #endif
 
-#define MSAA_MENU_SIG __MSABI_LONG(&hAA0DF00D)
+const MSAA_MENU_SIG = &hAA0DF00D
 
 type tagMSAAMENUINFO
 	dwMSAASignature as DWORD

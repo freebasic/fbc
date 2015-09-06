@@ -40,6 +40,7 @@
 
 '' The following symbols have been renamed:
 ''     typedef String => String_
+''     typedef Boolean => XBoolean
 ''     procedure XtIsOverrideShell => XtIsOverrideShell_
 ''     procedure XtIsVendorShell => XtIsVendorShell_
 ''     procedure XtIsTransientShell => XtIsTransientShell_
@@ -77,6 +78,7 @@ const XtCacheAll = &h002
 const XtCacheByDisplay = &h003
 const XtCacheRefCount = &h100
 
+type XBoolean as byte
 type XtArgVal as clong
 type XtEnum as ubyte
 type Cardinal as ulong
@@ -131,7 +133,7 @@ end type
 const XtCWQueryOnly = 1 shl 7
 const XtSMDontChange = 5
 type XtConverter as sub(byval as XrmValue ptr, byval as Cardinal ptr, byval as XrmValue ptr, byval as XrmValue ptr)
-type XtTypeConverter as function(byval as Display ptr, byval as XrmValue ptr, byval as Cardinal ptr, byval as XrmValue ptr, byval as XrmValue ptr, byval as XtPointer ptr) as byte
+type XtTypeConverter as function(byval as Display ptr, byval as XrmValue ptr, byval as Cardinal ptr, byval as XrmValue ptr, byval as XrmValue ptr, byval as XtPointer ptr) as XBoolean
 type XtDestructor as sub(byval as XtAppContext, byval as XrmValue ptr, byval as XtPointer, byval as XrmValue ptr, byval as Cardinal ptr)
 type XtCacheRef as Opaque
 type XtActionHookId as Opaque
@@ -140,7 +142,7 @@ type XtBlockHookId as culong
 type XtBlockHookProc as sub(byval as XtPointer)
 type XtKeyProc as sub(byval as Display ptr, byval as KeyCode, byval as Modifiers, byval as Modifiers ptr, byval as KeySym ptr)
 type XtCaseProc as sub(byval as Display ptr, byval as KeySym, byval as KeySym ptr, byval as KeySym ptr)
-type XtEventHandler as sub(byval as Widget, byval as XtPointer, byval as XEvent ptr, byval as zstring ptr)
+type XtEventHandler as sub(byval as Widget, byval as XtPointer, byval as XEvent ptr, byval as XBoolean ptr)
 type EventMask as culong
 
 type XtListPosition as long
@@ -222,7 +224,7 @@ type XtLanguageProc as function(byval as Display ptr, byval as String_, byval as
 type XtErrorMsgHandler as sub(byval as String_, byval as String_, byval as String_, byval as String_, byval as String_ ptr, byval as Cardinal ptr)
 type XtErrorHandler as sub(byval as String_)
 type XtCreatePopupChildProc as sub(byval as Widget)
-type XtWorkProc as function(byval as XtPointer) as byte
+type XtWorkProc as function(byval as XtPointer) as XBoolean
 
 type SubstitutionRec
 	match as byte
@@ -230,34 +232,34 @@ type SubstitutionRec
 end type
 
 type Substitution as SubstitutionRec ptr
-type XtFilePredicate as function(byval as String_) as byte
+type XtFilePredicate as function(byval as String_) as XBoolean
 type XtRequestId as XtPointer
-type XtConvertSelectionProc as function(byval as Widget, byval as XAtom ptr, byval as XAtom ptr, byval as XAtom ptr, byval as XtPointer ptr, byval as culong ptr, byval as long ptr) as byte
+type XtConvertSelectionProc as function(byval as Widget, byval as XAtom ptr, byval as XAtom ptr, byval as XAtom ptr, byval as XtPointer ptr, byval as culong ptr, byval as long ptr) as XBoolean
 type XtLoseSelectionProc as sub(byval as Widget, byval as XAtom ptr)
 type XtSelectionDoneProc as sub(byval as Widget, byval as XAtom ptr, byval as XAtom ptr)
 type XtSelectionCallbackProc as sub(byval as Widget, byval as XtPointer, byval as XAtom ptr, byval as XAtom ptr, byval as XtPointer, byval as culong ptr, byval as long ptr)
 type XtLoseSelectionIncrProc as sub(byval as Widget, byval as XAtom ptr, byval as XtPointer)
 type XtSelectionDoneIncrProc as sub(byval as Widget, byval as XAtom ptr, byval as XAtom ptr, byval as XtRequestId ptr, byval as XtPointer)
-type XtConvertSelectionIncrProc as function(byval as Widget, byval as XAtom ptr, byval as XAtom ptr, byval as XAtom ptr, byval as XtPointer ptr, byval as culong ptr, byval as long ptr, byval as culong ptr, byval as XtPointer, byval as XtRequestId ptr) as byte
+type XtConvertSelectionIncrProc as function(byval as Widget, byval as XAtom ptr, byval as XAtom ptr, byval as XAtom ptr, byval as XtPointer ptr, byval as culong ptr, byval as long ptr, byval as culong ptr, byval as XtPointer, byval as XtRequestId ptr) as XBoolean
 type XtCancelConvertSelectionProc as sub(byval as Widget, byval as XAtom ptr, byval as XAtom ptr, byval as XtRequestId ptr, byval as XtPointer)
-type XtEventDispatchProc as function(byval as XEvent ptr) as byte
+type XtEventDispatchProc as function(byval as XEvent ptr) as XBoolean
 type XtExtensionSelectProc as sub(byval as Widget, byval as long ptr, byval as XtPointer ptr, byval as long, byval as XtPointer)
 
-declare function XtConvertAndStore(byval as Widget, byval as const zstring ptr, byval as XrmValue ptr, byval as const zstring ptr, byval as XrmValue ptr) as byte
-declare function XtCallConverter(byval as Display ptr, byval as XtTypeConverter, byval as XrmValuePtr, byval as Cardinal, byval as XrmValuePtr, byval as XrmValue ptr, byval as XtCacheRef ptr) as byte
-declare function XtDispatchEvent(byval as XEvent ptr) as byte
-declare function XtCallAcceptFocus(byval as Widget, byval as Time ptr) as byte
-declare function XtPeekEvent(byval as XEvent ptr) as byte
-declare function XtAppPeekEvent(byval as XtAppContext, byval as XEvent ptr) as byte
-declare function XtIsSubclass(byval as Widget, byval as WidgetClass) as byte
-declare function XtIsObject(byval as Widget) as byte
-declare function _XtCheckSubclassFlag(byval as Widget, byval as XtEnum) as byte
-declare function _XtIsSubclassOf(byval as Widget, byval as WidgetClass, byval as WidgetClass, byval as XtEnum) as byte
-declare function XtIsManaged(byval as Widget) as byte
-declare function XtIsRealized(byval as Widget) as byte
-declare function XtIsSensitive(byval as Widget) as byte
-declare function XtOwnSelection(byval as Widget, byval as XAtom, byval as Time, byval as XtConvertSelectionProc, byval as XtLoseSelectionProc, byval as XtSelectionDoneProc) as byte
-declare function XtOwnSelectionIncremental(byval as Widget, byval as XAtom, byval as Time, byval as XtConvertSelectionIncrProc, byval as XtLoseSelectionIncrProc, byval as XtSelectionDoneIncrProc, byval as XtCancelConvertSelectionProc, byval as XtPointer) as byte
+declare function XtConvertAndStore(byval as Widget, byval as const zstring ptr, byval as XrmValue ptr, byval as const zstring ptr, byval as XrmValue ptr) as XBoolean
+declare function XtCallConverter(byval as Display ptr, byval as XtTypeConverter, byval as XrmValuePtr, byval as Cardinal, byval as XrmValuePtr, byval as XrmValue ptr, byval as XtCacheRef ptr) as XBoolean
+declare function XtDispatchEvent(byval as XEvent ptr) as XBoolean
+declare function XtCallAcceptFocus(byval as Widget, byval as Time ptr) as XBoolean
+declare function XtPeekEvent(byval as XEvent ptr) as XBoolean
+declare function XtAppPeekEvent(byval as XtAppContext, byval as XEvent ptr) as XBoolean
+declare function XtIsSubclass(byval as Widget, byval as WidgetClass) as XBoolean
+declare function XtIsObject(byval as Widget) as XBoolean
+declare function _XtCheckSubclassFlag(byval as Widget, byval as XtEnum) as XBoolean
+declare function _XtIsSubclassOf(byval as Widget, byval as WidgetClass, byval as WidgetClass, byval as XtEnum) as XBoolean
+declare function XtIsManaged(byval as Widget) as XBoolean
+declare function XtIsRealized(byval as Widget) as XBoolean
+declare function XtIsSensitive(byval as Widget) as XBoolean
+declare function XtOwnSelection(byval as Widget, byval as XAtom, byval as Time, byval as XtConvertSelectionProc, byval as XtLoseSelectionProc, byval as XtSelectionDoneProc) as XBoolean
+declare function XtOwnSelectionIncremental(byval as Widget, byval as XAtom, byval as Time, byval as XtConvertSelectionIncrProc, byval as XtLoseSelectionIncrProc, byval as XtSelectionDoneIncrProc, byval as XtCancelConvertSelectionProc, byval as XtPointer) as XBoolean
 declare function XtMakeResizeRequest(byval as Widget, byval as Dimension, byval as Dimension, byval as Dimension ptr, byval as Dimension ptr) as XtGeometryResult
 declare sub XtTranslateCoords(byval as Widget, byval as Position, byval as Position, byval as Position ptr, byval as Position ptr)
 declare function XtGetKeysymTable(byval as Display ptr, byval as KeyCode ptr, byval as long ptr) as KeySym ptr
@@ -287,7 +289,7 @@ declare function XtAppAddActionHook(byval as XtAppContext, byval as XtActionHook
 declare sub XtRemoveActionHook(byval as XtActionHookId)
 declare sub XtGetActionList(byval as WidgetClass, byval as XtActionList ptr, byval as Cardinal ptr)
 declare sub XtCallActionProc(byval as Widget, byval as const zstring ptr, byval as XEvent ptr, byval as String_ ptr, byval as Cardinal)
-declare sub XtRegisterGrabAction(byval as XtActionProc, byval as byte, byval as ulong, byval as long, byval as long)
+declare sub XtRegisterGrabAction(byval as XtActionProc, byval as XBoolean, byval as ulong, byval as long, byval as long)
 declare sub XtSetMultiClickTime(byval as Display ptr, byval as long)
 declare function XtGetMultiClickTime(byval as Display ptr) as long
 declare function XtGetActionKeysym(byval as XEvent ptr, byval as Modifiers ptr) as KeySym
@@ -296,20 +298,20 @@ declare sub XtTranslateKey(byval as Display ptr, byval as KeyCode, byval as Modi
 declare sub XtSetKeyTranslator(byval as Display ptr, byval as XtKeyProc)
 declare sub XtRegisterCaseConverter(byval as Display ptr, byval as XtCaseProc, byval as KeySym, byval as KeySym)
 declare sub XtConvertCase(byval as Display ptr, byval as KeySym, byval as KeySym ptr, byval as KeySym ptr)
-#define XtAllEvents cast(EventMask, -cast(clong, 1))
-declare sub XtAddEventHandler(byval as Widget, byval as EventMask, byval as byte, byval as XtEventHandler, byval as XtPointer)
-declare sub XtRemoveEventHandler(byval as Widget, byval as EventMask, byval as byte, byval as XtEventHandler, byval as XtPointer)
-declare sub XtAddRawEventHandler(byval as Widget, byval as EventMask, byval as byte, byval as XtEventHandler, byval as XtPointer)
-declare sub XtRemoveRawEventHandler(byval as Widget, byval as EventMask, byval as byte, byval as XtEventHandler, byval as XtPointer)
-declare sub XtInsertEventHandler(byval as Widget, byval as EventMask, byval as byte, byval as XtEventHandler, byval as XtPointer, byval as XtListPosition)
-declare sub XtInsertRawEventHandler(byval as Widget, byval as EventMask, byval as byte, byval as XtEventHandler, byval as XtPointer, byval as XtListPosition)
+const XtAllEvents = cast(EventMask, -cast(clong, 1))
+declare sub XtAddEventHandler(byval as Widget, byval as EventMask, byval as XBoolean, byval as XtEventHandler, byval as XtPointer)
+declare sub XtRemoveEventHandler(byval as Widget, byval as EventMask, byval as XBoolean, byval as XtEventHandler, byval as XtPointer)
+declare sub XtAddRawEventHandler(byval as Widget, byval as EventMask, byval as XBoolean, byval as XtEventHandler, byval as XtPointer)
+declare sub XtRemoveRawEventHandler(byval as Widget, byval as EventMask, byval as XBoolean, byval as XtEventHandler, byval as XtPointer)
+declare sub XtInsertEventHandler(byval as Widget, byval as EventMask, byval as XBoolean, byval as XtEventHandler, byval as XtPointer, byval as XtListPosition)
+declare sub XtInsertRawEventHandler(byval as Widget, byval as EventMask, byval as XBoolean, byval as XtEventHandler, byval as XtPointer, byval as XtListPosition)
 declare function XtSetEventDispatcher(byval as Display ptr, byval as long, byval as XtEventDispatchProc) as XtEventDispatchProc
-declare function XtDispatchEventToWidget(byval as Widget, byval as XEvent ptr) as byte
+declare function XtDispatchEventToWidget(byval as Widget, byval as XEvent ptr) as XBoolean
 declare sub XtInsertEventTypeHandler(byval as Widget, byval as long, byval as XtPointer, byval as XtEventHandler, byval as XtPointer, byval as XtListPosition)
 declare sub XtRemoveEventTypeHandler(byval as Widget, byval as long, byval as XtPointer, byval as XtEventHandler, byval as XtPointer)
 declare function XtBuildEventMask(byval as Widget) as EventMask
 declare sub XtRegisterExtensionSelector(byval as Display ptr, byval as long, byval as long, byval as XtExtensionSelectProc, byval as XtPointer)
-declare sub XtAddGrab(byval as Widget, byval as byte, byval as byte)
+declare sub XtAddGrab(byval as Widget, byval as XBoolean, byval as XBoolean)
 declare sub XtRemoveGrab(byval as Widget)
 declare sub XtProcessEvent(byval as XtInputMask)
 declare sub XtAppProcessEvent(byval as XtAppContext, byval as XtInputMask)
@@ -337,9 +339,9 @@ const XtIMXEvent = 1
 const XtIMTimer = 2
 const XtIMAlternateInput = 4
 const XtIMSignal = 8
-#define XtIMAll (((XtIMXEvent or XtIMTimer) or XtIMAlternateInput) or XtIMSignal)
+const XtIMAll = ((XtIMXEvent or XtIMTimer) or XtIMAlternateInput) or XtIMSignal
 
-declare function XtPending() as byte
+declare function XtPending() as XBoolean
 declare function XtAppPending(byval as XtAppContext) as XtInputMask
 declare function XtAppAddBlockHook(byval as XtAppContext, byval as XtBlockHookProc, byval as XtPointer) as XtBlockHookId
 declare sub XtRemoveBlockHook(byval as XtBlockHookId)
@@ -350,28 +352,28 @@ declare sub XtRemoveBlockHook(byval as XtBlockHookId)
 #define XtIsConstraint(widget) _XtCheckSubclassFlag(widget, cast(XtEnum, &h10))
 #define XtIsShell(widget) _XtCheckSubclassFlag(widget, cast(XtEnum, &h20))
 #undef XtIsOverrideShell
-declare function XtIsOverrideShell_ alias "XtIsOverrideShell"(byval as Widget) as byte
+declare function XtIsOverrideShell_ alias "XtIsOverrideShell"(byval as Widget) as XBoolean
 #define XtIsOverrideShell(widget) _XtIsSubclassOf(widget, cast(WidgetClass, overrideShellWidgetClass), cast(WidgetClass, shellWidgetClass), cast(XtEnum, &h20))
 #define XtIsWMShell(widget) _XtCheckSubclassFlag(widget, cast(XtEnum, &h40))
 #undef XtIsVendorShell
-declare function XtIsVendorShell_ alias "XtIsVendorShell"(byval as Widget) as byte
+declare function XtIsVendorShell_ alias "XtIsVendorShell"(byval as Widget) as XBoolean
 #define XtIsVendorShell(widget) _XtIsSubclassOf(widget, cast(WidgetClass, vendorShellWidgetClass), cast(WidgetClass, wmShellWidgetClass), cast(XtEnum, &h40))
 #undef XtIsTransientShell
-declare function XtIsTransientShell_ alias "XtIsTransientShell"(byval as Widget) as byte
+declare function XtIsTransientShell_ alias "XtIsTransientShell"(byval as Widget) as XBoolean
 #define XtIsTransientShell(widget) _XtIsSubclassOf(widget, cast(WidgetClass, transientShellWidgetClass), cast(WidgetClass, wmShellWidgetClass), cast(XtEnum, &h40))
 #define XtIsTopLevelShell(widget) _XtCheckSubclassFlag(widget, cast(XtEnum, &h80))
 #undef XtIsApplicationShell
-declare function XtIsApplicationShell_ alias "XtIsApplicationShell"(byval as Widget) as byte
+declare function XtIsApplicationShell_ alias "XtIsApplicationShell"(byval as Widget) as XBoolean
 #define XtIsApplicationShell(widget) _XtIsSubclassOf(widget, cast(WidgetClass, applicationShellWidgetClass), cast(WidgetClass, topLevelShellWidgetClass), cast(XtEnum, &h80))
 #undef XtIsSessionShell
-declare function XtIsSessionShell_ alias "XtIsSessionShell"(byval as Widget) as byte
+declare function XtIsSessionShell_ alias "XtIsSessionShell"(byval as Widget) as XBoolean
 #define XtIsSessionShell(widget) _XtIsSubclassOf(widget, cast(WidgetClass, sessionShellWidgetClass), cast(WidgetClass, topLevelShellWidgetClass), cast(XtEnum, &h80))
 
 declare sub XtRealizeWidget(byval as Widget)
 declare sub XtUnrealizeWidget(byval as Widget)
 declare sub XtDestroyWidget(byval as Widget)
-declare sub XtSetSensitive(byval as Widget, byval as byte)
-declare sub XtSetMappedWhenManaged(byval as Widget, byval as byte)
+declare sub XtSetSensitive(byval as Widget, byval as XBoolean)
+declare sub XtSetMappedWhenManaged(byval as Widget, byval as XBoolean)
 declare function XtNameToWidget(byval as Widget, byval as const zstring ptr) as Widget
 declare function XtWindowToWidget(byval as Display ptr, byval as Window) as Widget
 declare function XtGetClassExtension(byval as WidgetClass, byval as Cardinal, byval as XrmQuark, byval as clong, byval as Cardinal) as XtPointer
@@ -461,10 +463,10 @@ declare sub XtVaGetSubvalues(byval as XtPointer, byval as XtResourceList, byval 
 declare sub XtGetResourceList(byval as WidgetClass, byval as XtResourceList ptr, byval as Cardinal ptr)
 declare sub XtGetConstraintResourceList(byval as WidgetClass, byval as XtResourceList ptr, byval as Cardinal ptr)
 
-#define XtUnspecifiedPixmap cast(Pixmap, 2)
+const XtUnspecifiedPixmap = cast(Pixmap, 2)
 const XtUnspecifiedShellInt = -1
-#define XtUnspecifiedWindow cast(Window, 2)
-#define XtUnspecifiedWindowGroup cast(Window, 3)
+const XtUnspecifiedWindow = cast(Window, 2)
+const XtUnspecifiedWindowGroup = cast(Window, 3)
 #define XtCurrentDirectory "XtCurrentDirectory"
 #define XtDefaultForeground "XtDefaultForeground"
 #define XtDefaultBackground "XtDefaultBackground"
@@ -476,14 +478,14 @@ const XtUnspecifiedShellInt = -1
 type _XtCheckpointTokenRec
 	save_type as long
 	interact_style as long
-	shutdown as byte
-	fast as byte
-	cancel_shutdown as byte
+	shutdown as XBoolean
+	fast as XBoolean
+	cancel_shutdown as XBoolean
 	phase as long
 	interact_dialog_type as long
-	request_cancel as byte
-	request_next_phase as byte
-	save_success as byte
+	request_cancel as XBoolean
+	request_next_phase as XBoolean
+	save_success as XBoolean
 	as long type
 	widget as Widget
 end type
@@ -534,7 +536,7 @@ declare sub XtCallbackReleaseCacheRefList(byval as Widget, byval as XtPointer, b
 declare sub XtSetWMColormapWindows(byval as Widget, byval as Widget ptr, byval as Cardinal)
 declare function XtFindFile(byval as const zstring ptr, byval as Substitution, byval as Cardinal, byval as XtFilePredicate) as String_
 declare function XtResolvePathname(byval as Display ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as Substitution, byval as Cardinal, byval as XtFilePredicate) as String_
-#define XT_CONVERT_FAIL cast(XAtom, &h80000001)
+const XT_CONVERT_FAIL = cast(XAtom, &h80000001)
 declare sub XtDisownSelection(byval as Widget, byval as XAtom, byval as Time)
 declare sub XtGetSelectionValue(byval as Widget, byval as XAtom, byval as XAtom, byval as XtSelectionCallbackProc, byval as XtPointer, byval as Time)
 declare sub XtGetSelectionValues(byval as Widget, byval as XAtom, byval as XAtom ptr, byval as long, byval as XtSelectionCallbackProc, byval as XtPointer ptr, byval as Time)
@@ -552,13 +554,13 @@ declare sub XtSendSelectionRequest(byval as Widget, byval as XAtom, byval as Tim
 declare sub XtCancelSelectionRequest(byval as Widget, byval as XAtom)
 declare function XtReservePropertyAtom(byval as Widget) as XAtom
 declare sub XtReleasePropertyAtom(byval as Widget, byval as XAtom)
-declare sub XtGrabKey(byval as Widget, byval as KeyCode, byval as Modifiers, byval as byte, byval as long, byval as long)
+declare sub XtGrabKey(byval as Widget, byval as KeyCode, byval as Modifiers, byval as XBoolean, byval as long, byval as long)
 declare sub XtUngrabKey(byval as Widget, byval as KeyCode, byval as Modifiers)
-declare function XtGrabKeyboard(byval as Widget, byval as byte, byval as long, byval as long, byval as Time) as long
+declare function XtGrabKeyboard(byval as Widget, byval as XBoolean, byval as long, byval as long, byval as Time) as long
 declare sub XtUngrabKeyboard(byval as Widget, byval as Time)
-declare sub XtGrabButton(byval as Widget, byval as long, byval as Modifiers, byval as byte, byval as ulong, byval as long, byval as long, byval as Window, byval as Cursor)
+declare sub XtGrabButton(byval as Widget, byval as long, byval as Modifiers, byval as XBoolean, byval as ulong, byval as long, byval as long, byval as Window, byval as Cursor)
 declare sub XtUngrabButton(byval as Widget, byval as ulong, byval as Modifiers)
-declare function XtGrabPointer(byval as Widget, byval as byte, byval as ulong, byval as long, byval as long, byval as Window, byval as Cursor, byval as Time) as long
+declare function XtGrabPointer(byval as Widget, byval as XBoolean, byval as ulong, byval as long, byval as long, byval as Window, byval as Cursor, byval as Time) as long
 declare sub XtUngrabPointer(byval as Widget, byval as Time)
 declare sub XtGetApplicationNameAndClass(byval as Display ptr, byval as String_ ptr, byval as String_ ptr)
 declare sub XtRegisterDrawable(byval as Display ptr, byval as Drawable, byval as Widget)
@@ -618,48 +620,48 @@ end type
 
 type XtDestroyHookData as XtDestroyHookDataRec ptr
 declare sub XtGetDisplays(byval as XtAppContext, byval as Display ptr ptr ptr, byval as Cardinal ptr)
-declare function XtToolkitThreadInitialize() as byte
+declare function XtToolkitThreadInitialize() as XBoolean
 declare sub XtAppSetExitFlag(byval as XtAppContext)
-declare function XtAppGetExitFlag(byval as XtAppContext) as byte
+declare function XtAppGetExitFlag(byval as XtAppContext) as XBoolean
 declare sub XtAppLock(byval as XtAppContext)
 declare sub XtAppUnlock(byval as XtAppContext)
-declare function XtCvtStringToAcceleratorTable(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToAtom(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToBool(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToBoolean(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToCommandArgArray(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToCursor(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToDimension(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToDirectoryString(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToDisplay(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToFile(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToFloat(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToFont(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToFontSet(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToFontStruct(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToGravity(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToInitialState(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToInt(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToPixel(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToRestartStyle(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToShort(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToPosition alias "XtCvtStringToShort"(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToTranslationTable(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToUnsignedChar(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtStringToVisual(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtIntToBool(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtIntToBoolean(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtIntToColor(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtIntToFloat(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtIntToFont(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtIntToPixel(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtIntToPixmap(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtIntToShort(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtIntToDimension alias "XtCvtIntToShort"(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtIntToPosition alias "XtCvtIntToShort"(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtIntToUnsignedChar(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtColorToPixel(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
-declare function XtCvtPixelToColor alias "XtCvtIntToColor"(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as byte
+declare function XtCvtStringToAcceleratorTable(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToAtom(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToBool(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToBoolean(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToCommandArgArray(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToCursor(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToDimension(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToDirectoryString(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToDisplay(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToFile(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToFloat(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToFont(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToFontSet(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToFontStruct(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToGravity(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToInitialState(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToInt(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToPixel(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToRestartStyle(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToShort(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToPosition alias "XtCvtStringToShort"(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToTranslationTable(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToUnsignedChar(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtStringToVisual(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtIntToBool(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtIntToBoolean(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtIntToColor(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtIntToFloat(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtIntToFont(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtIntToPixel(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtIntToPixmap(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtIntToShort(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtIntToDimension alias "XtCvtIntToShort"(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtIntToPosition alias "XtCvtIntToShort"(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtIntToUnsignedChar(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtColorToPixel(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
+declare function XtCvtPixelToColor alias "XtCvtIntToColor"(byval as Display ptr, byval as XrmValuePtr, byval as Cardinal ptr, byval as XrmValuePtr, byval as XrmValuePtr, byval as XtPointer ptr) as XBoolean
 
 end extern
 

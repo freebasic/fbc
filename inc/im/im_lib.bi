@@ -1,24 +1,45 @@
+'' FreeBASIC binding for im-3.9.1
 ''
+'' based on the C header files:
+''   Copyright (C) 1994-2014 Tecgraf, PUC-Rio.                                
+''                                                                            
+''   Permission is hereby granted, free of charge, to any person obtaining    
+''   a copy of this software and associated documentation files (the          
+''   "Software"), to deal in the Software without restriction, including      
+''   without limitation the rights to use, copy, modify, merge, publish,      
+''   distribute, sublicense, and/or sell copies of the Software, and to       
+''   permit persons to whom the Software is furnished to do so, subject to    
+''   the following conditions:                                                
+''                                                                            
+''   The above copyright notice and this permission notice shall be           
+''   included in all copies or substantial portions of the Software.          
+''                                                                            
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,          
+''   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF       
+''   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   
+''   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY     
+''   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,     
+''   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE        
+''   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                   
 ''
-'' im_lib -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __im_lib_bi__
-#define __im_lib_bi__
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
+#pragma once
+
+extern "C"
+
+#define __IM_LIB_H
 #define IM_AUTHOR "Antonio Scuri"
-#define IM_COPYRIGHT "Copyright (C) 1994-2012 Tecgraf, PUC-Rio."
-#define IM_VERSION "3.8"
-#define IM_VERSION_NUMBER 308000
-#define IM_VERSION_DATE "2012/05/15"
+#define IM_COPYRIGHT "Copyright (C) 1994-2014 Tecgraf, PUC-Rio."
+#define IM_VERSION "3.9"
+const IM_VERSION_NUMBER = 309000
+#define IM_VERSION_DATE "2014/09/30"
 #define IM_DESCRIPTION "Image Representation, Storage, Capture and Processing"
 #define IM_NAME "IM - An Imaging Toolkit"
 
-declare function imVersion cdecl alias "imVersion" () as zstring ptr
-declare function imVersionDate cdecl alias "imVersionDate" () as zstring ptr
-declare function imVersionNumber cdecl alias "imVersionNumber" () as integer
+declare function imVersion() as const zstring ptr
+declare function imVersionDate() as const zstring ptr
+declare function imVersionNumber() as long
 
-#endif
+end extern

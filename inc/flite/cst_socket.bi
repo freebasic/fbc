@@ -1,16 +1,45 @@
+'' FreeBASIC binding for flite-2.0.0-release
 ''
+'' based on the C header files:
+''                     Language Technologies Institute                      
+''                        Carnegie Mellon University                        
+''                         Copyright (c) 1999-2014                          
+''                           All Rights Reserved.                           
+''                                                                          
+''     Permission is hereby granted, free of charge, to use and distribute  
+''     this software and its documentation without restriction, including   
+''     without limitation the rights to use, copy, modify, merge, publish,  
+''     distribute, sublicense, and/or sell copies of this work, and to      
+''     permit persons to whom this work is furnished to do so, subject to   
+''     the following conditions:                                            
+''      1. The code must retain the above copyright notice, this list of    
+''         conditions and the following disclaimer.                         
+''      2. Any modifications must be clearly marked as such.                
+''      3. Original authors' names are not deleted.                         
+''      4. The authors' names are not used to endorse or promote products   
+''         derived from this software without specific prior written        
+''         permission.                                                      
+''                                                                          
+''     CARNEGIE MELLON UNIVERSITY AND THE CONTRIBUTORS TO THIS WORK         
+''     DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING      
+''     ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT   
+''     SHALL CARNEGIE MELLON UNIVERSITY NOR THE CONTRIBUTORS BE LIABLE      
+''     FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    
+''     WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN   
+''     AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,          
+''     ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF       
+''     THIS SOFTWARE.                                                       
 ''
-'' cst_socket -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __cst_socket_bi__
-#define __cst_socket_bi__
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-declare function cst_socket_open cdecl alias "cst_socket_open" (byval host as zstring ptr, byval port as integer) as integer
-declare function cst_socket_close cdecl alias "cst_socket_close" (byval socket as integer) as integer
-declare function cst_socket_server cdecl alias "cst_socket_server" (byval name as zstring ptr, byval port as integer, byval as function cdecl(byval as process_client) as integer) as integer
+#pragma once
 
-#endif
+extern "C"
+
+#define _CST_SOCKET_H__
+declare function cst_socket_open(byval host as const zstring ptr, byval port as long) as long
+declare function cst_socket_close(byval socket as long) as long
+declare function cst_socket_server(byval name as const zstring ptr, byval port as long, byval process_client as function(byval name as long, byval fd as long) as long) as long
+
+end extern

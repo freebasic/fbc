@@ -91,14 +91,14 @@ end type
 type BlockHookRec as _BlockHookRec
 type BlockHook as _BlockHookRec ptr
 declare sub _XtFreeEventTable(byval as XtEventTable ptr)
-declare function _XtOnGrabList(byval as Widget, byval as XtGrabRec ptr) as byte
+declare function _XtOnGrabList(byval as Widget, byval as XtGrabRec ptr) as XBoolean
 declare sub _XtRemoveAllInputs(byval as XtAppContext)
-declare sub _XtRefreshMapping(byval as XEvent ptr, byval as byte)
+declare sub _XtRefreshMapping(byval as XEvent ptr, byval as XBoolean)
 declare sub _XtSendFocusEvent(byval as Widget, byval as long)
 declare function _XtConvertTypeToMask(byval as long) as EventMask
 declare function _XtFindRemapWidget(byval event as XEvent ptr, byval widget as Widget, byval mask as EventMask, byval pdi as XtPerDisplayInput) as Widget
 declare sub _XtUngrabBadGrabs(byval event as XEvent ptr, byval widget as Widget, byval mask as EventMask, byval pdi as XtPerDisplayInput)
 declare sub _XtFillAncestorList(byval listPtr as Widget ptr ptr, byval maxElemsPtr as long ptr, byval numElemsPtr as long ptr, byval start as Widget, byval breakWidget as Widget)
-extern XtAppPeekEvent_SkipTimer as byte
+extern XtAppPeekEvent_SkipTimer as XBoolean
 
 end extern

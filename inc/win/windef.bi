@@ -50,7 +50,6 @@
 
 #include once "_mingw.bi"
 #include once "winapifamily.bi"
-#include once "basetsd.bi"
 
 '' The following symbols have been renamed:
 ''     constant TRUE => CTRUE
@@ -124,6 +123,12 @@ type HGLOBAL as HANDLE
 type HLOCAL as HANDLE
 type GLOBALHANDLE as HANDLE
 type LOCALHANDLE as HANDLE
+
+end extern
+
+#include once "basetsd.bi"
+
+extern "Windows"
 
 #ifdef __FB_64BIT__
 	type FARPROC as function() as INT_PTR
@@ -327,7 +332,7 @@ end type
 
 type HUMPD as HUMPD__ ptr
 type LPCOLORREF as DWORD ptr
-#define HFILE_ERROR cast(HFILE, -1)
+const HFILE_ERROR = cast(HFILE, -1)
 
 type tagRECT
 	left as LONG

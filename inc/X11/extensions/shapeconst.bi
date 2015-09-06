@@ -48,4 +48,4 @@ const ShapeClip = 1
 const ShapeInput = 2
 const ShapeNotifyMask = cast(clong, 1) shl 0
 const ShapeNotify = 0
-#define ShapeNumberEvents (ShapeNotify + 1)
+const ShapeNumberEvents = ShapeNotify + 1

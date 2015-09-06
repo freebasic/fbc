@@ -14,20 +14,32 @@
 
 extern "c"
 
+#undef strcat
 declare function strcat (byval as zstring ptr, byval as const zstring ptr) as zstring ptr
+#undef strchr
 declare function strchr (byval as const zstring ptr, byval as long) as zstring ptr
+#undef strcmp
 declare function strcmp (byval as const zstring ptr, byval as const zstring ptr) as long
 declare function strcoll (byval as const zstring ptr, byval as const zstring ptr) as long
+#undef strcpy
 declare function strcpy (byval as zstring ptr, byval as const zstring ptr) as zstring ptr
+#undef strcspn
 declare function strcspn (byval as const zstring ptr, byval as const zstring ptr) as size_t
 declare function strerror (byval as long) as zstring ptr
 declare function strlen (byval as const zstring ptr) as size_t
+#undef strncat
 declare function strncat (byval as zstring ptr, byval as const zstring ptr, byval as size_t) as zstring ptr
+#undef strncmp
 declare function strncmp (byval as const zstring ptr, byval as const zstring ptr, byval as size_t) as long
+#undef strncpy
 declare function strncpy (byval as zstring ptr, byval as const zstring ptr, byval as size_t) as zstring ptr
+#undef strpbrk
 declare function strpbrk (byval as const zstring ptr, byval as const zstring ptr) as zstring ptr
+#undef strrchr
 declare function strrchr (byval as const zstring ptr, byval as long) as zstring ptr
+#undef strspn
 declare function strspn (byval as const zstring ptr, byval as const zstring ptr) as size_t
+#undef strstr
 declare function strstr (byval as const zstring ptr, byval as const zstring ptr) as zstring ptr
 declare function strtok (byval as zstring ptr, byval as const zstring ptr) as zstring ptr
 declare function strxfrm (byval as zstring ptr, byval as const zstring ptr, byval as size_t) as size_t

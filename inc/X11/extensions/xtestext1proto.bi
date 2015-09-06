@@ -70,7 +70,7 @@ type xTestFakeInputReq
 	action_list(0 to 63) as CARD8
 end type
 
-#define sz_xTestFakeInputReq (XTestMAX_ACTION_LIST_SIZE + 8)
+const sz_xTestFakeInputReq = XTestMAX_ACTION_LIST_SIZE + 8
 
 type xTestGetInputReq
 	reqType as CARD8

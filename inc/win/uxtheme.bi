@@ -31,7 +31,7 @@ type HTHEME as HANDLE
 
 	const GBF_DIRECT = &h00000001
 	const GBF_COPY = &h00000002
-	#define GBF_VALIDBITS (GBF_DIRECT or GBF_COPY)
+	const GBF_VALIDBITS = GBF_DIRECT or GBF_COPY
 
 	declare function GetThemeBitmap(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval dwFlags as ULONG, byval phBitmap as HBITMAP ptr) as HRESULT
 	declare function GetThemeStream(byval hTheme as HTHEME, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval ppvStream as any ptr ptr, byval pcbStream as DWORD ptr, byval hInst as HINSTANCE) as HRESULT
@@ -122,7 +122,7 @@ type HTHEME as HANDLE
 	const WTNCA_NODRAWICON = &h00000002
 	const WTNCA_NOSYSMENU = &h00000004
 	const WTNCA_NOMIRRORHELP = &h00000008
-	#define WTNCA_VALIDBITS (((WTNCA_NODRAWCAPTION or WTNCA_NODRAWICON) or WTNCA_NOSYSMENU) or WTNCA_NOMIRRORHELP)
+	const WTNCA_VALIDBITS = ((WTNCA_NODRAWCAPTION or WTNCA_NODRAWICON) or WTNCA_NOSYSMENU) or WTNCA_NOMIRRORHELP
 	declare function SetWindowThemeAttribute(byval hwnd as HWND, byval eAttribute as WINDOWTHEMEATTRIBUTETYPE, byval pvAttribute as PVOID, byval cbAttribute as DWORD) as HRESULT
 
 	private function SetWindowThemeNonClientAttributes cdecl(byval hwnd as HWND, byval dwMask as DWORD, byval dwAttributes as DWORD) as HRESULT
@@ -136,7 +136,7 @@ declare function OpenThemeData(byval hwnd as HWND, byval pszClassList as LPCWSTR
 #if _WIN32_WINNT = &h0602
 	const OTD_FORCE_RECT_SIZING = &h00000001
 	const OTD_NONCLIENT = &h00000002
-	#define OTD_VALIDBITS (OTD_FORCE_RECT_SIZING or OTD_NONCLIENT)
+	const OTD_VALIDBITS = OTD_FORCE_RECT_SIZING or OTD_NONCLIENT
 	declare function OpenThemeDataEx(byval hwnd as HWND, byval pszClassList as LPCWSTR, byval dwFlags as DWORD) as HTHEME
 #endif
 
@@ -146,21 +146,21 @@ const DTT_GRAYED = &h1
 declare function DrawThemeText(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pszText as LPCWSTR, byval iCharCount as long, byval dwTextFlags as DWORD, byval dwTextFlags2 as DWORD, byval pRect as const RECT ptr) as HRESULT
 
 #if _WIN32_WINNT = &h0602
-	#define DTT_TEXTCOLOR (__MSABI_LONG(1u) shl 0)
-	#define DTT_BORDERCOLOR (__MSABI_LONG(1u) shl 1)
-	#define DTT_SHADOWCOLOR (__MSABI_LONG(1u) shl 2)
-	#define DTT_SHADOWTYPE (__MSABI_LONG(1u) shl 3)
-	#define DTT_SHADOWOFFSET (__MSABI_LONG(1u) shl 4)
-	#define DTT_BORDERSIZE (__MSABI_LONG(1u) shl 5)
-	#define DTT_FONTPROP (__MSABI_LONG(1u) shl 6)
-	#define DTT_COLORPROP (__MSABI_LONG(1u) shl 7)
-	#define DTT_STATEID (__MSABI_LONG(1u) shl 8)
-	#define DTT_CALCRECT (__MSABI_LONG(1u) shl 9)
-	#define DTT_APPLYOVERLAY (__MSABI_LONG(1u) shl 10)
-	#define DTT_GLOWSIZE (__MSABI_LONG(1u) shl 11)
-	#define DTT_CALLBACK (__MSABI_LONG(1u) shl 12)
-	#define DTT_COMPOSITED (__MSABI_LONG(1u) shl 13)
-	#define DTT_VALIDBITS ((((((((((((DTT_TEXTCOLOR or DTT_BORDERCOLOR) or DTT_SHADOWCOLOR) or DTT_SHADOWTYPE) or DTT_SHADOWOFFSET) or DTT_BORDERSIZE) or DTT_FONTPROP) or DTT_COLORPROP) or DTT_STATEID) or DTT_CALCRECT) or DTT_APPLYOVERLAY) or DTT_GLOWSIZE) or DTT_COMPOSITED)
+	const DTT_TEXTCOLOR = culng(1u shl 0)
+	const DTT_BORDERCOLOR = culng(1u shl 1)
+	const DTT_SHADOWCOLOR = culng(1u shl 2)
+	const DTT_SHADOWTYPE = culng(1u shl 3)
+	const DTT_SHADOWOFFSET = culng(1u shl 4)
+	const DTT_BORDERSIZE = culng(1u shl 5)
+	const DTT_FONTPROP = culng(1u shl 6)
+	const DTT_COLORPROP = culng(1u shl 7)
+	const DTT_STATEID = culng(1u shl 8)
+	const DTT_CALCRECT = culng(1u shl 9)
+	const DTT_APPLYOVERLAY = culng(1u shl 10)
+	const DTT_GLOWSIZE = culng(1u shl 11)
+	const DTT_CALLBACK = culng(1u shl 12)
+	const DTT_COMPOSITED = culng(1u shl 13)
+	const DTT_VALIDBITS = culng(culng(culng(culng(culng(culng(culng(culng(culng(culng(culng(culng(DTT_TEXTCOLOR or DTT_BORDERCOLOR) or DTT_SHADOWCOLOR) or DTT_SHADOWTYPE) or DTT_SHADOWOFFSET) or DTT_BORDERSIZE) or DTT_FONTPROP) or DTT_COLORPROP) or DTT_STATEID) or DTT_CALCRECT) or DTT_APPLYOVERLAY) or DTT_GLOWSIZE) or DTT_COMPOSITED)
 	type DTT_CALLBACK_PROC as function(byval hdc as HDC, byval pszText as LPWSTR, byval cchText as long, byval prc as LPRECT, byval dwFlags as UINT, byval lParam as LPARAM) as long
 
 	type _DTTOPTS
@@ -208,7 +208,7 @@ const HTTB_RESIZINGBORDER_LEFT = &h0010
 const HTTB_RESIZINGBORDER_TOP = &h0020
 const HTTB_RESIZINGBORDER_RIGHT = &h0040
 const HTTB_RESIZINGBORDER_BOTTOM = &h0080
-#define HTTB_RESIZINGBORDER (((HTTB_RESIZINGBORDER_LEFT or HTTB_RESIZINGBORDER_TOP) or HTTB_RESIZINGBORDER_RIGHT) or HTTB_RESIZINGBORDER_BOTTOM)
+const HTTB_RESIZINGBORDER = ((HTTB_RESIZINGBORDER_LEFT or HTTB_RESIZINGBORDER_TOP) or HTTB_RESIZINGBORDER_RIGHT) or HTTB_RESIZINGBORDER_BOTTOM
 const HTTB_SIZINGTEMPLATE = &h0100
 const HTTB_SYSTEMSIZINGMARGINS = &h0200
 
@@ -284,12 +284,12 @@ declare function GetWindowTheme(byval hwnd as HWND) as HTHEME
 const ETDT_DISABLE = &h00000001
 const ETDT_ENABLE = &h00000002
 const ETDT_USETABTEXTURE = &h00000004
-#define ETDT_ENABLETAB (ETDT_ENABLE or ETDT_USETABTEXTURE)
+const ETDT_ENABLETAB = ETDT_ENABLE or ETDT_USETABTEXTURE
 
 #if _WIN32_WINNT = &h0602
 	const ETDT_USEAEROWIZARDTABTEXTURE = &h00000008
-	#define ETDT_ENABLEAEROWIZARDTAB (ETDT_ENABLE or ETDT_USEAEROWIZARDTABTEXTURE)
-	#define ETDT_VALIDBITS (((ETDT_DISABLE or ETDT_ENABLE) or ETDT_USETABTEXTURE) or ETDT_USEAEROWIZARDTABTEXTURE)
+	const ETDT_ENABLEAEROWIZARDTAB = ETDT_ENABLE or ETDT_USEAEROWIZARDTABTEXTURE
+	const ETDT_VALIDBITS = ((ETDT_DISABLE or ETDT_ENABLE) or ETDT_USETABTEXTURE) or ETDT_USEAEROWIZARDTABTEXTURE
 #endif
 
 declare function EnableThemeDialogTexture(byval hwnd as HWND, byval dwFlags as DWORD) as HRESULT
@@ -324,7 +324,7 @@ const DTBG_OMITCONTENT = &h00000008
 const DTBG_COMPUTINGREGION = &h00000010
 const DTBG_MIRRORDC = &h00000020
 const DTBG_NOMIRROR = &h00000040
-#define DTBG_VALIDBITS ((((((DTBG_CLIPRECT or DTBG_DRAWSOLID) or DTBG_OMITBORDER) or DTBG_OMITCONTENT) or DTBG_COMPUTINGREGION) or DTBG_MIRRORDC) or DTBG_NOMIRROR)
+const DTBG_VALIDBITS = (((((DTBG_CLIPRECT or DTBG_DRAWSOLID) or DTBG_OMITBORDER) or DTBG_OMITCONTENT) or DTBG_COMPUTINGREGION) or DTBG_MIRRORDC) or DTBG_NOMIRROR
 
 type _DTBGOPTS
 	dwSize as DWORD

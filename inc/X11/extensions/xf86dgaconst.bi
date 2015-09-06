@@ -66,7 +66,7 @@ const XF86DGANoDirectVideoMode = 1
 const XF86DGAScreenNotActive = 2
 const XF86DGADirectNotActivated = 3
 const XF86DGAOperationNotSupported = 4
-#define XF86DGANumberErrors (XF86DGAOperationNotSupported + 1)
+const XF86DGANumberErrors = XF86DGAOperationNotSupported + 1
 
 type XDGAMode
 	num as long

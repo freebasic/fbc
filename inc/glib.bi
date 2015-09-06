@@ -1,4 +1,4 @@
-'' FreeBASIC binding for glib-2.42.2
+'' FreeBASIC binding for glib-2.44.1
 ''
 '' based on the C header files:
 ''   GLIB - Library of useful routines for C programming
@@ -59,6 +59,7 @@
 ''     procedure g_atomic_pointer_or => g_atomic_pointer_or_
 ''     procedure g_atomic_pointer_xor => g_atomic_pointer_xor_
 ''     #ifdef __FB_WIN32__
+''         procedure g_atexit => g_atexit_
 ''         procedure g_filename_to_utf8 => g_filename_to_utf8_
 ''         procedure g_filename_from_utf8 => g_filename_from_utf8_
 ''         procedure g_filename_from_uri => g_filename_from_uri_
@@ -79,9 +80,9 @@
 ''         procedure g_file_open_tmp => g_file_open_tmp_
 ''         procedure g_get_current_dir => g_get_current_dir_
 ''     #endif
+''     procedure g_steal_pointer => g_steal_pointer_
 ''     procedure g_source_remove => g_source_remove_
 ''     #ifdef __FB_WIN32__
-''         procedure g_atexit => g_atexit_
 ''         procedure g_io_channel_new_file => g_io_channel_new_file_
 ''     #endif
 ''     #define G_QUEUE_INIT => G_QUEUE_INIT_
@@ -148,6 +149,43 @@ extern "C"
 #define G_STRUCT_MEMBER(member_type, struct_p, struct_offset) (*cptr(member_type ptr, G_STRUCT_MEMBER_P((struct_p), (struct_offset))))
 #define G_LIKELY(expr) (expr)
 #define G_UNLIKELY(expr) (expr)
+#define _GLIB_AUTOPTR_FUNC_NAME(TypeName) glib_autoptr_cleanup_##TypeName
+#define _GLIB_AUTOPTR_TYPENAME(TypeName) TypeName##_autoptr
+#define _GLIB_AUTO_FUNC_NAME(TypeName) glib_auto_cleanup_##TypeName
+#macro _GLIB_DEFINE_AUTOPTR_CHAINUP(ModuleObjName, ParentName)
+	extern "C"
+		type _GLIB_AUTOPTR_TYPENAME(ModuleObjName) as ModuleObjName ptr
+		private sub _GLIB_AUTOPTR_FUNC_NAME(ModuleObjName)(byval _ptr as ModuleObjName ptr ptr)
+			_GLIB_AUTOPTR_FUNC_NAME(ParentName)(cptr(ParentName ptr ptr, _ptr))
+		end sub
+	end extern
+#endmacro
+#macro G_DEFINE_AUTOPTR_CLEANUP_FUNC(TypeName, func)
+	extern "C"
+		type _GLIB_AUTOPTR_TYPENAME(TypeName) as TypeName ptr
+		private sub _GLIB_AUTOPTR_FUNC_NAME(TypeName)(byval _ptr as TypeName ptr ptr)
+			if *_ptr then
+				func(*_ptr)
+			end if
+		end sub
+	end extern
+#endmacro
+#macro G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(TypeName, func)
+	extern "C"
+		private sub _GLIB_AUTO_FUNC_NAME(TypeName)(byval _ptr as TypeName ptr)
+			func(_ptr)
+		end sub
+	end extern
+#endmacro
+#macro G_DEFINE_AUTO_CLEANUP_FREE_FUNC(TypeName, func, none)
+	extern "C"
+		private sub _GLIB_AUTO_FUNC_NAME(TypeName)(byval _ptr as TypeName ptr)
+			if *_ptr <> none
+				func(*_ptr)
+			end if
+		end sub
+	end extern
+#endmacro
 #define __G_VERSION_MACROS_H__
 #define G_ENCODE_VERSION(major, minor) (((major) shl 16) or ((minor) shl 8))
 #define GLIB_VERSION_2_26 G_ENCODE_VERSION(2, 26)
@@ -161,10 +199,14 @@ extern "C"
 #define GLIB_VERSION_2_42 G_ENCODE_VERSION(2, 42)
 #define GLIB_VERSION_CUR_STABLE G_ENCODE_VERSION(GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION)
 #define GLIB_VERSION_PREV_STABLE G_ENCODE_VERSION(GLIB_MAJOR_VERSION, GLIB_MINOR_VERSION - 2)
+#define GLIB_VERSION_2_44 G_ENCODE_VERSION(2, 44)
 #define GLIB_VERSION_MIN_REQUIRED GLIB_VERSION_CUR_STABLE
 #undef GLIB_VERSION_MAX_ALLOWED
 #define GLIB_VERSION_MAX_ALLOWED GLIB_VERSION_CUR_STABLE
 #define GLIB_AVAILABLE_IN_ALL _GLIB_EXTERN
+#define GLIB_DEPRECATED_IN_2_44 GLIB_DEPRECATED
+#define GLIB_DEPRECATED_IN_2_44_FOR(f) GLIB_DEPRECATED_FOR(f)
+#define GLIB_AVAILABLE_IN_2_44 _GLIB_EXTERN
 
 type gchar as zstring
 type gshort as short
@@ -178,15 +220,15 @@ type guint as ulong
 type gfloat as single
 type gdouble as double
 
-#define G_MININT8 cast(gint8, &h80)
-#define G_MAXINT8 cast(gint8, &h7f)
-#define G_MAXUINT8 cast(guint8, &hff)
-#define G_MININT16 cast(gint16, &h8000)
-#define G_MAXINT16 cast(gint16, &h7fff)
-#define G_MAXUINT16 cast(guint16, &hffff)
-#define G_MININT32 cast(gint32, &h80000000)
-#define G_MAXINT32 cast(gint32, &h7fffffff)
-#define G_MAXUINT32 cast(guint32, &hffffffff)
+const G_MININT8 = cast(gint8, &h80)
+const G_MAXINT8 = cast(gint8, &h7f)
+const G_MAXUINT8 = cast(guint8, &hff)
+const G_MININT16 = cast(gint16, &h8000)
+const G_MAXINT16 = cast(gint16, &h7fff)
+const G_MAXUINT16 = cast(guint16, &hffff)
+const G_MININT32 = cast(gint32, &h80000000)
+const G_MAXINT32 = cast(gint32, &h7fffffff)
+const G_MAXUINT32 = cast(guint32, &hffffffff)
 #define G_MININT64 cast(gint64, G_GINT64_CONSTANT(&h8000000000000000))
 #define G_MAXINT64 G_GINT64_CONSTANT(&h7fffffffffffffff)
 #define G_MAXUINT64 G_GINT64_CONSTANT(&hffffffffffffffffu)
@@ -201,7 +243,7 @@ type GFunc as sub(byval data as gpointer, byval user_data as gpointer)
 type GHashFunc as function(byval key as gconstpointer) as guint
 type GHFunc as sub(byval key as gpointer, byval value as gpointer, byval user_data as gpointer)
 type GFreeFunc as sub(byval data as gpointer)
-type GTranslateFunc as function(byval str as const zstring ptr, byval data as gpointer) as const zstring ptr
+type GTranslateFunc as function(byval str as const gchar ptr, byval data as gpointer) as const gchar ptr
 
 const G_E = 2.7182818284590452353602874713526624977572470937000
 const G_LN2 = 0.69314718055994530941723212145817656807550013436026
@@ -298,7 +340,7 @@ type GByteArray as _GByteArray
 type GPtrArray as _GPtrArray
 
 type _GArray
-	data as zstring ptr
+	data as gchar ptr
 	len as guint
 end type
 
@@ -319,7 +361,7 @@ end type
 
 declare function g_array_new(byval zero_terminated as gboolean, byval clear_ as gboolean, byval element_size as guint) as GArray ptr
 declare function g_array_sized_new(byval zero_terminated as gboolean, byval clear_ as gboolean, byval element_size as guint, byval reserved_size as guint) as GArray ptr
-declare function g_array_free(byval array as GArray ptr, byval free_segment as gboolean) as zstring ptr
+declare function g_array_free(byval array as GArray ptr, byval free_segment as gboolean) as gchar ptr
 declare function g_array_ref(byval array as GArray ptr) as GArray ptr
 declare sub g_array_unref(byval array as GArray ptr)
 declare function g_array_get_element_size(byval array as GArray ptr) as guint
@@ -411,32 +453,125 @@ declare function g_atomic_int_exchange_and_add(byval atomic as gint ptr, byval v
 #define __G_QUARK_H__
 type GQuark as guint32
 
-declare function g_quark_try_string(byval string as const zstring ptr) as GQuark
-declare function g_quark_from_static_string(byval string as const zstring ptr) as GQuark
-declare function g_quark_from_string(byval string as const zstring ptr) as GQuark
-declare function g_quark_to_string(byval quark as GQuark) as const zstring ptr
-declare function g_intern_string(byval string as const zstring ptr) as const zstring ptr
-declare function g_intern_static_string(byval string as const zstring ptr) as const zstring ptr
+declare function g_quark_try_string(byval string as const gchar ptr) as GQuark
+declare function g_quark_from_static_string(byval string as const gchar ptr) as GQuark
+declare function g_quark_from_string(byval string as const gchar ptr) as GQuark
+declare function g_quark_to_string(byval quark as GQuark) as const gchar ptr
+declare function g_intern_string(byval string as const gchar ptr) as const gchar ptr
+declare function g_intern_static_string(byval string as const gchar ptr) as const gchar ptr
 type GError as _GError
 
 type _GError
 	domain as GQuark
 	code as gint
-	message as zstring ptr
+	message as gchar ptr
 end type
 
-declare function g_error_new(byval domain as GQuark, byval code as gint, byval format as const zstring ptr, ...) as GError ptr
-declare function g_error_new_literal(byval domain as GQuark, byval code as gint, byval message as const zstring ptr) as GError ptr
-declare function g_error_new_valist(byval domain as GQuark, byval code as gint, byval format as const zstring ptr, byval args as va_list) as GError ptr
+declare function g_error_new(byval domain as GQuark, byval code as gint, byval format as const gchar ptr, ...) as GError ptr
+declare function g_error_new_literal(byval domain as GQuark, byval code as gint, byval message as const gchar ptr) as GError ptr
+declare function g_error_new_valist(byval domain as GQuark, byval code as gint, byval format as const gchar ptr, byval args as va_list) as GError ptr
 declare sub g_error_free(byval error as GError ptr)
 declare function g_error_copy(byval error as const GError ptr) as GError ptr
 declare function g_error_matches(byval error as const GError ptr, byval domain as GQuark, byval code as gint) as gboolean
-declare sub g_set_error(byval err as GError ptr ptr, byval domain as GQuark, byval code as gint, byval format as const zstring ptr, ...)
-declare sub g_set_error_literal(byval err as GError ptr ptr, byval domain as GQuark, byval code as gint, byval message as const zstring ptr)
+declare sub g_set_error(byval err as GError ptr ptr, byval domain as GQuark, byval code as gint, byval format as const gchar ptr, ...)
+declare sub g_set_error_literal(byval err as GError ptr ptr, byval domain as GQuark, byval code as gint, byval message as const gchar ptr)
 declare sub g_propagate_error(byval dest as GError ptr ptr, byval src as GError ptr)
 declare sub g_clear_error(byval err as GError ptr ptr)
-declare sub g_prefix_error(byval err as GError ptr ptr, byval format as const zstring ptr, ...)
-declare sub g_propagate_prefixed_error(byval dest as GError ptr ptr, byval src as GError ptr, byval format as const zstring ptr, ...)
+declare sub g_prefix_error(byval err as GError ptr ptr, byval format as const gchar ptr, ...)
+declare sub g_propagate_prefixed_error(byval dest as GError ptr ptr, byval src as GError ptr, byval format as const gchar ptr, ...)
+#define __G_UTILS_H__
+declare function g_get_user_name() as const gchar ptr
+declare function g_get_real_name() as const gchar ptr
+declare function g_get_home_dir() as const gchar ptr
+declare function g_get_tmp_dir() as const gchar ptr
+declare function g_get_host_name() as const gchar ptr
+declare function g_get_prgname() as const gchar ptr
+declare sub g_set_prgname(byval prgname as const gchar ptr)
+declare function g_get_application_name() as const gchar ptr
+declare sub g_set_application_name(byval application_name as const gchar ptr)
+declare sub g_reload_user_special_dirs_cache()
+declare function g_get_user_data_dir() as const gchar ptr
+declare function g_get_user_config_dir() as const gchar ptr
+declare function g_get_user_cache_dir() as const gchar ptr
+declare function g_get_system_data_dirs() as const gchar const ptr ptr
+
+#ifdef __FB_WIN32__
+	declare function g_win32_get_system_data_dirs_for_module(byval address_of_function as sub()) as const gchar const ptr ptr
+#endif
+
+declare function g_get_system_config_dirs() as const gchar const ptr ptr
+declare function g_get_user_runtime_dir() as const gchar ptr
+
+type GUserDirectory as long
+enum
+	G_USER_DIRECTORY_DESKTOP
+	G_USER_DIRECTORY_DOCUMENTS
+	G_USER_DIRECTORY_DOWNLOAD
+	G_USER_DIRECTORY_MUSIC
+	G_USER_DIRECTORY_PICTURES
+	G_USER_DIRECTORY_PUBLIC_SHARE
+	G_USER_DIRECTORY_TEMPLATES
+	G_USER_DIRECTORY_VIDEOS
+	G_USER_N_DIRECTORIES
+end enum
+
+declare function g_get_user_special_dir(byval directory as GUserDirectory) as const gchar ptr
+type GDebugKey as _GDebugKey
+
+type _GDebugKey
+	key as const gchar ptr
+	value as guint
+end type
+
+declare function g_parse_debug_string(byval string as const gchar ptr, byval keys as const GDebugKey ptr, byval nkeys as guint) as guint
+declare function g_snprintf(byval string as gchar ptr, byval n as gulong, byval format as const gchar ptr, ...) as gint
+declare function g_vsnprintf(byval string as gchar ptr, byval n as gulong, byval format as const gchar ptr, byval args as va_list) as gint
+declare sub g_nullify_pointer(byval nullify_location as gpointer ptr)
+
+type GFormatSizeFlags as long
+enum
+	G_FORMAT_SIZE_DEFAULT = 0
+	G_FORMAT_SIZE_LONG_FORMAT = 1 shl 0
+	G_FORMAT_SIZE_IEC_UNITS = 1 shl 1
+end enum
+
+declare function g_format_size_full(byval size as guint64, byval flags as GFormatSizeFlags) as gchar ptr
+declare function g_format_size(byval size as guint64) as gchar ptr
+declare function g_format_size_for_display(byval size as goffset) as gchar ptr
+type GVoidFunc as sub()
+
+#ifdef __FB_UNIX__
+	declare sub g_atexit(byval func as GVoidFunc)
+#else
+	declare sub g_atexit_ alias "g_atexit"(byval func as GVoidFunc)
+	#define g_atexit(func) atexit(func)
+#endif
+
+declare function g_find_program_in_path(byval program as const gchar ptr) as gchar ptr
+declare function g_bit_nth_lsf(byval mask as gulong, byval nth_bit as gint) as gint
+declare function g_bit_nth_msf(byval mask as gulong, byval nth_bit as gint) as gint
+declare function g_bit_storage(byval number as gulong) as guint
+
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
+	#macro G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
+		dim shared dll_name as zstring ptr
+		function DllMain stdcall alias "DllMain"(byval hinstDLL as HINSTANCE, byval fdwReason as DWORD, byval lpvReserved as LPVOID) as BOOL
+			dim wcbfr as wstring * 1000
+			dim tem as zstring ptr
+			select case fdwReason
+			case DLL_PROCESS_ATTACH
+				GetModuleFileNameW(cast(HMODULE, hinstDLL), wcbfr, 1000)
+				tem = g_utf16_to_utf8(wcbfr, -1, NULL, NULL, NULL)
+				dll_name = g_path_get_basename(tem)
+				g_free(tem)
+			end select
+			return CTRUE
+		end function
+	#endmacro
+#else
+	#define G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
+#endif
+
 #define G_THREAD_ERROR g_thread_error_quark()
 declare function g_thread_error_quark() as GQuark
 
@@ -503,8 +638,8 @@ end type
 
 declare function g_thread_ref(byval thread as GThread ptr) as GThread ptr
 declare sub g_thread_unref(byval thread as GThread ptr)
-declare function g_thread_new(byval name as const zstring ptr, byval func as GThreadFunc, byval data as gpointer) as GThread ptr
-declare function g_thread_try_new(byval name as const zstring ptr, byval func as GThreadFunc, byval data as gpointer, byval error as GError ptr ptr) as GThread ptr
+declare function g_thread_new(byval name as const gchar ptr, byval func as GThreadFunc, byval data as gpointer) as GThread ptr
+declare function g_thread_try_new(byval name as const gchar ptr, byval func as GThreadFunc, byval data as gpointer, byval error as GError ptr ptr) as GThread ptr
 declare function g_thread_self() as GThread ptr
 declare sub g_thread_exit(byval retval as gpointer)
 declare function g_thread_join(byval thread as GThread ptr) as gpointer
@@ -541,6 +676,17 @@ declare function g_once_init_enter(byval location as any ptr) as gboolean
 declare sub g_once_init_leave(byval location as any ptr, byval result as gsize)
 #define g_once(once, func, arg) iif((once)->status = G_ONCE_STATUS_READY, (once)->retval, g_once_impl((once), (func), (arg)))
 declare function g_get_num_processors() as guint
+type GMutexLocker as any
+
+private function g_mutex_locker_new(byval mutex as GMutex ptr) as GMutexLocker ptr
+	g_mutex_lock(mutex)
+	return cptr(GMutexLocker ptr, mutex)
+end function
+
+private sub g_mutex_locker_free(byval locker as GMutexLocker ptr)
+	g_mutex_unlock(cptr(GMutex ptr, locker))
+end sub
+
 type GAsyncQueue as _GAsyncQueue
 declare function g_async_queue_new() as GAsyncQueue ptr
 declare function g_async_queue_new_full(byval item_free_func as GDestroyNotify) as GAsyncQueue ptr
@@ -567,15 +713,15 @@ declare sub g_async_queue_sort_unlocked(byval queue as GAsyncQueue ptr, byval fu
 declare function g_async_queue_timed_pop(byval queue as GAsyncQueue ptr, byval end_time as GTimeVal ptr) as gpointer
 declare function g_async_queue_timed_pop_unlocked(byval queue as GAsyncQueue ptr, byval end_time as GTimeVal ptr) as gpointer
 #define __G_BACKTRACE_H__
-declare sub g_on_error_query(byval prg_name as const zstring ptr)
-declare sub g_on_error_stack_trace(byval prg_name as const zstring ptr)
+declare sub g_on_error_query(byval prg_name as const gchar ptr)
+declare sub g_on_error_stack_trace(byval prg_name as const gchar ptr)
 #define __G_BASE64_H__
-declare function g_base64_encode_step(byval in as const guchar ptr, byval len as gsize, byval break_lines as gboolean, byval out as zstring ptr, byval state as gint ptr, byval save as gint ptr) as gsize
-declare function g_base64_encode_close(byval break_lines as gboolean, byval out as zstring ptr, byval state as gint ptr, byval save as gint ptr) as gsize
-declare function g_base64_encode(byval data as const guchar ptr, byval len as gsize) as zstring ptr
-declare function g_base64_decode_step(byval in as const zstring ptr, byval len as gsize, byval out as guchar ptr, byval state as gint ptr, byval save as guint ptr) as gsize
-declare function g_base64_decode(byval text as const zstring ptr, byval out_len as gsize ptr) as guchar ptr
-declare function g_base64_decode_inplace(byval text as zstring ptr, byval out_len as gsize ptr) as guchar ptr
+declare function g_base64_encode_step(byval in as const guchar ptr, byval len as gsize, byval break_lines as gboolean, byval out as gchar ptr, byval state as gint ptr, byval save as gint ptr) as gsize
+declare function g_base64_encode_close(byval break_lines as gboolean, byval out as gchar ptr, byval state as gint ptr, byval save as gint ptr) as gsize
+declare function g_base64_encode(byval data as const guchar ptr, byval len as gsize) as gchar ptr
+declare function g_base64_decode_step(byval in as const gchar ptr, byval len as gsize, byval out as guchar ptr, byval state as gint ptr, byval save as guint ptr) as gsize
+declare function g_base64_decode(byval text as const gchar ptr, byval out_len as gsize ptr) as guchar ptr
+declare function g_base64_decode_inplace(byval text as gchar ptr, byval out_len as gsize ptr) as guchar ptr
 #define __G_BITLOCK_H__
 declare sub g_bit_lock(byval address as gint ptr, byval lock_bit as gint)
 declare function g_bit_trylock(byval address as gint ptr, byval lock_bit as gint) as gboolean
@@ -602,43 +748,43 @@ declare function g_bookmark_file_error_quark() as GQuark
 type GBookmarkFile as _GBookmarkFile
 declare function g_bookmark_file_new() as GBookmarkFile ptr
 declare sub g_bookmark_file_free(byval bookmark as GBookmarkFile ptr)
-declare function g_bookmark_file_load_from_file(byval bookmark as GBookmarkFile ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_bookmark_file_load_from_data(byval bookmark as GBookmarkFile ptr, byval data as const zstring ptr, byval length as gsize, byval error as GError ptr ptr) as gboolean
-declare function g_bookmark_file_load_from_data_dirs(byval bookmark as GBookmarkFile ptr, byval file as const zstring ptr, byval full_path as zstring ptr ptr, byval error as GError ptr ptr) as gboolean
-declare function g_bookmark_file_to_data(byval bookmark as GBookmarkFile ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_bookmark_file_to_file(byval bookmark as GBookmarkFile ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare sub g_bookmark_file_set_title(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval title as const zstring ptr)
-declare function g_bookmark_file_get_title(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare sub g_bookmark_file_set_description(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval description as const zstring ptr)
-declare function g_bookmark_file_get_description(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare sub g_bookmark_file_set_mime_type(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval mime_type as const zstring ptr)
-declare function g_bookmark_file_get_mime_type(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare sub g_bookmark_file_set_groups(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval groups as const zstring ptr ptr, byval length as gsize)
-declare sub g_bookmark_file_add_group(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval group as const zstring ptr)
-declare function g_bookmark_file_has_group(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval group as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_bookmark_file_get_groups(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr ptr
-declare sub g_bookmark_file_add_application(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval name as const zstring ptr, byval exec as const zstring ptr)
-declare function g_bookmark_file_has_application(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval name as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_bookmark_file_get_applications(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr ptr
-declare function g_bookmark_file_set_app_info(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval name as const zstring ptr, byval exec as const zstring ptr, byval count as gint, byval stamp as time_t, byval error as GError ptr ptr) as gboolean
-declare function g_bookmark_file_get_app_info(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval name as const zstring ptr, byval exec as zstring ptr ptr, byval count as guint ptr, byval stamp as time_t ptr, byval error as GError ptr ptr) as gboolean
-declare sub g_bookmark_file_set_is_private(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval is_private as gboolean)
-declare function g_bookmark_file_get_is_private(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare sub g_bookmark_file_set_icon(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval href as const zstring ptr, byval mime_type as const zstring ptr)
-declare function g_bookmark_file_get_icon(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval href as zstring ptr ptr, byval mime_type as zstring ptr ptr, byval error as GError ptr ptr) as gboolean
-declare sub g_bookmark_file_set_added(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval added as time_t)
-declare function g_bookmark_file_get_added(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as time_t
-declare sub g_bookmark_file_set_modified(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval modified as time_t)
-declare function g_bookmark_file_get_modified(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as time_t
-declare sub g_bookmark_file_set_visited(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval visited as time_t)
-declare function g_bookmark_file_get_visited(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as time_t
-declare function g_bookmark_file_has_item(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr) as gboolean
+declare function g_bookmark_file_load_from_file(byval bookmark as GBookmarkFile ptr, byval filename as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function g_bookmark_file_load_from_data(byval bookmark as GBookmarkFile ptr, byval data as const gchar ptr, byval length as gsize, byval error as GError ptr ptr) as gboolean
+declare function g_bookmark_file_load_from_data_dirs(byval bookmark as GBookmarkFile ptr, byval file as const gchar ptr, byval full_path as gchar ptr ptr, byval error as GError ptr ptr) as gboolean
+declare function g_bookmark_file_to_data(byval bookmark as GBookmarkFile ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_bookmark_file_to_file(byval bookmark as GBookmarkFile ptr, byval filename as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare sub g_bookmark_file_set_title(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval title as const gchar ptr)
+declare function g_bookmark_file_get_title(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
+declare sub g_bookmark_file_set_description(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval description as const gchar ptr)
+declare function g_bookmark_file_get_description(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
+declare sub g_bookmark_file_set_mime_type(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval mime_type as const gchar ptr)
+declare function g_bookmark_file_get_mime_type(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
+declare sub g_bookmark_file_set_groups(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval groups as const gchar ptr ptr, byval length as gsize)
+declare sub g_bookmark_file_add_group(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval group as const gchar ptr)
+declare function g_bookmark_file_has_group(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval group as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function g_bookmark_file_get_groups(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gchar ptr ptr
+declare sub g_bookmark_file_add_application(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval name as const gchar ptr, byval exec as const gchar ptr)
+declare function g_bookmark_file_has_application(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval name as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function g_bookmark_file_get_applications(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gchar ptr ptr
+declare function g_bookmark_file_set_app_info(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval name as const gchar ptr, byval exec as const gchar ptr, byval count as gint, byval stamp as time_t, byval error as GError ptr ptr) as gboolean
+declare function g_bookmark_file_get_app_info(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval name as const gchar ptr, byval exec as gchar ptr ptr, byval count as guint ptr, byval stamp as time_t ptr, byval error as GError ptr ptr) as gboolean
+declare sub g_bookmark_file_set_is_private(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval is_private as gboolean)
+declare function g_bookmark_file_get_is_private(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare sub g_bookmark_file_set_icon(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval href as const gchar ptr, byval mime_type as const gchar ptr)
+declare function g_bookmark_file_get_icon(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval href as gchar ptr ptr, byval mime_type as gchar ptr ptr, byval error as GError ptr ptr) as gboolean
+declare sub g_bookmark_file_set_added(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval added as time_t)
+declare function g_bookmark_file_get_added(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as time_t
+declare sub g_bookmark_file_set_modified(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval modified as time_t)
+declare function g_bookmark_file_get_modified(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as time_t
+declare sub g_bookmark_file_set_visited(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval visited as time_t)
+declare function g_bookmark_file_get_visited(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as time_t
+declare function g_bookmark_file_has_item(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr) as gboolean
 declare function g_bookmark_file_get_size(byval bookmark as GBookmarkFile ptr) as gint
-declare function g_bookmark_file_get_uris(byval bookmark as GBookmarkFile ptr, byval length as gsize ptr) as zstring ptr ptr
-declare function g_bookmark_file_remove_group(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval group as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_bookmark_file_remove_application(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval name as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_bookmark_file_remove_item(byval bookmark as GBookmarkFile ptr, byval uri as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_bookmark_file_move_item(byval bookmark as GBookmarkFile ptr, byval old_uri as const zstring ptr, byval new_uri as const zstring ptr, byval error as GError ptr ptr) as gboolean
+declare function g_bookmark_file_get_uris(byval bookmark as GBookmarkFile ptr, byval length as gsize ptr) as gchar ptr ptr
+declare function g_bookmark_file_remove_group(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval group as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function g_bookmark_file_remove_application(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval name as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function g_bookmark_file_remove_item(byval bookmark as GBookmarkFile ptr, byval uri as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function g_bookmark_file_move_item(byval bookmark as GBookmarkFile ptr, byval old_uri as const gchar ptr, byval new_uri as const gchar ptr, byval error as GError ptr ptr) as gboolean
 #define __G_BYTES_H__
 declare function g_bytes_new(byval data as gconstpointer, byval size as gsize) as GBytes ptr
 declare function g_bytes_new_take(byval data as gpointer, byval size as gsize) as GBytes ptr
@@ -656,9 +802,9 @@ declare function g_bytes_equal(byval bytes1 as gconstpointer, byval bytes2 as gc
 declare function g_bytes_compare(byval bytes1 as gconstpointer, byval bytes2 as gconstpointer) as gint
 #define __G_CHARSET_H__
 declare function g_get_charset(byval charset as const zstring ptr ptr) as gboolean
-declare function g_get_codeset() as zstring ptr
-declare function g_get_language_names() as const zstring const ptr ptr
-declare function g_get_locale_variants(byval locale as const zstring ptr) as zstring ptr ptr
+declare function g_get_codeset() as gchar ptr
+declare function g_get_language_names() as const gchar const ptr ptr
+declare function g_get_locale_variants(byval locale as const gchar ptr) as gchar ptr ptr
 #define __G_CHECKSUM_H__
 
 type GChecksumType as long
@@ -676,11 +822,11 @@ declare sub g_checksum_reset(byval checksum as GChecksum ptr)
 declare function g_checksum_copy(byval checksum as const GChecksum ptr) as GChecksum ptr
 declare sub g_checksum_free(byval checksum as GChecksum ptr)
 declare sub g_checksum_update(byval checksum as GChecksum ptr, byval data as const guchar ptr, byval length as gssize)
-declare function g_checksum_get_string(byval checksum as GChecksum ptr) as const zstring ptr
+declare function g_checksum_get_string(byval checksum as GChecksum ptr) as const gchar ptr
 declare sub g_checksum_get_digest(byval checksum as GChecksum ptr, byval buffer as guint8 ptr, byval digest_len as gsize ptr)
-declare function g_compute_checksum_for_data(byval checksum_type as GChecksumType, byval data as const guchar ptr, byval length as gsize) as zstring ptr
-declare function g_compute_checksum_for_string(byval checksum_type as GChecksumType, byval str as const zstring ptr, byval length as gssize) as zstring ptr
-declare function g_compute_checksum_for_bytes(byval checksum_type as GChecksumType, byval data as GBytes ptr) as zstring ptr
+declare function g_compute_checksum_for_data(byval checksum_type as GChecksumType, byval data as const guchar ptr, byval length as gsize) as gchar ptr
+declare function g_compute_checksum_for_string(byval checksum_type as GChecksumType, byval str as const gchar ptr, byval length as gssize) as gchar ptr
+declare function g_compute_checksum_for_bytes(byval checksum_type as GChecksumType, byval data as GBytes ptr) as gchar ptr
 #define __G_CONVERT_H__
 
 type GConvertError as long
@@ -697,41 +843,41 @@ end enum
 #define G_CONVERT_ERROR g_convert_error_quark()
 declare function g_convert_error_quark() as GQuark
 type GIConv as _GIConv ptr
-declare function g_iconv_open(byval to_codeset as const zstring ptr, byval from_codeset as const zstring ptr) as GIConv
-declare function g_iconv(byval converter as GIConv, byval inbuf as zstring ptr ptr, byval inbytes_left as gsize ptr, byval outbuf as zstring ptr ptr, byval outbytes_left as gsize ptr) as gsize
+declare function g_iconv_open(byval to_codeset as const gchar ptr, byval from_codeset as const gchar ptr) as GIConv
+declare function g_iconv(byval converter as GIConv, byval inbuf as gchar ptr ptr, byval inbytes_left as gsize ptr, byval outbuf as gchar ptr ptr, byval outbytes_left as gsize ptr) as gsize
 declare function g_iconv_close(byval converter as GIConv) as gint
-declare function g_convert(byval str as const zstring ptr, byval len as gssize, byval to_codeset as const zstring ptr, byval from_codeset as const zstring ptr, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_convert_with_iconv(byval str as const zstring ptr, byval len as gssize, byval converter as GIConv, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_convert_with_fallback(byval str as const zstring ptr, byval len as gssize, byval to_codeset as const zstring ptr, byval from_codeset as const zstring ptr, byval fallback as const zstring ptr, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_locale_to_utf8(byval opsysstring as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_locale_from_utf8(byval utf8string as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
+declare function g_convert(byval str as const gchar ptr, byval len as gssize, byval to_codeset as const gchar ptr, byval from_codeset as const gchar ptr, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_convert_with_iconv(byval str as const gchar ptr, byval len as gssize, byval converter as GIConv, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_convert_with_fallback(byval str as const gchar ptr, byval len as gssize, byval to_codeset as const gchar ptr, byval from_codeset as const gchar ptr, byval fallback as const gchar ptr, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_locale_to_utf8(byval opsysstring as const gchar ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_locale_from_utf8(byval utf8string as const gchar ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
 
 #ifdef __FB_UNIX__
-	declare function g_filename_to_utf8(byval opsysstring as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_from_utf8(byval utf8string as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_from_uri(byval uri as const zstring ptr, byval hostname as zstring ptr ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_to_uri(byval filename as const zstring ptr, byval hostname as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
+	declare function g_filename_to_utf8(byval opsysstring as const gchar ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_from_utf8(byval utf8string as const gchar ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_from_uri(byval uri as const gchar ptr, byval hostname as gchar ptr ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_to_uri(byval filename as const gchar ptr, byval hostname as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
 #else
-	declare function g_filename_to_utf8_ alias "g_filename_to_utf8"(byval opsysstring as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_from_utf8_ alias "g_filename_from_utf8"(byval utf8string as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_from_uri_ alias "g_filename_from_uri"(byval uri as const zstring ptr, byval hostname as zstring ptr ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_to_uri_ alias "g_filename_to_uri"(byval filename as const zstring ptr, byval hostname as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
+	declare function g_filename_to_utf8_ alias "g_filename_to_utf8"(byval opsysstring as const gchar ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_from_utf8_ alias "g_filename_from_utf8"(byval utf8string as const gchar ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_from_uri_ alias "g_filename_from_uri"(byval uri as const gchar ptr, byval hostname as gchar ptr ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_to_uri_ alias "g_filename_to_uri"(byval filename as const gchar ptr, byval hostname as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
 #endif
 
-declare function g_filename_display_name(byval filename as const zstring ptr) as zstring ptr
-declare function g_get_filename_charsets(byval charsets as const zstring ptr ptr ptr) as gboolean
-declare function g_filename_display_basename(byval filename as const zstring ptr) as zstring ptr
-declare function g_uri_list_extract_uris(byval uri_list as const zstring ptr) as zstring ptr ptr
+declare function g_filename_display_name(byval filename as const gchar ptr) as gchar ptr
+declare function g_get_filename_charsets(byval charsets as const gchar ptr ptr ptr) as gboolean
+declare function g_filename_display_basename(byval filename as const gchar ptr) as gchar ptr
+declare function g_uri_list_extract_uris(byval uri_list as const gchar ptr) as gchar ptr ptr
 
 #ifdef __FB_WIN32__
-	declare function g_filename_to_utf8_utf8(byval opsysstring as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_to_utf8 alias "g_filename_to_utf8_utf8"(byval opsysstring as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_from_utf8_utf8(byval utf8string as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_from_utf8 alias "g_filename_from_utf8_utf8"(byval utf8string as const zstring ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_from_uri_utf8(byval uri as const zstring ptr, byval hostname as zstring ptr ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_from_uri alias "g_filename_from_uri_utf8"(byval uri as const zstring ptr, byval hostname as zstring ptr ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_to_uri_utf8(byval filename as const zstring ptr, byval hostname as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
-	declare function g_filename_to_uri alias "g_filename_to_uri_utf8"(byval filename as const zstring ptr, byval hostname as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
+	declare function g_filename_to_utf8_utf8(byval opsysstring as const gchar ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_to_utf8 alias "g_filename_to_utf8_utf8"(byval opsysstring as const gchar ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_from_utf8_utf8(byval utf8string as const gchar ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_from_utf8 alias "g_filename_from_utf8_utf8"(byval utf8string as const gchar ptr, byval len as gssize, byval bytes_read as gsize ptr, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_from_uri_utf8(byval uri as const gchar ptr, byval hostname as gchar ptr ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_from_uri alias "g_filename_from_uri_utf8"(byval uri as const gchar ptr, byval hostname as gchar ptr ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_to_uri_utf8(byval filename as const gchar ptr, byval hostname as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
+	declare function g_filename_to_uri alias "g_filename_to_uri_utf8"(byval filename as const gchar ptr, byval hostname as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
 #endif
 
 #define __G_DATASET_H__
@@ -760,7 +906,7 @@ declare function g_datalist_get_flags(byval datalist as GData ptr ptr) as guint
 
 declare sub g_dataset_destroy(byval dataset_location as gconstpointer)
 declare function g_dataset_id_get_data(byval dataset_location as gconstpointer, byval key_id as GQuark) as gpointer
-declare function g_datalist_get_data(byval datalist as GData ptr ptr, byval key as const zstring ptr) as gpointer
+declare function g_datalist_get_data(byval datalist as GData ptr ptr, byval key as const gchar ptr) as gpointer
 declare sub g_dataset_id_set_data_full(byval dataset_location as gconstpointer, byval key_id as GQuark, byval data as gpointer, byval destroy_func as GDestroyNotify)
 declare function g_dataset_id_remove_no_notify(byval dataset_location as gconstpointer, byval key_id as GQuark) as gpointer
 declare sub g_dataset_foreach(byval dataset_location as gconstpointer, byval func as GDataForeachFunc, byval user_data as gpointer)
@@ -849,7 +995,7 @@ declare function g_date_get_monday_week_of_year(byval date as const GDate ptr) a
 declare function g_date_get_sunday_week_of_year(byval date as const GDate ptr) as guint
 declare function g_date_get_iso8601_week_of_year(byval date as const GDate ptr) as guint
 declare sub g_date_clear(byval date as GDate ptr, byval n_dates as guint)
-declare sub g_date_set_parse(byval date as GDate ptr, byval str as const zstring ptr)
+declare sub g_date_set_parse(byval date as GDate ptr, byval str as const gchar ptr)
 declare sub g_date_set_time_t(byval date as GDate ptr, byval timet as time_t)
 declare sub g_date_set_time_val(byval date as GDate ptr, byval timeval as GTimeVal ptr)
 declare sub g_date_set_time(byval date as GDate ptr, byval time_ as GTime)
@@ -875,7 +1021,7 @@ declare function g_date_compare(byval lhs as const GDate ptr, byval rhs as const
 declare sub g_date_to_struct_tm(byval date as const GDate ptr, byval tm as tm ptr)
 declare sub g_date_clamp(byval date as GDate ptr, byval min_date as const GDate ptr, byval max_date as const GDate ptr)
 declare sub g_date_order(byval date1 as GDate ptr, byval date2 as GDate ptr)
-declare function g_date_strftime(byval s as zstring ptr, byval slen as gsize, byval format as const zstring ptr, byval date as const GDate ptr) as gsize
+declare function g_date_strftime(byval s as gchar ptr, byval slen as gsize, byval format as const gchar ptr, byval date as const GDate ptr) as gsize
 declare function g_date_weekday alias "g_date_get_weekday"(byval date as const GDate ptr) as GDateWeekday
 declare function g_date_month alias "g_date_get_month"(byval date as const GDate ptr) as GDateMonth
 declare function g_date_year alias "g_date_get_year"(byval date as const GDate ptr) as GDateYear
@@ -898,14 +1044,14 @@ enum
 	G_TIME_TYPE_UNIVERSAL
 end enum
 
-declare function g_time_zone_new(byval identifier as const zstring ptr) as GTimeZone ptr
+declare function g_time_zone_new(byval identifier as const gchar ptr) as GTimeZone ptr
 declare function g_time_zone_new_utc() as GTimeZone ptr
 declare function g_time_zone_new_local() as GTimeZone ptr
 declare function g_time_zone_ref(byval tz as GTimeZone ptr) as GTimeZone ptr
 declare sub g_time_zone_unref(byval tz as GTimeZone ptr)
 declare function g_time_zone_find_interval(byval tz as GTimeZone ptr, byval type as GTimeType, byval time_ as gint64) as gint
 declare function g_time_zone_adjust_time(byval tz as GTimeZone ptr, byval type as GTimeType, byval time_ as gint64 ptr) as gint
-declare function g_time_zone_get_abbreviation(byval tz as GTimeZone ptr, byval interval as gint) as const zstring ptr
+declare function g_time_zone_get_abbreviation(byval tz as GTimeZone ptr, byval interval as gint) as const gchar ptr
 declare function g_time_zone_get_offset(byval tz as GTimeZone ptr, byval interval as gint) as gint32
 declare function g_time_zone_is_dst(byval tz as GTimeZone ptr, byval interval as gint) as gboolean
 
@@ -958,58 +1104,58 @@ declare function g_date_time_get_seconds(byval datetime as GDateTime ptr) as gdo
 declare function g_date_time_to_unix(byval datetime as GDateTime ptr) as gint64
 declare function g_date_time_to_timeval(byval datetime as GDateTime ptr, byval tv as GTimeVal ptr) as gboolean
 declare function g_date_time_get_utc_offset(byval datetime as GDateTime ptr) as GTimeSpan
-declare function g_date_time_get_timezone_abbreviation(byval datetime as GDateTime ptr) as const zstring ptr
+declare function g_date_time_get_timezone_abbreviation(byval datetime as GDateTime ptr) as const gchar ptr
 declare function g_date_time_is_daylight_savings(byval datetime as GDateTime ptr) as gboolean
 declare function g_date_time_to_timezone(byval datetime as GDateTime ptr, byval tz as GTimeZone ptr) as GDateTime ptr
 declare function g_date_time_to_local(byval datetime as GDateTime ptr) as GDateTime ptr
 declare function g_date_time_to_utc(byval datetime as GDateTime ptr) as GDateTime ptr
-declare function g_date_time_format(byval datetime as GDateTime ptr, byval format as const zstring ptr) as zstring ptr
+declare function g_date_time_format(byval datetime as GDateTime ptr, byval format as const gchar ptr) as gchar ptr
 #define __G_DIR_H__
 type GDir as _GDir
 
 #ifdef __FB_UNIX__
-	declare function g_dir_open(byval path as const zstring ptr, byval flags as guint, byval error as GError ptr ptr) as GDir ptr
-	declare function g_dir_read_name(byval dir as GDir ptr) as const zstring ptr
+	declare function g_dir_open(byval path as const gchar ptr, byval flags as guint, byval error as GError ptr ptr) as GDir ptr
+	declare function g_dir_read_name(byval dir as GDir ptr) as const gchar ptr
 #else
-	declare function g_dir_open_ alias "g_dir_open"(byval path as const zstring ptr, byval flags as guint, byval error as GError ptr ptr) as GDir ptr
-	declare function g_dir_read_name_ alias "g_dir_read_name"(byval dir as GDir ptr) as const zstring ptr
+	declare function g_dir_open_ alias "g_dir_open"(byval path as const gchar ptr, byval flags as guint, byval error as GError ptr ptr) as GDir ptr
+	declare function g_dir_read_name_ alias "g_dir_read_name"(byval dir as GDir ptr) as const gchar ptr
 #endif
 
 declare sub g_dir_rewind(byval dir as GDir ptr)
 declare sub g_dir_close(byval dir as GDir ptr)
 
 #ifdef __FB_WIN32__
-	declare function g_dir_open_utf8(byval path as const zstring ptr, byval flags as guint, byval error as GError ptr ptr) as GDir ptr
-	declare function g_dir_open alias "g_dir_open_utf8"(byval path as const zstring ptr, byval flags as guint, byval error as GError ptr ptr) as GDir ptr
-	declare function g_dir_read_name_utf8(byval dir as GDir ptr) as const zstring ptr
-	declare function g_dir_read_name alias "g_dir_read_name_utf8"(byval dir as GDir ptr) as const zstring ptr
+	declare function g_dir_open_utf8(byval path as const gchar ptr, byval flags as guint, byval error as GError ptr ptr) as GDir ptr
+	declare function g_dir_open alias "g_dir_open_utf8"(byval path as const gchar ptr, byval flags as guint, byval error as GError ptr ptr) as GDir ptr
+	declare function g_dir_read_name_utf8(byval dir as GDir ptr) as const gchar ptr
+	declare function g_dir_read_name alias "g_dir_read_name_utf8"(byval dir as GDir ptr) as const gchar ptr
 #endif
 
 #define __G_ENVIRON_H__
 
 #ifdef __FB_UNIX__
-	declare function g_getenv(byval variable as const zstring ptr) as const zstring ptr
-	declare function g_setenv(byval variable as const zstring ptr, byval value as const zstring ptr, byval overwrite as gboolean) as gboolean
-	declare sub g_unsetenv(byval variable as const zstring ptr)
+	declare function g_getenv(byval variable as const gchar ptr) as const gchar ptr
+	declare function g_setenv(byval variable as const gchar ptr, byval value as const gchar ptr, byval overwrite as gboolean) as gboolean
+	declare sub g_unsetenv(byval variable as const gchar ptr)
 #else
-	declare function g_getenv_ alias "g_getenv"(byval variable as const zstring ptr) as const zstring ptr
-	declare function g_setenv_ alias "g_setenv"(byval variable as const zstring ptr, byval value as const zstring ptr, byval overwrite as gboolean) as gboolean
-	declare sub g_unsetenv_ alias "g_unsetenv"(byval variable as const zstring ptr)
+	declare function g_getenv_ alias "g_getenv"(byval variable as const gchar ptr) as const gchar ptr
+	declare function g_setenv_ alias "g_setenv"(byval variable as const gchar ptr, byval value as const gchar ptr, byval overwrite as gboolean) as gboolean
+	declare sub g_unsetenv_ alias "g_unsetenv"(byval variable as const gchar ptr)
 #endif
 
-declare function g_listenv() as zstring ptr ptr
-declare function g_get_environ() as zstring ptr ptr
-declare function g_environ_getenv(byval envp as zstring ptr ptr, byval variable as const zstring ptr) as const zstring ptr
-declare function g_environ_setenv(byval envp as zstring ptr ptr, byval variable as const zstring ptr, byval value as const zstring ptr, byval overwrite as gboolean) as zstring ptr ptr
-declare function g_environ_unsetenv(byval envp as zstring ptr ptr, byval variable as const zstring ptr) as zstring ptr ptr
+declare function g_listenv() as gchar ptr ptr
+declare function g_get_environ() as gchar ptr ptr
+declare function g_environ_getenv(byval envp as gchar ptr ptr, byval variable as const gchar ptr) as const gchar ptr
+declare function g_environ_setenv(byval envp as gchar ptr ptr, byval variable as const gchar ptr, byval value as const gchar ptr, byval overwrite as gboolean) as gchar ptr ptr
+declare function g_environ_unsetenv(byval envp as gchar ptr ptr, byval variable as const gchar ptr) as gchar ptr ptr
 
 #ifdef __FB_WIN32__
-	declare function g_getenv_utf8(byval variable as const zstring ptr) as const zstring ptr
-	declare function g_getenv alias "g_getenv_utf8"(byval variable as const zstring ptr) as const zstring ptr
-	declare function g_setenv_utf8(byval variable as const zstring ptr, byval value as const zstring ptr, byval overwrite as gboolean) as gboolean
-	declare function g_setenv alias "g_setenv_utf8"(byval variable as const zstring ptr, byval value as const zstring ptr, byval overwrite as gboolean) as gboolean
-	declare sub g_unsetenv_utf8(byval variable as const zstring ptr)
-	declare sub g_unsetenv alias "g_unsetenv_utf8"(byval variable as const zstring ptr)
+	declare function g_getenv_utf8(byval variable as const gchar ptr) as const gchar ptr
+	declare function g_getenv alias "g_getenv_utf8"(byval variable as const gchar ptr) as const gchar ptr
+	declare function g_setenv_utf8(byval variable as const gchar ptr, byval value as const gchar ptr, byval overwrite as gboolean) as gboolean
+	declare function g_setenv alias "g_setenv_utf8"(byval variable as const gchar ptr, byval value as const gchar ptr, byval overwrite as gboolean) as gboolean
+	declare sub g_unsetenv_utf8(byval variable as const gchar ptr)
+	declare sub g_unsetenv alias "g_unsetenv_utf8"(byval variable as const gchar ptr)
 #endif
 
 #define __G_FILEUTILS_H__
@@ -1057,38 +1203,38 @@ declare function g_file_error_quark() as GQuark
 declare function g_file_error_from_errno(byval err_no as gint) as GFileError
 
 #ifdef __FB_UNIX__
-	declare function g_file_test(byval filename as const zstring ptr, byval test as GFileTest) as gboolean
-	declare function g_file_get_contents(byval filename as const zstring ptr, byval contents as zstring ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_file_test(byval filename as const gchar ptr, byval test as GFileTest) as gboolean
+	declare function g_file_get_contents(byval filename as const gchar ptr, byval contents as gchar ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean
 #else
-	declare function g_file_test_ alias "g_file_test"(byval filename as const zstring ptr, byval test as GFileTest) as gboolean
-	declare function g_file_get_contents_ alias "g_file_get_contents"(byval filename as const zstring ptr, byval contents as zstring ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_file_test_ alias "g_file_test"(byval filename as const gchar ptr, byval test as GFileTest) as gboolean
+	declare function g_file_get_contents_ alias "g_file_get_contents"(byval filename as const gchar ptr, byval contents as gchar ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean
 #endif
 
-declare function g_file_set_contents(byval filename as const zstring ptr, byval contents as const zstring ptr, byval length as gssize, byval error as GError ptr ptr) as gboolean
-declare function g_file_read_link(byval filename as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_mkdtemp(byval tmpl as zstring ptr) as zstring ptr
-declare function g_mkdtemp_full(byval tmpl as zstring ptr, byval mode as gint) as zstring ptr
+declare function g_file_set_contents(byval filename as const gchar ptr, byval contents as const gchar ptr, byval length as gssize, byval error as GError ptr ptr) as gboolean
+declare function g_file_read_link(byval filename as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_mkdtemp(byval tmpl as gchar ptr) as gchar ptr
+declare function g_mkdtemp_full(byval tmpl as gchar ptr, byval mode as gint) as gchar ptr
 
 #ifdef __FB_UNIX__
-	declare function g_mkstemp(byval tmpl as zstring ptr) as gint
+	declare function g_mkstemp(byval tmpl as gchar ptr) as gint
 #else
-	declare function g_mkstemp_ alias "g_mkstemp"(byval tmpl as zstring ptr) as gint
+	declare function g_mkstemp_ alias "g_mkstemp"(byval tmpl as gchar ptr) as gint
 #endif
 
-declare function g_mkstemp_full(byval tmpl as zstring ptr, byval flags as gint, byval mode as gint) as gint
+declare function g_mkstemp_full(byval tmpl as gchar ptr, byval flags as gint, byval mode as gint) as gint
 
 #ifdef __FB_UNIX__
-	declare function g_file_open_tmp(byval tmpl as const zstring ptr, byval name_used as zstring ptr ptr, byval error as GError ptr ptr) as gint
+	declare function g_file_open_tmp(byval tmpl as const gchar ptr, byval name_used as gchar ptr ptr, byval error as GError ptr ptr) as gint
 #else
-	declare function g_file_open_tmp_ alias "g_file_open_tmp"(byval tmpl as const zstring ptr, byval name_used as zstring ptr ptr, byval error as GError ptr ptr) as gint
+	declare function g_file_open_tmp_ alias "g_file_open_tmp"(byval tmpl as const gchar ptr, byval name_used as gchar ptr ptr, byval error as GError ptr ptr) as gint
 #endif
 
-declare function g_dir_make_tmp(byval tmpl as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_build_path(byval separator as const zstring ptr, byval first_element as const zstring ptr, ...) as zstring ptr
-declare function g_build_pathv(byval separator as const zstring ptr, byval args as zstring ptr ptr) as zstring ptr
-declare function g_build_filename(byval first_element as const zstring ptr, ...) as zstring ptr
-declare function g_build_filenamev(byval args as zstring ptr ptr) as zstring ptr
-declare function g_mkdir_with_parents(byval pathname as const zstring ptr, byval mode as gint) as gint
+declare function g_dir_make_tmp(byval tmpl as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_build_path(byval separator as const gchar ptr, byval first_element as const gchar ptr, ...) as gchar ptr
+declare function g_build_pathv(byval separator as const gchar ptr, byval args as gchar ptr ptr) as gchar ptr
+declare function g_build_filename(byval first_element as const gchar ptr, ...) as gchar ptr
+declare function g_build_filenamev(byval args as gchar ptr ptr) as gchar ptr
+declare function g_mkdir_with_parents(byval pathname as const gchar ptr, byval mode as gint) as gint
 
 #ifdef __FB_UNIX__
 	#define G_DIR_SEPARATOR asc("/")
@@ -1104,40 +1250,40 @@ declare function g_mkdir_with_parents(byval pathname as const zstring ptr, byval
 	#define G_SEARCHPATH_SEPARATOR_S ";"
 #endif
 
-declare function g_path_is_absolute(byval file_name as const zstring ptr) as gboolean
-declare function g_path_skip_root(byval file_name as const zstring ptr) as const zstring ptr
-declare function g_basename(byval file_name as const zstring ptr) as const zstring ptr
+declare function g_path_is_absolute(byval file_name as const gchar ptr) as gboolean
+declare function g_path_skip_root(byval file_name as const gchar ptr) as const gchar ptr
+declare function g_basename(byval file_name as const gchar ptr) as const gchar ptr
 
 #ifdef __FB_UNIX__
-	declare function g_get_current_dir() as zstring ptr
+	declare function g_get_current_dir() as gchar ptr
 #else
-	declare function g_get_current_dir_ alias "g_get_current_dir"() as zstring ptr
+	declare function g_get_current_dir_ alias "g_get_current_dir"() as gchar ptr
 #endif
 
-declare function g_path_get_basename(byval file_name as const zstring ptr) as zstring ptr
-declare function g_path_get_dirname(byval file_name as const zstring ptr) as zstring ptr
-declare function g_dirname alias "g_path_get_dirname"(byval file_name as const zstring ptr) as zstring ptr
+declare function g_path_get_basename(byval file_name as const gchar ptr) as gchar ptr
+declare function g_path_get_dirname(byval file_name as const gchar ptr) as gchar ptr
+declare function g_dirname alias "g_path_get_dirname"(byval file_name as const gchar ptr) as gchar ptr
 
 #ifdef __FB_WIN32__
-	declare function g_file_test_utf8(byval filename as const zstring ptr, byval test as GFileTest) as gboolean
-	declare function g_file_test alias "g_file_test_utf8"(byval filename as const zstring ptr, byval test as GFileTest) as gboolean
-	declare function g_file_get_contents_utf8(byval filename as const zstring ptr, byval contents as zstring ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_file_get_contents alias "g_file_get_contents_utf8"(byval filename as const zstring ptr, byval contents as zstring ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_mkstemp_utf8(byval tmpl as zstring ptr) as gint
-	declare function g_mkstemp alias "g_mkstemp_utf8"(byval tmpl as zstring ptr) as gint
-	declare function g_file_open_tmp_utf8(byval tmpl as const zstring ptr, byval name_used as zstring ptr ptr, byval error as GError ptr ptr) as gint
-	declare function g_file_open_tmp alias "g_file_open_tmp_utf8"(byval tmpl as const zstring ptr, byval name_used as zstring ptr ptr, byval error as GError ptr ptr) as gint
-	declare function g_get_current_dir_utf8() as zstring ptr
-	declare function g_get_current_dir alias "g_get_current_dir_utf8"() as zstring ptr
+	declare function g_file_test_utf8(byval filename as const gchar ptr, byval test as GFileTest) as gboolean
+	declare function g_file_test alias "g_file_test_utf8"(byval filename as const gchar ptr, byval test as GFileTest) as gboolean
+	declare function g_file_get_contents_utf8(byval filename as const gchar ptr, byval contents as gchar ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_file_get_contents alias "g_file_get_contents_utf8"(byval filename as const gchar ptr, byval contents as gchar ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_mkstemp_utf8(byval tmpl as gchar ptr) as gint
+	declare function g_mkstemp alias "g_mkstemp_utf8"(byval tmpl as gchar ptr) as gint
+	declare function g_file_open_tmp_utf8(byval tmpl as const gchar ptr, byval name_used as gchar ptr ptr, byval error as GError ptr ptr) as gint
+	declare function g_file_open_tmp alias "g_file_open_tmp_utf8"(byval tmpl as const gchar ptr, byval name_used as gchar ptr ptr, byval error as GError ptr ptr) as gint
+	declare function g_get_current_dir_utf8() as gchar ptr
+	declare function g_get_current_dir alias "g_get_current_dir_utf8"() as gchar ptr
 #endif
 
 #define __G_GETTEXT_H__
-declare function g_strip_context(byval msgid as const zstring ptr, byval msgval as const zstring ptr) as const zstring ptr
-declare function g_dgettext(byval domain as const zstring ptr, byval msgid as const zstring ptr) as const zstring ptr
-declare function g_dcgettext(byval domain as const zstring ptr, byval msgid as const zstring ptr, byval category as gint) as const zstring ptr
-declare function g_dngettext(byval domain as const zstring ptr, byval msgid as const zstring ptr, byval msgid_plural as const zstring ptr, byval n as gulong) as const zstring ptr
-declare function g_dpgettext(byval domain as const zstring ptr, byval msgctxtid as const zstring ptr, byval msgidoffset as gsize) as const zstring ptr
-declare function g_dpgettext2(byval domain as const zstring ptr, byval context as const zstring ptr, byval msgid as const zstring ptr) as const zstring ptr
+declare function g_strip_context(byval msgid as const gchar ptr, byval msgval as const gchar ptr) as const gchar ptr
+declare function g_dgettext(byval domain as const gchar ptr, byval msgid as const gchar ptr) as const gchar ptr
+declare function g_dcgettext(byval domain as const gchar ptr, byval msgid as const gchar ptr, byval category as gint) as const gchar ptr
+declare function g_dngettext(byval domain as const gchar ptr, byval msgid as const gchar ptr, byval msgid_plural as const gchar ptr, byval n as gulong) as const gchar ptr
+declare function g_dpgettext(byval domain as const gchar ptr, byval msgctxtid as const gchar ptr, byval msgidoffset as gsize) as const gchar ptr
+declare function g_dpgettext2(byval domain as const gchar ptr, byval context as const gchar ptr, byval msgid as const gchar ptr) as const gchar ptr
 
 #define __G_HASH_H__
 #define __G_LIST_H__
@@ -1164,9 +1310,18 @@ declare function g_realloc_n(byval mem as gpointer, byval n_blocks as gsize, byv
 declare function g_try_malloc_n(byval n_blocks as gsize, byval n_block_bytes as gsize) as gpointer
 declare function g_try_malloc0_n(byval n_blocks as gsize, byval n_block_bytes as gsize) as gpointer
 declare function g_try_realloc_n(byval mem as gpointer, byval n_blocks as gsize, byval n_block_bytes as gsize) as gpointer
+
+private function g_steal_pointer_ alias "g_steal_pointer"(byval pp as gpointer) as gpointer
+	dim ptr_ as gpointer ptr = cptr(gpointer ptr, pp)
+	dim ref as gpointer
+	ref = *ptr_
+	(*ptr_) = cptr(any ptr, 0)
+	return ref
+end function
+
+#define g_steal_pointer(pp) iif(0, *(pp), g_steal_pointer_(pp))
 #define _G_NEW(struct_type, n_structs, func) cptr(struct_type ptr, g_##func##_n((n_structs), sizeof(struct_type)))
 #define _G_RENEW(struct_type, mem, n_structs, func) cptr(struct_type ptr, g_##func##_n(mem, (n_structs), sizeof(struct_type)))
-
 #define g_new(struct_type, n_structs) _G_NEW(struct_type, n_structs, malloc)
 #define g_new0(struct_type, n_structs) _G_NEW(struct_type, n_structs, malloc0)
 #define g_renew(struct_type, mem, n_structs) _G_RENEW(struct_type, mem, n_structs, realloc)
@@ -1372,10 +1527,10 @@ declare function g_hmac_copy(byval hmac as const GHmac ptr) as GHmac ptr
 declare function g_hmac_ref(byval hmac as GHmac ptr) as GHmac ptr
 declare sub g_hmac_unref(byval hmac as GHmac ptr)
 declare sub g_hmac_update(byval hmac as GHmac ptr, byval data as const guchar ptr, byval length as gssize)
-declare function g_hmac_get_string(byval hmac as GHmac ptr) as const zstring ptr
+declare function g_hmac_get_string(byval hmac as GHmac ptr) as const gchar ptr
 declare sub g_hmac_get_digest(byval hmac as GHmac ptr, byval buffer as guint8 ptr, byval digest_len as gsize ptr)
-declare function g_compute_hmac_for_data(byval digest_type as GChecksumType, byval key as const guchar ptr, byval key_len as gsize, byval data as const guchar ptr, byval length as gsize) as zstring ptr
-declare function g_compute_hmac_for_string(byval digest_type as GChecksumType, byval key as const guchar ptr, byval key_len as gsize, byval str as const zstring ptr, byval length as gssize) as zstring ptr
+declare function g_compute_hmac_for_data(byval digest_type as GChecksumType, byval key as const guchar ptr, byval key_len as gsize, byval data as const guchar ptr, byval length as gsize) as gchar ptr
+declare function g_compute_hmac_for_string(byval digest_type as GChecksumType, byval key as const guchar ptr, byval key_len as gsize, byval str as const gchar ptr, byval length as gssize) as gchar ptr
 #define __G_HOOK_H__
 
 type GHook as _GHook
@@ -1450,11 +1605,11 @@ declare sub g_hook_list_invoke_check(byval hook_list as GHookList ptr, byval may
 declare sub g_hook_list_marshal(byval hook_list as GHookList ptr, byval may_recurse as gboolean, byval marshaller as GHookMarshaller, byval marshal_data as gpointer)
 declare sub g_hook_list_marshal_check(byval hook_list as GHookList ptr, byval may_recurse as gboolean, byval marshaller as GHookCheckMarshaller, byval marshal_data as gpointer)
 #define __G_HOST_UTILS_H__
-declare function g_hostname_is_non_ascii(byval hostname as const zstring ptr) as gboolean
-declare function g_hostname_is_ascii_encoded(byval hostname as const zstring ptr) as gboolean
-declare function g_hostname_is_ip_address(byval hostname as const zstring ptr) as gboolean
-declare function g_hostname_to_ascii(byval hostname as const zstring ptr) as zstring ptr
-declare function g_hostname_to_unicode(byval hostname as const zstring ptr) as zstring ptr
+declare function g_hostname_is_non_ascii(byval hostname as const gchar ptr) as gboolean
+declare function g_hostname_is_ascii_encoded(byval hostname as const gchar ptr) as gboolean
+declare function g_hostname_is_ip_address(byval hostname as const gchar ptr) as gboolean
+declare function g_hostname_to_ascii(byval hostname as const gchar ptr) as gchar ptr
+declare function g_hostname_to_unicode(byval hostname as const gchar ptr) as gchar ptr
 
 #define __G_IOCHANNEL_H__
 #define __G_MAIN_H__
@@ -1947,37 +2102,37 @@ declare sub g_unicode_canonical_ordering(byval string as gunichar ptr, byval len
 declare function g_unicode_canonical_decomposition(byval ch as gunichar, byval result_len as gsize ptr) as gunichar ptr
 
 #if (defined(__FB_WIN32__) and (not defined(GLIB_STATIC_COMPILATION))) or defined(__FB_CYGWIN__)
-	extern import g_utf8_skip as const zstring const ptr
+	extern import g_utf8_skip as const gchar const ptr
 #else
-	extern g_utf8_skip as const zstring const ptr
+	extern g_utf8_skip as const gchar const ptr
 #endif
 
 #define g_utf8_next_char(p) cptr(zstring ptr, (p) + g_utf8_skip[(*cptr(const guchar ptr, (p)))])
-declare function g_utf8_get_char(byval p as const zstring ptr) as gunichar
-declare function g_utf8_get_char_validated(byval p as const zstring ptr, byval max_len as gssize) as gunichar
-declare function g_utf8_offset_to_pointer(byval str as const zstring ptr, byval offset as glong) as zstring ptr
-declare function g_utf8_pointer_to_offset(byval str as const zstring ptr, byval pos as const zstring ptr) as glong
-declare function g_utf8_prev_char(byval p as const zstring ptr) as zstring ptr
-declare function g_utf8_find_next_char(byval p as const zstring ptr, byval end as const zstring ptr) as zstring ptr
-declare function g_utf8_find_prev_char(byval str as const zstring ptr, byval p as const zstring ptr) as zstring ptr
-declare function g_utf8_strlen(byval p as const zstring ptr, byval max as gssize) as glong
-declare function g_utf8_substring(byval str as const zstring ptr, byval start_pos as glong, byval end_pos as glong) as zstring ptr
-declare function g_utf8_strncpy(byval dest as zstring ptr, byval src as const zstring ptr, byval n as gsize) as zstring ptr
-declare function g_utf8_strchr(byval p as const zstring ptr, byval len as gssize, byval c as gunichar) as zstring ptr
-declare function g_utf8_strrchr(byval p as const zstring ptr, byval len as gssize, byval c as gunichar) as zstring ptr
-declare function g_utf8_strreverse(byval str as const zstring ptr, byval len as gssize) as zstring ptr
-declare function g_utf8_to_utf16(byval str as const zstring ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar2 ptr
-declare function g_utf8_to_ucs4(byval str as const zstring ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar ptr
-declare function g_utf8_to_ucs4_fast(byval str as const zstring ptr, byval len as glong, byval items_written as glong ptr) as gunichar ptr
+declare function g_utf8_get_char(byval p as const gchar ptr) as gunichar
+declare function g_utf8_get_char_validated(byval p as const gchar ptr, byval max_len as gssize) as gunichar
+declare function g_utf8_offset_to_pointer(byval str as const gchar ptr, byval offset as glong) as gchar ptr
+declare function g_utf8_pointer_to_offset(byval str as const gchar ptr, byval pos as const gchar ptr) as glong
+declare function g_utf8_prev_char(byval p as const gchar ptr) as gchar ptr
+declare function g_utf8_find_next_char(byval p as const gchar ptr, byval end as const gchar ptr) as gchar ptr
+declare function g_utf8_find_prev_char(byval str as const gchar ptr, byval p as const gchar ptr) as gchar ptr
+declare function g_utf8_strlen(byval p as const gchar ptr, byval max as gssize) as glong
+declare function g_utf8_substring(byval str as const gchar ptr, byval start_pos as glong, byval end_pos as glong) as gchar ptr
+declare function g_utf8_strncpy(byval dest as gchar ptr, byval src as const gchar ptr, byval n as gsize) as gchar ptr
+declare function g_utf8_strchr(byval p as const gchar ptr, byval len as gssize, byval c as gunichar) as gchar ptr
+declare function g_utf8_strrchr(byval p as const gchar ptr, byval len as gssize, byval c as gunichar) as gchar ptr
+declare function g_utf8_strreverse(byval str as const gchar ptr, byval len as gssize) as gchar ptr
+declare function g_utf8_to_utf16(byval str as const gchar ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar2 ptr
+declare function g_utf8_to_ucs4(byval str as const gchar ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar ptr
+declare function g_utf8_to_ucs4_fast(byval str as const gchar ptr, byval len as glong, byval items_written as glong ptr) as gunichar ptr
 declare function g_utf16_to_ucs4(byval str as const gunichar2 ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar ptr
-declare function g_utf16_to_utf8(byval str as const gunichar2 ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as zstring ptr
+declare function g_utf16_to_utf8(byval str as const gunichar2 ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gchar ptr
 declare function g_ucs4_to_utf16(byval str as const gunichar ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar2 ptr
-declare function g_ucs4_to_utf8(byval str as const gunichar ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_unichar_to_utf8(byval c as gunichar, byval outbuf as zstring ptr) as gint
-declare function g_utf8_validate(byval str as const zstring ptr, byval max_len as gssize, byval end as const zstring ptr ptr) as gboolean
-declare function g_utf8_strup(byval str as const zstring ptr, byval len as gssize) as zstring ptr
-declare function g_utf8_strdown(byval str as const zstring ptr, byval len as gssize) as zstring ptr
-declare function g_utf8_casefold(byval str as const zstring ptr, byval len as gssize) as zstring ptr
+declare function g_ucs4_to_utf8(byval str as const gunichar ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_unichar_to_utf8(byval c as gunichar, byval outbuf as gchar ptr) as gint
+declare function g_utf8_validate(byval str as const gchar ptr, byval max_len as gssize, byval end as const gchar ptr ptr) as gboolean
+declare function g_utf8_strup(byval str as const gchar ptr, byval len as gssize) as gchar ptr
+declare function g_utf8_strdown(byval str as const gchar ptr, byval len as gssize) as gchar ptr
+declare function g_utf8_casefold(byval str as const gchar ptr, byval len as gssize) as gchar ptr
 
 type GNormalizeMode as long
 enum
@@ -1991,148 +2146,55 @@ enum
 	G_NORMALIZE_NFKC = G_NORMALIZE_ALL_COMPOSE
 end enum
 
-declare function g_utf8_normalize(byval str as const zstring ptr, byval len as gssize, byval mode as GNormalizeMode) as zstring ptr
-declare function g_utf8_collate(byval str1 as const zstring ptr, byval str2 as const zstring ptr) as gint
-declare function g_utf8_collate_key(byval str as const zstring ptr, byval len as gssize) as zstring ptr
-declare function g_utf8_collate_key_for_filename(byval str as const zstring ptr, byval len as gssize) as zstring ptr
-declare function _g_utf8_make_valid(byval name as const zstring ptr) as zstring ptr
-#define __G_UTILS_H__
-declare function g_get_user_name() as const zstring ptr
-declare function g_get_real_name() as const zstring ptr
-declare function g_get_home_dir() as const zstring ptr
-declare function g_get_tmp_dir() as const zstring ptr
-declare function g_get_host_name() as const zstring ptr
-declare function g_get_prgname() as const zstring ptr
-declare sub g_set_prgname(byval prgname as const zstring ptr)
-declare function g_get_application_name() as const zstring ptr
-declare sub g_set_application_name(byval application_name as const zstring ptr)
-declare sub g_reload_user_special_dirs_cache()
-declare function g_get_user_data_dir() as const zstring ptr
-declare function g_get_user_config_dir() as const zstring ptr
-declare function g_get_user_cache_dir() as const zstring ptr
-declare function g_get_system_data_dirs() as const zstring const ptr ptr
-
-#ifdef __FB_WIN32__
-	declare function g_win32_get_system_data_dirs_for_module(byval address_of_function as sub()) as const zstring const ptr ptr
-#endif
-
-declare function g_get_system_config_dirs() as const zstring const ptr ptr
-declare function g_get_user_runtime_dir() as const zstring ptr
-
-type GUserDirectory as long
-enum
-	G_USER_DIRECTORY_DESKTOP
-	G_USER_DIRECTORY_DOCUMENTS
-	G_USER_DIRECTORY_DOWNLOAD
-	G_USER_DIRECTORY_MUSIC
-	G_USER_DIRECTORY_PICTURES
-	G_USER_DIRECTORY_PUBLIC_SHARE
-	G_USER_DIRECTORY_TEMPLATES
-	G_USER_DIRECTORY_VIDEOS
-	G_USER_N_DIRECTORIES
-end enum
-
-declare function g_get_user_special_dir(byval directory as GUserDirectory) as const zstring ptr
-type GDebugKey as _GDebugKey
-
-type _GDebugKey
-	key as const zstring ptr
-	value as guint
-end type
-
-declare function g_parse_debug_string(byval string as const zstring ptr, byval keys as const GDebugKey ptr, byval nkeys as guint) as guint
-declare function g_snprintf(byval string as zstring ptr, byval n as gulong, byval format as const zstring ptr, ...) as gint
-declare function g_vsnprintf(byval string as zstring ptr, byval n as gulong, byval format as const zstring ptr, byval args as va_list) as gint
-declare sub g_nullify_pointer(byval nullify_location as gpointer ptr)
-
-type GFormatSizeFlags as long
-enum
-	G_FORMAT_SIZE_DEFAULT = 0
-	G_FORMAT_SIZE_LONG_FORMAT = 1 shl 0
-	G_FORMAT_SIZE_IEC_UNITS = 1 shl 1
-end enum
-
-declare function g_format_size_full(byval size as guint64, byval flags as GFormatSizeFlags) as zstring ptr
-declare function g_format_size(byval size as guint64) as zstring ptr
-declare function g_format_size_for_display(byval size as goffset) as zstring ptr
-type GVoidFunc as sub()
-
-#ifdef __FB_UNIX__
-	declare sub g_atexit(byval func as GVoidFunc)
-#else
-	declare sub g_atexit_ alias "g_atexit"(byval func as GVoidFunc)
-	#define g_atexit(func) atexit(func)
-#endif
-
-declare function g_find_program_in_path(byval program as const zstring ptr) as zstring ptr
-declare function g_bit_nth_lsf(byval mask as gulong, byval nth_bit as gint) as gint
-declare function g_bit_nth_msf(byval mask as gulong, byval nth_bit as gint) as gint
-declare function g_bit_storage(byval number as gulong) as guint
-
-#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
-	#macro G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
-		dim shared dll_name as zstring ptr
-		function DllMain stdcall alias "DllMain"(byval hinstDLL as HINSTANCE, byval fdwReason as DWORD, byval lpvReserved as LPVOID) as BOOL
-			dim wcbfr as wstring * 1000
-			dim tem as zstring ptr
-			select case fdwReason
-			case DLL_PROCESS_ATTACH
-				GetModuleFileNameW(cast(HMODULE, hinstDLL), wcbfr, 1000)
-				tem = g_utf16_to_utf8(wcbfr, -1, NULL, NULL, NULL)
-				dll_name = g_path_get_basename(tem)
-				g_free(tem)
-			end select
-			return CTRUE
-		end function
-	#endmacro
-#else
-	#define G_WIN32_DLLMAIN_FOR_DLL_NAME(static, dll_name)
-#endif
-
+declare function g_utf8_normalize(byval str as const gchar ptr, byval len as gssize, byval mode as GNormalizeMode) as gchar ptr
+declare function g_utf8_collate(byval str1 as const gchar ptr, byval str2 as const gchar ptr) as gint
+declare function g_utf8_collate_key(byval str as const gchar ptr, byval len as gssize) as gchar ptr
+declare function g_utf8_collate_key_for_filename(byval str as const gchar ptr, byval len as gssize) as gchar ptr
+declare function _g_utf8_make_valid(byval name as const gchar ptr) as gchar ptr
 type GString as _GString
 
 type _GString
-	str as zstring ptr
+	str as gchar ptr
 	len as gsize
 	allocated_len as gsize
 end type
 
-declare function g_string_new(byval init as const zstring ptr) as GString ptr
-declare function g_string_new_len(byval init as const zstring ptr, byval len as gssize) as GString ptr
+declare function g_string_new(byval init as const gchar ptr) as GString ptr
+declare function g_string_new_len(byval init as const gchar ptr, byval len as gssize) as GString ptr
 declare function g_string_sized_new(byval dfl_size as gsize) as GString ptr
-declare function g_string_free(byval string as GString ptr, byval free_segment as gboolean) as zstring ptr
+declare function g_string_free(byval string as GString ptr, byval free_segment as gboolean) as gchar ptr
 declare function g_string_free_to_bytes(byval string as GString ptr) as GBytes ptr
 declare function g_string_equal(byval v as const GString ptr, byval v2 as const GString ptr) as gboolean
 declare function g_string_hash(byval str as const GString ptr) as guint
-declare function g_string_assign(byval string as GString ptr, byval rval as const zstring ptr) as GString ptr
+declare function g_string_assign(byval string as GString ptr, byval rval as const gchar ptr) as GString ptr
 declare function g_string_truncate(byval string as GString ptr, byval len as gsize) as GString ptr
 declare function g_string_set_size(byval string as GString ptr, byval len as gsize) as GString ptr
-declare function g_string_insert_len(byval string as GString ptr, byval pos as gssize, byval val as const zstring ptr, byval len as gssize) as GString ptr
-declare function g_string_append(byval string as GString ptr, byval val as const zstring ptr) as GString ptr
-declare function g_string_append_len(byval string as GString ptr, byval val as const zstring ptr, byval len as gssize) as GString ptr
+declare function g_string_insert_len(byval string as GString ptr, byval pos as gssize, byval val as const gchar ptr, byval len as gssize) as GString ptr
+declare function g_string_append(byval string as GString ptr, byval val as const gchar ptr) as GString ptr
+declare function g_string_append_len(byval string as GString ptr, byval val as const gchar ptr, byval len as gssize) as GString ptr
 declare function g_string_append_c(byval string as GString ptr, byval c as byte) as GString ptr
 declare function g_string_append_unichar(byval string as GString ptr, byval wc as gunichar) as GString ptr
-declare function g_string_prepend(byval string as GString ptr, byval val as const zstring ptr) as GString ptr
+declare function g_string_prepend(byval string as GString ptr, byval val as const gchar ptr) as GString ptr
 declare function g_string_prepend_c(byval string as GString ptr, byval c as byte) as GString ptr
 declare function g_string_prepend_unichar(byval string as GString ptr, byval wc as gunichar) as GString ptr
-declare function g_string_prepend_len(byval string as GString ptr, byval val as const zstring ptr, byval len as gssize) as GString ptr
-declare function g_string_insert(byval string as GString ptr, byval pos as gssize, byval val as const zstring ptr) as GString ptr
+declare function g_string_prepend_len(byval string as GString ptr, byval val as const gchar ptr, byval len as gssize) as GString ptr
+declare function g_string_insert(byval string as GString ptr, byval pos as gssize, byval val as const gchar ptr) as GString ptr
 declare function g_string_insert_c(byval string as GString ptr, byval pos as gssize, byval c as byte) as GString ptr
 declare function g_string_insert_unichar(byval string as GString ptr, byval pos as gssize, byval wc as gunichar) as GString ptr
-declare function g_string_overwrite(byval string as GString ptr, byval pos as gsize, byval val as const zstring ptr) as GString ptr
-declare function g_string_overwrite_len(byval string as GString ptr, byval pos as gsize, byval val as const zstring ptr, byval len as gssize) as GString ptr
+declare function g_string_overwrite(byval string as GString ptr, byval pos as gsize, byval val as const gchar ptr) as GString ptr
+declare function g_string_overwrite_len(byval string as GString ptr, byval pos as gsize, byval val as const gchar ptr, byval len as gssize) as GString ptr
 declare function g_string_erase(byval string as GString ptr, byval pos as gssize, byval len as gssize) as GString ptr
 declare function g_string_ascii_down(byval string as GString ptr) as GString ptr
 declare function g_string_ascii_up(byval string as GString ptr) as GString ptr
-declare sub g_string_vprintf(byval string as GString ptr, byval format as const zstring ptr, byval args as va_list)
-declare sub g_string_printf(byval string as GString ptr, byval format as const zstring ptr, ...)
-declare sub g_string_append_vprintf(byval string as GString ptr, byval format as const zstring ptr, byval args as va_list)
-declare sub g_string_append_printf(byval string as GString ptr, byval format as const zstring ptr, ...)
-declare function g_string_append_uri_escaped(byval string as GString ptr, byval unescaped as const zstring ptr, byval reserved_chars_allowed as const zstring ptr, byval allow_utf8 as gboolean) as GString ptr
+declare sub g_string_vprintf(byval string as GString ptr, byval format as const gchar ptr, byval args as va_list)
+declare sub g_string_printf(byval string as GString ptr, byval format as const gchar ptr, ...)
+declare sub g_string_append_vprintf(byval string as GString ptr, byval format as const gchar ptr, byval args as va_list)
+declare sub g_string_append_printf(byval string as GString ptr, byval format as const gchar ptr, ...)
+declare function g_string_append_uri_escaped(byval string as GString ptr, byval unescaped as const gchar ptr, byval reserved_chars_allowed as const gchar ptr, byval allow_utf8 as gboolean) as GString ptr
 declare function g_string_down(byval string as GString ptr) as GString ptr
 declare function g_string_up(byval string as GString ptr) as GString ptr
-declare sub g_string_sprintf alias "g_string_printf"(byval string as GString ptr, byval format as const zstring ptr, ...)
-declare sub g_string_sprintfa alias "g_string_append_printf"(byval string as GString ptr, byval format as const zstring ptr, ...)
+declare sub g_string_sprintf alias "g_string_printf"(byval string as GString ptr, byval format as const gchar ptr, ...)
+declare sub g_string_sprintfa alias "g_string_append_printf"(byval string as GString ptr, byval format as const gchar ptr, ...)
 type GIOChannel as _GIOChannel
 type GIOFuncs as _GIOFuncs
 
@@ -2190,10 +2252,10 @@ end enum
 type _GIOChannel
 	ref_count as gint
 	funcs as GIOFuncs ptr
-	encoding as zstring ptr
+	encoding as gchar ptr
 	read_cd as GIConv
 	write_cd as GIConv
-	line_term as zstring ptr
+	line_term as gchar ptr
 	line_term_len as guint
 	buf_size as gsize
 	read_buf as GString ptr
@@ -2213,8 +2275,8 @@ end type
 type GIOFunc as function(byval source as GIOChannel ptr, byval condition as GIOCondition, byval data as gpointer) as gboolean
 
 type _GIOFuncs
-	io_read as function(byval channel as GIOChannel ptr, byval buf as zstring ptr, byval count as gsize, byval bytes_read as gsize ptr, byval err as GError ptr ptr) as GIOStatus
-	io_write as function(byval channel as GIOChannel ptr, byval buf as const zstring ptr, byval count as gsize, byval bytes_written as gsize ptr, byval err as GError ptr ptr) as GIOStatus
+	io_read as function(byval channel as GIOChannel ptr, byval buf as gchar ptr, byval count as gsize, byval bytes_read as gsize ptr, byval err as GError ptr ptr) as GIOStatus
+	io_write as function(byval channel as GIOChannel ptr, byval buf as const gchar ptr, byval count as gsize, byval bytes_written as gsize ptr, byval err as GError ptr ptr) as GIOStatus
 	io_seek as function(byval channel as GIOChannel ptr, byval offset as gint64, byval type as GSeekType, byval err as GError ptr ptr) as GIOStatus
 	io_close as function(byval channel as GIOChannel ptr, byval err as GError ptr ptr) as GIOStatus
 	io_create_watch as function(byval channel as GIOChannel ptr, byval condition as GIOCondition) as GSource ptr
@@ -2226,8 +2288,8 @@ end type
 declare sub g_io_channel_init(byval channel as GIOChannel ptr)
 declare function g_io_channel_ref(byval channel as GIOChannel ptr) as GIOChannel ptr
 declare sub g_io_channel_unref(byval channel as GIOChannel ptr)
-declare function g_io_channel_read(byval channel as GIOChannel ptr, byval buf as zstring ptr, byval count as gsize, byval bytes_read as gsize ptr) as GIOError
-declare function g_io_channel_write(byval channel as GIOChannel ptr, byval buf as const zstring ptr, byval count as gsize, byval bytes_written as gsize ptr) as GIOError
+declare function g_io_channel_read(byval channel as GIOChannel ptr, byval buf as gchar ptr, byval count as gsize, byval bytes_read as gsize ptr) as GIOError
+declare function g_io_channel_write(byval channel as GIOChannel ptr, byval buf as const gchar ptr, byval count as gsize, byval bytes_written as gsize ptr) as GIOError
 declare function g_io_channel_seek(byval channel as GIOChannel ptr, byval offset as gint64, byval type as GSeekType) as GIOError
 declare sub g_io_channel_close(byval channel as GIOChannel ptr)
 declare function g_io_channel_shutdown(byval channel as GIOChannel ptr, byval flush as gboolean, byval err as GError ptr ptr) as GIOStatus
@@ -2239,28 +2301,28 @@ declare function g_io_channel_get_buffer_size(byval channel as GIOChannel ptr) a
 declare function g_io_channel_get_buffer_condition(byval channel as GIOChannel ptr) as GIOCondition
 declare function g_io_channel_set_flags(byval channel as GIOChannel ptr, byval flags as GIOFlags, byval error as GError ptr ptr) as GIOStatus
 declare function g_io_channel_get_flags(byval channel as GIOChannel ptr) as GIOFlags
-declare sub g_io_channel_set_line_term(byval channel as GIOChannel ptr, byval line_term as const zstring ptr, byval length as gint)
-declare function g_io_channel_get_line_term(byval channel as GIOChannel ptr, byval length as gint ptr) as const zstring ptr
+declare sub g_io_channel_set_line_term(byval channel as GIOChannel ptr, byval line_term as const gchar ptr, byval length as gint)
+declare function g_io_channel_get_line_term(byval channel as GIOChannel ptr, byval length as gint ptr) as const gchar ptr
 declare sub g_io_channel_set_buffered(byval channel as GIOChannel ptr, byval buffered as gboolean)
 declare function g_io_channel_get_buffered(byval channel as GIOChannel ptr) as gboolean
-declare function g_io_channel_set_encoding(byval channel as GIOChannel ptr, byval encoding as const zstring ptr, byval error as GError ptr ptr) as GIOStatus
-declare function g_io_channel_get_encoding(byval channel as GIOChannel ptr) as const zstring ptr
+declare function g_io_channel_set_encoding(byval channel as GIOChannel ptr, byval encoding as const gchar ptr, byval error as GError ptr ptr) as GIOStatus
+declare function g_io_channel_get_encoding(byval channel as GIOChannel ptr) as const gchar ptr
 declare sub g_io_channel_set_close_on_unref(byval channel as GIOChannel ptr, byval do_close as gboolean)
 declare function g_io_channel_get_close_on_unref(byval channel as GIOChannel ptr) as gboolean
 declare function g_io_channel_flush(byval channel as GIOChannel ptr, byval error as GError ptr ptr) as GIOStatus
-declare function g_io_channel_read_line(byval channel as GIOChannel ptr, byval str_return as zstring ptr ptr, byval length as gsize ptr, byval terminator_pos as gsize ptr, byval error as GError ptr ptr) as GIOStatus
+declare function g_io_channel_read_line(byval channel as GIOChannel ptr, byval str_return as gchar ptr ptr, byval length as gsize ptr, byval terminator_pos as gsize ptr, byval error as GError ptr ptr) as GIOStatus
 declare function g_io_channel_read_line_string(byval channel as GIOChannel ptr, byval buffer as GString ptr, byval terminator_pos as gsize ptr, byval error as GError ptr ptr) as GIOStatus
-declare function g_io_channel_read_to_end(byval channel as GIOChannel ptr, byval str_return as zstring ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as GIOStatus
-declare function g_io_channel_read_chars(byval channel as GIOChannel ptr, byval buf as zstring ptr, byval count as gsize, byval bytes_read as gsize ptr, byval error as GError ptr ptr) as GIOStatus
+declare function g_io_channel_read_to_end(byval channel as GIOChannel ptr, byval str_return as gchar ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as GIOStatus
+declare function g_io_channel_read_chars(byval channel as GIOChannel ptr, byval buf as gchar ptr, byval count as gsize, byval bytes_read as gsize ptr, byval error as GError ptr ptr) as GIOStatus
 declare function g_io_channel_read_unichar(byval channel as GIOChannel ptr, byval thechar as gunichar ptr, byval error as GError ptr ptr) as GIOStatus
-declare function g_io_channel_write_chars(byval channel as GIOChannel ptr, byval buf as const zstring ptr, byval count as gssize, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as GIOStatus
+declare function g_io_channel_write_chars(byval channel as GIOChannel ptr, byval buf as const gchar ptr, byval count as gssize, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as GIOStatus
 declare function g_io_channel_write_unichar(byval channel as GIOChannel ptr, byval thechar as gunichar, byval error as GError ptr ptr) as GIOStatus
 declare function g_io_channel_seek_position(byval channel as GIOChannel ptr, byval offset as gint64, byval type as GSeekType, byval error as GError ptr ptr) as GIOStatus
 
 #ifdef __FB_UNIX__
-	declare function g_io_channel_new_file(byval filename as const zstring ptr, byval mode as const zstring ptr, byval error as GError ptr ptr) as GIOChannel ptr
+	declare function g_io_channel_new_file(byval filename as const gchar ptr, byval mode as const gchar ptr, byval error as GError ptr ptr) as GIOChannel ptr
 #else
-	declare function g_io_channel_new_file_ alias "g_io_channel_new_file"(byval filename as const zstring ptr, byval mode as const zstring ptr, byval error as GError ptr ptr) as GIOChannel ptr
+	declare function g_io_channel_new_file_ alias "g_io_channel_new_file"(byval filename as const gchar ptr, byval mode as const gchar ptr, byval error as GError ptr ptr) as GIOChannel ptr
 #endif
 
 declare function g_io_channel_error_quark() as GQuark
@@ -2290,8 +2352,8 @@ declare function g_io_channel_unix_get_fd(byval channel as GIOChannel ptr) as gi
 	declare function g_io_channel_win32_new_socket(byval socket as gint) as GIOChannel ptr
 	declare function g_io_channel_win32_new_stream_socket(byval socket as gint) as GIOChannel ptr
 	declare sub g_io_channel_win32_set_debug(byval channel as GIOChannel ptr, byval flag as gboolean)
-	declare function g_io_channel_new_file_utf8(byval filename as const zstring ptr, byval mode as const zstring ptr, byval error as GError ptr ptr) as GIOChannel ptr
-	declare function g_io_channel_new_file alias "g_io_channel_new_file_utf8"(byval filename as const zstring ptr, byval mode as const zstring ptr, byval error as GError ptr ptr) as GIOChannel ptr
+	declare function g_io_channel_new_file_utf8(byval filename as const gchar ptr, byval mode as const gchar ptr, byval error as GError ptr ptr) as GIOChannel ptr
+	declare function g_io_channel_new_file alias "g_io_channel_new_file_utf8"(byval filename as const gchar ptr, byval mode as const gchar ptr, byval error as GError ptr ptr) as GIOChannel ptr
 #endif
 
 #define __G_KEY_FILE_H__
@@ -2322,48 +2384,48 @@ declare function g_key_file_ref(byval key_file as GKeyFile ptr) as GKeyFile ptr
 declare sub g_key_file_unref(byval key_file as GKeyFile ptr)
 declare sub g_key_file_free(byval key_file as GKeyFile ptr)
 declare sub g_key_file_set_list_separator(byval key_file as GKeyFile ptr, byval separator as byte)
-declare function g_key_file_load_from_file(byval key_file as GKeyFile ptr, byval file as const zstring ptr, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_load_from_data(byval key_file as GKeyFile ptr, byval data as const zstring ptr, byval length as gsize, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_load_from_dirs(byval key_file as GKeyFile ptr, byval file as const zstring ptr, byval search_dirs as const zstring ptr ptr, byval full_path as zstring ptr ptr, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_load_from_data_dirs(byval key_file as GKeyFile ptr, byval file as const zstring ptr, byval full_path as zstring ptr ptr, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_to_data(byval key_file as GKeyFile ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_key_file_save_to_file(byval key_file as GKeyFile ptr, byval filename as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_get_start_group(byval key_file as GKeyFile ptr) as zstring ptr
-declare function g_key_file_get_groups(byval key_file as GKeyFile ptr, byval length as gsize ptr) as zstring ptr ptr
-declare function g_key_file_get_keys(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr ptr
-declare function g_key_file_has_group(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr) as gboolean
-declare function g_key_file_has_key(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_get_value(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare sub g_key_file_set_value(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval value as const zstring ptr)
-declare function g_key_file_get_string(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare sub g_key_file_set_string(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval string as const zstring ptr)
-declare function g_key_file_get_locale_string(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval locale as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare sub g_key_file_set_locale_string(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval locale as const zstring ptr, byval string as const zstring ptr)
-declare function g_key_file_get_boolean(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare sub g_key_file_set_boolean(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval value as gboolean)
-declare function g_key_file_get_integer(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval error as GError ptr ptr) as gint
-declare sub g_key_file_set_integer(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval value as gint)
-declare function g_key_file_get_int64(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval error as GError ptr ptr) as gint64
-declare sub g_key_file_set_int64(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval value as gint64)
-declare function g_key_file_get_uint64(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval error as GError ptr ptr) as guint64
-declare sub g_key_file_set_uint64(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval value as guint64)
-declare function g_key_file_get_double(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval error as GError ptr ptr) as gdouble
-declare sub g_key_file_set_double(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval value as gdouble)
-declare function g_key_file_get_string_list(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr ptr
-declare sub g_key_file_set_string_list(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval list as const zstring const ptr ptr, byval length as gsize)
-declare function g_key_file_get_locale_string_list(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval locale as const zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr ptr
-declare sub g_key_file_set_locale_string_list(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval locale as const zstring ptr, byval list as const zstring const ptr ptr, byval length as gsize)
-declare function g_key_file_get_boolean_list(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean ptr
-declare sub g_key_file_set_boolean_list(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval list as gboolean ptr, byval length as gsize)
-declare function g_key_file_get_integer_list(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gint ptr
-declare sub g_key_file_set_double_list(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval list as gdouble ptr, byval length as gsize)
-declare function g_key_file_get_double_list(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gdouble ptr
-declare sub g_key_file_set_integer_list(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval list as gint ptr, byval length as gsize)
-declare function g_key_file_set_comment(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval comment as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_get_comment(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_key_file_remove_comment(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_remove_key(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval key as const zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_remove_group(byval key_file as GKeyFile ptr, byval group_name as const zstring ptr, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_load_from_file(byval key_file as GKeyFile ptr, byval file as const gchar ptr, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_load_from_data(byval key_file as GKeyFile ptr, byval data as const gchar ptr, byval length as gsize, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_load_from_dirs(byval key_file as GKeyFile ptr, byval file as const gchar ptr, byval search_dirs as const gchar ptr ptr, byval full_path as gchar ptr ptr, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_load_from_data_dirs(byval key_file as GKeyFile ptr, byval file as const gchar ptr, byval full_path as gchar ptr ptr, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_to_data(byval key_file as GKeyFile ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_key_file_save_to_file(byval key_file as GKeyFile ptr, byval filename as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_get_start_group(byval key_file as GKeyFile ptr) as gchar ptr
+declare function g_key_file_get_groups(byval key_file as GKeyFile ptr, byval length as gsize ptr) as gchar ptr ptr
+declare function g_key_file_get_keys(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gchar ptr ptr
+declare function g_key_file_has_group(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr) as gboolean
+declare function g_key_file_has_key(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_get_value(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
+declare sub g_key_file_set_value(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval value as const gchar ptr)
+declare function g_key_file_get_string(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
+declare sub g_key_file_set_string(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval string as const gchar ptr)
+declare function g_key_file_get_locale_string(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval locale as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
+declare sub g_key_file_set_locale_string(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval locale as const gchar ptr, byval string as const gchar ptr)
+declare function g_key_file_get_boolean(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare sub g_key_file_set_boolean(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval value as gboolean)
+declare function g_key_file_get_integer(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval error as GError ptr ptr) as gint
+declare sub g_key_file_set_integer(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval value as gint)
+declare function g_key_file_get_int64(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval error as GError ptr ptr) as gint64
+declare sub g_key_file_set_int64(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval value as gint64)
+declare function g_key_file_get_uint64(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval error as GError ptr ptr) as guint64
+declare sub g_key_file_set_uint64(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval value as guint64)
+declare function g_key_file_get_double(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval error as GError ptr ptr) as gdouble
+declare sub g_key_file_set_double(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval value as gdouble)
+declare function g_key_file_get_string_list(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gchar ptr ptr
+declare sub g_key_file_set_string_list(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval list as const gchar const ptr ptr, byval length as gsize)
+declare function g_key_file_get_locale_string_list(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval locale as const gchar ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gchar ptr ptr
+declare sub g_key_file_set_locale_string_list(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval locale as const gchar ptr, byval list as const gchar const ptr ptr, byval length as gsize)
+declare function g_key_file_get_boolean_list(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean ptr
+declare sub g_key_file_set_boolean_list(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval list as gboolean ptr, byval length as gsize)
+declare function g_key_file_get_integer_list(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gint ptr
+declare sub g_key_file_set_double_list(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval list as gdouble ptr, byval length as gsize)
+declare function g_key_file_get_double_list(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gdouble ptr
+declare sub g_key_file_set_integer_list(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval list as gint ptr, byval length as gsize)
+declare function g_key_file_set_comment(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval comment as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_get_comment(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_key_file_remove_comment(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_remove_key(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval key as const gchar ptr, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_remove_group(byval key_file as GKeyFile ptr, byval group_name as const gchar ptr, byval error as GError ptr ptr) as gboolean
 
 #define G_KEY_FILE_DESKTOP_GROUP "Desktop Entry"
 #define G_KEY_FILE_DESKTOP_KEY_TYPE "Type"
@@ -2393,10 +2455,10 @@ declare function g_key_file_remove_group(byval key_file as GKeyFile ptr, byval g
 #define __G_MAPPED_FILE_H__
 type GMappedFile as _GMappedFile
 
-declare function g_mapped_file_new(byval filename as const zstring ptr, byval writable as gboolean, byval error as GError ptr ptr) as GMappedFile ptr
+declare function g_mapped_file_new(byval filename as const gchar ptr, byval writable as gboolean, byval error as GError ptr ptr) as GMappedFile ptr
 declare function g_mapped_file_new_from_fd(byval fd as gint, byval writable as gboolean, byval error as GError ptr ptr) as GMappedFile ptr
 declare function g_mapped_file_get_length(byval file as GMappedFile ptr) as gsize
-declare function g_mapped_file_get_contents(byval file as GMappedFile ptr) as zstring ptr
+declare function g_mapped_file_get_contents(byval file as GMappedFile ptr) as gchar ptr
 declare function g_mapped_file_get_bytes(byval file as GMappedFile ptr) as GBytes ptr
 declare function g_mapped_file_ref(byval file as GMappedFile ptr) as GMappedFile ptr
 declare sub g_mapped_file_unref(byval file as GMappedFile ptr)
@@ -2429,10 +2491,10 @@ type GMarkupParseContext as _GMarkupParseContext
 type GMarkupParser as _GMarkupParser
 
 type _GMarkupParser
-	start_element as sub(byval context as GMarkupParseContext ptr, byval element_name as const zstring ptr, byval attribute_names as const zstring ptr ptr, byval attribute_values as const zstring ptr ptr, byval user_data as gpointer, byval error as GError ptr ptr)
-	end_element as sub(byval context as GMarkupParseContext ptr, byval element_name as const zstring ptr, byval user_data as gpointer, byval error as GError ptr ptr)
-	text as sub(byval context as GMarkupParseContext ptr, byval text as const zstring ptr, byval text_len as gsize, byval user_data as gpointer, byval error as GError ptr ptr)
-	passthrough as sub(byval context as GMarkupParseContext ptr, byval passthrough_text as const zstring ptr, byval text_len as gsize, byval user_data as gpointer, byval error as GError ptr ptr)
+	start_element as sub(byval context as GMarkupParseContext ptr, byval element_name as const gchar ptr, byval attribute_names as const gchar ptr ptr, byval attribute_values as const gchar ptr ptr, byval user_data as gpointer, byval error as GError ptr ptr)
+	end_element as sub(byval context as GMarkupParseContext ptr, byval element_name as const gchar ptr, byval user_data as gpointer, byval error as GError ptr ptr)
+	text as sub(byval context as GMarkupParseContext ptr, byval text as const gchar ptr, byval text_len as gsize, byval user_data as gpointer, byval error as GError ptr ptr)
+	passthrough as sub(byval context as GMarkupParseContext ptr, byval passthrough_text as const gchar ptr, byval text_len as gsize, byval user_data as gpointer, byval error as GError ptr ptr)
 	error as sub(byval context as GMarkupParseContext ptr, byval error as GError ptr, byval user_data as gpointer)
 end type
 
@@ -2440,17 +2502,17 @@ declare function g_markup_parse_context_new(byval parser as const GMarkupParser 
 declare function g_markup_parse_context_ref(byval context as GMarkupParseContext ptr) as GMarkupParseContext ptr
 declare sub g_markup_parse_context_unref(byval context as GMarkupParseContext ptr)
 declare sub g_markup_parse_context_free(byval context as GMarkupParseContext ptr)
-declare function g_markup_parse_context_parse(byval context as GMarkupParseContext ptr, byval text as const zstring ptr, byval text_len as gssize, byval error as GError ptr ptr) as gboolean
+declare function g_markup_parse_context_parse(byval context as GMarkupParseContext ptr, byval text as const gchar ptr, byval text_len as gssize, byval error as GError ptr ptr) as gboolean
 declare sub g_markup_parse_context_push(byval context as GMarkupParseContext ptr, byval parser as const GMarkupParser ptr, byval user_data as gpointer)
 declare function g_markup_parse_context_pop(byval context as GMarkupParseContext ptr) as gpointer
 declare function g_markup_parse_context_end_parse(byval context as GMarkupParseContext ptr, byval error as GError ptr ptr) as gboolean
-declare function g_markup_parse_context_get_element(byval context as GMarkupParseContext ptr) as const zstring ptr
+declare function g_markup_parse_context_get_element(byval context as GMarkupParseContext ptr) as const gchar ptr
 declare function g_markup_parse_context_get_element_stack(byval context as GMarkupParseContext ptr) as const GSList ptr
 declare sub g_markup_parse_context_get_position(byval context as GMarkupParseContext ptr, byval line_number as gint ptr, byval char_number as gint ptr)
 declare function g_markup_parse_context_get_user_data(byval context as GMarkupParseContext ptr) as gpointer
-declare function g_markup_escape_text(byval text as const zstring ptr, byval length as gssize) as zstring ptr
-declare function g_markup_printf_escaped(byval format as const zstring ptr, ...) as zstring ptr
-declare function g_markup_vprintf_escaped(byval format as const zstring ptr, byval args as va_list) as zstring ptr
+declare function g_markup_escape_text(byval text as const gchar ptr, byval length as gssize) as gchar ptr
+declare function g_markup_printf_escaped(byval format as const zstring ptr, ...) as gchar ptr
+declare function g_markup_vprintf_escaped(byval format as const zstring ptr, byval args as va_list) as gchar ptr
 
 type GMarkupCollectType as long
 enum
@@ -2462,9 +2524,9 @@ enum
 	G_MARKUP_COLLECT_OPTIONAL = 1 shl 16
 end enum
 
-declare function g_markup_collect_attributes(byval element_name as const zstring ptr, byval attribute_names as const zstring ptr ptr, byval attribute_values as const zstring ptr ptr, byval error as GError ptr ptr, byval first_type as GMarkupCollectType, byval first_attr as const zstring ptr, ...) as gboolean
+declare function g_markup_collect_attributes(byval element_name as const gchar ptr, byval attribute_names as const gchar ptr ptr, byval attribute_values as const gchar ptr ptr, byval error as GError ptr ptr, byval first_type as GMarkupCollectType, byval first_attr as const gchar ptr, ...) as gboolean
 #define __G_MESSAGES_H__
-declare function g_printf_string_upper_bound(byval format as const zstring ptr, byval args as va_list) as gsize
+declare function g_printf_string_upper_bound(byval format as const gchar ptr, byval args as va_list) as gsize
 const G_LOG_LEVEL_USER_SHIFT = 8
 
 type GLogLevelFlags as long
@@ -2480,33 +2542,33 @@ enum
 	G_LOG_LEVEL_MASK = not (G_LOG_FLAG_RECURSION or G_LOG_FLAG_FATAL)
 end enum
 
-#define G_LOG_FATAL_MASK (G_LOG_FLAG_RECURSION or G_LOG_LEVEL_ERROR)
-type GLogFunc as sub(byval log_domain as const zstring ptr, byval log_level as GLogLevelFlags, byval message as const zstring ptr, byval user_data as gpointer)
-declare function g_log_set_handler(byval log_domain as const zstring ptr, byval log_levels as GLogLevelFlags, byval log_func as GLogFunc, byval user_data as gpointer) as guint
-declare sub g_log_remove_handler(byval log_domain as const zstring ptr, byval handler_id as guint)
-declare sub g_log_default_handler(byval log_domain as const zstring ptr, byval log_level as GLogLevelFlags, byval message as const zstring ptr, byval unused_data as gpointer)
+const G_LOG_FATAL_MASK = G_LOG_FLAG_RECURSION or G_LOG_LEVEL_ERROR
+type GLogFunc as sub(byval log_domain as const gchar ptr, byval log_level as GLogLevelFlags, byval message as const gchar ptr, byval user_data as gpointer)
+declare function g_log_set_handler(byval log_domain as const gchar ptr, byval log_levels as GLogLevelFlags, byval log_func as GLogFunc, byval user_data as gpointer) as guint
+declare sub g_log_remove_handler(byval log_domain as const gchar ptr, byval handler_id as guint)
+declare sub g_log_default_handler(byval log_domain as const gchar ptr, byval log_level as GLogLevelFlags, byval message as const gchar ptr, byval unused_data as gpointer)
 declare function g_log_set_default_handler(byval log_func as GLogFunc, byval user_data as gpointer) as GLogFunc
-declare sub g_log(byval log_domain as const zstring ptr, byval log_level as GLogLevelFlags, byval format as const zstring ptr, ...)
-declare sub g_logv(byval log_domain as const zstring ptr, byval log_level as GLogLevelFlags, byval format as const zstring ptr, byval args as va_list)
-declare function g_log_set_fatal_mask(byval log_domain as const zstring ptr, byval fatal_mask as GLogLevelFlags) as GLogLevelFlags
+declare sub g_log(byval log_domain as const gchar ptr, byval log_level as GLogLevelFlags, byval format as const gchar ptr, ...)
+declare sub g_logv(byval log_domain as const gchar ptr, byval log_level as GLogLevelFlags, byval format as const gchar ptr, byval args as va_list)
+declare function g_log_set_fatal_mask(byval log_domain as const gchar ptr, byval fatal_mask as GLogLevelFlags) as GLogLevelFlags
 declare function g_log_set_always_fatal(byval fatal_mask as GLogLevelFlags) as GLogLevelFlags
-declare sub _g_log_fallback_handler(byval log_domain as const zstring ptr, byval log_level as GLogLevelFlags, byval message as const zstring ptr, byval unused_data as gpointer)
+declare sub _g_log_fallback_handler(byval log_domain as const gchar ptr, byval log_level as GLogLevelFlags, byval message as const gchar ptr, byval unused_data as gpointer)
 declare sub g_return_if_fail_warning(byval log_domain as const zstring ptr, byval pretty_function as const zstring ptr, byval expression as const zstring ptr)
 declare sub g_warn_message(byval domain as const zstring ptr, byval file as const zstring ptr, byval line as long, byval func as const zstring ptr, byval warnexpr as const zstring ptr)
 declare sub g_assert_warning(byval log_domain as const zstring ptr, byval file as const zstring ptr, byval line as const long, byval pretty_function as const zstring ptr, byval expression as const zstring ptr)
 
-const G_LOG_DOMAIN = cptr(zstring ptr, 0)
+const G_LOG_DOMAIN = cptr(gchar ptr, 0)
 #define g_error(__VA_ARGS__...) scope : g_log(G_LOG_DOMAIN, G_LOG_LEVEL_ERROR, __VA_ARGS__) : end scope
 #define g_message(__VA_ARGS__...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_MESSAGE, __VA_ARGS__)
 #define g_critical(__VA_ARGS__...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL, __VA_ARGS__)
 #define g_warning(__VA_ARGS__...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, __VA_ARGS__)
 #define g_info(__VA_ARGS__...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_INFO, __VA_ARGS__)
 #define g_debug(__VA_ARGS__...) g_log(G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, __VA_ARGS__)
-type GPrintFunc as sub(byval string as const zstring ptr)
+type GPrintFunc as sub(byval string as const gchar ptr)
 
-declare sub g_print(byval format as const zstring ptr, ...)
+declare sub g_print(byval format as const gchar ptr, ...)
 declare function g_set_print_handler(byval func as GPrintFunc) as GPrintFunc
-declare sub g_printerr(byval format as const zstring ptr, ...)
+declare sub g_printerr(byval format as const gchar ptr, ...)
 declare function g_set_printerr_handler(byval func as GPrintFunc) as GPrintFunc
 
 #define g_warn_if_reached() scope : g_warn_message(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, NULL) : end scope
@@ -2573,7 +2635,7 @@ enum
 	G_OPTION_ARG_INT64
 end enum
 
-type GOptionArgFunc as function(byval option_name as const zstring ptr, byval value as const zstring ptr, byval data as gpointer, byval error as GError ptr ptr) as gboolean
+type GOptionArgFunc as function(byval option_name as const gchar ptr, byval value as const gchar ptr, byval data as gpointer, byval error as GError ptr ptr) as gboolean
 type GOptionParseFunc as function(byval context as GOptionContext ptr, byval group as GOptionGroup ptr, byval data as gpointer, byval error as GError ptr ptr) as gboolean
 type GOptionErrorFunc as sub(byval context as GOptionContext ptr, byval group as GOptionGroup ptr, byval data as gpointer, byval error as GError ptr ptr)
 #define G_OPTION_ERROR g_option_error_quark()
@@ -2588,50 +2650,54 @@ end enum
 declare function g_option_error_quark() as GQuark
 
 type _GOptionEntry
-	long_name as const zstring ptr
+	long_name as const gchar ptr
 	short_name as byte
 	flags as gint
 	arg as GOptionArg
 	arg_data as gpointer
-	description as const zstring ptr
-	arg_description as const zstring ptr
+	description as const gchar ptr
+	arg_description as const gchar ptr
 end type
 
 #define G_OPTION_REMAINING ""
-declare function g_option_context_new(byval parameter_string as const zstring ptr) as GOptionContext ptr
-declare sub g_option_context_set_summary(byval context as GOptionContext ptr, byval summary as const zstring ptr)
-declare function g_option_context_get_summary(byval context as GOptionContext ptr) as const zstring ptr
-declare sub g_option_context_set_description(byval context as GOptionContext ptr, byval description as const zstring ptr)
-declare function g_option_context_get_description(byval context as GOptionContext ptr) as const zstring ptr
+declare function g_option_context_new(byval parameter_string as const gchar ptr) as GOptionContext ptr
+declare sub g_option_context_set_summary(byval context as GOptionContext ptr, byval summary as const gchar ptr)
+declare function g_option_context_get_summary(byval context as GOptionContext ptr) as const gchar ptr
+declare sub g_option_context_set_description(byval context as GOptionContext ptr, byval description as const gchar ptr)
+declare function g_option_context_get_description(byval context as GOptionContext ptr) as const gchar ptr
 declare sub g_option_context_free(byval context as GOptionContext ptr)
 declare sub g_option_context_set_help_enabled(byval context as GOptionContext ptr, byval help_enabled as gboolean)
 declare function g_option_context_get_help_enabled(byval context as GOptionContext ptr) as gboolean
 declare sub g_option_context_set_ignore_unknown_options(byval context as GOptionContext ptr, byval ignore_unknown as gboolean)
 declare function g_option_context_get_ignore_unknown_options(byval context as GOptionContext ptr) as gboolean
-declare sub g_option_context_add_main_entries(byval context as GOptionContext ptr, byval entries as const GOptionEntry ptr, byval translation_domain as const zstring ptr)
-declare function g_option_context_parse(byval context as GOptionContext ptr, byval argc as gint ptr, byval argv as zstring ptr ptr ptr, byval error as GError ptr ptr) as gboolean
-declare function g_option_context_parse_strv(byval context as GOptionContext ptr, byval arguments as zstring ptr ptr ptr, byval error as GError ptr ptr) as gboolean
+declare sub g_option_context_set_strict_posix(byval context as GOptionContext ptr, byval strict_posix as gboolean)
+declare function g_option_context_get_strict_posix(byval context as GOptionContext ptr) as gboolean
+declare sub g_option_context_add_main_entries(byval context as GOptionContext ptr, byval entries as const GOptionEntry ptr, byval translation_domain as const gchar ptr)
+declare function g_option_context_parse(byval context as GOptionContext ptr, byval argc as gint ptr, byval argv as gchar ptr ptr ptr, byval error as GError ptr ptr) as gboolean
+declare function g_option_context_parse_strv(byval context as GOptionContext ptr, byval arguments as gchar ptr ptr ptr, byval error as GError ptr ptr) as gboolean
 declare sub g_option_context_set_translate_func(byval context as GOptionContext ptr, byval func as GTranslateFunc, byval data as gpointer, byval destroy_notify as GDestroyNotify)
-declare sub g_option_context_set_translation_domain(byval context as GOptionContext ptr, byval domain as const zstring ptr)
+declare sub g_option_context_set_translation_domain(byval context as GOptionContext ptr, byval domain as const gchar ptr)
 declare sub g_option_context_add_group(byval context as GOptionContext ptr, byval group as GOptionGroup ptr)
 declare sub g_option_context_set_main_group(byval context as GOptionContext ptr, byval group as GOptionGroup ptr)
 declare function g_option_context_get_main_group(byval context as GOptionContext ptr) as GOptionGroup ptr
-declare function g_option_context_get_help(byval context as GOptionContext ptr, byval main_help as gboolean, byval group as GOptionGroup ptr) as zstring ptr
-declare function g_option_group_new(byval name as const zstring ptr, byval description as const zstring ptr, byval help_description as const zstring ptr, byval user_data as gpointer, byval destroy as GDestroyNotify) as GOptionGroup ptr
+declare function g_option_context_get_help(byval context as GOptionContext ptr, byval main_help as gboolean, byval group as GOptionGroup ptr) as gchar ptr
+declare function g_option_group_new(byval name as const gchar ptr, byval description as const gchar ptr, byval help_description as const gchar ptr, byval user_data as gpointer, byval destroy as GDestroyNotify) as GOptionGroup ptr
 declare sub g_option_group_set_parse_hooks(byval group as GOptionGroup ptr, byval pre_parse_func as GOptionParseFunc, byval post_parse_func as GOptionParseFunc)
 declare sub g_option_group_set_error_hook(byval group as GOptionGroup ptr, byval error_func as GOptionErrorFunc)
 declare sub g_option_group_free(byval group as GOptionGroup ptr)
+declare function g_option_group_ref(byval group as GOptionGroup ptr) as GOptionGroup ptr
+declare sub g_option_group_unref(byval group as GOptionGroup ptr)
 declare sub g_option_group_add_entries(byval group as GOptionGroup ptr, byval entries as const GOptionEntry ptr)
 declare sub g_option_group_set_translate_func(byval group as GOptionGroup ptr, byval func as GTranslateFunc, byval data as gpointer, byval destroy_notify as GDestroyNotify)
-declare sub g_option_group_set_translation_domain(byval group as GOptionGroup ptr, byval domain as const zstring ptr)
+declare sub g_option_group_set_translation_domain(byval group as GOptionGroup ptr, byval domain as const gchar ptr)
 #define __G_PATTERN_H__
 type GPatternSpec as _GPatternSpec
-declare function g_pattern_spec_new(byval pattern as const zstring ptr) as GPatternSpec ptr
+declare function g_pattern_spec_new(byval pattern as const gchar ptr) as GPatternSpec ptr
 declare sub g_pattern_spec_free(byval pspec as GPatternSpec ptr)
 declare function g_pattern_spec_equal(byval pspec1 as GPatternSpec ptr, byval pspec2 as GPatternSpec ptr) as gboolean
-declare function g_pattern_match(byval pspec as GPatternSpec ptr, byval string_length as guint, byval string as const zstring ptr, byval string_reversed as const zstring ptr) as gboolean
-declare function g_pattern_match_string(byval pspec as GPatternSpec ptr, byval string as const zstring ptr) as gboolean
-declare function g_pattern_match_simple(byval pattern as const zstring ptr, byval string as const zstring ptr) as gboolean
+declare function g_pattern_match(byval pspec as GPatternSpec ptr, byval string_length as guint, byval string as const gchar ptr, byval string_reversed as const gchar ptr) as gboolean
+declare function g_pattern_match_string(byval pspec as GPatternSpec ptr, byval string as const gchar ptr) as gboolean
+declare function g_pattern_match_simple(byval pattern as const gchar ptr, byval string as const gchar ptr) as gboolean
 #define __G_PRIMES_H__
 declare function g_spaced_primes_closest(byval num as guint) as guint
 #define __G_QSORT_H__
@@ -2817,33 +2883,33 @@ type GRegex as _GRegex
 type GMatchInfo as _GMatchInfo
 type GRegexEvalCallback as function(byval match_info as const GMatchInfo ptr, byval result as GString ptr, byval user_data as gpointer) as gboolean
 
-declare function g_regex_new(byval pattern as const zstring ptr, byval compile_options as GRegexCompileFlags, byval match_options as GRegexMatchFlags, byval error as GError ptr ptr) as GRegex ptr
+declare function g_regex_new(byval pattern as const gchar ptr, byval compile_options as GRegexCompileFlags, byval match_options as GRegexMatchFlags, byval error as GError ptr ptr) as GRegex ptr
 declare function g_regex_ref(byval regex as GRegex ptr) as GRegex ptr
 declare sub g_regex_unref(byval regex as GRegex ptr)
-declare function g_regex_get_pattern(byval regex as const GRegex ptr) as const zstring ptr
+declare function g_regex_get_pattern(byval regex as const GRegex ptr) as const gchar ptr
 declare function g_regex_get_max_backref(byval regex as const GRegex ptr) as gint
 declare function g_regex_get_capture_count(byval regex as const GRegex ptr) as gint
 declare function g_regex_get_has_cr_or_lf(byval regex as const GRegex ptr) as gboolean
 declare function g_regex_get_max_lookbehind(byval regex as const GRegex ptr) as gint
-declare function g_regex_get_string_number(byval regex as const GRegex ptr, byval name as const zstring ptr) as gint
-declare function g_regex_escape_string(byval string as const zstring ptr, byval length as gint) as zstring ptr
-declare function g_regex_escape_nul(byval string as const zstring ptr, byval length as gint) as zstring ptr
+declare function g_regex_get_string_number(byval regex as const GRegex ptr, byval name as const gchar ptr) as gint
+declare function g_regex_escape_string(byval string as const gchar ptr, byval length as gint) as gchar ptr
+declare function g_regex_escape_nul(byval string as const gchar ptr, byval length as gint) as gchar ptr
 declare function g_regex_get_compile_flags(byval regex as const GRegex ptr) as GRegexCompileFlags
 declare function g_regex_get_match_flags(byval regex as const GRegex ptr) as GRegexMatchFlags
-declare function g_regex_match_simple(byval pattern as const zstring ptr, byval string as const zstring ptr, byval compile_options as GRegexCompileFlags, byval match_options as GRegexMatchFlags) as gboolean
-declare function g_regex_match(byval regex as const GRegex ptr, byval string as const zstring ptr, byval match_options as GRegexMatchFlags, byval match_info as GMatchInfo ptr ptr) as gboolean
-declare function g_regex_match_full(byval regex as const GRegex ptr, byval string as const zstring ptr, byval string_len as gssize, byval start_position as gint, byval match_options as GRegexMatchFlags, byval match_info as GMatchInfo ptr ptr, byval error as GError ptr ptr) as gboolean
-declare function g_regex_match_all(byval regex as const GRegex ptr, byval string as const zstring ptr, byval match_options as GRegexMatchFlags, byval match_info as GMatchInfo ptr ptr) as gboolean
-declare function g_regex_match_all_full(byval regex as const GRegex ptr, byval string as const zstring ptr, byval string_len as gssize, byval start_position as gint, byval match_options as GRegexMatchFlags, byval match_info as GMatchInfo ptr ptr, byval error as GError ptr ptr) as gboolean
-declare function g_regex_split_simple(byval pattern as const zstring ptr, byval string as const zstring ptr, byval compile_options as GRegexCompileFlags, byval match_options as GRegexMatchFlags) as zstring ptr ptr
-declare function g_regex_split(byval regex as const GRegex ptr, byval string as const zstring ptr, byval match_options as GRegexMatchFlags) as zstring ptr ptr
-declare function g_regex_split_full(byval regex as const GRegex ptr, byval string as const zstring ptr, byval string_len as gssize, byval start_position as gint, byval match_options as GRegexMatchFlags, byval max_tokens as gint, byval error as GError ptr ptr) as zstring ptr ptr
-declare function g_regex_replace(byval regex as const GRegex ptr, byval string as const zstring ptr, byval string_len as gssize, byval start_position as gint, byval replacement as const zstring ptr, byval match_options as GRegexMatchFlags, byval error as GError ptr ptr) as zstring ptr
-declare function g_regex_replace_literal(byval regex as const GRegex ptr, byval string as const zstring ptr, byval string_len as gssize, byval start_position as gint, byval replacement as const zstring ptr, byval match_options as GRegexMatchFlags, byval error as GError ptr ptr) as zstring ptr
-declare function g_regex_replace_eval(byval regex as const GRegex ptr, byval string as const zstring ptr, byval string_len as gssize, byval start_position as gint, byval match_options as GRegexMatchFlags, byval eval as GRegexEvalCallback, byval user_data as gpointer, byval error as GError ptr ptr) as zstring ptr
-declare function g_regex_check_replacement(byval replacement as const zstring ptr, byval has_references as gboolean ptr, byval error as GError ptr ptr) as gboolean
+declare function g_regex_match_simple(byval pattern as const gchar ptr, byval string as const gchar ptr, byval compile_options as GRegexCompileFlags, byval match_options as GRegexMatchFlags) as gboolean
+declare function g_regex_match(byval regex as const GRegex ptr, byval string as const gchar ptr, byval match_options as GRegexMatchFlags, byval match_info as GMatchInfo ptr ptr) as gboolean
+declare function g_regex_match_full(byval regex as const GRegex ptr, byval string as const gchar ptr, byval string_len as gssize, byval start_position as gint, byval match_options as GRegexMatchFlags, byval match_info as GMatchInfo ptr ptr, byval error as GError ptr ptr) as gboolean
+declare function g_regex_match_all(byval regex as const GRegex ptr, byval string as const gchar ptr, byval match_options as GRegexMatchFlags, byval match_info as GMatchInfo ptr ptr) as gboolean
+declare function g_regex_match_all_full(byval regex as const GRegex ptr, byval string as const gchar ptr, byval string_len as gssize, byval start_position as gint, byval match_options as GRegexMatchFlags, byval match_info as GMatchInfo ptr ptr, byval error as GError ptr ptr) as gboolean
+declare function g_regex_split_simple(byval pattern as const gchar ptr, byval string as const gchar ptr, byval compile_options as GRegexCompileFlags, byval match_options as GRegexMatchFlags) as gchar ptr ptr
+declare function g_regex_split(byval regex as const GRegex ptr, byval string as const gchar ptr, byval match_options as GRegexMatchFlags) as gchar ptr ptr
+declare function g_regex_split_full(byval regex as const GRegex ptr, byval string as const gchar ptr, byval string_len as gssize, byval start_position as gint, byval match_options as GRegexMatchFlags, byval max_tokens as gint, byval error as GError ptr ptr) as gchar ptr ptr
+declare function g_regex_replace(byval regex as const GRegex ptr, byval string as const gchar ptr, byval string_len as gssize, byval start_position as gint, byval replacement as const gchar ptr, byval match_options as GRegexMatchFlags, byval error as GError ptr ptr) as gchar ptr
+declare function g_regex_replace_literal(byval regex as const GRegex ptr, byval string as const gchar ptr, byval string_len as gssize, byval start_position as gint, byval replacement as const gchar ptr, byval match_options as GRegexMatchFlags, byval error as GError ptr ptr) as gchar ptr
+declare function g_regex_replace_eval(byval regex as const GRegex ptr, byval string as const gchar ptr, byval string_len as gssize, byval start_position as gint, byval match_options as GRegexMatchFlags, byval eval as GRegexEvalCallback, byval user_data as gpointer, byval error as GError ptr ptr) as gchar ptr
+declare function g_regex_check_replacement(byval replacement as const gchar ptr, byval has_references as gboolean ptr, byval error as GError ptr ptr) as gboolean
 declare function g_match_info_get_regex(byval match_info as const GMatchInfo ptr) as GRegex ptr
-declare function g_match_info_get_string(byval match_info as const GMatchInfo ptr) as const zstring ptr
+declare function g_match_info_get_string(byval match_info as const GMatchInfo ptr) as const gchar ptr
 declare function g_match_info_ref(byval match_info as GMatchInfo ptr) as GMatchInfo ptr
 declare sub g_match_info_unref(byval match_info as GMatchInfo ptr)
 declare sub g_match_info_free(byval match_info as GMatchInfo ptr)
@@ -2851,18 +2917,18 @@ declare function g_match_info_next(byval match_info as GMatchInfo ptr, byval err
 declare function g_match_info_matches(byval match_info as const GMatchInfo ptr) as gboolean
 declare function g_match_info_get_match_count(byval match_info as const GMatchInfo ptr) as gint
 declare function g_match_info_is_partial_match(byval match_info as const GMatchInfo ptr) as gboolean
-declare function g_match_info_expand_references(byval match_info as const GMatchInfo ptr, byval string_to_expand as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_match_info_fetch(byval match_info as const GMatchInfo ptr, byval match_num as gint) as zstring ptr
+declare function g_match_info_expand_references(byval match_info as const GMatchInfo ptr, byval string_to_expand as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_match_info_fetch(byval match_info as const GMatchInfo ptr, byval match_num as gint) as gchar ptr
 declare function g_match_info_fetch_pos(byval match_info as const GMatchInfo ptr, byval match_num as gint, byval start_pos as gint ptr, byval end_pos as gint ptr) as gboolean
-declare function g_match_info_fetch_named(byval match_info as const GMatchInfo ptr, byval name as const zstring ptr) as zstring ptr
-declare function g_match_info_fetch_named_pos(byval match_info as const GMatchInfo ptr, byval name as const zstring ptr, byval start_pos as gint ptr, byval end_pos as gint ptr) as gboolean
-declare function g_match_info_fetch_all(byval match_info as const GMatchInfo ptr) as zstring ptr ptr
+declare function g_match_info_fetch_named(byval match_info as const GMatchInfo ptr, byval name as const gchar ptr) as gchar ptr
+declare function g_match_info_fetch_named_pos(byval match_info as const GMatchInfo ptr, byval name as const gchar ptr, byval start_pos as gint ptr, byval end_pos as gint ptr) as gboolean
+declare function g_match_info_fetch_all(byval match_info as const GMatchInfo ptr) as gchar ptr ptr
 #define __G_SCANNER_H__
 
 type GScanner as _GScanner
 type GScannerConfig as _GScannerConfig
 type GTokenValue as _GTokenValue
-type GScannerMsgFunc as sub(byval scanner as GScanner ptr, byval message as zstring ptr, byval error as gboolean)
+type GScannerMsgFunc as sub(byval scanner as GScanner ptr, byval message as gchar ptr, byval error as gboolean)
 
 #define G_CSET_A_2_Z_ "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #define G_CSET_a_2_z "abcdefghijklmnopqrstuvwxyz"
@@ -2912,24 +2978,24 @@ end enum
 
 union _GTokenValue
 	v_symbol as gpointer
-	v_identifier as zstring ptr
+	v_identifier as gchar ptr
 	v_binary as gulong
 	v_octal as gulong
 	v_int as gulong
 	v_int64 as guint64
 	v_float as gdouble
 	v_hex as gulong
-	v_string as zstring ptr
-	v_comment as zstring ptr
+	v_string as gchar ptr
+	v_comment as gchar ptr
 	v_char as guchar
 	v_error as guint
 end union
 
 type _GScannerConfig
-	cset_skip_characters as zstring ptr
-	cset_identifier_first as zstring ptr
-	cset_identifier_nth as zstring ptr
-	cpair_comment_single as zstring ptr
+	cset_skip_characters as gchar ptr
+	cset_identifier_first as gchar ptr
+	cset_identifier_nth as gchar ptr
+	cpair_comment_single as gchar ptr
 	case_sensitive : 1 as guint
 	skip_comment_multi : 1 as guint
 	skip_comment_single : 1 as guint
@@ -2959,7 +3025,7 @@ type _GScanner
 	user_data as gpointer
 	max_parse_errors as guint
 	parse_errors as guint
-	input_name as const zstring ptr
+	input_name as const gchar ptr
 	qdata as GData ptr
 	config as GScannerConfig ptr
 	token as GTokenType
@@ -2972,9 +3038,9 @@ type _GScanner
 	next_position as guint
 	symbol_table as GHashTable ptr
 	input_fd as gint
-	text as const zstring ptr
-	text_end as const zstring ptr
-	buffer as zstring ptr
+	text as const gchar ptr
+	text_end as const gchar ptr
+	buffer as gchar ptr
 	scope_id as guint
 	msg_handler as GScannerMsgFunc
 end type
@@ -2983,7 +3049,7 @@ declare function g_scanner_new(byval config_templ as const GScannerConfig ptr) a
 declare sub g_scanner_destroy(byval scanner as GScanner ptr)
 declare sub g_scanner_input_file(byval scanner as GScanner ptr, byval input_fd as gint)
 declare sub g_scanner_sync_file_offset(byval scanner as GScanner ptr)
-declare sub g_scanner_input_text(byval scanner as GScanner ptr, byval text as const zstring ptr, byval text_len as guint)
+declare sub g_scanner_input_text(byval scanner as GScanner ptr, byval text as const gchar ptr, byval text_len as guint)
 declare function g_scanner_get_next_token(byval scanner as GScanner ptr) as GTokenType
 declare function g_scanner_peek_next_token(byval scanner as GScanner ptr) as GTokenType
 declare function g_scanner_cur_token(byval scanner as GScanner ptr) as GTokenType
@@ -2992,14 +3058,14 @@ declare function g_scanner_cur_line(byval scanner as GScanner ptr) as guint
 declare function g_scanner_cur_position(byval scanner as GScanner ptr) as guint
 declare function g_scanner_eof(byval scanner as GScanner ptr) as gboolean
 declare function g_scanner_set_scope(byval scanner as GScanner ptr, byval scope_id as guint) as guint
-declare sub g_scanner_scope_add_symbol(byval scanner as GScanner ptr, byval scope_id as guint, byval symbol as const zstring ptr, byval value as gpointer)
-declare sub g_scanner_scope_remove_symbol(byval scanner as GScanner ptr, byval scope_id as guint, byval symbol as const zstring ptr)
-declare function g_scanner_scope_lookup_symbol(byval scanner as GScanner ptr, byval scope_id as guint, byval symbol as const zstring ptr) as gpointer
+declare sub g_scanner_scope_add_symbol(byval scanner as GScanner ptr, byval scope_id as guint, byval symbol as const gchar ptr, byval value as gpointer)
+declare sub g_scanner_scope_remove_symbol(byval scanner as GScanner ptr, byval scope_id as guint, byval symbol as const gchar ptr)
+declare function g_scanner_scope_lookup_symbol(byval scanner as GScanner ptr, byval scope_id as guint, byval symbol as const gchar ptr) as gpointer
 declare sub g_scanner_scope_foreach_symbol(byval scanner as GScanner ptr, byval scope_id as guint, byval func as GHFunc, byval user_data as gpointer)
-declare function g_scanner_lookup_symbol(byval scanner as GScanner ptr, byval symbol as const zstring ptr) as gpointer
-declare sub g_scanner_unexp_token(byval scanner as GScanner ptr, byval expected_token as GTokenType, byval identifier_spec as const zstring ptr, byval symbol_spec as const zstring ptr, byval symbol_name as const zstring ptr, byval message as const zstring ptr, byval is_error as gint)
-declare sub g_scanner_error(byval scanner as GScanner ptr, byval format as const zstring ptr, ...)
-declare sub g_scanner_warn(byval scanner as GScanner ptr, byval format as const zstring ptr, ...)
+declare function g_scanner_lookup_symbol(byval scanner as GScanner ptr, byval symbol as const gchar ptr) as gpointer
+declare sub g_scanner_unexp_token(byval scanner as GScanner ptr, byval expected_token as GTokenType, byval identifier_spec as const gchar ptr, byval symbol_spec as const gchar ptr, byval symbol_name as const gchar ptr, byval message as const gchar ptr, byval is_error as gint)
+declare sub g_scanner_error(byval scanner as GScanner ptr, byval format as const gchar ptr, ...)
+declare sub g_scanner_warn(byval scanner as GScanner ptr, byval format as const gchar ptr, ...)
 
 #define g_scanner_add_symbol(scanner, symbol, value) scope : g_scanner_scope_add_symbol((scanner), 0, (symbol), (value)) : end scope
 #define g_scanner_remove_symbol(scanner, symbol) scope : g_scanner_scope_remove_symbol((scanner), 0, (symbol)) : end scope
@@ -3060,9 +3126,9 @@ enum
 end enum
 
 declare function g_shell_error_quark() as GQuark
-declare function g_shell_quote(byval unquoted_string as const zstring ptr) as zstring ptr
-declare function g_shell_unquote(byval quoted_string as const zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_shell_parse_argv(byval command_line as const zstring ptr, byval argcp as gint ptr, byval argvp as zstring ptr ptr ptr, byval error as GError ptr ptr) as gboolean
+declare function g_shell_quote(byval unquoted_string as const gchar ptr) as gchar ptr
+declare function g_shell_unquote(byval quoted_string as const gchar ptr, byval error as GError ptr ptr) as gchar ptr
+declare function g_shell_parse_argv(byval command_line as const gchar ptr, byval argcp as gint ptr, byval argvp as gchar ptr ptr ptr, byval error as GError ptr ptr) as gboolean
 #define __G_SLICE_H__
 declare function g_slice_alloc(byval block_size as gsize) as gpointer
 declare function g_slice_alloc0(byval block_size as gsize) as gpointer
@@ -3138,33 +3204,33 @@ declare function g_spawn_error_quark() as GQuark
 declare function g_spawn_exit_error_quark() as GQuark
 
 #ifdef __FB_UNIX__
-	declare function g_spawn_async(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_async_with_pipes(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval standard_input as gint ptr, byval standard_output as gint ptr, byval standard_error as gint ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_sync(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval standard_output as zstring ptr ptr, byval standard_error as zstring ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_command_line_sync(byval command_line as const zstring ptr, byval standard_output as zstring ptr ptr, byval standard_error as zstring ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_command_line_async(byval command_line as const zstring ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_async(byval working_directory as const gchar ptr, byval argv as gchar ptr ptr, byval envp as gchar ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_async_with_pipes(byval working_directory as const gchar ptr, byval argv as gchar ptr ptr, byval envp as gchar ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval standard_input as gint ptr, byval standard_output as gint ptr, byval standard_error as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_sync(byval working_directory as const gchar ptr, byval argv as gchar ptr ptr, byval envp as gchar ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval standard_output as gchar ptr ptr, byval standard_error as gchar ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_command_line_sync(byval command_line as const gchar ptr, byval standard_output as gchar ptr ptr, byval standard_error as gchar ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_command_line_async(byval command_line as const gchar ptr, byval error as GError ptr ptr) as gboolean
 #else
-	declare function g_spawn_async_ alias "g_spawn_async"(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_async_with_pipes_ alias "g_spawn_async_with_pipes"(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval standard_input as gint ptr, byval standard_output as gint ptr, byval standard_error as gint ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_sync_ alias "g_spawn_sync"(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval standard_output as zstring ptr ptr, byval standard_error as zstring ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_command_line_sync_ alias "g_spawn_command_line_sync"(byval command_line as const zstring ptr, byval standard_output as zstring ptr ptr, byval standard_error as zstring ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_command_line_async_ alias "g_spawn_command_line_async"(byval command_line as const zstring ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_async_ alias "g_spawn_async"(byval working_directory as const gchar ptr, byval argv as gchar ptr ptr, byval envp as gchar ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_async_with_pipes_ alias "g_spawn_async_with_pipes"(byval working_directory as const gchar ptr, byval argv as gchar ptr ptr, byval envp as gchar ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval standard_input as gint ptr, byval standard_output as gint ptr, byval standard_error as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_sync_ alias "g_spawn_sync"(byval working_directory as const gchar ptr, byval argv as gchar ptr ptr, byval envp as gchar ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval standard_output as gchar ptr ptr, byval standard_error as gchar ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_command_line_sync_ alias "g_spawn_command_line_sync"(byval command_line as const gchar ptr, byval standard_output as gchar ptr ptr, byval standard_error as gchar ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_command_line_async_ alias "g_spawn_command_line_async"(byval command_line as const gchar ptr, byval error as GError ptr ptr) as gboolean
 #endif
 
 declare function g_spawn_check_exit_status(byval exit_status as gint, byval error as GError ptr ptr) as gboolean
 declare sub g_spawn_close_pid(byval pid as GPid)
 
 #ifdef __FB_WIN32__
-	declare function g_spawn_async_utf8(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_async alias "g_spawn_async_utf8"(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_async_with_pipes_utf8(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval standard_input as gint ptr, byval standard_output as gint ptr, byval standard_error as gint ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_async_with_pipes alias "g_spawn_async_with_pipes_utf8"(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval standard_input as gint ptr, byval standard_output as gint ptr, byval standard_error as gint ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_sync_utf8(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval standard_output as zstring ptr ptr, byval standard_error as zstring ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_sync alias "g_spawn_sync_utf8"(byval working_directory as const zstring ptr, byval argv as zstring ptr ptr, byval envp as zstring ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval standard_output as zstring ptr ptr, byval standard_error as zstring ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_command_line_sync_utf8(byval command_line as const zstring ptr, byval standard_output as zstring ptr ptr, byval standard_error as zstring ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_command_line_sync alias "g_spawn_command_line_sync_utf8"(byval command_line as const zstring ptr, byval standard_output as zstring ptr ptr, byval standard_error as zstring ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_command_line_async_utf8(byval command_line as const zstring ptr, byval error as GError ptr ptr) as gboolean
-	declare function g_spawn_command_line_async alias "g_spawn_command_line_async_utf8"(byval command_line as const zstring ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_async_utf8(byval working_directory as const gchar ptr, byval argv as gchar ptr ptr, byval envp as gchar ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_async alias "g_spawn_async_utf8"(byval working_directory as const gchar ptr, byval argv as gchar ptr ptr, byval envp as gchar ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_async_with_pipes_utf8(byval working_directory as const gchar ptr, byval argv as gchar ptr ptr, byval envp as gchar ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval standard_input as gint ptr, byval standard_output as gint ptr, byval standard_error as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_async_with_pipes alias "g_spawn_async_with_pipes_utf8"(byval working_directory as const gchar ptr, byval argv as gchar ptr ptr, byval envp as gchar ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval child_pid as GPid ptr, byval standard_input as gint ptr, byval standard_output as gint ptr, byval standard_error as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_sync_utf8(byval working_directory as const gchar ptr, byval argv as gchar ptr ptr, byval envp as gchar ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval standard_output as gchar ptr ptr, byval standard_error as gchar ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_sync alias "g_spawn_sync_utf8"(byval working_directory as const gchar ptr, byval argv as gchar ptr ptr, byval envp as gchar ptr ptr, byval flags as GSpawnFlags, byval child_setup as GSpawnChildSetupFunc, byval user_data as gpointer, byval standard_output as gchar ptr ptr, byval standard_error as gchar ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_command_line_sync_utf8(byval command_line as const gchar ptr, byval standard_output as gchar ptr ptr, byval standard_error as gchar ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_command_line_sync alias "g_spawn_command_line_sync_utf8"(byval command_line as const gchar ptr, byval standard_output as gchar ptr ptr, byval standard_error as gchar ptr ptr, byval exit_status as gint ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_command_line_async_utf8(byval command_line as const gchar ptr, byval error as GError ptr ptr) as gboolean
+	declare function g_spawn_command_line_async alias "g_spawn_command_line_async_utf8"(byval command_line as const gchar ptr, byval error as GError ptr ptr) as gboolean
 #endif
 
 #define __G_STRFUNCS_H__
@@ -3207,65 +3273,66 @@ declare function g_ascii_toupper(byval c as byte) as byte
 declare function g_ascii_digit_value(byval c as byte) as gint
 declare function g_ascii_xdigit_value(byval c as byte) as gint
 #define G_STR_DELIMITERS "_-|> <."
-declare function g_strdelimit(byval string as zstring ptr, byval delimiters as const zstring ptr, byval new_delimiter as byte) as zstring ptr
-declare function g_strcanon(byval string as zstring ptr, byval valid_chars as const zstring ptr, byval substitutor as byte) as zstring ptr
-declare function g_strerror(byval errnum as gint) as const zstring ptr
-declare function g_strsignal(byval signum as gint) as const zstring ptr
-declare function g_strreverse(byval string as zstring ptr) as zstring ptr
-declare function g_strlcpy(byval dest as zstring ptr, byval src as const zstring ptr, byval dest_size as gsize) as gsize
-declare function g_strlcat(byval dest as zstring ptr, byval src as const zstring ptr, byval dest_size as gsize) as gsize
-declare function g_strstr_len(byval haystack as const zstring ptr, byval haystack_len as gssize, byval needle as const zstring ptr) as zstring ptr
-declare function g_strrstr(byval haystack as const zstring ptr, byval needle as const zstring ptr) as zstring ptr
-declare function g_strrstr_len(byval haystack as const zstring ptr, byval haystack_len as gssize, byval needle as const zstring ptr) as zstring ptr
-declare function g_str_has_suffix(byval str as const zstring ptr, byval suffix as const zstring ptr) as gboolean
-declare function g_str_has_prefix(byval str as const zstring ptr, byval prefix as const zstring ptr) as gboolean
-declare function g_strtod(byval nptr as const zstring ptr, byval endptr as zstring ptr ptr) as gdouble
-declare function g_ascii_strtod(byval nptr as const zstring ptr, byval endptr as zstring ptr ptr) as gdouble
-declare function g_ascii_strtoull(byval nptr as const zstring ptr, byval endptr as zstring ptr ptr, byval base as guint) as guint64
-declare function g_ascii_strtoll(byval nptr as const zstring ptr, byval endptr as zstring ptr ptr, byval base as guint) as gint64
+declare function g_strdelimit(byval string as gchar ptr, byval delimiters as const gchar ptr, byval new_delimiter as byte) as gchar ptr
+declare function g_strcanon(byval string as gchar ptr, byval valid_chars as const gchar ptr, byval substitutor as byte) as gchar ptr
+declare function g_strerror(byval errnum as gint) as const gchar ptr
+declare function g_strsignal(byval signum as gint) as const gchar ptr
+declare function g_strreverse(byval string as gchar ptr) as gchar ptr
+declare function g_strlcpy(byval dest as gchar ptr, byval src as const gchar ptr, byval dest_size as gsize) as gsize
+declare function g_strlcat(byval dest as gchar ptr, byval src as const gchar ptr, byval dest_size as gsize) as gsize
+declare function g_strstr_len(byval haystack as const gchar ptr, byval haystack_len as gssize, byval needle as const gchar ptr) as gchar ptr
+declare function g_strrstr(byval haystack as const gchar ptr, byval needle as const gchar ptr) as gchar ptr
+declare function g_strrstr_len(byval haystack as const gchar ptr, byval haystack_len as gssize, byval needle as const gchar ptr) as gchar ptr
+declare function g_str_has_suffix(byval str as const gchar ptr, byval suffix as const gchar ptr) as gboolean
+declare function g_str_has_prefix(byval str as const gchar ptr, byval prefix as const gchar ptr) as gboolean
+declare function g_strtod(byval nptr as const gchar ptr, byval endptr as gchar ptr ptr) as gdouble
+declare function g_ascii_strtod(byval nptr as const gchar ptr, byval endptr as gchar ptr ptr) as gdouble
+declare function g_ascii_strtoull(byval nptr as const gchar ptr, byval endptr as gchar ptr ptr, byval base as guint) as guint64
+declare function g_ascii_strtoll(byval nptr as const gchar ptr, byval endptr as gchar ptr ptr, byval base as guint) as gint64
 const G_ASCII_DTOSTR_BUF_SIZE = 29 + 10
-declare function g_ascii_dtostr(byval buffer as zstring ptr, byval buf_len as gint, byval d as gdouble) as zstring ptr
-declare function g_ascii_formatd(byval buffer as zstring ptr, byval buf_len as gint, byval format as const zstring ptr, byval d as gdouble) as zstring ptr
-declare function g_strchug(byval string as zstring ptr) as zstring ptr
-declare function g_strchomp(byval string as zstring ptr) as zstring ptr
+declare function g_ascii_dtostr(byval buffer as gchar ptr, byval buf_len as gint, byval d as gdouble) as gchar ptr
+declare function g_ascii_formatd(byval buffer as gchar ptr, byval buf_len as gint, byval format as const gchar ptr, byval d as gdouble) as gchar ptr
+declare function g_strchug(byval string as gchar ptr) as gchar ptr
+declare function g_strchomp(byval string as gchar ptr) as gchar ptr
 #define g_strstrip(string) g_strchomp(g_strchug(string))
-declare function g_ascii_strcasecmp(byval s1 as const zstring ptr, byval s2 as const zstring ptr) as gint
-declare function g_ascii_strncasecmp(byval s1 as const zstring ptr, byval s2 as const zstring ptr, byval n as gsize) as gint
-declare function g_ascii_strdown(byval str as const zstring ptr, byval len as gssize) as zstring ptr
-declare function g_ascii_strup(byval str as const zstring ptr, byval len as gssize) as zstring ptr
-declare function g_str_is_ascii(byval str as const zstring ptr) as gboolean
-declare function g_strcasecmp(byval s1 as const zstring ptr, byval s2 as const zstring ptr) as gint
-declare function g_strncasecmp(byval s1 as const zstring ptr, byval s2 as const zstring ptr, byval n as guint) as gint
-declare function g_strdown(byval string as zstring ptr) as zstring ptr
-declare function g_strup(byval string as zstring ptr) as zstring ptr
-declare function g_strdup(byval str as const zstring ptr) as zstring ptr
-declare function g_strdup_printf(byval format as const zstring ptr, ...) as zstring ptr
-declare function g_strdup_vprintf(byval format as const zstring ptr, byval args as va_list) as zstring ptr
-declare function g_strndup(byval str as const zstring ptr, byval n as gsize) as zstring ptr
-declare function g_strnfill(byval length as gsize, byval fill_char as byte) as zstring ptr
-declare function g_strconcat(byval string1 as const zstring ptr, ...) as zstring ptr
-declare function g_strjoin(byval separator as const zstring ptr, ...) as zstring ptr
-declare function g_strcompress(byval source as const zstring ptr) as zstring ptr
-declare function g_strescape(byval source as const zstring ptr, byval exceptions as const zstring ptr) as zstring ptr
+declare function g_ascii_strcasecmp(byval s1 as const gchar ptr, byval s2 as const gchar ptr) as gint
+declare function g_ascii_strncasecmp(byval s1 as const gchar ptr, byval s2 as const gchar ptr, byval n as gsize) as gint
+declare function g_ascii_strdown(byval str as const gchar ptr, byval len as gssize) as gchar ptr
+declare function g_ascii_strup(byval str as const gchar ptr, byval len as gssize) as gchar ptr
+declare function g_str_is_ascii(byval str as const gchar ptr) as gboolean
+declare function g_strcasecmp(byval s1 as const gchar ptr, byval s2 as const gchar ptr) as gint
+declare function g_strncasecmp(byval s1 as const gchar ptr, byval s2 as const gchar ptr, byval n as guint) as gint
+declare function g_strdown(byval string as gchar ptr) as gchar ptr
+declare function g_strup(byval string as gchar ptr) as gchar ptr
+declare function g_strdup(byval str as const gchar ptr) as gchar ptr
+declare function g_strdup_printf(byval format as const gchar ptr, ...) as gchar ptr
+declare function g_strdup_vprintf(byval format as const gchar ptr, byval args as va_list) as gchar ptr
+declare function g_strndup(byval str as const gchar ptr, byval n as gsize) as gchar ptr
+declare function g_strnfill(byval length as gsize, byval fill_char as byte) as gchar ptr
+declare function g_strconcat(byval string1 as const gchar ptr, ...) as gchar ptr
+declare function g_strjoin(byval separator as const gchar ptr, ...) as gchar ptr
+declare function g_strcompress(byval source as const gchar ptr) as gchar ptr
+declare function g_strescape(byval source as const gchar ptr, byval exceptions as const gchar ptr) as gchar ptr
 declare function g_memdup(byval mem as gconstpointer, byval byte_size as guint) as gpointer
-declare function g_strsplit(byval string as const zstring ptr, byval delimiter as const zstring ptr, byval max_tokens as gint) as zstring ptr ptr
-declare function g_strsplit_set(byval string as const zstring ptr, byval delimiters as const zstring ptr, byval max_tokens as gint) as zstring ptr ptr
-declare function g_strjoinv(byval separator as const zstring ptr, byval str_array as zstring ptr ptr) as zstring ptr
-declare sub g_strfreev(byval str_array as zstring ptr ptr)
-declare function g_strdupv(byval str_array as zstring ptr ptr) as zstring ptr ptr
-declare function g_strv_length(byval str_array as zstring ptr ptr) as guint
-declare function g_stpcpy(byval dest as zstring ptr, byval src as const zstring ptr) as zstring ptr
-declare function g_str_to_ascii(byval str as const zstring ptr, byval from_locale as const zstring ptr) as zstring ptr
-declare function g_str_tokenize_and_fold(byval string as const zstring ptr, byval translit_locale as const zstring ptr, byval ascii_alternates as zstring ptr ptr ptr) as zstring ptr ptr
-declare function g_str_match_string(byval search_term as const zstring ptr, byval potential_hit as const zstring ptr, byval accept_alternates as gboolean) as gboolean
+declare function g_strsplit(byval string as const gchar ptr, byval delimiter as const gchar ptr, byval max_tokens as gint) as gchar ptr ptr
+declare function g_strsplit_set(byval string as const gchar ptr, byval delimiters as const gchar ptr, byval max_tokens as gint) as gchar ptr ptr
+declare function g_strjoinv(byval separator as const gchar ptr, byval str_array as gchar ptr ptr) as gchar ptr
+declare sub g_strfreev(byval str_array as gchar ptr ptr)
+declare function g_strdupv(byval str_array as gchar ptr ptr) as gchar ptr ptr
+declare function g_strv_length(byval str_array as gchar ptr ptr) as guint
+declare function g_stpcpy(byval dest as gchar ptr, byval src as const zstring ptr) as gchar ptr
+declare function g_str_to_ascii(byval str as const gchar ptr, byval from_locale as const gchar ptr) as gchar ptr
+declare function g_str_tokenize_and_fold(byval string as const gchar ptr, byval translit_locale as const gchar ptr, byval ascii_alternates as gchar ptr ptr ptr) as gchar ptr ptr
+declare function g_str_match_string(byval search_term as const gchar ptr, byval potential_hit as const gchar ptr, byval accept_alternates as gboolean) as gboolean
+declare function g_strv_contains(byval strv as const gchar const ptr ptr, byval str as const gchar ptr) as gboolean
 #define __G_STRINGCHUNK_H__
 type GStringChunk as _GStringChunk
 declare function g_string_chunk_new(byval size as gsize) as GStringChunk ptr
 declare sub g_string_chunk_free(byval chunk as GStringChunk ptr)
 declare sub g_string_chunk_clear(byval chunk as GStringChunk ptr)
-declare function g_string_chunk_insert(byval chunk as GStringChunk ptr, byval string as const zstring ptr) as zstring ptr
-declare function g_string_chunk_insert_len(byval chunk as GStringChunk ptr, byval string as const zstring ptr, byval len as gssize) as zstring ptr
-declare function g_string_chunk_insert_const(byval chunk as GStringChunk ptr, byval string as const zstring ptr) as zstring ptr
+declare function g_string_chunk_insert(byval chunk as GStringChunk ptr, byval string as const gchar ptr) as gchar ptr
+declare function g_string_chunk_insert_len(byval chunk as GStringChunk ptr, byval string as const gchar ptr, byval len as gssize) as gchar ptr
+declare function g_string_chunk_insert_const(byval chunk as GStringChunk ptr, byval string as const gchar ptr) as gchar ptr
 #define __G_TEST_UTILS_H__
 
 type GTestFunc as sub()
@@ -3318,7 +3385,7 @@ type GTestFixtureFunc as sub(byval fixture as gpointer, byval user_data as gcons
 #endmacro
 
 #macro g_assert_no_error(err)
-	if (err) then
+	if err then
 		g_assertion_message_error(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, #err, err, 0, 0)
 	end if
 #endmacro
@@ -3379,13 +3446,13 @@ declare sub g_test_add_func(byval testpath as const zstring ptr, byval test_func
 declare sub g_test_add_data_func(byval testpath as const zstring ptr, byval test_data as gconstpointer, byval test_func as GTestDataFunc)
 declare sub g_test_add_data_func_full(byval testpath as const zstring ptr, byval test_data as gpointer, byval test_func as GTestDataFunc, byval data_free_func as GDestroyNotify)
 declare sub g_test_fail()
-declare sub g_test_incomplete(byval msg as const zstring ptr)
-declare sub g_test_skip(byval msg as const zstring ptr)
+declare sub g_test_incomplete(byval msg as const gchar ptr)
+declare sub g_test_skip(byval msg as const gchar ptr)
 declare function g_test_failed() as gboolean
 declare sub g_test_set_nonfatal_assertions()
 #macro g_test_add(testpath, Fixture, tdata, fsetup, ftest, fteardown)
 	scope
-		dim add_vtable as sub cdecl(byval as const zstring ptr, byval as gsize, byval as gconstpointer, byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer)) = cptr(sub cdecl(byval as const zstring ptr, byval as gsize, byval as gconstpointer, byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer)), @g_test_add_vtable)
+		dim add_vtable as sub cdecl(byval as const zstring ptr, byval as gsize, byval as gconstpointer, byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer)) = cptr(sub cdecl(byval as const gchar ptr, byval as gsize, byval as gconstpointer, byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer), byval as sub cdecl(byval as Fixture ptr, byval as gconstpointer)), @g_test_add_vtable)
 		add_vtable(testpath, sizeof(Fixture), tdata, fsetup, ftest, fteardown)
 	end scope
 #endmacro
@@ -3481,7 +3548,7 @@ end enum
 type GTestLogMsg
 	log_type as GTestLogType
 	n_strings as guint
-	strings as zstring ptr ptr
+	strings as gchar ptr ptr
 	n_nums as guint
 	nums as clongdouble ptr
 end type
@@ -3497,9 +3564,9 @@ declare sub g_test_log_buffer_free(byval tbuffer as GTestLogBuffer ptr)
 declare sub g_test_log_buffer_push(byval tbuffer as GTestLogBuffer ptr, byval n_bytes as guint, byval bytes as const guint8 ptr)
 declare function g_test_log_buffer_pop(byval tbuffer as GTestLogBuffer ptr) as GTestLogMsg ptr
 declare sub g_test_log_msg_free(byval tmsg as GTestLogMsg ptr)
-type GTestLogFatalFunc as function(byval log_domain as const zstring ptr, byval log_level as GLogLevelFlags, byval message as const zstring ptr, byval user_data as gpointer) as gboolean
+type GTestLogFatalFunc as function(byval log_domain as const gchar ptr, byval log_level as GLogLevelFlags, byval message as const gchar ptr, byval user_data as gpointer) as gboolean
 declare sub g_test_log_set_fatal_handler(byval log_func as GTestLogFatalFunc, byval user_data as gpointer)
-declare sub g_test_expect_message(byval log_domain as const zstring ptr, byval log_level as GLogLevelFlags, byval pattern as const zstring ptr)
+declare sub g_test_expect_message(byval log_domain as const gchar ptr, byval log_level as GLogLevelFlags, byval pattern as const gchar ptr)
 declare sub g_test_assert_expected_messages_internal(byval domain as const zstring ptr, byval file as const zstring ptr, byval line as long, byval func as const zstring ptr)
 
 type GTestFileType as long
@@ -3508,9 +3575,9 @@ enum
 	G_TEST_BUILT
 end enum
 
-declare function g_test_build_filename(byval file_type as GTestFileType, byval first_path as const zstring ptr, ...) as zstring ptr
-declare function g_test_get_dir(byval file_type as GTestFileType) as const zstring ptr
-declare function g_test_get_filename(byval file_type as GTestFileType, byval first_path as const zstring ptr, ...) as const zstring ptr
+declare function g_test_build_filename(byval file_type as GTestFileType, byval first_path as const gchar ptr, ...) as gchar ptr
+declare function g_test_get_dir(byval file_type as GTestFileType) as const gchar ptr
+declare function g_test_get_filename(byval file_type as GTestFileType, byval first_path as const gchar ptr, ...) as const gchar ptr
 #define g_test_assert_expected_messages() g_test_assert_expected_messages_internal(G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC)
 #define __G_THREADPOOL_H__
 type GThreadPool as _GThreadPool
@@ -3547,8 +3614,8 @@ declare sub g_timer_continue(byval timer as GTimer ptr)
 declare function g_timer_elapsed(byval timer as GTimer ptr, byval microseconds as gulong ptr) as gdouble
 declare sub g_usleep(byval microseconds as gulong)
 declare sub g_time_val_add(byval time_ as GTimeVal ptr, byval microseconds as glong)
-declare function g_time_val_from_iso8601(byval iso_date as const zstring ptr, byval time_ as GTimeVal ptr) as gboolean
-declare function g_time_val_to_iso8601(byval time_ as GTimeVal ptr) as zstring ptr
+declare function g_time_val_from_iso8601(byval iso_date as const gchar ptr, byval time_ as GTimeVal ptr) as gboolean
+declare function g_time_val_to_iso8601(byval time_ as GTimeVal ptr) as gchar ptr
 #define __G_TRASH_STACK_H__
 type GTrashStack as _GTrashStack
 
@@ -3624,14 +3691,14 @@ type GVariantType as _GVariantType
 #define G_VARIANT_TYPE_VARDICT cptr(const GVariantType ptr, "a{sv}")
 #define G_VARIANT_TYPE(type_string) g_variant_type_checked_((type_string))
 
-declare function g_variant_type_string_is_valid(byval type_string as const zstring ptr) as gboolean
-declare function g_variant_type_string_scan(byval string as const zstring ptr, byval limit as const zstring ptr, byval endptr as const zstring ptr ptr) as gboolean
+declare function g_variant_type_string_is_valid(byval type_string as const gchar ptr) as gboolean
+declare function g_variant_type_string_scan(byval string as const gchar ptr, byval limit as const gchar ptr, byval endptr as const gchar ptr ptr) as gboolean
 declare sub g_variant_type_free(byval type as GVariantType ptr)
 declare function g_variant_type_copy(byval type as const GVariantType ptr) as GVariantType ptr
-declare function g_variant_type_new(byval type_string as const zstring ptr) as GVariantType ptr
+declare function g_variant_type_new(byval type_string as const gchar ptr) as GVariantType ptr
 declare function g_variant_type_get_string_length(byval type as const GVariantType ptr) as gsize
-declare function g_variant_type_peek_string(byval type as const GVariantType ptr) as const zstring ptr
-declare function g_variant_type_dup_string(byval type as const GVariantType ptr) as zstring ptr
+declare function g_variant_type_peek_string(byval type as const GVariantType ptr) as const gchar ptr
+declare function g_variant_type_dup_string(byval type as const GVariantType ptr) as gchar ptr
 declare function g_variant_type_is_definite(byval type as const GVariantType ptr) as gboolean
 declare function g_variant_type_is_container(byval type as const GVariantType ptr) as gboolean
 declare function g_variant_type_is_basic(byval type as const GVariantType ptr) as gboolean
@@ -3653,7 +3720,7 @@ declare function g_variant_type_new_array(byval element as const GVariantType pt
 declare function g_variant_type_new_maybe(byval element as const GVariantType ptr) as GVariantType ptr
 declare function g_variant_type_new_tuple(byval items as const GVariantType const ptr ptr, byval length as gint) as GVariantType ptr
 declare function g_variant_type_new_dict_entry(byval key as const GVariantType ptr, byval value as const GVariantType ptr) as GVariantType ptr
-declare function g_variant_type_checked_(byval as const zstring ptr) as const GVariantType ptr
+declare function g_variant_type_checked_(byval as const gchar ptr) as const GVariantType ptr
 #define __G_VARIANT_H__
 type GVariant as _GVariant
 
@@ -3685,7 +3752,7 @@ declare function g_variant_ref_sink(byval value as GVariant ptr) as GVariant ptr
 declare function g_variant_is_floating(byval value as GVariant ptr) as gboolean
 declare function g_variant_take_ref(byval value as GVariant ptr) as GVariant ptr
 declare function g_variant_get_type(byval value as GVariant ptr) as const GVariantType ptr
-declare function g_variant_get_type_string(byval value as GVariant ptr) as const zstring ptr
+declare function g_variant_get_type_string(byval value as GVariant ptr) as const gchar ptr
 declare function g_variant_is_of_type(byval value as GVariant ptr, byval type as const GVariantType ptr) as gboolean
 declare function g_variant_is_container(byval value as GVariant ptr) as gboolean
 declare function g_variant_classify(byval value as GVariant ptr) as GVariantClass
@@ -3699,18 +3766,18 @@ declare function g_variant_new_int64(byval value as gint64) as GVariant ptr
 declare function g_variant_new_uint64(byval value as guint64) as GVariant ptr
 declare function g_variant_new_handle(byval value as gint32) as GVariant ptr
 declare function g_variant_new_double(byval value as gdouble) as GVariant ptr
-declare function g_variant_new_string(byval string as const zstring ptr) as GVariant ptr
-declare function g_variant_new_take_string(byval string as zstring ptr) as GVariant ptr
-declare function g_variant_new_printf(byval format_string as const zstring ptr, ...) as GVariant ptr
-declare function g_variant_new_object_path(byval object_path as const zstring ptr) as GVariant ptr
-declare function g_variant_is_object_path(byval string as const zstring ptr) as gboolean
-declare function g_variant_new_signature(byval signature as const zstring ptr) as GVariant ptr
-declare function g_variant_is_signature(byval string as const zstring ptr) as gboolean
+declare function g_variant_new_string(byval string as const gchar ptr) as GVariant ptr
+declare function g_variant_new_take_string(byval string as gchar ptr) as GVariant ptr
+declare function g_variant_new_printf(byval format_string as const gchar ptr, ...) as GVariant ptr
+declare function g_variant_new_object_path(byval object_path as const gchar ptr) as GVariant ptr
+declare function g_variant_is_object_path(byval string as const gchar ptr) as gboolean
+declare function g_variant_new_signature(byval signature as const gchar ptr) as GVariant ptr
+declare function g_variant_is_signature(byval string as const gchar ptr) as gboolean
 declare function g_variant_new_variant(byval value as GVariant ptr) as GVariant ptr
-declare function g_variant_new_strv(byval strv as const zstring const ptr ptr, byval length as gssize) as GVariant ptr
-declare function g_variant_new_objv(byval strv as const zstring const ptr ptr, byval length as gssize) as GVariant ptr
-declare function g_variant_new_bytestring(byval string as const zstring ptr) as GVariant ptr
-declare function g_variant_new_bytestring_array(byval strv as const zstring const ptr ptr, byval length as gssize) as GVariant ptr
+declare function g_variant_new_strv(byval strv as const gchar const ptr ptr, byval length as gssize) as GVariant ptr
+declare function g_variant_new_objv(byval strv as const gchar const ptr ptr, byval length as gssize) as GVariant ptr
+declare function g_variant_new_bytestring(byval string as const gchar ptr) as GVariant ptr
+declare function g_variant_new_bytestring_array(byval strv as const gchar const ptr ptr, byval length as gssize) as GVariant ptr
 declare function g_variant_new_fixed_array(byval element_type as const GVariantType ptr, byval elements as gconstpointer, byval n_elements as gsize, byval element_size as gsize) as GVariant ptr
 declare function g_variant_get_boolean(byval value as GVariant ptr) as gboolean
 declare function g_variant_get_byte(byval value as GVariant ptr) as guchar
@@ -3723,32 +3790,32 @@ declare function g_variant_get_uint64(byval value as GVariant ptr) as guint64
 declare function g_variant_get_handle(byval value as GVariant ptr) as gint32
 declare function g_variant_get_double(byval value as GVariant ptr) as gdouble
 declare function g_variant_get_variant(byval value as GVariant ptr) as GVariant ptr
-declare function g_variant_get_string(byval value as GVariant ptr, byval length as gsize ptr) as const zstring ptr
-declare function g_variant_dup_string(byval value as GVariant ptr, byval length as gsize ptr) as zstring ptr
-declare function g_variant_get_strv(byval value as GVariant ptr, byval length as gsize ptr) as const zstring ptr ptr
-declare function g_variant_dup_strv(byval value as GVariant ptr, byval length as gsize ptr) as zstring ptr ptr
-declare function g_variant_get_objv(byval value as GVariant ptr, byval length as gsize ptr) as const zstring ptr ptr
-declare function g_variant_dup_objv(byval value as GVariant ptr, byval length as gsize ptr) as zstring ptr ptr
-declare function g_variant_get_bytestring(byval value as GVariant ptr) as const zstring ptr
-declare function g_variant_dup_bytestring(byval value as GVariant ptr, byval length as gsize ptr) as zstring ptr
-declare function g_variant_get_bytestring_array(byval value as GVariant ptr, byval length as gsize ptr) as const zstring ptr ptr
-declare function g_variant_dup_bytestring_array(byval value as GVariant ptr, byval length as gsize ptr) as zstring ptr ptr
+declare function g_variant_get_string(byval value as GVariant ptr, byval length as gsize ptr) as const gchar ptr
+declare function g_variant_dup_string(byval value as GVariant ptr, byval length as gsize ptr) as gchar ptr
+declare function g_variant_get_strv(byval value as GVariant ptr, byval length as gsize ptr) as const gchar ptr ptr
+declare function g_variant_dup_strv(byval value as GVariant ptr, byval length as gsize ptr) as gchar ptr ptr
+declare function g_variant_get_objv(byval value as GVariant ptr, byval length as gsize ptr) as const gchar ptr ptr
+declare function g_variant_dup_objv(byval value as GVariant ptr, byval length as gsize ptr) as gchar ptr ptr
+declare function g_variant_get_bytestring(byval value as GVariant ptr) as const gchar ptr
+declare function g_variant_dup_bytestring(byval value as GVariant ptr, byval length as gsize ptr) as gchar ptr
+declare function g_variant_get_bytestring_array(byval value as GVariant ptr, byval length as gsize ptr) as const gchar ptr ptr
+declare function g_variant_dup_bytestring_array(byval value as GVariant ptr, byval length as gsize ptr) as gchar ptr ptr
 declare function g_variant_new_maybe(byval child_type as const GVariantType ptr, byval child as GVariant ptr) as GVariant ptr
 declare function g_variant_new_array(byval child_type as const GVariantType ptr, byval children as GVariant const ptr ptr, byval n_children as gsize) as GVariant ptr
 declare function g_variant_new_tuple(byval children as GVariant const ptr ptr, byval n_children as gsize) as GVariant ptr
 declare function g_variant_new_dict_entry(byval key as GVariant ptr, byval value as GVariant ptr) as GVariant ptr
 declare function g_variant_get_maybe(byval value as GVariant ptr) as GVariant ptr
 declare function g_variant_n_children(byval value as GVariant ptr) as gsize
-declare sub g_variant_get_child(byval value as GVariant ptr, byval index_ as gsize, byval format_string as const zstring ptr, ...)
+declare sub g_variant_get_child(byval value as GVariant ptr, byval index_ as gsize, byval format_string as const gchar ptr, ...)
 declare function g_variant_get_child_value(byval value as GVariant ptr, byval index_ as gsize) as GVariant ptr
-declare function g_variant_lookup(byval dictionary as GVariant ptr, byval key as const zstring ptr, byval format_string as const zstring ptr, ...) as gboolean
-declare function g_variant_lookup_value(byval dictionary as GVariant ptr, byval key as const zstring ptr, byval expected_type as const GVariantType ptr) as GVariant ptr
+declare function g_variant_lookup(byval dictionary as GVariant ptr, byval key as const gchar ptr, byval format_string as const gchar ptr, ...) as gboolean
+declare function g_variant_lookup_value(byval dictionary as GVariant ptr, byval key as const gchar ptr, byval expected_type as const GVariantType ptr) as GVariant ptr
 declare function g_variant_get_fixed_array(byval value as GVariant ptr, byval n_elements as gsize ptr, byval element_size as gsize) as gconstpointer
 declare function g_variant_get_size(byval value as GVariant ptr) as gsize
 declare function g_variant_get_data(byval value as GVariant ptr) as gconstpointer
 declare function g_variant_get_data_as_bytes(byval value as GVariant ptr) as GBytes ptr
 declare sub g_variant_store(byval value as GVariant ptr, byval data as gpointer)
-declare function g_variant_print(byval value as GVariant ptr, byval type_annotate as gboolean) as zstring ptr
+declare function g_variant_print(byval value as GVariant ptr, byval type_annotate as gboolean) as gchar ptr
 declare function g_variant_print_string(byval value as GVariant ptr, byval string as GString ptr, byval type_annotate as gboolean) as GString ptr
 declare function g_variant_hash(byval value as gconstpointer) as guint
 declare function g_variant_equal(byval one as gconstpointer, byval two as gconstpointer) as gboolean
@@ -3769,8 +3836,8 @@ declare function g_variant_iter_copy(byval iter as GVariantIter ptr) as GVariant
 declare function g_variant_iter_n_children(byval iter as GVariantIter ptr) as gsize
 declare sub g_variant_iter_free(byval iter as GVariantIter ptr)
 declare function g_variant_iter_next_value(byval iter as GVariantIter ptr) as GVariant ptr
-declare function g_variant_iter_next(byval iter as GVariantIter ptr, byval format_string as const zstring ptr, ...) as gboolean
-declare function g_variant_iter_loop(byval iter as GVariantIter ptr, byval format_string as const zstring ptr, ...) as gboolean
+declare function g_variant_iter_next(byval iter as GVariantIter ptr, byval format_string as const gchar ptr, ...) as gboolean
+declare function g_variant_iter_loop(byval iter as GVariantIter ptr, byval format_string as const gchar ptr, ...) as gboolean
 type GVariantBuilder as _GVariantBuilder
 
 type _GVariantBuilder
@@ -3811,17 +3878,17 @@ declare sub g_variant_builder_clear(byval builder as GVariantBuilder ptr)
 declare sub g_variant_builder_open(byval builder as GVariantBuilder ptr, byval type as const GVariantType ptr)
 declare sub g_variant_builder_close(byval builder as GVariantBuilder ptr)
 declare sub g_variant_builder_add_value(byval builder as GVariantBuilder ptr, byval value as GVariant ptr)
-declare sub g_variant_builder_add(byval builder as GVariantBuilder ptr, byval format_string as const zstring ptr, ...)
-declare sub g_variant_builder_add_parsed(byval builder as GVariantBuilder ptr, byval format as const zstring ptr, ...)
-declare function g_variant_new(byval format_string as const zstring ptr, ...) as GVariant ptr
-declare sub g_variant_get(byval value as GVariant ptr, byval format_string as const zstring ptr, ...)
-declare function g_variant_new_va(byval format_string as const zstring ptr, byval endptr as const zstring ptr ptr, byval app as va_list ptr) as GVariant ptr
-declare sub g_variant_get_va(byval value as GVariant ptr, byval format_string as const zstring ptr, byval endptr as const zstring ptr ptr, byval app as va_list ptr)
-declare function g_variant_check_format_string(byval value as GVariant ptr, byval format_string as const zstring ptr, byval copy_only as gboolean) as gboolean
-declare function g_variant_parse(byval type as const GVariantType ptr, byval text as const zstring ptr, byval limit as const zstring ptr, byval endptr as const zstring ptr ptr, byval error as GError ptr ptr) as GVariant ptr
-declare function g_variant_new_parsed(byval format as const zstring ptr, ...) as GVariant ptr
-declare function g_variant_new_parsed_va(byval format as const zstring ptr, byval app as va_list ptr) as GVariant ptr
-declare function g_variant_parse_error_print_context(byval error as GError ptr, byval source_str as const zstring ptr) as zstring ptr
+declare sub g_variant_builder_add(byval builder as GVariantBuilder ptr, byval format_string as const gchar ptr, ...)
+declare sub g_variant_builder_add_parsed(byval builder as GVariantBuilder ptr, byval format as const gchar ptr, ...)
+declare function g_variant_new(byval format_string as const gchar ptr, ...) as GVariant ptr
+declare sub g_variant_get(byval value as GVariant ptr, byval format_string as const gchar ptr, ...)
+declare function g_variant_new_va(byval format_string as const gchar ptr, byval endptr as const gchar ptr ptr, byval app as va_list ptr) as GVariant ptr
+declare sub g_variant_get_va(byval value as GVariant ptr, byval format_string as const gchar ptr, byval endptr as const gchar ptr ptr, byval app as va_list ptr)
+declare function g_variant_check_format_string(byval value as GVariant ptr, byval format_string as const gchar ptr, byval copy_only as gboolean) as gboolean
+declare function g_variant_parse(byval type as const GVariantType ptr, byval text as const gchar ptr, byval limit as const gchar ptr, byval endptr as const gchar ptr ptr, byval error as GError ptr ptr) as GVariant ptr
+declare function g_variant_new_parsed(byval format as const gchar ptr, ...) as GVariant ptr
+declare function g_variant_new_parsed_va(byval format as const gchar ptr, byval app as va_list ptr) as GVariant ptr
+declare function g_variant_parse_error_print_context(byval error as GError ptr, byval source_str as const gchar ptr) as gchar ptr
 declare function g_variant_compare(byval one as gconstpointer, byval two as gconstpointer) as gint
 type GVariantDict as _GVariantDict
 
@@ -3831,12 +3898,12 @@ end type
 
 declare function g_variant_dict_new(byval from_asv as GVariant ptr) as GVariantDict ptr
 declare sub g_variant_dict_init(byval dict as GVariantDict ptr, byval from_asv as GVariant ptr)
-declare function g_variant_dict_lookup(byval dict as GVariantDict ptr, byval key as const zstring ptr, byval format_string as const zstring ptr, ...) as gboolean
-declare function g_variant_dict_lookup_value(byval dict as GVariantDict ptr, byval key as const zstring ptr, byval expected_type as const GVariantType ptr) as GVariant ptr
-declare function g_variant_dict_contains(byval dict as GVariantDict ptr, byval key as const zstring ptr) as gboolean
-declare sub g_variant_dict_insert(byval dict as GVariantDict ptr, byval key as const zstring ptr, byval format_string as const zstring ptr, ...)
-declare sub g_variant_dict_insert_value(byval dict as GVariantDict ptr, byval key as const zstring ptr, byval value as GVariant ptr)
-declare function g_variant_dict_remove(byval dict as GVariantDict ptr, byval key as const zstring ptr) as gboolean
+declare function g_variant_dict_lookup(byval dict as GVariantDict ptr, byval key as const gchar ptr, byval format_string as const gchar ptr, ...) as gboolean
+declare function g_variant_dict_lookup_value(byval dict as GVariantDict ptr, byval key as const gchar ptr, byval expected_type as const GVariantType ptr) as GVariant ptr
+declare function g_variant_dict_contains(byval dict as GVariantDict ptr, byval key as const gchar ptr) as gboolean
+declare sub g_variant_dict_insert(byval dict as GVariantDict ptr, byval key as const gchar ptr, byval format_string as const gchar ptr, ...)
+declare sub g_variant_dict_insert_value(byval dict as GVariantDict ptr, byval key as const gchar ptr, byval value as GVariant ptr)
+declare function g_variant_dict_remove(byval dict as GVariantDict ptr, byval key as const gchar ptr) as gboolean
 declare sub g_variant_dict_clear(byval dict as GVariantDict ptr)
 declare function g_variant_dict_end(byval dict as GVariantDict ptr) as GVariant ptr
 declare function g_variant_dict_ref(byval dict as GVariantDict ptr) as GVariantDict ptr
@@ -3857,7 +3924,7 @@ declare sub g_variant_dict_unref(byval dict as GVariantDict ptr)
 	extern glib_binary_age as const guint
 #endif
 
-declare function glib_check_version_ alias "glib_check_version"(byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as const zstring ptr
+declare function glib_check_version_ alias "glib_check_version"(byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as const gchar ptr
 #define GLIB_CHECK_VERSION(major, minor, micro) (((GLIB_MAJOR_VERSION > (major)) orelse ((GLIB_MAJOR_VERSION = (major)) andalso (GLIB_MINOR_VERSION > (minor)))) orelse (((GLIB_MAJOR_VERSION = (major)) andalso (GLIB_MINOR_VERSION = (minor))) andalso (GLIB_MICRO_VERSION >= (micro))))
 
 #if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
@@ -3870,36 +3937,47 @@ declare function glib_check_version_ alias "glib_check_version"(byval required_m
 #endif
 
 #if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
-	declare function g_win32_getlocale() as zstring ptr
-	declare function g_win32_error_message(byval error as gint) as zstring ptr
+	declare function g_win32_getlocale() as gchar ptr
+	declare function g_win32_error_message(byval error as gint) as gchar ptr
 #endif
 
 #if (defined(__FB_CYGWIN__) and defined(__FB_64BIT__)) or ((not defined(__FB_64BIT__)) and (defined(__FB_CYGWIN__) or defined(__FB_WIN32__)))
-	declare function g_win32_get_package_installation_directory(byval package as const zstring ptr, byval dll_name as const zstring ptr) as zstring ptr
-	declare function g_win32_get_package_installation_subdirectory(byval package as const zstring ptr, byval dll_name as const zstring ptr, byval subdir as const zstring ptr) as zstring ptr
+	declare function g_win32_get_package_installation_directory(byval package as const gchar ptr, byval dll_name as const gchar ptr) as gchar ptr
+	declare function g_win32_get_package_installation_subdirectory(byval package as const gchar ptr, byval dll_name as const gchar ptr, byval subdir as const gchar ptr) as gchar ptr
 #endif
 
 #if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
-	declare function g_win32_get_package_installation_directory_of_module(byval hmodule as gpointer) as zstring ptr
+	declare function g_win32_get_package_installation_directory_of_module(byval hmodule as gpointer) as gchar ptr
 	declare function g_win32_get_windows_version() as guint
-	declare function g_win32_locale_filename_from_utf8(byval utf8filename as const zstring ptr) as zstring ptr
-	declare function g_win32_get_command_line() as zstring ptr ptr
+	declare function g_win32_locale_filename_from_utf8(byval utf8filename as const gchar ptr) as gchar ptr
+	declare function g_win32_get_command_line() as gchar ptr ptr
 	#define G_WIN32_IS_NT_BASED() CTRUE
 	#define G_WIN32_HAVE_WIDECHAR_API() CTRUE
 #endif
 
 #ifdef __FB_WIN32__
-	declare function g_win32_get_package_installation_directory_utf8(byval package as const zstring ptr, byval dll_name as const zstring ptr) as zstring ptr
+	declare function g_win32_get_package_installation_directory_utf8(byval package as const gchar ptr, byval dll_name as const gchar ptr) as gchar ptr
 
 	#ifdef __FB_64BIT__
-		declare function g_win32_get_package_installation_directory alias "g_win32_get_package_installation_directory_utf8"(byval package as const zstring ptr, byval dll_name as const zstring ptr) as zstring ptr
+		declare function g_win32_get_package_installation_directory alias "g_win32_get_package_installation_directory_utf8"(byval package as const gchar ptr, byval dll_name as const gchar ptr) as gchar ptr
 	#endif
 
-	declare function g_win32_get_package_installation_subdirectory_utf8(byval package as const zstring ptr, byval dll_name as const zstring ptr, byval subdir as const zstring ptr) as zstring ptr
+	declare function g_win32_get_package_installation_subdirectory_utf8(byval package as const gchar ptr, byval dll_name as const gchar ptr, byval subdir as const gchar ptr) as gchar ptr
 
 	#ifdef __FB_64BIT__
-		declare function g_win32_get_package_installation_subdirectory alias "g_win32_get_package_installation_subdirectory_utf8"(byval package as const zstring ptr, byval dll_name as const zstring ptr, byval subdir as const zstring ptr) as zstring ptr
+		declare function g_win32_get_package_installation_subdirectory alias "g_win32_get_package_installation_subdirectory_utf8"(byval package as const gchar ptr, byval dll_name as const gchar ptr, byval subdir as const gchar ptr) as gchar ptr
 	#endif
+#endif
+
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
+	type GWin32OSType as long
+	enum
+		G_WIN32_OS_ANY
+		G_WIN32_OS_WORKSTATION
+		G_WIN32_OS_SERVER
+	end enum
+
+	declare function g_win32_check_windows_version(byval major as const gint, byval minor as const gint, byval spver as const gint, byval os_type as const GWin32OSType) as gboolean
 #endif
 
 #define __G_ALLOCATOR_H__
@@ -3915,7 +3993,7 @@ const G_ALLOCATOR_NODE = 3
 #define g_chunk_free(mem, mem_chunk) g_mem_chunk_free(mem_chunk, mem)
 #define g_mem_chunk_create(type, x, y) g_mem_chunk_new(NULL, sizeof(type), 0, 0)
 
-declare function g_mem_chunk_new(byval name as const zstring ptr, byval atom_size as gint, byval area_size as gsize, byval type as gint) as GMemChunk ptr
+declare function g_mem_chunk_new(byval name as const gchar ptr, byval atom_size as gint, byval area_size as gsize, byval type as gint) as GMemChunk ptr
 declare sub g_mem_chunk_destroy(byval mem_chunk as GMemChunk ptr)
 declare function g_mem_chunk_alloc(byval mem_chunk as GMemChunk ptr) as gpointer
 declare function g_mem_chunk_alloc0(byval mem_chunk as GMemChunk ptr) as gpointer
@@ -3925,7 +4003,7 @@ declare sub g_mem_chunk_reset(byval mem_chunk as GMemChunk ptr)
 declare sub g_mem_chunk_print(byval mem_chunk as GMemChunk ptr)
 declare sub g_mem_chunk_info()
 declare sub g_blow_chunks()
-declare function g_allocator_new(byval name as const zstring ptr, byval n_preallocs as guint) as GAllocator ptr
+declare function g_allocator_new(byval name as const gchar ptr, byval n_preallocs as guint) as GAllocator ptr
 declare sub g_allocator_free(byval allocator as GAllocator ptr)
 declare sub g_list_push_allocator(byval allocator as GAllocator ptr)
 declare sub g_list_pop_allocator()
@@ -3949,13 +4027,13 @@ declare sub g_cache_value_foreach(byval cache as GCache ptr, byval func as GHFun
 #define __G_COMPLETION_H__
 
 type GCompletion as _GCompletion
-type GCompletionFunc as function(byval as gpointer) as zstring ptr
-type GCompletionStrncmpFunc as function(byval s1 as const zstring ptr, byval s2 as const zstring ptr, byval n as gsize) as gint
+type GCompletionFunc as function(byval as gpointer) as gchar ptr
+type GCompletionStrncmpFunc as function(byval s1 as const gchar ptr, byval s2 as const gchar ptr, byval n as gsize) as gint
 
 type _GCompletion
 	items as GList ptr
 	func as GCompletionFunc
-	prefix as zstring ptr
+	prefix as gchar ptr
 	cache as GList ptr
 	strncmp_func as GCompletionStrncmpFunc
 end type
@@ -3964,8 +4042,8 @@ declare function g_completion_new(byval func as GCompletionFunc) as GCompletion 
 declare sub g_completion_add_items(byval cmp as GCompletion ptr, byval items as GList ptr)
 declare sub g_completion_remove_items(byval cmp as GCompletion ptr, byval items as GList ptr)
 declare sub g_completion_clear_items(byval cmp as GCompletion ptr)
-declare function g_completion_complete(byval cmp as GCompletion ptr, byval prefix as const zstring ptr, byval new_prefix as zstring ptr ptr) as GList ptr
-declare function g_completion_complete_utf8(byval cmp as GCompletion ptr, byval prefix as const zstring ptr, byval new_prefix as zstring ptr ptr) as GList ptr
+declare function g_completion_complete(byval cmp as GCompletion ptr, byval prefix as const gchar ptr, byval new_prefix as gchar ptr ptr) as GList ptr
+declare function g_completion_complete_utf8(byval cmp as GCompletion ptr, byval prefix as const gchar ptr, byval new_prefix as gchar ptr ptr) as GList ptr
 declare sub g_completion_set_compare(byval cmp as GCompletion ptr, byval strncmp_func as GCompletionStrncmpFunc)
 declare sub g_completion_free(byval cmp as GCompletion ptr)
 
@@ -4148,6 +4226,370 @@ declare sub g_mutex_free(byval mutex as GMutex ptr)
 declare function g_cond_new() as GCond ptr
 declare sub g_cond_free(byval cond as GCond ptr)
 declare function g_cond_timed_wait(byval cond as GCond ptr, byval mutex as GMutex ptr, byval timeval as GTimeVal ptr) as gboolean
+
+private sub g_autoptr_cleanup_generic_gfree(byval p as any ptr)
+	dim pp as any ptr ptr = cptr(any ptr ptr, p)
+	if *pp then
+		g_free(*pp)
+	end if
+end sub
+
+type GAsyncQueue_autoptr as GAsyncQueue ptr
+
+private sub glib_autoptr_cleanup_GAsyncQueue(byval _ptr as GAsyncQueue ptr ptr)
+	if *_ptr then
+		g_async_queue_unref(*_ptr)
+	end if
+end sub
+
+type GBookmarkFile_autoptr as GBookmarkFile ptr
+
+private sub glib_autoptr_cleanup_GBookmarkFile(byval _ptr as GBookmarkFile ptr ptr)
+	if *_ptr then
+		g_bookmark_file_free(*_ptr)
+	end if
+end sub
+
+type GBytes_autoptr as GBytes ptr
+
+private sub glib_autoptr_cleanup_GBytes(byval _ptr as GBytes ptr ptr)
+	if *_ptr then
+		g_bytes_unref(*_ptr)
+	end if
+end sub
+
+type GChecksum_autoptr as GChecksum ptr
+
+private sub glib_autoptr_cleanup_GChecksum(byval _ptr as GChecksum ptr ptr)
+	if *_ptr then
+		g_checksum_free(*_ptr)
+	end if
+end sub
+
+type GDateTime_autoptr as GDateTime ptr
+
+private sub glib_autoptr_cleanup_GDateTime(byval _ptr as GDateTime ptr ptr)
+	if *_ptr then
+		g_date_time_unref(*_ptr)
+	end if
+end sub
+
+type GDir_autoptr as GDir ptr
+
+private sub glib_autoptr_cleanup_GDir(byval _ptr as GDir ptr ptr)
+	if *_ptr then
+		g_dir_close(*_ptr)
+	end if
+end sub
+
+type GError_autoptr as GError ptr
+
+private sub glib_autoptr_cleanup_GError(byval _ptr as GError ptr ptr)
+	if *_ptr then
+		g_error_free(*_ptr)
+	end if
+end sub
+
+type GHashTable_autoptr as GHashTable ptr
+
+private sub glib_autoptr_cleanup_GHashTable(byval _ptr as GHashTable ptr ptr)
+	if *_ptr then
+		g_hash_table_unref(*_ptr)
+	end if
+end sub
+
+type GHmac_autoptr as GHmac ptr
+
+private sub glib_autoptr_cleanup_GHmac(byval _ptr as GHmac ptr ptr)
+	if *_ptr then
+		g_hmac_unref(*_ptr)
+	end if
+end sub
+
+type GIOChannel_autoptr as GIOChannel ptr
+
+private sub glib_autoptr_cleanup_GIOChannel(byval _ptr as GIOChannel ptr ptr)
+	if *_ptr then
+		g_io_channel_unref(*_ptr)
+	end if
+end sub
+
+type GKeyFile_autoptr as GKeyFile ptr
+
+private sub glib_autoptr_cleanup_GKeyFile(byval _ptr as GKeyFile ptr ptr)
+	if *_ptr then
+		g_key_file_unref(*_ptr)
+	end if
+end sub
+
+type GList_autoptr as GList ptr
+
+private sub glib_autoptr_cleanup_GList(byval _ptr as GList ptr ptr)
+	if *_ptr then
+		g_list_free(*_ptr)
+	end if
+end sub
+
+type GArray_autoptr as GArray ptr
+
+private sub glib_autoptr_cleanup_GArray(byval _ptr as GArray ptr ptr)
+	if *_ptr then
+		g_array_unref(*_ptr)
+	end if
+end sub
+
+type GPtrArray_autoptr as GPtrArray ptr
+
+private sub glib_autoptr_cleanup_GPtrArray(byval _ptr as GPtrArray ptr ptr)
+	if *_ptr then
+		g_ptr_array_unref(*_ptr)
+	end if
+end sub
+
+type GByteArray_autoptr as GByteArray ptr
+
+private sub glib_autoptr_cleanup_GByteArray(byval _ptr as GByteArray ptr ptr)
+	if *_ptr then
+		g_byte_array_unref(*_ptr)
+	end if
+end sub
+
+type GMainContext_autoptr as GMainContext ptr
+
+private sub glib_autoptr_cleanup_GMainContext(byval _ptr as GMainContext ptr ptr)
+	if *_ptr then
+		g_main_context_unref(*_ptr)
+	end if
+end sub
+
+type GMainLoop_autoptr as GMainLoop ptr
+
+private sub glib_autoptr_cleanup_GMainLoop(byval _ptr as GMainLoop ptr ptr)
+	if *_ptr then
+		g_main_loop_unref(*_ptr)
+	end if
+end sub
+
+type GSource_autoptr as GSource ptr
+
+private sub glib_autoptr_cleanup_GSource(byval _ptr as GSource ptr ptr)
+	if *_ptr then
+		g_source_unref(*_ptr)
+	end if
+end sub
+
+type GMappedFile_autoptr as GMappedFile ptr
+
+private sub glib_autoptr_cleanup_GMappedFile(byval _ptr as GMappedFile ptr ptr)
+	if *_ptr then
+		g_mapped_file_unref(*_ptr)
+	end if
+end sub
+
+type GMarkupParseContext_autoptr as GMarkupParseContext ptr
+
+private sub glib_autoptr_cleanup_GMarkupParseContext(byval _ptr as GMarkupParseContext ptr ptr)
+	if *_ptr then
+		g_markup_parse_context_unref(*_ptr)
+	end if
+end sub
+
+type GNode_autoptr as GNode ptr
+
+private sub glib_autoptr_cleanup_GNode(byval _ptr as GNode ptr ptr)
+	if *_ptr then
+		g_node_destroy(*_ptr)
+	end if
+end sub
+
+type GOptionContext_autoptr as GOptionContext ptr
+
+private sub glib_autoptr_cleanup_GOptionContext(byval _ptr as GOptionContext ptr ptr)
+	if *_ptr then
+		g_option_context_free(*_ptr)
+	end if
+end sub
+
+type GOptionGroup_autoptr as GOptionGroup ptr
+
+private sub glib_autoptr_cleanup_GOptionGroup(byval _ptr as GOptionGroup ptr ptr)
+	if *_ptr then
+		g_option_group_unref(*_ptr)
+	end if
+end sub
+
+type GPatternSpec_autoptr as GPatternSpec ptr
+
+private sub glib_autoptr_cleanup_GPatternSpec(byval _ptr as GPatternSpec ptr ptr)
+	if *_ptr then
+		g_pattern_spec_free(*_ptr)
+	end if
+end sub
+
+type GQueue_autoptr as GQueue ptr
+
+private sub glib_autoptr_cleanup_GQueue(byval _ptr as GQueue ptr ptr)
+	if *_ptr then
+		g_queue_free(*_ptr)
+	end if
+end sub
+
+private sub glib_auto_cleanup_GQueue(byval _ptr as GQueue ptr)
+	g_queue_clear(_ptr)
+end sub
+
+type GRand_autoptr as GRand ptr
+
+private sub glib_autoptr_cleanup_GRand(byval _ptr as GRand ptr ptr)
+	if *_ptr then
+		g_rand_free(*_ptr)
+	end if
+end sub
+
+type GRegex_autoptr as GRegex ptr
+
+private sub glib_autoptr_cleanup_GRegex(byval _ptr as GRegex ptr ptr)
+	if *_ptr then
+		g_regex_unref(*_ptr)
+	end if
+end sub
+
+type GMatchInfo_autoptr as GMatchInfo ptr
+
+private sub glib_autoptr_cleanup_GMatchInfo(byval _ptr as GMatchInfo ptr ptr)
+	if *_ptr then
+		g_match_info_unref(*_ptr)
+	end if
+end sub
+
+type GScanner_autoptr as GScanner ptr
+
+private sub glib_autoptr_cleanup_GScanner(byval _ptr as GScanner ptr ptr)
+	if *_ptr then
+		g_scanner_destroy(*_ptr)
+	end if
+end sub
+
+type GSequence_autoptr as GSequence ptr
+
+private sub glib_autoptr_cleanup_GSequence(byval _ptr as GSequence ptr ptr)
+	if *_ptr then
+		g_sequence_free(*_ptr)
+	end if
+end sub
+
+type GSList_autoptr as GSList ptr
+
+private sub glib_autoptr_cleanup_GSList(byval _ptr as GSList ptr ptr)
+	if *_ptr then
+		g_slist_free(*_ptr)
+	end if
+end sub
+
+type GStringChunk_autoptr as GStringChunk ptr
+
+private sub glib_autoptr_cleanup_GStringChunk(byval _ptr as GStringChunk ptr ptr)
+	if *_ptr then
+		g_string_chunk_free(*_ptr)
+	end if
+end sub
+
+type GThread_autoptr as GThread ptr
+
+private sub glib_autoptr_cleanup_GThread(byval _ptr as GThread ptr ptr)
+	if *_ptr then
+		g_thread_unref(*_ptr)
+	end if
+end sub
+
+private sub glib_auto_cleanup_GMutex(byval _ptr as GMutex ptr)
+	g_mutex_clear(_ptr)
+end sub
+
+type GMutexLocker_autoptr as GMutexLocker ptr
+
+private sub glib_autoptr_cleanup_GMutexLocker(byval _ptr as GMutexLocker ptr ptr)
+	if *_ptr then
+		g_mutex_locker_free(*_ptr)
+	end if
+end sub
+
+private sub glib_auto_cleanup_GCond(byval _ptr as GCond ptr)
+	g_cond_clear(_ptr)
+end sub
+
+type GTimer_autoptr as GTimer ptr
+
+private sub glib_autoptr_cleanup_GTimer(byval _ptr as GTimer ptr ptr)
+	if *_ptr then
+		g_timer_destroy(*_ptr)
+	end if
+end sub
+
+type GTimeZone_autoptr as GTimeZone ptr
+
+private sub glib_autoptr_cleanup_GTimeZone(byval _ptr as GTimeZone ptr ptr)
+	if *_ptr then
+		g_time_zone_unref(*_ptr)
+	end if
+end sub
+
+type GTree_autoptr as GTree ptr
+
+private sub glib_autoptr_cleanup_GTree(byval _ptr as GTree ptr ptr)
+	if *_ptr then
+		g_tree_unref(*_ptr)
+	end if
+end sub
+
+type GVariant_autoptr as GVariant ptr
+
+private sub glib_autoptr_cleanup_GVariant(byval _ptr as GVariant ptr ptr)
+	if *_ptr then
+		g_variant_unref(*_ptr)
+	end if
+end sub
+
+type GVariantBuilder_autoptr as GVariantBuilder ptr
+
+private sub glib_autoptr_cleanup_GVariantBuilder(byval _ptr as GVariantBuilder ptr ptr)
+	if *_ptr then
+		g_variant_builder_unref(*_ptr)
+	end if
+end sub
+
+private sub glib_auto_cleanup_GVariantBuilder(byval _ptr as GVariantBuilder ptr)
+	g_variant_builder_clear(_ptr)
+end sub
+
+type GVariantIter_autoptr as GVariantIter ptr
+
+private sub glib_autoptr_cleanup_GVariantIter(byval _ptr as GVariantIter ptr ptr)
+	if *_ptr then
+		g_variant_iter_free(*_ptr)
+	end if
+end sub
+
+type GVariantDict_autoptr as GVariantDict ptr
+
+private sub glib_autoptr_cleanup_GVariantDict(byval _ptr as GVariantDict ptr ptr)
+	if *_ptr then
+		g_variant_dict_unref(*_ptr)
+	end if
+end sub
+
+private sub glib_auto_cleanup_GVariantDict(byval _ptr as GVariantDict ptr)
+	g_variant_dict_clear(_ptr)
+end sub
+
+type GVariantType_autoptr as GVariantType ptr
+
+private sub glib_autoptr_cleanup_GVariantType(byval _ptr as GVariantType ptr ptr)
+	if *_ptr then
+		g_variant_type_free(*_ptr)
+	end if
+end sub
+
 #undef __GLIB_H_INSIDE__
 
 end extern

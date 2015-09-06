@@ -38,9 +38,10 @@
 ''     constant W_BOTTOM => CGUI_W_BOTTOM
 ''     constant W_LEFT => CGUI_W_LEFT
 ''     constant W_RIGHT => CGUI_W_RIGHT
-''     #define W_CENTRE_H => CGUI_W_CENTRE_H
-''     #define W_CENTRE_V => CGUI_W_CENTRE_V
-''     #define W_CENTRE => CGUI_W_CENTRE
+''     constant W_CENTRE_H => CGUI_W_CENTRE_H
+''     constant W_CENTRE_V => CGUI_W_CENTRE_V
+''     constant W_CENTRE => CGUI_W_CENTRE
+''     variable ID_DESKTOP => CGUI_ID_DESKTOP
 ''     constant R_HORIZONTAL => CGUI_R_HORIZONTAL
 ''     constant R_VERTICAL => CGUI_R_VERTICAL
 ''     constant TR_SHOWPOS => CGUI_TR_SHOWPOS
@@ -240,9 +241,9 @@ const CGUI_W_TOP = 1 shl 4
 const CGUI_W_BOTTOM = 1 shl 5
 const CGUI_W_LEFT = 1 shl 6
 const CGUI_W_RIGHT = 1 shl 7
-#define CGUI_W_CENTRE_H (CGUI_W_LEFT or CGUI_W_RIGHT)
-#define CGUI_W_CENTRE_V (CGUI_W_TOP or CGUI_W_BOTTOM)
-#define CGUI_W_CENTRE (CGUI_W_CENTRE_H or CGUI_W_CENTRE_V)
+const CGUI_W_CENTRE_H = CGUI_W_LEFT or CGUI_W_RIGHT
+const CGUI_W_CENTRE_V = CGUI_W_TOP or CGUI_W_BOTTOM
+const CGUI_W_CENTRE = CGUI_W_CENTRE_H or CGUI_W_CENTRE_V
 
 declare sub DisplayWin()
 declare sub CloseWin(byval dummy as any ptr)

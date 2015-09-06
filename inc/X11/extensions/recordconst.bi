@@ -35,7 +35,7 @@ const RECORD_MINOR_VERSION = 13
 const RECORD_LOWEST_MAJOR_VERSION = 1
 const RECORD_LOWEST_MINOR_VERSION = 12
 const XRecordBadContext = 0
-#define RecordNumErrors (XRecordBadContext + 1)
+const RecordNumErrors = XRecordBadContext + 1
 const RecordNumEvents = cast(clong, 0)
 const XRecordFromServerTime = &h01
 const XRecordFromClientTime = &h02

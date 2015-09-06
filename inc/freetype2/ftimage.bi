@@ -104,7 +104,7 @@ const FT_CURVE_TAG_CUBIC = 2
 const FT_CURVE_TAG_HAS_SCANMODE = 4
 const FT_CURVE_TAG_TOUCH_X = 8
 const FT_CURVE_TAG_TOUCH_Y = 16
-#define FT_CURVE_TAG_TOUCH_BOTH (FT_CURVE_TAG_TOUCH_X or FT_CURVE_TAG_TOUCH_Y)
+const FT_CURVE_TAG_TOUCH_BOTH = FT_CURVE_TAG_TOUCH_X or FT_CURVE_TAG_TOUCH_Y
 
 type FT_Outline_MoveToFunc as function(byval to as const FT_Vector ptr, byval user as any ptr) as long
 type FT_Outline_MoveTo_Func as FT_Outline_MoveToFunc

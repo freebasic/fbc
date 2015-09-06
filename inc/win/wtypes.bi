@@ -351,7 +351,7 @@ type tagDEC
 end type
 
 type DECIMAL as tagDEC
-#define DECIMAL_NEG cast(UBYTE, &h80)
+const DECIMAL_NEG = cast(UBYTE, &h80)
 #macro DECIMAL_SETZERO(dec)
 	scope
 		(dec).Lo64 = 0
@@ -373,8 +373,8 @@ end type
 
 type BSTRBLOB as tagBSTRBLOB
 type LPBSTRBLOB as tagBSTRBLOB ptr
-#define VARIANT_TRUE cast(VARIANT_BOOL, -1)
-#define VARIANT_FALSE cast(VARIANT_BOOL, 0)
+const VARIANT_TRUE = cast(VARIANT_BOOL, -1)
+const VARIANT_FALSE = cast(VARIANT_BOOL, 0)
 
 type tagCLIPDATA
 	cbSize as ULONG

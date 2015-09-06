@@ -31,7 +31,7 @@ extern "Windows"
 #define _WINSOCKAPI_
 #define ___WSA_SOCKET_TYPES_H
 type SOCKET as UINT_PTR
-#define INVALID_SOCKET cast(SOCKET, not 0)
+const INVALID_SOCKET = cast(SOCKET, not 0)
 const SOCKET_ERROR = -1
 #define ___WSA_FD_TYPES_H
 const FD_SETSIZE = 64
@@ -195,7 +195,7 @@ const IOCPARM_MASK = &h7f
 const IOC_VOID = &h20000000
 const IOC_OUT = &h40000000
 const IOC_IN = &h80000000
-#define IOC_INOUT (IOC_IN or IOC_OUT)
+const IOC_INOUT = IOC_IN or IOC_OUT
 #define _IO(x, y) ((IOC_VOID or ((x) shl 8)) or (y))
 #define _IOR(x, y, t) (((IOC_OUT or ((clng(sizeof(t)) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
 #define _IOW(x, y, t) (((IOC_IN or ((clng(sizeof(t)) and IOCPARM_MASK) shl 16)) or ((x) shl 8)) or (y))
@@ -290,7 +290,7 @@ const SO_BROADCAST = &h0020
 const SO_USELOOPBACK = &h0040
 const SO_LINGER = &h0080
 const SO_OOBINLINE = &h0100
-#define SO_DONTLINGER cast(u_int, not SO_LINGER)
+const SO_DONTLINGER = cast(u_int, not SO_LINGER)
 const SO_SNDBUF = &h1001
 const SO_RCVBUF = &h1002
 const SO_SNDLOWAT = &h1003
@@ -381,12 +381,12 @@ const FD_CONNECT = &h10
 const FD_CLOSE = &h20
 #define __WSA_ERR_MACROS_DEFINED
 #define h_errno WSAGetLastError()
-#define HOST_NOT_FOUND WSAHOST_NOT_FOUND
-#define TRY_AGAIN WSATRY_AGAIN
-#define NO_RECOVERY WSANO_RECOVERY
-#define NO_DATA WSANO_DATA
-#define WSANO_ADDRESS WSANO_DATA
-#define NO_ADDRESS WSANO_ADDRESS
+const HOST_NOT_FOUND = WSAHOST_NOT_FOUND
+const TRY_AGAIN = WSATRY_AGAIN
+const NO_RECOVERY = WSANO_RECOVERY
+const NO_DATA = WSANO_DATA
+const WSANO_ADDRESS = WSANO_DATA
+const NO_ADDRESS = WSANO_ADDRESS
 
 declare function accept(byval s as SOCKET, byval addr as SOCKADDR ptr, byval addrlen as long ptr) as SOCKET
 declare function bind(byval s as SOCKET, byval name as const SOCKADDR ptr, byval namelen as long) as long

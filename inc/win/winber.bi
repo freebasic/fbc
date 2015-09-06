@@ -55,8 +55,8 @@
 extern "C"
 
 #define _WINBER_DEFINED_
-#define LBER_ERROR __MSABI_LONG(&hffffffff)
-#define LBER_DEFAULT __MSABI_LONG(&hffffffff)
+const LBER_ERROR = &hffffffff
+const LBER_DEFAULT = &hffffffff
 
 type ber_tag_t as ulong
 type ber_int_t as long

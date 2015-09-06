@@ -50,7 +50,6 @@
 
 #inclib "shell32"
 
-#include once "crt/long.bi"
 #include once "rpc.bi"
 #include once "rpcndr.bi"
 #include once "wtypesbase.bi"
@@ -105,6 +104,9 @@ type IExtractIconA field = 1
 end type
 
 type IExtractIconAVtbl_ field = 1
+	QueryInterface as function(byval This as IExtractIconA ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IExtractIconA ptr) as ULONG
+	Release as function(byval This as IExtractIconA ptr) as ULONG
 	GetIconLocation as function(byval This as IExtractIconA ptr, byval uFlags as UINT, byval pszIconFile as PSTR, byval cchMax as UINT, byval piIndex as long ptr, byval pwFlags as UINT ptr) as HRESULT
 	Extract as function(byval This as IExtractIconA ptr, byval pszFile as PCSTR, byval nIconIndex as UINT, byval phiconLarge as HICON ptr, byval phiconSmall as HICON ptr, byval nIconSize as UINT) as HRESULT
 end type
@@ -117,6 +119,9 @@ type IExtractIconW field = 1
 end type
 
 type IExtractIconWVtbl_ field = 1
+	QueryInterface as function(byval This as IExtractIconW ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IExtractIconW ptr) as ULONG
+	Release as function(byval This as IExtractIconW ptr) as ULONG
 	GetIconLocation as function(byval This as IExtractIconW ptr, byval uFlags as UINT, byval pszIconFile as PWSTR, byval cchMax as UINT, byval piIndex as long ptr, byval pwFlags as UINT ptr) as HRESULT
 	Extract as function(byval This as IExtractIconW ptr, byval pszFile as PCWSTR, byval nIconIndex as UINT, byval phiconLarge as HICON ptr, byval phiconSmall as HICON ptr, byval nIconSize as UINT) as HRESULT
 end type
@@ -140,6 +145,9 @@ type IShellIconOverlayIdentifier field = 1
 end type
 
 type IShellIconOverlayIdentifierVtbl_ field = 1
+	QueryInterface as function(byval This as IShellIconOverlayIdentifier ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellIconOverlayIdentifier ptr) as ULONG
+	Release as function(byval This as IShellIconOverlayIdentifier ptr) as ULONG
 	IsMemberOf as function(byval This as IShellIconOverlayIdentifier ptr, byval pwszPath as PCWSTR, byval dwAttrib as DWORD) as HRESULT
 	GetOverlayInfo as function(byval This as IShellIconOverlayIdentifier ptr, byval pwszIconFile as PWSTR, byval cchMax as long, byval pIndex as long ptr, byval pdwFlags as DWORD ptr) as HRESULT
 	GetPriority as function(byval This as IShellIconOverlayIdentifier ptr, byval pIPriority as long ptr) as HRESULT
@@ -154,6 +162,9 @@ type IShellIconOverlayManager field = 1
 end type
 
 type IShellIconOverlayManagerVtbl_ field = 1
+	QueryInterface as function(byval This as IShellIconOverlayManager ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellIconOverlayManager ptr) as ULONG
+	Release as function(byval This as IShellIconOverlayManager ptr) as ULONG
 	GetFileOverlayInfo as function(byval This as IShellIconOverlayManager ptr, byval pwszPath as PCWSTR, byval dwAttrib as DWORD, byval pIndex as long ptr, byval dwflags as DWORD) as HRESULT
 	GetReservedOverlayInfo as function(byval This as IShellIconOverlayManager ptr, byval pwszPath as PCWSTR, byval dwAttrib as DWORD, byval pIndex as long ptr, byval dwflags as DWORD, byval iReservedID as long) as HRESULT
 	RefreshOverlayImages as function(byval This as IShellIconOverlayManager ptr, byval dwFlags as DWORD) as HRESULT
@@ -174,6 +185,9 @@ type IShellIconOverlay field = 1
 end type
 
 type IShellIconOverlayVtbl_ field = 1
+	QueryInterface as function(byval This as IShellIconOverlay ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellIconOverlay ptr) as ULONG
+	Release as function(byval This as IShellIconOverlay ptr) as ULONG
 	GetOverlayIndex as function(byval This as IShellIconOverlay ptr, byval pidl as LPCITEMIDLIST, byval pIndex as long ptr) as HRESULT
 	GetOverlayIconIndex as function(byval This as IShellIconOverlay ptr, byval pidl as LPCITEMIDLIST, byval pIconIndex as long ptr) as HRESULT
 end type
@@ -345,6 +359,9 @@ type IShellExecuteHookA field = 1
 end type
 
 type IShellExecuteHookAVtbl_ field = 1
+	QueryInterface as function(byval This as IShellExecuteHookA ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellExecuteHookA ptr) as ULONG
+	Release as function(byval This as IShellExecuteHookA ptr) as ULONG
 	Execute as function(byval This as IShellExecuteHookA ptr, byval pei as LPSHELLEXECUTEINFOA) as HRESULT
 end type
 
@@ -355,6 +372,9 @@ type IShellExecuteHookW field = 1
 end type
 
 type IShellExecuteHookWVtbl_ field = 1
+	QueryInterface as function(byval This as IShellExecuteHookW ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellExecuteHookW ptr) as ULONG
+	Release as function(byval This as IShellExecuteHookW ptr) as ULONG
 	Execute as function(byval This as IShellExecuteHookW ptr, byval pei as LPSHELLEXECUTEINFOW) as HRESULT
 end type
 
@@ -373,6 +393,9 @@ type IURLSearchHook field = 1
 end type
 
 type IURLSearchHookVtbl_ field = 1
+	QueryInterface as function(byval This as IURLSearchHook ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IURLSearchHook ptr) as ULONG
+	Release as function(byval This as IURLSearchHook ptr) as ULONG
 	Translate as function(byval This as IURLSearchHook ptr, byval pwszSearchURL as PWSTR, byval cchBufferSize as DWORD) as HRESULT
 end type
 
@@ -383,6 +406,9 @@ type ISearchContext field = 1
 end type
 
 type ISearchContextVtbl_ field = 1
+	QueryInterface as function(byval This as ISearchContext ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as ISearchContext ptr) as ULONG
+	Release as function(byval This as ISearchContext ptr) as ULONG
 	GetSearchUrl as function(byval This as ISearchContext ptr, byval pbstrSearchUrl as BSTR ptr) as HRESULT
 	GetSearchText as function(byval This as ISearchContext ptr, byval pbstrSearchText as BSTR ptr) as HRESULT
 	GetSearchStyle as function(byval This as ISearchContext ptr, byval pdwSearchStyle as DWORD ptr) as HRESULT
@@ -395,6 +421,10 @@ type IURLSearchHook2 field = 1
 end type
 
 type IURLSearchHook2Vtbl_ field = 1
+	QueryInterface as function(byval This as IURLSearchHook2 ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IURLSearchHook2 ptr) as ULONG
+	Release as function(byval This as IURLSearchHook2 ptr) as ULONG
+	Translate as function(byval This as IURLSearchHook2 ptr, byval pwszSearchURL as PWSTR, byval cchBufferSize as DWORD) as HRESULT
 	TranslateWithSearchContext as function(byval This as IURLSearchHook2 ptr, byval pwszSearchURL as PWSTR, byval cchBufferSize as DWORD, byval pSearchContext as ISearchContext ptr) as HRESULT
 end type
 
@@ -449,6 +479,9 @@ type ICopyHookA field = 1
 end type
 
 type ICopyHookAVtbl_ field = 1
+	QueryInterface as function(byval This as ICopyHookA ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as ICopyHookA ptr) as ULONG
+	Release as function(byval This as ICopyHookA ptr) as ULONG
 	CopyCallback as function(byval This as ICopyHookA ptr, byval hwnd as HWND, byval wFunc as UINT, byval wFlags as UINT, byval pszSrcFile as PCSTR, byval dwSrcAttribs as DWORD, byval pszDestFile as PCSTR, byval dwDestAttribs as DWORD) as UINT
 end type
 
@@ -460,6 +493,9 @@ type ICopyHookW field = 1
 end type
 
 type ICopyHookWVtbl_ field = 1
+	QueryInterface as function(byval This as ICopyHookW ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as ICopyHookW ptr) as ULONG
+	Release as function(byval This as ICopyHookW ptr) as ULONG
 	CopyCallback as function(byval This as ICopyHookW ptr, byval hwnd as HWND, byval wFunc as UINT, byval wFlags as UINT, byval pszSrcFile as PCWSTR, byval dwSrcAttribs as DWORD, byval pszDestFile as PCWSTR, byval dwDestAttribs as DWORD) as UINT
 end type
 
@@ -483,6 +519,9 @@ type LPCOPYHOOKW as ICopyHookW ptr
 	end type
 
 	type IFileViewerSiteVtbl_ field = 1
+		QueryInterface as function(byval This as IFileViewerSite ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+		AddRef as function(byval This as IFileViewerSite ptr) as ULONG
+		Release as function(byval This as IFileViewerSite ptr) as ULONG
 		SetPinnedWindow as function(byval This as IFileViewerSite ptr, byval hwnd as HWND) as HRESULT
 		GetPinnedWindow as function(byval This as IFileViewerSite ptr, byval phwnd as HWND ptr) as HRESULT
 	end type
@@ -512,6 +551,9 @@ type LPCOPYHOOKW as ICopyHookW ptr
 	end type
 
 	type IFileViewerAVtbl_ field = 1
+		QueryInterface as function(byval This as IFileViewerA ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+		AddRef as function(byval This as IFileViewerA ptr) as ULONG
+		Release as function(byval This as IFileViewerA ptr) as ULONG
 		ShowInitialize as function(byval This as IFileViewerA ptr, byval lpfsi as LPFILEVIEWERSITE) as HRESULT
 		Show as function(byval This as IFileViewerA ptr, byval pvsi as LPFVSHOWINFO) as HRESULT
 		PrintTo as function(byval This as IFileViewerA ptr, byval pszDriver as PSTR, byval fSuppressUI as WINBOOL) as HRESULT
@@ -525,6 +567,9 @@ type LPCOPYHOOKW as ICopyHookW ptr
 	end type
 
 	type IFileViewerWVtbl_ field = 1
+		QueryInterface as function(byval This as IFileViewerW ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+		AddRef as function(byval This as IFileViewerW ptr) as ULONG
+		Release as function(byval This as IFileViewerW ptr) as ULONG
 		ShowInitialize as function(byval This as IFileViewerW ptr, byval lpfsi as LPFILEVIEWERSITE) as HRESULT
 		Show as function(byval This as IFileViewerW ptr, byval pvsi as LPFVSHOWINFO) as HRESULT
 		PrintTo as function(byval This as IFileViewerW ptr, byval pszDriver as PWSTR, byval fSuppressUI as WINBOOL) as HRESULT
@@ -547,18 +592,18 @@ const FCIDM_BROWSERFIRST = &ha000
 const FCIDM_BROWSERLAST = &hbf00
 const FCIDM_GLOBALFIRST = &h8000
 const FCIDM_GLOBALLAST = &h9fff
-#define FCIDM_MENU_FILE (FCIDM_GLOBALFIRST + &h0000)
-#define FCIDM_MENU_EDIT (FCIDM_GLOBALFIRST + &h0040)
-#define FCIDM_MENU_VIEW (FCIDM_GLOBALFIRST + &h0080)
-#define FCIDM_MENU_VIEW_SEP_OPTIONS (FCIDM_GLOBALFIRST + &h0081)
-#define FCIDM_MENU_TOOLS (FCIDM_GLOBALFIRST + &h00c0)
-#define FCIDM_MENU_TOOLS_SEP_GOTO (FCIDM_GLOBALFIRST + &h00c1)
-#define FCIDM_MENU_HELP (FCIDM_GLOBALFIRST + &h0100)
-#define FCIDM_MENU_FIND (FCIDM_GLOBALFIRST + &h0140)
-#define FCIDM_MENU_EXPLORE (FCIDM_GLOBALFIRST + &h0150)
-#define FCIDM_MENU_FAVORITES (FCIDM_GLOBALFIRST + &h0170)
-#define FCIDM_TOOLBAR (FCIDM_BROWSERFIRST + 0)
-#define FCIDM_STATUS (FCIDM_BROWSERFIRST + 1)
+const FCIDM_MENU_FILE = FCIDM_GLOBALFIRST + &h0000
+const FCIDM_MENU_EDIT = FCIDM_GLOBALFIRST + &h0040
+const FCIDM_MENU_VIEW = FCIDM_GLOBALFIRST + &h0080
+const FCIDM_MENU_VIEW_SEP_OPTIONS = FCIDM_GLOBALFIRST + &h0081
+const FCIDM_MENU_TOOLS = FCIDM_GLOBALFIRST + &h00c0
+const FCIDM_MENU_TOOLS_SEP_GOTO = FCIDM_GLOBALFIRST + &h00c1
+const FCIDM_MENU_HELP = FCIDM_GLOBALFIRST + &h0100
+const FCIDM_MENU_FIND = FCIDM_GLOBALFIRST + &h0140
+const FCIDM_MENU_EXPLORE = FCIDM_GLOBALFIRST + &h0150
+const FCIDM_MENU_FAVORITES = FCIDM_GLOBALFIRST + &h0170
+const FCIDM_TOOLBAR = FCIDM_BROWSERFIRST + 0
+const FCIDM_STATUS = FCIDM_BROWSERFIRST + 1
 const IDC_OFFLINE_HAND = 103
 
 #if _WIN32_WINNT = &h0602
@@ -566,7 +611,7 @@ const IDC_OFFLINE_HAND = 103
 	const IDC_PANTOOL_HAND_CLOSED = 105
 #endif
 
-#define PANE_NONE cast(DWORD, -1)
+const PANE_NONE = cast(DWORD, -1)
 const PANE_ZONE = 1
 const PANE_OFFLINE = 2
 const PANE_PRINTER = 3
@@ -765,7 +810,7 @@ declare function SHGetFolderPathAndSubDirW(byval hwnd as HWND, byval csidl as lo
 
 const FCS_READ = &h00000001
 const FCS_FORCEWRITE = &h00000002
-#define FCS_WRITE (FCS_READ or FCS_FORCEWRITE)
+const FCS_WRITE = FCS_READ or FCS_FORCEWRITE
 const FCS_FLAG_DRAGDROP = 2
 const FCSM_VIEWID = &h00000001
 const FCSM_WEBVIEWTEMPLATE = &h00000002
@@ -847,7 +892,7 @@ const BIF_RETURNFSANCESTORS = &h00000008
 const BIF_EDITBOX = &h00000010
 const BIF_VALIDATE = &h00000020
 const BIF_NEWDIALOGSTYLE = &h00000040
-#define BIF_USENEWUI (BIF_NEWDIALOGSTYLE or BIF_EDITBOX)
+const BIF_USENEWUI = BIF_NEWDIALOGSTYLE or BIF_EDITBOX
 const BIF_BROWSEINCLUDEURLS = &h00000080
 const BIF_UAHINT = &h00000100
 const BIF_NONEWFOLDERBUTTON = &h00000200
@@ -862,25 +907,25 @@ const BFFM_SELCHANGED = 2
 const BFFM_VALIDATEFAILEDA = 3
 const BFFM_VALIDATEFAILEDW = 4
 const BFFM_IUNKNOWN = 5
-#define BFFM_SETSTATUSTEXTA (WM_USER + 100)
-#define BFFM_ENABLEOK (WM_USER + 101)
-#define BFFM_SETSELECTIONA (WM_USER + 102)
-#define BFFM_SETSELECTIONW (WM_USER + 103)
-#define BFFM_SETSTATUSTEXTW (WM_USER + 104)
-#define BFFM_SETOKTEXT (WM_USER + 105)
-#define BFFM_SETEXPANDED (WM_USER + 106)
+const BFFM_SETSTATUSTEXTA = WM_USER + 100
+const BFFM_ENABLEOK = WM_USER + 101
+const BFFM_SETSELECTIONA = WM_USER + 102
+const BFFM_SETSELECTIONW = WM_USER + 103
+const BFFM_SETSTATUSTEXTW = WM_USER + 104
+const BFFM_SETOKTEXT = WM_USER + 105
+const BFFM_SETEXPANDED = WM_USER + 106
 declare function SHBrowseForFolderA(byval lpbi as LPBROWSEINFOA) as LPITEMIDLIST
 declare function SHBrowseForFolderW(byval lpbi as LPBROWSEINFOW) as LPITEMIDLIST
 
 #ifdef UNICODE
 	declare function SHBrowseForFolder alias "SHBrowseForFolderW"(byval lpbi as LPBROWSEINFOW) as LPITEMIDLIST
-	#define BFFM_SETSTATUSTEXT BFFM_SETSTATUSTEXTW
-	#define BFFM_SETSELECTION BFFM_SETSELECTIONW
+	const BFFM_SETSTATUSTEXT = BFFM_SETSTATUSTEXTW
+	const BFFM_SETSELECTION = BFFM_SETSELECTIONW
 	const BFFM_VALIDATEFAILED = BFFM_VALIDATEFAILEDW
 #else
 	declare function SHBrowseForFolder alias "SHBrowseForFolderA"(byval lpbi as LPBROWSEINFOA) as LPITEMIDLIST
-	#define BFFM_SETSTATUSTEXT BFFM_SETSTATUSTEXTA
-	#define BFFM_SETSELECTION BFFM_SETSELECTIONA
+	const BFFM_SETSTATUSTEXT = BFFM_SETSTATUSTEXTA
+	const BFFM_SETSELECTION = BFFM_SETSELECTIONA
 	const BFFM_VALIDATEFAILED = BFFM_VALIDATEFAILEDA
 #endif
 
@@ -907,6 +952,9 @@ type IShellDetails field = 1
 end type
 
 type IShellDetailsVtbl_ field = 1
+	QueryInterface as function(byval This as IShellDetails ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellDetails ptr) as ULONG
+	Release as function(byval This as IShellDetails ptr) as ULONG
 	GetDetailsOf as function(byval This as IShellDetails ptr, byval pidl as LPCITEMIDLIST, byval iColumn as UINT, byval pDetails as SHELLDETAILS ptr) as HRESULT
 	ColumnClick as function(byval This as IShellDetails ptr, byval iColumn as UINT) as HRESULT
 end type
@@ -918,6 +966,9 @@ type IObjMgr field = 1
 end type
 
 type IObjMgrVtbl_ field = 1
+	QueryInterface as function(byval This as IObjMgr ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IObjMgr ptr) as ULONG
+	Release as function(byval This as IObjMgr ptr) as ULONG
 	Append as function(byval This as IObjMgr ptr, byval punk as IUnknown ptr) as HRESULT
 	Remove as function(byval This as IObjMgr ptr, byval punk as IUnknown ptr) as HRESULT
 end type
@@ -929,6 +980,9 @@ type ICurrentWorkingDirectory field = 1
 end type
 
 type ICurrentWorkingDirectoryVtbl_ field = 1
+	QueryInterface as function(byval This as ICurrentWorkingDirectory ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as ICurrentWorkingDirectory ptr) as ULONG
+	Release as function(byval This as ICurrentWorkingDirectory ptr) as ULONG
 	GetDirectory as function(byval This as ICurrentWorkingDirectory ptr, byval pwzPath as PWSTR, byval cchSize as DWORD) as HRESULT
 	SetDirectory as function(byval This as ICurrentWorkingDirectory ptr, byval pwzPath as PCWSTR) as HRESULT
 end type
@@ -940,6 +994,9 @@ type IACList field = 1
 end type
 
 type IACListVtbl_ field = 1
+	QueryInterface as function(byval This as IACList ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IACList ptr) as ULONG
+	Release as function(byval This as IACList ptr) as ULONG
 	Expand as function(byval This as IACList ptr, byval pszExpand as PCWSTR) as HRESULT
 end type
 
@@ -969,6 +1026,10 @@ type IACList2 field = 1
 end type
 
 type IACList2Vtbl_ field = 1
+	QueryInterface as function(byval This as IACList2 ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IACList2 ptr) as ULONG
+	Release as function(byval This as IACList2 ptr) as ULONG
+	Expand as function(byval This as IACList2 ptr, byval pszExpand as PCWSTR) as HRESULT
 	SetOptions as function(byval This as IACList2 ptr, byval dwFlag as DWORD) as HRESULT
 	GetOptions as function(byval This as IACList2 ptr, byval pdwFlag as DWORD ptr) as HRESULT
 end type
@@ -999,6 +1060,9 @@ type IProgressDialog field = 1
 end type
 
 type IProgressDialogVtbl_ field = 1
+	QueryInterface as function(byval This as IProgressDialog ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IProgressDialog ptr) as ULONG
+	Release as function(byval This as IProgressDialog ptr) as ULONG
 	StartProgressDialog as function(byval This as IProgressDialog ptr, byval hwndParent as HWND, byval punkEnableModless as IUnknown ptr, byval dwFlags as DWORD, byval pvResevered as LPCVOID) as HRESULT
 	StopProgressDialog as function(byval This as IProgressDialog ptr) as HRESULT
 	SetTitle as function(byval This as IProgressDialog ptr, byval pwzTitle as PCWSTR) as HRESULT
@@ -1018,6 +1082,11 @@ type IDockingWindowSite field = 1
 end type
 
 type IDockingWindowSiteVtbl_ field = 1
+	QueryInterface as function(byval This as IDockingWindowSite ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IDockingWindowSite ptr) as ULONG
+	Release as function(byval This as IDockingWindowSite ptr) as ULONG
+	GetWindow as function(byval This as IDockingWindowSite ptr, byval phwnd as HWND ptr) as HRESULT
+	ContextSensitiveHelp as function(byval This as IDockingWindowSite ptr, byval fEnterMode as WINBOOL) as HRESULT
 	GetBorderDW as function(byval This as IDockingWindowSite ptr, byval punkObj as IUnknown ptr, byval prcBorder as RECT ptr) as HRESULT
 	RequestBorderSpaceDW as function(byval This as IDockingWindowSite ptr, byval punkObj as IUnknown ptr, byval pbw as LPCBORDERWIDTHS) as HRESULT
 	SetBorderSpaceDW as function(byval This as IDockingWindowSite ptr, byval punkObj as IUnknown ptr, byval pbw as LPCBORDERWIDTHS) as HRESULT
@@ -1036,6 +1105,11 @@ type IDockingWindowFrame field = 1
 end type
 
 type IDockingWindowFrameVtbl_ field = 1
+	QueryInterface as function(byval This as IDockingWindowFrame ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IDockingWindowFrame ptr) as ULONG
+	Release as function(byval This as IDockingWindowFrame ptr) as ULONG
+	GetWindow as function(byval This as IDockingWindowFrame ptr, byval phwnd as HWND ptr) as HRESULT
+	ContextSensitiveHelp as function(byval This as IDockingWindowFrame ptr, byval fEnterMode as WINBOOL) as HRESULT
 	AddToolbar as function(byval This as IDockingWindowFrame ptr, byval punkSrc as IUnknown ptr, byval pwszItem as PCWSTR, byval dwAddFlags as DWORD) as HRESULT
 	RemoveToolbar as function(byval This as IDockingWindowFrame ptr, byval punkSrc as IUnknown ptr, byval dwRemoveFlags as DWORD) as HRESULT
 	FindToolbar as function(byval This as IDockingWindowFrame ptr, byval pwszItem as PCWSTR, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
@@ -1048,6 +1122,9 @@ type IThumbnailCapture field = 1
 end type
 
 type IThumbnailCaptureVtbl_ field = 1
+	QueryInterface as function(byval This as IThumbnailCapture ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IThumbnailCapture ptr) as ULONG
+	Release as function(byval This as IThumbnailCapture ptr) as ULONG
 	CaptureThumbnail as function(byval This as IThumbnailCapture ptr, byval pMaxSize as const SIZE ptr, byval pHTMLDoc2 as IUnknown ptr, byval phbmThumbnail as HBITMAP ptr) as HRESULT
 end type
 
@@ -1151,6 +1228,9 @@ type IShellFolderBand field = 1
 end type
 
 type IShellFolderBandVtbl_ field = 1
+	QueryInterface as function(byval This as IShellFolderBand ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellFolderBand ptr) as ULONG
+	Release as function(byval This as IShellFolderBand ptr) as ULONG
 	InitializeSFB as function(byval This as IShellFolderBand ptr, byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST) as HRESULT
 	SetBandInfoSFB as function(byval This as IShellFolderBand ptr, byval pbi as PBANDINFOSFB) as HRESULT
 	GetBandInfoSFB as function(byval This as IShellFolderBand ptr, byval pbi as PBANDINFOSFB) as HRESULT
@@ -1167,6 +1247,11 @@ type IDeskBarClient field = 1
 end type
 
 type IDeskBarClientVtbl_ field = 1
+	QueryInterface as function(byval This as IDeskBarClient ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IDeskBarClient ptr) as ULONG
+	Release as function(byval This as IDeskBarClient ptr) as ULONG
+	GetWindow as function(byval This as IDeskBarClient ptr, byval phwnd as HWND ptr) as HRESULT
+	ContextSensitiveHelp as function(byval This as IDeskBarClient ptr, byval fEnterMode as WINBOOL) as HRESULT
 	SetDeskBarSite as function(byval This as IDeskBarClient ptr, byval punkSite as IUnknown ptr) as HRESULT
 	SetModeDBC as function(byval This as IDeskBarClient ptr, byval dwMode as DWORD) as HRESULT
 	UIActivateDBC as function(byval This as IDeskBarClient ptr, byval dwState as DWORD) as HRESULT
@@ -1430,34 +1515,34 @@ const SHCNRF_InterruptLevel = &h0001
 const SHCNRF_ShellLevel = &h0002
 const SHCNRF_RecursiveInterrupt = &h1000
 const SHCNRF_NewDelivery = &h8000
-#define SHCNE_RENAMEITEM __MSABI_LONG(&h00000001)
-#define SHCNE_CREATE __MSABI_LONG(&h00000002)
-#define SHCNE_DELETE __MSABI_LONG(&h00000004)
-#define SHCNE_MKDIR __MSABI_LONG(&h00000008)
-#define SHCNE_RMDIR __MSABI_LONG(&h00000010)
-#define SHCNE_MEDIAINSERTED __MSABI_LONG(&h00000020)
-#define SHCNE_MEDIAREMOVED __MSABI_LONG(&h00000040)
-#define SHCNE_DRIVEREMOVED __MSABI_LONG(&h00000080)
-#define SHCNE_DRIVEADD __MSABI_LONG(&h00000100)
-#define SHCNE_NETSHARE __MSABI_LONG(&h00000200)
-#define SHCNE_NETUNSHARE __MSABI_LONG(&h00000400)
-#define SHCNE_ATTRIBUTES __MSABI_LONG(&h00000800)
-#define SHCNE_UPDATEDIR __MSABI_LONG(&h00001000)
-#define SHCNE_UPDATEITEM __MSABI_LONG(&h00002000)
-#define SHCNE_SERVERDISCONNECT __MSABI_LONG(&h00004000)
-#define SHCNE_UPDATEIMAGE __MSABI_LONG(&h00008000)
-#define SHCNE_DRIVEADDGUI __MSABI_LONG(&h00010000)
-#define SHCNE_RENAMEFOLDER __MSABI_LONG(&h00020000)
-#define SHCNE_FREESPACE __MSABI_LONG(&h00040000)
-#define SHCNE_EXTENDED_EVENT __MSABI_LONG(&h04000000)
-#define SHCNE_ASSOCCHANGED __MSABI_LONG(&h08000000)
-#define SHCNE_DISKEVENTS __MSABI_LONG(&h0002381f)
-#define SHCNE_GLOBALEVENTS __MSABI_LONG(&h0c0581e0)
-#define SHCNE_ALLEVENTS __MSABI_LONG(&h7fffffff)
-#define SHCNE_INTERRUPT __MSABI_LONG(&h80000000)
-#define SHCNEE_ORDERCHANGED __MSABI_LONG(2)
-#define SHCNEE_MSI_CHANGE __MSABI_LONG(4)
-#define SHCNEE_MSI_UNINSTALL __MSABI_LONG(5)
+const SHCNE_RENAMEITEM = &h00000001
+const SHCNE_CREATE = &h00000002
+const SHCNE_DELETE = &h00000004
+const SHCNE_MKDIR = &h00000008
+const SHCNE_RMDIR = &h00000010
+const SHCNE_MEDIAINSERTED = &h00000020
+const SHCNE_MEDIAREMOVED = &h00000040
+const SHCNE_DRIVEREMOVED = &h00000080
+const SHCNE_DRIVEADD = &h00000100
+const SHCNE_NETSHARE = &h00000200
+const SHCNE_NETUNSHARE = &h00000400
+const SHCNE_ATTRIBUTES = &h00000800
+const SHCNE_UPDATEDIR = &h00001000
+const SHCNE_UPDATEITEM = &h00002000
+const SHCNE_SERVERDISCONNECT = &h00004000
+const SHCNE_UPDATEIMAGE = &h00008000
+const SHCNE_DRIVEADDGUI = &h00010000
+const SHCNE_RENAMEFOLDER = &h00020000
+const SHCNE_FREESPACE = &h00040000
+const SHCNE_EXTENDED_EVENT = &h04000000
+const SHCNE_ASSOCCHANGED = &h08000000
+const SHCNE_DISKEVENTS = &h0002381f
+const SHCNE_GLOBALEVENTS = &h0c0581e0
+const SHCNE_ALLEVENTS = &h7fffffff
+const SHCNE_INTERRUPT = &h80000000
+const SHCNEE_ORDERCHANGED = 2
+const SHCNEE_MSI_CHANGE = 4
+const SHCNEE_MSI_UNINSTALL = 5
 const SHCNF_IDLIST = &h0000
 const SHCNF_PATHA = &h0001
 const SHCNF_PRINTERA = &h0002
@@ -1485,6 +1570,9 @@ type IShellChangeNotify field = 1
 end type
 
 type IShellChangeNotifyVtbl_ field = 1
+	QueryInterface as function(byval This as IShellChangeNotify ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellChangeNotify ptr) as ULONG
+	Release as function(byval This as IShellChangeNotify ptr) as ULONG
 	OnChange as function(byval This as IShellChangeNotify ptr, byval lEvent as LONG, byval pidl1 as LPCITEMIDLIST, byval pidl2 as LPCITEMIDLIST) as HRESULT
 end type
 
@@ -1495,6 +1583,9 @@ type IQueryInfo field = 1
 end type
 
 type IQueryInfoVtbl_ field = 1
+	QueryInterface as function(byval This as IQueryInfo ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IQueryInfo ptr) as ULONG
+	Release as function(byval This as IQueryInfo ptr) as ULONG
 	GetInfoTip as function(byval This as IQueryInfo ptr, byval dwFlags as DWORD, byval ppwszTip as PWSTR ptr) as HRESULT
 	GetInfoFlags as function(byval This as IQueryInfo ptr, byval pdwFlags as DWORD ptr) as HRESULT
 end type
@@ -1514,16 +1605,16 @@ const QIF_DONTEXPANDFOLDER = &h00000002
 
 type SHARD as long
 enum
-	SHARD_PIDL = cast(clong, &h00000001)
-	SHARD_PATHA = cast(clong, &h00000002)
-	SHARD_PATHW = cast(clong, &h00000003)
+	SHARD_PIDL = &h00000001
+	SHARD_PATHA = &h00000002
+	SHARD_PATHW = &h00000003
 
 	#if _WIN32_WINNT = &h0602
-		SHARD_APPIDINFO = cast(clong, &h00000004)
-		SHARD_APPIDINFOIDLIST = cast(clong, &h00000005)
-		SHARD_LINK = cast(clong, &h00000006)
-		SHARD_APPIDINFOLINK = cast(clong, &h00000007)
-		SHARD_SHELLITEM = cast(clong, &h00000008)
+		SHARD_APPIDINFO = &h00000004
+		SHARD_APPIDINFOIDLIST = &h00000005
+		SHARD_LINK = &h00000006
+		SHARD_APPIDINFOLINK = &h00000007
+		SHARD_SHELLITEM = &h00000008
 	#endif
 end enum
 
@@ -1661,7 +1752,7 @@ declare function SHGetDataFromIDListW(byval psf as IShellFolder ptr, byval pidl 
 #endif
 
 const PRF_VERIFYEXISTS = &h1
-#define PRF_TRYPROGRAMEXTENSIONS (&h2 or PRF_VERIFYEXISTS)
+const PRF_TRYPROGRAMEXTENSIONS = &h2 or PRF_VERIFYEXISTS
 const PRF_FIRSTDIRDEF = &h4
 const PRF_DONTFINDLNK = &h8
 const PRF_REQUIREABSOLUTE = &h10
@@ -1740,9 +1831,9 @@ declare function DriveType(byval iDrive as long) as long
 declare function RealDriveType(byval iDrive as long, byval fOKToHitNet as WINBOOL) as long
 declare function IsNetDrive(byval iDrive as long) as long
 
-#define MM_ADDSEPARATOR __MSABI_LONG(&h00000001)
-#define MM_SUBMENUSHAVEIDS __MSABI_LONG(&h00000002)
-#define MM_DONTREMOVESEPS __MSABI_LONG(&h00000004)
+const MM_ADDSEPARATOR = &h00000001
+const MM_SUBMENUSHAVEIDS = &h00000002
+const MM_DONTREMOVESEPS = &h00000004
 declare function Shell_MergeMenus(byval hmDst as HMENU, byval hmSrc as HMENU, byval uInsert as UINT, byval uIDAdjust as UINT, byval uIDAdjustMax as UINT, byval uFlags as ULONG) as UINT
 declare function SHObjectProperties(byval hwnd as HWND, byval shopObjectType as DWORD, byval pszObjectName as PCWSTR, byval pszPropertyPage as PCWSTR) as WINBOOL
 const SHOP_PRINTERNAME = &h00000001
@@ -1752,9 +1843,9 @@ declare function SHFormatDrive(byval hwnd as HWND, byval drive as UINT, byval fm
 const SHFMT_ID_DEFAULT = &hffff
 const SHFMT_OPT_FULL = &h0001
 const SHFMT_OPT_SYSONLY = &h0002
-#define SHFMT_ERROR __MSABI_LONG(&hffffffff)
-#define SHFMT_CANCEL __MSABI_LONG(&hfffffffe)
-#define SHFMT_NOFORMAT __MSABI_LONG(&hfffffffd)
+const SHFMT_ERROR = &hffffffff
+const SHFMT_CANCEL = &hfffffffe
+const SHFMT_NOFORMAT = &hfffffffd
 #define HPSXA_DEFINED
 
 type HPSXA__ field = 1
@@ -1775,6 +1866,9 @@ declare function SHReplaceFromPropSheetExtArray(byval hpsxa as HPSXA, byval uPag
 	end type
 
 	type IDefViewFrameVtbl_ field = 1
+		QueryInterface as function(byval This as IDefViewFrame ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+		AddRef as function(byval This as IDefViewFrame ptr) as ULONG
+		Release as function(byval This as IDefViewFrame ptr) as ULONG
 		GetWindowLV as function(byval This as IDefViewFrame ptr, byval phwnd as HWND ptr) as HRESULT
 		ReleaseWindowLV as function(byval This as IDefViewFrame ptr) as HRESULT
 		GetShellFolder as function(byval This as IDefViewFrame ptr, byval ppsf as IShellFolder ptr ptr) as HRESULT
@@ -2060,6 +2154,9 @@ type IDocViewSite field = 1
 end type
 
 type IDocViewSiteVtbl_ field = 1
+	QueryInterface as function(byval This as IDocViewSite ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IDocViewSite ptr) as ULONG
+	Release as function(byval This as IDocViewSite ptr) as ULONG
 	OnSetTitle as function(byval This as IDocViewSite ptr, byval pvTitle as VARIANTARG ptr) as HRESULT
 end type
 
@@ -2122,6 +2219,9 @@ type IInitializeObject field = 1
 end type
 
 type IInitializeObjectVtbl_ field = 1
+	QueryInterface as function(byval This as IInitializeObject ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IInitializeObject ptr) as ULONG
+	Release as function(byval This as IInitializeObject ptr) as ULONG
 	Initialize as function(byval This as IInitializeObject ptr) as HRESULT
 end type
 
@@ -2137,6 +2237,9 @@ type IBanneredBar field = 1
 end type
 
 type IBanneredBarVtbl_ field = 1
+	QueryInterface as function(byval This as IBanneredBar ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IBanneredBar ptr) as ULONG
+	Release as function(byval This as IBanneredBar ptr) as ULONG
 	SetIconSize as function(byval This as IBanneredBar ptr, byval iIcon as DWORD) as HRESULT
 	GetIconSize as function(byval This as IBanneredBar ptr, byval piIcon as DWORD ptr) as HRESULT
 	SetBitmap as function(byval This as IBanneredBar ptr, byval hBitmap as HBITMAP) as HRESULT
@@ -2151,6 +2254,9 @@ type IShellFolderViewCB field = 1
 end type
 
 type IShellFolderViewCBVtbl_ field = 1
+	QueryInterface as function(byval This as IShellFolderViewCB ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellFolderViewCB ptr) as ULONG
+	Release as function(byval This as IShellFolderViewCB ptr) as ULONG
 	MessageSFVCB as function(byval This as IShellFolderViewCB ptr, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as HRESULT
 end type
 
@@ -2272,6 +2378,9 @@ type IShellFolderView
 end type
 
 type IShellFolderViewVtbl_
+	QueryInterface as function(byval This as IShellFolderView ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as IShellFolderView ptr) as ULONG
+	Release as function(byval This as IShellFolderView ptr) as ULONG
 	Rearrange as function(byval This as IShellFolderView ptr, byval lParamSort as LPARAM) as HRESULT
 	GetArrangeParam as function(byval This as IShellFolderView ptr, byval plParamSort as LPARAM ptr) as HRESULT
 	ArrangeGrid as function(byval This as IShellFolderView ptr) as HRESULT
@@ -2369,19 +2478,19 @@ const DFM_GETVERBW = 15
 const DFM_GETVERBA = 16
 const DFM_MERGECONTEXTMENU_BOTTOM = 17
 const DFM_MODIFYQCMFLAGS = 18
-#define DFM_CMD_DELETE cast(UINT, -1)
-#define DFM_CMD_MOVE cast(UINT, -2)
-#define DFM_CMD_COPY cast(UINT, -3)
-#define DFM_CMD_LINK cast(UINT, -4)
-#define DFM_CMD_PROPERTIES cast(UINT, -5)
-#define DFM_CMD_NEWFOLDER cast(UINT, -6)
-#define DFM_CMD_PASTE cast(UINT, -7)
-#define DFM_CMD_VIEWLIST cast(UINT, -8)
-#define DFM_CMD_VIEWDETAILS cast(UINT, -9)
-#define DFM_CMD_PASTELINK cast(UINT, -10)
-#define DFM_CMD_PASTESPECIAL cast(UINT, -11)
-#define DFM_CMD_MODALPROP cast(UINT, -12)
-#define DFM_CMD_RENAME cast(UINT, -13)
+const DFM_CMD_DELETE = cast(UINT, -1)
+const DFM_CMD_MOVE = cast(UINT, -2)
+const DFM_CMD_COPY = cast(UINT, -3)
+const DFM_CMD_LINK = cast(UINT, -4)
+const DFM_CMD_PROPERTIES = cast(UINT, -5)
+const DFM_CMD_NEWFOLDER = cast(UINT, -6)
+const DFM_CMD_PASTE = cast(UINT, -7)
+const DFM_CMD_VIEWLIST = cast(UINT, -8)
+const DFM_CMD_VIEWDETAILS = cast(UINT, -9)
+const DFM_CMD_PASTELINK = cast(UINT, -10)
+const DFM_CMD_PASTESPECIAL = cast(UINT, -11)
+const DFM_CMD_MODALPROP = cast(UINT, -12)
+const DFM_CMD_RENAME = cast(UINT, -13)
 type LPFNVIEWCALLBACK as function(byval psvOuter as IShellView ptr, byval psf as IShellFolder ptr, byval hwndMain as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as HRESULT
 
 type _CSFV
@@ -2664,6 +2773,9 @@ type INamedPropertyBag field = 1
 end type
 
 type INamedPropertyBagVtbl_ field = 1
+	QueryInterface as function(byval This as INamedPropertyBag ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+	AddRef as function(byval This as INamedPropertyBag ptr) as ULONG
+	Release as function(byval This as INamedPropertyBag ptr) as ULONG
 	ReadPropertyNPB as function(byval This as INamedPropertyBag ptr, byval pszBagname as PCWSTR, byval pszPropName as PCWSTR, byval pVar as PROPVARIANT ptr) as HRESULT
 	WritePropertyNPB as function(byval This as INamedPropertyBag ptr, byval pszBagname as PCWSTR, byval pszPropName as PCWSTR, byval pVar as PROPVARIANT ptr) as HRESULT
 	RemovePropertyNPB as function(byval This as INamedPropertyBag ptr, byval pszBagname as PCWSTR, byval pszPropName as PCWSTR) as HRESULT

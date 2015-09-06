@@ -142,7 +142,7 @@ type PDWORD32 as ulong ptr
 	type ULONG_PTR as ulong
 	type PULONG_PTR as ulong ptr
 	type __int3264 as long
-	#define ADDRESS_TAG_BIT __MSABI_LONG(&h80000000u)
+	const ADDRESS_TAG_BIT = &h80000000u
 	type UHALF_PTR as ushort
 	type PUHALF_PTR as ushort ptr
 	type HALF_PTR as short
@@ -174,15 +174,15 @@ type PDWORD32 as ulong ptr
 #endif
 
 #define HandleToHandle32(h) PtrToPtr32(h)
-#define MAXUINT_PTR (not cast(UINT_PTR, 0))
-#define MAXINT_PTR cast(INT_PTR, MAXUINT_PTR shr 1)
-#define MININT_PTR (not MAXINT_PTR)
-#define MAXULONG_PTR (not cast(ULONG_PTR, 0))
-#define MAXLONG_PTR cast(LONG_PTR, MAXULONG_PTR shr 1)
-#define MINLONG_PTR (not MAXLONG_PTR)
-#define MAXUHALF_PTR cast(UHALF_PTR, not 0)
-#define MAXHALF_PTR cast(HALF_PTR, MAXUHALF_PTR shr 1)
-#define MINHALF_PTR (not MAXHALF_PTR)
+const MAXUINT_PTR = not cast(UINT_PTR, 0)
+const MAXINT_PTR = cast(INT_PTR, MAXUINT_PTR shr 1)
+const MININT_PTR = not MAXINT_PTR
+const MAXULONG_PTR = not cast(ULONG_PTR, 0)
+const MAXLONG_PTR = cast(LONG_PTR, MAXULONG_PTR shr 1)
+const MINLONG_PTR = not MAXLONG_PTR
+const MAXUHALF_PTR = cast(UHALF_PTR, not 0)
+const MAXHALF_PTR = cast(HALF_PTR, MAXUHALF_PTR shr 1)
+const MINHALF_PTR = not MAXHALF_PTR
 
 type SIZE_T_ as ULONG_PTR
 type PSIZE_T as ULONG_PTR ptr
@@ -190,33 +190,33 @@ type SSIZE_T_ as LONG_PTR
 type PSSIZE_T as LONG_PTR ptr
 
 #if _WIN32_WINNT = &h0602
-	#define MAXUINT8 cast(UINT8, not cast(UINT8, 0))
-	#define MAXINT8 cast(INT8, MAXUINT8 shr 1)
-	#define MININT8 cast(INT8, not MAXINT8)
+	const MAXUINT8 = cast(UINT8, not cast(UINT8, 0))
+	const MAXINT8 = cast(INT8, MAXUINT8 shr 1)
+	const MININT8 = cast(INT8, not MAXINT8)
 	#define MAXUINT16 cast(UINT16, not cast(UINT16, 0))
 	#define MAXINT16 cast(INT16, MAXUINT16 shr 1)
 	#define MININT16 cast(INT16, not MAXINT16)
-	#define MAXUINT32 cast(UINT32, not cast(UINT32, 0))
-	#define MAXINT32 cast(INT32, MAXUINT32 shr 1)
-	#define MININT32 cast(INT32, not MAXINT32)
-	#define MAXUINT64 cast(UINT64, not cast(UINT64, 0))
-	#define MAXINT64 cast(INT64, MAXUINT64 shr 1)
-	#define MININT64 cast(INT64, not MAXINT64)
-	#define MAXULONG32 cast(ULONG32, not cast(ULONG32, 0))
-	#define MAXLONG32 cast(LONG32, MAXULONG32 shr 1)
-	#define MINLONG32 cast(LONG32, not MAXLONG32)
+	const MAXUINT32 = cast(UINT32, not cast(UINT32, 0))
+	const MAXINT32 = cast(INT32, MAXUINT32 shr 1)
+	const MININT32 = cast(INT32, not MAXINT32)
+	const MAXUINT64 = cast(UINT64, not cast(UINT64, 0))
+	const MAXINT64 = cast(INT64, MAXUINT64 shr 1)
+	const MININT64 = cast(INT64, not MAXINT64)
+	const MAXULONG32 = cast(ULONG32, not cast(ULONG32, 0))
+	const MAXLONG32 = cast(LONG32, MAXULONG32 shr 1)
+	const MINLONG32 = cast(LONG32, not MAXLONG32)
 	#define MAXULONG64 cast(ULONG64, not cast(ULONG64, 0))
 	#define MAXLONG64 cast(LONG64, MAXULONG64 shr 1)
 	#define MINLONG64 cast(LONG64, not MAXLONG64)
 	#define MAXULONGLONG cast(ULONGLONG, not cast(ULONGLONG, 0))
 	#define MINLONGLONG cast(LONGLONG, not MAXLONGLONG)
-	#define MAXSIZE_T cast(SIZE_T_, not cast(SIZE_T_, 0))
-	#define MAXSSIZE_T cast(SSIZE_T_, MAXSIZE_T shr 1)
-	#define MINSSIZE_T cast(SSIZE_T_, not MAXSSIZE_T)
-	#define MAXUINT cast(UINT, not cast(UINT, 0))
+	const MAXSIZE_T = cast(SIZE_T_, not cast(SIZE_T_, 0))
+	const MAXSSIZE_T = cast(SSIZE_T_, MAXSIZE_T shr 1)
+	const MINSSIZE_T = cast(SSIZE_T_, not MAXSSIZE_T)
+	const MAXUINT = cast(UINT, not cast(UINT, 0))
 	#define MAXINT cast(INT_, MAXUINT shr 1)
 	#define MININT cast(INT_, not MAXINT)
-	#define MAXDWORD32 cast(DWORD32, not cast(DWORD32, 0))
+	const MAXDWORD32 = cast(DWORD32, not cast(DWORD32, 0))
 	#define MAXDWORD64 cast(DWORD64, not cast(DWORD64, 0))
 #endif
 

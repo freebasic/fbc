@@ -76,14 +76,14 @@ type _RequestRec
 	offset as culong
 	timeout as XtIntervalId
 	event as XSelectionRequestEvent
-	allSent as byte
+	allSent as XBoolean
 end type
 
 type RequestRec as _RequestRec
 
 type SelectionPropRec
 	prop as XAtom
-	avail as byte
+	avail as XBoolean
 end type
 
 type SelectionProp as SelectionPropRec ptr
@@ -143,7 +143,7 @@ type _QueuedRequestRec
 	callback as XtSelectionCallbackProc
 	closure as XtPointer
 	time as Time
-	incremental as byte
+	incremental as XBoolean
 end type
 
 type QueuedRequestRec as _QueuedRequestRec
@@ -173,7 +173,7 @@ type CallBackInfoRec
 	widget as Widget
 	time as Time
 	ctx as Select_
-	incremental as zstring ptr
+	incremental as XBoolean ptr
 	current as long
 end type
 

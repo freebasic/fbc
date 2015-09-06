@@ -1,60 +1,90 @@
+'' FreeBASIC binding for flite-2.0.0-release
 ''
+'' based on the C header files:
+''                     Language Technologies Institute                      
+''                        Carnegie Mellon University                        
+''                         Copyright (c) 1999-2014                          
+''                           All Rights Reserved.                           
+''                                                                          
+''     Permission is hereby granted, free of charge, to use and distribute  
+''     this software and its documentation without restriction, including   
+''     without limitation the rights to use, copy, modify, merge, publish,  
+''     distribute, sublicense, and/or sell copies of this work, and to      
+''     permit persons to whom this work is furnished to do so, subject to   
+''     the following conditions:                                            
+''      1. The code must retain the above copyright notice, this list of    
+''         conditions and the following disclaimer.                         
+''      2. Any modifications must be clearly marked as such.                
+''      3. Original authors' names are not deleted.                         
+''      4. The authors' names are not used to endorse or promote products   
+''         derived from this software without specific prior written        
+''         permission.                                                      
+''                                                                          
+''     CARNEGIE MELLON UNIVERSITY AND THE CONTRIBUTORS TO THIS WORK         
+''     DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING      
+''     ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT   
+''     SHALL CARNEGIE MELLON UNIVERSITY NOR THE CONTRIBUTORS BE LIABLE      
+''     FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES    
+''     WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN   
+''     AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,          
+''     ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF       
+''     THIS SOFTWARE.                                                       
 ''
-'' cst_regex -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __cst_regex_bi__
-#define __cst_regex_bi__
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-#define CST_REGMAGIC 0234
+#pragma once
+
+#include once "cst_file.bi"
+#include once "cst_string.bi"
+
+extern "C"
+
+#define _CST_REGEX_H__
+const CST_REGMAGIC = &o234
 
 type cst_regex_struct
 	regstart as byte
 	reganch as byte
 	regmust as zstring ptr
-	regmlen as integer
-	regsize as integer
+	regmlen as long
+	regsize as long
 	program as zstring ptr
 end type
 
 type cst_regex as cst_regex_struct
-
-#define CST_NSUBEXP 10
+const CST_NSUBEXP = 10
 
 type cst_regstate_struct
-	startp as zstring * 10
-	endp as zstring * 10
-	input as zstring ptr
-	bol as zstring ptr
+	startp(0 to 9) as const zstring ptr
+	endp(0 to 9) as const zstring ptr
+	input as const zstring ptr
+	bol as const zstring ptr
 end type
 
 type cst_regstate as cst_regstate_struct
+declare function new_cst_regex(byval str as const zstring ptr) as cst_regex ptr
+declare sub delete_cst_regex(byval r as cst_regex ptr)
+declare function cst_regex_match(byval r as const cst_regex ptr, byval str as const zstring ptr) as long
+declare function cst_regex_match_return(byval r as const cst_regex ptr, byval str as const zstring ptr) as cst_regstate ptr
+declare function hs_regcomp(byval as const zstring ptr) as cst_regex ptr
+declare function hs_regexec(byval as const cst_regex ptr, byval as const zstring ptr) as cst_regstate ptr
+declare sub hs_regdelete(byval as cst_regex ptr)
+declare function cst_regsub(byval r as const cst_regstate ptr, byval in as const zstring ptr, byval out as zstring ptr, byval max as uinteger) as uinteger
+declare sub cst_regex_init()
 
-declare function new_cst_regex cdecl alias "new_cst_regex" (byval str as zstring ptr) as cst_regex ptr
-declare sub delete_cst_regex cdecl alias "delete_cst_regex" (byval r as cst_regex ptr)
-declare function cst_regex_match cdecl alias "cst_regex_match" (byval r as cst_regex ptr, byval str as zstring ptr) as integer
-declare function cst_regex_match_return cdecl alias "cst_regex_match_return" (byval r as cst_regex ptr, byval str as zstring ptr) as cst_regstate ptr
-declare function hs_regcomp cdecl alias "hs_regcomp" (byval as zstring ptr) as cst_regex ptr
-declare function hs_regexec cdecl alias "hs_regexec" (byval as cst_regex ptr, byval as zstring ptr) as cst_regstate ptr
-declare sub hs_regdelete cdecl alias "hs_regdelete" (byval as cst_regex ptr)
-declare function cst_regsub cdecl alias "cst_regsub" (byval r as cst_regstate ptr, byval in as zstring ptr, byval out as zstring ptr, byval max as size_t) as size_t
-declare sub cst_regex_init cdecl alias "cst_regex_init" ()
-extern cst_rx_white alias "cst_rx_white" as cst_regex ptr
-extern cst_rx_alpha alias "cst_rx_alpha" as cst_regex ptr
-extern cst_rx_uppercase alias "cst_rx_uppercase" as cst_regex ptr
-extern cst_rx_lowercase alias "cst_rx_lowercase" as cst_regex ptr
-extern cst_rx_alphanum alias "cst_rx_alphanum" as cst_regex ptr
-extern cst_rx_identifier alias "cst_rx_identifier" as cst_regex ptr
-extern cst_rx_int alias "cst_rx_int" as cst_regex ptr
-extern cst_rx_double alias "cst_rx_double" as cst_regex ptr
-extern cst_rx_commaint alias "cst_rx_commaint" as cst_regex ptr
-extern cst_rx_digits alias "cst_rx_digits" as cst_regex ptr
-extern cst_rx_dotted_abbrev alias "cst_rx_dotted_abbrev" as cst_regex ptr
-extern cst_regex_table(0 to -1) alias "cst_regex_table" as cst_regex ptr
+extern cst_rx_white as const cst_regex const ptr
+extern cst_rx_alpha as const cst_regex const ptr
+extern cst_rx_uppercase as const cst_regex const ptr
+extern cst_rx_lowercase as const cst_regex const ptr
+extern cst_rx_alphanum as const cst_regex const ptr
+extern cst_rx_identifier as const cst_regex const ptr
+extern cst_rx_int as const cst_regex const ptr
+extern cst_rx_double as const cst_regex const ptr
+extern cst_rx_commaint as const cst_regex const ptr
+extern cst_rx_digits as const cst_regex const ptr
+extern cst_rx_dotted_abbrev as const cst_regex const ptr
+extern cst_regex_table(0 to 1 - 1) as const cst_regex const ptr
+const CST_RX_dotted_abbrev_NUM = 0
 
-#define CST_RX_dotted_abbrev_NUM 0
-
-#endif
+end extern

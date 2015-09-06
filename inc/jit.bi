@@ -65,10 +65,10 @@ const JIT_NATIVE_INT32 = 1
 #define JIT_NOTHROW
 #define jit_min_int (cast(jit_int, 1) shl ((sizeof(jit_int) * 8) - 1))
 #define jit_max_int cast(jit_int, not jit_min_int)
-#define jit_max_uint cast(jit_uint, not cast(jit_uint, 0))
+const jit_max_uint = cast(jit_uint, not cast(jit_uint, 0))
 #define jit_min_long (cast(jit_long, 1) shl ((sizeof(jit_long) * 8) - 1))
 #define jit_max_long cast(jit_long, not jit_min_long)
-#define jit_max_ulong cast(jit_ulong, not cast(jit_ulong, 0))
+const jit_max_ulong = cast(jit_ulong, not cast(jit_ulong, 0))
 #define _JIT_COMMON_H
 
 type jit_context_t as _jit_context ptr
@@ -79,7 +79,7 @@ type jit_value_t as _jit_value ptr
 type jit_type_t as _jit_type ptr
 type jit_stack_trace_t as jit_stack_trace ptr
 type jit_label_t as jit_nuint
-#define jit_label_undefined cast(jit_label_t, not cast(jit_uint, 0))
+const jit_label_undefined = cast(jit_label_t, not cast(jit_uint, 0))
 const JIT_NO_OFFSET = culng(not culng(0))
 type jit_meta_free_func as sub(byval data as any ptr)
 type jit_on_demand_func as function(byval func as jit_function_t) as long
