@@ -463,11 +463,80 @@ namespace callByrefFunctionPtrThroughByref
 	end sub
 end namespace
 
+namespace noCtorsCalled
+	dim shared as integer ctors, dtors
+
+	type ClassUdt
+		dummy as integer
+		declare constructor( )
+		declare constructor( byref as const ClassUdt )
+		declare operator let( byref as const ClassUdt )
+		declare destructor( )
+	end type
+
+	constructor ClassUdt( )
+		if ctors <> 0 then
+			'' (libcunit doesn't allow using CU_ASSERT() in a global ctor/dtor)
+			print __FUNCTION__ + "(" & __LINE__ & "): too many ctor calls"
+			end 1
+		end if
+		ctors += 1
+	end constructor
+
+	constructor ClassUdt( byref rhs as const ClassUdt )
+		CU_FAIL( )
+	end constructor
+
+	operator ClassUdt.let( byref rhs as const ClassUdt )
+		CU_FAIL( )
+	end operator
+
+	destructor ClassUdt( )
+		if dtors <> 0 then
+			'' (libcunit doesn't allow using CU_ASSERT() in a global ctor/dtor)
+			print __FUNCTION__ + "(" & __LINE__ & "): too many dtor calls"
+			end 1
+		end if
+		dtors += 1
+	end destructor
+
+	dim shared globalstr as string
+	dim shared byref globalstrref1 as string = globalstr
+	var shared byref globalstrref2           = globalstr
+
+	dim shared globaludt as ClassUdt
+	dim shared byref globaludtref1 as ClassUdt = globaludt
+	var shared byref globaludtref2             = globaludt
+
+	sub test cdecl( )
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 0 )
+
+		scope
+			dim byref localstrref1 as string = globalstr
+			var byref localstrref2 = globalstr
+
+			dim byref localudtref1 as ClassUdt = globaludt
+			var byref localudtref2 = globaludt
+
+			static byref staticstrref1 as string = globalstr
+			static var byref staticstrref2 = globalstr
+
+			static byref staticudtref1 as ClassUdt = globaludt
+			static var byref staticudtref2 = globaludt
+		end scope
+
+		CU_ASSERT( ctors = 1 )
+		CU_ASSERT( dtors = 0 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/dim/byref" )
 	fbcu.add_test( "simpleVars", @simpleVars.test )
 	fbcu.add_test( "allDtypes", @allDtypes.test )
 	fbcu.add_test( "callByrefFunctionPtrThroughByref", @callByrefFunctionPtrThroughByref.test )
+	fbcu.add_test( "noCtorsCalled", @noCtorsCalled.test )
 end sub
 
 end namespace

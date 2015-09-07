@@ -6,6 +6,7 @@ o Dim Byref
   - symbHasDtor() & co should either be adjusted to check for REF/IMPORT/PARAMBYREF/PARAMINSTANCE flags,
     or be renamed to symbTypeHasDtor()
   - arrays of refs
+    - test that the rtlib functions like Redim don't call ctors/dtors
   - allow/fix initialization from non-var:
      - should allow everything that's allowed for byref parameters (CALLs,
        CALLCTORs, TYPEINIs, constants, literals etc) by copying to a temp var
@@ -15,7 +16,6 @@ o Dim Byref
        which we don't need. The temp vars from the reference var initializer are in the same
        scope as the reference var, and it should be enough to just remove their TEMP flag.
   - allow BYVAL initialization, like byref results/params
-  - test that no ctors/dtors are called for class/string refs
   - disallow [Z/W]String * N with Dim Byref (same problem as with byref params, see bug #650)
   - allow BYREF fields; but they must be initialized in a constructor - what syntax to use for that?
     @a = b works, but feels like a hack. Otherwise, a new syntax for field initialization is needed,
