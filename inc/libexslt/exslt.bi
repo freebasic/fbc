@@ -43,15 +43,15 @@ extern exsltLibexsltVersion as const long
 extern exsltLibxsltVersion as const long
 extern exsltLibxmlVersion as const long
 
-#define EXSLT_COMMON_NAMESPACE cptr(const xmlChar ptr, "http://exslt.org/common")
-#define EXSLT_CRYPTO_NAMESPACE cptr(const xmlChar ptr, "http://exslt.org/crypto")
-#define EXSLT_MATH_NAMESPACE cptr(const xmlChar ptr, "http://exslt.org/math")
-#define EXSLT_SETS_NAMESPACE cptr(const xmlChar ptr, "http://exslt.org/sets")
-#define EXSLT_FUNCTIONS_NAMESPACE cptr(const xmlChar ptr, "http://exslt.org/functions")
-#define EXSLT_STRINGS_NAMESPACE cptr(const xmlChar ptr, "http://exslt.org/strings")
-#define EXSLT_DATE_NAMESPACE cptr(const xmlChar ptr, "http://exslt.org/dates-and-times")
-#define EXSLT_DYNAMIC_NAMESPACE cptr(const xmlChar ptr, "http://exslt.org/dynamic")
-#define SAXON_NAMESPACE cptr(const xmlChar ptr, "http://icl.com/saxon")
+#define EXSLT_COMMON_NAMESPACE cptr(const xmlChar ptr, @"http://exslt.org/common")
+#define EXSLT_CRYPTO_NAMESPACE cptr(const xmlChar ptr, @"http://exslt.org/crypto")
+#define EXSLT_MATH_NAMESPACE cptr(const xmlChar ptr, @"http://exslt.org/math")
+#define EXSLT_SETS_NAMESPACE cptr(const xmlChar ptr, @"http://exslt.org/sets")
+#define EXSLT_FUNCTIONS_NAMESPACE cptr(const xmlChar ptr, @"http://exslt.org/functions")
+#define EXSLT_STRINGS_NAMESPACE cptr(const xmlChar ptr, @"http://exslt.org/strings")
+#define EXSLT_DATE_NAMESPACE cptr(const xmlChar ptr, @"http://exslt.org/dates-and-times")
+#define EXSLT_DYNAMIC_NAMESPACE cptr(const xmlChar ptr, @"http://exslt.org/dynamic")
+#define SAXON_NAMESPACE cptr(const xmlChar ptr, @"http://icl.com/saxon")
 
 declare sub exsltCommonRegister()
 declare sub exsltCryptoRegister()

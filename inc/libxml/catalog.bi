@@ -34,8 +34,8 @@
 extern "C"
 
 #define __XML_CATALOG_H__
-#define XML_CATALOGS_NAMESPACE cptr(const xmlChar ptr, "urn:oasis:names:tc:entity:xmlns:xml:catalog")
-#define XML_CATALOG_PI cptr(const xmlChar ptr, "oasis-xml-catalog")
+#define XML_CATALOGS_NAMESPACE cptr(const xmlChar ptr, @"urn:oasis:names:tc:entity:xmlns:xml:catalog")
+#define XML_CATALOG_PI cptr(const xmlChar ptr, @"oasis-xml-catalog")
 
 type xmlCatalogPrefer as long
 enum

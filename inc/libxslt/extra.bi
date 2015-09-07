@@ -36,11 +36,11 @@
 extern "C"
 
 #define __XML_XSLT_EXTRA_H__
-#define XSLT_LIBXSLT_NAMESPACE cptr(xmlChar ptr, "http://xmlsoft.org/XSLT/namespace")
-#define XSLT_SAXON_NAMESPACE cptr(xmlChar ptr, "http://icl.com/saxon")
-#define XSLT_XT_NAMESPACE cptr(xmlChar ptr, "http://www.jclark.com/xt")
-#define XSLT_XALAN_NAMESPACE cptr(xmlChar ptr, "org.apache.xalan.xslt.extensions.Redirect")
-#define XSLT_NORM_SAXON_NAMESPACE cptr(xmlChar ptr, "http://nwalsh.com/xslt/ext/com.nwalsh.saxon.CVS")
+#define XSLT_LIBXSLT_NAMESPACE cptr(xmlChar ptr, @"http://xmlsoft.org/XSLT/namespace")
+#define XSLT_SAXON_NAMESPACE cptr(xmlChar ptr, @"http://icl.com/saxon")
+#define XSLT_XT_NAMESPACE cptr(xmlChar ptr, @"http://www.jclark.com/xt")
+#define XSLT_XALAN_NAMESPACE cptr(xmlChar ptr, @"org.apache.xalan.xslt.extensions.Redirect")
+#define XSLT_NORM_SAXON_NAMESPACE cptr(xmlChar ptr, @"http://nwalsh.com/xslt/ext/com.nwalsh.saxon.CVS")
 
 declare sub xsltFunctionNodeSet(byval ctxt as xmlXPathParserContextPtr, byval nargs as long)
 declare sub xsltDebug(byval ctxt as xsltTransformContextPtr, byval node as xmlNodePtr, byval inst as xmlNodePtr, byval comp as xsltStylePreCompPtr)

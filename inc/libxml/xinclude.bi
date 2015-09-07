@@ -32,16 +32,16 @@
 extern "C"
 
 #define __XML_XINCLUDE_H__
-#define XINCLUDE_NS cptr(const xmlChar ptr, "http://www.w3.org/2003/XInclude")
-#define XINCLUDE_OLD_NS cptr(const xmlChar ptr, "http://www.w3.org/2001/XInclude")
-#define XINCLUDE_NODE cptr(const xmlChar ptr, "include")
-#define XINCLUDE_FALLBACK cptr(const xmlChar ptr, "fallback")
-#define XINCLUDE_HREF cptr(const xmlChar ptr, "href")
-#define XINCLUDE_PARSE cptr(const xmlChar ptr, "parse")
-#define XINCLUDE_PARSE_XML cptr(const xmlChar ptr, "xml")
-#define XINCLUDE_PARSE_TEXT cptr(const xmlChar ptr, "text")
-#define XINCLUDE_PARSE_ENCODING cptr(const xmlChar ptr, "encoding")
-#define XINCLUDE_PARSE_XPOINTER cptr(const xmlChar ptr, "xpointer")
+#define XINCLUDE_NS cptr(const xmlChar ptr, @"http://www.w3.org/2003/XInclude")
+#define XINCLUDE_OLD_NS cptr(const xmlChar ptr, @"http://www.w3.org/2001/XInclude")
+#define XINCLUDE_NODE cptr(const xmlChar ptr, @"include")
+#define XINCLUDE_FALLBACK cptr(const xmlChar ptr, @"fallback")
+#define XINCLUDE_HREF cptr(const xmlChar ptr, @"href")
+#define XINCLUDE_PARSE cptr(const xmlChar ptr, @"parse")
+#define XINCLUDE_PARSE_XML cptr(const xmlChar ptr, @"xml")
+#define XINCLUDE_PARSE_TEXT cptr(const xmlChar ptr, @"text")
+#define XINCLUDE_PARSE_ENCODING cptr(const xmlChar ptr, @"encoding")
+#define XINCLUDE_PARSE_XPOINTER cptr(const xmlChar ptr, @"xpointer")
 type xmlXIncludeCtxt as _xmlXIncludeCtxt
 type xmlXIncludeCtxtPtr as xmlXIncludeCtxt ptr
 

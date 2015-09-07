@@ -83,8 +83,8 @@ declare function xmlBufUse(byval buf as const xmlBufPtr) as uinteger
 declare function xmlBufShrink(byval buf as xmlBufPtr, byval len as uinteger) as uinteger
 
 #define LIBXML2_NEW_BUFFER
-#define XML_XML_NAMESPACE cptr(const xmlChar ptr, "http://www.w3.org/XML/1998/namespace")
-#define XML_XML_ID cptr(const xmlChar ptr, "xml:id")
+#define XML_XML_NAMESPACE cptr(const xmlChar ptr, @"http://www.w3.org/XML/1998/namespace")
+#define XML_XML_ID cptr(const xmlChar ptr, @"xml:id")
 
 type xmlElementType as long
 enum

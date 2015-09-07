@@ -38,7 +38,7 @@ extern "C"
 #define XSLT_DEFAULT_VERSION "1.0"
 #define XSLT_DEFAULT_VENDOR "libxslt"
 #define XSLT_DEFAULT_URL "http://xmlsoft.org/XSLT/"
-#define XSLT_NAMESPACE cptr(const xmlChar ptr, "http://www.w3.org/1999/XSL/Transform")
+#define XSLT_NAMESPACE cptr(const xmlChar ptr, @"http://www.w3.org/1999/XSL/Transform")
 const XSLT_PARSE_OPTIONS = ((XML_PARSE_NOENT or XML_PARSE_DTDLOAD) or XML_PARSE_DTDATTR) or XML_PARSE_NOCDATA
 
 extern xsltMaxDepth as long
