@@ -1,49 +1,67 @@
+'' FreeBASIC binding for libxml2-2.9.2
 ''
+'' based on the C header files:
+''    Copyright (C) 1998-2012 Daniel Veillard.  All Rights Reserved.
 ''
-'' xmlstring -- header translated with help of SWIG FB wrapper
+''   Permission is hereby granted, free of charge, to any person obtaining a copy
+''   of this software and associated documentation files (the "Software"), to deal
+''   in the Software without restriction, including without limitation the rights
+''   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+''   copies of the Software, and to permit persons to whom the Software is fur-
+''   nished to do so, subject to the following conditions:
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+''   The above copyright notice and this permission notice shall be included in
+''   all copies or substantial portions of the Software.
 ''
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+''   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FIT-
+''   NESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+''   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+''   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+''   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+''   THE SOFTWARE.
 ''
-#ifndef __xml_xmlstring_bi__
-#define __xml_xmlstring_bi__
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-#include once "xmlversion.bi"
+#pragma once
 
-type xmlChar as byte
+#include once "crt/stdarg.bi"
+#include once "libxml/xmlversion.bi"
 
-extern "c"
-declare function xmlStrdup (byval cur as zstring ptr) as zstring ptr
-declare function xmlStrndup (byval cur as zstring ptr, byval len as integer) as zstring ptr
-declare function xmlCharStrndup (byval cur as zstring ptr, byval len as integer) as zstring ptr
-declare function xmlCharStrdup (byval cur as zstring ptr) as zstring ptr
-declare function xmlStrsub (byval str as zstring ptr, byval start as integer, byval len as integer) as zstring ptr
-declare function xmlStrchr (byval str as zstring ptr, byval val as xmlChar) as zstring ptr
-declare function xmlStrstr (byval str as zstring ptr, byval val as zstring ptr) as zstring ptr
-declare function xmlStrcasestr (byval str as zstring ptr, byval val as zstring ptr) as zstring ptr
-declare function xmlStrcmp (byval str1 as zstring ptr, byval str2 as zstring ptr) as integer
-declare function xmlStrncmp (byval str1 as zstring ptr, byval str2 as zstring ptr, byval len as integer) as integer
-declare function xmlStrcasecmp (byval str1 as zstring ptr, byval str2 as zstring ptr) as integer
-declare function xmlStrncasecmp (byval str1 as zstring ptr, byval str2 as zstring ptr, byval len as integer) as integer
-declare function xmlStrEqual (byval str1 as zstring ptr, byval str2 as zstring ptr) as integer
-declare function xmlStrQEqual (byval pref as zstring ptr, byval name as zstring ptr, byval str as zstring ptr) as integer
-declare function xmlStrlen (byval str as zstring ptr) as integer
-declare function xmlStrcat (byval cur as zstring ptr, byval add as zstring ptr) as zstring ptr
-declare function xmlStrncat (byval cur as zstring ptr, byval add as zstring ptr, byval len as integer) as zstring ptr
-declare function xmlStrncatNew (byval str1 as zstring ptr, byval str2 as zstring ptr, byval len as integer) as zstring ptr
-declare function xmlStrPrintf (byval buf as zstring ptr, byval len as integer, byval msg as zstring ptr, ...) as integer
-''''''' declare function xmlStrVPrintf (byval buf as zstring ptr, byval len as integer, byval msg as zstring ptr, byval ap as va_list) as integer
-declare function xmlGetUTF8Char (byval utf as ubyte ptr, byval len as integer ptr) as integer
-declare function xmlCheckUTF8 (byval utf as ubyte ptr) as integer
-declare function xmlUTF8Strsize (byval utf as zstring ptr, byval len as integer) as integer
-declare function xmlUTF8Strndup (byval utf as zstring ptr, byval len as integer) as zstring ptr
-declare function xmlUTF8Strpos (byval utf as zstring ptr, byval pos as integer) as zstring ptr
-declare function xmlUTF8Strloc (byval utf as zstring ptr, byval utfchar as zstring ptr) as integer
-declare function xmlUTF8Strsub (byval utf as zstring ptr, byval start as integer, byval len as integer) as zstring ptr
-declare function xmlUTF8Strlen (byval utf as zstring ptr) as integer
-declare function xmlUTF8Size (byval utf as zstring ptr) as integer
-declare function xmlUTF8Charcmp (byval utf1 as zstring ptr, byval utf2 as zstring ptr) as integer
+extern "C"
+
+#define __XML_STRING_H__
+type xmlChar as ubyte
+declare function xmlStrdup(byval cur as const xmlChar ptr) as xmlChar ptr
+declare function xmlStrndup(byval cur as const xmlChar ptr, byval len as long) as xmlChar ptr
+declare function xmlCharStrndup(byval cur as const zstring ptr, byval len as long) as xmlChar ptr
+declare function xmlCharStrdup(byval cur as const zstring ptr) as xmlChar ptr
+declare function xmlStrsub(byval str as const xmlChar ptr, byval start as long, byval len as long) as xmlChar ptr
+declare function xmlStrchr(byval str as const xmlChar ptr, byval val as xmlChar) as const xmlChar ptr
+declare function xmlStrstr(byval str as const xmlChar ptr, byval val as const xmlChar ptr) as const xmlChar ptr
+declare function xmlStrcasestr(byval str as const xmlChar ptr, byval val as const xmlChar ptr) as const xmlChar ptr
+declare function xmlStrcmp(byval str1 as const xmlChar ptr, byval str2 as const xmlChar ptr) as long
+declare function xmlStrncmp(byval str1 as const xmlChar ptr, byval str2 as const xmlChar ptr, byval len as long) as long
+declare function xmlStrcasecmp(byval str1 as const xmlChar ptr, byval str2 as const xmlChar ptr) as long
+declare function xmlStrncasecmp(byval str1 as const xmlChar ptr, byval str2 as const xmlChar ptr, byval len as long) as long
+declare function xmlStrEqual(byval str1 as const xmlChar ptr, byval str2 as const xmlChar ptr) as long
+declare function xmlStrQEqual(byval pref as const xmlChar ptr, byval name as const xmlChar ptr, byval str as const xmlChar ptr) as long
+declare function xmlStrlen(byval str as const xmlChar ptr) as long
+declare function xmlStrcat(byval cur as xmlChar ptr, byval add as const xmlChar ptr) as xmlChar ptr
+declare function xmlStrncat(byval cur as xmlChar ptr, byval add as const xmlChar ptr, byval len as long) as xmlChar ptr
+declare function xmlStrncatNew(byval str1 as const xmlChar ptr, byval str2 as const xmlChar ptr, byval len as long) as xmlChar ptr
+declare function xmlStrPrintf(byval buf as xmlChar ptr, byval len as long, byval msg as const xmlChar ptr, ...) as long
+declare function xmlStrVPrintf(byval buf as xmlChar ptr, byval len as long, byval msg as const xmlChar ptr, byval ap as va_list) as long
+declare function xmlGetUTF8Char(byval utf as const ubyte ptr, byval len as long ptr) as long
+declare function xmlCheckUTF8(byval utf as const ubyte ptr) as long
+declare function xmlUTF8Strsize(byval utf as const xmlChar ptr, byval len as long) as long
+declare function xmlUTF8Strndup(byval utf as const xmlChar ptr, byval len as long) as xmlChar ptr
+declare function xmlUTF8Strpos(byval utf as const xmlChar ptr, byval pos as long) as const xmlChar ptr
+declare function xmlUTF8Strloc(byval utf as const xmlChar ptr, byval utfchar as const xmlChar ptr) as long
+declare function xmlUTF8Strsub(byval utf as const xmlChar ptr, byval start as long, byval len as long) as xmlChar ptr
+declare function xmlUTF8Strlen(byval utf as const xmlChar ptr) as long
+declare function xmlUTF8Size(byval utf as const xmlChar ptr) as long
+declare function xmlUTF8Charcmp(byval utf1 as const xmlChar ptr, byval utf2 as const xmlChar ptr) as long
+
 end extern
-
-#endif

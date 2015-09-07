@@ -29,12 +29,15 @@
 
 #pragma once
 
-#define __XML_XSLTCONFIG_H__
+#include once "win32config.bi"
+
+'' The following symbols have been renamed:
+''     #define LIBXSLT_VERSION_EXTRA => LIBXSLT_VERSION_EXTRA_WIN32
+
+#define __XML_XSLTWIN32CONFIG_H__
 #define LIBXSLT_DOTTED_VERSION "1.1.28"
 const LIBXSLT_VERSION = 10128
 #define LIBXSLT_VERSION_STRING "10128"
-#define LIBXSLT_VERSION_EXTRA "-GITv1.1.27-16-g9382efe"
+#define LIBXSLT_VERSION_EXTRA_WIN32 "-win32"
 #define WITH_XSLT_DEBUG
-#define WITH_DEBUGGER
-#define WITH_MODULES
-#define LIBXSLT_DEFAULT_PLUGINS_PATH() "/usr/lib/libxslt-plugins"
+#define LIBXSLT_PLUGINS_PATH() getenv("LIBXSLT_PLUGINS_PATH")

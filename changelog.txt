@@ -49,6 +49,7 @@ Version 1.04.0
 - Updated ATK binding to 2.16.0
 - New binding for jpeglib 6b, 7, 8, 9a, with 64bit support
 - New binding for json-c 0.12, with 64bit support
+- New binding for libxml2 2.9.2 and libxslt 1.1.28, with 64bit support
 
 [fixed]
 - False-positive "ambigious sizeof" warnings if the identifier could refer only to a type or procedure (in that case it should already be fairly clear that the type will be chosen, not the procedure, because sizeof() can't be applied to procedures at all), or if an expression such as "array(0)" is given to sizeof() (i.e. something that starts with an identifier but is followed by further tokens that clarify that it's not refering to a type)

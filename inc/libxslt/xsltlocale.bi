@@ -29,12 +29,18 @@
 
 #pragma once
 
-#define __XML_XSLTCONFIG_H__
-#define LIBXSLT_DOTTED_VERSION "1.1.28"
-const LIBXSLT_VERSION = 10128
-#define LIBXSLT_VERSION_STRING "10128"
-#define LIBXSLT_VERSION_EXTRA "-GITv1.1.27-16-g9382efe"
-#define WITH_XSLT_DEBUG
-#define WITH_DEBUGGER
-#define WITH_MODULES
-#define LIBXSLT_DEFAULT_PLUGINS_PATH() "/usr/lib/libxslt-plugins"
+#include once "libxml/xmlstring.bi"
+
+extern "C"
+
+#define __XML_XSLTLOCALE_H__
+#define XSLT_LOCALE_NONE
+type xsltLocale as any ptr
+type xsltLocaleChar as xmlChar
+declare function xsltNewLocale(byval langName as const xmlChar ptr) as xsltLocale
+declare sub xsltFreeLocale(byval locale as xsltLocale)
+declare function xsltStrxfrm(byval locale as xsltLocale, byval string as const xmlChar ptr) as xsltLocaleChar ptr
+declare function xsltLocaleStrcmp(byval locale as xsltLocale, byval str1 as const xsltLocaleChar ptr, byval str2 as const xsltLocaleChar ptr) as long
+declare sub xsltFreeLocales()
+
+end extern

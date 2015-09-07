@@ -29,12 +29,69 @@
 
 #pragma once
 
-#define __XML_XSLTCONFIG_H__
-#define LIBXSLT_DOTTED_VERSION "1.1.28"
-const LIBXSLT_VERSION = 10128
-#define LIBXSLT_VERSION_STRING "10128"
-#define LIBXSLT_VERSION_EXTRA "-GITv1.1.27-16-g9382efe"
-#define WITH_XSLT_DEBUG
-#define WITH_DEBUGGER
-#define WITH_MODULES
-#define LIBXSLT_DEFAULT_PLUGINS_PATH() "/usr/lib/libxslt-plugins"
+#include once "crt/math.bi"
+#include once "libxml/xmlversion.bi"
+
+#if defined(__FB_DOS__) or defined(__FB_UNIX__)
+	extern "C"
+#endif
+
+#define __LIBXSLT_WIN32_CONFIG__
+const HAVE_CTYPE_H = 1
+const HAVE_STDLIB_H = 1
+const HAVE_STDARG_H = 1
+const HAVE_MALLOC_H = 1
+const HAVE_TIME_H = 1
+const HAVE_LOCALTIME = 1
+const HAVE_GMTIME = 1
+const HAVE_TIME = 1
+const HAVE_MATH_H = 1
+const HAVE_FCNTL_H = 1
+#define HAVE_ISINF
+#define HAVE_ISNAN
+
+#ifdef __FB_WIN32__
+	#define isinf(d) iif(_fpclass(d) = _FPCLASS_PINF, 1, iif(_fpclass(d) = _FPCLASS_NINF, -1, 0))
+	#define isnan(d) _isnan(d)
+#else
+	private function isinf(byval d as double) as long
+		dim expon as long = 0
+		dim val_ as double = frexp(d, @expon)
+		if expon = 1025 then
+			if val_ = 0.5 then
+				return 1
+			elseif val_ = (-0.5) then
+				return -1
+			else
+				return 0
+			end if
+		else
+			return 0
+		end if
+	end function
+
+	private function isnan(byval d as double) as long
+		dim expon as long = 0
+		dim val_ as double = frexp(d, @expon)
+		if expon = 1025 then
+			if val_ = 0.5 then
+				return 0
+			elseif val_ = (-0.5) then
+				return 0
+			else
+				return 1
+			end if
+		else
+			return 0
+		end if
+	end function
+#endif
+
+#define HAVE_SYS_STAT_H
+#define HAVE__STAT
+#define HAVE_STRING_H
+#define _WINSOCKAPI_
+
+#if defined(__FB_DOS__) or defined(__FB_UNIX__)
+	end extern
+#endif

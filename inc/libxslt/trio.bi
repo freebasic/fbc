@@ -1,75 +1,32 @@
+'' FreeBASIC binding for libxslt-1.1.28
 ''
+'' based on the C header files:
+''    Copyright (C) 2001-2002 Daniel Veillard.  All Rights Reserved.
 ''
-'' trio -- header translated with help of SWIG FB wrapper
+''   Permission is hereby granted, free of charge, to any person obtaining a copy
+''   of this software and associated documentation files (the "Software"), to deal
+''   in the Software without restriction, including without limitation the rights
+''   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+''   copies of the Software, and to permit persons to whom the Software is fur-
+''   nished to do so, subject to the following conditions:
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+''   The above copyright notice and this permission notice shall be included in
+''   all copies or substantial portions of the Software.
 ''
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+''   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FIT-
+''   NESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+''   DANIEL VEILLARD BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+''   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CON-
+''   NECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ''
-#ifndef __xslt_trio_bi__
-#define __xslt_trio_bi__
+''   Except as contained in this notice, the name of Daniel Veillard shall not
+''   be used in advertising or otherwise to promote the sale, use or other deal-
+''   ings in this Software without prior written authorization from him.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-#include once "triodef.bi"
+#pragma once
 
-enum 
-	TRIO_EOF = 1
-	TRIO_EINVAL = 2
-	TRIO_ETOOMANY = 3
-	TRIO_EDBLREF = 4
-	TRIO_EGAP = 5
-	TRIO_ENOMEM = 6
-	TRIO_ERANGE = 7
-	TRIO_ERRNO = 8
-	TRIO_ECUSTOM = 9
-end enum
-
-type trio_outstream_t as function cdecl(byval as trio_pointer_t, byval as integer) as integer
-type trio_instream_t as function cdecl(byval as trio_pointer_t) as integer
-
-extern "c"
-declare function trio_strerror (byval as integer) as zstring ptr
-declare function trio_printf (byval format as zstring ptr, ...) as integer
-declare function trio_vprintf (byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_printfv (byval format as zstring ptr, byval args as any ptr ptr) as integer
-declare function trio_fprintf (byval file as FILE ptr, byval format as zstring ptr, ...) as integer
-declare function trio_vfprintf (byval file as FILE ptr, byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_fprintfv (byval file as FILE ptr, byval format as zstring ptr, byval args as any ptr ptr) as integer
-declare function trio_dprintf (byval fd as integer, byval format as zstring ptr, ...) as integer
-declare function trio_vdprintf (byval fd as integer, byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_dprintfv (byval fd as integer, byval format as zstring ptr, byval args as any ptr ptr) as integer
-declare function trio_cprintf (byval stream as trio_outstream_t, byval closure as trio_pointer_t, byval format as zstring ptr, ...) as integer
-declare function trio_vcprintf (byval stream as trio_outstream_t, byval closure as trio_pointer_t, byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_cprintfv (byval stream as trio_outstream_t, byval closure as trio_pointer_t, byval format as zstring ptr, byval args as any ptr ptr) as integer
-declare function trio_sprintf (byval buffer as zstring ptr, byval format as zstring ptr, ...) as integer
-declare function trio_vsprintf (byval buffer as zstring ptr, byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_sprintfv (byval buffer as zstring ptr, byval format as zstring ptr, byval args as any ptr ptr) as integer
-declare function trio_snprintf (byval buffer as zstring ptr, byval max as integer, byval format as zstring ptr, ...) as integer
-declare function trio_vsnprintf (byval buffer as zstring ptr, byval bufferSize as integer, byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_snprintfv (byval buffer as zstring ptr, byval bufferSize as integer, byval format as zstring ptr, byval args as any ptr ptr) as integer
-declare function trio_snprintfcat (byval buffer as zstring ptr, byval max as integer, byval format as zstring ptr, ...) as integer
-declare function trio_vsnprintfcat (byval buffer as zstring ptr, byval bufferSize as integer, byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_aprintf (byval format as zstring ptr, ...) as zstring ptr
-declare function trio_vaprintf (byval format as zstring ptr, byval args as va_list) as zstring ptr
-declare function trio_asprintf (byval ret as byte ptr ptr, byval format as zstring ptr, ...) as integer
-declare function trio_vasprintf (byval ret as byte ptr ptr, byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_scanf (byval format as zstring ptr, ...) as integer
-declare function trio_vscanf (byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_scanfv (byval format as zstring ptr, byval args as any ptr ptr) as integer
-declare function trio_fscanf (byval file as FILE ptr, byval format as zstring ptr, ...) as integer
-declare function trio_vfscanf (byval file as FILE ptr, byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_fscanfv (byval file as FILE ptr, byval format as zstring ptr, byval args as any ptr ptr) as integer
-declare function trio_dscanf (byval fd as integer, byval format as zstring ptr, ...) as integer
-declare function trio_vdscanf (byval fd as integer, byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_dscanfv (byval fd as integer, byval format as zstring ptr, byval args as any ptr ptr) as integer
-declare function trio_cscanf (byval stream as trio_instream_t, byval closure as trio_pointer_t, byval format as zstring ptr, ...) as integer
-declare function trio_vcscanf (byval stream as trio_instream_t, byval closure as trio_pointer_t, byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_cscanfv (byval stream as trio_instream_t, byval closure as trio_pointer_t, byval format as zstring ptr, byval args as any ptr ptr) as integer
-declare function trio_sscanf (byval buffer as zstring ptr, byval format as zstring ptr, ...) as integer
-declare function trio_vsscanf (byval buffer as zstring ptr, byval format as zstring ptr, byval args as va_list) as integer
-declare function trio_sscanfv (byval buffer as zstring ptr, byval format as zstring ptr, byval args as any ptr ptr) as integer
-declare sub trio_locale_set_decimal_point (byval decimalPoint as zstring ptr)
-declare sub trio_locale_set_thousand_separator (byval thousandSeparator as zstring ptr)
-declare sub trio_locale_set_grouping (byval grouping as zstring ptr)
-end extern
-
-#endif
+#define TRIO_TRIO_H

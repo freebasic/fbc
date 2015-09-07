@@ -1,21 +1,46 @@
+'' FreeBASIC binding for libxslt-1.1.28
 ''
+'' based on the C header files:
+''    Copyright (C) 2001-2002 Daniel Veillard.  All Rights Reserved.
 ''
-'' security -- header translated with help of SWIG FB wrapper
+''   Permission is hereby granted, free of charge, to any person obtaining a copy
+''   of this software and associated documentation files (the "Software"), to deal
+''   in the Software without restriction, including without limitation the rights
+''   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+''   copies of the Software, and to permit persons to whom the Software is fur-
+''   nished to do so, subject to the following conditions:
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+''   The above copyright notice and this permission notice shall be included in
+''   all copies or substantial portions of the Software.
 ''
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+''   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FIT-
+''   NESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+''   DANIEL VEILLARD BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+''   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CON-
+''   NECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ''
-#ifndef __xslt_security_bi__
-#define __xslt_security_bi__
+''   Except as contained in this notice, the name of Daniel Veillard shall not
+''   be used in advertising or otherwise to promote the sale, use or other deal-
+''   ings in this Software without prior written authorization from him.
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
+#pragma once
+
+#include once "libxml/tree.bi"
 #include once "xsltexports.bi"
 #include once "xsltInternals.bi"
 
+extern "C"
+
+#define __XML_XSLT_SECURITY_H__
 type xsltSecurityPrefs as _xsltSecurityPrefs
 type xsltSecurityPrefsPtr as xsltSecurityPrefs ptr
 
-enum xsltSecurityOption
+type xsltSecurityOption as long
+enum
 	XSLT_SECPREF_READ_FILE = 1
 	XSLT_SECPREF_WRITE_FILE
 	XSLT_SECPREF_CREATE_DIRECTORY
@@ -23,20 +48,17 @@ enum xsltSecurityOption
 	XSLT_SECPREF_WRITE_NETWORK
 end enum
 
-type xsltSecurityCheck as function cdecl(byval as xsltSecurityPrefsPtr, byval as xsltTransformContextPtr, byval as zstring ptr) as integer
+type xsltSecurityCheck as function(byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as const zstring ptr) as long
+declare function xsltNewSecurityPrefs() as xsltSecurityPrefsPtr
+declare sub xsltFreeSecurityPrefs(byval sec as xsltSecurityPrefsPtr)
+declare function xsltSetSecurityPrefs(byval sec as xsltSecurityPrefsPtr, byval option as xsltSecurityOption, byval func as xsltSecurityCheck) as long
+declare function xsltGetSecurityPrefs(byval sec as xsltSecurityPrefsPtr, byval option as xsltSecurityOption) as xsltSecurityCheck
+declare sub xsltSetDefaultSecurityPrefs(byval sec as xsltSecurityPrefsPtr)
+declare function xsltGetDefaultSecurityPrefs() as xsltSecurityPrefsPtr
+declare function xsltSetCtxtSecurityPrefs(byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr) as long
+declare function xsltSecurityAllow(byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as const zstring ptr) as long
+declare function xsltSecurityForbid(byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as const zstring ptr) as long
+declare function xsltCheckWrite(byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval URL as const xmlChar ptr) as long
+declare function xsltCheckRead(byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval URL as const xmlChar ptr) as long
 
-extern "c"
-declare function xsltNewSecurityPrefs () as xsltSecurityPrefsPtr
-declare sub xsltFreeSecurityPrefs (byval sec as xsltSecurityPrefsPtr)
-declare function xsltSetSecurityPrefs (byval sec as xsltSecurityPrefsPtr, byval option as xsltSecurityOption, byval func as xsltSecurityCheck) as integer
-declare function xsltGetSecurityPrefs (byval sec as xsltSecurityPrefsPtr, byval option as xsltSecurityOption) as xsltSecurityCheck
-declare sub xsltSetDefaultSecurityPrefs (byval sec as xsltSecurityPrefsPtr)
-declare function xsltGetDefaultSecurityPrefs () as xsltSecurityPrefsPtr
-declare function xsltSetCtxtSecurityPrefs (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr) as integer
-declare function xsltSecurityAllow (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as zstring ptr) as integer
-declare function xsltSecurityForbid (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as zstring ptr) as integer
-declare function xsltCheckWrite (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval URL as zstring ptr) as integer
-declare function xsltCheckRead (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval URL as zstring ptr) as integer
 end extern
-
-#endif
