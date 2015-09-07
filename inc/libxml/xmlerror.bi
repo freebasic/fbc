@@ -1,25 +1,47 @@
+'' FreeBASIC binding for libxml2-2.9.2
 ''
+'' based on the C header files:
+''    Copyright (C) 1998-2012 Daniel Veillard.  All Rights Reserved.
 ''
-'' xmlerror -- header translated with help of SWIG FB wrapper
+''   Permission is hereby granted, free of charge, to any person obtaining a copy
+''   of this software and associated documentation files (the "Software"), to deal
+''   in the Software without restriction, including without limitation the rights
+''   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+''   copies of the Software, and to permit persons to whom the Software is fur-
+''   nished to do so, subject to the following conditions:
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+''   The above copyright notice and this permission notice shall be included in
+''   all copies or substantial portions of the Software.
 ''
+''   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+''   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FIT-
+''   NESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+''   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+''   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+''   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+''   THE SOFTWARE.
 ''
-#ifndef __xml_xmlerror_bi__
-#define __xml_xmlerror_bi__
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-#include once "parser.bi"
+#pragma once
 
-enum xmlErrorLevel
+#include once "libxml/parser.bi"
+
+extern "C"
+
+#define __XML_ERROR_H__
+
+type xmlErrorLevel as long
+enum
 	XML_ERR_NONE = 0
 	XML_ERR_WARNING = 1
 	XML_ERR_ERROR = 2
 	XML_ERR_FATAL = 3
 end enum
 
-
-enum xmlErrorDomain
+type xmlErrorDomain as long
+enum
 	XML_FROM_NONE = 0
 	XML_FROM_PARSER
 	XML_FROM_TREE
@@ -47,28 +69,33 @@ enum xmlErrorDomain
 	XML_FROM_CHECK
 	XML_FROM_WRITER
 	XML_FROM_MODULE
+	XML_FROM_I18N
+	XML_FROM_SCHEMATRONV
+	XML_FROM_BUFFER
+	XML_FROM_URI
 end enum
 
 type xmlError as _xmlError
 type xmlErrorPtr as xmlError ptr
 
 type _xmlError
-	domain as integer
-	code as integer
-	message as byte ptr
+	domain as long
+	code as long
+	message as zstring ptr
 	level as xmlErrorLevel
-	file as byte ptr
-	line as integer
-	str1 as byte ptr
-	str2 as byte ptr
-	str3 as byte ptr
-	int1 as integer
-	int2 as integer
+	file as zstring ptr
+	line as long
+	str1 as zstring ptr
+	str2 as zstring ptr
+	str3 as zstring ptr
+	int1 as long
+	int2 as long
 	ctxt as any ptr
 	node as any ptr
 end type
 
-enum xmlParserErrors
+type xmlParserErrors as long
+enum
 	XML_ERR_OK = 0
 	XML_ERR_INTERNAL_ERROR
 	XML_ERR_NO_MEMORY
@@ -171,10 +198,22 @@ enum xmlParserErrors
 	XML_WAR_NS_URI
 	XML_WAR_NS_URI_RELATIVE
 	XML_ERR_MISSING_ENCODING
+	XML_WAR_SPACE_VALUE
+	XML_ERR_NOT_STANDALONE
+	XML_ERR_ENTITY_PROCESSING
+	XML_ERR_NOTATION_PROCESSING
+	XML_WAR_NS_COLUMN
+	XML_WAR_ENTITY_REDEFINED
+	XML_ERR_UNKNOWN_VERSION
+	XML_ERR_VERSION_MISMATCH
+	XML_ERR_NAME_TOO_LONG
+	XML_ERR_USER_STOP
 	XML_NS_ERR_XML_NAMESPACE = 200
 	XML_NS_ERR_UNDEFINED_NAMESPACE
 	XML_NS_ERR_QNAME
 	XML_NS_ERR_ATTRIBUTE_REDEFINED
+	XML_NS_ERR_EMPTY
+	XML_NS_ERR_COLON
 	XML_DTD_ATTRIBUTE_DEFAULT = 500
 	XML_DTD_ATTRIBUTE_REDEFINED
 	XML_DTD_ATTRIBUTE_VALUE
@@ -216,6 +255,7 @@ enum xmlParserErrors
 	XML_DTD_STANDALONE_DEFAULTED
 	XML_DTD_XMLID_VALUE
 	XML_DTD_XMLID_TYPE
+	XML_DTD_DUP_TOKEN
 	XML_HTML_STRUCURE_ERROR = 800
 	XML_HTML_UNKNOWN_TAG
 	XML_RNGP_ANYNAME_ATTR_ANCESTOR = 1000
@@ -366,6 +406,7 @@ enum xmlParserErrors
 	XML_TREE_INVALID_HEX = 1300
 	XML_TREE_INVALID_DEC
 	XML_TREE_UNTERMINATED_ENTITY
+	XML_TREE_NOT_UTF8
 	XML_SAVE_NOT_UTF8 = 1400
 	XML_SAVE_CHAR_INVALID
 	XML_SAVE_NO_DOCTYPE
@@ -629,6 +670,9 @@ enum xmlParserErrors
 	XML_SCHEMAV_CVC_AU
 	XML_SCHEMAV_CVC_TYPE_1
 	XML_SCHEMAV_CVC_TYPE_2
+	XML_SCHEMAV_CVC_IDC
+	XML_SCHEMAV_CVC_WILDCARD
+	XML_SCHEMAV_MISC
 	XML_XPTR_UNKNOWN_SCHEME = 1900
 	XML_XPTR_CHILDSEQ_START
 	XML_XPTR_EVAL_FAILED
@@ -637,9 +681,12 @@ enum xmlParserErrors
 	XML_C14N_REQUIRES_UTF8
 	XML_C14N_CREATE_STACK
 	XML_C14N_INVALID_NODE
+	XML_C14N_UNKNOW_NODE
+	XML_C14N_RELATIVE_NAMESPACE
 	XML_FTP_PASV_ANSWER = 2000
 	XML_FTP_EPSV_ANSWER
 	XML_FTP_ACCNT
+	XML_FTP_URL_SYNTAX
 	XML_HTTP_URL_SYNTAX = 2020
 	XML_HTTP_USE_IP
 	XML_HTTP_UNKNOWN_HOST
@@ -723,6 +770,20 @@ enum xmlParserErrors
 	XML_SCHEMAP_DERIVATION_OK_RESTRICTION_2_1_3
 	XML_SCHEMAP_AU_PROPS_CORRECT_2
 	XML_SCHEMAP_A_PROPS_CORRECT_2
+	XML_SCHEMAP_C_PROPS_CORRECT
+	XML_SCHEMAP_SRC_REDEFINE
+	XML_SCHEMAP_SRC_IMPORT
+	XML_SCHEMAP_WARN_SKIP_SCHEMA
+	XML_SCHEMAP_WARN_UNLOCATED_SCHEMA
+	XML_SCHEMAP_WARN_ATTR_REDECL_PROH
+	XML_SCHEMAP_WARN_ATTR_POINTLESS_PROH
+	XML_SCHEMAP_AG_PROPS_CORRECT
+	XML_SCHEMAP_COS_CT_EXTENDS_1_2
+	XML_SCHEMAP_AU_PROPS_CORRECT
+	XML_SCHEMAP_A_PROPS_CORRECT_3
+	XML_SCHEMAP_COS_ALL_LIMITED
+	XML_SCHEMATRONV_ASSERT = 4000
+	XML_SCHEMATRONV_REPORT
 	XML_MODULE_OPEN = 4900
 	XML_MODULE_CLOSE
 	XML_CHECK_FOUND_ELEMENT = 5000
@@ -763,27 +824,30 @@ enum xmlParserErrors
 	XML_CHECK_OUTSIDE_DICT
 	XML_CHECK_WRONG_NAME
 	XML_CHECK_NAME_NOT_NULL
+	XML_I18N_NO_NAME = 6000
+	XML_I18N_NO_HANDLER
+	XML_I18N_EXCESS_HANDLER
+	XML_I18N_CONV_FAILED
+	XML_I18N_NO_OUTPUT
+	XML_BUF_OVERFLOW = 7000
 end enum
 
-type xmlGenericErrorFunc as any ptr
-type xmlStructuredErrorFunc as any ptr
+type xmlGenericErrorFunc as sub(byval ctx as any ptr, byval msg as const zstring ptr, ...)
+type xmlStructuredErrorFunc as sub(byval userData as any ptr, byval error as xmlErrorPtr)
+declare sub xmlSetGenericErrorFunc(byval ctx as any ptr, byval handler as xmlGenericErrorFunc)
+declare sub initGenericErrorDefaultFunc(byval handler as xmlGenericErrorFunc ptr)
+declare sub xmlSetStructuredErrorFunc(byval ctx as any ptr, byval handler as xmlStructuredErrorFunc)
+declare sub xmlParserError(byval ctx as any ptr, byval msg as const zstring ptr, ...)
+declare sub xmlParserWarning(byval ctx as any ptr, byval msg as const zstring ptr, ...)
+declare sub xmlParserValidityError(byval ctx as any ptr, byval msg as const zstring ptr, ...)
+declare sub xmlParserValidityWarning(byval ctx as any ptr, byval msg as const zstring ptr, ...)
+declare sub xmlParserPrintFileInfo(byval input as xmlParserInputPtr)
+declare sub xmlParserPrintFileContext(byval input as xmlParserInputPtr)
+declare function xmlGetLastError() as xmlErrorPtr
+declare sub xmlResetLastError()
+declare function xmlCtxtGetLastError(byval ctx as any ptr) as xmlErrorPtr
+declare sub xmlCtxtResetLastError(byval ctx as any ptr)
+declare sub xmlResetError(byval err as xmlErrorPtr)
+declare function xmlCopyError(byval from as xmlErrorPtr, byval to as xmlErrorPtr) as long
 
-extern "c"
-declare sub xmlSetGenericErrorFunc (byval ctx as any ptr, byval handler as xmlGenericErrorFunc)
-declare sub initGenericErrorDefaultFunc (byval handler as xmlGenericErrorFunc ptr)
-declare sub xmlSetStructuredErrorFunc (byval ctx as any ptr, byval handler as xmlStructuredErrorFunc)
-declare sub xmlParserError (byval ctx as any ptr, byval msg as zstring ptr, ...)
-declare sub xmlParserWarning (byval ctx as any ptr, byval msg as zstring ptr, ...)
-declare sub xmlParserValidityError (byval ctx as any ptr, byval msg as zstring ptr, ...)
-declare sub xmlParserValidityWarning (byval ctx as any ptr, byval msg as zstring ptr, ...)
-declare sub xmlParserPrintFileInfo (byval input as xmlParserInputPtr)
-declare sub xmlParserPrintFileContext (byval input as xmlParserInputPtr)
-declare function xmlGetLastError () as xmlErrorPtr
-declare sub xmlResetLastError ()
-declare function xmlCtxtGetLastError (byval ctx as any ptr) as xmlErrorPtr
-declare sub xmlCtxtResetLastError (byval ctx as any ptr)
-declare sub xmlResetError (byval err as xmlErrorPtr)
-declare function xmlCopyError (byval from as xmlErrorPtr, byval to as xmlErrorPtr) as integer
 end extern
-
-#endif

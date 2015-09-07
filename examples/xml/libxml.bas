@@ -15,8 +15,8 @@ End If
 
 Dim As Integer ret = xmlTextReaderRead( reader )
 Do While( ret = 1 )
-    Dim As ZString Ptr constname = xmlTextReaderConstName( reader )
-    Dim As ZString Ptr value = xmlTextReaderConstValue( reader )
+    Dim As Const ZString Ptr constname = xmlTextReaderConstName( reader )
+    Dim As Const ZString Ptr value = xmlTextReaderConstValue( reader )
 
     Print xmlTextReaderDepth( reader ); _
         xmlTextReaderNodeType( reader ); _

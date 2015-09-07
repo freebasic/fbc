@@ -1,24 +1,31 @@
+'' FreeBASIC binding for json-c-0.12-20140410
+''
+'' based on the C header files:
+''   $Id: debug.h,v 1.5 2006/01/30 23:07:57 mclark Exp $
+''
+''   Copyright (c) 2004, 2005 Metaparadigm Pte. Ltd.
+''   Michael Clark <michael@metaparadigm.com>
+''   Copyright (c) 2009 Hewlett-Packard Development Company, L.P.
+''
+''   This library is free software; you can redistribute it and/or modify
+''   it under the terms of the MIT license. See COPYING for details.
 ''
 ''
-'' debug -- header translated with help of SWIG FB wrapper
-''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
-''
-''
-#ifndef __debug_bi__
-#define __debug_bi__
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-Extern "C"
+#pragma once
 
-declare sub mc_set_debug (byval debug as integer)
-declare function mc_get_debug () as integer
-declare sub mc_set_syslog (byval syslog as integer)
-declare sub mc_abort (byval msg as zstring ptr, ...)
-declare sub mc_debug (byval msg as zstring ptr, ...)
-declare sub mc_error (byval msg as zstring ptr, ...)
-declare sub mc_info (ByVal msg as zstring ptr, ...)
+#include once "crt/stdlib.bi"
 
-End Extern
+extern "C"
 
-#endif
+#define _DEBUG_H_
+declare sub mc_set_debug(byval debug as long)
+declare function mc_get_debug() as long
+declare sub mc_set_syslog(byval syslog as long)
+declare sub mc_debug(byval msg as const zstring ptr, ...)
+declare sub mc_error(byval msg as const zstring ptr, ...)
+declare sub mc_info(byval msg as const zstring ptr, ...)
+
+end extern
