@@ -1,18 +1,25 @@
 o Dim Byref
-  - backends: all irNewVR* functions should use ptr dtype if the sym is a ref, like astNewVAR()
-    Add symbGetRealParamDtype() for vars/fields too?
-	function symbIsByref( byval sym as FBSYMBOL ptr ) as integer
-		function = symbIsRef( sym ) or symbIsParamBydescOrByref( sym ) or symbIsImport( sym )
-	end function
-  - check all FBSYMBOL->lgt/typ accesses, ISLONGINT, symbGet[Full]Type, symbGetLen
-    probably everywhere we need symbGetArrayElements(), we also need to check symbIsRef()
-    also: symbGetArrayDimensions() checks
+  - There might still be places in the compiler where symbIsRef() checks are
+    missing. E.g. calculating a variable size based on dtype alone would be
+    wrong now in case it's a reference. Previously this problem already existed
+    but only for parameters and function results.
+  - symbHasDtor() & co should either be adjusted to check for REF/IMPORT/PARAMBYREF/PARAMINSTANCE flags,
+    or be renamed to symbTypeHasDtor()
   - arrays of refs
-  - extend temp var life-time like WITH
-  - allow BYVAL initialization, like byref results/params?
-  - allow assignment from constants/literals, by creating a temp var?
+  - allow/fix initialization from non-var:
+     - should allow everything that's allowed for byref parameters (CALLs,
+       CALLCTORs, TYPEINIs, constants, literals etc) by copying to a temp var
+       if needed
+     - Temp var life-time must be extended to the same scope as the reference;
+       WITH is already doing something much like this, except it uses an implicit scope block,
+       which we don't need. The temp vars from the reference var initializer are in the same
+       scope as the reference var, and it should be enough to just remove their TEMP flag.
+  - allow BYVAL initialization, like byref results/params
   - test that no ctors/dtors are called for class/string refs
   - disallow [Z/W]String * N with Dim Byref (same problem as with byref params, see bug #650)
+  - allow BYREF fields; but they must be initialized in a constructor - what syntax to use for that?
+    @a = b works, but feels like a hack. Otherwise, a new syntax for field initialization is needed,
+    like initializer lists in C++
 
 o boolean
   - test overload resolution?
