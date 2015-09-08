@@ -1,7 +1,7 @@
 '' FreeBASIC binding for lzo-2.09
 ''
 '' based on the C header files:
-''   lzo1a.h -- public interface of the LZO1A compression algorithm
+''   lzo2a.h -- public interface of the LZO2A compression algorithm
 ''
 ''   This file is part of the LZO real-time data compression library.
 ''
@@ -37,12 +37,11 @@
 
 extern "C"
 
-const __LZO1A_H_INCLUDED = 1
-#define LZO1A_MEM_COMPRESS cast(lzo_uint32_t, cast(clong, 8192) * lzo_sizeof_dict_t)
-const LZO1A_MEM_DECOMPRESS = 0
-declare function lzo1a_compress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
-declare function lzo1a_decompress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
-#define LZO1A_99_MEM_COMPRESS cast(lzo_uint32_t, cast(clong, 65536) * lzo_sizeof_dict_t)
-declare function lzo1a_99_compress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
+const __LZO2A_H_INCLUDED = 1
+const LZO2A_MEM_DECOMPRESS = 0
+declare function lzo2a_decompress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
+declare function lzo2a_decompress_safe(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
+#define LZO2A_999_MEM_COMPRESS cast(lzo_uint32_t, (8 * cast(clong, 16384)) * sizeof(short))
+declare function lzo2a_999_compress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
 
 end extern
