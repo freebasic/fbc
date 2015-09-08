@@ -2014,6 +2014,10 @@ private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 	dim as FBSYMBOL ptr ns = any
 	dim as string s
 
+	if( symbGetHashtb( sym ) = NULL ) then
+		return "<no hash tb>"
+	end if
+
 	ns = symbGetNamespace( sym )
 	while( ns <> @symbGetGlobalNamespc( ) )
 		s = *symbGetName( ns ) + "." + s
