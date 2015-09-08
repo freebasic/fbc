@@ -53,6 +53,7 @@ Version 1.04.0
 - New binding for liblzma from xz 5.2.1, with 64bit support
 - New binding for LZO 2.09, with 64bit support
 - New binding for MediaInfo 0.7.77, with 64bit support
+- New binding for libmodplug 0.8.8.5, with 64bit support
 
 [fixed]
 - False-positive "ambigious sizeof" warnings if the identifier could refer only to a type or procedure (in that case it should already be fairly clear that the type will be chosen, not the procedure, because sizeof() can't be applied to procedures at all), or if an expression such as "array(0)" is given to sizeof() (i.e. something that starts with an identifier but is followed by further tokens that clarify that it's not refering to a type)
