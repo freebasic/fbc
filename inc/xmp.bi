@@ -1,287 +1,322 @@
-#Ifndef XMP_BI
-#define XMP_BI
+'' FreeBASIC binding for libxmp-4.3.9
+''
+'' based on the C header files:
+''   This library is free software; you can redistribute it and/or modify it
+''   under the terms of the GNU Lesser General Public License as published by
+''   the Free Software Foundation; either version 2.1 of the License, or (at
+''   your option) any later version. This library is distributed in the hope
+''   that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+''   warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+''   GNU Lesser General Public License for more details.
+''
+''   You should have received a copy of the GNU Lesser General Public
+''   License along with this library; if not, write to the Free Software
+''   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-#Inclib "xmp"
+#pragma once
 
-Extern "C"
+#inclib "xmp"
 
-#define XMP_VERSION "4.0.4"
-#define XMP_VERCODE &h040004
-#define XMP_VER_MAJOR 4
-#define XMP_VER_MINOR 0
-#define XMP_VER_RELEASE 4
+#include once "crt/long.bi"
 
-#define XMP_NAME_SIZE		64	'/* Size of module name and type */
+'' The following symbols have been renamed:
+''     #define XMP_VERSION => XMP_VERSION_
+''     constant XMP_VERCODE => XMP_VERCODE_
+''     constant XMP_CHANNEL_MUTE => XMP_CHANNEL_MUTE_
 
-#define XMP_KEY_OFF		&h81	'/* Note number for key off event */
-#define XMP_KEY_CUT		&h82	'/* Note number for key cut event */
-#define XMP_KEY_FADE		&h83	'/* Note number for fade event */
+extern "C"
 
-'/* mixer parameter macros */
+#define XMP_H
+#define XMP_VERSION_ "4.3.9"
+const XMP_VERCODE_ = &h040309
+const XMP_VER_MAJOR = 4
+const XMP_VER_MINOR = 3
+const XMP_VER_RELEASE = 9
+const XMP_NAME_SIZE = 64
+const XMP_KEY_OFF = &h81
+const XMP_KEY_CUT = &h82
+const XMP_KEY_FADE = &h83
+const XMP_FORMAT_8BIT = 1 shl 0
+const XMP_FORMAT_UNSIGNED = 1 shl 1
+const XMP_FORMAT_MONO = 1 shl 2
+const XMP_PLAYER_AMP = 0
+const XMP_PLAYER_MIX = 1
+const XMP_PLAYER_INTERP = 2
+const XMP_PLAYER_DSP = 3
+const XMP_PLAYER_FLAGS = 4
+const XMP_PLAYER_CFLAGS = 5
+const XMP_PLAYER_SMPCTL = 6
+const XMP_PLAYER_VOLUME = 7
+const XMP_PLAYER_STATE = 8
+const XMP_PLAYER_SMIX_VOLUME = 9
+const XMP_PLAYER_DEFPAN = 10
+const XMP_INTERP_NEAREST = 0
+const XMP_INTERP_LINEAR = 1
+const XMP_INTERP_SPLINE = 2
+const XMP_DSP_LOWPASS = 1 shl 0
+const XMP_DSP_ALL = XMP_DSP_LOWPASS
+const XMP_STATE_UNLOADED = 0
+const XMP_STATE_LOADED = 1
+const XMP_STATE_PLAYING = 2
+const XMP_FLAGS_VBLANK = 1 shl 0
+const XMP_FLAGS_FX9BUG = 1 shl 1
+const XMP_FLAGS_FIXLOOP = 1 shl 2
+const XMP_SMPCTL_SKIP = 1 shl 0
+const XMP_MAX_KEYS = 121
+const XMP_MAX_ENV_POINTS = 32
+const XMP_MAX_MOD_LENGTH = 256
+const XMP_MAX_CHANNELS = 64
+const XMP_MAX_SRATE = 49170
+const XMP_MIN_SRATE = 4000
+const XMP_MIN_BPM = 20
+const XMP_MAX_FRAMESIZE = ((5 * XMP_MAX_SRATE) * 2) / XMP_MIN_BPM
+const XMP_END = 1
+const XMP_ERROR_INTERNAL = 2
+const XMP_ERROR_FORMAT = 3
+const XMP_ERROR_LOAD = 4
+const XMP_ERROR_DEPACK = 5
+const XMP_ERROR_SYSTEM = 6
+const XMP_ERROR_INVALID = 7
+const XMP_ERROR_STATE = 8
 
-'/* sample format flags */
-#define XMP_FORMAT_8BIT		(1 Shl 0) '/* Mix to 8-bit instead of 16 */
-#define XMP_FORMAT_UNSIGNED	(1 Shl 1) '/* Mix to unsigned samples */
-#define XMP_FORMAT_MONO		(1 Shl 2) '/* Mix to mono instead of stereo */
+type xmp_channel
+	pan as long
+	vol as long
+	flg as long
+end type
 
-'/* mixer paramters for xmp_set_player() */
-#define XMP_PLAYER_AMP		0	'/* Amplification factor */
-#define XMP_PLAYER_MIX		1	'/* Stereo mixing */
-#define XMP_PLAYER_INTERP	2	'/* Interpolation type */
-#define XMP_PLAYER_DSP		3	'/* DSP effect flags */
-#define XMP_PLAYER_FLAGS	4	'/* Player flags */
+const XMP_CHANNEL_SYNTH = 1 shl 0
+const XMP_CHANNEL_MUTE_ = 1 shl 1
+const XMP_CHANNEL_SPLIT = 1 shl 2
+const XMP_CHANNEL_SURROUND = 1 shl 4
 
-'/* interpolation types */
-#define XMP_INTERP_NEAREST	0	'/* Nearest neighbor */
-#define XMP_INTERP_LINEAR	1	'/* Linear (default) */
-#define XMP_INTERP_SPLINE	2	'/* Cubic spline */
+type xmp_pattern
+	rows as long
+	index(0 to 0) as long
+end type
 
-'/* dsp effect types */
-#define XMP_DSP_LOWPASS		(1 Shl 0) '/* Lowpass filter effect */
-#define XMP_DSP_ALL		XMP_DSP_LOWPASS
+type xmp_event
+	note as ubyte
+	ins as ubyte
+	vol as ubyte
+	fxt as ubyte
+	fxp as ubyte
+	f2t as ubyte
+	f2p as ubyte
+	_flag as ubyte
+end type
 
-'/* player flags */
-#define XMP_FLAGS_VBLANK	(1 Shl 0) '/* Use vblank timing */
-#define XMP_FLAGS_FX9BUG	(1 Shl 1) '/* Emulate FX9 bug */
-#define XMP_FLAGS_FIXLOOP	(1 Shl 2) '/* Emulate sample loop bug */
+type xmp_track
+	rows as long
+	event(0 to 0) as xmp_event
+end type
 
-'/* limits */
-#define XMP_MAX_KEYS		121	'/* Number of valid keys */
-#define XMP_MAX_ENV_POINTS	32	'/* Max number of envelope points */
-#define XMP_MAX_MOD_LENGTH	256	'/* Max number of patterns in module */
-#define XMP_MAX_CHANNELS	64	'/* Max number of channels in module */
-#define XMP_MAX_SRATE		48000	'/* max sampling rate (Hz) */
-#define XMP_MIN_BPM		20	'/* min BPM */
-'/* frame rate = (50 * bpm / 125) Hz */
-'/* frame size = (sampling rate * channels * size) / frame rate */
-#define XMP_MAX_FRAMESIZE	(5 * XMP_MAX_SRATE * 2 / XMP_MIN_BPM)
+type xmp_envelope
+	flg as long
+	npt as long
+	scl as long
+	sus as long
+	sue as long
+	lps as long
+	lpe as long
+	data(0 to (32 * 2) - 1) as short
+end type
 
-'/* error codes */
-#define XMP_END			1
-#define XMP_ERROR_INTERNAL	2	'/* Internal error */
-#define XMP_ERROR_FORMAT	3	'/* Unsupported module format */
-#define XMP_ERROR_LOAD		4	'/* Error loading file */
-#define XMP_ERROR_DEPACK	5	'/* Error depacking file */
-#define XMP_ERROR_SYSTEM	6	'/* System error */
-#define XMP_ERROR_INVALID	7	'/* Invalid parameter */
+const XMP_ENVELOPE_ON = 1 shl 0
+const XMP_ENVELOPE_SUS = 1 shl 1
+const XMP_ENVELOPE_LOOP = 1 shl 2
+const XMP_ENVELOPE_FLT = 1 shl 3
+const XMP_ENVELOPE_SLOOP = 1 shl 4
+const XMP_ENVELOPE_CARRY = 1 shl 5
 
-Type xmp_channel
-	pan As Integer			'/* Channel pan (0x80 is center) */
-	vol As Integer			'/* Channel volume */
-	#define XMP_CHANNEL_SYNTH	(1 Shl 0)  '/* Channel is synthesized */
-	#define XMP_CHANNEL_MUTE_  	(1 Shl 1)  '/* Channel is muted */
-	flg As Integer			'/* Channel flags */
-End Type
+type xmp_instrument_map
+	ins as ubyte
+	xpo as byte
+end type
 
-Type xmp_pattern
-	rows As Integer			'/* Number of rows */
-	index(0) As Integer			'/* Track index */
-End Type
+type xmp_subinstrument
+	vol as long
+	gvl as long
+	pan as long
+	xpo as long
+	fin as long
+	vwf as long
+	vde as long
+	vra as long
+	vsw as long
+	rvv as long
+	sid as long
+	nna as long
+	dct as long
+	dca as long
+	ifc as long
+	ifr as long
+end type
 
-Type xmp_event
-	note As UByte		'/* Note number (0 means no note) */
-	ins As UByte		'/* Patch number */
-	vol As UByte	'/* Volume (0 to basevol) */
-	fxt As UByte		'/* Effect type */
-	fxp As UByte		'/* Effect parameter */
-	f2t As UByte		'/* Secondary effect type */
-	f2p As UByte	'/* Secondary effect parameter */
-	_flag As UByte		'/* Internal (reserved) flags */
-End Type
+type xmp_instrument
+	name as zstring * 32
+	vol as long
+	nsm as long
+	rls as long
+	aei as xmp_envelope
+	pei as xmp_envelope
+	fei as xmp_envelope
+	map(0 to 120) as xmp_instrument_map
+	sub as xmp_subinstrument ptr
+	extra as any ptr
+end type
 
-Type xmp_track
-	rows As Integer			'/* Number of rows */
-	As xmp_event event(0)	'/* Event data */
-End Type
+const XMP_INST_NNA_CUT = &h00
+const XMP_INST_NNA_CONT = &h01
+const XMP_INST_NNA_OFF = &h02
+const XMP_INST_NNA_FADE = &h03
+const XMP_INST_DCT_OFF = &h00
+const XMP_INST_DCT_NOTE = &h01
+const XMP_INST_DCT_SMP = &h02
+const XMP_INST_DCT_INST = &h03
+const XMP_INST_DCA_CUT = XMP_INST_NNA_CUT
+const XMP_INST_DCA_OFF = XMP_INST_NNA_OFF
+const XMP_INST_DCA_FADE = XMP_INST_NNA_FADE
 
-Type xmp_envelope
-	#define XMP_ENVELOPE_ON		(1 Shl 0)  '/* Envelope is enabled */
-	#define XMP_ENVELOPE_SUS	(1 Shl 1)  '/* Envelope has sustain point */
-	#define XMP_ENVELOPE_LOOP	(1 Shl 2)  '/* Envelope has loop */
-	#define XMP_ENVELOPE_FLT	(1 Shl 3)  '/* Envelope is used for filter */
-	#define XMP_ENVELOPE_SLOOP	(1 Shl 4)  '/* Envelope has sustain loop */
-	#define XMP_ENVELOPE_CARRY	(1 Shl 5)  '/* Don't reset envelope position */
-	flg As Integer			'/* Flags */
-	npt As Integer			'/* Number of envelope points */
-	scl As Integer			'/* Envelope scaling */
-	sus As Integer			'/* Sustain start point */
-	sue As Integer			'/* Sustain end point */
-	lps As Integer			'/* Loop start point */
-	lpe As Integer			'/* Loop end point */
-	Data(XMP_MAX_ENV_POINTS * 2-1) As Short
-End Type
+type xmp_sample
+	name as zstring * 32
+	len as long
+	lps as long
+	lpe as long
+	flg as long
+	data as ubyte ptr
+end type
 
-Type xmp_subinstrument
+const XMP_SAMPLE_16BIT = 1 shl 0
+const XMP_SAMPLE_LOOP = 1 shl 1
+const XMP_SAMPLE_LOOP_BIDIR = 1 shl 2
+const XMP_SAMPLE_LOOP_REVERSE = 1 shl 3
+const XMP_SAMPLE_LOOP_FULL = 1 shl 4
+const XMP_SAMPLE_SYNTH = 1 shl 15
 
-	As Integer vol'		/* Default volume */
-	As Integer gvl'		/* Global volume */
-	As Integer pan'		/* Pan */
-	As Integer xpo'		/* Transpose */
-	As Integer fin'		/* Finetune */
-	As Integer vwf'		/* Vibrato waveform */
-	As Integer vde'		/* Vibrato depth */
-	As Integer vra'		/* Vibrato rate */
-	As Integer vsw'		/* Vibrato sweep */
-	As Integer rvv'		/* Random volume variation (IT) */
-	As Integer sid'		/* Sample number */
-	#define XMP_INST_NNA_CUT	&h00
-	#define XMP_INST_NNA_CONT	&h01
-	#define XMP_INST_NNA_OFF	&h02
-	#define XMP_INST_NNA_FADE	&h03
-	As Integer nna'		/* New note action */
-	#define XMP_INST_DCT_OFF	&h00
-	#define XMP_INST_DCT_NOTE	&h01
-	#define XMP_INST_DCT_SMP	&h02
-	#define XMP_INST_DCT_INST	&h03
-	As Integer dct'		/* Duplicate check type */
-	#define XMP_INST_DCA_CUT	XMP_INST_NNA_CUT
-	#define XMP_INST_DCA_OFF	XMP_INST_NNA_OFF
-	#define XMP_INST_DCA_FADE	XMP_INST_NNA_FADE
-	As Integer dca'		/* Duplicate check action */
-	As Integer ifc'		/* Initial filter cutoff */
-	As Integer ifr'		/* Initial filter resonance */
+type xmp_sequence
+	entry_point as long
+	duration as long
+end type
 
-End Type
-Type xmp_instrumentad
-	ins As UByte
-	xpo As Byte
-End Type
-Type xmp_instrument
-	As ZString*32 Name'			/* Instrument name */
-	As Integer vol'			/* Instrument volume */
-	As Integer nsm'			/* Number of samples */
-	As Integer rls'			/* Release (fadeout) */
-	aei As xmp_envelope '	/* Amplitude envelope info */
-	pei As xmp_envelope '	/* Pan envelope info */
-	fei As xmp_envelope '	/* Frequency envelope info */
+type xmp_module
+	name as zstring * 64
+	as zstring * 64 type
+	pat as long
+	trk as long
+	chn as long
+	ins as long
+	smp as long
+	spd as long
+	bpm as long
+	len as long
+	rst as long
+	gvl as long
+	xxp as xmp_pattern ptr ptr
+	xxt as xmp_track ptr ptr
+	xxi as xmp_instrument ptr
+	xxs as xmp_sample ptr
+	xxc(0 to 63) as xmp_channel
+	xxo(0 to 255) as ubyte
+end type
 
-	As xmp_subinstrument Ptr sub_
-	As xmp_instrumentad map(XMP_MAX_KEYS-1)
+type xmp_test_info
+	name as zstring * 64
+	as zstring * 64 type
+end type
 
+const XMP_PERIOD_BASE = 6847
 
-	As Any Ptr extra'			/* Extra fields */
-End Type
+type xmp_module_info
+	md5(0 to 15) as ubyte
+	vol_base as long
+	mod_ as xmp_module ptr
+	comment as zstring ptr
+	num_sequences as long
+	seq_data as xmp_sequence ptr
+end type
 
-Type xmp_sample
-	As ZString*32 Name'			/* Sample name */
-	As Integer Len'			/* Sample length */
-	As Integer lps'			/* Loop start */
-	As Integer lpe'			/* Loop end */
-	#define XMP_SAMPLE_16BIT	(1 Shl 0)  '/* 16bit sample */
-	#define XMP_SAMPLE_LOOP		(1 Shl 1)  '/* Sample is looped */
-	#define XMP_SAMPLE_LOOP_BIDIR	(1 Shl 2)  '/* Bidirectional sample loop */
-	#define XMP_SAMPLE_LOOP_REVERSE	(1 Shl 3)  '/* Backwards sample loop */
-	#define XMP_SAMPLE_LOOP_FULL	(1 Shl 4)  '/* Play full sample before looping */
-	#define XMP_SAMPLE_SYNTH	(1 Shl 15) '/* Data contains synth patch */
-	As Integer flg'			/* Flags */
-	As UByte Ptr Data'		/* Sample data */
-End Type
+type xmp_channel_info
+	period as ulong
+	position as ulong
+	pitchbend as short
+	note as ubyte
+	instrument as ubyte
+	sample as ubyte
+	volume as ubyte
+	pan as ubyte
+	reserved as ubyte
+	event as xmp_event
+end type
 
-Type xmp_sequence
-	As Integer entry_point
-	As Integer duration
-End Type
+type xmp_frame_info
+	pos as long
+	pattern as long
+	row as long
+	num_rows as long
+	frame as long
+	speed as long
+	bpm as long
+	time as long
+	total_time as long
+	frame_time as long
+	buffer as any ptr
+	buffer_size as long
+	total_size as long
+	volume as long
+	loop_count as long
+	virt_channels as long
+	virt_used as long
+	sequence as long
+	channel_info(0 to 63) as xmp_channel_info
+end type
 
-Type xmp_module
-	As ZString*XMP_NAME_SIZE Name'	/* Module title */
-	As ZString*XMP_NAME_SIZE Type'	/* Module format */
-	As Integer pat'			/* Number of patterns */
-	As Integer trk'			/* Number of tracks */
-	As Integer chn'			/* Tracks per pattern */
-	As Integer ins'			/* Number of instruments */
-	As Integer smp'			/* Number of samples */
-	As Integer spd'			/* Initial speed */
-	As Integer bpm'			/* Initial BPM */
-	As Integer Len'			/* Module length in patterns */
-	As Integer rst'			/* Restart position */
-	As Integer gvl'			/* Global volume */
+type xmp_context as zstring ptr
 
-	As xmp_pattern Ptr Ptr xxp'	/* Patterns */
-	As xmp_track Ptr Ptr xxt'		/* Tracks */
-	As xmp_instrument Ptr xxi'	/* Instruments */
-	As xmp_sample Ptr xxs'		/* Samples */
-	As xmp_channel xxc(64)'	/* Channel info */
-	As ZString*XMP_MAX_MOD_LENGTH xxo'	/* Orders */
-End Type
+#if defined(__FB_WIN32__) and (not defined(BUILDING_STATIC))
+	extern import xmp_version as const zstring ptr
+	extern import xmp_vercode as const ulong
+#else
+	extern xmp_version as const zstring ptr
+	extern xmp_vercode as const ulong
+#endif
 
-Type xmp_test_info
-	As ZString*XMP_NAME_SIZE Name'	/* Module title */
-	As ZString*XMP_NAME_SIZE Type'	/* Module format */
-End Type
+declare function xmp_create_context() as xmp_context
+declare sub xmp_free_context(byval as xmp_context)
+declare function xmp_test_module(byval as zstring ptr, byval as xmp_test_info ptr) as long
+declare function xmp_load_module(byval as xmp_context, byval as zstring ptr) as long
+declare sub xmp_scan_module(byval as xmp_context)
+declare sub xmp_release_module(byval as xmp_context)
+declare function xmp_start_player(byval as xmp_context, byval as long, byval as long) as long
+declare function xmp_play_frame(byval as xmp_context) as long
+declare function xmp_play_buffer(byval as xmp_context, byval as any ptr, byval as long, byval as long) as long
+declare sub xmp_get_frame_info(byval as xmp_context, byval as xmp_frame_info ptr)
+declare sub xmp_end_player(byval as xmp_context)
+declare sub xmp_inject_event(byval as xmp_context, byval as long, byval as xmp_event ptr)
+declare sub xmp_get_module_info(byval as xmp_context, byval as xmp_module_info ptr)
+declare function xmp_get_format_list() as zstring ptr ptr
+declare function xmp_next_position(byval as xmp_context) as long
+declare function xmp_prev_position(byval as xmp_context) as long
+declare function xmp_set_position(byval as xmp_context, byval as long) as long
+declare sub xmp_stop_module(byval as xmp_context)
+declare sub xmp_restart_module(byval as xmp_context)
+declare function xmp_seek_time(byval as xmp_context, byval as long) as long
+declare function xmp_channel_mute(byval as xmp_context, byval as long, byval as long) as long
+declare function xmp_channel_vol(byval as xmp_context, byval as long, byval as long) as long
+declare function xmp_set_player(byval as xmp_context, byval as long, byval as long) as long
+declare function xmp_get_player(byval as xmp_context, byval as long) as long
+declare function xmp_set_instrument_path(byval as xmp_context, byval as zstring ptr) as long
+declare function xmp_load_module_from_memory(byval as xmp_context, byval as any ptr, byval as clong) as long
+declare function xmp_load_module_from_file(byval as xmp_context, byval as any ptr, byval as clong) as long
+declare function xmp_start_smix(byval as xmp_context, byval as long, byval as long) as long
+declare sub xmp_end_smix(byval as xmp_context)
+declare function xmp_smix_play_instrument(byval as xmp_context, byval as long, byval as long, byval as long, byval as long) as long
+declare function xmp_smix_play_sample(byval as xmp_context, byval as long, byval as long, byval as long, byval as long) as long
+declare function xmp_smix_channel_pan(byval as xmp_context, byval as long, byval as long) as long
+declare function xmp_smix_load_sample(byval as xmp_context, byval as long, byval as zstring ptr) as long
+declare function xmp_smix_release_sample(byval as xmp_context, byval as long) as long
 
-#define XMP_PERIOD_BASE	6847		'/* C4 period */
-
-Type xmp_module_info
-	As ZString*16 md5'		/* MD5 message digest */
-	As Integer vol_base'			/* Volume scale */
-	As xmp_module Ptr Mod_'		/* Pointer to module data */
-	As ZString Ptr comment'			/* Comment text, if any */
-	As Integer num_sequences'		/* Number of valid sequences */
-	As xmp_sequence Ptr seq_data'	/* Pointer to sequence data */
-End Type
-
-Type xmp_channel_info '/* Current channel information */
-	As UInteger period'	/* Sample period */
-	As UInteger position'	/* Sample position */
-	As Short pitchbend'	/* Linear bend from base note*/
-	As UByte note'	/* Current base note number */
-	As UByte instrument' /* Current instrument number */
-	As UByte sample'	/* Current sample number */
-	As UByte volume'	/* Current volume */
-	As UByte pan'	/* Current stereo pan */
-	As UByte reserved'	/* Reserved */
-	As xmp_event event'	/* Current track event */
-End Type
-
-Type xmp_frame_info '			/* Current frame information */
-	As Integer Pos'			/* Current position */
-	As Integer pattern'			/* Current pattern */
-	As Integer row'			/* Current row in pattern */
-	As Integer num_rows'			/* Number of rows in current pattern */
-	As Integer frame'			/* Current frame */
-	As Integer speed'			/* Current replay speed */
-	As Integer bpm'			/* Current bpm */
-	As Integer Time'			/* Current module time in ms */
-	As Integer total_time'			/* Estimated replay time in ms*/
-	As Integer frame_time'			/* Frame replay time in us */
-	As Any Ptr buffer'			/* Pointer to sound buffer */
-	As Integer buffer_size'		/* Used buffer size */
-	As Integer total_size'			/* Total buffer size */
-	As Integer volume'			/* Current master volume */
-	As Integer loop_count'			/* Loop counter */
-	As Integer virt_channels'		/* Number of virtual channels */
-	As Integer virt_used'			/* Used virtual channels */
-	As Integer sequence'			/* Current sequence */
-	As xmp_channel_info channel_info(XMP_MAX_CHANNELS-1)
-End Type
-
-
-Type xmp_context As ZString Ptr
-
-Declare Function xmp_create_context() As xmp_context
-Declare Sub        xmp_free_context    (As xmp_context)
-Declare Function         xmp_test_module     (As ZString Ptr, As xmp_test_info Ptr)As Integer
-Declare Function         xmp_load_module     (As xmp_context, As ZString Ptr)As Integer
-Declare Sub        xmp_scan_module     (As xmp_context)
-Declare Sub        xmp_release_module  (As xmp_context)
-Declare Function         xmp_start_player    (As xmp_context, As Integer, As Integer)As Integer
-Declare Function         xmp_play_frame      (As xmp_context)As Integer
-Declare Sub        xmp_get_frame_info  (As xmp_context, As xmp_frame_info Ptr)
-Declare Sub        xmp_end_player      (As xmp_context)
-Declare Sub        xmp_inject_event    (As xmp_context, As Integer, As xmp_event Ptr)
-Declare Sub        xmp_get_module_info (As xmp_context, As xmp_module_info Ptr)
-Declare Function   xmp_get_format_list () As ZString Ptr Ptr
-Declare Function         xmp_next_position   (As xmp_context)As Integer
-Declare Function         xmp_prev_position   (As xmp_context)As Integer
-Declare Function         xmp_set_position    (As xmp_context, As Integer)As Integer
-Declare Sub        xmp_stop_module     (As xmp_context)
-Declare Sub        xmp_restart_module  (As xmp_context)
-Declare Function         xmp_seek_time       (As xmp_context, As Integer)As Integer
-Declare Function         xmp_channel_mute    (As xmp_context, As Integer,As Integer)As Integer
-Declare Function         xmp_channel_vol     (As xmp_context, As Integer, As Integer)As Integer
-Declare Function         xmp_set_player      (As xmp_context, As Integer, As Integer)As Integer
-Declare Function         xmp_get_player      (As xmp_context,As Integer)As Integer
-Declare Function         xmp_set_instrument_path (As xmp_context, As ZString Ptr)As Integer
-
-End Extern
-#EndIf	'/* XMP_BI */
+end extern
