@@ -674,7 +674,10 @@ private sub hConvOperand _
 
 end sub
 
-'' Warn about mixing boolean and non-boolean operands.
+'' Warn about mixing boolean and non-boolean operands, unless one is 0/-1.
+''    boolean and integer    => warning
+''    integer and true       => no warning
+''    boolean and (-1)       => no warning
 private function hWarnAboutMixedBooleanOperands _
 	( _
 		byval l as ASTNODE ptr, _
@@ -686,7 +689,12 @@ private function hWarnAboutMixedBooleanOperands _
 
 	assert( lbool or rbool )
 
-	return (lbool <> rbool)
+	if( lbool <> rbool ) then
+		return (not astIsConst0OrMinus1( l )) and _
+		       (not astIsConst0OrMinus1( r ))
+	end if
+
+	return FALSE
 end function
 
 '':::::

@@ -55,14 +55,14 @@ booleanCapableBopsNoWarnings(b3, false, b2)
 booleanCapableBops1WarningEach(b3, b1, i1)
 booleanCapableBops1WarningEach(b3, i1, b1)
 
-#print "mixing integers and true/false in boolean-capable BOPs - 1 warning each:"
-booleanCapableBops1WarningEach(i3, i1, true)
-booleanCapableBops1WarningEach(i3, i1, false)
-booleanCapableBops1WarningEach(i3, true, i2)
-booleanCapableBops1WarningEach(i3, false, i2)
+#print "mixing integers and true/false in boolean-capable BOPs - no warnings:"
+booleanCapableBopsNoWarnings(i3, i1, true)
+booleanCapableBopsNoWarnings(i3, i1, false)
+booleanCapableBopsNoWarnings(i3, true, i2)
+booleanCapableBopsNoWarnings(i3, false, i2)
 
-#print "mixing booleans and 0/-1 literals in boolean-capable BOPs - 1 warning each:"
-booleanCapableBops1WarningEach(b3, b1, -1)
-booleanCapableBops1WarningEach(b3, b1, 0)
-booleanCapableBops1WarningEach(b3, -1, b2)
-booleanCapableBops1WarningEach(b3, 0, b2)
+#print "mixing booleans and 0/-1 literals in boolean-capable BOPs - no warnings:"
+booleanCapableBopsNoWarnings(b3, b1, -1)
+booleanCapableBopsNoWarnings(b3, b1, 0)
+booleanCapableBopsNoWarnings(b3, -1, b2)
+booleanCapableBopsNoWarnings(b3, 0, b2)
