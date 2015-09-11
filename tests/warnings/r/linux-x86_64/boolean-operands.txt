@@ -1,0 +1,41 @@
+boolean-capable relational/logic BOPs:
+no mixing - no warnings:
+	Mixing operand data types may have undefined results
+	Mixing operand data types may have undefined results
+mixing - 1 warning each:
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
+1 warning:
+	Mixing operand data types may have undefined results
