@@ -31,6 +31,16 @@ function astConstGeZero( byval n as ASTNODE ptr ) as integer
 	end if
 end function
 
+function astIsConst0OrMinus1( byval n as ASTNODE ptr ) as integer
+	if( astIsCONST( n ) ) then
+		dim value as longint = astConstGetAsInt64( n )
+		if( (value = 0) or (value = -1) ) then
+			return TRUE
+		end if
+	end if
+	return FALSE
+end function
+
 function astNewCONSTstr( byval v as zstring ptr ) as ASTNODE ptr
     dim as FBSYMBOL ptr tc = any
 

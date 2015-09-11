@@ -1266,31 +1266,20 @@ function astNewBOP _
 
 	'' warn on mixing boolean and non-boolean operands
 	if( is_boolean ) then
-		
 		dim as FB_WARNINGMSG warning = 0
 
 		'' lhs boolean -> non-boolean?
 		if( typeGetDtAndPtrOnly( ldtype ) <> FB_DATATYPE_BOOLEAN ) then
-			if( astIsConst( l ) ) then
-				'' make exception for 0|-1
-				dim tmp as longint = astConstGetAsInt64( l )
-				if( (tmp <> 0) and (tmp <> -1) ) then
-					warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
-				end if
-			else
+			'' make exception for 0|-1
+			if( astIsConst0OrMinus1( l ) = FALSE ) then
 				warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 			end if
 		end if
 
 		'' rhs boolean -> non-boolean?
 		if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_BOOLEAN ) then
-			if( astIsConst( r ) ) then
-				'' make exception for 0|-1
-				dim tmp as longint = astConstGetAsInt64( r )
-				if( (tmp <> 0) and (tmp <> -1) ) then
-					warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
-				end if
-			else
+			'' make exception for 0|-1
+			if( astIsConst0OrMinus1( r ) = FALSE ) then
 				warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
 			end if
 		end if
@@ -1298,7 +1287,6 @@ function astNewBOP _
 		if( warning <> 0 ) then
 			errReportWarn( warning )
 		end if
-			
 	end if
 
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
