@@ -674,6 +674,21 @@ private sub hConvOperand _
 
 end sub
 
+'' Warn about mixing boolean and non-boolean operands.
+private function hWarnAboutMixedBooleanOperands _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
+
+	var lbool = (astGetDataType( l ) = FB_DATATYPE_BOOLEAN)
+	var rbool = (astGetDataType( r ) = FB_DATATYPE_BOOLEAN)
+
+	assert( lbool or rbool )
+
+	return (lbool <> rbool)
+end function
+
 '':::::
 function astNewBOP _
 	( _
@@ -691,7 +706,6 @@ function astNewBOP _
 	dim as integer lrank = any, rrank = any, intrank = any, uintrank = any
     dim as integer is_str = any
     dim as FBSYMBOL ptr litsym = any, subtype = any
-	dim as integer is_boolean = any
 	dim as integer do_promote = any
 
 	function = NULL
@@ -715,7 +729,6 @@ function astNewBOP _
 	ldclass = typeGetClass( ldtype )
 	rdclass = typeGetClass( rdtype )
 
-	is_boolean = ((typeGetDtAndPtrOnly( ldtype ) = FB_DATATYPE_BOOLEAN) or (typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_BOOLEAN))
 	do_promote = TRUE
 
 	'' UDT's? try auto-coercion
@@ -1013,21 +1026,31 @@ function astNewBOP _
 
 	do_promote = (env.clopt.lang <> FB_LANG_QB) and (is_str = FALSE)
 
-	if (is_boolean) then
+	'' Any boolean operand(s)?
+	if( (typeGetDtAndPtrOnly( ldtype ) = FB_DATATYPE_BOOLEAN) or _
+	    (typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_BOOLEAN) ) then
 		select case as const op
 		case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
 			 AST_OP_EQ, AST_OP_NE
-
+			'' Don't promote booleans to integers, so we have
+			'' "pure-boolean" BOPs, and also so we can show warnings
+			'' about mixing booleans/integers.
 			do_promote = FALSE
-		
+
 		case AST_OP_ANDALSO, AST_OP_ORELSE
+			'' Allow booleans to be promoted to integers, so they
+			'' are allowed to be mixed with integers, which makes
+			'' more sense for AndAlso/OrElse than the (other)
+			'' relational BOPs.
 
 		case else
-
 			'' No other BOP's allowed with booleans
 			exit function
-
 		end select
+
+		if( hWarnAboutMixedBooleanOperands( l, r ) ) then
+			errReportWarn( FB_WARNINGMSG_OPERANDSMIXEDTYPES )
+		end if
 	end if
 
 	if( do_promote ) then
@@ -1263,31 +1286,6 @@ function astNewBOP _
 			end if
 		end if
 	end select
-
-	'' warn on mixing boolean and non-boolean operands
-	if( is_boolean ) then
-		dim as FB_WARNINGMSG warning = 0
-
-		'' lhs boolean -> non-boolean?
-		if( typeGetDtAndPtrOnly( ldtype ) <> FB_DATATYPE_BOOLEAN ) then
-			'' make exception for 0|-1
-			if( astIsConst0OrMinus1( l ) = FALSE ) then
-				warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
-			end if
-		end if
-
-		'' rhs boolean -> non-boolean?
-		if( typeGetDtAndPtrOnly( rdtype ) <> FB_DATATYPE_BOOLEAN ) then
-			'' make exception for 0|-1
-			if( astIsConst0OrMinus1( r ) = FALSE ) then
-				warning = FB_WARNINGMSG_OPERANDSMIXEDTYPES
-			end if
-		end if
-
-		if( warning <> 0 ) then
-			errReportWarn( warning )
-		end if
-	end if
 
 	'' constant folding (won't handle commutation, ie: "1+a+2+3" will become "1+a+5", not "a+6")
 	''
