@@ -182,13 +182,120 @@ namespace fbc_tests.boolean_.bop
 
 	end sub
 
+	sub testPureBooleanBops cdecl( )
+		#macro check( l, bop, r, expectedResult )
+			scope
+				dim as boolean b1, b2, b3
+
+				#assert typeof( cbool( l ) bop cbool( r ) ) = typeof( boolean )
+
+				CU_ASSERT( (cbool( l ) bop cbool( r )) = cbool( expectedResult ) )
+
+				b1 = (l)
+				b2 = (r)
+				b3 = b1 bop b2
+				CU_ASSERT( b3 = cbool( expectedResult ) )
+			end scope
+		#endmacro
+
+		check(  0, and,  0,  0 )
+		check(  0, and,  1,  0 )
+		check(  0, and, -1,  0 )
+		check(  1, and,  0,  0 )
+		check(  1, and,  1, -1 )
+		check(  1, and, -1, -1 )
+		check( -1, and,  0,  0 )
+		check( -1, and,  1, -1 )
+		check( -1, and, -1, -1 )
+
+		check(  0, or,  0,  0 )
+		check(  0, or,  1, -1 )
+		check(  0, or, -1, -1 )
+		check(  1, or,  0, -1 )
+		check(  1, or,  1, -1 )
+		check(  1, or, -1, -1 )
+		check( -1, or,  0, -1 )
+		check( -1, or,  1, -1 )
+		check( -1, or, -1, -1 )
+
+		check(  0, xor,  0,  0 )
+		check(  0, xor,  1, -1 )
+		check(  0, xor, -1, -1 )
+		check(  1, xor,  0, -1 )
+		check(  1, xor,  1,  0 )
+		check(  1, xor, -1,  0 )
+		check( -1, xor,  0, -1 )
+		check( -1, xor,  1,  0 )
+		check( -1, xor, -1,  0 )
+
+		check(  0, eqv,  0, -1 )
+		check(  0, eqv,  1,  0 )
+		check(  0, eqv, -1,  0 )
+		check(  1, eqv,  0,  0 )
+		check(  1, eqv,  1, -1 )
+		check(  1, eqv, -1, -1 )
+		check( -1, eqv,  0,  0 )
+		check( -1, eqv,  1, -1 )
+		check( -1, eqv, -1, -1 )
+
+		check(  0, imp,  0, -1 )
+		check(  0, imp,  1, -1 )
+		check(  0, imp, -1, -1 )
+		check(  1, imp,  0,  0 )
+		check(  1, imp,  1, -1 )
+		check(  1, imp, -1, -1 )
+		check( -1, imp,  0,  0 )
+		check( -1, imp,  1, -1 )
+		check( -1, imp, -1, -1 )
+
+		check(  0, =,  0, -1 )
+		check(  0, =,  1,  0 )
+		check(  0, =, -1,  0 )
+		check(  1, =,  0,  0 )
+		check(  1, =,  1, -1 )
+		check(  1, =, -1, -1 )
+		check( -1, =,  0,  0 )
+		check( -1, =,  1, -1 )
+		check( -1, =, -1, -1 )
+
+		check(  0, <>,  0,  0 )
+		check(  0, <>,  1, -1 )
+		check(  0, <>, -1, -1 )
+		check(  1, <>,  0, -1 )
+		check(  1, <>,  1,  0 )
+		check(  1, <>, -1,  0 )
+		check( -1, <>,  0, -1 )
+		check( -1, <>,  1,  0 )
+		check( -1, <>, -1,  0 )
+
+		check(  0, andalso,  0,  0 )
+		check(  0, andalso,  1,  0 )
+		check(  0, andalso, -1,  0 )
+		check(  1, andalso,  0,  0 )
+		check(  1, andalso,  1, -1 )
+		check(  1, andalso, -1, -1 )
+		check( -1, andalso,  0,  0 )
+		check( -1, andalso,  1, -1 )
+		check( -1, andalso, -1, -1 )
+
+		check(  0, orelse,  0,  0 )
+		check(  0, orelse,  1, -1 )
+		check(  0, orelse, -1, -1 )
+		check(  1, orelse,  0, -1 )
+		check(  1, orelse,  1, -1 )
+		check(  1, orelse, -1, -1 )
+		check( -1, orelse,  0, -1 )
+		check( -1, orelse,  1, -1 )
+		check( -1, orelse, -1, -1 )
+	end sub
+
 	private sub ctor () constructor
-	
+
 		fbcu.add_suite("fbc_tests.boolean_.bop")
 		fbcu.add_test("test1", @test1 )
 		fbcu.add_test("test2", @test2 )
-		
+		fbcu.add_test( "testPureBooleanBops", @testPureBooleanBops )
+
 	end sub
-	
+
 end namespace
-			

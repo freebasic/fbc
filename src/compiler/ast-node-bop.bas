@@ -285,6 +285,8 @@ private function hConstBop _
 		case AST_OP_IMP : l->val.i = cbool( l->val.i ) imp cbool( r->val.i )
 		case AST_OP_NE  : l->val.i = cbool( l->val.i ) <>  cbool( r->val.i )
 		case AST_OP_EQ  : l->val.i = cbool( l->val.i ) =   cbool( r->val.i )
+		case AST_OP_ANDALSO : l->val.i = cbool( l->val.i ) andalso cbool( r->val.i )
+		case AST_OP_ORELSE  : l->val.i = cbool( l->val.i ) orelse  cbool( r->val.i )
 		case else
 			assert( FALSE )
 		end select
@@ -980,15 +982,10 @@ function astNewBOP _
 	    (typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_BOOLEAN) ) then
 		select case as const op
 		case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
-			 AST_OP_EQ, AST_OP_NE
+		     AST_OP_EQ, AST_OP_NE, AST_OP_ANDALSO, AST_OP_ORELSE
 			'' Don't promote booleans to integers, so we can have
 			'' "pure-boolean" BOPs (that also return booleans).
 			is_boolean = TRUE
-
-		case AST_OP_ANDALSO, AST_OP_ORELSE
-			'' TODO: should do that for AndAlso/OrElse too,
-			'' but it caused backwards-compatibility problems with
-			'' fbc sources...
 
 		case else
 			'' No other BOP's allowed with booleans
