@@ -1,29 +1,52 @@
+'' FreeBASIC binding for vlc-2.2.1
 ''
+'' based on the C header files:
+''   **************************************************************************
+''    libvlc_media_list.h:  libvlc_media_list API
+''   ****************************************************************************
+''    Copyright (C) 1998-2008 VLC authors and VideoLAN
+''    $Id: 015824bf54e656cc67838452c7e99a00a452af6e $
 ''
-'' libvlc_media_list -- header translated with help of SWIG FB wrapper
+''    Authors: Pierre d'Herbemont
 ''
-'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
-''         be included in other distributions without authorization.
+''    This program is free software; you can redistribute it and/or modify it
+''    under the terms of the GNU Lesser General Public License as published by
+''    the Free Software Foundation; either version 2.1 of the License, or
+''    (at your option) any later version.
 ''
+''    This program is distributed in the hope that it will be useful,
+''    but WITHOUT ANY WARRANTY; without even the implied warranty of
+''    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+''    GNU Lesser General Public License for more details.
 ''
-#ifndef __libvlc_media_list_bi__
-#define __libvlc_media_list_bi__
+''    You should have received a copy of the GNU Lesser General Public License
+''    along with this program; if not, write to the Free Software Foundation,
+''    Inc., 51 Franklin Street, Fifth Floor, Boston MA 02110-1301, USA.
+''   ***************************************************************************
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
-#define LIBVLC_MEDIA_LIST_H 1
+#pragma once
 
-type libvlc_media_list_t as any
+extern "C"
 
-declare sub libvlc_media_list_release cdecl alias "libvlc_media_list_release" (byval p_ml as libvlc_media_list_t ptr)
-declare sub libvlc_media_list_retain cdecl alias "libvlc_media_list_retain" (byval p_ml as libvlc_media_list_t ptr)
-declare function libvlc_media_list_add_file_content cdecl alias "libvlc_media_list_add_file_content" (byval p_ml as libvlc_media_list_t ptr, byval psz_uri as zstring ptr) as integer
-declare sub libvlc_media_list_set_media cdecl alias "libvlc_media_list_set_media" (byval p_ml as libvlc_media_list_t ptr, byval p_md as libvlc_media_t ptr)
-declare function libvlc_media_list_add_media cdecl alias "libvlc_media_list_add_media" (byval p_ml as libvlc_media_list_t ptr, byval p_md as libvlc_media_t ptr) as integer
-declare function libvlc_media_list_insert_media cdecl alias "libvlc_media_list_insert_media" (byval p_ml as libvlc_media_list_t ptr, byval p_md as libvlc_media_t ptr, byval i_pos as integer) as integer
-declare function libvlc_media_list_remove_index cdecl alias "libvlc_media_list_remove_index" (byval p_ml as libvlc_media_list_t ptr, byval i_pos as integer) as integer
-declare function libvlc_media_list_count cdecl alias "libvlc_media_list_count" (byval p_ml as libvlc_media_list_t ptr) as integer
-declare function libvlc_media_list_index_of_item cdecl alias "libvlc_media_list_index_of_item" (byval p_ml as libvlc_media_list_t ptr, byval p_md as libvlc_media_t ptr) as integer
-declare function libvlc_media_list_is_readonly cdecl alias "libvlc_media_list_is_readonly" (byval p_ml as libvlc_media_list_t ptr) as integer
-declare sub libvlc_media_list_lock cdecl alias "libvlc_media_list_lock" (byval p_ml as libvlc_media_list_t ptr)
-declare sub libvlc_media_list_unlock cdecl alias "libvlc_media_list_unlock" (byval p_ml as libvlc_media_list_t ptr)
+const LIBVLC_MEDIA_LIST_H = 1
+declare function libvlc_media_list_new(byval p_instance as libvlc_instance_t ptr) as libvlc_media_list_t ptr
+declare sub libvlc_media_list_release(byval p_ml as libvlc_media_list_t ptr)
+declare sub libvlc_media_list_retain(byval p_ml as libvlc_media_list_t ptr)
+declare function libvlc_media_list_add_file_content(byval p_ml as libvlc_media_list_t ptr, byval psz_uri as const zstring ptr) as long
+declare sub libvlc_media_list_set_media(byval p_ml as libvlc_media_list_t ptr, byval p_md as libvlc_media_t ptr)
+declare function libvlc_media_list_media(byval p_ml as libvlc_media_list_t ptr) as libvlc_media_t ptr
+declare function libvlc_media_list_add_media(byval p_ml as libvlc_media_list_t ptr, byval p_md as libvlc_media_t ptr) as long
+declare function libvlc_media_list_insert_media(byval p_ml as libvlc_media_list_t ptr, byval p_md as libvlc_media_t ptr, byval i_pos as long) as long
+declare function libvlc_media_list_remove_index(byval p_ml as libvlc_media_list_t ptr, byval i_pos as long) as long
+declare function libvlc_media_list_count(byval p_ml as libvlc_media_list_t ptr) as long
+declare function libvlc_media_list_item_at_index(byval p_ml as libvlc_media_list_t ptr, byval i_pos as long) as libvlc_media_t ptr
+declare function libvlc_media_list_index_of_item(byval p_ml as libvlc_media_list_t ptr, byval p_md as libvlc_media_t ptr) as long
+declare function libvlc_media_list_is_readonly(byval p_ml as libvlc_media_list_t ptr) as long
+declare sub libvlc_media_list_lock(byval p_ml as libvlc_media_list_t ptr)
+declare sub libvlc_media_list_unlock(byval p_ml as libvlc_media_list_t ptr)
+declare function libvlc_media_list_event_manager(byval p_ml as libvlc_media_list_t ptr) as libvlc_event_manager_t ptr
 
-#endif
+end extern

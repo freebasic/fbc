@@ -1,7 +1,7 @@
 '' FreeBASIC binding for lzo-2.09
 ''
 '' based on the C header files:
-''   lzo1a.h -- public interface of the LZO1A compression algorithm
+''   lzoutil.h -- utility functions for use by applications
 ''
 ''   This file is part of the LZO real-time data compression library.
 ''
@@ -32,17 +32,11 @@
 
 #pragma once
 
-#include once "crt/long.bi"
 #include once "lzo/lzoconf.bi"
 
-extern "C"
-
-const __LZO1A_H_INCLUDED = 1
-#define LZO1A_MEM_COMPRESS cast(lzo_uint32_t, cast(clong, 8192) * lzo_sizeof_dict_t)
-const LZO1A_MEM_DECOMPRESS = 0
-declare function lzo1a_compress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
-declare function lzo1a_decompress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
-#define LZO1A_99_MEM_COMPRESS cast(lzo_uint32_t, cast(clong, 65536) * lzo_sizeof_dict_t)
-declare function lzo1a_99_compress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
-
-end extern
+const __LZOUTIL_H_INCLUDED = 1
+#define lzo_alloc(a, b) malloc((a) * (b))
+#define lzo_malloc(a) malloc(a)
+#define lzo_free(a) free(a)
+#define lzo_fread(f, b, s) fread(b, 1, s, f)
+#define lzo_fwrite(f, b, s) fwrite(b, 1, s, f)

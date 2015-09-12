@@ -1,3 +1,3 @@
 #pragma once
-#inclib "pcre16"
+#inclib "pcre32"
 #include once "pcre-common.bi"

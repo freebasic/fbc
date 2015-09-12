@@ -2,12 +2,9 @@
 ''
 '' based on the C header files:
 ''   **************************************************************************
-''    libvlc_structures.h:  libvlc_* new external API structures
+''    libvlc_version.h
 ''   ****************************************************************************
-''    Copyright (C) 1998-2008 VLC authors and VideoLAN
-''    $Id $
-''
-''    Authors: Filippo Carone <littlejohn@videolan.org>
+''    Copyright (C) 2010 Rémi Denis-Courmont
 ''
 ''    This program is free software; you can redistribute it and/or modify it
 ''    under the terms of the GNU Lesser General Public License as published by
@@ -29,15 +26,10 @@
 
 #pragma once
 
-#include once "crt/stdint.bi"
-
-const LIBVLC_STRUCTURES_H = 1
-type libvlc_time_t as longint
-
-type libvlc_log_message_t
-	i_severity as long
-	psz_type as const zstring ptr
-	psz_name as const zstring ptr
-	psz_header as const zstring ptr
-	psz_message as const zstring ptr
-end type
+const LIBVLC_VERSION_H = 1
+const LIBVLC_VERSION_MAJOR = 2
+const LIBVLC_VERSION_MINOR = 2
+const LIBVLC_VERSION_REVISION = 1
+const LIBVLC_VERSION_EXTRA = 0
+#define LIBVLC_VERSION(maj, min, rev, extra) ((((maj shl 24) or (min shl 16)) or (rev shl 8)) or (extra))
+#define LIBVLC_VERSION_INT LIBVLC_VERSION(LIBVLC_VERSION_MAJOR, LIBVLC_VERSION_MINOR, LIBVLC_VERSION_REVISION, LIBVLC_VERSION_EXTRA)

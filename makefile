@@ -880,68 +880,23 @@ bindist:
   ifeq ($(TARGET_ARCH),x86_64)
 	# Exclude headers which don't support 64bit yet
 	rm -r $(packinc)/big_int
-	rm -r $(packinc)/cd
-	rm -r $(packinc)/cgi-util.bi
-	rm -r $(packinc)/chipmunk
-	rm -r $(packinc)/cryptlib.bi
 	rm -r $(packinc)/dislin.bi
-	rm -r $(packinc)/disphelper
-	rm -r $(packinc)/dos
-	rm -r $(packinc)/expat.bi
-	rm -r $(packinc)/flite
-	rm -r $(packinc)/FreeImage.bi
-	rm -r $(packinc)/gd.bi
-	rm -r $(packinc)/gdbm.bi
-	rm -r $(packinc)/gdsl
 	rm -r $(packinc)/gettext-po.bi
-	rm -r $(packinc)/gif_lib.bi
 	rm -r $(packinc)/glade
-	rm -r $(packinc)/gmp.bi
 	rm -r $(packinc)/goocanvas.bi
-	rm -r $(packinc)/grx
-	rm -r $(packinc)/gsl
-	rm -r $(packinc)/IL
-	rm -r $(packinc)/im
 	rm -r $(packinc)/japi.bi
 	rm -r $(packinc)/jni.bi
-	rm -r $(packinc)/jpeglib.bi
 	rm -r $(packinc)/jpgalleg.bi
-	rm -r $(packinc)/json-c
 	rm -r $(packinc)/libart_lgpl
 	rm -r $(packinc)/libintl.bi
-	rm -r $(packinc)/libxml
-	rm -r $(packinc)/libxslt
-	rm -r $(packinc)/lzma.bi
-	rm -r $(packinc)/lzo
-	rm -r $(packinc)/MediaInfo.bi
-	rm -r $(packinc)/modplug.bi
-	rm -r $(packinc)/mpg123.bi
-	rm -r $(packinc)/mxml.bi
 	rm -r $(packinc)/mysql
-	rm -r $(packinc)/Newton.bi
-	rm -r $(packinc)/ode
-	rm -r $(packinc)/ogg
-	rm -r $(packinc)/pcre16.bi
-	rm -r $(packinc)/pcre.bi
-	rm -r $(packinc)/pcreposix.bi
 	rm -r $(packinc)/pdflib.bi
-	rm -r $(packinc)/portaudio.bi
-	rm -r $(packinc)/postgresql
 	rm -r $(packinc)/quicklz.bi
-	rm -r $(packinc)/sndfile.bi
 	rm -r $(packinc)/spidermonkey
-	rm -r $(packinc)/sqlite2.bi
-	rm -r $(packinc)/sqlite3.bi
-	rm -r $(packinc)/sqlite3ext.bi
 	rm -r $(packinc)/tinyptc.bi
-	rm -r $(packinc)/uuid.bi
-	rm -r $(packinc)/vlc
-	rm -r $(packinc)/vorbis
 	rm -r $(packinc)/win/ddk
 	rm -r $(packinc)/win/rc
 	rm -r $(packinc)/wx-c
-	rm -r $(packinc)/xmp.bi
-	rm -r $(packinc)/zmq
   endif
 
   ifndef DISABLE_DOCS

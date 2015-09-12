@@ -1,11 +1,12 @@
-'' FreeBASIC binding for pcre-8.37
+'' FreeBASIC binding for pcre2-10.20
 ''
 '' based on the C header files:
-''    This is the header for the POSIX wrapper interface to the PCRE Perl-
-''   Compatible Regular Expression library. It defines the things POSIX says should
-''   be there. I hope.
+''    PCRE2 is a library of functions to support regular expressions whose syntax
+''   and semantics are as close as possible to those of the Perl 5 language.
 ''
-''               Copyright (c) 1997-2012 University of Cambridge
+''                          Written by Philip Hazel
+''        Original API code Copyright (c) 1997-2012 University of Cambridge
+''            New API code Copyright (c) 2014 University of Cambridge
 ''
 ''   -----------------------------------------------------------------------------
 ''   Redistribution and use in source and binary forms, with or without
@@ -40,20 +41,20 @@
 
 #pragma once
 
-#inclib "pcreposix"
+#inclib "pcre2-8"
+#inclib "pcre2-posix"
 
 #include once "crt/stdlib.bi"
 
 extern "C"
 
-#define _PCREPOSIX_H
 const REG_ICASE = &h0001
 const REG_NEWLINE = &h0002
 const REG_NOTBOL = &h0004
 const REG_NOTEOL = &h0008
 const REG_DOTALL = &h0010
 const REG_NOSUB = &h0020
-const REG_UTF8 = &h0040
+const REG_UTF = &h0040
 const REG_STARTEND = &h0080
 const REG_NOTEMPTY = &h0100
 const REG_UNGREEDY = &h0200
@@ -81,7 +82,8 @@ enum
 end enum
 
 type regex_t
-	re_pcre as any ptr
+	re_pcre2_code as any ptr
+	re_match_data as any ptr
 	re_nsub as uinteger
 	re_erroffset as uinteger
 end type

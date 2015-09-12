@@ -50,6 +50,25 @@ Version 1.04.0
 - New binding for jpeglib 6b, 7, 8, 9a, with 64bit support
 - New binding for json-c 0.12, with 64bit support
 - New binding for libxml2 2.9.2 and libxslt 1.1.28, with 64bit support
+- New binding for liblzma from xz 5.2.1, with 64bit support
+- New binding for LZO 2.09, with 64bit support
+- New binding for MediaInfo 0.7.77, with 64bit support
+- New binding for libmodplug 0.8.8.5, with 64bit support
+- New binding for libmpg123 1.22.4, with 64bit support
+- New binding for Mini-XML 2.9, with 64bit support
+- New bindings for SQLite 2.8.17 and 3.8.11.1, with 64bit support
+- New bindings for PCRE 8.37 and PCRE2 10.20, with 64bit support
+- New binding for PostgreSQL 9.4.4, with 64bit support
+- New binding for libogg 1.3.2, with 64bit support
+- New binding for libvorbis 1.3.5, with 64bit support
+- New binding for Newton 3.13, with 64bit support
+- New binding for ODE 0.13.1, with 64bit support
+- New binding for PortAudio (pa_stable_v19_20140130), with 64bit support
+- New binding for libsndfile 1.0.25, with 64bit support
+- New binding for libuuid (e2fsprogs-libs-1.42.13), with 64bit support
+- New binding for libxmp 4.3.9, with 64bit support
+- New binding for ZeroMQ 4.1.3, with 64bit support
+- New binding for libVLC 2.2.1, with 64bit support
 
 [fixed]
 - False-positive "ambigious sizeof" warnings if the identifier could refer only to a type or procedure (in that case it should already be fairly clear that the type will be chosen, not the procedure, because sizeof() can't be applied to procedures at all), or if an expression such as "array(0)" is given to sizeof() (i.e. something that starts with an identifier but is followed by further tokens that clarify that it's not refering to a type)
@@ -88,6 +107,7 @@ Version 1.04.0
 - X11 binding: X11's boolean typedef was errornously translated as string type in some places - it is now preserved, named "XBoolean", and translated as byte as intended.
 - GTK+ 2 binding: GtkCurve structure was translated incorrectly (i.e. wrong sizeof())
 - 1.02.0 regression: Windows API binding: The LPRGLPVOID typedef and related ones were omitted from win/dplay.bi due to a translation bug
+- Windows API binding: win/GdiPlus.bi now uses the Gdiplus namespace and #inclib on 64bit too.
 
 
 Version 1.03.0

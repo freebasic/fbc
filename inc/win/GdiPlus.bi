@@ -1,6 +1,18 @@
+#pragma once
+
+#inclib "gdiplus"
+
 #ifdef __FB_64BIT__
 
+'' Even though the C++ API isn't translated for 64bit, we can still wrap the
+'' C API in the same namespace, allowing lots of existing code to work.
+'' The namespace doesn't hurt the function name mangling because everything
+'' is inside an Extern block anyways.
+namespace Gdiplus
+
 #include "gdiplus-c.bi"
+
+end namespace
 
 #else
 
@@ -12,10 +24,6 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __win_GdiPlus_bi__
-#define __win_GdiPlus_bi__
-
-#inclib "gdiplus"
 
 #include once "win/ole2.bi"
 
@@ -39,7 +47,5 @@ type UINT16 as ushort
 #include once "win/GdiplusFlat.bi"
 
 end namespace
-
-#endif
 
 #endif

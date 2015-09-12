@@ -600,6 +600,7 @@ declare function astNewUOP _
 
 declare function astConstEqZero( byval n as ASTNODE ptr ) as integer
 declare function astConstGeZero( byval n as ASTNODE ptr ) as integer
+declare function astIsConst0OrMinus1( byval n as ASTNODE ptr ) as integer
 
 declare function astNewCONST _
 	( _

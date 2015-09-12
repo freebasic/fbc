@@ -2014,6 +2014,10 @@ private function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 	dim as FBSYMBOL ptr ns = any
 	dim as string s
 
+	if( symbGetHashtb( sym ) = NULL ) then
+		return "<no hash tb>"
+	end if
+
 	ns = symbGetNamespace( sym )
 	while( ns <> @symbGetGlobalNamespc( ) )
 		s = *symbGetName( ns ) + "." + s
@@ -2428,10 +2432,6 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 end function
 
 sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
-	dim as FBSYMBOL ptr i = any
-	dim as THASH ptr hash = any
-	dim as HASHITEM ptr hashitem = any
-
 	select case( ns->class )
 	case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_NAMESPACE
 
@@ -2441,17 +2441,31 @@ sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
 
 	print symbDump( ns ) + ":"
 
-	i = symbGetCompSymbTb( ns ).head
+	var i = symbGetCompSymbTb( ns ).head
 	while( i )
 		print "    symtb: " + symbDump( i )
 		i = i->next
 	wend
 
-	hash = @symbGetCompHashTb( ns ).tb
+	'' For each bucket in the hashtb...
+	var hash = @symbGetCompHashTb( ns ).tb
 	for index as integer = 0 to hash->nodes-1
-		hashitem = hash->list[index].head
+		'' For each item in this bucket...
+		'' (can have multiple items in case of hash collisions)
+		var hashitem = hash->list[index].head
 		while( hashitem )
-			print "    hashtb[" & index & "]: " + *hashitem->name + " = " + symbDump( hashitem->data )
+			'' The user data stored in the hashtb entry is the "head" symbol.
+			'' It can link to more symbols through its FBSYMBOL.hash.next field.
+			'' symbNewSymbol() prepends new symbols to that list, so they shadow the previous ones.
+			''   1st/head symbol = the one from the current scope
+			''   other symbols   = shadowed symbols from parent scopes
+			dim as FBSYMBOL ptr sym = hashitem->data
+			var bucketprefix = "    hashtb[" & index & "]: "
+			print bucketprefix + *hashitem->name + " = " + symbDump( sym )
+			while( sym->hash.next )
+				sym = sym->hash.next
+				print space(len(bucketprefix)) + "next: " + symbDump( sym )
+			wend
 			hashitem = hashitem->next
 		wend
 	next

@@ -1,45 +1,62 @@
-#ifndef __lzo1x_bi__
-#define __lzo1x_bi__
+'' FreeBASIC binding for lzo-2.09
+''
+'' based on the C header files:
+''   lzo1x.h -- public interface of the LZO1X compression algorithm
+''
+''   This file is part of the LZO real-time data compression library.
+''
+''   Copyright (C) 1996-2015 Markus Franz Xaver Johannes Oberhumer
+''   All Rights Reserved.
+''
+''   The LZO library is free software; you can redistribute it and/or
+''   modify it under the terms of the GNU General Public License as
+''   published by the Free Software Foundation; either version 2 of
+''   the License, or (at your option) any later version.
+''
+''   The LZO library is distributed in the hope that it will be useful,
+''   but WITHOUT ANY WARRANTY; without even the implied warranty of
+''   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+''   GNU General Public License for more details.
+''
+''   You should have received a copy of the GNU General Public License
+''   along with the LZO library; see the file COPYING.
+''   If not, write to the Free Software Foundation, Inc.,
+''   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+''
+''   Markus F.X.J. Oberhumer
+''   <markus@oberhumer.com>
+''   http://www.oberhumer.com/opensource/lzo/
+''
+'' translated to FreeBASIC by:
+''   Copyright © 2015 FreeBASIC development team
 
+#pragma once
+
+#include once "crt/long.bi"
 #include once "lzo/lzoconf.bi"
 
 extern "C"
 
-#define LZO1X_MEM_COMPRESS      LZO1X_1_MEM_COMPRESS
-#define LZO1X_MEM_DECOMPRESS    (0)
-#define LZO1X_MEM_OPTIMIZE      (0)
+const __LZO1X_H_INCLUDED = 1
+#define LZO1X_MEM_COMPRESS LZO1X_1_MEM_COMPRESS
+const LZO1X_MEM_DECOMPRESS = 0
+const LZO1X_MEM_OPTIMIZE = 0
+declare function lzo1x_decompress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
+declare function lzo1x_decompress_safe(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
+#define LZO1X_1_MEM_COMPRESS cast(lzo_uint32_t, cast(clong, 16384) * lzo_sizeof_dict_t)
+declare function lzo1x_1_compress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
+#define LZO1X_1_11_MEM_COMPRESS cast(lzo_uint32_t, cast(clong, 2048) * lzo_sizeof_dict_t)
+declare function lzo1x_1_11_compress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
+#define LZO1X_1_12_MEM_COMPRESS cast(lzo_uint32_t, cast(clong, 4096) * lzo_sizeof_dict_t)
+declare function lzo1x_1_12_compress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
+#define LZO1X_1_15_MEM_COMPRESS cast(lzo_uint32_t, cast(clong, 32768) * lzo_sizeof_dict_t)
+declare function lzo1x_1_15_compress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
+#define LZO1X_999_MEM_COMPRESS cast(lzo_uint32_t, (14 * cast(clong, 16384)) * sizeof(short))
 
-declare function lzo1x_decompress cdecl (byval src as lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uintp, byval wrkmem as lzo_voidp) as integer
-declare function lzo1x_decompress_safe cdecl (byval src as lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uintp, byval wrkmem as lzo_voidp) as integer
-
-#define LZO1X_1_MEM_COMPRESS    (cast(lzo_uint32, 16384L * lzo_sizeof_dict_t))
-
-declare function lzo1x_1_compress cdecl (byval src as lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uintp, byval wrkmem as lzo_voidp) as integer
-
-#define LZO1X_1_11_MEM_COMPRESS (cast(lzo_uint32, 2048L * lzo_sizeof_dict_t))
-
-declare function lzo1x_1_11_compress cdecl (byval src as lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uintp, byval wrkmem as lzo_voidp) as integer
-
-#define LZO1X_1_12_MEM_COMPRESS (cast(lzo_uint32, 4096L * lzo_sizeof_dict_t))
-
-declare function lzo1x_1_12_compress cdecl (byval src as lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uintp, byval wrkmem as lzo_voidp) as integer
-
-#define LZO1X_1_15_MEM_COMPRESS (cast(lzo_uint32, 32768L * lzo_sizeof_dict_t))
-
-declare function lzo1x_1_15_compress cdecl (byval src as lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uintp, byval wrkmem as lzo_voidp) as integer
-
-#define LZO1X_999_MEM_COMPRESS  (cast(lzo_uint32, 14 * 16384L * sizeof(short)))
-
-declare function lzo1x_999_compress cdecl (byval src as lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uintp, byval wrkmem as lzo_voidp) as integer
-
-declare function lzo1x_999_compress_dict cdecl (byval src as lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uintp, byval wrkmem as lzo_voidp, byval dict as lzo_bytep, byval dict_len as lzo_uint) as integer
-                                   
-declare function lzo1x_999_compress_level cdecl (byval src as lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uintp, byval wrkmem as lzo_voidp, byval dict as lzo_bytep, byval dict_len as lzo_uint, byval cb as lzo_callback_p, byval compression_level as integer) as integer
-
-declare function lzo1x_999_compress_dict_safe cdecl (byval src as lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uintp, byval wrkmem as lzo_voidp, byval dict as lzo_bytep, byval dict_len as lzo_uint) as integer
-
-declare function lzo1x_optimize cdecl  (byval in as lzo_bytep, byval in_len as lzo_uint, byval out_ as lzo_bytep, byval out_len as lzo_uintp, byval wrkmem as lzo_uintp) as integer
+declare function lzo1x_999_compress(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
+declare function lzo1x_999_compress_dict(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp, byval dict as const lzo_bytep, byval dict_len as lzo_uint) as long
+declare function lzo1x_999_compress_level(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp, byval dict as const lzo_bytep, byval dict_len as lzo_uint, byval cb as lzo_callback_t ptr, byval compression_level as long) as long
+declare function lzo1x_decompress_dict_safe(byval src as const lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp, byval dict as const lzo_bytep, byval dict_len as lzo_uint) as long
+declare function lzo1x_optimize(byval src as lzo_bytep, byval src_len as lzo_uint, byval dst as lzo_bytep, byval dst_len as lzo_uint ptr, byval wrkmem as lzo_voidp) as long
 
 end extern
-
-#endif
