@@ -290,14 +290,17 @@ private function hArrayInit _
 			astTypeIniAddCtorList( ctx.tree, ctx.sym, elements, ctx.dtype, ctx.subtype )
 		else
 			dim as longint pad_lgt = any
-			'' calc len.. handle fixed-len strings
-			select case as const( typeGetDtAndPtrOnly( ctx.dtype ) )
-			case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-				pad_lgt = symbGetLen( ctx.sym )
-			case else
-				pad_lgt = symbCalcLen( ctx.dtype, ctx.subtype )
-			end select
-
+			if( symbIsRef( ctx.sym ) ) then
+				pad_lgt = env.pointersize
+			else
+				select case as const( typeGetDtAndPtrOnly( ctx.dtype ) )
+				case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+					'' Fixed-length strings
+					pad_lgt = symbGetLen( ctx.sym )
+				case else
+					pad_lgt = symbCalcLen( ctx.dtype, ctx.subtype )
+				end select
+			end if
 			pad_lgt *= elements
 
 			astTypeIniAddPad( ctx.tree, pad_lgt )
