@@ -230,6 +230,3 @@ namespace fbc_tests.boolean_.false_true
 	end sub
 	
 end namespace
-			
-
-

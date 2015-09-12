@@ -6,7 +6,7 @@
 #undef TRUE
 
 #define FALSE 0
-#define TRUE -1
+#define TRUE (-1)
 
 const FALSE_STRING = "false"
 const TRUE_STRING = "true"
