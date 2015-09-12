@@ -618,6 +618,13 @@ function symbAddVar _
 		s->scope = FB_MAINSCOPE
 	end if
 
+	'' Static member var using parent UDT as dtype? Length must be
+	'' recalculated later, when UDT was fully parsed...
+	if( (symbGetType( s ) = FB_DATATYPE_STRUCT) and _
+	    (s->subtype = symbGetCurrentNamespc( )) ) then
+		symbSetUdtHasRecByvalRes( subtype )
+	end if
+
 	function = s
 end function
 
