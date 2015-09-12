@@ -1342,7 +1342,8 @@ declare function symbCalcParamLen _
 		byval mode as FB_PARAMMODE _
 	) as longint
 
-declare function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as longint
+declare function symbProcCalcStdcallSuffixN( byval proc as FBSYMBOL ptr ) as longint
+declare function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 
 declare function symbAddScope _
 	( _

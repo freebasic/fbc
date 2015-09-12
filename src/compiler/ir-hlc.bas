@@ -54,7 +54,7 @@
 ''
 ''      gcc doesn't know that the "hidden" result parameter is special and thus
 ''      calculates it into the @N suffix. We need to use an asm() alias to avoid
-''      that. (see symbCalcProcParamsLen())
+''      that.
 ''
 ''    * StdcallMs (stdcall without @N) is not directly supported by gcc, only at
 ''      the linker level through ld --kill-at etc. We need it for individual
@@ -464,7 +464,7 @@ private function hGetMangledNameForASM _
 	if( (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and symbIsProc( sym ) ) then
 		if( symbGetProcMode( sym ) = FB_FUNCMODE_STDCALL ) then
 			mangled += "@"
-			mangled += str( symbCalcProcParamsLen( sym ) )
+			mangled += str( symbProcCalcStdcallSuffixN( sym ) )
 		end if
 	end if
 

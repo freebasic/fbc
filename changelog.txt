@@ -108,6 +108,7 @@ Version 1.04.0
 - GTK+ 2 binding: GtkCurve structure was translated incorrectly (i.e. wrong sizeof())
 - 1.02.0 regression: Windows API binding: The LPRGLPVOID typedef and related ones were omitted from win/dplay.bi due to a translation bug
 - Windows API binding: win/GdiPlus.bi now uses the Gdiplus namespace and #inclib on 64bit too.
+- The @N stdcall suffix was calculated incorrectly (i.e. it was incompatible with gcc and MSVC) for procedures with Byval non-trivial UDT or Byval String parameters.
 
 
 Version 1.03.0

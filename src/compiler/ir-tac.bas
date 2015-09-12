@@ -448,28 +448,9 @@ private sub _emitProcEnd _
 		byval exitlabel as FBSYMBOL ptr _
 	)
 
-	dim as integer bytestopop = any
-
 	_flush( )
 
-	'' Get the size for the callee's stack clean up (at end of procedure)
-	if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
-		bytestopop = 0
-	else
-		bytestopop = symbCalcProcParamsLen( proc )
-	end if
-
-	'' Additionally pop the hidden ptr (symbCalcProcParamsLen() doesn't
-	'' include it), if it's stdcall/pascal, or the target wants us to
-	'' always pop it, even under cdecl.
-	if( symbProcReturnsOnStack( proc ) ) then
-		if( (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) or _
-		    (env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) ) then
-			bytestopop += env.pointersize
-		end if
-	end if
-
-	emitProcFooter( proc, bytestopop, initlabel, exitlabel )
+	emitProcFooter( proc, symbProcCalcBytesToPop( proc ), initlabel, exitlabel )
 
 end sub
 
