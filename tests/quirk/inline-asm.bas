@@ -25,6 +25,14 @@ private sub test cdecl( )
 		#endif
 	end asm
 	CU_ASSERT( f1address = @quirk_inline_asm_f1 )
+
+	goto label2
+label1:
+	goto label3
+label2:
+	asm jmp label1
+label3:
+
 end sub
 
 private sub ctor( ) constructor

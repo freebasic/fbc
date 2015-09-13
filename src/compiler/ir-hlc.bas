@@ -3158,18 +3158,22 @@ end sub
 ''
 '' Some x86-specific examples:
 ''
+''    myLabel:
 ''    asm
 ''        mov eax, [myVar]
 ''        mov eax, offset myFunction
+''        jmp myLabel
 ''    end asm
 ''
 '' =>
 ''
+''    myLabel:
 ''    asm("mov eax, [%0]\n"
 ''        : "=m" (MYVAR$0)            // output contraints
 ''        : "m" (MYVAR$0)             // input contraints
 ''        : "cc", "memory", "eax", "ebx", "ecx", "edx", "esp", "edi", "esi");  // clobbered flags/memory/registers
 ''    asm("mov eax, offset myFunction\n" : : : /*clobber list*/);
+''    asm goto("jmp %l0" : /*no outputs allowed with goto*/ : : /*clobber list*/ : myLabel);
 ''
 ''  * references to variables are replaced by %N place-holders, and we add
 ''    memory constraints (both output/input because we don't know what the ASM
@@ -3209,16 +3213,34 @@ end sub
 ''           i.e. quoted and including constraints if needed.
 ''
 private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
-	dim as string ln
-	dim as integer operandcounter
-	dim as string outputconstraints, inputconstraints
+	'' 1st pass to count some stats (no emitting yet)
+	dim as integer uses_label, labelindex
+	var n = asmtokenhead
+	while( n )
+		if( n->type = AST_ASMTOK_SYMB ) then
+			select case( n->sym->class )
+			case FB_SYMBCLASS_LABEL
+				uses_label = TRUE
+			case FB_SYMBCLASS_VAR
+				'' With asm goto() the labels list starts behind the constraints,
+				'' hence the label indices must be adjusted.
+				'' We'll emit 1 input operand per variable (and no outputs).
+				labelindex += 1
+			end select
+		end if
+		n = n->next
+	wend
 
-	ln = "__asm__"
+	dim as string ln = "__asm__"
 
 	'' Only when inside normal procedures
 	'' (NAKED procedures don't increase the indentation)
 	if( sectionInsideProc( ) ) then
 		ln += " __volatile__"
+	end if
+
+	if( uses_label ) then
+		ln += " goto"
 	end if
 
 	ln += "( "
@@ -3230,7 +3252,10 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 		end if
 	end if
 
-	var n = asmtokenhead
+	'' 2nd pass - emitting
+	dim as integer operandcounter, labelcounter
+	dim as string outputconstraints, inputconstraints, labellist
+	n = asmtokenhead
 	while( n )
 
 		select case( n->type )
@@ -3239,28 +3264,49 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 
 		case AST_ASMTOK_SYMB
 			if( sectionInsideProc( ) ) then
-				var id = *symbGetMangledName( n->sym )
+				var id = symbGetMangledName( n->sym )
+				if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
+					select case( n->sym->class )
+					case FB_SYMBCLASS_VAR
+						'' Referencing a variable:
+						'' Insert %0 -%9 place holders and add output/input memory constraints
+						ln += "%" & operandcounter
+						operandcounter += 1
 
-				if( (env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL) andalso symbIsVar( n->sym ) ) then
-					'' If referencing a variable:
-					'' Insert %0 -%9 place holders and add output/input memory constraints
-					ln += "%" + str( operandcounter )
-					operandcounter += 1
+						'' output operand constraint: "=m" (symbol)
+						'' input operand constraint:   "m" (symbol)
+						'' Output constraints are not allowed for "asm goto"
+						if( uses_label = FALSE ) then
+							if( len( outputconstraints ) > 0 ) then
+								outputconstraints += ", "
+							end if
+							outputconstraints += """=m"" (" + *id + ")"
+						end if
+						if( len( inputconstraints ) > 0 ) then
+							inputconstraints  += ", "
+						end if
+						inputconstraints  +=  """m"" (" + *id + ")"
 
-					'' output operand constraint: "=m" (symbol)
-					'' input operand constraint:   "m" (symbol)
-					if( len( outputconstraints ) > 0 ) then
-						outputconstraints += ", "
-						inputconstraints  += ", "
-					end if
-					outputconstraints += """=m"" (" + id + ")"
-					inputconstraints  +=  """m"" (" + id + ")"
+					case FB_SYMBCLASS_LABEL
+						'' Referencing a label:
+						'' Insert %lN place-holder, where N = number of inputs + zero-based position
+						'' of the label in the labels list that was specified in the "asm goto" syntax.
+						ln += "%l" & labelindex
+						labelindex += 1
+
+						if( len( labellist ) > 0 ) then
+							labellist += ", "
+						end if
+						labellist += *id
+
+					case else
+						'' Referencing a procedure: emit as-is, no gcc constraints needed
+						ln += *id
+					end select
 				else
-					'' -asm intel: References to procedures/labels though need to be
-					''             emitted as-is, no gcc constraints needed.
-					'' -asm att: Expecting FB inline asm to be in gcc's format
-					''           already, emit everything as-is.
-					ln += id
+					'' -asm att: Expecting FB inline asm to be in gcc's format already,
+					'' emit everything as-is.
+					ln += *id
 				end if
 			else
 				'' In NAKED procedure
@@ -3292,6 +3338,10 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 			if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
 				ln += ", ""mm0"", ""mm1"", ""mm2"", ""mm3"", ""mm4"", ""mm5"", ""mm6"", ""mm7"""
 				ln += ", ""xmm0"", ""xmm1"", ""xmm2"", ""xmm3"", ""xmm4"", ""xmm5"", ""xmm6"", ""xmm7"""
+			end if
+
+			if( uses_label ) then
+				ln += " : " + labellist
 			end if
 		end if
 	end if

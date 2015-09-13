@@ -112,6 +112,7 @@ Version 1.04.0
 - The @N stdcall suffix was calculated incorrectly (i.e. it was incompatible with gcc and MSVC) for procedures with Byval non-trivial UDT or Byval String parameters.
 - Static member variables using the parent UDT as their data type could be allocated incorrectly (not enough memory reserved, possible even zero memory), if they were declared above some or all fields (related to bug #649)
 - C backend: References to procedures and labels are now emitted as-is, instead of using gcc's inline asm place-holders with memory reference constraints (the latter only makes sense for variables, not functions/labels)
+- C backend: Inline ASM using labels (i.e. jumps) should now work, using gcc's "asm goto()" syntax
 
 
 Version 1.03.0
