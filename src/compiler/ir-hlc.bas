@@ -3169,16 +3169,17 @@ end sub
 ''
 ''    myLabel:
 ''    asm("mov eax, [%0]\n"
-''        : "=m" (MYVAR$0)            // output contraints
-''        : "m" (MYVAR$0)             // input contraints
+''        : "+m" (MYVAR$0)            // output contraints
+''        :                           // input contraints
 ''        : "cc", "memory", "eax", "ebx", "ecx", "edx", "esp", "edi", "esi");  // clobbered flags/memory/registers
 ''    asm("mov eax, offset myFunction\n" : : : /*clobber list*/);
 ''    asm goto("jmp %l0" : /*no outputs allowed with goto*/ : : /*clobber list*/ : myLabel);
 ''
 ''  * references to variables are replaced by %N place-holders, and we add
-''    memory constraints (both output/input because we don't know what the ASM
-''    code does). This lets gcc replace the variable references by the proper
-''    stack offset expression (i.e. esp+N or ebp-N).
+''    memory constraints (both output/input, using "+m", because we don't know
+''    what the ASM code does).
+''    This lets gcc replace the variable references by the proper stack offset
+''    expression (i.e. esp+N or ebp-N).
 ''
 ''    Actually gcc inserts something like <DWORD PTR [ebp-N]>, not just <ebp-N>,
 ''    corresponding to the referenced variable's data type. Thus, FB inline ASM
@@ -3220,10 +3221,11 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 		if( n->type = AST_ASMTOK_SYMB ) then
 			select case( n->sym->class )
 			case FB_SYMBCLASS_LABEL
+				'' Determine whether to use <asm()> or <asm goto()>
 				uses_label = TRUE
 			case FB_SYMBCLASS_VAR
-				'' With asm goto() the labels list starts behind the constraints,
-				'' hence the label indices must be adjusted.
+				'' Find first valid index into the label list;
+				'' it starts behind the constraints.
 				'' We'll emit 1 input operand per variable (and no outputs).
 				labelindex += 1
 			end select
@@ -3253,7 +3255,7 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 	end if
 
 	'' 2nd pass - emitting
-	dim as integer operandcounter, labelcounter
+	dim as integer operandindex
 	dim as string outputconstraints, inputconstraints, labellist
 	n = asmtokenhead
 	while( n )
@@ -3268,29 +3270,34 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 				if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
 					select case( n->sym->class )
 					case FB_SYMBCLASS_VAR
-						'' Referencing a variable:
-						'' Insert %0 -%9 place holders and add output/input memory constraints
-						ln += "%" & operandcounter
-						operandcounter += 1
+						'' Referencing a variable: insert %N place-holder...
+						'' (N refers to N'th operand written in the whole
+						'' asm [goto]([outputs...] inputs... [labels...]) statement)
+						ln += "%" & operandindex
+						operandindex += 1
 
-						'' output operand constraint: "=m" (symbol)
-						'' input operand constraint:   "m" (symbol)
-						'' Output constraints are not allowed for "asm goto"
-						if( uses_label = FALSE ) then
+						'' ... and add the symbol to a constraint list
+						if( uses_label ) then
+							'' read-only input operand constraint: "m" (symbol)
+							'' "asm goto" doesn't allow output constraints, so we can only use
+							'' input constraints. Hopefully there are no jump instructions that
+							'' modify their memory operand...
+							if( len( inputconstraints ) > 0 ) then
+								inputconstraints  += ", "
+							end if
+							inputconstraints  +=  """m"" (" + *id + ")"
+						else
+							'' read+write output operand constraint: "+m" (symbol)
 							if( len( outputconstraints ) > 0 ) then
 								outputconstraints += ", "
 							end if
-							outputconstraints += """=m"" (" + *id + ")"
+							outputconstraints += """+m"" (" + *id + ")"
 						end if
-						if( len( inputconstraints ) > 0 ) then
-							inputconstraints  += ", "
-						end if
-						inputconstraints  +=  """m"" (" + *id + ")"
 
 					case FB_SYMBCLASS_LABEL
-						'' Referencing a label:
-						'' Insert %lN place-holder, where N = number of inputs + zero-based position
-						'' of the label in the labels list that was specified in the "asm goto" syntax.
+						'' Referencing a label: insert %lN place-holder
+						'' (N refers to N'th operand written in whole
+						'' asm goto(outputs... inputs... labels...) statement)
 						ln += "%l" & labelindex
 						labelindex += 1
 
