@@ -180,8 +180,13 @@ function astLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 end function
 
-function astConstFlushToInt( byval n as ASTNODE ptr ) as longint
-	n = astNewCONV( FB_DATATYPE_INTEGER, NULL, n )
+function astConstFlushToInt _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer _
+	) as longint
+
+	n = astNewCONV( dtype, NULL, n )
 
 	assert( astIsCONST( n ) )
 	function = n->val.i

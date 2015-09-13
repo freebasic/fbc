@@ -623,7 +623,12 @@ declare function astNewCONSTz _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
-declare function astConstFlushToInt( byval n as ASTNODE ptr ) as longint
+declare function astConstFlushToInt _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer = FB_DATATYPE_INTEGER _
+	) as longint
+
 declare function astConstFlushToStr( byval n as ASTNODE ptr ) as string
 declare function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
 declare function astConstGetAsInt64( byval n as ASTNODE ptr ) as longint
