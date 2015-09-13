@@ -583,6 +583,8 @@ type FB_LANG_CTX
 	int16literaldtype		as FB_DATATYPE  '' etc.
 	int31literaldtype		as FB_DATATYPE
 	int32literaldtype		as FB_DATATYPE
+	int63literaldtype		as FB_DATATYPE
+	int64literaldtype		as FB_DATATYPE
 	floatliteraldtype		as FB_DATATYPE  '' default dtype for float number literals
 end type
 

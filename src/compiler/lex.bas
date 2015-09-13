@@ -1089,17 +1089,14 @@ read_char:
 	*pnum = 0
 
 	select case( dtype )
-	case FB_DATATYPE_SHORT
-		dtype = env.lang.int15literaldtype
-	case FB_DATATYPE_USHORT
-		dtype = env.lang.int16literaldtype
-	case FB_DATATYPE_LONG
-		dtype = env.lang.int31literaldtype
-	case FB_DATATYPE_ULONG
-		dtype = env.lang.int32literaldtype
+	case FB_DATATYPE_SHORT    : dtype = env.lang.int15literaldtype
+	case FB_DATATYPE_USHORT   : dtype = env.lang.int16literaldtype
+	case FB_DATATYPE_LONG     : dtype = env.lang.int31literaldtype
+	case FB_DATATYPE_ULONG    : dtype = env.lang.int32literaldtype
+	case FB_DATATYPE_LONGINT  : dtype = env.lang.int63literaldtype
+	case FB_DATATYPE_ULONGINT : dtype = env.lang.int64literaldtype
 #if __FB_DEBUG__
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT, _
-	     FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 	case else
 		assert( FALSE )
 #endif
