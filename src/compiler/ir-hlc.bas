@@ -3341,11 +3341,38 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 			'' We don't know what registers etc. will be trashed,
 			'' so assume everything...
 			ln += " : ""cc"", ""memory"""
-			ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""esp"", ""edi"", ""esi"""
-			if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
-				ln += ", ""mm0"", ""mm1"", ""mm2"", ""mm3"", ""mm4"", ""mm5"", ""mm6"", ""mm7"""
-				ln += ", ""xmm0"", ""xmm1"", ""xmm2"", ""xmm3"", ""xmm4"", ""xmm5"", ""xmm6"", ""xmm7"""
-			end if
+
+			select case( fbGetCpuFamily( ) )
+			case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
+				if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
+					ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""esp"", ""edi"", ""esi"""
+				else
+					ln += ", ""rax"", ""rbx"", ""rcx"", ""rdx"", ""rsp"", ""rdi"", ""rsi"""
+					ln += ", ""r8"", ""r9"", ""r10"", ""r11"", ""r12"", ""r13"", ""r14"", ""r15"""
+				end if
+
+				'' gcc seems to only accept the mm* registers if SSE was enabled via gcc command line options
+				if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
+					ln += ", ""mm0"", ""mm1"", ""mm2"", ""mm3"", ""mm4"", ""mm5"", ""mm6"", ""mm7"""
+					ln += ", ""xmm0"", ""xmm1"", ""xmm2"", ""xmm3"", ""xmm4"", ""xmm5"", ""xmm6"", ""xmm7"""
+					if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86_64 ) then
+						ln += ", ""xmm8"", ""xmm9"", ""xmm10"", ""xmm11"", ""xmm12"", ""xmm13"", ""xmm14"", ""xmm15"""
+					end if
+				end if
+
+			case FB_CPUFAMILY_ARM, FB_CPUFAMILY_AARCH64
+				'' TODO
+				ln += ", ""r0"", ""r1"", ""r2"", ""r3"", ""r4"", ""r5"", ""r6"""
+				'''ln += ", ""r7""" '' not always accepted by gcc
+				ln += ", ""r8"", ""r9"", ""r10"", ""r11"", ""r12"", ""r13"", ""r14"", ""r15"""
+
+				if( fbGetCpuFamily( ) = FB_CPUFAMILY_AARCH64 ) then
+					ln += ", ""r16"", ""r17"", ""r18"", ""r19"""
+					ln += ", ""r20"", ""r21"", ""r22"", ""r23"", ""r24"", ""r25"", ""r26"", ""r27"", ""r28"""
+					''ln += ", ""r29""" '' not always accepted by gcc
+					ln += ", ""r30"""
+				end if
+			end select
 
 			if( uses_label ) then
 				ln += " : " + labellist
