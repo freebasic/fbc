@@ -17,8 +17,6 @@ type IRTAC_CTX
 	tacidx			as IRTAC ptr
 
 	vregTB			as TFLIST
-
-	asm_line		as string
 end type
 
 declare sub hFlushUOP _
@@ -692,25 +690,30 @@ private sub _emitComment( byval text as zstring ptr )
 	_emit( AST_OP_LIT_COMMENT, NULL, NULL, NULL, cast( any ptr, ZstrDup( text ) ) )
 end sub
 
-private sub _emitAsmBegin( )
-	ctx.asm_line = ""
-end sub
+private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
+	dim ln as string
 
-private sub _emitAsmText( byval text as zstring ptr )
-	ctx.asm_line += *text
-end sub
+	var n = asmtokenhead
+	while( n )
 
-private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
-	ctx.asm_line += *symbGetMangledName( sym )
-	if( symbGetOfs( sym ) > 0 ) then
-		ctx.asm_line += "+" + str( symbGetOfs( sym ) )
-	elseif( symbGetOfs( sym ) < 0 ) then
-		ctx.asm_line += str( symbGetOfs( sym ) )
-	end if
-end sub
+		select case( n->type )
+		case AST_ASMTOK_TEXT
+			ln += *n->text
+		case AST_ASMTOK_SYMB
+			ln += *symbGetMangledName( n->sym )
+			var ofs = symbGetOfs( n->sym )
+			if( ofs <> 0 ) then
+				if( ofs > 0 ) then
+					ln += "+"
+				end if
+				ln += str( ofs )
+			end if
+		end select
 
-private sub _emitAsmEnd( )
-	_emit( AST_OP_LIT_ASM, NULL, NULL, NULL, cast( any ptr, ZstrDup( strptr( ctx.asm_line ) ) ) )
+		n = n->next
+	wend
+
+	_emit( AST_OP_LIT_ASM, NULL, NULL, NULL, cast( any ptr, ZstrDup( strptr( ln ) ) ) )
 end sub
 
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
@@ -2657,10 +2660,7 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitProcBegin, _
 	@_emitProcEnd, _
 	@_emitPushArg, _
-	@_emitAsmBegin, _
-	@_emitAsmText, _
-	@_emitAsmSymb, _
-	@_emitAsmEnd, _
+	@_emitAsmLine, _
 	@_emitComment, _
 	@_emitBop, _
 	@_emitUop, _

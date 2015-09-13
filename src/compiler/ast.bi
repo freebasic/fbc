@@ -3,6 +3,7 @@
 
 #include once "list.bi"
 #include once "ast-op.bi"
+#include once "ir.bi"
 
 const AST_INITNODES				= 8192
 const AST_INITPROCNODES			= 128
@@ -143,20 +144,6 @@ end type
 
 type AST_NODE_LIT
 	text			as zstring ptr
-end type
-
-enum AST_ASMTOKTYPE
-	AST_ASMTOK_TEXT
-	AST_ASMTOK_SYMB
-end enum
-
-type ASTASMTOK
-	type		as AST_ASMTOKTYPE
-	union
-		sym	as FBSYMBOL ptr
-		text	as zstring ptr
-	end union
-	next		as ASTASMTOK ptr
 end type
 
 type AST_NODE_ASM
@@ -395,9 +382,7 @@ type ASTCTX
 	''   0 => show warnings
 	'' > 0 => hide warnings
 	hidewarningslevel	as integer
-end Type
-
-#include once "ir.bi"
+end type
 
 enum AST_OPFLAGS
 	AST_OPFLAGS_NONE		= &h00000000

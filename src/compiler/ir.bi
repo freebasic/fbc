@@ -1,6 +1,8 @@
 #ifndef __IR_BI__
 #define __IR_BI__
 
+#include once "ast-op.bi"
+
 const IR_INITADDRNODES		= 2048
 const IR_INITVREGNODES		= IR_INITADDRNODES*3
 
@@ -89,6 +91,20 @@ type IRVREG
 	tacvhead	as IRTACVREG ptr				'' back-link to tac table
 	tacvtail	as IRTACVREG ptr				'' /
 	taclast		as IRTAC ptr					'' /
+end type
+
+enum AST_ASMTOKTYPE
+	AST_ASMTOK_TEXT
+	AST_ASMTOK_SYMB
+end enum
+
+type ASTASMTOK
+	type		as AST_ASMTOKTYPE
+	union
+		sym	as FBSYMBOL ptr
+		text	as zstring ptr
+	end union
+	next		as ASTASMTOK ptr
 end type
 
 '' if changed, update the _vtbl symbols at ir-*.bas::*_ctor
@@ -189,10 +205,7 @@ type IR_VTBL
 		byval level as integer _
 	)
 
-	emitAsmBegin as sub( )
-	emitAsmText as sub( byval text as zstring ptr )
-	emitAsmSymb as sub( byval sym as FBSYMBOL ptr )
-	emitAsmEnd as sub( )
+	emitAsmLine as sub( byval asmtokenhead as ASTASMTOK ptr )
 
 	emitComment as sub _
 	( _
@@ -533,10 +546,7 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irEmitPUSHARG( param, vr, plen, level ) ir.vtbl.emitPushArg( param, vr, plen, level )
 
-#define irEmitAsmBegin( )     ir.vtbl.emitAsmBegin( )
-#define irEmitAsmText( text ) ir.vtbl.emitAsmText( text )
-#define irEmitAsmSymb( sym )  ir.vtbl.emitAsmSymb( sym )
-#define irEmitAsmEnd( )       ir.vtbl.emitAsmEnd( )
+#define irEmitAsmLine( asmtokenhead ) ir.vtbl.emitAsmLine( asmtokenhead )
 
 #define irEmitCOMMENT(text) ir.vtbl.emitComment( text )
 

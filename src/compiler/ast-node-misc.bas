@@ -128,35 +128,22 @@ function astNewASM( byval asmtokhead as ASTASMTOK ptr ) as ASTNODE ptr
 end function
 
 function astLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
-	dim as ASTASMTOK ptr node = any, nxt = any
-
 	if( ast.doemit ) then
-		irEmitAsmBegin( )
+		irEmitAsmLine( n->asm.tokhead )
 	end if
 
-	node = n->asm.tokhead
+	var node = n->asm.tokhead
 	while( node )
-		nxt = node->next
+		var nxt = node->next
 
 		select case( node->type )
 		case AST_ASMTOK_TEXT
-			if( ast.doemit ) then
-				irEmitAsmText( node->text )
-			end if
 			ZstrFree( node->text )
-		case AST_ASMTOK_SYMB
-			if( ast.doemit ) then
-				irEmitAsmSymb( node->sym )
-			end if
 		end select
 
 		listDelNode( @ast.asmtoklist, node )
 		node = nxt
 	wend
-
-	if( ast.doemit ) then
-		irEmitAsmEnd( )
-	end if
 
 	function = NULL
 end function

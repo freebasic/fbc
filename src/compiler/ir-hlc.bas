@@ -189,11 +189,6 @@ type IRHLCCTX
 	fbctinf				as string
 	exports				as string
 
-	asm_line			as string  '' line of inline asm built up by _emitAsm*()
-	asm_i				as integer '' next operand/symbol index
-	asm_output			as string  '' output constraints in gcc's syntax
-	asm_input			as string  '' input constraints in gcc's syntax
-
 	exprnodes			as TLIST   '' EXPRNODE
 	exprtext			as string  '' buffer used by exprFlush() to build the final text
 	exprcache			as TLIST   '' EXPRCACHENODE
@@ -3157,102 +3152,153 @@ private sub _emitComment( byval text as zstring ptr )
 	end if
 end sub
 
-private sub _emitAsmBegin( )
-	'' -asm intel: FB asm blocks are expected to be in Intel format as
-	''             usual; we have to convert them to the GCC format here.
-	'' -asm att: FB asm blocks are expected to be in the GCC format,
-	''           i.e. quoted and including constraints if needed.
-	ctx.asm_line = "__asm__"
+''
+'' -asm intel: FB asm blocks are expected to be in Intel format as usual;
+''             we have to convert them to the GCC format here.
+''
+'' Some x86-specific examples:
+''
+''    asm
+''        mov eax, [myVar]
+''        mov eax, offset myFunction
+''    end asm
+''
+'' =>
+''
+''    asm("mov eax, [%0]\n"
+''        : "=m" (MYVAR$0)            // output contraints
+''        : "m" (MYVAR$0)             // input contraints
+''        : "cc", "memory", "eax", "ebx", "ecx", "edx", "esp", "edi", "esi");  // clobbered flags/memory/registers
+''    asm("mov eax, offset myFunction\n" : : : /*clobber list*/);
+''
+''  * references to variables are replaced by %N place-holders, and we add
+''    memory constraints (both output/input because we don't know what the ASM
+''    code does). This lets gcc replace the variable references by the proper
+''    stack offset expression (i.e. esp+N or ebp-N).
+''
+''    Actually gcc inserts something like <DWORD PTR [ebp-N]>, not just <ebp-N>,
+''    corresponding to the referenced variable's data type. Thus, FB inline ASM
+''    like this:
+''        dword ptr [a]
+''    is effectively turned into
+''        dword ptr [dword ptr [a]]
+''
+''    But it's ok, because the GNU assembler apparently uses the outer-most
+''    size specifier only, which means the user's size specifier overrides the
+''    one inserted by gcc.
+''        dim x as long
+''        asm
+''            div dword ptr [dword ptr [x]]
+''            div byte ptr [dword ptr [x]]
+''        end asm
+''    compiled into an .o with -gen gas, and then disassembled with objdump -M intel -d:
+''        div DWORD PTR [ebp-0x4]
+''        div BYTE PTR [ebp-0x4]
+''
+''  * Functions can be emitted as-is (using the external/mangled name),
+''    the assembler will recognize them already.
+''
+''  * references to labels are replaced by %lN place-holders, and the special
+''    "asm goto" syntax must be used.
+''
+''  * gcc's optimizations require us to specify what flags/memory/registers are
+''    overwritten/changed by the ASM code. Since we don't know what the ASM code
+''    does, we add all flags/memory/registers to the clobbered list...
+''
+'' -asm att: FB asm blocks are expected to be in the GCC format already,
+''           i.e. quoted and including constraints if needed.
+''
+private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
+	dim as string ln
+	dim as integer operandcounter
+	dim as string outputconstraints, inputconstraints
+
+	ln = "__asm__"
 
 	'' Only when inside normal procedures
 	'' (NAKED procedures don't increase the indentation)
 	if( sectionInsideProc( ) ) then
-		ctx.asm_line += " __volatile__"
+		ln += " __volatile__"
 	end if
 
-	ctx.asm_line += "( "
+	ln += "( "
 
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
-		ctx.asm_line += """"
+		ln += """"
 		if( sectionInsideProc( ) ) then
-			ctx.asm_line += $"\t"
+			ln += $"\t"
 		end if
-		ctx.asm_i = 0
-		ctx.asm_output = ""
-		ctx.asm_input = ""
-	end if
-end sub
-
-private sub _emitAsmText( byval text as zstring ptr )
-	ctx.asm_line += *text
-end sub
-
-private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
-	dim as string id
-
-	'' In NAKED procedure?
-	if( sectionInsideProc( ) = FALSE ) then
-		ctx.asm_line += hGetMangledNameForASM( sym, TRUE )
-		exit sub
 	end if
 
-	id = *symbGetMangledName( sym )
+	var n = asmtokenhead
+	while( n )
 
-	if( (env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL) andalso symbIsVar( sym ) ) then
-		'' If referencing a variable:
-		'' Insert %0 -%9 place holders, gcc will fill in the proper
-		'' DWORD PTR [ebp+N] for them based on input/output operands.
-		'  - unfortunately we don't know whether this symbol is used
-		''   as input, output or both, so we enlist as operand for both,
-		''   and use the %i for the output operand.
-		ctx.asm_line += "%" + str( ctx.asm_i )
-		ctx.asm_i += 1
+		select case( n->type )
+		case AST_ASMTOK_TEXT
+			ln += *n->text
 
-		'' output operand constraint: "=m" (symbol)
-		'' input operand constraint:   "m" (symbol)
-		if( len( ctx.asm_output ) > 0 ) then
-			ctx.asm_output += ", "
-			ctx.asm_input  += ", "
-		end if
-		ctx.asm_output += """=m"" (" + id + ")"
-		ctx.asm_input  +=  """m"" (" + id + ")"
-	else
-		'' -asm intel: References to procedures/labels though need to be
-		''             emitted as-is, no gcc constraints needed.
-		'' -asm att: Expecting FB inline asm to be in gcc's format
-		''           already, emit everything as-is.
-		ctx.asm_line += id
-	end if
-end sub
+		case AST_ASMTOK_SYMB
+			if( sectionInsideProc( ) ) then
+				var id = *symbGetMangledName( n->sym )
 
-private sub _emitAsmEnd( )
+				if( (env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL) andalso symbIsVar( n->sym ) ) then
+					'' If referencing a variable:
+					'' Insert %0 -%9 place holders and add output/input memory constraints
+					ln += "%" + str( operandcounter )
+					operandcounter += 1
+
+					'' output operand constraint: "=m" (symbol)
+					'' input operand constraint:   "m" (symbol)
+					if( len( outputconstraints ) > 0 ) then
+						outputconstraints += ", "
+						inputconstraints  += ", "
+					end if
+					outputconstraints += """=m"" (" + id + ")"
+					inputconstraints  +=  """m"" (" + id + ")"
+				else
+					'' -asm intel: References to procedures/labels though need to be
+					''             emitted as-is, no gcc constraints needed.
+					'' -asm att: Expecting FB inline asm to be in gcc's format
+					''           already, emit everything as-is.
+					ln += id
+				end if
+			else
+				'' In NAKED procedure
+				ln += hGetMangledNameForASM( n->sym, TRUE )
+			end if
+
+		end select
+
+		n = n->next
+	wend
+
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
 		if( sectionInsideProc( ) ) then
-			ctx.asm_line += $"\n"
+			ln += $"\n"
 		end if
 
-		ctx.asm_line += """"
+		ln += """"
 
 		'' Only when inside normal procedures
 		'' (NAKED procedures don't increase the indentation)
 		if( sectionInsideProc( ) ) then
-			ctx.asm_line += " : " + ctx.asm_output
-			ctx.asm_line += " : " + ctx.asm_input
+			ln += " : " + outputconstraints
+			ln += " : " + inputconstraints
 
 			'' We don't know what registers etc. will be trashed,
 			'' so assume everything...
-			ctx.asm_line += " : ""cc"", ""memory"""
-			ctx.asm_line += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""esp"", ""edi"", ""esi"""
+			ln += " : ""cc"", ""memory"""
+			ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""esp"", ""edi"", ""esi"""
 			if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
-				ctx.asm_line += ", ""mm0"", ""mm1"", ""mm2"", ""mm3"", ""mm4"", ""mm5"", ""mm6"", ""mm7"""
-				ctx.asm_line += ", ""xmm0"", ""xmm1"", ""xmm2"", ""xmm3"", ""xmm4"", ""xmm5"", ""xmm6"", ""xmm7"""
+				ln += ", ""mm0"", ""mm1"", ""mm2"", ""mm3"", ""mm4"", ""mm5"", ""mm6"", ""mm7"""
+				ln += ", ""xmm0"", ""xmm1"", ""xmm2"", ""xmm3"", ""xmm4"", ""xmm5"", ""xmm6"", ""xmm7"""
 			end if
 		end if
 	end if
 
-	ctx.asm_line += " );"
+	ln += " );"
 
-	hWriteLine( ctx.asm_line )
+	hWriteLine( ln )
 end sub
 
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
@@ -3559,10 +3605,7 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitProcBegin, _
 	@_emitProcEnd, _
 	@irhlEmitPushArg, _
-	@_emitAsmBegin, _
-	@_emitAsmText, _
-	@_emitAsmSymb, _
-	@_emitAsmEnd, _
+	@_emitAsmLine, _
 	@_emitComment, _
 	@_emitBop, _
 	@_emitUop, _

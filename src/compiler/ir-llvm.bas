@@ -169,8 +169,6 @@ type IRLLVMCONTEXT
 	fbctinf				as string
 	fbctinf_len			as integer
 
-	asm_line			as string  '' line of inline asm built up by _emitAsm*()
-
 	section				as integer  '' current section to write to
 	head_txt			as string
 	body_txt			as string
@@ -2091,25 +2089,30 @@ private sub _emitComment( byval text as zstring ptr )
 	hWriteLine( "; " + *text )
 end sub
 
-private sub _emitAsmBegin( )
-	ctx.asm_line = ""
-end sub
+private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
+	dim ln as string
 
-private sub _emitAsmText( byval text as zstring ptr )
-	ctx.asm_line += *text
-end sub
+	var n = asmtokenhead
+	while( n )
 
-private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
-	ctx.asm_line += *symbGetMangledName( sym )
-	if( symbGetOfs( sym ) > 0 ) then
-		ctx.asm_line += "+" + str( symbGetOfs( sym ) )
-	elseif( symbGetOfs( sym ) < 0 ) then
-		ctx.asm_line += str( symbGetOfs( sym ) )
-	end if
-end sub
+		select case( n->type )
+		case AST_ASMTOK_TEXT
+			ln += *n->text
+		case AST_ASMTOK_SYMB
+			ln += *symbGetMangledName( n->sym )
+			var ofs = symbGetOfs( n->sym )
+			if( ofs <> 0 ) then
+				if( ofs > 0 ) then
+					ln += "+"
+				end if
+				ln += str( ofs )
+			end if
+		end select
 
-private sub _emitAsmEnd( )
-	hWriteLine( ctx.asm_line )
+		n = n->next
+	wend
+
+	hWriteLine( ln )
 end sub
 
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
@@ -2427,10 +2430,7 @@ static as IR_VTBL irllvm_vtbl = _
 	@_emitProcBegin, _
 	@_emitProcEnd, _
 	@irhlEmitPushArg, _
-	@_emitAsmBegin, _
-	@_emitAsmText, _
-	@_emitAsmSymb, _
-	@_emitAsmEnd, _
+	@_emitAsmLine, _
 	@_emitComment, _
 	@_emitBop, _
 	@_emitUop, _
