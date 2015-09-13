@@ -3198,7 +3198,8 @@ private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
 
 	id = *symbGetMangledName( sym )
 
-	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
+	if( (env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL) andalso symbIsVar( sym ) ) then
+		'' If referencing a variable:
 		'' Insert %0 -%9 place holders, gcc will fill in the proper
 		'' DWORD PTR [ebp+N] for them based on input/output operands.
 		'  - unfortunately we don't know whether this symbol is used
@@ -3216,6 +3217,10 @@ private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
 		ctx.asm_output += """=m"" (" + id + ")"
 		ctx.asm_input  +=  """m"" (" + id + ")"
 	else
+		'' -asm intel: References to procedures/labels though need to be
+		''             emitted as-is, no gcc constraints needed.
+		'' -asm att: Expecting FB inline asm to be in gcc's format
+		''           already, emit everything as-is.
 		ctx.asm_line += id
 	end if
 end sub
