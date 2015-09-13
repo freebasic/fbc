@@ -135,10 +135,7 @@ private function hSelConstAddCase _
 		byval swtbase as integer, _
 		byval value as ulongint, _
 		byval label as FBSYMBOL ptr _
-	) as integer static
-
-	dim as integer probe, high, low, i
-	dim as ulongint v
+	) as integer
 
 	'' nothing left?
 	if( ctx.base >= FB_MAXSWTCASEEXPR ) then
@@ -146,23 +143,23 @@ private function hSelConstAddCase _
 	end if
 
 	'' find the slot using bin-search
-	high = ctx.base - swtbase
-	low  = -1
+	var high = ctx.base - swtbase
+	var low  = -1
 
 	do while( high - low > 1 )
-		probe = cunsg(high + low) \ 2
-		v = ctx.casevalues(swtbase+probe)
+		dim as integer probe = cunsg(high + low) \ 2
+		var v = ctx.casevalues(swtbase+probe)
 		if( v < value ) then
 			low = probe
 		elseif( v > value ) then
 			high = probe
 		else
-			exit function
+			return FALSE
 		end if
 	loop
 
 	'' move up
-	for i = ctx.base+1 to swtbase+high+1 step -1
+	for i as integer = ctx.base+1 to swtbase+high+1 step -1
 		ctx.casevalues(i) = ctx.casevalues(i-1)
 		ctx.caselabels(i) = ctx.caselabels(i-1)
 	next
@@ -177,10 +174,6 @@ end function
 
 '' cSelConstStmtNext  =  CASE (ELSE | (ConstExpression{int} (',' ConstExpression{int})*)) .
 sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
-	dim as ulongint value, tovalue, maxval, minval
-	dim as FBSYMBOL ptr label
-	dim as integer swtbase
-
 	'' CASE
 	lexSkipToken( )
 
@@ -210,49 +203,30 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 	end if
 
 	'' ConstExpression{int} ((',' | TO) ConstExpression{int})*
-	swtbase = stk->select.const_.base
+	var swtbase = stk->select.const_.base
 
 	'' add label
-	label = symbAddLabel( NULL, FB_SYMBOPT_NONE )
+	var label = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	do
 		'' ConstExpression{int}
-		value = cConstIntExpr( cExpression( ) )
+		dim as ulongint value = cConstIntExpr( cExpression( ) )
 
-		minval = stk->select.const_.minval
-		maxval = stk->select.const_.maxval
+		var minval = stk->select.const_.minval
+		var maxval = stk->select.const_.maxval
 
 		'' TO?
+		dim as ulongint tovalue
 		if( lexGetToken( ) = FB_TK_TO ) then
 			lexSkipToken( )
 
+			'' ConstExpression{int}
 			tovalue = cConstIntExpr( cExpression( ) )
-
-			for value = value to tovalue
-				if( value < minval ) then
-					minval = value
-				end if
-				if( value > maxval ) then
-					maxval = value
-				end if
-
-				'' too big?
-				if( (minval > maxval) or _
-					(maxval - minval > FB_MAXSWTCASERANGE) or _
-					(minval * typeGetSize( FB_DATATYPE_INTEGER ) > 4294967292ULL) ) then
-
-					errReport( FB_ERRMSG_RANGETOOLARGE )
-					'' error recovery: reset values
-					minval = stk->select.const_.minval
-					maxval = stk->select.const_.maxval
-				else
-					'' add item
-					if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
-						errReport( FB_ERRMSG_DUPDEFINITION )
-					end if
-				end if
-			next
 		else
+			tovalue = value
+		end if
+
+		for value = value to tovalue
 			if( value < minval ) then
 				minval = value
 			end if
@@ -270,12 +244,11 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 				minval = stk->select.const_.minval
 				maxval = stk->select.const_.maxval
 			else
-				'' add item
 				if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
 					errReport( FB_ERRMSG_DUPDEFINITION )
 				end if
 			end if
-		end if
+		next
 
 		stk->select.const_.minval = minval
 		stk->select.const_.maxval = maxval
