@@ -206,14 +206,15 @@ dim shared as IRLLVMCONTEXT ctx
 dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 { _
 	@"i8"       , _ '' void
+	@"i8"       , _ '' boolean
 	@"i8"       , _ '' byte
 	@"i8"       , _ '' ubyte
 	@"i8"       , _ '' char
 	@"i16"      , _ '' short
 	@"i16"      , _ '' ushort
 	NULL        , _ '' wchar
-	NULL        , _ '' int
-	NULL        , _ '' uint
+	NULL        , _ '' integer
+	NULL        , _ '' uinteger
 	NULL        , _ '' enum
 	@"i32"      , _ '' long
 	@"i32"      , _ '' ulong
@@ -226,7 +227,7 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 	NULL        , _ '' struct
 	NULL        , _ '' namespace
 	NULL        , _ '' function
-	@"i8"       , _ '' fwd-ref
+	@"i8"       , _ '' fwdref (needed for any un-resolved fwdrefs)
 	NULL          _ '' pointer
 }
 
