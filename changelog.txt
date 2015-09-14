@@ -116,6 +116,7 @@ Version 1.04.0
 - C backend: Inline ASM using labels (i.e. jumps) should now work, using gcc's "asm goto()" syntax
 - C backend: The register clobber lists produced for inline ASM are now adjusted to the target - now x86_64 and ARM is supported (though ARM/AArch64 support is probably incomplete), no longer x86 only.
 - GET# didn't work with wstrings
+- Integer-only operations like AND, OR, \ and MOD converted non-integer operands to Integer, even if the other was a LongInt or UInteger. Now the conversion will use an integer type matching the integer operand (if any), to avoid truncating floating point values, and give more expected results.
 
 
 Version 1.03.0

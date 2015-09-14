@@ -676,6 +676,19 @@ private sub hConvOperand _
 
 end sub
 
+'' Return FB_DATATYPE_INTEGER, or the given dtype if it's a bigger integer-class dtype
+private function hGetIntegerOrBigger( byval dtype as integer ) as integer
+	select case( dtype )
+	case FB_DATATYPE_UINT, FB_DATATYPE_ULONGINT  '' these are always > integer
+		return dtype
+	case FB_DATATYPE_LONGINT '' this is only > integer on 32bit
+		if( fbIs64bit( ) = FALSE ) then
+			return dtype
+		end if
+	end select
+	return FB_DATATYPE_INTEGER
+end function
+
 '':::::
 function astNewBOP _
 	( _
@@ -1132,12 +1145,19 @@ function astNewBOP _
 	case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
 		 AST_OP_INTDIV, AST_OP_MOD, AST_OP_SHL, AST_OP_SHR
 
+		'' Examples:
+		''     double xor double =>  integer xor integer
+		''    integer xor double =>  integer xor integer
+		''    longint xor double =>  longint xor longint
+		''   ulongint xor double => ulongint xor longint
+		'' etc.
+
 		if( ldclass <> FB_DATACLASS_INTEGER ) then
-			hConvOperand( FB_DATATYPE_INTEGER, ldtype, ldclass, l )
+			hConvOperand( hGetIntegerOrBigger( rdtype ), ldtype, ldclass, l )
 		end if
 
 		if( rdclass <> FB_DATACLASS_INTEGER ) then
-			hConvOperand( FB_DATATYPE_INTEGER, rdtype, rdclass, r )
+			hConvOperand( hGetIntegerOrBigger( ldtype ), rdtype, rdclass, r )
 		end if
 
 	'' atan2 can only operate on floats
