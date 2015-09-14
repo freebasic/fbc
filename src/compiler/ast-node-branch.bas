@@ -163,7 +163,9 @@ function astBuildJMPTB _
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr tbsym = any
 
-	assert( symbGetType( tempvar ) = FB_DATATYPE_UINT or symbGetType( tempvar ) = FB_DATATYPE_ULONGINT )
+	var dtype = symbGetType( tempvar )
+	assert( (dtype = FB_DATATYPE_UINT) or _
+	        (dtype = FB_DATATYPE_ULONGINT) )
 
 	tree = NULL
 
@@ -208,10 +210,11 @@ function astBuildJMPTB _
 		'' optimised to:
 		'' if( cunsg(expr - minval) > (maxval - minval) ) then goto deflabel
 		tree = astNewLINK( tree, _
-			astNewBOP( AST_OP_GT, astNewBOP( AST_OP_SUB, _
+			astNewBOP( AST_OP_GT, _
+				astNewBOP( AST_OP_SUB, _
 					astNewVAR( tempvar ), _
-					astNewCONSTi( minval, FB_DATATYPE_UINT ) ), _
-				astNewCONSTi( maxval - minval, FB_DATATYPE_UINT ), _
+					astNewCONSTi( minval, dtype ) ), _
+				astNewCONSTi( maxval - minval, dtype ), _
 				deflabel, AST_OPOPT_NONE ) )
 
 		'' goto table[expr - minval]
@@ -220,7 +223,7 @@ function astBuildJMPTB _
 				astNewIDX( astNewVAR( tbsym, -minval * env.pointersize ), _
 					astNewBOP( AST_OP_MUL, _
 						astNewVAR( tempvar ), _
-						astNewCONSTi( env.pointersize, FB_DATATYPE_UINT ) ), _
+						astNewCONSTi( env.pointersize, dtype ) ), _
 					typeAddrOf( FB_DATATYPE_VOID ), NULL ) ) )
 	else
 		tbsym = NULL

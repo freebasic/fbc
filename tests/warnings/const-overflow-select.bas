@@ -3,6 +3,11 @@ select case as const( &hFF00000000ull )
 case 0
 end select
 
+#print "also no warning for CASE value > 32bit:"
+select case as const( &hFF00000000ull )
+case &hFF00000000ull
+end select
+
 #ifndef __FB_64BIT__
 
 dim as long l

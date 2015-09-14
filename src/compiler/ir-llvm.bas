@@ -1996,12 +1996,11 @@ private sub _emitJmpTb _
 
 	dim as string ln
 
-	assert( labelcount > 0 )
-
 	hLoadVreg( v1 )
+	var dtype = hEmitType( v1->dtype, v1->subtype )
 
 	ln = "switch "
-	ln += hEmitType( v1->dtype, v1->subtype ) + " "
+	ln += dtype + " "
 	ln += hVregToStr( v1 ) + ", "
 	ln += "label %" + *symbGetMangledName( deflabel ) + " "
 	ln += "["
@@ -2009,7 +2008,7 @@ private sub _emitJmpTb _
 
 	ctx.indent += 1
 	for i as integer = 0 to labelcount - 1
-		ln = "i32 " + str( values[i] ) + ", "
+		ln = dtype + " " & values[i] & ", "
 		ln += "label %" + *symbGetMangledName( labels[i] )
 		hWriteLine( ln )
 	next

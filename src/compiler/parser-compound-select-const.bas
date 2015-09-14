@@ -123,7 +123,7 @@ sub cSelConstStmtBegin()
 	stk->select.casecnt = 0
 	stk->select.const_.base = ctx.base
 	stk->select.const_.deflabel = NULL
-	stk->select.const_.minval = &hFFFFFFFFu
+	stk->select.const_.minval = &hFFFFFFFFFFFFFFFFull
 	stk->select.const_.maxval = 0
 	stk->select.cmplabel = cl
 	stk->select.endlabel = el
@@ -210,7 +210,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 
 	do
 		'' ConstExpression{int}
-		dim as ulongint value = cConstIntExpr( cExpression( ) )
+		dim as ulongint value = cConstIntExpr( cExpression( ), symbGetType( stk->select.sym ) )
 
 		var minval = stk->select.const_.minval
 		var maxval = stk->select.const_.maxval
@@ -221,7 +221,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 			lexSkipToken( )
 
 			'' ConstExpression{int}
-			tovalue = cConstIntExpr( cExpression( ) )
+			tovalue = cConstIntExpr( cExpression( ), symbGetType( stk->select.sym ) )
 		else
 			tovalue = value
 		end if
@@ -235,10 +235,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 			end if
 
 			'' too big?
-			if( (minval > maxval) or _
-				(maxval - minval > FB_MAXSWTCASERANGE) or _
-				(minval * typeGetSize( FB_DATATYPE_INTEGER ) > 4294967292ULL) ) then
-
+			if( (minval > maxval) or ((maxval - minval) > FB_MAXSWTCASERANGE) ) then
 				errReport( FB_ERRMSG_RANGETOOLARGE )
 				'' error recovery: reset values
 				minval = stk->select.const_.minval

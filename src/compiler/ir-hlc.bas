@@ -3026,6 +3026,9 @@ private sub _emitJmpTb _
 	dim as EXPRNODE ptr l = any
 	dim as integer i = any
 
+	var dtype = v1->dtype
+	assert( (dtype = FB_DATATYPE_UINT) or (dtype = FB_DATATYPE_ULONGINT) )
+
 	'' SELECT CASE AS CONST always uses a temp var, no need to worry about side effects
 	assert( v1->typ = IR_VREGTYPE_VAR )
 	temp = exprFlush( exprNewVREG( v1 ) )
@@ -3062,19 +3065,19 @@ private sub _emitJmpTb _
 
 	if( minval > 0 ) then
 		'' if( temp < minval ) goto deflabel
-		l = exprNewTEXT( FB_DATATYPE_UINT, NULL, temp )
-		l = exprNewBOP( AST_OP_LT, l, exprNewIMMi( minval ) )
+		l = exprNewTEXT( dtype, NULL, temp )
+		l = exprNewBOP( AST_OP_LT, l, exprNewIMMi( minval, dtype ) )
 		hWriteLine( "if( " + exprFlush( l ) + " ) goto " + *symbGetMangledName( deflabel ) + ";", TRUE )
 	end if
 
 	'' if( temp > maxval ) then goto deflabel
-	l = exprNewTEXT( FB_DATATYPE_UINT, NULL, temp )
-	l = exprNewBOP( AST_OP_GT, l, exprNewIMMi( maxval ) )
+	l = exprNewTEXT( dtype, NULL, temp )
+	l = exprNewBOP( AST_OP_GT, l, exprNewIMMi( maxval, dtype ) )
 	hWriteLine( "if( " + exprFlush( l ) + " ) goto " + *symbGetMangledName( deflabel ) + ";", TRUE )
 
 	'' l = jumptable[l - minval]
-	l = exprNewTEXT( FB_DATATYPE_UINT, NULL, temp )
-	l = exprNewBOP( AST_OP_SUB, l, exprNewIMMi( minval ) )
+	l = exprNewTEXT( dtype, NULL, temp )
+	l = exprNewBOP( AST_OP_SUB, l, exprNewIMMi( minval, dtype ) )
 	hWriteLine( "goto *" + tb + "[" + exprFlush( l ) + "];", TRUE )
 
 end sub
