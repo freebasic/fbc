@@ -30,7 +30,7 @@ int fb_FileGetWstrEx
         	dst[chars] = _LC('\0');
 
 		if( bytesread )
-			*bytesread = chars;
+			*bytesread = chars * sizeof(FB_WCHAR);
     }
     else
 		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
