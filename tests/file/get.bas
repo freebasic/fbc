@@ -21,7 +21,10 @@ private sub test cdecl( )
 	dim ll as longint
 	dim ull as ulongint
 	dim s as string
+	dim z6 as zstring * 6
+	dim w6 as wstring * 6
 	dim array4b(0 to 3) as byte
+	dim array4l(0 to 3) as long
 
 	''
 	'' Expecting TESTFILE to contain this ASCII text: 1234567890
@@ -47,11 +50,23 @@ private sub test cdecl( )
 	CU_ASSERT( get( #f, 1, s ) = 0 )
 	CU_ASSERT( s = "1234567890" )
 
+	CU_ASSERT( get( #f, 1, z6 ) = 0 )
+	CU_ASSERT( z6 = "12345" )
+
+	CU_ASSERT( get( #f, 1, w6 ) = 0 )
+	CU_ASSERT( w6 = wstr( "12345" ) )
+
 	CU_ASSERT( get( #f, 1, array4b() ) = 0 )
 	CU_ASSERT( array4b(0) = asc( "1" ) )
 	CU_ASSERT( array4b(1) = asc( "2" ) )
 	CU_ASSERT( array4b(2) = asc( "3" ) )
 	CU_ASSERT( array4b(3) = asc( "4" ) )
+
+	CU_ASSERT( get( #f, 1, array4l() ) = 0 )
+	CU_ASSERT( array4l(0) = cvl( "1234" ) )
+	CU_ASSERT( array4l(1) = cvl( "5678" ) )
+	CU_ASSERT( array4l(2) = &h3039 ) '' 90
+	CU_ASSERT( array4l(3) = 0 )
 
 	''
 	'' Same again, but with bytesread variable given
@@ -69,10 +84,16 @@ private sub test cdecl( )
 	ll = 0
 	ull = 0
 	s = ""
+	z6 = ""
+	w6 = wstr( "" )
 	array4b(0) = 0
 	array4b(1) = 0
 	array4b(2) = 0
 	array4b(3) = 0
+	array4l(0) = 0
+	array4l(1) = 0
+	array4l(2) = 0
+	array4l(3) = 0
 
 	bytesread = 0 : CU_ASSERT( get( #f, 1, b  , , bytesread ) = 0 ) : CU_ASSERT( b   = asc( "1" ) ) : CU_ASSERT( bytesread = 1 )
 	bytesread = 0 : CU_ASSERT( get( #f, 1, ub , , bytesread ) = 0 ) : CU_ASSERT( ub  = asc( "1" ) ) : CU_ASSERT( bytesread = 1 )
@@ -97,6 +118,16 @@ private sub test cdecl( )
 	CU_ASSERT( bytesread = 10 )
 
 	bytesread = 0
+	CU_ASSERT( get( #f, 1, z6, , bytesread ) = 0 )
+	CU_ASSERT( z6 = "12345" )
+	CU_ASSERT( bytesread = 5 )
+
+	bytesread = 0
+	CU_ASSERT( get( #f, 1, w6, , bytesread ) = 0 )
+	CU_ASSERT( w6 = wstr( "12345" ) )
+	CU_ASSERT( bytesread = (5 * sizeof( wstring )) )
+
+	bytesread = 0
 	CU_ASSERT( get( #f, 1, array4b(), , bytesread ) = 0 )
 	CU_ASSERT( array4b(0) = asc( "1" ) )
 	CU_ASSERT( array4b(1) = asc( "2" ) )
@@ -104,9 +135,39 @@ private sub test cdecl( )
 	CU_ASSERT( array4b(3) = asc( "4" ) )
 	CU_ASSERT( bytesread = 4 )
 
+	bytesread = 0
+	CU_ASSERT( get( #f, 1, array4l(), , bytesread ) = 0 )
+	CU_ASSERT( array4l(0) = cvl( "1234" ) )
+	CU_ASSERT( array4l(1) = cvl( "5678" ) )
+	CU_ASSERT( array4l(2) = &h3039 ) '' 90
+	CU_ASSERT( array4l(3) = 0 )
+	CU_ASSERT( bytesread = 10 )
+
 	''
 	'' LONGINT offset
 	''
+
+	b = 0
+	ub = 0
+	sh = 0
+	ush = 0
+	l = 0
+	ul = 0
+	i = 0
+	ui = 0
+	ll = 0
+	ull = 0
+	s = ""
+	z6 = ""
+	w6 = wstr( "" )
+	array4b(0) = 0
+	array4b(1) = 0
+	array4b(2) = 0
+	array4b(3) = 0
+	array4l(0) = 0
+	array4l(1) = 0
+	array4l(2) = 0
+	array4l(3) = 0
 
 	CU_ASSERT( get( #f, 1ll, b   ) = 0 ) : CU_ASSERT( b   = asc( "1" ) )
 	CU_ASSERT( get( #f, 1ll, ub  ) = 0 ) : CU_ASSERT( ub  = asc( "1" ) )
@@ -128,11 +189,23 @@ private sub test cdecl( )
 	CU_ASSERT( get( #f, 1ll, s ) = 0 )
 	CU_ASSERT( s = "1234567890" )
 
+	CU_ASSERT( get( #f, 1ll, z6 ) = 0 )
+	CU_ASSERT( z6 = "12345" )
+
+	CU_ASSERT( get( #f, 1ll, w6 ) = 0 )
+	CU_ASSERT( w6 = wstr( "12345" ) )
+
 	CU_ASSERT( get( #f, 1ll, array4b() ) = 0 )
 	CU_ASSERT( array4b(0) = asc( "1" ) )
 	CU_ASSERT( array4b(1) = asc( "2" ) )
 	CU_ASSERT( array4b(2) = asc( "3" ) )
 	CU_ASSERT( array4b(3) = asc( "4" ) )
+
+	CU_ASSERT( get( #f, 1ll, array4l() ) = 0 )
+	CU_ASSERT( array4l(0) = cvl( "1234" ) )
+	CU_ASSERT( array4l(1) = cvl( "5678" ) )
+	CU_ASSERT( array4l(2) = &h3039 ) '' 90
+	CU_ASSERT( array4l(3) = 0 )
 
 	''
 	'' LONGINT offset + bytesread
@@ -149,10 +222,16 @@ private sub test cdecl( )
 	ll = 0
 	ull = 0
 	s = ""
+	z6 = ""
+	w6 = wstr( "" )
 	array4b(0) = 0
 	array4b(1) = 0
 	array4b(2) = 0
 	array4b(3) = 0
+	array4l(0) = 0
+	array4l(1) = 0
+	array4l(2) = 0
+	array4l(3) = 0
 
 	bytesread = 0 : CU_ASSERT( get( #f, 1ll, b  , , bytesread ) = 0 ) : CU_ASSERT( b   = asc( "1" ) ) : CU_ASSERT( bytesread = 1 )
 	bytesread = 0 : CU_ASSERT( get( #f, 1ll, ub , , bytesread ) = 0 ) : CU_ASSERT( ub  = asc( "1" ) ) : CU_ASSERT( bytesread = 1 )
@@ -177,12 +256,30 @@ private sub test cdecl( )
 	CU_ASSERT( bytesread = 10 )
 
 	bytesread = 0
+	CU_ASSERT( get( #f, 1ll, z6, , bytesread ) = 0 )
+	CU_ASSERT( z6 = "12345" )
+	CU_ASSERT( bytesread = 5 )
+
+	bytesread = 0
+	CU_ASSERT( get( #f, 1ll, w6, , bytesread ) = 0 )
+	CU_ASSERT( w6 = wstr( "12345" ) )
+	CU_ASSERT( bytesread = (5 * sizeof( wstring )) )
+
+	bytesread = 0
 	CU_ASSERT( get( #f, 1ll, array4b(), , bytesread ) = 0 )
 	CU_ASSERT( array4b(0) = asc( "1" ) )
 	CU_ASSERT( array4b(1) = asc( "2" ) )
 	CU_ASSERT( array4b(2) = asc( "3" ) )
 	CU_ASSERT( array4b(3) = asc( "4" ) )
 	CU_ASSERT( bytesread = 4 )
+
+	bytesread = 0
+	CU_ASSERT( get( #f, 1ll, array4l(), , bytesread ) = 0 )
+	CU_ASSERT( array4l(0) = cvl( "1234" ) )
+	CU_ASSERT( array4l(1) = cvl( "5678" ) )
+	CU_ASSERT( array4l(2) = &h3039 ) '' 90
+	CU_ASSERT( array4l(3) = 0 )
+	CU_ASSERT( bytesread = 10 )
 
 	close #f
 end sub
