@@ -778,8 +778,18 @@ private function hBuildFakeByrefInitExpr( byval dtype as integer, byval subtype 
 end function
 
 private function hCheckAndBuildByrefInitializer( byval sym as FBSYMBOL ptr, byref expr as ASTNODE ptr ) as ASTNODE ptr
-	if( astCheckByrefAssign( sym->typ, sym->subtype, expr ) = FALSE ) then
-		errReport( FB_ERRMSG_INCOMPATIBLEREFINIT )
+	'' Check data types, CONSTness, etc.
+	var ok = astCheckByrefAssign( sym->typ, sym->subtype, expr )
+
+	'' Disallow AST nodes refering to temp vars (i.e. where addrof is
+	'' permitted) that aren't already disallowed in cVarOrDeref()
+	select case( expr->class )
+	case AST_NODECLASS_CALL
+		ok = FALSE
+	end select
+
+	if( ok = FALSE ) then
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
 		astDelTree( expr )
 		expr = hBuildFakeByrefInitExpr( sym->typ, sym->subtype )
 	end if
