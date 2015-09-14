@@ -19,21 +19,24 @@ int fb_FileGetWstrEx
     if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-	/* perform call ... but only if there's data ... */
-    if( (dst != NULL) && (dst_chars > 0) )
-    {
-        size_t chars;
-        res = fb_FileGetDataEx( handle, pos, (void *)dst, dst_chars, &chars, TRUE, TRUE );
-
-        /* add the null-term */
-        if( res == FB_RTERROR_OK )
-        	dst[chars] = _LC('\0');
-
-		if( bytesread )
-			*bytesread = chars * sizeof(FB_WCHAR);
-    }
-    else
+	if( (dst != NULL) && (dst_chars > 0) ) {
+		if (dst_chars > 1) {
+			/* read dst_chars - 1 chars, then add null-terminator */
+			size_t chars;
+			res = fb_FileGetDataEx( handle, pos, (void *)dst, dst_chars - 1, &chars, TRUE, TRUE );
+			if (res == FB_RTERROR_OK) {
+				dst[chars] = _LC('\0'); /* null-terminator */
+				if (bytesread)
+					*bytesread = chars * sizeof(FB_WCHAR);
+			}
+		} else {
+			/* room for null-terminator only */
+			dst[0] = _LC('\0');
+			res = FB_RTERROR_OK;
+		}
+	} else {
 		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
 	return res;
 }
