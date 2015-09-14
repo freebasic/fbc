@@ -1180,6 +1180,9 @@ function cVariableEx _
 	if( sym = NULL ) then
 		if( env.opt.explicit ) then
 			errReportUndef( FB_ERRMSG_VARIABLENOTDECLARED, id )
+			'' Error recovery in -lang fb: don't declare the variable implicitly;
+			'' hVarAddUndecl() assumes other dialects by using FB_SYMBOPT_UNSCOPE.
+			return NULL
 		end if
 
 		'' don't allow explicit namespaces
