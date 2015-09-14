@@ -188,6 +188,9 @@ namespace fbc_tests.boolean_.bop
 				dim as boolean b1, b2, b3
 
 				#assert typeof( cbool( l ) bop cbool( r ) ) = typeof( boolean )
+				#assert typeof( b1         bop b2         ) = typeof( boolean )
+				#assert typeof( b1         bop cbool( r ) ) = typeof( boolean )
+				#assert typeof( cbool( l ) bop b2         ) = typeof( boolean )
 
 				CU_ASSERT( (cbool( l ) bop cbool( r )) = cbool( expectedResult ) )
 

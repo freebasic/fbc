@@ -1537,12 +1537,14 @@ function astNewBOP _
 
 		'' For ANDALSO/ORELSE, "ex" is the dtorlist cookie
 
+		assert( (dtype = FB_DATATYPE_BOOLEAN) or (dtype = FB_DATATYPE_INTEGER) )
+
 		if ldclass = FB_DATACLASS_FPOINT then
 			cmp_constl = astNewConstf(0.0, FB_DATATYPE_SINGLE)
 			cmp_constr = astNewConstf(0.0, FB_DATATYPE_SINGLE)
 		else
-			cmp_constl = astNewCONSTi( 0 )
-			cmp_constr = astNewCONSTi( 0 )
+			cmp_constl = astNewCONSTi( 0, dtype )
+			cmp_constr = astNewCONSTi( 0, dtype )
 		end if
 
 		if op = AST_OP_ANDALSO then
@@ -1555,9 +1557,9 @@ function astNewBOP _
 		r = astNewBOP( AST_OP_NE, r, cmp_constr )
 
 		if op = AST_OP_ANDALSO then
-			return astNewIIF( l, r, cint( ex ), astNewCONSTi( 0 ), 0 )
+			return astNewIIF( l, r, cint( ex ), astNewCONSTi( 0, dtype ), 0 )
 		else
-			return astNewIIF( l, r, cint( ex ), astNewCONSTi( -1 ), 0 )
+			return astNewIIF( l, r, cint( ex ), astNewCONSTi( -1, dtype ), 0 )
 		end if
 	end select
 
