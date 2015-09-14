@@ -1411,6 +1411,10 @@ function cVarDecl _
 		dimensions = 0
 		have_bounds = FALSE
 		if( (lexGetToken( ) = CHAR_LPRNT) and (is_fordecl = FALSE) ) then
+			if( attrib and FB_SYMBATTRIB_REF ) then
+				errReport( FB_ERRMSG_ARRAYOFREFS )
+				attrib and= not FB_SYMBATTRIB_REF
+			end if
 			lexSkipToken( )
 
 			'' '()'

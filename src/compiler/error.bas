@@ -405,7 +405,8 @@ declare function hMakeParamDesc _
 		@"Type mismatch in byref function result assignment", _
 		@"-asm att|intel option given, but not supported for this target (only x86 or x86_64)", _
 		@"Reference not initialized", _
-		@"Incompatible reference initializer" _
+		@"Incompatible reference initializer", _
+		@"Array of references - not supported yet" _
 	}
 
 

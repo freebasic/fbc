@@ -6,6 +6,11 @@ o Dim Byref
   - symbHasDtor() & co should either be adjusted to check for REF/IMPORT/PARAMBYREF/PARAMINSTANCE flags,
     or be renamed to symbTypeHasDtor()
   - arrays of refs
+    - parameter syntax?
+         byref       as integer  <= integer reference
+               (any) as integer  <= bydesc array of integers
+         byref (any) as integer  <= bydesc array of integer references?
+         (looks like array being passed byref - confusing)
     - test that the rtlib functions like Redim don't call ctors/dtors
   - allow/fix initialization from non-var:
      - should allow everything that's allowed for byref parameters (CALLs,
