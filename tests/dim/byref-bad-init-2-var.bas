@@ -1,5 +1,4 @@
-' TEST_MODE : COMPILE_ONLY_FAIL
+' TEST_MODE : COMPILE_ONLY_OK
 
-'' string literals are VARs, but while references can't point to literals,
-'' this shouldn't be allowed either
+'' This can and should be allowed while Byref function result allow it too...
 var byref i = "abc"
