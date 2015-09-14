@@ -420,17 +420,14 @@ private function hCopyUnionFields _
 	base_ofs = symbGetOfs( base_fld )
 
 	do
-		lgt = (symbGetLen( fld ) * symbGetArrayElements( fld )) + _
-			  (symbGetOfs( fld ) - base_ofs)
+		lgt = symbGetRealSize( fld ) + (symbGetOfs( fld ) - base_ofs)
 		if( lgt > bytes ) then
 			bytes = lgt
 		end if
 
+		'' Visit following union fields (but not any methods/static member vars/etc.)
 		fld = fld->next
-		if( fld = NULL ) then
-			exit do
-		end if
-	loop while( symbGetIsUnionField( fld ) )
+	loop while( fld andalso symbIsField( fld ) andalso symbGetIsUnionField( fld ) )
 
     '' copy all them at once
 	astAdd( astNewMEM( AST_OP_MEMMOVE, _

@@ -605,12 +605,17 @@ end function
 private function hEmitSymType( byval sym as FBSYMBOL ptr ) as string
 	dim s as string
 
-	select case( symbGetType( sym ) )
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		s = hEmitStrLitType( symbGetLen( sym ) )
-	case else
-		s = hEmitType( symbGetType( sym ), symbGetSubtype( sym ) )
-	end select
+	var dtype = symbGetType( sym )
+	if( symbIsRef( sym ) ) then
+		s = hEmitType( typeAddrOf( dtype ), sym->subtype )
+	else
+		select case( dtype )
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			s = hEmitStrLitType( sym->lgt )
+		case else
+			s = hEmitType( dtype, sym->subtype )
+		end select
+	end if
 
 	if( symbGetIsDynamic( sym ) ) then
 		'' Dynamic array vars/fields/params

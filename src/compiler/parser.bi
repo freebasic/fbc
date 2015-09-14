@@ -855,7 +855,8 @@ declare sub hSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as longint _
+		byref lgt as longint, _
+		byval is_byref as integer = FALSE _
 	)
 
 declare function hCheckForDefiniteTypes _

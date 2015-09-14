@@ -1514,6 +1514,8 @@ declare function symbAllocWstrConst _
 		byval lgt as integer _
 	) as FBSYMBOL ptr
 
+declare function symbGetRealSize( byval sym as FBSYMBOL ptr ) as longint
+
 declare function symbCalcArrayElements _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -2148,7 +2150,7 @@ declare function symbGetUDTBaseLevel _
 #define symbGetFieldBitLength( fld ) _
 	iif( (fld)->var_.bits > 0, _
 		clngint( (fld)->var_.bits ), _ '' clngint needed for older versions of fbc
-		(fld)->lgt * symbGetArrayElements( fld ) * 8 )
+		symbGetRealSize( fld ) * 8 )
 
 #define symbGetUDTSymbTbHead(s) s->udt.ns.symtb.head
 

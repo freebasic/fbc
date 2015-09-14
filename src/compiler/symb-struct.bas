@@ -456,9 +456,6 @@ function symbAddField _
 	sym->var_.bitpos = parent->udt.bitpos
 	sym->var_.bits = bits
 
-	'' multiple len by all array elements (if any)
-	lgt *= symbGetArrayElements( sym )
-
 	'' Dynamic array? Same restrictions as STRINGs. No need to check the
 	'' array's dtype because only the descriptor will be included in the
 	'' UDT, not the array data.
@@ -517,6 +514,8 @@ function symbAddField _
 		symbSetUDTHasPtrField( base_parent )
 	end if
 
+	var realsize = symbGetRealSize( sym )
+
 	'' Union?
 	if( symbGetUDTIsUnion( parent ) ) then
 		symbSetIsUnionField( sym )
@@ -527,14 +526,14 @@ function symbAddField _
 
 		if( alloc_field ) then
 			'' Union's size is the max field size
-			if( parent->lgt < lgt ) then
-				parent->lgt = lgt
+			if( parent->lgt < realsize ) then
+				parent->lgt = realsize
 			end if
 		end if
 	else
 		'' Update struct size, if a new (non-fake) field was started
 		if( alloc_field ) then
-			offset += lgt
+			offset += realsize
 			parent->ofs = offset
 			parent->lgt = offset
 		end if

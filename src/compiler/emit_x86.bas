@@ -762,6 +762,22 @@ private sub hEndRegTB
 
 end sub
 
+private function hGetGlobalTypeAlign( byval dtype as integer ) as integer
+	if( dtype = FB_DATATYPE_DOUBLE ) then
+		function = 8
+	else
+		function = 4
+	end if
+end function
+
+private function hGetGlobalVarAlign( byval sym as FBSYMBOL ptr ) as integer
+	if( symbIsRef( sym ) ) then
+		function = 4
+	else
+		function = hGetGlobalTypeAlign( symbGetType( sym ) )
+	end if
+end function
+
 '':::::
 private sub hEmitVarBss _
 	( _
@@ -769,15 +785,12 @@ private sub hEmitVarBss _
 	) static
 
     dim as string alloc, ostr
-    dim as integer attrib, elements
+	dim as integer attrib
 
 	assert( symbIsExtern( s ) = FALSE )
 	assert( symbIsDynamic( s ) = FALSE )
 
 	attrib = symbGetAttrib( s )
-
-	elements = symbGetArrayElements( s )
-	assert( elements >= 1 )
 
     hEmitBssHeader( )
 
@@ -792,18 +805,12 @@ private sub hEmitVarBss _
        	alloc = ".comm"
     end if
 
-    '' align
-    if( symbGetType( s ) = FB_DATATYPE_DOUBLE ) then
-    	hALIGN( 8 )
-    	emitWriteStr( ".balign 8", TRUE )
-	else
-    	hALIGN( 4 )
-    end if
+	hALIGN( hGetGlobalVarAlign( s ) )
 
 	'' emit
     ostr = alloc + TABCHAR
     ostr += *symbGetMangledName( s )
-    ostr += "," + str( symbGetLen( s ) * elements )
+	ostr += "," + str( symbGetRealSize( s ) )
     emitWriteStr( ostr, TRUE )
 
 	'' Add debug info for public/shared globals, but not local statics
@@ -857,11 +864,7 @@ private sub hEmitVarConst _
 	if( s->var_.align ) then
 		hALIGN ( s->var_.align )
 	else
-		if( dtype = FB_DATATYPE_DOUBLE ) then
-			hALIGN( 8 )
-			else
-			hALIGN( 4 )
-		end if
+		hALIGN( hGetGlobalTypeAlign( dtype ) )
 	end if
 
 
@@ -6494,11 +6497,7 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr )
 	'' Add debug info for public/shared globals, but not local statics
 	edbgEmitGlobalVar( sym, IR_SECTION_DATA )
 
-   	if( symbGetType( sym ) = FB_DATATYPE_DOUBLE ) then
-    	hALIGN( 8 )
-	else
-    	hALIGN( 4 )
-	end if
+	hALIGN( hGetGlobalVarAlign( sym ) )
 
 	'' public?
 	if( symbIsPublic( sym ) ) then
@@ -6944,7 +6943,7 @@ private sub _procAllocLocal _
 		exit sub
 	end if
 
-	lgt = symbGetLen( sym ) * symbGetArrayElements( sym )
+	lgt = symbGetRealSize( sym )
 
     proc->proc.ext->stk.localofs += ((lgt + 3) and not 3)
 
@@ -6971,7 +6970,8 @@ private sub _procAllocArg _
 	if( symbIsParamByVal( sym ) ) then
 		lgt = symbGetLen( sym )
 	else
-		lgt = 4    '' it's just a pointer
+		'' Bydesc/byref
+		lgt = env.pointersize
 	end if
 
 	sym->ofs = proc->proc.ext->stk.argofs

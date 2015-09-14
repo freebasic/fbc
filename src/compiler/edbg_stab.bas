@@ -706,6 +706,7 @@ private function hGetDataType _
 
 	if( symbIsParamBydesc( sym ) ) then
 		'' Bydesc parameter, need to emit as the real descriptor type
+		'' (it's really a pointer/ref, but that's already handled by edbgEmitProcArg())
 		dtype = FB_DATATYPE_STRUCT
 		subtype = sym->var_.array.desctype
 		dimtbelements = symbGetArrayDimensions( sym )
@@ -713,7 +714,19 @@ private function hGetDataType _
 		dtype = symbGetType( sym )
 		subtype = symbGetSubtype( sym )
 
+		'' TODO: handle byref functions?
+
 		if( symbIsVar( sym ) or symbIsField( sym ) ) then
+			'' Looks like reference vars need to be emitted as pointers;
+			'' at least that's how g++ -gstabs seems to do it, and the gdb docs
+			'' don't mention any way to encode references in STABS.
+			'' Byref parameters on the other hand have a special "v" prefix,
+			'' this is handled in edbgEmitProcArg().
+			if( symbIsRef( sym ) ) then
+				assert( symbIsParam( sym ) = FALSE )
+				dtype = typeAddrOf( dtype )
+			end if
+
 			'' Fixed-size array?
 			if( symbGetArrayDimensions( sym ) > 0 ) then
 				desc += str( ctx.typecnt ) + "="
@@ -987,13 +1000,10 @@ sub edbgEmitProcArg( byval sym as FBSYMBOL ptr )
 
 	if( symbIsParamByVal( sym ) ) then
 		desc += "p"
-
-	elseif( symbIsParamByRef( sym ) ) then
+	else
+		'' It's a reference or descriptor ptr
+		assert( symbIsParamBydescOrByref( sym ) )
 		desc += "v"
-
-	elseif( symbIsParamByDesc( sym ) ) then
-		'' (will be emitted as descriptor)
-    	desc += "v"
 	end if
 
     '' data type

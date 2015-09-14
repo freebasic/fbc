@@ -960,6 +960,7 @@ end function
 
 private function hHasDtor( byval sym as FBSYMBOL ptr ) as integer
 	assert( symbIsVar( sym ) )
+	assert( symbIsRef( sym ) = FALSE )
 
 	'' Everything with a destructor (classes)
 	function = symbHasDtor( sym )

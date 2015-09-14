@@ -223,8 +223,7 @@ function astBuildJMPTB _
 				astNewIDX( astNewVAR( tbsym, -minval * env.pointersize ), _
 					astNewBOP( AST_OP_MUL, _
 						astNewVAR( tempvar ), _
-						astNewCONSTi( env.pointersize, dtype ) ), _
-					typeAddrOf( FB_DATATYPE_VOID ), NULL ) ) )
+						astNewCONSTi( env.pointersize, dtype ) ) ) ) )
 	else
 		tbsym = NULL
 	end if
