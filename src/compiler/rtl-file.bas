@@ -8,7 +8,7 @@
 #include once "lex.bi"
 #include once "rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 67 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 71 ) = _
 	{ _
 		/' function fb_FileOpen _
 			( _
@@ -438,6 +438,25 @@
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
+		/' function fb_FileGetWStr _
+			( _
+				byval fnum as long, _
+				byval pos as long, _
+				byref dst as wstring, _
+				byval dst_chars as integer _
+			) as long '/ _
+		( _
+			@FB_RTL_FILEGETWSTR, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+			{ _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_WCHAR, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' function fb_FileGetStrLarge _
 			( _
 				byval fnum as long, _
@@ -456,6 +475,25 @@
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
+		), _
+		/' function fb_FileGetWStrLarge _
+			( _
+				byval fnum as long, _
+				byval pos as longint, _
+				byref dst as wstring, _
+				byval dst_len as integer _
+			) as long '/ _
+		( _
+			@FB_RTL_FILEGETWSTRLARGE, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+			{ _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_WCHAR, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' function fb_FileGetArray _
 			( _
@@ -554,6 +592,27 @@
 				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
+		/' function fb_FileGetWStrIOB _
+			( _
+				byval fnum as long, _
+				byval pos as long, _
+				byref dst as wstring, _
+				byval dst_len as integer, _
+				byref bytesread as uinteger _
+			) as long '/ _
+		( _
+			@FB_RTL_FILEGETWSTRIOB, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+			{ _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_WCHAR, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
 		/' function fb_FileGetStrLargeIOB _
 			( _
 				byval fnum as long, _
@@ -574,6 +633,27 @@
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
+		), _
+		/' function fb_FileGetWStrLargeIOB _
+			( _
+				byval fnum as long, _
+				byval pos as longint, _
+				byref dst as wstring, _
+				byval dst_len as integer, _
+				byref bytesread as uinteger _
+			) as long '/ _
+		( _
+			@FB_RTL_FILEGETWSTRLARGEIOB, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+			{ _
+				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_WCHAR, FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
+			} _
 		), _
 		/' function fb_FileGetArrayIOB _
 			( _
@@ -1539,6 +1619,7 @@ function rtlFileGet _
 	''
 	dtype = astGetDataType( dst )
 	isstring = symbIsString( dtype )
+	var iswstr = (dtype = FB_DATATYPE_WCHAR)
 
 	if( offset = NULL ) then
 		offset = astNewCONSTi( 0 )
@@ -1551,9 +1632,17 @@ function rtlFileGet _
 	if( iobytes ) then
 		if( isstring ) then
 			if( islarge ) then
-				f = PROCLOOKUP( FILEGETSTRLARGEIOB )
+				if( iswstr ) then
+					f = PROCLOOKUP( FILEGETWSTRLARGEIOB )
+				else
+					f = PROCLOOKUP( FILEGETSTRLARGEIOB )
+				end if
 			else
-				f = PROCLOOKUP( FILEGETSTRIOB )
+				if( iswstr ) then
+					f = PROCLOOKUP( FILEGETWSTRIOB )
+				else
+					f = PROCLOOKUP( FILEGETSTRIOB )
+				end if
 			end if
 		else
 			if( islarge ) then
@@ -1565,9 +1654,17 @@ function rtlFileGet _
 	else
 		if( isstring ) then
 			if( islarge ) then
-				f = PROCLOOKUP( FILEGETSTRLARGE )
+				if( iswstr ) then
+					f = PROCLOOKUP( FILEGETWSTRLARGE )
+				else
+					f = PROCLOOKUP( FILEGETSTRLARGE )
+				end if
 			else
-				f = PROCLOOKUP( FILEGETSTR )
+				if( iswstr ) then
+					f = PROCLOOKUP( FILEGETWSTR )
+				else
+					f = PROCLOOKUP( FILEGETSTR )
+				end if
 			end if
 		else
 			if( islarge ) then

@@ -114,6 +114,7 @@ Version 1.04.0
 - C backend: References to procedures and labels are now emitted as-is, instead of using gcc's inline asm place-holders with memory reference constraints (the latter only makes sense for variables, not functions/labels)
 - C backend: Inline ASM using labels (i.e. jumps) should now work, using gcc's "asm goto()" syntax
 - C backend: The register clobber lists produced for inline ASM are now adjusted to the target - now x86_64 and ARM is supported (though ARM/AArch64 support is probably incomplete), no longer x86 only.
+- GET# didn't work with wstrings
 
 
 Version 1.03.0
