@@ -1110,9 +1110,7 @@ function astNewBOP _
 	case AST_OP_DIV
 
 		if( ldclass <> FB_DATACLASS_FPOINT ) then
-			ldtype = typeJoin( ldtype, FB_DATATYPE_DOUBLE )
-			l = astNewCONV( ldtype, NULL, l )
-			ldclass = FB_DATACLASS_FPOINT
+			hConvOperand( FB_DATATYPE_DOUBLE, ldtype, ldclass, l )
 		end if
 
 		if( rdclass <> FB_DATACLASS_FPOINT ) then
@@ -1135,30 +1133,22 @@ function astNewBOP _
 		 AST_OP_INTDIV, AST_OP_MOD, AST_OP_SHL, AST_OP_SHR
 
 		if( ldclass <> FB_DATACLASS_INTEGER ) then
-			ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
-			l = astNewCONV( ldtype, NULL, l )
-			ldclass = FB_DATACLASS_INTEGER
+			hConvOperand( FB_DATATYPE_INTEGER, ldtype, ldclass, l )
 		end if
 
 		if( rdclass <> FB_DATACLASS_INTEGER ) then
-			rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
-			r = astNewCONV( rdtype, NULL, r )
-			rdclass = FB_DATACLASS_INTEGER
+			hConvOperand( FB_DATATYPE_INTEGER, rdtype, rdclass, r )
 		end if
 
 	'' atan2 can only operate on floats
 	case AST_OP_ATAN2, AST_OP_POW
 
 		if( ldclass <> FB_DATACLASS_FPOINT ) then
-			ldtype = typeJoin( ldtype, FB_DATATYPE_DOUBLE )
-			l = astNewCONV( ldtype, NULL, l )
-			ldclass = FB_DATACLASS_FPOINT
+			hConvOperand( FB_DATATYPE_DOUBLE, ldtype, ldclass, l )
 		end if
 
 		if( rdclass <> FB_DATACLASS_FPOINT ) then
-			rdtype = typeJoin( rdtype, FB_DATATYPE_DOUBLE )
-			r = astNewCONV( rdtype, NULL, r )
-			rdclass = FB_DATACLASS_FPOINT
+			hConvOperand( FB_DATATYPE_DOUBLE, rdtype, rdclass, r )
 		end if
 
 	end select
