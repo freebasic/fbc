@@ -81,28 +81,6 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 '' helper functions
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-#define hEmitBssHeader( ) _setSection( IR_SECTION_BSS, 0 )
-
-'':::::
-#ifdef __FB_LINUX__
-''
-'' !!!FIXME!!!
-''
-'' Linux appears to support .rodata section, but I'm not sure about other platforms, and that's
-'' probably the reason FB used to output a normal .data section in any case...
-''
-#define hEmitConstHeader( ) _setSection( IR_SECTION_CONST, 0 )
-#else
-#define hEmitConstHeader( ) _setSection( IR_SECTION_DATA, 0 )
-#endif
-
-'':::::
-#define hEmitDataHeader( ) _setSection( IR_SECTION_DATA, 0 )
-
-'':::::
-#define hEmitExportHeader( ) _setSection( IR_SECTION_DIRECTIVE, 0 )
-
 #if __FB_DEBUG__
 function emitDumpRegName( byval dtype as integer, byval reg as integer ) as string
 	function = *hGetRegName( dtype, reg )
@@ -792,7 +770,7 @@ private sub hEmitVarBss _
 
 	attrib = symbGetAttrib( s )
 
-    hEmitBssHeader( )
+	_setSection( IR_SECTION_BSS, 0 )
 
     '' allocation modifier
     if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
@@ -858,7 +836,17 @@ private sub hEmitVarConst _
 		stext = *symbGetVarLitText( s )
 	end select
 
-	hEmitConstHeader( )
+	''
+	'' !!!FIXME!!!
+	''
+	'' Linux appears to support .rodata section, but I'm not sure about other platforms, and that's
+	'' probably the reason FB used to output a normal .data section in any case...
+	''
+	#ifdef __FB_LINUX__
+		_setSection( IR_SECTION_CONST, 0 )
+	#else
+		_setSection( IR_SECTION_DATA, 0 )
+	#endif
 
 	'' some SSE instructions require operands to be 16-byte aligned
 	if( s->var_.align ) then
@@ -903,7 +891,7 @@ end sub
 
 private sub hEmitExport( byval s as FBSYMBOL ptr )
     if( symbIsExport( s ) ) then
-        hEmitExportHeader( )
+        _setSection( IR_SECTION_DIRECTIVE, 0 )
 
         dim as zstring ptr sname = symbGetMangledName( s )
         if( env.underscoreprefix ) then
@@ -958,7 +946,7 @@ private sub hDeclVariable _
     	    end if
 		end if
 
-		hEmitDataHeader( )
+		_setSection( IR_SECTION_DATA, 0 )
 		irhlFlushStaticInitializer( s )
 		return
 	end if
