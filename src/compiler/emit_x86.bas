@@ -842,11 +842,11 @@ private sub hEmitVarConst _
 	'' Linux appears to support .rodata section, but I'm not sure about other platforms, and that's
 	'' probably the reason FB used to output a normal .data section in any case...
 	''
-	#ifdef __FB_LINUX__
+	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
 		_setSection( IR_SECTION_CONST, 0 )
-	#else
+	else
 		_setSection( IR_SECTION_DATA, 0 )
-	#endif
+	end if
 
 	'' some SSE instructions require operands to be 16-byte aligned
 	if( s->var_.align ) then

@@ -117,6 +117,7 @@ Version 1.04.0
 - C backend: The register clobber lists produced for inline ASM are now adjusted to the target - now x86_64 and ARM is supported (though ARM/AArch64 support is probably incomplete), no longer x86 only.
 - GET# didn't work with wstrings
 - Integer-only operations like AND, OR, \ and MOD converted non-integer operands to Integer, even if the other was a LongInt or UInteger. Now the conversion will use an integer type matching the integer operand (if any), to avoid truncating floating point values, and give more expected results.
+- ASM backend: Cross-compiling could give different results than native compilation with regards to the choice of whether to place string literals into .data or const (e.g. .rodata) sections
 
 
 Version 1.03.0
