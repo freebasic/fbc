@@ -125,6 +125,18 @@ namespace allDtypes
 	destructor ClassUdt( )
 	end destructor
 
+	type Parent extends object
+		declare abstract function f() as integer
+	end type
+
+	type Child extends Parent
+		declare virtual function f() as integer
+	end type
+
+	function Child.f() as integer
+		function = 123
+	end function
+
 	dim shared b as byte = 1
 	dim shared ub as ubyte = 2
 	dim shared sh as short = 3
@@ -141,6 +153,7 @@ namespace allDtypes
 	dim shared xpod as PodUdt = (14)
 	dim shared xclass as ClassUdt
 	dim shared pany as any ptr = cptr(any ptr, 16)
+	dim shared xchild as Child
 
 	dim shared byref rb as byte = b
 	dim shared byref rub as ubyte = ub
@@ -158,6 +171,8 @@ namespace allDtypes
 	dim shared byref rxpod as PodUdt = xpod
 	dim shared byref rxclass as ClassUdt = xclass
 	dim shared byref rpany as any ptr = pany
+	dim shared byref as Parent rparent1 = xchild
+	dim shared byref rparent2 as Parent = xchild
 
 	sub test cdecl( )
 		s = "11"
@@ -178,6 +193,8 @@ namespace allDtypes
 		CU_ASSERT( rxpod.i = 14 )
 		CU_ASSERT( rxclass.i = 15 )
 		CU_ASSERT( rpany = cptr( any ptr, 16 ) )
+		CU_ASSERT( rparent1.f() = 123 )
+		CU_ASSERT( rparent2.f() = 123 )
 
 		rb   = 101
 		rub  = 102
@@ -230,6 +247,8 @@ namespace allDtypes
 			dim byref rxpod as PodUdt = xpod
 			dim byref rxclass as ClassUdt = xclass
 			dim byref rpany as any ptr = pany
+			dim byref as Parent rparent1 = xchild
+			dim byref rparent2 as Parent = xchild
 
 			CU_ASSERT( rb   = 101 )
 			CU_ASSERT( rub  = 102 )
@@ -247,6 +266,8 @@ namespace allDtypes
 			CU_ASSERT( rxpod.i = 114 )
 			CU_ASSERT( rxclass.i = 115 )
 			CU_ASSERT( rpany = cptr( any ptr, 116 ) )
+			CU_ASSERT( rparent1.f() = 123 )
+			CU_ASSERT( rparent2.f() = 123 )
 
 			rb   = 1
 			rub  = 2
@@ -300,6 +321,8 @@ namespace allDtypes
 			static byref rxpod as PodUdt = xpod
 			static byref rxclass as ClassUdt = xclass
 			static byref rpany as any ptr = pany
+			static byref as Parent rparent1 = xchild
+			static byref rparent2 as Parent = xchild
 
 			CU_ASSERT( rb   = 1 )
 			CU_ASSERT( rub  = 2 )
@@ -317,6 +340,8 @@ namespace allDtypes
 			CU_ASSERT( rxpod.i = 14 )
 			CU_ASSERT( rxclass.i = 15 )
 			CU_ASSERT( rpany = cptr( any ptr, 16 ) )
+			CU_ASSERT( rparent1.f() = 123 )
+			CU_ASSERT( rparent2.f() = 123 )
 
 			rb   = 101
 			rub  = 102

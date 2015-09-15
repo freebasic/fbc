@@ -1295,8 +1295,10 @@ function cVarDecl _
 		'' parse the symbol type (INTEGER, STRING, etc...)
 		hSymbolType( dtype, subtype, lgt, has_byref_at_start )
 
-		'' Disallow creating objects of abstract classes
-		hComplainIfAbstractClass( dtype, subtype )
+		if( has_byref_at_start = FALSE ) then
+			'' Disallow creating objects of abstract classes
+			hComplainIfAbstractClass( dtype, subtype )
+		end if
 
 		addsuffix = FALSE
 		is_multdecl = TRUE
@@ -1486,11 +1488,15 @@ function cVarDecl _
 
 				lexSkipToken( )
 
-				'' parse the symbol type (INTEGER, STRING, etc...)
-				hSymbolType( dtype, subtype, lgt, ((attrib and FB_SYMBATTRIB_REF) <> 0) )
+				var is_ref = ((attrib and FB_SYMBATTRIB_REF) <> 0)
 
-				'' Disallow creating objects of abstract classes
-				hComplainIfAbstractClass( dtype, subtype )
+				'' parse the symbol type (INTEGER, STRING, etc...)
+				hSymbolType( dtype, subtype, lgt, is_ref )
+
+				if( is_ref = FALSE ) then
+					'' Disallow creating objects of abstract classes
+					hComplainIfAbstractClass( dtype, subtype )
+				end if
 
 				addsuffix = FALSE
 
