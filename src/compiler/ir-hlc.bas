@@ -731,17 +731,19 @@ private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 		end if
 	end select
 
-	'' If it's a fixed-length string, add an extra array dimension
-	'' (zstring * 5 becomes char[5])
-	dim as longint length = 0
-	select case( symbGetType( sym ) )
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-		length = symbGetStrLen( sym )
-	case FB_DATATYPE_WCHAR
-		length = symbGetWstrLen( sym )
-	end select
-	if( length > 0 ) then
-		s += "[" + str( length ) + "]"
+	if( symbIsRef( sym ) = FALSE ) then
+		'' If it's a fixed-length string, add an extra array dimension
+		'' (zstring * 5 becomes char[5])
+		dim as longint length = 0
+		select case( symbGetType( sym ) )
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+			length = symbGetStrLen( sym )
+		case FB_DATATYPE_WCHAR
+			length = symbGetWstrLen( sym )
+		end select
+		if( length > 0 ) then
+			s += "[" + str( length ) + "]"
+		end if
 	end if
 
 	function = s
