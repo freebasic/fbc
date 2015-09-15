@@ -3413,6 +3413,9 @@ end sub
 private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
 	var dtype = symbGetType( sym )
 	var l = exprNewIMMi( value, dtype )
+	if( symbIsRef( sym ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
 	l = exprNewCAST( dtype, sym->subtype, l )
 	ctx.varini += exprFlush( l )
 	hVarIniSeparator( )
@@ -3421,6 +3424,9 @@ end sub
 private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )
 	var dtype = symbGetType( sym )
 	var l = exprNewIMMf( value, dtype )
+	if( symbIsRef( sym ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
 	l = exprNewCAST( dtype, sym->subtype, l )
 	ctx.varini += exprFlush( l )
 	hVarIniSeparator( )
@@ -3437,7 +3443,11 @@ private sub _emitVarIniOfs _
 
 	l = exprNewOFFSET( rhs, ofs )
 
-	l = exprNewCAST( symbGetType( sym ), sym->subtype, l )
+	var dtype = symbGetType( sym )
+	if( symbIsRef( sym ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
+	l = exprNewCAST( dtype, sym->subtype, l )
 
 	ctx.varini += exprFlush( l )
 	hVarIniSeparator( )
