@@ -769,6 +769,29 @@ private function hVarInitDefault _
 
 end function
 
+'' Ensure the initializer doesn't reference any vars it mustn't
+private function hCheckGlobalInitializer _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval initree as ASTNODE ptr _
+	) as integer
+
+	'' Allow temp vars and temp array descriptors
+	var ignoreattribs = FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR
+
+	'' Allow only non-SHARED STATICs to reference STATICs
+	if( symbIsShared( sym ) = FALSE ) then
+		ignoreattribs or= FB_SYMBATTRIB_STATIC
+	end if
+
+	if( astTypeIniUsesLocals( initree, ignoreattribs ) ) then
+		errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
+		return FALSE
+	end if
+
+	return TRUE
+end function
+
 '' Build a NULL ptr deref with the given dtype:
 ''    *cptr(dtype ptr, 0)
 private function hBuildFakeByrefInitExpr( byval dtype as integer, byval subtype as FBSYMBOL ptr ) as ASTNODE ptr
@@ -803,6 +826,10 @@ private function hCheckAndBuildByrefInitializer( byval sym as FBSYMBOL ptr, byre
 	astTypeIniAddAssign( initree, astNewADDROF( expr ), sym, ptrdtype, ptrsubtype )
 	astTypeIniEnd( initree, TRUE )
 
+	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) <> 0 ) then
+		hCheckGlobalInitializer( sym, initree )
+	end if
+
 	function = initree
 end function
 
@@ -813,7 +840,7 @@ private function hVarInit _
         byval isdecl as integer _
 	) as ASTNODE ptr
 
-	dim as integer attrib = any, ignoreattribs = any
+	dim as integer attrib = any
 
 	function = NULL
 
@@ -939,19 +966,7 @@ private function hVarInit _
 			end if
 		end if
 
-		'' Ensure the initializer doesn't reference any vars it mustn't
-
-		'' Allow temp vars and temp array descriptors
-		ignoreattribs = FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR
-
-		'' Allow only non-SHARED STATICs to reference STATICs
-		if( symbIsShared( sym ) = FALSE ) then
-			ignoreattribs or= FB_SYMBATTRIB_STATIC
-		end if
-
-		if( astTypeIniUsesLocals( initree, ignoreattribs ) ) then
-			errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
-			'' error recovery: discard the tree
+		if( hCheckGlobalInitializer( sym, initree ) = FALSE ) then
 			astDelTree( initree )
 			exit function
 		end if
