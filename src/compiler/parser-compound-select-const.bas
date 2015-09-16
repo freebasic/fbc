@@ -225,7 +225,8 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 			tovalue = value
 		end if
 
-		for value = value to tovalue
+		'' Add Case values in range unless it was something invalid like "1 to 0"
+		while( value <= tovalue )
 			if( value < minval ) then
 				minval = value
 			end if
@@ -236,15 +237,23 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 			'' too big?
 			if( (minval > maxval) or ((maxval - minval + 1) > FB_MAXJUMPTBSLOTS) ) then
 				errReport( FB_ERRMSG_RANGETOOLARGE )
-				'' error recovery: reset values
+				'' error recovery: reset values and abort,
+				'' to avoid excessive looping in case of code like "0 to 4294967295u"
 				minval = stk->select.const_.minval
 				maxval = stk->select.const_.maxval
-			else
-				if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
-					errReport( FB_ERRMSG_DUPDEFINITION )
-				end if
+				exit while
 			end if
-		next
+
+			if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
+				errReport( FB_ERRMSG_DUPDEFINITION )
+			end if
+
+			'' "Early" exit check to avoid overflow problems
+			if( value = tovalue ) then
+				exit while
+			end if
+			value += 1
+		wend
 
 		stk->select.const_.minval = minval
 		stk->select.const_.maxval = maxval
