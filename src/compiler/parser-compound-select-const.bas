@@ -221,12 +221,18 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 
 			'' ConstExpression{int}
 			tovalue = cConstIntExpr( cExpression( ), symbGetType( stk->select.sym ) )
+
+			if( value > tovalue ) then
+				errReport( FB_ERRMSG_INVALIDCASERANGE )
+				tovalue = value
+			end if
 		else
 			tovalue = value
 		end if
 
-		'' Add Case values in range unless it was something invalid like "1 to 0"
-		while( value <= tovalue )
+		'' Add Case values in range
+		do
+			assert( value <= tovalue )
 			if( value < minval ) then
 				minval = value
 			end if
@@ -241,7 +247,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 				'' to avoid excessive looping in case of code like "0 to 4294967295u"
 				minval = stk->select.const_.minval
 				maxval = stk->select.const_.maxval
-				exit while
+				exit do
 			end if
 
 			if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
@@ -250,10 +256,10 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 
 			'' "Early" exit check to avoid overflow problems
 			if( value = tovalue ) then
-				exit while
+				exit do
 			end if
 			value += 1
-		wend
+		loop
 
 		stk->select.const_.minval = minval
 		stk->select.const_.maxval = maxval

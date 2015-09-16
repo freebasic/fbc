@@ -120,6 +120,7 @@ Version 1.04.0
 - Integer-only operations like AND, OR, \ and MOD converted non-integer operands to Integer, even if the other was a LongInt or UInteger. Now the conversion will use an integer type matching the integer operand (if any), to avoid truncating floating point values, and give more expected results.
 - ASM backend: Cross-compiling could give different results than native compilation with regards to the choice of whether to place string literals into .data or const (e.g. .rodata) sections
 - Compiling a Select Case As Const block containing a Case with a huge range of values such as <case 0 to 4294967295u> won't cause the compiler to "hang" anymore
+- Select Case As Const: <CASE a TO b> now triggers a compile-time error if a > b, instead of silently doing nothing
 
 
 Version 1.03.0
