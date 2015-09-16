@@ -8,13 +8,12 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
-const FB_MAXSWTCASEEXPR = 8192
-const FB_MAXSWTCASERANGE= 4096
+const FB_MAXJUMPTBSLOTS = 8192
 
 type SELECTCTX
 	base		as integer
-	casevalues(0 to FB_MAXSWTCASEEXPR-1) as ulongint
-	caselabels(0 to FB_MAXSWTCASEEXPR-1) as FBSYMBOL ptr
+	casevalues(0 to FB_MAXJUMPTBSLOTS-1) as ulongint
+	caselabels(0 to FB_MAXJUMPTBSLOTS-1) as FBSYMBOL ptr
 end type
 
 dim shared ctx as SELECTCTX
@@ -138,7 +137,7 @@ private function hSelConstAddCase _
 	) as integer
 
 	'' no free slots left?
-	if( ctx.base >= FB_MAXSWTCASEEXPR ) then
+	if( ctx.base >= FB_MAXJUMPTBSLOTS ) then
 		return FALSE
 	end if
 
@@ -235,7 +234,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 			end if
 
 			'' too big?
-			if( (minval > maxval) or ((maxval - minval) > FB_MAXSWTCASERANGE) ) then
+			if( (minval > maxval) or ((maxval - minval + 1) > FB_MAXJUMPTBSLOTS) ) then
 				errReport( FB_ERRMSG_RANGETOOLARGE )
 				'' error recovery: reset values
 				minval = stk->select.const_.minval
