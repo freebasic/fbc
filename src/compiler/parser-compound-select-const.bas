@@ -137,7 +137,7 @@ private function hSelConstAddCase _
 		byval label as FBSYMBOL ptr _
 	) as integer
 
-	'' nothing left?
+	'' no free slots left?
 	if( ctx.base >= FB_MAXSWTCASEEXPR ) then
 		return FALSE
 	end if
@@ -158,8 +158,8 @@ private function hSelConstAddCase _
 		end if
 	loop
 
-	'' move up
-	for i as integer = ctx.base+1 to swtbase+high+1 step -1
+	'' move up tail items to free a slot at swtbase+high
+	for i as integer = ctx.base to swtbase+high+1 step -1
 		ctx.casevalues(i) = ctx.casevalues(i-1)
 		ctx.caselabels(i) = ctx.caselabels(i-1)
 	next
