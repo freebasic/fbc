@@ -1061,6 +1061,8 @@ private function hCallStaticCtor _
 	dim as ASTNODE ptr t = any, initcode = any
 	dim as FBSYMBOL ptr proc = any
 
+	assert( symbIsRef( sym ) = FALSE )
+
 	t = hFlushDecl( var_decl )
 	initcode = NULL
 
@@ -1069,7 +1071,7 @@ private function hCallStaticCtor _
 		initcode = astTypeIniFlush( sym, initree, FALSE, AST_OPOPT_ISINI )
 	end if
 
-	if( has_dtor and (not symbIsRef( sym )) ) then
+	if( has_dtor ) then
 		'' Register an atexit() handler to call the static var's dtor
 		'' at program exit.
 		'' atexit( @static_proc )
@@ -1096,11 +1098,12 @@ private function hCallGlobalCtor _
 		byval has_dtor as integer _
 	) as ASTNODE ptr
 
+	assert( symbIsRef( sym ) = FALSE )
+
 	var_decl = hFlushDecl( var_decl )
 
-	var call_dtor = has_dtor and (not symbIsRef( sym ))
-	if( (initree <> NULL) or call_dtor ) then
-		astProcAddGlobalInstance( sym, initree, call_dtor )
+	if( (initree <> NULL) or has_dtor ) then
+		astProcAddGlobalInstance( sym, initree, has_dtor )
 	end if
 
 	'' No temp dtors should be left registered after the TYPEINI build-up
@@ -1162,18 +1165,21 @@ private function hFlushInitializer _
 	end if
 
 	'' not an object?
-	if( symbHasCtor( sym ) = FALSE ) then
+	if( symbIsRef( sym ) or (not symbHasCtor( sym )) ) then
+		'' No constructor call needed
 		'' let emit flush it..
 		symbSetTypeIniTree( sym, initree )
 
 		'' no dtor?
-		if( has_dtor = FALSE ) then
+		if( symbIsRef( sym ) or (not has_dtor) ) then
 			return hFlushDecl( var_decl )
 		end if
 
 		'' must be added to the dtor list..
 		initree = NULL
 	end if
+
+	'' Need to call constructor and/or destructor
 
     '' local?
     if( symbIsLocal( sym ) ) then
