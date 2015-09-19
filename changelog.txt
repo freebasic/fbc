@@ -122,7 +122,7 @@ Version 1.04.0
 - Compiling a Select Case As Const block containing a Case with a huge range of values such as <case 0 to 4294967295u> won't cause the compiler to "hang" anymore
 - Select Case As Const: <CASE a TO b> now triggers a compile-time error if a > b, instead of silently doing nothing
 - #784: C backend: String literals in inline ASM (containing double quotes, backslashes, etc.) were emitted into the .c code without escaping
-- -lang qb: Suffixed identifiers on the left-hand side of assignments were resolved by prefering global variables instead of local ones. Now local ones take priority, as in other places (e.g. expressions) and as in QB.
+- #777: -lang qb: Suffixed identifiers on the left-hand side of assignments were resolved by prefering global variables instead of local ones. Now local ones take priority, as in other places (e.g. expressions) and as in QB.
 
 
 Version 1.03.0
