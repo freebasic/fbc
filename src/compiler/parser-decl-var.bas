@@ -1122,7 +1122,7 @@ private function hFlushInitializer _
 	) as ASTNODE ptr
 
 	'' object?
-	if( has_dtor ) then
+	if( has_dtor and (not symbIsRef( sym )) ) then
 		'' check visibility
 		if( symbCheckAccess( symbGetCompDtor( symbGetSubtype( sym ) ) ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODTOR )

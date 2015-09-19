@@ -556,12 +556,40 @@ namespace noCtorsCalled
 	end sub
 end namespace
 
+namespace privateDtor
+	type UDT
+		private:
+			dummy as integer
+			declare destructor()
+		public:
+			declare sub free()
+	end type
+
+	destructor UDT()
+	end destructor
+
+	sub UDT.free()
+		delete @this
+	end sub
+
+	sub test cdecl( )
+		dim as UDT ptr p = new UDT
+
+		'' It should be allowed to create a reference to a UDT even if
+		'' its destructor isn't publicly accessible
+		dim byref as UDT r = *p
+
+		p->free()
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/dim/byref" )
 	fbcu.add_test( "simpleVars", @simpleVars.test )
 	fbcu.add_test( "allDtypes", @allDtypes.test )
 	fbcu.add_test( "callByrefFunctionPtrThroughByref", @callByrefFunctionPtrThroughByref.test )
 	fbcu.add_test( "noCtorsCalled", @noCtorsCalled.test )
+	fbcu.add_test( "privateDtor", @privateDtor.test )
 end sub
 
 end namespace
