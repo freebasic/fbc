@@ -515,64 +515,64 @@ private function hAssignOrCall_QB _
 
 	function = FALSE
 
-    dim as zstring ptr id = lexGetText( )
-    dim as integer suffix = lexGetType( )
-    dim as integer defdtype = symbGetDefType( id )
+	dim as zstring ptr id = lexGetText( )
+	dim as integer suffix = lexGetType( )
+	dim as integer defdtype = symbGetDefType( id )
 
-    do while( chain_ <> NULL )
+	do while( chain_ <> NULL )
 
-    	dim as FBSYMBOL ptr sym = chain_->sym
+		dim as FBSYMBOL ptr sym = chain_->sym
 		dim as FBSYMBOL ptr var_sym = NULL
 
-    	'' no suffix?
-    	if( suffix = FB_DATATYPE_INVALID ) then
-    		do
-    			dim as integer is_match = TRUE
-    			'' is the original symbol suffixed?
-    			if( symbIsSuffixed( sym ) ) then
-    				'' if it's a VAR, lookup the default type (last DEF###) in
-    				'' the case symbol could not be found..
-    				if( symbGetClass( sym ) = FB_SYMBCLASS_VAR ) then
-    					if( defdtype = FB_DATATYPE_STRING ) then
-	          				select case as const symbGetType( sym )
-	          				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+		'' no suffix?
+		if( suffix = FB_DATATYPE_INVALID ) then
+			do
+				dim as integer is_match = TRUE
+				'' is the original symbol suffixed?
+				if( symbIsSuffixed( sym ) ) then
+					'' if it's a VAR, lookup the default type (last DEF###) in
+					'' the case symbol could not be found..
+					if( symbGetClass( sym ) = FB_SYMBCLASS_VAR ) then
+						if( defdtype = FB_DATATYPE_STRING ) then
+							select case as const symbGetType( sym )
+							case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 
-	          				case else
-	          					is_match = FALSE
-	          				end select
-    					else
-    						is_match = (symbGetType( sym ) = defdtype)
-    					end if
-    				end if
-    			end if
+							case else
+								is_match = FALSE
+							end select
+						else
+							is_match = (symbGetType( sym ) = defdtype)
+						end if
+					end if
+				end if
 
-	    		if( is_match ) then
-	    			select case as const symbGetClass( sym )
-	    			'' proc?
-	    			case FB_SYMBCLASS_PROC
-  						'' if it's a RTL func, the suffix is obligatory
-  						if( symbGetIsRTL( sym ) ) then
-  							is_match = (symbIsSuffixed( sym ) = FALSE)
-  						end if
+				if( is_match ) then
+					select case as const symbGetClass( sym )
+					'' proc?
+					case FB_SYMBCLASS_PROC
+						'' if it's a RTL func, the suffix is obligatory
+						if( symbGetIsRTL( sym ) ) then
+							is_match = (symbIsSuffixed( sym ) = FALSE)
+						end if
 
 						if( is_match ) then
-	    					return hProcSymbol( NULL, sym, iscall )
-	    				end if
+							return hProcSymbol( NULL, sym, iscall )
+						end if
 
-	    			'' variable?
-	    			case FB_SYMBCLASS_VAR
-           				if( var_sym = NULL ) then
-           					if( symbVarCheckAccess( sym ) ) then
-           						var_sym = sym
-           					end if
-           				end if
+					'' variable?
+					case FB_SYMBCLASS_VAR
+						if( var_sym = NULL ) then
+							if( symbVarCheckAccess( sym ) ) then
+								var_sym = sym
+							end if
+						end if
 
-	  				'' quirk-keyword?
-	  				case FB_SYMBCLASS_KEYWORD
-  						'' only if not suffixed
-  						if( symbIsSuffixed( sym ) = FALSE ) then
-	  						return cQuirkStmt( sym->key.id )
-	  					end if
+					'' quirk-keyword?
+					case FB_SYMBCLASS_KEYWORD
+						'' only if not suffixed
+						if( symbIsSuffixed( sym ) = FALSE ) then
+							return cQuirkStmt( sym->key.id )
+						end if
 
 					end select
 				end if
@@ -580,39 +580,39 @@ private function hAssignOrCall_QB _
 				sym = sym->hash.next
 			loop while( sym <> NULL )
 
-    	'' suffix..
-    	else
-    		do
-	      		dim as integer is_match = any
-	       		if( suffix = FB_DATATYPE_STRING ) then
-	          		select case as const symbGetType( sym )
-	          		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-	          			is_match = TRUE
-	          		case else
-	          			is_match = FALSE
-	          		end select
-	          	else
-	          		is_match = (symbGetType( sym ) = suffix)
-	          	end if
+		'' suffix..
+		else
+			do
+				dim as integer is_match = any
+				if( suffix = FB_DATATYPE_STRING ) then
+					select case as const symbGetType( sym )
+					case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+						is_match = TRUE
+					case else
+						is_match = FALSE
+					end select
+				else
+					is_match = (symbGetType( sym ) = suffix)
+				end if
 
-	    		if( is_match ) then
-	    			select case as const symbGetClass( sym )
-	    			'' proc?
-	    			case FB_SYMBCLASS_PROC
-	    				return hProcSymbol( NULL, sym, iscall )
+				if( is_match ) then
+					select case as const symbGetClass( sym )
+					'' proc?
+					case FB_SYMBCLASS_PROC
+						return hProcSymbol( NULL, sym, iscall )
 
-	    			'' variable?
-	    			case FB_SYMBCLASS_VAR
-           				if( symbVarCheckAccess( sym ) ) then
-           					var_sym = sym
-           				end if
+					'' variable?
+					case FB_SYMBCLASS_VAR
+						if( symbVarCheckAccess( sym ) ) then
+							var_sym = sym
+						end if
 
-	  				'' quirk-keyword?
-	  				case FB_SYMBCLASS_KEYWORD
-	  					return cQuirkStmt( sym->key.id )
+					'' quirk-keyword?
+					case FB_SYMBCLASS_KEYWORD
+						return cQuirkStmt( sym->key.id )
 
 					end select
-	          	end if
+				end if
 
 				sym = sym->hash.next
 			loop while( sym <> NULL )
@@ -623,8 +623,8 @@ private function hAssignOrCall_QB _
 			return hVarSymbol( var_sym, iscall )
 		end if
 
-    	chain_ = symbChainGetNext( chain_ )
-    loop
+		chain_ = symbChainGetNext( chain_ )
+	loop
 
 end function
 
