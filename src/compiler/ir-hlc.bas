@@ -3259,11 +3259,6 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 	ln += "( "
 
 	dim asmcode as string
-	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
-		if( sectionInsideProc( ) ) then
-			asmcode += !"\t"
-		end if
-	end if
 
 	'' 2nd pass - emitting
 	dim as integer operandindex
@@ -3335,12 +3330,6 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 
 		n = n->next
 	wend
-
-	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
-		if( sectionInsideProc( ) ) then
-			asmcode += !"\n"
-		end if
-	end if
 
 	hBuildStrLit( ln, strptr( asmcode ), len( asmcode ) + 1 )
 
