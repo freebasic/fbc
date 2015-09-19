@@ -506,6 +506,19 @@ private function hVarSymbol _
 
 end function
 
+private function hMatchesDefdtype( byval sym as FBSYMBOL ptr, byval defdtype as integer ) as integer
+	if( defdtype = FB_DATATYPE_STRING ) then
+		select case( symbGetType( sym ) )
+		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+			function = TRUE
+		case else
+			function = FALSE
+		end select
+	else
+		function = (symbGetType( sym ) = defdtype)
+	end if
+end function
+
 ''::::
 private function hAssignOrCall_QB _
 	( _
@@ -533,16 +546,7 @@ private function hAssignOrCall_QB _
 					'' if it's a VAR, lookup the default type (last DEF###) in
 					'' the case symbol could not be found..
 					if( symbGetClass( sym ) = FB_SYMBCLASS_VAR ) then
-						if( defdtype = FB_DATATYPE_STRING ) then
-							select case as const symbGetType( sym )
-							case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-
-							case else
-								is_match = FALSE
-							end select
-						else
-							is_match = (symbGetType( sym ) = defdtype)
-						end if
+						is_match = hMatchesDefdtype( sym, defdtype )
 					end if
 				end if
 
@@ -583,19 +587,7 @@ private function hAssignOrCall_QB _
 		'' suffix..
 		else
 			do
-				dim as integer is_match = any
-				if( suffix = FB_DATATYPE_STRING ) then
-					select case as const symbGetType( sym )
-					case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-						is_match = TRUE
-					case else
-						is_match = FALSE
-					end select
-				else
-					is_match = (symbGetType( sym ) = suffix)
-				end if
-
-				if( is_match ) then
+				if( hMatchesDefdtype( sym, suffix ) ) then
 					select case as const symbGetClass( sym )
 					'' proc?
 					case FB_SYMBCLASS_PROC
