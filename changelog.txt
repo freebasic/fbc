@@ -123,6 +123,7 @@ Version 1.04.0
 - Select Case As Const: <CASE a TO b> now triggers a compile-time error if a > b, instead of silently doing nothing
 - #784: C backend: String literals in inline ASM (containing double quotes, backslashes, etc.) were emitted into the .c code without escaping
 - #777: -lang qb: Suffixed identifiers on the left-hand side of assignments were resolved by prefering global variables instead of local ones. Now local ones take priority, as in other places (e.g. expressions) and as in QB.
+- #783: C backend: Run-time float-to-uint64 conversions truncated the value to int64
 
 
 Version 1.03.0

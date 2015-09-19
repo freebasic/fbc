@@ -167,9 +167,11 @@ end type
 enum
 	BUILTIN_F2I           = (1 shl 0)
 	BUILTIN_F2L           = (1 shl 1)
-	BUILTIN_D2I           = (1 shl 2)
-	BUILTIN_D2L           = (1 shl 3)
-	BUILTIN_STATICASSERT  = (1 shl 4)
+	BUILTIN_F2UL          = (1 shl 2)
+	BUILTIN_D2I           = (1 shl 3)
+	BUILTIN_D2L           = (1 shl 4)
+	BUILTIN_D2UL          = (1 shl 5)
+	BUILTIN_STATICASSERT  = (1 shl 6)
 end enum
 
 type IRHLCCTX
@@ -1115,27 +1117,22 @@ private sub hWriteX86F2I _
 		byval ptype as integer _
 	)
 
-	dim as string rtype_str, rtype_suffix
-	if( rtype = FB_DATATYPE_LONG ) then
-		rtype_str = "int32"
-		rtype_suffix = "l"
-	else
-		rtype_str = "int64"
-		rtype_suffix = "q"
-	end if
+	var rtype_str = hEmitType( rtype, NULL )
+	var ptype_str = hEmitType( ptype, NULL )
 
-	dim as string ptype_str, ptype_suffix
-	if( ptype = FB_DATATYPE_SINGLE ) then
-		ptype_str = "float"
-		ptype_suffix = "s"
-	else
-		ptype_str = "double"
-		ptype_suffix = "l"
-	end if
-
-	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
-		rtype_suffix = ""
-		ptype_suffix = ""
+	dim as string rtype_suffix, ptype_suffix
+	if( env.clopt.asmsyntax = FB_ASMSYNTAX_ATT ) then
+		select case( typeGetSize( rtype ) )
+		case 4
+			rtype_suffix = "l"
+		case 8
+			rtype_suffix = "q"
+		end select
+		if( ptype = FB_DATATYPE_SINGLE ) then
+			ptype_suffix = "s"
+		else
+			ptype_suffix = "l"
+		end if
 	end if
 
 	hWriteLine( "", TRUE )
@@ -1164,21 +1161,14 @@ private sub hWriteGenericF2I _
 		byval ptype as integer _
 	)
 
-	dim as string resulttype, callname
-
-	if( rtype = FB_DATATYPE_LONG ) then
-		resulttype = "int32"
-	else
-		resulttype = "int64"
-	end if
-
+	dim as string callname
 	if( ptype = FB_DATATYPE_SINGLE ) then
 		callname = "nearbyintf"
 	else
 		callname = "nearbyint"
 	end if
 
-	hWriteLine( "#define fb_" + fname +  "( value ) ((" + resulttype + ")__builtin_" + callname + "( value ))", TRUE )
+	hWriteLine( "#define fb_" + fname +  "( value ) ((" + hEmitType( rtype, NULL ) + ")__builtin_" + callname + "( value ))", TRUE )
 
 end sub
 
@@ -1189,11 +1179,16 @@ private sub hWriteF2I _
 		byval ptype as integer _
 	)
 
+	'' We have inline ASM routines for some cases
 	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
-		hWriteX86F2I( fname, rtype, ptype )
-	else
-		hWriteGenericF2I( fname, rtype, ptype )
+		select case( rtype )
+		case FB_DATATYPE_LONG, FB_DATATYPE_LONGINT
+			hWriteX86F2I( fname, rtype, ptype )
+			exit sub
+		end select
 	end if
+
+	hWriteGenericF2I( fname, rtype, ptype )
 
 end sub
 
@@ -1272,18 +1267,12 @@ private sub _emitEnd( )
 	'' Switch to header section temporarily
 	section = sectionGosub( 0 )
 
-	if( ctx.usedbuiltins and BUILTIN_F2I ) then
-		hWriteF2I( "F2I", FB_DATATYPE_LONG, FB_DATATYPE_SINGLE )
-	end if
-	if( ctx.usedbuiltins and BUILTIN_F2L ) then
-		hWriteF2I( "F2L", FB_DATATYPE_LONGINT, FB_DATATYPE_SINGLE )
-	end if
-	if( ctx.usedbuiltins and BUILTIN_D2I ) then
-		hWriteF2I( "D2I", FB_DATATYPE_LONG, FB_DATATYPE_DOUBLE )
-	end if
-	if( ctx.usedbuiltins and BUILTIN_D2L ) then
-		hWriteF2I( "D2L", FB_DATATYPE_LONGINT, FB_DATATYPE_DOUBLE )
-	end if
+	if( ctx.usedbuiltins and BUILTIN_F2I  ) then hWriteF2I( "F2I" , FB_DATATYPE_LONG    , FB_DATATYPE_SINGLE )
+	if( ctx.usedbuiltins and BUILTIN_F2L  ) then hWriteF2I( "F2L" , FB_DATATYPE_LONGINT , FB_DATATYPE_SINGLE )
+	if( ctx.usedbuiltins and BUILTIN_F2UL ) then hWriteF2I( "F2UL", FB_DATATYPE_ULONGINT, FB_DATATYPE_SINGLE )
+	if( ctx.usedbuiltins and BUILTIN_D2I  ) then hWriteF2I( "D2I" , FB_DATATYPE_LONG    , FB_DATATYPE_DOUBLE )
+	if( ctx.usedbuiltins and BUILTIN_D2L  ) then hWriteF2I( "D2L" , FB_DATATYPE_LONGINT , FB_DATATYPE_DOUBLE )
+	if( ctx.usedbuiltins and BUILTIN_D2UL ) then hWriteF2I( "D2UL", FB_DATATYPE_ULONGINT, FB_DATATYPE_DOUBLE )
 
 	'' Append global declarations to the header of the toplevel section.
 	'' This must be done during _emitEnd() instead of _emitBegin() because
@@ -2833,29 +2822,35 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		'' ((type)fb_F2I( r ))
 		''
 		'' If converting to integer <= int32: use fb_*2I()
-		'' If converting to integer >= uint32: use fb_*2L()
-		''
-		'' Treating uint32 like [u]int64 as a special case:
-		'' float|double -> uint32 conversions must be done as float|double -> int64 -> uint32,
-		'' otherwise the value will be truncated to int32. (This is a limitation of the F2I ASM routines,
-		'' and the ASM emitter is having the same problem, see emit_x86.bas:_emitLOADF2I() & co)
+		'' If converting to uint32 or int64: use fb_*2L()
+		''   (uint32: need to avoid truncation to int32)
+		'' If converting to uint64: use fb_*2UL()
+		''   (need to avoid truncation to int64)
 
 		dim s as string, tempdtype as integer
-		if( typeGetSizeType( v1->dtype ) < FB_SIZETYPE_UINT32 ) then
+		select case( typeGetSizeType( v1->dtype ) )
+		case is <= FB_SIZETYPE_INT32
 			if( r->dtype = FB_DATATYPE_SINGLE ) then
 				s = "fb_F2I" : ctx.usedbuiltins or= BUILTIN_F2I
 			else
 				s = "fb_D2I" : ctx.usedbuiltins or= BUILTIN_D2I
 			end if
 			tempdtype = FB_DATATYPE_LONG
-		else
+		case is <= FB_SIZETYPE_INT64
 			if( r->dtype = FB_DATATYPE_SINGLE ) then
 				s = "fb_F2L" : ctx.usedbuiltins or= BUILTIN_F2L
 			else
 				s = "fb_D2L" : ctx.usedbuiltins or= BUILTIN_D2L
 			end if
 			tempdtype = FB_DATATYPE_LONGINT
-		end if
+		case else
+			if( r->dtype = FB_DATATYPE_SINGLE ) then
+				s = "fb_F2UL" : ctx.usedbuiltins or= BUILTIN_F2UL
+			else
+				s = "fb_D2UL" : ctx.usedbuiltins or= BUILTIN_D2UL
+			end if
+			tempdtype = FB_DATATYPE_ULONGINT
+		end select
 		s += "( " + exprFlush( r ) + " )"
 		r = exprNewTEXT( tempdtype, NULL, s )
 	end if

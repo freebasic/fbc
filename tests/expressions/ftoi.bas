@@ -244,28 +244,25 @@ sub floatToIntRounding cdecl( )
 end sub
 
 sub doubleToUnsigned cdecl( )
-	dim as unsigned integer i
-	dim as unsigned longint l
+	dim as uinteger i
+	dim as ulongint l
 	dim as double d
 
 	d = 1234.49
 	i = d
 	l = d
-
 	CU_ASSERT_EQUAL( i, 1234 )
 	CU_ASSERT_EQUAL( l, 1234 )
 
 	d = 1234.5
 	i = d
 	l = d
-
 	CU_ASSERT_EQUAL( i, 1234 )
 	CU_ASSERT_EQUAL( l, 1234 )
 
 	d = 1234.51
 	i = d
 	l = d
-
 	CU_ASSERT_EQUAL( i, 1235 )
 	CU_ASSERT_EQUAL( l, 1235 )
 
@@ -273,17 +270,66 @@ sub doubleToUnsigned cdecl( )
 	CU_ASSERT_EQUAL( i, 4.2e9 )
 
 	'' -gen gcc regression tests
-	d = 4294967295u
-	CU_ASSERT( cuint( d ) = 4294967295u )
-	CU_ASSERT( cuint( cdbl( 4294967295u ) ) = 4294967295u )
+	d = &hFFFFFFFFu
+	CU_ASSERT( culng( d ) = &hFFFFFFFFu )
+	CU_ASSERT( cuint( d ) = &hFFFFFFFFu )
+	CU_ASSERT( culng( cdbl( &hFFFFFFFFu ) ) = &hFFFFFFFFu )
+	CU_ASSERT( cuint( cdbl( &hFFFFFFFFu ) ) = &hFFFFFFFFu )
 	d = -1
 	CU_ASSERT( cint( d ) = -1 )
+
+	'' double-2-uint64 shouldn't truncate to int64
+	d = 1e19
+	CU_ASSERT( culngint( d ) = 10000000000000000000ull )
+	CU_ASSERT( culngint( d ) = &h8AC7230489E80000ull )
+end sub
+
+sub singleToUnsigned cdecl( )
+	dim as uinteger i
+	dim as ulongint l
+	dim as single f
+
+	f = 1234.49
+	i = f
+	l = f
+	CU_ASSERT_EQUAL( i, 1234 )
+	CU_ASSERT_EQUAL( l, 1234 )
+
+	f = 1234.5
+	i = f
+	l = f
+	CU_ASSERT_EQUAL( i, 1234 )
+	CU_ASSERT_EQUAL( l, 1234 )
+
+	f = 1234.51
+	i = f
+	l = f
+	CU_ASSERT_EQUAL( i, 1235 )
+	CU_ASSERT_EQUAL( l, 1235 )
+
+	i = 4.2e9
+	CU_ASSERT_EQUAL( i, 4.2e9 )
+
+	'' -gen gcc regression tests
+	f = &h80000000u
+	CU_ASSERT( culng( f ) = &h80000000u )
+	CU_ASSERT( cuint( f ) = &h80000000u )
+	CU_ASSERT( culng( csng( &h80000000u ) ) = &h80000000u )
+	CU_ASSERT( cuint( csng( &h80000000u ) ) = &h80000000u )
+	f = -1
+	CU_ASSERT( cint( f ) = -1 )
+
+	'' float-2-uint64 shouldn't truncate to int64
+	f = 9223372036854775808f
+	CU_ASSERT( culngint( f ) = 9223372036854775808ull )
+	CU_ASSERT( culngint( f ) = &h8000000000000000ull )
 end sub
 
 sub ctor( ) constructor
 	fbcu.add_suite( "fbc_tests.expressions.ftoi" )
 	fbcu.add_test( "FTOI rounding", @floatToIntRounding )
-	fbcu.add_test( "double to unsigned", @doubleToUnsigned )
+	fbcu.add_test( "doubleToUnsigned", @doubleToUnsigned )
+	fbcu.add_test( "singleToUnsigned", @singleToUnsigned )
 end sub
 
 end namespace
