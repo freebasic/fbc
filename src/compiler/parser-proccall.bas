@@ -603,8 +603,10 @@ private function hAssignOrCall_QB _
 
 					'' variable?
 					case FB_SYMBCLASS_VAR
-						if( symbVarCheckAccess( sym ) ) then
-							var_sym = sym
+						if( var_sym = NULL ) then
+							if( symbVarCheckAccess( sym ) ) then
+								var_sym = sym
+							end if
 						end if
 
 					'' quirk-keyword?
