@@ -121,6 +121,7 @@ Version 1.04.0
 - ASM backend: Cross-compiling could give different results than native compilation with regards to the choice of whether to place string literals into .data or const (e.g. .rodata) sections
 - Compiling a Select Case As Const block containing a Case with a huge range of values such as <case 0 to 4294967295u> won't cause the compiler to "hang" anymore
 - Select Case As Const: <CASE a TO b> now triggers a compile-time error if a > b, instead of silently doing nothing
+- #784: C backend: String literals in inline ASM (containing double quotes, backslashes, etc.) were emitted into the .c code without escaping
 
 
 Version 1.03.0

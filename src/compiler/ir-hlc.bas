@@ -3258,10 +3258,10 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 
 	ln += "( "
 
+	dim asmcode as string
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
-		ln += """"
 		if( sectionInsideProc( ) ) then
-			ln += $"\t"
+			asmcode += !"\t"
 		end if
 	end if
 
@@ -3273,7 +3273,7 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 
 		select case( n->type )
 		case AST_ASMTOK_TEXT
-			ln += *n->text
+			asmcode += *n->text
 
 		case AST_ASMTOK_SYMB
 			if( sectionInsideProc( ) ) then
@@ -3284,7 +3284,7 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 						'' Referencing a variable: insert %N place-holder...
 						'' (N refers to N'th operand written in the whole
 						'' asm [goto]([outputs...] inputs... [labels...]) statement)
-						ln += "%" & operandindex
+						asmcode += "%" & operandindex
 						operandindex += 1
 
 						'' ... and add the symbol to a constraint list
@@ -3309,7 +3309,7 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 						'' Referencing a label: insert %lN place-holder
 						'' (N refers to N'th operand written in whole
 						'' asm goto(outputs... inputs... labels...) statement)
-						ln += "%l" & labelindex
+						asmcode += "%l" & labelindex
 						labelindex += 1
 
 						if( len( labellist ) > 0 ) then
@@ -3319,16 +3319,16 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 
 					case else
 						'' Referencing a procedure: emit as-is, no gcc constraints needed
-						ln += *id
+						asmcode += *id
 					end select
 				else
 					'' -asm att: Expecting FB inline asm to be in gcc's format already,
 					'' emit everything as-is.
-					ln += *id
+					asmcode += *id
 				end if
 			else
 				'' In NAKED procedure
-				ln += hGetMangledNameForASM( n->sym, TRUE )
+				asmcode += hGetMangledNameForASM( n->sym, TRUE )
 			end if
 
 		end select
@@ -3338,11 +3338,13 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
 		if( sectionInsideProc( ) ) then
-			ln += $"\n"
+			asmcode += !"\n"
 		end if
+	end if
 
-		ln += """"
+	hBuildStrLit( ln, strptr( asmcode ), len( asmcode ) + 1 )
 
+	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
 		'' Only when inside normal procedures
 		'' (NAKED procedures don't increase the indentation)
 		if( sectionInsideProc( ) ) then

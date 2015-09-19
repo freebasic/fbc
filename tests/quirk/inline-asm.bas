@@ -33,6 +33,14 @@ label2:
 	asm jmp label1
 label3:
 
+	'' Inline ASM can contain double quotes etc., and strings in the inline
+	'' ASM can contain escape sequences...
+	'' This requires the backends to take special care when emitting.
+	asm
+		jmp ignore
+		.ascii $"testing double-quoted string literal, even with \""embedded\"" double quotes and null terminator\0"
+		ignore:
+	end asm
 end sub
 
 private sub ctor( ) constructor
