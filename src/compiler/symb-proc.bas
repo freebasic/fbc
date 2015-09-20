@@ -2082,9 +2082,6 @@ function symbFindClosestOvlProc _
 			matches = 0
 			exact_matches = 0
 
-			'' start out assuming TRUE - as we visit params/args this may be set to FALSE
-			dim as integer constonly_diff = TRUE
-
 			'' for each arg..
 			arg = arg_head
 			for i as integer = 0 to args-1
@@ -2096,20 +2093,8 @@ function symbFindClosestOvlProc _
 				end if
 
 				'' exact checks are required for operator overload candidates
-				if( arg_matches = FB_OVLPROC_FULLMATCH ) then
+				if( (arg_matches = FB_OVLPROC_FULLMATCH) or arg_constonly_diff ) then
 					exact_matches += 1
-				else
-					if( constonly_diff and arg_constonly_diff ) then
-						'' everything constonly_diff so far, ok
-					elseif( constonly_diff ) then
-						'' previous params were constonly_diff, but now one isn't
-						constonly_diff = FALSE
-					elseif( arg_constonly_diff ) then
-						'' previous params weren't constonly_diff, this one is but
-						'' doesn't change the overall picture
-					else
-						'' nothing is constonly_diff
-					end if
 				end if
 
 				matches += arg_matches
@@ -2121,13 +2106,7 @@ function symbFindClosestOvlProc _
 
 			'' If there were no args, then assume it's a match and
 			'' then check the remaining params, if any.
-			dim as integer is_match
-			if( (args = 0) or (matches > 0) ) then
-				is_match = TRUE
-			else
-				is_match = FALSE
-				constonly_diff = FALSE
-			end if
+			var is_match = (args = 0) or (matches > 0)
 
 			'' Fewer args than params? Check whether the missing ones are optional.
 			for i as integer = args to params-1
@@ -2150,9 +2129,7 @@ function symbFindClosestOvlProc _
 					'' an operator overload candidate is only eligible if
 					'' there is at least one exact arg match
 					if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
-						if( exact_matches = 0 and constonly_diff = FALSE ) then
-							eligible = FALSE
-						end if
+						eligible = (exact_matches >= 1)
 					end if
 
 					'' it's eligible, update

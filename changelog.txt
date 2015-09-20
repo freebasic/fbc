@@ -6,6 +6,7 @@ Version 1.04.0
 - Windows API binding: The BOOLEAN typedef has been renamed to WINBOOLEAN due to the addition of built-in Boolean type to FB. You can #undef Boolean before #including windows.bi to get the Windows API BOOLEAN typedef again.
 - Many bindings now declare CTRUE (1) instead of TRUE (1), to avoid conflicting with the new built-in True (-1) keyword. You can #undef True before #including them to get their old TRUE (1) again.
 - On 64bit, but not -lang qb, integer number literals > 32bit now default to being Integers instead of LongInts, since 64bit Integers are the default type on 64bit. This only makes a difference for overload resolution and typeof(). No changes on 32bit or -lang qb.
+- #738: Operator overloading: The overload resolution is now a bit more permissive with regards to CONSTness; for example non-const UDT objects can be passed to Byref As Const UDT parameters, regardless of the other argument/parameter (if it's a binary operator). Previously this was disallowed (though only sometimes, due to a separate issue).
 
 [added]
 - BOOLEAN data type (compatible to GCC C++). Logic operations involving boolean operands also return a boolean.
