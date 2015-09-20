@@ -33,11 +33,8 @@ int fb_DevPipeOpen( FB_FILE *handle, const char *filename, size_t filename_len )
     int res = fb_ErrorSetNum( FB_RTERROR_OK );
     FILE *fp = NULL;
     char openmask[16];
-    const char *fname;
 
     FB_LOCK();
-
-    fname = filename;
 
     handle->hooks = &hooks_dev_pipe;
 
@@ -81,9 +78,9 @@ int fb_DevPipeOpen( FB_FILE *handle, const char *filename, size_t filename_len )
     {
         /* try to open/create pipe */
 #ifdef HOST_MINGW
-        if( (fp = _popen( fname, openmask )) == NULL )
+        if( (fp = _popen( filename, openmask )) == NULL )
 #else
-        if( (fp = popen( fname, openmask )) == NULL )
+        if( (fp = popen( filename, openmask )) == NULL )
 #endif
         {
             res = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
