@@ -114,7 +114,8 @@ function astNewUOP _
 		end if
 	end if
 
-	if( op = AST_OP_SWZ_REPEAT ) then
+	select case( op )
+	case AST_OP_SWZ_REPEAT
 		'' alloc new node
 		n = astNewNode( AST_NODECLASS_UOP, o->dtype, o->subtype )
 
@@ -124,7 +125,11 @@ function astNewUOP _
 		n->op.ex = NULL
 		n->op.options = AST_OPOPT_ALLOCRES
 		return n
-	end if
+
+	case AST_OP_LEN
+		'' The len() UOP is only allowed if overloaded
+		exit function
+	end select
 
 	'' string? can't operate
 	if( typeGetClass( o->dtype ) = FB_DATACLASS_STRING ) then

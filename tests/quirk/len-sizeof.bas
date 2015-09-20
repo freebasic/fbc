@@ -449,6 +449,52 @@ private sub sizeofTypeVsLenString cdecl()
 	end scope
 end sub
 
+namespace lenUdtWithCastOverloads
+	type UDT1
+		dummy as integer
+		declare operator cast() as integer
+	end type
+
+	operator UDT1.cast() as integer
+		return 123
+	end operator
+
+	type UDT2
+		pz as zstring ptr
+		dummy as integer
+		declare operator cast() byref as zstring
+	end type
+
+	operator UDT2.cast() byref as zstring
+		return *pz
+	end operator
+
+	sub test cdecl( )
+		scope
+			dim x as UDT1
+			CU_ASSERT( len( x ) = sizeof( x ) )
+			CU_ASSERT( len( x ) = sizeof( UDT1 ) )
+			CU_ASSERT( len( x ) = sizeof( integer ) )
+			CU_ASSERT( len( UDT1 ) = sizeof( x ) )
+			CU_ASSERT( len( UDT1 ) = sizeof( UDT1 ) )
+			CU_ASSERT( len( UDT1 ) = sizeof( integer ) )
+		end scope
+
+		scope
+			dim x as UDT2 = ( @"FreeBASIC" )
+			CU_ASSERT( (*x.pz)[0] = asc( "F" ) )
+			CU_ASSERT( len( *x.pz ) = 9 )
+			CU_ASSERT( sizeof( *x.pz ) = sizeof( zstring ) )
+			CU_ASSERT( len( x ) = sizeof( x ) )
+			CU_ASSERT( len( x ) = sizeof( UDT2 ) )
+			CU_ASSERT( len( x ) = sizeof( zstring ptr ) + sizeof( integer ) )
+			CU_ASSERT( len( UDT2 ) = sizeof( x ) )
+			CU_ASSERT( len( UDT2 ) = sizeof( UDT2 ) )
+			CU_ASSERT( len( UDT2 ) = sizeof( zstring ptr ) + sizeof( integer ) )
+		end scope
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/quirk/len-sizeof" )
 	fbcu.add_test( "len(string)", @lenString )
@@ -456,6 +502,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "sizeof(var)", @sizeofVar )
 	fbcu.add_test( "sizeof(type)", @sizeofType )
 	fbcu.add_test( "sizeof(type) vs. len(string)", @sizeofTypeVsLenString )
+	fbcu.add_test( "lenUdtWithCastOverloads", @lenUdtWithCastOverloads.test )
 end sub
 
 end namespace

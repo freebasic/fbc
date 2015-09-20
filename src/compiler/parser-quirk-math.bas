@@ -84,6 +84,7 @@ private function hLen _
 		assert( lgt >= 0 )
 
 	case FB_DATATYPE_STRUCT
+		'' Check whether there is a matching len() UOP overload
 		lenexpr = astNewUOP( AST_OP_LEN, expr )
 		if( lenexpr <> NULL ) then
 			return lenexpr
