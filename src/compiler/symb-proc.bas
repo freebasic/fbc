@@ -2033,7 +2033,6 @@ function symbFindClosestOvlProc _
 	dim as integer arg_matches = any, matches = any
 	dim as integer max_matches = any, exact_matches = any
 	dim as integer matchcount = any
-	dim as integer constonly_diff = any
 	dim as FB_CALL_ARG ptr arg = any
 
 	*err_num = FB_ERRMSG_OK
@@ -2083,19 +2082,33 @@ function symbFindClosestOvlProc _
 			matches = 0
 			exact_matches = 0
 
+			'' start out assuming TRUE - as we visit params/args this may be set to FALSE
+			dim as integer constonly_diff = TRUE
+
 			'' for each arg..
 			arg = arg_head
 			for i as integer = 0 to args-1
-				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode, constonly_diff )
+				dim as integer arg_constonly_diff = FALSE
+				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode, arg_constonly_diff )
 				if( arg_matches = 0 ) then
 					matches = 0
 					exit for
 				end if
 
 				'' exact checks are required for operator overload candidates
-				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
-					if( arg_matches = FB_OVLPROC_FULLMATCH ) then
-						exact_matches += 1
+				if( arg_matches = FB_OVLPROC_FULLMATCH ) then
+					exact_matches += 1
+				else
+					if( constonly_diff and arg_constonly_diff ) then
+						'' everything constonly_diff so far, ok
+					elseif( constonly_diff ) then
+						'' previous params were constonly_diff, but now one isn't
+						constonly_diff = FALSE
+					elseif( arg_constonly_diff ) then
+						'' previous params weren't constonly_diff, this one is but
+						'' doesn't change the overall picture
+					else
+						'' nothing is constonly_diff
 					end if
 				end if
 
@@ -2108,7 +2121,13 @@ function symbFindClosestOvlProc _
 
 			'' If there were no args, then assume it's a match and
 			'' then check the remaining params, if any.
-			var is_match = (args = 0) or (matches > 0)
+			dim as integer is_match
+			if( (args = 0) or (matches > 0) ) then
+				is_match = TRUE
+			else
+				is_match = FALSE
+				constonly_diff = FALSE
+			end if
 
 			'' Fewer args than params? Check whether the missing ones are optional.
 			for i as integer = args to params-1

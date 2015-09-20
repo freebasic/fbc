@@ -127,6 +127,7 @@ Version 1.04.0
 - #745 part 1: PRINT comma-padding could wrap into the next line too early (if the padding would move the caret beyond column width-FB_TAB_WIDTH). This happened in both console and graphics modes.
 - #745 part 2: FB runtime cached the console/graphics window width but didn't update it when it got resized, this should now be fixed at least for the graphics window and Linux console window.
 - #743: 1.00.0 regression: len() used on UDT with overloaded cast() operators returned the result type and value of one of these cast operators, instead of the sizeof()
+- #738: Operator overloading: The overload resolution gave different results for b+a compared to a+b, if one argument/parameter differed only in CONSTness, and the other didn't.
 
 
 Version 1.03.0
