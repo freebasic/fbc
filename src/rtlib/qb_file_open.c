@@ -98,10 +98,10 @@ FBCALL int fb_FileOpenQB
 								 fb_DevScrnOpen );
 	}
 	/* pipe? */
-	else if( (str_len == 5) && (strcasecmp( str->data, "PIPE:" ) == 0) )
+	else if( (str_len >= 5) && (strncasecmp( str->data, "PIPE:", 5 ) == 0) )
 	{
 		return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-								 str,
+								 fb_StrMid( str, 6, str_len - 5 ),
 								 mode,
 								 access,
 								 lock,
