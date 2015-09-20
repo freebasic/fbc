@@ -49,6 +49,8 @@ typedef struct {
 
        void         fb_DevScrnInit              ( void );
        void         fb_DevScrnInit_Screen       ( void );
+       void         fb_DevScrnUpdateWidth       ( void );
+       void         fb_DevScrnMaybeUpdateWidth  ( void );
        void         fb_DevScrnEnd               ( FB_FILE *handle );
        void         fb_DevScrnInit_NoOpen       ( void );
        void         fb_DevScrnInit_Write        ( void );

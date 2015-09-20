@@ -224,6 +224,8 @@ void fb_hRecheckConsoleSize( int requery_cursorpos )
 	if (requery_cursorpos) {
 		fb_hRecheckCursorPos( );
 	}
+
+	fb_DevScrnMaybeUpdateWidth( );
 }
 
 static void sigwinch_handler(int sig)

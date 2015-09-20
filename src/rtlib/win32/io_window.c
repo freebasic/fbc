@@ -51,6 +51,8 @@ FBCALL void fb_hUpdateConsoleWindow( void )
 
     hReadConsoleRect( &__fb_con.window, FALSE );
     hReadConsoleRect( &srRealConsoleWindow, TRUE );
+
+    fb_DevScrnMaybeUpdateWidth( );
 }
 
 void fb_InitConsoleWindow( void )
