@@ -102,7 +102,7 @@ private function hLen _
 end function
 
 private function hLenSizeof( byval tk as integer, byval isasm as integer ) as ASTNODE ptr
-	dim as ASTNODE ptr expr = any, initree = any
+	dim as ASTNODE ptr expr = any
 	dim as integer dtype = any
 	dim as longint lgt = any
 	dim as FBSYMBOL ptr subtype = any
