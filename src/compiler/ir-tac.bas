@@ -2017,6 +2017,8 @@ private sub hFlushCOMP _
 		if( v2_typ <> IR_VREGTYPE_IMM ) then
 			doload = TRUE
 		end if
+	elseif( v1_typ = IR_VREGTYPE_OFS ) then
+		doload = TRUE
 	end if
 
 	if( (v1_typ = IR_VREGTYPE_REG) or doload ) then
