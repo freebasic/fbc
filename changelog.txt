@@ -132,6 +132,7 @@ Version 1.04.0
 - #738: Operator overloading: The overload resolution gave different results for b+a compared to a+b, if one argument/parameter differed only in CONSTness, and the other didn't.
 - #746: -lang qb's Open "Pipe:<shell command>" wasn't working. Only Open "Pipe:" was accepted (but that's useless); anything else was treated as normal Open file command.
 - #414: ASM backend: Bad code generated for comparisons such as IF @globalvar = @stackvar THEN ...
+- C backend: Extern Import variables were not emitted and accessed correctly
 
 
 Version 1.03.0

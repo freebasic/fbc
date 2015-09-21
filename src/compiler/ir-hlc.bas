@@ -720,6 +720,11 @@ end sub
 private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 	dim as string s
 
+	'' even dllimport'ed arrays are emitted as pointers, not arrays
+	if( symbIsImport( sym ) ) then
+		exit function
+	end if
+
 	'' Emit all array dimensions individually
 	'' (This lets array initializers rely on gcc to fill uninitialized
 	'' elements with zeroes)
@@ -767,7 +772,7 @@ private sub hEmitVarDecl _
 	end if
 
 	var dtype = symbGetType( sym )
-	if( symbIsRef( sym ) ) then
+	if( symbIsRef( sym ) or symbIsImport( sym ) ) then
 		dtype = typeAddrOf( dtype )
 	end if
 
@@ -775,9 +780,10 @@ private sub hEmitVarDecl _
 	ln += " " + *symbGetMangledName( sym )
 	ln += hEmitArrayDecl( sym )
 
-	if( symbIsImport( sym ) ) then
-		ln += " __attribute__((dllimport))"
-	end if
+	'' dllimport's are handled manually, emitted as pointers and deref'ed
+	'' where needed, as with the ASM backend, as opposed to using
+	'' __attribute__((dllimport)). The _imp__ prefix will be added by fbc's
+	'' name mangling.
 
 	if( symbIsCommon( sym ) and (not use_extern) ) then
 		ln += " __attribute__((common))"
@@ -1603,8 +1609,7 @@ end function
 
 private function symbIsCArray( byval sym as FBSYMBOL ptr ) as integer
 	'' No bydesc/byref, those are emitted as pointers...
-	'' TODO: handle symbIsImport( sym ) here?
-	if( symbIsRef( sym ) or symbIsParamBydescOrByref( sym ) ) then
+	if( symbIsRef( sym ) or symbIsParamBydescOrByref( sym ) or symbIsImport( sym ) ) then
 		return FALSE
 	end if
 
