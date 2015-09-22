@@ -1,4 +1,33 @@
+o Dim Byref
+  - There might still be places in the compiler where symbIsRef() checks are
+    missing. E.g. calculating a variable size based on dtype alone would be
+    wrong now in case it's a reference. Previously this problem already existed
+    but only for parameters and function results.
+  - symbHasDtor() & co should either be adjusted to check for REF/IMPORT/PARAMBYREF/PARAMINSTANCE flags,
+    or be renamed to symbTypeHasDtor()
+  - arrays of refs
+    - parameter syntax?
+         byref       as integer  <= integer reference
+               (any) as integer  <= bydesc array of integers
+         byref (any) as integer  <= bydesc array of integer references?
+         (looks like array being passed byref - confusing)
+    - test that the rtlib functions like Redim don't call ctors/dtors
+  - allow/fix initialization from non-var:
+     - should allow everything that's allowed for byref parameters (CALLs,
+       CALLCTORs, TYPEINIs, constants, literals etc) by copying to a temp var
+       if needed
+     - Temp var life-time must be extended to the same scope as the reference;
+       WITH is already doing something much like this, except it uses an implicit scope block,
+       which we don't need. The temp vars from the reference var initializer are in the same
+       scope as the reference var, and it should be enough to just remove their TEMP flag.
+  - allow BYVAL initialization, like byref results/params
+  - disallow [Z/W]String * N with Dim Byref (same problem as with byref params, see bug #650)
+  - allow BYREF fields; but they must be initialized in a constructor - what syntax to use for that?
+    @a = b works, but feels like a hack. Otherwise, a new syntax for field initialization is needed,
+    like initializer lists in C++
+
 o boolean
+  - LLVM backend
   - test overload resolution?
   - add an -exx check to detect illegal boolean values on read?
   - MacOSX/Darwin has 4-byte bool, that's the only case where gcc booleans aren't 1 byte.

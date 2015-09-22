@@ -3,6 +3,7 @@
 
 #include once "list.bi"
 #include once "ast-op.bi"
+#include once "ir.bi"
 
 const AST_INITNODES				= 8192
 const AST_INITPROCNODES			= 128
@@ -143,20 +144,6 @@ end type
 
 type AST_NODE_LIT
 	text			as zstring ptr
-end type
-
-enum AST_ASMTOKTYPE
-	AST_ASMTOK_TEXT
-	AST_ASMTOK_SYMB
-end enum
-
-type ASTASMTOK
-	type		as AST_ASMTOKTYPE
-	union
-		sym	as FBSYMBOL ptr
-		text	as zstring ptr
-	end union
-	next		as ASTASMTOK ptr
 end type
 
 type AST_NODE_ASM
@@ -395,9 +382,7 @@ type ASTCTX
 	''   0 => show warnings
 	'' > 0 => hide warnings
 	hidewarningslevel	as integer
-end Type
-
-#include once "ir.bi"
+end type
 
 enum AST_OPFLAGS
 	AST_OPFLAGS_NONE		= &h00000000
@@ -467,7 +452,7 @@ declare sub astProcAddGlobalInstance _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval initree as ASTNODE ptr, _
-		byval has_dtor as integer _
+		byval call_dtor as integer _
 	)
 
 declare function astScopeBegin( ) as ASTNODE ptr
@@ -638,7 +623,12 @@ declare function astNewCONSTz _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
-declare function astConstFlushToInt( byval n as ASTNODE ptr ) as longint
+declare function astConstFlushToInt _
+	( _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer = FB_DATATYPE_INTEGER _
+	) as longint
+
 declare function astConstFlushToStr( byval n as ASTNODE ptr ) as string
 declare function astConstFlushToWstr( byval n as ASTNODE ptr ) as wstring ptr
 declare function astConstGetAsInt64( byval n as ASTNODE ptr ) as longint
@@ -659,13 +649,7 @@ declare function astNewVAR _
 		byval subtype as FBSYMBOL ptr = NULL _
 	) as ASTNODE ptr
 
-declare function astNewIDX _
-	( _
-		byval v as ASTNODE ptr, _
-		byval i as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr
+declare function astNewIDX( byval var_ as ASTNODE ptr, byval idx as ASTNODE ptr ) as ASTNODE ptr
 
 declare function astNewFIELD _
 	( _

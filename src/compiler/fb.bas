@@ -321,6 +321,13 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 		env.lang.int16literaldtype = FB_DATATYPE_UINT
 		env.lang.int31literaldtype = FB_DATATYPE_INTEGER
 		env.lang.int32literaldtype = FB_DATATYPE_UINT
+		if( fbIs64bit( ) ) then
+			env.lang.int63literaldtype = FB_DATATYPE_INTEGER
+			env.lang.int64literaldtype = FB_DATATYPE_UINT
+		else
+			env.lang.int63literaldtype = FB_DATATYPE_LONGINT
+			env.lang.int64literaldtype = FB_DATATYPE_ULONGINT
+		end if
 		env.lang.floatliteraldtype = FB_DATATYPE_DOUBLE
 	else
 		'' In QB, the INTEGER keyword produces FB_DATATYPE_SHORT
@@ -335,6 +342,8 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 		env.lang.int16literaldtype = FB_DATATYPE_USHORT
 		env.lang.int31literaldtype = FB_DATATYPE_LONG
 		env.lang.int32literaldtype = FB_DATATYPE_ULONG
+		env.lang.int63literaldtype = FB_DATATYPE_LONGINT
+		env.lang.int64literaldtype = FB_DATATYPE_ULONGINT
 		env.lang.floatliteraldtype = FB_DATATYPE_SINGLE
 	end if
 

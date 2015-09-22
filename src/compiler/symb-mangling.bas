@@ -696,19 +696,18 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 			mangled += "@"
 		end if
 
-		select case( env.clopt.target )
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			'' Win32 import? Don't add the prefix under the C backend; it will use
-			'' __declspec(dllimport) instead in order to let gcc do it.
-			if( (env.clopt.backend = FB_BACKEND_GAS) and symbIsImport( sym ) ) then
-				mangled += "__imp_"
-			end if
-		end select
-
 		'' Win32 underscore prefix
 		if( hAddUnderscore( ) ) then
 			mangled += "_"
 		end if
+
+		select case( env.clopt.target )
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			'' Win32 import? Add same prefix as done by gcc
+			if( symbIsImport( sym ) ) then
+				mangled += "_imp__"
+			end if
+		end select
 
 		if( docpp ) then
 			'' Note: This adds the _Z prefix to all global variables,
@@ -1244,7 +1243,7 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 
 	'' @N win32 stdcall suffix
 	if( add_stdcall_suffix ) then
-		mangled += "@" + str( symbCalcProcParamsLen( sym ) )
+		mangled += "@" + str( symbProcCalcStdcallSuffixN( sym ) )
 
 		if( env.clopt.backend = FB_BACKEND_LLVM ) then
 			'' In LLVM, @ is a special char, identifiers using it must be quoted

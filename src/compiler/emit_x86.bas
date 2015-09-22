@@ -81,28 +81,6 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 '' helper functions
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-#define hEmitBssHeader( ) _setSection( IR_SECTION_BSS, 0 )
-
-'':::::
-#ifdef __FB_LINUX__
-''
-'' !!!FIXME!!!
-''
-'' Linux appears to support .rodata section, but I'm not sure about other platforms, and that's
-'' probably the reason FB used to output a normal .data section in any case...
-''
-#define hEmitConstHeader( ) _setSection( IR_SECTION_CONST, 0 )
-#else
-#define hEmitConstHeader( ) _setSection( IR_SECTION_DATA, 0 )
-#endif
-
-'':::::
-#define hEmitDataHeader( ) _setSection( IR_SECTION_DATA, 0 )
-
-'':::::
-#define hEmitExportHeader( ) _setSection( IR_SECTION_DIRECTIVE, 0 )
-
 #if __FB_DEBUG__
 function emitDumpRegName( byval dtype as integer, byval reg as integer ) as string
 	function = *hGetRegName( dtype, reg )
@@ -762,6 +740,22 @@ private sub hEndRegTB
 
 end sub
 
+private function hGetGlobalTypeAlign( byval dtype as integer ) as integer
+	if( dtype = FB_DATATYPE_DOUBLE ) then
+		function = 8
+	else
+		function = 4
+	end if
+end function
+
+private function hGetGlobalVarAlign( byval sym as FBSYMBOL ptr ) as integer
+	if( symbIsRef( sym ) ) then
+		function = 4
+	else
+		function = hGetGlobalTypeAlign( symbGetType( sym ) )
+	end if
+end function
+
 '':::::
 private sub hEmitVarBss _
 	( _
@@ -769,17 +763,14 @@ private sub hEmitVarBss _
 	) static
 
     dim as string alloc, ostr
-    dim as integer attrib, elements
+	dim as integer attrib
 
 	assert( symbIsExtern( s ) = FALSE )
 	assert( symbIsDynamic( s ) = FALSE )
 
 	attrib = symbGetAttrib( s )
 
-	elements = symbGetArrayElements( s )
-	assert( elements >= 1 )
-
-    hEmitBssHeader( )
+	_setSection( IR_SECTION_BSS, 0 )
 
     '' allocation modifier
     if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
@@ -792,18 +783,12 @@ private sub hEmitVarBss _
        	alloc = ".comm"
     end if
 
-    '' align
-    if( symbGetType( s ) = FB_DATATYPE_DOUBLE ) then
-    	hALIGN( 8 )
-    	emitWriteStr( ".balign 8", TRUE )
-	else
-    	hALIGN( 4 )
-    end if
+	hALIGN( hGetGlobalVarAlign( s ) )
 
 	'' emit
     ostr = alloc + TABCHAR
     ostr += *symbGetMangledName( s )
-    ostr += "," + str( symbGetLen( s ) * elements )
+	ostr += "," + str( symbGetRealSize( s ) )
     emitWriteStr( ostr, TRUE )
 
 	'' Add debug info for public/shared globals, but not local statics
@@ -851,17 +836,23 @@ private sub hEmitVarConst _
 		stext = *symbGetVarLitText( s )
 	end select
 
-	hEmitConstHeader( )
+	''
+	'' !!!FIXME!!!
+	''
+	'' Linux appears to support .rodata section, but I'm not sure about other platforms, and that's
+	'' probably the reason FB used to output a normal .data section in any case...
+	''
+	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+		_setSection( IR_SECTION_CONST, 0 )
+	else
+		_setSection( IR_SECTION_DATA, 0 )
+	end if
 
 	'' some SSE instructions require operands to be 16-byte aligned
 	if( s->var_.align ) then
 		hALIGN ( s->var_.align )
 	else
-		if( dtype = FB_DATATYPE_DOUBLE ) then
-			hALIGN( 8 )
-			else
-			hALIGN( 4 )
-		end if
+		hALIGN( hGetGlobalTypeAlign( dtype ) )
 	end if
 
 
@@ -900,7 +891,7 @@ end sub
 
 private sub hEmitExport( byval s as FBSYMBOL ptr )
     if( symbIsExport( s ) ) then
-        hEmitExportHeader( )
+        _setSection( IR_SECTION_DIRECTIVE, 0 )
 
         dim as zstring ptr sname = symbGetMangledName( s )
         if( env.underscoreprefix ) then
@@ -955,7 +946,7 @@ private sub hDeclVariable _
     	    end if
 		end if
 
-		hEmitDataHeader( )
+		_setSection( IR_SECTION_DATA, 0 )
 		irhlFlushStaticInitializer( s )
 		return
 	end if
@@ -6494,11 +6485,7 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr )
 	'' Add debug info for public/shared globals, but not local statics
 	edbgEmitGlobalVar( sym, IR_SECTION_DATA )
 
-   	if( symbGetType( sym ) = FB_DATATYPE_DOUBLE ) then
-    	hALIGN( 8 )
-	else
-    	hALIGN( 4 )
-	end if
+	hALIGN( hGetGlobalVarAlign( sym ) )
 
 	'' public?
 	if( symbIsPublic( sym ) ) then
@@ -6944,7 +6931,7 @@ private sub _procAllocLocal _
 		exit sub
 	end if
 
-	lgt = symbGetLen( sym ) * symbGetArrayElements( sym )
+	lgt = symbGetRealSize( sym )
 
     proc->proc.ext->stk.localofs += ((lgt + 3) and not 3)
 
@@ -6971,7 +6958,8 @@ private sub _procAllocArg _
 	if( symbIsParamByVal( sym ) ) then
 		lgt = symbGetLen( sym )
 	else
-		lgt = 4    '' it's just a pointer
+		'' Bydesc/byref
+		lgt = env.pointersize
 	end if
 
 	sym->ofs = proc->proc.ext->stk.argofs

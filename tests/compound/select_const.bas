@@ -266,6 +266,87 @@ sub testTypes cdecl()
 
 end sub
 
+sub test64bitCaseValues cdecl( )
+	scope
+		dim i as ulongint = &h100000000ull
+		select case as const i
+		case &h100000000ull
+		case &h100000010ull
+			CU_FAIL( )
+		case else
+			CU_FAIL( )
+		end select
+	end scope
+
+	scope
+		dim i as ulongint = 0
+		select case as const i
+		case &h100000000ull
+			CU_FAIL( )
+		case &h100000010ull
+			CU_FAIL( )
+		end select
+	end scope
+
+	scope
+		dim i as ulongint = 5
+		select case as const i
+		case &h100000000ull to &h100000010ull
+			CU_FAIL( )
+		end select
+	end scope
+
+	scope
+		dim i as ulongint = &hFFFFFFFFull
+		select case as const i
+		case &h100000000ull to &h100000010ull
+			CU_FAIL( )
+		end select
+	end scope
+
+	scope
+		dim i as ulongint = &h100000011ull
+		select case as const i
+		case &h100000000ull to &h100000010ull
+			CU_FAIL( )
+		end select
+	end scope
+end sub
+
+sub testMaxRange cdecl( )
+	dim i as uinteger
+
+	i = 0
+	select case as const i
+	case 0 to 8191
+	case else
+		CU_FAIL( )
+	end select
+
+	i = 8191
+	select case as const i
+	case 0 to 8191
+	case else
+		CU_FAIL( )
+	end select
+
+	i = 8192
+	select case as const i
+	case 0 to 8191
+		CU_FAIL( )
+	end select
+
+	#ifdef __FB_64BIT__
+		i = &hFFFFFFFFFFFFFFFFu
+	#else
+		i = &hFFFFFFFFu
+	#endif
+	select case as const i
+	case 0 to 8191
+		CU_FAIL( )
+	end select
+end sub
+
 private sub ctor( ) constructor
 	fbcu.add_suite("fbc_tests-compound:select_const")
 	fbcu.add_test("test single1", @test_single_1)
@@ -274,6 +355,8 @@ private sub ctor( ) constructor
 	fbcu.add_test("test range2", @test_range_2)
 	fbcu.add_test( "empty jmptb", @testEmptyJumpTable )
 	fbcu.add_test( "integer types", @testTypes )
+	fbcu.add_test( "test64bitCaseValues", @test64bitCaseValues )
+	fbcu.add_test( "testMaxRange", @testMaxRange )
 end sub
 
 end namespace

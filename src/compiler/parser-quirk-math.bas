@@ -84,6 +84,7 @@ private function hLen _
 		assert( lgt >= 0 )
 
 	case FB_DATATYPE_STRUCT
+		'' Check whether there is a matching len() UOP overload
 		lenexpr = astNewUOP( AST_OP_LEN, expr )
 		if( lenexpr <> NULL ) then
 			return lenexpr
@@ -102,7 +103,7 @@ private function hLen _
 end function
 
 private function hLenSizeof( byval tk as integer, byval isasm as integer ) as ASTNODE ptr
-	dim as ASTNODE ptr expr = any, initree = any
+	dim as ASTNODE ptr expr = any
 	dim as integer dtype = any
 	dim as longint lgt = any
 	dim as FBSYMBOL ptr subtype = any

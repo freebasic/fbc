@@ -118,30 +118,67 @@ function symbCalcParamLen _
 
 end function
 
-function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as longint
-	dim as longint length = any
-	dim as FBSYMBOL ptr param = any
-
-	'' Calculate the sum of the sizes of all "normal" parameters,
+'' Calculate the N for the @N stdcall suffix
+function symbProcCalcStdcallSuffixN( byval proc as FBSYMBOL ptr ) as longint
+	'' Calculate the sum of the on-stack sizes of all "normal" parameters,
 	'' - ignoring any vararg param,
 	'' - including THIS param,
-	'' - excluding the hidden struct result param, if any,
-	''   instead it's handled separately where needed.
+	'' - excluding the hidden struct result param, if any
+	'' - including sizeof(UDT) instead of sizeof(ptr) for Byval non-trivial
+	''   UDT parameters, even though they are implicitly passed as pointer;
+	''   following gcc's and MSVC's behaviour.
+	''   The same should be done for our Byval Strings.
 
-	param = symbGetProcHeadParam( proc )
-	length = 0
+	dim as longint length = 0
 
+	var param = symbGetProcHeadParam( proc )
 	while( param )
-		'' VARARG params will have 0 (unknown) length,
-		'' thus they do not affect the sum.
-		assert( iif( symbGetParamMode( param ) = FB_PARAMMODE_VARARG, symbGetLen( param ) = 0, TRUE ) )
 
-		length += symbGetLen( param )
+		if( (symbGetParamMode( param ) = FB_PARAMMODE_BYVAL) and _
+		    (not typeIsTrivial( param->typ, param->subtype )) ) then
+			'' Byval non-trivial UDT parameters are an exception:
+			'' Their size on stack is sizeof(ptr), but we want to
+			'' add sizeof(UDT) to the @N suffix.
+			length += symbCalcLen( param->typ, param->subtype )
+		else
+			'' Use param's size on stack
+			'' VARARG params have 0 (unknown) length; they do not affect the sum.
+			length += symbGetLen( param )
+		end if
 
 		param = param->next
 	wend
 
 	function = length
+end function
+
+'' Calculate the number of bytes the procedure needs to pop from stack when returning
+function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
+	dim as longint bytestopop = 0
+	var notcdecl = (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL)
+
+	'' Need to pop parameters in case of stdcall/pascal, but not for cdecl
+	if( notcdecl ) then
+		var param = symbGetProcHeadParam( proc )
+		while( param )
+
+			'' Param symbols store their size on stack as their length.
+			'' VARARG params have 0 (unknown) length; they do not affect the sum.
+			bytestopop += symbGetLen( param )
+
+			param = param->next
+		wend
+	end if
+
+	'' Additionally pop the hidden struct result ptr param (if any) for stdcall/pascal,
+	'' or even for cdecl if needed for the target.
+	if( symbProcReturnsOnStack( proc ) ) then
+		if( notcdecl or ((env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) <> 0) ) then
+			bytestopop += env.pointersize
+		end if
+	end if
+
+	function = bytestopop
 end function
 
 '':::::
@@ -1996,7 +2033,6 @@ function symbFindClosestOvlProc _
 	dim as integer arg_matches = any, matches = any
 	dim as integer max_matches = any, exact_matches = any
 	dim as integer matchcount = any
-	dim as integer constonly_diff = any
 	dim as FB_CALL_ARG ptr arg = any
 
 	*err_num = FB_ERRMSG_OK
@@ -2049,17 +2085,16 @@ function symbFindClosestOvlProc _
 			'' for each arg..
 			arg = arg_head
 			for i as integer = 0 to args-1
-				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode, constonly_diff )
+				dim as integer arg_constonly_diff = FALSE
+				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode, arg_constonly_diff )
 				if( arg_matches = 0 ) then
 					matches = 0
 					exit for
 				end if
 
 				'' exact checks are required for operator overload candidates
-				if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
-					if( arg_matches = FB_OVLPROC_FULLMATCH ) then
-						exact_matches += 1
-					end if
+				if( (arg_matches = FB_OVLPROC_FULLMATCH) or arg_constonly_diff ) then
+					exact_matches += 1
 				end if
 
 				matches += arg_matches
@@ -2094,9 +2129,7 @@ function symbFindClosestOvlProc _
 					'' an operator overload candidate is only eligible if
 					'' there is at least one exact arg match
 					if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
-						if( exact_matches = 0 and constonly_diff = FALSE ) then
-							eligible = FALSE
-						end if
+						eligible = (exact_matches >= 1)
 					end if
 
 					'' it's eligible, update

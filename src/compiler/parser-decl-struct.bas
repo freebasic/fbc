@@ -1070,7 +1070,7 @@ sub cTypeDecl( byval attrib as integer )
 		end if
 	end if
 
-	'' byval results to self?
+	'' byval results or static vars using this UDT as data type?
 	if( symbGetUdtHasRecByvalRes( sym ) ) then
 		hPatchByvalResultToSelf( sym )
 	end if
@@ -1104,21 +1104,21 @@ private sub hPatchByvalParamsToSelf( byval parent as FBSYMBOL ptr )
 end sub
 
 private sub hPatchByvalResultToSelf( byval parent as FBSYMBOL ptr )
-	dim as FBSYMBOL ptr sym = any
+	var sym = symbGetUDTSymbtb( parent ).head
+	while( sym )
 
-	'' for each method..
-	sym = symbGetUDTSymbtb( parent ).head
-	do while( sym <> NULL )
-
-		if( symbIsProc( sym ) ) then
-			'' byval result to self? reset..
-			if( (symbGetType( sym ) = FB_DATATYPE_STRUCT) and _
-			    (symbGetSubtype( sym ) = parent) and _
-			    (not symbIsRef( sym )) ) then
+		'' Function or static variable? Using parent UDT as Byval (result) data type?
+		if( (symbGetType( sym ) = FB_DATATYPE_STRUCT) and _
+		    (symbGetSubtype( sym ) = parent) and _
+		    (not symbIsRef( sym )) ) then
+			if( symbIsProc( sym ) ) then
 				symbProcRecalcRealType( sym )
+				'' (FBSYMBOL->lgt is 0 for procedures anyways, no need to update)
+			elseif( symbIsVar( sym ) ) then
+				symbRecalcLen( sym )
 			end if
 		end if
 
 		sym = sym->next
-	loop
+	wend
 end sub

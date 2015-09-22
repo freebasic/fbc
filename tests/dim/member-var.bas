@@ -393,6 +393,37 @@ namespace inheritance
 	end sub
 end namespace
 
+namespace parentUdtAsDataType
+	'' Static member variables using the parent UDT should be allocated with
+	'' the proper size, even if they are declared above all/some fields.
+
+	type UDT
+		'' static member var using parent UDT as dtype,
+		'' declared before any fields are declared (i.e. sizeof(UDT)
+		'' isn't known yet)
+		static x as UDT
+
+		'' now some fields
+		as long i1, i2
+	end type
+
+	dim shared UDT.x as UDT    '' shouldn't have zero size
+	dim shared as long i1, i2  '' should be in separate memory
+
+	sub test cdecl( )
+		UDT.x.i1 = 1
+		UDT.x.i2 = 2
+
+		CU_ASSERT( UDT.x.i1 = 1 )
+		CU_ASSERT( UDT.x.i2 = 2 )
+		CU_ASSERT( i1 = 0 )
+		CU_ASSERT( i2 = 0 )
+
+		CU_ASSERT( @UDT.x.i1 <> @i1 )
+		CU_ASSERT( @UDT.x.i2 <> @i2 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/dim/member-var" )
 	fbcu.add_test( "basic declaration/usage", @integers.test )
@@ -402,6 +433,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "member var bodies outside of parent namespace", @outsideOfOriginalNamespace.test )
 	fbcu.add_test( "member var bodies with initializers", @initialized.test )
 	fbcu.add_test( "inherited member vars", @inheritance.test )
+	fbcu.add_test( "parentUdtAsDataType", @parentUdtAsDataType.test )
 end sub
 
 end namespace

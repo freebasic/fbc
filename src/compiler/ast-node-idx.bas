@@ -9,26 +9,11 @@
 #include once "ir.bi"
 #include once "ast.bi"
 
-'':::::
-function astNewIDX _
-	( _
-		byval var_ as ASTNODE ptr, _
-		byval idx as ASTNODE ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as ASTNODE ptr 
-
-    dim as ASTNODE ptr n = any
-
+function astNewIDX( byval var_ as ASTNODE ptr, byval idx as ASTNODE ptr ) as ASTNODE ptr
 	assert( astIsVAR( var_ ) )
 
-	if( dtype = FB_DATATYPE_INVALID ) then
-		dtype = astGetFullType( var_ )
-		subtype = astGetSubType( var_ )
-	end if
-
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_IDX, dtype, subtype )
+	var n = astNewNode( AST_NODECLASS_IDX, var_->dtype, var_->subtype )
 
 	n->l = idx
 	n->r = var_

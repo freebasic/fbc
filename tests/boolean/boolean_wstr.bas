@@ -6,7 +6,7 @@
 #undef TRUE
 
 #define FALSE 0
-#define TRUE -1
+#define TRUE (-1)
 
 const FALSE_WSTRING = wstr("false")
 const TRUE_WSTRING = wstr("true")

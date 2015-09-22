@@ -9,7 +9,7 @@
 #include once "rtl.bi"
 #include once "ast.bi"
 
-declare sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
+declare sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 
 sub hComplainIfAbstractClass _
 	( _
@@ -37,11 +37,17 @@ sub hSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as longint _
+		byref lgt as longint, _
+		byval is_byref as integer _
 	)
 
+	dim as integer options = FB_SYMBTYPEOPT_DEFAULT
+	if( is_byref ) then
+		options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
+	end if
+
 	'' parse the symbol type (INTEGER, STRING, etc...)
-	if( cSymbolType( dtype, subtype, lgt ) = FALSE ) then
+	if( cSymbolType( dtype, subtype, lgt, options ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a type
 		dtype = FB_DATATYPE_INTEGER
@@ -763,6 +769,70 @@ private function hVarInitDefault _
 
 end function
 
+'' Ensure the initializer doesn't reference any vars it mustn't
+private function hCheckGlobalInitializer _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval initree as ASTNODE ptr _
+	) as integer
+
+	'' Allow temp vars and temp array descriptors
+	var ignoreattribs = FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR
+
+	'' Allow only non-SHARED STATICs to reference STATICs
+	if( symbIsShared( sym ) = FALSE ) then
+		ignoreattribs or= FB_SYMBATTRIB_STATIC
+	end if
+
+	if( astTypeIniUsesLocals( initree, ignoreattribs ) ) then
+		errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
+		return FALSE
+	end if
+
+	return TRUE
+end function
+
+'' Build a NULL ptr deref with the given dtype:
+''    *cptr(dtype ptr, 0)
+private function hBuildFakeByrefInitExpr( byval dtype as integer, byval subtype as FBSYMBOL ptr ) as ASTNODE ptr
+	var expr = astNewCONSTi( 0 )
+	expr = astNewCONV( typeAddrOf( dtype ), subtype, expr, AST_CONVOPT_DONTCHKPTR )
+	function = astNewDEREF( expr )
+end function
+
+private function hCheckAndBuildByrefInitializer( byval sym as FBSYMBOL ptr, byref expr as ASTNODE ptr ) as ASTNODE ptr
+	'' Check data types, CONSTness, etc.
+	var ok = astCheckByrefAssign( sym->typ, sym->subtype, expr )
+
+	'' Disallow AST nodes refering to temp vars (i.e. where addrof is
+	'' permitted) that aren't already disallowed in cVarOrDeref()
+	select case( expr->class )
+	case AST_NODECLASS_CALL
+		ok = FALSE
+	end select
+
+	if( ok = FALSE ) then
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		astDelTree( expr )
+		expr = hBuildFakeByrefInitExpr( sym->typ, sym->subtype )
+	end if
+
+	'' Build the TYPEINI for initializing the reference/pointer
+	'' Do the implicit ADDROF due to BYREF
+	var ptrdtype = typeAddrOf( sym->typ )
+	var ptrsubtype = sym->subtype
+	var initree = astTypeIniBegin( ptrdtype, ptrsubtype, FALSE, 0 )
+	assert( astCanTakeAddrOf( expr ) )
+	astTypeIniAddAssign( initree, astNewADDROF( expr ), sym, ptrdtype, ptrsubtype )
+	astTypeIniEnd( initree, TRUE )
+
+	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) <> 0 ) then
+		hCheckGlobalInitializer( sym, initree )
+	end if
+
+	function = initree
+end function
+
 '':::::
 private function hVarInit _
 	( _
@@ -770,8 +840,7 @@ private function hVarInit _
         byval isdecl as integer _
 	) as ASTNODE ptr
 
-	dim as integer attrib = any, ignoreattribs = any
-	dim as ASTNODE ptr initree = any
+	dim as integer attrib = any
 
 	function = NULL
 
@@ -806,6 +875,21 @@ private function hVarInit _
 		exit function
 	end if
 
+	'' Reference? Must be initialized with a var/deref, not an arbitrary initializer
+	if( symbIsRef( sym ) ) then
+		assert( symbIsRef( sym ) )
+
+		var expr = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
+		if( expr = NULL ) then
+			'' For Dim Byref, the initializer isn't optional as for normal Dim
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			hSkipStmt( )
+			exit function
+		end if
+
+		return hCheckAndBuildByrefInitializer( sym, expr )
+	end if
+
     '' ANY?
 	if( lexGetToken( ) = FB_TK_ANY ) then
 
@@ -832,7 +916,7 @@ private function hVarInit _
 		exit function
 	end if
 
-	initree = cInitializer( sym, FB_INIOPT_ISINI )
+	var initree = cInitializer( sym, FB_INIOPT_ISINI )
 	if( initree = NULL ) then
 		return NULL
 	end if
@@ -882,19 +966,7 @@ private function hVarInit _
 			end if
 		end if
 
-		'' Ensure the initializer doesn't reference any vars it mustn't
-
-		'' Allow temp vars and temp array descriptors
-		ignoreattribs = FB_SYMBATTRIB_TEMP or FB_SYMBATTRIB_DESCRIPTOR
-
-		'' Allow only non-SHARED STATICs to reference STATICs
-		if( symbIsShared( sym ) = FALSE ) then
-			ignoreattribs or= FB_SYMBATTRIB_STATIC
-		end if
-
-		if( astTypeIniUsesLocals( initree, ignoreattribs ) ) then
-			errReport( FB_ERRMSG_INVALIDREFERENCETOLOCAL )
-			'' error recovery: discard the tree
+		if( hCheckGlobalInitializer( sym, initree ) = FALSE ) then
 			astDelTree( initree )
 			exit function
 		end if
@@ -989,6 +1061,8 @@ private function hCallStaticCtor _
 	dim as ASTNODE ptr t = any, initcode = any
 	dim as FBSYMBOL ptr proc = any
 
+	assert( symbIsRef( sym ) = FALSE )
+
 	t = hFlushDecl( var_decl )
 	initcode = NULL
 
@@ -1024,13 +1098,13 @@ private function hCallGlobalCtor _
 		byval has_dtor as integer _
 	) as ASTNODE ptr
 
+	assert( symbIsRef( sym ) = FALSE )
+
 	var_decl = hFlushDecl( var_decl )
 
-	if( (initree = NULL) and (has_dtor = FALSE) ) then
-		return var_decl
+	if( (initree <> NULL) or has_dtor ) then
+		astProcAddGlobalInstance( sym, initree, has_dtor )
 	end if
-
-	astProcAddGlobalInstance( sym, initree, has_dtor )
 
 	'' No temp dtors should be left registered after the TYPEINI build-up
 	assert( astDtorListIsEmpty( ) )
@@ -1051,7 +1125,7 @@ private function hFlushInitializer _
 	) as ASTNODE ptr
 
 	'' object?
-	if( has_dtor ) then
+	if( has_dtor and (not symbIsRef( sym )) ) then
 		'' check visibility
 		if( symbCheckAccess( symbGetCompDtor( symbGetSubtype( sym ) ) ) = FALSE ) then
 			errReport( FB_ERRMSG_NOACCESSTODTOR )
@@ -1091,18 +1165,21 @@ private function hFlushInitializer _
 	end if
 
 	'' not an object?
-	if( symbHasCtor( sym ) = FALSE ) then
+	if( symbIsRef( sym ) or (not symbHasCtor( sym )) ) then
+		'' No constructor call needed
 		'' let emit flush it..
 		symbSetTypeIniTree( sym, initree )
 
 		'' no dtor?
-		if( has_dtor = FALSE ) then
+		if( symbIsRef( sym ) or (not has_dtor) ) then
 			return hFlushDecl( var_decl )
 		end if
 
 		'' must be added to the dtor list..
 		initree = NULL
 	end if
+
+	'' Need to call constructor and/or destructor
 
     '' local?
     if( symbIsLocal( sym ) ) then
@@ -1186,9 +1263,14 @@ private function hMaybeBuildFieldAccess _
 	function = astBuildVarField( symbGetParamVar( thisparam ), fld )
 end function
 
-'':::::
-''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
-''                       (',' SymbolDef)* .
+''
+'' VarDecl =
+''     SingleVarDecl (',' SingleVarDecl)*
+''   | [BYREF] AS DataType MultVarDecl (',' MultVarDecl)*
+''
+'' SingleVarDecl = [BYREF] Identifier ['(' ArrayDimensions ')'] [AS SymbolType] ['=' VarInitializer]
+''
+'' MultVarDecl = Identifier ['(' ArrayDimensions ')'] ['=' VarInitializer]
 ''
 function cVarDecl _
 	( _
@@ -1223,23 +1305,43 @@ function cVarDecl _
 		end if
 	end if
 
+	'' BYREF?
+	var has_byref_at_start = hMatch( FB_TK_BYREF )
+
 	'' (AS SymbolType)?
 	is_multdecl = FALSE
 	if( lexGetToken( ) = FB_TK_AS ) then
 		lexSkipToken( )
 
 		'' parse the symbol type (INTEGER, STRING, etc...)
-		hSymbolType( dtype, subtype, lgt )
+		hSymbolType( dtype, subtype, lgt, has_byref_at_start )
 
-		'' Disallow creating objects of abstract classes
-		hComplainIfAbstractClass( dtype, subtype )
+		if( has_byref_at_start = FALSE ) then
+			'' Disallow creating objects of abstract classes
+			hComplainIfAbstractClass( dtype, subtype )
+		end if
 
 		addsuffix = FALSE
 		is_multdecl = TRUE
+		if( has_byref_at_start ) then
+			has_byref_at_start = FALSE
+			baseattrib or= FB_SYMBATTRIB_REF
+		end if
 	end if
 
 	do
 		dim as integer attrib = baseattrib
+
+		if( is_multdecl = FALSE ) then
+			'' 1st SingleVarDecl has BYREF?
+			if( has_byref_at_start ) then
+				has_byref_at_start = FALSE
+				attrib or= FB_SYMBATTRIB_REF
+			'' additional SingleVarDecl has BYREF?
+			elseif( hMatch( FB_TK_BYREF ) ) then
+				attrib or= FB_SYMBATTRIB_REF
+			end if
+		end if
 
 		'' Some code below needs to differentiate between "new variable declaration" and "redim";
 		'' however this isn't always accurate. For example, a REDIM statement can act as a variable
@@ -1332,6 +1434,10 @@ function cVarDecl _
 		dimensions = 0
 		have_bounds = FALSE
 		if( (lexGetToken( ) = CHAR_LPRNT) and (is_fordecl = FALSE) ) then
+			if( attrib and FB_SYMBATTRIB_REF ) then
+				errReport( FB_ERRMSG_ARRAYOFREFS )
+				attrib and= not FB_SYMBATTRIB_REF
+			end if
 			lexSkipToken( )
 
 			'' '()'
@@ -1403,11 +1509,15 @@ function cVarDecl _
 
 				lexSkipToken( )
 
-				'' parse the symbol type (INTEGER, STRING, etc...)
-				hSymbolType( dtype, subtype, lgt )
+				var is_ref = ((attrib and FB_SYMBATTRIB_REF) <> 0)
 
-				'' Disallow creating objects of abstract classes
-				hComplainIfAbstractClass( dtype, subtype )
+				'' parse the symbol type (INTEGER, STRING, etc...)
+				hSymbolType( dtype, subtype, lgt, is_ref )
+
+				if( is_ref = FALSE ) then
+					'' Disallow creating objects of abstract classes
+					hComplainIfAbstractClass( dtype, subtype )
+				end if
 
 				addsuffix = FALSE
 
@@ -1600,6 +1710,13 @@ function cVarDecl _
 			else
 				'' default initialization
 				if( sym ) then
+					'' Byref? Always requires an explicit initializer
+					if( symbIsRef( sym ) ) then
+						errReport( FB_ERRMSG_MISSINGREFINIT )
+						hSkipStmt( )
+						exit function
+					end if
+
 					if( symbArrayHasUnknownBounds( sym ) ) then
 						errReport( FB_ERRMSG_MUSTHAVEINITWITHELLIPSIS )
 						hSkipStmt( )
@@ -1872,6 +1989,45 @@ sub cArrayDecl _
 	loop while( hMatch( CHAR_COMMA ) )
 end sub
 
+private function hCheckAndBuildAutoVarInitializer( byval sym as FBSYMBOL ptr, byval expr as ASTNODE ptr ) as ASTNODE ptr
+	'' build a ini-tree
+	var initree = astTypeIniBegin( sym->typ, sym->subtype, symbIsLocal( sym ) )
+
+	'' not an object?
+	if( symbHasCtor( sym ) = FALSE ) then
+		astTypeIniAddAssign( initree, expr, sym )
+	'' handle constructors..
+	else
+		dim as integer is_ctorcall = any
+		expr = astBuildImplicitCtorCallEx( sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
+
+		if( expr <> NULL ) then
+			if( is_ctorcall ) then
+				astTypeIniAddCtorCall( initree, sym, expr )
+			else
+				'' no proper ctor, try an assign
+				astTypeIniAddAssign( initree, expr, sym )
+			end if
+		end if
+	end if
+
+	astTypeIniEnd( initree, TRUE )
+
+	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+					FB_SYMBATTRIB_SHARED)) <> 0 ) then
+		'' only if it's not an object, static or global instances are allowed
+		if( symbHasCtor( sym ) = FALSE ) then
+			if( astTypeIniIsConst( initree ) = FALSE ) then
+				'' error recovery: discard the tree
+				astDelTree( initree )
+				initree = NULL
+			end if
+		end if
+	end if
+
+	function = initree
+end function
+
 ''
 '' AutoVar =
 ''    SymbolDef '=' Initializer
@@ -1879,7 +2035,7 @@ end sub
 '' AutoVarDecl =
 ''    VAR [SHARED] AutoVar (',' AutoVar)*
 ''
-private sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
+private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as FBSYMBOL ptr parent = any, sym = any
@@ -1905,27 +2061,34 @@ private sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
 		'' can't use SHARED inside a proc
 		if( hCheckScope( ) = FALSE ) then
 			'' error recovery: don't make it shared
-			attrib or= FB_SYMBATTRIB_STATIC
+			baseattrib or= FB_SYMBATTRIB_STATIC
 		else
-			attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+			baseattrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
 		end if
 		lexSkipToken( )
 	end if
 
 	'' this proc static?
 	if( symbGetProcStaticLocals( parser.currproc ) ) then
-		attrib or= FB_SYMBATTRIB_STATIC
+		baseattrib or= FB_SYMBATTRIB_STATIC
 	end if
 
 	'' inside a namespace but outside a proc?
 	if( symbIsGlobalNamespc( ) = FALSE ) then
 		if( fbIsModLevel( ) ) then
 			'' variables will be always shared..
-			attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+			baseattrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
 		end if
 	end if
 
 	do
+		var attrib = baseattrib
+
+		'' BYREF?
+		if( hMatch( FB_TK_BYREF ) ) then
+			attrib or= FB_SYMBATTRIB_REF
+		end if
+
 		'' id.id? if not, NULL
 		parent = cParentId( FB_IDOPT_DEFAULT or FB_IDOPT_ISDECL or _
 					FB_IDOPT_ALLOWSTRUCT or FB_IDOPT_ISVAR )
@@ -1953,89 +2116,70 @@ private sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
 			errReport( FB_ERRMSG_EXPECTEDEQ )
 		end if
 
-		'' parse expression
-		dim as ASTNODE ptr expr = cExpression( )
+		'' Parse initializer expression
+		'' (before adding the symbol, so that it can't be used in the initializer)
+		dim expr as ASTNODE ptr
+		var is_byref = (attrib and FB_SYMBATTRIB_REF) orelse (sym andalso symbIsRef( sym ))
+		if( is_byref ) then
+			'' Reference; must be initialized with a var/deref, not an arbitrary expression
+			expr = cVarOrDeref( FB_VAREXPROPT_ISEXPR )
+		else
+			expr = cExpression( )
+		end if
 		if( expr = NULL ) then
 			errReport( FB_ERRMSG_AUTONEEDSINITIALIZER )
-			'' error recovery: fake an expr
-			expr = astNewCONSTi( 0 )
+			hSkipStmt( )
+			'' error recovery: build an expression with a simple dtype
+			if( is_byref ) then
+				expr = hBuildFakeByrefInitExpr( FB_DATATYPE_INTEGER, NULL )
+			else
+				expr = astNewCONSTi( 0 )
+			end if
 		end if
 
-		dim as integer dtype = astGetFullType( expr )
-		dim as FBSYMBOL ptr subtype = astGetSubType( expr )
+		'' Determine var's dtype based on the initializer expression
+		var dtype = expr->dtype
+		var subtype = expr->subtype
 
-		'' check for special types
-		dim as integer has_ctor = any, has_dtor = any
+		if( is_byref = FALSE ) then
+			select case( typeGetDtAndPtrOnly( dtype ) )
+			case FB_DATATYPE_WCHAR
+				'' wstrings: can't make a "wstring variable" to hold this expression,
+				'' because 1) we don't have dynamic wstrings yet, and 2) we can't use
+				'' a fixed-length wstring because we don't know the length (it may not
+				'' even be constant).
+				'' TODO: could allow VAR initialized with a wstring literal, then the length is known
+				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+				'' error recovery: create a fake expression
+				astDelTree( expr )
+				expr = astNewCONSTi( 0 )
+				dtype = FB_DATATYPE_INTEGER
+				subtype = NULL
 
-		has_ctor = typeHasCtor( dtype, subtype )
-		has_dtor = typeHasDtor( dtype, subtype )
+			case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
+				'' zstring: create a dynamic string variable to hold the zstring data
+				dtype = FB_DATATYPE_STRING
 
-		select case as const typeGetDtAndPtrOnly( dtype )
-		'' wstrings not allowed...
-		case FB_DATATYPE_WCHAR
-			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-			'' error recovery: create a fake expression
-			astDelTree( expr )
-			expr = astNewCONSTi( 0 )
-			dtype = FB_DATATYPE_INTEGER
-			subtype = NULL
+			end select
+		end if
 
-		'' zstring... convert to string
-		case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
-			dtype = FB_DATATYPE_STRING
-
-		'' if it's a function pointer and not a fun ptr prototype, create one
-		case typeAddrOf( FB_DATATYPE_FUNCTION )
-			if( symbGetIsFuncPtr( subtype ) = FALSE ) then
-				subtype = symbAddProcPtrFromFunction( subtype )
-			end if
-
-		end select
+		'' For function pointers, the expression's subtype should be one of the special PROCs created by
+		'' symbAddProcPtr(), not a normal procedure symbol (e.g. in a case like "VAR foo = @myproc"), to
+		'' ensure the new function pointer var uses the same procptr subtype symbol as any other compatible
+		'' procptrs in the scope, allowing them to be seen as compatible. astNewVAR() should have done the
+		'' symbAddProcPtrFromFunction() if it was needed already.
+		assert( iif( typeGetDtOnly( dtype ) = FB_DATATYPE_FUNCTION, symbGetIsFuncPtr( subtype ), TRUE ) )
 
 		'' add var after parsing the expression, or the the var itself could be used
 		sym = hAddVar( sym, parent, id, NULL, dtype, subtype, _
 			symbCalcLen( dtype, subtype ), FALSE, attrib, 0, FALSE, dTB(), FB_TK_VAR )
 
 		if( sym <> NULL ) then
-			'' build a ini-tree
-			dim as ASTNODE ptr initree = any
-
-			initree = astTypeIniBegin( astGetFullType( expr ), subtype, symbIsLocal( sym ) )
-
-			'' not an object?
-			if( has_ctor = FALSE ) then
-				astTypeIniAddAssign( initree, expr, sym )
-			'' handle constructors..
+			if( symbIsRef( sym ) ) then
+				expr = hCheckAndBuildByrefInitializer( sym, expr )
 			else
-				dim as integer is_ctorcall = any
-				expr = astBuildImplicitCtorCallEx( sym, expr, cBydescArrayArgParens( expr ), is_ctorcall )
-
-				if( expr <> NULL ) then
-					if( is_ctorcall ) then
-						astTypeIniAddCtorCall( initree, sym, expr )
-					else
-						'' no proper ctor, try an assign
-						astTypeIniAddAssign( initree, expr, sym )
-					end if
-				end if
+				expr = hCheckAndBuildAutoVarInitializer( sym, expr )
 			end if
-
-			if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-							FB_SYMBATTRIB_SHARED)) <> 0 ) then
-				'' only if it's not an object, static or global instances are allowed
-				if( has_ctor = FALSE ) then
-					if( astTypeIniIsConst( initree ) = FALSE ) then
-						'' error recovery: discard the tree
-						astDelTree( expr )
-						expr = astNewCONSTz( dtype, subtype )
-						dtype = FB_DATATYPE_INTEGER
-						subtype = NULL
-						has_dtor = FALSE
-					end if
-				end if
-			end if
-
-			astTypeIniEnd( initree, TRUE )
 
 			'' add to AST
 			dim as ASTNODE ptr var_decl = astNewDECL( sym, FALSE )
@@ -2044,7 +2188,7 @@ private sub cAutoVarDecl( byval attrib as FB_SYMBATTRIB )
 			symbSetIsDeclared( sym )
 
 			'' flush the init tree (must be done after adding the decl node)
-			astAdd( hFlushInitializer( sym, var_decl, initree, has_dtor ) )
+			astAdd( hFlushInitializer( sym, var_decl, expr, symbHasDtor( sym ) ) )
 		end if
 
 		'' (',' SymbolDef)*

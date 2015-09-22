@@ -1,1 +1,2 @@
 SELECT CONST with 64bit value, no warning (should use 64bit temp var):
+also no warning for CASE value > 32bit:

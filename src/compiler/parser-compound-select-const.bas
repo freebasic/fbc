@@ -8,13 +8,12 @@
 #include once "ast.bi"
 #include once "rtl.bi"
 
-const FB_MAXSWTCASEEXPR = 8192
-const FB_MAXSWTCASERANGE= 4096
+const FB_MAXJUMPTBSLOTS = 8192
 
 type SELECTCTX
 	base		as integer
-	casevalues(0 to FB_MAXSWTCASEEXPR-1) as ulongint
-	caselabels(0 to FB_MAXSWTCASEEXPR-1) as FBSYMBOL ptr
+	casevalues(0 to FB_MAXJUMPTBSLOTS-1) as ulongint
+	caselabels(0 to FB_MAXJUMPTBSLOTS-1) as FBSYMBOL ptr
 end type
 
 dim shared ctx as SELECTCTX
@@ -123,7 +122,7 @@ sub cSelConstStmtBegin()
 	stk->select.casecnt = 0
 	stk->select.const_.base = ctx.base
 	stk->select.const_.deflabel = NULL
-	stk->select.const_.minval = &hFFFFFFFFu
+	stk->select.const_.minval = &hFFFFFFFFFFFFFFFFull
 	stk->select.const_.maxval = 0
 	stk->select.cmplabel = cl
 	stk->select.endlabel = el
@@ -135,34 +134,31 @@ private function hSelConstAddCase _
 		byval swtbase as integer, _
 		byval value as ulongint, _
 		byval label as FBSYMBOL ptr _
-	) as integer static
+	) as integer
 
-	dim as integer probe, high, low, i
-	dim as ulongint v
-
-	'' nothing left?
-	if( ctx.base >= FB_MAXSWTCASEEXPR ) then
+	'' no free slots left?
+	if( ctx.base >= FB_MAXJUMPTBSLOTS ) then
 		return FALSE
 	end if
 
 	'' find the slot using bin-search
-	high = ctx.base - swtbase
-	low  = -1
+	var high = ctx.base - swtbase
+	var low  = -1
 
 	do while( high - low > 1 )
-		probe = cunsg(high + low) \ 2
-		v = ctx.casevalues(swtbase+probe)
+		dim as integer probe = cunsg(high + low) \ 2
+		var v = ctx.casevalues(swtbase+probe)
 		if( v < value ) then
 			low = probe
 		elseif( v > value ) then
 			high = probe
 		else
-			exit function
+			return FALSE
 		end if
 	loop
 
-	'' move up
-	for i = ctx.base+1 to swtbase+high+1 step -1
+	'' move up tail items to free a slot at swtbase+high
+	for i as integer = ctx.base to swtbase+high+1 step -1
 		ctx.casevalues(i) = ctx.casevalues(i-1)
 		ctx.caselabels(i) = ctx.caselabels(i-1)
 	next
@@ -177,10 +173,6 @@ end function
 
 '' cSelConstStmtNext  =  CASE (ELSE | (ConstExpression{int} (',' ConstExpression{int})*)) .
 sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
-	dim as ulongint value, tovalue, maxval, minval
-	dim as FBSYMBOL ptr label
-	dim as integer swtbase
-
 	'' CASE
 	lexSkipToken( )
 
@@ -210,49 +202,37 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 	end if
 
 	'' ConstExpression{int} ((',' | TO) ConstExpression{int})*
-	swtbase = stk->select.const_.base
+	var swtbase = stk->select.const_.base
 
 	'' add label
-	label = symbAddLabel( NULL, FB_SYMBOPT_NONE )
+	var label = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	do
 		'' ConstExpression{int}
-		value = cConstIntExpr( cExpression( ) )
+		dim as ulongint value = cConstIntExpr( cExpression( ), symbGetType( stk->select.sym ) )
 
-		minval = stk->select.const_.minval
-		maxval = stk->select.const_.maxval
+		var minval = stk->select.const_.minval
+		var maxval = stk->select.const_.maxval
 
 		'' TO?
+		dim as ulongint tovalue
 		if( lexGetToken( ) = FB_TK_TO ) then
 			lexSkipToken( )
 
-			tovalue = cConstIntExpr( cExpression( ) )
+			'' ConstExpression{int}
+			tovalue = cConstIntExpr( cExpression( ), symbGetType( stk->select.sym ) )
 
-			for value = value to tovalue
-				if( value < minval ) then
-					minval = value
-				end if
-				if( value > maxval ) then
-					maxval = value
-				end if
-
-				'' too big?
-				if( (minval > maxval) or _
-					(maxval - minval > FB_MAXSWTCASERANGE) or _
-					(minval * typeGetSize( FB_DATATYPE_INTEGER ) > 4294967292ULL) ) then
-
-					errReport( FB_ERRMSG_RANGETOOLARGE )
-					'' error recovery: reset values
-					minval = stk->select.const_.minval
-					maxval = stk->select.const_.maxval
-				else
-					'' add item
-					if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
-						errReport( FB_ERRMSG_DUPDEFINITION )
-					end if
-				end if
-			next
+			if( value > tovalue ) then
+				errReport( FB_ERRMSG_INVALIDCASERANGE )
+				tovalue = value
+			end if
 		else
+			tovalue = value
+		end if
+
+		'' Add Case values in range
+		do
+			assert( value <= tovalue )
 			if( value < minval ) then
 				minval = value
 			end if
@@ -261,21 +241,25 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 			end if
 
 			'' too big?
-			if( (minval > maxval) or _
-				(maxval - minval > FB_MAXSWTCASERANGE) or _
-				(minval * typeGetSize( FB_DATATYPE_INTEGER ) > 4294967292ULL) ) then
-
+			if( (minval > maxval) or ((maxval - minval + 1) > FB_MAXJUMPTBSLOTS) ) then
 				errReport( FB_ERRMSG_RANGETOOLARGE )
-				'' error recovery: reset values
+				'' error recovery: reset values and abort,
+				'' to avoid excessive looping in case of code like "0 to 4294967295u"
 				minval = stk->select.const_.minval
 				maxval = stk->select.const_.maxval
-			else
-				'' add item
-				if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
-					errReport( FB_ERRMSG_DUPDEFINITION )
-				end if
+				exit do
 			end if
-		end if
+
+			if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
+				errReport( FB_ERRMSG_DUPDEFINITION )
+			end if
+
+			'' "Early" exit check to avoid overflow problems
+			if( value = tovalue ) then
+				exit do
+			end if
+			value += 1
+		loop
 
 		stk->select.const_.minval = minval
 		stk->select.const_.maxval = maxval

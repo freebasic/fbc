@@ -285,6 +285,8 @@ private function hConstBop _
 		case AST_OP_IMP : l->val.i = cbool( l->val.i ) imp cbool( r->val.i )
 		case AST_OP_NE  : l->val.i = cbool( l->val.i ) <>  cbool( r->val.i )
 		case AST_OP_EQ  : l->val.i = cbool( l->val.i ) =   cbool( r->val.i )
+		case AST_OP_ANDALSO : l->val.i = cbool( l->val.i ) andalso cbool( r->val.i )
+		case AST_OP_ORELSE  : l->val.i = cbool( l->val.i ) orelse  cbool( r->val.i )
 		case else
 			assert( FALSE )
 		end select
@@ -674,6 +676,19 @@ private sub hConvOperand _
 
 end sub
 
+'' Return FB_DATATYPE_INTEGER, or the given dtype if it's a bigger integer-class dtype
+private function hGetIntegerOrBigger( byval dtype as integer ) as integer
+	select case( dtype )
+	case FB_DATATYPE_UINT, FB_DATATYPE_ULONGINT  '' these are always > integer
+		return dtype
+	case FB_DATATYPE_LONGINT '' this is only > integer on 32bit
+		if( fbIs64bit( ) = FALSE ) then
+			return dtype
+		end if
+	end select
+	return FB_DATATYPE_INTEGER
+end function
+
 '':::::
 function astNewBOP _
 	( _
@@ -980,15 +995,10 @@ function astNewBOP _
 	    (typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_BOOLEAN) ) then
 		select case as const op
 		case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
-			 AST_OP_EQ, AST_OP_NE
+		     AST_OP_EQ, AST_OP_NE, AST_OP_ANDALSO, AST_OP_ORELSE
 			'' Don't promote booleans to integers, so we can have
 			'' "pure-boolean" BOPs (that also return booleans).
 			is_boolean = TRUE
-
-		case AST_OP_ANDALSO, AST_OP_ORELSE
-			'' TODO: should do that for AndAlso/OrElse too,
-			'' but it caused backwards-compatibility problems with
-			'' fbc sources...
 
 		case else
 			'' No other BOP's allowed with booleans
@@ -1113,9 +1123,7 @@ function astNewBOP _
 	case AST_OP_DIV
 
 		if( ldclass <> FB_DATACLASS_FPOINT ) then
-			ldtype = typeJoin( ldtype, FB_DATATYPE_DOUBLE )
-			l = astNewCONV( ldtype, NULL, l )
-			ldclass = FB_DATACLASS_FPOINT
+			hConvOperand( FB_DATATYPE_DOUBLE, ldtype, ldclass, l )
 		end if
 
 		if( rdclass <> FB_DATACLASS_FPOINT ) then
@@ -1137,31 +1145,30 @@ function astNewBOP _
 	case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
 		 AST_OP_INTDIV, AST_OP_MOD, AST_OP_SHL, AST_OP_SHR
 
+		'' Examples:
+		''     double xor double =>  integer xor integer
+		''    integer xor double =>  integer xor integer
+		''    longint xor double =>  longint xor longint
+		''   ulongint xor double => ulongint xor longint
+		'' etc.
+
 		if( ldclass <> FB_DATACLASS_INTEGER ) then
-			ldtype = typeJoin( ldtype, FB_DATATYPE_INTEGER )
-			l = astNewCONV( ldtype, NULL, l )
-			ldclass = FB_DATACLASS_INTEGER
+			hConvOperand( hGetIntegerOrBigger( rdtype ), ldtype, ldclass, l )
 		end if
 
 		if( rdclass <> FB_DATACLASS_INTEGER ) then
-			rdtype = typeJoin( rdtype, FB_DATATYPE_INTEGER )
-			r = astNewCONV( rdtype, NULL, r )
-			rdclass = FB_DATACLASS_INTEGER
+			hConvOperand( hGetIntegerOrBigger( ldtype ), rdtype, rdclass, r )
 		end if
 
 	'' atan2 can only operate on floats
 	case AST_OP_ATAN2, AST_OP_POW
 
 		if( ldclass <> FB_DATACLASS_FPOINT ) then
-			ldtype = typeJoin( ldtype, FB_DATATYPE_DOUBLE )
-			l = astNewCONV( ldtype, NULL, l )
-			ldclass = FB_DATACLASS_FPOINT
+			hConvOperand( FB_DATATYPE_DOUBLE, ldtype, ldclass, l )
 		end if
 
 		if( rdclass <> FB_DATACLASS_FPOINT ) then
-			rdtype = typeJoin( rdtype, FB_DATATYPE_DOUBLE )
-			r = astNewCONV( rdtype, NULL, r )
-			rdclass = FB_DATACLASS_FPOINT
+			hConvOperand( FB_DATATYPE_DOUBLE, rdtype, rdclass, r )
 		end if
 
 	end select
@@ -1540,12 +1547,14 @@ function astNewBOP _
 
 		'' For ANDALSO/ORELSE, "ex" is the dtorlist cookie
 
+		assert( (dtype = FB_DATATYPE_BOOLEAN) or (dtype = FB_DATATYPE_INTEGER) )
+
 		if ldclass = FB_DATACLASS_FPOINT then
 			cmp_constl = astNewConstf(0.0, FB_DATATYPE_SINGLE)
 			cmp_constr = astNewConstf(0.0, FB_DATATYPE_SINGLE)
 		else
-			cmp_constl = astNewCONSTi( 0 )
-			cmp_constr = astNewCONSTi( 0 )
+			cmp_constl = astNewCONSTi( 0, dtype )
+			cmp_constr = astNewCONSTi( 0, dtype )
 		end if
 
 		if op = AST_OP_ANDALSO then
@@ -1558,9 +1567,9 @@ function astNewBOP _
 		r = astNewBOP( AST_OP_NE, r, cmp_constr )
 
 		if op = AST_OP_ANDALSO then
-			return astNewIIF( l, r, cint( ex ), astNewCONSTi( 0 ), 0 )
+			return astNewIIF( l, r, cint( ex ), astNewCONSTi( 0, dtype ), 0 )
 		else
-			return astNewIIF( l, r, cint( ex ), astNewCONSTi( -1 ), 0 )
+			return astNewIIF( l, r, cint( ex ), astNewCONSTi( -1, dtype ), 0 )
 		end if
 	end select
 

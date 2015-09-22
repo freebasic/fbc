@@ -12,21 +12,21 @@
 function cConstIntExpr _
 	( _
 		byval expr as ASTNODE ptr, _
-		byval defaultvalue as longint _
+		byval dtype as integer _
 	) as longint
 
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-		expr = astNewCONSTi( defaultvalue )
+		expr = astNewCONSTi( 0, dtype )
 	end if
 
 	if( astIsCONST( expr ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDCONST )
 		astDelTree( expr )
-		expr = astNewCONSTi( defaultvalue )
+		expr = astNewCONSTi( 0, dtype )
 	end if
 
-	function = astConstFlushToInt( expr )
+	function = astConstFlushToInt( expr, dtype )
 end function
 
 private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr

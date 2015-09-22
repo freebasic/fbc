@@ -1342,7 +1342,8 @@ declare function symbCalcParamLen _
 		byval mode as FB_PARAMMODE _
 	) as longint
 
-declare function symbCalcProcParamsLen( byval proc as FBSYMBOL ptr ) as longint
+declare function symbProcCalcStdcallSuffixN( byval proc as FBSYMBOL ptr ) as longint
+declare function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 
 declare function symbAddScope _
 	( _
@@ -1512,6 +1513,8 @@ declare function symbAllocWstrConst _
 		byval sname as wstring ptr, _
 		byval lgt as integer _
 	) as FBSYMBOL ptr
+
+declare function symbGetRealSize( byval sym as FBSYMBOL ptr ) as longint
 
 declare function symbCalcArrayElements _
 	( _
@@ -2147,7 +2150,7 @@ declare function symbGetUDTBaseLevel _
 #define symbGetFieldBitLength( fld ) _
 	iif( (fld)->var_.bits > 0, _
 		clngint( (fld)->var_.bits ), _ '' clngint needed for older versions of fbc
-		(fld)->lgt * symbGetArrayElements( fld ) * 8 )
+		symbGetRealSize( fld ) * 8 )
 
 #define symbGetUDTSymbTbHead(s) s->udt.ns.symtb.head
 

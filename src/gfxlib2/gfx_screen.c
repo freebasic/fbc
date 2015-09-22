@@ -352,6 +352,10 @@ static int set_mode
 	        }
 		}
 
+		/* Update FB_HANDLE_SCREEN's width/line_len as the graphics window may
+		   now have a different size than the previous console/graphics window */
+		fb_DevScrnMaybeUpdateWidth( );
+
         if( !exit_proc_set ) {
             exit_proc_set = TRUE;
 

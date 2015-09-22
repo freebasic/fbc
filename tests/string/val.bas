@@ -179,12 +179,30 @@ namespace fbc_tests.string_.val_
 		TestValLng( "&B1111111111111111111111111111111111111111111111111111111111111111", -1, 18446744073709551615 )
 
 	end sub
+
+	sub test0x cdecl( )
+		'' FB val() is typically implemented via CRT strtod() which
+		'' recognizes the 0x or 0X prefix for hexadecimal numbers.
+		'' FB val() shouldn't recognize the 0x/0X prefix though.
+		CU_ASSERT( val( "0"   ) = 0.0 )
+		CU_ASSERT( val( "0x"  ) = 0.0 )
+		CU_ASSERT( val( "0X"  ) = 0.0 )
+		CU_ASSERT( val( "0x0" ) = 0.0 )
+		CU_ASSERT( val( "0X0" ) = 0.0 )
+		CU_ASSERT( val( "0xF" ) = 0.0 )
+		CU_ASSERT( val( "0XF" ) = 0.0 )
+
+		CU_ASSERT( val( "&hF" ) = 15.0 )
+		CU_ASSERT( val( "&HF" ) = 15.0 )
+	end sub
+
 	sub ctor () constructor
 
 		fbcu.add_suite("fbc_tests.string.val")
 		fbcu.add_test("test1", @test1)
 		fbcu.add_test("test2", @test2)
 		fbcu.add_test("test3", @test3)
+		fbcu.add_test("test0x", @test0x)
 
 	end sub
 

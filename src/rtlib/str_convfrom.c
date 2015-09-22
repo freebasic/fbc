@@ -15,11 +15,10 @@ FBCALL double fb_hStr2Double( char *src, ssize_t len )
 	if( len < 1 )
 		return 0.0;
 
-	else if( (len >= 2) && (p[0] == '&') )
-	{
-		skip = 2;
-		switch( p[1] )
-		{
+	else if( len >= 2 ) {
+		if( p[0] == '&' ) {
+			skip = 2;
+			switch( p[1] ) {
 			case 'h':
 			case 'H':
 				radix = 16;
@@ -37,15 +36,24 @@ FBCALL double fb_hStr2Double( char *src, ssize_t len )
 				radix = 8;
 				skip = 1;
 				break;
-		}
+			}
 
-		return fb_hStrRadix2Longint( p + skip, len - skip, radix );
+			return fb_hStrRadix2Longint( p + skip, len - skip, radix );
+
+		} else if( p[0] == '0' ) {
+			if( p[1] == 'x' || p[1] == 'X' ) {
+				/* Filter out strings with 0x/0X prefix -- strtod() treats them as hex.
+				   But we only want to support the &h prefix for that. */
+				return 0.0; /* 0x would be parsed to the value zero */
+			}
+		}
 	}
 
 	/* Workaround: strtod() does not allow 'd' as an exponent specifier on 
 	 * non-win32 platforms, so create a temporary buffer and replace any 
-     * 'd's with 'e'
-     */
+	 * 'd's with 'e'.
+	 * This would be bad for hex strings, but those should be handled above already.
+	 */
 	q = malloc( len + 1 );
 	for( i = 0; i < len; i++ )
 	{

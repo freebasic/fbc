@@ -17,8 +17,6 @@ type IRTAC_CTX
 	tacidx			as IRTAC ptr
 
 	vregTB			as TFLIST
-
-	asm_line		as string
 end type
 
 declare sub hFlushUOP _
@@ -448,28 +446,9 @@ private sub _emitProcEnd _
 		byval exitlabel as FBSYMBOL ptr _
 	)
 
-	dim as integer bytestopop = any
-
 	_flush( )
 
-	'' Get the size for the callee's stack clean up (at end of procedure)
-	if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
-		bytestopop = 0
-	else
-		bytestopop = symbCalcProcParamsLen( proc )
-	end if
-
-	'' Additionally pop the hidden ptr (symbCalcProcParamsLen() doesn't
-	'' include it), if it's stdcall/pascal, or the target wants us to
-	'' always pop it, even under cdecl.
-	if( symbProcReturnsOnStack( proc ) ) then
-		if( (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) or _
-		    (env.target.options and FB_TARGETOPT_CALLEEPOPSHIDDENPTR) ) then
-			bytestopop += env.pointersize
-		end if
-	end if
-
-	emitProcFooter( proc, bytestopop, initlabel, exitlabel )
+	emitProcFooter( proc, symbProcCalcBytesToPop( proc ), initlabel, exitlabel )
 
 end sub
 
@@ -711,25 +690,30 @@ private sub _emitComment( byval text as zstring ptr )
 	_emit( AST_OP_LIT_COMMENT, NULL, NULL, NULL, cast( any ptr, ZstrDup( text ) ) )
 end sub
 
-private sub _emitAsmBegin( )
-	ctx.asm_line = ""
-end sub
+private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
+	dim ln as string
 
-private sub _emitAsmText( byval text as zstring ptr )
-	ctx.asm_line += *text
-end sub
+	var n = asmtokenhead
+	while( n )
 
-private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
-	ctx.asm_line += *symbGetMangledName( sym )
-	if( symbGetOfs( sym ) > 0 ) then
-		ctx.asm_line += "+" + str( symbGetOfs( sym ) )
-	elseif( symbGetOfs( sym ) < 0 ) then
-		ctx.asm_line += str( symbGetOfs( sym ) )
-	end if
-end sub
+		select case( n->type )
+		case AST_ASMTOK_TEXT
+			ln += *n->text
+		case AST_ASMTOK_SYMB
+			ln += *symbGetMangledName( n->sym )
+			var ofs = symbGetOfs( n->sym )
+			if( ofs <> 0 ) then
+				if( ofs > 0 ) then
+					ln += "+"
+				end if
+				ln += str( ofs )
+			end if
+		end select
 
-private sub _emitAsmEnd( )
-	_emit( AST_OP_LIT_ASM, NULL, NULL, NULL, cast( any ptr, ZstrDup( strptr( ctx.asm_line ) ) ) )
+		n = n->next
+	wend
+
+	_emit( AST_OP_LIT_ASM, NULL, NULL, NULL, cast( any ptr, ZstrDup( strptr( ln ) ) ) )
 end sub
 
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
@@ -2033,6 +2017,8 @@ private sub hFlushCOMP _
 		if( v2_typ <> IR_VREGTYPE_IMM ) then
 			doload = TRUE
 		end if
+	elseif( v1_typ = IR_VREGTYPE_OFS ) then
+		doload = TRUE
 	end if
 
 	if( (v1_typ = IR_VREGTYPE_REG) or doload ) then
@@ -2676,10 +2662,7 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitProcBegin, _
 	@_emitProcEnd, _
 	@_emitPushArg, _
-	@_emitAsmBegin, _
-	@_emitAsmText, _
-	@_emitAsmSymb, _
-	@_emitAsmEnd, _
+	@_emitAsmLine, _
 	@_emitComment, _
 	@_emitBop, _
 	@_emitUop, _

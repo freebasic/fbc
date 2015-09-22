@@ -5,12 +5,16 @@ Version 1.04.0
 - #750: The gfxlib is now cleaned-up by END (which also happens automatically at the end of the implicit main function), instead of the FB runtime's global destructor. This should fix the "hang on exit on Windows 10" issues. The reason is that the gfxlib clean-up needs to wait for the background thread to exit, which cannot safely be done in a global destructor on Windows, due to the loader lock. This means it is definitely not safe anymore to use FB graphics commands during global variable destructors or module-level destructors.
 - Windows API binding: The BOOLEAN typedef has been renamed to WINBOOLEAN due to the addition of built-in Boolean type to FB. You can #undef Boolean before #including windows.bi to get the Windows API BOOLEAN typedef again.
 - Many bindings now declare CTRUE (1) instead of TRUE (1), to avoid conflicting with the new built-in True (-1) keyword. You can #undef True before #including them to get their old TRUE (1) again.
+- On 64bit, but not -lang qb, integer number literals > 32bit now default to being Integers instead of LongInts, since 64bit Integers are the default type on 64bit. This only makes a difference for overload resolution and typeof(). No changes on 32bit or -lang qb.
+- #738: Operator overloading: The overload resolution is now a bit more permissive with regards to CONSTness; for example non-const UDT objects can be passed to Byref As Const UDT parameters, regardless of the other argument/parameter (if it's a binary operator). Previously this was disallowed (though only sometimes, due to a separate issue).
+- #756: Val() no longer recognizes 0x or 0X prefixes for hexadecimal values. &h or &H should be used instead. Previously it was only "supported" accidentally, and could produce wrong values (all d's turned into e's in the string before the conversion).
 
 [added]
 - BOOLEAN data type (compatible to GCC C++). Logic operations involving boolean operands also return a boolean.
 - TRUE/FALSE built-in constants (programs may still declare them manually, but a warning will be shown)
 - CBOOL()
 - Boolean support for PRINT, INPUT, DATA, WRITE etc. Booleans are represented as "true"/"false" strings (case-insensitive).
+- DIM|VAR BYREF id AS datatype, for creating local references to other objects, similar to BYREF parameters
 - exepath() now works on FreeBSD, NetBSD, Darwin and Solaris
 - The FB gfxlib can now be built on OS X using XQuartz by passing ENABLE_XQUARTZ=1 to make
 - Redundant float constant declarations are now also allowed
@@ -69,6 +73,7 @@ Version 1.04.0
 - New binding for libxmp 4.3.9, with 64bit support
 - New binding for ZeroMQ 4.1.3, with 64bit support
 - New binding for libVLC 2.2.1, with 64bit support
+- Select Case As Const maximum allowed Cases (jump table slots) increased from 4097 to 8192
 
 [fixed]
 - False-positive "ambigious sizeof" warnings if the identifier could refer only to a type or procedure (in that case it should already be fairly clear that the type will be chosen, not the procedure, because sizeof() can't be applied to procedures at all), or if an expression such as "array(0)" is given to sizeof() (i.e. something that starts with an identifier but is followed by further tokens that clarify that it's not refering to a type)
@@ -108,6 +113,26 @@ Version 1.04.0
 - GTK+ 2 binding: GtkCurve structure was translated incorrectly (i.e. wrong sizeof())
 - 1.02.0 regression: Windows API binding: The LPRGLPVOID typedef and related ones were omitted from win/dplay.bi due to a translation bug
 - Windows API binding: win/GdiPlus.bi now uses the Gdiplus namespace and #inclib on 64bit too.
+- The @N stdcall suffix was calculated incorrectly (i.e. it was incompatible with gcc and MSVC) for procedures with Byval non-trivial UDT or Byval String parameters.
+- Static member variables using the parent UDT as their data type could be allocated incorrectly (not enough memory reserved, possible even zero memory), if they were declared above some or all fields (related to bug #649)
+- C backend: References to procedures and labels are now emitted as-is, instead of using gcc's inline asm place-holders with memory reference constraints (the latter only makes sense for variables, not functions/labels)
+- C backend: Inline ASM using labels (i.e. jumps) should now work, using gcc's "asm goto()" syntax
+- C backend: The register clobber lists produced for inline ASM are now adjusted to the target - now x86_64 and ARM is supported (though ARM/AArch64 support is probably incomplete), no longer x86 only.
+- GET# didn't work with wstrings
+- Integer-only operations like AND, OR, \ and MOD converted non-integer operands to Integer, even if the other was a LongInt or UInteger. Now the conversion will use an integer type matching the integer operand (if any), to avoid truncating floating point values, and give more expected results.
+- ASM backend: Cross-compiling could give different results than native compilation with regards to the choice of whether to place string literals into .data or const (e.g. .rodata) sections
+- Compiling a Select Case As Const block containing a Case with a huge range of values such as <case 0 to 4294967295u> won't cause the compiler to "hang" anymore
+- Select Case As Const: <CASE a TO b> now triggers a compile-time error if a > b, instead of silently doing nothing
+- #784: C backend: String literals in inline ASM (containing double quotes, backslashes, etc.) were emitted into the .c code without escaping
+- #777: -lang qb: Suffixed identifiers on the left-hand side of assignments were resolved by prefering global variables instead of local ones. Now local ones take priority, as in other places (e.g. expressions) and as in QB.
+- #783: C backend: Run-time float-to-uint64 conversions truncated the value to int64
+- #745 part 1: PRINT comma-padding could wrap into the next line too early (if the padding would move the caret beyond column width-FB_TAB_WIDTH). This happened in both console and graphics modes.
+- #745 part 2: FB runtime cached the console/graphics window width but didn't update it when it got resized, this should now be fixed at least for the graphics window and Linux console window.
+- #743: 1.00.0 regression: len() used on UDT with overloaded cast() operators returned the result type and value of one of these cast operators, instead of the sizeof()
+- #738: Operator overloading: The overload resolution gave different results for b+a compared to a+b, if one argument/parameter differed only in CONSTness, and the other didn't.
+- #746: -lang qb's Open "Pipe:<shell command>" wasn't working. Only Open "Pipe:" was accepted (but that's useless); anything else was treated as normal Open file command.
+- #414: ASM backend: Bad code generated for comparisons such as IF @globalvar = @stackvar THEN ...
+- C backend: Extern Import variables were not emitted and accessed correctly
 
 
 Version 1.03.0

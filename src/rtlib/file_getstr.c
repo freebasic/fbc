@@ -22,6 +22,7 @@ int fb_FileGetStrEx( FB_FILE *handle, fb_off_t pos, void *str, ssize_t str_len, 
         res = fb_FileGetDataEx( handle, pos, data, len, &len, TRUE, FALSE );
         data[len] = 0;                                /* add the null-term */
     } else {
+		/* no/empty destination string */
 		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 

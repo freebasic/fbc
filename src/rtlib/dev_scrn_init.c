@@ -4,17 +4,30 @@
 
 static FB_FILE_HOOKS hooks_dev_scrn_null = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+/* Update width/line_length after the screen was resized (can happen with
+   console/terminal windows but also with graphics window) */
+void fb_DevScrnUpdateWidth( void )
+{
+	int cols;
+	fb_GetSize( &cols, NULL );
+	FB_HANDLE_SCREEN->line_length = fb_GetX( ) - 1;
+	FB_HANDLE_SCREEN->width = cols;
+}
+
+void fb_DevScrnMaybeUpdateWidth( void )
+{
+	/* Only if it was initialized (i.e. used) yet, otherwise we don't need
+	   to bother */
+	if( FB_HANDLE_SCREEN->hooks ) {
+		fb_DevScrnUpdateWidth( );
+	}
+}
+
+
 void fb_DevScrnInit_Screen( void )
 {
-    int cols;
-	DEV_SCRN_INFO *info = (DEV_SCRN_INFO*) malloc(sizeof(DEV_SCRN_INFO));
-
-    fb_GetSize( &cols, NULL );
-    info->length = 0;
-
-    FB_HANDLE_SCREEN->opaque = info;
-    FB_HANDLE_SCREEN->line_length = fb_GetX() - 1;
-    FB_HANDLE_SCREEN->width = cols;
+	fb_DevScrnUpdateWidth( );
+	FB_HANDLE_SCREEN->opaque = calloc(1, sizeof(DEV_SCRN_INFO));
 }
 
 void fb_DevScrnEnd( FB_FILE *handle )

@@ -618,6 +618,13 @@ function symbAddVar _
 		s->scope = FB_MAINSCOPE
 	end if
 
+	'' Static member var using parent UDT as dtype? Length must be
+	'' recalculated later, when UDT was fully parsed...
+	if( (symbGetType( s ) = FB_DATATYPE_STRUCT) and _
+	    (s->subtype = symbGetCurrentNamespc( )) ) then
+		symbSetUdtHasRecByvalRes( subtype )
+	end if
+
 	function = s
 end function
 
@@ -697,6 +704,13 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+function symbGetRealSize( byval sym as FBSYMBOL ptr ) as longint
+	assert( symbIsVar( sym ) or symbIsField( sym ) )
+	var size = iif( symbIsRef( sym ), env.pointersize, symbGetLen( sym ) )
+	size *= symbGetArrayElements( sym )
+	function = size
+end function
 
 '' Calculate a static array's total number of elements, all dimensions together.
 '' <first> may be specified to calculate only the elements for <first> and the
@@ -779,10 +793,11 @@ function symbCheckArraySize _
 end function
 
 function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
-	'' shared, static, param or temp?
+	'' shared, static, ref, param or temp?
 	if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
 	                    FB_SYMBATTRIB_STATIC or _
 	                    FB_SYMBATTRIB_COMMON or _
+	                    FB_SYMBATTRIB_REF or _
 	                    FB_SYMBATTRIB_PARAMBYDESC or _
 	                    FB_SYMBATTRIB_PARAMBYVAL or _
 	                    FB_SYMBATTRIB_PARAMBYREF or _
@@ -817,10 +832,11 @@ function symbGetVarHasCtor( byval s as FBSYMBOL ptr ) as integer
 end function
 
 function symbGetVarHasDtor( byval s as FBSYMBOL ptr ) as integer
-	'' shared, static, param or temporary?
+	'' shared, static, ref, param or temporary?
 	if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
 	                    FB_SYMBATTRIB_STATIC or _
 	                    FB_SYMBATTRIB_COMMON or _
+	                    FB_SYMBATTRIB_REF or _
 	                    FB_SYMBATTRIB_PARAMBYDESC or _
 	                    FB_SYMBATTRIB_PARAMBYVAL or _
 	                    FB_SYMBATTRIB_PARAMBYREF or _

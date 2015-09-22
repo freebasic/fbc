@@ -169,8 +169,6 @@ type IRLLVMCONTEXT
 	fbctinf				as string
 	fbctinf_len			as integer
 
-	asm_line			as string  '' line of inline asm built up by _emitAsm*()
-
 	section				as integer  '' current section to write to
 	head_txt			as string
 	body_txt			as string
@@ -208,14 +206,15 @@ dim shared as IRLLVMCONTEXT ctx
 dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 { _
 	@"i8"       , _ '' void
+	@"i8"       , _ '' boolean
 	@"i8"       , _ '' byte
 	@"i8"       , _ '' ubyte
 	@"i8"       , _ '' char
 	@"i16"      , _ '' short
 	@"i16"      , _ '' ushort
 	NULL        , _ '' wchar
-	NULL        , _ '' int
-	NULL        , _ '' uint
+	NULL        , _ '' integer
+	NULL        , _ '' uinteger
 	NULL        , _ '' enum
 	@"i32"      , _ '' long
 	@"i32"      , _ '' ulong
@@ -228,7 +227,7 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 	NULL        , _ '' struct
 	NULL        , _ '' namespace
 	NULL        , _ '' function
-	@"i8"       , _ '' fwd-ref
+	@"i8"       , _ '' fwdref (needed for any un-resolved fwdrefs)
 	NULL          _ '' pointer
 }
 
@@ -606,12 +605,17 @@ end function
 private function hEmitSymType( byval sym as FBSYMBOL ptr ) as string
 	dim s as string
 
-	select case( symbGetType( sym ) )
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		s = hEmitStrLitType( symbGetLen( sym ) )
-	case else
-		s = hEmitType( symbGetType( sym ), symbGetSubtype( sym ) )
-	end select
+	var dtype = symbGetType( sym )
+	if( symbIsRef( sym ) ) then
+		s = hEmitType( typeAddrOf( dtype ), sym->subtype )
+	else
+		select case( dtype )
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			s = hEmitStrLitType( sym->lgt )
+		case else
+			s = hEmitType( dtype, sym->subtype )
+		end select
+	end if
 
 	if( symbGetIsDynamic( sym ) ) then
 		'' Dynamic array vars/fields/params
@@ -1997,12 +2001,11 @@ private sub _emitJmpTb _
 
 	dim as string ln
 
-	assert( labelcount > 0 )
-
 	hLoadVreg( v1 )
+	var dtype = hEmitType( v1->dtype, v1->subtype )
 
 	ln = "switch "
-	ln += hEmitType( v1->dtype, v1->subtype ) + " "
+	ln += dtype + " "
 	ln += hVregToStr( v1 ) + ", "
 	ln += "label %" + *symbGetMangledName( deflabel ) + " "
 	ln += "["
@@ -2010,7 +2013,7 @@ private sub _emitJmpTb _
 
 	ctx.indent += 1
 	for i as integer = 0 to labelcount - 1
-		ln = "i32 " + str( values[i] ) + ", "
+		ln = dtype + " " & values[i] & ", "
 		ln += "label %" + *symbGetMangledName( labels[i] )
 		hWriteLine( ln )
 	next
@@ -2091,25 +2094,30 @@ private sub _emitComment( byval text as zstring ptr )
 	hWriteLine( "; " + *text )
 end sub
 
-private sub _emitAsmBegin( )
-	ctx.asm_line = ""
-end sub
+private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
+	dim ln as string
 
-private sub _emitAsmText( byval text as zstring ptr )
-	ctx.asm_line += *text
-end sub
+	var n = asmtokenhead
+	while( n )
 
-private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
-	ctx.asm_line += *symbGetMangledName( sym )
-	if( symbGetOfs( sym ) > 0 ) then
-		ctx.asm_line += "+" + str( symbGetOfs( sym ) )
-	elseif( symbGetOfs( sym ) < 0 ) then
-		ctx.asm_line += str( symbGetOfs( sym ) )
-	end if
-end sub
+		select case( n->type )
+		case AST_ASMTOK_TEXT
+			ln += *n->text
+		case AST_ASMTOK_SYMB
+			ln += *symbGetMangledName( n->sym )
+			var ofs = symbGetOfs( n->sym )
+			if( ofs <> 0 ) then
+				if( ofs > 0 ) then
+					ln += "+"
+				end if
+				ln += str( ofs )
+			end if
+		end select
 
-private sub _emitAsmEnd( )
-	hWriteLine( ctx.asm_line )
+		n = n->next
+	wend
+
+	hWriteLine( ln )
 end sub
 
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
@@ -2427,10 +2435,7 @@ static as IR_VTBL irllvm_vtbl = _
 	@_emitProcBegin, _
 	@_emitProcEnd, _
 	@irhlEmitPushArg, _
-	@_emitAsmBegin, _
-	@_emitAsmText, _
-	@_emitAsmSymb, _
-	@_emitAsmEnd, _
+	@_emitAsmLine, _
 	@_emitComment, _
 	@_emitBop, _
 	@_emitUop, _

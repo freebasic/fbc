@@ -121,8 +121,7 @@ private function hNidxArray2ArrayAccess( byval nidxarray as ASTNODE ptr ) as AST
 					FB_DATATYPE_UINT ) )
     end if
 
-    function = astNewIDX( varexpr, idxexpr, _
-    					  astGetFullType( varexpr ), astGetSubType( varexpr ) )
+	function = astNewIDX( varexpr, idxexpr  )
 end function
 
 private function hMaybeArrayAccess2Ptr _

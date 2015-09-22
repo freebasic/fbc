@@ -130,6 +130,8 @@ function astBuildVarDtorCall overload _
 	'' assuming conditions were checked already
 	function = NULL
 
+	assert( symbIsRef( s ) = FALSE )
+
 	'' array? dims can be -1 with "DIM foo()" arrays..
 	if( symbGetArrayDimensions( s ) <> 0 ) then
 		'' destruct and/or free array, if needed
@@ -803,10 +805,7 @@ function astBuildArrayDescIniTree _
 
     '' .size = len( array ) * elements( array )
 	astTypeIniAddAssign( tree, _
-		astNewCONSTi( _
-			iif( symbIsDynamic( array ), _
-				0ll, _
-				symbGetLen( array ) * symbGetArrayElements( array ) ) ), _
+		astNewCONSTi( iif( symbIsDynamic( array ), 0ll, symbGetRealSize( array ) ) ), _
 		elm )
 
     elm = symbGetNext( elm )

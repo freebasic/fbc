@@ -54,7 +54,7 @@
 ''
 ''      gcc doesn't know that the "hidden" result parameter is special and thus
 ''      calculates it into the @N suffix. We need to use an asm() alias to avoid
-''      that. (see symbCalcProcParamsLen())
+''      that.
 ''
 ''    * StdcallMs (stdcall without @N) is not directly supported by gcc, only at
 ''      the linker level through ld --kill-at etc. We need it for individual
@@ -167,9 +167,11 @@ end type
 enum
 	BUILTIN_F2I           = (1 shl 0)
 	BUILTIN_F2L           = (1 shl 1)
-	BUILTIN_D2I           = (1 shl 2)
-	BUILTIN_D2L           = (1 shl 3)
-	BUILTIN_STATICASSERT  = (1 shl 4)
+	BUILTIN_F2UL          = (1 shl 2)
+	BUILTIN_D2I           = (1 shl 3)
+	BUILTIN_D2L           = (1 shl 4)
+	BUILTIN_D2UL          = (1 shl 5)
+	BUILTIN_STATICASSERT  = (1 shl 6)
 end enum
 
 type IRHLCCTX
@@ -188,11 +190,6 @@ type IRHLCCTX
 
 	fbctinf				as string
 	exports				as string
-
-	asm_line			as string  '' line of inline asm built up by _emitAsm*()
-	asm_i				as integer '' next operand/symbol index
-	asm_output			as string  '' output constraints in gcc's syntax
-	asm_input			as string  '' input constraints in gcc's syntax
 
 	exprnodes			as TLIST   '' EXPRNODE
 	exprtext			as string  '' buffer used by exprFlush() to build the final text
@@ -236,7 +233,7 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 	@"uint16"   , _ '' ushort
 	NULL        , _ '' wchar
 	NULL        , _ '' integer
-	NULL        , _ '' uint
+	NULL        , _ '' uinteger
 	NULL        , _ '' enum
 	@"int32"    , _ '' long
 	@"uint32"   , _ '' ulong
@@ -464,7 +461,7 @@ private function hGetMangledNameForASM _
 	if( (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and symbIsProc( sym ) ) then
 		if( symbGetProcMode( sym ) = FB_FUNCMODE_STDCALL ) then
 			mangled += "@"
-			mangled += str( symbCalcProcParamsLen( sym ) )
+			mangled += str( symbProcCalcStdcallSuffixN( sym ) )
 		end if
 	end if
 
@@ -723,6 +720,11 @@ end sub
 private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 	dim as string s
 
+	'' even dllimport'ed arrays are emitted as pointers, not arrays
+	if( symbIsImport( sym ) ) then
+		exit function
+	end if
+
 	'' Emit all array dimensions individually
 	'' (This lets array initializers rely on gcc to fill uninitialized
 	'' elements with zeroes)
@@ -736,17 +738,19 @@ private function hEmitArrayDecl( byval sym as FBSYMBOL ptr ) as string
 		end if
 	end select
 
-	'' If it's a fixed-length string, add an extra array dimension
-	'' (zstring * 5 becomes char[5])
-	dim as longint length = 0
-	select case( symbGetType( sym ) )
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-		length = symbGetStrLen( sym )
-	case FB_DATATYPE_WCHAR
-		length = symbGetWstrLen( sym )
-	end select
-	if( length > 0 ) then
-		s += "[" + str( length ) + "]"
+	if( symbIsRef( sym ) = FALSE ) then
+		'' If it's a fixed-length string, add an extra array dimension
+		'' (zstring * 5 becomes char[5])
+		dim as longint length = 0
+		select case( symbGetType( sym ) )
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+			length = symbGetStrLen( sym )
+		case FB_DATATYPE_WCHAR
+			length = symbGetWstrLen( sym )
+		end select
+		if( length > 0 ) then
+			s += "[" + str( length ) + "]"
+		end if
 	end if
 
 	function = s
@@ -767,13 +771,19 @@ private sub hEmitVarDecl _
 		ln += "static "
 	end if
 
-	ln += hEmitType( symbGetType( sym ), symbGetSubType( sym ) )
+	var dtype = symbGetType( sym )
+	if( symbIsRef( sym ) or symbIsImport( sym ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
+
+	ln += hEmitType( dtype, sym->subtype )
 	ln += " " + *symbGetMangledName( sym )
 	ln += hEmitArrayDecl( sym )
 
-	if( symbIsImport( sym ) ) then
-		ln += " __attribute__((dllimport))"
-	end if
+	'' dllimport's are handled manually, emitted as pointers and deref'ed
+	'' where needed, as with the ASM backend, as opposed to using
+	'' __attribute__((dllimport)). The _imp__ prefix will be added by fbc's
+	'' name mangling.
 
 	if( symbIsCommon( sym ) and (not use_extern) ) then
 		ln += " __attribute__((common))"
@@ -1113,27 +1123,22 @@ private sub hWriteX86F2I _
 		byval ptype as integer _
 	)
 
-	dim as string rtype_str, rtype_suffix
-	if( rtype = FB_DATATYPE_LONG ) then
-		rtype_str = "int32"
-		rtype_suffix = "l"
-	else
-		rtype_str = "int64"
-		rtype_suffix = "q"
-	end if
+	var rtype_str = hEmitType( rtype, NULL )
+	var ptype_str = hEmitType( ptype, NULL )
 
-	dim as string ptype_str, ptype_suffix
-	if( ptype = FB_DATATYPE_SINGLE ) then
-		ptype_str = "float"
-		ptype_suffix = "s"
-	else
-		ptype_str = "double"
-		ptype_suffix = "l"
-	end if
-
-	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
-		rtype_suffix = ""
-		ptype_suffix = ""
+	dim as string rtype_suffix, ptype_suffix
+	if( env.clopt.asmsyntax = FB_ASMSYNTAX_ATT ) then
+		select case( typeGetSize( rtype ) )
+		case 4
+			rtype_suffix = "l"
+		case 8
+			rtype_suffix = "q"
+		end select
+		if( ptype = FB_DATATYPE_SINGLE ) then
+			ptype_suffix = "s"
+		else
+			ptype_suffix = "l"
+		end if
 	end if
 
 	hWriteLine( "", TRUE )
@@ -1162,21 +1167,14 @@ private sub hWriteGenericF2I _
 		byval ptype as integer _
 	)
 
-	dim as string resulttype, callname
-
-	if( rtype = FB_DATATYPE_LONG ) then
-		resulttype = "int32"
-	else
-		resulttype = "int64"
-	end if
-
+	dim as string callname
 	if( ptype = FB_DATATYPE_SINGLE ) then
 		callname = "nearbyintf"
 	else
 		callname = "nearbyint"
 	end if
 
-	hWriteLine( "#define fb_" + fname +  "( value ) ((" + resulttype + ")__builtin_" + callname + "( value ))", TRUE )
+	hWriteLine( "#define fb_" + fname +  "( value ) ((" + hEmitType( rtype, NULL ) + ")__builtin_" + callname + "( value ))", TRUE )
 
 end sub
 
@@ -1187,11 +1185,16 @@ private sub hWriteF2I _
 		byval ptype as integer _
 	)
 
+	'' We have inline ASM routines for some cases
 	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
-		hWriteX86F2I( fname, rtype, ptype )
-	else
-		hWriteGenericF2I( fname, rtype, ptype )
+		select case( rtype )
+		case FB_DATATYPE_LONG, FB_DATATYPE_LONGINT
+			hWriteX86F2I( fname, rtype, ptype )
+			exit sub
+		end select
 	end if
+
+	hWriteGenericF2I( fname, rtype, ptype )
 
 end sub
 
@@ -1270,18 +1273,12 @@ private sub _emitEnd( )
 	'' Switch to header section temporarily
 	section = sectionGosub( 0 )
 
-	if( ctx.usedbuiltins and BUILTIN_F2I ) then
-		hWriteF2I( "F2I", FB_DATATYPE_LONG, FB_DATATYPE_SINGLE )
-	end if
-	if( ctx.usedbuiltins and BUILTIN_F2L ) then
-		hWriteF2I( "F2L", FB_DATATYPE_LONGINT, FB_DATATYPE_SINGLE )
-	end if
-	if( ctx.usedbuiltins and BUILTIN_D2I ) then
-		hWriteF2I( "D2I", FB_DATATYPE_LONG, FB_DATATYPE_DOUBLE )
-	end if
-	if( ctx.usedbuiltins and BUILTIN_D2L ) then
-		hWriteF2I( "D2L", FB_DATATYPE_LONGINT, FB_DATATYPE_DOUBLE )
-	end if
+	if( ctx.usedbuiltins and BUILTIN_F2I  ) then hWriteF2I( "F2I" , FB_DATATYPE_LONG    , FB_DATATYPE_SINGLE )
+	if( ctx.usedbuiltins and BUILTIN_F2L  ) then hWriteF2I( "F2L" , FB_DATATYPE_LONGINT , FB_DATATYPE_SINGLE )
+	if( ctx.usedbuiltins and BUILTIN_F2UL ) then hWriteF2I( "F2UL", FB_DATATYPE_ULONGINT, FB_DATATYPE_SINGLE )
+	if( ctx.usedbuiltins and BUILTIN_D2I  ) then hWriteF2I( "D2I" , FB_DATATYPE_LONG    , FB_DATATYPE_DOUBLE )
+	if( ctx.usedbuiltins and BUILTIN_D2L  ) then hWriteF2I( "D2L" , FB_DATATYPE_LONGINT , FB_DATATYPE_DOUBLE )
+	if( ctx.usedbuiltins and BUILTIN_D2UL ) then hWriteF2I( "D2UL", FB_DATATYPE_ULONGINT, FB_DATATYPE_DOUBLE )
 
 	'' Append global declarations to the header of the toplevel section.
 	'' This must be done during _emitEnd() instead of _emitBegin() because
@@ -1612,7 +1609,7 @@ end function
 
 private function symbIsCArray( byval sym as FBSYMBOL ptr ) as integer
 	'' No bydesc/byref, those are emitted as pointers...
-	if( symbIsParamBydescOrByref( sym ) ) then
+	if( symbIsRef( sym ) or symbIsParamBydescOrByref( sym ) or symbIsImport( sym ) ) then
 		return FALSE
 	end if
 
@@ -1727,7 +1724,7 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 		subtype = symbGetSubtype( sym )
 
 		'' Emitted as pointer?
-		if( symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
+		if( symbIsRef( sym ) or symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
 			dtype = typeAddrOf( dtype )
 		end if
 
@@ -2830,29 +2827,35 @@ private sub _emitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 		'' ((type)fb_F2I( r ))
 		''
 		'' If converting to integer <= int32: use fb_*2I()
-		'' If converting to integer >= uint32: use fb_*2L()
-		''
-		'' Treating uint32 like [u]int64 as a special case:
-		'' float|double -> uint32 conversions must be done as float|double -> int64 -> uint32,
-		'' otherwise the value will be truncated to int32. (This is a limitation of the F2I ASM routines,
-		'' and the ASM emitter is having the same problem, see emit_x86.bas:_emitLOADF2I() & co)
+		'' If converting to uint32 or int64: use fb_*2L()
+		''   (uint32: need to avoid truncation to int32)
+		'' If converting to uint64: use fb_*2UL()
+		''   (need to avoid truncation to int64)
 
 		dim s as string, tempdtype as integer
-		if( typeGetSizeType( v1->dtype ) < FB_SIZETYPE_UINT32 ) then
+		select case( typeGetSizeType( v1->dtype ) )
+		case is <= FB_SIZETYPE_INT32
 			if( r->dtype = FB_DATATYPE_SINGLE ) then
 				s = "fb_F2I" : ctx.usedbuiltins or= BUILTIN_F2I
 			else
 				s = "fb_D2I" : ctx.usedbuiltins or= BUILTIN_D2I
 			end if
 			tempdtype = FB_DATATYPE_LONG
-		else
+		case is <= FB_SIZETYPE_INT64
 			if( r->dtype = FB_DATATYPE_SINGLE ) then
 				s = "fb_F2L" : ctx.usedbuiltins or= BUILTIN_F2L
 			else
 				s = "fb_D2L" : ctx.usedbuiltins or= BUILTIN_D2L
 			end if
 			tempdtype = FB_DATATYPE_LONGINT
-		end if
+		case else
+			if( r->dtype = FB_DATATYPE_SINGLE ) then
+				s = "fb_F2UL" : ctx.usedbuiltins or= BUILTIN_F2UL
+			else
+				s = "fb_D2UL" : ctx.usedbuiltins or= BUILTIN_D2UL
+			end if
+			tempdtype = FB_DATATYPE_ULONGINT
+		end select
 		s += "( " + exprFlush( r ) + " )"
 		r = exprNewTEXT( tempdtype, NULL, s )
 	end if
@@ -3031,6 +3034,9 @@ private sub _emitJmpTb _
 	dim as EXPRNODE ptr l = any
 	dim as integer i = any
 
+	var dtype = v1->dtype
+	assert( (dtype = FB_DATATYPE_UINT) or (dtype = FB_DATATYPE_ULONGINT) )
+
 	'' SELECT CASE AS CONST always uses a temp var, no need to worry about side effects
 	assert( v1->typ = IR_VREGTYPE_VAR )
 	temp = exprFlush( exprNewVREG( v1 ) )
@@ -3067,19 +3073,19 @@ private sub _emitJmpTb _
 
 	if( minval > 0 ) then
 		'' if( temp < minval ) goto deflabel
-		l = exprNewTEXT( FB_DATATYPE_UINT, NULL, temp )
-		l = exprNewBOP( AST_OP_LT, l, exprNewIMMi( minval ) )
+		l = exprNewTEXT( dtype, NULL, temp )
+		l = exprNewBOP( AST_OP_LT, l, exprNewIMMi( minval, dtype ) )
 		hWriteLine( "if( " + exprFlush( l ) + " ) goto " + *symbGetMangledName( deflabel ) + ";", TRUE )
 	end if
 
 	'' if( temp > maxval ) then goto deflabel
-	l = exprNewTEXT( FB_DATATYPE_UINT, NULL, temp )
-	l = exprNewBOP( AST_OP_GT, l, exprNewIMMi( maxval ) )
+	l = exprNewTEXT( dtype, NULL, temp )
+	l = exprNewBOP( AST_OP_GT, l, exprNewIMMi( maxval, dtype ) )
 	hWriteLine( "if( " + exprFlush( l ) + " ) goto " + *symbGetMangledName( deflabel ) + ";", TRUE )
 
 	'' l = jumptable[l - minval]
-	l = exprNewTEXT( FB_DATATYPE_UINT, NULL, temp )
-	l = exprNewBOP( AST_OP_SUB, l, exprNewIMMi( minval ) )
+	l = exprNewTEXT( dtype, NULL, temp )
+	l = exprNewBOP( AST_OP_SUB, l, exprNewIMMi( minval, dtype ) )
 	hWriteLine( "goto *" + tb + "[" + exprFlush( l ) + "];", TRUE )
 
 end sub
@@ -3157,97 +3163,228 @@ private sub _emitComment( byval text as zstring ptr )
 	end if
 end sub
 
-private sub _emitAsmBegin( )
-	'' -asm intel: FB asm blocks are expected to be in Intel format as
-	''             usual; we have to convert them to the GCC format here.
-	'' -asm att: FB asm blocks are expected to be in the GCC format,
-	''           i.e. quoted and including constraints if needed.
-	ctx.asm_line = "__asm__"
+''
+'' -asm intel: FB asm blocks are expected to be in Intel format as usual;
+''             we have to convert them to the GCC format here.
+''
+'' Some x86-specific examples:
+''
+''    myLabel:
+''    asm
+''        mov eax, [myVar]
+''        mov eax, offset myFunction
+''        jmp myLabel
+''    end asm
+''
+'' =>
+''
+''    myLabel:
+''    asm("mov eax, [%0]\n"
+''        : "+m" (MYVAR$0)            // output contraints
+''        :                           // input contraints
+''        : "cc", "memory", "eax", "ebx", "ecx", "edx", "esp", "edi", "esi");  // clobbered flags/memory/registers
+''    asm("mov eax, offset myFunction\n" : : : /*clobber list*/);
+''    asm goto("jmp %l0" : /*no outputs allowed with goto*/ : : /*clobber list*/ : myLabel);
+''
+''  * references to variables are replaced by %N place-holders, and we add
+''    memory constraints (both output/input, using "+m", because we don't know
+''    what the ASM code does).
+''    This lets gcc replace the variable references by the proper stack offset
+''    expression (i.e. esp+N or ebp-N).
+''
+''    Actually gcc inserts something like <DWORD PTR [ebp-N]>, not just <ebp-N>,
+''    corresponding to the referenced variable's data type. Thus, FB inline ASM
+''    like this:
+''        dword ptr [a]
+''    is effectively turned into
+''        dword ptr [dword ptr [a]]
+''
+''    But it's ok, because the GNU assembler apparently uses the outer-most
+''    size specifier only, which means the user's size specifier overrides the
+''    one inserted by gcc.
+''        dim x as long
+''        asm
+''            div dword ptr [dword ptr [x]]
+''            div byte ptr [dword ptr [x]]
+''        end asm
+''    compiled into an .o with -gen gas, and then disassembled with objdump -M intel -d:
+''        div DWORD PTR [ebp-0x4]
+''        div BYTE PTR [ebp-0x4]
+''
+''  * Functions can be emitted as-is (using the external/mangled name),
+''    the assembler will recognize them already.
+''
+''  * references to labels are replaced by %lN place-holders, and the special
+''    "asm goto" syntax must be used.
+''
+''  * gcc's optimizations require us to specify what flags/memory/registers are
+''    overwritten/changed by the ASM code. Since we don't know what the ASM code
+''    does, we add all flags/memory/registers to the clobbered list...
+''
+'' -asm att: FB asm blocks are expected to be in the GCC format already,
+''           i.e. quoted and including constraints if needed.
+''
+private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
+	'' 1st pass to count some stats (no emitting yet)
+	dim as integer uses_label, labelindex
+	var n = asmtokenhead
+	while( n )
+		if( n->type = AST_ASMTOK_SYMB ) then
+			select case( n->sym->class )
+			case FB_SYMBCLASS_LABEL
+				'' Determine whether to use <asm()> or <asm goto()>
+				uses_label = TRUE
+			case FB_SYMBCLASS_VAR
+				'' Find first valid index into the label list;
+				'' it starts behind the constraints.
+				'' We'll emit 1 input operand per variable (and no outputs).
+				labelindex += 1
+			end select
+		end if
+		n = n->next
+	wend
+
+	dim as string ln = "__asm__"
 
 	'' Only when inside normal procedures
 	'' (NAKED procedures don't increase the indentation)
 	if( sectionInsideProc( ) ) then
-		ctx.asm_line += " __volatile__"
+		ln += " __volatile__"
 	end if
 
-	ctx.asm_line += "( "
+	if( uses_label ) then
+		ln += " goto"
+	end if
+
+	ln += "( "
+
+	dim asmcode as string
+
+	'' 2nd pass - emitting
+	dim as integer operandindex
+	dim as string outputconstraints, inputconstraints, labellist
+	n = asmtokenhead
+	while( n )
+
+		select case( n->type )
+		case AST_ASMTOK_TEXT
+			asmcode += *n->text
+
+		case AST_ASMTOK_SYMB
+			if( sectionInsideProc( ) ) then
+				var id = symbGetMangledName( n->sym )
+				if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
+					select case( n->sym->class )
+					case FB_SYMBCLASS_VAR
+						'' Referencing a variable: insert %N place-holder...
+						'' (N refers to N'th operand written in the whole
+						'' asm [goto]([outputs...] inputs... [labels...]) statement)
+						asmcode += "%" & operandindex
+						operandindex += 1
+
+						'' ... and add the symbol to a constraint list
+						if( uses_label ) then
+							'' read-only input operand constraint: "m" (symbol)
+							'' "asm goto" doesn't allow output constraints, so we can only use
+							'' input constraints. Hopefully there are no jump instructions that
+							'' modify their memory operand...
+							if( len( inputconstraints ) > 0 ) then
+								inputconstraints  += ", "
+							end if
+							inputconstraints  +=  """m"" (" + *id + ")"
+						else
+							'' read+write output operand constraint: "+m" (symbol)
+							if( len( outputconstraints ) > 0 ) then
+								outputconstraints += ", "
+							end if
+							outputconstraints += """+m"" (" + *id + ")"
+						end if
+
+					case FB_SYMBCLASS_LABEL
+						'' Referencing a label: insert %lN place-holder
+						'' (N refers to N'th operand written in whole
+						'' asm goto(outputs... inputs... labels...) statement)
+						asmcode += "%l" & labelindex
+						labelindex += 1
+
+						if( len( labellist ) > 0 ) then
+							labellist += ", "
+						end if
+						labellist += *id
+
+					case else
+						'' Referencing a procedure: emit as-is, no gcc constraints needed
+						asmcode += *id
+					end select
+				else
+					'' -asm att: Expecting FB inline asm to be in gcc's format already,
+					'' emit everything as-is.
+					asmcode += *id
+				end if
+			else
+				'' In NAKED procedure
+				asmcode += hGetMangledNameForASM( n->sym, TRUE )
+			end if
+
+		end select
+
+		n = n->next
+	wend
+
+	hBuildStrLit( ln, strptr( asmcode ), len( asmcode ) + 1 )
 
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
-		ctx.asm_line += """"
-		if( sectionInsideProc( ) ) then
-			ctx.asm_line += $"\t"
-		end if
-		ctx.asm_i = 0
-		ctx.asm_output = ""
-		ctx.asm_input = ""
-	end if
-end sub
-
-private sub _emitAsmText( byval text as zstring ptr )
-	ctx.asm_line += *text
-end sub
-
-private sub _emitAsmSymb( byval sym as FBSYMBOL ptr )
-	dim as string id
-
-	'' In NAKED procedure?
-	if( sectionInsideProc( ) = FALSE ) then
-		ctx.asm_line += hGetMangledNameForASM( sym, TRUE )
-		exit sub
-	end if
-
-	id = *symbGetMangledName( sym )
-
-	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
-		'' Insert %0 -%9 place holders, gcc will fill in the proper
-		'' DWORD PTR [ebp+N] for them based on input/output operands.
-		'  - unfortunately we don't know whether this symbol is used
-		''   as input, output or both, so we enlist as operand for both,
-		''   and use the %i for the output operand.
-		ctx.asm_line += "%" + str( ctx.asm_i )
-		ctx.asm_i += 1
-
-		'' output operand constraint: "=m" (symbol)
-		'' input operand constraint:   "m" (symbol)
-		if( len( ctx.asm_output ) > 0 ) then
-			ctx.asm_output += ", "
-			ctx.asm_input  += ", "
-		end if
-		ctx.asm_output += """=m"" (" + id + ")"
-		ctx.asm_input  +=  """m"" (" + id + ")"
-	else
-		ctx.asm_line += id
-	end if
-end sub
-
-private sub _emitAsmEnd( )
-	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
-		if( sectionInsideProc( ) ) then
-			ctx.asm_line += $"\n"
-		end if
-
-		ctx.asm_line += """"
-
 		'' Only when inside normal procedures
 		'' (NAKED procedures don't increase the indentation)
 		if( sectionInsideProc( ) ) then
-			ctx.asm_line += " : " + ctx.asm_output
-			ctx.asm_line += " : " + ctx.asm_input
+			ln += " : " + outputconstraints
+			ln += " : " + inputconstraints
 
 			'' We don't know what registers etc. will be trashed,
 			'' so assume everything...
-			ctx.asm_line += " : ""cc"", ""memory"""
-			ctx.asm_line += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""esp"", ""edi"", ""esi"""
-			if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
-				ctx.asm_line += ", ""mm0"", ""mm1"", ""mm2"", ""mm3"", ""mm4"", ""mm5"", ""mm6"", ""mm7"""
-				ctx.asm_line += ", ""xmm0"", ""xmm1"", ""xmm2"", ""xmm3"", ""xmm4"", ""xmm5"", ""xmm6"", ""xmm7"""
+			ln += " : ""cc"", ""memory"""
+
+			select case( fbGetCpuFamily( ) )
+			case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
+				if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
+					ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""esp"", ""edi"", ""esi"""
+				else
+					ln += ", ""rax"", ""rbx"", ""rcx"", ""rdx"", ""rsp"", ""rdi"", ""rsi"""
+					ln += ", ""r8"", ""r9"", ""r10"", ""r11"", ""r12"", ""r13"", ""r14"", ""r15"""
+				end if
+
+				'' gcc seems to only accept the mm* registers if SSE was enabled via gcc command line options
+				if( env.clopt.fputype = FB_FPUTYPE_SSE ) then
+					ln += ", ""mm0"", ""mm1"", ""mm2"", ""mm3"", ""mm4"", ""mm5"", ""mm6"", ""mm7"""
+					ln += ", ""xmm0"", ""xmm1"", ""xmm2"", ""xmm3"", ""xmm4"", ""xmm5"", ""xmm6"", ""xmm7"""
+					if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86_64 ) then
+						ln += ", ""xmm8"", ""xmm9"", ""xmm10"", ""xmm11"", ""xmm12"", ""xmm13"", ""xmm14"", ""xmm15"""
+					end if
+				end if
+
+			case FB_CPUFAMILY_ARM, FB_CPUFAMILY_AARCH64
+				'' TODO
+				ln += ", ""r0"", ""r1"", ""r2"", ""r3"", ""r4"", ""r5"", ""r6"""
+				'''ln += ", ""r7""" '' not always accepted by gcc
+				ln += ", ""r8"", ""r9"", ""r10"", ""r11"", ""r12"", ""r13"", ""r14"", ""r15"""
+
+				if( fbGetCpuFamily( ) = FB_CPUFAMILY_AARCH64 ) then
+					ln += ", ""r16"", ""r17"", ""r18"", ""r19"""
+					ln += ", ""r20"", ""r21"", ""r22"", ""r23"", ""r24"", ""r25"", ""r26"", ""r27"", ""r28"""
+					''ln += ", ""r29""" '' not always accepted by gcc
+					ln += ", ""r30"""
+				end if
+			end select
+
+			if( uses_label ) then
+				ln += " : " + labellist
 			end if
 		end if
 	end if
 
-	ctx.asm_line += " );"
+	ln += " );"
 
-	hWriteLine( ctx.asm_line )
+	hWriteLine( ln )
 end sub
 
 private sub _emitVarIniBegin( byval sym as FBSYMBOL ptr )
@@ -3269,6 +3406,9 @@ end sub
 private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
 	var dtype = symbGetType( sym )
 	var l = exprNewIMMi( value, dtype )
+	if( symbIsRef( sym ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
 	l = exprNewCAST( dtype, sym->subtype, l )
 	ctx.varini += exprFlush( l )
 	hVarIniSeparator( )
@@ -3277,6 +3417,9 @@ end sub
 private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )
 	var dtype = symbGetType( sym )
 	var l = exprNewIMMf( value, dtype )
+	if( symbIsRef( sym ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
 	l = exprNewCAST( dtype, sym->subtype, l )
 	ctx.varini += exprFlush( l )
 	hVarIniSeparator( )
@@ -3293,7 +3436,11 @@ private sub _emitVarIniOfs _
 
 	l = exprNewOFFSET( rhs, ofs )
 
-	l = exprNewCAST( symbGetType( sym ), sym->subtype, l )
+	var dtype = symbGetType( sym )
+	if( symbIsRef( sym ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
+	l = exprNewCAST( dtype, sym->subtype, l )
 
 	ctx.varini += exprFlush( l )
 	hVarIniSeparator( )
@@ -3554,10 +3701,7 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitProcBegin, _
 	@_emitProcEnd, _
 	@irhlEmitPushArg, _
-	@_emitAsmBegin, _
-	@_emitAsmText, _
-	@_emitAsmSymb, _
-	@_emitAsmEnd, _
+	@_emitAsmLine, _
 	@_emitComment, _
 	@_emitBop, _
 	@_emitUop, _
