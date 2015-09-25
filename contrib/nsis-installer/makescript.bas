@@ -75,6 +75,16 @@ private sub emitPath(byval o as integer, byref cmd as string, byref path as stri
     print #o, "    " + cmd + " ""$INSTDIR\" + path + """"
 end sub
 
+private sub emitRmDirs(byval o as integer, byref prevpath as string, byref path as string)
+    '' RMDir foo\bar\baz
+    '' RMDir foo\bar
+    '' RMDir foo
+    while ((len(prevpath) > 0) and (prevpath <> left(path, len(prevpath))))
+        emitPath(o, "RMDir ", prevpath)
+        prevpath = pathStripComponent(prevpath)
+    wend
+end sub
+
 private sub emitInstallerFiles _
     ( _
         byref manifest as string, _
@@ -103,13 +113,7 @@ private sub emitInstallerFiles _
                 if (install) then
                     emitPath(o, "SetOutPath", path)
                 else
-                    '' RMDir foo\bar\baz
-                    '' RMDir foo\bar
-                    '' RMDir foo
-                    while ((len(prevpath) > 0) and (prevpath <> left(path, len(prevpath))))
-                        emitPath(o, "RMDir ", prevpath)
-                        prevpath = pathStripComponent(prevpath)
-                    wend
+                    emitRmDirs(o, prevpath, path)
                 end if
                 prevpath = path
             end if
@@ -123,6 +127,10 @@ private sub emitInstallerFiles _
             print #o, filename
         end if
     wend
+
+    if (install = FALSE) then
+        emitRmDirs(o, prevpath, path)
+    end if
 
     close #f
 end sub
