@@ -49,7 +49,7 @@
 #   - Only work locally, e.g. don't touch existing DJGPP/MinGW setups on the host
 # 
 # TODO:
-#   - win32: build NSIS installer + fbdoc CHM
+#   - win32: fbdoc CHM
 #   - win32/win64: build libcunit too, package the libffi/libcunit builds
 #
 set -e
@@ -459,6 +459,14 @@ windowsbuild() {
 		;;
 	esac
 	cd ..
+
+	if [ "$target" = win32 ]; then
+		cd fbc/contrib/nsis-installer
+		cp ../../FreeBASIC-*-win32.zip .
+		make
+		cd ../../..
+		cp fbc/contrib/nsis-installer/FreeBASIC-*-win32.exe ../output
+	fi
 
 	cp fbc/*.zip fbc/*.7z ../output
 	cp fbc/contrib/manifest/fbc-$target.lst		../output
