@@ -133,6 +133,9 @@ get_mingww64_toolchain() {
 	mkdir -p ../input/MinGW-w64
 	download "MinGW-w64/$file" "http://sourceforge.net/projects/mingw-w64/files/$dir$file/download"
 
+	srcfile=src-$gccversion-release-rt_v4-$mingwbuildsrev.tar.7z
+	download "MinGW-w64/$srcfile" "http://sourceforge.net/projects/mingw-w64/files/Toolchain%20sources/Personal%20Builds/mingw-builds/$gccversion/$srcfile/download"
+
 	7z x "../input/MinGW-w64/$file" > /dev/null
 }
 
