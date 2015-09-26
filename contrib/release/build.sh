@@ -125,9 +125,10 @@ get_mingww64_toolchain() {
 	bits="$1"
 	arch="$2"
 
-	gccversion=4.9.2
+	gccversion=5.2.0
+	mingwbuildsrev=rev0
 	dir=Toolchains%20targetting%20Win$bits/Personal%20Builds/mingw-builds/$gccversion/threads-win32/sjlj/
-	file=$arch-$gccversion-release-win32-sjlj-rt_v4-rev3.7z
+	file=$arch-$gccversion-release-win32-sjlj-rt_v4-$mingwbuildsrev.7z
 
 	mkdir -p ../input/MinGW-w64
 	download "MinGW-w64/$file" "http://sourceforge.net/projects/mingw-w64/files/$dir$file/download"
@@ -146,32 +147,37 @@ dos)
 		download "DJGPP/${package}.zip" "${DJGPP_MIRROR}${dir}${package}.zip"
 	}
 
+	djver=204
+	gccver=520
+	bnuver=2251
+	gdbver=771
+
 	# binutils/gcc/gdb (needs updating to new versions)
-	download_djgpp beta/v2gnu/ bnu225b
-	download_djgpp beta/v2gnu/ gcc492b
-	download_djgpp beta/v2gnu/ gpp492b
-	download_djgpp beta/v2gnu/ gdb771b
+	download_djgpp beta/v2gnu/ bnu${bnuver}b
+	download_djgpp beta/v2gnu/ gcc${gccver}b
+	download_djgpp beta/v2gnu/ gpp${gccver}b
+	download_djgpp beta/v2gnu/ gdb${gdbver}b
 
 	# rest to complete the DJGPP install (usually no changes needed)
-	download_djgpp beta/v2/ djdev204
+	download_djgpp beta/v2/ djdev${djver}
 	download_djgpp beta/v2gnu/ fil41b
 	download_djgpp beta/v2gnu/ mak40b
 	download_djgpp beta/v2gnu/ shl2011b
 
 	# Sources for stuff that goes into the FB-dos package (needs updating to new versions)
-	download_djgpp current/v2gnu/ bnu225s
-	download_djgpp beta/v2gnu/ gcc492s
-	download_djgpp current/v2gnu/ gdb771s
-	download_djgpp beta/v2/ djlsr204
+	download_djgpp current/v2gnu/ bnu${bnuver}s
+	download_djgpp beta/v2gnu/    gcc${gccver}s
+	download_djgpp current/v2gnu/ gdb${gdbver}s
+	download_djgpp beta/v2/       djlsr${djver}
 
-	unzip -q ../input/DJGPP/djdev204.zip
+	unzip -q ../input/DJGPP/djdev${djver}.zip
 	unzip -q ../input/DJGPP/shl2011b.zip
 	unzip -q ../input/DJGPP/fil41b.zip
 	unzip -q ../input/DJGPP/mak40b.zip
-	unzip -q ../input/DJGPP/gdb771b.zip
-	unzip -q ../input/DJGPP/bnu225b.zip
-	unzip -q ../input/DJGPP/gcc492b.zip
-	unzip -q ../input/DJGPP/gpp492b.zip
+	unzip -q ../input/DJGPP/gdb${gdbver}b.zip
+	unzip -q ../input/DJGPP/bnu${bnuver}b.zip
+	unzip -q ../input/DJGPP/gcc${gccver}b.zip
+	unzip -q ../input/DJGPP/gpp${gccver}b.zip
 	;;
 win32)
 	get_mingww64_toolchain 32 i686
@@ -196,7 +202,7 @@ win32-mingworg)
 	}
 	download_extract_mingw mingwrt-4.0.3-1-mingw32-dev.tar.lzma
 	download_extract_mingw w32api-4.0.3-1-mingw32-dev.tar.lzma
-	download_extract_mingw binutils-2.24-1-mingw32-bin.tar.xz
+	download_extract_mingw binutils-2.25.1-1-mingw32-bin.tar.xz
 	download_extract_mingw gcc-c++-4.8.1-4-mingw32-bin.tar.lzma
 	download_extract_mingw gcc-c++-4.8.1-4-mingw32-dev.tar.lzma
 	download_extract_mingw gcc-core-4.8.1-4-mingw32-bin.tar.lzma
@@ -221,7 +227,7 @@ win64)
 	;;
 esac
 
-bootfb_title=FreeBASIC-1.02.1-$fbtarget
+bootfb_title=FreeBASIC-1.03.0-$fbtarget
 
 case $fbtarget in
 linux*)
@@ -317,7 +323,7 @@ EOF
 	cp lib/crt0.o lib/gcrt0.o lib/libdbg.a lib/libemu.a lib/libm.a fbc/lib/dos/
 	cp lib/libstdcxx.a fbc/lib/dos/libstdcx.a
 	cp lib/libsupcxx.a fbc/lib/dos/libsupcx.a
-	cp lib/gcc/djgpp/4.92/libgcc.a fbc/lib/dos/
+	cp lib/gcc/djgpp/5.20/libgcc.a fbc/lib/dos/
 
 	cd fbc
 	make bindist TARGET_OS=dos DISABLE_DOCS=1
@@ -423,7 +429,7 @@ windowsbuild() {
 		;;
 	win64)
 		cp bin/gcc.exe fbc/bin/win64
-		cp --parents libexec/gcc/x86_64-w64-mingw32/4.9.2/cc1.exe fbc/bin
+		cp --parents libexec/gcc/x86_64-w64-mingw32/5.2.0/cc1.exe fbc/bin
 		;;
 	esac
 
