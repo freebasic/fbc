@@ -1710,8 +1710,8 @@ function cVarDecl _
 			else
 				'' default initialization
 				if( sym ) then
-					'' Byref? Always requires an explicit initializer
-					if( symbIsRef( sym ) ) then
+					'' Allocating a Byref variable? Always requires an explicit initializer
+					if( (not symbIsExtern( sym )) and symbIsRef( sym ) ) then
 						errReport( FB_ERRMSG_MISSINGREFINIT )
 						hSkipStmt( )
 						exit function

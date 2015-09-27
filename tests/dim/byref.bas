@@ -1,4 +1,5 @@
 #include "fbcu.bi"
+#include "byref-common.bi"
 
 namespace fbc_tests.dim_.byref_
 
@@ -583,6 +584,17 @@ namespace privateDtor
 	end sub
 end namespace
 
+namespace externs
+	sub test cdecl( )
+		CU_ASSERT( @ri = @i )
+		CU_ASSERT( @SomeUDT.ri = @SomeUDT.i )
+		CU_ASSERT( i  = &hEE112233 )
+		CU_ASSERT( ri = &hEE112233 )
+		CU_ASSERT( SomeUDT.i  = &hEE445566 )
+		CU_ASSERT( SomeUDT.ri = &hEE445566 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/dim/byref" )
 	fbcu.add_test( "simpleVars", @simpleVars.test )
@@ -590,6 +602,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "callByrefFunctionPtrThroughByref", @callByrefFunctionPtrThroughByref.test )
 	fbcu.add_test( "noCtorsCalled", @noCtorsCalled.test )
 	fbcu.add_test( "privateDtor", @privateDtor.test )
+	fbcu.add_test( "externs", @externs.test )
 end sub
 
 end namespace
