@@ -1400,6 +1400,10 @@ end sub
 private sub _scopeEnd( byval s as FBSYMBOL ptr )
 end sub
 
+private function hIsStaticWithDtor( byval sym as FBSYMBOL ptr ) as integer
+	function = symbIsStatic( sym ) and (not symbIsRef( sym )) and symbHasDtor( sym )
+end function
+
 private sub _procAllocStaticVars( byval sym as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr desc = any
 	dim as integer section = any
@@ -1425,7 +1429,7 @@ private sub _procAllocStaticVars( byval sym as FBSYMBOL ptr )
 		'' variable?
 		case FB_SYMBCLASS_VAR
 			'' static with dtor?
-			if( symbIsStatic( sym ) and symbHasDtor( sym ) ) then
+			if( hIsStaticWithDtor( sym ) ) then
 				hMaybeEmitLocalVar( sym )
 
 				''
@@ -3115,7 +3119,7 @@ private sub _emitDECL( byval sym as FBSYMBOL ptr )
 	'' Emit locals/statics locally, except statics with dtor - those are
 	'' handled in _procAllocStaticVars(), including their dynamic array
 	'' descriptors (if any).
-	if( symbIsStatic( sym ) and symbHasDtor( sym ) ) then
+	if( hIsStaticWithDtor( sym ) ) then
 		exit sub
 	end if
 
@@ -3125,7 +3129,7 @@ private sub _emitDECL( byval sym as FBSYMBOL ptr )
 	assert( symbIsVar( sym ) )
 	array = sym->var_.desc.array
 	if( array ) then
-		if( symbIsStatic( array ) and symbHasDtor( array ) ) then
+		if( hIsStaticWithDtor( array ) ) then
 			exit sub
 		end if
 	end if
