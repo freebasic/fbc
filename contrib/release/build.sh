@@ -7,8 +7,8 @@
 #   - Downloaded archives are cached in the input/ dir
 #   - Output packages & manifests are put in the output/ dir
 #   - Toolchain source packages are downloaded too
-#   - fbc sources are retrieved from Git; you can specify the exact commit to
-#     build, the default is "master".
+#   - fbc sources are retrieved from Git; you have to specify the exact commit
+#     to build (or a tag/branch name).
 #
 # The standalone fbc is built in the same directory as the normal fbc, by just
 # rebuilding src/compiler/obj/fbc.o (that's all that's affected by
@@ -49,7 +49,7 @@
 #   - Only work locally, e.g. don't touch existing DJGPP/MinGW setups on the host
 # 
 # TODO:
-#   - win32: build NSIS installer + fbdoc CHM
+#   - win32: fbdoc CHM
 #   - win32/win64: build libcunit too, package the libffi/libcunit builds
 #
 set -e
@@ -79,6 +79,19 @@ mkdir -p input
 mkdir -p output
 rm -rf build
 mkdir build
+
+echo "updating input/fbc repo"
+cd input
+if [ ! -d fbc ]; then
+	git clone https://github.com/freebasic/fbc.git
+fi
+cd fbc
+git fetch
+git fetch --tags
+git remote prune origin
+git reset --hard origin/master
+cd ../..
+
 cd build
 
 buildinfo=../output/buildinfo-$target.txt
@@ -112,12 +125,16 @@ get_mingww64_toolchain() {
 	bits="$1"
 	arch="$2"
 
-	gccversion=4.9.2
+	gccversion=5.2.0
+	mingwbuildsrev=rev0
 	dir=Toolchains%20targetting%20Win$bits/Personal%20Builds/mingw-builds/$gccversion/threads-win32/sjlj/
-	file=$arch-$gccversion-release-win32-sjlj-rt_v4-rev3.7z
+	file=$arch-$gccversion-release-win32-sjlj-rt_v4-$mingwbuildsrev.7z
 
 	mkdir -p ../input/MinGW-w64
 	download "MinGW-w64/$file" "http://sourceforge.net/projects/mingw-w64/files/$dir$file/download"
+
+	srcfile=src-$gccversion-release-rt_v4-$mingwbuildsrev.tar.7z
+	download "MinGW-w64/$srcfile" "http://sourceforge.net/projects/mingw-w64/files/Toolchain%20sources/Personal%20Builds/mingw-builds/$gccversion/$srcfile/download"
 
 	7z x "../input/MinGW-w64/$file" > /dev/null
 }
@@ -133,32 +150,37 @@ dos)
 		download "DJGPP/${package}.zip" "${DJGPP_MIRROR}${dir}${package}.zip"
 	}
 
+	djver=204
+	gccver=520
+	bnuver=2251
+	gdbver=771
+
 	# binutils/gcc/gdb (needs updating to new versions)
-	download_djgpp beta/v2gnu/ bnu225b
-	download_djgpp beta/v2gnu/ gcc492b
-	download_djgpp beta/v2gnu/ gpp492b
-	download_djgpp beta/v2gnu/ gdb771b
+	download_djgpp beta/v2gnu/ bnu${bnuver}b
+	download_djgpp beta/v2gnu/ gcc${gccver}b
+	download_djgpp beta/v2gnu/ gpp${gccver}b
+	download_djgpp beta/v2gnu/ gdb${gdbver}b
 
 	# rest to complete the DJGPP install (usually no changes needed)
-	download_djgpp beta/v2/ djdev204
+	download_djgpp beta/v2/ djdev${djver}
 	download_djgpp beta/v2gnu/ fil41b
 	download_djgpp beta/v2gnu/ mak40b
 	download_djgpp beta/v2gnu/ shl2011b
 
 	# Sources for stuff that goes into the FB-dos package (needs updating to new versions)
-	download_djgpp current/v2gnu/ bnu225s
-	download_djgpp beta/v2gnu/ gcc492s
-	download_djgpp current/v2gnu/ gdb771s
-	download_djgpp beta/v2/ djlsr204
+	download_djgpp current/v2gnu/ bnu${bnuver}s
+	download_djgpp beta/v2gnu/    gcc${gccver}s
+	download_djgpp current/v2gnu/ gdb${gdbver}s
+	download_djgpp beta/v2/       djlsr${djver}
 
-	unzip -q ../input/DJGPP/djdev204.zip
+	unzip -q ../input/DJGPP/djdev${djver}.zip
 	unzip -q ../input/DJGPP/shl2011b.zip
 	unzip -q ../input/DJGPP/fil41b.zip
 	unzip -q ../input/DJGPP/mak40b.zip
-	unzip -q ../input/DJGPP/gdb771b.zip
-	unzip -q ../input/DJGPP/bnu225b.zip
-	unzip -q ../input/DJGPP/gcc492b.zip
-	unzip -q ../input/DJGPP/gpp492b.zip
+	unzip -q ../input/DJGPP/gdb${gdbver}b.zip
+	unzip -q ../input/DJGPP/bnu${bnuver}b.zip
+	unzip -q ../input/DJGPP/gcc${gccver}b.zip
+	unzip -q ../input/DJGPP/gpp${gccver}b.zip
 	;;
 win32)
 	get_mingww64_toolchain 32 i686
@@ -183,7 +205,7 @@ win32-mingworg)
 	}
 	download_extract_mingw mingwrt-4.0.3-1-mingw32-dev.tar.lzma
 	download_extract_mingw w32api-4.0.3-1-mingw32-dev.tar.lzma
-	download_extract_mingw binutils-2.24-1-mingw32-bin.tar.xz
+	download_extract_mingw binutils-2.25.1-1-mingw32-bin.tar.xz
 	download_extract_mingw gcc-c++-4.8.1-4-mingw32-bin.tar.lzma
 	download_extract_mingw gcc-c++-4.8.1-4-mingw32-dev.tar.lzma
 	download_extract_mingw gcc-core-4.8.1-4-mingw32-bin.tar.lzma
@@ -208,14 +230,7 @@ win64)
 	;;
 esac
 
-get_fbc_sources() {
-	# fbc sources
-	download fbc-$fbccommit.tar.gz https://github.com/freebasic/fbc/archive/$fbccommit.tar.gz
-	tar xf ../input/fbc-$fbccommit.tar.gz
-	mv fbc-$fbccommit fbc
-}
-
-bootfb_title=FreeBASIC-1.02.1-$fbtarget
+bootfb_title=FreeBASIC-1.03.0-$fbtarget
 
 case $fbtarget in
 linux*)
@@ -227,7 +242,9 @@ linux*)
 	download $bootfb_package "https://downloads.sourceforge.net/fbc/${bootfb_package}?download"
 	tar xf ../input/$bootfb_package
 
-	get_fbc_sources
+	# fbc sources
+	cp -R ../input/fbc .
+	cd fbc && git reset --hard "$fbccommit" && cd ..
 
 	mkdir tempinstall
 	;;
@@ -237,7 +254,9 @@ linux*)
 	download $bootfb_package "https://downloads.sourceforge.net/fbc/${bootfb_package}?download"
 	unzip -q ../input/$bootfb_package
 
-	get_fbc_sources
+	# fbc sources
+	cp -R ../input/fbc fbc
+	cd fbc && git reset --hard "$fbccommit" && cd ..
 	echo "prefix := `pwd -W`" > fbc/config.mk
 
 	# On 64bit, we have to override the FB makefile's uname check, because MSYS uname reports 32bit still
@@ -307,7 +326,7 @@ EOF
 	cp lib/crt0.o lib/gcrt0.o lib/libdbg.a lib/libemu.a lib/libm.a fbc/lib/dos/
 	cp lib/libstdcxx.a fbc/lib/dos/libstdcx.a
 	cp lib/libsupcxx.a fbc/lib/dos/libsupcx.a
-	cp lib/gcc/djgpp/4.92/libgcc.a fbc/lib/dos/
+	cp lib/gcc/djgpp/5.20/libgcc.a fbc/lib/dos/
 
 	cd fbc
 	make bindist TARGET_OS=dos DISABLE_DOCS=1
@@ -413,7 +432,7 @@ windowsbuild() {
 		;;
 	win64)
 		cp bin/gcc.exe fbc/bin/win64
-		cp --parents libexec/gcc/x86_64-w64-mingw32/4.9.2/cc1.exe fbc/bin
+		cp --parents libexec/gcc/x86_64-w64-mingw32/5.2.0/cc1.exe fbc/bin
 		;;
 	esac
 
@@ -440,6 +459,14 @@ windowsbuild() {
 		;;
 	esac
 	cd ..
+
+	if [ "$target" = win32 ]; then
+		cd fbc/contrib/nsis-installer
+		cp ../../FreeBASIC-*-win32.zip .
+		make
+		cd ../../..
+		cp fbc/contrib/nsis-installer/FreeBASIC-*-win32.exe ../output
+	fi
 
 	cp fbc/*.zip fbc/*.7z ../output
 	cp fbc/contrib/manifest/fbc-$target.lst		../output

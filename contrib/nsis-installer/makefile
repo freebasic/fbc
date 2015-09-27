@@ -1,36 +1,24 @@
 include ../../version.mk
 
-ZIP_TITLE := FreeBASIC-$(FBVERSION)-win32
-ZIP_FILE := $(ZIP_TITLE).zip
-INSTALLER_EXE := $(ZIP_TITLE).exe
+FBTITLE := FreeBASIC-$(FBVERSION)-win32
 MAKENSIS := makensis
-FBC := fbc
-
-MANIFEST := ../manifest/FreeBASIC-win32.lst
 
 .SUFFIXES:
 
-.PHONY: all
-all: $(INSTALLER_EXE)
-
-$(INSTALLER_EXE): installer.nsi $(ZIP_FILE) \
-                    open-console.exe fblogo-header.bmp \
-                    fblogo.ico $(MANIFEST)
-	unzip -q -o $(ZIP_FILE)
-	cp installer.nsi open-console.exe fblogo.ico $(ZIP_TITLE)
-	$(MAKENSIS) -V2 $(ZIP_TITLE)/installer.nsi
-	rm -r $(ZIP_TITLE)
-
-# The installer script is put in the root FreeBASIC folder. makensis will cd there.
-installer.nsi: makescript.exe $(MANIFEST) template.nsi
-	$^ $@
-
-makescript.exe: makescript.bas
-	$(FBC) -g -exx -d FBVERSION=$(FBVERSION) $< -x $@
-
-open-console.exe: open-console.bas
-	$(FBC) -exx $< -x $@
+$(FBTITLE).exe: makescript.bas template.nsi $(FBTITLE).zip \
+                  open-console.bas fblogo-header.bmp fblogo.ico
+	rm -rf $(FBTITLE)
+	unzip -q -o $(FBTITLE).zip
+	$(FBTITLE)/fbc.exe -g -exx -d FBVERSION=$(FBVERSION) makescript.bas
+	find $(FBTITLE) -type f | LC_ALL=C sort | sed -e 's,^$(FBTITLE)/,,g' > files.lst
+	unix2dos files.lst
+	makescript.exe files.lst template.nsi installer.nsi
+	rm files.lst
+	$(FBTITLE)/fbc.exe open-console.bas
+	cp installer.nsi open-console.exe fblogo.ico $(FBTITLE)
+	$(MAKENSIS) -V2 $(FBTITLE)/installer.nsi
+	rm -r installer.nsi open-console.exe makescript.exe $(FBTITLE)
 
 .PHONY: clean
 clean:
-	-rm -f open-console.exe installer.nsi makescript.exe $(INSTALLER_EXE)
+	-rm -f $(FBTITLE).exe
