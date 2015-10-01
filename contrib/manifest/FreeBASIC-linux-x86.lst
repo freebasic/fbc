@@ -333,6 +333,7 @@ examples/manual/bits/hibyte.bas
 examples/manual/bits/hiword.bas
 examples/manual/bits/lobyte.bas
 examples/manual/bits/loword.bas
+examples/manual/casting/boolean.bas
 examples/manual/casting/cast.bas
 examples/manual/casting/cbyte.bas
 examples/manual/casting/cdbl.bas
@@ -420,6 +421,9 @@ examples/manual/control/while-wend.bas
 examples/manual/data/data.bas
 examples/manual/data/read.bas
 examples/manual/data/restore.bas
+examples/manual/datatype/boolean-false.bas
+examples/manual/datatype/boolean-true.bas
+examples/manual/datatype/boolean.bas
 examples/manual/datatype/byte.bas
 examples/manual/datatype/byte2.bas
 examples/manual/datatype/const-ovl.bas
@@ -922,6 +926,7 @@ examples/manual/proguide/libs/libs5.bas
 examples/manual/proguide/linecontinuation1.bas
 examples/manual/proguide/linecontinuation2.bas
 examples/manual/proguide/literals/bin.bas
+examples/manual/proguide/literals/boolean.bas
 examples/manual/proguide/literals/dblsuff.bas
 examples/manual/proguide/literals/dec.bas
 examples/manual/proguide/literals/escape.bas
