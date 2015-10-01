@@ -168,10 +168,10 @@ dos)
 	download_djgpp beta/v2gnu/ shl2011b
 
 	# Sources for stuff that goes into the FB-dos package (needs updating to new versions)
-	download_djgpp current/v2gnu/ bnu${bnuver}s
-	download_djgpp beta/v2gnu/    gcc${gccver}s
-	download_djgpp current/v2gnu/ gdb${gdbver}s
-	download_djgpp beta/v2/       djlsr${djver}
+	download_djgpp beta/v2gnu/ bnu${bnuver}s
+	download_djgpp beta/v2gnu/ gcc${gccver}s
+	download_djgpp beta/v2gnu/ gdb${gdbver}s
+	download_djgpp beta/v2/    djlsr${djver}
 
 	unzip -q ../input/DJGPP/djdev${djver}.zip
 	unzip -q ../input/DJGPP/shl2011b.zip
