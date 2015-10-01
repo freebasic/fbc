@@ -5,6 +5,7 @@ Version 1.05.0
 [added]
 
 [fixed]
+- 0.90.0 regression: Self-op optimizations stopped handling some cases and should now work again, for example: optimizing A=A+1 => A+=1 where A is a Long, should give nice ASM code with -gen gas again
 
 
 Version 1.04.0
