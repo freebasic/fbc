@@ -22,7 +22,7 @@ End If
 
 '' Draw a pattern on the image by directly manipulating pixel memory.
 For y As Integer = 0 To 63
-	Dim row As UInteger Ptr = pixels + y * pitch
+	Dim row As ulong Ptr = pixels + y * pitch
 	
 	For x As Integer = 0 To 63
 		row[x] = RGB(x * 4, y * 4, (x Xor y) * 4)

@@ -6,5 +6,5 @@
 '' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpNotEqual
 '' --------
 
-   If (69 <> 420) Then Print "(420 <> 420) is true."
+   If (69 <> 420) Then Print "(69 <> 420) is true."
    If Not (69 = 420) Then Print "not (69 = 420) is true."

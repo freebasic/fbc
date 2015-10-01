@@ -35,8 +35,8 @@ ScreenLock()
 	For y As Integer = 0 To h - 1
 	    
 	    '' Set pixel address to the start of the row
-	    '' It's a 32-bit pixel, so use a UInteger Ptr
-	    Dim As UInteger Ptr pixel = row
+	    '' It's a 32-bit pixel, so use a ULong Ptr
+	    Dim As ULong Ptr pixel = row
 	    
 	    For x As Integer = 0 To w - 1
 	        
@@ -44,7 +44,7 @@ ScreenLock()
 	        *pixel = RGB(x, x Xor y, y) 
 	        
 	        '' Get the next pixel address 
-	        '' (UInteger Ptr will increment by 4 bytes)
+	        '' (ULong Ptr will increment by 4 bytes)
 	        pixel += 1
 	        
 	    Next x
