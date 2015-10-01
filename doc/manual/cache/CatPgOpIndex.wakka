@@ -3,7 +3,7 @@ List of operators used in FreeBASIC.
 
 <<
 {{fbdoc item="section" value="Assignment Operators"}}
-	- {{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpAssignment|=[>] (Assignment)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpCombineConcat|&= (Concatenate and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpCombineAdd|+= (Add and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpCombineSub|-= (Subtract and Assign)"}}

@@ -1,0 +1,34 @@
+{{fbdoc item="title" value="TRUE"}}----
+Intrinsic constant set by the compiler
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgConst Const]] **True** [[KeyPgAs As]] [[KeyPgBoolean Boolean]]
+##
+{{fbdoc item="desc"}}
+	Gives the True ##[[KeyPgBoolean Boolean]]## value where used.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/datatype/boolean-true.bas"}}%%(freebasic)
+Dim b As Boolean = True
+If b Then
+	Print "b is True"
+Else
+	Print "b is False"
+End If
+%%
+
+%%
+b is True
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__True""**##.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgFalse False]]##
+	- ##[[KeyPgBoolean Boolean]]##
+
+{{fbdoc item="back" value="CatPgTODO|!!!TODO!!!"}}

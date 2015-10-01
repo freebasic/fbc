@@ -11,6 +11,9 @@ Compares two expressions for inequality
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **<>** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **<>** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgUlongint ulongint]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **<>** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgSingle single]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **<>** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **<>** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **<>** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgZstring zstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgZstring zstring]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **<>** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgWstring wstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
@@ -53,7 +56,7 @@ End If
 	##[[KeyPgOpEqual Operator =]]## (Equal) is complement to **##Operator <>## (Not equal)**, and is functionally identical when combined with ##[[KeyPgOpNot Operator Not]]## (Bit-wise Complement).
 
 {{fbdoc item="filename" value="examples/manual/operator/not-equal2.bas"}}%%(freebasic)
-   if (69 <> 420) then print "(420 <> 420) is true."
+   if (69 <> 420) then print "(69 <> 420) is true."
    if not (69 = 420) then print "not (69 = 420) is true."
 %%
 

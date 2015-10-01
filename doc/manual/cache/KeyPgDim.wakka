@@ -101,7 +101,7 @@ Dim array(1 To 2, 6, 3 To 5) As Single
 	See also //[[ProPgFixLenArrays Fixed-Length Arrays]]// and //[[ProPgVarLenArrays Variable-Length Arrays]]//.
 
 {{fbdoc item="section" value="Initializers"}}
-	Arrays, variables, strings, and user defined types (UDTs) are initialized to zero or null strings by default when they are created.
+	Arrays, variables, strings, and user defined types (UDTs) are initialized to zero (or ##[[KeyPgFalse False]]## for ##[[KeyPgBoolean Boolean]]##) or null strings by default when they are created.
 
 	To avoid the overhead of default variable initialization, the ##**Any**## initializer can be used with ##**Dim**## to tell the compiler to only reserve the place for the variable in memory but not initialize it, so the variable will contain garbage. In this case the programmer should not make assumptions about the initial values.
 	

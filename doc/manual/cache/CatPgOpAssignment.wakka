@@ -3,7 +3,7 @@ Operators that assign values to operands
 
 The assignment operators perform an assignment to the first, or //left-hand side//, operand based on the value of the second, or //right-hand side//, operand. Most of the assignment operators are combination operators, in that they first perform a mathematical or bitwise operation on the two operands, then assign the result to the //left-hand side// operand.
 
-<<=={{fbdoc item="keyword" value="KeyPgOpAssignment|Operator = (Assignment)"}}==
+<<=={{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}==
 	Assigns the value of one operand to the other.
 =={{fbdoc item="keyword" value="KeyPgOpCombineConcat|Operator &= (Concatenate and Assign)"}}==
 	Assigns the value of a concatenation between two operands.

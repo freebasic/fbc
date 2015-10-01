@@ -2,7 +2,7 @@
 Returns information about an open file number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileAttr""** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //returntype// [[KeyPgAs as]] [[KeyPgLong long]] = 1 ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileAttr""** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //returntype// [[KeyPgAs as]] [[KeyPgLong long]] = 1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 ##
 {{fbdoc item="usage"}}##
 	#include "file.bi"

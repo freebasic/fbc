@@ -92,6 +92,10 @@ This should have produced the ##fbc.exe## compiler and the libraries in ##lib\wi
 		- ##""C:\MinGW-w64\bin\{ar,as,ld,dlltool}.exe""##
 		- ##""GoRC.exe""## from [[http://www.godevtool.com/]]
 	
+	1) For 64bit, or for using -gen gcc on 32bit, gcc.exe and cc1.exe are needed too.
+		- Copy ##""C:\MinGW-w64\bin\gcc.exe""## to ##""C:\fbc\bin\win{32|64}""##
+		- Copy ##""C:\MinGW-w64\libexec\gcc\[target]\[version]\cc1.exe""## to ##""C:\fbc\bin\libexec\gcc\[target]\[version]\cc1.exe""##
+	
 	1) Copy to ##""C:\fbc\lib\win32""## (32bit) or ##""C:\fbc\lib\win64""## (64bit):
 		- ##""C:\MinGW-w64\[target]\lib\{crt2,dllcrt2,gcrt2}.o""##
 		- ##""C:\MinGW-w64\[target]\lib\lib{gmon,mingw32,mingwex,moldname}.a""##

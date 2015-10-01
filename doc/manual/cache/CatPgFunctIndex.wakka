@@ -63,6 +63,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgWrite|WRITE"}}
 
 {{fbdoc item="section" value="Data types and declarations"}}
+	- {{fbdoc item="keyword" value="KeyPgBoolean|BOOLEAN"}}
 	- {{fbdoc item="keyword" value="KeyPgByte|BYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgAs|AS"}}
 	- {{fbdoc item="keyword" value="KeyPgDim|DIM"}}
@@ -228,7 +229,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgLprint|LPRINT"}}
 
 {{fbdoc item="section" value="Assignment Operators"}}
-	- {{fbdoc item="keyword" value="KeyPgOpAssignment|= (Assignment)"}}
+	- {{fbdoc item="keyword" value="KeyPgOpAssignment|=[>] (Assignment)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpCombineConcat|&= (Concatenate and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpCombineAdd|+= (Add and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpCombineSub|-= (Subtract and Assign)"}}
@@ -433,6 +434,8 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdline|__LINE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdpath|__PATH__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdtime|__TIME__"}}
+	- {{fbdoc item="keyword" value="KeyPgFalse|FALSE"}}
+	- {{fbdoc item="keyword" value="KeyPgTrue|TRUE"}}
 
 {{fbdoc item="section" value="Preprocessor"}}
 	- {{fbdoc item="keyword" value="KeyPgPpassert|#ASSERT"}}
@@ -580,6 +583,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 
 {{fbdoc item="section" value="Type casting/conversion"}}
 	- {{fbdoc item="keyword" value="KeyPgCast|CAST"}}
+	- {{fbdoc item="keyword" value="KeyPgCbool|CBOOL"}}
 	- {{fbdoc item="keyword" value="KeyPgCbyte|CBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgCdbl|CDBL"}}
 	- {{fbdoc item="keyword" value="KeyPgCint|CINT"}}

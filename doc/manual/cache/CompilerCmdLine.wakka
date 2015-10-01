@@ -145,7 +145,6 @@ Using the **fbc** command-line.
 {{fbdoc item="section" value="Meta"}}
 	=={{fbdoc item="keyword" value="CompilerOptoptfile|@< file >"}}==
 		Read (additional) command-line options from a file
-		
 
 >>::c::
 
@@ -165,6 +164,13 @@ Using the **fbc** command-line.
 		//(Compile an object file ##sub_module.o##)//
 	##fbc -x application.exe main_module.o sub_module.o##
 		//(Link an executable ##application.exe##)//
+
+	**Note:** How to include an icon in a FB executable program
+	There is a simple command line option to compile a FB program into an executable with an Icon:
+		- Create a *.rc file, for example appicon.rc, with this info:
+			FB_PROGRAM_ICON ICON "appicon.ico"
+				(where appicon.ico is the name of icon)
+		- Then when compiling program, add appicon.rc in the list of files to compile.
 
 {{fbdoc item="see"}}
 	- [[CatPgCompOpt Compiler Options]]

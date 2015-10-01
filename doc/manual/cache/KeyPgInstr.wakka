@@ -22,9 +22,9 @@ Locates the first occurrence of a substring or character within a string
 	The position of the first occurrence of ##//substring//## in ##//str//##.
 
 {{fbdoc item="desc"}}
-	Locates the position of the first occurrence of a substring or character within a string. In the first form of ##**Instr**##, the search begins at the first character.
+	Locates the position of the first occurrence of a substring or character within a string. In the first form of ##**Instr**## (without ##//start//## parameter), the search begins at the first character.
 	
-	Zero (0) is returned if ##//substring//## is not found, either ##//str//## or ##//substring//## are empty strings, or ##//start//## < 1.
+	Zero (0) is returned if: either ##//substring//## is not found, either ##//str//## or ##//substring//## are empty strings, or ##//start//## < 1.
 
 	If the ##**Any**## keyword is specified, ##**Instr**## returns the first occurrence of any character in ##//substring//##.
 

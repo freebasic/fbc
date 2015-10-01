@@ -121,6 +121,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgBitreset|BITRESET"}}
 	- {{fbdoc item="keyword" value="KeyPgBitset|BITSET"}}
 	- {{fbdoc item="keyword" value="KeyPgBload|BLOAD"}}
+	- {{fbdoc item="keyword" value="KeyPgBoolean|BOOLEAN"}}
 	- {{fbdoc item="keyword" value="KeyPgBsave|BSAVE"}}
 	- {{fbdoc item="keyword" value="KeyPgByref|BYREF (parameters)"}}
 	- {{fbdoc item="keyword" value="KeyPgByrefFunction|BYREF (function results)"}}
@@ -131,6 +132,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgCallocate|CALLOCATE"}}
 	- {{fbdoc item="keyword" value="KeyPgCase|CASE"}}
 	- {{fbdoc item="keyword" value="KeyPgCast|CAST"}}
+	- {{fbdoc item="keyword" value="KeyPgCbool|CBOOL"}}
 	- {{fbdoc item="keyword" value="KeyPgCbyte|CBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgCdbl|CDBL"}}
 	- {{fbdoc item="keyword" value="KeyPgCdecl|CDECL"}}
@@ -244,6 +246,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
 	- {{fbdoc item="keyword" value="KeyPgExternBlock|EXTERN...END EXTERN"}}
 {{anchor name="f"}}{{fbdoc item="section" value="F"}}
+	- {{fbdoc item="keyword" value="KeyPgFalse|FALSE"}}
 	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
 	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}
 	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}
@@ -508,6 +511,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgTo|TO"}}
 	- {{fbdoc item="keyword" value="KeyPgTransGfx|TRANS (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgTrim|TRIM"}}
+	- {{fbdoc item="keyword" value="KeyPgTrue|TRUE"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeAlias|TYPE (Alias)"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeTemp|TYPE (Temporary)"}}
 	- {{fbdoc item="keyword" value="KeyPgType|TYPE (UDT)"}}

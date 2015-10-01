@@ -9,6 +9,8 @@ Operators and procedures that convert between different types.
 	Operators to convert to floating-point types.
 **{{anchor name="STRING|Conversions to/from string types"}}**
 	Operators to convert top an from string types.
+**{{anchor name="BOOLEAN|Conversion to boolean types"}}**
+	Operators to convert to boolean types.
 
 <<{{anchor name="GENERIC"}}{{fbdoc item="section" value="Generic conversions"}}
 	=={{fbdoc item="keyword" value="KeyPgCast|CAST"}} and {{fbdoc item="keyword" value="KeyPgCptr|CPTR"}}==
@@ -42,6 +44,10 @@ Operators and procedures that convert between different types.
 		Converts numeric string expressions to integer values.
 	=={{fbdoc item="keyword" value="KeyPgVallng|VALLNG"}} and {{fbdoc item="keyword" value="KeyPgValulng|VALULNG"}}==
 		Converts numeric string expressions to long values.
+
+{{anchor name="BOOLEAN"}}{{fbdoc item="section" value="Conversion to boolean types"}}
+	=={{fbdoc item="keyword" value="KeyPgCbool|CBOOL"}}==
+		Converts a numeric or string expression to a boolean value.
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

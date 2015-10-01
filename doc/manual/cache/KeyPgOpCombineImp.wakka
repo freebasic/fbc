@@ -11,14 +11,14 @@ Performs a bitwise-imp (implication) and assigns the result to a variable
 	##//lhs//##
 		The variable to assign to.
 	##//T1//##
-		Any numeric type.
+		Any numeric or boolean type.
 	##//rhs//##
 		The value to perform a bitwise-imp (implication) with ##//lhs//##.
 	##//T2//##
-		Any numeric type.
+		Any numeric or boolean type.
 
 {{fbdoc item="desc"}}
-	This operator performs a bitwise-imp and assigns the result to a variable. It is functionally equivalent to:
+	This operator performs a bitwise-imp and assigns the result to a variable (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value). It is functionally equivalent to:
 ##
 		//lhs// = //lhs// [[KeyPgOpImp imp]] //rhs//
 ##

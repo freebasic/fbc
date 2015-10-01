@@ -142,16 +142,16 @@ Remember to include our ##fb.Image## data type!
 %%(freebasic)
   '' This one is very important.
   '' We cast to a ubyte ptr first off, to get the exact byte our pixels begin.
-  '' We then cast to a uInteger ptr, simply to avoid "suspicious assignment"
+  '' We then cast to a uLong ptr, simply to avoid "suspicious assignment"
   '' warnings.
-Dim as uInteger ptr myPix = cast( uInteger ptr, ( cast( ubyte ptr, myBuf ) + sizeof(FB.Image) ) )
+Dim as uLong ptr myPix = cast( uLong ptr, ( cast( ubyte ptr, myBuf ) + sizeof(FB.Image) ) )
 %%
 
 Phew.  Alright.  We have to make sure we get the exact address of our pixels.  An integer contains 4 bytes.  3 of these are used for our RGB, and the extra is generally used for alpha when you need it (some people are very resourceful and will use the alpha byte - or channel - to store all kinds of data).  If we're even ONE BYTE off, your Red can become your Green, and your Blue into your Red!  So we have to cast to a ##[[KeyPgUbyte ubyte]] [[KeyPgPtr ptr]]## first.
 
 You probably also noticed that we simply added ##sizeof(fb.Image)## to our address.  That's another perk of using ##fb.Image##!  If you add its size to the start of the buffer, we have just skipped all the memory addresses relating to the header and are now at our pixels.
 
-Finally, we cast it all to a ##[[KeyPgUinteger Uinteger]] [[KeyPgPtr Ptr]]##, mainly for safety.  We're in 32 bit depth mode, so we need 4 bytes per pixels.  A ##[[KeyPgUinteger Uinteger]]## has that.
+Finally, we cast it all to a ##[[KeyPgUlong Ulong]] [[KeyPgPtr Ptr]]##, mainly for safety.  We're in 32 bit depth mode, so we need 4 bytes per pixels.  A ##[[KeyPgUlong Ulong]]## has that.
 
 Here's a small line if you still don't understand how this works.  Here is our buffer:  |FB.IMAGE Header|Pixels|
 
@@ -159,7 +159,7 @@ If what's contained in the first section of our buffer is the ##fb.Image## Heade
 
 One problem though!  If we add that size to our buffer address, to try and get a new one, we end up with strange results.  This is because our datatype isn't one byte long.  We have to cast to a ##[[KeyPgUbyte Ubyte]] [[KeyPgPtr Ptr]]## first, then add the address.  A ##[[KeyPgUbyte Ubyte]]## is one byte long, so we'll get the exact byte we need in memory to work with.
 
-Finally, we're in 32-bits.  We just casted to a ##[[KeyPgUbyte Ubyte]] [[KeyPgPtr Ptr]]##.  Although we *can* just assign the uInteger ptr the address of the ##[[KeyPgUbyte Ubyte]]##, it's best practice to cast it to a ##[[KeyPgUinteger Uinteger]] [[KeyPgPtr Ptr]]## first.  We finally have the address of our pixels, in the right datatype (one per pixel!).  We could manipulate those pixels directly now, if we'd like.
+Finally, we're in 32-bits.  We just casted to a ##[[KeyPgUbyte Ubyte]] [[KeyPgPtr Ptr]]##.  Although we *can* just assign the uLong ptr the address of the ##[[KeyPgUbyte Ubyte]]##, it's best practice to cast it to a ##[[KeyPgUlong Ulong]] [[KeyPgPtr Ptr]]## first.  We finally have the address of our pixels, in the right datatype (one per pixel!).  We could manipulate those pixels directly now, if we'd like.
 
 
 %%(freebasic)
@@ -441,9 +441,9 @@ Screenres 640, 480, 32
 Dim as FB.IMAGE ptr myBuf = ImageCreate( 640, 480 )
 
   '' Get the address of our screen's buffer.
-Dim as uInteger ptr myScrPix = ScreenPtr
+Dim as uLong ptr myScrPix = ScreenPtr
   '' Get the address of our pixel's buffer.
-Dim as uInteger ptr myBufPix = Cast( uInteger ptr, Cast( uByte ptr, myBuf ) + Sizeof(FB.IMAGE) )
+Dim as uLong ptr myBufPix = Cast( uLong ptr, Cast( uByte ptr, myBuf ) + Sizeof(FB.IMAGE) )
 
 
   '' Lock our page.  Fill the entire page with white.

@@ -32,7 +32,7 @@ Called automatically when a class or user defined type is created
 		Note: Even if is defined an explicit default ##**Constructor**##, it is never called by the implicit copy constructor.
 
 	Chaining of constructors in nested types is supported.  Any fields that have their own default constructor are called first.
-	The keyword ##**Constructor**(//parameters//)## can be used at the top of a constructor, allowing to chain together constructors of same type. It prevents the compiler from emitting field initalization code (instead, it relies on the chained constructor to initialize everything).
+	The keyword ##**Constructor**(//parameters//)## can be used at the top of a constructor, allowing to chain together constructors of same type. It prevents the compiler from emitting field initialization code (instead, it relies on the chained constructor to initialize everything).
 
 	##**Constructor**## can be also called directly from the ##//typename//## instance like the other member methods (##[[KeyPgSub Sub]]##) and with the same syntax, i.e. using a member access operator, e.g. ##//obj//.**Constructor**(//parameters//)##. In particular, doing ##//this//.**Constructor**(//parameters//)## is not treated as chaining constructor, and it is allowed anywhere (not only at the top of constructors). In general it's not safe to manually call the constructor on an object, because no ##[[KeyPgDestructor destructor]]## is called, and the old object state - if any - is overwritten without any of its old members being destroyed, which could cause memory/resource leaks.
 

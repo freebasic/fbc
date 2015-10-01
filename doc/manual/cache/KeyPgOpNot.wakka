@@ -16,13 +16,14 @@ Returns the bitwise-not (complement) of a numeric value
 	##//rhs//##
 		The right-hand side expression.
 	##//T//##
-		Any numeric type.
+		Any numeric or boolean type.
 
 {{fbdoc item="ret"}}
 	Returns the bitwise-complement of its operand.
 
 {{fbdoc item="desc"}}
 	This operator returns the bitwise-complement of its operand, a logical operation that results in a value with bits set depending on the bits of the operand.
+	(for a boolean type, '##**Not**## false' returns 'true' and '##**Not**## true' returns 'false')
 
 	The truth table below demonstrates all combinations of a boolean-complement operation:
 

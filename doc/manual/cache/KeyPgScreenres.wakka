@@ -40,7 +40,7 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 
 __##flags## details:__
 
-~If flags are omitted, ""FreeBASIC"" uses QB-compatible graphics in windowed (except in DOS) mode.  These constants are defined in ##fbgfx.bi##.  In the //[[CompilerOptlang -lang fb]]// dialect, these constants are part of the ##FB## ##[[KeyPgNamespace Namespace]]##. Note that most of the flags are not supported in DOS.
+~If flags are omitted, ""FreeBASIC"" uses QB-compatible graphics in windowed (except in DOS) mode.  These constants are defined in ##fbgfx.bi##.  In the //[[CompilerOptlang -lang fb]]// dialect, these constants are part of the ##FB## ##[[KeyPgNamespace Namespace]]##. Their values can be combined to form a mask using ##[[KeyPgOpOr Operator Or]]##. Note that most of the flags are not supported in DOS.
 
 ~Available flags:
 

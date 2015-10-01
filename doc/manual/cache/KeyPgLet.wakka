@@ -39,7 +39,7 @@ x = 100
 	- The UDT to multi-variable Let assignment is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpAssignment Operator = (Assignment)]]##
+	- ##{{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}##
 	- ##[[KeyPgOpLet Operator Let (Assignment)]]##
 	- ##[[KeyPgOpLetlist Operator Let() (Assignment)]]##
 	- ##[[KeyPgOperator Operator]]##

@@ -5,6 +5,8 @@ Built-in data types
 	Types that store integer values, whose range is determined by the size of the data type and its signedness.
 **{{anchor name="FLOATING|Floating-point types"}}**
 	Types that store real number values, whose range and precision is determined by the size of the data type.
+**{{anchor name="BOOLEAN|Boolean types"}}**
+	Types that store boolean values.
 **{{anchor name="MODIFIERS|Data Type Modifiers"}}**
 	Specifies additional characteristics of a standard or user-defined data type.
 **{{anchor name="STRING|String types"}}**
@@ -29,6 +31,10 @@ Built-in data types
 		32-bit wide data types that store real number values.
 	=={{fbdoc item="keyword" value="KeyPgDouble|DOUBLE"}}==
 		64-bit wide data types that store real number values.
+
+{{anchor name="BOOLEAN"}}{{fbdoc item="section" value="Boolean types"}}
+	=={{fbdoc item="keyword" value="KeyPgBoolean|BOOLEAN"}}==
+		1-bit wide data types that store boolean values.
 <<>>{{anchor name="MODIFIERS"}}{{fbdoc item="section" value="Data Type Modifiers"}}
 	=={{fbdoc item="keyword" value="KeyPgConstQualifier|CONST"}}==
 		Specifies a read only type.

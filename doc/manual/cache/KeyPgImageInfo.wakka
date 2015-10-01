@@ -114,7 +114,7 @@ end if
 
 '' Draw a pattern on the image by directly manipulating pixel memory.
 for y as integer = 0 to 63
-	dim row as uinteger ptr = pixels + y * pitch
+	dim row as ulong ptr = pixels + y * pitch
 	
 	for x as integer = 0 to 63
 		row[x] = rgb(x * 4, y * 4, (x xor y) * 4)

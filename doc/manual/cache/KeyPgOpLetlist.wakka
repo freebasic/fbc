@@ -3,6 +3,8 @@ Assigns fields of a user defined type to a list of variables
 
 {{fbdoc item="syntax"}}##
 	**Let**( //variable1// [, //variable2// [, ... ]] ) = //UDT_var//
+		##//or//##
+	**Let**( //variable1// [, //variable2// [, ... ]] ) => //UDT_var//     (from fbc version 0.90)
 ##
 {{fbdoc item="param"}}
 	##//variable1// [, //variable2// [, ... ]]##
@@ -45,7 +47,7 @@ y =  7
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLet Let]]##
-	- ##[[KeyPgOpAssignment Operator = (Assignment)]]##
+	- ##{{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}##
 	- ##[[KeyPgOpLet Operator Let (Assignment)]]##
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
