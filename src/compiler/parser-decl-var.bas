@@ -267,6 +267,12 @@ private function hCheckExternVar _
 		exit function
 	end if
 
+	'' Byref?
+	if( symbIsRef( sym ) <> ((attrib and FB_SYMBATTRIB_REF) <> 0) ) then
+		errReportEx( FB_ERRMSG_TYPEMISMATCH, *id )
+		exit function
+	end if
+
 	'' Check fix-len string length
 	select case( typeGetDtAndPtrOnly( dtype ) )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
@@ -333,7 +339,8 @@ private sub hCheckExternVarAndRecover _
 		dtype = symbGetFullType( sym )
 		subtype = symbGetSubType( sym )
 		lgt = symbGetLen( sym )
-		attrib = (attrib and (not FB_SYMBATTRIB_DYNAMIC)) or (sym->attrib and FB_SYMBATTRIB_DYNAMIC)
+		const AttribsToCopy = FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_REF
+		attrib = (attrib and (not AttribsToCopy)) or (sym->attrib and AttribsToCopy)
 		dimensions = symbGetArrayDimensions( sym )
 		if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
 			have_bounds = FALSE
