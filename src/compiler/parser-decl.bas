@@ -132,7 +132,20 @@ function cDeclaration _
 			end if
 		end if
 
-	case FB_TK_TYPE, FB_TK_UNION
+	case FB_TK_TYPE
+		'' TYPE at the beginning of the statement indicates a TYPE declaration,
+		'' unless it's a TYPE<Foo>(...) or TYPE(...) expression.
+		if( attrib = 0 ) then
+			select case( lexGetLookAhead( 1 ) )
+			case FB_TK_LT, CHAR_LPRNT
+				return FALSE
+			end select
+		end if
+
+		cTypeDecl( attrib )
+		function = TRUE
+
+	case FB_TK_UNION
 		cTypeDecl( attrib )
 		function = TRUE
 

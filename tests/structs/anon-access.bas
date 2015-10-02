@@ -72,10 +72,50 @@ private sub test3538470 cdecl( )
 	CU_ASSERT( 456 = (type<CtorUdt>( )).b )
 end sub
 
+namespace atBeginOfStatement
+	dim shared globali as integer
+
+	type UDT
+		i as integer = 123
+		declare function getI() as integer
+		declare sub copyToGlobal()
+	end type
+
+	function UDT.getI() as integer
+		return i
+	end function
+
+	sub UDT.copyToGlobal()
+		globali = i
+	end sub
+
+	private sub test cdecl( )
+		CU_ASSERT( UDT().getI() = 123 )
+		CU_ASSERT( type<UDT>().getI() = 123 )
+
+		globali = 0
+		UDT().copyToGlobal()
+		CU_ASSERT( globali = 123 )
+
+		globali = 0
+		(UDT()).copyToGlobal()
+		CU_ASSERT( globali = 123 )
+
+		globali = 0
+		type<UDT>().copyToGlobal()
+		CU_ASSERT( globali = 123 )
+
+		globali = 0
+		(type<UDT>()).copyToGlobal()
+		CU_ASSERT( globali = 123 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/structs/anon-access" )
 	fbcu.add_test( "#3538470", @test3538470 )
 	fbcu.add_test( "test", @test )
+	fbcu.add_test( "atBeginOfStatement", @atBeginOfStatement.test )
 end sub
 
 end namespace
