@@ -64,7 +64,7 @@ bar.f(bar.g())
 	Most of the time, however, using ##[[KeyPgThis This]]## explicitly is unnecessary; member procedures can refer to other members of the instance which they are passed directly by name, without having to qualify it with ##[[KeyPgThis This]]## and ##[[KeyPgOpMemberAccess Operator . (Member access)]]##. The only times when you need to qualify member names with ##[[KeyPgThis This]]## is when the member name is hidden, for example, by a parameter or local variable. In these situations, qualifying the member name is the only way to refer to these hidden member names.
 
 	##//Note:
-	To access duplicated symbols defined outside the Type use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith With..End With]] block).//##
+	To access duplicated symbols defined outside the Type, use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith With..End With]] block).//##
 
 	The following example uses the ##[[KeyPgThis This]]## keyword to refer to member data whose name is hidden by a parameter and local variable:
 

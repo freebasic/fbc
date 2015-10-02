@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Literals"}}----
-Non-variable compile-time string and numeric values.
+Non-variable compile-time string, numeric values and boolean values.
 
-Literals are numbers or strings of characters specified directly in the source code.  Literal values may be used by assigning them to a variable or constant, passing them to a procedure, or using them in an expression.
+Literals are numbers, strings of characters or boolean truths specified directly in the source code.  Literal values may be used by assigning them to a variable or constant, passing them to a procedure, or using them in an expression.
 
 Numeric literals come in two forms - integer and floating-point.  
 
@@ -117,6 +117,14 @@ print $"C:\temp"
 %%
 
 	Besides ASCII files with Unicode escape sequences (##\u##), ""FreeBASIC"" can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source files allowing unicode characters directly in the string literal.
+
+{{fbdoc item="section" value="Boolean Literals"}}
+	The boolean type has two values, represented by literals ##[[KeyPgTrue True]]## and ##[[KeyPgFalse False]]##.
+
+{{fbdoc item="filename" value="examples/manual/proguide/literals/boolean.bas"}}%%(freebasic)
+Dim a As Boolean = False
+Dim b As Boolean = True
+%%	
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgTypeof Typeof]]##

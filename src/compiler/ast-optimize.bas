@@ -1566,16 +1566,26 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	'' is left side a var, idx or ptr?
 
-	'' skip any casting if they won't do any conversion
-	dim as ASTNODE ptr t = astSkipNoConvCAST( l )
+	'' We can do the optimization even if there are casts, but only if they are no-conv casts
+	''    dim i as integer = ...
+	'' rhs cast examples (common):
+	''    i = cbyte(i + 1)   <- should not just become i += 1
+	''    i = clng(i + 1)    <- this is a noconv cast on 32bit, but not 64bit
+	''    i = cuint(i + 1)   <- noconv cast
+	'' lhs cast examples (uncommon):
+	''    cbyte(i) = i + 1   <- syntax error
+	''    cuint(i) = i + 1   <- allowed noconv cast
+	''    clng(i) = i + 1    <- allowed noconv cast on 32bit, syntax error on 64bit
+	var lnocast = astSkipNoConvCAST( l )
+	var rnocast = astSkipNoConvCAST( r )
 
-	select case as const t->class
+	select case as const lnocast->class
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, _
 	     AST_NODECLASS_IIF
 
 	case AST_NODECLASS_FIELD
 		'' isn't it a bitfield?
-		if( symbFieldIsBitfield( t->sym ) ) then
+		if( symbFieldIsBitfield( lnocast->sym ) ) then
 			exit function
 		end if
 
@@ -1584,13 +1594,13 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 	end select
 
 	'' is right side an unary or binary operation?
-	select case r->class
+	select case rnocast->class
 	case AST_NODECLASS_UOP
 
 	case AST_NODECLASS_BOP
 		'' can't be a relative op -- unless EMIT is changed to not assume
 		'' the res operand is a reg
-		if( astOpIsRelational( r->op.op ) ) then
+		if( astOpIsRelational( rnocast->op.op ) ) then
 			exit function
 		end if
 
@@ -1599,17 +1609,19 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 	end select
 
 	'' node result is an integer too?
-	if( typeGetClass( astGetDataType( r ) ) <> FB_DATACLASS_INTEGER ) then
+	if( typeGetClass( astGetDataType( rnocast ) ) <> FB_DATACLASS_INTEGER ) then
 		exit function
 	end if
 
-	'' is the left child the same?
-	if( astIsTreeEqual( l, r->l ) = FALSE ) then
+	'' is the UOP/BOP's lhs operand the same as the ASSIGN's lhs?
+	'' There may be a noconv cast here too, for example:
+	''    i = cuint(i) + 1
+	if( astIsTreeEqual( lnocast, astSkipNoConvCAST( rnocast->l ) ) = FALSE ) then
 		exit function
 	end if
 
 	'' delete assign node and alert UOP/BOP to not allocate a result (IR is aware)
-	r->op.options and= not AST_OPOPT_ALLOCRES
+	rnocast->op.options and= not AST_OPOPT_ALLOCRES
 
 	''	=             o
 	'' / \           / \
@@ -1619,6 +1631,11 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 
     astDelNode( n )
 	astDelTree( l )
+	if( r <> rnocast ) then
+		'' If r had a noconv cast, delete that too, so the UOP/BOP ends up at toplevel
+		astDelNode( r )
+		r = rnocast
+	end if
 
     function = r
 

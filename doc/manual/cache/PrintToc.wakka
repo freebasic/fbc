@@ -123,6 +123,7 @@
 		[[KeyPgBitreset BITRESET]]
 		[[KeyPgBitset BITSET]]
 		[[KeyPgBload BLOAD]]
+		[[KeyPgBoolean BOOLEAN]]
 		[[KeyPgBsave BSAVE]]
 		[[KeyPgByref BYREF (parameters)]]
 		[[KeyPgByrefFunction BYREF (function results)]]
@@ -134,6 +135,7 @@
 		[[KeyPgCallocate CALLOCATE]]
 		[[KeyPgCase CASE]]
 		[[KeyPgCast CAST]]
+		[[KeyPgCbool CBOOL]]
 		[[KeyPgCbyte CBYTE]]
 		[[KeyPgCdbl CDBL]]
 		[[KeyPgCdecl CDECL]]
@@ -250,6 +252,7 @@
 		[[KeyPgExternBlock EXTERN...END EXTERN]]
 
 	{{fbdoc item="subsect" value="F"}}
+		[[KeyPgFalse FALSE]]
 		[[KeyPgField FIELD]]
 		[[KeyPgFileattr FILEATTR]]
 		[[KeyPgFilecopy FILECOPY]]
@@ -525,6 +528,7 @@
 		[[KeyPgTo TO]]
 		[[KeyPgTransGfx TRANS (Graphics PUT)]]
 		[[KeyPgTrim TRIM]]
+		[[KeyPgTrue TRUE]]
 		[[KeyPgTypeAlias TYPE (Alias)]]
 		[[KeyPgTypeTemp TYPE (Temporary)]]
 		[[KeyPgType TYPE (UDT)]]
@@ -603,7 +607,7 @@
 		[[CatPgCasting Converting Between Data Types]]
 
 	{{fbdoc item="subsect" value="Assignment operators"}}
-		[[KeyPgOpAssignment Operator = (Assignment)]]
+		{{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}
 		[[KeyPgOpCombineConcat Operator &= (Concatenate and Assign)]]
 		[[KeyPgOpCombineAdd Operator += (Add and Assign)]]
 		[[KeyPgOpCombineSub Operator -= (Subtract and Assign)]]

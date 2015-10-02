@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="Operator = (Assign)"}}----
+{{fbdoc item="title" value="Operator =[>] (Assign)"}}----
 Assigns a value to a variable
 
 {{fbdoc item="syntax"}}##
@@ -6,26 +6,32 @@ Assigns a value to a variable
 ##
 {{fbdoc item="usage"}}##
 	//lhs// **=** //rhs//
+		##//or//##
+	//lhs// **=>** //rhs//     (from fbc version 0.90)
 
-		##//or, in the //QB// dialect,//##
+			##//or, in the //QB// dialect,//##
 
 	[ [[KeyPgLet Let]] ] //lhs// **=** //rhs//
+		##//or//##
+	[ [[KeyPgLet Let]] ] //lhs// **=>** //rhs//     (from fbc version 0.90)
 ##
 {{fbdoc item="param"}}
 	##//lhs//##
 		The variable to assign to.
 	##//T1//##
-		Any numeric, string or pointer type.
+		Any numeric, boolean, string or pointer type.
 	##//rhs//##
 		The value to assign to ##//lhs//##.
 	##//T2//##
 		Any type convertible to ##//T2//##.
 
 {{fbdoc item="desc"}}
-	This operator assigns the value of its right-hand side operand (##//rhs//##) to its left-hand side operand (##//lhs//##). The right-hand side operand must be implicitly convertible to the left-hand side type (##//T1//##). For example, you cannot assign a numeric value to a string type; to do that, first convert the numeric value to a string using ##[[KeyPgStr Str]]## or ##[[KeyPgWstr Wstr]]##.
+	This operator assigns the value of its right-hand side operand (##//rhs//##) to its left-hand side operand (##//lhs//##). The right-hand side operand must be implicitly convertible to the left-hand side type (##//T1//##) (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value). For example, you cannot assign a numeric value to a string type; to do that, first convert the numeric value to a string using ##[[KeyPgStr Str]]## or ##[[KeyPgWstr Wstr]]##.
 	Assignment between arrays is not supported presently.
 
-	Avoid confusion with ##[[KeyPgOpEqual Operator = (Equal)]]##, which also uses the '##=##' symbol (for that, from fbc version 0.90, '=>' can be used for assignments, in place of '=', same as for initializers).
+	Avoid confusion with ##[[KeyPgOpEqual Operator = (Equal)]]##, which also uses the '##=##' symbol.
+	For this purpose and for solving some cases of ambiguity of the parser (see ##[[KeyPgByrefFunction BYREF (function results)]]##), the alternative symbol '=>' can be used for assignments (in place of '=') from fbc version 0.90 (same as already for the initializers).
+		//Note: the '=>' symbol has been chosen against '<=' (already the operator 'Less Than Or Equal') and ':=' (':' used as statement separator).//
 
 	This operator can be overloaded for user-defined types.
 

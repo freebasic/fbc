@@ -13,7 +13,7 @@ Set assembler format for inline assembly under -gen gcc
 	
 		- ##-gen gcc -asm intel##: FB inline assembly blocks must use FB's usual Intel syntax format. Under -gen gcc, fbc will try to translate it to gcc's format automatically. For example:
 			%%(freebasic)
-dim a as integer = 1
+dim a as long = 1
 print a
 asm
 	inc dword ptr [a]
@@ -23,7 +23,7 @@ print a
 			
 		- ##-gen gcc -asm att##: FB inline assembly blocks must use [[https://gcc.gnu.org/onlinedocs/gcc/Using-Assembly-Language-with-C.html gcc's format]]. For example:
 			%%(freebasic)
-dim a as integer = 1
+dim a as long = 1
 print a
 asm
 	"incl %0\n" : "+m" (a) : :

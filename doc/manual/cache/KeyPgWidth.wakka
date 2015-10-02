@@ -31,7 +31,7 @@ Sets or gets the number of rows and columns of the display
 	
 	Valid font heights are 8 pixels, 14 pixels and 16 pixels.  The fonts all have a fixed width of 8 pixels.
 
-	Using the ##**Width**## command forces a screen clear (##[[KeyPgCls Cls]]##) 
+	Using the ##**Width**## command in graphic mode also forces a screen clear (##[[KeyPgCls Cls]]##).
 
 {{fbdoc item="ex"}}
 

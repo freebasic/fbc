@@ -600,7 +600,7 @@ end function
 private function hUTF32LEToUTF32LE( ) as integer static
 
 	if( get( #env.inf.num, , lex.ctx->buffw ) = 0 ) then
-		function = cunsg(seek( env.inf.num ) - lex.ctx->filepos) \ len( uinteger )
+		function = cunsg(seek( env.inf.num ) - lex.ctx->filepos) \ sizeof( ulong )
 	else
 		function = 0
 	end if

@@ -2,15 +2,16 @@
 Used in place of procedure parameter to pass a variable number of arguments, or as the upper bound in an array declaration to denote that the number of elements will be determined by the initializer.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc_name// [[KeyPgCdecl cdecl]] ( //param// [[KeyPgAs as]] [[DataType datatype]], **...** )
+	[[KeyPgDeclare declare]] { [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc_name// [[KeyPgCdecl cdecl]] ( //param_list//, **...** )  { | [[KeyPgAs As]] //return_type// }
 	
 	[[KeyPgDim dim]] //array_symbol// ([//lbound// [[KeyPgTo to]]] **...**) [[[KeyPgAs as]] [[DataType datatype]]] => { //expression_list// }
 	
 	[[KeyPgPpdefine #define]] //identifier//( [ //parameters//, ] //variadic_parameter//**...** ) //body//
 ##
 {{fbdoc item="desc"}}
-	The ellipsis (three dots, ##**...**##) is used in procedure declarations and definitions to indicate a variable argument list. A first argument must always be specified and the function must be called with the C calling convention ##[[KeyPgCdecl cdecl]]##. In the procedure body, ##[[KeyPgVaFirst va_first]]##, ##[[KeyPgVaArg va_arg]]## and ##[[KeyPgVaNext va_next]]## are used to handle the variable arguments.
-	Only numeric types and pointers are supported as parameters.  ##[[KeyPgString String]]##s can be passed, in which case a ##[[KeyPgZstring Zstring]] [[KeyPgPtr Ptr]]## to the string data is taken.
+	The ellipsis (three dots, ##**...**##) is used in procedure declarations and definitions to indicate a variable argument list. A first argument (at least) must always be specified and the procedure must be called with the C calling convention ##[[KeyPgCdecl cdecl]]##. In the procedure body, ##[[KeyPgVaFirst va_first]]##, ##[[KeyPgVaArg va_arg]]## and ##[[KeyPgVaNext va_next]]## are used to handle the variable arguments.
+	Only numeric types and pointers are supported as variable arguments (all bytes and shorts passed on variable arguments are implicitly converted to integers, all singles passed on variable arguments are implicitly converted to doubles).  ##[[KeyPgString String]]##s can be passed, in which case a ##[[KeyPgZstring Zstring]] [[KeyPgPtr Ptr]]## to the string data is taken.
+	A variadic procedure name can never be overloaded.
 	
 	Using an ellipsis in place of the upper bound in an array declaration causes the upper bound to be set according to the data that appears in the ##//expression_list//##.  When the ellipsis is used in this manner, an initializer must appear, and cannot be ##[[KeyPgAny Any]]##.
 	

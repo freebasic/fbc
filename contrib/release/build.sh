@@ -151,8 +151,9 @@ dos)
 	}
 
 	djver=204
-	gccver=520
-	bnuver=2251
+	gccver=492
+	djgppgccversiondir=4.92
+	bnuver=225
 	gdbver=771
 
 	# binutils/gcc/gdb (needs updating to new versions)
@@ -168,10 +169,10 @@ dos)
 	download_djgpp beta/v2gnu/ shl2011b
 
 	# Sources for stuff that goes into the FB-dos package (needs updating to new versions)
-	download_djgpp current/v2gnu/ bnu${bnuver}s
-	download_djgpp beta/v2gnu/    gcc${gccver}s
-	download_djgpp current/v2gnu/ gdb${gdbver}s
-	download_djgpp beta/v2/       djlsr${djver}
+	download_djgpp beta/v2gnu/ bnu${bnuver}s
+	download_djgpp beta/v2gnu/ gcc${gccver}s
+	download_djgpp beta/v2gnu/ gdb${gdbver}s
+	download_djgpp beta/v2/    djlsr${djver}
 
 	unzip -q ../input/DJGPP/djdev${djver}.zip
 	unzip -q ../input/DJGPP/shl2011b.zip
@@ -326,7 +327,7 @@ EOF
 	cp lib/crt0.o lib/gcrt0.o lib/libdbg.a lib/libemu.a lib/libm.a fbc/lib/dos/
 	cp lib/libstdcxx.a fbc/lib/dos/libstdcx.a
 	cp lib/libsupcxx.a fbc/lib/dos/libsupcx.a
-	cp lib/gcc/djgpp/5.20/libgcc.a fbc/lib/dos/
+	cp lib/gcc/djgpp/$djgppgccversiondir/libgcc.a fbc/lib/dos/
 
 	cd fbc
 	make bindist TARGET_OS=dos DISABLE_DOCS=1
@@ -432,7 +433,7 @@ windowsbuild() {
 		;;
 	win64)
 		cp bin/gcc.exe fbc/bin/win64
-		cp --parents libexec/gcc/x86_64-w64-mingw32/5.2.0/cc1.exe fbc/bin
+		cp --parents libexec/gcc/x86_64-w64-mingw32/$gccversion/cc1.exe fbc/bin
 		;;
 	esac
 

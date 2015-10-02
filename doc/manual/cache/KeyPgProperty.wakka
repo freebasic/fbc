@@ -40,7 +40,7 @@ Declares or defines a property in a type or class
 
 	##//typename//## is the name of the type for which the ##**Property**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace Namespace]]##.
 
-	A **Property** may optionally have one index parameter.  When indexed, properties are accessed as Property(Index) = Value.
+	A **Property** may optionally have one index parameter.  When indexed, properties are accessed as ##//fieldname//##(Index) = Value.
 
 	A hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//## is passed to the property procedure.  ##[[KeyPgThis this]]## is used to access the fields of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
 

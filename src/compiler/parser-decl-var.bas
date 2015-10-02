@@ -255,7 +255,7 @@ private function hCheckExternVar _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
-		byref attrib as integer, _
+		byval attrib as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
 	) as integer
@@ -263,6 +263,12 @@ private function hCheckExternVar _
 	'' Check data type
 	if( (dtype <> symbGetFullType( sym )) or _
 	    (subtype <> symbGetSubType( sym )) ) then
+		errReportEx( FB_ERRMSG_TYPEMISMATCH, *id )
+		exit function
+	end if
+
+	'' Byref?
+	if( symbIsRef( sym ) <> ((attrib and FB_SYMBATTRIB_REF) <> 0) ) then
 		errReportEx( FB_ERRMSG_TYPEMISMATCH, *id )
 		exit function
 	end if
@@ -333,7 +339,8 @@ private sub hCheckExternVarAndRecover _
 		dtype = symbGetFullType( sym )
 		subtype = symbGetSubType( sym )
 		lgt = symbGetLen( sym )
-		attrib = (attrib and (not FB_SYMBATTRIB_DYNAMIC)) or (sym->attrib and FB_SYMBATTRIB_DYNAMIC)
+		const AttribsToCopy = FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_REF
+		attrib = (attrib and (not AttribsToCopy)) or (sym->attrib and AttribsToCopy)
 		dimensions = symbGetArrayDimensions( sym )
 		if( attrib and FB_SYMBATTRIB_DYNAMIC ) then
 			have_bounds = FALSE
@@ -1710,8 +1717,8 @@ function cVarDecl _
 			else
 				'' default initialization
 				if( sym ) then
-					'' Byref? Always requires an explicit initializer
-					if( symbIsRef( sym ) ) then
+					'' Allocating a Byref variable? Always requires an explicit initializer
+					if( (not symbIsExtern( sym )) and symbIsRef( sym ) ) then
 						errReport( FB_ERRMSG_MISSINGREFINIT )
 						hSkipStmt( )
 						exit function

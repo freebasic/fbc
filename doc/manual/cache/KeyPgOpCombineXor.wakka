@@ -11,14 +11,14 @@ Performs a bitwise-xor (exclusive disjunction) and assigns the result to a varia
 	##//lhs//##
 		The variable to assign to.
 	##//T1//##
-		Any numeric type.
+		Any numeric or boolean type.
 	##//rhs//##
 		The value to perform a bitwise-xor (exclusive or) with ##//lhs//##.
 	##//T2//##
-		Any numeric type.
+		Any numeric or boolean type.
 
 {{fbdoc item="desc"}}
-	This operator performs a bitwise-or and assigns the result to a variable. It is functionally equivalent to:
+	This operator performs a bitwise-or and assigns the result to a variable (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value). It is functionally equivalent to:
 ##
 		//lhs// = //lhs// [[KeyPgOpXor xor]] //rhs//
 ##

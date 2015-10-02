@@ -11,19 +11,20 @@ Returns the short circuit-or (Inclusive Disjunction) of two numeric values
 	##//lhs//##
 		The left-hand side expression.
 	##//T1//##
-		Any numeric type.
+		Any numeric or boolean type.
 	##//rhs//##
 		The right-hand side expression.
 	##//T2//##
-		Any numeric type.
+		Any numeric or boolean type.
 	##//Ret//##
-		An Integer.
+		A numeric or boolean type (varies with ##//T1//## and ##//T2//##).
 
 {{fbdoc item="ret"}}
 	Returns the short circuit-or (inclusive disjunction) of the two operands.
 
 {{fbdoc item="desc"}}
 	This operator evaluates the left hand side expression.  If the result is nonzero, then ##-1## (true) is immediately returned.  If the result is zero then the right hand side is evaluated, and the logical result from that is returned, returning ##-1## (true) for a nonzero value or ##0## (false) for zero.
+	(for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value)
 
 	The truth table below demonstrates all combinations of a short circuit-or operation, the '-' denotes that the operand is not evaluated.
 
@@ -31,7 +32,7 @@ Returns the short circuit-or (Inclusive Disjunction) of two numeric values
 
 	Short-circuiting is performed - only expressions needed to calculate the result are evaluated.
 	
-	The return type is always an ##[[KeyPgInteger Integer]]##, of the value ##0## or ##-1##, denoting false and true respectively.
+	The return type is almost always an ##[[KeyPgInteger Integer]]##, of the value ##0## or ##-1##, denoting false and true respectively. Except if the left and right-hand side types are both ##[[KeyPgBoolean Boolean]]##, then the return type is also ##[[KeyPgBoolean Boolean]]##.
 
 	This operator cannot be overloaded for user-defined types.
 
