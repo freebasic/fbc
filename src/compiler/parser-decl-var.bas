@@ -255,7 +255,7 @@ private function hCheckExternVar _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
-		byref attrib as integer, _
+		byval attrib as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
 	) as integer
