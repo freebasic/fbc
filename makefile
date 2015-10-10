@@ -188,6 +188,12 @@ ifdef TARGET
     else ifneq ($(filter xbox%,$(triplet)),)
       TARGET_OS := xbox
     endif
+    ifneq ($(filter emscripten%,$(triplet)),)
+      TARGET_OS := js
+	  AS = llvm-as
+	  AR = emar
+	  CC = emcc
+    endif
   endif
 
   ifndef TARGET_ARCH

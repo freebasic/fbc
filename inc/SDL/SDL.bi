@@ -1106,6 +1106,7 @@ const SDL_PRESSED = 1
 
 type SDL_EventType as long
 enum
+#ifndef __FB_JS__
 	SDL_NOEVENT = 0
 	SDL_ACTIVEEVENT
 	SDL_KEYDOWN
@@ -1132,11 +1133,52 @@ enum
 	SDL_EVENT_RESERVED7
 	SDL_USEREVENT = 24
 	SDL_NUMEVENTS = 32
+#else
+    SDL_NOEVENT        = 0
+    SDL_FIRSTEVENT     = 0
+    SDL_QUIT_          = &h100
+    SDL_WINDOWEVENT    = &h200
+    SDL_SYSWMEVENT
+    SDL_KEYDOWN        = &h300
+    SDL_KEYUP
+    SDL_TEXTEDITING
+    SDL_TEXTINPUT
+    SDL_MOUSEMOTION    = &h400
+    SDL_MOUSEBUTTONDOWN
+    SDL_MOUSEBUTTONUP
+    SDL_MOUSEWHEEL
+    SDL_INPUTMOTION    = &h500
+    SDL_INPUTBUTTONDOWN
+    SDL_INPUTBUTTONUP
+    SDL_INPUTWHEEL
+    SDL_INPUTPROXIMITYIN
+    SDL_INPUTPROXIMITYOUT
+    SDL_JOYAXISMOTION  = &h600
+    SDL_JOYBALLMOTION
+    SDL_JOYHATMOTION
+    SDL_JOYBUTTONDOWN
+    SDL_JOYBUTTONUP
+    SDL_FINGERDOWN      = &h700
+    SDL_FINGERUP
+    SDL_FINGERMOTION
+    SDL_TOUCHBUTTONDOWN
+    SDL_TOUCHBUTTONUP   
+    SDL_DOLLARGESTURE   = &h800
+    SDL_DOLLARRECORD
+    SDL_MULTIGESTURE
+    SDL_CLIPBOARDUPDATE = &h900
+    SDL_EVENT_COMPAT1 = &h7000
+    SDL_EVENT_COMPAT2
+    SDL_EVENT_COMPAT3
+    SDL_USEREVENT    = &h8000
+    SDL_LASTEVENT    = &hFFFF
+#endif
 end enum
 
 #define SDL_EVENTMASK(X) (1 shl (X))
 
 type SDL_EventMask_ as long
+#ifndef __FB_JS__
 enum
 	SDL_ACTIVEEVENTMASK = SDL_EVENTMASK(SDL_ACTIVEEVENT)
 	SDL_KEYDOWNMASK = SDL_EVENTMASK(SDL_KEYDOWN)
@@ -1157,72 +1199,148 @@ enum
 	SDL_QUITMASK = SDL_EVENTMASK(SDL_QUIT_)
 	SDL_SYSWMEVENTMASK = SDL_EVENTMASK(SDL_SYSWMEVENT)
 end enum
+#endif
 
 const SDL_ALLEVENTS = &hFFFFFFFF
 
 type SDL_ActiveEvent
+#ifndef __FB_JS__
 	as Uint8 type
+#else
+	as Uint32 type
+#endif
 	gain as Uint8
 	state as Uint8
 end type
 
 type SDL_KeyboardEvent
+#ifndef __FB_JS__
 	as Uint8 type
 	which as Uint8
 	state as Uint8
+#else
+	as Uint32 type
+	windowID as Uint32
+	state as Uint8
+	repeat as Uint8
+	padding2 as Uint8
+	padding3 as Uint8
+#endif
 	keysym as SDL_keysym
 end type
 
 type SDL_MouseMotionEvent
+#ifndef __FB_JS__	
 	as Uint8 type
 	which as Uint8
 	state as Uint8
 	x as Uint16
 	y as Uint16
+#else
+	as Uint32 type
+	timestamp as Uint32
+	windowID as Uint32
+	which as Uint32
+	state as Uint32
+	x as Sint16
+	y as Sint16
+#endif	
 	xrel as Sint16
 	yrel as Sint16
 end type
 
 type SDL_MouseButtonEvent
+#ifndef __FB_JS__	
 	as Uint8 type
 	which as Uint8
 	button as Uint8
 	state as Uint8
 	x as Uint16
 	y as Uint16
+#else
+	as Uint32 type
+	timestamp as Uint32
+	windowID as Uint32
+	which as Uint32
+	button as Uint8
+	state as Uint8
+	padding1 as Uint8
+	padding2 as Uint8
+	x as Sint16
+	y as Sint16
+#endif
 end type
 
 type SDL_JoyAxisEvent
+#ifndef __FB_JS__	
 	as Uint8 type
+#else
+	as Uint32 type
+#endif
 	which as Uint8
 	axis as Uint8
+#ifndef __FB_JS__	
 	value as Sint16
+#else
+	padding1 as Uint8
+	padding2 as Uint8
+	value as integer
+#endif
 end type
 
 type SDL_JoyBallEvent
+#ifndef __FB_JS__	
 	as Uint8 type
+#else
+	as Uint32 type
+#endif
 	which as Uint8
 	ball as Uint8
+#ifndef __FB_JS__	
 	xrel as Sint16
 	yrel as Sint16
+#else
+	padding1 as Uint8
+	padding2 as Uint8
+	xrel as integer
+	yrel as integer
+#endif
 end type
 
 type SDL_JoyHatEvent
+#ifndef __FB_JS__	
 	as Uint8 type
+#else
+	as Uint32 type
+#endif
 	which as Uint8
 	hat as Uint8
 	value as Uint8
+#ifdef __FB_JS__	
+	as Uint8 padding1
+#endif
 end type
 
 type SDL_JoyButtonEvent
+#ifndef __FB_JS__	
 	as Uint8 type
+#else
+	as Uint32 type
+#endif
 	which as Uint8
 	button as Uint8
 	state as Uint8
+#ifdef __FB_JS__	
+	as Uint8 padding1
+#endif
 end type
 
 type SDL_ResizeEvent
+#ifndef __FB_JS__	
 	as Uint8 type
+#else
+	as Uint32 type
+#endif
 	w as long
 	h as long
 end type
@@ -1232,11 +1350,20 @@ type SDL_ExposeEvent
 end type
 
 type SDL_QuitEvent
+#ifndef __FB_JS__	
 	as Uint8 type
+#else
+	as Uint32 type
+#endif
 end type
 
 type SDL_UserEvent
+#ifndef __FB_JS__	
 	as Uint8 type
+#else
+	as Uint32 type
+	windowID as Uint32
+#endif
 	code as long
 	data1 as any ptr
 	data2 as any ptr
@@ -1245,12 +1372,20 @@ end type
 type SDL_SysWMmsg as SDL_SysWMmsg_
 
 type SDL_SysWMEvent
+#ifndef __FB_JS__	
 	as Uint8 type
+#else
+	as Uint32 type
+#endif
 	msg as SDL_SysWMmsg ptr
 end type
 
 union SDL_Event
+#ifndef __FB_JS__
 	as Uint8 type
+#else
+	as Uint32 type
+#endif
 	active as SDL_ActiveEvent
 	key as SDL_KeyboardEvent
 	motion as SDL_MouseMotionEvent
@@ -1276,10 +1411,12 @@ enum
 end enum
 
 declare function SDL_PeepEvents(byval events as SDL_Event ptr, byval numevents as long, byval action as SDL_eventaction, byval mask as Uint32) as long
+#ifndef __FB_JS__
 private function SDL_QuitRequested() as SDL_bool
 	SDL_PumpEvents()
 	function = SDL_PeepEvents(NULL, 0, SDL_PEEKEVENT, SDL_QUITMASK)
 end function
+#endif
 declare function SDL_PollEvent(byval event as SDL_Event ptr) as long
 declare function SDL_WaitEvent(byval event as SDL_Event ptr) as long
 declare function SDL_PushEvent(byval event as SDL_Event ptr) as long
