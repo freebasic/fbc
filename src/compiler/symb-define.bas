@@ -238,6 +238,9 @@ sub symbDefineInit _
 
 	'' Add __FB_<target>__ define
 	symbAddDefine( "__FB_" + ucase( *env.target.id ) + "__", NULL, 0 )
+	if( env.clopt.target = FB_COMPTARGET_JS ) then
+		symbAddDefine( @"__FB_LINUX__", NULL, 0 )
+	end if
 
 	'' add __FB_UNIX__ / __FB_PCOS__ defines, as necessary
 	if( env.target.options and FB_TARGETOPT_UNIX ) then

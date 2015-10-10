@@ -178,6 +178,15 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
+	), _
+	( _
+		@"js", _
+		FB_DATATYPE_USHORT, _   '' wchar
+		FB_FUNCMODE_CDECL, _
+		FB_FUNCMODE_STDCALL_MS, _
+		0	or FB_TARGETOPT_UNIX _
+			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+			or FB_TARGETOPT_RETURNINREGS _
 	) _
 }
 
@@ -191,7 +200,8 @@ dim shared as FBCPUFAMILYINFO cpufamilyinfo(0 to FB_CPUFAMILY__COUNT-1) = _
 	(@"x86"    , FB_DEFAULT_CPUTYPE_X86    ), _
 	(@"x86_64" , FB_DEFAULT_CPUTYPE_X86_64 ), _
 	(@"arm"    , FB_DEFAULT_CPUTYPE_ARM    ), _
-	(@"aarch64", FB_DEFAULT_CPUTYPE_AARCH64)  _
+	(@"aarch64", FB_DEFAULT_CPUTYPE_AARCH64), _
+	(@"asmjs"  , FB_DEFAULT_CPUTYPE_ASMJS  )  _
 }
 
 type FBCPUTYPEINFO
@@ -219,7 +229,8 @@ dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 	( NULL       , @"x86-64"       , FB_CPUFAMILY_X86_64 , 64 ), _ '' FB_CPUTYPE_X86_64
 	( NULL       , @"armv6"        , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV6
 	( NULL       , @"armv7-a"      , FB_CPUFAMILY_ARM    , 32 ), _ '' FB_CPUTYPE_ARMV7A
-	( NULL       , @"aarch64"      , FB_CPUFAMILY_AARCH64, 64 )  _ '' FB_CPUTYPE_AARCH64
+	( NULL       , @"aarch64"      , FB_CPUFAMILY_AARCH64, 64 ), _ '' FB_CPUTYPE_AARCH64
+	( NULL       , @"asmjs"        , FB_CPUFAMILY_ASMJS	 , 32 )  _ '' FB_CPUTYPE_ASMJS
 }
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
