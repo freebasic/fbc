@@ -1,65 +1,45 @@
 /* asmjs fbgfx driver */
 
 #include "../fb_gfx.h"
-#include <emscripten/emscripten.h>
-#include <SDL/SDL.h>
+#include "fb_gfx_js.h"
 
-#define SCREENLIST(w, h) ((h) | (w) << 16)
-
-#define GFX_JS_FPS 60
+JS_GFXDRIVER_CTX __fb_js_ctx = { FALSE, FALSE, FALSE, FALSE, NULL };
 
 static void driver_exit(void);
 
-typedef struct JS_GFXDRIVER_CTX_
-{
-    int inited;
-    int changingScreen;
-    int updated ;
-    SDL_Surface *canvas;
-} JS_GFXDRIVER_CTX;
-
-static JS_GFXDRIVER_CTX __js_ctx = { 0, 0, 0, NULL };
-
 static void driver_blit()
 {
-	SDL_Surface *tmp = SDL_CreateRGBSurfaceFrom(
-		__fb_gfx->framebuffer,
-		__fb_gfx->w, __fb_gfx->h, __fb_gfx->depth, __fb_gfx->pitch,
-		0x0f00, 0x00f0, 0x000f, 0xf000);
+    if(SDL_LockSurface(__fb_js_ctx.canvas) == 0)
+    {
+        __fb_js_ctx.blit(__fb_js_ctx.canvas->pixels, __fb_js_ctx.canvas->pitch);
 
-	SDL_BlitSurface(tmp, NULL, __js_ctx.canvas, NULL);
+        SDL_UnlockSurface(__fb_js_ctx.canvas);
+    }
 
-	SDL_FreeSurface(tmp);
-
-	SDL_Flip(__js_ctx.canvas);
+	SDL_Flip(__fb_js_ctx.canvas);
 }
 
 static void driver_update(void *unused)
 {
-	if( !__js_ctx.inited || __fb_gfx == NULL || __fb_gfx->framebuffer == NULL )
+	if( !__fb_js_ctx.inited || __fb_gfx == NULL || __fb_gfx->framebuffer == NULL )
 		return;
 
-	if( !__js_ctx.changingScreen )
+    int ini_time = SDL_GetTicks();
+
+	if( !__fb_js_ctx.changingScreen && !__fb_js_ctx.blitting )
     {
+        __fb_js_ctx.blitting = TRUE;
         driver_blit();
+        __fb_js_ctx.blitting = FALSE;
 
-        SDL_PumpEvents();
+        __fb_js_ctx.updated = TRUE;
 
-        __js_ctx.updated = 1;
+        fb_js_events_check( );
 	}
 
-	emscripten_async_call(driver_update, NULL, 1000/GFX_JS_FPS);
-}
+	int delay = (1000/GFX_JS_FPS) - (SDL_GetTicks() - ini_time);
 
-static void fb_js_kb_init(void)
-{
-	__fb_ctx.hooks.inkeyproc  = NULL;
-	__fb_ctx.hooks.getkeyproc = NULL;
-	__fb_ctx.hooks.keyhitproc = NULL;
-	__fb_ctx.hooks.multikeyproc = NULL;
-	__fb_ctx.hooks.sleepproc = NULL;
-
-	return;
+	emscripten_async_call(driver_update, NULL, MAX( delay, 1 ) );
 }
 
 
@@ -68,26 +48,30 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if( w == 0 || h == 0 || depth_arg == 0 )
 		return 0;
 
-	__js_ctx.changingScreen = TRUE;
+	__fb_js_ctx.changingScreen = TRUE;
 
-	if( !__js_ctx.inited )
-		SDL_Init(SDL_INIT_VIDEO);
+	if( !__fb_js_ctx.inited )
+    {
+        fb_js_events_init();
+        SDL_Init(SDL_INIT_VIDEO);
+    }
 
-	if( __js_ctx.canvas != NULL )
-		SDL_FreeSurface(__js_ctx.canvas);
+	if( __fb_js_ctx.canvas != NULL )
+		SDL_FreeSurface(__fb_js_ctx.canvas);
 
-	__js_ctx.canvas = SDL_SetVideoMode(w, h, 32, SDL_HWSURFACE);
+	__fb_js_ctx.canvas = SDL_SetVideoMode(w, h, 32, SDL_HWSURFACE);
 
-    // in JS we should not hook the key routines
-    fb_js_kb_init();
+	__fb_js_ctx.blit = fb_hGetBlitter(__fb_js_ctx.canvas->format->BitsPerPixel, TRUE);
 
-	__js_ctx.changingScreen = FALSE;
-	int was_inited = __js_ctx.inited;
-	__js_ctx.inited = TRUE;
+	__fb_js_ctx.changingScreen = FALSE;
+	__fb_js_ctx.blitting = FALSE;
+
+	int was_inited = __fb_js_ctx.inited;
+	__fb_js_ctx.inited = TRUE;
 
 	if( !was_inited )
 	{
-		__js_ctx.updated = 0;
+		__fb_js_ctx.updated = 0;
 		emscripten_async_call(driver_update, NULL, 1000/GFX_JS_FPS);
 	}
 
@@ -96,17 +80,17 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 
 static void driver_exit(void)
 {
-	if( __js_ctx.inited )
+	if( __fb_js_ctx.inited )
 	{
-		__js_ctx.inited = FALSE;
+		__fb_js_ctx.inited = FALSE;
 
-		if( __js_ctx.updated == 0 )
+		if( !__fb_js_ctx.updated )
 			driver_blit();
 
-		if( __js_ctx.canvas != NULL )
+		if( __fb_js_ctx.canvas != NULL )
 		{
-			SDL_FreeSurface(__js_ctx.canvas);
-			__js_ctx.canvas = NULL;
+			SDL_FreeSurface(__fb_js_ctx.canvas);
+			__fb_js_ctx.canvas = NULL;
 		}
 
 		SDL_Quit();
@@ -165,7 +149,7 @@ static int *driver_fetch_modes(int depth, int *size)
 
 static void driver_poll_events(void)
 {
-	/* !!!WRITEME!!! */
+	fb_js_events_check( );
 }
 
 static const GFXDRIVER fb_gfxDriverJS =
