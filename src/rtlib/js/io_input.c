@@ -11,7 +11,11 @@ EM_BOOL fb_hKeyPressedCB(int eventType, const EmscriptenKeyboardEvent *keyEvent,
     // !!!FIXME!!! convert ctrlKey, shiftKey and altKey
     // !!!FIXME!!! check repeat
 
-    __fb_con.key_buffer[__fb_con.key_tail] = keyEvent->keyCode != 0? keyEvent->keyCode: keyEvent->charCode;
+    unsigned long key = keyEvent->keyCode != 0? keyEvent->keyCode: keyEvent->charCode;
+
+    //emscripten_log(EM_LOG_CONSOLE, "%d, %d, %d, %d, %d", keyEvent->keyCode, keyEvent->charCode, key > 0x00FF? ((key & 0x00FF) << 8 | 0x00FF): key, keyEvent->key[0], keyEvent->code[0]);
+
+    __fb_con.key_buffer[__fb_con.key_tail] = key;
     __fb_con.key_tail = (__fb_con.key_tail + 1) % KEY_BUFFER_LEN;
 
     if( __fb_con.key_tail == __fb_con.key_head )
