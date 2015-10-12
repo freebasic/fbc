@@ -73,7 +73,10 @@ function symbStructBegin _
 	'' Assume FIELD = 1 under -lang qb, because QB didn't do any alignment
 	if( fbLangIsSet( FB_LANG_QB ) ) then
 		if( align = 0 ) then
-			align = 1
+			'' emcripten doesn't support unaligned memory access
+			if( env.clopt.target <> FB_COMPTARGET_JS ) then
+				align = 1
+			end if
 		end if
 	end if
 
@@ -167,7 +170,6 @@ private function hCalcPadding _
 
 	'' default?
 	if( align = 0 ) then
-		assert( fbLangIsSet( FB_LANG_QB ) = FALSE )
 		align = natalign
 	'' packed..
 	else
