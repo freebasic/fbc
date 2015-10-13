@@ -15,7 +15,7 @@ static int file_mode_map[] = { FB_FILE_ATTR_MODE_BINARY,   /* FB_FILE_MODE_BINAR
 
 FBCALL ssize_t fb_FileAttr( int handle, int returntype )
 {
-	int ret = 0;
+	ssize_t ret = 0;
 	int err = 0;
 	FB_FILE *file;
 
