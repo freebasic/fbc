@@ -17,13 +17,13 @@ typedef struct JS_GFXDRIVER_CTX_
     SDL_Surface *canvas;
     BLITTER *blit;
 
-	unsigned long key_buffer[KEY_BUFFER_LEN];
-	int           key_head;
-	int           key_tail;
+    int doNotCaptureKeyboard;
 } JS_GFXDRIVER_CTX;
 
 extern JS_GFXDRIVER_CTX __fb_js_ctx;
 
 
-void fb_js_events_init(void);
-void fb_js_events_check(void);
+extern void fb_js_events_init(void);
+extern void fb_js_events_exit(void);
+extern void fb_js_events_check(void);
+extern int fb_js_sdl_buttons_to_fb_buttons(int sdl_buttons);

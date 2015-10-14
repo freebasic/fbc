@@ -3,7 +3,15 @@
 #include "../fb_gfx.h"
 #include "fb_gfx_js.h"
 
-JS_GFXDRIVER_CTX __fb_js_ctx = { FALSE, FALSE, FALSE, FALSE, NULL };
+JS_GFXDRIVER_CTX __fb_js_ctx =
+{
+    .inited = FALSE,
+    .changingScreen = FALSE,
+    .updated = FALSE,
+    .blitting = FALSE,
+    .canvas = NULL,
+    .doNotCaptureKeyboard = 0,
+};
 
 static void driver_exit(void);
 
@@ -93,6 +101,8 @@ static void driver_exit(void)
 			__fb_js_ctx.canvas = NULL;
 		}
 
+		fb_js_events_exit();
+
 		SDL_Quit();
 	}
 }
@@ -107,49 +117,71 @@ static void driver_unlock(void)
 	/* !!!WRITEME!!! */
 }
 
-static void driver_set_palette(int index, int r, int g, int b)
-{
-	/* !!!WRITEME!!! */
-}
-
 static void driver_wait_vsync(void)
 {
 	/* !!!WRITEME!!! */
 }
 
+int fb_js_sdl_buttons_to_fb_buttons(int sdl_buttons)
+{
+	int fb_buttons = 0;
+
+	if( sdl_buttons & SDL_BUTTON_LMASK)
+        fb_buttons |= BUTTON_LEFT;
+	if( sdl_buttons & SDL_BUTTON_MMASK)
+        fb_buttons |= BUTTON_MIDDLE;
+	if( sdl_buttons & SDL_BUTTON_RMASK)
+        fb_buttons |= BUTTON_RIGHT;
+	if( sdl_buttons & SDL_BUTTON_X1MASK)
+        fb_buttons |= BUTTON_X1;
+	if( sdl_buttons & SDL_BUTTON_X2MASK)
+        fb_buttons |= BUTTON_X2;
+
+    return fb_buttons;
+}
+
 static int driver_get_mouse(int *x, int *y, int *z, int *buttons, int *clip)
 {
-	/* !!!WRITEME!!! */
+	SDL_PumpEvents();
+
+	*buttons = fb_js_sdl_buttons_to_fb_buttons(SDL_GetMouseState(x, y));
+
+	*z = 0;
+	*clip = 0;
+
 	return 0;
 }
 
 static void driver_set_mouse(int x, int y, int cursor, int clip)
 {
-	/* !!!WRITEME!!! */
+	//SDL_WarpMouseInWindow(NULL, x, y);
 }
+
+static int modes[] = {
+    SCREENLIST(640, 480),
+    SCREENLIST(512, 512),
+    SCREENLIST(320, 240),
+    SCREENLIST(320, 200),
+    SCREENLIST(320, 100),
+    SCREENLIST(256, 256),
+    SCREENLIST(160, 120),
+    SCREENLIST(80, 80)
+};
 
 static int *driver_fetch_modes(int depth, int *size)
 {
-	int num = 0;
-	int *modes = NULL, *new_modes;
-
-	++num;
-	new_modes = realloc(modes, sizeof(int) * num);
-	if (!new_modes) {
-		*size = num - 1;
-		return modes;
-	}
-
-	modes = new_modes;
-	modes[num - 1] = SCREENLIST(320, 200);
-
-	*size = num;
-	return modes;
+	*size = sizeof(modes) / sizeof(int);
+	return memcpy((void*)malloc(sizeof(modes)), modes, sizeof(modes));
 }
 
 static void driver_poll_events(void)
 {
 	fb_js_events_check( );
+}
+
+static void driver_set_window_title(char *title)
+{
+    SDL_WM_SetCaption(title, NULL);
 }
 
 static const GFXDRIVER fb_gfxDriverJS =
@@ -159,11 +191,11 @@ static const GFXDRIVER fb_gfxDriverJS =
 	driver_exit,             /* void (*exit)(void); */
 	driver_lock,             /* void (*lock)(void); */
 	driver_unlock,           /* void (*unlock)(void); */
-	driver_set_palette,      /* void (*set_palette)(int index, int r, int g, int b); */
+	NULL,                    /* void (*set_palette)(int index, int r, int g, int b); */
 	driver_wait_vsync,       /* void (*wait_vsync)(void); */
 	driver_get_mouse,        /* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
 	driver_set_mouse,        /* void (*set_mouse)(int x, int y, int cursor, int clip); */
-	NULL,                    /* void (*set_window_title)(char *title); */
+	driver_set_window_title, /* void (*set_window_title)(char *title); */
 	NULL,                    /* int (*set_window_pos)(int x, int y); */
 	driver_fetch_modes,      /* int *(*fetch_modes)(int depth, int *size); */
 	NULL,                    /* void (*flip)(void); */
@@ -177,9 +209,9 @@ const GFXDRIVER *__fb_gfx_drivers_list[] = {
 
 void fb_hScreenInfo(ssize_t *width, ssize_t *height, ssize_t *depth, ssize_t *refresh)
 {
-	*width = __fb_gfx->w;
-	*height = __fb_gfx->h;
-	*depth = __fb_gfx->depth;
+	*width = 512;
+	*height = 512;
+	*depth = 32;
 	*refresh = GFX_JS_FPS;
 }
 

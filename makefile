@@ -443,6 +443,10 @@ ifneq ($(filter cygwin win32,$(TARGET_OS)),)
   ALLFBLFLAGS += -t 2048
 endif
 
+ifeq ($(TARGET_OS),js)
+	DISABLE_MT := YesPlease
+endif
+
 # Pass the configuration defines on to the compiler source code
 ifdef ENABLE_STANDALONE
   ALLFBCFLAGS += -d ENABLE_STANDALONE
