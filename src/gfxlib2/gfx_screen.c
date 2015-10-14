@@ -231,6 +231,7 @@ static int set_mode
         __fb_ctx.hooks.isredirproc = fb_GfxIsRedir;
         __fb_ctx.hooks.pagecopyproc = fb_GfxPageCopy;
         __fb_ctx.hooks.pagesetproc = fb_GfxPageSet;
+        __fb_ctx.hooks.posteventproc = NULL;
         __fb_gfx = (FBGFX *)calloc(1, sizeof(FBGFX));
     }
 

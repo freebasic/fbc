@@ -88,6 +88,8 @@ typedef int         (*FB_PAGECOPYPROC)  ( int src, int dst );
 FBCALL int			fb_PageSet			( int active, int visible );
 typedef int         (*FB_PAGESETPROC)   ( int active, int visible );
 
+typedef void        (*FB_POSTEVENTPROC) (EVENT *e);
+
 typedef struct FB_HOOKSTB {
     FB_INKEYPROC    		inkeyproc;
     FB_GETKEYPROC   		getkeyproc;
@@ -116,4 +118,5 @@ typedef struct FB_HOOKSTB {
     FB_ISREDIRPROC			isredirproc;
     FB_PAGECOPYPROC			pagecopyproc;
     FB_PAGESETPROC			pagesetproc;
+    FB_POSTEVENTPROC		posteventproc;
 } FB_HOOKSTB;

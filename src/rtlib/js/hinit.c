@@ -20,7 +20,17 @@ void fb_hInit( void )
 {
 	memset( &__fb_con, 0, sizeof(__fb_con) );
 
-	emscripten_set_keypress_callback( 0, 0, 1, fb_hKeyPressedCB );
+	// keyboard
+	emscripten_set_keypress_callback( 0, NULL, 1, fb_hKeyEventHandler );
+	emscripten_set_keydown_callback( 0, NULL, 1, fb_hKeyEventHandler );
+	emscripten_set_keyup_callback( 0, NULL, 1, fb_hKeyEventHandler );
+
+	// mouse
+	emscripten_set_mousemove_callback( 0, NULL, 1, fb_hMouseEventHandler );
+	emscripten_set_mousedown_callback( 0, NULL, 1, fb_hMouseEventHandler );
+	emscripten_set_mouseup_callback( 0, NULL, 1, fb_hMouseEventHandler );
+	emscripten_set_dblclick_callback( 0, NULL, 1, fb_hMouseEventHandler );
+	//emscripten_set_wheel_callback( 0, NULL, 1, fb_hMouseWheelEventHandler );
 }
 
 void fb_hEnd( int unused )
