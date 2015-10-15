@@ -9,6 +9,7 @@ Version 1.05.0
 - When Dim'ing an Extern variable, the Byref attribute was not checked - neither required nor disallowed - now the Dim must match the Extern with regards to Byref too.
 - Type<Foo>(...) expressions couldn't be used at the begin of a statement (because the Type keyword was treated as begin of a Type declaration)
 - FileAttr() was still broken for 64bit - the result value was truncated to 32bit
+- 1.04.0 regression: Under -gen gcc -asm att, support for gcc-style inline asm was broken
 
 
 Version 1.04.0

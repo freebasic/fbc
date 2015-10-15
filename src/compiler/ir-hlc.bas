@@ -3335,9 +3335,27 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 		n = n->next
 	wend
 
-	hBuildStrLit( ln, strptr( asmcode ), len( asmcode ) + 1 )
-
 	if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
+		''
+		'' Escape double quotes, backslashes, etc. in the asm text,
+		'' for example to emit .ascii directives correctly:
+		''
+		'' .bas:
+		''    asm
+		''        .ascii $"zzz\""\0"
+		''    end asm
+		''
+		'' .c (-gen gcc -asm intel):
+		''    __asm__ __volatile__(
+		''        ".ascii \x22zzz\x5C\x22\x5C" "0\x22"
+		''        :  :  : "cc", "memory", ...
+		''    );
+		''
+		'' .asm:
+		''    .ascii "zzz\"\0"
+		''
+		hBuildStrLit( ln, strptr( asmcode ), len( asmcode ) + 1 )
+
 		'' Only when inside normal procedures
 		'' (NAKED procedures don't increase the indentation)
 		if( sectionInsideProc( ) ) then
@@ -3384,6 +3402,22 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 				ln += " : " + labellist
 			end if
 		end if
+	else
+		''
+		'' Pass asm text through as-is, assuming it is in the gcc format
+		''
+		'' .bas:
+		''    asm
+		''        "incl %0\n" : "+m" (a) : :
+		''    end asm
+		''
+		'' .c (-gen gcc -asm att):
+		''    __asm__ __volatile__( "incl %0\n" : "+m" (A$0) : : );
+		''
+		'' .asm:
+		''    incl -16(%ebp)
+		''
+		ln += asmcode
 	end if
 
 	ln += " );"
