@@ -101,7 +101,7 @@ int fb_ConsoleLineInput
 
     {
         /* create temporary string */
-        FBSTRING str_result = { 0 };
+        FBSTRING str_result = { .data = NULL, .len = 0, .size = 0 };
 
         res = fb_DevFileReadLineDumb( stdin, &str_result, hWrapper );
 

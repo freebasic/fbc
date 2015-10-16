@@ -4,5 +4,6 @@
 
 FBCALL unsigned int fb_ConsoleReadXY( int col, int row, int colorflag )
 {
+	/* !!!WRITEME!!! */
 	return 0;
 }

@@ -679,7 +679,24 @@ private function hLinkFiles( ) as integer
 
 	case FB_COMPTARGET_JS
 		ldcline += " -O" + str( fbGetOption( FB_COMPOPT_OPTIMIZELEVEL ) )
-		ldcline += " -Wno-warn-absolute-paths -s LEGACY_GL_EMULATION=1 -s ALLOW_MEMORY_GROWTH=1"
+		
+		static as zstring*32 emscripten_options(...) = _
+		{ _
+			"CASE_INSENSITIVE_FS=1", _
+			"TOTAL_MEMORY=67108864", _
+			"ALLOW_MEMORY_GROWTH=1", _
+			"RETAIN_COMPILER_SETTINGS=1" _
+		}
+			'"WARN_UNALIGNED=1", _
+		
+		ldcline += " -Wno-warn-absolute-paths"
+		for i as integer = 0 to ubound(emscripten_options)
+			ldcline += " -s " + emscripten_options(i)
+		next
+		
+		ldcline += " --shell-file" + hFindLib("fb_shell.html")
+		ldcline += " --post-js" + hFindLib("termlib_min.js")
+
 	end select
 
 	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) then
@@ -2815,7 +2832,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 			ln += "-Wno-unused-but-set-variable "
 		else
-			ln += "-Wno-warn-absolute-paths -s LEGACY_GL_EMULATION=1 "
+			ln += "-Wno-warn-absolute-paths -s ASYNCIFY=1 -s RETAIN_COMPILER_SETTINGS=1 "
 		end if
 
 		'' Don't warn about non-standard main() signature

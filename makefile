@@ -522,6 +522,9 @@ ifeq ($(TARGET_OS),dos)
   RTL_OBJDIRS += $(djgpplibcobjdir)
   RTL_LIBS += $(libdir)/libc.a
 endif
+ifeq ($(TARGET_OS),js)
+  RTL_LIBS += $(libdir)/termlib_min.js
+endif
 
 #
 # Build rules
@@ -589,6 +592,9 @@ $(libdir)/fbrt0.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H)
 $(libdir)/fbrt0pic.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
 
+$(libdir)/termlib_min.js: $(rootdir)lib/termlib_min.js
+	cp $< $@
+	
 $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
