@@ -9,7 +9,8 @@ void fb_ConsolePrintBufferWstrEx
 		int mask
 	)
 {
-	/* !!!WRITEME!!! */
+	/* !!!FIXME!!! should print only buffer[0 .. chars-1] */
+	wprintf( L"%ls", buffer );
 }
 
 void fb_ConsolePrintBufferWstr

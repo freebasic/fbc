@@ -4,5 +4,5 @@
 
 int fb_ConsoleWidth( int cols, int rows )
 {
-	return 0;
+	return (25 << 16) | 80;
 }

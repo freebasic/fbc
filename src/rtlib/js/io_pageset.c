@@ -4,5 +4,5 @@
 
 int fb_ConsolePageSet( int active, int visible )
 {
-	return -1;
+	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 }
