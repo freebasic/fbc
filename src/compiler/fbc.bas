@@ -695,7 +695,10 @@ private function hLinkFiles( ) as integer
 		next
 		
 		ldcline += " --shell-file" + hFindLib("fb_shell.html")
-		ldcline += " --post-js" + hFindLib("termlib_min.js")
+		ldcline += " --post-js" + hFindLib("fb_rtlib.js")
+		if( len(fbc.subsystem) = 0 ) then
+			ldcline += " --post-js" + hFindLib("termlib_min.js")
+		end if
 
 	end select
 

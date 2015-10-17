@@ -524,6 +524,8 @@ ifeq ($(TARGET_OS),dos)
 endif
 ifeq ($(TARGET_OS),js)
   RTL_LIBS += $(libdir)/termlib_min.js
+  RTL_LIBS += $(libdir)/fb_rtlib.js
+  RTL_LIBS += $(libdir)/fb_shell.html
 endif
 
 #
@@ -593,6 +595,12 @@ $(libdir)/fbrt0pic.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
 
 $(libdir)/termlib_min.js: $(rootdir)lib/termlib_min.js
+	cp $< $@
+
+$(libdir)/fb_rtlib.js: $(rootdir)lib/fb_rtlib.js
+	cp $< $@
+	
+$(libdir)/fb_shell.html: $(rootdir)lib/fb_shell.html
 	cp $< $@
 	
 $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S)

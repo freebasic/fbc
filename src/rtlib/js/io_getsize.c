@@ -1,7 +1,12 @@
 #include "../fb.h"
+#include "fb_private_console.h"
 
 FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
-	*cols = 80;
-	*rows = 25;
+	int res = EM_ASM_INT({
+        return __fb_rtlib.console.size_get();
+    }, NULL);
+
+	*cols = res & 0xFF;
+	*rows = (res >> 8) & 0xFF;
 }

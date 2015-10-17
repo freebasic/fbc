@@ -6,7 +6,7 @@
 int fb_ConsoleLocate( int row, int col, int cursor )
 {
 	EM_ASM_ARGS({
-        fbrt_term.position_set($0, $1);
+        __fb_rtlib.console.pos_set($0, $1);
     }, row-1, col-1);
 
 	return (col & 0xFF) | ((row & 0xFF) << 8);
