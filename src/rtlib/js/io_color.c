@@ -19,7 +19,7 @@ int fb_ConsoleColor( int fc, int bc, int flags )
     char bc_c = __fb_con.color_remap[last_bc];
 
 	EM_ASM_ARGS({
-        fbrt_term.color_set('$0', '$1');
+        __fb_rtlib.console.color_set($0, $1);
     }, fc_c, bc_c);
 
 	return cur;
