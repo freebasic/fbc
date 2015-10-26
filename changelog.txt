@@ -10,6 +10,7 @@ Version 1.05.0
 - Type<Foo>(...) expressions couldn't be used at the begin of a statement (because the Type keyword was treated as begin of a Type declaration)
 - FileAttr() was still broken for 64bit - the result value was truncated to 32bit
 - 1.04.0 regression: Under -gen gcc -asm att, support for gcc-style inline asm was broken
+- ld was warning about unsupported linker options on OS X
 
 
 Version 1.04.0
