@@ -613,6 +613,12 @@ function cSymbolType _
 
 		end select
 
+		'' STRING * N can't be allowed with BYREF or pointers, because
+		'' we can't represent the * N on expression data types.
+		if( options and FB_SYMBTYPEOPT_ISBYREF ) then
+			errReport( FB_ERRMSG_BYREFFIXSTR, TRUE )
+		end if
+
 		'' const?
 		if( is_const ) then
 			dtype = typeSetIsConst( dtype )
