@@ -873,6 +873,7 @@ bindist:
 	rm -r $(packinc)/windows.bi
 	rm -r $(packinc)/wx-c
 	rm -r $(packinc)/X11
+	rm -r $(packinc)/xcb
 	rm -r $(packinc)/xmp.bi
 	rm -r $(packinc)/zmq
   endif
