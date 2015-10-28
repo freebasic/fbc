@@ -1022,7 +1022,7 @@ mingw-libs:
 	# Windows API libs
 	#  * copy all lib*.a files from the directory of libkernel32.a
 	#  * renaming lib*.a to lib*.dll.a - this isn't 100% correct, because
-	#    all libs really are import libs, but it follows FB tradition.
+	#    not all libs really are import libs, but it follows FB tradition.
 	#  * Filtering out some libs which are included in MinGW toolchains
 	#    sometimes, but we don't want (e.g. libpthread).
 	dir=$$(dirname $$($(CC) -print-file-name=libkernel32.a)); \
