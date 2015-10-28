@@ -1168,10 +1168,12 @@ declare function symbStructBegin _
 		byval id_alias as const zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer, _
-		byval base_ as FBSYMBOL ptr, _
+		byval is_derived as integer, _
 		byval attrib as integer, _
 		byval options as integer _
 	) as FBSYMBOL ptr
+
+declare sub symbStructAddBase( byval struct as FBSYMBOL ptr, byval base_ as FBSYMBOL ptr )
 
 declare function typeCalcNaturalAlign _
 	( _

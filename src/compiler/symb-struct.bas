@@ -24,7 +24,7 @@ function symbStructBegin _
 		byval id_alias as const zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer, _
-		byval base_ as FBSYMBOL ptr, _
+		byval is_derived as integer, _
 		byval attrib as integer, _
 		byval options as integer _
 	) as FBSYMBOL ptr
@@ -84,34 +84,37 @@ function symbStructBegin _
 	s->udt.retdtype = FB_DATATYPE_INVALID
 	s->udt.dbg.typenum = INVALID
 	s->udt.ext = NULL
+	s->udt.base = NULL
 
-	'' extending another UDT?
-	if( base_ <> NULL ) then
-		static as FBARRAYDIM dTB(0 to 0)
-
-		'' (using base$ instead of $base to prevent gdb/stabs confusion,
-		'' where leading $ has special meaning)
-		s->udt.base = symbAddField( s, "base$", 0, dTB(), FB_DATATYPE_STRUCT, base_, 0, 0, 0 )
-
+	if( is_derived ) then
 		symbSetIsUnique( s )
 		symbNestBegin( s, FALSE )
-		symbNamespaceImportEx( base_, s )
-
-		if( symbGetHasRTTI( base_ ) ) then
-			symbSetHasRTTI( s )
-
-			'' inherit the vtable elements and abstracts counts
-			assert( base_->udt.ext->vtableelements >= 2 )
-			symbUdtAllocExt( s )
-			s->udt.ext->vtableelements = base_->udt.ext->vtableelements
-			s->udt.ext->abstractcount = base_->udt.ext->abstractcount
-		end if
-	else
-		s->udt.base = NULL
 	end if
 
 	function = s
 end function
+
+sub symbStructAddBase( byval s as FBSYMBOL ptr, byval base_ as FBSYMBOL ptr )
+	static as FBARRAYDIM dTB(0 to 0)
+
+	assert( s->udt.base = NULL )
+
+	'' (using base$ instead of $base to prevent gdb/stabs confusion,
+	'' where leading $ has special meaning)
+	s->udt.base = symbAddField( s, "base$", 0, dTB(), FB_DATATYPE_STRUCT, base_, 0, 0, 0 )
+
+	symbNamespaceImportEx( base_, s )
+
+	if( symbGetHasRTTI( base_ ) ) then
+		symbSetHasRTTI( s )
+
+		'' inherit the vtable elements and abstracts counts
+		assert( base_->udt.ext->vtableelements >= 2 )
+		symbUdtAllocExt( s )
+		s->udt.ext->vtableelements = base_->udt.ext->vtableelements
+		s->udt.ext->abstractcount = base_->udt.ext->abstractcount
+	end if
+end sub
 
 function typeCalcNaturalAlign _
 	( _
