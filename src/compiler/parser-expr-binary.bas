@@ -376,7 +376,7 @@ function cIsExpression _
 	'' SymbolType
 	dim as integer dtype = any
 	dim as FBSYMBOL ptr subtype = any
-	if( cSymbolType( dtype, subtype, 0 ) = FALSE ) then
+	if( cSymbolType( dtype, subtype ) = FALSE ) then
 		return NULL
 	end if
 

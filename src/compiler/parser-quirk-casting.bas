@@ -153,7 +153,7 @@ function cAnonType( ) as ASTNODE ptr
 
 	if( is_explicit ) then
 		'' SymbolType
-		if( cSymbolType( dtype, subtype, 0 ) = FALSE ) then
+		if( cSymbolType( dtype, subtype ) = FALSE ) then
 			'' it would be nice to be able to fall back and do
 			'' a cExpression(), like typeof(), or len() do,
 			'' however the ambiguity with the "greater-than '>' operator"

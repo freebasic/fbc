@@ -1582,24 +1582,28 @@ function symbTypeToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval length as longint _
+		byval length as longint, _
+		byval is_fixlenstr as integer _
 	) as string
 
 	dim as string s
-	dim as integer dtypeonly = any, ptrcount = any
-    
+
 	if( dtype = FB_DATATYPE_INVALID ) then
 		exit function
 	end if
 
-	ptrcount = typeGetPtrCnt( dtype )
+	if( length <= 0 ) then
+		length = symbCalcLen( dtype, subtype )
+	end if
+
+	var ptrcount = typeGetPtrCnt( dtype )
+	var dtypeonly = typeGetDtOnly( dtype )
+
 	if( typeIsConstAt( dtype, ptrcount ) ) then
 		s = "const "
 	else
 		s = ""
 	end if
-
-	dtypeonly = typeGetDtOnly( dtype )
 
 	select case as const( dtypeonly )
 	case FB_DATATYPE_FWDREF, FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
@@ -1608,7 +1612,7 @@ function symbTypeToStr _
 
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
 		s += *symb_dtypeTB(dtypeonly).name
-		if( length > 0 ) then
+		if( is_fixlenstr or (length <> symb_dtypeTB(dtypeonly).size) ) then
 			select case( dtypeonly )
 			case FB_DATATYPE_FIXSTR
 				'' For STRING*N the null terminator is

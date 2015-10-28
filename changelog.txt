@@ -12,6 +12,7 @@ Version 1.05.0
 - 1.04.0 regression: Under -gen gcc -asm att, support for gcc-style inline asm was broken
 - ld was warning about unsupported linker options on OS X
 - BYREF fixed-length strings (e.g. BYREF myParameter AS ZSTRING * 10) now trigger a compiler error since they are unsupported
+- #print typeof() output now differentiates between ZSTRING and ZSTRING * N (ZSTRING without size is produced by dereferencing a ZSTRING PTR, or BYREF AS ZSTRING)
 
 
 Version 1.04.0

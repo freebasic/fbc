@@ -1295,7 +1295,7 @@ declare sub astSetType _
 		byval subtype as FBSYMBOL ptr _
 	)
 
-declare function astSizeOf( byval n as ASTNODE ptr ) as longint
+declare function astSizeOf( byval n as ASTNODE ptr, byref is_fixlenstr as integer = FALSE ) as longint
 declare function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 declare function astIsRelationalBop( byval n as ASTNODE ptr ) as integer
 

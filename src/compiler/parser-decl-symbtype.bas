@@ -149,7 +149,8 @@ function cTypeOrExpression _
 		byval tk as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as longint _
+		byref lgt as longint, _
+		byref is_fixlenstr as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr expr = any
@@ -211,7 +212,7 @@ function cTypeOrExpression _
 
 	if( maybe_type ) then
 		'' Parse as type
-		if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_NONE ) ) then
+		if( cSymbolType( dtype, subtype, lgt, is_fixlenstr, FB_SYMBTYPEOPT_NONE ) ) then
 			'' Successful -- it's a type, not an expression
 			ambigioussizeof.maybeWarn( tk, TRUE )
 			return NULL
@@ -235,13 +236,14 @@ sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as longint _
+		byref lgt as longint, _
+		byref is_fixlenstr as integer _
 	)
 
 	dim as ASTNODE ptr expr = any
 
 	'' Type or an Expression
-	expr = cTypeOrExpression( FB_TK_TYPEOF, dtype, subtype, lgt )
+	expr = cTypeOrExpression( FB_TK_TYPEOF, dtype, subtype, lgt, is_fixlenstr )
 
 	'' Was it a type?
 	if( expr = NULL ) then
@@ -252,7 +254,7 @@ sub cTypeOf _
 
 	dtype   = astGetFullType( expr )
 	subtype = astGetSubtype( expr )
-	lgt     = astSizeOf( expr )
+	lgt     = astSizeOf( expr, is_fixlenstr )
 
 	astDelTree( expr )
 end sub
@@ -306,6 +308,7 @@ function cSymbolType _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint, _
+		byref is_fixlenstr as integer, _
 		byval options as FB_SYMBTYPEOPT _
 	) as integer
 
@@ -313,9 +316,10 @@ function cSymbolType _
 
 	function = FALSE
 
-	lgt = 0
 	dtype = FB_DATATYPE_INVALID
 	subtype = NULL
+	lgt = 0
+	is_fixlenstr = FALSE
 
 	dim as integer is_const = FALSE
 	dim as integer ptr_cnt = 0
@@ -332,7 +336,7 @@ function cSymbolType _
 		end if
 
 		'' datatype
-		cTypeOf( dtype, subtype, lgt )
+		cTypeOf( dtype, subtype, lgt, is_fixlenstr )
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
@@ -520,6 +524,7 @@ function cSymbolType _
 							dtype = symbGetFullType( sym )
 							subtype = symbGetSubtype( sym )
 							lgt = symbGetLen( sym )
+							is_fixlenstr = symbGetIsFixLenStr( sym )
 							ptr_cnt += typeGetPtrCnt( dtype )
 							exit do, do
 						end select
@@ -576,6 +581,7 @@ function cSymbolType _
 
 		'' expr
 		lgt = cConstIntExpr( cEqInParensOnlyExpr( ) )
+		is_fixlenstr = TRUE
 
 		select case as const typeGet( dtype )
 		case FB_DATATYPE_STRING

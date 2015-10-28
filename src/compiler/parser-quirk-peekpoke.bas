@@ -17,9 +17,7 @@ private function hOptionalTypeAndFirstExpr _
 		byref subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr expr = any
-
-	expr = cTypeOrExpression( FB_TK_SIZEOF, dtype, subtype, 0 )
+	var expr = cTypeOrExpression( FB_TK_SIZEOF, dtype, subtype )
 	if( expr = NULL ) then
 		'' SymbolType
 

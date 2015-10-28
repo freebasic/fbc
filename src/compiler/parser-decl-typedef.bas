@@ -54,12 +54,13 @@ private function hReadType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as longint _
+		byref lgt as longint, _
+		byref is_fixlenstr as integer _
 	) as zstring ptr
 
     static as zstring * FB_MAXNAMELEN+1 tname
 
-	if( cSymbolType( dtype, subtype, lgt, FB_SYMBTYPEOPT_ALLOWFORWARD ) ) then
+	if( cSymbolType( dtype, subtype, lgt, is_fixlenstr, FB_SYMBTYPEOPT_ALLOWFORWARD ) ) then
 		return NULL
 	end if
 
@@ -95,7 +96,8 @@ private sub hAddForwardRef _
 		byval pfwdname as zstring ptr, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as longint _
+		byref lgt as longint, _
+		byref is_fixlenstr as integer _
 	)
 
     dim as integer ptrcount = typeGetPtrCnt( dtype )
@@ -115,6 +117,7 @@ private sub hAddForwardRef _
 
         subtype = NULL
         lgt = 0
+        is_fixlenstr = FALSE
     else
 
         '' The typeJoin()'s will remove the PTR's off the typedef's type, but we
@@ -167,16 +170,21 @@ private sub hAddTypedef _
 		byval pfwdname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval lgt as longint _
+		byval lgt as longint, _
+		byval is_fixlenstr as integer _
 	)
 
     '' Forward ref? Note: may update dtype & co
     if( pfwdname <> NULL ) then
-		hAddForwardRef( pid, pfwdname, dtype, subtype, lgt )
+		hAddForwardRef( pid, pfwdname, dtype, subtype, lgt, is_fixlenstr )
     end if
 
     dim as FBSYMBOL ptr typedef = symbAddTypedef( pid, dtype, subtype, lgt )
-    if( typedef = NULL ) then
+    if( typedef ) then
+        if( is_fixlenstr ) then
+            symbSetIsFixLenStr( typedef )
+        end if
+    else
         '' check if the dup definition is different
         dim as integer isdup = TRUE
         dim as FBSYMBOL ptr sym = any
@@ -235,35 +243,28 @@ end function
 
 '' MultipleTypedef  =  TYPE AS SymbolType symbol (',' symbol)*
 sub cTypedefMultDecl( )
-    dim as zstring ptr pfwdname = any, pid = any
-	dim as integer dtype = any
-	dim as longint lgt = any
-    dim as FBSYMBOL ptr subtype = any
-
 	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL or FB_CMPSTMT_MASK_CODE ) = FALSE ) then
 		hSkipStmt( )
 		exit sub
 	end if
 
-    '' AS
-    lexSkipToken( )
+	'' AS
+	lexSkipToken( )
 
-    '' SymtolType
-    pfwdname = hReadType( dtype, subtype, lgt )
+	'' SymtolType
+	dim as integer dtype, is_fixlenstr
+	dim as longint lgt
+	dim as FBSYMBOL ptr subtype
+	var pfwdname = hReadType( dtype, subtype, lgt, is_fixlenstr )
 
-    do
-        '' Parse the ID
-        pid = hReadId( )
+	do
+		'' Parse the ID
+		var pid = hReadId( )
 
-        hAddTypedef( pid, pfwdname, dtype, subtype, lgt )
+		hAddTypedef( pid, pfwdname, dtype, subtype, lgt, is_fixlenstr )
 
-    	'' ','?
-    	if( lexGetToken( ) <> CHAR_COMMA ) then
-    		exit do
-    	end if
-
-    	lexSkipToken( )
-    loop
+		'' ','?
+	loop while( hMatch( CHAR_COMMA ) )
 end sub
 
 '' SingleTypedef  =  TYPE symbol AS SymbolType (',' symbol AS SymbolType)*
@@ -275,32 +276,26 @@ sub cTypedefSingleDecl( byval pid as zstring ptr )
 		exit sub
 	end if
 
-    dim as zstring ptr pfwdname = any
-	dim as integer dtype = any
-	dim as longint lgt = any
-    dim as FBSYMBOL ptr subtype = any
+	do
+		'' AS?
+		if( hMatch( FB_TK_AS ) = FALSE ) then
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		end if
 
-    do
-        '' AS?
-        if( lexGetToken( ) <> FB_TK_AS ) then
-            errReport( FB_ERRMSG_SYNTAXERROR )
-        else
-            lexSkipToken( )
-        end if
+		'' SymtolType
+		dim as integer dtype, is_fixlenstr
+		dim as longint lgt
+		dim as FBSYMBOL ptr subtype
+		var pfwdname = hReadType( dtype, subtype, lgt, is_fixlenstr )
 
-        '' SymtolType
-        pfwdname = hReadType( dtype, subtype, lgt )
+		hAddTypedef( pid, pfwdname, dtype, subtype, lgt, is_fixlenstr )
 
-        hAddTypedef( pid, pfwdname, dtype, subtype, lgt )
+		'' ','?
+		if( hMatch( CHAR_COMMA ) = FALSE ) then
+			exit do
+		end if
 
-    	'' ','?
-    	if( lexGetToken( ) <> CHAR_COMMA ) then
-    		exit do
-    	end if
-
-    	lexSkipToken( )
-
-        '' Parse the next ID
-        pid = hReadId( )
-    loop
+		'' Parse the next ID
+		pid = hReadId( )
+	loop
 end sub
