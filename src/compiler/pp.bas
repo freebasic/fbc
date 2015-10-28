@@ -306,12 +306,7 @@ private sub ppInclude()
     dim as integer isonce = any
 
 	'' ONCE?
-	isonce = FALSE
-	if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
-		if( hMatchText( "ONCE" ) ) then
-			isonce = TRUE
-		end if
-	end if
+	isonce = hMatchIdOrKw( "ONCE" )
 
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )

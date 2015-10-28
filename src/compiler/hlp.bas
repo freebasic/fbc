@@ -9,19 +9,15 @@
 #include once "lex.bi"
 #include once "dstr.bi"
 
-'':::::
-function hMatchText _
-	( _
-		byval txt as zstring ptr _
-	) as integer
-
-	if( ucase( *lexGetText( ) ) = *txt ) then
-		lexSkipToken( )
-		function = TRUE
-	else
-		function = FALSE
-	end if
-
+function hMatchIdOrKw( byval txt as const zstring ptr ) as integer
+	select case( lexGetClass( ) )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_KEYWORD
+		if( ucase( *lexGetText( ) ) = *txt ) then
+			lexSkipToken( )
+			return TRUE
+		end if
+	end select
+	return FALSE
 end function
 
 '':::::

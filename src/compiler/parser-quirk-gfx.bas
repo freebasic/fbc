@@ -282,52 +282,59 @@ private function hGetMode _
 
 	function = FALSE
 
-	select case as const lexGetToken
-
+	select case( lexGetToken( ) )
 	case FB_TK_AND
 		lexSkipToken
 		mode = FBGFX_PUTMODE_AND
+		return TRUE
 
 	case FB_TK_OR
 		lexSkipToken
 		mode = FBGFX_PUTMODE_OR
+		return TRUE
 
 	case FB_TK_XOR
 		lexSkipToken
 		mode = FBGFX_PUTMODE_XOR
+		return TRUE
+	end select
 
-	case else
+	select case( lexGetClass( ) )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_KEYWORD
 		select case ucase( *lexGetText( ) )
 		case "PSET"
 			lexSkipToken( )
 			mode = FBGFX_PUTMODE_PSET
+			return TRUE
 
 		case "PRESET"
 			lexSkipToken( )
 			mode = FBGFX_PUTMODE_PRESET
+			return TRUE
 
 		case "TRANS"
 			lexSkipToken( )
 			mode = FBGFX_PUTMODE_TRANS
+			return TRUE
 
 		case "ADD"
 			lexSkipToken( )
 			mode = FBGFX_PUTMODE_ADD
-
 			if( hMatch( CHAR_COMMA ) ) then
 				hMatchExpression( alphaexpr )
 			else
 				alphaexpr = astNewCONSTi( 255, FB_DATATYPE_UINT )
 			end if
+			return TRUE
 
 		case "ALPHA"
 			lexSkipToken( )
 			mode = FBGFX_PUTMODE_ALPHA
-
 			if( hMatch( CHAR_COMMA ) ) then
 				hMatchExpression( alphaexpr )
 				mode = FBGFX_PUTMODE_BLEND
 			end if
+			return TRUE
 
 		case "CUSTOM"
 			lexSkipToken( )
@@ -377,14 +384,13 @@ private function hGetMode _
 				exit function
 			end if
 
-		case else
-			errReport( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			return TRUE
 		end select
+
 	end select
 
-	function = TRUE
-
+	errReport( FB_ERRMSG_SYNTAXERROR )
+	return FALSE
 end function
 
 '':::::
@@ -877,7 +883,7 @@ function cGfxPalette as integer
 
 	function = FALSE
 
-	isget = hMatchText( "GET" )
+	isget = hMatchIdOrKw( "GET" )
 
     '' this could fail if using was #undef'ed and made a method...
 	if( hMatch( FB_TK_USING ) ) then

@@ -991,20 +991,16 @@ private function hFileOpen _
 	end if
 
 	'' (ACCESS (READ|WRITE|READ WRITE))?
-	if( hMatchText( "ACCESS" ) ) then
-		select case ucase( *lexGetText( ) )
-		case "WRITE"
-			lexSkipToken( )
+	if( hMatchIdOrKw( "ACCESS" ) ) then
+		if( hMatchIdOrKw( "WRITE" ) ) then
 			access_mode = FB_FILE_ACCESS_WRITE
-
-		case "READ"
-			lexSkipToken( )
+		elseif( hMatchIdOrKw( "READ" ) ) then
 			if( hMatch( FB_TK_WRITE ) ) then
 				access_mode = FB_FILE_ACCESS_READWRITE
 			else
 				access_mode = FB_FILE_ACCESS_READ
 			end if
-		end select
+		end if
 	else
 		access_mode = FB_FILE_ACCESS_ANY
 	end if
@@ -1020,20 +1016,16 @@ private function hFileOpen _
 	if( hMatch( FB_TK_SHARED ) ) then
 		lock_mode = FB_FILE_LOCK_SHARED
 
-	elseif( hMatchText( "LOCK" ) ) then
-		select case ucase( *lexGetText( ) )
-		case "WRITE"
-			lexSkipToken( )
+	elseif( hMatchIdOrKw( "LOCK" ) ) then
+		if( hMatchIdOrKw( "WRITE" ) ) then
 			lock_mode = FB_FILE_LOCK_WRITE
-
-		case "READ"
-			lexSkipToken( )
+		elseif( hMatchIdOrKw( "READ" ) ) then
 			if( hMatch( FB_TK_WRITE ) ) then
 				lock_mode = FB_FILE_LOCK_READWRITE
 			else
 				lock_mode = FB_FILE_LOCK_READ
 			end if
-		end select
+		end if
 	else
 		lock_mode = FB_FILE_LOCK_SHARED
 	end if
@@ -1060,7 +1052,7 @@ private function hFileOpen _
 	end if
 
 	'' (LEN '=' Expression)?
-	if( hMatchText( "LEN" ) ) then
+	if( hMatchIdOrKw( "LEN" ) ) then
 		if( cAssignToken( ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDEQ )
 			flen = astNewCONSTi( 0 )
