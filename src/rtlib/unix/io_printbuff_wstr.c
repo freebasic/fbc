@@ -33,7 +33,7 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 
 	/* !!!FIXME!!! to support unicode the char_buffer would have to be a wchar_t,
 				   slowing down non-unicode printing.. */
-	fb_wstr_ConvToA( temp, buffer, avail_len );
+	fb_wstr_ConvToA( temp, avail_len, buffer );
 
 	memcpy( __fb_con.char_buffer + ((__fb_con.cur_y - 1) * __fb_con.w) + __fb_con.cur_x - 1,
 	        temp,

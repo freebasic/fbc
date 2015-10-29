@@ -6,7 +6,7 @@
 
 static void hConvToA( char *buffer, FB_WCHAR *expression )
 {
-	fb_wstr_ConvToA( buffer, expression, BUFFER_SIZE-1 );
+	fb_wstr_ConvToA( buffer, BUFFER_SIZE-1, expression );
 	buffer[BUFFER_SIZE-1] = 0; /* null terminator */
 }
 

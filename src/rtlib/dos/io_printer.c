@@ -47,7 +47,7 @@ int fb_PrinterWriteWstr( DEV_LPT_INFO *devInfo, const FB_WCHAR *data, size_t len
     char *temp = alloca( length + 1 );
 
     if( length > 0 )
-    	fb_wstr_ConvToA( temp, data, length );
+        fb_wstr_ConvToA( temp, length, data );
     else
     	*temp = '\0';
 
