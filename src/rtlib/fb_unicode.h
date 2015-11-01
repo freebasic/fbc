@@ -147,8 +147,8 @@ static __inline__ ssize_t fb_wstr_Len( const FB_WCHAR *s )
 	return wcslen( s );
 }
 
-ssize_t fb_wstr_ConvFromA( FB_WCHAR *dst, int dst_chars, const char *src );
-ssize_t fb_wstr_ConvToA( char *dst, int dst_chars, const FB_WCHAR *src );
+ssize_t fb_wstr_ConvFromA( FB_WCHAR *dst, ssize_t dst_chars, const char *src );
+ssize_t fb_wstr_ConvToA( char *dst, ssize_t dst_chars, const FB_WCHAR *src );
 
 static __inline__ int fb_wstr_IsLower( FB_WCHAR c )
 {
