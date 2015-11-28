@@ -349,10 +349,6 @@ function cProcCall _
 
 	'' ProcArgList
 	procexpr = cProcArgList( base_parent, sym, ptrexpr, @arg_list, options )
-	if( procexpr = NULL ) then
-		hSkipUntil( CHAR_RPRNT )
-		exit function
-	end if
 
 	'' ')'
 	if( (checkprnts) or (parser.prntcnt > 0) ) then
@@ -974,28 +970,19 @@ private sub hBaseInit( )
 	lexSkipToken( )
 
 	subtype = symbGetSubtype( base_ )
-	initree = NULL
 
 	'' Has a ctor?
 	if( symbGetCompCtorHead( subtype ) ) then
 		'' CtorCall
 		ctorcall = cCtorCall( subtype )
-		if( ctorcall ) then
-			'' Will be a CTORCALL except in case of error recovery
-			if( astIsCALLCTOR( ctorcall ) ) then
-				'' cCtorCall() created a temporary object to
-				'' call the constructor on, we delete it though:
-				ctorcall = astCALLCTORToCALL( ctorcall )
+		'' cCtorCall() created a temporary object to
+		'' call the constructor on, we delete it though:
+		ctorcall = astCALLCTORToCALL( ctorcall )
 
-				'' Turn the ctorcall into an initree
-				initree = astTypeIniBegin( FB_DATATYPE_STRUCT, subtype, TRUE )
-				astTypeIniAddCtorCall( initree, base_, ctorcall )
-				astTypeIniEnd( initree, TRUE )
-			else
-				astDelTree( ctorcall )
-				ctorcall = NULL
-			end if
-		end if
+		'' Turn the ctorcall into an initree
+		initree = astTypeIniBegin( FB_DATATYPE_STRUCT, subtype, TRUE )
+		astTypeIniAddCtorCall( initree, base_, ctorcall )
+		astTypeIniEnd( initree, TRUE )
 	else
 		'' Initializer
 		initree = cInitializer( base_, FB_INIOPT_ISINI )
@@ -1153,16 +1140,6 @@ function hForwardCall( ) as integer
 		exit function
     end if
 
-    ''
-    dim as ASTNODE ptr procexpr = cProcArgList( NULL, _
-    											proc, _
-    											NULL, _
-    											@arg_list, _
-    											FB_PARSEROPT_OPTONLY )
-    if( procexpr <> NULL ) then
-    	astAdd( procexpr )
-    end if
-
+	astAdd( cProcArgList( NULL, proc, NULL, @arg_list, FB_PARSEROPT_OPTONLY ) )
 	function = TRUE
-
 end function

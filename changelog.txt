@@ -15,6 +15,7 @@ Version 1.05.0
 - #print typeof() output now differentiates between ZSTRING and ZSTRING * N (ZSTRING without size is produced by dereferencing a ZSTRING PTR, or BYREF AS ZSTRING)
 - Context-specific keywords, e.g. graphics PUT modes, must now be given as keywords (e.g. PSET), string literals (e.g. "PSET") are no longer accepted.
 - Wstring-to-Zstring conversions didn't use the system's Unicode <-> codepage conversion function, and only converted ASCII characters. Now it will try to convert the Unicode chars to codepage chars.
+- Compiler crash during error recovery when there was an error when parsing the argument expression for a BYREF AS ANY parameter
 
 
 Version 1.04.0

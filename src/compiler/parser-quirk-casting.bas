@@ -199,12 +199,7 @@ function cAnonType( ) as ASTNODE ptr
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
 		'' Has a ctor?
 		if( symbGetCompCtorHead( subtype ) ) then
-			initree = cCtorCall( subtype )
-			if( initree = NULL ) then
-				'' Error recovery
-				initree = astNewCONSTz( dtype, subtype )
-			end if
-			return initree
+			return cCtorCall( subtype )
 		end if
 	end if
 

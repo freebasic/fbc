@@ -134,9 +134,6 @@ function cOperatorNew( ) as ASTNODE ptr
 				errReport( FB_ERRMSG_EXPLICITCTORCALLINVECTOR, TRUE )
 			else
 				initexpr = cCtorCall( subtype )
-				if( initexpr = NULL ) then
-					return NULL
-				end if
 			end if
 		else
 			dim as FBSYMBOL ptr ctor = symbGetCompDefCtor( subtype )
@@ -147,9 +144,6 @@ function cOperatorNew( ) as ASTNODE ptr
 				'' only if not a vector
 				if( op <> AST_OP_NEW_VEC ) then
 					initexpr = cCtorCall( subtype )
-					if( initexpr = NULL ) then
-						return NULL
-					end if
 				else
 					'' check visibility
 					if( symbCheckAccess( ctor ) = FALSE ) then
