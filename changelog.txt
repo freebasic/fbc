@@ -16,6 +16,8 @@ Version 1.05.0
 - Context-specific keywords, e.g. graphics PUT modes, must now be given as keywords (e.g. PSET), string literals (e.g. "PSET") are no longer accepted.
 - Wstring-to-Zstring conversions didn't use the system's Unicode <-> codepage conversion function, and only converted ASCII characters. Now it will try to convert the Unicode chars to codepage chars.
 - Compiler crash during error recovery when there was an error when parsing the argument expression for a BYREF AS ANY parameter
+- 1.04.0 regression: Get# for WStrings was incorrectly changed to convert the loaded bytes to wstring characters, like Input# would do. Now it's changed back to just loading the raw bytes into the wstring, which is also how Get# works for other datatypes.
+- 1.04.0 regression: Due to the Get# wstring breakage, the compiler failed to read source files encoded in UTF16LE with BOM on Windows, and UTF32LE with BOM on Linux.
 
 
 Version 1.04.0
