@@ -4,7 +4,6 @@
 
 int fb_DevFileEof( FB_FILE *handle )
 {
-	int result;
     FILE *fp;
 
 	FB_LOCK();
@@ -16,32 +15,35 @@ int fb_DevFileEof( FB_FILE *handle )
 		return FB_TRUE;
 	}
 
-	result = FB_FALSE;
-
+	int eof;
 	switch( handle->mode ) {
 	/* non-text mode? */
 	case FB_FILE_MODE_BINARY:
 	case FB_FILE_MODE_RANDOM:
 		/* note: handle->putback_size will be checked by fb_FileEofEx() */
-		result = (ftello( fp ) >= handle->size ? FB_TRUE : FB_FALSE);
+		/* This detects both cases: a) last read reached EOF, b) next
+		   read will reach EOF */
+		eof = (ftello( fp ) >= handle->size);
 		break;
 
 	/* text-mode (INPUT, OUTPUT or APPEND) */
 	default:
-		/* try feof() first, because the EOF char (27) */
-		if( feof( fp ) ) {
-			result = FB_TRUE;
-		/* if in input mode, feof() won't return TRUE if file_pos == file_size */
-		} else if( handle->mode == FB_FILE_MODE_INPUT ) {
-			/* Check the file size, if known
-			   (excluding pipes, for example, which re-use fb_DevFileEof()) */
-			if( handle->hooks->pfnTell != NULL && handle->hooks->pfnSeek != NULL ) {
-				result = (ftello( fp ) >= handle->size ? FB_TRUE : FB_FALSE);
+		/* This also handles the EOF char (27). */
+		/* We can't check ftell(), because it's not guaranteed to give
+		   a real file offset in text mode. */
+		/* a) detect whether last read reached EOF */
+		eof = feof( fp );
+		if( !eof ) {
+			/* b) peek ahead: will the next read reach EOF? */
+			int c = getc( fp );
+			eof = (c == EOF);
+			if( !eof ) {
+				ungetc( c, fp );
 			}
 		}
 		break;
 	}
 
 	FB_UNLOCK();
-	return result;
+	return eof ? FB_TRUE : FB_FALSE;
 }
