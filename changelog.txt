@@ -19,6 +19,7 @@ Version 1.05.0
 - 1.04.0 regression: Get# for WStrings was incorrectly changed to convert the loaded bytes to wstring characters, like Input# would do. Now it's changed back to just loading the raw bytes into the wstring, which is also how Get# works for other datatypes.
 - 1.04.0 regression: Due to the Get# wstring breakage, the compiler failed to read source files encoded in UTF16LE with BOM on Windows, and UTF32LE with BOM on Linux.
 - Eof() could incorrectly return TRUE too early on Windows, when reading a big text file with LF line endings, OPENed FOR INPUT (text mode)
+- Line's styled/pattern drawing support was broken on non-x86 systems
 
 
 Version 1.04.0

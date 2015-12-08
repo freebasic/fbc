@@ -274,7 +274,7 @@
 		return 0;
 	}
 
-	#define RORW(num, bits) num = ( (num) >> (bits) ) | (num << (16 - bits) )
+	#define RORW(num, bits) num = (((((num) & 0xFFFF) >> (bits) ) | ((num) << (16 - bits))) & 0xFFFF)
 	#define RORW1(num)      RORW(num, 1)
 #endif
 
