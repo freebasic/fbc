@@ -14,6 +14,7 @@ Assigns fields of a user defined type to a list of variables
 
 {{fbdoc item="desc"}}
 	Assigns the values from the ##//UDT_var//## variable's fields to the list of variables.
+	Union is not supported.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/let-list.bas"}}%%(freebasic)

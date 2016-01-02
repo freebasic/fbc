@@ -370,6 +370,7 @@ During the program compilation three types of errors can arise:
 	- //320 Incompatible reference initializer//
 	- //321 Array of references - not supported yet//
 	- //322 Invalid CASE range, start value is greater than the end value//
+	- //323 Fixed-length string combined with BYREF (not supported)//
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.

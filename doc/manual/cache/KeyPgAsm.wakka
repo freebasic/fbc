@@ -27,11 +27,11 @@ Code block that allows the use of architecture-specific instructions.
 			Instruction syntax is mostly the same as FASM uses, one important difference is that GAS requires size settings to be followed by the word "##ptr##".
 			
 			%%(freebasic)
-' Assuming "blah" is a FB global or local UINTEGER variable
-mov  eax, [blah]        ' OK: size is apparent from eax
-inc  [blah]             ' Not OK: size is not given
-inc  dword [blah]       ' Not OK: size given, but still not accepted by GAS
-inc  dword ptr [blah]   ' OK: "ptr" is needed by GAS here%%
+' Assuming "n" is a FB global or local ULONG variable
+mov  eax, [n]        ' OK: size is apparent from eax
+inc  [n]             ' Not OK: size is not given
+inc  dword [n]       ' Not OK: size given, but still not accepted by GAS
+inc  dword ptr [n]   ' OK: "ptr" is needed by GAS here%%
 
 		==Register Preservation==
 			When an ##**Asm**## block is opened, the registers ##ebx##, ##esi##, and ##edi## are pushed to the stack, when the block is closed, these registers are popped back from the stack.  This is because these registers are required to be preserved by most or all OS's using the x86 CPU.  You can therefore use these registers without explicitly preserving them yourself. You should not change ##esp## and ##ebp##, since they are usually used to address local variables. 
@@ -95,7 +95,7 @@ inc  dword ptr [blah]   ' OK: "ptr" is needed by GAS here%%
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/asm.bas"}}%%(freebasic)
 '' This is an example for the x86 architecture.
-Function AddFive(ByVal num As Integer) As Integer
+Function AddFive(ByVal num As Long) As Long
 	Asm
 		mov eax, [num]
 		add eax, 5
@@ -103,7 +103,7 @@ Function AddFive(ByVal num As Integer) As Integer
 	End Asm
 End Function
 
-Dim i As Integer = 4
+Dim i As Long = 4
 
 Print "4 + 5 ="; AddFive(i)
 %%

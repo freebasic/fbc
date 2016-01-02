@@ -7,7 +7,7 @@
 '' --------
 
 '' This is an example for the x86 architecture.
-Function AddFive(ByVal num As Integer) As Integer
+Function AddFive(ByVal num As Long) As Long
 	Asm
 		mov eax, [num]
 		add eax, 5
@@ -15,6 +15,6 @@ Function AddFive(ByVal num As Integer) As Integer
 	End Asm
 End Function
 
-Dim i As Integer = 4
+Dim i As Long = 4
 
 Print "4 + 5 ="; AddFive(i)

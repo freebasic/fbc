@@ -420,8 +420,11 @@
 		[[KeyPgPreserve PRESERVE]]
 		[[KeyPgPreset PRESET]]
 		[[KeyPgPrint PRINT]]
+		[[KeyPgPrint ?]]
 		[[KeyPgPrintPp PRINT #]]
+		[[KeyPgPrintPp ? #]]
 		[[KeyPgPrintusing PRINT USING]]
+		[[KeyPgPrintusing ? USING]]
 		[[KeyPgPrivate PRIVATE]]
 		[[KeyPgVisPrivate PRIVATE: (Access Control)]]
 		[[KeyPgOpProcptr PROCPTR]]
@@ -1022,7 +1025,8 @@
 	[[ProPgCruntime C Standard Library Functions]]
 	[[CptAscii ASCII Character Codes]]
 	[[TblRuntimeErrors Runtime Error Codes]]
-	[[TblComparisonC C/C++ vs. FreeBASIC comparison]]
+	[[TblComparisonC C/C++ vs. FreeBASIC syntax comparison]]
+	[[TblComparisonCTypes C/C++ vs. FreeBASIC integer data type comparison]]
 
 {{fbdoc item="section" value="Hacking on FreeBASIC"}}
 	[[DevToc Developer's Table of Contents]]

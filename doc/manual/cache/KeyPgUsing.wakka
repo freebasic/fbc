@@ -35,7 +35,7 @@ Dim OtherVariable As T
 	- QB had the ##**Using**## keyword, but for other purposes. Namespaces did not exist in QB.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPrintusing Print Using]]##
+	- ##[[KeyPgPrintusing (Print | ?) Using]]##
 	- ##[[KeyPgPalette Palette Using]]##
 	- ##[[KeyPgNamespace Namespace]]##
 

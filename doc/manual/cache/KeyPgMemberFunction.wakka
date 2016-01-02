@@ -6,7 +6,7 @@ Declares or defines a member procedure returning a value.
 		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember static]] | [[KeyPgConstMember const]] ] **Function** //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgStatic Static]] ]
 	End { [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] }
 
-	**Function** //typename//.//fieldname// ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]]
+	**Function** //typename//.//fieldname// ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgExport Export]] ]
 		//statements//
 	**End Function**
 ##

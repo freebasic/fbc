@@ -40,7 +40,7 @@ Conditional statement block
 
 	If ##**As Const**## is used, only integer constants (all numeric constants excluding the two floating-point constants: single and double) can be evaluated and the expression list supports simple constants and enumerations only. "##**To**##" ranges are supported, but "##**Is**##" relational operators are not.
 
-	With ##**As Const**##, a jump table is created to contain the full range of integer ##**Case**##s handled.  This allows ##**Select Case As Const**## to be faster than ##**Select Case**##.  However, the size of the range of values is limited, and the largest value in the range may be no higher than the smallest value + 4096.
+	With ##**As Const**##, a jump table is created to contain the full range of integer ##**Case**##s handled.  This allows ##**Select Case As Const**## to be faster than ##**Select Case**##.  However, the size of the range of values is limited, and the largest value in the range may be no higher than the smallest value + 8191.
 
 {{fbdoc item="ex"}}
 

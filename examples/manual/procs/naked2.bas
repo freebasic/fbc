@@ -10,9 +10,9 @@
 '' plus ecx register preserved in asm block by creating user stack
 Function subtract_cp Naked cdecl _      '' parameters pushed onto call stack in reverse order of declaration
 	( _
-	    ByVal a As Integer, _
-	    ByVal b As Integer _            '' parameter pushed onto stack in first
-	) As Integer
+	    ByVal a As Long, _
+	    ByVal b As Long _            '' parameter pushed onto stack in first
+	) As Long
    
 	Asm
 	    push ebp                        '' push ebp onto stack   => esp -= 4

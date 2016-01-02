@@ -3,8 +3,8 @@ Declares or defines an overloaded operator.
 
 {{fbdoc item="syntax"}}##
 	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] | [[KeyPgEnum Enum]] } //typename//
-		[[KeyPgDeclare declare]] **Operator** [[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
-		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpAt @]] () [[KeyPgAs as]] [[DataType datatype]] [[KeyPgPtr ptr]]
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgCast cast]] () [ [[KeyPgByrefFunction byref]] ] [[KeyPgAs as]] [[DataType datatype]]
+		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpAt @]] () [ [[KeyPgByrefFunction byref]] ] [[KeyPgAs as]] [[DataType datatype]] [[KeyPgPtr ptr]]
 		[[KeyPgDeclare declare]] **Operator** //assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
 		[[KeyPgDeclare declare]] **Operator** {{fbdoc item="keyword" value="KeyPgOpPtrIndex|[]"}} ( //index// [[KeyPgAs as]] [[DataType datatype]] ) [ [[KeyPgByrefFunction byref]] ] [[KeyPgAs as]] [[DataType datatype]]
 		[[KeyPgDeclare declare]] **Operator** [[KeyPgOpNew new]] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
@@ -25,16 +25,16 @@ Declares or defines an overloaded operator.
 	[[KeyPgDeclare declare]] **Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
 	[[KeyPgDeclare declare]] **Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
 
-	**Operator** //typename//.[[KeyPgCast cast]] () [[KeyPgAs as]] [[DataType datatype]]
-	**Operator** //typename//.[[KeyPgOpAt @]] () [[KeyPgAs as]] [[DataType datatype]] [[KeyPgPtr ptr]]
-	**Operator** //typename//.//assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
-	**Operator** {{fbdoc item="keyword" value="KeyPgOpPtrIndex|[]"}} ( //index// [[KeyPgAs as]] [[DataType datatype]] ) [ [[KeyPgByrefFunction byref]] ] [[KeyPgAs as]] [[DataType datatype]]
-	**Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
-	**Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
-	**Operator** //typename//.[[KeyPgOpNew new]] ( //size// as uinteger ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
-	**Operator** //typename//.[[KeyPgOpNew new]][] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
-	**Operator** //typename//.[[KeyPgOpDelete delete]] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
-	**Operator** //typename//.[[KeyPgOpDelete delete]][] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	**Operator** //typename//.[[KeyPgCast cast]] () [ [[KeyPgByrefFunction byref]] ] [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgExport Export]] ]
+	**Operator** //typename//.[[KeyPgOpAt @]] () [ [[KeyPgByrefFunction byref]] ] [[KeyPgAs as]] [[DataType datatype]] [[KeyPgPtr ptr]] [ [[KeyPgExport Export]] ]
+	**Operator** //typename//.//assignment_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [ [[KeyPgExport Export]] ]
+	**Operator** {{fbdoc item="keyword" value="KeyPgOpPtrIndex|[]"}} ( //index// [[KeyPgAs as]] [[DataType datatype]] ) [ [[KeyPgByrefFunction byref]] ] [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgExport Export]] ]
+	**Operator** //unary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgExport Export]] ]
+	**Operator** //binary_op// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //lhs// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgExport Export]] ]
+	**Operator** //typename//.[[KeyPgOpNew new]] ( //size// as uinteger ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] [ [[KeyPgExport Export]] ]
+	**Operator** //typename//.[[KeyPgOpNew new]][] ( //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] [ [[KeyPgExport Export]] ]
+	**Operator** //typename//.[[KeyPgOpDelete delete]] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [ [[KeyPgExport Export]] ]
+	**Operator** //typename//.[[KeyPgOpDelete delete]][] ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [ [[KeyPgExport Export]] ]
 ##
 {{fbdoc item="param"}}
 	##//typename//## 

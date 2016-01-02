@@ -9,15 +9,15 @@ Standard data type: wide character string
 	A ##**Wstring**## is a fixed-size array of wide-chars that never overflows if the size is known at compile-time. It has no descriptor, and does never resize unless it's a pointer and ##[[KeyPgAllocate Allocate]]##/##[[KeyPgReallocate Reallocate]]##/##[[KeyPgDeallocate Deallocate]]## are used directly. When the variable has a fixed ##//size//##, ""FreeBASIC"" avoids any overflow that could occur on assignment, by truncating the contents to a length of ##//size// - 1##.
 
 	The end of the string is marked by the character 0 automatically added by the ""FreeBASIC"" string handling functions, so that character must never be part of a ##**Wstring**## or the content will be truncated. The character 0 will be appended when the string is created, and the length will be calculated by scanning the string for the first null character.
-	
+
 	In a ##**Wstring**##, ##[[KeyPgLen Len]]## returns the size of the contained string and ##[[KeyPgSizeof Sizeof]]## returns the space allocated to the ##**Wstring**##.  ##[[KeyPgSizeof Sizeof]]## only works if the size is known by the compiler, i.e. a fixed-size ##**Wstring**## variable is passed directly, not as a dereferenced pointer or a ##[[KeyPgByref Byref]]## function argument.
 
 	This type is provided for support non-Latin based alphabets. Any intrinsic string function like ##[[KeyPgLeft Left]]## will work with ##**Wstring**##s too, as will any string operator.
 
-	Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source files.
+	When processing source files, ""FreeBASIC"" can parse ASCII files with Unicode escape sequences (\u),  UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE.
 
-	The FreeBASIC text file functions can read and write Unicode files in different encodings, provided the ##[[KeyPgEncoding encoding]]## is specified when the file is opened. The text is automatically converted to the internal encoding at read and converted back to the file encoding at write. 
-	
+	The ""FreeBASIC"" text file functions can read and write Unicode files in different encodings, provided the ##[[KeyPgEncoding encoding]]## is specified when the file is opened. The text is automatically converted to the internal encoding at read and converted back to the file encoding at write.
+
 	##[[KeyPgSizeof sizeof]]##( ##**Wstring**## ) returns the number of bytes used by a ##**Wstring**## character in the current platform.
 
 {{fbdoc item="ex"}}
@@ -39,7 +39,7 @@ print len(*str2)      'returns 12, the length of the string it points to
 {{fbdoc item="target"}}
 	Support for wstrings relies in the C runtime library available in the platform and the internal format may vary.
 		- Unicode is not supported in the DOS port of ""FreeBASIC"". In this port a character takes up always 1 byte and ##[[KeyPgWstring Wstrings]]## will behave as standard ASCII ##[[KeyPgZstring Zstrings]]##
-		- On ""Win32"" wstrings are encoded in UCS-2 (UTF-16 LE) and a character takes up 2 bytes.
+		- On ""Win32"" wstrings are encoded in UCS-2 and a character takes up always 2 bytes. This is actually not UTF-16 LE, as ""FreeBASIC"" doesn't bother with surrogates introduced in Win XP. This further means that what ""FreeBASIC"" understands with a character may not represent a full codepoint.
 		- On Linux wstrings are encoded in UCS-4 and a character takes up 4 bytes.
 
 {{fbdoc item="lang"}}

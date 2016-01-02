@@ -9,19 +9,19 @@ Declares or defines a property in a type or class
 		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
 	End { [[KeyPgType Type]] | [[KeyPgClass Class]] }
 
-	**Property** //typename//.//fieldname// () [[KeyPgAs as]] [[DataType datatype]]
+	**Property** //typename//.//fieldname// () [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgExport Export]] ]
 		//statements//
 	**End Property**
 
-	**Property** //typename//.//fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
+	**Property** //typename//.//fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] ) [ [[KeyPgExport Export]] ]
 		//statements//
 	**End Property**
 
-	**Property** //typename//.//fieldname// (  [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
+	**Property** //typename//.//fieldname// (  [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgExport Export]] ]
 		//statements//
 	**End Property**
 
-	**Property** //typename//.//fieldname// (  [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
+	**Property** //typename//.//fieldname// (  [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] ) [ [[KeyPgExport Export]] ]
 		//statements//
 	**End Property**
 ##

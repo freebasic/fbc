@@ -1,8 +1,8 @@
-{{fbdoc item="title" value="PRINT #"}}----
+{{fbdoc item="title" value="(PRINT | ?) #"}}----
 Writes a list of values to a file or device
 
 {{fbdoc item="syntax"}}##
-	**Print #** //filenum//**,** [ //expressionlist// ] [ **,** | **;** ]
+	(**Print** | **?**) **#** //filenum//**,** [ //expressionlist// ] [ **,** | **;** ]
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
@@ -38,8 +38,8 @@ open "bleh.dat"  for output as #1
 	- QB did not support casting for UDTs, so didn't allow them to be ##**Print**##ed.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPrintusing Print Using]]##
-	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrintusing (Print | ?) Using]]##
+	- ##[[KeyPgPrint (Print | ?)]]##
 	- ##[[KeyPgWrite Write #]]##
 	- ##[[KeyPgOpen Open]]##
 

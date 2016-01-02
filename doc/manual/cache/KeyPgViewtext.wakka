@@ -49,7 +49,7 @@ loop until len(inkey)
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCls Cls]]##
-	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrint (Print | ?)]]##
 	- ##[[KeyPgColor Color]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

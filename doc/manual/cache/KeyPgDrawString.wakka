@@ -133,7 +133,7 @@ sleep
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrint (Print | ?)]]##
 	- ##[[KeyPgDraw Draw]]##
 	- ##[[KeyPgImagecreate ImageCreate]]##
 	- ##[[KeyPgImageDestroy ImageDestroy]]##

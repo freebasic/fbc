@@ -22,10 +22,10 @@ Restarts a thread suspended by a call to ##[[KeyPgCondWait Condwait]]##
 {{fbdoc item="filename" value="examples/manual/threads/condsignal.bas"}}%%(freebasic)
 ' This very simple example code demonstrates the use of several condition variable routines.
 ' The main routine initializes a string and creates one thread.
-' The thread complementes the string, then sends a condition signal.
-' The main routine waits until receive the condition signal, then print the complemented string.
+' The main routine waits until receive the condition signal from the thread, then print the complemented string.
+' The thread complements the string, then sends a condition signal.
 '
-'Principle of mutual exclusion + simple synchronisation
+'Principle of mutual exclusion + simple synchronization
 '          Thread#A                XOR + ==>            Thread#B
 '.....                                         .....
 'MutexLock(mut)                                MutexLock(mut)

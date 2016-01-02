@@ -48,7 +48,7 @@ write #filenum, i, d, s
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgWrite Write]]##
-	- ##[[KeyPgPrintPp Print #]]##
+	- ##[[KeyPgPrintPp (Print | ?) #]]##
 	- ##[[KeyPgInputPp Input #]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

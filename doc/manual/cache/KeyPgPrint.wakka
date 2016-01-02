@@ -1,8 +1,8 @@
-{{fbdoc item="title" value="PRINT"}}----
+{{fbdoc item="title" value="(PRINT | ?)"}}----
 Writes text to the screen
 
 {{fbdoc item="syntax"}}##
-	**Print** [ //expressionlist// ] [ , | ; ]
+	(**Print** | **?**) [ //expressionlist// ] [ , | ; ]
 ##
 {{fbdoc item="param"}}
 	##//expressionlist//##
@@ -56,8 +56,8 @@ Print s; " is great!"
 {{fbdoc item="see"}}
 	- ##[[KeyPgSpc Spc]]##
 	- ##[[KeyPgTab Tab]]##
-	- ##[[KeyPgPrintPp Print #]]##
-	- ##[[KeyPgPrintusing Print Using]]##
+	- ##[[KeyPgPrintPp (Print | ?) #]]##
+	- ##[[KeyPgPrintusing (Print | ?) Using]]##
 	- ##[[KeyPgWrite Write]]##
 	- ##[[KeyPgDrawString Draw String]]##
 	- ##[[KeyPgInput Input]]##

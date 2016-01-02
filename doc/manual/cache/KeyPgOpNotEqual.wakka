@@ -19,6 +19,8 @@ Compares two expressions for inequality
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **<>** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgWstring wstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
 
 	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **<>** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T// ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+
+	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **<>** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgBoolean boolean]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgBoolean boolean]] ) [[KeyPgAs as]] [[KeyPgBoolean boolean]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **<>** //rhs//
@@ -35,7 +37,7 @@ Compares two expressions for inequality
 	Returns negative one (-1) if expressions are not equal, or zero (0) if equal.
 
 {{fbdoc item="desc"}}
-	**##Operator <>## (Not equal)** is a binary operator that compares two expressions for inequality and returns the result - a boolean value in the form of an ##[[KeyPgInteger Integer]]##: negative one (-1) for true and zero (0) for false. The arguments are not modified in any way.
+	**##Operator <>## (Not equal)** is a binary operator that compares two expressions for inequality and returns the result - a boolean value mainly in the form of an ##[[KeyPgInteger Integer]]##: negative one (-1) for true and zero (0) for false. Only if the left and right-hand side types are both ##[[KeyPgBoolean Boolean]]##, the return type is also ##[[KeyPgBoolean Boolean]]##. The arguments are not modified in any way.
 
 	This operator can be overloaded to accept user-defined types as well.
 

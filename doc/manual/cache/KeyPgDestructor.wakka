@@ -7,7 +7,7 @@ Called automatically when a class or user defined type goes out of scope or is d
 		[[KeyPgDeclare Declare]] **Destructor** ( )
 	End Type
 	
-	**Destructor** //typename// ( )
+	**Destructor** //typename// ( ) [ [[KeyPgExport Export]] ]
 		//statements//
 	**End Destructor**
 ##

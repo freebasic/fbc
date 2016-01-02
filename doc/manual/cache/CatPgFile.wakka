@@ -70,6 +70,7 @@ Statements and procedures for working with files and devices.
 	=={{fbdoc item="keyword" value="KeyPgLineinputPp|LINE INPUT #"}}==
 		Reads a line of text from a file or device.
 	=={{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}==
+	=={{fbdoc item="keyword" value="KeyPgPrintPp|? #"}}==
 		Writes text data to a file or device.
 	=={{fbdoc item="keyword" value="KeyPgPutfileio|PUT #"}}==
 		Writes arbitrary data to a file or device.

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="STR"}}----
-Returns a string representation of a number or Unicode character string
+Returns a string representation of a number, boolean or Unicode character string
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgString string]]
@@ -12,6 +12,7 @@ Returns a string representation of a number or Unicode character string
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //b// [[KeyPgAs as]] [[KeyPgBoolean boolean]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
 	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgString string]]
 ##
@@ -28,6 +29,8 @@ Returns a string representation of a number or Unicode character string
 
 {{fbdoc item="desc"}}
 	##**Str**## converts numeric variables to their string representation. Used this way it is the ##[[KeyPgString String]]## equivalent to ##[[KeyPgWstr Wstr]]## applied to numeric variables, and the opposite of the ##[[KeyPgVal Val]]## function, which converts a string into a number.
+
+	##**Str**## converts boolean variables to their string representation "false" / "true".
 
 	##**Str**## also converts Unicode character strings to ASCII character strings. Used this way it does the opposite of ##[[KeyPgWstr Wstr]]##. If an ASCII character string is given, that string is returned unmodified.
 
@@ -53,6 +56,7 @@ print a, b
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgVal Val]]##
+	- ##[[KeyPgCbool Cbool]]##
 	- ##[[KeyPgChr Chr]]##
 	- ##[[KeyPgAsc Asc]]##
 

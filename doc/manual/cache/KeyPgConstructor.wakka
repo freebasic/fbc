@@ -7,7 +7,7 @@ Called automatically when a class or user defined type is created
 		[[KeyPgDeclare declare]] **Constructor** ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //parameter// [[KeyPgAs as]] [[DataType datatype]] [ = //default// ] [, ... ] )
 	End Type
 
-	**Constructor** //typename// ( [ //parameters// ] )
+	**Constructor** //typename// ( [ //parameters// ] ) [ [[KeyPgExport Export]] ]
 		//statements//
 	**End Constructor**
 ##
