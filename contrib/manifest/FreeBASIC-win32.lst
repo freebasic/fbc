@@ -47,6 +47,8 @@ examples/GUI/GTK+/Gtk-2/deprecated/scribble-simple.bas
 examples/GUI/GTK+/Gtk-2/gdk_image.bas
 examples/GUI/GTK+/Gtk-2/opengl_button.bas
 examples/GUI/GTK+/Gtk-3/GtkBuilder_Cairo.bas
+examples/GUI/GTK+/Gtk-3/customgtkwidget.bas
+examples/GUI/GTK+/Gtk-3/customgtkwidget.bi
 examples/GUI/GTK+/Gtk-3/gtk_applicationE110.bas
 examples/GUI/GTK+/GtkBuilder.bas
 examples/GUI/GTK+/GtkBuilder1.ui
@@ -667,6 +669,7 @@ examples/manual/gfx/screensync.bas
 examples/manual/gfx/step.bas
 examples/manual/gfx/view.bas
 examples/manual/gfx/window.bas
+examples/manual/gfx/window2.bas
 examples/manual/gfx/windowtitle.bas
 examples/manual/hardware/inp.bas
 examples/manual/hardware/lpos.bas
