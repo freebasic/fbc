@@ -267,6 +267,7 @@ dim shared as FBCPUTYPEINFO cputypeinfo(0 to FB_CPUTYPE__COUNT-1) = _
 	( NULL       , @"pentium4"     , FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_PENTIUM4
 	( @"prescott", @"pentium4-sse3", FB_CPUFAMILY_X86    , 32, FALSE ), _ '' FB_CPUTYPE_PENTIUMSSE3
 	( NULL       , @"x86-64"       , FB_CPUFAMILY_X86_64 , 64, FALSE ), _ '' FB_CPUTYPE_X86_64
+	( NULL       , @"armv5te"      , FB_CPUFAMILY_ARM    , 32, FALSE ), _ '' FB_CPUTYPE_ARMV5TE
 	( NULL       , @"armv6"        , FB_CPUFAMILY_ARM    , 32, FALSE ), _ '' FB_CPUTYPE_ARMV6
 	( NULL       , @"armv6+fp"     , FB_CPUFAMILY_ARM    , 32, FALSE ), _ '' FB_CPUTYPE_ARMV6_FP
 	( NULL       , @"armv7-a"      , FB_CPUFAMILY_ARM    , 32, FALSE ), _ '' FB_CPUTYPE_ARMV7A
@@ -1047,8 +1048,15 @@ function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 
 	'' Extra names to be recognized by -arch to make it nicer to use
 	select case( fbcarch )
+	case "x86"
+                function = FB_CPUTYPE_686
 	case "x86_64", "amd64"
 		function = FB_CPUTYPE_X86_64
+	case "armeabi", "armv5"
+                '' This refers to the android armeabi abi.
+		function = FB_CPUTYPE_ARMV5TE
+	case "armv7a", "armv7"
+		function = FB_CPUTYPE_ARMV7A
 	case else
 		function = -1
 	end select
