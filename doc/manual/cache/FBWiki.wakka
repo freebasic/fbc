@@ -1,0 +1,39 @@
+>>**[[DocToc FreeBASIC Manual]]**
+	Language Documentation: Keywords and language features explained.
+	Compiler Reference: How to invoke the compiler.
+	Programmer's Guide & Tutorials: How to write programs in ""FreeBASIC"".
+
+**[[http://www.freebasic.net/forum/ FreeBASIC's Official Forum]]**
+	The best place to ask questions, present projects, stay up to date and meet ""FreeBASIC"" users & developers.
+
+**[[http://sourceforge.net/projects/fbc/ FreeBASIC's SourceForge Page]]**
+	Official ""FreeBASIC"" downloads are available here, as well as a bug tracker and the ""FreeBASIC"" Compiler's source code repository.
+
+**[[DevToc FreeBASIC Internals Documentation]]**
+	Guides on how to compile ""FreeBASIC"" itself, and documentation of how the compiler and run-time libraries work behind the scenes.
+>>
+
+{{image url="/images/fbwlogo.png"}}  
+
+----
+Hello, and welcome to the ""FreeBASIC"" wiki. ""FreeBASIC"" is free, open source and in active development.
+
+	[[CompilerAbout About]] | [[CompilerFeatures Main Features]] | [[CompilerHistory Project history]] | [[CompilerCredits Credits]] | [[GnuLicenses Licenses]]
+::c::
+	This wiki contains the [[DocToc FreeBASIC Manual]]. The manual is updated whenever possible to document the latest version of ""FreeBASIC"" available. Some features documented here might not be available yet in the latest official ""FreeBASIC"" release, and may only be available when building the ""FreeBASIC"" compiler and/or runtime libraries from sources, or downloading a compiled development version. The content on this wiki is created and updated by users and developers of ""FreeBASIC"". Here is a list of people who spent a lot of time getting this wiki up and running:
+	[[ContributorList Documentation Contributors]]
+	
+	From time to time, an offline version of the manual is compiled and made available for download. A list of the compilations is also available at the [[FBWikiDownloads Wiki downloads page]].
+
+==How to improve this Wiki==
+
+	Have you found an error or omission on one of our pages? Please register on our forum at [[http://freebasic.net/forum freebasic.net/forum]] to get edit access to our wiki.  Let us know about the error or omission by adding a comment to the page, or edit the content yourself and help contribute to the wiki.  Have a look at the [[FBWikiHelp FB Wiki - Help]] page to get started.  Also, feel free to take a look at the list of [[MissingDocs Docs pages that need to be written]].
+
+==How to get involved in FB development==
+
+	Getting involved in ""FreeBASIC""'s development isn't hard. You can provide feedback, help improving this wiki or help developing ""FreeBASIC""-related projects. Of course you can also contribute to the ""FreeBASIC"" compiler, by reporting bugs or submitting patches. A good way to get started is to write small patches and submitting them via the patch tracker on ""SourceForge"", or posting them on the forum. Besides the compiler (written in ""FreeBASIC"" itself), there is the runtime library as well as the graphics library (both written in C). Feel free to contact other developers via the forum, the ""##freebasic"" IRC channel on freenode, or the trackers on ""SourceForge"".
+	
+	[[CompilerContacting How to contact the developers]]
+	[[CompilerReportingBugs How to report a bug]]
+	[[DevToc FreeBASIC Internals Documentation]]
+::c::

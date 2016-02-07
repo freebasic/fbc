@@ -1,0 +1,122 @@
+{{fbdoc item="title" value="Topic Sample"}}----
+General style page for topics.
+
+__On this page:__
+
+	- Components of a Topic
+	- Syntax: Declaration versus Usage
+	- Font Styles
+	- Sample Page
+
+__Components of a Topic:__
+
+	- Brief Sentence about the function/sub/keyword
+	- **Syntax** - where possible this section should show the full specification of the function/sub/macro/statement including optional parameters (with default values), variable types, and return type (if there is one).  If function is overloaded, all variants to be shown.  Parameters are explicitly to be declared using ##[[KeyPgByval byval]]## and ##[[KeyPgByref byref]]##.  The entire declaration line should be formated as ##monospaced##.  See below for additional font style usage.  Some quirk statements may not have a full declaration, in which case the the "syntax" section is used but formatted same as "usage"
+	- **Usage** - the condensed, "traditional", i.e. existing version of the syntax.  Shows the form of the function but not all the specifics.  More than one form may be shown.  The entire syntax line should be formated as ##monospaced##.  See below for additional font style usage.  This section is only present if a full declaration is available in the the "syntax" section.
+	- **Parameters** - list of parameters in the order that they appear in syntax of the function.  In the case of a function/statement that is to be documented over several pages e.g. ##[[KeyPgAccess Access]]##, only those parameters that apply to the specific section of the function specification need to be listed.
+	- **Return Value** - description of the return value if any
+	- **Description** - all other information about the function, data tables, special notes, etc.
+	- **Examples**
+	- **Dialect Differences**
+	- **Platform Differences**
+	- **Differences with QBasic**
+	- **See Also** (cross referenced links)
+	- Back links - Table of Contents, Alphabetical list, or Parent Category
+
+__Syntax: Declaration versus Usage:__
+
+FreeBASIC is very compatible with QBasic and therefore inherits much of the quirkiness of the QBasic syntax.  While some keywords (primarily functions and subs) can be specified with a full declaration (or prototype), many statements can not. (not easily anyway)  Visually the appearance of the usages and declarations should be similar and resemble the examples below.  Where possible full declarations for functions and subs should be added.
+
+**Usage Example:**
+##
+	**PSet** [//target// ,] [STEP] (//x//, //y//) [,//color//]
+##
+
+**Declaration Example:**
+	##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Atn** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+##
+
+All topics should continue to include the existing syntax section of the documents as-is (with additional font formatting as needed).  Where applicable, a declaration section should be added.  The syntax line and the declaration line follow the same font formatting rules.
+
+__Font styles__
+
+	- Any keywords documented in the topic are ##**monospaced bold**##.
+	- parameter names are ##//monospaced italic//##
+	- keywords documented on other wiki pages should have the appropriate ##monospaced## wiki link. (e.g. ##[[KeyPgAsc Asc]]##)
+
+
+__Sample Page:__
+
+{{fbdoc item="title" value="Function"}}----
+Brief sentence describing intent of function.
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Function**( //param1// [[KeyPgAs as]] [[KeyPgString string]], //param2// [[KeyPgAs as]] [[KeyPgInteger integer]] = &H1234 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+##
+{{fbdoc item="usage"}}##
+	//result// = **Function**( //param1// [, //param2// ] )
+##
+
+{{fbdoc item="param"}}
+	##//param1//##
+		A description of parameter.  Format of parameter is ##//monospaced italic//## with one indent.  Description of parameter is normal text with two indents.
+	##//param2//##
+		A description of parameter. For example: Optional.  If omitted a default value of &H1234 is assumed.
+
+{{fbdoc item="ret"}}
+	Description of return value, including possible failure return.  If this section is not present, no return value or return value not applicable is assumed.  If the section is present and there is no return value, a simple "None" will suffice.
+
+{{fbdoc item="desc"}}
+	Short paragraph describing what function does, quirky properties, etc.  At this point, most of what the function/sub does should be described in the previous sections.  This is a good place to provide data tables, discussions on interactions with other functions/subs, tips, pitfalls, etc.
+
+	Any additional information.
+
+{{fbdoc item="ex"}}
+Example #1:
+{{fbdoc item="filename" value="examples/manual/check/FBWikiTopicSample_1.bas"}}%%(freebasic)
+Const param1 As String = "a string"
+Const param2 As Integer = &Hdeadbeef
+
+Function func( a As String, b As Integer = 0) As Integer
+	Return Val(a)+b
+End Function
+
+	'' acquire result
+	Dim As Integer result
+	result = func( param1 )
+	
+	'' acquire new result with param2
+	result = func( param1, param2 )
+%%
+	
+Output:
+%%
+sample output
+sample output
+sample output
+sample output
+%%
+
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
+	- In the ////[[CompilerOptlang -lang qb]]// dialect, ...
+	- etc
+
+{{fbdoc item="target"}}
+	- Not supported on DOS
+	- Win32 does not ...
+	- etc
+
+{{fbdoc item="diff"}}
+	- List any differences between FreeBASIC and other basics (primarily QBasic)
+	- QBasic does not ...
+	- New to ""FreeBASIC""
+	-etc
+
+{{fbdoc item="see"}}
+	- List related Functions / relevant keywords
+	- Other FBWiki Links
+	- etc
+
+{{fbdoc item="back" value="FBWikiHelp|FB Wiki - Help"}}

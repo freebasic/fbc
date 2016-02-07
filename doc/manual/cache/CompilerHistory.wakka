@@ -1,0 +1,225 @@
+{{fbdoc item="title" value="Project History"}}----
+Chronology of the ""FreeBASIC"" project.
+
+{{fbdoc item="section" value="Chronology"}}
+
+	**2004 September** 
+		- Project started by Andre Victor T. Vicentini, written in VBDOS
+
+	**2004 October 22**
+		- Project Registered on ""SourceForge.net""
+
+	**2004 November ???**
+		- ""FreeBASIC"" compiles itself, becoming a self hosting compiler.
+
+	**2004 November 30**
+		- Version 0.01 released
+	
+	**2004 December ???**
+		- Version 0.02 released
+	
+	**2004 December 2**
+		- Version 0.03 released
+	
+	**2004 December ???**
+		- Version 0.04 released
+	
+	**2004 December ???**
+		- Version 0.05 released
+	
+	**2004 December 7**
+		- Version 0.06 released
+
+	**2004 December 9**
+		- Version 0.07 released
+
+	**2004 December 15**
+		- Version 0.08 released
+
+	**2004 December 31**
+		- Version 0.09 released
+		- Linux port added by [[LilloWiki Angelo Mottola]]
+	
+	**2005 January 8**
+		- Version 0.10 released
+
+	**2005 January 31**
+		- Version 0.11 released
+		- Improved ""GFXLib2"" by [[LilloWiki Angelo Mottola]] replaced the original SDL-based gfxlib by Sterling Christensen
+		- DOS port added by [[DrV Daniel R. Verkamp]]
+	
+	**2005 March 4**
+		- Version 0.12 released
+	
+	**2005 April 14**
+		- Version 0.13 released
+
+	**2005 July 27**
+		- Version 0.14 released
+		- Full debugging support
+		- Function overloading
+
+	**2005 December 6**
+		- Version 0.15 released
+		- Support for Unicode strings
+		- Complete ""WinAPI"" headers
+
+	**2006 June 11 - 19** 
+		- Version 0.16 released
+		- Namespaces
+		- Implicit scope blocks
+
+	**2006 July 15**
+		- FBHELP "help viewer" 0.1 released, some bugs present, fixing in following months
+
+	**2006 July 30** 
+		- First 0.17 "testing" version
+		- addition of ##[[KeyPgPpmacro macro]]## support, which would be later used in the compiler itself
+	
+	**2006 August 1**
+		- DOS graphics bug fixed (worked never before), "unofficial" patch provided
+	
+	**2006 September - December**
+		- Heavy changes in ""FreeBASIC"", neither "stable" nor "testing" releases
+		- introduced [[CompilerDialects compiler dialects]]  //qb//, //deprecated//, and //fb//, along with a new //-lang// compiler switch (no //fblite// dialect yet)
+		- beginnings of OOP
+		- Introduction of the BFD library from the GNU binutils, providing additional link-time information in libraries.
+	
+	**2006 November** 
+		- Started providing CVS versions of FB, Win and Linux, later also DOS
+	
+	**2006 December 08**
+		- FBHELP "help viewer" 0.5 released, pretty mature now
+
+	**2007 January - April**
+		- Types (structures) allow member functions, operator overloading, properties, constructors and destructors. 
+		- Graphics library has capabilities for screen control, events, and alpha blending. 
+		- Built-in support for 64 bit file operations.
+
+	**2007 May 2** 
+		- The next 0.17 "testing" version, very much new. 
+		- Shortly after this release, the version number in CVS was increased to 0.18, but before any full release of 0.17 had been made.
+
+	**2007 May 14**
+		- Version 0.17 released, similar to previous testing releases, but complete with installers.
+		- Because the 0.17 sources can only be compiled with a version 0.16+2006-July-Testing combination, a release was made to allow users to install and compile ""FreeBASIC"" without applying any patch.
+		- Major installation problems on the Linux release, so an additional Linux release was made a week later to correct the problems.
+		- Some users found minor installation problems on DOS/Windows and workarounds made available.
+		- First full release with graphics working (almost) with DOS target also
+		- The major change in this full release compared to version 0.16, was that all procedure parameters now defaulted to passing BYVAL.
+
+	**2007 June 7**
+		- The ""FreeBASIC"" source code moved from CVS to SVN.   
+
+	**2007 August 16**
+		- ""FreeBASIC"" 0.18.1 full release uploaded. 
+		- No ground breaking additions, only minor fixes compared to previous version 0.17.
+		- Strings and UDT's are passed BYREF with other data types being passed BYVAL.
+
+	**2007 October 12**
+		- ""FreeBASIC"" 0.18.2 full release uploaded. 
+		- many, many bug fixes
+		- MILESTONE: PCOPY in text mode added ( dos/window only )
+		- QB Compatibility improvements for RND, SCREEN, ERASE
+		- Changed default field alignment to 4 bytes on DOS and Linux such that the BFD in binutils-2.17 compatibility problems should **finally** be resolved for DOS and Linux users.
+
+	**2007 December 29**
+		- ""FreeBASIC"" 0.18.3 full release uploaded. 
+		- Various bug fixes (graphics, threading)
+		- QB compatibility mode further restricted compared to FB mode, and improved compatibility to QB 
+		- Experimental serial port driver for DOS added 
+
+	**2008 March 27**
+		- ""FreeBASIC"" 0.18.4 full release uploaded.
+		- INSTRREV added  
+		- Many bug fixes in various areas
+		- More OOP, finalizing dialect split into //-lang fb// and //-lang qb//, added  //-lang fblite//
+		- Fixed Linux packages
+		- Fixed old shell/path/spawn trouble in DOS
+
+	**2008 April 18**
+		- ""FreeBASIC"" 0.18.5 full release uploaded.
+		- Bugfix release. Linux: packaging,  ""Win32"": graphics, DOS: GDB
+
+	**2008 August 10**
+		- ""FreeBASIC"" 0.18.6: unexpected bugfix release, only ""Win32"" gfx related bugs (fix not complete)
+
+	**2008 August 11**
+		- ""FreeBASIC"" 0.20 full release uploaded.
+		- Many bugfixes
+		- Re-allowed GOSUB&RETURN in -lang fblite
+		- Some graphics enhancements, SSE, GET, ...
+
+	**2008 September to 2008 December**
+		- Development continues (core + main library + graphics), no releases, testing by SVN versions (not for DOS)
+
+	**2009**
+		- Some developers left, very little development (mostly compiler core), no releases
+
+	**2009 July**
+		- SVN versions for DOS available again (included updates are mostly from 2008)
+
+	**2009 December**
+		- A large patch set about the **-gen GCC** feature was committed by Victor, and this feature (having been around in the source long before) got enabled in the SVN versions and could be tested by the community now
+
+	**2010 March**
+		- **dkl** joined the developer team
+
+	**2010 July 23**
+		- ""FreeBASIC"" 0.21 full release uploaded (almost 2 years after 0.20)
+		- Many improvements, **-gen GCC** enabled (but not documented)
+
+	**2010 August 11**
+		- ""FreeBASIC"" 0.21.1 full release uploaded
+		- Only a few minor bugfixes
+
+	**2011 March 29**
+		- New branch of ""FreeBASIC"" committed into SVN at ""SourceForge"" by Victor, implementing inheritance
+
+	**2011 May 8** to **June 1**
+		- ""FreeBASIC"" 0.22 full release uploaded
+		- "Maybe the last FB release without inheritance?" - the inheritance feature previously committed into a separate branch is NOT included
+		- Many small improvements
+		- There were several subminor updates to the released files because of packaging issues
+
+	**2011 June** to **July**
+		- Switch ""FreeBASIC"" source code management from Subversion to Git. All the history was imported into a new Git repository; the old SVN repository still exists on ""SourceForge"", but is no longer used.
+
+	**2011 August 7**
+		- ""FreeBASIC"" 0.23 release
+		- Just a few bugfixes, still no inheritance
+
+	**2012 August 20**
+		- ""FreeBASIC"" 0.24 release
+		- Bugfixes, OOP enhancements
+
+	**2013 May**
+		- Awaiting ""FreeBASIC"" 0.25 release, version number bumped to 0.90, releasing test versions of all packages ("RC" versions)
+
+	**2013 June 24**
+		- ""FreeBASIC"" 0.90 release
+		- Many bugfixes (critical miscompilations, ""Win32"" graphics, DOS keyboard and file I/O, ...)
+		- OOP enhancements
+		- **-gen GCC** is mature now
+
+	**2013 July 17**
+		- ""FreeBASIC"" 0.90.1 release
+		- Bugfixes
+
+	**2014 September 24**
+		- ""FreeBASIC"" 1.00.0 release, 10 years after project start
+		- 64-bit support (Windows and Linux, needs GCC)
+		- Smaller DOS binaries (0.90 regression)
+		- Many bugfixes
+
+	**2014 December 28**
+		- ""FreeBASIC"" 1.01.0 release
+		- started additionally providing "win32-mingworg" packages
+		- Bugfixes
+
+	**2015 October 1**
+		- ""FreeBASIC"" 1.04.0 release
+		- new data type "boolean"
+		- Bugfixes
+
+{{fbdoc item="back" value="FBWiki|Main Page"}}

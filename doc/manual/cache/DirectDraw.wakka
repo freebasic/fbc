@@ -1,0 +1,4 @@
+DirectDraw is part of Microsoft's DirectX API. DirectDraw is used to render 2D graphics in applications where top performance is important.  DirectDraw uses hardware acceleration if it is available on the client's computer.
+
+{{fbdoc item="see"}}
+- Wikipedia:DirectDraw

@@ -1,0 +1,8 @@
+{{fbdoc item="section" value="Windows IDEs, GUI and RAD"}}
+
+	[[http://fbedit.freebasic.net/viewforum.php?f=2 FBEdit]] - IDE for FreeBASIC by KetilO
+	[[http://www.freebasiccompiler.com/ FireFly Visual Designer]] - RAD/GUI Designer for FreeBASIC by PaulSquires
+
+{{fbdoc item="section" value="Cross-Platform IDEs, GUI and RAD"}}
+
+	[[http://freebasic.net/forum/viewtopic.php?t=12322 AntTweakBar]] - Linux and Windows GUI Library

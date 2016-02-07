@@ -1,0 +1,114 @@
+chkdocs: 2008/07/25 16:55:55
+cache: ../fbdoc/cache/
+
+Loaded 933 page names from 'PageIndex.txt'
+scanning pages:
+
+Found 15296 links
+Saved 15296 links to 'linklist.csv'
+Saved 805 page names to 'DocPages.txt'
+Saved 747 file names to 'samplist.log'
+
+Checking missing pages:
+No missing pages
+
+Checking 'CatPgFullIndex':
+	Ignoring 'KeyPgOp*' pages
+All keypages on 'CatPgFullIndex'
+
+Checking 'CatPgFunctIndex':
+	Ignoring 'KeyPgOp*' pages
+All keypages on 'CatPgFunctIndex'
+
+Checking missing backlinks:
+	Ignoring missing backlinks to 'catpgfunctindex'
+	Ignoring missing backlinks to 'catpgfullindex'
+	Ignoring missing backlinks to 'catpggfx'
+	Ignoring missing backlinks to 'catpgopindex'
+	Ignoring missing backlinks to 'catpgcompopt'
+'KeyPgMetaLang' does not have backlink to 'CatPgPreProcess'
+Found 1 missing backlinks
+
+Checking invalid backlinks:
+'DocToc' should be removed from 'FreeBASIC'
+'DocToc' should be removed from 'CVSCompile'
+'ExtLibTOC' should be removed from 'ExtLibfbsound'
+'ExtLibTOC' should be removed from 'ExtLibmini'
+'FBWiki' should be removed from 'TiGer'
+Found 5 invalid backlinks
+
+Checking headers:
+'TutHowToProgGame1' has invalid horzline
+Found 1 invalid headers
+
+Checking mismatched name case in links:
+No mismatched name case in links
+
+Checking pages not linked from any CatPg:
+Found 0 not linked from any CatPg
+
+Checking pages with no back link:
+'KeyPgClass' has no backlink
+Found 1 pages with no backlink at all
+
+Checking PrintToc for missing pages:
+Reading '../fbdoc/cache/PrintToc.wakka'
+Missing 'AntoniGual'
+Missing 'CatPgCompOpt'
+Missing 'CatPgFullIndex'
+Missing 'CatPgFunctIndex'
+Missing 'CatPgGfx'
+Missing 'CatPgOpArithmetic'
+Missing 'CatPgOpAssignment'
+Missing 'CatPgOpConditional'
+Missing 'CatPgOperators'
+Missing 'CatPgOpIndexing'
+Missing 'CatPgOpIterating'
+Missing 'CatPgOpLogical'
+Missing 'CatPgOpMemory'
+Missing 'CatPgOpPoint'
+Missing 'CatPgOpPrepro'
+Missing 'CatPgOpShortCircuit'
+Missing 'CatPgOpString'
+Missing 'CatPgOpTypeclass'
+Missing 'CatPgProgrammer'
+Missing 'DataType'
+Missing 'DocToc'
+Missing 'DrV'
+Missing 'ExtLibTOC'
+Missing 'FaqPgbloadworkaround'
+Missing 'FaqPggetputstructure'
+Missing 'FreeBASIC'
+Missing 'GarvanOKeeffe'
+Missing 'GfxLib'
+Missing 'JeffMarshall'
+Missing 'LaananFisher'
+Missing 'LilloWiki'
+Missing 'RandyKeeling'
+Missing 'SirMud'
+Missing 'SotSvart'
+Missing 'SrcPgGfxNull'
+Missing 'TutMathAngles'
+Missing 'TutMathIntroTrig'
+Missing 'Unicode'
+Missing 'x86'
+Found 39 missing pages
+
+Checking DOC pages with no title:
+'AntoniGual' has no title
+'DrV' has no title
+'GarvanOKeeffe' has no title
+'JeffMarshall' has no title
+'LilloWiki' has no title
+'RandyKeeling' has no title
+'SotSvart' has no title
+Found 7 DOC pages with no title
+
+Checking duplicate filenames:
+No duplicate file names
+
+Checking Image References:
+No references to missing image files
+
+
+Execution time: 34 seconds.

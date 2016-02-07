@@ -1,0 +1,22 @@
+I go by Pritchard on the FreeBASIC.net Forums.
+
+I've been using FreeBASIC since .13 and can help with a variety of issues.  If you need anything, ask on the forum.  If you have an edit disagreement with me, make sure it's not because I edited "your" content you submitted to the wiki.  Wiki content's meant to be edited.  Deal with it.  Anywho, this page is so I can test Wiki changes and mockups without disrupting other pages.
+
+Please don't edit this page,
+Pritchard.
+
+----------------------Beginner's Guide to Programming (Really!)-------------------------
+
+What is programming?
+
+Programming actually very simple - You give the computer a command, and it obeys.  The simple concept of controlling an electronic device with programmable commands has had remarkable consequences:  video games, robots, space shuttles, mobile phones, and even automated operation of chemical plants.
+
+But how is this done?
+
+Programming has A LOT of jargon (words specific to certain groups).  This makes programming difficult to describe and, for many, even more difficult to understand.  But just as the construction industry uses terms alien to non-handymen, such as: door jamb, penny gauge, and miter - programmers use an equally vast set of terms to describe the tools and methods used to control computers.  Many of these are essential to computing theory, such as: algorithm, binary, control flow, functions, variables - but others, such as: spaghetti code, naming conventions, and bug - are less necessary.  Terms from either construction or programming are learned with time and experience.  Don't be afraid of them!
+
+Programmers use many tools to turn lines of code into computer commands.  Because there are so many individual tools involved in programming, phrases such as "Development Environment" or "Development Suite" are used to describe an entire set of tools - similar to how general industry describes the entirety of their tools and working conditions as their "Working Environment".
+
+A small Development Environment may consist of only two things - A word editor and a Compiler.  A basic word editor is Notepad.  Programmers use word editors to WRITE lines of code, COMMANDS that the computer will EXECUTE.  A Compiler TRANSLATES these lines of code, or COMMANDS into a language the computer understands.  This creates an EXECUTABLE FILE - they contain the COMMANDS we told the computer to EXECUTE.  Any piece of software - from your word editor, to your internet browser - are executable files and were created using some form of this method.   And somewhere exists lines of code, written using a word editor, that a compiler used to create them.
+
+Now to put all of this into practice. (finish writing)

@@ -1,0 +1,5 @@
+Simple DirectMedia Layer (SDL) is a library that creates an abstraction over various platforms' graphics, sound, and input APIs, allowing a developer to write a computer game or other multimedia application once and run it on GNU/Linux, Windows, Mac OS Classic, Mac OS X, BeOS and a few other unofficially ported platforms. It manages video, events, numeric audio, CD-ROM sound, threads, and timers. 
+
+{{fbdoc item="see"}}
+- Wikipedia:Simple_DirectMedia_Layer
+- SDL Website: http://www.libsdl.org/

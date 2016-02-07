@@ -1,0 +1,74 @@
+{{fbdoc item="title" value="FreeBASIC Manual Downloads"}}----
+
+Downloads of previous versions of the manual.
+
+Since this manual is for a beta compiler still in development, we do not maintain multiple versions of the wiki.  Any downloadable documentation made available from time to time is just a snapshot of this wiki.  The following is a list of documentation that should be approximately correct for each official release of the compiler packages.
+
+http://sourceforge.net/projects/fbc/files/Older%20versions/
+
+{{fbdoc item="section" value="Version 0.21 Snapshots"}}
+
+	""FreeBASIC v0.21.1b (2010.08.11)""
+	http://downloads.sourceforge.net/fbc/FB-manual-0.21.1-chm.zip?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.21.1-html.tar.gz?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.21.1-txt.zip?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.21.1-fbhelp.zip?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.21.1-wakka.tar.gz?download 
+
+	""FreeBASIC v0.21.0b (2010.07.24)""
+	http://downloads.sourceforge.net/fbc/FB-manual-0.21.0-chm.zip?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.21.0-html.tar.gz?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.21.0-txt.zip?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.21.0-fbhelp.zip?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.21.0-wakka.tar.gz?download 
+
+{{fbdoc item="section" value="Version 0.20 Snapshots"}}
+
+	""FreeBASIC v0.20.0b (2008.08.11)""
+	http://downloads.sourceforge.net/fbc/FB-manual-0.20.0-chm.zip?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.20.0-html.tar.gz?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.20.0-txt.zip?download 
+	http://downloads.sourceforge.net/fbc/FB-manual-0.20.0-fbhelp.zip?download
+	http://downloads.sourceforge.net/fbc/FB-manual-0.20.0-wakka.tar.gz?download
+
+{{fbdoc item="section" value="Version 0.18 Snapshots"}}
+
+(only CHM format)
+
+	""FreeBASIC v0.18.5b (2008.04.28)"" and ""FreeBASIC v0.18.6b (2008.08.08)""
+	http://downloads.sourceforge.net/fbc/FB-manual-chm-0.18.5.zip?download
+
+	""FreeBASIC v0.18.4b (2008.04.15)""
+	http://downloads.sourceforge.net/fbc/FB-manual-chm-0.18.4.zip?download
+
+	""FreeBASIC v0.18.3b (2007.12.31)""
+	http://downloads.sourceforge.net/fbc/FB-manual-chm-12.dec.2007.zip?download
+	
+	""FreeBASIC v0.18.2b (2007.10.14)""
+	http://downloads.sourceforge.net/fbc/FB-manual-chm-04.nov.2007.zip?download
+	
+	""FreeBASIC v0.18.1b (2007.08.16)""
+	http://downloads.sourceforge.net/fbc/FB-manual-chm-04.sep.2007.zip?download
+
+{{fbdoc item="section" value="Older Snapshots"}}
+
+	There have actually been more releases of the docs than released versions of the compiler.  If you happen to know a snapshot of the manual that is better suited for a specific version of the compiler, please update this list.
+
+	""FreeBASIC v0.17b (2007.05.14)""
+	http://downloads.sourceforge.net/fbc/FB-manual-chm-10.jun.2007.zip?download
+
+	""FreeBASIC v0.16b (2006.06.19)""
+	http://downloads.sourceforge.net/fbc/FB-manual-chm-08.sep.2006.zip?download
+
+	""FreeBASIC v0.15b (2005.12.01)""
+	http://downloads.sourceforge.net/fbc/FB-manual-chm-10.dec.2005.zip?download
+
+	""FreeBASIC v0.14b (2005.07.24)""
+	http://downloads.sourceforge.net/fbc/FB-manual-chm-5.nov.2005.zip?download
+
+{{fbdoc item="section" value="Conversion to Other Formats"}}
+
+	Other formats of the documentation (FBHELP, TXT, HTML) can also be downloaded from:
+	[[http://www.execulink.com/~coder/freebasic/docs.html execulink.com/~coder/freebasic/docs.html]] (last update in 2008)
+
+{{fbdoc item="back" value="FBWiki|Main Page"}}
