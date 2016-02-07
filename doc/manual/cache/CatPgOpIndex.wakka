@@ -92,7 +92,7 @@ List of operators used in FreeBASIC.
 	- {{fbdoc item="keyword" value="KeyPgOpDelete|Delete"}}
 
 {{fbdoc item="section" value="Iteration Operators"}}
-	- {{fbdoc item="keyword" value="KeyPgOpFor|For"}}, [[KeyPgOpFor Next]], and [[KeyPgOpFor Step]]
+	- {{fbdoc item="keyword" value="KeyPgOpFor|For"}}, [[KeyPgOpNext Next]], and [[KeyPgOpStep Step]]
 
 >>::c::
 

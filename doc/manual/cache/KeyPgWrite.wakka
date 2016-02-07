@@ -38,6 +38,7 @@ write i, d, s
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgWritePp Write #]]##
-	- ##[[KeyPgPrint (Print | ?)]]##
+	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrint ?]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

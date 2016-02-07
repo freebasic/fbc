@@ -2,7 +2,7 @@
 Outputs formatted text to the screen or output device
 
 {{fbdoc item="syntax"}}##
-	([[KeyPgPrint Print | ?]]) [# //filenum// ,] [ //printexpressionlist// {,|;} ] **Using** //formatstring// **;** [ //expressionlist// [ ; ] ]
+	([[KeyPgPrint Print]] | [[KeyPgPrint ?]]) [# //filenum// ,] [ //printexpressionlist// {,|;} ] **Using** //formatstring// **;** [ //expressionlist// [ ; ] ]
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
@@ -54,8 +54,10 @@ The last day in the year is 31 Dec%%
 	- QB didn't allow ##"&"## to be used for printing numbers.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPrint (Print | ?)]]##
-	- ##[[KeyPgPrintpp (Print | ?) #]]##
+	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrint ?]]##
+	- ##[[KeyPgPrintpp Print #]]##
+	- ##[[KeyPgPrintpp ? #]]##
 	- ##[[KeyPgFormat Format]]##
 	- ##[[KeyPgUsing Using]]##
 	- ##[[KeyPgPalette Palette Using]]##

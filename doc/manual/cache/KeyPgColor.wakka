@@ -2,7 +2,7 @@
 Sets the display foreground / background color that is used with console output and graphics output of text
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Color** ( [[KeyPgByval byval]] //foreground// [[KeyPgAs as]] [[KeyPgLong long]] , [[KeyPgByval byval]] //background// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Color** ( [[KeyPgByval byval]] //foreground// [[KeyPgAs as]] [[KeyPgUlong ulong]] , [[KeyPgByval byval]] //background// [[KeyPgAs as]] [[KeyPgUlong ulong]] ) [[KeyPgAs as]] [[KeyPgUlong ulong]]
 ##
 {{fbdoc item="usage"}}##
 	**Color** [//foreground//] [, //background//]
@@ -45,7 +45,7 @@ sleep
 %%
 {{image class="center" title="Color example" url="/images/color.png"}}
 {{fbdoc item="filename" value="examples/manual/console/color.bas"}}%%(freebasic)
-Dim c As Uinteger
+Dim c As Ulong
 
 'retrieve current color values
 c = Color()

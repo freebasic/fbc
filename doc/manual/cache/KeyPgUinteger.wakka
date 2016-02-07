@@ -13,6 +13,7 @@ Standard data type: 32-bit or 64-bit unsigned, same size as ##[[KeyPgSizeof Size
 	32-bit or 64-bit unsigned whole-number data type, depending on the platform.
 	
 	If an explicit bit size is given, a data type is provided that can hold values from ##0## up to ##(1ULL [[KeyPgOpShiftleft Shl]] (//bits//)) - 1##.
+	The selected data type is ##[[KeyPgUbyte UByte]]## for **UInteger<8>**, ##[[KeyPgUshort UShort]]## for **UInteger<16>**, ##[[KeyPgUlong ULong]]## for **UInteger<32>** and ##[[KeyPgUlongint ULongInt]]## for **UInteger<64>**.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/uinteger.bas"}}%%(freebasic)

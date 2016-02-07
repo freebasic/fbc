@@ -5,7 +5,7 @@ Welcome to our world!  This page is an overview of our online warehouse of knowl
 	""FreeBASIC"" is a free 32-bit compiler for the BASIC language.  It is open source and //[[GnuLicenses licensed under the GPL]]//. It is designed to be syntax compatible with QuickBASIC, while expanding on the language and capabilities. It can create programs for MS-Windows, DOS and Linux, and is being ported to other platforms. See //[[CompilerAbout About FreeBASIC]]// and //[[CompilerFeatures Main Features]]//.
 
 {{fbdoc item="section" value="Latest Version"}}
-	""FreeBASIC"" is a beta release compiler and development is ongoing.  With each full update, many features are added, and bugs from previous releases are fixed.  To see the latest version available, visit [[http://sourceforge.net/projects/fbc http://sourceforge.net/projects/fbc]] on [[http://sourceforge.net SourceForge]], or [[http://www.freebasic.net/index.php/download http://www.freebasic.net/index.php/download]] on [[http://www.freebasic.net FreeBASIC's official website]].
+	""FreeBASIC"" is a beta release compiler and development is ongoing.  With each full update, many features are added, and bugs from previous releases are fixed.  To see the latest version available, visit [[http://www.freebasic.net/forum/viewforum.php?f=1 the News section on the forum]].
 
 {{fbdoc item="section" value="Requirements and Installation"}}
 	Minimum hardware is listed on the //[[CompilerRequirements Requirements]]// page.  Visit our //[[CompilerRequirements Installation]]// page for setting up ""FreeBASIC"" on your computer.
@@ -27,7 +27,6 @@ Welcome to our world!  This page is an overview of our online warehouse of knowl
 {{fbdoc item="section" value="Starting points on the Web"}}
 	- Official Website at [[http://www.freebasic.net http://www.freebasic.net]]
 	- Official Forums at [[http://www.freebasic.net/forum http://www.freebasic.net/forum]]
-	- Official Archive at [[http://www.freebasic.net/arch http://www.freebasic.net/arch]]
 
 Thank you for using ""FreeBASIC"".  Happy coding!
 

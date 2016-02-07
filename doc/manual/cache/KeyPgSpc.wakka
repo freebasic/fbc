@@ -50,6 +50,7 @@ Bob                                Smith
 {{fbdoc item="see"}}
 	- ##[[KeyPgTab Tab]]##
 	- ##[[KeyPgSpace Space]]##
-	- ##[[KeyPgPrint (Print | ?)]]##
+	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrint ?]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

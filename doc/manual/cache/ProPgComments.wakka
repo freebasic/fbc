@@ -8,7 +8,7 @@ Comments are regions of text that the compiler will ignore but may contain infor
 %%
 
 {{fbdoc item="section" value="The comment statement: Rem"}}
-	A source code statement beginning with ##[[KeyPgRem Rem]]## indicates that the rest of the line is comment and will not be compiled.  ##[[KeyPgRem Rem]]## behavior is the same as above, except it must be the first keyword in the statement.
+	A source code statement beginning with ##[[KeyPgRem Rem]]## indicates that the line is comment and will not be compiled.  In ""FreeBASIC"", ##[[KeyPgRem Rem]]## may also appear after other keywords on a source line and the behavior is the same as above (only the rest of the statement will be treated as a comment).
 	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment2.bas"}}%%(freebasic)
 Rem comment
 %%

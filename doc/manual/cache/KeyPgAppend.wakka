@@ -52,7 +52,8 @@ NEXT
 	- ##[[KeyPgInputfilemode Input (File Mode)]]##
 	- ##[[KeyPgOpen Open]]##
 	- ##[[KeyPgOutput Output]]##
-	- ##[[KeyPgPrintPp (Print | ?) #]]##
+	- ##[[KeyPgPrintPp Print #]]##
+	- ##[[KeyPgPrintPp ? #]]##
 	- ##[[KeyPgWrite Write #]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

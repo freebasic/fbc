@@ -63,6 +63,7 @@ wend
 {{fbdoc item="see"}}
 	- ##[[KeyPgCsrlin Csrlin]]##
 	- ##[[KeyPgPos Pos]]##
-	- ##[[KeyPgPrint (Print | ?)]]##
+	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrint ?]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

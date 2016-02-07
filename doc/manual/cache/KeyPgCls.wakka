@@ -78,7 +78,8 @@ Loop Until len(Inkey) > 0%%
 {{fbdoc item="see"}}
 	- ##[[KeyPgColor Color]]##
 	- ##[[KeyPgLocate Locate]]##
-	- ##[[KeyPgPrint (Print | ?)]]##
+	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrint ?]]##
 	- ##[[KeyPgViewgraphics View (Graphics)]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}{{fbdoc item="back" value="CatPgGfxScreen|Screen Functions Index"}}

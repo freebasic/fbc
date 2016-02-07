@@ -56,8 +56,10 @@ Print s; " is great!"
 {{fbdoc item="see"}}
 	- ##[[KeyPgSpc Spc]]##
 	- ##[[KeyPgTab Tab]]##
-	- ##[[KeyPgPrintPp (Print | ?) #]]##
-	- ##[[KeyPgPrintusing (Print | ?) Using]]##
+	- ##[[KeyPgPrintPp Print #]]##
+	- ##[[KeyPgPrintPp ? #]]##
+	- ##[[KeyPgPrintusing Print Using]]##
+	- ##[[KeyPgPrintusing ? Using]]##
 	- ##[[KeyPgWrite Write]]##
 	- ##[[KeyPgDrawString Draw String]]##
 	- ##[[KeyPgInput Input]]##

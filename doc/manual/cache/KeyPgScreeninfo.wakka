@@ -30,7 +30,7 @@ Retrieves information about current video mode or the desktop.
 
 	Here's a description of available fields:
 
-	{{table columns="2" cellpadding="1" cells="w;Width of the screen in pixels;h;Height of the screen in pixels;depth;Current pixel format bits per pixel: this can be 1, 2, 4, 8, 16, or 32;pitch;Size of a framebuffer row in bytes;rate;Current refresh rate, or 0 if unknown;driver;Name of current graphics driver in use, like DirectX or X11"}}
+	{{table columns="2" cellpadding="1" cells="w;Width of the screen in pixels;h;Height of the screen in pixels;depth;Current pixel format bits per pixel: this can be 1, 2, 4, 8, 16, or 32;bpp;Bytes per pixel;pitch;Size of a framebuffer row in bytes;rate;Current refresh rate, or 0 if unknown;driver;Name of current graphics driver in use, like DirectX or X11"}}
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screeninfo.bas"}}%%(freebasic)

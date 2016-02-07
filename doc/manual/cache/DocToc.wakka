@@ -58,7 +58,7 @@
 	{{fbdoc item="keyword" value="GfxDefPalettes|Default Palettes"}}
 
 <<>>{{fbdoc item="section" value="Tutorials"}}
-	
+
 	{{fbdoc item="keyword" value="CatPgProgrammer|Programmer's Guide"}}
 	{{fbdoc item="keyword" value="CommunityTutorials|Community Tutorials"}}
 	{{fbdoc item="keyword" value="CodeLibrary|Community Code Library"}}
@@ -103,7 +103,7 @@
 
 {{fbdoc item="section" value="Hacking on FreeBASIC"}}
 
-	    {{fbdoc item="keyword" value="DevToc|Developer's Table of Contents"}}
+		{{fbdoc item="keyword" value="DevToc|Developer's Table of Contents"}}
 
 >>::c::
 

@@ -22,8 +22,6 @@ There are several options available for getting help with ""FreeBASIC"".
 {{fbdoc item="section" value="Examples and Source Code"}}
 	In the ./examples directory located where ""FreeBASIC"" was installed on your system are hundreds of examples to be compiled and run.  Most of the external library examples will need additional libraries to be downloaded to allow them to work.  See [[ExtLibTOC Library Headers Index]] for a full list.
 
-	""FreeBASIC""'s official code archive is located at [[http://www.freebasic.net/arch http://www.freebasic.net/arch]].  This archive hosts user contributed libraries and tools and has links to source code located on other websites.
-
 {{fbdoc item="section" value="Tutorials"}}
 	Community created tutorials about ""FreeBASIC"" can be found at [[CommunityTutorials]].  Some selected tutorials are included in this manual.
 

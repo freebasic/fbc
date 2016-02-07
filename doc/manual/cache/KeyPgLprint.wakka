@@ -50,8 +50,10 @@ LPrint Chr$(12)
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpenLpt Open LPT]]##
-	- ##[[KeyPgPrint (Print | ?)]]##
-	- ##[[KeyPgPrintPp (Print | ?) #]]##
+	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrint ?]]##
+	- ##[[KeyPgPrintPp Print #]]##
+	- ##[[KeyPgPrintPp ? #]]##
 	- ##[[KeyPgWrite Write]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

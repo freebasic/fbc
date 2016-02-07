@@ -28,7 +28,6 @@
 
 	==Formats==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8024 fbpng library by yetifoot]]
-	[[http://www.freebasic.net/___old_site/arch/category.php?id=6 JPEG image loader by Antoni]]
 
 	==3D==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8724 Tree Generation by Zamaster]]
@@ -58,7 +57,6 @@
 	[[http://www.freebasic.net/forum/viewtopic.php?t=14579 Irrlicht wrapper + Newton Intergrated by SiskinEDGE]]
 
 {{anchor name="TEXT"}}{{fbdoc item="section" value="Text/Parser Code"}}
-	[[http://www.freebasic.net/___old_site/arch/file.php?id=8 Cross Platform INI library by SirMud]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=5693 Expression Parser by yetifoot]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8680 Turing Machine by Zamaster]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7321 Roman Numeral to Integer Conversion by stylin]]

@@ -64,7 +64,8 @@ The following are examples of Date And Time formats:
 	- Does not exist in QB 4.5. This function appeared first in PDS 7.1
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPrintusing (Print | ?) Using]]##
+	- ##[[KeyPgPrintusing Print Using]]##
+	- ##[[KeyPgPrintusing ? Using]]##
 	- ##[[KeyPgStr Str]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

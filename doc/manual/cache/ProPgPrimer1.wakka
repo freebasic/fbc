@@ -157,7 +157,8 @@ End If
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgPrint (Print | ?)]]##
+	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgPrint ?]]##
 	- ##[[KeyPgInput Input]]##
 	- ##[[KeyPgFornext For...Next]]##
 	- ##[[KeyPgIfthen If...Then]]##

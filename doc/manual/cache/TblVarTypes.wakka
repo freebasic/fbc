@@ -22,7 +22,7 @@ Standard variable types and limits.
 ~&[*] //All runtime library array procedures take and produce ##[[KeyPgInteger Integer]]## values for subscripts and indexes. The actual limits will vary (smaller) with the number of dimensions, element size, storage location and/or platform.//
 
 {{fbdoc item="see"}}
-	[[ProPgIdentifierRules]] usage of suffixes for variables
-	[[ProPgLiterals]] usage of suffixes for literals / numbers
+	[[ProPgIdentifierRules Usage of suffixes for variables]]
+	[[ProPgLiterals Usage of suffixes for literals / numbers]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
