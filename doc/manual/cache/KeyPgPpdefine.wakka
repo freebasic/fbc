@@ -20,6 +20,8 @@ Preprocessor directive to define a macro
 	The result of macro expansion can be checked by using the [[CompilerOptpp -pp]] compiler option.
 	
 	##**#define**##s are often used to declare constants. The ##[[KeyPgConst Const]]## statement is a type-safe alternative.
+	
+	WARNING: When the macro body contains an expression with one operator at least, it may be mandatory to have to surround some terms (parameters, whole body) by parentheses in order to not undergo an unwanted precedence change of operators.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/define.bas"}}%%(freebasic)
