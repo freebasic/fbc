@@ -13,11 +13,11 @@ Code block that allows the use of architecture-specific instructions.
 {{fbdoc item="desc"}}
 	The ##**Asm**## block is used to insert specific machine-code instructions in a program in order to perform operations that cannot be carried out using the features of the language or to hand-optimize performance-sensitive sections of code.
 
-	The current ""FreeBASIC"" compiler currently only produces code for Intel [[x86 80x86]]-based machines; however, in the future, the compiler might be ported to a platform which does not support the same instruction set.  Therefore, ##**Asm**## blocks should only be used when necessary, and a ""FreeBASIC""-only alternative should be provided if possible.
+	The current ""FreeBASIC"" compiler currently only produces code for Intel [[x86|80x86]]-based machines; however, in the future, the compiler might be ported to a platform which does not support the same instruction set.  Therefore, ##**Asm**## blocks should only be used when necessary, and a ""FreeBASIC""-only alternative should be provided if possible.
 
-	The return value of a function may be set by using the ##[[KeyPgFunction Function]]## keyword within brackets as shown in the example below.
+	The return value of a function may be set by using the ##[[KeyPgFunction|Function]]## keyword within brackets as shown in the example below.
 
-	##**Asm**## block comments have the same syntax as usual ""FreeBASIC"" [[KeyPgRem comments]]  - use ""FreeBASIC""-like " ##'## " comments, not " ##;## " as usual in assembly code. 
+	##**Asm**## block comments have the same syntax as usual ""FreeBASIC"" [[KeyPgRem|comments]]  - use ""FreeBASIC""-like " ##'## " comments, not " ##;## " as usual in assembly code. 
 
 	==x86 Specific:==
 
@@ -48,9 +48,9 @@ inc  dword ptr [n]   ' OK: "ptr" is needed by GAS here%%
 		==Instruction Set==
 		
 		See these external references:
-		~- [[http://board.flatassembler.net/download.php?id=3093 Original Intel 80386 manual from 1986]]
-		~- [[http://developer.intel.com/design/Pentium4/documentation.htm Latest Intel Pentium 4 manuals]]
-		~- [[http://home.comcast.net/~fbkotler/nasmdocb.html NASM x86 Instruction Reference]] (Please note that NASM is not the assembler used by ""FreeBASIC"", but this page provides a good overview of x86 instructions)
+		~- [[http://board.flatassembler.net/download.php?id=3093|Original Intel 80386 manual from 1986]]
+		~- [[http://developer.intel.com/design/Pentium4/documentation.htm|Latest Intel Pentium 4 manuals]]
+		~- [[http://home.comcast.net/~fbkotler/nasmdocb.html|NASM x86 Instruction Reference]] (Please note that NASM is not the assembler used by ""FreeBASIC"", but this page provides a good overview of x86 instructions)
 		
 		==Unsafe instructions==
 		~Note that the ""FreeBASIC"" compiler produces 32-bit protected-mode code for the x86 which usually runs in an unprivileged user level; therefore, privileged and sensitive instructions will assemble fine, but possibly won't work correctly or cause a runtime "General Protection Fault", "Illegal instruction", or SIGILL error. The following are the privileged and sensitive instructions as of the Intel Pentium 4 and Xeon:
@@ -111,17 +111,17 @@ Print "4 + 5 ="; AddFive(i)
 ##%%4 + 5 = 9%%##
 
 	""FreeBASIC""'s Assembler is AS / GAS, the assembler of GCC, so an external program. Some quirks apply:
-		- The error lines  returned by FBC for ##**Asm**## blocks are not related the FB source file. As FBC simply displays the errors returned by AS , the lines are related to the assembly file. To make ""FreeBASIC"" preserve them, the compiler must be invoked with the //[[CompilerOptrupp -R]]// option ("don't delete ASM files").
+		- The error lines  returned by FBC for ##**Asm**## blocks are not related the FB source file. As FBC simply displays the errors returned by AS , the lines are related to the assembly file. To make ""FreeBASIC"" preserve them, the compiler must be invoked with the //[[CompilerOptrupp|-R]]// option ("don't delete ASM files").
 		- The label names are case sensitive inside ##**Asm**## blocks.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Asm""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Asm""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgFunction Function]]##
-	- ##[[KeyPgNaked Naked]]##
+	- ##[[KeyPgFunction|Function]]##
+	- ##[[KeyPgNaked|Naked]]##
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -2,7 +2,7 @@
 Returns command line parameters used to call the program
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Command** ( [[KeyPgByval byval]] //index// [[KeyPgAs as]] [[KeyPgLong long]] = -1 ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Command** ( [[KeyPgByval|byval]] //index// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1 ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Command**[$]( [ //index// ] )
@@ -73,8 +73,8 @@ sleep
 %%
 
 {{fbdoc item="lang"}}
-	- The string type suffix ##$## is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix ##$## is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- The string type suffix ##$## is obligatory in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- The string type suffix ##$## is optional in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- The numeric argument was not supported in QB.
@@ -82,9 +82,9 @@ sleep
 	- By default arguments containing wildcard characters are expanded (filename globbing)
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfbargc __FB_ARGC__]]##
-	- ##[[KeyPgDdfbargv __FB_ARGV__]]##
-	- ##[[KeyPgExec Exec]]##
-	- ##[[KeyPgRun Run]]##
+	- ##[[KeyPgDdfbargc|__FB_ARGC__]]##
+	- ##[[KeyPgDdfbargv|__FB_ARGV__]]##
+	- ##[[KeyPgExec|Exec]]##
+	- ##[[KeyPgRun|Run]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

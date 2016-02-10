@@ -5,11 +5,11 @@ Statement to invoke a subroutine
 	**Call** //procname// ([//parameter list//])
 ##
 {{fbdoc item="desc"}}
-	Calls a ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]##.
+	Calls a ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]##.
 
 	This keyword is a holdover from earlier dialects of BASIC, and is mainly deprecated.
 
-	In //[[CompilerOptlang -lang qb]]//, it can be used to call ##[[KeyPgSub sub]]##s in code before they are declared.  The function will be implicitly ##[[KeyPgDeclare Declare]]##'d, with any parameters passed ##[[KeyPgByref Byref]] As [[KeyPgAny Any]]##.
+	In //[[CompilerOptlang|-lang qb]]//, it can be used to call ##[[KeyPgSub|sub]]##s in code before they are declared.  The function will be implicitly ##[[KeyPgDeclare|Declare]]##'d, with any parameters passed ##[[KeyPgByref|Byref]] As [[KeyPgAny|Any]]##.
 	Note: until the function is declared, no type-checking is done on the parameters, so it is up to the programmer to ensure they are of the correct type.
 
 {{fbdoc item="ex"}}
@@ -53,15 +53,15 @@ End Sub
 %%
 
 {{fbdoc item="lang"}}
-	- The use of ##**Call**## is not allowed in the //[[CompilerOptlang -lang fb]]// dialect.
-	- The //[[CompilerOptlang -lang fblite]]// dialect does not allow you to call functions that have not been previously declared.
+	- The use of ##**Call**## is not allowed in the //[[CompilerOptlang|-lang fb]]// dialect.
+	- The //[[CompilerOptlang|-lang fblite]]// dialect does not allow you to call functions that have not been previously declared.
 
 {{fbdoc item="diff"}}
 	- The procedure must have already been declared.
-	- ##**Call**## in QB will make a copy of all parameters, so changes made to the arguments inside the called ##[[KeyPgSub Sub]]## will not be reflected in the variables in the caller.
+	- ##**Call**## in QB will make a copy of all parameters, so changes made to the arguments inside the called ##[[KeyPgSub|Sub]]## will not be reflected in the variables in the caller.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDeclare Declare]]##
-	- ##[[KeyPgSub Sub]]##
+	- ##[[KeyPgDeclare|Declare]]##
+	- ##[[KeyPgSub|Sub]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

@@ -2,7 +2,7 @@
 Retrieves the status of the mouse pointing device
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getmouse** ( [[KeyPgByref byref]] //x// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //y// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //wheel// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //buttons// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //clip// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Getmouse** ( [[KeyPgByref|byref]] //x// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //y// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //wheel// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //buttons// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //clip// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Getmouse** (//x//, //y// [, [ //wheel// ] [, [ //buttons// ] [, [ //clip// ]]]])
@@ -20,17 +20,17 @@ Retrieves the status of the mouse pointing device
 		clip status
 
 {{fbdoc item="ret"}}
-	##0## on success, or ##1## on error (for example because the mouse is outside the graphic window) or on failure. //[[ProPgErrorHandling (sets a runtime error)]]//
+	##0## on success, or ##1## on error (for example because the mouse is outside the graphic window) or on failure. //[[ProPgErrorHandling|(sets a runtime error)]]//
 
 {{fbdoc item="desc"}}
 	##**Getmouse**## retrieves the mouse position and buttons status; information is returned in the variables passed to this function by reference. If a mouse is not available, all variables will contain the ##-1## value. 
 	
 	If in console mode, the ##//x//## and ##//y//## coordinates are the character cell coordinates the mouse is currently on; the upper left corner of the screen is at coordinates ##0, 0##. If the mouse moves out of the console window, ##**Getmouse**## returns the last coordinate on the window that the mouse was on. If in console mode and fullscreen, the scroll wheel value is not returned. 
 	
-	If in graphics mode, ##//x//## and ##//y//## will always be returned in pixel coordinates still relative to the upper left corner of the screen, which is at 0,0 in this case; custom coordinates system set via ##[[KeyPgViewgraphics View]]## or ##[[KeyPgWindow Window]]## do not affect the coordinates returned by ##**Getmouse**##.
+	If in graphics mode, ##//x//## and ##//y//## will always be returned in pixel coordinates still relative to the upper left corner of the screen, which is at 0,0 in this case; custom coordinates system set via ##[[KeyPgViewgraphics|View]]## or ##[[KeyPgWindow|Window]]## do not affect the coordinates returned by ##**Getmouse**##.
 	If the mouse runs off the graphic window, all values are set to ##-1## and the return value of the function is set to ##1##. This may result in misinterpretation for the buttons and wheel if the return value of the function is not also tested.
 	
-	##//Wheel//## is the mouse wheel counter; rotating the wheel away from you makes the count to increase, rotating the wheel toward you makes it to decrease. At program startup or when a new graphics mode is set via ##[[KeyPgScreengraphics Screen]]##, wheel position is reset to 0. ""FreeBASIC"" may not always support mouse wheels for a given platform, in which case 0 is always returned.
+	##//Wheel//## is the mouse wheel counter; rotating the wheel away from you makes the count to increase, rotating the wheel toward you makes it to decrease. At program startup or when a new graphics mode is set via ##[[KeyPgScreengraphics|Screen]]##, wheel position is reset to 0. ""FreeBASIC"" may not always support mouse wheels for a given platform, in which case 0 is always returned.
 	
 	##//Buttons//## stores the buttons status as a bitmask: bit 0 is set if left mouse button is down; bit 1 is set if right mouse button is down; bit 2 is set if middle mouse button / wheel is down.
 
@@ -95,7 +95,7 @@ loop while inkey = ""
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Getmouse""**##.  The variables passed must also be of type ##[[KeyPgLong Long]]## instead of ##[[KeyPgInteger Integer]]##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Getmouse""**##.  The variables passed must also be of type ##[[KeyPgLong|Long]]## instead of ##[[KeyPgInteger|Integer]]##.
 
 {{fbdoc item="target"}}
 	- On ""Win32"", scroll wheel changes are not guaranteed to be detected in full-screen console mode. 
@@ -105,10 +105,10 @@ loop while inkey = ""
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreenres Screenres]]## setting graph mode by resolution
-	- ##[[KeyPgScreengraphics Screen (Graphics)]]## setting mode the QB-like way
-	- ##[[KeyPgSetmouse Setmouse]]##
-	- ##[[KeyPgMultikey Multikey]]##
-	- ##[[KeyPgGetjoystick Getjoystick]]##
+	- ##[[KeyPgScreenres|Screenres]]## setting graph mode by resolution
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]## setting mode the QB-like way
+	- ##[[KeyPgSetmouse|Setmouse]]##
+	- ##[[KeyPgMultikey|Multikey]]##
+	- ##[[KeyPgGetjoystick|Getjoystick]]##
 
 {{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}

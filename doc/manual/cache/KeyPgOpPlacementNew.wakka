@@ -2,11 +2,11 @@
 Operator to construct an object at a specified memory address.
 
 {{fbdoc item="syntax"}}##
-	//result// = **New(//address//)** //[[DataType datatype]]//
+	//result// = **New(//address//)** //[[DataType|datatype]]//
 		//or//
-	//result// = **New(//address//)** //[[DataType datatype]]// ( //initializers//, ... )
+	//result// = **New(//address//)** //[[DataType|datatype]]// ( //initializers//, ... )
 		//or//
-	//result// = **New(//address//)** //[[DataType datatype]]//**[** //count// **]**
+	//result// = **New(//address//)** //[[DataType|datatype]]//**[** //count// **]**
 ##
 {{fbdoc item="param"}}
 	##//address//## 
@@ -19,18 +19,18 @@ Operator to construct an object at a specified memory address.
 		Number of elements to construct.
 
 {{fbdoc item="ret"}}
-	A pointer of type ##[[DataType datatype]]## to the newly constructed data.
+	A pointer of type ##[[DataType|datatype]]## to the newly constructed data.
 
 {{fbdoc item="desc"}}
 	The ##**Placement New**## operator constructs a specified data type at the specified memory location. 
 
-	For simple types, like integers, an initial value can be given. For types without ##[[KeyPgConstructor constructor]]##s, initial values can be specified for each field. Types that have constructors can have their constructors called by ##**Placement New**## as well. If no initializers are given, the default values for those types will be set.
+	For simple types, like integers, an initial value can be given. For types without ##[[KeyPgConstructor|constructor]]##s, initial values can be specified for each field. Types that have constructors can have their constructors called by ##**Placement New**## as well. If no initializers are given, the default values for those types will be set.
 
 	Memory is **not** allocated when using the ##**Placement New**## operator. Instead, the memory at the specified ##//address//## is used.
-	It is incorrect to call ##[[KeyPgOpDelete Delete]]## on the address. The proper way is to only call the destructor if one exists (implicitly or explicitly), with syntax as for a member method by using member access operator.
+	It is incorrect to call ##[[KeyPgOpDelete|Delete]]## on the address. The proper way is to only call the destructor if one exists (implicitly or explicitly), with syntax as for a member method by using member access operator.
 	See examples below for proper //placement new// usage.
 
-	Specifying an initial value of ##[[KeyPgAny Any]]##, as in ##**New**(//address//)//datatype//(**Any**)## or ##**New**(//address//)//datatype//[//count//]{**Any**}## will not initialize the data.  This is only valid on data types that do not have constructors (otherwise for data types with constructors, syntax of simple pointer conversion, like //Cptr(datatype Ptr, address)//, can be substituted to the invalid use of New...Any).
+	Specifying an initial value of ##[[KeyPgAny|Any]]##, as in ##**New**(//address//)//datatype//(**Any**)## or ##**New**(//address//)//datatype//[//count//]{**Any**}## will not initialize the data.  This is only valid on data types that do not have constructors (otherwise for data types with constructors, syntax of simple pointer conversion, like //Cptr(datatype Ptr, address)//, can be substituted to the invalid use of New...Any).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/placement_new.bas"}}%%(freebasic)
@@ -72,13 +72,13 @@ Scope
 End Scope
 %%
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
+	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDestructor Destructor]]##
-	- ##[[KeyPgOpNew New]]##
+	- ##[[KeyPgDestructor|Destructor]]##
+	- ##[[KeyPgOpNew|New]]##
 
 {{fbdoc item="back" value="CatPgOpMemory|Memory Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

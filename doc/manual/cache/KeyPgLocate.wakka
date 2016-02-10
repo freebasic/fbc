@@ -2,15 +2,15 @@
 Sets the current cursor position
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Locate**( //row// [[KeyPgAs as]] [[KeyPgLong long]] = 0, //column// [[KeyPgAs as]] [[KeyPgLong long]] = 0, //state// [[KeyPgAs as]] [[KeyPgLong long]] = -1, //start// [[KeyPgAs as]] [[KeyPgLong long]] = 0, //stop// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Locate**( //row// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, //column// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, //state// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1, //start// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, //stop// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	**Locate** [//row//], [//column//], [//state//]
 
 	//result// = **Locate**( [//row//], [//column//], [//state//] )
-	//new_column// = [[KeyPgLobyte lobyte]]( //result// )
-	//new_row// = [[KeyPgHibyte hibyte]]( //result// )
-	//new_state// = [[KeyPgHiword hiword]]( //result// )
+	//new_column// = [[KeyPgLobyte|lobyte]]( //result// )
+	//new_row// = [[KeyPgHibyte|hibyte]]( //result// )
+	//new_state// = [[KeyPgHiword|hiword]]( //result// )
 ##
 {{fbdoc item="param"}}
 	##//row//##
@@ -20,12 +20,12 @@ Sets the current cursor position
 	##//state//##
 		the state of the cursor. ##0## is off, ##1## is on (console-mode only).
 	##//start//##
-		Ignored. Allowed for //[[CompilerOptlang -lang qb]]// dialect compatibility only.
+		Ignored. Allowed for //[[CompilerOptlang|-lang qb]]// dialect compatibility only.
 	##//stop//##
-		Ignored. Allowed for //[[CompilerOptlang -lang qb]]// dialect compatibility only.
+		Ignored. Allowed for //[[CompilerOptlang|-lang qb]]// dialect compatibility only.
 
 {{fbdoc item="ret"}}
-	Returns a 32 bit ##[[KeyPgLong Long]]## containing the current cursor position and state. The [[KeyPgLobyte low byte of the low word]] contains the column, the [[KeyPgHibyte high byte of the low word]] contains the row, and the [[KeyPgHiword high word]] contains the cursor state.
+	Returns a 32 bit ##[[KeyPgLong|Long]]## containing the current cursor position and state. The [[KeyPgLobyte|low byte of the low word]] contains the column, the [[KeyPgHibyte|high byte of the low word]] contains the row, and the [[KeyPgHiword|high word]] contains the cursor state.
 	
 	If any of the //row//, //column// or //state// parameters were just set by the call to **Locate**, then the return value will reflect these new values, not the previous ones. If any of the parameters were omitted in the call to **Locate**, then the return value will reflect the current values, which are the same as before the call to **Locate**.
 
@@ -61,9 +61,9 @@ wend
 	- The ##//start//## and ##//stop//## arguments have no effect in ""FreeBASIC"".
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCsrlin Csrlin]]##
-	- ##[[KeyPgPos Pos]]##
-	- ##[[KeyPgPrint Print]]##
-	- ##[[KeyPgPrint ?]]##
+	- ##[[KeyPgCsrlin|Csrlin]]##
+	- ##[[KeyPgPos|Pos]]##
+	- ##[[KeyPgPrint|Print]]##
+	- ##[[KeyPgPrint|?]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

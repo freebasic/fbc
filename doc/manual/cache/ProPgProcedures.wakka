@@ -4,7 +4,7 @@ Overview of the different FB procedure types.
 	Procedures are blocks of code that can be executed, or called, from anywhere in a program, any number of times. The code that is executed is called the procedure body. There are two types of procedures in FreeBASIC: procedures that don't return a value and procedures that do.
 
 {{fbdoc item="section" value="Subs"}}
-	//Subs// are procedures that don't return values. They are declared using the ##[[KeyPgDeclare Declare]]## keyword, and defined using the ##[[KeyPgSub Sub]]## keyword. Declaring a procedure introduces its name so that it can be called, and a procedure definition lists the statements of code that will be executed when called. A //sub// is called simply by using its name somewhere in the program.
+	//Subs// are procedures that don't return values. They are declared using the ##[[KeyPgDeclare|Declare]]## keyword, and defined using the ##[[KeyPgSub|Sub]]## keyword. Declaring a procedure introduces its name so that it can be called, and a procedure definition lists the statements of code that will be executed when called. A //sub// is called simply by using its name somewhere in the program.
 
 {{fbdoc item="filename" value="examples/manual/proguide/procs/subs.bas"}}%%(freebasic)
 ' introduces the sub 'MyProcedure'
@@ -27,7 +27,7 @@ the body of MyProcedure
 	Notice that only the declaration is needed to call the procedure. The procedure can be defined later in code, or even in a different source file altogether.
 
 {{fbdoc item="section" value="Functions"}}
-	//Functions// are procedures that return a value back to the point in code in which they are called. You can think of a //function// call as evaluating to some expression, just like a variable or object. They are declared using the ##[[KeyPgDeclare Declare]]## keyword, and defined using the ##[[KeyPgFunction Function]]## keyword. The type of value that //functions// return is specified at the end of the declaration.
+	//Functions// are procedures that return a value back to the point in code in which they are called. You can think of a //function// call as evaluating to some expression, just like a variable or object. They are declared using the ##[[KeyPgDeclare|Declare]]## keyword, and defined using the ##[[KeyPgFunction|Function]]## keyword. The type of value that //functions// return is specified at the end of the declaration.
 
 {{fbdoc item="filename" value="examples/manual/proguide/procs/functions.bas"}}%%(freebasic)
 ' introduces and defines a procedure that returns an integer value
@@ -49,10 +49,10 @@ print i
 	It is a common convention when calling a procedure to place parenthesis ##'()'## after the procedure name, to signify a procedure call. ""FreeBASIC"" does not require this, however.
 
 {{fbdoc item="see"}}
-	- [[ProPgPassingArguments Passing Arguments to Procedures]]
-	- [[ProPgReturnValue Returning a Value]]
-	- ##[[KeyPgDeclare Declare]]##
-	- ##[[KeyPgSub Sub]]##
-	- ##[[KeyPgFunction Function]]##
+	- [[ProPgPassingArguments|Passing Arguments to Procedures]]
+	- [[ProPgReturnValue|Returning a Value]]
+	- ##[[KeyPgDeclare|Declare]]##
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgFunction|Function]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

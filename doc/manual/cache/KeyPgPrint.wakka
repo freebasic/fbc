@@ -11,15 +11,15 @@ Writes text to the screen
 {{fbdoc item="desc"}}
 	##**Print**## outputs a list of values to the screen. Numeric values are converted to their string representation, with left padding for the sign. Objects of user-defined types must overload ##Operator Cast () As String##.
 
-	Consecutive values in the expression list are separated either by a comma (##,##) or semicolon (##;##). A comma indicates printing should take place at the next 14 column boundary, while a semicolon indicates values are printed with no space between them.  This has a similar effect to concatenating expressions using ##[[KeyPgOpConcat +]]## or ##[[KeyPgOpConcatConvert &]]##.
+	Consecutive values in the expression list are separated either by a comma (##,##) or semicolon (##;##). A comma indicates printing should take place at the next 14 column boundary, while a semicolon indicates values are printed with no space between them.  This has a similar effect to concatenating expressions using ##[[KeyPgOpConcat|+]]## or ##[[KeyPgOpConcatConvert|&]]##.
 
-	##**Print**## also supports the special expressions, ##[[KeyPgSpc Spc]]()## and ##[[KeyPgTab Tab]]()##.  These can be used to space out expressions, or to align the printing to a specific column.
+	##**Print**## also supports the special expressions, ##[[KeyPgSpc|Spc]]()## and ##[[KeyPgTab|Tab]]()##.  These can be used to space out expressions, or to align the printing to a specific column.
 
 	A new-line character is printed after the values in the expression list unless the expression list is followed by a comma or semicolon.  A ##**Print**## without any expressions or separators following it will just print a new-line.
 
-	NOTE: ##**Print**## resets the ##[[KeyPgErr Err]]## value after each expression is printed.
+	NOTE: ##**Print**## resets the ##[[KeyPgErr|Err]]## value after each expression is printed.
 	    
-	NOTE: In graphics mode, ##[[KeyPgDrawString Draw String]]## provides a flexible alternative to ##**Print**##: it prints a string to the screen with pixel positioning, transparent background, and can use a user-supplied font.
+	NOTE: In graphics mode, ##[[KeyPgDrawString|Draw String]]## provides a flexible alternative to ##**Print**##: it prints a string to the screen with pixel positioning, transparent background, and can use a user-supplied font.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/console/print.bas"}}%%(freebasic)
@@ -46,22 +46,22 @@ Print s; " is great!"
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, an extra space is printed after numbers.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, an extra space is printed after numbers.
 
 {{fbdoc item="diff"}}
-	- None, when using QBASIC's variable types in //[[CompilerOptlang -lang qb]]//.
+	- None, when using QBASIC's variable types in //[[CompilerOptlang|-lang qb]]//.
 	- Unsigned numbers are printed without a space before them.
 	- QB did not support casting for UDTs, so didn't allow them to be ##**Print**##ed.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSpc Spc]]##
-	- ##[[KeyPgTab Tab]]##
-	- ##[[KeyPgPrintPp Print #]]##
-	- ##[[KeyPgPrintPp ? #]]##
-	- ##[[KeyPgPrintusing Print Using]]##
-	- ##[[KeyPgPrintusing ? Using]]##
-	- ##[[KeyPgWrite Write]]##
-	- ##[[KeyPgDrawString Draw String]]##
-	- ##[[KeyPgInput Input]]##
+	- ##[[KeyPgSpc|Spc]]##
+	- ##[[KeyPgTab|Tab]]##
+	- ##[[KeyPgPrintPp|Print #]]##
+	- ##[[KeyPgPrintPp|? #]]##
+	- ##[[KeyPgPrintusing|Print Using]]##
+	- ##[[KeyPgPrintusing|? Using]]##
+	- ##[[KeyPgWrite|Write]]##
+	- ##[[KeyPgDrawString|Draw String]]##
+	- ##[[KeyPgInput|Input]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

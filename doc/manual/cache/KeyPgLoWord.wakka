@@ -2,20 +2,20 @@
 Gets the lowest 16bit word of the operand.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Loword**( //expr// ) ([[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) [[KeyPgOpAnd and]] &h0000FFFF)
+	[[KeyPgPpdefine|#define]] **Loword**( //expr// ) ([[KeyPgCast|Cast]]([[KeyPgUinteger|Uinteger]], //expr//) [[KeyPgOpAnd|and]] &h0000FFFF)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Loword**( //expr// )
 ##
 {{fbdoc item="param"}}
 	##//expr//##
-		A numeric expression, converted to an ##[[KeyPgUinteger Uinteger]]## value.
+		A numeric expression, converted to an ##[[KeyPgUinteger|Uinteger]]## value.
 
 {{fbdoc item="ret"}}
 	Returns the value of the low word of //expr//.
 
 {{fbdoc item="desc"}}
-	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger Uinteger]]## value, then expands to an ##[[KeyPgUinteger Uinteger]]## representing the value of its least-significant (low) 16bit word.
+	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger|Uinteger]]## value, then expands to an ##[[KeyPgUinteger|Uinteger]]## representing the value of its least-significant (low) 16bit word.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/loword.bas"}}%%(freebasic)
@@ -46,14 +46,14 @@ The Binary representation of the LSW Is    1111111111111111
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__LOWORD""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__LOWORD""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLoByte Lobyte]]##
-	- ##[[KeyPgHibyte Hibyte]]##
-	- ##[[KeyPgHiword Hiword]]##
+	- ##[[KeyPgLoByte|Lobyte]]##
+	- ##[[KeyPgHibyte|Hibyte]]##
+	- ##[[KeyPgHiword|Hiword]]##
 
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

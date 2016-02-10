@@ -9,11 +9,11 @@ Although many headers can be used on any of the platforms supported by ""FreeBAS
 
 {{fbdoc item="section" value="FreeBASIC headers"}}
 	There are a few headers that are specific to ""FreeBASIC"" and expose some functions that are otherwise not available:
-	- ##datetime.bi## - Declarations for ##[[KeyPgDateSerial DateSerial]]##, ##[[KeyPgDateValue DateValue]]##, ##[[KeyPgIsDate IsDate]]##, ##[[KeyPgYear Year]]##, ##[[KeyPgMonth Month]]##, ##[[KeyPgDay Day]]##, ##[[KeyPgWeekday Weekday]]##, ##[[KeyPgTimeserial TimeSerial]]##, ##[[KeyPgTimeValue TimeValue]]##, ##[[KeyPgHour Hour]]##, ##[[KeyPgMinute Minute]]##, ##[[KeyPgSecond Second]]##, ##[[KeyPgNow Now]]##, ##[[KeyPgDateAdd DateAdd]]##, ##[[KeyPgDatePart DatePart]]##, ##[[KeyPgDateDiff DateDiff]]##, ##[[KeyPgMonthname MonthName]]##, ##[[KeyPgWeekdayname WeekdayName]]##
-	- ##dir.bi## - Constants to be used with ##[[KeyPgDir Dir]]##
-	- ##fbgfx.bi## - Additional constants and structures to be used with graphics commands such as ##[[KeyPgMultikey Multikey]]##,  ##[[KeyPgScreencontrol Screencontrol]]##, and ##[[KeyPgScreenevent Screenevent]]##, ##[[KeyPgImagecreate Imagecreate]]##.
-	- ##file.bi## - Declarations for ##[[KeyPgFilecopy FileCopy]]##, ##[[KeyPgFileattr FileAttr]]##, ##[[KeyPgFilelen FileLen]]##, ##[[KeyPgFileexists Fileexists]]##, ##[[KeyPgFiledatetime FileDateTime]]##
-	- ##string.bi## - Declarations for ##[[KeyPgFormat format]]##
+	- ##datetime.bi## - Declarations for ##[[KeyPgDateSerial|DateSerial]]##, ##[[KeyPgDateValue|DateValue]]##, ##[[KeyPgIsDate|IsDate]]##, ##[[KeyPgYear|Year]]##, ##[[KeyPgMonth|Month]]##, ##[[KeyPgDay|Day]]##, ##[[KeyPgWeekday|Weekday]]##, ##[[KeyPgTimeserial|TimeSerial]]##, ##[[KeyPgTimeValue|TimeValue]]##, ##[[KeyPgHour|Hour]]##, ##[[KeyPgMinute|Minute]]##, ##[[KeyPgSecond|Second]]##, ##[[KeyPgNow|Now]]##, ##[[KeyPgDateAdd|DateAdd]]##, ##[[KeyPgDatePart|DatePart]]##, ##[[KeyPgDateDiff|DateDiff]]##, ##[[KeyPgMonthname|MonthName]]##, ##[[KeyPgWeekdayname|WeekdayName]]##
+	- ##dir.bi## - Constants to be used with ##[[KeyPgDir|Dir]]##
+	- ##fbgfx.bi## - Additional constants and structures to be used with graphics commands such as ##[[KeyPgMultikey|Multikey]]##,  ##[[KeyPgScreencontrol|Screencontrol]]##, and ##[[KeyPgScreenevent|Screenevent]]##, ##[[KeyPgImagecreate|Imagecreate]]##.
+	- ##file.bi## - Declarations for ##[[KeyPgFilecopy|FileCopy]]##, ##[[KeyPgFileattr|FileAttr]]##, ##[[KeyPgFilelen|FileLen]]##, ##[[KeyPgFileexists|Fileexists]]##, ##[[KeyPgFiledatetime|FileDateTime]]##
+	- ##string.bi## - Declarations for ##[[KeyPgFormat|format]]##
 	- ##vbcompat.bi## - Includes datetime.bi, dir.bi, file.bi, and string.bi plus additional constants compatible with Microsoft Visual Basic.
 
 {{fbdoc item="section" value="C Runtime (CRT)"}}
@@ -54,11 +54,11 @@ MessageBox( null, "Hello World", "FreeBASIC", MB_OK )
 %%
 
 {{fbdoc item="section" value="Requirements for Using Prebuilt Static Libraries"}}
-	- The source code must include the appropriate headers using ##[[KeyPgInclude #include]]##.
-	- The static library must be linked at compile time by using either ##[[KeyPgInclib #inclib]]## in the source code or by using the //-l// option on the command line to specify the name of the library.
+	- The source code must include the appropriate headers using ##[[KeyPgInclude|#include]]##.
+	- The static library must be linked at compile time by using either ##[[KeyPgInclib|#inclib]]## in the source code or by using the //-l// option on the command line to specify the name of the library.
 
 {{fbdoc item="section" value="Requirements for Using Prebuilt Shared Libraries"}}
-	- The source code must include the appropriate headers using ##[[KeyPgInclude #include]]##.
+	- The source code must include the appropriate headers using ##[[KeyPgInclude|#include]]##.
 	- The shared library (.DLL) must be present on the host computer where the compiled program will run.
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

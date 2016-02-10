@@ -2,7 +2,7 @@
 Assigns a value to a variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Let** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T1//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Let** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T1//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T2// )
 ##
 {{fbdoc item="usage"}}##
 	//lhs// **=** //rhs//
@@ -11,9 +11,9 @@ Assigns a value to a variable
 
 			##//or, in the //QB// dialect,//##
 
-	[ [[KeyPgLet Let]] ] //lhs// **=** //rhs//
+	[ [[KeyPgLet|Let]] ] //lhs// **=** //rhs//
 		##//or//##
-	[ [[KeyPgLet Let]] ] //lhs// **=>** //rhs//     (from fbc version 0.90)
+	[ [[KeyPgLet|Let]] ] //lhs// **=>** //rhs//     (from fbc version 0.90)
 ##
 {{fbdoc item="param"}}
 	##//lhs//##
@@ -26,11 +26,11 @@ Assigns a value to a variable
 		Any type convertible to ##//T2//##.
 
 {{fbdoc item="desc"}}
-	This operator assigns the value of its right-hand side operand (##//rhs//##) to its left-hand side operand (##//lhs//##). The right-hand side operand must be implicitly convertible to the left-hand side type (##//T1//##) (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value). For example, you cannot assign a numeric value to a string type; to do that, first convert the numeric value to a string using ##[[KeyPgStr Str]]## or ##[[KeyPgWstr Wstr]]##.
+	This operator assigns the value of its right-hand side operand (##//rhs//##) to its left-hand side operand (##//lhs//##). The right-hand side operand must be implicitly convertible to the left-hand side type (##//T1//##) (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value). For example, you cannot assign a numeric value to a string type; to do that, first convert the numeric value to a string using ##[[KeyPgStr|Str]]## or ##[[KeyPgWstr|Wstr]]##.
 	Assignment between arrays is not supported presently.
 
-	Avoid confusion with ##[[KeyPgOpEqual Operator = (Equal)]]##, which also uses the '##=##' symbol.
-	For this purpose and for solving some cases of ambiguity of the parser (see ##[[KeyPgByrefFunction BYREF (function results)]]##), the alternative symbol '=>' can be used for assignments (in place of '=') from fbc version 0.90 (same as already for the initializers).
+	Avoid confusion with ##[[KeyPgOpEqual|Operator = (Equal)]]##, which also uses the '##=##' symbol.
+	For this purpose and for solving some cases of ambiguity of the parser (see ##[[KeyPgByrefFunction|BYREF (function results)]]##), the alternative symbol '=>' can be used for assignments (in place of '=') from fbc version 0.90 (same as already for the initializers).
 		//Note: the '=>' symbol has been chosen against '<=' (already the operator 'Less Than Or Equal') and ':=' (':' used as statement separator).//
 
 	This operator can be overloaded for user-defined types.
@@ -59,15 +59,15 @@ Let i = 300 ' <-alternate syntax
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
-	- In the //[[CompilerOptlang -lang qb]]// dialect, an assignment expression can be preceded by the ##[[KeyPgLet Let]]## keyword.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, an assignment expression can be preceded by the ##[[KeyPgLet|Let]]## keyword.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}} 
-	- ##[[KeyPgOpEqual Operator = (Equal)]]##
-	- ##[[KeyPgOpLet Operator Let (Assignment)]]##
-	- ##[[KeyPgSwap Swap]]##
+	- ##[[KeyPgOpEqual|Operator = (Equal)]]##
+	- ##[[KeyPgOpLet|Operator Let (Assignment)]]##
+	- ##[[KeyPgSwap|Swap]]##
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -2,7 +2,7 @@
 Returns the arctangent of a ratio
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ATan2""** ( [[KeyPgByval byval]] //y// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByval byval]] //x// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""ATan2""** ( [[KeyPgByval|byval]] //y// [[KeyPgAs|as]] [[KeyPgDouble|double]], [[KeyPgByval|byval]] //x// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = ""ATan2""( //y//, //x// )
@@ -17,7 +17,7 @@ Returns the arctangent of a ratio
 	The angle whose tangent is ##//y/////x//##, in radians, in the range [-Pi..Pi].
 
 {{fbdoc item="desc"}}
-	##""ATan2""## returns the arctangent of the ratio ##//y/////x//## as a ##[[KeyPgDouble Double]]## within the range of -[[TutMathAngles Pi]] to [[TutMathAngles Pi]].  The arctangent is the inverse of the ##[[KeyPgTan Tan]]## function. The returned angle is measured in [[TutMathAngles radians]] (not [[TutMathAngles degrees]]).
+	##""ATan2""## returns the arctangent of the ratio ##//y/////x//## as a ##[[KeyPgDouble|Double]]## within the range of -[[TutMathAngles|Pi]] to [[TutMathAngles|Pi]].  The arctangent is the inverse of the ##[[KeyPgTan|Tan]]## function. The returned angle is measured in [[TutMathAngles|radians]] (not [[TutMathAngles|degrees]]).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/atan2.bas"}}%%(freebasic)
@@ -33,11 +33,11 @@ The output would be:
 	- New to ""FreeBASIC""
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Atan2""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Atan2""**##.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgTan Tan]]##
-	- ##[[KeyPgAtn Atn]]##
-	- [[TutMathIntroTrig A Brief Introduction To Trigonometry]]
+	- ##[[KeyPgTan|Tan]]##
+	- ##[[KeyPgAtn|Atn]]##
+	- [[TutMathIntroTrig|A Brief Introduction To Trigonometry]]
 
 {{fbdoc item="back" value="CatPgMath|Math"}}

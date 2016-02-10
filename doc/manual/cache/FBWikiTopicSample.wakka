@@ -11,9 +11,9 @@ __On this page:__
 __Components of a Topic:__
 
 	- Brief Sentence about the function/sub/keyword
-	- **Syntax** - where possible this section should show the full specification of the function/sub/macro/statement including optional parameters (with default values), variable types, and return type (if there is one).  If function is overloaded, all variants to be shown.  Parameters are explicitly to be declared using ##[[KeyPgByval byval]]## and ##[[KeyPgByref byref]]##.  The entire declaration line should be formated as ##monospaced##.  See below for additional font style usage.  Some quirk statements may not have a full declaration, in which case the the "syntax" section is used but formatted same as "usage"
+	- **Syntax** - where possible this section should show the full specification of the function/sub/macro/statement including optional parameters (with default values), variable types, and return type (if there is one).  If function is overloaded, all variants to be shown.  Parameters are explicitly to be declared using ##[[KeyPgByval|byval]]## and ##[[KeyPgByref|byref]]##.  The entire declaration line should be formated as ##monospaced##.  See below for additional font style usage.  Some quirk statements may not have a full declaration, in which case the the "syntax" section is used but formatted same as "usage"
 	- **Usage** - the condensed, "traditional", i.e. existing version of the syntax.  Shows the form of the function but not all the specifics.  More than one form may be shown.  The entire syntax line should be formated as ##monospaced##.  See below for additional font style usage.  This section is only present if a full declaration is available in the the "syntax" section.
-	- **Parameters** - list of parameters in the order that they appear in syntax of the function.  In the case of a function/statement that is to be documented over several pages e.g. ##[[KeyPgAccess Access]]##, only those parameters that apply to the specific section of the function specification need to be listed.
+	- **Parameters** - list of parameters in the order that they appear in syntax of the function.  In the case of a function/statement that is to be documented over several pages e.g. ##[[KeyPgAccess|Access]]##, only those parameters that apply to the specific section of the function specification need to be listed.
 	- **Return Value** - description of the return value if any
 	- **Description** - all other information about the function, data tables, special notes, etc.
 	- **Examples**
@@ -34,7 +34,7 @@ FreeBASIC is very compatible with QBasic and therefore inherits much of the quir
 
 **Declaration Example:**
 	##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Atn** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Atn** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 
 All topics should continue to include the existing syntax section of the documents as-is (with additional font formatting as needed).  Where applicable, a declaration section should be added.  The syntax line and the declaration line follow the same font formatting rules.
@@ -43,7 +43,7 @@ __Font styles__
 
 	- Any keywords documented in the topic are ##**monospaced bold**##.
 	- parameter names are ##//monospaced italic//##
-	- keywords documented on other wiki pages should have the appropriate ##monospaced## wiki link. (e.g. ##[[KeyPgAsc Asc]]##)
+	- keywords documented on other wiki pages should have the appropriate ##monospaced## wiki link. (e.g. ##[[KeyPgAsc|Asc]]##)
 
 
 __Sample Page:__
@@ -52,7 +52,7 @@ __Sample Page:__
 Brief sentence describing intent of function.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Function**( //param1// [[KeyPgAs as]] [[KeyPgString string]], //param2// [[KeyPgAs as]] [[KeyPgInteger integer]] = &H1234 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Function**( //param1// [[KeyPgAs|as]] [[KeyPgString|string]], //param2// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = &H1234 ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Function**( //param1// [, //param2// ] )
@@ -99,8 +99,8 @@ sample output
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
-	- In the ////[[CompilerOptlang -lang qb]]// dialect, ...
+	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
+	- In the ////[[CompilerOptlang|-lang qb]]// dialect, ...
 	- etc
 
 {{fbdoc item="target"}}

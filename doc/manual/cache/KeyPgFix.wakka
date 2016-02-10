@@ -2,12 +2,12 @@
 Returns the integer part of a number, rounding towards zero
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fix** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fix** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fix** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fix** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fix** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Fix** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Fix** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgSingle|single]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Fix** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Fix** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Fix** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Fix** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgLongint|longint]] ) [[KeyPgAs|as]] [[KeyPgLongint|longint]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Fix** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Fix**( //number// )
@@ -20,11 +20,11 @@ Returns the integer part of a number, rounding towards zero
 	Returns the integer part of ##//number//##, rounding towards zero.
 
 {{fbdoc item="desc"}}
-	Equivalent to: ##[[KeyPgSgn Sgn]](//number//) * [[KeyPgInt Int]]([[KeyPgAbs Abs]](//number//))##.  For example, ##**Fix**(1.3)## will return ##1.0##, and ##**Fix**(-4.9)## will return ##-4.0##.  For integer types, the number is returned unchanged.
+	Equivalent to: ##[[KeyPgSgn|Sgn]](//number//) * [[KeyPgInt|Int]]([[KeyPgAbs|Abs]](//number//))##.  For example, ##**Fix**(1.3)## will return ##1.0##, and ##**Fix**(-4.9)## will return ##-4.0##.  For integer types, the number is returned unchanged.
 
-	Note: this function is also equivalent to ##//number// - [[KeyPgFrac Frac]](//number//)##.
+	Note: this function is also equivalent to ##//number// - [[KeyPgFrac|Frac]](//number//)##.
 
-	The ##**Fix**## unary ##[[KeyPgOperator operator]]## can be overloaded with user defined types.
+	The ##**Fix**## unary ##[[KeyPgOperator|operator]]## can be overloaded with user defined types.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/fix.bas"}}%%(freebasic)
@@ -33,15 +33,15 @@ Print fix(-1.9) '' will print -1
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInt Int]]##
-	- ##[[KeyPgFrac Frac]]##
-	- ##[[KeyPgCint Cint]]##
-	- ##[[KeyPgOperator Operator]]##
+	- ##[[KeyPgInt|Int]]##
+	- ##[[KeyPgFrac|Frac]]##
+	- ##[[KeyPgCint|Cint]]##
+	- ##[[KeyPgOperator|Operator]]##
 
 {{fbdoc item="back" value="CatPgMath|Math"}}

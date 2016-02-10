@@ -2,7 +2,7 @@
 Returns the ascii code of the first key in the keyboard buffer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getkey** ( ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Getkey** ( ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Getkey**
@@ -15,7 +15,7 @@ Returns the ascii code of the first key in the keyboard buffer
 
 	The key read is not echoed to the screen.
 
-	For a keyword not stopping the program if no key is at the buffer see ##[[KeyPgInkey Inkey]]## or ##[[KeyPgMultikey Multikey]]##.
+	For a keyword not stopping the program if no key is at the buffer see ##[[KeyPgInkey|Inkey]]## or ##[[KeyPgMultikey|Multikey]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/getkey.bas"}}%%(freebasic)
@@ -36,15 +36,15 @@ loop until foo = 27
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Getkey""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Getkey""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgGetmouse GetMouse]]##
-	- ##[[KeyPgInkey Inkey]]##
-	- ##[[KeyPgInputnum Input()]]##
-	- ##[[KeyPgMultikey Multikey]]##
+	- ##[[KeyPgGetmouse|GetMouse]]##
+	- ##[[KeyPgInkey|Inkey]]##
+	- ##[[KeyPgInputnum|Input()]]##
+	- ##[[KeyPgMultikey|Multikey]]##
 
 {{fbdoc item="back" value="CatPgInput|User Input"}}

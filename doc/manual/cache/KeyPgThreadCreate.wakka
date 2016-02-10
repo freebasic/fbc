@@ -2,24 +2,24 @@
 Starts a user-defined procedure in a separate execution thread
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare Declare]] [[KeyPgFunction Function]] **Threadcreate** _
+	[[KeyPgDeclare|Declare]] [[KeyPgFunction|Function]] **Threadcreate** _
 		( _
-			[[KeyPgByval ByVal]] //procptr// [[KeyPgAs As]] [[KeyPgSub Sub]] ( [[KeyPgByval ByVal]] //userdata// [[KeyPgAs As]] [[KeyPgAny Any]] [[KeyPgPtr Ptr]] ), _
-			[[KeyPgByval ByVal]] //param// [[KeyPgAs As]] [[KeyPgAny Any]] [[KeyPgPtr Ptr]] = 0, _
-			[[KeyPgByval ByVal]] //stack_size// [[KeyPgAs As]] [[KeyPgInteger Integer]] = 0 _
-		) [[KeyPgAs As]] [[KeyPgAny Any]] [[KeyPgPtr Ptr]]
+			[[KeyPgByval|ByVal]] //procptr// [[KeyPgAs|As]] [[KeyPgSub|Sub]] ( [[KeyPgByval|ByVal]] //userdata// [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]] ), _
+			[[KeyPgByval|ByVal]] //param// [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]] = 0, _
+			[[KeyPgByval|ByVal]] //stack_size// [[KeyPgAs|As]] [[KeyPgInteger|Integer]] = 0 _
+		) [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Threadcreate** ( //procptr// [, [ //param// ] [, //stack_size// ] ] )
 ##
 {{fbdoc item="param"}}
 	##//procptr//##
-		A pointer to the ##[[KeyPgSub Sub]]## intended to work as a thread. The sub must have the following signature (same parameters, same calling convention) to be compatible to //procptr//:
-		##[[KeyPgDeclare Declare]] [[KeyPgSub Sub]] myThread ( [[KeyPgByval ByVal]] //userdata// [[KeyPgAs As]] [[KeyPgAny Any]] [[KeyPgPtr Ptr]] )##
+		A pointer to the ##[[KeyPgSub|Sub]]## intended to work as a thread. The sub must have the following signature (same parameters, same calling convention) to be compatible to //procptr//:
+		##[[KeyPgDeclare|Declare]] [[KeyPgSub|Sub]] myThread ( [[KeyPgByval|ByVal]] //userdata// [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]] )##
 	##//userdata//##
-		The ##Any Ptr## parameter of the ##[[KeyPgSub Sub]]## intended to work as a thread. ""FreeBASIC"" expects this parameter to be present, it must not be omitted! 
+		The ##Any Ptr## parameter of the ##[[KeyPgSub|Sub]]## intended to work as a thread. ""FreeBASIC"" expects this parameter to be present, it must not be omitted! 
 	##//param//##
-		##Any Ptr## argument that will be passed to the thread ##[[KeyPgSub Sub]]## pointed to by ##//procptr//## through its //userdata// parameter. For example, this can be a pointer to a structure or an array containing various information for the thread sub to work with. If //param// is not given, ##0## (zero) will be passed to the thread sub's //userdata// parameter instead.
+		##Any Ptr## argument that will be passed to the thread ##[[KeyPgSub|Sub]]## pointed to by ##//procptr//## through its //userdata// parameter. For example, this can be a pointer to a structure or an array containing various information for the thread sub to work with. If //param// is not given, ##0## (zero) will be passed to the thread sub's //userdata// parameter instead.
 	##//stack_size//##
 		Optional number of bytes to reserve for this thread's stack.
 
@@ -31,9 +31,9 @@ Starts a user-defined procedure in a separate execution thread
 	
 	The sub that was started as a thread will execute in parallel with the main part of the program. The OS achieves this by assigning it to a different processor if it exists, or by alternating between execution threads on a single processor. There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple create threads actually start executing.
 	
-	Before closing, programs should wait for the termination of all launched threads by using ##[[KeyPgThreadWait ThreadWait]]##. Alternatively, if it's not necessary to safely wait for a thread to finish execution, ##[[KeyPgThreadDetach ThreadDetach]]## can be used. However, if a program exits while some threads are still active, those threads will be aborted by the system. For every thread created, programs should call either ##[[KeyPgThreadWait ThreadWait]]## or ##[[KeyPgThreadDetach ThreadDetach]]## to ensure that the system resources associated with the thread handles are released. Otherwise, there may be memory or system resource leaks.
+	Before closing, programs should wait for the termination of all launched threads by using ##[[KeyPgThreadWait|ThreadWait]]##. Alternatively, if it's not necessary to safely wait for a thread to finish execution, ##[[KeyPgThreadDetach|ThreadDetach]]## can be used. However, if a program exits while some threads are still active, those threads will be aborted by the system. For every thread created, programs should call either ##[[KeyPgThreadWait|ThreadWait]]## or ##[[KeyPgThreadDetach|ThreadDetach]]## to ensure that the system resources associated with the thread handles are released. Otherwise, there may be memory or system resource leaks.
 	
-	Due to the nature of threads, no assumptions about execution order can be made. In order to exchange data between multiple threads, including a thread and the main part of the program, mutexes must be used. These mutual exclusion locks can be "owned" by a single thread while doing critical work, causing other threads to wait for their turn. See ##[[KeyPgMutexCreate Mutexcreate]]##, ##[[KeyPgMutexLock Mutexlock]]##, ##[[KeyPgMutexUnlock Mutexunlock]]##, ##[[KeyPgMutexDestroy Mutexdestroy]]##.
+	Due to the nature of threads, no assumptions about execution order can be made. In order to exchange data between multiple threads, including a thread and the main part of the program, mutexes must be used. These mutual exclusion locks can be "owned" by a single thread while doing critical work, causing other threads to wait for their turn. See ##[[KeyPgMutexCreate|Mutexcreate]]##, ##[[KeyPgMutexLock|Mutexlock]]##, ##[[KeyPgMutexUnlock|Mutexunlock]]##, ##[[KeyPgMutexDestroy|Mutexdestroy]]##.
 	
 	##//stack_size//## can be used to change the thread's stack size from the system's default. This can be useful when the program requires a big stack, for example due to lots of procedure recursion or when allocating huge strings/arrays on the stack. On some systems (Linux), the stack automatically grows beyond ##//stack_size//## if more space is needed; on others (Win32), this is the fixed maximum allowed. Behavior is undefined when more stack is used than the reserved size on systems where stacks are not able to grow.
 
@@ -182,7 +182,7 @@ end sub
 %%
 
 {{fbdoc item="lang"}}
-	- Threading is not allowed in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Threading is not allowed in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="target"}}
 	- **Threadcreate** is not available with the DOS version / target of ""FreeBASIC"", because multithreading is not supported by DOS kernel nor the used extender.
@@ -192,11 +192,11 @@ end sub
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgThreadWait ThreadWait]]##
-	- ##[[KeyPgThreadDetach ThreadDetach]]##
-	- ##[[KeyPgMutexCreate Mutexcreate]]##
-	- ##[[KeyPgMutexLock Mutexlock]]##
-	- ##[[KeyPgMutexUnlock Mutexunlock]]##
-	- ##[[KeyPgMutexDestroy Mutexdestroy]]##
+	- ##[[KeyPgThreadWait|ThreadWait]]##
+	- ##[[KeyPgThreadDetach|ThreadDetach]]##
+	- ##[[KeyPgMutexCreate|Mutexcreate]]##
+	- ##[[KeyPgMutexLock|Mutexlock]]##
+	- ##[[KeyPgMutexUnlock|Mutexunlock]]##
+	- ##[[KeyPgMutexDestroy|Mutexdestroy]]##
 
 {{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

@@ -30,8 +30,8 @@ Error: a = -32767 in test.bas (__FB_MAINPROC__) line 47
 	- Did not exist in QB
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfile __FILE__]]##
-	- ##[[KeyPgDdfunctionnq __FUNCTION_NQ__]]##
-	- ##[[KeyPgDdline __LINE__]]##
+	- ##[[KeyPgDdfile|__FILE__]]##
+	- ##[[KeyPgDdfunctionnq|__FUNCTION_NQ__]]##
+	- ##[[KeyPgDdline|__LINE__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

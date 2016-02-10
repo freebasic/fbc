@@ -7,11 +7,11 @@ Generate position-indepedent code (non-x86 Unix shared libs)
 {{fbdoc item="desc"}}
 	The ##-pic## compiler option tells the compiler to generate position-indepedent code. This is needed for creating shared libraries on x86_64 or ARM Linux/BSD platforms except ""Win64"" (and also not on 32bit x86). This option should not be used when creating executables (as opposed to shared libraries) though.
 	
-	By default, ##-pic## is enabled when using ##[[CompilerOptdll -dll or -dylib]]##, and disabled for all other compilation modes. Usually you only have to specify ##-pic## if you are using ##[[CompilerOptc -c]]## or ##[[CompilerOptlib -lib]]## and want to link them into shared libraries later.
+	By default, ##-pic## is enabled when using ##[[CompilerOptdll|-dll or -dylib]]##, and disabled for all other compilation modes. Usually you only have to specify ##-pic## if you are using ##[[CompilerOptc|-c]]## or ##[[CompilerOptlib|-lib]]## and want to link them into shared libraries later.
 	
 	##-pic## is implemented by passing ##-fPIC## to gcc (when using the -gen gcc backend). The -gen gas backend does not support position-indepedent code since it only supports 32bit x86 and there is no special position-indepedent code needed for shared libraries on 32bit x86.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

@@ -1,9 +1,9 @@
 {{fbdoc item="title" value="INTEGER"}}----
-Standard data type: 32-bit or 64-bit signed, same size as ##[[KeyPgSizeof SizeOf]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##
+Standard data type: 32-bit or 64-bit signed, same size as ##[[KeyPgSizeof|SizeOf]]([[KeyPgAny|Any]] [[KeyPgPtr|Ptr]])##
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Integer**
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Integer**<//bits//>
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Integer**
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Integer**<//bits//>
 ##
 {{fbdoc item="param"}}
 	##//bits//##
@@ -14,8 +14,8 @@ Standard data type: 32-bit or 64-bit signed, same size as ##[[KeyPgSizeof SizeOf
 	
 	**Integer** is the main data type ""FreeBASIC"" uses for integer math and bitwise operations. It is the default type for number literals.
 	
-	If an explicit bit size is given, a data type is provided that can hold values from ##-1LL [[KeyPgOpShiftleft Shl]] (//bits//-1)## up to ##(1LL [[KeyPgOpShiftleft Shl]] (//bits//-1)) - 1##.
-	The selected data type is ##[[KeyPgByte Byte]]## for **Integer<8>**, ##[[KeyPgShort Short]]## for **Integer<16>**, ##[[KeyPgLong Long]]## for **Integer<32>** and ##[[KeyPgLongint LongInt]]## for **Integer<64>**.
+	If an explicit bit size is given, a data type is provided that can hold values from ##-1LL [[KeyPgOpShiftleft|Shl]] (//bits//-1)## up to ##(1LL [[KeyPgOpShiftleft|Shl]] (//bits//-1)) - 1##.
+	The selected data type is ##[[KeyPgByte|Byte]]## for **Integer<8>**, ##[[KeyPgShort|Short]]## for **Integer<16>**, ##[[KeyPgLong|Long]]## for **Integer<32>** and ##[[KeyPgLongint|LongInt]]## for **Integer<64>**.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/integer.bas"}}%%(freebasic)
@@ -31,17 +31,17 @@ Standard data type: 32-bit or 64-bit signed, same size as ##[[KeyPgSizeof SizeOf
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the ##**Integer**## data type is 32-bit.
-	- In the //[[CompilerOptlang -lang qb]]// dialect, the ##**Integer**## data type is 16-bit, regardless of platform.
+	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, the ##**Integer**## data type is 32-bit.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, the ##**Integer**## data type is 16-bit, regardless of platform.
 
 {{fbdoc item="diff"}}
 	- The ability to select a bit size is new to ""FreeBASIC""
 	- The INTEGER type is always 16 bits wide in QB.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLong Long]]##
-	- ##[[KeyPgLongint Longint]]##
-	- ##[[KeyPgUinteger Uinteger]]##
-	- ##[[KeyPgCint Cint]]##
+	- ##[[KeyPgLong|Long]]##
+	- ##[[KeyPgLongint|Longint]]##
+	- ##[[KeyPgUinteger|Uinteger]]##
+	- ##[[KeyPgCint|Cint]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

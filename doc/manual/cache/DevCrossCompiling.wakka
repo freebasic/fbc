@@ -5,7 +5,7 @@
 Since fbc version 0.24, the ""FreeBASIC"" compiler always supports all compilation targets. There no longer is any configuration necessary to enable support for additional targets at fbc compile-time, like it used to exist in older fbc versions. This means you only need to install one fbc per host system, and it can be used to compile native programs aswell as non-native programs.
 
 	- default: compile for native system
-	- [[CompilerOpttarget -target]] and [[CompilerOptarch -arch]] compiler options allow cross-compiling
+	- [[CompilerOpttarget|-target]] and [[CompilerOptarch|-arch]] compiler options allow cross-compiling
 
 {{fbdoc item="section" value="Requirements for cross-compiling"}}
 
@@ -27,7 +27,7 @@ Install the ##gcc-mingw-w64## package and its dependencies. The exact package na
 
 That includes the binutils and ""MinGW"" libraries, both of which fbc definitely needs for cross-compiling. It also includes the cross-compiling gcc, which fbc uses to look up the installation locations of the ""MinGW"" libraries. Besides that, gcc is obviously also needed if you want to use ##-gen gcc## (such as when targetting 64bit which is currently only supported via -gen gcc).
 
-The installed tools are called ##i686-w64-mingw32-as## (""MinGW"" cross assembler), ##i686-w64-mingw32-ld## (""MinGW"" cross linker), ##i686-w64-mingw32-gcc## (""MinGW"" cross gcc), etc. You can use them with fbc by specifying the common target prefix to the fbc [[CompilerOpttarget -target]] option:
+The installed tools are called ##i686-w64-mingw32-as## (""MinGW"" cross assembler), ##i686-w64-mingw32-ld## (""MinGW"" cross linker), ##i686-w64-mingw32-gcc## (""MinGW"" cross gcc), etc. You can use them with fbc by specifying the common target prefix to the fbc [[CompilerOpttarget|-target]] option:
 
 %%fbc foo.bas -target i686-w64-mingw32%%
 

@@ -9,9 +9,9 @@ Statement to begin a new scope block
 {{fbdoc item="desc"}}
 	The Scope block allows variables to be (re)defined and used locally in a program.
 	
-	When a variable is (re)defined with ##[[KeyPgDim Dim]]## within a scope structure, this local working variable can be used from its (re)definition until the end of the scope.  During this time, any variables outside the scope that have the same name will be ignored, and will not be accessible by that name. Any statements in the Scope block before the variable is redefined will use the variable as defined outside the Scope.
+	When a variable is (re)defined with ##[[KeyPgDim|Dim]]## within a scope structure, this local working variable can be used from its (re)definition until the end of the scope.  During this time, any variables outside the scope that have the same name will be ignored, and will not be accessible by that name. Any statements in the Scope block before the variable is redefined will use the variable as defined outside the Scope.
 
-	##**Scope..End Scope**## is not permitted when compiling with in the //[[CompilerOptlang -lang qb]]// dialect.
+	##**Scope..End Scope**## is not permitted when compiling with in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/variable/scope.bas"}}%%(freebasic)
@@ -29,16 +29,16 @@ Print "x ="; x; ", "; "y ="; y
 %%
 
 {{fbdoc item="lang"}}
-	- Explicit ##**Scope**##..##**End Scope**## blocks are available only in the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects.
-	- Explicit ##**Scope**##..##**End Scope**## blocks are not available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
+	- Explicit ##**Scope**##..##**End Scope**## blocks are available only in the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects.
+	- Explicit ##**Scope**##..##**End Scope**## blocks are not available in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgRedim Redim]]##
-	- ##[[KeyPgStatic Static]]##
-	- ##[[KeyPgVar Var]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgRedim|Redim]]##
+	- ##[[KeyPgStatic|Static]]##
+	- ##[[KeyPgVar|Var]]##
 
 {{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

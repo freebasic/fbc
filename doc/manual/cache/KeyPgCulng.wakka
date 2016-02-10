@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="CULNG"}}----
-Converts numeric or string expression to ##[[KeyPgUlong Ulong]]##
+Converts numeric or string expression to ##[[KeyPgUlong|Ulong]]##
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Culng** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgUlong ulong]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Culng** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgUlong|ulong]]
 
-	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgUlong ulong]]
+	[[KeyPgType|Type]] //typename//
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgUlong|ulong]]
 	End Type
 ##
 {{fbdoc item="usage"}}##
@@ -15,19 +15,19 @@ Converts numeric or string expression to ##[[KeyPgUlong Ulong]]##
 ##
 {{fbdoc item="param"}}
 	##//expression//##
-		a numeric, string, or pointer expression to cast to a ##[[KeyPgUlong Ulong]]## value
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgUlong|Ulong]]## value
 	##//datatype//##
 		any numeric, string, or pointer data type
 	##//typename//##
 		a user defined type
 
 {{fbdoc item="ret"}}
-	A ##[[KeyPgUlong Ulong]]## value.
+	A ##[[KeyPgUlong|Ulong]]## value.
 
 {{fbdoc item="desc"}}
-	The ##**Culng**## function rounds off the decimal part and returns a 32 bit ##[[KeyPgUlong Ulong]]## value. The function does not check for an overflow. The name can be explained as 'Convert to Unsigned ""LoNG""'.
+	The ##**Culng**## function rounds off the decimal part and returns a 32 bit ##[[KeyPgUlong|Ulong]]## value. The function does not check for an overflow. The name can be explained as 'Convert to Unsigned ""LoNG""'.
 	
-	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValuint Valuint]]## or ##[[KeyPgValulng Valulng]]##.
+	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValuint|Valuint]]## or ##[[KeyPgValulng|Valulng]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/casting/culng.bas"}}%%(freebasic)
@@ -45,22 +45,22 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Culng""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Culng""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCbyte Cbyte]]##
-	- ##[[KeyPgCubyte Cubyte]]##
-	- ##[[KeyPgCshort Cshort]]##
-	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgCint Cint]]##
-	- ##[[KeyPgCuint Cuint]]##
-	- ##[[KeyPgClng Clng]]##
-	- ##[[KeyPgClngint Clngint]]##
-	- ##[[KeyPgCulngint Culngint]]##
-	- ##[[KeyPgCsng Csng]]##
-	- ##[[KeyPgCdbl Cdbl]]##
+	- ##[[KeyPgCbyte|Cbyte]]##
+	- ##[[KeyPgCubyte|Cubyte]]##
+	- ##[[KeyPgCshort|Cshort]]##
+	- ##[[KeyPgCushort|Cushort]]##
+	- ##[[KeyPgCint|Cint]]##
+	- ##[[KeyPgCuint|Cuint]]##
+	- ##[[KeyPgClng|Clng]]##
+	- ##[[KeyPgClngint|Clngint]]##
+	- ##[[KeyPgCulngint|Culngint]]##
+	- ##[[KeyPgCsng|Csng]]##
+	- ##[[KeyPgCdbl|Cdbl]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

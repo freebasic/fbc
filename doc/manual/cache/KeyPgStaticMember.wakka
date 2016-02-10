@@ -2,31 +2,31 @@
 Declare a static member procedure or variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgType Type]] //typename//
-		**Static** //variablename// [[KeyPgAs As]] [[DataType DataType]] [, ...]
-		[[KeyPgDeclare Declare]] **Static** [[KeyPgSub Sub]]|[[KeyPgFunction Function]] //procedurename// ...
+	[[KeyPgType|Type]] //typename//
+		**Static** //variablename// [[KeyPgAs|As]] [[DataType|DataType]] [, ...]
+		[[KeyPgDeclare|Declare]] **Static** [[KeyPgSub|Sub]]|[[KeyPgFunction|Function]] //procedurename// ...
 		...
-	[[KeyPgEndblock End]] [[KeyPgType Type]]
+	[[KeyPgEndblock|End]] [[KeyPgType|Type]]
 	
-	[[KeyPgDim Dim]] //typename.variablename// [[KeyPgAs As]] [[DataType DataType]] [= //initializer//] [, ...]
+	[[KeyPgDim|Dim]] //typename.variablename// [[KeyPgAs|As]] [[DataType|DataType]] [= //initializer//] [, ...]
 	
-	[**Static**] [[KeyPgSub Sub]]|[[KeyPgFunction Function]] //typename//.//procedurename// ...
+	[**Static**] [[KeyPgSub|Sub]]|[[KeyPgFunction|Function]] //typename//.//procedurename// ...
 		...
-	End [[KeyPgSub Sub]]|[[KeyPgFunction Function]]
+	End [[KeyPgSub|Sub]]|[[KeyPgFunction|Function]]
 ##
 {{fbdoc item="desc"}}
 
 	- Static member procedures
-		##**Static**## methods do not have an implicit ##[[KeyPgThis This]]## instance argument passed to them. This allows them to be used like normal non-member procedures (for example with callback procedure pointers).  An advantage of ##**Static**## methods are that they are encapsulated in the ##//typename//## namespace, and therefore have the ability to access the ##[[KeyPgVisPrivate Private]]## or ##[[KeyPgVisProtected Protected]]## members or methods of instances of ##//typename//##.
+		##**Static**## methods do not have an implicit ##[[KeyPgThis|This]]## instance argument passed to them. This allows them to be used like normal non-member procedures (for example with callback procedure pointers).  An advantage of ##**Static**## methods are that they are encapsulated in the ##//typename//## namespace, and therefore have the ability to access the ##[[KeyPgVisPrivate|Private]]## or ##[[KeyPgVisProtected|Protected]]## members or methods of instances of ##//typename//##.
 		
-		##**Static**## methods can be called directly anywhere in code, like normal non-member procedures, or on objects of type ##//typename//##, similar to non-static methods, however either way there is no implicit or explicit ##[[KeyPgThis This]]## (or explicit ##[[KeyPgBase Base]]##) access possible from within a static method.
+		##**Static**## methods can be called directly anywhere in code, like normal non-member procedures, or on objects of type ##//typename//##, similar to non-static methods, however either way there is no implicit or explicit ##[[KeyPgThis|This]]## (or explicit ##[[KeyPgBase|Base]]##) access possible from within a static method.
 		
 		For member procedures with a ##**Static**## declaration, ##**Static**## may also be specified on the corresponding procedure bodies, for improved code readability.
 	
 	- Static member variables
-		##**Static**## member variables are created and initialized only once independently of any object construction, in contrast to non-static ("instance") member variables which are created again and again for each separate object. ##**Static**## members are always ##[[KeyPgShared Shared]]##, even if ##[[KeyPgShared Shared]]## was not specified in the declaration. Thus, ##**Static**## member variables are similar to global variables, except that they are declared in a ##**Type**## namespace.
+		##**Static**## member variables are created and initialized only once independently of any object construction, in contrast to non-static ("instance") member variables which are created again and again for each separate object. ##**Static**## members are always ##[[KeyPgShared|Shared]]##, even if ##[[KeyPgShared|Shared]]## was not specified in the declaration. Thus, ##**Static**## member variables are similar to global variables, except that they are declared in a ##**Type**## namespace.
 		
-		Each ##**Static**## member variable declared in a Type must be explicitly allocated somewhere outside the type by using a ##[[KeyPgDim Dim]]## statement. The declaration inside the Type is the prototype that is visible to every module seeing the Type declaration. The definition outside the Type allocates and optionally initializes the ##**Static**## member variable. There can only be one definition per ##**Static**## member variable: it can only be allocated in a single module, not in multiple ones. This is the same as for ##[[KeyPgExtern Extern]]## variables.
+		Each ##**Static**## member variable declared in a Type must be explicitly allocated somewhere outside the type by using a ##[[KeyPgDim|Dim]]## statement. The declaration inside the Type is the prototype that is visible to every module seeing the Type declaration. The definition outside the Type allocates and optionally initializes the ##**Static**## member variable. There can only be one definition per ##**Static**## member variable: it can only be allocated in a single module, not in multiple ones. This is the same as for ##[[KeyPgExtern|Extern]]## variables.
 		
 		A ##**Static**## member variable is subject to member access control except for its definition outside the Type. If a private ##**Static**## member variable is to be explicitly initialized outside the Type's member procedures, an initializer must be provided with the definition.
 
@@ -131,9 +131,9 @@ Print uThird.getID
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgClass Class]]##
-	- ##[[KeyPgDeclare Declare]]##
-	- ##[[KeyPgType Type]]##
-	- ##[[KeyPgStatic Static]]##
+	- ##[[KeyPgClass|Class]]##
+	- ##[[KeyPgDeclare|Declare]]##
+	- ##[[KeyPgType|Type]]##
+	- ##[[KeyPgStatic|Static]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

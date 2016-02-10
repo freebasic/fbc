@@ -2,20 +2,20 @@
 Gets the second 16bit word of the operand.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Hiword**( //expr// ) (([[KeyPgCast Cast]]([[KeyPgUinteger Uinteger]], //expr//) and &hFFFF0000) [[KeyPgOpShiftRight shr]] 16)
+	[[KeyPgPpdefine|#define]] **Hiword**( //expr// ) (([[KeyPgCast|Cast]]([[KeyPgUinteger|Uinteger]], //expr//) and &hFFFF0000) [[KeyPgOpShiftRight|shr]] 16)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Hiword**( //expr// )
 ##
 {{fbdoc item="param"}}
 	##//expr//##
-		A numeric expression, converted to an ##[[KeyPgUinteger Uinteger]]## value.
+		A numeric expression, converted to an ##[[KeyPgUinteger|Uinteger]]## value.
 
 {{fbdoc item="ret"}}
 	Returns the value of the high 16bit word of the low 32bit dword of //expr//.
 
 {{fbdoc item="desc"}}
-	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger Uinteger]]## value, then expands to an ##[[KeyPgUinteger Uinteger]]## representing the value of its second 16bit word - that is the most-significant (high) 16bit word of the least-significant (low) 32bit dword of //expr//.
+	This macro converts the numeric expression ##//expr//## to an ##[[KeyPgUinteger|Uinteger]]## value, then expands to an ##[[KeyPgUinteger|Uinteger]]## representing the value of its second 16bit word - that is the most-significant (high) 16bit word of the least-significant (low) 32bit dword of //expr//.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/hiword.bas"}}%%(freebasic)
@@ -45,14 +45,14 @@ The Binary representation of the LSW Is    1111111111111111
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__HIWORD""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__HIWORD""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLoByte Lobyte]]##
-	- ##[[KeyPgHibyte Hibyte]]##
-	- ##[[KeyPgLoWord Loword]]##
+	- ##[[KeyPgLoByte|Lobyte]]##
+	- ##[[KeyPgHibyte|Hibyte]]##
+	- ##[[KeyPgLoWord|Loword]]##
 
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

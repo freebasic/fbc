@@ -6,6 +6,6 @@ Unicode is an industry standard designed to allow text and symbols from all of t
 The Unicode Consortium, the non-profit organization that coordinates Unicode's development, has the ambitious goal of eventually replacing existing character encoding schemes with Unicode and its standard Unicode Transformation Format (UTF) schemes, as many of the existing schemes are limited in size and scope, and are incompatible with multilingual environments. Unicode's success at unifying character sets has led to its widespread and predominant use in the internationalization and localization of computer software. The standard has been implemented in many recent technologies, including XML, the Java programming language, and modern operating systems.
 
 Common Unicode formats include:
-- [[http://en.wikipedia.org/wiki/UTF-8 UTF-8]]
-- [[http://en.wikipedia.org/wiki/UTF-16 UTF-16]]
-- [[http://en.wikipedia.org/wiki/UTF-32 UTF-32]]
+- [[http://en.wikipedia.org/wiki/UTF-8|UTF-8]]
+- [[http://en.wikipedia.org/wiki/UTF-16|UTF-16]]
+- [[http://en.wikipedia.org/wiki/UTF-32|UTF-32]]

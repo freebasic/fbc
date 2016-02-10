@@ -31,7 +31,7 @@ Statements and procedures that provide runtime error-handling capabilities.
 		Resumes execution at the line after where the error occurred.
 >>::c::
 {{fbdoc item="see"}}
-	- [[ProPgErrorHandling Error Handling]]
-	- [[TblRuntimeErrors Runtime Error Codes]]
+	- [[ProPgErrorHandling|Error Handling]]
+	- [[TblRuntimeErrors|Runtime Error Codes]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

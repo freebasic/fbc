@@ -2,14 +2,14 @@
 Fixed-size homogeneous data structures.
 
 {{fbdoc item="section" value="Overview"}}
-	Fixed-length arrays are [[ProPgArrays arrays]] that have a fixed constant size throughout the execution of a program. The memory used by a fixed-length array to store its elements is allocated at compile-time, either on the stack or in the ##.BSS## or ##.DATA## sections of the executable, depending on whether ##[[KeyPgStatic Static]]## was used to define it. This may allow for quicker program execution since the memory for the array is already allocated, unlike [[ProPgVarLenArrays variable-length arrays]], whose element memory isn't allocated until runtime.
+	Fixed-length arrays are [[ProPgArrays|arrays]] that have a fixed constant size throughout the execution of a program. The memory used by a fixed-length array to store its elements is allocated at compile-time, either on the stack or in the ##.BSS## or ##.DATA## sections of the executable, depending on whether ##[[KeyPgStatic|Static]]## was used to define it. This may allow for quicker program execution since the memory for the array is already allocated, unlike [[ProPgVarLenArrays|variable-length arrays]], whose element memory isn't allocated until runtime.
 	
-	Fixed-length arrays with //[[ProPgStorageClasses automatic storage]]//, have their elements allocated on the program stack, and pointers to these elements remain valid only while the array is in scope. The elements of fixed-length arrays with //[[ProPgStorageClasses static storage]]// are allocated in the ##.DATA## or ##.BSS## sections of the executable, depending on whether or not they are initialized when defined, so pointers to these elements remain valid for the entire execution of the program. Fixed-length arrays of any storage class cannot be resized during program execution, only [[ProPgVarLenArrays variable-length arrays]] can.
+	Fixed-length arrays with //[[ProPgStorageClasses|automatic storage]]//, have their elements allocated on the program stack, and pointers to these elements remain valid only while the array is in scope. The elements of fixed-length arrays with //[[ProPgStorageClasses|static storage]]// are allocated in the ##.DATA## or ##.BSS## sections of the executable, depending on whether or not they are initialized when defined, so pointers to these elements remain valid for the entire execution of the program. Fixed-length arrays of any storage class cannot be resized during program execution, only [[ProPgVarLenArrays|variable-length arrays]] can.
 	
-	Fixed-length arrays may also be used as data members inside [[ProPgUDTs user-defined types]], in which case the array is directly allocated as part of the user-defined type structure.
+	Fixed-length arrays may also be used as data members inside [[ProPgUDTs|user-defined types]], in which case the array is directly allocated as part of the user-defined type structure.
 
 {{fbdoc item="section" value="Declaration"}}
-	A fixed-length array is declared with either the ##[[KeyPgDim Dim]]## or ##[[KeyPgStatic Static]]## keywords, followed by a variable identifier, a parenthesized list of boundaries and an element [[CatPgStdDataTypes data type]].
+	A fixed-length array is declared with either the ##[[KeyPgDim|Dim]]## or ##[[KeyPgStatic|Static]]## keywords, followed by a variable identifier, a parenthesized list of boundaries and an element [[CatPgStdDataTypes|data type]].
 	
 	{{fbdoc item="filename" value="examples/manual/proguide/arrays/fixedlen_storage.bas"}}%%(freebasic)
 '' Defines a one-dimensional fixed-length array of type INTEGER having automatic storage.
@@ -30,7 +30,7 @@ dim d(1 to 2, 1 to 2) as integer  '' 2-dimensional, 4 elements: (1,1), (1,2), (2
 dim e(255, 255, 255, 255) as integer '' 4-dimensional, 256 * 256 * 256 * 256 elements
 %%
 	
-	For an array to be declared fixed-length, the boundaries must be specified using only number literals or ##[[KeyPgConst Const]]## values or ##[[KeyPgEnum Enum]]## constants.
+	For an array to be declared fixed-length, the boundaries must be specified using only number literals or ##[[KeyPgConst|Const]]## values or ##[[KeyPgEnum|Enum]]## constants.
 
 {{fbdoc item="filename" value="examples/manual/proguide/arrays/fixedlen_constants.bas"}}%%(freebasic)
 const myLowerBound = -5

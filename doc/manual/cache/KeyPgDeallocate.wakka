@@ -2,7 +2,7 @@
 Frees previously allocated memory
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Deallocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //pointer// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Deallocate** [[KeyPgCdecl|cdecl]] ( [[KeyPgByval|byval]] //pointer// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**Deallocate**( //pointer// )
@@ -12,7 +12,7 @@ Frees previously allocated memory
 		the address of the previously allocated buffer.
 
 {{fbdoc item="desc"}}
-	This procedure frees memory that was previously allocated with ##[[KeyPgAllocate Allocate]]##. ##//pointer//## must be a valid pointer. After the procedure returns, ##//pointer//## will be rendered invalid (pointing to an invalid memory address), and its use (dereferencing or calling **##Deallocate##** again) will result in undefined behavior.
+	This procedure frees memory that was previously allocated with ##[[KeyPgAllocate|Allocate]]##. ##//pointer//## must be a valid pointer. After the procedure returns, ##//pointer//## will be rendered invalid (pointing to an invalid memory address), and its use (dereferencing or calling **##Deallocate##** again) will result in undefined behavior.
 
 	Calling **##Deallocate##** on a null pointer induces no action.
 
@@ -92,16 +92,16 @@ end sub
    end 0
 %%
 
-In the program above, a reference pointer in a function is set to null after deallocating the memory it points to. An ##[[KeyPgAssert ASSERT]]## macro is used to test if the original pointer is in fact null after the function call. This example implies the correct way to pass pointers to functions that deallocate the memory they point to is by reference.
+In the program above, a reference pointer in a function is set to null after deallocating the memory it points to. An ##[[KeyPgAssert|ASSERT]]## macro is used to test if the original pointer is in fact null after the function call. This example implies the correct way to pass pointers to functions that deallocate the memory they point to is by reference.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Deallocate""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Deallocate""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgAllocate Allocate]]##
-	- ##[[KeyPgReallocate Reallocate]]##
+	- ##[[KeyPgAllocate|Allocate]]##
+	- ##[[KeyPgReallocate|Reallocate]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

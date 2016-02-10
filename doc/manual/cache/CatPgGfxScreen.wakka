@@ -44,7 +44,7 @@ Statements and procedures that work with the graphics display.
 	=={{fbdoc item="keyword" value="KeyPgScreenlock|SCREENLOCK"}}==
 		Locks the current working page's framebuffer for direct access.
 	=={{fbdoc item="keyword" value="KeyPgScreenunlock|SCREENUNLOCK"}}==
-		Reverts a previous [[KeyPgScreenlock ScreenLock]] command.
+		Reverts a previous [[KeyPgScreenlock|ScreenLock]] command.
 
 {{anchor name="METRICS"}}{{fbdoc item="section" value="Screen Metrics"}}
 	=={{fbdoc item="keyword" value="KeyPgViewgraphics|VIEW (GRAPHICS)"}}==
@@ -54,7 +54,7 @@ Statements and procedures that work with the graphics display.
 	=={{fbdoc item="keyword" value="KeyPgPmap|PMAP"}}==
 		Converts coordinates between physical and view mappings.
 	=={{fbdoc item="keyword" value="KeyPgPointCoord|POINTCOORD"}}==
-		Queries ##[[KeyPgDraw Draw]]##'s pen position.
+		Queries ##[[KeyPgDraw|Draw]]##'s pen position.
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Introduction to Message-Based Programming"}}----
-//Written by [[WikiRick rdc]]//
+//Written by [[WikiRick|rdc]]//
 
 Historically, programming languages have been categorized as procedural and message-based. For example, QuickBasic could be categorized as a procedural language and Visual Basic could be categorized as a message-based (or event-driven) language. In a procedural language you generally start at the top, do some things and exit in a somewhat linear manner. In a message-based language, you generally initialize the system and then the program sits in an idle loop and waits for something to happen. When something happens, you handle it and then the program returns to the idle loop, eventually exiting the loop when the user closes the program.
 

@@ -7,11 +7,11 @@ Create a static library
 {{fbdoc item="desc"}}
 	The ##-lib## compiler option creates a static library.
 
-	The intrinsic macro ##[[KeyPgDdfboutlib __FB_OUT_LIB__]]## is set to non-zero (-1) if the ##-lib## option was specified, and set to zero (0) otherwise.
+	The intrinsic macro ##[[KeyPgDdfboutlib|__FB_OUT_LIB__]]## is set to non-zero (-1) if the ##-lib## option was specified, and set to zero (0) otherwise.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfboutlib __FB_OUT_LIB__]]##
-	- [[ProPgStaticLibraries Static Libraries]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- ##[[KeyPgDdfboutlib|__FB_OUT_LIB__]]##
+	- [[ProPgStaticLibraries|Static Libraries]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

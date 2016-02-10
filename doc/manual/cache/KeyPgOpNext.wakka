@@ -1,21 +1,21 @@
 {{fbdoc item="title" value="Operator Next (Iteration)"}}----
-Determines if a ##[[KeyPgFornext For...Next]]## loop should be terminated
+Determines if a ##[[KeyPgFornext|For...Next]]## loop should be terminated
 
 {{fbdoc item="syntax"}}##
-	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] } //typename//
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Next** ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //cond// [[KeyPgAs as]] //typename// ) [[KeyPgAs as]] [[KeyPgInteger Integer]]
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Next** ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //cond// [[KeyPgAs as]] //typename//, [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //stp// [[KeyPgAs as]] //typename// ) [[KeyPgAs as]] [[KeyPgInteger Integer]]
+	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] } //typename//
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Next** ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //cond// [[KeyPgAs|as]] //typename// ) [[KeyPgAs|as]] [[KeyPgInteger|Integer]]
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Next** ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //cond// [[KeyPgAs|as]] //typename//, [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //stp// [[KeyPgAs|as]] //typename// ) [[KeyPgAs|as]] [[KeyPgInteger|Integer]]
 		//...//
-	End { [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] }
+	End { [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] }
 ##
 {{fbdoc item="usage"}}##
-	[[KeyPgFornext For]] //iterator// [ As //typename// ] = //start_value// To //end_value// [ [[KeyPgFornext Step]] //step_value// ]
+	[[KeyPgFornext|For]] //iterator// [ As //typename// ] = //start_value// To //end_value// [ [[KeyPgFornext|Step]] //step_value// ]
 		[// ...statements... //]
-	[[KeyPgFornext Next]]
+	[[KeyPgFornext|Next]]
 ##
 {{fbdoc item="param"}}
 	##//typename//##
-		name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgUnion Union]]##
+		name of the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]##
 	##//cond//##, ##//end_value//##
 		a ##//typename//## object used as a loop-terminating value
 	##//stp//##, ##//step_value//##
@@ -26,21 +26,21 @@ Determines if a ##[[KeyPgFornext For...Next]]## loop should be terminated
 		a ##//typename//## object used to copy construct or assign to the iterator initially
 
 {{fbdoc item="desc"}}
-	##[[KeyPgOpFor Operator For]]##, ##**Operator Next**## and ##[[KeyPgOpStep Operator Step]]## can be overloaded in user-defined type definitions to allow objects of that type to be used as iterators and step values in ##[[KeyPgFornext For...Next]]## loops.
+	##[[KeyPgOpFor|Operator For]]##, ##**Operator Next**## and ##[[KeyPgOpStep|Operator Step]]## can be overloaded in user-defined type definitions to allow objects of that type to be used as iterators and step values in ##[[KeyPgFornext|For...Next]]## loops.
 
-	##**Operator Next**## is called every time the iterator needs to be checked against the end value. This happens immediately after the call to its ##[[KeyPgOpFor Operator For]]##, and immediately after any calls to its ##[[KeyPgOpStep Operator Step]]##. ##**Operator Next**## should return zero (0) if the loop should be terminated, or non-zero if the loop should continue iterating. The first time ##**Operator Next**## is called, no statements in the ##[[KeyPgFornext For...Next]]## body, if any, have been executed yet.
+	##**Operator Next**## is called every time the iterator needs to be checked against the end value. This happens immediately after the call to its ##[[KeyPgOpFor|Operator For]]##, and immediately after any calls to its ##[[KeyPgOpStep|Operator Step]]##. ##**Operator Next**## should return zero (0) if the loop should be terminated, or non-zero if the loop should continue iterating. The first time ##**Operator Next**## is called, no statements in the ##[[KeyPgFornext|For...Next]]## body, if any, have been executed yet.
 
-	The first version of ##**Operator Next**## is used if no step value is given in the ##[[KeyPgFornext For...Next]]## statement. If a step value is given, the second version is used and is passed the step value.
+	The first version of ##**Operator Next**## is used if no step value is given in the ##[[KeyPgFornext|For...Next]]## statement. If a step value is given, the second version is used and is passed the step value.
 
 {{fbdoc item="ex"}}
-	See the [[KeyPgOpStep Operator Step]] examples.
+	See the [[KeyPgOpStep|Operator Step]] examples.
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
+	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpFor Operator For]]##
-	- ##[[KeyPgOpStep Operator Step]]##
-	- ##[[KeyPgFornext For...Next]]##
+	- ##[[KeyPgOpFor|Operator For]]##
+	- ##[[KeyPgOpStep|Operator Step]]##
+	- ##[[KeyPgFornext|For...Next]]##
 
 {{fbdoc item="back" value="CatPgOpIterating|Iterating Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

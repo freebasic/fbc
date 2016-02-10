@@ -20,7 +20,7 @@ Intrinsic define set by the compiler
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfbfpu __FB_FPU__]]##
-	- [[CompilerOptfpu Compiler Option: -fpu]]
+	- ##[[KeyPgDdfbfpu|__FB_FPU__]]##
+	- [[CompilerOptfpu|Compiler Option: -fpu]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

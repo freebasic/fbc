@@ -2,24 +2,24 @@
 Returns a string of characters from one or more ASCII integer values
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Chr** ( [[KeyPgByval byval]] //ch// [[KeyPgAs as]] [[KeyPgInteger integer]] [, ... ] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Chr** ( [[KeyPgByval|byval]] //ch// [[KeyPgAs|as]] [[KeyPgInteger|integer]] [, ... ] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Chr**[$]( //ch0// [, //ch1// ... //chN// ] )
 ##
 {{fbdoc item="param"}}
 	##//ch//##
-		The [[CptAscii ASCII]] integer value of a character.
+		The [[CptAscii|ASCII]] integer value of a character.
 
 {{fbdoc item="ret"}}
 	Returns a string containing the character(s).
 
 {{fbdoc item="desc"}}
-	##**Chr**## returns a string containing the character(s) represented by the [[CptAscii ASCII]] values passed to it.
+	##**Chr**## returns a string containing the character(s) represented by the [[CptAscii|ASCII]] values passed to it.
 
 	When ##**Chr**## is used with numerical constants or literals, the result is evaluated at compile-time, so it can be used in variable initializers.
 
-	##[[KeyPgAsc ASC]]## performs the opposite function, returning the [[CptAscii ASCII]] code of a character represented by a string.
+	##[[KeyPgAsc|ASC]]## performs the opposite function, returning the [[CptAscii|ASCII]] code of a character represented by a string.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/chr.bas"}}%%(freebasic)
@@ -35,17 +35,17 @@ print s
 %%
 
 {{fbdoc item="lang"}}
-	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- FreeBASIC accepts multiple integer values as arguments, QB accepted only one.
 	- FreeBASIC evaluates the CHR function at compile time when used with constants or literals.
 
 {{fbdoc item="see"}}
-	- [[CptAscii ASCII Character Codes]]
-	- ##[[KeyPgAsc Asc]]##
-	- ##[[KeyPgStr Str]]##
-	- ##[[KeyPgVal Val]]##
+	- [[CptAscii|ASCII Character Codes]]
+	- ##[[KeyPgAsc|Asc]]##
+	- ##[[KeyPgStr|Str]]##
+	- ##[[KeyPgVal|Val]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

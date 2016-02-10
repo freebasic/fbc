@@ -12,15 +12,15 @@ Statements and procedures for working with arrays.
 	=={{fbdoc item="keyword" value="KeyPgOptiondynamic|OPTION DYNAMIC"}}==
 		Forces arrays to be defined as variable-length arrays.
 	=={{fbdoc item="keyword" value="KeyPgMetaDynamic|'$DYNAMIC"}}==
-		Alternate form of the [[KeyPgOptiondynamic OPTION DYNAMIC]] statement.
+		Alternate form of the [[KeyPgOptiondynamic|OPTION DYNAMIC]] statement.
 	=={{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}==
-		Reverts a previous [[KeyPgOptiondynamic OPTION DYNAMIC]] command.
+		Reverts a previous [[KeyPgOptiondynamic|OPTION DYNAMIC]] command.
 	=={{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}==
-		Alternate form of the [[KeyPgOptionstatic OPTION STATIC]] statement.
+		Alternate form of the [[KeyPgOptionstatic|OPTION STATIC]] statement.
 	=={{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}==
 		Defines and resizes variable-length arrays.
 	=={{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}==
-		Preserves array contents when used with [[KeyPgRedim REDIM]].
+		Preserves array contents when used with [[KeyPgRedim|REDIM]].
 
 <<>>{{anchor name="CLEAR"}}{{fbdoc item="section" value="Clearing Array Data"}}
 	=={{fbdoc item="keyword" value="KeyPgErase|ERASE"}}==

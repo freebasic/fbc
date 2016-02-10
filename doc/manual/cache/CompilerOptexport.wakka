@@ -8,8 +8,8 @@ Export symbols for dynamic linkage
 	The ##-export## compiler option exports symbols for dynamic linkage.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgExport Export]]##
-	- [[ProPgSharedLibraries Shared Libraries]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- ##[[KeyPgExport|Export]]##
+	- [[ProPgSharedLibraries|Shared Libraries]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

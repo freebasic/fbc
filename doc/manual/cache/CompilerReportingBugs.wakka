@@ -17,12 +17,12 @@ Currently, it is assumed that users are testing with at least the latest stable 
 
 	If after making a test case you find that there is indeed a bug in the compiler or runtime libraries (expected results differ from actual results), then you should see if that bug has already been reported or addressed by,
 	
-		- //searching the ""FreeBASIC"" [[http://sourceforge.net/p/fbc/bugs/ bug-tracker]] on sourceforge.net.// This is an official list of all known bugs and issues.
-		- //searching the ""FreeBASIC"" [[http://freebasic.net/forum forums]] on freebasic.net.// Sometimes questions are asked here that lead to bugs being discovered and fixed right away.
+		- //searching the ""FreeBASIC"" [[http://sourceforge.net/p/fbc/bugs/|bug-tracker]] on sourceforge.net.// This is an official list of all known bugs and issues.
+		- //searching the ""FreeBASIC"" [[http://freebasic.net/forum|forums]] on freebasic.net.// Sometimes questions are asked here that lead to bugs being discovered and fixed right away.
 
 {{fbdoc item="section" value="Submitting a bug report"}}
 
-	If the bug hasn't been reported, fixed or otherwise addressed, then please submit a bug report to the ""FreeBASIC"" [[http://sourceforge.net/p/fbc/bugs/ bug-tracker]] on sourceforge.net - you will need to register for a free account there. Log in and click on the "Create Ticket" link and be sure to provide the following information:
+	If the bug hasn't been reported, fixed or otherwise addressed, then please submit a bug report to the ""FreeBASIC"" [[http://sourceforge.net/p/fbc/bugs/|bug-tracker]] on sourceforge.net - you will need to register for a free account there. Log in and click on the "Create Ticket" link and be sure to provide the following information:
 	
 		- //the appropriate category.// A drop-down box is provided to select what part of the project you're reporting on, e.g., the compiler or gfxlib2 (graphics runtime library).
 		- //an appropriate summary.// This should be a short, but concise sentence that summarizes what the bug is doing. Please be as specific as you can within the space allowed. A good summary might be, "Operator Let taking a byval arg of its own type crashes."

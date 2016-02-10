@@ -9,10 +9,10 @@ Set the optimization level for GCC
 		The optimization level: ##0##, ##1##, ##2##, ##3## or ##max## (##3##).
 
 {{fbdoc item="desc"}}
-	Specifies the optimization level to be passed to GCC when using ##**[[CompilerOptgen -gen gcc]]**##.
+	Specifies the optimization level to be passed to GCC when using ##**[[CompilerOptgen|-gen gcc]]**##.
 
 {{fbdoc item="see"}}
-	- [[CompilerOptgen Compiler Option: -gen gcc]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerOptgen|Compiler Option: -gen gcc]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

@@ -2,7 +2,7 @@
 Returns the tangent of an angle
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Tan** ( [[KeyPgByval byval]] //angle// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Tan** ( [[KeyPgByval|byval]] //angle// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Tan**( //angle// )
@@ -12,10 +12,10 @@ Returns the tangent of an angle
 		the angle (in radians)
 
 {{fbdoc item="ret"}}
-	Returns the tangent of the argument ##//angle//## as a ##[[KeyPgDouble Double]]## within the range of -infinity to infinity.
+	Returns the tangent of the argument ##//angle//## as a ##[[KeyPgDouble|Double]]## within the range of -infinity to infinity.
 
 {{fbdoc item="desc"}}
-	The argument ##//angle//## is measured in [[TutMathAngles radians]] (not [[TutMathAngles degrees]]).
+	The argument ##//angle//## is measured in [[TutMathAngles|radians]] (not [[TutMathAngles|degrees]]).
 
 	The value returned by this function is undefined for values of ##//angle//## with an absolute value of ##2 ^ 63## or greater.
 
@@ -41,10 +41,10 @@ The tangent of a 75 degree angle Is 3.732050807568878
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgAtn Atn]]##
-	- ##[[KeyPgAtan2 Atan2]]##
-	- ##[[KeyPgSin Sin]]##
-	- ##[[KeyPgCos Cos]]##
-	- [[TutMathIntroTrig A Brief Introduction To Trigonometry]]
+	- ##[[KeyPgAtn|Atn]]##
+	- ##[[KeyPgAtan2|Atan2]]##
+	- ##[[KeyPgSin|Sin]]##
+	- ##[[KeyPgCos|Cos]]##
+	- [[TutMathIntroTrig|A Brief Introduction To Trigonometry]]
 
 {{fbdoc item="back" value="CatPgMath|Math"}}

@@ -18,6 +18,6 @@ Control flow statement for conditional branching
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgIfthen If...Then]]##
+	- ##[[KeyPgIfthen|If...Then]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

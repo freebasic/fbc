@@ -85,7 +85,7 @@ Referring again to the triangle image above, let's say that player one is on the
 
 To solve this we look at what pieces of information we know. We know the adjacent side to angle y (25.2 meters) and the measure of angle y (31.5 degrees). This is enough information to use the tangent function. {{fbdoc item="keyword" value="KeyPgTan|TAN"}} ( y ) = Opposite/adjacent, or TAN(31.5 degrees) = Opposite/25.2 meters. Using a little algebra to rearrange this we get opposite = {{fbdoc item="keyword" value="KeyPgTan|TAN"}}(31.5 degrees) * 25.2 meters. To find the distance between the players we could use Pythagoras's Theorem now that we know the two non-hypotenuse sides of the triangle or we could use the cosine. Using cosine would give {{fbdoc item="keyword" value="KeyPgCos|COS"}} ( y ) = adjacent/hypotenuse. With some algebra we get, hypotenuse = 25.2/{{fbdoc item="keyword" value="KeyPgCos|COS"}}(31.5 degrees).
 
-Before we can write a program to solve this, we must remember that FreeBASIC, like most programming languages, works with radians, not degrees (see [[TutMathAngles Angles]] ).
+Before we can write a program to solve this, we must remember that FreeBASIC, like most programming languages, works with radians, not degrees (see [[TutMathAngles|Angles]] ).
 
 In FreeBASIC we could get the answer with this code.
 

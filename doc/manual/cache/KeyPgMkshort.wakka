@@ -1,23 +1,23 @@
 {{fbdoc item="title" value="MKSHORT"}}----
-Does a binary copy from a ##[[KeyPgShort short]]## variable to a ##[[KeyPgString string]]##, setting its length to 2 bytes
+Does a binary copy from a ##[[KeyPgShort|short]]## variable to a ##[[KeyPgString|string]]##, setting its length to 2 bytes
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkshort** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Mkshort** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgShort|short]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Mkshort**[$](//number//)
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		A ##[[KeyPgShort short]]## variable to binary copy to a ##[[KeyPgString string]]##.
+		A ##[[KeyPgShort|short]]## variable to binary copy to a ##[[KeyPgString|string]]##.
 
 {{fbdoc item="ret"}}
-	Returns a ##[[KeyPgString string]]## with a binary copy of the ##[[KeyPgShort short]]##.
+	Returns a ##[[KeyPgString|string]]## with a binary copy of the ##[[KeyPgShort|short]]##.
 
 {{fbdoc item="desc"}}
-	Does a binary copy  from a SHORT variable to a string, setting its length to 2 bytes. The resulting string can be read back to a ##[[KeyPgShort short]]## by ##[[KeyPgCvshort Cvshort]]##
+	Does a binary copy  from a SHORT variable to a string, setting its length to 2 bytes. The resulting string can be read back to a ##[[KeyPgShort|short]]## by ##[[KeyPgCvshort|Cvshort]]##
 
-	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
+	This function is useful to write numeric values to buffers without using a ##[[KeyPgType|Type]]## definition.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/mkshort.bas"}}%%(freebasic)
@@ -30,12 +30,12 @@ sleep
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Mkshort""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Mkshort""**##.
 
 {{fbdoc item="diff"}}
 	- In QBasic this function is called ##**Mki**##.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCvshort Cvshort]]##
+	- ##[[KeyPgCvshort|Cvshort]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

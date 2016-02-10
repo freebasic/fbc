@@ -2,7 +2,7 @@
 Converts a row of image data into another color depth
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageConvertRow""** ( [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //src_bpp// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgAny any]]  [[KeyPgPtr ptr]], [[KeyPgByval byval]] //dst_bpp// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //isrgb// [[KeyPgAs as]] [[KeyPgLong long]] = 1 )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ImageConvertRow""** ( [[KeyPgByval|byval]] //src// [[KeyPgAs|as]] [[KeyPgAny|any]]  [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //src_bpp// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //dst// [[KeyPgAs|as]] [[KeyPgAny|any]]  [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //dst_bpp// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //width// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //isrgb// [[KeyPgAs|as]] [[KeyPgLong|long]] = 1 )
 ##
 {{fbdoc item="usage"}}##
 	**""ImageConvertRow""**( //src//, //src_bpp//, //dst//, //dst_bpp//, //width// [, //isrgb// ] )
@@ -101,17 +101,17 @@ ImageDestroy img32
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__ImageConvertRow""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__ImageConvertRow""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreenres ScreenRes]]##
-	- ##[[KeyPgGetgraphics Get (Graphics)]]##
-	- ##[[KeyPgPutgraphics Put (Graphics)]]##
-	- ##[[KeyPgImagecreate ImageCreate]]##
-	- ##[[KeyPgImageDestroy ImageDestroy]]##
-	- ##[[KeyPgImageInfo ImageInfo]]##
+	- ##[[KeyPgScreenres|ScreenRes]]##
+	- ##[[KeyPgGetgraphics|Get (Graphics)]]##
+	- ##[[KeyPgPutgraphics|Put (Graphics)]]##
+	- ##[[KeyPgImagecreate|ImageCreate]]##
+	- ##[[KeyPgImageDestroy|ImageDestroy]]##
+	- ##[[KeyPgImageInfo|ImageInfo]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

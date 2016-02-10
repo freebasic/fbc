@@ -2,19 +2,19 @@
 Error handling statement to set the current error handler
 
 {{fbdoc item="syntax"}}##
-	On [[[KeyPgLocal Local]]] Error Goto //label//
+	On [[[KeyPgLocal|Local]]] Error Goto //label//
 ##
 {{fbdoc item="param"}}
 	##//label//##
 		Label to jump to when an error occurs
 
 {{fbdoc item="desc"}}
-	**On Error** triggers a jump to an error handler when an error occurs. Such errors can be triggered by built-in statements such as ##[[KeyPgOpen Open]]##, or when the ##[[KeyPgError Error]]## statement is used.
+	**On Error** triggers a jump to an error handler when an error occurs. Such errors can be triggered by built-in statements such as ##[[KeyPgOpen|Open]]##, or when the ##[[KeyPgError|Error]]## statement is used.
 	
-	Note: The error checking for built-in statements is only enabled if the program is compiled with one of the //[[CompilerOpte -e]]//, //[[CompilerOptex -ex]]// or //[[CompilerOptexx -exx]]// options. **On Error** remains working with ##[[KeyPgError Error]]## even when none of these options are used.
+	Note: The error checking for built-in statements is only enabled if the program is compiled with one of the //[[CompilerOpte|-e]]//, //[[CompilerOptex|-ex]]// or //[[CompilerOptexx|-exx]]// options. **On Error** remains working with ##[[KeyPgError|Error]]## even when none of these options are used.
 	
-	##[[KeyPgLocal On Local Error]]## can be used to specify a local error handler inside a procedure. This allows for specialized per-procedure error handling and will override the global error handler, if any. Without ##[[KeyPgLocal Local]]##, the handler must be in the main part of the module.
-	Remark: Presently, the ##[[KeyPgLocal Local]]## clause is ignored by the compiler.
+	##[[KeyPgLocal|On Local Error]]## can be used to specify a local error handler inside a procedure. This allows for specialized per-procedure error handling and will override the global error handler, if any. Without ##[[KeyPgLocal|Local]]##, the handler must be in the main part of the module.
+	Remark: Presently, the ##[[KeyPgLocal|Local]]## clause is ignored by the compiler.
 	
 	##**On Error Goto 0**## deactivates the current error handler.
 
@@ -73,10 +73,10 @@ errhandler:
 	- QB has no LOCAL clause and requires the label to be in the main part of the module. 
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgError Error]]##
-	- ##[[KeyPgLocal Local]]##
-	- ##[[KeyPgErr Err]]##
-	- [[TblRuntimeErrors Runtime Error Codes]]
-	- [[ProPgErrorHandling Error Handling]]
+	- ##[[KeyPgError|Error]]##
+	- ##[[KeyPgLocal|Local]]##
+	- ##[[KeyPgErr|Err]]##
+	- [[TblRuntimeErrors|Runtime Error Codes]]
+	- [[ProPgErrorHandling|Error Handling]]
 
 {{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

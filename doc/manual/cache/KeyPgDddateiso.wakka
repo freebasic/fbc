@@ -27,8 +27,8 @@ Compiled before Christmas day 2011
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDddate __DATE__]]##
-	- ##[[KeyPgDdtime __TIME__]]##
-	- ##[[KeyPgDate Date]]##
+	- ##[[KeyPgDddate|__DATE__]]##
+	- ##[[KeyPgDdtime|__TIME__]]##
+	- ##[[KeyPgDate|Date]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

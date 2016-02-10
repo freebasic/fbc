@@ -2,8 +2,8 @@
 Reads a number of wide-characters from console or file
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( [[KeyPgByval byval]] //num// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Winput**( [[KeyPgByval byval]] //num// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgString wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Winput**( [[KeyPgByval|byval]] //num// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgString|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Winput**( [[KeyPgByval|byval]] //num// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByval|byval]] //filenum// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgString|wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Winput**( //num// [, [#]//filenum// } )
@@ -15,7 +15,7 @@ Reads a number of wide-characters from console or file
 		File number of bound file or device.
 
 {{fbdoc item="ret"}}
-	Returns a [[KeyPgWstring Wstring]] of the characters read.
+	Returns a [[KeyPgWstring|Wstring]] of the characters read.
 
 {{fbdoc item="desc"}}
 	Reads a number of wide-characters from the console, or a bound file/device specified by ##//filenum//##.
@@ -76,13 +76,13 @@ end if
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- QB does not support Unicode
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInputnum Input()]]##
-	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgInputnum|Input()]]##
+	- ##[[KeyPgOpen|Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}{{fbdoc item="back" value="CatPgInput|User Input"}}

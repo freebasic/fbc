@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="FILEDATETIME"}}----
-Returns the last modified date and time of a file as [[ProPgDates Date Serial]] 
+Returns the last modified date and time of a file as [[ProPgDates|Date Serial]] 
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileDateTime""** ( [[KeyPgByval byval]] //filename// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""FileDateTime""** ( [[KeyPgByval|byval]] //filename// [[KeyPgAs|as]] [[KeyPgZstring|zstring]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "file.bi"
@@ -18,10 +18,10 @@ Returns the last modified date and time of a file as [[ProPgDates Date Serial]]
 		Filename to retrieve date and time for.
 
 {{fbdoc item="ret"}}
-	Returns a [[ProPgDates Date Serial]].
+	Returns a [[ProPgDates|Date Serial]].
 
 {{fbdoc item="desc"}}
-	Returns the file's last modified date and time as [[ProPgDates Date Serial]].
+	Returns the file's last modified date and time as [[ProPgDates|Date Serial]].
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/filedatetime.bas"}}%%(freebasic)
@@ -56,6 +56,6 @@ end if
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- [[ProPgDates Date Serials]]
+	- [[ProPgDates|Date Serials]]
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

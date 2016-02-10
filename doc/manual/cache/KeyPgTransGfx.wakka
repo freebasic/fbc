@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="TRANS"}}----
-Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects transparent background as the blitting method
+Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which selects transparent background as the blitting method
 
 {{fbdoc item="syntax"}}##
 	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ], **Trans**
@@ -10,7 +10,7 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects t
 
 {{fbdoc item="desc"}}
 	##**Trans**## selects transparent background as the method for blitting an image buffer.  This is similar to the ##PSET## method, but pixels containing the mask color are skipped.
-	For 8-bit color images, the mask color is palette index 0.  For 16/32-bit color images, the mask color is Magenta, which is ##[[KeyPgRgb RGB]](255, 0, 255)##.  The alpha value is ignored when checking for the mask color in 32-bit images.
+	For 8-bit color images, the mask color is palette index 0.  For 16/32-bit color images, the mask color is Magenta, which is ##[[KeyPgRgb|RGB]](255, 0, 255)##.  The alpha value is ignored when checking for the mask color in 32-bit images.
 
 	Note: for 32-bit images, the alpha value of pixels may be changed to 0.  This is for efficiency reasons.  To preserve the alpha values, a custom blender may be used, as in the second example below.
 
@@ -86,7 +86,7 @@ sleep
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPutgraphics Put (Graphics)]]##
-	- ##[[KeyPgCustomgfx Custom]]##
+	- ##[[KeyPgPutgraphics|Put (Graphics)]]##
+	- ##[[KeyPgCustomgfx|Custom]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

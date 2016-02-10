@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="CBYTE"}}----
-Converts numeric or string expression to ##[[KeyPgByte Byte]]##.
+Converts numeric or string expression to ##[[KeyPgByte|Byte]]##.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cbyte** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgByte byte]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cbyte** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgByte|byte]]
 
-	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgByte byte]]
+	[[KeyPgType|Type]] //typename//
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgByte|byte]]
 	End Type
 ##
 {{fbdoc item="usage"}}##
@@ -15,21 +15,21 @@ Converts numeric or string expression to ##[[KeyPgByte Byte]]##.
 ##
 {{fbdoc item="param"}}
 	##//expression//##
-		A numeric, string, or pointer expression to cast to a ##[[KeyPgByte Byte]]## value.
+		A numeric, string, or pointer expression to cast to a ##[[KeyPgByte|Byte]]## value.
 	##//datatype//##
 		Any numeric, string, or pointer data type.
 	##//typename//##
 		A user defined type.
 
 {{fbdoc item="ret"}}
-	A ##[[KeyPgByte Byte]]## value.
+	A ##[[KeyPgByte|Byte]]## value.
 
 {{fbdoc item="desc"}}
-	The ##**Cbyte**## function rounds off the decimal part and returns a 8-bit ##[[KeyPgByte Byte]]## value. The function does not check for an overflow, and results are undefined for values which are less than ##-128## or larger than ##127##.
+	The ##**Cbyte**## function rounds off the decimal part and returns a 8-bit ##[[KeyPgByte|Byte]]## value. The function does not check for an overflow, and results are undefined for values which are less than ##-128## or larger than ##127##.
 
 	The name can be explained as 'Convert to Byte'.
 
-	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]##.
+	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint|Valint]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/casting/cbyte.bas"}}%%(freebasic)
@@ -47,22 +47,22 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Cbyte""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Cbyte""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCubyte Cubyte]]##
-	- ##[[KeyPgCshort Cshort]]##
-	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgCint Cint]]##
-	- ##[[KeyPgCuint Cuint]]##
-	- ##[[KeyPgClng Clng]]##
-	- ##[[KeyPgCulng Culng]]##
-	- ##[[KeyPgClngint Clngint]]##
-	- ##[[KeyPgCulngint Culngint]]##
-	- ##[[KeyPgCsng Csng]]##
-	- ##[[KeyPgCdbl Cdbl]]##
+	- ##[[KeyPgCubyte|Cubyte]]##
+	- ##[[KeyPgCshort|Cshort]]##
+	- ##[[KeyPgCushort|Cushort]]##
+	- ##[[KeyPgCint|Cint]]##
+	- ##[[KeyPgCuint|Cuint]]##
+	- ##[[KeyPgClng|Clng]]##
+	- ##[[KeyPgCulng|Culng]]##
+	- ##[[KeyPgClngint|Clngint]]##
+	- ##[[KeyPgCulngint|Culngint]]##
+	- ##[[KeyPgCsng|Csng]]##
+	- ##[[KeyPgCdbl|Cdbl]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

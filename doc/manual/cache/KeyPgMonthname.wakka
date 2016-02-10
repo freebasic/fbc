@@ -2,7 +2,7 @@
 Gets the name of a month from its integral representation
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""MonthName""** ( [[KeyPgByval byval]] //month// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //abbreviate// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""MonthName""** ( [[KeyPgByval|byval]] //month// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //abbreviate// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -36,6 +36,6 @@ Print Format(ds, "yyyy/mm/dd hh:mm:ss "); MonthName(Month(ds))
 	- Did not exist in QB. This function appeared in Visual Basic.
 
 {{fbdoc item="see"}}
-	- [[ProPgDates Date Serials]]
+	- [[ProPgDates|Date Serials]]
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

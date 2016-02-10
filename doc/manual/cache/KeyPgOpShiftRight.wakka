@@ -2,10 +2,10 @@
 Shifts the bits of a numeric expression to the right
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Shr** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Shr** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Shr** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Shr** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgUlongint ulongint]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Shr** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Shr** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Shr** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgLongint|longint]] ) [[KeyPgAs|as]] [[KeyPgLongint|longint]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Shr** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **Shr** //rhs//
@@ -20,7 +20,7 @@ Shifts the bits of a numeric expression to the right
 	Returns the result of ##//lhs//## being shifted right ##//rhs//## number of times.
 
 {{fbdoc item="desc"}}
-	**##Operator Shr## (Shift right)** shifts all of the bits in the left-hand side expression (##//lhs//##) right a number of times specified by the right-hand side expression (##//rhs//##). Numerically, the result is the same as "##[[KeyPgInt Int]](//lhs//## [[KeyPgOpDivide /]] ##2 [[KeyPgOpExponentiate ^]] //rhs//)##". For example, "##&b0101 **Shr** 1##" returns the binary number ##&b010##, and "##5 **Shr** 1##" returns ##2##.
+	**##Operator Shr## (Shift right)** shifts all of the bits in the left-hand side expression (##//lhs//##) right a number of times specified by the right-hand side expression (##//rhs//##). Numerically, the result is the same as "##[[KeyPgInt|Int]](//lhs//## [[KeyPgOpDivide|/]] ##2 [[KeyPgOpExponentiate|^]] //rhs//)##". For example, "##&b0101 **Shr** 1##" returns the binary number ##&b010##, and "##5 **Shr** 1##" returns ##2##.
 
 	If the left-hand side expression is signed and negative, the sign bit is copied in the newly created bits on the left after the shift.  For example, "##-5 **Shr** 2##" returns ##-2##.
 
@@ -55,15 +55,15 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Shr""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Shr""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpCombineShiftRight Operator Shr= (Shift Right and Assign)]]##
-	- ##[[KeyPgOpShiftLeft Operator Shl (Shift left)]]##
-	- ##[[KeyPgBin Bin]]##
-	- [[CatPgMath Mathematical Functions]]
+	- ##[[KeyPgOpCombineShiftRight|Operator Shr= (Shift Right and Assign)]]##
+	- ##[[KeyPgOpShiftLeft|Operator Shl (Shift left)]]##
+	- ##[[KeyPgBin|Bin]]##
+	- [[CatPgMath|Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

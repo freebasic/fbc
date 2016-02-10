@@ -2,7 +2,7 @@
 Unloads a dynamic link library from memory
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Dylibfree** ( [[KeyPgByval byval]] //library// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPointer pointer]] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Dylibfree** ( [[KeyPgByval|byval]] //library// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPointer|pointer]] )
 ##
 {{fbdoc item="usage"}}##
 	**Dylibfree**( //library// )
@@ -12,23 +12,23 @@ Unloads a dynamic link library from memory
 		The handle of a library to unload.
 
 {{fbdoc item="desc"}}
-	##**Dylibfree**## is used to release at runtime libraries previously linked to your program with ##[[KeyPgDylibload Dylibload]]##. The argument is the handle to the library returned by ##[[KeyPgDylibload Dylibload]]##.
+	##**Dylibfree**## is used to release at runtime libraries previously linked to your program with ##[[KeyPgDylibload|Dylibload]]##. The argument is the handle to the library returned by ##[[KeyPgDylibload|Dylibload]]##.
 
 {{fbdoc item="ex"}}
-	See the dynamic loading example on the [[ProPgSharedLibraries Shared Libraries]] page.
+	See the dynamic loading example on the [[ProPgSharedLibraries|Shared Libraries]] page.
 
 {{fbdoc item="target"}}
 	- Dynamic link libraries are not available in DOS, as the OS doesn't support them.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Dylibfree""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Dylibfree""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDylibsymbol Dylibsymbol]]##
-	- ##[[KeyPgDylibload Dylibload]]##
-	- ##[[KeyPgExport Export]]##
+	- ##[[KeyPgDylibsymbol|Dylibsymbol]]##
+	- ##[[KeyPgDylibload|Dylibload]]##
+	- ##[[KeyPgExport|Export]]##
 
 {{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

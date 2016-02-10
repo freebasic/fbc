@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="CULNGINT"}}----
-Converts numeric or string expression to 64-bit unsigned integer (##[[KeyPgUlongint Ulongint]]##)
+Converts numeric or string expression to 64-bit unsigned integer (##[[KeyPgUlongint|Ulongint]]##)
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Culngint** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Culngint** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]]
 
-	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
+	[[KeyPgType|Type]] //typename//
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]]
 	End Type
 ##
 {{fbdoc item="usage"}}##
@@ -15,22 +15,22 @@ Converts numeric or string expression to 64-bit unsigned integer (##[[KeyPgUlong
 ##
 {{fbdoc item="param"}}
 	##//expression//##
-		a numeric, string, or pointer expression to cast to a ##[[KeyPgUlongint Ulongint]]## value
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgUlongint|Ulongint]]## value
 	##//datatype//##
 		any numeric, string, or pointer data type
 	##//typename//##
 		a user defined type
 
 {{fbdoc item="ret"}}
-	A ##[[KeyPgUlongint Ulongint]]## value.
+	A ##[[KeyPgUlongint|Ulongint]]## value.
 
 {{fbdoc item="desc"}}
-	The ##**Culngint**## function rounds off the decimal part and returns a 64-bit ##[[KeyPgUlongint Ulongint]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##0## or larger than ##18## ##446## ##744## ##073## ##709## ##551## ##615##.  Additionally, casts from floating-point expressions are currently not guaranteed to work for values higher than ##2^63## (##9## ##223## ##372## ##036## ##854## ##775## ##808##).
+	The ##**Culngint**## function rounds off the decimal part and returns a 64-bit ##[[KeyPgUlongint|Ulongint]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##0## or larger than ##18## ##446## ##744## ##073## ##709## ##551## ##615##.  Additionally, casts from floating-point expressions are currently not guaranteed to work for values higher than ##2^63## (##9## ##223## ##372## ##036## ##854## ##775## ##808##).
 
 
 	The name can be explained as 'Convert to Unsigned ""LoNG INTeger""'.
 
-	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValulng Valulng]]##.
+	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValulng|Valulng]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/casting/culngint.bas"}}%%(freebasic)
@@ -48,22 +48,22 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Culngint""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Culngint""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCbyte Cbyte]]##
-	- ##[[KeyPgCubyte Cubyte]]##
-	- ##[[KeyPgCshort Cshort]]##
-	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgCint Cint]]##
-	- ##[[KeyPgCuint Cuint]]##
-	- ##[[KeyPgClng Clng]]##
-	- ##[[KeyPgCulng Culng]]##
-	- ##[[KeyPgClngint Clngint]]##
-	- ##[[KeyPgCsng Csng]]##
-	- ##[[KeyPgCdbl Cdbl]]##
+	- ##[[KeyPgCbyte|Cbyte]]##
+	- ##[[KeyPgCubyte|Cubyte]]##
+	- ##[[KeyPgCshort|Cshort]]##
+	- ##[[KeyPgCushort|Cushort]]##
+	- ##[[KeyPgCint|Cint]]##
+	- ##[[KeyPgCuint|Cuint]]##
+	- ##[[KeyPgClng|Clng]]##
+	- ##[[KeyPgCulng|Culng]]##
+	- ##[[KeyPgClngint|Clngint]]##
+	- ##[[KeyPgCsng|Csng]]##
+	- ##[[KeyPgCdbl|Cdbl]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

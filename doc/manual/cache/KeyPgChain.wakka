@@ -2,7 +2,7 @@
 Temporarily transfers control to an external program
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Chain** ( [[KeyPgByref byref]] //program// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Chain** ( [[KeyPgByref|byref]] //program// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Chain**( //program// )
@@ -40,8 +40,8 @@ end if
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgExec Exec]]## transfer temporarily, with arguments  
-	- ##[[KeyPgRun Run]]## one-way transfer
-	- ##[[KeyPgCommand Command]]## pick arguments
+	- ##[[KeyPgExec|Exec]]## transfer temporarily, with arguments  
+	- ##[[KeyPgRun|Run]]## one-way transfer
+	- ##[[KeyPgCommand|Command]]## pick arguments
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

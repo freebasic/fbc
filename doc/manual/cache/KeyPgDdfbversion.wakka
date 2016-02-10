@@ -20,9 +20,9 @@ Intrinsic define (macro string) set by the compiler
 	- Did not exist in QB
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfbsignature __FB_SIGNATURE__]]##
-	- ##[[KeyPgDdfbwin32 __FB_WIN32__]]##
-	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
-	- ##[[KeyPgDdfbdos __FB_DOS__]]##
+	- ##[[KeyPgDdfbsignature|__FB_SIGNATURE__]]##
+	- ##[[KeyPgDdfbwin32|__FB_WIN32__]]##
+	- ##[[KeyPgDdfblinux|__FB_LINUX__]]##
+	- ##[[KeyPgDdfbdos|__FB_DOS__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

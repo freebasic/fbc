@@ -6,12 +6,12 @@ Preprocessor directive to define a multiline macro
 		//body//
 	**#endmacro**
 	
-	**#macro** //identifier//( [ //parameters//, ] //[[KeyPgDots variadic_parameter...]]// )
+	**#macro** //identifier//( [ //parameters//, ] //[[KeyPgDots|variadic_parameter...]]// )
 		//body//
 	**#endmacro**
 ##
 {{fbdoc item="desc"}}
-	##**#macro**## is the multi-line version of ##[[KeyPgPpdefine #define]]##.
+	##**#macro**## is the multi-line version of ##[[KeyPgPpdefine|#define]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/macro.bas"}}%%(freebasic)
@@ -45,8 +45,8 @@ Print2( "Hello", "World" )
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #define]]##
-	- ##[[KeyPgPpifdef #ifdef]]##
-	- ##[[KeyPgPpundef #undef]]##
+	- ##[[KeyPgPpdefine|#define]]##
+	- ##[[KeyPgPpifdef|#ifdef]]##
+	- ##[[KeyPgPpundef|#undef]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

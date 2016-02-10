@@ -27,13 +27,13 @@ Returns the color attribute of a specified pixel coordinate
 {{fbdoc item="desc"}}
 	""GfxLib"" Function with two different uses. 
 	If supplied with two coordinates it reads the color of the pixel at the coordinate ##//coord_x//##, ##//coord_y//## of the screen, or of the ##//buffer//##, if supplied. 
-	The value return is a color index in a 256 or less color ##[[KeyPgScreengraphics Screen]]##, and an ##[[KeyPgRgb RGB]]## value in true color modes. If the coordinates are off-screen or off-buffer, ##-1## is returned
+	The value return is a color index in a 256 or less color ##[[KeyPgScreengraphics|Screen]]##, and an ##[[KeyPgRgb|RGB]]## value in true color modes. If the coordinates are off-screen or off-buffer, ##-1## is returned
 
 	If supplied with a single value it returns the one of the coordinates of the graphics cursor as set by the last graphics command executed. If the last command was executed in a buffer, the values returned will be coordinates in the buffer. Arguments out of the range ##0##-##3## will return ##0##.
 
 	The function ##**Point**## does not work in text modes.
 
-	Speed note: while ##**Point**## provides valid results, it is quite slow to call repeatedly due to the overhead of additional calculations and checks. Much better performance can be achieved by using direct memory access using the results obtained from ##[[KeyPgImageinfo Imageinfo]]## and ##[[KeyPgScreeninfo Screeninfo]]##/##[[KeyPgScreenptr ScreenPtr]]##.
+	Speed note: while ##**Point**## provides valid results, it is quite slow to call repeatedly due to the overhead of additional calculations and checks. Much better performance can be achieved by using direct memory access using the results obtained from ##[[KeyPgImageinfo|Imageinfo]]## and ##[[KeyPgScreeninfo|Screeninfo]]##/##[[KeyPgScreenptr|ScreenPtr]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/point.bas"}}%%(freebasic)
@@ -58,11 +58,11 @@ sleep%%
 	- In 16 bpp and 32 bpp modes, a 32-bit value is returned instead of an 8-bit palette index
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPset Pset]]## - write pixels
-	- ##[[KeyPgPmap Pmap]]##
-	- ##[[KeyPgColor Color]]##
-	- ##[[KeyPgViewgraphics View (Graphics)]]##
-	- ##[[KeyPgWindow Window]]##
-	- ##[[GfxInternalFormats Internal pixel formats]]##
+	- ##[[KeyPgPset|Pset]]## - write pixels
+	- ##[[KeyPgPmap|Pmap]]##
+	- ##[[KeyPgColor|Color]]##
+	- ##[[KeyPgViewgraphics|View (Graphics)]]##
+	- ##[[KeyPgWindow|Window]]##
+	- ##[[GfxInternalFormats|Internal pixel formats]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

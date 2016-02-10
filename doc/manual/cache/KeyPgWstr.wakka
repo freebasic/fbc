@@ -2,18 +2,18 @@
 Returns a wide-character string representation of a number or ASCII character string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUlong ulong]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstr** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstr** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgByte|byte]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstr** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstr** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgShort|short]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstr** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgUshort|ushort]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstr** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstr** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstr** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgLongint|longint]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstr** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstr** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstr** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstr** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstr** ( [[KeyPgByval|byval]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Wstr**( //number// )
@@ -30,7 +30,7 @@ Returns a wide-character string representation of a number or ASCII character st
 	Returns the wide-character representation of the numeric or string expression.
 
 {{fbdoc item="desc"}}
-	##**Wstr**## converts numeric variables to their wide-character string representation. It is the wide-character equivalent to ##[[KeyPgStr Str]]##.
+	##**Wstr**## converts numeric variables to their wide-character string representation. It is the wide-character equivalent to ##[[KeyPgStr|Str]]##.
 
 	##**Wstr**## also converts ASCII character strings to Unicode character strings. If a wide-character string is given, that string is returned unmodified.
 
@@ -63,13 +63,13 @@ print WStr("Unicode 'Hello World'")
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Wstr""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Wstr""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgStr Str]]##
-	- ##[[KeyPgWstring Wstring]]##
+	- ##[[KeyPgStr|Str]]##
+	- ##[[KeyPgWstring|Wstring]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

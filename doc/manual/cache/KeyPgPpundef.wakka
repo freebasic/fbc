@@ -5,7 +5,7 @@ Preprocessor directive to undefine a macro
 	**#undef** //symbol//
 ##
 {{fbdoc item="desc"}}
-	Undefines a symbol previously defined with ##[[KeyPgPpdefine #define]]##.
+	Undefines a symbol previously defined with ##[[KeyPgPpdefine|#define]]##.
 	
 	Can be used to ensure that a macro or symbol has a limited lifespan and does not conflict with a similar macro definition that may be defined later in the source code.
 	
@@ -23,14 +23,14 @@ Print ADD2(1, 2)
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #define]]##
-	- ##[[KeyPgPpmacro #macro]]##
-	- ##[[KeyPgPpif #if]]##
-	- ##[[KeyPgPpelse #else]]## 
-	- ##[[KeyPgPpelseif #elseif]]## 
-	- ##[[KeyPgPpendif #endif]]## 
-	- ##[[KeyPgPpifdef #ifdef]]##
-	- ##[[KeyPgPpifndef #ifndef]]##
-	- ##[[KeyPgDefined defined]]##
+	- ##[[KeyPgPpdefine|#define]]##
+	- ##[[KeyPgPpmacro|#macro]]##
+	- ##[[KeyPgPpif|#if]]##
+	- ##[[KeyPgPpelse|#else]]## 
+	- ##[[KeyPgPpelseif|#elseif]]## 
+	- ##[[KeyPgPpendif|#endif]]## 
+	- ##[[KeyPgPpifdef|#ifdef]]##
+	- ##[[KeyPgPpifndef|#ifndef]]##
+	- ##[[KeyPgDefined|defined]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

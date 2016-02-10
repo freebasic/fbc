@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="PSET"}}----
-Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects ##[[KeyPgPset PSet]]## as the blitting method
+Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which selects ##[[KeyPgPset|PSet]]## as the blitting method
 
 {{fbdoc item="syntax"}}##
 	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ], **Pset**
@@ -11,7 +11,7 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects #
 {{fbdoc item="desc"}}
 	The ##**PSet**## method copies the source pixel values onto the destination pixels.
 
-	This is the simplest ##[[KeyPgPutgraphics Put]]## method. The pixels in the destination buffer are directly overwritten with the pixels in the source buffer.  No additional operations are done, and there are no color values that are treated as transparent.  It has the same effect as ##[[KeyPgPset PSet]]ting## each pixel individually.
+	This is the simplest ##[[KeyPgPutgraphics|Put]]## method. The pixels in the destination buffer are directly overwritten with the pixels in the source buffer.  No additional operations are done, and there are no color values that are treated as transparent.  It has the same effect as ##[[KeyPgPset|PSet]]ting## each pixel individually.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/gfx/put-pset.bas"}}%%(freebasic)
@@ -42,7 +42,7 @@ sleep
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPset PSet]]##
-	- ##[[KeyPgPutgraphics Put (Graphics)]]##
+	- ##[[KeyPgPset|PSet]]##
+	- ##[[KeyPgPutgraphics|Put (Graphics)]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

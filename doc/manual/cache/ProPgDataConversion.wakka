@@ -30,8 +30,8 @@ __Double or Single to Integer__
 	- If the value of the floating point number exceeds the range of the target type are results are undefined.  A run-time error is not raised.
 
 {{fbdoc item="see"}}
-	- [[CatPgStdDataTypes Standard Data Types]]
-	- [[TblVarTypes Variable Types]]
-	- [[CatPgCasting Casting and Conversion Functions]]
+	- [[CatPgStdDataTypes|Standard Data Types]]
+	- [[TblVarTypes|Variable Types]]
+	- [[CatPgCasting|Casting and Conversion Functions]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

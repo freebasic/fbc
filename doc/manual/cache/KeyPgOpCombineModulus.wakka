@@ -2,7 +2,7 @@
 Divides a value and assigns the remainder to a variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Mod=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Mod=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] )
 ##
 {{fbdoc item="usage"}}##
 	//lhs// **Mod=** //rhs//
@@ -14,9 +14,9 @@ Divides a value and assigns the remainder to a variable
 		The value to divide ##//lhs//## by.
 
 {{fbdoc item="desc"}}
-	This operator divides two values of ##[[KeyPgInteger Integer]]## type and assigns the remainder to its left-hand side (##//lhs//##) variable. It is functionally equivalent to:
+	This operator divides two values of ##[[KeyPgInteger|Integer]]## type and assigns the remainder to its left-hand side (##//lhs//##) variable. It is functionally equivalent to:
 ##
-		//lhs// = //lhs// [[KeyPgOpModulus Mod]] //rhs//
+		//lhs// = //lhs// [[KeyPgOpModulus|Mod]] //rhs//
 ##
 	This operator can be overloaded for user-defined types.
 
@@ -31,13 +31,13 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpModulus Operator + (Modulus)]]##
-	- [[CatPgMath Mathematical Functions]]
+	- ##[[KeyPgOpModulus|Operator + (Modulus)]]##
+	- [[CatPgMath|Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

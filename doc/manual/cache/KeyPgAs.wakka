@@ -1,14 +1,14 @@
 {{fbdoc item="title" value="AS"}}----
-Optional part of a declaration which specifies a data type, or part of the [[KeyPgOpen Open]] statement which specifies a file handle.
+Optional part of a declaration which specifies a data type, or part of the [[KeyPgOpen|Open]] statement which specifies a file handle.
 
 {{fbdoc item="syntax"}}##
-	//symbolname// **As** [[DataType datatype]]
+	//symbolname// **As** [[DataType|datatype]]
 
-	[[KeyPgOpen open]] ... **As** //#filenumber//
-	[[KeyPgType type]] ... **As** [[DataType datatype]]
+	[[KeyPgOpen|open]] ... **As** //#filenumber//
+	[[KeyPgType|type]] ... **As** [[DataType|datatype]]
 ##
 {{fbdoc item="desc"}}
-	##**As**## is used to declare the type of variables, fields or arguments and is also used in the ##[[KeyPgOpen Open]]## statement to determine the file handle. ##**As**## is also used with the ##[[KeyPgTypeAlias Type (Alias)]]## syntax, similar to C's typedef statement.
+	##**As**## is used to declare the type of variables, fields or arguments and is also used in the ##[[KeyPgOpen|Open]]## statement to determine the file handle. ##**As**## is also used with the ##[[KeyPgTypeAlias|Type (Alias)]]## syntax, similar to C's typedef statement.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/as.bas"}}%%(freebasic)
@@ -34,12 +34,12 @@ Open "test" For Input As #1
 %%
 
 {{fbdoc item="diff"}}
-	- The [[KeyPgTypeAlias Type (Alias)]] syntax was not supported in QB.
+	- The [[KeyPgTypeAlias|Type (Alias)]] syntax was not supported in QB.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDeclare Declare]]##
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgType Type]]##
-	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgDeclare|Declare]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgType|Type]]##
+	- ##[[KeyPgOpen|Open]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

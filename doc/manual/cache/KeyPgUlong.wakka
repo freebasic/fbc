@@ -2,7 +2,7 @@
 Standard data type: 32-bit unsigned integer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Ulong**
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Ulong**
 ##
 {{fbdoc item="desc"}}
 	32-bit unsigned whole-number data type. Can hold values from ##0## to ##4294967295##. Corresponds to an unsigned DWORD.
@@ -17,14 +17,14 @@ Standard data type: 32-bit unsigned integer
 	%%ULong Range = 0 to 4294967295%%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Ulong""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Ulong""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLong Long]]##
-	- ##[[KeyPgUinteger Uinteger]]##
-	- ##[[KeyPgUlongint Ulongint]]##
+	- ##[[KeyPgLong|Long]]##
+	- ##[[KeyPgUinteger|Uinteger]]##
+	- ##[[KeyPgUlongint|Ulongint]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

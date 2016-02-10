@@ -2,7 +2,7 @@
 Destroys and deallocates storage for an image
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ImageDestroy""** ( [[KeyPgByval byval]] //image// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ImageDestroy""** ( [[KeyPgByval|byval]] //image// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**""ImageDestroy""**( //image// )
@@ -12,20 +12,20 @@ Destroys and deallocates storage for an image
 		The address of the image to destroy.
 
 {{fbdoc item="desc"}}
-	Destroys the image pointed to by ##//image//##, which must be an address returned from a call to ##[[KeyPgImagecreate ImageCreate]]##.
+	Destroys the image pointed to by ##//image//##, which must be an address returned from a call to ##[[KeyPgImagecreate|ImageCreate]]##.
 
 	Calling ##**""ImageDestroy""**## on a null pointer induces no action.
 
 {{fbdoc item="ex"}}
-	See ##[[KeyPgImagecreate ImageCreate]]## for an example on using ##**""ImageDestroy""**##.
+	See ##[[KeyPgImagecreate|ImageCreate]]## for an example on using ##**""ImageDestroy""**##.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Imagedestroy""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Imagedestroy""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgImagecreate ImageCreate]]##
+	- ##[[KeyPgImagecreate|ImageCreate]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="ACCESS"}}----
-Clause of the ##[[KeyPgOpen Open]]## statement to specify requested privileges
+Clause of the ##[[KeyPgOpen|Open]]## statement to specify requested privileges
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgOpen open]] //filename// for [[KeyPgBinary binary]] **Access** {**Read** | **Write** | **Read Write**} as [#]//filenum//
+	[[KeyPgOpen|open]] //filename// for [[KeyPgBinary|binary]] **Access** {**Read** | **Write** | **Read Write**} as [#]//filenum//
 ##
 {{fbdoc item="usage"}}##
 	open //filename// for binary **Access Read** as #//filenum//
@@ -18,11 +18,11 @@ Clause of the ##[[KeyPgOpen Open]]## statement to specify requested privileges
 		Open the file with read and write privileges.
 
 {{fbdoc item="desc"}}
-	##Access## is used with the ##[[KeyPgOpen Open]]## statement to request read, write, or read and write privileges.  If the ##Access## clause is not specified, ##Read Write## is assumed.
+	##Access## is used with the ##[[KeyPgOpen|Open]]## statement to request read, write, or read and write privileges.  If the ##Access## clause is not specified, ##Read Write## is assumed.
 
 {{fbdoc item="ex"}}
 
-This example shows how to open the file "data.raw" with ##[[KeyPgReadFile read]]## and then "data.out" with ##[[KeyPgWriteFile write]]## access, in ##[[KeyPgBinary Binary]]## mode, in an open file number returned by ##[[KeyPgFreefile FreeFile]]##.
+This example shows how to open the file "data.raw" with ##[[KeyPgReadFile|read]]## and then "data.out" with ##[[KeyPgWriteFile|write]]## access, in ##[[KeyPgBinary|Binary]]## mode, in an open file number returned by ##[[KeyPgFreefile|FreeFile]]##.
 {{fbdoc item="filename" value="examples/manual/fileio/access.bas"}}%%(freebasic)
 Dim As Integer o
 
@@ -60,8 +60,8 @@ Dim As Integer o
 	- None known.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgReadFile Read]]##
-	- ##[[KeyPgWriteFile Write]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgReadFile|Read]]##
+	- ##[[KeyPgWriteFile|Write]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

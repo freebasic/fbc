@@ -2,14 +2,14 @@
 Opens a serial port for input and output
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Open Com** ( byref //options// [[KeyPgAs as]] [[KeyPgString string]], **AS** //filenum// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Open Com** ( byref //options// [[KeyPgAs|as]] [[KeyPgString|string]], **AS** //filenum// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Open Com**( //options//[,] **AS**[#] //filenum// )
 ##
 {{fbdoc item="param"}}
 	##//options//##
-		A [[KeyPgString string]] containing options used in controlling the port.
+		A [[KeyPgString|string]] containing options used in controlling the port.
 	##//filenum//##
 		The file number to bind to the port.
 
@@ -17,9 +17,9 @@ Opens a serial port for input and output
 	Returns zero (##0##) on success and a non-zero error code otherwise.
 
 {{fbdoc item="desc"}}
-	This command opens a serial port of the PC, allowing to send and receive data by using the normal file commands as ##[[KeyPgPrintpp Print  #]]##, ##[[KeyPgInputpp Input #]]##, ##[[KeyPgGetfileio Get #]]##, ...
+	This command opens a serial port of the PC, allowing to send and receive data by using the normal file commands as ##[[KeyPgPrintpp|Print  #]]##, ##[[KeyPgInputpp|Input #]]##, ##[[KeyPgGetfileio|Get #]]##, ...
 
-	The main parameter is a ##[[KeyPgString String]]## that describes, at the very least, which communications port to open. It has the format:
+	The main parameter is a ##[[KeyPgString|String]]## that describes, at the very least, which communications port to open. It has the format:
 
 		##"**COM**//n//**:** [ //baudrate// ][ , [ //parity// ][ , [ //data_bits// ][ , [ //stop_bits// ][ , [ //extended_options// ]]]]]"##
 
@@ -71,13 +71,13 @@ OPEN COM "COM1:115200" as 1
 		Currently not supported: IRQ's on the slave PIC, alternate base I/O addresses, Timeouts and most errors as detected in QB, hardware flow control, FIFO's.
 		##"COM:"## maps to ##"COM1:"##
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect the old syntax ##OPEN "COMx:...## is supported. 
+	- In the //[[CompilerOptlang|-lang qb]]// dialect the old syntax ##OPEN "COMx:...## is supported. 
 
 {{fbdoc item="diff"}}
 	- In QB the syntax was ##OPEN  "COMx:[baudrate] [,parity, [data_bits, [stop_bits, [extended_options]]]]"  FOR INPUT|OUTPUT|RANDOM AS [#] n##
 	- In QB, only ##"COM1:"## and ##"COM2:"## are supported.  In ""FreeBASIC"", any correctly configured serial port may be used.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgOpen|Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

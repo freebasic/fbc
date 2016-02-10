@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Pointers, Data Types and Memory"}}----
-//Written by [[WikiRick rdc]]//
+//Written by [[WikiRick|rdc]]//
 
-If you read the article [[TutPointers Introduction to Pointers]] you know that pointers contain memory location addresses. You can manipulate the data in these memory locations using the reference operator *. Using pointers with single data item isn?t a problem, but what if you need to store multiple data items together and manipulate them using a pointer? It can get a bit tricky unless you understand how data is stored in memory.
+If you read the article [[TutPointers|Introduction to Pointers]] you know that pointers contain memory location addresses. You can manipulate the data in these memory locations using the reference operator *. Using pointers with single data item isn?t a problem, but what if you need to store multiple data items together and manipulate them using a pointer? It can get a bit tricky unless you understand how data is stored in memory.
 
 A single memory location in a computer is 1 byte long. Big enough to hold a single ANSI character (as opposed to Unicode characters, which are wide characters and are two bytes. We won?t be discussing Unicode characters in this article.) However, all data types are not a single byte in width. Here is a simple program that displays the length in bytes of each data type.
 
@@ -71,7 +71,7 @@ ZString:  27
 
 Notice that the length of a pointer is always 4 bytes long (the same as an integer), regardless of the data being pointed to, since a pointer contains a memory address and not data.
 
-Looking at the length of the different data types, you can see that if you were to [[KeyPgAllocate allocate]] enough space for 10 integers, it would take 40 bytes of memory. Each integer takes up 4 bytes. So the question is, how do you access each integer value from the memory buffer? The answer, pointer math. Take a look at the following program.
+Looking at the length of the different data types, you can see that if you were to [[KeyPgAllocate|allocate]] enough space for 10 integers, it would take 40 bytes of memory. Each integer takes up 4 bytes. So the question is, how do you access each integer value from the memory buffer? The answer, pointer math. Take a look at the following program.
 
 ##%%(freebasic)
 option explicit
@@ -94,7 +94,7 @@ sleep
 end
 %%##
 
-In this program we dimension two variables, an [[KeyPgInteger integer]] and an [[KeyPgInteger integer]] [[KeyPgPointer pointer]], aptr. Aptr will point to our memory buffer that will contain two integers. The [[KeyPgAllocate allocate]] function requires the size of the buffer we need, so we multiply the size of an [[KeyPgInteger integer]] by 2 to reserve 8 bytes of memory (each integer will take 4 bytes of space). 
+In this program we dimension two variables, an [[KeyPgInteger|integer]] and an [[KeyPgInteger|integer]] [[KeyPgPointer|pointer]], aptr. Aptr will point to our memory buffer that will contain two integers. The [[KeyPgAllocate|allocate]] function requires the size of the buffer we need, so we multiply the size of an [[KeyPgInteger|integer]] by 2 to reserve 8 bytes of memory (each integer will take 4 bytes of space). 
 
 After the allocation process, aptr contains the address of the first byte of our memory buffer. Storing the first integer is simply a matter of using the reference operator and setting the value to 1. To print out the value, we again just use *aptr.
 
@@ -108,6 +108,6 @@ To load the second value into our buffer, we use:
 
 This may look a little strange at first glance. Aptr points to the first byte in our memory buffer. An integer is 4 bytes long, so to get to the next integer byte position, we must add 4 to aptr. We need the parenthesis around the add operation because the reference operator * has a higher precedence than +. The parenthesis ensure that we perform the add operation first, and then apply the indirection operator.
 
-Notice that we didn?t increment aptr directly. If we did, aptr would no longer point to the start of the memory buffer and the program would crash when we deallocated the buffer since it would [[KeyPgDeallocate deallocate]] memory outside the memory buffer. If the need arises to directly increment a pointer, then create a temporary pointer variable and increment that, rather than the pointer used in the original allocation. 
+Notice that we didn?t increment aptr directly. If we did, aptr would no longer point to the start of the memory buffer and the program would crash when we deallocated the buffer since it would [[KeyPgDeallocate|deallocate]] memory outside the memory buffer. If the need arises to directly increment a pointer, then create a temporary pointer variable and increment that, rather than the pointer used in the original allocation. 
 
 Memory buffers and pointers are a powerful way to store and manipulate data in memory. Care must be taken though to ensure that you are accessing the data correctly according to the type of data being stored in the buffer.

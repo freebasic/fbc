@@ -9,7 +9,7 @@ Intrinsic define (macro value) set by the compiler
 
 	Returns non-zero (-1) if the output is an object module.  Returns zero (0) otherwise.
 
-	Only one of ##[[KeyPgDdfboutdll __FB_OUT_DLL__]]##, ##[[KeyPgDdfboutexe __FB_OUT_EXE__]]##, ##[[KeyPgDdfboutlib __FB_OUT_LIB__]]##, or ##""__FB_OUT_OBJ__""##, will evaluate to non-zero (-1).  All others will evaluate to zero (0).
+	Only one of ##[[KeyPgDdfboutdll|__FB_OUT_DLL__]]##, ##[[KeyPgDdfboutexe|__FB_OUT_EXE__]]##, ##[[KeyPgDdfboutlib|__FB_OUT_LIB__]]##, or ##""__FB_OUT_OBJ__""##, will evaluate to non-zero (-1).  All others will evaluate to zero (0).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fboutobj.bas"}}%%(freebasic)
@@ -24,8 +24,8 @@ Intrinsic define (macro value) set by the compiler
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}} 
-	- ##[[KeyPgDdfboutexe __FB_OUT_EXE__]]##
-	- ##[[KeyPgDdfboutdll __FB_OUT_DLL__]]##
-	- ##[[KeyPgDdfboutlib __FB_OUT_LIB__]]##
+	- ##[[KeyPgDdfboutexe|__FB_OUT_EXE__]]##
+	- ##[[KeyPgDdfboutdll|__FB_OUT_DLL__]]##
+	- ##[[KeyPgDdfboutlib|__FB_OUT_LIB__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

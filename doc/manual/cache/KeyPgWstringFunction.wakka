@@ -1,9 +1,9 @@
 {{fbdoc item="title" value="WSTRING (Function)"}}----
-Fills a ##[[KeyPgWstring wstring]]## with a certain length of a certain wide character
+Fills a ##[[KeyPgWstring|wstring]]## with a certain length of a certain wide character
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring** ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByval byval]] //ch_code// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wstring** ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //ch// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstring** ( [[KeyPgByval|byval]] //count// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByval|byval]] //ch_code// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wstring** ( [[KeyPgByval|byval]] //count// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //ch// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Wstring**( //count//, //ch_code// )
@@ -12,17 +12,17 @@ Fills a ##[[KeyPgWstring wstring]]## with a certain length of a certain wide cha
 ##
 {{fbdoc item="param"}}
 	##//count//##
-		An ##[[KeyPgInteger integer]]## specifying the length of the string to be created.
+		An ##[[KeyPgInteger|integer]]## specifying the length of the string to be created.
 	##//ch_code//##
-		A ##[[KeyPgLong long]]## specifying the Unicode char to be used to fill the string.
+		A ##[[KeyPgLong|long]]## specifying the Unicode char to be used to fill the string.
 	##//ch//##
-		A ##[[KeyPgwstring wstring]]## whose first character is to be used to fill the string.
+		A ##[[KeyPgwstring|wstring]]## whose first character is to be used to fill the string.
 
 {{fbdoc item="ret"}}
-	The created ##[[KeyPgwstring wstring]]##. An empty string will be returned if either ##//ch//## is an empty string, or ##//count// <= 0##.
+	The created ##[[KeyPgwstring|wstring]]##. An empty string will be returned if either ##//ch//## is an empty string, or ##//count// <= 0##.
 
 {{fbdoc item="desc"}}
-	##**Wstring**## generates a temporary ##[[KeyPgwstring wstring]]## filled with ##//count//## copies of a [[Unicode Unicode]] character. This string can be printed or assigned to a previously ##[[KeyPgDim Dim]]##ed ##[[KeyPgwstring wstring]]##.
+	##**Wstring**## generates a temporary ##[[KeyPgwstring|wstring]]## filled with ##//count//## copies of a [[Unicode|Unicode]] character. This string can be printed or assigned to a previously ##[[KeyPgDim|Dim]]##ed ##[[KeyPgwstring|wstring]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/wstring.bas"}}%%(freebasic)
@@ -37,14 +37,14 @@ end 0
 	- Unicode strings are not supported in the DOS port of ""FreeBASIC"".
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Wstring""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Wstring""**##.
 
 {{fbdoc item="diff"}}
-	- ""QBasic"" does not support [[Unicode Unicode]]
+	- ""QBasic"" does not support [[Unicode|Unicode]]
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgString String]] (data type)##
-	- ##[[KeyPgWspace Wspace]]##
-	- ##[[KeyPgWstring Wstring]] (data type)##
+	- ##[[KeyPgString|String]] (data type)##
+	- ##[[KeyPgWspace|Wspace]]##
+	- ##[[KeyPgWstring|Wstring]] (data type)##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

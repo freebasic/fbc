@@ -9,7 +9,7 @@ Intrinsic define (macro value) set by the compiler
 
 	Returns non-zero (-1) if the output is a shared library.  Returns zero (0) otherwise.
 
-	Only one of ##""__FB_OUT_DLL__""##, ##[[KeyPgDdfboutexe __FB_OUT_EXE__]]##, ##[[KeyPgDdfboutlib __FB_OUT_LIB__]]##, or ##[[KeyPgDdfboutobj __FB_OUT_OBJ__]]## will evaluate to non-zero (-1).  All others will evaluate to zero (0).
+	Only one of ##""__FB_OUT_DLL__""##, ##[[KeyPgDdfboutexe|__FB_OUT_EXE__]]##, ##[[KeyPgDdfboutlib|__FB_OUT_LIB__]]##, or ##[[KeyPgDdfboutobj|__FB_OUT_OBJ__]]## will evaluate to non-zero (-1).  All others will evaluate to zero (0).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fboutdll.bas"}}%%(freebasic)
@@ -24,9 +24,9 @@ Intrinsic define (macro value) set by the compiler
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}} 
-	- ##[[KeyPgDdfboutexe __FB_OUT_EXE__]]##
-	- ##[[KeyPgDdfboutlib __FB_OUT_LIB__]]##
-	- ##[[KeyPgDdfboutobj __FB_OUT_OBJ__]]##
-	- [[CompilerOptdll Compiler Option: -dll]]
+	- ##[[KeyPgDdfboutexe|__FB_OUT_EXE__]]##
+	- ##[[KeyPgDdfboutlib|__FB_OUT_LIB__]]##
+	- ##[[KeyPgDdfboutobj|__FB_OUT_OBJ__]]##
+	- [[CompilerOptdll|Compiler Option: -dll]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

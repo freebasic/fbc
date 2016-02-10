@@ -2,9 +2,9 @@
 Returns a reference to a character in a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **[]** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgByrefFunction byref]] [[KeyPgAs as]] [[KeyPgUbyte ubyte]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **[]** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgZstring zstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgByrefFunction byref]] [[KeyPgAs as]] [[KeyPgUbyte ubyte]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **[]** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgWstring wstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgByrefFunction byref]] [[KeyPgAs as]] //T//
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **[]** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgString|string]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgByrefFunction|byref]] [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **[]** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgZstring|zstring]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgByrefFunction|byref]] [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **[]** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgWstring|wstring]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgByrefFunction|byref]] [[KeyPgAs|as]] //T//
 ##
 
 {{fbdoc item="usage"}}##
@@ -21,7 +21,7 @@ Returns a reference to a character in a string
 {{fbdoc item="desc"}}
 	This operator returns a reference to a specific character in a string:
 		- This operator must not be used in case of empty string because reference is undefined (inducing runtime error).
-		- Otherwise, the user must ensure that the index does not exceed the range "[0, ##[[KeyPgLen Len]](//lhs//) - 1##]". Outside this range, results are undefined.
+		- Otherwise, the user must ensure that the index does not exceed the range "[0, ##[[KeyPgLen|Len]](//lhs//) - 1##]". Outside this range, results are undefined.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/stringindex.bas"}}%%(freebasic)
@@ -43,6 +43,6 @@ H e l l o ,   w o r l d !
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- [[CatPgOpString String Operators]]
+	- [[CatPgOpString|String Operators]]
 
 {{fbdoc item="back" value="CatPgOpIndexing|Indexing Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

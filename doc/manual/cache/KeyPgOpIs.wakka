@@ -7,7 +7,7 @@ Check if an object is compatible to a type derived from its compile-time type
 ##
 {{fbdoc item="param"}}
 	##//expression//##
-		The expression to check, an object of a type that is directly or indirectly derived from ##[[KeyPgObject Object]]## using ##[[KeyPgExtends Extends]]##.
+		The expression to check, an object of a type that is directly or indirectly derived from ##[[KeyPgObject|Object]]## using ##[[KeyPgExtends|Extends]]##.
 	##//typename//##
 		The child type to check for. This type must be directly or indirectly derived from the type of //expression// (the compile-time type of the object).
 
@@ -15,13 +15,13 @@ Check if an object is compatible to a type derived from its compile-time type
 	Returns negative one (##-1##) if the expression is an object of real-type ##//typename//## or one of its base-types derived from the //expression// type, or zero (##0##) if it's an object of an incompatible type.
 
 {{fbdoc item="desc"}}
-	The ##**Is**## operator must be used in conjunction with inheritance in order to check compatibility between objects and types from an inheritance structure extending the built-in ##[[KeyPgObject Object]]## type.
+	The ##**Is**## operator must be used in conjunction with inheritance in order to check compatibility between objects and types from an inheritance structure extending the built-in ##[[KeyPgObject|Object]]## type.
 	
-	The ##**Is**## operator is a binary operator that checks whether an object is compatible to its derived types at run-time. Because ##**Is**## relies on run-time type information, it can only be used with types that are derived from the built-in ##[[KeyPgObject Object]]## type using ##[[KeyPgExtends Extends]]##. The compiler disallows using ##**Is**## for checks that can be solved at compile-time.
+	The ##**Is**## operator is a binary operator that checks whether an object is compatible to its derived types at run-time. Because ##**Is**## relies on run-time type information, it can only be used with types that are derived from the built-in ##[[KeyPgObject|Object]]## type using ##[[KeyPgExtends|Extends]]##. The compiler disallows using ##**Is**## for checks that can be solved at compile-time.
 	
 	The ##**Is**## operator is successful not only for the real-type (the "lowest"), but also for its base-types, as long as they are still below the type of //expression// (the compile-time type). In order to determine the real-type, all possibilities from lowest to highest must be checked.
 
-	Extending the built-in ##[[KeyPgObject Object]]## type allows to add an extra hidden vtable pointer field at the top of the ##[[KeyPgType Type]]##. The vtable is used to access information for run-time type identification used by the ##**Is**## operator.
+	Extending the built-in ##[[KeyPgObject|Object]]## type allows to add an extra hidden vtable pointer field at the top of the ##[[KeyPgType|Type]]##. The vtable is used to access information for run-time type identification used by the ##**Is**## operator.
 
 	This operator cannot be overloaded.
 
@@ -89,9 +89,9 @@ identify(@o)
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgExtends Extends]]##
-	- ##[[KeyPgObject Object]]##
-	- ##[[KeyPgIs Is (Select Case)]]##
-	- ##[[KeyPgTypeof Typeof]]##
+	- ##[[KeyPgExtends|Extends]]##
+	- ##[[KeyPgObject|Object]]##
+	- ##[[KeyPgIs|Is (Select Case)]]##
+	- ##[[KeyPgTypeof|Typeof]]##
  
 {{fbdoc item="back" value="CatPgOpConditional|Relational Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

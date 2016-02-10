@@ -1,17 +1,17 @@
 {{fbdoc item="title" value="Compiler Option: -ex"}}----
-Add error checking with ##[[KeyPgResume Resume]]## support
+Add error checking with ##[[KeyPgResume|Resume]]## support
 
 {{fbdoc item="syntax"}}##
 	**-ex**
 ##
 {{fbdoc item="desc"}}
-	The ##-ex## compiler option adds error handling as with the //[[CompilerOpte -e]]// option plus support for ##[[KeyPgResume Resume]]##.
+	The ##-ex## compiler option adds error handling as with the //[[CompilerOpte|-e]]// option plus support for ##[[KeyPgResume|Resume]]##.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfberr __FB_ERR__]]##
-	- [[CompilerOpte Compiler Option: -e]]
-	- [[CompilerOptexx Compiler Option: -exx]]
-	- [[ProPgErrorHandling Error Handling]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- ##[[KeyPgDdfberr|__FB_ERR__]]##
+	- [[CompilerOpte|Compiler Option: -e]]
+	- [[CompilerOptexx|Compiler Option: -exx]]
+	- [[ProPgErrorHandling|Error Handling]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

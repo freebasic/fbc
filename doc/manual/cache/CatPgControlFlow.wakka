@@ -18,7 +18,7 @@ Statements that direct the flow of program execution.
 	=={{fbdoc item="keyword" value="KeyPgOngosub|ON GOSUB"}}==
 		Temporarily transfers execution to one of a number of points in code defined by text labels, based on the value of an expression.
 	=={{fbdoc item="keyword" value="KeyPgReturn|RETURN"}}==
-		Returns from a call using [[KeyPgGosub Gosub]] or from a procedure returning a value.
+		Returns from a call using [[KeyPgGosub|Gosub]] or from a procedure returning a value.
 
 {{anchor name="BRANCHING"}}{{fbdoc item="section" value="Branching Statements"}}
 	=={{fbdoc item="keyword" value="KeyPgIfthen|IF..END IF"}}==
@@ -36,7 +36,7 @@ Statements that direct the flow of program execution.
 
 	{{fbdoc item="subsect" value="Intra-branch control"}}
 		=={{fbdoc item="keyword" value="KeyPgExit|EXIT SELECT"}}==
-			Prematurely breaks out of a ##[[KeyPgSelectcase SELECT..END SELECT]]## statement.
+			Prematurely breaks out of a ##[[KeyPgSelectcase|SELECT..END SELECT]]## statement.
 <<>>{{anchor name="LOOPING"}}{{fbdoc item="section" value="Looping Statements"}}
 	=={{fbdoc item="keyword" value="KeyPgWhilewend|WHILE..WEND"}}==
 		Executes a block of statements while a condition is met.

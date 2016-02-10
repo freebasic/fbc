@@ -1,10 +1,10 @@
 {{fbdoc item="title" value="EVENT (message data from ScreenEvent)"}}----
-Pre-defined structure (UDT) from fbgfx.bi used by [[KeyPgScreenevent Screenevent]] to return event data 
+Pre-defined structure (UDT) from fbgfx.bi used by [[KeyPgScreenevent|Screenevent]] to return event data 
 
 {{fbdoc item="syntax"}}##
 	#include once "fbgfx.bi"
 	using fb
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Event**
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Event**
 ##
 {{fbdoc item="desc"}}
 	Here we report the ##EVENT## structure for clarity:
@@ -53,12 +53,12 @@ End Type
 	The ##fbgfx.bi## header file contains a definition of the ##EVENT## user data type, so it is not necessary to declare it manually.
 
 {{fbdoc item="lang"}}
-	- In //[[CompilerDialects lang fb]]//, the structure and constants are stored in the ##FB## ##[[KeyPgNamespace Namespace]]##. This is not the case in other dialects.
+	- In //[[CompilerDialects|lang fb]]//, the structure and constants are stored in the ##FB## ##[[KeyPgNamespace|Namespace]]##. This is not the case in other dialects.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreenEvent ScreenEvent]]##
+	- ##[[KeyPgScreenEvent|ScreenEvent]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

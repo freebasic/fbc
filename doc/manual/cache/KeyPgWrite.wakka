@@ -37,8 +37,8 @@ write i, d, s
 	- QBASIC might print format floating-point values in slightly different ways.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgWritePp Write #]]##
-	- ##[[KeyPgPrint Print]]##
-	- ##[[KeyPgPrint ?]]##
+	- ##[[KeyPgWritePp|Write #]]##
+	- ##[[KeyPgPrint|Print]]##
+	- ##[[KeyPgPrint|?]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

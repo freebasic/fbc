@@ -21,7 +21,7 @@ Where ##//item//## and ##//value//## are used as follows:
 		Inserts a sub-section title on a page.  Normally only used on category pages (pages beginning with ""CatPg"")
 
 	item="**keyword**" value="//""WikiPageName""//""|""//Display text//"
-		Inserts a keyword link to //""WikiPageName""// and displays //Display Text//.  In the online version, this method of linking to a keyword page is not much different than using the ""[["" ""]]"" tags for a page links.  It has special meaning to the document converters when found on a category page (pages beginning with ""CatPg""), when automatically building a table of contents from the online documentation.
+		Inserts a keyword link to //""WikiPageName""// and displays //Display Text//.  In the online version, this method of linking to a keyword page is not much different than using the ""[[""|""]]"" tags for a page links.  It has special meaning to the document converters when found on a category page (pages beginning with ""CatPg""), when automatically building a table of contents from the online documentation.
 
 	item="**syntax**"
 		Inserts a **Syntax:** section header on a page

@@ -2,21 +2,21 @@
 Specifies that a member procedure is read only.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare Declare]] **Const** [[KeyPgSub Sub]]|[[KeyPgFunction Function]]|[[KeyPgProperty Property]]|[[KeyPgOperator Operator]] ...
+	[[KeyPgType|Type]] //typename//
+		[[KeyPgDeclare|Declare]] **Const** [[KeyPgSub|Sub]]|[[KeyPgFunction|Function]]|[[KeyPgProperty|Property]]|[[KeyPgOperator|Operator]] ...
 	End Type
 	
-	**Const** [[KeyPgSub Sub]]|[[KeyPgFunction Function]]|... //typename// ...
+	**Const** [[KeyPgSub|Sub]]|[[KeyPgFunction|Function]]|... //typename// ...
 		...
-	End [[KeyPgSub Sub]]|[[KeyPgFunction Function]]|...
+	End [[KeyPgSub|Sub]]|[[KeyPgFunction|Function]]|...
 ##
 {{fbdoc item="desc"}}
-	Specifies that a method does not change the object it is called on. The hidden ##[[KeyPgThis This]]## parameter will be considered read-only. The declaration can be read as 'invoking a const method promises not to change the object', and the compiler will error if the member procedure tries to change any of the data fields, or calls a non-const member procedure. 
+	Specifies that a method does not change the object it is called on. The hidden ##[[KeyPgThis|This]]## parameter will be considered read-only. The declaration can be read as 'invoking a const method promises not to change the object', and the compiler will error if the member procedure tries to change any of the data fields, or calls a non-const member procedure. 
 	
 	Read-only (##**Const**##) declarations are a measure of type safety that can be read as 'promises not to change.'  The compiler uses the const declarations to check operations on variables and parameters and generate an error at compile time if their data could potentially change.  There is no runtime overhead for using ##**Const**## qualifiers since all of the checks are made at compile time.
 	
 	Constructors and destructors cannot be ##**Const**## (not useful).
-	Member procedures can not be both ##**Const**## and ##[[KeyPgStaticMember Static]]## since static member procedures do not have a hidden ##[[KeyPgThis This]]## parameter.
+	Member procedures can not be both ##**Const**## and ##[[KeyPgStaticMember|Static]]## since static member procedures do not have a hidden ##[[KeyPgThis|This]]## parameter.
 	
 	For methods with ##**Const**## in their declaration, ##**Const**## can also be specified on the corresponding method bodies, for improved code readability.
 
@@ -81,9 +81,9 @@ end sub
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgConst Const]]##
-	- ##[[KeyPgConstQualifier Const (Qualifier)]]##
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgConst|Const]]##
+	- ##[[KeyPgConstQualifier|Const (Qualifier)]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgType|Type]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

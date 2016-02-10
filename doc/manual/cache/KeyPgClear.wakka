@@ -2,7 +2,7 @@
 Clears or initializes some memory
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Clear** [[KeyPgCdecl cdecl]] ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //value// [[KeyPgAs as]] [[KeyPgLong long]] = 0, [[KeyPgByval byval]] //bytes// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Clear** [[KeyPgCdecl|cdecl]] ( [[KeyPgByref|byref]] //dst// [[KeyPgAs|as]] [[KeyPgAny|any]], [[KeyPgByval|byval]] //value// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByval|byval]] //bytes// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] )
 ##
 {{fbdoc item="usage"}}##
 	**Clear**( //dst//, [//value//], //bytes// )
@@ -18,7 +18,7 @@ Clears or initializes some memory
 {{fbdoc item="desc"}}
 	##**Clear**## sets one or more bytes in memory to a certain value (the default value is zero (##0##) if not specified). The starting address is taken from a reference to a variable or array element.
 
-	**NOTE:** In order to clear memory referenced by a ##[[KeyPgPointer Pointer]]##, it must be dereferenced first.  Otherwise, ##**Clear**## will try to clear the bytes at the **pointer variable**'s memory location.
+	**NOTE:** In order to clear memory referenced by a ##[[KeyPgPointer|Pointer]]##, it must be dereferenced first.  Otherwise, ##**Clear**## will try to clear the bytes at the **pointer variable**'s memory location.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/clear.bas"}}%%(freebasic)
@@ -52,7 +52,7 @@ deallocate p
 	- The keyword ##CLEAR## was used in QB to erase all variables, close all files, and optionally change the stack size. This use is not supported in ""FreeBASIC"".
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgErase Erase]]##
-	- ##[[KeyPgReset Reset]]##
+	- ##[[KeyPgErase|Erase]]##
+	- ##[[KeyPgReset|Reset]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

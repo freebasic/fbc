@@ -42,10 +42,10 @@ Statements that affect how code is compiled.
 >>
 ::c::
 {{fbdoc item="lang"}}
-	- ##[[KeyPgDeflongint DEFLONGINT]]## and ##[[KeyPgDefulongint DEFULONGINT]]## available only in the //[[CompilerOptlang -lang fblite]]// dialect.
-	- ##OPTION## statements are available only in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects only.
+	- ##[[KeyPgDeflongint|DEFLONGINT]]## and ##[[KeyPgDefulongint|DEFULONGINT]]## available only in the //[[CompilerOptlang|-lang fblite]]// dialect.
+	- ##OPTION## statements are available only in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang qb]]// dialects only.
 
 {{fbdoc item="see"}}
-	- [[CatPgPreProcess Preprocessor]]
+	- [[CatPgPreProcess|Preprocessor]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

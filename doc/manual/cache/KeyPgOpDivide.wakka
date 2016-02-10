@@ -2,8 +2,8 @@
 Divides two numeric expressions
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **/** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgSingle single]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **/** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **/** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgSingle|single]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgSingle|single]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **/** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgDouble|double]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **##/##** //rhs//
@@ -39,13 +39,13 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- [[KeyPgOpIntegerDivide Operator \ (Integer divide)]]
-	- [[CatPgMath Mathematical Functions]]
+	- [[KeyPgOpIntegerDivide|Operator \ (Integer divide)]]
+	- [[CatPgMath|Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

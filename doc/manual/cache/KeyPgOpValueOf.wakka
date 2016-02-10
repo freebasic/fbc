@@ -2,7 +2,7 @@
 Dereferences a pointer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] ***** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T// [[KeyPgPointer pointer]] ) [[KeyPgByrefFunction byref]] [[KeyPgAs as]] //T//
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] ***** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T// [[KeyPgPointer|pointer]] ) [[KeyPgByrefFunction|byref]] [[KeyPgAs|as]] //T//
 ##
 
 {{fbdoc item="usage"}}##
@@ -12,7 +12,7 @@ Dereferences a pointer
 	##//rhs//##
 		The address to dereference.
 	##//T//##
-		Any [[CatPgStdDataTypes standard]], [[CatPgUserDefTypes user-defined]] or procedure type.
+		Any [[CatPgStdDataTypes|standard]], [[CatPgUserDefTypes|user-defined]] or procedure type.
 
 {{fbdoc item="ret"}}
 	Returns a reference to the value stored at the address ##//rhs//##.
@@ -47,14 +47,14 @@ The new value of 'a' is 1
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpAt Operator @ (Address of)]]##
+	- ##[[KeyPgOpAt|Operator @ (Address of)]]##
 	- ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer index)"}}##
-	- [[ProPgPointers Pointers]]
+	- [[ProPgPointers|Pointers]]
 	
 {{fbdoc item="back" value="CatPgOpPoint|Pointer Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

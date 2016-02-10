@@ -2,7 +2,7 @@
 Sets the position and visibility of the mouse cursor
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setmouse** ( [[KeyPgByval byval]] //x// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //y// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //visibility// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //clip// [[KeyPgAs as]] [[KeyPgLong long]] = -1 ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Setmouse** ( [[KeyPgByval|byval]] //x// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1, [[KeyPgByval|byval]] //y// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1, [[KeyPgByval|byval]] //visibility// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1, [[KeyPgByval|byval]] //clip// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Setmouse**([ //x// ] [, [ //y// ] [, [ //visibility// ] [, [ //clip// ]]]])
@@ -22,7 +22,7 @@ Sets the position and visibility of the mouse cursor
 	Zero (##0##) on success, non-zero to indicate failure.
 
 {{fbdoc item="desc"}}
-	##**Setmouse**## will set the (##//x//##, ##//y//##) coordinates of the mouse pointer, as well as setting its visibility.  The mouse position is set using the ##//x//## and ##//y//## parameters.  The mouse will be visible if visibility is set to ##1##, and invisible if ##//visibility//## is set to ##0##.  ##**Setmouse**## is intended for graphics modes initiated using the ##[[KeyPgScreengraphics Screen (Graphics)]]## statement only.
+	##**Setmouse**## will set the (##//x//##, ##//y//##) coordinates of the mouse pointer, as well as setting its visibility.  The mouse position is set using the ##//x//## and ##//y//## parameters.  The mouse will be visible if visibility is set to ##1##, and invisible if ##//visibility//## is set to ##0##.  ##**Setmouse**## is intended for graphics modes initiated using the ##[[KeyPgScreengraphics|Screen (Graphics)]]## statement only.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/setmouse.bas"}}%%(freebasic)
@@ -47,15 +47,15 @@ Loop While Inkey = ""
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Setmouse""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Setmouse""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgGetmouse Getmouse]]##
-	- ##[[KeyPgScreengraphics Screen]]##
-	- ##[[KeyPgMultikey Multikey]]##
-	- ##[[KeyPgGetkey Getkey]]##
+	- ##[[KeyPgGetmouse|Getmouse]]##
+	- ##[[KeyPgScreengraphics|Screen]]##
+	- ##[[KeyPgMultikey|Multikey]]##
+	- ##[[KeyPgGetkey|Getkey]]##
 
 {{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}

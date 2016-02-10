@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="The Pointer Data Type"}}----
-//Written by [[WikiRick rdc]]//
+//Written by [[WikiRick|rdc]]//
 
 The pointer data type is unique among the FreeBasic numeric data types. Instead of containing data, like the other numeric types, a pointer contains the memory address of data.
 
@@ -39,13 +39,13 @@ Untyped pointers have no type checking and default to size of byte. Untyped poin
 
 === Pointer Operators ===
 
-FreeBasic has the following [[CatPgOpPoint pointer operators]].
+FreeBasic has the following [[CatPgOpPoint|pointer operators]].
 
 You will notice that the addressof operator not only returns the memory address of a variable, but it can also return the address of a subroutine or function. You would use the address of a subroutine or function to create a callback function such as used in the CRT QSort function.
 
 === Memory Functions ===
 
-FreeBasic also has a number of [[CatPgMemory memory functions]] that are used with pointers.
+FreeBasic also has a number of [[CatPgMemory|memory functions]] that are used with pointers.
 
 These functions are useful for creating a number of dynamic structures such as linked lists, ragged or dynamic arrays and buffers used with third party libraries.
 
@@ -79,13 +79,13 @@ Pointer indexing works the same way as pointer arithmetic, but the details are h
 
 Freebasic has a set of pointer functions to complement the pointer operators.
 
-~- [[KeyPgCptr Cptr]] Converts expression to a data_type pointer. Expression can be another pointer or an integer.
-~- [[KeyPgPeek Peek]] Returns the contents of memory location pointer to by pointer. Data_type specifies the type of expected data.
-~- [[KeyPgPoke Poke]] Puts the value of expression into the memory location pointed to by pointer. The data_type specifies the type of data being placed into the memory location.
-~- [[KeyPgSadd Sadd]] Returns the location in memory where the string data in a dynamic string is located.
-~- [[KeyPgOpStrptr Strptr]] The same as Sadd.
-~- [[KeyPgOpProcptr Procptr]] Returns the address of a function. This works the same way as the addressof operator @.
-~- [[KeyPgOpVarptr Varptr]] This function works the same way as the addressof operator @.
+~- [[KeyPgCptr|Cptr]] Converts expression to a data_type pointer. Expression can be another pointer or an integer.
+~- [[KeyPgPeek|Peek]] Returns the contents of memory location pointer to by pointer. Data_type specifies the type of expected data.
+~- [[KeyPgPoke|Poke]] Puts the value of expression into the memory location pointed to by pointer. The data_type specifies the type of data being placed into the memory location.
+~- [[KeyPgSadd|Sadd]] Returns the location in memory where the string data in a dynamic string is located.
+~- [[KeyPgOpStrptr|Strptr]] The same as Sadd.
+~- [[KeyPgOpProcptr|Procptr]] Returns the address of a function. This works the same way as the addressof operator @.
+~- [[KeyPgOpVarptr|Varptr]] This function works the same way as the addressof operator @.
 
 The Sadd and Strptr functions work with the string data types to return the address of the string data. The Peek and Poke functions have been added for the purposes of supporting legacy code. Procptr and Varptr both work just like the address of operator @, but Proptr only works on subroutines and functions and Varptr only works on variables. Cptr is useful for casting an untyped pointer to a typed pointer, such as a return value from a third party library.
 

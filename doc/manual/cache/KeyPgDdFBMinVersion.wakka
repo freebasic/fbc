@@ -2,10 +2,10 @@
 Macro function to test minimum compiler version
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **""__FB_MIN_VERSION__""**( //major//, //minor//, //patch//) _
-		(([[KeyPgDdFBVerMajor __FB_VER_MAJOR__]] > major) or _
-		(([[KeyPgDdFBVerMajor __FB_VER_MAJOR__]] = major) and (([[KeyPgDdFBVerMinor __FB_VER_MINOR__]] > minor) or _
-		([[KeyPgDdFBVerMinor __FB_VER_MINOR__]] = minor and [[KeyPgDdFBVerPatch __FB_VER_PATCH__]] >= patch_level))))
+	[[KeyPgPpdefine|#define]] **""__FB_MIN_VERSION__""**( //major//, //minor//, //patch//) _
+		(([[KeyPgDdFBVerMajor|__FB_VER_MAJOR__]] > major) or _
+		(([[KeyPgDdFBVerMajor|__FB_VER_MAJOR__]] = major) and (([[KeyPgDdFBVerMinor|__FB_VER_MINOR__]] > minor) or _
+		([[KeyPgDdFBVerMinor|__FB_VER_MINOR__]] = minor and [[KeyPgDdFBVerPatch|__FB_VER_PATCH__]] >= patch_level))))
 ##
 {{fbdoc item="usage"}}##
 	**""__FB_MIN_VERSION__""**( //major//, //minor//, //patch//)
@@ -35,6 +35,6 @@ Macro function to test minimum compiler version
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- [[KeyPgPpif #IF]]
+	- [[KeyPgPpif|#IF]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

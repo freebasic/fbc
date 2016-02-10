@@ -5,7 +5,7 @@ Intrinsic define set by the compiler
 	""__FB_DOS__""
 ##
 {{fbdoc item="desc"}}
-	Define without a value created at compile time if compiling for the DOS target. Default in the DOS hosted version, or active when the //[[CompilerOpttarget -target dos]]// command line option is used. It can be used to compile parts of the program only if the target is DOS. Note: the DOS hosted version cannot compile to other targets than DOS by now.
+	Define without a value created at compile time if compiling for the DOS target. Default in the DOS hosted version, or active when the //[[CompilerOpttarget|-target dos]]// command line option is used. It can be used to compile parts of the program only if the target is DOS. Note: the DOS hosted version cannot compile to other targets than DOS by now.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbdos.bas"}}%%(freebasic)
@@ -21,10 +21,10 @@ Intrinsic define set by the compiler
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
-	- ##[[KeyPgDdfbwin32 __FB_WIN32__]]##
-	- ##[[KeyPgDdfbpcos __FB_PCOS__]]##
-	- ##[[FaqDOS DOS related FAQ]]##
-	- [[CompilerOpttarget Compiler Option: -target]]
+	- ##[[KeyPgDdfblinux|__FB_LINUX__]]##
+	- ##[[KeyPgDdfbwin32|__FB_WIN32__]]##
+	- ##[[KeyPgDdfbpcos|__FB_PCOS__]]##
+	- ##[[FaqDOS|DOS related FAQ]]##
+	- [[CompilerOpttarget|Compiler Option: -target]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

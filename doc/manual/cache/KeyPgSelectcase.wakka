@@ -131,6 +131,6 @@ sleep
 	- in an "##//expr1// TO //expr2//##" case, QB would always evaluate both expressions, even if ##//expr1//## was higher than the original expression.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgIfthen If...Then]]##
+	- ##[[KeyPgIfthen|If...Then]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

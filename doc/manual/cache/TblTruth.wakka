@@ -6,7 +6,7 @@ Computed values for the bitwise logical operators.
 **{{anchor name="UNARY|Unary operator"}}**
 	Operator that take a single operand.
 
-	These logical operators return a value based on the value of their operand(s). For the binary operators, each bit in the left-hand side value is applied logically to the corresponding bit in the right-hand side value. The result of this operation is returned. For the unary operator, (##[[KeyPgOpNot Operator Not]]##), the logic is applied to its right-hand side operand only.
+	These logical operators return a value based on the value of their operand(s). For the binary operators, each bit in the left-hand side value is applied logically to the corresponding bit in the right-hand side value. The result of this operation is returned. For the unary operator, (##[[KeyPgOpNot|Operator Not]]##), the logic is applied to its right-hand side operand only.
 
 <<{{anchor name="BINARY"}}{{fbdoc item="section" value="Binary operators"}}
 

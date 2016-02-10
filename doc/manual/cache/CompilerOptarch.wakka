@@ -40,7 +40,7 @@ Set target architecture for improved/restricted code generation or cross-compili
 		- Restricting code generation; for example: You can use ##-arch 386## to limit the compiler to using only i386-compatible instructions.
 		- Cross-compiling; for example: You can use ##-arch x86_64## on 32bit x86 systems to cross-compile to 64bit x86_64.
 	
-	The exact impact which the ##-arch## setting has on code generation depends on the [[CompilerOptgen code generation backend]] that is being used. The x86 ASM backend (##-gen gas##) handles the ##-arch## setting and adjusts code generation accordingly in some cases. When using the GCC backend (##-gen gcc##), the specified architecture will be passed on to gcc via ##gcc -march=<...>##, causing gcc to generate code for the specified architecture.
+	The exact impact which the ##-arch## setting has on code generation depends on the [[CompilerOptgen|code generation backend]] that is being used. The x86 ASM backend (##-gen gas##) handles the ##-arch## setting and adjusts code generation accordingly in some cases. When using the GCC backend (##-gen gcc##), the specified architecture will be passed on to gcc via ##gcc -march=<...>##, causing gcc to generate code for the specified architecture.
 	
 	However, ##-arch## only affects newly generated code, but not pre-compiled code such as the ""FreeBASIC"" runtime libraries, or any other library from the ##lib/## directory. For example, using ##-arch 386## is not necessarily enough to get a pure i386 executable -- it also depends on how all the libraries that will be linked in were compiled.
 	
@@ -48,12 +48,12 @@ Set target architecture for improved/restricted code generation or cross-compili
 	
 	The ##-arch native## shortcut is similar to gcc's ##-march=native## option. On x86, it causes fbc to try and detect the host CPU automatically based on the ##cpuid## instruction and its availability or results. On other architectures, this will currently simply use the architecture which the compiler itself was built for. Under -gen gcc this will use ##gcc -march=native##.
 	
-	Specifying an ##-arch## setting incompatible to the native architecture will trigger [[DevCrossCompiling cross-compilation]], just like the ##[[CompilerOpttarget -target]]## option, except that only the target architecture, but not the target operating system, is changed.
+	Specifying an ##-arch## setting incompatible to the native architecture will trigger [[DevCrossCompiling|cross-compilation]], just like the ##[[CompilerOpttarget|-target]]## option, except that only the target architecture, but not the target operating system, is changed.
 
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
-	- [[CompilerOpttarget -target]]
-	- [[DevCrossCompiling FB and cross-compiling]]
+	- [[CompilerCmdLine|Using the Command Line]]
+	- [[CompilerOpttarget|-target]]
+	- [[DevCrossCompiling|FB and cross-compiling]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

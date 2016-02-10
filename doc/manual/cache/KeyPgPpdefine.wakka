@@ -4,22 +4,22 @@ Preprocessor directive to define a macro
 {{fbdoc item="syntax"}}##
 	#define //identifier// //body//
 	#define //identifier//( [ //parameters// ] ) //body//
-	#define //identifier//( [ //parameters//, ] //[[KeyPgDots variadic_parameter...]]// ) //body//
+	#define //identifier//( [ //parameters//, ] //[[KeyPgDots|variadic_parameter...]]// ) //body//
 ##
 {{fbdoc item="desc"}}
-	##**#define**## allows to declare text-based preprocessor macros. Once the compiler has seen a ##**#define**##, it will start replacing further occurrences of ##//identifier//## with ##//body//##. ##//body//## may be empty. The expansion is done recursively, until there is nothing more to expand and the compiler can continue analyzing the resulting code. ##[[KeyPgPpundef #undef]]## can be used to make the compiler forget about a ##**#define**##.
+	##**#define**## allows to declare text-based preprocessor macros. Once the compiler has seen a ##**#define**##, it will start replacing further occurrences of ##//identifier//## with ##//body//##. ##//body//## may be empty. The expansion is done recursively, until there is nothing more to expand and the compiler can continue analyzing the resulting code. ##[[KeyPgPpundef|#undef]]## can be used to make the compiler forget about a ##**#define**##.
 	
-	##//Parameters//## turn a define into a function-like macro, allowing text arguments to be passed to the macro. Any occurrences of the parameter names in the ##//body//## will be replaced by the given argument text during expansion. The ##[[KeyPgOpPpStringize # stringize]]## operator can be used on macro parameters to turn them into string literals, and the ##[[KeyPgOpPpConcat ## concatenate]]## operator can be used to merge tokens together.
+	##//Parameters//## turn a define into a function-like macro, allowing text arguments to be passed to the macro. Any occurrences of the parameter names in the ##//body//## will be replaced by the given argument text during expansion. The ##[[KeyPgOpPpStringize|# stringize]]## operator can be used on macro parameters to turn them into string literals, and the ##[[KeyPgOpPpConcat|## concatenate]]## operator can be used to merge tokens together.
 
 	Note: In the function-like macro declaration, the ##//identifier//## should be followed by the opening parentheses (##(##) immediately without any white-space in between, otherwise the compiler will treat it as part of the ##//body//##.
 	
-	Defines are //scoped//; they are only visible in the scope they were defined in. If defined at module level, the define is visible throughout the module. If the ##//identifier//## is defined inside a compound statement having scope (##[[KeyPgSub Sub]]##, ##[[KeyPgFornext For..Next]]##, ##[[KeyPgWhilewend While..Wend]]##, ##[[KeyPgDoloop Do..Loop]]##, ##[[KeyPgScope Scope..End Scope]]##, etc), the ##//identifier//## define is only visible within that scope. Namespaces on the other hand do not have any effect on the visibility of a define.
+	Defines are //scoped//; they are only visible in the scope they were defined in. If defined at module level, the define is visible throughout the module. If the ##//identifier//## is defined inside a compound statement having scope (##[[KeyPgSub|Sub]]##, ##[[KeyPgFornext|For..Next]]##, ##[[KeyPgWhilewend|While..Wend]]##, ##[[KeyPgDoloop|Do..Loop]]##, ##[[KeyPgScope|Scope..End Scope]]##, etc), the ##//identifier//## define is only visible within that scope. Namespaces on the other hand do not have any effect on the visibility of a define.
 	
-	##//Identifier//##s can be checked for with ##[[KeyPgPpifdef #ifdef]]## and others, which can be used to hide parts of code from the compiler (conditional compiling).
+	##//Identifier//##s can be checked for with ##[[KeyPgPpifdef|#ifdef]]## and others, which can be used to hide parts of code from the compiler (conditional compiling).
 	
-	The result of macro expansion can be checked by using the [[CompilerOptpp -pp]] compiler option.
+	The result of macro expansion can be checked by using the [[CompilerOptpp|-pp]] compiler option.
 	
-	##**#define**##s are often used to declare constants. The ##[[KeyPgConst Const]]## statement is a type-safe alternative.
+	##**#define**##s are often used to declare constants. The ##[[KeyPgConst|Const]]## statement is a type-safe alternative.
 	
 	WARNING: When the macro body contains an expression with one operator at least, it may be mandatory to have to surround some terms (parameters, whole body) by parentheses in order to not undergo an unwanted precedence change of operators.
 
@@ -66,12 +66,12 @@ end namespace
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpmacro #macro]]##
-	- ##[[KeyPgOpPpStringize # Preprocessor stringize]]##
-	- ##[[KeyPgOpPpConcat ## Preprocessor concatenate]]##
-	- ##[[KeyPgPpifdef #ifdef]]##
-	- ##[[KeyPgPpundef #undef]]##
-	- ##[[KeyPgConst Const]]##
-	- ##[[KeyPgDots ...]]##
+	- ##[[KeyPgPpmacro|#macro]]##
+	- ##[[KeyPgOpPpStringize|# Preprocessor stringize]]##
+	- ##[[KeyPgOpPpConcat|## Preprocessor concatenate]]##
+	- ##[[KeyPgPpifdef|#ifdef]]##
+	- ##[[KeyPgPpundef|#undef]]##
+	- ##[[KeyPgConst|Const]]##
+	- ##[[KeyPgDots|...]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

@@ -7,11 +7,11 @@ Add debug information
 {{fbdoc item="desc"}}
 	The ##-g## compiler option inserts debugging symbols into output files, to use with GDB-compatible debuggers.
 
-	The intrinsic macro ##[[KeyPgDdfbdebug __FB_DEBUG__]]## is set to non-zero (-1) if the option was specified, and set to zero (0) otherwise.
+	The intrinsic macro ##[[KeyPgDdfbdebug|__FB_DEBUG__]]## is set to non-zero (-1) if the option was specified, and set to zero (0) otherwise.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfbdebug __FB_DEBUG__]]##
-	- [[DebuggerRunning Debugging]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- ##[[KeyPgDdfbdebug|__FB_DEBUG__]]##
+	- [[DebuggerRunning|Debugging]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

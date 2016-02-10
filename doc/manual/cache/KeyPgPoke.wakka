@@ -2,8 +2,8 @@
 Assigns a value to a location in memory.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Poke** ( [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //value// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] )
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Poke** ( //datatype//, [[KeyPgByval byval]] //address// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //value// [[KeyPgAs as]] //datatype// )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Poke** ( [[KeyPgByval|byval]] //address// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByref|byref]] //value// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Poke** ( //datatype//, [[KeyPgByval|byval]] //address// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByref|byref]] //value// [[KeyPgAs|as]] //datatype// )
 ##
 {{fbdoc item="usage"}}##
 	**Poke** [ //datatype//, ] //address//, //value//
@@ -23,7 +23,7 @@ Assigns a value to a location in memory.
 			or
 		##*cast(//datatype// ptr, //address//) = //value//##
 
-	When ##//datatype//## is a user-defined type, ##**Poke**## assigns ##//value//## using the type's ##[[KeyPgOpLet Operator Let]]##.
+	When ##//datatype//## is a user-defined type, ##**Poke**## assigns ##//value//## using the type's ##[[KeyPgOpLet|Operator Let]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/poke.bas"}}%%(freebasic)
@@ -43,6 +43,6 @@ Print Peek(Integer, p)
 	- ##DEF SEG## isn't needed anymore because the address space is 32-bit flat in FreeBASIC.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPeek Peek]]##
+	- ##[[KeyPgPeek|Peek]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

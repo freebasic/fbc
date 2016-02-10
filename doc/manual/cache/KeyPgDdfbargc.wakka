@@ -21,7 +21,7 @@ next i
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfbargv __FB_ARGV__]]##
-	- ##[[KeyPgCommand Command]]##
+	- ##[[KeyPgDdfbargv|__FB_ARGV__]]##
+	- ##[[KeyPgCommand|Command]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

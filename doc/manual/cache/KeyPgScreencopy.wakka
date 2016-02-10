@@ -2,7 +2,7 @@
 Copies the contents of a graphical page into another graphical page
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screencopy** ( [[KeyPgByval byval]] //from_page// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //to_page// [[KeyPgAs as]] [[KeyPgLong long]] = -1 ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Screencopy** ( [[KeyPgByval|byval]] //from_page// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1, [[KeyPgByval|byval]] //to_page// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	**Screencopy** [ //from_page// ] [, //to_page// ]
@@ -14,16 +14,16 @@ Copies the contents of a graphical page into another graphical page
 		page to copy to
 
 {{fbdoc item="desc"}}
-	##//from_page//## is the page to copy from. If this argument is omitted, the current work page is assumed.  ##//to_page//## is the page to copy to. If this argument is omitted, the currently visible page is assumed.  Page numbers range from ##0## to ##//num_pages// - 1##, where ##//num_pages//## is the number of pages specified when setting the graphics mode with ##[[KeyPgScreenres Screenres]]## or ##[[KeyPgScreengraphics Screen]]##.
+	##//from_page//## is the page to copy from. If this argument is omitted, the current work page is assumed.  ##//to_page//## is the page to copy to. If this argument is omitted, the currently visible page is assumed.  Page numbers range from ##0## to ##//num_pages// - 1##, where ##//num_pages//## is the number of pages specified when setting the graphics mode with ##[[KeyPgScreenres|Screenres]]## or ##[[KeyPgScreengraphics|Screen]]##.
 
 	You can use this function to add a double buffer to your graphics. Any graphics screen mode with multiple pages supports this function.
 
 	##**Screencopy**## is inactive if the destination page is locked.
 
-	There are two other functions similar to this: ##[[KeyPgFlip Flip]]## and ##[[KeyPgPcopy PCopy]]##.  ##[[KeyPgFlip Flip]]## is designed to work in ""OpenGL"" modes, while ##[[KeyPgPcopy PCopy]]## supports console pages on some platforms.  Both do the same thing as ##**Screencopy**## in normal graphics modes.
+	There are two other functions similar to this: ##[[KeyPgFlip|Flip]]## and ##[[KeyPgPcopy|PCopy]]##.  ##[[KeyPgFlip|Flip]]## is designed to work in ""OpenGL"" modes, while ##[[KeyPgPcopy|PCopy]]## supports console pages on some platforms.  Both do the same thing as ##**Screencopy**## in normal graphics modes.
 
 {{fbdoc item="ex"}}
-	See also ##[[KeyPgScreenset Screenset]]## example.
+	See also ##[[KeyPgScreenset|Screenset]]## example.
 
 {{fbdoc item="filename" value="examples/manual/gfx/screencopy.bas"}}%%(freebasic)
 '' 320x200x8, with 3 pages
@@ -71,15 +71,15 @@ loop
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screencopy""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Screencopy""**##.
 
 {{fbdoc item="diff"}}
-	- New to ""FreeBASIC"". It is a graphics-only version of ##[[KeyPgPcopy Pcopy]]## - which works in both text and graphics modes.
+	- New to ""FreeBASIC"". It is a graphics-only version of ##[[KeyPgPcopy|Pcopy]]## - which works in both text and graphics modes.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPcopy Pcopy]]##
-	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
-	- ##[[KeyPgScreenres Screenres]]##
-	- ##[[KeyPgScreenset Screenset]]##
+	- ##[[KeyPgPcopy|Pcopy]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
+	- ##[[KeyPgScreenres|Screenres]]##
+	- ##[[KeyPgScreenset|Screenset]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

@@ -5,7 +5,7 @@ Returns a pointer to the first argument in a variable argument list
 	//pointer_variable// = **va_first**()
 ##
 {{fbdoc item="desc"}}
-	The ##**va_first**## function provides an untyped [[ProPgPointers pointer]] value that points to the first variable argument passed to a function.
+	The ##**va_first**## function provides an untyped [[ProPgPointers|pointer]] value that points to the first variable argument passed to a function.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/vararg1.bas"}}%%(freebasic)
@@ -107,14 +107,14 @@ end sub
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Va_first""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Va_first""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- [[KeyPgDots ... (Ellipsis)]]
-	- ##[[KeyPgVaArg va_arg]]##
-	- ##[[KeyPgVaNext va_next]]##
+	- [[KeyPgDots|... (Ellipsis)]]
+	- ##[[KeyPgVaArg|va_arg]]##
+	- ##[[KeyPgVaNext|va_next]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}

@@ -3,7 +3,7 @@ During the program compilation three types of errors can arise:
 
 ==Compiler Warnings:==
 	The warnings don't stop the compilation, just alert the user some non-recommended and error-prone operation is attempted in the code. 
-	Sometimes one of these operations is coded deliberately to achieve a result, in this case the warnings can be disabled by setting  the //[[CompilerOptw -w 1]]// option at the command line.
+	Sometimes one of these operations is coded deliberately to achieve a result, in this case the warnings can be disabled by setting  the //[[CompilerOptw|-w 1]]// option at the command line.
 
 	- //1 Passing scalar as pointer//
 	- //2 Passing pointer to scalar//

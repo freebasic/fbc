@@ -11,10 +11,10 @@ Specifies a default data type for a range of variable names
 		the last letter in the range
 
 {{fbdoc item="desc"}}
-	##**Defdbl**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgDouble Double]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
+	##**Defdbl**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgDouble|Double]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make ##aNum## a ##[[KeyPgDouble Double]]##-precision decimal number since it is in the range of a-d:
+	This will make ##aNum## a ##[[KeyPgDouble|Double]]##-precision decimal number since it is in the range of a-d:
 {{fbdoc item="filename" value="examples/manual/switches/defdbl.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
 
@@ -27,15 +27,15 @@ Print Len(aNum) ' Prints 8, the number of bytes in a double.
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
+	- Only available in the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDefint Defint]]##
-	- ##[[KeyPgDefsng Defsng]]##
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgDouble Double]]##
+	- ##[[KeyPgDefint|Defint]]##
+	- ##[[KeyPgDefsng|Defsng]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgDouble|Double]]##
 
 {{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

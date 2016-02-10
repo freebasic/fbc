@@ -2,7 +2,7 @@
 Multiplies and assigns a value to a variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] ***=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T1//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] ***=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T1//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T2// )
 ##
 {{fbdoc item="usage"}}##
 	//lhs// ***=** //rhs//
@@ -20,7 +20,7 @@ Multiplies and assigns a value to a variable
 {{fbdoc item="desc"}}
 	This operator multiplies and assigns a value to a variable. It is functionally equivalent to:
 ##
-		//lhs// = //lhs// [[KeyPgOpMultiply *]] //rhs//
+		//lhs// = //lhs// [[KeyPgOpMultiply|*]] //rhs//
 ##
 	The right-hand side expression (##//rhs//##) will be converted to the left-hand side type (##//T1//##).
 
@@ -40,13 +40,13 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpMultiply Operator * (Multiply)]]##
-	- [[CatPgMath Mathematical Functions]]
+	- ##[[KeyPgOpMultiply|Operator * (Multiply)]]##
+	- [[CatPgMath|Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

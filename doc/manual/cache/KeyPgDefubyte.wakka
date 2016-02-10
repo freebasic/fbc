@@ -11,10 +11,10 @@ Specifies a default data type for a range of variable names
 		the last letter in the range
 
 {{fbdoc item="desc"}}
-	##**Defubyte**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgUbyte Ubyte]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
+	##**Defubyte**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgUbyte|Ubyte]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make ##uNumber## a ##[[KeyPgUbyte Ubyte]]## number since it's first letter starts with u.
+	This will make ##uNumber## a ##[[KeyPgUbyte|Ubyte]]## number since it's first letter starts with u.
 {{fbdoc item="filename" value="examples/manual/switches/defubyte.bas"}}%%(freebasic)
 '' Compile with -lang fblite
 
@@ -25,16 +25,16 @@ Dim uNumber
 %%
 
 {{fbdoc item="lang"}}
-	- Available in the //[[CompilerOptlang -lang fblite]]// dialect.
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Defubyte""**##.
+	- Available in the //[[CompilerOptlang|-lang fblite]]// dialect.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Defubyte""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDefbyte Defbyte]]##
-	- ##[[KeyPgDefint Defint]]##
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgUbyte Ubyte]]##
+	- ##[[KeyPgDefbyte|Defbyte]]##
+	- ##[[KeyPgDefint|Defint]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgUbyte|Ubyte]]##
 
 {{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

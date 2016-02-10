@@ -15,6 +15,6 @@ Set stack size in kilobytes
 	- Supported on Windows, Cygwin and DOS only.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

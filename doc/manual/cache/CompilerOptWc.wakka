@@ -14,9 +14,9 @@ Pass options to the C compiler when using the C emitter (-gen gcc).
 		##fbc -gen gcc -Wc -m32,--verbose,-include,some-header.h##
 
 {{fbdoc item="see"}}
-	- [[CompilerOptgen Compiler Option: -gen]]
-	- [[CompilerOptWa Compiler Option: -Wa]]
-	- [[CompilerOptWl Compiler Option: -Wl]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerOptgen|Compiler Option: -gen]]
+	- [[CompilerOptWa|Compiler Option: -Wa]]
+	- [[CompilerOptWl|Compiler Option: -Wl]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

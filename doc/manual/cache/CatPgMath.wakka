@@ -47,9 +47,9 @@ Procedures that work with numbers mathematically.
 
 {{anchor name="MISC"}}{{fbdoc item="section" value="Miscellaneous Procedures"}}
 	=={{fbdoc item="keyword" value="KeyPgRandomize|RANDOMIZE"}}==
-		Seeds the random number generator used by ##[[KeyPgRnd Rnd]]##.
+		Seeds the random number generator used by ##[[KeyPgRnd|Rnd]]##.
 	=={{fbdoc item="keyword" value="KeyPgRnd|RND"}}==
-		Returns a random [[KeyPgDouble Double]] in the range [0, 1).
+		Returns a random [[KeyPgDouble|Double]] in the range [0, 1).
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

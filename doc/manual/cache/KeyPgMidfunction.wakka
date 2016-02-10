@@ -2,10 +2,10 @@
 Returns a substring of a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByref byref]] //str// as [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByval byval]] //str// as [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer ) as [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByref byref]] //str// as [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mid** ( [[KeyPgByval byval]] //str// as [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //start// as integer, [[KeyPgByval byval]] //n// as integer ) as [[KeyPgWstring wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Mid** ( [[KeyPgByref|byref]] //str// as [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [[KeyPgByval|byval]] //start// as integer ) as [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Mid** ( [[KeyPgByval|byval]] //str// as [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //start// as integer ) as [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Mid** ( [[KeyPgByref|byref]] //str// as [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [[KeyPgByval|byval]] //start// as integer, [[KeyPgByval|byval]] //n// as integer ) as [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Mid** ( [[KeyPgByval|byval]] //str// as [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //start// as integer, [[KeyPgByval|byval]] //n// as integer ) as [[KeyPgWstring|wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Mid**[$]( //str//, //start// [, //n// ] )
@@ -45,17 +45,17 @@ A Unicode example:
 	- DOS does not support the wide-character string versions of **##Mid##**.
 
 {{fbdoc item="lang"}}
-	- The string type suffix "##$##" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix "##$##" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- The string type suffix "##$##" is obligatory in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- The string type suffix "##$##" is optional in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- QB does not support Unicode.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInstr Instr]]##
-	- ##[[KeyPgMidstatement Mid (Statement)]]##
-	- ##[[KeyPgLeft Left]]##
-	- ##[[KeyPgRight Right]]##
-	- ##[[KeyPgAsc Asc]]##
+	- ##[[KeyPgInstr|Instr]]##
+	- ##[[KeyPgMidstatement|Mid (Statement)]]##
+	- ##[[KeyPgLeft|Left]]##
+	- ##[[KeyPgRight|Right]]##
+	- ##[[KeyPgAsc|Asc]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

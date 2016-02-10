@@ -2,16 +2,16 @@
 Variable declaration modifier specifying visibility throughout a module
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim Dim]] **Shared** ...
-	[[KeyPgRedim Redim]] **Shared** ...
-	[[KeyPgCommon Common]] **Shared** ...
-	[[KeyPgStatic Static]] **Shared** ...
+	[[KeyPgDim|Dim]] **Shared** ...
+	[[KeyPgRedim|Redim]] **Shared** ...
+	[[KeyPgCommon|Common]] **Shared** ...
+	[[KeyPgStatic|Static]] **Shared** ...
 ##
 {{fbdoc item="desc"}}
-	##**Shared**## makes module-level variables visible inside ##[[KeyPgSub Sub]]##s and ##[[KeyPgFunction Function]]##s.
+	##**Shared**## makes module-level variables visible inside ##[[KeyPgSub|Sub]]##s and ##[[KeyPgFunction|Function]]##s.
 	If ##**Shared**## is not used on a module-level variable's declaration, the variable is only visible to the module-level code in that file (furthermore, only a variable declared with ##Dim## without ##Shared## modifier, and not inside a Namespace block, is stored on the stack).
 
-	NOTES (for ##**Shared**## variables excluding ##[[KeyPgCommon Common]]## variables):
+	NOTES (for ##**Shared**## variables excluding ##[[KeyPgCommon|Common]]## variables):
 		- Generally a ##**Shared**## variable may only be initialized with a constant value (its starting value is set at the start of the program in the .data section before any code is run, and so it cannot depend on any variables or functions in it).
 		- A first exception is a ##**Shared**## variable of var-len string type, that never can be initialized, even with a constant string (because of its structure with a descriptor in the .data section, but to point to a dynamic memory block).
 		- A second exception is a ##**Shared**## variable of user-defined type having a constructor even implicit, that can be initialized with a non-constant value (because it's the constructor code, called when the program starts, which writes the "initial" values into the .data section).
@@ -41,15 +41,15 @@ End Sub
 	- The ##**Shared**## statement inside scope blocks -- functions, subs, if/thens, and loops -- is not supported. Use ##Dim##|##Redim##|##Common##|##Static **Shared**## in the main program instead.  Or if you're inside a scope block and ##Redim##ming a variable or array previously set up with ##**Shared**##, just do a ##Redim## without ##**Shared**##; it will work fine and won't ruin anything.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCommon Common]]##
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgErase Erase]]##
-	- ##[[KeyPgExtern Extern]]##
-	- ##[[KeyPgLbound Lbound]]##
-	- ##[[KeyPgRedim Redim]]##
-	- ##[[KeyPgPreserve Preserve]]##
-	- ##[[KeyPgStatic Static]]##
-	- ##[[KeyPgUbound Ubound]]##
-	- ##[[KeyPgVar Var]]##
+	- ##[[KeyPgCommon|Common]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgErase|Erase]]##
+	- ##[[KeyPgExtern|Extern]]##
+	- ##[[KeyPgLbound|Lbound]]##
+	- ##[[KeyPgRedim|Redim]]##
+	- ##[[KeyPgPreserve|Preserve]]##
+	- ##[[KeyPgStatic|Static]]##
+	- ##[[KeyPgUbound|Ubound]]##
+	- ##[[KeyPgVar|Var]]##
 
 {{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

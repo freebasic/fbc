@@ -1,9 +1,9 @@
 {{fbdoc item="title" value="UINTEGER"}}----
-Standard data type: 32-bit or 64-bit unsigned, same size as ##[[KeyPgSizeof SizeOf]]([[KeyPgAny Any]] [[KeyPgPtr Ptr]])##
+Standard data type: 32-bit or 64-bit unsigned, same size as ##[[KeyPgSizeof|SizeOf]]([[KeyPgAny|Any]] [[KeyPgPtr|Ptr]])##
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Uinteger**
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Uinteger**<//bits//>
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Uinteger**
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Uinteger**<//bits//>
 ##
 {{fbdoc item="param"}}
 	##//bits//##
@@ -12,8 +12,8 @@ Standard data type: 32-bit or 64-bit unsigned, same size as ##[[KeyPgSizeof Size
 {{fbdoc item="desc"}}
 	32-bit or 64-bit unsigned whole-number data type, depending on the platform.
 	
-	If an explicit bit size is given, a data type is provided that can hold values from ##0## up to ##(1ULL [[KeyPgOpShiftleft Shl]] (//bits//)) - 1##.
-	The selected data type is ##[[KeyPgUbyte UByte]]## for **UInteger<8>**, ##[[KeyPgUshort UShort]]## for **UInteger<16>**, ##[[KeyPgUlong ULong]]## for **UInteger<32>** and ##[[KeyPgUlongint ULongInt]]## for **UInteger<64>**.
+	If an explicit bit size is given, a data type is provided that can hold values from ##0## up to ##(1ULL [[KeyPgOpShiftleft|Shl]] (//bits//)) - 1##.
+	The selected data type is ##[[KeyPgUbyte|UByte]]## for **UInteger<8>**, ##[[KeyPgUshort|UShort]]## for **UInteger<16>**, ##[[KeyPgUlong|ULong]]## for **UInteger<32>** and ##[[KeyPgUlongint|ULongInt]]## for **UInteger<64>**.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/uinteger.bas"}}%%(freebasic)
@@ -28,14 +28,14 @@ Standard data type: 32-bit or 64-bit unsigned, same size as ##[[KeyPgSizeof Size
 #endif%%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Uinteger""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Uinteger""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInteger Integer]]##
-	- ##[[KeyPgUnsigned Unsigned]]##
-	- ##[[KeyPgCuint Cuint]]##
+	- ##[[KeyPgInteger|Integer]]##
+	- ##[[KeyPgUnsigned|Unsigned]]##
+	- ##[[KeyPgCuint|Cuint]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

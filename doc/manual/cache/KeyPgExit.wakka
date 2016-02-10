@@ -2,19 +2,19 @@
 Control flow statement to exit a compound statement block
 
 {{fbdoc item="syntax"}}##
-	**Exit** {[[KeyPgDoloop Do]] | [[KeyPgFornext For]] | [[KeyPgWhilewend While]] | [[KeyPgSelectcase Select]] }
-	**Exit** {[[KeyPgSub Sub]] | [[KeyPgFunction Function]] | [[KeyPgOperator Operator]] | [[KeyPgProperty Property]] }
+	**Exit** {[[KeyPgDoloop|Do]] | [[KeyPgFornext|For]] | [[KeyPgWhilewend|While]] | [[KeyPgSelectcase|Select]] }
+	**Exit** {[[KeyPgSub|Sub]] | [[KeyPgFunction|Function]] | [[KeyPgOperator|Operator]] | [[KeyPgProperty|Property]] }
 	
-	**Exit** {[[KeyPgDoloop Do]] [, [[KeyPgDoloop Do]] [ , ...] ] |
-			[[KeyPgFornext For]] [, [[KeyPgFornext For]] [ , ...] ] | 
-			[[KeyPgWhilewend While]] [, [[KeyPgWhilewend While]], [...] ] | 
-			[[KeyPgSelectcase Select]] [, [[KeyPgSelectcase Select]] [ , ...] ] }
+	**Exit** {[[KeyPgDoloop|Do]] [, [[KeyPgDoloop|Do]] [ , ...] ] |
+			[[KeyPgFornext|For]] [, [[KeyPgFornext|For]] [ , ...] ] | 
+			[[KeyPgWhilewend|While]] [, [[KeyPgWhilewend|While]], [...] ] | 
+			[[KeyPgSelectcase|Select]] [, [[KeyPgSelectcase|Select]] [ , ...] ] }
 
 ##
 {{fbdoc item="desc"}}
-	Leaves a code block such as a ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgDoloop Do...Loop]]##, ##[[KeyPgFornext For...Next]]##, ##[[KeyPgWhilewend While...Wend]]##, or a  ##[[KeyPgSelectcase Select Case]]## block. The execution skips the rest of the block and goes to the line after its end.
+	Leaves a code block such as a ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##, ##[[KeyPgDoloop|Do...Loop]]##, ##[[KeyPgFornext|For...Next]]##, ##[[KeyPgWhilewend|While...Wend]]##, or a  ##[[KeyPgSelectcase|Select Case]]## block. The execution skips the rest of the block and goes to the line after its end.
 	
-	Where there are multiple ##[[KeyPgDoloop Do]]## / ##[[KeyPgFornext For]]## / ##[[KeyPgWhilewend While]]## / ##[[KeyPgSelectcase Select]]## blocks nested, it will skip to the end of the innermost block of that type.  You can skip to the end of multiple blocks of that type by giving the word multiple times, separated by commas.
+	Where there are multiple ##[[KeyPgDoloop|Do]]## / ##[[KeyPgFornext|For]]## / ##[[KeyPgWhilewend|While]]## / ##[[KeyPgSelectcase|Select]]## blocks nested, it will skip to the end of the innermost block of that type.  You can skip to the end of multiple blocks of that type by giving the word multiple times, separated by commas.
 	For example: ##**Exit While, While**##
 
 {{fbdoc item="ex"}}
@@ -46,11 +46,11 @@ Next i
 	- EXIT WHILE and EXIT SELECT are new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSub Sub]]##
-	- ##[[KeyPgFunction Function]]##
-	- ##[[KeyPgDoloop Do...Loop]]##
-	- ##[[KeyPgFornext For...Next]]##
-	- ##[[KeyPgWhilewend While...Wend]]##
-	- ##[[KeyPgContinue Continue]]##
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgFunction|Function]]##
+	- ##[[KeyPgDoloop|Do...Loop]]##
+	- ##[[KeyPgFornext|For...Next]]##
+	- ##[[KeyPgWhilewend|While...Wend]]##
+	- ##[[KeyPgContinue|Continue]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

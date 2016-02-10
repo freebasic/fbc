@@ -2,9 +2,9 @@
 Writes data from a buffer to a file
 
 {{fbdoc item="syntax"}}##
-	**Put** #//filenum// [[KeyPgAs As]] [[KeyPgLong long]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data// [[KeyPgAs As]] [[KeyPgAny Any]] [, //amount// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]]]
-	**Put** #//filenum// [[KeyPgAs As]] [[KeyPgLong long]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data// [[KeyPgAs As]] [[KeyPgString String]]
-	**Put** #//filenum// [[KeyPgAs As]] [[KeyPgLong long]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data()// [[KeyPgAs As]] [[KeyPgAny Any]]
+	**Put** #//filenum// [[KeyPgAs|As]] [[KeyPgLong|long]], [//position// [[KeyPgAs|As]] [[KeyPgLongint|longint]]], //data// [[KeyPgAs|As]] [[KeyPgAny|Any]] [, //amount// [[KeyPgAs|As]] [[KeyPgUinteger|Uinteger]]]
+	**Put** #//filenum// [[KeyPgAs|As]] [[KeyPgLong|long]], [//position// [[KeyPgAs|As]] [[KeyPgLongint|longint]]], //data// [[KeyPgAs|As]] [[KeyPgString|String]]
+	**Put** #//filenum// [[KeyPgAs|As]] [[KeyPgLong|long]], [//position// [[KeyPgAs|As]] [[KeyPgLongint|longint]]], //data()// [[KeyPgAs|As]] [[KeyPgAny|Any]]
 ##
 {{fbdoc item="usage"}}##
 	**Put** #//filenum//, //position//, //data// [, //amount//]
@@ -12,27 +12,27 @@ Writes data from a buffer to a file
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		The value passed to ##[[KeyPgOpen Open]]## when the file was opened.
+		The value passed to ##[[KeyPgOpen|Open]]## when the file was opened.
 	##//position//##
 		Is the position where ##Put## must start in the file. If the file was opened ##For Random##, the position is in records, else it is given in bytes. If omitted, writing starts at the present file pointer position.  The position is 1-based: i.e. the first record or byte of a file is at position ##1##.
 		If ##//position//## is omitted or zero (##0##), file writing will start from the current file position.
 	##//data//##
 		Is the buffer where data is written from. It can be a numeric variable, a string, an array or a user-defined type. The operation will try to transfer to disk the complete variable, unless ##//amount//## is given.
 		When putting arrays, ##//data//## should be followed by an empty pair of brackets: '##()##'.  ##**Put**## will write all of the data in the array.  ##//amount//## is not allowed.
-		When putting ##[[KeyPgString String]]##s, the number of bytes written is the same as the number of bytes in the string data.  ##//amount//## is not allowed.
-		Note: If you want to write values from a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf Operator * (Value of)]]##.) If you pass a pointer directly, then ##**Put**## will put the memory from the pointer variable, not the memory it points to.
+		When putting ##[[KeyPgString|String]]##s, the number of bytes written is the same as the number of bytes in the string data.  ##//amount//## is not allowed.
+		Note: If you want to write values from a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer.  (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf|Operator * (Value of)]]##.) If you pass a pointer directly, then ##**Put**## will put the memory from the pointer variable, not the memory it points to.
 	##//amount//##
-		Makes ##Put## write to file ##//amount//## consecutive variables to the file - i.e. it writes ##( //amount// * [[KeyPgSizeof Sizeof]](//data//) )## bytes of data, starting at ##//data//##'s location in memory, into the file.  If ##//amount//## is omitted it defaults to ##1##, meaning that ##**Put**## just writes a single variable.
+		Makes ##Put## write to file ##//amount//## consecutive variables to the file - i.e. it writes ##( //amount// * [[KeyPgSizeof|Sizeof]](//data//) )## bytes of data, starting at ##//data//##'s location in memory, into the file.  If ##//amount//## is omitted it defaults to ##1##, meaning that ##**Put**## just writes a single variable.
 
 {{fbdoc item="ret"}}
 	##0## on success; nonzero on error. "disk full" is considered as an error, and results in return code ##3##. An "exact" amount of data written before is not available, and wouldn't be really useful anyway. 
 
 {{fbdoc item="desc"}}
-	Writes binary data from a buffer variable to a file opened in ##[[KeyPgBinary Binary]]## or ##[[KeyPgRandom Random]]## mode.
+	Writes binary data from a buffer variable to a file opened in ##[[KeyPgBinary|Binary]]## or ##[[KeyPgRandom|Random]]## mode.
 
 	##**Put**## can be used as a function, and will return ##0## on success or an error code on failure.	
 
-	For files opened in ##[[KeyPgRandom Random]]## mode, the size in bytes of the data to write must match the specified record size.
+	For files opened in ##[[KeyPgRandom|Random]]## mode, the size in bytes of the data to write must match the specified record size.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/put.bas"}}%%(freebasic)
@@ -109,12 +109,12 @@ Deallocate lpBuffer
 	- ##**Put**## can be used as a function in FB, to find the success/error code returned without having to use error handling procedures.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPutgraphics Put (Graphics)]]## different usage of same keyword 
-	- ##[[KeyPgGetfileio Get (File I/O)]]##
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgClose Close]]##
-	- ##[[KeyPgRandom Random]]##
-	- ##[[KeyPgBinary Binary]]##
-	- ##[[KeyPgFreefile Freefile]]##
+	- ##[[KeyPgPutgraphics|Put (Graphics)]]## different usage of same keyword 
+	- ##[[KeyPgGetfileio|Get (File I/O)]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgClose|Close]]##
+	- ##[[KeyPgRandom|Random]]##
+	- ##[[KeyPgBinary|Binary]]##
+	- ##[[KeyPgFreefile|Freefile]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

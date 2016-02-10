@@ -2,17 +2,17 @@
 Converts a number to a Unicode octal representation
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlong ulong]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgConst const]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Woct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Woct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Woct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Woct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Woct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUbyte ubyte]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUshort ushort]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlong ulong]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Woct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgConst const]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Woct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Woct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Woct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Woct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Woct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Woct**( //number// [, //digits// ] )
@@ -27,11 +27,11 @@ Converts a number to a Unicode octal representation
 	The Unicode octal representation of the number, truncated or padded with zeros (##"0"##) to fit the number of digits, if specified.
 
 {{fbdoc item="desc"}}
-	Returns the octal ##[[KeyPgWstring Wstring]]## (Unicode) representation of ##//number//##. Octal digits range from ##0## to ##7##.
+	Returns the octal ##[[KeyPgWstring|Wstring]]## (Unicode) representation of ##//number//##. Octal digits range from ##0## to ##7##.
 
 	If you specify ##//digits//## > ##0##, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
 
-	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//number//## (3 characters for ##[[KeyPgByte byte]]##, 6 for ##[[KeyPgShort short]]##, 11 for ##[[KeyPgLong long]]##, and 22 for ##[[KeyPgLongint longint]]##)
+	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//number//## (3 characters for ##[[KeyPgByte|byte]]##, 6 for ##[[KeyPgShort|short]]##, 11 for ##[[KeyPgLong|long]]##, and 22 for ##[[KeyPgLongint|longint]]##)
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/woct.bas"}}%%(freebasic)
@@ -49,7 +49,7 @@ print Woct(54321, 8)
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Woct""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Woct""**##.
 
 {{fbdoc item="target"}}
 	- Unicode strings are not supported in the DOS port of ""FreeBASIC"".
@@ -58,7 +58,7 @@ print Woct(54321, 8)
 	- In QBASIC Unicode was not supported.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgWbin Wbin]]##
-	- ##[[KeyPgWhex Whex]]##
+	- ##[[KeyPgWbin|Wbin]]##
+	- ##[[KeyPgWhex|Whex]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

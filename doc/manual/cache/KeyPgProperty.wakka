@@ -2,32 +2,32 @@
 Declares or defines a property in a type or class
 
 {{fbdoc item="syntax"}}##
-	{ [[KeyPgType Type]] | [[KeyPgClass Class]] } //typename//
-		[[KeyPgDeclare declare]] **Property** //fieldname// () [[KeyPgAs as]] [[DataType datatype]]
-		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
-		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]]
-		[[KeyPgDeclare declare]] **Property** //fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] )
-	End { [[KeyPgType Type]] | [[KeyPgClass Class]] }
+	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] } //typename//
+		[[KeyPgDeclare|declare]] **Property** //fieldname// () [[KeyPgAs|as]] [[DataType|datatype]]
+		[[KeyPgDeclare|declare]] **Property** //fieldname// ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //new_value// [[KeyPgAs|as]] [[DataType|datatype]] )
+		[[KeyPgDeclare|declare]] **Property** //fieldname// ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //index// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[DataType|datatype]]
+		[[KeyPgDeclare|declare]] **Property** //fieldname// ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //index// [[KeyPgAs|as]] [[DataType|datatype]], [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //new_value// [[KeyPgAs|as]] [[DataType|datatype]] )
+	End { [[KeyPgType|Type]] | [[KeyPgClass|Class]] }
 
-	**Property** //typename//.//fieldname// () [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgExport Export]] ]
+	**Property** //typename//.//fieldname// () [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
 		//statements//
 	**End Property**
 
-	**Property** //typename//.//fieldname// ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] ) [ [[KeyPgExport Export]] ]
+	**Property** //typename//.//fieldname// ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //new_value// [[KeyPgAs|as]] [[DataType|datatype]] ) [ [[KeyPgExport|Export]] ]
 		//statements//
 	**End Property**
 
-	**Property** //typename//.//fieldname// (  [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgExport Export]] ]
+	**Property** //typename//.//fieldname// (  [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //index// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
 		//statements//
 	**End Property**
 
-	**Property** //typename//.//fieldname// (  [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //index// [[KeyPgAs as]] [[DataType datatype]], [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //new_value// [[KeyPgAs as]] [[DataType datatype]] ) [ [[KeyPgExport Export]] ]
+	**Property** //typename//.//fieldname// (  [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //index// [[KeyPgAs|as]] [[DataType|datatype]], [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //new_value// [[KeyPgAs|as]] [[DataType|datatype]] ) [ [[KeyPgExport|Export]] ]
 		//statements//
 	**End Property**
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
-		name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
+		name of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##
 	##//fieldname//## 
 		name of the property
 	##//new_value//## 
@@ -36,13 +36,13 @@ Declares or defines a property in a type or class
 		the property index value
 
 {{fbdoc item="desc"}}
-	##**Property**## fields are used to get and set values of a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## in the same way as other data fields except instead of a simple assignment to a field or a value retrieved from field, a procedure is executed.
+	##**Property**## fields are used to get and set values of a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## in the same way as other data fields except instead of a simple assignment to a field or a value retrieved from field, a procedure is executed.
 
-	##//typename//## is the name of the type for which the ##**Property**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace Namespace]]##.
+	##//typename//## is the name of the type for which the ##**Property**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace|Namespace]]##.
 
 	A **Property** may optionally have one index parameter.  When indexed, properties are accessed as ##//fieldname//##(Index) = Value.
 
-	A hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//## is passed to the property procedure.  ##[[KeyPgThis this]]## is used to access the fields of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
+	A hidden ##[[KeyPgThis|this]]## parameter having the same type as ##//typename//## is passed to the property procedure.  ##[[KeyPgThis|this]]## is used to access the fields of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##.
 
 	**Note:** A standard **Property** (get & set) does not work with combination operators (as "+="). But a result byref get-**Property** (as more generally any result byref function) works with combination operators.
 
@@ -159,7 +159,7 @@ FOO Number's Value: 2147483648
 FOO 31st Bit Set? -1
 %%
 {{fbdoc item="see"}}
-	- ##[[KeyPgClass Class]]##
-	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgClass|Class]]##
+	- ##[[KeyPgType|Type]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

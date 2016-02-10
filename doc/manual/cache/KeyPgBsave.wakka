@@ -2,7 +2,7 @@
 Saves an array of arbitrary data and palette information to a file on disk
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bsave** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //source// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgUlong ulong]] = 0, [[KeyPgByval byval]] //pal// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0, [[KeyPgByval byval]] //bitsperpixel// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Bsave** ( [[KeyPgByref|byref]] //filename// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [[KeyPgByval|byval]] //source// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //size// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] = 0, [[KeyPgByval|byval]] //pal// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] = 0, [[KeyPgByval|byval]] //bitsperpixel// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Bsave**( //filename//, //source// [,[ //size// ][,[ //pal// ][, //bitsperpixel// ]]] )
@@ -15,12 +15,12 @@ Saves an array of arbitrary data and palette information to a file on disk
 	##//size//##
 		optional, the total number of bytes of data to store.  This value is needed unless the output is a BMP file.
 	##//pal//##
-		optional, the address of a buffer holding 256 ##[[KeyPgPalette Palette]]## colors, or null (##0##) for the current screen palette.
+		optional, the address of a buffer holding 256 ##[[KeyPgPalette|Palette]]## colors, or null (##0##) for the current screen palette.
 	##//bitsperpixel//##
 		optional, a requested bit depth for the output BMP image.
 
 {{fbdoc item="ret"}}
-	Returns zero (##0##) if successful, or a non-zero error code to indicate a failure. //[[ProPgErrorHandling (throws a runtime error)]]//
+	Returns zero (##0##) if successful, or a non-zero error code to indicate a failure. //[[ProPgErrorHandling|(throws a runtime error)]]//
 
 {{fbdoc item="desc"}}
 	##**Bsave**## is used for saving arbitrary data from memory into a file, using a file format specific to FB, or saving images into a standard BMP image file, replacing an existing file if necessary.
@@ -32,7 +32,7 @@ Saves an array of arbitrary data and palette information to a file on disk
 	The default bit depth for BMP files is 8-bit for 8-bit (palette) images, 24-bit for 16-bit images, and 32-bit for 32-bit images.  The ##//bitsperpixel//## parameter can be used to request 24-bit output for 8-bit images, or 24-bit output for 32-bit images.
 
 **Runtime errors:**
-	##**Bsave**## throws one of the following [[ProPgErrorHandling runtime errors]]:
+	##**Bsave**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
 
 	//(##1##) Illegal function call//
 		- ##//size//## is less than zero (##0##), or ##//size//## is zero and ##//source//## is non-null, or a problem is detected with the image buffer.
@@ -59,10 +59,10 @@ BSAVE "hello.bmp", 0
 {{fbdoc item="diff"}}
 	- Support for saving more than 64KiB of arbitrary data is new to ""FreeBASIC"".
 	- Support for saving BMP files is new to ""FreeBASIC"".
-	- ""QB"" cannot use ##[[KeyPgBload Bload]]## to load files created with ##**Bsave**## in ""FreeBASIC"", but ""FreeBASIC"" can use ##[[KeyPgBload Bload]]## to load files created with ##**Bsave**## in ""QB""
+	- ""QB"" cannot use ##[[KeyPgBload|Bload]]## to load files created with ##**Bsave**## in ""FreeBASIC"", but ""FreeBASIC"" can use ##[[KeyPgBload|Bload]]## to load files created with ##**Bsave**## in ""QB""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgBload Bload]]##
-	- ##[[KeyPgPalette Palette]]##
+	- ##[[KeyPgBload|Bload]]##
+	- ##[[KeyPgPalette|Palette]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

@@ -6,16 +6,16 @@ The performance of an application might be measured by how many times functions 
 ""FreeBASIC"" uses GPROF for analyzing the execution of an application.  The profiler information is collected while the program is running, and GPROF is used to report on the collected data afterward.
 
 The three basic steps to profiling a program are:
-	- 1) Prepare the program for profiling by compiling source with the //[[CompilerOptprofile -profile]]// option.
+	- 1) Prepare the program for profiling by compiling source with the //[[CompilerOptprofile|-profile]]// option.
 	- 2) Run the program to collection information ( stored in ##gmon.out## ).
 	- 3) Analyze the information collected using GPROF.
 
-Full documentation on GPROF is available here: [[http://www.gnu.org/software/binutils/manual/gprof-2.9.1/gprof.html http://www.gnu.org/software/binutils/manual/gprof-2.9.1/gprof.html]].  If the documentation has moved from that location, simply search the web for "GNU GPROF" and a relevant link should be returned.
+Full documentation on GPROF is available here: [[http://www.gnu.org/software/binutils/manual/gprof-2.9.1/gprof.html|http://www.gnu.org/software/binutils/manual/gprof-2.9.1/gprof.html]].  If the documentation has moved from that location, simply search the web for "GNU GPROF" and a relevant link should be returned.
 
 ""FreeBASIC"" supports function profiling; not basic-block or line-by-line profiling.
 
 {{fbdoc item="section" value="Preparing a Program for Profiling"}}
-	Only code that is compiled with the //[[CompilerOptprofile -profile]]// command line option can be profiled.  Pass the //[[CompilerOptprofile -profile]]// option to the ""FreeBASIC"" compiler to prepare the program to be profiled.  This will tell the compiler to insert special startup code at the beginning of the application as well as at the beginning of each function.
+	Only code that is compiled with the //[[CompilerOptprofile|-profile]]// command line option can be profiled.  Pass the //[[CompilerOptprofile|-profile]]// option to the ""FreeBASIC"" compiler to prepare the program to be profiled.  This will tell the compiler to insert special startup code at the beginning of the application as well as at the beginning of each function.
 	%%
 fbc program.bas -profile
 %%

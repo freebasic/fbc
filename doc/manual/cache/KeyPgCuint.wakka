@@ -1,13 +1,13 @@
 {{fbdoc item="title" value="CUINT"}}----
-Converts numeric or string expression to a ##[[KeyPgUinteger Uinteger]]## or ##[[KeyPgUinteger Uinteger]]<//bits//>##
+Converts numeric or string expression to a ##[[KeyPgUinteger|Uinteger]]## or ##[[KeyPgUinteger|Uinteger]]<//bits//>##
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cuint** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cuint**<//bits//> ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]<//bits//>
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cuint** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cuint**<//bits//> ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]<//bits//>
 
-	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]<//bits//>
+	[[KeyPgType|Type]] //typename//
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]<//bits//>
 	End Type
 ##
 {{fbdoc item="usage"}}##
@@ -19,23 +19,23 @@ Converts numeric or string expression to a ##[[KeyPgUinteger Uinteger]]## or ##[
 	##//bits//##
 		A numeric constant expression indicating the size in bits of unsigned integer desired.  The values allowed are ##8##, ##16##, ##32## or ##64##.
 	##//expression//##
-		a numeric, string, or pointer expression to cast to a ##[[KeyPgUinteger Uinteger]]## or ##[[KeyPgUinteger Uinteger]]<//bits//>## value
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgUinteger|Uinteger]]## or ##[[KeyPgUinteger|Uinteger]]<//bits//>## value
 	##//datatype//##
 		any numeric, string, or pointer data type
 	##//typename//##
 		a user defined type
 
 {{fbdoc item="ret"}}
-	A ##[[KeyPgUinteger Uinteger]]## or ##[[KeyPgUinteger Uinteger]]<//bits//>## containing the converted value.
+	A ##[[KeyPgUinteger|Uinteger]]## or ##[[KeyPgUinteger|Uinteger]]<//bits//>## containing the converted value.
 
 {{fbdoc item="desc"}}
-	The ##**Cuint**## function rounds off the decimal part and returns a ##[[KeyPgUinteger Uinteger]]## value, or if a ##//bits//## value is supplied, an unsigned integer type of the given size.
+	The ##**Cuint**## function rounds off the decimal part and returns a ##[[KeyPgUinteger|Uinteger]]## value, or if a ##//bits//## value is supplied, an unsigned integer type of the given size.
 	
-	The function does not check for an overflow; for example, for a 32-bit ##[[KeyPgUinteger Uinteger]]## results are undefined for values which are less than ##0## or larger than ##4## ##294## ##967## ##296##.
+	The function does not check for an overflow; for example, for a 32-bit ##[[KeyPgUinteger|Uinteger]]## results are undefined for values which are less than ##0## or larger than ##4## ##294## ##967## ##296##.
 	
 	The name can be explained as 'Convert to Unsigned INTeger'.
 	
-	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValuint Valuint]]## or ##[[KeyPgValulng Valulng]]##, depending on the size of the result type.
+	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValuint|Valuint]]## or ##[[KeyPgValulng|Valulng]]##, depending on the size of the result type.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/casting/cuint.bas"}}%%(freebasic)
@@ -52,23 +52,23 @@ PRINT numeric_value
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Cuint""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Cuint""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCbyte Cbyte]]##
-	- ##[[KeyPgCubyte Cubyte]]##
-	- ##[[KeyPgCshort Cshort]]##
-	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgCint Cint]]##
-	- ##[[KeyPgClng Clng]]##
-	- ##[[KeyPgCulng Culng]]##
-	- ##[[KeyPgClngint Clngint]]##
-	- ##[[KeyPgCulngint Culngint]]##
-	- ##[[KeyPgCsng Csng]]##
-	- ##[[KeyPgCdbl Cdbl]]##
-	- ##[[KeyPgUinteger Uinteger]]##
+	- ##[[KeyPgCbyte|Cbyte]]##
+	- ##[[KeyPgCubyte|Cubyte]]##
+	- ##[[KeyPgCshort|Cshort]]##
+	- ##[[KeyPgCushort|Cushort]]##
+	- ##[[KeyPgCint|Cint]]##
+	- ##[[KeyPgClng|Clng]]##
+	- ##[[KeyPgCulng|Culng]]##
+	- ##[[KeyPgClngint|Clngint]]##
+	- ##[[KeyPgCulngint|Culngint]]##
+	- ##[[KeyPgCsng|Csng]]##
+	- ##[[KeyPgCdbl|Cdbl]]##
+	- ##[[KeyPgUinteger|Uinteger]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

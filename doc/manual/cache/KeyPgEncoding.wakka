@@ -2,18 +2,18 @@
 Specifies character format of a text file
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgOpen open]] //filename// for {Input|Output|Append} **Encoding** "//utf-8//"|"//utf-16//"|"//utf-32//"|"//ascii//" as [#]//filenum// 
+	[[KeyPgOpen|open]] //filename// for {Input|Output|Append} **Encoding** "//utf-8//"|"//utf-16//"|"//utf-32//"|"//ascii//" as [#]//filenum// 
 ##
 {{fbdoc item="param"}}
 	##//filename//## for {Input|Output|Append}
-		file name to open for ##[[KeyPgInputfilemode Input]]##, ##[[KeyPgOutput Output]]##, or ##[[KeyPgAppend Append]]##
+		file name to open for ##[[KeyPgInputfilemode|Input]]##, ##[[KeyPgOutput|Output]]##, or ##[[KeyPgAppend|Append]]##
 	##**Encoding** "//utf-8//"|"//utf-16//"|"//utf-32//"|"//ascii//"##
 		indicates encoding type for the file
 	##//filenum//##
 		unused file number to associate with the open file
 
 {{fbdoc item="desc"}}
-	##**Encoding**## specifies the format for an Unicode text file, so ##[[KeyPgWinput Winput #]]## and ##[[KeyPgPrintPp Print #]]## use the correct encoding.  If omitted from an ##[[KeyPgOpen Open]]## statement, "ascii" encoding is the default.
+	##**Encoding**## specifies the format for an Unicode text file, so ##[[KeyPgWinput|Winput #]]## and ##[[KeyPgPrintPp|Print #]]## use the correct encoding.  If omitted from an ##[[KeyPgOpen|Open]]## statement, "ascii" encoding is the default.
 
 	Only little endian character encodings are supported at the moment. 
 		-"utf8", 
@@ -108,12 +108,12 @@ FreeBASIC
 	- Unicode (w)strings are not supported in the DOS port of FreeBASIC
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Encoding""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Encoding""**##.
 
 {{fbdoc item="diff"}}
 	- QB had no support for Unicode
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgOpen|Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

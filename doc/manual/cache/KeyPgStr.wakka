@@ -2,19 +2,19 @@
 Returns a string representation of a number, boolean or Unicode character string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgShort short]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUlong ulong]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //b// [[KeyPgAs as]] [[KeyPgBoolean boolean]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Str** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgByte|byte]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgShort|short]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgUshort|ushort]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgLongint|longint]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByval|byval]] //b// [[KeyPgAs|as]] [[KeyPgBoolean|boolean]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Str** ( [[KeyPgByval|byval]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Str**[$]( //number// )
@@ -28,11 +28,11 @@ Returns a string representation of a number, boolean or Unicode character string
 		String expression to convert to a string.
 
 {{fbdoc item="desc"}}
-	##**Str**## converts numeric variables to their string representation. Used this way it is the ##[[KeyPgString String]]## equivalent to ##[[KeyPgWstr Wstr]]## applied to numeric variables, and the opposite of the ##[[KeyPgVal Val]]## function, which converts a string into a number.
+	##**Str**## converts numeric variables to their string representation. Used this way it is the ##[[KeyPgString|String]]## equivalent to ##[[KeyPgWstr|Wstr]]## applied to numeric variables, and the opposite of the ##[[KeyPgVal|Val]]## function, which converts a string into a number.
 
 	##**Str**## converts boolean variables to their string representation "false" / "true".
 
-	##**Str**## also converts Unicode character strings to ASCII character strings. Used this way it does the opposite of ##[[KeyPgWstr Wstr]]##. If an ASCII character string is given, that string is returned unmodified.
+	##**Str**## also converts Unicode character strings to ASCII character strings. Used this way it does the opposite of ##[[KeyPgWstr|Wstr]]##. If an ASCII character string is given, that string is returned unmodified.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/str.bas"}}%%(freebasic)
@@ -44,9 +44,9 @@ print a, b
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, ##**Str**## will left pad a positive number with a space.
-	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, ##**Str**## will left pad a positive number with a space.
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang fb]]// dialects.
 
 {{fbdoc item="target"}}
 	- DOS version/target of FreeBASIC does not support the wide-character string version of ##**Str**##.
@@ -55,9 +55,9 @@ print a, b
 	- QB does not support the wide-character string version of ##**Str**##.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgVal Val]]##
-	- ##[[KeyPgCbool Cbool]]##
-	- ##[[KeyPgChr Chr]]##
-	- ##[[KeyPgAsc Asc]]##
+	- ##[[KeyPgVal|Val]]##
+	- ##[[KeyPgCbool|Cbool]]##
+	- ##[[KeyPgChr|Chr]]##
+	- ##[[KeyPgAsc|Asc]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

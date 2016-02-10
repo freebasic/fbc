@@ -2,15 +2,15 @@
 Specifies a //stdcall//-style calling convention in a procedure declaration
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgSub Sub]] //name// **Stdcall** [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""alias"""//] ( //parameters// )
-	[[KeyPgFunction Function]] //name// **Stdcall** [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""alias"""//] ( //parameters// ) [[KeyPgAs as]] //return_type//
+	[[KeyPgSub|Sub]] //name// **Stdcall** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// )
+	[[KeyPgFunction|Function]] //name// **Stdcall** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// ) [[KeyPgAs|as]] //return_type//
 ##
 {{fbdoc item="desc"}}
 	In procedure declarations, ##**Stdcall**## specifies that a procedure will use the ##**Stdcall**## calling convention. In the ##**Stdcall**## calling convention, any parameters are to be passed (pushed onto the stack) in the reverse order in which they are listed, that is, from right to left. The procedures need not preserve the ##EAX##, ##ECX## or ##EDX## registers, and must clean up the stack (pop any parameters) before it returns.
 	
-	##**Stdcall**## is not allowed to be used with variadic procedure declarations (those with the last parameter listed as "##[[KeyPgDots ...]]##").
+	##**Stdcall**## is not allowed to be used with variadic procedure declarations (those with the last parameter listed as "##[[KeyPgDots|...]]##").
 
-	##**Stdcall**## is the default calling convention on Windows, unless another calling convention is explicitly specified or implied by one of the ##[[KeyPgExternBlock EXTERN blocks]]##. ##**Stdcall**## is also the standard (or most common) calling convention used in BASIC languages, and the Windows API.
+	##**Stdcall**## is the default calling convention on Windows, unless another calling convention is explicitly specified or implied by one of the ##[[KeyPgExternBlock|EXTERN blocks]]##. ##**Stdcall**## is also the standard (or most common) calling convention used in BASIC languages, and the Windows API.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/stdcall.bas"}}%%(freebasic)
@@ -37,8 +37,8 @@ End Function
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPascal Pascal]]##, ##[[KeyPgCdecl Cdecl]]##
-	- ##[[KeyPgDeclare Declare]]##
-	- ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgPascal|Pascal]]##, ##[[KeyPgCdecl|Cdecl]]##
+	- ##[[KeyPgDeclare|Declare]]##
+	- ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

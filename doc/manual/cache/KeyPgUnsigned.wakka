@@ -2,7 +2,7 @@
 Integer data type modifier
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Unsigned** //{integer-based data type}//
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Unsigned** //{integer-based data type}//
 ##
 {{fbdoc item="desc"}}
 	Forces an integer-based data type to be unsigned (cannot contain negative numbers, but has its maximum value doubled).
@@ -20,12 +20,12 @@ print x
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Unsigned""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Unsigned""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgUinteger Uinteger]]##
+	- ##[[KeyPgUinteger|Uinteger]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

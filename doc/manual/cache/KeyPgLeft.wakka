@@ -2,8 +2,8 @@
 Returns the leftmost substring of a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Left** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Left** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]], [[KeyPgByval byval]] //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Left** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Left** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]], [[KeyPgByval|byval]] //n// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Left**[$]( //str//, //n// )
@@ -40,14 +40,14 @@ print left(text, 6) 'displays "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;"
 	- DOS does not support the wide-character string version of **##Left##**.
 
 {{fbdoc item="lang"}}
-	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- QB does not support Unicode.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgRight Right]]##
-	- ##[[KeyPgMidfunction Mid (Function)]]##
+	- ##[[KeyPgRight|Right]]##
+	- ##[[KeyPgMidfunction|Mid (Function)]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

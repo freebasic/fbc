@@ -2,9 +2,9 @@
 Changes the sign of a numeric expression
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **-** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **-** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **-** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **-** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **-** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgSingle|single]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **-** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **-** //rhs//
@@ -39,12 +39,12 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- [[CatPgMath Mathematical Functions]]
+	- [[CatPgMath|Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

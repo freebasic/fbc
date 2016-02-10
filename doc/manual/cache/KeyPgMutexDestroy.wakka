@@ -2,25 +2,25 @@
 Destroys a mutex
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Mutexdestroy** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Mutexdestroy** ( [[KeyPgByval|byval]] //id// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**Mutexdestroy**( //id// )
 ##
 {{fbdoc item="param"}}
 	##//id//##
-		The ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle of the mutex to be destroyed.
+		The ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]## handle of the mutex to be destroyed.
 
 {{fbdoc item="desc"}}
-	##Mutexdestroy## discards a mutex created by ##[[KeyPgMutexCreate Mutexcreate]]##.  This call should be executed after any threads using the mutex are no longer in use.
+	##Mutexdestroy## discards a mutex created by ##[[KeyPgMutexCreate|Mutexcreate]]##.  This call should be executed after any threads using the mutex are no longer in use.
 
-	    See ##[[KeyPgMutexCreate Mutexcreate]]## for more general information on mutexes.
+	    See ##[[KeyPgMutexCreate|Mutexcreate]]## for more general information on mutexes.
 
 {{fbdoc item="ex"}}
-	See the examples in ##[[KeyPgMutexCreate Mutexcreate]]## and also ##[[KeyPgThreadCreate Threadcreate]]##.
+	See the examples in ##[[KeyPgMutexCreate|Mutexcreate]]## and also ##[[KeyPgThreadCreate|Threadcreate]]##.
 
 {{fbdoc item="lang"}}
-	- Threading is not allowed in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Threading is not allowed in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="target"}}
 	- The DOS version of ""FreeBASIC"" does not allow for threads, as the OS does not support them.
@@ -30,10 +30,10 @@ Destroys a mutex
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgMutexCreate Mutexcreate]]##
-	- ##[[KeyPgMutexLock Mutexlock]]##
-	- ##[[KeyPgMutexUnlock Mutexunlock]]##
-	- ##[[KeyPgThreadCreate Threadcreate]]##
-	- ##[[KeyPgThreadWait Threadwait]]##
+	- ##[[KeyPgMutexCreate|Mutexcreate]]##
+	- ##[[KeyPgMutexLock|Mutexlock]]##
+	- ##[[KeyPgMutexUnlock|Mutexunlock]]##
+	- ##[[KeyPgThreadCreate|Threadcreate]]##
+	- ##[[KeyPgThreadWait|Threadwait]]##
 
 {{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

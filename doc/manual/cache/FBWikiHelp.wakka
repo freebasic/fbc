@@ -7,20 +7,20 @@ Registered users can help improve the the online documentation and the FreeBASIC
 	- creating a tutorial.
 
 ==Resources==
-	-[[FBWikiFbdocAction fbdoc Action]] - syntax and usage of the ""{{""fbdoc""}}"" action
-	-[[FBWikiPageNames Page Names]] - commonly used page names in this wiki
-	-[[FormattingRules Formatting Rules]] - markup codes used for formatting content
-	-[[FBWikiTopicSample Topic Sample]] - General style format for topic pages in the manual.
-	-[[FBWikiKeywordTemplate Keyword Template]] - Template for keyword pages.
-	-[[FBWikiTutorialTemplate Tutorial Template]] - Template for tutorial pages. (Only a suggestion, not a requirement)
-	-[[FBWikiGraphics Displaying graphics in the Wiki]] - Guidelines for adding graphics to wiki pages
+	-[[FBWikiFbdocAction|fbdoc Action]] - syntax and usage of the ""{{""fbdoc""}}"" action
+	-[[FBWikiPageNames|Page Names]] - commonly used page names in this wiki
+	-[[FormattingRules|Formatting Rules]] - markup codes used for formatting content
+	-[[FBWikiTopicSample|Topic Sample]] - General style format for topic pages in the manual.
+	-[[FBWikiKeywordTemplate|Keyword Template]] - Template for keyword pages.
+	-[[FBWikiTutorialTemplate|Tutorial Template]] - Template for tutorial pages. (Only a suggestion, not a requirement)
+	-[[FBWikiGraphics|Displaying graphics in the Wiki]] - Guidelines for adding graphics to wiki pages
 	-MissingDocs - A list of pages that need work.
 	-SandBox - A place to test your formatting skills.
 
 This wiki is the official source for the FreeBASIC Manual.  The pages it contains are used to generate other downloadable formats of the documentation.  Some pages need to be formatted and organized in a specific way to be recognized by our document converters.  
 
 {{fbdoc item="see"}}
-	-[[FBWikiFaq FB Wiki - FAQ]] - Frequently Asked Questions about the online documentation.
+	-[[FBWikiFaq|FB Wiki - FAQ]] - Frequently Asked Questions about the online documentation.
 
 
 {{fbdoc item="back" value="FBWiki|Main Page"}}

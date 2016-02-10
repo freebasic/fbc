@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ADD"}}----
-Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects addition as the blitting method
+Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which selects addition as the blitting method
 
 {{fbdoc item="syntax"}}##
 	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ], **Add**[ ,//multiplier// ]
@@ -14,7 +14,7 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects a
 	##**Add**## selects addition as the method for blitting an image buffer.  For each source and target pixel, the values of each respective component are added together to produce the result.
 	The addition is saturated - i.e. if the sum of the two values is 256 or more, then it will be cropped down to 255.
 	
-	This method will work in all color modes.  Mask colors (color 0 for indexed images, magenta (##[[KeyPgRgb RGB]](255, 0, 255)##) for full color images) will be skipped, though full color values of 0 (##[[KeyPgRgba RGBA]](0, 0, 0, 0)##) will have also have no effect.
+	This method will work in all color modes.  Mask colors (color 0 for indexed images, magenta (##[[KeyPgRgb|RGB]](255, 0, 255)##) for full color images) will be skipped, though full color values of 0 (##[[KeyPgRgba|RGBA]](0, 0, 0, 0)##) will have also have no effect.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/gfx/put-add.bas"}}%%(freebasic)
@@ -43,9 +43,9 @@ sleep
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	-##[[KeyPgTransGfx Trans]]##
-	-##[[KeyPgAlphaGfx Alpha]]##
-	-##[[KeyPgCustomgfx Custom]]##
-	- ##[[KeyPgPutgraphics Put (Graphics)]]##
+	-##[[KeyPgTransGfx|Trans]]##
+	-##[[KeyPgAlphaGfx|Alpha]]##
+	-##[[KeyPgCustomgfx|Custom]]##
+	- ##[[KeyPgPutgraphics|Put (Graphics)]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

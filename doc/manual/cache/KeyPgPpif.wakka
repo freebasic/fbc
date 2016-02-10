@@ -4,14 +4,14 @@ Preprocessor conditional directive
 {{fbdoc item="syntax"}}##
 	**#if** (expression)
 		' Conditionally included statements
-	[[KeyPgPpendif #endif]]
+	[[KeyPgPpendif|#endif]]
 ##
 {{fbdoc item="desc"}}
 	Conditionally includes statements at compile time.
 
-	Statements contained within the ##**#if**## / ##[[KeyPgPpendif #endif]]## block are included if ##//expression//## evaluates to True (non-zero) and excluded (ignored) if ##//expression//## evaluates to False (##0##).
+	Statements contained within the ##**#if**## / ##[[KeyPgPpendif|#endif]]## block are included if ##//expression//## evaluates to True (non-zero) and excluded (ignored) if ##//expression//## evaluates to False (##0##).
 
-	This conditional directive differs from the ##[[KeyPgIfthen If]]## conditional statement in that ##**#if**## is evaluated at compile-time and ##[[KeyPgIfthen If]]## is evaluated at run-time.
+	This conditional directive differs from the ##[[KeyPgIfthen|If]]## conditional statement in that ##**#if**## is evaluated at compile-time and ##[[KeyPgIfthen|If]]## is evaluated at run-time.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/if.bas"}}%%(freebasic)
@@ -26,15 +26,15 @@ Preprocessor conditional directive
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #define]]##
-	- ##[[KeyPgPpmacro #macro]]##
-	- ##[[KeyPgPpelse #else]]## 
-	- ##[[KeyPgPpelseif #elseif]]## 
-	- ##[[KeyPgPpendif #endif]]## 
-	- ##[[KeyPgPpifdef #ifdef]]##
-	- ##[[KeyPgPpifndef #ifndef]]##
-	- ##[[KeyPgPpundef #undef]]##
-	- ##[[KeyPgDefined defined]]##
-	- ##[[KeyPgPpassert #assert]]## 
+	- ##[[KeyPgPpdefine|#define]]##
+	- ##[[KeyPgPpmacro|#macro]]##
+	- ##[[KeyPgPpelse|#else]]## 
+	- ##[[KeyPgPpelseif|#elseif]]## 
+	- ##[[KeyPgPpendif|#endif]]## 
+	- ##[[KeyPgPpifdef|#ifdef]]##
+	- ##[[KeyPgPpifndef|#ifndef]]##
+	- ##[[KeyPgPpundef|#undef]]##
+	- ##[[KeyPgDefined|defined]]##
+	- ##[[KeyPgPpassert|#assert]]## 
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

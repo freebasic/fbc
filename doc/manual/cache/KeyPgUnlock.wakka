@@ -7,31 +7,31 @@ Removes a previous access restriction (lock) on a file
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		The file number used to ##[[KeyPgOpen Open]]## the file.
+		The file number used to ##[[KeyPgOpen|Open]]## the file.
 	##//record//##
-		The record (##[[KeyPgRandom Random]]## files) to unlock.
+		The record (##[[KeyPgRandom|Random]]## files) to unlock.
 	##//start//##
-		The first byte position (##[[KeyPgBinary Binary]]## files) in a range to unlock.
+		The first byte position (##[[KeyPgBinary|Binary]]## files) in a range to unlock.
 	##//end//##
-		The last byte position (##[[KeyPgBinary Binary]]## files) in a range to unlock.
+		The last byte position (##[[KeyPgBinary|Binary]]## files) in a range to unlock.
 
 {{fbdoc item="desc"}}
-	##**Unlock**## removes the temporary access restriction set by ##[[KeyPgLock Lock]]##.
+	##**Unlock**## removes the temporary access restriction set by ##[[KeyPgLock|Lock]]##.
 
-	It is strongly recommended to use the same arguments used in the previous ##[[KeyPgLock Lock]]##.
+	It is strongly recommended to use the same arguments used in the previous ##[[KeyPgLock|Lock]]##.
 
 	**Note: This command does not always work, neither as documented nor as expected. It appears to be broken at the moment.**
 
 {{fbdoc item="ex"}}
-	     For an example see ##[[KeyPgLock Lock]]##.
+	     For an example see ##[[KeyPgLock|Lock]]##.
 
 {{fbdoc item="diff"}}
 	- Currently, FB cannot implicitly unlock the entire file
-	- In ##[[KeyPgRandom Random]]## mode, FB cannot unlock a range of records
+	- In ##[[KeyPgRandom|Random]]## mode, FB cannot unlock a range of records
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLock Lock]]##
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgScreenUnlock ScreenUnlock]]##
+	- ##[[KeyPgLock|Lock]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgScreenUnlock|ScreenUnlock]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

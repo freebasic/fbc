@@ -2,7 +2,7 @@
 Standard data type: 64 bit unsigned
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Ulongint**
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Ulongint**
 ##
 {{fbdoc item="desc"}}
 	A 64-bit unsigned whole-number data type. Can hold values from 0 to 18 446 744 073 709 551 615. Corresponds to an unsigned QWORD.
@@ -18,13 +18,13 @@ Print "ULongInt Range = "; x; " to "; y
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Ulongint""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Ulongint""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLongint Longint]]##
-	- ##[[KeyPgCulngint Culngint]]##
+	- ##[[KeyPgLongint|Longint]]##
+	- ##[[KeyPgCulngint|Culngint]]##
 	
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

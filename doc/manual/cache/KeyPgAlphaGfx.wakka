@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ALPHA"}}----
-Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects alpha blending as the method
+Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which selects alpha blending as the method
 
 {{fbdoc item="syntax"}}##
 	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ], **Alpha**
@@ -12,11 +12,11 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which selects a
 		Optional alpha parameter in the range [0..255].  Overrides alpha values in individual pixels.
 
 {{fbdoc item="desc"}}
-	##**Alpha**## selects alpha blending as the method for ##[[KeyPgPutgraphics Put]]##ting an image.  If the ##//alphaval//## parameter is specified, it overrides the alpha value of each pixel, and the mask color (magenta) will be treated as transparent.  This works in 15, 16, 24, or 32-bit color depths.
+	##**Alpha**## selects alpha blending as the method for ##[[KeyPgPutgraphics|Put]]##ting an image.  If the ##//alphaval//## parameter is specified, it overrides the alpha value of each pixel, and the mask color (magenta) will be treated as transparent.  This works in 15, 16, 24, or 32-bit color depths.
 
-	If ##//alphaval//## is not specified, ##**Alpha**## will only work in 32-bit color depth, and ##[[KeyPgPutgraphics Put]]## will use the alpha value embedded within each pixel.  Pixels using the mask color will be treated as normal, and drawn with their given alpha value.
+	If ##//alphaval//## is not specified, ##**Alpha**## will only work in 32-bit color depth, and ##[[KeyPgPutgraphics|Put]]## will use the alpha value embedded within each pixel.  Pixels using the mask color will be treated as normal, and drawn with their given alpha value.
 	
-	##**Alpha**## also has another mode which allows an 8-bit image to be ##[[KeyPgPutgraphics Put]]## on top of a 32-bit image.  In this case, it will replace the alpha channel of the 32-bit image with the contents of the 8-bit image.
+	##**Alpha**## also has another mode which allows an 8-bit image to be ##[[KeyPgPutgraphics|Put]]## on top of a 32-bit image.  In this case, it will replace the alpha channel of the 32-bit image with the contents of the 8-bit image.
 
 	    Alpha values range between 0 and 255.  An alpha value of 0 will not draw the image at all.  All other alpha values are incremented by 1 to get a range between 2 and 256, and the result is then divided by 256 to get a value between 1/128 and 1, which is used to calculate the exact value of each pixel from the source and destination pixels.  Thus, 255 is practically equivalent to drawing using Put with Trans blitting mode, 0 is equivalent to doing nothing at all, and all the other alpha values blend is expected.
 
@@ -138,8 +138,8 @@ sleep%%
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPutgraphics Put (Graphics)]]##
-	- ##[[KeyPgTransGfx Trans]]##
-	- ##[[KeyPgCustomgfx Custom]]##
+	- ##[[KeyPgPutgraphics|Put (Graphics)]]##
+	- ##[[KeyPgTransGfx|Trans]]##
+	- ##[[KeyPgCustomgfx|Custom]]##
 	
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

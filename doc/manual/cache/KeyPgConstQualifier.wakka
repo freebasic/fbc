@@ -2,14 +2,14 @@
 Specifies that a data type or pointer data type is read only.
 
 {{fbdoc item="syntax"}}##
-	... [[KeyPgAs as]] [**Const**] //[[DataType datatype]]// [ [**Const**] [[KeyPgPtr ptr]] ... ]
+	... [[KeyPgAs|as]] [**Const**] //[[DataType|datatype]]// [ [**Const**] [[KeyPgPtr|ptr]] ... ]
 ##
 {{fbdoc item="param"}}
 	##//datatype//##
 		Name of a standard or user defined data type.
 
 {{fbdoc item="desc"}}
-	Specifies that the ##//datatype//## or ##[[KeyPgPtr ptr]]## immediately to the right of the ##**Const**## qualifier is to be considered as read only.  Read-only (##**Const**##) declarations are a measure of type safety that can be read as 'promises not to change.'  The compiler uses the const declarations to check operations on variables and parameters and generate an error at compile time if their data could potentially change.  There is no runtime overhead for using ##**Const**## qualifiers since all of the checks are made at compile time.
+	Specifies that the ##//datatype//## or ##[[KeyPgPtr|ptr]]## immediately to the right of the ##**Const**## qualifier is to be considered as read only.  Read-only (##**Const**##) declarations are a measure of type safety that can be read as 'promises not to change.'  The compiler uses the const declarations to check operations on variables and parameters and generate an error at compile time if their data could potentially change.  There is no runtime overhead for using ##**Const**## qualifiers since all of the checks are made at compile time.
 
 	##**Const**## can be used anywhere data type declarations are made.  This includes variables, parameters, function return results, user defined type fields, type aliases, and casting.  The ##//datatype//## can be any built-in standard data type or user defined type.
 
@@ -19,9 +19,9 @@ Specifies that a data type or pointer data type is read only.
 
 	Procedures can be overloaded based on the const-ness of parameters.  For example a procedure can be overloaded where one version of the procedure takes a ##'byref foo as bar'## parameter and another version of the procedure takes a ##'byref foo as const bar'## parameter.
 
-	With pointer declarations, ##**Const**## can be used to indicate which part of the pointer declaration is read-only (all other parts are by default read-write).  The read-only portion of the pointer data type could be the pointer itself (the address), what the pointer points to (the data), or both.  In a declaration with more than one level of ##[[KeyPgPtr Ptr]]## indirection, the right most ##[[KeyPgPtr Ptr]]## indicates the highest order level of indirection and is therefore dereferenced first.
+	With pointer declarations, ##**Const**## can be used to indicate which part of the pointer declaration is read-only (all other parts are by default read-write).  The read-only portion of the pointer data type could be the pointer itself (the address), what the pointer points to (the data), or both.  In a declaration with more than one level of ##[[KeyPgPtr|Ptr]]## indirection, the right most ##[[KeyPgPtr|Ptr]]## indicates the highest order level of indirection and is therefore dereferenced first.
 
-	The compiler has an internal hard-limit of eight (8) levels of pointer indirection with respect to const qualifiers and the behavior of using ##**Const**## with ##[[KeyPgPtr Ptr]]## data types having greater than eight (8) levels of indirection is undefined.
+	The compiler has an internal hard-limit of eight (8) levels of pointer indirection with respect to const qualifiers and the behavior of using ##**Const**## with ##[[KeyPgPtr|Ptr]]## data types having greater than eight (8) levels of indirection is undefined.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/const-var.bas"}}%%(freebasic)
@@ -146,9 +146,9 @@ foo( y )
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgConst Const]]##
-	- ##[[KeyPgConstMember Const (Member)]]##
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgConst|Const]]##
+	- ##[[KeyPgConstMember|Const (Member)]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgType|Type]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

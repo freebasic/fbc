@@ -2,7 +2,7 @@
 Finds the remainder from a division operation
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Mod** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Mod** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **Mod** //rhs//
@@ -17,7 +17,7 @@ Finds the remainder from a division operation
 	Returns the remainder of a division operation.
 
 {{fbdoc item="desc"}}
-	**##Operator Mod## (Modulus)** divides two ##[[KeyPgInteger Integer]]## expressions and returns the remainder. Numeric values are converted to ##[[KeyPgInteger Integer]]## by rounding up or down.
+	**##Operator Mod## (Modulus)** divides two ##[[KeyPgInteger|Integer]]## expressions and returns the remainder. Numeric values are converted to ##[[KeyPgInteger|Integer]]## by rounding up or down.
 
 	Neither of the operands are modified in any way.
 
@@ -42,12 +42,12 @@ This is because:
 	- 5.1 is rounded to 5 while 2.8 is rounded to 3. This makes the problem 5 MOD 3 which means 5 divided by 3 which gives a remainder of 2
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- [[CatPgMath Mathematical Functions]]
+	- [[CatPgMath|Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

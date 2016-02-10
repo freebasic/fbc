@@ -2,7 +2,7 @@
 Standard data type: 16 bit unsigned
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Ushort**
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Ushort**
 ##
 {{fbdoc item="desc"}}
 	16-bit unsigned whole-number data type. Can hold values from 0 to 65535.
@@ -18,13 +18,13 @@ Standard data type: 16 bit unsigned
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Ushort""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Ushort""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgShort Short]]##
-	- ##[[KeyPgCushort Cushort]]##
+	- ##[[KeyPgShort|Short]]##
+	- ##[[KeyPgCushort|Cushort]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

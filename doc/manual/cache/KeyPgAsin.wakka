@@ -2,7 +2,7 @@
 Finds the arcsine of a number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Asin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Asin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Asin**( //number// )
@@ -15,7 +15,7 @@ Finds the arcsine of a number
 	The arcsine of ##//number//##, in radians, in the range [-Pi/2..Pi/2].
 
 {{fbdoc item="desc"}}
-	##**Asin**## returns the arcsine of the argument ##//number//## as a ##[[KeyPgDouble Double]]## within the range of -[[TutMathAngles Pi]]/2 to [[TutMathAngles Pi]]/2.  The arcsine is the inverse of the ##[[KeyPgSin Sin]]## function. The returned angle is measured in [[TutMathAngles radians]] (not [[TutMathAngles degrees]]).
+	##**Asin**## returns the arcsine of the argument ##//number//## as a ##[[KeyPgDouble|Double]]## within the range of -[[TutMathAngles|Pi]]/2 to [[TutMathAngles|Pi]]/2.  The arcsine is the inverse of the ##[[KeyPgSin|Sin]]## function. The returned angle is measured in [[TutMathAngles|radians]] (not [[TutMathAngles|degrees]]).
 
 
 {{fbdoc item="ex"}}
@@ -37,13 +37,13 @@ The angle between the sides is 0.6435011087932844
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Asin""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Asin""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSin Sin]]##
-	- [[TutMathIntroTrig A Brief Introduction To Trigonometry]]
+	- ##[[KeyPgSin|Sin]]##
+	- [[TutMathIntroTrig|A Brief Introduction To Trigonometry]]
 
 {{fbdoc item="back" value="CatPgMath|Math"}}

@@ -20,13 +20,13 @@ Intrinsic define set by the compiler
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
-	- ##[[KeyPgDdfbfreebsd __FB_FREEBSD__]]##
-	- ##[[KeyPgDdfbopenbsd __FB_OPENBSD__]]##
-	- ##[[KeyPgDdfbnetbsd __FB_NETBSD__]]##
-	- ##[[KeyPgDdfbcygwin __FB_CYGWIN__]]##
-	- ##[[KeyPgDdfbdarwin __FB_DARWIN__]]##
-	- ##[[KeyPgDdfbpcos __FB_PCOS__]]##
-	- [[CompilerOpttarget Compiler Option: -target]]
+	- ##[[KeyPgDdfblinux|__FB_LINUX__]]##
+	- ##[[KeyPgDdfbfreebsd|__FB_FREEBSD__]]##
+	- ##[[KeyPgDdfbopenbsd|__FB_OPENBSD__]]##
+	- ##[[KeyPgDdfbnetbsd|__FB_NETBSD__]]##
+	- ##[[KeyPgDdfbcygwin|__FB_CYGWIN__]]##
+	- ##[[KeyPgDdfbdarwin|__FB_DARWIN__]]##
+	- ##[[KeyPgDdfbpcos|__FB_PCOS__]]##
+	- [[CompilerOpttarget|Compiler Option: -target]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

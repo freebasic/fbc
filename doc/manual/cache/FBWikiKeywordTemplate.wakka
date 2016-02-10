@@ -2,7 +2,7 @@
 Keyword template.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""MyFunction""**( //param1// [[KeyPgAs as]] [[KeyPgString string]], //param2// [[KeyPgAs as]] [[KeyPgInteger integer]] = &H1234 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""MyFunction""**( //param1// [[KeyPgAs|as]] [[KeyPgString|string]], //param2// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = &H1234 ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **""MyFunction""**( //param1// [, //param2// ] )
@@ -34,7 +34,7 @@ sample output
 %%
 
 {{fbdoc item="lang"}}
-	- Supported only with //[[CompilerOptlang -lang fb]]//.
+	- Supported only with //[[CompilerOptlang|-lang fb]]//.
 
 {{fbdoc item="target"}}
 	- None
@@ -43,6 +43,6 @@ sample output
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[FBWikiKeywordTemplate Keyword Template]]##
+	- ##[[FBWikiKeywordTemplate|Keyword Template]]##
 
 {{fbdoc item="back" value="FBWikiHelp|FB Wiki - Help"}}

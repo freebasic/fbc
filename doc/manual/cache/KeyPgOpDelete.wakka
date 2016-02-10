@@ -1,9 +1,9 @@
 {{fbdoc item="title" value="Operator Delete"}}----
-Operator to delete data allocated with the ##[[KeyPgOpNew New]]## operator
+Operator to delete data allocated with the ##[[KeyPgOpNew|New]]## operator
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **delete** ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **delete[]** ( //buf//  [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **delete** ( //buf//  [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **delete[]** ( //buf//  [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**Delete** //buf//
@@ -12,14 +12,14 @@ Operator to delete data allocated with the ##[[KeyPgOpNew New]]## operator
 ##
 {{fbdoc item="param"}}
 	##//buf//## 
-		A pointer to memory that has been allocated by ##[[KeyPgOpNew New]]## or ##[[KeyPgOpNew New]][]## (a typed pointer must be provided in accordance to the data type to delete).
+		A pointer to memory that has been allocated by ##[[KeyPgOpNew|New]]## or ##[[KeyPgOpNew|New]][]## (a typed pointer must be provided in accordance to the data type to delete).
 
 {{fbdoc item="desc"}}
-	##**Delete**## is used to destroy and free the memory of an object created with ##[[KeyPgOpNew New]]##. When deleting a TYPE, its destructor will be called. ##**Delete**## should only be used with addresses returned from ##[[KeyPgOpNew New]]##.
+	##**Delete**## is used to destroy and free the memory of an object created with ##[[KeyPgOpNew|New]]##. When deleting a TYPE, its destructor will be called. ##**Delete**## should only be used with addresses returned from ##[[KeyPgOpNew|New]]##.
 
-	The array version of ##**Delete**##, ##**Delete[]**##, is used to destroy an array of objects previously created with ##[[KeyPgOpNew New]][]##. Destructors will be called here as well.
+	The array version of ##**Delete**##, ##**Delete[]**##, is used to destroy an array of objects previously created with ##[[KeyPgOpNew|New]][]##. Destructors will be called here as well.
 
-	##**Delete**## must be used with addresses returned from ##[[KeyPgOpNew New]]##, and ##**Delete[]**## with ##[[KeyPgOpNew New]][]##. You cannot mix and match the different versions of the operators.
+	##**Delete**## must be used with addresses returned from ##[[KeyPgOpNew|New]]##, and ##**Delete[]**## with ##[[KeyPgOpNew|New]][]##. You cannot mix and match the different versions of the operators.
 
 	After the memory is deleted, the ##//buf//## pointer will be pointing at invalid memory. Calling ##**Delete**## twice on the same pointer value leads to undefined behaviour. It may be a good idea to set the //##buf//## pointer to null (##0##), in order to guard against later code using it accidentally, since null pointer dereferences are easier to find and debug.
 
@@ -59,13 +59,13 @@ delete[] p
 p = 0
 %%
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
+	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpNew New]]##
-	- ##[[KeyPgDeallocate Deallocate]]##
+	- ##[[KeyPgOpNew|New]]##
+	- ##[[KeyPgDeallocate|Deallocate]]##
 
 {{fbdoc item="back" value="CatPgOpMemory|Memory Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

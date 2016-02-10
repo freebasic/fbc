@@ -3,7 +3,7 @@
 Short description of keyword
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Keyword**( [[KeyPgByval byval]] //foo// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Keyword**( [[KeyPgByval|byval]] //foo// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="param"}}
 	##//foo//##: parameter description
@@ -37,7 +37,7 @@ print keyword(foo)
 
 {{fbdoc item="lang"}}
 	- List of the differences in each dialect, e.g:
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Keyword""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Keyword""**##.
 
 
 {{fbdoc item="diff"}}

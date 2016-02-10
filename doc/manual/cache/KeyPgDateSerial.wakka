@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="DATESERIAL"}}----
-Creates a [[ProPgDates date serial]]
+Creates a [[ProPgDates|date serial]]
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateSerial""** ( [[KeyPgByval byval]] //year// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //month// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //day// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""DateSerial""** ( [[KeyPgByval|byval]] //year// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //month// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //day// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -17,7 +17,7 @@ Creates a [[ProPgDates date serial]]
 		the day of the month
 
 {{fbdoc item="ret"}}
-	Returns a [[ProPgDates date serial]] containing the date formed by the values in the ##//year//##, ##//month//## and ##//day//## parameters.The date serial returned has no decimal part.
+	Returns a [[ProPgDates|date serial]] containing the date formed by the values in the ##//year//##, ##//month//## and ##//day//## parameters.The date serial returned has no decimal part.
 
 {{fbdoc item="desc"}}
 	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
@@ -35,9 +35,9 @@ print format(a, "yyyy/mm/dd hh:mm:ss")
 	- Did not exist in QB. This function appeared in PDS and VBDOS
 
 {{fbdoc item="see"}}
-	- [[ProPgDates Date Serials]]
-	- ##[[KeyPgDateSerial DateSerial]]##
-	- ##[[KeyPgTimeValue TimeValue]]##
-	- ##[[KeyPgDateValue DateValue]]##
+	- [[ProPgDates|Date Serials]]
+	- ##[[KeyPgDateSerial|DateSerial]]##
+	- ##[[KeyPgTimeValue|TimeValue]]##
+	- ##[[KeyPgDateValue|DateValue]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

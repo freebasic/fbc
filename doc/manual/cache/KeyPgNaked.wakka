@@ -2,19 +2,19 @@
 Write functions without prolog/epilog code
 
 {{fbdoc item="syntax"}}##
-	{[[KeyPgSub Sub]] | [[KeyPgFunction Function]]} //identifier// **Naked** [//calling_convention//] ( //param_list// ) [[[KeyPgAs As]] //data_type//]
+	{[[KeyPgSub|Sub]] | [[KeyPgFunction|Function]]} //identifier// **Naked** [//calling_convention//] ( //param_list// ) [[[KeyPgAs|As]] //data_type//]
 		//asm_statements//
-	[[KeyPgEndblock End]] {[[KeyPgSub Sub]] | [[KeyPgFunction Function]]}
+	[[KeyPgEndblock|End]] {[[KeyPgSub|Sub]] | [[KeyPgFunction|Function]]}
 ##
 {{fbdoc item="param"}}
 	##//identifier//## - name of the procedure.
-	##//calling_convention//## - calling convention of the procedure - can be ##[[KeyPgCdecl CDecl]]##, ##[[KeyPgPascal Pascal]]##, or ##[[KeyPgStdcall StdCall]]##
-	##//asm_statements//## - the code in the procedure body.  The code for handling parameters and returning values must all be done manually.  Note that the methods for doing these can change, depending on the [[ProPgCallingConventions calling convention]].
+	##//calling_convention//## - calling convention of the procedure - can be ##[[KeyPgCdecl|CDecl]]##, ##[[KeyPgPascal|Pascal]]##, or ##[[KeyPgStdcall|StdCall]]##
+	##//asm_statements//## - the code in the procedure body.  The code for handling parameters and returning values must all be done manually.  Note that the methods for doing these can change, depending on the [[ProPgCallingConventions|calling convention]].
 	##//param_list//## - parameters to be passed to the procedure.
-	##//data_type//## - the [[DataType data type]] of the function.
+	##//data_type//## - the [[DataType|data type]] of the function.
 
 {{fbdoc item="desc"}}
-	##**Naked**## allows the programmer to write procedures without the compiler generating any prolog/epilog code.  This is useful when writing small, fast functions in ##[[KeyPgAsm Asm]]## without any unnecessary overhead.
+	##**Naked**## allows the programmer to write procedures without the compiler generating any prolog/epilog code.  This is useful when writing small, fast functions in ##[[KeyPgAsm|Asm]]## without any unnecessary overhead.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/naked1.bas"}}%%(freebasic)
@@ -111,12 +111,12 @@ Print subtract_cp( 5, 1 ) '' 5 - 1%%
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgAsm Asm]]##
-	- ##[[ProPgCallingConventions Calling Conventions]]##
-	- ##[[KeyPgFunction Function]]##
-	- ##[[KeyPgSub Sub]]##
-	- ##[[KeyPgCdecl CDecl]]##
-	- ##[[KeyPgPascal Pascal]]##
-	- ##[[KeyPgStdcall StdCall]]##
+	- ##[[KeyPgAsm|Asm]]##
+	- ##[[ProPgCallingConventions|Calling Conventions]]##
+	- ##[[KeyPgFunction|Function]]##
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgCdecl|CDecl]]##
+	- ##[[KeyPgPascal|Pascal]]##
+	- ##[[KeyPgStdcall|StdCall]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

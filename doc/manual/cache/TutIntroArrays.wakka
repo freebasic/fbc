@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Introduction To Arrays"}}----
-//Written by [[WikiRick rdc]]//
+//Written by [[WikiRick|rdc]]//
 
 Arrays are probably the single most useful programming construct  that is available to you in FreeBasic. Many problems that you will try to solve with a programming solution involve data arranged in tabular format, and arrays are perfect for managing this type of data. Understanding arrays is a crucial skill in becoming a competent programmer.
 
@@ -107,7 +107,7 @@ Dynamic arrays can change sizes during execution. ##ReDim## will clear the conte
 
 === Array Functions ===
 
-There are a number of [[CatPgArray functions]] that you can use with arrays.
+There are a number of [[CatPgArray|functions]] that you can use with arrays.
 
 === Arrays of Composite Types ===
 

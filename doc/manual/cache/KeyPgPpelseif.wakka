@@ -2,17 +2,17 @@
 Preprocessor conditional directive
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpif #if]] (expression1)
+	[[KeyPgPpif|#if]] (expression1)
 		' Conditionally included statements if expression1 is True
 	**#elseif** (expression2)
 		' Conditionally included statements if expression2 is True
-	[[KeyPgPpelse #else]]
+	[[KeyPgPpelse|#else]]
 		' Conditionally included statements if both
 		' expression1 and expression2 are False
-	[[KeyPgPpendif #endif]]
+	[[KeyPgPpendif|#endif]]
 ##
 {{fbdoc item="desc"}}
-	**#elseif** can be added to an ##[[KeyPgPpif #if]]## block to provide an additional conditions.
+	**#elseif** can be added to an ##[[KeyPgPpif|#if]]## block to provide an additional conditions.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/elseif.bas"}}%%(freebasic)
@@ -30,15 +30,15 @@ Preprocessor conditional directive
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #define]]##
-	- ##[[KeyPgPpmacro #macro]]##
-	- ##[[KeyPgPpif #if]]##
-	- ##[[KeyPgPpelse #else]]## 
-	- ##[[KeyPgPpendif #endif]]## 
-	- ##[[KeyPgPpifdef #ifdef]]##
-	- ##[[KeyPgPpifndef #ifndef]]##
-	- ##[[KeyPgPpundef #undef]]##
-	- ##[[KeyPgDefined defined]]##
+	- ##[[KeyPgPpdefine|#define]]##
+	- ##[[KeyPgPpmacro|#macro]]##
+	- ##[[KeyPgPpif|#if]]##
+	- ##[[KeyPgPpelse|#else]]## 
+	- ##[[KeyPgPpendif|#endif]]## 
+	- ##[[KeyPgPpifdef|#ifdef]]##
+	- ##[[KeyPgPpifndef|#ifndef]]##
+	- ##[[KeyPgPpundef|#undef]]##
+	- ##[[KeyPgDefined|defined]]##
 
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

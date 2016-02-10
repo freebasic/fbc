@@ -6,19 +6,19 @@ Reads a list of values from a text file
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		a file number of a file or device opened for ##[[KeyPgInputfilemode Input]]##
+		a file number of a file or device opened for ##[[KeyPgInputfilemode|Input]]##
 	##//variable_list//##
 		a list of variables used to hold the values read
 
 {{fbdoc item="desc"}}
 	Reads from a text file through a bound file number a delimiter-separated set of values and writes them in reading order into the variables in ##//variable_list//##. If a variable is numeric the read value is converted from its string representation into the corresponding type.
 
-	Numeric values are converted in a similar way to the procedures ##[[KeyPgVal Val]]## and ##[[KeyPgVallng ValLng]]##, using the most appropriate function for the number format.
+	Numeric values are converted in a similar way to the procedures ##[[KeyPgVal|Val]]## and ##[[KeyPgVallng|ValLng]]##, using the most appropriate function for the number format.
 
 	Delimiters may be commas or line breaks. Whitespace is also treated as a separator after numbers. A string including a comma or a whitespace must be surrounded by double quotes. 
 
-	To read an entire line into a string, use ##[[KeyPgLineinputPp Line Input]]## instead.
-	[[KeyPgWritePp Write #]] can be used to create a file readable with ##**""Input #""**##.
+	To read an entire line into a string, use ##[[KeyPgLineinputPp|Line Input]]## instead.
+	[[KeyPgWritePp|Write #]] can be used to create a file readable with ##**""Input #""**##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/input.bas"}}%%(freebasic)
@@ -40,10 +40,10 @@ print a, b, c
 	- QB has a bug in INPUT # that causes it to read past the end of the line if it does not find a matching end-quote when reading a string. If you are porting QB code that relies upon this bug, you may need to edit your data files to remove newlines from inside quoted strings, or to use a custom function to piece back together the multiline string.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInput Input]]##
-	- ##[[KeyPgLineinputPp Line Input #]]##
-	- ##[[KeyPgWritePp Write #]]##
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgInputfilemode Input (file mode)]]##
+	- ##[[KeyPgInput|Input]]##
+	- ##[[KeyPgLineinputPp|Line Input #]]##
+	- ##[[KeyPgWritePp|Write #]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgInputfilemode|Input (file mode)]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -2,7 +2,7 @@
 Reads buttons and axis information from attached gaming devices
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Getjoystick** ( [[KeyPgByval byval]] //id// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByref byref]] //buttons// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //a1// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a2// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a3// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a4// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a5// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a6// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a7// [[KeyPgAs as]] [[KeyPgSingle single]] = 0, [[KeyPgByref byref]] //a8// [[KeyPgAs as]] [[KeyPgSingle single]] = 0 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Getjoystick** ( [[KeyPgByval|byval]] //id// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] //buttons// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //a1// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a2// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a3// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a4// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a5// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a6// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a7// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0, [[KeyPgByref|byref]] //a8// [[KeyPgAs|as]] [[KeyPgSingle|single]] = 0 ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Getjoystick**( //id//[, //buttons//[, //a1//[, //a2//[, //a3//[, //a4//[, //a5//[, //a6//[, //a7//[, //a8//]]]]]]]]] )
@@ -33,7 +33,7 @@ Reads buttons and axis information from attached gaming devices
 	##0## on success or ##1## on failure.  All of the axis positions are returned in floating point format.
 
 {{fbdoc item="desc"}}
-	##**Getjoystick**## will retrieves the button state, and the axis positions for up to 8 axes, for the joystick determined by ##//id//##, a number between ##0## and ##15##. Buttons are stored in a similar manner to ##[[KeyPgGetmouse Getmouse]]##, with each bit in ##//buttons//## representing a button.
+	##**Getjoystick**## will retrieves the button state, and the axis positions for up to 8 axes, for the joystick determined by ##//id//##, a number between ##0## and ##15##. Buttons are stored in a similar manner to ##[[KeyPgGetmouse|Getmouse]]##, with each bit in ##//buttons//## representing a button.
 
 	A single precision value between ##-1.0## and ##1.0## is returned for each valid axis.  If the axis does not exist for the controller, a value of ##-1000.00## is returned.
 
@@ -80,15 +80,15 @@ loop
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Getjoystick""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Getjoystick""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
-	- ##[[KeyPgSetmouse Setmouse]]##
-	- ##[[KeyPgGetmouse Getmouse]]##
-	- ##[[KeyPgMultikey Multikey]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
+	- ##[[KeyPgSetmouse|Setmouse]]##
+	- ##[[KeyPgGetmouse|Getmouse]]##
+	- ##[[KeyPgMultikey|Multikey]]##
 
 {{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}

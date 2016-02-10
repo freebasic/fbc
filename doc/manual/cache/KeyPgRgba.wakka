@@ -2,7 +2,7 @@
 Computes a valid color value including alpha (transparency) for hi/truecolor modes
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **RGBA**(//r//,//g//,//b//,//a//) (([[KeyPgCuint cuint]](r) [[KeyPgOpShiftLeft shl]] 16) [[KeyPgOpOr or]] ([[KeyPgCuint cuint]](g) [[KeyPgOpShiftLeft shl]] 8) [[KeyPgOpOr or]] [[KeyPgCuint cuint]](b) [[KeyPgOpOr or]] ([[KeyPgCuint cuint]](a) [[KeyPgOpShiftLeft shl]] 24))
+	[[KeyPgPpdefine|#define]] **RGBA**(//r//,//g//,//b//,//a//) (([[KeyPgCuint|cuint]](r) [[KeyPgOpShiftLeft|shl]] 16) [[KeyPgOpOr|or]] ([[KeyPgCuint|cuint]](g) [[KeyPgOpShiftLeft|shl]] 8) [[KeyPgOpOr|or]] [[KeyPgCuint|cuint]](b) [[KeyPgOpOr|or]] ([[KeyPgCuint|cuint]](a) [[KeyPgOpShiftLeft|shl]] 24))
 ##
 {{fbdoc item="usage"}}##
 	//result// = **RGBA**(//red//, //green//, //blue//, //alpha//)
@@ -24,7 +24,7 @@ Computes a valid color value including alpha (transparency) for hi/truecolor mod
 	##//red//##, ##//green//##, ##//blue//## and ##//alpha//## are components ranging ##0##-##255##.
 
 	The ##**RGBA**## function can be used to compute a valid color value including an alpha channel for use while in hi/truecolor modes. It returns an unsigned integer in the format ##&h//AARRGGBB//##, where ##//RR//##, ##//GG//##, ##//BB//##, ##//AA//## equal the values passed to this function, in hexadecimal format.
-	It is possible to retrieve the red, green, blue  and alpha values from a color value, by using a combination of ##[[KeyPgOpAnd And]]## and ##[[KeyPgOpShiftRight Shr]]##.  The second example below shows how to ##[[KeyPgPpdefine #Define]]## and use macros to do this.
+	It is possible to retrieve the red, green, blue  and alpha values from a color value, by using a combination of ##[[KeyPgOpAnd|And]]## and ##[[KeyPgOpShiftRight|Shr]]##.  The second example below shows how to ##[[KeyPgPpdefine|#Define]]## and use macros to do this.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/rgba.bas"}}%%(freebasic)
@@ -99,14 +99,14 @@ Print Using "Alpha:       _&H\\ = ###"; Hex(a, 2); a
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Rgba""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Rgba""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgRgb RGB]]##
-	- ##[[KeyPgColor Color]]##
-	- ##[[KeyPgPpdefine #Define]]##
+	- ##[[KeyPgRgb|RGB]]##
+	- ##[[KeyPgColor|Color]]##
+	- ##[[KeyPgPpdefine|#Define]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

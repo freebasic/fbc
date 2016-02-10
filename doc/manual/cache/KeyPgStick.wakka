@@ -2,7 +2,7 @@
 Reads axis position from attached gaming devices
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Stick** ( [[KeyPgByval byval]] //axis// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Stick** ( [[KeyPgByval|byval]] //axis// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Stick**( //axis// )
@@ -57,13 +57,13 @@ Loop
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Only available in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgGetjoystick Getjoystick]]##
-	- ##[[KeyPgStrig Strig]]##
+	- ##[[KeyPgGetjoystick|Getjoystick]]##
+	- ##[[KeyPgStrig|Strig]]##
 
 {{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}

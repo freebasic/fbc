@@ -2,33 +2,33 @@
 Called automatically when a class or user defined type goes out of scope or is destroyed
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgType Type]] //typename//
+	[[KeyPgType|Type]] //typename//
 		//field declarations//
-		[[KeyPgDeclare Declare]] **Destructor** ( )
+		[[KeyPgDeclare|Declare]] **Destructor** ( )
 	End Type
 	
-	**Destructor** //typename// ( ) [ [[KeyPgExport Export]] ]
+	**Destructor** //typename// ( ) [ [[KeyPgExport|Export]] ]
 		//statements//
 	**End Destructor**
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
-		name of the ##[[KeyPgType Type]]## of ##[[KeyPgClass Class]]##
+		name of the ##[[KeyPgType|Type]]## of ##[[KeyPgClass|Class]]##
 
 {{fbdoc item="desc"}}
-	The destructor method is called when a user defined ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## variable goes out of scope or is destroyed explicitly with the ##[[KeyPgOpDelete Delete]]## operator.
+	The destructor method is called when a user defined ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## variable goes out of scope or is destroyed explicitly with the ##[[KeyPgOpDelete|Delete]]## operator.
 
-	##//typename//## is the name of the type for which the ##**Destructor**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace Namespace]]##.
+	##//typename//## is the name of the type for which the ##**Destructor**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace|Namespace]]##.
 
-	The ##**Destructor**## method is passed a hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//##.
+	The ##**Destructor**## method is passed a hidden ##[[KeyPgThis|this]]## parameter having the same type as ##//typename//##.
 
-	The destructor in a type is called before the destructors on any of its fields.  Therefore, all fields are accessible with the hidden ##[[KeyPgThis this]]## parameter in the destructor body.
+	The destructor in a type is called before the destructors on any of its fields.  Therefore, all fields are accessible with the hidden ##[[KeyPgThis|this]]## parameter in the destructor body.
 
 	Only one destructor may be declared and defined per type.
 
-	Since the ##[[KeyPgEnd End]]## statement does not close any scope, object destructors will not automatically be called if the ##[[KeyPgEnd End]]## statement is used to terminate the program.
+	Since the ##[[KeyPgEnd|End]]## statement does not close any scope, object destructors will not automatically be called if the ##[[KeyPgEnd|End]]## statement is used to terminate the program.
 
-	##**Destructor**## can be also called directly from the ##//typename//## instance like the other member methods (##[[KeyPgSub Sub]]##) and with the same syntax, i.e. using a member access operator, e.g. ##//obj//.**Destructor**()##. The object, and all its members, are assumed to be constructed and in a valid state, otherwise its effects are undefined and may cause crashes.  This syntax is useful in cases where ##//obj//## has been constructed manually, e.g. with ##//obj.[[KeyPgConstructor constructor]]()##// or ##[[KeyPgOpPlacementNew Placement New]]##.
+	##**Destructor**## can be also called directly from the ##//typename//## instance like the other member methods (##[[KeyPgSub|Sub]]##) and with the same syntax, i.e. using a member access operator, e.g. ##//obj//.**Destructor**()##. The object, and all its members, are assumed to be constructed and in a valid state, otherwise its effects are undefined and may cause crashes.  This syntax is useful in cases where ##//obj//## has been constructed manually, e.g. with ##//obj.[[KeyPgConstructor|constructor]]()##// or ##[[KeyPgOpPlacementNew|Placement New]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/destructor.bas"}}%%(freebasic)
@@ -69,16 +69,16 @@ Destroying: A.x
 Destroying: main.x
 %%
 {{fbdoc item="lang"}}
-	- Object-related features are supported only in the //[[CompilerOptlang -lang fb]]// dialect.
+	- Object-related features are supported only in the //[[CompilerOptlang|-lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgClass Class]]##
-	- ##[[KeyPgConstructor Constructor]]##
-	- ##[[KeyPgOpDelete Delete]]##
-	- ##[[KeyPgModuleDestructor Destructor (Module)]]##
-	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgClass|Class]]##
+	- ##[[KeyPgConstructor|Constructor]]##
+	- ##[[KeyPgOpDelete|Delete]]##
+	- ##[[KeyPgModuleDestructor|Destructor (Module)]]##
+	- ##[[KeyPgType|Type]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

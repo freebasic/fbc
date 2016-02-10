@@ -2,7 +2,7 @@
 Checks to see if the end of an open file has been reached
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Eof** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Eof** ( [[KeyPgByval|byval]] //filenum// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Eof**( //filenum// )
@@ -15,9 +15,9 @@ Checks to see if the end of an open file has been reached
 	Returns true (-1) if end-of-file has been reached, zero (0) otherwise.
 
 {{fbdoc item="desc"}}
-	When reading from files opened for ##[[KeyPgInputfilemode Input (File Mode)]]##, it is useful to know when the end of the file has been reached, thus avoiding errors caused by reading past the ends of files. Use EOF to determine this. EOF expects a valid file number from an already opened file. Use ##[[KeyPgFreefile Freefile]]## to retrieve an available file file number.
+	When reading from files opened for ##[[KeyPgInputfilemode|Input (File Mode)]]##, it is useful to know when the end of the file has been reached, thus avoiding errors caused by reading past the ends of files. Use EOF to determine this. EOF expects a valid file number from an already opened file. Use ##[[KeyPgFreefile|Freefile]]## to retrieve an available file file number.
 
-	For file numbers bound to files opened for ##[[KeyPgOutput Output]]##, EOF always returns 0.
+	For file numbers bound to files opened for ##[[KeyPgOutput|Output]]##, EOF always returns 0.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/eof.bas"}}%%(freebasic)
@@ -56,8 +56,8 @@ end 0
 	- In QB, for files opened in RANDOM or BINARY mode, EOF returned non-zero only after a read past the end of file has been attempted.  In FreeBASIC, EOF returns true after the last item is read.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLof Lof]]##
-	- ##[[KeyPgLoc Loc]]##
-	- ##[[KeyPgFreefile Freefile]]##
+	- ##[[KeyPgLof|Lof]]##
+	- ##[[KeyPgLoc|Loc]]##
+	- ##[[KeyPgFreefile|Freefile]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

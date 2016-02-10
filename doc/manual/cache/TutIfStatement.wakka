@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="The IF Statement"}}----
-//Written by [[WikiRick rdc]]//
+//Written by [[WikiRick|rdc]]//
 
 You can think of the If statement block as a question that requires a True or False answer. The answer determines which section of code your program will execute. Since computers only work with numbers, you frame the question as a conditional equation that will result in either 0 for False or non-zero for True. 
 
@@ -61,7 +61,7 @@ This format enables you to ask a series of questions and if the answer is False 
 
 As you can see you can frame the question in a number of ways and then execute the code based on a number of answer combinations. This gives you a lot of flexibility in how to both frame a question and what to do based on the answers.
 
-The <expression> is the question that needs an answer and you frame the question using [[CatPgOperators logical operators]]. 
+The <expression> is the question that needs an answer and you frame the question using [[CatPgOperators|logical operators]]. 
 
 You can mix arithmetic and logical operators, as well as parenthesis, within an If statement. The compiler evaluates the conditional statements from left to right, taking into account the precedence of the operators.  For example, all of the following code snippets are legal If statement constructs.
 

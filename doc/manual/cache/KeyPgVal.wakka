@@ -2,8 +2,8 @@
 Converts a string to a floating point number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Val** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Val** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Val** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Val** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Val**( //strnum// )
@@ -13,7 +13,7 @@ Converts a string to a floating point number
 		the string containing a number to convert
 
 {{fbdoc item="ret"}}
-	Returns a converted ##[[KeyPgDouble Double]]## precision number
+	Returns a converted ##[[KeyPgDouble|Double]]## precision number
 
 	If the first character of the string is invalid, ##**Val**## will return ##0##.
 
@@ -23,10 +23,10 @@ Converts a string to a floating point number
 	##**Val**## can be used to convert integer numbers in binary / octal / hexadecimal format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prefixed, for example: ##**Val**("&HFF")## returns ##255##.
 
 	**Note**:
-	If you want to get an integer value from a string, consider using ##[[KeyPgValint ValInt]]## or ##[[KeyPgVallng ValLng]]## instead.  They are faster, since they don't use floating-point numbers, and only ##[[KeyPgVallng ValLng]]## provides full 64-bit precision for ##[[KeyPgLongint LongInt]]## types.
+	If you want to get an integer value from a string, consider using ##[[KeyPgValint|ValInt]]## or ##[[KeyPgVallng|ValLng]]## instead.  They are faster, since they don't use floating-point numbers, and only ##[[KeyPgVallng|ValLng]]## provides full 64-bit precision for ##[[KeyPgLongint|LongInt]]## types.
 
 
-	If you want to convert a number into string format, use the ##[[KeyPgStr Str]]## function.
+	If you want to convert a number into string format, use the ##[[KeyPgStr|Str]]## function.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/val.bas"}}%%(freebasic)
@@ -44,13 +44,13 @@ print a, b
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCdbl Cdbl]]##
-	- ##[[KeyPgValint Valint]]##
-	- ##[[KeyPgValuint Valuint]]##
-	- ##[[KeyPgVallng Vallng]]##
-	- ##[[KeyPgValulng Valulng]]##
-	- ##[[KeyPgStr Str]]##
-	- ##[[KeyPgChr Chr]]##
-	- ##[[KeyPgAsc Asc]]##
+	- ##[[KeyPgCdbl|Cdbl]]##
+	- ##[[KeyPgValint|Valint]]##
+	- ##[[KeyPgValuint|Valuint]]##
+	- ##[[KeyPgVallng|Vallng]]##
+	- ##[[KeyPgValulng|Valulng]]##
+	- ##[[KeyPgStr|Str]]##
+	- ##[[KeyPgChr|Chr]]##
+	- ##[[KeyPgAsc|Asc]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

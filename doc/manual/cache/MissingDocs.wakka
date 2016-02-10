@@ -3,15 +3,15 @@ Please edit this page to remove items when they are written or add items when th
 
 {{fbdoc item="section" value="Missing/Incomplete/Outdated Pages"}}
 	Variable Initialization (ProPgInitialization needs updates for dialects/UDTs)
-	[[ExtLibTOC External Libraries]] - availability (windows, linux, DOS), usage, and download locations
+	[[ExtLibTOC|External Libraries]] - availability (windows, linux, DOS), usage, and download locations
 	Cross compiling and environment variables (used to invoke sub-programs)
 	Statements (Add to "Lexical Conventions" on CatPgProgrammer)
 	Scope/Code Blocks (Add to "Statements and Expressions" on CatPgProgrammer)
 	Expressions (Add to "Statements and Expressions" on CatPgProgrammer)
-	See [[CatPgProgrammer Programmer's Guide]] (W.I.P.)
+	See [[CatPgProgrammer|Programmer's Guide]] (W.I.P.)
 	Need to split Return-from-gosub and Return-from-proc (See KeyPgReturn)
-	##[[KeyPgOpCast Cast (operator)]]##?
-	Dedicated page for ##[[KeyPgScreengraphics Screen]]##'s QB/page-choosing mode - perhaps KeyPgScreenqb or KeyPgScreenpage...?  (quick fb example added to KeyPgPcopy for now...)
+	##[[KeyPgOpCast|Cast (operator)]]##?
+	Dedicated page for ##[[KeyPgScreengraphics|Screen]]##'s QB/page-choosing mode - perhaps KeyPgScreenqb or KeyPgScreenpage...?  (quick fb example added to KeyPgPcopy for now...)
 
 {{fbdoc item="section" value="Pages missing/incorrect examples"}}
 	None known (but if found, please edit this page)
@@ -23,7 +23,7 @@ Please edit this page to remove items when they are written or add items when th
 	Consistent policy about "FB version diff" [[KeyPgImageInfo]] [[KeyPgRem]]
 	FB source file size limit
 	"returning references" stuff (PEEK, (), [], ... total 7 pages BUMP'ed today)
-	##[[KeyPgNaked Naked]]## keyword could use more examples for other calling conventions
+	##[[KeyPgNaked|Naked]]## keyword could use more examples for other calling conventions
 	Various outdated pages {delete} or update them [[FBWikiDownloads]] [[GFXLib2]]
 	"-gen GCC" document how to get it working (esp. in DOS)
 

@@ -341,17 +341,17 @@ They work just they same as normal overloaded functions.
 
 **Closing**
 
-I hope this tutorial has been useful for you, although there are still a few things left to learn; if you've got this far, it shouldn't be too hard for you to pick them up.  There is some more information available in the wiki and on the forums, and also in part 2 of this tutorial, available here - [[TutBeginnersGuideToTypesAsObjects2 Beginners Guide to Types as Objects (Part 2)]]
+I hope this tutorial has been useful for you, although there are still a few things left to learn; if you've got this far, it shouldn't be too hard for you to pick them up.  There is some more information available in the wiki and on the forums, and also in part 2 of this tutorial, available here - [[TutBeginnersGuideToTypesAsObjects2|Beginners Guide to Types as Objects (Part 2)]]
 
 **More reading**
 
-	- ##[[KeyPgProperty Property]]##
-	- ##[[KeyPgConstructor Constructor]]##
-	- ##[[KeyPgDestructor Destructor]]##
-	- ##[[KeyPgOperator Operator]]##
-	- ##[[KeyPgThis This]]##
-	- ##[[KeyPgType Type]]##
-	- [[ProPgTypeObjects Types as Objects]]
-	- ##[[KeyPgVisPublic Public:]]##
-	- ##[[KeyPgVisPrivate Private:]]##
-	- ##[[KeyPgVisProtected Protected:]]##
+	- ##[[KeyPgProperty|Property]]##
+	- ##[[KeyPgConstructor|Constructor]]##
+	- ##[[KeyPgDestructor|Destructor]]##
+	- ##[[KeyPgOperator|Operator]]##
+	- ##[[KeyPgThis|This]]##
+	- ##[[KeyPgType|Type]]##
+	- [[ProPgTypeObjects|Types as Objects]]
+	- ##[[KeyPgVisPublic|Public:]]##
+	- ##[[KeyPgVisPrivate|Private:]]##
+	- ##[[KeyPgVisProtected|Protected:]]##

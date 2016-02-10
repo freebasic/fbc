@@ -2,8 +2,8 @@
 Removes surrounding substrings or characters on the right side of a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rtrim** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [ **Any** ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] = " " ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rtrim** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]], [ **Any** ] [[KeyPgByref byref]] //trimset// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] = [[KeyPgWstr Wstr]](" ") ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Rtrim** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [ **Any** ] [[KeyPgByref|byref]] //trimset// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] = " " ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Rtrim** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]], [ **Any** ] [[KeyPgByref|byref]] //trimset// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]] = [[KeyPgWstr|Wstr]](" ") ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Rtrim**[$]( //str// [, [ **Any** ] //trimset// ] )
@@ -18,7 +18,7 @@ Removes surrounding substrings or characters on the right side of a string
 	Returns the trimmed string.
 
 {{fbdoc item="desc"}}
-	This procedure trims surrounding characters from the right (end) of a source string. Substrings matching ##//trimset//## will be trimmed if specified, otherwise spaces ([[CptAscii ASCII]] code 32) are trimmed.
+	This procedure trims surrounding characters from the right (end) of a source string. Substrings matching ##//trimset//## will be trimmed if specified, otherwise spaces ([[CptAscii|ASCII]] code 32) are trimmed.
 
 	If the ##**Any**## keyword is used, any character matching a character in ##//trimset//## will be trimmed.
 	
@@ -50,14 +50,14 @@ print "'" + rtrim(s2, any "Ba") + "'"
 	- DOS version/target of ""FreeBASIC"" does not support the wide-character version of ##**RTrim**##.
 
 {{fbdoc item="lang"}}
-	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- QB does not support specifying a ##//trimset//## string or the ##ANY## clause.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLtrim Ltrim]]##
-	- ##[[KeyPgTrim Trim]]##
+	- ##[[KeyPgLtrim|Ltrim]]##
+	- ##[[KeyPgTrim|Trim]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

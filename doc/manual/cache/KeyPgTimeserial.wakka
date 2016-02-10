@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="TIMESERIAL"}}----
-Gets a [[ProPgDates Date Serial]] for the specified hours, minutes, and seconds
+Gets a [[ProPgDates|Date Serial]] for the specified hours, minutes, and seconds
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeSerial""** ( [[KeyPgByval byval]] //hour// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //minute// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //second// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""TimeSerial""** ( [[KeyPgByval|byval]] //hour// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //minute// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //second// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -17,7 +17,7 @@ Gets a [[ProPgDates Date Serial]] for the specified hours, minutes, and seconds
 		number of seconds
 
 {{fbdoc item="ret"}}
-	Returns a [[ProPgDates date serial]] containing the time formed by the values in the ##//hours//##, ##//minutes//## and ##//seconds//## parameters.The date serial returned has no integer part.
+	Returns a [[ProPgDates|date serial]] containing the time formed by the values in the ##//hours//##, ##//minutes//## and ##//seconds//## parameters.The date serial returned has no integer part.
 
 {{fbdoc item="desc"}}
 
@@ -38,9 +38,9 @@ Print Format(ds, "yyyy/mm/dd hh:mm:ss")
 	- Did not exist in QB. This function appeared in PDS and VBDOS
 
 {{fbdoc item="see"}}
-	- [[ProPgDates Date Serials]]
-	- ##[[KeyPgDateSerial DateSerial]]##
-	- ##[[KeyPgTimeValue TimeValue]]##
-	- ##[[KeyPgDateValue DateValue]]##
+	- [[ProPgDates|Date Serials]]
+	- ##[[KeyPgDateSerial|DateSerial]]##
+	- ##[[KeyPgTimeValue|TimeValue]]##
+	- ##[[KeyPgDateValue|DateValue]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

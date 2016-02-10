@@ -2,7 +2,7 @@
 Transfers execution to an external program
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub function]] **Run** ( [[KeyPgByref byref]] //program// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByref byref]] //arguments// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] = "####" ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgSub|function]] **Run** ( [[KeyPgByref|byref]] //program// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [[KeyPgByref|byref]] //arguments// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] = "####" ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Run**( //program// [, //arguments// ] )
@@ -37,8 +37,8 @@ Dim result As Integer = Run("program.exe")
 	- Returning an error code is new to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgExec Exec]]## transfer temporarily, with arguments  
-	- ##[[KeyPgChain Chain]]## transfer temporarily, without arguments
-	- ##[[KeyPgCommand Command]]## pick arguments
+	- ##[[KeyPgExec|Exec]]## transfer temporarily, with arguments  
+	- ##[[KeyPgChain|Chain]]## transfer temporarily, without arguments
+	- ##[[KeyPgCommand|Command]]## pick arguments
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

@@ -2,7 +2,7 @@
 Error reporting function
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Ermn** ( ) [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Ermn** ( ) [[KeyPgAs|as]] [[KeyPgZstring|zstring]] [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Ermn** ( ) 
@@ -10,7 +10,7 @@ Error reporting function
 {{fbdoc item="ret"}}
 	Returns a pointer to the string identifying the module where the error occurred.
 
-	Returns NULL if the source is not compiled with the //[[CompilerOptexx -exx]]// compiler option.
+	Returns NULL if the source is not compiled with the //[[CompilerOptexx|-exx]]// compiler option.
 
 {{fbdoc item="desc"}}
 	An error reporting function returning a pointer to the name of the module.
@@ -41,14 +41,14 @@ Error Module  : test.bas
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Ermn""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Ermn""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}} 
-	- ##[[KeyPgErfn Erfn]]##
-	- ##[[KeyPgErl Erl]]##
-	- ##[[KeyPgOnerror On...Error]]##
+	- ##[[KeyPgErfn|Erfn]]##
+	- ##[[KeyPgErl|Erl]]##
+	- ##[[KeyPgOnerror|On...Error]]##
 
 {{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

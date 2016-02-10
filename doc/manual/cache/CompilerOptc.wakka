@@ -8,10 +8,10 @@ Compile and assemble source file only, do not link
 	The ##**-c**## option specifies that any source files listed are to be compiled and assembled into object files, and not linked into an executable (the default behavior). When using the "-c" switch, "-m" must be specified when compiling a main source file.
 
 {{fbdoc item="see"}}
-	- [[CompilerOptcupp Compiler Option: -C]]
-	- [[CompilerOptr Compiler Option: -r]]
-	- [[CompilerOptm Compiler Option: -m]]
-	- [[CompilerOpto Compiler Option: -o]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerOptcupp|Compiler Option: -C]]
+	- [[CompilerOptr|Compiler Option: -r]]
+	- [[CompilerOptm|Compiler Option: -m]]
+	- [[CompilerOpto|Compiler Option: -o]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

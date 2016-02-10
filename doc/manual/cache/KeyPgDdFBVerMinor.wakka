@@ -24,7 +24,7 @@ Print "Welcome to FreeBASIC " & fbMajorVersion & "." & fbMinorVersion & "." & fb
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}} 
-	- ##[[KeyPgDdFBVerMajor __FB_VER_MAJOR__]]##
-	- ##[[KeyPgDdFBVerPatch __FB_VER_PATCH__]]##
+	- ##[[KeyPgDdFBVerMajor|__FB_VER_MAJOR__]]##
+	- ##[[KeyPgDdFBVerPatch|__FB_VER_PATCH__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

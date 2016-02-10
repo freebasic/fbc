@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="External Libraries Index"}}----
-This is the list of external library bindings currently included in ""FreeBASIC"". Visit the link shown for each individual library below to see more information. To obtain a needed external library or DLL, please visit the library's homepage. If you translated additional headers, or updated existing ones, please post them on the [[http://www.freebasic.net/forum/ FreeBASIC forum]] or submit them to the [[http://sourceforge.net/projects/fbc/ fbc project's patch tracker]]!
+This is the list of external library bindings currently included in ""FreeBASIC"". Visit the link shown for each individual library below to see more information. To obtain a needed external library or DLL, please visit the library's homepage. If you translated additional headers, or updated existing ones, please post them on the [[http://www.freebasic.net/forum/|FreeBASIC forum]] or submit them to the [[http://sourceforge.net/projects/fbc/|fbc project's patch tracker]]!
 
 {{fbdoc item="section" value="Graphical/test-based user interfaces"}}
 	{{fbdoc item="keyword" value="ExtLibcgui|CGUI"}} - Library for making GUIs in a simple way.
@@ -16,7 +16,7 @@ This is the list of external library bindings currently included in ""FreeBASIC"
 	{{fbdoc item="keyword" value="ExtLibcaca|caca"}} - A colour ASCII art library. 
 	{{fbdoc item="keyword" value="ExtLibcairo|Cairo"}} - 2D graphics library with support for multiple output devices.
 	{{fbdoc item="keyword" value="ExtLibdislin|DISLIN"}} - Library of subroutines and functions that display data graphically.
-	{{fbdoc item="keyword" value="ExtLibfreeglut|freeglut"}} - A free alternative to [[ExtLibGLUT GLUT]], an ""OpenGL"" library for window creation and callback-based input handling
+	{{fbdoc item="keyword" value="ExtLibfreeglut|freeglut"}} - A free alternative to [[ExtLibGLUT|GLUT]], an ""OpenGL"" library for window creation and callback-based input handling
 	{{fbdoc item="keyword" value="ExtLibfreeimage|FreeImage"}} - Open Source library to support popular graphics image formats.
 	{{fbdoc item="keyword" value="ExtLibfreetype2|Freetype2"}} - A Free, High-Quality, and Portable Font Engine.
 	{{fbdoc item="keyword" value="ExtLibgd|GD"}} - Open source code library for the dynamic creation of images by programmers.

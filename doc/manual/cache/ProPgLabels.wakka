@@ -7,7 +7,7 @@ Defines a location in a program.
 	//literalnumber//
 ##
 {{fbdoc item="desc"}}
-	Defines a place in a program where ##[[KeyPgGoto Goto]]## or ##[[KeyPgGosub Gosub]]## can jump to.
+	Defines a place in a program where ##[[KeyPgGoto|Goto]]## or ##[[KeyPgGosub|Gosub]]## can jump to.
 
 	A label can be a positive integer line number or a ##//symbolname//##. In both cases, the label must start at the first column of line. A ##//symbolname//## label must end with a colon (:) character.
 
@@ -43,13 +43,13 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- Line numbers with decimals is available only in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Line numbers with decimals is available only in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- None if compiled in the //[[CompilerOptlang -lang qb]]// dialect.
+	- None if compiled in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgGosub Gosub]]##
-	- ##[[KeyPgGoto Goto]]##
+	- ##[[KeyPgGosub|Gosub]]##
+	- ##[[KeyPgGoto|Goto]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

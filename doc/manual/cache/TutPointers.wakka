@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Introduction to Pointers"}}----
-//Written by [[WikiRick rdc]]//
+//Written by [[WikiRick|rdc]]//
 
 **What is a Pointer?**
 
@@ -11,7 +11,7 @@ Normally, you would access the data directly through the use of variables. When 
 
 Using pointers is a bit different. Imagine you have a little scrap of paper that will represent our pointer. Right now it is blank and doesn't point to anything. This undefined pointer can't be used until it is initialized. To initialize the pointer, write a 1 on it. Now our pointer is "pointing" to hole 1 in our egg carton. To put data (an egg) in hole 1, we look at our scrap of paper, match it to hole 1 and place the egg in the hole. To retrieve the egg we do just the opposite. We match our slip of paper to hole 1 and then grab the egg. All the putting and getting of the egg has to be done through the slip of paper and is called dereferencing the pointer. That is, we get to the data through the reference contained in the pointer, the number 1. The pointer doesn't contain the data; it contains a reference to the data.
 
-In FreeBasic we define a pointer using the [[KeyPgDim Dim]] and [[KeyPgPtr Ptr]] statements:
+In FreeBasic we define a pointer using the [[KeyPgDim|Dim]] and [[KeyPgPtr|Ptr]] statements:
 
 ##%%(freebasic)
 dim aptr as integer ptr
@@ -27,7 +27,7 @@ dim aptr as integer ptr
 aptr = allocate(sizeof(integer))
 %%##
 
-Here we are using [[KeyPgAllocate Allocate]] to set aside enough space in memory for an [[KeyPgInteger Integer]] and loading the address of that space into aptr. The [[KeyPgSizeof sizeof]] macro returns the size in bytes of the passed data type. You could use len instead of [[KeyPgSizeof Sizeof]] (since .13b) if you prefer.
+Here we are using [[KeyPgAllocate|Allocate]] to set aside enough space in memory for an [[KeyPgInteger|Integer]] and loading the address of that space into aptr. The [[KeyPgSizeof|sizeof]] macro returns the size in bytes of the passed data type. You could use len instead of [[KeyPgSizeof|Sizeof]] (since .13b) if you prefer.
 
 Once we have initialized the pointer, we can now use it:
 
@@ -52,13 +52,13 @@ deallocate aptr
 sleep
 %%##
 
-The [[KeyPgDeallocate deallocate]] function frees the memory pointed at by aptr, and makes aptr undefined once again. This is like erasing the number on our slip of paper. If we were to use aptr after deallocating it, the program would crash.
+The [[KeyPgDeallocate|deallocate]] function frees the memory pointed at by aptr, and makes aptr undefined once again. This is like erasing the number on our slip of paper. If we were to use aptr after deallocating it, the program would crash.
 
 **What Good are Pointers?**
 
 A major reason for adding pointers to FreeBasic is that many external libraries require pointers to type structures and pointers to strings. For example, the Win32 API has many structures that must be filled out and then passed to a function through a pointer.
 
-Another use of a pointer is in a [[KeyPgType Type]] definition. [[KeyPgType Type]] defs in FreeBasic can only contain fixed length strings, but what if you don't know the length of a string until the program is running? A pointer can serve this purpose.
+Another use of a pointer is in a [[KeyPgType|Type]] definition. [[KeyPgType|Type]] defs in FreeBasic can only contain fixed length strings, but what if you don't know the length of a string until the program is running? A pointer can serve this purpose.
 
 (It should be stated that the Type definitions can now support variable length strings.)
 
@@ -95,13 +95,13 @@ function pSetString(byval s as string) as zstring ptr
 end function
 %%##
 
-Here we define our type with a field sptr as [[KeyPgZstring zstring]] [[KeyPgPtr ptr]]. Zstrings are null terminated strings and are used by many external libraries and are designed for dynamic allocations. Once we define our type we create an instance of it with the [[KeyPgDim dim]] statement:
+Here we define our type with a field sptr as [[KeyPgZstring|zstring]] [[KeyPgPtr|ptr]]. Zstrings are null terminated strings and are used by many external libraries and are designed for dynamic allocations. Once we define our type we create an instance of it with the [[KeyPgDim|dim]] statement:
 
 ##%%(freebasic)
 dim mytype as mytptr
 %%##
 
-We then call our function pSetString to get the address of the variable length string we want in our [[KeyPgType type]] def.
+We then call our function pSetString to get the address of the variable length string we want in our [[KeyPgType|type]] def.
 
 ##%%(freebasic)
 mytype.sptr = pSetString("Hello World From FreeBasic!")
@@ -109,7 +109,7 @@ mytype.sptr = pSetString("Hello World From FreeBasic!")
 
 Remember sptr is defined as a pointer, not a string variable, so pSetString is returning a pointer (memory address) to the string not the string itself. In other words, if the string is in hole #1, pSetString returns 1.
 
-The function pSetString uses a temporary [[KeyPgZstring zstring]] sz, to [[KeyPgAllocate allocate]] space for the passed string parameter s. Because a [[KeyPgZstring zstring]] is a null terminated string, we must add 1 to the length of s for the null terminator in the [[KeyPgAllocate allocate]] function.
+The function pSetString uses a temporary [[KeyPgZstring|zstring]] sz, to [[KeyPgAllocate|allocate]] space for the passed string parameter s. Because a [[KeyPgZstring|zstring]] is a null terminated string, we must add 1 to the length of s for the null terminator in the [[KeyPgAllocate|allocate]] function.
 
 ##%%(freebasic)
 'allocate some space + 1 for the chr(0)

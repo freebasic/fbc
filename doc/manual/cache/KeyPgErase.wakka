@@ -2,7 +2,7 @@
 Statement to erase arrays
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Erase** ( array [[KeyPgAs as]] [[KeyPgAny any]] [, ... ] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Erase** ( array [[KeyPgAs|as]] [[KeyPgAny|any]] [, ... ] )
 ##
 {{fbdoc item="usage"}}##
 	**Erase**( //array0// [, //array1// ... //arrayN// ] )
@@ -28,13 +28,13 @@ erase MyArray1, MyArray2
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCommon Common]]##
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgExtern Extern]]##
-	- ##[[KeyPgLbound Lbound]]##
-	- ##[[KeyPgRedim Redim]]##
-	- ##[[KeyPgStatic Static]]##
-	- ##[[KeyPgUbound UBound]]##
-	- ##[[KeyPgVar Var]]##
+	- ##[[KeyPgCommon|Common]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgExtern|Extern]]##
+	- ##[[KeyPgLbound|Lbound]]##
+	- ##[[KeyPgRedim|Redim]]##
+	- ##[[KeyPgStatic|Static]]##
+	- ##[[KeyPgUbound|UBound]]##
+	- ##[[KeyPgVar|Var]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}

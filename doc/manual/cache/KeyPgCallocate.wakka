@@ -2,7 +2,7 @@
 Allocates memory for a certain number of elements from the free store and clears the contents
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Callocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //num_elements// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByval byval]] //size// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] = 1 ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Callocate** [[KeyPgCdecl|cdecl]] ( [[KeyPgByval|byval]] //num_elements// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByval|byval]] //size// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] = 1 ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Callocate**( //num_elements// [, //size// ] )
@@ -17,7 +17,7 @@ Allocates memory for a certain number of elements from the free store and clears
 	If successful, the address of the start of the allocated memory is returned. Otherwise, the null pointer (##0##) is returned.
 
 {{fbdoc item="desc"}}
-	##**Callocate**## initializes the allocated memory with zeros. Consequently, ##**Callocate**## can be also directly used with ##[[KeyPgString String]]## or ##[[KeyPgType UDT]]## containing string, because the string descriptor is cleared (set to 0) first.
+	##**Callocate**## initializes the allocated memory with zeros. Consequently, ##**Callocate**## can be also directly used with ##[[KeyPgString|String]]## or ##[[KeyPgType|UDT]]## containing string, because the string descriptor is cleared (set to 0) first.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/callocate.bas"}}%%(freebasic)
@@ -44,14 +44,14 @@ Outputs:
 	- This procedure is not guaranteed to be thread-safe.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Callocate""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Callocate""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgAllocate Allocate]]##
-	- ##[[KeyPgDeallocate Deallocate]]##
-	- ##[[KeyPgReallocate Reallocate]]##
+	- ##[[KeyPgAllocate|Allocate]]##
+	- ##[[KeyPgDeallocate|Deallocate]]##
+	- ##[[KeyPgReallocate|Reallocate]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

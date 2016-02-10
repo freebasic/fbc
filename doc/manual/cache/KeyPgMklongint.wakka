@@ -1,23 +1,23 @@
 {{fbdoc item="title" value="MKLONGINT"}}----
-Does a binary copy from a ##[[KeyPgLongint longint]]## variable to a ##[[KeyPgString string]]##, setting its length to 8 bytes
+Does a binary copy from a ##[[KeyPgLongint|longint]]## variable to a ##[[KeyPgString|string]]##, setting its length to 8 bytes
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mklongint** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Mklongint** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgLongint|longint]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Mklongint**[$]( //number// )
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		A ##[[KeyPgLongint longint]]## variable to binary copy to a ##[[KeyPgString string]]##.
+		A ##[[KeyPgLongint|longint]]## variable to binary copy to a ##[[KeyPgString|string]]##.
 
 {{fbdoc item="ret"}}
-	Returns a ##[[KeyPgString string]]## with a binary copy of the ##[[KeyPgLongint longint]]##.
+	Returns a ##[[KeyPgString|string]]## with a binary copy of the ##[[KeyPgLongint|longint]]##.
 
 {{fbdoc item="desc"}}
-	Does a binary copy  from a ##[[KeyPgLongint Longint]]## variable to a string, setting its length to 8 bytes. The resulting string can be read back to a longint by ##[[KeyPgCvlongint Cvlongint]]##
+	Does a binary copy  from a ##[[KeyPgLongint|Longint]]## variable to a string, setting its length to 8 bytes. The resulting string can be read back to a longint by ##[[KeyPgCvlongint|Cvlongint]]##
 
-	This function is useful to write numeric values to buffers without using a ##[[KeyPgType Type]]## definition.
+	This function is useful to write numeric values to buffers without using a ##[[KeyPgType|Type]]## definition.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/mklongint.bas"}}%%(freebasic)
@@ -30,12 +30,12 @@ sleep
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Mklongint""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Mklongint""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCvlongint Cvlongint]]##
+	- ##[[KeyPgCvlongint|Cvlongint]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

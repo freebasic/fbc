@@ -12,6 +12,6 @@ Set maximum number of errors to report before aborting compilation
 	The ##-maxerr## compiler option sets the maximum number of errors the compiler must find before stopping. The default is 10. If **inf**, for infinite, is specified the compiler continues until it finds the end of the source. Useful if an IDE is parsing the error messages.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

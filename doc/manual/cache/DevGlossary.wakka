@@ -81,7 +81,7 @@
 	A ''cast'' that does not require a ''conversion''.
 
 ''normal build''
-	Described here: [[DevNormalVsStandalone Normal vs. Standalone]]
+	Described here: [[DevNormalVsStandalone|Normal vs. Standalone]]
 
 ''objinfo''
 	See [[DevObjinfo]]
@@ -96,7 +96,7 @@
 	Any ''sub'' or ''function'', including constructors/destructors, operator overloads, property setters/getters.
 
 ''standalone build''
-	Described here: [[DevNormalVsStandalone Normal vs. Standalone]]
+	Described here: [[DevNormalVsStandalone|Normal vs. Standalone]]
 
 ''static''
 	- static variable allocation: on the heap instead of the stack, but still scoped -- also see ''local''.

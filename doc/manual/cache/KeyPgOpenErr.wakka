@@ -2,7 +2,7 @@
 Opens both the standard input (//stdin//) and standard error (//stderr//) streams for file operations.
 
 {{fbdoc item="syntax"}}##
-	**[[KeyPgOpen Open]] Err** [for //mode//] [[KeyPgAs as]] [#]//filenum// [[KeyPgAs as]] [[KeyPgLong long]]
+	**[[KeyPgOpen|Open]] Err** [for //mode//] [[KeyPgAs|as]] [#]//filenum// [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	**Open Err** [for //mode//] as [#]//filenum//
@@ -23,15 +23,15 @@ Opens both the standard input (//stdin//) and standard error (//stderr//) stream
 	
 	##stderr## is an output stream different from ##stdout## allowing error messages to be redirected separately from the main console output.
 	
-	The normal console commands, such as ##[[KeyPgColor Color]]## and ##[[KeyPgLocate Locate]]##, do not work in this mode, because they do not accept a file number.
+	The normal console commands, such as ##[[KeyPgColor|Color]]## and ##[[KeyPgLocate|Locate]]##, do not work in this mode, because they do not accept a file number.
 
 	The ##[For Input|Output]## ##//mode//## is allowed for compatibility, but is ignored.
 
 **Runtime errors:**
-	    ##**Open Err**## throws one of the following [[ProPgErrorHandling runtime errors]]:
+	    ##**Open Err**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
 
 	//(##1##) Illegal function call//
-		- ##//Filenumber//## was not free at the time. use ##[[KeyPgFreefile Freefile]]## to ensure that ##//filenumber//## is free.
+		- ##//Filenumber//## was not free at the time. use ##[[KeyPgFreefile|Freefile]]## to ensure that ##//filenumber//## is free.
 
 		
 {{fbdoc item="ex"}}
@@ -49,6 +49,6 @@ sleep
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgOpen|Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -2,13 +2,13 @@
 Returns the row position of the cursor
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Csrlin** ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Csrlin** ( ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Csrlin**
 ##
 {{fbdoc item="ret"}}
-	An ##[[KeyPgInteger integer]]## specifying the current row of the cursor.
+	An ##[[KeyPgInteger|integer]]## specifying the current row of the cursor.
 
 {{fbdoc item="desc"}}
 	Returns the current row the cursor is on (i.e. the "**c**ur**s**o**r** **lin**e").  The topmost row is number ##1##.
@@ -22,7 +22,7 @@ print "The cursor is on row:"; CSRLIN
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLocate Locate]]##
-	- ##[[KeyPgPos Pos]]##
+	- ##[[KeyPgLocate|Locate]]##
+	- ##[[KeyPgPos|Pos]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

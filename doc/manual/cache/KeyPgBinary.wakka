@@ -2,7 +2,7 @@
 Specifies file or device to be opened for binary mode
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgOpen Open]] //filename// for **Binary** [[[KeyPgAccess Access]] //access_type//] [[[KeyPgLock Lock]] //lock_type//] as [#]//filenum// 
+	[[KeyPgOpen|Open]] //filename// for **Binary** [[[KeyPgAccess|Access]] //access_type//] [[[KeyPgLock|Lock]] //lock_type//] as [#]//filenum// 
 ##
 {{fbdoc item="param"}}
 	##//filename//##
@@ -16,15 +16,15 @@ Specifies file or device to be opened for binary mode
 
 {{fbdoc item="desc"}}
 	Opens a file or device for reading and/or writing binary data in the file ##//filenum//##, with free format.
-	If the file does not exist, a new file will be created. The file pointer is initialized by ##[[KeyPgOpen Open]]## at byte no. 1. 
-	##[[KeyPgGetfileio Get #]]## and ##[[KeyPgPutfileio Put #]]## file operations move the file pointer according to the size of the data, the pointer can be set to any byte in the file.
-	The data existing in the file is preserved by ##[[KeyPgOpen Open]]##. 
+	If the file does not exist, a new file will be created. The file pointer is initialized by ##[[KeyPgOpen|Open]]## at byte no. 1. 
+	##[[KeyPgGetfileio|Get #]]## and ##[[KeyPgPutfileio|Put #]]## file operations move the file pointer according to the size of the data, the pointer can be set to any byte in the file.
+	The data existing in the file is preserved by ##[[KeyPgOpen|Open]]##. 
 	This file mode can use any buffer variable to read/write data in the file.   
-	The data is saved in binary mode, in the same internal format ""FreeBASIC"" uses, by means of ##[[KeyPgGetfileio Get #]]## and ##[[KeyPgPutfileio Put #]]##.
+	The data is saved in binary mode, in the same internal format ""FreeBASIC"" uses, by means of ##[[KeyPgGetfileio|Get #]]## and ##[[KeyPgPutfileio|Put #]]##.
 	
 	##//filename//## must be a string expression resulting in a legal file name in the target OS, without wildcards. The file will be sought for in the present directory, unless a path is given.
 			
-	##//Access_type//## By default ##**Binary**## mode allows to both read and write the file, unless an ##[[KeyPgAccess Access]]## type is specified, it mus be one of: 
+	##//Access_type//## By default ##**Binary**## mode allows to both read and write the file, unless an ##[[KeyPgAccess|Access]]## type is specified, it mus be one of: 
 		- ##**Read**## - the file is opened for input only
 		- ##**Write**## - the file is opened for output only
 		- ##**Read Write**## - the file is opened for input and output (the default)
@@ -35,9 +35,9 @@ Specifies file or device to be opened for binary mode
 		- ##**Lock Write**## - The file can't be opened simultaneously for writing
 		- ##**Lock Read Write**## - The file cannot be opened simultaneously by other processes.
 		If no lock type is stated, the file will be ##**Shared**## for other threads of the program and ##**Lock Read Write**## for other programs.
-		##[[KeyPgLock Lock]]## and ##[[KeyPgUnlock Unlock]]## can be used to restrict temporally access to parts of a file.
+		##[[KeyPgLock|Lock]]## and ##[[KeyPgUnlock|Unlock]]## can be used to restrict temporally access to parts of a file.
 
-	##//filenum//## is a valid file number (in the range ##1..255##) not being used for any other file presently open. The file number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile FreeFile]]## function.
+	##//filenum//## is a valid file number (in the range ##1..255##) not being used for any other file presently open. The file number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile|FreeFile]]## function.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/binary-write.bas"}}%%(freebasic)
@@ -82,12 +82,12 @@ Print txt
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgPutfileio Put #]]##
-	- ##[[KeyPgGetfileio Get #]]##
-	- ##[[KeyPgRandom Random]]##
-	- ##[[KeyPgAppend Append]]##
-	- ##[[KeyPgOutput Output]]##
-	- ##[[KeyPgInputfilemode Input]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgPutfileio|Put #]]##
+	- ##[[KeyPgGetfileio|Get #]]##
+	- ##[[KeyPgRandom|Random]]##
+	- ##[[KeyPgAppend|Append]]##
+	- ##[[KeyPgOutput|Output]]##
+	- ##[[KeyPgInputfilemode|Input]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

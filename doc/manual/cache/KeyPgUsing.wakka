@@ -5,10 +5,10 @@ Brings namespace symbols into the current scope
 	**Using** //identifier// [, //identifier// [, ...] ]
 ##
 {{fbdoc item="param"}}
-	##//identifier//##: The name of the ##[[KeyPgNamespace Namespace]]## that you want to use.
+	##//identifier//##: The name of the ##[[KeyPgNamespace|Namespace]]## that you want to use.
 
 {{fbdoc item="desc"}}
-	The ##**Using**## command allows all symbols from a given namespace to be accessed without the namespace's name prefix. Unlike ""C++"" but like C#, the ##[[KeyPgNamespace Namespace]]## keyword is not needed after ##**Using**##, because individual symbols cannot be inherited from a namespace. Inheriting a whole namespace can save typing, but sometimes some meaning of the code can be lost, and conflicts with other symbols could be created.
+	The ##**Using**## command allows all symbols from a given namespace to be accessed without the namespace's name prefix. Unlike ""C++"" but like C#, the ##[[KeyPgNamespace|Namespace]]## keyword is not needed after ##**Using**##, because individual symbols cannot be inherited from a namespace. Inheriting a whole namespace can save typing, but sometimes some meaning of the code can be lost, and conflicts with other symbols could be created.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/using.bas"}}%%(freebasic)
@@ -35,9 +35,9 @@ Dim OtherVariable As T
 	- QB had the ##**Using**## keyword, but for other purposes. Namespaces did not exist in QB.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPrintusing Print Using]]##
-	- ##[[KeyPgPrintusing ? Using]]##
-	- ##[[KeyPgPalette Palette Using]]##
-	- ##[[KeyPgNamespace Namespace]]##
+	- ##[[KeyPgPrintusing|Print Using]]##
+	- ##[[KeyPgPrintusing|? Using]]##
+	- ##[[KeyPgPalette|Palette Using]]##
+	- ##[[KeyPgNamespace|Namespace]]##
 
 {{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

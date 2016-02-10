@@ -66,8 +66,8 @@ Invoking the compiler after installation.
 	and a ##hello.exe## executable file will be created in the ##examples\misc## directory.
 
 {{fbdoc item="see"}}
-	- [[CompilerInstalling Installing FreeBASIC]]
-	- [[CompilerCmdLine Compiler Command Line Options]]
-	- [[CompilerFAQ Compiler FAQ]]
+	- [[CompilerInstalling|Installing FreeBASIC]]
+	- [[CompilerCmdLine|Compiler Command Line Options]]
+	- [[CompilerFAQ|Compiler FAQ]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

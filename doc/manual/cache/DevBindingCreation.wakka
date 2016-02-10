@@ -4,7 +4,7 @@ This page aims to document the problems and solutions commonly encountered when 
 
 In general, FB and ""C/C++"" are very similar. FB follows the same ABI as GCC where applicable, in order to be binary-compatible as much as possible. The language syntax is also similar to ""C/C++"". As a result, a lot of type and procedure declarations can be translated directly 1:1 between C and FB. However, there also are constructs which cannot be translated directly, for example: typedefs declaring function types. FB has function pointer types, but not plain function types.
 
-	- The good news: We have tools ([[http://www.freebasic.net/forum/viewtopic.php?f=8&t=18712 fbfrog]] and [[http://www.freebasic.net/forum/viewtopic.php?f=8&t=15364 h_2_bi]]) which can do most of the translation automatically.
+	- The good news: We have tools ([[http://www.freebasic.net/forum/viewtopic.php?f=8&t=18712|fbfrog]] and [[http://www.freebasic.net/forum/viewtopic.php?f=8&t=15364|h_2_bi]]) which can do most of the translation automatically.
 	- The bad news: There always are some problems which cannot be solved automatically and thus need to be fixed manually.
 
 {{fbdoc item="section" value="Data types"}}

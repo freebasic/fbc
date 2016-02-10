@@ -8,6 +8,6 @@ Do not show source line where error occurred
 	The ##-noerrline## compiler option causes reported errors to not show the place in source where error occurred. Useful if an IDE is parsing the error messages.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

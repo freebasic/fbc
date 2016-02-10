@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="LPOS"}}----
-Returns the number of characters sent to the printer port in the last ##[[KeyPgLprint Lprint]]## statement.
+Returns the number of characters sent to the printer port in the last ##[[KeyPgLprint|Lprint]]## statement.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lpos** ( [[KeyPgByval byval]] //printer// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Lpos** ( [[KeyPgByval|byval]] //printer// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = LPOS(//printer//)
@@ -15,7 +15,7 @@ Returns the number of characters sent to the printer port in the last ##[[KeyPgL
 	Returns the number of characters sent.
 
 {{fbdoc item="desc"}}
-	Used to determine, from the last ##[[KeyPgLprint Lprint]]##, how many characters were sent to the printer port.
+	Used to determine, from the last ##[[KeyPgLprint|Lprint]]##, how many characters were sent to the printer port.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/hardware/lpos.bas"}}%%(freebasic)
@@ -37,6 +37,6 @@ Sleep
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLprint Lprint]]##
+	- ##[[KeyPgLprint|Lprint]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

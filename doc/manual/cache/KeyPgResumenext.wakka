@@ -5,9 +5,9 @@ Error handling statement to resume execution after a jump to an error handler
 	**Resume Next**
 ##
 {{fbdoc item="desc"}}
-	##**Resume Next**## is used in the traditional QB error handling mechanism within an error handler (called by ##[[KeyPgOnerror On Error]]##) to return execution to the line after the one that caused the error.  Usually this is used to avoid executing the same line and causing the error again.
+	##**Resume Next**## is used in the traditional QB error handling mechanism within an error handler (called by ##[[KeyPgOnerror|On Error]]##) to return execution to the line after the one that caused the error.  Usually this is used to avoid executing the same line and causing the error again.
 
-	##**Resume Next**## resets the ##[[KeyPgErr Err]]## value to 0
+	##**Resume Next**## resets the ##[[KeyPgErr|Err]]## value to 0
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/error/resume-next.bas"}}%%(freebasic)
@@ -33,7 +33,7 @@ Resume Next ' execution jumps to 'Print "ending..."' line, but j is now in an un
 %%
 
 {{fbdoc item="lang"}}
-	-  RESUME NEXT is not supported in the //[[CompilerOptlang -lang fb]]// dialect. Statements can be used in its function form to return an error code
+	-  RESUME NEXT is not supported in the //[[CompilerOptlang|-lang fb]]// dialect. Statements can be used in its function form to return an error code
 {{fbdoc item="filename" value="examples/manual/check/KeyPgResumenext_1.bas"}}%%(freebasic)
 If Open( "text" For Input As #1 ) <> 0 Then
   Print "Unable to open file"
@@ -41,11 +41,11 @@ End If
 %% 
 
 {{fbdoc item="diff"}}
-	- Must compile with //[[CompilerOptex -ex]]// option
+	- Must compile with //[[CompilerOptex|-ex]]// option
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgErr Err]]##
-	- ##[[KeyPgResume Resume]]##
-	- [[ProPgErrorHandling Error Handling]]
+	- ##[[KeyPgErr|Err]]##
+	- ##[[KeyPgResume|Resume]]##
+	- [[ProPgErrorHandling|Error Handling]]
 
 {{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

@@ -2,16 +2,16 @@
 ""FreeBASIC"" is an open source (under GPL) compiler. It is designed to be syntax compatible with [[QuickBASIC]], while expanding on the language and capabilities. It compiles for DOS, Microsoft Windows and Linux, and is being ported to other platforms. 
 
 {{fbdoc item="see"}}
-	- [[CompilerFAQ FreeBASIC FAQ]]
-	- [[CompilerAbout About]]
-	- [[CompilerFeatures Main Features]]
-	- [[CompilerCredits Credits]]
-	- [[CompilerRequirements Requirements]]
-	- [[CompilerInstalling Installing]]
-	- [[CompilerRunning Running]]
-	- [[CompilerDialects FreeBASIC Dialects]]
-	- [[CompilerQB FreeBASIC and QBasic]]
-	- [[LangQB Differences from QB]]
+	- [[CompilerFAQ|FreeBASIC FAQ]]
+	- [[CompilerAbout|About]]
+	- [[CompilerFeatures|Main Features]]
+	- [[CompilerCredits|Credits]]
+	- [[CompilerRequirements|Requirements]]
+	- [[CompilerInstalling|Installing]]
+	- [[CompilerRunning|Running]]
+	- [[CompilerDialects|FreeBASIC Dialects]]
+	- [[CompilerQB|FreeBASIC and QBasic]]
+	- [[LangQB|Differences from QB]]
 	
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

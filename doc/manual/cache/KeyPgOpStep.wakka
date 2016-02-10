@@ -1,21 +1,21 @@
 {{fbdoc item="title" value="Operator Step (Iteration)"}}----
-Increments the iterator of a ##[[KeyPgFornext For...Next]]## loop
+Increments the iterator of a ##[[KeyPgFornext|For...Next]]## loop
 
 {{fbdoc item="syntax"}}##
-	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] } //typename//
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Step** ()
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Step** ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //stp// [[KeyPgAs as]] //typename// )
+	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] } //typename//
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Step** ()
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Step** ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //stp// [[KeyPgAs|as]] //typename// )
 		//...//
-	End { [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] }
+	End { [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] }
 ##
 {{fbdoc item="usage"}}##
-	[[KeyPgFornext For]] //iterator// [ As //typename// ] = //start_value// To //end_value// [ [[KeyPgFornext Step]] //step_value// ]
+	[[KeyPgFornext|For]] //iterator// [ As //typename// ] = //start_value// To //end_value// [ [[KeyPgFornext|Step]] //step_value// ]
 		[// ...statements... //]
-	[[KeyPgFornext Next]]
+	[[KeyPgFornext|Next]]
 ##
 {{fbdoc item="param"}}
 	##//typename//##
-		name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgUnion Union]]##
+		name of the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]##
 	##//stp//##, ##//step_value//##
 		a ##//typename//## object used as an incremental value
 	##//iterator//##
@@ -26,11 +26,11 @@ Increments the iterator of a ##[[KeyPgFornext For...Next]]## loop
 		a ##//typename//## object used to copy construct or assign to the iterator initially
 
 {{fbdoc item="desc"}}
-	##[[KeyPgOpFor Operator For]]##, ##[[KeyPgOpNext Operator Next]]## and ##**Operator Step**## can be overloaded in user-defined type definitions to allow objects of that type to be used as iterators and step values in ##[[KeyPgFornext For...Next]]## loops.
+	##[[KeyPgOpFor|Operator For]]##, ##[[KeyPgOpNext|Operator Next]]## and ##**Operator Step**## can be overloaded in user-defined type definitions to allow objects of that type to be used as iterators and step values in ##[[KeyPgFornext|For...Next]]## loops.
 
-	##**Operator Step**## is called to increment the iterator immediately after all statements in the ##[[KeyPgFornext For...Next]]## body are executed, if any.
+	##**Operator Step**## is called to increment the iterator immediately after all statements in the ##[[KeyPgFornext|For...Next]]## body are executed, if any.
 
-	The first version of ##**Operator Step**## is used if no step value is given in the ##[[KeyPgFornext For...Next]]## statement. If a step value is given, the second version is used and is passed the step value.
+	The first version of ##**Operator Step**## is used if no step value is given in the ##[[KeyPgFornext|For...Next]]## statement. If a step value is given, the second version is used and is passed the step value.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/step.bas"}}%%(freebasic)
@@ -74,7 +74,7 @@ For i As T = 10 To 1 Step -1
   Print i.value;
 Next i
 %%
-A more practical example demonstrating file iteration based on [[http://www.freebasic.net/forum/viewtopic.php?p=83564 cha0s' file iteration class]].
+A more practical example demonstrating file iteration based on [[http://www.freebasic.net/forum/viewtopic.php?p=83564|cha0s' file iteration class]].
 {{fbdoc item="filename" value="examples/manual/udt/stepFileIteration.bas"}}%%(freebasic)
 '' a class which iterates through files
 type FileIter
@@ -345,11 +345,11 @@ next
 print "done"
 %%
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
+	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpFor Operator For]]##
-	- ##[[KeyPgOpNext Operator Next]]##
-	- ##[[KeyPgFornext For...Next]]##
+	- ##[[KeyPgOpFor|Operator For]]##
+	- ##[[KeyPgOpNext|Operator Next]]##
+	- ##[[KeyPgFornext|For...Next]]##
 
 {{fbdoc item="back" value="CatPgOpIterating|Iterating Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

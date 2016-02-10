@@ -11,7 +11,7 @@
 	~3) SDL.dll runtime library - http://www.libsdl.org/download-1.2.php 
 
 ===Step 2: Where you put it.===
-	 The .bi file can be put pretty much where ever you want to put it, you will tell the compiler where to find it in the [[KeyPgInclude '$include]] command. The .dll however need to be placed in specific places. The easiest way to make sure that the program will be able to use these files is to have the .dll in the same folder as the compiled executable. You can also put them in any folder that is listed in your Enviroment variable, but I don't recommend that because it will be easier to find and remeber that you need the .dlls if you just put them in the same folder as the executable, which will proably be the same folder as your .bas file for the main program.
+	 The .bi file can be put pretty much where ever you want to put it, you will tell the compiler where to find it in the [[KeyPgInclude|'$include]] command. The .dll however need to be placed in specific places. The easiest way to make sure that the program will be able to use these files is to have the .dll in the same folder as the compiled executable. You can also put them in any folder that is listed in your Enviroment variable, but I don't recommend that because it will be easier to find and remeber that you need the .dlls if you just put them in the same folder as the executable, which will proably be the same folder as your .bas file for the main program.
 	 
 ----
 

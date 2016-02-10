@@ -2,7 +2,7 @@
 Finds available fullscreen video modes
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screenlist** ( [[KeyPgByval byval]] //depth// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Screenlist** ( [[KeyPgByval|byval]] //depth// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Screenlist**( [ //depth// ] )
@@ -15,9 +15,9 @@ Finds available fullscreen video modes
 	returns ##0##, when there are no more resolutions to read.
 
 {{fbdoc item="desc"}}
-	It works like the ##[[KeyPgDir Dir]]## function: the first call to the function requires the ##//depth//## parameter to be specified, it  returns the lowest supported resolution for the requested depth. Further calls to ##**Screenlist**## without arguments returns the next resolutions. When no more resolutions are available, ##[[KeyPgScreenlist Screenlist]]## returns ##0##.
+	It works like the ##[[KeyPgDir|Dir]]## function: the first call to the function requires the ##//depth//## parameter to be specified, it  returns the lowest supported resolution for the requested depth. Further calls to ##**Screenlist**## without arguments returns the next resolutions. When no more resolutions are available, ##[[KeyPgScreenlist|Screenlist]]## returns ##0##.
 
-	The result of ##[[KeyPgScreenlist Screenlist]]## is encoded as a 32 bit value, with the screen width as the [[KeyPgHiword high word]] and the height as the [[KeyPgLoword low word]].
+	The result of ##[[KeyPgScreenlist|Screenlist]]## is encoded as a 32 bit value, with the screen width as the [[KeyPgHiword|high word]] and the height as the [[KeyPgLoword|low word]].
 
 	Resolutions are returned from lowest to highest supported ones. 
 
@@ -39,13 +39,13 @@ Wend
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screenlist""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Screenlist""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics Screen]]##
-	- ##[[KeyPgScreenres Screenres]]##
+	- ##[[KeyPgScreengraphics|Screen]]##
+	- ##[[KeyPgScreenres|Screenres]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

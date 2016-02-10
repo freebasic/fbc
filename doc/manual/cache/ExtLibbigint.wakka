@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="big_int"}}----
-Library for using arbitrarily large integers. Note: This library seems to be dead, a possible alternative is [[ExtLibgmp gmp]].
+Library for using arbitrarily large integers. Note: This library seems to be dead, a possible alternative is [[ExtLibgmp|gmp]].
 
 Website: http://valyala.narod.ru/big_int/ (Russian) [the site apparently is gone]
 Platforms supported: ""Win32"", Linux

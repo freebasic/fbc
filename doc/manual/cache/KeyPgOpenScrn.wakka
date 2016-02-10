@@ -2,7 +2,7 @@
 Opens the console directly for input and output as a file
 
 {{fbdoc item="syntax"}}##
-	**[[KeyPgOpen Open]] Scrn** [for //mode//] [[KeyPgAs as]] [#]//filenum// [[KeyPgAs as]] [[KeyPgLong long]]
+	**[[KeyPgOpen|Open]] Scrn** [for //mode//] [[KeyPgAs|as]] [#]//filenum// [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	**Open Scrn** [for //mode//] as [#]//filenum//
@@ -11,7 +11,7 @@ Opens the console directly for input and output as a file
 ##
 {{fbdoc item="param"}}
 	##//mode//##
-		Either ##[[KeyPgInputfilemode Input]]## or ##[[KeyPgOutput Output]]##.  If omitted, ##[[KeyPgOutput Output]]## is assumed.
+		Either ##[[KeyPgInputfilemode|Input]]## or ##[[KeyPgOutput|Output]]##.  If omitted, ##[[KeyPgOutput|Output]]## is assumed.
 	##//filenum//##
 		An unused file number.
 
@@ -23,20 +23,20 @@ Opens the console directly for input and output as a file
 
 	This command may use direct access to the console for speed in some implementations, so  it should not be used when the input / output is required to be redirected or piped with OS commands.    
 
-	The normal console commands, such as ##[[KeyPgColor Color]]## and ##[[KeyPgLocate Locate]]##, do not work in this mode, because they do not accept a file number.
+	The normal console commands, such as ##[[KeyPgColor|Color]]## and ##[[KeyPgLocate|Locate]]##, do not work in this mode, because they do not accept a file number.
 
 	The ##[For Input|Output]## clause is allowed for compatibility, but is ignored.
 
 	##//filenum//## is an unused file number.
 
-	An unused file number can be found using ##[[KeyPgFreefile FreeFile]]##.
+	An unused file number can be found using ##[[KeyPgFreefile|FreeFile]]##.
 
 	
 **Runtime errors:**
-	    ##**Open Cons**## throws one of the following [[ProPgErrorHandling runtime errors]]:
+	    ##**Open Cons**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
 
 	//(##1##) Illegal function call//
-		- ##//filenumber//## was not free at the time. use ##[[KeyPgFreefile Freefile]]## to ensure that ##//filenumber//## is free.
+		- ##//filenumber//## was not free at the time. use ##[[KeyPgFreefile|Freefile]]## to ensure that ##//filenumber//## is free.
 		
 		
 
@@ -55,7 +55,7 @@ sleep
 	- QB used OPEN "SCRN:" ...
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgOpenCons Open Cons]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgOpenCons|Open Cons]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

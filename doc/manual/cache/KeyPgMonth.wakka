@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="MONTH"}}----
-Gets the month of the year from a [[ProPgDates Date Serial]]
+Gets the month of the year from a [[ProPgDates|Date Serial]]
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Month** ( [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Month** ( [[KeyPgByval|byval]] //date_serial// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -13,7 +13,7 @@ Gets the month of the year from a [[ProPgDates Date Serial]]
 		the date
 
 {{fbdoc item="ret"}}
-	Returns the month number from a variable containing a date in  [[ProPgDates Date Serial]]  format.
+	Returns the month number from a variable containing a date in  [[ProPgDates|Date Serial]]  format.
 
 	The month values are in the range 1-12 being 1 for January and 12 for December.
 
@@ -34,6 +34,6 @@ Print Format(a, "yyyy/mm/dd hh:mm:ss "); Month(a)
 	- Did not exist in QB. This function appeared in PDS and VBDOS
 
 {{fbdoc item="see"}}
-	- [[ProPgDates Date Serials]]
+	- [[ProPgDates|Date Serials]]
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

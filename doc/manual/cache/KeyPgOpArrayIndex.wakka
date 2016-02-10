@@ -2,7 +2,7 @@
 Returns a reference to an element in an array
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **()** ( //lhs//() [[KeyPgAs as]] //T//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]], ... ) [[KeyPgByrefFunction byref]] [[KeyPgAs as]] //T//
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **()** ( //lhs//() [[KeyPgAs|as]] //T//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]], ... ) [[KeyPgByrefFunction|byref]] [[KeyPgAs|as]] //T//
 ##
 
 {{fbdoc item="usage"}}##
@@ -19,7 +19,7 @@ Returns a reference to an element in an array
 {{fbdoc item="desc"}}
 	This operator returns a reference to an element in an array. For multidimensional arrays, multiple indexes must be specified (up to the total number of dimensions of the array).
 
-	For any dimension ##//d//## in array ##//a//##, any index less than ##[[KeyPgLbound Lbound]](//a//, //d//)## or greater than ##[[KeyPgUbound Ubound]](//a//, //d//)## will result in a runtime error.
+	For any dimension ##//d//## in array ##//a//##, any index less than ##[[KeyPgLbound|Lbound]](//a//, //d//)## or greater than ##[[KeyPgUbound|Ubound]](//a//, //d//)## will result in a runtime error.
 
 {{fbdoc item="ex"}}
 

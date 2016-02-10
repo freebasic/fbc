@@ -3,35 +3,35 @@ Defines or resizes a variable-length array
 
 {{fbdoc item="syntax"}}
 	Declaring a Dynamic Array:
-		##**Redim** [ [[KeyPgShared Shared]] ] //symbolname//([//subscript// [, ...]]) As [[DataType datatype]] [, ...]##
-		##**Redim** [ [[KeyPgShared Shared]] ] As [[DataType datatype]] //symbolname//([//subscript// [, ...]]) [, ...]##
+		##**Redim** [ [[KeyPgShared|Shared]] ] //symbolname//([//subscript// [, ...]]) As [[DataType|datatype]] [, ...]##
+		##**Redim** [ [[KeyPgShared|Shared]] ] As [[DataType|datatype]] //symbolname//([//subscript// [, ...]]) [, ...]##
 
 	Resizing a Dynamic Array:
-		##**Redim** [ [[KeyPgPreserve Preserve]] ] //symbolname//([//subscript// [, ...]]) [, ...]##
+		##**Redim** [ [[KeyPgPreserve|Preserve]] ] //symbolname//([//subscript// [, ...]]) [, ...]##
 
 {{fbdoc item="param"}}
-	##[[KeyPgShared Shared]]##
+	##[[KeyPgShared|Shared]]##
 		Specifies shared (file-scope) access to the array throughout the module.
-	##[[KeyPgPreserve Preserve]]##
-		When used with an existing array, the contents of the array will be preserved during the resize. Note that in some cases ##[[KeyPgPreserve Preserve]]## will not preserve data at its original index, see below.
+	##[[KeyPgPreserve|Preserve]]##
+		When used with an existing array, the contents of the array will be preserved during the resize. Note that in some cases ##[[KeyPgPreserve|Preserve]]## will not preserve data at its original index, see below.
 	##//symbolname//##
 		A new or existing array id.
 	##//subscript//##: [ ##//lowerbound// To## ] ##//upperbound//##
-		The lower and upper bound range for a dimension of the array. Lower bound defaults to zero (##0##), or the default ##[[KeyPgOptionbase Base]]##, if not specified.
-	##[[DataType datatype]]##
+		The lower and upper bound range for a dimension of the array. Lower bound defaults to zero (##0##), or the default ##[[KeyPgOptionbase|Base]]##, if not specified.
+	##[[DataType|datatype]]##
 		The type of elements contained in the array.
 
 {{fbdoc item="desc"}}
-	##**Redim**## can be used to define new variable-length arrays, or resize existing variable-length arrays while keeping the same number of dimensions. ##**Redim**## always produces variable-length arrays, so, unlike ##[[KeyPgDim Dim]]##, variable-length arrays can be defined with constant subscripts.
+	##**Redim**## can be used to define new variable-length arrays, or resize existing variable-length arrays while keeping the same number of dimensions. ##**Redim**## always produces variable-length arrays, so, unlike ##[[KeyPgDim|Dim]]##, variable-length arrays can be defined with constant subscripts.
 	
-	When defining a new variable-length array, its elements are default constructed. For simple data types like ##[[KeyPgInteger Integer]]## or ##[[KeyPgDouble Double]]##, the elements are initialized to zero (##0##). For user-defined types with a default constructor, that will be called.
+	When defining a new variable-length array, its elements are default constructed. For simple data types like ##[[KeyPgInteger|Integer]]## or ##[[KeyPgDouble|Double]]##, the elements are initialized to zero (##0##). For user-defined types with a default constructor, that will be called.
 	
 	**NOTES**: 
-		- ##**Redim** [[KeyPgPreserve Preserve]]## may not work as expected in all cases:
-			##[[KeyPgPreserve Preserve]]##'s current behavior is to keep the original data contiguous in memory, and only expand or truncate the size of the memory.
+		- ##**Redim** [[KeyPgPreserve|Preserve]]## may not work as expected in all cases:
+			##[[KeyPgPreserve|Preserve]]##'s current behavior is to keep the original data contiguous in memory, and only expand or truncate the size of the memory.
 			Its behavior (with a single dimension) is well-defined only when the upper bound is changed.  If the lower bound is changed, the current result is that the data is in effect shifted to start at the new lower bound.
 			With multiple dimensions, only the upper bound of only the first dimension may be safely increased.  If the first dimension is reduced, the existing mappable data may be lost. If lower-order dimensions are resized at all, the effects can be hard to predict.
-		- ##**Redim**## cannot be used on fixed-size arrays - i.e. arrays with constant bounds made with ##[[KeyPgDim Dim]]##.  This includes the fixed-size arrays contained in UDTs (user-defined ##[[KeyPgType Type]]##s).  This also includes fixed-length arrays passed as parameters in a function.  ""FreeBASIC"" cannot prevent you trying this at compile-time, but the results at run-time will be undefined.
+		- ##**Redim**## cannot be used on fixed-size arrays - i.e. arrays with constant bounds made with ##[[KeyPgDim|Dim]]##.  This includes the fixed-size arrays contained in UDTs (user-defined ##[[KeyPgType|Type]]##s).  This also includes fixed-length arrays passed as parameters in a function.  ""FreeBASIC"" cannot prevent you trying this at compile-time, but the results at run-time will be undefined.
 		- Using ##**Redim**## within a member procedure with an array that contains an instance of the object class is undefined, and will [hopefully] result in horrible crashes.
 		- For use of ##**Redim**## (resizing) with a complex expression, (especially if the array expression itself contains parentheses), the array expression must be enclosed in parentheses in order to solve the parsing ambiguity.
 
@@ -142,19 +142,19 @@ Print
 
 %%
 {{fbdoc item="diff"}}
-	- ##[[KeyPgPreserve Preserve]]## was in Visual Basic, but not in QBASIC.
+	- ##[[KeyPgPreserve|Preserve]]## was in Visual Basic, but not in QBASIC.
 	- Multi-dimensional arrays in ""FreeBASIC"" are in row-major order, rather than column-major order.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCommon Common]]##
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgErase Erase]]##
-	- ##[[KeyPgExtern Extern]]##
-	- ##[[KeyPgLbound Lbound]]##
-	- ##[[KeyPgPreserve Preserve]]##
-	- ##[[KeyPgShared Shared]]##
-	- ##[[KeyPgStatic Static]]##
-	- ##[[KeyPgUbound Ubound]]##
-	- ##[[KeyPgVar Var]]##
+	- ##[[KeyPgCommon|Common]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgErase|Erase]]##
+	- ##[[KeyPgExtern|Extern]]##
+	- ##[[KeyPgLbound|Lbound]]##
+	- ##[[KeyPgPreserve|Preserve]]##
+	- ##[[KeyPgShared|Shared]]##
+	- ##[[KeyPgStatic|Static]]##
+	- ##[[KeyPgUbound|Ubound]]##
+	- ##[[KeyPgVar|Var]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}

@@ -2,8 +2,8 @@
 Appends and assigns a string onto another string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **&=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **&=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgWstring wstring]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **&=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgString|string]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T2// )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **&=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgWstring|wstring]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T2// )
 ##
 {{fbdoc item="usage"}}##
 	//lhs// &= //rhs//
@@ -19,13 +19,13 @@ Appends and assigns a string onto another string
 {{fbdoc item="desc"}}
 	This operator appends one string onto another. The right-hand side expression (##//rhs//##) is converted to a string before concatenation. It is functionally equivalent to,
 ##
-		//lhs// = //lhs// [[KeyPgOpConcatConvert &]] //rhs//
+		//lhs// = //lhs// [[KeyPgOpConcatConvert|&]] //rhs//
 ##
 	where the result is assigned back to the left-hand side string.
 
 	This operator can be overloaded for user-defined types.
 
-	Note: This operator exists in C/""C++"" with a different meaning - there it performs a bitwise ##[[KeyPgOpCombineAnd And=]]##.
+	Note: This operator exists in C/""C++"" with a different meaning - there it performs a bitwise ##[[KeyPgOpCombineAnd|And=]]##.
 
 
 {{fbdoc item="ex"}}
@@ -41,13 +41,13 @@ Hello, world!
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpConcatConvert Operator & (String concatenation with conversion)]]##
-	- ##[[KeyPgOpCombineAdd Operator +=  (Add and Assign)]]##
+	- ##[[KeyPgOpConcatConvert|Operator & (String concatenation with conversion)]]##
+	- ##[[KeyPgOpCombineAdd|Operator +=  (Add and Assign)]]##
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

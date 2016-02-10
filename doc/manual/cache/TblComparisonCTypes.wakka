@@ -3,6 +3,6 @@
 {{table columns="7" cellpadding="1" cells="; C int; C long long [int]; C long [int]; FB Long; FB LongInt; FB Integer; 32bit win32; 32; 64; 32 (ILP32); 32; 64; 32; 32bit linux-x86; 32; 64; 32 (ILP32); 32; 64; 32; 64bit win64; 32; 64; 32 (LLP64); 32; 64; 64; 64bit linux-x86_64; 32; 64; 64 (LP64); 32; 64; 64 "}}
 
 {{fbdoc item="see"}}
-	- [[DevBindingCreation Creating FB bindings for C libraries]] - How to translate C data types to FB
+	- [[DevBindingCreation|Creating FB bindings for C libraries]] - How to translate C data types to FB
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -2,18 +2,18 @@
 Statement modifier.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgFornext For]] //iterator// = //initial_value// To //end_value// **Step** //increment//
+	[[KeyPgFornext|For]] //iterator// = //initial_value// To //end_value// **Step** //increment//
 
-	[[KeyPgLinegraphics Line]] [ //buffer//, ] **Step** ( //x1//, //y1// ) - **Step** ( //x2//, //y2// ) [, [ //color// ][, [ B|BF ][, //style// ] ] ]
+	[[KeyPgLinegraphics|Line]] [ //buffer//, ] **Step** ( //x1//, //y1// ) - **Step** ( //x2//, //y2// ) [, [ //color// ][, [ B|BF ][, //style// ] ] ]
 
-	[[KeyPgCircle Circle]] [ //target,// ] **Step** ( //x//, //y// ), //radius// [, [ //color// ][, [ //start// ][, [ //end// ][, [ //aspect// ][, F] ] ] ] ]
+	[[KeyPgCircle|Circle]] [ //target,// ] **Step** ( //x//, //y// ), //radius// [, [ //color// ][, [ //start// ][, [ //end// ][, [ //aspect// ][, F] ] ] ] ]
 
-	[[KeyPgPaint Paint]] [ //target//, ] STEP ( //x//, //y// ) [, [ //paint// ][, [ //border_color// ] ] ]
+	[[KeyPgPaint|Paint]] [ //target//, ] STEP ( //x//, //y// ) [, [ //paint// ][, [ //border_color// ] ] ]
 ##
 {{fbdoc item="desc"}}
-	In a ##[[KeyPgFornext For]]## statement, ##**Step**## specifies the increment of the loop iterator with each loop.
+	In a ##[[KeyPgFornext|For]]## statement, ##**Step**## specifies the increment of the loop iterator with each loop.
 
-	In a ##[[KeyPgLinegraphics Line]]##, ##[[KeyPgCircle Circle]]## or ##[[KeyPgPaint Paint]]## statement, ##**Step**## indicates that the following coordinate has values relative to the graphics cursor.
+	In a ##[[KeyPgLinegraphics|Line]]##, ##[[KeyPgCircle|Circle]]## or ##[[KeyPgPaint|Paint]]## statement, ##**Step**## indicates that the following coordinate has values relative to the graphics cursor.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/step.bas"}}%%(freebasic)
@@ -28,9 +28,9 @@ LINE -STEP(10,10),13
 %%
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgFornext For...Next]]##
-	- ##[[KeyPgLinegraphics Line]]##
-	- ##[[KeyPgCircle Circle]]##
-	- ##[[KeyPgPaint Paint]]##
+	- ##[[KeyPgFornext|For...Next]]##
+	- ##[[KeyPgLinegraphics|Line]]##
+	- ##[[KeyPgCircle|Circle]]##
+	- ##[[KeyPgPaint|Paint]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

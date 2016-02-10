@@ -2,7 +2,7 @@
 Copies one graphical or text page onto another
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Pcopy** ( [[KeyPgByval byval]] //source// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //destination// [[KeyPgAs as]] [[KeyPgLong long]] = -1 ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Pcopy** ( [[KeyPgByval|byval]] //source// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1, [[KeyPgByval|byval]] //destination// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	**Pcopy** [ //source// ] [, //destination// ]
@@ -91,15 +91,15 @@ Loop Until Len(Inkey$)
 	- Maximum number of text pages in Windows is 4.
 	- Maximum number of text pages in DOS is 8.
 	- Maximum number of text pages in all other targets is 1.
-	- Maximum number of graphics pages depends on what was specified when the ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]## statement was called.
+	- Maximum number of graphics pages depends on what was specified when the ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|Screenres]]## statement was called.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreencopy Screencopy]]##
-	- ##[[KeyPgFlip Flip]]##
-	- ##[[KeyPgScreengraphics Screen]]##
+	- ##[[KeyPgScreencopy|Screencopy]]##
+	- ##[[KeyPgFlip|Flip]]##
+	- ##[[KeyPgScreengraphics|Screen]]##
 
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

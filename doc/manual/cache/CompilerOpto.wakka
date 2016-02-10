@@ -9,7 +9,7 @@ Set object file path/name
 		The name, with optional path, of the object file to create.
 
 {{fbdoc item="desc"}}
-	The ##**-o**## option can be used to specify the file name for the object file created while compiling an input file. By default, the name for the object file (and other temporaries like assembly files) is based on the name of the corresponding input file, but with an ##.o## extension. This option is useful for example in combination with ##[[CompilerOptc -c]]##, or to force the compiler to create temporary object files in other directories (if, for example, the source code directory is or should be treated as read-only).
+	The ##**-o**## option can be used to specify the file name for the object file created while compiling an input file. By default, the name for the object file (and other temporaries like assembly files) is based on the name of the corresponding input file, but with an ##.o## extension. This option is useful for example in combination with ##[[CompilerOptc|-c]]##, or to force the compiler to create temporary object files in other directories (if, for example, the source code directory is or should be treated as read-only).
 	
 	Given ##-o## options are only assigned to input files that need to be compiled, namely ##*.bas##, ##*.rc##, ##*.res## and ##*.xpm##.
 	
@@ -21,11 +21,11 @@ Set object file path/name
 	However, this is an error:
 		##fbc 1.bas 2.bas -o 1.o -o 2.o##
 	
-	The ##[[CompilerOptv -v]]## option makes the compiler show the actual file names that it uses.
+	The ##[[CompilerOptv|-v]]## option makes the compiler show the actual file names that it uses.
 
 {{fbdoc item="see"}}
-	- [[CompilerOptb Compiler Option: -b]]
-	- [[CompilerOptc Compiler Option: -c]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerOptb|Compiler Option: -b]]
+	- [[CompilerOptc|Compiler Option: -c]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

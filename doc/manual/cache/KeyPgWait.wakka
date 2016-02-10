@@ -2,7 +2,7 @@
 Reads from a hardware port with a mask.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wait** ( [[KeyPgByval byval]] //port// [[KeyPgAs as]] [[KeyPgUshort ushort]], [[KeyPgByval byval]] //and_mask// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //xor_mask// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wait** ( [[KeyPgByval|byval]] //port// [[KeyPgAs|as]] [[KeyPgUshort|ushort]], [[KeyPgByval|byval]] //and_mask// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //xor_mask// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	**Wait** //port,// //and_value// [, //xor_value//]
@@ -11,9 +11,9 @@ Reads from a hardware port with a mask.
 	##//port//##
 		Port to read.
 	##//and_mask//##
-		Mask value to [[KeyPgOpAnd And]] the port value with.
+		Mask value to [[KeyPgOpAnd|And]] the port value with.
 	##//xor_mask//##
-		Mask value to [[KeyPgOpXor Xor]] the port value with.
+		Mask value to [[KeyPgOpXor|Xor]] the port value with.
 
 {{fbdoc item="ret"}}
 	0 if successful, -1 on failure.
@@ -29,13 +29,13 @@ screensync 'FreeBASIC way of accomplishing the same thing
 %%
 
 {{fbdoc item="target"}}
-	- In the Windows and Linux versions three port numbers (&H3C7, &H3C8, &H3C9) are hooked by the graphics library when a graphics mode is in use to emulate VGA palette handling as in QB. This use is deprecated; use ##[[KeyPgPalette Palette]]## to retrieve and set palette colors.
+	- In the Windows and Linux versions three port numbers (&H3C7, &H3C8, &H3C9) are hooked by the graphics library when a graphics mode is in use to emulate VGA palette handling as in QB. This use is deprecated; use ##[[KeyPgPalette|Palette]]## to retrieve and set palette colors.
 	
 	- Using true port access in the Windows version requires the program to install a device driver for the present session. For that reason, Windows executables using hardware port access should be run with administrator permits each time the computer is restarted. Further runs don't require admin rights as they just use the already installed driver. The driver is only 3K in size and is embedded in the executable.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInp Inp]]##
-	- ##[[KeyPgOut Out]]##
+	- ##[[KeyPgInp|Inp]]##
+	- ##[[KeyPgOut|Out]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
    

@@ -13,10 +13,10 @@ Sets new view coordinates mapping for current viewport
 {{fbdoc item="desc"}}
 	##**Window**## is used to define a new coordinates system. ##(//x1//, //y1//)## and ##(//x2//, //y2//)## are the new coordinates to be mapped to the opposite corners of the current viewport; all future coordinates passed to graphics primitive statements will be affected by this new mapping. If ##**Screen**## is omitted, the new coordinates system will be Cartesian, that is, with y coordinates increasing from bottom to top. Call ##**Window**## with no argument to disable the coordinates transformation.
 
-	""FreeBASIC's"" current behavior is to keep track of the corners of the ##**Window**##, rather than a specific coordinate mapping.  This means that the coordinate mapping can change after calls to ##[[KeyPgViewgraphics View]]##.
+	""FreeBASIC's"" current behavior is to keep track of the corners of the ##**Window**##, rather than a specific coordinate mapping.  This means that the coordinate mapping can change after calls to ##[[KeyPgViewgraphics|View]]##.
 	The ##**Window**## corners are also currently taken into account when working on image buffers, so when a ##**Window**## is in effect, the coordinate mapping will be different from image to image.
 
-	When there is no ##**Window**## in effect, there is no coordinate mapping in effect, so the effective coordinate system is constant, independent of image buffer sizes or ##[[KeyPgViewgraphics View]]## coordinates (if any).
+	When there is no ##**Window**## in effect, there is no coordinate mapping in effect, so the effective coordinate system is constant, independent of image buffer sizes or ##[[KeyPgViewgraphics|View]]## coordinates (if any).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/window2.bas"}}%%(freebasic)
@@ -95,8 +95,8 @@ sleep
 	- ""FreeBASIC's"" current behavior is to preserve the WINDOW coordinates after calls to VIEW, or when working on images, meaning that the coordinate mapping may undergo scaling/translations. (If a WINDOW hasn't been set, there is no coordinate mapping, and so it doesn't change after calls to VIEW.)  The behavior may change in future, but consistent behavior can be be assured over inconstent viewport coordinates by re-calling WINDOW when you change the VIEW.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
-	- ##[[KeyPgViewgraphics View (Graphics)]]##
-	- ##[[KeyPgPmap PMap]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
+	- ##[[KeyPgViewgraphics|View (Graphics)]]##
+	- ##[[KeyPgPmap|PMap]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

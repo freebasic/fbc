@@ -2,7 +2,7 @@
 Reads button state from attached gaming devices
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Strig** ( [[KeyPgByval byval]] //button// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Strig** ( [[KeyPgByval|byval]] //button// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Strig**( //button// )
@@ -57,13 +57,13 @@ Loop
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Only available in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgGetjoystick Getjoystick]]##
-	- ##[[KeyPgStick Stick]]##
+	- ##[[KeyPgGetjoystick|Getjoystick]]##
+	- ##[[KeyPgStick|Stick]]##
 
 {{fbdoc item="back" value="CatPgGfxInput|User Input Functions"}}

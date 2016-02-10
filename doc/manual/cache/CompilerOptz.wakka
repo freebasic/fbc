@@ -12,9 +12,9 @@ Sets miscellaneous or experimental compiler options.
 	The ##-z## compiler option sets miscellaneous, obscure, temporary, or experimental options used by the developers.  There is no guarantee that these options will be supported in future versions of the compiler.
 
 	{{fbdoc item="subsect" value="-z gosub-setjmp"}}
-		Specifies that the ##setjmp##/##longjmp## implementation of ##[[KeyPgGosub Gosub]]## should be used even when the GAS backend is used.  By default, ##[[KeyPgGosub Gosub]]## will be supported in //[[CompilerOptgen -gen gas]]// using ##CALL##/##RET## assembly instructions and in //[[CompilerOptgen -gen gcc]]// using ##setjmp##/##longjmp## C runtime functions.
+		Specifies that the ##setjmp##/##longjmp## implementation of ##[[KeyPgGosub|Gosub]]## should be used even when the GAS backend is used.  By default, ##[[KeyPgGosub|Gosub]]## will be supported in //[[CompilerOptgen|-gen gas]]// using ##CALL##/##RET## assembly instructions and in //[[CompilerOptgen|-gen gcc]]// using ##setjmp##/##longjmp## C runtime functions.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

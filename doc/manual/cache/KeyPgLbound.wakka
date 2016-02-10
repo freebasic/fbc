@@ -2,7 +2,7 @@
 Returns the lower bound of an array's dimension
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lbound** ( array() [[KeyPgAs as]] [[KeyPgAny any]], [[KeyPgByval byval]] //dimension// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Lbound** ( array() [[KeyPgAs|as]] [[KeyPgAny|any]], [[KeyPgByval|byval]] //dimension// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 1 ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Lbound**( //array// [, //dimension// ] )
@@ -41,9 +41,9 @@ print lbound(array, 3) 'returns 1
 %%
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgUbound Ubound]]##
-	- ##[[KeyPgStatic Static]]##
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgUbound|Ubound]]##
+	- ##[[KeyPgStatic|Static]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgRedim|Redim]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}

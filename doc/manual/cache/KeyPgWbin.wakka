@@ -1,18 +1,18 @@
 {{fbdoc item="title" value="WBIN"}}----
-Returns the binary ##[[KeyPgWstring wstring]]## (Unicode) representation of a number
+Returns the binary ##[[KeyPgWstring|wstring]]## (Unicode) representation of a number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlong ulong]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgConst const]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUbyte ubyte]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUshort ushort]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlong ulong]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wbin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgConst const]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Wbin**( //number// [, //digits//] )
@@ -24,14 +24,14 @@ Returns the binary ##[[KeyPgWstring wstring]]## (Unicode) representation of a nu
 		Optional number of digits to return.
 
 {{fbdoc item="ret"}}
-	Returns a binary ##[[KeyPgWstring wstring]]## representation of ##//number//##, truncated or padded with zeros (##"0"##) to fit the number of digits, if specified.
+	Returns a binary ##[[KeyPgWstring|wstring]]## representation of ##//number//##, truncated or padded with zeros (##"0"##) to fit the number of digits, if specified.
 
 {{fbdoc item="desc"}}
-	Returns a ##[[KeyPgWstring wstring]]## (Unicode) representing the binary value of the integer ##//number//##. Binary digits range from ##0## to ##1##.
+	Returns a ##[[KeyPgWstring|wstring]]## (Unicode) representing the binary value of the integer ##//number//##. Binary digits range from ##0## to ##1##.
 
 	If you specify ##//digits//## > ##0##, the result wstring will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
 
-	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//expression//## (32 for a ##[[KeyPgLong long]]##, 64 for floating point or ##[[KeyPgLongint longint]]##)
+	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//expression//## (32 for a ##[[KeyPgLong|long]]##, 64 for floating point or ##[[KeyPgLongint|longint]]##)
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/wbin.bas"}}%%(freebasic)
@@ -50,14 +50,14 @@ PRINT WBIN(54321, 20)
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Wbin""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Wbin""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgBin Bin]]##
-	- ##[[KeyPgWhex Whex]]##
-	- ##[[KeyPgWoct Woct]]##
+	- ##[[KeyPgBin|Bin]]##
+	- ##[[KeyPgWhex|Whex]]##
+	- ##[[KeyPgWoct|Woct]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

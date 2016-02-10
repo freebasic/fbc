@@ -2,7 +2,7 @@
 Removes a folder/directory from the file system
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Rmdir** ( [[KeyPgByref byref]] //folder// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Rmdir** ( [[KeyPgByref|byref]] //folder// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Rmdir**( //folder// )
@@ -33,8 +33,8 @@ If 0 <> result Then Print "error: unable to remove folder " & pathname & " in th
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgShell Shell]]##
-	- ##[[KeyPgChdir Chdir]]##
-	- ##[[KeyPgMkdir Mkdir]]##
+	- ##[[KeyPgShell|Shell]]##
+	- ##[[KeyPgChdir|Chdir]]##
+	- ##[[KeyPgMkdir|Mkdir]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

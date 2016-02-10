@@ -5,7 +5,7 @@ Intrinsic define set by the compiler
 	""__FB_VECTORIZE__""
 ##
 {{fbdoc item="desc"}}
-	Defined as the vectorisation level number set by the //[[CompilerOptvec -vec]]// command-line option.
+	Defined as the vectorisation level number set by the //[[CompilerOptvec|-vec]]// command-line option.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbvectorize.bas"}}%%(freebasic)
@@ -20,6 +20,6 @@ Intrinsic define set by the compiler
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- [[CompilerOptvec Compiler Option: -vec]]
+	- [[CompilerOptvec|Compiler Option: -vec]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

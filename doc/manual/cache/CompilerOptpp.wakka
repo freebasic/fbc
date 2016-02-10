@@ -8,6 +8,6 @@ Emit the preprocessed input file only, do not compile
 	The ##-pp## compiler option enables the preprocessor-only mode. The code is parsed & checked as usual, but is not compiled. A pre-processed version of every input source.bas is generated, named source.pp.bas. 
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

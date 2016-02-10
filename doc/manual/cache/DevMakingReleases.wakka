@@ -95,8 +95,8 @@ When making an FB release, the GCC toolchain used to build FB has a huge impact,
 Additionally, different GCC toolchains and runtime libraries (e.g. ""MinGW.org"" vs. ""MinGW-w64"", or DJGPP 2.03 vs. 2.04 vs. CVS) can be more or less different in terms of ABI compatibility or runtime behaviour. As such any FB program can behave differently depending on the GCC toolchain, including fbc itself.
 
 More information:
-	[[DevBuildKnownProblems Known problems when compiling FB]]
-	[[DevGccToolchainChoice GCC toolchain choice]]
+	[[DevBuildKnownProblems|Known problems when compiling FB]]
+	[[DevGccToolchainChoice|GCC toolchain choice]]
 
 {{anchor name="RELEASESCRIPT"}}{{fbdoc item="section" value="Release making script"}}
 

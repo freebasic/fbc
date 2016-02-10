@@ -16,8 +16,8 @@ Intrinsic define (macro string) set by the compiler
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfile __FILE__]]##
-	- ##[[KeyPgDdfunctionnq __FUNCTION_NQ__]]##
-	- ##[[KeyPgDdline __LINE__]]##
+	- ##[[KeyPgDdfile|__FILE__]]##
+	- ##[[KeyPgDdfunctionnq|__FUNCTION_NQ__]]##
+	- ##[[KeyPgDdline|__LINE__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

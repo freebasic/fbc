@@ -2,9 +2,9 @@
 Reads data from a file to a buffer
 
 {{fbdoc item="syntax"}}##
-	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgLong Long]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], [[KeyPgByref ByRef]] //data// [[KeyPgAs As]] [[KeyPgAny Any]] [, [//amount// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]]] [, [[KeyPgByref ByRef]] //bytesread// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]]] ]
-	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgLong Long]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data// [[KeyPgAs As]] [[KeyPgString String]] [, , [[KeyPgByref ByRef]] //bytesread// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]] ]
-	**Get** #//filenum// [[KeyPgAs As]] [[KeyPgLong Long]], [//position// [[KeyPgAs As]] [[KeyPgLongint longint]]], //data()// [[KeyPgAs As]] [[KeyPgAny Any]] [, , [[KeyPgByref ByRef]] //bytesread// [[KeyPgAs As]] [[KeyPgUinteger Uinteger]] ]
+	**Get** #//filenum// [[KeyPgAs|As]] [[KeyPgLong|Long]], [//position// [[KeyPgAs|As]] [[KeyPgLongint|longint]]], [[KeyPgByref|ByRef]] //data// [[KeyPgAs|As]] [[KeyPgAny|Any]] [, [//amount// [[KeyPgAs|As]] [[KeyPgUinteger|Uinteger]]] [, [[KeyPgByref|ByRef]] //bytesread// [[KeyPgAs|As]] [[KeyPgUinteger|Uinteger]]] ]
+	**Get** #//filenum// [[KeyPgAs|As]] [[KeyPgLong|Long]], [//position// [[KeyPgAs|As]] [[KeyPgLongint|longint]]], //data// [[KeyPgAs|As]] [[KeyPgString|String]] [, , [[KeyPgByref|ByRef]] //bytesread// [[KeyPgAs|As]] [[KeyPgUinteger|Uinteger]] ]
+	**Get** #//filenum// [[KeyPgAs|As]] [[KeyPgLong|Long]], [//position// [[KeyPgAs|As]] [[KeyPgLongint|longint]]], //data()// [[KeyPgAs|As]] [[KeyPgAny|Any]] [, , [[KeyPgByref|ByRef]] //bytesread// [[KeyPgAs|As]] [[KeyPgUinteger|Uinteger]] ]
 ##
 {{fbdoc item="usage"}}##
 	**Get** #//filenum//, //position//, //data// [, [//amount//] [, //bytesread// ] ]
@@ -12,29 +12,29 @@ Reads data from a file to a buffer
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		The value passed to ##[[KeyPgOpen Open]]## when the file was opened.
+		The value passed to ##[[KeyPgOpen|Open]]## when the file was opened.
 	##//position//##
-		The position where the read must start. If the file was opened ##[[KeyPgRandom For Random]]##, the position is in records; otherwise, it is in bytes. If omitted, reading starts at the present file pointer position.  The position is 1-based: i.e. first record or byte of a file is at position ##1##.
+		The position where the read must start. If the file was opened ##[[KeyPgRandom|For Random]]##, the position is in records; otherwise, it is in bytes. If omitted, reading starts at the present file pointer position.  The position is 1-based: i.e. first record or byte of a file is at position ##1##.
 		If ##//position//## is omitted or zero (##0##), file reading will start from the current file position.
 	##//data//##
-		The buffer where data is written. It can be a numeric variable, a string, an array, a user defined type or a dereferenced pointer. The read operation will try to fill completely the variable, unless the ##[[KeyPgEof EOF]]## is reached.
+		The buffer where data is written. It can be a numeric variable, a string, an array, a user defined type or a dereferenced pointer. The read operation will try to fill completely the variable, unless the ##[[KeyPgEof|EOF]]## is reached.
 		When getting arrays, ##//data//## should be followed by an empty pair of brackets: "##()##".  ##**Get**## will read data for all of the values in the array.  ##//amount//## is not allowed.
-		When getting ##[[KeyPgString String]]##s, the number of bytes read is the same as the number of bytes in the string data. ##//amount//## is not allowed.
-		Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer. (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf Operator * (Value of)]]##.) If you pass a pointer directly, then ##**Get**## will overwrite the pointer variable, not the memory it points to.
+		When getting ##[[KeyPgString|String]]##s, the number of bytes read is the same as the number of bytes in the string data. ##//amount//## is not allowed.
+		Note: If you want to read values into a buffer, you should NOT pass a pointer to the buffer; instead you should pass the first variable in the buffer. (This can be done by dereferencing the pointer with ##[[KeyPgOpValueOf|Operator * (Value of)]]##.) If you pass a pointer directly, then ##**Get**## will overwrite the pointer variable, not the memory it points to.
 	##//amount//##
-		Makes ##**Get**## read ##//amount//## consecutive variables from file to memory, i.e. it reads ##(//amount// * [[KeyPgSizeof Sizeof]](//data//) )## bytes of data from file into the memory starting at ##//data//##'s memory location.  If ##//amount//## is omitted it defaults to ##1##, meaning that ##**Get**## just reads a single variable.
+		Makes ##**Get**## read ##//amount//## consecutive variables from file to memory, i.e. it reads ##(//amount// * [[KeyPgSizeof|Sizeof]](//data//) )## bytes of data from file into the memory starting at ##//data//##'s memory location.  If ##//amount//## is omitted it defaults to ##1##, meaning that ##**Get**## just reads a single variable.
 	##//bytesread//##
 		An unsigned integer variable to accept the result of the number of bytes read successfully from the file.
 
 {{fbdoc item="ret"}}
-	Zero (##0##) on success; non-zero on error. Note: if ##[[KeyPgEof EOF]]## (end of file) is reached while reading, ##**Get**## will return success.  The amount of bytes actually read can be checked by passing a ##//bytesread//## variable.
+	Zero (##0##) on success; non-zero on error. Note: if ##[[KeyPgEof|EOF]]## (end of file) is reached while reading, ##**Get**## will return success.  The amount of bytes actually read can be checked by passing a ##//bytesread//## variable.
 
 {{fbdoc item="desc"}}
 	Reads binary data from a file to a buffer variable
 
 	##**Get**## can be used as a function, and will return ##0## on success or an error code on failure.	
 
-	For files opened in ##[[KeyPgRandom Random]]## mode, the size in bytes of the data to read must match the specified record size.
+	For files opened in ##[[KeyPgRandom|Random]]## mode, the size in bytes of the data to read must match the specified record size.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/get.bas"}}%%(freebasic)
@@ -141,13 +141,13 @@ Print ExampleStr
 	- FB allows the ##//bytesread//## parameter, to check how many bytes have been successfully read in.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgGetgraphics Get (Graphics)]]## different usage of same keyword 
-	- ##[[KeyPgPutfileio Put (File I/O)]]##
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgClose Close]]##
-	- ##[[KeyPgBinary Binary]]##
-	- ##[[KeyPgRandom Random]]##
-	- ##[[KeyPgFreefile Freefile]]##
-	- ##[[ProPgFileIO File I/O methods comparison]]##
+	- ##[[KeyPgGetgraphics|Get (Graphics)]]## different usage of same keyword 
+	- ##[[KeyPgPutfileio|Put (File I/O)]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgClose|Close]]##
+	- ##[[KeyPgBinary|Binary]]##
+	- ##[[KeyPgRandom|Random]]##
+	- ##[[KeyPgFreefile|Freefile]]##
+	- ##[[ProPgFileIO|File I/O methods comparison]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -6,11 +6,11 @@ The DOS version of FB is typically compiled on a 32bit Windows system with DJGPP
 
 {{fbdoc item="subsect" value="Getting the FB source code"}}
 
-To compile a new version of FB, you first need to [[DevGettingTheSourceCode get the FB source code]]. The following assumes that you have a directory called ##fbcdos##, containing the latest FB source code. Naming it ##fbcdos## is convenient as it avoids conflicts in case you also have an ##fbc## directory for building the Windows version of FB.
+To compile a new version of FB, you first need to [[DevGettingTheSourceCode|get the FB source code]]. The following assumes that you have a directory called ##fbcdos##, containing the latest FB source code. Naming it ##fbcdos## is convenient as it avoids conflicts in case you also have an ##fbc## directory for building the Windows version of FB.
 
 {{fbdoc item="subsect" value="Installing DJGPP"}}
 
-To install DJGPP, we need to download several packages which can be found on the [[http://www.delorie.com/djgpp/getting.html DJGPP homepage]]. FB needs djdev204.zip from the ##[[http://www.delorie.com/pub/djgpp/beta/v2/ beta/v2/]]## directory, and several others from the ##[[http://www.delorie.com/pub/djgpp/beta/v2gnu/ beta/v2gnu/]]## directory. If anything is missing from there, you can also look into the ##[[http://www.delorie.com/pub/djgpp/current/v2gnu/ current/v2gnu/]]## directory. The following packages are needed:
+To install DJGPP, we need to download several packages which can be found on the [[http://www.delorie.com/djgpp/getting.html|DJGPP homepage]]. FB needs djdev204.zip from the ##[[http://www.delorie.com/pub/djgpp/beta/v2/|beta/v2/]]## directory, and several others from the ##[[http://www.delorie.com/pub/djgpp/beta/v2gnu/|beta/v2gnu/]]## directory. If anything is missing from there, you can also look into the ##[[http://www.delorie.com/pub/djgpp/current/v2gnu/|current/v2gnu/]]## directory. The following packages are needed:
 
 	- ##binutils## (##bnu*b.zip##)
 	- ##bash## (##bsh*.zip##)
@@ -37,11 +37,11 @@ In the end, you should be able to open a command prompt with ##""C:\DJGPP\bin""#
 
 {{fbdoc item="subsect" value="Getting an existing FB setup for bootstrapping"}}
 
-We will need a working FB-dos installation to bootstrap the new FB compiler. If you do not have FB-dos installed yet, download the latest ""FreeBASIC-X.XX.X-dos"" release from [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20DOS/ FB's download site]]. It should be extracted somewhere like ##""C:\FreeBASIC-X.XX.X-dos""##.
+We will need a working FB-dos installation to bootstrap the new FB compiler. If you do not have FB-dos installed yet, download the latest ""FreeBASIC-X.XX.X-dos"" release from [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20DOS/|FB's download site]]. It should be extracted somewhere like ##""C:\FreeBASIC-X.XX.X-dos""##.
 
 {{fbdoc item="subsect" value="Building the new FB setup"}}
 
-If you want to create a [[DevNormalVsStandalone traditional standalone]] FB-dos setup like the one from the ##FreeBASIC-X.XX.X-dos## release package, you need to tell FB's makefile by setting the ENABLE_STANDALONE variable. Assuming the FB sources are located at ##""C:\fbcdos""##, create a ##""C:\fbcdos\config.mk""## file containing the following:
+If you want to create a [[DevNormalVsStandalone|traditional standalone]] FB-dos setup like the one from the ##FreeBASIC-X.XX.X-dos## release package, you need to tell FB's makefile by setting the ENABLE_STANDALONE variable. Assuming the FB sources are located at ##""C:\fbcdos""##, create a ##""C:\fbcdos\config.mk""## file containing the following:
 
 %%ENABLE_STANDALONE = 1
 %%
@@ -85,7 +85,7 @@ If you rebuild it in the future (e.g. after updates to the FB source code from G
 
 {{fbdoc item="subsect" value="Getting an existing FB setup for bootstrapping"}}
 
-We will need a working fbc installation to bootstrap the new FB compiler. If you do not have fbc installed yet, download the latest ""fbcXXXXb"" package from [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20DOS/ FB's download site]], and extract it into the DJGPP directory (##C:\DJGPP##) like a DJGPP package. This will add a working fbc to your DJGPP installation.
+We will need a working fbc installation to bootstrap the new FB compiler. If you do not have fbc installed yet, download the latest ""fbcXXXXb"" package from [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20DOS/|FB's download site]], and extract it into the DJGPP directory (##C:\DJGPP##) like a DJGPP package. This will add a working fbc to your DJGPP installation.
 
 {{fbdoc item="subsect" value="Building the new FB setup"}}
 

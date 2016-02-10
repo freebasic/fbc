@@ -38,8 +38,8 @@ When built from source, ""FreeBASIC"" can be configured for and installed in one
 	- looks for its own libraries in ##lib/freebasic/## instead of ##lib/##, to cleanly separate FB libraries from system libraries
 	- looks for binutils/gcc 1) in ##bin/## and 2) by relying on ##PATH##
 	- looks for crt/gcc libraries 1) in ##lib/freebasic/## and 2) by running "##gcc -print-file-name=...##"
-	- ##[[CompilerOpttarget -target]]## option accepts system triplets such as "##i686-pc-linux-gnu##" or "##x86_64-w64-mingw32##"
-	- the target name given to the ##[[CompilerOpttarget -target]]## option is prepended to the gcc/binutils program names when cross-compiling
+	- ##[[CompilerOpttarget|-target]]## option accepts system triplets such as "##i686-pc-linux-gnu##" or "##x86_64-w64-mingw32##"
+	- the target name given to the ##[[CompilerOpttarget|-target]]## option is prepended to the gcc/binutils program names when cross-compiling
 	- compatible with the standard ##/usr## or ##/usr/local## directories
 	- typically used for the FB-linux release
 	- uses ##windres## from binutils to compile win32 resource scripts
@@ -53,7 +53,7 @@ This makes the normal FB build integrate with GNU/Linux distributions and other 
 	- looks for libraries in ##lib/##, not in ##lib/freebasic/##
 	- does not try to rely on ##PATH## and use system tools
 	- does not try to query gcc to find files
-	- ##[[CompilerOpttarget -target]]## only accepts simple FB target names, no system triplets
+	- ##[[CompilerOpttarget|-target]]## only accepts simple FB target names, no system triplets
 	- typically used for the FB-dos and FB-win32 releases
 	- uses ""GoRC"" to compile win32 resource scripts
 

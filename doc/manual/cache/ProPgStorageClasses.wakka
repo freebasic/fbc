@@ -9,7 +9,7 @@ A variable, object or array's storage class determines when and where memory is 
 	
 	//Automatic// entities are guaranteed to have unique storage for each instance of the block in which they are declared. For example, the //automatic// variables declared within a procedure will be allocated at different addresses and have unique state (value) for each call to the procedure.
 	
-	//Automatic// variables, objects and arrays are defined using the ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]## and ##[[KeyPgVar Var]]## keywords without the ##[[KeyPgShared Shared]]## specifier.
+	//Automatic// variables, objects and arrays are defined using the ##[[KeyPgDim|Dim]]##, ##[[KeyPgRedim|Redim]]## and ##[[KeyPgVar|Var]]## keywords without the ##[[KeyPgShared|Shared]]## specifier.
 
 	The memory for //automatic// variables, objects and arrays is allocated on the program stack.
 	
@@ -21,22 +21,22 @@ A variable, object or array's storage class determines when and where memory is 
 	
 	//Static// entities are guaranteed to have the same storage for each instance of the block in which they are declared. For example, the //static// variables declared within a procedure will be allocated at the same address, and retain their state (value) across each call to the procedure.
 	
-	//Static// variables, objects and arrays are declared using the ##[[KeyPgStatic Static]]## keyword. Entities declared using the ##[[KeyPgShared Shared]]## specifier are implicitly //static//. All entities declared within a procedure that is declared using the ##[[KeyPgStatic Static]]## specifier are also implicitly //static//.
+	//Static// variables, objects and arrays are declared using the ##[[KeyPgStatic|Static]]## keyword. Entities declared using the ##[[KeyPgShared|Shared]]## specifier are implicitly //static//. All entities declared within a procedure that is declared using the ##[[KeyPgStatic|Static]]## specifier are also implicitly //static//.
 	
 	The memory for //static// variables, objects and arrays is allocated in the ##.BSS## section of the executable, or in the ##.DATA## section if they are initialized when defined. //Static// variable-length arrays must be declared empty, with an empty subscript range list; their element data is still allocated in the free store (when they are resized), but the internal array data is allocated in the ##.DATA## section of the executable to allow the element data to persist throughout program execution.
 	
-	//Static// variables, objects and arrays have internal linkage by default, unless previously declared using the ##[[KeyPgExtern Extern]]## or ##[[KeyPgCommon Common]]## keywords.
+	//Static// variables, objects and arrays have internal linkage by default, unless previously declared using the ##[[KeyPgExtern|Extern]]## or ##[[KeyPgCommon|Common]]## keywords.
 
 {{fbdoc item="target"}}
-	-  In DOS and Windows platforms, the size of the program stack can be adjusted at compile-time using the ##//-t//## [[CompilerCmdLine command-line switch]]. In Linux platforms, the size of the program stack can be adjusted at load-time by modifying ##/etc/security/limits.conf##, or on a per-thread basis using the shell builtin ##ulimit##.
+	-  In DOS and Windows platforms, the size of the program stack can be adjusted at compile-time using the ##//-t//## [[CompilerCmdLine|command-line switch]]. In Linux platforms, the size of the program stack can be adjusted at load-time by modifying ##/etc/security/limits.conf##, or on a per-thread basis using the shell builtin ##ulimit##.
 
 {{fbdoc item="diff"}}
 	- ""QuickBASIC"" allows //static// entities to be declared within procedures and ##DEF FN## routines only.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgExtern Extern]]##, ##[[KeyPgCommon Common]]##
-	- ##[[KeyPgDim Dim]]##, ##[[KeyPgRedim Redim]]##, ##[[KeyPgVar Var]]##, ##[[KeyPgShared Shared]]##
-	- ##[[KeyPgStatic Static]]##
-	- [[ProPgVarProcLinkage Linkage]]
+	- ##[[KeyPgExtern|Extern]]##, ##[[KeyPgCommon|Common]]##
+	- ##[[KeyPgDim|Dim]]##, ##[[KeyPgRedim|Redim]]##, ##[[KeyPgVar|Var]]##, ##[[KeyPgShared|Shared]]##
+	- ##[[KeyPgStatic|Static]]##
+	- [[ProPgVarProcLinkage|Linkage]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

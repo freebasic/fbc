@@ -9,11 +9,11 @@ Provides ""QuickBASIC"" or backward compatibility
 		The dialect to use in compilation, one of ##**fb**## (default), ##**fblite**##, ##**qb**## or ##**deprecated**##.
 
 {{fbdoc item="desc"}}
-	The ##-forcelang## compiler option changes the way source code is interpreted, and is meant as a tool to users wanting traditional ""QuickBASIC""-like behavior, or behavior deprecated from previous versions of ""FreeBASIC"".  It overrides any ##[[KeyPgPplang #lang]]## statements within the code.
+	The ##-forcelang## compiler option changes the way source code is interpreted, and is meant as a tool to users wanting traditional ""QuickBASIC""-like behavior, or behavior deprecated from previous versions of ""FreeBASIC"".  It overrides any ##[[KeyPgPplang|#lang]]## statements within the code.
 
-	The intrinsic macro ##[[KeyPgDdfblang __FB_LANG__]]## is set to the string name of the dialect specified on the command line, or ##"fb"## by default.
+	The intrinsic macro ##[[KeyPgDdfblang|__FB_LANG__]]## is set to the string name of the dialect specified on the command line, or ##"fb"## by default.
 
-	To learn more about the differences between each of these language dialects, see [[CompilerDialects Compiler Dialects]].
+	To learn more about the differences between each of these language dialects, see [[CompilerDialects|Compiler Dialects]].
 
 	{{fbdoc item="subsect" value="fb"}}
 	
@@ -32,10 +32,10 @@ Provides ""QuickBASIC"" or backward compatibility
 		This dialect is for backward compatibility with some previous versions of ""FreeBASIC"", however, this dialect may not exist in future versions.  Programmers should consider using the "fblite" dialect instead.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPplang #lang]]##
-	- ##[[KeyPgDdfblang __FB_LANG__]]##
-	- [[CompilerOptlang Compiler Option: -lang]]
-	- [[CompilerDialects Compiler Dialects]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- ##[[KeyPgPplang|#lang]]##
+	- ##[[KeyPgDdfblang|__FB_LANG__]]##
+	- [[CompilerOptlang|Compiler Option: -lang]]
+	- [[CompilerDialects|Compiler Dialects]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

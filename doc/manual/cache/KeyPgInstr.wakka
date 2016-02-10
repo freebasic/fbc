@@ -2,10 +2,10 @@
 Locates the first occurrence of a substring or character within a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instr** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]],  [ **Any** ] [[KeyPgByref byref]] //substring// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instr** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]], [ **Any** ] [[KeyPgByref byref]] //substring// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instr** ( [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [ **Any** ] [[KeyPgByref byref]] //substring// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instr** ( [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]], [ **Any** ] [[KeyPgByref byref]] //substring// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Instr** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]],  [ **Any** ] [[KeyPgByref|byref]] //substring// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Instr** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]], [ **Any** ] [[KeyPgByref|byref]] //substring// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Instr** ( [[KeyPgByval|byval]] //start// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [ **Any** ] [[KeyPgByref|byref]] //substring// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Instr** ( [[KeyPgByval|byval]] //start// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]], [ **Any** ] [[KeyPgByref|byref]] //substring// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 ##
 {{fbdoc item="usage"}}##
 	//first// = **Instr**( [ //start//, ] //str//, [ **Any** ] //substring// )
@@ -64,7 +64,7 @@ print instr(text,"&#1077;&#1090;") ' displays 5
 	- QB does not support Unicode.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInstrrev Instrrev]]##
-	- ##[[KeyPgMidfunction Mid (Function)]]##
+	- ##[[KeyPgInstrrev|Instrrev]]##
+	- ##[[KeyPgMidfunction|Mid (Function)]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

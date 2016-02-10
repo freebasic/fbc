@@ -2,8 +2,8 @@
 Locates the last occurrence of a substring or character within a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instrrev** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [ **Any** ] [[KeyPgByref byref]] //substring// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Instrrev** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]], [ **Any** ] [[KeyPgByref byref]] //substring// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]], [[KeyPgByval byval]] //start// [[KeyPgAs as]] [[KeyPgInteger integer]] = -1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Instrrev** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [ **Any** ] [[KeyPgByref|byref]] //substring// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [[KeyPgByval|byval]] //start// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = -1 ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Instrrev** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]], [ **Any** ] [[KeyPgByref|byref]] //substring// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]], [[KeyPgByval|byval]] //start// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = -1 ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 ##
 {{fbdoc item="usage"}}##
 	//last// = **Instrrev**( //str//, [ **Any** ] //substring// [, //start// ]  )
@@ -56,13 +56,13 @@ print instrrev(text,"&#1077;&#1090;") ' displays 5
 	- The wide-character string version of ##**Instrrev**## is not supported for DOS target.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Instrrev""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Instrrev""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInstr Instr]]##
-	- ##[[KeyPgMidfunction Mid (Function)]]##
+	- ##[[KeyPgInstr|Instr]]##
+	- ##[[KeyPgMidfunction|Mid (Function)]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

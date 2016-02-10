@@ -12,12 +12,12 @@ Add a preprocessor definition
 		Value to give to the macro.  If omitted, it will be defined as 1
 
 {{fbdoc item="desc"}}
-	The ##-d## compiler option adds a preprocessor macro to all source files. The same as using the preprocessor directive ##[[KeyPgPpdefine #define]]## or ##[[KeyPgPpmacro #macro]]##.
+	The ##-d## compiler option adds a preprocessor macro to all source files. The same as using the preprocessor directive ##[[KeyPgPpdefine|#define]]## or ##[[KeyPgPpmacro|#macro]]##.
 
 {{fbdoc item="see"}}
-	- [[KeyPgPpdefine #define]]
-	- [[KeyPgPpmacro #macro]]
-	- [[CatPgDddefines Intrinsic Defines]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[KeyPgPpdefine|#define]]
+	- [[KeyPgPpmacro|#macro]]
+	- [[CatPgDddefines|Intrinsic Defines]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

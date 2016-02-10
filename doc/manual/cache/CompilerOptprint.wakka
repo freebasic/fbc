@@ -12,7 +12,7 @@ Print out information
 	{{table columns="2" cellpadding="1" cells="option;effect;host;Prints the host system on which fbc is running;target;Prints the target system for which fbc is compiling (can be affected by the -target option);x;Prints the file name of the output executable or library that fbc will or would generate (named after the -x option), depending on other command line options"}}
 
 {{fbdoc item="ex"}}
-	A [[http://en.wikipedia.org/wiki/Make_(software) makefile]] could use ##target := $(shell $(FBC) -print target)## to find out the compilation target, which would even work when cross-compiling, with ##FBC## set to something like ##fbc -target foo##.
+	A [[http://en.wikipedia.org/wiki/Make_(software)|makefile]] could use ##target := $(shell $(FBC) -print target)## to find out the compilation target, which would even work when cross-compiling, with ##FBC## set to something like ##fbc -target foo##.
 	
 	##fbc -print x## alone will print out the executable file extension for the target system.
 	##fbc -print x -dll## on the other hand will print out the dynamic library file name format.
@@ -20,8 +20,8 @@ Print out information
 	##fbc 1.bas 2.bas -lib -print x## will compile 1.bas and 2.bas into a library, whose file name will be displayed.
 
 {{fbdoc item="see"}}
-	- [[CompilerOptx -x]]
-	- [[CompilerOpttarget -target]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerOptx|-x]]
+	- [[CompilerOpttarget|-target]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

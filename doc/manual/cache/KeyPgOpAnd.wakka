@@ -2,7 +2,7 @@
 Returns the bitwise-and (conjunction) of two numeric values
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **And** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T1//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// ) [[KeyPgAs as]] //Ret//
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **And** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T1//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T2// ) [[KeyPgAs|as]] //Ret//
 ##
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **And** //rhs//
@@ -31,7 +31,7 @@ Returns the bitwise-and (conjunction) of two numeric values
 
 	No short-circuiting is performed - both expressions are always evaluated.
 	
-	The return type depends on the types of values passed. ##[[KeyPgByte Byte]]##, ##[[KeyPgUbyte Ubyte]]## and floating-point type values are first converted to ##[[KeyPgInteger Integer]]##. If the left and right-hand side types differ only in signedness, then the return type is the same as the left-hand side type (##//T1//##), otherwise, the larger of the two types is returned. Only if the left and right-hand side types are both ##[[KeyPgBoolean Boolean]]##, the return type is also ##[[KeyPgBoolean Boolean]]##.
+	The return type depends on the types of values passed. ##[[KeyPgByte|Byte]]##, ##[[KeyPgUbyte|Ubyte]]## and floating-point type values are first converted to ##[[KeyPgInteger|Integer]]##. If the left and right-hand side types differ only in signedness, then the return type is the same as the left-hand side type (##//T1//##), otherwise, the larger of the two types is returned. Only if the left and right-hand side types are both ##[[KeyPgBoolean|Boolean]]##, the return type is also ##[[KeyPgBoolean|Boolean]]##.
 
 	This operator can be overloaded for user-defined types.
 
@@ -64,13 +64,13 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpAndAlso AndAlso]]##
-	- [[TblTruth Operator Truth Tables]]
+	- ##[[KeyPgOpAndAlso|AndAlso]]##
+	- [[TblTruth|Operator Truth Tables]]
 
 {{fbdoc item="back" value="CatPgOpLogical|Logical Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

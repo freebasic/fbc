@@ -2,12 +2,12 @@
 Returns the bitwise-not (complement) of a numeric value
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Not** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgByte byte]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Not** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Not** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Not** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Not** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgByte|byte]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Not** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Not** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Not** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Not** ( [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T// ) [[KeyPgAs as]] //T//
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Not** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T// ) [[KeyPgAs|as]] //T//
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Not** //rhs//
@@ -58,12 +58,12 @@ IF NOT numeric_value2 = 25 THEN PRINT "Numeric_Value2 is not equal to 25"
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- [[TblTruth Operator Truth Tables]]
+	- [[TblTruth|Operator Truth Tables]]
 
 {{fbdoc item="back" value="CatPgOpLogical|Logical Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

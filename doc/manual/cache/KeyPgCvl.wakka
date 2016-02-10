@@ -1,9 +1,9 @@
 {{fbdoc item="title" value="CVL"}}----
-Converts a single-precision floating-point number or four-byte string to an integer (##[[KeyPgLong long]]##) variable
+Converts a single-precision floating-point number or four-byte string to an integer (##[[KeyPgLong|long]]##) variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvl** ( [[KeyPgByval byval]] //sng// [[KeyPgAs as]] [[KeyPgSingle single]] ) [[KeyPgAs as]] [[KeyPgLong long]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cvl** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cvl** ( [[KeyPgByval|byval]] //sng// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cvl** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Cvl**( //sng// )
@@ -11,19 +11,19 @@ Converts a single-precision floating-point number or four-byte string to an inte
 ##
 {{fbdoc item="param"}}
 	##//sng//##
-		A ##[[KeyPgSingle Single]]## floating-point number with a binary copy of an integer variable stored in it.
+		A ##[[KeyPgSingle|Single]]## floating-point number with a binary copy of an integer variable stored in it.
 	##//str//##
-		A ##[[KeyPgString String]]## at least four bytes in length with a binary copy of an integer variable stored in it.
+		A ##[[KeyPgString|String]]## at least four bytes in length with a binary copy of an integer variable stored in it.
 
 {{fbdoc item="ret"}}
-		A ##[[KeyPgLong long]]## variable to copy the binary copy of a integer to.
+		A ##[[KeyPgLong|long]]## variable to copy the binary copy of a integer to.
 
 {{fbdoc item="desc"}}
-	Returns a 32-bit ##[[KeyPgLong Long]]## integer value using the binary data contained in a ##[[KeyPgSingle Single]]##, or a ##[[KeyPgString String]]## of at least four bytes in length.  A value of zero (##0##) is returned if the string is less than four bytes in length.
+	Returns a 32-bit ##[[KeyPgLong|Long]]## integer value using the binary data contained in a ##[[KeyPgSingle|Single]]##, or a ##[[KeyPgString|String]]## of at least four bytes in length.  A value of zero (##0##) is returned if the string is less than four bytes in length.
 
-	##**Cvl**## is used to convert 4-byte strings created with ##[[KeyPgMkl Mkl]]##.
+	##**Cvl**## is used to convert 4-byte strings created with ##[[KeyPgMkl|Mkl]]##.
 
-	This function can also be used to convert 32-bit integer values from a memory or file buffer without the need for a ##[[KeyPgType Type]]## structure.  However, just as with the type structure, special care should be taken when using ##**Cvl**## to convert strings that have been read from a buffer.
+	This function can also be used to convert 32-bit integer values from a memory or file buffer without the need for a ##[[KeyPgType|Type]]## structure.  However, just as with the type structure, special care should be taken when using ##**Cvl**## to convert strings that have been read from a buffer.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/cvl.bas"}}%%(freebasic)
@@ -39,10 +39,10 @@ print using "l = &"; l
 	- QB did not support floating-point arguments.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgMkl Mkl]]##
-	- ##[[KeyPgCvshort Cvshort]]##
-	- ##[[KeyPgCvi Cvi]]##
-	- ##[[KeyPgCvlongint Cvlongint]]##
+	- ##[[KeyPgMkl|Mkl]]##
+	- ##[[KeyPgCvshort|Cvshort]]##
+	- ##[[KeyPgCvi|Cvi]]##
+	- ##[[KeyPgCvlongint|Cvlongint]]##
 
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

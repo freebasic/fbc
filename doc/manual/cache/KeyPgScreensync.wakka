@@ -2,7 +2,7 @@
 Synchronizes display updates with hardware
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screensync** ( ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Screensync** ( ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Screensync**
@@ -13,11 +13,11 @@ Synchronizes display updates with hardware
 {{fbdoc item="desc"}}
 	This [[GfxLib]] statement stops the execution of the program until the graphics card signals it has ended tracing a frame and is going to start the new one.
 
-	If the program uses this small interval of time between frames to redraw the image, the flickering is greatly reduced. In that use, **Screensync** is a reminiscence of QB where there was only that equivalent method (##[[KeyPgWait WAIT]] &H3DA, 8##) to improve the flickering. It is an empirical method because it only allows to synchronize the beginning of the drawing with the fixed dead time between two frames. To be used occasionally to avoid flickering when only very short time of drawing.
+	If the program uses this small interval of time between frames to redraw the image, the flickering is greatly reduced. In that use, **Screensync** is a reminiscence of QB where there was only that equivalent method (##[[KeyPgWait|WAIT]] &H3DA, 8##) to improve the flickering. It is an empirical method because it only allows to synchronize the beginning of the drawing with the fixed dead time between two frames. To be used occasionally to avoid flickering when only very short time of drawing.
 
-	Except the purpose to reduce the flickering, **Screensync** can be also used simply as a method of synchronization of graphic drawing with the screen frame tracing (similarly to statement ##[[KeyPgSleep Sleep]]##).
+	Except the purpose to reduce the flickering, **Screensync** can be also used simply as a method of synchronization of graphic drawing with the screen frame tracing (similarly to statement ##[[KeyPgSleep|Sleep]]##).
 
-	The use of the QB-compatible form ##[[KeyPgWait WAIT]] &H3DA, 8## is deprecated.
+	The use of the QB-compatible form ##[[KeyPgWait|WAIT]] &H3DA, 8## is deprecated.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screensync.bas"}}%%(freebasic)
@@ -36,13 +36,13 @@ LOOP UNTIL INKEY <> ""
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screensync""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Screensync""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC"". 
-	- QBasic used ##[[KeyPgWait WAIT]] &H3DA, 8## for this purpose.
+	- QBasic used ##[[KeyPgWait|WAIT]] &H3DA, 8## for this purpose.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgWait Wait]]##
+	- ##[[KeyPgWait|Wait]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

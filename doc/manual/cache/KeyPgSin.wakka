@@ -2,7 +2,7 @@
 Returns the sine of an angle
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sin** ( [[KeyPgByval byval]] //angle// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Sin** ( [[KeyPgByval|byval]] //angle// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Sin**( //angle// )
@@ -12,10 +12,10 @@ Returns the sine of an angle
 		the angle (in radians)
 
 {{fbdoc item="ret"}}
-	Returns the sine of the argument ##//angle//## as a ##[[KeyPgDouble Double]]## within the range of ##-1.0## to ##1.0##.
+	Returns the sine of the argument ##//angle//## as a ##[[KeyPgDouble|Double]]## within the range of ##-1.0## to ##1.0##.
 
 {{fbdoc item="desc"}}
-	The argument ##//angle//## is measured in [[TutMathAngles radians]] (not [[TutMathAngles degrees]]).
+	The argument ##//angle//## is measured in [[TutMathAngles|radians]] (not [[TutMathAngles|degrees]]).
 
 	The value returned by this function is undefined for values of ##//angle//## with an absolute value of ##2 ^ 63## or greater.
 
@@ -41,9 +41,9 @@ The sine of a 30 degree angle Is 0.5
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgAsin Asin]]##
-	- ##[[KeyPgCos Cos]]##
-	- ##[[KeyPgTan Tan]]##
-	- [[TutMathIntroTrig A Brief Introduction To Trigonometry]]
+	- ##[[KeyPgAsin|Asin]]##
+	- ##[[KeyPgCos|Cos]]##
+	- ##[[KeyPgTan|Tan]]##
+	- [[TutMathIntroTrig|A Brief Introduction To Trigonometry]]
 
 {{fbdoc item="back" value="CatPgMath|Math"}}

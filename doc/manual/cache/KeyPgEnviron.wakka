@@ -2,7 +2,7 @@
 Returns the value of a system environment variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Environ** ( [[KeyPgByref byref]] //varname// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Environ** ( [[KeyPgByref|byref]] //varname// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Environ**( //varname// )
@@ -25,10 +25,10 @@ print environ("path")
 %%
 
 {{fbdoc item="diff"}}
-	- The ##**ENVIRON**## statement is now called ##[[KeyPgSetenviron Setenviron]]##.
+	- The ##**ENVIRON**## statement is now called ##[[KeyPgSetenviron|Setenviron]]##.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSetenviron Setenviron]]##
-	- ##[[KeyPgShell Shell]]##
+	- ##[[KeyPgSetenviron|Setenviron]]##
+	- ##[[KeyPgShell|Shell]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

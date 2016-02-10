@@ -2,8 +2,8 @@
 Converts a string to a unsigned 64bit integer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valulng** ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Valulng** ( [[KeyPgByref byref]] //strnum// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Valulng** ( [[KeyPgByref|byref]] //strnum// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Valulng** ( [[KeyPgByref|byref]] //strnum// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]] ) [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Valulng** ( //strnum// )
@@ -13,16 +13,16 @@ Converts a string to a unsigned 64bit integer
 		the string to convert
 
 {{fbdoc item="ret"}}
-	Returns a ##[[KeyPgUlongint ulongint]]## of the converted string
+	Returns a ##[[KeyPgUlongint|ulongint]]## of the converted string
 
 	If the first character of the string is invalid, ##**Valulng**## will return ##0##.
 
 {{fbdoc item="desc"}}
 	For example, ##**Valulng**("10")## will return ##10##, and ##**Valulng**("10.60")## will return ##10## as well. The function parses the string from the left, skipping any white space, and returns the longest number it can read, stopping at the first non-suitable character it finds.  Any non-numeric characters, including decimal points and exponent specifiers, are considered non-suitable, for example, ##**Valulng**("23.1E+6")## will just return ##23##.
 
-	##**Valulng**## can be used to convert integer numbers in [[KeyPgBin binary]] / [[KeyPgOct octal]] / [[KeyPgHex hexadecimal]] format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prefixed, for example: ##**Valulng**("&HFF")## returns ##255##.
+	##**Valulng**## can be used to convert integer numbers in [[KeyPgBin|binary]] / [[KeyPgOct|octal]] / [[KeyPgHex|hexadecimal]] format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prefixed, for example: ##**Valulng**("&HFF")## returns ##255##.
 
-	If you want to convert a number into string format, use the ##[[KeyPgStr Str]]## function.
+	If you want to convert a number into string format, use the ##[[KeyPgStr|Str]]## function.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/valulng.bas"}}%%(freebasic)
@@ -38,18 +38,18 @@ print a, b
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Valulng""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Valulng""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCulngint Culngint]]##
-	- ##[[KeyPgVal Val]]##
-	- ##[[KeyPgValuint Valuint]]##
-	- ##[[KeyPgVallng Vallng]]##
-	- ##[[KeyPgStr Str]]##
-	- ##[[KeyPgChr Chr]]##
-	- ##[[KeyPgAsc Asc]]##
+	- ##[[KeyPgCulngint|Culngint]]##
+	- ##[[KeyPgVal|Val]]##
+	- ##[[KeyPgValuint|Valuint]]##
+	- ##[[KeyPgVallng|Vallng]]##
+	- ##[[KeyPgStr|Str]]##
+	- ##[[KeyPgChr|Chr]]##
+	- ##[[KeyPgAsc|Asc]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

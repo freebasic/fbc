@@ -2,13 +2,13 @@
 Returns the current directory/folder
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Curdir** ( ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Curdir** ( ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Curdir**
 ##
 {{fbdoc item="ret"}}
-	A ##[[KeyPgString string]]## which is set to the name of the current directory/folder.
+	A ##[[KeyPgString|string]]## which is set to the name of the current directory/folder.
 
 {{fbdoc item="desc"}}
 	Returns the current directory/folder.
@@ -20,15 +20,15 @@ print curdir
 	output will vary.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Curdir""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Curdir""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgDir Dir]]##
-	- ##[[KeyPgMkdir Mkdir]]##
-	- ##[[KeyPgRmdir Rmdir]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgDir|Dir]]##
+	- ##[[KeyPgMkdir|Mkdir]]##
+	- ##[[KeyPgRmdir|Rmdir]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

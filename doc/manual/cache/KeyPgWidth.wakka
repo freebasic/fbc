@@ -18,7 +18,7 @@ Sets or gets the number of rows and columns of the display
 		device name to apply to
 
 {{fbdoc item="ret"}}
-	Returns a 32 bit ##[[KeyPgLong Long]]## where the [[KeyPgHiword high word]] is the number of rows and the [[KeyPgLoWord low word]] is the number of columns currently set.
+	Returns a 32 bit ##[[KeyPgLong|Long]]## where the [[KeyPgHiword|high word]] is the number of rows and the [[KeyPgLoWord|low word]] is the number of columns currently set.
 
 {{fbdoc item="desc"}}
 	Sets the maximum number of columns of characters of an output device (console, printer or text file). If text sent to the device reaches the width an automatic carriage return is generated.
@@ -27,11 +27,11 @@ Sets or gets the number of rows and columns of the display
 
 	If a device is not given then ##**Width**## takes effect on the active console/graphics screen, and a second argument specifying maximum number of rows is allowed.
 
-	In graphics modes ##**Width**## is used to indirectly select the font size by setting one of the character height * width pairs allowed (See ##[[KeyPgScreengraphics Screen (Graphics)]]##). If  ##//rows//## / ##//cols//## is an invalid combination, no changes are made to the screen display.
+	In graphics modes ##**Width**## is used to indirectly select the font size by setting one of the character height * width pairs allowed (See ##[[KeyPgScreengraphics|Screen (Graphics)]]##). If  ##//rows//## / ##//cols//## is an invalid combination, no changes are made to the screen display.
 	
 	Valid font heights are 8 pixels, 14 pixels and 16 pixels.  The fonts all have a fixed width of 8 pixels.
 
-	Using the ##**Width**## command in graphic mode also forces a screen clear (##[[KeyPgCls Cls]]##).
+	Using the ##**Width**## command in graphic mode also forces a screen clear (##[[KeyPgCls|Cls]]##).
 
 {{fbdoc item="ex"}}
 
@@ -94,9 +94,9 @@ sleep
 	- ##//columns//## was limited to ##40## or ##80##, while ##//rows//## could be ##25##, ##30##, ##43##, ##50## or ##60##, depending on the graphics hardware and screen mode being used.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLoWord Loword]]##
-	- ##[[KeyPgHiword Hiword]]##
-	- ##[[KeyPgCsrlin Csrlin]]##
-	- ##[[KeyPgPos Pos]]##
+	- ##[[KeyPgLoWord|Loword]]##
+	- ##[[KeyPgHiword|Hiword]]##
+	- ##[[KeyPgCsrlin|Csrlin]]##
+	- ##[[KeyPgPos|Pos]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

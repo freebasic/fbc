@@ -2,17 +2,17 @@
 Returns the hexadecimal of the given number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlong ulong]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgConst const]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUbyte ubyte]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUshort ushort]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlong ulong]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hex** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgConst const]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	
 ##
 {{fbdoc item="usage"}}##
@@ -20,21 +20,21 @@ Returns the hexadecimal of the given number
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		A number or expression evaluating to a number.  A floating-point number will be converted to a ##[[KeyPgLongint longint]]##.
+		A number or expression evaluating to a number.  A floating-point number will be converted to a ##[[KeyPgLongint|longint]]##.
 	##//digits//##
 		Optional number of digits to return.
 
 {{fbdoc item="ret"}}
-	A [[KeyPgString string]] containing the unsigned hexadecimal representation of ##//number//##.
+	A [[KeyPgString|string]] containing the unsigned hexadecimal representation of ##//number//##.
 
 {{fbdoc item="desc"}}
 	Returns the unsigned hexadecimal string representation of the integer ##//number//##. Hexadecimal digits range from 0-9, or A-F.
 
 	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
 
-	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (8 for a ##[[KeyPgLong long]]##, 16 for a ##[[KeyPgLongint longint]])##.
+	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (8 for a ##[[KeyPgLong|long]]##, 16 for a ##[[KeyPgLongint|longint]])##.
 
-	If you want to do the opposite, i.e. convert a hexadecimal string back into a number, the easiest way to do it is to prepend the string with ##"&H"##, and convert it to an integer type, using a function like ##[[KeyPgCint Cint]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgCint Cint]]("&HFF")##
+	If you want to do the opposite, i.e. convert a hexadecimal string back into a number, the easiest way to do it is to prepend the string with ##"&H"##, and convert it to an integer type, using a function like ##[[KeyPgCint|Cint]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgCint|Cint]]("&HFF")##
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/hex.bas"}}%%(freebasic)
@@ -51,17 +51,17 @@ Print Hex(54321, 5)
 %%
 
 {{fbdoc item="lang"}}
-	- The string type suffix ##"$"## is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix ##"$"## is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- The string type suffix ##"$"## is obligatory in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- The string type suffix ##"$"## is optional in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- In QBASIC, there was no way to specify the number of digits returned.
 	- The size of the string returned was limited to 32 bits, or 8 hexadecimal digits.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgBin Bin]]##
-	- ##[[KeyPgOct Oct]]##
-	- ##[[KeyPgValint Valint]]##
-	- ##[[KeyPgVallng Vallng]]##
+	- ##[[KeyPgBin|Bin]]##
+	- ##[[KeyPgOct|Oct]]##
+	- ##[[KeyPgValint|Valint]]##
+	- ##[[KeyPgVallng|Vallng]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

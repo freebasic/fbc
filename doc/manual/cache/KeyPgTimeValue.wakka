@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="TIMEVALUE"}}----
-Gets a [[ProPgDates Date Serial]] from a time string
+Gets a [[ProPgDates|Date Serial]] from a time string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""TimeValue""** ( [[KeyPgByref byref]] //timestring// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""TimeValue""** ( [[KeyPgByref|byref]] //timestring// [[KeyPgAs|as]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -13,7 +13,7 @@ Gets a [[ProPgDates Date Serial]] from a time string
 		the string to convert
 
 {{fbdoc item="ret"}}
-	Returns a [[ProPgDates Date Serial]] from a time string.
+	Returns a [[ProPgDates|Date Serial]] from a time string.
 
 {{fbdoc item="desc"}}
 	
@@ -34,9 +34,9 @@ Print Format(ds, "hh:mm:ss")
 	- Did not exist in QB. This function appeared in PDS and VBDOS
 
 {{fbdoc item="see"}}
-	- [[ProPgDates Date Serials]]
-	- ##[[KeyPgDateSerial DateSerial]]##
-	- ##[[KeyPgTimeValue TimeValue]]##
-	- ##[[KeyPgDateValue DateValue]]##
+	- [[ProPgDates|Date Serials]]
+	- ##[[KeyPgDateSerial|DateSerial]]##
+	- ##[[KeyPgTimeValue|TimeValue]]##
+	- ##[[KeyPgDateValue|DateValue]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

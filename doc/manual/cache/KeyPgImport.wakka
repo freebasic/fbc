@@ -2,10 +2,10 @@
 External linkage attribute for public data located in DLL's
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgExtern Extern]] **Import** //symbolname//[( //subscripts//)] [ [[KeyPgAlias alias]] "//aliasname//"] [ [[KeyPgAs as]] [[DataType DataType]]] [, ...]
+	[[KeyPgExtern|Extern]] **Import** //symbolname//[( //subscripts//)] [ [[KeyPgAlias|alias]] "//aliasname//"] [ [[KeyPgAs|as]] [[DataType|DataType]]] [, ...]
 ##
 {{fbdoc item="desc"}}
-	Is used only on Win32 platforms with the ##[[KeyPgExtern Extern]]## keyword and is needed to access global variables in DLLs.  This is due to the level of indirection on any such access: an implicit pointer dereference.
+	Is used only on Win32 platforms with the ##[[KeyPgExtern|Extern]]## keyword and is needed to access global variables in DLLs.  This is due to the level of indirection on any such access: an implicit pointer dereference.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/mydll.c"}}%%(c)
@@ -33,12 +33,12 @@ Print "&h" + Hex( MyDll_Data )
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Import""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Import""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgExtern Extern]]##
+	- ##[[KeyPgExtern|Extern]]##
 
 {{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

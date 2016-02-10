@@ -2,10 +2,10 @@
 Shifts left and assigns a value to a variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Shl=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] )
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Shl=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] )
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Shl=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgLongint longint]] )
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Shl=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgUlongint ulongint]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Shl=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Shl=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Shl=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgLongint|longint]] )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Shl=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] )
 ##
 {{fbdoc item="usage"}}##
 	//lhs// **shl=** //rhs//
@@ -19,7 +19,7 @@ Shifts left and assigns a value to a variable
 {{fbdoc item="desc"}}
 	This operator shifts the bits in its left-hand side (##//lhs//##) parameter a number of times specified by its right-hand side (##//rhs//##) parameter, and assigns the result to ##//lhs//##. It is functionally equivalent to:
 ##
-		//lhs// = //lhs// [[KeyPgOpShiftLeft Shl]] //rhs//
+		//lhs// = //lhs// [[KeyPgOpShiftLeft|Shl]] //rhs//
 ##
 	This operator can be overloaded for user-defined types.
 
@@ -34,14 +34,14 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Shl=""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Shl=""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpShiftLeft Operator Shl (Shift left)]]##
-	- ##[[KeyPgOpCombineShiftRight Operator Shr= (Shift right and Assign)]]##
-	- [[CatPgMath Mathematical Functions]]
+	- ##[[KeyPgOpShiftLeft|Operator Shl (Shift left)]]##
+	- ##[[KeyPgOpCombineShiftRight|Operator Shr= (Shift right and Assign)]]##
+	- [[CatPgMath|Mathematical Functions]]
 	
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

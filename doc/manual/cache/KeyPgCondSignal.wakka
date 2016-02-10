@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="CONDSIGNAL"}}----
-Restarts a thread suspended by a call to ##[[KeyPgCondWait Condwait]]##
+Restarts a thread suspended by a call to ##[[KeyPgCondWait|Condwait]]##
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Condsignal** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Condsignal** ( [[KeyPgByval|byval]] //handle// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**Condsignal** ( //handle// )
@@ -12,12 +12,12 @@ Restarts a thread suspended by a call to ##[[KeyPgCondWait Condwait]]##
 		The handle of a conditional variable, or the null pointer (0) on failure.
 
 {{fbdoc item="desc"}}
-	Once the conditional is created with ##[[KeyPgCondCreate Condcreate]]## and the threads are started, one of more of them (including the main thread executing main program) can be set to ##[[KeyPgCondWait Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
+	Once the conditional is created with ##[[KeyPgCondCreate|Condcreate]]## and the threads are started, one of more of them (including the main thread executing main program) can be set to ##[[KeyPgCondWait|Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal|Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast|Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy|Conddestroy]]## must be used to avoid leaking resources in the OS.
 
-	**Condsignal** restarts one thread waiting. It should be called after ##//mutex//## is locked (using the same ##//mutex//## as one used with ##[[KeyPgCondWait Condwait]]##). If no threads are waiting on the conditional, nothing happens; if several are waiting, only one is restarted. The caller must then unlock ##//mutex//## in order for ##[[KeyPgCondWait Condwait]]## routine to complete.
+	**Condsignal** restarts one thread waiting. It should be called after ##//mutex//## is locked (using the same ##//mutex//## as one used with ##[[KeyPgCondWait|Condwait]]##). If no threads are waiting on the conditional, nothing happens; if several are waiting, only one is restarted. The caller must then unlock ##//mutex//## in order for ##[[KeyPgCondWait|Condwait]]## routine to complete.
 
 {{fbdoc item="ex"}}
-	See also ##[[KeyPgCondCreate Condcreate]]## and ##[[KeyPgCondWait Condwait]]##
+	See also ##[[KeyPgCondCreate|Condcreate]]## and ##[[KeyPgCondWait|Condwait]]##
 
 {{fbdoc item="filename" value="examples/manual/threads/condsignal.bas"}}%%(freebasic)
 ' This very simple example code demonstrates the use of several condition variable routines.
@@ -77,7 +77,7 @@ CondDestroy(cond)
 %%
 
 {{fbdoc item="lang"}}
-	- Threading is not allowed in //[[CompilerOptlang -lang qb]]//
+	- Threading is not allowed in //[[CompilerOptlang|-lang qb]]//
 
 {{fbdoc item="target"}}
 	- **Condsignal** is not available with the DOS version / target of FreeBASIC, because multithreading is not supported by DOS kernel nor the used extender.
@@ -87,10 +87,10 @@ CondDestroy(cond)
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCondCreate Condcreate]]##
-	- ##[[KeyPgCondDestroy Conddestroy]]##
-	- ##[[KeyPgCondBroadcast Condbroadcast]]##
-	- ##[[KeyPgCondWait Condwait]]##
-	- ##[[KeyPgThreadCreate Threadcreate]]##
+	- ##[[KeyPgCondCreate|Condcreate]]##
+	- ##[[KeyPgCondDestroy|Conddestroy]]##
+	- ##[[KeyPgCondBroadcast|Condbroadcast]]##
+	- ##[[KeyPgCondWait|Condwait]]##
+	- ##[[KeyPgThreadCreate|Threadcreate]]##
 
 {{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

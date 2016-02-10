@@ -2,7 +2,7 @@
 Gets the value of an integer with a specified bit cleared.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **Bitreset**( //value//, //bit_number// ) ((//value//) [[KeyPgOpAnd and]] [[KeyPgOpNot not]] ([[KeyPgCast Cast]]([[KeyPgTypeof TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft shl]] (//bit_number//)))
+	[[KeyPgPpdefine|#define]] **Bitreset**( //value//, //bit_number// ) ((//value//) [[KeyPgOpAnd|and]] [[KeyPgOpNot|not]] ([[KeyPgCast|Cast]]([[KeyPgTypeof|TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft|shl]] (//bit_number//)))
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Bitreset**( //value//, //bit_number// )
@@ -17,9 +17,9 @@ Gets the value of an integer with a specified bit cleared.
 	Returns the integer value with the specified bit cleared.
 
 {{fbdoc item="desc"}}
-	This macro expands to a copy of the integer ##//value//## with the specified ##//bit_number//## cleared (to //off//, or `##0##`). Behaves as `##//value// [[KeyPgOpAnd And]] [[KeyPgOpNot Not]] (1 [[KeyPgOpShiftLeft Shl]] //bit_number//)##`.
+	This macro expands to a copy of the integer ##//value//## with the specified ##//bit_number//## cleared (to //off//, or `##0##`). Behaves as `##//value// [[KeyPgOpAnd|And]] [[KeyPgOpNot|Not]] (1 [[KeyPgOpShiftLeft|Shl]] //bit_number//)##`.
 
-	The valid range of values for ##//bit_number//## depends on the size, in bits, of `##[[KeyPgTypeof Typeof]](//value//)##`, which is `##0##` through `##[[KeyPgSizeof Sizeof]](//value//) * 8 - 1##`. See [[TblVarTypes Standard Datatype Limits]] for a table of the standard datatypes and their sizes.
+	The valid range of values for ##//bit_number//## depends on the size, in bits, of `##[[KeyPgTypeof|Typeof]](//value//)##`, which is `##0##` through `##[[KeyPgSizeof|Sizeof]](//value//) * 8 - 1##`. See [[TblVarTypes|Standard Datatype Limits]] for a table of the standard datatypes and their sizes.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/bitreset.bas"}}%%(freebasic)
@@ -33,13 +33,13 @@ print hex(bitreset(&h8000000000000001,63))
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Bitreset""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Bitreset""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgBit Bit]]##
-	- ##[[KeyPgBitset Bitset]]##
+	- ##[[KeyPgBit|Bit]]##
+	- ##[[KeyPgBitset|Bitset]]##
 	
 {{fbdoc item="back" value="CatPgBits|Bit Manipulation"}}

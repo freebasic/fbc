@@ -57,6 +57,6 @@ Built-in data types
 >>::c::
 
 {{fbdoc item="see"}}
-	- [[TblVarTypes Variable types and limits]]
+	- [[TblVarTypes|Variable types and limits]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

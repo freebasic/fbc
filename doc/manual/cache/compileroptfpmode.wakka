@@ -15,13 +15,13 @@ Selects faster, less accurate or slower, more precise floating-point math.
 
 	##-fpmode PRECISE## will generate standard floating point instructions that operate at the default speed and accuracy of the selected floating point unit.
 
-	Currently, the only floating point operations that behave differently when using ##-fpmode FAST## are: ##[[KeyPgSin sin]]()##, ##[[KeyPgCos cos]]()##, reciprocal, and reciprocal [[KeyPgSqr square root]], all of which must operate on ##[[KeyPgSingle Single]]## precision values.
+	Currently, the only floating point operations that behave differently when using ##-fpmode FAST## are: ##[[KeyPgSin|sin]]()##, ##[[KeyPgCos|cos]]()##, reciprocal, and reciprocal [[KeyPgSqr|square root]], all of which must operate on ##[[KeyPgSingle|Single]]## precision values.
 
-	Using ##-fpmode PRECISE## is dependent on the ##[[CompilerOptfpu -fpu SSE]]## command line option. Using ##-fpmode PRECISE## without using ##[[CompilerOptfpu -fpu SSE]]## will generate an error.
+	Using ##-fpmode PRECISE## is dependent on the ##[[CompilerOptfpu|-fpu SSE]]## command line option. Using ##-fpmode PRECISE## without using ##[[CompilerOptfpu|-fpu SSE]]## will generate an error.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
-	- [[CompilerOptfpu Compiler Option: -fpu]]
-	- ##[[KeyPgDdfbfpmode __FB_FPMODE__]]##
+	- [[CompilerCmdLine|Using the Command Line]]
+	- [[CompilerOptfpu|Compiler Option: -fpu]]
+	- ##[[KeyPgDdfbfpmode|__FB_FPMODE__]]##
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

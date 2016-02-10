@@ -28,8 +28,8 @@ Address of MYSUB is 4012D0
 	- Did not exist in QB
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfilenq __FILE_NQ__]]##
-	- ##[[KeyPgDdfunction __FUNCTION__]]##
-	- ##[[KeyPgDdline __LINE__]]##
+	- ##[[KeyPgDdfilenq|__FILE_NQ__]]##
+	- ##[[KeyPgDdfunction|__FUNCTION__]]##
+	- ##[[KeyPgDdline|__LINE__]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

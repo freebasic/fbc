@@ -38,15 +38,15 @@ Chronology of the ""FreeBASIC"" project.
 
 	**2004 December 31**
 		- Version 0.09 released
-		- Linux port added by [[LilloWiki Angelo Mottola]]
+		- Linux port added by [[LilloWiki|Angelo Mottola]]
 	
 	**2005 January 8**
 		- Version 0.10 released
 
 	**2005 January 31**
 		- Version 0.11 released
-		- Improved ""GFXLib2"" by [[LilloWiki Angelo Mottola]] replaced the original SDL-based gfxlib by Sterling Christensen
-		- DOS port added by [[DrV Daniel R. Verkamp]]
+		- Improved ""GFXLib2"" by [[LilloWiki|Angelo Mottola]] replaced the original SDL-based gfxlib by Sterling Christensen
+		- DOS port added by [[DrV|Daniel R. Verkamp]]
 	
 	**2005 March 4**
 		- Version 0.12 released
@@ -74,14 +74,14 @@ Chronology of the ""FreeBASIC"" project.
 
 	**2006 July 30** 
 		- First 0.17 "testing" version
-		- addition of ##[[KeyPgPpmacro macro]]## support, which would be later used in the compiler itself
+		- addition of ##[[KeyPgPpmacro|macro]]## support, which would be later used in the compiler itself
 	
 	**2006 August 1**
 		- DOS graphics bug fixed (worked never before), "unofficial" patch provided
 	
 	**2006 September - December**
 		- Heavy changes in ""FreeBASIC"", neither "stable" nor "testing" releases
-		- introduced [[CompilerDialects compiler dialects]]  //qb//, //deprecated//, and //fb//, along with a new //-lang// compiler switch (no //fblite// dialect yet)
+		- introduced [[CompilerDialects|compiler dialects]]  //qb//, //deprecated//, and //fb//, along with a new //-lang// compiler switch (no //fblite// dialect yet)
 		- beginnings of OOP
 		- Introduction of the BFD library from the GNU binutils, providing additional link-time information in libraries.
 	

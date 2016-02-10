@@ -28,8 +28,8 @@ Dim baz(0 To 4) As Integer  ' declares an array with indices 0-4
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
-	- In //[[CompilerOptlang -lang fb]]//, ##**Option Base**## is not allowed, and the default lower bound is always ##0##.
+	- Only available in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang qb]]// dialects.
+	- In //[[CompilerOptlang|-lang fb]]//, ##**Option Base**## is not allowed, and the default lower bound is always ##0##.
 
 {{fbdoc item="diff"}}
 	- QBASIC only supported values of ##0## or ##1## for ##//base_subscript//##.
@@ -37,8 +37,8 @@ Dim baz(0 To 4) As Integer  ' declares an array with indices 0-4
 	- Arrays must always be explicitly created in ""FreeBASIC"".  QBASIC would implicitly create an array from ##//base_subscript//## to ##10## if one was used in code without being predefined.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgRedim Redim]]##
-	- ##[[KeyPgLbound LBound]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgRedim|Redim]]##
+	- ##[[KeyPgLbound|LBound]]##
 
 {{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

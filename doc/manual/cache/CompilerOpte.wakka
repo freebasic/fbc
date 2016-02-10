@@ -8,10 +8,10 @@ Add error checking
 	Adds QuickBASIC-like error checking.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfberr __FB_ERR__]]##
-	- [[CompilerOptex Compiler Option: -ex]]
-	- [[CompilerOptexx Compiler Option: -exx]]
-	- [[ProPgErrorHandling Error Handling]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- ##[[KeyPgDdfberr|__FB_ERR__]]##
+	- [[CompilerOptex|Compiler Option: -ex]]
+	- [[CompilerOptexx|Compiler Option: -exx]]
+	- [[ProPgErrorHandling|Error Handling]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

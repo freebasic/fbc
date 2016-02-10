@@ -46,6 +46,6 @@ Dim b As /' can comment in here also '/    Integer
 	- Multiline comments are new to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgPpif|#if]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -2,7 +2,7 @@
 Sets the current system time
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Settime** ( [[KeyPgByref byref]] //newtime// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Settime** ( [[KeyPgByref|byref]] //newtime// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Settime**( //newtime// )
@@ -23,10 +23,10 @@ SETTIME "1:20:30"
 %%
 
 {{fbdoc item="diff"}}
-	- The ##[[KeyPgTime Time]]## statement was used QB and the syntax was ##TIME = //newtime//##.
+	- The ##[[KeyPgTime|Time]]## statement was used QB and the syntax was ##TIME = //newtime//##.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgTime Time]]##
-	- ##[[KeyPgSetdate Setdate]]##
+	- ##[[KeyPgTime|Time]]##
+	- ##[[KeyPgSetdate|Setdate]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

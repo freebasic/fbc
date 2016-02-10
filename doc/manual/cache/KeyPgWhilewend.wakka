@@ -11,11 +11,11 @@ Control flow statement for looping
 
 	If ##//condition//## evaluates to false when the ##**While**## statement is first executed, then the ##//statement block//## is skipped and execution resumes immediately following the enclosing ##**Wend**## statement.
 
-	If an ##[[KeyPgExit Exit]] **While**## statement is encountered inside the //statement block//, the loop is terminated, and execution resumes immediately following the enclosing ##**Wend**## statement. If a ##[[KeyPgContinue Continue]] **While**## statement is encountered, the rest of the ##//statement block//## is skipped and execution resumes at the ##**While**## statement.
+	If an ##[[KeyPgExit|Exit]] **While**## statement is encountered inside the //statement block//, the loop is terminated, and execution resumes immediately following the enclosing ##**Wend**## statement. If a ##[[KeyPgContinue|Continue]] **While**## statement is encountered, the rest of the ##//statement block//## is skipped and execution resumes at the ##**While**## statement.
 
-	Like all control flow statements, the ##**While**## statement can be nested, that is, it can be used in a statement block of another ##[[KeyPgWhile While]]## statement.
+	Like all control flow statements, the ##**While**## statement can be nested, that is, it can be used in a statement block of another ##[[KeyPgWhile|While]]## statement.
 
-	//**note**: the ##**While**## //keyword// is also used in the ##[[KeyPgDoloop Do...Loop]]## statement to indicate the type of comparison. Used in this way, the ##**Do**## statement becomes functionally equivalent to the ##**While**## statement, so do not confuse their enclosing keywords ##Loop## and ##**Wend**##, respectively.//
+	//**note**: the ##**While**## //keyword// is also used in the ##[[KeyPgDoloop|Do...Loop]]## statement to indicate the type of comparison. Used in this way, the ##**Do**## statement becomes functionally equivalent to the ##**While**## statement, so do not confuse their enclosing keywords ##Loop## and ##**Wend**##, respectively.//
 
 {{fbdoc item="ex"}}
 	In this example, a ##**While**## loop is used to reverse a string by iterating through it backward. The loop stops if index is less than ##0## //(##0## being the first index in the string)//.
@@ -38,15 +38,15 @@ end 0
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, variables declared inside a ##**While**##..##**Wend**## loop have a function-wide [[ProPgVariableScope scope]] as in QB 
-	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, variables declared inside a ##**While**##..##**Wend**## block are visible only inside the block, and can't be accessed outside it.
+	- In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, variables declared inside a ##**While**##..##**Wend**## loop have a function-wide [[ProPgVariableScope|scope]] as in QB 
+	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects, variables declared inside a ##**While**##..##**Wend**## block are visible only inside the block, and can't be accessed outside it.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgExit Exit]]##
-	- ##[[KeyPgContinue Continue]]##
-	- ##[[KeyPgDoloop Do...Loop]]##
+	- ##[[KeyPgExit|Exit]]##
+	- ##[[KeyPgContinue|Continue]]##
+	- ##[[KeyPgDoloop|Do...Loop]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

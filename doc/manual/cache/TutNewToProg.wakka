@@ -61,7 +61,7 @@ What are variables?  They're the most important part of programming, that's what
 
 Do you recall doing algebra or using letters in math, in school?  An example might be something like:  x = 4, 1 + x = 5.  When programming, variables are exactly that.  They are words or letters that hold values in programming.  These values may store important data such as a name, how much health your main character in your video game has, or even something as simple as the color of one pixel.  When you make a variable, you actually are storing the data it holds small piece of the computer's memory.  In FreeBASIC, and most programming languages, you will work with variables a lot.
 
-To create variables in FreeBASIC, we use the DIM command.  What does DIM stand for?  I'm not sure, but it could stand for DIMENSION, where programmers would define the "size" of their variable.  DIM is used to tell FreeBASIC that we're creating a new variable in our program.  The command is described in high detail on [[KeyPgDim this page]], but we're going to explain it in less detail here.
+To create variables in FreeBASIC, we use the DIM command.  What does DIM stand for?  I'm not sure, but it could stand for DIMENSION, where programmers would define the "size" of their variable.  DIM is used to tell FreeBASIC that we're creating a new variable in our program.  The command is described in high detail on [[KeyPgDim|this page]], but we're going to explain it in less detail here.
 
 The most simple syntax for DIM is:  DIM [""VariableName""] AS [""DataType""] [="[""Value""] ]
 
@@ -79,7 +79,7 @@ PRINT foo
 SLEEP
 %%
 
-In our program, we created foo. FOO was created as an INTEGER (A [[CatPgStdDataTypes datatype]] which holds numbers) We gave foo the value of 5.  We then call the command PRINT, which PRINTS information on our screen.  We PRINT foo, so the number 5 should be PRINTed on the screen.  We then SLEEP, which pauses our program until we hit a key.
+In our program, we created foo. FOO was created as an INTEGER (A [[CatPgStdDataTypes|datatype]] which holds numbers) We gave foo the value of 5.  We then call the command PRINT, which PRINTS information on our screen.  We PRINT foo, so the number 5 should be PRINTed on the screen.  We then SLEEP, which pauses our program until we hit a key.
 
 ==Basic ""DataTypes""==
 

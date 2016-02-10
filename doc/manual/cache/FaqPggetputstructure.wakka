@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="GET/PUT image header example"}}----
 Example showing the two different headers used for image buffers.
-Note: ##[[KeyPgImageInfo ImageInfo]]## is provided as a simpler alternative to reading the image structures directly.
+Note: ##[[KeyPgImageInfo|ImageInfo]]## is provided as a simpler alternative to reading the image structures directly.
 
 {{fbdoc item="filename" value="examples/manual/faq/gfxlib2/image-header.bas"}}%%(freebasic)
 '' fbgfx.bi contains the necessary structures and constants for working

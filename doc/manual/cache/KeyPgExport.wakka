@@ -2,16 +2,16 @@
 Declaration specifier to indicate that a procedure in a DLL should be visible from other programs
 
 {{fbdoc item="syntax"}}##
-	{ [[KeyPgSub sub]] | [[KeyPgFunction function]] } //proc_name// ( //argumentlist// ) [ [[KeyPgAs as]] [[DataType datatype]] ] **Export**
+	{ [[KeyPgSub|sub]] | [[KeyPgFunction|function]] } //proc_name// ( //argumentlist// ) [ [[KeyPgAs|as]] [[DataType|datatype]] ] **Export**
 ##
 {{fbdoc item="desc"}}
-	If a function is declared with this clause in a DLL, it is added to the public export table, so external programs can dynamically link to it using [[KeyPgDylibsymbol Dylibsymbol]].
+	If a function is declared with this clause in a DLL, it is added to the public export table, so external programs can dynamically link to it using [[KeyPgDylibsymbol|Dylibsymbol]].
 
 {{fbdoc item="ex"}}
-	See the examples on the [[ProPgSharedLibraries Shared Libraries]] page.
+	See the examples on the [[ProPgSharedLibraries|Shared Libraries]] page.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Export""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Export""**##.
 
 {{fbdoc item="target"}}
 	- Dynamic link libraries are not available in DOS, as the OS doesn't support them.
@@ -20,8 +20,8 @@ Declaration specifier to indicate that a procedure in a DLL should be visible fr
 	- New to Freebasic
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDylibload Dylibload]]##
-	- ##[[KeyPgDylibsymbol Dylibsymbol]]##
-	- ##[[KeyPgAlias Alias]]##
+	- ##[[KeyPgDylibload|Dylibload]]##
+	- ##[[KeyPgDylibsymbol|Dylibsymbol]]##
+	- ##[[KeyPgAlias|Alias]]##
 
 {{fbdoc item="back" value="CatPgModularizing|Modularizing"}}{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

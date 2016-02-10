@@ -2,7 +2,7 @@
 Sets current work and visible pages
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Screenset** ( [[KeyPgByval byval]] //work_page// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //visible_page// [[KeyPgAs as]] [[KeyPgLong long]] = -1 )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Screenset** ( [[KeyPgByval|byval]] //work_page// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1, [[KeyPgByval|byval]] //visible_page// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1 )
 ##
 {{fbdoc item="usage"}}##
 	**Screenset** [ //work_page// ] [, //visible_page// ]
@@ -14,11 +14,11 @@ Sets current work and visible pages
 		index to visible page
 
 {{fbdoc item="desc"}}
-	##**Screenset**## allows to set the current working page and the current visible page. Page numbers range from ##0## to ##//num_pages// - 1##, where ##//num_pages//## is the number of pages specified when setting the graphics mode with ##[[KeyPgScreenres Screenres]]## or ##[[KeyPgScreengraphics Screen]]##.  You can use this function to achieve page-flipping or double-buffering.
+	##**Screenset**## allows to set the current working page and the current visible page. Page numbers range from ##0## to ##//num_pages// - 1##, where ##//num_pages//## is the number of pages specified when setting the graphics mode with ##[[KeyPgScreenres|Screenres]]## or ##[[KeyPgScreengraphics|Screen]]##.  You can use this function to achieve page-flipping or double-buffering.
 
 	If you provide ##//visible_page//## but omit ##//work_page//##, only the visible page is changed. If you provide ##//work_page//## but omit ##//visible_page//##, only the work page is changed. If you omit both arguments, both work page and visible page are reset to page 0.
 
-	##**Screenset**## provides one method of writing to the screen without instantly displaying changes to the user.  See also ##[[KeyPgScreenlock Screenlock]]## / ##[[KeyPgScreenunlock Screenunlock]]## for an alternative method of doing this.
+	##**Screenset**## provides one method of writing to the screen without instantly displaying changes to the user.  See also ##[[KeyPgScreenlock|Screenlock]]## / ##[[KeyPgScreenunlock|Screenunlock]]## for an alternative method of doing this.
 
 	Note: The current cursor position is not handled independently for each video page. Therefore, when another working page is selected, the starting cursor position corresponds to the last cursor position on the previous working page (same behavior for the text cursor and the graphics cursor).
 
@@ -49,16 +49,16 @@ Loop While Inkey = ""
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screenset""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Screenset""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
-	- ##[[KeyPgScreenres Screenres]]##
-	- ##[[KeyPgScreencopy Screencopy]]##
-	- ##[[KeyPgScreenlock Screenlock]]##
-	- ##[[KeyPgScreenunlock Screenunlock]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
+	- ##[[KeyPgScreenres|Screenres]]##
+	- ##[[KeyPgScreencopy|Screencopy]]##
+	- ##[[KeyPgScreenlock|Screenlock]]##
+	- ##[[KeyPgScreenunlock|Screenunlock]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

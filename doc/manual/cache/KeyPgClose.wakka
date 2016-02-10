@@ -2,7 +2,7 @@
 Stream I/O function to terminate access to a device
 
 {{fbdoc item="syntax"}}##
-	**Close** [[#]//filenum// ] [, [#]//filenum// ...]
+	**Close** [[#]//filenum//|] [, [#]//filenum// ...]
 	            // or //
 	//result// = **Close**( [#//filenum//] )
 ##
@@ -47,9 +47,9 @@ Close
 	- FB throws an error on trying to close an unused file number, if compiled with error checking and if not used with the function-style syntax
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgPutfileio Put (File I/O)]]## 
-	- ##[[KeyPgGetfileio Get (File I/O)]]##
-	- ##[[KeyPgFreefile Freefile]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgPutfileio|Put (File I/O)]]## 
+	- ##[[KeyPgGetfileio|Get (File I/O)]]##
+	- ##[[KeyPgFreefile|Freefile]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

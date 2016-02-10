@@ -18,12 +18,12 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item2"}}==How do I install ""FreeBASIC"" in Ubuntu?"==
-	See [[http://www.freebasic.net/forum/viewtopic.php?t=3991&postdays=0&postorder=asc&highlight=install+ubuntu&start=0  This thread in the FB forums]] 
+	See [[http://www.freebasic.net/forum/viewtopic.php?t=3991&postdays=0&postorder=asc&highlight=install+ubuntu&start=0| This thread in the FB forums]] 
 
 {{anchor name="item0|Back to top"}}
 
 {{fbdoc item="see"}}
-	[[CompilerFAQ Compiler FAQ]]
-	[[FaqPgrtlib FB Runtime Library FAQ]]
+	[[CompilerFAQ|Compiler FAQ]]
+	[[FaqPgrtlib|FB Runtime Library FAQ]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
