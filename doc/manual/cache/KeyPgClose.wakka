@@ -2,7 +2,7 @@
 Stream I/O function to terminate access to a device
 
 {{fbdoc item="syntax"}}##
-	**Close** [[#]//filenum//|] [, [#]//filenum// ...]
+	**Close** [[#]//filenum// ] [, [#]//filenum// ...]
 	            // or //
 	//result// = **Close**( [#//filenum//] )
 ##
@@ -15,7 +15,7 @@ Stream I/O function to terminate access to a device
 
 	##**Close**## without arguments closes all the files presently opened.
 
-	Terminating the program using an ##[[KeyPgEnd End]]## statement will automatically close all files.
+	Terminating the program using an ##[[KeyPgEnd|End]]## statement will automatically close all files.
 
 {{fbdoc item="ret"}}
 	##**Close**## returns zero (##0##) on success and a non-zero error code otherwise.
