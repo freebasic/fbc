@@ -253,7 +253,9 @@ namespace fb.fbdoc
 			exit function
 		end if
 
-		ctx->linkre = new CRegex( $"^\[\[(\S*)(\s+(.+))?\]\]$", REGEX_OPT_DOTALL )
+		'' [[link]]
+		'' [[link|text]]
+		ctx->linkre = new CRegex( $"^\[\[([^\|]+)(?:\|(.+))?\]\]$", REGEX_OPT_DOTALL )
 		if( ctx->linkre = NULL ) then
 			exit function
 		end if
