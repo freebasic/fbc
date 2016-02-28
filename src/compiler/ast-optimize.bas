@@ -419,9 +419,7 @@ private sub hOptConstIdxMult( byval n as ASTNODE ptr )
 
 					case 3, 5, 9
 						'' The x86 ASM backend additionally supports 3, 5, 9,
-						'' but it's only possible if there isn't already an index
-						'' (that happens with local variables that use EBP plus an
-						'' index on each access already, x86 assumption)
+						'' but only when accessing a global symbol, instead of one on stack.
 						optimize = TRUE
 						dim as FBSYMBOL ptr s = astGetSymbol( n->r )
 						if( symbIsParam( s ) ) then

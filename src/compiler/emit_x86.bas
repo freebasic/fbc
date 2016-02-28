@@ -309,32 +309,36 @@ private function hGetIdxName _
     	mult = vreg->mult
 		''
 		'' For x86 ASM, a multiplier/scaling factor can be given right
-		'' as part of address/indexing expression. It can be a power
+		'' as part of the address/indexing expression. It can be a power
 		'' of two in the range 1..8, i.e. one of {1, 2, 4, 8}.
+		'' For example, we can optimize
+		''    imul eax, 4                     ; multiply index by array element size
+		''    mov dword ptr [ebp+eax], 0      ; store 0 into array element
+		'' to
+		''    mov dword ptr [ebp+eax*4], 0
 		''
-		''  For example, assuming a variable at ebp-N, holding a valid array index,
-		''  and the corresponding dword array at ebp-M:
+		'' Furthermore, we can support the multipliers 3, 5, 9 by
+		'' emitting x*2+x, x*4+x, x*8+x respectively (addone = TRUE).
+		'' This is only possible if the base offset is a constant (i.e.
+		'' a global symbol), for example:
+		''    [GLOBAL+eax*2+eax]
+		'' But if it's a register then it's not possible:
+		''    [ebp+eax*2+eax]    = illegal syntax
 		''
-		''      mov eax, dword ptr [ebp-N]       ; Load array index variable from stack
-		''      mov dword ptr [ebp+eax*4-M], 0   ; Store 0 into element eax of the dword array
+		'' 6 and 7 cannot be supported, because this is illegal syntax:
+		''    [GLOBAL+eax*4+eax+eax]
+		''    [GLOBAL+eax*4+eax+eax+eax]
 		''
-		''  instead of:
-		''
-		''      mov eax, dword ptr [ebp-N]
-		''      imul eax, 4
-		''      mov dword ptr [ebp+eax-M], 0
-		''
-		'' We can support {3, 5, 9} multipliers by emitting them as
-		'' *2+1, *4+1, *8+1 respectively (with addone = TRUE).
-		''
-		'' 6 and 7 cannot be supported.
-		''
-		'' Besides that, since the "addone" form uses up the "offset"
-		'' part from the [base + (index*mult) + offset] form, it can
-		'' only be used if the offset isn't needed in combination with
-		'' the base. This means the "addone" form cannot be used with
-		'' things from stack (ebp-N), but only globals.
-		''
+		'' The GNU assembler does not only allow
+		''    [basereg + displacement + offsetreg*multiplier]
+		'' in various orders, but can also evaluate inline constant math
+		'' expressions, for example:
+		''    [basereg + offsetreg*multiplier + 10 + 10 + 10 + 10]
+		''  = [basereg + offsetreg*multiplier + 40]
+		'' This is also allowed:
+		''    [GLOBAL+eax*4+eax+10]
+		''  = [eax+eax*4+GLOBAL+10]
+		'' (in case we do addone and the vreg also has an offset)
 
 		assert( (mult >= 1) and (mult <= 9) )
 		assert( (mult <> 6) and (mult <> 7) )
@@ -351,7 +355,6 @@ private function hGetIdxName _
 			iname += str( mult )
 
 			if( addone ) then
-				assert( vreg->ofs = 0 )
 				iname += "+"
 				iname += *rname
 			end if
@@ -393,7 +396,7 @@ sub hPrepOperand _
 			operand = "["
 		end if
 
-		'' base + (index*mult) + offset
+		'' base + (index*mult) + offset [+ offset2]
 
 		'' variable or index
 		dim as zstring ptr idx_op
