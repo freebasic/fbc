@@ -265,7 +265,7 @@ function vregDump( byval v as IRVREG ptr ) as string
 	if( v->typ <> IR_VREGTYPE_REG ) then
 		if( v->ofs ) then
 			if( (env.clopt.backend = FB_BACKEND_GAS) and (v->sym <> NULL) ) then
-				s += " [" + *symbGetMangledName( v->sym ) + str( v->ofs ) + "]"
+				s += " [" + *symbGetMangledName( v->sym ) + "+" + str( v->ofs ) + "]"
 			else
 				s += " ofs=" + str( v->ofs )
 			end if
