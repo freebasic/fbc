@@ -21,8 +21,9 @@ private sub test2 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite("fbc_tests.optimizations.constant_index")
-	fbcu.add_test("Array index const folding", @test1)
+	fbcu.add_suite( "tests/optimizations/const_idx" )
+	fbcu.add_test( "test1", @test1 )
+	fbcu.add_test( "test2", @test2 )
 end sub
 
 end namespace
