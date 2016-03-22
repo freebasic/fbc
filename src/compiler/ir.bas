@@ -283,7 +283,11 @@ function vregDump( byval v as IRVREG ptr ) as string
 		end if
 	end if
 
-	if( ISLONGINT( v->dtype ) ) then
+	'' If it's a longint vreg, show vaux
+	'' ASM backend: uses vaux, so always show it
+	'' C/LLVM backends: don't use vaux, so only show it if it's set
+	if( ISLONGINT( v->dtype ) and _
+	    ((env.clopt.backend = FB_BACKEND_GAS) or (v->vaux <> NULL)) ) then
 		s += " vaux=<" + vregDump( v->vaux ) + ">"
 	end if
 
