@@ -1096,7 +1096,7 @@ else
   BOOTSTRAP_CFLAGS := -nostdinc
   BOOTSTRAP_CFLAGS += -Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable
   BOOTSTRAP_CFLAGS += -Wno-unused-but-set-variable -Wno-main
-  BOOTSTRAP_CFLAGS += -fno-strict-aliasing -frounding-math
+  BOOTSTRAP_CFLAGS += -fno-strict-aliasing -frounding-math -fwrapv
   BOOTSTRAP_CFLAGS += -Wfatal-errors
   BOOTSTRAP_OBJ := $(patsubst %.c,%.o,$(sort $(wildcard bootstrap/$(FBTARGET)/*.c)))
   $(BOOTSTRAP_OBJ): %.o: %.c

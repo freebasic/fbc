@@ -83,6 +83,9 @@
 ''   also means we have to add code for converting int/float to 0/1 when casting
 ''   them to boolean.
 ''
+'' - Avoiding C's undefined behaviour where possible:
+''    - using gcc's -fwrapv to get well-defined signed integer overflow
+''
 
 #include once "fb.bi"
 #include once "fbint.bi"
