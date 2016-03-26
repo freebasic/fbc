@@ -1,6 +1,7 @@
 Version 1.06.0
 
 [changed]
+- Adjusted warning text for "mixed bool/nonbool operands" warning
 
 [added]
 

@@ -2,41 +2,41 @@ boolean-capable relational/logic BOPs:
 no mixing - no warnings:
 mixing - 1 warning each:
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 1 warning:
-	Mixing operand data types may have undefined results
+	Suspicious logic operation, mixed boolean and non-boolean operands
 mixing integers and true/false in boolean-capable BOPs - no warnings:
 mixing booleans and 0/-1 literals in boolean-capable BOPs - no warnings:
 mixing booleans and relational BOPs in boolean-capable BOPs - no warnings:
