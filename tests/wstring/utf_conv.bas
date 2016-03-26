@@ -1,19 +1,10 @@
 ﻿# include "fbcu.bi"
 
-
-
 #include once "utf_conv.bi"
 
 namespace fbc_tests.wstrings.utf_conv
 
-# if defined(NULL)
-# 	define NULL_ NULL
-# 	undef NULL
-# 	define NULL cptr(any ptr, 0)
-# endif
-
 sub test_z cdecl ()
-
 	dim as zstring ptr srcstr = @"ã é ô"
 	dim as byte ptr utfstr
 	dim as integer bytes
@@ -27,11 +18,9 @@ sub test_z cdecl ()
 
 	deallocate( newstr )
 	deallocate( utfstr )
-
 end sub
 
 sub test_w cdecl ()
-	
 	dim as wstring ptr srcstr = @wstr("ã é ô")
 	dim as byte ptr utfstr
 	dim as integer bytes
@@ -45,21 +34,12 @@ sub test_w cdecl ()
 
 	deallocate( newstr )
 	deallocate( utfstr )
-
 end sub
 
 sub ctor () constructor
-
 	fbcu.add_suite("fbc_tests.wstrings.utf_conv")
 	fbcu.add_test("test_z", @test_z)
 	fbcu.add_test("test_w", @test_w)
-
 end sub
-
-# if defined(NULL_)
-# undef NULL
-# define NULL NULL_
-# undef NULL_
-# endif
 
 end namespace
