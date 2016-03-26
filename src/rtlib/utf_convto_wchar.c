@@ -43,15 +43,21 @@ static FB_WCHAR *hUTF8ToUTF16( const UTF_8 *src, FB_WCHAR *dst, ssize_t *chars )
 			}
 	
 			c -= __fb_utf8_offsetsTb[extbytes];
-	
-			if( charsleft <= 1 )
+
+			/* Ensure we have room for at least 2 UTF16 units (surrogate pair) */
+			if( charsleft < 2 )
 			{
-				charsleft = 8 + 1;
+				/* If we still have room for 1 char, reclaim it */
+				dst_size -= charsleft;
+
+				/* Make room for some chars */
+				charsleft = 8;
 				dst_size += charsleft;
+
 				buffer = realloc( buffer, dst_size * sizeof( FB_WCHAR ) );
 				dst = buffer + dst_size - charsleft;
 			}
-			
+
 			if( c <= UTF16_MAX_BMP )
 				*dst++ = c;
 			else
@@ -151,10 +157,10 @@ static FB_WCHAR *hUTF8ToUTF32( const UTF_8 *src, FB_WCHAR *dst, ssize_t *chars )
 				case 0:
 					c += *src++;
 			}
-	
+
 			c -= __fb_utf8_offsetsTb[extbytes];
-	
-			if( charsleft <= 1 )
+
+			if( charsleft == 0 )
 			{
 				charsleft = 8;
 				dst_size += charsleft;
@@ -339,9 +345,14 @@ static FB_WCHAR *hUTF32ToUTF16( const UTF_32 *src, FB_WCHAR *dst, ssize_t *chars
 	    {
 	    	c = *src++;
 	
-			if( charsleft <= 1 )
+			/* Ensure we have room for at least 2 UTF16 units (surrogate pair) */
+			if( charsleft < 2 )
 			{
-				charsleft = 8 + 1;
+				/* If we still have room for 1 char, reclaim it */
+				dst_size -= charsleft;
+
+				/* Make room for some chars */
+				charsleft = 8;
 				dst_size += charsleft;
 				buffer = realloc( buffer, dst_size * sizeof( FB_WCHAR ) );
 				dst = buffer + dst_size - charsleft;

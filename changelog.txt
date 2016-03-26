@@ -9,6 +9,7 @@ Version 1.06.0
 - #816: The ASM backend contained a bad assert() which could be triggered in debug builds of the compiler, when generating code for certain array accesses
 - C backend: undefined behaviour (inherited from C) in case of signed integer overflow
 - utf_conv.bi: When given a NULL destination buffer, no-op conversions (UTF16 => UTF16 or UTF32 => UTF32) didn't allocate a new buffer, but just returned the source buffer, violating the contract used for proper conversions (which allocate a new buffer if a NULL destination is passed).
+- utf_conv.bi: In UTF8 => UTF16/32 and UTF32 => UTF16 conversions, strings longer than 8 chars could be truncated
 
 
 Version 1.05.0
