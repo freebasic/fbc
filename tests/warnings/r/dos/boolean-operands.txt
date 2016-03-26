@@ -39,3 +39,4 @@ mixing - 1 warning each:
 	Mixing operand data types may have undefined results
 mixing integers and true/false in boolean-capable BOPs - no warnings:
 mixing booleans and 0/-1 literals in boolean-capable BOPs - no warnings:
+mixing booleans and relational BOPs in boolean-capable BOPs - no warnings:

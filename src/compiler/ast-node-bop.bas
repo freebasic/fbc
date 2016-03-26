@@ -689,6 +689,31 @@ private function hGetIntegerOrBigger( byval dtype as integer ) as integer
 	return FB_DATATYPE_INTEGER
 end function
 
+private function hIsConsideredBoolean( byval n as ASTNODE ptr ) as integer
+	return (typeGetDtAndPtrOnly( n->dtype ) = FB_DATATYPE_BOOLEAN) orelse _
+	       astIsConst0OrMinus1( n ) orelse _
+	       astIsRelationalBop( n )
+end function
+
+'' Warn about mixed boolean and non-boolean operands, unless
+'' 1. the non-boolean can be considered boolean:
+''  - integer constants 0 and -1 (classic FALSE/TRUE definitions)
+''  - relational BOPs, which don't return booleans yet,
+''    but should really be mixable with booleans
+'' 2. the boolean is true/false (0 or -1 constants), which should also be
+''    mixable with integers for better backwards compatibility.
+private function hShouldWarnAboutMixedBool( byval l as ASTNODE ptr, byval r as ASTNODE ptr ) as integer
+	if( (typeGetDtAndPtrOnly( l->dtype ) =  FB_DATATYPE_BOOLEAN) and _
+	    (typeGetDtAndPtrOnly( r->dtype ) <> FB_DATATYPE_BOOLEAN) ) then
+		return (not astIsConst0OrMinus1( l )) andalso (not hIsConsideredBoolean( r ))
+	end if
+	if( (typeGetDtAndPtrOnly( l->dtype ) <> FB_DATATYPE_BOOLEAN) and _
+	    (typeGetDtAndPtrOnly( r->dtype ) =  FB_DATATYPE_BOOLEAN) ) then
+		return (not hIsConsideredBoolean( l )) andalso (not astIsConst0OrMinus1( r ))
+	end if
+	return FALSE
+end function
+
 '':::::
 function astNewBOP _
 	( _
@@ -1010,16 +1035,8 @@ function astNewBOP _
 			exit function
 		end select
 
-		'' Aren't both operands booleans?
-		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
-			'' Warn about mixing boolean and non-boolean operands, unless one is 0/-1.
-			''    boolean and integer    => warning
-			''    integer and true       => no warning
-			''    boolean and (-1)       => no warning
-			if( (not astIsConst0OrMinus1( l )) and _
-			    (not astIsConst0OrMinus1( r )) ) then
-				errReportWarn( FB_WARNINGMSG_OPERANDSMIXEDTYPES )
-			end if
+		if( hShouldWarnAboutMixedBool( l, r ) ) then
+			errReportWarn( FB_WARNINGMSG_OPERANDSMIXEDTYPES )
 		end if
 	end if
 
