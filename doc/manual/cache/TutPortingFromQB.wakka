@@ -56,35 +56,35 @@ I warn you all changes required except two come from a couple of (wise) limitati
 	- A simple variable can't have the same name as an array
 
 **""In TCLib17.bi""**
-ERROR: Duplicated definition, found 'RGB' ([[KeyPgRgb RGB]] is a keyword in FB)
+ERROR: Duplicated definition, found 'RGB' ([[KeyPgRgb|RGB]] is a keyword in FB)
 Add:
 ## #undefine RGB##
 Before the line giving the error.
 
-ERROR: Duplicated definition, found 'ScreenRes' ([[KeyPgScreenres ScreenRes]] is a keyword in FB)
+ERROR: Duplicated definition, found 'ScreenRes' ([[KeyPgScreenres|ScreenRes]] is a keyword in FB)
 Add:
 ## #undefine ""ScreenRes""##
 Before the line giving the error.
 
-ERROR: Duplicated definition, found 'Name' ([[KeyPgName Name]] is a keyword in QB)
+ERROR: Duplicated definition, found 'Name' ([[KeyPgName|Name]] is a keyword in QB)
 Add
 ## #undefine Name##
 Before the line giving the error.
 
 **""In TCRay17.bas""**
-ERROR: Duplicated definition, found 'Acos' ([[KeyPgAcos Acos]] is a keyword in QB)
+ERROR: Duplicated definition, found 'Acos' ([[KeyPgAcos|Acos]] is a keyword in QB)
 Add
 ## #undefine Acos##
 Before the line giving the error.
 
-ERROR: Argument count mismatch Clear ([[KeyPgClear CLEAR]] is not required in FB, the keyword has been reused (not a clever decision?))
+ERROR: Argument count mismatch Clear ([[KeyPgClear|CLEAR]] is not required in FB, the keyword has been reused (not a clever decision?))
 'comment out CLEAR
 
-ERROR: Illegal specification, at parameter 2 (Type) of Init.Cubic() ([[KeyPgType Type]] is a keyword in QB)
+ERROR: Illegal specification, at parameter 2 (Type) of Init.Cubic() ([[KeyPgType|Type]] is a keyword in QB)
 We can undefine it so search and replace ##type$## to ##_type$##
 
 ERROR: Expected 'END IF', found 'END' END FUNCTION
-This is an error caused by a quirk introduced in FB. Single line [[KeyPgIfthen IF]]'s having a colon after THEN require an ENDIF, it has to do with macros...  What reason had Jark to put colons past his THEN's escapes me. QB does not require them at all and FB behaves as expected without them.  Remove all colons after THEN keywords. Search and Replace //THEN :// to //THEN//
+This is an error caused by a quirk introduced in FB. Single line [[KeyPgIfthen|IF]]'s having a colon after THEN require an ENDIF, it has to do with macros...  What reason had Jark to put colons past his THEN's escapes me. QB does not require them at all and FB behaves as expected without them.  Remove all colons after THEN keywords. Search and Replace //THEN :// to //THEN//
 
 ERROR: Array access, index expected, before '=' xn = x * x - y * y + zx0
 We have an array names xn, and a variable named xn.  Substitute xn with _xn in the lines which error when you try to compile.

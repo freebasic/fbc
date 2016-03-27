@@ -2,7 +2,7 @@
 Tests the existence of a file
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileExists""** ( [[KeyPgByval byval]] //filename// [[KeyPgAs as]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""FileExists""** ( [[KeyPgByval|byval]] //filename// [[KeyPgAs|as]] [[KeyPgZstring|zstring]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	#include "file.bi"
@@ -22,8 +22,8 @@ Tests the existence of a file
 
 {{fbdoc item="desc"}}
 	##**""FileExists""**## tests for the existence of a file.
-	Internally, it may issue an Open() and a Close() function, which may have consequences - eg, any existing ##[[KeyPgLock Lock]]##(s) on the file may be released.
-	Depending on the exact requirements, alternative methods of checking for file existence may be to use the ##[[KeyPgDir Dir]]()## function (being careful of attributes and ensuring the path doesn't contain wildcards), or to try ##[[KeyPgOpen Open]]##ing the file and checking the return value for success.
+	Internally, it may issue an Open() and a Close() function, which may have consequences - eg, any existing ##[[KeyPgLock|Lock]]##(s) on the file may be released.
+	Depending on the exact requirements, alternative methods of checking for file existence may be to use the ##[[KeyPgDir|Dir]]()## function (being careful of attributes and ensuring the path doesn't contain wildcards), or to try ##[[KeyPgOpen|Open]]##ing the file and checking the return value for success.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/fileexists.bas"}}%%(freebasic)
@@ -50,6 +50,6 @@ end if
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDir Dir]]##
+	- ##[[KeyPgDir|Dir]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

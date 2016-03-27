@@ -1,0 +1,5 @@
+Description from [[http://www.jorgon.freeserve.co.uk/|Jeremy Gordons GoTools Site]]
+
+A free resource compiler (GoRC.exe), which produces RES files from RC files, or OBJ files from RC or RES files, together with documentation.
+
+It is used by FreeBASIC on the Windows OS.

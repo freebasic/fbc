@@ -14,6 +14,6 @@ Prefer static libraries over dynamic ones when linking
 	- On Windows, there are no static versions of the system libraries, but ##-static## can still be useful to decide between static library or DLL versions of other libraries, if both are installed.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

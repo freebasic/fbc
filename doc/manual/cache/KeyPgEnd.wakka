@@ -2,7 +2,7 @@
 Control flow statement to end the program.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **End** ( [[KeyPgByval byval]] //retval// [[KeyPgAs as]] [[KeyPgLong long]] = 0 )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **End** ( [[KeyPgByval|byval]] //retval// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 )
 ##
 {{fbdoc item="usage"}}##
 	**End** [ //retval// ]
@@ -51,7 +51,7 @@ end main()
 	- The END statement supports specifying a custom return value to be returned to the operating system.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgEndblock End (Block)]]##
-	- ##[[KeyPgReturn Return]]##
+	- ##[[KeyPgEndblock|End (Block)]]##
+	- ##[[KeyPgReturn|Return]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

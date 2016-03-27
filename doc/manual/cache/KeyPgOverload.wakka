@@ -2,17 +2,17 @@
 Specifies that a procedure name can be overloaded
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] **Overload** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	[[KeyPgDeclare|Declare]] [[[KeyPgStatic|Static]]] [[KeyPgSub|Sub]] //procedure_name// [[[KeyPgCdecl|Cdecl]]|[[KeyPgStdcall|Stdcall]]|[[KeyPgPascal|Pascal]]] **Overload** [[[KeyPgAlias|Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor|Constructor]] [//priority//]] [[[KeyPgStatic|Static]]] [[[KeyPgExport|Export]]]
 
-	[[KeyPgDeclare Declare]] [[[KeyPgStatic Static]]] [[KeyPgFunction Function]] //procedure_name// [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] **Overload** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type// [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	[[KeyPgDeclare|Declare]] [[[KeyPgStatic|Static]]] [[KeyPgFunction|Function]] //procedure_name// [[[KeyPgCdecl|Cdecl]]|[[KeyPgStdcall|Stdcall]]|[[KeyPgPascal|Pascal]]] **Overload** [[[KeyPgAlias|Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs|as]] //return_type// [[[KeyPgStatic|Static]]] [[[KeyPgExport|Export]]]
 
-	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgSub Sub]] //procedure_name// [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] **Overload** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	[[[KeyPgPublic|Public]]|[[KeyPgPrivate|Private]]] [[KeyPgSub|Sub]] //procedure_name// [[[KeyPgCdecl|Cdecl]]|[[KeyPgStdcall|Stdcall]]|[[KeyPgPascal|Pascal]]] **Overload** [[[KeyPgAlias|Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor|Constructor]] [//priority//]] [[[KeyPgStatic|Static]]] [[[KeyPgExport|Export]]]
 		//..procedure body..//
-	[[KeyPgEnd End]] [[KeyPgSub Sub]]
+	[[KeyPgEnd|End]] [[KeyPgSub|Sub]]
 	
-	[[[KeyPgPublic Public]]|[[KeyPgPrivate Private]]] [[KeyPgFunction Function]] //procedure_name// [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] **Overload** [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	[[[KeyPgPublic|Public]]|[[KeyPgPrivate|Private]]] [[KeyPgFunction|Function]] //procedure_name// [[[KeyPgCdecl|Cdecl]]|[[KeyPgStdcall|Stdcall]]|[[KeyPgPascal|Pascal]]] **Overload** [[[KeyPgAlias|Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs|as]] //return_type//  [[[KeyPgStatic|Static]]] [[[KeyPgExport|Export]]]
 		//..procedure body..//
-	[[KeyPgEnd End]] [[KeyPgFunction Function]]
+	[[KeyPgEnd|End]] [[KeyPgFunction|Function]]
 ##
 {{fbdoc item="desc"}}
 	In procedure declarations, ##**Overload**## allows procedure names to be overloaded, that is, other procedures can then be declared with the same name if their parameter lists are unique. Two parameter lists are unique if they contain a different number of parameters, or have parameters of different types. Note that this means that two or more procedures cannot be declared with the same name if they differ in return type alone.
@@ -48,7 +48,7 @@ SLEEP
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDeclare Declare]]##
-	- ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgDeclare|Declare]]##
+	- ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

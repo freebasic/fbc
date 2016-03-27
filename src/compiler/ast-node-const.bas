@@ -125,9 +125,9 @@ function astNewCONSTz _
 	select case as const( typeGetDtAndPtrOnly( dtype ) )
 	case FB_DATATYPE_VOID
 		'' A CONST expression with VOID type doesn't make sense,
-		'' but some callers of astNewCONSTz() can call it for SUBs,
-		'' which have a VOID result type.
-		function = NULL
+		'' but astNewCONSTz() can be called for BYREF AS ANY parameters.
+		'' Any expression type should be ok for error recovery.
+		function = astNewCONSTi( 0 )
 
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		function = astNewCONSTstr( NULL )

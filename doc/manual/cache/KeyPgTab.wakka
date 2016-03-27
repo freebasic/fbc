@@ -5,14 +5,14 @@ Sets the column when writing to screen or file
 	**Tab**( //col_num// )
 ##
 {{fbdoc item="usage"}}##
-	[[KeyPgPrint Print]] **Tab**( //column// ) [(, | ;)] ...
+	[[KeyPgPrint|Print]] **Tab**( //column// ) [(, | ;)] ...
 ##
 {{fbdoc item="param"}}
 	##//column//##
 		##1##-based column number to move to
 
 {{fbdoc item="desc"}}
-	##**Tab**## will move the cursor to given ##//column//## number when ##[[KeyPgPrint Print]]##ing to screen or to a file.  Character cells skipped over between the old and new cursor positions are left unchanged.
+	##**Tab**## will move the cursor to given ##//column//## number when ##[[KeyPgPrint|Print]]##ing to screen or to a file.  Character cells skipped over between the old and new cursor positions are left unchanged.
 	If the current column is greater than ##//column//##, then ##**Tab**## will move the cursor to the requested column number on the next line.  If the current column is equal to ##//column//##, then the cursor will not move anywhere.
 
 {{fbdoc item="ex"}}
@@ -44,9 +44,10 @@ Bob                                Smith
 	- In QBASIC, spaces were printed in the gap, while in ""FreeBASIC"", the characters are just skipped over and left untouched.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSpc Spc]]##
-	- ##[[KeyPgLocate Locate]]##
-	- ##[[KeyPgPos Pos]]##
-	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgSpc|Spc]]##
+	- ##[[KeyPgLocate|Locate]]##
+	- ##[[KeyPgPos|Pos]]##
+	- ##[[KeyPgPrint|Print]]##
+	- ##[[KeyPgPrint|?]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

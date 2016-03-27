@@ -5,9 +5,9 @@
 
 	If operators have equal precedence, they then are evaluated in the order in of their associativity.  The associativity may be Left-to-Right or Right-to-Left order.
 
-	As a rule, binary operators (such as ##[[KeyPgOpAdd +]]##, ##[[KeyPgOpExponentiate ^]]##) and unary postfix operators (such as ##[[KeyPgOpArrayIndex ()]]##, ##[[KeyPgOpPtrMemberAccess ->]]##) are evaluated Left-to-Right, and unary prefix operators (such as ##[[KeyPgOpNot Not]]##, ##[[KeyPgOpAt @]]##) are evaluated Right-to-Left.
+	As a rule, binary operators (such as ##[[KeyPgOpAdd|+]]##, ##[[KeyPgOpExponentiate|^]]##) and unary postfix operators (such as ##[[KeyPgOpArrayIndex|()]]##, ##[[KeyPgOpPtrMemberAccess|->]]##) are evaluated Left-to-Right, and unary prefix operators (such as ##[[KeyPgOpNot|Not]]##, ##[[KeyPgOpAt|@]]##) are evaluated Right-to-Left.
 
-	Operators that have an associativity of "N/A" indicate that there is no expression in which the operator can be used where its order of operation would need to be checked, either by precedence or by associativity.  Function-like operators such as ##[[KeyPgCast Cast]]## are always the first to be evaluated due to the parentheses required in their syntax.  And assignment operators are always the last to be evaluated.
+	Operators that have an associativity of "N/A" indicate that there is no expression in which the operator can be used where its order of operation would need to be checked, either by precedence or by associativity.  Function-like operators such as ##[[KeyPgCast|Cast]]## are always the first to be evaluated due to the parentheses required in their syntax.  And assignment operators are always the last to be evaluated.
 
 	Parentheses can be used to override operator precedence. Operations within parentheses are performed before other operations. Within the parentheses normal operator precedence is used.
 
@@ -36,6 +36,6 @@ Actual result: (a SHL n) + 1%%
 For expressions where the operator precedence may be ambiguous, it is recommended to wrap parts of the expression in parentheses, in order both to minimise the possibility of error and to aid comprehension for people reading the code.
 
 {{fbdoc item="see"}}
-	- [[CatPgOperators Operators]]
+	- [[CatPgOperators|Operators]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

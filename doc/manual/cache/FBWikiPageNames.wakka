@@ -1,0 +1,42 @@
+{{fbdoc item="title" value="Page Names"}}----
+Most of the pages in this wiki have a specific naming convention.  This naming convention helps the document conversion program to properly generate other documentation formats from this online source.  New pages should try to follow these conventions where possible.  There may be several existing pages that do not follow the conventions.
+
+Most page name prefixes have been chosen to help the document converters to process the content correctly and automatically build a full table of contents.  Some page name prefixes have been chosen to help those maintaining the documentation to efficiently recognize the main purpose of a page by name only without needing to view the content.
+
+==Important Pages==
+	[[FBWiki|FBWiki]] - FB Wiki - Main Page
+		The home/root/main page for this wiki.
+
+	[[DocToc|DocToc]] - ""FreeBASIC Manual"" - Table of Contents
+		Any page that is reachable through the links on this page is considered to be part of the ""FreeBASIC"" Manual and will be included in the downloadable versions of the documentation.
+
+	[[CommunityTutorials|CommunityTutorials]] - Community Tutorials
+		Main page for community submitted tutorials.  These pages are not part of the ""FreeBASIC"" Manual and are available only online.
+
+	[[FBWikiHelp|FBWikiHelp]] - FB Wiki - Help
+		The "help on help" starting point for the online documentation.
+
+==FBWiki Pages==
+	Page names that begin with **""FBWiki""** indicate pages that document the documentation.  These pages are not part of the ""FreeBASIC"" Manual and are available only online.
+
+==Category Pages==
+	Page names that begin with **""CatPg""** indicate a category of topics and usually only include a list of links to other pages.  These page names have special meaning to the document converters when automatically building a full table of contents and applying styles.
+
+==Keyword Pages==
+	Page names that begin with **""KeyPg""** indicate a keyword that is available in the ""FreeBASIC"" language or runtime library.  These page names have special meaning to the document converters when automatically building a full table of contents and applying styles.  Most of the keyword pages are named with the keyword immediately following the ""KeyPg"".  For example [[KeyPgScreengraphics|KeyPgScreengraphics]].
+
+==Programmer's Guide Pages==
+	Page names that begin with **""ProPg""** indicate a page that is part of the [[CatPgProgrammer|Programmer's Guide]].  These page names have special meaning to the document converters when automatically building a full table of contents and applying styles.
+
+==Tutorial Pages==
+	Page names that begin with **""Tut""** are reserved for tutorial pages linked from [[CommunityTutorials|Community Tutorials]].  The first letter of each word in the name of the tutorial will be capitalized e.g. **""TutHelloWorld""**
+
+==Other Page Prefixes==
+	- **""Compiler*""** pages - reserved for pages that document the compiler itself (for example command line options).
+	- **""SVN*""** pages - reserved for instructions on compiling the compiler and runtime library from sources.
+	- **""Dev*""** pages - reserved for pages that document the internals of the ""FreeBASIC"" compiler and runtime libraries. Starting point: [[DevToc|DevToc]]
+	- **""Faq*""** pages - reserved for pages that provide answers to a list of Frequently Asked Questions.
+	- **""KeyPgPp*""** pages - like a **""KeyPg*""** page except reserved for preprocessor directives.  e.g. [[KeyPgPpdefine|KeyPgPpdefine]]
+	- **""SrcPg*""** pages - a source example.
+
+{{fbdoc item="back" value="FBWikiHelp|FB Wiki - Help"}}

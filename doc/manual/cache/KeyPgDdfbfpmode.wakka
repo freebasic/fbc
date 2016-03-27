@@ -20,6 +20,6 @@ Intrinsic define set by the compiler
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- [[compileroptfpmode Compiler Option: -fpmode]]
+	- [[compileroptfpmode|Compiler Option: -fpmode]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

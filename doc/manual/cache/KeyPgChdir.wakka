@@ -2,14 +2,14 @@
 Changes the current drive and directory
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Chdir** ( [[KeyPgByref byref]] //path// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Chdir** ( [[KeyPgByref|byref]] //path// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Chdir**( //path// )
 ##
 {{fbdoc item="param"}}
 	##//path//##
-		A ##[[KeyPgString string]]## argument specifying the path to change to.
+		A ##[[KeyPgString|string]]## argument specifying the path to change to.
 
 {{fbdoc item="ret"}}
 	Returns zero (0) on success and negative one (-1) on failure.
@@ -33,7 +33,7 @@ If 0 <> result Then Print "error changing current directory to " & pathname & ".
 	- In QB, the drive could not be specified.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgMkdir Mkdir]]##
-	- ##[[KeyPgRmdir Rmdir]]##
+	- ##[[KeyPgMkdir|Mkdir]]##
+	- ##[[KeyPgRmdir|Rmdir]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

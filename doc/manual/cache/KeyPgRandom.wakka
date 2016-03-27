@@ -2,7 +2,7 @@
 Specifies file or device to be opened for binary mode
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgOpen Open]] //filename// for **Random** [[[KeyPgAccess Access]] //access_type//] [[[KeyPgLock Lock]] //lock_type//] as [#]//filenum// [Len = //record_length//]
+	[[KeyPgOpen|Open]] //filename// for **Random** [[[KeyPgAccess|Access]] //access_type//] [[[KeyPgLock|Lock]] //lock_type//] as [#]//filenum// [Len = //record_length//]
 ##
 {{fbdoc item="param"}}
 	##//filename//##
@@ -18,13 +18,13 @@ Specifies file or device to be opened for binary mode
 
 {{fbdoc item="desc"}}
 	Opens a file or device for reading and/or writing binary data in the given file ##//filenum//##, with records of size ##//record_length//##.
-	If the file does not exist, a new file will be created, otherwise any data existing in the file is preserved by ##[[KeyPgOpen Open]]##.  The file pointer is initialized by ##[[KeyPgOpen Open]]## at the start of the file, at record number ##1##. File operations move the file position in steps of ##//record_length//## bytes.
-	This file mode uses an user-defined ##[[KeyPgType Type]]## buffer variable to read/write full records in a file. The buffer variable uses to include several fields.
-	The data is saved in binary mode, in the same internal format ""FreeBASIC"" uses, by means of ##[[KeyPgGetfileio Get #]]## and ##[[KeyPgPutfileio Put #]]##.
+	If the file does not exist, a new file will be created, otherwise any data existing in the file is preserved by ##[[KeyPgOpen|Open]]##.  The file pointer is initialized by ##[[KeyPgOpen|Open]]## at the start of the file, at record number ##1##. File operations move the file position in steps of ##//record_length//## bytes.
+	This file mode uses an user-defined ##[[KeyPgType|Type]]## buffer variable to read/write full records in a file. The buffer variable uses to include several fields.
+	The data is saved in binary mode, in the same internal format ""FreeBASIC"" uses, by means of ##[[KeyPgGetfileio|Get #]]## and ##[[KeyPgPutfileio|Put #]]##.
 	
 	##//filename//## must be string expression resulting in a legal file name in the target OS, without wildcards. The file will be sought for in the present directory, unless a path is given.
 			
-	##//Access_type//## - By default ##**Random**## mode allows to both read and write the file, unless an ##[[KeyPgAccess Access]]## type is specified, it must be one of:
+	##//Access_type//## - By default ##**Random**## mode allows to both read and write the file, unless an ##[[KeyPgAccess|Access]]## type is specified, it must be one of:
 		- ##**Read**## - the file is opened for input only
 		- ##**Write**## - the file is opened for output only
 		- ##**Read Write**## - the file is opened for input and output (the default)
@@ -35,11 +35,11 @@ Specifies file or device to be opened for binary mode
 		- ##**Lock Write**## - The file can't be opened simultaneously for writing
 		- ##**Lock Read Write**## - The file cannot be opened simultaneously by other processes.
 		If no lock type is stated, the file will be ##**Shared**## for other threads of the program and ##**Lock Read Write**## for other programs.
-		##[[KeyPgLock Lock]]## and ##[[KeyPgUnlock Unlock]]## can be used to restrict temporally access to parts of a file.
+		##[[KeyPgLock|Lock]]## and ##[[KeyPgUnlock|Unlock]]## can be used to restrict temporally access to parts of a file.
 
-	##//filenum//## is a valid ""FreeBASIC"" file number (in the range ##1..255##) not being used for any other file presently open. This number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile FreeFile]]## function.
+	##//filenum//## is a valid ""FreeBASIC"" file number (in the range ##1..255##) not being used for any other file presently open. This number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile|FreeFile]]## function.
 	
-	##//record_length//## is the amount of bytes the file pointer will move for each individual ##[[KeyPgGetfileio Get]]## and ##[[KeyPgPutfileio Put]]##, it must match the size of the buffer variable used when ##[[KeyPgGetfileio Get]]##ting and ##[[KeyPgPutfileio Put]]##ting data. If omitted, it defaults to ##128##.
+	##//record_length//## is the amount of bytes the file pointer will move for each individual ##[[KeyPgGetfileio|Get]]## and ##[[KeyPgPutfileio|Put]]##, it must match the size of the buffer variable used when ##[[KeyPgGetfileio|Get]]##ting and ##[[KeyPgPutfileio|Put]]##ting data. If omitted, it defaults to ##128##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/random1.bas"}}%%(freebasic)
@@ -109,12 +109,12 @@ close #1
 
 {{fbdoc item="diff"}}
 	- Care must be taken with dynamic or fixed length strings inside user defined types (UDT), see the warning at KeyPgType.
-	- The keyword ##[[KeyPgField Field]]## can only be used with ##[[KeyPgType Type]]## to specify the packing of the UDT. 
+	- The keyword ##[[KeyPgField|Field]]## can only be used with ##[[KeyPgType|Type]]## to specify the packing of the UDT. 
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgBinary Binary]]##
-	- ##[[KeyPgGetfileio Get #]]##
-	- ##[[KeyPgPutfileio Put #]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgBinary|Binary]]##
+	- ##[[KeyPgGetfileio|Get #]]##
+	- ##[[KeyPgPutfileio|Put #]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -2,7 +2,7 @@
 Retrieves information about an image
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Imageinfo** ( [[KeyPgByval byval]] //image// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByref byref]] //width// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //height// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //bypp// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //pitch// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] //pixdata// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] = 0, [[KeyPgByref byref]] //size// [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Imageinfo** ( [[KeyPgByval|byval]] //image// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByref|byref]] //width// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //height// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //bypp// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //pitch// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] //pixdata// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] = 0, [[KeyPgByref|byref]] //size// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Imageinfo**( //image// [, [//width//] [, [//height//] [, [//bypp//] [, [//pitch//] [, [//pixdata//] [, //size//]]]]]] )
@@ -131,17 +131,17 @@ sleep
 {{image class="center" title="Output image for ImageInfo example" url="/images/imageinfo.png"}}
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Imageinfo""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Imageinfo""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgImagecreate ImageCreate]]##
-	- ##[[KeyPgImageDestroy ImageDestroy]]##
-	- ##[[KeyPgImageConvertRow ImageConvertRow]]##
-	- ##[[KeyPgGetgraphics Get (Graphics)]]##
-	- ##[[KeyPgPutgraphics Put (Graphics)]]##
-	- [[GfxInternalFormats Internal pixel formats]]
+	- ##[[KeyPgImagecreate|ImageCreate]]##
+	- ##[[KeyPgImageDestroy|ImageDestroy]]##
+	- ##[[KeyPgImageConvertRow|ImageConvertRow]]##
+	- ##[[KeyPgGetgraphics|Get (Graphics)]]##
+	- ##[[KeyPgPutgraphics|Put (Graphics)]]##
+	- [[GfxInternalFormats|Internal pixel formats]]
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

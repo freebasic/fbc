@@ -2,7 +2,7 @@
 Returns the arctangent of a number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Atn** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Atn** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = Atn( //number// )
@@ -15,7 +15,7 @@ Returns the arctangent of a number
 	The angle, in radians, whose tangent is ##//number//##, in the range [-Pi/2..Pi/2].
 
 {{fbdoc item="desc"}}
-	##Atn## returns the arctangent of the argument ##//number//## as a ##[[KeyPgDouble Double]]## within the range of -[[TutMathAngles Pi]]/2 to [[TutMathAngles Pi]]/2.  The arctangent is the inverse of the ##[[KeyPgTan Tan]]## function. The returned angle is measured in [[TutMathAngles radians]] (not [[TutMathAngles degrees]]).
+	##Atn## returns the arctangent of the argument ##//number//## as a ##[[KeyPgDouble|Double]]## within the range of -[[TutMathAngles|Pi]]/2 to [[TutMathAngles|Pi]]/2.  The arctangent is the inverse of the ##[[KeyPgTan|Tan]]## function. The returned angle is measured in [[TutMathAngles|radians]] (not [[TutMathAngles|degrees]]).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/atn.bas"}}%%(freebasic)
@@ -33,8 +33,8 @@ Pi = 3.141592653589793
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgTan Tan]]##
-	- ##[[KeyPgAtan2 ATan2]]##
-	- [[TutMathIntroTrig A Brief Introduction To Trigonometry]]
+	- ##[[KeyPgTan|Tan]]##
+	- ##[[KeyPgAtan2|ATan2]]##
+	- [[TutMathIntroTrig|A Brief Introduction To Trigonometry]]
 
 {{fbdoc item="back" value="CatPgMath|Math"}}

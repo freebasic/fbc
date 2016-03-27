@@ -25,21 +25,11 @@
 #include once "CRegex.bi"
 #include once "pcre.bi"
 
-''#print __FB_VER_MAJOR__
-''#print __FB_VER_MINOR__
-
-'' compatibility hack due to pcre header change in 0.18.4
-#if(( __FB_VER_MAJOR__ <= 0 ) and ( __FB_VER_MINOR__ <= 17 ))
-#define pcre_extra_t pcre_extra
-#else
-#define pcre_extra_t pcre_extra_
-#endif
-
 namespace fb
 
 	type CRegexCtx_
 		as pcre ptr 		reg
-		as pcre_extra_t ptr extra
+		as pcre_extra ptr extra
 		as integer ptr 		vectb
 		as zstring ptr 		subject
 		as integer 			sublen

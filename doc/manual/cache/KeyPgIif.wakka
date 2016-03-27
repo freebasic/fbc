@@ -69,12 +69,12 @@ Sleep
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Iif""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Iif""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgIfthen If...Then]]##
+	- ##[[KeyPgIfthen|If...Then]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

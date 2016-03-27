@@ -54,7 +54,9 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgOpenScrn|OPEN SCRN"}}
 	- {{fbdoc item="keyword" value="KeyPgPos|POS"}}
 	- {{fbdoc item="keyword" value="KeyPgPrint|PRINT"}}
+	- {{fbdoc item="keyword" value="KeyPgPrint|?"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintusing|PRINT USING"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintusing|? USING"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenCons|SCREEN (Console)"}}
 	- {{fbdoc item="keyword" value="KeyPgSpc|SPC"}}
 	- {{fbdoc item="keyword" value="KeyPgTab|TAB"}}
@@ -158,6 +160,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgOpen|OPEN"}}
 	- {{fbdoc item="keyword" value="KeyPgOutput|OUTPUT"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintPp|? #"}}
 	- {{fbdoc item="keyword" value="KeyPgPutfileio|PUT # (File I/O)"}}
 	- {{fbdoc item="keyword" value="KeyPgRandom|RANDOM"}}
 	- {{fbdoc item="keyword" value="KeyPgReadFile|READ (File Access)"}}	

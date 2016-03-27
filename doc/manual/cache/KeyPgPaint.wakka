@@ -20,11 +20,11 @@ Fills an area delimited by a border of a specified color
 {{fbdoc item="desc"}}
 	Graphics command to fill an area delimited by a border of specified color. Also known as 'flood-fill' or 'paint bucket'.
 
-	##**Paint**## can operate on the current work page as set by the ##[[KeyPgScreenset Screenset]]## statement or on the target ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer, if specified.
+	##**Paint**## can operate on the current work page as set by the ##[[KeyPgScreenset|Screenset]]## statement or on the target ##[[KeyPgGetgraphics|Get]]##/##[[KeyPgPutgraphics|Put]]## buffer, if specified.
 
-	Filling starts at specified ##(//x//,//y//)## coordinates; if ##STEP## is specified, these are relative to the last graphics cursor position. Coordinates are also affected by custom coordinates system set up by ##[[KeyPgWindow Window]]## and/or ##[[KeyPgViewgraphics View (Graphics)]]## statements; clipping set by ##[[KeyPgViewgraphics View]]## also applies.
+	Filling starts at specified ##(//x//,//y//)## coordinates; if ##STEP## is specified, these are relative to the last graphics cursor position. Coordinates are also affected by custom coordinates system set up by ##[[KeyPgWindow|Window]]## and/or ##[[KeyPgViewgraphics|View (Graphics)]]## statements; clipping set by ##[[KeyPgViewgraphics|View]]## also applies.
 	
-	If the ##//paint//## argument is a number, it is assumed a color in the same format used by the ##[[KeyPgColor Color]]## statement, and the region is flood-filled using that color. If ##//paint//## is a ##[[KeyPgString String]]##, the region will be filled using a pattern; the pattern is always 8*8 pixels, and the passed string must hold pixels data in a format dependent on the current color depth. The string holds pattern pixels row by row, and its size should be as follows:
+	If the ##//paint//## argument is a number, it is assumed a color in the same format used by the ##[[KeyPgColor|Color]]## statement, and the region is flood-filled using that color. If ##//paint//## is a ##[[KeyPgString|String]]##, the region will be filled using a pattern; the pattern is always 8*8 pixels, and the passed string must hold pixels data in a format dependent on the current color depth. The string holds pattern pixels row by row, and its size should be as follows:
 
 	For color depths 1, 2, 4 and 8:
 	##size = 8 * 8 = 64##
@@ -33,7 +33,7 @@ Fills an area delimited by a border of a specified color
 	For color depths 24 and 32:
 	##size = (8 * 8) * 4 = 256##
 
-	If the passed string is smaller, missing pixels will be 0. If the ##//paint//## argument is omitted, normal filling is performed using the current foreground color set by ##[[KeyPgColor Color]]##. Flood-filling continues until pixels of the specified border color are found; if ##//border_color//## is omitted, the current background color is assumed.
+	If the passed string is smaller, missing pixels will be 0. If the ##//paint//## argument is omitted, normal filling is performed using the current foreground color set by ##[[KeyPgColor|Color]]##. Flood-filling continues until pixels of the specified border color are found; if ##//border_color//## is omitted, the current background color is assumed.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/paint.bas"}}%%(freebasic)
@@ -130,6 +130,6 @@ sleep
 	- The background color parameter supported by QB is not supported by the ""FreeBASIC"" version
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics Screen]]##
+	- ##[[KeyPgScreengraphics|Screen]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

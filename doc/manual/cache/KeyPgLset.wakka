@@ -2,8 +2,8 @@
 Left-justifies a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Lset** ( [[KeyPgByref byref]] //dst// [[KeyPgAs as]] [[KeyPgString string]], [[KeyPgByref byref]] //src// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] )
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Lset** ( [[KeyPgByval byval]] //dst// [[KeyPgAs as]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //src// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Lset** ( [[KeyPgByref|byref]] //dst// [[KeyPgAs|as]] [[KeyPgString|string]], [[KeyPgByref|byref]] //src// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Lset** ( [[KeyPgByval|byval]] //dst// [[KeyPgAs|as]] [[KeyPgWstring|wstring]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //src// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]] [[KeyPgPtr|ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**Lset** //dst//, //src//
@@ -11,13 +11,13 @@ Left-justifies a string
 ##
 {{fbdoc item="param"}}
 	##//dst//##
-		String ##[[KeyPgString String]]## to receive the data.
+		String ##[[KeyPgString|String]]## to receive the data.
 	##//src//##
-		Source ##[[KeyPgString String]]## to get the data.
+		Source ##[[KeyPgString|String]]## to get the data.
 	##//dst_udt//##
-		User defined ##[[KeyPgType Type]]## to receive the data.	
+		User defined ##[[KeyPgType|Type]]## to receive the data.	
 	##//src_udt//##
-		User defined ##[[KeyPgType Type]]## to copy the data from.
+		User defined ##[[KeyPgType|Type]]## to copy the data from.
 
 {{fbdoc item="desc"}}
 	##**Lset**## left justifies text into the string buffer ##//dst//##, filling the left part of the string with ##//src//## and the right part with spaces. The string buffer size is not modified.
@@ -54,12 +54,12 @@ print a.x
 	-In QB, the syntax was ##**Lset** //dst// = //src//##. That syntax is also supported by FB.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgRset Rset]]##
-	- ##[[KeyPgSpace Space]]##
-	- ##[[KeyPgPutfileio Put (File I/O)]]##
-	- ##[[KeyPgMkd Mkd]]##
-	- ##[[KeyPgMki Mki]]##
-	- ##[[KeyPgMkl Mkl]]##
-	- ##[[KeyPgMks Mks]]##
+	- ##[[KeyPgRset|Rset]]##
+	- ##[[KeyPgSpace|Space]]##
+	- ##[[KeyPgPutfileio|Put (File I/O)]]##
+	- ##[[KeyPgMkd|Mkd]]##
+	- ##[[KeyPgMki|Mki]]##
+	- ##[[KeyPgMkl|Mkl]]##
+	- ##[[KeyPgMks|Mks]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

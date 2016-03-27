@@ -4,7 +4,7 @@ Operators that are executed by the preprocessor
 These operators control how text is interpreted by the preprocessor.
 
 <<=={{fbdoc item="keyword" value="KeyPgOpPpStringize|Operator # (Stringize)"}}==
-	Returns a text operand converted to a [[KeyPgString String]] literal.
+	Returns a text operand converted to a [[KeyPgString|String]] literal.
 =={{fbdoc item="keyword" value="KeyPgOpPpConcat|Operator ## (Concatenation)"}}==
 	Concatenates two text operands.
 <<>>=={{fbdoc item="keyword" value="KeyPgOpPpEscape|Operator ! (Escaped String Literal)"}}==

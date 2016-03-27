@@ -2,24 +2,24 @@
 Returns a binary (base 2) string representation of an integer
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlong ulong]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgConst const]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Bin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Bin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Bin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Bin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Bin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUbyte ubyte]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUshort ushort]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlong ulong]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Bin** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgConst const]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Bin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Bin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Bin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Bin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Bin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Bin**[$]( //number// [, //digits// ] )
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		A number or expression evaluating to a number.  A floating-point number will be converted to a ##[[KeyPgLongint longint]]##.
+		A number or expression evaluating to a number.  A floating-point number will be converted to a ##[[KeyPgLongint|longint]]##.
 	##//digits//##
 		Desired number of digits in the returned string.
 
@@ -31,9 +31,9 @@ Returns a binary (base 2) string representation of an integer
 
 	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
 
-	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (32 for a ##[[KeyPgLong long]]##, 64 for a ##[[KeyPgLongint Longint]])##.
+	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (32 for a ##[[KeyPgLong|long]]##, 64 for a ##[[KeyPgLongint|Longint]])##.
 
-	If you want to do the opposite, i.e. convert an binary string back into a number, the easiest way to do it is to prepend the string with ##"&B"##, and convert it to an integer type, using a function like ##[[KeyPgCint Cint]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgCint Cint]]("&B101")##
+	If you want to do the opposite, i.e. convert an binary string back into a number, the easiest way to do it is to prepend the string with ##"&B"##, and convert it to an integer type, using a function like ##[[KeyPgCint|Cint]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgCint|Cint]]("&B101")##
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/bin.bas"}}%%(freebasic)
@@ -48,15 +48,15 @@ Print Bin(54321, 20)
 00001101010000110001
 %%
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Bin""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Bin""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOct Oct]]##
-	- ##[[KeyPgHex Hex]]##
-	- ##[[KeyPgValint Valint]]##
-	- ##[[KeyPgVallng Vallng]]##
+	- ##[[KeyPgOct|Oct]]##
+	- ##[[KeyPgHex|Hex]]##
+	- ##[[KeyPgValint|Valint]]##
+	- ##[[KeyPgVallng|Vallng]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

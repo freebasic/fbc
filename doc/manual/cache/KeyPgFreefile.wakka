@@ -2,7 +2,7 @@
 Returns a free file number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Freefile** ( ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Freefile** ( ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Freefile**
@@ -11,9 +11,9 @@ Returns a free file number
 	The next available file number, if any, otherwise zero (##0##).
 
 {{fbdoc item="desc"}}
-	Returns the number of the next free file number with valid values ##1## to ##255##, or ##0## if there are already 255 files opened. This value is a required argument to ##[[KeyPgOpen Open]]## a file. ##**Freefile**## is useful when opening files in complex programs where the programmer can't keep track of the used file numbers.
+	Returns the number of the next free file number with valid values ##1## to ##255##, or ##0## if there are already 255 files opened. This value is a required argument to ##[[KeyPgOpen|Open]]## a file. ##**Freefile**## is useful when opening files in complex programs where the programmer can't keep track of the used file numbers.
 	Make sure to always close files when no longer needed, otherwise you will get a file number leak, and won't be able to open any files anymore after 255 filenumbers are exhausted while your program is running.
-	##**Freefile**## will always return the smallest free file number.  The file number returned by ##**Freefile**## will not change until that file number is ##[[KeyPgOpen Open]]##ed, or until a smaller file number is ##[[KeyPgClose Close]]##d.  For this reason, it is wise to use ##**Freefile**## immediately before its corresponding ##[[KeyPgOpen Open]]##, to ensure that the file number is not returned and opened elsewhere first.
+	##**Freefile**## will always return the smallest free file number.  The file number returned by ##**Freefile**## will not change until that file number is ##[[KeyPgOpen|Open]]##ed, or until a smaller file number is ##[[KeyPgClose|Close]]##d.  For this reason, it is wise to use ##**Freefile**## immediately before its corresponding ##[[KeyPgOpen|Open]]##, to ensure that the file number is not returned and opened elsewhere first.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/freefile.bas"}}%%(freebasic)
@@ -37,7 +37,7 @@ Close #f
 End
 %%
 
-	When using multiple ##**Freefile**## statements, ##**Freefile**## should be used immediately before the ##[[KeyPgOpen Open]]## statement:
+	When using multiple ##**Freefile**## statements, ##**Freefile**## should be used immediately before the ##[[KeyPgOpen|Open]]## statement:
 {{fbdoc item="filename" value="examples/manual/fileio/freefile-good.bas"}}%%(freebasic)
 dim fr as integer, fs as integer
 ' The CORRECT way:
@@ -67,8 +67,8 @@ OPEN "file2" FOR INPUT AS #fs '' error: file number already opened
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgPutfileio Put (File I/O)]]##
-	- ##[[KeyPgGetfileio Get (File I/O)]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgPutfileio|Put (File I/O)]]##
+	- ##[[KeyPgGetfileio|Get (File I/O)]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

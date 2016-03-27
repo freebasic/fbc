@@ -16,8 +16,8 @@ Add a library file to the linker's list.
 	The ##-l## compiler option adds a library file to the linker's list, to be linked into the final executable or library if needed to satisfy dependencies.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInclib #inclib]]##
-	- [[CompilerOptp Compiler Option: -p]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- ##[[KeyPgInclib|#inclib]]##
+	- [[CompilerOptp|Compiler Option: -p]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

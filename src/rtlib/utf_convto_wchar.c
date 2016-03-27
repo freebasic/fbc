@@ -43,15 +43,21 @@ static FB_WCHAR *hUTF8ToUTF16( const UTF_8 *src, FB_WCHAR *dst, ssize_t *chars )
 			}
 	
 			c -= __fb_utf8_offsetsTb[extbytes];
-	
-			if( charsleft <= 1 )
+
+			/* Ensure we have room for at least 2 UTF16 units (surrogate pair) */
+			if( charsleft < 2 )
 			{
-				charsleft = 8 + 1;
+				/* If we still have room for 1 char, reclaim it */
+				dst_size -= charsleft;
+
+				/* Make room for some chars */
+				charsleft = 8;
 				dst_size += charsleft;
+
 				buffer = realloc( buffer, dst_size * sizeof( FB_WCHAR ) );
 				dst = buffer + dst_size - charsleft;
 			}
-			
+
 			if( c <= UTF16_MAX_BMP )
 				*dst++ = c;
 			else
@@ -151,10 +157,10 @@ static FB_WCHAR *hUTF8ToUTF32( const UTF_8 *src, FB_WCHAR *dst, ssize_t *chars )
 				case 0:
 					c += *src++;
 			}
-	
+
 			c -= __fb_utf8_offsetsTb[extbytes];
-	
-			if( charsleft <= 1 )
+
+			if( charsleft == 0 )
 			{
 				charsleft = 8;
 				dst_size += charsleft;
@@ -300,29 +306,28 @@ static FB_WCHAR *hUTF16ToUTF32( const UTF_16 *src, FB_WCHAR *dst, ssize_t *chars
 
 static FB_WCHAR *hUTF16ToWChar( const UTF_16 *src, FB_WCHAR *dst, ssize_t *chars )
 {
-	FB_WCHAR *res = NULL;
-
 	switch( sizeof( FB_WCHAR ) )
 	{
 	case sizeof( char ):
-		res = (FB_WCHAR *)fb_hUTF16ToChar( src, (char *)dst, chars );
+		dst = (FB_WCHAR *)fb_hUTF16ToChar( src, (char *)dst, chars );
 		break;
 
 	case sizeof( UTF_16 ):
 		if( dst == NULL ) {
-			res = (FB_WCHAR *)src;
+			dst = malloc( (*chars + 1) * sizeof( UTF_16 ) );
+			memcpy( dst, src, *chars * sizeof( UTF_16 ) );
+			dst[*chars] = 0;
 		} else {
 			memcpy( dst, src, *chars * sizeof( UTF_16 ) );
-			res = dst;
 		}
 		break;
 
 	case sizeof( UTF_32 ):
-		res = hUTF16ToUTF32( src, dst, chars );
+		dst = hUTF16ToUTF32( src, dst, chars );
 		break;
 	}
 
-	return res;
+	return dst;
 }
 
 
@@ -340,9 +345,14 @@ static FB_WCHAR *hUTF32ToUTF16( const UTF_32 *src, FB_WCHAR *dst, ssize_t *chars
 	    {
 	    	c = *src++;
 	
-			if( charsleft <= 1 )
+			/* Ensure we have room for at least 2 UTF16 units (surrogate pair) */
+			if( charsleft < 2 )
 			{
-				charsleft = 8 + 1;
+				/* If we still have room for 1 char, reclaim it */
+				dst_size -= charsleft;
+
+				/* Make room for some chars */
+				charsleft = 8;
 				dst_size += charsleft;
 				buffer = realloc( buffer, dst_size * sizeof( FB_WCHAR ) );
 				dst = buffer + dst_size - charsleft;
@@ -398,29 +408,27 @@ static FB_WCHAR *hUTF32ToUTF16( const UTF_32 *src, FB_WCHAR *dst, ssize_t *chars
 
 static FB_WCHAR *hUTF32ToWChar( const UTF_32 *src, FB_WCHAR *dst, ssize_t *chars )
 {
-	FB_WCHAR *res = NULL;
-
 	switch( sizeof( FB_WCHAR ) )
 	{
 	case sizeof( char ):
-		res = (FB_WCHAR *)fb_hUTF32ToChar( src, (char *)dst, chars );
+		dst = (FB_WCHAR *)fb_hUTF32ToChar( src, (char *)dst, chars );
 		break;
 
 	case sizeof( UTF_16 ):
-		res = hUTF32ToUTF16( src, dst, chars );
+		dst = hUTF32ToUTF16( src, dst, chars );
 		break;
 
 	case sizeof( UTF_32 ):
 		if( dst == NULL ) {
-			res = (FB_WCHAR *)src;
+			dst = malloc( (*chars + 1) * sizeof( UTF_32 ) );
+			memcpy( dst, src, *chars * sizeof( UTF_32 ) );
+			dst[*chars] = 0;
 		} else {
 			memcpy( dst, src, *chars * sizeof( UTF_32 ) );
-			res = dst;
 		}
 		break;
 	}
-
-	return res;
+	return dst;
 }
 
 FB_WCHAR *fb_UTFToWChar( FB_FILE_ENCOD encod, const void *src, FB_WCHAR *dst, ssize_t *chars )

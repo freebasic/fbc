@@ -3,22 +3,22 @@ Specifies an interface to be implemented by a user-defined type
 ~&Note: Stub page. Even though this keyword is reserved already, interfaces are not implemented yet.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgType Type]] //typename// **Implements** //interface//
+	[[KeyPgType|Type]] //typename// **Implements** //interface//
 		...
-	End [[KeyPgType Type]]
+	End [[KeyPgType|Type]]
 ##
 {{fbdoc item="desc"}}
 
 {{fbdoc item="ex"}}
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Implements""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Implements""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgType Type]]##
-	- ##[[KeyPgExtends Extends]]##
+	- ##[[KeyPgType|Type]]##
+	- ##[[KeyPgExtends|Extends]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

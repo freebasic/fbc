@@ -2,7 +2,7 @@
 Standard data type: 8 bit signed
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Byte**
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Byte**
 ##
 {{fbdoc item="desc"}}
 	8-bit signed whole-number data type. Can hold a value in the range of -128 to 127.
@@ -23,13 +23,13 @@ Print "Byte Range = "; x; " to "; y
 	%%Byte Range = -128 to  127%%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Byte""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Byte""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgUbyte Ubyte]]##
-	- ##[[KeyPgCbyte Cbyte]]##
+	- ##[[KeyPgUbyte|Ubyte]]##
+	- ##[[KeyPgCbyte|Cbyte]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

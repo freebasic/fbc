@@ -5,7 +5,7 @@ Forces variables, objects and arrays to be declared before they are used
 	**Option Explicit**
 ##
 {{fbdoc item="desc"}}
-	##**Option Explicit**## is a statement that forces any following variable, object or array usage to be preceded by a declaration, with, for example, ##[[KeyPgDim Dim]]## or ##[[KeyPgStatic Static]]##. This rule remains in effect for the rest of the module in which ##**Option Explicit**## is used, and cannot be overridden.
+	##**Option Explicit**## is a statement that forces any following variable, object or array usage to be preceded by a declaration, with, for example, ##[[KeyPgDim|Dim]]## or ##[[KeyPgStatic|Static]]##. This rule remains in effect for the rest of the module in which ##**Option Explicit**## is used, and cannot be overridden.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/switches/option-explicit.bas"}}%%(freebasic)
@@ -20,12 +20,12 @@ a = 1                       ' ..or this statement will fail to compile.
 %%
 	
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
+	- Only available in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
 	-New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfboptionexplicit __FB_OPTION_EXPLICIT__]]##
+	- ##[[KeyPgDdfboptionexplicit|__FB_OPTION_EXPLICIT__]]##
 
 {{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

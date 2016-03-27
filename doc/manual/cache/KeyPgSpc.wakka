@@ -5,14 +5,14 @@ Output function to skip spaces when writing to screen or file
 	**Spc**( //columns// )
 ##
 {{fbdoc item="usage"}}##
-	[[KeyPgPrint Print]] **Spc**( //spaces// ) [(, | ;)] ...
+	[[KeyPgPrint|Print]] **Spc**( //spaces// ) [(, | ;)] ...
 ##
 {{fbdoc item="param"}}
 	##//spaces//##
 		number of spaces to skip
 
 {{fbdoc item="desc"}}
-	##**Spc**## skips over the given number of ##//spaces//## when ##[[KeyPgPrint Print]]##ing to screen or to a file.  The character cells skipped over are left unchanged.
+	##**Spc**## skips over the given number of ##//spaces//## when ##[[KeyPgPrint|Print]]##ing to screen or to a file.  The character cells skipped over are left unchanged.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/console/spc.bas"}}%%(freebasic)
@@ -45,11 +45,12 @@ Bob                                Smith
 %%##
 
 {{fbdoc item="diff"}}
-	- In QBASIC, spaces were printed in the gap, while in ""FreeBASIC"", the characters are just skipped over and left untouched.  The ##[[KeyPgSpace Space]]## function can still be used to achieve this effect.
+	- In QBASIC, spaces were printed in the gap, while in ""FreeBASIC"", the characters are just skipped over and left untouched.  The ##[[KeyPgSpace|Space]]## function can still be used to achieve this effect.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgTab Tab]]##
-	- ##[[KeyPgSpace Space]]##
-	- ##[[KeyPgPrint Print]]##
+	- ##[[KeyPgTab|Tab]]##
+	- ##[[KeyPgSpace|Space]]##
+	- ##[[KeyPgPrint|Print]]##
+	- ##[[KeyPgPrint|?]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

@@ -2,7 +2,7 @@
 Exponentiates and assigns a value to a variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **^=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgDouble double]] )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **^=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgDouble|double]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgDouble|double]] )
 ##
 {{fbdoc item="usage"}}##
 	//lhs// **^=** //rhs//
@@ -16,11 +16,11 @@ Exponentiates and assigns a value to a variable
 {{fbdoc item="desc"}}
 	This operator exponentiates and assigns a value to a variable. It is functionally equivalent to:
 ##
-		//lhs// = //lhs// [[KeyPgOpExponentiate ^]] //rhs//
+		//lhs// = //lhs// [[KeyPgOpExponentiate|^]] //rhs//
 ##
 	This operator can be overloaded for user-defined types.
 
-	Note: This operator exists in C/""C++"" with a different meaning - there it performs a Bitwise ##[[KeyPgOpCombineXor Xor=]]##.
+	Note: This operator exists in C/""C++"" with a different meaning - there it performs a Bitwise ##[[KeyPgOpCombineXor|Xor=]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/exponent-assign.bas"}}%%(freebasic)
@@ -36,13 +36,13 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpExponentiate Operator ^ (Exponentiate)]]##
-	- [[CatPgMath Mathematical Functions]]
+	- ##[[KeyPgOpExponentiate|Operator ^ (Exponentiate)]]##
+	- [[CatPgMath|Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

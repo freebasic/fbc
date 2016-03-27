@@ -2,7 +2,7 @@
 Raises a numeric expression to some power
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **^** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **^** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgDouble|double]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **^** //rhs//
@@ -22,11 +22,11 @@ Raises a numeric expression to some power
 	Neither of the operands are modified in any way.
 
 	Note: this operation is not guaranteed to be fully accurate, and there may be some inaccuracy in the least significant bits of the number.  This is particularly noticeable when the result is expected to be an exact number: in these cases, you may find the result is out by a very small amount.  For this reason, you should never assume that an exponentiation expression will be exactly equal to the value you expect.
-	This also means that you should be wary of using rounding methods such as ##[[KeyPgInt Int]]## and ##[[KeyPgFix Fix]]## on the result: if you expect the result to be an integer value, then there's a chance that it might be slightly lower, and will round down to a value that is one less than you would expect.
+	This also means that you should be wary of using rounding methods such as ##[[KeyPgInt|Int]]## and ##[[KeyPgFix|Fix]]## on the result: if you expect the result to be an integer value, then there's a chance that it might be slightly lower, and will round down to a value that is one less than you would expect.
 	
 	This operator can be overloaded for user-defined types.
 
-	Note: This operator exists in C/""C++"" with a different meaning - there it performs a Bitwise ##[[KeyPgOpXor Xor]]##.
+	Note: This operator exists in C/""C++"" with a different meaning - there it performs a Bitwise ##[[KeyPgOpXor|Xor]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/exponent.bas"}}%%(freebasic)
@@ -46,12 +46,12 @@ The fifth root of 3.4 is 1.27730844458754
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- [[CatPgMath Mathematical Functions]]
+	- [[CatPgMath|Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

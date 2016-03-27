@@ -21,7 +21,6 @@ o Dim Byref
        which we don't need. The temp vars from the reference var initializer are in the same
        scope as the reference var, and it should be enough to just remove their TEMP flag.
   - allow BYVAL initialization, like byref results/params
-  - disallow [Z/W]String * N with Dim Byref (same problem as with byref params, see bug #650)
   - allow BYREF fields; but they must be initialized in a constructor - what syntax to use for that?
     @a = b works, but feels like a hack. Otherwise, a new syntax for field initialization is needed,
     like initializer lists in C++

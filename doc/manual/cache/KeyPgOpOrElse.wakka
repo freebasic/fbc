@@ -2,7 +2,7 @@
 Returns the short circuit-or (Inclusive Disjunction) of two numeric values
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **""OrElse""** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T1//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// ) [[KeyPgAs as]] //Ret//
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **""OrElse""** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T1//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T2// ) [[KeyPgAs|as]] //Ret//
 ##
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **""OrElse""** //rhs//
@@ -32,7 +32,7 @@ Returns the short circuit-or (Inclusive Disjunction) of two numeric values
 
 	Short-circuiting is performed - only expressions needed to calculate the result are evaluated.
 	
-	The return type is almost always an ##[[KeyPgInteger Integer]]##, of the value ##0## or ##-1##, denoting false and true respectively. Except if the left and right-hand side types are both ##[[KeyPgBoolean Boolean]]##, then the return type is also ##[[KeyPgBoolean Boolean]]##.
+	The return type is almost always an ##[[KeyPgInteger|Integer]]##, of the value ##0## or ##-1##, denoting false and true respectively. Except if the left and right-hand side types are both ##[[KeyPgBoolean|Boolean]]##, then the return type is also ##[[KeyPgBoolean|Boolean]]##.
 
 	This operator cannot be overloaded for user-defined types.
 
@@ -52,8 +52,8 @@ SLEEP
 	- This operator was not available in QB.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpAndAlso AndAlso]]##
-	- ##[[KeyPgOpOr Or]]##
-	- [[TblTruth Operator Truth Tables]]
+	- ##[[KeyPgOpAndAlso|AndAlso]]##
+	- ##[[KeyPgOpOr|Or]]##
+	- [[TblTruth|Operator Truth Tables]]
 
 {{fbdoc item="back" value="CatPgOpShortCircuit|Short Circuit Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

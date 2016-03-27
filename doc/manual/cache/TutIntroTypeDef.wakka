@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Introduction to the Type Def"}}----
-//Written by [[WikiRick rdc]]//
+//Written by [[WikiRick|rdc]]//
 
 There are times when creating a program that you may want to define an aggregate structure such as a personnel record, or an enemy in a game. While you can do this using individual data types, it is hard to manage within  a program. Composite data types allow you to group together related data items into a single structure that can be manipulated as a single entity. ""FreeBASIC"" offers two composite data types, the ##Type## and ##Union##.
 

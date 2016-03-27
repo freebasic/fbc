@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="BASE (initializer)"}}----
-Specifies an initializer for the base UDT in derived [[KeyPgType UDT]] constructors
+Specifies an initializer for the base UDT in derived [[KeyPgType|UDT]] constructors
 
 {{fbdoc item="syntax"}}##
 	**base** ( //constructor-parameters...// )
@@ -9,7 +9,7 @@ Specifies an initializer for the base UDT in derived [[KeyPgType UDT]] construct
 {{fbdoc item="desc"}}
 	The ##**Base**## initializer can be used at the top of constructors of derived UDTs. It allows to specify an explicit constructor call or UDT initializer to be used to initialize the base object. It will replace the implicit default initialization, and must appear above any other statements in the constructor it is used in.
 	
-	Note: Unlike "##**Base( )**##", a "##[[KeyPgBase Base]].[[KeyPgConstructor Constructor]]( )##" statement does not replace the implicit default initialization done by the constructor of a derived UDT, and can usually not be used legally, because it would result in two constructor calls for the base object.
+	Note: Unlike "##**Base( )**##", a "##[[KeyPgBase|Base]].[[KeyPgConstructor|Constructor]]( )##" statement does not replace the implicit default initialization done by the constructor of a derived UDT, and can usually not be used legally, because it would result in two constructor calls for the base object (for an inheritance structure extending the built-in ##[[KeyPgObject|Object]]## type, this second base constructor call may also corrupt the vtable pointer to point to the base-type vtable instead of to the type vtable).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/baseinit1.bas"}}%%(freebasic)
@@ -53,16 +53,16 @@ constructor Child( byref rhs as Child )
 end constructor
 %%
 {{fbdoc item="lang"}}
-	- Methods are only supported in the //[[CompilerOptlang -lang fb]]// dialect, hence ##**Base**## has no function in other dialects.
+	- Methods are only supported in the //[[CompilerOptlang|-lang fb]]// dialect, hence ##**Base**## has no function in other dialects.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgBase Base (member access)]]##
-	- ##[[KeyPgThis This]]##
-	- ##[[KeyPgType Type]]##
-	- ##[[KeyPgExtends Extends]]##
-	- ##[[KeyPgOptionBase Option Base]]##
+	- ##[[KeyPgBase|Base (member access)]]##
+	- ##[[KeyPgThis|This]]##
+	- ##[[KeyPgType|Type]]##
+	- ##[[KeyPgExtends|Extends]]##
+	- ##[[KeyPgOptionBase|Option Base]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

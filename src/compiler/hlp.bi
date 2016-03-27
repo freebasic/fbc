@@ -9,10 +9,7 @@ const INVALID = -1
 '' helper module protos
 ''
 
-declare function hMatchText _
-	( _
-		byval txt as zstring ptr _
-	) as integer
+declare function hMatchIdOrKw( byval txt as const zstring ptr ) as integer
 
 declare function hMatch _
 	( _

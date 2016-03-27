@@ -15,11 +15,11 @@ Sets the math unit to be used for floating point arithmetics.
 
 	##-fpu SSE## will generate floating point instructions for SSE and SSE2 with some math support still done by the 387.
 
-	Functions normally return a floating point value (##[[KeyPgSingle Single]]## or ##[[KeyPgDouble Double]]##) in the ##st(0)## register.  Sometimes, this may be optimized by returning the value in the ##xmm0## register instead.  This can be specified with ##[[KeyPgOption Option("SSE")]]## after the return type in a function's declaration or definition.  ##[[KeyPgOption Option("SSE")]]## is ignored unless the source is compiled with the ##-fpu SSE## command line option.
+	Functions normally return a floating point value (##[[KeyPgSingle|Single]]## or ##[[KeyPgDouble|Double]]##) in the ##st(0)## register.  Sometimes, this may be optimized by returning the value in the ##xmm0## register instead.  This can be specified with ##[[KeyPgOption|Option("SSE")]]## after the return type in a function's declaration or definition.  ##[[KeyPgOption|Option("SSE")]]## is ignored unless the source is compiled with the ##-fpu SSE## command line option.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
-	- ##[[KeyPgOption Option()]]##
-	- ##[[KeyPgDdfbfpu __FB_FPU__]]##
+	- [[CompilerCmdLine|Using the Command Line]]
+	- ##[[KeyPgOption|Option()]]##
+	- ##[[KeyPgDdfbfpu|__FB_FPU__]]##
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

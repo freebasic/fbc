@@ -2,7 +2,7 @@
 Returns the address of a procedure
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Procptr** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// ) [[KeyPgAs as]] //T// [[KeyPgPtr ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Procptr** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T// ) [[KeyPgAs|as]] //T// [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Procptr** ( //lhs// )
@@ -17,9 +17,9 @@ Returns the address of a procedure
 	Returns the address of the procedure.
 
 {{fbdoc item="desc"}}
-	This operator returns the address of a ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## procedure.
+	This operator returns the address of a ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]## procedure.
 
-	##[[KeyPgOpAt Operator @ (Address of)]]##, when used with procedures, has identical behavior.
+	##[[KeyPgOpAt|Operator @ (Address of)]]##, when used with procedures, has identical behavior.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/procptr.bas"}}%%(freebasic)
@@ -46,15 +46,15 @@ end function
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Procptr""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Procptr""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSub Sub]]##
-	- ##[[KeyPgOpVarptr Varptr]]##
-	- ##[[KeyPgOpStrptr Strptr]]##
-	- [[ProPgPointers Pointers]]
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgOpVarptr|Varptr]]##
+	- ##[[KeyPgOpStrptr|Strptr]]##
+	- [[ProPgPointers|Pointers]]
 
 {{fbdoc item="back" value="CatPgOpPoint|Pointer Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

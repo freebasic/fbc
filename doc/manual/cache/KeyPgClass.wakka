@@ -22,11 +22,11 @@ sample output
 %%
 
 {{fbdoc item="lang"}}
-	- Object-related features are supported only in the //[[CompilerOptlang -lang fb]]// option
+	- Object-related features are supported only in the //[[CompilerOptlang|-lang fb]]// option
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgEnum Enum]]##
-	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgEnum|Enum]]##
+	- ##[[KeyPgType|Type]]##

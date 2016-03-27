@@ -5,7 +5,7 @@ Intrinsic define set by the compiler
 	""__FB_WIN32__""
 ##
 {{fbdoc item="desc"}}
-	Define without a value created at compile time if compiling to the ""Win32"" target. Default in ""Win32"" hosted version, or active if the //[[CompilerOpttarget -target win32]]// command line option is used. It can be used to compile parts of the program only if the target is ""Win32"".
+	Define without a value created at compile time if compiling to the ""Win32"" target. Default in ""Win32"" hosted version, or active if the //[[CompilerOpttarget|-target win32]]// command line option is used. It can be used to compile parts of the program only if the target is ""Win32"".
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbwin32.bas"}}%%(freebasic)
@@ -21,9 +21,9 @@ Intrinsic define set by the compiler
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfbdos __FB_DOS__]]##
-	- ##[[KeyPgDdfblinux __FB_LINUX__]]##
-	- ##[[KeyPgDdfbpcos __FB_PCOS__]]##
-	- [[CompilerOpttarget Compiler Option: -target]]
+	- ##[[KeyPgDdfbdos|__FB_DOS__]]##
+	- ##[[KeyPgDdfblinux|__FB_LINUX__]]##
+	- ##[[KeyPgDdfbpcos|__FB_PCOS__]]##
+	- [[CompilerOpttarget|Compiler Option: -target]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

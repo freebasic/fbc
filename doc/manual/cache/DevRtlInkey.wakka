@@ -4,15 +4,15 @@
 
 	Using FB's built-in functionality, there are four ways of getting keyboard input:
 	
-		- ##[[KeyPgInkey inkey()]]## returns a string containing an ASCII char corresponding to the key pressed by the user, or a 2-byte FB extended keycode for some special keys, such as the Arrow keys or Page Up/Down. It works pretty much like it did in QB.
+		- ##[[KeyPgInkey|inkey()]]## returns a string containing an ASCII char corresponding to the key pressed by the user, or a 2-byte FB extended keycode for some special keys, such as the Arrow keys or Page Up/Down. It works pretty much like it did in QB.
 		
-		- ##[[KeyPgGetkey getkey()]]## returns the same information as ##inkey()##, but in form of an integer instead of a string. ##inkey()## and ##getkey()## belong together: They use the same code and they are located in the same modules.
+		- ##[[KeyPgGetkey|getkey()]]## returns the same information as ##inkey()##, but in form of an integer instead of a string. ##inkey()## and ##getkey()## belong together: They use the same code and they are located in the same modules.
 		
-		- ##[[KeyPgMultikey multikey()]]## takes an [[GfxScancodes FB scancode (SC_*)]] and checks whether that key is pressed at this moment.
+		- ##[[KeyPgMultikey|multikey()]]## takes an [[GfxScancodes|FB scancode (SC_*)]] and checks whether that key is pressed at this moment.
 		
-		- ##[[KeyPgScreenevent screenevent()]]## returns key presses in form of EVENT_KEY_PRESS events (and others for key release or repeat). It returns the [[GfxScancodes FB scancode]] in the [[KeyPgEvent EVENT.scancode field]], and the ASCII char value or 0 in the EVENT.ascii field. EVENT.ascii does not use FB extended keycodes; the EVENT.scancode field can be checked instead in order to handle extended keys.
+		- ##[[KeyPgScreenevent|screenevent()]]## returns key presses in form of EVENT_KEY_PRESS events (and others for key release or repeat). It returns the [[GfxScancodes|FB scancode]] in the [[KeyPgEvent|EVENT.scancode field]], and the ASCII char value or 0 in the EVENT.ascii field. EVENT.ascii does not use FB extended keycodes; the EVENT.scancode field can be checked instead in order to handle extended keys.
 	
-	[[GfxScancodes "scancode"]] refers to the SC_* #defines which are more or less matching the DOS keyboard scancodes. The values are not made up, they themselves correspond to certain ASCII chars, for example: SC_HOME = asc( "G" ) = &h47. They're also the same values that you get under DOS/DJGPP or from the Linux kernel as part of extended key code sequences. Besides their use in ##multikey()## or ##screenevent()##, scancodes are used in various places internally, for example when translating between different kinds of key codes, as an easy-to-use and portable representation of keycodes.
+	[[GfxScancodes|"scancode"]] refers to the SC_* #defines which are more or less matching the DOS keyboard scancodes. The values are not made up, they themselves correspond to certain ASCII chars, for example: SC_HOME = asc( "G" ) = &h47. They're also the same values that you get under DOS/DJGPP or from the Linux kernel as part of extended key code sequences. Besides their use in ##multikey()## or ##screenevent()##, scancodes are used in various places internally, for example when translating between different kinds of key codes, as an easy-to-use and portable representation of keycodes.
 	
 	"key" refers to an ASCII char, or a 2-byte extended keycode string for other keys as returned by ##inkey()##. The rtlib has several KEY_* #defines for the available 2-byte extended keycodes, in form of integers. These are used internally and also match the values returned by ##getkey()##.
 	

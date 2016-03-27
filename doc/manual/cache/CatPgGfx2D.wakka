@@ -65,9 +65,9 @@ Statements and procedures for working with 2D graphics.
 		=={{fbdoc item="keyword" value="KeyPgAlphaGfx|ALPHA"}}==
 			Blend using a uniform transparency or the image buffer's alpha channel.
 		=={{fbdoc item="keyword" value="KeyPgAndGfx|AND"}}==
-			Combine the source and target components using a bitwise ##[[KeyPgOpAnd And]]##
+			Combine the source and target components using a bitwise ##[[KeyPgOpAnd|And]]##
 		=={{fbdoc item="keyword" value="KeyPgOrGfx|OR"}}==
-			Combine the source and target components using a bitwise ##[[KeyPgOpOr Or]]##
+			Combine the source and target components using a bitwise ##[[KeyPgOpOr|Or]]##
 		=={{fbdoc item="keyword" value="KeyPgPsetGfx|PSET"}}==
 			Directly copy pixel colors from the source to the destination.
 		=={{fbdoc item="keyword" value="KeyPgTransGfx|TRANS"}}==
@@ -75,7 +75,7 @@ Statements and procedures for working with 2D graphics.
 		=={{fbdoc item="keyword" value="KeyPgCustomgfx|CUSTOM"}}==
 			Allows a custom blending procedure to be used.
 		=={{fbdoc item="keyword" value="KeyPgXorGfx|XOR"}}==
-			Combine the source and target components using a bitwise ##[[KeyPgOpXor Xor]]##
+			Combine the source and target components using a bitwise ##[[KeyPgOpXor|Xor]]##
 
 >>::c::
 

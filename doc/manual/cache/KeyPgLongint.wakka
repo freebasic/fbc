@@ -2,7 +2,7 @@
 Standard data type: 64 bit signed
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Longint**
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Longint**
 ##
 {{fbdoc item="desc"}}
 	A 64-bit signed whole-number data type. Can hold values from -9 223 372 036 854 775 808 to 9 223 372 036 854 775 807. Corresponds to a signed QWORD.
@@ -18,13 +18,13 @@ Standard data type: 64 bit signed
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Longint""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Longint""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgUlongint Ulongint]]##
-	- ##[[KeyPgClngint Clngint]]##
+	- ##[[KeyPgUlongint|Ulongint]]##
+	- ##[[KeyPgClngint|Clngint]]##
 	
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

@@ -56,7 +56,7 @@
 {{anchor name="item2"}}==Who is responsible for ""FreeBASIC""?==
 	The first versions of ""FreeBASIC"" were developed exclusively by V1ctor. Later versions gained contributions from many people, including Lillo, who developed the Linux port and the graphics library, and ""DrV"", who developed the DOS port. 
 
-	See the [[CompilerCredits FreeBASIC Credits]] page.
+	See the [[CompilerCredits|FreeBASIC Credits]] page.
 
 {{anchor name="item0|Back to top"}}
 
@@ -85,7 +85,7 @@
 
 {{anchor name="item5"}}==How fast is ""FreeBASIC""?==
 	Most tests run by the community have shown ""FreeBASIC"" is significantly faster than ""QuickBASIC"", faster than most other GPL or commercial BASICs, and often approaching GCC in terms of speed.
-	The [[http://shootout.alioth.debian.org/gp4/benchmark.php?test=all&lang=all Computer Languages Benchmark Game]], an independent test team, give ""FreeBASIC"" for Linux a speed 1.8 times slower than  ""GNU g++"". Tests are about calculation, memory and disk access speed in console programs, no graphics capabilities were tested. This is not a bad result considering ""FreeBASIC"" is not yet an optimizing compiler.
+	The [[http://shootout.alioth.debian.org/gp4/benchmark.php?test=all&lang=all|Computer Languages Benchmark Game]], an independent test team, give ""FreeBASIC"" for Linux a speed 1.8 times slower than  ""GNU g++"". Tests are about calculation, memory and disk access speed in console programs, no graphics capabilities were tested. This is not a bad result considering ""FreeBASIC"" is not yet an optimizing compiler.
 	One area where there is a notable speed deficiency is in 32-bit console modes. While ""FreeBASIC"" is consistently on-par with other 32-bit console mode applications, 32-bit console mode operations are significantly slower than 16-bit console operations, as seen in ""QuickBASIC"". In DOS version, some I/O operations can slow down after porting from a 16-bit BASIC to FB - optimizing the code brings the speed back.
 
 {{anchor name="item0|Back to top"}}
@@ -95,7 +95,7 @@
 	Most compatibility problems arise from the use of 8086-DOS-hardware specific low-level techniques in the old QB programs. VGA port programming, DOS interrupts, memory segment switching, poking to the screen memory or music playing using the PC speaker are not directly supported, even if they can be supported/emulated by external libraries. 
 	Other issues in porting old QB programs, like variable name clashes with new FB keywords, variables with the name of a QB keyword plus a type suffix, default integer size being 32 bits in FB, are addressed by running ""FreeBASIC"" with the commandline switch ##-lang qb## .
 
-	See [[LangQB Differences between FreeBASIC and QuickBASIC]].
+	See [[LangQB|Differences between FreeBASIC and QuickBASIC]].
 
 {{anchor name="item0|Back to top"}}
 
@@ -105,13 +105,13 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item8"}}==Does ""FreeBASIC"" support Object Oriented Programming?==
-	""FreeBASIC"" (since version 0.90) supports classes (user-defined types) with member functions (methods), static methods, static member variables, constructors, destructors, properties, operator overloading, single inheritance, virtual and abstract methods (polymorphism) and run-time type information. Future plans regarding OOP functionality include adding support for multiple inheritance and/or interfaces. For more information see: [[TutBeginnersGuideToTypesAsObjects A Beginners Guide to Types as Objects]].
+	""FreeBASIC"" (since version 0.90) supports classes (user-defined types) with member functions (methods), static methods, static member variables, constructors, destructors, properties, operator overloading, single inheritance, virtual and abstract methods (polymorphism) and run-time type information. Future plans regarding OOP functionality include adding support for multiple inheritance and/or interfaces. For more information see: [[TutBeginnersGuideToTypesAsObjects|A Beginners Guide to Types as Objects]].
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item9"}}==What are the future plans with FB / ""ToDo"" list ?==
 
-	You can find out what's planned for the future releases by directly looking at [[http://sourceforge.net/p/fbc/code/ci/master/tree/todo.txt fbc's todo.txt]].
+	You can find out what's planned for the future releases by directly looking at [[http://sourceforge.net/p/fbc/code/ci/master/tree/todo.txt|fbc's todo.txt]].
 
 {{anchor name="item0|Back to top"}}
 
@@ -130,13 +130,13 @@
 
 {{anchor name="item12"}}==Can I use a non-latin charset in my ""FreeBASIC"" applications?==
 
-	""FreeBASIC"" has the Unicode support provided by the C runtime library for the given platform. This means FB DOS won't help you with Unicode. On other platforms you can use [[KeyPgWstring Wstrings]] to support any charset you need. The File OPEN keyword  has an additional [[KeyPgEncoding Encoding]] parameter allowing for different encodings. As ""FreeBASIC"" is coded itself in FB, this means you can code your source in an Unicode editor so the comments and string literals can be in any character set (keywords, labels and names for variables and procedures must be kept inside the  ASCII set..).
-	For the output to screen the support is different from console to graphics. In console mode wstring printing in non latin charsets is supported if the console font supports them. Graphics mode uses an  internal CP437 charset (the old DOS charset) font so non-latin output requires a custom made raster font and the use of the [[KeyPgDrawString DRAW STRING]] keyword. Third party tools exist to grab an external font and convert it to the  DRAW STRING format.
+	""FreeBASIC"" has the Unicode support provided by the C runtime library for the given platform. This means FB DOS won't help you with Unicode. On other platforms you can use [[KeyPgWstring|Wstrings]] to support any charset you need. The File OPEN keyword  has an additional [[KeyPgEncoding|Encoding]] parameter allowing for different encodings. As ""FreeBASIC"" is coded itself in FB, this means you can code your source in an Unicode editor so the comments and string literals can be in any character set (keywords, labels and names for variables and procedures must be kept inside the  ASCII set..).
+	For the output to screen the support is different from console to graphics. In console mode wstring printing in non latin charsets is supported if the console font supports them. Graphics mode uses an  internal CP437 charset (the old DOS charset) font so non-latin output requires a custom made raster font and the use of the [[KeyPgDrawString|DRAW STRING]] keyword. Third party tools exist to grab an external font and convert it to the  DRAW STRING format.
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item13"}}==Can I use Serial/COM and Hardware/CPU ports in FB?==
-	 Yes, FB has built in functions to access the serial/COM port and hardware/CPU ports with no need of external libraries. See the {{anchor name="item999|OS specific FAQ's"}} for details for your OS, and [[KeyPgOpenCom Open Com]], [[KeyPgInp INP]] and [[KeyPgOut OUT]] .
+	 Yes, FB has built in functions to access the serial/COM port and hardware/CPU ports with no need of external libraries. See the {{anchor name="item999|OS specific FAQ's"}} for details for your OS, and [[KeyPgOpenCom|Open Com]], [[KeyPgInp|INP]] and [[KeyPgOut|OUT]] .
 
 {{anchor name="item0|Back to top"}}
 ----
@@ -144,11 +144,11 @@
 @@**Getting Started with ""FreeBASIC"" questions**@@
 
 {{anchor name="item20"}}==Where can I find more information about ""FreeBASIC""?==
-	The ""FreeBASIC"" Wiki is the most up-to-date manual for using ""FreeBASIC"", available [[http://www.freebasic.net/wiki/ here]].
+	The ""FreeBASIC"" Wiki is the most up-to-date manual for using ""FreeBASIC"", available [[http://www.freebasic.net/wiki/|here]].
 
-	Active ""FreeBASIC"" related forums, besides the [[http://www.freebasic.net/forum official one]], can be found at [[http://www.qbasicnews.com/ qbasicnews]], [[http://www.petesqbsite.com/phpBB3/ Pete's QB Site]] , [[http://games.freebasic.net/forum/index.php the FB Games directory]]  or  [[http://www.freebasic-portal.de freebasic-portal.de (in German)]].
+	Active ""FreeBASIC"" related forums, besides the [[http://www.freebasic.net/forum|official one]], can be found at [[http://www.qbasicnews.com/|qbasicnews]], [[http://www.petesqbsite.com/phpBB3/|Pete's QB Site]] , [[http://games.freebasic.net/forum/index.php|the FB Games directory]]  or  [[http://www.freebasic-portal.de|freebasic-portal.de (in German)]].
 
-	Active magazines which regularly have ""FreeBASIC"" related articles are [[http://www.petesqbsite.com/sections/express/express.shtml QB Express]] and [[http://www.qbxl.net/ QBXL Magazine]]. These magazines are always looking for new articles, so if you think you've got a good idea for an article about ""FreeBASIC"", submit it!
+	Active magazines which regularly have ""FreeBASIC"" related articles are [[http://www.petesqbsite.com/sections/express/express.shtml|QB Express]] and [[http://www.qbxl.net/|QBXL Magazine]]. These magazines are always looking for new articles, so if you think you've got a good idea for an article about ""FreeBASIC"", submit it!
 
 {{anchor name="item0|Back to top"}}
 
@@ -162,7 +162,7 @@
 
 {{anchor name="item22"}}==Can I have an offline version of the documentation?==
 	This online Wiki is the official documentation for FB. Usually it is up-to-date with the latest improvements found in the development version of FB.
-	Offline versions of this wiki (in CHM, HTML and other formats) are available from the [[http://sourceforge.net/projects/fbc/files/Documentation/ Documentation directory at fbc's downloads site on SourceForge]].
+	Offline versions of this wiki (in CHM, HTML and other formats) are available from the [[http://sourceforge.net/projects/fbc/files/Documentation/|Documentation directory at fbc's downloads site on SourceForge]].
 
 {{anchor name="item0|Back to top"}}
 
@@ -173,28 +173,28 @@
 	-##lang qb## will allow the developers to keep increasing the compatibility with qb programs. Newer keywords in FB can be used by preceding them with two underscores.  For example, ##Getmouse## can be called by using ##_####_Getmouse##
 	-##lang fblite## offers ""FreeBASIC"" language compatibility, with a more QBASIC-compatible coding style.
 
-	See [[CompilerDialects Compiler Dialects]] for details.
+	See [[CompilerDialects|Compiler Dialects]] for details.
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item24"}}==Why does my program crash when I define an array larger than xx ?==
 
-	This generally happens because you made an //[[ProPgStorageClasses automatic]]// fixed-length array too large, and it is corrupting the program stack. You have a couple of options:
+	This generally happens because you made an //[[ProPgStorageClasses|automatic]]// fixed-length array too large, and it is corrupting the program stack. You have a couple of options:
 
 	- if possible, reduce the size of the //automatic// array
 	- create a variable-length array, by
-		- defining the array with an empty subscript list (using ##[[KeyPgDim Dim]]##), or
-		- defining the array with variable subscripts instead of numeric literals, [[KeyPgConst constants]] or [[KeyPgEnum enums]] (using ##[[KeyPgDim Dim]]##), or
-		- defining the array with ##[[KeyPgRedim Redim]]##
-	- reserve more memory for the program stack by using the ##-t## [[CompilerCmdLine command-line option]] when compiling. The default is ##-t 1024## (kilobytes). Note: it's a bad idea to use very large values here.
-	- create a //static// array by defining the array with ##[[KeyPgStatic Static]]## rather than ##[[KeyPgDim Dim]]## (only locally visible, but globally preserved)
-	- define the array with ##[[KeyPgShared Shared]]## access using ##[[KeyPgDim Dim]]## (this makes the array fully global)
-	- use [[ProPgPointers Pointers]] and [[CatPgMemory Memory Functions]] like ##[[KeyPgAllocate Allocate]]## and ##[[KeyPgDeallocate Deallocate]]## to manage memory yourself - this is the preferred way for storing big buffers, but not for beginners.
+		- defining the array with an empty subscript list (using ##[[KeyPgDim|Dim]]##), or
+		- defining the array with variable subscripts instead of numeric literals, [[KeyPgConst|constants]] or [[KeyPgEnum|enums]] (using ##[[KeyPgDim|Dim]]##), or
+		- defining the array with ##[[KeyPgRedim|Redim]]##
+	- reserve more memory for the program stack by using the ##-t## [[CompilerCmdLine|command-line option]] when compiling. The default is ##-t 1024## (kilobytes). Note: it's a bad idea to use very large values here.
+	- create a //static// array by defining the array with ##[[KeyPgStatic|Static]]## rather than ##[[KeyPgDim|Dim]]## (only locally visible, but globally preserved)
+	- define the array with ##[[KeyPgShared|Shared]]## access using ##[[KeyPgDim|Dim]]## (this makes the array fully global)
+	- use [[ProPgPointers|Pointers]] and [[CatPgMemory|Memory Functions]] like ##[[KeyPgAllocate|Allocate]]## and ##[[KeyPgDeallocate|Deallocate]]## to manage memory yourself - this is the preferred way for storing big buffers, but not for beginners.
 
-	//Static// and //variable-length// arrays don't use the program stack for their element data, so do not have the problem associated with //automatic// fixed-length arrays. See [[ProPgStorageClasses Storage Classes]] for more information. Note that storing huge buffers as //static// or increasing the stack size far above the default is not a very good idea, since it increases the fixed amount of memory needed to load and start you program, even if most of it is not used later, and can result in performance degrade, or even refusing your program to load at all.    
+	//Static// and //variable-length// arrays don't use the program stack for their element data, so do not have the problem associated with //automatic// fixed-length arrays. See [[ProPgStorageClasses|Storage Classes]] for more information. Note that storing huge buffers as //static// or increasing the stack size far above the default is not a very good idea, since it increases the fixed amount of memory needed to load and start you program, even if most of it is not used later, and can result in performance degrade, or even refusing your program to load at all.    
 
 {{anchor name="item25"}}==Why does my program fail to compile with the message 'cannot find -llibname'"?==
-	This is an error raised by the linker.  The program is supposed to link to an external library, designated in the program code with ##[[KeyPgInclib #Inclib]]## or on the compiler command line with ##[[CompilerOptL -l]]##.  However, the linker has been unable to find a matching file in any of the library paths.  Check the homepage of the library you want to compile with to find out how to download it, or check [[ExtLibTOC]] to see if information about the library can be found there.
+	This is an error raised by the linker.  The program is supposed to link to an external library, designated in the program code with ##[[KeyPgInclib|#Inclib]]## or on the compiler command line with ##[[CompilerOptL|-l]]##.  However, the linker has been unable to find a matching file in any of the library paths.  Check the homepage of the library you want to compile with to find out how to download it, or check [[ExtLibTOC]] to see if information about the library can be found there.
 
 {{anchor name="item0|Back to top"}}
 
@@ -203,13 +203,13 @@
 @@**Advanced ""FreeBASIC""**@@
 
 {{anchor name="item31"}}==How do I link to C libraries?==
-	C libraries are set up in much the same way in ""FreeBASIC"" as they are in C. Every library included with ""FreeBASIC"" has a basic include file named "//library name//.bi" which uses the [[KeyPgInclib #INCLIB]] metacommand to include the library, and the [[KeyPgDeclare Declare statement]] to declare the functions within the library. ""FreeBASIC"" includes hundreds of BI files, see full list of library headers [[ExtLibTOC here]].
+	C libraries are set up in much the same way in ""FreeBASIC"" as they are in C. Every library included with ""FreeBASIC"" has a basic include file named "//library name//.bi" which uses the [[KeyPgInclib|#INCLIB]] metacommand to include the library, and the [[KeyPgDeclare|Declare statement]] to declare the functions within the library. ""FreeBASIC"" includes hundreds of BI files, see full list of library headers [[ExtLibTOC|here]].
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item32"}}==Can I use a debugger?==
 	""FreeBASIC"" can use preferably a debugger compatible with GNU GDB. 
-		- ""Win32"": Insight is an user friendly wrapper for GDB, see [[FaqPgWin32 Win32 related FAQ]]. 
+		- ""Win32"": Insight is an user friendly wrapper for GDB, see [[FaqPgWin32|Win32 related FAQ]]. 
 		- DOS: Be warned that DOS also has product named "Insight", but it's a real mode debugger not usable with ""FreeBASIC"", use GDB or some DPMI32 debugger at least.
 		- Linux: use GDB.
 
@@ -245,16 +245,16 @@ Depends. If your OS at least egalizes the functionality of DOS with DPMI32 (cons
 
 {{anchor name="item37"}}==Does ""FreeBASIC"" support returning references from Functions, like in ""C++""?==
 
-Yes, this functionality exists since version 0.90.0. Procedures can now return references using ##[[KeyPgByrefFunction byref]] as //datatype//## for the return type.
+Yes, this functionality exists since version 0.90.0. Procedures can now return references using ##[[KeyPgByrefFunction|byref]] as //datatype//## for the return type.
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item999"}}{{fbdoc item="see"}}
-	- [[FaqPgWin32 Win32 related FAQ]]
-	- [[FaqDOS DOS related FAQ]]
-	- [[FaqPgLinux Linux related FAQ]]
+	- [[FaqPgWin32|Win32 related FAQ]]
+	- [[FaqDOS|DOS related FAQ]]
+	- [[FaqPgLinux|Linux related FAQ]]
 and
-	- [[FaqPgrtlib FB Runtime Library FAQ]]
-	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]
+	- [[FaqPgrtlib|FB Runtime Library FAQ]]
+	- [[FaqPggfxlib2|Frequently Asked FreeBASIC Graphics Library Questions]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

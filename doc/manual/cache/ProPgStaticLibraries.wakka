@@ -26,7 +26,7 @@ End Function
 Compile the library with:
 	##fbc -lib mylib.bas##
 
-The //[[CompilerOptlib -lib]]// option tells the compiler to take the source code, ##mylib.bas##, and turn it in to an object file ##mylib.o##, then store the object file in to a library file, also called an archive, ##libmylib.a##.  A library might contain many modules (source files) each with many functions, but for this simple example, it is just one each.
+The //[[CompilerOptlib|-lib]]// option tells the compiler to take the source code, ##mylib.bas##, and turn it in to an object file ##mylib.o##, then store the object file in to a library file, also called an archive, ##libmylib.a##.  A library might contain many modules (source files) each with many functions, but for this simple example, it is just one each.
 
 To make use of the library in some other source code, we need some way of telling the compiler what exactly is in the library.  A good way to do this is to put the declarations ( also called an interface, or API ) for the library in to a header file.
 
@@ -35,7 +35,7 @@ To make use of the library in some other source code, we need some way of tellin
 #inclib "mylib"
 Declare Function Add2( ByVal x As Integer, ByVal y As Integer ) As Integer
 %%
-There is no need to compile the header.  We want this in its source form so it can be included with other source files.  The ##[[KeyPgInclib #inclib]]## statement will tell the compiler the name of a static library that we need to link with when eventually making an executable.
+There is no need to compile the header.  We want this in its source form so it can be included with other source files.  The ##[[KeyPgInclib|#inclib]]## statement will tell the compiler the name of a static library that we need to link with when eventually making an executable.
 
 With our library (.a file) and a header (.bi file) we can try them out in a test program:
 
@@ -45,7 +45,7 @@ With our library (.a file) and a header (.bi file) we can try them out in a test
 #include once "mylib.bi"
 Print Add2(1,2)
 %%
-The ##[[KeyPgInclude #include]]## statement tells the compiler to include the source code from ##mylib.bi## just as if we had typed it in to the original source.  With the way we have written our include file, it tells the compiler everything it needs to know about the library.
+The ##[[KeyPgInclude|#include]]## statement tells the compiler to include the source code from ##mylib.bi## just as if we had typed it in to the original source.  With the way we have written our include file, it tells the compiler everything it needs to know about the library.
 
 We compile this with:
 	##fbc mytest.bas##
@@ -55,14 +55,14 @@ Then when we run the ##mytest## executable, we should get the result of:
 
 More than one source module can be used when making a library.  And basic programs can use more than one library by including each needed header.  Some libraries are so large that they might use several headers.  On very large projects, making libraries out of some code modules that seldom change can improve compile times dramatically.
 
-Libraries can optionally contain debugging information specified with the //[[CompilerOptg -g]]// command line option.
+Libraries can optionally contain debugging information specified with the //[[CompilerOptg|-g]]// command line option.
 
 Object files, and therefore libraries, are platform specific and in some cases specific to a particular version of the compiler and FreeBASIC runtime library.
 
 {{fbdoc item="see"}}
-	- [[ProPgSharedLibraries Shared Libraries]]
-	- ##[[KeyPgInclib #inclib]]##
-	- ##[[KeyPgInclude #include]]##
-	- [[CompilerOptlib Compiler Option: -lib]]
+	- [[ProPgSharedLibraries|Shared Libraries]]
+	- ##[[KeyPgInclib|#inclib]]##
+	- ##[[KeyPgInclude|#include]]##
+	- [[CompilerOptlib|Compiler Option: -lib]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

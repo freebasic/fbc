@@ -2,7 +2,7 @@
 Returns the length of an open disk file
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lof** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Lof** ( [[KeyPgByval|byval]] //filenum// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgLongint|longint]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Lof**( //filenum// )
@@ -15,9 +15,9 @@ Returns the length of an open disk file
 	The length in bytes of an open disk file.
 
 {{fbdoc item="desc"}}
-	Returns the length, in bytes, of a file opened previously with ##[[KeyPgOpen Open]]## using the given ##//filenum//##.
+	Returns the length, in bytes, of a file opened previously with ##[[KeyPgOpen|Open]]## using the given ##//filenum//##.
 
-	With ##[[KeyPgOpenCom Open Com]]## it returns the length of the data pending to be read in the receive buffer.
+	With ##[[KeyPgOpenCom|Open Com]]## it returns the length of the data pending to be read in the receive buffer.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/lof.bas"}}%%(freebasic)
@@ -32,8 +32,8 @@ close #f
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLoc Loc]]##
-	- ##[[KeyPgEof Eof]]##
-	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgLoc|Loc]]##
+	- ##[[KeyPgEof|Eof]]##
+	- ##[[KeyPgOpen|Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

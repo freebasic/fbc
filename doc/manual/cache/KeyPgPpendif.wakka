@@ -7,7 +7,7 @@ Preprocessor conditional directive
 {{fbdoc item="desc"}}
 	Ends a group of conditional directives
 
-	See ##[[KeyPgPpif #if]]##, ##[[KeyPgPpifdef #ifdef]]##, or ##[[KeyPgPpifndef #ifndef]]## for examples of usage.
+	See ##[[KeyPgPpif|#if]]##, ##[[KeyPgPpifdef|#ifdef]]##, or ##[[KeyPgPpifndef|#ifndef]]## for examples of usage.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/endif.bas"}}%%(freebasic)
@@ -21,14 +21,14 @@ Preprocessor conditional directive
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #define]]##
-	- ##[[KeyPgPpmacro #macro]]##
-	- ##[[KeyPgPpif #if]]##
-	- ##[[KeyPgPpelse #else]]## 
-	- ##[[KeyPgPpelseif #elseIf]]## 
-	- ##[[KeyPgPpifdef #ifdef]]##
-	- ##[[KeyPgPpifndef #ifndef]]##
-	- ##[[KeyPgPpundef #undef]]##
-	- ##[[KeyPgDefined defined]]##
+	- ##[[KeyPgPpdefine|#define]]##
+	- ##[[KeyPgPpmacro|#macro]]##
+	- ##[[KeyPgPpif|#if]]##
+	- ##[[KeyPgPpelse|#else]]## 
+	- ##[[KeyPgPpelseif|#elseIf]]## 
+	- ##[[KeyPgPpifdef|#ifdef]]##
+	- ##[[KeyPgPpifndef|#ifndef]]##
+	- ##[[KeyPgPpundef|#undef]]##
+	- ##[[KeyPgDefined|defined]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

@@ -70,6 +70,7 @@ Statements and procedures for working with files and devices.
 	=={{fbdoc item="keyword" value="KeyPgLineinputPp|LINE INPUT #"}}==
 		Reads a line of text from a file or device.
 	=={{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}==
+	=={{fbdoc item="keyword" value="KeyPgPrintPp|? #"}}==
 		Writes text data to a file or device.
 	=={{fbdoc item="keyword" value="KeyPgPutfileio|PUT #"}}==
 		Writes arbitrary data to a file or device.
@@ -90,7 +91,7 @@ Statements and procedures for working with files and devices.
 	=={{fbdoc item="keyword" value="KeyPgLock|LOCK"}}==
 		Restricts read or write access to a file or portion of a file.
 	=={{fbdoc item="keyword" value="KeyPgUnlock|UNLOCK"}}==
-		Remove read or write restrictions from a previous [[KeyPgLock Lock]] command.
+		Remove read or write restrictions from a previous [[KeyPgLock|Lock]] command.
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

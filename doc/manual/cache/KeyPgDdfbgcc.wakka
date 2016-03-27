@@ -5,7 +5,7 @@ Intrinsic define set by the compiler
 	""__FB_GCC__""
 ##
 {{fbdoc item="desc"}}
-	Defined to true (##-1##) if [[CompilerOptgen -gen gcc]] is used, or false (##0##) otherwise.
+	Defined to true (##-1##) if [[CompilerOptgen|-gen gcc]] is used, or false (##0##) otherwise.
 
 {{fbdoc item="diff"}}
 	- Did not exist in QB

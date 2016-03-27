@@ -173,8 +173,8 @@ Using the **fbc** command-line.
 		- Then when compiling program, add appicon.rc in the list of files to compile.
 
 {{fbdoc item="see"}}
-	- [[CatPgCompOpt Compiler Options]]
-	- [[CompilerInstalling Installing FreeBASIC]]
-	- [[CompilerRunning Invoking the FreeBASIC compiler]]
+	- [[CatPgCompOpt|Compiler Options]]
+	- [[CompilerInstalling|Installing FreeBASIC]]
+	- [[CompilerRunning|Invoking the FreeBASIC compiler]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

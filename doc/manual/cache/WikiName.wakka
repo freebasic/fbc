@@ -1,0 +1,9 @@
+From [[https://www.eng.uwaterloo.ca/twiki/bin/view/TWiki/WikiName|University of Waterloo]]:
+
+Your name, usually your first and last name connected without a space. 
+For example, Tim Berners-Lee's WikiName is Tim********Berners********Lee. 
+
+ Your name is also a potentially valid WikiWord when used within a topic, however the home pages of registered users on this site are stored in the Main TWiki web. Prepend  Main. when you sign your username in a topic - write Main.T********Wiki********Guest to link to T********Wiki********Guest, your personal topic page in the Main TWiki web. This will ensure that your personal topic page is linked to at it's location in the Main TWiki web. For convenience, your signature is also provided to you for copying and pasting when editing a topic. 
+
+ Though rarely used in common practice, you can use the special %MAINWEB% variable to prepend to user names, for example, %MAINWEB%.T********Wiki********Guest. 
+

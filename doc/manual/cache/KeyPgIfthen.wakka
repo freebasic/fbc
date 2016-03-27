@@ -21,15 +21,15 @@ Control flow statement for conditional branching
 		- a conditional expression, for example:
 			##x = 5##
 		- multiple conditions separated by logical bit-wise operators, for example:
-			##x >= 5 [[KeyPgOpAnd And]] x <= 10##
+			##x >= 5 [[KeyPgOpAnd|And]] x <= 10##
 		- multiple conditions separated by logical short-circuit operators, for example:
-			##y <> 0 [[KeyPgOpAndAlso AndAlso]] x \ y = 1##
+			##y <> 0 [[KeyPgOpAndAlso|AndAlso]] x \ y = 1##
 			(in this case, "##x \ y = 1##" will only be evaluated if "##y <> 0##" is True)
 		- any numerical expression, in which case a value of zero (##0##) represents False, and a non-zero value represents True
 
 	Both multi-line and single-line ##**If**##s can be nested.  In the latter case, the optional ##**End If**##s can be useful to control where nested ##**If**##s begin and end.
 
-	In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, colons (##:##) can be used instead of newlines to construct multi-line ##**If**## blocks on a single line.
+	In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, colons (##:##) can be used instead of newlines to construct multi-line ##**If**## blocks on a single line.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/if-then.bas"}}%%(freebasic)
@@ -61,17 +61,17 @@ loop 'Go back to the start of the loop
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, variables declared inside an ##**If**##..##**Then**## block have a procedure-wide [[ProPgVariableScope scope]]  as in QB 
-	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, variables declared inside an ##**If**##..##**Then**## block are visible only inside the block, and cannot be accessed outside it.
-	- In the //[[CompilerOptlang -lang qb]]// dialect, if there is a new line or a single-line comment (##'##) directly after THEN, then the IF will be multi-line.  A colon, a ##[[KeyPgRem Rem]]## or any other statement will result in a single-line IF.
-	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, if there is a new line, a single-line comment (##'##), a colon (##:##), or a ##[[KeyPgRem Rem]]## statement directly after THEN, then the IF will be multi-line.  Any other statement will result in a single-line IF.
+	- In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, variables declared inside an ##**If**##..##**Then**## block have a procedure-wide [[ProPgVariableScope|scope]]  as in QB 
+	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects, variables declared inside an ##**If**##..##**Then**## block are visible only inside the block, and cannot be accessed outside it.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, if there is a new line or a single-line comment (##'##) directly after THEN, then the IF will be multi-line.  A colon, a ##[[KeyPgRem|Rem]]## or any other statement will result in a single-line IF.
+	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, if there is a new line, a single-line comment (##'##), a colon (##:##), or a ##[[KeyPgRem|Rem]]## statement directly after THEN, then the IF will be multi-line.  Any other statement will result in a single-line IF.
 
 {{fbdoc item="diff"}}
 	- END IF was not supported in single-line IFs in QBASIC.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDoloop Do...Loop]]##
-	- ##[[KeyPgPpif #if]]##
-	- ##[[KeyPgSelectcase Select Case]]##
+	- ##[[KeyPgDoloop|Do...Loop]]##
+	- ##[[KeyPgPpif|#if]]##
+	- ##[[KeyPgSelectcase|Select Case]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

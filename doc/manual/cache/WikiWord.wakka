@@ -1,0 +1,72 @@
+From [[http://en.wikipedia.org/|Wikipedia:]]
+
+'''`CamelCase''' is the practice of writing compound noun and adjective|compound words or phrases where the words are joined without whitespace|spaces, and each word is capitalization|capitalized within the compound.  The name comes from the uppercase "bumps" in the middle of the compound word, suggesting the humps of a camel.
+
+	`camelCaseLooksLikeThis
+	`lowerCamelCaseLooksTheSame
+	`Upper********Camel********Case********Looks********Like********This
+
+`CamelCase is a standard identifier naming convention for several programming languages, and has become fashionable in marketing for names of products and companies.  Outside of these contexts, however, `CamelCase is rarely used  in formal written English language, and most style guides recommend against it.
+
+==Variations and synonyms==
+
+There are two common varieties of `CamelCase, distinguished by their handling of the initial letter.  The variety in which the first letter is capitalized is commonly called ''`UpperCamelCase'', ''`Pascal case'', or ''`BiCapitalized''.  The variety in which the first letter is left as lowercase is commonly called ''`lowerCamelCase'' or sometimes simply ''`camelCase''.  For clarity, this article will use the terms ''`UpperCamelCase'' and ''`lowerCamelCase'', respectively.
+
+The term ''`StudlyCaps'' is similar--but not necessarily identical--to `CamelCase.  It is sometimes used in reference to `CamelCase but can also refer to random mixed capitalization (as in ''"`Mi********Xe********D `CaPitALiZaTioN"'') as popularly used in minority online culture.
+
+==`CamelCase and coding standards==
+
+`CamelCase is recommended or enforced by many computer systems, and mandated  by the coding standards of many programming languages &mdash; such as Mesa, the systems programming language of the Xerox Alto (late 1970s), or the modern language Java programming language.  It is also the official convention for file names in Java and of the Amiga personal computers.<!--Are these upper or lower CamelCase?-->
+
+Coding standards often distinguish between `UpperCamelCase and `lowerCamelCase, typically specifying which variety should be used for specific kinds of entities: variable (computer science)|variables, field (computer science)|record fields, method (computer science)|methods, procedure (computer science)|procedures, type (computer science)|types, etc..
+
+For instance, the Java coding style dictates that `UpperCamelCase should be used for class (computer science)|classes, and `lowerCamelCase should be used for instance (computer science)|instances and member (computer science)|members.  The Hungarian notation for coding in C specifies that a lowercase abbreviation for the variable type should be prefixed on all variable names, with the remainder of the name in `UpperCamelCase; as such it is a form of `lowerCamelCase.
+
+==History of `CamelCase==
+
+`CamelCase has been sporadically used since ancient times, for example as a traditional spelling style for surnames in certain ethnicities, such as the Scotland|Scottish ''`Mc********Lean'' or the the Netherlands|Dutch-American ''`deJong'' or ''`De********Jong''.  In the early 20th century, it was used occasionally for trademarking corporations and products, such as the `Cinema********Scope film|movie projection system introduced in the 1950s.
+
+However, the use of `CamelCase became widespread only in the 1970s or 1980s, when it was adopted as a standard or alternative identifier naming convention|naming convention for multi-word identifiers in several programming languages. There are various possible origins, and it may have developed independently from multiple sources.
+
+== Background for modern `CamelCase ==
+
+In programs of any significant size, there is a need for descriptive (hence multi-word) identifiers, like "<tt>previous balance</tt>" or "<tt>end of file</tt>".  Writing the words together as in "<tt>endoffile</tt>" is not satisfactory because the names often become unreadable. Therefore, the pioneer programming language COBOL allowed a hyphen ("<tt>-</tt>") to be used between words of compound identifiers, as in "<tt>END-OF-FILE</tt>". The contemporary "algebraic" language Fortran reserved the hyphen as the minus operator, but allowed spaces to be arbitrarily embedded into identifiers, so that "<tt>TOTAMP</tt>" could be written "<tt>TOT AMP</tt>" (or "<tt>TO TAMP</tt>"). However, this feature was of little use because most Fortran compilers did not allow identifiers longer than six letters.
+
+It should be noted that the common punched card character sets of the time had no lower-case letters and no special character that would be adequate as a word separator in identifiers.  However, by the late 1960s the ASCII character set standard had been established, allowing the designers of the C language to adopt the underscore character "<tt>_</tt>" as a word joiner.  Underscore-separated compounds like "<tt>end_of_file</tt>" are still prevalent in C programs and libraries.
+
+===The "Lazy Programmer" origin===
+
+One explanation of the origins of `CamelCase in computing claims that the style originated within the culture of C programming language|C programmers and hackers, who found it more convenient than the standard underscore-based style.
+
+On most keyboards, the underscore key is inconveniently placed. Additionally, in some fonts the underscore character can be confused with a minus sign; it can be overlooked because it falls below the string of characters, or it can be lost entirely when printed on a dot-matrix printer with a defective pin or misaligned ribbon.  Moreover, compiler limits on identifier length and the small computer displays available in the 1970s worked together to encourage brevity.  So many programmers chose to use CamelCase instead, because it yielded legible compound names with fewer keystrokes and fewer characters.
+
+===The "Alto Keyboard" origin===
+
+Another explanation is that `CamelCase started at Xerox PARC around 1978, with the Mesa programming language developed for the Xerox Alto computer.  This machine lacked an underscore key, and the hyphen and space characters were not permitted in identifiers, leaving `CamelCase as the only viable scheme for readable multiword names.  The PARC Mesa Language Manual (1979) included a coding standard with specific rules for upper and lower `CamelCase, which were strictly followed by the Mesa libraries and the Alto operating system.
+
+The Smalltalk language, which was developed originally on the Alto and became quite popular in the early 1980s, may have been instrumental in spreading the style outside PARC.  `CamelCase was also used in the PostScript graphics language, another very popular PARC invention.  Further boost was provided by Niklaus Wirth &mdash; the inventor of Pascal programming language|Pascal &mdash; who acquired a taste for `CamelCase during a sabbatical at PARC, and used it in Modula, his next programming language.
+
+===History of the name===
+
+The style had no definite name initially. The earliest occurrence of ''`Inter********Caps'' on Usenet is in an April 1990 post to the group <tt>alt.folklore.computers</tt> by Avi Rappoport [http://groups-beta.google.com/group/alt.folklore.computers/msg/21f332e5b813313e], with ''`Bi********Capitalization'' appearing slightly later in a 1991 post  by Eric S. Raymond to the same group [http://groups.google.com/groups?selm=1ZJ7Y0%233w7TXB3X6xdT7Fp8Dg1SnxYw%3Deric%40snark.thyrsus.com&output=gplain]. The name "`CamelCase" occurs only in 1995, in a post by Newton Love. [http://groups.google.com/groups?selm=newton.212.30563F09%40michelob.wustl.edu&output=gplain].
+
+===The spread of `CamelCase===
+
+During the same period in which personal computers exposed hacker culture to a more mainstream audience in the 1980s and 1990s, `CamelCase became fashionable for corporate trade names, first in computer-related fields but later expanding further into the mainstream. Here are some examples ranging from the 1970s to the 2000s:
+
+This fashion has become so pervasive that it is often incorrectly applied to names that do not use it officially, as in ''`Trans********America'' (Transamerica), ''`Mozilla********Fire********Fox'' (Firefox), ''`Use********Net (Usenet)'', ''`Time Warner'' (Time Warner, whose new logo does appear in `CamelCase fashion), and ''`Game Boy'' (`Game Boy).
+
+==See also==
+
+*All caps
+*`CamelCase and Wiki
+<!-- Wikipedia:`CamelCase and Wikipedia -->
+
+==References==
+*[http://www.netbros.com/CamelCase ''`Net********Village: What is `CamelCase?'']
+
+==External links==
+*[http://c2.com/cgi/wiki?CamelCase Examples and history of `CamelCase]
+*[http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpgenref/html/cpconcapitalizationstyles.asp .NET Framework General Reference Capitalization Styles]
+*[http://www.theslot.com/webnames.html What's in a `nAME(cq)?], by Bill Walsh, at The Slot
+*[http://www.microsoft.com/typography/ctfonts/WordRecognition.aspx The Science of Word Recognition], by Kevin Larson, Advanced Reading Technology, Microsoft Corporation

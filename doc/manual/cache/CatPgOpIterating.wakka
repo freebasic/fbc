@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Iterating Operators"}}----
 Operators that work with iterator objects
 
-These operators allow objects of user-defined types to be used as iterators and step values in ##[[KeyPgFornext For...Next]]## statements.
+These operators allow objects of user-defined types to be used as iterators and step values in ##[[KeyPgFornext|For...Next]]## statements.
 
 <<=={{fbdoc item="keyword" value="KeyPgOpFor|Operator For"}}==
 	Allows an iterator a chance to prepare for the loop.

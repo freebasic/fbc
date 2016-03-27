@@ -1315,7 +1315,7 @@ sub symbCompRTTIInit( )
 	'' type fb_RTTI$
 	'' (using fb_RTTI$ instead of $fb_RTTI to prevent gdb/stabs confusion,
 	'' where leading $ has special meaning)
-	rttitype = symbStructBegin( NULL, NULL, NULL, "fb_RTTI$", "fb_RTTI$", FALSE, 0, NULL, 0, 0 )
+	rttitype = symbStructBegin( NULL, NULL, NULL, "fb_RTTI$", "fb_RTTI$", FALSE, 0, FALSE, 0, 0 )
 	symb.rtti.fb_rtti = rttitype
 
 	'' stdlibvtable as any ptr
@@ -1338,7 +1338,7 @@ sub symbCompRTTIInit( )
 		ptypename = @"OBJECT"
 	end if
 	'' (using fb_Object$ instead of $fb_Object - ditto)
-	objtype = symbStructBegin( NULL, NULL, NULL, ptypename, "fb_Object$", FALSE, 0, NULL, 0, 0 )
+	objtype = symbStructBegin( NULL, NULL, NULL, ptypename, "fb_Object$", FALSE, 0, FALSE, 0, 0 )
 	symb.rtti.fb_object = objtype
 	symbSetHasRTTI( objtype )
 	symbSetIsUnique( objtype )

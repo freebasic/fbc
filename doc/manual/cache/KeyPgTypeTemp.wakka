@@ -10,7 +10,7 @@ Creates a temporary copy of a user defined type
 	##//initializers//##
 		Initial values for the type
 	##//typename//##
-		The name of the ##[[KeyPgType Type]]## or ##[[KeyPgUnion Union]]##
+		The name of the ##[[KeyPgType|Type]]## or ##[[KeyPgUnion|Union]]##
 
 {{fbdoc item="ret"}}
 	A temporary copy of the type.
@@ -20,11 +20,11 @@ Creates a temporary copy of a user defined type
 
 	For a type without constructor, the temporary type syntax is allowed if all type data-fields are numeric primitives only and without any default initializers, but the compiler does a direct assignment instead of using a temporary copy if at same time the type is without destructor.
 
-	The ##[[KeyPgConstructor Constructor]]## for the type, if there is one, will be called when the temporary copy is created, and the ##[[KeyPgDestructor Destructor]]## for the type, if there is one, will be called immediately after its use. But when there is a constructor, the temporary type expression may be simply replaced by ##//typename( initializers//, ... )##.
+	The ##[[KeyPgConstructor|Constructor]]## for the type, if there is one, will be called when the temporary copy is created, and the ##[[KeyPgDestructor|Destructor]]## for the type, if there is one, will be called immediately after its use. But when there is a constructor, the temporary type expression may be simply replaced by ##//typename( initializers//, ... )##.
 
 	It can create not only a temporary copy of an user defined type, but also a temporary copy of predefined data-type as a variable-length string or any numeric data-type (all standard data-types excluding fixed-length strings).
 
-	It can also be used as an even shorter shortcut than ##[[KeyPgWith With]]## (see below) if you are changing all the records.
+	It can also be used as an even shorter shortcut than ##[[KeyPgWith|With]]## (see below) if you are changing all the records.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/temp-type.bas"}}%%(freebasic)
@@ -106,7 +106,7 @@ test( type<U>( 1 ) )
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgType Type...End Type]]##
-	- ##[[KeyPgTypeAlias Type (Alias)]]##
+	- ##[[KeyPgType|Type...End Type]]##
+	- ##[[KeyPgTypeAlias|Type (Alias)]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

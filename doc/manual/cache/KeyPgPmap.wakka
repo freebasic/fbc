@@ -2,7 +2,7 @@
 Maps coordinates between view and physical mapping.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **PMap** ( [[KeyPgByval byval]] //coord// [[KeyPgAs as]] [[KeyPgSingle single]], [[KeyPgByval byval]] //func// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgSingle single]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **PMap** ( [[KeyPgByval|byval]] //coord// [[KeyPgAs|as]] [[KeyPgSingle|single]], [[KeyPgByval|byval]] //func// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgSingle|single]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **PMap**( //coord//, //func// )
@@ -17,7 +17,7 @@ Maps coordinates between view and physical mapping.
 	The mapped coordinate value.
 
 {{fbdoc item="desc"}}
-	This function converts a coordinate between view (as defined by the ##[[KeyPgWindow Window]]## statement) and physical (as set by the ##[[KeyPgViewgraphics View (Graphics)]]## statement) mappings. Depending on the value of ##//func//##, ##//expr//## is used to compute a different mapping to be returned by ##**PMap**##:
+	This function converts a coordinate between view (as defined by the ##[[KeyPgWindow|Window]]## statement) and physical (as set by the ##[[KeyPgViewgraphics|View (Graphics)]]## statement) mappings. Depending on the value of ##//func//##, ##//expr//## is used to compute a different mapping to be returned by ##**PMap**##:
 
 		{{table columns="2" cellpadding="1" cells="func value:;return value:;0;Treats expr as x view coordinate and returns corresponding x physical coordinate.;1;Treats expr as y view coordinate and returns corresponding y physical coordinate.;2;Treats expr as x physical coordinate and returns corresponding x view coordinate.;3;Treats expr as y physical coordinate and returns corresponding y view coordinate."}}
 
@@ -36,7 +36,7 @@ sleep
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgWindow Window]]##
-	- ##[[KeyPgViewgraphics View (Graphics)]]##
+	- ##[[KeyPgWindow|Window]]##
+	- ##[[KeyPgViewgraphics|View (Graphics)]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

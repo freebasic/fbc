@@ -2,7 +2,7 @@
 Stops execution of current thread until some condition becomes true
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Condwait** ( [[KeyPgByval byval]] //handle// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //mutex// [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]] )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Condwait** ( [[KeyPgByval|byval]] //handle// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //mutex// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
 ##
 {{fbdoc item="usage"}}##
 	**Condwait** ( //handle//, //mutex// )
@@ -14,18 +14,18 @@ Stops execution of current thread until some condition becomes true
 		The mutex associated with this conditional variable, which must be locked when testing the condition and calling ##**Condwait**##.
 
 {{fbdoc item="desc"}}
-	Function that stops the thread where it is called until some other thread  ##[[KeyPgCondSignal Condsignal]]##s or ##[[KeyPgCondBroadcast Condbroadcast]]##s  the handle.
+	Function that stops the thread where it is called until some other thread  ##[[KeyPgCondSignal|Condsignal]]##s or ##[[KeyPgCondBroadcast|Condbroadcast]]##s  the handle.
 
-	Once the conditional variable is created with ##[[KeyPgCondCreate Condcreate]]## and the threads are started, one of more of them (including the main thread executing main program) can be set to ##**Condwait**## for the conditional; they will be stopped until some other thread ##[[KeyPgCondSignal Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy Conddestroy]]## must be used to avoid leaking resources in the OS.
+	Once the conditional variable is created with ##[[KeyPgCondCreate|Condcreate]]## and the threads are started, one of more of them (including the main thread executing main program) can be set to ##**Condwait**## for the conditional; they will be stopped until some other thread ##[[KeyPgCondSignal|Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast|Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy|Conddestroy]]## must be used to avoid leaking resources in the OS.
 
-	When calling ##**Condwait**##, ##//mutex//## should already be locked (using the same ##//mutex//## as one used with ##[[KeyPgCondSignal Condsignal]]## or ##[[KeyPgCondBroadcast Condbroadcast]]##). An atomic unlock of the ##//mutex//## and wait on the conditional variable will occur. The calling thread execution is suspended and does not consume any CPU time until the condition variable is signaled. When the condition variable becomes signaled, ##//mutex//## will be locked again and then execution will return to the thread after the ##**Condwait**## call. The caller is then responsible for unlocking ##//mutex//## when the thread is finished with it.
+	When calling ##**Condwait**##, ##//mutex//## should already be locked (using the same ##//mutex//## as one used with ##[[KeyPgCondSignal|Condsignal]]## or ##[[KeyPgCondBroadcast|Condbroadcast]]##). An atomic unlock of the ##//mutex//## and wait on the conditional variable will occur. The calling thread execution is suspended and does not consume any CPU time until the condition variable is signaled. When the condition variable becomes signaled, ##//mutex//## will be locked again and then execution will return to the thread after the ##**Condwait**## call. The caller is then responsible for unlocking ##//mutex//## when the thread is finished with it.
 
 	**Note:** It is a good habit to use ##**Condwait**## in a protected way against eventual spurious wakeups.
-	For that, ##**Condwait**## is put within a loop for checking that a Boolean predicate is indeed true (set by another thread just before executing ##[[KeyPgCondSignal Condsignal]]## or ##[[KeyPgCondBroadcast Condbroadcast]]##) when the thread has finished waiting.
+	For that, ##**Condwait**## is put within a loop for checking that a Boolean predicate is indeed true (set by another thread just before executing ##[[KeyPgCondSignal|Condsignal]]## or ##[[KeyPgCondBroadcast|Condbroadcast]]##) when the thread has finished waiting.
 	See example below for detailed coding.
 
 {{fbdoc item="ex"}}
-	See also ##[[KeyPgCondCreate Condcreate]]## and ##[[KeyPgCondSignal Condsignal]]##
+	See also ##[[KeyPgCondCreate|Condcreate]]## and ##[[KeyPgCondSignal|Condsignal]]##
 
 {{fbdoc item="filename" value="examples/manual/threads/condwait.bas"}}%%(freebasic)
 ' This simple example code demonstrates the use of several condition variable routines.
@@ -100,19 +100,19 @@ CondDestroy(countThresholdCV)
 	- In Linux the threads are always started in the order they are created, this can't be assumed in Win32. It's an OS, not a FreeBASIC issue. 
 
 {{fbdoc item="lang"}}
-	- Threading is not allowed in //[[CompilerOptlang -lang qb]]//
+	- Threading is not allowed in //[[CompilerOptlang|-lang qb]]//
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCondCreate Condcreate]]##
-	- ##[[KeyPgCondDestroy Conddestroy]]##
-	- ##[[KeyPgCondBroadcast Condbroadcast]]##
-	- ##[[KeyPgCondSignal Condsignal]]##
-	- ##[[KeyPgMutexCreate Mutexcreate]]##
-	- ##[[KeyPgMutexLock Mutexlock]]##
-	- ##[[KeyPgMutexUnlock Mutexunlock]]##
-	- ##[[KeyPgThreadCreate Threadcreate]]##
+	- ##[[KeyPgCondCreate|Condcreate]]##
+	- ##[[KeyPgCondDestroy|Conddestroy]]##
+	- ##[[KeyPgCondBroadcast|Condbroadcast]]##
+	- ##[[KeyPgCondSignal|Condsignal]]##
+	- ##[[KeyPgMutexCreate|Mutexcreate]]##
+	- ##[[KeyPgMutexLock|Mutexlock]]##
+	- ##[[KeyPgMutexUnlock|Mutexunlock]]##
+	- ##[[KeyPgThreadCreate|Threadcreate]]##
 
 {{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

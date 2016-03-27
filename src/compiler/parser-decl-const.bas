@@ -12,7 +12,7 @@ private sub hGetType( byref dtype as integer, byref subtype as FBSYMBOL ptr )
 	if( lexGetToken( ) = FB_TK_AS ) then
 		lexSkipToken( )
 
-		if( cSymbolType( dtype, subtype, 0 ) = FALSE ) then
+		if( cSymbolType( dtype, subtype ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			dtype = FB_DATATYPE_INTEGER
 			subtype = NULL

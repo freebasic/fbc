@@ -2,12 +2,12 @@
 Control flow statement to continue next iteration of a loop
 
 {{fbdoc item="syntax"}}##
-	**Continue** {[[KeyPgDoloop do]] | [[KeyPgFornext for]] | [[KeyPgWhilewend while]]}
+	**Continue** {[[KeyPgDoloop|do]] | [[KeyPgFornext|for]] | [[KeyPgWhilewend|while]]}
 ##
 {{fbdoc item="desc"}}
-	Skips all code until the end clause of a loop structure, i.e. ##[[KeyPgDoloop Do...Loop]]##, ##[[KeyPgFornext For...Next]]##, or a ##[[KeyPgWhilewend While...Wend]]## block, then executes the limit condition check. In the case of a ##[[KeyPgFornext For...Next]]##, the variable is incremented according to the ##[[KeyPgStep Step]]## specified.
+	Skips all code until the end clause of a loop structure, i.e. ##[[KeyPgDoloop|Do...Loop]]##, ##[[KeyPgFornext|For...Next]]##, or a ##[[KeyPgWhilewend|While...Wend]]## block, then executes the limit condition check. In the case of a ##[[KeyPgFornext|For...Next]]##, the variable is incremented according to the ##[[KeyPgStep|Step]]## specified.
 
-	Where there are multiple ##[[KeyPgDoloop Do]]## / ##[[KeyPgFornext For]]## / ##[[KeyPgWhilewend While]]## blocks nested, it will continue on the innermost block of that type, i.e. the last one entered.  You can continue an earlier block of that type by giving the word multiple times, separated by commas.  e.g. ##**continue while, while**##
+	Where there are multiple ##[[KeyPgDoloop|Do]]## / ##[[KeyPgFornext|For]]## / ##[[KeyPgWhilewend|While]]## blocks nested, it will continue on the innermost block of that type, i.e. the last one entered.  You can continue an earlier block of that type by giving the word multiple times, separated by commas.  e.g. ##**continue while, while**##
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/continue.bas"}}%%(freebasic)
@@ -52,12 +52,12 @@ Next n
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Continue""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Continue""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgExit Exit]]##
+	- ##[[KeyPgExit|Exit]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

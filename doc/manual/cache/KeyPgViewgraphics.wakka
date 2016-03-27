@@ -7,21 +7,21 @@ Sets new physical coordinate mapping and clipping region
 	**View Screen** ( //x1//, //y1// )-( //x2//, //y2// ) [ [, //fill_color// ] [, //border_color// ] ]
 ##
 {{fbdoc item="param"}}
-	##//x1//## ##[[KeyPgAs as]] [[KeyPgInteger Integer]]##, ##//y1//## ##[[KeyPgAs as]] [[KeyPgInteger Integer]]##
+	##//x1//## ##[[KeyPgAs|as]] [[KeyPgInteger|Integer]]##, ##//y1//## ##[[KeyPgAs|as]] [[KeyPgInteger|Integer]]##
 		The horizontal and vertical offsets, in pixels, of one corner of the viewport relative to the top-left corner of the screen.
-	##//x2//## ##[[KeyPgAs as]] [[KeyPgInteger Integer]]##, ##//y2//## ##[[KeyPgAs as]] [[KeyPgInteger Integer]]##
+	##//x2//## ##[[KeyPgAs|as]] [[KeyPgInteger|Integer]]##, ##//y2//## ##[[KeyPgAs|as]] [[KeyPgInteger|Integer]]##
 		The horizontal and vertical offsets, in pixels, of the opposite corner of the viewport relative to the top-left corner of the screen.
-	##//fill_color//## ##[[KeyPgAs as]] [[KeyPgUinteger UInteger]]##
+	##//fill_color//## ##[[KeyPgAs|as]] [[KeyPgUinteger|UInteger]]##
 		The color to fill the new viewport.
-	##//border_color//## ##[[KeyPgAs as]] [[KeyPgUinteger UInteger]]##
+	##//border_color//## ##[[KeyPgAs|as]] [[KeyPgUinteger|UInteger]]##
 		The color of the border to draw around the new viewport.
 
 {{fbdoc item="desc"}}
-	The //viewport//, or clipping region, is a rectangular area of the graphics screen, outside of which no drawing will be done. That is, only drawing done within this area will be shown. A graphics screen must be created with ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres ScreenRes]]## before calling ##**View**## or ##**View Screen**##.
+	The //viewport//, or clipping region, is a rectangular area of the graphics screen, outside of which no drawing will be done. That is, only drawing done within this area will be shown. A graphics screen must be created with ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|ScreenRes]]## before calling ##**View**## or ##**View Screen**##.
 
 	The first statement sets the viewport to encompass the entire screen, which is the default viewport for a new graphics screen.
 
-	The second and third statements both allow a new viewport to be defined. The corners of the viewport are specified by the ##//x1//##, ##//y1//##, ##//x2//## and ##//y2//## parameters. ##//fill_color//## and ##//border_color//## are both in the format accepted by ##[[KeyPgColor Color]]##. The indicated effects for each parameter only occur if that parameter is specified.
+	The second and third statements both allow a new viewport to be defined. The corners of the viewport are specified by the ##//x1//##, ##//y1//##, ##//x2//## and ##//y2//## parameters. ##//fill_color//## and ##//border_color//## are both in the format accepted by ##[[KeyPgColor|Color]]##. The indicated effects for each parameter only occur if that parameter is specified.
 
 	The second statement modifies the coordinate mapping of the graphics screen such that coordinates specified for drawing statements and procedures are relative to the top-left corner of the viewport.
 
@@ -70,9 +70,9 @@ imagedestroy(ip)
 	- ""FreeBASIC's"" current behavior is to preserve the ##WINDOW## coordinates after calls to ##VIEW##, or when working on images, meaning that the coordinate mapping may undergo scaling/translations if the viewport changes. (If a ##WINDOW## hasn't been set, there is no coordinate mapping, and so it doesn't change after calls to ##VIEW##.)  The behavior may change in future, but consistent behavior can be assured over inconstent viewport coordinates by re-calling ##WINDOW## whenever you change the ##VIEW##.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgViewtext View Print]]##
-	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
-	- ##[[KeyPgWindow Window]]##
-	- ##[[KeyPgPmap Pmap]]##
+	- ##[[KeyPgViewtext|View Print]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
+	- ##[[KeyPgWindow|Window]]##
+	- ##[[KeyPgPmap|Pmap]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

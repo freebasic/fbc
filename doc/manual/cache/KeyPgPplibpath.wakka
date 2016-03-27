@@ -21,8 +21,8 @@ Preprocessor statement to add a search path for libraries
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInclib #inclib]]##
-	- ##[[KeyPgInclude #include]]##
-	- [[CompilerOptp Compiler Option: -p]]
+	- ##[[KeyPgInclib|#inclib]]##
+	- ##[[KeyPgInclude|#include]]##
+	- [[CompilerOptp|Compiler Option: -p]]
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

@@ -2,14 +2,14 @@
 Method attribute; specifies that a method must override a virtual
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgType Type]] //typename// [[KeyPgExtends Extends]] //basename//
+	[[KeyPgType|Type]] //typename// [[KeyPgExtends|Extends]] //basename//
 		...
-		[[KeyPgDeclare Declare]] [[KeyPgMemberSub Sub]]|[[KeyPgMemberFunction Function]]|[[KeyPgOperator Operator]]|[[KeyPgProperty Property]]|[[KeyPgDestructor Destructor]] ... ( [//parameterlist//] ) [[[KeyPgAs As]] //[[DataType datatype]]//] **Override**
+		[[KeyPgDeclare|Declare]] [[KeyPgMemberSub|Sub]]|[[KeyPgMemberFunction|Function]]|[[KeyPgOperator|Operator]]|[[KeyPgProperty|Property]]|[[KeyPgDestructor|Destructor]] ... ( [//parameterlist//] ) [[[KeyPgAs|As]] //[[DataType|datatype]]//] **Override**
 		...
 	End Type
 ##
 {{fbdoc item="desc"}}
-	In method declarations, ##**Override**## can be used to indicate that this method is expected to override a [[KeyPgVirtual virtual]] or [[KeyPgAbstract abstract]] method from the base class. Then the compiler will show an error if the method does not override anything (only a non-static method can override a virtual or abstract method).
+	In method declarations, ##**Override**## can be used to indicate that this method is expected to override a [[KeyPgVirtual|virtual]] or [[KeyPgAbstract|abstract]] method from the base class. Then the compiler will show an error if the method does not override anything (only a non-static method can override a virtual or abstract method).
 	
 	Use of ##**Override**## is not mandatory to override a virtual or abstract method, it is highly recommended, as it will help prevent inadvertent errors (name/signature not matching).
 	
@@ -48,6 +48,6 @@ End Function
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgVirtual Virtual]]##, ##[[KeyPgAbstract Abstract]]##
+	- ##[[KeyPgVirtual|Virtual]]##, ##[[KeyPgAbstract|Abstract]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

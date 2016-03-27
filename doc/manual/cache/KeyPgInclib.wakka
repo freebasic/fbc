@@ -5,7 +5,7 @@ Preprocessor directive
 	**#inclib** //"libname"//
 ##
 {{fbdoc item="desc"}}
-	Includes a library in the linking process as if the user specified ##[[CompilerOptl -l libname]]## on the command line.
+	Includes a library in the linking process as if the user specified ##[[CompilerOptl|-l libname]]## on the command line.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/inclib.bas"}}%%(freebasic)
@@ -19,8 +19,8 @@ Preprocessor directive
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInclude #include]]##
-	- [[CompilerOptl Compiler Option: -l]]
-	- [[CompilerOptp Compiler Option: -p]]
+	- ##[[KeyPgInclude|#include]]##
+	- [[CompilerOptl|Compiler Option: -l]]
+	- [[CompilerOptp|Compiler Option: -p]]
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

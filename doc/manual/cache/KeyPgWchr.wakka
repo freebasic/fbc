@@ -2,7 +2,7 @@
 Returns a wide-character string containing one or more Unicode characters
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] Wchr ( [[KeyPgByval byval]] //ch// [[KeyPgAs as]] [[KeyPgInteger integer]] [, ... ] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] Wchr ( [[KeyPgByval|byval]] //ch// [[KeyPgAs|as]] [[KeyPgInteger|integer]] [, ... ] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Wchr**( //ch0// [, //ch1// ... //chN// ] )
@@ -36,13 +36,13 @@ Multiple UNICODE characters: &#933;&#934;&#935;
 	- DOS does not support ##**Wchr**##.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Wchr""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Wchr""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgChr Chr]]##
-	- ##[[KeyPgWstr Wstr]]##
+	- ##[[KeyPgChr|Chr]]##
+	- ##[[KeyPgWstr|Wstr]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

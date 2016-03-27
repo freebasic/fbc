@@ -2,9 +2,9 @@
 Returns the corresponding ASCII or Unicode integer representation of a character
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Asc** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //position// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Asc** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgZstring zstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //position// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Asc** ( [[KeyPgByval byval]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //position// [[KeyPgAs as]] [[KeyPgInteger integer]] = 1 ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Asc** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [[KeyPgByval|byval]] //position// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 1 ) [[KeyPgAs|as]] [[KeyPgUlong|ulong]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Asc** ( [[KeyPgByval|byval]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgZstring|zstring]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //position// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 1 ) [[KeyPgAs|as]] [[KeyPgUlong|ulong]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Asc** ( [[KeyPgByval|byval]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //position// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 1 ) [[KeyPgAs|as]] [[KeyPgUlong|ulong]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Asc**( //str// [, //position// ] )
@@ -16,16 +16,16 @@ Returns the corresponding ASCII or Unicode integer representation of a character
 		The position in the string of a character.
 
 {{fbdoc item="ret"}}
-	The ASCII or Unicode integer representation of the character at ##//position//## in ##//str//##.
+	The raw character value stored at ##//position//## in ##//str//##.
 
 {{fbdoc item="desc"}}
-	If ##//str//## is a ##[[KeyPgString String]]## or a ##[[KeyPgZstring ZString]]##, an [[CptAscii ASCII]] code value is returned.
-
-	If ##//str//## is a ##[[KeyPgWstring WString]]##, a [[CptAscii Unicode]] code value is returned.
+	If ##//str//## is a ##[[KeyPgString|String]]## or a ##[[KeyPgZstring|ZString]]##, the ##[[KeyPgUbyte|UByte]]## value at that ##//position//## is returned. This will be a 7-bit [[CptAscii|ASCII]] code, or even a 8-bit character value from some code-page, depending on the string data stored in ##//str//##.
+	
+	If ##//str//## is a ##[[KeyPgWstring|WString]]##, the ##[[KeyPgUshort|UShort]]## (Windows) or ##[[KeyPgULong|ULong]]## (Linux) value at that ##//position//## is returned. This will be a 16bit value on Windows (WStrings use UTF16 there), or a 32bit value on Linux (WStrings use UTF32 there).
 	
 	The function returns zero (##0##) if the string is a zero length string, ##//position//## is less than one (##1##), or ##//position//## is greater than the number of characters in ##//str//##.
 	
-	##[[KeyPgChr Chr]]## performs the opposite function for ASCII strings, while ##[[KeyPgWchr WChr]]## is the opposite for Unicode strings, returning a string containing the character represented by the code passed as an argument.
+	##[[KeyPgChr|Chr]]## performs the opposite function for ASCII strings, while ##[[KeyPgWchr|WChr]]## is the opposite for Unicode strings, returning a string containing the character represented by the code passed as an argument.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/asc.bas"}}%%(freebasic)
@@ -54,9 +54,9 @@ print "the Unicode of the second char of " & a & " is: " & asc(a)
 	- QB does not support the wide-character string version of ##**ASC**##
 
 {{fbdoc item="see"}}
-	- [[CptAscii ASCII Character Codes]]
-	- ##[[KeyPgChr Chr]]##
-	- ##[[KeyPgStr Str]]##
-	- ##[[KeyPgVal Val]]##
+	- [[CptAscii|ASCII Character Codes]]
+	- ##[[KeyPgChr|Chr]]##
+	- ##[[KeyPgStr|Str]]##
+	- ##[[KeyPgVal|Val]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

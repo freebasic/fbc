@@ -134,6 +134,6 @@ This will create an executable named ##test2.exe## because ##test2.o## was speci
 
 
 {{fbdoc item="see"}}
-	- [[ProPgStaticLibraries Static Libraries]]
+	- [[ProPgStaticLibraries|Static Libraries]]
 
 {{fbdoc item="back" value="CommunityTutorials|Community Tutorials"}}

@@ -15,6 +15,6 @@ Sets the executable subsystem
 	- Supported on Windows and Cygwin only.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

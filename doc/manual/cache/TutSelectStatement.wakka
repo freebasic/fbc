@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="The Select Case Statement"}}----
-//Written by [[WikiRick rdc]]//
+//Written by [[WikiRick|rdc]]//
 
 The Select Case block can be viewed as an optimized If-ElseIf ladder, and works in much the same way. The standard Select Case can use any of the standard data types for <expression> and the specialized Select Case As Const format is optimized for integer values.
 

@@ -9,7 +9,7 @@ Properties are a special mix of member variable and member procedure. They provi
 
 {{anchor name="BASIC"}}{{fbdoc item="section" value="Basic properties"}}
 
-	A property is declared similar to a [[ProPgMemberProcedures member procedure]], except that the [[KeyPgProperty Property]] keyword is used instead of ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]##. For example, let's consider a window class for a windowing system or GUI library.
+	A property is declared similar to a [[ProPgMemberProcedures|member procedure]], except that the [[KeyPgProperty|Property]] keyword is used instead of ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]##. For example, let's consider a window class for a windowing system or GUI library.
 	
 	{{fbdoc item="filename" value="examples/manual/proguide/udt/properties1.bas"}}%%(freebasic)
 type Window
@@ -37,7 +37,7 @@ dim as Window w
 w.title = "My Window"
 %%
 	
-	It is very similar to a member [[KeyPgSub Sub]], as it takes a parameter and updates the object to the new state based on the parameter. However, the syntax for sending this parameter is a basic assignment, not a function call. By assigning the new value to the ##title## property, the property procedure will automatically be called with the given new value, and can update the window to reflect the change. It is up to the object how to represent the property state internally.
+	It is very similar to a member [[KeyPgSub|Sub]], as it takes a parameter and updates the object to the new state based on the parameter. However, the syntax for sending this parameter is a basic assignment, not a function call. By assigning the new value to the ##title## property, the property procedure will automatically be called with the given new value, and can update the window to reflect the change. It is up to the object how to represent the property state internally.
 	
 	By design, properties can only be assigned one value at a time, and as a result the property procedure can not have more than one parameter.
 	
@@ -68,9 +68,9 @@ w.title = "My Window"
 print w.title
 %%
 	
-	The getter is very similar to a [[KeyPgFunction Function]]. It is supposed to return the current value of the property, and it allows the current value to be calculated from other internal values, if needed. Note that both //setter// and //getter// use the same identifier, indicating they handle the same property.
+	The getter is very similar to a [[KeyPgFunction|Function]]. It is supposed to return the current value of the property, and it allows the current value to be calculated from other internal values, if needed. Note that both //setter// and //getter// use the same identifier, indicating they handle the same property.
 	
-	Just like [[ProPgMemberProcedures method overloading]], it is possible to specify multiple setters, provided they have different parameter types:
+	Just like [[ProPgMemberProcedures|method overloading]], it is possible to specify multiple setters, provided they have different parameter types:
 	
 	{{fbdoc item="filename" value="examples/manual/proguide/udt/properties4.bas"}}%%(freebasic)
 type Window
@@ -130,7 +130,7 @@ w.set_title(5)
 print w.get_title()
 %%
 	
-	The code is basically the same, only the syntax is different. Properties are specifically designed to combine the setter/getter concept and the language's normal way of literally [[CatPgOpAssignment assigning]] and [[CatPgOpTypeclass accessing]] values to a class' member variables. It is up to the programmers to decide which way they prefer.
+	The code is basically the same, only the syntax is different. Properties are specifically designed to combine the setter/getter concept and the language's normal way of literally [[CatPgOpAssignment|assigning]] and [[CatPgOpTypeclass|accessing]] values to a class' member variables. It is up to the programmers to decide which way they prefer.
 	
 	Here is an example demonstrating a text user interface window class allowing to set position and title using properties:
 	

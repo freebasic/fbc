@@ -9,15 +9,15 @@ A variable's scope refers to its visibility in a program. A variable is not visi
 
 	Variables declared in the local scope are visible only in the most local instance of the IF, FOR, SCOPE, function, or module block in which they are declared.
 
-	- ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, the main body, and each compound statement implicitly define a new local scope block. 
-	- Explicitly declared variables using ##[[KeyPgDim Dim]]## or ##[[KeyPgRedim Redim]]## take the scope of the local most block in which they are declared. 
-	- Implicit variables take the scope of the the local most ##[[KeyPgScope Scope...End Scope]]## block in which they are first used, otherwise take the scope of the ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, or main body in which they are used. 
+	- ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##, the main body, and each compound statement implicitly define a new local scope block. 
+	- Explicitly declared variables using ##[[KeyPgDim|Dim]]## or ##[[KeyPgRedim|Redim]]## take the scope of the local most block in which they are declared. 
+	- Implicit variables take the scope of the the local most ##[[KeyPgScope|Scope...End Scope]]## block in which they are first used, otherwise take the scope of the ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##, or main body in which they are used. 
 
 	In the local scope, there is no visibility between module-level code and function level code. Furthermore, variables dimensioned within a block decision or loop statement will only be visible within the block in which they are dimensioned. Variables declared in the local scope of a module are not visible in any of the functions within that module. Similarly, local variables declared inside functions are not visible in the module-level code, nor any other function within the module.
 
-	Variables declared inside ##[[KeyPgScope Scope]]## blocks may only be declared of local scope, and are not visible outside the block. ##[[KeyPgScope Scope]]## blocks, however, inherit the surrounding scope, so local variables declared outside the ##[[KeyPgScope Scope]]## block will be visible inside (//see example program//).
+	Variables declared inside ##[[KeyPgScope|Scope]]## blocks may only be declared of local scope, and are not visible outside the block. ##[[KeyPgScope|Scope]]## blocks, however, inherit the surrounding scope, so local variables declared outside the ##[[KeyPgScope|Scope]]## block will be visible inside (//see example program//).
 
-	You can declare a variable to be of local scope explicitly by using the ##[[KeyPgDim Dim]]## statement, or implicitly by simply introducing the variable (//see [[ProPgImplicitdeclarations Implicit Declarations]]//). The example program ##**local.bas**## demonstrates visibility rules for the local scope.
+	You can declare a variable to be of local scope explicitly by using the ##[[KeyPgDim|Dim]]## statement, or implicitly by simply introducing the variable (//see [[ProPgImplicitdeclarations|Implicit Declarations]]//). The example program ##**local.bas**## demonstrates visibility rules for the local scope.
 
 **local.bas**
 {{fbdoc item="filename" value="examples/manual/proguide/varscope/local.bas"}}%%(freebasic)
@@ -68,9 +68,9 @@ End 0
 
 	Unlike the local scope, the shared scope makes module-level variables visible to functions of that module. In other words, the module //shares// its declarations with its functions.
 
-	Variables can only be declared to be of shared scope at the module-level. Ie., only modules can share variables. Neither functions nor ##[[KeyPgScope Scope]]## blocks can declare variables in the shared scope, thus variables declared there can only be local to that function or block.
+	Variables can only be declared to be of shared scope at the module-level. Ie., only modules can share variables. Neither functions nor ##[[KeyPgScope|Scope]]## blocks can declare variables in the shared scope, thus variables declared there can only be local to that function or block.
 
-	You can declare a variable to be of shared scope by using the DIM statement with the ##[[KeyPgShared Shared]]## keyword. The example program ##**shared_scope.bas**## demonstrates visibility rules for the shared scope.
+	You can declare a variable to be of shared scope by using the DIM statement with the ##[[KeyPgShared|Shared]]## keyword. The example program ##**shared_scope.bas**## demonstrates visibility rules for the shared scope.
 
 ##**shared.bas**##
 {{fbdoc item="filename" value="examples/manual/proguide/varscope/shared.bas"}}%%(freebasic)
@@ -105,7 +105,7 @@ End Function
 
 	Variables declared in the common scope are visible to all modules.
 
-	Variables declared with ##[[KeyPgCommon Common]]## are visible to other modules with a matching ##[[KeyPgCommon Common]]## variable declaration.  The variable name declared must match from between modules.
+	Variables declared with ##[[KeyPgCommon|Common]]## are visible to other modules with a matching ##[[KeyPgCommon|Common]]## variable declaration.  The variable name declared must match from between modules.
 
 ##**module1.bas**##
 {{fbdoc item="filename" value="examples/manual/proguide/varscope/module1.bas"}}%%(freebasic)
@@ -162,7 +162,7 @@ End Sub
 
 	Variables declared in the common shared scope are visible to all modules and all functions of those modules.
 
-	Variables declared with ##[[KeyPgCommon Common]]## are visible to other modules with a matching ##[[KeyPgCommon Common]]## variable declaration.  The variable name declared must match from between modules.  Within a module the ##[[KeyPgShared Shared]]## declaration modifier gives the variable module scope and makes the variable visible to all subs and functions.
+	Variables declared with ##[[KeyPgCommon|Common]]## are visible to other modules with a matching ##[[KeyPgCommon|Common]]## variable declaration.  The variable name declared must match from between modules.  Within a module the ##[[KeyPgShared|Shared]]## declaration modifier gives the variable module scope and makes the variable visible to all subs and functions.
 
 //**##module3.bas##**//
 {{fbdoc item="filename" value="examples/manual/proguide/varscope/module3.bas"}}%%(freebasic)
@@ -218,12 +218,12 @@ End Sub
 	See examples above.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScope Scope]]##
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgCommon Common]]##
-	- ##[[KeyPgShared Shared]]##
-	- [[ProPgVariables Variables]]
-	- [[ProPgImplicitdeclarations Implicit Declarations]]
+	- ##[[KeyPgScope|Scope]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgCommon|Common]]##
+	- ##[[KeyPgShared|Shared]]##
+	- [[ProPgVariables|Variables]]
+	- [[ProPgImplicitdeclarations|Implicit Declarations]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
    

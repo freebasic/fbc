@@ -2,8 +2,8 @@
 Reads a number of characters from console or file
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Input** ( //n// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Input** ( //n// [[KeyPgAs as]] [[KeyPgInteger integer]], //filenum// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Input** ( //n// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Input** ( //n// [[KeyPgAs|as]] [[KeyPgInteger|integer]], //filenum// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Input**[$]( //n// [, [#]//filenum// ] )
@@ -15,7 +15,7 @@ Reads a number of characters from console or file
 		File number of a bound file or device.
 
 {{fbdoc item="ret"}}
-	Returns a ##[[KeyPgString String]]## of the characters read.
+	Returns a ##[[KeyPgString|String]]## of the characters read.
 
 {{fbdoc item="desc"}}
 	Reads a number of characters from the console, or a bound file/device specified by ##//filenum//##.
@@ -40,8 +40,8 @@ loop until choice >= "1" and choice <= "3"
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgWinput Winput()]]##
-	- ##[[KeyPgGetkey Getkey]]##
-	- ##[[KeyPgInkey Inkey]]##
+	- ##[[KeyPgWinput|Winput()]]##
+	- ##[[KeyPgGetkey|Getkey]]##
+	- ##[[KeyPgInkey|Inkey]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}{{fbdoc item="back" value="CatPgInput|User Input"}}

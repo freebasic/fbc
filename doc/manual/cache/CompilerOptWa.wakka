@@ -14,9 +14,9 @@ Pass options to the assembler when using the assembly emitter (-gen gas), the de
 		##fbc -Wa -o,output.o,--verbose##
 
 {{fbdoc item="see"}}
-	- [[CompilerOptgen Compiler Option: -gen]]
-	- [[CompilerOptWc Compiler Option: -Wc]]
-	- [[CompilerOptWl Compiler Option: -Wl]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerOptgen|Compiler Option: -gen]]
+	- [[CompilerOptWc|Compiler Option: -Wc]]
+	- [[CompilerOptWl|Compiler Option: -Wl]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

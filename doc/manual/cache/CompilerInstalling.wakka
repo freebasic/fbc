@@ -3,17 +3,17 @@ Installing ""FreeBASIC"", any additionally needed packages, and perhaps a text e
 
 {{fbdoc item="section" value="Windows 32bit"}}
 
-	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/ FreeBASIC-x.xx.x-win32.exe]] installer
+	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/|FreeBASIC-x.xx.x-win32.exe]] installer
 	1) Run it and click through it. The installer will install ""FreeBASIC"" at ##""C:\%ProgramFiles%\FreeBASIC""##, or if you chose a different installation directory, in your chosen directory. Start Menu shortcuts to the website will be installed as well.
 	1) Unless you already have a source code editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":
-		- [[http://fbide.freebasic.net/ FBIDE]]
-		- [[http://radasm.cherrytree.at/fbedit/ FBEdit]]
+		- [[http://fbide.freebasic.net/|FBIDE]]
+		- [[http://radasm.cherrytree.at/fbedit/|FBEdit]]
 
-	To uninstall ""FreeBASIC"", remove it from the system's list of installed software ([[http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/win_addprog_window_component.mspx Add/remove programs]], [[http://windows.microsoft.com/en-US/windows-vista/Uninstall-or-change-a-program Uninstall or change a program]]).
+	To uninstall ""FreeBASIC"", remove it from the system's list of installed software ([[http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/win_addprog_window_component.mspx|Add/remove programs]], [[http://windows.microsoft.com/en-US/windows-vista/Uninstall-or-change-a-program|Uninstall or change a program]]).
 
 {{fbdoc item="section" value="Windows x64"}}
 
-	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/ FreeBASIC-x.xx.x-win64.zip]] package
+	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/|FreeBASIC-x.xx.x-win64.zip]] package
 	1) Extract it where you like, for example at ##""C:\%ProgramFiles%\FreeBASIC""## (no further installation required to use fbc).
 	1) You may want to install a source code editor or IDE; also see the **Windows 32bit** section.
 
@@ -21,7 +21,7 @@ Installing ""FreeBASIC"", any additionally needed packages, and perhaps a text e
 
 {{fbdoc item="section" value="Linux"}}
 
-	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Linux/ FreeBASIC-x.xx.x-linux-x86.tar.gz (32bit) or FreeBASIC-x.xx.x-linux-x86_64.tar.gz (64bit)]] package
+	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Linux/|FreeBASIC-x.xx.x-linux-x86.tar.gz (32bit) or FreeBASIC-x.xx.x-linux-x86_64.tar.gz (64bit)]] package
 	1) Extract the archive, for example by doing right-click -> Extract Here, or manually in a terminal:
 		
 		%%$ cd Downloads
@@ -41,8 +41,8 @@ $ sudo ./install.sh -i%%
 			- gcc
 			- libncurses development files
 			- X11 development files (for FB graphics programs)
-			- libffi development files (for the [[KeyPgThreadCall ThreadCall]] keyword)
-			- gpm (general purpose mouse) daemon and libgpm (only needed for [[KeyPgGetmouse GetMouse]] support in the Linux console)
+			- libffi development files (for the [[KeyPgThreadCall|ThreadCall]] keyword)
+			- gpm (general purpose mouse) daemon and libgpm (only needed for [[KeyPgGetmouse|GetMouse]] support in the Linux console)
 		
 		The actual package names to install vary depending on the GNU/Linux distribution.
 		
@@ -82,13 +82,13 @@ $ sudo ./install.sh -i%%
 				- libffi46-devel-32bit
 	
 	1) Unless you already have a text editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":
-		- [[http://www.geany.org/ Geany]]
+		- [[http://www.geany.org/|Geany]]
 	
 	To uninstall ""FreeBASIC"" from ##/usr/local##, you can run the install.sh script again, but with the -u option: ##sudo ./install.sh -u##
 
 {{fbdoc item="section" value="DOS"}}
 
-	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20DOS/ FreeBASIC-x.xx.x-dos.zip]] archive
+	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20DOS/|FreeBASIC-x.xx.x-dos.zip]] archive
 	1) Find a place for ""FreeBASIC"" with at least 13 ""MiB"" free space.
 	1) Unpack the ZIP archive, making sure that the directory structure as used inside the archive is preserved ("PKUNZIP -d" for example). 
 	1) The top-level directory is named ""FreeBASIC-x.xx.x-dos"" (will be truncated to "FREEBASI" in DOS without full LFN support), so you might want to rename it then to a convenient DOS-compliant name not longer than 8 characters and containing no white-spaces, like "FB".
@@ -98,23 +98,23 @@ $ sudo ./install.sh -i%%
 
 {{fbdoc item="section" value="Compiling under Ubuntu 10.04 LTS, 64-bit:"}}
 This comment applies to FB 1.01.0, and may apply to other builds also.
-Install all of the Libraries listed above; some of the entries ending in ì:i386î may throw ìnot foundî errors.
-To verify that youíre using a 64-bit build, use: ìuname -aî or ìuname -mî (itíll show x86_64 for 64-bit, i386 for 32-bit).
-Then, when running FBC, an error may appear: ìerror while loading shared libraries: libtinfo.so.5: cannot open shared object file: No such file or directoryî.
+Install all of the Libraries listed above; some of the entries ending in ‚Äú:i386‚Äù may throw ‚Äúnot found‚Äù errors.
+To verify that you‚Äôre using a 64-bit build, use: ‚Äúuname -a‚Äù or ‚Äúuname -m‚Äù (it‚Äôll show x86_64 for 64-bit, i386 for 32-bit).
+Then, when running FBC, an error may appear: ‚Äúerror while loading shared libraries: libtinfo.so.5: cannot open shared object file: No such file or directory‚Äù.
 
-ìlibtinfo.so.5î is available as a separate library in Ubuntu 11.10+, but it is built into ìncurses.so.5î in 10.04 LTS. So, we need to re-direct the libtinfo references into the ncurses.so.5 libraries:
+‚Äúlibtinfo.so.5‚Äù is available as a separate library in Ubuntu 11.10+, but it is built into ‚Äúncurses.so.5‚Äù in 10.04 LTS. So, we need to re-direct the libtinfo references into the ncurses.so.5 libraries:
 	1) Issue: find / -name 'libtinfo.so.5' - just to verify that there are no confusing references to these libraries anywhere. Any references should be checked, and probably deleted?
-	1) Change to the folder containing the FBC executable (perhaps ì/usr/local/bin/î).
-	1) Issue: ldd fbc - it will list the various library folder(s) being searched (probably ì/lib32î in most cases).
-	1) Issue: sudo ln -s /lib32/libncurses.so.5 /lib32/libtinfo.so.5 (assuming ì/lib32î was emitted in the previous step).
-	1) Issue: sudo ln -s /lib32/libtinfo.so.5     /lib32/libtinfo.so (assuming ì/lib32î...)
+	1) Change to the folder containing the FBC executable (perhaps ‚Äú/usr/local/bin/‚Äù).
+	1) Issue: ldd fbc - it will list the various library folder(s) being searched (probably ‚Äú/lib32‚Äù in most cases).
+	1) Issue: sudo ln -s /lib32/libncurses.so.5 /lib32/libtinfo.so.5 (assuming ‚Äú/lib32‚Äù was emitted in the previous step).
+	1) Issue: sudo ln -s /lib32/libtinfo.so.5     /lib32/libtinfo.so (assuming ‚Äú/lib32‚Äù...)
 	1) Retry!
 	1) [Unrelated point: if "private" Libraries are needed for compiles, they were expected to be in /usr/local/lib/freebasic/. Now, they may have to be in /usr/local/lib/freebasic/linux-x86/].
 	1) [Mike Kennedy, Jan, 2015. (This note was not acceptable as a standard "comment" - I don't know why?)].
 
 
 {{fbdoc item="see"}}
-	- [[CompilerRunning Invoking the Compiler]]
-	- [[CompilerCmdLine Compiler Command Line Options]]
+	- [[CompilerRunning|Invoking the Compiler]]
+	- [[CompilerCmdLine|Compiler Command Line Options]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

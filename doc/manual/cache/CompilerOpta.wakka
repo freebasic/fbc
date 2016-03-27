@@ -12,7 +12,7 @@ Add an object file to the linker's list
 	The ##-a## compiler option adds a compiled object file to the linker's list. The "-a" is optional if the object file name has a ".o" file extension.
 
 {{fbdoc item="see"}}
-	- [[CompilerOptb Compiler Option: -b]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerOptb|Compiler Option: -b]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

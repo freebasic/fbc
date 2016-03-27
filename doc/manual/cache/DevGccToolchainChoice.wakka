@@ -6,9 +6,9 @@ FB is based on GCC toolchains and corresponding libraries. However, there is not
 
 ""MinGW"" toolchains:
 
-	- [[http://mingw.org/ MinGW.org]] - also provides MSYS, besides a ""MinGW"" GCC toolchain. No ""Win64"" support (yet).
-	- [[http://mingw-w64.sourceforge.net/ MinGW-w64]] - 32bit and 64bit. Different runtime libraries than ""MinGW.org"".
-	- [[http://tdm-gcc.tdragon.net/ TDM-GCC]] - 32bit based on ""MinGW.org"", 64bit based on ""MinGW-w64"", with modifications.
+	- [[http://mingw.org/|MinGW.org]] - also provides MSYS, besides a ""MinGW"" GCC toolchain. No ""Win64"" support (yet).
+	- [[http://mingw-w64.sourceforge.net/|MinGW-w64]] - 32bit and 64bit. Different runtime libraries than ""MinGW.org"".
+	- [[http://tdm-gcc.tdragon.net/|TDM-GCC]] - 32bit based on ""MinGW.org"", 64bit based on ""MinGW-w64"", with modifications.
 	- ""MinGW"" cross-compilers on various GNU/Linux distributions - for example ""MinGW-w64"" on Debian/Ubuntu and Fedora (i686-w64-mingw32, x86_64-w64-mingw32)
 
 Notes:
@@ -73,7 +73,7 @@ In theory, it is possible to use static linking to avoid the problems with share
 	- The fbc ##-static## command line option tells the linker to prefer static libraries instead of shared ones. This can (in theory) also be used when building fbc itself. It relies on the Linux distro to provide static versions of the system libraries. Linking statically on GNU/Linux is typically discouraged though, in particular with glibc (some of its components are not designed for static linking), but also in general (shared libraries are preferred to avoid redundancy.
 	
 	
-	- FB can (in theory) also be used with a different libc (instead of glibc), one that explicitly supports static linking, for example [[http://www.musl-libc.org/ musl-libc]].
+	- FB can (in theory) also be used with a different libc (instead of glibc), one that explicitly supports static linking, for example [[http://www.musl-libc.org/|musl-libc]].
 	
 	
 		In this context, you will typically use a custom gcc toolchain, which also requires FB to be built specifically for that toolchain. This approach in general works quite well, but it can be a lot of work.
@@ -83,7 +83,7 @@ In theory, it is possible to use static linking to avoid the problems with share
 		Another headache when using a different libc than the Linux distro default is that you also need to build a lot of libraries such as ncurses, X11 and ""Mesa/OpenGL"" in order to satisfy FB's dependencies, not to mention any other third-party libraries you want to use in your program. Existing libraries precompiled for glibc can probably not be used (at least not safely) due to the two libc's being ABI-incompatible.
 
 {{fbdoc item="see"}}
-	- [[DevBuildKnownProblems Known problems when compiling FB]]
+	- [[DevBuildKnownProblems|Known problems when compiling FB]]
 
 {{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -2,7 +2,7 @@
 Gets the difference of two dates measured by a specified interval
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateDiff""** ( [[KeyPgByref byref]] //interval// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //serial1// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByval byval]] //serial2// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByval byval]] //firstdayofweek// [[KeyPgAs as]] [[KeyPgLong long]] = fbUseSystem, [[KeyPgByval byval]] //firstdayofyear// [[KeyPgAs as]] [[KeyPgLong long]] = fbUseSystem ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""DateDiff""** ( [[KeyPgByref|byref]] //interval// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [[KeyPgByval|byval]] //serial1// [[KeyPgAs|as]] [[KeyPgDouble|double]], [[KeyPgByval|byval]] //serial2// [[KeyPgAs|as]] [[KeyPgDouble|double]], [[KeyPgByval|byval]] //firstdayofweek// [[KeyPgAs|as]] [[KeyPgLong|long]] = fbUseSystem, [[KeyPgByval|byval]] //firstdayofyear// [[KeyPgAs|as]] [[KeyPgLong|long]] = fbUseSystem ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -21,7 +21,7 @@ Gets the difference of two dates measured by a specified interval
 		first day of the year
 
 {{fbdoc item="ret"}}
-	Returns an integer corresponding to the number of ##//interval//##s found between two [[ProPgDates Date Serials]].
+	Returns an integer corresponding to the number of ##//interval//##s found between two [[ProPgDates|Date Serials]].
 
 	If ##//date_serial1//## > ##//date_serial2//##, the result is negative.
 
@@ -69,6 +69,6 @@ end if
 	- Did not exist in QB. This function appeared in Visual Basic.
 
 {{fbdoc item="see"}}
-	- [[ProPgDates Date Serials]]
+	- [[ProPgDates|Date Serials]]
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

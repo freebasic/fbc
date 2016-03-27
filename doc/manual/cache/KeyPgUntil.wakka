@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="UNTIL"}}----
-Conditional clause used in ##[[KeyPgDoloop Do..Loop]]## statements.
+Conditional clause used in ##[[KeyPgDoloop|Do..Loop]]## statements.
 
 {{fbdoc item="syntax"}}##
 	Do **Until** //condition//
@@ -7,7 +7,7 @@ Conditional clause used in ##[[KeyPgDoloop Do..Loop]]## statements.
 	Loop **Until** //condition//
 ##
 {{fbdoc item="desc"}}
-	##**Until**## is used with the ##[[KeyPgDoloop Do...Loop]]## structure.
+	##**Until**## is used with the ##[[KeyPgDoloop|Do...Loop]]## structure.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/until.bas"}}%%(freebasic)
@@ -26,7 +26,7 @@ LOOP UNTIL a > 10
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDoloop Do...Loop]]##
+	- ##[[KeyPgDoloop|Do...Loop]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
    

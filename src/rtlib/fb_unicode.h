@@ -39,7 +39,6 @@ typedef uint8_t  UTF_8;
 #	define wcstoull strtoull
 #	define wcschr   strchr
 #	define wcscspn  strcspn
-#	define FB_WSTR_WCHARTOCHAR fb_wstr_WcharToChar
 	static __inline__ size_t __dos_mbstowcs(FB_WCHAR *wcstr, const char *mbstr, size_t count)
 	{
 		return memcpy(wcstr,mbstr,count), count;
@@ -47,10 +46,6 @@ typedef uint8_t  UTF_8;
 	static __inline__ size_t __dos_wcstombs(char *mbstr, const FB_WCHAR *wcstr, size_t count)
 	{
 		return memcpy(mbstr,wcstr,count), count;
-	}
-	static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, ssize_t chars )
-	{
-		memcpy(dst,src,chars);
 	}
 	static __inline__ int swprintf(FB_WCHAR *buffer, size_t n, const FB_WCHAR *format, ...)
 	{
@@ -78,19 +73,6 @@ typedef uint8_t  UTF_8;
 #	else
 #		define FB_WEOF ((FB_WCHAR)-1)
 #	endif
-#	define FB_WSTR_WCHARTOCHAR fb_wstr_WcharToChar
-	static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, ssize_t chars )
-	{
-		while( chars-- ) {
-			UTF_16 c = *src++;
-			if( c > 255 ) {
-				if( c >= UTF16_SUR_HIGH_START && c <= UTF16_SUR_HIGH_END )
-					++src;
-				c = '?';
-			}
-			*dst++ = c;
-		}
-	}
 #else
 #	define __USE_ISOC99 1
 #	define __USE_ISOC95 1
@@ -141,20 +123,6 @@ typedef uint8_t  UTF_8;
     swprintf( buffer, 16+8 + 1, _LC("%.16g"), (double) (num) )
 #endif
 
-#ifndef FB_WSTR_WCHARTOCHAR
-#define FB_WSTR_WCHARTOCHAR fb_wstr_WcharToChar
-static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, ssize_t chars )
-{
-	while( chars ) {
-		UTF_32 c = *src++;
-		if( c > 255 )
-			c = '?';
-		*dst++ = c;
-		--chars;
-	}
-}
-#endif
-
 /* Calculate the number of characters between two pointers. */
 static __inline__ ssize_t fb_wstr_CalcDiff( const FB_WCHAR *ini, const FB_WCHAR *end )
 {
@@ -179,52 +147,8 @@ static __inline__ ssize_t fb_wstr_Len( const FB_WCHAR *s )
 	return wcslen( s );
 }
 
-static __inline__ void fb_wstr_ConvFromA( FB_WCHAR *dst, ssize_t dst_chars, const char *src )
-{
-	ssize_t chars;
-
-	/* NULL? */
-	if( src == NULL ) {
-		chars = -1;
-	} else {
-		/* plus the null-term (note: "n" in chars, not bytes!) */
-		chars = mbstowcs( dst, src, dst_chars + 1 );
-	}
-
-	/* error? */
-	if( chars == -1 )
-		*dst = _LC('\0');
-
-	/* if there's no enough space in dst the null-term won't be added? */
-	else if( chars == (dst_chars + 1) )
-		dst[dst_chars] = _LC('\0');
-}
-
-static __inline__ void fb_wstr_ConvToA( char *dst, const FB_WCHAR *src, ssize_t chars )
-{
-	/* !!!FIXME!!! wcstombs() will fail and not emit '?' or such if the
-	   characters are above 255 and can't be converted? not good.. */
-#if 0
-	ssize_t bytes;
-
-	/* plus the null-term */
-	bytes = wcstombs( dst, src, chars + 1 );
-
-	/* error? */
-	if( bytes == -1 )
-		*dst = '\0';
-
-	/* if there's no enough space in dst the null-term won't be added? */
-	else if( bytes == chars + 1 )
-		dst[src_chars] = '\0';
-
-#else
-	FB_WSTR_WCHARTOCHAR( dst, src, chars );
-
-	/* plus the null-term */
-	dst[chars] = '\0';
-#endif
-}
+ssize_t fb_wstr_ConvFromA( FB_WCHAR *dst, ssize_t dst_chars, const char *src );
+ssize_t fb_wstr_ConvToA( char *dst, ssize_t dst_chars, const FB_WCHAR *src );
 
 static __inline__ int fb_wstr_IsLower( FB_WCHAR c )
 {

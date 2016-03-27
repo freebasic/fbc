@@ -25,6 +25,6 @@ dim a as long
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- [[CompilerOptasm Compiler Option: -asm]]
+	- [[CompilerOptasm|Compiler Option: -asm]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

@@ -196,6 +196,7 @@ enum FB_SYMBTYPEOPT
 
 	FB_SYMBTYPEOPT_CHECKSTRPTR	= &h00000001
 	FB_SYMBTYPEOPT_ALLOWFORWARD	= &h00000002
+	FB_SYMBTYPEOPT_ISBYREF		= &h00000004
 
 	FB_SYMBTYPEOPT_DEFAULT		= FB_SYMBTYPEOPT_CHECKSTRPTR
 end enum
@@ -296,21 +297,24 @@ declare function cTypeOrExpression _
 		byval tk as integer, _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as longint _
+		byref lgt as longint = 0, _
+		byref is_fixlenstr as integer = FALSE _
 	) as ASTNODE ptr
 
 declare sub cTypeOf _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as longint _
+		byref lgt as longint, _
+		byref is_fixlenstr as integer _
 	)
 
 declare function cSymbolType _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
-		byref lgt as longint, _
+		byref lgt as longint = 0, _
+		byref is_fixlenstr as integer = FALSE, _
 		byval options as FB_SYMBTYPEOPT = FB_SYMBTYPEOPT_DEFAULT _
 	) as integer
 

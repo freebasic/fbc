@@ -2,7 +2,7 @@
 Returns the natural logarithm of a given number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Log** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Log** [[KeyPgCdecl|cdecl]] ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Log**( //number// )
@@ -41,6 +41,6 @@ The log base 2 of 16 is: 4
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgExp Exp]]##
+	- ##[[KeyPgExp|Exp]]##
 
 {{fbdoc item="back" value="CatPgMath|Math"}}

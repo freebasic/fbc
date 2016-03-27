@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="Operator \ (Integer divide)"}}----
-Divides two ##[[KeyPgInteger Integer]]## expressions
+Divides two ##[[KeyPgInteger|Integer]]## expressions
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **\** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgInteger integer]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **\** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgUinteger uinteger]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgUinteger uinteger]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **\** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgLongint longint]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgLongint longint]] ) [[KeyPgAs as]] [[KeyPgLongint longint]]
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **\** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] [[KeyPgUlongint ulongint]], [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgUlongint ulongint]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **\** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **\** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **\** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgLongint|longint]] ) [[KeyPgAs|as]] [[KeyPgLongint|longint]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **\** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **##\##** //rhs//
@@ -17,10 +17,10 @@ Divides two ##[[KeyPgInteger Integer]]## expressions
 		The right-hand side divisor expression.
 
 {{fbdoc item="ret"}}
-	Returns the quotient of an ##[[KeyPgInteger Integer]]## dividend and divisor.
+	Returns the quotient of an ##[[KeyPgInteger|Integer]]## dividend and divisor.
 
 {{fbdoc item="desc"}}
-	**##Operator \## (Integer division)** divides two ##[[KeyPgInteger Integer]]## expressions and returns the result. Float numeric values are converted to ##[[KeyPgInteger Integer]]## by rounding up or down, and the fractional part of the resulting quotient is truncated.
+	**##Operator \## (Integer division)** divides two ##[[KeyPgInteger|Integer]]## expressions and returns the result. Float numeric values are converted to ##[[KeyPgInteger|Integer]]## by rounding up or down, and the fractional part of the resulting quotient is truncated.
 	
 	If the divisor (##//rhs//##) is zero (##0##), a division by zero error (crash) will be raised.
 
@@ -46,14 +46,14 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- [[KeyPgOpDivide Operator / (Floating-point divide)]]
-	- [[KeyPgOpModulus Operator Mod (Modulus)]]
-	- [[CatPgMath Mathematical Functions]]
+	- [[KeyPgOpDivide|Operator / (Floating-point divide)]]
+	- [[KeyPgOpModulus|Operator Mod (Modulus)]]
+	- [[CatPgMath|Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpArithmetic|Arithmetic Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

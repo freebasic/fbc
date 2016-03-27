@@ -2,8 +2,8 @@
 Returns a lower case copy of a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lcase** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]], [[KeyPgByval byval]] //mode// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Lcase** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgWstring wstring]], [[KeyPgByval byval]] //mode// [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Lcase** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [[KeyPgByval|byval]] //mode// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Lcase** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgWstring|wstring]], [[KeyPgByval|byval]] //mode// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Lcase**[$]( //str// [ , //mode// ] )
@@ -35,13 +35,13 @@ abcdefg
 	- The wide-character string version of ##**Lcase**## is not supported for DOS target.
 
 {{fbdoc item="lang"}}
-	- The string type suffix "$" is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix "$" is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- The string type suffix "$" is obligatory in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- QB does not support Unicode.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgUcase Ucase]]##
+	- ##[[KeyPgUcase|Ucase]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

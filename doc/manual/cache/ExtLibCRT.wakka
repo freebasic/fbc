@@ -4,7 +4,7 @@ Standard C language functions. On Windows, this is implemented in msvcrt.dll (ho
 Websites: http://msdn.microsoft.com/en-us/library/59ey50w6.aspx, http://www.gnu.org/software/libc/, http://www.delorie.com/djgpp/
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: crt.bi
-Function reference: [[ProPgCruntime C Runtime Functions]]
+Function reference: [[ProPgCruntime|C Runtime Functions]]
 MSDN function reference: http://msdn.microsoft.com/en-us/library/634ca0c2.aspx
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

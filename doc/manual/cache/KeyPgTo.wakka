@@ -2,27 +2,27 @@
 Statement modifier to specify a range.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgFor For]] //iterator// //intial_value// **To** //ending_value//
+	[[KeyPgFor|For]] //iterator// //intial_value// **To** //ending_value//
 		//statement(s)//.
-	[[KeyPgNext Next]] [ //iterator// ]
+	[[KeyPgNext|Next]] [ //iterator// ]
 //or//
-	[[KeyPgSelectcase Select Case]] //case_comparison_value//
-	[[KeyPgCase Case]] //lower_bound// **To** //upper_bound//
+	[[KeyPgSelectcase|Select Case]] //case_comparison_value//
+	[[KeyPgCase|Case]] //lower_bound// **To** //upper_bound//
 		//statement(s)//.
 	**End Select**
 //or//
-	[[KeyPgDim Dim]] //variable_identifier//( //lower_bound// **To** //upper_bound// ) [[KeyPgAs As]] //type_specifier//
+	[[KeyPgDim|Dim]] //variable_identifier//( //lower_bound// **To** //upper_bound// ) [[KeyPgAs|As]] //type_specifier//
 ##
 {{fbdoc item="desc"}}
-	The ##**To**## keyword is used to define a certain numerical range. This keyword is valid only if used with ##[[KeyPgFornext For ... Next]]##, ##[[KeyPgCase Case]]## and ##[[KeyPgDim Dim]]## statements.
+	The ##**To**## keyword is used to define a certain numerical range. This keyword is valid only if used with ##[[KeyPgFornext|For ... Next]]##, ##[[KeyPgCase|Case]]## and ##[[KeyPgDim|Dim]]## statements.
 
-	In the first syntax, the ##**To**## keyword defines the initial and ending values of the iterator in a ##[[KeyPgFor For]]## statement.
+	In the first syntax, the ##**To**## keyword defines the initial and ending values of the iterator in a ##[[KeyPgFor|For]]## statement.
 
-	In the second syntax, the ##**To**## keyword defines lower and upper bounds for ##[[KeyPgCase Case]]## comparisons.
+	In the second syntax, the ##**To**## keyword defines lower and upper bounds for ##[[KeyPgCase|Case]]## comparisons.
 
-	In the third syntax, the ##**To**## keyword defines the array bounds in a ##[[KeyPgDim Dim]]## statement
+	In the third syntax, the ##**To**## keyword defines the array bounds in a ##[[KeyPgDim|Dim]]## statement
 
-	For more information, see ##[[KeyPgFornext For...Next]]##, ##[[KeyPgDim Dim]]## and ##[[KeyPgSelectcase Select Case]]##.
+	For more information, see ##[[KeyPgFornext|For...Next]]##, ##[[KeyPgDim|Dim]]## and ##[[KeyPgSelectcase|Select Case]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/misc/to.bas"}}%%(freebasic)
@@ -76,8 +76,8 @@ Sleep
 	- none
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgFornext For...Next]]##
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgSelectcase Select Case]]##
+	- ##[[KeyPgFornext|For...Next]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgSelectcase|Select Case]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

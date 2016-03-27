@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="OR"}}----
-Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which uses a bit-wise ##[[KeyPgOpOr Or]]## as the blitting method
+Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which uses a bit-wise ##[[KeyPgOpOr|Or]]## as the blitting method
 
 {{fbdoc item="syntax"}}##
 	**Put** [ //target//, ] [ STEP ] ( //x//,//y// ), //source// [ ,( //x1//,//y1// )-( //x2//,//y2// ) ], **Or**
@@ -9,8 +9,8 @@ Parameter to the ##[[KeyPgPutgraphics Put]]## graphics statement which uses a bi
 		Required.
 
 {{fbdoc item="desc"}}
-	The ##**Or**## method combines each source pixel with the corresponding destination pixel, using the bit-wise ##[[KeyPgOpOr Or]]## function.  The result of this is output as the destination pixel.
-	This method works in all graphics modes.  There is no mask color, although color values of ##0## (##[[KeyPgRgba RGBA]](0, 0, 0, 0)## in full-color modes) will have no effect, because of the behavior of ##[[KeyPgOpOr Or]]##.
+	The ##**Or**## method combines each source pixel with the corresponding destination pixel, using the bit-wise ##[[KeyPgOpOr|Or]]## function.  The result of this is output as the destination pixel.
+	This method works in all graphics modes.  There is no mask color, although color values of ##0## (##[[KeyPgRgba|RGBA]](0, 0, 0, 0)## in full-color modes) will have no effect, because of the behavior of ##[[KeyPgOpOr|Or]]##.
 
 	In full-color modes, each component (red, green, blue and alpha) is kept in a discrete set of bits, so the operation can be made to only affect some of the channels, by making sure the all the values of the other channels are set to ##0##.
 
@@ -48,7 +48,7 @@ Sleep
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpOr Or]]##
-	- ##[[KeyPgPutgraphics Put (Graphics)]]##
+	- ##[[KeyPgOpOr|Or]]##
+	- ##[[KeyPgPutgraphics|Put (Graphics)]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

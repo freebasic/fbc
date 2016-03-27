@@ -18,7 +18,7 @@ Add a source file to compilation
 	Note that the ##**-b**## option was not needed for //file1.bas// or //file2.bas//.
 
 {{fbdoc item="see"}}
-	- [[CompilerOpta Compiler Option: -a]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerOpta|Compiler Option: -a]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

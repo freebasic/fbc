@@ -16,6 +16,6 @@ Preprocessor diagnostic directive
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPperror #error]]##
+	- ##[[KeyPgPperror|#error]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

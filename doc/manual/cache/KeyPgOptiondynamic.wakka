@@ -5,7 +5,7 @@ Specifies variable-length array declarations
 	**Option Dynamic**
 ##
 {{fbdoc item="desc"}}
-	##**Option Dynamic**## is a statement that specifies that any following array declarations are variable-length, whether they are declared with constant subscript ranges or not. This remains in effect for the rest of the module in which ##**Option Dynamic**## is used, and can be overridden with ##[[KeyPgOptionstatic Option Static]]##.  It is equivalent to the ##[[KeyPgMetaDynamic '$Dynamic]]## metacommand.
+	##**Option Dynamic**## is a statement that specifies that any following array declarations are variable-length, whether they are declared with constant subscript ranges or not. This remains in effect for the rest of the module in which ##**Option Dynamic**## is used, and can be overridden with ##[[KeyPgOptionstatic|Option Static]]##.  It is equivalent to the ##[[KeyPgMetaDynamic|'$Dynamic]]## metacommand.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/switches/option-dynamic.bas"}}%%(freebasic)
@@ -22,17 +22,17 @@ Dim bar(99) As Integer      ' declares a variable-length array
 ReDim bar(199) As Integer   ' resize the array
 %%
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
+	- Only available in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfboptiondynamic __FB_OPTION_DYNAMIC__]]##
-	- ##[[KeyPgMetaDynamic '$Dynamic]]##
-	- ##[[KeyPgMetaDynamic '$Static]]##
-	- ##[[KeyPgOptionstatic Option Static]]##
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgRedim Redim]]##
+	- ##[[KeyPgDdfboptiondynamic|__FB_OPTION_DYNAMIC__]]##
+	- ##[[KeyPgMetaDynamic|'$Dynamic]]##
+	- ##[[KeyPgMetaDynamic|'$Static]]##
+	- ##[[KeyPgOptionstatic|Option Static]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgRedim|Redim]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

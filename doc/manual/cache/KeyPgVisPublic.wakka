@@ -1,24 +1,24 @@
 {{fbdoc item="title" value="PUBLIC: (Access Control)"}}----
-Specifies public member access control in a ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
+Specifies public member access control in a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgType Type]] //typename//
+	[[KeyPgType|Type]] //typename//
 		**Public:**
 			//member declarations//
 	End Type
 ##
 {{fbdoc item="param"}}
 	##//typename//##
-		name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
+		name of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##
 	##//member declarations//##
 		declarations for fields, functions, or enumerations
 
 {{fbdoc item="desc"}}
-	##**Public:**## indicates that ##//member declarations//## following it have public access.  Public members are accessible with any usage of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
+	##**Public:**## indicates that ##//member declarations//## following it have public access.  Public members are accessible with any usage of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##.
 	
-	##//member declarations//## following ##**Public:**## are public until a different access control specifier is given, like ##[[KeyPgVisPrivate Private:]]## or ##[[KeyPgVisProtected Protected:]]##
+	##//member declarations//## following ##**Public:**## are public until a different access control specifier is given, like ##[[KeyPgVisPrivate|Private:]]## or ##[[KeyPgVisProtected|Protected:]]##
 
-	Members in a ##[[KeyPgType Type]]## declaration are ##**Public:**## by default if no member access control specifier is given.
+	Members in a ##[[KeyPgType|Type]]## declaration are ##**Public:**## by default if no member access control specifier is given.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/public.bas"}}%%(freebasic)
@@ -44,16 +44,16 @@ myVariable.setNome( "FreeBASIC" )
 %%
 
 {{fbdoc item="lang"}}
-	- Available only in the //[[CompilerOptlang -lang fb]]// dialect.
+	- Available only in the //[[CompilerOptlang|-lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgClass Class]]##
-	- ##[[KeyPgVisPrivate Private:]]## (Access Control)
-	- ##[[KeyPgVisProtected Protected:]]## (Access Control)
-	- ##[[KeyPgPublic Public]]##
-	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgClass|Class]]##
+	- ##[[KeyPgVisPrivate|Private:]]## (Access Control)
+	- ##[[KeyPgVisProtected|Protected:]]## (Access Control)
+	- ##[[KeyPgPublic|Public]]##
+	- ##[[KeyPgType|Type]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

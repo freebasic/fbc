@@ -8,7 +8,7 @@ Comments are regions of text that the compiler will ignore but may contain infor
 %%
 
 {{fbdoc item="section" value="The comment statement: Rem"}}
-	A source code statement beginning with ##[[KeyPgRem Rem]]## indicates that the rest of the line is comment and will not be compiled.  ##[[KeyPgRem Rem]]## behavior is the same as above, except it must be the first keyword in the statement.
+	A source code statement beginning with ##[[KeyPgRem|Rem]]## indicates that the line is comment and will not be compiled.  In ""FreeBASIC"", ##[[KeyPgRem|Rem]]## may also appear after other keywords on a source line and the behavior is the same as above (only the rest of the statement will be treated as a comment).
 	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment2.bas"}}%%(freebasic)
 Rem comment
 %%
@@ -48,7 +48,7 @@ Print _ ' line
 %%
 
 {{fbdoc item="section" value="Metacommands"}}
-	Metacommands, such as ##[[KeyPgMetaStatic $static]]## and ##[[KeyPgMetaInclude $include]]##, can be placed in single-line comments.  The ##**$**## sign and the keyword must be the first two things in the statement, not including white space.
+	Metacommands, such as ##[[KeyPgMetaStatic|$static]]## and ##[[KeyPgMetaInclude|$include]]##, can be placed in single-line comments.  The ##**$**## sign and the keyword must be the first two things in the statement, not including white space.
 
 	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment6.bas"}}%%(freebasic)
 Rem compile With -lang fblite Or qb
@@ -63,7 +63,7 @@ Rem $Static
 	When you make a single-line comment, ""FreeBASIC"" will parse the comment, to check for a metacommand.  If it finds a multi-line comment, it will treat it as usual, and continue parsing the single-line comment after the close-comment marker.
 
 	If you want to prevent ""FreeBASIC"" parsing the single-line comment, put another single quote (##**'**##), at the start of the comment.  ""FreeBASIC"" will treat the rest of the line, including multi-line comment markers and metacommands, as ordinary text, and will ignore it.  Other words encountered in a comment will also stop the parsing.
-	~&//Note: As of version 0.21.0, this will not longer apply in the //[[CompilerOptlang -lang fb]]// dialect, and multi-line comment markers will be completely ignored inside single-line comments//
+	~&//Note: As of version 0.21.0, this will not longer apply in the //[[CompilerOptlang|-lang fb]]// dialect, and multi-line comment markers will be completely ignored inside single-line comments//
 
 	{{fbdoc item="filename" value="examples/manual/proguide/comments/comment7.bas"}}%%(freebasic)
 '' $static <-- will not get parsed
@@ -95,6 +95,6 @@ Dim b As /' can comment in here also '/    Integer
 %%
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgRem Rem]]##
+	- ##[[KeyPgRem|Rem]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

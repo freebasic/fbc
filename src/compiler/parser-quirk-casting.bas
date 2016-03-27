@@ -153,7 +153,7 @@ function cAnonType( ) as ASTNODE ptr
 
 	if( is_explicit ) then
 		'' SymbolType
-		if( cSymbolType( dtype, subtype, 0 ) = FALSE ) then
+		if( cSymbolType( dtype, subtype ) = FALSE ) then
 			'' it would be nice to be able to fall back and do
 			'' a cExpression(), like typeof(), or len() do,
 			'' however the ambiguity with the "greater-than '>' operator"
@@ -199,12 +199,7 @@ function cAnonType( ) as ASTNODE ptr
 	if( typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_STRUCT ) then
 		'' Has a ctor?
 		if( symbGetCompCtorHead( subtype ) ) then
-			initree = cCtorCall( subtype )
-			if( initree = NULL ) then
-				'' Error recovery
-				initree = astNewCONSTz( dtype, subtype )
-			end if
-			return initree
+			return cCtorCall( subtype )
 		end if
 	end if
 

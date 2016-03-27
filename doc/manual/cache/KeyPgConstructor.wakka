@@ -2,39 +2,39 @@
 Called automatically when a class or user defined type is created
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] **Constructor** ( )
-		[[KeyPgDeclare declare]] **Constructor** ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //parameter// [[KeyPgAs as]] [[DataType datatype]] [ = //default// ] [, ... ] )
+	[[KeyPgType|Type]] //typename//
+		[[KeyPgDeclare|declare]] **Constructor** ( )
+		[[KeyPgDeclare|declare]] **Constructor** ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //parameter// [[KeyPgAs|as]] [[DataType|datatype]] [ = //default// ] [, ... ] )
 	End Type
 
-	**Constructor** //typename// ( [ //parameters// ] )
+	**Constructor** //typename// ( [ //parameters// ] ) [ [[KeyPgExport|Export]] ]
 		//statements//
 	**End Constructor**
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
-		name of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##
+		name of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##
 
 {{fbdoc item="desc"}}
-	##**Constructor**## methods are called when a user defined ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## variable is created.
+	##**Constructor**## methods are called when a user defined ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## variable is created.
 
-	##//typename//## is the name of the type for which the ##**Constructor**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace Namespace]]##.
+	##//typename//## is the name of the type for which the ##**Constructor**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace|Namespace]]##.
 
 	More than one constructor may exist for a type or class.  The exact constructor method called depends on the ##//parameter//## signature matched when the variable is initialized.  More than one ##//parameter//## may exist in a constructor method declaration.
 
-	A constructor method is passed a hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//##.  ##[[KeyPgThis this]]## is optionally used to access the fields of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]## which is to be initialized in the ##**Constructor**## method.
+	A constructor method is passed a hidden ##[[KeyPgThis|this]]## parameter having the same type as ##//typename//##.  ##[[KeyPgThis|this]]## is optionally used to access the fields of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## which is to be initialized in the ##**Constructor**## method.
 
-	Constructors are called when declaring global or local static instances of ##//typename//## and when allocating ##//typename//## dynamically using the ##[[KeyPgOpNew New]]## operator. See examples below for different constructor syntaxes.
+	Constructors are called when declaring global or local static instances of ##//typename//## and when allocating ##//typename//## dynamically using the ##[[KeyPgOpNew|New]]## operator. See examples below for different constructor syntaxes.
 
-	A copy ##**Constructor**## is a special constructor that initializes a new object from an existing object. There are three general cases where the copy ##**Constructor**## is called: when instantiating one object and initializing it with another object (in one instruction), when passing an object by value, when an object is returned from a function by value (by using ##[[KeyPgReturn Return]] //x//## statement).
-		Note: When an object is returned from a function by value, but by using ##**Function** = //x//## (or ##//function_identifier// = //x//##) assignment, the ##**Constructor**## is called once at first, and then the ##[[KeyPgOpLet Let (Assign)]]## operator at each assignment.
+	A copy ##**Constructor**## is a special constructor that initializes a new object from an existing object. There are three general cases where the copy ##**Constructor**## is called: when instantiating one object and initializing it with another object (in one instruction), when passing an object by value, when an object is returned from a function by value (by using ##[[KeyPgReturn|Return]] //x//## statement).
+		Note: When an object is returned from a function by value, but by using ##**Function** = //x//## (or ##//function_identifier// = //x//##) assignment, the ##**Constructor**## is called once at first, and then the ##[[KeyPgOpLet|Let (Assign)]]## operator at each assignment.
 	A copy ##**Constructor**## must be defined if the shallow implicit copy constructor is not sufficient. This happens in cases when the object manages dynamically allocated memory or other resources which need to be specially constructed or copied (for example if a member pointer points to dynamically allocated memory, the implicit copy constructor will simply do an implicit pointer construction and a copy of value instead of allocate memory and then perform the copy of data).
 		Note: Even if is defined an explicit default ##**Constructor**##, it is never called by the implicit copy constructor.
 
 	Chaining of constructors in nested types is supported.  Any fields that have their own default constructor are called first.
 	The keyword ##**Constructor**(//parameters//)## can be used at the top of a constructor, allowing to chain together constructors of same type. It prevents the compiler from emitting field initialization code (instead, it relies on the chained constructor to initialize everything).
 
-	##**Constructor**## can be also called directly from the ##//typename//## instance like the other member methods (##[[KeyPgSub Sub]]##) and with the same syntax, i.e. using a member access operator, e.g. ##//obj//.**Constructor**(//parameters//)##. In particular, doing ##//this//.**Constructor**(//parameters//)## is not treated as chaining constructor, and it is allowed anywhere (not only at the top of constructors). In general it's not safe to manually call the constructor on an object, because no ##[[KeyPgDestructor destructor]]## is called, and the old object state - if any - is overwritten without any of its old members being destroyed, which could cause memory/resource leaks.
+	##**Constructor**## can be also called directly from the ##//typename//## instance like the other member methods (##[[KeyPgSub|Sub]]##) and with the same syntax, i.e. using a member access operator, e.g. ##//obj//.**Constructor**(//parameters//)##. In particular, doing ##//this//.**Constructor**(//parameters//)## is not treated as chaining constructor, and it is allowed anywhere (not only at the top of constructors). In general it's not safe to manually call the constructor on an object, because no ##[[KeyPgDestructor|destructor]]## is called, and the old object state - if any - is overwritten without any of its old members being destroyed, which could cause memory/resource leaks.
 
 {{fbdoc item="ex"}}
 Simple constructor example for beginners.
@@ -181,16 +181,16 @@ Print *u.p
 Sleep
 %%
 {{fbdoc item="lang"}}
-	- Object-related features are supported only in the //[[CompilerOptlang -lang fb]]// option
+	- Object-related features are supported only in the //[[CompilerOptlang|-lang fb]]// option
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgClass Class]]##
-	- ##[[KeyPgModuleConstructor Constructor (Module)]]##
-	- ##[[KeyPgOpNew New]]##
-	- ##[[KeyPgDestructor Destructor]]##
-	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgClass|Class]]##
+	- ##[[KeyPgModuleConstructor|Constructor (Module)]]##
+	- ##[[KeyPgOpNew|New]]##
+	- ##[[KeyPgDestructor|Destructor]]##
+	- ##[[KeyPgType|Type]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

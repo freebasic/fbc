@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="GLUT, the OpenGL Utility Toolkit"}}----
-GLUT is a helper library that can be used to create OpenGL applications. It allows easy creation of a window with an OpenGL drawing context and also handles events such as mouse and keyboard input or timers. GLUT appears to be no longer maintained, however there is an active alternative: [[ExtLibfreeglut freeglut]].
+GLUT is a helper library that can be used to create OpenGL applications. It allows easy creation of a window with an OpenGL drawing context and also handles events such as mouse and keyboard input or timers. GLUT appears to be no longer maintained, however there is an active alternative: [[ExtLibfreeglut|freeglut]].
 
 Website: http://www.opengl.org/resources/libraries/glut/
 Platforms supported: ""Win32""

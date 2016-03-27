@@ -2,7 +2,7 @@
 Deletes a file from disk / storage media.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Kill** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Kill** ( [[KeyPgByref|byref]] //filename// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Kill**( //filename// )
@@ -32,7 +32,7 @@ If result <> 0 Then Print "error trying to kill " ; filename ; " !"
 	- KILL can optionally be used as function in ""FreeBASIC"".
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgShell Shell]]##
-	- ##[[KeyPgRmdir Rmdir]]##
+	- ##[[KeyPgShell|Shell]]##
+	- ##[[KeyPgRmdir|Rmdir]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

@@ -18,24 +18,24 @@
 	Of the QB's sound keywords only BEEP is implemented in FB. 
 	If PC speaker sound is required, it should be programmed using IN and OUT. See the example in the OUT keyword for a replacement of SOUND. 
 	There is a library called QBSound that allows to emulate qb's ability to PLAY in the background tunes encoded in strings, it uses the soundcard's synthesizer.
-	If what's required is to play .wav or .mp3 files thru a soundcard, external libraries as FMOD or BASS can be used in Linux and Windows. For DOS see the [[FaqDOS DOS FAQ section]].
+	If what's required is to play .wav or .mp3 files thru a soundcard, external libraries as FMOD or BASS can be used in Linux and Windows. For DOS see the [[FaqDOS|DOS FAQ section]].
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item2"}}==How do I access the serial ports?==
 
 	**DOS**
-	See [[FaqDOS DOS FAQ section]].
+	See [[FaqDOS|DOS FAQ section]].
 
 	**Windows and Linux**
-	See [[KeyPgOpenCom Open Com]].
+	See [[KeyPgOpenCom|Open Com]].
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item3"}}==How do I print?==
 	Since version 0.15 FB supports character output to printer.
 	To print graphics two approaches are possible:
-	- Preprocess the graphics data, program the printer, and send the data to it (see [[http://en.wikipedia.org/wiki/ESC/P wikipedia.org/wiki/ESC/P]]). This is OS-portable but depends on the printer model. The only way for DOS, see also [[FaqDOS DOS FAQ section]].
+	- Preprocess the graphics data, program the printer, and send the data to it (see [[http://en.wikipedia.org/wiki/ESC/P|wikipedia.org/wiki/ESC/P]]). This is OS-portable but depends on the printer model. The only way for DOS, see also [[FaqDOS|DOS FAQ section]].
 	- In Windows and Linux there are specific API calls. This is not OS-portable but the OS's printer driver makes it printer-independent.
 
 {{anchor name="item0|Back to top"}}
@@ -49,10 +49,10 @@
 {{anchor name="item0|Back to top"}}
 
 {{fbdoc item="see"}}
-	- [[CompilerFAQ Compiler FAQ]]
-	- [[FaqPggfxlib2 Frequently Asked FreeBASIC Graphics Library Questions]]
+	- [[CompilerFAQ|Compiler FAQ]]
+	- [[FaqPggfxlib2|Frequently Asked FreeBASIC Graphics Library Questions]]
 and
-	- [[FaqPgWin32 Win32 related FAQ]]
-	- [[FaqDOS DOS related FAQ]]
+	- [[FaqPgWin32|Win32 related FAQ]]
+	- [[FaqDOS|DOS related FAQ]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

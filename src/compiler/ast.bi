@@ -1295,7 +1295,7 @@ declare sub astSetType _
 		byval subtype as FBSYMBOL ptr _
 	)
 
-declare function astSizeOf( byval n as ASTNODE ptr ) as longint
+declare function astSizeOf( byval n as ASTNODE ptr, byref is_fixlenstr as integer = FALSE ) as longint
 declare function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 declare function astIsRelationalBop( byval n as ASTNODE ptr ) as integer
 
@@ -1307,6 +1307,7 @@ declare function astBuildByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNOD
 declare function astIsByrefResultDeref( byval expr as ASTNODE ptr ) as integer
 declare function astRemoveByrefResultDeref( byval expr as ASTNODE ptr ) as ASTNODE ptr
 declare function astIgnoreCallResult( byval n as ASTNODE ptr ) as ASTNODE ptr
+declare function astBuildFakeCall( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare sub astGosubAddInit( byval proc as FBSYMBOL ptr )
 

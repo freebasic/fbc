@@ -2,7 +2,7 @@
 Standard data type: 8 bit unsigned
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //variable// [[KeyPgAs as]] **Ubyte**
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Ubyte**
 ##
 {{fbdoc item="desc"}}
 	8-bit unsigned whole-number data type. Can hold a value in the range of 0 to 255.
@@ -24,13 +24,13 @@ PRINT "ubytevar= ", ubytevar
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Ubyte""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Ubyte""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgByte Byte]]##
-	- ##[[KeyPgCubyte Cubyte]]##
+	- ##[[KeyPgByte|Byte]]##
+	- ##[[KeyPgCubyte|Cubyte]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

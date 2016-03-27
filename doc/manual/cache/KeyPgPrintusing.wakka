@@ -1,14 +1,14 @@
-{{fbdoc item="title" value="PRINT USING"}}----
+{{fbdoc item="title" value="(PRINT | ?) USING"}}----
 Outputs formatted text to the screen or output device
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPrint Print]] [# //filenum// ,] [ //printexpressionlist// {,|;} ] **Using** //formatstring// **;** [ //expressionlist// [ ; ] ]
+	([[KeyPgPrint|Print]] | [[KeyPgPrint|?]]) [# //filenum// ,] [ //printexpressionlist// {,|;} ] **Using** //formatstring// **;** [ //expressionlist// [ ; ] ]
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		The file number of a file or device opened for ##[[KeyPgOutput Output]]## or ##[[KeyPgAppend Append]]##.  (Alternatively ##[[KeyPgLprint Lprint]]## may be used where appropriate, instead of ##[[KeyPgPrintpp Print #]]##)
+		The file number of a file or device opened for ##[[KeyPgOutput|Output]]## or ##[[KeyPgAppend|Append]]##.  (Alternatively ##[[KeyPgLprint|Lprint]]## may be used where appropriate, instead of ##[[KeyPgPrintpp|Print #]]##)
 	##//printexpressionlist//##
-		Optional preceding list of items to print, separated by commas (##,##) or semi-colons (##;##) (see ##[[KeyPgPrint Print]]## for more details).
+		Optional preceding list of items to print, separated by commas (##,##) or semi-colons (##;##) (see ##[[KeyPgPrint|Print]]## for more details).
 	##//formatstring//##
 		Format string to use.
 	##//expressionlist//##
@@ -54,10 +54,12 @@ The last day in the year is 31 Dec%%
 	- QB didn't allow ##"&"## to be used for printing numbers.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPrint Print]]##
-	- ##[[KeyPgPrintpp Print #]]##
-	- ##[[KeyPgFormat Format]]##
-	- ##[[KeyPgUsing Using]]##
-	- ##[[KeyPgPalette Palette Using]]##
+	- ##[[KeyPgPrint|Print]]##
+	- ##[[KeyPgPrint|?]]##
+	- ##[[KeyPgPrintpp|Print #]]##
+	- ##[[KeyPgPrintpp|? #]]##
+	- ##[[KeyPgFormat|Format]]##
+	- ##[[KeyPgUsing|Using]]##
+	- ##[[KeyPgPalette|Palette Using]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

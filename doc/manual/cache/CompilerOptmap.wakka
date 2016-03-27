@@ -12,6 +12,6 @@ Save the linking map to file name
 	The ##-map## compiler option saves the a map file of the executable made.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

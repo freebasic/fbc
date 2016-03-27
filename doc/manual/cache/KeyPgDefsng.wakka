@@ -11,10 +11,10 @@ Specifies a default data type for a range of variable names
 		the last letter in the range
 
 {{fbdoc item="desc"}}
-	##**Defsng**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgSingle Single]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
+	##**Defsng**## specifies that variables and arrays which aren't declared with a data type - or not declared at all - are implicitly declared of type ##[[KeyPgSingle|Single]]## if the first letter of their names matches a certain letter or lies within an inclusive range of letters.
 
 {{fbdoc item="ex"}}
-	This will make ##sNumber## and ##yNumber## a ##[[KeyPgSingle Single]]##-precision decimal number since it is in the range of s-z.
+	This will make ##sNumber## and ##yNumber## a ##[[KeyPgSingle|Single]]##-precision decimal number since it is in the range of s-z.
 {{fbdoc item="filename" value="examples/manual/switches/defsng.bas"}}%%(freebasic)
 '' Compile with -lang fblite or qb
 
@@ -25,14 +25,14 @@ Dim sNumber, yNumber
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects.
+	- Only available in the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDefint Defint]]##
-	- ##[[KeyPgDefdbl Defdbl]]##
-	- ##[[KeyPgSingle Single]]##
+	- ##[[KeyPgDefint|Defint]]##
+	- ##[[KeyPgDefdbl|Defdbl]]##
+	- ##[[KeyPgSingle|Single]]##
 
 {{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

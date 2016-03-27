@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="POINTCOORD"}}----
-Queries ##[[KeyPgDraw Draw]]##'s pen position in graphics mode
+Queries ##[[KeyPgDraw|Draw]]##'s pen position in graphics mode
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare Declare]] [[KeyPgFunction Function]] ""PointCoord""( [[KeyPgByval ByVal]] //func// [[KeyPgAs As]] [[KeyPgLong Long]] ) [[KeyPgAs As]] [[KeyPgSingle Single]]
+	[[KeyPgDeclare|Declare]] [[KeyPgFunction|Function]] ""PointCoord""( [[KeyPgByval|ByVal]] //func// [[KeyPgAs|As]] [[KeyPgLong|Long]] ) [[KeyPgAs|As]] [[KeyPgSingle|Single]]
 	//result// = ""PointCoord""( //func// )
 ##
 {{fbdoc item="desc"}}
-	The ##**""PointCoord""**## function can be used to query x and y position of the ##[[KeyPgDraw Draw]]## pen in graphics mode. The //result// value depends on the passed //func// value:
+	The ##**""PointCoord""**## function can be used to query x and y position of the ##[[KeyPgDraw|Draw]]## pen in graphics mode. The //result// value depends on the passed //func// value:
 	
 	{{table columns="2" cellpadding="1" cells="func value:;return value:;0;x physical coordinate, same as PMap( PointCoord( 2 ), 0 );1;y physical coordinate, same as PMap( PointCoord( 3 ), 1 );2;x view coordinate;3;y view coordinate"}}
 
@@ -44,7 +44,7 @@ Sleep
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPmap PMap]]##
-	- ##[[KeyPgWindow Window]]##
+	- ##[[KeyPgPmap|PMap]]##
+	- ##[[KeyPgWindow|Window]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

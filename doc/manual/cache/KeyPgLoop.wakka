@@ -7,7 +7,7 @@ Control flow statement for looping.
 	**Loop** [ { **Until** | **While** } //condition// ]
 ##
 {{fbdoc item="see"}}
-	- ##[[KeyPgDoloop Do...Loop]]##
+	- ##[[KeyPgDoloop|Do...Loop]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
    

@@ -3,36 +3,36 @@ Declares a user-defined type.
 
 {{fbdoc item="syntax"}}##
 	**Type** //typename//
-		//fieldname1// [[KeyPgAs As]] //[[DataType DataType]]//
-		//fieldname2// [[KeyPgAs As]] //[[DataType DataType]]//
-		[[KeyPgAs As]] //[[DataType DataType]]// //fieldname3//, //fieldname4//
+		//fieldname1// [[KeyPgAs|As]] //[[DataType|DataType]]//
+		//fieldname2// [[KeyPgAs|As]] //[[DataType|DataType]]//
+		[[KeyPgAs|As]] //[[DataType|DataType]]// //fieldname3//, //fieldname4//
 		...
 	**End Type**
 	
-	**Type** //typename// [[[KeyPgExtends Extends]] //base_typename//] [[[KeyPgField Field]] = //alignment//]
-		[[[KeyPgVisPrivate Private:]]|[[KeyPgVisPublic Public:]]|[[KeyPgVisProtected Protected:]]]
+	**Type** //typename// [[[KeyPgExtends|Extends]] //base_typename//] [[[KeyPgField|Field]] = //alignment//]
+		[[[KeyPgVisPrivate|Private:]]|[[KeyPgVisPublic|Public:]]|[[KeyPgVisProtected|Protected:]]]
 		
-		[[KeyPgDeclare Declare]] [[KeyPgMemberSub Sub]]|[[KeyPgMemberFunction Function]]|[[KeyPgConstructor Constructor]]|[[KeyPgDestructor Destructor]]|[[KeyPgProperty Property]]|[[KeyPgOperator Operator]] ...
-		[[KeyPgStatic Static]] //variablename// [[KeyPgAs As]] //[[DataType DataType]]//
+		[[KeyPgDeclare|Declare]] [[KeyPgMemberSub|Sub]]|[[KeyPgMemberFunction|Function]]|[[KeyPgConstructor|Constructor]]|[[KeyPgDestructor|Destructor]]|[[KeyPgProperty|Property]]|[[KeyPgOperator|Operator]] ...
+		[[KeyPgStatic|Static]] //variablename// [[KeyPgAs|As]] //[[DataType|DataType]]//
 		
-		//fieldname// [[KeyPgAs As]] //[[DataType DataType]]// [= //initializer//]
-		//fieldname//(//array dimensions//) [[KeyPgAs As]] //[[DataType DataType]]// [= //initializer//]
-		//fieldname//([[KeyPgAny Any]] [, [[KeyPgAny Any]]...]) [[KeyPgAs As]] [[DataType DataType]]
-		//fieldname// : //bits// [[KeyPgAs As]] //[[DataType DataType]]// [= //initializer//]
+		//fieldname// [[KeyPgAs|As]] //[[DataType|DataType]]// [= //initializer//]
+		//fieldname//(//array dimensions//) [[KeyPgAs|As]] //[[DataType|DataType]]// [= //initializer//]
+		//fieldname//([[KeyPgAny|Any]] [, [[KeyPgAny|Any]]...]) [[KeyPgAs|As]] [[DataType|DataType]]
+		//fieldname// : //bits// [[KeyPgAs|As]] //[[DataType|DataType]]// [= //initializer//]
 		
-		[[KeyPgAs As]] [[DataType DataType]] //fieldname// [= //initializer//], ...
-		[[KeyPgAs As]] [[DataType DataType]] //fieldname//(//array dimensions//) [= //initializer//], ...
-		[[KeyPgAs As]] [[DataType DataType]] //fieldname//([[KeyPgAny Any]] [, [[KeyPgAny Any]]...])
-		[[KeyPgAs As]] [[DataType DataType]] //fieldname// : //bits// [= //initializer//], ...
+		[[KeyPgAs|As]] [[DataType|DataType]] //fieldname// [= //initializer//], ...
+		[[KeyPgAs|As]] [[DataType|DataType]] //fieldname//(//array dimensions//) [= //initializer//], ...
+		[[KeyPgAs|As]] [[DataType|DataType]] //fieldname//([[KeyPgAny|Any]] [, [[KeyPgAny|Any]]...])
+		[[KeyPgAs|As]] [[DataType|DataType]] //fieldname// : //bits// [= //initializer//], ...
 		
-		[[KeyPgUnion Union]]
-			//fieldname// [[KeyPgAs As]] //[[DataType DataType]]//
+		[[KeyPgUnion|Union]]
+			//fieldname// [[KeyPgAs|As]] //[[DataType|DataType]]//
 			**Type**
-				//fieldname// [[KeyPgAs As]] //[[DataType DataType]]//
+				//fieldname// [[KeyPgAs|As]] //[[DataType|DataType]]//
 				...
 			**End Type**
 			...
-		[[KeyPgUnion End Union]]
+		[[KeyPgUnion|End Union]]
 		
 		...
 	**End Type**
@@ -41,26 +41,26 @@ Declares a user-defined type.
 	##**Type**## is used to declare custom data types containing one or more data fields, including integer types, floating point types, fixed-size or variable-length (dynamic) arrays, fixed-size or variable-length strings, bitfields, or other user-defined types.
 	
 	Types support various functionality related to object-oriented programming:
-		- Inheritance through the use of the [[KeyPgExtends Extends]] keyword
-		- Member procedures such as [[KeyPgMemberSub subs]] or [[KeyPgMemberFunction functions]], including ##[[KeyPgAbstract Abstract]]## or ##[[KeyPgVirtual Virtual]]## ones
-		- Member procedures with special semantic meaning such as [[KeyPgConstructor constructors]] or a [[KeyPgDestructor destructor]]
-		- ##[[KeyPgStatic Static]]## member variables
-		- Member visibility specifiers: ##[[KeyPgVisPublic Public:]]##, ##[[KeyPgVisPrivate Private:]]##, ##[[KeyPgVisProtected Protected:]]##
+		- Inheritance through the use of the [[KeyPgExtends|Extends]] keyword
+		- Member procedures such as [[KeyPgMemberSub|subs]] or [[KeyPgMemberFunction|functions]], including ##[[KeyPgAbstract|Abstract]]## or ##[[KeyPgVirtual|Virtual]]## ones
+		- Member procedures with special semantic meaning such as [[KeyPgConstructor|constructors]] or a [[KeyPgDestructor|destructor]]
+		- ##[[KeyPgStatic|Static]]## member variables
+		- Member visibility specifiers: ##[[KeyPgVisPublic|Public:]]##, ##[[KeyPgVisPrivate|Private:]]##, ##[[KeyPgVisProtected|Protected:]]##
 	
 	Types may also contain nested types or unions, allowing data members to be grouped as desired. Nested types/unions are not allowed to contain member procedures or static member variables (same restriction for local types/unions).
 	
 	//Memory layout//
-	Types lay out their fields consecutively in memory, following the native alignment and padding rules (described on the ##[[KeyPgField Field]]## page). Special care must be taken when using Types for file I/O or interacting with other programs or programming languages, in case the alignment and padding rules are different. The optional ##[[KeyPgField Field]] = //number//## specifier can be used to change the behavior on the ""FreeBASIC"" side.
+	Types lay out their fields consecutively in memory, following the native alignment and padding rules (described on the ##[[KeyPgField|Field]]## page). Special care must be taken when using Types for file I/O or interacting with other programs or programming languages, in case the alignment and padding rules are different. The optional ##[[KeyPgField|Field]] = //number//## specifier can be used to change the behavior on the ""FreeBASIC"" side.
 	
 	//Variable-length data//
-	In ""FreeBASIC"", Type data structures must ultimately be fixed-size, such that the compiler knows how much memory to allocate for objects of that Type. Nevertheless, Types may contain variable-length (dynamic) string or array data members. However, the string's/array's data will not be embedded in the Type directly. Instead, the Type will only contain a ##[[KeyPgString String]]##/array descriptor structure, which ""FreeBASIC"" uses behind the scenes to manage the variable-length string/array data. For sizing the structure of the array descriptor in the Type, a variable-length (dynamic) array data member must be always declared by using ##[[KeyPgAny Any(s)]]## in place of the array bounds, in order to fix the amount of dimensions based on the number of Anys specified.
+	In ""FreeBASIC"", Type data structures must ultimately be fixed-size, such that the compiler knows how much memory to allocate for objects of that Type. Nevertheless, Types may contain variable-length (dynamic) string or array data members. However, the string's/array's data will not be embedded in the Type directly. Instead, the Type will only contain a ##[[KeyPgString|String]]##/array descriptor structure, which ""FreeBASIC"" uses behind the scenes to manage the variable-length string/array data. For sizing the structure of the array descriptor in the Type, a variable-length (dynamic) array data member must be always declared by using ##[[KeyPgAny|Any(s)]]## in place of the array bounds, in order to fix the amount of dimensions based on the number of Anys specified.
 	
 	Because of that, saving such a Type into a file will write out the descriptor, not the actual string/array data. In order to embed strings/arrays into Types directly, fixed-length strings/arrays must be used.
 	
 	Similarly, when maintaining dynamic data manually through the use of pointers within a Type, it does usually not make sense to save the Type to a file, because the address stored in the pointer field will be written to file, not the actual memory it points to. Addresses are meaningful to a specific process only though, and cannot be shared that way.
 	
 	//Special note on fixed-length strings//
-	Currently, fixed-length string fields of ##[[KeyPgString String]] * //N//## type have an extra null terminator at their end, for compatibility with C strings, making them incompatible with QB strings inside Types, because they actually use up ##//N//+1## bytes, instead of just ##N## bytes. A possible work-around is to declare the field ##As [[KeyPgString String]] * (//N//-1)##, though this will not work in future releases if the null terminator is removed.  Another alternative is to use a ##[[KeyPgByte Byte]]## or ##[[KeyPgUbyte UByte]]## array with the proper size.
+	Currently, fixed-length string fields of ##[[KeyPgString|String]] * //N//## type have an extra null terminator at their end, for compatibility with C strings, making them incompatible with QB strings inside Types, because they actually use up ##//N//+1## bytes, instead of just ##N## bytes. A possible work-around is to declare the field ##As [[KeyPgString|String]] * (//N//-1)##, though this will not work in future releases if the null terminator is removed.  Another alternative is to use a ##[[KeyPgByte|Byte]]## or ##[[KeyPgUbyte|UByte]]## array with the proper size.
 
 {{fbdoc item="ex"}}
 This is an example of a QB-style type, not including procedure definitions
@@ -130,23 +130,23 @@ if ub2str(h2->sig()) = "GIF89a" then print "ok" else print "error" '' Prints ok
 	- The default ##**Field**## alignment parameter is 8 bytes for Windows targets (this difference with regard to 4 bytes applies only to Longint and Double members).
 	
 {{fbdoc item="lang"}}
-	- Object-related features such as functions declared inside ##**Type**## blocks are supported only with the //[[CompilerOptlang -lang fb]]// dialect since version 0.17b
-	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang fblite]]// dialects, the default ##**Field**## alignment parameter depends on the target platform.
-	- With the //[[CompilerOptlang -lang qb]]// dialect the fields are aligned to byte boundaries by default, unless otherwise specified.
+	- Object-related features such as functions declared inside ##**Type**## blocks are supported only with the //[[CompilerOptlang|-lang fb]]// dialect since version 0.17b
+	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, the default ##**Field**## alignment parameter depends on the target platform.
+	- With the //[[CompilerOptlang|-lang qb]]// dialect the fields are aligned to byte boundaries by default, unless otherwise specified.
 	- To force byte alignment use ##FIELD=1##.
 
 {{fbdoc item="diff"}}
 	- At present, fixed-length strings have an extra, redundant character on the end, which means they take up one more byte than they do in QB.  For this reason, UDTs that use them are not compatible with QB when used for file I/O.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgTypeAlias Type (Alias)]]##
-	- ##[[KeyPgTypeTemp Type (Temporary)]]##
-	- ##[[KeyPgUnion Union]]##
-	- ##[[KeyPgEnum Enum]]##
-	- ##[[KeyPgTypeof Typeof]]##
-	- ##[[KeyPgOffsetof OffsetOf]]##
-	- ##[[KeyPgField Field]]##
-	- ##[[KeyPgExtends Extends]]##
-	- ##[[KeyPgWith With]]##
+	- ##[[KeyPgTypeAlias|Type (Alias)]]##
+	- ##[[KeyPgTypeTemp|Type (Temporary)]]##
+	- ##[[KeyPgUnion|Union]]##
+	- ##[[KeyPgEnum|Enum]]##
+	- ##[[KeyPgTypeof|Typeof]]##
+	- ##[[KeyPgOffsetof|OffsetOf]]##
+	- ##[[KeyPgField|Field]]##
+	- ##[[KeyPgExtends|Extends]]##
+	- ##[[KeyPgWith|With]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

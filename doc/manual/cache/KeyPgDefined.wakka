@@ -14,9 +14,9 @@ Preprocessor function to test if a symbol has been defined
 {{fbdoc item="desc"}}
 	Given the symbol name, the ##**defined()**## preprocessor function returns true if the symbol has been defined - or false if the symbol is unknown.
 
-	This is used mainly with ##[[KeyPgPpif #if]]##.
+	This is used mainly with ##[[KeyPgPpif|#if]]##.
 
-	Similar to ##[[KeyPgPpifdef #ifdef]]## except it allows more than one check to occur because of its flexibility.
+	Similar to ##[[KeyPgPpifdef|#ifdef]]## except it allows more than one check to occur because of its flexibility.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/defined.bas"}}%%(freebasic)
@@ -44,14 +44,14 @@ dim c as single
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #define]]##
-	- ##[[KeyPgPpmacro #macro]]##
-	- ##[[KeyPgPpif #if]]##
-	- ##[[KeyPgPpelse #else]]## 
-	- ##[[KeyPgPpelseif #elseif]]## 
-	- ##[[KeyPgPpendif #endif]]## 
-	- ##[[KeyPgPpifdef #ifdef]]##
-	- ##[[KeyPgPpifndef #ifndef]]##
-	- ##[[KeyPgPpundef #undef]]##
+	- ##[[KeyPgPpdefine|#define]]##
+	- ##[[KeyPgPpmacro|#macro]]##
+	- ##[[KeyPgPpif|#if]]##
+	- ##[[KeyPgPpelse|#else]]## 
+	- ##[[KeyPgPpelseif|#elseif]]## 
+	- ##[[KeyPgPpendif|#endif]]## 
+	- ##[[KeyPgPpifdef|#ifdef]]##
+	- ##[[KeyPgPpifndef|#ifndef]]##
+	- ##[[KeyPgPpundef|#undef]]##
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

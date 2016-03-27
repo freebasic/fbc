@@ -2,7 +2,7 @@
 Gets the character or color attribute at a given location
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Screen** ( [[KeyPgByval byval]] row [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] column [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] colorflag [[KeyPgAs as]] [[KeyPgLong long]] = 0 ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Screen** ( [[KeyPgByval|byval]] row [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] column [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] colorflag [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Screen**( //row//, //column// [, //colorflag// ] )
@@ -13,10 +13,10 @@ Gets the character or color attribute at a given location
 	##//column//##
 		1-based offset from the top left corner of the console.
 	##//colorflag//##
-		If equal to 0, the [[CptAscii ASCII]] code is returned, otherwise the color attribute is returned.  If omitted, it defaults to 0.
+		If equal to 0, the [[CptAscii|ASCII]] code is returned, otherwise the color attribute is returned.  If omitted, it defaults to 0.
 
 {{fbdoc item="ret"}}
-	The [[CptAscii ASCII]] or color attribute of the character.
+	The [[CptAscii|ASCII]] or color attribute of the character.
 
 {{fbdoc item="desc"}}
 	##**Screen**## returns the character or the color attribute found at a given position of a console output. It works in console mode and in graphics mode.
@@ -120,13 +120,13 @@ print using "Background color: &"; hex(bg, 8)
 sleep
 %%
 {{fbdoc item="target"}}
-	- On the Linux version, the value returned can differ from the character shown on the console.  For example, unprintable control codes - such as the ##LF## character (##10##) that implicitly occurs after the end of ##[[KeyPgPrint Print]]##ed text - may be picked up instead of the untouched character in its place.
+	- On the Linux version, the value returned can differ from the character shown on the console.  For example, unprintable control codes - such as the ##LF## character (##10##) that implicitly occurs after the end of ##[[KeyPgPrint|Print]]##ed text - may be picked up instead of the untouched character in its place.
 
 {{fbdoc item="diff"}}
 	- In QB ##**Screen**## triggered an error if the coordinates were out of screen.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
-	- ##[[KeyPgColor Color]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
+	- ##[[KeyPgColor|Color]]##
 
 {{fbdoc item="back" value="CatPgConsole|Console Functions"}}

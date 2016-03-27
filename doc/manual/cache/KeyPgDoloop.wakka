@@ -15,7 +15,7 @@ Control flow statement for looping
 
 	If ##**Until**## is used, the ##**Do**## statement stops repetition of the //##statement block##// when //##condition##// evaluates to true. The ##**While**## keyword has opposite effect, stopping the loop if //condition// evaluates to false. If both //##condition##// and either ##**Until**## or ##**While**## are omitted, the ##**Do**## statement loops indefinitely.
 
-	If an ##[[KeyPgExit Exit]]## ##**Do**## statement is encountered inside the //##statement block##//, the loop is terminated, and execution resumes immediately following the enclosing ##**Loop**## statement. If a ##[[KeyPgContinue Continue]]## ##**Do**## statement is encountered, the rest of the //##statement block##// is skipped and execution resumes at the ##**Do**## statement.
+	If an ##[[KeyPgExit|Exit]]## ##**Do**## statement is encountered inside the //##statement block##//, the loop is terminated, and execution resumes immediately following the enclosing ##**Loop**## statement. If a ##[[KeyPgContinue|Continue]]## ##**Do**## statement is encountered, the rest of the //##statement block##// is skipped and execution resumes at the ##**Do**## statement.
 
 	In the first syntax, the //##condition##// is checked when the ##**Do**## statement is first encountered, and if the //##condition##// is met, the //##statement block##// will be skipped. In the second syntax, //##condition##// is initially checked //after// the //##statement block##// is executed. This means that the //##statement block##// is always guaranteed to execute //at least// once.
 
@@ -35,7 +35,7 @@ print "total odd numbers: " ; total_odd         '' prints '5'
 end 0
 %%
 
-	Here, an infinite DO loop is used to count the total number of evens. We place the conditional check inside the loop via an ##[[KeyPgIfthen If...Then]]## statement, which exits the loop if and when //##n > 10##// becomes true:
+	Here, an infinite DO loop is used to count the total number of evens. We place the conditional check inside the loop via an ##[[KeyPgIfthen|If...Then]]## statement, which exits the loop if and when //##n > 10##// becomes true:
 {{fbdoc item="filename" value="examples/manual/control/do-loop2.bas"}}%%(freebasic)
    dim as integer n = 1                            '' number to check
    dim as integer total_even = 0                   '' running total of even numbers
@@ -51,16 +51,16 @@ end 0
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, variables declared inside a ##**Do**##..##**Loop**## block have a function-wide [[ProPgVariableScope scope]]  as in QB 
-	- In the //[[CompilerOptlang -lang fb]]// and //[[CompilerOptlang -lang deprecated]]// dialects, variables declared inside a ##**Do**##..##**Loop**## block are visible only inside the block, and can't be accessed outside it.
+	- In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, variables declared inside a ##**Do**##..##**Loop**## block have a function-wide [[ProPgVariableScope|scope]]  as in QB 
+	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects, variables declared inside a ##**Do**##..##**Loop**## block are visible only inside the block, and can't be accessed outside it.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgContinue Continue]]##
-	- ##[[KeyPgExit Exit]]##
-	- ##[[KeyPgFornext For...Next]]##
-	- ##[[KeyPgWhilewend While...Wend]]##
+	- ##[[KeyPgContinue|Continue]]##
+	- ##[[KeyPgExit|Exit]]##
+	- ##[[KeyPgFornext|For...Next]]##
+	- ##[[KeyPgWhilewend|While...Wend]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

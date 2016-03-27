@@ -44,10 +44,11 @@ sub hSymbolType _
 	dim as integer options = FB_SYMBTYPEOPT_DEFAULT
 	if( is_byref ) then
 		options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
+		options or= FB_SYMBTYPEOPT_ISBYREF
 	end if
 
 	'' parse the symbol type (INTEGER, STRING, etc...)
-	if( cSymbolType( dtype, subtype, lgt, options ) = FALSE ) then
+	if( cSymbolType( dtype, subtype, lgt, , options ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a type
 		dtype = FB_DATATYPE_INTEGER

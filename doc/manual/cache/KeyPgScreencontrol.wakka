@@ -2,8 +2,8 @@
 Sets or gets internal graphics library settings
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ScreenControl""** ( [[KeyPgByval byval]] what [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByref byref]] param1 [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] param2 [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] param3 [[KeyPgAs as]] [[KeyPgInteger integer]] = 0, [[KeyPgByref byref]] param4 [[KeyPgAs as]] [[KeyPgInteger integer]] = 0 )
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **""ScreenControl""** ( [[KeyPgByval byval]] what [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByref byref]] param [[KeyPgAs as]] [[KeyPgString string]] = ##"####"## )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param1 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param2 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param3 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0, [[KeyPgByref|byref]] param4 [[KeyPgAs|as]] [[KeyPgInteger|integer]] = 0 )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **""ScreenControl""** ( [[KeyPgByval|byval]] what [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByref|byref]] param [[KeyPgAs|as]] [[KeyPgString|string]] = ##"####"## )
 ##
 {{fbdoc item="usage"}}##
 	**""ScreenControl""**( //what// [, [ //param1// ][, [ //param2// ][, [ //param3// ][, [ //param4// ]]]]] )
@@ -27,12 +27,12 @@ Sets or gets internal graphics library settings
 {{fbdoc item="desc"}}
 
 	This function can be used to set or get internal ""GfxLib"" states. The ##//what//## parameter specifies which operation to perform. On operations that set states, the ##//param*//## parameters must contain the values to be set. On operations that get states, ##//param*//## will hold the values returned by ""GfxLib"" when the function returns.
-	The meaning of the ##//param*//## parameters depend on the ##//what//## parameter, whose possible values are defined as constants in ##fbgfx.bi##.  In //[[CompilerDialects lang fb]]//, they are set to be stored in the ##FB## ##[[KeyPgNamespace Namespace]]##.
+	The meaning of the ##//param*//## parameters depend on the ##//what//## parameter, whose possible values are defined as constants in ##fbgfx.bi##.  In //[[CompilerDialects|lang fb]]//, they are set to be stored in the ##FB## ##[[KeyPgNamespace|Namespace]]##.
 	Below is a list of the supported ##//what//## constants - and their values as defined at time of writing - along with the parameters associated with them.
 
 	__Supported operations__
 		
-		Note: * denotes operations that are allowed while a graphics mode has not yet been set via [[KeyPgScreengraphics Screen (Graphics)]] or [[KeyPgScreenres ScreenRes]]. For all other operations, return values are zero(##0##) or the empty string(##"####"##) and the operation has no effect if a graphics mode is not available at call time.
+		Note: * denotes operations that are allowed while a graphics mode has not yet been set via [[KeyPgScreengraphics|Screen (Graphics)]] or [[KeyPgScreenres|ScreenRes]]. For all other operations, return values are zero(##0##) or the empty string(##"####"##) and the operation has no effect if a graphics mode is not available at call time.
 		
 		**Get operations**
 	- ##GET_WINDOW_POS## (##0##) Returns the current window position, in desktop coordinates.
@@ -60,12 +60,12 @@ Sets or gets internal graphics library settings
 		[OUT] ##//param//## name
 	- ##GET_TRANSPARENT_COLOR## (##10##) Returns the transparent color value for the current graphics mode depth.
 		[OUT] ##//param1//## value
-	- ##GET_VIEWPORT## (##11##) Returns the current viewport as set by the [[KeyPgViewgraphics View (Graphics)]] statement, in screen coordinates.
+	- ##GET_VIEWPORT## (##11##) Returns the current viewport as set by the [[KeyPgViewgraphics|View (Graphics)]] statement, in screen coordinates.
 		[OUT] ##//param1//## x1
 		[OUT] ##//param2//## y1
 		[OUT] ##//param3//## x2
 		[OUT] ##//param4//## y2
-	- ##GET_PEN_POS## (##12##) Returns the last graphical pen position, in screen coordinates. This position is used in graphics functions supporting relative coordinates using the ##[[KeyPgStep Step]]## keyword.
+	- ##GET_PEN_POS## (##12##) Returns the last graphical pen position, in screen coordinates. This position is used in graphics functions supporting relative coordinates using the ##[[KeyPgStep|Step]]## keyword.
 		[OUT] ##//param1//## x
 		[OUT] ##//param2//## y
 	- ##GET_COLOR## (##13##) Returns the current graphics mode color.
@@ -75,19 +75,19 @@ Sets or gets internal graphics library settings
 		[OUT] ##//param1//## ##TRUE## (##-1##) if alpha primitives is enabled, ##FALSE## (##0##) otherwise
 	- ##GET_GL_EXTENSIONS## (##15##) Returns a string holding all supported GL extensions, or the empty string if not in ""OpenGL"" mode.
 		[OUT] ##//param//## supported GL extensions
-	- ##GET_HIGH_PRIORITY## (##16##) Returns if ##GFX_HIGH_PRIORITY## was specified in the flags passed to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres Screenres]]##.
+	- ##GET_HIGH_PRIORITY## (##16##) Returns if ##GFX_HIGH_PRIORITY## was specified in the flags passed to ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|Screenres]]##.
 		[OUT] ##//param1//## higher priority graphics processing enabled
 
 		**Set operations**
 	- ##SET_WINDOW_POS## (##100##) Sets the current program window position, in desktop coordinates.
 		[IN] ##//param1//## x
 		[IN] ##//param2//## y
-	- * ##SET_WINDOW_TITLE## (##101##) Sets the current program window title. This is equivalent to calling ##[[KeyPgWindowtitle WindowTitle]]( //param// )##.
+	- * ##SET_WINDOW_TITLE## (##101##) Sets the current program window title. This is equivalent to calling ##[[KeyPgWindowtitle|WindowTitle]]( //param// )##.
 		[IN] ##//param//## title
-	- ##SET_PEN_POS## (##102##) Sets the current graphical pen position, in screen coordinates. This position is used in graphics functions supporting relative coordinates using the ##[[KeyPgStep Step]]## keyword.
+	- ##SET_PEN_POS## (##102##) Sets the current graphical pen position, in screen coordinates. This position is used in graphics functions supporting relative coordinates using the ##[[KeyPgStep|Step]]## keyword.
 		[IN] ##//param1//## x
 		[IN] ##//param2//## y
-	- * ##SET_DRIVER_NAME## (##103##) Sets the name of the internal graphics driver to be used in subsequent calls to ##[[KeyPgScreengraphics Screen]]## or ##[[KeyPgScreenres ScreenRes]]##.
+	- * ##SET_DRIVER_NAME## (##103##) Sets the name of the internal graphics driver to be used in subsequent calls to ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|ScreenRes]]##.
 		[IN] ##//param//## driver name
 	- ##SET_ALPHA_PRIMITIVES## (##104##) Sets if primitives drawing should honor alpha channel.
 		[IN] ##//param1//## enabled
@@ -119,7 +119,7 @@ Sets or gets internal graphics library settings
 		[IN] ##//param1//## samples
 
 		**Other operations**
-	- ##POLL_EVENTS## (##200##) Cause the library to poll all events, ie to check the system event queue, specifically used for retrieving keyboard and mouse events.  This is most useful for ""OpenGL"" code where ##[[KeyPgFlip Flip]]## is not used, as normally ##[[KeyPgFlip Flip]]## will cause these events to be polled.
+	- ##POLL_EVENTS## (##200##) Cause the library to poll all events, ie to check the system event queue, specifically used for retrieving keyboard and mouse events.  This is most useful for ""OpenGL"" code where ##[[KeyPgFlip|Flip]]## is not used, as normally ##[[KeyPgFlip|Flip]]## will cause these events to be polled.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screencontrol.bas"}}%%(freebasic)
@@ -214,16 +214,16 @@ sleep
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screencontrol""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Screencontrol""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
-	- ##[[KeyPgScreenevent ScreenEvent]]##
-	- ##[[KeyPgScreeninfo ScreenInfo]]##
-	- ##[[KeyPgWindowtitle WindowTitle]]##
-	- ##[[KeyPgViewgraphics View (Graphics)]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
+	- ##[[KeyPgScreenevent|ScreenEvent]]##
+	- ##[[KeyPgScreeninfo|ScreenInfo]]##
+	- ##[[KeyPgWindowtitle|WindowTitle]]##
+	- ##[[KeyPgViewgraphics|View (Graphics)]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

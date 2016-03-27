@@ -6,14 +6,14 @@ Reads one line of text from a file
 ##
 {{fbdoc item="param"}}
 	##//file number//##
-		file number of an file opened for ##[[KeyPgInputfilemode Input]]##
+		file number of an file opened for ##[[KeyPgInputfilemode|Input]]##
 	##//string_variable//##
 		variable to receive the line of text
 
 {{fbdoc item="desc"}}
-	Reads a line from an open text file (opened for ##[[KeyPgInputfilemode Input]]## through a bound file number) and stores it in a string variable.  
+	Reads a line from an open text file (opened for ##[[KeyPgInputfilemode|Input]]## through a bound file number) and stores it in a string variable.  
 
-	A line of text ends at, but does not include the end of line characters.  An end of line character may be the ##LF## character (##[[KeyPgChr Chr]](10)##) or the ##CRLF## character pair (##[[KeyPgChr Chr]](13,10)##).
+	A line of text ends at, but does not include the end of line characters.  An end of line character may be the ##LF## character (##[[KeyPgChr|Chr]](10)##) or the ##CRLF## character pair (##[[KeyPgChr|Chr]](13,10)##).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/lineinput.bas"}}%%(freebasic)
@@ -33,8 +33,8 @@ print s
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInputPp Input #]]##
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgInputfilemode Input (file mode)]]##
+	- ##[[KeyPgInputPp|Input #]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgInputfilemode|Input (file mode)]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

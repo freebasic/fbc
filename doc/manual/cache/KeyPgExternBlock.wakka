@@ -2,22 +2,22 @@
 Statement block to allow calling of functions compiled for specific languages or platforms.
 
 {{fbdoc item="syntax"}}##
-	**Extern { """C""" | """C++""" | """Windows""" | """Windows-MS""" }** [ **[[KeyPgLib Lib]]** "//libname//" ]
+	**Extern { """C""" | """C++""" | """Windows""" | """Windows-MS""" }** [ **[[KeyPgLib|Lib]]** "//libname//" ]
 		//declarative statements//
 	**End Extern**
 ##
 {{fbdoc item="desc"}}
 	##**Extern**## blocks provide default calling conventions for procedures and mandate a certain name decoration.
 
-	##**Extern """C"""**## blocks provide a default ##[[KeyPgCdecl cdecl]]## calling convention to procedures, and also preserve the case of all names declared within them. The same effect can be achieved without the EXTERN block by using ##[[KeyPgCdecl cdecl]]## together with an ##[[KeyPgAlias alias]]## string containing the exact procedure name.
+	##**Extern """C"""**## blocks provide a default ##[[KeyPgCdecl|cdecl]]## calling convention to procedures, and also preserve the case of all names declared within them. The same effect can be achieved without the EXTERN block by using ##[[KeyPgCdecl|cdecl]]## together with an ##[[KeyPgAlias|alias]]## string containing the exact procedure name.
 
 	##**Extern """C++"""**## blocks are exactly like ##**Extern """C"""**## blocks but they also mangle the names declared within them in a way compatible to that of //g""++""-4.x//.
 
-	##**Extern """Windows"""**## blocks provide a default ##[[KeyPgStdcall Stdcall]]## calling convention to procedures, preserve the case of all names declared within them, and on the Windows platform, append an ##"@//N//"## suffix to procedure names, where ##//N//## is the total size in bytes of any procedure parameters. Similar to the ##**Extern """C"""**## block, the same effect can be achieved by using ##[[KeyPgStdcall stdcall]]## and ##[[KeyPgAlias alias]]##.
+	##**Extern """Windows"""**## blocks provide a default ##[[KeyPgStdcall|Stdcall]]## calling convention to procedures, preserve the case of all names declared within them, and on the Windows platform, append an ##"@//N//"## suffix to procedure names, where ##//N//## is the total size in bytes of any procedure parameters. Similar to the ##**Extern """C"""**## block, the same effect can be achieved by using ##[[KeyPgStdcall|stdcall]]## and ##[[KeyPgAlias|alias]]##.
 
 	##**Extern """Windows-MS"""**## blocks are exactly like ##**Extern """Windows"""**## blocks but do not append the ##"@//N//"## suffix to procedure names on Windows.
 	
-	##[[KeyPgLib Lib]] "//libname//"## can be used to specify a library which will be linked in as if ##[[KeyPgInclib #inclib "libname"]]## or ##[[CompilerOptl -l libname]]## had been used. Additionally, all procedure declarations inside the **Extern** block will use the specified ##[[KeyPgLib Lib]] "//libname//"## as if it was specified as part of their declarations (but it can still be overridden with an explicit ##[[KeyPgLib Lib]] "//libname//"##).
+	##[[KeyPgLib|Lib]] "//libname//"## can be used to specify a library which will be linked in as if ##[[KeyPgInclib|#inclib "libname"]]## or ##[[CompilerOptl|-l libname]]## had been used. Additionally, all procedure declarations inside the **Extern** block will use the specified ##[[KeyPgLib|Lib]] "//libname//"## as if it was specified as part of their declarations (but it can still be overridden with an explicit ##[[KeyPgLib|Lib]] "//libname//"##).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/extern-block.bas"}}%%(freebasic)
@@ -63,7 +63,7 @@ MyTest4( 0 )
 %%
 
 {{fbdoc item="lang"}}
-	- ##**Extern**## blocks are only available in the //[[CompilerOptlang -lang fb]]// dialect.
+	- ##**Extern**## blocks are only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
@@ -72,8 +72,8 @@ MyTest4( 0 )
 	- On Linux, *BSD and DOS platforms, ##**Extern "Windows"**## blocks never append a ##"@//N//"## suffix to procedure names, and thus are equal to ##**Extern "Windows-MS"**##.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCdecl Cdecl]]##
-	- ##[[KeyPgStdcall Stdcall]]##
-	- ##[[KeyPgExtern Extern]]##
+	- ##[[KeyPgCdecl|Cdecl]]##
+	- ##[[KeyPgStdcall|Stdcall]]##
+	- ##[[KeyPgExtern|Extern]]##
 
 {{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

@@ -2,16 +2,16 @@
 Indicates the end of a compound statement block.
 
 {{fbdoc item="syntax"}}##
-	**End** { [[KeyPgSub Sub]] | [[KeyPgFunction Function]] | [[KeyPgIfthen If]]  | [[KeyPgSelectcase Select]]  | [[KeyPgType Type]]  | [[KeyPgEnum Enum]]  | [[KeyPgScope Scope]]  | [[KeyPgWith With]]  | [[KeyPgNamespace Namespace]]  | [[KeyPgExtern Extern]]  | [[KeyPgConstructor Constructor]]  | [[KeyPgDestructor Destructor]]  | [[KeyPgOperator Operator]] | [[KeyPgProperty Property]] }
+	**End** { [[KeyPgSub|Sub]] | [[KeyPgFunction|Function]] | [[KeyPgIfthen|If]]  | [[KeyPgSelectcase|Select]]  | [[KeyPgType|Type]]  | [[KeyPgEnum|Enum]]  | [[KeyPgScope|Scope]]  | [[KeyPgWith|With]]  | [[KeyPgNamespace|Namespace]]  | [[KeyPgExtern|Extern]]  | [[KeyPgConstructor|Constructor]]  | [[KeyPgDestructor|Destructor]]  | [[KeyPgOperator|Operator]] | [[KeyPgProperty|Property]] }
 ##
 {{fbdoc item="desc"}}
 	Used to indicate the end of the most recent code block.
 
-	The type of the block must be included in the command: one of ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgIfthen If]]##, ##[[KeyPgSelectcase Select]]##, ##[[KeyPgType Type]]##, ##[[KeyPgEnum Enum]]##, ##[[KeyPgScope Scope]]##, ##[[KeyPgWith With]]##, ##[[KeyPgNamespace Namespace]]##, ##[[KeyPgExternBlock Extern]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgOperator Operator]]##, or ##[[KeyPgProperty Property]]##.
+	The type of the block must be included in the command: one of ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##, ##[[KeyPgIfthen|If]]##, ##[[KeyPgSelectcase|Select]]##, ##[[KeyPgType|Type]]##, ##[[KeyPgEnum|Enum]]##, ##[[KeyPgScope|Scope]]##, ##[[KeyPgWith|With]]##, ##[[KeyPgNamespace|Namespace]]##, ##[[KeyPgExternBlock|Extern]]##, ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##, ##[[KeyPgOperator|Operator]]##, or ##[[KeyPgProperty|Property]]##.
 
-	Ending a ##[[KeyPgSub Sub]]##, ##[[KeyPgFunction Function]]##, ##[[KeyPgIfthen If]]##, ##[[KeyPgSelectcase Select]]##, ##[[KeyPgScope Scope]]##, ##[[KeyPgConstructor Constructor]]##, ##[[KeyPgDestructor Destructor]]##, ##[[KeyPgOperator Operator]]##, or ##[[KeyPgProperty Property]]## block also closes the scope for variables defined inside that block.  When the scope is closed, variables defined inside the scope are destroyed, calling their destructors as needed.
+	Ending a ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##, ##[[KeyPgIfthen|If]]##, ##[[KeyPgSelectcase|Select]]##, ##[[KeyPgScope|Scope]]##, ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##, ##[[KeyPgOperator|Operator]]##, or ##[[KeyPgProperty|Property]]## block also closes the scope for variables defined inside that block.  When the scope is closed, variables defined inside the scope are destroyed, calling their destructors as needed.
 
-	To end a program, see ##[[KeyPgEnd End (Statement)]]##.
+	To end a program, see ##[[KeyPgEnd|End (Statement)]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/endblock.bas"}}%%(freebasic)
@@ -36,20 +36,20 @@ End Sub
 	- none
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgConstructor Constructor]]##
-	- ##[[KeyPgDestructor Destructor]]##
-	- ##[[KeyPgEnd End (Statement)]]##
-	- ##[[KeyPgEnum Enum]]##
-	- ##[[KeyPgExternBlock Extern]]##
-	- ##[[KeyPgFunction Function]]##
-	- ##[[KeyPgIfthen If...Then]]##
-	- ##[[KeyPgNamespace Namespace]]##
-	- ##[[KeyPgOperator Operator]]##
-	- ##[[KeyPgProperty Property]]##
-	- ##[[KeyPgScope Scope]]##
-	- ##[[KeyPgSelectcase Select Case]]##
-	- ##[[KeyPgSub Sub]]##
-	- ##[[KeyPgType Type]]##
-	- ##[[KeyPgWith With]]##
+	- ##[[KeyPgConstructor|Constructor]]##
+	- ##[[KeyPgDestructor|Destructor]]##
+	- ##[[KeyPgEnd|End (Statement)]]##
+	- ##[[KeyPgEnum|Enum]]##
+	- ##[[KeyPgExternBlock|Extern]]##
+	- ##[[KeyPgFunction|Function]]##
+	- ##[[KeyPgIfthen|If...Then]]##
+	- ##[[KeyPgNamespace|Namespace]]##
+	- ##[[KeyPgOperator|Operator]]##
+	- ##[[KeyPgProperty|Property]]##
+	- ##[[KeyPgScope|Scope]]##
+	- ##[[KeyPgSelectcase|Select Case]]##
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgType|Type]]##
+	- ##[[KeyPgWith|With]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -10,7 +10,7 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask )
     char *temp = alloca( len + 1 );
 
     if( len > 0 )
-    	fb_wstr_ConvToA( temp, buffer, len );
+        fb_wstr_ConvToA( temp, len, buffer );
     else
     	*temp = '\0';
 

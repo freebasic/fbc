@@ -2,7 +2,7 @@
 Gets the address of an [[OpenGL]] procedure
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ScreenGLProc""** ( [[KeyPgByref byref]] procname [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""ScreenGLProc""** ( [[KeyPgByref|byref]] procname [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="param"}}
 	##//procname//##
@@ -35,7 +35,7 @@ end if
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Screenglproc""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Screenglproc""**##.
 
 {{fbdoc item="target"}}
 	- Not available for DOS target.
@@ -44,7 +44,7 @@ end if
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
-	- ##[[KeyPgScreencontrol ScreenControl]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
+	- ##[[KeyPgScreencontrol|ScreenControl]]##
 
 {{fbdoc item="back" value="CatPgGfxScreen|Screen Functions"}}

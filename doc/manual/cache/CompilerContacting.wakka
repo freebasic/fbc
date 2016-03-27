@@ -1,0 +1,13 @@
+{{fbdoc item="title" value="Contacting FreeBASIC Developers"}}----
+You should contact the ""FreeBASIC"" developers through the [[http://sourceforge.net/|SourceForge]] tracker or the forums available. They reply to posts often.
+
+	- [[http://sourceforge.net/tracker/?group_id=122342&atid=693196|SF.net bug tracker]]
+	- [[http://sourceforge.net/tracker/?atid=693199&group_id=122342&func=browse|SF.net feature request tracker]]
+	- [[http://www.freebasic.net/forum/|The official forums (Language: English)]]
+
+You can also usually find a developer in the IRC channel #freebasic on ""FreeNode"".
+
+{{fbdoc item="see"}}
+	- [[CompilerReportingBugs|Reporting a bug]]
+
+{{fbdoc item="back" value="FBWiki|Main Page"}}

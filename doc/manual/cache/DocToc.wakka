@@ -58,7 +58,7 @@
 	{{fbdoc item="keyword" value="GfxDefPalettes|Default Palettes"}}
 
 <<>>{{fbdoc item="section" value="Tutorials"}}
-	
+
 	{{fbdoc item="keyword" value="CatPgProgrammer|Programmer's Guide"}}
 	{{fbdoc item="keyword" value="CommunityTutorials|Community Tutorials"}}
 	{{fbdoc item="keyword" value="CodeLibrary|Community Code Library"}}
@@ -98,11 +98,12 @@
 	{{fbdoc item="keyword" value="ProPgCruntime|C Standard Library Functions"}}
 	{{fbdoc item="keyword" value="CptAscii|ASCII Character Codes"}}
 	{{fbdoc item="keyword" value="TblRuntimeErrors|Runtime Error Codes"}}
-	{{fbdoc item="keyword" value="TblComparisonC|C/C++ vs. FreeBASIC comparison"}}
+	{{fbdoc item="keyword" value="TblComparisonC|C/C++ vs. FreeBASIC syntax comparison"}}
+	{{fbdoc item="keyword" value="TblComparisonCTypes|C/C++ vs. FreeBASIC integer data type comparison"}}
 
 {{fbdoc item="section" value="Hacking on FreeBASIC"}}
 
-	    {{fbdoc item="keyword" value="DevToc|Developer's Table of Contents"}}
+		{{fbdoc item="keyword" value="DevToc|Developer's Table of Contents"}}
 
 >>::c::
 

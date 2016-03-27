@@ -300,7 +300,7 @@ private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
 	lexSkipToken( )
 
 	'' DataType
-	if( cSymbolType( dtype, subtype, 0 ) = FALSE ) then
+	if( cSymbolType( dtype, subtype ) = FALSE ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: skip until ',', create a fake type
 		hSkipUntil( CHAR_COMMA )

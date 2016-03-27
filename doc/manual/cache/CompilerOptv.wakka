@@ -8,6 +8,6 @@ Be verbose
 	The ##-v## compiler option activates verbose mode. In this mode the compiler shows its actions step by step
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

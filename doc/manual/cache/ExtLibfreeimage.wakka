@@ -8,7 +8,7 @@ Header version: 3.15.1
 Example included: yes, in ""examples/files/FreeImage""
 
 {{fbdoc item="ex"}}
-Here follows an example of using ""FreeImage"" in ""FreeBASIC"".  If using Windows you will require freeimage.dll which is available from the [[http://freeimage.sourceforge.net/ FreeImage site]].
+Here follows an example of using ""FreeImage"" in ""FreeBASIC"".  If using Windows you will require freeimage.dll which is available from the [[http://freeimage.sourceforge.net/|FreeImage site]].
 	
 {{fbdoc item="filename" value="examples/manual/extras/freeimage.bas"}}%%(freebasic)
 '' Code example for loading all common image types using FreeImage.

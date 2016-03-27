@@ -2,7 +2,7 @@
 Specifies text file to be opened for append mode
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgOpen open]] //filename// for **Append** [[[KeyPgEncoding encoding]] //encoding_type//] [[[KeyPgLock lock]] //lock_type//] as [#]//filenum// 
+	[[KeyPgOpen|open]] //filename// for **Append** [[[KeyPgEncoding|encoding]] //encoding_type//] [[[KeyPgLock|lock]] //lock_type//] as [#]//filenum// 
 ##
 {{fbdoc item="param"}}
 	##//filename//##
@@ -15,15 +15,15 @@ Specifies text file to be opened for append mode
 		unused file number to associate with the open file
 
 {{fbdoc item="desc"}}
-	A file mode used with ##[[KeyPgOpen Open]]## to open a text file for writing.
+	A file mode used with ##[[KeyPgOpen|Open]]## to open a text file for writing.
 
-	This mode is used to add text to an existing file  with ##[[KeyPgPrintPp Print #]]##, or comma separated values with ##[[KeyPgWrite Write#]]##.
+	This mode is used to add text to an existing file  with ##[[KeyPgPrintPp|Print #]]##, or comma separated values with ##[[KeyPgWrite|Write#]]##.
 
 	Text files can't be simultaneously read and written in ""FreeBASIC"", so if both functions are required on the same file, it must be opened twice.
 	
 	##//filename//## must be a string expression resulting in a legal file name in the target OS, without wildcards. The file will be sought for in the present directory, unless the ##//filename//## contains a path . If the file does not exist, it is created. The pointer is set after the last character of the file.
 	
-	##//Encoding_type//## indicates the Unicode ##[[KeyPgEncoding Encoding]]## of the file, so characters are correctly read. If omitted, "ascii" encoding is defaulted. Only little endian character encodings are supported at the moment. 
+	##//Encoding_type//## indicates the Unicode ##[[KeyPgEncoding|Encoding]]## of the file, so characters are correctly read. If omitted, "ascii" encoding is defaulted. Only little endian character encodings are supported at the moment. 
 		-##"utf8"##
 		-##"utf16"##
 		-##"utf32"##
@@ -34,7 +34,7 @@ Specifies text file to be opened for append mode
 		- ##**Write**## - the file can be opened simultaneously by other processes, but not for writing
 		- ##**Read Write**## - the file cannot be opened simultaneously by other processes (the default)
 
-	##//filenum//## Is a valid FreeBASIC file number (in the range ##1..255##) not being used for any other file presently open. The file number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile Freefile]]## function.
+	##//filenum//## Is a valid FreeBASIC file number (in the range ##1..255##) not being used for any other file presently open. The file number identifies the file for the rest of file operations. A free file number can be found using the ##[[KeyPgFreefile|Freefile]]## function.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/for-append.bas"}}%%(freebasic)
@@ -49,10 +49,11 @@ NEXT
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInputfilemode Input (File Mode)]]##
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgOutput Output]]##
-	- ##[[KeyPgPrintPp Print #]]##
-	- ##[[KeyPgWrite Write #]]##
+	- ##[[KeyPgInputfilemode|Input (File Mode)]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgOutput|Output]]##
+	- ##[[KeyPgPrintPp|Print #]]##
+	- ##[[KeyPgPrintPp|? #]]##
+	- ##[[KeyPgWrite|Write #]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Operators"}}----
 Procedures that operate on one or more operands.
 
-""FreeBASIC"" has numerous //operators// that perform a certain function with their //operands//. Many operators use a "##operand //operator// operand##" syntax, like ##[[KeyPgOpAssignment Operator = (Assignment)]]## or ##[[KeyPgOpAdd Operator +]]##, while others are called like normal procedures, like ##[[KeyPgOpStrptr Operator Strptr]]##.
+""FreeBASIC"" has numerous //operators// that perform a certain function with their //operands//. Many operators use a "##operand //operator// operand##" syntax, like ##[[KeyPgOpAssignment|Operator = (Assignment)]]## or ##[[KeyPgOpAdd|Operator +]]##, while others are called like normal procedures, like ##[[KeyPgOpStrptr|Operator Strptr]]##.
 
 <<=={{fbdoc item="keyword" value="CatPgOpAssignment|Assignment operators"}}==
 	Operators which assign the value of one operand to the other.
@@ -22,10 +22,10 @@ Procedures that operate on one or more operands.
 =={{fbdoc item="keyword" value="CatPgOpPoint|Pointer operators"}}==
 	Operators that work with pointers and addresses.
 =={{fbdoc item="keyword" value="CatPgOpTypeclass|Type or Class operators"}}==
-	Operators that provide access to [[KeyPgType Type]] or [[KeyPgClass Class]] members.
+	Operators that provide access to [[KeyPgType|Type]] or [[KeyPgClass|Class]] members.
 =={{fbdoc item="keyword" value="CatPgOpMemory|Memory operators"}}==
 	Operators that allocate memory for and construct objects.
 =={{fbdoc item="keyword" value="CatPgOpIterating|Iterating operators"}}==
-	Operators that use iterator objects in ##[[KeyPgFornext For...Next]]## statements.
+	Operators that use iterator objects in ##[[KeyPgFornext|For...Next]]## statements.
 >>::c::
 {{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

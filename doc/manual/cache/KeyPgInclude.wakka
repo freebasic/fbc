@@ -11,14 +11,14 @@ Preprocessor statement to include contents of another source file
 
 	The ##**once**## specifier tells the compiler to include the file only once even if it is included several times by the source code.
 
-	##[[KeyPgMetaInclude $Include]]## is an alternative form of ##**include**##, existing only for compatibility with ""QuickBASIC"". It is recommended to use ##**#include**## instead.
+	##[[KeyPgMetaInclude|$Include]]## is an alternative form of ##**include**##, existing only for compatibility with ""QuickBASIC"". It is recommended to use ##**#include**## instead.
 
 	The compiler will automatically convert path separator characters ( '**##/##**' and '**##\##**' ) as needed to properly load the file.  The filename name may be an absolute or relative path.  
 
 	For relative paths, or where no path is given at all, the include file is search for in the following order:
 	- Relative from the directory of the source file
 	- Relative from the current working directory
-	- Relative from addition directories specified with the //[[CompilerOpti -i]]// command line option
+	- Relative from addition directories specified with the //[[CompilerOpti|-i]]// command line option
 	- The include folder of the ""FreeBASIC"" installation (##**""FreeBASIC""\inc**##, where ##**""FreeBASIC""**## is the folder where the ##**fbc**## executable is located)
 
 {{fbdoc item="ex"}}
@@ -43,9 +43,9 @@ Foo.Barbeque = 2
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpdefine #define]]##
-	- ##[[KeyPgInclib #inclib]]##
-	- [[CompilerOpti Compiler Option: -i]]
-	- [[CompilerOptinclude Compiler Option: -include]]
+	- ##[[KeyPgPpdefine|#define]]##
+	- ##[[KeyPgInclib|#inclib]]##
+	- [[CompilerOpti|Compiler Option: -i]]
+	- [[CompilerOptinclude|Compiler Option: -include]]
 
 {{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

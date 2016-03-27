@@ -2,7 +2,7 @@
 Returns the address of a variable or object
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Varptr** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T// ) [[KeyPgAs as]] //T// [[KeyPgPtr ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Varptr** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T// ) [[KeyPgAs|as]] //T// [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="syntax"}}##
 	//result// = **Varptr** ( //lhs// )
@@ -19,7 +19,7 @@ Returns the address of a variable or object
 {{fbdoc item="desc"}}
 	This operator returns the address of its operand.
 
-	When the operand is of type ##[[KeyPgString String]]##, the address of the internal string descriptor is returned. Use ##[[KeyPgOpStrptr Operator Strptr (String pointer)]]## to retrieve the address of the string data.
+	When the operand is of type ##[[KeyPgString|String]]##, the address of the internal string descriptor is returned. Use ##[[KeyPgOpStrptr|Operator Strptr (String pointer)]]## to retrieve the address of the string data.
 
 	The operand cannot be an array, but may be an array element. For example, ##"**Varptr**(myarray(0))"## returns the address of ##"myarray(0)"##.
 
@@ -46,8 +46,8 @@ Print Peek( addr )
 	- None
 
 {{fbdoc item="see"}}
-	- [[ProPgPointers Pointers]]
-	- ##[[KeyPgPoke Peek]]##
-	- ##[[KeyPgPoke Poke]]##
+	- [[ProPgPointers|Pointers]]
+	- ##[[KeyPgPoke|Peek]]##
+	- ##[[KeyPgPoke|Poke]]##
 
 {{fbdoc item="back" value="CatPgOpPoint|Pointer Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

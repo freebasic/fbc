@@ -455,4 +455,4 @@ delete[] Xlist
 %%
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgType|Type]]##

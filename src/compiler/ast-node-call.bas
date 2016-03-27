@@ -531,3 +531,17 @@ function astIgnoreCallResult( byval n as ASTNODE ptr ) as ASTNODE ptr
 	astSetType( n, FB_DATATYPE_VOID, NULL )
 	function = n
 end function
+
+'' Build a fake CALL to the given procedure, to be used for error recovery.
+function astBuildFakeCall( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
+	var c = astNewCALL( proc )
+
+	'' Build fake arg for each param (including the THIS param for methods)
+	var param = symbGetProcHeadParam( proc )
+	while( param )
+		astNewARG( c, astNewCONSTz( symbGetType( param ), param->subtype ) )
+		param = param->next
+	wend
+
+	function = c
+end function

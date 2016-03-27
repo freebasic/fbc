@@ -9,7 +9,7 @@ Numeric literals come in two forms - integer and floating-point.
 
 	__Decimal__
 	Decimal digits ( ##0 1 2 3 4 5 6 7 8 9## ).
-	//Note: to get negative values, a "##-##" sign (##[[KeyPgOpNegate Operator - (Negate)]]##) can be placed before a numeric literal//
+	//Note: to get negative values, a "##-##" sign (##[[KeyPgOpNegate|Operator - (Negate)]]##) can be placed before a numeric literal//
 
 {{fbdoc item="filename" value="examples/manual/proguide/literals/dec.bas"}}%%(freebasic)
 Dim x as integer = 123456
@@ -43,12 +43,12 @@ Dim b as byte = &B10000000
 	If an integer literal suffix is not given, the number field size required to hold the literal is automatically calculated.  Specifying a size suffix guarantees that the compiler will consider a number as a specific integer size.
 
 	Integer literals ending with:
-	- "##%##", are considered as signed 32/64 (depending on platform) bit integers. (##[[KeyPgInteger Integer]]##)
-	- "##L##", "##&##", are considered as signed 32 bit long integers. (##[[KeyPgLong Long]]##)
-	- "##U##", are considered as unsigned 32/64 (depending on platform) bit integers. (##[[KeyPgUinteger Uinteger]]##)
-	- "##UL##", are considered as unsigned 32 bit integers. (##[[KeyPgUlong Ulong]]##)
-	- "##LL##", are considered as signed 64 bit integers. (##[[KeyPgLongint Longint]]##)
-	- "##ULL##", are considered as unsigned 64 bit integers. (##[[KeyPgUlongint Ulongint]]##)
+	- "##%##", are considered as signed 32/64 (depending on platform) bit integers. (##[[KeyPgInteger|Integer]]##)
+	- "##L##", "##&##", are considered as signed 32 bit long integers. (##[[KeyPgLong|Long]]##)
+	- "##U##", are considered as unsigned 32/64 (depending on platform) bit integers. (##[[KeyPgUinteger|Uinteger]]##)
+	- "##UL##", are considered as unsigned 32 bit integers. (##[[KeyPgUlong|Ulong]]##)
+	- "##LL##", are considered as signed 64 bit integers. (##[[KeyPgLongint|Longint]]##)
+	- "##ULL##", are considered as unsigned 64 bit integers. (##[[KeyPgUlongint|Ulongint]]##)
 
 	The prefixes, suffixes, and hexadecimal letter digits are all case-insensitive.
 	
@@ -66,7 +66,7 @@ Dim d as ulongint = &b1010101ULL
 	//or//
 	##"".fraction[((D|E) [+|-] exponent)|(D|E)|][suffix]""##
 	
-	By default, floating point numbers that do not have either an exponent or a suffix are considered as a double precision floating point value, except in the //[[CompilerOptlang -lang qb]]// dialect, where numbers of 7 digits or fewer are considered to be single precision.
+	By default, floating point numbers that do not have either an exponent or a suffix are considered as a double precision floating point value, except in the //[[CompilerOptlang|-lang qb]]// dialect, where numbers of 7 digits or fewer are considered to be single precision.
 {{fbdoc item="filename" value="examples/manual/proguide/literals/floats.bas"}}%%(freebasic)
 Dim a as double = 123.456
 Dim b as double = -123.0
@@ -104,14 +104,14 @@ print "That's right!"
 print "See the ""word"" contained in double quotes."
 %%
 
-	String literals can contain escape sequences if the string literal is prefixed by the ##[[KeyPgOpPpEscape ! operator]]## (Escaped String Literal).  See [[TblEscapeSequences Escape Sequences]] for a list of accepted escape sequences.
+	String literals can contain escape sequences if the string literal is prefixed by the ##[[KeyPgOpPpEscape|! operator]]## (Escaped String Literal).  See [[TblEscapeSequences|Escape Sequences]] for a list of accepted escape sequences.
 {{fbdoc item="filename" value="examples/manual/proguide/literals/escape.bas"}}%%(freebasic)
 print !"Hello\nWorld!"
 %%
 
-	By default, string literals are non-escaped unless ##[[KeyPgOptionescape Option Escape]]## was used in the source in which case all string literals following are by default escaped.
+	By default, string literals are non-escaped unless ##[[KeyPgOptionescape|Option Escape]]## was used in the source in which case all string literals following are by default escaped.
 
-	A string may be explicitly specified as non-escaped when prefixed by the ##[[KeyPgOpPpEscape $ operator]]## (Non-Escaped String Literal).
+	A string may be explicitly specified as non-escaped when prefixed by the ##[[KeyPgOpPpEscape|$ operator]]## (Non-Escaped String Literal).
 {{fbdoc item="filename" value="examples/manual/proguide/literals/noescape.bas"}}%%(freebasic)
 print $"C:\temp"
 %%
@@ -119,7 +119,7 @@ print $"C:\temp"
 	Besides ASCII files with Unicode escape sequences (##\u##), ""FreeBASIC"" can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source files allowing unicode characters directly in the string literal.
 
 {{fbdoc item="section" value="Boolean Literals"}}
-	The boolean type has two values, represented by literals ##[[KeyPgTrue True]]## and ##[[KeyPgFalse False]]##.
+	The boolean type has two values, represented by literals ##[[KeyPgTrue|True]]## and ##[[KeyPgFalse|False]]##.
 
 {{fbdoc item="filename" value="examples/manual/proguide/literals/boolean.bas"}}%%(freebasic)
 Dim a As Boolean = False
@@ -127,10 +127,10 @@ Dim b As Boolean = True
 %%	
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgTypeof Typeof]]##
-	- ##[[KeyPgPpdefine #define]]##
-	- ##[[KeyPgConst Const]]## 
-	- ##[[CatPgStdDataTypes Standard Data Types]]##
-	- ##[[TblVarTypes Table with variable types overview, limits and suffixes]]##
+	- ##[[KeyPgTypeof|Typeof]]##
+	- ##[[KeyPgPpdefine|#define]]##
+	- ##[[KeyPgConst|Const]]## 
+	- ##[[CatPgStdDataTypes|Standard Data Types]]##
+	- ##[[TblVarTypes|Table with variable types overview, limits and suffixes]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

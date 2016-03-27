@@ -2,7 +2,7 @@
 Sets the current system date
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setdate** ( [[KeyPgByref byref]] //newdate// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Setdate** ( [[KeyPgByref|byref]] //newdate// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Setdate**( //newdate// )
@@ -30,7 +30,7 @@ SetDate m + "/" + d + "/" + y
 	- The DATE statement was used in QB and the syntax was "//DATE = string//"
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDate Date]]##
-	- ##[[KeyPgSettime Settime]]##
+	- ##[[KeyPgDate|Date]]##
+	- ##[[KeyPgSettime|Settime]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

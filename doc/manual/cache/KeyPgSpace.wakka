@@ -2,7 +2,7 @@
 Creates a string of a given length filled with spaces (##" "##)
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Space**( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Space**( [[KeyPgByval|byval]] //count// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Space**[$]( //count// )
@@ -25,15 +25,15 @@ print a ' prints: x   x
 %%
 
 {{fbdoc item="lang"}}
-	- The string type suffix ##$## is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix ##$## is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- The string type suffix ##$## is obligatory in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- The string type suffix ##$## is optional in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgWspace Wspace]]##
-	- ##[[KeyPgSpc Spc]]##
-	- ##[[KeyPgStringFunction String (Function)]]##
+	- ##[[KeyPgWspace|Wspace]]##
+	- ##[[KeyPgSpc|Spc]]##
+	- ##[[KeyPgStringFunction|String (Function)]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

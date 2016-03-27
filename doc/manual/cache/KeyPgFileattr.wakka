@@ -2,7 +2,7 @@
 Returns information about an open file number
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""FileAttr""** ( [[KeyPgByval byval]] //filenum// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //returntype// [[KeyPgAs as]] [[KeyPgLong long]] = 1 ) [[KeyPgAs as]] [[KeyPgInteger integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""FileAttr""** ( [[KeyPgByval|byval]] //filenum// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //returntype// [[KeyPgAs|as]] [[KeyPgLong|long]] = 1 ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 ##
 {{fbdoc item="usage"}}##
 	#include "file.bi"
@@ -15,7 +15,7 @@ Returns information about an open file number
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		The file number of a file or device opened with ##[[KeyPgOpen Open]]##
+		The file number of a file or device opened with ##[[KeyPgOpen|Open]]##
 	##//returntype//##
 		An integer value indicating the type of information to return.
 
@@ -71,6 +71,6 @@ close #1
 	- ##//returntype//## = 3 is new to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgOpen|Open]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

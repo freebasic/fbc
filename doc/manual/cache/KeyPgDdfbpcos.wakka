@@ -20,10 +20,10 @@ Intrinsic define set by the compiler
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfbwin32 __FB_WIN32__]]##
-	- ##[[KeyPgDdfbdos __FB_DOS__]]##
-	- ##[[KeyPgDdfbxbox __FB_XBOX__]]##
-	- ##[[KeyPgDdfbunix __FB_UNIX__]]##
-	- [[CompilerOpttarget Compiler Option: -target]]
+	- ##[[KeyPgDdfbwin32|__FB_WIN32__]]##
+	- ##[[KeyPgDdfbdos|__FB_DOS__]]##
+	- ##[[KeyPgDdfbxbox|__FB_XBOX__]]##
+	- ##[[KeyPgDdfbunix|__FB_UNIX__]]##
+	- [[CompilerOpttarget|Compiler Option: -target]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

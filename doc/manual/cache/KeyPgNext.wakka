@@ -1,15 +1,15 @@
 {{fbdoc item="title" value="NEXT"}}----
-Control flow statement to mark the end of a ##[[KeyPgFornext For...Next]]## loop.
+Control flow statement to mark the end of a ##[[KeyPgFornext|For...Next]]## loop.
 
 {{fbdoc item="syntax"}}##
 	**Next** [ //identifier_list// ]
 ##
 {{fbdoc item="desc"}}
-	Indicates the end of a statement block associated with a matching ##[[KeyPgFornext For]]## statement. 
+	Indicates the end of a statement block associated with a matching ##[[KeyPgFornext|For]]## statement. 
 
-	When ##**Next**## is used on its own without an //identifier_list//, it closes the most recent ##[[KeyPgFornext For]]## statement block.
+	When ##**Next**## is used on its own without an //identifier_list//, it closes the most recent ##[[KeyPgFornext|For]]## statement block.
 
-	##//identifier_list//## is optional and may be one or more variable names separated by commas.  This form of the ##**Next**## statement is retained for compatibility with QB.  ##//identifier_list//##, if given, must match the identifiers used in the associated ##[[KeyPgFornext For]]## statements in reverse order, from inner to outer.
+	##//identifier_list//## is optional and may be one or more variable names separated by commas.  This form of the ##**Next**## statement is retained for compatibility with QB.  ##//identifier_list//##, if given, must match the identifiers used in the associated ##[[KeyPgFornext|For]]## statements in reverse order, from inner to outer.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/next.bas"}}%%(freebasic)
@@ -36,9 +36,9 @@ next j,i
 %%
 
 {{fbdoc item="diff"}}
-	- ##[[KeyPgByref Byref]]## arguments cannot be used as counters.
+	- ##[[KeyPgByref|Byref]]## arguments cannot be used as counters.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgFornext For...Next]]##
+	- ##[[KeyPgFornext|For...Next]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -1,13 +1,13 @@
 {{fbdoc item="title" value="CINT"}}----
-Converts a numeric or string expression to an ##[[KeyPgInteger Integer]]## or an ##[[KeyPgInteger Integer]]<//bits//>##
+Converts a numeric or string expression to an ##[[KeyPgInteger|Integer]]## or an ##[[KeyPgInteger|Integer]]<//bits//>##
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cint** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cint**<//bits//> ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgInteger integer]]<//bits//>
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cint** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cint**<//bits//> ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]<//bits//>
 
-	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgInteger integer]]<//bits//>
+	[[KeyPgType|Type]] //typename//
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]<//bits//>
 	End Type
 ##
 {{fbdoc item="usage"}}##
@@ -19,21 +19,21 @@ Converts a numeric or string expression to an ##[[KeyPgInteger Integer]]## or an
 	##//bits//##
 		A numeric constant expression indicating the size in bits of integer desired.  The values allowed are ##8##, ##16##, ##32## or ##64##.
 	##//expression//##
-		a numeric, string, or pointer expression to cast to a ##[[KeyPgInteger Integer]]## value
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgInteger|Integer]]## value
 	##//datatype//##
 		any numeric, string, or pointer data type
 	##//typename//##
 		a user defined type
 
 {{fbdoc item="ret"}}
-	An ##[[KeyPgInteger Integer]]## or ##[[KeyPgInteger Integer]]<//bits//>## containing the converted value.
+	An ##[[KeyPgInteger|Integer]]## or ##[[KeyPgInteger|Integer]]<//bits//>## containing the converted value.
 
 {{fbdoc item="desc"}}
-	If ##**Cint**## is passed a numeric ##//expression//##, it rounds it using using the [[http://en.wikipedia.org/wiki/Rounding#Round-to-even_method round-to-even method]] - i.e. it rounds to the closest integer value, choosing the closest even integer if the number is equidistant from two integers - and returns an ##[[KeyPgInteger Integer]]##, or if a ##//bits//## value is supplied, an integer type of the given size.
+	If ##**Cint**## is passed a numeric ##//expression//##, it rounds it using using the [[http://en.wikipedia.org/wiki/Rounding#Round-to-even_method|round-to-even method]] - i.e. it rounds to the closest integer value, choosing the closest even integer if the number is equidistant from two integers - and returns an ##[[KeyPgInteger|Integer]]##, or if a ##//bits//## value is supplied, an integer type of the given size.
 	
-	The function does not check for an overflow; for example, for a 32-bit ##[[KeyPgInteger Integer]]## the results are undefined for values which are less than ##-2## ##147## ##483## ##648## or larger than ##2## ##147## ##483## ##647##.
+	The function does not check for an overflow; for example, for a 32-bit ##[[KeyPgInteger|Integer]]## the results are undefined for values which are less than ##-2##Â ##147##Â ##483##Â ##648## or larger than ##2##Â ##147##Â ##483##Â ##647##.
 	
-	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]## or ##[[KeyPgVallng Vallng]]##, depending on the size of the result type.
+	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint|Valint]]## or ##[[KeyPgVallng|Vallng]]##, depending on the size of the result type.
 	
 	The name "CINT" is derived from 'Convert to INTeger'.
 
@@ -56,25 +56,25 @@ PRINT numeric_value
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, ##**Cint**## will return a 16-bit integer, like in QB.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, ##**Cint**## will return a 16-bit integer, like in QB.
 
 {{fbdoc item="diff"}}
 	- The string argument was not allowed in QB
 	- The ##<//bits//>## parameter was not allowed in QB
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCast Cast]]##
-	- ##[[KeyPgCbyte Cbyte]]##
-	- ##[[KeyPgCubyte Cubyte]]##
-	- ##[[KeyPgCshort Cshort]]##
-	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgCuint Cuint]]##
-	- ##[[KeyPgClng Clng]]##
-	- ##[[KeyPgCulng Culng]]##
-	- ##[[KeyPgClngint Clngint]]##
-	- ##[[KeyPgCulngint Culngint]]##
-	- ##[[KeyPgCsng Csng]]##
-	- ##[[KeyPgCdbl Cdbl]]##
-	- ##[[KeyPgInteger Integer]]##
+	- ##[[KeyPgCast|Cast]]##
+	- ##[[KeyPgCbyte|Cbyte]]##
+	- ##[[KeyPgCubyte|Cubyte]]##
+	- ##[[KeyPgCshort|Cshort]]##
+	- ##[[KeyPgCushort|Cushort]]##
+	- ##[[KeyPgCuint|Cuint]]##
+	- ##[[KeyPgClng|Clng]]##
+	- ##[[KeyPgCulng|Culng]]##
+	- ##[[KeyPgClngint|Clngint]]##
+	- ##[[KeyPgCulngint|Culngint]]##
+	- ##[[KeyPgCsng|Csng]]##
+	- ##[[KeyPgCdbl|Cdbl]]##
+	- ##[[KeyPgInteger|Integer]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

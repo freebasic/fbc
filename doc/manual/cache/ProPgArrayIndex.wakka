@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Array Index"}}----
-An array index is the number used to access an [[ProPgArrays Array]] of [[ProPgVariables Variables]] created using the ##[[KeyPgDim Dim]]## command.
+An array index is the number used to access an [[ProPgArrays|Array]] of [[ProPgVariables|Variables]] created using the ##[[KeyPgDim|Dim]]## command.
 
 {{fbdoc item="desc"}}
 	The following examples illustrate the use of array elements.
@@ -27,7 +27,7 @@ Index        Data
 	%%
 	9
 	%%
-	To change the contents of an array, use it like any other [[ProPgVariables Variable]]:
+	To change the contents of an array, use it like any other [[ProPgVariables|Variable]]:
 	%%(freebasic)
 	myArray(3) = 0
 	%%
@@ -39,7 +39,7 @@ Index        Data
 	%%
 	0
 	%%
-	Array elements can be indexed using another [[ProPgVariables Variable]]. In this example we set all elements in our array to zero:
+	Array elements can be indexed using another [[ProPgVariables|Variable]]. In this example we set all elements in our array to zero:
 	%%(freebasic)
 	Dim a As Integer
 	for a = 1 to 10
@@ -95,11 +95,11 @@ END SUB
 %%
 
 {{fbdoc item="see"}}
-	- [[ProPgArrays Arrays]]
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgFunction Function]]##
-	- ##[[KeyPgSub Sub]]##
-	- [[ProPgVariables Variables]] 
-	- [[ProPgVariableScope Variable Scope]]
+	- [[ProPgArrays|Arrays]]
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgFunction|Function]]##
+	- ##[[KeyPgSub|Sub]]##
+	- [[ProPgVariables|Variables]] 
+	- [[ProPgVariableScope|Variable Scope]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

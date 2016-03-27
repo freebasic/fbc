@@ -38,9 +38,9 @@ Commands that control the preprocessor.
 		Creates a multi-line text-replacement macro.
 	=={{fbdoc item="keyword" value="KeyPgPpundef|#UNDEF"}}==
 		Undefines a symbol.
-	==[[KeyPgOpPpStringize # Preprocessor stringize]]==
+	==[[KeyPgOpPpStringize|# Preprocessor stringize]]==
 		Converts text into a string literal.
-	==[[KeyPgOpPpConcat ## Preprocessor concatenate]]==
+	==[[KeyPgOpPpConcat|## Preprocessor concatenate]]==
 		Concatenates two pieces of text.
 	=={{fbdoc item="keyword" value="KeyPgOpPpEscape|! Escaped String Literal"}}==
 		Indicates string literal immediately following must be processed for escape sequences.
@@ -71,13 +71,13 @@ Commands that control the preprocessor.
 
 {{anchor name="METACOMMAND"}}{{fbdoc item="section" value="Metacommands"}}
 	=={{fbdoc item="keyword" value="KeyPgInclude|'$INCLUDE"}}==
-		Alternate form of the [[KeyPgInclude #INCLUDE]] directive.
+		Alternate form of the [[KeyPgInclude|#INCLUDE]] directive.
 	=={{fbdoc item="keyword" value="KeyPgMetaDynamic|'$DYNAMIC"}}==
-		Alternate form of the [[KeyPgOptiondynamic OPTION DYNAMIC]] statement.
+		Alternate form of the [[KeyPgOptiondynamic|OPTION DYNAMIC]] statement.
 	=={{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}==
-		Alternate form of the [[KeyPgOptionstatic OPTION STATIC]] statement.
+		Alternate form of the [[KeyPgOptionstatic|OPTION STATIC]] statement.
 	=={{fbdoc item="keyword" value="KeyPgMetaLang|'$LANG"}}==
-		Alternate form of the [[KeyPgPplang #lang]] directive.
+		Alternate form of the [[KeyPgPplang|#lang]] directive.
 
 
 >>::c::

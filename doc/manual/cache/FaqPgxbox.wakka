@@ -114,7 +114,7 @@ Initially, input will be acquired through SDL, as a gfxlib port is not yet compl
 
 {{anchor name="item23"}}==Does it only run on certain Xboxes?==
 
-FreeBASIC for Xbox executables will only run on modded Xboxes. However, modding an Xbox is often as simple as loading a savegame in a certain game. More information is available on the [[http://www.xbox-linux.org/wiki/Main_Page Xbox-Linux]] website.
+FreeBASIC for Xbox executables will only run on modded Xboxes. However, modding an Xbox is often as simple as loading a savegame in a certain game. More information is available on the [[http://www.xbox-linux.org/wiki/Main_Page|Xbox-Linux]] website.
 
 
 {{anchor name="item24"}}==Is another language (eg C or ASM) needed for the job?==

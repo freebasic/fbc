@@ -1,0 +1,7 @@
+{{fbdoc item="title" value="TinyPTC"}}----
+A minimalist graphics library included with ""FreeBASIC""
+
+TinyPTC is primarily a graphics library, the simplest one available included with FreeBASIC. It does little more than give you a pointer to the graphics region to draw to.
+
+{{fbdoc item="see"}}
+	-[[TutUsingLibs|Using libraries in FreeBASIC]] //by SJ Zero

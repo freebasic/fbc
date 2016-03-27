@@ -2,7 +2,7 @@
 Returns the current system date as a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Date** ( ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Date** ( ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Date**
@@ -19,11 +19,11 @@ print date ' prints the current date
 %%
 
 {{fbdoc item="diff"}}
-	- The QB DATE statement (to set the system date) is now called ##[[KeyPgSetdate Setdate]]##.
+	- The QB DATE statement (to set the system date) is now called ##[[KeyPgSetdate|Setdate]]##.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSetdate Setdate]]##
-	- ##[[KeyPgTime Time]]##
-	- ##[[KeyPgTimer Timer]]##
+	- ##[[KeyPgSetdate|Setdate]]##
+	- ##[[KeyPgTime|Time]]##
+	- ##[[KeyPgTimer|Timer]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

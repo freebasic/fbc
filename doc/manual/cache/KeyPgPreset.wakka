@@ -16,11 +16,11 @@ Plots a single pixel
 
 {{fbdoc item="desc"}}
 
-	##//target//## specifies buffer to draw on.  ##//target//## may be an image created with ##[[KeyPgImagecreate ImageCreate]]## or ##[[KeyPgGetgraphics Get (Graphics)]]##.  If omitted, //target// defaults to the screen's current work page.
+	##//target//## specifies buffer to draw on.  ##//target//## may be an image created with ##[[KeyPgImagecreate|ImageCreate]]## or ##[[KeyPgGetgraphics|Get (Graphics)]]##.  If omitted, //target// defaults to the screen's current work page.
 
-	##(//x, y//)## are the coordinates of the pixel.  STEP if present, indicates that ##(//x, y//)## coordinates are relative to the graphics cursor position.  If omitted, ##(//x, y//)## are relative to the upper left-hand corner of ##//target//##.  The x and y coordinates are affected by the last call to the ##[[KeyPgViewgraphics View (Graphics)]]## and ##[[KeyPgWindow Window]]## statements, and respect the current clipping region as set by the ##[[KeyPgViewgraphics View (Graphics)]]## statement.
+	##(//x, y//)## are the coordinates of the pixel.  STEP if present, indicates that ##(//x, y//)## coordinates are relative to the graphics cursor position.  If omitted, ##(//x, y//)## are relative to the upper left-hand corner of ##//target//##.  The x and y coordinates are affected by the last call to the ##[[KeyPgViewgraphics|View (Graphics)]]## and ##[[KeyPgWindow|Window]]## statements, and respect the current clipping region as set by the ##[[KeyPgViewgraphics|View (Graphics)]]## statement.
 
-	##//color//## specifies the color attribute.  If omitted, ##//color//## defaults to the current background color.  See ##[[KeyPgColor Color]]##.  ##//color//## is graphics mode specific, see ##[[KeyPgColor Color]]## and ##[[KeyPgScreengraphics Screen (Graphics)]]## for details.
+	##//color//## specifies the color attribute.  If omitted, ##//color//## defaults to the current background color.  See ##[[KeyPgColor|Color]]##.  ##//color//## is graphics mode specific, see ##[[KeyPgColor|Color]]## and ##[[KeyPgScreengraphics|Screen (Graphics)]]## for details.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/preset.bas"}}%%(freebasic)
@@ -41,6 +41,6 @@ SLEEP
 	- ##//target//## is new to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPset PSet]]##
+	- ##[[KeyPgPset|PSet]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

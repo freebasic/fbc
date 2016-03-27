@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="DATEVALUE"}}----
-Returns a [[ProPgDates Date Serial]] from a string
+Returns a [[ProPgDates|Date Serial]] from a string
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""DateValue""** ( [[KeyPgByref byref]] //date_string// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""DateValue""** ( [[KeyPgByref|byref]] //date_string// [[KeyPgAs|as]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -13,12 +13,12 @@ Returns a [[ProPgDates Date Serial]] from a string
 		the string to convert to a date serial
 
 {{fbdoc item="ret"}}
-	Returns a [[ProPgDates Date Serial]] from a date string.
+	Returns a [[ProPgDates|Date Serial]] from a date string.
 
 {{fbdoc item="desc"}}
 	The date string must be in the format set in the regional settings of the Operating System. 
 
-	##**""DateValue""**( Date() )## will work correctly only if the regional settings specify the same short date format QB used (##mm-dd-yyyy##).  Consider using the ##[[KeyPgNow Now]]## function in the expression ##Fix(Now())## to obtain the current date as a date serial.
+	##**""DateValue""**( Date() )## will work correctly only if the regional settings specify the same short date format QB used (##mm-dd-yyyy##).  Consider using the ##[[KeyPgNow|Now]]## function in the expression ##Fix(Now())## to obtain the current date as a date serial.
 
 	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
@@ -56,8 +56,8 @@ print "Number of days between dates is " & abs( v2 - v1 )
 	- Did not exist in QB. This function appeared in PDS and VBDOS
 
 {{fbdoc item="see"}}
-	- [[ProPgDates Date Serials]]
-	- ##[[KeyPgDateSerial DateSerial]]##
-	- ##[[KeyPgTimeValue TimeValue]]##
+	- [[ProPgDates|Date Serials]]
+	- ##[[KeyPgDateSerial|DateSerial]]##
+	- ##[[KeyPgTimeValue|TimeValue]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

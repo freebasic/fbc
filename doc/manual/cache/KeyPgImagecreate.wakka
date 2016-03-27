@@ -2,8 +2,8 @@
 Allocates and initializes storage for an image
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ImageCreate""** ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //color// [[KeyPgAs as]] [[KeyPgUlong ulong]] = **transparent_color** ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""ImageCreate""** ( [[KeyPgByval byval]] //width// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //height// [[KeyPgAs as]] [[KeyPgLong long]], [[KeyPgByval byval]] //color// [[KeyPgAs as]] [[KeyPgUlong ulong]] = **transparent_color**, [[KeyPgByval byval]] //depth// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""ImageCreate""** ( [[KeyPgByval|byval]] //width// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //height// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //color// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] = **transparent_color** ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""ImageCreate""** ( [[KeyPgByval|byval]] //width// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //height// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //color// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] = **transparent_color**, [[KeyPgByval|byval]] //depth// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **""ImageCreate""**( //width//, //height// [, [ //color// ][, //depth// ]] )
@@ -21,16 +21,16 @@ Allocates and initializes storage for an image
 {{fbdoc item="ret"}}
 	If the image could not be created, NULL (##0##) is returned, otherwise, the address of the image is returned. ##**""ImageCreate""**## must be called after graphic mode initialization, else it returns ##0##.
 
-	Consequently, in case of ##[[KeyPgShared Shared]]## variable declaration, ##**""ImageCreate""**## cannot be used as integrated initializer, even inside an ##[[KeyPgType UDT]]## (in member field or constructor), because the initialization value (of shared variable) is set at the start of the program before any user code is run. The image allocation call must be in a separated executable instruction, and after the graphic mode initialization.
+	Consequently, in case of ##[[KeyPgShared|Shared]]## variable declaration, ##**""ImageCreate""**## cannot be used as integrated initializer, even inside an ##[[KeyPgType|UDT]]## (in member field or constructor), because the initialization value (of shared variable) is set at the start of the program before any user code is run. The image allocation call must be in a separated executable instruction, and after the graphic mode initialization.
 
 {{fbdoc item="desc"}}
-	Both procedures attempt to allocate memory for an image of the specified ##//width//## and ##//height//##. If not successful, NULL (##0##) is returned. Otherwise, an image of that size is created and initialized by filling the entire area of pixels with the value ##//color//##. If not specified, ##//color//## assumes the value of the transparent color for the current graphics screen, which can be found by calling ##[[KeyPgScreencontrol ScreenControl]]##. In any case, the address of the image is returned, which is then controlled by the user, and must be destroyed using ##[[KeyPgImageDestroy ImageDestroy]]##.
+	Both procedures attempt to allocate memory for an image of the specified ##//width//## and ##//height//##. If not successful, NULL (##0##) is returned. Otherwise, an image of that size is created and initialized by filling the entire area of pixels with the value ##//color//##. If not specified, ##//color//## assumes the value of the transparent color for the current graphics screen, which can be found by calling ##[[KeyPgScreencontrol|ScreenControl]]##. In any case, the address of the image is returned, which is then controlled by the user, and must be destroyed using ##[[KeyPgImageDestroy|ImageDestroy]]##.
 
-	The first procedure creates an image with a color depth matching that of the current graphics screen, which can be found by calling ##[[KeyPgScreencontrol ScreenControl]]##. The second procedure creates an image with a color depth of ##//depth//##, in bits per pixel. For both procedures, the resulting image can be used in drawing procedures while in any screen mode -- and across mode changes -- as long as the color depth of the image matches that of the graphics screen.
+	The first procedure creates an image with a color depth matching that of the current graphics screen, which can be found by calling ##[[KeyPgScreencontrol|ScreenControl]]##. The second procedure creates an image with a color depth of ##//depth//##, in bits per pixel. For both procedures, the resulting image can be used in drawing procedures while in any screen mode -- and across mode changes -- as long as the color depth of the image matches that of the graphics screen.
 
-	##**""ImageCreate""**## is the recommended way to allocate memory for new images. The memory layout -- size, structure, etc. -- while documented, may change from version to version, making manual calculation of the sizes involved error-prone. However, ##[[KeyPgImageInfo ImageInfo]]## can be used to retrieve, among other things, the size, in bytes, of an existing image, allowing memory to be manually allocated for a copy of an image, or to be read from or written to a file or device.
+	##**""ImageCreate""**## is the recommended way to allocate memory for new images. The memory layout -- size, structure, etc. -- while documented, may change from version to version, making manual calculation of the sizes involved error-prone. However, ##[[KeyPgImageInfo|ImageInfo]]## can be used to retrieve, among other things, the size, in bytes, of an existing image, allowing memory to be manually allocated for a copy of an image, or to be read from or written to a file or device.
 
-	##[[KeyPgGetgraphics Get (Graphics)]]## can be used to initialize an image using pre-allocated memory.
+	##[[KeyPgGetgraphics|Get (Graphics)]]## can be used to initialize an image using pre-allocated memory.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/imagecreate.bas"}}%%(freebasic)
@@ -62,15 +62,15 @@ sleep
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Imagecreate""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Imagecreate""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgImageDestroy ImageDestroy]]##
-	- ##[[KeyPgImageInfo ImageInfo]]##
-	- ##[[KeyPgGetgraphics Get (Graphics)]]##
-	- [[GfxInternalFormats Internal pixel formats]]
+	- ##[[KeyPgImageDestroy|ImageDestroy]]##
+	- ##[[KeyPgImageInfo|ImageInfo]]##
+	- ##[[KeyPgGetgraphics|Get (Graphics)]]##
+	- [[GfxInternalFormats|Internal pixel formats]]
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

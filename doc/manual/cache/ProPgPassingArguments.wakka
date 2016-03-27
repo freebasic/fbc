@@ -23,9 +23,9 @@ The parameters have the values: abc and 123
 {{fbdoc item="section" value="Passing arguments by value"}}
 	Arguments that are passed by value are not actually passed to procedures; a copy of the argument is made and passed instead. This allows the procedure to modify the copy, and the original variable or object remains unchanged.
 
-	When passing objects to procedures by value, the copy is made by calling the copy constructor of the ##[[KeyPgType Type]]## or ##[[KeyPgClass Class]]##.
+	When passing objects to procedures by value, the copy is made by calling the copy constructor of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##.
 
-	To specify that an argument should be passed by value, precede the parameter name in the procedure declaration with the ##[[KeyPgByval Byval]]## keyword:
+	To specify that an argument should be passed by value, precede the parameter name in the procedure declaration with the ##[[KeyPgByval|Byval]]## keyword:
 
 {{fbdoc item="filename" value="examples/manual/proguide/procs/passbyval.bas"}}%%(freebasic)
 sub Procedure (byval param as integer)
@@ -52,7 +52,7 @@ The variable 'arg' after the call = 10
 
 	A reference is like an alias for a variable or object. Whenever you refer to a reference, you're referring to the actual variable or object that it aliases. In other words, you can think of a reference parameter of a procedure as the argument that is passed to it; any changes made to the reference parameter are actually changes to the argument it represents.
 
-	To specify that an argument should be passed by reference, precede the parameter name in the procedure declaration with the ##[[KeyPgByref Byref]]## keyword:
+	To specify that an argument should be passed by reference, precede the parameter name in the procedure declaration with the ##[[KeyPgByref|Byref]]## keyword:
 
 {{fbdoc item="filename" value="examples/manual/proguide/procs/passbyref.bas"}}%%(freebasic)
 sub Procedure (byref param as integer)
@@ -74,7 +74,7 @@ The variable 'arg' after the call = 20
 %%
 
 {{fbdoc item="section" value="Manually passing pointers to by-reference parameters"}}
-	By specifying the ##Byval## keyword in front of an argument to a ##[[KeyPgByref Byref]]## parameter, an address (usually stored in a pointer) can be passed directly as-is, forcing the ##Byref## parameter to reference the same memory location which the address pointed to.
+	By specifying the ##Byval## keyword in front of an argument to a ##[[KeyPgByref|Byref]]## parameter, an address (usually stored in a pointer) can be passed directly as-is, forcing the ##Byref## parameter to reference the same memory location which the address pointed to.
 
 {{fbdoc item="filename" value="examples/manual/proguide/procs/byrefparam-explicit-byval.bas"}}%%(freebasic)
 sub f( byref i as integer )
@@ -90,12 +90,12 @@ print i
 %%
 
 {{fbdoc item="see"}}
-	- [[ProPgProcedures Procedures Overview]]
-	- [[ProPgReturnValue Returning a Value]]
-	- ##[[KeyPgDeclare Declare]]##
-	- ##[[KeyPgSub Sub]]##
-	- ##[[KeyPgFunction Function]]##
-	- ##[[KeyPgByval Byval]]##
-	- ##[[KeyPgByref Byref]]##
+	- [[ProPgProcedures|Procedures Overview]]
+	- [[ProPgReturnValue|Returning a Value]]
+	- ##[[KeyPgDeclare|Declare]]##
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgFunction|Function]]##
+	- ##[[KeyPgByval|Byval]]##
+	- ##[[KeyPgByref|Byref]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

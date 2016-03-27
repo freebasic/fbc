@@ -7,18 +7,18 @@ Restricts read/write access to a file or portion of a file
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		The file number used to ##[[KeyPgOpen Open]]## the file.
+		The file number used to ##[[KeyPgOpen|Open]]## the file.
 	##//record//##
-		The record (##[[KeyPgRandom Random]]## files) to lock.
+		The record (##[[KeyPgRandom|Random]]## files) to lock.
 	##//start//##
-		The first byte position (##[[KeyPgBinary Binary]]## files) to lock from.
+		The first byte position (##[[KeyPgBinary|Binary]]## files) to lock from.
 	##//end//##
-		The last byte position (##[[KeyPgBinary Binary]]## files) to lock to.
+		The last byte position (##[[KeyPgBinary|Binary]]## files) to lock to.
 
 {{fbdoc item="desc"}}
 	##**Lock**## temporarily restricts access by other threads or programs to a file, or portion of a file, usually to allow safe writing to it.
 
-	After modifying the data, an ##[[KeyPgUnlock Unlock]]## with the same parameters as the ##**Lock**## should be issued.
+	After modifying the data, an ##[[KeyPgUnlock|Unlock]]## with the same parameters as the ##**Lock**## should be issued.
 
 	**Note: This command does not always work, neither as documented nor as expected. It appears to be broken at the moment.**
 
@@ -42,11 +42,11 @@ close #f
 
 {{fbdoc item="diff"}}
 	- Currently, FB cannot implicitly lock the entire file
-	- In ##[[KeyPgRandom Random]]## mode, FB cannot lock a range of records
+	- In ##[[KeyPgRandom|Random]]## mode, FB cannot lock a range of records
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgUnlock Unlock]]##
-	- ##[[KeyPgScreenLock ScreenLock]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgUnlock|Unlock]]##
+	- ##[[KeyPgScreenLock|ScreenLock]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

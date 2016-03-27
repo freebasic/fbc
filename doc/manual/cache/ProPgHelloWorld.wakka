@@ -21,10 +21,10 @@ Hello World
 %%
 
 {{fbdoc item="see"}}
-	- [[CompilerFAQ Freebasic FAQ]]
-	- [[CompilerFeatures Main Features]]
-	- [[CompilerRequirements Requirements]]
-	- [[CompilerInstalling Installing]]
-	- [[CompilerRunning Running]]
+	- [[CompilerFAQ|Freebasic FAQ]]
+	- [[CompilerFeatures|Main Features]]
+	- [[CompilerRequirements|Requirements]]
+	- [[CompilerInstalling|Installing]]
+	- [[CompilerRunning|Running]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -2,7 +2,7 @@
 Formats a number in a specified format
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Format** ( [[KeyPgByval byval]] //numerical_expression// [[KeyPgAs as]] [[KeyPgDouble double]], [[KeyPgByref byref]] //formatting_expression// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] = "####" ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Format** ( [[KeyPgByval|byval]] //numerical_expression// [[KeyPgAs|as]] [[KeyPgDouble|double]], [[KeyPgByref|byref]] //formatting_expression// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] = "####" ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	#include "string.bi"
@@ -64,7 +64,8 @@ The following are examples of Date And Time formats:
 	- Does not exist in QB 4.5. This function appeared first in PDS 7.1
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPrintusing Print Using]]##
-	- ##[[KeyPgStr Str]]##
+	- ##[[KeyPgPrintusing|Print Using]]##
+	- ##[[KeyPgPrintusing|? Using]]##
+	- ##[[KeyPgStr|Str]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

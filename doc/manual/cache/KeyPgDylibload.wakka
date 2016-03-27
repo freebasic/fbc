@@ -2,36 +2,36 @@
 Loads to a Dynamic Link Library (DLL) into memory at runtime
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Dylibload** ( [[KeyPgByref byref]] //filename// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPointer Pointer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Dylibload** ( [[KeyPgByref|byref]] //filename// [[KeyPgAs|as]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPointer|Pointer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Dylibload** ( //filename// )
 ##
 {{fbdoc item="param"}}
 	##//filename//##
-		A ##[[KeyPgString string]]## containing the filename of the library to load.
+		A ##[[KeyPgString|string]]## containing the filename of the library to load.
 
 {{fbdoc item="ret"}}
-	The ##[[KeyPgPointer pointer]]## handle of the library loaded. Zero on error
+	The ##[[KeyPgPointer|pointer]]## handle of the library loaded. Zero on error
 
 {{fbdoc item="desc"}}
-	##[[KeyPgDylibload Dylibload]]## is used to link at runtime libraries to your program. This function does the link and returns a handle that must be used with ##[[KeyPgDylibsymbol Dylibsymbol]]## when calling a function in the library and with ##[[KeyPgDylibfree Dylibfree]]## when releasing the library.
+	##[[KeyPgDylibload|Dylibload]]## is used to link at runtime libraries to your program. This function does the link and returns a handle that must be used with ##[[KeyPgDylibsymbol|Dylibsymbol]]## when calling a function in the library and with ##[[KeyPgDylibfree|Dylibfree]]## when releasing the library.
 
 {{fbdoc item="ex"}}
-	See the dynamic loading example on the [[ProPgSharedLibraries Shared Libraries]] page.
+	See the dynamic loading example on the [[ProPgSharedLibraries|Shared Libraries]] page.
 
 {{fbdoc item="target"}}
 	- Dynamic link libraries are not available in DOS, as the OS doesn't support them.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Dylibload""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Dylibload""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDylibsymbol Dylibsymbol]]##
-	- ##[[KeyPgDylibfree Dylibfree]]##
-	- ##[[KeyPgExport Export]]##
+	- ##[[KeyPgDylibsymbol|Dylibsymbol]]##
+	- ##[[KeyPgDylibfree|Dylibfree]]##
+	- ##[[KeyPgExport|Export]]##
 
 {{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

@@ -1,0 +1,50 @@
+!!! Template keyword page !!!
+{{fbdoc item="title" value="KEYWORD"}}----
+Short description of keyword
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Keyword**( [[KeyPgByval|byval]] //foo// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+##
+{{fbdoc item="param"}}
+	##//foo//##: parameter description
+
+{{fbdoc item="usage"}}##
+	//result// = **Keyword**( //foo// )
+##
+
+{{fbdoc item="ret"}}
+	Description of the function's return value (if any)
+
+{{fbdoc item="desc"}}
+	A lengthy description of the keyword
+
+	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+{{fbdoc item="ex"}}
+Examples go here
+""{{fbdoc item="filename" value="examples/manual/keyword.bas"}}""%%(freebasic)
+''(fbdoc item escaped in quotes to prevent it being parsed)
+'' This is a brief program to demonstrate the use of KEYWORD
+
+dim foo as integer
+print keyword(foo)
+%%
+
+{{image class="center" title="Example output of graphics program" url="/images/keyword.png"}}
+
+{{fbdoc item="target"}}
+	- List of platform-specific differences
+
+{{fbdoc item="lang"}}
+	- List of the differences in each dialect, e.g:
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Keyword""**##.
+
+
+{{fbdoc item="diff"}}
+	- List of differences from QBASIC, e.g:
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- List of other related keywords
+
+{{fbdoc item="back" value="CatPgName|Category name"}}

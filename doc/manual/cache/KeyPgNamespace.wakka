@@ -2,7 +2,7 @@
 Declares a namespace block
 
 {{fbdoc item="syntax"}}##
-	**Namespace** //identifier// [ [[KeyPgAlias Alias]] "//aliasname//" ]
+	**Namespace** //identifier// [ [[KeyPgAlias|Alias]] "//aliasname//" ]
 		//statements//
 	**End Namespace**
 ##
@@ -19,14 +19,14 @@ Declares a namespace block
 	Any identifier in the global namespace is available for use in a named namespace (even global symbols with the same name as keywords may be declared inside a namespace). 
 
 	Namespaces implicitly have public access and this is not modifiable.
-	A variable declared inside a namespace is always implicitly static and visible throughout the entire program even if the declaration modifier [[KeyPgShared Shared]] is not specified (static and shared are optional, but this may improve code readability).
+	A variable declared inside a namespace is always implicitly static and visible throughout the entire program even if the declaration modifier [[KeyPgShared|Shared]] is not specified (static and shared are optional, but this may improve code readability).
 	Namespaces do not have any effect on the visibility of a define.
 	It is possible to define a namespace in two or more declarations.
 	
 	Namespaces are commonly used in libraries where you don't want all the symbols from that library to crowd the user's space (called the global namespace). 
 	For example, if you used the "Forms" library, it might define the Point type for describing an X and Y coordinate, and you might also define it for another purpose. This can be resolved by creating the namespace Forms for the library, and then referring to its Point type as Forms.Point, and yours as just Point. 
 
-	To access duplicated symbols defined in the global namespace, use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith With..End With]] block).
+	To access duplicated symbols defined in the global namespace, use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/namespace.bas"}}%%(freebasic)
@@ -91,12 +91,12 @@ print mylib.test()
 %%
 
 {{fbdoc item="lang"}}
-	- Namespaces are not supported in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Namespaces are not supported in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- [[KeyPgUsing Using (Namespaces)]]
+	- [[KeyPgUsing|Using (Namespaces)]]
 
 {{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

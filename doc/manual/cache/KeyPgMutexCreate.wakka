@@ -2,18 +2,18 @@
 Creates a mutex used for synchronizing the execution of threads
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mutexcreate** ( ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Mutexcreate** ( ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Mutexcreate**
 ##
 {{fbdoc item="ret"}}
-	The ##[[KeyPgAny any]] [[KeyPgPtr ptr]]## handle of the mutex created, or the null pointer (0) on failure.
+	The ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]## handle of the mutex created, or the null pointer (0) on failure.
 
 {{fbdoc item="desc"}}
-	Mutexes, short for "Mutually Exclusive", are a way of synchronizing shared data within threads.  If there is a global variable used by multiple threads (or a local static variable used by a single thread called multiple times), it should be "locked" during its use with a mutex.  This halts all threads using ##[[KeyPgMutexLock Mutexlock]]## with that mutex (including the main thread executing main program), until it is unlocked with ##[[KeyPgMutexUnlock Mutexunlock]]##.
+	Mutexes, short for "Mutually Exclusive", are a way of synchronizing shared data within threads.  If there is a global variable used by multiple threads (or a local static variable used by a single thread called multiple times), it should be "locked" during its use with a mutex.  This halts all threads using ##[[KeyPgMutexLock|Mutexlock]]## with that mutex (including the main thread executing main program), until it is unlocked with ##[[KeyPgMutexUnlock|Mutexunlock]]##.
 
-	##Mutexcreate## creates a mutex, returning a handle which is to be referred to when locking, unlocking, or destroying the mutex.  Mutexes created with ##Mutexcreate## should be destroyed when no longer needed or before the end of the program with ##[[KeyPgMutexDestroy Mutexdestroy]]##.
+	##Mutexcreate## creates a mutex, returning a handle which is to be referred to when locking, unlocking, or destroying the mutex.  Mutexes created with ##Mutexcreate## should be destroyed when no longer needed or before the end of the program with ##[[KeyPgMutexDestroy|Mutexdestroy]]##.
 	
 	A  mutex is a lock that guarantees three things:
 	1. Atomicity - Locking a mutex is an atomic operation, meaning that the operating system (or threads library) assures you that if you locked a mutex, no other thread succeeded in locking this mutex at the same time.
@@ -21,7 +21,7 @@ Creates a mutex used for synchronizing the execution of threads
 	3. Non-Busy Wait - If a thread attempts to lock a thread that was locked by a second thread, the first thread will be suspended (and will not consume any CPU resources) until the lock is freed by the second thread. At this time, the first thread will wake up and continue execution, having the mutex locked by it. 
 
 {{fbdoc item="ex"}}
-	See also the ##[[KeyPgThreadCreate Threadcreate]]## examples.
+	See also the ##[[KeyPgThreadCreate|Threadcreate]]## examples.
 
 {{fbdoc item="filename" value="examples/manual/threads/mutexcreate.bas"}}%%(freebasic)
 'Visual example of mutual exclusion between 2 threads by using Mutex:
@@ -132,10 +132,10 @@ Delete Pptr
 
 Sleep
 %%
-	See also the similar ##[[KeyPgCondCreate Condcreate]]## example
+	See also the similar ##[[KeyPgCondCreate|Condcreate]]## example
 
 {{fbdoc item="lang"}}
-	- Threading is not allowed in the //[[CompilerOptlang -lang qb]]// dialect.
+	- Threading is not allowed in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="target"}}
 	- The DOS version of ""FreeBASIC"" does not allow for threads, as the OS does not support them.
@@ -145,10 +145,10 @@ Sleep
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgMutexDestroy Mutexdestroy]]##
-	- ##[[KeyPgMutexLock Mutexlock]]##
-	- ##[[KeyPgMutexUnlock Mutexunlock]]##
-	- ##[[KeyPgThreadCreate Threadcreate]]##
-	- ##[[KeyPgThreadWait Threadwait]]##
+	- ##[[KeyPgMutexDestroy|Mutexdestroy]]##
+	- ##[[KeyPgMutexLock|Mutexlock]]##
+	- ##[[KeyPgMutexUnlock|Mutexunlock]]##
+	- ##[[KeyPgThreadCreate|Threadcreate]]##
+	- ##[[KeyPgThreadWait|Threadwait]]##
 
 {{fbdoc item="back" value="CatPgThreading|Threading Support Functions"}}

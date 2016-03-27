@@ -1,12 +1,12 @@
-{{fbdoc item="title" value="PRINT #"}}----
+{{fbdoc item="title" value="(PRINT | ?) #"}}----
 Writes a list of values to a file or device
 
 {{fbdoc item="syntax"}}##
-	**Print #** //filenum//**,** [ //expressionlist// ] [ **,** | **;** ]
+	(**Print** | **?**) **#** //filenum//**,** [ //expressionlist// ] [ **,** | **;** ]
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		The file number of a file or device opened for ##[[KeyPgOutput Output]]## or ##[[KeyPgAppend Append]]##.
+		The file number of a file or device opened for ##[[KeyPgOutput|Output]]## or ##[[KeyPgAppend|Append]]##.
 	##//expressionlist//##
 		List of values to write.
 
@@ -30,17 +30,19 @@ open "bleh.dat"  for output as #1
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, an extra space is printed after numbers.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, an extra space is printed after numbers.
 
 {{fbdoc item="diff"}}
-	- None, when using QBASIC's variable types in //[[CompilerOptlang -lang qb]]//.
+	- None, when using QBASIC's variable types in //[[CompilerOptlang|-lang qb]]//.
 	- Unsigned numbers are printed without a space before them.
 	- QB did not support casting for UDTs, so didn't allow them to be ##**Print**##ed.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPrintusing Print Using]]##
-	- ##[[KeyPgPrint Print]]##
-	- ##[[KeyPgWrite Write #]]##
-	- ##[[KeyPgOpen Open]]##
+	- ##[[KeyPgPrintusing|Print Using]]##
+	- ##[[KeyPgPrintusing|? Using]]##
+	- ##[[KeyPgPrint|Print]]##
+	- ##[[KeyPgPrint|?]]##
+	- ##[[KeyPgWrite|Write #]]##
+	- ##[[KeyPgOpen|Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

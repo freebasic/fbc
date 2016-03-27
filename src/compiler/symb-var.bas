@@ -19,7 +19,7 @@ sub symbVarInit( )
 	static as FBARRAYDIM dTB(0)
 
 	'' type FBARRAYDIM
-	symb.fbarraydim = symbStructBegin( NULL, NULL, NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0, NULL, 0, 0 )
+	symb.fbarraydim = symbStructBegin( NULL, NULL, NULL, "__FB_ARRAYDIMTB$", NULL, FALSE, 0, FALSE, 0, 0 )
 
 	'' elements		as integer
 	symbAddField( symb.fbarraydim, "elements", 0, dTB(), _
@@ -187,7 +187,7 @@ function symbAddArrayDescriptorType _
 	'' descriptor type, e.g. in hMangleUdtId().
 	''
 	attrib or= FB_SYMBATTRIB_DESCRIPTOR
-	sym = symbStructBegin( symtb, hashtb, NULL, id, aliasid, FALSE, 0, NULL, attrib, FB_SYMBOPT_PRESERVECASE )
+	sym = symbStructBegin( symtb, hashtb, NULL, id, aliasid, FALSE, 0, FALSE, attrib, FB_SYMBOPT_PRESERVECASE )
 	assert( sym )
 	dTB(0).lower = 0
 	dTB(0).upper = 0

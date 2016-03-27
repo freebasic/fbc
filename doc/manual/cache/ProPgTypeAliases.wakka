@@ -12,9 +12,9 @@ Additional names for variable or object types
 	Type aliases are alternative names for a type. They can be used to facilitate a mass change from one type to another, save typing, or make circular dependency possible.
 
 {{anchor name="DECL"}}{{fbdoc item="section" value="Declaration"}}
-	Type aliases are declared using the ##[[KeyPgTypeAlias Type]]## keyword much like declaring variables or objects with [[KeyPgExtern Extern]] or [[KeyPgDim Dim]].
+	Type aliases are declared using the ##[[KeyPgTypeAlias|Type]]## keyword much like declaring variables or objects with [[KeyPgExtern|Extern]] or [[KeyPgDim|Dim]].
 
-	The following example declares a type alias to ##[[KeyPgSingle Single]]## called "##//float//##", a procedure, and defines and initializes two variables of that type:
+	The following example declares a type alias to ##[[KeyPgSingle|Single]]## called "##//float//##", a procedure, and defines and initializes two variables of that type:
 
 	{{fbdoc item="filename" value="examples/manual/proguide/typalias/builtin.bas"}}%%(freebasic)
 type float as single

@@ -11,7 +11,7 @@ Statement for sequenced pixel plotting
 		a string containing the sequence of commands
 
 {{fbdoc item="desc"}}
-	Drawing will take place onto the current work page set via ##[[KeyPgScreenset ScreenSet]]## or onto the ##//target//## ##[[KeyPgGetgraphics Get]]##/##[[KeyPgPutgraphics Put]]## buffer if specified.
+	Drawing will take place onto the current work page set via ##[[KeyPgScreenset|ScreenSet]]## or onto the ##//target//## ##[[KeyPgGetgraphics|Get]]##/##[[KeyPgPutgraphics|Put]]## buffer if specified.
 	The ##**Draw**## statement can be used to issue several drawing commands all at once; it is useful to quickly draw figures. The command string accepts the following commands:
 
 	Commands to plot pixels:
@@ -101,9 +101,9 @@ sleep
 	- FB does not currently allow sub-pixel movements: all movements are rounded to the nearest integer coordinate.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDrawString Draw String]]##
-	- ##[[KeyPgScreengraphics Screen (Graphics)]]##
-	- ##[[KeyPgOpVarptr VarPtr]]##
-	- ##[[KeyPgPaint Paint]]##
+	- ##[[KeyPgDrawString|Draw String]]##
+	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
+	- ##[[KeyPgOpVarptr|VarPtr]]##
+	- ##[[KeyPgPaint|Paint]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

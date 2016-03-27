@@ -3,7 +3,7 @@ A BASIC compiler, interpreter and IDE
 
 ""QuickBASIC"" is a twenty year old interpreter/compiler upon which FreeBASIC is modeled. It runs in 16-bit MS-DOS.
 
-More information from [[http://en.wikipedia.org Wikipedia]]:
+More information from [[http://en.wikipedia.org|Wikipedia]]:
 
 Microsoft ""QuickBASIC"" (often shortened, correctly, to QB, or incorrectly, to "QBasic", which is a different system) is a descendant of the BASIC programming language that was developed by the Microsoft Corporation for use with the MS-DOS Operating System.  It was loosely based on GW-BASIC but in addition provided user-defined types, improved programming structures, better graphics and disk support and a compiler in addition to the interpreter. Microsoft sold ""QuickBASIC"" as a commercial development suite.
 
@@ -18,6 +18,6 @@ A replacement for GW-BASIC, based on ""QuickBASIC"" 4.5 was included with MS-DOS
 To learn more about the language, history, and community of ""QuickBASIC"" and its free interpreter-only counterpart, you should see also en.wikipedia.org/wiki/QBasic. There are more links, and more information, including a barebones tutorial for Quick/QBasic programming.
 
 ==External links==
-~- [[http://www.petesqbsite.com/ Pete's QB Site]]. One of the oldest remaining QB sites (since Oct 1998).
-~- [[http://www.qbasicnews.com/ QQN/QBN: QBasic/QuickBasic News]].
-~- [[http://www.qbasicnews.com/sections.php?id=4 QQN's Newbies Section]] which includes a link for downloading QBasic.
+~- [[http://www.petesqbsite.com/|Pete's QB Site]]. One of the oldest remaining QB sites (since Oct 1998).
+~- [[http://www.qbasicnews.com/|QQN/QBN: QBasic/QuickBasic News]].
+~- [[http://www.qbasicnews.com/sections.php?id=4|QQN's Newbies Section]] which includes a link for downloading QBasic.

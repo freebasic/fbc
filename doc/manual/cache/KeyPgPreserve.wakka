@@ -1,14 +1,14 @@
 {{fbdoc item="title" value="PRESERVE"}}----
-Used with ##[[KeyPgRedim Redim]]## to preserve contents will resizing an array
+Used with ##[[KeyPgRedim|Redim]]## to preserve contents will resizing an array
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgRedim redim]] **Preserve** //array//(...) [[[KeyPgAs as]] [[DataType datatype]]]
+	[[KeyPgRedim|redim]] **Preserve** //array//(...) [[[KeyPgAs|as]] [[DataType|datatype]]]
 ##
 {{fbdoc item="desc"}}
-	Used with ##[[KeyPgRedim Redim]]## so that when an array is resized, data is not reset but is preserved. This means when the array is enlarged that only new data is reset, while the old data remains the same.
+	Used with ##[[KeyPgRedim|Redim]]## so that when an array is resized, data is not reset but is preserved. This means when the array is enlarged that only new data is reset, while the old data remains the same.
 
-	**NOTE**: ##**Redim** [[KeyPgPreserve Preserve]]## may not work as expected in all cases:
-		##[[KeyPgPreserve Preserve]]##'s current behavior is to keep the original data contiguous in memory, and only expand or truncate the size of the memory.
+	**NOTE**: ##**Redim** [[KeyPgPreserve|Preserve]]## may not work as expected in all cases:
+		##[[KeyPgPreserve|Preserve]]##'s current behavior is to keep the original data contiguous in memory, and only expand or truncate the size of the memory.
 		Its behavior is only well-defined when the upper bound is changed.  If the lower bound is changed, the current result is that the data is in effect shifted to start at the new lower bound.
 		If there are multiple dimensions, only the upper bound of the first dimension may be changed safely.  If lower-order dimensions are resized at all, the effects can be hard to predict.
 
@@ -32,9 +32,9 @@ next
 	- ##**Preserve**## wasn't supported until PDS 7.1
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDim Dim]]##
-	- ##[[KeyPgLbound Lbound]]##
-	- ##[[KeyPgRedim Redim]]##
-	- ##[[KeyPgUbound Ubound]]##
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgLbound|Lbound]]##
+	- ##[[KeyPgRedim|Redim]]##
+	- ##[[KeyPgUbound|Ubound]]##
 
 {{fbdoc item="back" value="CatPgArray|Array Functions"}}

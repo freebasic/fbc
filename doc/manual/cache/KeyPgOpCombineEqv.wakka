@@ -2,7 +2,7 @@
 Performs a bitwise-eqv (equivalence) and assigns the result to a variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Eqv=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T1//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Eqv=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T1//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T2// )
 ##
 {{fbdoc item="usage"}}##
 	//lhs// **Eqv=** //rhs//
@@ -20,7 +20,7 @@ Performs a bitwise-eqv (equivalence) and assigns the result to a variable
 {{fbdoc item="desc"}}
 	This operator performs a bitwise-eqv and assigns the result to a variable (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value). It is functionally equivalent to:
 ##
-		//lhs// = //lhs// [[KeyPgOpEqv eqv]] //rhs//
+		//lhs// = //lhs// [[KeyPgOpEqv|eqv]] //rhs//
 ##
 	##**Eqv=**## compares each bit of its operands, ##//lhs//## and ##//rhs//##, and if both bits are the same (either both 0 or both 1), then the corresponding bit in the first operand, ##//lhs//##, is set to 1, otherwise it is set to 0.
 
@@ -36,12 +36,12 @@ print bin(a)
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpEqv Eqv]]##
+	- ##[[KeyPgOpEqv|Eqv]]##
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

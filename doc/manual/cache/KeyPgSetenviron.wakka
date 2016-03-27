@@ -2,7 +2,7 @@
 Sets a system environment variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Setenviron** ( [[KeyPgByref byref]] //varexpression// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Setenviron** ( [[KeyPgByref|byref]] //varexpression// [[KeyPgAs|as]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Setenviron**( //varexpression// )
@@ -70,7 +70,7 @@ ScreenUnlock
 	- In QB, ##**Setenviron**## was called ##**Environ**##.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgEnviron Environ]]##
-	- ##[[KeyPgShell Shell]]##
+	- ##[[KeyPgEnviron|Environ]]##
+	- ##[[KeyPgShell|Shell]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

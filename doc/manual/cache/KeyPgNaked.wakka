@@ -2,28 +2,28 @@
 Write functions without prolog/epilog code
 
 {{fbdoc item="syntax"}}##
-	{[[KeyPgSub Sub]] | [[KeyPgFunction Function]]} //identifier// **Naked** [//calling_convention//] ( //param_list// ) [[[KeyPgAs As]] //data_type//]
+	{[[KeyPgSub|Sub]] | [[KeyPgFunction|Function]]} //identifier// **Naked** [//calling_convention//] ( //param_list// ) [[[KeyPgAs|As]] //data_type//]
 		//asm_statements//
-	[[KeyPgEndblock End]] {[[KeyPgSub Sub]] | [[KeyPgFunction Function]]}
+	[[KeyPgEndblock|End]] {[[KeyPgSub|Sub]] | [[KeyPgFunction|Function]]}
 ##
 {{fbdoc item="param"}}
 	##//identifier//## - name of the procedure.
-	##//calling_convention//## - calling convention of the procedure - can be ##[[KeyPgCdecl CDecl]]##, ##[[KeyPgPascal Pascal]]##, or ##[[KeyPgStdcall StdCall]]##
-	##//asm_statements//## - the code in the procedure body.  The code for handling parameters and returning values must all be done manually.  Note that the methods for doing these can change, depending on the [[ProPgCallingConventions calling convention]].
+	##//calling_convention//## - calling convention of the procedure - can be ##[[KeyPgCdecl|CDecl]]##, ##[[KeyPgPascal|Pascal]]##, or ##[[KeyPgStdcall|StdCall]]##
+	##//asm_statements//## - the code in the procedure body.  The code for handling parameters and returning values must all be done manually.  Note that the methods for doing these can change, depending on the [[ProPgCallingConventions|calling convention]].
 	##//param_list//## - parameters to be passed to the procedure.
-	##//data_type//## - the [[DataType data type]] of the function.
+	##//data_type//## - the [[DataType|data type]] of the function.
 
 {{fbdoc item="desc"}}
-	##**Naked**## allows the programmer to write procedures without the compiler generating any prolog/epilog code.  This is useful when writing small, fast functions in ##[[KeyPgAsm Asm]]## without any unnecessary overhead.
+	##**Naked**## allows the programmer to write procedures without the compiler generating any prolog/epilog code.  This is useful when writing small, fast functions in ##[[KeyPgAsm|Asm]]## without any unnecessary overhead.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/naked1.bas"}}%%(freebasic)
 '' Naked cdecl function
 Function subtract_c Naked cdecl _   '' parameters pushed onto call stack in reverse order of declaration
 	( _
-	    ByVal a As Integer, _
-	    ByVal b As Integer _        '' parameter pushed onto stack in first
-	) As Integer
+	    ByVal a As Long, _
+	    ByVal b As Long _        '' parameter pushed onto stack in first
+	) As Long
    
 	Asm
 	    mov eax, dword Ptr [esp+4]  '' eax = a
@@ -42,9 +42,9 @@ Function subtract_s Naked stdcall _ '' parameters pushed onto call stack in reve
 	                     _          '' called procedure responsible for removing parameters from stack
 	                     _          ''   (appending constant to RET instruction specifying number of bytes to release)
 	( _
-	    ByVal a As Integer, _
-	    ByVal b As Integer _        '' parameter pushed onto stack in first
-	) As Integer
+	    ByVal a As Long, _
+	    ByVal b As Long _        '' parameter pushed onto stack in first
+	) As Long
    
 	Asm
 	    mov eax, dword Ptr [esp+4]  '' eax = a
@@ -63,14 +63,14 @@ Function subtract_p Naked pascal _  '' parameters pushed onto call stack in same
 	                     _          '' called procedure responsible for removing parameters from stack
 	                     _          ''   (appending constant to RET instruction specifying number of bytes to release)
 	( _
-	    ByVal a As Integer, _       '' parameter pushed onto stack in first
-	    ByVal b As Integer _
-	) As Integer
+	    ByVal a As Long, _       '' parameter pushed onto stack in first
+	    ByVal b As Long _
+	) As Long
    
 	Asm
 	    mov eax, dword Ptr [esp+8]  '' eax = a
 	    sub eax, dword Ptr [esp+4]  '' eax -= b
-	    ret 8                       '' return result in eax and 8 bytes (2 integers) to release
+	    ret 8                       '' return result in eax and 8 bytes (2 longs) to release
 	End Asm
    
 End Function
@@ -82,9 +82,9 @@ Print subtract_p( 5, 1 ) '' 5 - 1%%
 '' plus ecx register preserved in asm block by creating user stack
 Function subtract_cp Naked cdecl _      '' parameters pushed onto call stack in reverse order of declaration
 	( _
-	    ByVal a As Integer, _
-	    ByVal b As Integer _            '' parameter pushed onto stack in first
-	) As Integer
+	    ByVal a As Long, _
+	    ByVal b As Long _            '' parameter pushed onto stack in first
+	) As Long
    
 	Asm
 	    push ebp                        '' push ebp onto stack   => esp -= 4
@@ -111,12 +111,12 @@ Print subtract_cp( 5, 1 ) '' 5 - 1%%
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgAsm Asm]]##
-	- ##[[ProPgCallingConventions Calling Conventions]]##
-	- ##[[KeyPgFunction Function]]##
-	- ##[[KeyPgSub Sub]]##
-	- ##[[KeyPgCdecl CDecl]]##
-	- ##[[KeyPgPascal Pascal]]##
-	- ##[[KeyPgStdcall StdCall]]##
+	- ##[[KeyPgAsm|Asm]]##
+	- ##[[ProPgCallingConventions|Calling Conventions]]##
+	- ##[[KeyPgFunction|Function]]##
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgCdecl|CDecl]]##
+	- ##[[KeyPgPascal|Pascal]]##
+	- ##[[KeyPgStdcall|StdCall]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

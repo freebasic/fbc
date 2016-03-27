@@ -1,0 +1,5 @@
+FastCGI is an extension to [[http://wikipedia.org/wiki/Common_Gateway_Interface|Common Gateway Interface]] that increases speed. Instead of creating a new process every time a page is reloaded, FastCGI will use the same process, queuing up requests. This increases startup speed, at the expense of forcing users to wait for the previous requests to finish. FastCGI also allows programs to get the web server to do certain operations, like reading in a file, before the request is handed over. 
+
+{{fbdoc item="see"}}
+- [[http://wikipedia.org/wiki/FastCGI|FastCGI on Wikipedia]]
+- [[http://www.fastcgi.com/|Home page]]

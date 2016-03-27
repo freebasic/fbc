@@ -6,12 +6,12 @@ Control flow statement, open statement clause, or operator depending on context.
 //or//
 	Open [ //device// ] "//filename//" **For** //filemode// As #handle
 //or//
-	declare operator **For** ( byref stp as [[DataType datatype]] )
+	declare operator **For** ( byref stp as [[DataType|datatype]] )
 ##
 {{fbdoc item="see"}}
-	- ##[[KeyPgFornext For...Next]]##
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgOperator Operator]]##
+	- ##[[KeyPgFornext|For...Next]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgOperator|Operator]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
    

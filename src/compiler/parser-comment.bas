@@ -90,10 +90,7 @@ private sub cDirective( ) static
 			lexSkipToken( )
 
 			'' ONCE?
-			isonce = FALSE
-			if( hMatchText( "ONCE" ) ) then
-				isonce = TRUE
-			end if
+			isonce = hMatchIdOrKw( "ONCE" )
 
 			'' ':'
 			if( hMatch( FB_TK_STMTSEP ) = FALSE ) then
@@ -135,7 +132,7 @@ private sub cDirective( ) static
 		
 		case else
 			'' Special case, allow $LANG metacommand in all dialects
-			if( hMatchText( "LANG" ) ) then
+			if( hMatchIdOrKw( "LANG" ) ) then
 
 				'' ':'
 				if( hMatch( FB_TK_STMTSEP ) = FALSE ) then

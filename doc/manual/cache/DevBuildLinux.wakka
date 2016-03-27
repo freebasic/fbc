@@ -17,11 +17,11 @@ Generally, compiling FB-linux requires the following packages:
 
 {{fbdoc item="subsect" value="Getting the FB source code"}}
 
-To compile a new version of FB, you first need to [[DevGettingTheSourceCode get the FB source code]]. The following assumes that you have a directory called ##fbc##, containing the latest FB source code.
+To compile a new version of FB, you first need to [[DevGettingTheSourceCode|get the FB source code]]. The following assumes that you have a directory called ##fbc##, containing the latest FB source code.
 
 {{fbdoc item="subsect" value="Getting an existing FB-linux setup for bootstrapping"}}
 
-We will need a working FB-linux installation to bootstrap the new FB compiler. If you do not have a native version of FB installed yet, download the latest ""FreeBASIC-X.XX.X-linux"" release for your system (32bit x86, 64bit x86_64, ARM, etc.) from [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Linux/ FB's download site]], then extract and install it:
+We will need a working FB-linux installation to bootstrap the new FB compiler. If you do not have a native version of FB installed yet, download the latest ""FreeBASIC-X.XX.X-linux"" release for your system (32bit x86, 64bit x86_64, ARM, etc.) from [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Linux/|FB's download site]], then extract and install it:
 
 %%$ tar xf FreeBASIC-X.XX.X-linux.tar.gz
 $ cd FreeBASIC-X.XX.X-linux

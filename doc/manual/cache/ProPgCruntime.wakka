@@ -21,7 +21,7 @@ This is a list of function prototypes in the standard C library in alphabetical 
 
 	**Note:** The following prototypes are not the official ""FreeBASIC"" prototypes (see the include files), however, they will give you enough information to properly use the functions. 
 
-	The Include File column contains the name of the file which you must include, using the ##[[KeyPgInclude #include]]## directive at the beginning of your program. If you don't include the appropriate include file, the program either will not compile, or it will compile apparently correctly but give incorrect results when run.  All of the C Runtime headers are located in the ##crt## directory; for example, if the specified header is ##math.bi##, use ###include "crt/math.bi"## or ###include "crt\math.bi"##, our just ###include "crt.bi"## including all the others.
+	The Include File column contains the name of the file which you must include, using the ##[[KeyPgInclude|#include]]## directive at the beginning of your program. If you don't include the appropriate include file, the program either will not compile, or it will compile apparently correctly but give incorrect results when run.  All of the C Runtime headers are located in the ##crt## directory; for example, if the specified header is ##math.bi##, use ###include "crt/math.bi"## or ###include "crt\math.bi"##, our just ###include "crt.bi"## including all the others.
 
 	The Prototype column contains the following information: 
 		- The name of the function; 
@@ -102,7 +102,7 @@ This is a list of function prototypes in the standard C library in alphabetical 
 {{anchor name="SORTING"}}{{fbdoc item="section" value="Searching and Sorting"}}
 
 	##**#include "crt/stdlib.bi"**##
-			    **Note:** The //compare// callback function required by ##bsearch## and ##qsort## must be declared as ##[[KeyPgCdecl cdecl]]##. It must return a value <0 if its first argument should be located before the second one in the sorted array, >0 if the first argument should be located after the second one, and zero if their relative positions are indifferent (equal values).  
+			    **Note:** The //compare// callback function required by ##bsearch## and ##qsort## must be declared as ##[[KeyPgCdecl|cdecl]]##. It must return a value <0 if its first argument should be located before the second one in the sorted array, >0 if the first argument should be located after the second one, and zero if their relative positions are indifferent (equal values).  
 			
 	{{table columns="2" cellpadding="1" cells="Prototype (with parameters);Comments;bsearch(key as any ptr, base as any ptr, num as size_t, width as size_t, compare as function(elem1 as any ptr, elem2 as any ptr) as integer) as any ptr;Perform binary search.;qsort(base as any ptr, num as size_t, width as size_t, compare as function(elem1 as any ptr, elem2 as any ptr) as integer);Use the quicksort algorithm to sort an array."}}
 
@@ -119,6 +119,6 @@ This is a list of function prototypes in the standard C library in alphabetical 
 	{{table columns="2" cellpadding="1" cells="Prototype (with parameters);Comments;asctime(time as type tm ptr) as zstring ptr;Convert time from type tm to zstring.;clock() as clock_t;Get elapsed processor time in clock ticks.;ctime(time as time_t ptr) as zstring ptr;Convert binary time to zstring.;difftime(time_t time2, time_t time1) as double;Compute the difference between two times in seconds.;gmtime(time as time_t ptr) as type tm ptr;Get Greenwich Mean Time (GMT) in a tm structure.;localtime(time as time_t ptr) as type tm ptr;Get the local time in a tm structure.;time_(timeptr as time_t ptr) as time_t;Get current time as seconds elapsed since 0 hours GMT 1/1/70."}}
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInclude #include]]##
+	- ##[[KeyPgInclude|#include]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}{{fbdoc item="back" value="DocToc|Table of Contents"}}

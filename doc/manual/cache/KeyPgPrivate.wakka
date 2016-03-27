@@ -2,18 +2,18 @@
 Specifies a procedure having internal linkage
 
 {{fbdoc item="syntax"}}##
-	**Private** [[KeyPgSub Sub]] //procedure_name// [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor Constructor]] [//priority//]] [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	**Private** [[KeyPgSub|Sub]] //procedure_name// [[[KeyPgCdecl|Cdecl]]|[[KeyPgStdcall|Stdcall]]|[[KeyPgPascal|Pascal]]] [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""external_name"""//] [([//parameter_list//])] [[[KeyPgModuleConstructor|Constructor]] [//priority//]] [[[KeyPgStatic|Static]]] [[[KeyPgExport|Export]]]
 		//..procedure body..//
-	[[KeyPgEnd End]] [[KeyPgSub Sub]]
+	[[KeyPgEnd|End]] [[KeyPgSub|Sub]]
 	
-	**Private** [[KeyPgFunction Function]] //procedure_name// [[[KeyPgCdecl Cdecl]]|[[KeyPgStdcall Stdcall]]|[[KeyPgPascal Pascal]]] [[[KeyPgOverload Overload]]] [[[KeyPgAlias Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs as]] //return_type//  [[[KeyPgStatic Static]]] [[[KeyPgExport Export]]]
+	**Private** [[KeyPgFunction|Function]] //procedure_name// [[[KeyPgCdecl|Cdecl]]|[[KeyPgStdcall|Stdcall]]|[[KeyPgPascal|Pascal]]] [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs|as]] //return_type//  [[[KeyPgStatic|Static]]] [[[KeyPgExport|Export]]]
 		//..procedure body..//
-	[[KeyPgEnd End]] [[KeyPgFunction Function]]
+	[[KeyPgEnd|End]] [[KeyPgFunction|Function]]
 ##
 {{fbdoc item="desc"}}
 	In procedure definitions, ##**Private**## specifies that a procedure has internal linkage, meaning its name is not visible to external modules.
 
-	The ##[[KeyPgOptionprivate Option Private]]## statement allows procedures to be defined with internal linkage by default.
+	The ##[[KeyPgOptionprivate|Option Private]]## statement allows procedures to be defined with internal linkage by default.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/sub-private.bas"}}%%(freebasic)
@@ -30,10 +30,10 @@ End Sub
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgVisPrivate Private:]]## (Access Control)
-	- ##[[KeyPgPublic Public]]##
-	- ##[[KeyPgOptionprivate Option Private]]##
-	- ##[[KeyPgSub Sub]]##
-	- ##[[KeyPgFunction Function]]##
+	- ##[[KeyPgVisPrivate|Private:]]## (Access Control)
+	- ##[[KeyPgPublic|Public]]##
+	- ##[[KeyPgOptionprivate|Option Private]]##
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgFunction|Function]]##
 
 {{fbdoc item="back" value="CatPgModularizing|Modularizing"}}{{fbdoc item="back" value="CatPgProcedures|Procedures"}}

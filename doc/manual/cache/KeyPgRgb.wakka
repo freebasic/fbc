@@ -2,7 +2,7 @@
 Computes a valid color value for hi/truecolor modes
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **RGB**(//r//,//g//,//b//) (([[KeyPgCuint cuint]](r) [[KeyPgOpShiftLeft shl]] 16) [[KeyPgOpOr or]] ([[KeyPgCuint cuint]](g) [[KeyPgOpShiftLeft shl]] 8) [[KeyPgOpOr or]] [[KeyPgCuint cuint]](b) [[KeyPgOpOr or]] &hFF000000)
+	[[KeyPgPpdefine|#define]] **RGB**(//r//,//g//,//b//) (([[KeyPgCuint|cuint]](r) [[KeyPgOpShiftLeft|shl]] 16) [[KeyPgOpOr|or]] ([[KeyPgCuint|cuint]](g) [[KeyPgOpShiftLeft|shl]] 8) [[KeyPgOpOr|or]] [[KeyPgCuint|cuint]](b) [[KeyPgOpOr|or]] &hFF000000)
 ##
 {{fbdoc item="usage"}}##
 	//result// = **RGB**(//red//, //green//, //blue//)
@@ -22,12 +22,12 @@ Computes a valid color value for hi/truecolor modes
 	##//red//##, ##//green//## and ##//blue//## are components ranging ##0##-##255##.
 
 	The ##**RGB**## function can be used to compute a valid color value for use while in hi/truecolor modes. It returns an unsigned integer  in the format ##&h//AARRGGBB//##, where ##//RR//##, ##//GG//## and ##//BB//## equal the values passed to this function, in hexadecimal format. ##//AA//## is the implicit alpha value and is automatically set to ##&hFF## (opaque).
-	It is possible to retrieve the red, green, blue and alpha values from a color value, by using a combination of ##[[KeyPgOpAnd And]]## and ##[[KeyPgOpShiftRight Shr]]##.  The second example below shows how to ##[[KeyPgPpdefine #Define]]## and use macros to do this.
+	It is possible to retrieve the red, green, blue and alpha values from a color value, by using a combination of ##[[KeyPgOpAnd|And]]## and ##[[KeyPgOpShiftRight|Shr]]##.  The second example below shows how to ##[[KeyPgPpdefine|#Define]]## and use macros to do this.
 
 	**Note for Windows API programmers**: The macro named ##RGB## in the Windows references has been renamed ##BGR## in the FB headers for Windows to avoid collisions. 
 
 {{fbdoc item="ex"}}
-	See ##[[KeyPgPutgraphics Put (Graphics)]]## example in addition.
+	See ##[[KeyPgPutgraphics|Put (Graphics)]]## example in addition.
 	
 {{fbdoc item="filename" value="examples/manual/gfx/rgb.bas"}}%%(freebasic)
 ScreenRes 640,480,32  '32 bit color
@@ -64,15 +64,15 @@ Print Using "Alpha:       _&H\\ = ###"; Hex(a, 2); a
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Rgb""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Rgb""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgRgba RGBA]]##
-	- ##[[KeyPgColor Color]]##
-	- ##[[KeyPgPpdefine #Define]]##
+	- ##[[KeyPgRgba|RGBA]]##
+	- ##[[KeyPgColor|Color]]##
+	- ##[[KeyPgPpdefine|#Define]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}
    

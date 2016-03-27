@@ -1,4 +1,5 @@
 #include "fbcu.bi"
+#include "file.bi"
 
 namespace fbc_tests.file_.get_
 
@@ -23,6 +24,8 @@ private sub test cdecl( )
 	dim s as string
 	dim z6 as zstring * 6
 	dim w6 as wstring * 6
+	dim pz6 as zstring ptr = callocate( 6 * sizeof( zstring ) )
+	dim pw6 as wstring ptr = callocate( 6 * sizeof( wstring ) )
 	dim array4b(0 to 3) as byte
 	dim array4l(0 to 3) as long
 
@@ -54,7 +57,41 @@ private sub test cdecl( )
 	CU_ASSERT( z6 = "12345" )
 
 	CU_ASSERT( get( #f, 1, w6 ) = 0 )
-	CU_ASSERT( w6 = wstr( "12345" ) )
+	#if sizeof(wstring) = 2
+		CU_ASSERT( w6[0] = cvshort( "12" ) )
+		CU_ASSERT( w6[1] = cvshort( "34" ) )
+		CU_ASSERT( w6[2] = cvshort( "56" ) )
+		CU_ASSERT( w6[3] = cvshort( "78" ) )
+		CU_ASSERT( w6[4] = cvshort( "90" ) )
+	#elseif sizeof(wstring) = 4
+		CU_ASSERT( w6[0] = cvl( "1234" ) )
+		CU_ASSERT( w6[1] = cvl( "5678" ) )
+		CU_ASSERT( w6[2] = cvshort( "90" ) )
+		CU_ASSERT( w6[3] = 0 )
+		CU_ASSERT( w6[4] = 0 )
+	#endif
+	CU_ASSERT( w6[5] = 0 )
+
+	*pz6 = "00000"
+	CU_ASSERT( get( #f, 1, *pz6 ) = 0 )
+	CU_ASSERT( *pz6 = "12345" )
+
+	*pw6 = "00000"
+	CU_ASSERT( get( #f, 1, *pw6 ) = 0 )
+	#if sizeof(wstring) = 2
+		CU_ASSERT( (*pw6)[0] = cvshort( "12" ) )
+		CU_ASSERT( (*pw6)[1] = cvshort( "34" ) )
+		CU_ASSERT( (*pw6)[2] = cvshort( "56" ) )
+		CU_ASSERT( (*pw6)[3] = cvshort( "78" ) )
+		CU_ASSERT( (*pw6)[4] = cvshort( "90" ) )
+	#elseif sizeof(wstring) = 4
+		CU_ASSERT( (*pw6)[0] = cvl( "1234" ) )
+		CU_ASSERT( (*pw6)[1] = cvl( "5678" ) )
+		CU_ASSERT( (*pw6)[2] = cvshort( "90" ) )
+		CU_ASSERT( (*pw6)[3] = 0 )
+		CU_ASSERT( (*pw6)[4] = 0 )
+	#endif
+	CU_ASSERT( (*pw6)[5] = 0 )
 
 	CU_ASSERT( get( #f, 1, array4b() ) = 0 )
 	CU_ASSERT( array4b(0) = asc( "1" ) )
@@ -65,7 +102,7 @@ private sub test cdecl( )
 	CU_ASSERT( get( #f, 1, array4l() ) = 0 )
 	CU_ASSERT( array4l(0) = cvl( "1234" ) )
 	CU_ASSERT( array4l(1) = cvl( "5678" ) )
-	CU_ASSERT( array4l(2) = &h3039 ) '' 90
+	CU_ASSERT( array4l(2) = cvshort( "90" ) )
 	CU_ASSERT( array4l(3) = 0 )
 
 	''
@@ -124,8 +161,46 @@ private sub test cdecl( )
 
 	bytesread = 0
 	CU_ASSERT( get( #f, 1, w6, , bytesread ) = 0 )
-	CU_ASSERT( w6 = wstr( "12345" ) )
-	CU_ASSERT( bytesread = (5 * sizeof( wstring )) )
+	#if sizeof(wstring) = 2
+		CU_ASSERT( w6[0] = cvshort( "12" ) )
+		CU_ASSERT( w6[1] = cvshort( "34" ) )
+		CU_ASSERT( w6[2] = cvshort( "56" ) )
+		CU_ASSERT( w6[3] = cvshort( "78" ) )
+		CU_ASSERT( w6[4] = cvshort( "90" ) )
+	#elseif sizeof(wstring) = 4
+		CU_ASSERT( w6[0] = cvl( "1234" ) )
+		CU_ASSERT( w6[1] = cvl( "5678" ) )
+		CU_ASSERT( w6[2] = cvshort( "90" ) )
+		CU_ASSERT( w6[3] = 0 )
+		CU_ASSERT( w6[4] = 0 )
+	#endif
+	CU_ASSERT( w6[5] = 0 )
+	CU_ASSERT( bytesread = 10 )
+
+	bytesread = 0
+	*pz6 = "00000"
+	CU_ASSERT( get( #f, 1, *pz6, , bytesread ) = 0 )
+	CU_ASSERT( *pz6 = "12345" )
+	CU_ASSERT( bytesread = 5 )
+
+	bytesread = 0
+	*pw6 = "00000"
+	CU_ASSERT( get( #f, 1, *pw6, , bytesread ) = 0 )
+	#if sizeof(wstring) = 2
+		CU_ASSERT( (*pw6)[0] = cvshort( "12" ) )
+		CU_ASSERT( (*pw6)[1] = cvshort( "34" ) )
+		CU_ASSERT( (*pw6)[2] = cvshort( "56" ) )
+		CU_ASSERT( (*pw6)[3] = cvshort( "78" ) )
+		CU_ASSERT( (*pw6)[4] = cvshort( "90" ) )
+	#elseif sizeof(wstring) = 4
+		CU_ASSERT( (*pw6)[0] = cvl( "1234" ) )
+		CU_ASSERT( (*pw6)[1] = cvl( "5678" ) )
+		CU_ASSERT( (*pw6)[2] = cvshort( "90" ) )
+		CU_ASSERT( (*pw6)[3] = 0 )
+		CU_ASSERT( (*pw6)[4] = 0 )
+	#endif
+	CU_ASSERT( (*pw6)[5] = 0 )
+	CU_ASSERT( bytesread = 10 )
 
 	bytesread = 0
 	CU_ASSERT( get( #f, 1, array4b(), , bytesread ) = 0 )
@@ -139,7 +214,7 @@ private sub test cdecl( )
 	CU_ASSERT( get( #f, 1, array4l(), , bytesread ) = 0 )
 	CU_ASSERT( array4l(0) = cvl( "1234" ) )
 	CU_ASSERT( array4l(1) = cvl( "5678" ) )
-	CU_ASSERT( array4l(2) = &h3039 ) '' 90
+	CU_ASSERT( array4l(2) = cvshort( "90" ) )
 	CU_ASSERT( array4l(3) = 0 )
 	CU_ASSERT( bytesread = 10 )
 
@@ -193,7 +268,41 @@ private sub test cdecl( )
 	CU_ASSERT( z6 = "12345" )
 
 	CU_ASSERT( get( #f, 1ll, w6 ) = 0 )
-	CU_ASSERT( w6 = wstr( "12345" ) )
+	#if sizeof(wstring) = 2
+		CU_ASSERT( w6[0] = cvshort( "12" ) )
+		CU_ASSERT( w6[1] = cvshort( "34" ) )
+		CU_ASSERT( w6[2] = cvshort( "56" ) )
+		CU_ASSERT( w6[3] = cvshort( "78" ) )
+		CU_ASSERT( w6[4] = cvshort( "90" ) )
+	#elseif sizeof(wstring) = 4
+		CU_ASSERT( w6[0] = cvl( "1234" ) )
+		CU_ASSERT( w6[1] = cvl( "5678" ) )
+		CU_ASSERT( w6[2] = cvshort( "90" ) )
+		CU_ASSERT( w6[3] = 0 )
+		CU_ASSERT( w6[4] = 0 )
+	#endif
+	CU_ASSERT( w6[5] = 0 )
+
+	*pz6 = "00000"
+	CU_ASSERT( get( #f, 1ll, *pz6 ) = 0 )
+	CU_ASSERT( *pz6 = "12345" )
+
+	*pw6 = "00000"
+	CU_ASSERT( get( #f, 1ll, *pw6 ) = 0 )
+	#if sizeof(wstring) = 2
+		CU_ASSERT( (*pw6)[0] = cvshort( "12" ) )
+		CU_ASSERT( (*pw6)[1] = cvshort( "34" ) )
+		CU_ASSERT( (*pw6)[2] = cvshort( "56" ) )
+		CU_ASSERT( (*pw6)[3] = cvshort( "78" ) )
+		CU_ASSERT( (*pw6)[4] = cvshort( "90" ) )
+	#elseif sizeof(wstring) = 4
+		CU_ASSERT( (*pw6)[0] = cvl( "1234" ) )
+		CU_ASSERT( (*pw6)[1] = cvl( "5678" ) )
+		CU_ASSERT( (*pw6)[2] = cvshort( "90" ) )
+		CU_ASSERT( (*pw6)[3] = 0 )
+		CU_ASSERT( (*pw6)[4] = 0 )
+	#endif
+	CU_ASSERT( (*pw6)[5] = 0 )
 
 	CU_ASSERT( get( #f, 1ll, array4b() ) = 0 )
 	CU_ASSERT( array4b(0) = asc( "1" ) )
@@ -204,7 +313,7 @@ private sub test cdecl( )
 	CU_ASSERT( get( #f, 1ll, array4l() ) = 0 )
 	CU_ASSERT( array4l(0) = cvl( "1234" ) )
 	CU_ASSERT( array4l(1) = cvl( "5678" ) )
-	CU_ASSERT( array4l(2) = &h3039 ) '' 90
+	CU_ASSERT( array4l(2) = cvshort( "90" ) )
 	CU_ASSERT( array4l(3) = 0 )
 
 	''
@@ -262,8 +371,46 @@ private sub test cdecl( )
 
 	bytesread = 0
 	CU_ASSERT( get( #f, 1ll, w6, , bytesread ) = 0 )
-	CU_ASSERT( w6 = wstr( "12345" ) )
-	CU_ASSERT( bytesread = (5 * sizeof( wstring )) )
+	#if sizeof(wstring) = 2
+		CU_ASSERT( w6[0] = cvshort( "12" ) )
+		CU_ASSERT( w6[1] = cvshort( "34" ) )
+		CU_ASSERT( w6[2] = cvshort( "56" ) )
+		CU_ASSERT( w6[3] = cvshort( "78" ) )
+		CU_ASSERT( w6[4] = cvshort( "90" ) )
+	#elseif sizeof(wstring) = 4
+		CU_ASSERT( w6[0] = cvl( "1234" ) )
+		CU_ASSERT( w6[1] = cvl( "5678" ) )
+		CU_ASSERT( w6[2] = cvshort( "90" ) )
+		CU_ASSERT( w6[3] = 0 )
+		CU_ASSERT( w6[4] = 0 )
+	#endif
+	CU_ASSERT( w6[5] = 0 )
+	CU_ASSERT( bytesread = 10 )
+
+	bytesread = 0
+	*pz6 = "00000"
+	CU_ASSERT( get( #f, 1ll, *pz6, , bytesread ) = 0 )
+	CU_ASSERT( *pz6 = "12345" )
+	CU_ASSERT( bytesread = 5 )
+
+	bytesread = 0
+	*pw6 = "00000"
+	CU_ASSERT( get( #f, 1ll, *pw6, , bytesread ) = 0 )
+	#if sizeof(wstring) = 2
+		CU_ASSERT( (*pw6)[0] = cvshort( "12" ) )
+		CU_ASSERT( (*pw6)[1] = cvshort( "34" ) )
+		CU_ASSERT( (*pw6)[2] = cvshort( "56" ) )
+		CU_ASSERT( (*pw6)[3] = cvshort( "78" ) )
+		CU_ASSERT( (*pw6)[4] = cvshort( "90" ) )
+	#elseif sizeof(wstring) = 4
+		CU_ASSERT( (*pw6)[0] = cvl( "1234" ) )
+		CU_ASSERT( (*pw6)[1] = cvl( "5678" ) )
+		CU_ASSERT( (*pw6)[2] = cvshort( "90" ) )
+		CU_ASSERT( (*pw6)[3] = 0 )
+		CU_ASSERT( (*pw6)[4] = 0 )
+	#endif
+	CU_ASSERT( (*pw6)[5] = 0 )
+	CU_ASSERT( bytesread = 10 )
 
 	bytesread = 0
 	CU_ASSERT( get( #f, 1ll, array4b(), , bytesread ) = 0 )
@@ -277,16 +424,87 @@ private sub test cdecl( )
 	CU_ASSERT( get( #f, 1ll, array4l(), , bytesread ) = 0 )
 	CU_ASSERT( array4l(0) = cvl( "1234" ) )
 	CU_ASSERT( array4l(1) = cvl( "5678" ) )
-	CU_ASSERT( array4l(2) = &h3039 ) '' 90
+	CU_ASSERT( array4l(2) = cvshort( "90" ) )
 	CU_ASSERT( array4l(3) = 0 )
 	CU_ASSERT( bytesread = 10 )
 
+	deallocate( pw6 )
+	deallocate( pz6 )
 	close #f
+end sub
+
+sub testGetWstrFill cdecl( )
+	for n as integer = 0 to sizeof(wstring) * 2
+		const TESTFILE = "data.tmp"
+
+		'' Create test file with N bytes
+		scope
+			if( kill( TESTFILE ) ) then
+			end if
+			var f = freefile( )
+			if( open( TESTFILE, for binary, access write, as #f ) <> 0 ) then
+				CU_FAIL( "could not create file " & TESTFILE )
+			end if
+			for i as integer = 0 to n - 1
+				var b = cubyte( asc( "a" ) )
+				put #f, , b
+			next
+			close #f
+			CU_ASSERT( filelen( TESTFILE ) = n )
+		end scope
+
+		scope
+			var f = freefile( )
+			if( open( TESTFILE, for binary, access read, as #f ) <> 0 ) then
+				CU_FAIL( "could not open file " & TESTFILE )
+			end if
+
+			dim w as wstring * 10
+			'' Fill all bytes in the wstring buffer with '?'
+			for i as integer = 0 to sizeof(w) - 1
+				cptr( ubyte ptr, @w )[i] = asc( "?" )
+			next
+
+			'' Try a Get# wstring. It should read the 'a' bytes from
+			'' the file, fill the last wchar's remaining bytes with
+			'' zeroes if needed to round up to sizeof(wstring),
+			'' and add a null terminator.
+			dim bytesread as integer
+			CU_ASSERT( get( #f, , w, , bytesread ) = 0 )
+			CU_ASSERT( bytesread = n )
+
+			'' Check whether it worked
+
+			'' 'a' bytes as read from file
+			for i as integer = 0 to n - 1
+				CU_ASSERT( cptr( ubyte ptr, @w )[i] = asc( "a" ) )
+			next
+
+			'' zero bytes padding, if needed
+			dim as integer extra = bytesread mod sizeof( wstring )
+			if extra > 0 then
+				bytesread += sizeof( wstring ) - extra '' round up
+				for i as integer = n to bytesread - 1
+					CU_ASSERT( cptr( ubyte ptr, @w )[i] = 0 )
+				next
+			end if
+
+			'' null terminator
+			CU_ASSERT( (bytesread mod sizeof( wstring )) = 0 )
+			CU_ASSERT( w[bytesread \ sizeof( wstring )] = 0 )
+
+			close #f
+		end scope
+
+		'' Delete test file
+		CU_ASSERT( kill( TESTFILE ) = 0 )
+	next
 end sub
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/file/get" )
 	fbcu.add_test( "test", @test )
+	fbcu.add_test( "testGetWstrFill", @testGetWstrFill )
 end sub
 
 end namespace

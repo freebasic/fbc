@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="CSHORT"}}----
-Converts numeric or string expression to an integer (##[[KeyPgShort Short]]##)
+Converts numeric or string expression to an integer (##[[KeyPgShort|Short]]##)
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cshort** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgShort short]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cshort** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgShort|short]]
 
-	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgShort short]]
+	[[KeyPgType|Type]] //typename//
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgShort|short]]
 	End Type
 ##
 {{fbdoc item="usage"}}##
@@ -15,21 +15,21 @@ Converts numeric or string expression to an integer (##[[KeyPgShort Short]]##)
 ##
 {{fbdoc item="param"}}
 	##//expression//##
-		a numeric, string, or pointer expression to cast to a ##[[KeyPgShort Short]]## value
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgShort|Short]]## value
 	##//datatype//##
 		any numeric, string, or pointer data type
 	##//typename//##
 		a user defined type
 
 {{fbdoc item="ret"}}
-	A ##[[KeyPgShort Short]]## value.
+	A ##[[KeyPgShort|Short]]## value.
 
 {{fbdoc item="desc"}}
-	The ##**Cshort**## function rounds off the decimal part and returns a 16-bit ##[[KeyPgShort Short]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##-32## ##768## or larger than ##32## ##767##.
+	The ##**Cshort**## function rounds off the decimal part and returns a 16-bit ##[[KeyPgShort|Short]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##-32## ##768## or larger than ##32## ##767##.
 
 	The name can be explained as 'Convert to Short'.
 
-	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]##.
+	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint|Valint]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/casting/cshort.bas"}}%%(freebasic)
@@ -47,22 +47,22 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Cshort""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Cshort""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCbyte Cbyte]]##
-	- ##[[KeyPgCubyte Cubyte]]##
-	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgCint Cint]]##
-	- ##[[KeyPgCuint Cuint]]##
-	- ##[[KeyPgClng Clng]]##
-	- ##[[KeyPgCulng Culng]]##
-	- ##[[KeyPgClngint Clngint]]##
-	- ##[[KeyPgCulngint Culngint]]##
-	- ##[[KeyPgCsng Csng]]##
-	- ##[[KeyPgCdbl Cdbl]]##
+	- ##[[KeyPgCbyte|Cbyte]]##
+	- ##[[KeyPgCubyte|Cubyte]]##
+	- ##[[KeyPgCushort|Cushort]]##
+	- ##[[KeyPgCint|Cint]]##
+	- ##[[KeyPgCuint|Cuint]]##
+	- ##[[KeyPgClng|Clng]]##
+	- ##[[KeyPgCulng|Culng]]##
+	- ##[[KeyPgClngint|Clngint]]##
+	- ##[[KeyPgCulngint|Culngint]]##
+	- ##[[KeyPgCsng|Csng]]##
+	- ##[[KeyPgCdbl|Cdbl]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

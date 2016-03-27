@@ -20,8 +20,8 @@ Compile Date: 09-29-2011
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDddateiso __DATE_ISO__]]##
-	- ##[[KeyPgDdtime __TIME__]]##
-	- ##[[KeyPgDate Date]]##
+	- ##[[KeyPgDddateiso|__DATE_ISO__]]##
+	- ##[[KeyPgDdtime|__TIME__]]##
+	- ##[[KeyPgDate|Date]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

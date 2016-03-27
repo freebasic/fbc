@@ -28,9 +28,15 @@ dim d   as double
 
 dim p   as any ptr
 dim pi  as integer ptr
+dim ps  as string ptr
+dim pz  as zstring ptr
+dim pw  as wstring ptr
 
 #print typeof( p  )
 #print typeof( pi )
+#print typeof( ps )
+#print typeof( pz )
+#print typeof( pw )
 
 dim s   as string
 dim fixstr as string * 31
@@ -49,6 +55,31 @@ end type
 
 dim x1 as UDT1
 #print typeof( UDT1 )
+
+#print "Zstring vs Zstring * N"
+scope
+	dim byref rz as zstring = "foo"
+	dim pz as zstring ptr
+	dim z1 as zstring * 1
+	dim z32 as zstring * 32
+
+	type tz as zstring
+	type tz1 as zstring * 1
+	type tz32 as zstring * 32
+
+	#print typeof(rz)
+	#print typeof(*pz)
+	#print typeof(z1)
+	#print typeof(z32)
+
+	#print typeof(zstring)
+	#print typeof(zstring * 1)
+	#print typeof(zstring * 32)
+
+	#print typeof(tz)
+	#print typeof(tz1)
+	#print typeof(tz32)
+end scope
 
 #print
 #print "procptr parameter types:"

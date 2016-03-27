@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="WEEKDAY"}}----
-Gets the number of day of the week from a [[ProPgDates Date Serial]]
+Gets the number of day of the week from a [[ProPgDates|Date Serial]]
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Weekday** ( [[KeyPgByval byval]] //serial// [[KeyPgAs as]] [[KeyPgDouble double]] , [[KeyPgByval byval]] //firstdayofweek// [[KeyPgAs as]] [[KeyPgLong long]] = fbusesystem ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Weekday** ( [[KeyPgByval|byval]] //serial// [[KeyPgAs|as]] [[KeyPgDouble|double]] , [[KeyPgByval|byval]] //firstdayofweek// [[KeyPgAs|as]] [[KeyPgLong|long]] = fbusesystem ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -15,7 +15,7 @@ Gets the number of day of the week from a [[ProPgDates Date Serial]]
 		the first day of the week
 
 {{fbdoc item="ret"}}
-	Returns the week day number from a variable containing a date in [[ProPgDates Date Serial]] format.
+	Returns the week day number from a variable containing a date in [[ProPgDates|Date Serial]] format.
 
 {{fbdoc item="desc"}}
 
@@ -40,6 +40,6 @@ print format(a, "yyyy/mm/dd hh:mm:ss "); weekday(a)
 	- Did not exist in QB. This function appeared in PDS and VBDOS
 
 {{fbdoc item="see"}}
-	- [[ProPgDates Date Serials]]
+	- [[ProPgDates|Date Serials]]
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

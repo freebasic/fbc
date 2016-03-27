@@ -1,0 +1,23 @@
+{{fbdoc item="title" value="Tutorial Template"}}----
+//by Your-name-here//
+
+This template is more of a suggestion than a requirement.  But if you are writing a tutorial and not sure where to start, maybe this can help.
+
+==Title Your Tutorial==
+	Please include a title.  If the tutorial is selected for inclusion in the FreeBASIC documentation, it should have a ##""{{fbdoc item="Title" value="Title-of-the-tutorial"}}""## action at the top of page.  This helps keep the style consistent with every other page in the FreeBASIC manual.
+
+==Including Sample Code==
+	Sample code is best included inside ""%%(freebasic) code goes here %%"" tags.  These special blocks are recognized by both the on-line wiki and our document converters.  Code tagged in this way can be automatically formatted or extracted later.
+
+{{fbdoc item="filename" value="examples/manual/check/FBWikiTutorialTemplate_1.bas"}}%%(freebasic)
+'' sample code
+'' sample code
+%%
+
+==The best tutorials are completed tutorials==
+	Once you have started a tutorial, please return to finish it.  It is understandable that a tutorial might be a work in progress, and the wiki does provide a convenient place to work on it until it is completed.  But, nobody wants to read a half completed tutorial.  Thanks.
+
+{{fbdoc item="see"}}
+	- [[FBWikiKeywordTemplate|Keyword Template]]
+
+{{fbdoc item="back" value="FBWikiHelp|FB Wiki - Help"}}

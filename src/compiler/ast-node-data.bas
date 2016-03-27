@@ -268,7 +268,7 @@ private sub hCreateDataDesc( )
 	static as FBARRAYDIM dTB(0)
 
 	'' Using FIELD = 1, to pack it as done by the rtlib
-	ast.data.desc = symbStructBegin( NULL, NULL, NULL, "__FB_DATADESC$", NULL, FALSE, 1, NULL, 0, 0 )
+	ast.data.desc = symbStructBegin( NULL, NULL, NULL, "__FB_DATADESC$", NULL, FALSE, 1, FALSE, 0, 0 )
 
 	'' type	as short
 	symbAddField( ast.data.desc, "type", 0, dTB(), _

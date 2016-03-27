@@ -24,12 +24,12 @@ Dim Int As Integer          ' declare a variable with the name 'int'
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang qb]]// dialects.
+	- Only available in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang qb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpundef #undef]]##
+	- ##[[KeyPgPpundef|#undef]]##
 
 {{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}

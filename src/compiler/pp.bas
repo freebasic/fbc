@@ -306,12 +306,7 @@ private sub ppInclude()
     dim as integer isonce = any
 
 	'' ONCE?
-	isonce = FALSE
-	if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
-		if( hMatchText( "ONCE" ) ) then
-			isonce = TRUE
-		end if
-	end if
+	isonce = hMatchIdOrKw( "ONCE" )
 
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -709,11 +704,6 @@ function ppReadLiteralW _
 end function
 
 function ppTypeOf( ) as string
-	'' get type's name
-	dim as integer dtype = any
-	dim as longint lgt = any
-	dim as FBSYMBOL ptr subtype = any
-
 	'' TYPEOF
 	lexSkipToken( )
 
@@ -724,9 +714,12 @@ function ppTypeOf( ) as string
 		lexSkipToken( )
 	end if
 
-	cTypeOf( dtype, subtype, lgt )
+	dim as integer dtype, is_fixlenstr
+	dim as longint lgt
+	dim as FBSYMBOL ptr subtype
+	cTypeOf( dtype, subtype, lgt, is_fixlenstr )
 
-	function = ucase( symbTypeToStr( dtype, subtype, lgt ) )
+	function = ucase( symbTypeToStr( dtype, subtype, lgt, is_fixlenstr ) )
 
 	'' ')'
 	if( lexGetToken( ) <> CHAR_RPRNT ) then

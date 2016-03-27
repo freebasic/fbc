@@ -21,8 +21,8 @@ Control flow statement.
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDoloop Do...Loop]]##
-	- ##[[KeyPgWhilewend While...Wend]]##
+	- ##[[KeyPgDoloop|Do...Loop]]##
+	- ##[[KeyPgWhilewend|While...Wend]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}
    

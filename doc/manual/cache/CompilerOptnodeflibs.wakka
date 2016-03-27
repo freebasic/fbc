@@ -8,6 +8,6 @@ Do not include the default libraries
 	The ##-nodeflibs## compiler option causes default libraries not to be used when linking.  The libraries which are normally linked by default can still be used, but only if they are explicitly specified.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

@@ -1,3 +1,19 @@
+Version 1.06.0
+
+[changed]
+- Adjusted warning text for "mixed bool/nonbool operands" warning
+
+[added]
+
+[fixed]
+- win/d3dx9.bi no longer has a hard-coded #inclib "d3dx9d". d3dx9d.dll is apparently not a generally valid choice. In practice programs have to be linked against d3dx9_33.dll or d3dx9_39.dll, etc.
+- #816: The ASM backend contained a bad assert() which could be triggered in debug builds of the compiler, when generating code for certain array accesses
+- C backend: undefined behaviour (inherited from C) in case of signed integer overflow
+- utf_conv.bi: When given a NULL destination buffer, no-op conversions (UTF16 => UTF16 or UTF32 => UTF32) didn't allocate a new buffer, but just returned the source buffer, violating the contract used for proper conversions (which allocate a new buffer if a NULL destination is passed).
+- utf_conv.bi: In UTF8 => UTF16/32 and UTF32 => UTF16 conversions, strings longer than 8 chars could be truncated
+- #797: False-positive warnings when mixing booleans with comparisons in logic operations
+
+
 Version 1.05.0
 
 [changed]
@@ -8,6 +24,18 @@ Version 1.05.0
 - 0.90.0 regression: Self-op optimizations stopped handling some cases and should now work again, for example: optimizing A=A+1 => A+=1 where A is a Long, should give nice ASM code with -gen gas again
 - When Dim'ing an Extern variable, the Byref attribute was not checked - neither required nor disallowed - now the Dim must match the Extern with regards to Byref too.
 - Type<Foo>(...) expressions couldn't be used at the begin of a statement (because the Type keyword was treated as begin of a Type declaration)
+- FileAttr() was still broken for 64bit - the result value was truncated to 32bit
+- 1.04.0 regression: Under -gen gcc -asm att, support for gcc-style inline asm was broken
+- ld was warning about unsupported linker options on OS X
+- BYREF fixed-length strings (e.g. BYREF myParameter AS ZSTRING * 10) now trigger a compiler error since they are unsupported
+- #print typeof() output now differentiates between ZSTRING and ZSTRING * N (ZSTRING without size is produced by dereferencing a ZSTRING PTR, or BYREF AS ZSTRING)
+- Context-specific keywords, e.g. graphics PUT modes, must now be given as keywords (e.g. PSET), string literals (e.g. "PSET") are no longer accepted.
+- Wstring-to-Zstring conversions didn't use the system's Unicode <-> codepage conversion function, and only converted ASCII characters. Now it will try to convert the Unicode chars to codepage chars.
+- Compiler crash during error recovery when there was an error when parsing the argument expression for a BYREF AS ANY parameter
+- 1.04.0 regression: Get# for WStrings was incorrectly changed to convert the loaded bytes to wstring characters, like Input# would do. Now it's changed back to just loading the raw bytes into the wstring, which is also how Get# works for other datatypes.
+- 1.04.0 regression: Due to the Get# wstring breakage, the compiler failed to read source files encoded in UTF16LE with BOM on Windows, and UTF32LE with BOM on Linux.
+- Eof() could incorrectly return TRUE too early on Windows, when reading a big text file with LF line endings, OPENed FOR INPUT (text mode)
+- Line's styled/pattern drawing support was broken on non-x86 systems
 
 
 Version 1.04.0

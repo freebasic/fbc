@@ -34,10 +34,10 @@ For x = -1 To 1 Step s
 Next x
 
 '' revert to screen coordinates
-Window       
+Window
 
 '' remove the clipping area
-View Screen  
+View
 
 '' draw title
 Draw String ( 120, 160 ), "Y = X ^ 3"

@@ -362,7 +362,7 @@ private function hOvlProcArgList _
 
 		errReportParam( proc, 0, NULL, err_num )
 		'' error recovery: fake an expr
-		return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+		return astBuildFakeCall( proc )
 	end if
 
 	proc = ovlproc
@@ -374,7 +374,7 @@ private function hOvlProcArgList _
 		                  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
 		             symbGetFullProcName( proc ) )
 		'' error recovery: fake an expr
-		return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+		return astBuildFakeCall( proc )
 	end if
 
     '' method?
@@ -386,7 +386,7 @@ private function hOvlProcArgList _
 			if( (base_parent <> NULL) or (symbIsMethod( parser.currproc ) = FALSE) ) then
 				errReport( FB_ERRMSG_MEMBERISNTSTATIC, TRUE )
 				'' error recovery: fake an expr
-				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+				return astBuildFakeCall( proc )
 			end if
 
 			'' pass the instance ptr of the current method
@@ -422,7 +422,8 @@ private function hOvlProcArgList _
 			errReport( FB_ERRMSG_PARAMTYPEMISMATCH )
 			'' error recovery: fake an expr (don't try to fake an arg,
 			'' different modes and param types like "as any" would break AST)
-			return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+			astDelTree( procexpr )
+			return astBuildFakeCall( proc )
 		end if
 
 		symbFreeOvlCallArg( @parser.ovlarglist, arg )
@@ -447,6 +448,9 @@ end function
 
 '':::::
 ''ProcArgList     =    ProcArg (DECL_SEPARATOR ProcArg)* .
+''
+'' This function always returns a CALL, even for error recovery - so callers
+'' don't have to check before passing it to astNewCALLCTOR() etc.
 ''
 function cProcArgList _
 	( _
@@ -480,7 +484,7 @@ function cProcArgList _
 		                  FB_ERRMSG_ILLEGALMEMBERACCESS ), _
 		             symbGetFullProcName( proc ) )
 		'' error recovery: fake an expr
-		return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+		return astBuildFakeCall( proc )
 	end if
 
     '' method?
@@ -492,7 +496,7 @@ function cProcArgList _
 			if( (base_parent <> NULL) or (symbIsMethod( parser.currproc ) = FALSE) ) then
 				errReport( FB_ERRMSG_MEMBERISNTSTATIC, TRUE )
 				'' error recovery: fake an expr
-				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+				return astBuildFakeCall( proc )
 			end if
 
 			'' pass the instance ptr of the current method
@@ -529,7 +533,8 @@ function cProcArgList _
 		dim as FB_CALL_ARG ptr nxt = arg->next
 
 		if( astNewARG( procexpr, arg->expr, , arg->mode ) = NULL ) then
-			exit function
+			astDelTree( procexpr )
+			return astBuildFakeCall( proc )
 		end if
 
 		symbFreeOvlCallArg( @parser.ovlarglist, arg )
@@ -597,7 +602,7 @@ function cProcArgList _
 				'' don't try to fake an arg, different modes and param
 				'' types like "as any" would break AST
 				astDelTree( procexpr )
-				return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+				return astBuildFakeCall( proc )
 			end if
 
 			'' next
@@ -624,12 +629,13 @@ function cProcArgList _
 			errReport( FB_ERRMSG_ARGCNTMISMATCH )
 			'' error recovery: fake an expr
 			astDelTree( procexpr )
-			return astNewCONSTz( symbGetType( proc ), symbGetSubType( proc ) )
+			return astBuildFakeCall( proc )
 		end if
 
 		'' add to tree
 		if( astNewARG( procexpr, NULL ) = NULL ) then
-			exit function
+			astDelTree( procexpr )
+			return astBuildFakeCall( proc )
 		end if
 
 		'' next

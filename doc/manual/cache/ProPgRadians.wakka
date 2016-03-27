@@ -1,13 +1,18 @@
 {{fbdoc item="title" value="Radian system of measuring angles"}}----
 All of the built-in trigonometric functions in ""FreeBASIC"" express angles in radians.
 
+Let pi the constant equal to the ratio of the circumference of a circle to its diameter. It can be calculated programmatically by multiplying the arctangent of 1 by 4.
 A full circle is divided into 2 * pi radians or 360 degrees, which leads to the following conversions:
 
-%%radians = degrees * pi / 180
+%%pi = atn(1) * 4
+radians = degrees * pi / 180
 degrees = radians * 180 / pi%%
 
-Pi is a constant equal to the ratio of the circumference of a circle to its diameter.  It can be calculated programmatically by multiplying the arctangent of 1 by 4:
+These 3 formulas can be expressed by using macros:
 
-%%pi = atn(1) * 4%%
+%%#define   pi          ( atn(1) * 4 )
+#define   radian(x)   ( (x) * pi / 180 )
+#define   degree(x)   ( (x) * 180 / pi )%%The added parentheses compared to the raw formulas are mandatory to not undergo an unwanted precedence change of operators when the macros are used in any context of expressions.
+
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

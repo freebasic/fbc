@@ -2,12 +2,12 @@
 A variable declaration type modifier
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim dim]] //symbolname// [[KeyPgAs as]] [[DataType DataType]] {**Ptr** | [[KeyPgPointer pointer]]}
+	[[KeyPgDim|dim]] //symbolname// [[KeyPgAs|as]] [[DataType|DataType]] {**Ptr** | [[KeyPgPointer|pointer]]}
 ##
 {{fbdoc item="desc"}}
-	Declares a pointer variable. The same as ##[[KeyPgPointer Pointer]]##.
+	Declares a pointer variable. The same as ##[[KeyPgPointer|Pointer]]##.
 
-	##[[KeyPgOpAt Operator @ (Address of)]]## operator or ##[[KeyPgOpVarptr Varptr]]## are used to take the address of a variable. The ##[[KeyPgOpValueOf Operator * (Value of)]]## operator is used to dereference the pointer, that is, access the actual value stored in the memory location the pointer is pointing at.
+	##[[KeyPgOpAt|Operator @ (Address of)]]## operator or ##[[KeyPgOpVarptr|Varptr]]## are used to take the address of a variable. The ##[[KeyPgOpValueOf|Operator * (Value of)]]## operator is used to dereference the pointer, that is, access the actual value stored in the memory location the pointer is pointing at.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/ptr.bas"}}%%(freebasic)
@@ -31,13 +31,13 @@ Print p
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Ptr""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Ptr""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPointer Pointer]]##
-	- ##[[KeyPgAllocate Allocate]]##
+	- ##[[KeyPgPointer|Pointer]]##
+	- ##[[KeyPgAllocate|Allocate]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

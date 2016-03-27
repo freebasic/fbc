@@ -8,8 +8,8 @@ Do not delete the object file(s)
 	The ##-C## compiler option causes the object file(s) that are generated during the compile process to not be deleted.
 
 {{fbdoc item="see"}}
-	- [[CompilerOptc Compiler Option: -c]]
-	- [[CompilerOptrupp Compiler Option: -R]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerOptc|Compiler Option: -c]]
+	- [[CompilerOptrupp|Compiler Option: -R]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

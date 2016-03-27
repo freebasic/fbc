@@ -2,13 +2,13 @@
 Returns the amount of time that has passed since a static reference point.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Timer** ( ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Timer** ( ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Timer**
 ##
 {{fbdoc item="ret"}}
-	Returns a ##[[KeyPgDouble double]]## precision result with the time, in seconds, since a static reference point.
+	Returns a ##[[KeyPgDouble|double]]## precision result with the time, in seconds, since a static reference point.
 
 {{fbdoc item="desc"}}
 
@@ -32,20 +32,20 @@ Print "Done."
 %%
 
 {{fbdoc item="target"}}
-	- On ""Win32"" and Linux, if the program must wait for periods of 0.1 seconds or more, ##[[KeyPgSleep Sleep]]## should be used, this allows other programs to run during the waiting period. For shorter delays, a loop using TIMER can be more precise.
+	- On ""Win32"" and Linux, if the program must wait for periods of 0.1 seconds or more, ##[[KeyPgSleep|Sleep]]## should be used, this allows other programs to run during the waiting period. For shorter delays, a loop using TIMER can be more precise.
 	- The reference point chosen varies, depending on the platform.  On Windows, the time is measured relative to the point the computer was booted up.  On DOS, the time is measured relative to Jan 1 1970.
 
-~&//Note for DOS users: today, the number of seconds since 1970 is in excess of ##10^9##, and is therefore unsuitable for storing in ##[[KeyPgSingle Single]]##-precision variables, also it shouldn't be multiplied (to get 1/10 seconds or so) and stored in 32-bit integer variables then//
+~&//Note for DOS users: today, the number of seconds since 1970 is in excess of ##10^9##, and is therefore unsuitable for storing in ##[[KeyPgSingle|Single]]##-precision variables, also it shouldn't be multiplied (to get 1/10 seconds or so) and stored in 32-bit integer variables then//
 
 	- The precision of TIMER varies, depending on the computer used.  If the processor has a precision timer (as the Performance Counter Pentium processors from Intel have) and the OS uses it, the precision is linked to the processor clock and microseconds can be expected. With older processors (386, 486), and always in DOS, the resolution is 1/18 second.
 
-	- Usage of TIMER can cause disk accesses in DOS, see [[http://www.freebasic.net/forum/viewtopic.php?t=12985 forum]] for analysis and solutions
+	- Usage of TIMER can cause disk accesses in DOS, see [[http://www.freebasic.net/forum/viewtopic.php?t=12985|forum]] for analysis and solutions
 
 {{fbdoc item="diff"}}
 	- In QB, TIMER returned the number of seconds from last midnight, and its accuracy was 1/18 secs
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgTime Time]]##
-	- ##[[KeyPgSleep Sleep]]##
+	- ##[[KeyPgTime|Time]]##
+	- ##[[KeyPgSleep|Sleep]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

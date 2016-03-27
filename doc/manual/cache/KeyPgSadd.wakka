@@ -2,9 +2,9 @@
 Returns a pointer to a string variable's data
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sadd** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgZstring Zstring]] [[KeyPgPtr ptr]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sadd** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgWstring Wstring]] ) [[KeyPgAs as]] [[KeyPgZstring Zstring]] [[KeyPgPtr ptr]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Sadd** ( [[KeyPgByref byref]] //str// [[KeyPgAs as]] [[KeyPgZstring Zstring]] ) [[KeyPgAs as]] [[KeyPgZstring Zstring]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Sadd** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgZstring|Zstring]] [[KeyPgPtr|ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Sadd** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgWstring|Wstring]] ) [[KeyPgAs|as]] [[KeyPgZstring|Zstring]] [[KeyPgPtr|ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Sadd** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgZstring|Zstring]] ) [[KeyPgAs|as]] [[KeyPgZstring|Zstring]] [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Sadd**( //str// )
@@ -34,8 +34,8 @@ Print SAdd(s)
 	- QB returned an integer instead of a pointer.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpStrptr Strptr]]##
-	- ##[[KeyPgOpVarptr Varptr]]##
-	- ##[[KeyPgOpProcptr Procptr]]##
+	- ##[[KeyPgOpStrptr|Strptr]]##
+	- ##[[KeyPgOpVarptr|Varptr]]##
+	- ##[[KeyPgOpProcptr|Procptr]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

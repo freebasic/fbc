@@ -396,9 +396,10 @@ sub cProcRetType _
 
 		'' Then allow BYREF AS Z/WSTRING as the type
 		options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
+		options or= FB_SYMBTYPEOPT_ISBYREF
 	end if
 
-	if( cSymbolType( dtype, subtype, 0, options ) = FALSE ) then
+	if( cSymbolType( dtype, subtype, , , options ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a type
 		dtype = FB_DATATYPE_INTEGER

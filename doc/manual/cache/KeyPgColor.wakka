@@ -2,7 +2,7 @@
 Sets the display foreground / background color that is used with console output and graphics output of text
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Color** ( [[KeyPgByval byval]] //foreground// [[KeyPgAs as]] [[KeyPgLong long]] , [[KeyPgByval byval]] //background// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Color** ( [[KeyPgByval|byval]] //foreground// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] , [[KeyPgByval|byval]] //background// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] ) [[KeyPgAs|as]] [[KeyPgUlong|ulong]]
 ##
 {{fbdoc item="usage"}}##
 	**Color** [//foreground//] [, //background//]
@@ -15,16 +15,16 @@ Sets the display foreground / background color that is used with console output 
 		the background color to set
 
 {{fbdoc item="ret"}}
-	Returns a 32-bit value containing the current foreground color in the [[KeyPgLoWord low word]] and the current background color in the [[KeyPgHiword high word]].  (In hi/truecolor modes, only the foreground color is returned, taking up the whole 32 bits.)
+	Returns a 32-bit value containing the current foreground color in the [[KeyPgLoWord|low word]] and the current background color in the [[KeyPgHiword|high word]].  (In hi/truecolor modes, only the foreground color is returned, taking up the whole 32 bits.)
 	The old color values can be retrieved at the same time as setting new ones.
 
 {{fbdoc item="desc"}}
-	The ##**Color**## statement sets the current foreground and/or background colors. ##[[KeyPgCircle Circle]]##, ##[[KeyPgDraw Draw]]##, ##[[KeyPgLinegraphics Line (Graphics)]]##, ##[[KeyPgCls Cls]]##, ##[[KeyPgPaint Paint]]##, ##[[KeyPgPrint Print]]##, ##[[KeyPgPreset PReset]]## and ##[[KeyPgPset PSet]]## all use the last colors set by this function when you don't specify a color to them, where applicable. The color values that ##**Color**## accepts depend on the current graphics mode.
+	The ##**Color**## statement sets the current foreground and/or background colors. ##[[KeyPgCircle|Circle]]##, ##[[KeyPgDraw|Draw]]##, ##[[KeyPgLinegraphics|Line (Graphics)]]##, ##[[KeyPgCls|Cls]]##, ##[[KeyPgPaint|Paint]]##, ##[[KeyPgPrint|Print]]##, ##[[KeyPgPreset|PReset]]## and ##[[KeyPgPset|PSet]]## all use the last colors set by this function when you don't specify a color to them, where applicable. The color values that ##**Color**## accepts depend on the current graphics mode.
 
 	{{table columns="2" cellpadding="1" cells="Mode;Meaning;1;foreground is screen color (ranging 0-15). background is the emulated CGA palette to be used: 0 (green, red, and brown), 1 (cyan, magenta and white), 2 (same as 0, but with bright colors) or 3 (same as 1, but with bright colors);2, 11;foreground is a color index in current palette (ranging 0-1). background is a color index in current palette (ranging 0-1).;7, 8;foreground is a color index in current palette (ranging 0-15). background is screen color index in current palette (ranging 0-15).;9;foreground is a color index in current palette (ranging 0-63). background is screen color index in current palette (ranging 0-63).;12;foreground is a color index in current palette (ranging 0-15). background is a color index in current palette (ranging 0-15).;13 and up;foreground is a color index in current palette (ranging 0-255). background is a color index in current palette (ranging 0-255)."}}
 
-	If you are using a color depth higher than 8bpp, foreground and background are direct ##[[KeyPgRgb RGB]]## color values in the form ##&h//AARRGGBB//##, where ##//AA//##, ##//RR//##, ##//GG//## and ##//BB//## are the alpha, red, green and blue components ranging ##&h00##-##&hFF## (##0##-##255## in decimal notation). While in hi/truecolor modes, you can use the ##[[KeyPgRgb RGB]]## or ##[[KeyPgRgba RGBA]]## macro to obtain a valid color value.
-	A [[GfxDefPalettes Default Palette]] is automatically set when entering a ##[[KeyPgScreengraphics Screen]]## mode. 
+	If you are using a color depth higher than 8bpp, foreground and background are direct ##[[KeyPgRgb|RGB]]## color values in the form ##&h//AARRGGBB//##, where ##//AA//##, ##//RR//##, ##//GG//## and ##//BB//## are the alpha, red, green and blue components ranging ##&h00##-##&hFF## (##0##-##255## in decimal notation). While in hi/truecolor modes, you can use the ##[[KeyPgRgb|RGB]]## or ##[[KeyPgRgba|RGBA]]## macro to obtain a valid color value.
+	A [[GfxDefPalettes|Default Palette]] is automatically set when entering a ##[[KeyPgScreengraphics|Screen]]## mode. 
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/color.bas"}}%%(freebasic)
@@ -45,7 +45,7 @@ sleep
 %%
 {{image class="center" title="Color example" url="/images/color.png"}}
 {{fbdoc item="filename" value="examples/manual/console/color.bas"}}%%(freebasic)
-Dim c As Uinteger
+Dim c As Ulong
 
 'retrieve current color values
 c = Color()
@@ -61,12 +61,12 @@ Print "Background: " & HIWORD(c)
 	- There is no border argument.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgRgb RGB]]##
-	- ##[[KeyPgRgba RGBA]]##
-	- ##[[KeyPgLoWord LOWORD]]##
-	- ##[[KeyPgHiword HIWORD]]##
-	- ##[[KeyPgLocate Locate]]##
-	- ##[[KeyPgPalette Palette]]##
-	- ##[[KeyPgScreengraphics Screen]]##
+	- ##[[KeyPgRgb|RGB]]##
+	- ##[[KeyPgRgba|RGBA]]##
+	- ##[[KeyPgLoWord|LOWORD]]##
+	- ##[[KeyPgHiword|HIWORD]]##
+	- ##[[KeyPgLocate|Locate]]##
+	- ##[[KeyPgPalette|Palette]]##
+	- ##[[KeyPgScreengraphics|Screen]]##
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}{{fbdoc item="back" value="CatPgConsole|Console Functions"}}

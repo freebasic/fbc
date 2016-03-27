@@ -56,9 +56,6 @@ function cFunctionCall _
 			lexSkipToken( )
 
 			funcexpr = cProcArgList( base_parent, sym, ptrexpr, @arg_list, options )
-			if( funcexpr = NULL ) then
-				exit function
-			end if
 
 			'' ')'
 			hParseRPNT( )
@@ -70,14 +67,8 @@ function cFunctionCall _
 			end if
 
 			'' no args
-			funcexpr = cProcArgList( base_parent, _
-									 sym, _
-									 ptrexpr, _
-									 @arg_list, _
-									 options or FB_PARSEROPT_OPTONLY )
-			if( funcexpr = NULL ) then
-				exit function
-			end if
+			funcexpr = cProcArgList( base_parent, sym, ptrexpr, @arg_list, _
+			                         options or FB_PARSEROPT_OPTONLY )
 		end if
 
 	else
@@ -87,23 +78,14 @@ function cFunctionCall _
 
 			'' ProcArgList
 			funcexpr = cProcArgList( base_parent, sym, ptrexpr, @arg_list, options )
-			if( funcexpr = NULL ) then
-				exit function
-			end if
 
 			'' ')'
 			hParseRPNT( )
 
 		else
 			'' ProcArgList (function could have optional params)
-			funcexpr = cProcArgList( base_parent, _
-									 sym, _
-									 ptrexpr, _
-									 @arg_list, _
-									 options or FB_PARSEROPT_OPTONLY )
-			if( funcexpr = NULL ) then
-				exit function
-			end if
+			funcexpr = cProcArgList( base_parent, sym, ptrexpr, @arg_list, _
+			                         options or FB_PARSEROPT_OPTONLY )
 		end if
 
 	end if
@@ -198,15 +180,9 @@ function cCtorCall _
 	arg->expr = astNewVAR( tmp )
 	arg->mode = INVALID
 
-	procexpr = cProcArgList( NULL, _
-							 symbGetCompCtorHead( sym ), _
-					  		 NULL, _
-					  		 @arg_list, _
-					  		 FB_PARSEROPT_ISFUNC or _
-					  		 FB_PARSEROPT_HASINSTPTR or _
-					  		 iif( isprnt = FALSE, _
-					  		 	  FB_PARSEROPT_OPTONLY, _
-					  		 	  FB_PARSEROPT_NONE ) )
+	procexpr = cProcArgList( NULL, symbGetCompCtorHead( sym ), NULL, @arg_list, _
+	                         FB_PARSEROPT_ISFUNC or FB_PARSEROPT_HASINSTPTR or _
+	                         iif( isprnt = FALSE, FB_PARSEROPT_OPTONLY, FB_PARSEROPT_NONE ) )
 
 	'' Try to parse the ')' even in case of error recovery; it belongs to
 	'' the type() construct afterall, and nothing else would handle it.
@@ -222,13 +198,5 @@ function cCtorCall _
 		end if
 	end if
 
-	'' cProcArgList() usually returns a CALL, but it can be NULL or a CONST
-	'' etc. in case of error recovery
-	if( procexpr = NULL ) then
-		function = NULL
-	elseif( astIsCALL( procexpr ) = FALSE ) then
-		function = procexpr
-	else
-		function = astNewCALLCTOR( procexpr, astNewVAR( tmp ) )
-	end if
+	function = astNewCALLCTOR( procexpr, astNewVAR( tmp ) )
 end function

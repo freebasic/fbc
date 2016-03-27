@@ -2,7 +2,7 @@
 Declares an alternative name for a type
 
 {{fbdoc item="syntax"}}##
-	**Type** //typename// [[KeyPgAs as]] //symbol//
+	**Type** //typename// [[KeyPgAs|as]] //symbol//
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
@@ -11,10 +11,10 @@ Declares an alternative name for a type
 		symbol or data type declaration to associate with ##//typename//##. 
 
 {{fbdoc item="desc"}}
-	##//symbol//## may refer to any declared data type including a built-in data type, ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## pointer, ##[[KeyPgType Type]]## declaration, ##[[KeyPgUnion Union]]## declaration, or ##[[KeyPgEnum Enum]]## declaration.
+	##//symbol//## may refer to any declared data type including a built-in data type, ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]## pointer, ##[[KeyPgType|Type]]## declaration, ##[[KeyPgUnion|Union]]## declaration, or ##[[KeyPgEnum|Enum]]## declaration.
 
 	A type alias can be used to allow forward declarations of parameters in procedure declarations, but only used with pointers or parameters passed by reference (excluding arrays).
-	A type alias can also be used to allow forward declarations of data fields in [[CatPgUserDefTypes User Defined Types]], but only used with pointers.
+	A type alias can also be used to allow forward declarations of data fields in [[CatPgUserDefTypes|User Defined Types]], but only used with pointers.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/type-fwd.bas"}}%%(freebasic)
@@ -48,7 +48,7 @@ end with
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgType Type...End Type]]##
-	- ##[[KeyPgTypeTemp Type (Temporary)]]##
+	- ##[[KeyPgType|Type...End Type]]##
+	- ##[[KeyPgTypeTemp|Type (Temporary)]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

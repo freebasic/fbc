@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="WSPACE"}}----
-Creates a ##[[KeyPgWstring Wstring]]## of a given length filled with spaces (##" "##)
+Creates a ##[[KeyPgWstring|Wstring]]## of a given length filled with spaces (##" "##)
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Wspace**( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgInteger integer]] ) [[KeyPgAs as]] [[KeyPgWstring wstring]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wspace**( [[KeyPgByval|byval]] //count// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Wspace**( //count// )
@@ -12,7 +12,7 @@ Creates a ##[[KeyPgWstring Wstring]]## of a given length filled with spaces (##"
 		An integer type specifying the length of the string to be created.
 
 {{fbdoc item="ret"}}
-	The created ##[[KeyPgWstring Wstring]]##. An empty string will be returned if ##//count// <= 0##.
+	The created ##[[KeyPgWstring|Wstring]]##. An empty string will be returned if ##//count// <= 0##.
 
 {{fbdoc item="desc"}}
 	##**Wspace**## creates a wstring (wide character string- Unicode) with the specified number of spaces.
@@ -28,13 +28,13 @@ print a ' prints: x   x
 	- Unicode strings are not supported in the DOS port of ""FreeBASIC"".
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Wspace""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Wspace""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSpace Space]]##
-	- ##[[KeyPgWstring Wstring]]##
+	- ##[[KeyPgSpace|Space]]##
+	- ##[[KeyPgWstring|Wstring]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

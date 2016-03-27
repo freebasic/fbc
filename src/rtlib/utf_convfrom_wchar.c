@@ -172,18 +172,6 @@ static char *hToUTF16( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *b
 
 	*bytes = chars * sizeof( UTF_16 );
 
-	/* same size? */
-	if( sizeof( FB_WCHAR ) == sizeof( UTF_16 ) )
-	{
-		if( dst == NULL )
-			return (char *)src;
-		else
-		{
-			memcpy( dst, src, chars * sizeof( UTF_16 ) );
-			return dst;
-		}
-	}
-
 	if( chars > 0 )
 	{
 		if( dst == NULL )
@@ -198,6 +186,10 @@ static char *hToUTF16( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *b
 	{
 	case sizeof( char ):
 		hCharToUTF16( src, chars, (UTF_16 *)dst, bytes );
+		break;
+
+	case sizeof( UTF_16 ):
+		memcpy( dst, src, chars * sizeof( UTF_16 ) );
 		break;
 
 	case sizeof( UTF_32 ):
@@ -245,18 +237,6 @@ static char *hToUTF32( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *b
 
 	*bytes = chars * sizeof( UTF_32 );
 
-	/* same size? */
-	if( sizeof( FB_WCHAR ) == sizeof( UTF_32 ) )
-	{
-		if( dst == NULL )
-			return (char *)src;
-		else
-		{
-			memcpy( dst, src, chars * sizeof( UTF_32 ) );
-			return dst;
-		}
-	}
-
 	if( chars > 0 )
 	{
 		if( dst == NULL )
@@ -275,6 +255,10 @@ static char *hToUTF32( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *b
 
 	case sizeof( UTF_16 ):
         hUTF16ToUTF32( src, chars, (UTF_32 *)dst, bytes );
+		break;
+
+	case sizeof( UTF_32 ):
+		memcpy( dst, src, chars * sizeof( UTF_32 ) );
 		break;
 
 	default:

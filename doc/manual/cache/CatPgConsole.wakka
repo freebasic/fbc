@@ -32,8 +32,10 @@ Procedures that work with the console.
 		Gets the character or color attribute at a given location.
 <<>>{{anchor name="WRITING"}}{{fbdoc item="section" value="Writing Text to the Console"}}
 	=={{fbdoc item="keyword" value="KeyPgPrint|PRINT"}}==
+	=={{fbdoc item="keyword" value="KeyPgPrint|?"}}==
 		Writes text to the console.
 	=={{fbdoc item="keyword" value="KeyPgPrintusing|PRINT USING"}}==
+	=={{fbdoc item="keyword" value="KeyPgPrintusing|? USING"}}==
 		Writes formatted text to the console.
 	=={{fbdoc item="keyword" value="KeyPgWrite|WRITE"}}==
 		Writes a list of items to the console.

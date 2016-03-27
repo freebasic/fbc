@@ -2,24 +2,24 @@
 Converts a number to octal representation
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Oct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUbyte ubyte]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Oct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUshort ushort]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Oct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlong ulong]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Oct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Oct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgConst const]] [[KeyPgAny any]] [[KeyPgPtr ptr]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Oct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUbyte ubyte]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Oct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUshort ushort]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Oct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlong ulong]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Oct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgUlongint ulongint]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Oct** ( [[KeyPgByval byval]] //number// [[KeyPgAs as]] [[KeyPgConst const]] [[KeyPgAny any]] [[KeyPgPtr ptr]], [[KeyPgByval byval]] //digits// [[KeyPgAs as]] [[KeyPgLong long]] ) [[KeyPgAs as]] [[KeyPgString string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Oct**[$]( //number// [, //digits// ] )
 ##
 {{fbdoc item="param"}}
 	##//number//##
-		A number or expression evaluating to a number.  A floating-point number will be converted to a ##[[KeyPgLongint longint]]##.
+		A number or expression evaluating to a number.  A floating-point number will be converted to a ##[[KeyPgLongint|longint]]##.
 	##//digits//##
 		Desired number of digits in the returned string.
 
@@ -31,9 +31,9 @@ Converts a number to octal representation
 
 	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
 
-	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//number//## (3 characters for ##[[KeyPgByte Byte]]##, 6 for ##[[KeyPgShort Short]]##, 11 for ##[[KeyPgLong Long]]##, and 22 for ##[[KeyPgLongint Longint]]##)
+	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//number//## (3 characters for ##[[KeyPgByte|Byte]]##, 6 for ##[[KeyPgShort|Short]]##, 11 for ##[[KeyPgLong|Long]]##, and 22 for ##[[KeyPgLongint|Longint]]##)
 
-	If you want to do the opposite, i.e. convert an octal string back into a number, the easiest way to do it is to prepend the string with ##"&O"##, and convert it to an integer type, using a function like ##[[KeyPgCint Cint]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgCint Cint]]("&O77")##
+	If you want to do the opposite, i.e. convert an octal string back into a number, the easiest way to do it is to prepend the string with ##"&O"##, and convert it to an integer type, using a function like ##[[KeyPgCint|Cint]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgCint|Cint]]("&O77")##
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/oct.bas"}}%%(freebasic)
@@ -49,17 +49,17 @@ Print Oct(54321, 8)
 %%
 
 {{fbdoc item="lang"}}
-	- The string type suffix ##"$"## is obligatory in the //[[CompilerOptlang -lang qb]]// dialect.
-	- The string type suffix ##"$"## is optional in the //[[CompilerOptlang -lang fblite]]// and //[[CompilerOptlang -lang fb]]// dialects.
+	- The string type suffix ##"$"## is obligatory in the //[[CompilerOptlang|-lang qb]]// dialect.
+	- The string type suffix ##"$"## is optional in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang fb]]// dialects.
 
 {{fbdoc item="diff"}}
 	- In QBASIC, there was no way to specify the number of digits returned.
 	- The size of the string returned was limited to 32 bits, or 11 octal digits.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgBin Bin]]##
-	- ##[[KeyPgHex Hex]]##
-	- ##[[KeyPgValint Valint]]##
-	- ##[[KeyPgVallng Vallng]]##
+	- ##[[KeyPgBin|Bin]]##
+	- ##[[KeyPgHex|Hex]]##
+	- ##[[KeyPgValint|Valint]]##
+	- ##[[KeyPgVallng|Vallng]]##
 
 {{fbdoc item="back" value="CatPgString|String Functions"}}

@@ -1,0 +1,4 @@
+Direct3D is an API, owned and developed by Microsoft for the creation of 3D games. It is used for manipulating and displaying three-dimensional objects. Direct3D provides programmers with a way to develop 3-D programs that can utilize whatever graphics acceleration device is installed in the machine. Virtually all 3-D accelerator cards for PCs support Direct3D.
+
+{{fbdoc item="see"}}
+- Wikipedia:Direct3D

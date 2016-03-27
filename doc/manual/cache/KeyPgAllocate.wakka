@@ -2,7 +2,7 @@
 Allocates a block of memory from the free store
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Allocate** [[KeyPgCdecl cdecl]] ( [[KeyPgByval byval]] //count// [[KeyPgAs as]] [[KeyPgUinteger uinteger]] ) [[KeyPgAs as]] [[KeyPgAny any]] [[KeyPgPtr ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Allocate** [[KeyPgCdecl|cdecl]] ( [[KeyPgByval|byval]] //count// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Allocate**( //count// )
@@ -17,11 +17,11 @@ Allocates a block of memory from the free store
 {{fbdoc item="desc"}}
 	Attempts to allocate, or reserve, ##//count//## number of bytes from the free store (heap). The newly allocated memory is not initialized.
 
-	As the initial value of newly allocated memory is unspecified, **Allocate** must not be directly used with ##[[KeyPgString String]]## or ##[[KeyPgType UDT]]## containing string, because the string descriptor being not cleared (containing random data), that may induce corrupted string or more (trying to write to a random place in memory or trying to deallocate a random pointer).  It is mandatory in that case (with string or UDT containing string) to use ##[[KeyPgCallocate Callocate]]## (clearing memory), or ##[[KeyPgOpNew New]]## (calling constructor) in case of **UDT**, or at worst after **Allocate** to explicitly clear the descriptor (setting to 0) before the first string use.
+	As the initial value of newly allocated memory is unspecified, **Allocate** must not be directly used with ##[[KeyPgString|String]]## or ##[[KeyPgType|UDT]]## containing string, because the string descriptor being not cleared (containing random data), that may induce corrupted string or more (trying to write to a random place in memory or trying to deallocate a random pointer).  It is mandatory in that case (with string or UDT containing string) to use ##[[KeyPgCallocate|Callocate]]## (clearing memory), or ##[[KeyPgOpNew|New]]## (calling constructor) in case of **UDT**, or at worst after **Allocate** to explicitly clear the descriptor (setting to 0) before the first string use.
 
-	The pointer that is returned is an [[KeyPgAny any]] [[KeyPgPtr ptr]] and points to the start of the allocated memory. This pointer is guaranteed to be unique, even if ##//count//## is zero.
+	The pointer that is returned is an [[KeyPgAny|any]] [[KeyPgPtr|ptr]] and points to the start of the allocated memory. This pointer is guaranteed to be unique, even if ##//count//## is zero.
 
-	Allocated memory must be deallocated, or returned back to the free store, with ##[[KeyPgDeallocate Deallocate]]## when no longer needed. 
+	Allocated memory must be deallocated, or returned back to the free store, with ##[[KeyPgDeallocate|Deallocate]]## when no longer needed. 
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/allocate.bas"}}%%(freebasic)
@@ -92,14 +92,14 @@ end sub
 	- This procedure is not guaranteed to be thread-safe.
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Allocate""**## 
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Allocate""**## 
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCallocate Callocate]]##
-	- ##[[KeyPgReallocate Reallocate]]##
-	- ##[[KeyPgDeallocate Deallocate]]##
+	- ##[[KeyPgCallocate|Callocate]]##
+	- ##[[KeyPgReallocate|Reallocate]]##
+	- ##[[KeyPgDeallocate|Deallocate]]##
 
 {{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

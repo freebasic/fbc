@@ -12,7 +12,7 @@ Pass options to linker
 	The ##-Wl## compiler option passes additional options to LD, the linker.  Options must be separated by commas only.
 
 {{fbdoc item="see"}}
-	- [[CompilerOptWa Compiler Option: -Wa]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerOptWa|Compiler Option: -Wa]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

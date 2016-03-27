@@ -2,7 +2,7 @@
 Divides and assigns a value to a variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **/=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T1//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **/=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T1//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T2// )
 ##
 {{fbdoc item="usage"}}##
 	//lhs// **/=** //rhs//
@@ -20,7 +20,7 @@ Divides and assigns a value to a variable
 {{fbdoc item="desc"}}
 	This operator divides and assigns a value to a variable. It is functionally equivalent to:
 ##
-		//lhs// = //lhs// [[KeyPgOpDivide /]] //rhs//
+		//lhs// = //lhs// [[KeyPgOpDivide|/]] //rhs//
 ##
 	This operator can be overloaded for user-defined types.
 
@@ -38,13 +38,13 @@ Output:
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpDivide Operator / (Divide)]]##
-	- [[CatPgMath Mathematical Functions]]
+	- ##[[KeyPgOpDivide|Operator / (Divide)]]##
+	- [[CatPgMath|Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

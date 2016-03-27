@@ -2,7 +2,7 @@
 
 {{fbdoc item="section" value="From Git"}}
 
-The ""FreeBASIC"" source code is maintained using the [[http://git-scm.com/ Git version control system]]. The latest version of FB source code is available from these Git repositories:
+The ""FreeBASIC"" source code is maintained using the [[http://git-scm.com/|Git version control system]]. The latest version of FB source code is available from these Git repositories:
 
 	- Main repository at ""SourceForge"":
 		Git clone URL: ##""git://git.code.sf.net/p/fbc/code""##
@@ -16,10 +16,10 @@ In order to access a Git repository, you first need to install a Git client.
 
 	- Linux:
 		- The standard Git command line client is available in form of packages for many GNU/Linux distributions. For example, on Debian/Ubuntu, you can install the ##git## and ##git-gui## packages: ##sudo apt-get install git git-gui##.
-		- File explorer integration: Some tools such as [[http://rabbitvcs.org/ RabbitVCS]] act as graphical frontend for the Git command line client. It can integrate into the Nautilus file explorer much like ""TortoiseSVN"" on Windows. Install the ##rabbitvcs-nautilus## package on Debian/Ubuntu to get it.
+		- File explorer integration: Some tools such as [[http://rabbitvcs.org/|RabbitVCS]] act as graphical frontend for the Git command line client. It can integrate into the Nautilus file explorer much like ""TortoiseSVN"" on Windows. Install the ##rabbitvcs-nautilus## package on Debian/Ubuntu to get it.
 	- Windows:
-		- The standard Git command line client is made available for Windows by the [[https://msysgit.github.io/ MsysGit]] project. Just download the latest installer from their website, and install it. The recommended setting for ##core.autocrlf## is ##true##, so that the FB source code in the working tree will have CRLF line endings. By default ""MsysGit"" will add some useful context-menu (right-click menu) entries for directories in the Windows Explorer.
-		- There are other Git clients available, for example [[https://code.google.com/p/tortoisegit/ TortoiseGit]] or [[http://www.sourcetreeapp.com/ SourceTree]].
+		- The standard Git command line client is made available for Windows by the [[https://msysgit.github.io/|MsysGit]] project. Just download the latest installer from their website, and install it. The recommended setting for ##core.autocrlf## is ##true##, so that the FB source code in the working tree will have CRLF line endings. By default ""MsysGit"" will add some useful context-menu (right-click menu) entries for directories in the Windows Explorer.
+		- There are other Git clients available, for example [[https://code.google.com/p/tortoisegit/|TortoiseGit]] or [[http://www.sourcetreeapp.com/|SourceTree]].
 
 Check out [[http://git-scm.com/downloads]] for more information.
 

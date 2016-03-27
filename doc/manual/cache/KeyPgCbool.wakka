@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="CBOOL"}}----
-Converts numeric or string expression to a boolean (##[[KeyPgBoolean Boolean]]##)
+Converts numeric or string expression to a boolean (##[[KeyPgBoolean|Boolean]]##)
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Cbool** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgBoolean boolean]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cbool** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgBoolean|boolean]]
 
-	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgBoolean boolean]]
+	[[KeyPgType|Type]] //typename//
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgBoolean|boolean]]
 	End Type
 ##
 {{fbdoc item="usage"}}##
@@ -15,21 +15,21 @@ Converts numeric or string expression to a boolean (##[[KeyPgBoolean Boolean]]##
 ##
 {{fbdoc item="param"}}
 	##//expression//##
-		a numeric, string, or user defined type to cast to a ##[[KeyPgBoolean Boolean]]## value
+		a numeric, string, or user defined type to cast to a ##[[KeyPgBoolean|Boolean]]## value
 	##//datatype//##
 		any numeric, string, or user defined type
 	##//typename//##
 		a user defined type
 
 {{fbdoc item="ret"}}
-	A ##[[KeyPgBoolean Boolean]]## value.
+	A ##[[KeyPgBoolean|Boolean]]## value.
 
 {{fbdoc item="desc"}}
-	The ##**Cbool**## function converts a zero value to ##[[KeyPgFalse False]]## and a non-zero value to ##[[KeyPgTrue True]]##.
+	The ##**Cbool**## function converts a zero value to ##[[KeyPgFalse|False]]## and a non-zero value to ##[[KeyPgTrue|True]]##.
 
 	The name can be explained as 'Convert to Boolean'.
 
-	If the argument is a string expression, it is converted to boolean using a case insensitive to the string "false" to return a ##[[KeyPgFalse False]]## value or "true" to return a ##[[KeyPgTrue True]]## value.
+	If the argument is a string expression, it is converted to boolean using a case insensitive to the string "false" to return a ##[[KeyPgFalse|False]]## value or "true" to return a ##[[KeyPgTrue|True]]## value.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/casting/boolean.bas"}}%%(freebasic)
@@ -47,23 +47,24 @@ SLEEP
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Cbool""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Cbool""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCbyte Cbyte]]##
-	- ##[[KeyPgCubyte Cubyte]]##
-	- ##[[KeyPgCshort Cshort]]##
-	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgCint Cint]]##
-	- ##[[KeyPgCuint Cuint]]##
-	- ##[[KeyPgClng Clng]]##
-	- ##[[KeyPgCulng Culng]]##
-	- ##[[KeyPgClngint Clngint]]##
-	- ##[[KeyPgCulngint Culngint]]##
-	- ##[[KeyPgCsng Csng]]##
-	- ##[[KeyPgCdbl Cdbl]]##
+	- ##[[KeyPgCbyte|Cbyte]]##
+	- ##[[KeyPgCubyte|Cubyte]]##
+	- ##[[KeyPgCshort|Cshort]]##
+	- ##[[KeyPgCushort|Cushort]]##
+	- ##[[KeyPgCint|Cint]]##
+	- ##[[KeyPgCuint|Cuint]]##
+	- ##[[KeyPgClng|Clng]]##
+	- ##[[KeyPgCulng|Culng]]##
+	- ##[[KeyPgClngint|Clngint]]##
+	- ##[[KeyPgCulngint|Culngint]]##
+	- ##[[KeyPgCsng|Csng]]##
+	- ##[[KeyPgCdbl|Cdbl]]##
+	- ##[[KeyPgStr|Str]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

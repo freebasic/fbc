@@ -2,12 +2,12 @@
 Open a printer device
 
 {{fbdoc item="syntax"}}##
-	**Open Lpt** ["[LPT[x]:][//Printer_Name//][,//TITLE=Doc_Title//][,//EMU=TTY//]"] [For Input|Output] [[KeyPgAs as]] #//filenum//
+	**Open Lpt** ["[LPT[x]:][//Printer_Name//][,//TITLE=Doc_Title//][,//EMU=TTY//]"] [For Input|Output] [[KeyPgAs|as]] #//filenum//
 ##
 {{fbdoc item="usage"}}##
-	**Open Lpt** "LPT..." [[KeyPgAs as]] [#]//filenum//
+	**Open Lpt** "LPT..." [[KeyPgAs|as]] [#]//filenum//
 		//or//
-	//result// = **Open Lpt**( "LPT..."[,] [[KeyPgAs as]] [#]//filenum// )
+	//result// = **Open Lpt**( "LPT..."[,] [[KeyPgAs|as]] [#]//filenum// )
 ##
 {{fbdoc item="param"}}
 	##//x//##
@@ -27,13 +27,13 @@ Open a printer device
 	##0## is returned if ##**Open Lpt**## completed successfully, otherwise a non-zero value is returned to indicate failure.
 
 {{fbdoc item="desc"}}
-	##**Open Lpt**## opens a connection to a printer device.  The connection is treated like a file, so data may be written to the printer using ##[[KeyPgPrint Print]]## and ##[[KeyPgPutfileio Put #]]## commands.  
+	##**Open Lpt**## opens a connection to a printer device.  The connection is treated like a file, so data may be written to the printer using ##[[KeyPgPrint|Print]]## and ##[[KeyPgPutfileio|Put #]]## commands.  
 
 	Any printer attached to the system may be opened with ##**Open Lpt**##
 
 	##**Open Lpt** "LPT:" ...## will try to open the default printer on Windows and Linux, and ##"LPT1:"## on DOS.
 
-	##[[KeyPgLprint Lprint]]## will automatically try to open the default printer on Windows and Linux, and ##"LPT1:"## on DOS.
+	##[[KeyPgLprint|Lprint]]## will automatically try to open the default printer on Windows and Linux, and ##"LPT1:"## on DOS.
 
 Platform specific notes:
 
@@ -105,10 +105,10 @@ Print "Printing Completed!"
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect the old syntax is supported OPEN "LPT:..." . This syntax used in the other dialects will open a regular file.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect the old syntax is supported OPEN "LPT:..." . This syntax used in the other dialects will open a regular file.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpen Open]]##
-	- ##[[KeyPgLprint Lprint]]##
+	- ##[[KeyPgOpen|Open]]##
+	- ##[[KeyPgLprint|Lprint]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

@@ -1,0 +1,31 @@
+{{fbdoc item="title" value="Reporting a bug"}}----
+How to report a bug or problem with the project.
+
+The ""FreeBASIC"" development team relies on community members for a large part of the testing and debugging process. This is important because it allows the project to progress quickly, since both the developers' time and test equipment is limited. What is just as important is that this testing be done in a certain way to help speed up the process.
+
+Currently, it is assumed that users are testing with at least the latest stable release. Previous stable or intermediary releases are not supported, so bug reports using them do little good. If you think you have found a bug, please observe the following steps:
+
+{{fbdoc item="section" value="Checking your code for problems"}}
+
+	Before reporting a bug, try to make sure it's a bug in the ""FreeBASIC"" compiler or runtime libraries and not a bug in your own code by,
+	
+		- //reading any relevant documentation that pertains to your problem.// Note the expected results or behavior and compare that to the actual results or behavior you are experiencing.
+		- //looking in the compiler or runtime library sources if no such documentation exists.// Once the compiler and runtime library sources are documented, this will be easier to do. Just remember that documentation can be incorrect as well, so the ""FreeBASIC"" source code is the only way to be completely sure of what results or behavior you should be expecting.
+		- //making a test case for your problem.// Often, by creating a small test program with enough (but no more) code to reproduce the 'bug', problems in your own code become easier to see.
+
+{{fbdoc item="section" value="Checking if the bug has already been reported or addressed"}}
+
+	If after making a test case you find that there is indeed a bug in the compiler or runtime libraries (expected results differ from actual results), then you should see if that bug has already been reported or addressed by,
+	
+		- //searching the ""FreeBASIC"" [[http://sourceforge.net/p/fbc/bugs/|bug-tracker]] on sourceforge.net.// This is an official list of all known bugs and issues.
+		- //searching the ""FreeBASIC"" [[http://freebasic.net/forum|forums]] on freebasic.net.// Sometimes questions are asked here that lead to bugs being discovered and fixed right away.
+
+{{fbdoc item="section" value="Submitting a bug report"}}
+
+	If the bug hasn't been reported, fixed or otherwise addressed, then please submit a bug report to the ""FreeBASIC"" [[http://sourceforge.net/p/fbc/bugs/|bug-tracker]] on sourceforge.net - you will need to register for a free account there. Log in and click on the "Create Ticket" link and be sure to provide the following information:
+	
+		- //the appropriate category.// A drop-down box is provided to select what part of the project you're reporting on, e.g., the compiler or gfxlib2 (graphics runtime library).
+		- //an appropriate summary.// This should be a short, but concise sentence that summarizes what the bug is doing. Please be as specific as you can within the space allowed. A good summary might be, "Operator Let taking a byval arg of its own type crashes."
+		- //an appropriate description.// This should include a small test case with enough (but no more) source code to reproduce the bug, including comments that detail your expected results or behavior and your actual results or behavior. Also include your operating system and the command-line options and switches used when compiling the test case, and any other relevant info - e.g., if you're submitting a bug in the graphics library (##//gfxlib2//##), it might be helpful to include the make and model of your graphics card(s).
+
+{{fbdoc item="back" value="FBWiki|Main Page"}}

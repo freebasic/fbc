@@ -689,6 +689,31 @@ private function hGetIntegerOrBigger( byval dtype as integer ) as integer
 	return FB_DATATYPE_INTEGER
 end function
 
+private function hIsConsideredBoolean( byval n as ASTNODE ptr ) as integer
+	return (typeGetDtAndPtrOnly( n->dtype ) = FB_DATATYPE_BOOLEAN) orelse _
+	       astIsConst0OrMinus1( n ) orelse _
+	       astIsRelationalBop( n )
+end function
+
+'' Warn about mixed boolean and non-boolean operands, unless
+'' 1. the non-boolean can be considered boolean:
+''  - integer constants 0 and -1 (classic FALSE/TRUE definitions)
+''  - relational BOPs, which don't return booleans yet,
+''    but should really be mixable with booleans
+'' 2. the boolean is true/false (0 or -1 constants), which should also be
+''    mixable with integers for better backwards compatibility.
+private function hShouldWarnAboutMixedBool( byval l as ASTNODE ptr, byval r as ASTNODE ptr ) as integer
+	if( (typeGetDtAndPtrOnly( l->dtype ) =  FB_DATATYPE_BOOLEAN) and _
+	    (typeGetDtAndPtrOnly( r->dtype ) <> FB_DATATYPE_BOOLEAN) ) then
+		return (not astIsConst0OrMinus1( l )) andalso (not hIsConsideredBoolean( r ))
+	end if
+	if( (typeGetDtAndPtrOnly( l->dtype ) <> FB_DATATYPE_BOOLEAN) and _
+	    (typeGetDtAndPtrOnly( r->dtype ) =  FB_DATATYPE_BOOLEAN) ) then
+		return (not hIsConsideredBoolean( l )) andalso (not astIsConst0OrMinus1( r ))
+	end if
+	return FALSE
+end function
+
 '':::::
 function astNewBOP _
 	( _
@@ -993,50 +1018,25 @@ function astNewBOP _
 	'' Any boolean operand(s)?
 	if( (typeGetDtAndPtrOnly( ldtype ) = FB_DATATYPE_BOOLEAN) or _
 	    (typeGetDtAndPtrOnly( rdtype ) = FB_DATATYPE_BOOLEAN) ) then
+		'' Logic BOP which could be pure boolean?
 		select case as const op
 		case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
 		     AST_OP_EQ, AST_OP_NE, AST_OP_ANDALSO, AST_OP_ORELSE
-			'' Don't promote booleans to integers, so we can have
-			'' "pure-boolean" BOPs (that also return booleans).
-			is_boolean = TRUE
+			'' Pure boolean BOPs return booleans and use the boolean operands
+			'' as-is (no promotion/conversion to integers).
+			'' However, with mixed boolean and non-boolean operands, the boolean
+			'' is converted to integer. Then we do the usual promotions for both
+			'' operands. This should give good backwards compatibility and
+			'' well-defined behaviour when mixing like that.
+			is_boolean = (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype ))
 
 		case else
 			'' No other BOP's allowed with booleans
 			exit function
 		end select
 
-		'' Aren't both operands booleans?
-		if( typeGetDtAndPtrOnly( ldtype ) <> typeGetDtAndPtrOnly( rdtype ) ) then
-			'' Warn about mixing boolean and non-boolean operands, unless one is 0/-1.
-			''    boolean and integer    => warning
-			''    integer and true       => no warning
-			''    boolean and (-1)       => no warning
-			if( (not astIsConst0OrMinus1( l )) and _
-			    (not astIsConst0OrMinus1( r )) ) then
-				errReportWarn( FB_WARNINGMSG_OPERANDSMIXEDTYPES )
-			end if
-
-			'' Do usual promotions (i.e. the boolean will be converted to integer,
-			'' and then again to match the other side if needed).
-			''    true and (-1)       = (-1) and (-1)    = integer
-			''    integer and true    = integer and (-1) = integer
-			''
-			'' No need to worry about floats, because they're converted to integers
-			'' for AND/OR/etc. anyways, and =/<> always return integers anyways.
-			''
-			'' This ensures we have well-defined behaviour in case of mixed operands.
-			'' Even though we'll do typeMax() below, which ensures that both operands
-			'' will be the same (so there's no danger to violate corresponding expectations
-			'' by hConstBop() etc.), that's not enough in case the non-boolean operand
-			'' is, for example, a byte (as opposed to an integer). Byte operands are supposed
-			'' to be promoted even if booleans are involved too.
-			''
-			'' Alternatively we could convert the non-boolean operand to boolean, to force
-			'' this to be a boolean BOP. However, that would probably give worse backwards
-			'' compatibility than this, because of cases where TRUE/FALSE are used in
-			'' integer BOPs (old-school boolean logic). Those will keep returning integers
-			'' even though TRUE/FALSE are now boolean built-ins.
-			is_boolean = FALSE
+		if( hShouldWarnAboutMixedBool( l, r ) ) then
+			errReportWarn( FB_WARNINGMSG_OPERANDSMIXEDTYPES )
 		end if
 	end if
 

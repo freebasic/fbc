@@ -4,7 +4,7 @@
 	Frontend: main module, entry point, command-line handling, assembling/linking/etc.
 
 ''objinfo''
-	[[DevObjinfo Object/library information]] section reader/writer, used by ''fbc''. Includes tiny ELF/COFF object file format readers.
+	[[DevObjinfo|Object/library information]] section reader/writer, used by ''fbc''. Includes tiny ELF/COFF object file format readers.
 
 ''fb''
 	FB parser interface, starts the ''parser'' for every input/include file.

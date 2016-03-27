@@ -1,16 +1,16 @@
 {{fbdoc item="title" value="Pointers to Procedures"}}----
 Pointers that point to procedures
 
-	Just as pointers can be made to point to an ##[[KeyPgInteger Integer]]## or ##[[KeyPgSingle Single]]## type, pointers can also point to procedures, that is, they can store the address of a procedure.
+	Just as pointers can be made to point to an ##[[KeyPgInteger|Integer]]## or ##[[KeyPgSingle|Single]]## type, pointers can also point to procedures, that is, they can store the address of a procedure.
 
 {{fbdoc item="section" value="Declaration"}}
-	To declare a pointer to procedure, use the ##[[KeyPgSub Sub]]## or ##[[KeyPgFunction Function]]## keywords, followed by any parameters and return value type:
+	To declare a pointer to procedure, use the ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]## keywords, followed by any parameters and return value type:
 
 {{fbdoc item="filename" value="examples/manual/proguide/procptrs/dimptr.bas"}}%%(freebasic)
 ' declares a pointer to sub procedure that takes no arguments
 dim pointerToProcedure as sub
 %%
-	Procedure pointers store procedure addresses, which are retrieved using ##[[KeyPgOpAt Operator @]]## (Address of) or the ##[[KeyPgOpProcptr ProcPtr operator]]##:
+	Procedure pointers store procedure addresses, which are retrieved using ##[[KeyPgOpAt|Operator @]]## (Address of) or the ##[[KeyPgOpProcptr|ProcPtr operator]]##:
 
 {{fbdoc item="filename" value="examples/manual/proguide/procptrs/pfunc.bi"}}%%(freebasic)
 '' pfunc.bi
@@ -31,7 +31,7 @@ dim pFunc as function (as integer, as integer) as integer = @Add
 
 print "3 + 4 = " & pFunc(3, 4)
 %%
-	For a calling example of subroutine pointer, see the ##[[KeyPgOpAt Operator @ (Address of)]]## page.
+	For a calling example of subroutine pointer, see the ##[[KeyPgOpAt|Operator @ (Address of)]]## page.
 
 	
 {{fbdoc item="section" value="Passing procedure pointers to procedures"}}
@@ -63,7 +63,7 @@ print "3 + 4 = " & DoOperation(3, 4, @Add)
 %%
 
 {{fbdoc item="section" value="Pointers to procedure pointers"}}
-	Because the syntax of a procedure pointer does not allow declaration of a pointer to procedure pointer when the procedure is a function (because ptr applies on return type and not on procedure), a type alias is used. Notice how it is necessary to surround a dereferenced pointer to procedure pointer by parenthesis when calling the procedure. This is because the function-call operator '()' has higher precedence than ##[[KeyPgOpValueOf Operator *]]## (Value of):
+	Because the syntax of a procedure pointer does not allow declaration of a pointer to procedure pointer when the procedure is a function (because ptr applies on return type and not on procedure), a type alias is used. Notice how it is necessary to surround a dereferenced pointer to procedure pointer by parenthesis when calling the procedure. This is because the function-call operator '()' has higher precedence than ##[[KeyPgOpValueOf|Operator *]]## (Value of):
 
 {{fbdoc item="filename" value="examples/manual/proguide/procptrs/procptrs.bas"}}%%(freebasic)
 Function Halve (ByVal i As Integer) As Integer
@@ -130,11 +130,11 @@ print p(obj, 69) '' prints 489
 %%
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgSub Sub]]##
-	- ##[[KeyPgFunction Function]]##
-	- ##[[KeyPgPointer Pointer]]##
-	- ##[[KeyPgOpAt Operator @ (Address of)]]##
-	- ##[[KeyPgOpProcptr ProcPtr operator]]##
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgFunction|Function]]##
+	- ##[[KeyPgPointer|Pointer]]##
+	- ##[[KeyPgOpAt|Operator @ (Address of)]]##
+	- ##[[KeyPgOpProcptr|ProcPtr operator]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
    

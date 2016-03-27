@@ -24,7 +24,7 @@ int fb_DevFileWriteWstr( FB_FILE *handle, const FB_WCHAR* src, size_t chars )
 
 	/* convert to ascii, file should be opened with the ENCODING option
 	   to allow UTF characters to be written */
-	fb_wstr_ConvToA( buffer, src, chars );
+	fb_wstr_ConvToA( buffer, chars, src );
 
 	/* do write */
 	res = fwrite( (void *)buffer, 1, chars, fp ) == chars;

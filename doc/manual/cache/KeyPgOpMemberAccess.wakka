@@ -2,7 +2,7 @@
 Returns a reference to a member from a reference to an object
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare Declare]] [[KeyPgOperator Operator]] **.** ( [[KeyPgByref Byref]] //lhs// [[KeyPgAs As]] //T// ) [[KeyPgByref Byref]] [[KeyPgAs As]] //U//
+	[[KeyPgDeclare|Declare]] [[KeyPgOperator|Operator]] **.** ( [[KeyPgByref|Byref]] //lhs// [[KeyPgAs|As]] //T// ) [[KeyPgByref|Byref]] [[KeyPgAs|As]] //U//
 ##
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **.** //rhs//
@@ -23,7 +23,7 @@ Returns a reference to a member from a reference to an object
 {{fbdoc item="desc"}}
 	**##Operator .## (Member access)** returns a reference to a member of an object.
 
-	**##Operator .## (Member access)** can also be used to access members of an implicit object inside a ##[[KeyPgWith With..End With]]## block.
+	**##Operator .## (Member access)** can also be used to access members of an implicit object inside a ##[[KeyPgWith|With..End With]]## block.
 
 	This operator cannot be overloaded.
 
@@ -52,10 +52,10 @@ end with
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]##
-	- ##[[KeyPgOpAt Operator @ (Address of)]]##
-	- ##[[KeyPgOpValueOf Operator * (Value of)]]##
-	- ##[[KeyPgWith With..End With]]##
+	- ##[[KeyPgOpPtrMemberAccess|Operator -> (Pointer to member access)]]##
+	- ##[[KeyPgOpAt|Operator @ (Address of)]]##
+	- ##[[KeyPgOpValueOf|Operator * (Value of)]]##
+	- ##[[KeyPgWith|With..End With]]##
 
 {{fbdoc item="back" value="CatPgOpTypeclass|Type or Class Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
    

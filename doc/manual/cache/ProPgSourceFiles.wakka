@@ -30,10 +30,10 @@ FreeBASIC by default, automatically takes care of compiling sources and linking 
 %%
 
 {{fbdoc item="section" value="Header Files"}}
-	A header file is a special kind of source file that typically only contains declarations and has a ##.bi## extension. See [[ProPgHeaderFiles Header Files (.bi)]].
+	A header file is a special kind of source file that typically only contains declarations and has a ##.bi## extension. See [[ProPgHeaderFiles|Header Files (.bi)]].
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine fbc command-line]]
-	- [[ProPgHeaderFiles Header Files (.bi)]]
+	- [[CompilerCmdLine|fbc command-line]]
+	- [[ProPgHeaderFiles|Header Files (.bi)]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

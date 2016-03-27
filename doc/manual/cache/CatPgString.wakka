@@ -8,7 +8,7 @@ Statements and Procedures that work with strings.
 	String data types and procedures that create new strings.
 **{{anchor name="CHRCONVERT|Character Conversions"}}**
 	Procedures that convert from character codes to strings and back.
-**{{anchor name="NUMSTRCONV|Numeric to String Conversions"}}**
+**{{anchor name="NUMSTRCONV|Numeric/Boolean to String Conversions"}}**
 	Procedures that convert numeric values to strings.
 **{{anchor name="STRNUMCONV|String to Numeric Conversions"}}**
 	Procedures that convert strings to numeric values.
@@ -21,85 +21,85 @@ Statements and Procedures that work with strings.
 	=={{fbdoc item="keyword" value="KeyPgString|STRING"}}==
 		Standard data type: 8 bit character string.
 	=={{fbdoc item="keyword" value="KeyPgStringFunction|STRING (Function)"}}==
-		Returns a [[KeyPgString String]] of multiple characters.
+		Returns a [[KeyPgString|String]] of multiple characters.
 	=={{fbdoc item="keyword" value="KeyPgZstring|ZSTRING"}}==
 		Standard data type: null terminated 8 bit character string.
 	=={{fbdoc item="keyword" value="KeyPgWstring|WSTRING"}}==
 		Standard data type: wide character string.
 	=={{fbdoc item="keyword" value="KeyPgWstringFunction|WSTRING (Function)"}}==
-		Returns a [[KeyPgWstring WString]] of multiple characters.
+		Returns a [[KeyPgWstring|WString]] of multiple characters.
 	=={{fbdoc item="keyword" value="KeyPgSpace|SPACE"}}==
-		Returns a [[KeyPgString String]] consisting of spaces.
+		Returns a [[KeyPgString|String]] consisting of spaces.
 	=={{fbdoc item="keyword" value="KeyPgWspace|WSPACE"}}==
-		Returns a [[KeyPgWstring WString]] consisting of spaces.
+		Returns a [[KeyPgWstring|WString]] consisting of spaces.
 	=={{fbdoc item="keyword" value="KeyPgLen|LEN"}}==
 		Returns the length of a string in characters.
 
 {{anchor name="CHRCONVT"}}{{fbdoc item="section" value="Character Conversion"}}
 	=={{fbdoc item="keyword" value="KeyPgAsc|ASC"}}==
-		Returns an [[KeyPgInteger Integer]] representation of an character.
+		Returns an [[KeyPgInteger|Integer]] representation of an character.
 	=={{fbdoc item="keyword" value="KeyPgChr|CHR"}}==
-		Returns a string of one or more characters from their ASCII [[KeyPgInteger Integer]] representation.
+		Returns a string of one or more characters from their ASCII [[KeyPgInteger|Integer]] representation.
 	=={{fbdoc item="keyword" value="KeyPgWchr|WCHR"}}==
-		Returns a [[KeyPgWstring WString]] of one or more characters from their Unicode [[KeyPgInteger Integer]] representation.
+		Returns a [[KeyPgWstring|WString]] of one or more characters from their Unicode [[KeyPgInteger|Integer]] representation.
 
-{{anchor name="NUMSTRCONV"}}{{fbdoc item="section" value="Numeric to String Conversions"}}
+{{anchor name="NUMSTRCONV"}}{{fbdoc item="section" value="Numeric/Boolean to String Conversions"}}
 	=={{fbdoc item="keyword" value="KeyPgBin|BIN"}}==
-		Returns a binary [[KeyPgString String]] representation of an integral value.
+		Returns a binary [[KeyPgString|String]] representation of an integral value.
 	=={{fbdoc item="keyword" value="KeyPgWbin|WBIN"}}==
-		Returns a binary [[KeyPgWstring WString]] representation of an integral value.
+		Returns a binary [[KeyPgWstring|WString]] representation of an integral value.
 	=={{fbdoc item="keyword" value="KeyPgHex|HEX"}}==
-		Returns a hexadecimal [[KeyPgString String]] representation of an integral value.
+		Returns a hexadecimal [[KeyPgString|String]] representation of an integral value.
 	=={{fbdoc item="keyword" value="KeyPgWhex|WHEX"}}==
-		Returns a hexadecimal [[KeyPgWstring WString]] representation of an integral value.
+		Returns a hexadecimal [[KeyPgWstring|WString]] representation of an integral value.
 	=={{fbdoc item="keyword" value="KeyPgOct|OCT"}}==
-		Returns an octal [[KeyPgString String]] representation of an integral value.
+		Returns an octal [[KeyPgString|String]] representation of an integral value.
 	=={{fbdoc item="keyword" value="KeyPgWoct|WOCT"}}==
-		Returns an octal [[KeyPgWstring WString]] representation of an integral value.
+		Returns an octal [[KeyPgWstring|WString]] representation of an integral value.
 	=={{fbdoc item="keyword" value="KeyPgStr|STR"}}==
-		Returns the [[KeyPgString String]] representation of numeric value.
+		Returns the [[KeyPgString|String]] representation of numeric value or boolean.
 	=={{fbdoc item="keyword" value="KeyPgWstr|WSTR"}}==
-		Returns the [[KeyPgWstring WString]] representation of numeric value.
+		Returns the [[KeyPgWstring|WString]] representation of numeric value.
 	=={{fbdoc item="keyword" value="KeyPgFormat|FORMAT"}}==
-		Returns a formatted [[KeyPgString String]] representation of a [[KeyPgDouble Double]].
+		Returns a formatted [[KeyPgString|String]] representation of a [[KeyPgDouble|Double]].
 
 {{anchor name="STRNUMCONV"}}{{fbdoc item="section" value="String to Numeric Conversions"}}
 	=={{fbdoc item="keyword" value="KeyPgVal|VAL"}}==
-		Returns the [[KeyPgDouble Double]] conversion of a numeric string.
+		Returns the [[KeyPgDouble|Double]] conversion of a numeric string.
 	=={{fbdoc item="keyword" value="KeyPgValint|VALINT"}}==
-		Returns the [[KeyPgInteger Integer]] conversion of a numeric string.
+		Returns the [[KeyPgInteger|Integer]] conversion of a numeric string.
 	=={{fbdoc item="keyword" value="KeyPgVallng|VALLNG"}}==
-		Returns the [[KeyPgLong Long]] conversion of a numeric string.
+		Returns the [[KeyPgLong|Long]] conversion of a numeric string.
 	=={{fbdoc item="keyword" value="KeyPgValuint|VALUINT"}}==
-		Returns the [[KeyPgUinteger uInteger]] conversion of a numeric string.
+		Returns the [[KeyPgUinteger|uInteger]] conversion of a numeric string.
 	=={{fbdoc item="keyword" value="KeyPgValulng|VALULNG"}}==
-		Returns the [[KeyPgUlong ULong]] conversion of a numeric string.
+		Returns the [[KeyPgUlong|ULong]] conversion of a numeric string.
 
 <<>>{{anchor name="NUMSERIAL"}}{{fbdoc item="section" value="Numeric Serialization"}}
 	=={{fbdoc item="keyword" value="KeyPgMkd|MKD"}}==
-		Returns an eight character [[KeyPgString String]] representation of a [[KeyPgDouble Double]].
+		Returns an eight character [[KeyPgString|String]] representation of a [[KeyPgDouble|Double]].
 	=={{fbdoc item="keyword" value="KeyPgMki|MKI"}}==
-		Returns a four character [[KeyPgString String]] representation of a [[KeyPgInteger Integer]].
+		Returns a four character [[KeyPgString|String]] representation of a [[KeyPgInteger|Integer]].
 	=={{fbdoc item="keyword" value="KeyPgMkl|MKL"}}==
-		Returns a four character [[KeyPgString String]] representation of a [[KeyPgLong Long]].
+		Returns a four character [[KeyPgString|String]] representation of a [[KeyPgLong|Long]].
 	=={{fbdoc item="keyword" value="KeyPgMklongint|MKLONGINT"}}==
-		Returns an eight character [[KeyPgString String]] representation of a [[KeyPgLongint Longint]].
+		Returns an eight character [[KeyPgString|String]] representation of a [[KeyPgLongint|Longint]].
 	=={{fbdoc item="keyword" value="KeyPgMks|MKS"}}==
-		Returns a four character [[KeyPgString String]] representation of a [[KeyPgSingle Single]].
+		Returns a four character [[KeyPgString|String]] representation of a [[KeyPgSingle|Single]].
 	=={{fbdoc item="keyword" value="KeyPgMkshort|MKSHORT"}}==
-		Returns a two character [[KeyPgString String]] representation of a [[KeyPgShort Short]].
+		Returns a two character [[KeyPgString|String]] representation of a [[KeyPgShort|Short]].
 	=={{fbdoc item="keyword" value="KeyPgCvd|CVD"}}==
-		Returns a [[KeyPgDouble Double]] representation of an eight character [[KeyPgString String]].
+		Returns a [[KeyPgDouble|Double]] representation of an eight character [[KeyPgString|String]].
 	=={{fbdoc item="keyword" value="KeyPgCvi|CVI"}}==
-		Returns an [[KeyPgInteger Integer]] representation of a four character [[KeyPgString String]].
+		Returns an [[KeyPgInteger|Integer]] representation of a four character [[KeyPgString|String]].
 	=={{fbdoc item="keyword" value="KeyPgCvl|CVL"}}==
-		Returns a [[KeyPgLong Long]] representation of a four character [[KeyPgString String]].
+		Returns a [[KeyPgLong|Long]] representation of a four character [[KeyPgString|String]].
 	=={{fbdoc item="keyword" value="KeyPgCvlongint|CVLONGINT"}}==
-		Returns a [[KeyPgLongint Longint]] representation of an eight character [[KeyPgString String]].
+		Returns a [[KeyPgLongint|Longint]] representation of an eight character [[KeyPgString|String]].
 	=={{fbdoc item="keyword" value="KeyPgCvs|CVS"}}==
-		Returns a [[KeyPgSingle Single]] representation of a four character [[KeyPgString String]].
+		Returns a [[KeyPgSingle|Single]] representation of a four character [[KeyPgString|String]].
 	=={{fbdoc item="keyword" value="KeyPgCvshort|CVSHORT"}}==
-		Returns a [[KeyPgShort Short]] representation of a two character [[KeyPgString String]].
+		Returns a [[KeyPgShort|Short]] representation of a two character [[KeyPgString|String]].
 
 {{anchor name="SUBSTRING"}}{{fbdoc item="section" value="Working with Substrings"}}
 	=={{fbdoc item="keyword" value="KeyPgLeft|LEFT"}}==

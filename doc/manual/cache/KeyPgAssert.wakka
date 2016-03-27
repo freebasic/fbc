@@ -2,7 +2,7 @@
 Debugging macro that halts program execution if an expression is evaluated to ##0## (false).
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **ASSERT**(//expression//) [[KeyPgIfthen if]] (expression) = 0 [[KeyPgThen then]] : fb_Assert( [[KeyPgDdfile __FILE__]], [[KeyPgDdline __LINE__]], [[KeyPgDdfunction __FUNCTION__]], [[KeyPgOpPpStringize #]]expression ) : [[KeyPgEndif end if]]
+	[[KeyPgPpdefine|#define]] **ASSERT**(//expression//) [[KeyPgIfthen|if]] (expression) = 0 [[KeyPgThen|then]] : fb_Assert( [[KeyPgDdfile|__FILE__]], [[KeyPgDdline|__LINE__]], [[KeyPgDdfunction|__FUNCTION__]], [[KeyPgOpPpStringize|#]]expression ) : [[KeyPgEndif|end if]]
 ##
 {{fbdoc item="usage"}}##
 	**ASSERT**( //expression// )
@@ -18,7 +18,7 @@ Debugging macro that halts program execution if an expression is evaluated to ##
 	
 	If ##-g## is not passed to fbc, the macro does not generate any code, and has no effect.
 
-	Note: If an ##**ASSERT**## fails while the program is in a graphics ##[[KeyPgScreengraphics Screen]]##, the error message will not be visible as it will be printed to the graphics screen, which will be closed immediately after.
+	Note: If an ##**ASSERT**## fails while the program is in a graphics ##[[KeyPgScreengraphics|Screen]]##, the error message will not be visible as it will be printed to the graphics screen, which will be closed immediately after.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/debug/assert.bas"}}%%(freebasic)
@@ -34,13 +34,13 @@ foo
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__ASSERT""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__ASSERT""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpAssert #assert]]##
-	- ##[[KeyPgAssertwarn ASSERTWARN]]##
+	- ##[[KeyPgPpAssert|#assert]]##
+	- ##[[KeyPgAssertwarn|ASSERTWARN]]##
 	
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -16,9 +16,9 @@ Add a path to search for include files
 		##fbc -i includes file.bas ##
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgInclude #include]]##
-	- [[CompilerOptinclude Compiler Option: -include]]
-	- [[ProPgHeaderFiles Header Files]]
-	- [[CompilerCmdLine Using the Command Line]]
+	- ##[[KeyPgInclude|#include]]##
+	- [[CompilerOptinclude|Compiler Option: -include]]
+	- [[ProPgHeaderFiles|Header Files]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

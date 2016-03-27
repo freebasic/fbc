@@ -1,11 +1,11 @@
 {{fbdoc item="title" value="CLNG"}}----
-Converts numeric or string expression to ##[[KeyPgLong Long]]##
+Converts numeric or string expression to ##[[KeyPgLong|Long]]##
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Clng** ( [[KeyPgByval byval]] //expression// [[KeyPgAs as]] [[DataType datatype]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Clng** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 
-	[[KeyPgType Type]] //typename//
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] [[KeyPgCast cast]] ( ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgType|Type]] //typename//
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 	End Type
 ##
 {{fbdoc item="usage"}}##
@@ -15,21 +15,21 @@ Converts numeric or string expression to ##[[KeyPgLong Long]]##
 ##
 {{fbdoc item="param"}}
 	##//expression//##
-		a numeric, string, or pointer expression to cast to a ##[[KeyPgLong Long]]## value
+		a numeric, string, or pointer expression to cast to a ##[[KeyPgLong|Long]]## value
 	##//datatype//##
 		any numeric, string, or pointer data type
 	##//typename//##
 		a user defined type
 
 {{fbdoc item="ret"}}
-	A ##[[KeyPgLong Long]]## value.
+	A ##[[KeyPgLong|Long]]## value.
 
 {{fbdoc item="desc"}}
-	The ##**Clng**## function rounds off the decimal part and returns a 32-bit ##[[KeyPgLong Long]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##-2## ##147## ##483## ##648## or larger than ##2## ##147## ##483## ##648##.
+	The ##**Clng**## function rounds off the decimal part and returns a 32-bit ##[[KeyPgLong|Long]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##-2## ##147## ##483## ##648## or larger than ##2## ##147## ##483## ##648##.
 
 	The name can be explained as 'Convert to ""LoNG""'.
 
-	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint Valint]]##.
+	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValint|Valint]]##.
 
 {{fbdoc item="ex"}}
 
@@ -51,16 +51,16 @@ SLEEP
 	- The string argument was not allowed in QB
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgCbyte Cbyte]]##
-	- ##[[KeyPgCubyte Cubyte]]##
-	- ##[[KeyPgCshort Cshort]]##
-	- ##[[KeyPgCushort Cushort]]##
-	- ##[[KeyPgCint Cint]]##
-	- ##[[KeyPgCuint Cuint]]##
-	- ##[[KeyPgCulng Culng]]##
-	- ##[[KeyPgClngint Clngint]]##
-	- ##[[KeyPgCulngint Culngint]]##
-	- ##[[KeyPgCsng Csng]]##
-	- ##[[KeyPgCdbl Cdbl]]##
+	- ##[[KeyPgCbyte|Cbyte]]##
+	- ##[[KeyPgCubyte|Cubyte]]##
+	- ##[[KeyPgCshort|Cshort]]##
+	- ##[[KeyPgCushort|Cushort]]##
+	- ##[[KeyPgCint|Cint]]##
+	- ##[[KeyPgCuint|Cuint]]##
+	- ##[[KeyPgCulng|Culng]]##
+	- ##[[KeyPgClngint|Clngint]]##
+	- ##[[KeyPgCulngint|Culngint]]##
+	- ##[[KeyPgCsng|Csng]]##
+	- ##[[KeyPgCdbl|Cdbl]]##
 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

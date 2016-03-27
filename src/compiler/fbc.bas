@@ -664,8 +664,10 @@ private function hLinkFiles( ) as integer
 		'' (needed until binutils' default DJGPP ldscripts are fixed)
 		ldcline += " -T """ + fbc.libpath + (FB_HOST_PATHDIV + "i386go32.x""")
 	else
-		'' Supplementary ld script to drop the fbctinf objinfo section
-		ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
+		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN ) then
+			'' Supplementary ld script to drop the fbctinf objinfo section
+			ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
+		end if
 	end if
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
@@ -703,7 +705,9 @@ private function hLinkFiles( ) as integer
 
 	if( fbGetOption( FB_COMPOPT_DEBUG ) = FALSE ) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
-			ldcline += " -s"
+			if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN ) then
+				ldcline += " -s"
+			end if
 		end if
 	end if
 
@@ -863,6 +867,10 @@ private function hLinkFiles( ) as integer
 		ldcline += hFindLib( "crtend.o" )
 
 	end select
+	
+	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
+		ldcline += " -macosx_version_min 10.6"
+	end if
 
 	'' extra options
 	ldcline += " " + fbc.extopt.ld
@@ -2782,6 +2790,9 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		'' subtraction, however with the C backend with, gcc -ffast-math
 		'' optimizes out the subtraction (even under -O0) and inserts 0 instead.
 
+		'' Define signed integer overflow
+		ln += "-fwrapv "
+
 		'' Avoid gcc exception handling bloat
 		ln += "-fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables "
 
@@ -3327,7 +3338,7 @@ private sub hPrintVersion( )
 
 	print "FreeBASIC Compiler - Version " + FB_VERSION + _
 		" (" + FB_BUILD_DATE + "), built for " + fbGetHostId( ) + " (" & fbGetHostBits( ) & "bit)"
-	print "Copyright (C) 2004-2015 The FreeBASIC development team."
+	print "Copyright (C) 2004-2016 The FreeBASIC development team."
 
 	#ifdef ENABLE_STANDALONE
 		hAppendConfigInfo( config, "standalone" )

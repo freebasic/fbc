@@ -2,7 +2,7 @@
 
 The FB makefile aswell as the compiler/rtlib/gfxlib2 source code offers some configuration options. If you build FB by using the FB makefile, then it makes sense to use the FB makefile's configuration options. If you build FB by compiling the sources manually (without using the FB makefile), then of course you can only use the source code configuration options, and you are responsible for putting the FB setup together properly yourself.
 
-The compiler and rtlib/gfxlib2 source code both handle some #defines which allow for some configuration. For example, #defining ENABLE_STANDALONE when building the compiler (by specifying ##-d ENABLE_STANDALONE## on the fbc command line) will adjust the compiler for a [[DevNormalVsStandalone standalone setup]]. As another example, #defining DISABLE_FFI when building the rtlib (by specifying ##-DDISABLE_FFI## on the gcc command line) will cause the rtlib to be built without using the libffi headers (##ffi.h##). This disables [[KeyPgThreadCall ThreadCall]] support in the rtlib, but can be useful if you do not have libffi.
+The compiler and rtlib/gfxlib2 source code both handle some #defines which allow for some configuration. For example, #defining ENABLE_STANDALONE when building the compiler (by specifying ##-d ENABLE_STANDALONE## on the fbc command line) will adjust the compiler for a [[DevNormalVsStandalone|standalone setup]]. As another example, #defining DISABLE_FFI when building the rtlib (by specifying ##-DDISABLE_FFI## on the gcc command line) will cause the rtlib to be built without using the libffi headers (##ffi.h##). This disables [[KeyPgThreadCall|ThreadCall]] support in the rtlib, but can be useful if you do not have libffi.
 
 When using the FB makefile, you can set some variables on the make command line or inside ##config.mk## that affect how the makefile will invoke the fbc/gcc compilers and what directory layout it will use for the FB setup. This includes cases where the makefile will automatically pass the configuration options on to the compiler/rtlib/gfxlib2 source code. For example, specifying ENABLE_STANDALONE=1 to the FB makefile causes it to use ##-d ENABLE_STANDALONE## when building the new compiler (to make it standalone) and to put the newly built compiler and libraries into the standalone directory layout.
 
@@ -77,7 +77,7 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 		##V## for verbose. By default, the makefile does not display the full command lines used during compilation, but just prints out the latest tool and file name combination to give a better visual indication of the build progress. It also makes warnings and errors stand out more in the console window. If the variable ##V## is set, the echoing tricks are disabled and full command lines will be shown, as GNU make normally does.
 	
 	- ##ENABLE_STANDALONE=1##
-		Build a standalone FB setup instead of the normal Unix-style setup, see also: [[DevNormalVsStandalone the standalone vs. normal comparison]]. This causes the makefile to use the standalone directory layout and to use ##-d ENABLE_STANDALONE## when building the compiler.
+		Build a standalone FB setup instead of the normal Unix-style setup, see also: [[DevNormalVsStandalone|the standalone vs. normal comparison]]. This causes the makefile to use the standalone directory layout and to use ##-d ENABLE_STANDALONE## when building the compiler.
 	
 	- ##ENABLE_PREFIX=1##
 		This causes the makefile to use ##-d ENABLE_PREFIX=$(prefix)## when building the compiler.
@@ -97,13 +97,13 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 {{fbdoc item="section" value="Compiler source code configuration (FBFLAGS)"}}
 
 	- ##-d ENABLE_STANDALONE##
-		This makes the compiler behave as a standalone tool that cannot rely on the system to have certain programs or libraries. See [[DevNormalVsStandalone the normal vs. standalone comparison]] for more information.
+		This makes the compiler behave as a standalone tool that cannot rely on the system to have certain programs or libraries. See [[DevNormalVsStandalone|the normal vs. standalone comparison]] for more information.
 	
 	- ##-d ENABLE_SUFFIX=foo##
 		This makes the compiler append the given suffix to the ##lib/freebasic/## directory name when searching for its own ##lib/freebasic/## directory. For example, ##-d ENABLE_SUFFIX=-0.24## causes it to look for ##lib/freebasic-0.24/## instead of ##lib/freebasic/##. Corresponding the ENABLE_SUFFIX=foo makefile option, this adjust the compiler to work in the new directory layout.
 	
 	- ##-d ENABLE_PREFIX=/some/path##
-		This causes the given prefix path to be hard-coded into the compiler, disabling the use of ##[[KeyPgExepath exepath()]]##. Thus it will no longer be relocatable. This is useful if its known that the compiler does not need to be relocatable, or if ##exepath()## does not work properly (for example, in FB 0.90.1, this is the case for ""FreeBSD"").
+		This causes the given prefix path to be hard-coded into the compiler, disabling the use of ##[[KeyPgExepath|exepath()]]##. Thus it will no longer be relocatable. This is useful if its known that the compiler does not need to be relocatable, or if ##exepath()## does not work properly (for example, in FB 0.90.1, this is the case for ""FreeBSD"").
 	
 	- ##-d ENABLE_LIB64##
 		This makes the compiler search 64bit libraries in ##lib64/freebasic/## instead of ##lib/freebasic/##. This only affects the normal (non-standalone) build. 32bit libraries are still searched in ##lib/freebasic/##.
@@ -114,10 +114,10 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 		With this, the Unix rtlib/gfxlib2 will not use X11 headers, disabling gfxlib2's X11 graphics driver and some of the rtlib's Linux console functionality (affects multikey() and console mouse handling).
 	
 	- ##-DDISABLE_GPM##
-		With this, the Linux rtlib will not use General Purpose Mouse headers (gpm.h), disabling the Linux [[KeyPgGetmouse GetMouse]] functionality.
+		With this, the Linux rtlib will not use General Purpose Mouse headers (gpm.h), disabling the Linux [[KeyPgGetmouse|GetMouse]] functionality.
 	
 	- ##-DDISABLE_FFI##
-		With this, the rtlib will not use libffi headers (ffi.h), disabling the [[KeyPgThreadcall ThreadCall]] functionality.
+		With this, the rtlib will not use libffi headers (ffi.h), disabling the [[KeyPgThreadcall|ThreadCall]] functionality.
 	
 	- ##-DDISABLE_OPENGL##
 		With this, the gfxlib2 will not use ""OpenGL"" headers, disabling the ""OpenGL"" graphics drivers.

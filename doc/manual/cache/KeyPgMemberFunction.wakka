@@ -2,17 +2,17 @@
 Declares or defines a member procedure returning a value.
 
 {{fbdoc item="syntax"}}##
-	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] } //typename//
-		[[KeyPgDeclare declare]] [ [[KeyPgStaticMember static]] | [[KeyPgConstMember const]] ] **Function** //fieldname// [//calling convention specifier//] [ [[KeyPgAlias alias]] //external_name// ] ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]] [ [[KeyPgStatic Static]] ]
-	End { [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] }
+	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] } //typename//
+		[[KeyPgDeclare|declare]] [ [[KeyPgStaticMember|static]] | [[KeyPgConstMember|const]] ] **Function** //fieldname// [//calling convention specifier//] [ [[KeyPgAlias|alias]] //external_name// ] ( [ //parameters// ] ) [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgStatic|Static]] ]
+	End { [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] }
 
-	**Function** //typename//.//fieldname// ( [ //parameters// ] ) [[KeyPgAs as]] [[DataType datatype]]
+	**Function** //typename//.//fieldname// ( [ //parameters// ] ) [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
 		//statements//
 	**End Function**
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
-		name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgUnion Union]]##
+		name of the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]##
 	##//fieldname//## 
 		name of the procedure
 	##//external_name//##
@@ -20,19 +20,19 @@ Declares or defines a member procedure returning a value.
 	##//parameters//## 
 		the parameters to be passed to the procedure
 	##//calling convention specifier//##	
-		can be one of: ##[[KeyPgCdecl Cdecl]]##, ##[[KeyPgStdcall Stdcall]]## or ##[[KeyPgPascal Pascal]]##
+		can be one of: ##[[KeyPgCdecl|Cdecl]]##, ##[[KeyPgStdcall|Stdcall]]## or ##[[KeyPgPascal|Pascal]]##
 
 {{fbdoc item="desc"}}
-	##**Function**## members are accessed with ##[[KeyPgOpMemberAccess Operator . (Member access)]]## or ##[[KeyPgOpPtrMemberAccess Operator -> (Pointer to member access)]]## to call a member procedure that returns a value (a reference can also be returned by specifying ##[[KeyPgByrefFunction byref as]] //return_type//##).  The procedure may optionally accept parameters either ##[[KeyPgByval byval]]## or ##[[KeyPgByref byref]]##.  ##//typename//## be overloaded  without explicit use of the ##[[KeyPgOverload Overload]]## keyword.
+	##**Function**## members are accessed with ##[[KeyPgOpMemberAccess|Operator . (Member access)]]## or ##[[KeyPgOpPtrMemberAccess|Operator -> (Pointer to member access)]]## to call a member procedure that returns a value (a reference can also be returned by specifying ##[[KeyPgByrefFunction|byref as]] //return_type//##).  The procedure may optionally accept parameters either ##[[KeyPgByval|byval]]## or ##[[KeyPgByref|byref]]##.  ##//typename//## be overloaded  without explicit use of the ##[[KeyPgOverload|Overload]]## keyword.
 
-	##//typename//## is the name of the type for which the ##**Function**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace Namespace]]##.
+	##//typename//## is the name of the type for which the ##**Function**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace|Namespace]]##.
 
-	A hidden ##[[KeyPgThis this]]## parameter having the same type as ##//typename//## is passed to non-static member procedures.  ##[[KeyPgThis this]]## is used to access the fields of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, or ##[[KeyPgUnion Union]]##.
-	To access duplicated symbols defined outside the Type, use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith With..End With]] block).
+	A hidden ##[[KeyPgThis|this]]## parameter having the same type as ##//typename//## is passed to non-static member procedures.  ##[[KeyPgThis|this]]## is used to access the fields of the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]##.
+	To access duplicated symbols defined outside the Type, use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
 
-	A ##[[KeyPgStaticMember Static (Member)]]## may be declared using the ##**Static**## specifier.  A ##[[KeyPgConstMember Const (Member)]]## may be declared using the ##**Const**## specifier.
+	A ##[[KeyPgStaticMember|Static (Member)]]## may be declared using the ##**Static**## specifier.  A ##[[KeyPgConstMember|Const (Member)]]## may be declared using the ##**Const**## specifier.
 
-	As for a normal ##[[KeyPgFunction Function]]##, the return value of a ##**Function**## member can be ignored in the calling code.
+	As for a normal ##[[KeyPgFunction|Function]]##, the return value of a ##**Function**## member can be ignored in the calling code.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/function.bas"}}%%(freebasic)
@@ -75,12 +75,12 @@ print "Day   = "; d.Day
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
+	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgClass Class]]##
-	- ##[[KeyPgFunction Function]]##
-	- ##[[KeyPgMemberSub Sub (Member)]]##
-	- ##[[KeyPgType Type]]##
+	- ##[[KeyPgClass|Class]]##
+	- ##[[KeyPgFunction|Function]]##
+	- ##[[KeyPgMemberSub|Sub (Member)]]##
+	- ##[[KeyPgType|Type]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

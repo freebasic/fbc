@@ -18,8 +18,8 @@ Compile Time: 13:42:57
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDddate __DATE__]]##
-	- ##[[KeyPgDddateiso __DATE_ISO__]]##
-	- ##[[KeyPgTime Time]]##
+	- ##[[KeyPgDddate|__DATE__]]##
+	- ##[[KeyPgDddateiso|__DATE_ISO__]]##
+	- ##[[KeyPgTime|Time]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

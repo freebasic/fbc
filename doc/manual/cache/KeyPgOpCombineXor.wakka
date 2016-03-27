@@ -2,7 +2,7 @@
 Performs a bitwise-xor (exclusive disjunction) and assigns the result to a variable
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Xor=** ( [[KeyPgByref byref]] //lhs// [[KeyPgAs as]] //T1//, [[KeyPgByref byref]] //rhs// [[KeyPgAs as]] //T2// )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Xor=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T1//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T2// )
 ##
 {{fbdoc item="usage"}}##
 	//lhs// **Xor=** //rhs//
@@ -20,7 +20,7 @@ Performs a bitwise-xor (exclusive disjunction) and assigns the result to a varia
 {{fbdoc item="desc"}}
 	This operator performs a bitwise-or and assigns the result to a variable (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value). It is functionally equivalent to:
 ##
-		//lhs// = //lhs// [[KeyPgOpXor xor]] //rhs//
+		//lhs// = //lhs// [[KeyPgOpXor|xor]] //rhs//
 ##
 	##**Xor=**## compares each bit of its operands, ##//lhs//## and ##//rhs//##, and if both bits are the same (both 1 or both 0), then the corresponding bit in the first operand, ##//lhs//##, is set to 0, otherwise it is set to 1.
 
@@ -36,12 +36,12 @@ print bin(a)
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// dialect, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, this operator cannot be overloaded.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpXor Xor]]##
+	- ##[[KeyPgOpXor|Xor]]##
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

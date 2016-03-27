@@ -2,7 +2,7 @@
 Sends a command to the system command interpreter
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Shell** ( [[KeyPgByref byref]] //command// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Shell** ( [[KeyPgByref|byref]] //command// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Shell**( //command// )
@@ -36,7 +36,7 @@ shell "ls"
 	- QB allowed SHELL on its own without a "command" argument which caused a default command shell to be started.  Execution in the main program would suspend until exit from the command shell.  The behaviour in FB is platform-dependent.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgExec Exec]]##
-	- ##[[KeyPgRun Run]]##
+	- ##[[KeyPgExec|Exec]]##
+	- ##[[KeyPgRun|Run]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

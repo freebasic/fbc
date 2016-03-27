@@ -9,9 +9,9 @@
 '' Naked cdecl function
 Function subtract_c Naked cdecl _   '' parameters pushed onto call stack in reverse order of declaration
 	( _
-	    ByVal a As Integer, _
-	    ByVal b As Integer _        '' parameter pushed onto stack in first
-	) As Integer
+	    ByVal a As Long, _
+	    ByVal b As Long _        '' parameter pushed onto stack in first
+	) As Long
    
 	Asm
 	    mov eax, dword Ptr [esp+4]  '' eax = a
@@ -30,9 +30,9 @@ Function subtract_s Naked stdcall _ '' parameters pushed onto call stack in reve
 	                     _          '' called procedure responsible for removing parameters from stack
 	                     _          ''   (appending constant to RET instruction specifying number of bytes to release)
 	( _
-	    ByVal a As Integer, _
-	    ByVal b As Integer _        '' parameter pushed onto stack in first
-	) As Integer
+	    ByVal a As Long, _
+	    ByVal b As Long _        '' parameter pushed onto stack in first
+	) As Long
    
 	Asm
 	    mov eax, dword Ptr [esp+4]  '' eax = a
@@ -51,14 +51,14 @@ Function subtract_p Naked pascal _  '' parameters pushed onto call stack in same
 	                     _          '' called procedure responsible for removing parameters from stack
 	                     _          ''   (appending constant to RET instruction specifying number of bytes to release)
 	( _
-	    ByVal a As Integer, _       '' parameter pushed onto stack in first
-	    ByVal b As Integer _
-	) As Integer
+	    ByVal a As Long, _       '' parameter pushed onto stack in first
+	    ByVal b As Long _
+	) As Long
    
 	Asm
 	    mov eax, dword Ptr [esp+8]  '' eax = a
 	    Sub eax, dword Ptr [esp+4]  '' eax -= b
-	    ret 8                       '' return result in eax and 8 bytes (2 integers) to release
+	    ret 8                       '' return result in eax and 8 bytes (2 longs) to release
 	End Asm
    
 End Function

@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="NOW"}}----
-Gets the current system time as a [[ProPgDates Date Serial]] 
+Gets the current system time as a [[ProPgDates|Date Serial]] 
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Now** ( ) [[KeyPgAs as]] [[KeyPgDouble double]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Now** ( ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -29,6 +29,6 @@ print format(a, "yyyy/mm/dd hh:mm:ss")
 	- Did not exist in QB. This function appeared in PDS and VBDOS
 
 {{fbdoc item="see"}}
-	- [[ProPgDates Date Serials]]
+	- [[ProPgDates|Date Serials]]
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

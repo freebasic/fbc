@@ -28,7 +28,7 @@ See also:
 
 {{fbdoc item="section" value="MinGW binutils ld versions 2.18 to 2.21"}}
 
-	fbc triggers a bug ([[https://sourceware.org/bugzilla/show_bug.cgi?id=12614 binutils ld bug 12614]]) in the mentioned linker versions causing it to produce broken binaries in some cases. It's fixed in binutils 2.21.1 and up.
+	fbc triggers a bug ([[https://sourceware.org/bugzilla/show_bug.cgi?id=12614|binutils ld bug 12614]]) in the mentioned linker versions causing it to produce broken binaries in some cases. It's fixed in binutils 2.21.1 and up.
 
 {{fbdoc item="section" value="MinGW.org runtime's globbing code changes case of command line arguments"}}
 

@@ -2,7 +2,7 @@
 Makes a folder/directory on the local file system
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Mkdir** ( [[KeyPgByref byref]] //folder// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Mkdir** ( [[KeyPgByref|byref]] //folder// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Mkdir**( //folder// )
@@ -32,8 +32,8 @@ If 0 <> result Then Print "error: unable to create folder " & pathname & " in th
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgShell Shell]]##
-	- ##[[KeyPgChdir Chdir]]##
-	- ##[[KeyPgRmdir Rmdir]]##
+	- ##[[KeyPgShell|Shell]]##
+	- ##[[KeyPgChdir|Chdir]]##
+	- ##[[KeyPgRmdir|Rmdir]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

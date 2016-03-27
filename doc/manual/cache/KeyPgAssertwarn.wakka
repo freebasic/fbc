@@ -2,7 +2,7 @@
 Debugging macro that prints a warning if an expression evaluates to 0.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgPpdefine #define]] **ASSERTWARN**(//expression//) [[KeyPgIfthen if]] (expression) = 0 [[KeyPgThen then]] : fb_AssertWarn( [[KeyPgDdfile __FILE__]], [[KeyPgDdline __LINE__]], [[KeyPgDdfunction __FUNCTION__]], [[KeyPgOpPpStringize #]]expression ) : [[KeyPgEndif end if]]
+	[[KeyPgPpdefine|#define]] **ASSERTWARN**(//expression//) [[KeyPgIfthen|if]] (expression) = 0 [[KeyPgThen|then]] : fb_AssertWarn( [[KeyPgDdfile|__FILE__]], [[KeyPgDdline|__LINE__]], [[KeyPgDdfunction|__FUNCTION__]], [[KeyPgOpPpStringize|#]]expression ) : [[KeyPgEndif|end if]]
 ##
 {{fbdoc item="usage"}}##
 	**ASSERTWARN**( //expression// )
@@ -12,7 +12,7 @@ Debugging macro that prints a warning if an expression evaluates to 0.
 		Any valid expression.  If ##//expression//## evaluates to ##0##, a warning message is printed to stdout (console).
 
 {{fbdoc item="desc"}}
-	The ##**ASSERTWARN**## macro is intended for use in debugging and works only if the ##-g## option is selected in the FBC command line. In this case it prints a warning message if ##//expression//## evaluates to ##0##. It doesn't stop the program execution like ##[[KeyPgAssert ASSERT]]## does.
+	The ##**ASSERTWARN**## macro is intended for use in debugging and works only if the ##-g## option is selected in the FBC command line. In this case it prints a warning message if ##//expression//## evaluates to ##0##. It doesn't stop the program execution like ##[[KeyPgAssert|ASSERT]]## does.
 	
 	Its normal use is to check the correct value of the variables during debugging.
 	
@@ -32,12 +32,12 @@ foo
 %%
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__ASSERTWARN""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__ASSERTWARN""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgAssert ASSERT]]##
+	- ##[[KeyPgAssert|ASSERT]]##
 	
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

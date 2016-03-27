@@ -2,7 +2,7 @@
 Changes the current video display page
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgSub sub]] **Flip** ( [[KeyPgByval byval]] //frompage// [[KeyPgAs as]] [[KeyPgLong long]] = -1, [[KeyPgByval byval]] //topage// [[KeyPgAs as]] [[KeyPgLong long]] = -1 )
+	[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] **Flip** ( [[KeyPgByval|byval]] //frompage// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1, [[KeyPgByval|byval]] //topage// [[KeyPgAs|as]] [[KeyPgLong|long]] = -1 )
 ##
 {{fbdoc item="usage"}}##
 	**Flip** [ //frompage// ] [, //topage// ]
@@ -14,7 +14,7 @@ Changes the current video display page
 		new page to display
 
 {{fbdoc item="desc"}}
-	In normal graphics mode, ##**Flip**## is an alias for ##[[KeyPgPcopy PCopy]]## and ##[[KeyPgScreencopy ScreenCopy]]##. See ##[[KeyPgScreencopy ScreenCopy]]## for details.
+	In normal graphics mode, ##**Flip**## is an alias for ##[[KeyPgPcopy|PCopy]]## and ##[[KeyPgScreencopy|ScreenCopy]]##. See ##[[KeyPgScreencopy|ScreenCopy]]## for details.
 
 	In OpenGL mode, ##**Flip**## does a hardware page flip and displays the contents of the backbuffer. It is recommended that you call ##**Flip**## regularly while in OpenGL mode, otherwise your app may also become unresponsive.
 
@@ -40,7 +40,7 @@ Sleep
 
 
 {{fbdoc item="lang"}}
-	- Not available in the //[[CompilerOptlang -lang qb]]// dialect unless referenced with the alias ##**""__Flip""**##.
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Flip""**##.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""

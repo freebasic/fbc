@@ -80,7 +80,7 @@ declare function hMakeParamDesc _
 		( 0, @"Mixing signed/unsigned operands" ), _
 		( 0, @"Mismatching parameter initializer" ), _
 		( 1, @"" ), _  '' FB_WARNINGMSG_AMBIGIOUSLENSIZEOF
-		( 0, @"Mixing operand data types may have undefined results" ), _
+		( 0, @"Suspicious logic operation, mixed boolean and non-boolean operands" ), _
 		( 0, @"Redefinition of intrinsic" ) _
 	}
 
@@ -407,7 +407,8 @@ declare function hMakeParamDesc _
 		@"Reference not initialized", _
 		@"Incompatible reference initializer", _
 		@"Array of references - not supported yet", _
-		@"Invalid CASE range, start value is greater than the end value" _
+		@"Invalid CASE range, start value is greater than the end value", _
+		@"Fixed-length string combined with BYREF (not supported)" _
 	}
 
 

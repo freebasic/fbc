@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Implicit Declarations"}}----
 Lazy declaration of variables.
 
-	The //[[CompilerOptlang qb]]// and //[[CompilerOptlang fblite]]// ""FreeBASIC"" language dialects allow variable names to be used without declaring them first. This is called implicit or lazy declaration since the actual declaration is inferred from how the name is first used.
+	The //[[CompilerOptlang|qb]]// and //[[CompilerOptlang|fblite]]// ""FreeBASIC"" language dialects allow variable names to be used without declaring them first. This is called implicit or lazy declaration since the actual declaration is inferred from how the name is first used.
 
 {{fbdoc item="section" value="Variable Type"}}
 
@@ -9,15 +9,15 @@ Lazy declaration of variables.
 
 	{{fbdoc item="subsect" value="Default type"}}
 
-		In the //[[CompilerOptlang qb]]// dialect, implicitly declared variables default to ##[[KeyPgSingle Single]]## type, while in the //[[CompilerOptlang fblite]]// dialect they default to ##[[KeyPgInteger Integer]]## type.
+		In the //[[CompilerOptlang|qb]]// dialect, implicitly declared variables default to ##[[KeyPgSingle|Single]]## type, while in the //[[CompilerOptlang|fblite]]// dialect they default to ##[[KeyPgInteger|Integer]]## type.
 
 	{{fbdoc item="subsect" value="Default implicit type directives"}}
 		
-		"##DEFxxx##" directives dictate the new default type for any following implicit variable declarations. These directives are: ##[[KeyPgDefbyte DefByte]]##, ##[[KeyPgDefubyte DefUByte]]##, ##[[KeyPgDefshort DefShort]]##, ##[[KeyPgDefushort DefUShort]]##, ##[[KeyPgDefint DefInt]]##, ##[[KeyPgDefuint DefUInt]]##, ##[[KeyPgDeflng DefLng]]##, ##[[KeyPgDefsng DefSng]]##, ##[[KeyPgDefdbl DefDbl]]## and ##[[KeyPgDefstr DefStr]]##.
+		"##DEFxxx##" directives dictate the new default type for any following implicit variable declarations. These directives are: ##[[KeyPgDefbyte|DefByte]]##, ##[[KeyPgDefubyte|DefUByte]]##, ##[[KeyPgDefshort|DefShort]]##, ##[[KeyPgDefushort|DefUShort]]##, ##[[KeyPgDefint|DefInt]]##, ##[[KeyPgDefuint|DefUInt]]##, ##[[KeyPgDeflng|DefLng]]##, ##[[KeyPgDefsng|DefSng]]##, ##[[KeyPgDefdbl|DefDbl]]## and ##[[KeyPgDefstr|DefStr]]##.
 
 	{{fbdoc item="subsect" value="Variable type suffix symbols"}}
 
-		Variable names suffixed with one of a certain set of symbols will be implicitly declared of a certain type. These symbols are: ##'%'## for ##[[KeyPgInteger Integer]]##, ##'&'## for ##[[KeyPgLong Long]]##, ##'!'## for ##[[KeyPgSingle Single]]##, ##'#'## for ##[[KeyPgDouble Double]]## and ##'$'## for ##[[KeyPgString String]]##. These symbols override previous "##DEFxxx##" directives, if any.
+		Variable names suffixed with one of a certain set of symbols will be implicitly declared of a certain type. These symbols are: ##'%'## for ##[[KeyPgInteger|Integer]]##, ##'&'## for ##[[KeyPgLong|Long]]##, ##'!'## for ##[[KeyPgSingle|Single]]##, ##'#'## for ##[[KeyPgDouble|Double]]## and ##'$'## for ##[[KeyPgString|String]]##. These symbols override previous "##DEFxxx##" directives, if any.
 
 {{fbdoc item="section" value="Implicit Array Declaration"}}
 
@@ -25,10 +25,10 @@ Lazy declaration of variables.
 
 {{fbdoc item="section" value="Debugging"}}
 
-	For full debugging support, all variables must be explicitly declared and suffixes should not be used. The use of ##[[KeyPgOptionexplicit Option Explicit]]## is recommended to turn of support for implicit declarations, so that mistyped variable names are caught at compile time by the compiler.
+	For full debugging support, all variables must be explicitly declared and suffixes should not be used. The use of ##[[KeyPgOptionexplicit|Option Explicit]]## is recommended to turn of support for implicit declarations, so that mistyped variable names are caught at compile time by the compiler.
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOptionexplicit Option Explicit]]##
-	- [[CompilerOptlang FreeBASIC Language Dialects]]
+	- ##[[KeyPgOptionexplicit|Option Explicit]]##
+	- [[CompilerOptlang|FreeBASIC Language Dialects]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}} 

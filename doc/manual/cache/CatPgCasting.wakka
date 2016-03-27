@@ -37,7 +37,7 @@ Operators and procedures that convert between different types.
 
 {{anchor name="STRING"}}{{fbdoc item="section" value="Conversions to/from string types"}}
 	=={{fbdoc item="keyword" value="KeyPgStr|STR"}} and {{fbdoc item="keyword" value="KeyPgWstr|WSTR"}}==
-		Converts numeric expressions to a numeric string representation.
+		Converts numeric expressions or booleans to their string representation.
 	=={{fbdoc item="keyword" value="KeyPgVal|VAL"}}==
 		Converts a numeric string expression to a floating-point value.
 	=={{fbdoc item="keyword" value="KeyPgValint|VALINT"}} and {{fbdoc item="keyword" value="KeyPgValuint|VALUINT"}}==

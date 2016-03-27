@@ -40,7 +40,7 @@ Set the target platform for cross compilation
 				- ##freebsd##
 				- ##netbsd##
 				- ##openbsd##
-			- The [[DevNormalVsStandalone Normal]] fbc (e.g. FB-linux release) additionally recognizes GNU triplets, for example:
+			- The [[DevNormalVsStandalone|Normal]] fbc (e.g. FB-linux release) additionally recognizes GNU triplets, for example:
 				- ##i686-w64-mingw32##
 				- ##x86_64-w64-mingw32##
 				- ##i686-pc-linux-gnu##
@@ -48,7 +48,7 @@ Set the target platform for cross compilation
 				- ##...##
 
 {{fbdoc item="desc"}}
-	The ##-target## compiler option can be used to create an executable for a platform which is different from the host on which the source code is being compiled and linked. Appropriate libraries and cross compilation tools (assembler, linker) must be installed for cross compilation to work (also see [[DevCrossCompiling FB and cross-compiling]]). 
+	The ##-target## compiler option can be used to create an executable for a platform which is different from the host on which the source code is being compiled and linked. Appropriate libraries and cross compilation tools (assembler, linker) must be installed for cross compilation to work (also see [[DevCrossCompiling|FB and cross-compiling]]). 
 	
 	If ##-target <platform>## is given, the compiler will compile programs more or less as if they were compiled on the given platform. This affects which ##""__FB_*__""## operating-system-specific symbol will be pre-defined, the default calling convention, the object and executable file format (e.g. ELF/COFF), the available runtime libraries and functions, etc.
 	
@@ -73,7 +73,7 @@ Set the target platform for cross compilation
 		- Libraries besides FB's own runtime libraries are located by running ##gcc -print-file-name=...## (or ##<platform>-gcc -print-file-name=...##). This allows fbc to use the system and gcc libraries installed on Linux and similar systems without knowing the exact installation directories.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
-	- [[DevCrossCompiling FB and cross-compiling]]
+	- [[CompilerCmdLine|Using the Command Line]]
+	- [[DevCrossCompiling|FB and cross-compiling]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

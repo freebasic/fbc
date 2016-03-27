@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="HOUR"}}----
-Gets the hour of day from a [[ProPgDates Date Serial]] 
+Gets the hour of day from a [[ProPgDates|Date Serial]] 
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **Hour** ( [[KeyPgByval byval]] //date_serial// [[KeyPgAs as]] [[KeyPgDouble double]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hour** ( [[KeyPgByval|byval]] //date_serial// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -13,7 +13,7 @@ Gets the hour of day from a [[ProPgDates Date Serial]]
 		the date serial
 
 {{fbdoc item="ret"}}
-	Returns the hour from a variable containing a date in [[ProPgDates Date Serial]] format.
+	Returns the hour from a variable containing a date in [[ProPgDates|Date Serial]] format.
 
 {{fbdoc item="desc"}}
 	The compiler will not recognize this function unless ##vbcompat.bi## is included.
@@ -31,6 +31,6 @@ print format(ds, "yyyy/mm/dd hh:mm:ss "); Hour(ds)
 	- Did not exist in QB. This function appeared in PDS and VBDOS
 
 {{fbdoc item="see"}}
-	- [[ProPgDates Date Serials]]
+	- [[ProPgDates|Date Serials]]
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

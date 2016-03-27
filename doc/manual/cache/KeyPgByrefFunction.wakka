@@ -2,7 +2,7 @@
 Specifies that a function result is returned by reference
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgFunction Function]] //name// ( //parameter-list// ) **Byref** [[KeyPgAs As]] //[[DataType datatype]]//
+	[[KeyPgFunction|Function]] //name// ( //parameter-list// ) **Byref** [[KeyPgAs|As]] //[[DataType|datatype]]//
 ##
 {{fbdoc item="desc"}}
 	Causes the function result to be returned by reference, rather than by value. A function returning ##**Byref**## will return the address of a variable, instead of making a copy like when returning by value. This allows the caller of the function to modify the variable which the function result points to.
@@ -79,7 +79,7 @@ Print I
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- [[ProPgReturnValue Returning values]]
-	- ##[[KeyPgByref Byref (parameters)]]##
+	- [[ProPgReturnValue|Returning values]]
+	- ##[[KeyPgByref|Byref (parameters)]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

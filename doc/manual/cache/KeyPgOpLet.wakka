@@ -1,12 +1,12 @@
 {{fbdoc item="title" value="Operator Let (Assign)"}}----
-Indicates the assignment operator when overloading [[KeyPgOpAssignment Operator = (Assignment)]]
+Indicates the assignment operator when overloading [[KeyPgOpAssignment|Operator = (Assignment)]]
 
 {{fbdoc item="syntax"}}##
-	{ [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] | [[KeyPgEnum Enum]] } //typename//
-		[[KeyPgDeclare declare]] [[KeyPgOperator operator]] **Let** ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
-	End { [[KeyPgType Type]] | [[KeyPgClass Class]] | [[KeyPgUnion Union]] }
+	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] | [[KeyPgEnum|Enum]] } //typename//
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Let** ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //rhs// [[KeyPgAs|as]] [[DataType|datatype]] )
+	End { [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] }
 
-	[[KeyPgOperator operator]] //typename//.**Let** ( [ [[KeyPgByref byref]] | [[KeyPgByval byval]] ] //rhs// [[KeyPgAs as]] [[DataType datatype]] )
+	[[KeyPgOperator|operator]] //typename//.**Let** ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //rhs// [[KeyPgAs|as]] [[DataType|datatype]] )
 ##
 {{fbdoc item="usage"}}##
 	//lhs// **=** //rhs//
@@ -15,14 +15,14 @@ Indicates the assignment operator when overloading [[KeyPgOpAssignment Operator 
 ##
 {{fbdoc item="param"}}
 	##//typename//## 
-		name of the ##[[KeyPgType Type]]##, ##[[KeyPgClass Class]]##, ##[[KeyPgUnion Union]]##, or ##[[KeyPgEnum Enum]]##
+		name of the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, ##[[KeyPgUnion|Union]]##, or ##[[KeyPgEnum|Enum]]##
 	##//lhs//##
 		The variable to assign to.
 	##//rhs//##
 		The value to assign.
 
 {{fbdoc item="desc"}}
-	##**Let**## is used to overload the ##{{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}## operator and to distinguish it from the comparison operator ##[[KeyPgOpEqual Operator = (Equal)]]##.
+	##**Let**## is used to overload the ##{{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}## operator and to distinguish it from the comparison operator ##[[KeyPgOpEqual|Operator = (Equal)]]##.
 
 	##//lhs// **=[>]** //rhs//## will assign the ##//rhs//## to ##//lhs//## by invoking the ##**Let**## operator procedure defined in ##//typename//##.
 	This includes the case of an object returned from a function by value, by using ##**Function** =[>] //rhs//## (or ##//function_identifier// =[>] //rhs//##) assignment.
@@ -76,16 +76,16 @@ Thanks to the overloading operator Let (assign)
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, this operator cannot be overloaded.
-	- In the //[[CompilerOptlang -lang qb]]// and //[[CompilerOptlang -lang fblite]]// dialects, an assignment expression can be preceded by the ##[[KeyPgLet Let]]## keyword.
+	- In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, this operator cannot be overloaded.
+	- In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, an assignment expression can be preceded by the ##[[KeyPgLet|Let]]## keyword.
 
 {{fbdoc item="diff"}}
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLet Let]]##
-	- ##[[KeyPgOpLetlist Operator Let() (Assignment)]]##
+	- ##[[KeyPgLet|Let]]##
+	- ##[[KeyPgOpLetlist|Operator Let() (Assignment)]]##
 	- ##{{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}##
-	- ##[[KeyPgOpEqual Operator = (Equal)]]##
+	- ##[[KeyPgOpEqual|Operator = (Equal)]]##
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

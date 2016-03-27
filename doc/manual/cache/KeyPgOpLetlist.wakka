@@ -14,6 +14,7 @@ Assigns fields of a user defined type to a list of variables
 
 {{fbdoc item="desc"}}
 	Assigns the values from the ##//UDT_var//## variable's fields to the list of variables.
+	Union is not supported.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/let-list.bas"}}%%(freebasic)
@@ -40,14 +41,14 @@ y =  7
 %%
 
 {{fbdoc item="lang"}}
-	- Only available in the //[[CompilerOptlang -lang fb]]// dialect.
+	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLet Let]]##
+	- ##[[KeyPgLet|Let]]##
 	- ##{{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}##
-	- ##[[KeyPgOpLet Operator Let (Assignment)]]##
+	- ##[[KeyPgOpLet|Operator Let (Assignment)]]##
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

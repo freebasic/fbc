@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="ISDATE"}}----
-Tests if a string can be converted to a [[ProPgDates Date Serial]]
+Tests if a string can be converted to a [[ProPgDates|Date Serial]]
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare declare]] [[KeyPgFunction function]] **""IsDate""** ( [[KeyPgByref byref]] //stringdate// [[KeyPgAs as]] [[KeyPgConstQualifier const]] [[KeyPgString string]] ) [[KeyPgAs as]] [[KeyPgLong long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""IsDate""** ( [[KeyPgByref|byref]] //stringdate// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
 	#include "vbcompat.bi"
@@ -13,12 +13,12 @@ Tests if a string can be converted to a [[ProPgDates Date Serial]]
 		the string to test
 
 {{fbdoc item="ret"}}
-	Returns non-zero (-1) if the date string can be converted to a [[ProPgDates Date Serial]], otherwise returns zero (0).
+	Returns non-zero (-1) if the date string can be converted to a [[ProPgDates|Date Serial]], otherwise returns zero (0).
 
 {{fbdoc item="desc"}}
 	Date strings must be in the format set in the regional settings of the OS to be considered valid dates.
 
-	##**""IsDate""([[KeyPgDate Date]])**## will return non-zero (-1) only if the regional settings specify the same date format that QB used.
+	##**""IsDate""([[KeyPgDate|Date]])**## will return non-zero (-1) only if the regional settings specify the same date format that QB used.
 
 	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
@@ -52,9 +52,9 @@ loop
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- [[ProPgDates Date Serials]]
-	- ##[[KeyPgDateSerial DateSerial]]##
-	- ##[[KeyPgTimeValue TimeValue]]##
-	- ##[[KeyPgDateValue DateValue]]##
+	- [[ProPgDates|Date Serials]]
+	- ##[[KeyPgDateSerial|DateSerial]]##
+	- ##[[KeyPgTimeValue|TimeValue]]##
+	- ##[[KeyPgDateValue|DateValue]]##
 
 {{fbdoc item="back" value="CatPgDate|Date and Time Functions"}}

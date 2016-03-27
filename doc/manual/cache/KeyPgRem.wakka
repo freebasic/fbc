@@ -42,9 +42,10 @@ Dim b As /' can comment in here also '/    Integer
 %%
 
 {{fbdoc item="diff"}}
+	- ##**Rem**## may also appear after other keywords on a source line in ""FreeBASIC""
 	- Multiline comments are new to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpif #if]]##
+	- ##[[KeyPgPpif|#if]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

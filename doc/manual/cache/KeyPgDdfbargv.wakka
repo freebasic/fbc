@@ -39,7 +39,7 @@ end function
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgDdfbargc __FB_ARGC__]]##
-	- ##[[KeyPgCommand Command]]##
+	- ##[[KeyPgDdfbargc|__FB_ARGC__]]##
+	- ##[[KeyPgCommand|Command]]##
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

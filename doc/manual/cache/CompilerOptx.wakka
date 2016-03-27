@@ -12,6 +12,6 @@ Set executable/library path/name
 	The ##-x## compiler option set the executable or library name, with extension. Defaults to the name of the first source file passed on the command line. When compiling libraries, be sure to add the "lib" prefix to the file name, otherwise the linker will not be able to find it. If compiling and linking separately, this option must be set only in the linker.
 
 {{fbdoc item="see"}}
-	- [[CompilerCmdLine Using the Command Line]]
+	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}
