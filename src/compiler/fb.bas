@@ -368,7 +368,7 @@ function fbGetBackendName _
 
 end function
 
-sub fbInit( byval ismain as integer, byval restarts as integer )
+sub fbInit( byval ismain as integer, byval restarts as integer, byval entry as zstring ptr )
 	strsetInit( @env.libs, FB_INITLIBNODES \ 4 )
 	strsetInit( @env.libpaths, FB_INITLIBNODES \ 4 )
 
@@ -379,6 +379,7 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 
 	env.includerec = 0
 	env.main.proc = NULL
+	env.entry = *entry
 
 	env.opt.explicit = (env.clopt.lang = FB_LANG_FB)
 
@@ -982,6 +983,11 @@ end function
 
 '':::::
 function fbGetEntryPoint( ) as string static
+
+	'' If overridden with -entry
+	if( len(env.entry) ) then
+		return env.entry
+	end if
 
 	'' All targets use main(), except for xbox...
 	if (env.clopt.target = FB_COMPTARGET_XBOX) then

@@ -423,7 +423,7 @@ const FB_INFOSEC_OBJNAME = "__fb_ct.inf"
 
 #include once "error.bi"
 
-declare sub fbInit(byval ismain as integer, byval restarts as integer)
+declare sub fbInit(byval ismain as integer, byval restarts as integer, byval entry as zstring ptr)
 declare sub fbEnd()
 
 declare sub fbCompile _

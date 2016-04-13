@@ -90,6 +90,7 @@ type FBCCTX
 
 	outname 			as zstring * FB_MAXPATHLEN+1
 	mainname			as zstring * FB_MAXPATHLEN+1
+	entry				as zstring * FB_MAXNAMELEN+1
 	mainset				as integer
 	mapfile				as zstring * FB_MAXPATHLEN+1
 	subsystem			as zstring * FB_MAXNAMELEN+1
@@ -1500,6 +1501,7 @@ enum
 	OPT_EDEBUGINFO
 	OPT_ELOCATION
 	OPT_ENULLPTR
+	OPT_ENTRY
 	OPT_EX
 	OPT_EXX
 	OPT_EXPORT
@@ -1571,6 +1573,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	FALSE, _ '' OPT_EDEBUGINFO
 	FALSE, _ '' OPT_ELOCATION
 	FALSE, _ '' OPT_ENULLPTR
+	TRUE,  _ '' OPT_ENTRY
 	FALSE, _ '' OPT_EX
 	FALSE, _ '' OPT_EXX
 	FALSE, _ '' OPT_EXPORT
@@ -1683,6 +1686,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 	case OPT_ENULLPTR
 		fbSetOption( FB_COMPOPT_NULLPTRCHECK, TRUE )
+
+	case OPT_ENTRY
+		fbc.entry = arg
 
 	case OPT_EX
 		fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
@@ -2088,6 +2094,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		CHECK("edebuginfo", OPT_EDEBUGINFO)
 		CHECK("elocation", OPT_ELOCATION)
 		CHECK("enullptr", OPT_ENULLPTR)
+		CHECK("entry", OPT_ENTRY)
 		CHECK("exx", OPT_EXX)
 		CHECK("export", OPT_EXPORT)
 
@@ -2754,7 +2761,7 @@ private sub hCompileBas _
 
 	do
 		'' init the parser
-		fbInit( is_main, restarts )
+		fbInit( is_main, restarts, fbc.entry )
 
 		if( is_fbctinf ) then
 			'' Let the compiler know about all libs collected so far,
@@ -3102,7 +3109,7 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			'' -march=name
 			'' Specify the name of the target architecture and, 
 			'' optionally, one or more feature modifiers. This option 
-			'' has the form â€˜-march=arch{+[no]feature}*â€™.
+			'' has the form ‘-march=arch{+[no]feature}*’.
 			'' 
 			'' The permissible values for arch are 
 			'' 'armv8-a'
@@ -3636,6 +3643,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -enullptr        Enable null-pointer checking"
 	end if
 
+	print "  -entry           Change the entry point of the program from main()"
 	print "  -ex              -e plus RESUME support"
 	print "  -exx             -ex plus array bounds/null-pointer checking"
 	print "  -export          Export symbols for dynamic linkage"
