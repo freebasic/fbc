@@ -2492,6 +2492,14 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		end if
 	end select
 
+	'' On darwin need to change the default asm syntax when using gen gcc because
+	'' most C compilers on OSX seem to be configured without intel syntax support;
+	'' probably because Apple as and llvm-mc have horribly broken intel support.
+	if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) and _
+	    (fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS) ) then
+		fbSetOption( FB_COMPOPT_ASMSYNTAX, FB_ASMSYNTAX_ATT )
+	end if
+
 	if( fbc.asmsyntax >= 0 ) then
 		'' -asm only applies to x86 and x86_64
 		select case( fbGetCpuFamily( ) )
