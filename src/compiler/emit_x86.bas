@@ -7189,7 +7189,9 @@ private function _getSectionString _
 
 	ostr = NEWLINE
 
-	'' Omit the .section directive on Darwin
+	'' Omit the .section directive on Darwin.
+	'' as accepts .text, .const, and many others as shorthands, while .section has a different syntax:
+	'' .section segment , section [[[ , type ] , attribute] , sizeof_stub]
 	if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) then
 		ostr += ".section "
 	end if
@@ -7224,7 +7226,11 @@ private function _getSectionString _
 		ostr += "drectve"
 
 	case IR_SECTION_INFO
-		ostr += FB_INFOSEC_NAME
+		if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN) then
+			ostr += "section __DATA," + FB_INFOSEC_NAME
+		else
+			ostr += FB_INFOSEC_NAME
+		end if
 
 	case IR_SECTION_CONSTRUCTOR
 		ostr += "ctors"
