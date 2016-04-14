@@ -15,12 +15,14 @@ SOURCE_FILES := $(wildcard $(SOURCE_DIR)/*.bas)
 OBJECT_FILES := $(SOURCE_FILES:%.bas=%.o)
 LIB_FILE := lib$(FBCU_).a
 
-
 #:: compiler flags, with fbcu defines
 
 FBC_CFLAGS := -c -w 0
 FBC_CFLAGS += -i $(INCLUDE_DIR)
 FBC_CFLAGS += -m $(FBCU_)
+ifdef ARCH
+	FBC_CFLAGS += -arch $(ARCH)
+endif
 
 	#: hack ...
 	AUTO_OFILE := "fbc-tests"
@@ -79,6 +81,9 @@ FBC_CFLAGS += -m $(FBCU_)
 #:: linker flags
 
 FBC_LFLAGS := -lib -x $(LIB_FILE)
+ifdef ARCH
+	FBC_LFLAGS += -arch $(ARCH)
+endif
 
 #:: rules
 

@@ -57,6 +57,11 @@ ifneq ($(FB_LANG),)
 FBC_CFLAGS += -lang $(FB_LANG)
 endif
 
+ifneq ($(ARCH),)
+FBC_CFLAGS += -arch $(ARCH)
+FBC_LFLAGS += -arch $(ARCH)
+endif
+
 ifneq ($(FPU),)
 FBC_CFLAGS += -fpu $(FPU)
 endif
