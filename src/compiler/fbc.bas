@@ -1014,7 +1014,7 @@ private function hLinkFiles( ) as integer
 	end select
 
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
-		ldcline += " -macosx_version_min 10.6"
+		ldcline += " -macosx_version_min 10.4"
 	end if
 
 	'' extra options
