@@ -1034,35 +1034,89 @@ private sub hClearLocals _
 end sub
 
 '':::::
+'' Amount to decrement esp
+private function hFrameBytesToAlloc _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as integer static
+
+	dim as integer bytestoalloc, bytespushed = any
+
+    	bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
+
+	if( (env.target.options and FB_TARGETOPT_STACKALIGN16) <> 0 ) then
+
+		'' Calculate amount of space used in the stack frame in addition to locals/temps
+		'EMIT_ARGSTART includes eip and ebp pushed to stack
+		bytespushed = EMIT_ARGSTART
+		if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+			bytespushed += 4
+		end if
+		if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
+			bytespushed += 4
+		end if
+		if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
+			bytespushed += 4
+		end if
+
+		'' Ensure total size of locals + preserved registers (inc. eip) + padding is a multiple of 16
+		bytestoalloc += bytespushed
+		bytestoalloc = (bytestoalloc + 15) and (not 15)
+		bytestoalloc -= bytespushed
+	end if
+
+	return bytestoalloc
+end function
+
+'':::::
+'' Stack frames are skipped if possible (and not debug/profile build) or naked.
+'' In particular they can normally be skipped if the function has no arguments
+'' or locals, meaning that nothing needs to be indexed with ebp.
+'' The stack contents is as follows:
+'' (ebp-addressed) arguments
+''                               <-- aligned (on 4/16 byte boundary)
+'' (ebp-addressed) return address
+'' (ebp-addressed) saved ebp (ebp points here)
+'' (ebp-addressed) locals and temp variables
+''                 padding for 16 byte alignment (if needed)
+'' (esp-addressed) saved ebx, esi, edi (if needed)
+''                               <-- aligned (on 4/16 byte boundary)
+'' (esp-addressed) function arguments and temps
+''
 private sub hCreateFrame _
 	( _
 		byval proc as FBSYMBOL ptr _
 	) static
 
-    dim as integer bytestoalloc, bytestoclear
+	dim as integer bytestoalloc, bytestoclear, bytespushed
 	dim as zstring ptr lprof
 
 	' No frame for naked functions
 	if( symbIsNaked( proc ) = FALSE ) then
 
-    	bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
+		bytestoalloc = hFrameBytesToAlloc( proc )
 
+		'' No locals/temps/padding or arguments?
     	if( (bytestoalloc <> 0) or _
     		(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
         	symbGetIsMainProc( proc ) or _
         	env.clopt.debug or _
 			env.clopt.profile ) then
 
+			'' esp is now -4 modulo alignment (because of pushed eip) if the
+			'' caller correctly aligned the stack; but no assumption for main()
+			if( symbGetIsMainProc( proc ) ) then
+				outp( "and esp, 0xFFFFFFF0" )
+				outp( "sub esp, 4" )
+			end if
+
     		hPUSH( "ebp" )
     		outp( "mov ebp, esp" )
-
-        	if( symbGetIsMainProc( proc ) ) then
-				outp( "and esp, 0xFFFFFFF0" )
-	    	end if
 
     		if( bytestoalloc > 0 ) then
     			outp( "sub esp, " + str( bytestoalloc ) )
     		end if
+
     	end if
 
 		if( env.clopt.target = FB_COMPTARGET_DOS ) then
@@ -1112,7 +1166,7 @@ private sub hDestroyFrame _
 
     	dim as integer bytestoalloc
 
-    	bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
+    	bytestoalloc = hFrameBytesToAlloc( proc )
 
     	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
     		hPOP( "edi" )
