@@ -83,8 +83,18 @@
 ''   also means we have to add code for converting int/float to 0/1 when casting
 ''   them to boolean.
 ''
-'' - Avoiding C's undefined behaviour where possible:
+'' - Avoiding C's undefined behaviour where possible. This is important because
+''   otherwise we can't rely on gcc to generate meaningful code when
+''   "optimizations" are enabled. As a (hopefully nice-to-have) side-effect,
+''   some of the FB features/behaviour that originates from the x86 ASM backend
+''   are guaranteed to work just the same with the C backend, no matter what
+''   architecture.
 ''    - using gcc's -fwrapv to get well-defined signed integer overflow
+''    - emitting the extra AND mask operation on the rhs of SHL/SHR, to ensure
+''      that the shift amount is in the range 0..sizeof(lhs)*8-1.
+''      (astNewBOP() already handles this for constant shift amounts)
+''    - relying on gcc to provide well-defined signed shl on negative integers
+''      (https://gcc.gnu.org/onlinedocs/gcc/Integers-implementation.html)
 ''
 
 #include once "fb.bi"
@@ -2741,7 +2751,13 @@ private sub _emitBop _
 		l = exprNewBOP( op, l, r )
 
 	case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD, _
-	     AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, AST_OP_XOR
+	     AST_OP_AND, AST_OP_OR, AST_OP_XOR
+		l = exprNewBOP( op, l, r )
+
+	case AST_OP_SHL, AST_OP_SHR
+		'' Mask the shift amount to ensure it's valid, avoiding C UB
+		r = exprNewBOP( AST_OP_AND, r, exprNewIMMi( typeGetBits( l->dtype ) - 1 ) )
+
 		l = exprNewBOP( op, l, r )
 
 	case AST_OP_EQV
