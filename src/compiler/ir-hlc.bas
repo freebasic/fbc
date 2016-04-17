@@ -2722,27 +2722,26 @@ private sub _emitBop _
 			l = exprNewUOP( AST_OP_NEG, l )
 		end if
 
-	case AST_OP_ADD, AST_OP_SUB, AST_OP_MUL, AST_OP_DIV, AST_OP_INTDIV, _
-	     AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
-	     AST_OP_XOR
-		dim as integer is_ptr_arith = ((op = AST_OP_ADD) or (op = AST_OP_SUB))
-
+	case AST_OP_ADD, AST_OP_SUB
 		'' Cast to byte ptr to work around C's pointer arithmetic
-		if( is_ptr_arith and typeIsPtr( v1->dtype ) ) then
+		if( typeIsPtr( v1->dtype ) ) then
 			l = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, l )
 		end if
-		if( is_ptr_arith and typeIsPtr( v2->dtype ) ) then
+		if( typeIsPtr( v2->dtype ) ) then
 			r = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, r )
 		end if
+		l = exprNewBOP( op, l, r )
 
+	case AST_OP_DIV
 		'' Ensure '/' means floating point divide by casting to double
 		'' For AST_OP_INTDIV this is not needed, since the AST will already
 		'' cast both operands to integer before doing the intdiv.
-		if( op = AST_OP_DIV ) then
-			l = exprNewCAST( FB_DATATYPE_DOUBLE, NULL, l )
-			r = exprNewCAST( FB_DATATYPE_DOUBLE, NULL, r )
-		end if
+		l = exprNewCAST( FB_DATATYPE_DOUBLE, NULL, l )
+		r = exprNewCAST( FB_DATATYPE_DOUBLE, NULL, r )
+		l = exprNewBOP( op, l, r )
 
+	case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD, _
+	     AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, AST_OP_XOR
 		l = exprNewBOP( op, l, r )
 
 	case AST_OP_EQV
