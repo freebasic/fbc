@@ -73,6 +73,10 @@
 ''    reads in a lib*.a archive file,
 ''    looks for the fbctinf object file added to static libraries by fbc -lib,
 ''    and if found, calls hLoadFbctinfFromObj().
+''    Note that Darwin has two different types of static libraries, both with
+''    extension .a: normal 'ar' archives, and 'lipo' fat/universal binaries.
+''    fbc creates ar archives, and it seems to generally be the default.
+''    We only support reading 'ar' archives.
 ''
 '' objinfoReadLib():
 ''    searches a libfile for the given libname in the given libpaths,
@@ -80,7 +84,8 @@
 ''
 '' hLoadFbctinfFromObj():
 ''    reads the currently loaded object file,
-''    using either the COFF (Win32, DOS) or ELF32 (Linux, *BSD) format.
+''    using either the COFF (Win32, DOS), ELF32/64 (Linux, *BSD) or
+''    Mach-O (Darwin) format.
 ''    ELF32 (linux-arm) or ELF64 (linux-aarch64)
 ''    looks for the .fbctinf section,
 ''    and if found, parses its content, and tells the frontend about the
@@ -462,6 +467,214 @@ private sub hLoadFbctinfFromCOFF( byval magic as ushort )
 	next
 end sub
 
+
+'' Mach-O implementation
+
+'' All of these structures are defined in /usr/include/mach-o/loader.h
+
+'' mach_header and mach_header_64 are identical aside from addition of
+'' a reserved member at the end, and different magic constant.
+type MACH_H
+	magic	    as ulong
+	cputype	    as ulong  ' cpu_type_t
+	cpusubtype  as ulong  ' cpu_subtype_t
+	filetype    as ulong
+	ncmds	    as ulong
+	sizeofcmds  as ulong
+	flags	    as ulong
+end type
+
+'' Mach-O load command header
+type LOAD_COMMAND_H
+	cmd	as ulong
+	cmdsize as ulong
+end type
+
+'' cpu_type_t constants
+const MACH_CPU_ARCH_ABI64 = &h01000000
+const MACH_CPU_TYPE_X86 = 7
+const MACH_CPU_TYPE_X86_64 = (MACH_CPU_TYPE_X86 or MACH_CPU_ARCH_ABI64)
+const MACH_CPU_TYPE_ARM = 12
+const MACH_CPU_TYPE_ARM64 = (MACH_CPU_TYPE_ARM or MACH_CPU_ARCH_ABI64)
+const MACH_CPU_TYPE_POWERPC = 18
+const MACH_CPU_TYPE_POWERPC64 = (MACH_CPU_TYPE_POWERPC or MACH_CPU_ARCH_ABI64)
+
+const MH_MAGIC_32 = &hfeedface
+const MH_MAGIC_64 = &hfeedfacf
+
+const MH_OBJECT = 1  ' MH_OBJECT
+
+const LC_SEGMENT = &h1
+const LC_SEGMENT_64 = &h19
+
+#macro DEFINE_SEGMENT_COMMAND(NAME, SIZE_TYPE)
+type NAME
+	cmd	    as ulong
+	cmdsize	    as ulong
+	segname(15) as ubyte
+	vmaddr	    as SIZE_TYPE
+	vmsize	    as SIZE_TYPE
+	fileoff	    as SIZE_TYPE
+	filesize    as SIZE_TYPE
+	maxprot	    as ulong  'vm_prot_t
+	initprot    as ulong  'vm_prot_t
+	nsects	    as ulong
+	flags	    as ulong
+end type
+#endmacro
+
+DEFINE_SEGMENT_COMMAND(SEGMENT_COMMAND_32, ulong)    'struct segment_command
+DEFINE_SEGMENT_COMMAND(SEGMENT_COMMAND_64, ulongint) 'struct segment_command_64
+
+#macro DEFINE_SECTION(NAME, SIZE_TYPE, RESERVED3)
+'' Defined in /usr/include/mach-o/loader.h
+type NAME
+	sectname	 as zstring * 16
+	segname		 as zstring * 16
+	addr		 as SIZE_TYPE
+	size		 as SIZE_TYPE
+	offset		 as ulong
+	align		 as ulong
+	reloff		 as ulong
+	nreloc		 as ulong
+	flags		 as ulong
+	reserved1	 as ulong
+	reserved2	 as ulong
+	RESERVED3
+end type
+#endmacro
+
+DEFINE_SECTION(SECTION_32, ulong, )                   'struct section
+DEFINE_SECTION(SECTION_64, ulongint, reserved3 as ulong) 'struct section_64
+
+
+#macro MACHO_SECTION_CODE(BITS)
+
+'' Iterate over the sections of a segment load command. Returns non-zero on error.
+private function hProcessMachOSegment##BITS( byval loadcmd as LOAD_COMMAND_H ptr ) as integer
+	dim segmentp as SEGMENT_COMMAND_##BITS ptr
+	dim sectionp as SECTION_##BITS ptr
+
+	segmentp = cptr( SEGMENT_COMMAND_##BITS ptr, loadcmd )
+	if( segmentp + 1 > objdata.p + objdata.size ) then
+		INFO( "mach-o: segment load_command past end of file" )
+		return 1
+	end if
+
+	'' Section headers follow immediately after the segment header
+	sectionp = cptr( SECTION_##BITS ptr, segmentp + 1 )
+	for sectionidx as integer = 0 to segmentp->nsects - 1
+		if( sectionp + 1 > objdata.p + objdata.size ) then
+			INFO( "mach-o: section header past end of file" )
+			return 1
+		end if
+
+		INFO( "mach-o: found segment=" & sectionp->segname & " section=" & sectionp->sectname )
+		if( sectionp->sectname = FB_INFOSEC_NAME ) then
+			if( sectionp->offset + sectionp->size > objdata.size ) then
+				INFO( "mach-o: fbctinf section data past end of file" )
+				return 1
+			end if
+
+			fbctinf.p = objdata.p + sectionp->offset
+			fbctinf.size = sectionp->size
+			exit for
+		end if
+
+		sectionp += 1
+	next
+end function
+
+#endmacro
+
+MACHO_SECTION_CODE(32)
+MACHO_SECTION_CODE(64)
+
+private sub hLoadFbctinfFromMachO( )
+	dim header as MACH_H ptr = any
+	dim loadcmd as LOAD_COMMAND_H ptr = any
+	dim dataptr as ubyte ptr = any
+
+	fbctinf.p = NULL
+	fbctinf.size = 0
+
+	if( objdata.size < sizeof( MACH_H ) ) then
+		INFO( "mach-o: no room for header" )
+		exit sub
+	end if
+
+	header = cptr( any ptr, objdata.p )
+
+	'' Check magic
+	if( header->magic <> MH_MAGIC_32 and header->magic <> MH_MAGIC_64 ) then
+		INFO( "mach-o: magic constant mismatch" )
+		exit sub
+	end if
+
+	'' Check cpu type matches
+	select case( fbGetCpuFamily( ) )
+	case FB_CPUFAMILY_X86
+		if( header->cputype <> MACH_CPU_TYPE_X86 ) then
+			INFO( "mach-o: CPU type is not x86" )
+			exit sub
+		end if
+	case FB_CPUFAMILY_X86_64
+		if( header->cputype <> MACH_CPU_TYPE_X86_64 ) then
+			INFO( "mach-o: CPU type is not x86_64" )
+			exit sub
+		end if
+	case FB_CPUFAMILY_ARM
+		if( header->cputype <> MACH_CPU_TYPE_ARM ) then
+			INFO( "mach-o: CPU type is not 32bit ARM" )
+			exit sub
+		end if
+	case FB_CPUFAMILY_AARCH64
+		if( header->cputype <> MACH_CPU_TYPE_ARM64 ) then
+			INFO( "mach-o: CPU type is not ARM64" )
+			exit sub
+		end if
+	end select
+
+	'' Check file type
+	if( header->filetype <> MH_OBJECT ) then
+		INFO( "mach-o: Not an object file" )
+		exit sub
+	end if
+
+	'' 64 bit mach-o files have 4 bytes padding after header so load commands are 8-byte aligned
+	dataptr = objdata.p + sizeof( MACH_H )
+	if( header->magic = MH_MAGIC_64 ) then
+		dataptr += 4
+	end if
+
+	'' Iterate over load commands. Note: 'segment' load commands are not the same
+	'' thing as the memory segments the sections belong to. Instead, to reduce space overhead
+	'' of .o files, all sections are stored under a single segment load command regardless of
+	'' their actual segment.
+	for cmdidx as integer = 0 to header->ncmds - 1
+		loadcmd = cptr( LOAD_COMMAND_H ptr, dataptr )
+
+		if( loadcmd + 1 > objdata.p + objdata.size ) then
+			INFO( "mach-o: load_command past end of file" )
+			exit sub
+		end if
+
+		INFO( "mach-o: load command " & loadcmd->cmd )
+		if( loadcmd->cmd = LC_SEGMENT ) then
+			if( hProcessMachOSegment32( loadcmd ) ) then
+				exit sub
+			end if
+		elseif( loadcmd->cmd = LC_SEGMENT_64 ) then
+			if( hProcessMachOSegment64( loadcmd ) ) then
+				exit sub
+			end if
+		end if
+
+		dataptr += loadcmd->cmdsize
+	next
+end sub
+
+
 '' .a archive entry header
 type AR_H field = 1
 	'' (all values right-padded with ASCII spaces)
@@ -639,6 +852,9 @@ private sub hLoadFbctinfFromObj( )
 			INFO( "reading arm32 ELF: " + parser.filename )
 			hLoadFbctinfFromELF32_H( EM_ARM32 )
 		end select
+	elseif( fbTargetSupportsMachO( ) ) then
+		INFO( "reading Mach-O: " + parser.filename )
+		hLoadFbctinfFromMachO( )
 	end if
 
 	if( fbctinf.size = 0 ) then
