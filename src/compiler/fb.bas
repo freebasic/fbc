@@ -433,7 +433,7 @@ sub fbInit( byval ismain as integer, byval restarts as integer, byval entry as z
 	'' Yes for dos/cygwin-x86/win32/xbox, but not win64/cygwin-x86_64/linux-*/etc.
 	env.underscoreprefix = FALSE
 	select case( env.clopt.target )
-	case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
+	case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX, FB_COMPTARGET_DARWIN
 		env.underscoreprefix = TRUE
 	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
 		env.underscoreprefix = not fbIs64bit( )
