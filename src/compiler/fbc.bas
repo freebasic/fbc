@@ -624,6 +624,16 @@ private function hLinkFiles( ) as integer
 		case FB_CPUFAMILY_ARM
 			ldcline += "-m armelf_linux_eabi "
 		end select
+	case FB_COMPTARGET_DARWIN
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86
+			ldcline += "-arch i386 "
+		case FB_CPUFAMILY_X86_64
+			ldcline += "-arch x86_64 "
+		case FB_CPUFAMILY_ARM
+			'' fixme: this is clearly too specific
+			ldcline += "-arch armv6 "
+		end select
 	end select
 
 	'' Set executable name
