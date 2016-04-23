@@ -2442,7 +2442,11 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	'' or cross-compiling. Even on a 64bit x86_64 host where
 	'' FB_DEFAULT_BACKEND is -gen gcc, we still prefer using -gen gas when
 	'' cross-compiling to 32bit x86.
-	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
+	'' (Apple gas assembler has such broken support for intel syntax
+	'' (see https://discussions.apple.com/message/10163960#10163960)
+	'' that it can't work for non-trivial programs, so default to -gen gcc.)
+	if( (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
+	    (fbGetOption(FB_COMPOPT_TARGET) <> FB_COMPTARGET_DARWIN) ) then
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GAS )
 	else
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
@@ -3027,6 +3031,8 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-fPIC "
 		end if
 
+		'' Warning: -Wno-unused-but-set-variable is not supported by somewhat
+		'' old gcc, and will cause a failure. But we don't want all that spam.
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 			ln += "-S -nostdlib -nostdinc -Wall -Wno-unused-label " + _
 			      "-Wno-unused-function -Wno-unused-variable " 
