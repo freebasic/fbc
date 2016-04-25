@@ -1186,7 +1186,11 @@ private sub hLoadVreg( byval v as IRVREG ptr )
 		hPrepareAddress( v )
 		assert( typeIsPtr( v->dtype ) )
 		var temp0 = irhlAllocVreg( typeDeref( v->dtype ), v->subtype )
-		hWriteLine( hVregToStr( temp0 ) + " = load " + hEmitType( v->dtype, v->subtype ) + " " + hVregToStr( v ) )
+		var s = hVregToStr( temp0 ) + " = load "
+		s += hEmitType( typeDeref( v->dtype ), v->subtype ) + ", "
+		s += hEmitType( v->dtype, v->subtype ) + " "
+		s += hVregToStr( v )
+		hWriteLine( s )
 		*v = *temp0
 	end select
 end sub
