@@ -14,6 +14,7 @@ Version 1.06.0
 - utf_conv.bi: In UTF8 => UTF16/32 and UTF32 => UTF16 conversions, strings longer than 8 chars could be truncated
 - #797: False-positive warnings when mixing booleans with comparisons in logic operations
 - TRE binding: Didn't compile with TRE_USE_SYSTEM_REGEX_H
+- LLVM backend: Emit the new (LLVM 3.7+) load-syntax
 
 
 Version 1.05.0
