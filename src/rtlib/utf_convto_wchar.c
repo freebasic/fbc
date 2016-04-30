@@ -241,6 +241,27 @@ static FB_WCHAR *hUTF8ToWChar( const UTF_8 *src, FB_WCHAR *dst, ssize_t *chars )
 	return res;
 }
 
+static FB_WCHAR *hUTF16ToUTF16( const UTF_16 *src, FB_WCHAR *dst, ssize_t *chars )
+{
+	/* Have to determine and return actual string length */
+	ssize_t len = 0;
+	if( dst == NULL ) {
+		while( src[len] )
+			len++;
+		dst = malloc( (len + 1) * sizeof( UTF_16 ) );
+		memcpy( dst, src, (len + 1) * sizeof( UTF_16 ) );
+	} else {
+		while( src[len] && len < *chars )
+			len++;
+		memcpy( dst, src, len * sizeof( UTF_16 ) );
+		if (len < *chars)
+			/* The input buffer has a trailing NUL character, copy it */
+			dst[len] = 0;
+	}
+	*chars = len;
+	return dst;
+}
+
 static FB_WCHAR *hUTF16ToUTF32( const UTF_16 *src, FB_WCHAR *dst, ssize_t *chars )
 {
 	UTF_16 c;
@@ -313,13 +334,7 @@ static FB_WCHAR *hUTF16ToWChar( const UTF_16 *src, FB_WCHAR *dst, ssize_t *chars
 		break;
 
 	case sizeof( UTF_16 ):
-		if( dst == NULL ) {
-			dst = malloc( (*chars + 1) * sizeof( UTF_16 ) );
-			memcpy( dst, src, *chars * sizeof( UTF_16 ) );
-			dst[*chars] = 0;
-		} else {
-			memcpy( dst, src, *chars * sizeof( UTF_16 ) );
-		}
+		dst = hUTF16ToUTF16( src, dst, chars );
 		break;
 
 	case sizeof( UTF_32 ):
@@ -329,7 +344,6 @@ static FB_WCHAR *hUTF16ToWChar( const UTF_16 *src, FB_WCHAR *dst, ssize_t *chars
 
 	return dst;
 }
-
 
 static FB_WCHAR *hUTF32ToUTF16( const UTF_32 *src, FB_WCHAR *dst, ssize_t *chars )
 {
@@ -406,6 +420,27 @@ static FB_WCHAR *hUTF32ToUTF16( const UTF_32 *src, FB_WCHAR *dst, ssize_t *chars
 	return buffer;
 }
 
+static FB_WCHAR *hUTF32ToUTF32( const UTF_32 *src, FB_WCHAR *dst, ssize_t *chars )
+{
+	/* Have to determine and return actual string length */
+	ssize_t len = 0;
+	if( dst == NULL ) {
+		while( src[len] )
+			len++;
+		dst = malloc( (len + 1) * sizeof( UTF_32 ) );
+		memcpy( dst, src, (len + 1) * sizeof( UTF_32 ) );
+	} else {
+		while( src[len] && len < *chars )
+			len++;
+		memcpy( dst, src, len * sizeof( UTF_32 ) );
+		/* Can't copy trailing NUL character if dst is too small */
+		if (len < *chars)
+			dst[len] = 0;
+	}
+	*chars = len;
+	return dst;
+}
+
 static FB_WCHAR *hUTF32ToWChar( const UTF_32 *src, FB_WCHAR *dst, ssize_t *chars )
 {
 	switch( sizeof( FB_WCHAR ) )
@@ -419,18 +454,19 @@ static FB_WCHAR *hUTF32ToWChar( const UTF_32 *src, FB_WCHAR *dst, ssize_t *chars
 		break;
 
 	case sizeof( UTF_32 ):
-		if( dst == NULL ) {
-			dst = malloc( (*chars + 1) * sizeof( UTF_32 ) );
-			memcpy( dst, src, *chars * sizeof( UTF_32 ) );
-			dst[*chars] = 0;
-		} else {
-			memcpy( dst, src, *chars * sizeof( UTF_32 ) );
-		}
+		dst = hUTF32ToUTF32( src, dst, chars );
 		break;
 	}
 	return dst;
 }
 
+/* Convert a NUL-terminated UTF string to FB_WCHARs.
+   dst is an output buffer, or NULL to allocate a new one.
+   If dst is not NULL, then *chars is the length of the output buffer in
+   characters. If it's too short then no trailing NUL character is appended!
+   Returns the output buffer and sets *chars to the number of wchars written
+   to the buffer, NOT including any trailing NUL, and counting UTF16 surrogate
+   pairs (if WCHAR is 16 bit) as 2. */
 FB_WCHAR *fb_UTFToWChar( FB_FILE_ENCOD encod, const void *src, FB_WCHAR *dst, ssize_t *chars )
 {
 	switch( encod )

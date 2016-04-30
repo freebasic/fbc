@@ -268,6 +268,14 @@ static char *hToUTF32( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *b
 	return dst;
 }
 
+/* chars is the length of the input in characters, with UTF16 surrogate pairs
+   counting as 2.
+   dst is an optional output buffer (which must be large enough); if NULL, one
+   is malloc'd.
+   A NUL is only appended to the output if it occurs in the input (unlike
+   fb_UTFToWChar this does NOT stop on seeing a NUL, as the length is known).
+   Returns the output buffer and sets *bytes to the number of bytes written.
+*/
 char *fb_WCharToUTF
 	(
 		FB_FILE_ENCOD encod,
