@@ -15,6 +15,7 @@ Version 1.06.0
 - #797: False-positive warnings when mixing booleans with comparisons in logic operations
 - TRE binding: Didn't compile with TRE_USE_SYSTEM_REGEX_H
 - LLVM backend: Emit the new (LLVM 3.7+) load-syntax
+- When compiling .rc files with windres instead of GoRC (happens with non-standalone fbc), the current directory is now an include search directory, to match the GoRC behaviour.
 
 
 Version 1.05.0
