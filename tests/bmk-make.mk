@@ -70,15 +70,29 @@ ifneq ($(GEN),)
 FBC_CFLAGS += -gen $(GEN)
 endif
 
+TARGET_ARCH := $(shell $(FBC) $(FBC_CFLAGS) -print target | cut -d - -f 2)
+ifeq ($(TARGET_ARCH),x86)
+	CFLAGS := -m32
+endif
+ifeq ($(TARGET_ARCH),x86_64)
+	CFLAGS := -m64
+endif
+
+# The default target has to appear before "include $(BMK)", which might
+# define other targets.
+all : $(RUN_TEST)
+
 MAINX :=
 SRCSX :=
+EXTRA_OBJSX :=
 
 ifneq ($(BMK),)
 
-include $(BMK)
 SRCDIR := $(dir $(BMK))
+include $(BMK)
 MAINX := $(addprefix $(SRCDIR),$(MAIN))
 SRCSX := $(MAINX) $(addprefix $(SRCDIR),$(SRCS))
+EXTRA_OBJSX := $(addprefix $(SRCDIR),$(EXTRA_OBJS))
 
 else
 
@@ -104,13 +118,11 @@ endif
 
 OBJS := $(addsuffix .o,$(basename $(SRCSX)))
 
-all : $(RUN_TEST)
-
 $(OBJS) : %.o : %.bas
 	$(FBC) $(FBC_CFLAGS) -m $(MAIN_MODULE) -c $< -o $@
 
-$(APP) : $(OBJS)
-	$(FBC) $(FBC_LFLAGS) $(OBJS) -x $(APP)
+$(APP) : $(OBJS) $(EXTRA_OBJSX)
+	$(FBC) $(FBC_LFLAGS) $(OBJS) $(EXTRA_OBJSX) -x $(APP)
 
 run_test_ok : $(APP)
 	@if $(APP) ; then true ; else false ; fi
@@ -121,4 +133,4 @@ run_test_fail : $(APP)
 .PHONY : clean
 clean:
 	@$(ECHO) Cleaning $(SRCDIR)$(MAIN_MODULE) files ...
-	@$(RM) $(OBJS) $(APP)
+	@$(RM) $(OBJS) $(EXTRA_OBJSX) $(APP)

@@ -1,0 +1,10 @@
+# TEST_MODE : MULTI_MODULE_OK
+
+MAIN := fbmod.bas
+SRCS := 
+
+EXTRA_OBJS := cppmod.o
+
+$(SRCDIR)cppmod.o : $(SRCDIR)cppmod.cpp
+	# Pass $(CFLAGS) to get -m32 or -m64 as required
+	$(CXX) -c $(CFLAGS) -o $@ $^
