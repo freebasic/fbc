@@ -1,0 +1,9 @@
+# TEST_MODE : MULTI_MODULE_OK
+
+MAIN := stack-alignment.bas
+SRCS := 
+
+EXTRA_OBJS := check-stack-alignment.o
+
+$(SRCDIR)check-stack-alignment.o : $(SRCDIR)check-stack-alignment.c
+	$(CC) -c $(CFLAGS) -o $@ $^
