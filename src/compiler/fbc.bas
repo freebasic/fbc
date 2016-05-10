@@ -3049,12 +3049,15 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-fPIC "
 		end if
 
-		'' Warning: -Wno-unused-but-set-variable is not supported by somewhat
-		'' old gcc, and will cause a failure. But we don't want all that spam.
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
-			ln += "-S -nostdlib -nostdinc -Wall -Wno-unused-label " + _
-			      "-Wno-unused-function -Wno-unused-variable " 
-			ln += "-Wno-unused-but-set-variable "
+			ln += "-S -nostdlib -nostdinc -Wall "
+
+			'' -Wno-unused-but-set-variable and the warning it suppresses were introduced
+			'' in GCC 4.6. Don't pass that flag to avoid an error on earlier GCC. As a
+			'' result, to disable the warning on 4.6+ need to disable all unused warnings...
+			' ln += "-Wno-unused-label -Wno-unused-function -Wno-unused-variable "
+			' ln += "-Wno-unused-but-set-variable "
+			ln += "-Wno-unused "
 		else
 			'if Emscripten is used, we will skip the assembly generation and compile directly to object code
 			ln += "-c -nostdlib -nostdinc -Wall -Wno-unused-label " + _
