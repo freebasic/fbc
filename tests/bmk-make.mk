@@ -28,6 +28,7 @@ SHELL := $(SHELL)
 endif
 ECHO := echo
 
+CC := gcc
 ifndef FBC
 FBC := fbc$(EXEEXT)
 endif
