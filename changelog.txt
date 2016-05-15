@@ -18,6 +18,7 @@ Version 1.06.0
 - When compiling .rc files with windres instead of GoRC (happens with non-standalone fbc), the current directory is now an include search directory, to match the GoRC behaviour.
 - #659: Keep the stack 16-byte aligned on linux-x86 and darwin-x86 to comply with ABI; fixes crashes when external libraries use SSE
 - On Windows, FB console input treated multiple repeated keypresses that were merged into one event by the system as a single keypress
+- Accesses to 64bit bitfields could be miscompiled or trigger a compiler crash
 
 
 Version 1.05.0

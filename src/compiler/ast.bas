@@ -188,15 +188,6 @@ dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
 	(AST_NODECLASS_LIT   , AST_OPFLAGS_NONE, @"asm"     )  _ '' AST_OP_ASM
 }
 
-dim shared as uinteger ast_bitmaskTB( 0 to ... ) = _
-{ _
-	0, _
-	1, 3, 7, 15, 31, 63, 127, 255, _
-	511, 1023, 2047, 4095, 8191, 16383, 32767, 65535, _
-	131071, 262143, 524287, 1048575, 2097151, 4194303, 8388607, 16777215, _
-	33554431, 67108863, 134217727, 268435455, 536870911, 1073741823, 2147483647, 4294967295 _
-}
-
 sub astInit( )
     listInit( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
 
