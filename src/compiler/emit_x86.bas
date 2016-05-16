@@ -1103,15 +1103,15 @@ private sub hCreateFrame _
         	env.clopt.debug or _
 			env.clopt.profile ) then
 
-			'' esp is now -4 modulo alignment (because of pushed eip) if the
-			'' caller correctly aligned the stack; but no assumption for main()
-			if( symbGetIsMainProc( proc ) ) then
-				outp( "and esp, 0xFFFFFFF0" )
-				outp( "sub esp, 4" )
-			end if
-
     		hPUSH( "ebp" )
     		outp( "mov ebp, esp" )
+
+			'' esp is now at -EMIT_ARGSTART modulo alignment if the caller correctly
+			'' aligned the stack; but don't make that assumption for main()
+			if( symbGetIsMainProc( proc ) ) then
+				outp( "and esp, 0xFFFFFFF0" )
+				bytestoalloc += EMIT_ARGSTART
+			end if
 
     		if( bytestoalloc > 0 ) then
     			outp( "sub esp, " + str( bytestoalloc ) )
