@@ -403,7 +403,8 @@ int fb_ConsoleProcessEvents( void )
             switch ( ir.EventType ) {
             case KEY_EVENT:
                 if( ir.Event.KeyEvent.bKeyDown && ir.Event.KeyEvent.wRepeatCount != 0 ) {
-                    for (size_t i = 0; i < ir.Event.KeyEvent.wRepeatCount; i++) {
+                    size_t i;
+                    for (i = 0; i < ir.Event.KeyEvent.wRepeatCount; i++) {
                         fb_hConsoleProcessKeyEvent( &ir.Event.KeyEvent );
                     }
                 } else if( !ir.Event.KeyEvent.bKeyDown ) {
