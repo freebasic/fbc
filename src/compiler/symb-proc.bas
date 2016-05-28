@@ -1319,11 +1319,6 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 		exit function
 	end select
 
-	'' "this"?
-	if( symbIsParamInstance( param ) ) then
-		attrib or= FB_SYMBATTRIB_PARAMINSTANCE
-	end if
-
 	'' QB quirk..
 	if( symbIsSuffixed( param ) ) then
 		attrib or= FB_SYMBATTRIB_SUFFIXED
