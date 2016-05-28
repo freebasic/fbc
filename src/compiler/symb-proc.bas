@@ -1198,7 +1198,7 @@ function symbAddProcPtrFromFunction _
 
 	function = symbAddProcPtr( proc, _
 			symbGetFullType( base_proc ), symbGetSubtype( base_proc ), _
-			base_proc->attrib and FB_SYMBATTRIB_REF, _  '' preserve REF flag
+			base_proc->attrib and (FB_SYMBATTRIB_REF or FB_SYMBATTRIB_CONST), _
 			symbGetProcMode( base_proc ) )
 
 end function

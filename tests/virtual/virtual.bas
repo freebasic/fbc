@@ -1605,6 +1605,38 @@ namespace callingConventions
 	end sub
 end namespace
 
+namespace callConstVirtual
+	type A extends object
+		declare const virtual function f1( ) as integer
+		declare const abstract function f2( ) as integer
+	end type
+
+	type B extends A
+		declare const function f1( ) as integer override
+		declare const function f2( ) as integer override
+	end type
+
+	function A.f1( ) as integer : function = &hA1 : end function
+	function B.f1( ) as integer : function = &hB1 : end function
+	function B.f2( ) as integer : function = &hB2 : end function
+
+	sub test cdecl( )
+		scope
+			dim p as A ptr = new B
+			CU_ASSERT( p->f1( ) = &hB1 )
+			CU_ASSERT( p->f2( ) = &hB2 )
+			delete p
+		end scope
+
+		scope
+			dim p as B ptr = new B
+			CU_ASSERT( p->f1( ) = &hB1 )
+			CU_ASSERT( p->f2( ) = &hB2 )
+			delete p
+		end scope
+	end sub
+end namespace
+
 private sub ctor( ) constructor
 	fbcu.add_suite( "tests/virtual/virtual" )
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
@@ -1635,6 +1667,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "bydescParams1", @bydescParams1.test )
 	fbcu.add_test( "bydescParams2", @bydescParams2.test )
 	fbcu.add_test( "callingConventions", @callingConventions.test )
+	fbcu.add_test( "callConstVirtual", @callConstVirtual.test )
 end sub
 
 end namespace
