@@ -25,7 +25,7 @@ end type
 
 declare function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
 declare sub hLoadProcResult( byval proc as FBSYMBOL ptr )
-declare function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
+declare function hDeclVarsForProcParams( byval proc as FBSYMBOL ptr ) as integer
 declare function hInitVptr _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -468,11 +468,11 @@ sub astProcBegin( byval sym as FBSYMBOL ptr, byval ismain as integer )
 	' at ebp-N, which won't exist, no result is needed either
 	if( enable_implicit_code ) then
 		'' alloc parameters
-		hDeclProcParams( sym )
+		hDeclVarsForProcParams( sym )
 
 		'' alloc result local var
 		if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
-			symbAddProcResult( sym )
+			symbAddProcResultVar( sym )
 		end if
 	end if
 
@@ -785,7 +785,7 @@ function astProcEnd( byval callrtexit as integer ) as integer
 
 end function
 
-private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
+private function hDeclVarsForProcParams( byval proc as FBSYMBOL ptr ) as integer
     dim as integer i = any
     dim as FBSYMBOL ptr p = any
 
@@ -793,8 +793,7 @@ private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer
 
 	'' proc returns an UDT?
 	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
-		'' create an hidden arg if needed
-		symbAddProcResultParam( proc )
+		symbAddVarForProcResultParam( proc )
 	end if
 
 	'' Param vars must be declared in the order they should be allocated

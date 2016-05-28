@@ -165,7 +165,7 @@ enum FB_SYMBATTRIB
     FB_SYMBATTRIB_DESTRUCTOR    = &h00002000	'' /
     FB_SYMBATTRIB_OPERATOR    	= &h00004000
     FB_SYMBATTRIB_PROPERTY    	= &h00008000    '' /
-	FB_SYMBATTRIB_PARAMBYDESC	= &h00010000 '' VARs
+	FB_SYMBATTRIB_PARAMBYDESC	= &h00010000 '' VARs, TODO: Rename these and symbIsParam*() to clarify that they're about param vars (not params)
 	FB_SYMBATTRIB_PARAMBYVAL	= &h00020000 '' VARs
 	FB_SYMBATTRIB_PARAMBYREF 	= &h00040000 '' VARs
 	FB_SYMBATTRIB_LITERAL		= &h00080000
@@ -182,7 +182,7 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_ABSTRACT      = &h40000000  '' methods only: pure virtuals (only)
 
 	'' reuse - take care
-	FB_SYMBATTRIB_PARAMINSTANCE	= FB_SYMBATTRIB_METHOD '' PARAMs
+	FB_SYMBATTRIB_INSTANCEPARAM	= FB_SYMBATTRIB_METHOD '' PARAMs
 	FB_SYMBATTRIB_SUFFIXED		= FB_SYMBATTRIB_NAKED
 end enum
 
@@ -1317,10 +1317,10 @@ declare sub symbGetRealParamDtype overload _
 	)
 
 declare function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
-declare function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
-declare function symbAddProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbAddVarForProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function symbAddProcResultVar( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
-declare sub symbAddProcInstancePtr _
+declare sub symbAddProcInstanceParam _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
@@ -2353,7 +2353,7 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbIsParamByRef(s) ((s->attrib and FB_SYMBATTRIB_PARAMBYREF) <> 0)
 
-#define symbIsParamInstance(s) ((s->attrib and FB_SYMBATTRIB_PARAMINSTANCE) <> 0)
+#define symbIsInstanceParam(s) ((s->attrib and FB_SYMBATTRIB_INSTANCEPARAM) <> 0)
 
 #define symbIsParam(s) ((s->attrib and (FB_SYMBATTRIB_PARAMBYREF or FB_SYMBATTRIB_PARAMBYVAL or FB_SYMBATTRIB_PARAMBYDESC)) <> 0)
 

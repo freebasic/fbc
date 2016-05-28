@@ -1347,7 +1347,7 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 	function = s
 end function
 
-function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+function symbAddVarForProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
 
@@ -1367,7 +1367,7 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	function = s
 end function
 
-function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+function symbAddProcResultVar( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	dim as FBARRAYDIM dTB(0) = any
 	dim as FBSYMBOL ptr res = any
 	dim as integer dtype = any
@@ -1403,7 +1403,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 end function
 
 '':::::
-sub symbAddProcInstancePtr _
+sub symbAddProcInstanceParam _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
@@ -1422,7 +1422,7 @@ sub symbAddProcInstancePtr _
 	end if
 
 	symbAddProcParam( proc, FB_INSTANCEPTR, dtype, parent, 0, _
-	                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_PARAMINSTANCE )
+	                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_INSTANCEPARAM )
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2756,7 +2756,7 @@ function symbCalcProcMatch _
 	'' possible type mismatch.
 	if( symbIsVirtual( l ) and symbIsMethod( l ) and symbIsMethod( r ) ) then
 		if( (lparam <> NULL) and (rparam <> NULL) ) then
-			if( symbIsParamInstance( lparam ) and symbIsParamInstance( rparam ) ) then
+			if( symbIsInstanceParam( lparam ) and symbIsInstanceParam( rparam ) ) then
 				lparam = lparam->next
 				rparam = rparam->next
 			end if

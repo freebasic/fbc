@@ -873,7 +873,7 @@ private sub hGetProcParamsTypeCode _
 		'' created by symbAddProcPtrFromFunction() when calling a
 		'' virtual method through the procedure pointer in the vtable.
 		''
-		if( is_real_proc and symbIsParamInstance( param ) ) then
+		if( is_real_proc and symbIsInstanceParam( param ) ) then
 			param = symbGetParamNext( param )
 		end if
 	end if

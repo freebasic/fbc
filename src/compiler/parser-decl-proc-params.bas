@@ -38,7 +38,7 @@ sub cParameters _
 	'' method? add the instance pointer (must be done here
 	'' to check for dups)
 	if( symbIsMethod( proc ) ) then
-		symbAddProcInstancePtr( parent, proc )
+		symbAddProcInstanceParam( parent, proc )
 		length += env.pointersize
 	end if
 
