@@ -2267,6 +2267,7 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	end if
 	checkAttrib( ABSTRACT )
 	checkAttrib( VIRTUAL )
+	checkAttrib( NOTHISCONSTNESS )
 #endif
 
 #if 1

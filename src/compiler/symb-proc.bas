@@ -711,6 +711,12 @@ private function hSetupProc _
 
 		assert( attrib and FB_SYMBATTRIB_METHOD )
 
+		'' ctors/dtors don't have THIS CONSTness, disable the checks
+		'' We can't just rely on the ctor/dtor flags for this because those
+		'' can't be propagated to procptrs currently (e.g. here we assume any
+		'' PROC with these flags is a proper proc, not a procptr)
+		attrib or= FB_SYMBATTRIB_NOTHISCONSTNESS
+
 		'' ctor?
 		if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
 			head_proc = symbGetCompCtorHead( parent )
@@ -1196,9 +1202,15 @@ function symbAddProcPtrFromFunction _
 		param = param->next
     loop
 
+	'' attribs to copy from the proc to the procptr
+	'' (anything needed for procptr call checking)
+	var attribmask = FB_SYMBATTRIB_REF '' return byref
+	attribmask or= FB_SYMBATTRIB_CONST '' THIS CONSTness, needed for symbCalcProcMatch() type checking
+	attribmask or= FB_SYMBATTRIB_NOTHISCONSTNESS '' method call THIS CONSTness checking
+
 	function = symbAddProcPtr( proc, _
 			symbGetFullType( base_proc ), symbGetSubtype( base_proc ), _
-			base_proc->attrib and (FB_SYMBATTRIB_REF or FB_SYMBATTRIB_CONST), _
+			base_proc->attrib and attribmask, _
 			symbGetProcMode( base_proc ) )
 
 end function

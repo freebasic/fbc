@@ -1014,7 +1014,7 @@ function astNewARG _
 	'' dtor don't matter)
 	if( ((symbGetIsRTL( sym ) = FALSE) or symbGetIsRTLConst( param )) and _
 	    ((not symbIsInstanceParam( param )) or _
-	     ((not symbIsConstructor( sym )) and (not symbIsDestructor( sym )))) ) then
+	     ((sym->attrib and FB_SYMBATTRIB_NOTHISCONSTNESS) = 0)) ) then
 		if( symbCheckConstAssign( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
 			if( symbIsInstanceParam( param ) ) then
 				errReportParam( parent->sym, 0, NULL, FB_ERRMSG_CONSTUDTTONONCONSTMETHOD )

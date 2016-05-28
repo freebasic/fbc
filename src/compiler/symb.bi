@@ -180,6 +180,7 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_NAKED         = &h10000000  '' procedures only
 	FB_SYMBATTRIB_VIRTUAL       = &h20000000  '' methods only: all virtuals (normal and pure)
 	FB_SYMBATTRIB_ABSTRACT      = &h40000000  '' methods only: pure virtuals (only)
+	FB_SYMBATTRIB_NOTHISCONSTNESS = &h80000000 '' PROCs only
 
 	'' reuse - take care
 	FB_SYMBATTRIB_INSTANCEPARAM	= FB_SYMBATTRIB_METHOD '' PARAMs
