@@ -1923,7 +1923,7 @@ extern KSDATAFORMAT_SUBTYPE_WAVEFORMATEX as const GUID
 	end scope
 #endmacro
 #define EXTRACT_WAVEFORMATEX_ID(Guid) cast(USHORT, (Guid)->Data1)
-#define IS_VALID_WAVEFORMATEX_GUID(Guid) (memcmp(cast(PUSHORT, @KSDATAFORMAT_SUBTYPE_WAVEFORMATEX) + 1, cast(PUSHORT, (Guid)) + 1, sizeof(GUID) - sizeof(USHORT)) = 0)
+#define IS_VALID_WAVEFORMATEX_GUID(Guid_) (memcmp(cast(PUSHORT, @KSDATAFORMAT_SUBTYPE_WAVEFORMATEX) + 1, cast(PUSHORT, (Guid_)) + 1, sizeof(GUID) - sizeof(USHORT)) = 0)
 #define _WAVEFORMATEXTENSIBLE_
 
 union WAVEFORMATEXTENSIBLE_Samples field = 1

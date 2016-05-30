@@ -268,8 +268,8 @@ declare function _XGetRequest(byval dpy as Display ptr, byval type as CARD8, byv
 		req = cptr(x##name##Req ptr, _XGetRequest(dpy, X_##name, sz))
 	end scope
 #endmacro
-#define GetReq(name, req) GetReqSized(name, XSIZEOF(x##name##Req), req)
-#define GetReqExtra(name, n, req) GetReqSized(name, XSIZEOF(x##name##Req) + n, req)
+#define GetReq(name, req_) GetReqSized(name, XSIZEOF(x##name##Req), req_)
+#define GetReqExtra(name, n, req_) GetReqSized(name, XSIZEOF(x##name##Req) + n, req_)
 #macro GetResReq(name, rid, req)
 	scope
 		req = cptr(xResourceReq ptr, _XGetRequest(dpy, X_##name, XSIZEOF(xResourceReq)))
