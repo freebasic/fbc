@@ -11,7 +11,7 @@ end sub
 
 private sub ctor () constructor
 
-  fbcu.add_suite("fb-tests-cunit-pretests")
+  fbcu.add_suite("fbc_tests.pretest.compile_with_cunit")
   fbcu.add_test("test_true", @test_true)
 
 end sub

@@ -14,7 +14,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/const/cast-const-away" )
+	fbcu.add_suite( "fbc_tests.const.cast-const-away" )
 	fbcu.add_test( "1", @test )
 end sub
 

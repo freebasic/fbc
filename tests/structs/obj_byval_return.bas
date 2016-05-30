@@ -49,7 +49,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:obj-byval-ret")
+	fbcu.add_suite("fbc_tests.structs.obj_byval_return")
 	fbcu.add_test( "bar1", @test_bar1)
 	fbcu.add_test( "bar2", @test_bar2)
 

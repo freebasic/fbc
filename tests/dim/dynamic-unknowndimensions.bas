@@ -31,7 +31,7 @@ namespace uboundDimensionCount
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/dim/dynamic-unknowndimensions" )
+	fbcu.add_suite( "fbc_tests.dim.dynamic-unknowndimensions" )
 	fbcu.add_test( "ubound() dimension count", @uboundDimensionCount.test )
 end sub
 

@@ -116,7 +116,7 @@ namespace derefZWstringLiteral
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/param-string-copyback" )
+	fbcu.add_suite( "fbc_tests.functions.param-string-copyback" )
 	fbcu.add_test( "simple", @simple.test )
 	fbcu.add_test( "different length", @differentLength.test )
 	fbcu.add_test( "function results", @functionResults.test )

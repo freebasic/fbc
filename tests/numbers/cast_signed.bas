@@ -23,7 +23,7 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/numbers/cast_signed" )
+	fbcu.add_suite( "fbc_tests.numbers.cast_signed" )
 	fbcu.add_test( "test", @test )
 end sub
 

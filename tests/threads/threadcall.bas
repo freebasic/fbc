@@ -169,7 +169,7 @@ namespace fbc_tests.threads.threadcall_tests
     end sub
 
     private sub ctor () constructor
-        fbcu.add_suite( "fbc_tests.threads:threadcall_tests" )
+        fbcu.add_suite( "fbc_tests.threads.threadcall" )
         fbcu.add_test( "threadcall_test", @threadcall_test )
     end sub
 

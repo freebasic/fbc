@@ -18,7 +18,7 @@ sub test_accum_addsub cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/optimizations/addsub ")
+	fbcu.add_suite( "fbc_tests.optimizations.addsub")
 	fbcu.add_test( "Optimizing constant folding in nested add/subtract expressions", @test_accum_addsub )
 end sub
 

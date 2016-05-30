@@ -138,7 +138,7 @@ namespace fbc_tests.boolean_.wstr_
 	end sub
 
 	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean_.wstr_")
+		fbcu.add_suite("fbc_tests.boolean.boolean_wstr")
 		fbcu.add_test("wstr_true_false_constants", @wstr_true_false_constants)
 		fbcu.add_test("wstr_const_comparison", @wstr_const_comparison)
 		fbcu.add_test("wstr_const_assignment", @wstr_const_assignment)

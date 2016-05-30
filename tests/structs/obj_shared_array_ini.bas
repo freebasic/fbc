@@ -27,7 +27,7 @@ end sub
 	
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:obj-shared_array_ini")
+	fbcu.add_suite("fbc_tests.structs.obj_shared_array_ini")
 	fbcu.add_test( "test", @test)
 
 end sub

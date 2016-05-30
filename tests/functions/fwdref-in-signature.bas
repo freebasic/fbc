@@ -61,7 +61,7 @@ end sub
 type T_ as integer
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/fwdref-in-signature" )
+	fbcu.add_suite( "fbc_tests.functions.fwdref-in-signature" )
 	fbcu.add_test( "test", @test )
 end sub
 

@@ -40,7 +40,7 @@ function cleanup cdecl () as long
 end function
 
 sub ctor () constructor
-	fbcu.add_suite("fbc_tests.pointers.ptr_to_func_array", @init, @cleanup)
+	fbcu.add_suite("fbc_tests.pointers.array_ptr_fn", @init, @cleanup)
 	fbcu.add_test("test", @test)
 end sub
 

@@ -50,7 +50,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.compare")
+	fbcu.add_suite("fbc_tests.string.compare")
 	fbcu.add_test("equalSizeTest", @equalSizeTest)
 	fbcu.add_test("equalTest", @equalTest)
 	fbcu.add_test("unequalSizeTest", @unequalSizeTest)

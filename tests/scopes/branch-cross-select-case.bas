@@ -34,7 +34,7 @@ private sub testBranchCrossingSelectInteger2 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/scopes/branch-crossing-select-case" )
+	fbcu.add_suite( "fbc_tests.scopes.branch-cross-select-case" )
 	fbcu.add_test( "GOTO over SELECT CASE integer 1", @testBranchCrossingSelectInteger1 )
 	fbcu.add_test( "GOTO over SELECT CASE integer 2", @testBranchCrossingSelectInteger2 )
 end sub

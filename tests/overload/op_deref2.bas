@@ -22,7 +22,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:op-deref2")
+	fbcu.add_suite("fbc_tests.overload.op_deref2")
 	fbcu.add_test("1", @test_1)
 
 end sub

@@ -41,7 +41,7 @@ sub test_1 cdecl ()
 end sub
 
 sub ctor () constructor
-	fbcu.add_suite("fbc_tests.functions.va_tempstring")
+	fbcu.add_suite("fbc_tests.functions.va_tmpstring")
 	fbcu.add_test("test_1", @test_1)
 end sub
 

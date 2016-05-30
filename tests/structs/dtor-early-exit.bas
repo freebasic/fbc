@@ -63,7 +63,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/dtor-early-exit")
+	fbcu.add_suite( "fbc_tests.structs.dtor-early-exit")
 	fbcu.add_test( "Irrelevant early return from destructor", @test )
 end sub
 

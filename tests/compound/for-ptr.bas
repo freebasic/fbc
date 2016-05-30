@@ -92,7 +92,7 @@ private sub testAnyPtr cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/compound/for-ptr" )
+	fbcu.add_suite( "fbc_tests.compound.for-ptr" )
 	fbcu.add_test( "FOR with pointer counter", @testPtrIterators )
 	fbcu.add_test( "FOR on ANY PTR", @testAnyPtr )
 end sub

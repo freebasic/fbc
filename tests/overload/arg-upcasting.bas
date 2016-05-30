@@ -239,7 +239,7 @@ namespace constcopyctor
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/arg-upcasting" )
+	fbcu.add_suite( "fbc_tests.overload.arg-upcasting" )
 	fbcu.add_test( "byrefParams", @byrefParams.test )
 	fbcu.add_test( "pointerParams", @pointerParams.test )
 	fbcu.add_test( "copyctor", @copyctor.test )

@@ -44,7 +44,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:obj-global")
+	fbcu.add_suite("fbc_tests.structs.obj_global")
 	fbcu.add_test( "test static", @test_static)
 	fbcu.add_test( "test shared", @test_shared)
 

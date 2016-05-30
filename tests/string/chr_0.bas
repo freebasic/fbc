@@ -26,7 +26,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.chr_0")
+	fbcu.add_suite("fbc_tests.string.chr_0")
 	fbcu.add_test("dynConstTest", @dynConstTest)
 
 end sub

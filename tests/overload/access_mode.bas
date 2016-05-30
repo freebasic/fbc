@@ -30,7 +30,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:access-mode")
+	fbcu.add_suite("fbc_tests.overload.access_mode")
 	fbcu.add_test("1", @test_1)
 
 end sub

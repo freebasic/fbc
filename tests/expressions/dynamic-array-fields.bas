@@ -320,7 +320,7 @@ namespace sidefxRemoval
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/expressions/dynamic-array-fields")
+	fbcu.add_suite( "fbc_tests.expressions.dynamic-array-fields")
 	fbcu.add_test( "simple array access", @arrayAccess.testSimple )
 	fbcu.add_test( "array access with diff", @arrayAccess.testDiff )
 	fbcu.add_test( "multi-dimensional array access", @arrayAccess.testMultipleDimensions )

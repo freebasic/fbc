@@ -109,7 +109,7 @@ end namespace
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/udt-result" )
+	fbcu.add_suite( "fbc_tests.functions.udt-result" )
 	fbcu.add_test( "simple UDT #1", @simpleUdt.test1 )
 	fbcu.add_test( "simple UDT #2", @simpleUdt.test2 )
 	fbcu.add_test( "complex UDT #1", @complexUdt1.test )

@@ -26,7 +26,7 @@ sub test cdecl( )
 end sub
 
 sub ctor( ) constructor
-	fbcu.add_suite( "tests/crt/malloc" )
+	fbcu.add_suite( "fbc_tests.crt.malloc" )
 	fbcu.add_test( "test", @test )
 end sub
 

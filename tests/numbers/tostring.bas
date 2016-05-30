@@ -49,7 +49,7 @@ private sub testDouble cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/numbers/tostring" )
+	fbcu.add_suite( "fbc_tests.numbers.tostring" )
 	fbcu.add_test( "SINGLE", @testSingle )
 	fbcu.add_test( "DOUBLE", @testDouble )
 end sub

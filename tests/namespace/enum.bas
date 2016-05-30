@@ -90,7 +90,7 @@ private sub test5 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/namespace/enum" )
+	fbcu.add_suite( "fbc_tests.namespace.enum" )
 	fbcu.add_test("test 1", @test_1)
 	fbcu.add_test("test 2", @test_2)
 	fbcu.add_test("test 3", @fbc_tests.ns.enum_.inner.test_3)

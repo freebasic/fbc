@@ -176,7 +176,7 @@ namespace tempvarSelectConst
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/threads/racecondition" )
+	fbcu.add_suite( "fbc_tests.threads.racecondition" )
 # if defined(FBCU_CONFIG_TEST_OUTPUT)
 	fbcu.add_test( "1", @multiplethreads.test )
 # endif

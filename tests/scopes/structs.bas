@@ -112,7 +112,7 @@ private sub test5 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/scopes/structs" )
+	fbcu.add_suite( "fbc_tests.scopes.structs" )
 	fbcu.add_test( "1", @test1 )
 	fbcu.add_test( "2", @test2 )
 	fbcu.add_test( "3", @test3 )

@@ -98,7 +98,7 @@ namespace testNoParams2
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/optional-params" )
+	fbcu.add_suite( "fbc_tests.overload.optional-params" )
 	fbcu.add_test( "regression test 1", @testRegression1.test )
 	fbcu.add_test( "regression test 2", @testRegression2.test )
 	fbcu.add_test( "no params 1", @testNoParams1.test )

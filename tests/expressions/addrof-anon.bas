@@ -27,7 +27,7 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/expressions/addrof-anon" )
+	fbcu.add_suite( "fbc_tests.expressions.addrof-anon" )
 	fbcu.add_test( "test", @test )
 end sub
 

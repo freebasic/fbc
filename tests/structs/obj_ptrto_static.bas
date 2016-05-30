@@ -25,7 +25,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:obj-ptrto-static")
+	fbcu.add_suite("fbc_tests.structs.obj_ptrto_static")
 	fbcu.add_test( "#1", @test_1)
 
 end sub

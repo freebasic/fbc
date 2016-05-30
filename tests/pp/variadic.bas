@@ -29,7 +29,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.macros.variadic")
+	fbcu.add_suite("fbc_tests.pp.variadic")
 	fbcu.add_test("expansion", @expansion)
 
 end sub

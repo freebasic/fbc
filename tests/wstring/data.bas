@@ -68,7 +68,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.wstrings.data_")
+	fbcu.add_suite("fbc_tests.wstring.data")
 	fbcu.add_test("test_1", @test_1)
 	fbcu.add_test("test_2", @test_2)
 

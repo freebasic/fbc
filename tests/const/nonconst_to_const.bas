@@ -12,7 +12,7 @@ namespace fbc_tests.const_.nonconst_to_const
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("tests.const.nonconst_to_const")
+		fbcu.add_suite("fbc_tests.const.nonconst_to_const")
 		fbcu.add_test("offset", @test)
 	
 	end sub

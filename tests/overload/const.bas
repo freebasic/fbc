@@ -51,7 +51,7 @@ namespace integer_double
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/const" )
+	fbcu.add_suite( "fbc_tests.overload.const" )
 	fbcu.add_test( "integer_single", @integer_single.test )
 	fbcu.add_test( "integer_double", @integer_double.test )
 end sub

@@ -84,7 +84,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.scopes.branch crossing")
+	fbcu.add_suite("fbc_tests.scopes.branch_cross")
 	fbcu.add_test("test 1", @test_1)
 '	fbcu.add_test("test 2", @test_2)
 

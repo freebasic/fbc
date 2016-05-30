@@ -70,7 +70,7 @@ end sub
 	
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:bop_coersion")
+	fbcu.add_suite("fbc_tests.overload.bop_coercion")
 	fbcu.add_test("test_basic", @test)
 
 end sub

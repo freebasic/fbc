@@ -1046,7 +1046,7 @@ private sub testBopU64 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/optimizations/consteval" )
+	fbcu.add_suite( "fbc_tests.optimizations.consteval" )
 	fbcu.add_test( "uop single"      , @testUopSingle )
 	fbcu.add_test( "math bop single" , @testMathBopSingle )
 	fbcu.add_test( "logic bop single", @testLogicBopSingle )

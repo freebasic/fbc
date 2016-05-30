@@ -592,7 +592,7 @@ namespace varShadowing
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/scopes/shadow_inherit" )
+	fbcu.add_suite( "fbc_tests.scopes.shadow_inherit" )
 
 	'' without 
 	fbcu.add_test( "1", @test_opt_imp_scope_imp_inherit )

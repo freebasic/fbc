@@ -26,7 +26,7 @@ private sub quirk_arrayfunction_inWith cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/quirk/quirk_arraystatement" )
+	fbcu.add_suite( "fbc_tests.quirk.quirk_arraystatement" )
 	fbcu.add_test( "ERASE inside WITH", @quirk_arraystatement_inWith )
 	fbcu.add_test( "L/UBOUND inside WITH", @quirk_arrayfunction_inWith )
 end sub

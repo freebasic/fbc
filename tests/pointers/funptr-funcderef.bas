@@ -32,7 +32,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-pointers:funptr_funcderef")
+	fbcu.add_suite("fbc_tests.pointers.funptr-funcderef")
 	fbcu.add_test("test_basic", @test_basic)
 
 end sub

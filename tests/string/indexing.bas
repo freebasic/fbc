@@ -181,7 +181,7 @@ sub testInitializer cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/string/indexing" )
+	fbcu.add_suite( "fbc_tests.string.indexing" )
 	fbcu.add_test( "basics", @testBasics )
 	fbcu.add_test( "initializer", @testInitializer )
 end sub

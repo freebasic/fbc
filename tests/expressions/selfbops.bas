@@ -154,7 +154,7 @@ namespace sidefxRemovalWithStringConcat
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/expressions/selfbops")
+	fbcu.add_suite( "fbc_tests.expressions.selfbops")
 	fbcu.add_test( "bitfields", @bitfields.test )
 	fbcu.add_test( "sidefxRemoval", @sidefxRemoval.test )
 	fbcu.add_test( "sidefxRemovalWithBitfields", @sidefxRemovalWithBitfields.test )

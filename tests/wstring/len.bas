@@ -31,7 +31,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.wstrings.len_")
+	fbcu.add_suite("fbc_tests.wstring.len")
 	fbcu.add_test("test_1", @test_1)
 
 end sub

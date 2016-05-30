@@ -860,7 +860,7 @@ namespace const0
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/pointers" )
+	fbcu.add_suite( "fbc_tests.overload.pointers" )
 	fbcu.add_test( "pointers", @pointers.test )
 	fbcu.add_test( "Any Ptr param 1", @anyptrParam1.test )
 	fbcu.add_test( "Any Ptr param 2", @anyptrParam2.test )

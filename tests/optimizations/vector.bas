@@ -242,7 +242,7 @@ namespace fbc_tests.optimizations.vector
 
 	private sub ctor () constructor
 
-		fbcu.add_suite("fbc_tests-optimizations:SSE vector optimizations")
+		fbcu.add_suite("fbc_tests.optimizations.vector")
 		fbcu.add_test("test1", @test1)
 		fbcu.add_test("test2", @test2)
 		fbcu.add_test("test3", @test3)

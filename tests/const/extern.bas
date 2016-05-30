@@ -14,7 +14,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("tests/const/extern")
+	fbcu.add_suite("fbc_tests.const.extern")
 	fbcu.add_test("extern", @test_extern)
 
 end sub

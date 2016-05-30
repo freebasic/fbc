@@ -26,7 +26,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:uop_coersion")
+	fbcu.add_suite("fbc_tests.overload.uop_coersion")
 	fbcu.add_test("test_basic", @test)
 
 end sub

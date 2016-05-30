@@ -48,7 +48,7 @@ namespace fbc_tests.overload_.implicit_ctor2
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.overload_.implicit_ctor2")
+		fbcu.add_suite("fbc_tests.overload.implicit_ctor2")
 		fbcu.add_test("Test Construction 2", @the_test)
 	
 	end sub

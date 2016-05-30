@@ -40,7 +40,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:by descriptor")
+	fbcu.add_suite("fbc_tests.overload.const_enum")
 	fbcu.add_test("test_params_and_returns", @test_params_and_returns)
 
 end sub

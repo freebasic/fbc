@@ -11,7 +11,7 @@ sub test cdecl( )
 end sub
 
 sub ctor( ) constructor
-	fbcu.add_suite( "tests/dim/global-init" )
+	fbcu.add_suite( "fbc_tests.dim.global-init" )
 	fbcu.add_test( "test", @test )
 end sub
 

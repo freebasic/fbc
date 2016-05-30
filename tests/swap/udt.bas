@@ -143,7 +143,7 @@ sub testBitfields cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite("fb-tests-swap-udt")
+	fbcu.add_suite("fbc_tests.swap.udt")
 	fbcu.add_test("test_swap_local", @test_swap_local)
 	fbcu.add_test("test_swap_static_initialized", @test_swap_static_initialized)
 	fbcu.add_test("test_swap_local_initialized", @test_swap_local_initialized)

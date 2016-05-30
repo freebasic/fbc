@@ -41,7 +41,7 @@ namespace fbc_tests.ns.dups_qkwd
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.namespace.dups-qkwd")
+		fbcu.add_suite("fbc_tests.namespace.dups_qkwd")
 		fbcu.add_test("#1", @test_1)
 		fbcu.add_test("#2", @test_2)
 		

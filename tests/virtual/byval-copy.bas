@@ -552,7 +552,7 @@ namespace noOpObjectCopySideFx
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/virtual/byval-copy" )
+	fbcu.add_suite( "fbc_tests.virtual.byval-copy" )
 	fbcu.add_test( "noFieldsRetainsVptr", @noFieldsRetainsVptr.test )
 	fbcu.add_test( "implicitLetWithFieldsRetainsVptr", @implicitLetWithFieldsRetainsVptr.test )
 	fbcu.add_test( "implicitLetCopiesFields", @implicitLetCopiesFields.test )

@@ -31,7 +31,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:property-stmt")
+	fbcu.add_suite("fbc_tests.structs.obj_property_stmt")
 	fbcu.add_test( "#1", @test_1)
 
 end sub

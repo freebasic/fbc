@@ -513,7 +513,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.printusing")
+	fbcu.add_suite("fbc_tests.string.print_using")
 	fbcu.add_test("statement parsing test", @stmttest)
 	fbcu.add_test("number test", @numtest)
 	fbcu.add_test("format parsing test", @fmttest)

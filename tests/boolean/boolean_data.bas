@@ -39,7 +39,7 @@ namespace fbc_tests.boolean_.data_
 	end sub
 
 	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean_.data_")
+		fbcu.add_suite("fbc_tests.boolean.boolean_data")
 		fbcu.add_test("data_read_boolean", @data_read_boolean)
 	end sub
 

@@ -28,7 +28,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:op-to-ptr")
+	fbcu.add_suite("fbc_tests.overload.op_to_ptr")
 	fbcu.add_test("1", @test_1)
 
 end sub

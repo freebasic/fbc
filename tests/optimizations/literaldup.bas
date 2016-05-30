@@ -18,7 +18,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests-optimizations:literal duplication")
+	fbcu.add_suite("fbc_tests.optimizations.literaldup")
 	fbcu.add_test("test_literal_reuse", @test_literal_reuse)
 end sub
 

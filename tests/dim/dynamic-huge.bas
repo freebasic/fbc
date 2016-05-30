@@ -24,7 +24,7 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/dim/dynamic-huge" )
+	fbcu.add_suite( "fbc_tests.dim.dynamic-huge" )
 	fbcu.add_test( "1", @test )
 end sub
 

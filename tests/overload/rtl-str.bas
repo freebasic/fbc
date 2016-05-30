@@ -26,7 +26,7 @@ sub test1 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/rtl" )
+	fbcu.add_suite( "fbc_tests.overload.rtl-str" )
 	fbcu.add_test( "1", @test1 )
 end sub
 

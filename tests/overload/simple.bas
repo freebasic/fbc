@@ -91,7 +91,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/simple" )
+	fbcu.add_suite( "fbc_tests.overload.simple" )
 	fbcu.add_test( "simple", @test )
 end sub
 

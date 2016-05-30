@@ -199,7 +199,7 @@ namespace returnByvalDoesntCallLet
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/byval-copy" )
+	fbcu.add_suite( "fbc_tests.structs.byval-copy" )
 	fbcu.add_test( "passingByvalDoesntCallLet1", @passingByvalDoesntCallLet1.test )
 	fbcu.add_test( "passingByvalDoesntCallLet2", @passingByvalDoesntCallLet2.test )
 	fbcu.add_test( "returnByvalDoesntCallLet", @returnByvalDoesntCallLet.test )

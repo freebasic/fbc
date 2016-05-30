@@ -19,7 +19,7 @@ private sub wtest cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.string_.inline_zstring_cast" )
+	fbcu.add_suite( "fbc_tests.string.inline_zstring_cast" )
 	fbcu.add_test( "inline zstring cast assignment", @ztest )
 	fbcu.add_test( "inline wstring cast assignment", @wtest )
 end sub

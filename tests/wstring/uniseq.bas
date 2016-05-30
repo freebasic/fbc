@@ -34,7 +34,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.wstrings.uniseq")
+	fbcu.add_suite("fbc_tests.wstring.uniseq")
 	fbcu.add_test("test_1", @test_1)
 
 end sub

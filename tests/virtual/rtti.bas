@@ -159,7 +159,7 @@ namespace dtorsResetVptr
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/virtual/rtti" )
+	fbcu.add_suite( "fbc_tests.virtual.rtti" )
 	fbcu.add_test( "Is operator", @simple.test )
 	fbcu.add_test( "empty vtable", @emptyVtable.test )
 	fbcu.add_test( "RTTI handles namespaces", @rttiHandlesNamespaces1.test )

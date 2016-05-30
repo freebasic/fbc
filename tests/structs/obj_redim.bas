@@ -46,7 +46,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:obj-redim")
+	fbcu.add_suite("fbc_tests.structs.obj_redim")
 	fbcu.add_test( "test", @test)
 
 end sub

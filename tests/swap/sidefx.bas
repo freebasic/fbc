@@ -147,7 +147,7 @@ namespace stringConcat
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "fb_tests.swap.sidefx" )
+	fbcu.add_suite( "fbc_tests.swap.sidefx" )
 	fbcu.add_test( "SWAP on *function()", @testDerefs )
 	fbcu.add_test( "SWAP on array(function())", @testArrays )
 	fbcu.add_test( "SWAP on function().field", @testResultUdtField )

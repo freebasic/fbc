@@ -143,7 +143,7 @@ namespace ptrIndexFollowedByFieldSyntax
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/op-ptrindex" )
+	fbcu.add_suite( "fbc_tests.overload.op-ptrindex" )
 	fbcu.add_test( "simple", @simple.test )
 	fbcu.add_test( "returning BYREF", @byrefResult.test )
 	fbcu.add_test( "multiple overloads", @multipleOverloads.test )

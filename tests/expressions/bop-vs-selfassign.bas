@@ -153,7 +153,7 @@ namespace returnByrefAssignment
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/expression/bop-vs-selfassign" )
+	fbcu.add_suite( "fbc_tests.expressions.bop-vs-selfassign" )
 	fbcu.add_test( "testVarAssign", @testVarAssign )
 	fbcu.add_test( "testDerefAssign", @testDerefAssign )
 	fbcu.add_test( "returnByrefAssignment", @returnByrefAssignment.test )

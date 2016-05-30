@@ -3439,7 +3439,7 @@ namespace tempStringArg
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/temp-var-dtors" )
+	fbcu.add_suite( "fbc_tests.structs.temp-var-dtors" )
 
 	#macro add( t )
 		fbcu.add_test( #t, @t )

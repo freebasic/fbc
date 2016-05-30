@@ -76,7 +76,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.wstrings.woct_")
+	fbcu.add_suite("fbc_tests.wstring.woct")
 	fbcu.add_test("test_byte", @test_byte)
 	fbcu.add_test("test_short", @test_short)
 	fbcu.add_test("test_int", @test_int)

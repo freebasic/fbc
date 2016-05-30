@@ -81,7 +81,7 @@ namespace fbc_tests.boolean_.field_
 	end sub
 
 	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean_.field_")
+		fbcu.add_suite("fbc_tests.boolean.boolean_field")
 		fbcu.add_test("test1", @test1)
 		fbcu.add_test("test2", @test2)
 		fbcu.add_test("test3", @test3)

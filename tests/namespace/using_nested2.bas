@@ -26,7 +26,7 @@ namespace fbc_tests.ns.using_nested2
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.namespace.using-nested2")
+		fbcu.add_suite("fbc_tests.namespace.using_nested2")
 		fbcu.add_test("#1", @test_1)
 		
 	end sub

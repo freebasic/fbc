@@ -99,7 +99,7 @@ sub test_int cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/optimizations/operand-reorder" )
+	fbcu.add_suite( "fbc_tests.optimizations.operand_reorder" )
 	fbcu.add_test( "test_int", @test_int )
 end sub
 

@@ -99,7 +99,7 @@ private sub testRegression1 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/quirk/undef" )
+	fbcu.add_suite( "fbc_tests.quirk.undef" )
 	fbcu.add_test( "redefining a standard type", @testRedefStandardType )
 	fbcu.add_test( "before undeffing a function", @testPreUndefFunction )
 	fbcu.add_test( "after undeffing the function", @testPostUndefFunction )

@@ -16,7 +16,7 @@ namespace fbc_tests.file_.input_large_dbl
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.file.input_large_dbl")
+		fbcu.add_suite("fbc_tests.file.large_dbl")
 		fbcu.add_test("read_it", @read_it)
 	
 	end sub

@@ -1714,7 +1714,7 @@ namespace constObjectWithVirtualDtor
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/virtual/virtual" )
+	fbcu.add_suite( "fbc_tests.virtual.virtual" )
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
 	fbcu.add_test( "Overriding vs. shadowing", @overridingVsShadowing.test )
 	fbcu.add_test( "Methods with a different signature are not overridden", @differentSignatureIsntOverridden.test )

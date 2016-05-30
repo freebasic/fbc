@@ -50,7 +50,7 @@ D_TEST_PROC(double)
 	
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests-optimizations:multiplication association")
+	fbcu.add_suite("fbc_tests.optimizations.mul_assoc")
 	fbcu.add_test("test_byte", @test_byte)
 	fbcu.add_test("test_ubyte", @test_ubyte)
 	fbcu.add_test("test_short", @test_short)

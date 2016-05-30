@@ -41,7 +41,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite( "tests/structs/obj_defparam" )
+	fbcu.add_suite( "fbc_tests.structs.obj_default_param" )
 	fbcu.add_test( "test", @test )
 
 end sub

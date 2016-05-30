@@ -312,7 +312,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/temp-strings" )
+	fbcu.add_suite( "fbc_tests.functions.temp-strings" )
 	fbcu.add_test( "1", @test )
 end sub
 

@@ -259,7 +259,7 @@ sub testNextBestForInteger cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/integers" )
+	fbcu.add_suite( "fbc_tests.overload.integers" )
 	fbcu.add_test( "regression test for bug #716", @regressionTestBug716.test )
 	fbcu.add_test( "preferExactSigned"   , @preferExactSigned.test )
 	fbcu.add_test( "preferExactUnsigned" , @preferExactUnsigned.test )

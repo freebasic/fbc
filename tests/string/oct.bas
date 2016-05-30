@@ -72,7 +72,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.oct_")
+	fbcu.add_suite("fbc_tests.string.oct")
 	fbcu.add_test("test_long", @test_long)
 	fbcu.add_test("test_int", @test_int)
 	fbcu.add_test("test_short", @test_short)

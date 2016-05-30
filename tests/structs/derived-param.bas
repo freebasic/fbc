@@ -110,7 +110,7 @@ namespace WithCtorBase
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/derived-param" )
+	fbcu.add_suite( "fbc_tests.structs.derived-param" )
 	fbcu.add_test( "Parameters derived from POD struct", @NoCtorBase.test )
 	fbcu.add_test( "Parameters derived from class", @WithCtorBase.test )
 end sub

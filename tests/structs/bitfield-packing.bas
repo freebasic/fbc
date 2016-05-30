@@ -119,7 +119,7 @@ namespace bitfieldsInNestedTypes
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/bitfield-packing" )
+	fbcu.add_suite( "fbc_tests.structs.bitfield-packing" )
 	fbcu.add_test( "test", @test )
 	fbcu.add_test( "gengccRegressionTest", @gengccRegressionTest.test )
 	fbcu.add_test( "bitfieldsInNestedTypes", @bitfieldsInNestedTypes.test )

@@ -64,7 +64,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-numbers:const_op")
+	fbcu.add_suite("fbc_tests.numbers.const_op")
 	fbcu.add_test("test_1", @test_1)
 	fbcu.add_test("test_2", @test_2)
 

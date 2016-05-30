@@ -52,7 +52,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/optimizations/self-bop" )
+	fbcu.add_suite( "fbc_tests.optimizations.self-bop" )
 	fbcu.add_test( "test", @test )
 end sub
 
