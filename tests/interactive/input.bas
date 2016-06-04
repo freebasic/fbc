@@ -136,7 +136,7 @@ sub ctor () constructor
 '// this should be determined internally by fbcu. for
 '// now, this #define suffices ...
 # if defined (FBCU_CONFIG_TEST_USER_INPUT)
-	fbcu.add_suite("fbc_tests.interactive.input_")
+	fbcu.add_suite("fbc_tests.interactive.input")
 	fbcu.add_test("test_1", @test_1)
 # endif
 

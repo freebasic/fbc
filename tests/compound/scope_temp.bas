@@ -33,7 +33,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests-compound:scope_temp")
+	fbcu.add_suite("fbc_tests.compound.scope_temp")
 	fbcu.add_test("test temp", @test_temp)
 
 end sub

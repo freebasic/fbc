@@ -40,7 +40,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests-compound:scope_imp_str")
+	fbcu.add_suite("fbc_tests.compound.scope_imp_str")
 	fbcu.add_test("test zstring", @test_zstring)
 	fbcu.add_test("test string", @test_string)
 

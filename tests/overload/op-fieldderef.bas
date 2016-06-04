@@ -79,7 +79,7 @@ namespace parenthesized
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/op-fieldderef" )
+	fbcu.add_suite( "fbc_tests.overload.op-fieldderef" )
 	fbcu.add_test( "simple", @simple.test )
 	fbcu.add_test( "withSingleDeref", @withSingleDeref.test )
 	fbcu.add_test( "withMultiDeref", @withMultiDeref.test )

@@ -215,7 +215,7 @@ namespace fbc_tests.boolean_.boolean_
 	end sub
 
 	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean_.boolean")
+		fbcu.add_suite("fbc_tests.boolean.boolean")
 		fbcu.add_test("sizeof_boolean", @sizeof_boolean)
 		fbcu.add_test("convert_cbool", @convert_cbool)
 		fbcu.add_test("convert_cbool_literal", @convert_cbool_literal)

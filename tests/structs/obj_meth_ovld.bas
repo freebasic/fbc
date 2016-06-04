@@ -49,7 +49,7 @@ end sub
 private _
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.structs.meth_ovld")
+	fbcu.add_suite("fbc_tests.structs.obj_meth_ovld")
 	fbcu.add_test("test", @test)
 	
 end sub

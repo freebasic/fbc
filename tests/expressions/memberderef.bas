@@ -25,7 +25,7 @@ namespace syntax
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/expressions/memberderef" )
+	fbcu.add_suite( "fbc_tests.expressions.memberderef" )
 	fbcu.add_test( "syntax", @syntax.test )
 end sub
 

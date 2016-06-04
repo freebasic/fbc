@@ -249,7 +249,7 @@ sub testContinueWhile cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/compound/loop_" )
+	fbcu.add_suite( "fbc_tests.compound.loop" )
 	fbcu.add_test( "while", @testWhile )
 	fbcu.add_test( "do while", @testDoWhile )
 	fbcu.add_test( "loop while", @testLoopWhile )

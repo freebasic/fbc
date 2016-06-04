@@ -35,7 +35,7 @@ namespace nonTrivialDueToField
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/return-non-trivial" )
+	fbcu.add_suite( "fbc_tests.functions.return-non-trivial" )
 	fbcu.add_test( "nonTrivialDueToField", @nonTrivialDueToField.test )
 end sub
 

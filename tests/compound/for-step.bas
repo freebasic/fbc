@@ -85,7 +85,7 @@ private sub testNegativeStep cdecl()
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/compound/for-step" )
+	fbcu.add_suite( "fbc_tests.compound.for-step" )
 	fbcu.add_test( "FOR with positive STEP", @testPositiveStep )
 	fbcu.add_test( "FOR with negative STEP", @testNegativeStep )
 end sub

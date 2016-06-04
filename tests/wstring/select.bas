@@ -28,7 +28,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.wstrings.select_")
+	fbcu.add_suite("fbc_tests.wstring.select")
 	fbcu.add_test("test_1", @test_1)
 
 end sub

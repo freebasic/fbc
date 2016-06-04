@@ -15,7 +15,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload.only_one_vararg_in_type")
+	fbcu.add_suite("fbc_tests.overload.type_vararg")
 	fbcu.add_test("1", @test_1)
 
 end sub

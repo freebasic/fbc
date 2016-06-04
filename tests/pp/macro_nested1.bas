@@ -42,7 +42,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.macros.nested_1")
+	fbcu.add_suite("fbc_tests.pp.macro_nested1")
 	fbcu.add_test("nestedTest", @nestedTest)
 	fbcu.add_test("commentsInParamsTest", @commentsInParamsTest)
 

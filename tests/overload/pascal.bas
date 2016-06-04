@@ -117,7 +117,7 @@ namespace ctors
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/pascal" )
+	fbcu.add_suite( "fbc_tests.overload.pascal" )
 	fbcu.add_test( "procedures", @procs.test )
 	fbcu.add_test( "constructors", @ctors.test )
 end sub

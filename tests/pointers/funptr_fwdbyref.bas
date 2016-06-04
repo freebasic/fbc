@@ -49,7 +49,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.pointers.funcptr_fwdbyref")
+	fbcu.add_suite("fbc_tests.pointers.funptr_fwdbyref")
 	fbcu.add_test("test", @test)
 
 end sub

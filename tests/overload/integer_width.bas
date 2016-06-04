@@ -20,7 +20,7 @@ namespace fbc_tests.overloads.integer_width
 	end sub
 
 	private sub ctor () constructor
-		fbcu.add_suite("fb-tests.overload.integer_width")
+		fbcu.add_suite("fbc_tests.overload.integer_width")
 		fbcu.add_test("test", @zee_test)
 	end sub
 

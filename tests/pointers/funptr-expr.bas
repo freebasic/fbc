@@ -30,7 +30,7 @@ sub testRvalueByref cdecl( )
 end sub
 
 private sub ctor () constructor
-	fbcu.add_suite( "tests/pointers/funcptr-expr" )
+	fbcu.add_suite( "fbc_tests.pointers.funptr-expr" )
 	fbcu.add_test( "@proc passed to BYREF param", @testRvalueByref )
 end sub
 

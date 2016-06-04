@@ -34,7 +34,7 @@ end sub
 	
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:obj-static_array_ini")
+	fbcu.add_suite("fbc_tests.structs.obj_static_array_ini")
 	fbcu.add_test( "test", @test)
 
 end sub

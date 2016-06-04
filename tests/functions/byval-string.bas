@@ -107,7 +107,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/byval-string" )
+	fbcu.add_suite( "fbc_tests.functions.byval-string" )
 	fbcu.add_test( "1", @test )
 end sub
 

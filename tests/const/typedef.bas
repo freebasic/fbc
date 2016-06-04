@@ -27,7 +27,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("tests/const/typedef")
+	fbcu.add_suite("fbc_tests.const.typedef")
 	fbcu.add_test("enum", @test_enum)
 	fbcu.add_test("type", @test_type)
 

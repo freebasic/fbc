@@ -27,7 +27,7 @@ namespace udtInheritance
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/byval-as-const" )
+	fbcu.add_suite( "fbc_tests.overload.byval-as-const" )
 	fbcu.add_test( "UDTs with inheritance", @udtInheritance.test )
 end sub
 

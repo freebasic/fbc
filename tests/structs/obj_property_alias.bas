@@ -31,7 +31,7 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/obj-property-alias" )
+	fbcu.add_suite( "fbc_tests.structs.obj_property_alias" )
 	fbcu.add_test( "test", @test )
 end sub
 

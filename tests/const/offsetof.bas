@@ -17,7 +17,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("tests/const/offsetof")
+	fbcu.add_suite("fbc_tests.const.offsetof")
 	fbcu.add_test("offset", @test)
 
 end sub

@@ -25,7 +25,7 @@ namespace fbc_tests.boolean_.ptr_
 
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.boolean_.ptr_")
+		fbcu.add_suite("fbc_tests.boolean.boolean_ptr")
 		fbcu.add_test("test1", @test1)
 		
 	end sub

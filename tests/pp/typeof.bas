@@ -173,7 +173,7 @@ namespace namespaces
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/pp/typeof" )
+	fbcu.add_suite( "fbc_tests.pp.typeof" )
 	fbcu.add_test( "typeof() with PP", @test )
 	fbcu.add_test( "namespaces", @namespaces.test )
 end sub

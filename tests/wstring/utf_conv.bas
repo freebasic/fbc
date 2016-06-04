@@ -220,7 +220,7 @@ sub testUTFAndWCharPreallocDest cdecl( )
 end sub
 
 sub ctor( ) constructor
-	fbcu.add_suite( "tests/wstrings/utf_conv" )
+	fbcu.add_suite( "fbc_tests.wstring.utf_conv" )
 	fbcu.add_test( "test_z", @test_z )
 	fbcu.add_test( "test_w", @test_w )
 	fbcu.add_test( "testWstringToNullDest", @testWstringToNullDest )

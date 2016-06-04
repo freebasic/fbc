@@ -29,7 +29,7 @@ namespace fbc_tests.structs.const_method
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("tests.structs.const_method")
+		fbcu.add_suite("fbc_tests.structs.const_method")
 		fbcu.add_test("const_method", @test)
 	
 	end sub

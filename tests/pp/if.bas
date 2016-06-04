@@ -248,7 +248,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/pp/if" )
+	fbcu.add_suite( "fbc_tests.pp.if" )
 	fbcu.add_test( "test", @test )
 end sub
 

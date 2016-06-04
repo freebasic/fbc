@@ -53,7 +53,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:ctor-union")
+	fbcu.add_suite("fbc_tests.structs.ctor_union")
 	fbcu.add_test( "test foo", @test_foo)
 	fbcu.add_test( "test bar", @test_bar)
 

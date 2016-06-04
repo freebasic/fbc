@@ -60,7 +60,7 @@ namespace shadowingACommon
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/dim/common-shared-1" )
+	fbcu.add_suite( "fbc_tests.dim.common-shared-1" )
 	fbcu.add_test( "test", @test )
 	fbcu.add_test( "shadowing a COMMON", @shadowingACommon.test )
 end sub

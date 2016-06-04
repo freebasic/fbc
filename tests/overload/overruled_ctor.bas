@@ -56,7 +56,7 @@ namespace fbc_tests.overload_.overruled_ctor
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.overload_.overruled_ctor")
+		fbcu.add_suite("fbc_tests.overload.overruled_ctor")
 		fbcu.add_test("Test Constructor", @the_test)
 	
 	end sub

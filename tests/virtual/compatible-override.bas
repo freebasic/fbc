@@ -150,7 +150,7 @@ namespace constness
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/virtual/compatible-override" )
+	fbcu.add_suite( "fbc_tests.virtual.compatible-override" )
 	fbcu.add_test( "integer types", @integertypes.test )
 	fbcu.add_test( "covariant return type", @covariantReturnType.test )
 	fbcu.add_test( "CONSTness", @constness.test )

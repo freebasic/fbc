@@ -274,7 +274,7 @@ namespace vectorNewCtorList
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/paraminit" )
+	fbcu.add_suite( "fbc_tests.functions.paraminit" )
 
 	fbcu.add_test( "101", @udtByref.anon                         .test )
 	fbcu.add_test( "102", @udtByref.global                       .test )

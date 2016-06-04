@@ -120,7 +120,7 @@ private sub testDoubleUops cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/optimizations/nop" )
+	fbcu.add_suite( "fbc_tests.optimizations.nop" )
 	fbcu.add_test( "conditional branch BOP", @testBranch )
 	fbcu.add_test( "Double UOPs", @testDoubleUops )
 end sub

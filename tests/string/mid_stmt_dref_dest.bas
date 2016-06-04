@@ -13,7 +13,7 @@ namespace fbc_tests.string_.mid_stmt_deref_destination
 	
 	sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.string_.mid_stmt_deref_destination")
+		fbcu.add_suite("fbc_tests.string.mid_stmt_dref_dest")
 		fbcu.add_test("deref_as_mid_destination", @deref_as_mid_destination)
 	
 	end sub

@@ -23,6 +23,6 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/dim/extern-not-allocated-by-local-2" )
+	fbcu.add_suite( "fbc_tests.dim.extern-not-allocated-by-local-2" )
 	fbcu.add_test( "test", @test )
 end sub

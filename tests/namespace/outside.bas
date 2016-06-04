@@ -370,7 +370,7 @@ end sub
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 private sub modctor( ) constructor
-	fbcu.add_suite( "tests/namespace/outside" )
+	fbcu.add_suite( "fbc_tests.namespace.outside" )
 	fbcu.add_test( "normal procedures", @procs.test )
 	fbcu.add_test( "variables", @vars.test )
 	fbcu.add_test( "operator", @testOp )

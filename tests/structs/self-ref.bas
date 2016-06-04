@@ -19,7 +19,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite("fb-tests-structs:selfref")
+	fbcu.add_suite("fbc_tests.structs.self-ref")
 	fbcu.add_test( "test", @test )
 end sub
 

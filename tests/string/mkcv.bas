@@ -168,7 +168,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.mkcv")
+	fbcu.add_suite("fbc_tests.string.mkcv")
 	fbcu.add_test("mkConstTest", @mkConstTest)
 	fbcu.add_test("mkVarTest", @mkVarTest)
 	fbcu.add_test("cvConstTest", @cvConstTest)

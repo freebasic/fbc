@@ -48,7 +48,7 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/naked-ctor")
+	fbcu.add_suite( "fbc_tests.functions.naked-ctor")
 	fbcu.add_test( "Naked constructors/destructors", @test )
 end sub
 

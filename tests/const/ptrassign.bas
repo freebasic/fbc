@@ -14,7 +14,7 @@ namespace fbc_tests.const_.ptrassign
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("tests.const.ptrassign")
+		fbcu.add_suite("fbc_tests.const.ptrassign")
 		fbcu.add_test("assign const ptr", @test)
 	
 	end sub

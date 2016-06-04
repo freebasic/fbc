@@ -96,7 +96,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:string pointers")
+	fbcu.add_suite("fbc_tests.overload.strings_ptr")
 	fbcu.add_test("test_literals", @test_literals)
 	fbcu.add_test("test_string", @test_string)
 	fbcu.add_test("test_fixed_string", @test_fixed_string)

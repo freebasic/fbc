@@ -40,7 +40,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.namespace.imp_method")
+	fbcu.add_suite("fbc_tests.namespace.import_method")
 	
 	fbcu.add_test("test", @test)
 	

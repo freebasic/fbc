@@ -77,7 +77,7 @@ end namespace
 
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/derived" )
+	fbcu.add_suite( "fbc_tests.overload.derived" )
 	fbcu.add_test( "Derived can resolve to Base in overloading", @ResolveToBase.test )
 	fbcu.add_test( "Derived resolve to themselves when possible", @ResolveExact.test )
 end sub

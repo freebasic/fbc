@@ -136,7 +136,7 @@ private sub testNoConvCasts cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/optimizations/float-bop-cast-rhs" )
+	fbcu.add_suite( "fbc_tests.optimizations.float-bop-cast-rhs" )
 	fbcu.add_test( "code generation", @testCodeGeneration )
 	fbcu.add_test( "noconv CASTs", @testNoConvCasts )
 end sub

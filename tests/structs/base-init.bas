@@ -348,7 +348,7 @@ namespace podBaseComplexDerived
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/based-init" )
+	fbcu.add_suite( "fbc_tests.structs.base-init" )
 	fbcu.add_test( "Implicit base default ctor call", @implicitBaseDefCtor.test )
 	fbcu.add_test( "BASE() with non-default ctor", @explicitBaseCtor.test )
 	fbcu.add_test( "BASE() with default ctor", @explicitBaseDefCtor.test )

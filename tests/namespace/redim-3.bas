@@ -66,6 +66,6 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/namespace/redim-3" )
+	fbcu.add_suite( "fbc_tests.namespace.redim-3" )
 	fbcu.add_test( "test", @test )
 end sub

@@ -28,7 +28,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:ctor-bitfield")
+	fbcu.add_suite("fbc_tests.structs.ctor_bitfield")
 	fbcu.add_test( "test", @test)
 
 end sub

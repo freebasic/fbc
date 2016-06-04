@@ -30,7 +30,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:op_assign_explicit_fwd")
+	fbcu.add_suite("fbc_tests.structs.op_assign_explicit_fwd")
 	fbcu.add_test( "test", @test)
 
 end sub

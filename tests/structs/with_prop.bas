@@ -31,7 +31,7 @@ namespace fbc_tests.structs.with_prop
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.pointers.with_prop")
+		fbcu.add_suite("fbc_tests.structs.with_prop")
 		fbcu.add_test("properties and with", @test_stuff)
 	
 	end sub

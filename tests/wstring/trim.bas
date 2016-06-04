@@ -300,7 +300,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.wstrings.trim_")
+	fbcu.add_suite("fbc_tests.wstring.trim")
 	fbcu.add_test("test_1", @test_1)
 	fbcu.add_test("test_2", @test_2)
 	fbcu.add_test("test_3", @test_3)

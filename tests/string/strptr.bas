@@ -14,7 +14,7 @@ end sub
 	
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-string:strptr")
+	fbcu.add_suite("fbc_tests.string.strptr")
 	fbcu.add_test("test_basic", @test_basic)
 
 end sub

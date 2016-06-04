@@ -8,7 +8,7 @@ namespace fbc_tests.compound.rtl_cb
 	
 	sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.compound.rtl_cb")
+		fbcu.add_suite("fbc_tests.functions.rtl_cb")
 		fbcu.add_test("take sleep's address", @test)
 	
 	end sub

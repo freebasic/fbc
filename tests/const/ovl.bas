@@ -126,7 +126,7 @@ namespace fbc_tests.const_.ovl
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("tests.const.ovl")
+		fbcu.add_suite("fbc_tests.const.ovl")
 		fbcu.add_test("ovl_1", @test1)
 		fbcu.add_test("ovl_2", @test2)
 		fbcu.add_test("ovl_3", @test3)

@@ -73,7 +73,7 @@ end constructor
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:op-ctor-coercion-udt")
+	fbcu.add_suite("fbc_tests.overload.op_ctor_coercion_udt")
 	fbcu.add_test("bar val", @bar__byval_test)
 	fbcu.add_test("bar ref", @bar__byref_test)
 

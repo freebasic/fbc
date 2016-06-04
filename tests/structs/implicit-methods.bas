@@ -551,7 +551,7 @@ namespace virtualWithByvalSelfResult
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/implicit-methods" )
+	fbcu.add_suite( "fbc_tests.structs.implicit-methods" )
 
 	fbcu.add_test( "copyCtorUdt"        , @copyCtorUdt.test )
 	fbcu.add_test( "copyCtorConstUdt"   , @copyCtorConstUdt.test )

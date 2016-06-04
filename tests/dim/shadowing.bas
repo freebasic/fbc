@@ -120,7 +120,7 @@ namespace dimImplicitThisField
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/dim/shadowing" )
+	fbcu.add_suite( "fbc_tests.dim.shadowing" )
 	fbcu.add_test( "empty dynamic array", @testEmptyDynamicArray )
 	fbcu.add_test( "filled dynamic array", @testFilledDynamicArray )
 	fbcu.add_test( "fixed-size array", @testFixedSizeArray )

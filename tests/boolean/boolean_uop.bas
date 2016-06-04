@@ -39,7 +39,7 @@ namespace fbc_tests.boolean_.uop
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.boolean_.uop")
+		fbcu.add_suite("fbc_tests.boolean.boolean_uop")
 		fbcu.add_test("test1", @test1)
 		
 	end sub

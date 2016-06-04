@@ -1105,7 +1105,7 @@ namespace deleteNull
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/pointers/new-delete" )
+	fbcu.add_suite( "fbc_tests.pointers.new-delete" )
 	fbcu.add_test( "default initialization", @defaultInit.test )
 	fbcu.add_test( "New with int/float initializer", @newIntFloatInit )
 	fbcu.add_test( "New with string initializer", @newStringInit )

@@ -50,7 +50,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.lrset")
+	fbcu.add_suite("fbc_tests.string.lrset")
 	fbcu.add_test("test_lrset", @test_lrset)
 
 end sub

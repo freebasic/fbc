@@ -49,7 +49,7 @@ namespace fbc_tests.string_.str_pad
 
 	sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.string_.str_pad")
+		fbcu.add_suite("fbc_tests.string.str_pad")
 		fbcu.add_test("integer to str", @test_i)
 		fbcu.add_test("uinteger to str", @test_ui)
 

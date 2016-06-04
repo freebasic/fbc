@@ -208,7 +208,7 @@ namespace unknownDimensionsArgHasDimensionsFilledIn
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/overload/bydesc" )
+	fbcu.add_suite( "fbc_tests.overload.bydesc" )
 	fbcu.add_test( "simple", @simple.test )
 	fbcu.add_test( "dimensions1vs2", @dimensions1vs2.test )
 	fbcu.add_test( "unknownDimensionsDtype", @unknownDimensionsDtype.test )

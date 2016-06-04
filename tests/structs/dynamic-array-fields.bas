@@ -1002,7 +1002,7 @@ namespace scoping
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/dynamic-array-fields")
+	fbcu.add_suite( "fbc_tests.structs.dynamic-array-fields")
 	fbcu.add_test( "descriptor allocation", @descriptorAllocation.test )
 	fbcu.add_test( "descriptor init & clean up", @descriptorInitAndCleanUp.test )
 	fbcu.add_test( "copy pod", @copyPod.test )

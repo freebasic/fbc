@@ -18,7 +18,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.macros.recursive")
+	fbcu.add_suite("fbc_tests.pp.recursive")
 	fbcu.add_test("recursiveTest", @recursiveTest)
 
 end sub

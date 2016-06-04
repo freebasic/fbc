@@ -44,7 +44,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:obj-cast-ovl2")
+	fbcu.add_suite("fbc_tests.structs.obj_cast_ovl2")
 	fbcu.add_test( "test 1", @test1)
 
 end sub

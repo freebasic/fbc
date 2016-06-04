@@ -73,7 +73,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:obj-temp")
+	fbcu.add_suite("fbc_tests.structs.obj_temp")
 	fbcu.add_test( "pass 1", @test_pass1)
 	fbcu.add_test( "pass 2", @test_pass2)
 	fbcu.add_test( "return 1", @test_ret1)

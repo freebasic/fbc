@@ -25,7 +25,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:op_constparam")
+	fbcu.add_suite("fbc_tests.overload.op_constparam")
 	fbcu.add_test("test", @test)
 
 end sub

@@ -303,7 +303,7 @@ namespace dtorOnly
 end namespace
 
 sub ctor( ) constructor
-	fbcu.add_suite( "tests/dim/udt-init" )
+	fbcu.add_suite( "fbc_tests.dim.udt-init" )
 	fbcu.add_test( "basic 1", @basic.test1 )
 	fbcu.add_test( "basic 2", @basic.test2 )
 	fbcu.add_test( "basic 3", @basic.test3 )

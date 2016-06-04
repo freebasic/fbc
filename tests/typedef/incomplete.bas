@@ -35,7 +35,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/typedef/incomplete" )
+	fbcu.add_suite( "fbc_tests.typedef.incomplete" )
 	fbcu.add_test( "test", @test )
 end sub
 

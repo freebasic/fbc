@@ -970,7 +970,7 @@ namespace returnCtorCall
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/return-byref" )
+	fbcu.add_suite( "fbc_tests.functions.return-byref" )
 	fbcu.add_test( "returning globals", @returnGlobal.test )
 	fbcu.add_test( "returning statics", @returnStatic.test )
 	fbcu.add_test( "WITH block", @withBlock.test )

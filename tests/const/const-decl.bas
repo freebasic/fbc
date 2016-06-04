@@ -167,7 +167,7 @@ namespace implicitTypes
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/const/const-decl" )
+	fbcu.add_suite( "fbc_tests.const.const-decl" )
 	fbcu.add_test( "syntax", @syntax.test )
 	fbcu.add_test( "explicitTypes", @explicitTypes.test )
 	fbcu.add_test( "implicitTypes", @implicitTypes.test )

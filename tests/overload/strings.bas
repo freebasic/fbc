@@ -49,7 +49,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:strings")
+	fbcu.add_suite("fbc_tests.overload.strings")
 	fbcu.add_test("test_vars", @test_vars)
 	fbcu.add_test("test_literals", @test_literals)
 

@@ -24,7 +24,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:obj-vis-static")
+	fbcu.add_suite("fbc_tests.structs.obj_vis_static")
 	fbcu.add_test( "#1", @test_1)
 
 end sub

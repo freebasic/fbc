@@ -16,7 +16,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.macros.conditional")
+	fbcu.add_suite("fbc_tests.pp.hello")
 	fbcu.add_test("helloTest", @helloTest)
 
 end sub

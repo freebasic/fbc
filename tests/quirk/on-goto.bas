@@ -136,7 +136,7 @@ private sub test4_5 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/quirk/on-goto" )
+	fbcu.add_suite( "fbc_tests.quirk.on-goto" )
 	fbcu.add_test( "1 0", @test1_0 )
 	fbcu.add_test( "1 1", @test1_1 )
 	fbcu.add_test( "1 2", @test1_2 )

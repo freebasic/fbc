@@ -14,7 +14,7 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/expressions/div-by-zero" )
+	fbcu.add_suite( "fbc_tests.expressions.div-by-zero" )
 	fbcu.add_test( "test", @test )
 end sub
 

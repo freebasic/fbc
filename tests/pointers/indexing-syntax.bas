@@ -32,6 +32,6 @@ private sub testVarPtrIndexing cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/pointers/indexing-syntax" )
+	fbcu.add_suite( "fbc_tests.pointers.indexing-syntax" )
 	fbcu.add_test( "indexing directly on VARPTR() & co", @testVarPtrIndexing )
 end sub

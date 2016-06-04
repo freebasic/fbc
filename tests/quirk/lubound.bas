@@ -161,7 +161,7 @@ sub test1 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/optimizations/array-bound" )
+	fbcu.add_suite( "fbc_tests.quirk.lubound" )
 	fbcu.add_test( "1", @test1 )
 end sub
 

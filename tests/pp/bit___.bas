@@ -39,7 +39,7 @@ namespace fbc_tests.macros.bit___
 
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.macros.bit___")
+		fbcu.add_suite("fbc_tests.pp.bit___")
 		fbcu.add_test("test_longint_bit", @test64)
 		fbcu.add_test("test_literals", @test_literals)
 

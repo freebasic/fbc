@@ -15,7 +15,7 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/crt/varargs" )
+	fbcu.add_suite( "fbc_tests.crt.varargs" )
 	fbcu.add_test( "test", @test )
 end sub
 

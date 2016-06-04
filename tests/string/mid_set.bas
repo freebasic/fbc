@@ -143,7 +143,7 @@ private sub testDestExpr cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/string/mid-set" )
+	fbcu.add_suite( "fbc_tests.string.mid_set" )
 	fbcu.add_test( "midSetTest", @midSetTest )
 	fbcu.add_test( "destination expression", @testDestExpr )
 end sub

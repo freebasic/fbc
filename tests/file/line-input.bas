@@ -33,7 +33,7 @@ sub testBigList cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/file/line-input" )
+	fbcu.add_suite( "fbc_tests.file.line-input" )
 	fbcu.add_test( "testBigList", @testBigList )
 end sub
 

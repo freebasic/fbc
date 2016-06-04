@@ -77,7 +77,7 @@ namespace testStdcall
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/ctor-alias" )
+	fbcu.add_suite( "fbc_tests.structs.ctor_alias" )
 	fbcu.add_test( "cdecl", @testCdecl.test )
 	fbcu.add_test( "stdcall", @testStdcall.test )
 end sub

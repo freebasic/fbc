@@ -82,7 +82,7 @@ namespace fbc_tests.string_.cvi_mki
 
 	sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.string_.cv_mki")
+		fbcu.add_suite("fbc_tests.string.cvi_mki")
 		fbcu.add_test("cvi", @CVXtest)
 		fbcu.add_test("mki", @MKXtest)
 	

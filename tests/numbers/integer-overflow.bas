@@ -109,7 +109,7 @@ sub testUnsigned cdecl( )
 end sub
 
 sub ctor( ) constructor
-	fbcu.add_suite( "tests/numbers/integer-overflow" )
+	fbcu.add_suite( "fbc_tests.numbers.integer-overflow" )
 	fbcu.add_test( "signed", @testSigned )
 	fbcu.add_test( "unsigned", @testUnsigned )
 end sub

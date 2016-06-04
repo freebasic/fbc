@@ -52,7 +52,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.wstrings.symb")
+	fbcu.add_suite("fbc_tests.wstring.symb")
 	fbcu.add_test("test_1", @test_1)
 
 end sub

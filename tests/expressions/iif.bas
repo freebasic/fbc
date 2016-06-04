@@ -1095,7 +1095,7 @@ sub testRtlErrorChecking cdecl( )
 end sub
 
 sub ctor( ) constructor
-	fbcu.add_suite( "tests/expressions/iif" )
+	fbcu.add_suite( "fbc_tests.expressions.iif" )
 	fbcu.add_test( "int BOP", @testIntBop )
 	fbcu.add_test( "float BOP", @testFloatBop )
 	fbcu.add_test( "string IIF", @testStrings )

@@ -72,7 +72,7 @@ end sub
 '' -----------------------------------------------------------------------------
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/derived_ptr_assign" )
+	fbcu.add_suite( "fbc_tests.structs.derived-ptr-assign" )
 	fbcu.add_test( "derived pointer assignments", @testNoCtorBase )
 	fbcu.add_test( "derived pointer assignments", @testWithCtorBase )
 end sub

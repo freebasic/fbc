@@ -425,7 +425,7 @@ namespace parentUdtAsDataType
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/dim/member-var" )
+	fbcu.add_suite( "fbc_tests.dim.member-var" )
 	fbcu.add_test( "basic declaration/usage", @integers.test )
 	fbcu.add_test( "array access parsing", @arrays.test )
 	fbcu.add_test( "field access parsing", @udts.test )

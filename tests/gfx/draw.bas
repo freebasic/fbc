@@ -54,7 +54,7 @@ private sub testRememberPenPositionFromXCommand cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/gfx/draw" )
+	fbcu.add_suite( "fbc_tests.gfx.draw" )
 	fbcu.add_test( "remember pen position for X command", @testRememberPenPositionForXCommand )
 	fbcu.add_test( "remember pen position from X command", @testRememberPenPositionFromXCommand )
 end sub

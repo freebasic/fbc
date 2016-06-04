@@ -37,7 +37,7 @@ namespace test3544952
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/dim/array-static-init" )
+	fbcu.add_suite( "fbc_tests.dim.array-static-init" )
 	fbcu.add_test( "1", @test1 )
 	fbcu.add_test( "#3544952", @test3544952.test )
 end sub

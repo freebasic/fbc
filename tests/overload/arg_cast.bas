@@ -22,7 +22,7 @@ namespace fbc_tests.overloads.arg_cast
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fb-tests-overload.arg_cast")
+		fbcu.add_suite("fbc_tests.overload.arg_cast")
 		fbcu.add_test("test_arg_udt_cast", @the_test)
 	
 	end sub

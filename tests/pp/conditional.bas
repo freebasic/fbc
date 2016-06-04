@@ -48,7 +48,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.macros.conditional")
+	fbcu.add_suite("fbc_tests.pp.conditional")
 	fbcu.add_test("ifEqualityTest", @ifEqualityTest)
 	fbcu.add_test("ifInequalityTest", @ifInequalityTest)
 	fbcu.add_test("elseifDefinedTest", @elseifDefinedTest)

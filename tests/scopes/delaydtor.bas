@@ -33,7 +33,7 @@ namespace fbc_tests.scopes.delaydtors
 	
 	sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.scopes.delaydtors")
+		fbcu.add_suite("fbc_tests.scopes.delaydtor")
 		fbcu.add_test("dtor delay", @test1)
 	
 	end sub

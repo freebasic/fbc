@@ -312,7 +312,7 @@ sub testAssignFromBoolVar cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/boolean/boolean-conversions" )
+	fbcu.add_suite( "fbc_tests.boolean.boolean-conversions" )
 	fbcu.add_test( "testCompileTime", @testCompileTime )
 	fbcu.add_test( "testRunTime", @testRunTime )
 	fbcu.add_test( "testAssignToBoolVar", @testAssignToBoolVar )

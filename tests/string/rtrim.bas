@@ -173,7 +173,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.rtrim_")
+	fbcu.add_suite("fbc_tests.string.rtrim")
 	fbcu.add_test("#0", @test_0)
 	fbcu.add_test("#1", @test_1)
 	fbcu.add_test("#2", @test_2)

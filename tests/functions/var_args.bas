@@ -212,7 +212,7 @@ sub testVaNext cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/var_args" )
+	fbcu.add_suite( "fbc_tests.functions.var_args" )
 	fbcu.add_test( "test_1", @test_1 )
 	fbcu.add_test( "va_first()", @testVaFirst )
 	fbcu.add_test( "va_next()", @testVaNext )

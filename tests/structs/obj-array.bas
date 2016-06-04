@@ -104,7 +104,7 @@ namespace defctorWithParams
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/array" )
+	fbcu.add_suite( "fbc_tests.structs.obj-array" )
 	fbcu.add_test( "object array, ctor only", @ctoronly.test )
 	fbcu.add_test( "object array, dtor only", @dtoronly.test )
 	fbcu.add_test( "object array, defctor without params", @defctorNoParams.test )

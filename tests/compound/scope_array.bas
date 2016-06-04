@@ -74,7 +74,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.compound.scoped_array")
+	fbcu.add_suite("fbc_tests.compound.scope_array")
 	fbcu.add_test("test scope array", @test_scope_array)
 	
 end sub

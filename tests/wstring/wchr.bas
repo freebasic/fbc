@@ -33,7 +33,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.wstrings.wchr_")
+	fbcu.add_suite("fbc_tests.wstring.wchr")
 	fbcu.add_test("test_1", @test_1)
 
 end sub

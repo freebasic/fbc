@@ -43,7 +43,7 @@ namespace fbc_tests.boolean_.bitfield
 	end sub
 
 	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean_.bitfield")
+		fbcu.add_suite("fbc_tests.boolean.boolean_bitfield")
 		fbcu.add_test("test1", @test1)
 	end sub
 end namespace

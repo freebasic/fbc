@@ -2641,7 +2641,7 @@ end sub
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/union-init" )
+	fbcu.add_suite( "fbc_tests.dim.union-init" )
 	fbcu.add_test( "test1", @test1 )
 	fbcu.add_test( "toplevel1", @toplevel1 )
 	fbcu.add_test( "toplevel2", @toplevel2 )

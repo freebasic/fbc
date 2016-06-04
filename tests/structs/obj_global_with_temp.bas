@@ -27,7 +27,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:obj-global-with-temp")
+	fbcu.add_suite("fbc_tests.structs.obj_global_with_temp")
 	fbcu.add_test( "1", @test1)
 
 end sub

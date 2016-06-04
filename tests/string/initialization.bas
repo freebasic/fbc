@@ -50,7 +50,7 @@ end sub
 	
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.init")
+	fbcu.add_suite("fbc_tests.string.initialization")
 	fbcu.add_test("1", @test_1)
 	fbcu.add_test("2", @test_2)
 	fbcu.add_test("3", @test_3)
