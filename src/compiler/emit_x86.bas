@@ -6555,11 +6555,18 @@ end sub
 sub emitVARINIi( byval dtype as integer, byval value as longint )
 	dim s as string
 	s = *_getTypeString( dtype ) + " "
+
+	'' AST stores boolean true as -1, but we emit it as 1 for gcc compatibility
+	if( (dtype = FB_DATATYPE_BOOLEAN) and (value <> 0) ) then
+		value = 1
+	end if
+
 	if( ISLONGINT( dtype ) ) then
 		s += "0x" + hex( value )
 	else
 		s += str( value )
 	end if
+
 	s += NEWLINE
 	outEx( s )
 end sub

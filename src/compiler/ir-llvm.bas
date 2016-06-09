@@ -2166,11 +2166,18 @@ end sub
 private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
 	hVarIniElementType( sym )
 	var dtype = symbGetType( sym )
+
+	'' AST stores boolean true as -1, but we emit it as 1 for gcc compatibility
+	if( (dtype = FB_DATATYPE_BOOLEAN) and (value <> 0) ) then
+		value = 1
+	end if
+
 	if( typeGetSize( dtype ) = 8 ) then
 		ctx.varini += hEmitLong( value )
 	else
 		ctx.varini += hEmitInt( dtype, sym->subtype, value )
 	end if
+
 	hVarIniSeparator( )
 end sub
 

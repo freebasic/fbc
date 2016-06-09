@@ -21,6 +21,7 @@ Version 1.06.0
 - Accesses to 64bit bitfields could be miscompiled or trigger a compiler crash
 - #732: Virtual destructors couldn't be called on const objects
 - #790: Windows API and X11 bindings: Fixed some macros where macro parameters conflicted with other identifiers or FB keywords used in the macro body
+- boolean initializer values for global or static variables were not emitted properly
 
 
 Version 1.05.0

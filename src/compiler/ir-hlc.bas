@@ -3461,11 +3461,18 @@ end sub
 
 private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
 	var dtype = symbGetType( sym )
+
+	'' AST stores boolean true as -1, but we emit it as 1 for gcc compatibility
+	if( (dtype = FB_DATATYPE_BOOLEAN) and (value <> 0) ) then
+		value = 1
+	end if
+
 	var l = exprNewIMMi( value, dtype )
 	if( symbIsRef( sym ) ) then
 		dtype = typeAddrOf( dtype )
 	end if
 	l = exprNewCAST( dtype, sym->subtype, l )
+
 	ctx.varini += exprFlush( l )
 	hVarIniSeparator( )
 end sub
