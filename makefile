@@ -654,38 +654,38 @@ $(LIBFBGFXMTPIC_C): $(libfbgfxmtpicobjdir)/%.o: %.c $(LIBFBGFX_H)
 install:        install-compiler install-includes install-rtlib install-gfxlib2
 
 install-compiler:
-	mkdir -p $(prefixbindir)
-	$(INSTALL_PROGRAM) $(FBC_EXE) $(PREFIX_FBC_EXE)
+	mkdir -p $(DESTDIR)$(prefixbindir)
+	$(INSTALL_PROGRAM) $(FBC_EXE) $(DESTDIR)$(PREFIX_FBC_EXE)
 
 install-includes:
-	mkdir -p $(prefixincdir)
-	cp -r $(rootdir)inc/* $(prefixincdir)
+	mkdir -p $(DESTDIR)$(prefixincdir)
+	cp -r $(rootdir)inc/* $(DESTDIR)$(prefixincdir)
 
 install-rtlib:
-	mkdir -p $(prefixlibdir)
-	$(INSTALL_FILE) $(RTL_LIBS) $(prefixlibdir)
+	mkdir -p $(DESTDIR)$(prefixlibdir)
+	$(INSTALL_FILE) $(RTL_LIBS) $(DESTDIR)$(prefixlibdir)
 
 install-gfxlib2:
-	mkdir -p $(prefixlibdir)
-	$(INSTALL_FILE) $(GFX_LIBS) $(prefixlibdir)
+	mkdir -p $(DESTDIR)$(prefixlibdir)
+	$(INSTALL_FILE) $(GFX_LIBS) $(DESTDIR)$(prefixlibdir)
 
 ################################################################################
 
 .PHONY: uninstall uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
 uninstall:        uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
-	-rmdir $(prefixlibdir)
+	-rmdir $(DESTDIR)$(prefixlibdir)
 
 uninstall-compiler:
-	rm -f $(PREFIX_FBC_EXE)
+	rm -f $(DESTDIR)$(PREFIX_FBC_EXE)
 
 uninstall-includes:
-	rm -rf $(prefixincdir)
+	rm -rf $(DESTDIR)$(prefixincdir)
 
 uninstall-rtlib:
-	rm -f $(patsubst $(libdir)/%,$(prefixlibdir)/%,$(RTL_LIBS))
+	rm -f $(patsubst $(libdir)/%,$(DESTDIR)$(prefixlibdir)/%,$(RTL_LIBS))
 
 uninstall-gfxlib2:
-	rm -f $(patsubst $(libdir)/%,$(prefixlibdir)/%,$(GFX_LIBS))
+	rm -f $(patsubst $(libdir)/%,$(DESTDIR)$(prefixlibdir)/%,$(GFX_LIBS))
 
 ################################################################################
 
