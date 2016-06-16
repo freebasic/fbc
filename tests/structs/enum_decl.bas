@@ -38,7 +38,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:enum-decl")
+	fbcu.add_suite("fbc_tests.structs.enum_decl")
 	fbcu.add_test( "1", @test_1)
 
 end sub

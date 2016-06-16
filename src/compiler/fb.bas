@@ -128,6 +128,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_FUNCMODE_STDCALL_MS, _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+			or FB_TARGETOPT_STACKALIGN16 _
 	), _
 	( _
 		@"dos", _
@@ -169,6 +170,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
+			or FB_TARGETOPT_STACKALIGN16 _
 	), _
 	( _
 		@"netbsd", _

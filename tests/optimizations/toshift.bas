@@ -147,7 +147,7 @@ sub test_negative cdecl ()
 end sub
 
 private sub ctor () constructor
-	fbcu.add_suite("fbc_tests-optimizations:multiplication association")
+	fbcu.add_suite("fbc_tests.optimizations.toshift")
 	fbcu.add_test("test_positive", @test_positive)
 	fbcu.add_test("test_negative", @test_negative)
 end sub

@@ -57,7 +57,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor () constructor
-	fbcu.add_suite("fb-tests-overload:bop_coersion2")
+	fbcu.add_suite("fbc_tests.overload.bop_coercion2")
 	fbcu.add_test("test_basic", @test)
 end sub
 

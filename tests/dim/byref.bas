@@ -596,7 +596,7 @@ namespace externs
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/dim/byref" )
+	fbcu.add_suite( "fbc_tests.dim.byref" )
 	fbcu.add_test( "simpleVars", @simpleVars.test )
 	fbcu.add_test( "allDtypes", @allDtypes.test )
 	fbcu.add_test( "callByrefFunctionPtrThroughByref", @callByrefFunctionPtrThroughByref.test )

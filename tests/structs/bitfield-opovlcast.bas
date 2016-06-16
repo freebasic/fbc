@@ -43,7 +43,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.structs.bitfield_opovlcast")
+	fbcu.add_suite("fbc_tests.structs.bitfield-opovlcast")
 	fbcu.add_test("test", @test)
 
 end sub

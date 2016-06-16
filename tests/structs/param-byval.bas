@@ -343,7 +343,7 @@ namespace defCtorAndIntCtor
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/param-byval" )
+	fbcu.add_suite( "fbc_tests.structs.param-byval" )
 	fbcu.add_test( "1", @defCtor.test )
 	fbcu.add_test( "2", @defCtorAndCopyCtor.test )
 	fbcu.add_test( "3", @intCtor.test )

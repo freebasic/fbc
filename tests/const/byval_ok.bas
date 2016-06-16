@@ -19,7 +19,7 @@ namespace fbc_tests.const_.byval_ok
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("tests.const.byval_ok")
+		fbcu.add_suite("fbc_tests.const.byval_ok")
 		fbcu.add_test("const to byval is ok", @test)
 	
 	end sub

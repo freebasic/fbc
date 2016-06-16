@@ -1465,8 +1465,6 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 ''
 extern ast as ASTCTX
 
-extern ast_bitmaskTB( 0 to 32 ) as uinteger
-
 extern ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO
 
 declare function astDumpOp( byval op as AST_OP ) as string

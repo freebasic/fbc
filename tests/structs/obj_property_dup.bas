@@ -31,7 +31,7 @@ end sub
 	
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:property-dup")
+	fbcu.add_suite("fbc_tests.structs.obj_property_dup")
 	fbcu.add_test( "#1", @test_1)
 
 end sub

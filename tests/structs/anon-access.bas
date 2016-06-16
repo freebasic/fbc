@@ -112,7 +112,7 @@ namespace atBeginOfStatement
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/anon-access" )
+	fbcu.add_suite( "fbc_tests.structs.anon-access" )
 	fbcu.add_test( "#3538470", @test3538470 )
 	fbcu.add_test( "test", @test )
 	fbcu.add_test( "atBeginOfStatement", @atBeginOfStatement.test )

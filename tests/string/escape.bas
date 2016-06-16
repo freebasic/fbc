@@ -471,7 +471,7 @@ namespace combination
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/string_/escape" )
+	fbcu.add_suite( "fbc_tests.string.escape" )
 	fbcu.add_test( "escape", @escapeTest )
 	fbcu.add_test( "nonescape", @noescapeTest )
 	fbcu.add_test( "numbase", @numbaseTest )

@@ -43,7 +43,7 @@ namespace fbc_tests.overloads.arg_cast2
 
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fb-tests-overload.arg_cast2")
+		fbcu.add_suite("fbc_tests.overload.arg_cast2")
 		fbcu.add_test("n_a", @dummy)
 	
 	end sub

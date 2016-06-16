@@ -41,7 +41,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite( "tests/structs/obj_inner_enum" )
+	fbcu.add_suite( "fbc_tests.structs.obj_inner_enum" )
 	fbcu.add_test( "#1", @test1 )
 	fbcu.add_test( "#2", @test2 )
 

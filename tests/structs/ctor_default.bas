@@ -26,7 +26,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:ctor-default")
+	fbcu.add_suite("fbc_tests.structs.ctor_default")
 	fbcu.add_test( "test", @test )
 
 end sub

@@ -33,7 +33,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.scopes.constants")
+	fbcu.add_suite("fbc_tests.scopes.consts")
 	fbcu.add_test("test 1", @test_1)
 	fbcu.add_test("test 2", @test_2)
 	fbcu.add_test("test 3", @test_3)

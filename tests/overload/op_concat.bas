@@ -51,7 +51,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:op_concat")
+	fbcu.add_suite("fbc_tests.overload.op_concat")
 	fbcu.add_test("test_foo", @test_foo)
 	fbcu.add_test("test_bar", @test_bar)
 

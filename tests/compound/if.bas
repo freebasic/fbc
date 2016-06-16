@@ -43,7 +43,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.compound.if_")
+	fbcu.add_suite("fbc_tests.compound.if")
 	fbcu.add_test("test single-line if scope", @test_singleline_scope)
 	fbcu.add_test("test multi-line if scope", @test_multiline_scope)
 

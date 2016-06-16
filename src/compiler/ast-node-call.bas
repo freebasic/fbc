@@ -140,9 +140,14 @@ end sub
 
 function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	static as integer reclevel = 0
+	'' totalstackbytes is the sum of all args and padding currently on the stack
+	'' for function calls. (Assumes recursive calls can happen only while
+	'' generating IR for nested function calls, all in the same stack frame.)
+	static as integer totalstackbytes = 0
 	dim as ASTNODE ptr arg = any, nextarg = any, l = any
 	dim as FBSYMBOL ptr proc = any
-	dim as integer bytestopop = any, bytestoalign = any
+	dim as integer bytestopop = any, bytestoalign = any, argbytes = any
+	dim as integer prev_totalstackbytes = totalstackbytes
 	dim as IRVREG ptr vr = any, v1 = any
 
 	'' ARGs can contain CALLs themselves, then astLoadCALL() will recurse
@@ -150,30 +155,39 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	proc = n->sym
 
-#if 1
-	bytestoalign = 0
-#else
-	'' Add extra stack alignment to ensure the stack pointer will be
-	'' aligned to a multiple of 16 after the arguments were pushed,
-	'' assuming our current stack pointer already is aligned that way.
-	bytestopop = 0
-	arg = n->r
-	while( arg )
-		l = arg->l
-		bytestopop += symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
-		arg = arg->r
-	wend
+	if( (env.clopt.backend = FB_BACKEND_GAS) and _
+	    (env.target.options and FB_TARGETOPT_STACKALIGN16) <> 0 ) then
+		'' Add extra stack alignment to ensure the stack pointer will be
+		'' aligned to a multiple of 16 after the arguments were pushed,
+		'' assuming the current stack pointer was already aligned that way
+		'' before the first (non-recursive) call to astLoadCALL.
+		argbytes = 0
+		arg = n->r
+		while( arg )
+			l = arg->l
+			argbytes += symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
+			arg = arg->r
+		wend
 
-	bytestoalign = (16 - (bytestopop and (16-1))) and (16-1)
-	if( bytestoalign > 0 ) then
-		if( ast.doemit ) then
-			irEmitSTACKALIGN( bytestoalign )
+		'' Include the size of the hidden ptr parameter, for returning structs
+		'' (We don't care who pops it)
+		if( symbProcReturnsOnStack( proc ) ) then
+			argbytes += env.pointersize
 		end if
+
+		bytestoalign = (16 - ((totalstackbytes + argbytes) and (16-1))) and (16-1)
+		if( bytestoalign > 0 ) then
+			if( ast.doemit ) then
+				irEmitSTACKALIGN( bytestoalign )
+			end if
+			totalstackbytes += bytestoalign
+		end if
+	else
+		bytestoalign = 0
 	end if
-#endif
 
 	'' Count up the size for the caller's stack clean up (after the call)
-	bytestopop = 0
+	bytestopop = bytestoalign
 
 	'' Push each argument
 	arg = n->r
@@ -183,8 +197,9 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 		'' cdecl: pushed arguments must be popped by caller
 		'' pascal/stdcall: callee does it instead
+		argbytes = symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
 		if( symbGetProcMode( proc ) = FB_FUNCMODE_CDECL ) then
-			bytestopop += symbCalcArgLen( l->dtype, l->subtype, arg->arg.mode )
+			bytestopop += argbytes
 		end if
 
 		if( l->class = AST_NODECLASS_CONV ) then
@@ -198,6 +213,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		if( ast.doemit ) then
 			irEmitPUSHARG( arg->sym, v1, arg->arg.lgt, reclevel )
 		end if
+		totalstackbytes += argbytes
 
 		astDelNode( arg )
 		arg = nextarg
@@ -228,6 +244,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			'' for the hidden struct result param)
 			irEmitPUSHARG( NULL, v1, 0, reclevel )
 		end if
+		totalstackbytes += env.pointersize
 	end if
 
 	if( ast.doemit ) then
@@ -250,10 +267,6 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	end if
 
-	'' caller always has to undo any stack alignment it did
-	bytestopop += bytestoalign
-	bytestoalign = 0
-
 	'' function pointer?
 	l = n->l
 	if( l ) then
@@ -267,6 +280,8 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			irEmitCALLFUNCT( proc, bytestopop, vr, reclevel )
 		end if
 	end if
+
+	totalstackbytes = prev_totalstackbytes
 
 	hCopyStringsBack( n )
 

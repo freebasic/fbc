@@ -24,7 +24,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.wstrings.utf8")
+	fbcu.add_suite("fbc_tests.wstring.utf8")
 	fbcu.add_test("test_1", @test_1)
 
 end sub

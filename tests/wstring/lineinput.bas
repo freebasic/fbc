@@ -61,7 +61,7 @@ sub testString cdecl()
 end sub
 
 sub ctor() constructor
-	fbcu.add_suite("fbc_tests.wstrings.lineinput")
+	fbcu.add_suite("fbc_tests.wstring.lineinput")
 	fbcu.add_test("Line Input to wstring", @testWstring)
 	fbcu.add_test("Line Input to string", @testString)
 end sub

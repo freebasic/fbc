@@ -1186,7 +1186,11 @@ private sub hLoadVreg( byval v as IRVREG ptr )
 		hPrepareAddress( v )
 		assert( typeIsPtr( v->dtype ) )
 		var temp0 = irhlAllocVreg( typeDeref( v->dtype ), v->subtype )
-		hWriteLine( hVregToStr( temp0 ) + " = load " + hEmitType( v->dtype, v->subtype ) + " " + hVregToStr( v ) )
+		var s = hVregToStr( temp0 ) + " = load "
+		s += hEmitType( typeDeref( v->dtype ), v->subtype ) + ", "
+		s += hEmitType( v->dtype, v->subtype ) + " "
+		s += hVregToStr( v )
+		hWriteLine( s )
 		*v = *temp0
 	end select
 end sub
@@ -2162,11 +2166,18 @@ end sub
 private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
 	hVarIniElementType( sym )
 	var dtype = symbGetType( sym )
+
+	'' AST stores boolean true as -1, but we emit it as 1 for gcc compatibility
+	if( (dtype = FB_DATATYPE_BOOLEAN) and (value <> 0) ) then
+		value = 1
+	end if
+
 	if( typeGetSize( dtype ) = 8 ) then
 		ctx.varini += hEmitLong( value )
 	else
 		ctx.varini += hEmitInt( dtype, sym->subtype, value )
 	end if
+
 	hVarIniSeparator( )
 end sub
 

@@ -64,7 +64,7 @@ private sub doubleToSingle2 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/expressions/double-to-single" )
+	fbcu.add_suite( "fbc_tests.expressions.double-to-single" )
 	fbcu.add_test( "DOUBLE to SINGLE 1", @doubleToSingle1 )
 	fbcu.add_test( "DOUBLE to SINGLE 2", @doubleToSingle2 )
 end sub

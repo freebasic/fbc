@@ -82,7 +82,7 @@ namespace fbc_tests.structs.obj_global_with_temp2
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:obj-global-with-temp2")
+	fbcu.add_suite("fbc_tests.structs.obj_global_with_temp2")
 	fbcu.add_test( "1", @test1.test)
 	fbcu.add_test( "2", @test2.test)
 

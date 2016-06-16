@@ -457,7 +457,7 @@ namespace temporaryDescriptors
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/ignore-result" )
+	fbcu.add_suite( "fbc_tests.functions.ignore-result" )
 	fbcu.add_test( "test", @test )
 	fbcu.add_test( "temporaryDescriptors", @temporaryDescriptors.test )
 end sub

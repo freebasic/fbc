@@ -21,7 +21,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/sameline" )
+	fbcu.add_suite( "fbc_tests.functions.same-line" )
 	fbcu.add_test( "procedures closed/opened on the same line" , @test  )
 end sub
 

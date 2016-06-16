@@ -109,7 +109,7 @@ namespace fbc_tests.structs.operators
 
 	private sub ctor () constructor
 
-		fbcu.add_suite("fb-tests-structs:operators")
+		fbcu.add_suite("fbc_tests.structs.ops")
 		fbcu.add_test( "test", @test)
 
 	end sub

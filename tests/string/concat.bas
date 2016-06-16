@@ -66,7 +66,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.concat")
+	fbcu.add_suite("fbc_tests.string.concat")
 	fbcu.add_test("concatTest", @concatTest)
 
 end sub

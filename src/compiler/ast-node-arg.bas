@@ -1013,10 +1013,10 @@ function astNewARG _
 	'' dtors run the object is dead anyways, so modifications made by the
 	'' dtor don't matter)
 	if( ((symbGetIsRTL( sym ) = FALSE) or symbGetIsRTLConst( param )) and _
-	    ((not symbIsParamInstance( param )) or _
-	     ((not symbIsConstructor( sym )) and (not symbIsDestructor( sym )))) ) then
+	    ((not symbIsInstanceParam( param )) or _
+	     ((sym->attrib and FB_SYMBATTRIB_NOTHISCONSTNESS) = 0)) ) then
 		if( symbCheckConstAssign( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
-			if( symbIsParamInstance( param ) ) then
+			if( symbIsInstanceParam( param ) ) then
 				errReportParam( parent->sym, 0, NULL, FB_ERRMSG_CONSTUDTTONONCONSTMETHOD )
 			else
 				errReportParam( parent->sym, parent->call.args+1, NULL, FB_ERRMSG_ILLEGALASSIGNMENT )
@@ -1095,7 +1095,7 @@ sub astReplaceInstanceArg _
 	end if
 
 	param = symbGetProcHeadParam( sym )
-	assert( symbIsParamInstance( param ) )
+	assert( symbIsInstanceParam( param ) )
 
 	'' Delete the old argument expression
 	astDelTree( n->l )

@@ -33,7 +33,7 @@ sub test cdecl ( )
 end sub
 
 private sub ctor () constructor
-	fbcu.add_suite("fbc_tests.functions.naked")
+	fbcu.add_suite("fbc_tests.functions.naked_functions")
 	fbcu.add_test("test", @test)
 end sub
 

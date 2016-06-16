@@ -19,7 +19,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:op-addrof")
+	fbcu.add_suite("fbc_tests.overload.op_addrof")
 	fbcu.add_test("1", @test_1)
 
 end sub

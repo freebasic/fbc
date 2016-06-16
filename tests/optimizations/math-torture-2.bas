@@ -2059,7 +2059,7 @@ sub test2 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/optimizations/math-torture-2" )
+	fbcu.add_suite( "fbc_tests.optimizations.math-torture-2" )
 	fbcu.add_test( "test2", @test2 )
 end sub
 

@@ -378,7 +378,7 @@ declare function ICDraw cdecl(byval hic as HIC, byval dwFlags as DWORD, byval lp
 #define ICDrawStopPlay(hic) ICSendMessage(hic, ICM_DRAW_STOP_PLAY, cast(DWORD_PTR, 0), cast(DWORD_PTR, 0))
 #define ICDrawGetTime(hic, lplTime) ICSendMessage(hic, ICM_DRAW_GETTIME, cast(DWORD_PTR, cast(LPVOID, (lplTime))), cast(DWORD_PTR, 0))
 #define ICDrawSetTime(hic, lTime) ICSendMessage(hic, ICM_DRAW_SETTIME, cast(DWORD_PTR, lTime), cast(DWORD_PTR, 0))
-#define ICDrawRealize(hic, hdc, fBackground) ICSendMessage(hic, ICM_DRAW_REALIZE, cast(DWORD_PTR, cast(UINT_PTR, cast(HDC, (hdc)))), cast(DWORD_PTR, cast(WINBOOL, (fBackground))))
+#define ICDrawRealize(hic, hdc_, fBackground) ICSendMessage(hic, ICM_DRAW_REALIZE, cast(DWORD_PTR, cast(UINT_PTR, cast(HDC, (hdc_)))), cast(DWORD_PTR, cast(WINBOOL, (fBackground))))
 #define ICDrawFlush(hic) ICSendMessage(hic, ICM_DRAW_FLUSH, cast(DWORD_PTR, 0), cast(DWORD_PTR, 0))
 #define ICDrawRenderBuffer(hic) ICSendMessage(hic, ICM_DRAW_RENDERBUFFER, cast(DWORD_PTR, 0), cast(DWORD_PTR, 0))
 #define ICDecompressOpen(fccType, fccHandler, lpbiIn, lpbiOut) ICLocate(fccType, fccHandler, lpbiIn, lpbiOut, ICMODE_DECOMPRESS)

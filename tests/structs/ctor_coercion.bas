@@ -98,7 +98,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:ctor-coercion")
+	fbcu.add_suite("fbc_tests.structs.ctor_coercion")
 	fbcu.add_test( "test", @test)
 
 end sub

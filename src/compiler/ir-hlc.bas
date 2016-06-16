@@ -83,8 +83,18 @@
 ''   also means we have to add code for converting int/float to 0/1 when casting
 ''   them to boolean.
 ''
-'' - Avoiding C's undefined behaviour where possible:
+'' - Avoiding C's undefined behaviour where possible. This is important because
+''   otherwise we can't rely on gcc to generate meaningful code when
+''   "optimizations" are enabled. As a (hopefully nice-to-have) side-effect,
+''   some of the FB features/behaviour that originates from the x86 ASM backend
+''   are guaranteed to work just the same with the C backend, no matter what
+''   architecture.
 ''    - using gcc's -fwrapv to get well-defined signed integer overflow
+''    - emitting the extra AND mask operation on the rhs of SHL/SHR, to ensure
+''      that the shift amount is in the range 0..sizeof(lhs)*8-1.
+''      (astNewBOP() already handles this for constant shift amounts)
+''    - relying on gcc to provide well-defined signed shl on negative integers
+''      (https://gcc.gnu.org/onlinedocs/gcc/Integers-implementation.html)
 ''
 
 #include once "fb.bi"
@@ -2722,26 +2732,31 @@ private sub _emitBop _
 			l = exprNewUOP( AST_OP_NEG, l )
 		end if
 
-	case AST_OP_ADD, AST_OP_SUB, AST_OP_MUL, AST_OP_DIV, AST_OP_INTDIV, _
-	     AST_OP_MOD, AST_OP_SHL, AST_OP_SHR, AST_OP_AND, AST_OP_OR, _
-	     AST_OP_XOR
-		dim as integer is_ptr_arith = ((op = AST_OP_ADD) or (op = AST_OP_SUB))
-
+	case AST_OP_ADD, AST_OP_SUB
 		'' Cast to byte ptr to work around C's pointer arithmetic
-		if( is_ptr_arith and typeIsPtr( v1->dtype ) ) then
+		if( typeIsPtr( v1->dtype ) ) then
 			l = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, l )
 		end if
-		if( is_ptr_arith and typeIsPtr( v2->dtype ) ) then
+		if( typeIsPtr( v2->dtype ) ) then
 			r = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, r )
 		end if
+		l = exprNewBOP( op, l, r )
 
+	case AST_OP_DIV
 		'' Ensure '/' means floating point divide by casting to double
 		'' For AST_OP_INTDIV this is not needed, since the AST will already
 		'' cast both operands to integer before doing the intdiv.
-		if( op = AST_OP_DIV ) then
-			l = exprNewCAST( FB_DATATYPE_DOUBLE, NULL, l )
-			r = exprNewCAST( FB_DATATYPE_DOUBLE, NULL, r )
-		end if
+		l = exprNewCAST( FB_DATATYPE_DOUBLE, NULL, l )
+		r = exprNewCAST( FB_DATATYPE_DOUBLE, NULL, r )
+		l = exprNewBOP( op, l, r )
+
+	case AST_OP_MUL, AST_OP_INTDIV, AST_OP_MOD, _
+	     AST_OP_AND, AST_OP_OR, AST_OP_XOR
+		l = exprNewBOP( op, l, r )
+
+	case AST_OP_SHL, AST_OP_SHR
+		'' Mask the shift amount to ensure it's valid, avoiding C UB
+		r = exprNewBOP( AST_OP_AND, r, exprNewIMMi( typeGetBits( l->dtype ) - 1 ) )
 
 		l = exprNewBOP( op, l, r )
 
@@ -3446,11 +3461,18 @@ end sub
 
 private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
 	var dtype = symbGetType( sym )
+
+	'' AST stores boolean true as -1, but we emit it as 1 for gcc compatibility
+	if( (dtype = FB_DATATYPE_BOOLEAN) and (value <> 0) ) then
+		value = 1
+	end if
+
 	var l = exprNewIMMi( value, dtype )
 	if( symbIsRef( sym ) ) then
 		dtype = typeAddrOf( dtype )
 	end if
 	l = exprNewCAST( dtype, sym->subtype, l )
+
 	ctx.varini += exprFlush( l )
 	hVarIniSeparator( )
 end sub

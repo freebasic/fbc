@@ -497,7 +497,7 @@ private sub testStack cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/optimizations/const_idx" )
+	fbcu.add_suite( "fbc_tests.optimizations.const_idx" )
 	fbcu.add_test( "test1", @test1 )
 	fbcu.add_test( "test2", @test2 )
 	fbcu.add_test( "testHeap", @testHeap )

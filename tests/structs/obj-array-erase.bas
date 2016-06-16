@@ -189,7 +189,7 @@ end namespace
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 private sub ctor() constructor
-	fbcu.add_suite("fbc_tests.structs.erase_obj")
+	fbcu.add_suite("fbc_tests.structs.obj-array-erase")
 	fbcu.add_test("ERASE on fixed-size arrays (fb_ArrayClear[Obj])", @fixedsize.test)
 	fbcu.add_test("ERASE on dynamic arrays (fb_ArrayErase[Obj])", @dynamic_.test)
 end sub

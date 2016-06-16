@@ -17,7 +17,7 @@ namespace fbc_tests.const_.op_concat
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("tests.const.op_concat")
+		fbcu.add_suite("fbc_tests.const.op_concat")
 		fbcu.add_test("& operator", @test)
 	
 	end sub

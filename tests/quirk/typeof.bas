@@ -320,7 +320,7 @@ sub testTypeofProcPtr cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/quirk/typeof" )
+	fbcu.add_suite( "fbc_tests.quirk.typeof" )
 	fbcu.add_test( "test", @test )
 	fbcu.add_test( "sizeof(typeof(deref))", @testSizeofTypeofDeref )
 	fbcu.add_test( "sizeof(typeof(...))", @testSizeofTypeofOthers )

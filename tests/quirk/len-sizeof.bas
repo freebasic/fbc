@@ -496,7 +496,7 @@ namespace lenUdtWithCastOverloads
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/quirk/len-sizeof" )
+	fbcu.add_suite( "fbc_tests.quirk.len-sizeof" )
 	fbcu.add_test( "len(string)", @lenString )
 	fbcu.add_test( "sizeof(expression)", @sizeofExpression )
 	fbcu.add_test( "sizeof(var)", @sizeofVar )

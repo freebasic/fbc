@@ -46,7 +46,7 @@ sub testOverride cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/derived_override" )
+	fbcu.add_suite( "fbc_tests.structs.derived-override" )
 	fbcu.add_test( "derived override", @testOverride )
 end sub
 

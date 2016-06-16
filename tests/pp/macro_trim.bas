@@ -46,7 +46,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.macros.macro_trim")
+	fbcu.add_suite("fbc_tests.pp.macro_trim")
 	fbcu.add_test("noArgTest", @noArgTest)
 	fbcu.add_test("withArgTest", @withArgTest)
 

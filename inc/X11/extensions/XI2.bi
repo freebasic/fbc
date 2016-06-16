@@ -121,9 +121,9 @@ const XIBarrierPointerReleased = 1 shl 0
 const XIBarrierDeviceIsGrabbed = 1 shl 1
 const XIDirectTouch = 1
 const XIDependentTouch = 2
-#define XISetMask(ptr, event) scope : cptr(ubyte ptr, (ptr))[((event) shr 3)] or= 1 shl ((event) and 7) : end scope
-#define XIClearMask(ptr, event) scope : cptr(ubyte ptr, (ptr))[((event) shr 3)] and= not (1 shl ((event) and 7)) : end scope
-#define XIMaskIsSet(ptr, event) (cptr(ubyte ptr, (ptr))[((event) shr 3)] and (1 shl ((event) and 7)))
+#define XISetMask(ptr_, event) scope : cptr(ubyte ptr, (ptr_))[((event) shr 3)] or= 1 shl ((event) and 7) : end scope
+#define XIClearMask(ptr_, event) scope : cptr(ubyte ptr, (ptr_))[((event) shr 3)] and= not (1 shl ((event) and 7)) : end scope
+#define XIMaskIsSet(ptr_, event) (cptr(ubyte ptr, (ptr_))[((event) shr 3)] and (1 shl ((event) and 7)))
 #define XIMaskLen(event) (((event) shr 3) + 1)
 const XIAllDevices = 0
 const XIAllMasterDevices = 1

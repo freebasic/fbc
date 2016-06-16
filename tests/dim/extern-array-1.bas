@@ -17,7 +17,7 @@ namespace fbc_tests.dim_.extern_array_1
 hInsertTest1( )
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/dim/extern-array-1" )
+	fbcu.add_suite( "fbc_tests.dim.extern-array-1" )
 	fbcu.add_test( "1", @test1 )
 end sub
 

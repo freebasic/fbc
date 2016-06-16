@@ -128,7 +128,7 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/compound/for-udt-init" )
+	fbcu.add_suite( "fbc_tests.compound.for-udt-init" )
 	fbcu.add_test( "test", @test )
 end sub
 

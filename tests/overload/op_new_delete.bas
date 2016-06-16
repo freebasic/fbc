@@ -52,7 +52,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:op-new-delete")
+	fbcu.add_suite("fbc_tests.overload.op_new_delete")
 	fbcu.add_test("#1", @test_1)
 	fbcu.add_test("#2", @test_2)
 

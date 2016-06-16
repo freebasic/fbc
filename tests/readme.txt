@@ -171,6 +171,10 @@ SRCS := my_test1.bas my_test2.bas my_test3.bas
 
 # EOF
 
+Use a '.bmk' file to link modules compiled by other compilers, e.g.
+C/C++. To do that just define a list of .o files as EXTRA_OBJS, and
+provide build rules for those files. See e.g. namespace/cpp/cpp.bmk.
+
 A '.bmk' can also be used to indicate the test type for a source file
 that is not normally readable with various GNU based streams. For,
 example UTF-32.  The '.bmk' is read only for the tag, and at testing

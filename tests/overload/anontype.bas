@@ -51,7 +51,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:anonymous types")
+	fbcu.add_suite("fbc_tests.overload.anontype")
 	fbcu.add_test("test_arguments_and_returns", @test_arguments_and_returns)
 
 end sub

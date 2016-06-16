@@ -179,13 +179,13 @@ type _XComposeStatus
 end type
 
 type XComposeStatus as _XComposeStatus
-#define IsKeypadKey(keysym) ((cast(KeySym, (keysym)) >= XK_KP_Space) andalso (cast(KeySym, (keysym)) <= XK_KP_Equal))
-#define IsPrivateKeypadKey(keysym) ((cast(KeySym, (keysym)) >= &h11000000) andalso (cast(KeySym, (keysym)) <= &h1100FFFF))
-#define IsCursorKey(keysym) ((cast(KeySym, (keysym)) >= XK_Home) andalso (cast(KeySym, (keysym)) < XK_Select))
-#define IsPFKey(keysym) ((cast(KeySym, (keysym)) >= XK_KP_F1) andalso (cast(KeySym, (keysym)) <= XK_KP_F4))
-#define IsFunctionKey(keysym) ((cast(KeySym, (keysym)) >= XK_F1) andalso (cast(KeySym, (keysym)) <= XK_F35))
-#define IsMiscFunctionKey(keysym) ((cast(KeySym, (keysym)) >= XK_Select) andalso (cast(KeySym, (keysym)) <= XK_Break))
-#define IsModifierKey(keysym) (((((cast(KeySym, (keysym)) >= XK_Shift_L) andalso (cast(KeySym, (keysym)) <= XK_Hyper_R)) orelse ((cast(KeySym, (keysym)) >= XK_ISO_Lock) andalso (cast(KeySym, (keysym)) <= XK_ISO_Level5_Lock))) orelse (cast(KeySym, (keysym)) = XK_Mode_switch)) orelse (cast(KeySym, (keysym)) = XK_Num_Lock))
+#define IsKeypadKey(keysym_) ((cast(KeySym, (keysym_)) >= XK_KP_Space) andalso (cast(KeySym, (keysym_)) <= XK_KP_Equal))
+#define IsPrivateKeypadKey(keysym_) ((cast(KeySym, (keysym_)) >= &h11000000) andalso (cast(KeySym, (keysym_)) <= &h1100FFFF))
+#define IsCursorKey(keysym_) ((cast(KeySym, (keysym_)) >= XK_Home) andalso (cast(KeySym, (keysym_)) < XK_Select))
+#define IsPFKey(keysym_) ((cast(KeySym, (keysym_)) >= XK_KP_F1) andalso (cast(KeySym, (keysym_)) <= XK_KP_F4))
+#define IsFunctionKey(keysym_) ((cast(KeySym, (keysym_)) >= XK_F1) andalso (cast(KeySym, (keysym_)) <= XK_F35))
+#define IsMiscFunctionKey(keysym_) ((cast(KeySym, (keysym_)) >= XK_Select) andalso (cast(KeySym, (keysym_)) <= XK_Break))
+#define IsModifierKey(keysym_) (((((cast(KeySym, (keysym_)) >= XK_Shift_L) andalso (cast(KeySym, (keysym_)) <= XK_Hyper_R)) orelse ((cast(KeySym, (keysym_)) >= XK_ISO_Lock) andalso (cast(KeySym, (keysym_)) <= XK_ISO_Level5_Lock))) orelse (cast(KeySym, (keysym_)) = XK_Mode_switch)) orelse (cast(KeySym, (keysym_)) = XK_Num_Lock))
 type Region as _XRegion ptr
 const RectangleOut = 0
 const RectangleIn = 1

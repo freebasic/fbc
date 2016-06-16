@@ -304,7 +304,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.string_.trim_")
+	fbcu.add_suite("fbc_tests.string.trim")
 	fbcu.add_test("trimDefaultCharTest", @trimDefaultCharTest)
 	fbcu.add_test("trimCharTest", @trimCharTest)
 	fbcu.add_test("trimStringTest", @trimStringTest)

@@ -42,7 +42,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.wstrings.unc")
+	fbcu.add_suite("fbc_tests.wstring.unc")
 	fbcu.add_test("test_esc", @test_esc)
 	fbcu.add_test("test_esc", @test_noesc)
 

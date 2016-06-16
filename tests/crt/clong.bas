@@ -18,7 +18,7 @@ sub test cdecl( )
 end sub
 
 sub ctor( ) constructor
-	fbcu.add_suite( "tests/crt/clong" )
+	fbcu.add_suite( "fbc_tests.crt.clong" )
 	fbcu.add_test( "test", @test )
 end sub
 

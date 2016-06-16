@@ -263,7 +263,7 @@ void fb_hConsolePutBackEvents( void )
     FB_UNLOCK();
 }
 
-static void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
+static void fb_hConsoleProcessKeyEvent( const KEY_EVENT_RECORD *event )
 {
     int KeyCode;
     int ValidKeyStatus, ValidKeys, AddScratchPadKey = FALSE;
@@ -403,7 +403,10 @@ int fb_ConsoleProcessEvents( void )
             switch ( ir.EventType ) {
             case KEY_EVENT:
                 if( ir.Event.KeyEvent.bKeyDown && ir.Event.KeyEvent.wRepeatCount != 0 ) {
-                    fb_hConsoleProcessKeyEvent( &ir.Event.KeyEvent );
+                    size_t i;
+                    for (i = 0; i < ir.Event.KeyEvent.wRepeatCount; i++) {
+                        fb_hConsoleProcessKeyEvent( &ir.Event.KeyEvent );
+                    }
                 } else if( !ir.Event.KeyEvent.bKeyDown ) {
                     fb_hConsoleProcessKeyEvent( &ir.Event.KeyEvent );
                 }

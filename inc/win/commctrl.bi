@@ -2990,7 +2990,7 @@ const LVSCW_AUTOSIZE_USEHEADER = -2
 const LVM_SETCOLUMNWIDTH = LVM_FIRST + 30
 #define ListView_SetColumnWidth(hwnd, iCol, cx) cast(WINBOOL, SNDMSG((hwnd), LVM_SETCOLUMNWIDTH, cast(WPARAM, clng(iCol)), MAKELPARAM((cx), 0)))
 const LVM_GETHEADER = LVM_FIRST + 31
-#define ListView_GetHeader(hwnd) cast(HWND, SNDMSG((hwnd), LVM_GETHEADER, cast(WPARAM, 0), cast(LPARAM, 0)))
+#define ListView_GetHeader(hwnd_) cast(HWND, SNDMSG((hwnd_), LVM_GETHEADER, cast(WPARAM, 0), cast(LPARAM, 0)))
 const LVM_CREATEDRAGIMAGE = LVM_FIRST + 33
 #define ListView_CreateDragImage(hwnd, i, lpptUpLeft) cast(HIMAGELIST, SNDMSG((hwnd), LVM_CREATEDRAGIMAGE, cast(WPARAM, clng(i)), cast(LPARAM, cast(LPPOINT, (lpptUpLeft)))))
 const LVM_GETVIEWRECT = LVM_FIRST + 34
@@ -4226,9 +4226,9 @@ const TVM_EDITLABELW = TV_FIRST + 65
 	const TVM_EDITLABEL = TVM_EDITLABELA
 #endif
 
-#define TreeView_EditLabel(hwnd, hitem) cast(HWND, SNDMSG((hwnd), TVM_EDITLABEL, 0, cast(LPARAM, cast(HTREEITEM, (hitem)))))
+#define TreeView_EditLabel(hwnd_, hitem) cast(HWND, SNDMSG((hwnd_), TVM_EDITLABEL, 0, cast(LPARAM, cast(HTREEITEM, (hitem)))))
 const TVM_GETEDITCONTROL = TV_FIRST + 15
-#define TreeView_GetEditControl(hwnd) cast(HWND, SNDMSG((hwnd), TVM_GETEDITCONTROL, 0, 0))
+#define TreeView_GetEditControl(hwnd_) cast(HWND, SNDMSG((hwnd_), TVM_GETEDITCONTROL, 0, 0))
 const TVM_GETVISIBLECOUNT = TV_FIRST + 16
 #define TreeView_GetVisibleCount(hwnd) cast(UINT, SNDMSG((hwnd), TVM_GETVISIBLECOUNT, 0, 0))
 const TVM_HITTEST = TV_FIRST + 17
@@ -4276,9 +4276,9 @@ const TVM_GETISEARCHSTRINGW = TV_FIRST + 64
 #endif
 
 const TVM_SETTOOLTIPS = TV_FIRST + 24
-#define TreeView_SetToolTips(hwnd, hwndTT) cast(HWND, SNDMSG((hwnd), TVM_SETTOOLTIPS, cast(WPARAM, (hwndTT)), 0))
+#define TreeView_SetToolTips(hwnd_, hwndTT) cast(HWND, SNDMSG((hwnd_), TVM_SETTOOLTIPS, cast(WPARAM, (hwndTT)), 0))
 const TVM_GETTOOLTIPS = TV_FIRST + 25
-#define TreeView_GetToolTips(hwnd) cast(HWND, SNDMSG((hwnd), TVM_GETTOOLTIPS, 0, 0))
+#define TreeView_GetToolTips(hwnd_) cast(HWND, SNDMSG((hwnd_), TVM_GETTOOLTIPS, 0, 0))
 #define TreeView_GetISearchString(hwndTV, lpsz) cast(WINBOOL, SNDMSG((hwndTV), TVM_GETISEARCHSTRING, 0, cast(LPARAM, cast(LPTSTR, (lpsz)))))
 const TVM_SETINSERTMARK = TV_FIRST + 26
 #define TreeView_SetInsertMark(hwnd, hItem, fAfter) cast(WINBOOL, SNDMSG((hwnd), TVM_SETINSERTMARK, cast(WPARAM, (fAfter)), cast(LPARAM, (hItem))))
@@ -5062,7 +5062,7 @@ const TCM_SETPADDING = TCM_FIRST + 43
 const TCM_GETROWCOUNT = TCM_FIRST + 44
 #define TabCtrl_GetRowCount(hwnd) clng(SNDMSG((hwnd), TCM_GETROWCOUNT, cast(WPARAM, 0), cast(LPARAM, 0)))
 const TCM_GETTOOLTIPS = TCM_FIRST + 45
-#define TabCtrl_GetToolTips(hwnd) cast(HWND, SNDMSG((hwnd), TCM_GETTOOLTIPS, cast(WPARAM, 0), cast(LPARAM, 0)))
+#define TabCtrl_GetToolTips(hwnd_) cast(HWND, SNDMSG((hwnd_), TCM_GETTOOLTIPS, cast(WPARAM, 0), cast(LPARAM, 0)))
 const TCM_SETTOOLTIPS = TCM_FIRST + 46
 #define TabCtrl_SetToolTips(hwnd, hwndTT) SNDMSG((hwnd), TCM_SETTOOLTIPS, cast(WPARAM, (hwndTT)), cast(LPARAM, 0))
 const TCM_GETCURFOCUS = TCM_FIRST + 47

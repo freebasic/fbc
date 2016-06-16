@@ -41,7 +41,7 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/expressions/idiv-by-float" )
+	fbcu.add_suite( "fbc_tests.expressions.idiv-by-float" )
 	fbcu.add_test( "test", @test )
 end sub
 

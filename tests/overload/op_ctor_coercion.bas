@@ -97,7 +97,7 @@ end constructor
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:op-ctor-coercion")
+	fbcu.add_suite("fbc_tests.overload.op_ctor_coercion")
 	fbcu.add_test("byte", @byte_test)
 	fbcu.add_test("ubyte", @ubyte_test)
 	fbcu.add_test("short", @short_test)

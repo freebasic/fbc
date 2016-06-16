@@ -57,7 +57,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.pointers.typedef_fwdref")
+	fbcu.add_suite("fbc_tests.pointers.typedef_fwd")
 	fbcu.add_test("test", @test)
 
 end sub

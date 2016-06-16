@@ -95,7 +95,7 @@ end sub
 private _
 sub ctor () constructor
  
-	fbcu.add_suite("fb-tests-structs:ctor-byval")
+	fbcu.add_suite("fbc_tests.structs.ctor_byval")
 	fbcu.add_test("test_local", @test_local)
 	fbcu.add_test("test_static_local", @test_static_local)
  

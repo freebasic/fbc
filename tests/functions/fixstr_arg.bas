@@ -56,7 +56,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.functions.fixstr-arg")
+	fbcu.add_suite("fbc_tests.functions.fixstr_arg")
 	fbcu.add_test("test_ref_1", @test_ref_1)
 	fbcu.add_test("test_ref_2", @test_ref_2)
 	fbcu.add_test("test_val_1", @test_val_1)

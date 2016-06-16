@@ -69,7 +69,7 @@ namespace fbc_tests.structs.ctor_bydesc
 	end sub
 	
 	private sub ctor () constructor
-		fbcu.add_suite("fb-tests-structs:ctor-bydesc")
+		fbcu.add_suite("fbc_tests.structs.ctor_bydesc")
 		fbcu.add_test("test_local", @test_local)
 		fbcu.add_test("test_static_local", @test_static_local)
 		fbcu.add_test("test_global", @test_global)

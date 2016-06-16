@@ -44,7 +44,7 @@ label3:
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/quirk/inline-asm" )
+	fbcu.add_suite( "fbc_tests.quirk.inline-asm" )
 	fbcu.add_test( "test", @test )
 end sub
 

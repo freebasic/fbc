@@ -2961,7 +2961,7 @@ private function hAssembleRc( byval rc as FBCIOFILE ptr ) as integer
 	'' Note: windres uses gcc -E to preprocess the .rc by default,
 	'' that may not be 100% compatible to GoRC.
 
-	dim as string ln = "--output-format=coff "
+	dim as string ln = "--output-format=coff --include-dir=."
 	ln += " """ + rc->srcfile + """"
 	ln += " """ + *rc->objfile + """"
 

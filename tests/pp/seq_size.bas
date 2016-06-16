@@ -48,7 +48,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.macros.size")
+	fbcu.add_suite("fbc_tests.pp.seq_size")
 	fbcu.add_test("sizeTest", @sizeTest)
 
 end sub

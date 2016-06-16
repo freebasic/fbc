@@ -52,7 +52,7 @@ sub test_ptr cdecl ()
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/anon-nested" )
+	fbcu.add_suite( "fbc_tests.structs.anon-nested" )
 	fbcu.add_test("pass by reference", @test_ref)
 	fbcu.add_test("pass by value", @test_val)
 	fbcu.add_test("pass by address", @test_ptr)

@@ -172,7 +172,18 @@ namespace fbc_tests.boolean_.boolean_
 		CU_ASSERT_EQUAL( b, TRUE )
 	end sub
 
+	dim shared global1 as boolean = TRUE
+	dim shared global2 as boolean = FALSE
+
 	sub initializer_literal cdecl ( )
+		CU_ASSERT( global1 = TRUE )
+		CU_ASSERT( global2 = FALSE )
+
+		static static1 as boolean = TRUE
+		static static2 as boolean = FALSE
+		CU_ASSERT( static1 = TRUE )
+		CU_ASSERT( static2 = FALSE )
+
 		dim as boolean a = 0
 		CU_ASSERT_EQUAL( a, FALSE )
 
@@ -215,7 +226,7 @@ namespace fbc_tests.boolean_.boolean_
 	end sub
 
 	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean_.boolean")
+		fbcu.add_suite("fbc_tests.boolean.boolean")
 		fbcu.add_test("sizeof_boolean", @sizeof_boolean)
 		fbcu.add_test("convert_cbool", @convert_cbool)
 		fbcu.add_test("convert_cbool_literal", @convert_cbool_literal)

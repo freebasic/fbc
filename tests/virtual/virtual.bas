@@ -1605,8 +1605,116 @@ namespace callingConventions
 	end sub
 end namespace
 
+namespace callConstVirtual
+	type A extends object
+		declare const virtual function f1( ) as integer
+		declare const abstract function f2( ) as integer
+	end type
+
+	type B extends A
+		declare const function f1( ) as integer override
+		declare const function f2( ) as integer override
+	end type
+
+	function A.f1( ) as integer : function = &hA1 : end function
+	function B.f1( ) as integer : function = &hB1 : end function
+	function B.f2( ) as integer : function = &hB2 : end function
+
+	sub test cdecl( )
+		scope
+			dim p as A ptr = new B
+			CU_ASSERT( p->f1( ) = &hB1 )
+			CU_ASSERT( p->f2( ) = &hB2 )
+			delete p
+		end scope
+
+		scope
+			dim p as B ptr = new B
+			CU_ASSERT( p->f1( ) = &hB1 )
+			CU_ASSERT( p->f2( ) = &hB2 )
+			delete p
+		end scope
+	end sub
+end namespace
+
+namespace constObjectWithVirtualDtor
+	dim shared as integer adtors, bdtors
+
+	type A extends object
+		declare virtual destructor( )
+	end type
+
+	type B extends A
+		declare destructor( ) override
+	end type
+
+	destructor A( ) : adtors += 1 : end destructor
+	destructor B( ) : bdtors += 1 : end destructor
+
+	sub test cdecl( )
+		adtors = 0
+		bdtors = 0
+		scope
+			dim xa as const A = A()
+			CU_ASSERT( adtors = 0 )
+			CU_ASSERT( bdtors = 0 )
+		end scope
+		CU_ASSERT( adtors = 1 )
+		CU_ASSERT( bdtors = 0 )
+
+		adtors = 0
+		bdtors = 0
+		scope
+			dim xb as const B = B()
+			CU_ASSERT( adtors = 0 )
+			CU_ASSERT( bdtors = 0 )
+		end scope
+		CU_ASSERT( adtors = 1 )
+		CU_ASSERT( bdtors = 1 )
+
+		adtors = 0
+		bdtors = 0
+		scope
+			dim p as const A ptr = new const A
+			CU_ASSERT( adtors = 0 )
+			CU_ASSERT( bdtors = 0 )
+			delete p
+			CU_ASSERT( adtors = 1 )
+			CU_ASSERT( bdtors = 0 )
+		end scope
+		CU_ASSERT( adtors = 1 )
+		CU_ASSERT( bdtors = 0 )
+
+		adtors = 0
+		bdtors = 0
+		scope
+			dim p as const A ptr = new B
+			CU_ASSERT( adtors = 0 )
+			CU_ASSERT( bdtors = 0 )
+			delete p
+			CU_ASSERT( adtors = 1 )
+			CU_ASSERT( bdtors = 1 )
+		end scope
+		CU_ASSERT( adtors = 1 )
+		CU_ASSERT( bdtors = 1 )
+
+		adtors = 0
+		bdtors = 0
+		scope
+			dim p as const B ptr = new B
+			CU_ASSERT( adtors = 0 )
+			CU_ASSERT( bdtors = 0 )
+			delete p
+			CU_ASSERT( adtors = 1 )
+			CU_ASSERT( bdtors = 1 )
+		end scope
+		CU_ASSERT( adtors = 1 )
+		CU_ASSERT( bdtors = 1 )
+	end sub
+end namespace
+
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/virtual/virtual" )
+	fbcu.add_suite( "fbc_tests.virtual.virtual" )
 	fbcu.add_test( "basic overriding", @overridingWorks.test )
 	fbcu.add_test( "Overriding vs. shadowing", @overridingVsShadowing.test )
 	fbcu.add_test( "Methods with a different signature are not overridden", @differentSignatureIsntOverridden.test )
@@ -1635,6 +1743,8 @@ private sub ctor( ) constructor
 	fbcu.add_test( "bydescParams1", @bydescParams1.test )
 	fbcu.add_test( "bydescParams2", @bydescParams2.test )
 	fbcu.add_test( "callingConventions", @callingConventions.test )
+	fbcu.add_test( "callConstVirtual", @callConstVirtual.test )
+	fbcu.add_test( "constObjectWithVirtualDtor", @constObjectWithVirtualDtor.test )
 end sub
 
 end namespace

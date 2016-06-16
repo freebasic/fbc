@@ -164,7 +164,7 @@ namespace fbc_tests.boolean_.file_
 	end sub
 
 	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean_.file_")
+		fbcu.add_suite("fbc_tests.boolean.boolean_file")
 		fbcu.add_test("io_test_utf16le", @io_test_ascii)
 		fbcu.add_test("io_test_utf16le", @io_test_utf16le)
 		fbcu.add_test("io_test_binary", @io_test_binary)

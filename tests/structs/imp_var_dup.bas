@@ -20,7 +20,7 @@ end sub
 	
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:imp_var_dup")
+	fbcu.add_suite("fbc_tests.structs.imp_var_dup")
 	fbcu.add_test("test_basic", @test_basic)
 
 end sub

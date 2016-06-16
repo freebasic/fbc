@@ -52,7 +52,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests-optimizations:casting")
+	fbcu.add_suite("fbc_tests.optimizations.casting")
 	fbcu.add_test("#1", @test_1)
 	fbcu.add_test("#2", @test_2)
 	fbcu.add_test("#3", @test_3)

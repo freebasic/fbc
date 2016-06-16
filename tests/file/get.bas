@@ -502,7 +502,7 @@ sub testGetWstrFill cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/file/get" )
+	fbcu.add_suite( "fbc_tests.file.get" )
 	fbcu.add_test( "test", @test )
 	fbcu.add_test( "testGetWstrFill", @testGetWstrFill )
 end sub

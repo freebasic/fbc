@@ -2,7 +2,7 @@
 
 '' simple
 
-extern "c++" lib "cpp"
+extern "c++"
 	namespace cpp
 		declare function sum( byval a as integer, byval b as integer ) as integer
 		declare function dec( byval a as integer, byval b as integer ) as integer
@@ -15,7 +15,7 @@ end extern
 
 '' nested
 
-extern "c++" lib "cpp"
+extern "c++"
 	namespace cpp.foo.bar
 		declare function sum( byval a as integer, byval b as integer ) as integer
 		declare function dec( byval a as integer, byval b as integer ) as integer
@@ -28,7 +28,7 @@ end extern
 
 '' nested + udts
 
-extern "c++" lib "cpp"
+extern "c++"
 	namespace cpp.foo.bar
 		type udt
 			v as integer
@@ -44,7 +44,7 @@ end extern
 
 '' nested + func ptr
 
-extern "c++" lib "cpp"
+extern "c++"
 	namespace cpp.foo.bar
 		type baz
 			v1 as integer

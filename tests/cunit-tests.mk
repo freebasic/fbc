@@ -86,6 +86,9 @@ FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_DIR) -x $(MAINEXE)
 ifdef DEBUG
 	FBC_LFLAGS += -g
 endif
+ifdef ARCH
+	FBC_LFLAGS += -arch $(ARCH)
+endif
 
 OBJLIST := $(SRCLIST:%.bas=%.o)
 
@@ -104,7 +107,7 @@ all : make_fbcu $(CUNIT_TESTS_INC) build_tests run_tests
 
 .PHONY: make_fbcu $(FBCU_BIN)
 make_fbcu : $(FBCU_BIN)
-	cd $(FBCU_DIR) && make FPU=$(FPU)
+	cd $(FBCU_DIR) && make FPU=$(FPU) ARCH=$(ARCH)
 
 # ------------------------------------------------------------------------
 # Auto-generate the file CUNIT_TESTS_INC - needed by this makefile

@@ -376,6 +376,23 @@ sub astForgetBitfields( byval n as ASTNODE ptr )
 	astForgetBitfields( n->r )
 end sub
 
+private function hMakeUintMask overload( byval bits as uinteger ) as ASTNODE ptr
+	dim mask as ulongint
+	if( bits >= 64 ) then
+		mask = &hFFFFFFFFFFFFFFFFull
+	else
+		mask = (1ull shl bits) - 1
+	end if
+	if( not fbIs64bit( ) ) then
+		mask = culng( mask )
+	end if
+	return astNewCONSTi( mask, FB_DATATYPE_UINT )
+end function
+
+private function hMakeUintMask overload( byval bits as uinteger, byval bitpos as uinteger ) as ASTNODE ptr
+	return astNewBOP( AST_OP_SHL, hMakeUintMask( bits ), astNewCONSTi( bitpos ) )
+end function
+
 private function astSetBitfield _
 	( _
 		byval bitfield as FBSYMBOL ptr, _
@@ -404,7 +421,8 @@ private function astSetBitfield _
 
 	'' Apply a mask to retrieve all bits but the bitfield's ones
 	l = astNewBOP( AST_OP_AND, l, _
-		astNewCONSTi( not (ast_bitmaskTB(bitfield->var_.bits) shl bitfield->var_.bitpos) ) )
+		astNewUOP( AST_OP_NOT, _
+			hMakeUintMask( bitfield->var_.bits, bitfield->var_.bitpos ) ) )
 
 	'' This ensures the bitfield is zeroed & clean before the new value
 	'' is ORed in below. Since the new value may contain zeroes while the
@@ -417,14 +435,11 @@ private function astSetBitfield _
 			r = astNewCONV( FB_DATATYPE_BOOLEAN, NULL, r )
 		end if
 		r = astNewCONV( FB_DATATYPE_UINT, NULL, r )
-
-		r = astNewBOP( AST_OP_AND, r, _
-		               astNewCONSTi( (ast_bitmaskTB(bitfield->var_.bits) shl bitfield->var_.bitpos), _
-		                             FB_DATATYPE_UINT ) )
+		r = astNewBOP( AST_OP_AND, r, hMakeUintMask( bitfield->var_.bits, bitfield->var_.bitpos ) )
 	else
 		'' Truncate r if it's too big, ensuring the OR below won't touch any
 		'' other bits outside the target bitfield.
-		r = astNewBOP( AST_OP_AND, r, astNewCONSTi( ast_bitmaskTB(bitfield->var_.bits) ) )
+		r = astNewBOP( AST_OP_AND, r, hMakeUintMask( bitfield->var_.bits ) )
 
 		'' Move r into position if the bitfield doesn't lie at the beginning of
 		'' the accessed field.
@@ -468,7 +483,7 @@ private function astAccessBitfield _
 	end if
 
 	'' Mask out other bits to the left
-	l = astNewBOP( AST_OP_AND, l, astNewCONSTi( ast_bitmaskTB(bitfield->var_.bits) ) )
+	l = astNewBOP( AST_OP_AND, l, hMakeUintMask( bitfield->var_.bits ) )
 
 	'' do boolean conversion after bitfield access
 	if( boolconv ) then

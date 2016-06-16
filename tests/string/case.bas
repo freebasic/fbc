@@ -147,7 +147,7 @@ sub testAscii cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/string/case" )
+	fbcu.add_suite( "fbc_tests.string.case" )
 	fbcu.add_test( "default", @testDefault )
 	fbcu.add_test( "ASCII-only", @testAscii )
 end sub

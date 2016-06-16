@@ -25,7 +25,7 @@ end sub
 
 private sub ctor () constructor
 
-  fbcu.add_suite("fbc_tests.pp.inconce2self")
+  fbcu.add_suite("fbc_tests.pp.inc_once2_self")
   fbcu.add_test("test2self", @test2self)
 
 end sub

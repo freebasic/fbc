@@ -97,7 +97,7 @@ private sub testPoke cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/quirk/peek-poke" )
+	fbcu.add_suite( "fbc_tests.quirk.peek-poke" )
 	fbcu.add_test( "Peek", @testPeek )
 	fbcu.add_test( "Poke", @testPoke )
 end sub

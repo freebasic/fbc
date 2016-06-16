@@ -223,7 +223,7 @@ namespace fbc_tests.boolean_.false_true
 
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.boolean_.false_true")
+		fbcu.add_suite("fbc_tests.boolean.boolean_false_true")
 		fbcu.add_test("test1", @test1)
 		fbcu.add_test("test2", @test2)
 		

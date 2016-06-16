@@ -2242,7 +2242,7 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	if( symbIsProc( sym ) ) then
 		checkAttrib( METHOD )
 	else
-		checkAttrib( PARAMINSTANCE )
+		checkAttrib( INSTANCEPARAM )
 	end if
 	checkAttrib( CONSTRUCTOR )
 	checkAttrib( DESTRUCTOR )
@@ -2267,6 +2267,7 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	end if
 	checkAttrib( ABSTRACT )
 	checkAttrib( VIRTUAL )
+	checkAttrib( NOTHISCONSTNESS )
 #endif
 
 #if 1

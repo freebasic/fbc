@@ -546,11 +546,15 @@ enum FB_TARGETOPT
 	''    hidden param is popped according to calling convention
 	FB_TARGETOPT_CALLEEPOPSHIDDENPTR = &h00000008
 
-	'' Returning structures in registers only exists on Win32, and
+	'' Returning structures in registers only exists on Win32 and Darwin/MacOSX, and
 	'' - neither Linux GCC (following the i386 SysV ABI),
 	'' - nor DJGPP
-	'' do it. TODO: what about the BSDs and Darwin/MacOSX?
+	'' do it. TODO: what about the BSDs?
 	FB_TARGETOPT_RETURNINREGS        = &h00000010
+
+	'' Whether the stack needs to be aligned to 16 bytes before any
+	'' call to external code (x86/x86_64 GNU/Linux and Darwin)
+	FB_TARGETOPT_STACKALIGN16        = &h00000020
 end enum
 
 type FBTARGET

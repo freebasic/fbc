@@ -185,7 +185,7 @@ namespace fbc_tests.boolean_.args
 	''
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.boolean_.args")
+		fbcu.add_suite("fbc_tests.boolean.boolean_args")
 		fbcu.add_test("pass_by_value", @pass_by_value)
 		fbcu.add_test("pass_by_ref", @pass_by_ref)
 		fbcu.add_test("pass_by_ref_mod", @pass_by_ref_mod)

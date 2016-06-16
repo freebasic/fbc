@@ -132,7 +132,7 @@ namespace fbc_tests.boolean_.val_
 	end sub
 
 	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean_.val_")
+		fbcu.add_suite("fbc_tests.boolean.boolean_val")
 		fbcu.add_test("valbool_const_str", @valbool_const_str)
 		fbcu.add_test("valbool_variable_str", @valbool_variable_str)
 		fbcu.add_test("valbool_const_wstr", @valbool_const_wstr)

@@ -711,6 +711,12 @@ private function hSetupProc _
 
 		assert( attrib and FB_SYMBATTRIB_METHOD )
 
+		'' ctors/dtors don't have THIS CONSTness, disable the checks
+		'' We can't just rely on the ctor/dtor flags for this because those
+		'' can't be propagated to procptrs currently (e.g. here we assume any
+		'' PROC with these flags is a proper proc, not a procptr)
+		attrib or= FB_SYMBATTRIB_NOTHISCONSTNESS
+
 		'' ctor?
 		if( (attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0 ) then
 			head_proc = symbGetCompCtorHead( parent )
@@ -1196,9 +1202,15 @@ function symbAddProcPtrFromFunction _
 		param = param->next
     loop
 
+	'' attribs to copy from the proc to the procptr
+	'' (anything needed for procptr call checking)
+	var attribmask = FB_SYMBATTRIB_REF '' return byref
+	attribmask or= FB_SYMBATTRIB_CONST '' THIS CONSTness, needed for symbCalcProcMatch() type checking
+	attribmask or= FB_SYMBATTRIB_NOTHISCONSTNESS '' method call THIS CONSTness checking
+
 	function = symbAddProcPtr( proc, _
 			symbGetFullType( base_proc ), symbGetSubtype( base_proc ), _
-			base_proc->attrib and FB_SYMBATTRIB_REF, _  '' preserve REF flag
+			base_proc->attrib and attribmask, _
 			symbGetProcMode( base_proc ) )
 
 end function
@@ -1319,11 +1331,6 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 		exit function
 	end select
 
-	'' "this"?
-	if( symbIsParamInstance( param ) ) then
-		attrib or= FB_SYMBATTRIB_PARAMINSTANCE
-	end if
-
 	'' QB quirk..
 	if( symbIsSuffixed( param ) ) then
 		attrib or= FB_SYMBATTRIB_SUFFIXED
@@ -1352,7 +1359,7 @@ function symbAddVarForParam( byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 	function = s
 end function
 
-function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+function symbAddVarForProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
     dim as FBARRAYDIM dTB(0) = any
     dim as FBSYMBOL ptr s = any
 
@@ -1372,7 +1379,7 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	function = s
 end function
 
-function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+function symbAddProcResultVar( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 	dim as FBARRAYDIM dTB(0) = any
 	dim as FBSYMBOL ptr res = any
 	dim as integer dtype = any
@@ -1408,7 +1415,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 end function
 
 '':::::
-sub symbAddProcInstancePtr _
+sub symbAddProcInstanceParam _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
@@ -1427,7 +1434,7 @@ sub symbAddProcInstancePtr _
 	end if
 
 	symbAddProcParam( proc, FB_INSTANCEPTR, dtype, parent, 0, _
-	                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_PARAMINSTANCE )
+	                  FB_PARAMMODE_BYREF, FB_SYMBATTRIB_INSTANCEPARAM )
 end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -2761,7 +2768,7 @@ function symbCalcProcMatch _
 	'' possible type mismatch.
 	if( symbIsVirtual( l ) and symbIsMethod( l ) and symbIsMethod( r ) ) then
 		if( (lparam <> NULL) and (rparam <> NULL) ) then
-			if( symbIsParamInstance( lparam ) and symbIsParamInstance( rparam ) ) then
+			if( symbIsInstanceParam( lparam ) and symbIsInstanceParam( rparam ) ) then
 				lparam = lparam->next
 				rparam = rparam->next
 			end if

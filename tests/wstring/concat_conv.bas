@@ -26,7 +26,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.wstrings.concat_conv")
+	fbcu.add_suite("fbc_tests.wstring.concat_conv")
 	fbcu.add_test("test_1", @test_1)
 
 end sub

@@ -35,7 +35,7 @@ namespace fbc_tests.structs.ctor_assign_parenth
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.structs.ctor_assign_parenth")
+		fbcu.add_suite("fbc_tests.structs.ctor_assign_parenths")
 		fbcu.add_test("new", @new_style)
 		fbcu.add_test("old", @old_style)
 	

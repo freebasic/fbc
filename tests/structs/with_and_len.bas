@@ -21,7 +21,7 @@ namespace fbc_tests.structs.with_and_len
 	end sub
 
 	private sub ctor () constructor
-		fbcu.add_suite("tests/structs/with_and_len")
+		fbcu.add_suite("fbc_tests.structs.with_and_len")
 		fbcu.add_test("with and len", @with_and_len_)
 		fbcu.add_test("with no len", @len_no_with)
 	end sub

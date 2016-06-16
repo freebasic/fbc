@@ -258,7 +258,7 @@ namespace dynamicArrayOfPointers
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/bydesc" )
+	fbcu.add_suite( "fbc_tests.functions.bydesc" )
 	fbcu.add_test( "#1 local array" , @test1.testLocal  )
 	fbcu.add_test( "#1 global array", @test1.testGlobal )
 	fbcu.add_test( "#1 param array" , @test1.testParam  )

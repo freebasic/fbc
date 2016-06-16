@@ -32,7 +32,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:op_acc_mode")
+	fbcu.add_suite("fbc_tests.structs.op_access_mode")
 	fbcu.add_test( "1", @test_1)
 
 end sub

@@ -93,7 +93,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:address of")
+	fbcu.add_suite("fbc_tests.overload.addressof")
 	fbcu.add_test("test_static_initialization", @test_static_initialization)
 	fbcu.add_test("test_static_assignment", @test_static_initialization)
 	fbcu.add_test("test_nonstatic_initialization", @test_static_initialization)

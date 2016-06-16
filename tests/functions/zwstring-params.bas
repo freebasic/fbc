@@ -83,7 +83,7 @@ sub test2 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/zwstring-params" )
+	fbcu.add_suite( "fbc_tests.functions.zwstring-params" )
 	fbcu.add_test( "1", @test1 )
 	fbcu.add_test( "2", @test2 )
 end sub

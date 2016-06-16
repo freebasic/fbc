@@ -27,7 +27,7 @@ sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/module-ctor" )
+	fbcu.add_suite( "fbc_tests.functions.module-ctor-staticmemberproc" )
 	fbcu.add_test( "test", @test )
 end sub
 

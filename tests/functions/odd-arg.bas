@@ -246,7 +246,7 @@ sub testUdtParam cdecl( )
 end sub
 
 sub ctor( ) constructor
-	fbcu.add_suite( "tests/functions/odd-arg" )
+	fbcu.add_suite( "fbc_tests.functions.odd-arg" )
 	fbcu.add_test( "BYTE parameters", @testByteParam )
 	fbcu.add_test( "SHORT parameters", @testShortParam )
 	fbcu.add_test( "odd-sized UDT parameters", @testUdtParam )

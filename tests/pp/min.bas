@@ -25,7 +25,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.macros.minTests")
+	fbcu.add_suite("fbc_tests.pp.min")
 	fbcu.add_test("test", @test)
 
 end sub

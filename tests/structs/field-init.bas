@@ -387,7 +387,7 @@ namespace strings
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/field-init")
+	fbcu.add_suite( "fbc_tests.structs.field-init")
 	fbcu.add_test( "POD field init", @pod.test )
 	fbcu.add_test( "Complex field init", @complex.test )
 	fbcu.add_test( "'= ANY' UDT field init", @anyinit.test )

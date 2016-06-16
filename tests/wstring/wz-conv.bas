@@ -58,7 +58,7 @@ sub testWstringToZstring cdecl( )
 end sub
 
 sub ctor( ) constructor
-	fbcu.add_suite( "tests/wstring/wz-conv" )
+	fbcu.add_suite( "fbc_tests.wstring.wz-conv" )
 	fbcu.add_test( "testWstringToZstring", @testWstringToZstring )
 end sub
 

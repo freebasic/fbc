@@ -1141,7 +1141,7 @@ sub testClearRemainders cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "fb_tests.swap.strings" )
+	fbcu.add_suite( "fbc_tests.swap.strings" )
 	fbcu.add_test( "SWAP on local vars", @testLocalVars )
 	fbcu.add_test( "SWAP on static vars", @testStaticVars )
 	fbcu.add_test( "SWAP local, static", @testLocalVarsAndStaticVars )

@@ -555,7 +555,7 @@ sub testBug3215431 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "fb_tests.swap.intfloat" )
+	fbcu.add_suite( "fbc_tests.swap.intfloat" )
 	fbcu.add_test( "SWAP on vars", @testVars )
 	fbcu.add_test( "SWAP on derefs", @testDerefs )
 	fbcu.add_test( "SWAP on arrays", @testArrays )

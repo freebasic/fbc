@@ -545,7 +545,7 @@ namespace temporaries
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/compound/with" )
+	fbcu.add_suite( "fbc_tests.compound.with" )
 	fbcu.add_test( "basics", @basics.test )
 	fbcu.add_test( "recursion", @tempvarVsRecursion.test )
 	fbcu.add_test( "PEEK", @implicitAddrOfPeek.test )

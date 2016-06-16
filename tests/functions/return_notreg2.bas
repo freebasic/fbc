@@ -22,7 +22,7 @@ namespace fbc_tests.dim_.return_notreg2
 	
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.dim.array_init")
+		fbcu.add_suite("fbc_tests.functions.return_notreg2")
 		fbcu.add_test("test 1", @test1)
 	
 	end sub

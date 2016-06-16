@@ -33,8 +33,8 @@
 		cast(WINBOOL, cast(ULONG_PTR, GlobalFree(GlobalPtrHandle(lp))))
 	end scope
 #endmacro
-#define DeletePen(hpen) DeleteObject(cast(HGDIOBJ, cast(HPEN, (hpen))))
-#define SelectPen(hdc, hpen) cast(HPEN, SelectObject((hdc), cast(HGDIOBJ, cast(HPEN, (hpen)))))
+#define DeletePen(hpen_) DeleteObject(cast(HGDIOBJ, cast(HPEN, (hpen_))))
+#define SelectPen(hdc, hpen_) cast(HPEN, SelectObject((hdc), cast(HGDIOBJ, cast(HPEN, (hpen_)))))
 #define GetStockPen(i) cast(HPEN, GetStockObject(i))
 #define DeleteBrush(hbr) DeleteObject(cast(HGDIOBJ, cast(HBRUSH, (hbr))))
 #define SelectBrush(hdc, hbr) cast(HBRUSH, SelectObject((hdc), cast(HGDIOBJ, cast(HBRUSH, (hbr)))))
@@ -46,8 +46,8 @@
 #define UnionRgn(hrgnResult, hrgnA, hrgnB) CombineRgn(hrgnResult, hrgnA, hrgnB, RGN_OR)
 #define XorRgn(hrgnResult, hrgnA, hrgnB) CombineRgn(hrgnResult, hrgnA, hrgnB, RGN_XOR)
 #define DeletePalette(hpal) DeleteObject(cast(HGDIOBJ, cast(HPALETTE, (hpal))))
-#define DeleteFont(hfont) DeleteObject(cast(HGDIOBJ, cast(HFONT, (hfont))))
-#define SelectFont(hdc, hfont) cast(HFONT, SelectObject((hdc), cast(HGDIOBJ, cast(HFONT, (hfont)))))
+#define DeleteFont(hfont_) DeleteObject(cast(HGDIOBJ, cast(HFONT, (hfont_))))
+#define SelectFont(hdc, hfont_) cast(HFONT, SelectObject((hdc), cast(HGDIOBJ, cast(HFONT, (hfont_)))))
 #define GetStockFont(i) cast(HFONT, GetStockObject(i))
 #define DeleteBitmap(hbm) DeleteObject(cast(HGDIOBJ, cast(HBITMAP, (hbm))))
 #define SelectBitmap(hdc, hbm) cast(HBITMAP, SelectObject((hdc), cast(HGDIOBJ, cast(HBITMAP, (hbm)))))
@@ -179,9 +179,9 @@
 #define HANDLE_WM_SYSTEMERROR(hwnd, wParam, lParam, fn) cast(LRESULT, 0)
 #define FORWARD_WM_SYSTEMERROR(hwnd, errCode, fn) cast(LRESULT, 0)
 #define HANDLE_WM_CREATE(hwnd, wParam, lParam, fn) cast(LRESULT, iif(fn((hwnd), cast(LPCREATESTRUCT, (lParam))), 0, -1))
-#define FORWARD_WM_CREATE(hwnd, lpCreateStruct, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_CREATE, cast(WPARAM, 0), cast(LPARAM, cast(LPCREATESTRUCT, (lpCreateStruct))))))
+#define FORWARD_WM_CREATE(hwnd, lpCreateStruct_, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_CREATE, cast(WPARAM, 0), cast(LPARAM, cast(LPCREATESTRUCT, (lpCreateStruct_))))))
 #define HANDLE_WM_NCCREATE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(LPCREATESTRUCT, (lParam))))))
-#define FORWARD_WM_NCCREATE(hwnd, lpCreateStruct, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_NCCREATE, cast(WPARAM, 0), cast(LPARAM, cast(LPCREATESTRUCT, (lpCreateStruct))))))
+#define FORWARD_WM_NCCREATE(hwnd, lpCreateStruct_, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_NCCREATE, cast(WPARAM, 0), cast(LPARAM, cast(LPCREATESTRUCT, (lpCreateStruct_))))))
 #macro HANDLE_WM_DESTROY(hwnd, wParam, lParam, fn)
 	scope
 		fn(hwnd)
@@ -266,7 +266,7 @@
 		cast(LRESULT, 0)
 	end scope
 #endmacro
-#define FORWARD_WM_GETMINMAXINFO(hwnd, lpMinMaxInfo, fn) fn((hwnd), WM_GETMINMAXINFO, cast(WPARAM, 0), cast(LPARAM, cast(LPMINMAXINFO, (lpMinMaxInfo))))
+#define FORWARD_WM_GETMINMAXINFO(hwnd, lpMinMaxInfo_, fn) fn((hwnd), WM_GETMINMAXINFO, cast(WPARAM, 0), cast(LPARAM, cast(LPMINMAXINFO, (lpMinMaxInfo_))))
 #macro HANDLE_WM_PAINT(hwnd, wParam, lParam, fn)
 	scope
 		fn(hwnd)
@@ -275,9 +275,9 @@
 #endmacro
 #define FORWARD_WM_PAINT(hwnd, fn) fn((hwnd), WM_PAINT, cast(WPARAM, 0), cast(LPARAM, 0))
 #define HANDLE_WM_ERASEBKGND(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(HDC, (wParam))))))
-#define FORWARD_WM_ERASEBKGND(hwnd, hdc, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_ERASEBKGND, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, 0))))
+#define FORWARD_WM_ERASEBKGND(hwnd, hdc_, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_ERASEBKGND, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, 0))))
 #define HANDLE_WM_ICONERASEBKGND(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(HDC, (wParam))))))
-#define FORWARD_WM_ICONERASEBKGND(hwnd, hdc, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_ICONERASEBKGND, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, 0))))
+#define FORWARD_WM_ICONERASEBKGND(hwnd, hdc_, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_ICONERASEBKGND, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, 0))))
 #macro HANDLE_WM_NCPAINT(hwnd, wParam, lParam, fn)
 	scope
 		fn((hwnd), cast(HRGN, (wParam)))
@@ -297,7 +297,7 @@
 		cast(LRESULT, 0)
 	end scope
 #endmacro
-#define FORWARD_WM_DROPFILES(hwnd, hdrop, fn) fn((hwnd), WM_DROPFILES, cast(WPARAM, cast(HDROP, (hdrop))), cast(LPARAM, 0))
+#define FORWARD_WM_DROPFILES(hwnd, hdrop_, fn) fn((hwnd), WM_DROPFILES, cast(WPARAM, cast(HDROP, (hdrop_))), cast(LPARAM, 0))
 #macro HANDLE_WM_ACTIVATE(hwnd, wParam, lParam, fn)
 	scope
 		fn((hwnd), cast(UINT, LOWORD(wParam)), cast(HWND, (lParam)), cast(WINBOOL, HIWORD(wParam)))
@@ -312,7 +312,7 @@
 	end scope
 #endmacro
 #define FORWARD_WM_ACTIVATEAPP(hwnd, fActivate, dwThreadId, fn) fn((hwnd), WM_ACTIVATEAPP, cast(WPARAM, cast(WINBOOL, (fActivate))), cast(LPARAM, (dwThreadId)))
-#define HANDLE_WM_NCACTIVATE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(WINBOOL, (wParam)), cast(WPARAM, 0), cast(LPARAM, 0)))))
+#define HANDLE_WM_NCACTIVATE(hwnd, wParam, lParam_, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(WINBOOL, (wParam)), cast(WPARAM, 0), cast(LPARAM, 0)))))
 #define FORWARD_WM_NCACTIVATE(hwnd, fActive, hwndActDeact, fMinimized, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_NCACTIVATE, cast(WPARAM, cast(WINBOOL, (fActive))), cast(LPARAM, 0))))
 #macro HANDLE_WM_SETFOCUS(hwnd, wParam, lParam, fn)
 	scope
@@ -561,9 +561,9 @@
 		cast(LRESULT, 0)
 	end scope
 #endmacro
-#define FORWARD_WM_MENUSELECT(hwnd, hmenu, item, hmenuPopup, flags, fn) fn((hwnd), WM_MENUSELECT, MAKEWPARAM((item), (flags)), cast(LPARAM, cast(HMENU, iif((hmenu), (hmenu), (hmenuPopup)))))
+#define FORWARD_WM_MENUSELECT(hwnd, hmenu_, item, hmenuPopup, flags, fn) fn((hwnd), WM_MENUSELECT, MAKEWPARAM((item), (flags)), cast(LPARAM, cast(HMENU, iif((hmenu_), (hmenu_), (hmenuPopup)))))
 #define HANDLE_WM_MENUCHAR(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, fn((hwnd), cast(UINT, LOWORD(wParam)), cast(UINT, HIWORD(wParam)), cast(HMENU, (lParam)))))
-#define FORWARD_WM_MENUCHAR(hwnd, ch, flags, hmenu, fn) cast(DWORD, fn((hwnd), WM_MENUCHAR, MAKEWPARAM(flags, cast(WORD, (ch))), cast(LPARAM, cast(HMENU, (hmenu)))))
+#define FORWARD_WM_MENUCHAR(hwnd, ch, flags, hmenu_, fn) cast(DWORD, fn((hwnd), WM_MENUCHAR, MAKEWPARAM(flags, cast(WORD, (ch))), cast(LPARAM, cast(HMENU, (hmenu_)))))
 #macro HANDLE_WM_COMMAND(hwnd, wParam, lParam, fn)
 	scope
 		fn((hwnd), clng(LOWORD(wParam)), cast(HWND, (lParam)), cast(UINT, HIWORD(wParam)))
@@ -650,7 +650,7 @@
 		cast(LRESULT, 0)
 	end scope
 #endmacro
-#define FORWARD_WM_PAINTCLIPBOARD(hwnd, hwndCBViewer, lpPaintStruct, fn) fn((hwnd), WM_PAINTCLIPBOARD, cast(WPARAM, cast(HWND, (hwndCBViewer))), cast(LPARAM, cast(LPPAINTSTRUCT, (lpPaintStruct))))
+#define FORWARD_WM_PAINTCLIPBOARD(hwnd, hwndCBViewer, lpPaintStruct_, fn) fn((hwnd), WM_PAINTCLIPBOARD, cast(WPARAM, cast(HWND, (hwndCBViewer))), cast(LPARAM, cast(LPPAINTSTRUCT, (lpPaintStruct_))))
 #macro HANDLE_WM_SIZECLIPBOARD(hwnd, wParam, lParam, fn)
 	scope
 		fn((hwnd), cast(HWND, (wParam)), cast(const LPRECT, GlobalLock(cast(HGLOBAL, (lParam)))))
@@ -697,7 +697,7 @@
 #endmacro
 #define FORWARD_WM_SYSCOMMAND(hwnd, cmd, x, y, fn) fn((hwnd), WM_SYSCOMMAND, cast(WPARAM, cast(UINT, (cmd))), MAKELPARAM((x), (y)))
 #define HANDLE_WM_MDICREATE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(UINT, fn((hwnd), cast(LPMDICREATESTRUCT, (lParam))))))
-#define FORWARD_WM_MDICREATE(hwnd, lpmcs, fn) cast(HWND, cast(UINT, cast(DWORD, fn((hwnd), WM_MDICREATE, cast(WPARAM, 0), cast(LPARAM, cast(LPMDICREATESTRUCT, (lpmcs)))))))
+#define FORWARD_WM_MDICREATE(hwnd_, lpmcs, fn) cast(HWND, cast(UINT, cast(DWORD, fn((hwnd_), WM_MDICREATE, cast(WPARAM, 0), cast(LPARAM, cast(LPMDICREATESTRUCT, (lpmcs)))))))
 #macro HANDLE_WM_MDIDESTROY(hwnd, wParam, lParam, fn)
 	scope
 		fn((hwnd), cast(HWND, (wParam)))
@@ -719,8 +719,8 @@
 	end scope
 #endmacro
 #define FORWARD_WM_MDIRESTORE(hwnd, hwndRestore, fn) fn((hwnd), WM_MDIRESTORE, cast(WPARAM, (hwndRestore)), cast(LPARAM, 0))
-#define HANDLE_WM_MDINEXT(hwnd, wParam, lParam, fn) cast(LRESULT, cast(HWND, fn((hwnd), cast(HWND, (wParam)), cast(WINBOOL, lParam))))
-#define FORWARD_WM_MDINEXT(hwnd, hwndCur, fPrev, fn) cast(HWND, cast(UINT_PTR, fn((hwnd), WM_MDINEXT, cast(WPARAM, (hwndCur)), cast(LPARAM, (fPrev)))))
+#define HANDLE_WM_MDINEXT(hwnd_, wParam, lParam, fn) cast(LRESULT, cast(HWND, fn((hwnd_), cast(HWND, (wParam)), cast(WINBOOL, lParam))))
+#define FORWARD_WM_MDINEXT(hwnd_, hwndCur, fPrev, fn) cast(HWND, cast(UINT_PTR, fn((hwnd_), WM_MDINEXT, cast(WPARAM, (hwndCur)), cast(LPARAM, (fPrev)))))
 #macro HANDLE_WM_MDIMAXIMIZE(hwnd, wParam, lParam, fn)
 	scope
 		fn((hwnd), cast(HWND, (wParam)))
@@ -740,7 +740,7 @@
 #endmacro
 #define FORWARD_WM_MDIICONARRANGE(hwnd, fn) fn((hwnd), WM_MDIICONARRANGE, cast(WPARAM, 0), cast(LPARAM, 0))
 #define HANDLE_WM_MDIGETACTIVE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, fn(hwnd)))
-#define FORWARD_WM_MDIGETACTIVE(hwnd, fn) cast(HWND, cast(UINT_PTR, fn((hwnd), WM_MDIGETACTIVE, cast(WPARAM, 0), cast(LPARAM, 0))))
+#define FORWARD_WM_MDIGETACTIVE(hwnd_, fn) cast(HWND, cast(UINT_PTR, fn((hwnd_), WM_MDIGETACTIVE, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define HANDLE_WM_MDISETMENU(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, fn((hwnd), cast(WINBOOL, (wParam)), cast(HMENU, (wParam)), cast(HMENU, (lParam)))))
 #define FORWARD_WM_MDISETMENU(hwnd, fRefresh, hmenuFrame, hmenuWindow, fn) cast(HMENU, cast(UINT_PTR, fn((hwnd), WM_MDISETMENU, cast(WPARAM, iif((fRefresh), (hmenuFrame), 0)), cast(LPARAM, (hmenuWindow)))))
 #macro HANDLE_WM_CHILDACTIVATE(hwnd, wParam, lParam, fn)
@@ -752,8 +752,8 @@
 #define FORWARD_WM_CHILDACTIVATE(hwnd, fn) fn((hwnd), WM_CHILDACTIVATE, cast(WPARAM, 0), cast(LPARAM, 0))
 #define HANDLE_WM_INITDIALOG(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(UINT, cast(WINBOOL, fn((hwnd), cast(HWND, (wParam)), lParam)))))
 #define FORWARD_WM_INITDIALOG(hwnd, hwndFocus, lParam, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_INITDIALOG, cast(WPARAM, cast(HWND, (hwndFocus))), (lParam))))
-#define HANDLE_WM_NEXTDLGCTL(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HWND, fn((hwnd), cast(HWND, (wParam)), cast(WINBOOL, (lParam))))))
-#define FORWARD_WM_NEXTDLGCTL(hwnd, hwndSetFocus, fNext, fn) cast(HWND, cast(UINT_PTR, fn((hwnd), WM_NEXTDLGCTL, cast(WPARAM, cast(HWND, (hwndSetFocus))), cast(LPARAM, (fNext)))))
+#define HANDLE_WM_NEXTDLGCTL(hwnd_, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HWND, fn((hwnd_), cast(HWND, (wParam)), cast(WINBOOL, (lParam))))))
+#define FORWARD_WM_NEXTDLGCTL(hwnd_, hwndSetFocus, fNext, fn) cast(HWND, cast(UINT_PTR, fn((hwnd_), WM_NEXTDLGCTL, cast(WPARAM, cast(HWND, (hwndSetFocus))), cast(LPARAM, (fNext)))))
 #macro HANDLE_WM_PARENTNOTIFY(hwnd, wParam, lParam, fn)
 	scope
 		fn((hwnd), cast(UINT, LOWORD(wParam)), cast(HWND, (lParam)), cast(UINT, HIWORD(wParam)))
@@ -769,28 +769,28 @@
 #endmacro
 #define FORWARD_WM_ENTERIDLE(hwnd, source, hwndSource, fn) fn((hwnd), WM_ENTERIDLE, cast(WPARAM, cast(UINT, (source))), cast(LPARAM, cast(HWND, (hwndSource))))
 #define HANDLE_WM_GETDLGCODE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(UINT, fn(hwnd, cast(LPMSG, (lParam))))))
-#define FORWARD_WM_GETDLGCODE(hwnd, lpmsg, fn) cast(UINT, cast(DWORD, fn((hwnd), WM_GETDLGCODE, iif(lpmsg, lpmsg->wParam, 0), cast(LPARAM, cast(LPMSG, (lpmsg))))))
+#define FORWARD_WM_GETDLGCODE(hwnd, lpmsg_, fn) cast(UINT, cast(DWORD, fn((hwnd), WM_GETDLGCODE, iif(lpmsg_, lpmsg_->wParam, 0), cast(LPARAM, cast(LPMSG, (lpmsg_))))))
 #define HANDLE_WM_CTLCOLORMSGBOX(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_MSGBOX))))
-#define FORWARD_WM_CTLCOLORMSGBOX(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORMSGBOX, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLORMSGBOX(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORMSGBOX, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #define HANDLE_WM_CTLCOLOREDIT(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_EDIT))))
-#define FORWARD_WM_CTLCOLOREDIT(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLOREDIT, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLOREDIT(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLOREDIT, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #define HANDLE_WM_CTLCOLORLISTBOX(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_LISTBOX))))
-#define FORWARD_WM_CTLCOLORLISTBOX(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORLISTBOX, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLORLISTBOX(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORLISTBOX, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #define HANDLE_WM_CTLCOLORBTN(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_BTN))))
-#define FORWARD_WM_CTLCOLORBTN(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORBTN, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLORBTN(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORBTN, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #define HANDLE_WM_CTLCOLORDLG(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_DLG))))
-#define FORWARD_WM_CTLCOLORDLG(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORDLG, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLORDLG(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORDLG, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #define HANDLE_WM_CTLCOLORSCROLLBAR(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_SCROLLBAR))))
-#define FORWARD_WM_CTLCOLORSCROLLBAR(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORSCROLLBAR, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLORSCROLLBAR(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORSCROLLBAR, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #define HANDLE_WM_CTLCOLORSTATIC(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_STATIC))))
-#define FORWARD_WM_CTLCOLORSTATIC(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORSTATIC, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLORSTATIC(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORSTATIC, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #macro HANDLE_WM_SETFONT(hwnd, wParam, lParam, fn)
 	scope
 		fn((hwnd), cast(HFONT, (wParam)), cast(WINBOOL, (lParam)))
 		cast(LRESULT, 0)
 	end scope
 #endmacro
-#define FORWARD_WM_SETFONT(hwnd, hfont, fRedraw, fn) fn((hwnd), WM_SETFONT, cast(WPARAM, cast(HFONT, (hfont))), cast(LPARAM, cast(WINBOOL, (fRedraw))))
+#define FORWARD_WM_SETFONT(hwnd, hfont_, fRedraw, fn) fn((hwnd), WM_SETFONT, cast(WPARAM, cast(HFONT, (hfont_))), cast(LPARAM, cast(WINBOOL, (fRedraw))))
 #define HANDLE_WM_GETFONT(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HFONT, fn(hwnd))))
 #define FORWARD_WM_GETFONT(hwnd, fn) cast(HFONT, cast(UINT_PTR, fn((hwnd), WM_GETFONT, cast(WPARAM, 0), cast(LPARAM, 0))))
 #macro HANDLE_WM_DRAWITEM(hwnd, wParam, lParam, fn)
@@ -869,7 +869,7 @@
 #define Static_GetTextLength(hwndCtl) GetWindowTextLength(hwndCtl)
 #define Static_SetText(hwndCtl, lpsz) SetWindowText((hwndCtl), (lpsz))
 #define Static_SetIcon(hwndCtl, hIcon) cast(HICON, cast(UINT_PTR, SNDMSG((hwndCtl), STM_SETICON, cast(WPARAM, cast(HICON, (hIcon))), cast(LPARAM, 0))))
-#define Static_GetIcon(hwndCtl, hIcon) cast(HICON, cast(UINT_PTR, SNDMSG((hwndCtl), STM_GETICON, cast(WPARAM, 0), cast(LPARAM, 0))))
+#define Static_GetIcon(hwndCtl, hIcon_) cast(HICON, cast(UINT_PTR, SNDMSG((hwndCtl), STM_GETICON, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define Button_Enable(hwndCtl, fEnable) EnableWindow((hwndCtl), (fEnable))
 #define Button_GetText(hwndCtl, lpch, cchMax) GetWindowText((hwndCtl), (lpch), (cchMax))
 #define Button_GetTextLength(hwndCtl) GetWindowTextLength(hwndCtl)

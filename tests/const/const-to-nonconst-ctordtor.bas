@@ -49,7 +49,7 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/const/const-to-nonconst-ctordtor" )
+	fbcu.add_suite( "fbc_tests.const.const-to-nonconst-ctordtor" )
 	fbcu.add_test( "test", @test )
 end sub
 

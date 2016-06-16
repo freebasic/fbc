@@ -65,7 +65,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-structs:property-idx")
+	fbcu.add_suite("fbc_tests.structs.obj_property_idx")
 	fbcu.add_test( "test", @test)
 
 end sub

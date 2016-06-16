@@ -292,7 +292,7 @@ namespace bug719_2
 end namespace
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/structs/derived_cast" )
+	fbcu.add_suite( "fbc_tests.structs.derived-cast" )
 	fbcu.add_test( "upcasting derived UDT vars", @test )
 	fbcu.add_test( "derived lvalue cast + anon assign", @lvalueCastVsTypeini.test )
 	fbcu.add_test( "bug #719 regression test 1", @bug719_1.test )

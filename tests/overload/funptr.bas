@@ -62,7 +62,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-overload:function pointers")
+	fbcu.add_suite("fbc_tests.overload.funptr")
 	fbcu.add_test("test_initialization_wo_params", @test_initialization_wo_params)
 	fbcu.add_test("test_assignment_wo_params", @test_assignment_wo_params)
 	fbcu.add_test("test_initialization_w_params", @test_initialization_w_params)

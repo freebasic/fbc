@@ -217,7 +217,7 @@ function cleanup cdecl () as long
 end function
 
 sub ctor () constructor
-	fbcu.add_suite("fbc_tests.string_.format_", @init, @cleanup)
+	fbcu.add_suite("fbc_tests.string.format", @init, @cleanup)
 	fbcu.add_test("number format test", @numberFormatTest)
 	fbcu.add_test("date format test", @dateFormatTest)
 end sub

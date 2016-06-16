@@ -54,7 +54,7 @@ private function hDeclareProc _
 	proc = symbPreAddProc( NULL )
 
 	'' add "this"
-	symbAddProcInstancePtr( udt, proc )
+	symbAddProcInstanceParam( udt, proc )
 
 	'' add right-side hand param?
 	if( rhsdtype <> FB_DATATYPE_INVALID ) then
@@ -1350,14 +1350,14 @@ sub symbCompRTTIInit( )
 
 	'' declare constructor( )
 	ctor = symbPreAddProc( NULL )
-	symbAddProcInstancePtr( objtype, ctor )
+	symbAddProcInstanceParam( objtype, ctor )
 	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR _
 	                         or FB_SYMBATTRIB_OVERLOADED, FB_FUNCMODE_CDECL )
 
 	'' declare constructor( byref __FB_RHS__ as const object )
 	'' (must have a BYREF AS CONST parameter so it can copy from CONST objects too)
 	ctor = symbPreAddProc( NULL )
-	symbAddProcInstancePtr( objtype, ctor )
+	symbAddProcInstanceParam( objtype, ctor )
 	symbAddProcParam( ctor, "__FB_RHS__", typeSetIsConst( FB_DATATYPE_STRUCT ), objtype, _
 			0, FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE )
 	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR _

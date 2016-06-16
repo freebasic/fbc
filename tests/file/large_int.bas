@@ -166,7 +166,7 @@ namespace fbc_tests.file_.input_large_int
 
 	private sub ctor () constructor
 
-		fbcu.add_suite("fbc_tests.file.input_large_int")
+		fbcu.add_suite("fbc_tests.file.large_int")
 
 		fbcu.add_test("run_test", @run_test)
 

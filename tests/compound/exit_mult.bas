@@ -66,7 +66,7 @@ end sub
 
 sub ctor () constructor
 
-	fbcu.add_suite("fbc_tests.compound.exit-mult")
+	fbcu.add_suite("fbc_tests.compound.exit_mult")
 	fbcu.add_test("for", @test_for)
 	fbcu.add_test("do", @test_do)
 	fbcu.add_test("while", @test_while)

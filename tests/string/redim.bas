@@ -37,7 +37,7 @@ end sub
 
 private sub ctor () constructor
 
-	fbcu.add_suite("fb-tests-strings:redim")
+	fbcu.add_suite("fbc_tests.string.redim")
 	fbcu.add_test( "test", @test)
 
 end sub

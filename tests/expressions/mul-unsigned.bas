@@ -350,7 +350,7 @@ private sub testRegression1 cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite("tests/expressions/mulunsigned")
+	fbcu.add_suite("fbc_tests.expressions.mul-unsigned")
 	fbcu.add_test( "ulongint", @testUlongint )
 	fbcu.add_test( "uinteger", @testUinteger )
 	fbcu.add_test( "ulong", @testUlong )

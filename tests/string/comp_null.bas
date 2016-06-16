@@ -62,7 +62,7 @@ sub wstringTest cdecl ()
 end sub
 
 sub ctor () constructor
-	fbcu.add_suite("fbc_tests.string_.comp_null", @init)
+	fbcu.add_suite("fbc_tests.string.comp_null", @init)
 	fbcu.add_test("string test", @stringTest)
 	fbcu.add_test("zstring test", @zstringTest)
 	fbcu.add_test("wstring test", @wstringTest)

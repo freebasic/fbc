@@ -39,7 +39,7 @@ function cleanup cdecl () as long
 end function
 
 sub ctor () constructor
-	fbcu.add_suite("fbc_tests.pointers.funcptr_array1", @init, @cleanup)
+	fbcu.add_suite("fbc_tests.pointers.funptr_array1", @init, @cleanup)
 	fbcu.add_test("test1", @test1)
 end sub
 

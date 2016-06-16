@@ -944,7 +944,7 @@ private sub test cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite( "tests/gfx/fb-image-expr" )
+	fbcu.add_suite( "fbc_tests.gfx.image-expr" )
 	fbcu.add_test( "1", @test )
 end sub
 

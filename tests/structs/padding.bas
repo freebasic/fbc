@@ -1460,7 +1460,7 @@ sub testGenGccUdtFieldInPackedUdt cdecl( )
 end sub
 
 private sub ctor( ) constructor
-	fbcu.add_suite("tests/structs/padding")
+	fbcu.add_suite("fbc_tests.structs.padding")
 	fbcu.add_test("size1", @testSize1)
 	fbcu.add_test("size2", @testSize2)
 	fbcu.add_test("no padding by default", @testDefaultNoPadding)

@@ -715,13 +715,13 @@ help:
 .PHONY: cunit-tests log-tests clean-tests
 
 cunit-tests:
-	cd tests && make cunit-tests FBC="`pwd`/../bin/fbc -i `pwd`/../inc"
+	cd tests && make cunit-tests FBC="`pwd`/../$(FBC_EXE) -i `pwd`/../inc"
 
 log-tests:
-	cd tests && make   log-tests FBC="`pwd`/../bin/fbc -i `pwd`/../inc"
+	cd tests && make   log-tests FBC="`pwd`/../$(FBC_EXE) -i `pwd`/../inc"
 
 warning-tests:
-	cd tests/warnings && FBC="`pwd`/../../bin/fbc" ./test.sh
+	cd tests/warnings && FBC="`pwd`/../../$(FBC_EXE)" ./test.sh
 
 clean-tests:
 	cd tests && make clean
