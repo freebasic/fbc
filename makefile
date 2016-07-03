@@ -1061,8 +1061,8 @@ bootstrap-dist:
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win32        && mv src/compiler/*.asm bootstrap/win32
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win64        && mv src/compiler/*.c   bootstrap/win64
 
-	# Ensure to have LFs regardless of host system (LFs will probably on
-	# DOS/Win32, but CRLFs could cause issues on Linux)
+	# Ensure to have LFs regardless of host system (LFs will probably work
+	# on DOS/Win32, but CRLFs could cause issues on Linux)
 	dos2unix bootstrap/dos/*
 	dos2unix bootstrap/linux-x86/*
 	dos2unix bootstrap/linux-x86_64/*
