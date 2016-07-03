@@ -24,6 +24,7 @@ Version 1.06.0
 - #790: Windows API and X11 bindings: Fixed some macros where macro parameters conflicted with other identifiers or FB keywords used in the macro body
 - boolean initializer values for global or static variables were not emitted properly
 - Compiler crash after reporting error about REDIM on a fixed-size array field
+- #827: Using the GNU gold linker (instead of ld.bfd) resulted in broken binaries due to fbextra.x, which fbc uses with ld.bfd to discard the objinfo .fbctinf sections, but is not supported by gold. Now when gold is detected, fbextra.x won't be used anymore, in order to get working binaries.
 
 
 Version 1.05.0

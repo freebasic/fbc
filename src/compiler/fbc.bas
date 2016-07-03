@@ -229,6 +229,19 @@ private function fbcAddObj( byref file as string ) as string ptr
 	function = s
 end function
 
+private function hGet1stOutputLineFromCommand( byref cmd as string ) as string
+	var f = freefile( )
+	if( open pipe( cmd, for input, as f ) <> 0 ) then
+		exit function
+	end if
+
+	dim ln as string
+	input #f, ln
+
+	close f
+	return ln
+end function
+
 ''
 '' Build the path to a certain file in our lib/ directory (or, in case of
 '' non-standalone, somewhere in a system directory such as /usr/lib).
@@ -278,14 +291,10 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 
 	path += " -print-file-name=" + *file
 
-	dim as integer ff = freefile( )
-	if( open pipe( path, for input, as ff ) <> 0 ) then
+	found = hGet1stOutputLineFromCommand( path )
+	if( len( found ) = 0 ) then
 		exit function
 	end if
-
-	input #ff, found
-
-	close ff
 
 	if( found = hStripPath( found ) ) then
 		exit function
@@ -545,6 +554,13 @@ private function hFindLib( byval file as zstring ptr ) as string
 	end if
 end function
 
+private function hLinkerIsGold( ) as integer
+	dim ldcmd as string
+	fbcFindBin( FBCTOOL_LD, ldcmd )
+	ldcmd += " --version"
+	return (instr( hGet1stOutputLineFromCommand( ldcmd ), "GNU gold" ) > 0)
+end function
+
 private function hLinkFiles( ) as integer
 	dim as string ldcline, dllname, deffile
 
@@ -658,7 +674,8 @@ private function hLinkFiles( ) as integer
 		ldcline += " -T """ + fbc.libpath + (FB_HOST_PATHDIV + "i386go32.x""")
 	else
 		if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
-		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) ) then
+		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) and _
+		    (not hLinkerIsGold( )) ) then
 			'' Supplementary ld script to drop the fbctinf objinfo section
 			ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
 		end if
