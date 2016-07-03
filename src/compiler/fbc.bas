@@ -3305,7 +3305,7 @@ private sub hPrintOptions( )
 	print "  -print fblibdir  Display the compiler's lib/ path"
 	print "  -print x         Display output binary/library file name (if known)"
 	print "  -profile         Enable function profiling"
-	print "  -r               Write out .asm (-gen gas), .c (-gen gcc) or .ll (-gen llvm) only"
+	print "  -r               Write out .asm/.c/.ll (-gen gas/gcc/llvm) only"
 	print "  -rr              Write out the final .asm only"
 	print "  -R               Preserve temporary .asm/.c/.ll/.def files"
 	print "  -RR              Preserve the final .asm file"
