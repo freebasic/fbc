@@ -135,13 +135,6 @@ declare sub fbcFindBin _
 		byref relying_on_system as integer = FALSE _
 	)
 
-declare function fbcRunBin _
-	( _
-		byval action as zstring ptr, _
-		byval tool as integer, _
-		byref ln as string _
-	) as integer
-
 #macro safeKill(f)
 	if( kill( f ) <> 0 ) then
 	end if
@@ -329,7 +322,7 @@ private sub fbcAddLibPathFor( byval libname as zstring ptr )
 end sub
 #endif
 
-sub fbcFindBin _
+private sub fbcFindBin _
 	( _
 		byval tool as integer, _
 		byref path as string, _
@@ -368,7 +361,7 @@ sub fbcFindBin _
 	last_relying_on_system = relying_on_system
 end sub
 
-function fbcRunBin _
+private function fbcRunBin _
 	( _
 		byval action as zstring ptr, _
 		byval tool as integer, _
