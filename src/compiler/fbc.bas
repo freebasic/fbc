@@ -664,7 +664,8 @@ private function hLinkFiles( ) as integer
 		'' (needed until binutils' default DJGPP ldscripts are fixed)
 		ldcline += " -T """ + fbc.libpath + (FB_HOST_PATHDIV + "i386go32.x""")
 	else
-		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN ) then
+		if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
+		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) ) then
 			'' Supplementary ld script to drop the fbctinf objinfo section
 			ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
 		end if
@@ -1359,6 +1360,7 @@ enum
 	OPT_MT
 	OPT_NODEFLIBS
 	OPT_NOERRLINE
+	OPT_NOOBJINFO
 	OPT_O
 	OPT_OPTIMIZE
 	OPT_P
@@ -1421,6 +1423,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	FALSE, _ '' OPT_MT
 	FALSE, _ '' OPT_NODEFLIBS
 	FALSE, _ '' OPT_NOERRLINE
+	FALSE, _ '' OPT_NOOBJINFO
 	TRUE , _ '' OPT_O
 	TRUE , _ '' OPT_OPTIMIZE
 	TRUE , _ '' OPT_P
@@ -1612,6 +1615,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 	case OPT_NOERRLINE
 		fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
+
+	case OPT_NOOBJINFO
+		fbSetOption( FB_COMPOPT_OBJINFO, FALSE )
 
 	case OPT_O
 		'' Error if there already is an -o waiting to be assigned
@@ -1879,6 +1885,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 	case asc("n")
 		CHECK("noerrline", OPT_NOERRLINE)
 		CHECK("nodeflibs", OPT_NODEFLIBS)
+		CHECK("noobjinfo", OPT_NOOBJINFO)
 
 	case asc("o")
 		ONECHAR(OPT_O)
@@ -3038,7 +3045,7 @@ private function hArchiveFiles( ) as integer
 
 	dim as string ln = "-rsc " + QUOTE + fbc.outname + (QUOTE + " ")
 
-	if( fbIsCrossComp( ) = FALSE ) then
+	if( fbGetOption( FB_COMPOPT_OBJINFO ) and (not fbIsCrossComp( )) ) then
 		if( hCompileFbctinf( ) ) then
 			'' The objinfo reader expects the fbctinf object to be
 			'' the first object file in libraries, so it must be
@@ -3295,6 +3302,7 @@ private sub hPrintOptions( )
 	print "  -mt              Use thread-safe FB runtime"
 	print "  -nodeflibs       Do not include the default libraries"
 	print "  -noerrline       Do not show source context in error messages"
+	print "  -noobjinfo       Do not read/write compile-time info from/to .o and .a files"
 	print "  -o <file>        Set .o (or -pp .bas) file name for prev/next input file"
 	print "  -O <value>       Optimization level (default: 0)"
 	print "  -p <path>        Add a library search path"
@@ -3466,7 +3474,7 @@ end sub
 	'' Scan objects and libraries for more libraries and paths,
 	'' before adding the default libs, which don't need to be searched,
 	'' because they don't contain objinfo anyways.
-	if( fbIsCrossComp( ) = FALSE ) then
+	if( fbGetOption( FB_COMPOPT_OBJINFO ) and (not fbIsCrossComp( )) ) then
 		hCollectObjinfo( )
 	end if
 

@@ -455,6 +455,7 @@ sub fbGlobalInit()
 	env.clopt.pic           = FALSE
 	env.clopt.msbitfields   = FALSE
 	env.clopt.stacksize     = FB_DEFSTACKSIZE
+	env.clopt.objinfo       = TRUE
 	env.clopt.showincludes  = FALSE
 
 	hUpdateLangOptions( )
@@ -541,6 +542,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		if (env.clopt.stacksize < FB_MINSTACKSIZE) then
 			env.clopt.stacksize = FB_MINSTACKSIZE
 		end if
+	case FB_COMPOPT_OBJINFO
+		env.clopt.objinfo = value
 	case FB_COMPOPT_SHOWINCLUDES
 		env.clopt.showincludes = value
 	end select
@@ -609,6 +612,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.pic
 	case FB_COMPOPT_STACKSIZE
 		function = env.clopt.stacksize
+	case FB_COMPOPT_OBJINFO
+		function = env.clopt.objinfo
 	case FB_COMPOPT_SHOWINCLUDES
 		function = env.clopt.showincludes
 
@@ -1051,13 +1056,12 @@ sub fbCompile _
 
 	fbMainEnd( )
 
-	'' not cross-compiling?
-	if( fbIsCrossComp( ) = FALSE ) then
-		'' compiling only?
-		if( env.clopt.outtype = FB_OUTTYPE_OBJECT ) then
-			'' store libs, paths and cmd-line options in the obj
-			hEmitObjinfo( )
-		end if
+	'' compiling only, not cross-compiling?
+	if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
+	    (not fbIsCrossComp( )) and _
+	    (env.clopt.outtype = FB_OUTTYPE_OBJECT) ) then
+		'' store libs, paths and cmd-line options in the obj
+		hEmitObjinfo( )
 	end if
 
 	'' save
