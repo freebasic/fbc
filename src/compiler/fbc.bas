@@ -1419,7 +1419,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	TRUE , _ '' OPT_MAP
 	TRUE , _ '' OPT_MAXERR
 	FALSE, _ '' OPT_MT
-  	FALSE, _ '' OPT_NODEFLIBS
+	FALSE, _ '' OPT_NODEFLIBS
 	FALSE, _ '' OPT_NOERRLINE
 	TRUE , _ '' OPT_O
 	TRUE , _ '' OPT_OPTIMIZE
