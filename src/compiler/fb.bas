@@ -455,6 +455,7 @@ sub fbGlobalInit()
 	env.clopt.pic           = FALSE
 	env.clopt.msbitfields   = FALSE
 	env.clopt.stacksize     = FB_DEFSTACKSIZE
+	env.clopt.showincludes  = FALSE
 
 	hUpdateLangOptions( )
 	hUpdateTargetOptions( )
