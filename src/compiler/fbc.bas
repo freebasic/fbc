@@ -554,11 +554,20 @@ private function hFindLib( byval file as zstring ptr ) as string
 	end if
 end function
 
-private function hLinkerIsGold( ) as integer
+private function fbcLinkerIsGold( ) as integer
 	dim ldcmd as string
 	fbcFindBin( FBCTOOL_LD, ldcmd )
 	ldcmd += " --version"
 	return (instr( hGet1stOutputLineFromCommand( ldcmd ), "GNU gold" ) > 0)
+end function
+
+'' Check whether we're using the gold linker.
+private function fbcIsUsingGoldLinker( ) as integer
+	'' gold only supports ELF, we only need to check for it when targetting ELF.
+	if( fbTargetSupportsELF( ) ) then
+		return fbcLinkerIsGold( )
+	end if
+	return FALSE
 end function
 
 private function hLinkFiles( ) as integer
@@ -673,10 +682,13 @@ private function hLinkFiles( ) as integer
 		'' (needed until binutils' default DJGPP ldscripts are fixed)
 		ldcline += " -T """ + fbc.libpath + (FB_HOST_PATHDIV + "i386go32.x""")
 	else
+		'' Supplementary ld script to drop the fbctinf objinfo section
+		''  - only if objinfo is enabled
+		''  - only with ld.bfd, not ld.gold, because gold doesn't support this kind
+		''    of linker script (results in broken binaries).
 		if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
 		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) and _
-		    (not hLinkerIsGold( )) ) then
-			'' Supplementary ld script to drop the fbctinf objinfo section
+		    (not fbcIsUsingGoldLinker( )) ) then
 			ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
 		end if
 	end if
