@@ -4,7 +4,7 @@
 
 FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 {
-	char buffer[MAX_PATH+1], *application, *arguments, **argv, *p;
+	char buffer[MAX_PATH+1], *arguments, **argv, *p;
 	int i, argc = 0, res = 0;
 	ssize_t len_arguments;
 
@@ -15,7 +15,7 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 		return -1;
 	}
 
-	application = fb_hGetShortPath( program->data, buffer, MAX_PATH );
+	fb_hGetShortPath( program->data, buffer, MAX_PATH );
 
 	if( args==NULL ) {
 		arguments = "";
@@ -60,9 +60,9 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 	*/
 
 	if( do_fork )
-		res = spawnv( P_WAIT, (const char*)application, (char * const *)argv );
+		res = spawnv( P_WAIT, buffer, (char * const *)argv );
 	else
-		res = execv( (const char*)application, (char * const *)argv );
+		res = execv( buffer, (char * const *)argv );
 
 	return res;
 }

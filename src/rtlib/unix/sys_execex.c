@@ -4,7 +4,7 @@
 
 FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 {
-	char buffer[MAX_PATH+1], *application, *arguments, **argv, *p;
+	char buffer[MAX_PATH+1], *arguments, **argv, *p;
 	int i, argc = 0, res = -1, status;
 	ssize_t len_arguments;
 	pid_t pid;
@@ -16,9 +16,9 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 		return -1;
 	}
 
-	application = fb_hGetShortPath( program->data, buffer, MAX_PATH );
+	fb_hGetShortPath( program->data, buffer, MAX_PATH );
 
-	fb_hConvertPath( application );
+	fb_hConvertPath( buffer );
 
 	if( args==NULL ) {
 		arguments = "";
@@ -46,7 +46,7 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 	argv = alloca( sizeof(char*) * (argc + 1 ));
 	DBG_ASSERT( argv!=NULL );
 
-	argv[0] = application;
+	argv[0] = buffer;
 
 	/* scan the processed args and set pointers */
 	p = arguments;
@@ -67,7 +67,7 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 		if( pid != -1 ) {
 			if (pid == 0) {
 				/* execvp() only returns if it failed */
-				execvp( application, argv );
+				execvp( buffer, argv );
 				/* HACK: execvp() failed, this must be communiated to the parent process *somehow*,
 				   so fb_ExecEx() can return -1 there */
 				/* Using _Exit() instead of exit() to prevent the child from flusing file I/O and
@@ -87,7 +87,7 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 			}
 		}
 	} else {
-		res = execvp( application, argv );
+		res = execvp( buffer, argv );
 	}
 
 	FB_LOCK( );
