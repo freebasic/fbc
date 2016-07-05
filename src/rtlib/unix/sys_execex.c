@@ -16,7 +16,8 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 		return -1;
 	}
 
-	fb_hGetShortPath( program->data, buffer, MAX_PATH );
+	strncpy( buffer, program->data, sizeof( buffer ) );
+	buffer[sizeof( buffer ) - 1] = 0;
 
 	fb_hConvertPath( buffer );
 

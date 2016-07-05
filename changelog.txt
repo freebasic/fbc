@@ -25,6 +25,7 @@ Version 1.06.0
 - boolean initializer values for global or static variables were not emitted properly
 - Compiler crash after reporting error about REDIM on a fixed-size array field
 - #827: Using the GNU gold linker (instead of ld.bfd) resulted in broken binaries due to fbextra.x, which fbc uses with ld.bfd to discard the objinfo .fbctinf sections, but is not supported by gold. Now when gold is detected, fbextra.x won't be used anymore, in order to get working binaries.
+- exec() on Linux & co was broken with regards to spaces in the executable path. Spaces were converted to "\ " and then to "/ ", resulting in a different path than given.
 
 
 Version 1.05.0
