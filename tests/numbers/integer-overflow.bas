@@ -74,8 +74,8 @@ sub testUnsigned cdecl( )
 
 		i = IMAX
 		CU_ASSERT( i = IMAX )
-		CU_ASSERT( clng(i + 1) = 0 )
-		CU_ASSERT( clng(IMAX + 1) = 0 )
+		CU_ASSERT( culng(i + 1) = 0 )
+		CU_ASSERT( culng(IMAX + 1) = 0 )
 		#ifndef __FB_64BIT__
 			CU_ASSERT( (i + 1) = 0 )
 			CU_ASSERT( (IMAX + 1) = 0 )
@@ -83,8 +83,8 @@ sub testUnsigned cdecl( )
 
 		i = 0
 		CU_ASSERT( i = 0 )
-		CU_ASSERT( clng(i - 1) = IMAX )
-		CU_ASSERT( clng(0u - 1) = IMAX )
+		CU_ASSERT( culng(i - 1) = IMAX )
+		CU_ASSERT( culng(0u - 1) = IMAX )
 		#ifndef __FB_64BIT__
 			CU_ASSERT( (i - 1) = IMAX )
 			CU_ASSERT( (0u - 1) = IMAX )
