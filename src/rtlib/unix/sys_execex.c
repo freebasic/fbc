@@ -6,7 +6,7 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 {
 	char buffer[MAX_PATH+1], *application, *arguments, **argv, *p;
 	int i, argc = 0, res = -1, status;
-	ssize_t len_program, len_arguments;
+	ssize_t len_arguments;
 	pid_t pid;
 
 	if( (program == NULL) || (program->data == NULL) ) 
@@ -17,14 +17,6 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 	}
 
 	application = fb_hGetShortPath( program->data, buffer, MAX_PATH );
-	DBG_ASSERT( application!=NULL );
-	if( application==program->data ) 
-	{
-		len_program = FB_STRSIZE( program );
-		application = buffer;
-		FB_MEMCPY(application, program->data, len_program );
-		application[len_program] = 0;
-	}
 
 	fb_hConvertPath( application );
 
