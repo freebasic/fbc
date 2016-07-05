@@ -555,6 +555,10 @@ enum FB_TARGETOPT
 	'' Whether the stack needs to be aligned to 16 bytes before any
 	'' call to external code (x86/x86_64 GNU/Linux and Darwin)
 	FB_TARGETOPT_STACKALIGN16        = &h00000020
+
+	FB_TARGETOPT_ELF   = &h00000040
+	FB_TARGETOPT_COFF  = &h00000080
+	FB_TARGETOPT_MACHO = &h00000100
 end enum
 
 type FBTARGET
