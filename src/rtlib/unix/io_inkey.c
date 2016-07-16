@@ -40,6 +40,8 @@ static const KEY_DATA key_data[] = {
 	{ "k8", KEY_F8        },
 	{ "k9", KEY_F9        },
 	{ "k;", KEY_F10       },
+	{ "F1", KEY_F11       },
+	{ "F2", KEY_F12       },
 	{ "kh", KEY_HOME      },
 	{ "ku", KEY_UP        },
 	{ "kP", KEY_PAGE_UP   },
