@@ -564,6 +564,7 @@ private function sregFindFreeReg _
 		end If
 	next
 
+	assert(false)
 end function
 
 '':::::
@@ -620,18 +621,23 @@ private function sregAllocate _
 
 	r = sregFindFreeReg( this_ )
 	if( r = INVALID ) then
+		'' No register free, find one to spill
 		r = sregFindTOSReg( this_ )
-		'' This will sregFree() the register
-		irStoreVR( this_->vregTB(r), this_->vauxparent(r) )
-	else
-		this_->stkctx.fregs -= 1
 
-		for i as integer = 0 to this_->regs - 1
-			if( this_->stkctx.regTB(i) <> INVALID ) then
-				this_->stkctx.regTB(i) += 1
-			end If
-		next
+		'' Spill it. This will also sregFree() the register,
+		'' so it's marked as free again.
+		irStoreVR( this_->vregTB(r), this_->vauxparent(r) )
+
+		assert( sregFindFreeReg( this_ ) = r )
 	end If
+
+	'' Mark as used (no longer free)
+	this_->stkctx.fregs -= 1
+	for i as integer = 0 to this_->regs - 1
+		if( this_->stkctx.regTB(i) <> INVALID ) then
+			this_->stkctx.regTB(i) += 1
+		end If
+	next
 
 	this_->vregTB(r) = vreg
 	this_->vauxparent(r) = vauxparent
