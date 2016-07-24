@@ -21,17 +21,18 @@ install:
 
 script:
   - mkdir build-32-imported
-    && cd build-32-imported
-    && echo 'TARGET_ARCH=x86' > config.mk
-    && echo 'MULTILIB=32' >> config.mk
-    && make -j4 -f ../makefile FBC=../FreeBASIC-1.05.0-linux-x86/bin/fbc </dev/null
+  - cd build-32-imported
+  - echo 'TARGET_ARCH := x86' > config.mk
+  - echo 'MULTILIB := 32' >> config.mk
+  - echo "CFLAGS += $(shell PKG_CONFIG_LIBDIR=/usr/lib32/pkgconfig pkg-config --debug --cflags --libs libffi)" >> config.mk
+  - make -j4 -f ../makefile FBC=../FreeBASIC-1.05.0-linux-x86/bin/fbc </dev/null
     && make -j4 -f ../makefile clean-compiler
     && make -j4 -f ../makefile compiler FBC=bin/fbc </dev/null
-    && cd ..
+  - cd ..
 
   - mkdir build-64-bootstrapped
-    && cd build-64-bootstrapped
-    && make -j4 -f ../makefile FBC=../FreeBASIC-1.05.0-source-bootstrap/bin/fbc </dev/null
+  - cd build-64-bootstrapped
+  - make -j4 -f ../makefile FBC=../FreeBASIC-1.05.0-source-bootstrap/bin/fbc </dev/null
     && make -j4 -f ../makefile clean-compiler
     && make -j4 -f ../makefile compiler FBC=bin/fbc </dev/null
-    && cd ..
+  - cd ..
