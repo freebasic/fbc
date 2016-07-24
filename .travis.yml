@@ -4,14 +4,10 @@ compiler: gcc
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get -y install
-      libncurses5-dev libffi-dev libgpm-dev
-      libgl1-mesa-dev libglu1-mesa-dev
-      libx11-dev libxext-dev libxpm-dev libxrender-dev libxrandr-dev
-
-  - sudo apt-get -y install
       gcc-multilib
-      libncurses5-dev:i386 libffi-dev:i386 libgpm-dev:i386
-      libgl1-mesa:i386 libgl1-mesa-dev:i386 libglu1-mesa:i386 libglu1-mesa-dev:i386
+      libncurses5-dev lib32ncurses5-dev libffi-dev lib32ffi-dev libgpm-dev
+      libgl1-mesa-dev libglu1-mesa-dev
+      libx11-dev      libxext-dev      libxpm-dev      libxrender-dev      libxrandr-dev
       libx11-dev:i386 libxext-dev:i386 libxpm-dev:i386 libxrender-dev:i386 libxrandr-dev:i386
 
 install:
