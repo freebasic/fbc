@@ -32,7 +32,7 @@ script:
 
   - mkdir build-64-bootstrapped
   - cd build-64-bootstrapped
-  - make -j4 -f ../makefile FBC=../FreeBASIC-1.05.0-source-bootstrap/bin/fbc </dev/null
+  - make -j4 -f ../makefile FBC='../FreeBASIC-1.05.0-source-bootstrap/bin/fbc -i ../FreeBASIC-1.05.0-source-bootstrap/inc' </dev/null
     && make -j4 -f ../makefile clean-compiler
     && make -j4 -f ../makefile compiler FBC=bin/fbc </dev/null
   - cd ..
