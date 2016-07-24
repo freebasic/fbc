@@ -8,7 +8,6 @@ before_install:
       libncurses5-dev lib32ncurses5-dev libffi-dev lib32ffi-dev libgpm-dev
       libgl1-mesa-dev libglu1-mesa-dev
       libx11-dev      libxext-dev      libxpm-dev      libxrender-dev      libxrandr-dev
-      libx11-dev:i386 libxext-dev:i386 libxpm-dev:i386 libxrender-dev:i386 libxrandr-dev:i386
 
 install:
   - wget -O FreeBASIC-1.05.0-linux-x86.tar.xz https://sourceforge.net/projects/fbc/files/Binaries%20-%20Linux/More/FreeBASIC-1.05.0-linux-x86.tar.xz/download
