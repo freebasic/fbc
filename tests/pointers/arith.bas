@@ -47,6 +47,81 @@ private function cleanup cdecl () as long
 	return 0
 end function
 
+namespace varAddressOffset
+	type UDT
+		as integer a, b, c
+	end type
+
+	#macro check( varaccess, dtype )
+		dim as uinteger addrof_x = cuint( @(varaccess) )
+		CU_ASSERT(  (@(varaccess))      = cptr( dtype ptr, addrof_x                     ) )
+		CU_ASSERT( ((@(varaccess)) + 1) = cptr( dtype ptr, addrof_x + sizeof( dtype ) ) )
+		CU_ASSERT( cuint( (@(varaccess))     ) =  addrof_x                      )
+		CU_ASSERT( cuint( (@(varaccess)) + 1 ) = (addrof_x + sizeof( dtype )) )
+	#endmacro
+
+	private sub checkByvalParam_Byte      ( byval x as byte        ) : check( x, byte        ) : end sub
+	private sub checkByvalParam_BytePtr   ( byval x as byte ptr    ) : check( x, byte ptr    ) : end sub
+	private sub checkByvalParam_Integer   ( byval x as integer     ) : check( x, integer     ) : end sub
+	private sub checkByvalParam_IntegerPtr( byval x as integer ptr ) : check( x, integer ptr ) : end sub
+	private sub checkByvalParam_Udt       ( byval x as UDT         ) : check( x, UDT         ) : end sub
+	private sub checkByvalParam_UdtPtr    ( byval x as UDT ptr     ) : check( x, UDT ptr     ) : end sub
+
+	private sub checkByrefParam_Byte      ( byref x as byte        ) : check( @x, byte        ptr ) : end sub
+	private sub checkByrefParam_BytePtr   ( byref x as byte ptr    ) : check( @x, byte ptr    ptr ) : end sub
+	private sub checkByrefParam_Integer   ( byref x as integer     ) : check( @x, integer     ptr ) : end sub
+	private sub checkByrefParam_IntegerPtr( byref x as integer ptr ) : check( @x, integer ptr ptr ) : end sub
+	private sub checkByrefParam_Udt       ( byref x as UDT         ) : check( @x, UDT         ptr ) : end sub
+	private sub checkByrefParam_UdtPtr    ( byref x as UDT ptr     ) : check( @x, UDT ptr     ptr ) : end sub
+
+	sub test cdecl( )
+		checkByvalParam_Byte      ( 0 )
+		checkByvalParam_BytePtr   ( 0 )
+		checkByvalParam_Integer   ( 0 )
+		checkByvalParam_IntegerPtr( 0 )
+		checkByvalParam_Udt       ( type( 0, 0, 0 ) )
+		checkByvalParam_UdtPtr    ( 0 )
+
+		scope : dim x as byte        : checkByrefParam_Byte      ( x ) : end scope
+		scope : dim x as byte ptr    : checkByrefParam_BytePtr   ( x ) : end scope
+		scope : dim x as integer     : checkByrefParam_Integer   ( x ) : end scope
+		scope : dim x as integer ptr : checkByrefParam_IntegerPtr( x ) : end scope
+		scope : dim x as UDT         : checkByrefParam_Udt       ( x ) : end scope
+		scope : dim x as UDT ptr     : checkByrefParam_UdtPtr    ( x ) : end scope
+
+		#macro testLocal_( dtype )
+			scope
+				dim x as dtype
+				check( x, dtype )
+			end scope
+		#endmacro
+
+		#macro testLocal( dtype )
+			testLocal_( dtype )
+			testLocal_( dtype ptr )
+			testLocal_( dtype ptr ptr )
+		#endmacro
+
+		testLocal( byte     )
+		testLocal( ubyte    )
+		testLocal( short    )
+		testLocal( ushort   )
+		testLocal( long     )
+		testLocal( ulong    )
+		testLocal( longint  )
+		testLocal( ulongint )
+		testLocal( integer  )
+		testLocal( uinteger )
+		testLocal( single   )
+		testLocal( double   )
+		testLocal( string   )
+		testLocal( UDT      )
+
+		#undef testLocal_
+		#undef testLocal
+	end sub
+end namespace
+
 private sub ctor () constructor
 	fbcu.add_suite("fbc_tests.pointers.arith", @init, @cleanup)
 	fbcu.add_test("pointerDiffTest", @pointerDiffTest)
@@ -54,6 +129,7 @@ private sub ctor () constructor
 	fbcu.add_test("integralAdditionAssignmentTest", @integralAdditionAssignmentTest)
 	fbcu.add_test("integralSubtractionTest", @integralSubtractionTest)
 	fbcu.add_test("integralSubtractionAssignmentTest", @integralSubtractionAssignmentTest)
+	fbcu.add_test( "varAddressOffset", @varAddressOffset.test )
 end sub
 
 end namespace
