@@ -26,13 +26,17 @@ script:
   - echo 'MULTILIB := 32' >> config.mk
   - echo "CFLAGS += $(shell PKG_CONFIG_LIBDIR=/usr/lib32/pkgconfig pkg-config --cflags libffi)" >> config.mk
   - make -j4 -f ../makefile FBC=../FreeBASIC-1.05.0-linux-x86/bin/fbc </dev/null
+    && mv bin/fbc bin/fbc1
     && make -j4 -f ../makefile clean-compiler
-    && make -j4 -f ../makefile compiler FBC=bin/fbc </dev/null
+    && make -j4 -f ../makefile compiler FBC=bin/fbc1 </dev/null
+    && rm bin/fbc1
   - cd ..
 
   - mkdir build-64-bootstrapped
   - cd build-64-bootstrapped
   - make -j4 -f ../makefile FBC='../FreeBASIC-1.05.0-source-bootstrap/bin/fbc -i ../FreeBASIC-1.05.0-source-bootstrap/inc' </dev/null
+    && mv bin/fbc bin/fbc1
     && make -j4 -f ../makefile clean-compiler
-    && make -j4 -f ../makefile compiler FBC=bin/fbc </dev/null
+    && make -j4 -f ../makefile compiler FBC=bin/fbc1 </dev/null
+    && rm bin/fbc1
   - cd ..
