@@ -7,14 +7,14 @@ before_install:
   - sudo apt-get -y install libx11-dev libxext-dev libxpm-dev libxrender-dev libxrandr-dev
 
 install: 
-  - wget -O FreeBASIC-1.05.0-source-bootstrap.tar.xz https://github.com/freebasic/fbc/releases/download/1.05.0/FreeBASIC-1.05.0-source-bootstrap.tar.xz \
-    && tar xf FreeBASIC-1.05.0-source-bootstrap.tar.xz \
-    && cd FreeBASIC-1.05.0-source-bootstrap \
-    && make bootstrap \
+  - wget -O FreeBASIC-1.05.0-source-bootstrap.tar.xz https://github.com/freebasic/fbc/releases/download/1.05.0/FreeBASIC-1.05.0-source-bootstrap.tar.xz
+    && tar xf FreeBASIC-1.05.0-source-bootstrap.tar.xz
+    && cd FreeBASIC-1.05.0-source-bootstrap
+    && make bootstrap
     && cd ..
 
 script:
-  - make FBC=FreeBASIC-1.05.0-source-bootstrap/bin/fbc \
-    && mv bin/fbc bin/fbc1 \
-    && make clean-compiler \
+  - make FBC=FreeBASIC-1.05.0-source-bootstrap/bin/fbc
+    && mv bin/fbc bin/fbc1
+    && make clean-compiler
     && make compiler FBC=bin/fbc1
