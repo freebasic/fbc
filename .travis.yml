@@ -22,14 +22,14 @@ script:
     && cd build-32-imported
     && echo 'TARGET_ARCH=x86' > config.mk
     && echo 'MULTILIB=32' >> config.mk
-    && make -j4 -f ../makefile FBC=FreeBASIC-1.05.0-linux-x86/bin/fbc
+    && make -j4 -f ../makefile FBC=../FreeBASIC-1.05.0-linux-x86/bin/fbc
     && make -j4 -f ../makefile clean-compiler
     && make -j4 -f ../makefile compiler FBC=bin/fbc
     && cd ..
 
   - mkdir build-64-bootstrapped
     && cd build-64-bootstrapped
-    && make -j4 -f ../makefile FBC=FreeBASIC-1.05.0-source-bootstrap/bin/fbc
+    && make -j4 -f ../makefile FBC=../FreeBASIC-1.05.0-source-bootstrap/bin/fbc
     && make -j4 -f ../makefile clean-compiler
     && make -j4 -f ../makefile compiler FBC=bin/fbc
     && cd ..
