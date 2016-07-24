@@ -3,18 +3,33 @@ compiler: gcc
 
 before_install:
   - sudo apt-get -qq update
+  - sudo apt-get -y install gcc-multilib
   - sudo apt-get -y install libncurses5-dev libffi-dev libgpm-dev
   - sudo apt-get -y install libx11-dev libxext-dev libxpm-dev libxrender-dev libxrandr-dev
 
-install: 
+install:
+  - wget -O FreeBASIC-1.05.0-linux-x86.tar.xz https://sourceforge.net/projects/fbc/files/Binaries%20-%20Linux/More/FreeBASIC-1.05.0-linux-x86.tar.xz/download
+    && tar xf FreeBASIC-1.05.0-linux-x86.tar.xz
+
   - wget -O FreeBASIC-1.05.0-source-bootstrap.tar.xz https://github.com/freebasic/fbc/releases/download/1.05.0/FreeBASIC-1.05.0-source-bootstrap.tar.xz
     && tar xf FreeBASIC-1.05.0-source-bootstrap.tar.xz
     && cd FreeBASIC-1.05.0-source-bootstrap
-    && make bootstrap
+    && make -j4 bootstrap
     && cd ..
 
 script:
-  - make FBC=FreeBASIC-1.05.0-source-bootstrap/bin/fbc
-    && mv bin/fbc bin/fbc1
-    && make clean-compiler
-    && make compiler FBC=bin/fbc1
+  - mkdir build-32-imported
+    && cd build-32-imported
+    && echo 'TARGET_ARCH=x86' > config.mk
+    && echo 'MULTILIB=32' >> config.mk
+    && make -j4 -f ../makefile FBC=FreeBASIC-1.05.0-linux-x86/bin/fbc
+    && make -j4 -f ../makefile clean-compiler
+    && make -j4 -f ../makefile compiler FBC=bin/fbc
+    && cd ..
+
+  - mkdir build-64-bootstrapped
+    && cd build-64-bootstrapped
+    && make -j4 -f ../makefile FBC=FreeBASIC-1.05.0-source-bootstrap/bin/fbc
+    && make -j4 -f ../makefile clean-compiler
+    && make -j4 -f ../makefile compiler FBC=bin/fbc
+    && cd ..
