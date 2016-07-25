@@ -28,7 +28,7 @@ script:
   - make -j4 -f ../makefile FBC=../FreeBASIC-1.05.0-linux-x86/bin/fbc </dev/null
     && mv bin/fbc bin/fbc1
     && make -j4 -f ../makefile clean-compiler
-    && make -j4 -f ../makefile compiler FBC=bin/fbc1 </dev/null
+    && make -j4 -f ../makefile compiler FBC='bin/fbc1 -i inc' </dev/null
     && rm bin/fbc1
   - cd ..
 
@@ -37,6 +37,6 @@ script:
   - make -j4 -f ../makefile FBC='../FreeBASIC-1.05.0-source-bootstrap/bin/fbc -i ../FreeBASIC-1.05.0-source-bootstrap/inc' </dev/null
     && mv bin/fbc bin/fbc1
     && make -j4 -f ../makefile clean-compiler
-    && make -j4 -f ../makefile compiler FBC=bin/fbc1 </dev/null
+    && make -j4 -f ../makefile compiler FBC='bin/fbc1 -i inc' </dev/null
     && rm bin/fbc1
   - cd ..
