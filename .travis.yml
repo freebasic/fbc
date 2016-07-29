@@ -28,10 +28,10 @@ script:
   - echo 'TARGET_ARCH := x86' > config.mk
   - echo 'MULTILIB := 32' >> config.mk
   - echo "CFLAGS += -I/usr/include/i686-linux-gnu" >> config.mk
-  - make -j4 FBC=../FreeBASIC-1.05.0-linux-x86/bin/fbc </dev/null
+  - make -j4 FBC=FreeBASIC-1.05.0-linux-x86/bin/fbc </dev/null
   - mv bin/fbc bin/fbc1
   - make -j4 clean-compiler
-  - make -j4 compiler FBC='bin/fbc1 -i ../inc' </dev/null
+  - make -j4 compiler FBC='bin/fbc1 -i inc' </dev/null
   - rm bin/fbc1
   - sudo apt-get -y install libcunit1-dev:i386
   - make cunit-tests
@@ -39,10 +39,10 @@ script:
   - make warning-tests
   - make clean
 
-  - make -j4 FBC='../FreeBASIC-1.05.0-source-bootstrap/bin/fbc -i ../FreeBASIC-1.05.0-source-bootstrap/inc' </dev/null
+  - make -j4 FBC='FreeBASIC-1.05.0-source-bootstrap/bin/fbc -i FreeBASIC-1.05.0-source-bootstrap/inc' </dev/null
   - mv bin/fbc bin/fbc1
   - make -j4 clean-compiler
-  - make -j4 compiler FBC='bin/fbc1 -i ../inc' </dev/null
+  - make -j4 compiler FBC='bin/fbc1 -i inc' </dev/null
   - rm bin/fbc1
   - sudo apt-get -y install libcunit1-dev
   - make cunit-tests
