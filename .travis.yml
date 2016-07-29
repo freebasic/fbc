@@ -5,15 +5,12 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get -y install
       gcc-multilib
-      libncurses5-dev lib32ncurses5-dev libffi-dev lib32ffi-dev libgpm-dev
+      libncurses5-dev libffi-dev libgpm-dev libcunit1-dev
       libgl1-mesa-dev libglu1-mesa-dev
       libx11-dev libxext-dev libxpm-dev libxrender-dev libxrandr-dev
 
 install:
   - set -e
-
-  - wget -O FreeBASIC-1.05.0-linux-x86.tar.xz https://sourceforge.net/projects/fbc/files/Binaries%20-%20Linux/More/FreeBASIC-1.05.0-linux-x86.tar.xz/download
-  - tar xf FreeBASIC-1.05.0-linux-x86.tar.xz
 
   - wget -O FreeBASIC-1.05.0-source-bootstrap.tar.xz https://github.com/freebasic/fbc/releases/download/1.05.0/FreeBASIC-1.05.0-source-bootstrap.tar.xz
   - tar xf FreeBASIC-1.05.0-source-bootstrap.tar.xz
@@ -25,26 +22,11 @@ install:
 script:
   - set -e
 
-  - echo 'TARGET_ARCH := x86' > config.mk
-  - echo 'MULTILIB := 32' >> config.mk
-  - echo "CFLAGS += -I/usr/include/i686-linux-gnu" >> config.mk
-  - make -j4 FBC=FreeBASIC-1.05.0-linux-x86/bin/fbc </dev/null
-  - mv bin/fbc bin/fbc1
-  - make -j4 clean-compiler
-  - make -j4 compiler FBC='bin/fbc1 -i inc' </dev/null
-  - rm bin/fbc1
-  - sudo apt-get -y install libcunit1-dev:i386
-  - make cunit-tests </dev/null
-  - make log-tests </dev/null
-  - make warning-tests </dev/null
-  - make clean
-
   - make -j4 FBC='FreeBASIC-1.05.0-source-bootstrap/bin/fbc -i FreeBASIC-1.05.0-source-bootstrap/inc' </dev/null
   - mv bin/fbc bin/fbc1
   - make -j4 clean-compiler
   - make -j4 compiler FBC='bin/fbc1 -i inc' </dev/null
   - rm bin/fbc1
-  - sudo apt-get -y install libcunit1-dev
   - make cunit-tests </dev/null
   - make log-tests </dev/null
   - make warning-tests </dev/null
