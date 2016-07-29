@@ -34,9 +34,9 @@ script:
   - make -j4 compiler FBC='bin/fbc1 -i inc' </dev/null
   - rm bin/fbc1
   - sudo apt-get -y install libcunit1-dev:i386
-  - make cunit-tests
-  - make log-tests
-  - make warning-tests
+  - make cunit-tests </dev/null
+  - make log-tests </dev/null
+  - make warning-tests </dev/null
   - make clean
 
   - make -j4 FBC='FreeBASIC-1.05.0-source-bootstrap/bin/fbc -i FreeBASIC-1.05.0-source-bootstrap/inc' </dev/null
@@ -45,7 +45,7 @@ script:
   - make -j4 compiler FBC='bin/fbc1 -i inc' </dev/null
   - rm bin/fbc1
   - sudo apt-get -y install libcunit1-dev
-  - make cunit-tests
-  - make log-tests
-  - make warning-tests
+  - make cunit-tests </dev/null
+  - make log-tests </dev/null
+  - make warning-tests </dev/null
   - make clean
