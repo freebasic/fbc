@@ -175,9 +175,9 @@ So first we'll define a user defined data type with the statement TYPE that can 
 
 %%(freebasic)
 	TYPE ObjectType
-	     x AS SINGLE
-	     y AS SINGLE
-	     speed AS SINGLE
+		 x AS SINGLE
+		 y AS SINGLE
+		 speed AS SINGLE
 	END TYPE
 %%
 
@@ -200,9 +200,9 @@ After the change the final version of the code looks like this:
 
 	' Our user defined type.
 	TYPE ObjectType
-	     x AS SINGLE
-	     y AS SINGLE
-	     speed AS SINGLE
+		 x AS SINGLE
+		 y AS SINGLE
+		 speed AS SINGLE
 	END TYPE
 
 	DIM SHARED CircleM AS ObjectType
@@ -290,9 +290,9 @@ Both these lines should be put in the code before the SCREEN statement. That's t
 	Using FB
 
 	DIM SHARED background1 AS ANY PTR ' A pointer that points to a memory
-	                                  ' buffer holding the background graphics
+									  ' buffer holding the background graphics
 	DIM SHARED WarriorSprite(12) AS ANY PTR ' A pointer that points to a memory
-	                                        ' buffer holding the warrior sprites
+											' buffer holding the warrior sprites
 
 	SCREEN 13,8,2,0 ' Sets the graphic mode
 	SETMOUSE 0,0,0  ' Hides the mouse cursor

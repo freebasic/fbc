@@ -35,9 +35,9 @@ End Sub
 'Set the proper method pointer based on animal id
 Constructor animal(anid As Integer)
 	If anid = isdog Then
-	    this.speak = @Bark
+		this.speak = @Bark
 	Elseif anid = iscat Then
-	    this.speak = @Meow
+		this.speak = @Meow
 	End If
 End Constructor
 %%
@@ -98,9 +98,9 @@ End Sub
 'Set the proper method pointer based on animal id
 Constructor animal(anid As Integer)
 	If anid = isdog Then
-	    this.speak = @Bark
+		this.speak = @Bark
 	Elseif anid = iscat Then
-	    this.speak = @Meow
+		this.speak = @Meow
 	End If
 End Constructor
 

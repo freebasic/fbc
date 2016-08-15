@@ -17,7 +17,7 @@ declare sub drawRectangle( byval x as integer, byval y as integer, byval w as in
 '' which can also be written as:
 
 declare sub drawRectangle( byval x as integer, byval y as integer, _
-	                       byval w as integer, byval h as integer )
+						   byval w as integer, byval h as integer )
 
 '' or:
 

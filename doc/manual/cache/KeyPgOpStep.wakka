@@ -27,9 +27,9 @@ Increments the iterator of a ##[[KeyPgFornext|For...Next]]## loop
 
 {{fbdoc item="desc"}}
 	##[[KeyPgOpFor|Operator For]]##, ##[[KeyPgOpNext|Operator Next]]## and ##**Operator Step**## can be overloaded in user-defined type definitions to allow objects of that type to be used as iterators and step values in ##[[KeyPgFornext|For...Next]]## loops.
-
+	
 	##**Operator Step**## is called to increment the iterator immediately after all statements in the ##[[KeyPgFornext|For...Next]]## body are executed, if any.
-
+	
 	The first version of ##**Operator Step**## is used if no step value is given in the ##[[KeyPgFornext|For...Next]]## statement. If a step value is given, the second version is used and is passed the step value.
 
 {{fbdoc item="ex"}}

@@ -6,11 +6,10 @@ Restricting member access to certain parts of code.
 {{anchor name="PROTECTED|Protected members"}}
 {{anchor name="PRIVATE|Private members"}}
 {{anchor name="CTORDTOR|Constructors and destructors"}}
-{{anchor name="INHERITED|Inherited members"}}
 
 {{anchor name="OVERVIEW"}}{{fbdoc item="section" value="Overview"}}
 	All members of a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## - including member data, procedures, constants, etc. - belong in one of three different classifications, each with its own rules dictating where in code they may be accessed, or referred to. These rules are called access rights. There are public, protected and private members, and they are declared in a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## definition following a ##[[KeyPgVisPublic|Public]]##, ##[[KeyPgVisProtected|Protected]]## or ##[[KeyPgVisPrivate|Private]]## label, respectively.
-
+	
 	By default, that is, without an access classification label, members of a ##[[KeyPgType|Type]]## are public, and members of a ##[[KeyPgClass|Class]]## are private.
 
 {{anchor name="PUBLIC"}}{{fbdoc item="section" value="Public members"}}
@@ -24,8 +23,5 @@ Restricting member access to certain parts of code.
 
 {{anchor name="CTORDTOR"}}{{fbdoc item="section" value="Constructors and destructors"}}
 	Constructors and destructors follow the same rules as any other member. When public, objects can be instantiated and destroyed from anywhere in code. When protected, objects can be instantiated and destroyed only from member procedures of their ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## or a derived ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##. Private constructors and destructors restrict object instantiation solely to member procedures of their ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##.
-
-{{anchor name="INHERITED"}}{{fbdoc item="section" value="Inherited members"}}
-	...
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

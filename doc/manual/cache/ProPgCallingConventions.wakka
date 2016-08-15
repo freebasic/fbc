@@ -9,24 +9,24 @@ In all calling conventions, integral procedure return values are returned in the
 
 {{fbdoc item="section" value="stdcall"}}	
 	In the **stdcall** convention, procedure parameters are pushed onto the call stack prior to the procedure call (which will push the return address just above parameters) in the reverse order they are declared, that is, from right to left. The procedure is in charge of popping any parameters from the call stack (commonly by appending a constant to the ##RET## instruction, signifying the number of bytes to release).
-
+	
 	**stdcall** is the default calling convention on Windows, and for procedures within ##[[KeyPgExternBlock|Extern "Windows"]]## and ##[[KeyPgExternBlock|Extern "Windows-MS"]]## blocks. It is also the default convention used in the Windows API.
-
+	
 	{{fbdoc item="target"}}
 	- In DOS and Windows platforms, the procedure name is decorated with an "##@//N//##" suffix, where ##//N//## is the total size, in bytes, of any parameters passed.
 
 {{fbdoc item="section" value="cdecl"}}
 	In the **cdecl** convention, procedure parameters are pushed onto the call stack prior to the procedure call, in the reverse order they are declared, that is, from right to left. The calling code is in charge of popping parameters from the call stack.
-
+	
 	**cdecl** is the default calling convention on Linux, the *BSDs, and DOS, and for procedures within ##[[KeyPgExternBlock|Extern "C"]]## and ##[[KeyPgExternBlock|Extern "C++"]]## blocks. It is also the default convention used by most C and ""C++"" compilers.
 
 {{fbdoc item="section" value="pascal"}}
 	In the **pascal** convention, procedure parameters are pushed onto the call stack, in the order they are declared, that is, from left to right. The procedure is in charge of popping any parameters from the call stack.
-
+	
 	**pascal** is the default convention used by Pascal and the Microsoft [[QuickBASIC]] series of compilers.
 
 The following table summarizes the differences between the various calling conventions:
-
+	
 	{{table columns="3" cellpadding="2" cells="Calling convention ; Parameters are pushed onto the call stack from ; Parameters are popped off the call stack by ; stdcall ; right to left ; the procedure ; cdecl ; right to left ; the calling code ; pascal ; left to right ; the procedure"}}
 
 {{fbdoc item="target"}}

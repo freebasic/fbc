@@ -17,23 +17,24 @@ Reads a list of values from the keyboard
 	For inputting to a single string without delimiting, ##[[KeyPgLineinput|Line Input]]## should be used instead.
 	
 	The ##//prompt//## - if any - is written to the screen at the current cursor location, and characters read are echoed to the screen immediately following the prompt. If no prompt is specified, characters are echoed at the current cursor location.
-
+	
 	The optional leading semicolon (##;##) after ##**Input**## is similar to the optional trailing semicolon in a ##[[KeyPgPrint|Print]]## statement: the cursor will remain on the same line after all of the characters have been echoed, otherwise, the cursor will move to the beginning of the next line.
-
-	If more values are read than are listed in the variable list, extra values will be ignored; if fewer values are read (i.e. the user presses enter before inputting all values), the remaining variables will be initialized - numeric variables to zero (##0##), and string variables to the empty string (##"####"##).
-
+	
+	If more values are read than are listed in the variable list, extra values will be ignored; if fewer values are read (i.e. the user presses enter before inputting all values), the remaining variables will be initialized (numeric variables to zero (##0##), and string variables to the empty string (##"####"##)).
+	
 	Numeric values are converted using methods similar to the procedures ##[[KeyPgVal|Val]]## and ##[[KeyPgVallng|ValLng]]##, using the most appropriate function for the number format, converting as many numeric characters as possible.
-
+	
 	##**Input**## has a limited edit capacity: it allows to erase characters using the backspace key.  If a better user interface is needed, a custom input routine should be used.
 	
 {{fbdoc item="ex"}}
 
 	**Example #1**
 {{fbdoc item="filename" value="examples/manual/console/input.bas"}}%%(freebasic)
-Dim n As String, a As Integer
-Input "Enter [Name, Age]: ", n, a
-Print n
-Print a
+Dim user_name As String, user_age As Integer
+
+Input "Enter your name and age, separated by a comma: ", user_name, user_age
+
+Print "Your name is " & user_name & ", and you are " & user_age & " years old."
 %%
 
 	**Example #2**
@@ -52,8 +53,8 @@ do
 	print
 	
 	do
-	    input "Would you like to enter some more numbers"; yn
-	    yn = lcase(yn)
+		input "Would you like to enter some more numbers"; yn
+		yn = lcase(yn)
 	loop until yn = "y" or yn = "n"
 	
 loop while lcase(yn) = "y"

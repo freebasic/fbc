@@ -4,12 +4,10 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Screenres** ( [[KeyPgByval|byval]] //width// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //height// [[KeyPgAs|as]] [[KeyPgLong|long]], [[KeyPgByval|byval]] //depth// [[KeyPgAs|as]] [[KeyPgLong|long]] = 8, [[KeyPgByval|byval]] //num_pages// [[KeyPgAs|as]] [[KeyPgLong|long]] = 1, [[KeyPgByval|byval]] //flags// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0, [[KeyPgByval|byval]] //refresh_rate// [[KeyPgAs|as]] [[KeyPgLong|long]] = 0 ) [[KeyPgAs|as]] [[KeyPgLong|long]]
  ##
-
 {{fbdoc item="usage"}}##
 	**Screenres** //width//, //height// [, [//depth//] [, [//num_pages//] [, [//flags//] [, //refresh_rate// ]]]]
 	//result// = **Screenres**( //width//, //height// [, [//depth//] [, [//num_pages//] [, [//flags//] [, //refresh_rate// ]]]] )
 ##
-
 {{fbdoc item="param"}}
 	##//width//##, ##//height//##
 		The display width and height, respectively. For fullscreen mode, the user should check the availability of the resolution using ##[[KeyPgScreenlist|Screenlist]]##.
@@ -27,28 +25,30 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 
 {{fbdoc item="desc"}}
 	##**Screenres**## tells the compiler to link the [[GfxLib]] and initializes a QB-only, QB-on-GUI or ""OpenGL"" graphics mode, depending on the ##//flags//## setting
-
+	
 	##**Screenres**##  clears the created window or the full screen. In non-fullscreen modes, the resolution does not have to match any resolution of the graphics card. Resolutions like ##555x111## are possible, ""GfxLib"" will create a window of such size. See the page [[GfxLib|GfxLib overview]] for DOS issues.
 	
 	The font size in ##**Screenres**## modes is set to 8x8 by default.  This can be changed by setting the number of text rows/columns, using the ##[[KeyPgWidth|Width]]## function.
-
+	
 	In QB-only modes a dumb window or fullscreen resolution is set, one or more buffers in standard memory are created,  console commands are redirected to their graphic versions, a [[GfxDefPalettes|default palette]] is set and an automatic screen refresh thread is started. QB-like graphics and console statements can be used.  
-
+	
 	 In QB-on-GUI modes one or more buffers in standard memory are created,  console commands are redirected to their graphic versions and a [[GfxDefPalettes|default palette]] is set. QB-like  graphics and console statements can be used.  It is up to the user to create a window and to refresh it with the contents of the graphics buffers.
-
+	
 	In ""OpenGL"" modes a dumb window or fullscreen resolution is set, one or more buffers in standard memory are created, and the system's ""OpenGL"" library is initialized. From here only ""OpenGL"" commands can be used to write to the graphics buffer. QB-like and console commands are forbidden. This mode allows to initialize ""OpenGL"" in a portable way.
-
+	
+	The error code returned by ##**Screenres**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Screenres**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
+	
 __##flags## details:__
-
+	
 ~If flags are omitted, ""FreeBASIC"" uses QB-compatible graphics in windowed (except in DOS) mode.  These constants are defined in ##fbgfx.bi##.  In the //[[CompilerOptlang|-lang fb]]// dialect, these constants are part of the ##FB## ##[[KeyPgNamespace|Namespace]]##. Their values can be combined to form a mask using ##[[KeyPgOpOr|Operator Or]]##. Note that most of the flags are not supported in DOS.
-
+	
 ~Available flags:
-
+	
 ~__graphic mode flags__
 ~~-##GFX_NULL##: Starts a QB-on-GUI graphics mode.  It creates a graphics buffer but not a window.  User must implement the window, the events manager and refresh the screen as needed.  This mode allows to mix ""FreeBASIC"" drawing functions with API-driven windows.  Alternatively, it allows to process graphics (for example files) without making it visible on the screen, even in a purely console application.  This flag overrides all other mode flags.  See an [[SrcPgGfxNull|Example of GFX_NULL]] in Windows.
 ~~-##GFX_OPENGL##: Initializes ""OpenGL"" to draw in a dumb window. ""FreeBASIC"" graphic functions can't be used.  The screen is not automatically updated, ##[[KeyPgFlip|Flip]]## must be used.  This option provides a portable way to initialize the ""OpenGL"" Library.
 ~~-If none of the above options is specified, ""FreeBASIC"" enters the QB-only graphics mode: it creates a buffer and a dumb window and sets a thread that automatically updates the screen and manages keyboard and mouse.  The ""FreeBASIC"" drawing functions can be used.
-
+	
 ~__window mode flags__
 ~~Window mode flags are meaningless if  ##GFX_NULL## mode is used
 ~~-##GFX_WINDOWED##: If windowed mode is supported, ""FreeBASIC"" opens a window of the requested size in the present desktop
@@ -58,20 +58,20 @@ __##flags## details:__
 ~~-##GFX_NO_FRAME##: Creates a window without a border.
 ~~-##GFX_SHAPED_WINDOW##: Creates transparent regions wherever RGBA(255, 0, 255, 0) is drawn on the screen.
 ~~-##GFX_ALWAYS_ON_TOP##: Creates a window that stays always on top.
-
+	
 ~__option flags__
 ~~Flags working in any mode, they activate special behaviors
 ~~-##GFX_ALPHA_PRIMITIVES##: Tells the graphics library to enable alpha channel support for all drawing primitives. This means the alpha specified in a color value (via either the ##[[KeyPgRgba|RGBA]]## macro or direct color in the form ##&h//AARRGGBB//##) will always be used by all primitives.
 ~~-##GFX_HIGH_PRIORITY##: Tells the graphics library to enable a higher priority for graphics processing.  Only has an effect on ##gdi## and ##""DirectX""## drivers on ""Win32"" platform.
-
+	
 ~__OpenGL Buffer flags__
 ~~These flags work only in ""OpenGL"" graphics mode, must be combined with GFX_OPENGL
 ~~-##GFX_STENCIL_BUFFER##: Forces ""OpenGL"" to use Stencil buffer 
 ~~-##GFX_ACCUMULATION_BUFFER##: Forces ""OpenGL"" to use Accumulation buffer
 ~~-##GFX_MULTISAMPLE##: Requests fullscreen anti-aliasing through the ARB_multisample extension
-
+	
 	Depending on whether the ##GFX_FULLSCREEN## parameter is present or not, ##**Screen**## will try to set the specified video mode in fullscreen or windowed mode, respectively.  If fullscreen mode is set and the system cannot set specified mode in fullscreen, it will try in windowed mode. If windowed mode is set and the system fails to open a window for specified mode, it will try fullscreen.  If everything fails, ##**Screen**## will have no effect and execution will resume from the statement following the ##**Screen**## call.  You should take care of checking if a graphics mode has been set or not, and behave accordingly; a way to check if ##**Screen**## is successful is to test the return value of the ##[[KeyPgScreenptr|Screenptr]]## function; see its page for details.
-
+	
 __Graphics mode console__
 	Console commands (##[[KeyPgLocate|Locate]]##, ##[[KeyPgPrint|Print]]##), input can be used both with standard QB ##**Screen**## modes and with the extended ones too, provided the standard color depth is not modified by using the second argument of ##**Screen**##. Where the table says more than one text resolution is available for the text mode, the required text resolution can be requested by using ##[[KeyPgWidth|Width]]##.  Any characters ##[[KeyPgPrint|Print]]##ed will erase the background around them; it does not use a transparent background.
 
@@ -83,7 +83,7 @@ screenres 320, 200, 8
 ' Draw color bands in a diagonal pattern over the whole screen
 for y as integer = 0 to 200-1
 	for x as integer = 0 to 320-1
-	    pset (x,y),(x + y) and 255
+		pset (x,y),(x + y) and 255
 	next x
 next y
 

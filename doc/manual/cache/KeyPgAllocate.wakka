@@ -16,11 +16,11 @@ Allocates a block of memory from the free store
 
 {{fbdoc item="desc"}}
 	Attempts to allocate, or reserve, ##//count//## number of bytes from the free store (heap). The newly allocated memory is not initialized.
-
+	
 	As the initial value of newly allocated memory is unspecified, **Allocate** must not be directly used with ##[[KeyPgString|String]]## or ##[[KeyPgType|UDT]]## containing string, because the string descriptor being not cleared (containing random data), that may induce corrupted string or more (trying to write to a random place in memory or trying to deallocate a random pointer).  It is mandatory in that case (with string or UDT containing string) to use ##[[KeyPgCallocate|Callocate]]## (clearing memory), or ##[[KeyPgOpNew|New]]## (calling constructor) in case of **UDT**, or at worst after **Allocate** to explicitly clear the descriptor (setting to 0) before the first string use.
-
+	
 	The pointer that is returned is an [[KeyPgAny|any]] [[KeyPgPtr|ptr]] and points to the start of the allocated memory. This pointer is guaranteed to be unique, even if ##//count//## is zero.
-
+	
 	Allocated memory must be deallocated, or returned back to the free store, with ##[[KeyPgDeallocate|Deallocate]]## when no longer needed. 
 
 {{fbdoc item="ex"}}
@@ -58,9 +58,10 @@ Allocates a block of memory from the free store
 	deallocate(buffer)
 	end 0
 %%
+	
 	Output is:
-	<<## 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377##>>
-	::c::
+	<<## 0 1 1 2 3 5 8 13 21 34 55 89 144 233 377##
+	<<::c::
 
 	It is important to free allocated memory if it's not going to be used anymore. Unused memory that isn't freed is simply wasting memory, and if the address of that memory is somehow overwritten or forgotten, that memory can never be freed. This condition is known as a memory leak, and should be avoided at all costs. Note that leaked memory is always completely freed when the application terminates, either by an "ordinary" exit or crash, so the leak "persists" only as long as the application runs, nevertheless it's a good habit to free any allocated memory inside your application. The following example demonstrates a function with a memory leak, where the address of allocated memory is lost and isn't and can't be freed anymore. If such a function is called frequently, the total amount of memory wasted can add up quickly.
 
@@ -74,7 +75,7 @@ sub BadAllocateExample()
 	p = allocate(420)   '' assign pointer to new memory
 
 	p = allocate(420)   '' reassign same pointer to different memory,
-	                    '' old address is lost and that memory is leaked
+						'' old address is lost and that memory is leaked
 
 	deallocate(p)
 

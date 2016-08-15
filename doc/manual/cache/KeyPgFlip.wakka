@@ -15,17 +15,17 @@ Changes the current video display page
 
 {{fbdoc item="desc"}}
 	In normal graphics mode, ##**Flip**## is an alias for ##[[KeyPgPcopy|PCopy]]## and ##[[KeyPgScreencopy|ScreenCopy]]##. See ##[[KeyPgScreencopy|ScreenCopy]]## for details.
-
+	
 	In OpenGL mode, ##**Flip**## does a hardware page flip and displays the contents of the backbuffer. It is recommended that you call ##**Flip**## regularly while in OpenGL mode, otherwise your app may also become unresponsive.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/flip.bas"}}%%(freebasic)
 ScreenRes 320, 240, 32, 2    'Sets up the screen to be 320x240 in 32-bit color with 2 video pages.
+ScreenSet 1,0                'Sets the working page to 1 and the displayed page to 0
 
 
 for n as integer = 50 to 270
 
-	ScreenSet 1,0     'Sets the working page to 1 and the displayed page to 0
 	Cls
 	Circle (n, 50),50 ,rgb(255,255,0) 'Draws a circle with a 50 pixel radius in yellow on page 1
 	flip 1,0    'Copies our circle from page 1 to page 0
@@ -35,6 +35,7 @@ next
 
 print "Now wasn't that neat!"
 print "Push any key."
+flip 1,0    'Copies our text from page 1 to page 0
 Sleep
 %%
 

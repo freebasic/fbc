@@ -25,19 +25,21 @@ Opens an external process' standard input (//stdin//) or output (//stdout//) str
 		An available file number to bind to the external process' //stdin// or //stdout// stream.
 
 {{fbdoc item="ret"}}
-	In the first usage, ##**Open Pipe**## returns zero (##0##) on success and a non-zero error code otherwise.
+	In the first usage, ##**Open Pipe()**## returns a 32 bit ##[[KeyPgLong|Long]]##: a zero (##0##) on success and a non-zero error code otherwise.
 
 {{fbdoc item="desc"}}
 	##**Open Pipe**## executes another process in the command shell and opens either its //stdin// or //stdout// streams for reading or writing. A //file number// is bound to the stream, which is used in subsequent file operations, such as ##[[KeyPgInputPp|Input #]]##. An available ##//filenumber//## can be retrieved with ##[[KeyPgFreefile|Freefile]]##. If the external process does not exist, a runtime error is thrown.
-
+	
 	The ##[[KeyPgInputfilemode|Input]]## and ##[[KeyPgOutput|Output]]## //file modes// open the external process' //stdin// and //stdout// streams, respectively, for sequential text I/O, useful for reading or writing plain text. Characters, words or whole lines can then be read or written using text-mode file operations, such as ##[[KeyPgLineinput|Line Input #]]## and ##[[KeyPgPrintPp|Print #]]##.
-
+	
 	The ##[[KeyPgBinary|Binary]]## //file mode// opens the external process' //stdin// or //stdout// streams - depending on the //access type// specified (see description of the ##//access_type//## parameter above) - for random-access reading or writing of arbitrarily sized and interpreted raw data. Simple data type values, like ##[[KeyPgByte|Byte]]## and ##[[KeyPgLongint|Longint]]##, and whole chunks of memory can be read from or written to the streams with binary-mode file operations like ##[[KeyPgGetfileio|Get #]]## and ##[[KeyPgPutfileio|Put #]]##.
 	Bidirectional pipes are not supported by FB and must be implemented using the OS' API functions.
+	
+	The error code returned by ##**Open Pipe**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Open Pipe**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
 **Runtime errors:**
-	    ##**Open Pipe**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
-
+	##**Open Pipe**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
+	
 	//(##1##) Illegal function call//
 		- ##//filenumber//## was not free at the time. use ##[[KeyPgFreefile|Freefile]]## to ensure that ##//filenumber//## is free.
 

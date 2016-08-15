@@ -13,8 +13,8 @@ Destroys a mutex
 
 {{fbdoc item="desc"}}
 	##Mutexdestroy## discards a mutex created by ##[[KeyPgMutexCreate|Mutexcreate]]##.  This call should be executed after any threads using the mutex are no longer in use.
-
-	    See ##[[KeyPgMutexCreate|Mutexcreate]]## for more general information on mutexes.
+	
+	See ##[[KeyPgMutexCreate|Mutexcreate]]## for more general information on mutexes.
 
 {{fbdoc item="ex"}}
 	See the examples in ##[[KeyPgMutexCreate|Mutexcreate]]## and also ##[[KeyPgThreadCreate|Threadcreate]]##.

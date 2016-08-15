@@ -23,6 +23,8 @@ Sets the position and visibility of the mouse cursor
 
 {{fbdoc item="desc"}}
 	##**Setmouse**## will set the (##//x//##, ##//y//##) coordinates of the mouse pointer, as well as setting its visibility.  The mouse position is set using the ##//x//## and ##//y//## parameters.  The mouse will be visible if visibility is set to ##1##, and invisible if ##//visibility//## is set to ##0##.  ##**Setmouse**## is intended for graphics modes initiated using the ##[[KeyPgScreengraphics|Screen (Graphics)]]## statement only.
+	
+	The error code returned by ##**Setmouse**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Setmouse**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/setmouse.bas"}}%%(freebasic)
@@ -37,8 +39,8 @@ Do
 	Do: Sleep 1: Loop While GetMouse( x, y , , buttons) <> 0
 
 	If buttons And 1 Then
-	    ' on left mouse click, center mouse
-	    SetMouse 320, 240
+		' on left mouse click, center mouse
+		SetMouse 320, 240
 	End If
 
 	' run loop until a key is pressed or the window is closed

@@ -1,12 +1,11 @@
 {{fbdoc item="title" value="Alphabetical Keywords List"}}----
 Alphabetical listing of keywords, macros and procedures.
 
-[[CatPgOperators|Operators]] ##{{anchor name="dot|."}} {{anchor name="underscore|_"}} {{anchor name="hash|#"}} {{anchor name="dollar|$"}} {{anchor name="a|A"}} {{anchor name="b|B"}} {{anchor name="c|C"}} {{anchor name="d|D"}} {{anchor name="e|E"}} {{anchor name="f|F"}} {{anchor name="g|G"}} {{anchor name="h|H"}} {{anchor name="i|I"}} {{anchor name="k|K"}} {{anchor name="l|L"}} {{anchor name="m|M"}} {{anchor name="n|N"}} {{anchor name="o|O"}} {{anchor name="p|P"}} {{anchor name="r|R"}} {{anchor name="s|S"}} {{anchor name="t|T"}} {{anchor name="u|U"}} {{anchor name="v|V"}} {{anchor name="w|W"}} {{anchor name="x|X"}} {{anchor name="y|Y"}} {{anchor name="z|Z"}}##
+[[CatPgOpIndex|Operators]] ##{{anchor name="dot|."}} {{anchor name="underscore|_"}} {{anchor name="hash|#"}} {{anchor name="dollar|$"}} {{anchor name="a|A"}} {{anchor name="b|B"}} {{anchor name="c|C"}} {{anchor name="d|D"}} {{anchor name="e|E"}} {{anchor name="f|F"}} {{anchor name="g|G"}} {{anchor name="h|H"}} {{anchor name="i|I"}} {{anchor name="k|K"}} {{anchor name="l|L"}} {{anchor name="m|M"}} {{anchor name="n|N"}} {{anchor name="o|O"}} {{anchor name="p|P"}} {{anchor name="r|R"}} {{anchor name="s|S"}} {{anchor name="t|T"}} {{anchor name="u|U"}} {{anchor name="v|V"}} {{anchor name="w|W"}} {{anchor name="x|X"}} {{anchor name="y|Y"}} {{anchor name="z|Z"}}##
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-<<
-{{fbdoc item="section" value="Operators"}}
-	- [[CatPgOperators|See Operator List]]
+<<{{fbdoc item="section" value="Operators"}}
+	- [[CatPgOpIndex|See Operator List]]
 {{anchor name="dot"}}{{fbdoc item="section" value="."}}
 	- {{fbdoc item="keyword" value="KeyPgDots|..."}}
 {{anchor name="underscore"}}{{fbdoc item="section" value="_"}}
@@ -125,6 +124,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgBsave|BSAVE"}}
 	- {{fbdoc item="keyword" value="KeyPgByref|BYREF (parameters)"}}
 	- {{fbdoc item="keyword" value="KeyPgByrefFunction|BYREF (function results)"}}
+	- {{fbdoc item="keyword" value="KeyPgByrefVariables|BYREF (variables)"}}
 	- {{fbdoc item="keyword" value="KeyPgByte|BYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgByval|BYVAL"}}
 {{anchor name="c"}}{{fbdoc item="section" value="C"}}
@@ -300,8 +300,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgOpIs|IS (Run-time type information operator)"}}
 	- {{fbdoc item="keyword" value="KeyPgIsDate|ISDATE"}}
 	- {{fbdoc item="keyword" value="KeyPgIsredirected|ISREDIRECTED"}}
-<<>>
-{{anchor name="k"}}{{fbdoc item="section" value="K"}}
+<<>>{{anchor name="k"}}{{fbdoc item="section" value="K"}}
 	- {{fbdoc item="keyword" value="KeyPgKill|KILL"}}
 {{anchor name="l"}}{{fbdoc item="section" value="L"}}
 	- {{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}

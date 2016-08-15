@@ -21,11 +21,11 @@ Declares a union user defined type.
 	Like Type, Union can use the optional ##[[KeyPgField|Field]] = //number//## specifier and supports also inheritance through the use of the [[KeyPgExtends|Extends]] keyword.
 	Unlike Type, Union can not contain variable-length strings, and more generally fields (or can not have bases) with constructors or destructors.
 	The size of the Union is the size of the largest data item. A data item can be an unnamed ##[[KeyPgType|Type]]##. Since they occupy the same space, only a single element can be used.
-
+	
 	Unions support member functions including ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##, ##[[KeyPgMemberFunction|Function]]##, ##[[KeyPgOperator|Operator]]##, ##[[KeyPgProperty|Property]]## and ##[[KeyPgMemberSub|Sub]]##. All members of a union are public and access control is not supported. 
-
+	
 	Nested unnamed type or union cannot have procedure members or static data members (same restriction for local named type/union).
-
+	
 	A ##**Union**## can be passed as a user defined type to overloaded operator functions.
 
 {{fbdoc item="ex"}}
@@ -60,8 +60,8 @@ type CompType
 	s as string * 20
 	ui as byte 'Flag to tell us what to use in union.
 	union 
-	    au as ubyte
-	    bu as integer
+		au as ubyte
+		bu as integer
 	end union
 end type
 
@@ -103,5 +103,6 @@ sleep
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgType|Type]]##
+	- [[ProPgDataConversion|Coercion and Conversion]]
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

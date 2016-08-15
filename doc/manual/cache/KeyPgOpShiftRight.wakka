@@ -21,13 +21,13 @@ Shifts the bits of a numeric expression to the right
 
 {{fbdoc item="desc"}}
 	**##Operator Shr## (Shift right)** shifts all of the bits in the left-hand side expression (##//lhs//##) right a number of times specified by the right-hand side expression (##//rhs//##). Numerically, the result is the same as "##[[KeyPgInt|Int]](//lhs//## [[KeyPgOpDivide|/]] ##2 [[KeyPgOpExponentiate|^]] //rhs//)##". For example, "##&b0101 **Shr** 1##" returns the binary number ##&b010##, and "##5 **Shr** 1##" returns ##2##.
-
+	
 	If the left-hand side expression is signed and negative, the sign bit is copied in the newly created bits on the left after the shift.  For example, "##-5 **Shr** 2##" returns ##-2##.
-
+	
 	Neither of the operands are modified in any way.
-
+	
 	The results of this operation are undefined for values of ##//rhs//## less than zero, or greater than or equal to the number of bits in the result's data type.
-
+	
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}

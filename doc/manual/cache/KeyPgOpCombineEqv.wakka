@@ -19,12 +19,11 @@ Performs a bitwise-eqv (equivalence) and assigns the result to a variable
 
 {{fbdoc item="desc"}}
 	This operator performs a bitwise-eqv and assigns the result to a variable (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value). It is functionally equivalent to:
-##
-		//lhs// = //lhs// [[KeyPgOpEqv|eqv]] //rhs//
-##
+		##//lhs// = //lhs// [[KeyPgOpEqv|eqv]] //rhs//##
+	
 	##**Eqv=**## compares each bit of its operands, ##//lhs//## and ##//rhs//##, and if both bits are the same (either both 0 or both 1), then the corresponding bit in the first operand, ##//lhs//##, is set to 1, otherwise it is set to 0.
-
-	This operator can be overloaded for user-defined types.
+	
+	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/eqv-assign.bas"}}%%(freebasic)

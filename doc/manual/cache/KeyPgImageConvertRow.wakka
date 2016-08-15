@@ -53,7 +53,7 @@ If img8 = 0 Then Print "Imagecreate failed on img8!": Sleep: End
 '' fill 8-bit image with a pattern
 for y = 0 to h - 1
 	for x = 0 to w - 1
-	    pset img8, (x, y), 56 + (x + y) mod 24
+		pset img8, (x, y), 56 + (x + y) mod 24
 	next x
 next y
 
@@ -82,8 +82,8 @@ ImageInfo( img32, , , , pitch32, p32 )
 
 For y = 0 To h - 1
 	ImageConvertRow(@p8 [ y * pitch8 ],  8, _
-	                @p32[ y * pitch32], 32, _
-	                w)
+					@p32[ y * pitch32], 32, _
+					w)
 Next y
 
 

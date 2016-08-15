@@ -2,26 +2,26 @@
 Using the **fbc** command-line.
 
 	The official ""FreeBASIC"" distribution comes with **fbc**, ""FreeBASIC""'s flagship compiler. **fbc** is a command line compiler, and can be launched from the console - from DOS, the Windows command prompt or a Linux shell. Running **fbc** from the console without any arguments displays a list of available options, or command-line switches, that can be used to adjust the behavior of the compiler.
-
+	
 	At its simplest, **fbc** takes a source file as a command-line argument and produces an executable file. It does this by compiling the source file (.bas) into an assembly (.asm) file, then compiling this into an object file (.o) using GAS and finally linking using LD this object file to other object files and libraries it needs to run, producing the final executable file. The assembly and compiled object files are deleted at this point by default. For example, the following command,
-
+	
 		##fbc foo.bas##
-
+	
 	produces the executable ##foo.exe## in DOS and Windows, and ##./foo## in Linux. **fbc** can accept multiple source files at once, compile and link them all into one executable. For example, the following command,
-
+	
 		##fbc foo.bas bar.bas baz.bas##
-
+	
 	produces the executable ##foo.exe## in DOS and Windows, and ##./foo## in Linux. Since ##foo.bas## was listed first, it will be the main entry point into the executable, and also provide its name. To specify a different entry point or executable name, use the "-m" and "-x" switches, respectively. To have, for example, ##baz.bas## provide the main entry point into an executable called ##foobar.exe##, you would use
-
+	
 		##fbc -x foobar.exe -m baz foo.bas bar.bas baz.bas##
-
+	
 	The "-x" switch names the executable verbatim, so in Linux, the executable produced from the above command would be called ##./foobar.exe##.
 
 {{fbdoc item="syntax"}}
 	##fbc [ //options// ] [ //input_list// ]##
-
+	
 	Where //input_list// is a list of filenames. Accepted files are:
-
+	
 		{{table columns="2" cellpadding="1" cells="File extension;Description;.bas;FreeBASIC source file;.a;Library;.o;Object file;.rc;Resource script (Windows only);.res;Compiled resource (Windows only);.xpm;X icon pixmap (Linux only)"}}
 
 <<{{fbdoc item="section" value="Source code"}}
@@ -164,7 +164,7 @@ Using the **fbc** command-line.
 		//(Compile an object file ##sub_module.o##)//
 	##fbc -x application.exe main_module.o sub_module.o##
 		//(Link an executable ##application.exe##)//
-
+	
 	**Note:** How to include an icon in a FB executable program
 	There is a simple command line option to compile a FB program into an executable with an Icon:
 		- Create a *.rc file, for example appicon.rc, with this info:

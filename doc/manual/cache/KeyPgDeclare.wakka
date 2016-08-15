@@ -30,11 +30,11 @@ Declares a module-level or member procedure
 {{fbdoc item="desc"}}
 	The ##**Declare**## statement declares a ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##, ##[[KeyPgOperator|Operator]]##, ##[[KeyPgConstructor|Constructor]]##, or ##[[KeyPgDestructor|Destructor]]##. We will refer to one of these as a routine. 
 	The routine can be referred to in code without seeing its definition, although it must be defined somewhere. Essentially, the ##**Declare**## statement introduces a routine, and states that its definition is elsewhere. For example, a function can be declared at the top of a source module, called, then defined at the bottom of the source file, as shown below the example.
-
+	
 	A routine's declaration is almost identical to the first line of its definition, except the declaration is preceded by the ##**Declare**## keyword and has no body. Also, attributes such as [[KeyPgExport|Export]] are left off the declaration.
-
+	
 	FreeBASIC, as QB, does not require the declaration of the functions unless they are defined in a different source file or in the same file past the point where they are called. This is no longer true for routines declared inside a [[KeyPgType|Type]] body, which must **always** be declared first in the [[KeyPgType|Type]]'s body before use. If you do not declare [[KeyPgType|Type]] routines you will receive an error.
-
+	
 	 As every file using a function must have its declaration, declarations are usually kept in one or more //include files// to allow usage of the function by any module that needs it using the ##[[KeyPgInclude|#include]]## statement. 
 
 {{fbdoc item="ex"}}

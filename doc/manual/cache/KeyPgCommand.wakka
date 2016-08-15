@@ -16,17 +16,17 @@ Returns command line parameters used to call the program
 
 {{fbdoc item="desc"}}
 	##**Command**## returns command-line arguments passed to the program upon execution.
-
+	
 	If ##//index//## is less than zero (##< 0##), a space-separated list of all command-line arguments is returned, otherwise, a single argument is returned. A value of zero (##0##) returns the name of the executable; and values of one (##1##) and greater return each command-line argument.
-
+	
 	If ##//index//## is greater than the number of arguments passed to the program, the null string (##"####"##) is returned.
-
+	
 	When the command line is parsed for arguments, everything between double quotes in the parameter list will be considered as a single block, and is returned without the double quotes.
-
+	
 	By default, filename globbing for arguments (expansion of wildcards to filenames) is used on all ports of ""FreeBASIC"" for compatibility.  Arguments on the command line containing wildcards are typically not expanded if when no file is matched or if properly quoted.  Other special characters for redirection are typically not returned unless properly quoted.  Consult the documentation on the shell being used for more information on the proper quoting of command line arguments.
-
+	
 ~&//**WARNING**: By nature of constructor precedence in ""FreeBASIC"" and main() initialization, calling ##**Command**## within a global constructor (module constructor or UDT constructor called for static/shared object) is not safe (may even induce a runtime error).//
-
+	
 	__Disabling filename globbing under Win32__
 		Define the following global variable(s) somewhere in the source:
 		{{fbdoc item="filename" value="examples/manual/check/KeyPgCommand_mingw.bas"}}%%(freebasic)

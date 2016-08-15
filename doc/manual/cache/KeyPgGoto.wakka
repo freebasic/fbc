@@ -6,7 +6,11 @@ Control flow statement to jump to another part of the program
 ##
 {{fbdoc item="desc"}}
 	Jumps code execution to a line label.
-
+	
+	When using ##**Goto** //label//## to exit a scope, any local variables defined in that scope are destroyed (destructors are called).
+	
+	Usage of ##**Goto** //label//## may be disallowed when it skips a variable definition but not the end of the variable's scope. If the variable requires construction, a compiler error is shown. For other variables, a compiler warning is shown. This is intended to prevent potential accesses to uninitialized variables, and ensures that automatic destruction never happens to an uninitialized variable.
+	
 	For better source code readability, overuse of ##**Goto**## should be avoided in favor of more modern structures such as ##[[KeyPgDoloop|Do...Loop]]##, ##[[KeyPgFornext|For...Next]]##, ##[[KeyPgSub|Sub]]##, and ##[[KeyPgFunction|Function]]##.
 
 {{fbdoc item="ex"}}
@@ -34,6 +38,7 @@ there:
 
 {{fbdoc item="lang"}}
 	- Line numbers are allowed only in the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects.
+	- In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, ##**Goto** //label//## is allowed to skip any variable definitions, because nested scopes are not supported and all variable definitions are moved to the top of their procedure.
 
 {{fbdoc item="diff"}}
 	- None
@@ -42,5 +47,6 @@ there:
 	- ##[[KeyPgGosub|Gosub]]##
 	- ##[[KeyPgSub|Sub]]##
 	- ##[[KeyPgFunction|Function]]##
+	- ##[[ProPgLabels|Labels]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

@@ -1,8 +1,7 @@
 {{fbdoc item="title" value="Functional Keyword List"}}----
 List of ""FreeBASIC"" keywords sorted by the function they perform.
 
-<<
-{{fbdoc item="section" value="Arrays"}}
+<<{{fbdoc item="section" value="Arrays"}}
 	- {{fbdoc item="keyword" value="KeyPgErase|ERASE"}}
 	- {{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}
 	- {{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}
@@ -65,12 +64,13 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgWrite|WRITE"}}
 
 {{fbdoc item="section" value="Data types and declarations"}}
-	- {{fbdoc item="keyword" value="KeyPgBoolean|BOOLEAN"}}
-	- {{fbdoc item="keyword" value="KeyPgByte|BYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgAs|AS"}}
-	- {{fbdoc item="keyword" value="KeyPgDim|DIM"}}
+	- {{fbdoc item="keyword" value="KeyPgBoolean|BOOLEAN"}}
+	- {{fbdoc item="keyword" value="KeyPgByrefVariables|BYREF (variables)"}}
+	- {{fbdoc item="keyword" value="KeyPgByte|BYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}}
 	- {{fbdoc item="keyword" value="KeyPgConstQualifier|CONST (Qualifier)"}}
+	- {{fbdoc item="keyword" value="KeyPgDim|DIM"}}
 	- {{fbdoc item="keyword" value="KeyPgDouble|DOUBLE"}}
 	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM"}}
 	- {{fbdoc item="keyword" value="KeyPgExtends|EXTENDS"}}
@@ -81,9 +81,9 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgScope|SCOPE"}}
 	- {{fbdoc item="keyword" value="KeyPgShared|SHARED"}}
 	- {{fbdoc item="keyword" value="KeyPgShort|SHORT"}}
-	- {{fbdoc item="keyword" value="KeyPgString|STRING"}}
 	- {{fbdoc item="keyword" value="KeyPgSingle|SINGLE"}}
 	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
+	- {{fbdoc item="keyword" value="KeyPgString|STRING"}}
 	- {{fbdoc item="keyword" value="KeyPgType|TYPE"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeAlias|TYPE (Alias)"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeTemp|TYPE (Temporary)"}}
@@ -227,7 +227,6 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgWait|WAIT"}}
 	- {{fbdoc item="keyword" value="KeyPgOpenCom|OPEN COM"}}
 	- {{fbdoc item="keyword" value="KeyPgOpenLpt|OPEN LPT"}}
-	- {{fbdoc item="keyword" value="KeyPgOpenLpt|LPT"}}
 	- {{fbdoc item="keyword" value="KeyPgLpos|LPOS"}}
 	- {{fbdoc item="keyword" value="KeyPgLprint|LPRINT"}}
 
@@ -310,8 +309,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaInclude|$INCLUDE"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaLang|$LANG"}}
-<<>>
-{{fbdoc item="section" value="Miscellaneous"}}
+<<>>{{fbdoc item="section" value="Miscellaneous"}}
 	- {{fbdoc item="keyword" value="KeyPgAsm|ASM"}}
 	- {{fbdoc item="keyword" value="KeyPgData|DATA"}}
 	- {{fbdoc item="keyword" value="KeyPgEndblock|END (Block)"}}

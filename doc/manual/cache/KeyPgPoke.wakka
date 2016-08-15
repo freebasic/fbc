@@ -10,7 +10,7 @@ Assigns a value to a location in memory.
 ##
 {{fbdoc item="param"}}
 	##//datatype//##
-		The type of data at the specified address.
+		The type of data at the specified address. If omitted, ##[[KeyPgUbyte|ubyte]]## is assumed.
 	##//address//##
 		The location in memory to assign to.
 	##//value//##
@@ -18,11 +18,10 @@ Assigns a value to a location in memory.
 
 {{fbdoc item="desc"}}
 	##**Poke**## assigns a value to a location in memory. It is equivalent to
-
 		##*cast(ubyte ptr, //address//) = //value//##
 			or
 		##*cast(//datatype// ptr, //address//) = //value//##
-
+	
 	When ##//datatype//## is a user-defined type, ##**Poke**## assigns ##//value//## using the type's ##[[KeyPgOpLet|Operator Let]]##.
 
 {{fbdoc item="ex"}}

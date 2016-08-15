@@ -3,7 +3,6 @@ Subtracts and assigns a value to a variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **-=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T1//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T2// )
-
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **-=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T// [[KeyPgPointer|ptr]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] )
 ##
 {{fbdoc item="usage"}}##
@@ -23,12 +22,11 @@ Subtracts and assigns a value to a variable
 
 {{fbdoc item="desc"}}
 	This operator subtracts and assigns a value to a variable. It is functionally equivalent to:
-##
-		//lhs// = //lhs// [[KeyPgOpSubtract|-]] //rhs//
-##
+		##//lhs// = //lhs// [[KeyPgOpSubtract|-]] //rhs//##
+	
 	For numeric types, the right-hand side expression (##//rhs//##) will be converted to the left-hand side type (##//T1//##).
-
-	This operator can be overloaded for user-defined types.
+	
+	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/subtract-assign.bas"}}%%(freebasic)

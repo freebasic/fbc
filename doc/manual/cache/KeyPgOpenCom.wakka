@@ -14,15 +14,15 @@ Opens a serial port for input and output
 		The file number to bind to the port.
 
 {{fbdoc item="ret"}}
-	Returns zero (##0##) on success and a non-zero error code otherwise.
+	##**Open Com()**## returns a 32 bit ##[[KeyPgLong|Long]]##: a zero (##0##) on success and a non-zero error code otherwise.
 
 {{fbdoc item="desc"}}
 	This command opens a serial port of the PC, allowing to send and receive data by using the normal file commands as ##[[KeyPgPrintpp|Print  #]]##, ##[[KeyPgInputpp|Input #]]##, ##[[KeyPgGetfileio|Get #]]##, ...
-
+	
 	The main parameter is a ##[[KeyPgString|String]]## that describes, at the very least, which communications port to open. It has the format:
-
+	
 		##"**COM**//n//**:** [ //baudrate// ][ , [ //parity// ][ , [ //data_bits// ][ , [ //stop_bits// ][ , [ //extended_options// ]]]]]"##
-
+	
 	where,
 	##//n//##
 		Com port to open. ##"1"##, ##"2"##, ##"3"##, ##"4"##, etc.  Some platforms will support more serial ports depending on how the operating system is configured.  Where ##//n//## is not given, ##"COM:"## will map to ##"COM1:"##, except on Linux where ##"COM:"## maps to ##"/dev/modem"##
@@ -34,14 +34,16 @@ Opens a serial port for input and output
 		##"5"##, ##"6"##, ##"7"## (default) or ##"8"##.
 	##//stop_bits//##
 		##"1"##, ##"1.5"## or ##"2"##. //(default value depends on baud rate and data bits, see table below)//
-
+	
 			{{table columns="2" cellpadding="2" cells="Condition;Default number of stop bits;baud rate <= 110 and data bits = 5;1.5;baud rate <= 110 and data bits >= 6;2;baud rate > 110;1"}}
 	##//extended_options//##
 		Miscellaneous options. //(See table below)//
-
+	
 			{{table columns="2" cellpadding="2" cells="Option;Action;'CSn';Set the CTS duration (in ms) (n>=0), 0 = turn off, default = 1000;'DSn';Set the DSR duration (in ms) (n>=0), 0 = turn off, default = 1000;'CDn';Set the Carrier Detect duration (in ms) (n>=0), 0 = turn off;'OPn';Set the 'Open Timeout' (in ms) (n>=0), 0 = turn off;'TBn';Set the 'Transmit Buffer' size (n>=0), 0 = default, depends on platform;'RBn';Set the 'Receive Buffer' size (n>=0), 0 = default, depends on platform;'RS';Suppress RTS detection;'LF';Communicate in ASCII mode (add LF to every CR) - Win32 doesn't support this one;'ASC';same as 'LF';'BIN';The opposite of LF and it'll always work;'PE';Enable 'Parity' check;'DT';Keep DTR enabled after CLOSE;'FE';Discard invalid character on error;'ME';Ignore all errors;'IRn';IRQ number for COM (only supported (?) on DOS)"}}
-
+	
 	All items except for the COM port are optional. The order of ##//baudrate//##, ##//parity//##, ##//data_bits//##, ##//stop_bits//## is fixed. Any skipped fixed item ( ##//baudrate//##, etc...) must be empty.
+	
+	The error code returned by ##**Open Com**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Open Com**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/opencom1.bas"}}%%(freebasic)

@@ -21,9 +21,9 @@ Concatenates two strings, converting non-strings to strings as needed
 
 {{fbdoc item="desc"}}
 	This operator concatenates two expressions. If either of the expressions is not a string type, it is converted to ##[[KeyPgString|String]]## with ##[[KeyPgStr|Str]]##.
-
+	
 	If either of the expressions is a ##[[KeyPgWstring|Wstring]]##, a ##[[KeyPgWstring|Wstring]]## is returned, otherwise a ##[[KeyPgString|String]]## is returned.
-
+	
 	Note: This operator exists in C/""C++"" with a different meaning - there it performs a bitwise [[KeyPgOpAnd|And]].
 
 {{fbdoc item="ex"}}

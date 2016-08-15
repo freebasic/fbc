@@ -17,9 +17,9 @@ Restricts read/write access to a file or portion of a file
 
 {{fbdoc item="desc"}}
 	##**Lock**## temporarily restricts access by other threads or programs to a file, or portion of a file, usually to allow safe writing to it.
-
+	
 	After modifying the data, an ##[[KeyPgUnlock|Unlock]]## with the same parameters as the ##**Lock**## should be issued.
-
+	
 	**Note: This command does not always work, neither as documented nor as expected. It appears to be broken at the moment.**
 
 {{fbdoc item="ex"}}

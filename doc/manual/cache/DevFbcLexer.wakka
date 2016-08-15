@@ -2,7 +2,7 @@
 
 ''##lex*.bas##'': File input, tokenization, macro expansion buffer, token queue, #include contexts.
 ''##pp*.bas##'': Preprocessor directive parsing, macro expansion text construction.
-
+	
 	The lexer reads the source code from the .bas files and translates it into a series of tokens, so the FB parser sees this:
 	
 	%%dim as integer i = 5
@@ -18,12 +18,12 @@ INTEGER keyword         (Data type)
 "="     operator        (Go to initializer parser)
 "5"     number literal  (Expression)
 EOL     statement end   (Variable declaration parser is done, 
-	                         the variable is added to the AST, 
-	                         back to toplevel parser)
+			 the variable is added to the AST, 
+			 back to toplevel parser)
 (Next line, next statement)
 PRINT   keyword         (Go to QB print quirk function call parser)
 "i"     symbol          (Expression, lookup "i" symbol, it's an integer variable,
-	                      create a CALL to fb_PrintInt(), the expression is the argument)
+			 create a CALL to fb_PrintInt(), the expression is the argument)
 EOL                     (Print parser is done, back to toplevel)
 EOF                     (Top-level parser is done)%%
 	

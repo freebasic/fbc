@@ -16,25 +16,25 @@ Opens the console's standard input (//stdin//) or output (//stdout//) streams fo
 		An available //file number// to bind to the //stdin// or //stdout// stream, which can be found with ##[[KeyPgFreefile|Freefile]]##.
 
 {{fbdoc item="ret"}}
-	In the first usage, ##**Open Cons**## returns zero (0) on success and a non-zero error code otherwise.
+	In the first usage, ##**Open Cons()**## returns a 32 bit ##[[KeyPgLong|Long]]##: a zero (0) on success and a non-zero error code otherwise.
 
 {{fbdoc item="desc"}}
 	##**Open Cons**## opens the console's //stdin// or //stdout// streams for reading or writing. A //file number// is bound to the stream, which is used in subsequent file operations, such as ##[[KeyPgInputPp|Input #]]##. An available //file number// can be retrieved with ##[[KeyPgFreefile|Freefile]]##.
-
+	
 	The ##[[KeyPgInputfilemode|Input]]## //file mode// opens the //stdin// stream for reading file operations, such as ##[[KeyPgInputPp|Line Input #]]##, while the ##[[KeyPgOutput|Output]]## //file mode// opens the //stdout// stream for writing file operations, such as ##[[KeyPgPrintPp|Print #]]##. The ##[[KeyPgOutput|Output]]## //file mode// is the default if not specified.
-
+	
 	The //stdin// and //stdout// streams are the ones used when the calling process' input or output is redirected (piped) by OS commands, or when it is opened with ##[[KeyPgOpenPipe|Open Pipe]]##.
-
+	
 	To open both the //stdin// and //stdout// streams for file operations, a process must use multiple //file numbers//.
 	
+	The error code returned by ##**Open Cons**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Open Cons**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 	
 **Runtime errors:**
-	    ##**Open Cons**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
-
+	##**Open Cons**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
+	
 	//(##1##) Illegal function call//
 		- ##//filenumber//## was not free at the time. use ##[[KeyPgFreefile|Freefile]]## to ensure that ##//filenumber//## is free.
-		
-		
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/opencons.bas"}}%%(freebasic)
 dim a as string

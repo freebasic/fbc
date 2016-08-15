@@ -7,7 +7,7 @@ Standard data type: 8 bit character string
 ##
 {{fbdoc item="desc"}}
 	A ##**Zstring**## is a C-style fixed-size array of chars.  It has no descriptor so its length is calculated faster to pass it as an argument to functions. When the variable has a fixed ##//size//##, ""FreeBASIC"" avoids any overflow that could occur on assignment, by truncating the contents to a length of ##//size// - 1##.
-
+	
 	A ##**Zstring** [[KeyPgPtr|ptr]]## can point to a standard ##**Zstring**##, also can be used to implement an "user-managed" ##**Zstring**##, in this case ##[[KeyPgAllocate|Allocate]]##/##[[KeyPgReallocate|Reallocate]]##/##[[KeyPgDeallocate|Deallocate]]## must be used to size-resize-dispose it and is up  to the user to avoid overflows . 
 	
 	The end of the string is marked by a null character (##0## ASCII). This is automatically added by the ""FreeBASIC"" string handling functions.  A null character will be appended when the string is created, and the length will be calculated by scanning the string for the first null character. A null character (e.g. ##[[KeyPgChr|Chr]](0)##) may never be contained in the text of a ##**Zstring**## or the rest of the string will be truncated.

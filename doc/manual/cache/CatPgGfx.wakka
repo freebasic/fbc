@@ -30,10 +30,9 @@ A list of the keywords and procedures of ""FreeBASIC""'s graphics library.
 	- {{fbdoc item="keyword" value="KeyPgPalette|PALETTE"}}
 	- {{fbdoc item="keyword" value="KeyPgPcopy|PCOPY"}}
 	- {{fbdoc item="keyword" value="KeyPgPmap|PMAP"}}
+<<>>
 	- {{fbdoc item="keyword" value="KeyPgPoint|POINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPointCoord|POINTCOORD"}}
-
-<<>>
 	- {{fbdoc item="keyword" value="KeyPgPreset|PRESET"}}
 	- {{fbdoc item="keyword" value="KeyPgPset|PSET"}}
 	- {{fbdoc item="keyword" value="KeyPgPsetGfx|PSET (GRAPHICS PUT)"}}
@@ -60,7 +59,6 @@ A list of the keywords and procedures of ""FreeBASIC""'s graphics library.
 	- {{fbdoc item="keyword" value="KeyPgWindow|WINDOW"}}
 	- {{fbdoc item="keyword" value="KeyPgWindowtitle|WINDOWTITLE"}}
 	- {{fbdoc item="keyword" value="KeyPgXorGfx|XOR (GRAPHICS PUT)"}}
-
 >>
 
 ::c::

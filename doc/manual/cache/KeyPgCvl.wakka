@@ -20,9 +20,9 @@ Converts a single-precision floating-point number or four-byte string to an inte
 
 {{fbdoc item="desc"}}
 	Returns a 32-bit ##[[KeyPgLong|Long]]## integer value using the binary data contained in a ##[[KeyPgSingle|Single]]##, or a ##[[KeyPgString|String]]## of at least four bytes in length.  A value of zero (##0##) is returned if the string is less than four bytes in length.
-
+	
 	##**Cvl**## is used to convert 4-byte strings created with ##[[KeyPgMkl|Mkl]]##.
-
+	
 	This function can also be used to convert 32-bit integer values from a memory or file buffer without the need for a ##[[KeyPgType|Type]]## structure.  However, just as with the type structure, special care should be taken when using ##**Cvl**## to convert strings that have been read from a buffer.
 
 {{fbdoc item="ex"}}

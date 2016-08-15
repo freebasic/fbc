@@ -5,7 +5,7 @@ Declares or defines a member procedure.
 	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] } //typename//
 		[[KeyPgDeclare|declare]] [ [[KeyPgStaticMember|static]] | [[KeyPgConstMember|const]] ] **Sub** //fieldname// [//calling convention specifier//] [ [[KeyPgAlias|alias]] //external_name// ] ( [ //parameters// ] ) [ [[KeyPgStatic|Static]] ] 
 	End { [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] }
-
+	
 	**Sub** //typename//.//fieldname// ( [ //parameters// ] ) [ [[KeyPgExport|Export]] ]
 		//statements//
 	**End Sub**
@@ -24,12 +24,12 @@ Declares or defines a member procedure.
 
 {{fbdoc item="desc"}}
 	##**Sub**## members are accessed with ##[[KeyPgOpMemberAccess|Operator . (Member access)]]## or ##[[KeyPgOpPtrMemberAccess|Operator -> (Pointer to member access)]]## to call a member procedure and may optionally accept parameters either ##[[KeyPgByval|byval]]## or ##[[KeyPgByref|byref]]##.  ##//typename//## be overloaded  without explicit use of the ##[[KeyPgOverload|Overload]]## keyword.
-
+	
 	##//typename//## is the name of the type for which the ##**Sub**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace|Namespace]]##.
-
+	
 	A hidden ##[[KeyPgThis|this]]## parameter having the same type as ##//typename//## is passed to non-static member procedures.  ##[[KeyPgThis|this]]## is used to access the fields of the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]##.
 	To access duplicated symbols defined outside the Type, use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
-
+	
 	A ##[[KeyPgStaticMember|Static (Member)]]## may be declared using the ##**Static**## specifier.  A ##[[KeyPgConstMember|Const (Member)]]## may be declared using the ##**Const**## specifier.
 
 {{fbdoc item="ex"}}

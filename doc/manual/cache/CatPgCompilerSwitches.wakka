@@ -4,8 +4,7 @@ Statements that affect how code is compiled.
 {{fbdoc item="desc"}}
 	These statements affect how the compiler declares variables, arrays and procedures, parses string literals, passes procedure parameters and more.
 
-<<
-{{fbdoc item="section" value="Metacommands"}}
+<<{{fbdoc item="section" value="Metacommands"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaDynamic|'$DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaInclude|'$INCLUDE"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|'$STATIC"}}
@@ -22,9 +21,7 @@ Statements that affect how code is compiled.
 	- {{fbdoc item="keyword" value="KeyPgOptionnokeyword|OPTION NOKEYWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionprivate|OPTION PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}
-
-<<>>
-{{fbdoc item="section" value="Set Default Datatypes"}}
+<<>>{{fbdoc item="section" value="Set Default Datatypes"}}
 	- {{fbdoc item="keyword" value="KeyPgDefbyte|DEFBYTE"}}
 	- {{fbdoc item="keyword" value="KeyPgDefdbl|DEFDBL"}}
 	- {{fbdoc item="keyword" value="KeyPgDefint|DEFINT"}}
@@ -37,8 +34,6 @@ Statements that affect how code is compiled.
 	- {{fbdoc item="keyword" value="KeyPgDefuint|DEFUINT"}}
 	- {{fbdoc item="keyword" value="KeyPgDefulongint|DEFULONGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgDefushort|DEFUSHORT"}}
-
-
 >>
 ::c::
 {{fbdoc item="lang"}}

@@ -2,7 +2,7 @@
 
 {{anchor name="item0"}}
 **Windows:**
-
+	
 	==- {{anchor name="item01|Which IDEs are available for Windows?"}}==
 	==- {{anchor name="item02|Can I get rid of the console / 'DOS' screen in a graphics application?"}}==
 	==- {{anchor name="item03|My GUI program does nothing when run / The program compiles but I get a permission denied error in the linker"}}==

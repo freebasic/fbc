@@ -16,9 +16,9 @@ Returns a random [[KeyPgDouble|double]] precision number in the range ##[0, 1)##
 
 {{fbdoc item="desc"}}
 	Returns a number of type ##[[KeyPgDouble|double]]## in the range ##[0, 1)## (i.e. ##0 <= **Rnd** < 1##), based on a random seed (see ##[[KeyPgRandomize|Randomize]]##).
-
+	
 	##**Rnd**## can use a variety of different algorithms - see ##[[KeyPgRandomize|Randomize]]## for details of the default and selectable algorithms.
-
+	
 	##**Rnd**## will return the same sequence of numbers every time a program is run.  This sequence can be changed by reseeding the generator.
 
 {{fbdoc item="ex"}}

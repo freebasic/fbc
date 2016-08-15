@@ -10,7 +10,7 @@ Preprocessor directive to define a macro
 	##**#define**## allows to declare text-based preprocessor macros. Once the compiler has seen a ##**#define**##, it will start replacing further occurrences of ##//identifier//## with ##//body//##. ##//body//## may be empty. The expansion is done recursively, until there is nothing more to expand and the compiler can continue analyzing the resulting code. ##[[KeyPgPpundef|#undef]]## can be used to make the compiler forget about a ##**#define**##.
 	
 	##//Parameters//## turn a define into a function-like macro, allowing text arguments to be passed to the macro. Any occurrences of the parameter names in the ##//body//## will be replaced by the given argument text during expansion. The ##[[KeyPgOpPpStringize|# stringize]]## operator can be used on macro parameters to turn them into string literals, and the ##[[KeyPgOpPpConcat|## concatenate]]## operator can be used to merge tokens together.
-
+	
 	Note: In the function-like macro declaration, the ##//identifier//## should be followed by the opening parentheses (##(##) immediately without any white-space in between, otherwise the compiler will treat it as part of the ##//body//##.
 	
 	Defines are //scoped//; they are only visible in the scope they were defined in. If defined at module level, the define is visible throughout the module. If the ##//identifier//## is defined inside a compound statement having scope (##[[KeyPgSub|Sub]]##, ##[[KeyPgFornext|For..Next]]##, ##[[KeyPgWhilewend|While..Wend]]##, ##[[KeyPgDoloop|Do..Loop]]##, ##[[KeyPgScope|Scope..End Scope]]##, etc), the ##//identifier//## define is only visible within that scope. Namespaces on the other hand do not have any effect on the visibility of a define.

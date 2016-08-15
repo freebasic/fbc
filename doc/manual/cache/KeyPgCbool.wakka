@@ -3,7 +3,7 @@ Converts numeric or string expression to a boolean (##[[KeyPgBoolean|Boolean]]##
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cbool** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgBoolean|boolean]]
-
+	
 	[[KeyPgType|Type]] //typename//
 		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgBoolean|boolean]]
 	End Type
@@ -26,9 +26,9 @@ Converts numeric or string expression to a boolean (##[[KeyPgBoolean|Boolean]]##
 
 {{fbdoc item="desc"}}
 	The ##**Cbool**## function converts a zero value to ##[[KeyPgFalse|False]]## and a non-zero value to ##[[KeyPgTrue|True]]##.
-
+	
 	The name can be explained as 'Convert to Boolean'.
-
+	
 	If the argument is a string expression, it is converted to boolean using a case insensitive to the string "false" to return a ##[[KeyPgFalse|False]]## value or "true" to return a ##[[KeyPgTrue|True]]## value.
 
 {{fbdoc item="ex"}}

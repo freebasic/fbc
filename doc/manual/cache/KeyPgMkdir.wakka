@@ -33,6 +33,7 @@ If 0 <> result Then Print "error: unable to create folder " & pathname & " in th
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgShell|Shell]]##
+	- ##[[KeyPgCurdir|Curdir]]##
 	- ##[[KeyPgChdir|Chdir]]##
 	- ##[[KeyPgRmdir|Rmdir]]##
 

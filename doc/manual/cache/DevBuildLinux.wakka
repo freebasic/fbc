@@ -92,11 +92,11 @@ Afterwards, you can install the new fbc build into ##/usr/local## by running "ma
 
 Besides native builds, you can also make non-native builds, such as compiling the 32bit version of FB on a 64bit system, using an existing 32bit FB build to bootstrap. This was very common before 64bit support was added to FB. It requires a slightly different procedure than a native build.
 
-	1) Get the FB source code.
+	-Get the FB source code.
 	
-	1) Install a 32bit version of FB for bootstrapping (instead of a native 64bit version).
+	-Install a 32bit version of FB for bootstrapping (instead of a native 64bit version).
 	
-	1) Install 32bit development packages (not just the native 64bit ones).
+	-Install 32bit development packages (not just the native 64bit ones).
 	
 		64bit Debian/Ubuntu example:
 			- ##gcc-multilib##
@@ -124,7 +124,7 @@ Besides native builds, you can also make non-native builds, such as compiling th
 			- ##Mesa-libGL-devel-32bit##
 			- ##libffi48-devel-32bit##
 	
-	1) Add the following ##config.mk## file to the fbc source tree (next to the FB makefile):
+	-Add the following ##config.mk## file to the fbc source tree (next to the FB makefile):
 	
 	
 		%%CC = gcc -m32
@@ -138,13 +138,13 @@ TARGET_ARCH = x86
 		
 		Setting the TARGET_ARCH to x86 is necessary to override the FB makefile's ##uname -m## check (because that returns x86_64 on 64bit). This allows the FB makefile to select the proper x86 rtlib/gfxlib2 modules and to use the correct directory layout for x86.
 	
-	1) Run "make" and let it compile FB:
+	-Run "make" and let it compile FB:
 	
 	
 		%%$ cd ~/fbc
 $ make
 %%
-	1) Optionally, install the newly built 32bit FB setup into ##/usr/local##:
+	-Optionally, install the newly built 32bit FB setup into ##/usr/local##:
 	
 	
 		%%$ sudo make install

@@ -28,12 +28,12 @@ Assigns a value to a variable
 {{fbdoc item="desc"}}
 	This operator assigns the value of its right-hand side operand (##//rhs//##) to its left-hand side operand (##//lhs//##). The right-hand side operand must be implicitly convertible to the left-hand side type (##//T1//##) (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value). For example, you cannot assign a numeric value to a string type; to do that, first convert the numeric value to a string using ##[[KeyPgStr|Str]]## or ##[[KeyPgWstr|Wstr]]##.
 	Assignment between arrays is not supported presently.
-
+	
 	Avoid confusion with ##[[KeyPgOpEqual|Operator = (Equal)]]##, which also uses the '##=##' symbol.
 	For this purpose and for solving some cases of ambiguity of the parser (see ##[[KeyPgByrefFunction|BYREF (function results)]]##), the alternative symbol '=>' can be used for assignments (in place of '=') from fbc version 0.90 (same as already for the initializers).
 		//Note: the '=>' symbol has been chosen against '<=' (already the operator 'Less Than Or Equal') and ':=' (':' used as statement separator).//
-
-	This operator can be overloaded for user-defined types.
+	
+	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/assign.bas"}}%%(freebasic)
@@ -69,5 +69,6 @@ Let i = 300 ' <-alternate syntax
 	- ##[[KeyPgOpEqual|Operator = (Equal)]]##
 	- ##[[KeyPgOpLet|Operator Let (Assignment)]]##
 	- ##[[KeyPgSwap|Swap]]##
+	- [[ProPgDataConversion|Coercion and Conversion]]
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

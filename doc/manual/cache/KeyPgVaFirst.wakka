@@ -6,6 +6,8 @@ Returns a pointer to the first argument in a variable argument list
 ##
 {{fbdoc item="desc"}}
 	The ##**va_first**## function provides an untyped [[ProPgPointers|pointer]] value that points to the first variable argument passed to a function.
+	
+	//Note:// Not supported when using gcc.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/vararg1.bas"}}%%(freebasic)
@@ -17,15 +19,15 @@ Function average Cdecl(count as Integer, ... ) As Double
 	arg = Va_First()
 
 	For i = 1 To count
-	    sum += Va_Arg(arg, Double)
-	    arg = Va_Next(arg, Double)
+		sum += Va_Arg(arg, Double)
+		arg = Va_Next(arg, Double)
 	Next
 	
 	Return sum / count
 end function
 
-Print average(4, 3.4,5.0,3.2,4.1)
-Print average(2, 65.2,454.65481)
+Print average(4, 3.4,5.0,3.2,4.1)  '' all passed variable arguments must be of type double
+Print average(2, 65.2,454.65481)   '' all passed variable arguments must be of type double
 Sleep
 %%
 
@@ -101,7 +103,7 @@ end sub
 	dim as string s = "bar"
 
 	myprintf(!"integer=%i, longint=%l single=%f, double=%d, string=%s, string=%s\n", _
-	         1, 1ll shl 32, 2.2, 3.3, "foo", s)
+			 1, 1ll shl 32, 2.2, 3.3, "foo", s)
 
 	sleep
 %%

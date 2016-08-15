@@ -13,7 +13,7 @@ Restarts all threads ##[[KeyPgCondWait|Condwait]]##ing for the handle
 
 {{fbdoc item="desc"}}
 	Once the conditional is ##[[KeyPgCondCreate|Condcreate]]## and the threads are started, one of more of them (including the main thread executing main program) can be set to ##[[KeyPgCondWait|Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal|Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast|Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy|Conddestroy]]## must be used to avoid leaking resources in the OS.
-
+	
 	**Condbroadcast** must be used instead of ##[[KeyPgCondSignal|Condsignal]]## to restart all threads waiting on the conditional.
 
 {{fbdoc item="ex"}}

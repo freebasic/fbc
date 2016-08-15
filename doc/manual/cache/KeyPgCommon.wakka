@@ -6,8 +6,12 @@ Variable declaration and scope modifier
 ##
 {{fbdoc item="desc"}}
 	Declares a variable which is shared between code modules. A matching ##**Common**## statement must appear in all other code modules using the variable. 
-
-	The ##**Shared**## optional parameter makes the variable global so that it can be used inside ##[[KeyPgSub|sub]]##s and ##[[KeyPgFunction|function]]##s, as well as at module level. ##**Common**## arrays are always variable-length, and must be defined with an empty parameter list ##()##, and its dimensions set in a later ##[[KeyPgDim|Dim]]## or ##[[KeyPgRedim|Redim]]## statement.
+	
+	##**Common**## variables cannot be initialized.
+	##**Common**## arrays are always variable-length, and must be defined with an empty parameter list ##()##, and its dimensions set in a later ##[[KeyPgDim|Dim]]## or ##[[KeyPgRedim|Redim]]## statement.
+	##**Common**## variables cannot be instances of a user-defined type having a constructor or a destructor even implicit.
+	
+	The ##**Shared**## optional parameter makes the variable global so that it can be used inside ##[[KeyPgSub|sub]]##s and ##[[KeyPgFunction|function]]##s, as well as at module level.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/common1.bas"}}%%(freebasic)

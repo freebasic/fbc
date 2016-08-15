@@ -31,7 +31,7 @@ Returns a wide-character string representation of a number or ASCII character st
 
 {{fbdoc item="desc"}}
 	##**Wstr**## converts numeric variables to their wide-character string representation. It is the wide-character equivalent to ##[[KeyPgStr|Str]]##.
-
+	
 	##**Wstr**## also converts ASCII character strings to Unicode character strings. If a wide-character string is given, that string is returned unmodified.
 
 {{fbdoc item="ex"}}

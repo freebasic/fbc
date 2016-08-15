@@ -2,7 +2,7 @@
 
 {{anchor name="item0"}}
 **FreeBASIC Linux questions:**
-
+	
 	==- {{anchor name="item1|FreeBASIC gives me an error 'ld: can't find -lX11' or something similar!"}}==
 	==- {{anchor name="item2|How do I install FreeBASIC in Ubuntu?"}}==
 

@@ -6,7 +6,7 @@ Disables support for ##[[KeyPgGosub|Gosub]]## and ##[[KeyPgOngosub|On Gosub]]##.
 ##
 {{fbdoc item="desc"}}
 	##**Option Nogosub**## disables support for ##[[KeyPgGosub|Gosub]]## and ##[[KeyPgReturn|Return]]## (from gosub).
-
+	
 	Because ##[[KeyPgReturn|Return]]## could mean return-from-gosub or return-from-procedure, ##[[KeyPgOptiongosub|Option Gosub]]## and ##**Option Nogosub**## can be used to enable and disable ##[[KeyPgGosub|Gosub]]## support.  When ##[[KeyPgGosub|Gosub]]## support is disabled, ##[[KeyPgReturn|Return]]## is then recognized as return-from-procedure.
 
 {{fbdoc item="ex"}}

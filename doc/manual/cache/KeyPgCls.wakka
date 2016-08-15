@@ -13,13 +13,13 @@ Clears the screen in both text modes and graphics modes
 
 {{fbdoc item="desc"}}
 	An optional ##//mode//## parameter may be given,
-
+	
 		If omitted, ##**CLS**## clears either the text or graphics viewport.  If a graphics viewport has been defined using the ##[[KeyPgViewgraphics|View (Graphics)]]## statement, the graphics viewport is cleared.  Otherwise, the text viewport, defined by ##[[KeyPgViewtext|View Print]]##, is cleared.  (If there is no explicit text viewport defined, the entire screen is cleared.)
-
+	
 		If ##0##, clears the entire screen
-
+	
 		If ##1##, clears the graphics viewport if defined.  Otherwise, clears the text viewport
-
+	
 		If ##2##, clears the text viewport
 
 

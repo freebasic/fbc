@@ -14,7 +14,7 @@ Creates and fills a string of a certain length with a certain character
 	##//count//##
 		An integer specifying the length of the string to be created.
 	##//ch_code//##
-		A long specifying the ASCII character code to be used to fill the string.
+		A long specifying the [[CptAscii|ASCII]] character code to be used to fill the string.
 	##//ch//##
 		A string whose first character is to be used to fill the string.
 
@@ -22,7 +22,7 @@ Creates and fills a string of a certain length with a certain character
 	The created string. An empty string will be returned if either ##//ch//## is an empty string, or ##//count//## <= 0.
 
 {{fbdoc item="desc"}}
-	A list of [[CptAscii|ASCII character codes]].
+	The ##**String**## function returns a string with a length of ##//count//##, filled with a given ##//ch_code//## or ##//ch//##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/string.bas"}}%%(freebasic)

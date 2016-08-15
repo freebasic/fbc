@@ -19,7 +19,7 @@ Returns an upper case copy of a string
 
 {{fbdoc item="desc"}}
 	Returns a copy of ##//str//## with all of the letters converted to upper case.
-
+	
 	If ##//str//## is empty, the null string (##"####"##) is returned.
 
 {{fbdoc item="ex"}}

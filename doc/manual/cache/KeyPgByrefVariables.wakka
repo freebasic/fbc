@@ -1,0 +1,179 @@
+{{fbdoc item="title" value="BYREF (variables)"}}----
+Declares a reference
+
+{{fbdoc item="syntax"}}
+		##([[KeyPgDim|Dim]] | [[KeyPgStatic|Static]]) [[[KeyPgShared|Shared]]] **Byref** //name1// As [[DataType|DataType]] = //variable1// [, **Byref** //name2// As [[DataType|DataType]] = //variable2//, ...]##
+	//or//
+		##([[KeyPgDim|Dim]] | [[KeyPgStatic|Static]]) [[[KeyPgShared|Shared]]] **Byref** As [[DataType|DataType]] //name1// = //variable1// [, //name2// = //variable2//, ...]##
+	//or//
+		##[[KeyPgVar|Var]] [[[KeyPgShared|Shared]]] **Byref** As [[DataType|DataType]] //name1// = //variable1// [, **Byref** //name2// = //variable2//, ...]##
+
+{{fbdoc item="param"}}
+	##//name//##
+		reference name
+	##//variable//##
+		variable name to refer
+
+{{fbdoc item="desc"}}
+	Declares a reference (by name) to a variable.
+	
+	A reference is an entity that is a way to access data located in memory. A reference is not the data itself but only information about its location. A reference can be thought of as a pointer that is implicitly dereferenced. In many cases, it can be used as an alternative to pointer.
+	
+	A reference must always be initialized with a variable when it is created.
+	[[DataType|DataType]] must be the same type as that of the variable, or one of the types of its Bases in case of inheritance:
+		- When the two types are identical (or using the third syntax with ##**Var**##), a reference can be considered as a perfect alias of the variable. One can do the same operations through such a reference as one can do with the original variable.
+		- Otherwise, a base type reference referring to a derived type object allows to activate polymorphism when a virtual method is called on it, similarly to a base type pointer referring to a derived type object. One can do the same operations through such a reference as one can do with a dereferenced pointer of same type (but for both not the same operations than with a derived type instance).
+	
+	A reference can be reassigned to refer to another variable (of compatible type) by doing:
+		@//refname// = @//othervariable//
+	
+	NOTE: The arrays of references and the non-static reference fields for UDT are not supported yet.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/variable/byref1.bas"}}%%(freebasic)
+'' Comparison between:
+''   - a copy ('ci') of a variable ('i')
+''   - a reference ('ri') to a variable ('i')
+
+
+Dim As Integer i = 12
+Print @i, i
+
+Dim As Integer ci = i  '' or Var ci = i
+Print @ci, ci
+
+Dim Byref As Integer ri = i  '' or Var Byref ri = i
+Print @ri, ri
+
+Print
+
+Print i, ci, ri
+i = 34
+Print i, ci, ri
+ci = 56
+Print i, ci, ri
+ri = 78
+Print i, ci, ri
+
+Sleep
+%%
+{{fbdoc item="filename" value="examples/manual/variable/byref2.bas"}}%%(freebasic)
+'' Use reference allows to simplify expressions compared to pointer
+'' (avoid to use operator '@' and especially '*')
+
+
+Dim As Zstring Ptr pz = @"FreeBASIC Zstring Ptr"
+Print *pz
+*pz &= " 1.3.0"
+Print *pz
+
+Print
+
+Dim Byref As Zstring rz = "FreeBASIC Zstring Ref"  '' or Var Byref rz = "FreeBASIC Zstring Ref"
+Print rz
+rz &= " 1.4.0"
+Print rz
+
+Sleep
+%%
+{{fbdoc item="filename" value="examples/manual/variable/byref3.bas"}}%%(freebasic)
+'' It is possible to reassign a reference.
+'' An example with an UDT to control the successive constructions & destructions of objects handled with one only reference.
+
+
+Type UDT
+  Declare Constructor ()
+  Declare Destructor ()
+  Dim As Integer I
+End Type
+
+Constructor UDT ()
+  Static As Integer nb
+  nb += 1
+  This.I = nb
+  Print "UDT.Constructor()"
+End Constructor
+
+Destructor UDT ()
+  Print "UDT.Destructor()"
+End Destructor
+
+
+Var Byref ru = *New UDT  '' or Dim Byref As UDT ru = *New UDT
+Print ru.I
+Delete @ru
+
+Print
+
+@ru = New UDT
+Print ru.I
+Delete @ru
+
+Sleep
+%%
+{{fbdoc item="filename" value="examples/manual/variable/byref4.bas"}}%%(freebasic)
+'' Polymorphism (by using inheritance and virtuality) can be activated through any of the 3 following kinds of entities:
+''   - base-type pointers referring to derived-type objects,
+''   - dereferenced base-type pointers referring to derived-type objects,
+''   - base-type references referring to derived-type objects.
+'
+'' If in the first line of the below code, FALSE is put instead TRUE, the polymorphism by virtuality is no more activated.
+
+
+#define virtuality TRUE
+
+Type myBase Extends Object
+  #if virtuality = TRUE
+	Declare Virtual Sub hello()
+  #else
+	Declare Sub Hello()
+  #endif
+End Type
+
+Sub myBase.hello()
+  Print "myBase.hello()"
+End Sub
+
+Type myDerived Extends myBase
+  Declare Sub hello()
+End Type
+
+Sub myDerived.hello()
+  Print "myDerived.hello()"
+End Sub
+
+
+Dim As myBase mb
+Dim As myBase Ptr pmb = @mb
+Dim Byref As myBase rmb = mb  '' or Var Byref rmb = mb
+pmb->hello()    '' pmb is a base-type pointer referring to a base-type object
+(*pmb).hello()  '' *pmb is a dereferenced base-type pointer referring to a base-type object
+rmb.hello()     '' rmb is a base-type reference referring to a base-type object
+
+Print
+
+Dim As myDerived md
+Dim As myBase Ptr pmd = @md
+Dim Byref As myBase rmd = md  '' only syntax because the reference data-type must be different from the one of object
+pmd->hello()    '' pmd is a base-type pointer referring to a derived-type object
+(*pmd).hello()  '' *pmd is a dereferenced base-type pointer referring to a derived-type object
+rmd.hello()     '' rmd is a base-type reference referring to a derived-type object
+
+Sleep
+%%
+
+{{fbdoc item="lang"}}
+	- Only supported in -lang fb, -lang fblite and -lang deprecated dialects.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC"".
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDim|Dim]]##
+	- ##[[KeyPgStatic|Static]]##
+	- ##[[KeyPgVar|Var]]##
+	- ##[[KeyPgShared|Shared]]##
+	- ##[[KeyPgByref|Byref (parameters)]]##
+	- ##[[KeyPgByrefFunction|Byref (function results)]]##
+
+{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

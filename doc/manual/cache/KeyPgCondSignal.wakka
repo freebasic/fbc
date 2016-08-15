@@ -13,8 +13,8 @@ Restarts a thread suspended by a call to ##[[KeyPgCondWait|Condwait]]##
 
 {{fbdoc item="desc"}}
 	Once the conditional is created with ##[[KeyPgCondCreate|Condcreate]]## and the threads are started, one of more of them (including the main thread executing main program) can be set to ##[[KeyPgCondWait|Condwait]]## for the conditional, they will be stopped until some other thread ##[[KeyPgCondSignal|Condsignal]]##s that the waiting thread can restart. ##[[KeyPgCondBroadcast|Condbroadcast]]## can be used to restart all threads waiting for the conditional. At the end of the program ##[[KeyPgCondDestroy|Conddestroy]]## must be used to avoid leaking resources in the OS.
-
-	**Condsignal** restarts one thread waiting. It should be called after ##//mutex//## is locked (using the same ##//mutex//## as one used with ##[[KeyPgCondWait|Condwait]]##). If no threads are waiting on the conditional, nothing happens; if several are waiting, only one is restarted. The caller must then unlock ##//mutex//## in order for ##[[KeyPgCondWait|Condwait]]## routine to complete.
+	
+	**Condsignal** restarts one thread waiting. It should be called after ##//mutex//## is locked (using the same ##//mutex//## as one used with ##[[KeyPgCondWait|Condwait]]##). If no threads are waiting on the conditional, nothing happens (the signal is lost forever); if several are waiting, only one is restarted. The caller must then unlock ##//mutex//## in order for ##[[KeyPgCondWait|Condwait]]## routine to complete.
 
 {{fbdoc item="ex"}}
 	See also ##[[KeyPgCondCreate|Condcreate]]## and ##[[KeyPgCondWait|Condwait]]##
@@ -26,16 +26,18 @@ Restarts a thread suspended by a call to ##[[KeyPgCondWait|Condwait]]##
 ' The thread complements the string, then sends a condition signal.
 '
 'Principle of mutual exclusion + simple synchronization
-'          Thread#A                XOR + ==>            Thread#B
-'.....                                         .....
-'MutexLock(mut)                                MutexLock(mut)
-'  Do_something#A_with_exclusion                 While Thread#A_signal <> true
-'  Thread#A_signal = true                          CondWait(cond, mut)
-'  CondSignal(cond)                              Wend
-'MutexUnlock(mut)                                Do_something#B_with_exclusion
-'.....                                           Thread#A_signal = false
-'                                              MutexUnlock(mut)
-'                                              .....
+'          Thread#A             XOR + ==>            Thread#B
+'.....                                     .....
+'MutexLock(mut)                            MutexLock(mut)
+'  Do_something_with_exclusion               Do_something_with_exclusion
+'  Thread_signal = true -------------------> While Thread_signal <> true
+'  CondSignal(cond) -------------------------> CondWait(cond, mut)
+'  Do_something_with_exclusion      .------> Wend
+'MutexUnlock(mut) ------------------'        Thread_signal = false
+'.....                                       Do_something_with_exclusion
+'.....                                     MutexUnlock(mut)
+'.....                                     .....
+
 
 Dim Shared As Any Ptr mutex
 Dim Shared As Any Ptr cond

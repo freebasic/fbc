@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Select Case"}}----
 
 {{fbdoc item="section" value="Basic implementation"}}
-
+	
 	%%
 dim i as integer		dim i as integer
 
@@ -56,7 +56,7 @@ end select				cmplabel3:    '' unused only because in this example the last CASE
 
 
 {{fbdoc item="section" value="SELECT CASE on strings/zstrings/fixstrs"}}
-
+	
 	%%
 dim s as string			dim s as string
 
@@ -87,7 +87,7 @@ end select				endlabel:
 	- the string temp var is destroyed at scope end or scope breaks (e.g. reaching END SELECT, or EXIT FUNCTION from within a CASE block)
 
 {{fbdoc item="section" value="SELECT CASE on wstrings"}}
-
+	
 	%%
 dim w as wstring * 10			dim w as wstring * 10
 
@@ -119,7 +119,7 @@ end select					endlabel:
 
 
 {{fbdoc item="section" value="SELECT CASE without temp var"}}
-
+	
 	When the expression given to the ''##select##'' statement is just a simple variable access, then no temporary variable needs to be created. In this case, the given variable itself will be used in the comparisons at each ''##case##'' statement. For example:
 	
 	%%

@@ -2,15 +2,15 @@
 
 {{fbdoc item="desc"}}
 	A date serial is a number that holds a date and time value in the same format used by PDS or VBDOS. The value is a count of the days from 0:00 AM of December 30,1899; it's mainly used for easy counting of the time between two dates.
-
+	
 	The date serial unit is one day and the fractional part represents the time of the day. If a date serial is written into an integer, the time is lost. FreeBASIC date serials are not limited to dates between 1753 and 2078 as in VBDOS. FreeBASIC date serial handling functions use ##[[KeyPgDouble|Double]]## arguments.
-
+	
 	FreeBASIC date serial handling functions require the inclusion of ##vbcompat.bi## or ##datetime.bi## in the source.
-
+	
 	A date serial can be created by the functions ##[[KeyPgNow|Now]]##, ##[[KeyPgTimeserial|TimeSerial]]##+##[[KeyPgDateSerial|DateSerial]]##, or ##[[KeyPgDateValue|DateValue]]##+##[[KeyPgTimeValue|TimeValue]]##.
-
+	
 	The functions ##[[KeyPgYear|Year]]##, ##[[KeyPgMonth|Month]]##, ##[[KeyPgWeekday|Weekday]]##, ##[[KeyPgDay|Day]]##, ##[[KeyPgHour|Hour]]##, ##[[KeyPgMinute|Minute]]##, ##[[KeyPgSecond|Second]]## allow to recover the different components of a date serial.
-
+	
 	The ##[[KeyPgFormat|Format]]## function has formatting expressions to print date serials in a human readable way.
 
 {{fbdoc item="ex"}}

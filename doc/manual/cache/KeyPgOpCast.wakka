@@ -1,0 +1,270 @@
+{{fbdoc item="title" value="Operator CAST"}}----
+Operator to convert a UDT (User Defined Type) variable into a specified data type
+
+{{fbdoc item="syntax"}}##
+	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] | [[KeyPgEnum|Enum]] } //typename//
+		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **cast** () [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]]
+		...
+	End { [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] }
+	
+	[[KeyPgOperator|operator]] //typename//.**cast** () [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
+	...
+##
+{{fbdoc item="usage"}}##
+	Cast( [[DataType|datatype]], //expression// )
+##
+{{fbdoc item="param"}}
+	##//typename//## 
+		The name of the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]##
+	##//datatype//## 
+		The name of the type for conversion into it, a built-in data type (standard data type) or a UDT different from ##//typename//##
+	##//expression//## 
+		The expression to convert, an instance of ##//typename//##
+
+{{fbdoc item="desc"}}
+	Converts an ##//expression//## (a ##//typename//## variable) into a different ##[[DataType|datatype]]##.
+	
+	##**Cast**## ##[[KeyPgOperator|operator]]## must be declared inside the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]##.
+	As all non-static member procedures, it has passed a hidden ##[[KeyPgThis|this]]## parameter.
+	
+	The ##**Cast**## ##[[KeyPgOperator|operator]]## is the only operator (or function) that can be declared multiple times when only the return type differs, but not the same as the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]## they are declared in.
+	
+	The ##**Cast**## ##[[KeyPgOperator|operator]]## allows conversions that can also be used on the right-hand side of expressions of construction (with initializer) and assignment (see example 1 below).
+	In addition to its explicit form usage ##Cast( [[DataType|datatype]], //expression// )##, the ##**Cast**## ##[[KeyPgOperator|operator]]## allows also implicit conversion into ##[[DataType|datatype]]## (see same example 1 below). For this not explicit usage, the compiler may decide which cast overload to call based on how the object is used.
+	
+	**Note:** The overloaded ##**Cast**## ##[[KeyPgOperator|operator]]## can convert only a UDT instance (not a built-in type variable) because it can be overloaded only as a member ##[[KeyPgOperator|operator]]## (not as a global operator).
+	To convert a built-in type variable into a UDT (not working syntax: ##Cast( //UDT//, //built_in_type_variable// )##), the best way into the UDT is to define a constructor or/and a Let operator, otherwise to use a ##**Cast**## ##[[KeyPgOperator|operator]]## but with return by reference (by an assignment: ##Cast( //built_in_datatype//, //UDT_instance// ) = //built_in_type_variable//##).
+	(see example 2 below)
+	
+	For implicit conversion from one UDT into another UDT, a ##**Cast**## ##[[KeyPgOperator|operator]]## in the first UDT can replace (in second priority) a constructor and a Let operator in the second UDT (see examples 3 and 4 below).
+	
+	**Warning:** For a ##**Cast**## operator that returns by value (no byref), do not use generally an exit code like ##Return //expression//## (or ##Operator = //expression//##) if ##//expression//## is an instance of ##//typename//##.
+	Such a ##**Cast**## operator code will induce an infinite loop when called, unless an implicit conversion from ##//typename//## to ##//datatype//## already exists through a matched constructor (or a let operator) for ##//datatype//##, so with a higher priority (see example 5 below).
+
+{{fbdoc item="ex"}}
+Very simple syntaxic example highlighting the conversion capabilities (explicit and implicit) by using Cast operators:
+{{fbdoc item="filename" value="examples/manual/casting/opcast1.bas"}}%%(freebasic)
+Type UDT
+  Dim As Integer I
+  Declare Operator Cast () As Integer
+  Declare Operator Cast () As String
+End Type
+
+Operator UDT.Cast () As Integer
+  Print "UDT.Cast() As Integer",
+  Return This.I
+End Operator
+
+Operator UDT.Cast () As String
+  Print "UDT.Cast() As String",
+  Return Str(This.I)
+End Operator
+
+
+Dim As UDT u
+
+u.I = 12
+Print Cast(Integer, u)               '' explicit conversion using the defined "Cast() As Integer" operator
+Print Cast(String, u)                '' explicit conversion using the defined "Cast() As String" operator
+Print u                              '' implicit conversion by compiler using the defined "Cast() As String" operator
+Print
+
+u.I = 34
+Dim As Integer J = Cast(Integer, u)  '' construction with explicit initialization using the defined "Cast() As Integer" operator
+Print J
+Dim As Integer K = u                 '' construction with implicit initialization by compiler using the defined "Cast() As Integer" operator
+Print K
+Print
+
+u.I = 56
+J = Cast(Integer, u)                 '' explicit assignment using the defined "Cast() As Integer" operator
+Print J
+K = u                                '' implicit assignment by compiler using the defined "Cast() As Integer" operator
+Print K
+Print
+
+u.I = 78
+Dim As String S = Cast(String, u)    '' construction with explicit initialization using the defined "Cast() As String" operator
+Print S
+Dim As String G = u                  '' construction with implicit initialization by compiler using the defined "Cast() As String" operator
+Print G
+Print
+
+u.I = 90
+S = Cast(String, u)                  '' explicit assignment using the defined "Cast() As String" operator
+Print S
+G = u                                '' implicit assignment by compiler using the defined "Cast() As String" operator
+Print G
+Print
+
+Sleep
+%%
+Workarounds for the not working syntax: ##//UDT_instance// = Cast( //UDT//, //built_in_type_variable// )##:
+(using constructor, Let operator, and a Cast operator which returns by reference)
+{{fbdoc item="filename" value="examples/manual/casting/opcast2.bas"}}%%(freebasic)
+Type UDT
+  As Integer I
+  Declare Constructor ()
+  Declare Constructor (ByVal I0 As Integer)
+  Declare Operator Let (ByVal I0 As Integer)
+  Declare Operator Cast () ByRef As Integer
+End Type
+
+Constructor UDT ()
+End Constructor
+
+Constructor UDT (ByVal I0 As Integer)
+  Print "UDT.Constructor(Byval As Integer)",
+  This.I = I0
+End Constructor
+
+Operator UDT.Let (ByVal I0 As Integer)
+  Print "UDT.Let(Byval As Integer)",,
+  This.I = I0
+End Operator
+
+Operator UDT.Cast () ByRef As Integer
+  Print "UDT.Cast() Byref As Integer",,
+  Return This.I
+End Operator
+
+
+Dim As UDT u
+
+'u = Cast(UDT, 12)     '' unsupported - error 20: Type mismatch
+u = UDT(34)            '' explicit conversion using the defined "Constructor(Byval As Integer)"
+Print u.I
+Print
+
+u = 56                 '' implicit conversion by compiler using the defined "Let(Byval As Integer)" operator
+Print u.I
+Print
+
+Cast(Integer, u) = 78  '' explicit conversion using the defined "Cast() Byref As Integer" operator with byref return
+Print u.I
+Print
+
+Sleep
+%%
+Conversion from UDT1 into UDT2, by using a constructor and a Let operator in UDT2:
+{{fbdoc item="filename" value="examples/manual/casting/opcast3.bas"}}%%(freebasic)
+Type _UDT1 As UDT1
+
+Type UDT2
+  Dim As Integer I2
+  Declare Constructor ()
+  Declare Constructor (Byref u As _UDT1)
+  Declare Operator Let (Byref u As _UDT1)
+End Type
+
+Constructor UDT2 ()
+End Constructor
+
+Type UDT1
+  Dim As Integer I1
+End Type
+
+Constructor UDT2 (Byref u As UDT1)
+  Print "UDT2.Constructor(Byref As UDT1)",
+  This.I2 = u.I1
+End Constructor
+
+Operator UDT2.Let (Byref u As UDT1)
+  Print "UDT2.Let(Byref As UDT1)",,
+  This.I2 = u.I1
+End Operator
+
+
+Dim As UDT1 u1
+
+u1.I1 = 123
+Dim As UDT2 u2 = u1  '' implicit conversion by compiler using the defined "UDT2.Constructor(Byref As UDT1)"
+Print u2.I2
+Print
+
+u1.I1 = 456
+u2 = u1              '' implicit conversion by compiler using the defined "UDT2.Let(Byref As UDT1)" operator
+Print u2.I2
+Print
+
+Sleep
+%%
+Conversion from UDT1 into UDT2, by using a Cast operator in UDT1:
+{{fbdoc item="filename" value="examples/manual/casting/opcast4.bas"}}%%(freebasic)
+Type UDT2
+  Dim As Integer I2
+End Type
+
+Type UDT1
+  Dim As Integer I1
+  Declare Operator Cast () As UDT2
+End Type
+
+Operator UDT1.Cast () As UDT2
+  Print "UDT1.Cast() As UDT2",,
+  Dim As UDT2 u
+  u.I2 = This.I1
+  Return u
+End Operator
+
+
+Dim As UDT1 u1
+
+u1.I1 = 123
+Dim As UDT2 u2 = u1  '' implicit conversion by compiler using the defined "UDT1.Cast() As UDT2" operator
+Print u2.I2
+Print
+
+u1.I1 = 456
+u2 = u1              '' implicit conversion by compiler using the defined "UDT1.Cast() As UDT2" operator
+Print u2.I2
+Print
+
+Sleep
+%%
+Conversion from UDT1 into UDT2, by using in UDT1 a Cast operator exiting by ##//Return This//##, but without infinite loop thanks to a matched Let operator in UDT2:
+{{fbdoc item="filename" value="examples/manual/casting/opcast5.bas"}}%%(freebasic)
+Type _UDT1 As UDT1
+
+Type UDT2
+  Dim As Integer I2
+  Declare Operator Let (ByRef u As _UDT1)
+End Type
+
+Type UDT1
+  Dim As Integer I1
+  Declare Operator Cast () As UDT2
+End Type
+
+Operator UDT1.Cast () As UDT2
+  Print "UDT1.Cast() As UDT2"
+  Return This                       '' implicit conversion by compiler using the defined "UDT2.Let(Byref As UDT1)" operator
+End Operator
+
+Operator UDT2.Let (ByRef u As UDT1)
+  Print "UDT2.Let(Byref As UDT1)"
+  This.I2 = u.I1
+End Operator
+
+
+Dim As UDT1 u1
+u1.I1 = 123
+
+Print Cast(UDT2, u1).I2
+
+Sleep
+%%
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgCast|Cast]]##
+	- ##[[KeyPgCptr|Cptr]]##
+	- ##[[KeyPgCint|Cint]]##
+	- ##[[KeyPgTypeof|Typeof]]##
+	- [[ProPgDataConversion|Coercion and Conversion]]
+	 
+{{fbdoc item="back" value="CatPgOpIndex|Operator List"}}

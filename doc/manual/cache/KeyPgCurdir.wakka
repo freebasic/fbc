@@ -28,6 +28,7 @@ print curdir
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen|Open]]##
 	- ##[[KeyPgDir|Dir]]##
+	- ##[[KeyPgChdir|Chdir]]##
 	- ##[[KeyPgMkdir|Mkdir]]##
 	- ##[[KeyPgRmdir|Rmdir]]##
 

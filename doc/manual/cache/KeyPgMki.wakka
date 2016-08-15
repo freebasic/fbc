@@ -18,9 +18,9 @@ Does a binary copy from an integer variable to a ##[[KeyPgString|string]]## of t
 
 {{fbdoc item="desc"}}
 	Does a binary copy from an ##[[KeyPgInteger|Integer]]## or ##[[KeyPgInteger|Integer]]<//bits//>## variable to a ##[[KeyPgString|string]]##, setting its length to the number of bytes in the type. The resulting string can be read back to an integer type using ##[[KeyPgCvi|Cvi]]## or ##[[KeyPgCvi|Cvi]]<//bits//>##.
-
+	
 	This function is useful to write numeric values to buffers without using a ##[[KeyPgType|Type]]## definition.
-
+	
 	##**mki**## supports an optional ##<//bits//>## parameter before the argument.  If ##//bits//## is ##16##, ##[[KeyPgMkshort|Mkshort]]## will be called instead; if ##//bits//## is ##32##, ##[[KeyPgMkl|Mkl]]## will be called; if ##//bits//## is ##64##, ##[[KeyPgMklongint|Mklongint]]## will be called.  The length of the return value and the required ##//number//## argument type will depend on which function is called.  See each function's page for more information.
 
 {{fbdoc item="ex"}}

@@ -12,8 +12,8 @@ Declares an alternative name for a type
 
 {{fbdoc item="desc"}}
 	##//symbol//## may refer to any declared data type including a built-in data type, ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]## pointer, ##[[KeyPgType|Type]]## declaration, ##[[KeyPgUnion|Union]]## declaration, or ##[[KeyPgEnum|Enum]]## declaration.
-
-	A type alias can be used to allow forward declarations of parameters in procedure declarations, but only used with pointers or parameters passed by reference (excluding arrays).
+	
+	A type alias can be used to allow forward declarations of parameters in procedure declarations, but only used with pointers or parameters passed by reference (excluding arrays). Generally the bodies of such procedures need to be implemented further in the code once the actual types are well defined.
 	A type alias can also be used to allow forward declarations of data fields in [[CatPgUserDefTypes|User Defined Types]], but only used with pointers.
 
 {{fbdoc item="ex"}}

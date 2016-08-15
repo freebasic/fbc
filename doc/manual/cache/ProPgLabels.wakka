@@ -8,7 +8,7 @@ Defines a location in a program.
 ##
 {{fbdoc item="desc"}}
 	Defines a place in a program where ##[[KeyPgGoto|Goto]]## or ##[[KeyPgGosub|Gosub]]## can jump to.
-
+	
 	A label can be a positive integer line number or a ##//symbolname//##. In both cases, the label must start at the first column of line. A ##//symbolname//## label must end with a colon (:) character.
 
 {{fbdoc item="ex"}}

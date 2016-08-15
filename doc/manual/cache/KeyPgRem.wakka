@@ -3,9 +3,9 @@ Indicates comments in the source code.
 
 {{fbdoc item="syntax"}}##
 	**Rem** comment
-
+	
 	' Comment
-
+	
 	/' Multi-line
 	   comment '/
 ##
@@ -13,7 +13,7 @@ Indicates comments in the source code.
 	A source code line beginning with ##**Rem**## indicates that the line is a comment and will not be compiled.  
 	
 	The single quote character (') may also be used to indicate a comment and may appear after other keywords on a source line.
-
+	
 	Multi-line comments are marked with the tokens ##**/'**## and ##**'/**##.  All text between the two markers is considered comment text and is not compiled.
 
 {{fbdoc item="ex"}}

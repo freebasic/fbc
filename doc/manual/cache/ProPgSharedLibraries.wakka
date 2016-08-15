@@ -14,13 +14,11 @@ Once the library is made, we can then use the code that it contains just as if w
 **{{anchor name="DYNAMIC|Loading Shared Libraries Dynamically"}}**
 
 {{anchor name="EXAMPLE1"}}{{fbdoc item="section" value="Shared Library Example"}}
-
 	Following is a simple example of creating a shared library using these three files:
-
 	- ##mylib.bas## - the source for the library
 	- ##mylib.bi## - the header for the library
 	- ##mytest.bas## - a test program
-
+	
 	Our library will be a single module providing a single function:
 	
 	{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/mylib.bas"}}%%(freebasic)
@@ -74,42 +72,35 @@ Print Add2(1,2)
 	Object files, and therefore shared libraries, are platform specific and in some cases specific to a particular version of the compiler and FreeBASIC runtime library.
 
 {{anchor name="WINDOWS"}}{{fbdoc item="section" value="Using Shared Libraries on Windows"}}
-
 	On Windows, the shared library must be stored in a location where it can be found by the executable that needs it a run-time.  
 	
 	The operating system may search the following directories:
-
 	- The directory from which the executable was loaded.
 	- The current directory.
 	- The Windows and Windows system folder.
 	- Directories list in the ##PATH## environment variable.
-
+	
 	The order in which directories are searched may depend on the Windows version in use, and on what settings that the operating system is configured with.
 
 {{anchor name="LINUX"}}{{fbdoc item="section" value="Using Shared Libraries on Linux"}}
-
 	By default, Linux will not normally search the current directory or the directory from which the executable was loaded.  You will need to either:
-
 	- copy the .so file to a directory that has shared libraries (e.g. ##/usr/lib##) and run ##ldconfig## to configure the library.
 	- modify the environment variable LD_LIBRARY_PATH to search the current directory or a specific directory for the newly created shared library.
-
+	
 	To run the executable ##./mytest/## and temporarily tell linux to search the current directory, use the following shell command:
 	%%LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH ./mytest%%
 
 {{anchor name="EXPORT"}}{{fbdoc item="section" value="Executables that export symbols"}}
-
 	If an executable has symbols that must be available to other shared libraries when those shared libraries are loaded, use the ##[[KeyPgExport|Export]]## procedure declaration specifier, and the //[[CompilerOptexport|-export]]// command line option when making (linking) the executable.
 	
 	The //[[CompilerOptexport|-export]]// option has no extra effect when used with the //[[CompilerOptdylib|-dylib]]// or //[[CompilerOptdll|-dll]]// command line options.
 
 {{anchor name="DYNAMIC"}}{{fbdoc item="section" value="Loading Shared Libraries Dynamically"}}
-
 	Shared libraries can be loaded and used at run time by dynamically loading the library and its symbols at runtime.
-
 	- ##[[KeyPgDylibload|Dylibload]]## can be used to load and obtain a handle to a shared library.
 	- ##[[KeyPgDylibsymbol|Dylibsymbol]]## is used to obtain the address of a symbol in a loaded shared library.
 	- ##[[KeyPgDylibfree|Dylibfree]]## is used to unload a shared library when it is no longer needed.
-
+	
 	Procedures in the shared library must use the ##[[KeyPgExport|Export]]## specifier to ensure that the symbols name is placed in the shared library's export table.
 	
 	{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/mydll.bas"}}%%(freebasic)

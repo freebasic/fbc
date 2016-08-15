@@ -4,7 +4,7 @@ During the program compilation three types of errors can arise:
 ==Compiler Warnings:==
 	The warnings don't stop the compilation, just alert the user some non-recommended and error-prone operation is attempted in the code. 
 	Sometimes one of these operations is coded deliberately to achieve a result, in this case the warnings can be disabled by setting  the //[[CompilerOptw|-w 1]]// option at the command line.
-
+	
 	- //1 Passing scalar as pointer//
 	- //2 Passing pointer to scalar//
 	- //3 Passing different pointer types//
@@ -47,7 +47,7 @@ During the program compilation three types of errors can arise:
 
 ==Compiler Error messages:==
 	The error messages stop the compilation after 10 errors (see the -maxerr command-line option to change that default value) or a fatal error occurred, and require a correction by the user before the compilation can be continued. The compiler signals the lines where the errors have been found, so the correction can be done quickly. In a few cases the place pointed at by the error messages is not where the errors can be found, it's the place where the compiler has given up in waiting for something that should be somewhere.
-
+	
 	- //1 Argument count mismatch//
 	- //2 Expected End-of-File//
 	- //3 Expected End-of-Line//
@@ -374,7 +374,7 @@ During the program compilation three types of errors can arise:
 
 ==Third party programs errors==
 	These errors occur after the source has been compiled into assembler, they come from the auxiliary programs FB requires to compile a source into an executable: the linker, the assembler and (for Windows programs) the resource compiler.
-
+	
 	If an IDE or a make utility are been used, additional errors can arise. These errors are outside the scope of this help.
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

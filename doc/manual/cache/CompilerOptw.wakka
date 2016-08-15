@@ -20,9 +20,9 @@ Set minimum warning level.
 
 {{fbdoc item="desc"}}
 	The ##-w## compiler option determines which compiler warnings, if any, are output. Each possible warning is associated with a warning level, starting from zero (##0##) and increasing with the potential problems that may occur. A significantly high ##//level//## value will have the effect of suppressing all warning messages.
-
+	
 	Note that the ##**param**##, ##**escape**##, ##**pedantic**## and ##**next**## arguments provide additional warnings not ordinarily output, even by default.
-
+	
 	If the ##**-w**## option is not specified, it's as if ##**-w 0**## was used. The ##**-w**## option can be specified multiple times.
 
 {{fbdoc item="see"}}

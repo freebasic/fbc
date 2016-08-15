@@ -36,7 +36,7 @@ Print p->a
 Print p->b
 %%
 	The first method uses ##[[KeyPgOpMemberAccess|Operator . (Member access)]]##. This operator accesses members from references, so the pointer is dereferenced first. The member access operator has higher priority over the dereference operator, so parenthesis are needed to dereference the pointer before using it with the member access operator.
-
+	
 	The second method uses ##[[KeyPgOpPtrMemberAccess|Operator -> (Pointer to member access)]]##. This operator accesses members from pointers, which are automatically dereferenced. This can make code a little clearer, although both forms produce identical results.
 
 {{fbdoc item="see"}}

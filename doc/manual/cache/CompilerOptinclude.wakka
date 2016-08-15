@@ -10,9 +10,9 @@ Include a header file on each source compiled
 
 {{fbdoc item="desc"}}
 	The ##**-include**## option has the effect of adding an ##[[KeyPgInclude|#include]]## preprocessor directive to the very beginning of each source file before processing it. When used multiple times, the files will be included in the order they are listed on the command-line.
-
+	
 	To include the file //header.bi// when processing //file1.bas// and //file2.bas//, type,
-
+	
 		##fbc -include header.bi file1.bas file2.bas##
 
 {{fbdoc item="see"}}

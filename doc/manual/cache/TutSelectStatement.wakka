@@ -67,14 +67,14 @@ Dim As Integer keycode
 Do
 	keycode = Asc(Inkey)
 	Select Case As Const keycode
-	    Case 48 To 57
-	        Print "You pressed a number key."
-	    Case 65 To 90
-	        Print "You pressed an upper case letter key."
-	    Case 97 To 122
-	        Print "You pressed a lower case key."
-	    End Select
-	    Sleep 1
+		Case 48 To 57
+			Print "You pressed a number key."
+		Case 65 To 90
+			Print "You pressed an upper case letter key."
+		Case 97 To 122
+			Print "You pressed a lower case key."
+		End Select
+		Sleep 1
 Loop Until keycode = 27 '27 is the ascii code for Escape
 
 End
@@ -94,11 +94,11 @@ Dim As Integer keycode
 Do
 	keycode = Asc(Inkey)
 	If (keycode >= 48) And (keycode <= 57) Then
-	    Print "You pressed a number key."
+		Print "You pressed a number key."
 	Elseif (keycode >= 65) And (keycode <= 90) Then
-	    Print "You pressed an upper case letter key."
+		Print "You pressed an upper case letter key."
 	Elseif (keycode >= 97) And (keycode <= 122) Then
-	    Print "You pressed a lower case key."
+		Print "You pressed a lower case key."
 	End If
 	Sleep 1
 Loop Until keycode = 27 '27 is the ascii code for Escape

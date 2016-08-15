@@ -12,7 +12,7 @@ Reads one line of text from a file
 
 {{fbdoc item="desc"}}
 	Reads a line from an open text file (opened for ##[[KeyPgInputfilemode|Input]]## through a bound file number) and stores it in a string variable.  
-
+	
 	A line of text ends at, but does not include the end of line characters.  An end of line character may be the ##LF## character (##[[KeyPgChr|Chr]](10)##) or the ##CRLF## character pair (##[[KeyPgChr|Chr]](13,10)##).
 
 {{fbdoc item="ex"}}
@@ -33,6 +33,7 @@ print s
 	- None
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgLineInput|Line Input]]##
 	- ##[[KeyPgInputPp|Input #]]##
 	- ##[[KeyPgOpen|Open]]##
 	- ##[[KeyPgInputfilemode|Input (file mode)]]##

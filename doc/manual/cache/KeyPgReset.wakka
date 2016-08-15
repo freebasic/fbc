@@ -16,9 +16,9 @@ Closes all open files, or resets standard I/O handles.
 
 {{fbdoc item="desc"}}
 	##**Reset**##, when called with no arguments, closes all disk files.
-
+	
 	##**Reset**##, when called with the ##//streamno//## argument, will reset the redirected or piped streams associated with stdin (##0##), or stdout (##1##).
-
+	
 **Runtime errors:**
 	##**Reset(//streamno//)**## can set one of the following [[ProPgErrorHandling|runtime errors]]:
 	

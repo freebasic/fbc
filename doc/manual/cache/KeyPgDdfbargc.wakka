@@ -6,14 +6,14 @@ Intrinsic define (macro value) set by the compiler
 ##
 {{fbdoc item="desc"}}
 	Substituted with the number of arguments passed in on the command line.
-
+	
 	**""__FB_ARGC__""** is the name of a parameter passed to the program's implicit main function, and therefore is only defined in the module level code of the main module for an application.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbargc.bas"}}%%(freebasic)
 dim i as integer
 for i = 0 to __FB_ARGC__ - 1
-	    print "arg "; i; " = '"; command(i); "'"
+		print "arg "; i; " = '"; command(i); "'"
 next i
 %%
 

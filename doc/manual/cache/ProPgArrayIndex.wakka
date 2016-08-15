@@ -3,7 +3,7 @@ An array index is the number used to access an [[ProPgArrays|Array]] of [[ProPgV
 
 {{fbdoc item="desc"}}
 	The following examples illustrate the use of array elements.
-
+	
 	If we have an array ##myArray## with elements of 1 to 10, filled with random data:
 %%
 Index        Data
@@ -18,7 +18,7 @@ Index        Data
 9              5
 10             7
 %%
-
+	
 	One can access each piece of data separately by pointing to the Index of the array element:
 	%%(freebasic)
 	Print myArray(5)
@@ -54,7 +54,6 @@ Index        Data
 	Value = int(rnd(1) * 10) + 1 'This line will do the same
 	myArray(index) = Value
 	%%
-
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/proguide/arrays/indexing.bas"}}%%(freebasic)

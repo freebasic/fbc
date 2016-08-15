@@ -7,13 +7,12 @@ Returns the hexadecimal of the given number
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
-
+	
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Hex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
-	
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Hex**[$]( //number// [, //digits// ] )
@@ -29,11 +28,11 @@ Returns the hexadecimal of the given number
 
 {{fbdoc item="desc"}}
 	Returns the unsigned hexadecimal string representation of the integer ##//number//##. Hexadecimal digits range from 0-9, or A-F.
-
+	
 	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
-
+	
 	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (8 for a ##[[KeyPgLong|long]]##, 16 for a ##[[KeyPgLongint|longint]])##.
-
+	
 	If you want to do the opposite, i.e. convert a hexadecimal string back into a number, the easiest way to do it is to prepend the string with ##"&H"##, and convert it to an integer type, using a function like ##[[KeyPgCint|Cint]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgCint|Cint]]("&HFF")##
 
 {{fbdoc item="ex"}}

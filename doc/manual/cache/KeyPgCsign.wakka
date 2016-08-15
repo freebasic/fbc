@@ -9,7 +9,7 @@ Converts an expression to signed
 ##
 {{fbdoc item="desc"}}
 	Converts an unsigned ##//expression//## to a signed one, useful to force signed behavior of division or multiplication (including with ##[[KeyPgOpShiftLeft|Shl]]## and ##[[KeyPgOpShiftRight|Shr]]##).
-
+	
 	This is the opposite of ##[[KeyPgCunsg|Cunsg]]##.
 
 {{fbdoc item="ex"}}

@@ -18,7 +18,7 @@ Renames a file on disk
 
 {{fbdoc item="desc"}}
 	Renames a file or folder originally called ##//oldname//## to ##//newname//##.
-
+	
 	The function is not guaranteed to succeed if a file/folder exists with the same name.  It may  succeed, overwriting the original, or it may fail.  For greater control, ##[[KeyPgFileexists|FileExists]]## could be used to test for an existing file, and ##[[KeyPgKill|Kill]]## could be used to delete an existing file beforehand.
 
 {{fbdoc item="ex"}}

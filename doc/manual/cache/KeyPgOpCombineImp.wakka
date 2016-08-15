@@ -19,12 +19,11 @@ Performs a bitwise-imp (implication) and assigns the result to a variable
 
 {{fbdoc item="desc"}}
 	This operator performs a bitwise-imp and assigns the result to a variable (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value). It is functionally equivalent to:
-##
-		//lhs// = //lhs// [[KeyPgOpImp|imp]] //rhs//
-##
+		##//lhs// = //lhs// [[KeyPgOpImp|imp]] //rhs//##
+	
 	##**Imp**## is a bitwise operator which is the same as (##[[KeyPgOpNot|Not]]## ##//lhs//##) ##[[KeyPgOpOr|Or]]## ##//rhs//##.  ##**Imp=**## compares each bit of its operands, ##//lhs//## and ##//rhs//##, and if the bit in ##//lhs//## is 0 or the bit in ##//rhs//## is 1, then the corresponding bit in the first operand, ##//lhs//##, is set to 1, otherwise it is set to 0.
-
-	This operator can be overloaded for user-defined types.
+	
+	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/imp-assign.bas"}}%%(freebasic)

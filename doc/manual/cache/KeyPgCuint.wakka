@@ -4,7 +4,7 @@ Converts numeric or string expression to a ##[[KeyPgUinteger|Uinteger]]## or ##[
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cuint** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cuint**<//bits//> ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]<//bits//>
-
+	
 	[[KeyPgType|Type]] //typename//
 		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]
 		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]<//bits//>

@@ -29,9 +29,9 @@ Returns a string representation of a number, boolean or Unicode character string
 
 {{fbdoc item="desc"}}
 	##**Str**## converts numeric variables to their string representation. Used this way it is the ##[[KeyPgString|String]]## equivalent to ##[[KeyPgWstr|Wstr]]## applied to numeric variables, and the opposite of the ##[[KeyPgVal|Val]]## function, which converts a string into a number.
-
+	
 	##**Str**## converts boolean variables to their string representation "false" / "true".
-
+	
 	##**Str**## also converts Unicode character strings to ASCII character strings. Used this way it does the opposite of ##[[KeyPgWstr|Wstr]]##. If an ASCII character string is given, that string is returned unmodified.
 
 {{fbdoc item="ex"}}

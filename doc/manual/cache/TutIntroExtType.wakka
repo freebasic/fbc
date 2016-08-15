@@ -124,9 +124,9 @@ Type myRect
 	Declare Property FillColor() As Integer
 	Declare Constructor()
 	Declare Constructor(xx_ As Integer, yy_ As Integer, w_ As Integer, _
-	                    h_ As Integer, f_ As Integer, oc_ As Integer, _
-	                    fc_ As Integer)
-	                    
+						h_ As Integer, f_ As Integer, oc_ As Integer, _
+						fc_ As Integer)
+						
 End Type
 %%
 You will notice in the definition that we have two Constructors, one that takes a set of parameters and one that doesn't. This is called overloading and can be used not only with Constructors but also with other subroutines and functions. Overloading is useful for situations where you need to handle different parameter types with a single method call. The compiler will determine which method to call based on the parameters passed to the method. You can overload as many methods as you want, as long as the number and type of parameters for each method is unique.
@@ -167,14 +167,14 @@ Type myRect
 	Declare Property FillColor() As Integer
 	Declare Constructor()
 	Declare Constructor(xx_ As Integer, yy_ As Integer, w_ As Integer, _
-	                    h_ As Integer, f_ As Integer, oc_ As Integer, _
-	                    fc_ As Integer)
+						h_ As Integer, f_ As Integer, oc_ As Integer, _
+						fc_ As Integer)
 End Type
 
 Sub myRect.DrawRect()
 	Line (this.x_, this.y_)-(this.x_ + Width - 1, this.y_ + this.height_ - 1), this.Otlncolor_, B
 	If this.Filled_ <> 0 Then
-	    Paint (this.x_ + 1, this.y_ + 1), this.Fillcolor_, this.Otlncolor_
+		Paint (this.x_ + 1, this.y_ + 1), this.Fillcolor_, this.Otlncolor_
 	End If   
 End Sub
 
@@ -245,8 +245,8 @@ Constructor myRect
 End Constructor
 
 Constructor MyRect (xx_ As Integer, yy_ As Integer, w_ As Integer, _
-	                    h_ As Integer, f_ As Integer, oc_ As Integer, _
-	                    fc_ As Integer)
+						h_ As Integer, f_ As Integer, oc_ As Integer, _
+						fc_ As Integer)
 
 	this.X_ = xx_
 	this.Y_ = yy_
@@ -290,14 +290,14 @@ Type myRect
 	Declare Property FillColor() As Integer
 	Declare Constructor()
 	Declare Constructor(xx_ As Integer, yy_ As Integer, w_ As Integer, _
-	                    h_ As Integer, f_ As Integer, oc_ As Integer, _
-	                    fc_ As Integer)
+						h_ As Integer, f_ As Integer, oc_ As Integer, _
+						fc_ As Integer)
 End Type
 
 Sub myRect.DrawRect()
 	Line (this.x_, this.y_)-(this.x_ + this.Width_ - 1, this.y_ + this.height_ - 1), this.Otlncolor_, B
 	If this.Filled_ <> 0 Then
-	    Paint (this.x_ + 1, this.y_ + 1), this.Fillcolor_, this.Otlncolor_
+		Paint (this.x_ + 1, this.y_ + 1), this.Fillcolor_, this.Otlncolor_
 	End If   
 End Sub
 
@@ -368,8 +368,8 @@ Constructor myRect
 End Constructor
 
 Constructor MyRect (xx_ As Integer, yy_ As Integer, w_ As Integer, _
-	                    h_ As Integer, f_ As Integer, oc_ As Integer, _
-	                    fc_ As Integer)
+						h_ As Integer, f_ As Integer, oc_ As Integer, _
+						fc_ As Integer)
 
 	this.X_ = xx_
 	this.Y_ = yy_

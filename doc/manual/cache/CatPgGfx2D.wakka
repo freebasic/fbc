@@ -24,7 +24,7 @@ Statements and procedures for working with 2D graphics.
 		Returns a color value including alpha (transparency) for hi/truecolor modes.
 	=={{fbdoc item="keyword" value="KeyPgPoint|POINT"}}==
 		Gets a pixel value from an image buffer or screen.
-
+	
 {{anchor name="DRAWING"}}{{fbdoc item="section" value="Drawing to Image Buffers"}}
 	=={{fbdoc item="keyword" value="KeyPgPset|PSET"}} and {{fbdoc item="keyword" value="KeyPgPreset|PRESET"}}==
 		Plots a single pixel on an image buffer or screen.
@@ -54,11 +54,10 @@ Statements and procedures for working with 2D graphics.
 		Creates an image buffer from a file.
 	=={{fbdoc item="keyword" value="KeyPgBsave|BSAVE"}}==
 		Saves an image buffer to a file.
-
 <<>>{{anchor name="BLITTING"}}{{fbdoc item="section" value="Blitting Image Buffers"}}
 	=={{fbdoc item="keyword" value="KeyPgPutgraphics|PUT (GRAPHICS)"}}==
 		Blits an image buffer to another image buffer or screen.
-
+	
 	{{fbdoc item="subsect" value="Blending Methods"}}
 		=={{fbdoc item="keyword" value="KeyPgAddGfx|ADD"}}==
 			Saturated addition of the source and target components.
@@ -76,7 +75,6 @@ Statements and procedures for working with 2D graphics.
 			Allows a custom blending procedure to be used.
 		=={{fbdoc item="keyword" value="KeyPgXorGfx|XOR"}}==
 			Combine the source and target components using a bitwise ##[[KeyPgOpXor|Xor]]##
-
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -6,7 +6,7 @@ Intrinsic define (macro value) set by the compiler
 ##
 {{fbdoc item="desc"}}
 	##""__FB_OPTION_EXPLICIT__""## indicates if ##[[KeyPgOptionexplicit|Option Explicit]]## has been used previously in the source.  
-
+	
 	Returns zero (0) if the option has not been set.  Returns non-zero (-1) if the option has been set.
 
 {{fbdoc item="ex"}}

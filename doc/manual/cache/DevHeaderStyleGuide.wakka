@@ -4,14 +4,14 @@
 This guide is not a [[http://www.cprogramming.com/tutorial.html#ctutorial|C tutorial]] or a [[DevTranslateHeader|step by step guide]] for converting headers. This is a style guide which represents the ##ideal## header we would like to maintain. Currently not all of the headers under our control conform to this guide 100%, but work is in progress to do this and all new contributions should attempt to use these standards. 
 
 ====General====
-
+	
 	- Translations should be very close to the original, so they look familiar and can be updated easily.
 	- Identifiers (including any #defines) should not be changed unless absolutely necessary.
 	- Smaller files may be combined into one bigger header, if they would be #included anyways and all belong to the same library.
 	- Original license should be retained. 
 
 ====Coding style====
-
+	
 	- Headers need to work with the latest ""FreeBASIC"" version.
 	- Naming conflicts between multiple identifiers (due to ""FreeBASIC""'s case insensitivity) or an identifier and a ""FreeBASIC"" keyword should be resolved by appending an underscore to one identifier.
 	- extern "c" blocks should be used instead of cdecl alias "..." for function declarations or function pointer types.
@@ -19,7 +19,7 @@ This guide is not a [[http://www.cprogramming.com/tutorial.html#ctutorial|C tuto
 	- ""FreeBASIC"" keywords should be lower-case. 
 
 ====Dealing with constructs not supported by ""FreeBASIC""====
-
+	
 	- Inline functions should be converted to a macro if appropriate.
 	- Preprocessor directives inside structure declarations, function bodies, or similar may need to be moved outside because in ""FreeBASIC"" they'd be scoped.
 	- Declarations spread across multiple lines with preprocessor directives in between them (for example function declarations, or array initializers) will need to be manually rewritten

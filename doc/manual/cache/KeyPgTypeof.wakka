@@ -4,7 +4,6 @@ Returns the type of a variable.
 {{fbdoc item="syntax"}}##
 	**Typeof** ( //variable// | //datatype// )
 ##
-
 {{fbdoc item="param"}}
 	##//variable//##
 		A variable of any type.

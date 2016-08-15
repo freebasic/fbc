@@ -16,29 +16,28 @@ Opens the console directly for input and output as a file
 		An unused file number.
 
 {{fbdoc item="ret"}}
-	Zero (##0##) is returned if ##**Open Err**## completed successfully, otherwise a non-zero value is returned to indicate failure.
+	A 32 bit ##[[KeyPgLong|Long]]##: a zero (##0##) is returned if ##**Open Scrn()**## completed successfully, otherwise a non-zero value is returned to indicate failure.
 
 {{fbdoc item="desc"}}
 	This command opens the console for both input and output as a file, allowing to read/write from/to it with normal file commands.
-
+	
 	This command may use direct access to the console for speed in some implementations, so  it should not be used when the input / output is required to be redirected or piped with OS commands.    
-
+	
 	The normal console commands, such as ##[[KeyPgColor|Color]]## and ##[[KeyPgLocate|Locate]]##, do not work in this mode, because they do not accept a file number.
-
+	
 	The ##[For Input|Output]## clause is allowed for compatibility, but is ignored.
-
+	
 	##//filenum//## is an unused file number.
-
+	
 	An unused file number can be found using ##[[KeyPgFreefile|FreeFile]]##.
-
+	
+	The error code returned by ##**Open Scrn**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Open Scrn**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 	
 **Runtime errors:**
-	    ##**Open Cons**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
-
+	##**Open Scrn**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
+	
 	//(##1##) Illegal function call//
-		- ##//filenumber//## was not free at the time. use ##[[KeyPgFreefile|Freefile]]## to ensure that ##//filenumber//## is free.
-		
-		
+		- ##//filenumber//## was not free at the time. use ##[[KeyPgFreefile|Freefile]]## to ensure that ##//filenumber//## is free.	
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/openscrn.bas"}}%%(freebasic)

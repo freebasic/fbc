@@ -8,14 +8,14 @@ Variable initializers are supported for initializing Arrays, variables and UDTs.
 ##
 {{fbdoc item="desc"}}
 	Arrays, variables and UDTs may be given a value at the time of their declaration using ##[[KeyPgDim|Dim]]##, with the syntax shown above.  Please note the important differences between initializing different types.  Scalar variables are initialized as they would in a normal assignment, using an equals sign.  UDTs and arrays are assigned with an equal sign followed by a greater than symbol (=>).  Array values are given in comma delimited values enclosed by curly brackets, and UDT values are given in comma delimited values enclosed by parenthesis.
-
+	
 	These methods of initializing variables can be nested within one another for complex assignments.  For instance, to initialize a multidimensional array:
 
 {{fbdoc item="filename" value="examples/manual/proguide/init/array.bas"}}%%(freebasic)
 DIM array(1 to 2, 1 to 5) as Integer => {{1, 2, 3, 4, 5}, {1, 2, 3, 4, 5}}
 %%
 	In this declaration, the values for the left-most dimension are given as 5-index arrays.  Nesting allows for arrays of any dimension to be initialized.
-
+	
 	UDTs and arrays can be nested within each other as well.  For instance, the following code declares and initializes an array of UDTs.
 
 {{fbdoc item="filename" value="examples/manual/proguide/init/udtarray.bas"}}%%(freebasic)

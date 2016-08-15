@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Keyboard Input"}}----
 
 {{fbdoc item="section" value="Basics"}}
-
+	
 	Using FB's built-in functionality, there are four ways of getting keyboard input:
 	
 		- ##[[KeyPgInkey|inkey()]]## returns a string containing an ASCII char corresponding to the key pressed by the user, or a 2-byte FB extended keycode for some special keys, such as the Arrow keys or Page Up/Down. It works pretty much like it did in QB.
@@ -28,7 +28,7 @@
 	by using function pointer hooks.
 
 {{fbdoc item="section" value="rtlib"}}
-
+	
 	The rtlib has separate console-mode implementations of the above functions, for each platform:
 	
 	- DOS
@@ -59,7 +59,7 @@
 		In X11 mode (used under 'xterm' terminal), ##fb_ConsoleMultikey()## sets the background thread's ##""__fb_con.keyboard_handler()""## to a function that checks whether the xterm has input focus (##""XGetInputFocus()""##) and if yes, simply uses ##""XQueryKeymap()""## to update the key state table for ##fb_ConsoleMultikey()##.
 
 {{fbdoc item="section" value="gfxlib2"}}
-
+	
 	In the gfxlib, ##fb_GfxInkey()## and ##fb_GfxGetkey()## use one key buffer (same code on all platforms), to which the different/platform-specific gfx drivers post keys to. Similar to that, there is a single key state table for ##fb_GfxMultikey()##, and it is also updated by the gfx drivers. Whether or not the gfx drivers actually do post keys or update key states is up to them though.
 	
 	- DOS

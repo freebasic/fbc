@@ -41,15 +41,13 @@ The FB rtlib source code depends on [[http://sourceware.org/libffi/|libffi]] hea
 Prebuilt versions of libffi are available from the [[http://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/Libraries/|fbc downloads area]].
 
 If you do not want to use a prebuilt version, but prefer to compile libffi manually instead, it is fairly simple. libffi uses the autotools (autoconf, automake, libtool) build system, so the corresponding packages have to be installed for ""MinGW""/MSYS. Open the MSYS bash (with the proper PATH settings).
-
-	- 32bit:
 	
+	- 32bit:
 	
 		%%$ ./configure
 $ make%%
 	
 	- 64bit: This requires working around MSYS' ##uname## which still returns 32bit even on 64bit:
-	
 	
 		%%$ ./configure --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32
 $ make%%
@@ -65,14 +63,13 @@ We will need a working FB-win32 installation to bootstrap the new FB compiler. I
 {{fbdoc item="subsect" value="Building the new FB setup"}}
 
 If you want to create a [[DevNormalVsStandalone|traditional standalone]] FB-win32 setup like the one from the ##""FreeBASIC-X.XX.X-win32""## release package, you need to tell FB's makefile by setting the ENABLE_STANDALONE variable. Furthermore, in order to compile for 64bit it is necessary to set the ##TARGET_ARCH## variable manually, because MSYS' ##uname -m## command does not support 64bit and thus the FB makefile would mis-detect the system as 32bit. Assuming the FB sources are located at ##""C:\fbc""##, create a ##""C:\fbc\config.mk""## file containing the following:
-
-	- 32bit:
 	
+	- 32bit:
 	
 		%%ENABLE_STANDALONE = 1
 %%
-	- 64bit:
 	
+	- 64bit:
 	
 		%%ENABLE_STANDALONE = 1
 
@@ -88,15 +85,15 @@ $ make FBC=C:/FreeBASIC-X.XX.X-win32/fbc.exe
 
 This should have produced the ##fbc.exe## compiler and the libraries in ##lib\win32\## or ##lib\win64\## respectively. To complete this new FB setup, you need to add the binutils (as.exe, ar.exe, ld.exe, dlltool.exe) into ##bin\win32\## and copy in some ""MinGW"" libraries into ##lib\win32\##.
 
-	1) Copy to ##""C:\fbc\bin\win32""## (32bit) or ##""C:\fbc\bin\win64""## (64bit):
+	-Copy to ##""C:\fbc\bin\win32""## (32bit) or ##""C:\fbc\bin\win64""## (64bit):
 		- ##""C:\MinGW-w64\bin\{ar,as,ld,dlltool}.exe""##
 		- ##""GoRC.exe""## from [[http://www.godevtool.com/]]
 	
-	1) For 64bit, or for using -gen gcc on 32bit, gcc.exe and cc1.exe are needed too.
+	-For 64bit, or for using -gen gcc on 32bit, gcc.exe and cc1.exe are needed too.
 		- Copy ##""C:\MinGW-w64\bin\gcc.exe""## to ##""C:\fbc\bin\win{32|64}""##
 		- Copy ##""C:\MinGW-w64\libexec\gcc\[target]\[version]\cc1.exe""## to ##""C:\fbc\bin\libexec\gcc\[target]\[version]\cc1.exe""##
 	
-	1) Copy to ##""C:\fbc\lib\win32""## (32bit) or ##""C:\fbc\lib\win64""## (64bit):
+	-Copy to ##""C:\fbc\lib\win32""## (32bit) or ##""C:\fbc\lib\win64""## (64bit):
 		- ##""C:\MinGW-w64\[target]\lib\{crt2,dllcrt2,gcrt2}.o""##
 		- ##""C:\MinGW-w64\[target]\lib\lib{gmon,mingw32,mingwex,moldname}.a""##
 		- ##""C:\MinGW-w64\[target]\lib\lib{advapi32,gdi32,kernel32,msvcrt,user32,winmm,winspool}.a""## //(rename to ##lib*.dll.a## if wanted)//
@@ -125,10 +122,10 @@ We will need a working fbc installation to bootstrap the new FB compiler. If you
 {{fbdoc item="subsect" value="Building the new FB setup"}}
 
 In order to create a normal (non-standalone) build, just compile FB without specifying ##ENABLE_STANDALONE##. However, in order to compile for 64bit it is necessary to set the ##TARGET_ARCH## variable manually, because MSYS' ##uname -m## command does not support 64bit and thus the FB makefile would mis-detect the system as 32bit.
-
-	- 32bit: no ##config.mk## needed.
-	- 64bit: Create a ##config.mk## containing the following:
 	
+	- 32bit: no ##config.mk## needed.
+	
+	- 64bit: Create a ##config.mk## containing the following:
 	
 		%%# Manually set TARGET_ARCH to override uname check for 64bit
 TARGET_ARCH = x86_64

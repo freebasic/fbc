@@ -13,12 +13,12 @@ Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which selects a
 
 {{fbdoc item="desc"}}
 	##**Alpha**## selects alpha blending as the method for ##[[KeyPgPutgraphics|Put]]##ting an image.  If the ##//alphaval//## parameter is specified, it overrides the alpha value of each pixel, and the mask color (magenta) will be treated as transparent.  This works in 15, 16, 24, or 32-bit color depths.
-
+	
 	If ##//alphaval//## is not specified, ##**Alpha**## will only work in 32-bit color depth, and ##[[KeyPgPutgraphics|Put]]## will use the alpha value embedded within each pixel.  Pixels using the mask color will be treated as normal, and drawn with their given alpha value.
 	
 	##**Alpha**## also has another mode which allows an 8-bit image to be ##[[KeyPgPutgraphics|Put]]## on top of a 32-bit image.  In this case, it will replace the alpha channel of the 32-bit image with the contents of the 8-bit image.
-
-	    Alpha values range between 0 and 255.  An alpha value of 0 will not draw the image at all.  All other alpha values are incremented by 1 to get a range between 2 and 256, and the result is then divided by 256 to get a value between 1/128 and 1, which is used to calculate the exact value of each pixel from the source and destination pixels.  Thus, 255 is practically equivalent to drawing using Put with Trans blitting mode, 0 is equivalent to doing nothing at all, and all the other alpha values blend is expected.
+	
+		Alpha values range between 0 and 255.  An alpha value of 0 will not draw the image at all.  All other alpha values are incremented by 1 to get a range between 2 and 256, and the result is then divided by 256 to get a value between 1/128 and 1, which is used to calculate the exact value of each pixel from the source and destination pixels.  Thus, 255 is practically equivalent to drawing using Put with Trans blitting mode, 0 is equivalent to doing nothing at all, and all the other alpha values blend is expected.
 
 {{fbdoc item="ex"}}
 	This example compares the two different ##**Alpha**## modes, including how they react to the mask color
@@ -29,7 +29,7 @@ screenres 320, 200, 32
 '' Draw checkered background
 for y as integer = 0 to 199
 	for x as integer = 0 to 319
-	    pset (x, y), iif((x shr 2 xor y shr 2) and 1, rgb(160, 160, 160), rgb(128, 128, 128))
+		pset (x, y), iif((x shr 2 xor y shr 2) and 1, rgb(160, 160, 160), rgb(128, 128, 128))
 	next x
 next y
 
@@ -37,23 +37,23 @@ next y
 dim img as any ptr = imagecreate(32, 32, rgba(0, 0, 0, 0))
 for y as single = -15.5 to 15.5
 	for x as single = -15.5 to 15.5
-	    dim as integer r, g, b, a
-	    if y <= 0 then
-	        if x <= 0 then
-	            r = 255: g = 0: b = 0   '' red
-	        else
-	            r = 0: g = 0: b = 255   '' blue
-	        end if
-	    else
-	        if x <= 0 then
-	            r = 0: g = 255: b = 0   '' green
-	        else
-	            r = 255: g = 0: b = 255 '' magenta (transparent mask color)
-	        end if
-	    end if
-	    a = 255 - (x ^ 2 + y ^ 2)
-	    if a < 0 then a = 0': r = 255: g = 0: b = 255
-	    pset img, (15.5 + x, 15.5 - y), rgba(r, g, b, a)
+		dim as integer r, g, b, a
+		if y <= 0 then
+			if x <= 0 then
+				r = 255: g = 0: b = 0   '' red
+			else
+				r = 0: g = 0: b = 255   '' blue
+			end if
+		else
+			if x <= 0 then
+				r = 0: g = 255: b = 0   '' green
+			else
+				r = 255: g = 0: b = 255 '' magenta (transparent mask color)
+			end if
+		end if
+		a = 255 - (x ^ 2 + y ^ 2)
+		if a < 0 then a = 0': r = 255: g = 0: b = 255
+		pset img, (15.5 + x, 15.5 - y), rgba(r, g, b, a)
 	next x
 next y
 
@@ -91,9 +91,9 @@ color 255, 0
 img8 = imagecreate(64, 64, 0,  8)
 for y = 0 to 63
 	for x = 0 to 63
-	    dim as single x2 = x - 31.5, y2 = y - 31.5
-	    dim as single t = sqr(x2 ^ 2 + y2 ^ 2) / 5
-	    pset img8, (x, y), sin(t) ^ 2 * 255
+		dim as single x2 = x - 31.5, y2 = y - 31.5
+		dim as single t = sqr(x2 ^ 2 + y2 ^ 2) / 5
+		pset img8, (x, y), sin(t) ^ 2 * 255
 	next x
 next y
 
@@ -106,7 +106,7 @@ sleep
 screenres 320, 200, 32
 for y = 0 to 199
 	for x = 0 to 319
-	    pset (x, y), iif(x - y and 3, rgb(160, 160, 160), rgb(128, 128, 128))
+		pset (x, y), iif(x - y and 3, rgb(160, 160, 160), rgb(128, 128, 128))
 	next x
 next y
 
@@ -114,7 +114,7 @@ next y
 img32 = imagecreate(64, 64, 0, 32)
 for y = 0 to 63
 	for x = 0 to 63
-	    pset img32, (x, y), rgb(x * 4, y * 4, 128)
+		pset img32, (x, y), rgb(x * 4, y * 4, 128)
 	next x
 next y
 

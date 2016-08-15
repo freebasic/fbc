@@ -29,25 +29,25 @@ function FI_Load(filename as string) as any ptr
 	'' Find out the image format
 	dim as FREE_IMAGE_FORMAT form = FreeImage_GetFileType(strptr(filename), 0)
 	if form = FIF_UNKNOWN then
-	    form = FreeImage_GetFIFFromFilename(strptr(filename))
+		form = FreeImage_GetFIFFromFilename(strptr(filename))
 	end if
 
 	'' Exit if unknown
 	if form = FIF_UNKNOWN then
-	    return NULL
+		return NULL
 	end if
 
 	'' Always load jpegs accurately
 	dim as uinteger flags = 0
 	if form = FIF_JPEG then
-	    flags = JPEG_ACCURATE
+		flags = JPEG_ACCURATE
 	end if
 
 	'' Load the image into memory
 	dim as FIBITMAP ptr image = FreeImage_Load(form, strptr(filename), flags)
 	if image = NULL then
-	    '' FreeImage failed to read in the image
-	    return NULL
+		'' FreeImage failed to read in the image
+		return NULL
 	end if
 
 	'' Flip the image so it matches FB's coordinate system
@@ -71,9 +71,9 @@ function FI_Load(filename as string) as any ptr
 
 	'' And copy over the pixels, row by row
 	for y as integer = 0 to (h - 1)
-	    memcpy(target + (y * target_pitch), _
-	           source + (y * source_pitch), _
-	           w * 4)
+		memcpy(target + (y * target_pitch), _
+			   source + (y * source_pitch), _
+			   w * 4)
 	next
 
 	FreeImage_Unload(image32)

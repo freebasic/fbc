@@ -44,7 +44,7 @@ Loop Until strKeyPress <> 0
 ' Show the key the user pressed
 Print
 Print "Your favorite key is: "; Chr(strKeyPress)                        
-	                    
+						
 ' Wait until someone presses a button before you exit
 Print
 Print "Press any button to exit"

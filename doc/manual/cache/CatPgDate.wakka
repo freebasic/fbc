@@ -12,7 +12,7 @@ Procedures that work with dates and time.
 <<{{anchor name="VBCOMPAT"}}{{fbdoc item="section" value="VisualBasic compatible procedures"}}
 	=={{fbdoc item="keyword" value="KeyPgNow|NOW"}}==
 		Gets a [[ProPgDates|date serial]] of the current date and time.
-
+	
 	{{fbdoc item="subsect" value="Creating Date serials"}}
 		=={{fbdoc item="keyword" value="KeyPgDateSerial|DATESERIAL"}}==
 			Gets the [[ProPgDates|date serial]] representation of a date.
@@ -22,7 +22,7 @@ Procedures that work with dates and time.
 			Gets the [[ProPgDates|date serial]] representation of a date expressed as a ##[[KeyPgString|string]]##.
 		=={{fbdoc item="keyword" value="KeyPgTimeValue|TIMEVALUE"}}==
 			Gets the [[ProPgDates|date serial]] representation of a time expressed as a ##[[KeyPgString|string]]##.
-
+	
 	{{fbdoc item="subsect" value="Extracting information from Date serials"}}
 		=={{fbdoc item="keyword" value="KeyPgSecond|SECOND"}}==
 			Gets the seconds of the hour from a [[ProPgDates|date serial]].
@@ -40,13 +40,13 @@ Procedures that work with dates and time.
 			Gets the year from a [[ProPgDates|date serial]].
 		=={{fbdoc item="keyword" value="KeyPgDatePart|DATEPART"}}==
 			Gets a time interval from a [[ProPgDates|date serial]].
-
+	
 	{{fbdoc item="subsect" value="Extracting information from Date serials"}}
 		=={{fbdoc item="keyword" value="KeyPgDateAdd|DATEADD"}}==
 			Gets the result of a time interval added to a [[ProPgDates|date serial]].
 		=={{fbdoc item="keyword" value="KeyPgDateDiff|DATEDIFF"}}==
 			Gets a time interval between two [[ProPgDates|date serial]]s.
-
+	
 	{{fbdoc item="subsect" value="Miscellaneous"}}
 		=={{fbdoc item="keyword" value="KeyPgIsDate|ISDATE"}}==
 			Tests if a ##[[KeyPgString|String]]## can be converted to a [[ProPgDates|date serial]].

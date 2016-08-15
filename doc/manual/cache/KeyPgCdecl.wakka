@@ -9,7 +9,7 @@ Specifies a //cdecl//-style calling convention in a procedure declaration
 	In procedure declarations, ##**Cdecl**## specifies that a procedure will use the ##**Cdecl**## calling convention. In the ##**Cdecl**## calling convention, any parameters are to be passed (pushed onto the stack) in the reverse order in which they are listed, that is, from right to left. The procedures need not preserve the ##EAX##, ##ECX## or ##EDX## registers, and must not clean up the stack (pop any parameters) before it returns - that is left to the calling code.
 	
 	##**Cdecl**## is allowed to be used with variadic procedure declarations (those with the last parameter listed as "##[[KeyPgDots|...]]##").
-
+	
 	##**Cdecl**## is the default calling convention on Linux, the *BSDs, and DOS, unless another calling convention is explicitly specified or implied by one of the ##[[KeyPgExternBlock|EXTERN blocks]]##. ##**Cdecl**## is typically the default calling convention for C compilers, and it's used almost exclusively on Unix-like systems.
 
 {{fbdoc item="ex"}}

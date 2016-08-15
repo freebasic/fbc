@@ -12,7 +12,7 @@ Outputs a comma-separated list of values to a text file or device
 
 {{fbdoc item="desc"}}
 	Outputs the values in ##//expressionlist//## to the text file or device bound to ##//filenum//##. The values are separated with commas, and strings are enclosed in double quotes. Numeric values greater than zero (##0##) and less than one (##1##) are prefixed with a zero (##0##) if none is given (e.g., a value of ##-.123## will be output as ##-0.123##). Extra zeroes are truncated.
-
+	
 	If no expression list is given, ##**Write #**## outputs a carriage return (note that the comma after ##//filenum//## is still necessary, even if no expression list is given).
 	The purpose of ##**Write #**## is to create a file that can be read back by using [[KeyPgInputPp|Input #]].
 

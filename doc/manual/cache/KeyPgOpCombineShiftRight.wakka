@@ -18,10 +18,9 @@ Shifts right and assigns a value to a variable
 
 {{fbdoc item="desc"}}
 	This operator shifts the bits in its left-hand side (##//lhs//##) parameter a number of times specified by its right-hand side (##//rhs//##) parameter, and assigns the result to ##//lhs//##. It is functionally equivalent to:
-##
-		//lhs// = //lhs// [[KeyPgOpShiftRight|Shr]] //rhs//
-##
-	This operator can be overloaded for user-defined types.
+		##//lhs// = //lhs// [[KeyPgOpShiftRight|Shr]] //rhs//##
+	
+	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/shr-assign.bas"}}%%(freebasic)

@@ -20,9 +20,8 @@ Gets a [[ProPgDates|Date Serial]] for the specified hours, minutes, and seconds
 	Returns a [[ProPgDates|date serial]] containing the time formed by the values in the ##//hours//##, ##//minutes//## and ##//seconds//## parameters.The date serial returned has no integer part.
 
 {{fbdoc item="desc"}}
-
 	##//hours//## must be specified in the range 0-23
-
+	
 	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}

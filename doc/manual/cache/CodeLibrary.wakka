@@ -21,18 +21,18 @@
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9588|Accurate Image Scaler by KristopherWindsor]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6676|Spline Curve by Zamaster]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=13251|Rotozoom by Dr_D]]
-
+	
 	==Colors and Palettes==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9441|24bit to 16bit color width by Eternal_Pain]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8764|HSV Color Space by Antoni]]
-
+	
 	==Formats==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8024|fbpng library by yetifoot]]
-
+	
 	==3D==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8724|Tree Generation by Zamaster]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7931|Quadtree-Based Renderer by relsoft]]
-
+	
 	==Animation==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7340|ASCII Animation Example by Pritchard]]
 	[[http://lachie.phatcode.net/articles.php|Chain-Like Animation Tutorial by Lachie Dazdarian]]
@@ -50,7 +50,7 @@
 	[[http://www.freebasic.net/forum/viewtopic.php?p=75713|BCD arithmetics by srvaldez]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=49695|10Byte extended float by srvaldez, included in FB examples]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=26794|CRC Calculation by Fragmeister]]
-
+	
 	==Physics simulation==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=3167|Atom smash simulation by coderjeff]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=3428|2d rigid body library by coderjeff]]
@@ -123,7 +123,7 @@
 	==Linux==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8040|Printing on Linux by coderJeff]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7611|Using GfxLib on Gtk by caseih]]
-
+	
 	==DOS==
 	[[http://www.freebasic.net/forum/viewtopic.php?p=70185|Detect system codepage by DrV]]
 	[[http://www.freebasic.net/forum/viewtopic.php?p=5993|Calling an Interrupt requiring a pointer by DrV]]
@@ -153,8 +153,7 @@
 	[[ExtLibTOC|External Library Documentation]]
 	[[http://www.sourceforge.net/|Sourceforge]]
 	[[http://games.freebasic.net/|FreeBASIC Games Directory]]
-
-<<::c::
+>>::c::
 This is a place to post worthy projects/code snippets for ""FreeBASIC"", in their relative categories.  To add a page, link to either its wiki page, website, or thread on the ""FreeBASIC"" Forums.  State the project name and who it's by.  Sections may be broken down into their own separate pages some time in the future.  Note:  Due to FB being in Beta stage of development, earlier coded projects may need to be reconfigured or recompiled to work on later versions of ""FreeBASIC"".
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

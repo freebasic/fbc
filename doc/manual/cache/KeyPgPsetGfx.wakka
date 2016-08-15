@@ -10,7 +10,7 @@ Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which selects #
 
 {{fbdoc item="desc"}}
 	The ##**PSet**## method copies the source pixel values onto the destination pixels.
-
+	
 	This is the simplest ##[[KeyPgPutgraphics|Put]]## method. The pixels in the destination buffer are directly overwritten with the pixels in the source buffer.  No additional operations are done, and there are no color values that are treated as transparent.  It has the same effect as ##[[KeyPgPset|PSet]]ting## each pixel individually.
 
 {{fbdoc item="ex"}}

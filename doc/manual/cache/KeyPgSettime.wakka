@@ -16,6 +16,8 @@ Sets the current system time
 
 {{fbdoc item="desc"}}
 	To set the time, format the date and send to ##Settime## in one of the following formats: ##"hh:mm:ss"##, ##"hh:mm"##, or ##"hh"## (##hh## is the hour, ##mm## is the minute, and ##ss## is the second).
+	
+	The error code returned by ##**Settime**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Settime**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/settime.bas"}}%%(freebasic)

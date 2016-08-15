@@ -23,11 +23,11 @@ Gets the name of a week day from its integral representation
 	How ##//weekday//## is interpreted depends on the ##//firstdayofweek//## parameter.
 	
 	If ##//abbreviate//## is true, a 3 letter abbreviation is returned, if false or omitted, the whole name is returned.
-
+	
 	##//firstdayofweek//## is an optional parameter specified as follows:
-
+	
 		{{table columns="3" cellpadding="1" cells="value;first day of week;constant;omitted;sunday;###;0;local settings;fbUseSystem;1;sunday;fbSunday;2;monday;fbMonday;3;tuesday;fbTuesday;4;wednesday;fbWednesday;5;thursday;fbThursday;6;friday;fbFriday;7;saturday;fbSaturday"}}
-  
+	
 	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}

@@ -5,7 +5,6 @@ Gets the value of an arbitrary type at an address in memory
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Peek** ( [[KeyPgByval|byval]] //address// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgByrefFunction|byref]] [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Peek** ( //datatype//, [[KeyPgByval|byval]] //address// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgByrefFunction|byref]] [[KeyPgAs|as]] //datatype//
 ##
-
 {{fbdoc item="usage"}}##
 	**Peek**( [ //datatype//, ] //address// )
 ##
@@ -13,7 +12,7 @@ Gets the value of an arbitrary type at an address in memory
 	##//address//##
 		The address in memory to get the value from.
 	##//datatype//##
-		The type of value to get.  If omitted, it defaults to the type of the pointer passed; or to ##[[KeyPgUbyte|ubyte]]##, if the address is an ##[[KeyPgInteger|integer]]## or an ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]##.
+		The type of value to get. If omitted, ##[[KeyPgUbyte|ubyte]]## is assumed.
 
 {{fbdoc item="desc"}}
 	This procedure returns a reference to the value in memory given by a memory address, and is equivalent to

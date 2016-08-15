@@ -16,6 +16,8 @@ Deletes a file from disk / storage media.
 
 {{fbdoc item="desc"}}
 	##**Kill**## deletes a file from disk / storage media.
+	
+	The error code returned by ##**Kill**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Kill**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
  
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/kill.bas"}}%%(freebasic)

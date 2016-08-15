@@ -5,7 +5,9 @@ Returns a pointer to the next argument in a variable argument list
 	//Argument_Pointer// = **va_next** ( //Argument_List//, [[DataType|datatype]] )
 ##
 {{fbdoc item="desc"}}
-	The ##**va_next**## macro points to the next argument within the list ##//Argument_List//##, ##//datatype//## being the type of the current argument being stepped over.
+	The ##**va_next**## macro provides a ##//datatype//## pointer value that points to the next argument within the list ##//Argument_List//##, ##//datatype//## being the type of the current argument being stepped over.
+	
+	//Note:// Not supported when using gcc.
 
 {{fbdoc item="ex"}}
 	See the ##[[KeyPgVaFirst|va_first()]]## examples.

@@ -12,13 +12,13 @@ Control flow statement for looping
 ##
 {{fbdoc item="desc"}}
 	The ##**Do**## statement executes the statements in the following //##statement block##// until/while the //##condition##//, if any,  evaluates to true.
-
+	
 	If ##**Until**## is used, the ##**Do**## statement stops repetition of the //##statement block##// when //##condition##// evaluates to true. The ##**While**## keyword has opposite effect, stopping the loop if //condition// evaluates to false. If both //##condition##// and either ##**Until**## or ##**While**## are omitted, the ##**Do**## statement loops indefinitely.
-
+	
 	If an ##[[KeyPgExit|Exit]]## ##**Do**## statement is encountered inside the //##statement block##//, the loop is terminated, and execution resumes immediately following the enclosing ##**Loop**## statement. If a ##[[KeyPgContinue|Continue]]## ##**Do**## statement is encountered, the rest of the //##statement block##// is skipped and execution resumes at the ##**Do**## statement.
-
+	
 	In the first syntax, the //##condition##// is checked when the ##**Do**## statement is first encountered, and if the //##condition##// is met, the //##statement block##// will be skipped. In the second syntax, //##condition##// is initially checked //after// the //##statement block##// is executed. This means that the //##statement block##// is always guaranteed to execute //at least// once.
-
+	
 	//##condition##// may be any valid expression that evaluates to False (zero) or True (non-zero).
 
 {{fbdoc item="ex"}}

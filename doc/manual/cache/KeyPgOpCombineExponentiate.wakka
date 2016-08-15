@@ -15,11 +15,10 @@ Exponentiates and assigns a value to a variable
 
 {{fbdoc item="desc"}}
 	This operator exponentiates and assigns a value to a variable. It is functionally equivalent to:
-##
-		//lhs// = //lhs// [[KeyPgOpExponentiate|^]] //rhs//
-##
-	This operator can be overloaded for user-defined types.
-
+		##//lhs// = //lhs// [[KeyPgOpExponentiate|^]] //rhs//##
+	
+	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
+	
 	Note: This operator exists in C/""C++"" with a different meaning - there it performs a Bitwise ##[[KeyPgOpCombineXor|Xor=]]##.
 
 {{fbdoc item="ex"}}

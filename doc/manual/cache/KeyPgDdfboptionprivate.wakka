@@ -6,9 +6,9 @@ Intrinsic define (macro value) set by the compiler
 ##
 {{fbdoc item="desc"}}
 	 Indicates if by default ##[[KeyPgFunction|Function]]##'s and ##[[KeyPgSub|Sub]]##'s have module scope or global scope when not explicitly specified with ##[[KeyPgPrivate|Private]]## or ##[[KeyPgPublic|Public]]##.
-
+	
 	The default scope specifier for functions and subs is set by usage of the //[[CompilerOptlang|-lang]]// command line option during compilation or usage of ##[[KeyPgOptionprivate|Option Private]]## in the source file.
-
+	
 	##""__FB_OPTION_PRIVATE__""## returns zero (0) if the option has not been set.  Returns non-zero (-1) if the option has been set.
 
 {{fbdoc item="ex"}}

@@ -3,7 +3,7 @@ Converts numeric or string expression to ##[[KeyPgUlong|Ulong]]##
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Culng** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgUlong|ulong]]
-
+	
 	[[KeyPgType|Type]] //typename//
 		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgUlong|ulong]]
 	End Type

@@ -18,9 +18,8 @@ Gets the name of a month from its integral representation
 	Returns the local operating system language month name from ##//month//## value 1 to 12.
 
 {{fbdoc item="desc"}}
-
 	If ##//abbreviate//## is true, the month name abbreviation  is returned. If omitted or false, the whole name is returned.
- 
+	 
 	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}

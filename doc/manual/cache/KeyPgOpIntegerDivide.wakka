@@ -23,9 +23,9 @@ Divides two ##[[KeyPgInteger|Integer]]## expressions
 	**##Operator \## (Integer division)** divides two ##[[KeyPgInteger|Integer]]## expressions and returns the result. Float numeric values are converted to ##[[KeyPgInteger|Integer]]## by rounding up or down, and the fractional part of the resulting quotient is truncated.
 	
 	If the divisor (##//rhs//##) is zero (##0##), a division by zero error (crash) will be raised.
-
+	
 	Neither of the operands are modified in any way.
-
+	
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}

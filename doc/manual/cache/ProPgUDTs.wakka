@@ -42,7 +42,6 @@ Print "x = " & rp->x & ", y = " & rp->y
 Sleep
 %%
 
-
 {{fbdoc item="see"}}
 	- [[ProPgTypeAliases|Type Aliases]]
 	- [[KeyPgTypeTemp|Temporary Types]]

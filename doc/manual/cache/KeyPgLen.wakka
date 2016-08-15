@@ -26,13 +26,13 @@ Returns the length of an expression or data type
 
 {{fbdoc item="desc"}}
 	##**Len**## returns the length of an expression or the size of a [[DataType|DataType]], in bytes.
-
+	
 	In the first form, if ##//expression//## is of type ##[[KeyPgString|String]]##, ##[[KeyPgWstring|Wstring]]## or ##[[KeyPgZstring|Zstring]]##, the length of the string in characters will be returned. If the expression is of a user defined type, an ##[[KeyPgOperator|Operator]] **Len**## compatible with that data type is called.  Otherwise, the size of the ##//expression//##'s data type in bytes is returned.
-
+	
 	In the second form, if ##//expression//## is ##[[KeyPgZstring|Zstring]]## or ##[[KeyPgWstring|Wstring]]##, the size in bytes of an ASCII or Unicode character is returned, respectively. If ##//datatype//## is ##[[KeyPgString|String]]##, the size of the string descriptor type is returned.
-
+	
 	If there is both a user defined type and a variable visible with the same name in the current scope, the user defined type takes precedence over the variable.  To ensure that the ##**Len**## takes the variable instead of the user defined type, wrap the argument to ##**Len**## with parentheses to force it to be seen as an expression.  For example ##Len((variable))##.
-
+	
 	The ##**Len**## unary ##[[KeyPgOperator|operator]]## can be overloaded with user defined types.
 
 {{fbdoc item="ex"}}

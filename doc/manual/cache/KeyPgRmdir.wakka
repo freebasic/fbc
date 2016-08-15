@@ -34,7 +34,9 @@ If 0 <> result Then Print "error: unable to remove folder " & pathname & " in th
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgShell|Shell]]##
+	- ##[[KeyPgCurdir|Curdir]]##
 	- ##[[KeyPgChdir|Chdir]]##
 	- ##[[KeyPgMkdir|Mkdir]]##
+	- ##[[KeyPgKill|Kill]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

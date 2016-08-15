@@ -15,7 +15,6 @@ Declare a static member procedure or variable
 	End [[KeyPgSub|Sub]]|[[KeyPgFunction|Function]]
 ##
 {{fbdoc item="desc"}}
-
 	- Static member procedures
 		##**Static**## methods do not have an implicit ##[[KeyPgThis|This]]## instance argument passed to them. This allows them to be used like normal non-member procedures (for example with callback procedure pointers).  An advantage of ##**Static**## methods are that they are encapsulated in the ##//typename//## namespace, and therefore have the ability to access the ##[[KeyPgVisPrivate|Private]]## or ##[[KeyPgVisProtected|Protected]]## members or methods of instances of ##//typename//##.
 		

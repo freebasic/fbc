@@ -19,10 +19,9 @@ Divides and assigns a value to a variable
 
 {{fbdoc item="desc"}}
 	This operator divides and assigns a value to a variable. It is functionally equivalent to:
-##
-		//lhs// = //lhs// [[KeyPgOpDivide|/]] //rhs//
-##
-	This operator can be overloaded for user-defined types.
+		##//lhs// = //lhs// [[KeyPgOpDivide|/]] //rhs//##
+	
+	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/divide-assign.bas"}}%%(freebasic)

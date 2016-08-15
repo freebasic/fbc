@@ -22,11 +22,10 @@ Appends and assigns a string onto another string
 		//lhs// = //lhs// [[KeyPgOpConcatConvert|&]] //rhs//
 ##
 	where the result is assigned back to the left-hand side string.
-
-	This operator can be overloaded for user-defined types.
-
+	
+	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
+	
 	Note: This operator exists in C/""C++"" with a different meaning - there it performs a bitwise ##[[KeyPgOpCombineAnd|And=]]##.
-
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/concat-assign.bas"}}%%(freebasic)

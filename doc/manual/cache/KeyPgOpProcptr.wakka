@@ -18,7 +18,7 @@ Returns the address of a procedure
 
 {{fbdoc item="desc"}}
 	This operator returns the address of a ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]## procedure.
-
+	
 	##[[KeyPgOpAt|Operator @ (Address of)]]##, when used with procedures, has identical behavior.
 
 {{fbdoc item="ex"}}

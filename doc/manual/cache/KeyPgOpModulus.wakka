@@ -18,9 +18,9 @@ Finds the remainder from a division operation
 
 {{fbdoc item="desc"}}
 	**##Operator Mod## (Modulus)** divides two ##[[KeyPgInteger|Integer]]## expressions and returns the remainder. Numeric values are converted to ##[[KeyPgInteger|Integer]]## by rounding up or down.
-
+	
 	Neither of the operands are modified in any way.
-
+	
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}

@@ -12,7 +12,7 @@ Specifies a procedure having internal linkage
 ##
 {{fbdoc item="desc"}}
 	In procedure definitions, ##**Private**## specifies that a procedure has internal linkage, meaning its name is not visible to external modules.
-
+	
 	The ##[[KeyPgOptionprivate|Option Private]]## statement allows procedures to be defined with internal linkage by default.
 
 {{fbdoc item="ex"}}

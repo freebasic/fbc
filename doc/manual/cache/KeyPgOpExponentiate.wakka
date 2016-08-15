@@ -18,14 +18,14 @@ Raises a numeric expression to some power
 
 {{fbdoc item="desc"}}
 	**##Operator ^## (Exponentiate)** returns the result of a base expression (##//lhs//##) raised to some exponent expression (##//rhs//##). ##**^**## works with double float numbers only, operands of other types will be converted into double before performing the exponentiation. Exponent of a fractional value (##1""/""//n//##) is the same as taking ##//n//##th root from the base, for example, ##2 **^** (1/3)## is the cube root of 2.
-
+	
 	Neither of the operands are modified in any way.
-
+	
 	Note: this operation is not guaranteed to be fully accurate, and there may be some inaccuracy in the least significant bits of the number.  This is particularly noticeable when the result is expected to be an exact number: in these cases, you may find the result is out by a very small amount.  For this reason, you should never assume that an exponentiation expression will be exactly equal to the value you expect.
 	This also means that you should be wary of using rounding methods such as ##[[KeyPgInt|Int]]## and ##[[KeyPgFix|Fix]]## on the result: if you expect the result to be an integer value, then there's a chance that it might be slightly lower, and will round down to a value that is one less than you would expect.
 	
 	This operator can be overloaded for user-defined types.
-
+	
 	Note: This operator exists in C/""C++"" with a different meaning - there it performs a Bitwise ##[[KeyPgOpXor|Xor]]##.
 
 {{fbdoc item="ex"}}

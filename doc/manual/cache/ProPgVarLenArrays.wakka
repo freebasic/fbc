@@ -2,8 +2,8 @@
 Resizable homogeneous data structures. Also known as "dynamic arrays".
 
 {{fbdoc item="section" value="Overview"}}
-	Variable-length arrays are [[ProPgArrays|arrays]] that can, during program execution, either be resized to hold more or less elements, or have their dimension[s] use a different subscript range. The memory used by a variable-length array to store its elements is allocated at runtime in the heap, as opposed to fixed-length arrays whose data is either allocated on the program stack or in the ##.BSS## or ##.DATA## sections of the executable, depending on whether they were defined with ##[[KeyPgStatic|Static]]##.
-
+	Variable-length arrays are [[ProPgArrays|arrays]] that can, during program execution, either be resized to hold more or less elements, or have their dimension[s] use a different subscript range. The memory used by a variable-length array to store its elements is allocated at runtime in the heap, as opposed to fixed-length arrays whose data is either allocated on the program stack or in the ##.BSS## or ##.DATA## sections of the executable, depending on whether they were defined with ##[[KeyPgStatic|Static]]## (or ##[[KeyPgShared|Shared]]##).
+	
 	Variable-length arrays may also be used as data members inside [[ProPgUDTs|user-defined types]]. As opposed to fixed-length arrays though, the array is not allocated as part of the user-defined type structure, because user-defined types cannot be variable-length. Instead, the user-defined type only contains the array descriptor that is used to hold and access the variable-length array behind the scenes, and the array is still allocated on the heap, as with variable-length array variables.
 	
 	Variable-length arrays are often called "dynamic arrays" because their size can change dynamically at runtime, instead of being fixed-size.

@@ -12,7 +12,8 @@ Waits for a thread to finish execution and releases the thread handle
 		##[[KeyPgAny|Any]] [[KeyPgPtr|Ptr]]## handle of a thread created by ##[[KeyPgThreadCreate|ThreadCreate]]## or ##[[KeyPgThreadCall|ThreadCall]]##
 
 {{fbdoc item="desc"}}
-	**""ThreadWait""** waits for a thread created by ##[[KeyPgThreadCreate|ThreadCreate]]## or ##[[KeyPgThreadCall|ThreadCall]]## to finish execution, and then releases the resources associated with the thread handle. **""ThreadWait""** does not return until the thread designated by ##//id//## ends. 
+	**""ThreadWait""** waits for a thread created by ##[[KeyPgThreadCreate|ThreadCreate]]## or ##[[KeyPgThreadCall|ThreadCall]]## to finish execution, and then releases the resources associated with the thread handle. **""ThreadWait""** does not return until the thread designated by ##//id//## ends.
+	During the wait, no CPU time is consumed by the caller.
 	
 	In order to release a thread handle without waiting for the thread to finish, use ##[[KeyPgThreadDetach|ThreadDetach]]##.
 	

@@ -19,9 +19,9 @@ Divides two numeric expressions
 
 {{fbdoc item="desc"}}
 	**##Operator /## (Divide)** returns the quotient of a dividend and divisor.
-
+	
 	Neither operand is modified in any way. Unlike with integer division, float division by zero is safe to perform, the quotient will hold a special value representing infinity, converting it to a string returns something like "Inf" or "INF", exact text is platform specific. 
-
+	
 	This operator can be overloaded to accept user-defined types.
 
 {{fbdoc item="ex"}}

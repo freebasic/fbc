@@ -19,14 +19,13 @@ Performs a bitwise-and (conjunction) and assigns the result to a variable
 
 {{fbdoc item="desc"}}
 	This operator performs a bitwise-and and assigns the result to a variable (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value). It is functionally equivalent to:
-##
-		//lhs// = //lhs// [[KeyPgOpAnd|and]] //rhs//
-##
+		##//lhs// = //lhs// [[KeyPgOpAnd|and]] //rhs//##
+	
 	##**And=**## compares each bit of its operands, ##//lhs//## and ##//rhs//##, and if both bits are 1, then the corresponding bit in the first operand, ##//lhs//##, is set to 1, otherwise it is set to 0.
-
+	
 	##**And=**## cannot be used in conditional expressions.
-
-	This operator can be overloaded for user-defined types.
+	
+	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/and-assign.bas"}}%%(freebasic)

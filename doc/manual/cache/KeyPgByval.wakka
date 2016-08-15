@@ -9,9 +9,9 @@ Declaration specifier to explicitly pass a parameter by value
 ##
 {{fbdoc item="desc"}}
 	##**Byval**## in a parameter list of a declare statement causes a copy of the variable to be passed to the procedure (for example, a sub or function) by its value.
-
+	
 	This means that if the value of the variable //##x##// is passed, then the original variable //##x##// will not be modified in any way; however, if the variable were passed ##[[KeyPgByref|Byref]]##, the value of the original variable //##x##// could be modified by the called function.
-
+	
 	Opposite of ##[[KeyPgByref|ByRef]]##.
 	
 	The ##**Byval**## keyword is also used in the context of ##Byref## [[KeyPgByref|parameters]] and [[KeyPgByrefFunction|function results]], where it can be used to explicitly override the by-reference semantics in order to pass or assign a pointer as-is to a ##Byref## parameter or function result. For reference:

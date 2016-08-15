@@ -10,10 +10,10 @@ Intrinsic define (macro value) set by the compiler
 		- //[[CompilerOptforcelang|-forcelang]]// command line option
 		- ##[[KeyPgPplang|#lang]]## directive
 		- ##[[KeyPgMetaLang|$lang]]## metacommand
-
+	
 	Returns a lower case string with one of the following values:
 		{{table columns="2" cellpadding="1" cells="value;description;''fb'';FreeBASIC compatibility (default);''qb'';QBASIC compatibility;''fblite'';FreeBASIC language compatibility, with a more QBASIC-compatible coding style;''deprecated'';FBC version 0.16 compatibility"}}
-
+	
 	##""__FB_LANG__""## is always defined.
 
 {{fbdoc item="ex"}}

@@ -9,12 +9,12 @@ Hidden instance parameter passed to non-static member functions in a ##[[KeyPgTy
 	End With
 ##
 {{fbdoc item="desc"}}
-	##**This**## is a reference to an instance of a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## that is passed as a hidden argument to all non-static member functions of that type or class. Non-static member functions are procedures declared inside the body of a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## and include ##[[KeyPgMemberSub|Sub]]##, ##[[KeyPgMemberFunction|Function]]##, ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##, assignment or cast ##[[KeyPgOperator|Operator]]##, and ##[[KeyPgProperty|Property]]## procedures.
-
+	##**This**## is a reference to an instance of a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## that is passed as a hidden argument to all non-static member functions of that type or class. Non-static member functions are procedures declared inside the body of a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## and include ##[[KeyPgMemberSub|Sub]]##, ##[[KeyPgMemberFunction|Function]]##, ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##, assignment or ##[[KeyPgOpCast|Cast]]## ##[[KeyPgOperator|Operator]]##, and ##[[KeyPgProperty|Property]]## procedures.
+	
 	The ##**This**## additional parameter has the same data type as the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## in which the procedure is declared.
-
+	
 	The ##**This**## parameter can be used just like any other variable, ie., pass it to procedures taking an object of the same type, call other member procedures and access member data using ##[[KeyPgOpMemberAccess|Operator . (Member access)]]##, etc.
-
+	
 	Most of the time, using ##**This**## explicitly for member access is unnecessary; member procedures can refer to other members of the instance which they are passed directly by name, without having to qualify it with ##**This**## and ##[[KeyPgOpMemberAccess|Operator . (Member access)]]##. The only times when you need to qualify member names with ##**This**## is when the member name is hidden, for example, by a local variable or parameter. In these situations, qualifying the member name is the only way to refer to these hidden member names.
 
 {{fbdoc item="ex"}}

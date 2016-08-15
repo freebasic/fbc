@@ -16,7 +16,7 @@ Checks to see if the end of an open file has been reached
 
 {{fbdoc item="desc"}}
 	When reading from files opened for ##[[KeyPgInputfilemode|Input (File Mode)]]##, it is useful to know when the end of the file has been reached, thus avoiding errors caused by reading past the ends of files. Use EOF to determine this. EOF expects a valid file number from an already opened file. Use ##[[KeyPgFreefile|Freefile]]## to retrieve an available file file number.
-
+	
 	For file numbers bound to files opened for ##[[KeyPgOutput|Output]]##, EOF always returns 0.
 
 {{fbdoc item="ex"}}
@@ -48,8 +48,6 @@ close #file_num                        '' close file via our file number
 
 end 0
 %%
-
-	Because of underlying differences in the libraries used by the compiler on different platforms, the EOF function can be unreliable when reading text files created in Linux (with LF line endings) in the Windows version of the compiler. The DOS and Linux compilers do not have this problem. One solution is to open the file for Binary access instead of for Input. Line Input# and EOF can still be used as in the above example, and the EOF function will work reliably. This solution will not detect the end of file character, but this is only used to mark the end of text streams that are not disk files.
 
 {{fbdoc item="diff"}}
 	- In QB the comm port signaled an EOF when there were no chars waiting to be read.

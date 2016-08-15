@@ -3,7 +3,7 @@ Converts numeric or string expression to an unsigned byte (##[[KeyPgUbyte|Ubyte]
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cubyte** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]]
-
+	
 	[[KeyPgType|Type]] //typename//
 		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]]
 	End Type
@@ -26,9 +26,9 @@ Converts numeric or string expression to an unsigned byte (##[[KeyPgUbyte|Ubyte]
 
 {{fbdoc item="desc"}}
 	The ##**Cubyte**## function rounds off the decimal part and returns a 8-bit ##[[KeyPgUbyte|Ubyte]]## value. The function does not check for an overflow, and results are undefined for values which are less than ##0## or larger than ##255##.
-
+	
 	The name can be explained as 'Convert to Unsigned Byte'.
-
+	
 	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValuint|Valuint]]##.
 
 {{fbdoc item="ex"}}

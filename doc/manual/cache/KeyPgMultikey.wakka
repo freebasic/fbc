@@ -19,6 +19,7 @@ Detects the status of keys by keyboard scancode.
 {{fbdoc item="filename" value="examples/manual/check/KeyPgMultikey_1.bas"}}%%(freebasic)
 While Inkey <> "": Wend '' loop until the Inkey buffer is empty
 %%
+
 	Keeping ##[[KeyPgInkey|Inkey]]## to work while you use ##**Multikey**## allows more flexibility and can be useful to detect ##[[KeyPgChr|Chr]](255)+"k"## combo returned on window close button click, if a windowed graphics mode has been set via the ##[[KeyPgScreengraphics|Screen]]## statement. For a list of accepted scancodes, see [[GfxScancodes|DOS keyboard scancodes]]; these are guaranteed to be valid for all ""FreeBASIC"" supported platforms.
 	##**Multikey**## should always work in graphics mode, as long as the screen is [[KeyPgScreenunlock|unlocked]]. Support in the console depends on the platform the program is run on though, and cannot be guaranteed.
 
@@ -45,9 +46,9 @@ Do
 	
 	' Lock the page while we work on it
 	Screenlock
-	    ' Clear the screen and draw a circle at the position (x, y)
-	    Cls
-	    Circle(x, y), 30, , , , ,F
+		' Clear the screen and draw a circle at the position (x, y)
+		Cls
+		Circle(x, y), 30, , , , ,F
 	ScreenUnlock
 	
 	Sleep 15, 1

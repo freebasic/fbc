@@ -6,7 +6,7 @@ Preprocessor operator to convert macro arguments to strings
 ##
 {{fbdoc item="desc"}}
 	This operator converts the ##//macro_argument//## into a string whose value is the name of the argument. This substitution is made during the macro expansion, previous to compilation.
-
+	
 ~&//Note: because of this feature, care should be taken when using file-handling statements in a macro.  Because of potential ambiguity with file-handling statements that take a "##**#**//filenum//##" parameter, if ##//filenum//## is one of the macro parameters, it may be necessary to wrap the ##//filenum//## expression in parenthesis (e.g. "##**#**(//filenum//)##"), to separate it from the ##**#**## sign.  Otherwise, ##//filenum//## will be stringized in the macro.//
 
 {{fbdoc item="ex"}}

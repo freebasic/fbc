@@ -8,13 +8,13 @@ Statement block to allow implicit access to fields in a user defined type variab
 ##
 {{fbdoc item="desc"}}
 	The ##**With...End With**## block allows the omission of the name of a variable of a user-defined ##[[KeyPgType|Type]]## when referring to its fields. The fields may then be accessed with just a single period (##.##) before them, e.g. if the ##[[KeyPgType|Type]]## contains an field element called "//##element##//", then it could be accessed within the ##**With**## block as "##//.element//##".
-
+	
 	It can be used as a shorthand to save typing and avoid cluttering the source. ##**With**## can also be used with dereferenced pointers, as the second example shows.
-
+	
 	##**With**## blocks may be nested.  In this case, only the innermost ##**With**## block is active, and any outer ones are ignored until the inner one is closed again.  See the third example for an illustration of this.
-
+	
 	Internally, a reference to the variable is taken at the start of the ##**With**## block, and then is used to calculate any element accesses within the block.  Note that this means that ##[[KeyPgGoto|Goto]]## should not be used to jump into a ##**With**## block, otherwise the reference will not have been set, and the results of trying to access it will be undefined.
-
+	
 	//Note for ##**With**## block used inside member procedure:
 	To access duplicated symbols defined outside the Type, use "##..""SomeSymbol""##".//
 
@@ -90,6 +90,8 @@ print rect2.x, rect2.y '' 3,  4
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__With""**##.
+	- In the //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, variables declared inside a ##**With**##..##**End With**## block have a function-wide [[ProPgVariableScope|scope]] as in QB.
+	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects, variables declared inside a ##**With**##..##**End With**## block are visible only inside the block, and can't be accessed outside it.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""

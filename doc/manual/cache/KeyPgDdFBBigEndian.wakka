@@ -6,7 +6,7 @@ Intrinsic define set by the compiler
 ##
 {{fbdoc item="desc"}}
 	Define without a value created at compile time if compiling for a big endian target.
-
+	
 	It can be used to compile parts of the program only if the target is big endian.
 
 {{fbdoc item="ex"}}

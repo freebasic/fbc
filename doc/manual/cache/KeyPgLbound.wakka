@@ -18,7 +18,7 @@ Returns the lower bound of an array's dimension
  
 {{fbdoc item="desc"}}
 	##**Lbound**## returns the lowest value that can be used as an index into a particular dimension of an array.
-
+	
 	Array dimensions are numbered from one (##1##) to ##//n//##, where ##//n//## is the total number of dimensions. If ##//dimension//## is not specified, ##**Lbound**## will return the lower bound of the first dimension.
 	
 	If ##//dimension//## is zero (##0##), ##**Lbound**## returns ##1##, corresponding to the lower bound of the array dimensions ##1##..##//n//##. ##**Ubound**## returns ##//n//##, the number of dimensions, in this case. This can be used to detect the array's number of dimensions.

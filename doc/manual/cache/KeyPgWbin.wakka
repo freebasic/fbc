@@ -7,7 +7,7 @@ Returns the binary ##[[KeyPgWstring|wstring]]## (Unicode) representation of a nu
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
-
+	
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Wbin** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
@@ -28,9 +28,9 @@ Returns the binary ##[[KeyPgWstring|wstring]]## (Unicode) representation of a nu
 
 {{fbdoc item="desc"}}
 	Returns a ##[[KeyPgWstring|wstring]]## (Unicode) representing the binary value of the integer ##//number//##. Binary digits range from ##0## to ##1##.
-
+	
 	If you specify ##//digits//## > ##0##, the result wstring will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
-
+	
 	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//expression//## (32 for a ##[[KeyPgLong|long]]##, 64 for floating point or ##[[KeyPgLongint|longint]]##)
 
 {{fbdoc item="ex"}}

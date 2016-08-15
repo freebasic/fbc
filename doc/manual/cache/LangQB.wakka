@@ -32,7 +32,7 @@ Since version 0.17, ""FreeBASIC"" introduced a -lang command-line option, that i
 	- FB's ##[[KeyPgColor|COLOR]]## does not allow a third argument for border color.
 	- FB's ##[[KeyPgTimer|TIMER]]## returns the number of seconds since the computer started, while QB's ##TIMER## returns the number of seconds since midnight. (""Win32"" and Linux only: No more wrapping at midnight! :))
 	- In QB a ##chr$(13)## inside a string did a ##CR+LF## when ##PRINT##ed. In FB the ##CHR(13)## prints just at what it is, a ##CR##.
-	- ##EOF## can no longer be used to detect an empty comms buffer. Empty buffer should be tested comparing ##LOC## with ##0## in FB. Also, for files opened in ##RANDOM## or ##BINARY## mode, ##EOF## returns non-zero already after reading exactly the file size, see ##[[KeyPgEof|Eof]]##.
+	- ##EOF## can no longer be used to detect an empty comms buffer. Empty buffer should be tested comparing ##Loc## with ##0## in FB. Also, for files opened in ##RANDOM## or ##BINARY## mode, ##EOF## returns non-zero already after reading exactly the file size, see ##[[KeyPgEof|Eof]]##.
 	- Integer variables do not signal overflow errors in FB, even with the //[[CompilerOptex|-ex]]// option on. Any QB code relying in catching integer overflow errors will not work in FB. 
 
 ==Archaic commands==

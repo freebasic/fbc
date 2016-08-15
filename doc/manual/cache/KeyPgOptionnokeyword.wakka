@@ -18,7 +18,7 @@
 #lang "fblite"
 
 Option NoKeyword Int        ' remove the keyword 'int' from the internal
-	                        ' symbol table
+							' symbol table
 
 Dim Int As Integer          ' declare a variable with the name 'int'
 %%

@@ -10,6 +10,7 @@ Pass options to the assembler when using the assembly emitter (-gen gas), the de
 
 {{fbdoc item="desc"}}
 	The ##-Wa## compiler option passes additional options to GAS, the assembler.  Options must be separated by commas only.
+	
 	For example:
 		##fbc -Wa -o,output.o,--verbose##
 

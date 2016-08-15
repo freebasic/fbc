@@ -28,8 +28,10 @@ Retrieves information about an image
 
 {{fbdoc item="desc"}}
 	##**""ImageInfo""**## provides various information about an image, such as its dimensions and color depth, but also provides you with the information you need to directly access all the pixel data in the pixel buffer.
-
+	
 	It can also provide the size of the image in memory, which is useful for allocating memory to copy the existing image, or to write the image to a file.
+	
+	The error code returned by ##**""ImageInfo""**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**""ImageInfo""**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/pixelptr.bas"}}%%(freebasic)
@@ -44,11 +46,11 @@ function pixelptr(byval img as any ptr, byval x as integer, byval y as integer) 
 	success = (imageinfo(img, w, h, bypp, pitch, pixdata) = 0)
 	
 	if success then
-	    if x < 0 or x >= w then return 0
-	    if y < 0 or y >= h then return 0
-	    return pixdata + y * pitch + x * bypp
+		if x < 0 or x >= w then return 0
+		if y < 0 or y >= h then return 0
+		return pixdata + y * pitch + x * bypp
 	else
-	    return 0
+		return 0
 	end if
 	
 end function
@@ -69,16 +71,16 @@ if ip <> 0 then
 	'' draw a pattern on the image
 	for y as integer = 0 to 31
 
-	    for x as integer = y - 5 to y + 5 step 5
+		for x as integer = y - 5 to y + 5 step 5
 
-	        '' find the pointer to pixel at x,y position
-	        '' note: this is inefficient to do for every pixel!
-	        pp = pixelptr(ip, x, y)
+			'' find the pointer to pixel at x,y position
+			'' note: this is inefficient to do for every pixel!
+			pp = pixelptr(ip, x, y)
 
-	        '' if success, plot a value at the pixel
-	        if (pp <> 0) then *pp = 15
+			'' if success, plot a value at the pixel
+			if (pp <> 0) then *pp = 15
 
-	    next x
+		next x
 
 	next y
 

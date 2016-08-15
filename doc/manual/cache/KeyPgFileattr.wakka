@@ -25,16 +25,16 @@ Returns information about an open file number
 {{fbdoc item="desc"}}
 	Information about the file number is returned based on the supplied ##//returntype//##
 		{{table columns="3" cellpadding="1" cells="Value;Description;constant;1;File Mode;fbFileAttrMode;2;File Handle;fbFileAttrHandle;3;Encoding;fbFileAttrEncoding"}}
-
+	
 	For File Mode, ##//returntype//## = 1 (##fbFileAttrMode##) the return value is the sum of one or more of the following values: 
 		{{table columns="3" cellpadding="1" cells="Value;File Mode;Constant;1;Input;fbFileModeInput;2;Output;fbFileModeOutput;4;Random;fbFileModeRandom;8;Append;fbFileModeAppend;32;Binary;fbFileModeBinary"}}
-
+	
 	For File Handle, ##//returntype//## = 2 (##fbFileAttrHandle##), the return value is the file handle as supplied by the C Runtime for file-type devices.  
-
+	
 	On Windows only: For File Handle, ##//returntype//## = 2 (##fbFileAttrHandle##), the value returned for COM devices is the handle returned by ##""CreateFile""()## when the device was first opened.  The value returned for LPT devices is the handle returned by ##""OpenPrinter""()## when the device was first opened.  This handle value can be passed to other Windows API functions.
-
+	
 	On Linux only: For File Handle, ##//returntype//## = 2 (##fbFileAttrHandle##), the value returned for COM devices is the file descriptor returned by open() when the device was first opened.
-
+	
 	For Encoding, ##//returntype//## = 3 (##fbFileAttrEncoding##), the return value is one of the following values:
 		{{table columns="3" cellpadding="1" cells="Value;Encoding;Constant;0;Ascii;fbFileEncodASCII;1;UTF-8;fbFileEncodUTF8;2;UTF-16;fbFileEncodUTF16;3;UTF-32;fbFileEncodUTF32"}}
 

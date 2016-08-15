@@ -14,7 +14,7 @@ Specifies character format of a text file
 
 {{fbdoc item="desc"}}
 	##**Encoding**## specifies the format for an Unicode text file, so ##[[KeyPgWinput|Winput #]]## and ##[[KeyPgPrintPp|Print #]]## use the correct encoding.  If omitted from an ##[[KeyPgOpen|Open]]## statement, "ascii" encoding is the default.
-
+	
 	Only little endian character encodings are supported at the moment. 
 		-"utf8", 
 		-"utf16" 

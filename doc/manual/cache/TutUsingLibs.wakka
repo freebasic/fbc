@@ -106,7 +106,7 @@ END FUNCTION
 And TinyPTC, which is again, not a high level library like the other two, can plot pixels using the following code:
 %%
 SUB putd(BYREF buffer(), BYVAL x AS INTEGER, BYVAL y AS INTEGER, BYVAL colr as INTEGER)
-	    buffer((y * SCR_WIDTH) + x) = colr
+		buffer((y * SCR_WIDTH) + x) = colr
 		ptc_update @buffer(0) 'This is a pageFlip
 END SUB
 %%

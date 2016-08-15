@@ -288,7 +288,7 @@ Function ListAddHead(list As listnode Ptr, item As Any Ptr) As Any Ptr
 	list->pNext->pNext = pTemp
 
 	If (pTemp <> 0) Then
-	    pTemp->pPrev = list->pNext
+		pTemp->pPrev = list->pNext
 	End If
 
 	Return item
@@ -309,7 +309,7 @@ Function ListGetLast(list As listnode Ptr) As listnode Ptr
 
 	pTemp = list
 	While (pTemp->pNext <> 0)
-	    pTemp = pTemp->pNext
+		pTemp = pTemp->pNext
 	Wend
 
 	Return pTemp
@@ -359,10 +359,10 @@ Function ListRemove(list As listnode Ptr, bDelete As Integer = 0) As listnode Pt
 	DeAllocate list
 
 	If (pPrev <> 0) Then
-	    pPrev->pNext = pNext
+		pPrev->pNext = pNext
 	End If
 	If (pNext <> 0) Then
-	    pNext->pPrev = pPrev
+		pNext->pPrev = pPrev
 	End If
 
 	Return pNext
@@ -375,8 +375,8 @@ Sub ListRemoveAll(list As listnode Ptr, bDelete As Integer = 0)
 	If (list = 0) Then Return
 
 	While (node <> 0)
-	    If ((node->pData <> 0) And (bDelete <> 0)) Then DeAllocate node->pData
-	    node = ListRemove(node)
+		If ((node->pData <> 0) And (bDelete <> 0)) Then DeAllocate node->pData
+		node = ListRemove(node)
 	Wend
 End Sub
 %%

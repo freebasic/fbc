@@ -8,7 +8,7 @@ Intrinsic define (macro string) set by the compiler
 	Substituted with the quoted name of the current function block where used.
 	
 	Its normal use is to report wrong values in debugging.
-
+	
 	If ##**""__FUNCTION__""**## is used at the module level, the function name given will be ##"""__FB_MAINPROC__"""## for the main module, or ##"""__FB_MODLEVELPROC__"""## for a different module.
 
 {{fbdoc item="ex"}}

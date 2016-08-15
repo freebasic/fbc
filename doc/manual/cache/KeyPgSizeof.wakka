@@ -6,14 +6,14 @@ Returns the size of a variable or type in bytes.
 ##
 {{fbdoc item="desc"}}
 	The ##**Sizeof**## operator returns the number of bytes taken up by a ##//variable//## or ##[[DataType|DataType]]##.
-
+	
 	Different from ##[[KeyPgLen|Len]]##, when used with fixed-length strings (including fixed-length ##[[KeyPgZstring|Zstring]]##s and ##[[KeyPgWstring|Wstring]]##s) it will return the number of bytes they use, and when used with variable-length strings, it will return the size of the string descriptor.
-
+	
 	If there is both a user defined type and a variable visible with the same name in the current scope, the user defined type takes precedence over the variable.  To ensure that the ##**Sizeof**## takes the variable instead of the user defined type, wrap the argument to ##**Sizeof**## with parentheses to force it to be seen as an expression.  For example ##Sizeof((variable))##.
-
+	
 	Note: When used with arrays, ##**Sizeof**## returns the size of a single element of the array.  This differs from its behavior in C, where arrays could only be a fixed size, and ##sizeof()## would return the number of it used.
 	For clarity, it is recommended that you avoid this potential confusion, and use ##**Sizeof**## directly on an array element, rather than the whole array.
-
+	
 	Remark: When used with a dereferenced z/wstring pointer, ##**Sizeof**## always returns the number of bytes taken up by one z/wstring character (instead of 0 before fbc version 0.90).
 
 {{fbdoc item="ex"}}
@@ -28,7 +28,6 @@ End Type
 Dim foo As bar
 Print SizeOf(foo)
 %%
-
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Sizeof""**##.

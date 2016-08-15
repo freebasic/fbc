@@ -140,9 +140,9 @@ With Employee
 		.lname = "Jones"
 		.empid = 1001
 		With .dept
-	    	.id = 24
-	    	.managerid = 1012
-	    	.floor = 13
+			.id = 24
+			.managerid = 1012
+			.floor = 13
 		End With
 End With
 %%
@@ -163,24 +163,24 @@ Function InitDept(deptid As Integer) As DepartmentType
 	Dim tmpDpt As DepartmentType
 
 	Select Case deptid
-	    Case 24 'dept 24
+		Case 24 'dept 24
 		With tmpDpt
-	        		.id = deptid
-	        		.managerid = 1012
-	        		.floor = 13
-	    	End With
-	    Case 48 'dept 48
-	     	With tmpDpt
-	        		.id = deptid
-	        		.managerid = 1024
-	        		.floor  = 12
-	        	End With
-	    Case Else 'In case a bad department id was passed
-	        	With tmpDpt
-	        		.id = 0
-	        		.managerid  = 0
-	        		.floor  = 0
-	        	End With
+					.id = deptid
+					.managerid = 1012
+					.floor = 13
+			End With
+		Case 48 'dept 48
+		 	With tmpDpt
+					.id = deptid
+					.managerid = 1024
+					.floor  = 12
+				End With
+		Case Else 'In case a bad department id was passed
+				With tmpDpt
+					.id = 0
+					.managerid  = 0
+					.floor  = 0
+				End With
 	End Select
 
 	'Return the dept info
@@ -205,7 +205,7 @@ By just adding a simple function to the program, you have made the program easie
 
 === Bit Fields ===
 
-There is yet another data type that can be used in type definitions, the bit field. Bit fields are defined as ##//variable_name//: bits As //""DataType""//##. The variable name must be followed with a colon, the number of bits, followed by the data type. Only integer types (all numeric types excluding the two floating-point types 'single' and 'double' and excluding also the 64-bit types) are allowed within a bit field. Bit fields are useful when you need to keep track of boolean type information. A bit can be either ##0## or ##1##, which may represent Yes or No, On or Off or even Black and White.
+There is yet another data type that can be used in type definitions, the bit field. Bit fields are defined as ##//variable_name//: bits As //""DataType""//##. The variable name must be followed with a colon, the number of bits, followed by the data type. Only integer types (all numeric types excluding the two floating-point types 'single' and 'double', and excluding also the 64-bit types for 32-bit development) are allowed within a bit field. Bit fields are useful when you need to keep track of boolean type information. A bit can be either ##0## or ##1##, which may represent Yes or No, On or Off or even Black and White.
 
 The following code snippet illustrates a bit field definition.
 
@@ -223,7 +223,7 @@ myBitType.b1 = 1
 myBitType.b2 = 1101
 %%
 
-The data type of the bit field determines how many bits you can declare in a bit field. Since an ##integer## is 32 bits long, you could declare up to 32 bits in the field. However, in most cases you would declare a single bit for each field, and use a number of fields to define the bit masking that you wish to use. Using a single bit simplifies the coding you need to do to determine if a bit is set or cleared and allows you to easily identify what a bit means within the type definition.
+The data type of the bit field determines how many bits you can declare in a bit field. Since an ##integer## is 32/64 bits long (on 32/64bit systems), you could declare up to 32/64 bits in the field. However, in most cases you would declare a single bit for each field, and use a number of fields to define the bit masking that you wish to use. Using a single bit simplifies the coding you need to do to determine if a bit is set or cleared and allows you to easily identify what a bit means within the type definition.
 
 === The Field Property ===
 
@@ -276,7 +276,7 @@ End Union
 
 If this were a ##Type##, you could access each field within the definition. For a ##Union## however, you can only access one field at any given time; all the fields within a ##Union## occupy the same memory segment, and the size of the ##Union## is the size of the largest member.
 
-In this case, the ##Union## would occupy four bytes, the size of an ##Integer##, with the ##//b//## field occupying 1 byte, the ##//s//## field occupying 2 bytes, and the ##//i//## occupying the full 4 bytes. Each field starts at the first byte, so the ##//s//## field would include the ##//b//## field, and the ##//i//## field would include both the ##//b//## and ##//s//## fields.
+In this case, the ##Union## would occupy four/eight bytes (on 32/64bit systems), the size of an ##Integer##, with the ##//b//## field occupying 1 byte, the ##//s//## field occupying 2 bytes, and the ##//i//## occupying the full 4/8 bytes (on 32/64bit systems). Each field starts at the first byte, so the ##//s//## field would include the ##//b//## field, and the ##//i//## field would include both the ##//b//## and ##//s//## fields.
 
 === Types in Unions ===
 
@@ -292,7 +292,7 @@ union LARGE_INTEGER
 end union
 %%
 
-The ##//Dword//## data type is defined in ##windef.bi## as a ""FreeBASIC"" ##Uinteger##, and the ##//Longlong//## type is defined as a ##//Longint//##. A Long is just an alias for the integer data type. Remember that a type occupies contiguous memory locations, so the ##//""HighPart""//## field follows the ##//""LowPart""//## part field in memory. Since this is a union, the type occupies the same memory segment as the ##//""QuadPart""//## field.
+The ##//Dword//## data type is defined in ##windef.bi## as a ""FreeBASIC"" ##Ulong##, and the ##//Longlong//## type is defined as a ##//Longint//##. A Long is a fixed 32-bit integer type. Remember that a type occupies contiguous memory locations, so the ##//""HighPart""//## field follows the ##//""LowPart""//## part field in memory. Since this is a union, the type occupies the same memory segment as the ##//""QuadPart""//## field.
 
 When you set ##//""QuardPart""//## to a large integer value, you are also setting the values of the type fields, which you can then extract as the ##//""LowPart""//##and ##//""HighPart""//##. You can also do the reverse; that is by setting the ##//""LowPart""//## and ##//""HighPart""//## of the type, you are setting the value of the ##//""QuadPart""//## field.
 
@@ -317,8 +317,8 @@ When using a ##Union## within a type it is common practice to create an ##//id//
 Type vType
 	vt_id As Integer
 	Union
-	    d As Double
-	    i As Integer
+		d As Double
+		i As Integer
 	End Union
 End Type
 %%

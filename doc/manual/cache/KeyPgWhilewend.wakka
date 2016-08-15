@@ -8,13 +8,13 @@ Control flow statement for looping
 ##
 {{fbdoc item="desc"}}
 	The ##**While**## statement will cause the following set of statements in the ##//statement block//## to execute repeatedly if and while the expression //condition// evaluates to true.
-
+	
 	If ##//condition//## evaluates to false when the ##**While**## statement is first executed, then the ##//statement block//## is skipped and execution resumes immediately following the enclosing ##**Wend**## statement.
-
+	
 	If an ##[[KeyPgExit|Exit]] **While**## statement is encountered inside the //statement block//, the loop is terminated, and execution resumes immediately following the enclosing ##**Wend**## statement. If a ##[[KeyPgContinue|Continue]] **While**## statement is encountered, the rest of the ##//statement block//## is skipped and execution resumes at the ##**While**## statement.
-
+	
 	Like all control flow statements, the ##**While**## statement can be nested, that is, it can be used in a statement block of another ##[[KeyPgWhile|While]]## statement.
-
+	
 	//**note**: the ##**While**## //keyword// is also used in the ##[[KeyPgDoloop|Do...Loop]]## statement to indicate the type of comparison. Used in this way, the ##**Do**## statement becomes functionally equivalent to the ##**While**## statement, so do not confuse their enclosing keywords ##Loop## and ##**Wend**##, respectively.//
 
 {{fbdoc item="ex"}}

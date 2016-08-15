@@ -69,7 +69,7 @@ GNU/Linux distros usually provide native gcc + glibc toolchains out-of-the-box, 
 Executables (such as fbc itself) produced on one GNU/Linux distro are not necessarily portable to other GNU/Linux distros, due to differences in system libraries and/or versions, such as glibc version differences, or ncurses/libtinfo differences. The most common problem with fbc is mismatching glibc versions, i.e. the fbc binary is run on a system with older glibc than the one it was built on, and some form of "glibc too old" error is encountered. The ncurses library is not always exactly the same either, as shown by the "`ospeed' has different size, consider re-linking" warnings when running fbc. Also, some distros have separated libncurses and libtinfo, some just have libncurses, which can cause errors due to the libtinfo shared library not being found.
 
 In theory, it is possible to use static linking to avoid the problems with shared libraries:
-
+	
 	- The fbc ##-static## command line option tells the linker to prefer static libraries instead of shared ones. This can (in theory) also be used when building fbc itself. It relies on the Linux distro to provide static versions of the system libraries. Linking statically on GNU/Linux is typically discouraged though, in particular with glibc (some of its components are not designed for static linking), but also in general (shared libraries are preferred to avoid redundancy.
 	
 	

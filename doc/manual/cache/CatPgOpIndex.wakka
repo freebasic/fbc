@@ -1,8 +1,7 @@
-{{fbdoc item="title" value="Operators List"}}----
+{{fbdoc item="title" value="Operator List"}}----
 List of operators used in FreeBASIC.
 
-<<
-{{fbdoc item="section" value="Assignment Operators"}}
+<<{{fbdoc item="section" value="Assignment Operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpAssignment|=[>] (Assignment)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpCombineConcat|&= (Concatenate and Assign)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpCombineAdd|+= (Add and Assign)"}}
@@ -23,7 +22,7 @@ List of operators used in FreeBASIC.
 	- {{fbdoc item="keyword" value="KeyPgOpLetlist|LET() (Assignment)"}}
 
 {{fbdoc item="section" value="Type Cast Operators"}}
-	- {{fbdoc item="keyword" value="KeyPgCast|CAST"}}
+	- {{fbdoc item="keyword" value="KeyPgOpCast|CAST (operator)"}}
 	- {{fbdoc item="keyword" value="KeyPgCptr|CPTR"}}
 
 {{fbdoc item="section" value="Arithmetic Operators"}}
@@ -47,9 +46,7 @@ List of operators used in FreeBASIC.
 	- {{fbdoc item="keyword" value="KeyPgOpConcat|+ (String concatenation)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpConcatConvert|& (String concatenation with conversion)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpStrptr|STRPTR (String pointer)"}}
-
-<<>>
-{{fbdoc item="section" value="Relational Operators"}}
+<<>>{{fbdoc item="section" value="Relational Operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpEqual|= (Equal)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpNotEqual|<> (Not equal)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpLessThan|< (Less than)"}}
@@ -93,7 +90,6 @@ List of operators used in FreeBASIC.
 
 {{fbdoc item="section" value="Iteration Operators"}}
 	- {{fbdoc item="keyword" value="KeyPgOpFor|For"}}, [[KeyPgOpNext|Next]], and [[KeyPgOpStep|Step]]
-
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

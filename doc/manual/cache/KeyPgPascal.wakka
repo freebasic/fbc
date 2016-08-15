@@ -9,7 +9,7 @@ Specifies a //Pascal//-style calling convention in a procedure declaration
 	In procedure declarations, ##**Pascal**## specifies that a procedure will use the ##**Pascal**## calling convention. In the //Pascal// calling convention, any parameters are to be passed (pushed onto the stack) in the same order in which they are listed, that is, from left to right. The procedures need not preserve the ##EAX##, ##ECX## or ##EDX## registers, and must clean up the stack (pop any parameters) before it returns.
 	
 	##**Pascal**## is not allowed to be used with variadic procedure declarations (those with the last parameter listed as "##[[KeyPgDots|...]]##").
-
+	
 	##**Pascal**## is the default calling convention for procedures in Microsoft ""QuickBASIC"", and is the standard convention used in the Windows 3.1 API.
 
 {{fbdoc item="ex"}}

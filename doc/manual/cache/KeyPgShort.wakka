@@ -13,9 +13,8 @@ Standard data type: 16 bit signed
   Dim y As Short = CShort(&H7FFF)
   Print "Short Range = "; x; " to "; y
 %%
-	**Output:**
+	Output:
 	%%Short Range = -32768 to  32767%%
-
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Short""**##.

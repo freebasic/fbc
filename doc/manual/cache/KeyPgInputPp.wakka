@@ -12,12 +12,13 @@ Reads a list of values from a text file
 
 {{fbdoc item="desc"}}
 	Reads from a text file through a bound file number a delimiter-separated set of values and writes them in reading order into the variables in ##//variable_list//##. If a variable is numeric the read value is converted from its string representation into the corresponding type.
-
+	
 	Numeric values are converted in a similar way to the procedures ##[[KeyPgVal|Val]]## and ##[[KeyPgVallng|ValLng]]##, using the most appropriate function for the number format.
-
+	
 	Delimiters may be commas or line breaks. Whitespace is also treated as a separator after numbers. A string including a comma or a whitespace must be surrounded by double quotes. 
-
+	
 	To read an entire line into a string, use ##[[KeyPgLineinputPp|Line Input]]## instead.
+	
 	[[KeyPgWritePp|Write #]] can be used to create a file readable with ##**""Input #""**##.
 
 {{fbdoc item="ex"}}
@@ -41,6 +42,7 @@ print a, b, c
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgInput|Input]]##
+	- ##[[KeyPgInputnum|Input()]]##
 	- ##[[KeyPgLineinputPp|Line Input #]]##
 	- ##[[KeyPgWritePp|Write #]]##
 	- ##[[KeyPgOpen|Open]]##

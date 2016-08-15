@@ -6,7 +6,7 @@ Preprocessor conditional directive
 ##
 {{fbdoc item="desc"}}
 	Ends a group of conditional directives
-
+	
 	See ##[[KeyPgPpif|#if]]##, ##[[KeyPgPpifdef|#ifdef]]##, or ##[[KeyPgPpifndef|#ifndef]]## for examples of usage.
 
 {{fbdoc item="ex"}}

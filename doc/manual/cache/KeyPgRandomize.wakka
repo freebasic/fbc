@@ -15,7 +15,6 @@ Seeds the random number generator
 
 {{fbdoc item="desc"}}
 	Sets the random seed that helps ##[[KeyPgRnd|Rnd]]## generate random numbers, and selects the algorithm to use. Valid values for ##//algorithm//## are:
-
 		##**0**## - Default for current [[CompilerDialects|language dialect]]. This is algorithm ##**3**## in the //[[CompilerOptlang|-lang fb]]// dialect, ##**4**## in the //[[CompilerOptlang|-lang qb]]// dialect and ##**1**## in the //[[CompilerOptlang|-lang fblite]]// dialect.
 		##**1**## - Uses the C runtime library's ##rand()## function. This will give different results depending on the platform.
 		##**2**## - Uses a fast implementation. This should be stable across all platforms, and provides 32-bit granularity, reasonable degree of randomness.
@@ -25,8 +24,7 @@ Seeds the random number generator
 		
 		For any given seed, each algorithm will produce a specific, deterministic sequence of numbers for that seed.  If you want each call to ##**Randomize**## to produce a different sequence of numbers, a seed that is not quite predictable should be used - for example, the value returned from ##[[KeyPgTimer|Timer]]##.  Omitting the ##//seed//## parameter will use a value based on this.
 		Note: using the ##[[KeyPgTimer|Timer]]## value directly as a parameter will produce the same seed if used more than once in the same second.  However, it is generally not worth calling ##**Randomize**## twice with unpredictable seeds anyway, because the second sequence will be no more random than the first.  In most cases, the Mersenne twister should provide a sufficiently random sequence of numbers, without requiring reseeding between ##[[KeyPgRnd|Rnd]]## calls.
-
-
+	
 		When you call ##**Randomize**## with the QB compatible algorithm, part of the old seed is retained.  This means that if you call ##**Randomize**## several times with the same seed, you will **not** get the same sequence each time.  To get a specific sequence in QB compatible mode, set the seed by calling ##[[KeyPgRnd|Rnd]]## with a negative parameter.
 
 {{fbdoc item="ex"}}

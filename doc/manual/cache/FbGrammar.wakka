@@ -1,4 +1,4 @@
-                                      {{fbdoc item="section" value="Grammar Notation"}}
+									  {{fbdoc item="section" value="Grammar Notation"}}
 
 **Format of a production**
 //left hand side//: right hand side;
@@ -299,7 +299,7 @@ Go straight to:
 ~| //{{anchor name="element_declaration|element_declaration"}}//
 ~| **as** as_element_declaration 
 ~;
-	                                          
+											  
 
 //{{anchor name="variable_declaration"}}variable_declaration//
 ~: (**redim** **preserve**?|**dim**|**common**) **shared**? //{{anchor name="symbol_type|symbol_type"}}//
@@ -342,7 +342,7 @@ Go straight to:
 ~: (**byval**|**byref**)? (//{{anchor name="identifier|identifier"}}// (**(** **)**)?)? **as** //{{anchor name="symbol_type|symbol_type"}}// (**=** //{{anchor name="literal|literal"}}//)?
 ~;
 
-	                   
+					   
 //{{anchor name="user_defined_type"}}user_defined_type//
 ~: //{{anchor name="identifier|identifier"}}//
 ~;

@@ -13,7 +13,7 @@ Releases a mutex lock
 
 {{fbdoc item="desc"}}
 	##Mutexunlock## releases a mutex "handle" created by ##[[KeyPgMutexCreate|Mutexcreate]]##, and locked with ##[[KeyPgMutexLock|Mutexlock]]##.  This allows other threads sharing the mutex to continue execution.
-
+	
 	See ##[[KeyPgMutexCreate|Mutexcreate]]## for more general information on mutexes.
 
 {{fbdoc item="ex"}}

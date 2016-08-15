@@ -133,7 +133,7 @@ Some of the ideas behind this script:
 	- Only work locally, e.g. don't touch existing ""DJGPP/MinGW"" setups on the host
 
 {{anchor name="DOCS"}}{{fbdoc item="section" value="FB manual/documentation"}}
-
+	
 	- See also doc/fbchkdoc/readme.txt and doc/manual/readme.txt
 	- Get ""MySQL"", libcurl, libaspell, libpcre
 	- Build the wiki tools:
@@ -164,7 +164,7 @@ Some of the ideas behind this script:
 		##""./samps extract @PageIndex.txt""##
 
 {{anchor name="SUMMARY"}}{{fbdoc item="section" value="Summary: currently the easiest way to build a release"}}
-
+	
 	- Update the wiki snapshot in the fbc sources
 	- Regenerate PrintToc and CompilerErrMsg
 	- If needed, update wiki samples in examples/manual/

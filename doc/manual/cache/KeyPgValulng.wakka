@@ -14,14 +14,14 @@ Converts a string to a unsigned 64bit integer
 
 {{fbdoc item="ret"}}
 	Returns a ##[[KeyPgUlongint|ulongint]]## of the converted string
-
+	
 	If the first character of the string is invalid, ##**Valulng**## will return ##0##.
 
 {{fbdoc item="desc"}}
 	For example, ##**Valulng**("10")## will return ##10##, and ##**Valulng**("10.60")## will return ##10## as well. The function parses the string from the left, skipping any white space, and returns the longest number it can read, stopping at the first non-suitable character it finds.  Any non-numeric characters, including decimal points and exponent specifiers, are considered non-suitable, for example, ##**Valulng**("23.1E+6")## will just return ##23##.
-
+	
 	##**Valulng**## can be used to convert integer numbers in [[KeyPgBin|binary]] / [[KeyPgOct|octal]] / [[KeyPgHex|hexadecimal]] format, if they have the relevant identifier (##"&B"## / ##"&O"## / ##"&H"##) prefixed, for example: ##**Valulng**("&HFF")## returns ##255##.
-
+	
 	If you want to convert a number into string format, use the ##[[KeyPgStr|Str]]## function.
 
 {{fbdoc item="ex"}}

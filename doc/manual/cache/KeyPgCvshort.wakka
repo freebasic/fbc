@@ -16,9 +16,9 @@ Converts a two-byte string to a ##[[KeypgShort|Short]]## integer variable
 
 {{fbdoc item="desc"}}
 	Returns a 16-bit ##[[KeyPgShort|Short]]## integer value using the binary data contained in a ##[[KeyPgString|string]]## of at least two bytes in length.  A value of zero (##0##) is returned if the string is less than two bytes in length.
-
+	
 	##**Cvshort**## is used to convert 2-byte strings created with ##[[KeyPgMkshort|Mkshort]]##.
-
+	
 	This function can also be used to convert 16-bit integer values from a memory or file buffer without the need for a ##[[KeyPgType|Type]]## structure.  However, just as with the type structure, special care should be taken when using ##**Cvshort**## to convert strings that have been read from a buffer.
 
 {{fbdoc item="ex"}}

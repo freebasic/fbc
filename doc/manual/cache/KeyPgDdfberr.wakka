@@ -6,10 +6,10 @@ Intrinsic define (macro value) set by the compiler
 ##
 {{fbdoc item="desc"}}
 	##""__FB_ERR__""## indicates if //[[CompilerOpte|-e]]//, //[[CompilerOptex|-ex]]//, or //[[CompilerOptexx|-exx]]// was specified on the compiler command line at the time of compilation of a module.
-
+	
 	Returns one of the following values:
 		{{table columns="2" cellpadding="1" cells="value;description;0;'-e', '-ex', '-exx' not specified;1;'-e' was specified;3;'-ex' was specified;7;'-exx' was specified"}}
-
+	
 	##""__FB_ERR__""## is always defined.
 
 {{fbdoc item="ex"}}

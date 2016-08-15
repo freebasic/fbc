@@ -55,13 +55,13 @@ gprof program[.exe] --brief --flat-profile > profile.txt
 	- Call to ##"_monstartup()"## at the beginning of the implicit main to initialize the profiling library.
 	- Call to ##"mcount()"## at the beginning of each procedure.  This is how the profiling library keeps track of what function is being and by which other function.
 	- Linking of additional program startup object code.  (e.g. ##gcrt?.o## )
-
+	
 	The profiling library itself may be in a separate library or part of the C runtime library.
 	- mingw will require ##gcrt2.o## and ##libgmon.a ##
 	- cygwin will require gcrt0.o and ##libgmon.a##
 	- dos will require ##gcrt0.o## (profiler code is in ##libc.a##) 
 	- linux will require ##gcrt1.o## (profiler code is in ##libc.a##) 
-
+	
 	The details may vary from one port of ""FreeBASIC"" to the next, but source code built for profiling with ""FreeBASIC"" should be compatible with other languages also supporting GPROF.
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -12,9 +12,9 @@ Error handling function to return the line where the error occurred
 
 {{fbdoc item="desc"}}
 	##**Erl**## will return the line number where the last error occurred. If no error has occurred, ##**Erl**## will return 0.
-
+	
 	##**Erl**## cannot always be used effectively -- QB-like error handling must be enabled.
-
+	
 	##**Erl**## is reset by RESUME and RESUME NEXT
 
 {{fbdoc item="ex"}}

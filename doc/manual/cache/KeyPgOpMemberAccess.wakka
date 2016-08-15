@@ -22,9 +22,9 @@ Returns a reference to a member from a reference to an object
 
 {{fbdoc item="desc"}}
 	**##Operator .## (Member access)** returns a reference to a member of an object.
-
+	
 	**##Operator .## (Member access)** can also be used to access members of an implicit object inside a ##[[KeyPgWith|With..End With]]## block.
-
+	
 	This operator cannot be overloaded.
 
 {{fbdoc item="ex"}}

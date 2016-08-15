@@ -10,14 +10,14 @@ Compares an expression less than or equal to another expression
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **<=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **<=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgLongint|longint]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **<=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
-
+	
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **<=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgSingle|single]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **<=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgDouble|double]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
-
+	
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **<=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgString|string]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **<=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgZstring|zstring]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgZstring|zstring]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **<=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgWstring|wstring]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgWstring|wstring]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
-
+	
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **<=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T// ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 ##
 {{fbdoc item="usage"}}##
@@ -36,7 +36,7 @@ Compares an expression less than or equal to another expression
 
 {{fbdoc item="desc"}}
 	**##Operator <=## (Less than or Equal)** is a binary operator that compares an expression less than or equal to another expression and returns the result - a boolean value in the form of an ##[[KeyPgInteger|Integer]]##: negative one (-1) for true and zero (0) for false. The arguments are not modified in any way.
-
+	
 	This operator can be overloaded to accept user-defined types as well.
 
 {{fbdoc item="ex"}}

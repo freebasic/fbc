@@ -24,7 +24,6 @@ Dim result As Integer = ChDir(pathname)
 
 If 0 <> result Then Print "error changing current directory to " & pathname & "."
 %%
-
 {{fbdoc item="target"}}
 	- Linux requires the //filename// case matches the real name of the file. Windows and DOS are case insensitive. 
 	- Path separators in Linux are forward slashes / . Windows uses backward slashes \ but it allows for forward slashes .  DOS uses backward  \ slashes. 
@@ -33,6 +32,7 @@ If 0 <> result Then Print "error changing current directory to " & pathname & ".
 	- In QB, the drive could not be specified.
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgCurdir|Curdir]]##
 	- ##[[KeyPgMkdir|Mkdir]]##
 	- ##[[KeyPgRmdir|Rmdir]]##
 

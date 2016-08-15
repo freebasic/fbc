@@ -19,9 +19,10 @@ Dereferences a pointer
 
 {{fbdoc item="desc"}}
 	**##Operator *## (Value of)** returns a reference to the value stored at an address, and is often called the dereference operator. The operand is not modified in any way.
-
+	Any type of ##[[KeyPgPointer|Pointer]]## can be dereferenced except for an ##[[KeyPgAny|Any]]## ##[[KeyPgPointer|Pointer]]##.
+	
 	As a reference, the result of this operator can be used on the left-hand side of assignments.
-
+	
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}

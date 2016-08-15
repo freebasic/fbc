@@ -17,9 +17,9 @@ Tests if a string can be converted to a [[ProPgDates|Date Serial]]
 
 {{fbdoc item="desc"}}
 	Date strings must be in the format set in the regional settings of the OS to be considered valid dates.
-
+	
 	##**""IsDate""([[KeyPgDate|Date]])**## will return non-zero (-1) only if the regional settings specify the same date format that QB used.
-
+	
 	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}

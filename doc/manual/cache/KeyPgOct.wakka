@@ -7,7 +7,7 @@ Converts a number to octal representation
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
-
+	
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Oct** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
@@ -28,11 +28,11 @@ Converts a number to octal representation
 
 {{fbdoc item="desc"}}
 	Returns the unsigned octal string representation of ##//number//##. Octal digits range from 0 to 7.
-
+	
 	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
-
+	
 	The length of the returned string will not be longer than the maximum number of digits required for the type of ##//number//## (3 characters for ##[[KeyPgByte|Byte]]##, 6 for ##[[KeyPgShort|Short]]##, 11 for ##[[KeyPgLong|Long]]##, and 22 for ##[[KeyPgLongint|Longint]]##)
-
+	
 	If you want to do the opposite, i.e. convert an octal string back into a number, the easiest way to do it is to prepend the string with ##"&O"##, and convert it to an integer type, using a function like ##[[KeyPgCint|Cint]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgCint|Cint]]("&O77")##
 
 {{fbdoc item="ex"}}

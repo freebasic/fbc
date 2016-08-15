@@ -3,18 +3,18 @@
 Showing the recursion between the FB parser, the PP parser, and the lexer:
 
 %%
-	                    +------------------> lexGetLookAhead() --------+
-	                    |                                              |
-	                    |                                              v
+				+------------------> lexGetLookAhead() --------+
+				|                                              |
+				|                                              v
 	 (begin)        (FB parsing)                (PP parsing)         (lexing)
 	fbCompile()  ->  cProgram()  ------------>  lexSkipToken()  ->  lexNextToken()
-	    |               ^  |                       |     ^              |    ^
-	    v               |  |                       v     |              v    |
+		|               ^  |                       |     ^              |    ^
+		v               |  |                       v     |              v    |
 	   fbPreIncludes()  |  |('$include)       ppCheck()  |           ppDefineLoad()
-	              |     |  |                       |     |          (macro expansion)
-	              v     |  v                       v     |
-	             fbIncludeFile()  <--------------  ppParse()
-	                                (#include)    (directives)%%
+			  |     |  |                       |     |          (macro expansion)
+			  v     |  v                       v     |
+			 fbIncludeFile()  <--------------  ppParse()
+					(#include)    (directives)%%
 
 {{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

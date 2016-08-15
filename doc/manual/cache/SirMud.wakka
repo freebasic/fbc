@@ -2,7 +2,7 @@
 I am SirMud or sir_mud on the forums/irc.
 
 {{fbdoc item="section" value="My Code"}}
-	    - Visit my personal site: [[http://mud.owlbox.net]]
+		- Visit my personal site: [[http://mud.owlbox.net]]
 	- Recipe Database - Website down, code available at [[http://sf.net/projects/recipedb]]
 		Store, search and organize your recipe collection. Works great for small, large and in-between collections.
 	- Bomb Squad!
@@ -12,7 +12,7 @@ I am SirMud or sir_mud on the forums/irc.
 		very well documented and licensed under the LGPL.
 	- Extended String Input Routine
 		Simple Object for various input needs. See code in this topic: [[http://www.freebasic.net/forum/viewtopic.php?t=6574|http://www.freebasic.net/forum/viewtopic.php?t=6574]] First code post will work with all version of freebasic > .15, last post by me is designed for the new OO like features present in .17 and higher.
-	    - FreeBASIC Extended Library [[http://code.google.com/p/fb-extended-lib/]]
+		- FreeBASIC Extended Library [[http://code.google.com/p/fb-extended-lib/]]
 		Extended runtime library providing many features. Project is open-source and ran by me, Stylin, DrD and MindlessXD
 	- Dr Mudball's Laboratory: Rise of the Bustrons! [[http://drmudball.googlepages.com/index.html]]
 		Simple yet addicting Arcade / Puzzle style game written by DrD and myself.
