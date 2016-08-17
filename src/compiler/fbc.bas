@@ -3328,7 +3328,7 @@ private sub hPrintOptions( )
 	print "  -o <file>        Set .o (or -pp .bas) file name for prev/next input file"
 	print "  -O <value>       Optimization level (default: 0)"
 	print "  -p <path>        Add a library search path"
-	print "  -pic             Generate position-indepedent code (non-x86 Unix shared libs)"
+	print "  -pic             Generate position-independent code (non-x86 Unix shared libs)"
 	print "  -pp              Write out preprocessed input file (.pp.bas) only"
 	print "  -prefix <path>   Set the compiler prefix path"
 	print "  -print host|target  Display host/target system name"
