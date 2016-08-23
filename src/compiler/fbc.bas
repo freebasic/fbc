@@ -3368,7 +3368,7 @@ private sub hPrintVersion( )
 
 	print "FreeBASIC Compiler - Version " + FB_VERSION + _
 		" (" + FB_BUILD_DATE + "), built for " + fbGetHostId( ) + " (" & fbGetHostBits( ) & "bit)"
-	print "Copyright (C) 2004-2016 The FreeBASIC development team."
+	print "Copyright (C) 2004-2016 The FreeBASIC development team. [Modified by Skyfish]"
 
 	#ifdef ENABLE_STANDALONE
 		hAppendConfigInfo( config, "standalone" )
