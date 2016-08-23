@@ -7,9 +7,9 @@ Finds the length of a file given its filename
 {{fbdoc item="usage"}}##
 	#include "file.bi"
 	//result// = **""FileLen""**(//filename//)
-##
-//or//
-##
+	
+##//or//##
+	
 	#include "vbcompat.bi"
 	//result// = **""FileLen""**(//filename//)
 ##

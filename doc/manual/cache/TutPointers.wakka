@@ -3,7 +3,7 @@
 
 **What is a Pointer?**
 
-A pointer is a 4-byte data type that holds an address to a memory location. A pointer doesn't contain data, it points to data once it has been initialized. An uninitialized pointer points to nothing and is undefined.
+A pointer is a 4-byte data type (on 32bit systems) or 8-byte data type (on 64bit systems) that holds an address to a memory location. A pointer doesn't contain data, it points to data once it has been initialized. An uninitialized pointer points to nothing and is undefined.
 
 To understand pointers, think of an egg carton that has numbers 1 through 12 printed on the bottom of each "hole" (where you put the eggs). These holes are like memory locations in a computer; each hole, or memory location, has an address, in this example, 1 through 12. If an egg represents a data item, then an egg in hole 1 has an address of 1.
 

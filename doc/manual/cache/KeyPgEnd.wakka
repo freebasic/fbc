@@ -32,8 +32,8 @@ function main() as integer
 	'' If string is empty, print an error message and
 	'' return error code 1 (failure)
 	if( text = "" ) then
-	    print "ERROR: string was empty"
-	    return 1
+		print "ERROR: string was empty"
+		return 1
 	end if
 
 	'' string is not empty, so print the string and

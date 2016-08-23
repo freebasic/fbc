@@ -17,7 +17,7 @@ Debugging macro that halts program execution if an expression is evaluated to ##
 	Its normal use is to check the correct value of the variables during debugging.
 	
 	If ##-g## is not passed to fbc, the macro does not generate any code, and has no effect.
-
+	
 	Note: If an ##**ASSERT**## fails while the program is in a graphics ##[[KeyPgScreengraphics|Screen]]##, the error message will not be visible as it will be printed to the graphics screen, which will be closed immediately after.
 
 {{fbdoc item="ex"}}

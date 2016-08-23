@@ -32,7 +32,7 @@ Draws a line
 	##//Color//## denotes the color attribute, which is mode specific (see ##[[KeyPgColor|Color]]## and ##[[KeyPgScreengraphics|Screen (Graphics)]]## for details). If omitted, the current foreground color as set by the ##[[KeyPgColor|Color]]## statement is used.
 	
 	##//Style//##, if specified, allows styled line drawing; its value is interpreted as a 16-bit bitmask, and ##**Line**## will use it to skip pixel drawing. Starting at ##(//x1//,//y1//)##, the most significant bit of the style mask is checked: if ##1##, the pixel is drawn, if ##0##, it's skipped. This repeats for all the line pixels with the other bits, with the mask being reused when the 16 bits are all checked.
-
+	
 	When ##**Line**## is used as ##**Line** - (x2, y2)##, a line is drawn from the current cursor position to the ##(//x2//,//y2//)## coordinates specified by ##**Line**##.  Alternatively, ##[[KeyPgPoint|Point]]## can be used to get the current cursor position.
 
 {{fbdoc item="ex"}}

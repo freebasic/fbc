@@ -15,7 +15,9 @@ Sets the display foreground / background color that is used with console output 
 		the background color to set
 
 {{fbdoc item="ret"}}
-	Returns a 32-bit value containing the current foreground color in the [[KeyPgLoWord|low word]] and the current background color in the [[KeyPgHiword|high word]].  (In hi/truecolor modes, only the foreground color is returned, taking up the whole 32 bits.)
+	Returns a 32-bit value containing the current foreground color in the ##[[KeyPgLoWord|low word]]## and the current background color in the ##[[KeyPgHiword|high word]]##.
+	In hi/truecolor modes, only the foreground color is returned, taking up the whole 32 bits. Instead, see ##[[KeyPgScreencontrol|ScreenControl]]## to return the current graphics mode color (foreground and background).
+	
 	The old color values can be retrieved at the same time as setting new ones.
 
 {{fbdoc item="desc"}}
@@ -24,7 +26,7 @@ Sets the display foreground / background color that is used with console output 
 	{{table columns="2" cellpadding="1" cells="Mode;Meaning;1;foreground is screen color (ranging 0-15). background is the emulated CGA palette to be used: 0 (green, red, and brown), 1 (cyan, magenta and white), 2 (same as 0, but with bright colors) or 3 (same as 1, but with bright colors);2, 11;foreground is a color index in current palette (ranging 0-1). background is a color index in current palette (ranging 0-1).;7, 8;foreground is a color index in current palette (ranging 0-15). background is screen color index in current palette (ranging 0-15).;9;foreground is a color index in current palette (ranging 0-63). background is screen color index in current palette (ranging 0-63).;12;foreground is a color index in current palette (ranging 0-15). background is a color index in current palette (ranging 0-15).;13 and up;foreground is a color index in current palette (ranging 0-255). background is a color index in current palette (ranging 0-255)."}}
 
 	If you are using a color depth higher than 8bpp, foreground and background are direct ##[[KeyPgRgb|RGB]]## color values in the form ##&h//AARRGGBB//##, where ##//AA//##, ##//RR//##, ##//GG//## and ##//BB//## are the alpha, red, green and blue components ranging ##&h00##-##&hFF## (##0##-##255## in decimal notation). While in hi/truecolor modes, you can use the ##[[KeyPgRgb|RGB]]## or ##[[KeyPgRgba|RGBA]]## macro to obtain a valid color value.
-	A [[GfxDefPalettes|Default Palette]] is automatically set when entering a ##[[KeyPgScreengraphics|Screen]]## mode. 
+	A ##[[GfxDefPalettes|Default Palette]]## is automatically set when entering a ##[[KeyPgScreengraphics|Screen]]## mode. 
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/color.bas"}}%%(freebasic)
@@ -54,6 +56,30 @@ c = Color()
 Print "Console colors:"
 Print "Foreground: " & LOWORD(c)
 Print "Background: " & HIWORD(c)
+%%
+
+{{fbdoc item="filename" value="examples/manual/gfx/color2.bas"}}%%(freebasic)
+' In 32-bit color depth, Function Color() returns only the foreground color
+
+#Include "fbgfx.bi"
+
+Dim As Integer fgcolor, bkcolor
+
+Screenres 500, 500, 32
+Width 500\8, 500\16
+Color &HFFFF00, &H0000FF
+Cls
+
+Print "From Function Color():"
+Print "  Foreground Color: "; Hex(Color(), 8)
+Print
+
+ScreenControl FB.GET_COLOR, fgcolor, bkcolor
+Print "From Sub ScreenControl():"
+Print "  Foreground Color: "; Hex(fgcolor, 8)
+Print "  Background Color: "; Hex(bkcolor, 8)
+
+Sleep
 %%
 
 {{fbdoc item="diff"}}

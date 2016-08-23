@@ -7,9 +7,9 @@ Tests the existence of a file
 {{fbdoc item="usage"}}##
 	#include "file.bi"
 	//result// = **""FileExists""**( //filename// )
-##
-//or//
-##
+	
+##//or//##
+	
 	#include "vbcompat.bi"
 	//result// = **""FileExists""**( //filename// )
 ##

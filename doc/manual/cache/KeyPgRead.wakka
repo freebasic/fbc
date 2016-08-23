@@ -8,12 +8,12 @@ Reads values stored with the ##[[KeyPgData|Data]]## statement.
 	Reads data stored in the application with the ##[[KeyPgData|Data]]## command. 
 	
 	The elements of the ##//variable_list//## must be of basic types, numeric, strings or elements of arrays and user defined types.
-
+	
 	All the ##[[KeyPgData|Data]]## statements in the program behave as a single list, after the last element of one ##[[KeyPgData|Data]]## statement is read, the first element of the following ##[[KeyPgData|Data]]## statement will be read.
 	The program should not attempt to ##[[KeyPgRead|Read]]## after the last ##**Data**## element.  The results are (in all dialects) undefined,  and the program may crash (Page Fault).
-
+	
 	Data constants can only be of simple types (numeric or string).  A string read into a numeric variable will be evaluated by the ##[[KeyPgVal|Val]]## function.
-
+	
 	The "##[[KeyPgRestore|Restore]] //label//##" statement makes the first ##[[KeyPgData|Data]]## item after ##//label//## the next item to be read, allowing the user to choose specific sections of data to be read.
 
 {{fbdoc item="ex"}}

@@ -10,7 +10,7 @@ Declares a variable
 		##**Dim** //name// ( [//lbound// [[KeyPgTo|To]]] //ubound// [, ...] ) As [[DataType|DataType]]##
 		##**Dim** //name// ( [[KeyPgAny|Any]] [, [[KeyPgAny|Any]]...] ) As [[DataType|DataType]]##
 		##**Dim** //name// ( ) As [[DataType|DataType]]##
-
+	
 	Initializers:
 		##**Dim** //scalar_symbol// As [[DataType|DataType]] = //expression// | [[KeyPgAny|Any]]##
 		##**Dim** //array_symbol// (//arraybounds//) As [[DataType|DataType]] = { //expression// [, ...] } | [[KeyPgAny|Any]]##
@@ -217,6 +217,7 @@ Deallocate(s3)
 	- ##[[KeyPgPreserve|Preserve]]##
 	- ##[[KeyPgShared|Shared]]##
 	- ##[[KeyPgStatic|Static]]##
+	- ##[[KeyPgByrefVariables|Byref (variables)]]##
 	- ##[[KeyPgErase|Erase]]##
 	- ##[[KeyPgLbound|LBound]]##
 	- ##[[KeyPgUbound|UBound]]##

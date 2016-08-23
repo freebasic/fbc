@@ -86,7 +86,9 @@ $(WAKKAZIP):
 ################################################################################
 
 refresh:
-	$(FBDOC) -refresh -useweb
+	rm -rf cache
+	mkdir cache
+	cd ../fbchkdoc && ./getindex -web && ./getpage -web @PageIndex.txt
 
 clean:
 	-rm -f html/*.html

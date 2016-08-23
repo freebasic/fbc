@@ -6,7 +6,7 @@ Create a DLL and import library
 ##
 {{fbdoc item="desc"}}
 	The ##-dll## compiler option creates a dynamic link library. This creates a DLL under Windows (including the import library), and creates a .so under Linux.
-
+	
 	The intrinsic macro ##[[KeyPgDdfboutdll|__FB_OUT_DLL__]]## is set to non-zero (-1) if the ##-dll## option was specified, and set to zero (0) otherwise.
 
 {{fbdoc item="target"}}

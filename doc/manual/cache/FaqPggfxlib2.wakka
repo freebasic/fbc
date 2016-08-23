@@ -3,6 +3,7 @@
 {{anchor name="item0"}}
 
 **""FreeBASIC"" Graphics Library questions:**
+	
 	==- {{anchor name="item1|How can I link/use Gfxlib?"}}==
 	==- {{anchor name="item2|What about the fbgfx.bi header file?"}}==
 	==- {{anchor name="item3|How are Get/Put arrays managed?"}}==

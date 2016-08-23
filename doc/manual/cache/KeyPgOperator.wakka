@@ -3,7 +3,7 @@ Declares or defines an overloaded operator.
 
 {{fbdoc item="syntax"}}##
 	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] | [[KeyPgEnum|Enum]] } //typename//
-		[[KeyPgDeclare|declare]] **Operator** [[KeyPgCast|cast]] () [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]]
+		[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpCast|cast]] () [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]]
 		[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpAt|@]] () [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] [[KeyPgPtr|ptr]]
 		[[KeyPgDeclare|declare]] **Operator** //assignment_op// ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //rhs// [[KeyPgAs|as]] [[DataType|datatype]] )
 		[[KeyPgDeclare|declare]] **Operator** {{fbdoc item="keyword" value="KeyPgOpPtrIndex|[]"}} ( //index// [[KeyPgAs|as]] [[DataType|datatype]] ) [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]]
@@ -12,7 +12,7 @@ Declares or defines an overloaded operator.
 		[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpDelete|delete]] ( //buf//  [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
 		[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpDelete|delete]][] ( //buf//  [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
 	End { [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] | [[KeyPgEnum|Enum]] }
-
+	
 	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] } //typename//
 		[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpFor|For]] ()
 		[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpFor|For]] ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //stp// [[KeyPgAs|as]] //typename// )
@@ -21,11 +21,11 @@ Declares or defines an overloaded operator.
 		[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpNext|Next]] ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //cond// [[KeyPgAs|as]] //typename// ) [[KeyPgAs|as]] [[KeyPgInteger|Integer]]
 		[[KeyPgDeclare|declare]] **Operator** [[KeyPgOpNext|Next]] ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //cond// [[KeyPgAs|as]] //typename//, [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //stp// [[KeyPgAs|as]] //typename// ) [[KeyPgAs|as]] [[KeyPgInteger|Integer]]
 	End { [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] }
-
+	
 	[[KeyPgDeclare|declare]] **Operator** //unary_op// ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //rhs// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[DataType|datatype]]
 	[[KeyPgDeclare|declare]] **Operator** //binary_op// ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //lhs// [[KeyPgAs|as]] [[DataType|datatype]], [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //rhs// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[DataType|datatype]]
-
-	**Operator** //typename//.[[KeyPgCast|cast]] () [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
+	
+	**Operator** //typename//.[[KeyPgOpCast|cast]] () [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
 	**Operator** //typename//.[[KeyPgOpAt|@]] () [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] [[KeyPgPtr|ptr]] [ [[KeyPgExport|Export]] ]
 	**Operator** //typename//.//assignment_op// ( [ [[KeyPgByref|byref]] | [[KeyPgByval|byval]] ] //rhs// [[KeyPgAs|as]] [[DataType|datatype]] ) [ [[KeyPgExport|Export]] ]
 	**Operator** {{fbdoc item="keyword" value="KeyPgOpPtrIndex|[]"}} ( //index// [[KeyPgAs|as]] [[DataType|datatype]] ) [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
@@ -48,21 +48,21 @@ Declares or defines an overloaded operator.
 
 {{fbdoc item="desc"}}
 	The built in operators like ##=##, ##+##, and ##cast## have predefined behaviors when used in expressions.  These operators can be overloaded to do something other than predefined operations when at least one of the arguments to the operator is a ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, ##[[KeyPgEnum|Enum]]##, or ##[[KeyPgUnion|Union]]## data type.
-
-	Operators are just functions.  The operator '+' has functionality like ##Function Plus( A as DataType, B as DataType ) as DataType##.  See //[[ProPgOperatorOverloading|Operator Overloading]]// for more information.  Operators can be overloaded to accept different data types as parameters.  The ##[[KeyPgCast|Cast]]## Operator is the only operator (or function) that can be declared multiple times when only the return type differs (for not explicit usage, the compiler may decide which cast overload to call based on how the object is used).
-
+	
+	Operators are just functions.  The operator '+' has functionality like ##Function Plus( A as DataType, B as DataType ) as DataType##.  See //[[ProPgOperatorOverloading|Operator Overloading]]// for more information.  Operators can be overloaded to accept different data types as parameters.  The ##[[KeyPgOpCast|Cast]]## Operator is the only operator (or function) that can be declared multiple times when only the return type differs, but not the same as the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## it is declared in (for not explicit usage, the compiler may decide which cast overload to call based on how the object is used).
+	
 	Non-static operator members are declared inside the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##.  Global operators are declared outside.  All operator definitions (procedure bodies) must appear outside.
-
-	##**Let**##, ##**Cast**##, and other assignment operators must be declared inside the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##.  They are passed a hidden ##[[KeyPgThis|this]]## parameter and have a return data type same as the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## they are declared in.
-
+	
+	##**Let**##, ##**Cast**##, and other assignment operators must be declared inside the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##.  As all non-static member procedures, they have passed a hidden ##[[KeyPgThis|this]]## parameter.
+	
 	Unary operators must be declared outside the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgEnum|Enum]]## and have a return data type explicitly declared.  Unary operators can be overloaded to return any valid data type, except for ##[[KeyPgOpPtrMemberAccess|Operator -> (Pointer to member access)]]## which must return a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## data type.
-
+	
 	Binary operators must be declared outside the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgEnum|Enum]]## and have a return data type explicitly declared.  Binary operators can be overloaded with valid data types, except for relational operators, which must return ##[[KeyPgInteger|Integer]]##.
-
+	
 	##[[KeyPgLet|Let]]## refers to the assignment operator, as in ##LET a=b##. The ##[[KeyPgLet|Let]]## keyword is omitted in common practice, and is not allowed in the //[[CompilerOptlang|-lang fb]]// dialect.  However, ##[[KeyPgOpLetlist|Let()]]## can be used to assign the fields of a UDT to multiple variables.
-
+	
 	See ##[[KeyPgOpFor|For]]##, ##[[KeyPgOpStep|Step]]##, and ##[[KeyPgOpNext|Next]]## for more information on overloading the ##[[KeyPgFornext|For..Next]]## statement for use with user defined types.
-
+	
 	##**New**##, ##**New[]**##, ##**Delete**##, and ##**Delete[]**## operator members are always static, even if not explicitly declared (##[[KeyPgStaticMember|static]]## keyword is unnecessary but allowed).
 
 {{fbdoc item="ex"}}
@@ -114,6 +114,7 @@ Print "'c *= 3'"
 c *= 3
 Print "c = "; c, "abs(c) ="; Abs( c )
 %%
+
 	Aligned memory allocator:
 		- by using the overloaded member operators "New" and "Delete", any created User object is aligned to a multiple of "ALIGN" bytes (256 bytes in this example),
 		- the real pointer of the allocated memory is saved just above the User pointer, in the padding block.
@@ -241,5 +242,6 @@ End Scope
 	- ##[[KeyPgClass|Class]]##
 	- ##[[KeyPgClass|Enum]]##
 	- ##[[KeyPgType|Type]]##
+	- [[ProPgDataConversion|Coercion and Conversion]]
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

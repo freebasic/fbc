@@ -25,6 +25,8 @@ Copies a file
 {{fbdoc item="desc"}}
 	Copies the contents of the source file into the destination file, overwriting the destination file if it already exists.
 	It is necessary to ##[[KeyPgInclude|#Include]]## either ##"file.bi"## or ##"vbcompat.bi"## in order to gain access to this function.
+	
+	The error code returned by ##**""FileCopy""**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**""FileCopy""**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/filecopy.bas"}}%%(freebasic)

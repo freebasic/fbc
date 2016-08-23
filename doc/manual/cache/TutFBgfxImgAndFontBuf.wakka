@@ -110,18 +110,28 @@ We actually don't need to know much about the format itself.  The reason for thi
 ==FB.IMAGE Data Type==
 
 %%(freebasic)
-  '' Image buffer header, new style (incorporates old header)
-type IMAGE field = 1
-	union
-	    old as _OLD_HEADER
-	    type as uinteger
-	end union
-	bpp as integer
-	width as uinteger
-	height as uinteger
-	pitch as uinteger
-	_reserved(1 to 12) as ubyte
-end type
+	'' Image buffer header, new style (incorporates old header)
+	''
+	type IMAGE field = 1
+		union
+			old as _OLD_HEADER
+			type as ulong
+		end union
+		bpp as long
+		width as ulong
+		height as ulong
+		pitch as ulong
+		_reserved(1 to 12) as ubyte
+		
+'		'' properties
+'		declare property pixels() as ubyte ptr
+	end type
+	
+	'' This is a trick to obtain a pointer to the pixels data area
+	''
+'	property IMAGE.pixels() as ubyte ptr
+'		return cast(ubyte ptr, @this) + sizeof(IMAGE)
+'	end property
 %%
 
 This same information can be found in ##fbgfx.bi##.  As you can see, this data type saves a *lot* of neat information about your buffer.  The Width, Height, Pitch (bytes per row), and Bit Depth (bytes per pixel) are all contained.  In the union is included the type of header, and the old header itself within the same space.  The new header format is indicated by a type value of ##7##.  The old header format is not used in the default dialect in the newer versions of FB, so we're not going to cover it here.
@@ -147,7 +157,7 @@ Remember to include our ##fb.Image## data type!
 Dim as uLong ptr myPix = cast( uLong ptr, ( cast( ubyte ptr, myBuf ) + sizeof(FB.Image) ) )
 %%
 
-Phew.  Alright.  We have to make sure we get the exact address of our pixels.  An integer contains 4 bytes.  3 of these are used for our RGB, and the extra is generally used for alpha when you need it (some people are very resourceful and will use the alpha byte - or channel - to store all kinds of data).  If we're even ONE BYTE off, your Red can become your Green, and your Blue into your Red!  So we have to cast to a ##[[KeyPgUbyte|ubyte]] [[KeyPgPtr|ptr]]## first.
+Phew.  Alright.  We have to make sure we get the exact address of our pixels.  A ulong contains 4 bytes.  3 of these are used for our RGB, and the extra is generally used for alpha when you need it (some people are very resourceful and will use the alpha byte - or channel - to store all kinds of data).  If we're even ONE BYTE off, your Red can become your Green, and your Blue into your Red!  So we have to cast to a ##[[KeyPgUbyte|ubyte]] [[KeyPgPtr|ptr]]## first.
 
 You probably also noticed that we simply added ##sizeof(fb.Image)## to our address.  That's another perk of using ##fb.Image##!  If you add its size to the start of the buffer, we have just skipped all the memory addresses relating to the header and are now at our pixels.
 

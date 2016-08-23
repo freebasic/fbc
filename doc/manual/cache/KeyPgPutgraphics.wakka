@@ -15,7 +15,7 @@ Copies an image on to another image or screen
 		specify a rectangular area in the source buffer to draw. If omitted, the entire buffer is drawn. ##STEP## indicates that ##//x2//## and ##//y2//## are relative to ##//x1//## and ##//y1//##, respectively.
 	##//method//##
 		specifies the method used to draw the image to the destination buffer, and can be any one of the following (the default method is ##XOR##):
-
+	
 		Background-independent methods
 			##[[KeyPgPsetGfx|PSET]]## : Source pixel values are copied without modification.
 			##PRESET## : Source pixel values are 1's-complement negated before being copied.
@@ -27,7 +27,7 @@ Copies an image on to another image or screen
 			##[[KeyPgAlphaGfx|ALPHA]]## : Source is blended with a transparency factor specified either in the ##//value//## parameter, or in the image's individual pixels.  See below.
 			##[[KeyPgAddGfx|ADD]]##: Source is multiplied by a value and added with saturation to the destination. See below.
 			##[[KeyPgCustomgfx|CUSTOM]]## : Uses a user-defined function to perform blending the source with the destination. See below.
-
+	
 	##//value//##
 		is a ##0..255## value specifying the transparency value for an ##ADD## or ##ALPHA## method blit.
 	##//blender//## 
@@ -36,34 +36,34 @@ Copies an image on to another image or screen
 		specifies a parameter to pass to the custom blender.
 
 {{fbdoc item="desc"}}
-	The ##**Put**## statement can be used to draw an image onto another image. The ##//x//## and ##//y//## coordinates are affected by the last call to the ##[[KeyPgViewgraphics|View]]## and ##[[KeyPgWindow|Window]]## statements, and plotted image respects the current clipping region set by last call to the ##[[KeyPgViewgraphics|View]]## statement. The source image is clipped if it is drawn outside the destination buffer.
-
+	The ##**Put**## statement can be used to draw an image onto another image or screen. The ##//x//## and ##//y//## coordinates are affected by the last call to the ##[[KeyPgViewgraphics|View]]## and ##[[KeyPgWindow|Window]]## statements, and plotted image respects the current clipping region set by last call to the ##[[KeyPgViewgraphics|View]]## statement. The source image can overflow the destination buffer or screen (then the copied image is clipped accordingly).
+	
 	**Valid Image Buffers**
 		The ##//source//## and ##//target//## image buffers must be valid image buffers. Valid image buffers are created using the ##[[KeyPgGetgraphics|Get]]## or ##[[KeyPgImagecreate|ImageCreate]]## statements. Valid image buffers can be specified in a ##**Put**## statement using an array name with optional index, or a pointer with optional index.
-
+	
 	**Drawing methods**
 		Depending on the method used, the existing pixel values in the destination buffer are used to calculate the pixel values that are actually drawn. The ##PSET##, ##PRESET## and ##TRANS## methods do not use the destination buffer for calculating final pixel values, while the ##AND##, ##OR##, ##XOR##, ##ALPHA## and ##ADD## methods do. Images that are drawn with these latter methods will look differently depending on the content of the destination buffer.
-
+	
 	**Different pixel formats**
 		The pixel format of an image buffer must be compatible with the current graphics mode color depth; that is, if you acquire an image using ##[[KeyPgGetgraphics|Get]]## and you later change screen mode via the ##[[KeyPgScreengraphics|Screen]]## statement, the image data may not be valid in the new graphics mode, and you may not be able to draw it on the screen. You should note however that you will always be able to draw image buffers onto other image buffers via ##**Put**## as long as these buffers were created with the same depth.
-
+	
 		The ##AND##, ##OR## and ##XOR## methods produce different results depending on the current color depth, as pixels are stored in different formats; see [[GfxInternalFormats|Internal pixel formats]] for details. 
-
+	
 	**Mask Color**
 		The ##TRANS##, ##ALPHA## and ##ADD## methods do not draw pixels in the source image that use the mask color. The mask color depends on target (being it an image buffer or the screen) depth: in depths up to 8 bpp (paletted modes) it is equal to color index ##0##, while in hi/truecolor depths (16 and 32 bpp) it is equal to magenta, which is ##[[KeyPgRgb|RGB]](255, 0, 255)##. Note that in 32 bpp modes the alpha value of a color does not affect the identification of the transparent color; only the lower 24 bits are used to identify it. See [[GfxInternalFormats|Internal pixel formats]] for details. 
-
+	
 	**Alpha drawing**
 		The ##ALPHA## method can be used in two modes. If the ##//value//## parameter is specified, this is used to specify the level of transparency for the whole image to be drawn; a value of 0 will draw a completely transparent image, whereas a value of 255 will draw a completely solid one. This mode works only when drawing onto hi/truecolor targets (16 and 32 bpp).
 		If the ##//value//## parameter is omitted, the ##ALPHA## method will take the alpha level value on a per-pixel basis, allowing to draw images with an alpha channel (certain parts of the image can be made more or less transparent than others). This mode works only with 32 bpp image buffers, as this is the only color depth that allows for an embedded alpha value in each pixel.
-
+	
 	**Dealing with the alpha channel**
 		Normally ##**Put**## only allows to draw image buffers onto targets with the same depth, but there is an exception. When drawing an 8 bpp image buffer onto a 32 bpp target and the ##ALPHA## method is used, the 8 bpp source image is drawn into the alpha channel of the 32 bpp target. This allows to easily set the whole alpha channel of an image without having to deal with low level access of its pixel data.
-
+	
 	**Custom Blend Function**
 		The ##CUSTOM## method uses a user-defined function to calculate the final pixel values to be drawn to the destination buffer. This function will be called once for every pixel of the source image, and will receive the source and destination pixel values, and a data pointer passed by the ##**Put**## function. The pixel value returned will be the value used to draw to the destination buffer. The function has the form:
-
+	
 		##[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] //identifier// ( [[KeyPgByval|byval]] //source_pixel// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByval|byval]] //destination_pixel// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByval|byval]] //parameter// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]##
-
+	
 			##//identifier//## is the name of the function. Can be anything.
 			##//source_pixel//## is the current pixel value of the source image.
 			##//destination_pixel//## is the current pixel value of the destination image.

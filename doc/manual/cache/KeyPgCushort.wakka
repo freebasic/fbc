@@ -3,7 +3,7 @@ Converts numeric or string expression to an unsigned integer (##[[KeyPgUshort|Us
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cushort** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgUshort|ushort]]
-
+	
 	[[KeyPgType|Type]] //typename//
 		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgUshort|ushort]]
 	End Type
@@ -26,9 +26,9 @@ Converts numeric or string expression to an unsigned integer (##[[KeyPgUshort|Us
 
 {{fbdoc item="desc"}}
 	The ##**Cushort**## function rounds off the decimal part and returns a 16-bit ##[[KeyPgUshort|Ushort]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##0## or larger than ##65## ##535##.
-
+	
 	The name can be explained as 'Convert to Unsigned Short'.
-
+	
 	If the argument is a string expression, it is converted to numeric by using ##[[KeyPgValuint|Valuint]]##.
 
 {{fbdoc item="ex"}}

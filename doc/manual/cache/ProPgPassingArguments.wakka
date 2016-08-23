@@ -3,7 +3,7 @@ Passing information to procedures.
 
 {{fbdoc item="section" value="Declaring parameters"}}
 	Procedures can get passed information in the form of variables and objects when they are called. In the context of a procedure call, these variables and objects are called arguments. These arguments are then represented as so-called parameters inside the procedure body. Parameters can be used just like any other variable or object.
-
+	
 	To specify that a procedure should get passed arguments when called, declare the procedure with a parameter list. A parameter list is a list of one or more names and types that the procedure will use when referring to the arguments that are passed to it. Parameter lists are surrounded by parenthesis.
 
 {{fbdoc item="filename" value="examples/manual/proguide/procs/passargs.bas"}}%%(freebasic)
@@ -22,9 +22,9 @@ The parameters have the values: abc and 123
 
 {{fbdoc item="section" value="Passing arguments by value"}}
 	Arguments that are passed by value are not actually passed to procedures; a copy of the argument is made and passed instead. This allows the procedure to modify the copy, and the original variable or object remains unchanged.
-
+	
 	When passing objects to procedures by value, the copy is made by calling the copy constructor of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##.
-
+	
 	To specify that an argument should be passed by value, precede the parameter name in the procedure declaration with the ##[[KeyPgByval|Byval]]## keyword:
 
 {{fbdoc item="filename" value="examples/manual/proguide/procs/passbyval.bas"}}%%(freebasic)
@@ -49,9 +49,9 @@ The variable 'arg' after the call = 10
 
 {{fbdoc item="section" value="Passing arguments by reference"}}
 	Unlike arguments that are passed by value, arguments that are passed to procedures by reference really do get passed; no copy is made. This allows the procedure to modify the original variable or object that was passed to it.
-
+	
 	A reference is like an alias for a variable or object. Whenever you refer to a reference, you're referring to the actual variable or object that it aliases. In other words, you can think of a reference parameter of a procedure as the argument that is passed to it; any changes made to the reference parameter are actually changes to the argument it represents.
-
+	
 	To specify that an argument should be passed by reference, precede the parameter name in the procedure declaration with the ##[[KeyPgByref|Byref]]## keyword:
 
 {{fbdoc item="filename" value="examples/manual/proguide/procs/passbyref.bas"}}%%(freebasic)

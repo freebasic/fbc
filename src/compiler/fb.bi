@@ -89,7 +89,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_GFX                  '' boolean: -gfx (whether gfxlib should be linked)
 	FB_COMPOPT_PIC                  '' boolean: -pic (whether to use position-independent code)
 	FB_COMPOPT_STACKSIZE            '' integer
-
+	FB_COMPOPT_OBJINFO              '' boolean: write/read .fbctinf sections etc.?
 	FB_COMPOPT_SHOWINCLUDES         '' boolean: -showincludes
 
 	FB_COMPOPTIONS
@@ -259,6 +259,7 @@ type FBCMMLINEOPT
 	gfx             as integer              '' Link against gfx library (default = false)
 	pic             as integer              '' Whether to use position-independent code (default = false)
 	stacksize       as integer
+	objinfo         as integer
 	showincludes    as integer
 end type
 
@@ -405,6 +406,8 @@ declare function fbGetBits( ) as integer
 declare function fbGetHostBits( ) as integer
 declare function fbGetCpuFamily( ) as integer
 declare function fbIdentifyFbcArch( byref fbcarch as string ) as integer
+declare function fbTargetSupportsELF( ) as integer
+declare function fbTargetSupportsCOFF( ) as integer
 
 declare function fbGetEntryPoint _
 	( _

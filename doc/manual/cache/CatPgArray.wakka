@@ -21,7 +21,6 @@ Statements and procedures for working with arrays.
 		Defines and resizes variable-length arrays.
 	=={{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}==
 		Preserves array contents when used with [[KeyPgRedim|REDIM]].
-
 <<>>{{anchor name="CLEAR"}}{{fbdoc item="section" value="Clearing Array Data"}}
 	=={{fbdoc item="keyword" value="KeyPgErase|ERASE"}}==
 		Destroys variable-length array elements and initializes fixed-length array elements.
@@ -31,7 +30,6 @@ Statements and procedures for working with arrays.
 		Returns the lower bound of an array's dimension.
 	=={{fbdoc item="keyword" value="KeyPgUbound|UBOUND"}}==
 		Returns the upper bound of an array's dimension.
-
  >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

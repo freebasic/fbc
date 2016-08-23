@@ -16,7 +16,7 @@ Opens both the standard input (//stdin//) and standard error (//stderr//) stream
 		An unused file number.
 
 {{fbdoc item="ret"}}
-	Zero is returned if ##**Open Err**## completed successfully, otherwise a non-zero value is returned to indicate failure.
+	A 32 bit ##[[KeyPgLong|Long]]##: a zero is returned if ##**Open Err()**## completed successfully, otherwise a non-zero value is returned to indicate failure.
 
 {{fbdoc item="desc"}}
 	This command opens ##stdin## to read from and ##stderr## to write to the console allowing read and write operations with normal file commands.
@@ -24,16 +24,17 @@ Opens both the standard input (//stdin//) and standard error (//stderr//) stream
 	##stderr## is an output stream different from ##stdout## allowing error messages to be redirected separately from the main console output.
 	
 	The normal console commands, such as ##[[KeyPgColor|Color]]## and ##[[KeyPgLocate|Locate]]##, do not work in this mode, because they do not accept a file number.
-
+	
 	The ##[For Input|Output]## ##//mode//## is allowed for compatibility, but is ignored.
+	
+	The error code returned by ##**Open Err**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Open Err**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
 **Runtime errors:**
-	    ##**Open Err**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
-
+	##**Open Err**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
+	
 	//(##1##) Illegal function call//
 		- ##//Filenumber//## was not free at the time. use ##[[KeyPgFreefile|Freefile]]## to ensure that ##//filenumber//## is free.
 
-		
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/openerr.bas"}}%%(freebasic)
 Dim a as string

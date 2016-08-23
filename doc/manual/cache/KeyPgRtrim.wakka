@@ -19,7 +19,7 @@ Removes surrounding substrings or characters on the right side of a string
 
 {{fbdoc item="desc"}}
 	This procedure trims surrounding characters from the right (end) of a source string. Substrings matching ##//trimset//## will be trimmed if specified, otherwise spaces ([[CptAscii|ASCII]] code 32) are trimmed.
-
+	
 	If the ##**Any**## keyword is used, any character matching a character in ##//trimset//## will be trimmed.
 	
 	All comparisons are case-sensitive.

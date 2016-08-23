@@ -12,9 +12,9 @@ Preprocessor directive to set the current line number and file name
 
 {{fbdoc item="desc"}}
 	Informs the compiler of a change in line number and file name and updates the ##[[KeyPgDdfile|__FILE__]]## and ##[[KeyPgDdline|__LINE__]]## macro values accordingly.
-
+	
 	Both compile time messages and run-time messages are affected by this directive.
-
+	
 	This directive allows other programs to generate source code for the FreeBASIC compiler and have it return warning and/or error messages that refer to the original source used by the other program.
 
 {{fbdoc item="ex"}}

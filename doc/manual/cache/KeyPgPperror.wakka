@@ -10,7 +10,7 @@ Preprocessor diagnostic directive
 
 {{fbdoc item="desc"}}
 	##**#error**## stops compiling and displays ##//error_text//## when compiler finds it. 
-
+	
 	This keyword must be surrounded by an ##[[KeyPgPpif|#if]] //<condition>//## ...##[[KeyPgPpendif|#endif]]##, so the compiler can reach ##**#error**## only if ##//<condition>//## is met.
 
 {{fbdoc item="ex"}}

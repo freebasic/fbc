@@ -6,11 +6,11 @@ Preprocessor conditional directive
 ##
 {{fbdoc item="param"}}
 	##//condition//##
-	    A conditional expression that is assumed to be true
+		A conditional expression that is assumed to be true
 
 {{fbdoc item="desc"}}
 	Asserts the truth of a conditional expression at compile time.  If ##//condition//## is false, compilation will stop with an error.
-
+	
 	This statement differs from the ##[[KeyPgAssert|ASSERT]]## macro in that ##**#assert**## is evaluated at compile-time and ##[[KeyPgAssert|ASSERT]]## is evaluated at run-time.
 
 {{fbdoc item="ex"}}

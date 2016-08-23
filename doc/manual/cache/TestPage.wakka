@@ -1,0 +1,10 @@
+Testing the table cell parsing: Chars like ##&## will become ##&amp;##, but the ##;## also is used as delimiter in the ##""{{table cells="..."}}""## string.
+
+{{table columns="3" cellpadding="2" cells="&"}}
+{{table columns="3" cellpadding="2" cells="&,"}}
+{{table columns="3" cellpadding="2" cells="&amp"}}
+{{table columns="3" cellpadding="2" cells="&amp,"}}
+{{table columns="3" cellpadding="2" cells="a;&;b"}}
+{{table columns="3" cellpadding="2" cells="a;&,;b"}}
+{{table columns="3" cellpadding="2" cells="a;&amp;b"}}
+{{table columns="3" cellpadding="2" cells="a;&amp,;b"}}

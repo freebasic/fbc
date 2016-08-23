@@ -16,7 +16,7 @@ Does a binary copy from a ##[[KeyPgDouble|double]]## variable to a ##[[KeyPgStri
 
 {{fbdoc item="desc"}}
 	Does a binary copy from a ##[[KeyPgDouble|double]]## variable to a ##[[KeyPgString|string]]##, setting its length to 8 bytes. The resulting string can be read back to a ##[[KeyPgDouble|double]]## by ##[[KeyPgCvd|Cvd]]##.
-
+	
 	This function is useful to write numeric values to buffers without using a ##[[KeyPgType|Type]]## definition.
 
 {{fbdoc item="ex"}}

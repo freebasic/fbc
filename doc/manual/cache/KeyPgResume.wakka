@@ -6,7 +6,7 @@ Error handling statement to resume execution after a jump to an error handler
 ##
 {{fbdoc item="desc"}}
 	##**Resume**## is used in the traditional QB error handling mechanism within an error handler (called by ##[[KeyPgOnerror|On Error]]##) to return execution to the line that caused the error.  Usually this is used after the error has been handled gracefully in order to try the previously erroneous operation again with corrected data.
-
+	
 	##**Resume**## resets the ##[[KeyPgErr|Err]]## value to 0
 
 {{fbdoc item="ex"}}

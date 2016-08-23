@@ -11,7 +11,7 @@ Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which selects t
 {{fbdoc item="desc"}}
 	##**Trans**## selects transparent background as the method for blitting an image buffer.  This is similar to the ##PSET## method, but pixels containing the mask color are skipped.
 	For 8-bit color images, the mask color is palette index 0.  For 16/32-bit color images, the mask color is Magenta, which is ##[[KeyPgRgb|RGB]](255, 0, 255)##.  The alpha value is ignored when checking for the mask color in 32-bit images.
-
+	
 	Note: for 32-bit images, the alpha value of pixels may be changed to 0.  This is for efficiency reasons.  To preserve the alpha values, a custom blender may be used, as in the second example below.
 
 {{fbdoc item="ex"}}
@@ -47,9 +47,9 @@ function trans32 ( byval source_pixel as uinteger, byval destination_pixel as ui
 	'' returns the source pixel
 	'' unless it is &hff00ff (magenta), then return the destination pixel
 	if (source_pixel and &hffffff) <> &hff00ff then
-	    return source_pixel
+		return source_pixel
 	else
-	    return destination_pixel
+		return destination_pixel
 	end if
 end function
 

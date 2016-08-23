@@ -6,9 +6,9 @@ Intrinsic define (macro value) set by the compiler
 ##
 {{fbdoc item="desc"}}
 	Indicates if parameters to a ##[[KeyPgFunction|Function]]## or ##[[KeyPgSub|Sub]]## are passed by reference as with ##[[KeyPgByref|Byref]]##, or by value as with ##[[KeyPgByval|Byval]]## by default when the by value / by reference specifier is not explicitly stated.
-
+	
 	##""__FB_OPTION_BYVAL__""## is set to non-zero (-1) if by default parameters are passed value, and zero (0) if by default parameters are passed by reference.
-
+	
 	The default for passing parameters by reference or by value is determined by the //[[CompilerOptlang|-lang]]// command line option used during compilation or usage of ##[[KeyPgOptionbyval|Option Byval]]## in the source file.
 
 {{fbdoc item="ex"}}

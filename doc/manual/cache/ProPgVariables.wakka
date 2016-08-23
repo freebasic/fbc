@@ -5,11 +5,11 @@ Symbols representing data in memory.
 	Variables are name symbols which can be manipulated. They are declared and referenced using names composed of letters, numbers, and character "_". These reference names cannot contain most other symbols because such symbols are part of the FreeBASIC programming language. They also cannot contain spaces.  See //[[ProPgIdentifierRules|Indentifier Rules]]//.
 	
 	In FreeBASIC, variables can be defined using the ##[[KeyPgDim|Dim]]## statement. 
-
+	
 	Variables are available for later access depending on where and how the ##[[KeyPgDim|Dim]]## declaration for that variable is given.  Depending on the [[ProPgVariableScope|scope]] of a variable, a defined variable can be available within the main area of a program, within a procedure, through an entire module, or through out an entire program.  See //[[ProPgVariableScope|Variable Scope]]//.
-
+	
 	Variables are also made available when they are passed as parameters to a procedure such as ##[[KeyPgFunction|Function]]## or ##[[KeyPgSub|Sub]]##.
-
+	
 	After a variable is declared with the ##[[KeyPgDim|Dim]]## statement, they can be assigned, passed to procedures, and used in expressions wherever their [[CatPgStdDataTypes|Standard Data Type]] is similar.  Sometimes variables are automatically converted to other data types before being used in expressions, or passed as parameters to procedures.  See //[[ProPgDataConversion|Coercion and Conversion]]//.
 
 {{fbdoc item="ex"}}

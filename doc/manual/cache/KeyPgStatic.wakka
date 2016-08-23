@@ -21,13 +21,13 @@ Defines variables, objects and arrays having static storage
 		##[[KeyPgAny|Any]] [, [[KeyPgAny|Any]]...]##
 		//or empty.//
 	##//expression//##
-	    An constant expression, or an array of constant expressions
+		An constant expression, or an array of constant expressions
 
 {{fbdoc item="desc"}}
 	Specifies [[ProPgStorageClasses|static storage]] for variables, objects and arrays; they are allocated at program startup and deallocated upon exit. Objects are constructed once when they are defined, and destructed upon program exit.
-
+	
 	When declaring static arrays, only [[ProPgLiterals|numeric literals]], [[KeyPgConst|constants]] or [[KeyPgEnum|enumerations]] may be used as subscript range values. Static variable-length arrays must be declared empty (no subscript range list) and resized using ##[[KeyPgRedim|Redim]]## before used.
-
+	
 	In both iterative and recursive blocks, like looping [[CatPgControlFlow|control flow statements]] or procedures, static variables, objects and arrays local to the block are guaranteed to occupy the same storage across all instantiations of the block. For example, procedures that call themselves - either directly or indirectly - share the same instances of their local static variables.
 	
 	A static variable may only be initialised with a constant value: its starting value is set at the start of the program before any code is run, and so it cannot depend on any variables or functions in it.
@@ -70,6 +70,7 @@ Number of times called: 2
 	- ##[[KeyPgStaticMember|Static (Member)]]##
 	- ##[[KeyPgDim|Dim]]##, ##[[KeyPgRedim|Redim]]##
 	- ##[[KeyPgShared|Shared]]##
+	- ##[[KeyPgByrefVariables|Byref (variables)]]##
 	- ##[[KeyPgSub|Sub (Module)]]##, ##[[KeyPgFunction|Function (Module)]]##
 	- ##[[KeyPgMemberSub|Sub (Member)]]##, ##[[KeyPgMemberFunction|Function (Member)]]##
 	- ##[[KeyPgOptionstatic|Option Static]]##

@@ -9,7 +9,7 @@ Error reporting function
 ##
 {{fbdoc item="ret"}}
 	Returns a pointer to the string identifying the module where the error occurred.
-
+	
 	Returns NULL if the source is not compiled with the //[[CompilerOptexx|-exx]]// compiler option.
 
 {{fbdoc item="desc"}}

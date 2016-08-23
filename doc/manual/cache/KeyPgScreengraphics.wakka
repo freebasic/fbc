@@ -2,7 +2,6 @@
 Initializes a graphics mode using QB-like mode numbers
 
 {{fbdoc item="syntax"}}##
-
 	##//[[CompilerOptlang|-lang fb|fblite]]// dialects:##
 		**Screen** //mode// [, [ //depth// ] [, [ //num_pages// ] [, [ //flags// ] [, [ //refresh_rate// ]]]]]
 		**Screen** , [ //active_page// ] [, [ //visible_page// ]]
@@ -29,35 +28,35 @@ Initializes a graphics mode using QB-like mode numbers
 
 {{fbdoc item="desc"}}
 	##**Screen**## tells the compiler to link the [[GfxLib]] and initializes a QB-only, QB-on-GUI or [[OpenGL]] graphics mode, depending on the ##//flags//## setting.
-
+	
 	In QB-only modes a dumb window or fullscreen resolution is set, one or more buffers in standard memory are created, console commands are redirected to their graphic versions, a [[GfxDefPalettes|default palette]] is set and an automatic screen refresh thread is started.  QB-like graphics and console statements can be used.
-
+	
 	In QB-on-GUI modes one or more buffers in standard memory are created, console commands are redirected to their graphic versions and a [[GfxDefPalettes|default palette]] is set.  QB-like graphics and console statements can be used.  It is up to the user to create a window and to refresh it with the contents of the graphics buffers.
-
+	
 	In ""OpenGL"" modes a dumb window or fullscreen resolution is set, one or more buffers in standard memory are created, and the OS's ""OpenGL"" library is initialized.  From here only ""OpenGL"" commands can be used; QB-like and console commands are forbidden.  This allows to initialize ""OpenGL"" in a portable way; you can then also use ##[[KeyPgScreencontrol|ScreenControl]]## to properly customize the GL pixel format to be used before ##**Screen**## is called or to retrieve the list of supported ""OpenGL"" extensions after a mode has been set, and ##[[KeyPgScreenglproc|ScreenGLProc]]## to obtain extension function pointers.
-
+	
 	Any buffer that is created in standard memory uses one of three supported internal pixel formats, depending on the desired color depth; see [[GfxInternalFormats|Internal pixel formats]] for details.
-
+	
 	If ##**Screen**## fails to set the required mode, an "Illegal function call" error is issued and the screen pointer is set to ##0##. Thus ##**Screen**## failures can be detected using standard ##[[KeyPgOnerror|On Error]]## processing or retrieving the screen pointer with ##[[KeyPgScreenptr|Screenptr]]##.
-
+	
 	Before setting a fullscreen mode the program should check if that mode is available in the graphics card using ##[[KeyPgScreenlist|Screenlist]]##.
-
+	
 __mode details__
 	Available modes list:
 	QB compatibility modes:
 {{table columns="6" cellpadding="1" cells="Mode nr;Resolution;Emulation;Text;char size;colors on screen;1;320x200;CGA ;40X25;8x8;16 background, 1 of four sets foreground;2;640x200;CGA;80x25;8x8;16 colors to 2 attributes;7;320x200;EGA;40x25;8x8;16 colors to 16 attributes;8;640x200;EGA;80x25;8x8;16 colors to 16 attributes;9;640x350;EGA;80x25 0r 80x43;8x14 or 8x8;16 colors to 16 attributes;11;640x480;VGA;80x30 or 80x60;8x16 or 8x8;256K colors to 2 attributes;12;640x480;VGA;80x30 or 80x60;8x16 or 8x8;256K colors to 16 attributes;13;320x200;MCGA;40X25;8X8;256K colors to 256 attributes"}}
 	New ""FreeBASIC"" modes:
 {{table columns="6" cellpadding="1" cells="Mode nr;Resolution;Emulation;Text;char size;colors on screen;14;320x240;###;40x30;8x8;256K colors to 256 attributes or direct color; 15;400x300;###;50x37;8x8;256K colors to 256 attributes or direct color; 16;512x384;###;64x24 or 64x48;8x16 or 8x8;256K colors to 256 attributes or direct color;17;640x400;###;80x25 or 80x50;8x16 or 8x8;256K colors to 256 attributes or direct color;18;640x480;###;80x30 or 80x60;8x16 or 8x8;256K colors to 256 attributes or direct color; 19;800x600;###;100x37 or 100x75;8x16 or 8x8;256K colors to 256 attributes or direct color;20;1024x768;###;128x48 or 128x96;8x16 or 8x8;256K colors to 256 attributes or direct color; 21;1280x1024;###;160x64 or 160x128;8x16 or 8x8;256K colors to 256 attributes or direct color"}} 
-
+	
 __##depth## details__
 	For modes ##14## and up, the depth parameter changes the color depth to the specified new one; if depth is not specified, these modes run in 8bpp.  For modes ##13## and below, ##//depth//## has no effect.
-
+	
 __##num_pages## details__
 	You can request any number of pages for any video mode; if you omit the parameter, only the visible page (number ##0##) will be available.  A page is either the visible screen or an offscreen buffer, you can show a page while working on another one; see the ##[[KeyPgScreenset|Screenset]]## statement for details.  All pages are created in standard memory, the video card memory is never used for video buffering.
-
+	
 __##flags## details:__
 	(documented at the page [[KeyPgScreenres|Screenres]])
-
+	
 __Other details__
 	While in windowed mode, clicking on the window close button will add a keypress of ##([[KeyPgChr|Chr]](255) & "k")## to the ##[[KeyPgInkey|Inkey]]## buffer.  Clicking on the Maximize window button will switch to fullscreen mode if possible.  A successful ##**Screen**## call sets currently visible and working pages both to page number ##0##, resets the palette to the specified mode one (see [[GfxDefPalettes|Default palettes]]), resets the clipping region to the size of the screen, disables custom coordinates mappings, moves the graphics cursor to the center of the screen, moves the text cursor to the top-left corner of the screen and sets foreground and background colors to bright white and black respectively.
 

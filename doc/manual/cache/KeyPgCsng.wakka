@@ -3,7 +3,7 @@ Converts numeric or string expression to ##[[KeyPgSingle|Single]]## precision fl
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Csng** ( [[KeyPgByval|byval]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[KeyPgSingle|single]]
-
+	
 	[[KeyPgType|Type]] //typename//
 		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] [[KeyPgCast|cast]] ( ) [[KeyPgAs|as]] [[KeyPgSingle|single]]
 	End Type
@@ -26,7 +26,7 @@ Converts numeric or string expression to ##[[KeyPgSingle|Single]]## precision fl
 
 {{fbdoc item="desc"}}
 	The ##**Csng**## function returns a 32-bit ##[[KeyPgSingle|Single]]## value. The function does not check for an overflow, so be sure not to pass a value outside the representable range of the ##[[KeyPgSingle|Single]]## data type. The name can be explained as 'Convert to ""SiNGle""'.
-
+	
 	If the argument to ##**Csng**## is a string expression, it is first converted to numeric by using ##[[KeyPgVal|Val]]##.
 
 {{fbdoc item="ex"}}

@@ -16,11 +16,11 @@ Finds available fullscreen video modes
 
 {{fbdoc item="desc"}}
 	It works like the ##[[KeyPgDir|Dir]]## function: the first call to the function requires the ##//depth//## parameter to be specified, it  returns the lowest supported resolution for the requested depth. Further calls to ##**Screenlist**## without arguments returns the next resolutions. When no more resolutions are available, ##[[KeyPgScreenlist|Screenlist]]## returns ##0##.
-
+	
 	The result of ##[[KeyPgScreenlist|Screenlist]]## is encoded as a 32 bit value, with the screen width as the [[KeyPgHiword|high word]] and the height as the [[KeyPgLoword|low word]].
-
+	
 	Resolutions are returned from lowest to highest supported ones. 
-
+	
 	It is safe to call this function before any graphics mode has been set.
 
 {{fbdoc item="filename" value="examples/manual/gfx/screenlist.bas"}}%%(freebasic)
@@ -36,7 +36,6 @@ While (mode <> 0)
 	mode = ScreenList()
 Wend
 %%
-
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Screenlist""**##.

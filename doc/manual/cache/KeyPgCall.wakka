@@ -6,9 +6,9 @@ Statement to invoke a subroutine
 ##
 {{fbdoc item="desc"}}
 	Calls a ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]##.
-
+	
 	This keyword is a holdover from earlier dialects of BASIC, and is mainly deprecated.
-
+	
 	In //[[CompilerOptlang|-lang qb]]//, it can be used to call ##[[KeyPgSub|sub]]##s in code before they are declared.  The function will be implicitly ##[[KeyPgDeclare|Declare]]##'d, with any parameters passed ##[[KeyPgByref|Byref]] As [[KeyPgAny|Any]]##.
 	Note: until the function is declared, no type-checking is done on the parameters, so it is up to the programmer to ensure they are of the correct type.
 

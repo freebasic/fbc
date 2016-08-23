@@ -8,7 +8,7 @@ Installing ""FreeBASIC"", any additionally needed packages, and perhaps a text e
 	1) Unless you already have a source code editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":
 		- [[http://fbide.freebasic.net/|FBIDE]]
 		- [[http://radasm.cherrytree.at/fbedit/|FBEdit]]
-
+	
 	To uninstall ""FreeBASIC"", remove it from the system's list of installed software ([[http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/win_addprog_window_component.mspx|Add/remove programs]], [[http://windows.microsoft.com/en-US/windows-vista/Uninstall-or-change-a-program|Uninstall or change a program]]).
 
 {{fbdoc item="section" value="Windows x64"}}
@@ -16,7 +16,7 @@ Installing ""FreeBASIC"", any additionally needed packages, and perhaps a text e
 	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/|FreeBASIC-x.xx.x-win64.zip]] package
 	1) Extract it where you like, for example at ##""C:\%ProgramFiles%\FreeBASIC""## (no further installation required to use fbc).
 	1) You may want to install a source code editor or IDE; also see the **Windows 32bit** section.
-
+	
 	To uninstall ""FreeBASIC"", simply deleted the directory where you extracted it.
 
 {{fbdoc item="section" value="Linux"}}

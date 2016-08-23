@@ -16,9 +16,9 @@ Returns a wide-character string containing one or more Unicode characters
 
 {{fbdoc item="desc"}}
 	##**Wchr**## returns a wide-character string containing the character(s) represented by the Unicode values passed to it.
-
+	
 	When ##**Wchr**## is used with numerical constants or literals, the result is evaluated at compile-time, so it can be used in variable initializers.
-
+	
 	Not all Unicode characters can be displayed on any machine, the characters available depend on the font presently in use in the console. Graphics modes can't display Unicode characters, as the [[GfxLib]] built-in font is not Unicode.
  
 {{fbdoc item="ex"}}

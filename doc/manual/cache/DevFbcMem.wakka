@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Memory management"}}----
-
+	
 	fbc tries to avoid memory allocations as much as possible, since they are pretty slow generally. The linked list implemented in list.bas comes with a builtin memory pool, so pretty much every list is pooled. The memory pool pre-allocates large chunks and can then quickly hand out many small nodes. Those lists are used for simple things like the list of libraries to link into an executable, but also for heavier things like AST nodes. The memory pool is supposed to speed things up (no idea if this was ever verified though).
 	
 	In many places the compiler simply uses global/static variables, for example fixed-length strings, in order to avoid memory allocations. Tokens are a nice example: lex.bas parses input characters into tokens, and stores the token text in static buffers. Token text, that could be: variable names, string literals, and so on. All tokens are stored here though, so the preprocessor can correctly record macros. Now take into account the huge number of tokens the parser has to deal with: For example, FB's current Windows headers result in ~100k tokens. Dynamically allocating a buffer for every token would quickly become inefficient.

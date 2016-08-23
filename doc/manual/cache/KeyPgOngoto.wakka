@@ -6,7 +6,7 @@ Jumps to a label based on an expression.
 ##
 {{fbdoc item="desc"}}
 	Branches to different labels depending on the value of //expression//. An expression value of 1 will branch to the first label, a value of 2 to the second, etc.  If the value of //expression// is zero (0) or greater than the number of items in the list, execution continues on the next statement following the ##**On...Goto**##.
-
+	
 	It is recommended that the structured ##[[KeyPgSelectcase|Select Case]]## conditional statement be used instead of ##**On...Goto**##.
 
 {{fbdoc item="ex"}}

@@ -19,20 +19,20 @@ Fills an area delimited by a border of a specified color
 
 {{fbdoc item="desc"}}
 	Graphics command to fill an area delimited by a border of specified color. Also known as 'flood-fill' or 'paint bucket'.
-
+	
 	##**Paint**## can operate on the current work page as set by the ##[[KeyPgScreenset|Screenset]]## statement or on the target ##[[KeyPgGetgraphics|Get]]##/##[[KeyPgPutgraphics|Put]]## buffer, if specified.
-
+	
 	Filling starts at specified ##(//x//,//y//)## coordinates; if ##STEP## is specified, these are relative to the last graphics cursor position. Coordinates are also affected by custom coordinates system set up by ##[[KeyPgWindow|Window]]## and/or ##[[KeyPgViewgraphics|View (Graphics)]]## statements; clipping set by ##[[KeyPgViewgraphics|View]]## also applies.
 	
 	If the ##//paint//## argument is a number, it is assumed a color in the same format used by the ##[[KeyPgColor|Color]]## statement, and the region is flood-filled using that color. If ##//paint//## is a ##[[KeyPgString|String]]##, the region will be filled using a pattern; the pattern is always 8*8 pixels, and the passed string must hold pixels data in a format dependent on the current color depth. The string holds pattern pixels row by row, and its size should be as follows:
-
+	
 	For color depths 1, 2, 4 and 8:
 	##size = 8 * 8 = 64##
 	For color depths 15 and 16:
 	##size = (8 * 8) * 2 = 128##
 	For color depths 24 and 32:
 	##size = (8 * 8) * 4 = 256##
-
+	
 	If the passed string is smaller, missing pixels will be 0. If the ##//paint//## argument is omitted, normal filling is performed using the current foreground color set by ##[[KeyPgColor|Color]]##. Flood-filling continues until pixels of the specified border color are found; if ##//border_color//## is omitted, the current background color is assumed.
 
 {{fbdoc item="ex"}}
@@ -57,16 +57,16 @@ const bit_depth = 8
 function paint_pixel( byval c as uinteger, byval bit_depth_ as integer ) as string
 	
 	if bit_depth_ <= 8 then '' 8-bit:
-	    function =  chr( cubyte(c) )
-	    
+		function =  chr( cubyte(c) )
+		
 	elseif bit_depth_ <= 16 then '' 16-bit:
-	    function = mkshort( c shr 3 and &h1f or _
-	                        c shr 5 and &h7e0 or _
-	                        c shr 8 and &hf800 )
-	    
+		function = mkshort( c shr 3 and &h1f or _
+							c shr 5 and &h7e0 or _
+							c shr 8 and &hf800 )
+		
 	elseif bit_depth_ <= 32 then '' 32-bit:
-	    function = mkl(c)
-	    
+		function = mkl(c)
+		
 	end if
 	
 end function
@@ -95,22 +95,22 @@ end if
 '' make the pattern to be used in Paint
 for y as uinteger = 0 to 7
 	for x as uinteger = 0 to 7
-	    
-	    '' choose the color of the pixel (c)
-	    if (x \ 4 + y \ 4) mod 2 > 0 then
-	        c = c1
-	    else
-	        c = c2
-	    end if
-	    
-	    '' add the pixel to the pattern
-	    paint_pattern = paint_pattern + paint_pixel(c, bit_depth)
-	    
-	    '' the following line can be used if you want to draw the 
-	    '' pattern tile in the top left hand corner of the screen:
-	    
-	    ' pset (x, y), c
-	    
+		
+		'' choose the color of the pixel (c)
+		if (x \ 4 + y \ 4) mod 2 > 0 then
+			c = c1
+		else
+			c = c2
+		end if
+		
+		'' add the pixel to the pattern
+		paint_pattern = paint_pattern + paint_pixel(c, bit_depth)
+		
+		'' the following line can be used if you want to draw the 
+		'' pattern tile in the top left hand corner of the screen:
+		
+		' pset (x, y), c
+		
 	next x
 next y
 

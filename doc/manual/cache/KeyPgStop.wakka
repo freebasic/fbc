@@ -13,7 +13,7 @@ Halts program execution, and waits for a key press before ending the program.
 
 {{fbdoc item="desc"}}
 	Halts the execution of the program and stands by. It's  provided as a help to debugging, as it preserves the memory and doesn't close files. For normal program termination the ##[[KeyPgEnd|End]]## keyword should be used. An optional return value, an integer, can be specified to return an error code to the system. If no return value is given, a value of 0 is automatically returned.
-
+	
 	Note: STOP is not implemented properly yet; currently it is the same as [[KeyPgSystem|SYSTEM]].
 
 {{fbdoc item="ex"}}

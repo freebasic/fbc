@@ -16,7 +16,7 @@ Returns the length of an open disk file
 
 {{fbdoc item="desc"}}
 	Returns the length, in bytes, of a file opened previously with ##[[KeyPgOpen|Open]]## using the given ##//filenum//##.
-
+	
 	With ##[[KeyPgOpenCom|Open Com]]## it returns the length of the data pending to be read in the receive buffer.
 
 {{fbdoc item="ex"}}

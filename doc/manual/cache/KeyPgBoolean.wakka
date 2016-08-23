@@ -6,8 +6,14 @@ Standard data type
 ##
 {{fbdoc item="desc"}}
 	Boolean data type. Can hold the values ##[[KeyPgTrue|True]]## or ##[[KeyPgFalse|False]]##.
-
-	**Notes on definition of boolean data type:** //Ideally, the definition of the boolean data type is that it holds the value of ##[[KeyPgTrue|True]]## or ##[[KeyPgFalse|False]]##, and that's it.  However, to make this concept a reality, we need a definition that uses real world connections.  A more realistic definition is that the boolean data type is a 1-bit integer, having the value 0 to indicate ##[[KeyPgFalse|False]]## and 1 to indicate ##[[KeyPgTrue|True]]##.  For a practical definition, we must consider, yet again, additional factors.  The most significant factor is that the hardware (processor) on which code is executed does not directly support a 1-bit data type; the smallest register or memory size we can work with is 8-bits or 1-byte.  Therefore, a practical definition of boolean data type is an integer, 8 bits wide, having the value 0 or 1, where all other values are undefined.  However, because of longstanding differences between C/C""++"" and FB with respect to logical operations, the interpretation of the value must also be considered.  Assume "false" is 0 in both C/C""++"" and FB.  C/C""++"" has logical 'not' operator '!' such that '!0' produces '1'.  FB has a bitwise ##[[KeyPgOpNot|Not]]## operator such that 'not 0' produces '-1'.  Therefore the definition for a C/C""++"" boolean is an unsigned 1-bit integer, zero extended to fill larger integer types, and the definition for a FB boolean is a signed 1-bit integer, sign extended to fill larger integer types.  However, the purpose and intent of the boolean data type remains, that it should only ever hold a ##[[KeyPgTrue|True]]## value or ##[[KeyPgFalse|False]]## value, regardless of the underlying details.//
+	
+	**Notes on definition of boolean data type:** //Ideally, the definition of the boolean data type is that it holds the value of ##[[KeyPgTrue|True]]## or ##[[KeyPgFalse|False]]##, and that's it. However, to make this concept a reality, we need a definition that uses real world connections.
+	A more realistic definition is that the boolean data type is a 1-bit integer, having the value 0 to indicate ##[[KeyPgFalse|False]]## and 1 to indicate ##[[KeyPgTrue|True]]##.
+	For a practical definition, we must consider, yet again, additional factors. The most significant factor is that the hardware (processor) on which code is executed does not directly support a 1-bit data type; the smallest register or memory size we can work with is 8-bits or 1-byte.
+	Therefore, a practical definition of boolean data type is an integer, 8 bits wide, having the value 0 or 1, where all other values are undefined. However, because of longstanding differences between C/C""++"" and FB with respect to logical operations, the interpretation of the value must also be considered.
+	Assume "false" is 0 in both C/C""++"" and FB.  C/C""++"" has logical 'not' operator '!' such that '!0' produces '1'.
+	FB has a bitwise ##[[KeyPgOpNot|Not]]## operator such that 'not 0' produces '-1'. Therefore the definition for a C/C""++"" boolean is an unsigned 1-bit integer, zero extended to fill larger integer types, and the definition for a FB boolean is a signed 1-bit integer, sign extended to fill larger integer types.
+	However, the purpose and intent of the boolean data type remains, that it should only ever hold a ##[[KeyPgTrue|True]]## value or ##[[KeyPgFalse|False]]## value, regardless of the underlying details.//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/boolean.bas"}}%%(freebasic)
@@ -15,7 +21,8 @@ Dim boolvar As Boolean
 boolvar = True
 Print "boolvar = ", boolvar
 %%
-**Output:**
+	
+	Output:
 	%%boolvar =     true%%
 
 {{fbdoc item="lang"}}

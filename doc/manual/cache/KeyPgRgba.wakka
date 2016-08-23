@@ -22,7 +22,7 @@ Computes a valid color value including alpha (transparency) for hi/truecolor mod
 
 {{fbdoc item="desc"}}
 	##//red//##, ##//green//##, ##//blue//## and ##//alpha//## are components ranging ##0##-##255##.
-
+	
 	The ##**RGBA**## function can be used to compute a valid color value including an alpha channel for use while in hi/truecolor modes. It returns an unsigned integer in the format ##&h//AARRGGBB//##, where ##//RR//##, ##//GG//##, ##//BB//##, ##//AA//## equal the values passed to this function, in hexadecimal format.
 	It is possible to retrieve the red, green, blue  and alpha values from a color value, by using a combination of ##[[KeyPgOpAnd|And]]## and ##[[KeyPgOpShiftRight|Shr]]##.  The second example below shows how to ##[[KeyPgPpdefine|#Define]]## and use macros to do this.
 

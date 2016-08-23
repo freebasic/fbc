@@ -111,6 +111,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_FUNCMODE_STDCALL, _  '' stdcall
 		0	or FB_TARGETOPT_EXPORT _
 			or FB_TARGETOPT_RETURNINREGS _
+			or FB_TARGETOPT_COFF _
 	), _
 	( _
 		@"cygwin", _
@@ -120,6 +121,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_EXPORT _
 			or FB_TARGETOPT_RETURNINREGS _
+			or FB_TARGETOPT_COFF _
 	), _
 	( _
 		@"linux", _
@@ -129,6 +131,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_STACKALIGN16 _
+			or FB_TARGETOPT_ELF _
 	), _
 	( _
 		@"dos", _
@@ -136,6 +139,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_FUNCMODE_CDECL, _
 		FB_FUNCMODE_STDCALL_MS, _
 		0	or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
+			or FB_TARGETOPT_COFF _
 	), _
 	( _
 		@"xbox", _
@@ -143,6 +147,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		FB_FUNCMODE_STDCALL, _
 		FB_FUNCMODE_STDCALL, _
 		0	or FB_TARGETOPT_RETURNINREGS _
+			or FB_TARGETOPT_COFF _
 	), _
 	( _
 		@"freebsd", _
@@ -152,6 +157,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
+			or FB_TARGETOPT_ELF _
 	), _
 	( _
 		@"openbsd", _
@@ -161,6 +167,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
+			or FB_TARGETOPT_ELF _
 	), _
 	( _
 		@"darwin", _
@@ -171,6 +178,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
 			or FB_TARGETOPT_STACKALIGN16 _
+			or FB_TARGETOPT_MACHO _
 	), _
 	( _
 		@"netbsd", _
@@ -180,6 +188,7 @@ dim shared as FBTARGET targetinfo(0 to FB_COMPTARGETS-1) = _
 		0	or FB_TARGETOPT_UNIX _
 			or FB_TARGETOPT_CALLEEPOPSHIDDENPTR _
 			or FB_TARGETOPT_RETURNINREGS _
+			or FB_TARGETOPT_ELF _
 	) _
 }
 
@@ -455,6 +464,8 @@ sub fbGlobalInit()
 	env.clopt.pic           = FALSE
 	env.clopt.msbitfields   = FALSE
 	env.clopt.stacksize     = FB_DEFSTACKSIZE
+	env.clopt.objinfo       = TRUE
+	env.clopt.showincludes  = FALSE
 
 	hUpdateLangOptions( )
 	hUpdateTargetOptions( )
@@ -540,6 +551,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		if (env.clopt.stacksize < FB_MINSTACKSIZE) then
 			env.clopt.stacksize = FB_MINSTACKSIZE
 		end if
+	case FB_COMPOPT_OBJINFO
+		env.clopt.objinfo = value
 	case FB_COMPOPT_SHOWINCLUDES
 		env.clopt.showincludes = value
 	end select
@@ -608,6 +621,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.pic
 	case FB_COMPOPT_STACKSIZE
 		function = env.clopt.stacksize
+	case FB_COMPOPT_OBJINFO
+		function = env.clopt.objinfo
 	case FB_COMPOPT_SHOWINCLUDES
 		function = env.clopt.showincludes
 
@@ -833,6 +848,15 @@ function fbIdentifyFbcArch( byref fbcarch as string ) as integer
 	end select
 end function
 
+function fbTargetSupportsELF( ) as integer
+	return ((env.target.options and FB_TARGETOPT_ELF) <> 0)
+end function
+
+function fbTargetSupportsCOFF( ) as integer
+	return ((env.target.options and FB_TARGETOPT_COFF) <> 0)
+end function
+
+
 '':::::
 function fbGetEntryPoint( ) as string static
 
@@ -1050,13 +1074,12 @@ sub fbCompile _
 
 	fbMainEnd( )
 
-	'' not cross-compiling?
-	if( fbIsCrossComp( ) = FALSE ) then
-		'' compiling only?
-		if( env.clopt.outtype = FB_OUTTYPE_OBJECT ) then
-			'' store libs, paths and cmd-line options in the obj
-			hEmitObjinfo( )
-		end if
+	'' compiling only, not cross-compiling?
+	if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
+	    (not fbIsCrossComp( )) and _
+	    (env.clopt.outtype = FB_OUTTYPE_OBJECT) ) then
+		'' store libs, paths and cmd-line options in the obj
+		hEmitObjinfo( )
 	end if
 
 	'' save

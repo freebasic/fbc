@@ -16,6 +16,7 @@ Right justifies a string in a string buffer
 
 {{fbdoc item="desc"}}
 	##**Rset**## right justifies text into the string buffer ##//dst//##, filling the right part of the string with ##//src//## and the left part with spaces.  The string buffer size is not modified.
+	
 	If text is too long for the string buffer size, ##**Rset**## truncates characters from the right.
 
 {{fbdoc item="ex"}}

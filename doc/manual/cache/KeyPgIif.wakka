@@ -20,9 +20,9 @@ Conditional function that returns one of two values.
 
 {{fbdoc item="desc"}}
 	##**IIf**## returns a different numeric or string or UDT value depending of the result of a conditional expression. Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
-
+	
 	##**IIf**## only evaluates the expression that it needs to return.  This saves time, and can also be useful to prevent evaluating expressions that might be invalid depending on the ##//condition//##.
-
+	
 	**Warning:** The ability to accept mixed numeric types, strings and UDTs is only supported from the fbc version 0.90.
 
 {{fbdoc item="ex"}}

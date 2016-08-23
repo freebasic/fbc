@@ -1,5 +1,7 @@
 {{fbdoc item="title" value="Coercion and Conversion"}}----
-Coercion of Numeric Data Types in Expressions.
+Transfer the data of a given type variable to a variable of another type requires conversion.
+
+==Coercion of Numeric Data Types in Expressions==
 
 When two different data types are used in a binary operation, like ##//+//## (Addition) or ##//=//## (Assignment), the smaller data type is automatically promoted to the larger data type regardless of the order in which the arguments are given.  
 
@@ -12,7 +14,7 @@ All unsigned integer types are handling like signed integer types for the purpos
 
 ==Conversion of Numeric Data Types==
 
-A type conversion will occur implicitly when an expression or variable is assigned, passed as a parameter to a procedure, or returned as a result from a procedure. Conversions may also be explicit when using CAST or one of the built-in conversion functions.
+A type conversion will occur implicitly when an expression or variable is assigned, passed as a parameter to a procedure, or returned as a result from a procedure. Conversions may also be explicit when using CAST or one of the built-in conversion functions (among standard functions).
 
 __Integer To Integer, any combination of Signed and Unsigned__
 	- Any integer type to a smaller integer type: least significant bits are retained
@@ -29,9 +31,82 @@ __Double or Single to Integer__
 	- Possible loss of precision
 	- If the value of the floating point number exceeds the range of the target type are results are undefined.  A run-time error is not raised.
 
+==Conversions using User Data Type constructors and operators==
+
+For conversion between built-in types (among standard types like between numeric types as above or between string types), the compiler knows what to do without the need for instructions from user.
+This is called the implicit internal conversion (or coercion).
+
+When one of the two types is at least a UDT (User Defined Type), the user has to code some UDT procedures to define how do the conversion.
+Then, the conversion execution can be explicit if the user specifies what UDT procedure must be used, or implicit if the user leaves the choice to compiler.
+
+In the world of UDTs, conversions can be controlled by means of three member procedures:
+	- Single-argument constructor: allow conversion from a particular type to initialize an object.
+	- Assignment operator: allow conversion from a particular type on assignment.
+	- Type-cast operator: allow conversion to a particular type.
+
+For a construction with implicit initialization, the compiler searches:
+	- Firstly a matched constructor.
+	- Then otherwise a matched cast operator.
+	(a matched let operator is not searched by compiler on a construction with implicit initialization)
+
+For an implicit assignment, including an implicit return from function by assigning (keyword 'Function ='), the compiler searches:
+	- Firstly a matched let operator.
+	- Then otherwise a matched cast operator.
+	(a matched constructor is not searched by compiler on an implicit assignment)
+
+For an implicit return from function by exiting immediately (keyword 'Return'), the compiler searches:
+	- Firstly a matched constructor.
+	- Secondly a matched let operator.
+	- Then otherwise a matched cast operator.
+
+{{fbdoc item="ex"}}
+Very simple syntaxic example highlighting the conversion capabilities by using Cast operator (explicit and implicit), Constructor (explicit and implicit) and Let operator (implicit):
+{{fbdoc item="filename" value="examples/manual/casting/opcast-ctor-oplet.bas"}}%%(freebasic)
+Type UDT
+  Dim As Integer I
+  Declare Operator Cast () As Integer
+  Declare Constructor (Byval I0 As Integer)
+  Declare Operator Let (Byval I0 As Integer)
+End Type
+
+Operator UDT.Cast () As Integer
+  Return This.I
+End Operator
+
+Constructor UDT (Byval I0 As Integer)
+  This.I = I0
+End Constructor
+
+Operator UDT.Let (Byval I0 As Integer)
+  This.I = I0
+End Operator
+
+Dim As Integer J = 12
+Dim As UDT u1 = UDT(J)  '' construction with explicit initialization using the defined "Constructor(Byval As Integer)" operator
+Print u1.I
+Dim As UDT u2 = J       '' construction with implicit initialization by compiler using the defined "Constructor(Byval As Integer)" operator
+Print u2.I
+Print
+
+u1.I = 34
+J = Cast(Integer, u1)  '' explicit assignment using the defined "Cast() As Integer" operator
+Print J
+Dim As Integer K
+K = u1                 '' implicit assignment by compiler using the defined "Cast() As Integer" operator
+Print K
+Print
+
+J = 56
+u1 = J                 '' implicit assignment by compiler using the defined "Let(Byval As Integer)" operator
+Print u1.I
+Print
+
+Sleep
+%%
 {{fbdoc item="see"}}
 	- [[CatPgStdDataTypes|Standard Data Types]]
 	- [[TblVarTypes|Variable Types]]
 	- [[CatPgCasting|Casting and Conversion Functions]]
+	- [[CatPgUserDefTypes|User Defined Types]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

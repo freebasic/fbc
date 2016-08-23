@@ -79,7 +79,7 @@ End Function
 ''
 ''----------------------------------------------------------------------------
 Function WndProc ( ByVal hWnd As HWND,ByVal message As UINT, _
-	               ByVal wParam As WPARAM,ByVal lParam As LPARAM ) As LRESULT
+				   ByVal wParam As WPARAM,ByVal lParam As LPARAM ) As LRESULT
    
 	Function = 0
 

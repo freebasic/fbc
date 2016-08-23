@@ -3,7 +3,7 @@ This is a good introduction to FB for QBasic programmers, based on SJ Zero's tut
 
 ==Getting started with the software==
 
-You can download FreeBASIC here: [[http://www.freebasic.net/index.php/download]]
+You can download FreeBASIC here: [[http://www.freebasic.net]]
 And FBIDE here: [[http://fbide.sourceforge.net/]]
 
 When installing FBIDE, select "FBIDE only," to not install the old version of FB included in that package.
@@ -14,48 +14,48 @@ When running FBIDE the first time, you will have to browse to find the FB compil
 Open up FBIDE and type the following:
 
 %%
- PRINT "Hello World!"
- SLEEP
+PRINT "Hello World!"
+SLEEP
 %%
 
 Now press F5. Congratulations, you've just seen how much like QB FreeBASIC really is. Now you can use most console commands for QB just like you remember. For example: 
 
 %%
- LOCATE 10,10
- PRINT "I'm the center of the universe!"
- SLEEP
+LOCATE 10,10
+PRINT "I'm the center of the universe!"
+SLEEP
 %%
 
 ==The Amazing Screen 13==
 
 Now, put "SCREEN 13" before your code, to see how easy it is to use graphics modes:
 %%
- SCREEN 13
- PRINT "Hello World!"
- SLEEP
+SCREEN 13
+PRINT "Hello World!"
+SLEEP
 %%
 
 From there, all of the standard QB graphics commands work as you remember, as you can see in this example:
 
 %%
- SCREEN 13
- LINE (1,1)-(100,100),1,bf
- PRINT "Hello World!"
- CIRCLE (10,10),10,2
- PSET (30,15),3
+SCREEN 13
+LINE (1,1)-(100,100),1,bf
+PRINT "Hello World!"
+CIRCLE (10,10),10,11
+PSET (30,15),15
 
- SLEEP
+SLEEP
 %%
 
 FreeBASIC also has new graphics features. For example, QB has never had a screen 14 or greater. Try running this program:
 %%
- SCREEN 15
- LINE (1,1)-(100,100),1,bf
- PRINT "Hello World!"
- CIRCLE (10,10),10,2
- PSET (30,15),3
+SCREEN 15
+LINE (1,1)-(100,100),1,bf
+PRINT "Hello World!"
+CIRCLE (10,10),10,11
+PSET (30,15),15
 
- SLEEP
+SLEEP
 %%
 
 After opening a graphics window via the SCREEN command, you can also hit ALT-ENTER to change between windowed and fullscreen modes.
@@ -63,28 +63,29 @@ After opening a graphics window via the SCREEN command, you can also hit ALT-ENT
 Another nice feature of the graphics library in FreeBASIC is that you can do page flipping in any video mode. The following code demonstrates this. 
 
 %%
- DIM as integer page
- DIM as integer notpage
- DIM as integer a, b
+DIM as integer page
+DIM as integer notpage
+DIM as integer a, b
 
 
- screen 12, , 2 'This sets the screen for 2 pages
- notpage = 1   'This sets the backpage
+screen 12, , 2 'This sets the screen for 2 pages
+notpage = 1    'This sets the backpage
 
- DO
-  IF page = 0 THEN page = 1 ELSE page = 0   'These two lines flip the page and the
-  IF notpage = 1 THEN notpage = 0 ELSE notpage = 1 'backpage
-	
-  SCREENSET page, notpage 'This flips the page
-	
-  CLS  'First we clear the screen
-  b = b + 1 
-  IF b > 100 THEN b = 0
-  FOR a = 1 TO 128
-   PSET (b,a),a 'Then we draw a line. It moves without flickering.
-  NEXT a
-  
- LOOP UNTIL INKEY = CHR(27)
+DO
+   IF page = 0 THEN page = 1 ELSE page = 0          'These two lines flip the page and the
+   IF notpage = 1 THEN notpage = 0 ELSE notpage = 1 'backpage
+
+   SCREENSET page, notpage 'This flips the page
+
+   CLS  'First we clear the screen
+   b = b + 1 
+   IF b > 100 THEN b = 0
+   FOR a = 1 TO 128
+	  PSET (b,a),a 'Then we draw a line. It moves without flickering.
+   NEXT a
+   SLEEP 10
+
+LOOP UNTIL INKEY = CHR(27) 'Press Escape key to quit the program.
 %%
 
 This works for any mode, so you can use the high resolution modes for your programs with page flipping, using standard QB graphics commands! 
@@ -95,14 +96,14 @@ This works for any mode, so you can use the high resolution modes for your progr
 I wouldn't be saying this if it wasn't true. Using ASM in BASIC to increase the functionality of your program is no longer necessary. Ignoring SDL, Allegro, DirectX, OpenGL, et. al. for a minute, you've got the above page flipping and advanced graphics modes at your disposal, as well as Inkey, which we've all grown to love or hate, but there are also two new input commands which do things QBers have had to resort to assembly code to do since the dawn of time:
 
 %%
- DIM as integer x, y, buttons
- CONST as integer escapeKey = 1
- SCREEN 12
+DIM as integer x, y, buttons
+CONST as integer escapeKey = 1
+SCREEN 12
 
- WHILE NOT MULTIKEY(escapeKey) 'this checks the escape key every frame
-  GETMOUSE x, y, , buttons 'This gets the mouse state 
-  PRINT x,y,buttons   
- WEND
+WHILE NOT MULTIKEY(escapeKey) 'this checks the escape key every frame
+   GETMOUSE x, y, , buttons    'This gets the mouse state 
+   PRINT x,y,buttons   
+WEND
 %%
 
-With this knowlege, you should be able to begin programming in FreeBASIC, with all the perks that it entails; Speed, power, and portability!
+With this knowledge, you should be able to begin programming in FreeBASIC, with all the perks that it entails; Speed, power, and portability!

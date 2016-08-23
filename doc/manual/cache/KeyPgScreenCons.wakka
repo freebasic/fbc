@@ -26,12 +26,11 @@ Gets the character or color attribute at a given location
 	If the color type is a palette type with up to 4 bits per pixel (such as the Win32 console), then the color attribute is an 8-bit value, where the higher four bits hold the cell background color and the lower four bits hold the foreground (character) color.
 	
 	If the color type is an 8-bit palette, then the color attribute is a 16-bit value, where the high byte holds the background color and the low byte holds the foreground color.
-
+	
 	If the color type is full color, then the color attribute is a 32-bit integer, holding a single color value.  If ##//colorflag//## is equal to 1, then the foreground color is returned; if ##//colorflag//## is equal to 2, then the background color is returned.
 	
-	
 	The color values for the standard 16 color palette are:
-
+	
 		{{table columns="4" cellpadding="2" cells="Value;Color;Value;Color;0;Black;8;Gray;1;Blue;9;Bright Blue;2;Green;10;Bright Green;3;Cyan;11;Bright Cyan;4;Red;12;Bright Red;5;Magenta;13;Pink;6;Brown;14;Yellow;7;White;15;Bright White"}}
 
 {{fbdoc item="ex"}}

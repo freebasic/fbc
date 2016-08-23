@@ -12,7 +12,7 @@ Creates a mutex used for synchronizing the execution of threads
 
 {{fbdoc item="desc"}}
 	Mutexes, short for "Mutually Exclusive", are a way of synchronizing shared data within threads.  If there is a global variable used by multiple threads (or a local static variable used by a single thread called multiple times), it should be "locked" during its use with a mutex.  This halts all threads using ##[[KeyPgMutexLock|Mutexlock]]## with that mutex (including the main thread executing main program), until it is unlocked with ##[[KeyPgMutexUnlock|Mutexunlock]]##.
-
+	
 	##Mutexcreate## creates a mutex, returning a handle which is to be referred to when locking, unlocking, or destroying the mutex.  Mutexes created with ##Mutexcreate## should be destroyed when no longer needed or before the end of the program with ##[[KeyPgMutexDestroy|Mutexdestroy]]##.
 	
 	A  mutex is a lock that guarantees three things:
@@ -64,14 +64,14 @@ End Type
 Static Sub ThreadUDT.Thread (ByVal param As Any Ptr) 'Generic user thread procedure
 	Dim tp As ThreadUDT Ptr = param                  'Casting to generic user thread UDT
 	Do
-	    Static As Integer I
-	    MutexLock(tp->sync)                          'Mutex (Lock) for user thread
-	    tp->procedure(tp->p)                         'Procedure(Any Ptr) to be executed by user thread
-	    I += 1
-	    Locate 30, 38
-	    Print I;
-	    MutexUnlock(tp->sync)                        'Mutex (Unlock) for user thread
-	    Sleep 5
+		Static As Integer I
+		MutexLock(tp->sync)                          'Mutex (Lock) for user thread
+		tp->procedure(tp->p)                         'Procedure(Any Ptr) to be executed by user thread
+		I += 1
+		Locate 30, 38
+		Print I;
+		MutexUnlock(tp->sync)                        'Mutex (Unlock) for user thread
+		Sleep 5
 	Loop Until tp->quit = tp->true                   'Test for ending user thread
 End Sub
 

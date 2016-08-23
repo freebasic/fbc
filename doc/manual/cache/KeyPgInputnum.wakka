@@ -19,9 +19,9 @@ Reads a number of characters from console or file
 
 {{fbdoc item="desc"}}
 	Reads a number of characters from the console, or a bound file/device specified by ##//filenum//##.
-
+	
 	The first version waits for and reads ##//n//## characters from the keyboard buffer. Extended keys are not read. The characters are not echoed to the screen.
-
+	
 	The second version waits for and reads ##//n//## characters from a file or device. The file position is updated.
 
 {{fbdoc item="ex"}}

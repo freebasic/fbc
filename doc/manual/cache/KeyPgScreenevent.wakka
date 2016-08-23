@@ -16,15 +16,14 @@ Queries for and retrieves system events.
 
 {{fbdoc item="desc"}}
 	This function returns the latest available system event from the internal ""GfxLib"" events queue. By "event" we mean any mouse or keyboard activity, for example.
-
+	
 	The event data (if available) will be copied into the buffer pointed That should be declared as an  ##[[KeyPgEvent|Event]]##
 	
 	__Querying for events__
 		The function returns ##-1## if there are pending events to be retrieved, ##0## otherwise. If the ##//event//## parameter is set to ##0## (the default if omitted) ##[[KeyPgScreenevent|ScreenEvent]]## will not be able to copy the event data and it will not dequeue it from the internal events queue. Calling the function this way can be useful to check if there are pending events without actually fetching them.
-
+	
 	__Note__
 		If you receive a KEY_PRESS, KEY_RELEASE or KEY_REPEAT event, it does not clear the keyboard buffer.  If you need the buffer to be clear after you receive the event, you will need to clear it manually.  See ##[[KeyPgInkey|Inkey]]##.
-
 		
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screenevent.bas"}}%%(freebasic)

@@ -46,7 +46,6 @@ Commands that control the preprocessor.
 		Indicates string literal immediately following must be processed for escape sequences.
 	=={{fbdoc item="keyword" value="KeyPgOpPpNoescape|$ Non-Escaped String Literal"}}==
 		Indicates string literal immediately following must not be processed for escape sequences.
-
 <<>>{{anchor name="FILE"}}{{fbdoc item="section" value="File Directives"}}
 	=={{fbdoc item="keyword" value="KeyPgInclude|#INCLUDE"}}==
 		Inserts text from a file.
@@ -78,8 +77,6 @@ Commands that control the preprocessor.
 		Alternate form of the [[KeyPgOptionstatic|OPTION STATIC]] statement.
 	=={{fbdoc item="keyword" value="KeyPgMetaLang|'$LANG"}}==
 		Alternate form of the [[KeyPgPplang|#lang]] directive.
-
-
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

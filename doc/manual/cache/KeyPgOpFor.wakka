@@ -27,9 +27,9 @@ Declares or defines operators used by a ##[[KeyPgFornext|For...Next]]## loop wit
 
 {{fbdoc item="desc"}}
 	##**Operator For**##, ##[[KeyPgOpNext|Operator Next]]## and ##[[KeyPgOpStep|Operator Step]]## can be overloaded in user-defined type definitions to allow objects of that type to be used as iterators and step values in ##[[KeyPgFornext|For...Next]]## loops.
-
+	
 	##**Operator For**## is called immediately after copy constructing or assigning to the iterator object, and allows the object to perform any additional initialization needed in preparation for the loop.
-
+	
 	The first version of ##**Operator For**## is used if no step value is given in the ##[[KeyPgFornext|For...Next]]## statement. If a step value is given, the second version is used and is passed the step value.
 
 {{fbdoc item="ex"}}

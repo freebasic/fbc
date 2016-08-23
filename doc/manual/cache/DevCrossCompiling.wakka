@@ -3,7 +3,7 @@
 {{fbdoc item="section" value="Each fbc supports all targets"}}
 
 Since fbc version 0.24, the ""FreeBASIC"" compiler always supports all compilation targets. There no longer is any configuration necessary to enable support for additional targets at fbc compile-time, like it used to exist in older fbc versions. This means you only need to install one fbc per host system, and it can be used to compile native programs aswell as non-native programs.
-
+	
 	- default: compile for native system
 	- [[CompilerOpttarget|-target]] and [[CompilerOptarch|-arch]] compiler options allow cross-compiling
 

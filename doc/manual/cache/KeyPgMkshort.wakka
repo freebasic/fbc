@@ -16,7 +16,7 @@ Does a binary copy from a ##[[KeyPgShort|short]]## variable to a ##[[KeyPgString
 
 {{fbdoc item="desc"}}
 	Does a binary copy  from a SHORT variable to a string, setting its length to 2 bytes. The resulting string can be read back to a ##[[KeyPgShort|short]]## by ##[[KeyPgCvshort|Cvshort]]##
-
+	
 	This function is useful to write numeric values to buffers without using a ##[[KeyPgType|Type]]## definition.
 
 {{fbdoc item="ex"}}

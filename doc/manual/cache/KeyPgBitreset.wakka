@@ -18,7 +18,7 @@ Gets the value of an integer with a specified bit cleared.
 
 {{fbdoc item="desc"}}
 	This macro expands to a copy of the integer ##//value//## with the specified ##//bit_number//## cleared (to //off//, or `##0##`). Behaves as `##//value// [[KeyPgOpAnd|And]] [[KeyPgOpNot|Not]] (1 [[KeyPgOpShiftLeft|Shl]] //bit_number//)##`.
-
+	
 	The valid range of values for ##//bit_number//## depends on the size, in bits, of `##[[KeyPgTypeof|Typeof]](//value//)##`, which is `##0##` through `##[[KeyPgSizeof|Sizeof]](//value//) * 8 - 1##`. See [[TblVarTypes|Standard Datatype Limits]] for a table of the standard datatypes and their sizes.
 
 {{fbdoc item="ex"}}

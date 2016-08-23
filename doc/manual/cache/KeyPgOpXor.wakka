@@ -24,15 +24,15 @@ Returns the bitwise-xor (exclusive disjunction) of two numeric values
 
 {{fbdoc item="desc"}}
 	This operator returns the bitwise-exclusion of its operands, a logical operation that results in a value with bits set depending on the bits of the operands (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value).
-
+	
 	The truth table below demonstrates all combinations of a boolean-exclusion operation:
-
+	
 	{{table columns="3" cellpadding="2" cells="Lhs Bit;Rhs Bit;Result;0;0;0;1;0;1;0;1;1;1;1;0"}}
-
+	
 	No short-circuiting is performed - both expressions are always evaluated.
 	
 	The return type depends on the types of values passed. ##[[KeyPgByte|Byte]]##, ##[[KeyPgUbyte|Ubyte]]## and floating-point type values are first converted to ##[[KeyPgInteger|Integer]]##. If the left and right-hand side types differ only in signedness, then the return type is the same as the left-hand side type (##//T1//##), otherwise, the larger of the two types is returned. Only if the left and right-hand side types are both ##[[KeyPgBoolean|Boolean]]##, the return type is also ##[[KeyPgBoolean|Boolean]]##.
-
+	
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}

@@ -6,7 +6,7 @@ Intrinsic define set by the compiler
 ##
 {{fbdoc item="desc"}}
 	##""__FB_MAIN__""## is defined in the main module and not defined in other modules.
-
+	
 	The main module is determined by the compiler as either the first source file listed on the command line or explicitly named using the -m option on the command line.
 
 {{fbdoc item="ex"}}

@@ -7,7 +7,6 @@ These operators provide conversion to string, concatenation and retrieval of cha
 	Concatenates two strings.
 =={{fbdoc item="keyword" value="KeyPgOpConcatConvert|Operator & (String concatenation with conversion)"}}==
 	Concatenates two values converted to strings.
-
 <<>>=={{fbdoc item="keyword" value="KeyPgOpStrptr|Operator Strptr (String pointer)"}}==
 	Returns the address of a string's character data.
 >>::c::

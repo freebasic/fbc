@@ -6,10 +6,10 @@ Converts a pointer expression to a specified data type pointer
 ##
 {{fbdoc item="desc"}}
 	Converts ##//expression//## to ##//""PointerDataType""//##.
-
+	
 	##//""PointerDataType""//## must be a ##[[KeyPgPointer|Pointer]]## type (e.g. a [[DataType]] ##[[KeyPgPtr|Ptr]]## or an ##[[KeyPgAny|Any]]## ##[[KeyPgPtr|Ptr]]##), or a ##[[KeyPgTypeAlias|Type (Alias)]]## to one.
 	##//expression//## may have a different pointer type or be an ##[[KeyPgInteger|Integer]]##.
-
+	
 ~&//Note: Currently, FB does not actually enforce that ##//""PointerDataType""//## must be a pointer.  This will likely change in future versions though.  Currently, it will display a warning if you try to convert to a non-pointer, if you compile with the ##**[[CompilerOptw|-w pedantic]]**## compiler switch.//
 
 {{fbdoc item="ex"}}

@@ -6,7 +6,6 @@ Returns a reference to a character in a string
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **[]** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgZstring|zstring]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgByrefFunction|byref]] [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]]
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **[]** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgWstring|wstring]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgByrefFunction|byref]] [[KeyPgAs|as]] //T//
 ##
-
 {{fbdoc item="usage"}}##
 	//result// = //lhs// **[** //rhs// **]**
 ##

@@ -40,9 +40,9 @@ the ascii code of 'b' is: 98
 
 Unicode example (Note to documentation editors: don't put inside ""%%(qbasic)"" markers or the Russian text will disappear!)
 
-<<##dim a as wstring * 11
+<<##dim a as wstring * 12
 a = "&#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088;"
-print "the Unicode of the second char of " & a & " is: " & asc(a)
+print "the Unicode of the second char of " & a & " is: " & asc(a, 2)
 ##<<::c::	will produce the output:
 <<##the Unicode of the second char of &#1055;&#1088;&#1080;&#1074;&#1077;&#1090;, &#1084;&#1080;&#1088; is: 1088
 ##<<::c::

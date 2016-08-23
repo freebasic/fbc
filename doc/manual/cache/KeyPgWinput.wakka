@@ -19,11 +19,11 @@ Reads a number of wide-characters from console or file
 
 {{fbdoc item="desc"}}
 	Reads a number of wide-characters from the console, or a bound file/device specified by ##//filenum//##.
-
+	
 	The first version waits for and reads ##//n//## wide characters from the keyboard buffer. Extended keys are not read. The characters are not echoed to the screen.
-
+	
 	The second version waits for and reads ##//n//## wide characters from a file or device. The file position is updated.
-
+	
 ~&//Note: FreeBASIC does not currently support reading wide-characters from the console.//
 
 {{fbdoc item="ex"}}
@@ -43,27 +43,27 @@ if open(filename for input encoding enc as #f) = 0 then
 	print "Press space to read a character from the file, or escape to exit."
 	
 	do
-	    
-	    select case input(1)
-	    
-	    case " " 'Space
-	        
-	        if eof(f) then
-	            
-	            print "You have reached the end of the file."
-	            exit do
-	            
-	        end if
-	        
-	        char = winput(1, f)
-	        print char & " (char no " & asc(char) & ")"
-	        
-	    case chr(27) 'Escape
-	        
-	        exit do
-	        
-	    end select
-	    
+		
+		select case input(1)
+		
+		case " " 'Space
+			
+			if eof(f) then
+				
+				print "You have reached the end of the file."
+				exit do
+				
+			end if
+			
+			char = winput(1, f)
+			print char & " (char no " & asc(char) & ")"
+			
+		case chr(27) 'Escape
+			
+			exit do
+			
+		end select
+		
 	loop
 	
 	close #f

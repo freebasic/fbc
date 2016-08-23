@@ -8,7 +8,7 @@ Converts an expression to unsigned
 	//variable// = **Cunsg** ( //expression// )
 ##
 	Converts a signed ##//expression//## to an unsigned one, useful to force unsigned behavior of division or multiplication (including with ##[[KeyPgOpShiftLeft|Shl]]## and ##[[KeyPgOpShiftRight|Shr]]##).
-
+	
 	This is the opposite of ##[[KeyPgCsign|Csign]]##.
 
 {{fbdoc item="ex"}}

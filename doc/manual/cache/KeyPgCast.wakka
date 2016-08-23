@@ -4,15 +4,28 @@ Converts an expression to a specified data type
 {{fbdoc item="syntax"}}##
 	Cast( [[DataType|datatype]], //expression// )
 ##
+{{fbdoc item="param"}}
+	##//datatype//## 
+		a built-in data type (standard type)
+	##//expression//## 
+		a variable of another built-in data type
+
 {{fbdoc item="desc"}}
 	Converts ##//expression//## into a different ##[[DataType|datatype]]##. Useful to be used in macros when ##[[DataType|datatype]]## is unknown and also when converting to [[KeyPgTypeAlias|Type Alias]].
-
-	Note: this is a general form of conversion operators such as ##[[KeyPgCint|Cint]]## or ##[[KeyPgCdbl|Cdbl]]##.  They are more versatile because they can be used on types that have a ##[[KeyPgOperator|Cast operator]]##, but don't have a built-in keyword for it. e.g. ##**Cast**( //my_type//, //expr//)##.  They are also suitable for use in cases where the type of a variable is not fixed in the code - for example, it might be ##[[KeyPgPpdefine|Define]]##d earlier, or may be the ##[[KeyPgTypeof|Type of]]## a different variable or expression.
-
-	Note: If you want to use an operator specifically for converting to different types of ##[[KeyPgPointer|Pointer]]##s, consider using ##[[KeyPgCptr|Cptr]]## instead.
+	
+	This is a general form of conversion operators such as ##[[KeyPgCint|Cint]]## or ##[[KeyPgCdbl|Cdbl]]##.
+	##**Cast**## is more versatile because it can be used on built-in types that have a built-in ##[[KeyPgOperator|Cast operator]]##, but don't have a built-in keyword for it: e.g. ##**Cast**( //Byte//, //boolean// )##.
+	It is also suitable for use in cases where the type of a variable is not fixed in the code - for example, it might be ##[[KeyPgPpdefine|Define]]##d earlier, or may be the ##[[KeyPgTypeof|Type of]]## a different variable or expression.
+	
+	**Note:** If you want to use an operator specifically for converting to different types of ##[[KeyPgPointer|Pointer]]##s, consider using ##[[KeyPgCptr|Cptr]]## instead.
+	
+	**Upcasting:** In an inheritance structure, the upcasting is converting a derived type reference or pointer into a base type.
+	In this special use, ##**Cast**## applied on a derived-type instance (##//expression//##) can be used to return a base-type (##//datatype//##) reference.
+	
+	By using a member ##[[KeyPgOpCast|Operator Cast]]##, ##**Cast**## can be overloaded for a user defined type expression.
   
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/casting/cast.bas"}}%%(freebasic)
+{{fbdoc item="filename" value="examples/manual/casting/cast1.bas"}}%%(freebasic)
 '' will print -128 because the integer literal will be converted to a signed Byte
 '' (this Casting operation is equivalent to using CByte)
 print cast( byte, &h0080 )
@@ -20,8 +33,33 @@ print cast( byte, &h0080 )
 '' will print 3 because the floating-point value will be converted to an Integer
 '' (this Casting operator is equivalent to using CInt)
 print cast( integer, 3.1 )
-%%
 
+sleep
+%%
+{{fbdoc item="filename" value="examples/manual/casting/cast2.bas"}}%%(freebasic)
+'' macro sizeofDerefPtr(): returns the size of the dereferenced pointer
+#define sizeofDerefPtr(ptrToDeref) Sizeof(*Cast(Typeof(ptrToDeref), 0))
+
+'' macro typeofDerefPtr(): returns the type of the dereferenced pointer
+#define typeofDerefPtr(ptrToDeref) Typeof(*Cast(Typeof(ptrToDeref), 0))
+
+
+' Allocate dynamically memory for a Double by New
+Dim As Double Ptr pd
+pd = New typeofDerefPtr(pd)
+*pd = 3.14159
+Print *pd
+
+' Allocate dynamically memory for a Zstring*10 by Callocate
+Dim As Zstring Ptr pz
+pz = Callocate(10, sizeofDerefPtr(pz))
+*pz = "FreeBASIC"
+Print *pz
+
+Sleep
+Delete pd
+Deallocate(pz)
+%%
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Cast""**##.
 
@@ -29,8 +67,10 @@ print cast( integer, 3.1 )
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgOpCast|Cast (operator)]]##
 	- ##[[KeyPgCptr|Cptr]]##
 	- ##[[KeyPgCint|Cint]]##
 	- ##[[KeyPgTypeof|Typeof]]##
+	- [[ProPgDataConversion|Coercion and Conversion]]
 	 
 {{fbdoc item="back" value="CatPgCasting|Converting Data Types"}}

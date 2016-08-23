@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="VIEW PRINT"}}----
-Sets the printable area of the screen
+Sets the printable text area of the screen
 
 {{fbdoc item="syntax"}}##
 	**View Print** [ //firstrow// **To** //lastrow// ]
@@ -11,8 +11,8 @@ Sets the printable area of the screen
 		last row of print area
 
 {{fbdoc item="desc"}}
-	Sets the boundaries of the console screen text area to the lines starting at first up to and including last.  Lines are counted starting with ##1##.  The text cursor is moved to the beginning of the first line specified.
-	If the row numbers are omitted, the entire screen is used as the text area.
+	Sets the boundaries of the text printing area on the screen (in console mode or in graphics mode) to the lines starting at first up to and including last (the number of the available text lines on the screen depends on the screen mode). Text lines are counted starting with ##1##. The text cursor is moved to the beginning of the first line specified.
+	If the row numbers are omitted, the entire screen is used as the text printing area.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/console/view.bas"}}%%(freebasic)

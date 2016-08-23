@@ -32,7 +32,6 @@ Procedures for working with multithreaded applications.
 		Resumes all threaded procedures waiting for a conditional.
 	=={{fbdoc item="keyword" value="KeyPgCondDestroy|CONDDESTROY"}}==
 		Destroys a conditional variable that is no longer needed.
-
 <<>>{{anchor name="MUTEXES"}}{{fbdoc item="section" value="Mutexes"}}
 	=={{fbdoc item="keyword" value="KeyPgMutexCreate|MUTEXCREATE"}}==
 		Creates a mutex.

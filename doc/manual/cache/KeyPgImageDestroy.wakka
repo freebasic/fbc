@@ -13,7 +13,7 @@ Destroys and deallocates storage for an image
 
 {{fbdoc item="desc"}}
 	Destroys the image pointed to by ##//image//##, which must be an address returned from a call to ##[[KeyPgImagecreate|ImageCreate]]##.
-
+	
 	Calling ##**""ImageDestroy""**## on a null pointer induces no action.
 
 {{fbdoc item="ex"}}

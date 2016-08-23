@@ -7,7 +7,7 @@ Returns the hexadecimal ##[[KeyPgWstring|wstring]]## (Unicode) representation of
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Whex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Whex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Whex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgConst|const]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
-
+	
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Whex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Whex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUshort|ushort]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Whex** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlong|ulong]], [[KeyPgByval|byval]] //digits// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgWstring|wstring]]
@@ -28,9 +28,9 @@ Returns the hexadecimal ##[[KeyPgWstring|wstring]]## (Unicode) representation of
 
 {{fbdoc item="desc"}}
 	Hexadecimal digits range from ##0##-##9##, or ##A##-##F##.
-
+	
 	If you specify ##//digits//## > ##0##, the resulting ##[[KeyPgWstring|wstring]]## will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
-
+	
 	The length of the wstring will not go longer than the maximum number of digits required for the type of ##//expression//## (8 for a ##[[KeyPgLong|long]]##, 16 for floating point or ##[[KeyPgLongint|longint]]##)
 
 {{fbdoc item="ex"}}
@@ -40,7 +40,6 @@ print Hex(54321, 2)
 print Hex(54321, 5)
 %%
 	will produce the output:
-
 %%D431
 31
 0D431

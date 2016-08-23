@@ -61,6 +61,10 @@ Declares a user-defined type.
 	
 	//Special note on fixed-length strings//
 	Currently, fixed-length string fields of ##[[KeyPgString|String]] * //N//## type have an extra null terminator at their end, for compatibility with C strings, making them incompatible with QB strings inside Types, because they actually use up ##//N//+1## bytes, instead of just ##N## bytes. A possible work-around is to declare the field ##As [[KeyPgString|String]] * (//N//-1)##, though this will not work in future releases if the null terminator is removed.  Another alternative is to use a ##[[KeyPgByte|Byte]]## or ##[[KeyPgUbyte|UByte]]## array with the proper size.
+	
+	//Note on bitfields ( ##//fieldname// : //bits//## )//
+	Bitfields can only be declared inside a type or a union, and allow to specify some very small objects of a given number of bits in length. Each field is accessed and manipulated as if it were an ordinary member of the structure. Only integer data-types (up to 32-bit for 32-bit development or 64-bit for 64-bit development) are valid. The sizes of the declared data-types, large enough to contain the bit patterns, affect how the bitfields are placed in memory.
+	A bitfield does not have any address (one cannot get a pointer to it and its offset inside the structure).
 
 {{fbdoc item="ex"}}
 This is an example of a QB-style type, not including procedure definitions
@@ -76,7 +80,6 @@ c.red = 255
 c.green = 128
 c.blue = 64
 %%
-
 And this is an example of a type working as an object:
 {{fbdoc item="filename" value="examples/manual/udt/type2.bas"}}%%(freebasic)
 '' Example showing the problems with fixed length string fields in UDTs
@@ -88,7 +91,7 @@ print "Using fixed-length string"
 
 type hdr1 field = 1
    as string*(6-1) sig /' We have to dimension the string with 1 char
-	                    '  less to avoid misalignments '/
+						'  less to avoid misalignments '/
    as ushort wid, hei
 end type
 
@@ -104,7 +107,7 @@ if left(h1->sig, 5) = "GIF89" then print "ok" else print "error"
 function ub2str( ub() as ubyte ) as string
 	dim as string res = space(ubound(ub) - lbound(ub) + 1)
 	for i as integer = lbound(ub) to ubound(ub)
-	    res[i - Lbound(ub)] = ub(i)
+		res[i - Lbound(ub)] = ub(i)
 	next
 	function = res
 end function
@@ -123,6 +126,35 @@ dim as hdr2 ptr h2 = cptr(hdr2 ptr, @z)
 
 print ub2str(h2->sig()), h2->wid, h2->hei '' Prints GIF89a  10  11 (ok)
 if ub2str(h2->sig()) = "GIF89a" then print "ok" else print "error" '' Prints ok
+%%
+This is an example of conversion from an Ubyte to a digit string in base 8 (octal string), by using bitfields in a local UDT (conversion equivalent to 'Oct(x, 3)'):
+{{fbdoc item="filename" value="examples/manual/udt/type3.bas"}}%%(freebasic)
+Function UbyteToOctalString (Byval b As Ubyte) As String
+ 
+	Union UbyteOctal
+		number As Ubyte
+		Type
+			d0 : 3 As Ubyte
+			d1 : 3 As Ubyte
+			d2 : 2 As Ubyte
+		End Type
+	End Union
+ 
+	Dim uo As UbyteOctal
+	uo.number = b
+	Return uo.d2 & uo.d1 & uo.d0
+ 
+End Function
+
+
+For I As Integer = 0 To 255
+	Print Using "###: "; I;
+''    Print Oct(I, 3),
+	Print UbyteToOctalString(I),  '' this line is thus equivalent to the previous one
+Next I
+Print
+
+Sleep
 %%
 
 {{fbdoc item="target"}}
@@ -148,5 +180,6 @@ if ub2str(h2->sig()) = "GIF89a" then print "ok" else print "error" '' Prints ok
 	- ##[[KeyPgField|Field]]##
 	- ##[[KeyPgExtends|Extends]]##
 	- ##[[KeyPgWith|With]]##
+	- [[ProPgDataConversion|Coercion and Conversion]]
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

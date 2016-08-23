@@ -19,6 +19,9 @@ Statements that direct the flow of program execution.
 		Temporarily transfers execution to one of a number of points in code defined by text labels, based on the value of an expression.
 	=={{fbdoc item="keyword" value="KeyPgReturn|RETURN"}}==
 		Returns from a call using [[KeyPgGosub|Gosub]] or from a procedure returning a value.
+	=={{fbdoc item="keyword" value="KeyPgExit|EXIT SUB"}}, {{fbdoc item="keyword" value="KeyPgExit|EXIT FUNCTION"}}, {{fbdoc item="keyword" value="KeyPgExit|EXIT OPERATOR"}},==
+	=={{fbdoc item="keyword" value="KeyPgExit|EXIT CONSTRUCTOR"}}, {{fbdoc item="keyword" value="KeyPgExit|EXIT DESTRUCTOR"}} and {{fbdoc item="keyword" value="KeyPgExit|EXIT PROPERTY"}}==
+		Prematurely leaves a procedure code block.
 
 {{anchor name="BRANCHING"}}{{fbdoc item="section" value="Branching Statements"}}
 	=={{fbdoc item="keyword" value="KeyPgIfthen|IF..END IF"}}==
@@ -44,7 +47,7 @@ Statements that direct the flow of program execution.
 		Executes a block of statements while an iterator is less than or greater than an expression.
 	=={{fbdoc item="keyword" value="KeyPgDoloop|DO..LOOP"}}==
 		Executes a block of statements while or until a condition is met.
-
+	
 	{{fbdoc item="subsect" value="Intra-loop control"}}
 		=={{fbdoc item="keyword" value="KeyPgContinue|CONTINUE WHILE"}}, {{fbdoc item="keyword" value="KeyPgContinue|CONTINUE FOR"}} and {{fbdoc item="keyword" value="KeyPgContinue|CONTINUE DO"}}==
 			Prematurely re-enters a loop.

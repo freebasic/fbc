@@ -45,24 +45,24 @@
 @@**""FreeBASIC"" questions**@@
 
 {{anchor name="item1"}}==What is ""FreeBASIC""?==
-	""FreeBASIC"" is a free, 32-bit BASIC compiler for Windows (32-bit), 32 bit protected-mode DOS (COFF executables, like DJGPP), and Linux (x86). It began as an attempt to create a code-compatible, free alternative to Microsoft ""QuickBASIC"", but has quickly grown into a powerful development tool, already including support for libraries such as Allegro, SDL, ""OpenGL"", and many others with its default installation.
-
+	""FreeBASIC"" is a free, BASIC compiler for Windows (32-bit and 64-bit), 32 bit protected-mode DOS (COFF executables, like DJGPP), and Linux (x86, x86_64, and ARM). It began as an attempt to create a code-compatible, free alternative to Microsoft ""QuickBASIC"", but has quickly grown into a powerful development tool, already including support for libraries such as Allegro, SDL, ""OpenGL"", and many others with its default installation.
+	
 	Aside from having a syntax mostly compatible with ""QuickBASIC"", ""FreeBASIC"" introduces several new features to the aged language, including pointers to variables and functions, and unsigned data types.
-
+	
 	""FreeBASIC"" compiler is self-hosting - written in ""FreeBASIC"", the libraries however are written in C.
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item2"}}==Who is responsible for ""FreeBASIC""?==
 	The first versions of ""FreeBASIC"" were developed exclusively by V1ctor. Later versions gained contributions from many people, including Lillo, who developed the Linux port and the graphics library, and ""DrV"", who developed the DOS port. 
-
+	
 	See the [[CompilerCredits|FreeBASIC Credits]] page.
 
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item3"}}==Why should I use ""FreeBASIC"" rather than ""QBasic""?==
 	""FreeBASIC"" has innumerable advantages over ""QBasic"", ""QuickBASIC"", PDS, and Visual Basic for DOS. 
-		- It supports 32-bit processors, where ""QBasic"" is designed for 16-bit CPU's.
+		- It supports 32-bit and 64-bit processors, where ""QBasic"" is designed for 16-bit CPU's.
 		- It supports modern OSes. It has ports to Windows, Linux, and 32-bit DOS.
 		- It supports modern APIs such as SDL, ""DirectX"", ""Win32"", and ""OpenGL"".
 		- It is distributed under the GPL, meaning it's free and legal to use, unlike most copies of ""QuickBASIC"" / other BASICs.
@@ -94,7 +94,7 @@
 	The ""FreeBASIC"" built in graphics library emulates the most used QB graphics modes (modes 7,12,13) and implements all the drawing primitives featured in QB. 
 	Most compatibility problems arise from the use of 8086-DOS-hardware specific low-level techniques in the old QB programs. VGA port programming, DOS interrupts, memory segment switching, poking to the screen memory or music playing using the PC speaker are not directly supported, even if they can be supported/emulated by external libraries. 
 	Other issues in porting old QB programs, like variable name clashes with new FB keywords, variables with the name of a QB keyword plus a type suffix, default integer size being 32 bits in FB, are addressed by running ""FreeBASIC"" with the commandline switch ##-lang qb## .
-
+	
 	See [[LangQB|Differences between FreeBASIC and QuickBASIC]].
 
 {{anchor name="item0|Back to top"}}
@@ -145,9 +145,9 @@
 
 {{anchor name="item20"}}==Where can I find more information about ""FreeBASIC""?==
 	The ""FreeBASIC"" Wiki is the most up-to-date manual for using ""FreeBASIC"", available [[http://www.freebasic.net/wiki/|here]].
-
+	
 	Active ""FreeBASIC"" related forums, besides the [[http://www.freebasic.net/forum|official one]], can be found at [[http://www.qbasicnews.com/|qbasicnews]], [[http://www.petesqbsite.com/phpBB3/|Pete's QB Site]] , [[http://games.freebasic.net/forum/index.php|the FB Games directory]]  or  [[http://www.freebasic-portal.de|freebasic-portal.de (in German)]].
-
+	
 	Active magazines which regularly have ""FreeBASIC"" related articles are [[http://www.petesqbsite.com/sections/express/express.shtml|QB Express]] and [[http://www.qbxl.net/|QBXL Magazine]]. These magazines are always looking for new articles, so if you think you've got a good idea for an article about ""FreeBASIC"", submit it!
 
 {{anchor name="item0|Back to top"}}
@@ -172,7 +172,7 @@
 	-##lang fb## provides the framework required for OOP programming . Other dialects don't give access to OOP.
 	-##lang qb## will allow the developers to keep increasing the compatibility with qb programs. Newer keywords in FB can be used by preceding them with two underscores.  For example, ##Getmouse## can be called by using ##_####_Getmouse##
 	-##lang fblite## offers ""FreeBASIC"" language compatibility, with a more QBASIC-compatible coding style.
-
+	
 	See [[CompilerDialects|Compiler Dialects]] for details.
 
 {{anchor name="item0|Back to top"}}
@@ -190,7 +190,7 @@
 	- create a //static// array by defining the array with ##[[KeyPgStatic|Static]]## rather than ##[[KeyPgDim|Dim]]## (only locally visible, but globally preserved)
 	- define the array with ##[[KeyPgShared|Shared]]## access using ##[[KeyPgDim|Dim]]## (this makes the array fully global)
 	- use [[ProPgPointers|Pointers]] and [[CatPgMemory|Memory Functions]] like ##[[KeyPgAllocate|Allocate]]## and ##[[KeyPgDeallocate|Deallocate]]## to manage memory yourself - this is the preferred way for storing big buffers, but not for beginners.
-
+	
 	//Static// and //variable-length// arrays don't use the program stack for their element data, so do not have the problem associated with //automatic// fixed-length arrays. See [[ProPgStorageClasses|Storage Classes]] for more information. Note that storing huge buffers as //static// or increasing the stack size far above the default is not a very good idea, since it increases the fixed amount of memory needed to load and start you program, even if most of it is not used later, and can result in performance degrade, or even refusing your program to load at all.    
 
 {{anchor name="item25"}}==Why does my program fail to compile with the message 'cannot find -llibname'"?==
@@ -212,7 +212,7 @@
 		- ""Win32"": Insight is an user friendly wrapper for GDB, see [[FaqPgWin32|Win32 related FAQ]]. 
 		- DOS: Be warned that DOS also has product named "Insight", but it's a real mode debugger not usable with ""FreeBASIC"", use GDB or some DPMI32 debugger at least.
 		- Linux: use GDB.
-
+	
 	See the {{anchor name="item999|OS specific FAQ's"}} for details for your OS.
 
 {{anchor name="item0|Back to top"}}

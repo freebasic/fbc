@@ -53,13 +53,9 @@ Then, open a command prompt with ##""C:\DJGPP\bin""## in its PATH, go to the dir
 %%
 
 This should have produced the ##fbc.exe## compiler and the libraries in ##lib\dos\##. To complete this new FB setup, you need to add the binutils (as.exe, ar.exe, ld.exe) into ##bin\dos\## and copy in some DJGPP libraries into ##lib\dos\##.
-
-	1) Copy these files to ##""C:\fbcdos\bin\dos""##:
-	
+	-Copy these files to ##""C:\fbcdos\bin\dos""##:
 		-##""C:\DJGPP\bin\{ar,as,ld}.exe""##
-	
-	1) Copy these files to ##""C:\fbcdos\lib\dos""##:
-	
+	-Copy these files to ##""C:\fbcdos\lib\dos""##:
 		-##""C:\DJGPP\lib\{crt0,gcrt0}.o""##
 		-##""C:\DJGPP\lib\lib{emu,m}.a""##
 		-##""C:\DJGPP\lib\gcc\djgpp\[version]\libgcc.a""##

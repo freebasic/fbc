@@ -13,14 +13,17 @@ Returns the address of a string's character data.
 		A string.
 
 {{fbdoc item="ret"}}
-	Returns a ##[[KeyPgZstring|Zstring]] [[KeyPgPtr|Ptr]]## to a string's character data.
+	Returns a ##[[KeyPgZstring|Zstring]] [[KeyPgPtr|Ptr]]## to a string's character data (null value in case of empty string).
 
 {{fbdoc item="desc"}}
 	This operator returns a ##[[KeyPgZstring|Zstring]] [[KeyPgPtr|Ptr]]## that points to the beginning of a string's character data. ##**Operator Strptr**## is the proper method for acquiring the address of a string's character data.
-
+	In case of empty ##[[KeyPgString|string]]## (only for variable length strings), ##**Operator Strptr**## returns a null pointer.
+	
 	Note that when passed a ##[[KeyPgWstring|Wstring]]##, ##**Operator Strptr**## still returns a ##[[KeyPgZstring|Zstring]] [[KeyPgPtr|Ptr]]##, which may not be the desired result.
-
+	
 	The related ##[[KeyPgOpVarptr|Operator Varptr (Variable pointer)]]## and ##[[KeyPgOpAt|Operator @ (Address of)]]##, when used with a ##[[KeyPgString|String]]##, return the address of the internal string descriptor.
+	When a variable length string is modified, the address of its descriptor remains always the same, but the the string's character data address (returned by ##**Operator Strptr**##) may change (like any allocated memory that must be reallocated).
+	When a fixed length string is modified, the string's character data address (returned by ##**Operator Strptr**##) is unchanged
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/strptr.bas"}}%%(freebasic)

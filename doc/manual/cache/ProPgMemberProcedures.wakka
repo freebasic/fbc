@@ -13,14 +13,14 @@ Procedures with full access to members of a ##[[KeyPgType|Type]]## or ##[[KeyPgC
 	Declaring two or more member procedures with the same name.
 **{{anchor name="STATIC|Static member procedures"}}**
 	Differences from non-static member procedures.
-
+	
 ~&//The term 'member procedure' refers to both static and non-static member procedures, unless otherwise noted.//
 
 {{anchor name="DECL"}}{{fbdoc item="section" value="Declaration and definition"}}
 	Member procedures are declared much like normal module-level procedures except that they are declared within, and defined outside, a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## definition {{anchor name="note_definedoutside|[1]"}}.
-
+	
 	When defining member procedures, the procedure name is prefixed with the name of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## and the member access operator (##[[KeyPgOpMemberAccess|Operator . (Member access)]]##). It is an error to define a member procedure without a matching declaration in the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## definition.
-
+	
 	The following example declares and defines a ##[[KeyPgSub|Sub]]## and ##[[KeyPgFunction|Function]]## member procedure:
 
 	{{fbdoc item="filename" value="examples/manual/proguide/members/foo1.bi"}}%%(freebasic)
@@ -44,7 +44,7 @@ End Function
 
 {{anchor name="USAGE"}}{{fbdoc item="section" value="Usage"}}
 	Member procedures are referred to just like member data, that is, their name is prefixed with the name of an object instance and the member access operator (##[[KeyPgOpMemberAccess|Operator . (Member access)]]##) {{anchor name="note_staticmemberprocs|[2]"}}.
-
+	
 	The following example, using the code from the last example, calls ##[[KeyPgSub|Sub]]## and ##[[KeyPgFunction|Function]]## member procedures:
 
 	{{fbdoc item="filename" value="examples/manual/proguide/members/usage1.bas"}}%%(freebasic)
@@ -55,19 +55,18 @@ Dim bar As foo
 bar.f(bar.g())
 %%
 
-
 {{anchor name="THIS"}}{{fbdoc item="section" value="The hidden parameter, This"}}
 	Member procedures actually have an additional parameter than what they are declared with {{anchor name="note_staticnothis|[3]"}}. When they are called, using the name of an instance and ##[[KeyPgOpMemberAccess|Operator . (Member access)]]##, a reference to that instance is passed along with any other arguments in the call, allowing the member procedure direct access to the instance.
-
+	
 	The additional parameter added by the compiler is called ##[[KeyPgThis|This]]##, and since it's a reference, any modifications to ##[[KeyPgThis|This]]## are actually modifications to the instance that was passed to the member procedure when it was called. You can use ##[[KeyPgThis|This]]## just like any other variable, ie., pass it to procedures taking a object of the same type, call other member procedures and access member data using ##[[KeyPgOpMemberAccess|Operator . (Member access)]]##, etc.
-
+	
 	Most of the time, however, using ##[[KeyPgThis|This]]## explicitly is unnecessary; member procedures can refer to other members of the instance which they are passed directly by name, without having to qualify it with ##[[KeyPgThis|This]]## and ##[[KeyPgOpMemberAccess|Operator . (Member access)]]##. The only times when you need to qualify member names with ##[[KeyPgThis|This]]## is when the member name is hidden, for example, by a parameter or local variable. In these situations, qualifying the member name is the only way to refer to these hidden member names.
-
+	
 	##//Note:
 	To access duplicated symbols defined outside the Type, use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).//##
-
+	
 	The following example uses the ##[[KeyPgThis|This]]## keyword to refer to member data whose name is hidden by a parameter and local variable:
-
+	
 	{{fbdoc item="filename" value="examples/manual/proguide/members/this.bas"}}%%(freebasic)
 Type foo
 	Declare Sub f (i As Integer)
@@ -93,9 +92,9 @@ End Sub
 
 {{anchor name="OVERLOAD"}}{{fbdoc item="section" value="Overloading"}}
 	A member procedure can be declared to have the same name as another member procedure, provided the parameters are different, either in number or in type. This is referred to as overloading.
-
+	
 	Only the parameters are used to determine if a procedure declaration is a valid overload. For example, a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## could have static and non-static member procedures with the same name, or ##[[KeyPgSub|Sub]]## and ##[[KeyPgFunction|Function]]## member procedures with the same name
-
+	
 	Unlike a module-level procedure, which needs to specify the ##[[KeyPgOverload|Overload]]## clause in the declaration to allow overloading it, a member procedure is overloadable by default, and does not need the ##[[KeyPgOverload|Overload]]## clause.
 
 	{{fbdoc item="filename" value="examples/manual/proguide/members/overload.bas"}}%%(freebasic)
@@ -125,11 +124,11 @@ End Type
 
 {{anchor name="STATIC"}}{{fbdoc item="section" value="Static member procedures"}}
 	Static member procedures are declared and defined much in the same way as non-static member procedures, with the ##[[KeyPgStatic|Static]]## keyword preceding the declaration and definition.
-
+	
 	Member procedures defined using the ##[[KeyPgStatic|Static]]## keyword must be declared with the ##[[KeyPgStatic|Static]]## keyword in the [[KeyPgType|Type]] or [[KeyPgClass|Class]] definition, or a compiler error will occur. Like non-static member procedures, it is an error to define a static member procedure without a matching declaration in the [[KeyPgType|Type]] or [[KeyPgClass|Class]] definition.
 	
 	Do not confuse this with procedure definitions that specify static storage for their variables and objects by appending the ##[[KeyPgStatic|Static]]## keyword to the procedure header. The ##[[KeyPgStatic|Static]]## keyword can be used in both contexts, however; static member procedures can be defined with static variable and object storage.
-
+	
 	The following example declares two static member procedures, the first of which also has static variable and object storage. Note that the ##[[KeyPgStatic|Static]]## keyword is optional in the member procedure definition:
 
 	{{fbdoc item="filename" value="examples/manual/proguide/members/foo2.bi"}}%%(freebasic)
@@ -152,9 +151,9 @@ End Function
 %%
 
 	Static member procedures can be called like non-static member procedures, qualifying the name of the procedure with the name of an instance and the member access operator (##[[KeyPgOpMemberAccess|Operator . (Member access)]]##).
-
+	
 	They can also be called by qualifying the procedure name with the name of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## they were declared in and the member access operator (##[[KeyPgOpMemberAccess|Operator . (Member access)]]##). In other words, an instance is not required in order to call static-member procedures.
-
+	
 	The following example, using the code from the last example, uses both ways to call static member procedures:
 	
 	{{fbdoc item="filename" value="examples/manual/proguide/members/usage2.bas"}}%%(freebasic)
@@ -166,9 +165,9 @@ bar.f(foo.g())
 %%
 
 	Unlike non-static member procedures, which are declared with an extra ##[[KeyPgThis|This]]## parameter, static member procedures do not get passed an instance when called. Because of this, static member procedures can only refer to constants, enumerations, other static members (data or procedures), etc., without qualifying their names. Static member procedures can still refer to non-static members when qualified with an instance, for example: a parameter or local variable.
-
+	
 	The following example refers to a non-static member from a static procedure:
-
+	
 	{{fbdoc item="filename" value="examples/manual/proguide/members/static.bas"}}%%(freebasic)
 Type foo
 	Declare Static Sub f (ByRef As foo)

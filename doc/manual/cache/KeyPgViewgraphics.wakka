@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="VIEW (GRAPHICS)"}}----
-Sets new physical coordinate mapping and clipping region
+Sets new physical coordinate mapping and clipping region for graphics keywords
 
 {{fbdoc item="syntax"}}##
 	**View**
@@ -17,15 +17,16 @@ Sets new physical coordinate mapping and clipping region
 		The color of the border to draw around the new viewport.
 
 {{fbdoc item="desc"}}
-	The //viewport//, or clipping region, is a rectangular area of the graphics screen, outside of which no drawing will be done. That is, only drawing done within this area will be shown. A graphics screen must be created with ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|ScreenRes]]## before calling ##**View**## or ##**View Screen**##.
-
-	The first statement sets the viewport to encompass the entire screen, which is the default viewport for a new graphics screen.
-
-	The second and third statements both allow a new viewport to be defined. The corners of the viewport are specified by the ##//x1//##, ##//y1//##, ##//x2//## and ##//y2//## parameters. ##//fill_color//## and ##//border_color//## are both in the format accepted by ##[[KeyPgColor|Color]]##. The indicated effects for each parameter only occur if that parameter is specified.
-
-	The second statement modifies the coordinate mapping of the graphics screen such that coordinates specified for drawing statements and procedures are relative to the top-left corner of the viewport.
-
-	The third statement modifies the coordinate mapping of the graphics screen such that coordinates specified for drawing statements and procedures are relative to the top-left corner of the screen.
+	The //viewport//, or clipping region, is a rectangular area of the graphics screen, outside of which no graphics drawing will be done. That is, only graphics drawing done within this area will be shown. A graphics screen must be created with ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|ScreenRes]]## before calling ##**View**## or ##**View Screen**##.
+	
+	The first statement (##**View**##) sets the viewport to encompass the entire screen, which is the default viewport for a new graphics screen.
+	
+	The second and third statements (##**View**## ##//parameters//## and ##**View** Screen## ##//parameters//##) both allow a new viewport to be defined. The indicated effects for each parameter only occur if that parameter is specified:
+		- The corners of the viewport are specified by the ##//x1//##, ##//y1//##, ##//x2//## and ##//y2//## parameters.@@
+		- ##//fill_color//## and ##//border_color//## are both in the format accepted by ##[[KeyPgColor|Color]]##.
+		- The second statement (##**View**## ##//parameters//##) modifies the coordinate mapping of the graphics screen such that coordinates specified for graphics drawing statements and procedures are relative to the top-left corner of the viewport.
+		- The third statement (##**View** Screen## ##//parameters//##) modifies the coordinate mapping of the graphics screen such that coordinates specified for graphics drawing statements and procedures are relative to the top-left corner of the screen.
+		- In both cases no new scale factor is applied (see ##[[KeyPgWindow|Window]]## for that).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/view.bas"}}%%(freebasic)

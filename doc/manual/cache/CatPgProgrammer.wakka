@@ -26,14 +26,14 @@
 	{{fbdoc item="keyword" value="ProPgDataConversion|Coercion and Conversion"}}
 	{{fbdoc item="keyword" value="ProPgConstants|Constants"}}
 	{{fbdoc item="keyword" value="ProPgVariables|Variables"}}
-
+	
 	{{fbdoc item="subsect" value="Arrays"}}
 		{{fbdoc item="keyword" value="ProPgArrays|Overview"}}
 		{{fbdoc item="keyword" value="ProPgFixLenArrays|Fixed-length Arrays"}}
 		{{fbdoc item="keyword" value="ProPgVarLenArrays|Variable-length Arrays"}}
 		{{fbdoc item="keyword" value="ProPgArrayIndex|Array Indexing"}}
 		Passing Arrays to Procedures
-
+	
 	{{fbdoc item="subsect" value="Pointers"}}
 		{{fbdoc item="keyword" value="ProPgPointers|Overview"}}
 		{{fbdoc item="keyword" value="ProPgPtrArithmetic|Pointer Arithmetic"}}
@@ -61,7 +61,7 @@
 	{{fbdoc item="keyword" value="ProPgTypeObjects|Types as Objects"}}
 <<>>{{fbdoc item="section" value="Statements and Expressions"}}
 	Assignments
-	{{fbdoc item="keyword" value="CatPgOperators|Operators List"}}
+	{{fbdoc item="keyword" value="CatPgOperators|Operator List"}}
 	{{fbdoc item="keyword" value="OpPrecedence|Operator Precedence"}}
 	{{fbdoc item="keyword" value="ProPgControlFlow|Control Flow Statements"}}
 
@@ -102,7 +102,6 @@
 	{{fbdoc item="keyword" value="ProPgFileIO|File I/O in FreeBASIC"}}
 
 NOTE: Existing ""CatPg"" pages should be recreated as ""ProPg"" pages providing a general overview to the grouping of keywords.
-
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

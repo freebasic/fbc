@@ -11,8 +11,10 @@ Declaration specifier to explicitly pass a parameter by reference
 	Passes a variable by reference, that is its address, to a subroutine or function. When a variable is passed by reference, the contents of the variable can be changed by the target subroutine or function.
 	
 	In //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, ##**Byref**## is the default parameter passing convention, unless ##[[KeyPgOptionbyval|Option ByVal]]## is in effect.
-
+	
 	Opposite of ##[[KeyPgByval|ByVal]]##.
+	
+	**Note:** A constant or a literal expression can also be passed to such a procedure (which gets by reference), but they are obviously not modifiable. In that case, the compiler passes by reference a temporary variable initialized with the constant or the literal expression.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/byref.bas"}}%%(freebasic)
@@ -42,5 +44,6 @@ end
 	- ##[[KeyPgDeclare|Declare]]##
 	- ##[[KeyPgByval|ByVal]]##
 	- ##[[KeyPgByrefFunction|Byref (function results)]]##
+	- ##[[KeyPgByrefVariables|Byref (variables)]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

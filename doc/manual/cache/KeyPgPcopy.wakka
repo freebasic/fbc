@@ -15,11 +15,11 @@ Copies one graphical or text page onto another
 
 {{fbdoc item="desc"}}
 	Copies one graphical or text video page to another. Useful for drawing all graphics on one invisible page and copying it to the active visible page - creating smooth graphics and animation. Known as 'double buffering' or 'page flipping'.
-
+	
 	##//source//## and ##//destination//## refer to page numbers. The 'source' page is copied over the 'destination' page when pcopy is called.
-
+	
 	If the ##//source//## argument is omitted, the current working page is assumed.  If the ##//destination//## page is omitted, the current visible page is assumed.
-
+	
 	##**Pcopy**## is inactive if the ##//destination//## page is locked.
 
 {{fbdoc item="ex"}}

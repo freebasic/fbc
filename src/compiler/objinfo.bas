@@ -612,9 +612,7 @@ private sub hLoadFile _
 end sub
 
 private sub hLoadFbctinfFromObj( )
-	select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
-	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_DOS, _
-	     FB_COMPTARGET_WIN32, FB_COMPTARGET_XBOX
+	if( fbTargetSupportsCOFF( ) ) then
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86_64
 			INFO( "reading x86-64 COFF: " + parser.filename )
@@ -623,10 +621,7 @@ private sub hLoadFbctinfFromObj( )
 			INFO( "reading i386 COFF: " + parser.filename )
 			hLoadFbctinfFromCOFF( &h014C )
 		end select
-
-	case FB_COMPTARGET_DARWIN, FB_COMPTARGET_FREEBSD, _
-	     FB_COMPTARGET_LINUX, FB_COMPTARGET_NETBSD, _
-	     FB_COMPTARGET_OPENBSD
+	elseif( fbTargetSupportsELF( ) ) then
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86_64
 			INFO( "reading x86-64 ELF: " + parser.filename )
@@ -635,8 +630,7 @@ private sub hLoadFbctinfFromObj( )
 			INFO( "reading i386 ELF: " + parser.filename )
 			hLoadFbctinfFromELF32_H( )
 		end select
-
-	end select
+	end if
 
 	if( fbctinf.size = 0 ) then
 		INFO( "no .fbctinf found" )

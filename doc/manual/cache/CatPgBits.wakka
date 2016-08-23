@@ -18,7 +18,6 @@ Macros that work with the bits and bytes of numbers.
 		Gets the least significant word (LSW, or //lo-word//) value of an ##[[KeyPgUinteger|Uinteger]]## value.
 	=={{fbdoc item="keyword" value="KeyPgHiword|HIWORD"}}==
 		Gets the most significant word (LSW, or //hi-word//) value of an ##[[KeyPgUinteger|Uinteger]]## value.
-
 <<>>{{anchor name="BITMACROS"}}{{fbdoc item="section" value="Bit Manipulation Macros"}}
 	=={{fbdoc item="keyword" value="KeyPgBit|BIT"}}==
 		Gets the state of an individual bit in an integer value.
@@ -26,7 +25,6 @@ Macros that work with the bits and bytes of numbers.
 		Gets the value of an integer with a specified bit cleared.
 	=={{fbdoc item="keyword" value="KeyPgBitset|BITSET"}}==
 		Gets the value of an integer with a specified bit set.
-
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

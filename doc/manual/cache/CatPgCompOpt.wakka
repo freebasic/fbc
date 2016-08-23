@@ -68,7 +68,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOptp|-p < name >"}}
 		- Add a path to search for libraries
 	{{fbdoc item="keyword" value="CompilerOptpic|-pic"}}
-		- Generate position-indepedent code (non-x86 Unix shared libs)
+		- Generate position-independent code (non-x86 Unix shared libs)
 	{{fbdoc item="keyword" value="CompilerOptpp|-pp"}}
 		- Emit the preprocessed input file only, do not compile
 	{{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}

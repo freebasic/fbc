@@ -25,11 +25,11 @@ Retrieves information about current video mode or the desktop.
 
 {{fbdoc item="desc"}}
 	This function can be useful to get current mode informations like graphics driver name, color depth, screen size and more.
-
+	
 	If ##**Screeninfo**## is called when no graphics mode is set, it returns the information about the desktop.
-
+	
 	Here's a description of available fields:
-
+	
 	{{table columns="2" cellpadding="1" cells="w;Width of the screen in pixels;h;Height of the screen in pixels;depth;Current pixel format bits per pixel: this can be 1, 2, 4, 8, 16, or 32;bpp;Bytes per pixel;pitch;Size of a framebuffer row in bytes;rate;Current refresh rate, or 0 if unknown;driver;Name of current graphics driver in use, like DirectX or X11"}}
 
 {{fbdoc item="ex"}}

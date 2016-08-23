@@ -14,7 +14,7 @@ Gets the month of the year from a [[ProPgDates|Date Serial]]
 
 {{fbdoc item="ret"}}
 	Returns the month number from a variable containing a date in  [[ProPgDates|Date Serial]]  format.
-
+	
 	The month values are in the range 1-12 being 1 for January and 12 for December.
 
 {{fbdoc item="desc"}}

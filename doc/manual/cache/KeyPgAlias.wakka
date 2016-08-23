@@ -44,5 +44,6 @@ END FUNCTION
 {{fbdoc item="see"}}
 	- ##[[KeyPgDeclare|Declare]]##
 	- ##[[KeyPgExport|Export]]##
+	- ##[[KeyPgTypeAlias|Type (Alias)]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

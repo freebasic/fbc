@@ -18,9 +18,9 @@ Returns the address of a variable or object
 
 {{fbdoc item="desc"}}
 	This operator returns the address of its operand.
-
+	
 	When the operand is of type ##[[KeyPgString|String]]##, the address of the internal string descriptor is returned. Use ##[[KeyPgOpStrptr|Operator Strptr (String pointer)]]## to retrieve the address of the string data.
-
+	
 	The operand cannot be an array, but may be an array element. For example, ##"**Varptr**(myarray(0))"## returns the address of ##"myarray(0)"##.
 
 {{fbdoc item="ex"}}

@@ -16,6 +16,8 @@ Sets the current system date
 
 {{fbdoc item="desc"}}
 	To set the date you just format ##//newdate//## and send to ##**Setdate**## in a valid format following one of the following: ##"mm-dd-yy"##, ##"mm-dd-yyyy"##, ##"mm/dd/yy"##, or ##"mm/dd/yyyy"## (##mm## is the month, ##dd## is the day, ##yy## or ##yyyy## is the year.
+	
+	The error code returned by ##**Setdate**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Setdate**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/setdate.bas"}}%%(freebasic)

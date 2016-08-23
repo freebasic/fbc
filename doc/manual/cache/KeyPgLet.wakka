@@ -12,9 +12,9 @@ Indicates the assignment operator.
 ##
 {{fbdoc item="desc"}}
 	Command intended to help the programmer to distinguish an assignment statement (e.g. ##**Let** a = 1##) from an equality test (e.g. ##If a = 1 then ...##).  As the compiler does not require it, it is usually omitted.
-
+	
 	**Let** can be used as a left-hand side operator to assign the members of a user defined type to multiple variables. //See ##[[KeyPgOpLetlist|Operator Let() (Assignment)]]##//
-
+	
 	**Let** is used with operator overloading to refer the assignment operator. //##See [[KeyPgOpLet|Operator Let (Assignment)]]##//
 
 {{fbdoc item="ex"}}

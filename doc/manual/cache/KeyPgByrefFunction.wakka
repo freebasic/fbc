@@ -20,9 +20,9 @@ Specifies that a function result is returned by reference
 Function min( Byref I As Integer , Byref J As Integer ) Byref As Integer
 	'' The smallest integer will be returned by reference, no copy will be created.
 	If I < J Then
-	    Return I
+		Return I
 	Else
-	    Return J
+		Return J
 	End If
 End Function
 
@@ -81,5 +81,6 @@ Print I
 {{fbdoc item="see"}}
 	- [[ProPgReturnValue|Returning values]]
 	- ##[[KeyPgByref|Byref (parameters)]]##
+	- ##[[KeyPgByrefVariables|Byref (variables)]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

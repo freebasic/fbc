@@ -3,7 +3,7 @@ Optional part of a declaration which specifies a data type, or part of the [[Key
 
 {{fbdoc item="syntax"}}##
 	//symbolname// **As** [[DataType|datatype]]
-
+	
 	[[KeyPgOpen|open]] ... **As** //#filenumber//
 	[[KeyPgType|type]] ... **As** [[DataType|datatype]]
 ##

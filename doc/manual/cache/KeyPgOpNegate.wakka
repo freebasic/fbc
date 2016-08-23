@@ -18,9 +18,9 @@ Changes the sign of a numeric expression
 
 {{fbdoc item="desc"}}
 	**##Operator -## (Negate)** is a unary operator that negates the value of its operand.
-
+	
 	The operand is not modified in any way.
-
+	
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}

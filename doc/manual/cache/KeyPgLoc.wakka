@@ -16,14 +16,14 @@ Returns the file position where the last file read/write was performed
 
 {{fbdoc item="desc"}}
 	Returns the position where the last file read/write was performed.
-
+	
 	The position is indicated in records:
 		In files opened FOR RANDOM the record length specified when file was opened is used
 		In  text files (FOR INPUT|OUTPUT|APPEND, a record length of 128 bytes is supposed.
 		In files opened for BINARY a 1 byte record length is used.
-
+	
 	In FreeBASIC the file position is 1 based, the first record of a file is record 1.
-
+	
 	When used with a serial device, ##**Loc**## returns the number of bytes waiting to be read from the serial device's input buffer.
 
 {{fbdoc item="ex"}}
@@ -52,7 +52,7 @@ close #1
 %%
 
 {{fbdoc item="diff"}}
-	- !!WRITEME!! ?
+	- None
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgLof|Lof]]##

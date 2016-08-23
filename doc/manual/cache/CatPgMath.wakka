@@ -28,7 +28,6 @@ Procedures that work with numbers mathematically.
 		Returns the largest integer less than or equal to a number.
 	=={{fbdoc item="keyword" value="KeyPgSgn|SGN"}}==
 		Returns the sign of a number.
-
 <<>>{{anchor name="TRIG"}}{{fbdoc item="section" value="Trigonometric Procedures"}}
 	=={{fbdoc item="keyword" value="KeyPgSin|SIN"}}==
 		Returns the sine of an angle.

@@ -6,17 +6,17 @@ Enables vector optimizations by the compiler.
 ##
 {{fbdoc item="param"}}
 	##//level//##
-	    The level of vectorization: (##0## | ##NONE##) | ##1## | ##2##.
+		The level of vectorization: (##0## | ##NONE##) | ##1## | ##2##.
 
 {{fbdoc item="desc"}}
 	The ##-vec## compiler option enables multiple levels of optimizations by searching for multiple scalar expressions that can be merged into a single vector expression. If this option is not specified, the default is ##-vec 0##.
-
+	
 	##-vec 0## | ##none## will disable vector optimizations.
-
+	
 	##-vec 1## will enable complete expression merging vectorization.
-
+	
 	##-vec 2## includes ##-vec 1## but also enables intra-expression vectorization.
-
+	
 	This option is dependent on the ##-fpu SSE## command line option.  Attempting to enable vector optimizations without using ##-fpu SSE## will generate an error.
 
 {{fbdoc item="see"}}

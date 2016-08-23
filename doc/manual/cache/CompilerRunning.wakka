@@ -5,13 +5,13 @@ Invoking the compiler after installation.
 	The compiler can be manually invoked from the command-line, or automatically by your IDE/Code Editor. If you're using an IDE, you will usually have to tell it where the compiler was installed, so it can find it. How exactly to do that depends on the IDE. 
 	
 	To compile manually, you should append the ""FreeBASIC"" installation directory to your PATH environment variable, separating it from previous entries using a semi-colon. Now you can simply use "fbc" from the command prompt, instead of always having to type in the full path (e.g. "C:\""FreeBASIC""\fbc.exe").
-
+	
 	Then, open a console/command prompt/MS DOS prompt, in the same directory as your program. To compile your program, you can use:
-
+	
 		##C:\mystuff\myprogram\> fbc myprogram.bas##
-
+	
 	and ##myprogram.exe## will be created in the same directory.
-
+	
 	A console can be launched in a specific directory from Explorer by using Microsoft's "Open Command Window Here" ""PowerToy"" on Windows XP. On Windows Vista & above you can SHIFT+""RightClick"" on a folder in Explorer to see the 'Open Command Window Here' option. As a last resort, you can also select Start -> Run, type "cmd" and hit Enter, and use the "cd" command to change the current directory.
 	
 	
@@ -25,44 +25,44 @@ Invoking the compiler after installation.
 	If the install.sh script was successfully executed with enough priviledges, the compiler binary should have been copied ##/usr/local/bin/fbc##, allowing any user access to the compiler from any directory.
 	
 	From the prompt, type,
-
+	
 		 ##fbc##
-
+	
 	to see a list of options.  To compile the "Hello, world!" example program, navigate to the directory where the ""FreeBASIC"" examples were installed (/usr/local/share/freebasic), and type,
-
+	
 		##fbc examples/misc/hello.bas##
-
+	
 	and a ##./hello## executable file will be created in the ##examples/misc## directory.
 
 {{fbdoc item="section" value="Linux (standalone)"}}
 	If the install script ##install-standalone.sh## was successfully executed with enough privileges, a link to the compiler binary should have been created at ##/usr/bin/fbc##, allowing any user access to the compiler from any directory. If it was not possible to create the link, you may want to alter your ##PATH## environmental variable to be able to invoke the compiler from any directory. Navigate to the directory where ""FreeBASIC"" was installed.
-
+	
 	From the prompt, type,
-
+	
 		 ##fbc##
-
+	
 	to see a list of options. To compile the "Hello, world!" example program type,
-
+	
 		##fbc examples/misc/hello.bas##
-
+	
 	and a ##./hello## executable file will be created in the ##examples/misc## directory.
 
 {{fbdoc item="section" value="DOS"}}
 	Navigate to the directory where ""FreeBASIC"" was installed. For example, if ""FreeBASIC"" is installed in the directory ##C:\FB##, type,
-
+	
 		##C:##
 		##CD FB##
-
+	
 	Some DOSes accept "##CDD C:\FB##" as well. You can also add the ""FreeBASIC"" directory to your PATH environment variable (usually something like "##SET PATH=C:\FB\;%PATH%##") so you can invoke the compiler from any directory.
-
+	
 	At the prompt, type,
-
+	
 		##fbc##
-
+	
 	to see a list of options. To compile the "Hello, world!" example program type,
-
+	
 		##fbc examples\misc\hello.bas##
-
+	
 	and a ##hello.exe## executable file will be created in the ##examples\misc## directory.
 
 {{fbdoc item="see"}}

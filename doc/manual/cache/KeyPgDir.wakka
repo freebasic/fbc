@@ -3,7 +3,7 @@ Searches for and returns information about an item in the filesystem; performs a
 
 {{fbdoc item="syntax"}}##
 	# [[KeyPgInclude|include]] "dir.bi"
-
+	
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Dir** ( [[KeyPgByref|byref]] //item_spec// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [[KeyPgByval|byval]] //attrib_mask// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = **fbNormal**, [[KeyPgByref|byref]] //out_attrib// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Dir** ( [[KeyPgByref|byref]] //item_spec// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]], [[KeyPgByval|byval]] //attrib_mask// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = **fbNormal**, [[KeyPgByval|byval]] //p_out_attrib// [[KeyPgAs|as]] [[KeyPgInteger|integer]] [[KeyPgPtr|ptr]] = 0 ) [[KeyPgAs|as]] [[KeyPgString|string]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Dir** ( [[KeyPgByval|byval]] //attrib_mask// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = **fbNormal**, [[KeyPgByref|byref]] //out_attrib// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgString|string]]
@@ -30,9 +30,9 @@ Searches for and returns information about an item in the filesystem; performs a
 
 {{fbdoc item="desc"}}
 	If ##//item_spec//## contains an absolute path, then the first procedure searches the filesystem for an item that matches the name ##//item_spec//## and whose attributes are all contained in ##//attrib_mask//##. Otherwise, it searches relative to the current directory (see ##[[KeyPgCurdir|CurDir]]##). In any case, if a matching item is not found, ##//out_attrib//## is assigned to zero and an empty string is returned. Otherwise, ##//out_attrib//## is assigned with the attribute flags of the item, and the name of the item, without a path, is returned.
-
+	
 	##//item_spec//## may include an asterisk (##*##, for matching any adjacent characters) or one or more question marks (##?##, for matching any individual character). If it does, the procedure searches for the first such item. If found, subsequent calls with ##//item_spec//## omitted, or set to an empty string, will return the next item matching the name ##//item_spec//## until no more such items are found. If ##//attrib_mask//## is omitted from these subsequent calls, the procedure searches for items with the same attributes as in the previous call.
-
+	
 	The second syntax behaves the same as ##**Dir**( //item_spec//, //attrib_mask//, *//p_out_attrib// )##.
 	The third syntax behaves the same as ##**Dir**( "####", , //out_attrib// )##.
 	The fourth syntax behaves the same as ##**Dir**( "####", , *//p_out_attrib// )##.
@@ -41,38 +41,38 @@ Searches for and returns information about an item in the filesystem; performs a
 	Files and directories and other items can be said to possess so-called file attributes; metadata that describes the item. The meaning of this metadata may vary depending on the operating system and the file system it uses.
 	The following defined constants are used as bit-flags in ##//attrib_mask//## and in ##//out_attrib//## or ##*//p_out_attrib//##. Their values can be combined to form a mask using ##[[KeyPgOpOr|Operator Or]]##.  These values are the metadata that the returned files are **allowed** to have.  For example, ##fbDirectory## will only allow the directory attribute not to be set, meaning that only files or directories with no other attributes set will be matched.  ##(fbReadOnly [[KeyPgOpOr|Or]] fbDirectory)## will allow read-only directories and files, and writable directories and files.
 	More powerful filtering can be done by checking the returned ##//out_attrib//## for specifc flags using ##[[KeyPgOpAnd|Operator And]]##. To access the defined flags, you must ##[[KeyPgInclude|#Include]] "dir.bi"##.
-
+	
 	## # define fbReadOnly &h01 ##
 		//The item cannot be written to or deleted.//
 		**DOS & Windows**: The item has the "read-only" attribute set.
 		**Linux**:The item has no write permissions associated with the current user or group, nor is it globally writable.  (Whether or not the user has root permissions is ignored.)
-
+	
 	## # define fbHidden &h02 ##
 		//The item is hidden in ordinary directory listings.//
 		**DOS & Windows**: The item has the "hidden" attribute set.
 		**Linux**: The item's name has a period (##.##) as the first character.
-
+	
 	## # define fbSystem &h04 ##
 		//The item is used almost exclusively by the system.//
 		**DOS & Windows**: The item has the "system" attribute set.
 		**Linux**: The item is either a character device, block device, named pipe (FIFO) or Unix socket.
-
+	
 	## # define fbDirectory &h10 ## 
 		//The item is a directory. Includes the current (##.##) and parent (##..##) directories as well.//
 		**DOS & Windows & Linux**: The item is a directory.
-
+	
 	## # define fbArchive &h20 ##
 		//The item may be backed up after some automated operations.//
 		**DOS & Windows**: The item has the "archive" attribute set (automatically set after every write access to a file).
 		**Linux**: The item is not a directory; typical filesystems do not support this metadata.
-
+	
 	## # define fbNormal (fbReadOnly or fbArchive) ##
 		//The item is read-only or "archived".//
-
+	
 	(If ##//attrib_mask//## does not include ##**fbArchive**##, then ##**Dir**## may widen the check to include ##**fbDirectory**##, but it is recommended to add ##**fbDirectory**## explicitly, if that is the behaviour sought.)
-
+	
 	Items found having no attributes are **always** matched, regardless of the value of ##//attrib_mask//##.  An item will not be matched if it has one or more attributes that aren't specified in ##//attrib_mask//##.  For example, ##//fbArchive// [[KeyPgOpOr|Or]] //fbDirectory//## will match against archived files, archived directories, non-archived files and non-archived directories.  It will not match against, for example, read-only files.
-
+	
 	In general it is not possible to use ##//attrib_mask//## to include a file/folder with one set of attributes while excluding a file/folder with a different set.  For example, it is not possible to scan for read-only directories while excluding read-only files (unless the files also have other attributes).  Finer control can be gained by checking the ##//out_attrib//## value for the desired set of attributes.
 
 
@@ -118,20 +118,20 @@ Do Until Len(fname) = 0 '' loop until Dir returns empty string
 
 	If (fname <> ".") And (fname <> "..") Then '' ignore current and parent directory entries
 
-	    Print fname,
+		Print fname,
 
-	    If (out_attr And fbDirectory) <> 0 Then
-	        Print "- directory";
-	        dircount += 1
-	    Else
-	        Print "- file";
-	        filecount += 1
-	    End If
-	    If (out_attr And fbReadOnly) <> 0 Then Print ", read-only";
-	    If (out_attr And fbHidden) <> 0 Then Print ", hidden";
-	    If (out_attr And fbSystem) <> 0 Then Print ", system";
-	    If (out_attr And fbArchive) <> 0 Then Print ", archived";
-	    Print
+		If (out_attr And fbDirectory) <> 0 Then
+			Print "- directory";
+			dircount += 1
+		Else
+			Print "- file";
+			filecount += 1
+		End If
+		If (out_attr And fbReadOnly) <> 0 Then Print ", read-only";
+		If (out_attr And fbHidden) <> 0 Then Print ", hidden";
+		If (out_attr And fbSystem) <> 0 Then Print ", system";
+		If (out_attr And fbArchive) <> 0 Then Print ", archived";
+		Print
 
 	End If
 
@@ -157,6 +157,7 @@ Print "Found " & filecount & " files and " & dircount & " subdirs"
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen|Open]]##
 	- ##[[KeyPgCurdir|Curdir]]##
+	- ##[[KeyPgChdir|Chdir]]##
 	- ##[[KeyPgMkdir|Mkdir]]##
 	- ##[[KeyPgRmdir|Rmdir]]##
 

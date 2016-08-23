@@ -32,7 +32,6 @@ dim pFunc as function (as integer, as integer) as integer = @Add
 print "3 + 4 = " & pFunc(3, 4)
 %%
 	For a calling example of subroutine pointer, see the ##[[KeyPgOpAt|Operator @ (Address of)]]## page.
-
 	
 {{fbdoc item="section" value="Passing procedure pointers to procedures"}}
 	Passing procedure pointers to other procedures is similar as well:

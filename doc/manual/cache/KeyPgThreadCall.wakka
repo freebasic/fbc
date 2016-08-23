@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="THREADCALL"}}----
 Starts a user-defined procedure with parameters in a separate execution thread
-
+	
 ~&//**Threadcall** uses [[ExtLibFfi|LibFFI]] internally: people who write programs using this functionality should be careful to follow ""LibFFI""'s license, which can be found at [[http://github.com/atgreen/libffi/blob/master/LICENSE]].//
 
 {{fbdoc item="syntax"}}##
@@ -20,16 +20,16 @@ Starts a user-defined procedure with parameters in a separate execution thread
 
 {{fbdoc item="desc"}}
 	Like ##[[KeyPgThreadCreate|Threadcreate]]##, **Threadcall** creates a thread which runs at the same time as the code calling it.  By placing "**Threadcall**" before almost any normal call to sub, the sub is called inside of a new thread and returns a pointer to that thread.
-
+	
 	Using **Threadcall** is simpler method of creating threads, and allows data to be passed to the thread without global variables or pointers which are not type safe.  However, ##[[KeyPgThreadCreate|Threadcreate]]## is more efficient and should be used for programs creating a large number of threads.
-
+	
 	While most subroutines are supported, the following types of subroutines may not be called:
 		- Subroutines using [[KeyPgVaArg|variable arguments]]
 		- Subroutines with unions which are passed ##[[KeyPgByVal|Byval]]##
 		- Subroutines with user types containing unions, arrays, strings, or bitfields which are passed ##[[KeyPgByVal|Byval]]##
-
+	
 	When using **Threadcall**, parenthesis around the parameter list are required unless the subroutine has no parameters.
-
+	
 	WARNING: //Presently when **Threadcall** involves to pass parameters to the thread, there is no guarentee that the corresponding data are still maintained after the end of the **Threadcall** statement and this until the thread is launched. That can cause bad behavior.//	
 
 {{fbdoc item="ex"}}

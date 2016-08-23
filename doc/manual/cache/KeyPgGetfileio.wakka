@@ -27,13 +27,14 @@ Reads data from a file to a buffer
 		An unsigned integer variable to accept the result of the number of bytes read successfully from the file.
 
 {{fbdoc item="ret"}}
-	Zero (##0##) on success; non-zero on error. Note: if ##[[KeyPgEof|EOF]]## (end of file) is reached while reading, ##**Get**## will return success.  The amount of bytes actually read can be checked by passing a ##//bytesread//## variable.
+	##**Get()**## returns a 32 bit ##[[KeyPgLong|Long]]##: a zero (##0##) on success; non-zero on error.
+	Note: if ##[[KeyPgEof|EOF]]## (end of file) is reached while reading, ##**Get**## will return success.  The amount of bytes actually read can be checked by passing a ##//bytesread//## variable.
 
 {{fbdoc item="desc"}}
 	Reads binary data from a file to a buffer variable
-
+	
 	##**Get**## can be used as a function, and will return ##0## on success or an error code on failure.	
-
+	
 	For files opened in ##[[KeyPgRandom|Random]]## mode, the size in bytes of the data to read must match the specified record size.
 
 {{fbdoc item="ex"}}
@@ -62,7 +63,7 @@ sub get_array()
 
 	' print out result
 	for i as integer = 0 to 10-1
-	    print an_array(i)
+		print an_array(i)
 	next
 	print
 
@@ -80,7 +81,7 @@ sub get_mem
 
 	' print out result using [] Pointer Indexing
 	for i as integer = 0 to 5-1
-	    print pmem[i]
+		print pmem[i]
 	next
 	print
 
@@ -118,10 +119,10 @@ Function LoadFile(byref filename As string) As String
 	if Open( filename For Binary Access Read As #h ) <> 0 then return ""
 	
 	If Lof(h) > 0 Then
-	    
-	    txt = String(Lof(h), 0)
-	    if Get( #h, ,txt ) <> 0 then txt = ""
-	    
+		
+		txt = String(Lof(h), 0)
+		if Get( #h, ,txt ) <> 0 then txt = ""
+		
 	End If
 	
 	Close #h

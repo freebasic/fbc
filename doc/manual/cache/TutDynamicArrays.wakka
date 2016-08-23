@@ -37,15 +37,15 @@ dim as ubyte x, y, i
 ' fill the array with values
 for y = 0 to 9
 	for x = 0 to 9
-	    i += 1
-	    myArray(x, y) = i
+		i += 1
+		myArray(x, y) = i
 	next x
 next y
 
 ' proves the values are good originally:
 for y = 0 to 9
 	for x = 0 to 9
-	    print using "##,"; myArray(x, y);
+		print using "##,"; myArray(x, y);
 	next x
 	print
 next y
@@ -60,7 +60,7 @@ redim preserve myArray(0 to 18, 0 to 12) as ubyte
 ' the values have not been preserved properly!
 for y = 0 to 9
 	for x = 0 to 9
-	    print using "##,"; myArray(x, y);
+		print using "##,"; myArray(x, y);
 	next x
 	print
 next y

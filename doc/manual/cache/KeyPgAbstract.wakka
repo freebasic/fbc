@@ -15,7 +15,7 @@ Declare abstract methods
 	[[KeyPgConstructor|Constructors]] cannot be abstract, since they cannot be virtual. In addition, abstract [[KeyPgDestructor|destructors]] are not supported either, because a destructor body (no matter whether implicit or explicit) is needed in order to call base and field destructors.
 	
 	Abstracts are called "pure virtual" in ""C++"" (unlike ""FreeBASIC"", ""C++"" allows pure virtuals to have a body, but accessible only statically).
-
+	
 	**Note:** In a multi-level inheritance, a same named method (same identifier and signature) can be declared ##**Abstract**##, ##[[KeyPgVirtual|Virtual]]## or normal (without specifier) at each inheritance hierarchy level. When there is mixing of specifiers, the usual order is abstract -> virtual -> normal, from top to bottom of the inheritance hierarchy.
 	The access control (##[[KeyPgVisPublic|Public]]##/##[[KeyPgVisProtected|Protected]]##/##[[KeyPgVisPrivate|Private]]##) of an overriding method is not taken into account by the internal polymorphism process, but only for the initial call at compile-time.
 	A derived static method cannot override a base virtual/abstract method, but can shadow any base method (including virtual/abstract).
@@ -81,5 +81,6 @@ end sub
 	- ##[[KeyPgType|Type]]##
 	- ##[[KeyPgExtends|Extends]]##
 	- ##[[KeyPgObject|Object]]##
+	- ##[[KeyPgOverride|Override]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

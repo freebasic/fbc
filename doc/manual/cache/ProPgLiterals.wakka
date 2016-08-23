@@ -6,7 +6,7 @@ Literals are numbers, strings of characters or boolean truths specified directly
 Numeric literals come in two forms - integer and floating-point.  
 
 {{fbdoc item="section" value="Integer Literals"}}
-
+	
 	__Decimal__
 	Decimal digits ( ##0 1 2 3 4 5 6 7 8 9## ).
 	//Note: to get negative values, a "##-##" sign (##[[KeyPgOpNegate|Operator - (Negate)]]##) can be placed before a numeric literal//
@@ -23,7 +23,7 @@ Dim b as byte = -128
 Dim x As Integer = &h1E240
 Dim b As Byte = &H80
 %%
-		
+			
 	__Octal__
 	"##&O##" ( O as in "Octal" ), followed by octal digits ( ##0 1 2 3 4 5 6 7## )
 
@@ -31,6 +31,7 @@ Dim b As Byte = &H80
 Dim x as integer = &O361100
 Dim b as byte = &O200
 %%
+	
 	__Binary__
 	"##&B##", followed by binary digits ( ##0 1## )
 
@@ -41,7 +42,7 @@ Dim b as byte = &B10000000
 
 {{fbdoc item="section" value="Integer size suffixes"}}
 	If an integer literal suffix is not given, the number field size required to hold the literal is automatically calculated.  Specifying a size suffix guarantees that the compiler will consider a number as a specific integer size.
-
+	
 	Integer literals ending with:
 	- "##%##", are considered as signed 32/64 (depending on platform) bit integers. (##[[KeyPgInteger|Integer]]##)
 	- "##L##", "##&##", are considered as signed 32 bit long integers. (##[[KeyPgLong|Long]]##)
@@ -49,7 +50,7 @@ Dim b as byte = &B10000000
 	- "##UL##", are considered as unsigned 32 bit integers. (##[[KeyPgUlong|Ulong]]##)
 	- "##LL##", are considered as signed 64 bit integers. (##[[KeyPgLongint|Longint]]##)
 	- "##ULL##", are considered as unsigned 64 bit integers. (##[[KeyPgUlongint|Ulongint]]##)
-
+	
 	The prefixes, suffixes, and hexadecimal letter digits are all case-insensitive.
 	
 {{fbdoc item="filename" value="examples/manual/proguide/literals/intsuff.bas"}}%%(freebasic)
@@ -61,7 +62,7 @@ Dim d as ulongint = &b1010101ULL
 
 {{fbdoc item="section" value="Floating Point Literals"}}
 	Floating point numbers are specified in decimal digits, may be positive or negative, have a fractional portion, and optionally an exponent.  The format of a floating point literal is as follows:
-
+	
 	##""number[.[fraction]][((D|E) [+|-] exponent)|(D|E)|][suffix]""##
 	//or//
 	##"".fraction[((D|E) [+|-] exponent)|(D|E)|][suffix]""##
@@ -96,7 +97,7 @@ Dim d as double = 3.141592653589e3#
 
 {{fbdoc item="section" value="String Literals"}}
 	String literals are a sequence of characters contained between two double quotes.  The sequence of characters escaped or non-escaped.
-
+	
 	Double quotes can be specified in the string literal by using two double quotes together.
 {{fbdoc item="filename" value="examples/manual/proguide/literals/string.bas"}}%%(freebasic)
 print "Hello World!"
@@ -110,7 +111,7 @@ print !"Hello\nWorld!"
 %%
 
 	By default, string literals are non-escaped unless ##[[KeyPgOptionescape|Option Escape]]## was used in the source in which case all string literals following are by default escaped.
-
+	
 	A string may be explicitly specified as non-escaped when prefixed by the ##[[KeyPgOpPpEscape|$ operator]]## (Non-Escaped String Literal).
 {{fbdoc item="filename" value="examples/manual/proguide/literals/noescape.bas"}}%%(freebasic)
 print $"C:\temp"

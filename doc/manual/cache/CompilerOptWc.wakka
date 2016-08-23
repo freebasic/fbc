@@ -10,6 +10,7 @@ Pass options to the C compiler when using the C emitter (-gen gcc).
 
 {{fbdoc item="desc"}}
 	The ##-Wc## compiler option passes additional options to GCC, the C compiler.  Options must be separated by commas only.
+	
 	For example:
 		##fbc -gen gcc -Wc -m32,--verbose,-include,some-header.h##
 

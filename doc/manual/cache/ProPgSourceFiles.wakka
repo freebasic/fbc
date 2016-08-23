@@ -9,7 +9,6 @@ FreeBASIC by default, automatically takes care of compiling sources and linking 
 ##
 {{fbdoc item="section" value="Unicode support"}}
 	- Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source (.bas) or header (.bi) files, they can be freely mixed with other sources/headers in the same project (also with other ASCII files).
-
 	- Literal strings can be typed in the original non-Latin alphabet, just use a text-editor that supports one of the Unicode formats listed above.
 
 {{fbdoc item="section" value="Implicit main()"}}

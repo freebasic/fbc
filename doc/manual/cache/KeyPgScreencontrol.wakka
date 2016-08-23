@@ -25,11 +25,10 @@ Sets or gets internal graphics library settings
 		optional string parameter, contains text to be set on entry or text got on exit
 
 {{fbdoc item="desc"}}
-
 	This function can be used to set or get internal ""GfxLib"" states. The ##//what//## parameter specifies which operation to perform. On operations that set states, the ##//param*//## parameters must contain the values to be set. On operations that get states, ##//param*//## will hold the values returned by ""GfxLib"" when the function returns.
 	The meaning of the ##//param*//## parameters depend on the ##//what//## parameter, whose possible values are defined as constants in ##fbgfx.bi##.  In //[[CompilerDialects|lang fb]]//, they are set to be stored in the ##FB## ##[[KeyPgNamespace|Namespace]]##.
 	Below is a list of the supported ##//what//## constants - and their values as defined at time of writing - along with the parameters associated with them.
-
+	
 	__Supported operations__
 		
 		Note: * denotes operations that are allowed while a graphics mode has not yet been set via [[KeyPgScreengraphics|Screen (Graphics)]] or [[KeyPgScreenres|ScreenRes]]. For all other operations, return values are zero(##0##) or the empty string(##"####"##) and the operation has no effect if a graphics mode is not available at call time.
@@ -77,7 +76,7 @@ Sets or gets internal graphics library settings
 		[OUT] ##//param//## supported GL extensions
 	- ##GET_HIGH_PRIORITY## (##16##) Returns if ##GFX_HIGH_PRIORITY## was specified in the flags passed to ##[[KeyPgScreengraphics|Screen]]## or ##[[KeyPgScreenres|Screenres]]##.
 		[OUT] ##//param1//## higher priority graphics processing enabled
-
+	
 		**Set operations**
 	- ##SET_WINDOW_POS## (##100##) Sets the current program window position, in desktop coordinates.
 		[IN] ##//param1//## x
@@ -117,7 +116,7 @@ Sets or gets internal graphics library settings
 		[IN] ##//param1//## bits
 	- * ##SET_GL_NUM_SAMPLES## (##117##) Sets the number of samples to be used for ""OpenGL"" multisampling
 		[IN] ##//param1//## samples
-
+	
 		**Other operations**
 	- ##POLL_EVENTS## (##200##) Cause the library to poll all events, ie to check the system event queue, specifically used for retrieving keyboard and mouse events.  This is most useful for ""OpenGL"" code where ##[[KeyPgFlip|Flip]]## is not used, as normally ##[[KeyPgFlip|Flip]]## will cause these events to be polled.
 
@@ -143,47 +142,47 @@ screencontrol GET_WINDOW_POS, x0, y0
 do
 
 	if (shakes > 0) then
-	    
-	    '' do a shake of the window
+		
+		'' do a shake of the window
 
-	    if (shakes > 1) then
+		if (shakes > 1) then
 
-	        '' move window to a random position near its original coordinates
-	        x = x0 + int(32 * (rnd() - 0.5))
-	        y = y0 + int(32 * (rnd() - 0.5))
-	        screencontrol SET_WINDOW_POS, x, y
+			'' move window to a random position near its original coordinates
+			x = x0 + int(32 * (rnd() - 0.5))
+			y = y0 + int(32 * (rnd() - 0.5))
+			screencontrol SET_WINDOW_POS, x, y
 
-	    else
+		else
 
-	        '' move window back to its original coordinates
-	        screencontrol SET_WINDOW_POS, x0, y0
+			'' move window back to its original coordinates
+			screencontrol SET_WINDOW_POS, x0, y0
 
-	    end if
+		end if
 
-	    shakes -= 1
+		shakes -= 1
 
 	end if
 
 	if (screenevent(@e)) then
-	    select case e.type
-	    
-	    '' user pressed the mouse button
-	    case EVENT_MOUSE_BUTTON_PRESS
+		select case e.type
+		
+		'' user pressed the mouse button
+		case EVENT_MOUSE_BUTTON_PRESS
 
-	        if (shakes = 0) then
-	            '' set to do 20 shakes
-	            shakes = 20
+			if (shakes = 0) then
+				'' set to do 20 shakes
+				shakes = 20
 
-	            '' find current window coordinates to shake around
-	            screencontrol GET_WINDOW_POS, x0, y0
-	        end if
+				'' find current window coordinates to shake around
+				screencontrol GET_WINDOW_POS, x0, y0
+			end if
 
-	    '' user closed the window or pressed a key
-	    case EVENT_WINDOW_CLOSE, EVENT_KEY_PRESS
-	        '' exit to end of program
-	        exit do
+		'' user closed the window or pressed a key
+		case EVENT_WINDOW_CLOSE, EVENT_KEY_PRESS
+			'' exit to end of program
+			exit do
 
-	    end select
+		end select
 	end if
 
 	'' free up CPU for other programs

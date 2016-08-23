@@ -13,9 +13,9 @@ Frees previously allocated memory
 
 {{fbdoc item="desc"}}
 	This procedure frees memory that was previously allocated with ##[[KeyPgAllocate|Allocate]]##. ##//pointer//## must be a valid pointer. After the procedure returns, ##//pointer//## will be rendered invalid (pointing to an invalid memory address), and its use (dereferencing or calling **##Deallocate##** again) will result in undefined behavior.
-
+	
 	Calling **##Deallocate##** on a null pointer induces no action.
-
+	
 ~&**##Deallocate##** is an alias for the C runtime library's **##free##**, so it's not guaranteed to be thread safe in all platforms.
 
 {{fbdoc item="ex"}}
@@ -24,7 +24,7 @@ The following example shows how to free previously allocated memory. Note that t
 {{fbdoc item="filename" value="examples/manual/memory/deallocate.bas"}}%%(freebasic)
 sub DeallocateExample1()
    dim as integer ptr integerPtr = allocate( len( integer ) )  '' initialize pointer to
-	                                                           '' new memory address
+															   '' new memory address
 
    *integerPtr = 420                                     '' use pointer
    print *integerPtr
@@ -58,7 +58,7 @@ sub DeallocateExample2()
    anotherIntegerPtr = 0                       '' and zero other pointer
 
 '' *integerPtr = 420                           '' undefined behavior; original
-	                                           '' pointer is invalid
+											   '' pointer is invalid
 end sub
 
    DeallocateExample2()
@@ -79,7 +79,7 @@ end sub
 
 sub DeallocateExample3()
    dim as integer ptr integerPtr = createInteger()       '' initialize pointer to
-	                                                     '' new memory address
+														 '' new memory address
 
    *integerPtr = 420                                     '' use pointer
    print *integerPtr

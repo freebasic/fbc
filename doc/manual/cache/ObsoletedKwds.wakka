@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Obsolete Keywords"}}----
-
+	
 	Along the way FB has had a few keywords changed. Here is the list of those no longer supported. Old code must be updated if recompiled.
-
+	
 	OPEN "CON:" 
 		Use [[KeyPgOpenCons|OPEN CONS]]    
 	OPEN "ERR:" 

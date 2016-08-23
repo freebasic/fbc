@@ -2,18 +2,21 @@
 Control flow statement for conditional branching.
 
 {{fbdoc item="syntax"}}##
-	**If** //expression// **Then** //statement(s)// [**Else** //statement(s)//]
+	**If** //expression// **Then** [//statement(s)//] [**Else** [//statement(s)//]] [**End If**]
 //or//
-	**If** //expression// **Then** : //statement(s)// [**Else** //statement(s)//] : **End If**
-//or//			
+	**If** //expression// **Then** : [//statement(s)//] [**Else** [//statement(s)//]] : **End If**
+//or//
 	**If** //expression// **Then**
-		//statement(s)//
+		[//statement(s)//]
 	[ **Elseif** //expression// **Then** ]
-		//statement(s)//
+		[//statement(s)//]
 	[ **Else** ]
-		//statement(s)//
+		[//statement(s)//]
 	**End If**
 ##
+	
+	Remark: ##**""EndIf""**## (without blank) is also supported like in QB for backward compatibility.
+
 {{fbdoc item="diff"}}
 	- None
 

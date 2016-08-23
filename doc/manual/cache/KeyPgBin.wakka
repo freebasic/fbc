@@ -28,11 +28,11 @@ Returns a binary (base 2) string representation of an integer
 
 {{fbdoc item="desc"}}
 	Returns a string representing the unsigned binary value of the integer ##//number//##. Binary digits range from 0 to 1.
-
+	
 	If you specify ##//digits//## > 0, the result string will be exactly that length.  It will be truncated or padded with zeros on the left, if necessary.
-
+	
 	The length of the string will not go longer than the maximum number of digits required for the type of ##//number//## (32 for a ##[[KeyPgLong|long]]##, 64 for a ##[[KeyPgLongint|Longint]])##.
-
+	
 	If you want to do the opposite, i.e. convert an binary string back into a number, the easiest way to do it is to prepend the string with ##"&B"##, and convert it to an integer type, using a function like ##[[KeyPgCint|Cint]]##, similarly to a normal numeric string.  E.g. ##[[KeyPgCint|Cint]]("&B101")##
 
 {{fbdoc item="ex"}}

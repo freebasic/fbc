@@ -26,11 +26,11 @@ option private
 #include once "windows.bi"
 
 declare function        WinMain     ( byval hInstance as HINSTANCE, _
-	                                  byval hPrevInstance as HINSTANCE, _
-	                                  szCmdLine as string, _
-	                                  byval iCmdShow as integer ) as integer
-	                              
-	                              
+									  byval hPrevInstance as HINSTANCE, _
+									  szCmdLine as string, _
+									  byval iCmdShow as integer ) as integer
+								  
+								  
 	''
 	'' Entry point    
 	''
@@ -42,9 +42,9 @@ declare function        WinMain     ( byval hInstance as HINSTANCE, _
 ''
 '' ::::::::
 function WndProc ( byval hWnd as HWND, _
-	               byval message as UINT, _
-	               byval wParam as WPARAM, _
-	               byval lParam as LPARAM ) as LRESULT
+				   byval message as UINT, _
+				   byval wParam as WPARAM, _
+				   byval lParam as LPARAM ) as LRESULT
 	
 	function = 0
 	
@@ -52,51 +52,51 @@ function WndProc ( byval hWnd as HWND, _
 	'' Process messages
 	''
 	select case( message )
-	    ''
-	    '' Window was created
-	    ''        
-	    case WM_CREATE            
-	        exit function
-	    
-	    '' User clicked the form
-	    case WM_LBUTTONUP
-	        MessageBox NULL, "Hello world from FreeBasic", "FB Win", MB_OK
-	    ''
-	    '' Windows is being repainted
-	    ''
-	    case WM_PAINT
+		''
+		'' Window was created
+		''        
+		case WM_CREATE            
+			exit function
+		
+		'' User clicked the form
+		case WM_LBUTTONUP
+			MessageBox NULL, "Hello world from FreeBasic", "FB Win", MB_OK
+		''
+		'' Windows is being repainted
+		''
+		case WM_PAINT
 			dim rct as RECT
 			dim pnt as PAINTSTRUCT
 			dim hDC as HDC
-	      
-	        hDC = BeginPaint( hWnd, @pnt )
-	        GetClientRect( hWnd, @rct )
-	        
-	        DrawText( hDC, _
-	        		  "Hello Windows from FreeBasic!", _
-	        		  -1, _
-	                  @rct, _
-	                  DT_SINGLELINE or DT_CENTER or DT_VCENTER )
-	        
-	        EndPaint( hWnd, @pnt )
-	        
-	        exit function            
-	    
+		  
+			hDC = BeginPaint( hWnd, @pnt )
+			GetClientRect( hWnd, @rct )
+			
+			DrawText( hDC, _
+					  "Hello Windows from FreeBasic!", _
+					  -1, _
+					  @rct, _
+					  DT_SINGLELINE or DT_CENTER or DT_VCENTER )
+			
+			EndPaint( hWnd, @pnt )
+			
+			exit function            
+		
 		''
 		'' Key pressed
 		''
 		case WM_KEYDOWN
-		    'Close if esc key pressed
+			'Close if esc key pressed
 			if( lobyte( wParam ) = 27 ) then
 				PostMessage( hWnd, WM_CLOSE, 0, 0 )
 			end if
 
-	    ''
-	    '' Window was closed
-	    ''
+		''
+		'' Window was closed
+		''
 		case WM_DESTROY
-	        PostQuitMessage( 0 )
-	        exit function
+			PostQuitMessage( 0 )
+			exit function
 	end select
 	
 	''
@@ -113,9 +113,9 @@ end function
 ''
 '' ::::::::
 function WinMain ( byval hInstance as HINSTANCE, _
-	               byval hPrevInstance as HINSTANCE, _
-	               szCmdLine as string, _
-	               byval iCmdShow as integer ) as integer    
+				   byval hPrevInstance as HINSTANCE, _
+				   szCmdLine as string, _
+				   byval iCmdShow as integer ) as integer    
 	 
 	dim wMsg as MSG
 	dim wcls as WNDCLASS     
@@ -141,7 +141,7 @@ function WinMain ( byval hInstance as HINSTANCE, _
 		.lpszMenuName  = NULL
 		.lpszClassName = strptr( szAppName )
 	end with
-	      
+		  
 	''
 	'' Register the window class     
 	''     
@@ -155,17 +155,17 @@ function WinMain ( byval hInstance as HINSTANCE, _
 	''
 	hWnd = CreateWindowEx( 0, _
 				 		   szAppName, _
-	                       "The Hello Program", _
-	                       WS_OVERLAPPEDWINDOW, _
-	                       CW_USEDEFAULT, _
-	                       CW_USEDEFAULT, _
-	                       CW_USEDEFAULT, _
-	                       CW_USEDEFAULT, _
-	                       NULL, _
-	                       NULL, _
-	                       hInstance, _
-	                       NULL )
-	                      
+						   "The Hello Program", _
+						   WS_OVERLAPPEDWINDOW, _
+						   CW_USEDEFAULT, _
+						   CW_USEDEFAULT, _
+						   CW_USEDEFAULT, _
+						   CW_USEDEFAULT, _
+						   NULL, _
+						   NULL, _
+						   hInstance, _
+						   NULL )
+						  
 
 	ShowWindow( hWnd, iCmdShow )
 	UpdateWindow( hWnd )
@@ -174,8 +174,8 @@ function WinMain ( byval hInstance as HINSTANCE, _
 	'' Process windows messages
 	''
 	while( GetMessage( @wMsg, NULL, 0, 0 ) <> FALSE )    
-	    TranslateMessage( @wMsg )
-	    DispatchMessage( @wMsg )
+		TranslateMessage( @wMsg )
+		DispatchMessage( @wMsg )
 	wend
 	
 	
@@ -206,8 +206,8 @@ For a program, the message queue will hold one or more messages, lined up like t
 	'' Process windows messages
 	''
 	while( GetMessage( @wMsg, NULL, 0, 0 ) <> FALSE )    
-	    TranslateMessage( @wMsg )
-	    DispatchMessage( @wMsg )
+		TranslateMessage( @wMsg )
+		DispatchMessage( @wMsg )
 	wend
 %%##
 

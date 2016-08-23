@@ -25,13 +25,13 @@ Writes data from a buffer to a file
 		Makes ##Put## write to file ##//amount//## consecutive variables to the file - i.e. it writes ##( //amount// * [[KeyPgSizeof|Sizeof]](//data//) )## bytes of data, starting at ##//data//##'s location in memory, into the file.  If ##//amount//## is omitted it defaults to ##1##, meaning that ##**Put**## just writes a single variable.
 
 {{fbdoc item="ret"}}
-	##0## on success; nonzero on error. "disk full" is considered as an error, and results in return code ##3##. An "exact" amount of data written before is not available, and wouldn't be really useful anyway. 
+	##Put()## returns a 32 bit ##[[KeyPgLong|Long]]##: ##0## on success; nonzero on error. "disk full" is considered as an error, and results in return code ##3##. An "exact" amount of data written before is not available, and wouldn't be really useful anyway. 
 
 {{fbdoc item="desc"}}
 	Writes binary data from a buffer variable to a file opened in ##[[KeyPgBinary|Binary]]## or ##[[KeyPgRandom|Random]]## mode.
-
+	
 	##**Put**## can be used as a function, and will return ##0## on success or an error code on failure.	
-
+	
 	For files opened in ##[[KeyPgRandom|Random]]## mode, the size in bytes of the data to write must match the specified record size.
 
 {{fbdoc item="ex"}}

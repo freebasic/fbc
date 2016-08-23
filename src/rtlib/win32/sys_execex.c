@@ -4,7 +4,7 @@
 
 FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
 {
-    char buffer[MAX_PATH+1], *application, *arguments;
+    char buffer[MAX_PATH+1], *arguments;
     int	res = 0, got_program;
     size_t len_arguments;
 #ifndef HOST_MINGW
@@ -19,12 +19,7 @@ FBCALL int fb_ExecEx( FBSTRING *program, FBSTRING *args, int do_fork )
         return -1;
     }
 
-    application = fb_hGetShortPath( program->data, buffer, MAX_PATH );
-    DBG_ASSERT( application!=NULL );
-    if( application==program->data ) {
-        application = buffer;
-        FB_MEMCPY(application, program->data, FB_STRSIZE( program ) );
-    }
+    fb_hGetShortPath( program->data, buffer, MAX_PATH );
 
 #ifdef HOST_MINGW
     if( args==NULL ) {

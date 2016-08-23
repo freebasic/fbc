@@ -35,7 +35,7 @@ A variable, object or array's storage class determines when and where memory is 
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgExtern|Extern]]##, ##[[KeyPgCommon|Common]]##
-	- ##[[KeyPgDim|Dim]]##, ##[[KeyPgRedim|Redim]]##, ##[[KeyPgVar|Var]]##, ##[[KeyPgShared|Shared]]##
+	- ##[[KeyPgDim|Dim]]##, ##[[KeyPgRedim|Redim]]##, ##[[KeyPgVar|Var]]##, ##[[KeyPgShared|Shared]]##, ##[[KeyPgByrefVariables|Byref (variables)]]##
 	- ##[[KeyPgStatic|Static]]##
 	- [[ProPgVarProcLinkage|Linkage]]
 

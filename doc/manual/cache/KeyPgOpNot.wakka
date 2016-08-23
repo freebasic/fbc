@@ -6,7 +6,7 @@ Returns the bitwise-not (complement) of a numeric value
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Not** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgUbyte|ubyte]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Not** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Not** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
-
+	
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Not** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T// ) [[KeyPgAs|as]] //T//
 ##
 {{fbdoc item="usage"}}##
@@ -24,11 +24,11 @@ Returns the bitwise-not (complement) of a numeric value
 {{fbdoc item="desc"}}
 	This operator returns the bitwise-complement of its operand, a logical operation that results in a value with bits set depending on the bits of the operand.
 	(for a boolean type, '##**Not**## false' returns 'true' and '##**Not**## true' returns 'false')
-
+	
 	The truth table below demonstrates all combinations of a boolean-complement operation:
-
+	
 	{{table columns="2" cellpadding="2" cells="Rhs Bit;Result;0;1;1;0"}}
-
+	
 	This operator can be overloaded for user-defined types.
 
 {{fbdoc item="ex"}}

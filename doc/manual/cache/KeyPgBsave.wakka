@@ -24,16 +24,18 @@ Saves an array of arbitrary data and palette information to a file on disk
 
 {{fbdoc item="desc"}}
 	##**Bsave**## is used for saving arbitrary data from memory into a file, using a file format specific to FB, or saving images into a standard BMP image file, replacing an existing file if necessary.
-
+	
 	##**Bsave**## outputs a __total__ of ##//size//## bytes of arbitrary data located at ##//source//## to a specified file. If ##//source//## is null (##0##), then ##**Bsave**## outputs a __maximum__ of ##//size//## bytes from the current work page's pixel buffer, which is structured in the current screen mode's internal pixel format. (This data is not compatible with the image buffer format as it has no header.)  For 8-bit images, palette information is obtained from ##//pal//## if present and non-null, or if ##//pal//## omitted or null (##0##), from the current screen palette.
-
+	
 	A BMP image file can be created if ##//filename//## has a file extension of "##"".bmp""##" (case insensitive). ##//source//## is assumed to point to a valid image buffer whose entire pixel data will be stored in the BMP file. If ##//source//## is null (##0##), the contents of the current work page will be stored instead. For 8-bit images, palette information is obtained from ##//pal//## if non-null, or if null (##0##), from the current screen palette. The ##//size//## parameter is ignored when saving BMP files.
-
+	
 	The default bit depth for BMP files is 8-bit for 8-bit (palette) images, 24-bit for 16-bit images, and 32-bit for 32-bit images.  The ##//bitsperpixel//## parameter can be used to request 24-bit output for 8-bit images, or 24-bit output for 32-bit images.
+	
+	The error code returned by ##**Bsave**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Bsave**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
 **Runtime errors:**
 	##**Bsave**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
-
+	
 	//(##1##) Illegal function call//
 		- ##//size//## is less than zero (##0##), or ##//size//## is zero and ##//source//## is non-null, or a problem is detected with the image buffer.
 	//(##2##) File not found//

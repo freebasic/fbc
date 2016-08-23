@@ -10,27 +10,27 @@ Provides ""QuickBASIC"" or backward compatibility
 
 {{fbdoc item="desc"}}
 	The ##-lang## compiler option changes the way source code is interpreted, and is meant as a tool to users wanting traditional ""QuickBASIC""-like behavior, or behavior deprecated from previous versions of ""FreeBASIC"".
-
+	
 	The intrinsic macro ##[[KeyPgDdfblang|__FB_LANG__]]## is set to the string name of the dialect specified on the command line, or ##"fb"## by default.
-
+	
 	To learn more about the differences between each of these language dialects, see [[CompilerDialects|Compiler Dialects]].
-
+	
 	{{fbdoc item="subsect" value="fb"}}
 	
 		This is the default dialect, and allows compilation of source code adhering to the most recent version of the ""FreeBASIC"" language.
-
+	
 	{{fbdoc item="subsect" value="fblite"}}
 	
 		This dialect provides support for ""FreeBASIC"" syntax and functionality, but with a more traditional ""QuickBASIC"" programming style.
-
+	
 	{{fbdoc item="subsect" value="qb"}}
 	
 		This dialect provides the best support for older ""QuickBASIC"" code.
-
+	
 	{{fbdoc item="subsect" value="deprecated"}}
 	
 		This dialect is for backward compatibility with some previous versions of ""FreeBASIC"", however, this dialect may not exist in future versions.  Programmers should consider using the "fblite" dialect instead.
-
+	
 	Note: this command-line option can be overridden by any ##[[KeyPgPplang|#lang]]## statements used in the code.
 
 {{fbdoc item="see"}}

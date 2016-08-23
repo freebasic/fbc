@@ -11,7 +11,7 @@ Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which uses a bi
 {{fbdoc item="desc"}}
 	The ##**And**## method combines each source pixel with the corresponding destination pixel, using the bit-wise ##[[KeyPgOpAnd|And]]## function.  The result of this is output as the destination pixel.
 	This method works in all graphics modes.  There is no mask color, although color values with all bits set (##255## for 8-bit palette modes, or ##[[KeyPgRgba|RGBA]](255, 255, 255, 255)## in full-color modes) will have no effect, because of the behavior of ##[[KeyPgOpAnd|And]]##.
-
+	
 	In full-color modes, each component (red, green, blue and alpha) is kept in a discrete set of bits, so the operation can be made to only affect some of the channels, by making sure the all the values of the other channels are set to ##255##.
 
 {{fbdoc item="ex"}}

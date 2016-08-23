@@ -17,9 +17,9 @@ Returns a [[ProPgDates|Date Serial]] from a string
 
 {{fbdoc item="desc"}}
 	The date string must be in the format set in the regional settings of the Operating System. 
-
+	
 	##**""DateValue""**( Date() )## will work correctly only if the regional settings specify the same short date format QB used (##mm-dd-yyyy##).  Consider using the ##[[KeyPgNow|Now]]## function in the expression ##Fix(Now())## to obtain the current date as a date serial.
-
+	
 	The compiler will not recognize this function unless ##vbcompat.bi## or ##datetime.bi## is included.
 
 {{fbdoc item="ex"}}

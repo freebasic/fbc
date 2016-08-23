@@ -6,5 +6,7 @@ The short circuit operators perform a evaluation on the left hand operand, and d
 <<=={{fbdoc item="keyword" value="KeyPgOpAndAlso|Operator AndAlso (Short Circuit Conjunction)"}}==
 	Returns the result of a short circuit conjunction of two operands.
 <<>>=={{fbdoc item="keyword" value="KeyPgOpOrElse|Operator OrElse (Short Circuit Inclusive Disjunction)"}}==
-	Returns the result of a short circuit inclusive or of two operands.>>
+	Returns the result of a short circuit inclusive or of two operands.
+>>::c::
+
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

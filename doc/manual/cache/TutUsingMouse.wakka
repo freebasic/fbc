@@ -129,20 +129,20 @@ DO
    GETMOUSE CurrentX, CurrentY, , MouseButtons
    IF MouseButtons AND LEFTBUTTON THEN
 	  IF CurrentY <= 12 THEN
-	     IF CurrentX >= 0 AND CurrentX <=75 THEN
-	        LOCATE 12, 1
-	        PRINT "First Option Selected ";
-	     ELSEIF CurrentX >= 76 AND CurrentX <= 147 THEN
-	        LOCATE 12, 1
-	        PRINT "Second Option Selected";
-	     ELSEIF CurrentX >= 148 AND CurrentX <=212 THEN
-	        LOCATE 12, 1
-	        PRINT "Third Option Selected ";
-	     ELSEIF CurrentX >= 213 AND CurrentX <=268 THEN
-	        LOCATE 12, 1
-	        PRINT "Last Option Selected  ";
-	        EXIT DO
-	     ENd IF
+		 IF CurrentX >= 0 AND CurrentX <=75 THEN
+			LOCATE 12, 1
+			PRINT "First Option Selected ";
+		 ELSEIF CurrentX >= 76 AND CurrentX <= 147 THEN
+			LOCATE 12, 1
+			PRINT "Second Option Selected";
+		 ELSEIF CurrentX >= 148 AND CurrentX <=212 THEN
+			LOCATE 12, 1
+			PRINT "Third Option Selected ";
+		 ELSEIF CurrentX >= 213 AND CurrentX <=268 THEN
+			LOCATE 12, 1
+			PRINT "Last Option Selected  ";
+			EXIT DO
+		 ENd IF
 	  END IF
    END IF
 LOOP WHILE INKEY$ = ""

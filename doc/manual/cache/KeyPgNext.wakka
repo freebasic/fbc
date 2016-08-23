@@ -6,16 +6,16 @@ Control flow statement to mark the end of a ##[[KeyPgFornext|For...Next]]## loop
 ##
 {{fbdoc item="desc"}}
 	Indicates the end of a statement block associated with a matching ##[[KeyPgFornext|For]]## statement. 
-
+	
 	When ##**Next**## is used on its own without an //identifier_list//, it closes the most recent ##[[KeyPgFornext|For]]## statement block.
-
+	
 	##//identifier_list//## is optional and may be one or more variable names separated by commas.  This form of the ##**Next**## statement is retained for compatibility with QB.  ##//identifier_list//##, if given, must match the identifiers used in the associated ##[[KeyPgFornext|For]]## statements in reverse order, from inner to outer.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/next.bas"}}%%(freebasic)
 for i as integer = 1 to 10
 	for j as integer = 1 to 2
-	    ' ...
+		' ...
 	next
 next
 %%
@@ -23,7 +23,7 @@ next
 {{fbdoc item="filename" value="examples/manual/control/next2.bas"}}%%(freebasic)
 for i as integer = 1 to 10
 	for j as integer = 1 to 2
-	    ' ...
+		' ...
 	next j
 next i
 %%

@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="User Defined Types"}}----
-<<
-{{fbdoc item="section" value="Declaration"}}
+
+<<{{fbdoc item="section" value="Declaration"}}
 	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM...END ENUM"}}
 	- {{fbdoc item="keyword" value="KeyPgType|TYPE...END TYPE"}}
 	- {{fbdoc item="keyword" value="KeyPgUnion|UNION...END UNION"}}
@@ -15,9 +15,7 @@
 	- {{fbdoc item="keyword" value="KeyPgBase|BASE (member access)"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeAlias|Type Alias"}}
 	- {{fbdoc item="keyword" value="KeyPgWith|WITH"}}
-
-<<>>
-{{fbdoc item="section" value="Member Procedures"}}
+<<>>{{fbdoc item="section" value="Member Procedures"}}
 	- {{fbdoc item="keyword" value="KeyPgBaseInit|BASE (initialization)"}}
 	- {{fbdoc item="keyword" value="KeyPgConstructor|CONSTRUCTOR"}}
 	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}
@@ -35,7 +33,6 @@
 	- {{fbdoc item="keyword" value="KeyPgVisPublic|PUBLIC: (Access Control)"}}
 	- {{fbdoc item="keyword" value="KeyPgVisPrivate|PRIVATE: (Access Control)"}}
 	- {{fbdoc item="keyword" value="KeyPgVisProtected|PROTECTED: (Access Control)"}}
-
 >>
 
 ::c::

@@ -1424,7 +1424,7 @@ function cVarDecl _
 			dtype = suffix
 			subtype = NULL
 			lgt = symbCalcLen( dtype, subtype )
-			addsuffix = TRUE
+			addsuffix = (suffix <> FB_DATATYPE_INVALID)
 		else
 			'' the user did 'DIM AS _____', and then
 			'' specified a suffix on a symbol, e.g.
@@ -1540,6 +1540,7 @@ function cVarDecl _
 					dtype = symbGetDefType( id )
 					subtype = NULL
 					lgt = symbCalcLen( dtype, subtype )
+					addsuffix = TRUE
 				end if
 
 				'' Potential redim, not just a variable declaration?

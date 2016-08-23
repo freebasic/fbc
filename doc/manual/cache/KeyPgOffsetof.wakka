@@ -15,7 +15,7 @@ Returns the offset of a field within a type.
 
 {{fbdoc item="desc"}}
 	For a non-derived type, ##**Offsetof**## will return the location ##//fieldname//## as offset in bytes from the beginning of ##//typename//##.
-
+	
 	For a derived type, ##**Offsetof**## will return the location ##//fieldname//## as offset in bytes from the beginning of its highest base type.
 	Note: if a member of the base type is overridden by a new member, the offset of the old member cannot be accessed from the derived type.
 
@@ -42,7 +42,6 @@ OffsetOf y =  4
 OffsetOf b =  8
 OffsetOf i =  8
 %%
-
 
 {{fbdoc item="lang"}}
 	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Offsetof""**##.

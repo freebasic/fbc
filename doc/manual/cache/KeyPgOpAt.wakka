@@ -18,12 +18,12 @@ Returns the address of a string literal, variable, object or procedure
 
 {{fbdoc item="desc"}}
 	**##Operator @## (Address of)** returns the memory address of its operand.
-
+	
 	When the operand is of type ##[[KeyPgString|String]]##, the address of the internal string descriptor is returned. Use ##[[KeyPgOpStrptr|Operator Strptr]]## (String pointer) to retrieve the address of the string data.
-
+	
 	The operand cannot be an array, but may be an array element. For example, ##"@myarray(0)"## returns the address of ##"myarray(0)"##.
-
-	This operator can be overloaded for user-defined types.
+	
+	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/address-var.bas"}}%%(freebasic)
@@ -63,7 +63,7 @@ Declare Sub mySubroutine ()
 Dim say_Hello As Sub() 
 
 say_Hello = @mySubroutine   'We tell say_Hello to point to mySubroutine.
-	                        'The sub() datatype acts as a pointer here.
+							'The sub() datatype acts as a pointer here.
 
 say_Hello() 'Now we can run say_Hello just like mySubroutine.
 

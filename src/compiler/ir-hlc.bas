@@ -2503,6 +2503,8 @@ private function exprNewVREG _
 		'' field accesses:
 		''        *(vregtype*)&sym
 		''        *(vregtype*)((uint8*)&sym + offset)
+		'' addrof var:
+		''        (vregtype)((uint8*)&sym + offset)
 
 		have_offset = ((vreg->ofs <> 0) or (vreg->vidx <> NULL))
 
@@ -2511,7 +2513,8 @@ private function exprNewVREG _
 		'' - symbol is an array in the C code? (arrays, fixlen strings...)
 		''   cannot just do (elementtype)carray, it must always be
 		''   *(elementtype*)carray to access the memory in these cases.
-		dim as integer do_deref = have_offset or symbIsCArray( vreg->sym )
+		var is_c_array = symbIsCArray( vreg->sym )
+		var do_deref = have_offset or is_c_array
 
 		l = exprNewSYM( vreg->sym )
 
@@ -2545,8 +2548,8 @@ private function exprNewVREG _
 
 		'' Deref/addrof trick
 
-		'' Add '&' for things that aren't pointers already
-		if( typeIsPtr( symdtype ) = FALSE ) then
+		'' Add '&' if symbol isn't emitted as pointer already
+		if( is_c_array = FALSE ) then
 			l = exprNewUOP( AST_OP_ADDROF, l )
 		end if
 		if( have_offset ) then

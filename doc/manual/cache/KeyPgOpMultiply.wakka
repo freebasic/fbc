@@ -6,7 +6,7 @@ Multiplies two numeric expressions
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] ***** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] ***** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgLongint|longint]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgLongint|longint]] ) [[KeyPgAs|as]] [[KeyPgLongint|longint]]
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] ***** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]]
-
+	
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] ***** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgSingle|single]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgSingle|single]]
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] ***** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgDouble|double]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 ##
@@ -24,9 +24,9 @@ Multiplies two numeric expressions
 
 {{fbdoc item="desc"}}
 	**##Operator *## (Multiply)** returns the product of two multiplicands.
-
+	
 	Neither operand is modified in any way.
-
+	
 	This operator can be overloaded to accept user-defined types.
 
 {{fbdoc item="ex"}}

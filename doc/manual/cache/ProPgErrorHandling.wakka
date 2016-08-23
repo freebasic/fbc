@@ -1,15 +1,14 @@
 {{fbdoc item="title" value="Error Handling"}}----
 Handling runtime errors.
-
+	
 	""FreeBASIC"" can handle the errors in the following ways:
 	- By default the program does nothing with the errors - they are silently ignored and code continues. In this case code should process possible errors in the next line by using the ##[[KeyPgErr|Err]]## function.
 	- If compiled with //[[CompilerOpte|-e]]// or //[[CompilerOptex|-ex]]// options, ""FreeBASIC"" uses QB-like error handling.
 	- **Future** OOP versions of ""FreeBASIC"" may have a java-like TRY..CATCH...FINALLY exception handler implemented.
-
+	
 	**NOTE:** The following information is valid unless the error produces an OS General Protection Fault (for example if the program writes outside the process memory area). In these cases the OS will immediately stop the program and issue an error: nothing can avoid it from inside ""FreeBASIC"".
 
 {{fbdoc item="section" value="Default error handling"}}
-
 	The default ""FreeBASIC"" behavior is to set the ERR variable and continue. 
 
 {{fbdoc item="filename" value="examples/manual/proguide/errors/err.bas"}}%%(freebasic)
@@ -21,7 +20,7 @@ Sleep
 %%
 
 	(The example program supposes there is no ##xzxwz.zwz## file). The program does not stop; it sets the ERR variable and continues. The error can be processed in the next line.
-
+	
 	Some IO functions such as ##[[KeyPgOpen|Open]]## and ##[[KeyPgPutfileio|Put #]]##... can be used in function form, returning an error number or zero if successful.
 
 {{fbdoc item="filename" value="examples/manual/proguide/errors/result.bas"}}%%(freebasic)
@@ -30,9 +29,8 @@ Sleep
 %%
 
 {{fbdoc item="section" value="QuickBASIC-like error handling"}}
-
 	If the  //[[CompilerOpte|-e]]// or //[[CompilerOptex|-ex]]// switch is used at compile time, the program is expected to have a QB-like error handler enabled. If no handler processes the error, the program stops with an error.
-
+	
 	Notice: if QB-Like error handling is used, the programmer should be prepared to handle all error conditions.
 
 {{fbdoc item="filename" value="examples/manual/proguide/errors/on-error.bas"}}%%(freebasic)
@@ -55,7 +53,7 @@ End
 %%
 
 	##[[KeyPgOnerror|On Error]]## sets an error handling routine which the program will jump to when an error is found. ##[[KeyPgOnerror|On Error]] [[KeyPgGoto|Goto]] 0## disables the error handling.
-
+	
 	If an error handling routine is not set when an error occurs, the program will stop and send the console an error message.
 %%
 Aborting program due to runtime error 2 (file not found)
@@ -84,8 +82,8 @@ Sub foo
 	
   fail:
   errmsg = "Error " & Err & _
-	       " in function " & *Erfn & _
-	       " on line " & Erl
+		   " in function " & *Erfn & _
+		   " on line " & Erl
   Print errmsg
 	
 End Sub
@@ -95,9 +93,8 @@ End Sub
 	With //[[CompilerOptex|-ex]]// and //[[CompilerOptlang|-lang qb]]// dialect only, the error routine can end by using ##[[KeyPgResume|Resume]]## (retries the statement that caused the error) or ##[[KeyPgResumenext|Resume Next]]## (continues at the next instruction) .
 
 {{fbdoc item="section" value="Error codes"}}
-
 	See [[TblRuntimeErrors|Runtime Error Codes]] for a listing of runtime error numbers and their associated meaning.
-
+	
 	No user error code range is defined. If ##[[KeyPgError|Error]]## is used to set an error code it is wise to use high values to avoid collisions with the list of built-in error codes. (This built-in list may be expanded later.)
 
 {{fbdoc item="see"}}

@@ -3,20 +3,20 @@ External tools the FreeBASIC compiler (fbc) may invoke during the compilation pr
 
 {{fbdoc item="desc"}}
 	FreeBASIC uses several tools for compiling source code in addition to the ##fbc## compiler.  The exact tools used by ##fbc## and how they are invoked depends on how ##fbc## was configured, the host platform (where fbc is running), the target platform (where the produced executable will be run), and other options (like environment variables and command line options).
-
+	
 	FreeBASIC (##fbc##) may have been configured in one of two ways: either as standalone or prefixed.  The standalone version searches directories relative to where the executable is located.  The prefixed version has a hardcoded path configured in to the compiler indicating where it expects to find additional tools and libraries.  For more information on configuring FreeBASIC, see the ##INSTALL## text file located in the src/compiler directory of the FreeBASIC sources.
-
+	
 	You can check if your installed version of ##fbc## is "standalone" or "prefixed" by invoking ##fbc## with the //[[CompilerOptversion|-version]]// command line option.
 
 {{fbdoc item="section" value="Standalone"}}
 	If ##fbc## was configured as "standalone", it will search for files relative to where the ##fbc## executable is located.  ##fbc## is at the "top" of the directory tree and searches sub-directories below it.  The "top" directory (which defaults to the location where ##fbc## is located) can be overridden with the //[[CompilerOptprefix|-prefix]]// command line option.  "topdir" shown in the directories below represents the directory where the ##fbc## executable is located, or the directory specified with the //[[CompilerOptprefix|-prefix]]// command line option (if it was given). "<target>" refers to the target platform having the same name as specified by the //[[CompilerOpttarget|-target]]// option.
-
+	
 	If not cross compiling, ##fbc## looks in these locations: 
 		- ##/topdir/inc##
 		- ##/topdir/lib/<target>##
 		- ##/topdir/bin/<target>##
 		- gcc is queried for missing libraries (currently on linux/freebsd only) 
-
+	
 	If cross compiling, ##fbc## looks in the these locations: 
 		- ##/topdir/inc##
 		- ##/topdir/lib/<target>##
@@ -25,13 +25,13 @@ External tools the FreeBASIC compiler (fbc) may invoke during the compilation pr
 
 {{fbdoc item="section" value="Prefixed"}}
 	If ##fbc## was configured as "prefixed", it will search for files relative to the configured prefix (hardcoded in the ##fbc## executable).  "prefix" shown in the directories below represents the configured prefix, or the directory specified with the //[[CompilerOptprefix|-prefix]]// command line option (if it was given).  "##<target>##" refers to the target platform having the same name as specified by the //[[CompilerOpttarget|-target]]// option.
-
+	
 	If not cross compiling, ##fbc## looks in these locations: 
 		- ##/prefix/include/freebasic##
 		- ##/prefix/lib/freebasic/<target>##
 		- ##/prefix/bin/freebasic/<target>##
 		- gcc is queried for missing libraries (currently on linux/freebsd only) 
-
+	
 	If cross compiling, ##fbc## looks in the these locations: 
 		- ##/prefix/include/freebasic##
 		- ##/prefix/lib/freebasic/<target>##
@@ -60,12 +60,12 @@ External tools the FreeBASIC compiler (fbc) may invoke during the compilation pr
 		- ##dlltool##
 		- ##pexports##
 		- ##cxbe##
-
+	
 	##fbc## will search for these tools in the following manner:
 		- If an environment variable (having same name as the tool without any extension, all in uppercase) has been set, it explicitly indicates the path and name of the executable to be invoked.
 		- If the file (or a symlink) exists in ##prefix/bin/freebasic/<target>##, or ##./bin/<target>## for the standalone version, then use it.
 		- On Linux, if the tool could not be found in ##prefix/bin/freebasic/<target>##, or ##./bin/<target>## for the standalone version, ##fbc## tries to invoke it anyway as it may be installed on the system and located on the PATH.
-
+	
 	"##<target>##" refers to the target platform having the same name as specified by the //[[CompilerOpttarget|-target]]// option.
 
 {{fbdoc item="see"}}

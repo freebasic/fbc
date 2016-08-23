@@ -20,9 +20,9 @@ Overwrites a substring of a string with another
 
 {{fbdoc item="desc"}}
 	Copies a maximum of ##//length//## characters of ##//expression//## into ##//text//##, starting at ##//start//##.
-
+	
 	If ##//length//## is not specified, all of ##//expression//## is copied. The size of the string ##//text//## is unchanged; if ##//expression//## is too big, as much of it is copied up to the end of ##//text//##.
-
+	
 	##**Mid**## can also be used as a function to return part of another string.  See [[KeyPgMidfunction|Mid (Function)]].
 
 {{fbdoc item="ex"}}

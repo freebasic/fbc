@@ -6,7 +6,7 @@ Intrinsic define (macro value) set by the compiler
 ##
 {{fbdoc item="desc"}}
 	Substituted with a pointer to a list of pointers to the zero terminated command line arguments passed in on the command line.
-
+	
 	**""__FB_ARGV__""** is the name of a parameter passed to the program's implicit main function, and therefore is only defined in the module level code of the main module for an application.
 
 {{fbdoc item="ex"}}
@@ -27,7 +27,7 @@ private function main _
 
   dim i as integer
   for i = 0 to argc - 1
-	    print "arg "; i; " = '"; *argv[i]; "'"
+		print "arg "; i; " = '"; *argv[i]; "'"
   next i
 
   return 0

@@ -74,7 +74,6 @@ Statements and Procedures that work with strings.
 		Returns the [[KeyPgUinteger|uInteger]] conversion of a numeric string.
 	=={{fbdoc item="keyword" value="KeyPgValulng|VALULNG"}}==
 		Returns the [[KeyPgUlong|ULong]] conversion of a numeric string.
-
 <<>>{{anchor name="NUMSERIAL"}}{{fbdoc item="section" value="Numeric Serialization"}}
 	=={{fbdoc item="keyword" value="KeyPgMkd|MKD"}}==
 		Returns an eight character [[KeyPgString|String]] representation of a [[KeyPgDouble|Double]].
@@ -128,6 +127,5 @@ Statements and Procedures that work with strings.
 		Left-justifies a string.
 	=={{fbdoc item="keyword" value="KeyPgRset|RSET"}}==
 		Right-justifies a string.
-
 >>::c::
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

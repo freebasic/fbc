@@ -6,15 +6,15 @@ Declares a variable whose type is implied from the initializer expression
 ##
 {{fbdoc item="desc"}}
 	##**Var**## declares a variable whose type is implied from the initializer expression. It is illegal to specify an explicit type in a ##**Var**## declaration. The initializer expression can be either a constant or any variable of any type.
-
+	
 	Note: ##[[KeyPgWstring|Wstring]]## is not supported with ##**Var**##, due to the fact that there is no var-len ##[[KeyPgWstring|Wstring]]## type. This isn't likely to change, due to the complexities involved with handling Unicode.
-
+	
 	Since the type of the variable is inferred from what you assign into it, it's helpful to know how literals work. Any literal number without a decimal point defaults to ##[[KeyPgInteger|Integer]]##. A literal number //with// a decimal point defaults to ##[[KeyPgDouble|Double]]##.  See [[ProPgLiterals]] for further information.
-
+	
 	All ##[[KeyPgZstring|Zstring]]## expressions, including string literals and dereferenced ##[[KeyPgZstring|Zstring]]## ##[[KeyPgPtr|Ptr]]##s, will be given the ##[[KeyPgString|String]]## variable type.
-
+	
 	Explicit suffixes may be used on literal variables, to change/clarify their type. See [[ProPgLiterals|Literals]] and [[TblVarTypes|Variable Types]] for some more information about suffixes that can be used on literals.
-
+	
 	Note: Suffixes must appear on the initializer, not on the variable. Trying to use ##**Var**## with a variable that has a suffix will throw a compile error.
 
 {{fbdoc item="ex"}}
@@ -72,6 +72,7 @@ sleep
 	- ##[[KeyPgPreserve|Preserve]]##
 	- ##[[KeyPgShared|Shared]]##
 	- ##[[KeyPgStatic|Static]]##
+	- ##[[KeyPgByrefVariables|Byref (variables)]]##
 	- ##[[KeyPgUbound|UBound]]##
 
 {{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}
