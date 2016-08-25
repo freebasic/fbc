@@ -616,7 +616,7 @@ $(LIBFBGFXMTPIC_C): $(libfbgfxmtpicobjdir)/%.o: %.c $(LIBFBGFX_H) | $(libfbgfxmt
 .PHONY: install install-compiler install-includes install-rtlib install-gfxlib2
 install:        install-compiler install-includes install-rtlib install-gfxlib2
 
-install-compiler:
+install-compiler: compiler
 	mkdir -p $(DESTDIR)$(prefixbindir)
 	$(INSTALL_PROGRAM) $(FBC_EXE) $(DESTDIR)$(PREFIX_FBC_EXE)
 
@@ -624,11 +624,11 @@ install-includes:
 	mkdir -p $(DESTDIR)$(prefixincdir)
 	cp -r $(rootdir)inc/* $(DESTDIR)$(prefixincdir)
 
-install-rtlib:
+install-rtlib: rtlib
 	mkdir -p $(DESTDIR)$(prefixlibdir)
 	$(INSTALL_FILE) $(RTL_LIBS) $(DESTDIR)$(prefixlibdir)
 
-install-gfxlib2:
+install-gfxlib2: gfxlib2
 	mkdir -p $(DESTDIR)$(prefixlibdir)
 	$(INSTALL_FILE) $(GFX_LIBS) $(DESTDIR)$(prefixlibdir)
 
