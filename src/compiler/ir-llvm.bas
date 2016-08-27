@@ -234,7 +234,14 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 private sub _init( )
 	irhlInit( )
 
-	irSetOption( IR_OPT_CPUSELFBOPS or IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
+	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
+
+	'' IR_OPT_CPUSELFBOPS disabled, to prevent AST from producing self-ops.
+	'' LLVM does not have self ops, and implementing them manually here would be
+	'' unnecessarily complex, especially in cases like:
+	''    a = noconvcast(a) op b   (self-bop with type-casted destination vreg)
+	'' because _setVregDataType() generates code to represent the cast, and the
+	'' resulting REG can't be used as store destination.
 
 	if( fbIs64bit( ) ) then
 		dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)

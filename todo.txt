@@ -39,6 +39,9 @@ o 64bit
   - 64bit bitfields aren't working properly - see tests/structs/bitfield-types.bas
 
 o LLVM backend
+  - _setVregDataType() currently generates code (bitcasts), unlike other backends.
+    It works for noconv casts on rvalues, but breaks for noconv casts on lvalues.
+    Maybe it should use the *(newtype*)&x trick to support it.
   - astTypeIniAddPad() must be ignored, but in exchange all fields must be
     initialized explicitly by specifying the data type
     (can use "zeroinitializer" as the value at least)
