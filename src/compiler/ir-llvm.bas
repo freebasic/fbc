@@ -999,8 +999,6 @@ end sub
 
 private sub _procAllocArg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr )
 	dim as string ln
-	dim as integer parammode = any
-	dim as FBSYMBOL ptr bydescrealsubtype = any
 
 	hAstCommand( "paramvar " + hSymName( sym ) )
 
@@ -1014,20 +1012,9 @@ private sub _procAllocArg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
 	'' they must use different names to avoid collision.
 	''
 
-	bydescrealsubtype = NULL
-	if( symbIsParamByref( sym ) ) then
-		parammode = FB_PARAMMODE_BYREF
-	elseif( symbIsParamBydesc( sym ) ) then
-		parammode = FB_PARAMMODE_BYDESC
-		bydescrealsubtype = sym->var_.array.desctype
-	else
-		assert( symbIsParamByval( sym ) )
-		parammode = FB_PARAMMODE_BYVAL
-	end if
-
-	var dtype = symbGetType( sym )
-	var subtype = sym->subtype
-	symbGetRealParamDtype( parammode, bydescrealsubtype, dtype, subtype )
+	dim dtype as integer
+	dim subtype as FBSYMBOL ptr
+	symbGetRealType( sym, dtype, subtype )
 
 	'' %myparam = alloca type
 	ln = *symbGetMangledName( sym ) + " = alloca "
@@ -1145,8 +1132,10 @@ private sub hPrepareAddress( byval v as IRVREG ptr )
 		v->vidx = NULL
 
 		if( sym ) then
-			v->dtype = typeAddrOf( sym->typ )
-			v->subtype = sym->subtype
+			symbGetRealType( sym, v->dtype, v->subtype )
+
+			'' vreg is the address of the memory allocated for the sym
+			v->dtype = typeAddrOf( v->dtype )
 
 			'' May need to cast from symbol's type to vreg's type (e.g. for field accesses)
 			_setVregDataType( v, addrdtype, addrsubtype )

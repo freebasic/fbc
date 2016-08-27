@@ -1518,6 +1518,7 @@ declare function symbAllocWstrConst _
 	) as FBSYMBOL ptr
 
 declare function symbGetRealSize( byval sym as FBSYMBOL ptr ) as longint
+declare sub symbGetRealType( byval sym as FBSYMBOL ptr, byref dtype as integer, byref subtype as FBSYMBOL ptr )
 
 declare function symbCalcArrayElements _
 	( _

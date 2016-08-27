@@ -29,7 +29,7 @@ Version 1.06.0
 - exec() on Linux & co was broken with regards to spaces in the executable path. Spaces were converted to "\ " and then to "/ ", resulting in a different path than given.
 - ASM backend: Fixed a compiler crash or potentially bad code generation in complex floating point expressions (which had enough operands to use up the x86 FPU stack, and trigger spilling of st() registers to stack)
 - C backend: Pointer arithmetic on the address of variables with any pointer type gave wrong results due to bad code generation in -gen gcc for this case.
-- LLVM backend: Self-BOP emitting
+- LLVM backend: Self-BOP emitting, byref var/param accesses
 
 
 Version 1.05.0
