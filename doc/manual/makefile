@@ -88,7 +88,7 @@ $(WAKKAZIP):
 refresh:
 	rm -rf cache
 	mkdir cache
-	cd ../fbchkdoc && ./getindex -web && ./getpage -web @PageIndex.txt
+	cd ../fbchkdoc && ./getindex -web && ./getpage -auto -web @PageIndex.txt
 
 clean:
 	-rm -f html/*.html

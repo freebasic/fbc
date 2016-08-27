@@ -784,10 +784,9 @@ private sub hEmitVarDecl _
 		ln += "static "
 	end if
 
-	var dtype = symbGetType( sym )
-	if( symbIsRef( sym ) or symbIsImport( sym ) ) then
-		dtype = typeAddrOf( dtype )
-	end if
+	dim dtype as integer
+	dim subtype as FBSYMBOL ptr
+	symbGetRealType( sym, dtype, subtype )
 
 	ln += hEmitType( dtype, sym->subtype )
 	ln += " " + *symbGetMangledName( sym )
@@ -1715,12 +1714,6 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 		n = exprNew( EXPRCLASS_SYM, typeAddrOf( FB_DATATYPE_FUNCTION ), sym )
 		n->sym = sym
 
-	'' Bydesc dynamic array param? Use descriptor type
-	elseif( symbIsParamBydesc( sym ) ) then
-		assert( sym->var_.array.desctype )
-		n = exprNew( EXPRCLASS_SYM, typeAddrOf( FB_DATATYPE_STRUCT ), sym->var_.array.desctype )
-		n->sym = sym
-
 	'' Array? Add CAST to make it a pointer to the first element,
 	'' instead of a pointer to the array.
 	elseif( symbIsCArray( sym ) ) then
@@ -1736,14 +1729,9 @@ private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 	        ((sym->stats and FB_SYMBSTATS_ARGV) <> 0) ) then
 		n = exprNew( EXPRCLASS_SYM, typeMultAddrOf( FB_DATATYPE_BYTE, 2 ), NULL )
 		n->sym = sym
-	else
-		dtype = symbGetType( sym )
-		subtype = symbGetSubtype( sym )
 
-		'' Emitted as pointer?
-		if( symbIsRef( sym ) or symbIsParamByRef( sym ) or symbIsImport( sym ) ) then
-			dtype = typeAddrOf( dtype )
-		end if
+	else
+		symbGetRealType( sym, dtype, subtype )
 
 		n = exprNew( EXPRCLASS_SYM, dtype, subtype )
 		n->sym = sym

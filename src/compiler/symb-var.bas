@@ -712,6 +712,28 @@ function symbGetRealSize( byval sym as FBSYMBOL ptr ) as longint
 	function = size
 end function
 
+sub symbGetRealType( byval sym as FBSYMBOL ptr, byref dtype as integer, byref subtype as FBSYMBOL ptr )
+	assert( symbIsVar( sym ) or symbIsField( sym ) )
+	dtype = symbGetType( sym )
+	subtype = sym->subtype
+	if( symbIsParam( sym ) ) then
+		dim parammode as integer
+		dim bydescrealsubtype as FBSYMBOL ptr
+		if( symbIsParamByref( sym ) ) then
+			parammode = FB_PARAMMODE_BYREF
+		elseif( symbIsParamBydesc( sym ) ) then
+			parammode = FB_PARAMMODE_BYDESC
+			bydescrealsubtype = sym->var_.array.desctype
+		else
+			assert( symbIsParamByval( sym ) )
+			parammode = FB_PARAMMODE_BYVAL
+		end if
+		symbGetRealParamDtype( parammode, bydescrealsubtype, dtype, subtype )
+	elseif( symbIsRef( sym ) or symbIsImport( sym ) ) then
+		dtype = typeAddrOf( dtype )
+	end if
+end sub
+
 '' Calculate a static array's total number of elements, all dimensions together.
 '' <first> may be specified to calculate only the elements for <first> and the
 '' following dimensions.

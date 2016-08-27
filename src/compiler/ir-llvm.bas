@@ -234,7 +234,14 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 private sub _init( )
 	irhlInit( )
 
-	irSetOption( IR_OPT_CPUSELFBOPS or IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
+	irSetOption( IR_OPT_FPUIMMEDIATES or IR_OPT_MISSINGOPS )
+
+	'' IR_OPT_CPUSELFBOPS disabled, to prevent AST from producing self-ops.
+	'' LLVM does not have self ops, and implementing them manually here would be
+	'' unnecessarily complex, especially in cases like:
+	''    a = noconvcast(a) op b   (self-bop with type-casted destination vreg)
+	'' because _setVregDataType() generates code to represent the cast, and the
+	'' resulting REG can't be used as store destination.
 
 	if( fbIs64bit( ) ) then
 		dtypeName(FB_DATATYPE_INTEGER) = dtypeName(FB_DATATYPE_LONGINT)
@@ -992,8 +999,6 @@ end sub
 
 private sub _procAllocArg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr )
 	dim as string ln
-	dim as integer parammode = any
-	dim as FBSYMBOL ptr bydescrealsubtype = any
 
 	hAstCommand( "paramvar " + hSymName( sym ) )
 
@@ -1007,20 +1012,9 @@ private sub _procAllocArg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
 	'' they must use different names to avoid collision.
 	''
 
-	bydescrealsubtype = NULL
-	if( symbIsParamByref( sym ) ) then
-		parammode = FB_PARAMMODE_BYREF
-	elseif( symbIsParamBydesc( sym ) ) then
-		parammode = FB_PARAMMODE_BYDESC
-		bydescrealsubtype = sym->var_.array.desctype
-	else
-		assert( symbIsParamByval( sym ) )
-		parammode = FB_PARAMMODE_BYVAL
-	end if
-
-	var dtype = symbGetType( sym )
-	var subtype = sym->subtype
-	symbGetRealParamDtype( parammode, bydescrealsubtype, dtype, subtype )
+	dim dtype as integer
+	dim subtype as FBSYMBOL ptr
+	symbGetRealType( sym, dtype, subtype )
 
 	'' %myparam = alloca type
 	ln = *symbGetMangledName( sym ) + " = alloca "
@@ -1138,8 +1132,10 @@ private sub hPrepareAddress( byval v as IRVREG ptr )
 		v->vidx = NULL
 
 		if( sym ) then
-			v->dtype = typeAddrOf( sym->typ )
-			v->subtype = sym->subtype
+			symbGetRealType( sym, v->dtype, v->subtype )
+
+			'' vreg is the address of the memory allocated for the sym
+			v->dtype = typeAddrOf( v->dtype )
 
 			'' May need to cast from symbol's type to vreg's type (e.g. for field accesses)
 			_setVregDataType( v, addrdtype, addrsubtype )

@@ -48,6 +48,7 @@ dim as integer i = 1, webPageCount = 0, nfailedpages = 0
 redim webPageList(1 to 1) as string
 redim failedpages(1 to 1) as string
 dim as string wiki_url, cache_dir, cmt
+var allow_retry = true
 
 if( command(i) = "" ) then
 	print "getpage {server} [pages] [@pagelist]"
@@ -62,6 +63,7 @@ if( command(i) = "" ) then
 	print "options:"
 	print "   pages      list of wiki pages on the command line"
 	print "   @pagelist	 text file with a list of pages, one per line"
+	print "   -auto      don't ask for user input, don't retry failed downloads"
 	print
 	end 1
 end if
@@ -104,6 +106,8 @@ while command(i) > ""
 			i += 1
 			wiki_url = command(i)
 			cache_dir = def_cache_dir
+		case "-auto"
+			allow_retry = false
 		case else
 			print "Unrecognized option '" + command(i) + "'"
 			end 1
@@ -201,7 +205,7 @@ do
 	LocalCache_Destroy()
 
 	'' Check for failed pages
-	if( nfailedpages > 0 ) then
+	if( (nfailedpages > 0) and allow_retry ) then
 		print
 		dim k as string
 		do
