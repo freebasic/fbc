@@ -579,6 +579,7 @@ Version 1.06.0
 - warning '-w constness' to enable 'CONST qualifier discarded' warning on command line
 - #pragma constness to enable/disable 'CONST qualifier discarded' warning in source code
 - Add "-arch armv5te" cpu type option, and several arch aliases: x86 (for 686), armeabi and armv5 (for armv5te), armv7 and armv7a (for armv7-a)
+- Android support. Commandline executables and shared/static libraries only; gfxlib (graphical/audio commands) and also console commands like "color" are not supported, nor does the android libc support locales for string<->wstring conversion. THREADCALL is also not enabled. The default target abi is armeabi; use arch=x86, arch=armv7a, or arch=aarch64 to target a different abi.
 
 [fixed]
 - win/d3dx9.bi no longer has a hard-coded #inclib "d3dx9d". d3dx9d.dll is apparently not a generally valid choice. In practice programs have to be linked against d3dx9_33.dll or d3dx9_39.dll, etc.
@@ -591,7 +592,7 @@ Version 1.06.0
 - TRE binding: Didn't compile with TRE_USE_SYSTEM_REGEX_H
 - LLVM backend: Emit the new (LLVM 3.7+) load-syntax
 - When compiling .rc files with windres instead of GoRC (happens with non-standalone fbc), the current directory is now an include search directory, to match the GoRC behaviour.
-- #659: Keep the stack 16-byte aligned on linux-x86 and darwin-x86 to comply with ABI; fixes crashes when external libraries use SSE
+- #659: Keep the stack 16-byte aligned on linux-x86, android-x86 and darwin-x86 to comply with ABI; fixes crashes when external libraries use SSE
 - On Windows, FB console input treated multiple repeated keypresses that were merged into one event by the system as a single keypress
 - Accesses to 64bit bitfields could be miscompiled or trigger a compiler crash
 - #732: Virtual destructors couldn't be called on const objects

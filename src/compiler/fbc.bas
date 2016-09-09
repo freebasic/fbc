@@ -253,8 +253,9 @@ private sub hSetOutName( )
 		case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
 			fbc.outname += ".dll"
 		case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
-			FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
-			FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
+		     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
+		     FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY, _
+		     FB_COMPTARGET_SOLARIS, FB_COMPTARGET_ANDROID
 			fbc.outname = hStripFilename( fbc.outname ) + _
 				"lib" + hStripPath( fbc.outname ) + ".so"
 		case FB_COMPTARGET_DOS
@@ -400,6 +401,15 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 #endif
 
 	function = found
+end function
+
+private function fbcFindSysroot( ) as string
+	'' Query the target-specific gcc
+	'' (TODO: need to tell which arch and ABI we are targetting, especially on android)
+	dim as string path
+	fbcFindBin( FBCTOOL_GCC, path )
+	path += " --print-sysroot"
+	return hGet1stOutputLineFromCommand( path )
 end function
 
 '' Retrieve the path to a library file, or an empty string if it can't be found.
@@ -731,6 +741,19 @@ private function hLinkFiles( ) as integer
 		case FB_CPUFAMILY_ARM
 			ldcline += "-m armelf_linux_eabi "
 		end select
+	case FB_COMPTARGET_ANDROID
+		ldcline += "-sysroot=" + fbcFindSysroot( ) + " "
+		'' androideabi-v7a ABI requires extra linker options; apparently
+		'' others don't. See https://developer.android.com/ndk/guides/standalone_toolchain.html
+		if( fbGetOption( FB_COMPOPT_CPUTYPE ) = FB_CPUTYPE_ARMV7A ) then
+			'FIXME: passing -march to linker doesn't seem right
+			ldcline += "-march=armv7-a --fix-cortex-a8 "
+		end if
+		'' Optional?
+		' select case( fbGetCpuFamily( ) )
+		' case FB_CPUFAMILY_X86
+		' 	ldcline += "-m elf_i386 "
+		' end select
 	case FB_COMPTARGET_DARWIN
 		select case( fbGetCpuFamily( ) )
 		case FB_CPUFAMILY_X86
@@ -839,8 +862,9 @@ private function hLinkFiles( ) as integer
 		end if
 
 	case FB_COMPTARGET_LINUX, FB_COMPTARGET_DARWIN, _
-		FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
-		FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
+	     FB_COMPTARGET_FREEBSD, FB_COMPTARGET_OPENBSD, _
+	     FB_COMPTARGET_NETBSD, FB_COMPTARGET_DRAGONFLY, _
+	     FB_COMPTARGET_SOLARIS, FB_COMPTARGET_ANDROID
 
 		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB ) then
 			dllname = hStripPath( hStripExt( fbc.outname ) )
@@ -873,6 +897,8 @@ private function hLinkFiles( ) as integer
 				ldcline += " -dynamic-linker /usr/libexec/ld.elf_so"
 			case FB_COMPTARGET_OPENBSD
 				ldcline += " -dynamic-linker /usr/libexec/ld.so"
+			case FB_COMPTARGET_ANDROID
+				ldcline += " -dynamic-linker /system/bin/linker"
 			end select
 		end if
 
@@ -1075,6 +1101,18 @@ private function hLinkFiles( ) as integer
 			end if
 		end if
 
+	case FB_COMPTARGET_ANDROID
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
+			if( fbc.staticlink ) then
+				ldcline += hFindLib( "crtbegin_static.o" )
+			else
+				ldcline += hFindLib( "crtbegin_dynamic.o" )
+			end if
+		else
+			'' FB_OUTTYPE_DYNAMICLIB
+			ldcline += hFindLib( "crtbegin_so.o" )
+		end if
+
 	case FB_COMPTARGET_XBOX
 		'' link with crt0.o (C runtime init)
 		ldcline += hFindLib( "crt0.o" )
@@ -1104,7 +1142,7 @@ private function hLinkFiles( ) as integer
 
 	'' Begin of lib group
 	'' All libraries are passed inside -( -) so we don't need to worry as
-	'' much about their order and/or listing them repeatedly.
+	'' much about their order and/or listing them repeatedly. (Not supported by Darwin ld)
 	if ( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN ) then
 		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_JS ) then
 			ldcline += " ""-("""
@@ -1157,6 +1195,14 @@ private function hLinkFiles( ) as integer
 		end if
 		if (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_OPENBSD) then
 			ldcline += hFindLib( "crtn.o" )
+		end if
+
+	case FB_COMPTARGET_ANDROID
+		if( fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_EXECUTABLE) then
+			ldcline += hFindLib( "crtend_android.o" )
+		else
+			'' FB_OUTTYPE_DYNAMICLIB
+			ldcline += hFindLib( "crtend_so.o" )
 		end if
 
 	case FB_COMPTARGET_WIN32
@@ -1485,6 +1531,7 @@ end type
 '' OS name strings recognized when parsing GNU triplets (-target option)
 dim shared as FBGNUOSINFO gnuosmap(0 to ...) => _
 { _
+	(@"android"    , FB_COMPTARGET_ANDROID  ), _
 	(@"linux"      , FB_COMPTARGET_LINUX    ), _
 	(@"mingw"      , FB_COMPTARGET_WIN32    ), _
 	(@"djgpp"      , FB_COMPTARGET_DOS      ), _
@@ -1537,6 +1584,7 @@ private sub hParseGnuTriplet _
 	'' Search for OS, it be anywere in the triplet:
 	''    mingw32              -> mingw
 	''    arm-linux-gnueabihf  -> linux
+	''    arm-linux-androideabi-> android
 	''    i686-w64-mingw32     -> mingw
 	''    i686-pc-linux-gnu    -> linux
 	''    i386-pc-msdosdjgpp   -> dos386
@@ -1550,7 +1598,7 @@ private sub hParseGnuTriplet _
 	next
 
 	'' If the triplet has at least two components (<arch>-<...>),
-	'' extract the first (the architecture and try to identify it.
+	'' extract the first (the architecture) and try to identify it.
 	if( separator > 0 ) then
 		var arch = left( arg, separator - 1 )
 		for i as integer = 0 to ubound( gnuarchmap )
@@ -1592,12 +1640,15 @@ dim shared as FBOSARCHINFO fbosarchmap(0 to ...) => _
 	_ '' OS given without arch, using the default arch, except for dos/xbox
 	_ ''  which only work with x86, so we can always default to x86 for them.
 	_ '' (these are supported for backwards compatibility with x86-only FB)
+	_ '' When targetting android assume cross-compiling. armv5te is the most
+	_ '' portable arch, supported even on x86 devices via emulation.
 	(@"dos"    , FB_COMPTARGET_DOS    , FB_DEFAULT_CPUTYPE_X86   ), _
 	(@"xbox"   , FB_COMPTARGET_XBOX   , FB_DEFAULT_CPUTYPE_X86   ), _
 	(@"cygwin" , FB_COMPTARGET_CYGWIN , FB_DEFAULT_CPUTYPE       ), _
 	(@"darwin" , FB_COMPTARGET_DARWIN , FB_DEFAULT_CPUTYPE       ), _
 	(@"freebsd", FB_COMPTARGET_FREEBSD, FB_DEFAULT_CPUTYPE       ), _
 	(@"linux"  , FB_COMPTARGET_LINUX  , FB_DEFAULT_CPUTYPE       ), _
+	(@"android", FB_COMPTARGET_ANDROID, FB_CPUTYPE_ARMV5TE       ), _
 	(@"netbsd" , FB_COMPTARGET_NETBSD , FB_DEFAULT_CPUTYPE       ), _
 	(@"openbsd", FB_COMPTARGET_OPENBSD, FB_DEFAULT_CPUTYPE       )  _
 }
@@ -1612,12 +1663,14 @@ dim shared as FBOSARCHINFO fbosarchmap(0 to ...) => _
 ''    -target linux           ->    Linux + default arch
 ''    -target linux-x86       ->    Linux + default x86 arch
 ''    -target linux-x86_64    ->    Linux + x86_64
+''    -target android         ->    Android + ARMv7a (the default ARM)
 ''    ...
 ''
 '' The normal (non-standalone) build also accepts GNU triplets:
 '' (the rough format is <arch>-<vendor>-<os> but it can vary a lot)
 ''    -target i686-pc-linux-gnu      ->    Linux + i686
 ''    -target arm-linux-gnueabihf    ->    Linux + default ARM arch
+''    -target arm-linux-androideabi  ->    Android + ARMv5te/ARM eabi
 ''    -target x86_64-w64-mingw32     ->    Windows + x86_64
 ''    ...
 ''
@@ -2715,13 +2768,18 @@ private sub parseArgsFromFile _
 	close #f
 end sub
 
+'' Whether a target needs shared libraries to be built with PIC.
+'' (Note: Android 5.0+ also need executables to be built with PIC (gcc -pie argument),
+'' but Android 4.0- don't support PIE executables. So it's up to the user to decide
+'' and pass argument to gcc.)
 private function hTargetNeedsPIC( ) as integer
 	function = FALSE
 	if( fbGetCpuFamily( ) <> FB_CPUFAMILY_X86 ) then
 		select case as const( fbGetOption( FB_COMPOPT_TARGET ) )
 		case FB_COMPTARGET_LINUX, FB_COMPTARGET_FREEBSD, _
-			FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
-			FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS
+		     FB_COMPTARGET_OPENBSD, FB_COMPTARGET_NETBSD, _
+		     FB_COMPTARGET_DRAGONFLY, FB_COMPTARGET_SOLARIS, _
+		     FB_COMPTARGET_ANDROID
 			function = TRUE
 		end select
 	end if
@@ -2949,6 +3007,13 @@ private sub fbcSetupCompilerPaths( )
 	''     "prefix/bin/" + "ld"
 	''     "prefix/bin/i686-w64-mingw32-" + "ld"
 	''
+	''
+	'' NOTE: Android armeabi and armeabi-v7a ABIs have the same FB target id,
+	'' arm-android.  We could have a separate target id called armv7a-android,
+	'' but the improvements to performance of libfb would be pretty minor
+	'' anyway (there is very little use of floating point), so it's simpler to
+	'' just use libraries built for armeabi for both abis. libfbgfx and other
+	'' libraries would be a different matter, so in future maybe change this.
 
 	dim as string targetid = fbGetTargetId( )
 
@@ -3432,6 +3497,13 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 					ln += "-march=" + *fbGetGccArch( ) + " "
 				end if
 			end if
+		end if
+
+		if( (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_ANDROID) and _
+		    (fbGetOption( FB_COMPOPT_CPUTYPE ) = FB_CPUTYPE_ARMV7A) ) then
+			'' The following options enforce the androideabi-v7a ABI
+			'' From https://developer.android.com/ndk/guides/standalone_toolchain.html
+			ln += "-mfloat-abi=softfp -mfpu=vfpv3-d16 "
 		end if
 
 		if( fbGetOption( FB_COMPOPT_PIC ) ) then
@@ -3935,6 +4007,9 @@ private sub hAddDefaultLibs( )
 				fbcAddDefLib( "Xrender" )
 			#endif
 
+		case FB_COMPTARGET_ANDROID
+			errReportEx( FB_ERRMSG_GFXLIBNOTSUPPORTEDFORTARGET, "", -1 )
+
 		end select
 	end if
 
@@ -4025,6 +4100,12 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "c" )
 		fbcAddDefLib( "m" )
 		fbcAddDefLib( "ncurses" )
+
+	case FB_COMPTARGET_ANDROID
+		fbcAddDefLib( "m" )
+		fbcAddDefLib( "dl" )
+		fbcAddDefLib( "gcc" )
+		fbcAddDefLib( "c" )
 
 	case FB_COMPTARGET_WIN32
 		fbcAddDefLib( "gcc" )
