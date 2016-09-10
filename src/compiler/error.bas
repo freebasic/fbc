@@ -382,6 +382,8 @@ declare function hMakeParamDesc _
 		/'FB_ERRMSG_CANTUSEELLIPSISASLOWERBOUND        '/ @"Can't use ... as lower bound", _
 		/'FB_ERRMSG_FORNEXTVARIABLEMISMATCH            '/ @"FOR/NEXT variable name mismatch", _
 		/'FB_ERRMSG_OPTIONREQUIRESSSE                  '/ @"Selected option requires an SSE FPU mode", _
+		/' FB_ERRMSG_SSEREQUIRESX86                    '/ @"-fpu sse option can only be used on x86 and x86_64 architectures", _
+		/' FB_ERRMSG_NEONREQUIRESARM                   '/ @"-fpu neon option can only be used on arm architectures", _
 		/'FB_ERRMSG_EXPECTEDRELOP                      '/ @"Expected relational operator ( =, >, <, <>, <=, >= )", _
 		/'FB_ERRMSG_STMTUNSUPPORTEDINGCC               '/ @"Unsupported statement in -gen gcc mode", _
 		/'FB_ERRMSG_TOOMANYLABELS                      '/ @"Too many labels", _

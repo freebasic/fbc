@@ -192,6 +192,7 @@ end enum
 enum FB_FPUTYPE
 	FB_FPUTYPE_FPU
 	FB_FPUTYPE_SSE
+	FB_FPUTYPE_NEON
 end enum
 
 '' floating-point modes
