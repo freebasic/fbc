@@ -1580,6 +1580,7 @@ private sub hParseGnuTriplet _
 		byref os as integer, _
 		byref cputype as integer _
 	)
+	dim arch as string
 
 	'' Search for OS, it be anywere in the triplet:
 	''    mingw32              -> mingw
@@ -1600,7 +1601,7 @@ private sub hParseGnuTriplet _
 	'' If the triplet has at least two components (<arch>-<...>),
 	'' extract the first (the architecture) and try to identify it.
 	if( separator > 0 ) then
-		var arch = left( arg, separator - 1 )
+		arch = left( arg, separator - 1 )
 		for i as integer = 0 to ubound( gnuarchmap )
 			if( arch = *gnuarchmap(i).gnuid ) then
 				cputype = gnuarchmap(i).cputype
@@ -1609,6 +1610,10 @@ private sub hParseGnuTriplet _
 		next
 	end if
 
+	'' Special case: our default arm cpu should be armv5te on android
+	if( (os = FB_COMPTARGET_ANDROID) and (arch = "arm") ) then
+		cputype = FB_CPUTYPE_ARMV5TE
+	end if
 end sub
 
 function fbCpuTypeFromGNUArchInfo( byref arch as string ) as integer
@@ -1728,7 +1733,7 @@ private sub hParseTargetArg _
 	var separator = instr( arg, "-" )
 	if( separator > 0 ) then
 		os = fbIdentifyOs( left( lcasearg, separator - 1 ) )
-		cputype = fbCpuTypeFromCpuFamilyId( right( lcasearg, len( lcasearg ) - separator ) )
+		cputype = fbDefaultCpuTypeFromCpuFamilyId( os, right( lcasearg, len( lcasearg ) - separator ) )
 
 		'' allow normalizing on gnu arch types to determine the standalone targetid
 		#ifdef ENABLE_STANDALONE
@@ -1920,6 +1925,7 @@ private sub handleOpt _
 		fbcAddObj( arg )
 
 	case OPT_ARCH
+		'' Set cputype later, so it overrides -target
 		fbc.cputype_is_native = (arg = "native")
 		fbc.cputype = fbIdentifyFbcArch( arg )
 		if( fbc.cputype < 0 ) then

@@ -431,6 +431,7 @@ const FB_DEFAULT_CPUTYPE_X86     = FB_CPUTYPE_686
 const FB_DEFAULT_CPUTYPE_X86_64  = FB_CPUTYPE_X86_64
 
 '' default ARM CPU
+'' A reasonable default for PCs, but on android is overridden to FB_CPUTYPE_ARMV5TE
 #ifdef BUILD_FB_DEFAULT_CPUTYPE_ARM
 const FB_DEFAULT_CPUTYPE_ARM     = BUILD_FB_DEFAULT_CPUTYPE_ARM
 #else
@@ -550,8 +551,8 @@ declare sub fbOverrideFilename(byval filename as zstring ptr)
 declare function fbGetTargetId( ) as string
 declare function fbGetHostId( ) as string
 declare function fbIdentifyOs( byref osid as string ) as integer
-declare function fbIdentifyCpuFamily( byref osid as string ) as integer
-declare function fbCpuTypeFromCpuFamilyId( byref cpufamilyid as string ) as integer
+declare function fbIdentifyCpuFamily( byref cpufamilyid as string ) as integer
+declare function fbDefaultCpuTypeFromCpuFamilyId( byval os as integer, byref cpufamilyid as string ) as integer
 declare function fbGetGccArch( ) as zstring ptr
 declare function fbGetFbcArch( ) as zstring ptr
 declare function fbIs64Bit( ) as integer
