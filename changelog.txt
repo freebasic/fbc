@@ -30,6 +30,7 @@ Version 1.06.0
 - ASM backend: Fixed a compiler crash or potentially bad code generation in complex floating point expressions (which had enough operands to use up the x86 FPU stack, and trigger spilling of st() registers to stack)
 - C backend: Pointer arithmetic on the address of variables with any pointer type gave wrong results due to bad code generation in -gen gcc for this case.
 - LLVM backend: Self-BOP emitting, byref var/param accesses
+- #837: Compiler hang (or assertion triggered, if enabled) for Select Case As Const with Case -1
 
 
 Version 1.05.0

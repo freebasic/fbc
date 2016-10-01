@@ -347,6 +347,56 @@ sub testMaxRange cdecl( )
 	end select
 end sub
 
+sub testMaxValue cdecl( )
+	scope
+		#ifdef __FB_64BIT__
+			var ok = false
+			dim i as uinteger = &hFFFFFFFFFFFFFFFFu
+			select case as const i
+			case &hFFFFFFFFFFFFFFFFu
+				ok = true
+			case else
+				CU_FAIL( )
+			end select
+			CU_ASSERT( ok )
+		#else
+			var ok = false
+			dim i as uinteger = &hFFFFFFFFu
+			select case as const i
+			case &hFFFFFFFFu
+				ok = true
+			case else
+				CU_FAIL( )
+			end select
+			CU_ASSERT( ok )
+		#endif
+	end scope
+
+	scope
+		var ok = false
+		dim i as uinteger = -1
+		select case as const i
+		case -1
+			ok = true
+		case else
+			CU_FAIL( )
+		end select
+		CU_ASSERT( ok )
+	end scope
+
+	scope
+		var ok = false
+		dim i as ulongint = &hFFFFFFFFFFFFFFFFull
+		select case as const i
+		case &hFFFFFFFFFFFFFFFFu
+			ok = true
+		case else
+			CU_FAIL( )
+		end select
+		CU_ASSERT( ok )
+	end scope
+end sub
+
 private sub ctor( ) constructor
 	fbcu.add_suite("fbc_tests.compound.select_const")
 	fbcu.add_test("test single1", @test_single_1)
@@ -357,6 +407,7 @@ private sub ctor( ) constructor
 	fbcu.add_test( "integer types", @testTypes )
 	fbcu.add_test( "test64bitCaseValues", @test64bitCaseValues )
 	fbcu.add_test( "testMaxRange", @testMaxRange )
+	fbcu.add_test( "testMaxValue", @testMaxValue )
 end sub
 
 end namespace
