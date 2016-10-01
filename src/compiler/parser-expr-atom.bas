@@ -302,16 +302,24 @@ private function hFindId _
 
 			case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_CLASS
 				if( symbGetCompCtorHead( sym ) ) then
+					'' Disallow creating objects of abstract classes
+					hComplainIfAbstractClass( FB_DATATYPE_STRUCT, sym )
+
 					'' skip ID, ctorCall() is also used by type<>(...)
 					lexSkipToken( )
+
 					return cStrIdxOrMemberDeref( cCtorCall( sym ) )
 				end if
 
 			case FB_SYMBCLASS_TYPEDEF
 				'' typedef of a TYPE/CLASS?
 				if( symbHasCtor( sym ) ) then
+					'' Disallow creating objects of abstract classes
+					hComplainIfAbstractClass( FB_DATATYPE_STRUCT, symbGetSubtype( sym ) )
+
 					'' skip ID, ctorCall() is also used by type<>(...)
 					lexSkipToken( )
+
 					return cStrIdxOrMemberDeref( cCtorCall( symbGetSubtype( sym ) ) )
 				end if
 

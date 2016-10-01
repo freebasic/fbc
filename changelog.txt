@@ -32,6 +32,7 @@ Version 1.06.0
 - LLVM backend: Self-BOP emitting, byref var/param accesses
 - #837: Compiler hang (or assertion triggered, if enabled) for Select Case As Const with Case -1
 - ASM backend: Invalid code generated for Select Case As Const jump table index when 64bit fbc cross-compiles to 32bit
+- #836: The MyUdt() syntax for creating temporary objects allowed creating objects of Abstract types (with unimplemented Abstract methods)
 
 
 Version 1.05.0
