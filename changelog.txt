@@ -31,6 +31,7 @@ Version 1.06.0
 - C backend: Pointer arithmetic on the address of variables with any pointer type gave wrong results due to bad code generation in -gen gcc for this case.
 - LLVM backend: Self-BOP emitting, byref var/param accesses
 - #837: Compiler hang (or assertion triggered, if enabled) for Select Case As Const with Case -1
+- ASM backend: Invalid code generated for Select Case As Const jump table index when 64bit fbc cross-compiles to 32bit
 
 
 Version 1.05.0

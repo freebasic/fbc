@@ -311,6 +311,113 @@ sub test64bitCaseValues cdecl( )
 			CU_FAIL( )
 		end select
 	end scope
+
+	#macro testCaseOk( value, casevalue )
+		scope
+			var ok = false
+			dim l as ulongint = value
+			select case as const l
+			case casevalue
+				ok = true
+			case else
+				CU_FAIL( )
+			end select
+			CU_ASSERT( ok )
+		end scope
+	#endmacro
+
+	#macro testCaseNok( value, casevalue )
+		scope
+			var ok = false
+			dim l as ulongint = value
+			select case as const l
+			case casevalue
+				CU_FAIL( )
+			case else
+				ok = true
+			end select
+			CU_ASSERT( ok )
+		end scope
+	#endmacro
+
+	 testCaseOk(                  0ull,                  0ull )
+	testCaseNok(                  0ull,         &hFFFFFFFFull )
+	testCaseNok(                  0ull, &hFFFFFFFF00000000ull )
+	testCaseNok(                  0ull, &hFFFFFFFFFFFFFFFFull )
+	testCaseNok(         &hFFFFFFFFull,                  0ull )
+	 testCaseOk(         &hFFFFFFFFull,         &hFFFFFFFFull )
+	testCaseNok(         &hFFFFFFFFull, &hFFFFFFFF00000000ull )
+	testCaseNok(         &hFFFFFFFFull, &hFFFFFFFFFFFFFFFFull )
+	testCaseNok( &hFFFFFFFF00000000ull,                  0ull )
+	testCaseNok( &hFFFFFFFF00000000ull,         &hFFFFFFFFull )
+	 testCaseOk( &hFFFFFFFF00000000ull, &hFFFFFFFF00000000ull )
+	testCaseNok( &hFFFFFFFF00000000ull, &hFFFFFFFFFFFFFFFFull )
+	testCaseNok( &hFFFFFFFFFFFFFFFFull,                  0ull )
+	testCaseNok( &hFFFFFFFFFFFFFFFFull,         &hFFFFFFFFull )
+	testCaseNok( &hFFFFFFFFFFFFFFFFull, &hFFFFFFFF00000000ull )
+	 testCaseOk( &hFFFFFFFFFFFFFFFFull, &hFFFFFFFFFFFFFFFFull )
+
+	testCaseNok(                  0ull, &hFFFFFFFEull to &h100000001ull )
+	testCaseNok(                  1ull, &hFFFFFFFEull to &h100000001ull )
+	 testCaseOk(         &hFFFFFFFEull, &hFFFFFFFEull to &h100000001ull )
+	 testCaseOk(         &hFFFFFFFFull, &hFFFFFFFEull to &h100000001ull )
+	 testCaseOk(        &h100000000ull, &hFFFFFFFEull to &h100000001ull )
+	 testCaseOk(        &h100000001ull, &hFFFFFFFEull to &h100000001ull )
+	testCaseNok( &hFFFFFFFF00000000ull, &hFFFFFFFEull to &h100000001ull )
+	testCaseNok( &hFFFFFFFFFFFFFFFFull, &hFFFFFFFEull to &h100000001ull )
+
+	#macro testExactSelect1( testvalue, ok1, ok2, ok3, ok4, okelse )
+		scope
+			var ok = false
+			dim l as ulongint = testvalue
+			select case as const l
+			case  &hFFFFFFFEull : ok = ok1
+			case  &hFFFFFFFFull : ok = ok2
+			case &h100000000ull : ok = ok3
+			case &h100000001ull : ok = ok4
+			case else           : ok = okelse
+			end select
+			CU_ASSERT( ok )
+		end scope
+	#endmacro
+
+	testExactSelect1(                  0ull, false, false, false, false,  true )
+	testExactSelect1(                  1ull, false, false, false, false,  true )
+	testExactSelect1(         &hFFFFFFFDull, false, false, false, false,  true )
+	testExactSelect1(         &hFFFFFFFEull,  true, false, false, false, false )
+	testExactSelect1(         &hFFFFFFFFull, false,  true, false, false, false )
+	testExactSelect1(        &h100000000ull, false, false,  true, false, false )
+	testExactSelect1(        &h100000001ull, false, false, false,  true, false )
+	testExactSelect1(        &h100000002ull, false, false, false, false,  true )
+	testExactSelect1( &hFFFFFFFF00000000ull, false, false, false, false,  true )
+	testExactSelect1( &hFFFFFFFFFFFFFFFEull, false, false, false, false,  true )
+	testExactSelect1( &hFFFFFFFFFFFFFFFFull, false, false, false, false,  true )
+
+	#macro testExactSelect2( testvalue, ok1, ok2, okelse )
+		scope
+			var ok = false
+			dim l as ulongint = testvalue
+			select case as const l
+			case &hFFFFFFFFFFFFFFFEull : ok = ok1
+			case &hFFFFFFFFFFFFFFFFull : ok = ok2
+			case else                  : ok = okelse
+			end select
+			CU_ASSERT( ok )
+		end scope
+	#endmacro
+
+	testExactSelect2(                  0ull, false, false,  true )
+	testExactSelect2(                  1ull, false, false,  true )
+	testExactSelect2(         &hFFFFFFFDull, false, false,  true )
+	testExactSelect2(         &hFFFFFFFEull, false, false,  true )
+	testExactSelect2(         &hFFFFFFFFull, false, false,  true )
+	testExactSelect2(        &h100000000ull, false, false,  true )
+	testExactSelect2(        &h100000001ull, false, false,  true )
+	testExactSelect2(        &h100000002ull, false, false,  true )
+	testExactSelect2( &hFFFFFFFF00000000ull, false, false,  true )
+	testExactSelect2( &hFFFFFFFFFFFFFFFEull,  true, false, false )
+	testExactSelect2( &hFFFFFFFFFFFFFFFFull, false,  true, false )
+
 end sub
 
 sub testMaxRange cdecl( )
