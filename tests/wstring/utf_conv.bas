@@ -219,6 +219,26 @@ sub testUTFAndWCharPreallocDest cdecl( )
 	deallocate( wbuf )
 end sub
 
+sub testBuildUtf16SurrogatePair cdecl( )
+	#ifdef __FB_LINUX__
+		dim utf32 as wstring * 2
+		utf32[0] = &h292B1
+		dim utf16bytes as integer
+		dim utf16 as ushort ptr = WCharToUTF( UTF_ENCOD_UTF16, @utf32, 1, NULL, @utf16bytes )
+		CU_ASSERT( utf16bytes = sizeof( ushort ) * 2 )
+		CU_ASSERT( utf16[0] = &hD864 )
+		CU_ASSERT( utf16[1] = &hDEB1 )
+	#elseif defined( __FB_WIN32__ )
+		dim utf32(0 to 1) as ulong
+		utf32(0) = &h292B1
+		dim utf16chars as integer
+		dim utf16 as wstring ptr = UTFToWchar( UTF_ENCOD_UTF32, @utf32(0), NULL, @utf16chars )
+		CU_ASSERT( utf16chars = 2 )
+		CU_ASSERT( (*utf16)[0] = &hD864 )
+		CU_ASSERT( (*utf16)[1] = &hDEB1 )
+	#endif
+end sub
+
 sub ctor( ) constructor
 	fbcu.add_suite( "fbc_tests.wstring.utf_conv" )
 	fbcu.add_test( "test_z", @test_z )
@@ -227,6 +247,7 @@ sub ctor( ) constructor
 	fbcu.add_test( "testZstringToNullDest", @testZstringToNullDest )
 	fbcu.add_test( "testUTFAndWCharNullDest", @testUTFAndWCharNullDest )
 	fbcu.add_test( "testUTFAndWCharPreallocDest", @testUTFAndWCharPreallocDest )
+	fbcu.add_test( "testBuildUtf16SurrogatePair", @testBuildUtf16SurrogatePair )
 end sub
 
 end namespace
