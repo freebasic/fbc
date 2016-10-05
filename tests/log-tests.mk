@@ -28,8 +28,6 @@ endif
 
 # verify the FB_LANG option
 # - must be set to a valid -lang option
-$
-
 ifeq ($(FB_LANG),)
 $(error FB_LANG option must be specified)
 endif
