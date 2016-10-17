@@ -137,6 +137,8 @@
 #   -DDISABLE_FBDEV  build without Linux framebuffer device headers (disables Linux fbdev gfx driver)
 #   -DDISABLE_D3D10  build without DirectX 10 driver(disable D2D driver in windows)
 #   -DDISABLE_NCURSES build without libtinfo or ncurses (disables console commands)
+#   -DDISABLE_LANGINFO build without locale info (affects Unix only; makes no difference unless you
+#                      call setlocale() manually). Does not remove setlocale(LC_CTYPE, "") call.
 #
 # makefile variables may either be set on the make command line,
 # or (in a more permanent way) inside a 'config.mk' file before

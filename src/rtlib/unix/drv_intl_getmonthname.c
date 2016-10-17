@@ -1,17 +1,36 @@
 /* get localized month name */
 
 #include "../fb.h"
+#ifndef DISABLE_LANGINFO
 #include <langinfo.h>
+#else
+const char *month_names[] = {
+    "January", "February", "March", "April", "May", "June", "July", "August",
+    "September", "October", "November", "December"
+};
+
+const char *short_month_names[] = {
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+};
+#endif
 
 FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
 {
     const char *pszName;
     FBSTRING *result;
     size_t name_len;
-    nl_item index;
 
     if( month < 1 || month > 12 )
         return NULL;
+
+#ifdef DISABLE_LANGINFO
+    if( short_names ) {
+        pszName = short_month_names[month - 1];
+    } else {
+        pszName = month_names[month - 1];
+    }
+#else
+    nl_item index;
 
     if( short_names ) {
         index = (nl_item) (ABMON_1 + month - 1);
@@ -19,13 +38,11 @@ FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
         index = (nl_item) (MON_1 + month - 1);
     }
 
-    FB_LOCK();
-
     pszName = nl_langinfo( index );
     if( pszName==NULL ) {
-        FB_UNLOCK();
         return NULL;
     }
+#endif
 
     name_len = strlen( pszName );
 
@@ -33,8 +50,6 @@ FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
     if( result!=NULL ) {
         FB_MEMCPY( result->data, pszName, name_len + 1 );
     }
-
-    FB_UNLOCK();
 
     return result;
 }
