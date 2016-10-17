@@ -2,7 +2,9 @@
 
 #include "../fb.h"
 #include "fb_private_console.h"
+#ifndef DISABLE_NCURSES
 #include <termcap.h>
+#endif
 
 /*#define DEBUG_TGETSTR*/
 #ifdef DEBUG_TGETSTR
@@ -58,6 +60,7 @@ static const KEY_DATA key_data[] = {
 static int key_buffer[KEY_BUFFER_LEN], key_head = 0, key_tail = 0, key_buffer_changed = FALSE;
 static NODE *root_node = NULL;
 
+#ifndef DISABLE_NCURSES
 static void add_key(NODE **node, char *key, short code)
 {
 	NODE *n;
@@ -97,9 +100,11 @@ static void add_key(NODE **node, char *key, short code)
 	else
 		n->code = code;
 }
+#endif
 
 static void init_keys(void)
 {
+#ifndef DISABLE_NCURSES
 	KEY_DATA *data;
 	char *key;
 
@@ -141,6 +146,7 @@ static void init_keys(void)
 		}
 	}
 	add_key(&root_node, "[M", KEY_MOUSE);
+#endif
 }
 
 static int get_input(void)
