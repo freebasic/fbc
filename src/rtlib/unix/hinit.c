@@ -678,7 +678,8 @@ void fb_hInit( void )
 	hInit( );
 
 #if defined HOST_LINUX && (defined HOST_X86 || defined HOST_X86_64)
-	/* Permissions for port I/O */
+	/* Permissions for port I/O
+	   (Android has the syscall but no libc wrapper) */
 	__fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
 #endif
 }

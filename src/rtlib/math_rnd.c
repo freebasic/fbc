@@ -6,7 +6,7 @@
 #if defined HOST_WIN32
 	#include <windows.h>
 	#include <wincrypt.h>
-#elif defined HOST_LINUX
+#elif defined HOST_LINUX || defined HOST_ANDROID
 	#include <fcntl.h>
 #endif
 
@@ -23,7 +23,7 @@ static void hRndCtxInitCRT32    ( uint32_t seed );
 static void hRndCtxInitFAST32   ( uint32_t seed );
 static void hRndCtxInitMTWIST32 ( uint64_t seed );
 static void hRndCtxInitQB32     ( uint32_t seed );
-#if defined HOST_WIN32 || defined HOST_LINUX
+#if defined HOST_WIN32 || defined HOST_LINUX || defined HOST_ANDROID
 static void hRndCtxInitREAL32   ( uint64_t seed );
 #endif
 
@@ -196,7 +196,7 @@ static void hRndCtxInitQB32 ( uint32_t seed )
 
 /* FB_RND_REAL */
 
-#if defined HOST_WIN32 || defined HOST_LINUX
+#if defined HOST_WIN32 || defined HOST_LINUX || defined HOST_ANDROID
 static int hRefillRealRndNumber( void )
 {
 	int success = 0;
@@ -207,7 +207,7 @@ static int hRefillRealRndNumber( void )
 		CryptReleaseContext( provider, 0 );
 	}
 
-#elif defined HOST_LINUX
+#else
 	int urandom = open( "/dev/urandom", O_RDONLY );
 	if( urandom != -1 ) {
 		success = ( read( urandom, ctx.state32, sizeof(ctx.state32) ) == sizeof(ctx.state32) );
@@ -341,7 +341,7 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 		hRndCtxInitQB32( (uint32_t)s );
 		break;
 
-#if defined HOST_WIN32 || defined HOST_LINUX
+#if defined HOST_WIN32 || defined HOST_LINUX || defined HOST_ANDROID
 	case FB_RND_REAL:
 		hRndCtxInitREAL32( (uint32_t)seed );
 		break;
