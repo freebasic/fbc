@@ -82,6 +82,7 @@ all :
 	@$(ECHO) "   FB_LANG=fb | fblite | qb | deprecated"
 	@$(ECHO) "   DEBUG=1"
 	@$(ECHO) "   EXTRAERR=1"
+	@$(ECHO) "   TARGET=target"
 	@$(ECHO) "   ARCH=arch (default is 486)"
 	@$(ECHO) "   OS=DOS"
 	@$(ECHO) "   FPU=fpu | sse"
