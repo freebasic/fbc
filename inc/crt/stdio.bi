@@ -27,6 +27,8 @@
 #include once "crt/dos/stdio.bi"
 #elseif defined(__FB_LINUX__)
 #include once "crt/linux/stdio.bi"
+#elseif defined(__FB_ANDROID__)
+#include once "crt/android/stdio.bi"
 #elseif defined(__FB_FREEBSD__)
 #include once "crt/freebsd/stdio.bi"
 #elseif defined(__FB_DARWIN__)
