@@ -23,6 +23,9 @@ FBC_CFLAGS += -m $(FBCU_)
 ifdef ARCH
 	FBC_CFLAGS += -arch $(ARCH)
 endif
+ifdef TARGET
+	FBC_CFLAGS += -target $(TARGET)
+endif
 
 	#: hack ...
 	AUTO_OFILE := "fbc-tests"
@@ -83,6 +86,9 @@ endif
 FBC_LFLAGS := -lib -x $(LIB_FILE)
 ifdef ARCH
 	FBC_LFLAGS += -arch $(ARCH)
+endif
+ifdef TARGET
+	FBC_LFLAGS += -target $(TARGET)
 endif
 
 #:: rules
