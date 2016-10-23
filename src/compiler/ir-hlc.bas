@@ -3677,7 +3677,15 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 			select case( fbGetCpuFamily( ) )
 			case FB_CPUFAMILY_X86, FB_CPUFAMILY_X86_64
 				if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
-					ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""edi"", ""esi"""
+					if( env.clopt.pic ) then
+						'' ebx is the fixed-purpose PIC register. GCC versions before 5.0
+						'' throw an error if you declare that it is clobbered, so we don't do
+						'' that. GCC 5 has rewritten PIC register handling and can now save and
+						'' restore ebx.
+						ln += ", ""eax"", ""ecx"", ""edx"", ""edi"", ""esi"""
+					else
+						ln += ", ""eax"", ""ebx"", ""ecx"", ""edx"", ""edi"", ""esi"""
+					end if
 				else
 					ln += ", ""rax"", ""rbx"", ""rcx"", ""rdx"", ""rdi"", ""rsi"""
 					ln += ", ""r8"", ""r9"", ""r10"", ""r11"", ""r12"", ""r13"", ""r14"", ""r15"""
