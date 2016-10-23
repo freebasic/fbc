@@ -20,7 +20,7 @@
 #   rtlib:
 #     src/rtlib/static/fbrt0.c
 #     -> fbrt0.o
-#     -> fbrt0pic.o, -fPIC version (non-x86 Linux etc.)
+#     -> fbrt0pic.o, -fPIC version (Unixes)
 #
 #     all *.c and *.s files in
 #     src/rtlib/
@@ -28,8 +28,8 @@
 #     src/rtlib/$(TARGET_ARCH)
 #     -> libfb.a
 #     -> libfbmt.a, -DENABLE_MT (threadsafe) version (except for DOS)
-#     -> libfbpic.a, -fPIC version (non-x86 Linux etc.)
-#     -> libfbmtpic.a, threadsafe and -fPIC (non-x86 Linux etc.)
+#     -> libfbpic.a, -fPIC version (Unixes)
+#     -> libfbmtpic.a, threadsafe and -fPIC (Unixes)
 #
 #     contrib/djgpp/libc/...
 #     -> libc.a, fixed libc for DOS/DJGPP (see contrib/djgpp/ for more info)
@@ -52,8 +52,8 @@
 #     src/gfxlib2/$(TARGET_ARCH)
 #     -> libfbgfx.a
 #     -> libfbgfxmt.a, -DENABLE_MT (threadsafe) version (except for DOS)
-#     -> libfbgfxpic.a, -fPIC version (non-x86 Linux etc.)
-#     -> libfbgfxmtpic.a, threadsafe and -fPIC (non-x86 Linux etc.)
+#     -> libfbgfxpic.a, -fPIC version (Unixes)
+#     -> libfbgfxmtpic.a, threadsafe and -fPIC (Unixes)
 #
 # commands:
 #
@@ -378,12 +378,14 @@ else
   FB_LDSCRIPT := fbextra.x
 endif
 
-# ENABLE_PIC for non-x86 Linux etc. (for every system where we need separate
-# -fPIC versions of FB libs besides the normal ones)
-ifneq ($(filter freebsd dragonfly linux netbsd openbsd solaris,$(TARGET_OS)),)
-  ifneq ($(TARGET_ARCH),x86)
-    ENABLE_PIC := YesPlease
-  endif
+# ENABLE_PIC for every system where we need separate
+# -fPIC versions of FB libs besides the normal ones
+ifneq ($(filter android freebsd dragonfly freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
+  ENABLE_PIC := YesPlease
+endif
+ifneq ($(TARGET_OS),android)
+  # Everything is PIC on Android by default, so don't produce two sets of libraries
+  ENABLE_NONPIC := YesPlease
 endif
 
 # disable .ident directive on windows targets
@@ -691,18 +693,22 @@ LIBFBGFXMT_C    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBG
 LIBFBGFXMT_S    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBGFX_S))
 LIBFBGFXMTPIC_C := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtpicobjdir)/%,$(LIBFBGFX_C))
 
-RTL_LIBS := $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a
-FBRTL_LIBS := $(libdir)/libfbrt.a
-GFX_LIBS := $(libdir)/libfbgfx.a
+ifdef ENABLE_NONPIC
+  RTL_LIBS := $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a
+  FBRTL_LIBS := $(libdir)/libfbrt.a
+  GFX_LIBS := $(libdir)/libfbgfx.a
+endif
 ifdef ENABLE_PIC
   RTL_LIBS += $(libdir)/fbrt0pic.o $(libdir)/libfbpic.a
   FBRTL_LIBS += $(libdir)/libfbrtpic.a
   GFX_LIBS += $(libdir)/libfbgfxpic.a
 endif
 ifndef DISABLE_MT
-  RTL_LIBS += $(libdir)/libfbmt.a
-  FBRTL_LIBS += $(libdir)/libfbrtmt.a
-  GFX_LIBS += $(libdir)/libfbgfxmt.a
+  ifdef ENABLE_NONPIC
+    RTL_LIBS += $(libdir)/libfbmt.a
+    FBRTL_LIBS += $(libdir)/libfbrtmt.a
+    GFX_LIBS += $(libdir)/libfbgfxmt.a
+  endif
   ifdef ENABLE_PIC
     RTL_LIBS += $(libdir)/libfbmtpic.a
     FBRTL_LIBS += $(libdir)/libfbrtmtpic.a
