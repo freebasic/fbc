@@ -49,7 +49,7 @@ SRCLIST := $(patsubst .bmk,.bas,$(SRCLIST))
 
 # ------------------------------------------------------------------------
 
-MAINEXE := fbc-tests$(EXEEXT)
+MAINEXE := fbc-tests$(TARGET_EXEEXT)
 
 FBCU_DIR := fbcu
 FBCU_INC := $(FBCU_DIR)/include

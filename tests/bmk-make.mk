@@ -109,7 +109,7 @@ SRCSX := $(FILE)
 endif
 
 MAIN_MODULE := $(basename $(MAINX))
-APP := $(MAIN_MODULE)$(EXEEXT)
+APP := $(MAIN_MODULE)$(TARGET_EXEEXT)
 
 ifeq ($(MAIN_MODULE),)
 $(error main module not specified)
