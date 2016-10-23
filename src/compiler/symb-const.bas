@@ -184,24 +184,23 @@ end function
 function symbAllocStrConst _
 	( _
 		byval sname as zstring ptr, _
-		byval lgt as integer _
+		byval strlength as integer _
 	) as FBSYMBOL ptr
 
     static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s = any
-	dim as integer strlen = any
 
 	function = NULL
 
-	'' the lgt passed isn't the real one because it doesn't
+	'' the strlength passed isn't the real one because it doesn't
 	'' take into acount the escape characters
-	strlen = len( *sname )
-	if( lgt < 0 ) then
-		lgt = strlen
+	dim as integer internalstrlen = len( *sname )
+	if( strlength < 0 ) then
+		strlength = internalstrlen
 	end if
 
-	if( strlen <= FB_MAXNAMELEN-6 ) then
+	if( internalstrlen <= FB_MAXNAMELEN-6 ) then
 		id = "{fbsc}"
 		id += *sname
 	else
@@ -215,14 +214,15 @@ function symbAllocStrConst _
 
 	id_alias = *symbUniqueId( )
 
-	'' lgt += the null-char (rtlib wrappers will take it into account)
+	'' strlength += the null-char (rtlib wrappers will take it into account)
 
 	'' it must be declare as SHARED, see symbAllocFloatConst()
-	s = symbAddVar( @id, @id_alias, FB_DATATYPE_CHAR, NULL, lgt + 1, 0, dTB(), _
+	var strsize = strlength + 1
+	s = symbAddVar( @id, @id_alias, FB_DATATYPE_CHAR, NULL, strsize, 0, dTB(), _
 	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
-	s->var_.littext = ZstrAllocate( strlen )
+	s->var_.littext = ZstrAllocate( internalstrlen )
 	*s->var_.littext = *sname
 
 	function = s
@@ -231,28 +231,27 @@ end function
 function symbAllocWStrConst _
 	( _
 		byval sname as wstring ptr, _
-		byval lgt as integer _
+		byval strlength as integer _
 	) as FBSYMBOL ptr
 
     static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
 	static as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s = any
-	dim as integer strlen = any
-	dim as integer wcharlen = any
 
 	function = NULL
 
-	'' the lgt passed isn't the real one because it doesn't
+	'' the strlength passed isn't the real one because it doesn't
 	'' take into acount the escape characters
-	strlen = len( *sname )
-	if( lgt < 0 ) then
-		lgt = strlen
+	dim as integer internalstrlen = len( *sname )
+	if( strlength < 0 ) then
+		strlength = internalstrlen
 	end if
 
-	wcharlen = typeGetSize( FB_DATATYPE_WCHAR )
-	'' hEscapeW() can use up to (4 * wcharlen) ascii chars per unicode char
+	dim as integer wcharsize = typeGetSize( FB_DATATYPE_WCHAR )
+
+	'' hEscapeW() can use up to (4 * wcharsize) ascii chars per unicode char
 	'' (up to one '\ooo' per byte of wchar)
-	if( strlen * ((1+3) * wcharlen) <= FB_MAXNAMELEN-6 ) then
+	if( internalstrlen * ((1+3) * wcharsize) <= FB_MAXNAMELEN-6 ) then
 		id = "{fbwc}"
 		id += *hEscapeW( sname )
 	else
@@ -267,11 +266,12 @@ function symbAllocWStrConst _
 	id_alias = *symbUniqueId( )
 
 	'' it must be declare as SHARED, see symbAllocFloatConst()
-	s = symbAddVar( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, (lgt + 1) * wcharlen, 0, dTB(), _
+	var strsize = (strlength + 1) * wcharsize
+	s = symbAddVar( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, strsize, 0, dTB(), _
 	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
-	s->var_.littextw = WstrAllocate( strlen )
+	s->var_.littextw = WstrAllocate( internalstrlen )
 	*s->var_.littextw = *sname
 
 	function = s
