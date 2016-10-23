@@ -35,6 +35,7 @@ Version 1.06.0
 - #836: The MyUdt() syntax for creating temporary objects allowed creating objects of Abstract types (with unimplemented Abstract methods)
 - WString conversions from UTF32 to UTF16 produced incorrect high surrogate values (affected conversion from UTF32 to Windows WString, and from Linux WString to UTF16)
 - Conversion from UTF32 to Windows WString behaved differently from other UTF32 to UTF16 conversions in FB with regards to truncating surrogate pairs when the destination buffer is full
+- #839: Wstring constants could be allocated with the wrong size when cross-compiling, leading to compiler errors and/or incorrect code generation
 
 
 Version 1.05.0

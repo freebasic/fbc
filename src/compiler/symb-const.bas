@@ -266,9 +266,8 @@ function symbAllocWStrConst _
 
 	id_alias = *symbUniqueId( )
 
-	'' lgt = (lgt + null-char) * sizeof( wstring ) (see parser-decl-symbinit.bas)
 	'' it must be declare as SHARED, see symbAllocFloatConst()
-	s = symbAddVar( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, (lgt+1) * len( wstring ), 0, dTB(), _
+	s = symbAddVar( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, (lgt + 1) * wcharlen, 0, dTB(), _
 	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
 
