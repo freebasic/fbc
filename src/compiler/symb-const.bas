@@ -247,11 +247,9 @@ function symbAllocWStrConst _
 		strlength = internalstrlen
 	end if
 
-	dim as integer wcharsize = typeGetSize( FB_DATATYPE_WCHAR )
-
-	'' hEscapeW() can use up to (4 * wcharsize) ascii chars per unicode char
+	'' hEscapeW() can use up to (4 * sizeof(wchar)) ascii chars per unicode char
 	'' (up to one '\ooo' per byte of wchar)
-	if( internalstrlen * ((1+3) * wcharsize) <= FB_MAXNAMELEN-6 ) then
+	if( internalstrlen * ((1+3) * sizeof( wstring )) <= FB_MAXNAMELEN-6 ) then
 		id = "{fbwc}"
 		id += *hEscapeW( sname )
 	else
@@ -266,7 +264,7 @@ function symbAllocWStrConst _
 	id_alias = *symbUniqueId( )
 
 	'' it must be declare as SHARED, see symbAllocFloatConst()
-	var strsize = (strlength + 1) * wcharsize
+	var strsize = (strlength + 1) * typeGetSize( FB_DATATYPE_WCHAR )
 	s = symbAddVar( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, strsize, 0, dTB(), _
 	                FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL, _
 	                FB_SYMBOPT_MOVETOGLOB or FB_SYMBOPT_PRESERVECASE or FB_SYMBOPT_NODUPCHECK )
