@@ -31,6 +31,62 @@ sub run_test( byval s1 as wstring ptr, byval s2 as wstring ptr )
 	
 end sub
 
+sub maximum_args cdecl ()
+
+	'' The maximum number of arguments is 32
+	dim const_wstr_long as wstring * 33 = wchr( _
+		48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, _
+		64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 _
+	)
+	CU_ASSERT_EQUAL( const_wstr_long, "0123456789:;<=>?@ABCDEFGHIJKLMNO" )
+
+	'' Test case where internal escape codes are emitted (causing maximum
+	'' internal representation length) during compile-time evaluation
+	#if sizeof(wstring) >= 2
+		scope
+			dim const_wstr_long as wstring * 33 = wchr( _
+				&hffff, &hffff, &hffff, &hffff, &hffff, _
+				&hffff, &hffff, &hffff, &hffff, &hffff, _
+				&hffff, &hffff, &hffff, &hffff, &hffff, _
+				&hffff, &hffff, &hffff, &hffff, &hffff, _
+				&hffff, &hffff, &hffff, &hffff, &hffff, _
+				&hffff, &hffff, &hffff, &hffff, &hffff, _
+				&hffff, &hffff _
+			)
+			dim correct as wstring * 33
+			correct[0] = &hffff
+			correct &= correct
+			correct &= correct
+			correct &= correct
+			correct &= correct
+			correct &= correct
+			CU_ASSERT_EQUAL( const_wstr_long, correct )
+		end scope
+	#endif
+
+	#if sizeof(wstring) = 4
+		scope
+			dim const_wstr_long as wstring * 33 = wchr( _
+				&hffffffffU, &hffffffffU, &hffffffffU, &hffffffffU, &hffffffffU, _
+				&hffffffffU, &hffffffffU, &hffffffffU, &hffffffffU, &hffffffffU, _
+				&hffffffffU, &hffffffffU, &hffffffffU, &hffffffffU, &hffffffffU, _
+				&hffffffffU, &hffffffffU, &hffffffffU, &hffffffffU, &hffffffffU, _
+				&hffffffffU, &hffffffffU, &hffffffffU, &hffffffffU, &hffffffffU, _
+				&hffffffffU, &hffffffffU, &hffffffffU, &hffffffffU, &hffffffffU, _
+				&hffffffffU, &hffffffffU _
+			)
+			dim correct as wstring * 33
+			correct[0] = &hffffffffU
+			correct &= correct
+			correct &= correct
+			correct &= correct
+			correct &= correct
+			correct &= correct
+			CU_ASSERT_EQUAL( const_wstr_long, correct )
+		end scope
+	#endif
+end sub
+
 sub high_codepoints cdecl ()
 
 	'' Test compile-time evaluation of wchr. However there is no way
@@ -74,6 +130,7 @@ sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.wstring.wchr")
 	fbcu.add_test("test_1", @test_1)
+	fbcu.add_test("maximum args", @maximum_args)
 	fbcu.add_test("High codepoints", @high_codepoints)
 
 end sub

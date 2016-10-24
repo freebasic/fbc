@@ -169,17 +169,18 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 end function
 
 private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
-	static as zstring * 32*6+1 zs
-	static as wstring * 32*6+1 ws
-	static as zstring * 8+1 o
-	dim as longint v = any, i = any, cnt = any, isconst = any
+        '' Max length of a single octal code is 11 digits for &hffffffffU
+	static as zstring * 11+1 o
+	static as zstring * 32*(2+11)+1 zs
+	static as wstring * 32*(2+11)+1 ws
+	dim as integer v = any, i = any, cnt = any, isconst = any
 	dim as ASTNODE ptr exprtb(0 to 31) = any
 
 	hMatchLPRNT( )
 
 	cnt = 0
 	do
-		hMatchExpressionEx( exprtb(cnt), FB_DATATYPE_INTEGER )
+		hMatchExpressionEx( exprtb(cnt), FB_DATATYPE_ULONG )
 		cnt += 1
 		if( cnt >= 32 ) then
 			exit do
@@ -217,7 +218,7 @@ private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
 		end if
 
 		for i = 0 to cnt-1
-			v = astConstFlushToInt( exprtb(i) )
+			v = astConstFlushToInt( exprtb(i), FB_DATATYPE_ULONG )
 			exprtb(i) = NULL
 
 			if( is_wstr = FALSE ) then

@@ -22,6 +22,23 @@ sub dynConstTest cdecl ()
 	CU_ASSERT_EQUAL( dyn_str_0123, const_str_0123 )
 	CU_ASSERT_EQUAL( dyn_str_3210, const_str_3210 )
 
+        '' The maximum number of arguments is 32
+	dim const_str_long as string = chr( _
+                48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, _
+                64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79 _
+        )
+	CU_ASSERT_EQUAL( const_str_long, "0123456789:;<=>?@ABCDEFGHIJKLMNO" )
+
+        '' Test case where internal escape codes are emitted (causing maximum
+        '' internal representation length) during compile-time evaluation
+	dim const_str_long2 as string = chr( _
+                128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, _
+                128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, _
+                128, 128, 128, 128, 128, 128, 128, 128 _
+        )
+	CU_ASSERT_EQUAL( const_str_long2, !"\128\128\128\128\128\128\128\128\128\128\128\128\128" _
+            !"\128\128\128\128\128\128\128\128\128\128\128\128\128\128\128\128\128\128\128" )
+
 end sub
 
 sub ctor () constructor
