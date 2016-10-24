@@ -2,6 +2,18 @@
 
 namespace fbc_tests.structs.padding
 
+'' On 32bit Win32/MinGW, doubles/longints are aligned to 8, but on
+'' 32bit Linux and others, doubles/longints are aligned to 4.
+'' (This often results in tighter packing, and only few cases are
+'' the same as on MinGW)
+''
+'' On 64bit, doubles/longints are aligned to 8 everywhere.
+#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ ) or defined( __FB_ARM__ )
+	#define QWORD_ALIGN 8
+#else
+	#define QWORD_ALIGN 4
+#endif
+
 sub testSize1 cdecl( )
 	type S
 		as ubyte b0
@@ -27,7 +39,7 @@ sub testSize1 cdecl( )
 			sizeof(double)		+ _ '' 40
 			sizeof(ubyte)		+ _ '' 41
 			7			)   '' 48
-	#elseif defined( __FB_WIN32__ )
+	#elseif QWORD_ALIGN = 8
 		CU_ASSERT( sizeof( S ) = _
 			sizeof(ubyte)		+ _ '' 1
 			1			+ _ '' 2
@@ -97,7 +109,7 @@ sub testSize1 cdecl( )
 			3			)   '' 44
 	#else
 		'' FIELD=4 makes the padding equal across 32bit platforms
-		'' (win32 8-byte alignments are lowered to 4; linux & co stay
+		'' (win32/arm 8-byte alignments are lowered to 4; linux & co stay
 		'' unchanged as there are no alignments > 4)
 		CU_ASSERT( sizeof( S4 ) = _
 			sizeof(ubyte)		+ _ '' 1
@@ -710,19 +722,11 @@ sub testDefaultPad4 cdecl()
 end sub
 
 sub testDefaultPad8 cdecl()
-
-	'' On 32bit Win32/MinGW, doubles/longints are aligned to 8, but on
-	'' 32bit Linux and others, doubles/longints are aligned to 4.
-	'' (This often results in tighter packing, and only few cases are
-	'' the same as on MinGW)
-	''
-	'' On 64bit, doubles/longints are aligned to 8 everywhere.
-
 	type A1
 		as long a
 		as longint b
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(A1) = 16)
 		CU_ASSERT(offsetof(A1, b) = 8)
 	#else
@@ -734,7 +738,7 @@ sub testDefaultPad8 cdecl()
 		as longint a
 		as long b
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(A2) = 16)
 	#else
 		CU_ASSERT(sizeof(A2) = 12)
@@ -764,7 +768,7 @@ sub testDefaultPad8 cdecl()
 		as longint b
 		as long c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(A5) = 24)
 		CU_ASSERT(offsetof(A5, b) = 8)
 		CU_ASSERT(offsetof(A5, c) = 16)
@@ -781,7 +785,7 @@ sub testDefaultPad8 cdecl()
 		as A1 a
 		as long b
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(B1) = 24)
 		CU_ASSERT(offsetof(B1, b) = 16)
 	#else
@@ -794,7 +798,7 @@ sub testDefaultPad8 cdecl()
 		as long b
 		as long c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(B2) = 24)
 		CU_ASSERT(offsetof(B2, b) = 16)
 		CU_ASSERT(offsetof(B2, c) = 20)
@@ -809,7 +813,7 @@ sub testDefaultPad8 cdecl()
 		as longint b
 		as long c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(B3) = 32)
 		CU_ASSERT(offsetof(B3, b) = 16)
 		CU_ASSERT(offsetof(B3, c) = 24)
@@ -824,7 +828,7 @@ sub testDefaultPad8 cdecl()
 		as long b
 		as longint c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(B4) = 32)
 		CU_ASSERT(offsetof(B4, b) = 16)
 		CU_ASSERT(offsetof(B4, c) = 24)
@@ -840,7 +844,7 @@ sub testDefaultPad8 cdecl()
 		as long c
 		as longint d
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(B5) = 32)
 		CU_ASSERT(offsetof(B5, b) = 16)
 		CU_ASSERT(offsetof(B5, c) = 20)
@@ -858,7 +862,7 @@ sub testDefaultPad8 cdecl()
 		as long c
 		as long d
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(B6) = 32)
 		CU_ASSERT(offsetof(B6, b) = 16)
 		CU_ASSERT(offsetof(B6, c) = 24)
@@ -876,7 +880,7 @@ sub testDefaultPad8 cdecl()
 		as longint c
 		as long d
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(B7) = 40)
 		CU_ASSERT(offsetof(B7, b) = 16)
 		CU_ASSERT(offsetof(B7, c) = 24)
@@ -895,7 +899,7 @@ sub testDefaultPad8 cdecl()
 		as long a
 		as A1 b
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(C1) = 24)
 		CU_ASSERT(offsetof(C1, b) = 8)
 	#else
@@ -908,7 +912,7 @@ sub testDefaultPad8 cdecl()
 		as long b
 		as A1 c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(C2) = 24)
 	#else
 		CU_ASSERT(sizeof(C2) = 20)
@@ -921,7 +925,7 @@ sub testDefaultPad8 cdecl()
 		as long b
 		as A1 c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(C3) = 32)
 		CU_ASSERT(offsetof(C3, b) = 8)
 		CU_ASSERT(offsetof(C3, c) = 16)
@@ -936,7 +940,7 @@ sub testDefaultPad8 cdecl()
 		as longint b
 		as A1 c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(C4) = 32)
 		CU_ASSERT(offsetof(C4, b) = 8)
 		CU_ASSERT(offsetof(C4, c) = 16)
@@ -952,7 +956,7 @@ sub testDefaultPad8 cdecl()
 		as longint c
 		as A1 d
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(C5) = 32)
 	#else
 		CU_ASSERT(sizeof(C5) = 28)
@@ -967,7 +971,7 @@ sub testDefaultPad8 cdecl()
 		as long c
 		as A1 d
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(C6) = 32)
 	#else
 		CU_ASSERT(sizeof(C6) = 28)
@@ -982,7 +986,7 @@ sub testDefaultPad8 cdecl()
 		as long c
 		as A1 d
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(C7) = 40)
 		CU_ASSERT(offsetof(C7, b) = 8)
 		CU_ASSERT(offsetof(C7, c) = 16)
@@ -1001,7 +1005,7 @@ sub testDefaultPad8 cdecl()
 		as A2 a
 		as long b
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(D1) = 24)
 		CU_ASSERT(offsetof(D1, b) = 16)
 	#else
@@ -1014,7 +1018,7 @@ sub testDefaultPad8 cdecl()
 		as long b
 		as long c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(D2) = 24)
 		CU_ASSERT(offsetof(D2, b) = 16)
 		CU_ASSERT(offsetof(D2, c) = 20)
@@ -1029,7 +1033,7 @@ sub testDefaultPad8 cdecl()
 		as longint b
 		as long c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(D3) = 32)
 		CU_ASSERT(offsetof(D3, b) = 16)
 		CU_ASSERT(offsetof(D3, c) = 24)
@@ -1044,7 +1048,7 @@ sub testDefaultPad8 cdecl()
 		as long b
 		as longint c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(D4) = 32)
 		CU_ASSERT(offsetof(D4, b) = 16)
 		CU_ASSERT(offsetof(D4, c) = 24)
@@ -1060,7 +1064,7 @@ sub testDefaultPad8 cdecl()
 		as long c
 		as longint d
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(D5) = 32)
 		CU_ASSERT(offsetof(D5, b) = 16)
 		CU_ASSERT(offsetof(D5, c) = 20)
@@ -1078,7 +1082,7 @@ sub testDefaultPad8 cdecl()
 		as long c
 		as long d
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(D6) = 32)
 		CU_ASSERT(offsetof(D6, b) = 16)
 		CU_ASSERT(offsetof(D6, c) = 24)
@@ -1096,7 +1100,7 @@ sub testDefaultPad8 cdecl()
 		as longint c
 		as long d
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(D7) = 40)
 		CU_ASSERT(offsetof(D7, b) = 16)
 		CU_ASSERT(offsetof(D7, c) = 24)
@@ -1115,7 +1119,7 @@ sub testDefaultPad8 cdecl()
 		as long a
 		as A2 b
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(E1) = 24)
 		CU_ASSERT(offsetof(E1, b) = 8)
 	#else
@@ -1128,7 +1132,7 @@ sub testDefaultPad8 cdecl()
 		as long b
 		as A2 c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(E2) = 24)
 	#else
 		CU_ASSERT(sizeof(E2) = 20)
@@ -1141,7 +1145,7 @@ sub testDefaultPad8 cdecl()
 		as long b
 		as A2 c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(E3) = 32)
 		CU_ASSERT(offsetof(E3, b) = 8)
 		CU_ASSERT(offsetof(E3, c) = 16)
@@ -1156,7 +1160,7 @@ sub testDefaultPad8 cdecl()
 		as longint b
 		as A2 c
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(E4) = 32)
 		CU_ASSERT(offsetof(E4, b) = 8)
 		CU_ASSERT(offsetof(E4, c) = 16)
@@ -1172,7 +1176,7 @@ sub testDefaultPad8 cdecl()
 		as longint c
 		as A2 d
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(E5) = 32)
 	#else
 		CU_ASSERT(sizeof(E5) = 28)
@@ -1187,7 +1191,7 @@ sub testDefaultPad8 cdecl()
 		as long c
 		as A2 d
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(E6) = 32)
 	#else
 		CU_ASSERT(sizeof(E6) = 28)
@@ -1202,7 +1206,7 @@ sub testDefaultPad8 cdecl()
 		as long c
 		as A2 d
 	end type
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(E7) = 40)
 		CU_ASSERT(offsetof(E7, b) = 8)
 		CU_ASSERT(offsetof(E7, c) = 16)
@@ -1249,7 +1253,7 @@ private sub bug2828675 cdecl()
 	#if defined( __FB_64BIT__ )
 		CU_ASSERT(sizeof(Nested) = 80)
 		CU_ASSERT(sizeof(Test) = 192)
-	#elseif defined( __FB_WIN32__ )
+	#elseif QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(Nested) = 72)
 		CU_ASSERT(sizeof(Test) = 168)
 	#else
@@ -1267,7 +1271,7 @@ private sub bug2828675 cdecl()
 		as integer i
 	end type
 
-	#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(A) = 16)
 		CU_ASSERT(sizeof(B) = 24)
 		CU_ASSERT(offsetof(B, i) = 16)

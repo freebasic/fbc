@@ -1,6 +1,5 @@
 #include "fbcu.bi"
 
-#ifndef __FB_ARM__
 #if __FB_ASM__ = "intel"
 
 dim shared f1calls as integer
@@ -48,5 +47,4 @@ private sub ctor( ) constructor
 	fbcu.add_test( "test", @test )
 end sub
 
-#endif
 #endif

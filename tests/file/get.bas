@@ -57,7 +57,9 @@ private sub test cdecl( )
 	CU_ASSERT( z6 = "12345" )
 
 	CU_ASSERT( get( #f, 1, w6 ) = 0 )
-	#if sizeof(wstring) = 2
+	#if sizeof(wstring) = 1
+		CU_ASSERT( w6 = "12345" )
+	#elseif sizeof(wstring) = 2
 		CU_ASSERT( w6[0] = cvshort( "12" ) )
 		CU_ASSERT( w6[1] = cvshort( "34" ) )
 		CU_ASSERT( w6[2] = cvshort( "56" ) )
@@ -78,7 +80,9 @@ private sub test cdecl( )
 
 	*pw6 = "00000"
 	CU_ASSERT( get( #f, 1, *pw6 ) = 0 )
-	#if sizeof(wstring) = 2
+	#if sizeof(wstring) = 1
+		CU_ASSERT( (*pw6) = "12345" )
+	#elseif sizeof(wstring) = 2
 		CU_ASSERT( (*pw6)[0] = cvshort( "12" ) )
 		CU_ASSERT( (*pw6)[1] = cvshort( "34" ) )
 		CU_ASSERT( (*pw6)[2] = cvshort( "56" ) )
@@ -161,21 +165,25 @@ private sub test cdecl( )
 
 	bytesread = 0
 	CU_ASSERT( get( #f, 1, w6, , bytesread ) = 0 )
-	#if sizeof(wstring) = 2
+	#if sizeof(wstring) = 1
+		CU_ASSERT( w6 = "12345" )
+		CU_ASSERT( bytesread = 5 )
+	#elseif sizeof(wstring) = 2
 		CU_ASSERT( w6[0] = cvshort( "12" ) )
 		CU_ASSERT( w6[1] = cvshort( "34" ) )
 		CU_ASSERT( w6[2] = cvshort( "56" ) )
 		CU_ASSERT( w6[3] = cvshort( "78" ) )
 		CU_ASSERT( w6[4] = cvshort( "90" ) )
+		CU_ASSERT( bytesread = 10 )
 	#elseif sizeof(wstring) = 4
 		CU_ASSERT( w6[0] = cvl( "1234" ) )
 		CU_ASSERT( w6[1] = cvl( "5678" ) )
 		CU_ASSERT( w6[2] = cvshort( "90" ) )
 		CU_ASSERT( w6[3] = 0 )
 		CU_ASSERT( w6[4] = 0 )
+		CU_ASSERT( bytesread = 10 )
 	#endif
 	CU_ASSERT( w6[5] = 0 )
-	CU_ASSERT( bytesread = 10 )
 
 	bytesread = 0
 	*pz6 = "00000"
@@ -186,21 +194,25 @@ private sub test cdecl( )
 	bytesread = 0
 	*pw6 = "00000"
 	CU_ASSERT( get( #f, 1, *pw6, , bytesread ) = 0 )
-	#if sizeof(wstring) = 2
+	#if sizeof(wstring) = 1
+		CU_ASSERT( (*pw6) = "12345" )
+		CU_ASSERT( bytesread = 5 )
+	#elseif sizeof(wstring) = 2
 		CU_ASSERT( (*pw6)[0] = cvshort( "12" ) )
 		CU_ASSERT( (*pw6)[1] = cvshort( "34" ) )
 		CU_ASSERT( (*pw6)[2] = cvshort( "56" ) )
 		CU_ASSERT( (*pw6)[3] = cvshort( "78" ) )
 		CU_ASSERT( (*pw6)[4] = cvshort( "90" ) )
+		CU_ASSERT( bytesread = 10 )
 	#elseif sizeof(wstring) = 4
 		CU_ASSERT( (*pw6)[0] = cvl( "1234" ) )
 		CU_ASSERT( (*pw6)[1] = cvl( "5678" ) )
 		CU_ASSERT( (*pw6)[2] = cvshort( "90" ) )
 		CU_ASSERT( (*pw6)[3] = 0 )
 		CU_ASSERT( (*pw6)[4] = 0 )
+		CU_ASSERT( bytesread = 10 )
 	#endif
 	CU_ASSERT( (*pw6)[5] = 0 )
-	CU_ASSERT( bytesread = 10 )
 
 	bytesread = 0
 	CU_ASSERT( get( #f, 1, array4b(), , bytesread ) = 0 )
@@ -268,7 +280,9 @@ private sub test cdecl( )
 	CU_ASSERT( z6 = "12345" )
 
 	CU_ASSERT( get( #f, 1ll, w6 ) = 0 )
-	#if sizeof(wstring) = 2
+	#if sizeof(wstring) = 1
+		CU_ASSERT( w6 = "12345" )
+	#elseif sizeof(wstring) = 2
 		CU_ASSERT( w6[0] = cvshort( "12" ) )
 		CU_ASSERT( w6[1] = cvshort( "34" ) )
 		CU_ASSERT( w6[2] = cvshort( "56" ) )
@@ -289,7 +303,9 @@ private sub test cdecl( )
 
 	*pw6 = "00000"
 	CU_ASSERT( get( #f, 1ll, *pw6 ) = 0 )
-	#if sizeof(wstring) = 2
+	#if sizeof(wstring) = 1
+		CU_ASSERT( (*pw6) = "12345" )
+	#elseif sizeof(wstring) = 2
 		CU_ASSERT( (*pw6)[0] = cvshort( "12" ) )
 		CU_ASSERT( (*pw6)[1] = cvshort( "34" ) )
 		CU_ASSERT( (*pw6)[2] = cvshort( "56" ) )
@@ -371,21 +387,25 @@ private sub test cdecl( )
 
 	bytesread = 0
 	CU_ASSERT( get( #f, 1ll, w6, , bytesread ) = 0 )
-	#if sizeof(wstring) = 2
+	#if sizeof(wstring) = 1
+		CU_ASSERT( w6 = "12345" )
+		CU_ASSERT( bytesread = 5 )
+	#elseif sizeof(wstring) = 2
 		CU_ASSERT( w6[0] = cvshort( "12" ) )
 		CU_ASSERT( w6[1] = cvshort( "34" ) )
 		CU_ASSERT( w6[2] = cvshort( "56" ) )
 		CU_ASSERT( w6[3] = cvshort( "78" ) )
 		CU_ASSERT( w6[4] = cvshort( "90" ) )
+		CU_ASSERT( bytesread = 10 )
 	#elseif sizeof(wstring) = 4
 		CU_ASSERT( w6[0] = cvl( "1234" ) )
 		CU_ASSERT( w6[1] = cvl( "5678" ) )
 		CU_ASSERT( w6[2] = cvshort( "90" ) )
 		CU_ASSERT( w6[3] = 0 )
 		CU_ASSERT( w6[4] = 0 )
+		CU_ASSERT( bytesread = 10 )
 	#endif
 	CU_ASSERT( w6[5] = 0 )
-	CU_ASSERT( bytesread = 10 )
 
 	bytesread = 0
 	*pz6 = "00000"
@@ -396,21 +416,25 @@ private sub test cdecl( )
 	bytesread = 0
 	*pw6 = "00000"
 	CU_ASSERT( get( #f, 1ll, *pw6, , bytesread ) = 0 )
-	#if sizeof(wstring) = 2
+	#if sizeof(wstring) = 1
+		CU_ASSERT( (*pw6) = "12345" )
+		CU_ASSERT( bytesread = 5 )
+	#elseif sizeof(wstring) = 2
 		CU_ASSERT( (*pw6)[0] = cvshort( "12" ) )
 		CU_ASSERT( (*pw6)[1] = cvshort( "34" ) )
 		CU_ASSERT( (*pw6)[2] = cvshort( "56" ) )
 		CU_ASSERT( (*pw6)[3] = cvshort( "78" ) )
 		CU_ASSERT( (*pw6)[4] = cvshort( "90" ) )
+		CU_ASSERT( bytesread = 10 )
 	#elseif sizeof(wstring) = 4
 		CU_ASSERT( (*pw6)[0] = cvl( "1234" ) )
 		CU_ASSERT( (*pw6)[1] = cvl( "5678" ) )
 		CU_ASSERT( (*pw6)[2] = cvshort( "90" ) )
 		CU_ASSERT( (*pw6)[3] = 0 )
 		CU_ASSERT( (*pw6)[4] = 0 )
+		CU_ASSERT( bytesread = 10 )
 	#endif
 	CU_ASSERT( (*pw6)[5] = 0 )
-	CU_ASSERT( bytesread = 10 )
 
 	bytesread = 0
 	CU_ASSERT( get( #f, 1ll, array4b(), , bytesread ) = 0 )
