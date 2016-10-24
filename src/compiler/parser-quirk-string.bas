@@ -189,26 +189,23 @@ private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
 
 	hMatchRPRNT( )
 
-	'' if wstring, check if compile-time conversion can be done
-	if( is_wstr and (env.wchar_doconv = FALSE) ) then
-		isconst = FALSE
-	else
-		'' constant? evaluate at compile-time
-		isconst = TRUE
-		for i = 0 to cnt-1
-			if( astIsCONST( exprtb(i) ) = FALSE ) then
-				isconst = FALSE
-				exit for
-			end if
+	'' If all arguments are constant do the evaluation at compile-time.
+	'' We can do this because we generate internal escape codes which are
+	'' independent of compiler or target's sizeof(wstring) or the locale.
+	isconst = TRUE
+	for i = 0 to cnt-1
+		if( astIsCONST( exprtb(i) ) = FALSE ) then
+			isconst = FALSE
+			exit for
+		end if
 
-        	'' when the constant value is 0, we must not handle
-            '' this as a constant string
-			if( astConstEqZero( exprtb(i) ) ) then
-				isconst = FALSE
-				exit for
-			end if
-		next
-	end if
+		'' when the constant value is 0, we must not handle
+		'' this as a constant string
+		if( astConstEqZero( exprtb(i) ) ) then
+			isconst = FALSE
+			exit for
+		end if
+	next
 
 	if( isconst ) then
 		if( is_wstr = FALSE ) then
