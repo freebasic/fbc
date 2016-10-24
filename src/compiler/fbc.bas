@@ -999,6 +999,10 @@ private function hLinkFiles( ) as integer
 		ldcline += " -Bstatic"
 	end if
 
+	if( fbGetOption( FB_COMPOPT_PIC ) ) then
+		ldcline += " -pie"
+	end if
+
 	if( len( fbc.mapfile ) > 0) then
 		ldcline += " -Map " + fbc.mapfile
 	end if
@@ -2779,7 +2783,7 @@ end sub
 '' Whether a target needs shared libraries to be built with PIC.
 '' (Note: Android 5.0+ also need executables to be built with PIC (gcc -pie argument),
 '' but Android 4.0- don't support PIE executables. So it's up to the user to decide
-'' and pass argument to gcc.)
+'' and pass that argument to gcc.)
 private function hTargetNeedsPIC( ) as integer
 	function = FALSE
 	if( fbGetCpuFamily( ) <> FB_CPUFAMILY_X86 ) then

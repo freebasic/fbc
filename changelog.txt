@@ -581,7 +581,7 @@ Version 1.06.0
 - Add "-arch armv5te" cpu type option, and several arch aliases: x86 (for 686), armeabi and armv5 (for armv5te), armv7 and armv7a (for armv7-a)
 - Android support. Commandline executables and shared/static libraries only; gfxlib (graphical/audio commands) and also console commands like "color" are not supported, nor does the android libc support locales for string<->wstring conversion. THREADCALL is also not enabled. The default target abi is armeabi; use arch=x86, arch=armv7a, or arch=aarch64 to target a different abi.
 - "-fpu neon" option for ARM archs (passed through to gcc).
-- -pic option (position-independent code) is now allowed on x86 (where it forces -gen gcc) and when building executables
+- -pic option (position-independent code) is now allowed on x86 (where it forces -gen gcc) and when building executables (in which case it passes -pie option to ld to produce position independent executables)
 
 [fixed]
 - win/d3dx9.bi no longer has a hard-coded #inclib "d3dx9d". d3dx9d.dll is apparently not a generally valid choice. In practice programs have to be linked against d3dx9_33.dll or d3dx9_39.dll, etc.
