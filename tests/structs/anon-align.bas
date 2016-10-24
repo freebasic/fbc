@@ -2,6 +2,18 @@
 
 namespace fbc_tests.structs.anon_align
 
+'' On 32bit Win32/MinGW, doubles/longints are aligned to 8, but on
+'' 32bit Linux and others, doubles/longints are aligned to 4.
+'' (This often results in tighter packing, and only few cases are
+'' the same as on MinGW)
+''
+'' On 64bit, doubles/longints are aligned to 8 everywhere.
+#if defined( __FB_64BIT__ ) or defined( __FB_WIN32__ ) or defined( __FB_ARM__ )
+	#define QWORD_ALIGN 8
+#else
+	#define QWORD_ALIGN 4
+#endif
+
 type foo1
     padding as long
     union
@@ -80,7 +92,7 @@ sub testAnonPadding cdecl()
 		end union
 		as long c
 	end type
-	#if defined( __FB_64BIT__) or defined( __FB_WIN32__ )
+	#if QWORD_ALIGN = 8
 		CU_ASSERT(sizeof(B) = 24)
 		CU_ASSERT(offsetof(B, c) = 16)
 	#else

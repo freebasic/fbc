@@ -1,14 +1,9 @@
 # include "fbcu.bi"
 
-'' no point testing DOS, wstrings aren't supported there at all anyways
-#ifndef __FB_DOS__
-
 namespace fbc_tests.wstrings.wz_conv
 
 sub testWstringToZstring cdecl( )
 	dim w as wstring * 50
-
-	#assert (sizeof(wstring) = 2) or (sizeof(wstring) = 4)
 
 	'' Store some Unicode text into w. This Russian text here happens to be
 	'' the same for UTF16 (Windows wstring) and UTF32 (Linux wstring).
@@ -63,5 +58,3 @@ sub ctor( ) constructor
 end sub
 
 end namespace
-
-#endif

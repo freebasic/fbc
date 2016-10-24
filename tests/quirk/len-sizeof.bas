@@ -2,6 +2,15 @@
 
 namespace fbc_tests.quirk.len_sizeof
 
+#if defined( __FB_WIN32__ )
+CONST WCHAR_SIZE = 2
+#elseif defined( __FB_DOS__ ) or defined( __FB_ANDROID__ )
+CONST WCHAR_SIZE = 1
+#else
+CONST WCHAR_SIZE = 4
+#endif
+
+
 sub lenString cdecl( )
 	dim as string s = "123"
 	dim as string ptr p = @s
@@ -283,19 +292,9 @@ sub sizeofVar cdecl( )
 	CU_ASSERT( sizeof( z32 ) = 32 )
 	CU_ASSERT( sizeof( w32 ) = 32 * sizeof( wstring ) )
 
-#if defined( __FB_WIN32__ )
-	CU_ASSERT( sizeof( wstr( "" ) ) = 2 )
-	CU_ASSERT( sizeof( wstr( "test" ) ) = 10 )
-	CU_ASSERT( sizeof( w32 ) = 64 )
-#elseif defined( __FB_DOS__ )
-	CU_ASSERT( sizeof( wstr( "" ) ) = 1 )
-	CU_ASSERT( sizeof( wstr( "test" ) ) = 5 )
-	CU_ASSERT( sizeof( w32 ) = 32 )
-#else
-	CU_ASSERT( sizeof( wstr( "" ) ) = 4 )
-	CU_ASSERT( sizeof( wstr( "test" ) ) = 20 )
-	CU_ASSERT( sizeof( w32 ) = 128 )
-#endif
+	CU_ASSERT( sizeof( wstr( "" ) ) = WCHAR_SIZE )
+	CU_ASSERT( sizeof( wstr( "test" ) ) = 5 * WCHAR_SIZE )
+	CU_ASSERT( sizeof( w32 ) = 32 * WCHAR_SIZE )
 
 	CU_ASSERT(    len( x1 ) = sizeof( integer ) * 4 )
 	CU_ASSERT( sizeof( x1 ) = sizeof( integer ) * 4 )
@@ -362,22 +361,10 @@ private sub sizeofType cdecl( )
 	CU_ASSERT(    len( wstring * 5 ) = 5 * sizeof( wstring ) )
 	CU_ASSERT( sizeof( wstring * 5 ) = 5 * sizeof( wstring ) )
 
-#if defined( __FB_WIN32__ )
-	CU_ASSERT(    len( wstring ) = 2 )
-	CU_ASSERT( sizeof( wstring ) = 2 )
-	CU_ASSERT(    len( wstring * 5 ) = 10 )
-	CU_ASSERT( sizeof( wstring * 5 ) = 10 )
-#elseif defined( __FB_DOS__ )
-	CU_ASSERT(    len( wstring ) = 1 )
-	CU_ASSERT( sizeof( wstring ) = 1 )
-	CU_ASSERT(    len( wstring * 5 ) = 5 )
-	CU_ASSERT( sizeof( wstring * 5 ) = 5 )
-#else
-	CU_ASSERT(    len( wstring ) = 4 )
-	CU_ASSERT( sizeof( wstring ) = 4 )
-	CU_ASSERT(    len( wstring * 5 ) = 20 )
-	CU_ASSERT( sizeof( wstring * 5 ) = 20 )
-#endif
+	CU_ASSERT(    len( wstring ) = WCHAR_SIZE )
+	CU_ASSERT( sizeof( wstring ) = WCHAR_SIZE )
+	CU_ASSERT(    len( wstring * 5 ) = 5 * WCHAR_SIZE )
+	CU_ASSERT( sizeof( wstring * 5 ) = 5 * WCHAR_SIZE )
 
 	type a
 		as integer a, b, c, d
