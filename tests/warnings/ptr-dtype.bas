@@ -69,7 +69,7 @@ testNoWarning( pi  , pui  )
 	testNoWarning( pul, pui )
 #endif
 
-#ifdef __FB_UNIX__
+#if sizeof(wstring) = 4
 	'' wstring = 4 bytes = long
 	testNoWarning( pl , pw )
 	testNoWarning( pul, pw )
@@ -78,7 +78,7 @@ testNoWarning( pi  , pui  )
 		testNoWarning( pi , pw )
 		testNoWarning( pui, pw )
 	#endif
-#elseif defined(__FB_DOS__)
+#elseif sizeof(wstring) = 1
 	'' wstring = byte = zstring
 	testNoWarning( pb , pw )
 	testNoWarning( pub, pw )

@@ -1,6 +1,6 @@
 /* libfb initialization for Unix */
 
-/* for getpgid() */
+/* for getpgid() and PTHREAD_MUTEX_RECURSIVE */
 #define _GNU_SOURCE 1
 
 #include "../fb.h"
@@ -451,17 +451,7 @@ static void hInit( void )
 
 	/* make mutex recursive to behave the same on Win32 and Linux (if possible) */
 	pthread_mutexattr_init(&attr);
-
-	/* TODO: Figure out which Unixy systems have/don't have PTHREAD_MUTEX_RECURSIVE[_NP] */
-	/* Currently it seems that PTHREAD_MUTEX_RECURSIVE is the standard POSIX name,
-	   while PTHREAD_MUTEX_RECURSIVE_NP is something non-posixy used on Linux.
-	   Some Linux distros (or glibc/pthread versions) only seemed to make the *_NP
-	   version available (at least this was observed in the past). */
-#ifdef HOST_LINUX
-	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE_NP);
-#else
 	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-#endif
 
 #ifdef ENABLE_MT
 	/* Init multithreading support */

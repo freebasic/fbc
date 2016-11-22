@@ -1222,9 +1222,7 @@ private sub _emitJMPTB _
 		byval maxval as ulongint _
 	)
 
-	dim as FBSYMBOL ptr label = any
 	dim as string deflabelname, tb
-	dim as integer i = any
 
 	deflabelname = *symbGetMangledName( deflabel )
 
@@ -1246,17 +1244,27 @@ private sub _emitJMPTB _
 	''
 
 	outEx( tb + ":" + NEWLINE )
-	i = 0
-	for value as ulongint = minval to maxval
-		assert( i < labelcount )
-		if( value = values1[i] ) then
-			label = labels1[i]
-			i += 1
-		else
-			label = deflabel
-		end if
-		outp( *_getTypeString( FB_DATATYPE_UINT ) + " " + *symbGetMangledName( label ) )
-	next
+	if( minval <= maxval ) then
+		var i = 0
+		var value = minval
+		do
+			assert( i < labelcount )
+
+			dim as FBSYMBOL ptr label
+			if( value = values1[i] ) then
+				label = labels1[i]
+				i += 1
+			else
+				label = deflabel
+			end if
+			outp( *_getTypeString( FB_DATATYPE_UINT ) + " " + *symbGetMangledName( label ) )
+
+			if( value = maxval ) then
+				exit do
+			end if
+			value += 1
+		loop
+	end if
 
 end sub
 

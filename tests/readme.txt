@@ -88,6 +88,10 @@ EXTRAERR=1
 ARCH=486
    Adds '-arch ARCH' option when compiling tests.
 
+TARGET=arch-os-variant
+   Adds '-target TARGET' option when compiling tests. This is used
+   for cross-compiling; normally you pass a binutils target triplet.
+
 FPU=FPU|SSE
    Adds '-fpu FPU|SSE' option when compiling tests.
 

@@ -337,12 +337,12 @@ static ssize_t hUTF32ToUTF16( FILE *fp, FB_WCHAR *dst, ssize_t max_chars )
 
 		if( c > UTF16_MAX_BMP )
 		{
+			c -= UTF16_HALFBASE;
 			if( chars > 1 )
 			{
 				*dst++ = (UTF_16)((c >> UTF16_HALFSHIFT) + UTF16_SUR_HIGH_START);
 				--chars;
 			}
-
 			c = ((c & UTF16_HALFMASK) + UTF16_SUR_LOW_START);
 		}
 

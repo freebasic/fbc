@@ -28,8 +28,6 @@ endif
 
 # verify the FB_LANG option
 # - must be set to a valid -lang option
-$
-
 ifeq ($(FB_LANG),)
 $(error FB_LANG option must be specified)
 endif
@@ -114,13 +112,13 @@ SRCLIST_COMPILE_AND_RUN_OK += $(SRCLIST_CUNIT)
 endif
 SRCLIST_COMPILE_AND_RUN_OK := $(filter %.bas,$(patsubst %.bmk,%.bas,$(SRCLIST_COMPILE_AND_RUN_OK)))
 OBJLIST_COMPILE_AND_RUN_OK := $(addsuffix .o,$(basename $(SRCLIST_COMPILE_AND_RUN_OK)))
-APPLIST_COMPILE_AND_RUN_OK := $(addsuffix $(EXEEXT),$(basename $(SRCLIST_COMPILE_AND_RUN_OK)))
+APPLIST_COMPILE_AND_RUN_OK := $(addsuffix $(TARGET_EXEEXT),$(basename $(SRCLIST_COMPILE_AND_RUN_OK)))
 LOGLIST_COMPILE_AND_RUN_OK := $(addsuffix .log,$(basename $(SRCLIST_COMPILE_AND_RUN_OK)))
 
 # COMPILE_AND_RUN_FAIL
 SRCLIST_COMPILE_AND_RUN_FAIL := $(filter %.bas,$(patsubst %.bmk,%.bas,$(SRCLIST_COMPILE_AND_RUN_FAIL)))
 OBJLIST_COMPILE_AND_RUN_FAIL := $(addsuffix .o,$(basename $(SRCLIST_COMPILE_AND_RUN_FAIL)))
-APPLIST_COMPILE_AND_RUN_FAIL := $(addsuffix $(EXEEXT),$(basename $(SRCLIST_COMPILE_AND_RUN_FAIL)))
+APPLIST_COMPILE_AND_RUN_FAIL := $(addsuffix $(TARGET_EXEEXT),$(basename $(SRCLIST_COMPILE_AND_RUN_FAIL)))
 LOGLIST_COMPILE_AND_RUN_FAIL := $(addsuffix .log,$(basename $(SRCLIST_COMPILE_AND_RUN_FAIL)))
 
 # MULI_MODULE_OK

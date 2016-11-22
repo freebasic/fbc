@@ -63,6 +63,11 @@ FBC_CFLAGS += -arch $(ARCH)
 FBC_LFLAGS += -arch $(ARCH)
 endif
 
+ifneq ($(TARGET),)
+FBC_CFLAGS += -target $(TARGET)
+FBC_LFLAGS += -target $(TARGET)
+endif
+
 ifneq ($(FPU),)
 FBC_CFLAGS += -fpu $(FPU)
 endif
@@ -104,7 +109,7 @@ SRCSX := $(FILE)
 endif
 
 MAIN_MODULE := $(basename $(MAINX))
-APP := $(MAIN_MODULE)$(EXEEXT)
+APP := $(MAIN_MODULE)$(TARGET_EXEEXT)
 
 ifeq ($(MAIN_MODULE),)
 $(error main module not specified)

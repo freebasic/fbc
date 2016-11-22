@@ -148,6 +148,17 @@ function astLoadJMPTB( byval n as ASTNODE ptr ) as IRVREG ptr
 	function = NULL
 end function
 
+'' Pre-calculate -minval * sizeof(ptr) as Long value, because the offset in an
+'' x86 IDX expression is signed 32bit.
+private function hPrecalcMinvalOffset( byval minval as ulongint, byval dtype as integer ) as longint
+	astBeginHideWarnings( )
+	var t = astNewCONSTi( minval, dtype )
+	t = astNewUOP( AST_OP_NEG, t )
+	t = astNewBOP( AST_OP_MUL, t, astNewCONSTi( env.pointersize, dtype ) )
+	function = astConstFlushToInt( t, FB_DATATYPE_LONG )
+	astEndHideWarnings( )
+end function
+
 function astBuildJMPTB _
 	( _
 		byval tempvar as FBSYMBOL ptr, _
@@ -217,10 +228,17 @@ function astBuildJMPTB _
 				astNewCONSTi( maxval - minval, dtype ), _
 				deflabel, AST_OPOPT_NONE ) )
 
-		'' goto table[expr - minval]
+		'' Do
+		''    goto table[expr - minval]
+		'' by using an IDX
+		''    goto [table  +  expr * sizeof(ptr)  +  -minval * sizeof(ptr)]
+		''    goto [table + expr*4 + 16]
+		''    goto [table + expr*4 - 16]
+		'' instead of DEREF-BOP-ADDROF (IDX gives better code currently).
 		tree = astNewLINK( tree, _
 			astNewBRANCH( AST_OP_JUMPPTR, NULL, _
-				astNewIDX( astNewVAR( tbsym, -minval * env.pointersize ), _
+				astNewIDX( _
+					astNewVAR( tbsym, hPrecalcMinvalOffset( minval, dtype ) ), _
 					astNewBOP( AST_OP_MUL, _
 						astNewVAR( tempvar ), _
 						astNewCONSTi( env.pointersize, dtype ) ) ) ) )

@@ -69,8 +69,15 @@ private sub testDouble cdecl( )
 		end scope
 	#endmacro
 
-	checkVarDivD(  0.0,  0.0, NEGNAND )
-	checkVarDivD(  0.0, -0.0, NEGNAND )
+	' The sign bit for NaN results is unspecified by IEEE754,
+	' and x86 and ARM differ in its selection.
+	#ifdef __FB_ARM__
+		checkVarDivD(  0.0,  0.0, POSNAND )
+		checkVarDivD(  0.0, -0.0, POSNAND )
+	#else
+		checkVarDivD(  0.0,  0.0, NEGNAND )
+		checkVarDivD(  0.0, -0.0, NEGNAND )
+	#endif
 	checkVarDivD( -0.0,  0.0, NEGNAND )
 	checkVarDivD( -0.0, -0.0, NEGNAND )
 	checkVarDivD(  1.0,  0.0, POSINFD )
@@ -88,8 +95,13 @@ private sub testDouble cdecl( )
 		end scope
 	#endmacro
 
-	checkVarDivNegD(  0.0,  0.0, POSNAND )
-	checkVarDivNegD(  0.0, -0.0, POSNAND )
+	#ifdef __FB_ARM__
+		checkVarDivNegD(  0.0,  0.0, NEGNAND )
+		checkVarDivNegD(  0.0, -0.0, NEGNAND )
+	#else
+		checkVarDivNegD(  0.0,  0.0, POSNAND )
+		checkVarDivNegD(  0.0, -0.0, POSNAND )
+	#endif
 	checkVarDivNegD( -0.0,  0.0, POSNAND )
 	checkVarDivNegD( -0.0, -0.0, POSNAND )
 	checkVarDivNegD(  1.0,  0.0, NEGINFD )
@@ -165,8 +177,13 @@ private sub testSingle cdecl( )
 		end scope
 	#endmacro
 
-	checkVarDivF(  0.0f,  0.0f, NEGNANF )
-	checkVarDivF(  0.0f, -0.0f, NEGNANF )
+	#ifdef __FB_ARM__
+		checkVarDivF(  0.0f,  0.0f, POSNANF )
+		checkVarDivF(  0.0f, -0.0f, POSNANF )
+	#else
+		checkVarDivF(  0.0f,  0.0f, NEGNANF )
+		checkVarDivF(  0.0f, -0.0f, NEGNANF )
+	#endif
 	checkVarDivF( -0.0f,  0.0f, NEGNANF )
 	checkVarDivF( -0.0f, -0.0f, NEGNANF )
 	checkVarDivF(  1.0f,  0.0f, POSINFF )
@@ -184,8 +201,13 @@ private sub testSingle cdecl( )
 		end scope
 	#endmacro
 
-	checkVarDivNegF(  0.0f,  0.0f, POSNANF )
-	checkVarDivNegF(  0.0f, -0.0f, POSNANF )
+	#ifdef __FB_ARM__
+		checkVarDivNegF(  0.0f,  0.0f, NEGNANF )
+		checkVarDivNegF(  0.0f, -0.0f, NEGNANF )
+	#else
+		checkVarDivNegF(  0.0f,  0.0f, POSNANF )
+		checkVarDivNegF(  0.0f, -0.0f, POSNANF )
+	#endif
 	checkVarDivNegF( -0.0f,  0.0f, POSNANF )
 	checkVarDivNegF( -0.0f, -0.0f, POSNANF )
 	checkVarDivNegF(  1.0f,  0.0f, NEGINFF )

@@ -7,14 +7,14 @@ typedef uint8_t  UTF_8;
 #define UTF8_BYTEMASK            0xBF
 #define UTF8_BYTEMARK            0x80
 
-#define UTF16_MAX_BMP            (UTF_32)0x0000FFFF
-#define UTF16_SUR_HIGH_START     (UTF_32)0xD800
-#define UTF16_SUR_HIGH_END       (UTF_32)0xDBFF
-#define UTF16_SUR_LOW_START      (UTF_32)0xDC00
-#define UTF16_SUR_LOW_END        (UTF_32)0xDFFF
+#define UTF16_MAX_BMP            ((UTF_32)0x0000FFFF)
+#define UTF16_SUR_HIGH_START     ((UTF_32)0xD800)
+#define UTF16_SUR_HIGH_END       ((UTF_32)0xDBFF)
+#define UTF16_SUR_LOW_START      ((UTF_32)0xDC00)
+#define UTF16_SUR_LOW_END        ((UTF_32)0xDFFF)
 #define UTF16_HALFSHIFT          10
-#define UTF16_HALFBASE           (UTF_32)0x0010000UL
-#define UTF16_HALFMASK           (UTF_32)0x3FFUL
+#define UTF16_HALFBASE           ((UTF_32)0x0010000UL)
+#define UTF16_HALFMASK           ((UTF_32)0x3FFUL)
 
 #if defined HOST_DOS
 #	include <ctype.h>

@@ -27,9 +27,9 @@ private sub test cdecl( )
 				"incl %0\n" : "+m" (a) : :
 			end asm
 		#endif
+		CU_ASSERT( a = 2 )
 	#endif
 
-	CU_ASSERT( a = 2 )
 end sub
 
 private sub ctor( ) constructor

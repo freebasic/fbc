@@ -154,6 +154,7 @@ static UTF_16 *hUTF32ToUTF16( const FB_WCHAR *src, ssize_t chars, UTF_16 *dst, s
 
 			*bytes += sizeof( UTF_16 );
 
+			c -= UTF16_HALFBASE;
 			dst[i++] = (UTF_16)((c >> UTF16_HALFSHIFT) + UTF16_SUR_HIGH_START);
 			c = ((c & UTF16_HALFMASK) + UTF16_SUR_LOW_START);
 		}

@@ -49,7 +49,7 @@ SRCLIST := $(patsubst .bmk,.bas,$(SRCLIST))
 
 # ------------------------------------------------------------------------
 
-MAINEXE := fbc-tests$(EXEEXT)
+MAINEXE := fbc-tests$(TARGET_EXEEXT)
 
 FBCU_DIR := fbcu
 FBCU_INC := $(FBCU_DIR)/include
@@ -58,7 +58,7 @@ FBCU_BIN := $(FBCU_DIR)/libfbcu.a
 
 FBCU_LIBS := -l cunit -l fbcu
 
-ifeq ($(TARGET),win32)
+ifeq ($(TARGET_OS),win32)
     FBCU_LIBS += -l user32
 endif
 
@@ -75,6 +75,9 @@ endif
 ifdef ARCH
 	FBC_CFLAGS += -arch $(ARCH)
 endif
+ifneq ($(TARGET),)
+	FBC_CFLAGS += -target $(TARGET)
+endif
 ifneq ($(FPU),)
 	FBC_CFLAGS += -fpu $(FPU)
 endif
@@ -88,6 +91,9 @@ ifdef DEBUG
 endif
 ifdef ARCH
 	FBC_LFLAGS += -arch $(ARCH)
+endif
+ifdef TARGET
+	FBC_LFLAGS += -target $(TARGET)
 endif
 
 OBJLIST := $(SRCLIST:%.bas=%.o)
@@ -107,7 +113,7 @@ all : make_fbcu $(CUNIT_TESTS_INC) build_tests run_tests
 
 .PHONY: make_fbcu $(FBCU_BIN)
 make_fbcu : $(FBCU_BIN)
-	cd $(FBCU_DIR) && make FPU=$(FPU) ARCH=$(ARCH)
+	cd $(FBCU_DIR) && make FPU=$(FPU) ARCH=$(ARCH) TARGET=$(TARGET)
 
 # ------------------------------------------------------------------------
 # Auto-generate the file CUNIT_TESTS_INC - needed by this makefile

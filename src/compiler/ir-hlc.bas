@@ -3043,9 +3043,7 @@ private sub _emitJmpTb _
 	)
 
 	dim as string tb, temp, ln
-	dim as FBSYMBOL ptr label = any
 	dim as EXPRNODE ptr l = any
-	dim as integer i = any
 
 	var dtype = v1->dtype
 	assert( (dtype = FB_DATATYPE_UINT) or (dtype = FB_DATATYPE_ULONGINT) )
@@ -3069,17 +3067,27 @@ private sub _emitJmpTb _
 	hWriteLine( "static const void* " + tb + "[" + exprFlush( l ) + "] = {", TRUE )
 	sectionIndent( )
 
-	i = 0
-	for value as ulongint = minval to maxval
-		assert( i < labelcount )
-		if( value = values[i] ) then
-			label = labels[i]
-			i += 1
-		else
-			label = deflabel
-		end if
-		hWriteLine( "&&" + *symbGetMangledName( label ) + ",", TRUE )
-	next
+	if( minval <= maxval ) then
+		var i = 0
+		var value = minval
+		do
+			assert( i < labelcount )
+
+			dim as FBSYMBOL ptr label
+			if( value = values[i] ) then
+				label = labels[i]
+				i += 1
+			else
+				label = deflabel
+			end if
+			hWriteLine( "&&" + *symbGetMangledName( label ) + ",", TRUE )
+
+			if( value = maxval ) then
+				exit do
+			end if
+			value += 1
+		loop
+	end if
 
 	sectionUnindent( )
 	hWriteLine( "};", TRUE )
