@@ -24,6 +24,8 @@ declare sub	parserEnd ( )
 declare sub	parserSetCtx ( )
 
 '' globals
+dim shared env as FBENV
+
 	dim shared infileTb( ) as FBFILE
 
 	dim shared as FB_LANG_INFO langTb(0 to FB_LANGS-1) = _

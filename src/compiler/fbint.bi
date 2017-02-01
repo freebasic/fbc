@@ -642,9 +642,6 @@ declare function fbGetInputFileParentDir( ) as string
 declare sub fbAddLib(byval libname as zstring ptr)
 declare sub fbAddLibPath(byval path as zstring ptr)
 
-''
-'' super globals
-''
-common shared as FBENV env
+extern env as FBENV
 
 #endif ''__FBINT_BI__
