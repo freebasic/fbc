@@ -1,6 +1,7 @@
 Version 1.06.0
 
 [changed]
+- Name mangling of Integer/Long parameters was reversed on 32bit to match 64bit, so the same FB and C++ code will be compatible on both 32bit and 64bit. Integer is mangled as C++ long (except on Win64), Long is mangled as C++ int.
 - Adjusted warning text for "mixed bool/nonbool operands" warning
 - test-suite uses libfbcunit for unit testing framework
 - SELECT CASE AS CONST respects data type and will show overflow warnings on out-of-range constants
