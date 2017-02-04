@@ -268,3 +268,137 @@ testPtr( pudt, ui  )
 'testPtr( pudt, ll  )
 'testPtr( pudt, ull )
 testPtr( pudt, enum1a )
+
+#print
+#print "UOPs"
+
+#macro testUops( x )
+	#print "not:"
+	#print typeof(   not (x)   )
+	#print "negation:"
+	#print typeof(      -(x)   )
+	#print "abs:"
+	#print typeof(  abs( (x) ) )
+	#print "sgn:"
+	#print typeof(  sgn( (x) ) )
+	#print "sin:"
+	#print typeof(  sin( (x) ) )
+	#print "asin:"
+	#print typeof( asin( (x) ) )
+	#print "cos:"
+	#print typeof(  cos( (x) ) )
+	#print "acos:"
+	#print typeof( acos( (x) ) )
+	#print "tan:"
+	#print typeof(  tan( (x) ) )
+	#print "atn:"
+	#print typeof(  atn( (x) ) )
+	#print "sqr:"
+	#print typeof(  sqr( (x) ) )
+	#print "log:"
+	#print typeof(  log( (x) ) )
+	#print "exp:"
+	#print typeof(  exp( (x) ) )
+	#print "int:"
+	#print typeof(  int( (x) ) )
+	#print "fix:"
+	#print typeof(  fix( (x) ) )
+	#print "frac:"
+	#print typeof( frac( (x) ) )
+#endmacro
+
+#print
+#print "cbyte(0):"
+testUops( cbyte( 0 ) )
+
+#print
+#print "b:"
+testUops( b )
+
+#print
+#print "cubyte(0):"
+testUops( cubyte( 0 ) )
+
+#print
+#print "ub:"
+testUops( ub )
+
+#print
+#print "cshort(0):"
+testUops( cshort( 0 ) )
+
+#print
+#print "sh:"
+testUops( sh )
+
+#print
+#print "cushort(0):"
+testUops( cushort( 0 ) )
+
+#print
+#print "ush:"
+testUops( ush )
+
+#print
+#print "0l:"
+testUops( 0l )
+
+#print
+#print "l:"
+testUops( l )
+
+#print
+#print "0ul:"
+testUops( 0ul )
+
+#print
+#print "ul:"
+testUops( ul )
+
+#print
+#print "0ll:"
+testUops( 0ll )
+
+#print
+#print "ll:"
+testUops( ll )
+
+#print
+#print "0ull:"
+testUops( 0ull )
+
+#print
+#print "ull:"
+testUops( ull )
+
+#print
+#print "0:"
+testUops( 0 )
+
+#print
+#print "i:"
+testUops( i )
+
+#print
+#print "0u:"
+testUops( 0u )
+
+#print
+#print "ui:"
+testUops( ui )
+
+#print
+#print "0.0f:"
+testUops( 0.0f )
+
+#print
+#print "f:"
+testUops( f )
+
+#print
+#print "0.0d:"
+testUops( 0.0d )
+
+#print
+#print "d:"
+testUops( d )
