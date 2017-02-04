@@ -18561,7 +18561,7 @@ ul:
 not:
 UINTEGER
 negation:
-UINTEGER
+INTEGER
 abs:
 UINTEGER
 sgn:
@@ -18697,7 +18697,7 @@ ull:
 not:
 ULONGINT
 negation:
-ULONGINT
+LONGINT
 abs:
 ULONGINT
 sgn:
@@ -18833,7 +18833,7 @@ ui:
 not:
 UINTEGER
 negation:
-UINTEGER
+INTEGER
 abs:
 UINTEGER
 sgn:

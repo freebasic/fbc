@@ -18697,7 +18697,7 @@ ull:
 not:
 UINTEGER
 negation:
-UINTEGER
+INTEGER
 abs:
 UINTEGER
 sgn:
@@ -18833,7 +18833,7 @@ ui:
 not:
 UINTEGER
 negation:
-UINTEGER
+INTEGER
 abs:
 UINTEGER
 sgn:

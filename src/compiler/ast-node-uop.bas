@@ -224,9 +224,28 @@ function astNewUOP _
 			subtype = o->subtype
 		end if
 
-	'' with SGN(int) the result is always a signed integer
+	'' with SGN(int) and [u]integer negation the result is always a signed integer
 	case AST_OP_SGN
 		if( typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER ) then
+			dtype = typeToSigned( dtype )
+		end if
+
+	case AST_OP_NEG
+		if( not typeIsSigned( dtype ) ) then
+			'' Check for constant overflows, for example:
+			'' NEG( cushort( 32769 ) ) is -32769,
+			'' but the lowest short is -32768.
+			if( astIsCONST( o ) ) then
+				if( astShouldShowWarnings( ) ) then
+					'' Highest bit set? (meaning the negation cannot be represented,
+					'' since the highest bit will be overwritten with the sign bit)
+					if( astConstGetUint( o ) > (1ull shl (typeGetBits( dtype ) - 1)) ) then
+						errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
+					end if
+				end if
+			end if
+
+			'' Negation on unsigned gives signed result
 			dtype = typeToSigned( dtype )
 		end if
 
@@ -265,26 +284,7 @@ function astNewUOP _
 
 	'' constant folding
 	if( astIsCONST( o ) ) then
-		if( op = AST_OP_NEG ) then
-			if( typeIsSigned( o->dtype ) = FALSE ) then
-				'' Check for overflows, for example:
-				'' NEG( cushort( 32769 ) ) is -32769,
-				'' but the lowest short is -32768.
-
-				if( astShouldShowWarnings( ) ) then
-					'' Highest bit set? (meaning the negation cannot be represented,
-					'' since the highest bit will be overwritten with the sign bit)
-					if( astConstGetUint( o ) > (1ull shl (typeGetBits( dtype ) - 1)) ) then
-						errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
-					end if
-				end if
-
-				dtype = typeToSigned( dtype )
-			end if
-		end if
-
 		o = hConstUop( op, dtype, subtype, o )
-
 		o->dtype = dtype
 		return o
 	end if
