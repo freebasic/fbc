@@ -1211,6 +1211,8 @@ read_char:
 		end if
 	end if
 
+	t.class = FB_TKCLASS_NUMLITERAL
+	t.id = t.dtype
 end sub
 
 '':::::
@@ -1696,41 +1698,34 @@ re_read:
 	select case as const char
 	'' '.'?
 	case CHAR_DOT
-
-	    '' only check for fpoint literals if not inside a comment or parsing an $include
-	    if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
-
-	    	dim as uinteger lachar = lexGetLookAheadChar( TRUE )
-
-	    	'' '0' .. '9'?
-	    	if( (lachar >= CHAR_0) and (lachar <= CHAR_9) ) then
-				goto read_number
+		'' only check for fpoint literals if not inside a comment or parsing an $include
+		if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
+			var lachar = lexGetLookAheadChar( TRUE )
+			'' '0' .. '9'?
+			if( (lachar >= CHAR_0) and (lachar <= CHAR_9) ) then
+				hReadNumber( *t, flags )
+				exit select
 			end if
-
 		end if
-
 		goto read_char
 
 	'' '&'?
 	case CHAR_AMP
 		select case lexGetLookAheadChar( )
 		case CHAR_HUPP, CHAR_HLOW, CHAR_OUPP, CHAR_OLOW, CHAR_BUPP, CHAR_BLOW
-			goto read_number
+			hReadNumber( *t, flags )
+		case else
+			t->class = FB_TKCLASS_OPERATOR
+			t->id = lexEatChar( )
+			t->dtype = t->id
+			t->len = 1
+			t->text[0] = char                   	'' t.text = chr( char )
+			t->text[1] = 0                          '' /
 		end select
-
-		t->class = FB_TKCLASS_OPERATOR
-		t->id = lexEatChar( )
-		t->dtype = t->id
-		t->len = 1
-		t->text[0] = char                   	'' t.text = chr( char )
-		t->text[1] = 0                          '' /
 
 	'' '0' .. '9'?
 	case CHAR_0 to CHAR_9
-read_number:
 		hReadNumber( *t, flags )
-		t->class = FB_TKCLASS_NUMLITERAL
-		t->id = t->dtype
 
 	'' A-Z, a-z, _
 	case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_UNDER
