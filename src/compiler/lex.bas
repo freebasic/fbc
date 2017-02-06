@@ -910,25 +910,18 @@ private sub readNumberChars _
 		byref value as ulongint _
 	)
 
+	'' Skip leading zeroes if not inside a comment or parsing an $include
+	var save_first_leading_zero = ((flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) <> 0)
+
 	dim value_prev as ulongint
 
 	do
 		var c = lexCurrentChar( )
 		select case as const c
-		case CHAR_0
+		case CHAR_0 to CHAR_9
 			lexEatChar( )
-			if( t.len > 0 ) then
-				if( skipchar = FALSE ) then
-					*pnum = CHAR_0
-					pnum += 1
-					t.len += 1
-					value = (value shl 3) + (value shl 1)
-				end if
-			end if
-
-		case CHAR_1 to CHAR_9
-			lexEatChar( )
-			if( skipchar = FALSE ) then
+			if( ((c <> CHAR_0) or (t.len > 0) or save_first_leading_zero) and _
+			    (not skipchar) ) then
 				*pnum = c
 				pnum += 1
 				t.len += 1
@@ -1052,30 +1045,14 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 	*pnum = 0
 	t.len = 0
 
-	var c = lexEatChar( )
-
-	select case as const c
+	select case as const lexCurrentChar( )
 	'' integer part
-	case CHAR_0
-	    '' skip the '0' if not inside a comment or parsing an $include
-	    if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) <> 0 ) then
-			*pnum = CHAR_0
-			pnum += 1
-			t.len += 1
-	    end if
-
-		readNumberChars( t, flags, pnum, skipchar, value )
-
-	case CHAR_1 to CHAR_9
-		*pnum = c
-		pnum += 1
-		t.len += 1
-		value = c - CHAR_0
-
+	case CHAR_0 to CHAR_9
 		readNumberChars( t, flags, pnum, skipchar, value )
 
 	'' fractional part
 	case CHAR_DOT
+		lexEatChar( )
 		'' add '.'
 		*pnum = CHAR_DOT
 		pnum += 1
@@ -1084,8 +1061,10 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 
 	'' hex, oct, bin
 	case CHAR_AMP
+		lexEatChar( )
 		t.len = 0
 		value = hReadNonDecNumber( pnum, t.len, t.dtype, flags )
+
 	end select
 
 	'' null-term
@@ -1125,7 +1104,7 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
 					lexEatChar( )
 					'' 'LL'?
-					c = lexCurrentChar( )
+					var c = lexCurrentChar( )
 					if( (c = CHAR_LUPP) or (c = CHAR_LLOW) ) then
 						lexEatChar( )
 						'' 'ULL' or 'LL'
