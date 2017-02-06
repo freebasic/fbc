@@ -747,8 +747,7 @@ end function
 private sub hReadFloatNumber _
 	( _
 		byref pnum as zstring ptr, _
-		byref tlen as integer, _
-		byref dtype as integer, _
+		byref t as FBTOKEN, _
 		byval hasdot as integer, _
 		byval flags as LEXCHECK _
 	)
@@ -757,8 +756,8 @@ private sub hReadFloatNumber _
 	dim as integer llen = any
 	dim as integer skipchar = any
 
-	dtype = env.lang.floatliteraldtype
-	llen = tlen
+	t.dtype = env.lang.floatliteraldtype
+	llen = t.len
 	skipchar = FALSE
 
 	'' DIGIT { DIGIT }
@@ -770,14 +769,14 @@ private sub hReadFloatNumber _
 			if( skipchar = FALSE ) then
 				*pnum = c
 				pnum += 1
-				tlen += 1
+				t.len += 1
 			end if
 		case else
 			exit do
 		end select
 
 		'' no more room?
-		if( tlen = FB_MAXNUMLEN ) then
+		if( t.len = FB_MAXNUMLEN ) then
 			'' not set yet?
 			if( skipchar = FALSE ) then
 				skipchar = TRUE
@@ -792,8 +791,8 @@ private sub hReadFloatNumber _
 		end if
 	loop
 
-	if( tlen > 7 + iif( hasdot, 1, 0 ) ) then
-		dtype = FB_DATATYPE_DOUBLE
+	if( t.len > 7 + iif( hasdot, 1, 0 ) ) then
+		t.dtype = FB_DATATYPE_DOUBLE
 	end if
 
 	'' [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ]
@@ -805,7 +804,7 @@ private sub hReadFloatNumber _
 		c = lexEatChar( )
 
 		if( c = CHAR_DLOW or c = CHAR_DUPP ) then
-			dtype = FB_DATATYPE_DOUBLE
+			t.dtype = FB_DATATYPE_DOUBLE
 		end if
 
 		if( skipchar = FALSE ) then
@@ -816,7 +815,7 @@ private sub hReadFloatNumber _
 			end if
 			*pnum = c
 			pnum += 1
-			tlen += 1
+			t.len += 1
 		end if
 
 		'' [opadd]
@@ -826,7 +825,7 @@ private sub hReadFloatNumber _
 			if( skipchar = FALSE ) then
 				*pnum = c
 				pnum += 1
-				tlen += 1
+				t.len += 1
 			end if
 		end if
 
@@ -838,14 +837,14 @@ private sub hReadFloatNumber _
 				if( skipchar = FALSE ) then
 					*pnum = c
 					pnum += 1
-					tlen += 1
+					t.len += 1
 				end if
 			case else
 				exit do
 			end select
 
 			'' no more room?
-			if( tlen = FB_MAXNUMLEN ) then
+			if( t.len = FB_MAXNUMLEN ) then
 				'' not set yet?
 				if( skipchar = FALSE ) then
 					skipchar = TRUE
@@ -866,7 +865,7 @@ private sub hReadFloatNumber _
 	select case as const lexCurrentChar( )
 	'' 'F', 'f'?
 	case CHAR_FUPP, CHAR_FLOW
-		dtype = FB_DATATYPE_SINGLE
+		t.dtype = FB_DATATYPE_SINGLE
 
 		if( (flags and (LEXCHECK_NOSUFFIX or LEXCHECK_NOLETTERSUFFIX)) = 0 ) then
 			c = lexEatChar( )
@@ -874,7 +873,7 @@ private sub hReadFloatNumber _
 		
 	'' '!'
 	case FB_TK_SGNTYPECHAR
-		dtype = FB_DATATYPE_SINGLE
+		t.dtype = FB_DATATYPE_SINGLE
 
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 			c = lexEatChar( )
@@ -882,7 +881,7 @@ private sub hReadFloatNumber _
 		
 	'' '#'?
 	case FB_TK_DBLTYPECHAR
-		dtype = FB_DATATYPE_DOUBLE
+		t.dtype = FB_DATATYPE_DOUBLE
 
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 			c = lexEatChar( )
@@ -891,11 +890,11 @@ private sub hReadFloatNumber _
 	end select
 
 	if( flags = LEXCHECK_EVERYTHING ) then
-		if( tlen - llen = 0 ) then
+		if( t.len - llen = 0 ) then
 			'' '0'
 			*pnum = CHAR_0
 			pnum += 1
-			tlen += 1
+			t.len += 1
 		end if
 	endif
 
@@ -940,7 +939,7 @@ private sub readNumberChars _
 				hasdot = TRUE
 			end if
 
-			hReadFloatNumber( pnum, t.len, t.dtype, hasdot, flags )
+			hReadFloatNumber( pnum, t, hasdot, flags )
 			exit do
 
 		case else
@@ -1057,7 +1056,7 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 		*pnum = CHAR_DOT
 		pnum += 1
 		t.len = 1
-		hReadFloatNumber( pnum, t.len, t.dtype, TRUE, flags )
+		hReadFloatNumber( pnum, t, TRUE, flags )
 
 	'' hex, oct, bin
 	case CHAR_AMP
