@@ -914,33 +914,21 @@ end sub
 ''                | FSUFFIX                       # is float
 ''                | .                             # is def### !!! context sensitive !!!
 ''
-private sub hReadNumber _
-	( _
-		byval pnum as zstring ptr, _
-		byref dtype as integer, _
-		byref tlen as integer, _
-		byval flags as LEXCHECK _
-	)
-
-	dim as uinteger c = any
-	dim as integer have_u_suffix = any
-	dim as ulongint value = any, value_prev = any
-	dim as integer skipchar = any, hasdot = any, warn = any
-
+private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 	'' Starting with SHORT for the integer literal parser,
 	'' may be changed to USHORT, LONG, ULONG, LONGINT, ULONGINT,
 	'' depending on the literal's size.
 	'' The float literal parser will change this to SINGLE/DOUBLE.
-	dtype = FB_DATATYPE_SHORT
+	t.dtype = FB_DATATYPE_SHORT
 
-	have_u_suffix = FALSE
-	value	   = 0
+	var have_u_suffix = FALSE, skipchar = FALSE
+	dim value as ulongint
 
-	*pnum 	   = 0
-	tlen 	   = 0
-	skipchar   = FALSE
+	var pnum = @t.text[0]
+	*pnum = 0
+	t.len = 0
 
-	c = lexEatChar( )
+	var c = lexEatChar( )
 
 	select case as const c
 	'' integer part
@@ -949,7 +937,7 @@ private sub hReadNumber _
 	    if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) <> 0 ) then
 			*pnum = CHAR_0
 			pnum += 1
-			tlen += 1
+			t.len += 1
 			value = 0
 	    end if
 
@@ -958,20 +946,22 @@ private sub hReadNumber _
 	case CHAR_1 to CHAR_9
 		*pnum = c
 		pnum += 1
-		tlen += 1
+		t.len += 1
 		value = c - CHAR_0
 
 read_char:
+		dim value_prev as ulongint
+
 		do
 			c = lexCurrentChar( )
 			select case as const c
 			case CHAR_0
 				lexEatChar( )
-				if( tlen > 0 ) then
+				if( t.len > 0 ) then
 					if( skipchar = FALSE ) then
 						*pnum = CHAR_0
 						pnum += 1
-						tlen += 1
+						t.len += 1
 						value = (value shl 3) + (value shl 1)
 					end if
 				end if
@@ -981,24 +971,23 @@ read_char:
 				if( skipchar = FALSE ) then
 					*pnum = c
 					pnum += 1
-					tlen += 1
+					t.len += 1
 					value = (value shl 3) + (value shl 1) + (c - CHAR_0)
 				end if
 
 			case CHAR_DOT, CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
+				var hasdot = FALSE
 				if( c = CHAR_DOT ) then
 					c = lexEatChar( )
 					if( skipchar = FALSE ) then
 						*pnum = CHAR_DOT
 						pnum += 1
-						tlen += 1
+						t.len += 1
 					end if
 					hasdot = TRUE
-				else
-					hasdot = FALSE
 				end if
 
-				hReadFloatNumber( pnum, tlen, dtype, hasdot, flags )
+				hReadFloatNumber( pnum, t.len, t.dtype, hasdot, flags )
 				exit do
 
 			case else
@@ -1007,35 +996,35 @@ read_char:
 
 			if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 				if( skipchar = FALSE ) then
-					select case as const tlen
+					select case as const t.len
 					case 5
 						if( value > 32767 ) then
-							dtype = FB_DATATYPE_LONG
+							t.dtype = FB_DATATYPE_LONG
 						end if
 
 					case 6
-						dtype = FB_DATATYPE_LONG
+						t.dtype = FB_DATATYPE_LONG
 
 					case 10
 						if( value > 2147483647ULL ) then
 							if( value > 4294967295ULL ) then
-								dtype = FB_DATATYPE_LONGINT
+								t.dtype = FB_DATATYPE_LONGINT
 							else
-								dtype = FB_DATATYPE_ULONG
+								t.dtype = FB_DATATYPE_ULONG
 							end if
 						end if
 
 					case 11
-						dtype = FB_DATATYPE_LONGINT
+						t.dtype = FB_DATATYPE_LONGINT
 
 					case 19
 						if( value > 9223372036854775807ULL ) then
-							dtype = FB_DATATYPE_ULONGINT
+							t.dtype = FB_DATATYPE_ULONGINT
 						end if
 						value_prev = value
 
 					case 20
-						dtype = FB_DATATYPE_ULONGINT
+						t.dtype = FB_DATATYPE_ULONGINT
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 							if( value_prev > 1844674407370955161ULL or _
 							   (value and &h8000000000000000ULL) = 0 ) then
@@ -1052,7 +1041,7 @@ read_char:
 					end select
 
 					'' no more room?
-					if( tlen = FB_MAXNUMLEN ) then
+					if( t.len = FB_MAXNUMLEN ) then
  						'' not set yet?
  						if( skipchar = FALSE ) then
  							skipchar = TRUE
@@ -1070,10 +1059,10 @@ read_char:
 
 		loop
 
-		if( tlen = 0 ) then
+		if( t.len = 0 ) then
 			*pnum = CHAR_0
 			pnum += 1
-			tlen = 1
+			t.len = 1
 		end if
 
 	'' fractional part
@@ -1081,25 +1070,25 @@ read_char:
 		'' add '.'
 		*pnum = CHAR_DOT
 		pnum += 1
-		tlen = 1
-		hReadFloatNumber( pnum, tlen, dtype, TRUE, flags )
+		t.len = 1
+		hReadFloatNumber( pnum, t.len, t.dtype, TRUE, flags )
 
 	'' hex, oct, bin
 	case CHAR_AMP
-		tlen = 0
-		value = hReadNonDecNumber( pnum, tlen, dtype, flags )
+		t.len = 0
+		value = hReadNonDecNumber( pnum, t.len, t.dtype, flags )
 	end select
 
 	'' null-term
 	*pnum = 0
 
-	select case( dtype )
-	case FB_DATATYPE_SHORT    : dtype = env.lang.int15literaldtype
-	case FB_DATATYPE_USHORT   : dtype = env.lang.int16literaldtype
-	case FB_DATATYPE_LONG     : dtype = env.lang.int31literaldtype
-	case FB_DATATYPE_ULONG    : dtype = env.lang.int32literaldtype
-	case FB_DATATYPE_LONGINT  : dtype = env.lang.int63literaldtype
-	case FB_DATATYPE_ULONGINT : dtype = env.lang.int64literaldtype
+	select case( t.dtype )
+	case FB_DATATYPE_SHORT    : t.dtype = env.lang.int15literaldtype
+	case FB_DATATYPE_USHORT   : t.dtype = env.lang.int16literaldtype
+	case FB_DATATYPE_LONG     : t.dtype = env.lang.int31literaldtype
+	case FB_DATATYPE_ULONG    : t.dtype = env.lang.int32literaldtype
+	case FB_DATATYPE_LONGINT  : t.dtype = env.lang.int63literaldtype
+	case FB_DATATYPE_ULONGINT : t.dtype = env.lang.int64literaldtype
 #if __FB_DEBUG__
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 	case else
@@ -1108,7 +1097,7 @@ read_char:
 	end select
 
 	'' check suffix type
-	if( typeGetClass( dtype ) <> FB_DATACLASS_FPOINT ) then
+	if( typeGetClass( t.dtype ) <> FB_DATACLASS_FPOINT ) then
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 
 			'' 'U' | 'u'
@@ -1116,7 +1105,7 @@ read_char:
 				select case lexCurrentChar( )
 				case CHAR_UUPP, CHAR_ULOW
 					lexEatChar( )
-					dtype = typeToUnsigned( dtype )
+					t.dtype = typeToUnsigned( t.dtype )
 					have_u_suffix = TRUE
 				end select
 			end if
@@ -1131,7 +1120,7 @@ read_char:
 					if( (c = CHAR_LUPP) or (c = CHAR_LLOW) ) then
 						lexEatChar( )
 						'' 'ULL' or 'LL'
-						dtype = iif( have_u_suffix, FB_DATATYPE_ULONGINT, FB_DATATYPE_LONGINT )
+						t.dtype = iif( have_u_suffix, FB_DATATYPE_ULONGINT, FB_DATATYPE_LONGINT )
 					'' 'L' only
 					else
 						'' LONG is 32bit; warn if number is > 32bit
@@ -1143,7 +1132,7 @@ read_char:
 							end if
 						end if
 						'' 'UL' or 'L'
-						dtype = iif( have_u_suffix, FB_DATATYPE_ULONG, FB_DATATYPE_LONG )
+						t.dtype = iif( have_u_suffix, FB_DATATYPE_ULONG, FB_DATATYPE_LONG )
 					end if
 				end if
 
@@ -1151,7 +1140,7 @@ read_char:
 			case CHAR_FUPP, CHAR_FLOW
 				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
 					if( have_u_suffix = FALSE ) then
-						dtype = FB_DATATYPE_SINGLE
+						t.dtype = FB_DATATYPE_SINGLE
 						lexEatChar( )
 					end if
 				end if
@@ -1161,7 +1150,7 @@ read_char:
 			case CHAR_DUPP, CHAR_DLOW
 				if( (flags and LEXCHECK_NOLETTERSUFFIX) = 0 ) then
 					if( have_u_suffix = FALSE ) then
-						dtype = FB_DATATYPE_DOUBLE
+						t.dtype = FB_DATATYPE_DOUBLE
 						lexEatChar( )
 					end if
 				end if
@@ -1171,10 +1160,10 @@ read_char:
 				'' Assuming it'll be either SHORT (16bit) or INTEGER (32bit or 64bit).
 				'' So, no need to worry about 8bit. And if it's 64bit, no need to warn
 				'' either - because it's always big enough.
+				var warn = FALSE
 				select case( typeGetSize( env.lang.integerkeyworddtype ) )
 				case 2    : warn = (value > &hFFFFull)
 				case 4    : warn = (value > &hFFFFFFFFull)
-				case else : warn = FALSE
 				end select
 				if( warn ) then
 					if( skipchar = FALSE ) then
@@ -1183,7 +1172,7 @@ read_char:
 						end if
 					end if
 				end if
-				dtype = env.lang.integerkeyworddtype
+				t.dtype = env.lang.integerkeyworddtype
 
 				lexEatChar( )
 
@@ -1196,14 +1185,14 @@ read_char:
 						end if
 					end if
 				end if
-				dtype = FB_DATATYPE_LONG
+				t.dtype = FB_DATATYPE_LONG
 
 				lexEatChar( )
 
 			'' '!'
 			case FB_TK_SGNTYPECHAR
 				if( have_u_suffix = FALSE ) then
-					dtype = FB_DATATYPE_SINGLE
+					t.dtype = FB_DATATYPE_SINGLE
 					lexEatChar( )
 				end if
 
@@ -1212,7 +1201,7 @@ read_char:
 				if( have_u_suffix = FALSE ) then
 					'' isn't it a '##'?
 					if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
-						dtype = FB_DATATYPE_DOUBLE
+						t.dtype = FB_DATATYPE_DOUBLE
 						lexEatChar( )
 					end if
 				end if
@@ -1739,9 +1728,9 @@ re_read:
 	'' '0' .. '9'?
 	case CHAR_0 to CHAR_9
 read_number:
-		hReadNumber( @t->text, t->id, t->len, flags )
+		hReadNumber( *t, flags )
 		t->class = FB_TKCLASS_NUMLITERAL
-		t->dtype = t->id
+		t->id = t->dtype
 
 	'' A-Z, a-z, _
 	case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_UNDER
