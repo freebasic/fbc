@@ -901,6 +901,130 @@ private sub hReadFloatNumber _
 
 end sub
 
+private sub readNumberChars _
+	( _
+		byref t as FBTOKEN, _
+		byref flags as LEXCHECK, _
+		byref pnum as zstring ptr, _
+		byref skipchar as integer, _
+		byref value as ulongint _
+	)
+
+	dim value_prev as ulongint
+
+	do
+		var c = lexCurrentChar( )
+		select case as const c
+		case CHAR_0
+			lexEatChar( )
+			if( t.len > 0 ) then
+				if( skipchar = FALSE ) then
+					*pnum = CHAR_0
+					pnum += 1
+					t.len += 1
+					value = (value shl 3) + (value shl 1)
+				end if
+			end if
+
+		case CHAR_1 to CHAR_9
+			lexEatChar( )
+			if( skipchar = FALSE ) then
+				*pnum = c
+				pnum += 1
+				t.len += 1
+				value = (value shl 3) + (value shl 1) + (c - CHAR_0)
+			end if
+
+		case CHAR_DOT, CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
+			var hasdot = FALSE
+			if( c = CHAR_DOT ) then
+				c = lexEatChar( )
+				if( skipchar = FALSE ) then
+					*pnum = CHAR_DOT
+					pnum += 1
+					t.len += 1
+				end if
+				hasdot = TRUE
+			end if
+
+			hReadFloatNumber( pnum, t.len, t.dtype, hasdot, flags )
+			exit do
+
+		case else
+			exit do
+		end select
+
+		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
+			if( skipchar = FALSE ) then
+				select case as const t.len
+				case 5
+					if( value > 32767 ) then
+						t.dtype = FB_DATATYPE_LONG
+					end if
+
+				case 6
+					t.dtype = FB_DATATYPE_LONG
+
+				case 10
+					if( value > 2147483647ULL ) then
+						if( value > 4294967295ULL ) then
+							t.dtype = FB_DATATYPE_LONGINT
+						else
+							t.dtype = FB_DATATYPE_ULONG
+						end if
+					end if
+
+				case 11
+					t.dtype = FB_DATATYPE_LONGINT
+
+				case 19
+					if( value > 9223372036854775807ULL ) then
+						t.dtype = FB_DATATYPE_ULONGINT
+					end if
+					value_prev = value
+
+				case 20
+					t.dtype = FB_DATATYPE_ULONGINT
+					if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+						if( value_prev > 1844674407370955161ULL or _
+						   (value and &h8000000000000000ULL) = 0 ) then
+							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
+							skipchar = TRUE
+						end if
+					end if
+
+				case 21
+					if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+						errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
+						skipchar = TRUE
+					end if
+				end select
+
+				'' no more room?
+				if( t.len = FB_MAXNUMLEN ) then
+					'' not set yet?
+					if( skipchar = FALSE ) then
+						skipchar = TRUE
+					else
+						'' show warning?
+						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+							'' just once..
+							flags or= LEXCHECK_NOLINECONT
+							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
+						end if
+					end if
+				end if
+			end if
+		end if
+	loop
+
+	if( t.len = 0 ) then
+		*pnum = CHAR_0
+		pnum += 1
+		t.len = 1
+	end if
+end sub
+
 '':::::
 ''number          = DIGIT dig_dot_nil i_fsufx_nil
 ''                | '.' float
@@ -938,10 +1062,9 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 			*pnum = CHAR_0
 			pnum += 1
 			t.len += 1
-			value = 0
 	    end if
 
-	    goto read_char
+		readNumberChars( t, flags, pnum, skipchar, value )
 
 	case CHAR_1 to CHAR_9
 		*pnum = c
@@ -949,121 +1072,7 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 		t.len += 1
 		value = c - CHAR_0
 
-read_char:
-		dim value_prev as ulongint
-
-		do
-			c = lexCurrentChar( )
-			select case as const c
-			case CHAR_0
-				lexEatChar( )
-				if( t.len > 0 ) then
-					if( skipchar = FALSE ) then
-						*pnum = CHAR_0
-						pnum += 1
-						t.len += 1
-						value = (value shl 3) + (value shl 1)
-					end if
-				end if
-
-			case CHAR_1 to CHAR_9
-				lexEatChar( )
-				if( skipchar = FALSE ) then
-					*pnum = c
-					pnum += 1
-					t.len += 1
-					value = (value shl 3) + (value shl 1) + (c - CHAR_0)
-				end if
-
-			case CHAR_DOT, CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
-				var hasdot = FALSE
-				if( c = CHAR_DOT ) then
-					c = lexEatChar( )
-					if( skipchar = FALSE ) then
-						*pnum = CHAR_DOT
-						pnum += 1
-						t.len += 1
-					end if
-					hasdot = TRUE
-				end if
-
-				hReadFloatNumber( pnum, t.len, t.dtype, hasdot, flags )
-				exit do
-
-			case else
-				exit do
-			end select
-
-			if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
-				if( skipchar = FALSE ) then
-					select case as const t.len
-					case 5
-						if( value > 32767 ) then
-							t.dtype = FB_DATATYPE_LONG
-						end if
-
-					case 6
-						t.dtype = FB_DATATYPE_LONG
-
-					case 10
-						if( value > 2147483647ULL ) then
-							if( value > 4294967295ULL ) then
-								t.dtype = FB_DATATYPE_LONGINT
-							else
-								t.dtype = FB_DATATYPE_ULONG
-							end if
-						end if
-
-					case 11
-						t.dtype = FB_DATATYPE_LONGINT
-
-					case 19
-						if( value > 9223372036854775807ULL ) then
-							t.dtype = FB_DATATYPE_ULONGINT
-						end if
-						value_prev = value
-
-					case 20
-						t.dtype = FB_DATATYPE_ULONGINT
-						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-							if( value_prev > 1844674407370955161ULL or _
-							   (value and &h8000000000000000ULL) = 0 ) then
-								errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
-								skipchar = TRUE
-							end if
-						end if
-
-					case 21
-						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
-							skipchar = TRUE
-						end if
-					end select
-
-					'' no more room?
-					if( t.len = FB_MAXNUMLEN ) then
- 						'' not set yet?
- 						if( skipchar = FALSE ) then
- 							skipchar = TRUE
- 						else
- 							'' show warning?
- 							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
- 								'' just once..
- 								flags or= LEXCHECK_NOLINECONT
- 								errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
-							end if
-						end if
-					end if
-				end if
-			end if
-
-		loop
-
-		if( t.len = 0 ) then
-			*pnum = CHAR_0
-			pnum += 1
-			t.len = 1
-		end if
+		readNumberChars( t, flags, pnum, skipchar, value )
 
 	'' fractional part
 	case CHAR_DOT
