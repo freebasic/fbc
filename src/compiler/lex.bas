@@ -1531,6 +1531,67 @@ private sub hCheckPeriods _
 
 end sub
 
+private function readId( byref t as FBTOKEN, byval flags as LEXCHECK ) as integer
+	'' Capture the currmacro status for ppDefineLoad() (in case this is a macro),
+	'' before we skip the identifier's chars, because that could reset the currmacro
+	'' if we leave the current expansion text in the process.
+	var currmacro = lex.ctx->currmacro
+
+	t.len = 0
+	t.prdpos = 0
+	hReadIdentifier( @t.text, t.len, t.dtype, flags )
+
+	'' use the special hash tb?
+	if( flags and LEXCHECK_KWDNAMESPC ) then
+		t.sym_chain = symbLookupAt(lex.ctx->kwdns, @t.text, FALSE, FALSE)
+
+		'' not found?
+		if( t.sym_chain = NULL ) then
+			t.id = FB_TK_ID
+			t.class = FB_TKCLASS_IDENTIFIER
+		else
+			t.id = t.sym_chain->sym->key.id
+			t.class = t.sym_chain->sym->key.tkclass
+		end if
+
+		return TRUE
+	end if
+
+	'' don't search for symbols?
+	if( flags and LEXCHECK_NOSYMBOL ) then
+		t.id = FB_TK_ID
+		t.class = FB_TKCLASS_IDENTIFIER
+		return TRUE
+	end if
+
+	t.sym_chain = symbLookup( @t.text, t.id, t.class )
+
+	'' don't load defines?
+	if( flags and LEXCHECK_NODEFINE ) then
+		return TRUE
+	end if
+
+	if( t.sym_chain ) then
+		'' define? (defines can't have dups nor be part of namespaces)
+		if( symbGetClass( t.sym_chain->sym ) = FB_SYMBCLASS_DEFINE ) then
+			'' restart..
+			if( ppDefineLoad( t.sym_chain->sym, currmacro ) ) then
+				t.after_space = TRUE
+				'' Ignore the ID and read expanded text
+				return FALSE
+			end if
+		end if
+	end if
+
+	if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
+		if( (flags and LEXCHECK_NOPERIOD) = 0 ) then
+			hCheckPeriods( @t, flags, t.sym_chain )
+		end if
+	end if
+
+	return TRUE
+end function
+
 '':::::
 sub lexNextToken _
 	( _
@@ -1540,7 +1601,6 @@ sub lexNextToken _
 
 	dim as uinteger char = any
 	dim as integer islinecont = any, lgt = any
-	dim as FBSYMCHAIN ptr chain_ = any
 
 	t->after_space = lex.ctx->after_space
 	lex.ctx->after_space = FALSE
@@ -1579,7 +1639,7 @@ re_read:
 				select case as const lexGetLookAheadChar( )
 				case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, _
 					 CHAR_0 to CHAR_9, CHAR_UNDER
-                	goto read_id
+					exit do
 
 				'' otherwise, skip until new-line is found
 				case else
@@ -1683,67 +1743,10 @@ read_number:
 		t->class = FB_TKCLASS_NUMLITERAL
 		t->dtype = t->id
 
-	'' 'A' .. 'Z', 'a' .. 'z'?
-	case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW
-read_id:
-		'' Capture the currmacro status for ppDefineLoad() (in case this is a macro),
-		'' before we skip the identifier's chars, because that could reset the currmacro
-		'' if we leave the current expansion text in the process.
-		var currmacro = lex.ctx->currmacro
-
-		t->len = 0
-		t->prdpos = 0
-		hReadIdentifier( @t->text, t->len, t->dtype, flags )
-
-		'' use the special hash tb?
-		if( (flags and LEXCHECK_KWDNAMESPC) <> 0 ) then
-			t->sym_chain = symbLookupAt( lex.ctx->kwdns, @t->text, FALSE, FALSE )
-			'' not found?
-			if( t->sym_chain = NULL ) then
-				t->id = FB_TK_ID
-				t->class = FB_TKCLASS_IDENTIFIER
-			else
-				t->id = t->sym_chain->sym->key.id
-				t->class = t->sym_chain->sym->key.tkclass
-			end if
-
-			exit sub
-		end if
-
-		'' don't search for symbols?
-		if( (flags and LEXCHECK_NOSYMBOL) <> 0 ) then
-			t->id = FB_TK_ID
-			t->class = FB_TKCLASS_IDENTIFIER
-			exit sub
-		end if
-
-		t->sym_chain = symbLookup( @t->text, t->id, t->class )
-
-		'' don't load defines?
-		if( (flags and LEXCHECK_NODEFINE) <> 0 ) then
-			exit sub
-		end if
-
-		chain_ = t->sym_chain
-
-		if( chain_ <> NULL ) then
-			'' define? (defines can't have dups nor be part of namespaces)
-			if( symbGetClass( chain_->sym ) = FB_SYMBCLASS_DEFINE ) then
-				'' restart..
-				if( ppDefineLoad( chain_->sym, currmacro ) ) then
-					t->after_space = TRUE
-					goto re_read
-				end if
-			end if
-		end if
-
-		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
-			'' don't look up symbols?
-			if( (flags and LEXCHECK_NOPERIOD) <> 0 ) then
-				exit sub
-			end if
-
-			hCheckPeriods( t, flags, chain_ )
+	'' A-Z, a-z, _
+	case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_UNDER
+		if( not readId( *t, flags ) ) then
+			goto re_read
 		end if
 
 	'' '"'?
