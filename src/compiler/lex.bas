@@ -266,27 +266,18 @@ private function hReadChar _
 
 end function
 
-'':::::
-function lexEatChar _
-	( _
-		_
-	) as uinteger
-
-    ''
-    function = lex.ctx->currchar
-
-	'' update if a look ahead char wasn't read already
+sub lexEatChar( )
 	if( lex.ctx->lahdchar = UINVALID ) then
+		'' No look-ahead char, read next char and force the next
+		'' lexCurrentChar() to update the current char.
 		hSkipChar( )
-    	lex.ctx->currchar = UINVALID
-
-    '' current= lookahead; lookhead = INVALID
-    else
-    	lex.ctx->currchar = lex.ctx->lahdchar
-    	lex.ctx->lahdchar = UINVALID
+		lex.ctx->currchar = UINVALID
+	else
+		'' Look ahead char is the next current char
+		lex.ctx->currchar = lex.ctx->lahdchar
+		lex.ctx->lahdchar = UINVALID
 	end if
-
-end function
+end sub
 
 '':::::
 private sub hSkipChar
@@ -395,19 +386,19 @@ private sub hReadIdentifier _
 		byval flags as LEXCHECK _
 	)
 
-	dim as uinteger c = any
 	dim as integer skipchar = any
 
 	'' (ALPHA | '_' )
-	*pid = lexEatChar( )
+	*pid = lexCurrentChar( )
 	pid += 1
 	tlen += 1
+	lexEatChar( )
 
 	skipchar = FALSE
 
 	'' { [ALPHADIGIT | '_' ] }
 	do
-		c = lexCurrentChar( )
+		var c = lexCurrentChar( )
 		select case as const c
 		case CHAR_AUPP to CHAR_ZUPP, _
 			 CHAR_ALOW to CHAR_ZLOW, _
@@ -458,19 +449,19 @@ private sub hReadIdentifier _
 		case FB_TK_INTTYPECHAR
 			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			dtype = env.lang.integerkeyworddtype
-			c = lexEatChar( )
+			lexEatChar( )
 
 		'' '&'?
 		case FB_TK_LNGTYPECHAR
 			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			dtype = FB_DATATYPE_LONG
-			c = lexEatChar( )
+			lexEatChar( )
 
 		'' '!'?
 		case FB_TK_SGNTYPECHAR
 			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			dtype = FB_DATATYPE_SINGLE
-			c = lexEatChar( )
+			lexEatChar( )
 
 		'' '#'?
 		case FB_TK_DBLTYPECHAR
@@ -478,14 +469,14 @@ private sub hReadIdentifier _
 			if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
 				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 				dtype = FB_DATATYPE_DOUBLE
-				c = lexEatChar( )
+				lexEatChar( )
 			end if
 
 		'' '$'?
 		case FB_TK_STRTYPECHAR
 			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			dtype = FB_DATATYPE_STRING
-			c = lexEatChar( )
+			lexEatChar( )
 		end select
     end if
 
@@ -537,9 +528,10 @@ private function hReadNonDecNumber _
 		end if
 
 		do
-			select case lexCurrentChar( )
+			c = lexCurrentChar( )
+			select case c
 			case CHAR_ALOW to CHAR_FLOW, CHAR_AUPP to CHAR_FUPP, CHAR_0 to CHAR_9
-				c = lexEatChar( )
+				lexEatChar( )
 				if( skipchar = FALSE ) then
                 	*pnum = c
                 	pnum += 1
@@ -599,9 +591,10 @@ private function hReadNonDecNumber _
 
 		first_c = lexCurrentChar( )
 		do
-			select case lexCurrentChar( )
+			c = lexCurrentChar( )
+			select case c
 			case CHAR_0 to CHAR_7
-				c = lexEatChar( )
+				lexEatChar( )
 
 				if( skipchar = FALSE ) then
                 	*pnum = c
@@ -684,9 +677,10 @@ private function hReadNonDecNumber _
 		end if
 
 		do
-			select case lexCurrentChar( )
+			c = lexCurrentChar( )
+			select case c
 			case CHAR_0, CHAR_1
-				c = lexEatChar( )
+				lexEatChar( )
 				if( skipchar = FALSE ) then
                 	*pnum = c
                 	pnum += 1
@@ -796,17 +790,14 @@ private sub hReadFloatNumber _
 	end if
 
 	'' [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ]
-	select case as const lexCurrentChar( )
+	c = lexCurrentChar( )
+	select case as const c
 	'' 'e', 'E', 'd', 'D'?
 	case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 		'' EXPCHAR
-
-		c = lexEatChar( )
-
 		if( c = CHAR_DLOW or c = CHAR_DUPP ) then
 			t.dtype = FB_DATATYPE_DOUBLE
 		end if
-
 		if( skipchar = FALSE ) then
 			if( flags = LEXCHECK_EVERYTHING ) then
 				'' make sure exp char is an 'e'
@@ -817,6 +808,7 @@ private sub hReadFloatNumber _
 			pnum += 1
 			t.len += 1
 		end if
+		lexEatChar( )
 
 		'' [opadd]
 		c = lexCurrentChar( )
@@ -868,7 +860,7 @@ private sub hReadFloatNumber _
 		t.dtype = FB_DATATYPE_SINGLE
 
 		if( (flags and (LEXCHECK_NOSUFFIX or LEXCHECK_NOLETTERSUFFIX)) = 0 ) then
-			c = lexEatChar( )
+			lexEatChar( )
 		end if
 		
 	'' '!'
@@ -876,7 +868,7 @@ private sub hReadFloatNumber _
 		t.dtype = FB_DATATYPE_SINGLE
 
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
-			c = lexEatChar( )
+			lexEatChar( )
 		end if
 		
 	'' '#'?
@@ -884,7 +876,7 @@ private sub hReadFloatNumber _
 		t.dtype = FB_DATATYPE_DOUBLE
 
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
-			c = lexEatChar( )
+			lexEatChar( )
 		end if
         
 	end select
@@ -930,7 +922,7 @@ private sub readNumberChars _
 		case CHAR_DOT, CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 			var hasdot = FALSE
 			if( c = CHAR_DOT ) then
-				c = lexEatChar( )
+				lexEatChar( )
 				if( skipchar = FALSE ) then
 					*pnum = CHAR_DOT
 					pnum += 1
@@ -1222,16 +1214,13 @@ private sub hReadString _
 	escaped = (tk->id = FB_TK_STRLIT_ESC)
 	skipchar = FALSE
 
-	'' skip open quote?
-	if( (flags and LEXCHECK_NOQUOTES) = 0 ) then
-		lexEatChar( )
-
-	'' read it too..
-	else
-		*ps = lexEatChar( )
+	'' Save opening quote?
+	if( flags and LEXCHECK_NOQUOTES ) then
+		*ps = lexCurrentChar( )
 		ps += 1
 		lgt += 1
 	end if
+	lexEatChar( )
 
 	do
 		char = lexCurrentChar( )
@@ -1347,16 +1336,13 @@ private sub hReadWStr _
 	escaped = (tk->id = FB_TK_STRLIT_ESC)
 	skipchar = FALSE
 
-	'' skip open quote?
-	if( (flags and LEXCHECK_NOQUOTES) = 0 ) then
-		lexEatChar( )
-
-	'' read it too..
-	else
-		*ps = lexEatChar( )
+	'' Save opening quote?
+	if( flags and LEXCHECK_NOQUOTES ) then
+		*ps = lexCurrentChar( )
 		ps += 1
 		lgt += 1
 	end if
+	lexEatChar( )
 
 	do
 		char = lexCurrentChar( )
@@ -1703,11 +1689,12 @@ re_read:
 			hReadNumber( *t, flags )
 		case else
 			t->class = FB_TKCLASS_OPERATOR
-			t->id = lexEatChar( )
+			t->id = CHAR_AMP
 			t->dtype = t->id
 			t->len = 1
-			t->text[0] = char                   	'' t.text = chr( char )
+			t->text[0] = CHAR_AMP                   	'' t.text = chr( char )
 			t->text[1] = 0                          '' /
+			lexEatChar( )
 		end select
 
 	'' '0' .. '9'?
@@ -1776,12 +1763,12 @@ re_read:
 	case else
 read_char:
 
-		t->id = lexEatChar( )
+		t->id = char
 		t->dtype = t->id
-
 		t->len = 1
 		t->text[0] = char                            '' t.text = chr( char )
 		t->text[1] = 0                               '' /
+		lexEatChar( )
 
 		select case as const char
 		'' '<', '>', '='?
@@ -1793,19 +1780,19 @@ read_char:
 				select case lexCurrentChar( TRUE )
 				'' '<='?
 				case CHAR_EQ
-					'' t.text += chr( lexEatChar )
-					t->text[t->len+0] = lexEatChar( )
+					t->text[t->len+0] = CHAR_EQ
 					t->text[t->len+1] = 0
 					t->len += 1
 					t->id = FB_TK_LE
+					lexEatChar( )
 
 				'' '<>'?
 				case CHAR_GT
-					'' t.text += chr( lexEatChar )
-					t->text[t->len+0] = lexEatChar( )
+					t->text[t->len+0] = CHAR_GT
 					t->text[t->len+1] = 0
 					t->len += 1
 					t->id = FB_TK_NE
+					lexEatChar( )
 
 				case else
 					t->id = FB_TK_LT
@@ -1813,12 +1800,12 @@ read_char:
 
 			case CHAR_GT
 				'' '>='?
-				if( fbGetGtInParensOnly( ) = FALSE andalso lexCurrentChar( TRUE ) = CHAR_EQ ) then
-					'' t.text += chr( lexEatChar )
-					t->text[t->len+0] = lexEatChar( )
+				if( (fbGetGtInParensOnly( ) = FALSE) andalso (lexCurrentChar( TRUE ) = CHAR_EQ) ) then
+					t->text[t->len+0] = CHAR_EQ
 					t->text[t->len+1] = 0
 					t->len += 1
 					t->id = FB_TK_GE
+					lexEatChar( )
 				else
 					t->id = FB_TK_GT
 				end if
@@ -1826,11 +1813,11 @@ read_char:
 			case CHAR_EQ
 				'' '=>'?
 				if( lexCurrentChar( TRUE ) = CHAR_GT ) then
-					'' t.text += chr( lexEatChar )
-					t->text[t->len+0] = lexEatChar( )
+					t->text[t->len+0] = CHAR_GT
 					t->text[t->len+1] = 0
 					t->len += 1
 					t->id = FB_TK_DBLEQ
+					lexEatChar( )
 				else
 					t->id = FB_TK_EQ
 				end if
@@ -1846,11 +1833,11 @@ read_char:
 
 			'' check for type-field dereference
 			if( lexCurrentChar( TRUE ) = CHAR_GT ) then
-				'' t.text += chr( lexEatChar )
-				t->text[t->len+0] = lexEatChar( )
+				t->text[t->len+0] = CHAR_GT
 				t->text[t->len+1] = 0
 				t->len += 1
 				t->id = FB_TK_FIELDDEREF
+				lexEatChar( )
 			end if
 
 		'' '/'?
@@ -2283,7 +2270,9 @@ sub lexReadLine _
 			lexEatChar( )
 			'' CRLF on DOS, LF only on *NIX
 			if( char = CHAR_CR ) then
-				if( lexCurrentChar( ) = CHAR_LF ) then lexEatChar
+				if( lexCurrentChar( ) = CHAR_LF ) then
+					lexEatChar( )
+				end if
 			end if
 
 			lex.ctx->head->id 	 = FB_TK_EOL
