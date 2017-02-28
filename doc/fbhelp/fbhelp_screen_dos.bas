@@ -258,7 +258,7 @@ end sub
 '':::::
 public sub Screen_Restore ( byval bRelease as integer )
 	
-	if( screen_saved = TRUE ) then
+	if( screen_saved ) then
 
 		if( screen_data <> NULL ) then
 

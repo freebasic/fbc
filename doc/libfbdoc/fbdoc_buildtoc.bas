@@ -54,7 +54,7 @@ namespace fb.fbdoc
 			return FALSE
 		end if
 
-		if( page->GetScanned() = TRUE ) then
+		if( page->GetScanned() ) then
 			return TRUE
 		end if
 

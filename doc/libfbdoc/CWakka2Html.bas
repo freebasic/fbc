@@ -415,7 +415,7 @@ namespace fb.fbdoc
 			end if
 		end if
 
-		if( bDefault = TRUE ) then
+		if( bDefault ) then
 			'' select class based on code tag?
 			'' res += "<tt><div class=""qbasic"">
 			'' only qbasic/freebasic should be formatted here

@@ -279,7 +279,7 @@ namespace fb.fbdoc
 		'' Expects Opening Quote
 		c = ReadChar( ctx )
 
-		if( (escapedonce = TRUE) or (ctx->escaped = TRUE) ) then
+		if( escapedonce or ctx->escaped ) then
 
 			while( ctx->i < ctx->n )
 				c = ReadChar( ctx )
@@ -334,7 +334,7 @@ namespace fb.fbdoc
 				exit while
 			elseif( c = asc("'") ) then
 				c = ReadChar( ctx )
-				if( ctx->incomment = TRUE ) then
+				if( ctx->incomment ) then
 					if( PeekChar( ctx ) = asc("/") ) then
 						c = ReadChar( ctx )
 						ctx->incomment = FALSE
@@ -460,7 +460,7 @@ namespace fb.fbdoc
 			return _AddToken( ctx, FB_TOKEN_NEWLINE )
 		end if
 
-		if( ctx->incomment = TRUE ) then
+		if( ctx->incomment ) then
 			_ReadToEOL( ctx )
 			return _AddToken( ctx, FB_TOKEN_COMMENT )
 		end if
@@ -490,7 +490,7 @@ namespace fb.fbdoc
 
 		'' #
 		c = PeekChar( ctx )
-		if( c = asc("#") and ctx->startofline = TRUE ) then
+		if( c = asc("#") and ctx->startofline ) then
 			c = ReadChar( ctx )
 			while( c )
 				c = PeekChar( ctx )

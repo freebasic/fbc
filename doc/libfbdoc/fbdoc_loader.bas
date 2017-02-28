@@ -69,7 +69,7 @@ namespace fb.fbdoc
 				if( wikicache->LoadPage( sPage, sBody ) ) = FALSE then
 					if RefreshMode = CWikiCache.CACHE_REFRESH_NONE then
 						return ""
-					elseif( bNoReload = TRUE ) then
+					elseif( bNoReload ) then
 						return ""
 					end if
 					bLoadPage = TRUE
@@ -77,7 +77,7 @@ namespace fb.fbdoc
 			end select
 		end if
 
-		if bLoadPage = TRUE then
+		if( bLoadPage ) then
 			dim as CWikiCon ptr wikicon = Connection_Create( )
 			printlog "Loading '" + *sPage + "'"
 			if( wikicon->LoadPage( sPage, TRUE, TRUE, sBody ) <> FALSE ) then

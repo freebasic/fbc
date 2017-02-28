@@ -254,7 +254,7 @@ namespace fb.fbdoc
 
 		if( ctx->col = 0 ) then
 			ctx->nlcount += 1
-			if( (ctx->nlcount < 2) or (bForced = TRUE) ) then
+			if( (ctx->nlcount < 2) or bForced ) then
 				ctx->res += chBreak
 				ctx->col = 0
 				ctx->row += 1

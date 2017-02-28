@@ -95,7 +95,7 @@ function WikiExampleCtx.FindNext() as integer
 		select case as const token->id
 		case WIKI_TOKEN_CODE
 
-			'' if( bInExamples = TRUE ) then
+			'' if( bInExamples ) then
 				codeid += 1
 			'' end if
 			

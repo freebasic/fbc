@@ -383,7 +383,7 @@ function cmd_extract_proc() as integer
 				if( wikiex->filename > "" ) then
 				'' !!! FIXME !!! - only allow "examples/manual/"
 					if( left( wikiex->filename, len( sample_dir ) ) = sample_dir ) then
-						if( WriteExampleFile( sPage, base_dir, wikiex->filename, wikiex->text, TRUE, "" ) = TRUE ) then
+						if( WriteExampleFile( sPage, base_dir, wikiex->filename, wikiex->text, TRUE, "" ) ) then
 							''
 						end if
 					else
@@ -754,7 +754,7 @@ function cmd_addlang_proc() as integer
 
 		if( changed ) then
 			text = b1.text()
-			if( WriteExampleFile( refs(i).pagename, base_dir, sample_dir & refs(i).filename, text, TRUE, "" ) = TRUE ) then
+			if( WriteExampleFile( refs(i).pagename, base_dir, sample_dir & refs(i).filename, text, TRUE, "" ) ) then
 				''
 			end if
 		end if
