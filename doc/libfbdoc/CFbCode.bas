@@ -50,14 +50,14 @@ namespace fb.fbdoc
 
 		ctx = new CFbCodeCtx
 		ctx->tokenlist = new CList( 16, len( FbToken ) )
-		ctx->incomment = 0
-		ctx->escaped = 0
-		ctx->startofline = 0
+		ctx->incomment = FALSE
+		ctx->escaped = FALSE
+		ctx->startofline = FALSE
 		ctx->text = NULL
 		ctx->n = 0
 		ctx->s = 0
 		ctx->i = 0
-		ctx->inprepro = 0
+		ctx->inprepro = FALSE
 
 	end constructor
 
@@ -266,7 +266,7 @@ namespace fb.fbdoc
 	private function _ReadQuoted _
 		( _
 			byval ctx as CFbCodeCtx ptr, _
-			byval escapedonce as integer = 0 _
+			byval escapedonce as integer = FALSE _
 		) as integer
 
 		dim as integer c
