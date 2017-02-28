@@ -165,7 +165,7 @@ public sub Screen_DrawTextAttrib _
 		line (xx,yy)-(xx+7,yy+7),text[i].attrib shr 4, bf
 		Draw String (xx,yy), chr(text[i].char), text[i].attrib and 15
 		xx += 8
-	next xx
+	next i
 	
 	if( cursor_drawn ) then
 		if( cursor_x >= x ) then
