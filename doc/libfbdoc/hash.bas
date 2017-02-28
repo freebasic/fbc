@@ -24,8 +24,6 @@
 #include once "hash.bi"
 
 #define NULL 0
-#define FALSE 0
-#define TRUE 1
 #define INVALID -1
 
 namespace fb

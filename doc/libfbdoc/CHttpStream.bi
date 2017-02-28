@@ -23,11 +23,6 @@
 #define NULL 0
 #endif
 
-#ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
-
 namespace fb
 
 	type CHttpStreamCtx as CHttpStreamCtx_
