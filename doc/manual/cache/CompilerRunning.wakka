@@ -9,7 +9,7 @@ Invoking the compiler after installation.
 	Then, open a console/command prompt/MS DOS prompt, in the same directory as your program. To compile your program, you can use:
 	
 		##C:\mystuff\myprogram\> fbc myprogram.bas##
-	
+		
 	and ##myprogram.exe## will be created in the same directory.
 	
 	A console can be launched in a specific directory from Explorer by using Microsoft's "Open Command Window Here" ""PowerToy"" on Windows XP. On Windows Vista & above you can SHIFT+""RightClick"" on a folder in Explorer to see the 'Open Command Window Here' option. As a last resort, you can also select Start -> Run, type "cmd" and hit Enter, and use the "cd" command to change the current directory.
@@ -27,11 +27,11 @@ Invoking the compiler after installation.
 	From the prompt, type,
 	
 		 ##fbc##
-	
+		
 	to see a list of options.  To compile the "Hello, world!" example program, navigate to the directory where the ""FreeBASIC"" examples were installed (/usr/local/share/freebasic), and type,
 	
 		##fbc examples/misc/hello.bas##
-	
+		
 	and a ##./hello## executable file will be created in the ##examples/misc## directory.
 
 {{fbdoc item="section" value="Linux (standalone)"}}
@@ -40,11 +40,11 @@ Invoking the compiler after installation.
 	From the prompt, type,
 	
 		 ##fbc##
-	
+		
 	to see a list of options. To compile the "Hello, world!" example program type,
 	
 		##fbc examples/misc/hello.bas##
-	
+		
 	and a ##./hello## executable file will be created in the ##examples/misc## directory.
 
 {{fbdoc item="section" value="DOS"}}
@@ -52,17 +52,17 @@ Invoking the compiler after installation.
 	
 		##C:##
 		##CD FB##
-	
+		
 	Some DOSes accept "##CDD C:\FB##" as well. You can also add the ""FreeBASIC"" directory to your PATH environment variable (usually something like "##SET PATH=C:\FB\;%PATH%##") so you can invoke the compiler from any directory.
 	
 	At the prompt, type,
 	
 		##fbc##
-	
+		
 	to see a list of options. To compile the "Hello, world!" example program type,
 	
 		##fbc examples\misc\hello.bas##
-	
+		
 	and a ##hello.exe## executable file will be created in the ##examples\misc## directory.
 
 {{fbdoc item="see"}}

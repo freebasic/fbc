@@ -10,11 +10,11 @@ To compile a new version of FB, you first need to [[DevGettingTheSourceCode|get 
 
 {{fbdoc item="subsect" value="Installing DJGPP"}}
 
-To install DJGPP, we need to download several packages which can be found on the [[http://www.delorie.com/djgpp/getting.html|DJGPP homepage]]. FB needs djdev204.zip from the ##[[http://www.delorie.com/pub/djgpp/beta/v2/|beta/v2/]]## directory, and several others from the ##[[http://www.delorie.com/pub/djgpp/beta/v2gnu/|beta/v2gnu/]]## directory. If anything is missing from there, you can also look into the ##[[http://www.delorie.com/pub/djgpp/current/v2gnu/|current/v2gnu/]]## directory. The following packages are needed:
+To install DJGPP, we need to download several packages which can be found on the [[http://www.delorie.com/djgpp/getting.html|DJGPP homepage]]. FB needs ##djdev*.zip## from the ##[[http://www.delorie.com/pub/djgpp/current/v2/|current/v2/]]## directory, and several others from the ##[[http://www.delorie.com/pub/djgpp/current/v2gnu/|current/v2gnu/]]## directory. The following packages are needed:
 
 	- ##binutils## (##bnu*b.zip##)
 	- ##bash## (##bsh*.zip##)
-	- ##djdev## (##djdev*.zip##) - //pick up djdev204.zip or later from the ##beta/## directory//
+	- ##djdev## (##djdev*.zip##)
 	- ##fileutils## (##fil*.zip##)
 	- ##gcc## (##gcc*b.zip##)
 	- ##""g++""## (##gpp*b.zip##)

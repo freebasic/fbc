@@ -116,8 +116,10 @@ print !"Hello\nWorld!"
 {{fbdoc item="filename" value="examples/manual/proguide/literals/noescape.bas"}}%%(freebasic)
 print $"C:\temp"
 %%
-
-	Besides ASCII files with Unicode escape sequences (##\u##), ""FreeBASIC"" can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source files allowing unicode characters directly in the string literal.
+	
+	Besides ASCII files with Unicode escape sequences (##\u##), ""FreeBASIC"" can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source files as long as they were saved with Byte Order Mark (BOM), allowing unicode characters directly in the string literal.
+	
+	String literals in an ASCII file are treated as ##[[KeyPgZstring|ZString]]##, while string literals in a Unicode file are treated as ##[[KeyPgWstring|WString]]## (regardless of the string literal's value).
 
 {{fbdoc item="section" value="Boolean Literals"}}
 	The boolean type has two values, represented by literals ##[[KeyPgTrue|True]]## and ##[[KeyPgFalse|False]]##.

@@ -10,7 +10,7 @@ Statements and procedures for working with files and devices.
 	Procedures that read and write data to an opened file or device.
 **{{anchor name="FILEPOS|File Position and other Info"}}**
 	Procedures that determine where reading and writing will take place within an opened file.
-
+	
 <<{{anchor name="FILEOPS"}}{{fbdoc item="section" value="Opening Files or Devices"}}
 	=={{fbdoc item="keyword" value="KeyPgFreefile|FREEFILE"}}==
 		Gets an available file number that can be used to read or write from files or devices.
@@ -32,7 +32,7 @@ Statements and procedures for working with files and devices.
 		Unbinds a file number from a file or device.
 	=={{fbdoc item="keyword" value="KeyPgReset|RESET"}}==
 		Unbinds all active file numbers.
-	
+		
 	{{fbdoc item="subsect" value="File I/O modes"}}
 		=={{fbdoc item="keyword" value="KeyPgInputfilemode|INPUT (File Mode)"}}==
 			Text data can be read from the file.
@@ -44,7 +44,7 @@ Statements and procedures for working with files and devices.
 			Arbitrary data can be read from or written to the file.
 		=={{fbdoc item="keyword" value="KeyPgRandom|RANDOM"}}==
 			Blocks of data of certain size can be read from and written to the file.
-	
+			
 	{{fbdoc item="subsect" value="File access privileges"}}
 		=={{fbdoc item="keyword" value="KeyPgAccess|ACCESS"}}==
 			An overview of file access privileges.
@@ -54,7 +54,7 @@ Statements and procedures for working with files and devices.
 			Binary data can only be written to the file.
 		=={{fbdoc item="keyword" value="KeyPgReadWriteFile|READ WRITE(File Access)"}}==
 			Binary data can be read from and written to the file.
-	
+			
 	{{fbdoc item="subsect" value="Character encoding"}}
 		=={{fbdoc item="keyword" value="KeyPgEncoding|ENCODING"}}==
 			Specifies the character encoding of a file.
@@ -76,7 +76,7 @@ Statements and procedures for working with files and devices.
 		Writes arbitrary data to a file or device.
 	=={{fbdoc item="keyword" value="KeyPgGetfileio|GET #"}}==
 		Reads arbitrary data from a file or device.
-
+		
 {{anchor name="FILEPOS"}}{{fbdoc item="section" value="File Position and other Info"}}
 	=={{fbdoc item="keyword" value="KeyPgLof|LOF"}}==
 		Gets the length (in bytes) of a file.

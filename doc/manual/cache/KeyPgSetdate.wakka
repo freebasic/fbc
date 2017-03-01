@@ -15,7 +15,7 @@ Sets the current system date
 	Returns zero on success or non-zero on failure on all ports except DOS.
 
 {{fbdoc item="desc"}}
-	To set the date you just format ##//newdate//## and send to ##**Setdate**## in a valid format following one of the following: ##"mm-dd-yy"##, ##"mm-dd-yyyy"##, ##"mm/dd/yy"##, or ##"mm/dd/yyyy"## (##mm## is the month, ##dd## is the day, ##yy## or ##yyyy## is the year.
+	To set the date you just format ##//newdate//## and send to ##**Setdate**## in a valid format following one of the following: ##"mm-dd-yy"##, ##"mm-dd-yyyy"##, ##"mm/dd/yy"##, or ##"mm/dd/yyyy"## (##mm## is the month, ##dd## is the day, ##yy## or ##yyyy## is the year). Two-digit year numbers are based on the year 1900.
 	
 	The error code returned by ##**Setdate**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Setdate**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 
@@ -27,6 +27,10 @@ d = "13" 'the 13th
 y = "1994" 'good ol' days
 SetDate m + "/" + d + "/" + y
 %%
+
+{{fbdoc item="target"}}
+	- On Windows the privilege SE_SYSTEMTIME_NAME is required, which typically means that the calling process has to be run with administrator privileges.
+	- On Linux the capability CAP_SYS_TIME is required, which typically means that the calling process has to run as root/superuser.
 
 {{fbdoc item="diff"}}
 	- The DATE statement was used in QB and the syntax was "//DATE = string//"

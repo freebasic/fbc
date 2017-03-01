@@ -48,7 +48,7 @@ __##flags## details:__
 ~~-##GFX_NULL##: Starts a QB-on-GUI graphics mode.  It creates a graphics buffer but not a window.  User must implement the window, the events manager and refresh the screen as needed.  This mode allows to mix ""FreeBASIC"" drawing functions with API-driven windows.  Alternatively, it allows to process graphics (for example files) without making it visible on the screen, even in a purely console application.  This flag overrides all other mode flags.  See an [[SrcPgGfxNull|Example of GFX_NULL]] in Windows.
 ~~-##GFX_OPENGL##: Initializes ""OpenGL"" to draw in a dumb window. ""FreeBASIC"" graphic functions can't be used.  The screen is not automatically updated, ##[[KeyPgFlip|Flip]]## must be used.  This option provides a portable way to initialize the ""OpenGL"" Library.
 ~~-If none of the above options is specified, ""FreeBASIC"" enters the QB-only graphics mode: it creates a buffer and a dumb window and sets a thread that automatically updates the screen and manages keyboard and mouse.  The ""FreeBASIC"" drawing functions can be used.
-	
+		
 ~__window mode flags__
 ~~Window mode flags are meaningless if  ##GFX_NULL## mode is used
 ~~-##GFX_WINDOWED##: If windowed mode is supported, ""FreeBASIC"" opens a window of the requested size in the present desktop
@@ -58,18 +58,18 @@ __##flags## details:__
 ~~-##GFX_NO_FRAME##: Creates a window without a border.
 ~~-##GFX_SHAPED_WINDOW##: Creates transparent regions wherever RGBA(255, 0, 255, 0) is drawn on the screen.
 ~~-##GFX_ALWAYS_ON_TOP##: Creates a window that stays always on top.
-	
+		
 ~__option flags__
 ~~Flags working in any mode, they activate special behaviors
 ~~-##GFX_ALPHA_PRIMITIVES##: Tells the graphics library to enable alpha channel support for all drawing primitives. This means the alpha specified in a color value (via either the ##[[KeyPgRgba|RGBA]]## macro or direct color in the form ##&h//AARRGGBB//##) will always be used by all primitives.
 ~~-##GFX_HIGH_PRIORITY##: Tells the graphics library to enable a higher priority for graphics processing.  Only has an effect on ##gdi## and ##""DirectX""## drivers on ""Win32"" platform.
-	
+		
 ~__OpenGL Buffer flags__
 ~~These flags work only in ""OpenGL"" graphics mode, must be combined with GFX_OPENGL
 ~~-##GFX_STENCIL_BUFFER##: Forces ""OpenGL"" to use Stencil buffer 
 ~~-##GFX_ACCUMULATION_BUFFER##: Forces ""OpenGL"" to use Accumulation buffer
 ~~-##GFX_MULTISAMPLE##: Requests fullscreen anti-aliasing through the ARB_multisample extension
-	
+		
 	Depending on whether the ##GFX_FULLSCREEN## parameter is present or not, ##**Screen**## will try to set the specified video mode in fullscreen or windowed mode, respectively.  If fullscreen mode is set and the system cannot set specified mode in fullscreen, it will try in windowed mode. If windowed mode is set and the system fails to open a window for specified mode, it will try fullscreen.  If everything fails, ##**Screen**## will have no effect and execution will resume from the statement following the ##**Screen**## call.  You should take care of checking if a graphics mode has been set or not, and behave accordingly; a way to check if ##**Screen**## is successful is to test the return value of the ##[[KeyPgScreenptr|Screenptr]]## function; see its page for details.
 	
 __Graphics mode console__

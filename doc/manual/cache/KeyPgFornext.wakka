@@ -71,6 +71,13 @@ do while iif(stepTemp >= 0, i <= toTemp, i >= toTemp)
 	i += stepTemp
 loop
 print%%
+Example of infinite For...Next loop in case of loop up to the highest value of an Ubyte iterator (255):
+{{fbdoc item="filename" value="examples/manual/control/for-next3.bas"}}%%(freebasic)
+For ub As UByte = 240 To 255 '' Infinite loop because the end criterion value (255+1=256) can never be reached by the UByte iterator
+	Print ub
+	If Inkey <> "" Then Exit For
+	Sleep 10
+Next ub%%The same applies to lowest value of an UByte iterator (0) in case of loop down (negative ##//stepvalue//##).
 
 {{fbdoc item="lang"}}
 	- In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang deprecated]]// dialects, variables declared inside a ##**For**##..##**Next**## block are visible only inside the block, and cannot be accessed outside it.

@@ -7,15 +7,18 @@ Declare virtual methods
 	End [[KeyPgType|Type]]
 ##
 {{fbdoc item="desc"}}
-	**Virtual** methods are methods that can be overridden by data types derived from the type they were declared in, allowing for polymorphism. In contrast to ##[[KeyPgAbstract|Abstract]]## methods, virtual methods must have an implementation, which is used when the virtual is not overridden.
+	**Virtual** methods are methods that can be overridden by data types derived from the type they were declared in, allowing for dynamic polymorphism. In contrast to ##[[KeyPgAbstract|Abstract]]## methods, virtual methods must have an implementation, which is used when the virtual is not overridden.
 	
 	A derived type can override virtual methods declared in its base type by declaring a method with the same identifier and signature, meaning same number and type of parameters, same return type (if any) and same calling convention:
 		- if that differs only in parameter passing mode or calling convention or return type, then an overriding error is returned at compile time,
 		- otherwise shadowing only is permitted for any other signature difference, corresponding to case where both methods would be overloadable.
 	The property of being a virtual method is not implicitly inherited by the overriding method in the derived type. If this overriding method must be overridden in turn in a lower level derived type, it must also be declared as virtual.
-
 	
 	When calling virtual methods, the compiler may need to do a vtable lookup in order to find out which method must be called for a given object. This requires an extra hidden vtable pointer field to be added at the top of each type with virtual methods. This hidden vptr is provided by the built-in ##[[KeyPgObject|Object]]## type. Because of that, virtual methods can only be declared in a type that directly or indirectly ##[[KeyPgExtends|extends]]## ##[[KeyPgObject|Object]]##.
+	
+	Dynamic polymorphism by using override procedures:
+		- Normally only a ##//typename//## procedure (or upper in hierarchy) is accessible through a base-##//typename//## reference/pointer even if this one refers to an object derived from ##//typename//##.
+		- But when the procedure is virtual, this tells the running program to resolve the override procedure the most derived relating to the real object type by vtable lookup (dynamic binding at runtime), rather than procedure normally accessible from the raw base-type of the reference/pointer (static binding at compile time).
 	
 	[[KeyPgConstructor|Constructors]] cannot be virtual because they create objects, while virtual methods require an already-existing object with a specific type.  The type of the constructor to call is determined at compile-time from the code.
 	In addition, when calling a virtual method inside a constructor, only the version of the method corresponding to an object of type of this constructor is used. That is because the vptr has not yet been set up by the derived type constructor, but only by the local type constructor.

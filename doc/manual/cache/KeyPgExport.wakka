@@ -6,6 +6,7 @@ Declaration specifier to indicate that a procedure in a DLL should be visible fr
 ##
 {{fbdoc item="desc"}}
 	If a function is declared with this clause in a DLL, it is added to the public export table, so external programs can dynamically link to it using [[KeyPgDylibsymbol|Dylibsymbol]].
+	(specifier to be put at procedure definition level, forbidden at procedure declaration line level)
 
 {{fbdoc item="ex"}}
 	See the examples on the [[ProPgSharedLibraries|Shared Libraries]] page.

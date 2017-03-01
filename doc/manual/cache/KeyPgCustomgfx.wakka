@@ -22,7 +22,7 @@ Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which selects a
 		[[KeyPgByval|byval]] //destination_pixel// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]], _
 		[[KeyPgByval|byval]] //parameter// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] _
 		) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]##
-	
+		
 	##//identifier//## is the name of the function.
 	##//source_pixel//## is the current pixel value of the source image.
 	##//destination_pixel//## is the current pixel value of the destination image.

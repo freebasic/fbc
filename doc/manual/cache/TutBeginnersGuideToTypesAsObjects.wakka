@@ -291,12 +291,14 @@ Print z
 
 You need to have separate lets and casts for each data type you want to support. The operators that need declaring within the type are known as non-static, and the ones that don't are known as global.  There is a technical reason for this; the non-static ones need to know which instance (in the technical jargon, in our example above, we would say that ##x## is an instance of ##bar##) of the ##Type## they are referring to, and this is accomplished by a hidden '##this##' reference.  This hidden '##this##' reference is how the other members like operators and methods know which instance of the ##Type## the call refers to.  Most operators can be overloaded; here's a list of the ones that currently can be:
 
+Specific ops:
+##cast##, ##@##, ##[]##, ##new##, ##new[]##, ##delete##, ##delete[]##, ##for##, ##step##, ##next##
 Assignment ops:
-  ##let##, ##+=##, ##-=##, ##*=##, ##/=##, ##\=##, ##mod=##, ##shl=##, ##shr=##, ##and=##, ##or=##, ##xor=##, ##imp=##, ##eqv=##, ##^=##
+##let##, ##+=##, ##-=##, ##*=##, ##&=##, ##/=##, ##\=##, ##mod=##, ##shl=##, ##shr=##, ##and=##, ##or=##, ##xor=##, ##imp=##, ##eqv=##, ##^=##
 Unary ops:
-  ##-##, ##not##, ##@##, ##*##, ##->##
+##-##, ##not##, ##*##, ##->##, ##abs##, ##sgn##, ##fix##, ##frac##, ##int##, ##exp##, ##log##, ##sin##, ##asin##, ##cos##, ##acos##, ##tan##, ##atn##, ##len##
 Binary ops:
-  ##+##, ##-##, ##*##, ##/##, ##\##, ##mod##, ##shl##, ##shr##, ##and##, ##or##, ##xor##, ##imp##, ##eqv##, ##^##, ##=##, ##<>##, ##<##, ##>##, ##<=##, ##>=##
+##+##, ##-##, ##*##, ##&##, ##/##, ##\##, ##mod##, ##shl##, ##shr##, ##and##, ##or##, ##xor##, ##imp##, ##eqv##, ##^##, ##=##, ##<>##, ##<##, ##>##, ##<=##, ##>=##
 
 **Overloaded Constructors/Methods**
 

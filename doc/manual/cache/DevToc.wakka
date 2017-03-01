@@ -27,7 +27,7 @@ This area of the Wiki is for documenting everything about the compiler and the r
 	{{fbdoc item="keyword" value="DevHeaderStyleGuide|Header Style Guidelines"}}
 	{{fbdoc item="keyword" value="ExtLibTOC|External Libraries Index (header status)"}}
 
->><<{{fbdoc item="section" value="Compiler internals"}}
+{{fbdoc item="section" value="Compiler internals"}}
 	
 	{{fbdoc item="keyword" value="DevFbcModules|Quick overview of all modules"}}
 	{{fbdoc item="keyword" value="DevObjinfo|The objinfo feature"}}
@@ -50,6 +50,6 @@ This area of the Wiki is for documenting everything about the compiler and the r
 	{{fbdoc item="keyword" value="GfxLib|Overview of drivers (backends)"}}
 	{{fbdoc item="keyword" value="GfxInternalFormats|Pixel formats"}}
 
->>::c::
+<<::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

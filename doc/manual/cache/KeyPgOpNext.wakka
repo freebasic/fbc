@@ -27,10 +27,11 @@ Determines if a ##[[KeyPgFornext|For...Next]]## loop should be terminated
 
 {{fbdoc item="desc"}}
 	##[[KeyPgOpFor|Operator For]]##, ##**Operator Next**## and ##[[KeyPgOpStep|Operator Step]]## can be overloaded in user-defined type definitions to allow objects of that type to be used as iterators and step values in ##[[KeyPgFornext|For...Next]]## loops.
+	As all non-static member procedures, they have passed a hidden ##[[KeyPgThis|this]]## parameter that allows to access by reference to the iterator object in the code body of the 3 operators.
 	
-	##**Operator Next**## is called every time the iterator needs to be checked against the end value. This happens immediately after the call to its ##[[KeyPgOpFor|Operator For]]##, and immediately after any calls to its ##[[KeyPgOpStep|Operator Step]]##. ##**Operator Next**## should return zero (0) if the loop should be terminated, or non-zero if the loop should continue iterating. The first time ##**Operator Next**## is called, no statements in the ##[[KeyPgFornext|For...Next]]## body, if any, have been executed yet.
+	##**Operator Next**## is called every time the iterator object needs to be checked against the end value. This happens immediately after the call to its ##[[KeyPgOpFor|Operator For]]##, and immediately after any calls to its ##[[KeyPgOpStep|Operator Step]]##. ##**Operator Next**## should return zero (0) if the loop should be terminated, or non-zero if the loop should continue iterating. The first time ##**Operator Next**## is called, no statements in the ##[[KeyPgFornext|For...Next]]## body, if any, have been executed yet.
 	
-	The first version of ##**Operator Next**## is used if no step value is given in the ##[[KeyPgFornext|For...Next]]## statement. If a step value is given, the second version is used and is passed the step value.
+	The first version of ##**Operator Next**## is used if no step value is given in the ##[[KeyPgFornext|For...Next]]## statement. If a step value is given, the second version is used and is passed the step value because testing for iterating end may depend on it.
 
 {{fbdoc item="ex"}}
 	See the [[KeyPgOpStep|Operator Step]] examples.

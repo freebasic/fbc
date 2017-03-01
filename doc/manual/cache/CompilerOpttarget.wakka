@@ -59,7 +59,7 @@ Set the target platform for cross compilation
 		- It is unnecessary (but safe) to specify a ##-target## option that matches the host (for example ##-target win32## on ##win32##). It does not make a difference to the compilation process.
 		
 		- If ##-target## is not specified, the compiler defaults to compiling for the native system. It will then use the compiler tools and libraries from the ##bin/## and ##lib/## directories corresponding to the native system.
-	
+		
 	With a normal FB setup such as the FB-linux release:
 	
 		- Specifying ##-target <platform>## causes the compiler to prefix the ##<platform>-## string to the executable names of binutils and gcc. For example, specifying ##-target i686-w64-mingw32## causes the compiler to invoke ##i686-w64-mingw32-ld## instead of ##ld## (same for other tools besides the linker). This allows fbc to integrate with binutils/gcc cross-compiler toolchains and matches how cross-compiling tools are typically installed on Linux distributions.

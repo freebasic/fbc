@@ -1,16 +1,22 @@
 {{fbdoc item="title" value="Coercion and Conversion"}}----
 Transfer the data of a given type variable to a variable of another type requires conversion.
 
-==Coercion of Numeric Data Types in Expressions==
+==Coercion of Numeric Data Types in Expressions and Arguments==
 
-When two different data types are used in a binary operation, like ##//+//## (Addition) or ##//=//## (Assignment), the smaller data type is automatically promoted to the larger data type regardless of the order in which the arguments are given.  
-
-Promotions are as follows:
-	- where both arguments are each one of byte, ubyte, short, ushort, or integer: the smaller sized argument is promoted to have the same size as the larger sized argument.
-	- where one of the arguments is longint or ulongint, and the other argument is of any integer type, the smaller sized argument is promoted to have the same size as the larger sized argument.
-	- where one of the arguments is a single or a double, both arguments are converted and/or promoted to double
-
-All unsigned integer types are handling like signed integer types for the purpose of promotion, and the most significant bit is extended (sign extension).
+For the integer types, the rule depends on the following ranking:
+		in 32bit:
+			byte < ubyte < short < ushort < long < integer < ulong < uinteger < longint < ulongint
+		in 64bit:
+			byte < ubyte < short < ushort < long < ulong < longint < integer < ulongint < uinteger
+First,  in accordance to the above ranking, all arguments smaller than Integer are converted to Integer.
+Then, if arguments have different size, the smaller argument is converted to match the bigger one. Next, if arguments have different signedness, the signed argument is converted to unsigned to match the other one.
+Finally, the (U)Integer types replace:
+		in 32bit:
+			the (U)Long types
+		in 64bit:
+			the (U)Longint types
+			
+On the other hand, if one of the arguments is a Single or a Double, both arguments are converted and/or promoted to Double.
 
 ==Conversion of Numeric Data Types==
 

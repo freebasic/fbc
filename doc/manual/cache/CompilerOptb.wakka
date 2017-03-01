@@ -14,7 +14,7 @@ Add a source file to compilation
 	To compile and link the source files //file1.bas//, //file2.bas// and //file3.fb// into an executable (//file1.exe// in DOS/Windows, //file1// in Linux), type,
 	
 		##fbc **-b** file1.bas file2.bas **-b** file3.fb##
-	
+		
 	Note that the ##**-b**## option was not needed for //file1.bas// or //file2.bas//.
 
 {{fbdoc item="see"}}

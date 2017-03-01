@@ -42,6 +42,8 @@ Control flow statement for conditional branching
 		- If none are true, the code following the ##**Else**## (if exists) is executed alone.
 	
 	In the //[[CompilerOptlang|-lang fb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, colons (##:##) can be used instead of newlines to construct multi-line ##**If**## blocks on a single line.
+	
+	**Note:** The single-line syntax ##**If...Goto**##, as shortcut for ##**If...Then Goto**##, is deprecated and it only exists for compatibility with QB.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/if-then.bas"}}%%(freebasic)

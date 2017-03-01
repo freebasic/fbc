@@ -7,7 +7,7 @@ Specifies execution of a procedure before module-level code
 	[[KeyPgEndblock|End]] [[KeyPgSub|Sub]]
 ##
 {{fbdoc item="desc"}}
-	The ##**Constructor**## keyword is used in ##[[KeyPgSub|Sub]]## definitions to force execution of the procedure prior to that of module-level code. Procedures defined as constructors may be used the same way as ordinary procedures, that is, they may be called from within module-level code, as well as other procedures.
+	The ##**Constructor**## keyword is used in ##[[KeyPgSub|Sub]]## definitions (forbidden at declaration line level) to force execution of the procedure prior to that of module-level code. Procedures defined as constructors may be used the same way as ordinary procedures, that is, they may be called from within module-level code, as well as other procedures.
 	
 	The procedure must have an empty parameter list.  A compile-time error will be generated if the ##**Constructor**## keyword is used in a Sub definition having one or more parameters. In a set of overloaded procedures, only one (1) constructor may be defined because of the ambiguity of having multiple Subs which take no arguments.
 	
@@ -18,6 +18,8 @@ Specifies execution of a procedure before module-level code
 	A module may define multiple constructor procedures, and multiple modules may define additional constructors provided no two ##[[KeyPgPublic|Public]]## constructors share the same //procedure_name//.
 	
 	When linking with modules that also define constructors, the order of execution is not guaranteed at link-time unless the ##//priority//## attribute is used. Therefore, special care should be taken when using constructors that may call on a secondary module also defining a constructor.  In such a case it is advisable to use a single constructor that explicitly calls initialization procedures in those modules.
+	
+	**Note:** A public static member procedure (Sub having empty parameter list) can also be defined as module constructor (also with the ##**Constructor**## keyword only used in Sub definition).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/mod-ctor.bas"}}%%(freebasic)

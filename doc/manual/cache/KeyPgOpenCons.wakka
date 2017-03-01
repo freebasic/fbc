@@ -29,6 +29,8 @@ Opens the console's standard input (//stdin//) or output (//stdout//) streams fo
 	
 	The error code returned by ##**Open Cons**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Open Cons**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
 	
+	**Warning:** Presently, ##**Open Cons**## does not work as described above. Without any //file mode// specifier, a runtime error 1 (illegal function call) occurs. With the ##[[KeyPgInputfilemode|Input]]## //file mode// specifier, the only input mode is well supported. But with the ##[[KeyPgOutput|Output]]## //file mode// specifier, input and output modes are simultaneously supported.
+	
 **Runtime errors:**
 	##**Open Cons**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
 	

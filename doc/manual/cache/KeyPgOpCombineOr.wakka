@@ -20,7 +20,7 @@ Performs a bitwise-or (inclusive disjunction) and assigns the result to a variab
 {{fbdoc item="desc"}}
 	This operator performs a bitwise-or and assigns the result to a variable (for conversion of a boolean to an integer, false or true boolean value becomes 0 or -1 integer value). It is functionally equivalent to:
 		##//lhs// = //lhs// [[KeyPgOpOr|or]] //rhs//##
-	
+		
 	##**Or=**## compares each bit of its operands, ##//lhs//## and ##//rhs//##, and if either bits are 1, then the corresponding bit in the first operand, ##//lhs//##, is set to 1, otherwise it is set to 0.
 	
 	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.

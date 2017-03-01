@@ -17,7 +17,7 @@ Finds the remainder from a division operation
 	Returns the remainder of a division operation.
 
 {{fbdoc item="desc"}}
-	**##Operator Mod## (Modulus)** divides two ##[[KeyPgInteger|Integer]]## expressions and returns the remainder. Numeric values are converted to ##[[KeyPgInteger|Integer]]## by rounding up or down.
+	**##Operator Mod## (Modulus)** divides two ##[[KeyPgInteger|Integer]]## expressions and returns the remainder. Float numeric values are converted to ##[[KeyPgInteger|Integer]]## by rounding up or down.
 	
 	Neither of the operands are modified in any way.
 	

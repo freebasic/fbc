@@ -32,7 +32,7 @@ Assigns a value to a variable
 	Avoid confusion with ##[[KeyPgOpEqual|Operator = (Equal)]]##, which also uses the '##=##' symbol.
 	For this purpose and for solving some cases of ambiguity of the parser (see ##[[KeyPgByrefFunction|BYREF (function results)]]##), the alternative symbol '=>' can be used for assignments (in place of '=') from fbc version 0.90 (same as already for the initializers).
 		//Note: the '=>' symbol has been chosen against '<=' (already the operator 'Less Than Or Equal') and ':=' (':' used as statement separator).//
-	
+		
 	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
 
 {{fbdoc item="ex"}}

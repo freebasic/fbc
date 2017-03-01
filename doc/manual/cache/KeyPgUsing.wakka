@@ -8,7 +8,8 @@ Brings namespace symbols into the current scope
 	##//identifier//##: The name of the ##[[KeyPgNamespace|Namespace]]## that you want to use.
 
 {{fbdoc item="desc"}}
-	The ##**Using**## command allows all symbols from a given namespace to be accessed without the namespace's name prefix. Unlike ""C++"" but like C#, the ##[[KeyPgNamespace|Namespace]]## keyword is not needed after ##**Using**##, because individual symbols cannot be inherited from a namespace. Inheriting a whole namespace can save typing, but sometimes some meaning of the code can be lost, and conflicts with other symbols could be created.
+	The ##**Using**## command allows all symbols from a given namespace to be accessed without the namespace's name prefix. Unlike ""C++"" but like C#, the ##[[KeyPgNamespace|Namespace]]## keyword is not needed after ##**Using**##, because individual symbols cannot be inherited from a namespace.
+	Inheriting a whole namespace can save typing, but sometimes some meaning of the code can be lost, and conflicts with other symbols could be created. For example, if there is duplicated symbol in the global namespace (unnamed namespace), access to local symbol is captured by duplicated global symbol (in that case, full prefixing is required to access local symbol).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/using.bas"}}%%(freebasic)
