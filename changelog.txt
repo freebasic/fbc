@@ -40,6 +40,7 @@ Version 1.06.0
 - WCHR would give the wrong result if given large number of arguments which were large constants
 - #846: Fix compiler crash on global variable initializer with type<T>(...) expression where T isn't a UDT
 - #847: Windows API binding: Fixed winnt.bi SECURITY_*_AUTHORITY initializers
+- #851: '#LINE line filename' only changed the source filename in error messages, not in debug info
 
 
 Version 1.05.0

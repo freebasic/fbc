@@ -393,6 +393,7 @@ declare sub fbSetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 declare sub fbGetLibs(byval libs as TSTRSET ptr, byval libpaths as TSTRSET ptr)
 declare sub fbPragmaOnce()
 declare sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
+declare sub fbOverrideFilename(byval filename as zstring ptr)
 
 declare function fbGetTargetId( ) as string
 declare function fbGetHostId( ) as string

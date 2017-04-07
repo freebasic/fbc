@@ -3637,13 +3637,7 @@ private sub _emitProcBegin _
 		byval initlabel as FBSYMBOL ptr _
 	)
 
-	dim as zstring ptr incfile = any
-
-	incfile = symbGetProcIncFile( proc )
-	if( incfile = NULL ) then
-		incfile = @env.inf.name
-	end if
-	hUpdateCurrentFileName( incfile )
+	hUpdateCurrentFileName( symbGetProcIncFile( proc ) )
 
 	irhlEmitProcBegin( )
 

@@ -377,8 +377,8 @@ private sub ppLine()
 
 		'' LIT_STR?
 		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
-    		env.inf.name = *lexGetText( )
-    		lexSkipToken( )
+			fbOverrideFilename( *lexGetText( ) )
+			lexSkipToken( )
 		end if
 	end if
 end sub

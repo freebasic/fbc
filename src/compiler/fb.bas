@@ -258,10 +258,13 @@ private function hFindIncFile _
 
 end function
 
-'':::::
+'' Add a string to filenamehash if missing, and add a copy of the filenamehash
+'' entry to incfilehash if missing, unless incfilehash is NULL.
+'' Invariant: incfilehash is a subset of filenamehash.
 private function hAddIncFile _
 	( _
 		byval incfilehash as THASH ptr, _
+		byval filenamehash as THASH ptr, _
 		byval filename as zstring ptr _
 	) as zstring ptr static
 
@@ -277,16 +280,22 @@ private function hAddIncFile _
 
 	index = hashHash( fname )
 
-	res = hashLookupEx( incfilehash, fname, index )
+	res = hashLookupEx( filenamehash, fname, index )
 	if( res = NULL ) then
-		hashAdd( incfilehash, fname, fname, index )
+		hashAdd( filenamehash, fname, fname, index )
 	else
 		deallocate( fname )
 		fname = res
 	end if
 
-	function = fname
+	if( incfilehash ) then
+		res = hashLookupEx( incfilehash, fname, index )
+		if( res = NULL ) then
+			hashAdd( incfilehash, fname, fname, index )
+		end if
+	end if
 
+	function = fname
 end function
 
 '':::::
@@ -391,8 +400,9 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 	'' After symbInit(), we can use typeGetSize()
 	env.wchar_doconv = (sizeof( wstring ) = typeGetSize( env.target.wchar ))
 
-	hashInit( @env.incfilehash, FB_INITINCFILES )
-	hashInit( @env.inconcehash, FB_INITINCFILES )
+	hashInit( @env.filenamehash, FB_INITINCFILES )
+	hashInit( @env.incfilehash, FB_INITINCFILES, FALSE )
+	hashInit( @env.inconcehash, FB_INITINCFILES, FALSE )
 
 	stackNew( @parser.stmt.stk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
 	lexInit( FALSE )
@@ -406,6 +416,7 @@ sub fbEnd()
 	lexEnd( )
 	stackFree( @parser.stmt.stk )
 
+	hashEnd( @env.filenamehash )
 	hashEnd( @env.inconcehash )
 	hashEnd( @env.incfilehash )
 
@@ -1025,7 +1036,7 @@ sub fbCompile _
 
 	env.inf.name = *infname
 	hReplaceSlash( env.inf.name, asc( FB_HOST_PATHDIV ) )
-	env.inf.incfile	= NULL
+	env.inf.incfile = hAddIncFile( NULL, @env.filenamehash, env.inf.name )
 	env.inf.ismain = ismain
 
 	env.outf.name = *outfname
@@ -1120,7 +1131,7 @@ end sub
 sub fbPragmaOnce()
 	if( env.inf.name > "" ) then
 		if( hFindIncFile( @env.inconcehash, env.inf.name ) = NULL ) then
-			hAddIncFile( @env.inconcehash, env.inf.name )
+			hAddIncFile( @env.inconcehash, @env.filenamehash, env.inf.name )
 		end if
 	end if
 end sub
@@ -1358,7 +1369,7 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 	end if
 
     '' we should respect the path here too
-	fileidx = hAddIncFile( @env.incfilehash, incfile )
+	fileidx = hAddIncFile( @env.incfilehash, @env.filenamehash, incfile )
 
 	'' push context
 	infileTb(env.includerec) = env.inf
@@ -1395,6 +1406,14 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 	'' pop context
 	env.includerec -= 1
 	env.inf = infileTb( env.includerec )
+end sub
+
+'' Used by #line to change the effective filename of the current source file.
+sub fbOverrideFilename(byval filename as zstring ptr)
+	env.inf.name = *filename
+	'' env.inf.incfile is an interned copy of env.inf.name (possibly up-cased),
+	'' so must be updated too.
+	env.inf.incfile = hAddIncFile( NULL, @env.filenamehash, filename )
 end sub
 
 '':::::
