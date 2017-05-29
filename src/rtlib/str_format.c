@@ -1164,7 +1164,7 @@ FBCALL FBSTRING *fb_hStrFormat
     pszIntlResult = fb_IntlGet( eFIL_TimeDivider, FALSE );
     chTimeSep = (( pszIntlResult==NULL ) ? ':' : *pszIntlResult );
     FB_UNLOCK();
-    
+
     if( chDecimalPoint==0 )
         chDecimalPoint = '.';
     if( chThousandsSep==0 )
@@ -1172,11 +1172,11 @@ FBCALL FBSTRING *fb_hStrFormat
 
     FB_STRLOCK();
 
-    if( mask == NULL || mask_length==0 ) 
+    if( mask == NULL || mask_length==0 )
     {
         dst = fb_hBuildDouble( value, chDecimalPoint, 0 );
-    } 
-    else 
+    }
+    else
     {
         FormatMaskInfo info;
 
@@ -1185,10 +1185,10 @@ FBCALL FBSTRING *fb_hStrFormat
                               mask, mask_length,
                               value, &info,
                               chThousandsSep, chDecimalPoint,
-                              chDateSep, chTimeSep ) ) 
+                              chDateSep, chTimeSep ) )
         {
             dst = fb_hStrAllocTemp_NoLock( NULL, info.length_min + info.length_opt );
-            if( dst == NULL ) 
+            if( dst == NULL )
             {
                 fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
                 dst = &__fb_ctx.null_desc;
