@@ -106,11 +106,21 @@ end sub
 '' Program = (Label? Statement? Comment?)* EOF?
 sub cProgram()
 	dim as integer startlevel = pp.level
+	dim dbg as AST_NODE_DBG ptr=any
+	DIM as ASTNODE ptr CurrLine=any,Currproc=ast.proc.Curr->r
+	dim as integer IsModify=any,LineNumber=0,mainproc=env.main.proc
+
+	if env.includerec>0 then
+		IsModify=1'maybe need fixed
+	else
+		IsModify=0'no need fixed,when is the main file
+	EndIf
 
 	'' For each line...
 	do
 		'' line begin
-		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
+		LineNumber=lexLineNum()
+		CurrLine=astAdd( astNewDBG( AST_OP_DBG_LineINI, LineNumber))
 
 		'' Label?
 		cLabel( )
@@ -154,6 +164,51 @@ sub cProgram()
 		'' A new statement starts behind EOL
 		'' (and EOF too, for implicitly generated code)
 		parser.stmt.cnt += 1  '' end-of-statement seen
+
+		select case IsModify
+			case Is<1'no need fixed
+			case 1
+				if mainproc=parser.currproc then'In main proc?
+					if CurrLine then
+						do 
+							Currproc  = Currproc ->next
+							if Currproc=0 then exit do
+							select case( Currproc ->class )
+								case AST_NODECLASS_NOP, AST_NODECLASS_LABEL, _
+									AST_NODECLASS_LIT, _
+									AST_NODECLASS_DATASTMT, AST_NODECLASS_DBG
+
+								case else'=effective code
+									IsModify=2
+									dbg=new AST_NODE_DBG
+									dbg->ex=LineNumber
+									dbg->op=CAST(INTEGER,env.inf.incfile)
+									CurrLine->dbg.ex=-CAST(INTEGER,dbg)
+									exit do
+							end select
+						Loop
+						Currproc =ast.proc.Curr->r
+					EndIf
+				EndIf
+			case else
+				if mainproc=parser.currproc then'In main proc?
+					if (lexGetToken() = FB_TK_EOF) then'file end?
+						dbg=new AST_NODE_DBG
+						CurrLine=astAdd(astNewDBG( AST_OP_DBG_LineINI,-CAST(INTEGER,dbg)))
+						if CurrLine then
+							dbg->ex=0
+							if env.includerec then
+								dbg->op=CAST(INTEGER,@infileTb(env.includerec-1).name)
+							else
+								dbg->op=CAST(INTEGER,@infileTb(0).name)
+							endif
+							astAdd(astNewDBG(AST_OP_DBG_LineEND))
+						ELSE
+							delete dbg
+						EndIf
+					EndIf
+				EndIf
+		End Select
 	loop while (lexGetToken() <> FB_TK_EOF)
 
 	'' EOF

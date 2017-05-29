@@ -645,4 +645,6 @@ declare sub fbAddLibPath(byval path as zstring ptr)
 
 extern env as FBENV
 
+extern infileTb( ) as FBFILE
+
 #endif ''__FBINT_BI__
