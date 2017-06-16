@@ -36,5 +36,5 @@ FBCALL int fb_LocateEx( int row, int col, int cursor, int *current_pos )
     if( current_pos )
         *current_pos = tmp_current_pos;
 
-	return res;
+    return res;
 }

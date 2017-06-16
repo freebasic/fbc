@@ -59,17 +59,17 @@ FBCALL FB_WCHAR *fb_StrToWstr( const char *src )
 	ssize_t chars;
 
     if( src == NULL )
-    	return NULL;
+        return NULL;
 
-	chars = strlen( src );
+    chars = strlen( src );
     if( chars == 0 )
-    	return NULL;
+        return NULL;
 
     dst = fb_wstr_AllocTemp( chars );
-	if( dst == NULL )
-		return NULL;
+    if( dst == NULL )
+        return NULL;
 
-	fb_wstr_ConvFromA( dst, chars, src );
+    fb_wstr_ConvFromA( dst, chars, src );
 
-	return dst;
+    return dst;
 }

@@ -39,11 +39,11 @@ int fb_ConsoleLineInputWstr
       fb_PrintVoid( 0, FB_PRINT_NEWLINE );
 
     if( tmp_result == NULL )
-    	return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+        return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
 
-	fb_WstrAssignFromA( dst, max_chars, tmp_result, -1 );
+    fb_WstrAssignFromA( dst, max_chars, tmp_result, -1 );
 
-	return fb_ErrorSetNum( FB_RTERROR_OK );
+    return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 #else

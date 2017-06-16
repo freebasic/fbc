@@ -33,8 +33,8 @@ FBCALL int fb_WstrCompare( const FB_WCHAR *str1, const FB_WCHAR *str2 )
 
     /* only right is null. is left empty? return eq */
     if( fb_wstr_Len( str1 ) == 0 )
-    	return 0;
+        return 0;
 
-	/* return gt */
-	return 1;
+    /* return gt */
+    return 1;
 }

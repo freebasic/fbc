@@ -14,11 +14,11 @@ FBCALL FBSTRING *fb_StrAllocTempDescV( FBSTRING *str )
     FB_STRUNLOCK();
 
     if( dsc == NULL )
-    	return &__fb_ctx.null_desc;
+        return &__fb_ctx.null_desc;
 
-	dsc->data = str->data;
-	dsc->len  = FB_STRSIZE( str );
-	dsc->size = str->size;
+    dsc->data = str->data;
+    dsc->len  = FB_STRSIZE( str );
+    dsc->size = str->size;
 
-	return dsc;
+    return dsc;
 }

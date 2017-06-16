@@ -39,10 +39,10 @@ int fb_DevConsOpen( FB_FILE *handle, const char *filename, size_t filename_len )
     if ( handle->access == FB_FILE_ACCESS_ANY)
         handle->access = FB_FILE_ACCESS_WRITE;
 
-	handle->opaque = (handle->mode == FB_FILE_MODE_INPUT? stdin : stdout);
+    handle->opaque = (handle->mode == FB_FILE_MODE_INPUT? stdin : stdout);
     handle->type = FB_FILE_TYPE_PIPE;
 
     FB_UNLOCK();
 
-	return fb_ErrorSetNum( FB_RTERROR_OK );
+    return fb_ErrorSetNum( FB_RTERROR_OK );
 }
