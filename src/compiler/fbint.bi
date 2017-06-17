@@ -616,8 +616,9 @@ type FBENV
 	ppfile_num		as integer					'' -pp output file
 
 	'' include files
-	incfilehash		as THASH
-	inconcehash		as THASH
+	filenamehash		as THASH
+	incfilehash		as THASH					'' A subset of filenamehash
+	inconcehash		as THASH					'' A subset of filenamehash
 	includerec		as integer					'' >0 if parsing an include file
 
 	main			as FBMAIN
@@ -642,10 +643,7 @@ declare function fbGetInputFileParentDir( ) as string
 declare sub fbAddLib(byval libname as zstring ptr)
 declare sub fbAddLibPath(byval path as zstring ptr)
 
-''
-'' super globals
-''
-common shared as FBENV env
+extern env as FBENV
 
 extern infileTb( ) as FBFILE
 

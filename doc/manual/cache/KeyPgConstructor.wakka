@@ -30,9 +30,9 @@ Called automatically when a class or user defined type is created
 		Note: When an object is returned from a function by value, but by using ##**Function** = //x//## (or ##//function_identifier// = //x//##) assignment, the ##**Constructor**## is called once at first, and then the ##[[KeyPgOpLet|Let (Assign)]]## operator at each assignment.
 	A copy ##**Constructor**## must be defined if the shallow implicit copy constructor is not sufficient. This happens in cases when the object manages dynamically allocated memory or other resources which need to be specially constructed or copied (for example if a member pointer points to dynamically allocated memory, the implicit copy constructor will simply do an implicit pointer construction and a copy of value instead of allocate memory and then perform the copy of data).
 		Note: Even if is defined an explicit default ##**Constructor**##, it is never called by the implicit copy constructor.
-	
+		
 	Chaining of constructors in nested types is supported.  Any fields that have their own default constructor are called first.
-	The keyword ##**Constructor**(//parameters//)## can be used at the top of a constructor, allowing to chain together constructors of same type. It prevents the compiler from emitting field initialization code (instead, it relies on the chained constructor to initialize everything).
+	Chaining together constructors of a same type is allowed by using the keyword ##**Constructor**(//parameters//)## at the top of constructor. It prevents the compiler from emitting field initialization code (instead, it relies on the chained constructor to initialize everything).
 	
 	##**Constructor**## can be also called directly from the ##//typename//## instance like the other member methods (##[[KeyPgSub|Sub]]##) and with the same syntax, i.e. using a member access operator, e.g. ##//obj//.**Constructor**(//parameters//)##. In particular, doing ##//this//.**Constructor**(//parameters//)## is not treated as chaining constructor, and it is allowed anywhere (not only at the top of constructors). In general it's not safe to manually call the constructor on an object, because no ##[[KeyPgDestructor|destructor]]## is called, and the old object state - if any - is overwritten without any of its old members being destroyed, which could cause memory/resource leaks.
 

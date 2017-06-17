@@ -3,20 +3,20 @@
 ""GfxLib"" is the built-in graphics library included in ""FreeBASIC"". As well as re-creating every ""QuickBASIC"" graphics command, ""GfxLib"" has built-in commands to handle input from the keyboard and mouse. Major contributors of the library are Lillo, ""CoderJeff"" and ""DrV"".
 
 The library supports various drivers depending on the platform: 
-	
+		
 	- All:
 		- **##Null##** Does nothing, allows to use graphics functions on in-memory buffers and such, without anything being displayed in a graphics window.  [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/gfx_driver_null.c|(gfxlib2/gfx_driver_null.c)]]
-	
+		
 	- ""Win32"":
 		- **##DirectX##** The default selection of FB ""GfxLib"". May not be available on old Windows installations. [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_ddraw.c|(gfxlib2/win32/gfx_driver_ddraw.c)]]
 		- **##GDI##** The "safest" one, available in all ""Win32"" versions. Bug note: broken in FB versions 0.20 to 0.24 (crash), and minor problems 0.18.5, and 0.90.x and 1.xx ("banding effects", try extra SCREENUNLOCK), [[http://www.freebasic.net/forum/viewtopic.php?p=106600#106600|(forum discussion: p=106600)]] [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_gdi.c|(gfxlib2/win32/gfx_driver_gdi.c)]]
 		- **##OpenGL##** [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/win32/gfx_driver_opengl.c|(gfxlib2/win32/gfx_driver_opengl.c)]]
-	
+		
 	- ""Linux & others"":
 		- **##X11##** The default on Unix systems  [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/unix/gfx_driver_x11.c|(gfxlib2/unix/gfx_driver_x11.c)]]
 		- **##OpenGL##** (on top of X11) [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/unix/gfx_driver_opengl_x11.c|(gfxlib2/unix/gfx_driver_opengl_x11.c)]]
 		- **##FBDev##** Linux framebuffer device -- fallback in case X11 is disabled [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/linux/gfx_driver_fbdev.c|(gfxlib2/linux/gfx_driver_fbdev.c)]]
-	
+		
 	- DOS:
 		- **##BIOS##** [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/dos/gfx_driver_bios.c|(gfxlib2/dos/gfx_driver_bios.c)]]
 		- **##""ModeX""##** "tuned" 320x240x8bpp VGA mode [[http://sourceforge.net/p/fbc/code/ci/master/tree/src/gfxlib2/dos/gfx_driver_modex.c|(gfxlib2/dos/gfx_driver_modex.c)]]

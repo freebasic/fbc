@@ -16,7 +16,7 @@ External tools the FreeBASIC compiler (fbc) may invoke during the compilation pr
 		- ##/topdir/lib/<target>##
 		- ##/topdir/bin/<target>##
 		- gcc is queried for missing libraries (currently on linux/freebsd only) 
-	
+		
 	If cross compiling, ##fbc## looks in the these locations: 
 		- ##/topdir/inc##
 		- ##/topdir/lib/<target>##
@@ -31,7 +31,7 @@ External tools the FreeBASIC compiler (fbc) may invoke during the compilation pr
 		- ##/prefix/lib/freebasic/<target>##
 		- ##/prefix/bin/freebasic/<target>##
 		- gcc is queried for missing libraries (currently on linux/freebsd only) 
-	
+		
 	If cross compiling, ##fbc## looks in the these locations: 
 		- ##/prefix/include/freebasic##
 		- ##/prefix/lib/freebasic/<target>##
@@ -60,12 +60,12 @@ External tools the FreeBASIC compiler (fbc) may invoke during the compilation pr
 		- ##dlltool##
 		- ##pexports##
 		- ##cxbe##
-	
+		
 	##fbc## will search for these tools in the following manner:
 		- If an environment variable (having same name as the tool without any extension, all in uppercase) has been set, it explicitly indicates the path and name of the executable to be invoked.
 		- If the file (or a symlink) exists in ##prefix/bin/freebasic/<target>##, or ##./bin/<target>## for the standalone version, then use it.
 		- On Linux, if the tool could not be found in ##prefix/bin/freebasic/<target>##, or ##./bin/<target>## for the standalone version, ##fbc## tries to invoke it anyway as it may be installed on the system and located on the PATH.
-	
+		
 	"##<target>##" refers to the target platform having the same name as specified by the //[[CompilerOpttarget|-target]]// option.
 
 {{fbdoc item="see"}}

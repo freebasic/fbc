@@ -34,10 +34,10 @@ Customizes colors in modes with paletted colors
 		In screen modes ##1##, ##2##, ##7##, ##8## and ##9## you can assign to each color index one of the colors in the available range. In other screen modes, the color must be specified in the form ##&h//BBGGRR//##, where ##//BB//##, ##//GG//## and ##//RR//## are the blue, green and red components ranging ##&h0##-##&h3F## in hexadecimal (##0##-##63## in decimal). If you don't like hexadecimal form, you can use the following formula to compute the integer value to pass to this parameter:
 		##color = red [[KeyPgOpOr|or]] (green [[KeyPgOpShiftLeft|shl]] 8) [[KeyPgOpOr|or]] (blue [[KeyPgOpShiftLeft|shl]] 16)##
 		Where red, green and blue must range ##0##-##63##. Please note that color values accepted by ##**Palette**## are **not** the in the same form as returned by the ##[[KeyPgRgb|RGB]]## macro (the red and blue fields are inverted, and the range is different); this is for backward compatibility with QB.
-	
+		
 	==Second form==
 		In the second form, you specify the red, green and blue components for a palette entry directly, by calling ##**Palette**## with 4 parameters. In this case ##//r//##, ##//g//## and ##//b//## must be in the range ##0##-##255##.
-	
+		
 	==Third form==
 		Calling ##**Palette Using**## allows to set a list of color values all at once; you should pass an array holding enough elements as the color indices available for your current graphics mode color depth (2 for 1bpp, 4 for 2bpp, 16 for 4bpp or 256 for 8bpp). The array elements must be integer color values in the form described above. The colors stored into ##//arrayname//## starting with given ##//idx//## index are then assigned to each palette index, starting with index ##0##.
 	

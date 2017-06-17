@@ -26,7 +26,6 @@ Returns the lower bound of an array's dimension
 	For any other (non-zero) ##//dimension//## values outside of the valid range ##1##..##//n//##, ##**Lbound**## returns ##0##. ##**Ubound**## returns ##-1## in this case. This can be used to detect whether a certain dimension exists in the array, and also works when used on an empty array which does not have any valid dimensions.
 	
 	Thus, for empty dynamic arrays, we get:
-	
 		- ##Lbound(array) = 0## and ##Ubound(array) = -1## (dimension 1 does not exist)
 		- ##Lbound(array, 0) = 1## and ##Ubound(array, 0) = 0## (zero dimensions)
 		- ##@array(Lbound(array)) = 0## (no data buffer allocated)

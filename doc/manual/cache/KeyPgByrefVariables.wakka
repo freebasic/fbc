@@ -20,13 +20,14 @@ Declares a reference
 	A reference is an entity that is a way to access data located in memory. A reference is not the data itself but only information about its location. A reference can be thought of as a pointer that is implicitly dereferenced. In many cases, it can be used as an alternative to pointer.
 	
 	A reference must always be initialized with a variable when it is created.
-	[[DataType|DataType]] must be the same type as that of the variable, or one of the types of its Bases in case of inheritance:
-		- When the two types are identical (or using the third syntax with ##**Var**##), a reference can be considered as a perfect alias of the variable. One can do the same operations through such a reference as one can do with the original variable.
-		- Otherwise, a base type reference referring to a derived type object allows to activate polymorphism when a virtual method is called on it, similarly to a base type pointer referring to a derived type object. One can do the same operations through such a reference as one can do with a dereferenced pointer of same type (but for both not the same operations than with a derived type instance).
-	
+	[[DataType|DataType]] must be the same type as that of the variable, or a compatible type (for example one from the types of its Bases in case of inheritance):
+		- When the two types are identical (or using the third syntax with ##**Var**##), a reference can be considered as an alias of the variable. One can do the same operations through such a reference as one can do with the original variable.
+		- Otherwise one cannot do all same operations than with the original variable:
+				For example, a base type reference referring to a derived type object allows to activate polymorphism when a virtual method is called on it, similarly to a base type pointer referring to a derived type object. One can do the same operations through such a reference as one can do with a dereferenced pointer of same type (but for both not the same operations as using directly the derived type instance).
+				
 	A reference can be reassigned to refer to another variable (of compatible type) by doing:
 		@//refname// = @//othervariable//
-	
+		
 	NOTE: The arrays of references and the non-static reference fields for UDT are not supported yet.
 
 {{fbdoc item="ex"}}

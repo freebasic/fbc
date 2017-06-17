@@ -515,24 +515,20 @@ function astTypeIniFlush overload _
 	function = astTypeIniFlush( astNewVAR( target ), initree, update_typeinicount, assignoptions )
 end function
 
-private function hFlushExprStatic _
-	( _
-		byval n as ASTNODE ptr, _
-		byval basesym as FBSYMBOL ptr _
-	) as integer
+private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL ptr )
+	'' Get lhs symbol: maybe a field (in case of TYPEINI_ASSIGN in a struct),
+	'' or the basesym (in case of TYPEINI_ASSIGN to global var).
+	var sym = n->sym
+	if( sym = NULL ) then
+		sym = basesym
+	end if
+	var sdtype = symbGetType( sym )
 
-	dim as ASTNODE ptr expr = any
-	dim as integer edtype = any, sdtype = any
-	dim as FBSYMBOL ptr sym = any, litsym = any
+	'' Get rhs expression
+	var expr = n->l
+	var edtype = astGetDataType( expr )
 
-	function = FALSE
-
-	expr = n->l
-	sym = n->sym
-	edtype = astGetDataType( expr )
-	sdtype = symbGetType( sym )
-
-	litsym = NULL
+	dim as FBSYMBOL ptr litsym = NULL
 	select case edtype
 	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		litsym = astGetStrLitSymbol( expr )
@@ -558,12 +554,11 @@ private function hFlushExprStatic _
 				irEmitVARINIi( sym, astConstGetInt( expr ) )
 			end if
 		end if
-
 	'' literal string..
 	else
+		var sdtype = symbGetType( sym )
 		'' not a wstring?
 		if( sdtype <> FB_DATATYPE_WCHAR ) then
-
 			'' convert?
 			if( edtype <> FB_DATATYPE_WCHAR ) then
 				'' less the null-char
@@ -576,11 +571,8 @@ private function hFlushExprStatic _
 						 	 	 str( *symbGetVarLitTextW( litsym ) ), _
 						 	 	 symbGetWstrLen( litsym ) - 1 )
 			end if
-
-
 		'' wstring..
 		else
-
 			'' convert?
 			if( edtype <> FB_DATATYPE_WCHAR ) then
 				'' less the null-char
@@ -593,17 +585,12 @@ private function hFlushExprStatic _
 						 	  	  symbGetVarLitTextW( litsym ), _
 						 	  	  symbGetWstrLen( litsym ) - 1 )
 			end if
-
 		end if
-
 	end if
 
 	astDelTree( n->l )
 	n->l = NULL
-
-	function = TRUE
-
-end function
+end sub
 
 sub astLoadStaticInitializer _
 	( _
@@ -642,116 +629,49 @@ sub astLoadStaticInitializer _
 	astDelNode( tree )
 end sub
 
-'':::::
-private function hExprIsConst _
-	( _
-		byval n as ASTNODE ptr _
-	) as integer
-
-    dim as FBSYMBOL ptr sym = any, litsym = any
-    dim as ASTNODE ptr expr = any
-    dim as integer sdtype = any, edtype = any
-
-    sym = n->sym
-    expr = n->l
-
-    sdtype = symbGetType( sym )
-    edtype = astGetDataType( expr )
-
-	'' check if it's a literal string
-	litsym = NULL
-	select case edtype
-	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		litsym = astGetStrLitSymbol( expr )
-	end select
-
-	'' not a literal string?
-	if( litsym = NULL ) then
-
-		'' string?
-		if( symbIsString( sdtype ) ) then
-			if( symbIsString( edtype ) ) then
-				errReport( FB_ERRMSG_EXPECTEDCONST, TRUE )
-			else
-				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-			end if
-			exit function
-
-		elseif( symbIsString( edtype ) ) then
-		    errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-			exit function
-		end if
-
-		'' bit field?
-		if( symbIsBitfield( sym ) ) then
+private function hExprIsConst( byval n as ASTNODE ptr ) as integer
+	var lsym = n->sym
+	if( lsym ) then
+		'' Disallow initialization of global bitfields (not implemented)
+		if( symbIsBitfield( lsym ) ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-			exit function
+			return FALSE
 		end if
-
-		'' offset?
-		if( astIsOFFSET( expr ) ) then
-			'' different types?
-			if( (typeGetClass( sdtype ) <> FB_DATACLASS_INTEGER) or _
-				(typeGetSize( sdtype ) <> env.pointersize) ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-				exit function
-			end if
-		else
-			'' not a constant?
-			if( astIsCONST( expr ) = FALSE ) then
-				errReport( FB_ERRMSG_EXPECTEDCONST, TRUE )
-				exit function
-			end if
-		end if
-
-	'' literal string..
-	else
-		'' not a string?
-		if( symbIsString( sdtype ) = FALSE ) then
-			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-			exit function
-		end if
-
-		'' can't be a variable-len string
-		if( sdtype = FB_DATATYPE_STRING ) then
-			errReport( FB_ERRMSG_CANTINITDYNAMICSTRINGS, TRUE )
-			exit function
-		end if
-
 	end if
 
-	function = TRUE
+	var rexpr = n->l
 
+	'' Expression must be constant or address-of global to be usable in global initializer
+	select case( rexpr->class )
+	case AST_NODECLASS_OFFSET, AST_NODECLASS_CONST
+		return TRUE
+	end select
+
+	'' Or a string literal, for a global string.
+	select case( astGetDataType( rexpr ) )
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		if( astGetStrLitSymbol( rexpr ) ) then
+			return TRUE
+		end if
+	end select
+
+	return FALSE
 end function
 
-'':::::
-function astTypeIniIsConst _
-	( _
-		byval tree as ASTNODE ptr _
-	) as integer
-
-    dim as ASTNODE ptr n = any
-
-	function = FALSE
-
-    n = tree->l
-    do while( n <> NULL )
-
-    	select case n->class
-    	case AST_NODECLASS_TYPEINI_ASSIGN
+function astTypeIniIsConst( byval tree as ASTNODE ptr ) as integer
+	var n = tree->l
+	while( n )
+		select case( n->class )
+		case AST_NODECLASS_TYPEINI_ASSIGN
 			if( hExprIsConst( n ) = FALSE ) then
-				exit function
+				return FALSE
 			end if
-
-    	case AST_NODECLASS_TYPEINI_CTORCALL, AST_NODECLASS_TYPEINI_CTORLIST
-    		exit function
-    	end select
-
-    	n = n->r
-    loop
-
-	function = TRUE
-
+		case AST_NODECLASS_TYPEINI_CTORCALL, AST_NODECLASS_TYPEINI_CTORLIST
+			return FALSE
+		end select
+		n = n->r
+	wend
+	return TRUE
 end function
 
 function astTypeIniUsesLocals _

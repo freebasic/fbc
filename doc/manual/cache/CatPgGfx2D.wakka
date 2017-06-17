@@ -12,7 +12,7 @@ Statements and procedures for working with 2D graphics.
 	Procedures that create, free and save image buffers.
 **{{anchor name="BLITTING|Blitting Image Buffers"}}**
 	Procedures that draw image buffers onto other image buffers or to the screen.
-
+	
 <<{{anchor name="COLOR"}}{{fbdoc item="section" value="Working with Color"}}
 	=={{fbdoc item="keyword" value="KeyPgColor|COLOR"}}==
 		Sets the foreground and background color to use with the drawing procedures.
@@ -24,7 +24,7 @@ Statements and procedures for working with 2D graphics.
 		Returns a color value including alpha (transparency) for hi/truecolor modes.
 	=={{fbdoc item="keyword" value="KeyPgPoint|POINT"}}==
 		Gets a pixel value from an image buffer or screen.
-	
+		
 {{anchor name="DRAWING"}}{{fbdoc item="section" value="Drawing to Image Buffers"}}
 	=={{fbdoc item="keyword" value="KeyPgPset|PSET"}} and {{fbdoc item="keyword" value="KeyPgPreset|PRESET"}}==
 		Plots a single pixel on an image buffer or screen.
@@ -38,7 +38,7 @@ Statements and procedures for working with 2D graphics.
 		Writes text to an image buffer or screen.
 	=={{fbdoc item="keyword" value="KeyPgPaint|PAINT"}}==
 		Fills an area with color on an image buffer or screen.
-
+		
 {{anchor name="IMGBUF"}}{{fbdoc item="section" value="Image Buffer Creation"}}
 	=={{fbdoc item="keyword" value="KeyPgGetgraphics|GET (GRAPHICS)"}}==
 		Creates an image buffer from a portion of another image buffer or screen.
@@ -57,7 +57,7 @@ Statements and procedures for working with 2D graphics.
 <<>>{{anchor name="BLITTING"}}{{fbdoc item="section" value="Blitting Image Buffers"}}
 	=={{fbdoc item="keyword" value="KeyPgPutgraphics|PUT (GRAPHICS)"}}==
 		Blits an image buffer to another image buffer or screen.
-	
+		
 	{{fbdoc item="subsect" value="Blending Methods"}}
 		=={{fbdoc item="keyword" value="KeyPgAddGfx|ADD"}}==
 			Saturated addition of the source and target components.

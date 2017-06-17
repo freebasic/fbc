@@ -25,7 +25,7 @@ Converts numeric or string expression to ##[[KeyPgLong|Long]]##
 	A ##[[KeyPgLong|Long]]## value.
 
 {{fbdoc item="desc"}}
-	The ##**Clng**## function rounds off the decimal part and returns a 32-bit ##[[KeyPgLong|Long]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##-2## ##147## ##483## ##648## or larger than ##2## ##147## ##483## ##648##.
+	The ##**Clng**## function rounds off the decimal part and returns a 32-bit ##[[KeyPgLong|Long]]## value.  The function does not check for an overflow, and results are undefined for values which are less than ##-2## ##147## ##483## ##648## or larger than ##2## ##147## ##483## ##647##.
 	
 	The name can be explained as 'Convert to ""LoNG""'.
 	

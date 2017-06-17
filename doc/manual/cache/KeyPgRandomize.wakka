@@ -24,7 +24,7 @@ Seeds the random number generator
 		
 		For any given seed, each algorithm will produce a specific, deterministic sequence of numbers for that seed.  If you want each call to ##**Randomize**## to produce a different sequence of numbers, a seed that is not quite predictable should be used - for example, the value returned from ##[[KeyPgTimer|Timer]]##.  Omitting the ##//seed//## parameter will use a value based on this.
 		Note: using the ##[[KeyPgTimer|Timer]]## value directly as a parameter will produce the same seed if used more than once in the same second.  However, it is generally not worth calling ##**Randomize**## twice with unpredictable seeds anyway, because the second sequence will be no more random than the first.  In most cases, the Mersenne twister should provide a sufficiently random sequence of numbers, without requiring reseeding between ##[[KeyPgRnd|Rnd]]## calls.
-	
+		
 		When you call ##**Randomize**## with the QB compatible algorithm, part of the old seed is retained.  This means that if you call ##**Randomize**## several times with the same seed, you will **not** get the same sequence each time.  To get a specific sequence in QB compatible mode, set the seed by calling ##[[KeyPgRnd|Rnd]]## with a negative parameter.
 
 {{fbdoc item="ex"}}
@@ -41,7 +41,7 @@ next
 {{fbdoc item="lang"}}
 	The default algorithm used depends on the current dialect in use:
 		- With the //[[CompilerOptlang|-lang fb]]// dialect, a 32 bit Mersenne Twister function with a granularity of 32 bits is used.
-		- With the //[[CompilerOptlang|-lang qb]]// dialect, a function giving the same output as ##**Rnd**## in QB is used. The granularity is 24 bits.
+		- With the //[[CompilerOptlang|-lang qb]]// dialect, a function giving the same output as ##[[KeyPgRnd|Rnd]]## in QB is used. The granularity is 24 bits.
 		- With the //[[CompilerOptlang|-lang deprecated]]// and //[[CompilerOptlang|-lang fblite]]// dialects, the function in the C runtime available in the system is used. The function has a granularity of 15 bits in ""Win32"", and 32 bits in Linux and DOS.
 
 {{fbdoc item="diff"}}

@@ -5,8 +5,6 @@ Returns the decimal part of a number
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Frac** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Frac** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Frac** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] ) [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]]
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Frac** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgLongint|longint]] ) [[KeyPgAs|as]] [[KeyPgLongint|longint]]
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Frac** ( [[KeyPgByval|byval]] //number// [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]] ) [[KeyPgAs|as]] [[KeyPgUlongint|ulongint]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **Frac**( //number// )

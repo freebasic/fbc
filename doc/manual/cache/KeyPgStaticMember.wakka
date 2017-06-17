@@ -21,7 +21,7 @@ Declare a static member procedure or variable
 		##**Static**## methods can be called directly anywhere in code, like normal non-member procedures, or on objects of type ##//typename//##, similar to non-static methods, however either way there is no implicit or explicit ##[[KeyPgThis|This]]## (or explicit ##[[KeyPgBase|Base]]##) access possible from within a static method.
 		
 		For member procedures with a ##**Static**## declaration, ##**Static**## may also be specified on the corresponding procedure bodies, for improved code readability.
-	
+		
 	- Static member variables
 		##**Static**## member variables are created and initialized only once independently of any object construction, in contrast to non-static ("instance") member variables which are created again and again for each separate object. ##**Static**## members are always ##[[KeyPgShared|Shared]]##, even if ##[[KeyPgShared|Shared]]## was not specified in the declaration. Thus, ##**Static**## member variables are similar to global variables, except that they are declared in a ##**Type**## namespace.
 		

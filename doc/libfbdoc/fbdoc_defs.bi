@@ -23,11 +23,6 @@
 #define NULL 0
 #endif
 
-#ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
-
 namespace fb.fbdoc
 
 	const nl as string = chr(10)

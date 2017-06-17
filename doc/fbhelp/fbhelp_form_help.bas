@@ -186,7 +186,7 @@ public sub HelpScreen_Show( byval pexepath as zstring ptr )
 								else
 									b = TRUE
 								end if
-								if( b = TRUE ) then
+								if( b ) then
 
 									if( HelpFile_SaveTopicAsText( hlp.pagename, filename ) = FALSE ) then
 										MsgBox_Show( "Error writing topic file.", NULL, 1, "OK" )
@@ -219,7 +219,7 @@ public sub HelpScreen_Show( byval pexepath as zstring ptr )
 
 		end if
 
-		if( bClose = TRUE ) then
+		if( bClose ) then
 
 			bClose = FALSE
 
@@ -234,7 +234,7 @@ public sub HelpScreen_Show( byval pexepath as zstring ptr )
 
 		endif
 
-		if( bFirstTime = TRUE ) then
+		if( bFirstTime ) then
 
 			if(( Timer - dStartTime ) > 5 ) then
 				with border

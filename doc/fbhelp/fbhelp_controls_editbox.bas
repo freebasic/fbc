@@ -90,7 +90,7 @@ public sub EditBox_Update _
 		bVisible = FALSE
 	end if
 
-	if( bVisible = TRUE ) then
+	if( bVisible ) then
 		Screen_SetCursorPos _
 			( _
 				ctl->ctl.rect.x + ctl->buffer->mindex - ctl->leftindex, _

@@ -8,7 +8,8 @@ FreeBASIC by default, automatically takes care of compiling sources and linking 
 	fbc myprog.bas tools.bas funcs.bas
 ##
 {{fbdoc item="section" value="Unicode support"}}
-	- Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source (.bas) or header (.bi) files, they can be freely mixed with other sources/headers in the same project (also with other ASCII files).
+	- Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source (.bas) or header (.bi) files as long as they were saved with Byte Order Mark (BOM), they can be freely mixed with other sources/headers in the same project (also with other ASCII files).
+	- Unicode files must be saved with Byte Order Mark (BOM), otherwise fbc does not recognize them as Unicode.
 	- Literal strings can be typed in the original non-Latin alphabet, just use a text-editor that supports one of the Unicode formats listed above.
 
 {{fbdoc item="section" value="Implicit main()"}}

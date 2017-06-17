@@ -151,7 +151,7 @@ end function
 ''
 function DoSpellCheckWord( byref word as string ) as integer
 
-	if( SpellCheck_WordCorrect(word) = TRUE ) then
+	if( SpellCheck_WordCorrect(word) ) then
 		function = TRUE
 	elseif( IsKeyword( word ) ) then
 		function = TRUE

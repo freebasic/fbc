@@ -36,7 +36,7 @@ Statements that direct the flow of program execution.
 		Executes a block of code if a condition is met.
 	=={{fbdoc item="keyword" value="KeyPgCase|..CASE ELSE.."}}==
 		Executes a block of code if all previous conditions weren't met.
-
+		
 	{{fbdoc item="subsect" value="Intra-branch control"}}
 		=={{fbdoc item="keyword" value="KeyPgExit|EXIT SELECT"}}==
 			Prematurely breaks out of a ##[[KeyPgSelectcase|SELECT..END SELECT]]## statement.
@@ -47,7 +47,7 @@ Statements that direct the flow of program execution.
 		Executes a block of statements while an iterator is less than or greater than an expression.
 	=={{fbdoc item="keyword" value="KeyPgDoloop|DO..LOOP"}}==
 		Executes a block of statements while or until a condition is met.
-	
+		
 	{{fbdoc item="subsect" value="Intra-loop control"}}
 		=={{fbdoc item="keyword" value="KeyPgContinue|CONTINUE WHILE"}}, {{fbdoc item="keyword" value="KeyPgContinue|CONTINUE FOR"}} and {{fbdoc item="keyword" value="KeyPgContinue|CONTINUE DO"}}==
 			Prematurely re-enters a loop.

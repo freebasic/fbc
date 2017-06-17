@@ -35,11 +35,10 @@ Set target architecture for improved/restricted code generation or cross-compili
 
 {{fbdoc item="desc"}}
 	The ##-arch## compiler option sets the target CPU architecture. This can be used for multiple purposes:
-	
 		- Improving code generation; for example: You can use ##-arch 686## to override the default ##-arch 486##, and the compiler will generate faster code in some cases, by using certain instructions which were not available on i486 (or other CPUs older than i686).
 		- Restricting code generation; for example: You can use ##-arch 386## to limit the compiler to using only i386-compatible instructions.
 		- Cross-compiling; for example: You can use ##-arch x86_64## on 32bit x86 systems to cross-compile to 64bit x86_64.
-	
+					
 	The exact impact which the ##-arch## setting has on code generation depends on the [[CompilerOptgen|code generation backend]] that is being used. The x86 ASM backend (##-gen gas##) handles the ##-arch## setting and adjusts code generation accordingly in some cases. When using the GCC backend (##-gen gcc##), the specified architecture will be passed on to gcc via ##gcc -march=<...>##, causing gcc to generate code for the specified architecture.
 	
 	However, ##-arch## only affects newly generated code, but not pre-compiled code such as the ""FreeBASIC"" runtime libraries, or any other library from the ##lib/## directory. For example, using ##-arch 386## is not necessarily enough to get a pure i386 executable -- it also depends on how all the libraries that will be linked in were compiled.

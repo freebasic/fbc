@@ -10,7 +10,7 @@ Name visibility within and between modules
 		Variable and object names declared at module-scope have internal linkage unless otherwise declared with ##[[KeyPgExtern|Extern]]## or ##[[KeyPgCommon|Common]]##. For example, variable names first introduced with ##[[KeyPgDim|Dim]]## or ##[[KeyPgStatic|Static]]## have internal linkage, and those variables can only be referred to by name within the module in which they are defined. Note that using ##[[KeyPgShared|Shared]]## only allows name visibility within the module's procedures, and does not contribute to the name's linkage.
 	
 		Procedure names declared with ##[[KeyPgPrivate|Private]]## have internal linkage.
-	
+		
 	{{fbdoc item="subsect" value="Local-scope declarations"}}
 	
 		All variable and object names declared at local-scope (in a ##[[KeyPgDo|Do]]## loop, or procedure body, for instance) have internal linkage.
@@ -29,7 +29,7 @@ Name visibility within and between modules
 		When both ##[[KeyPgExtern|Extern]]## and ##[[KeyPgCommon|Common]]## are both used to declare and define a variable, the effect is that the meaning of ##[[KeyPgCommon|Common]]## statement is altered to behave as though it were a ##[[KeyPgDim|Dim]]## declaration.  So it is generally, not recommended to mix ##[[KeyPgExtern|Extern]]## and ##[[KeyPgCommon|Common]]## on the same variable in the same module.  However, variables may be declared and defined with ##[[KeyPgCommon|Common]]## in one module and then referenced with ##[[KeyPgExtern|Extern]]## in another module without confusion.
 		
 		Procedure names are declared to have external linkage by default. Declarations using ##[[KeyPgPublic|Public]]## explicitly specify external linkage.
-	
+		
 	{{fbdoc item="subsect" value="Local-scope declarations"}}
 	
 		Currently, names declared at local-scope cannot have external linkage.

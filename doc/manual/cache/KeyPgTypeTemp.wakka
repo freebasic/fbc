@@ -21,11 +21,14 @@ Creates a temporary copy of a user defined type
 	For a type without own or inherited constructor (excluding also any type that is directly or indirectly derived from ##[[KeyPgObject|Object]]##), the temporary type syntax is allowed if all type data-fields (including those inherited) are numeric primitives only and without any default initializers.
 	If at same time the type is without destructor, the compiler does a direct assignment instead of using a temporary copy.
 	
-	The ##[[KeyPgConstructor|Constructor]]## for the type, if there is one, will be called when the temporary copy is created, and the ##[[KeyPgDestructor|Destructor]]## for the type, if there is one, will be called immediately after its use. But when there is a constructor, the temporary type expression may be simply replaced by ##//typename( initializers//, ... )##.
+	The ##[[KeyPgConstructor|Constructor]]## for the type, if there is one with parameters matching with the ##//initializers//## provided, will be called when the temporary copy is created, and the ##[[KeyPgDestructor|Destructor]]## for the type, if there is one, will be called immediately after its use. But when there is a matching constructor, the temporary type expression may be simply replaced by ##//typename( initializers//, ... )##.
+	If there is a constructor at least but none which matches with the ##//initializers//##, the temporary type syntax is obviously disallowed.
 	
 	It can create not only a temporary copy of an user defined type, but also a temporary copy of predefined data-type as a variable-length string or any numeric data-type (all standard data-types excluding fixed-length strings).
 	
 	It can also be used as an even shorter shortcut than ##[[KeyPgWith|With]]## (see below) if you are changing all the data-fields (or the n firsts only).
+	
+	Note: ##[[KeyPgStatic|Static]]## qualifier used at procedure definition level does not apply to temporary types.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/temp-type.bas"}}%%(freebasic)

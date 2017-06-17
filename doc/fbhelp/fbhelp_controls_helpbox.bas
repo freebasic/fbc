@@ -565,7 +565,7 @@ public sub HelpBox_Update _
 		bVisible = FALSE
 	end if
 
-	if( bVisible = TRUE ) then
+	if( bVisible ) then
 		Screen_SetCursorPos _
 			( _
 				ctl->ctl.rect.x + ctl->col - ctl->leftindex, _
@@ -1068,20 +1068,20 @@ private function _LoadHelpPage _
 
 	if( pagename <> NULL ) then
 		if( isfile <> 0 ) then
-			if( TextBuffer_LoadTextFile(  @ctl->buffer, *pagename) = TRUE ) then
+			if( TextBuffer_LoadTextFile(  @ctl->buffer, *pagename) ) then
 				bOK = TRUE
 			end if
 		else
 			size = HelpFile_SeekPage( pagename )
 			if( size >= 0 ) then
-				if( TextBuffer_Resize(  @ctl->buffer, size ) = TRUE ) then
+				if( TextBuffer_Resize(  @ctl->buffer, size ) ) then
 					if( HelpFile_Read( ctl->buffer.text, size ) <> 0 ) then
 						bOK = TRUE
 					end if
 				end if
 			end if
 		end if
-		if( bOK = TRUE ) then
+		if( bOK ) then
 			ctl->style = HELPBOX_STYLE_HELP
 			TextBuffer_GenerateRowIndex @ctl->buffer, 0, TRUE
 			HelpBox_GenerateLinkIndex ctl
@@ -1102,20 +1102,20 @@ private function _LoadHelpPage _
 
 	if( hist <> NULL ) then
 		if( hist->isfile <> 0 ) then
-			if( TextBuffer_LoadTextFile(  @ctl->buffer, hist->pagename ) = TRUE ) then
+			if( TextBuffer_LoadTextFile(  @ctl->buffer, hist->pagename ) ) then
 				bOK = TRUE
 			end if
 		else
 			size = HelpFile_SeekPage( hist->pagename )
 			if( size >= 0 ) then
-				if( TextBuffer_Resize(  @ctl->buffer, size ) = TRUE ) then
+				if( TextBuffer_Resize(  @ctl->buffer, size ) ) then
 					if( HelpFile_Read( ctl->buffer.text, size ) <> 0 ) then
 						bOK = TRUE
 					end if
 				end if
 			end if
 		end if
-		if( bOK = TRUE ) then
+		if( bOK ) then
 			ctl->style = HELPBOX_STYLE_HELP
 			TextBuffer_GenerateRowIndex @ctl->buffer, 0, TRUE
 			HelpBox_GenerateLinkIndex ctl

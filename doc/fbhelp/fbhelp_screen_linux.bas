@@ -196,7 +196,7 @@ end sub
 
 '':::::
 public sub Screen_HideCursor ( )
-	if( cursor_visible = TRUE ) then
+	if( cursor_visible ) then
 		locate , , 0
 		cursor_visible = FALSE
 	end if

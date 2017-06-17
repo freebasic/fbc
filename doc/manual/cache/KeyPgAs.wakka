@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="AS"}}----
-Optional part of a declaration which specifies a data type, or part of the [[KeyPgOpen|Open]] statement which specifies a file handle.
+Part of a declaration which specifies a data type, or part of the [[KeyPgOpen|Open]] statement which specifies a file handle.
 
 {{fbdoc item="syntax"}}##
 	//symbolname// **As** [[DataType|datatype]]

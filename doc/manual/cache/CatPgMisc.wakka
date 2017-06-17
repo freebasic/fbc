@@ -1,55 +1,52 @@
 {{fbdoc item="title" value="Miscellaneous Keywords"}}----
 
-<<
-	{{fbdoc item="section" value="Data"}}
-		- {{fbdoc item="keyword" value="KeyPgData|DATA"}}
-		- {{fbdoc item="keyword" value="KeyPgRead|READ"}}
-		- {{fbdoc item="keyword" value="KeyPgRestore|RESTORE"}}
-	
-	{{fbdoc item="section" value="Debugging"}}
-		- {{fbdoc item="keyword" value="KeyPgAssert|ASSERT"}}
-		- {{fbdoc item="keyword" value="KeyPgAssertwarn|ASSERTWARN"}}
-		- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
-	
-	{{fbdoc item="section" value="Hardware Access"}}
-		- {{fbdoc item="keyword" value="KeyPgInp|INP"}}
-		- {{fbdoc item="keyword" value="KeyPgLprint|LPRINT"}}
-		- {{fbdoc item="keyword" value="KeyPgLpos|LPOS"}}
-		- {{fbdoc item="keyword" value="KeyPgOut|OUT"}}
-		- {{fbdoc item="keyword" value="KeyPgWait|WAIT"}}
-	
-	{{fbdoc item="section" value="Operating System"}}
-		- {{fbdoc item="keyword" value="KeyPgBeep|BEEP"}}
-		- {{fbdoc item="keyword" value="KeyPgSleep|SLEEP"}}
-		- {{fbdoc item="keyword" value="KeyPgEnd|END (Statement)"}}
-	
-	{{fbdoc item="section" value="Stub Pages"}}
-		- {{fbdoc item="keyword" value="KeyPgAs|AS"}}
-		- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}
-		- {{fbdoc item="keyword" value="KeyPgTo|TO"}}
-		- {{fbdoc item="keyword" value="KeyPgIs|IS"}}
-		- {{fbdoc item="keyword" value="KeyPgStep|STEP"}}
-<<>>
-	{{fbdoc item="section" value="Control Flow"}}
-		- {{fbdoc item="keyword" value="KeyPgDo|DO"}}
-		- {{fbdoc item="keyword" value="KeyPgEndif|END IF"}}
-		- {{fbdoc item="keyword" value="KeyPgIif|IIF"}}
-		- {{fbdoc item="keyword" value="KeyPgLoop|LOOP"}}
-		- {{fbdoc item="keyword" value="KeyPgNext|NEXT"}}
-		- {{fbdoc item="keyword" value="KeyPgThen|THEN"}}
-		- {{fbdoc item="keyword" value="KeyPgUntil|UNTIL"}}
-		- {{fbdoc item="keyword" value="KeyPgWend|WEND"}}
-		- {{fbdoc item="keyword" value="KeyPgWhile|WHILE"}}
-	
-	{{fbdoc item="section" value="Uncategorized"}}
-		- {{fbdoc item="keyword" value="KeyPgEndblock|END (Block)"}}
-		- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
-		- {{fbdoc item="keyword" value="KeyPgSizeof|SIZEOF"}}
-		- {{fbdoc item="keyword" value="KeyPgTypeof|TYPEOF"}}
-		- {{fbdoc item="keyword" value="KeyPgLet|LET"}}
-		- {{fbdoc item="keyword" value="KeyPgRem|REM"}}
-		- {{fbdoc item="keyword" value="KeyPgOption|OPTION()"}}
->>
+<<{{fbdoc item="section" value="Data"}}
+	- {{fbdoc item="keyword" value="KeyPgData|DATA"}}
+	- {{fbdoc item="keyword" value="KeyPgRead|READ"}}
+	- {{fbdoc item="keyword" value="KeyPgRestore|RESTORE"}}
 
-::c::
+{{fbdoc item="section" value="Debugging"}}
+	- {{fbdoc item="keyword" value="KeyPgAssert|ASSERT"}}
+	- {{fbdoc item="keyword" value="KeyPgAssertwarn|ASSERTWARN"}}
+	- {{fbdoc item="keyword" value="KeyPgStop|STOP"}}
+
+{{fbdoc item="section" value="Hardware Access"}}
+	- {{fbdoc item="keyword" value="KeyPgInp|INP"}}
+	- {{fbdoc item="keyword" value="KeyPgLprint|LPRINT"}}
+	- {{fbdoc item="keyword" value="KeyPgLpos|LPOS"}}
+	- {{fbdoc item="keyword" value="KeyPgOut|OUT"}}
+	- {{fbdoc item="keyword" value="KeyPgWait|WAIT"}}
+
+{{fbdoc item="section" value="Operating System"}}
+	- {{fbdoc item="keyword" value="KeyPgBeep|BEEP"}}
+	- {{fbdoc item="keyword" value="KeyPgSleep|SLEEP"}}
+	- {{fbdoc item="keyword" value="KeyPgEnd|END (Statement)"}}
+
+{{fbdoc item="section" value="Stub Pages"}}
+	- {{fbdoc item="keyword" value="KeyPgAs|AS"}}
+	- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}
+	- {{fbdoc item="keyword" value="KeyPgTo|TO"}}
+	- {{fbdoc item="keyword" value="KeyPgIs|IS"}}
+	- {{fbdoc item="keyword" value="KeyPgStep|STEP"}}
+<<>>{{fbdoc item="section" value="Control Flow"}}
+	- {{fbdoc item="keyword" value="KeyPgDo|DO"}}
+	- {{fbdoc item="keyword" value="KeyPgEndif|END IF"}}
+	- {{fbdoc item="keyword" value="KeyPgIif|IIF"}}
+	- {{fbdoc item="keyword" value="KeyPgLoop|LOOP"}}
+	- {{fbdoc item="keyword" value="KeyPgNext|NEXT"}}
+	- {{fbdoc item="keyword" value="KeyPgThen|THEN"}}
+	- {{fbdoc item="keyword" value="KeyPgUntil|UNTIL"}}
+	- {{fbdoc item="keyword" value="KeyPgWend|WEND"}}
+	- {{fbdoc item="keyword" value="KeyPgWhile|WHILE"}}
+
+{{fbdoc item="section" value="Uncategorized"}}
+	- {{fbdoc item="keyword" value="KeyPgEndblock|END (Block)"}}
+	- {{fbdoc item="keyword" value="KeyPgOffsetof|OFFSETOF"}}
+	- {{fbdoc item="keyword" value="KeyPgSizeof|SIZEOF"}}
+	- {{fbdoc item="keyword" value="KeyPgTypeof|TYPEOF"}}
+	- {{fbdoc item="keyword" value="KeyPgLet|LET"}}
+	- {{fbdoc item="keyword" value="KeyPgRem|REM"}}
+	- {{fbdoc item="keyword" value="KeyPgOption|OPTION()"}}
+>>::c::
+
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

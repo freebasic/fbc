@@ -23,22 +23,22 @@
 	
 	
 {{fbdoc item="section" value="-lang fb (the default mode)"}}
-	
+	 
 	**Not supported:**
-	
+	 
 	""1"") implicit variable declaration
 		- All variables must be explicitly declared, using ##[[KeyPgDim|Dim]]##, ##[[KeyPgRedim|Redim]]##, ##[[KeyPgVar|Var]]##, ##[[KeyPgConst|Const]]##, ##[[KeyPgExtern|Extern]]## or ##[[KeyPgCommon|Common]]##.
-	
+	 
 	""2"") type suffixes (##!, #, $, %, &##)
 		- They are only allowed for numeric literals, but it's recommended to use ##[[KeyPgCast|Cast]]## or the ##f## (##single##), ##d## (##double##), ##ll## (##longint##), ##ul## (##ulong##), ##ull## (##ulongint##) numeric literal suffixes to resolve overloading.
-	
+	 
 	""3"") ##[[KeyPgDefbyte|Defbyte]]##, ##[[KeyPgDefubyte|Defubyte]]##, ##[[KeyPgDefshort|Defshort]]##, ##[[KeyPgDefushort|Defushort]]##, ##[[KeyPgDefint|Defint]]##, ##[[KeyPgDefuint|Defuint]]##, ##[[KeyPgDeflng|Deflng]]##, ##[[KeyPgDeflongint|Deflongint]]##, ##[[KeyPgDefulongint|Defulongint]]##, ##[[KeyPgDefsng|Defsng]]##, ##[[KeyPgDefdbl|Defdbl]]##, ##[[KeyPgDefstr|Defstr]]##
 		- An explicit type ("##As //T//##") is needed when declaring variables using ##[[KeyPgDim|Dim]]##, ##[[KeyPgRedim|Redim]]##, ##[[KeyPgExtern|Extern]]## or ##[[KeyPgCommon|Common]]##. Variables declared using ##[[KeyPgVar|Var]]## or ##[[KeyPgConst|Const]]## have their types inferred from an initialization value (an explicit type is optional using ##[[KeyPgConst|Const]]##).
-	
+	 
 	""4"") all parameters passed by reference by default
 		- By default, all intrinsic scalar types - numeric and pointer types - are passed by value (##[[KeyPgByval|Byval]]##). Any other type - ##[[KeyPgString|String]]## or user-defined type - is passed by reference (##[[KeyPgByref|Byref]]##).
 		- Use the ##-w pedantic## command-line option to have parameters without explicit ##[[KeyPgByval|Byval]]## or ##[[KeyPgByref|Byref]]## reported.
-	
+	 
 	""5"") ##OPTION##s of any kind (no context-sensitivity)
 		- Instead of ##[[KeyPgOptionnokeyword|Option Nokeyword]]##, use ###undef##.
 		- Instead of ##[[KeyPgOptionescape|Option Escape]]##, use: ##!"some esc seq \n\r"## (notice the '##!##' char) and pass ##-w pedantic## to check for possible escape sequences.
@@ -47,48 +47,48 @@
 		- Instead of ##[[KeyPgOptionbase|Option Base]]##, use explicit lower-bound subscripts in arrays declarations.
 		- Instead of ##[[KeyPgOptionprivate|Option Private]]##, use ##[[KeyPgPrivate|Private]]## to declare procedures with internal linkage.
 		- Instead of ##[[KeyPgOptiongosub|Option Gosub]]## and ##[[KeyPgOptionnogosub|Option Nogosub]]##, use procedures with ##[[KeyPgSub|Sub]]## or ##[[KeyPgFunction|Function]]##.
-	
+	 
 	""6"") periods in symbol names 
 		- Use namespaces instead.
 	 
 	""7"") ##[[KeyPgGosub|Gosub]]## or ##[[KeyPgReturn|Return (from Gosub)]]##
 		- Nested procedures may be allowed in future.
-	
-	""8"") ##[[KeyPgOngosub|On Gosub]]## or ##[[KeyPgOngoto|On Goto]]##
-		- Use ##[[KeyPgSelectcase|Select Case As Const]] //expr//## for the latter.
-	
+	 
+	""8"") ##[[KeyPgOngosub|On Gosub]]##
+		- Use ##[[KeyPgSelectcase|Select Case As Const integer_expression]]## instead.
+	 
 	""9"") ##[[KeyPgResume|Resume]]##
 		- Most runtime and graphics library procedures now return an error code, like:  ##IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN error##... 
-	
+	 
 	""10"") ##'$DYNAMIC##, ##'$STATIC##, ##'$INCLUDE## meta-commands embedded in comments
 		- See item 5 about ##[[KeyPgOptiondynamic|Option Dynamic]]##.
 		- Use ###include "filename"## instead of ##'$include##.
-	
+	 
 	""11"") ##[[KeyPgCall|Call]]## or ##[[KeyPgLet|Let]]##
 		- Just remove them.
-	
+	 
 	""12"") numeric labels
 		- Named labels can be used instead, e.g. ##label_name:## / ##[[KeyPgGoto|Goto]] label_name##.
-	
+	 
 	""13"") global symbols with the same name as keywords 
 		- Declare them inside a namespace. 
 
 
 {{fbdoc item="section" value="-lang deprecated"}}
-	
+	 
 	**Supported:** //Anything allowed in version 0.16b, but://
-	
+	 
 	""1"") ##GOSUB##/##RETURN## and ##ON ... GOSUB## (even at module-level)
 		- so the ##GOSUB## implementation could be thread-unsafe in the ##-lang qb## mode, allowing fast execution (##-lang qb## doesn't support multi-threading, while ##-lang deprecated## does).
-	
+	 
 	**Not supported:**
-	
+	 
 	""1"") Classes
 		- Periods allowed in symbol names make it too difficult and/or ambiguous.
-	
+	 
 	""2"") Operator overloading
 		- Periods allowed in symbol names make it too difficult and/or ambiguous.
-	
+	 
 	""3"") Constructors, destructors and methods in ##TYPE##s.
 		- Periods allowed in symbol names make it too difficult and/or ambiguous.
 
@@ -96,18 +96,18 @@
 {{fbdoc item="section" value="-lang fblite"}}
 	 
 	**Supported:** //Anything allowed in the //[[CompilerOptlang|-lang deprecated]]// dialect, plus..//
-	
+	 
 	""1"") ##GOSUB##/##RETURN##
 		- Use ##[[KeyPgOptiongosub|Option Gosub]]## to enable.  This will disable ##RETURN## from exiting a procedure, due to ambiguity.
-	
+	 
 	**Not supported:**
-	
+	 
 	""1"") ##[[KeyPgScope|Scope]]## blocks
 		- All variables are given procedure scope.  Explicit ##[[KeyPgScope|Scope]]## blocks may be added later.
 
 
 {{fbdoc item="section" value="-lang qb"}}
-	
+	 
 	**Supported:** //Everything not supported/allowed in the //[[CompilerOptlang|-lang fb]]// dialect, plus..//
 	
 	""1"") ##[[KeyPgCall|Call]]## can be used with forward-referenced functions.
@@ -122,7 +122,7 @@
 	
 	""1"") Multi-threading
 		- None of the ##[[CatPgThreading|threading]]## procedures may be used.
-	
+	 
 	""2"") Classes and Namespaces
 	
 	""3"") Procedure and operator overloading

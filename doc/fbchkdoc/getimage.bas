@@ -30,8 +30,6 @@
 
 ''
 const MAX_IMAGEFILES = 100
-#define FALSE 0
-#define TRUE 1
 
 type ImageFile
 	url as string

@@ -14,7 +14,7 @@ Standard data type: wide character string
 	
 	This type is provided for support non-Latin based alphabets. Any intrinsic string function like ##[[KeyPgLeft|Left]]## will work with ##**Wstring**##s too, as will any string operator.
 	
-	When processing source files, ""FreeBASIC"" can parse ASCII files with Unicode escape sequences (\u),  UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE.
+	When processing source files, ""FreeBASIC"" can parse ASCII files with Unicode escape sequences (\u),  or UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE files, as long as they were saved with Byte Order Mark (BOM).
 	
 	The ""FreeBASIC"" text file functions can read and write Unicode files in different encodings, provided the ##[[KeyPgEncoding|encoding]]## is specified when the file is opened. The text is automatically converted to the internal encoding at read and converted back to the file encoding at write.
 	
@@ -51,7 +51,6 @@ print len(*str2)      'returns 12, the length of the string it points to
 {{fbdoc item="see"}}
 	- ##[[KeyPgString|String]]## (data type)
 	- ##[[KeyPgZstring|Zstring]]## (data type)
-	- ##[[KeyPgWstring|Wstring]]## (data type)
 	- ##[[KeyPgStringFunction|String]]## (function)
 	- ##[[KeyPgWstringFunction|Wstring]]## (function)
 	- ##[[KeyPgWspace|Wspace]]##

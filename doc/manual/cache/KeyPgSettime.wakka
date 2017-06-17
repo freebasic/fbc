@@ -24,6 +24,10 @@ Sets the current system time
 SETTIME "1:20:30"
 %%
 
+{{fbdoc item="target"}}
+	- On Windows the privilege SE_SYSTEMTIME_NAME is required, which typically means that the calling process has to be run with administrator privileges.
+	- On Linux the capability CAP_SYS_TIME is required, which typically means that the calling process has to be run as root/superuser.
+
 {{fbdoc item="diff"}}
 	- The ##[[KeyPgTime|Time]]## statement was used QB and the syntax was ##TIME = //newtime//##.
 

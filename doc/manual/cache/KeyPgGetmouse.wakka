@@ -37,6 +37,8 @@ Retrieves the status of the mouse pointing device
 	##//Clip//## stores the mouse clipping status; if ##1##, the mouse is currently clipped to the graphics window; if ##0##, the mouse is not clipped.
 	
 	The error code returned by ##**Getmouse**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Getmouse**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
+	
+	**Warning:** When the flag GFX_SHAPED_WINDOW is set (see ##[[KeyPgScreenres|Screenres]]##), ##**Getmouse**## is only active in any colored area, ie there where color <> RGBA(255, 0, 255, alpha).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/getmouse.bas"}}%%(freebasic)

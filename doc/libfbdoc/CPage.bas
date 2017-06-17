@@ -201,7 +201,7 @@ namespace fb.fbdoc
 		) as integer
 
 		if( ctx = NULL ) then
-			function = 0
+			function = FALSE
 		else
 			function = ctx->emitted
 		end if
@@ -229,7 +229,7 @@ namespace fb.fbdoc
 		) as integer
 
 		if( ctx = NULL ) then
-			function = 0
+			function = FALSE
 		else
 			function = ctx->scanned
 		end if

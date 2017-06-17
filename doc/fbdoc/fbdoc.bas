@@ -360,7 +360,7 @@ end sub
 	'' Load Keywords
 	fbdoc_loadkeywords( ManualDir + "templates/default/keywords.lst" )
 
-	if( bMakeTitles = TRUE ) then
+	if( bMakeTitles ) then
 		'misc_dump_keypageslist( paglist, "keypages.txt" )
 		misc_dump_titles( paglist, "titles.txt" )
 	end if

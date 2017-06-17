@@ -79,6 +79,8 @@ End Sub
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgOpVarptr|Varptr]]##
+	- ##[[KeyPgOpProcptr|Procptr]]##
 	- ##[[KeyPgOpValueOf|Operator * (Value of)]]##
 	- [[ProPgPointers|Pointers]]
 
