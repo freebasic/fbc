@@ -87,142 +87,53 @@
 		return FALSE
 	end if
 #endmacro
-'' TODO: #define HANDLE_MSG(hwnd,message,fn) case (message): return HANDLE_##message((hwnd),(wParam),(lParam),(fn))
-#macro HANDLE_WM_COMPACTING(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+
+#Define HANDLE_MSG(HWnd,message,fn) Case message: Return HANDLE_##message(HWnd,wParam,lParam,fn)
+#Define HANDLE_WM_COMPACTING(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, (wParam)))
 #define FORWARD_WM_COMPACTING(hwnd, compactRatio, fn) fn((hwnd), WM_COMPACTING, cast(WPARAM, cast(UINT, (compactRatio))), cast(LPARAM, 0))
-#macro HANDLE_WM_WININICHANGE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(LPCTSTR, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_WININICHANGE(HWnd, wParam, lParam, fn) fn((HWnd), Cast(LPCTSTR, (lParam)))
 #define FORWARD_WM_WININICHANGE(hwnd, lpszSectionName, fn) fn((hwnd), WM_WININICHANGE, cast(WPARAM, 0), cast(LPARAM, cast(LPCTSTR, (lpszSectionName))))
-#macro HANDLE_WM_SYSCOLORCHANGE(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_SYSCOLORCHANGE(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_SYSCOLORCHANGE(hwnd, fn) fn((hwnd), WM_SYSCOLORCHANGE, cast(WPARAM, 0), cast(LPARAM, 0))
 #define HANDLE_WM_QUERYNEWPALETTE(hwnd, wParam, lParam, fn) MAKELRESULT(cast(WINBOOL, fn(hwnd)), cast(LRESULT, 0))
 #define FORWARD_WM_QUERYNEWPALETTE(hwnd, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_QUERYNEWPALETTE, cast(WPARAM, 0), cast(LPARAM, 0))))
-#macro HANDLE_WM_PALETTEISCHANGING(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_PALETTEISCHANGING(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (wParam)))
 #define FORWARD_WM_PALETTEISCHANGING(hwnd, hwndPaletteChange, fn) fn((hwnd), WM_PALETTEISCHANGING, cast(WPARAM, cast(HWND, (hwndPaletteChange))), cast(LPARAM, 0))
-#macro HANDLE_WM_PALETTECHANGED(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_PALETTECHANGED(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (wParam)))
 #define FORWARD_WM_PALETTECHANGED(hwnd, hwndPaletteChange, fn) fn((hwnd), WM_PALETTECHANGED, cast(WPARAM, cast(HWND, (hwndPaletteChange))), cast(LPARAM, 0))
-#macro HANDLE_WM_FONTCHANGE(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_FONTCHANGE(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_FONTCHANGE(hwnd, fn) fn((hwnd), WM_FONTCHANGE, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_SPOOLERSTATUS(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, (wParam)), clng(cshort(LOWORD(lParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_SPOOLERSTATUS(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, (wParam)), CLng(CShort(Loword(lParam))))
 #define FORWARD_WM_SPOOLERSTATUS(hwnd, status, cJobInQueue, fn) fn((hwnd), WM_SPOOLERSTATUS, cast(WPARAM, (status)), MAKELPARAM((cJobInQueue), 0))
-#macro HANDLE_WM_DEVMODECHANGE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(LPCTSTR, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_DEVMODECHANGE(HWnd, wParam, lParam, fn) fn((HWnd), Cast(LPCTSTR, (lParam)))
 #define FORWARD_WM_DEVMODECHANGE(hwnd, lpszDeviceName, fn) fn((hwnd), WM_DEVMODECHANGE, cast(WPARAM, 0), cast(LPARAM, cast(LPCTSTR, (lpszDeviceName))))
-#macro HANDLE_WM_TIMECHANGE(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_TIMECHANGE(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_TIMECHANGE(hwnd, fn) fn((hwnd), WM_TIMECHANGE, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_POWER(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(wParam))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_POWER(HWnd, wParam, lParam, fn) fn((HWnd), CLng(wParam))
 #define FORWARD_WM_POWER(hwnd, code, fn) fn((hwnd), WM_POWER, cast(WPARAM, clng(code)), cast(LPARAM, 0))
 #define HANDLE_WM_QUERYENDSESSION(hwnd, wParam, lParam, fn) MAKELRESULT(cast(WINBOOL, fn(hwnd)), cast(LRESULT, 0))
 #define FORWARD_WM_QUERYENDSESSION(hwnd, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_QUERYENDSESSION, cast(WPARAM, 0), cast(LPARAM, 0))))
-#macro HANDLE_WM_ENDSESSION(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(WINBOOL, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_ENDSESSION(HWnd, wParam, lParam, fn) fn((HWnd), Cast(WINBOOL, (wParam)))
 #define FORWARD_WM_ENDSESSION(hwnd, fEnding, fn) fn((hwnd), WM_ENDSESSION, cast(WPARAM, cast(WINBOOL, (fEnding))), cast(LPARAM, 0))
-#macro HANDLE_WM_QUIT(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(wParam))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_QUIT(HWnd, wParam, lParam, fn) fn((HWnd), CLng(wParam))
 #define FORWARD_WM_QUIT(hwnd, exitCode, fn) fn((hwnd), WM_QUIT, cast(WPARAM, (exitCode)), cast(LPARAM, 0))
 #define HANDLE_WM_SYSTEMERROR(hwnd, wParam, lParam, fn) cast(LRESULT, 0)
 #define FORWARD_WM_SYSTEMERROR(hwnd, errCode, fn) cast(LRESULT, 0)
 #define HANDLE_WM_CREATE(hwnd, wParam, lParam, fn) cast(LRESULT, iif(fn((hwnd), cast(LPCREATESTRUCT, (lParam))), 0, -1))
-#define FORWARD_WM_CREATE(hwnd, lpCreateStruct_, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_CREATE, cast(WPARAM, 0), cast(LPARAM, cast(LPCREATESTRUCT, (lpCreateStruct_))))))
+#define FORWARD_WM_CREATE(hwnd, lpCreateStruct, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_CREATE, cast(WPARAM, 0), cast(LPARAM, cast(LPCREATESTRUCT, (lpCreateStruct))))))
 #define HANDLE_WM_NCCREATE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(LPCREATESTRUCT, (lParam))))))
-#define FORWARD_WM_NCCREATE(hwnd, lpCreateStruct_, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_NCCREATE, cast(WPARAM, 0), cast(LPARAM, cast(LPCREATESTRUCT, (lpCreateStruct_))))))
-#macro HANDLE_WM_DESTROY(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#define FORWARD_WM_NCCREATE(hwnd, lpCreateStruct, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_NCCREATE, cast(WPARAM, 0), cast(LPARAM, cast(LPCREATESTRUCT, (lpCreateStruct))))))
+#Define HANDLE_WM_DESTROY(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_DESTROY(hwnd, fn) fn((hwnd), WM_DESTROY, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_NCDESTROY(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_NCDESTROY(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_NCDESTROY(hwnd, fn) fn((hwnd), WM_NCDESTROY, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_SHOWWINDOW(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(WINBOOL, (wParam)), cast(UINT, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_SHOWWINDOW(HWnd, wParam, lParam, fn) fn((HWnd), Cast(WINBOOL, (wParam)), Cast(UINT, (lParam)))
 #define FORWARD_WM_SHOWWINDOW(hwnd, fShow, status, fn) fn((hwnd), WM_SHOWWINDOW, cast(WPARAM, cast(WINBOOL, (fShow))), cast(LPARAM, cast(UINT, (status))))
-#macro HANDLE_WM_SETREDRAW(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(WINBOOL, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_SETREDRAW(HWnd, wParam, lParam, fn) fn((HWnd), Cast(WINBOOL, (wParam)))
 #define FORWARD_WM_SETREDRAW(hwnd, fRedraw, fn) fn((hwnd), WM_SETREDRAW, cast(WPARAM, cast(WINBOOL, (fRedraw))), cast(LPARAM, 0))
-#macro HANDLE_WM_ENABLE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(WINBOOL, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_ENABLE(HWnd, wParam, lParam, fn) fn((HWnd), Cast(WINBOOL, (wParam)))
 #define FORWARD_WM_ENABLE(hwnd, fEnable, fn) fn((hwnd), WM_ENABLE, cast(WPARAM, cast(WINBOOL, (fEnable))), cast(LPARAM, 0))
-#macro HANDLE_WM_SETTEXT(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(LPCTSTR, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_SETTEXT(HWnd, wParam, lParam, fn) fn((HWnd), Cast(LPCTSTR, (lParam)))
 #define FORWARD_WM_SETTEXT(hwnd, lpszText, fn) fn((hwnd), WM_SETTEXT, cast(WPARAM, 0), cast(LPARAM, cast(LPCTSTR, (lpszText))))
 #define HANDLE_WM_GETTEXT(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, clng(fn((hwnd), clng(wParam), cast(LPTSTR, (lParam))))))
 #define FORWARD_WM_GETTEXT(hwnd, cchTextMax, lpszText, fn) clng(cast(DWORD, fn((hwnd), WM_GETTEXT, cast(WPARAM, clng(cchTextMax)), cast(LPARAM, cast(LPTSTR, (lpszText))))))
@@ -230,60 +141,25 @@
 #define FORWARD_WM_GETTEXTLENGTH(hwnd, fn) clng(cast(DWORD, fn((hwnd), WM_GETTEXTLENGTH, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define HANDLE_WM_WINDOWPOSCHANGING(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(LPWINDOWPOS, (lParam))))))
 #define FORWARD_WM_WINDOWPOSCHANGING(hwnd, lpwpos, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_WINDOWPOSCHANGING, cast(WPARAM, 0), cast(LPARAM, cast(LPWINDOWPOS, (lpwpos))))))
-#macro HANDLE_WM_WINDOWPOSCHANGED(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(const LPWINDOWPOS, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_WINDOWPOSCHANGED(HWnd, wParam, lParam, fn) fn((HWnd), Cast(Const LPWINDOWPOS, (lParam)))
 #define FORWARD_WM_WINDOWPOSCHANGED(hwnd, lpwpos, fn) fn((hwnd), WM_WINDOWPOSCHANGED, cast(WPARAM, 0), cast(LPARAM, cast(const LPWINDOWPOS, (lpwpos))))
-#macro HANDLE_WM_MOVE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_MOVE(HWnd, wParam, lParam, fn) fn((HWnd), CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))))
 #define FORWARD_WM_MOVE(hwnd, x, y, fn) fn((hwnd), WM_MOVE, cast(WPARAM, 0), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_SIZE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, (wParam)), clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_SIZE(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, (wParam)), CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))))
 #define FORWARD_WM_SIZE(hwnd, state, cx, cy, fn) fn((hwnd), WM_SIZE, cast(WPARAM, cast(UINT, (state))), MAKELPARAM((cx), (cy)))
-#macro HANDLE_WM_CLOSE(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_CLOSE(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_CLOSE(hwnd, fn) fn((hwnd), WM_CLOSE, cast(WPARAM, 0), cast(LPARAM, 0))
 #define HANDLE_WM_QUERYOPEN(hwnd, wParam, lParam, fn) MAKELRESULT(cast(WINBOOL, fn(hwnd)), 0)
 #define FORWARD_WM_QUERYOPEN(hwnd, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_QUERYOPEN, cast(WPARAM, 0), cast(LPARAM, 0))))
-#macro HANDLE_WM_GETMINMAXINFO(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(LPMINMAXINFO, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
-#define FORWARD_WM_GETMINMAXINFO(hwnd, lpMinMaxInfo_, fn) fn((hwnd), WM_GETMINMAXINFO, cast(WPARAM, 0), cast(LPARAM, cast(LPMINMAXINFO, (lpMinMaxInfo_))))
-#macro HANDLE_WM_PAINT(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_GETMINMAXINFO(HWnd, wParam, lParam, fn) fn((HWnd), Cast(LPMINMAXINFO, (lParam)))
+#define FORWARD_WM_GETMINMAXINFO(hwnd, lpMinMaxInfo, fn) fn((hwnd), WM_GETMINMAXINFO, cast(WPARAM, 0), cast(LPARAM, cast(LPMINMAXINFO, (lpMinMaxInfo))))
+#Define HANDLE_WM_PAINT(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_PAINT(hwnd, fn) fn((hwnd), WM_PAINT, cast(WPARAM, 0), cast(LPARAM, 0))
 #define HANDLE_WM_ERASEBKGND(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(HDC, (wParam))))))
-#define FORWARD_WM_ERASEBKGND(hwnd, hdc_, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_ERASEBKGND, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, 0))))
+#define FORWARD_WM_ERASEBKGND(hwnd, hdc, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_ERASEBKGND, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, 0))))
 #define HANDLE_WM_ICONERASEBKGND(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(HDC, (wParam))))))
-#define FORWARD_WM_ICONERASEBKGND(hwnd, hdc_, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_ICONERASEBKGND, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, 0))))
-#macro HANDLE_WM_NCPAINT(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HRGN, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#define FORWARD_WM_ICONERASEBKGND(hwnd, hdc, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_ICONERASEBKGND, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, 0))))
+#Define HANDLE_WM_NCPAINT(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HRGN, (wParam)))
 #define FORWARD_WM_NCPAINT(hwnd, hrgn, fn) fn((hwnd), WM_NCPAINT, cast(WPARAM, cast(HRGN, (hrgn))), cast(LPARAM, 0))
 #define HANDLE_WM_NCCALCSIZE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(UINT, fn((hwnd), cast(WINBOOL, (wParam)), cptr(NCCALCSIZE_PARAMS ptr, (lParam))))))
 #define FORWARD_WM_NCCALCSIZE(hwnd, fCalcValidRects, lpcsp, fn) cast(UINT, cast(DWORD, fn((hwnd), WM_NCCALCSIZE, cast(WPARAM, (fCalcValidRects)), cast(LPARAM, cptr(NCCALCSIZE_PARAMS ptr, (lpcsp))))))
@@ -291,366 +167,117 @@
 #define FORWARD_WM_NCHITTEST(hwnd, x, y, fn) cast(UINT, cast(DWORD, fn((hwnd), WM_NCHITTEST, cast(WPARAM, 0), MAKELPARAM((x), (y)))))
 #define HANDLE_WM_QUERYDRAGICON(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(UINT, fn(hwnd))))
 #define FORWARD_WM_QUERYDRAGICON(hwnd, fn) cast(HICON, cast(UINT, cast(DWORD, fn((hwnd), WM_QUERYDRAGICON, cast(WPARAM, 0), cast(LPARAM, 0)))))
-#macro HANDLE_WM_DROPFILES(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HDROP, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
-#define FORWARD_WM_DROPFILES(hwnd, hdrop_, fn) fn((hwnd), WM_DROPFILES, cast(WPARAM, cast(HDROP, (hdrop_))), cast(LPARAM, 0))
-#macro HANDLE_WM_ACTIVATE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, LOWORD(wParam)), cast(HWND, (lParam)), cast(WINBOOL, HIWORD(wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_DROPFILES(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HDROP, (wParam)))
+#define FORWARD_WM_DROPFILES(hwnd, hdrop, fn) fn((hwnd), WM_DROPFILES, cast(WPARAM, cast(HDROP, (hdrop))), cast(LPARAM, 0))
+#Define HANDLE_WM_ACTIVATE(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, Loword(wParam)), Cast(HWnd, (lParam)), Cast(WINBOOL, Hiword(wParam)))
 #define FORWARD_WM_ACTIVATE(hwnd, state, hwndActDeact, fMinimized, fn) fn((hwnd), WM_ACTIVATE, MAKEWPARAM((state), (fMinimized)), cast(LPARAM, cast(HWND, (hwndActDeact))))
-#macro HANDLE_WM_ACTIVATEAPP(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(WINBOOL, (wParam)), cast(DWORD, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_ACTIVATEAPP(HWnd, wParam, lParam, fn) fn((HWnd), Cast(WINBOOL, (wParam)), Cast(DWORD, (lParam)))
 #define FORWARD_WM_ACTIVATEAPP(hwnd, fActivate, dwThreadId, fn) fn((hwnd), WM_ACTIVATEAPP, cast(WPARAM, cast(WINBOOL, (fActivate))), cast(LPARAM, (dwThreadId)))
-#define HANDLE_WM_NCACTIVATE(hwnd, wParam, lParam_, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(WINBOOL, (wParam)), cast(WPARAM, 0), cast(LPARAM, 0)))))
+#define HANDLE_WM_NCACTIVATE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(WINBOOL, (wParam)), cast(WPARAM, 0), cast(LPARAM, 0)))))
 #define FORWARD_WM_NCACTIVATE(hwnd, fActive, hwndActDeact, fMinimized, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_NCACTIVATE, cast(WPARAM, cast(WINBOOL, (fActive))), cast(LPARAM, 0))))
-#macro HANDLE_WM_SETFOCUS(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_SETFOCUS(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (wParam)))
 #define FORWARD_WM_SETFOCUS(hwnd, hwndOldFocus, fn) fn((hwnd), WM_SETFOCUS, cast(WPARAM, cast(HWND, (hwndOldFocus))), cast(LPARAM, 0))
-#macro HANDLE_WM_KILLFOCUS(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_KILLFOCUS(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (wParam)))
 #define FORWARD_WM_KILLFOCUS(hwnd, hwndNewFocus, fn) fn((hwnd), WM_KILLFOCUS, cast(WPARAM, cast(HWND, (hwndNewFocus))), cast(LPARAM, 0))
-#macro HANDLE_WM_KEYDOWN(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, (wParam)), CTRUE, clng(cshort(LOWORD(lParam))), cast(UINT, HIWORD(lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_KEYDOWN(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, (wParam)), CTRUE, CLng(CShort(Loword(lParam))), Cast(UINT, Hiword(lParam)))
 #define FORWARD_WM_KEYDOWN(hwnd, vk, cRepeat, flags, fn) fn((hwnd), WM_KEYDOWN, cast(WPARAM, cast(UINT, (vk))), MAKELPARAM((cRepeat), (flags)))
-#macro HANDLE_WM_KEYUP(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, (wParam)), FALSE, clng(cshort(LOWORD(lParam))), cast(UINT, HIWORD(lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_KEYUP(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, (wParam)), False, CLng(CShort(Loword(lParam))), Cast(UINT, Hiword(lParam)))
 #define FORWARD_WM_KEYUP(hwnd, vk, cRepeat, flags, fn) fn((hwnd), WM_KEYUP, cast(WPARAM, cast(UINT, (vk))), MAKELPARAM((cRepeat), (flags)))
-#macro HANDLE_WM_CHAR(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(TCHAR, (wParam)), clng(cshort(LOWORD(lParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_CHAR(HWnd, wParam, lParam, fn) fn((HWnd), Cast(TCHAR, (wParam)), CLng(CShort(Loword(lParam))))
 #define FORWARD_WM_CHAR(hwnd, ch, cRepeat, fn) fn((hwnd), WM_CHAR, cast(WPARAM, cast(TCHAR, (ch))), MAKELPARAM((cRepeat), 0))
-#macro HANDLE_WM_DEADCHAR(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(TCHAR, (wParam)), clng(cshort(LOWORD(lParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_DEADCHAR(HWnd, wParam, lParam, fn) fn((HWnd), Cast(TCHAR, (wParam)), CLng(CShort(Loword(lParam))))
 #define FORWARD_WM_DEADCHAR(hwnd, ch, cRepeat, fn) fn((hwnd), WM_DEADCHAR, cast(WPARAM, cast(TCHAR, (ch))), MAKELPARAM((cRepeat), 0))
-#macro HANDLE_WM_SYSKEYDOWN(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, (wParam)), CTRUE, clng(cshort(LOWORD(lParam))), cast(UINT, HIWORD(lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_SYSKEYDOWN(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, (wParam)), CTRUE, CLng(CShort(Loword(lParam))), Cast(UINT, Hiword(lParam)))
 #define FORWARD_WM_SYSKEYDOWN(hwnd, vk, cRepeat, flags, fn) fn((hwnd), WM_SYSKEYDOWN, cast(WPARAM, cast(UINT, (vk))), MAKELPARAM((cRepeat), (flags)))
-#macro HANDLE_WM_SYSKEYUP(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, (wParam)), FALSE, clng(cshort(LOWORD(lParam))), cast(UINT, HIWORD(lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_SYSKEYUP(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, (wParam)), False, CLng(CShort(Loword(lParam))), Cast(UINT, Hiword(lParam)))
 #define FORWARD_WM_SYSKEYUP(hwnd, vk, cRepeat, flags, fn) fn((hwnd), WM_SYSKEYUP, cast(WPARAM, cast(UINT, (vk))), MAKELPARAM((cRepeat), (flags)))
-#macro HANDLE_WM_SYSCHAR(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(TCHAR, (wParam)), clng(cshort(LOWORD(lParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_SYSCHAR(HWnd, wParam, lParam, fn) fn((HWnd), Cast(TCHAR, (wParam)), CLng(CShort(Loword(lParam))))
 #define FORWARD_WM_SYSCHAR(hwnd, ch, cRepeat, fn) fn((hwnd), WM_SYSCHAR, cast(WPARAM, cast(TCHAR, (ch))), MAKELPARAM((cRepeat), 0))
-#macro HANDLE_WM_SYSDEADCHAR(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(TCHAR, (wParam)), clng(cshort(LOWORD(lParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_SYSDEADCHAR(HWnd, wParam, lParam, fn) fn((HWnd), Cast(TCHAR, (wParam)), CLng(CShort(Loword(lParam))))
 #define FORWARD_WM_SYSDEADCHAR(hwnd, ch, cRepeat, fn) fn((hwnd), WM_SYSDEADCHAR, cast(WPARAM, cast(TCHAR, (ch))), MAKELPARAM((cRepeat), 0))
-#macro HANDLE_WM_MOUSEMOVE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_MOUSEMOVE(HWnd, wParam, lParam, fn) fn((HWnd), CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_MOUSEMOVE(hwnd, x, y, keyFlags, fn) fn((hwnd), WM_MOUSEMOVE, cast(WPARAM, cast(UINT, (keyFlags))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_LBUTTONDOWN(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), FALSE, clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_LBUTTONDOWN(HWnd, wParam, lParam, fn) fn((HWnd), False, CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_LBUTTONDOWN(hwnd, fDoubleClick, x, y, keyFlags, fn) fn((hwnd), iif((fDoubleClick), WM_LBUTTONDBLCLK, WM_LBUTTONDOWN), cast(WPARAM, cast(UINT, (keyFlags))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_LBUTTONDBLCLK(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), CTRUE, clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
-#macro HANDLE_WM_LBUTTONUP(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_LBUTTONDBLCLK(HWnd, wParam, lParam, fn) fn((HWnd), CTRUE, CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
+#Define HANDLE_WM_LBUTTONUP(HWnd, wParam, lParam, fn) fn((HWnd), CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_LBUTTONUP(hwnd, x, y, keyFlags, fn) fn((hwnd), WM_LBUTTONUP, cast(WPARAM, cast(UINT, (keyFlags))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_RBUTTONDOWN(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), FALSE, clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_RBUTTONDOWN(HWnd, wParam, lParam, fn) fn((HWnd), False, CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_RBUTTONDOWN(hwnd, fDoubleClick, x, y, keyFlags, fn) fn((hwnd), iif((fDoubleClick), WM_RBUTTONDBLCLK, WM_RBUTTONDOWN), cast(WPARAM, cast(UINT, (keyFlags))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_RBUTTONDBLCLK(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), CTRUE, clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
-#macro HANDLE_WM_RBUTTONUP(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_RBUTTONDBLCLK(HWnd, wParam, lParam, fn) fn((HWnd), CTRUE, CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
+#Define HANDLE_WM_RBUTTONUP(HWnd, wParam, lParam, fn) fn((HWnd), CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_RBUTTONUP(hwnd, x, y, keyFlags, fn) fn((hwnd), WM_RBUTTONUP, cast(WPARAM, cast(UINT, (keyFlags))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_MBUTTONDOWN(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), FALSE, clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_MBUTTONDOWN(HWnd, wParam, lParam, fn) fn((HWnd), False, CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_MBUTTONDOWN(hwnd, fDoubleClick, x, y, keyFlags, fn) fn((hwnd), iif((fDoubleClick), WM_MBUTTONDBLCLK, WM_MBUTTONDOWN), cast(WPARAM, cast(UINT, (keyFlags))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_MBUTTONDBLCLK(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), CTRUE, clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
-#macro HANDLE_WM_MBUTTONUP(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_MBUTTONDBLCLK(HWnd, wParam, lParam, fn) fn((HWnd), CTRUE, CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
+#Define HANDLE_WM_MBUTTONUP(HWnd, wParam, lParam, fn) fn((HWnd), CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_MBUTTONUP(hwnd, x, y, keyFlags, fn) fn((hwnd), WM_MBUTTONUP, cast(WPARAM, cast(UINT, (keyFlags))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_MOUSEWHEEL(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), clng(cshort(HIWORD(wParam))), cast(UINT, cshort(LOWORD(wParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_MOUSEWHEEL(HWnd, wParam, lParam, fn) fn((HWnd), CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), CLng(CShort(Hiword(wParam))), Cast(UINT, CShort(Loword(wParam))))
 #define FORWARD_WM_MOUSEWHEEL(hwnd, xPos, yPos, zDelta, fwKeys, fn) fn((hwnd), WM_MOUSEWHEEL, MAKEWPARAM((fwKeys), (zDelta)), MAKELPARAM(x, y))
-#macro HANDLE_WM_NCMOUSEMOVE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_NCMOUSEMOVE(HWnd, wParam, lParam, fn) fn((HWnd), CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_NCMOUSEMOVE(hwnd, x, y, codeHitTest, fn) fn((hwnd), WM_NCMOUSEMOVE, cast(WPARAM, cast(UINT, (codeHitTest))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_NCLBUTTONDOWN(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), FALSE, clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_NCLBUTTONDOWN(HWnd, wParam, lParam, fn) fn((HWnd), False, CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_NCLBUTTONDOWN(hwnd, fDoubleClick, x, y, codeHitTest, fn) fn((hwnd), iif((fDoubleClick), WM_NCLBUTTONDBLCLK, WM_NCLBUTTONDOWN), cast(WPARAM, cast(UINT, (codeHitTest))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_NCLBUTTONDBLCLK(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), CTRUE, clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
-#macro HANDLE_WM_NCLBUTTONUP(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_NCLBUTTONDBLCLK(HWnd, wParam, lParam, fn) fn((HWnd), CTRUE, CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
+#Define HANDLE_WM_NCLBUTTONUP(HWnd, wParam, lParam, fn) fn((HWnd), CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_NCLBUTTONUP(hwnd, x, y, codeHitTest, fn) fn((hwnd), WM_NCLBUTTONUP, cast(WPARAM, cast(UINT, (codeHitTest))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_NCRBUTTONDOWN(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), FALSE, clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_NCRBUTTONDOWN(HWnd, wParam, lParam, fn) fn((HWnd), False, CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_NCRBUTTONDOWN(hwnd, fDoubleClick, x, y, codeHitTest, fn) fn((hwnd), iif((fDoubleClick), WM_NCRBUTTONDBLCLK, WM_NCRBUTTONDOWN), cast(WPARAM, cast(UINT, (codeHitTest))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_NCRBUTTONDBLCLK(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), CTRUE, clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
-#macro HANDLE_WM_NCRBUTTONUP(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_NCRBUTTONDBLCLK(HWnd, wParam, lParam, fn) fn((HWnd), CTRUE, CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
+#Define HANDLE_WM_NCRBUTTONUP(HWnd, wParam, lParam, fn) fn((HWnd), CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_NCRBUTTONUP(hwnd, x, y, codeHitTest, fn) fn((hwnd), WM_NCRBUTTONUP, cast(WPARAM, cast(UINT, (codeHitTest))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_NCMBUTTONDOWN(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), FALSE, clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_NCMBUTTONDOWN(HWnd, wParam, lParam, fn) fn((HWnd), False, CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_NCMBUTTONDOWN(hwnd, fDoubleClick, x, y, codeHitTest, fn) fn((hwnd), iif((fDoubleClick), WM_NCMBUTTONDBLCLK, WM_NCMBUTTONDOWN), cast(WPARAM, cast(UINT, (codeHitTest))), MAKELPARAM((x), (y)))
-#macro HANDLE_WM_NCMBUTTONDBLCLK(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), CTRUE, clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
-#macro HANDLE_WM_NCMBUTTONUP(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_NCMBUTTONDBLCLK(HWnd, wParam, lParam, fn) fn((HWnd), CTRUE, CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
+#Define HANDLE_WM_NCMBUTTONUP(HWnd, wParam, lParam, fn) fn((HWnd), CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))), Cast(UINT, (wParam)))
 #define FORWARD_WM_NCMBUTTONUP(hwnd, x, y, codeHitTest, fn) fn((hwnd), WM_NCMBUTTONUP, cast(WPARAM, cast(UINT, (codeHitTest))), MAKELPARAM((x), (y)))
 #define HANDLE_WM_MOUSEACTIVATE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, clng(fn((hwnd), cast(HWND, (wParam)), cast(UINT, LOWORD(lParam)), cast(UINT, HIWORD(lParam))))))
 #define FORWARD_WM_MOUSEACTIVATE(hwnd, hwndTopLevel, codeHitTest, msg, fn) clng(cast(DWORD, fn((hwnd), WM_MOUSEACTIVATE, cast(WPARAM, cast(HWND, (hwndTopLevel))), MAKELPARAM((codeHitTest), (msg)))))
-#macro HANDLE_WM_CANCELMODE(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_CANCELMODE(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_CANCELMODE(hwnd, fn) fn((hwnd), WM_CANCELMODE, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_TIMER(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_TIMER(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, (wParam)))
 #define FORWARD_WM_TIMER(hwnd, id, fn) fn((hwnd), WM_TIMER, cast(WPARAM, cast(UINT, (id))), cast(LPARAM, 0))
-#macro HANDLE_WM_INITMENU(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HMENU, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_INITMENU(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HMENU, (wParam)))
 #define FORWARD_WM_INITMENU(hwnd, hMenu, fn) fn((hwnd), WM_INITMENU, cast(WPARAM, cast(HMENU, (hMenu))), cast(LPARAM, 0))
-#macro HANDLE_WM_INITMENUPOPUP(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HMENU, (wParam)), cast(UINT, LOWORD(lParam)), cast(WINBOOL, HIWORD(lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_INITMENUPOPUP(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HMENU, (wParam)), Cast(UINT, Loword(lParam)), Cast(WINBOOL, Hiword(lParam)))
 #define FORWARD_WM_INITMENUPOPUP(hwnd, hMenu, item, fSystemMenu, fn) fn((hwnd), WM_INITMENUPOPUP, cast(WPARAM, cast(HMENU, (hMenu))), MAKELPARAM((item), (fSystemMenu)))
-#macro HANDLE_WM_MENUSELECT(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HMENU, (lParam)), iif(HIWORD(wParam) and MF_POPUP, 0, clng(LOWORD(wParam))), iif(HIWORD(wParam) and MF_POPUP, GetSubMenu(cast(HMENU, lParam), LOWORD(wParam)), cast(HMENU, 0)), cast(UINT, iif(cshort(HIWORD(wParam)) = (-1), &hFFFFFFFF, HIWORD(wParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
-#define FORWARD_WM_MENUSELECT(hwnd, hmenu_, item, hmenuPopup, flags, fn) fn((hwnd), WM_MENUSELECT, MAKEWPARAM((item), (flags)), cast(LPARAM, cast(HMENU, iif((hmenu_), (hmenu_), (hmenuPopup)))))
+#Define HANDLE_WM_MENUSELECT(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HMENU, (lParam)), Iif(Hiword(wParam) And MF_POPUP, 0, CLng(Loword(wParam))), Iif(Hiword(wParam) And MF_POPUP, GetSubMenu(Cast(HMENU, lParam), Loword(wParam)), Cast(HMENU, 0)), Cast(UINT, Iif(CShort(Hiword(wParam)) = (-1), &hFFFFFFFF, Hiword(wParam))))
+#define FORWARD_WM_MENUSELECT(hwnd, hmenu, item, hmenuPopup, flags, fn) fn((hwnd), WM_MENUSELECT, MAKEWPARAM((item), (flags)), cast(LPARAM, cast(HMENU, iif((hmenu), (hmenu), (hmenuPopup)))))
 #define HANDLE_WM_MENUCHAR(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, fn((hwnd), cast(UINT, LOWORD(wParam)), cast(UINT, HIWORD(wParam)), cast(HMENU, (lParam)))))
-#define FORWARD_WM_MENUCHAR(hwnd, ch, flags, hmenu_, fn) cast(DWORD, fn((hwnd), WM_MENUCHAR, MAKEWPARAM(flags, cast(WORD, (ch))), cast(LPARAM, cast(HMENU, (hmenu_)))))
-#macro HANDLE_WM_COMMAND(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(LOWORD(wParam)), cast(HWND, (lParam)), cast(UINT, HIWORD(wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#define FORWARD_WM_MENUCHAR(hwnd, ch, flags, hmenu, fn) cast(DWORD, fn((hwnd), WM_MENUCHAR, MAKEWPARAM(flags, cast(WORD, (ch))), cast(LPARAM, cast(HMENU, (hmenu)))))
+#Define HANDLE_WM_COMMAND(HWnd, wParam, lParam, fn) fn((HWnd), CLng(Loword(wParam)), Cast(HWnd, (lParam)), Cast(UINT, Hiword(wParam)))
 #define FORWARD_WM_COMMAND(hwnd, id, hwndCtl, codeNotify, fn) fn((hwnd), WM_COMMAND, MAKEWPARAM(cast(UINT, (id)), cast(UINT, (codeNotify))), cast(LPARAM, cast(HWND, (hwndCtl))))
-#macro HANDLE_WM_HSCROLL(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (lParam)), cast(UINT, LOWORD(wParam)), clng(cshort(HIWORD(wParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_HSCROLL(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (lParam)), Cast(UINT, Loword(wParam)), CLng(CShort(Hiword(wParam))))
 #define FORWARD_WM_HSCROLL(hwnd, hwndCtl, code, pos, fn) fn((hwnd), WM_HSCROLL, MAKEWPARAM(cast(UINT, clng(code)), cast(UINT, clng(pos))), cast(LPARAM, cast(HWND, (hwndCtl))))
-#macro HANDLE_WM_VSCROLL(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (lParam)), cast(UINT, LOWORD(wParam)), clng(cshort(HIWORD(wParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_VSCROLL(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (lParam)), Cast(UINT, Loword(wParam)), CLng(CShort(Hiword(wParam))))
 #define FORWARD_WM_VSCROLL(hwnd, hwndCtl, code, pos, fn) fn((hwnd), WM_VSCROLL, MAKEWPARAM(cast(UINT, clng(code)), cast(UINT, clng(pos))), cast(LPARAM, cast(HWND, (hwndCtl))))
-#macro HANDLE_WM_CUT(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_CUT(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_CUT(hwnd, fn) fn((hwnd), WM_CUT, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_COPY(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_COPY(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_COPY(hwnd, fn) fn((hwnd), WM_COPY, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_PASTE(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_PASTE(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_PASTE(hwnd, fn) fn((hwnd), WM_PASTE, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_CLEAR(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_CLEAR(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_CLEAR(hwnd, fn) fn((hwnd), WM_CLEAR, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_UNDO(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_UNDO(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_UNDO(hwnd, fn) fn((hwnd), WM_UNDO, cast(WPARAM, 0), cast(LPARAM, 0))
 #define HANDLE_WM_RENDERFORMAT(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HANDLE, fn((hwnd), cast(UINT, (wParam))))))
 #define FORWARD_WM_RENDERFORMAT(hwnd, fmt, fn) cast(HANDLE, cast(UINT_PTR, fn((hwnd), WM_RENDERFORMAT, cast(WPARAM, cast(UINT, (fmt))), cast(LPARAM, 0))))
-#macro HANDLE_WM_RENDERALLFORMATS(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_RENDERALLFORMATS(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_RENDERALLFORMATS(hwnd, fn) fn((hwnd), WM_RENDERALLFORMATS, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_DESTROYCLIPBOARD(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_DESTROYCLIPBOARD(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_DESTROYCLIPBOARD(hwnd, fn) fn((hwnd), WM_DESTROYCLIPBOARD, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_DRAWCLIPBOARD(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_DRAWCLIPBOARD(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_DRAWCLIPBOARD(hwnd, fn) fn((hwnd), WM_DRAWCLIPBOARD, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_PAINTCLIPBOARD(hwnd, wParam, lParam, fn)
+
+#Macro HANDLE_WM_PAINTCLIPBOARD(HWnd, wParam, lParam, fn)
 	scope
 		fn((hwnd), cast(HWND, (wParam)), cast(const LPPAINTSTRUCT, GlobalLock(cast(HGLOBAL, (lParam)))))
 		GlobalUnlock(cast(HGLOBAL, (lParam)))
 		cast(LRESULT, 0)
 	end scope
 #endmacro
-#define FORWARD_WM_PAINTCLIPBOARD(hwnd, hwndCBViewer, lpPaintStruct_, fn) fn((hwnd), WM_PAINTCLIPBOARD, cast(WPARAM, cast(HWND, (hwndCBViewer))), cast(LPARAM, cast(LPPAINTSTRUCT, (lpPaintStruct_))))
+#define FORWARD_WM_PAINTCLIPBOARD(hwnd, hwndCBViewer, lpPaintStruct, fn) fn((hwnd), WM_PAINTCLIPBOARD, cast(WPARAM, cast(HWND, (hwndCBViewer))), cast(LPARAM, cast(LPPAINTSTRUCT, (lpPaintStruct))))
 #macro HANDLE_WM_SIZECLIPBOARD(hwnd, wParam, lParam, fn)
 	scope
 		fn((hwnd), cast(HWND, (wParam)), cast(const LPRECT, GlobalLock(cast(HGLOBAL, (lParam)))))
@@ -658,161 +285,77 @@
 		cast(LRESULT, 0)
 	end scope
 #endmacro
-#define FORWARD_WM_SIZECLIPBOARD(hwnd, hwndCBViewer, lprc, fn) fn((hwnd), WM_SIZECLIPBOARD, cast(WPARAM, cast(HWND, (hwndCBViewer))), cast(LPARAM, cast(LPRECT, (lprc))))
-#macro HANDLE_WM_VSCROLLCLIPBOARD(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (wParam)), cast(UINT, LOWORD(lParam)), clng(cshort(HIWORD(lParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+
+#Define FORWARD_WM_SIZECLIPBOARD(HWnd, hwndCBViewer, lprc, fn) fn((HWnd), WM_SIZECLIPBOARD, Cast(WPARAM, Cast(HWnd, (hwndCBViewer))), Cast(LPARAM, Cast(LPRECT, (lprc))))
+#Define HANDLE_WM_VSCROLLCLIPBOARD(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (wParam)), Cast(UINT, Loword(lParam)), CLng(CShort(Hiword(lParam))))
 #define FORWARD_WM_VSCROLLCLIPBOARD(hwnd, hwndCBViewer, code, pos, fn) fn((hwnd), WM_VSCROLLCLIPBOARD, cast(WPARAM, cast(HWND, (hwndCBViewer))), MAKELPARAM((code), (pos)))
-#macro HANDLE_WM_HSCROLLCLIPBOARD(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (wParam)), cast(UINT, LOWORD(lParam)), clng(cshort(HIWORD(lParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_HSCROLLCLIPBOARD(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (wParam)), Cast(UINT, Loword(lParam)), CLng(CShort(Hiword(lParam))))
 #define FORWARD_WM_HSCROLLCLIPBOARD(hwnd, hwndCBViewer, code, pos, fn) fn((hwnd), WM_HSCROLLCLIPBOARD, cast(WPARAM, cast(HWND, (hwndCBViewer))), MAKELPARAM((code), (pos)))
-#macro HANDLE_WM_ASKCBFORMATNAME(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(wParam), cast(LPTSTR, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_ASKCBFORMATNAME(HWnd, wParam, lParam, fn) fn((HWnd), CLng(wParam), Cast(LPTSTR, (lParam)))
 #define FORWARD_WM_ASKCBFORMATNAME(hwnd, cchMax, rgchName, fn) fn((hwnd), WM_ASKCBFORMATNAME, cast(WPARAM, clng(cchMax)), cast(LPARAM, (rgchName)))
-#macro HANDLE_WM_CHANGECBCHAIN(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (wParam)), cast(HWND, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_CHANGECBCHAIN(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (wParam)), Cast(HWnd, (lParam)))
 #define FORWARD_WM_CHANGECBCHAIN(hwnd, hwndRemove, hwndNext, fn) fn((hwnd), WM_CHANGECBCHAIN, cast(WPARAM, cast(HWND, (hwndRemove))), cast(LPARAM, cast(HWND, (hwndNext))))
 #define HANDLE_WM_SETCURSOR(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(HWND, (wParam)), cast(UINT, LOWORD(lParam)), cast(UINT, HIWORD(lParam))))))
 #define FORWARD_WM_SETCURSOR(hwnd, hwndCursor, codeHitTest, msg, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_SETCURSOR, cast(WPARAM, cast(HWND, (hwndCursor))), MAKELPARAM((codeHitTest), (msg)))))
-#macro HANDLE_WM_SYSCOMMAND(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, (wParam)), clng(cshort(LOWORD(lParam))), clng(cshort(HIWORD(lParam))))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_SYSCOMMAND(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, (wParam)), CLng(CShort(Loword(lParam))), CLng(CShort(Hiword(lParam))))
 #define FORWARD_WM_SYSCOMMAND(hwnd, cmd, x, y, fn) fn((hwnd), WM_SYSCOMMAND, cast(WPARAM, cast(UINT, (cmd))), MAKELPARAM((x), (y)))
 #define HANDLE_WM_MDICREATE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(UINT, fn((hwnd), cast(LPMDICREATESTRUCT, (lParam))))))
-#define FORWARD_WM_MDICREATE(hwnd_, lpmcs, fn) cast(HWND, cast(UINT, cast(DWORD, fn((hwnd_), WM_MDICREATE, cast(WPARAM, 0), cast(LPARAM, cast(LPMDICREATESTRUCT, (lpmcs)))))))
-#macro HANDLE_WM_MDIDESTROY(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#define FORWARD_WM_MDICREATE(hwnd, lpmcs, fn) cast(HWND, cast(UINT, cast(DWORD, fn((hwnd), WM_MDICREATE, cast(WPARAM, 0), cast(LPARAM, cast(LPMDICREATESTRUCT, (lpmcs)))))))
+#Define HANDLE_WM_MDIDESTROY(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (wParam)))
 #define FORWARD_WM_MDIDESTROY(hwnd, hwndDestroy, fn) fn((hwnd), WM_MDIDESTROY, cast(WPARAM, (hwndDestroy)), cast(LPARAM, 0))
-#macro HANDLE_WM_MDIACTIVATE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(WINBOOL, -(lParam = cast(LPARAM, hwnd))), cast(HWND, (lParam)), cast(HWND, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_MDIACTIVATE(HWnd, wParam, lParam, fn) fn((HWnd), Cast(WINBOOL, -(lParam = Cast(LPARAM, HWnd))), Cast(HWnd, (lParam)), Cast(HWnd, (wParam)))
 #define FORWARD_WM_MDIACTIVATE(hwnd, fActive, hwndActivate, hwndDeactivate, fn) fn(hwnd, WM_MDIACTIVATE, cast(WPARAM, (hwndDeactivate)), cast(LPARAM, (hwndActivate)))
-#macro HANDLE_WM_MDIRESTORE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_MDIRESTORE(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (wParam)))
 #define FORWARD_WM_MDIRESTORE(hwnd, hwndRestore, fn) fn((hwnd), WM_MDIRESTORE, cast(WPARAM, (hwndRestore)), cast(LPARAM, 0))
-#define HANDLE_WM_MDINEXT(hwnd_, wParam, lParam, fn) cast(LRESULT, cast(HWND, fn((hwnd_), cast(HWND, (wParam)), cast(WINBOOL, lParam))))
-#define FORWARD_WM_MDINEXT(hwnd_, hwndCur, fPrev, fn) cast(HWND, cast(UINT_PTR, fn((hwnd_), WM_MDINEXT, cast(WPARAM, (hwndCur)), cast(LPARAM, (fPrev)))))
-#macro HANDLE_WM_MDIMAXIMIZE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#define HANDLE_WM_MDINEXT(hwnd, wParam, lParam, fn) cast(LRESULT, cast(HWND, fn((hwnd), cast(HWND, (wParam)), cast(WINBOOL, lParam))))
+#define FORWARD_WM_MDINEXT(hwnd, hwndCur, fPrev, fn) cast(HWND, cast(UINT_PTR, fn((hwnd), WM_MDINEXT, cast(WPARAM, (hwndCur)), cast(LPARAM, (fPrev)))))
+#Define HANDLE_WM_MDIMAXIMIZE(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (wParam)))
 #define FORWARD_WM_MDIMAXIMIZE(hwnd, hwndMaximize, fn) fn((hwnd), WM_MDIMAXIMIZE, cast(WPARAM, (hwndMaximize)), cast(LPARAM, 0))
 #define HANDLE_WM_MDITILE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, fn((hwnd), cast(UINT, (wParam)))))
 #define FORWARD_WM_MDITILE(hwnd, cmd, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_MDITILE, cast(WPARAM, (cmd)), cast(LPARAM, 0))))
 #define HANDLE_WM_MDICASCADE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, fn((hwnd), cast(UINT, (wParam)))))
 #define FORWARD_WM_MDICASCADE(hwnd, cmd, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_MDICASCADE, cast(WPARAM, (cmd)), cast(LPARAM, 0))))
-#macro HANDLE_WM_MDIICONARRANGE(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_MDIICONARRANGE(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_MDIICONARRANGE(hwnd, fn) fn((hwnd), WM_MDIICONARRANGE, cast(WPARAM, 0), cast(LPARAM, 0))
 #define HANDLE_WM_MDIGETACTIVE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, fn(hwnd)))
-#define FORWARD_WM_MDIGETACTIVE(hwnd_, fn) cast(HWND, cast(UINT_PTR, fn((hwnd_), WM_MDIGETACTIVE, cast(WPARAM, 0), cast(LPARAM, 0))))
+#define FORWARD_WM_MDIGETACTIVE(hwnd, fn) cast(HWND, cast(UINT_PTR, fn((hwnd), WM_MDIGETACTIVE, cast(WPARAM, 0), cast(LPARAM, 0))))
 #define HANDLE_WM_MDISETMENU(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, fn((hwnd), cast(WINBOOL, (wParam)), cast(HMENU, (wParam)), cast(HMENU, (lParam)))))
 #define FORWARD_WM_MDISETMENU(hwnd, fRefresh, hmenuFrame, hmenuWindow, fn) cast(HMENU, cast(UINT_PTR, fn((hwnd), WM_MDISETMENU, cast(WPARAM, iif((fRefresh), (hmenuFrame), 0)), cast(LPARAM, (hmenuWindow)))))
-#macro HANDLE_WM_CHILDACTIVATE(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_CHILDACTIVATE(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_CHILDACTIVATE(hwnd, fn) fn((hwnd), WM_CHILDACTIVATE, cast(WPARAM, 0), cast(LPARAM, 0))
 #define HANDLE_WM_INITDIALOG(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(UINT, cast(WINBOOL, fn((hwnd), cast(HWND, (wParam)), lParam)))))
 #define FORWARD_WM_INITDIALOG(hwnd, hwndFocus, lParam, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_INITDIALOG, cast(WPARAM, cast(HWND, (hwndFocus))), (lParam))))
-#define HANDLE_WM_NEXTDLGCTL(hwnd_, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HWND, fn((hwnd_), cast(HWND, (wParam)), cast(WINBOOL, (lParam))))))
-#define FORWARD_WM_NEXTDLGCTL(hwnd_, hwndSetFocus, fNext, fn) cast(HWND, cast(UINT_PTR, fn((hwnd_), WM_NEXTDLGCTL, cast(WPARAM, cast(HWND, (hwndSetFocus))), cast(LPARAM, (fNext)))))
-#macro HANDLE_WM_PARENTNOTIFY(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, LOWORD(wParam)), cast(HWND, (lParam)), cast(UINT, HIWORD(wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#define HANDLE_WM_NEXTDLGCTL(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HWND, fn((hwnd), cast(HWND, (wParam)), cast(WINBOOL, (lParam))))))
+#define FORWARD_WM_NEXTDLGCTL(hwnd, hwndSetFocus, fNext, fn) cast(HWND, cast(UINT_PTR, fn((hwnd), WM_NEXTDLGCTL, cast(WPARAM, cast(HWND, (hwndSetFocus))), cast(LPARAM, (fNext)))))
+#Define HANDLE_WM_PARENTNOTIFY(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, Loword(wParam)), Cast(HWnd, (lParam)), Cast(UINT, Hiword(wParam)))
 #define FORWARD_WM_PARENTNOTIFY(hwnd, msg, hwndChild, idChild, fn) fn((hwnd), WM_PARENTNOTIFY, MAKEWPARAM(msg, idChild), cast(LPARAM, (hwndChild)))
-#macro HANDLE_WM_ENTERIDLE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, (wParam)), cast(HWND, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_ENTERIDLE(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, (wParam)), Cast(HWnd, (lParam)))
 #define FORWARD_WM_ENTERIDLE(hwnd, source, hwndSource, fn) fn((hwnd), WM_ENTERIDLE, cast(WPARAM, cast(UINT, (source))), cast(LPARAM, cast(HWND, (hwndSource))))
 #define HANDLE_WM_GETDLGCODE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(UINT, fn(hwnd, cast(LPMSG, (lParam))))))
-#define FORWARD_WM_GETDLGCODE(hwnd, lpmsg_, fn) cast(UINT, cast(DWORD, fn((hwnd), WM_GETDLGCODE, iif(lpmsg_, lpmsg_->wParam, 0), cast(LPARAM, cast(LPMSG, (lpmsg_))))))
+#define FORWARD_WM_GETDLGCODE(hwnd, lpmsg, fn) cast(UINT, cast(DWORD, fn((hwnd), WM_GETDLGCODE, iif(lpmsg, lpmsg->wParam, 0), cast(LPARAM, cast(LPMSG, (lpmsg))))))
 #define HANDLE_WM_CTLCOLORMSGBOX(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_MSGBOX))))
-#define FORWARD_WM_CTLCOLORMSGBOX(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORMSGBOX, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLORMSGBOX(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORMSGBOX, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #define HANDLE_WM_CTLCOLOREDIT(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_EDIT))))
-#define FORWARD_WM_CTLCOLOREDIT(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLOREDIT, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLOREDIT(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLOREDIT, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #define HANDLE_WM_CTLCOLORLISTBOX(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_LISTBOX))))
-#define FORWARD_WM_CTLCOLORLISTBOX(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORLISTBOX, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLORLISTBOX(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORLISTBOX, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #define HANDLE_WM_CTLCOLORBTN(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_BTN))))
-#define FORWARD_WM_CTLCOLORBTN(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORBTN, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLORBTN(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORBTN, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #define HANDLE_WM_CTLCOLORDLG(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_DLG))))
-#define FORWARD_WM_CTLCOLORDLG(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORDLG, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLORDLG(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORDLG, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #define HANDLE_WM_CTLCOLORSCROLLBAR(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_SCROLLBAR))))
-#define FORWARD_WM_CTLCOLORSCROLLBAR(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORSCROLLBAR, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#define FORWARD_WM_CTLCOLORSCROLLBAR(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORSCROLLBAR, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
 #define HANDLE_WM_CTLCOLORSTATIC(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HBRUSH, fn((hwnd), cast(HDC, (wParam)), cast(HWND, (lParam)), CTLCOLOR_STATIC))))
-#define FORWARD_WM_CTLCOLORSTATIC(hwnd, hdc_, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORSTATIC, cast(WPARAM, cast(HDC, (hdc_))), cast(LPARAM, cast(HWND, (hwndChild))))))
-#macro HANDLE_WM_SETFONT(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HFONT, (wParam)), cast(WINBOOL, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
-#define FORWARD_WM_SETFONT(hwnd, hfont_, fRedraw, fn) fn((hwnd), WM_SETFONT, cast(WPARAM, cast(HFONT, (hfont_))), cast(LPARAM, cast(WINBOOL, (fRedraw))))
+#define FORWARD_WM_CTLCOLORSTATIC(hwnd, hdc, hwndChild, fn) cast(HBRUSH, cast(UINT_PTR, fn((hwnd), WM_CTLCOLORSTATIC, cast(WPARAM, cast(HDC, (hdc))), cast(LPARAM, cast(HWND, (hwndChild))))))
+#Define HANDLE_WM_SETFONT(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HFONT, (wParam)), Cast(WINBOOL, (lParam)))
+#Define FORWARD_WM_SETFONT(HWnd, _hfont, fRedraw, fn) fn((HWnd), WM_SETFONT, Cast(WPARAM, Cast(HFONT, (_hfont))), Cast(LPARAM, Cast(WINBOOL, (fRedraw))))
 #define HANDLE_WM_GETFONT(hwnd, wParam, lParam, fn) cast(LRESULT, cast(UINT_PTR, cast(HFONT, fn(hwnd))))
 #define FORWARD_WM_GETFONT(hwnd, fn) cast(HFONT, cast(UINT_PTR, fn((hwnd), WM_GETFONT, cast(WPARAM, 0), cast(LPARAM, 0))))
-#macro HANDLE_WM_DRAWITEM(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cptr(const DRAWITEMSTRUCT ptr, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_DRAWITEM(HWnd, wParam, lParam, fn) fn((HWnd), cptr(Const DRAWITEMSTRUCT Ptr, (lParam)))
 #define FORWARD_WM_DRAWITEM(hwnd, lpDrawItem, fn) fn((hwnd), WM_DRAWITEM, cast(WPARAM, cptr(const DRAWITEMSTRUCT ptr, lpDrawItem)->CtlID), cast(LPARAM, cptr(const DRAWITEMSTRUCT ptr, (lpDrawItem))))
-#macro HANDLE_WM_MEASUREITEM(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cptr(MEASUREITEMSTRUCT ptr, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_MEASUREITEM(HWnd, wParam, lParam, fn) fn((HWnd), cptr(MEASUREITEMSTRUCT Ptr, (lParam)))
 #define FORWARD_WM_MEASUREITEM(hwnd, lpMeasureItem, fn) fn((hwnd), WM_MEASUREITEM, cast(WPARAM, cptr(MEASUREITEMSTRUCT ptr, lpMeasureItem)->CtlID), cast(LPARAM, cptr(MEASUREITEMSTRUCT ptr, (lpMeasureItem))))
-#macro HANDLE_WM_DELETEITEM(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cptr(const DELETEITEMSTRUCT ptr, (lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_DELETEITEM(HWnd, wParam, lParam, fn) fn((HWnd), cptr(Const DELETEITEMSTRUCT Ptr, (lParam)))
 #define FORWARD_WM_DELETEITEM(hwnd, lpDeleteItem, fn) fn((hwnd), WM_DELETEITEM, cast(WPARAM, cptr(const DELETEITEMSTRUCT ptr, (lpDeleteItem))->CtlID), cast(LPARAM, cptr(const DELETEITEMSTRUCT ptr, (lpDeleteItem))))
 #define HANDLE_WM_COMPAREITEM(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, clng(fn((hwnd), cptr(const COMPAREITEMSTRUCT ptr, (lParam))))))
 #define FORWARD_WM_COMPAREITEM(hwnd, lpCompareItem, fn) clng(cast(DWORD, fn((hwnd), WM_COMPAREITEM, cast(WPARAM, cptr(const COMPAREITEMSTRUCT ptr, (lpCompareItem))->CtlID), cast(LPARAM, cptr(const COMPAREITEMSTRUCT ptr, (lpCompareItem))))))
@@ -820,49 +363,19 @@
 #define FORWARD_WM_VKEYTOITEM(hwnd, vk, hwndListBox, iCaret, fn) clng(cast(DWORD, fn((hwnd), WM_VKEYTOITEM, MAKEWPARAM((vk), (iCaret)), cast(LPARAM, (hwndListBox)))))
 #define HANDLE_WM_CHARTOITEM(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, clng(fn((hwnd), cast(UINT, LOWORD(wParam)), cast(HWND, (lParam)), clng(cshort(HIWORD(wParam)))))))
 #define FORWARD_WM_CHARTOITEM(hwnd, ch, hwndListBox, iCaret, fn) clng(cast(DWORD, fn((hwnd), WM_CHARTOITEM, MAKEWPARAM(cast(UINT, (ch)), cast(UINT, (iCaret))), cast(LPARAM, (hwndListBox)))))
-#macro HANDLE_WM_QUEUESYNC(hwnd, wParam, lParam, fn)
-	scope
-		fn(hwnd)
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_QUEUESYNC(HWnd, wParam, lParam, fn) fn(HWnd)
 #define FORWARD_WM_QUEUESYNC(hwnd, fn) fn((hwnd), WM_QUEUESYNC, cast(WPARAM, 0), cast(LPARAM, 0))
-#macro HANDLE_WM_COMMNOTIFY(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(wParam), cast(UINT, LOWORD(lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_COMMNOTIFY(HWnd, wParam, lParam, fn) fn((HWnd), CLng(wParam), Cast(UINT, Loword(lParam)))
 #define FORWARD_WM_COMMNOTIFY(hwnd, cid, flags, fn) fn((hwnd), WM_COMMNOTIFY, cast(WPARAM, (cid)), MAKELPARAM((flags), 0))
-#macro HANDLE_WM_DISPLAYCHANGE(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(UINT, (wParam)), cast(UINT, LOWORD(lParam)), cast(UINT, HIWORD(wParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_DISPLAYCHANGE(HWnd, wParam, lParam, fn) fn((HWnd), Cast(UINT, (wParam)), Cast(UINT, Loword(lParam)), Cast(UINT, Hiword(wParam)))
 #define FORWARD_WM_DISPLAYCHANGE(hwnd, bitsPerPixel, cxScreen, cyScreen, fn) fn((hwnd), WM_DISPLAYCHANGE, cast(WPARAM, cast(UINT, (bitsPerPixel))), cast(LPARAM, MAKELPARAM(cast(UINT, (cxScreen)), cast(UINT, (cyScreen)))))
 #define HANDLE_WM_DEVICECHANGE(hwnd, wParam, lParam, fn) cast(LRESULT, cast(DWORD, cast(WINBOOL, fn((hwnd), cast(UINT, (wParam)), cast(DWORD, (wParam))))))
 #define FORWARD_WM_DEVICECHANGE(hwnd, uEvent, dwEventData, fn) cast(WINBOOL, cast(DWORD, fn((hwnd), WM_DEVICECHANGE, cast(WPARAM, cast(UINT, (uEvent))), cast(LPARAM, cast(DWORD, (dwEventData))))))
-#macro HANDLE_WM_CONTEXTMENU(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (wParam)), cast(UINT, LOWORD(lParam)), cast(UINT, HIWORD(lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_CONTEXTMENU(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (wParam)), Cast(UINT, Loword(lParam)), Cast(UINT, Hiword(lParam)))
 #define FORWARD_WM_CONTEXTMENU(hwnd, hwndContext, xPos, yPos, fn) fn((hwnd), WM_CONTEXTMENU, cast(WPARAM, cast(HWND, (hwndContext))), MAKELPARAM(cast(UINT, (xPos)), cast(UINT, (yPos))))
-#macro HANDLE_WM_COPYDATA(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), cast(HWND, (wParam)), cast(PCOPYDATASTRUCT, lParam))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_COPYDATA(HWnd, wParam, lParam, fn) fn((HWnd), Cast(HWnd, (wParam)), Cast(PCOPYDATASTRUCT, lParam))
 #define FORWARD_WM_COPYDATA(hwnd, hwndFrom, pcds, fn) cast(WINBOOL, cast(UINT, cast(DWORD, fn((hwnd), WM_COPYDATA, cast(WPARAM, (hwndFrom)), cast(LPARAM, (pcds))))))
-#macro HANDLE_WM_HOTKEY(hwnd, wParam, lParam, fn)
-	scope
-		fn((hwnd), clng(wParam), cast(UINT, LOWORD(lParam)), cast(UINT, HIWORD(lParam)))
-		cast(LRESULT, 0)
-	end scope
-#endmacro
+#Define HANDLE_WM_HOTKEY(HWnd, wParam, lParam, fn) fn((HWnd), CLng(wParam), Cast(UINT, Loword(lParam)), Cast(UINT, Hiword(lParam)))
 #define FORWARD_WM_HOTKEY(hwnd, idHotKey, fuModifiers, vk, fn) fn((hwnd), WM_HOTKEY, cast(WPARAM, (idHotKey)), MAKELPARAM((fuModifiers), (vk)))
 #define Static_Enable(hwndCtl, fEnable) EnableWindow((hwndCtl), (fEnable))
 #define Static_GetText(hwndCtl, lpch, cchMax) GetWindowText((hwndCtl), (lpch), (cchMax))
@@ -885,7 +398,8 @@
 #define Edit_SetText(hwndCtl, lpsz) SetWindowText((hwndCtl), (lpsz))
 #define Edit_LimitText(hwndCtl, cchMax) SNDMSG((hwndCtl), EM_LIMITTEXT, cast(WPARAM, (cchMax)), cast(LPARAM, 0))
 #define Edit_GetLineCount(hwndCtl) clng(cast(DWORD, SNDMSG((hwndCtl), EM_GETLINECOUNT, cast(WPARAM, 0), cast(LPARAM, 0))))
-#macro Edit_GetLine(hwndCtl, line, lpch, cchMax)
+
+#Macro Edit_GetLine(hwndCtl, Line, lpch, cchMax)
 	scope
 		(*cptr(long ptr, (lpch))) = (cchMax)
 		clng(cast(DWORD, SNDMSG((hwndCtl), EM_GETLINE, cast(WPARAM, clng(line)), cast(LPARAM, cast(LPTSTR, (lpch))))))
