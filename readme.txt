@@ -61,7 +61,7 @@
           gcc libncurses5-dev libffi-dev libgl1-mesa-dev
           libx11-dev libxext-dev libxrender-dev libxrandr-dev libxpm-dev
         Fedora:
-          gcc ncurses-devel libffi-devel mesa-libGL-devel
+          gcc ncurses-devel ncurses-compat-libs libffi-devel mesa-libGL-devel
           libX11-devel libXext-devel libXrender-devel libXrandr-devel
           libXpm-devel
       If you want to use the 32bit version of FB on a 64bit system, it is
