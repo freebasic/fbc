@@ -926,14 +926,12 @@ declare function Shell_NotifyIconW(byval dwMessage as DWORD, byval lpData as PNO
 
 #ifdef UNICODE
 	declare function Shell_NotifyIcon alias "Shell_NotifyIconW"(byval dwMessage as DWORD, byval lpData as PNOTIFYICONDATAW) as WINBOOL
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#else
 	declare function Shell_NotifyIcon alias "Shell_NotifyIconA"(byval dwMessage as DWORD, byval lpData as PNOTIFYICONDATAA) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	declare function Shell_NotifyIconGetRect(byval identifier as const NOTIFYICONIDENTIFIER ptr, byval iconLocation as RECT ptr) as HRESULT
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
-	declare function Shell_NotifyIcon alias "Shell_NotifyIconA"(byval dwMessage as DWORD, byval lpData as PNOTIFYICONDATAA) as WINBOOL
 #endif
 
 #define SHFILEINFO_DEFINED

@@ -6201,7 +6201,7 @@ declare function RemoveWindowSubclass(byval hWnd as HWND, byval pfnSubclass as S
 declare function DefSubclassProc(byval hWnd as HWND, byval uMsg as UINT, byval wParam as WPARAM, byval lParam as LPARAM) as LRESULT
 declare function DrawShadowText(byval hdc as HDC, byval pszText as LPCWSTR, byval cch as UINT, byval prc as RECT ptr, byval dwFlags as DWORD, byval crText as COLORREF, byval crShadow as COLORREF, byval ixOffset as long, byval iyOffset as long) as long
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _LI_METRIC as long
 	enum
 		LIM_SMALL
