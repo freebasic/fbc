@@ -453,25 +453,30 @@ private sub hReadIdentifier _
 	dtype = FB_DATATYPE_INVALID
 
 	if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
+		
 		select case as const lexCurrentChar( )
 		'' '%'?
 		case FB_TK_INTTYPECHAR
+         If ( env.clopt.lang <> FB_LANG_QB and env.clopt.lang <> FB_LANG_FB_DEPRECATED ) Then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			dtype = env.lang.integerkeyworddtype
 			c = lexEatChar( )
 
 		'' '&'?
 		case FB_TK_LNGTYPECHAR
+         If ( env.clopt.lang <> FB_LANG_QB and env.clopt.lang <> FB_LANG_FB_DEPRECATED ) Then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			dtype = FB_DATATYPE_LONG
 			c = lexEatChar( )
 
 		'' '!'?
 		case FB_TK_SGNTYPECHAR
+         If ( env.clopt.lang <> FB_LANG_QB and env.clopt.lang <> FB_LANG_FB_DEPRECATED ) Then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			dtype = FB_DATATYPE_SINGLE
 			c = lexEatChar( )
 
 		'' '#'?
 		case FB_TK_DBLTYPECHAR
 			'' isn't it a '##'?
+         If ( env.clopt.lang <> FB_LANG_QB and env.clopt.lang <> FB_LANG_FB_DEPRECATED ) Then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
 				dtype = FB_DATATYPE_DOUBLE
 				c = lexEatChar( )
@@ -479,9 +484,11 @@ private sub hReadIdentifier _
 
 		'' '$'?
 		case FB_TK_STRTYPECHAR
+         If ( env.clopt.lang <> FB_LANG_QB and env.clopt.lang <> FB_LANG_FB_DEPRECATED ) Then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			dtype = FB_DATATYPE_STRING
 			c = lexEatChar( )
 		end select
+		
     end if
 
 end sub
