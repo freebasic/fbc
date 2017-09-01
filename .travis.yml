@@ -9,25 +9,5 @@ before_install:
       libgl1-mesa-dev libglu1-mesa-dev
       libx11-dev libxext-dev libxpm-dev libxrender-dev libxrandr-dev
 
-install:
-  - set -e
-
-  - wget -O FreeBASIC-1.05.0-source-bootstrap.tar.xz https://github.com/freebasic/fbc/releases/download/1.05.0/FreeBASIC-1.05.0-source-bootstrap.tar.xz
-  - tar xf FreeBASIC-1.05.0-source-bootstrap.tar.xz
-
-  - cd FreeBASIC-1.05.0-source-bootstrap
-  - make -j4 bootstrap
-  - cd ..
-
-script:
-  - set -e
-
-  - make -j4 FBC='FreeBASIC-1.05.0-source-bootstrap/bin/fbc -i FreeBASIC-1.05.0-source-bootstrap/inc' </dev/null
-  - mv bin/fbc bin/fbc1
-  - make -j4 clean-compiler
-  - make -j4 compiler FBC='bin/fbc1 -i inc' </dev/null
-  - rm bin/fbc1
-  - make cunit-tests </dev/null
-  - make log-tests </dev/null
-  - make warning-tests </dev/null
-  - make clean
+install: contrib/travis/bootstrap.sh
+script:  contrib/travis/build-and-test.sh
