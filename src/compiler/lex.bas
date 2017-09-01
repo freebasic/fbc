@@ -456,19 +456,19 @@ private sub hReadIdentifier _
 		select case as const lexCurrentChar( )
 		'' '%'?
 		case FB_TK_INTTYPECHAR
-			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
+			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			dtype = env.lang.integerkeyworddtype
 			c = lexEatChar( )
 
 		'' '&'?
 		case FB_TK_LNGTYPECHAR
-			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
+			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			dtype = FB_DATATYPE_LONG
 			c = lexEatChar( )
 
 		'' '!'?
 		case FB_TK_SGNTYPECHAR
-			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
+			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			dtype = FB_DATATYPE_SINGLE
 			c = lexEatChar( )
 
@@ -476,14 +476,14 @@ private sub hReadIdentifier _
 		case FB_TK_DBLTYPECHAR
 			'' isn't it a '##'?
 			if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
-				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
+				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 				dtype = FB_DATATYPE_DOUBLE
 				c = lexEatChar( )
 			end if
 
 		'' '$'?
 		case FB_TK_STRTYPECHAR
-			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
+			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
 			dtype = FB_DATATYPE_STRING
 			c = lexEatChar( )
 		end select
