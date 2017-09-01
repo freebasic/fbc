@@ -100,7 +100,7 @@ vpath %.bas $(SOURCE_DIR)
 
 all : $(LIB_FILE)
 
-$(OBJECT_FILES) :
+$(OBJECT_FILES): %.o: %.bas
 	$(FBC) $(FBC_CFLAGS) $(SOURCE_FILES)
 
 $(LIB_FILE) : $(OBJECT_FILES)
