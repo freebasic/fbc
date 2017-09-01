@@ -1,13 +1,10 @@
 language: c
 compiler: gcc
 
-before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get -y install
-      gcc-multilib
-      libncurses5-dev libffi-dev libgpm-dev libcunit1-dev
-      libgl1-mesa-dev libglu1-mesa-dev
-      libx11-dev libxext-dev libxpm-dev libxrender-dev libxrandr-dev
+env:
+  - TARGET_BITS=32
+  - TARGET_BITS=64
 
-install: contrib/travis/bootstrap.sh
-script:  contrib/travis/build-and-test.sh
+before_install: sudo apt-get -qq update
+install: "contrib/travis/bootstrap.sh $TARGET_BITS"
+script:  "contrib/travis/build-and-test.sh $TARGET_BITS"
