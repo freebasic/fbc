@@ -10,5 +10,15 @@ make -j$(nproc) compiler FBC='bin/fbc1 -i inc' </dev/null
 rm bin/fbc1
 
 make cunit-tests </dev/null
+
 make log-tests </dev/null
+if grep RESULT=FAILED tests/failed-*.log; then
+	exit 1
+fi
+
 make warning-tests </dev/null
+git update-index -q --ignore-submodules --refresh
+if ! git diff-files --quiet --ignore-submodules; then
+	git diff
+	exit 1
+fi
