@@ -54,4 +54,8 @@ end namespace
 		':: main entry point
 # if not defined (FBCU_CONFIG_COMPILEONLY)
 		fbcu.run_tests()
+		'' Return non-zero exit code in case of failures
+		if (CU_get_number_of_failures() > 0) then
+			end 1
+		end if
 # endif
