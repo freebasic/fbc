@@ -1,6 +1,7 @@
 /* screen multiple pages handling */
 
 #include "fb_gfx.h"
+#include "fb_gfx_gl.h"
 
 FBCALL int fb_GfxFlip(int from_page, int to_page)
 {
@@ -16,7 +17,11 @@ FBCALL int fb_GfxFlip(int from_page, int to_page)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
 
+#ifndef DISABLE_OPENGL
+	if (__fb_gfx->driver->flip && __fb_gl_params.mode_2d!=2) {
+#else
 	if (__fb_gfx->driver->flip) {
+#endif
 		__fb_gfx->driver->flip();
 		if (__fb_gfx->driver->poll_events)
 			__fb_gfx->driver->poll_events();

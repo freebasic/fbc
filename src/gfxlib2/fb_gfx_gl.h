@@ -20,6 +20,8 @@
 
 typedef void (APIENTRY *GLENABLE)(GLenum);
 typedef void (APIENTRY *GLDISABLE)(GLenum);
+typedef void (APIENTRY *GLENABLECLIENTSTATE)(GLenum);
+typedef void (APIENTRY *GLDISABLECLIENTSTATE)(GLenum);
 typedef const GLubyte *(APIENTRY *GLGETSTRING)(GLenum);
 typedef void (APIENTRY *GLVIEWPORT)(GLint,GLint,GLsizei,GLsizei);
 typedef void (APIENTRY *GLMATRIXMODE)(GLenum);
@@ -32,12 +34,28 @@ typedef void (APIENTRY *GLCLEAR)(GLbitfield);
 typedef void (APIENTRY *GLGENTEXTURES)(GLsizei,GLuint *);
 typedef void (APIENTRY *GLDELETETEXTURES)(GLsizei,GLuint *);
 typedef void (APIENTRY *GLBINDTEXTURE)(GLenum,GLuint);
+typedef void (APIENTRY *GLTEXPARAMETERI)(GLenum, GLenum, GLint);
 typedef void (APIENTRY *GLTEXIMAGE2D)(GLenum,GLint,GLint,GLsizei,GLsizei,GLint,GLenum,GLenum,const GLvoid *);
+typedef void (APIENTRY *GLTEXSUBIMAGE2D)(GLenum,GLint,GLint,GLint,GLsizei,GLsizei,GLenum,GLenum,const GLvoid *);
+typedef void (APIENTRY *GLVERTEXPOINTER)(GLint,GLenum,GLsizei, const GLvoid *);
+typedef void (APIENTRY *GLTEXCOORDPOINTER)(GLint,GLenum,GLsizei,const GLvoid *);
+typedef void (APIENTRY *GLDRAWARRAYS)(GLenum,GLint,GLsizei);
+typedef void (APIENTRY *GLPUSHMATRIX)(void);
+typedef void (APIENTRY *GLPOPMATRIX)(void);
+typedef void (APIENTRY *GLPUSHATTRIB)(GLbitfield);
+typedef void (APIENTRY *GLPOPATTRIB)(void);
+typedef void (APIENTRY *GLPUSHCLIENTATTRIB)(GLbitfield);
+typedef void (APIENTRY *GLPOPCLIENTATTRIB)(void);
+typedef void (APIENTRY *GLPIXELTRANSFERI)(GLenum, GLint);
+typedef void (APIENTRY *GLPIXELMAP)(GLenum, GLsizei, const GLfloat *);
+
 
 
 typedef struct FB_GL {
 	GLENABLE					Enable;
 	GLDISABLE					Disable;
+	GLENABLECLIENTSTATE				EnableClientState;
+	GLDISABLECLIENTSTATE				DisableClientState;
 	GLGETSTRING					GetString;
 	GLVIEWPORT					Viewport;
 	GLMATRIXMODE				MatrixMode;
@@ -50,7 +68,20 @@ typedef struct FB_GL {
 	GLGENTEXTURES				GenTextures;
 	GLDELETETEXTURES			DeleteTextures;
 	GLBINDTEXTURE				BindTexture;
+	GLTEXPARAMETERI				TexParameter;
 	GLTEXIMAGE2D				TexImage2D;
+	GLTEXSUBIMAGE2D				TexSubImage2D;
+	GLVERTEXPOINTER				VertexPointer;
+	GLTEXCOORDPOINTER			TexCoordPointer;
+	GLDRAWARRAYS				DrawArrays;
+	GLPUSHMATRIX				PushMatrix;
+	GLPOPMATRIX				PopMatrix;
+	GLPUSHATTRIB				PushAttrib;
+	GLPOPATTRIB				PopAttrib;
+	GLPUSHCLIENTATTRIB			PushClientAttrib;
+	GLPOPCLIENTATTRIB			PopClientAttrib;
+	GLPIXELTRANSFERI			PixelTransferi;
+	GLPIXELMAP				PixelMap;
 	int							state;
     char						extensions[FBGL_EXTENSIONS_STRING_SIZE];
 } FB_GL;
@@ -69,14 +100,21 @@ typedef struct FB_GL_PARAMS {
 	int accum_blue_bits;
 	int accum_alpha_bits;
 	int num_samples;
+
+	int mode_2d;
+	int scale;
+	void (*callback)(void);
 } FB_GL_PARAMS;
 
 extern FB_GL __fb_gl;
 extern FB_GL_PARAMS __fb_gl_params;
+extern void fb_hGL_SetPalette(int index, int r, int g, int b);
 
 extern void fb_hGL_NormalizeParameters(int gl_options);
 extern int fb_hGL_Init(FB_DYLIB lib, char *os_extensions);
 extern int fb_hGL_ExtensionSupported(const char *extension);
 extern void *fb_hGL_GetProcAddress(const char *proc);
+extern void fb_hGL_SetupProjection(void);
+extern void fb_hGL_ScreenCreate(void);
 
 #endif /* not DISABLE_OPENGL */
