@@ -27,7 +27,7 @@ GFXDRIVER fb_gfxDriverOpenGL =
 	driver_exit,		/* void (*exit)(void); */
 	fb_hX11Lock,		/* void (*lock)(void); */
 	fb_hX11Unlock,		/* void (*unlock)(void); */
-	fb_hX11SetPalette,	/* void (*set_palette)(int index, int r, int g, int b); */
+	fb_hGL_SetPalette,	/* void (*set_palette)(int index, int r, int g, int b); */
 	fb_hX11WaitVSync,	/* void (*wait_vsync)(void); */
 	fb_hX11GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons, int *clip); */
 	fb_hX11SetMouse,	/* void (*set_mouse)(int x, int y, int cursor, int clip); */
@@ -56,6 +56,8 @@ typedef struct {
 static FB_DYLIB gl_lib = NULL;
 static GLXFUNCS __fb_glX = { NULL, NULL, NULL, NULL, NULL };
 static GLXContext context;
+
+
 
 void *fb_hGL_GetProcAddress(const char *proc)
 {
@@ -118,8 +120,21 @@ static void opengl_window_exit(void)
 	XSync(fb_x11.display, False);
 }
 
+static void opengl_window_idle(void)
+{}
+
 static void opengl_window_update(void)
 {
+
+	static int bind=FALSE;
+
+	if (!bind){
+		__fb_glX.MakeCurrent(fb_x11.display, fb_x11.window, context);
+		bind=TRUE;
+	}
+
+	fb_hGL_SetupProjection();
+	__fb_glX.SwapBuffers(fb_x11.display, fb_x11.window);
 }
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
@@ -177,7 +192,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	
 	fb_x11.init = opengl_window_init;
 	fb_x11.exit = opengl_window_exit;
-	fb_x11.update = opengl_window_update;
+	fb_x11.update = opengl_window_idle;
 	fb_hXlibInit();
 	fb_x11.display = XOpenDisplay(NULL);
 	if (!fb_x11.display)
@@ -203,7 +218,12 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		return -1;
 	}
 
-	result = fb_hX11Init(title, w, h, info->depth, refresh_rate, flags);
+	if (__fb_gl_params.scale>1){
+		free(__fb_gfx->dirty);
+		__fb_gfx->dirty = (char *)calloc(1, __fb_gfx->h * __fb_gfx->scanline_size* __fb_gl_params.scale);
+	}
+
+	result = fb_hX11Init(title, w * __fb_gl_params.scale, h * __fb_gl_params.scale, info->depth, refresh_rate, flags);
 
 	XFree(info);
 	info = NULL;
@@ -219,6 +239,13 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	if ((samples_attrib) && (*samples_attrib > 0))
 		__fb_gl.Enable(GL_MULTISAMPLE_ARB);
 
+	if (__fb_gl_params.mode_2d!=0)
+		fb_hGL_ScreenCreate();
+
+	if (__fb_gl_params.mode_2d==2){
+		__fb_glX.MakeCurrent(fb_x11.display, None, NULL);
+		fb_x11.update = opengl_window_update;
+	}
 	return 0;
 }
 
@@ -236,6 +263,9 @@ static void driver_exit(void)
 static void driver_flip(void)
 {
 	fb_hX11Lock();
+	if (__fb_gl_params.mode_2d==1)
+		fb_hGL_SetupProjection();
+
 	__fb_glX.SwapBuffers(fb_x11.display, fb_x11.window);
 	fb_hX11Unlock();
 }

@@ -45,7 +45,10 @@ namespace FB
 					 GFX_ACCUMULATION_BUFFER	= &h20000	, _
 					 GFX_MULTISAMPLE			= &h40000
 
-
+	'Constants for OpenGL 2D render
+	const as integer OGL_MANUAL_SYNC 			= 1, _
+                     OGL_AUTO_SYNC 				= 2
+					 
 	'' Constants accepted by ScreenControl
 	''
 	'' Getters:
