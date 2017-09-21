@@ -46,8 +46,9 @@ typedef void (APIENTRY *GLPUSHATTRIB)(GLbitfield);
 typedef void (APIENTRY *GLPOPATTRIB)(void);
 typedef void (APIENTRY *GLPUSHCLIENTATTRIB)(GLbitfield);
 typedef void (APIENTRY *GLPOPCLIENTATTRIB)(void);
+typedef void (APIENTRY *GLPIXELSTOREI)(GLenum, GLint);
 typedef void (APIENTRY *GLPIXELTRANSFERI)(GLenum, GLint);
-typedef void (APIENTRY *GLPIXELMAP)(GLenum, GLsizei, const GLfloat *);
+typedef void (APIENTRY *GLPIXELMAPFV)(GLenum, GLsizei, const GLfloat *);
 
 
 
@@ -68,7 +69,7 @@ typedef struct FB_GL {
 	GLGENTEXTURES				GenTextures;
 	GLDELETETEXTURES			DeleteTextures;
 	GLBINDTEXTURE				BindTexture;
-	GLTEXPARAMETERI				TexParameter;
+	GLTEXPARAMETERI				TexParameteri;
 	GLTEXIMAGE2D				TexImage2D;
 	GLTEXSUBIMAGE2D				TexSubImage2D;
 	GLVERTEXPOINTER				VertexPointer;
@@ -80,8 +81,9 @@ typedef struct FB_GL {
 	GLPOPATTRIB				PopAttrib;
 	GLPUSHCLIENTATTRIB			PushClientAttrib;
 	GLPOPCLIENTATTRIB			PopClientAttrib;
+	GLPIXELSTOREI				PixelStorei;
 	GLPIXELTRANSFERI			PixelTransferi;
-	GLPIXELMAP				PixelMap;
+	GLPIXELMAPFV				PixelMapfv;
 	int							state;
     char						extensions[FBGL_EXTENSIONS_STRING_SIZE];
 } FB_GL;

@@ -27,10 +27,10 @@ FBCALL void *fb_GfxGetGLProcAddress(const char *proc)
 
 FB_GL __fb_gl;
 FB_GL_PARAMS __fb_gl_params = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, NULL };
-GLfloat texcoords[8];
-GLuint ScreenTex;
+static GLfloat texcoords[8];
+static GLuint ScreenTex;
 
-GLfloat map_r[256], map_g[256], map_b[256];
+static GLfloat map_r[256], map_g[256], map_b[256];
 
 
 static int next_pow2(int n)
@@ -122,10 +122,10 @@ void fb_hGL_ScreenCreate(void)
 
 	__fb_gl.GenTextures(1, &id);
 	__fb_gl.BindTexture(GL_TEXTURE_2D, id);
-	__fb_gl.TexParameter(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	__fb_gl.TexParameter(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	__fb_gl.TexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	__fb_gl.TexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 
-	switch(__fb_gfx->depth){
+	switch (__fb_gfx->depth){
 	case 32:
 	case 24:
 		__fb_gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_BGRA, GL_UNSIGNED_BYTE, 0);
@@ -141,11 +141,11 @@ void fb_hGL_ScreenCreate(void)
 		__fb_gl.TexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_COLOR_INDEX, GL_UNSIGNED_BYTE, 0);
 	}
 
-	GLfloat ratio_w=(GLfloat)__fb_gfx->w/w, ratio_h=(GLfloat)__fb_gfx->h/h;
-	texcoords[0]=0		; texcoords[1]=ratio_h;
-	texcoords[2]=0		; texcoords[3]=0;
-	texcoords[4]=ratio_w	; texcoords[5]=0;
-	texcoords[6]=ratio_w	; texcoords[7]=ratio_h;
+	GLfloat ratio_w = (GLfloat)__fb_gfx->w / w, ratio_h = (GLfloat)__fb_gfx->h / h;
+	texcoords[0] = 0	; texcoords[1] = ratio_h;
+	texcoords[2] = 0	; texcoords[3] = 0;
+	texcoords[4] = ratio_w	; texcoords[5] = 0;
+	texcoords[6] = ratio_w	; texcoords[7] = ratio_h;
 
 	ScreenTex = id;
 }
@@ -222,7 +222,8 @@ int fb_hGL_Init(FB_DYLIB lib, char *os_extensions)
 							   "glTexParameteri", "glTexImage2D", "glTexSubImage2D",
 							   "glVertexPointer", "glTexCoordPointer", "glDrawArrays",
 							   "glPushMatrix", "glPopMatrix", "glPushAttrib", "glPopAttrib", 
-							   "glPushClientAttrib", "glPopClientAttrib", "glPixelTransferi", "glPixelMapfv" };
+							   "glPushClientAttrib", "glPopClientAttrib", "glPixelStorei",
+							   "glPixelTransferi", "glPixelMapfv" };
 	FB_GL *funcs = &__fb_gl;
 	void **funcs_ptr = (void **)funcs;
 	int res = 0, size = FBGL_EXTENSIONS_STRING_SIZE - 1;
@@ -254,7 +255,7 @@ void fb_hGL_SetPalette(int index, int r, int g, int b){
 
 void fb_hGL_SetupProjection(void)
 {
-	const GLfloat vert[]={-1,-1,-1,1,1,1,1,-1};
+	const GLfloat vert[] = {-1,-1,-1,1,1,1,1,-1};
 
 	__fb_gl.PushClientAttrib(GL_CLIENT_ALL_ATTRIB_BITS);
 	__fb_gl.PushAttrib(GL_ALL_ATTRIB_BITS);
@@ -286,16 +287,18 @@ void fb_hGL_SetupProjection(void)
 		break;
 	case 16:
 	case 15:
+		__fb_gl.PixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		__fb_gl.TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, __fb_gfx->w, __fb_gfx->h, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, (unsigned char *)__fb_gfx->framebuffer);
 		break;
 	case 8:
 	case 4:
 	case 2:
 	case 1:
+		__fb_gl.PixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		__fb_gl.PixelTransferi(GL_MAP_COLOR, GL_TRUE );
-		__fb_gl.PixelMap(GL_PIXEL_MAP_I_TO_R,256, map_r);
-		__fb_gl.PixelMap(GL_PIXEL_MAP_I_TO_G,256, map_g);
-		__fb_gl.PixelMap(GL_PIXEL_MAP_I_TO_B,256, map_b);
+		__fb_gl.PixelMapfv(GL_PIXEL_MAP_I_TO_R,256, map_r);
+		__fb_gl.PixelMapfv(GL_PIXEL_MAP_I_TO_G,256, map_g);
+		__fb_gl.PixelMapfv(GL_PIXEL_MAP_I_TO_B,256, map_b);
 
 		__fb_gl.TexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, __fb_gfx->w, __fb_gfx->h, GL_COLOR_INDEX, GL_UNSIGNED_BYTE, (unsigned char *)__fb_gfx->framebuffer);
 
