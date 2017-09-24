@@ -240,8 +240,8 @@ static int set_mode
         __fb_gfx->w = w;
         __fb_gfx->h = h;
         __fb_gfx->depth = depth;
-        if ((flags >= 0) && (flags & DRIVER_OPENGL))
-            __fb_gfx->depth = MAX(16, __fb_gfx->depth);
+       /* if ((flags >= 0) && (flags & DRIVER_OPENGL))
+            __fb_gfx->depth = MAX(16, __fb_gfx->depth);*/
         __fb_gfx->default_palette = (palette >= 0) ? &__fb_palette[palette] : NULL;
         __fb_gfx->scanline_size = scanline_size;
         __fb_gfx->font = (font >= 0) ? &__fb_font[font] : NULL;
