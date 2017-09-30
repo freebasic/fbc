@@ -1,0 +1,16 @@
+WinAPI Library / Header Patch for FreeBasic 1.05
+================================================
+
+Changed definition files:
+def\comctl32.def: added LoadIconMetric
+def\user32.def: added CalculatePopupWindowPosition
+
+Changed Headers:
+inc\win\commctrl.bi: changed _WIN32_WINNT value for LoadIconMetric
+inc\win\shellapi.bi: changed ShellNotifyIcon
+
+Compiled new import libraries with from the windows libraries with these definition files:
+Lib\libcomctl32.dll.a
+Lib\libuser32.dll.a
+
+Using the patch: Replace the *.bi and *.dll.a files with the patched ones for your FB architecture (win32 or win64)
