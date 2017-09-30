@@ -233,6 +233,14 @@ FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t
 	case SET_GL_NUM_SAMPLES:
 		__fb_gl_params.num_samples = *param1;
 		break;
+
+	case SET_GL_2D_MODE:
+		__fb_gl_params.mode_2d = *param1;
+		break;
+
+	case SET_GL_SCALE:
+		__fb_gl_params.scale = *param1;
+		break;
 #endif
 
 	case POLL_EVENTS:
