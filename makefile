@@ -116,6 +116,13 @@
 #    2) Add rtlib/gfxlib2 for some additional target
 #        $ make rtlib gfxlib2 TARGET=i686-w64-mingw32
 #
+# In order to be compatible to older makes like DJGPP's GNU make 3.79.1, this
+# makefile cannot use features added in more recent versions, for example:
+#  - "else if"
+#  - Order-only prerequisites
+#  - $(or ...), $(and ...)
+#  - $(eval ...)
+#
 
 FBC := fbc
 CFLAGS := -Wfatal-errors -O2
@@ -159,25 +166,35 @@ ifdef TARGET
   ifndef TARGET_OS
     ifneq ($(filter cygwin%,$(triplet)),)
       TARGET_OS := cygwin
-    else ifneq ($(filter darwin%,$(triplet)),)
+    endif
+    ifneq ($(filter darwin%,$(triplet)),)
       TARGET_OS := darwin
-    else ifneq ($(filter djgpp%,$(triplet)),)
+    endif
+    ifneq ($(filter djgpp%,$(triplet)),)
       TARGET_OS := dos
-    else ifneq ($(filter msdos%,$(triplet)),)
+    endif
+    ifneq ($(filter msdos%,$(triplet)),)
       TARGET_OS := dos
-    else ifneq ($(filter freebsd%,$(triplet)),)
+    endif
+    ifneq ($(filter freebsd%,$(triplet)),)
       TARGET_OS := freebsd
-    else ifneq ($(filter linux%,$(triplet)),)
+    endif
+    ifneq ($(filter linux%,$(triplet)),)
       TARGET_OS := linux
-    else ifneq ($(filter mingw%,$(triplet)),)
+    endif
+    ifneq ($(filter mingw%,$(triplet)),)
       TARGET_OS := win32
-    else ifneq ($(filter netbsd%,$(triplet)),)
+    endif
+    ifneq ($(filter netbsd%,$(triplet)),)
       TARGET_OS := netbsd
-    else ifneq ($(filter openbsd%,$(triplet)),)
+    endif
+    ifneq ($(filter openbsd%,$(triplet)),)
       TARGET_OS := openbsd
-    else ifneq ($(filter solaris%,$(triplet)),)
+    endif
+    ifneq ($(filter solaris%,$(triplet)),)
       TARGET_OS := solaris
-    else ifneq ($(filter xbox%,$(triplet)),)
+    endif
+    ifneq ($(filter xbox%,$(triplet)),)
       TARGET_OS := xbox
     endif
   endif
@@ -194,21 +211,29 @@ else
     uname := $(shell uname)
     ifneq ($(findstring CYGWIN,$(uname)),)
       TARGET_OS := cygwin
-    else ifeq ($(uname),Darwin)
+    endif
+    ifeq ($(uname),Darwin)
       TARGET_OS := darwin
-    else ifeq ($(uname),FreeBSD)
+    endif
+    ifeq ($(uname),FreeBSD)
       TARGET_OS := freebsd
-    else ifeq ($(uname),Linux)
+    endif
+    ifeq ($(uname),Linux)
       TARGET_OS := linux
-    else ifneq ($(findstring MINGW,$(uname)),)
+    endif
+    ifneq ($(findstring MINGW,$(uname)),)
       TARGET_OS := win32
-    else ifeq ($(uname),MS-DOS)
+    endif
+    ifneq ($(findstring DOS,$(uname)),)
       TARGET_OS := dos
-    else ifeq ($(uname),NetBSD)
+    endif
+    ifeq ($(uname),NetBSD)
       TARGET_OS := netbsd
-    else ifeq ($(uname),OpenBSD)
+    endif
+    ifeq ($(uname),OpenBSD)
       TARGET_OS := openbsd
-    else ifeq ($(uname),SunOS)
+    endif
+    ifeq ($(uname),SunOS)
       TARGET_OS := solaris
     endif
   endif
@@ -251,7 +276,8 @@ ifeq ($(MULTILIB),32)
   ifeq ($(TARGET_ARCH),x86_64)
     TARGET_ARCH := x86
   endif
-else ifeq ($(MULTILIB),64)
+endif
+ifeq ($(MULTILIB),64)
   ifeq ($(TARGET_ARCH),x86)
     TARGET_ARCH := x86_64
   endif
@@ -260,7 +286,6 @@ endif
 ifeq ($(TARGET_OS),dos)
   FBNAME := freebas$(ENABLE_SUFFIX)
   FB_LDSCRIPT := i386go32.x
-  DISABLE_MT := YesPlease
 else
   FBNAME := freebasic$(ENABLE_SUFFIX)
   FB_LDSCRIPT := fbextra.x
@@ -291,9 +316,11 @@ endif
 # Some use a simple free-form name
 ifeq ($(TARGET_OS),dos)
   FBTARGET := dos
-else ifeq ($(TARGET_OS),xbox)
+endif
+ifeq ($(TARGET_OS),xbox)
   FBTARGET := xbox
-else ifeq ($(TARGET_OS),win32)
+endif
+ifeq ($(TARGET_OS),win32)
   ifeq ($(TARGET_ARCH),x86_64)
     FBTARGET := win64
   else
@@ -458,21 +485,30 @@ LIBFBGFXMT_C    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBG
 LIBFBGFXMT_S    := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtobjdir)/%,$(LIBFBGFX_S))
 LIBFBGFXMTPIC_C := $(patsubst $(libfbgfxobjdir)/%,$(libfbgfxmtpicobjdir)/%,$(LIBFBGFX_C))
 
+RTL_OBJDIRS := $(libfbobjdir)
+GFX_OBJDIRS := $(libfbgfxobjdir)
 RTL_LIBS := $(libdir)/$(FB_LDSCRIPT) $(libdir)/fbrt0.o $(libdir)/libfb.a
 GFX_LIBS := $(libdir)/libfbgfx.a
 ifdef ENABLE_PIC
+  RTL_OBJDIRS += $(libfbpicobjdir)
+  GFX_OBJDIRS += $(libfbgfxpicobjdir)
   RTL_LIBS += $(libdir)/fbrt0pic.o $(libdir)/libfbpic.a
   GFX_LIBS += $(libdir)/libfbgfxpic.a
 endif
 ifndef DISABLE_MT
+  RTL_OBJDIRS += $(libfbmtobjdir)
+  GFX_OBJDIRS += $(libfbgfxmtobjdir)
   RTL_LIBS += $(libdir)/libfbmt.a
   GFX_LIBS += $(libdir)/libfbgfxmt.a
   ifdef ENABLE_PIC
+    RTL_OBJDIRS += $(libfbmtpicobjdir)
+    GFX_OBJDIRS += $(libfbgfxmtpicobjdir)
     RTL_LIBS += $(libdir)/libfbmtpic.a
     GFX_LIBS += $(libdir)/libfbgfxmtpic.a
   endif
 endif
 ifeq ($(TARGET_OS),dos)
+  RTL_OBJDIRS += $(djgpplibcobjdir)
   RTL_LIBS += $(libdir)/libc.a
 endif
 
@@ -516,33 +552,33 @@ bin $(libdir):
 ################################################################################
 
 .PHONY: compiler
-compiler: $(FBC_EXE)
+compiler: bin $(fbcobjdir) $(FBC_EXE)
 
-$(FBC_EXE): $(FBC_BAS) | bin
+$(FBC_EXE): $(FBC_BAS)
 	$(QUIET_LINK)$(FBC) $(ALLFBLFLAGS) -x $(FBCNEW_EXE) $^
 	$(QUIET)mv $(FBCNEW_EXE) $@
 
-$(FBC_BAS): $(fbcobjdir)/%.o: $(srcdir)/compiler/%.bas $(FBC_BI) | $(fbcobjdir)
+$(FBC_BAS): $(fbcobjdir)/%.o: $(srcdir)/compiler/%.bas $(FBC_BI)
 	$(QUIET_FBC)$(FBC) $(ALLFBCFLAGS) -c $< -o $@
 
 ################################################################################
 
 .PHONY: rtlib
-rtlib: $(RTL_LIBS)
+rtlib: $(libdir) $(RTL_OBJDIRS) $(RTL_LIBS)
 
-$(libdir)/fbextra.x: $(rootdir)lib/fbextra.x | $(libdir)
+$(libdir)/fbextra.x: $(rootdir)lib/fbextra.x
 	cp $< $@
 
-$(libdir)/i386go32.x: $(rootdir)contrib/djgpp/i386go32.x | $(libdir)
+$(libdir)/i386go32.x: $(rootdir)contrib/djgpp/i386go32.x
 	cp $< $@
 
-$(libdir)/fbrt0.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H) | $(libdir)
+$(libdir)/fbrt0.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/fbrt0pic.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H) | $(libdir)
+$(libdir)/fbrt0pic.o: $(srcdir)/rtlib/static/fbrt0.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S) | $(libdir)
+$(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
   # is very long...)
@@ -550,34 +586,44 @@ ifeq ($(TARGET_OS),dos)
 else
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
 endif
-$(LIBFB_C): $(libfbobjdir)/%.o: %.c $(LIBFB_H) | $(libfbobjdir)
+$(LIBFB_C): $(libfbobjdir)/%.o: %.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
-$(LIBFB_S): $(libfbobjdir)/%.o: %.s $(LIBFB_H) | $(libfbobjdir)
+$(LIBFB_S): $(libfbobjdir)/%.o: %.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfbpic.a: $(LIBFBPIC_C) | $(libdir)
+$(libdir)/libfbpic.a: $(LIBFBPIC_C)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
-$(LIBFBPIC_C): $(libfbpicobjdir)/%.o: %.c $(LIBFB_H) | $(libfbpicobjdir)
+$(LIBFBPIC_C): $(libfbpicobjdir)/%.o: %.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S) | $(libdir)
+$(libdir)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S)
+ifeq ($(TARGET_OS),dos)
+  # Avoid hitting the command line length limit (the libfb.a ar command line
+  # is very long...)
+	$(QUIET)rm -f $@
+	$(AR) x $(DJDIR)/lib/libpthread.a
+	$(AR) x $(DJDIR)/lib/libsocket.a
+	mv -f *.o $(libfbmtobjdir)
+	$(QUIET_AR)$(AR) rcs $@ $(libfbmtobjdir)/*.o
+else
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
-$(LIBFBMT_C): $(libfbmtobjdir)/%.o: %.c $(LIBFB_H) | $(libfbmtobjdir)
+endif
+$(LIBFBMT_C): $(libfbmtobjdir)/%.o: %.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
-$(LIBFBMT_S): $(libfbmtobjdir)/%.o: %.s $(LIBFB_H) | $(libfbmtobjdir)
+$(LIBFBMT_S): $(libfbmtobjdir)/%.o: %.s $(LIBFB_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfbmtpic.a: $(LIBFBMTPIC_C) | $(libdir)
+$(libdir)/libfbmtpic.a: $(LIBFBMTPIC_C)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
-$(LIBFBMTPIC_C): $(libfbmtpicobjdir)/%.o: %.c $(LIBFB_H) | $(libfbmtpicobjdir)
+$(LIBFBMTPIC_C): $(libfbmtpicobjdir)/%.o: %.c $(LIBFB_H)
 	$(QUIET_CC)$(CC) -DENABLE_MT -fPIC $(ALLCFLAGS) -c $< -o $@
 
 ifeq ($(TARGET_OS),dos)
 djgpplibc := $(shell $(CC) -print-file-name=libc.a)
 libcmaino := $(djgpplibcobjdir)/_main.o
-$(libcmaino): $(rootdir)contrib/djgpp/libc/crt0/_main.c | $(djgpplibcobjdir)
+$(libcmaino): $(rootdir)contrib/djgpp/libc/crt0/_main.c
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
-$(libdir)/libc.a: $(djgpplibc) $(libcmaino) | $(libdir)
+$(libdir)/libc.a: $(djgpplibc) $(libcmaino)
 	cp $(djgpplibc) $@
 	$(QUIET_AR)ar rs $@ $(libcmaino)
 endif
@@ -585,30 +631,30 @@ endif
 ################################################################################
 
 .PHONY: gfxlib2
-gfxlib2: $(GFX_LIBS)
+gfxlib2: $(libdir) $(GFX_OBJDIRS) $(GFX_LIBS)
 
-$(libdir)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S) | $(libdir)
+$(libdir)/libfbgfx.a: $(LIBFBGFX_C) $(LIBFBGFX_S)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
-$(LIBFBGFX_C): $(libfbgfxobjdir)/%.o: %.c $(LIBFBGFX_H) | $(libfbgfxobjdir)
+$(LIBFBGFX_C): $(libfbgfxobjdir)/%.o: %.c $(LIBFBGFX_H)
 	$(QUIET_CC)$(CC) $(ALLCFLAGS) -c $< -o $@
-$(LIBFBGFX_S): $(libfbgfxobjdir)/%.o: %.s $(LIBFBGFX_H) | $(libfbgfxobjdir)
+$(LIBFBGFX_S): $(libfbgfxobjdir)/%.o: %.s $(LIBFBGFX_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfbgfxpic.a: $(LIBFBGFXPIC_C) | $(libdir)
+$(libdir)/libfbgfxpic.a: $(LIBFBGFXPIC_C)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
-$(LIBFBGFXPIC_C): $(libfbgfxpicobjdir)/%.o: %.c $(LIBFBGFX_H) | $(libfbgfxpicobjdir)
+$(LIBFBGFXPIC_C): $(libfbgfxpicobjdir)/%.o: %.c $(LIBFBGFX_H)
 	$(QUIET_CC)$(CC) -fPIC $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfbgfxmt.a: $(LIBFBGFXMT_C) $(LIBFBGFXMT_S) | $(libdir)
+$(libdir)/libfbgfxmt.a: $(LIBFBGFXMT_C) $(LIBFBGFXMT_S)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
-$(LIBFBGFXMT_C): $(libfbgfxmtobjdir)/%.o: %.c $(LIBFBGFX_H) | $(libfbgfxmtobjdir)
+$(LIBFBGFXMT_C): $(libfbgfxmtobjdir)/%.o: %.c $(LIBFBGFX_H)
 	$(QUIET_CC)$(CC) -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
-$(LIBFBGFXMT_S): $(libfbgfxmtobjdir)/%.o: %.s $(LIBFBGFX_H) | $(libfbgfxmtobjdir)
+$(LIBFBGFXMT_S): $(libfbgfxmtobjdir)/%.o: %.s $(LIBFBGFX_H)
 	$(QUIET_CPPAS)$(CC) -x assembler-with-cpp -DENABLE_MT $(ALLCFLAGS) -c $< -o $@
 
-$(libdir)/libfbgfxmtpic.a: $(LIBFBGFXMTPIC_C) | $(libdir)
+$(libdir)/libfbgfxmtpic.a: $(LIBFBGFXMTPIC_C)
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
-$(LIBFBGFXMTPIC_C): $(libfbgfxmtpicobjdir)/%.o: %.c $(LIBFBGFX_H) | $(libfbgfxmtpicobjdir)
+$(LIBFBGFXMTPIC_C): $(libfbgfxmtpicobjdir)/%.o: %.c $(LIBFBGFX_H)
 	$(QUIET_CC)$(CC) -DENABLE_MT -fPIC $(ALLCFLAGS) -c $< -o $@
 
 ################################################################################
@@ -616,39 +662,39 @@ $(LIBFBGFXMTPIC_C): $(libfbgfxmtpicobjdir)/%.o: %.c $(LIBFBGFX_H) | $(libfbgfxmt
 .PHONY: install install-compiler install-includes install-rtlib install-gfxlib2
 install:        install-compiler install-includes install-rtlib install-gfxlib2
 
-install-compiler: compiler
-	mkdir -p $(DESTDIR)$(prefixbindir)
-	$(INSTALL_PROGRAM) $(FBC_EXE) $(DESTDIR)$(PREFIX_FBC_EXE)
+install-compiler:
+	mkdir -p $(prefixbindir)
+	$(INSTALL_PROGRAM) $(FBC_EXE) $(PREFIX_FBC_EXE)
 
 install-includes:
-	mkdir -p $(DESTDIR)$(prefixincdir)
-	cp -r $(rootdir)inc/* $(DESTDIR)$(prefixincdir)
+	mkdir -p $(prefixincdir)
+	cp -r $(rootdir)inc/* $(prefixincdir)
 
-install-rtlib: rtlib
-	mkdir -p $(DESTDIR)$(prefixlibdir)
-	$(INSTALL_FILE) $(RTL_LIBS) $(DESTDIR)$(prefixlibdir)
+install-rtlib:
+	mkdir -p $(prefixlibdir)
+	$(INSTALL_FILE) $(RTL_LIBS) $(prefixlibdir)
 
-install-gfxlib2: gfxlib2
-	mkdir -p $(DESTDIR)$(prefixlibdir)
-	$(INSTALL_FILE) $(GFX_LIBS) $(DESTDIR)$(prefixlibdir)
+install-gfxlib2:
+	mkdir -p $(prefixlibdir)
+	$(INSTALL_FILE) $(GFX_LIBS) $(prefixlibdir)
 
 ################################################################################
 
 .PHONY: uninstall uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
 uninstall:        uninstall-compiler uninstall-includes uninstall-rtlib uninstall-gfxlib2
-	-rmdir $(DESTDIR)$(prefixlibdir)
+	-rmdir $(prefixlibdir)
 
 uninstall-compiler:
-	rm -f $(DESTDIR)$(PREFIX_FBC_EXE)
+	rm -f $(PREFIX_FBC_EXE)
 
 uninstall-includes:
-	rm -rf $(DESTDIR)$(prefixincdir)
+	rm -rf $(prefixincdir)
 
 uninstall-rtlib:
-	rm -f $(patsubst $(libdir)/%,$(DESTDIR)$(prefixlibdir)/%,$(RTL_LIBS))
+	rm -f $(patsubst $(libdir)/%,$(prefixlibdir)/%,$(RTL_LIBS))
 
 uninstall-gfxlib2:
-	rm -f $(patsubst $(libdir)/%,$(DESTDIR)$(prefixlibdir)/%,$(GFX_LIBS))
+	rm -f $(patsubst $(libdir)/%,$(prefixlibdir)/%,$(GFX_LIBS))
 
 ################################################################################
 
@@ -662,13 +708,10 @@ clean-compiler:
   endif
 
 clean-rtlib:
-	rm -rf $(RTL_LIBS) $(libfbobjdir)
-  ifeq ($(TARGET_OS),dos)
-	rm -rf $(djgpplibcobjdir)
-  endif
+	rm -rf $(RTL_LIBS) $(RTL_OBJDIRS)
 
 clean-gfxlib2:
-	rm -rf $(GFX_LIBS) $(libfbgfxobjdir)
+	rm -rf $(GFX_LIBS) $(GFX_OBJDIRS)
 
 ################################################################################
 
@@ -681,13 +724,13 @@ help:
 .PHONY: cunit-tests log-tests clean-tests
 
 cunit-tests:
-	cd tests && make cunit-tests FBC="`pwd`/../$(FBC_EXE) -i `pwd`/../inc"
+	cd tests && make cunit-tests FBC="`pwd`/../bin/fbc -i `pwd`/../inc"
 
 log-tests:
-	cd tests && make   log-tests FBC="`pwd`/../$(FBC_EXE) -i `pwd`/../inc"
+	cd tests && make   log-tests FBC="`pwd`/../bin/fbc -i `pwd`/../inc"
 
 warning-tests:
-	cd tests/warnings && FBC="`pwd`/../../$(FBC_EXE)" ./test.sh
+	cd tests/warnings && FBC="`pwd`/../../bin/fbc" ./test.sh
 
 clean-tests:
 	cd tests && make clean
@@ -1027,8 +1070,8 @@ bootstrap-dist:
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win32        && mv src/compiler/*.asm bootstrap/win32
 	./$(FBC_EXE) src/compiler/*.bas -m fbc -i inc -e -r -v -target win64        && mv src/compiler/*.c   bootstrap/win64
 
-	# Ensure to have LFs regardless of host system (LFs will probably work
-	# on DOS/Win32, but CRLFs could cause issues on Linux)
+	# Ensure to have LFs regardless of host system (LFs will probably on
+	# DOS/Win32, but CRLFs could cause issues on Linux)
 	dos2unix bootstrap/dos/*
 	dos2unix bootstrap/linux-x86/*
 	dos2unix bootstrap/linux-x86_64/*
@@ -1062,7 +1105,7 @@ else
   BOOTSTRAP_CFLAGS := -nostdinc
   BOOTSTRAP_CFLAGS += -Wall -Wno-unused-label -Wno-unused-function -Wno-unused-variable
   BOOTSTRAP_CFLAGS += -Wno-unused-but-set-variable -Wno-main
-  BOOTSTRAP_CFLAGS += -fno-strict-aliasing -frounding-math -fwrapv
+  BOOTSTRAP_CFLAGS += -fno-strict-aliasing -frounding-math
   BOOTSTRAP_CFLAGS += -Wfatal-errors
   BOOTSTRAP_OBJ := $(patsubst %.c,%.o,$(sort $(wildcard bootstrap/$(FBTARGET)/*.c)))
   $(BOOTSTRAP_OBJ): %.o: %.c

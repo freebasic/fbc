@@ -105,7 +105,7 @@
 	#define alloca(x) __builtin_alloca(x)
 #endif
 
-#if defined ENABLE_MT && !defined HOST_DOS && !defined HOST_XBOX
+#if defined ENABLE_MT && !defined HOST_XBOX
 	FBCALL void fb_Lock( void );
 	FBCALL void fb_Unlock( void );
 	FBCALL void fb_StrLock( void );
@@ -428,8 +428,6 @@ void                fb_hListDynElemRemove   ( FB_LIST *list, FB_LISTELEM *elem )
 #define KEY_F8          FB_MAKE_EXT_KEY( 'B' )
 #define KEY_F9          FB_MAKE_EXT_KEY( 'C' )
 #define KEY_F10         FB_MAKE_EXT_KEY( 'D' )
-#define KEY_F11         FB_MAKE_EXT_KEY( 'E' )
-#define KEY_F12         FB_MAKE_EXT_KEY( 'F' )
 #define KEY_HOME        FB_MAKE_EXT_KEY( 'G' )
 #define KEY_UP          FB_MAKE_EXT_KEY( 'H' )
 #define KEY_PAGE_UP     FB_MAKE_EXT_KEY( 'I' )
