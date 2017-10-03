@@ -120,12 +120,13 @@ enum
 	FBCTOOL_GORC
 	FBCTOOL_WINDRES
 	FBCTOOL_CXBE
+        FBCTOOL_DXEGEN
 	FBCTOOL__COUNT
 end enum
 
 static shared as zstring * 8 toolnames(0 to FBCTOOL__COUNT-1) = _
 { _
-	"as", "ar", "ld", "gcc", "llc", "dlltool", "GoRC", "windres", "cxbe" _
+        "as", "ar", "ld", "gcc", "llc", "dlltool", "GoRC", "windres", "cxbe", "dxe3gen" _
 }
 
 declare sub fbcFindBin _
@@ -134,6 +135,13 @@ declare sub fbcFindBin _
 		byref path as string, _
 		byref relying_on_system as integer = FALSE _
 	)
+
+declare function fbcRunBin _
+	( _
+		byval action as zstring ptr, _
+		byval tool as integer, _
+		byref ln as string _
+	) as integer
 
 #macro safeKill(f)
 	if( kill( f ) <> 0 ) then
@@ -201,6 +209,8 @@ private sub hSetOutName( )
 		     FB_COMPTARGET_NETBSD
 			fbc.outname = hStripFilename( fbc.outname ) + _
 				"lib" + hStripPath( fbc.outname ) + ".so"
+                case FB_COMPTARGET_DOS
+                        fbc.outname += ".dxe"
 		end select
 	end select
 end sub
@@ -227,19 +237,6 @@ private function fbcAddObj( byref file as string ) as string ptr
 	dim as string ptr s = listNewNode( @fbc.objlist )
 	*s = file
 	function = s
-end function
-
-private function hGet1stOutputLineFromCommand( byref cmd as string ) as string
-	var f = freefile( )
-	if( open pipe( cmd, for input, as f ) <> 0 ) then
-		exit function
-	end if
-
-	dim ln as string
-	input #f, ln
-
-	close f
-	return ln
 end function
 
 ''
@@ -291,10 +288,14 @@ private function fbcBuildPathToLibFile( byval file as zstring ptr ) as string
 
 	path += " -print-file-name=" + *file
 
-	found = hGet1stOutputLineFromCommand( path )
-	if( len( found ) = 0 ) then
+	dim as integer ff = freefile( )
+	if( open pipe( path, for input, as ff ) <> 0 ) then
 		exit function
 	end if
+
+	input #ff, found
+
+	close ff
 
 	if( found = hStripPath( found ) ) then
 		exit function
@@ -331,7 +332,7 @@ private sub fbcAddLibPathFor( byval libname as zstring ptr )
 end sub
 #endif
 
-private sub fbcFindBin _
+sub fbcFindBin _
 	( _
 		byval tool as integer, _
 		byref path as string, _
@@ -370,7 +371,7 @@ private sub fbcFindBin _
 	last_relying_on_system = relying_on_system
 end sub
 
-private function fbcRunBin _
+function fbcRunBin _
 	( _
 		byval action as zstring ptr, _
 		byval tool as integer, _
@@ -554,22 +555,6 @@ private function hFindLib( byval file as zstring ptr ) as string
 	end if
 end function
 
-private function fbcLinkerIsGold( ) as integer
-	dim ldcmd as string
-	fbcFindBin( FBCTOOL_LD, ldcmd )
-	ldcmd += " --version"
-	return (instr( hGet1stOutputLineFromCommand( ldcmd ), "GNU gold" ) > 0)
-end function
-
-'' Check whether we're using the gold linker.
-private function fbcIsUsingGoldLinker( ) as integer
-	'' gold only supports ELF, we only need to check for it when targetting ELF.
-	if( fbTargetSupportsELF( ) ) then
-		return fbcLinkerIsGold( )
-	end if
-	return FALSE
-end function
-
 private function hLinkFiles( ) as integer
 	dim as string ldcline, dllname, deffile
 
@@ -598,6 +583,37 @@ private function hLinkFiles( ) as integer
 
 	'' Set executable name
 	ldcline += "-o " + QUOTE + fbc.outname + QUOTE
+
+#ifdef __FB_DOS__
+        if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) and _
+           (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) then
+                ldcline += " -I """ + hStripExt( fbc.outname ) + "_il.a"""
+                ldcline += " -U"
+                scope
+                 dim as string ptr objfile = listGetHead( @fbc.objlist )
+                 while( objfile )
+                        ldcline += " """ + *objfile + """"
+                        objfile = listGetNext( objfile )
+                 wend
+                end scope
+                scope
+                 dim as string ptr libfile = listGetHead(@fbc.libfiles)
+                 if (libfile) then
+                        ldcline +=  " -lc"
+                 end if
+                 while (libfile)
+                        ldcline += " """ + *libfile + """"
+                        libfile = listGetNext(libfile)
+                 wend
+                end scope
+		if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
+			exit function
+		end if
+
+                function = fbcRunBin( "making DXE", FBCTOOL_DXEGEN, ldcline )
+                exit function
+        end if
+#endif
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
@@ -682,13 +698,8 @@ private function hLinkFiles( ) as integer
 		'' (needed until binutils' default DJGPP ldscripts are fixed)
 		ldcline += " -T """ + fbc.libpath + (FB_HOST_PATHDIV + "i386go32.x""")
 	else
-		'' Supplementary ld script to drop the fbctinf objinfo section
-		''  - only if objinfo is enabled
-		''  - only with ld.bfd, not ld.gold, because gold doesn't support this kind
-		''    of linker script (results in broken binaries).
-		if( fbGetOption( FB_COMPOPT_OBJINFO ) and _
-		    (fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN) and _
-		    (not fbcIsUsingGoldLinker( )) ) then
+		if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN ) then
+			'' Supplementary ld script to drop the fbctinf objinfo section
 			ldcline += " """ + fbc.libpath + (FB_HOST_PATHDIV + "fbextra.x""")
 		end if
 	end if
@@ -1382,7 +1393,6 @@ enum
 	OPT_MT
 	OPT_NODEFLIBS
 	OPT_NOERRLINE
-	OPT_NOOBJINFO
 	OPT_O
 	OPT_OPTIMIZE
 	OPT_P
@@ -1443,9 +1453,8 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	TRUE , _ '' OPT_MAP
 	TRUE , _ '' OPT_MAXERR
 	FALSE, _ '' OPT_MT
-	FALSE, _ '' OPT_NODEFLIBS
+  	FALSE, _ '' OPT_NODEFLIBS
 	FALSE, _ '' OPT_NOERRLINE
-	FALSE, _ '' OPT_NOOBJINFO
 	TRUE , _ '' OPT_O
 	TRUE , _ '' OPT_OPTIMIZE
 	TRUE , _ '' OPT_P
@@ -1637,9 +1646,6 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 	case OPT_NOERRLINE
 		fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
-
-	case OPT_NOOBJINFO
-		fbSetOption( FB_COMPOPT_OBJINFO, FALSE )
 
 	case OPT_O
 		'' Error if there already is an -o waiting to be assigned
@@ -1907,7 +1913,6 @@ private function parseOption(byval opt as zstring ptr) as integer
 	case asc("n")
 		CHECK("noerrline", OPT_NOERRLINE)
 		CHECK("nodeflibs", OPT_NODEFLIBS)
-		CHECK("noobjinfo", OPT_NOOBJINFO)
 
 	case asc("o")
 		ONECHAR(OPT_O)
@@ -2819,9 +2824,6 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		'' subtraction, however with the C backend with, gcc -ffast-math
 		'' optimizes out the subtraction (even under -O0) and inserts 0 instead.
 
-		'' Define signed integer overflow
-		ln += "-fwrapv "
-
 		'' Avoid gcc exception handling bloat
 		ln += "-fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables "
 
@@ -2990,7 +2992,7 @@ private function hAssembleRc( byval rc as FBCIOFILE ptr ) as integer
 	'' Note: windres uses gcc -E to preprocess the .rc by default,
 	'' that may not be 100% compatible to GoRC.
 
-	dim as string ln = "--output-format=coff --include-dir=."
+	dim as string ln = "--output-format=coff "
 	ln += " """ + rc->srcfile + """"
 	ln += " """ + *rc->objfile + """"
 
@@ -3067,7 +3069,7 @@ private function hArchiveFiles( ) as integer
 
 	dim as string ln = "-rsc " + QUOTE + fbc.outname + (QUOTE + " ")
 
-	if( fbGetOption( FB_COMPOPT_OBJINFO ) and (not fbIsCrossComp( )) ) then
+	if( fbIsCrossComp( ) = FALSE ) then
 		if( hCompileFbctinf( ) ) then
 			'' The objinfo reader expects the fbctinf object to be
 			'' the first object file in libraries, so it must be
@@ -3324,18 +3326,17 @@ private sub hPrintOptions( )
 	print "  -mt              Use thread-safe FB runtime"
 	print "  -nodeflibs       Do not include the default libraries"
 	print "  -noerrline       Do not show source context in error messages"
-	print "  -noobjinfo       Do not read/write compile-time info from/to .o and .a files"
 	print "  -o <file>        Set .o (or -pp .bas) file name for prev/next input file"
 	print "  -O <value>       Optimization level (default: 0)"
 	print "  -p <path>        Add a library search path"
-	print "  -pic             Generate position-independent code (non-x86 Unix shared libs)"
+	print "  -pic             Generate position-indepedent code (non-x86 Unix shared libs)"
 	print "  -pp              Write out preprocessed input file (.pp.bas) only"
 	print "  -prefix <path>   Set the compiler prefix path"
 	print "  -print host|target  Display host/target system name"
 	print "  -print fblibdir  Display the compiler's lib/ path"
 	print "  -print x         Display output binary/library file name (if known)"
 	print "  -profile         Enable function profiling"
-	print "  -r               Write out .asm/.c/.ll (-gen gas/gcc/llvm) only"
+	print "  -r               Write out .asm (-gen gas), .c (-gen gcc) or .ll (-gen llvm) only"
 	print "  -rr              Write out the final .asm only"
 	print "  -R               Preserve temporary .asm/.c/.ll/.def files"
 	print "  -RR              Preserve the final .asm file"
@@ -3496,7 +3497,7 @@ end sub
 	'' Scan objects and libraries for more libraries and paths,
 	'' before adding the default libs, which don't need to be searched,
 	'' because they don't contain objinfo anyways.
-	if( fbGetOption( FB_COMPOPT_OBJINFO ) and (not fbIsCrossComp( )) ) then
+	if( fbIsCrossComp( ) = FALSE ) then
 		hCollectObjinfo( )
 	end if
 
