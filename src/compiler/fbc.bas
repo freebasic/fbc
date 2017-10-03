@@ -584,6 +584,7 @@ private function hLinkFiles( ) as integer
 	'' Set executable name
 	ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
+#ifdef __FB_DOS__
         if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) and _
            (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) then
                 ldcline += " -I """ + hStripExt( fbc.outname ) + "_il.a"""
@@ -612,6 +613,7 @@ private function hLinkFiles( ) as integer
                 function = fbcRunBin( "making DXE", FBCTOOL_DXEGEN, ldcline )
                 exit function
         end if
+#endif
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
