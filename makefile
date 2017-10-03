@@ -224,7 +224,7 @@ else
     ifneq ($(findstring MINGW,$(uname)),)
       TARGET_OS := win32
     endif
-    ifneq ($(findstring DOS,$(uname)),)
+    ifeq ($(uname),MS-DOS)
       TARGET_OS := dos
     endif
     ifeq ($(uname),NetBSD)
