@@ -3,6 +3,11 @@
 	struct _FBMUTEX {
 		pthread_mutex_t id;
 	};
+#elif defined HOST_DOS && defined ENABLE_MT
+	#include <pthread.h>
+	struct _FBMUTEX {
+		pthread_mutex_t id;
+	};
 #elif defined HOST_WIN32
 	#include <windows.h>
 	struct _FBMUTEX {
@@ -29,7 +34,9 @@ typedef struct {
    a void*, because pthread_t doesn't have to be an integer or pointer, and
    furthermore, zero may be a valid value for it. */
 struct _FBTHREAD {
-#if defined HOST_DOS
+#if defined HOST_DOS && defined ENABLE_MT
+	pthread_t id;
+#elif defined HOST_DOS && !defined ENABLE_MT
 	int id;
 	void *opaque;
 #elif defined HOST_UNIX
