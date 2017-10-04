@@ -3225,6 +3225,10 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "c" )
 		fbcAddDefLib( "m" )
+		if( fbGetOption( FB_COMPOPT_MULTITHREADED ) ) then
+			fbcAddDefLib( "pthread" )
+			fbcAddDefLib( "socket" )
+		end if
 
 	case FB_COMPTARGET_FREEBSD
 		fbcAddDefLib( "gcc" )

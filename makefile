@@ -564,9 +564,6 @@ ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
   # is very long...)
 	$(QUIET)rm -f $@
-	$(AR) x $(DJDIR)/lib/libpthread.a
-	$(AR) x $(DJDIR)/lib/libsocket.a
-	mv -f *.o $(libfbmtobjdir)
 	$(QUIET_AR)$(AR) rcs $@ $(libfbmtobjdir)/*.o
 else
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
