@@ -119,7 +119,7 @@ declare function CoInitializeEx(byval pvReserved as LPVOID, byval dwCoInit as DW
 declare function CoGetCurrentLogicalThreadId(byval pguid as GUID ptr) as HRESULT
 declare function CoGetContextToken(byval pToken as ULONG_PTR ptr) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	declare function CoGetApartmentType(byval pAptType as APTTYPE ptr, byval pAptQualifier as APTTYPEQUALIFIER ptr) as HRESULT
 #endif
 
@@ -181,7 +181,7 @@ const COM_RIGHTS_ACTIVATE_REMOTE = 16
 declare function CoCreateInstanceFromApp(byval Clsid as const IID const ptr, byval punkOuter as IUnknown ptr, byval dwClsCtx as DWORD, byval reserved as PVOID, byval dwCount as DWORD, byval pResults as MULTI_QI ptr) as HRESULT
 declare function CoIsHandlerConnected(byval pUnk as LPUNKNOWN) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function CoDisconnectContext(byval dwTimeout as DWORD) as HRESULT
 #endif
 

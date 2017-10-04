@@ -50,7 +50,7 @@ const ALG_SID_DSS_ANY = 0
 const ALG_SID_DSS_PKCS = 1
 const ALG_SID_DSS_DMS = 2
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const ALG_SID_ECDSA = 3
 #endif
 
@@ -83,7 +83,7 @@ const ALG_SID_DH_EPHEM = 2
 const ALG_SID_AGREED_KEY_ANY = 3
 const ALG_SID_KEA = 4
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const ALG_SID_ECDH = 5
 #endif
 
@@ -110,7 +110,7 @@ const ALG_SID_SSL2_MASTER = 5
 const ALG_SID_TLS1_MASTER = 6
 const ALG_SID_SCHANNEL_ENC_KEY = 7
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const ALG_SID_ECMQV = 1
 #endif
 
@@ -162,7 +162,7 @@ const CALG_SHA_256 = (ALG_CLASS_HASH or ALG_TYPE_ANY) or ALG_SID_SHA_256
 const CALG_SHA_384 = (ALG_CLASS_HASH or ALG_TYPE_ANY) or ALG_SID_SHA_384
 const CALG_SHA_512 = (ALG_CLASS_HASH or ALG_TYPE_ANY) or ALG_SID_SHA_512
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const CALG_ECDH = (ALG_CLASS_KEY_EXCHANGE or ALG_TYPE_DH) or ALG_SID_ECDH
 	const CALG_ECMQV = (ALG_CLASS_KEY_EXCHANGE or ALG_TYPE_ANY) or ALG_SID_ECMQV
 	const CALG_ECDSA = (ALG_CLASS_SIGNATURE or ALG_TYPE_DSS) or ALG_SID_ECDSA
@@ -179,7 +179,7 @@ const CRYPT_DELETEKEYSET = &h10
 const CRYPT_MACHINE_KEYSET = &h20
 const CRYPT_SILENT = &h40
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const CRYPT_DEFAULT_CONTAINER_OPTIONAL = &h80
 #endif
 
@@ -200,7 +200,7 @@ const CRYPT_VOLATILE = &h1000
 const CRYPT_SGCKEY = &h2000
 const CRYPT_ARCHIVABLE = &h4000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const CRYPT_FORCE_KEY_PROTECTION_HIGH = &h8000
 #endif
 
@@ -338,11 +338,14 @@ const PP_KEYSPEC = 39
 const PP_ENUMEX_SIGNING_PROT = 40
 const PP_CRYPT_COUNT_KEY_USE = 41
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const PP_USER_CERTSTORE = 42
 	const PP_SMARTCARD_READER = 43
 	const PP_SMARTCARD_GUID = 45
 	const PP_ROOT_CERTSTORE = 46
+#endif
+
+#if _WIN32_WINNT = &h0602
 	const PP_SMARTCARD_READER_ICON = 47
 #endif
 
@@ -373,7 +376,7 @@ const PP_KEYEXCHANGE_ALG = 14
 const PP_SIGNATURE_ALG = 15
 const PP_DELETEKEY = 24
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const PP_PIN_PROMPT_STRING = 44
 	const PP_SECURE_KEYEXCHANGE_PIN = 47
 	const PP_SECURE_SIGNATURE_PIN = 48
@@ -628,7 +631,7 @@ end type
 type CRYPT_3DES_KEY_STATE as _CRYPT_3DES_KEY_STATE
 type PCRYPT_3DES_KEY_STATE as _CRYPT_3DES_KEY_STATE ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _CRYPT_AES_128_KEY_STATE
 		Key(0 to 15) as ubyte
 		IV(0 to 15) as ubyte
@@ -4462,7 +4465,7 @@ declare function CertIsStrongHashToSign(byval pStrongSignPara as PCCERT_STRONG_S
 declare function CryptHashToBeSigned(byval hCryptProv as HCRYPTPROV_LEGACY, byval dwCertEncodingType as DWORD, byval pbEncoded as const UBYTE ptr, byval cbEncoded as DWORD, byval pbComputedHash as UBYTE ptr, byval pcbComputedHash as DWORD ptr) as WINBOOL
 declare function CryptHashCertificate(byval hCryptProv as HCRYPTPROV_LEGACY, byval Algid as ALG_ID, byval dwFlags as DWORD, byval pbEncoded as const UBYTE ptr, byval cbEncoded as DWORD, byval pbComputedHash as UBYTE ptr, byval pcbComputedHash as DWORD ptr) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function CryptHashCertificate2(byval pwszCNGHashAlgid as LPCWSTR, byval dwFlags as DWORD, byval pvReserved as any ptr, byval pbEncoded as const UBYTE ptr, byval cbEncoded as DWORD, byval pbComputedHash as UBYTE ptr, byval pcbComputedHash as DWORD ptr) as WINBOOL
 #endif
 
@@ -4486,7 +4489,7 @@ declare function CryptExportPublicKeyInfoEx(byval hCryptProvOrNCryptKey as HCRYP
 #define CRYPT_OID_EXPORT_PUBLIC_KEY_INFO_EX2_FUNC "CryptDllExportPublicKeyInfoEx2"
 type PFN_CRYPT_EXPORT_PUBLIC_KEY_INFO_EX2_FUNC as function(byval hNCryptKey as NCRYPT_KEY_HANDLE, byval dwCertEncodingType as DWORD, byval pszPublicKeyObjId as LPSTR, byval dwFlags as DWORD, byval pvAuxInfo as any ptr, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval pcbInfo as DWORD ptr) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	#define CRYPT_OID_EXPORT_PUBLIC_KEY_INFO_FROM_BCRYPT_HANDLE_FUNC "CryptDllExportPublicKeyInfoFromBCryptKeyHandle"
 	type PFN_CRYPT_EXPORT_PUBLIC_KEY_INFO_FROM_BCRYPT_HANDLE_FUNC as function(byval hBCryptKey as BCRYPT_KEY_HANDLE, byval dwCertEncodingType as DWORD, byval pszPublicKeyObjId as LPSTR, byval dwFlags as DWORD, byval pvAuxInfo as any ptr, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval pcbInfo as DWORD ptr) as WINBOOL
 	declare function CryptExportPublicKeyInfoFromBCryptKeyHandle(byval hBCryptKey as BCRYPT_KEY_HANDLE, byval dwCertEncodingType as DWORD, byval pszPublicKeyObjId as LPSTR, byval dwFlags as DWORD, byval pvAuxInfo as any ptr, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval pcbInfo as DWORD ptr) as WINBOOL
@@ -4514,7 +4517,7 @@ type PFN_EXPORT_PRIV_KEY_FUNC as function(byval hCryptProv as HCRYPTPROV, byval 
 declare function CryptImportPublicKeyInfo(byval hCryptProv as HCRYPTPROV, byval dwCertEncodingType as DWORD, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval phKey as HCRYPTKEY ptr) as WINBOOL
 declare function CryptImportPublicKeyInfoEx(byval hCryptProv as HCRYPTPROV, byval dwCertEncodingType as DWORD, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval aiKeyAlg as ALG_ID, byval dwFlags as DWORD, byval pvAuxInfo as any ptr, byval phKey as HCRYPTKEY ptr) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define CRYPT_OID_IMPORT_PUBLIC_KEY_INFO_EX2_FUNC "CryptDllImportPublicKeyInfoEx2"
 	type PFN_IMPORT_PUBLIC_KEY_INFO_EX2_FUNC as function(byval dwCertEncodingType as DWORD, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval dwFlags as DWORD, byval pvAuxInfo as any ptr, byval phKey as BCRYPT_KEY_HANDLE ptr) as WINBOOL
 	declare function CryptImportPublicKeyInfoEx2(byval dwCertEncodingType as DWORD, byval pInfo as PCERT_PUBLIC_KEY_INFO, byval dwFlags as DWORD, byval pvAuxInfo as any ptr, byval phKey as BCRYPT_KEY_HANDLE ptr) as WINBOOL
@@ -5178,9 +5181,12 @@ type _CERT_CHAIN_ENGINE_CONFIG
 	MaximumCachedCertificates as DWORD
 	CycleDetectionModulus as DWORD
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0601
 		hExclusiveRoot as HCERTSTORE
 		hExclusiveTrustedPeople as HCERTSTORE
+	#endif
+
+	#if _WIN32_WINNT = &h0602
 		dwExclusiveFlags as DWORD
 	#endif
 end type
@@ -5599,7 +5605,7 @@ const PKCS12_EXPORT_SILENT = &h40
 const PKCS12_EXPORT_RESERVED_MASK = &hffff0000
 declare function PFXExportCertStore(byval hStore as HCERTSTORE, byval pPFX as CRYPT_DATA_BLOB ptr, byval szPassword as LPCWSTR, byval dwFlags as DWORD) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type HCERT_SERVER_OCSP_RESPONSE as any ptr
 	declare function CertOpenServerOcspResponse(byval pChainContext as PCCERT_CHAIN_CONTEXT, byval dwFlags as DWORD, byval pvReserved as LPVOID) as HCERT_SERVER_OCSP_RESPONSE
 	const CERT_SERVER_OCSP_RESPONSE_ASYNC_FLAG = &h1
@@ -5628,7 +5634,7 @@ const CERT_RETRIEVE_BIOMETRIC_PREDEFINED_BASE_TYPE = cast(LPCSTR, 1000)
 const CERT_RETRIEVE_BIOMETRIC_PICTURE_TYPE = CERT_RETRIEVE_BIOMETRIC_PREDEFINED_BASE_TYPE + CERT_BIOMETRIC_PICTURE_TYPE
 const CERT_RETRIEVE_BIOMETRIC_SIGNATURE_TYPE = CERT_RETRIEVE_BIOMETRIC_PREDEFINED_BASE_TYPE + CERT_BIOMETRIC_SIGNATURE_TYPE
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	type _CERT_SELECT_CHAIN_PARA
 		hChainEngine as HCERTCHAINENGINE
 		pTime as PFILETIME
@@ -5767,6 +5773,9 @@ const CERT_RETRIEVE_BIOMETRIC_SIGNATURE_TYPE = CERT_RETRIEVE_BIOMETRIC_PREDEFINE
 	const TIMESTAMP_VERIFY_CONTEXT_SIGNATURE = &h20
 	const TIMESTAMP_NO_AUTH_RETRIEVAL = &h20000
 	declare function CryptVerifyTimeStampSignature(byval pbTSContentInfo as const UBYTE ptr, byval cbTSContentInfo as DWORD, byval pbData as const UBYTE ptr, byval cbData as DWORD, byval hAdditionalStore as HCERTSTORE, byval ppTsContext as PCRYPT_TIMESTAMP_CONTEXT ptr, byval ppTsSigner as PCCERT_CONTEXT ptr, byval phStore as HCERTSTORE ptr) as WINBOOL
+#endif
+
+#if _WIN32_WINNT = &h0602
 	const CRYPT_OBJECT_LOCATOR_SPN_NAME_TYPE = 1
 	const CRYPT_OBJECT_LOCATOR_LAST_RESERVED_NAME_TYPE = 32
 	const CRYPT_OBJECT_LOCATOR_FIRST_RESERVED_USER_NAME_TYPE = 33
@@ -5842,6 +5851,9 @@ declare function CryptUnprotectMemory(byval pDataIn as LPVOID, byval cbDataIn as
 #if _WIN32_WINNT = &h0602
 	declare function CryptProtectDataNoUI(byval pDataIn as DATA_BLOB ptr, byval szDataDescr as LPCWSTR, byval pOptionalEntropy as DATA_BLOB ptr, byval pvReserved as PVOID, byval pPromptStruct as CRYPTPROTECT_PROMPTSTRUCT ptr, byval dwFlags as DWORD, byval pbOptionalPassword as const UBYTE ptr, byval cbOptionalPassword as DWORD, byval pDataOut as DATA_BLOB ptr) as WINBOOL
 	declare function CryptUnprotectDataNoUI(byval pDataIn as DATA_BLOB ptr, byval ppszDataDescr as LPWSTR ptr, byval pOptionalEntropy as DATA_BLOB ptr, byval pvReserved as PVOID, byval pPromptStruct as CRYPTPROTECT_PROMPTSTRUCT ptr, byval dwFlags as DWORD, byval pbOptionalPassword as const UBYTE ptr, byval cbOptionalPassword as DWORD, byval pDataOut as DATA_BLOB ptr) as WINBOOL
+#endif
+
+#if _WIN32_WINNT >= &h0600
 	declare function CryptUpdateProtectedState(byval pOldSid as PSID, byval pwszOldPassword as LPCWSTR, byval dwFlags as DWORD, byval pdwSuccessCount as DWORD ptr, byval pdwFailureCount as DWORD ptr) as WINBOOL
 #endif
 

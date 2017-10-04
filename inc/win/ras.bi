@@ -207,7 +207,7 @@ type tagRASDIALPARAMSW field = 4
 	dwSubEntry as DWORD
 	dwCallbackId as ULONG_PTR
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0601
 		dwIfIndex as DWORD
 	#endif
 end type
@@ -225,7 +225,7 @@ type tagRASDIALPARAMSA field = 4
 	dwSubEntry as DWORD
 	dwCallbackId as ULONG_PTR
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0601
 		dwIfIndex as DWORD
 	#endif
 end type
@@ -1125,32 +1125,34 @@ declare function RasDeleteSubEntryW(byval pszPhonebook as LPCWSTR, byval pszEntr
 	declare function RasGetEapUserIdentity alias "RasGetEapUserIdentityW"(byval pszPhonebook as LPCWSTR, byval pszEntry as LPCWSTR, byval dwFlags as DWORD, byval hwnd as HWND, byval ppRasEapUserIdentity as tagRASEAPUSERIDENTITYW ptr ptr) as DWORD
 	declare sub RasFreeEapUserIdentity alias "RasFreeEapUserIdentityW"(byval pRasEapUserIdentity as tagRASEAPUSERIDENTITYW ptr)
 	declare function RasDeleteSubEntry alias "RasDeleteSubEntryW"(byval pszPhonebook as LPCWSTR, byval pszEntry as LPCWSTR, byval dwSubEntryId as DWORD) as DWORD
+
+	#if _WIN32_WINNT >= &h0600
+		type _tagRasNapState field = 4
+			dwSize as DWORD
+			dwFlags as DWORD
+			isolationState as IsolationState
+			probationTime as ProbationTime
+		end type
+
+		type RASNAPSTATE as _tagRasNapState
+		type LPRASNAPSTATE as _tagRasNapState ptr
+
+		type _RASPPPIPV6 field = 4
+			dwSize as DWORD
+			dwError as DWORD
+			bLocalInterfaceIdentifier(0 to 7) as UBYTE
+			bPeerInterfaceIdentifier(0 to 7) as UBYTE
+			bLocalCompressionProtocol(0 to 1) as UBYTE
+			bPeerCompressionProtocol(0 to 1) as UBYTE
+		end type
+
+		type RASPPPIPV6 as _RASPPPIPV6
+		type LPRASPPPIPV6 as _RASPPPIPV6 ptr
+		declare function rasgetnapstatus cdecl(byval hRasConn as HRASCONN, byval pNapState as LPRASNAPSTATE) as DWORD
+	#endif
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
-	type _tagRasNapState field = 4
-		dwSize as DWORD
-		dwFlags as DWORD
-		isolationState as IsolationState
-		probationTime as ProbationTime
-	end type
-
-	type RASNAPSTATE as _tagRasNapState
-	type LPRASNAPSTATE as _tagRasNapState ptr
-
-	type _RASPPPIPV6 field = 4
-		dwSize as DWORD
-		dwError as DWORD
-		bLocalInterfaceIdentifier(0 to 7) as UBYTE
-		bPeerInterfaceIdentifier(0 to 7) as UBYTE
-		bLocalCompressionProtocol(0 to 1) as UBYTE
-		bPeerCompressionProtocol(0 to 1) as UBYTE
-	end type
-
-	type RASPPPIPV6 as _RASPPPIPV6
-	type LPRASPPPIPV6 as _RASPPPIPV6 ptr
-	declare function rasgetnapstatus cdecl(byval hRasConn as HRASCONN, byval pNapState as LPRASNAPSTATE) as DWORD
-
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0601)
 	type RASAPIVERSION as long
 	enum
 		RASAPIVERSION_500 = 1
@@ -1223,61 +1225,65 @@ declare function RasDeleteSubEntryW(byval pszPhonebook as LPCWSTR, byval pszEntr
 	declare function RasDeleteSubEntry alias "RasDeleteSubEntryA"(byval pszPhonebook as LPCSTR, byval pszEntry as LPCSTR, byval dwSubentryId as DWORD) as DWORD
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
-	type _tagRasNapState field = 4
-		dwSize as DWORD
-		dwFlags as DWORD
-		isolationState as IsolationState
-		probationTime as ProbationTime
-	end type
+#ifndef UNICODE
+	#if _WIN32_WINNT >= &h0600
+		type _tagRasNapState field = 4
+			dwSize as DWORD
+			dwFlags as DWORD
+			isolationState as IsolationState
+			probationTime as ProbationTime
+		end type
 
-	type RASNAPSTATE as _tagRasNapState
-	type LPRASNAPSTATE as _tagRasNapState ptr
+		type RASNAPSTATE as _tagRasNapState
+		type LPRASNAPSTATE as _tagRasNapState ptr
 
-	type _RASPPPIPV6 field = 4
-		dwSize as DWORD
-		dwError as DWORD
-		bLocalInterfaceIdentifier(0 to 7) as UBYTE
-		bPeerInterfaceIdentifier(0 to 7) as UBYTE
-		bLocalCompressionProtocol(0 to 1) as UBYTE
-		bPeerCompressionProtocol(0 to 1) as UBYTE
-	end type
+		type _RASPPPIPV6 field = 4
+			dwSize as DWORD
+			dwError as DWORD
+			bLocalInterfaceIdentifier(0 to 7) as UBYTE
+			bPeerInterfaceIdentifier(0 to 7) as UBYTE
+			bLocalCompressionProtocol(0 to 1) as UBYTE
+			bPeerCompressionProtocol(0 to 1) as UBYTE
+		end type
 
-	type RASPPPIPV6 as _RASPPPIPV6
-	type LPRASPPPIPV6 as _RASPPPIPV6 ptr
-	declare function rasgetnapstatus cdecl(byval hRasConn as HRASCONN, byval pNapState as LPRASNAPSTATE) as DWORD
+		type RASPPPIPV6 as _RASPPPIPV6
+		type LPRASPPPIPV6 as _RASPPPIPV6 ptr
+		declare function rasgetnapstatus cdecl(byval hRasConn as HRASCONN, byval pNapState as LPRASNAPSTATE) as DWORD
+	#endif
 
-	type RASAPIVERSION as long
-	enum
-		RASAPIVERSION_500 = 1
-		RASAPIVERSION_501 = 2
-		RASAPIVERSION_600 = 3
-		RASAPIVERSION_601 = 4
-	end enum
+	#if _WIN32_WINNT >= &h0601
+		type RASAPIVERSION as long
+		enum
+			RASAPIVERSION_500 = 1
+			RASAPIVERSION_501 = 2
+			RASAPIVERSION_600 = 3
+			RASAPIVERSION_601 = 4
+		end enum
 
-	type _RASTUNNELENDPOINT field = 4
-		dwType as DWORD
+		type _RASTUNNELENDPOINT field = 4
+			dwType as DWORD
 
-		union field = 4
-			ipv4 as RASIPV4ADDR
-			ipv6 as RASIPV6ADDR
-		end union
-	end type
+			union field = 4
+				ipv4 as RASIPV4ADDR
+				ipv6 as RASIPV6ADDR
+			end union
+		end type
 
-	type RASTUNNELENDPOINT as _RASTUNNELENDPOINT
-	type PRASTUNNELENDPOINT as _RASTUNNELENDPOINT ptr
+		type RASTUNNELENDPOINT as _RASTUNNELENDPOINT
+		type PRASTUNNELENDPOINT as _RASTUNNELENDPOINT ptr
 
-	type _RASUPDATECONN field = 4
-		version as RASAPIVERSION
-		dwSize as DWORD
-		dwFlags as DWORD
-		dwIfIndex as DWORD
-		localEndPoint as RASTUNNELENDPOINT
-		remoteEndPoint as RASTUNNELENDPOINT
-	end type
+		type _RASUPDATECONN field = 4
+			version as RASAPIVERSION
+			dwSize as DWORD
+			dwFlags as DWORD
+			dwIfIndex as DWORD
+			localEndPoint as RASTUNNELENDPOINT
+			remoteEndPoint as RASTUNNELENDPOINT
+		end type
 
-	type RASUPDATECONN as _RASUPDATECONN
-	type LPRASUPDATECONN as _RASUPDATECONN ptr
+		type RASUPDATECONN as _RASUPDATECONN
+		type LPRASUPDATECONN as _RASUPDATECONN ptr
+	#endif
 #endif
 
 end extern

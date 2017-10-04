@@ -24,11 +24,13 @@ extern "Windows"
 #define _UXTHEME_H_
 type HTHEME as HANDLE
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	declare function BeginPanningFeedback(byval hwnd as HWND) as WINBOOL
 	declare function UpdatePanningFeedback(byval hwnd as HWND, byval lTotalOverpanOffsetX as LONG, byval lTotalOverpanOffsetY as LONG, byval fInInertia as WINBOOL) as WINBOOL
 	declare function EndPanningFeedback(byval hwnd as HWND, byval fAnimateBack as WINBOOL) as WINBOOL
+#endif
 
+#if _WIN32_WINNT >= &h0600
 	const GBF_DIRECT = &h00000001
 	const GBF_COPY = &h00000002
 	const GBF_VALIDBITS = GBF_DIRECT or GBF_COPY
@@ -133,7 +135,7 @@ type HTHEME as HANDLE
 
 declare function OpenThemeData(byval hwnd as HWND, byval pszClassList as LPCWSTR) as HTHEME
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const OTD_FORCE_RECT_SIZING = &h00000001
 	const OTD_NONCLIENT = &h00000002
 	const OTD_VALIDBITS = OTD_FORCE_RECT_SIZING or OTD_NONCLIENT
@@ -145,7 +147,7 @@ declare function DrawThemeBackground(byval hTheme as HTHEME, byval hdc as HDC, b
 const DTT_GRAYED = &h1
 declare function DrawThemeText(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval pszText as LPCWSTR, byval iCharCount as long, byval dwTextFlags as DWORD, byval dwTextFlags2 as DWORD, byval pRect as const RECT ptr) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const DTT_TEXTCOLOR = culng(1u shl 0)
 	const DTT_BORDERCOLOR = culng(1u shl 1)
 	const DTT_SHADOWCOLOR = culng(1u shl 2)
@@ -238,19 +240,19 @@ type MARGINS as _MARGINS
 type PMARGINS as _MARGINS ptr
 declare function GetThemeMargins(byval hTheme as HTHEME, byval hdc as HDC, byval iPartId as long, byval iStateId as long, byval iPropId as long, byval prc as RECT ptr, byval pMargins as MARGINS ptr) as HRESULT
 
-#if _WIN32_WINNT = &h0602
-	const MAX_INTLIST_COUNT = 402
-#else
+#if _WIN32_WINNT <= &h0502
 	const MAX_INTLIST_COUNT = 10
+#else
+	const MAX_INTLIST_COUNT = 402
 #endif
 
 type _INTLIST
 	iValueCount as long
 
-	#if _WIN32_WINNT = &h0602
-		iValues(0 to 401) as long
-	#else
+	#if _WIN32_WINNT <= &h0502
 		iValues(0 to 9) as long
+	#else
+		iValues(0 to 401) as long
 	#endif
 end type
 
@@ -286,7 +288,7 @@ const ETDT_ENABLE = &h00000002
 const ETDT_USETABTEXTURE = &h00000004
 const ETDT_ENABLETAB = ETDT_ENABLE or ETDT_USETABTEXTURE
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const ETDT_USEAEROWIZARDTABTEXTURE = &h00000008
 	const ETDT_ENABLEAEROWIZARDTAB = ETDT_ENABLE or ETDT_USEAEROWIZARDTABTEXTURE
 	const ETDT_VALIDBITS = ((ETDT_DISABLE or ETDT_ENABLE) or ETDT_USETABTEXTURE) or ETDT_USEAEROWIZARDTABTEXTURE
@@ -309,7 +311,7 @@ declare function GetCurrentThemeName(byval pszThemeFileName as LPWSTR, byval cch
 declare function GetThemeDocumentationProperty(byval pszThemeName as LPCWSTR, byval pszPropertyName as LPCWSTR, byval pszValueBuff as LPWSTR, byval cchMaxValChars as long) as HRESULT
 declare function DrawThemeParentBackground(byval hwnd as HWND, byval hdc as HDC, byval prc as RECT ptr) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const DTPB_WINDOWDC = &h00000001
 	const DTPB_USECTLCOLORSTATIC = &h00000002
 	const DTPB_USEERASEBKGND = &h00000004

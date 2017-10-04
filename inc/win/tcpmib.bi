@@ -17,7 +17,7 @@
 
 #define _INC_TCPMIB
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type MIB_TCP_STATE as long
 
 	type _TCP_CONNECTION_OFFLOAD_STATE as long

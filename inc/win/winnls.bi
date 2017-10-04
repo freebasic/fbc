@@ -84,7 +84,7 @@ const WC_DISCARDNS = &h00000010
 const WC_SEPCHARS = &h00000020
 const WC_DEFAULTCHAR = &h00000040
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const WC_ERR_INVALID_CHARS = &h00000080
 #endif
 
@@ -146,7 +146,7 @@ const MAP_EXPAND_LIGATURES = &h00002000
 const LCMAP_LOWERCASE = &h00000100
 const LCMAP_UPPERCASE = &h00000200
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const LCMAP_TITLECASE = &h00000300
 #endif
 
@@ -175,12 +175,15 @@ const LCID_INSTALLED = &h00000001
 const LCID_SUPPORTED = &h00000002
 const LCID_ALTERNATE_SORTS = &h00000004
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LOCALE_ALL = 0
 	const LOCALE_WINDOWS = &h00000001
 	const LOCALE_SUPPLEMENTAL = &h00000002
 	const LOCALE_ALTERNATE_SORTS = &h00000004
 	const LOCALE_REPLACEMENT = &h00000008
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	const LOCALE_NEUTRALDATA = &h00000010
 	const LOCALE_SPECIFICDATA = &h00000020
 #endif
@@ -189,7 +192,7 @@ const CP_INSTALLED = &h00000001
 const CP_SUPPORTED = &h00000002
 const SORT_STRINGSORT = &h00001000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const SORT_DIGITSASNUMBERS = &h00000008
 #endif
 
@@ -317,7 +320,7 @@ const CTRY_YEMEN = 967
 const CTRY_ZIMBABWE = 263
 const LOCALE_SLOCALIZEDDISPLAYNAME = &h00000002
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const LOCALE_ALLOW_NEUTRAL_NAMES = &h08000000
 	const LOCALE_RETURN_GENITIVE_NAMES = &h10000000
 #endif
@@ -326,9 +329,12 @@ const LOCALE_RETURN_NUMBER = &h20000000
 const LOCALE_USE_CP_ACP = &h40000000
 const LOCALE_NOUSEROVERRIDE = &h80000000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const LOCALE_SENGLISHDISPLAYNAME = &h00000072
 	const LOCALE_SNATIVEDISPLAYNAME = &h00000073
+#endif
+
+#if _WIN32_WINNT >= &h0600
 	const LOCALE_SLOCALIZEDLANGUAGENAME = &h0000006f
 #endif
 
@@ -339,7 +345,7 @@ const LOCALE_SENGLISHCOUNTRYNAME = &h00001002
 const LOCALE_SNATIVECOUNTRYNAME = &h00000008
 const LOCALE_SLANGUAGE = &h00000002
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LOCALE_SLANGDISPLAYNAME = &h0000006f
 #endif
 
@@ -454,7 +460,7 @@ const LOCALE_SYEARMONTH = &h00001006
 const LOCALE_SSORTNAME = &h00001013
 const LOCALE_IDIGITSUBSTITUTION = &h00001014
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LOCALE_SNAME = &h0000005c
 	const LOCALE_SDURATION = &h0000005d
 	const LOCALE_SKEYBOARDSTOINSTALL = &h0000005e
@@ -473,6 +479,9 @@ const LOCALE_IDIGITSUBSTITUTION = &h00001014
 	const LOCALE_SSCRIPTS = &h0000006c
 	const LOCALE_SPARENT = &h0000006d
 	const LOCALE_SCONSOLEFALLBACKNAME = &h0000006e
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	const LOCALE_IREADINGLAYOUT = &h00000070
 	const LOCALE_INEUTRAL = &h00000071
 	const LOCALE_INEGATIVEPERCENT = &h00000074
@@ -496,7 +505,7 @@ const DATE_YEARMONTH = &h00000008
 const DATE_LTRREADING = &h00000010
 const DATE_RTLREADING = &h00000020
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const DATE_AUTOLAYOUT = &h00000040
 #endif
 
@@ -504,7 +513,7 @@ const CAL_NOUSEROVERRIDE = LOCALE_NOUSEROVERRIDE
 const CAL_USE_CP_ACP = LOCALE_USE_CP_ACP
 const CAL_RETURN_NUMBER = LOCALE_RETURN_NUMBER
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const CAL_RETURN_GENITIVE_NAMES = LOCALE_RETURN_GENITIVE_NAMES
 #endif
 
@@ -557,7 +566,7 @@ const CAL_SABBREVMONTHNAME13 = &h0000002e
 const CAL_SYEARMONTH = &h0000002f
 const CAL_ITWODIGITYEARMAX = &h00000030
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const CAL_SSHORTESTDAYNAME1 = &h00000031
 	const CAL_SSHORTESTDAYNAME2 = &h00000032
 	const CAL_SSHORTESTDAYNAME3 = &h00000033
@@ -565,6 +574,9 @@ const CAL_ITWODIGITYEARMAX = &h00000030
 	const CAL_SSHORTESTDAYNAME5 = &h00000035
 	const CAL_SSHORTESTDAYNAME6 = &h00000036
 	const CAL_SSHORTESTDAYNAME7 = &h00000037
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	const CAL_SMONTHDAY = &h00000038
 	const CAL_SABBREVERASTRING = &h00000039
 #endif
@@ -602,7 +614,7 @@ const LGRPID_INDIC = &h000f
 const LGRPID_GEORGIAN = &h0010
 const LGRPID_ARMENIAN = &h0011
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const MUI_LANGUAGE_ID = &h4
 	const MUI_LANGUAGE_NAME = &h8
 	const MUI_MERGE_SYSTEM_FALLBACK = &h10
@@ -808,7 +820,7 @@ enum
 	GEOCLASS_ALL = 0
 end enum
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _NORM_FORM as long
 	enum
 		NormalizationOther = 0
@@ -902,7 +914,7 @@ declare function FoldStringW(byval dwMapFlags as DWORD, byval lpSrcStr as LPCWCH
 
 declare function GetStringTypeExW(byval Locale as LCID, byval dwInfoType as DWORD, byval lpSrcStr as LPCWCH, byval cchSrc as long, byval lpCharType as LPWORD) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function CompareStringEx(byval lpLocaleName as LPCWSTR, byval dwCmpFlags as DWORD, byval lpString1 as LPCWCH, byval cchCount1 as long, byval lpString2 as LPCWCH, byval cchCount2 as long, byval lpVersionInformation as LPNLSVERSIONINFO, byval lpReserved as LPVOID, byval lParam as LPARAM) as long
 	declare function CompareStringOrdinal(byval lpString1 as LPCWCH, byval cchCount1 as long, byval lpString2 as LPCWCH, byval cchCount2 as long, byval bIgnoreCase as WINBOOL) as long
 #endif
@@ -961,9 +973,12 @@ declare function GetCalendarInfoW(byval Locale as LCID, byval Calendar as CALID,
 declare function SetCalendarInfoA(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPCSTR) as WINBOOL
 declare function SetCalendarInfoW(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPCWSTR) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetDurationFormat(byval Locale as LCID, byval dwFlags as DWORD, byval lpDuration as const SYSTEMTIME ptr, byval ullDuration as ULONGLONG, byval lpFormat as LPCWSTR, byval lpDurationStr as LPWSTR, byval cchDuration as long) as long
 	declare function FindNLSString(byval Locale as LCID, byval dwFindNLSStringFlags as DWORD, byval lpStringSource as LPCWSTR, byval cchSource as long, byval lpStringValue as LPCWSTR, byval cchValue as long, byval pcchFound as LPINT) as long
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	declare function LoadStringByReference(byval Flags as DWORD, byval Language as PCWSTR, byval SourceString as PCWSTR, byval Buffer as PWSTR, byval cchBuffer as ULONG, byval Directory as PCWSTR, byval pcchBufferOut as PULONG) as WINBOOL
 #endif
 
@@ -971,13 +986,13 @@ declare function SetCalendarInfoW(byval Locale as LCID, byval Calendar as CALID,
 	declare function SetLocaleInfo alias "SetLocaleInfoW"(byval Locale as LCID, byval LCType as LCTYPE, byval lpLCData as LPCWSTR) as WINBOOL
 	declare function GetCalendarInfo alias "GetCalendarInfoW"(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPWSTR, byval cchData as long, byval lpValue as LPDWORD) as long
 	declare function SetCalendarInfo alias "SetCalendarInfoW"(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPCWSTR) as WINBOOL
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0601)
 	declare function SetLocaleInfo alias "SetLocaleInfoA"(byval Locale as LCID, byval LCType as LCTYPE, byval lpLCData as LPCSTR) as WINBOOL
 	declare function GetCalendarInfo alias "GetCalendarInfoA"(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPSTR, byval cchData as long, byval lpValue as LPDWORD) as long
 	declare function SetCalendarInfo alias "SetCalendarInfoA"(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPCSTR) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const MUI_FORMAT_REG_COMPAT = &h0001
 	const MUI_FORMAT_INF_COMPAT = &h0002
 	const MUI_VERIFY_FILE_EXISTS = &h0004
@@ -995,7 +1010,7 @@ declare function SetCalendarInfoW(byval Locale as LCID, byval Calendar as CALID,
 	declare function EnumTimeFormats alias "EnumTimeFormatsW"(byval lpTimeFmtEnumProc as TIMEFMT_ENUMPROCW, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
 	declare function EnumDateFormats alias "EnumDateFormatsW"(byval lpDateFmtEnumProc as DATEFMT_ENUMPROCW, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
 	declare function EnumDateFormatsEx alias "EnumDateFormatsExW"(byval lpDateFmtEnumProcEx as DATEFMT_ENUMPROCEXW, byval Locale as LCID, byval dwFlags as DWORD) as WINBOOL
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0600)
 	declare function SetLocaleInfo alias "SetLocaleInfoA"(byval Locale as LCID, byval LCType as LCTYPE, byval lpLCData as LPCSTR) as WINBOOL
 	declare function GetCalendarInfo alias "GetCalendarInfoA"(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPSTR, byval cchData as long, byval lpValue as LPDWORD) as long
 	declare function SetCalendarInfo alias "SetCalendarInfoA"(byval Locale as LCID, byval Calendar as CALID, byval CalType as CALTYPE, byval lpCalData as LPCSTR) as WINBOOL
@@ -1022,7 +1037,7 @@ declare function GetCPInfo(byval CodePage as UINT, byval lpCPInfo as LPCPINFO) a
 declare function GetCPInfoExA(byval CodePage as UINT, byval dwFlags as DWORD, byval lpCPInfoEx as LPCPINFOEXA) as WINBOOL
 declare function GetCPInfoExW(byval CodePage as UINT, byval dwFlags as DWORD, byval lpCPInfoEx as LPCPINFOEXW) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function LCIDToLocaleName(byval Locale as LCID, byval lpName as LPWSTR, byval cchName as long, byval dwFlags as DWORD) as long
 	declare function LocaleNameToLCID(byval lpName as LPCWSTR, byval dwFlags as DWORD) as LCID
 #endif
@@ -1058,7 +1073,7 @@ declare function EnumLanguageGroupLocalesW(byval lpLangGroupLocaleEnumProc as LA
 declare function EnumUILanguagesA(byval lpUILanguageEnumProc as UILANGUAGE_ENUMPROCA, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
 declare function EnumUILanguagesW(byval lpUILanguageEnumProc as UILANGUAGE_ENUMPROCW, byval dwFlags as DWORD, byval lParam as LONG_PTR) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetThreadUILanguage() as LANGID
 	declare function GetProcessPreferredUILanguages(byval dwFlags as DWORD, byval pulNumLanguages as PULONG, byval pwszLanguagesBuffer as PZZWSTR, byval pcchLanguagesBuffer as PULONG) as WINBOOL
 	declare function SetProcessPreferredUILanguages(byval dwFlags as DWORD, byval pwszLanguagesBuffer as PCZZWSTR, byval pulNumLanguages as PULONG) as WINBOOL
@@ -1091,11 +1106,11 @@ declare function EnumSystemCodePagesW(byval lpCodePageEnumProc as CODEPAGE_ENUMP
 
 #ifdef UNICODE
 	declare function EnumSystemCodePages alias "EnumSystemCodePagesW"(byval lpCodePageEnumProc as CODEPAGE_ENUMPROCW, byval dwFlags as DWORD) as WINBOOL
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function EnumSystemCodePages alias "EnumSystemCodePagesA"(byval lpCodePageEnumProc as CODEPAGE_ENUMPROCA, byval dwFlags as DWORD) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define LOCALE_NAME_USER_DEFAULT NULL
 	#define LOCALE_NAME_INVARIANT wstr("")
 	#define LOCALE_NAME_SYSTEM_DEFAULT wstr("!x-sys-default-locale")
@@ -1127,7 +1142,13 @@ declare function EnumSystemCodePagesW(byval lpCodePageEnumProc as CODEPAGE_ENUMP
 	declare function EnumDateFormatsExEx(byval lpDateFmtEnumProcExEx as DATEFMT_ENUMPROCEXEX, byval lpLocaleName as LPCWSTR, byval dwFlags as DWORD, byval lParam as LPARAM) as WINBOOL
 	declare function EnumTimeFormatsEx(byval lpTimeFmtEnumProcEx as TIMEFMT_ENUMPROCEX, byval lpLocaleName as LPCWSTR, byval dwFlags as DWORD, byval lParam as LPARAM) as WINBOOL
 	declare function EnumSystemLocalesEx(byval lpLocaleEnumProcEx as LOCALE_ENUMPROCEX, byval dwFlags as DWORD, byval lParam as LPARAM, byval lpReserved as LPVOID) as WINBOOL
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	declare function ResolveLocaleName(byval lpNameToResolve as LPCWSTR, byval lpLocaleName as LPWSTR, byval cchLocaleName as long) as long
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function IsValidNLSVersion(byval function as NLS_FUNCTION, byval lpLocaleName as LPCWSTR, byval lpVersionInformation as LPNLSVERSIONINFOEX) as DWORD
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	declare function EnumSystemCodePages alias "EnumSystemCodePagesA"(byval lpCodePageEnumProc as CODEPAGE_ENUMPROCA, byval dwFlags as DWORD) as WINBOOL

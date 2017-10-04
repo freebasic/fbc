@@ -17,7 +17,7 @@
 
 #define _INC_VIRTDISK
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	extern "Windows"
 
 	type _ATTACH_VIRTUAL_DISK_FLAG as long

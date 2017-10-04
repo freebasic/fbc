@@ -115,7 +115,7 @@ type PCNZWCH as const WCHAR ptr
 type PUNZWCH as WCHAR ptr
 type PCUNZWCH as const WCHAR ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type LPCWCHAR as const WCHAR ptr
 	type PCWCHAR as const WCHAR ptr
 	type LPCUWCHAR as const WCHAR ptr
@@ -804,7 +804,7 @@ const SUBLANG_LAO_LAO = &h01
 const SUBLANG_LAO_LAO_PDR = SUBLANG_LAO_LAO
 const SUBLANG_LATVIAN_LATVIA = &h01
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SUBLANG_LITHUANIAN_LITHUANIA = &h01
 #endif
 
@@ -833,7 +833,7 @@ const SUBLANG_PERSIAN_IRAN = &h01
 const SUBLANG_POLISH_POLAND = &h01
 const SUBLANG_PORTUGUESE_BRAZILIAN = &h01
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SUBLANG_PORTUGUESE_PORTUGAL = &h02
 #endif
 
@@ -897,7 +897,7 @@ const SUBLANG_SPANISH_PUERTO_RICO = &h14
 const SUBLANG_SPANISH_US = &h15
 const SUBLANG_SWAHILI_KENYA = &h01
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SUBLANG_SWEDISH_SWEDEN = &h01
 #endif
 
@@ -2908,10 +2908,10 @@ const PROCESS_QUERY_INFORMATION = &h0400
 const PROCESS_SUSPEND_RESUME = &h0800
 const PROCESS_QUERY_LIMITED_INFORMATION = &h1000
 
-#if _WIN32_WINNT = &h0602
-	const PROCESS_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hffff
-#else
+#if _WIN32_WINNT <= &h0502
 	const PROCESS_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hfff
+#else
+	const PROCESS_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hffff
 #endif
 
 #ifdef __FB_64BIT__
@@ -2933,10 +2933,10 @@ const THREAD_DIRECT_IMPERSONATION = &h0200
 const THREAD_SET_LIMITED_INFORMATION = &h0400
 const THREAD_QUERY_LIMITED_INFORMATION = &h0800
 
-#if _WIN32_WINNT = &h0602
-	const THREAD_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hffff
-#else
+#if _WIN32_WINNT <= &h0502
 	const THREAD_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &h3ff
+#else
+	const THREAD_ALL_ACCESS = (STANDARD_RIGHTS_REQUIRED or SYNCHRONIZE) or &hffff
 #endif
 
 const JOB_OBJECT_ASSIGN_PROCESS = &h0001
@@ -3835,7 +3835,7 @@ const FILE_OPEN_BY_FILE_ID = &h00002000
 const FILE_OPEN_FOR_BACKUP_INTENT = &h00004000
 const FILE_NO_COMPRESSION = &h00008000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const FILE_OPEN_REQUIRING_OPLOCK = &h00010000
 	const FILE_DISALLOW_EXCLUSIVE = &h00020000
 #endif
@@ -7003,7 +7003,7 @@ const VER_PLATFORM_WIN32_NT = 2
 declare function VerSetConditionMask(byval ConditionMask as ULONGLONG, byval TypeMask as DWORD, byval Condition as UBYTE) as ULONGLONG
 #define VER_SET_CONDITION(_m_, _t_, _c_) scope : (_m_) = VerSetConditionMask((_m_), (_t_), (_c_)) : end scope
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RtlGetProductInfo(byval OSMajorVersion as DWORD, byval OSMinorVersion as DWORD, byval SpMajorVersion as DWORD, byval SpMinorVersion as DWORD, byval ReturnedProductType as PDWORD) as WINBOOLEAN
 #endif
 
@@ -7879,18 +7879,7 @@ type TP_CLEANUP_GROUP as _TP_CLEANUP_GROUP
 type PTP_CLEANUP_GROUP as _TP_CLEANUP_GROUP ptr
 type PTP_CLEANUP_GROUP_CANCEL_CALLBACK as sub(byval ObjectContext as PVOID, byval CleanupContext as PVOID)
 
-#if _WIN32_WINNT = &h0602
-	type _TP_CALLBACK_ENVIRON_V3_u_s
-		LongFunction : 1 as DWORD
-		Persistent : 1 as DWORD
-		as DWORD Private : 30
-	end type
-
-	union _TP_CALLBACK_ENVIRON_V3_u
-		Flags as DWORD
-		s as _TP_CALLBACK_ENVIRON_V3_u_s
-	end union
-#else
+#if _WIN32_WINNT <= &h0600
 	type _TP_CALLBACK_ENVIRON_V1_u_s
 		LongFunction : 1 as DWORD
 		Persistent : 1 as DWORD
@@ -7901,11 +7890,37 @@ type PTP_CLEANUP_GROUP_CANCEL_CALLBACK as sub(byval ObjectContext as PVOID, byva
 		Flags as DWORD
 		s as _TP_CALLBACK_ENVIRON_V1_u_s
 	end union
+#else
+	type _TP_CALLBACK_ENVIRON_V3_u_s
+		LongFunction : 1 as DWORD
+		Persistent : 1 as DWORD
+		as DWORD Private : 30
+	end type
+
+	union _TP_CALLBACK_ENVIRON_V3_u
+		Flags as DWORD
+		s as _TP_CALLBACK_ENVIRON_V3_u_s
+	end union
 #endif
 
 type _ACTIVATION_CONTEXT as _ACTIVATION_CONTEXT_
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT <= &h0600
+	type _TP_CALLBACK_ENVIRON_V1
+		Version as TP_VERSION
+		Pool as PTP_POOL
+		CleanupGroup as PTP_CLEANUP_GROUP
+		CleanupGroupCancelCallback as PTP_CLEANUP_GROUP_CANCEL_CALLBACK
+		RaceDll as PVOID
+		ActivationContext as _ACTIVATION_CONTEXT ptr
+		FinalizationCallback as PTP_SIMPLE_CALLBACK
+		u as _TP_CALLBACK_ENVIRON_V1_u
+	end type
+
+	type TP_CALLBACK_ENVIRON_V1 as _TP_CALLBACK_ENVIRON_V1
+	type TP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1
+	type PTP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1 ptr
+#else
 	type _TP_CALLBACK_ENVIRON_V3
 		Version as TP_VERSION
 		Pool as PTP_POOL
@@ -7922,21 +7937,6 @@ type _ACTIVATION_CONTEXT as _ACTIVATION_CONTEXT_
 	type TP_CALLBACK_ENVIRON_V3 as _TP_CALLBACK_ENVIRON_V3
 	type TP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V3
 	type PTP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V3 ptr
-#else
-	type _TP_CALLBACK_ENVIRON_V1
-		Version as TP_VERSION
-		Pool as PTP_POOL
-		CleanupGroup as PTP_CLEANUP_GROUP
-		CleanupGroupCancelCallback as PTP_CLEANUP_GROUP_CANCEL_CALLBACK
-		RaceDll as PVOID
-		ActivationContext as _ACTIVATION_CONTEXT ptr
-		FinalizationCallback as PTP_SIMPLE_CALLBACK
-		u as _TP_CALLBACK_ENVIRON_V1_u
-	end type
-
-	type TP_CALLBACK_ENVIRON_V1 as _TP_CALLBACK_ENVIRON_V1
-	type TP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1
-	type PTP_CALLBACK_ENVIRON as TP_CALLBACK_ENVIRON_V1 ptr
 #endif
 
 type TP_WORK as _TP_WORK
@@ -7952,7 +7952,18 @@ type PTP_WAIT_CALLBACK as sub(byval Instance as PTP_CALLBACK_INSTANCE, byval Con
 type TP_IO as _TP_IO
 type PTP_IO as _TP_IO ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT <= &h0600
+	private sub TpInitializeCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
+		cbe->Pool = cptr(any ptr, 0)
+		cbe->CleanupGroup = cptr(any ptr, 0)
+		cbe->CleanupGroupCancelCallback = cptr(any ptr, 0)
+		cbe->RaceDll = cptr(any ptr, 0)
+		cbe->ActivationContext = cptr(any ptr, 0)
+		cbe->FinalizationCallback = cptr(any ptr, 0)
+		cbe->u.Flags = 0
+		cbe->Version = 1
+	end sub
+#else
 	private sub TpInitializeCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
 		cbe->Pool = cptr(any ptr, 0)
 		cbe->CleanupGroup = cptr(any ptr, 0)
@@ -7964,17 +7975,6 @@ type PTP_IO as _TP_IO ptr
 		cbe->Version = 3
 		cbe->CallbackPriority = TP_CALLBACK_PRIORITY_NORMAL
 		cbe->Size = sizeof(TP_CALLBACK_ENVIRON)
-	end sub
-#else
-	private sub TpInitializeCallbackEnviron cdecl(byval cbe as PTP_CALLBACK_ENVIRON)
-		cbe->Pool = cptr(any ptr, 0)
-		cbe->CleanupGroup = cptr(any ptr, 0)
-		cbe->CleanupGroupCancelCallback = cptr(any ptr, 0)
-		cbe->RaceDll = cptr(any ptr, 0)
-		cbe->ActivationContext = cptr(any ptr, 0)
-		cbe->FinalizationCallback = cptr(any ptr, 0)
-		cbe->u.Flags = 0
-		cbe->Version = 1
 	end sub
 #endif
 
@@ -8007,7 +8007,7 @@ private sub TpSetCallbackFinalizationCallback cdecl(byval cbe as PTP_CALLBACK_EN
 	cbe->FinalizationCallback = fini_cb
 end sub
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	private sub TpSetCallbackPriority cdecl(byval cbe as PTP_CALLBACK_ENVIRON, byval prio as TP_CALLBACK_PRIORITY)
 		cbe->CallbackPriority = prio
 	end sub
@@ -8394,7 +8394,7 @@ end type
 type WOW64_DESCRIPTOR_TABLE_ENTRY as _WOW64_DESCRIPTOR_TABLE_ENTRY
 type PWOW64_DESCRIPTOR_TABLE_ENTRY as _WOW64_DESCRIPTOR_TABLE_ENTRY ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	#define ___PROCESSOR_NUMBER_DEFINED
 
 	type _PROCESSOR_NUMBER

@@ -159,7 +159,7 @@ declare function GetClassURL(byval szURL as LPCWSTR, byval pClsID as CLSID ptr) 
 type IBindStatusCallback as IBindStatusCallback_
 declare function CreateAsyncBindCtx(byval reserved as DWORD, byval pBSCb as IBindStatusCallback ptr, byval pEFetc as IEnumFORMATETC ptr, byval ppBC as IBindCtx ptr ptr) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type IUri as IUri_
 	declare function CreateURLMonikerEx2(byval pMkCtx as LPMONIKER, byval pUri as IUri ptr, byval ppmk as LPMONIKER ptr, byval dwFlags as DWORD) as HRESULT
 #endif
@@ -195,7 +195,7 @@ declare function FindMimeFromData(byval pBC as LPBC, byval pwzUrl as LPCWSTR, by
 const FMFD_DEFAULT = &h0
 const FMFD_URLASFILENAME = &h1
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const FMFD_ENABLEMIMESNIFFING = &h2
 	const FMFD_IGNOREMIMETEXTPLAIN = &h4
 #endif
@@ -213,7 +213,7 @@ const URLMON_OPTION_USERAGENT = &h10000001
 const URLMON_OPTION_USERAGENT_REFRESH = &h10000002
 const URLMON_OPTION_URL_ENCODING = &h10000004
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const URLMON_OPTION_USE_BINDSTRINGCREDS = &h10000008
 	const URLMON_OPTION_USE_BROWSERAPPSDOCUMENTS = &h10000010
 #endif
@@ -292,7 +292,7 @@ const CF_NULL = 0
 #define INET_E_RESULT_DISPATCHED _HRESULT_TYPEDEF_(&h800C0200)
 #define INET_E_CANNOT_REPLACE_SFP_FILE _HRESULT_TYPEDEF_(&h800C0300)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define INET_E_CODE_INSTALL_SUPPRESSED _HRESULT_TYPEDEF_(&h800C0400)
 #endif
 
@@ -1050,7 +1050,7 @@ end type
 declare function ICodeInstall_OnCodeInstallProblem_Proxy(byval This as ICodeInstall ptr, byval ulStatusCode as ULONG, byval szDestination as LPCWSTR, byval szSource as LPCWSTR, byval dwReserved as DWORD) as HRESULT
 declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define _LPUri_DEFINED
 	#define __IUri_INTERFACE_DEFINED__
 
@@ -1118,9 +1118,9 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 		GetSchemeName as function(byval This as IUri ptr, byval pbstrSchemeName as BSTR ptr) as HRESULT
 		GetUserInfo as function(byval This as IUri ptr, byval pbstrUserInfo as BSTR ptr) as HRESULT
 
-		#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 			GetUserNameW as function(byval This as IUri ptr, byval pbstrUserName as BSTR ptr) as HRESULT
-		#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 			GetUserNameA as function(byval This as IUri ptr, byval pbstrUserName as BSTR ptr) as HRESULT
 		#endif
 
@@ -1311,9 +1311,9 @@ declare sub ICodeInstall_OnCodeInstallProblem_Stub(byval This as IRpcStubBuffer 
 		GetQuery as function(byval This as IUriBuilder ptr, byval pcchQuery as DWORD ptr, byval ppwzQuery as LPCWSTR ptr) as HRESULT
 		GetSchemeName as function(byval This as IUriBuilder ptr, byval pcchSchemeName as DWORD ptr, byval ppwzSchemeName as LPCWSTR ptr) as HRESULT
 
-		#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 			GetUserNameW as function(byval This as IUriBuilder ptr, byval pcchUserName as DWORD ptr, byval ppwzUserName as LPCWSTR ptr) as HRESULT
-		#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 			GetUserNameA as function(byval This as IUriBuilder ptr, byval pcchUserName as DWORD ptr, byval ppwzUserName as LPCWSTR ptr) as HRESULT
 		#endif
 
@@ -1539,7 +1539,7 @@ end type
 declare function IWinInetHttpTimeouts_GetRequestTimeouts_Proxy(byval This as IWinInetHttpTimeouts ptr, byval pdwConnectTimeout as DWORD ptr, byval pdwSendTimeout as DWORD ptr, byval pdwReceiveTimeout as DWORD ptr) as HRESULT
 declare sub IWinInetHttpTimeouts_GetRequestTimeouts_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define _LPWININETCACHEHINTS_DEFINED
 	#define __IWinInetCacheHints_INTERFACE_DEFINED__
 	type IWinInetCacheHints as IWinInetCacheHints_
@@ -1901,7 +1901,7 @@ declare sub IInternetProtocol_LockRequest_Stub(byval This as IRpcStubBuffer ptr,
 declare function IInternetProtocol_UnlockRequest_Proxy(byval This as IInternetProtocol ptr) as HRESULT
 declare sub IInternetProtocol_UnlockRequest_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define _LPIINTERNETPROTOCOLEX_DEFINED
 	#define __IInternetProtocolEx_INTERFACE_DEFINED__
 	extern IID_IInternetProtocolEx as const GUID
@@ -2225,7 +2225,7 @@ type IOInetBindInfoEx as IInternetBindInfoEx
 type IOInetProtocolRoot as IInternetProtocolRoot
 type IOInetProtocol as IInternetProtocol
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type IOInetProtocolEx as IInternetProtocolEx
 #endif
 
@@ -2241,7 +2241,7 @@ type LPOINETBINDINFO as LPIINTERNETBINDINFO
 type LPOINETPROTOCOLROOT as LPIINTERNETPROTOCOLROOT
 type LPOINETPROTOCOL as LPIINTERNETPROTOCOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define LPOINETPROTOCOLEX LPIINTERNETPROTOCOLEX
 #endif
 
@@ -2258,7 +2258,7 @@ extern IID_IOInetBindInfoEx alias "IID_IInternetBindInfoEx" as const GUID
 extern IID_IOInetProtocolRoot alias "IID_IInternetProtocolRoot" as const GUID
 extern IID_IOInetProtocol alias "IID_IInternetProtocol" as const GUID
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	extern IID_IOInetProtocolEx alias "IID_IInternetProtocolEx" as const GUID
 #endif
 
@@ -2270,13 +2270,13 @@ extern IID_IOInetThreadSwitch alias "IID_IInternetThreadSwitch" as const GUID
 extern IID_IOInetProtocolSinkStackable alias "IID_IInternetProtocolSinkStackable" as const GUID
 declare function CoInternetParseUrl(byval pwzUrl as LPCWSTR, byval ParseAction as PARSEACTION, byval dwFlags as DWORD, byval pszResult as LPWSTR, byval cchResult as DWORD, byval pcchResult as DWORD ptr, byval dwReserved as DWORD) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function CoInternetParseIUri(byval pIUri as IUri ptr, byval ParseAction as PARSEACTION, byval dwFlags as DWORD, byval pwzResult as LPWSTR, byval cchResult as DWORD, byval pcchResult as DWORD ptr, byval dwReserved as DWORD_PTR) as HRESULT
 #endif
 
 declare function CoInternetCombineUrl(byval pwzBaseUrl as LPCWSTR, byval pwzRelativeUrl as LPCWSTR, byval dwCombineFlags as DWORD, byval pszResult as LPWSTR, byval cchResult as DWORD, byval pcchResult as DWORD ptr, byval dwReserved as DWORD) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function CoInternetCombineUrlEx(byval pBaseUri as IUri ptr, byval pwzRelativeUrl as LPCWSTR, byval dwCombineFlags as DWORD, byval ppCombinedUri as IUri ptr ptr, byval dwReserved as DWORD_PTR) as HRESULT
 	declare function CoInternetCombineIUri(byval pBaseUri as IUri ptr, byval pRelativeUri as IUri ptr, byval dwCombineFlags as DWORD, byval ppCombinedUri as IUri ptr ptr, byval dwReserved as DWORD_PTR) as HRESULT
 #endif
@@ -2288,7 +2288,7 @@ declare function CoInternetGetSession(byval dwSessionMode as DWORD, byval ppIInt
 declare function CoInternetGetSecurityUrl(byval pwszUrl as LPCWSTR, byval ppwszSecUrl as LPWSTR ptr, byval psuAction as PSUACTION, byval dwReserved as DWORD) as HRESULT
 declare function AsyncInstallDistributionUnit(byval szDistUnit as LPCWSTR, byval szTYPE as LPCWSTR, byval szExt as LPCWSTR, byval dwFileVersionMS as DWORD, byval dwFileVersionLS as DWORD, byval szURL as LPCWSTR, byval pbc as IBindCtx ptr, byval pvReserved as LPVOID, byval flags as DWORD) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function CoInternetGetSecurityUrlEx(byval pUri as IUri ptr, byval ppSecUri as IUri ptr ptr, byval psuAction as PSUACTION, byval dwReserved as DWORD_PTR) as HRESULT
 	#define _INTERNETFEATURELIST_DEFINED
 
@@ -2363,7 +2363,7 @@ declare sub ReleaseBindInfo(byval pbindinfo as BINDINFO ptr)
 declare function OInetParseUrl alias "CoInternetParseUrl"(byval pwzUrl as LPCWSTR, byval ParseAction as PARSEACTION, byval dwFlags as DWORD, byval pszResult as LPWSTR, byval cchResult as DWORD, byval pcchResult as DWORD ptr, byval dwReserved as DWORD) as HRESULT
 declare function OInetCombineUrl alias "CoInternetCombineUrl"(byval pwzBaseUrl as LPCWSTR, byval pwzRelativeUrl as LPCWSTR, byval dwCombineFlags as DWORD, byval pszResult as LPWSTR, byval cchResult as DWORD, byval pcchResult as DWORD ptr, byval dwReserved as DWORD) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function OInetCombineUrlEx alias "CoInternetCombineUrlEx"(byval pBaseUri as IUri ptr, byval pwzRelativeUrl as LPCWSTR, byval dwCombineFlags as DWORD, byval ppCombinedUri as IUri ptr ptr, byval dwReserved as DWORD_PTR) as HRESULT
 	declare function OInetCombineIUri alias "CoInternetCombineIUri"(byval pBaseUri as IUri ptr, byval pRelativeUri as IUri ptr, byval dwCombineFlags as DWORD, byval ppCombinedUri as IUri ptr ptr, byval dwReserved as DWORD_PTR) as HRESULT
 #endif
@@ -2383,7 +2383,7 @@ declare function CoInternetCreateZoneManager(byval pSP as IServiceProvider ptr, 
 extern CLSID_InternetSecurityManager as const IID
 extern CLSID_InternetZoneManager as const IID
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	extern CLSID_PersistentZoneIdentifier as const IID
 #endif
 
@@ -2521,7 +2521,7 @@ declare sub IInternetSecurityManager_SetZoneMapping_Stub(byval This as IRpcStubB
 declare function IInternetSecurityManager_GetZoneMappings_Proxy(byval This as IInternetSecurityManager ptr, byval dwZone as DWORD, byval ppenumString as IEnumString ptr ptr, byval dwFlags as DWORD) as HRESULT
 declare sub IInternetSecurityManager_GetZoneMappings_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define _LPINTERNETSECURITYMANANGEREX_DEFINED
 	#define __IInternetSecurityManagerEx_INTERFACE_DEFINED__
 	extern IID_IInternetSecurityManagerEx as const GUID
@@ -2741,7 +2741,7 @@ const URLACTION_SHELL_VERB = &h1804
 const URLACTION_SHELL_WEBVIEW_VERB = &h1805
 const URLACTION_SHELL_SHELLEXECUTE = &h1806
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const URLACTION_SHELL_EXECUTE_HIGHRISK = &h1806
 	const URLACTION_SHELL_EXECUTE_MODRISK = &h1807
 	const URLACTION_SHELL_EXECUTE_LOWRISK = &h1808
@@ -2750,6 +2750,9 @@ const URLACTION_SHELL_SHELLEXECUTE = &h1806
 	const URLACTION_SHELL_ENHANCED_DRAGDROP_SECURITY = &h180B
 	const URLACTION_SHELL_EXTENSIONSECURITY = &h180C
 	const URLACTION_SHELL_SECURE_DRAGSOURCE = &h180D
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	const URLACTION_SHELL_REMOTEQUERY = &h180E
 	const URLACTION_SHELL_PREVIEW = &h180F
 	const URLACTION_SHELL_SHARE = &h1810
@@ -2802,8 +2805,11 @@ const URLPOLICY_CHANNEL_SOFTDIST_PRECACHE = &h20000
 const URLPOLICY_CHANNEL_SOFTDIST_AUTOINSTALL = &h30000
 const URLACTION_CHANNEL_SOFTDIST_MAX = &h1Eff
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const URLACTION_DOTNET_USERCONTROLS = &h2005
+#endif
+
+#if _WIN32_WINNT >= &h0600
 	const URLACTION_BEHAVIOR_MIN = &h2000
 	const URLACTION_BEHAVIOR_RUN = &h2000
 	const URLPOLICY_BEHAVIOR_CHECK_LIST = &h10000
@@ -2852,7 +2858,7 @@ const URLPOLICY_MASK_PERMISSIONS = &h0f
 #define SetUrlPolicyPermissions(dw, dw2) scope : (dw) = ((dw) and (not URLPOLICY_MASK_PERMISSIONS)) or (dw2) : end scope
 const URLPOLICY_DONTCHECKDLGBOX = &h100
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	extern GUID_CUSTOM_LOCALMACHINEZONEUNLOCKED as const GUID
 #endif
 
@@ -3001,7 +3007,7 @@ declare sub IInternetZoneManager_DestroyZoneEnumerator_Stub(byval This as IRpcSt
 declare function IInternetZoneManager_CopyTemplatePoliciesToZone_Proxy(byval This as IInternetZoneManager ptr, byval dwTemplate as DWORD, byval dwZone as DWORD, byval dwReserved as DWORD) as HRESULT
 declare sub IInternetZoneManager_CopyTemplatePoliciesToZone_Stub(byval This as IRpcStubBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr, byval pRpcMessage as PRPC_MESSAGE, byval pdwStubPhase as DWORD ptr)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define _LPINTERNETZONEMANAGEREX_DEFINED
 	#define __IInternetZoneManagerEx_INTERFACE_DEFINED__
 	extern IID_IInternetZoneManagerEx as const GUID

@@ -588,7 +588,7 @@ declare function StartServiceW(byval hService as SC_HANDLE, byval dwNumServiceAr
 
 declare function UnlockServiceDatabase(byval ScLock as SC_LOCK) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type PFN_SC_NOTIFY_CALLBACK as sub(byval pParameter as PVOID)
 
 	type _SERVICE_CONTROL_STATUS_REASON_PARAMSA
@@ -610,15 +610,15 @@ declare function UnlockServiceDatabase(byval ScLock as SC_LOCK) as WINBOOL
 	type PSERVICE_CONTROL_STATUS_REASON_PARAMSW as _SERVICE_CONTROL_STATUS_REASON_PARAMSW ptr
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	type SERVICE_CONTROL_STATUS_REASON_PARAMS as SERVICE_CONTROL_STATUS_REASON_PARAMSW
 	type PSERVICE_CONTROL_STATUS_REASON_PARAMS as PSERVICE_CONTROL_STATUS_REASON_PARAMSW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	type SERVICE_CONTROL_STATUS_REASON_PARAMS as SERVICE_CONTROL_STATUS_REASON_PARAMSA
 	type PSERVICE_CONTROL_STATUS_REASON_PARAMS as PSERVICE_CONTROL_STATUS_REASON_PARAMSA
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SERVICE_STOP_REASON_FLAG_CUSTOM = &h20000000
 	const SERVICE_STOP_REASON_FLAG_PLANNED = &h40000000
 	const SERVICE_STOP_REASON_FLAG_UNPLANNED = &h10000000
@@ -679,15 +679,15 @@ declare function UnlockServiceDatabase(byval ScLock as SC_LOCK) as WINBOOL
 	type PSERVICE_NOTIFYW as _SERVICE_NOTIFYW ptr
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	type SERVICE_NOTIFY as SERVICE_NOTIFYW
 	type PSERVICE_NOTIFY as PSERVICE_NOTIFYW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	type SERVICE_NOTIFY as SERVICE_NOTIFYA
 	type PSERVICE_NOTIFY as PSERVICE_NOTIFYA
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SERVICE_CONFIG_DELAYED_AUTO_START_INFO = 3
 	const SERVICE_CONFIG_FAILURE_ACTIONS_FLAG = 4
 	const SERVICE_CONFIG_SERVICE_SID_INFO = 5
@@ -730,13 +730,13 @@ declare function UnlockServiceDatabase(byval ScLock as SC_LOCK) as WINBOOL
 	type LPSERVICE_REQUIRED_PRIVILEGES_INFOW as _SERVICE_REQUIRED_PRIVILEGES_INFOW ptr
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	type SERVICE_REQUIRED_PRIVILEGES_INFO as SERVICE_REQUIRED_PRIVILEGES_INFOW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	type SERVICE_REQUIRED_PRIVILEGES_INFO as SERVICE_REQUIRED_PRIVILEGES_INFOA
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SERVICE_SID_TYPE_NONE = &h00000000
 	const SERVICE_SID_TYPE_RESTRICTED = &h00000003
 	const SERVICE_SID_TYPE_UNRESTRICTED = &h00000001
@@ -751,25 +751,25 @@ declare function UnlockServiceDatabase(byval ScLock as SC_LOCK) as WINBOOL
 	declare function ControlServiceExW(byval hService as SC_HANDLE, byval dwControl as DWORD, byval dwInfoLevel as DWORD, byval pControlParams as PVOID) as WINBOOL
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function ControlServiceEx alias "ControlServiceExW"(byval hService as SC_HANDLE, byval dwControl as DWORD, byval dwInfoLevel as DWORD, byval pControlParams as PVOID) as WINBOOL
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function ControlServiceEx alias "ControlServiceExA"(byval hService as SC_HANDLE, byval dwControl as DWORD, byval dwInfoLevel as DWORD, byval pControlParams as PVOID) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function NotifyServiceStatusChangeA(byval hService as SC_HANDLE, byval dwNotifyMask as DWORD, byval pNotifyBuffer as PSERVICE_NOTIFYA) as DWORD
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function NotifyServiceStatusChange alias "NotifyServiceStatusChangeA"(byval hService as SC_HANDLE, byval dwNotifyMask as DWORD, byval pNotifyBuffer as PSERVICE_NOTIFYA) as DWORD
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function NotifyServiceStatusChangeW(byval hService as SC_HANDLE, byval dwNotifyMask as DWORD, byval pNotifyBuffer as PSERVICE_NOTIFYW) as DWORD
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function NotifyServiceStatusChange alias "NotifyServiceStatusChangeW"(byval hService as SC_HANDLE, byval dwNotifyMask as DWORD, byval pNotifyBuffer as PSERVICE_NOTIFYW) as DWORD
 #endif
 

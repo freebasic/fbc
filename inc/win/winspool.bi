@@ -2321,7 +2321,7 @@ const JOB_EXECUTE = STANDARD_RIGHTS_EXECUTE or JOB_ACCESS_ADMINISTER
 #define SPLDS_PRINTER_LOCATIONS __TEXT("printerLocations")
 #define SPLDS_PRINTER_MODEL __TEXT("printerModel")
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const PRINTER_CONNECTION_MISMATCH = &h00000020
 	const PRINTER_CONNECTION_NO_UI = &h00000040
 
@@ -2368,51 +2368,51 @@ const JOB_EXECUTE = STANDARD_RIGHTS_EXECUTE or JOB_ACCESS_ADMINISTER
 	declare function AddPrinterConnection2W cdecl(byval hWnd as HWND, byval pszName as LPCWSTR, byval dwLevel as DWORD, byval pConnectionInfo as PVOID) as WINBOOL
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function AddPrinterConnection2 cdecl alias "AddPrinterConnection2W"(byval hWnd as HWND, byval pszName as LPCWSTR, byval dwLevel as DWORD, byval pConnectionInfo as PVOID) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function AddPrinterConnection2A cdecl(byval hWnd as HWND, byval pszName as LPCSTR, byval dwLevel as DWORD, byval pConnectionInfo as PVOID) as WINBOOL
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function AddPrinterConnection2 cdecl alias "AddPrinterConnection2A"(byval hWnd as HWND, byval pszName as LPCSTR, byval dwLevel as DWORD, byval pConnectionInfo as PVOID) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function DeletePrinterDriverPackageA(byval pszServer as LPCSTR, byval pszInfPath as LPCSTR, byval pszEnvironment as LPCSTR) as HRESULT
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function DeletePrinterDriverPackage alias "DeletePrinterDriverPackageA"(byval pszServer as LPCSTR, byval pszInfPath as LPCSTR, byval pszEnvironment as LPCSTR) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function DeletePrinterDriverPackageW(byval pszServer as LPCWSTR, byval pszInfPath as LPCWSTR, byval pszEnvironment as LPCWSTR) as HRESULT
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function DeletePrinterDriverPackage alias "DeletePrinterDriverPackageW"(byval pszServer as LPCWSTR, byval pszInfPath as LPCWSTR, byval pszEnvironment as LPCWSTR) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function DocumentEventA cdecl(byval hPrinter as HANDLE, byval hdc as HDC, byval iEsc as INT_, byval cbIn as ULONG, byval pvIn as PVOID, byval cbOut as ULONG, byval pvOut as PVOID) as HRESULT
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function DocumentEvent cdecl alias "DocumentEventA"(byval hPrinter as HANDLE, byval hdc as HDC, byval iEsc as INT_, byval cbIn as ULONG, byval pvIn as PVOID, byval cbOut as ULONG, byval pvOut as PVOID) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function DocumentEventW cdecl(byval hPrinter as HANDLE, byval hdc as HDC, byval iEsc as INT_, byval cbIn as ULONG, byval pvIn as PVOID, byval cbOut as ULONG, byval pvOut as PVOID) as HRESULT
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function DocumentEvent cdecl alias "DocumentEventW"(byval hPrinter as HANDLE, byval hdc as HDC, byval iEsc as INT_, byval cbIn as ULONG, byval pvIn as PVOID, byval cbOut as ULONG, byval pvOut as PVOID) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _DRIVER_INFO_8W
 		cVersion as DWORD
 		pName as LPWSTR
@@ -2510,13 +2510,13 @@ const JOB_EXECUTE = STANDARD_RIGHTS_EXECUTE or JOB_ACCESS_ADMINISTER
 	type PFORM_INFO_2W as _FORM_INFO_2W ptr
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	type DRIVER_INFO_8 as DRIVER_INFO_8W
 	type PDRIVER_INFO_8 as PDRIVER_INFO_8W
 	type LPDRIVER_INFO_8 as LPDRIVER_INFO_8W
 	type FORM_INFO_2 as FORM_INFO_2W
 	type PFORM_INFO_2 as PFORM_INFO_2W
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	type DRIVER_INFO_8 as DRIVER_INFO_8A
 	type PDRIVER_INFO_8 as PDRIVER_INFO_8A
 	type LPDRIVER_INFO_8 as LPDRIVER_INFO_8A
@@ -2524,7 +2524,7 @@ const JOB_EXECUTE = STANDARD_RIGHTS_EXECUTE or JOB_ACCESS_ADMINISTER
 	type PFORM_INFO_2 as PFORM_INFO_2A
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _PRINTPROCESSOR_CAPS_2
 		dwLevel as DWORD
 		dwNupOptions as DWORD
@@ -2570,99 +2570,99 @@ const JOB_EXECUTE = STANDARD_RIGHTS_EXECUTE or JOB_ACCESS_ADMINISTER
 	type PPRINTER_OPTIONS as _PRINTER_OPTIONS ptr
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	type CORE_PRINTER_DRIVER as CORE_PRINTER_DRIVERW
 	type PCORE_PRINTER_DRIVER as PCORE_PRINTER_DRIVERW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	type CORE_PRINTER_DRIVER as CORE_PRINTER_DRIVERA
 	type PCORE_PRINTER_DRIVER as PCORE_PRINTER_DRIVERA
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetCorePrinterDriversA(byval pszServer as LPCSTR, byval pszEnvironment as LPCSTR, byval pszzCoreDriverDependencies as LPCSTR, byval cCorePrinterDrivers as DWORD, byval pCorePrinterDrivers as PCORE_PRINTER_DRIVERA) as HRESULT
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function GetCorePrinterDrivers alias "GetCorePrinterDriversA"(byval pszServer as LPCSTR, byval pszEnvironment as LPCSTR, byval pszzCoreDriverDependencies as LPCSTR, byval cCorePrinterDrivers as DWORD, byval pCorePrinterDrivers as PCORE_PRINTER_DRIVERA) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetCorePrinterDriversW(byval pszServer as LPCWSTR, byval pszEnvironment as LPCWSTR, byval pszzCoreDriverDependencies as LPCWSTR, byval cCorePrinterDrivers as DWORD, byval pCorePrinterDrivers as PCORE_PRINTER_DRIVERW) as HRESULT
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function GetCorePrinterDrivers alias "GetCorePrinterDriversW"(byval pszServer as LPCWSTR, byval pszEnvironment as LPCWSTR, byval pszzCoreDriverDependencies as LPCWSTR, byval cCorePrinterDrivers as DWORD, byval pCorePrinterDrivers as PCORE_PRINTER_DRIVERW) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetPrinterDriver2A(byval hWnd as HWND, byval hPrinter as HANDLE, byval pEnvironment as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function GetPrinterDriver2 alias "GetPrinterDriver2A"(byval hWnd as HWND, byval hPrinter as HANDLE, byval pEnvironment as LPSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetPrinterDriver2W(byval hWnd as HWND, byval hPrinter as HANDLE, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function GetPrinterDriver2 alias "GetPrinterDriver2W"(byval hWnd as HWND, byval hPrinter as HANDLE, byval pEnvironment as LPWSTR, byval Level as DWORD, byval pDriverInfo as LPBYTE, byval cbBuf as DWORD, byval pcbNeeded as LPDWORD) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetPrinterDriverPackagePathA(byval pszServer as LPCSTR, byval pszEnvironment as LPCSTR, byval pszLanguage as LPCSTR, byval pszPackageID as LPCSTR, byval pszDriverPackageCab as LPSTR, byval cchDriverPackageCab as DWORD, byval pcchRequiredSize as LPDWORD) as HRESULT
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function GetPrinterDriverPackagePath alias "GetPrinterDriverPackagePathA"(byval pszServer as LPCSTR, byval pszEnvironment as LPCSTR, byval pszLanguage as LPCSTR, byval pszPackageID as LPCSTR, byval pszDriverPackageCab as LPSTR, byval cchDriverPackageCab as DWORD, byval pcchRequiredSize as LPDWORD) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetPrinterDriverPackagePathW(byval pszServer as LPCWSTR, byval pszEnvironment as LPCWSTR, byval pszLanguage as LPCWSTR, byval pszPackageID as LPCWSTR, byval pszDriverPackageCab as LPWSTR, byval cchDriverPackageCab as DWORD, byval pcchRequiredSize as LPDWORD) as HRESULT
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function GetPrinterDriverPackagePath alias "GetPrinterDriverPackagePathW"(byval pszServer as LPCWSTR, byval pszEnvironment as LPCWSTR, byval pszLanguage as LPCWSTR, byval pszPackageID as LPCWSTR, byval pszDriverPackageCab as LPWSTR, byval cchDriverPackageCab as DWORD, byval pcchRequiredSize as LPDWORD) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetSpoolFileHandleA(byval hPrinter as HANDLE) as HANDLE
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function GetSpoolFileHandle alias "GetSpoolFileHandleA"(byval hPrinter as HANDLE) as HANDLE
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetSpoolFileHandleW(byval hPrinter as HANDLE) as HANDLE
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function GetSpoolFileHandle alias "GetSpoolFileHandleW"(byval hPrinter as HANDLE) as HANDLE
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function CommitSpoolData(byval hPrinter as HANDLE, byval hSpoolFile as HANDLE, byval cbCommit as DWORD) as HANDLE
 	declare function CloseSpoolFileHandle(byval hPrinter as HANDLE, byval hSpoolFile as HANDLE) as WINBOOL
 	declare function OpenPrinter2A(byval pPrinterName as LPCSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTS, byval pOptions as PPRINTER_OPTIONS) as WINBOOL
 	declare function OpenPrinter2W(byval pPrinterName as LPCWSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTS, byval pOptions as PPRINTER_OPTIONS) as WINBOOL
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function OpenPrinter2 alias "OpenPrinter2W"(byval pPrinterName as LPCWSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTS, byval pOptions as PPRINTER_OPTIONS) as WINBOOL
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function OpenPrinter2 alias "OpenPrinter2A"(byval pPrinterName as LPCSTR, byval phPrinter as LPHANDLE, byval pDefault as LPPRINTER_DEFAULTS, byval pOptions as PPRINTER_OPTIONS) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function UploadPrinterDriverPackageA(byval pszServer as LPCSTR, byval pszInfPath as LPCSTR, byval pszEnvironment as LPCSTR, byval dwFlags as DWORD, byval hwnd as HWND, byval pszDestInfPath as LPSTR, byval pcchDestInfPath as PULONG) as HRESULT
 	declare function UploadPrinterDriverPackageW(byval pszServer as LPCWSTR, byval pszInfPath as LPCWSTR, byval pszEnvironment as LPCWSTR, byval dwFlags as DWORD, byval hwnd as HWND, byval pszDestInfPath as LPWSTR, byval pcchDestInfPath as PULONG) as HRESULT
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function UploadPrinterDriverPackage alias "UploadPrinterDriverPackageW"(byval pszServer as LPCWSTR, byval pszInfPath as LPCWSTR, byval pszEnvironment as LPCWSTR, byval dwFlags as DWORD, byval hwnd as HWND, byval pszDestInfPath as LPWSTR, byval pcchDestInfPath as PULONG) as HRESULT
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function UploadPrinterDriverPackage alias "UploadPrinterDriverPackageA"(byval pszServer as LPCSTR, byval pszInfPath as LPCSTR, byval pszEnvironment as LPCSTR, byval dwFlags as DWORD, byval hwnd as HWND, byval pszDestInfPath as LPSTR, byval pcchDestInfPath as PULONG) as HRESULT
 #endif
 

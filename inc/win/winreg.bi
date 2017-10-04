@@ -487,132 +487,132 @@ declare function RegSaveKeyExW(byval hKey as HKEY, byval lpFile as LPCWSTR, byva
 
 declare function Wow64Win32ApiEntry(byval dwFuncNumber as DWORD, byval dwFlag as DWORD, byval dwRes as DWORD) as LONG
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegCopyTreeA(byval hKeySrc as HKEY, byval lpSubKey as LPCSTR, byval hKeyDest as HKEY) as LONG
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function RegCopyTree alias "RegCopyTreeA"(byval hKeySrc as HKEY, byval lpSubKey as LPCSTR, byval hKeyDest as HKEY) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegCopyTreeW(byval hKeySrc as HKEY, byval lpSubKey as LPCWSTR, byval hKeyDest as HKEY) as LONG
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function RegCopyTree alias "RegCopyTreeW"(byval hKeySrc as HKEY, byval lpSubKey as LPCWSTR, byval hKeyDest as HKEY) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegCreateKeyTransactedA(byval hKey as HKEY, byval lpSubKey as LPCSTR, byval Reserved as DWORD, byval lpClass as LPSTR, byval dwOptions as DWORD, byval samDesired as REGSAM, byval lpSecurityAttributes as const LPSECURITY_ATTRIBUTES, byval phkResult as PHKEY, byval lpdwDisposition as LPDWORD, byval hTransaction as HANDLE, byval pExtendedParemeter as PVOID) as LONG
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function RegCreateKeyTransacted alias "RegCreateKeyTransactedA"(byval hKey as HKEY, byval lpSubKey as LPCSTR, byval Reserved as DWORD, byval lpClass as LPSTR, byval dwOptions as DWORD, byval samDesired as REGSAM, byval lpSecurityAttributes as const LPSECURITY_ATTRIBUTES, byval phkResult as PHKEY, byval lpdwDisposition as LPDWORD, byval hTransaction as HANDLE, byval pExtendedParemeter as PVOID) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegCreateKeyTransactedW(byval hKey as HKEY, byval lpSubKey as LPCWSTR, byval Reserved as DWORD, byval lpClass as LPWSTR, byval dwOptions as DWORD, byval samDesired as REGSAM, byval lpSecurityAttributes as const LPSECURITY_ATTRIBUTES, byval phkResult as PHKEY, byval lpdwDisposition as LPDWORD, byval hTransaction as HANDLE, byval pExtendedParemeter as PVOID) as LONG
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function RegCreateKeyTransacted alias "RegCreateKeyTransactedW"(byval hKey as HKEY, byval lpSubKey as LPCWSTR, byval Reserved as DWORD, byval lpClass as LPWSTR, byval dwOptions as DWORD, byval samDesired as REGSAM, byval lpSecurityAttributes as const LPSECURITY_ATTRIBUTES, byval phkResult as PHKEY, byval lpdwDisposition as LPDWORD, byval hTransaction as HANDLE, byval pExtendedParemeter as PVOID) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegDeleteKeyTransactedA(byval hKey as HKEY, byval lpSubKey as LPCSTR, byval samDesired as REGSAM, byval Reserved as DWORD, byval hTransaction as HANDLE, byval pExtendedParameter as PVOID) as LONG
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function RegDeleteKeyTransacted alias "RegDeleteKeyTransactedA"(byval hKey as HKEY, byval lpSubKey as LPCSTR, byval samDesired as REGSAM, byval Reserved as DWORD, byval hTransaction as HANDLE, byval pExtendedParameter as PVOID) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegDeleteKeyTransactedW(byval hKey as HKEY, byval lpSubKey as LPCWSTR, byval samDesired as REGSAM, byval Reserved as DWORD, byval hTransaction as HANDLE, byval pExtendedParameter as PVOID) as LONG
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function RegDeleteKeyTransacted alias "RegDeleteKeyTransactedW"(byval hKey as HKEY, byval lpSubKey as LPCWSTR, byval samDesired as REGSAM, byval Reserved as DWORD, byval hTransaction as HANDLE, byval pExtendedParameter as PVOID) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegDeleteKeyValueA(byval hKey as HKEY, byval lpSubKey as LPCSTR, byval lpValueName as LPCSTR) as LONG
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function RegDeleteKeyValue alias "RegDeleteKeyValueA"(byval hKey as HKEY, byval lpSubKey as LPCSTR, byval lpValueName as LPCSTR) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegDeleteKeyValueW(byval hKey as HKEY, byval lpSubKey as LPCWSTR, byval lpValueName as LPCWSTR) as LONG
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function RegDeleteKeyValue alias "RegDeleteKeyValueW"(byval hKey as HKEY, byval lpSubKey as LPCWSTR, byval lpValueName as LPCWSTR) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegDeleteTreeA(byval hKey as HKEY, byval lpSubKey as LPCSTR) as LONG
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function RegDeleteTree alias "RegDeleteTreeA"(byval hKey as HKEY, byval lpSubKey as LPCSTR) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegDeleteTreeW(byval hKey as HKEY, byval lpSubKey as LPCWSTR) as LONG
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function RegDeleteTree alias "RegDeleteTreeW"(byval hKey as HKEY, byval lpSubKey as LPCWSTR) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegDisablePredefinedCacheEx() as LONG
 	declare function RegLoadAppKeyA(byval lpFile as LPCSTR, byval phkResult as PHKEY, byval samDesired as REGSAM, byval dwOptions as DWORD, byval Reserved as DWORD) as LONG
 	declare function RegLoadAppKeyW(byval lpFile as LPCWSTR, byval phkResult as PHKEY, byval samDesired as REGSAM, byval dwOptions as DWORD, byval Reserved as DWORD) as LONG
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function RegLoadAppKey alias "RegLoadAppKeyW"(byval lpFile as LPCWSTR, byval phkResult as PHKEY, byval samDesired as REGSAM, byval dwOptions as DWORD, byval Reserved as DWORD) as LONG
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function RegLoadAppKey alias "RegLoadAppKeyA"(byval lpFile as LPCSTR, byval phkResult as PHKEY, byval samDesired as REGSAM, byval dwOptions as DWORD, byval Reserved as DWORD) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegLoadMUIStringA(byval hKey as HKEY, byval pszValue as LPCSTR, byval pszOutBuf as LPSTR, byval cbOutBuf as DWORD, byval pcbData as LPDWORD, byval Flags as DWORD, byval pszDirectory as LPCSTR) as LONG
 	declare function RegLoadMUIStringW(byval hKey as HKEY, byval pszValue as LPCWSTR, byval pszOutBuf as LPWSTR, byval cbOutBuf as DWORD, byval pcbData as LPDWORD, byval Flags as DWORD, byval pszDirectory as LPCWSTR) as LONG
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function RegLoadMUIString alias "RegLoadMUIStringW"(byval hKey as HKEY, byval pszValue as LPCWSTR, byval pszOutBuf as LPWSTR, byval cbOutBuf as DWORD, byval pcbData as LPDWORD, byval Flags as DWORD, byval pszDirectory as LPCWSTR) as LONG
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function RegLoadMUIString alias "RegLoadMUIStringA"(byval hKey as HKEY, byval pszValue as LPCSTR, byval pszOutBuf as LPSTR, byval cbOutBuf as DWORD, byval pcbData as LPDWORD, byval Flags as DWORD, byval pszDirectory as LPCSTR) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegOpenKeyTransactedA(byval hKey as HKEY, byval lpSubKey as LPCSTR, byval ulOptions as DWORD, byval samDesired as REGSAM, byval phkResult as PHKEY, byval hTransaction as HANDLE, byval pExtendedParameter as PVOID) as LONG
 	declare function RegOpenKeyTransactedW(byval hKey as HKEY, byval lpSubKey as LPCWSTR, byval ulOptions as DWORD, byval samDesired as REGSAM, byval phkResult as PHKEY, byval hTransaction as HANDLE, byval pExtendedParameter as PVOID) as LONG
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function RegOpenKeyTransacted alias "RegOpenKeyTransactedW"(byval hKey as HKEY, byval lpSubKey as LPCWSTR, byval ulOptions as DWORD, byval samDesired as REGSAM, byval phkResult as PHKEY, byval hTransaction as HANDLE, byval pExtendedParameter as PVOID) as LONG
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function RegOpenKeyTransacted alias "RegOpenKeyTransactedA"(byval hKey as HKEY, byval lpSubKey as LPCSTR, byval ulOptions as DWORD, byval samDesired as REGSAM, byval phkResult as PHKEY, byval hTransaction as HANDLE, byval pExtendedParameter as PVOID) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RegSetKeyValueA(byval hKey as HKEY, byval lpSubKey as LPCSTR, byval lpValueName as LPCSTR, byval dwType as DWORD, byval lpData as LPCVOID, byval cbData as DWORD) as LONG
 	declare function RegSetKeyValueW(byval hKey as HKEY, byval lpSubKey as LPCSTR, byval lpValueName as LPCSTR, byval dwType as DWORD, byval lpData as LPCVOID, byval cbData as DWORD) as LONG
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function RegSetKeyValue alias "RegSetKeyValueW"(byval hKey as HKEY, byval lpSubKey as LPCSTR, byval lpValueName as LPCSTR, byval dwType as DWORD, byval lpData as LPCVOID, byval cbData as DWORD) as LONG
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function RegSetKeyValue alias "RegSetKeyValueA"(byval hKey as HKEY, byval lpSubKey as LPCSTR, byval lpValueName as LPCSTR, byval dwType as DWORD, byval lpData as LPCVOID, byval cbData as DWORD) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SHUTDOWN_FORCE_OTHERS = &h00000001
 	const SHUTDOWN_FORCE_SELF = &h00000002
 	const SHUTDOWN_RESTART = &h00000004
@@ -626,9 +626,9 @@ declare function Wow64Win32ApiEntry(byval dwFuncNumber as DWORD, byval dwFlag as
 	declare function InitiateShutdownW(byval lpMachineName as LPWSTR, byval lpMessage as LPWSTR, byval dwGracePeriod as DWORD, byval dwShutdownFlags as DWORD, byval dwReason as DWORD) as DWORD
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function InitiateShutdown alias "InitiateShutdownW"(byval lpMachineName as LPWSTR, byval lpMessage as LPWSTR, byval dwGracePeriod as DWORD, byval dwShutdownFlags as DWORD, byval dwReason as DWORD) as DWORD
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function InitiateShutdown alias "InitiateShutdownA"(byval lpMachineName as LPSTR, byval lpMessage as LPSTR, byval dwGracePeriod as DWORD, byval dwShutdownFlags as DWORD, byval dwReason as DWORD) as DWORD
 #endif
 

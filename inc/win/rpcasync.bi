@@ -309,7 +309,7 @@ type RpcCallClientLocality as _RpcCallClientLocality
 declare function RpcServerSubscribeForNotification(byval Binding as RPC_BINDING_HANDLE, byval Notification as DWORD, byval NotificationType as RPC_NOTIFICATION_TYPES, byval NotificationInfo as RPC_ASYNC_NOTIFICATION_INFO ptr) as RPC_STATUS
 declare function RpcServerUnsubscribeForNotification(byval Binding as RPC_BINDING_HANDLE, byval Notification as RPC_NOTIFICATIONS, byval NotificationsQueued as ulong ptr) as RPC_STATUS
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type tagRPC_CALL_LOCAL_ADDRESS_V1_A
 		Version as ulong
 		Buffer as any ptr
@@ -331,15 +331,15 @@ declare function RpcServerUnsubscribeForNotification(byval Binding as RPC_BINDIN
 	type RPC_CALL_LOCAL_ADDRESS_W as tagRPC_CALL_LOCAL_ADDRESS_V1_W
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	type RPC_CALL_LOCAL_ADDRESS_V1 as RPC_CALL_LOCAL_ADDRESS_V1_W
 	type RPC_CALL_LOCAL_ADDRESS as RPC_CALL_LOCAL_ADDRESS_W
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	type RPC_CALL_LOCAL_ADDRESS_V1 as RPC_CALL_LOCAL_ADDRESS_V1_A
 	type RPC_CALL_LOCAL_ADDRESS as RPC_CALL_LOCAL_ADDRESS_A
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type tagRPC_CALL_ATTRIBUTES_V2A
 		Version as ulong
 		Flags as ulong
@@ -389,13 +389,13 @@ declare function RpcServerUnsubscribeForNotification(byval Binding as RPC_BINDIN
 	type RPC_CALL_ATTRIBUTES_W as tagRPC_CALL_ATTRIBUTES_V2W
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	type RPC_CALL_ATTRIBUTES_V2 as RPC_CALL_ATTRIBUTES_V2_W
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	type RPC_CALL_ATTRIBUTES_V2 as RPC_CALL_ATTRIBUTES_V2_A
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RpcDiagnoseError(byval BindingHandle as RPC_BINDING_HANDLE, byval IfSpec as RPC_IF_HANDLE, byval RpcStatus as RPC_STATUS, byval EnumHandle as RPC_ERROR_ENUM_HANDLE ptr, byval Options as ULONG, byval ParentWindow as HWND) as RPC_STATUS
 #endif
 

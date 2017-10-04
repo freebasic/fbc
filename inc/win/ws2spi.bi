@@ -324,7 +324,7 @@ type LPNSP_ROUTINE as _NSP_ROUTINE ptr
 type LPNSPSTARTUP as function(byval lpProviderId as LPGUID, byval lpnspRoutines as LPNSP_ROUTINE) as INT_
 declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as LPNSP_ROUTINE) as INT_
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type LPNSPV2CLEANUP as function(byval lpProviderId as LPGUID, byval pvClientSessionArg as LPVOID) as long
 	type LPNSPV2CLIENTSESSIONRUNDOWN as function(byval lpProviderId as LPGUID, byval pvClientSessionArg as LPVOID) as long
 	type LPNSPV2LOOKUPSERVICEBEGIN as function(byval lpProviderId as LPGUID, byval lpqsRestrictions as LPWSAQUERYSET2W, byval dwControlFlags as DWORD, byval lpvClientSessionArg as LPVOID, byval lphLookup as LPHANDLE) as long
@@ -334,7 +334,7 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 	type LPNSPV2STARTUP as function(byval lpProviderId as LPGUID, byval ppvClientSessionArg as LPVOID ptr) as long
 #endif
 
-#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0600)
 	type _NSPV2_ROUTINE field = 4
 		cbSize as DWORD
 		dwMajorVersion as DWORD
@@ -347,7 +347,7 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 		NSPv2SetServiceEx as LPNSPV2SETSERVICEEX
 		NSPv2ClientSessionRundown as LPNSPV2CLIENTSESSIONRUNDOWN
 	end type
-#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT >= &h0600)
 	type _NSPV2_ROUTINE
 		cbSize as DWORD
 		dwMajorVersion as DWORD
@@ -362,7 +362,7 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 	end type
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type NSPV2_ROUTINE as _NSPV2_ROUTINE
 	type PNSPV2_ROUTINE as _NSPV2_ROUTINE ptr
 	type LPCNSPV2_ROUTINE as _NSPV2_ROUTINE ptr
@@ -386,19 +386,19 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 	type WSC_PROVIDER_INFO_TYPE as _WSC_PROVIDER_INFO_TYPE
 #endif
 
-#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0600)
 	type _WSC_PROVIDER_AUDIT_INFO field = 4
 		RecordSize as DWORD
 		Reserved as PVOID
 	end type
-#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT >= &h0600)
 	type _WSC_PROVIDER_AUDIT_INFO
 		RecordSize as DWORD
 		Reserved as PVOID
 	end type
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type WSC_PROVIDER_AUDIT_INFO as _WSC_PROVIDER_AUDIT_INFO
 	type PWSC_PROVIDER_AUDIT_INFO as _WSC_PROVIDER_AUDIT_INFO ptr
 	declare function WSAAdvertiseProvider(byval puuidProviderId as const GUID ptr, byval pNSPv2Routine as const LPCNSPV2_ROUTINE ptr) as INT_
@@ -408,11 +408,11 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 	declare function WSCGetProviderInfo(byval lpProviderId as LPGUID, byval InfoType as WSC_PROVIDER_INFO_TYPE, byval Info as PBYTE, byval InfoSize as uinteger ptr, byval Flags as DWORD, byval lpErrno as LPINT) as long
 #endif
 
-#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0600)
 	declare function WSCInstallProviderAndChains(byval lpProviderId as const LPGUID, byval lpszProviderDllPath as const LPWSTR, byval lpszLspName as const LPWSTR, byval dwServiceFlags as DWORD, byval lpProtocolInfoList as const LPWSAPROTOCOL_INFO, byval dwNumberOfEntries as DWORD, byval lpdwCatalogEntryId as LPDWORD, byval lpErrno as LPINT) as long
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function WSCSetApplicationCategory(byval Path as LPCWSTR, byval PathLength as DWORD, byval Extra as LPCWSTR, byval ExtraLength as DWORD, byval PermittedLspCategories as DWORD, byval pPrevPermLspCat as DWORD ptr, byval lpErrno as LPINT) as long
 	declare function WSCSetProviderInfo(byval lpProviderId as LPGUID, byval InfoType as WSC_PROVIDER_INFO_TYPE, byval Info as PBYTE, byval InfoSize as uinteger, byval Flags as DWORD, byval lpErrno as LPINT) as long
 	declare function WSCInstallNameSpaceEx(byval lpszIdentifier as LPWSTR, byval lpszPathName as LPWSTR, byval dwNameSpace as DWORD, byval dwVersion as DWORD, byval lpProviderId as LPGUID, byval lpProviderInfo as LPBLOB) as long
@@ -420,7 +420,7 @@ declare function NSPStartup(byval lpProviderId as LPGUID, byval lpnspRoutines as
 	#define LPFN_WSCENUMNAMESPACEPROVIDERSEX LPFN_WSAENUMNAMESPACEPROVIDERSEXW
 #endif
 
-#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+#if defined(__FB_64BIT__) and (_WIN32_WINNT >= &h0600)
 	declare function WSCEnumNameSpaceProvidersEx32(byval lpdwBufferLength as LPDWORD, byval lpnspBuffer as LPWSANAMESPACE_INFOEXW) as INT_
 	declare function WSCGetProviderInfo32(byval lpProviderId as LPGUID, byval InfoType as WSC_PROVIDER_INFO_TYPE, byval Info as PBYTE, byval InfoSize as uinteger ptr, byval Flags as DWORD, byval lpErrno as LPINT) as long
 	declare function WSCInstallNameSpaceEx32(byval lpszIdentifier as LPWSTR, byval lpszPathName as LPWSTR, byval dwNameSpace as DWORD, byval dwVersion as DWORD, byval lpProviderId as LPGUID, byval lpProviderInfo as LPBLOB) as long

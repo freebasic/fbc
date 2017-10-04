@@ -163,7 +163,7 @@ declare function LeaveCriticalPolicySection(byval hSection as HANDLE) as WINBOOL
 declare function RegisterGPNotification(byval hEvent as HANDLE, byval bMachine as WINBOOL) as WINBOOL
 declare function UnregisterGPNotification(byval hEvent as HANDLE) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function CreateProfile(byval pszUserSid as LPCWSTR, byval pszUserName as LPCWSTR, byval pszProfilePath as LPWSTR, byval cchProfilePath as DWORD) as HRESULT
 #endif
 
@@ -358,8 +358,11 @@ const RSOP_USER_ACCESS_DENIED = &h00000001
 const RSOP_COMPUTER_ACCESS_DENIED = &h00000002
 const RSOP_TEMPNAMESPACE_EXISTS = &h00000004
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GenerateGPNotification(byval bMachine as WINBOOL, byval lpwszMgmtProduct as LPCWSTR, byval dwMgmtProductOptions as DWORD) as DWORD
+#endif
+
+#if _WIN32_WINNT = &h0602
 	declare function CreateAppContainerProfile(byval pszAppContainerName as PCWSTR, byval pszDisplayName as PCWSTR, byval pszDescription as PCWSTR, byval pCapabilities as PSID_AND_ATTRIBUTES, byval dwCapabilityCount as DWORD, byval ppSidAppContainerSid as PSID ptr) as HRESULT
 	declare function DeleteAppContainerProfile(byval pszAppContainerName as PCWSTR) as HRESULT
 	declare function GetAppContainerRegistryLocation(byval desiredAccess as REGSAM, byval phAppContainerKey as PHKEY) as HRESULT

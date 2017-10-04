@@ -7516,7 +7516,7 @@ declare sub IVPManager_SetVideoPortIndex_Stub(byval This as IRpcStubBuffer ptr, 
 declare function IVPManager_GetVideoPortIndex_Proxy(byval This as IVPManager ptr, byval pdwVideoPortIndex as DWORD ptr) as HRESULT
 declare sub IVPManager_GetVideoPortIndex_Stub(byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	type IAMAsyncReaderTimestampScalingVtbl as IAMAsyncReaderTimestampScalingVtbl_
 
 	type IAMAsyncReaderTimestampScaling

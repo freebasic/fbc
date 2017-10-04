@@ -55,7 +55,7 @@ const NS_NETBT = 13
 const NS_WINS = 14
 const NS_NLA = 15
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const NS_BTH = 16
 #endif
 
@@ -64,7 +64,7 @@ const NS_MS = 30
 const NS_STDA = 31
 const NS_NTDS = 32
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const NS_EMAIL = 37
 	const NS_PNRPNAME = 38
 	const NS_PNRPCLOUD = 39

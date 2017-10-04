@@ -582,7 +582,7 @@ type PACTRL_CONTROL_INFOW as _ACTRL_CONTROL_INFOW ptr
 const ACTRL_ACCESS_NO_OPTIONS = &h0
 const ACTRL_ACCESS_SUPPORTS_OBJECT_ENTRIES = &h1
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const TREE_SEC_INFO_SET = &h00000001
 	const TREE_SEC_INFO_RESET = &h00000002
 	const TREE_SEC_INFO_RESET_KEEP_EXPLICIT = &h00000003
@@ -596,7 +596,7 @@ enum
 	ProgressCancelOperation
 	ProgressRetryOperation
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		ProgressInvokePrePostError
 	#endif
 end enum

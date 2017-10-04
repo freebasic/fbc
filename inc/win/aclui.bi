@@ -94,11 +94,14 @@ const SI_RESET_SACL = &h00080000
 const SI_RESET_OWNER = &h00100000
 const SI_NO_ADDITIONAL_PERMISSION = &h00200000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SI_VIEW_ONLY = &h00400000
 	const SI_PERMS_ELEVATION_REQUIRED = &h01000000
 	const SI_AUDITS_ELEVATION_REQUIRED = &h02000000
 	const SI_OWNER_ELEVATION_REQUIRED = &h04000000
+#endif
+
+#if _WIN32_WINNT = &h0602
 	const SI_SCOPE_ELEVATION_REQUIRED = &h08000000
 #endif
 
@@ -143,8 +146,11 @@ enum
 	SI_PAGE_OWNER
 	SI_PAGE_EFFECTIVE
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		SI_PAGE_TAKEOWNERSHIP
+	#endif
+
+	#if _WIN32_WINNT = &h0602
 		SI_PAGE_SHARE
 	#endif
 end enum
@@ -255,7 +261,7 @@ end type
 
 type LPSecurityObjectTypeInfo as ISecurityObjectTypeInfo ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type ISecurityInformation3Vtbl as ISecurityInformation3Vtbl_
 
 	type ISecurityInformation3
@@ -271,7 +277,9 @@ type LPSecurityObjectTypeInfo as ISecurityObjectTypeInfo ptr
 	end type
 
 	type LPSECURITYINFO3 as ISecurityInformation3 ptr
+#endif
 
+#if _WIN32_WINNT = &h0602
 	type _SECURITY_OBJECT
 		pwszName as PWSTR
 		pData as PVOID
@@ -333,8 +341,11 @@ extern IID_ISecurityInformation2 as const IID
 extern IID_IEffectivePermission as const IID
 extern IID_ISecurityObjectTypeInfo as const IID
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	extern IID_ISecurityInformation3 as const IID
+#endif
+
+#if _WIN32_WINNT = &h0602
 	extern IID_ISecurityInformation4 as const IID
 	extern IID_IEffectivePermission2 as const IID
 #endif
@@ -342,7 +353,7 @@ extern IID_ISecurityObjectTypeInfo as const IID
 declare function CreateSecurityPage(byval psi as LPSECURITYINFO) as HPROPSHEETPAGE
 declare function EditSecurity(byval hwndOwner as HWND, byval psi as LPSECURITYINFO) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function EditSecurityAdvanced(byval hwndOwner as HWND, byval psi as LPSECURITYINFO, byval uSIPage as SI_PAGE_TYPE) as HRESULT
 #endif
 

@@ -598,7 +598,7 @@ const APPCOMMAND_MEDIA_REWIND = 50
 const APPCOMMAND_MEDIA_CHANNEL_UP = 51
 const APPCOMMAND_MEDIA_CHANNEL_DOWN = 52
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const APPCOMMAND_DELETE = 53
 	const APPCOMMAND_DWM_FLIP3D = 54
 #endif
@@ -917,7 +917,7 @@ const UOI_NAME = 2
 const UOI_TYPE = 3
 const UOI_USER_SID = 4
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const UOI_HEAPSIZE = 5
 	const UOI_IO = 6
 #endif
@@ -1294,7 +1294,7 @@ const WM_INITMENU = &h0116
 const WM_INITMENUPOPUP = &h0117
 const WM_MENUSELECT = &h011F
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const WM_GESTURE = &h0119
 	const WM_GESTURENOTIFY = &h011A
 #endif
@@ -1339,11 +1339,11 @@ const WM_XBUTTONDOWN = &h020B
 const WM_XBUTTONUP = &h020C
 const WM_XBUTTONDBLCLK = &h020D
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT <= &h0502
+	const WM_MOUSELAST = &h020d
+#else
 	const WM_MOUSEHWHEEL = &h020e
 	const WM_MOUSELAST = &h020e
-#else
-	const WM_MOUSELAST = &h020d
 #endif
 
 const WHEEL_DELTA = 120
@@ -1409,7 +1409,13 @@ const WM_MDIREFRESHMENU = &h0234
 	const WM_POINTERDEVICECHANGE = &h238
 	const WM_POINTERDEVICEINRANGE = &h239
 	const WM_POINTERDEVICEOUTOFRANGE = &h23a
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	const WM_TOUCH = &h0240
+#endif
+
+#if _WIN32_WINNT = &h0602
 	const WM_NCPOINTERUPDATE = &h0241
 	const WM_NCPOINTERDOWN = &h0242
 	const WM_NCPOINTERUP = &h0243
@@ -1466,13 +1472,19 @@ const WM_APPCOMMAND = &h0319
 const WM_THEMECHANGED = &h031A
 const WM_CLIPBOARDUPDATE = &h031d
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const WM_DWMCOMPOSITIONCHANGED = &h031e
 	const WM_DWMNCRENDERINGCHANGED = &h031f
 	const WM_DWMCOLORIZATIONCOLORCHANGED = &h0320
 	const WM_DWMWINDOWMAXIMIZEDCHANGE = &h0321
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	const WM_DWMSENDICONICTHUMBNAIL = &h0323
 	const WM_DWMSENDICONICLIVEPREVIEWBITMAP = &h0326
+#endif
+
+#if _WIN32_WINNT >= &h0600
 	const WM_GETTITLEBARINFOEX = &h033f
 #endif
 
@@ -1526,7 +1538,7 @@ const SMTO_BLOCK = &h0001
 const SMTO_ABORTIFHUNG = &h0002
 const SMTO_NOTIMEOUTIFNOTHUNG = &h0008
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SMTO_ERRORONEXIT = &h0020
 #endif
 
@@ -2029,7 +2041,7 @@ const MOD_CONTROL = &h0002
 const MOD_SHIFT = &h0004
 const MOD_WIN = &h0008
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const MOD_NOREPEAT = &h4000
 #endif
 
@@ -2046,7 +2058,7 @@ const EWX_POWEROFF = &h00000008
 const EWX_FORCEIFHUNG = &h00000010
 const EWX_QUICKRESOLVE = &h00000020
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const EWX_RESTARTAPPS = &h00000040
 #endif
 
@@ -2184,7 +2196,7 @@ const DEVICE_NOTIFY_ALL_INTERFACE_CLASSES = &h00000004
 	declare function UnregisterPowerSettingNotification(byval Handle as HPOWERNOTIFY) as WINBOOL
 	declare function RegisterSuspendResumeNotification(byval hRecipient as HANDLE, byval Flags as DWORD) as HPOWERNOTIFY
 	declare function UnregisterSuspendResumeNotification(byval Handle as HPOWERNOTIFY) as WINBOOL
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0400)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0501)
 	#define PostAppMessage PostAppMessageA
 #endif
 
@@ -2429,7 +2441,7 @@ declare function SetWindowPos(byval hWnd as HWND, byval hWndInsertAfter as HWND,
 declare function GetWindowPlacement(byval hWnd as HWND, byval lpwndpl as WINDOWPLACEMENT ptr) as WINBOOL
 declare function SetWindowPlacement(byval hWnd as HWND, byval lpwndpl as const WINDOWPLACEMENT ptr) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const WDA_NONE = &h00000000
 	const WDA_MONITOR = &h00000001
 	declare function GetWindowDisplayAffinity(byval hWnd as HWND, byval pdwAffinity as DWORD ptr) as WINBOOL
@@ -2698,7 +2710,7 @@ declare function IsClipboardFormatAvailable(byval format as UINT) as WINBOOL
 declare function GetPriorityClipboardFormat(byval paFormatPriorityList as UINT ptr, byval cFormats as long) as long
 declare function GetOpenClipboardWindow() as HWND
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function AddClipboardFormatListener(byval hwnd as HWND) as WINBOOL
 	declare function RemoveClipboardFormatListener(byval hwnd as HWND) as WINBOOL
 	declare function GetUpdatedClipboardFormats(byval lpuiFormats as PUINT, byval cFormats as UINT, byval pcFormatsOut as PUINT) as WINBOOL
@@ -2949,7 +2961,7 @@ const MOUSEEVENTF_XDOWN = &h0080
 const MOUSEEVENTF_XUP = &h0100
 const MOUSEEVENTF_WHEEL = &h0800
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const MOUSEEVENTF_HWHEEL = &h01000
 	const MOUSEEVENTF_MOVE_NOCOALESCE = &h2000
 #endif
@@ -2960,7 +2972,7 @@ const INPUT_MOUSE = 0
 const INPUT_KEYBOARD = 1
 const INPUT_HARDWARE = 2
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	#define TOUCH_COORD_TO_PIXEL(l) ((l) / 100)
 	const TOUCHEVENTF_MOVE = &h0001
 	const TOUCHEVENTF_DOWN = &h0002
@@ -2975,6 +2987,9 @@ const INPUT_HARDWARE = 2
 	const TOUCHINPUTMASKF_CONTACTAREA = &h0004
 	const TWF_FINETOUCH = &h00000001
 	const TWF_WANTPALM = &h00000002
+#endif
+
+#if _WIN32_WINNT = &h0602
 	const POINTER_FLAG_NONE = &h00000000
 	const POINTER_FLAG_NEW = &h00000001
 	const POINTER_FLAG_INRANGE = &h00000002
@@ -3099,7 +3114,7 @@ type PINPUT as tagINPUT ptr
 type LPINPUT as tagINPUT ptr
 declare function SendInput(byval cInputs as UINT, byval pInputs as LPINPUT, byval cbSize as long) as UINT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	type HTOUCHINPUT__
 		unused as long
 	end type
@@ -3128,7 +3143,9 @@ declare function SendInput(byval cInputs as UINT, byval pInputs as LPINPUT, byva
 	declare function RegisterTouchWindow(byval hwnd as HWND, byval ulFlags as ULONG) as WINBOOL
 	declare function UnregisterTouchWindow(byval hwnd as HWND) as WINBOOL
 	declare function IsTouchWindow(byval hwnd as HWND, byval pulFlags as PULONG) as WINBOOL
+#endif
 
+#if _WIN32_WINNT = &h0602
 	type POINTER_INPUT_TYPE as DWORD
 	type POINTER_FLAGS as UINT32
 	type TOUCH_FLAGS as UINT32
@@ -3316,7 +3333,7 @@ const MAPVK_VSC_TO_VK = 1
 const MAPVK_VK_TO_CHAR = 2
 const MAPVK_VSC_TO_VK_EX = 3
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const MAPVK_VK_TO_VSC_EX = 4
 #endif
 
@@ -3352,7 +3369,7 @@ const QS_ALLINPUT = ((((QS_INPUT or QS_POSTMESSAGE) or QS_TIMER) or QS_PAINT) or
 const USER_TIMER_MAXIMUM = &h7FFFFFFF
 const USER_TIMER_MINIMUM = &h0000000A
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const TIMERV_DEFAULT_COALESCING = 0
 	const TIMERV_NO_COALESCING = &hffffffff
 	const TIMERV_COALESCING_MIN = 1
@@ -3413,7 +3430,7 @@ declare function TranslateAcceleratorW(byval hWnd as HWND, byval hAccTable as HA
 	declare function TranslateAccelerator alias "TranslateAcceleratorW"(byval hWnd as HWND, byval hAccTable as HACCEL, byval lpMsg as LPMSG) as long
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	declare function SetCoalescableTimer(byval hWnd as HWND, byval nIDEvent as UINT_PTR, byval uElapse as UINT, byval lpTimerFunc as TIMERPROC, byval uToleranceDelay as ULONG) as UINT_PTR
 #endif
 
@@ -3508,16 +3525,23 @@ const SM_MEDIACENTER = 87
 const SM_STARTER = 88
 const SM_SERVERR2 = 89
 
-#if _WIN32_WINNT = &h0400
+#if _WIN32_WINNT <= &h0501
 	const SM_CMETRICS = 91
-#elseif _WIN32_WINNT = &h0602
+#elseif (not defined(__FB_64BIT__)) and defined(UNICODE) and (_WIN32_WINNT = &h0502)
+	const SM_CMETRICS = 97
+#elseif _WIN32_WINNT >= &h0600
 	const SM_MOUSEHORIZONTALWHEELPRESENT = 91
 	const SM_CXPADDEDBORDER = 92
+#endif
+
+#if _WIN32_WINNT = &h0600
+	const SM_CMETRICS = 93
+#elseif _WIN32_WINNT >= &h0601
 	const SM_DIGITIZER = 94
 	const SM_MAXIMUMTOUCHES = 95
 #endif
 
-#if _WIN32_WINNT >= &h0502
+#if ((not defined(UNICODE)) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT >= &h0601))) or (defined(UNICODE) and ((defined(__FB_64BIT__) and ((_WIN32_WINNT = &h0502) or (_WIN32_WINNT >= &h0601))) or ((not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0601))))
 	const SM_CMETRICS = 97
 #endif
 
@@ -3706,7 +3730,7 @@ declare function GetMenuInfo(byval as HMENU, byval as LPMENUINFO) as WINBOOL
 declare function SetMenuInfo(byval as HMENU, byval as LPCMENUINFO) as WINBOOL
 declare function EndMenu() as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	declare function CalculatePopupWindowPosition(byval anchorPoint as const POINT ptr, byval windowSize as const SIZE ptr, byval flags as UINT, byval excludeRect as RECT ptr, byval popupWindowPosition as RECT ptr) as WINBOOL
 #endif
 
@@ -3837,7 +3861,7 @@ const TPM_VERNEGANIMATION = &h2000
 const TPM_NOANIMATION = &h4000
 const TPM_LAYOUTRTL = &h8000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const TPM_WORKAREA = &h10000
 #endif
 
@@ -4329,7 +4353,7 @@ declare function WindowFromPoint(byval Point as POINT) as HWND
 declare function ChildWindowFromPoint(byval hWndParent as HWND, byval Point as POINT) as HWND
 declare function ChildWindowFromPointEx(byval hwnd as HWND, byval pt as POINT, byval flags as UINT) as HWND
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function SetPhysicalCursorPos(byval X as long, byval Y as long) as WINBOOL
 	declare function GetPhysicalCursorPos(byval lpPoint as LPPOINT) as WINBOOL
 	declare function LogicalToPhysicalPoint(byval hWnd as HWND, byval lpPoint as LPPOINT) as WINBOOL
@@ -4736,7 +4760,7 @@ const SC_MONITORPOWER = &hF170
 const SC_CONTEXTHELP = &hF180
 const SC_SEPARATOR = &hF00F
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SCF_ISSECURE = &h00000001
 #endif
 
@@ -4888,7 +4912,7 @@ declare function CreateIconIndirect(byval piconinfo as PICONINFO) as HICON
 declare function CopyIcon(byval hIcon as HICON) as HICON
 declare function GetIconInfo(byval hIcon as HICON, byval piconinfo as PICONINFO) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _ICONINFOEXA
 		cbSize as DWORD
 		fIcon as WINBOOL
@@ -4920,27 +4944,27 @@ declare function GetIconInfo(byval hIcon as HICON, byval piconinfo as PICONINFO)
 	type PICONINFOEXW as _ICONINFOEXW ptr
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	type ICONINFOEX as ICONINFOEXW
 	type PICONINFOEX as PICONINFOEXW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	type ICONINFOEX as ICONINFOEXA
 	type PICONINFOEX as PICONINFOEXA
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetIconInfoExA(byval hicon as HICON, byval piconinfo as PICONINFOEXA) as WINBOOL
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function GetIconInfoEx alias "GetIconInfoExA"(byval hicon as HICON, byval piconinfo as PICONINFOEXA) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetIconInfoExW(byval hicon as HICON, byval piconinfo as PICONINFOEXW) as WINBOOL
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function GetIconInfoEx alias "GetIconInfoExW"(byval hicon as HICON, byval piconinfo as PICONINFOEXW) as WINBOOL
 #endif
 
@@ -5012,7 +5036,7 @@ const OIC_WARNING = OIC_BANG
 const OIC_ERROR = OIC_HAND
 const OIC_INFORMATION = OIC_NOTE
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const OIC_SHIELD = 32518
 #endif
 
@@ -5024,7 +5048,7 @@ const ORD_LANGDRIVER = 1
 #define IDI_ASTERISK MAKEINTRESOURCE(32516)
 #define IDI_WINLOGO MAKEINTRESOURCE(32517)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define IDI_SHIELD MAKEINTRESOURCE(32518)
 #endif
 
@@ -5164,7 +5188,7 @@ const BM_CLICK = &h00F5
 const BM_GETIMAGE = &h00F6
 const BM_SETIMAGE = &h00F7
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const BM_SETDONTCLICK = &h00f8
 #endif
 
@@ -5705,7 +5729,7 @@ const IDH_HELP = 28445
 const GR_GDIOBJECTS = 0
 const GR_USEROBJECTS = 1
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const GR_GDIOBJECTS_PEAK = 2
 	const GR_USEROBJECTS_PEAK = 4
 	const GR_GLOBAL = cast(HANDLE, -2)
@@ -5816,7 +5840,7 @@ const SPI_SETWHEELSCROLLLINES = &h0069
 const SPI_GETMENUSHOWDELAY = &h006A
 const SPI_SETMENUSHOWDELAY = &h006B
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SPI_GETWHEELSCROLLCHARS = &h006C
 	const SPI_SETWHEELSCROLLCHARS = &h006D
 #endif
@@ -5828,11 +5852,14 @@ const SPI_SETMOUSESPEED = &h0071
 const SPI_GETSCREENSAVERRUNNING = &h0072
 const SPI_GETDESKWALLPAPER = &h0073
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SPI_GETAUDIODESCRIPTION = &h0074
 	const SPI_SETAUDIODESCRIPTION = &h0075
 	const SPI_GETSCREENSAVESECURE = &h0076
 	const SPI_SETSCREENSAVESECURE = &h0077
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	const SPI_GETHUNGAPPTIMEOUT = &h0078
 	const SPI_SETHUNGAPPTIMEOUT = &h0079
 	const SPI_GETWAITTOKILLTIMEOUT = &h007a
@@ -5859,6 +5886,9 @@ const SPI_GETDESKWALLPAPER = &h0073
 	const SPI_SETSNAPSIZING = &h008f
 	const SPI_GETDOCKMOVING = &h0090
 	const SPI_SETDOCKMOVING = &h0091
+#endif
+
+#if _WIN32_WINNT = &h0602
 	const SPI_GETTOUCHPREDICTIONPARAMETERS = &h009c
 	const SPI_SETTOUCHPREDICTIONPARAMETERS = &h009d
 	const SPI_GETLOGICALDPIOVERRIDE = &h009e
@@ -5912,7 +5942,7 @@ const SPI_SETBLOCKSENDINPUTRESETS = &h1027
 const SPI_GETUIEFFECTS = &h103E
 const SPI_SETUIEFFECTS = &h103F
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SPI_GETDISABLEOVERLAPPEDCONTENT = &h1040
 	const SPI_SETDISABLEOVERLAPPEDCONTENT = &h1041
 	const SPI_GETCLIENTAREAANIMATION = &h1042
@@ -5921,6 +5951,9 @@ const SPI_SETUIEFFECTS = &h103F
 	const SPI_SETCLEARTYPE = &h1049
 	const SPI_GETSPEECHRECOGNITION = &h104a
 	const SPI_SETSPEECHRECOGNITION = &h104b
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	const SPI_GETCARETBROWSING = &h104c
 	const SPI_SETCARETBROWSING = &h104d
 	const SPI_GETTHREADLOCALINPUTSETTINGS = &h104e
@@ -5953,11 +5986,14 @@ const SPI_SETFOCUSBORDERHEIGHT = &h2011
 const SPI_GETFONTSMOOTHINGORIENTATION = &h2012
 const SPI_SETFONTSMOOTHINGORIENTATION = &h2013
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SPI_GETMINIMUMHITRADIUS = &h2014
 	const SPI_SETMINIMUMHITRADIUS = &h2015
 	const SPI_GETMESSAGEDURATION = &h2016
 	const SPI_SETMESSAGEDURATION = &h2017
+#endif
+
+#if _WIN32_WINNT = &h0602
 	const SPI_GETCONTACTVISUALIZATION = &h2018
 	const SPI_SETCONTACTVISUALIZATION = &h2019
 	const SPI_GETGESTUREVISUALIZATION = &h201a
@@ -6019,7 +6055,7 @@ type tagNONCLIENTMETRICSA
 	lfStatusFont as LOGFONTA
 	lfMessageFont as LOGFONTA
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		iPaddedBorderWidth as long
 	#endif
 end type
@@ -6045,7 +6081,7 @@ type tagNONCLIENTMETRICSW
 	lfStatusFont as LOGFONTW
 	lfMessageFont as LOGFONTW
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		iPaddedBorderWidth as long
 	#endif
 end type
@@ -6210,7 +6246,7 @@ const CDS_GLOBAL = &h00000008
 const CDS_SET_PRIMARY = &h00000010
 const CDS_VIDEOPARAMETERS = &h00000020
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const CDS_ENABLE_UNSAFE_MODES = &h00000100
 	const CDS_DISABLE_UNSAFE_MODES = &h00000200
 #endif
@@ -6361,7 +6397,7 @@ declare function EnumDisplayDevicesW(byval lpDevice as LPCWSTR, byval iDevNum as
 
 const EDD_GET_DEVICE_INTERFACE_NAME = &h00000001
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	declare function GetDisplayConfigBufferSizes(byval flags as UINT32, byval numPathArrayElements as UINT32 ptr, byval numModeInfoArrayElements as UINT32 ptr) as LONG
 	declare function SetDisplayConfig(byval numPathArrayElements as UINT32, byval pathArray as DISPLAYCONFIG_PATH_INFO ptr, byval numModeInfoArrayElements as UINT32, byval modeInfoArray as DISPLAYCONFIG_MODE_INFO ptr, byval flags as UINT32) as LONG
 	declare function QueryDisplayConfig(byval flags as UINT32, byval numPathArrayElements as UINT32 ptr, byval pathArray as DISPLAYCONFIG_PATH_INFO ptr, byval numModeInfoArrayElements as UINT32 ptr, byval modeInfoArray as DISPLAYCONFIG_MODE_INFO ptr, byval currentTopologyId as DISPLAYCONFIG_TOPOLOGY_ID ptr) as LONG
@@ -6547,7 +6583,7 @@ end type
 type MONITORINFO as tagMONITORINFO
 type LPMONITORINFO as tagMONITORINFO ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type tagAUDIODESCRIPTION
 		cbSize as UINT
 		Enabled as WINBOOL
@@ -6608,7 +6644,7 @@ declare function MonitorFromRect(byval lprc as LPCRECT, byval dwFlags as DWORD) 
 declare function MonitorFromWindow(byval hwnd as HWND, byval dwFlags as DWORD) as HMONITOR
 declare function EndTask(byval hWnd as HWND, byval fShutDown as WINBOOL, byval fForce as WINBOOL) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function SoundSentry() as WINBOOL
 #endif
 
@@ -6692,13 +6728,19 @@ const EVENT_SYSTEM_SWITCHEND = &h0015
 const EVENT_SYSTEM_MINIMIZESTART = &h0016
 const EVENT_SYSTEM_MINIMIZEEND = &h0017
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const EVENT_SYSTEM_DESKTOPSWITCH = &h0020
+#endif
+
+#if _WIN32_WINNT = &h0602
 	const EVENT_SYSTEM_SWITCHER_APPGRABBED = &h0024
 	const EVENT_SYSTEM_SWITCHER_APPOVERTARGET = &h0025
 	const EVENT_SYSTEM_SWITCHER_APPDROPPED = &h0026
 	const EVENT_SYSTEM_SWITCHER_CANCELLED = &h0027
 	const EVENT_SYSTEM_IME_KEY_NOTIFICATION = &h0029
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	const EVENT_SYSTEM_END = &h00ff
 	const EVENT_OEM_DEFINED_START = &h0101
 	const EVENT_OEM_DEFINED_END = &h01ff
@@ -6725,7 +6767,7 @@ const EVENT_CONSOLE_END_APPLICATION = &h4007
 const CONSOLE_CARET_SELECTION = &h0001
 const CONSOLE_CARET_VISIBLE = &h0002
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const EVENT_CONSOLE_END = &h40ff
 #endif
 
@@ -6749,11 +6791,17 @@ const EVENT_OBJECT_HELPCHANGE = &h8010
 const EVENT_OBJECT_DEFACTIONCHANGE = &h8011
 const EVENT_OBJECT_ACCELERATORCHANGE = &h8012
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const EVENT_OBJECT_INVOKED = &h8013
 	const EVENT_OBJECT_TEXTSELECTIONCHANGED = &h8014
 	const EVENT_OBJECT_CONTENTSCROLLED = &h8015
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	const EVENT_SYSTEM_ARRANGMENTPREVIEW = &h8016
+#endif
+
+#if _WIN32_WINNT = &h0602
 	const EVENT_OBJECT_CLOAKED = &h8017
 	const EVENT_OBJECT_UNCLOAKED = &h8018
 	const EVENT_OBJECT_LIVEREGIONCHANGED = &h8019
@@ -6767,6 +6815,9 @@ const EVENT_OBJECT_ACCELERATORCHANGE = &h8012
 	const EVENT_OBJECT_IME_SHOW = &h8027
 	const EVENT_OBJECT_IME_HIDE = &h8028
 	const EVENT_OBJECT_IME_CHANGE = &h8029
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	const EVENT_OBJECT_END = &h80ff
 	const EVENT_AIA_START = &ha000
 	const EVENT_AIA_END = &hafff
@@ -6838,7 +6889,7 @@ declare function GetWindowModuleFileNameW(byval hwnd as HWND, byval pszFileName 
 	declare function GetWindowModuleFileName alias "GetWindowModuleFileNameW"(byval hwnd as HWND, byval pszFileName as LPWSTR, byval cchFileNameMax as UINT) as UINT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const USER_DEFAULT_SCREEN_DPI = 96
 	declare function SetProcessDPIAware() as WINBOOL
 	declare function IsProcessDPIAware() as WINBOOL
@@ -6927,7 +6978,7 @@ type PTITLEBARINFO as tagTITLEBARINFO ptr
 type LPTITLEBARINFO as tagTITLEBARINFO ptr
 declare function GetTitleBarInfo(byval hwnd as HWND, byval pti as PTITLEBARINFO) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type tagTITLEBARINFOEX
 		cbSize as DWORD
 		rcTitleBar as RECT
@@ -7101,7 +7152,7 @@ const MOUSE_MOVE_ABSOLUTE = 1
 const MOUSE_VIRTUAL_DESKTOP = &h02
 const MOUSE_ATTRIBUTES_CHANGED = &h04
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const MOUSE_MOVE_NOCOALESCE = &h08
 #endif
 
@@ -7253,10 +7304,10 @@ const RIDEV_EXMODEMASK = &h000000F0
 const GIDC_ARRIVAL = 1
 const GIDC_REMOVAL = 2
 
-#if _WIN32_WINNT = &h0602
-	#define GET_DEVICE_CHANGE_WPARAM(wParam) LOWORD(wParam)
-#else
+#if _WIN32_WINNT <= &h0600
 	#define GET_DEVICE_CHANGE_LPARAM(lParam) LOWORD(lParam)
+#else
+	#define GET_DEVICE_CHANGE_WPARAM(wParam) LOWORD(wParam)
 #endif
 
 type tagRAWINPUTDEVICELIST
@@ -7344,10 +7395,15 @@ declare function DefRawInputProc(byval paRawInput as PRAWINPUT ptr, byval nInput
 	declare function GetPointerDeviceRects(byval device as HANDLE, byval pointerDeviceRect as RECT ptr, byval displayRect as RECT ptr) as WINBOOL
 	declare function GetPointerDeviceCursors(byval device as HANDLE, byval cursorCount as UINT32 ptr, byval deviceCursors as POINTER_DEVICE_CURSOR_INFO ptr) as WINBOOL
 	declare function GetRawPointerDeviceData(byval pointerId as UINT32, byval historyCount as UINT32, byval propertiesCount as UINT32, byval pProperties as POINTER_DEVICE_PROPERTY ptr, byval pValues as LONG ptr) as WINBOOL
+#endif
+
+#if _WIN32_WINNT >= &h0600
 	const MSGFLT_ADD = 1
 	const MSGFLT_REMOVE = 2
 	declare function ChangeWindowMessageFilter(byval message as UINT, byval dwFlag as DWORD) as WINBOOL
+#endif
 
+#if _WIN32_WINNT >= &h0601
 	const MSGFLTINFO_NONE = 0
 	const MSGFLTINFO_ALREADYALLOWED_FORWND = 1
 	const MSGFLTINFO_ALREADYDISALLOWED_FORWND = 2
@@ -7450,7 +7506,7 @@ declare function ShutdownBlockReasonCreate(byval hWnd as HWND, byval pwszReason 
 declare function ShutdownBlockReasonQuery(byval hWnd as HWND, byval pwszBuff as LPWSTR, byval pcchBuff as DWORD ptr) as WINBOOL
 declare function ShutdownBlockReasonDestroy(byval hWnd as HWND) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	type tagINPUT_MESSAGE_DEVICE_TYPE as long
 	enum
 		IMDT_UNAVAILABLE = &h00000000
@@ -7512,7 +7568,9 @@ declare function ShutdownBlockReasonDestroy(byval hWnd as HWND) as WINBOOL
 	declare function SetDisplayAutoRotationPreferences(byval orientation as ORIENTATION_PREFERENCE) as WINBOOL
 	declare function IsImmersiveProcess(byval hProcess as HANDLE) as WINBOOL
 	declare function SetProcessRestrictionExemption(byval fEnableExemption as WINBOOL) as WINBOOL
+#endif
 
+#if _WIN32_WINNT = &h0602
 	type tagINPUT_TRANSFORM
 		union
 			type

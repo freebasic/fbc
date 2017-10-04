@@ -206,11 +206,11 @@ const CONNECT_RESERVED = &hFF000000
 const CONNECT_COMMANDLINE = &h00000800
 const CONNECT_CMD_SAVECRED = &h00001000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const CONNECT_CRED_RESET = &h00002000
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	#define WNetRestoreConnection WNetRestoreConnectionW
 #endif
 
@@ -313,7 +313,7 @@ declare function WNetDisconnectDialog(byval hwnd as HWND, byval dwType as DWORD)
 
 #if defined(UNICODE) and (_WIN32_WINNT <= &h0502)
 	declare function WNetRestoreConnection alias "WNetRestoreConnectionW"(byval hwndParent as HWND, byval lpDevice as LPCWSTR) as DWORD
-#elseif _WIN32_WINNT = &h0602
+#elseif _WIN32_WINNT >= &h0600
 	declare function WNetRestoreSingleConnectionW(byval hwndParent as HWND, byval lpDevice as LPCWSTR, byval fUseUI as BOOL) as DWORD
 #endif
 

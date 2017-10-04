@@ -337,7 +337,7 @@ extern IID_IKsControl as const GUID
 extern IID_IKsPinFactory as const GUID
 extern AM_INTERFACESETID_Standard as const GUID
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	extern MEDIATYPE_MPEG2_SECTIONS as const GUID
 	extern MEDIASUBTYPE_MPEG2_VERSIONED_TABLES as const GUID
 	extern MEDIASUBTYPE_ATSC_SI as const GUID
@@ -347,7 +347,7 @@ extern AM_INTERFACESETID_Standard as const GUID
 	extern MEDIASUBTYPE_MPEG2DATA as const GUID
 #endif
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	extern MEDIASUBTYPE_MPEG2_TRANSPORT_STRIDE as const GUID
 	extern MEDIASUBTYPE_MPEG2_UDCR_TRANSPORT as const GUID
 	extern MEDIASUBTYPE_MPEG2_PBDA_TRANSPORT_RAW as const GUID
@@ -359,7 +359,7 @@ extern AM_INTERFACESETID_Standard as const GUID
 	extern AM_KSPROPSETID_FrameStep as const GUID
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	extern AM_KSCATEGORY_VBICODEC_MI as const GUID
 #endif
 

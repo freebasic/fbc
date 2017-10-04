@@ -207,7 +207,7 @@ end type
 type MPR_INTERFACE_2 as _MPR_INTERFACE_2
 type PMPR_INTERFACE_2 as _MPR_INTERFACE_2 ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _MPR_INTERFACE_3
 		wszInterfaceName as wstring * 256 + 1
 		hInterface as HANDLE
@@ -691,7 +691,7 @@ declare function MprInfoBlockFind(byval lpHeader as LPVOID, byval dwInfoType as 
 declare function MprInfoBlockQuerySize(byval lpHeader as LPVOID) as DWORD
 #define MprInfoBlockExists(h, t) (MprInfoBlockFind((h), (t), NULL, NULL, NULL) = NO_ERROR)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _RAS_QUARANTINE_STATE as long
 	enum
 		RAS_QUAR_STATE_NORMAL
@@ -767,7 +767,9 @@ declare function MprInfoBlockQuerySize(byval lpHeader as LPVOID) as DWORD
 	declare function MprAdminReleaseIpv6AddressForUser(byval lpwszUserName as wstring ptr, byval lpwszPortName as wstring ptr, byval lpdwIpv6Address as IN6_ADDR ptr) as DWORD
 	declare function MprConfigFilterGetInfo(byval hMprConfig as HANDLE, byval dwLevel as DWORD, byval dwTransportId as DWORD, byval lpBuffer as LPBYTE) as DWORD
 	declare function MprConfigFilterSetInfo(byval hMprConfig as HANDLE, byval dwLevel as DWORD, byval dwTransportId as DWORD, byval lpBuffer as LPBYTE) as DWORD
+#endif
 
+#if _WIN32_WINNT >= &h0601
 	const MPRAPI_RAS_CONNECTION_OBJECT_REVISION_1 = &h01
 	const MPRAPI_MPR_SERVER_OBJECT_REVISION_1 = &h01
 	const MPRAPI_MPR_SERVER_SET_CONFIG_OBJECT_REVISION_1 = &h01

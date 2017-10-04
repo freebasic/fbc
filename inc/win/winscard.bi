@@ -615,26 +615,26 @@ declare function GetOpenCardNameW(byval as LPOPENCARDNAMEW) as LONG
 
 declare function SCardDlgExtendedError() as LONG
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function SCardGetTransmitCount(byval hCard as SCARDHANDLE, byval pcTransmitCount as LPDWORD) as LONG
 	declare function SCardReadCacheA(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPSTR, byval Data as PBYTE, byval DataLen as DWORD ptr) as LONG
 	declare function SCardReadCacheW(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPWSTR, byval Data as PBYTE, byval DataLen as DWORD ptr) as LONG
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function SCardReadCache alias "SCardReadCacheW"(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPWSTR, byval Data as PBYTE, byval DataLen as DWORD ptr) as LONG
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function SCardReadCache alias "SCardReadCacheA"(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPSTR, byval Data as PBYTE, byval DataLen as DWORD ptr) as LONG
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function SCardWriteCacheA(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPSTR, byval Data as PBYTE, byval DataLen as DWORD) as LONG
 	declare function SCardWriteCacheW(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPWSTR, byval Data as PBYTE, byval DataLen as DWORD) as LONG
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function SCardWriteCache alias "SCardWriteCacheW"(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPWSTR, byval Data as PBYTE, byval DataLen as DWORD) as LONG
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function SCardWriteCache alias "SCardWriteCacheA"(byval hContext as SCARDCONTEXT, byval CardIdentifier as UUID ptr, byval FreshnessCounter as DWORD, byval LookupName as LPSTR, byval Data as PBYTE, byval DataLen as DWORD) as LONG
 #endif
 
