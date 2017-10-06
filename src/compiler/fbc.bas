@@ -120,12 +120,13 @@ enum
 	FBCTOOL_GORC
 	FBCTOOL_WINDRES
 	FBCTOOL_CXBE
+	FBCTOOL_DXEGEN
 	FBCTOOL__COUNT
 end enum
 
 static shared as zstring * 8 toolnames(0 to FBCTOOL__COUNT-1) = _
 { _
-	"as", "ar", "ld", "gcc", "llc", "dlltool", "GoRC", "windres", "cxbe" _
+	"as", "ar", "ld", "gcc", "llc", "dlltool", "GoRC", "windres", "cxbe", "dxe3gen" _
 }
 
 declare sub fbcFindBin _
@@ -201,6 +202,8 @@ private sub hSetOutName( )
 		     FB_COMPTARGET_NETBSD
 			fbc.outname = hStripFilename( fbc.outname ) + _
 				"lib" + hStripPath( fbc.outname ) + ".so"
+		case FB_COMPTARGET_DOS
+			fbc.outname += ".dxe"
 		end select
 	end select
 end sub
@@ -598,6 +601,37 @@ private function hLinkFiles( ) as integer
 
 	'' Set executable name
 	ldcline += "-o " + QUOTE + fbc.outname + QUOTE
+
+#ifdef __FB_DOS__
+	if (fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DOS) and _
+	 (fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB) then
+		ldcline += " -I """ + hStripExt( fbc.outname ) + "_il.a"""
+		ldcline += " -U"
+		scope
+			dim as string ptr objfile = listGetHead( @fbc.objlist )
+			while( objfile )
+				ldcline += " """ + *objfile + """"
+				objfile = listGetNext( objfile )
+			wend
+		end scope
+		scope
+			dim as string ptr libfile = listGetHead(@fbc.libfiles)
+			if (libfile) then
+				ldcline +=  " -lc"
+			end if
+			while (libfile)
+				ldcline += " """ + *libfile + """"
+				libfile = listGetNext(libfile)
+			wend
+		end scope
+		if( hPutLdArgsIntoFile( ldcline ) = FALSE ) then
+			exit function
+		end if
+
+		function = fbcRunBin( "making DXE", FBCTOOL_DXEGEN, ldcline )
+		exit function
+	end if
+#endif
 
 	select case as const fbGetOption( FB_COMPOPT_TARGET )
 	case FB_COMPTARGET_CYGWIN, FB_COMPTARGET_WIN32
@@ -3191,6 +3225,10 @@ private sub hAddDefaultLibs( )
 		fbcAddDefLib( "gcc" )
 		fbcAddDefLib( "c" )
 		fbcAddDefLib( "m" )
+		if( fbGetOption( FB_COMPOPT_MULTITHREADED ) ) then
+			fbcAddDefLib( "pthread" )
+			fbcAddDefLib( "socket" )
+		end if
 
 	case FB_COMPTARGET_FREEBSD
 		fbcAddDefLib( "gcc" )
