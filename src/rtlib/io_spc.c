@@ -12,6 +12,10 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
     FB_LOCK();
 
     handle = FB_FILE_TO_HANDLE(fnum);
+    if (!handle) {
+        FB_UNLOCK();
+        return;
+    }
 
 	if( FB_HANDLE_IS_SCREEN(handle) || handle->type == FB_FILE_TYPE_CONSOLE )
     {
@@ -91,12 +95,13 @@ FBCALL void fb_PrintSPC( int fnum, ssize_t n )
     FB_LOCK();
 
     handle = FB_FILE_TO_HANDLE(fnum);
+    if (!handle) {
+        FB_UNLOCK();
+        return;
+    }
 
 	if( FB_HANDLE_IS_SCREEN(handle) || handle->type == FB_FILE_TYPE_CONSOLE )
 	{
-		if( n == 0 )
-			return;
-
         if( handle->type == FB_FILE_TYPE_CONSOLE ) {
             if( handle->hooks && handle->hooks->pfnFlush )
                 handle->hooks->pfnFlush( handle );
