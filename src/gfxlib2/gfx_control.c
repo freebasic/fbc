@@ -80,8 +80,10 @@ FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t
 		break;
 
 	case GET_WINDOW_HANDLE:
-		if (__fb_gfx)
+		if (__fb_gfx) {
 			res1 = fb_hGetWindowHandle();
+			res2 = fb_hGetDisplayHandle();
+		}
 		break;
 
 	case GET_DESKTOP_SIZE:

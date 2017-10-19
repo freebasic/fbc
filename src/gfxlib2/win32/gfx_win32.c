@@ -783,6 +783,11 @@ ssize_t fb_hGetWindowHandle(void)
 	return (ssize_t)fb_win32.wnd;
 }
 
+ssize_t fb_hGetDisplayHandle(void)
+{
+	return 0;
+}
+
 static void keyconv_clear( KEYCONVINFO *k )
 {
 	if( k->v ) {
