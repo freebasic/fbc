@@ -200,8 +200,11 @@ static int save_bmp(FB_GFXCTX *ctx, FILE *f, void *src, void *pal, int outbpp)
 				}
 				break;
 		}
-		if (!fwrite(buffer, outpitch, 1, f))
+		if (!fwrite(buffer, outpitch, 1, f)) {
+			free(buffer);
+			if (paltmp) free(paltmp);
 			return FB_RTERROR_FILEIO;
+		}
 		s -= inpitch;
 	}
 
