@@ -1,6 +1,6 @@
 
   fbdoc - FreeBASIC User's Manual Converter/Generator
-  Copyright (C) 2006-2008 The FreeBASIC development team.
+  Copyright (C) 2006-2017 The FreeBASIC development team.
 
 License:
 

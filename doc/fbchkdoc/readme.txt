@@ -1,5 +1,5 @@
 fbchkdoc - FreeBASIC Wiki Management Tools
-Copyright (C) 2008 Jeffery R. Marshall (coder[at]execulink[dot]com)
+Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
 
     A collection of utilities to help maintain the FreeBASIC documentation
     at http://www.freebasic.net/wiki

@@ -2,7 +2,7 @@
 #define __CWIKICON_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2008 The FreeBASIC development team.
+''	Copyright (C) 2006-2017 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
