@@ -42,6 +42,7 @@ using fbdoc
 '' --------------------------------------------------------
 
 dim as string web_wiki_url, dev_wiki_url
+dim as string ca_file, web_ca_file, dev_ca_file
 dim as string def_cache_dir, web_cache_dir, dev_cache_dir
 dim as string web_user, web_pass, dev_user, dev_pass
 
@@ -77,6 +78,8 @@ if( command(i) = "" ) then
 	print "   -comment1  prompt for comment line only once"
 	print "   -u user    specifiy wiki account username"
 	print "   -p pass    specifiy wiki account password"
+	print "   -certificate file"
+	print "              certificate to use to authenticate server (.pem)"
 	print
 	end 1
 end if
@@ -87,6 +90,8 @@ scope
 	if( opts <> NULL ) then
 		web_wiki_url = opts->Get( "web_wiki_url" )
 		dev_wiki_url = opts->Get( "dev_wiki_url" )
+		web_ca_file = opts->Get( "web_certificate", "" )
+		dev_ca_file = opts->Get( "dev_certificate", "" )
 		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
 		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
 		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
@@ -112,27 +117,34 @@ while command(i) > ""
 			cache_dir = def_cache_dir
 			sUserName = web_user
 			sPassword = web_pass
+			ca_file = web_ca_file
 		case "-dev"
 			wiki_url = dev_wiki_url 
 			cache_dir = def_cache_dir
 			sUserName = dev_user
 			sPassword = dev_pass
+			ca_file = dev_ca_file
 		case "-web+"
 			wiki_url = web_wiki_url 
 			cache_dir = web_cache_dir
 			sUserName = web_user
 			sPassword = web_pass
+			ca_file = web_ca_file
 		case "-dev+"
 			wiki_url = dev_wiki_url 
 			cache_dir = dev_cache_dir
 			sUserName = dev_user
 			sPassword = dev_pass
+			ca_file = dev_ca_file
 		case "-url"
 			i += 1
 			wiki_url = command(i)
 			cache_dir = def_cache_dir
 			sUserName = ""
 			sPassword = ""
+		case "-certificate"
+			i += 1
+			ca_file = command(i)
 		case "-u"
 			i += 1
 			sUserName = command(i)
@@ -201,7 +213,7 @@ if wikicache = NULL then
 	end 1
 end if
 
-wikicon = new CWikiCon( wiki_url )
+wikicon = new CWikiCon( wiki_url, ca_file )
 if wikicon = NULL then
 	print "Unable to create connection " + wiki_url
 	delete wikicache
@@ -213,6 +225,11 @@ if( webPageCount > 0 ) then
 	dim as integer i
 	dim as string ret
 	print "URL: "; wiki_url
+	if( ca_file > "" ) then
+		print "Certificate: "; ca_file
+	else
+		print "Certificate: none"
+	end if
 	print "cache: "; cache_dir
 	for i = 1 to webPageCount
 		sPage = webPageList(i)
