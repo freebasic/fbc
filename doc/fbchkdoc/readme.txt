@@ -2,7 +2,7 @@ fbchkdoc - FreeBASIC Wiki Management Tools
 Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
 
     A collection of utilities to help maintain the FreeBASIC documentation
-    at http://www.freebasic.net/wiki
+    at https://www.freebasic.net/wiki
 
 License:
 
@@ -67,7 +67,7 @@ little collection of utilities that I would use to perform routine tasks that
 would be boring or time-consuming otherwise.
 
     The utilities found here are not "generic" tools.  They are specific to
-the wiki (and it's sources) found on http://www.freebasic.net/wiki.  These
+the wiki (and it's sources) found on https://www.freebasic.net/wiki.  These
 utilities may not work for everyone.  I have only used these on the win32
 platform (due to regularly building a CHM file), and you may need to tweak,
 change, or write new code to get them to work on other platforms.
@@ -117,7 +117,7 @@ different name. A description of the options in this file are below:
         normally '../manual/cache'.  This is where the wakka source files are
         stored and modified.
 
-    web_cache_dir    
+	web_cache_dir    
         also for storing wakka files.  Typically an extra copy of cache_dir.
         Not used by any of these tools, but useful for comparing one snapshot
         of the wiki with another.  For example, after making changes to
@@ -143,6 +143,12 @@ different name. A description of the options in this file are below:
     dev_wiki_url
         the location of the secondary "off-line" duplicate wiki.  This url
         is required only if there is a secondary wiki that can be used.
+
+    web_cert_file
+        path and file name to the certificate for web url
+
+    dev_cert_file
+        path and file name to the certificate for dev url
 
     dev_username, dev_password
         the username and password for the off-line wiki.  These options are 
@@ -518,7 +524,7 @@ in SVN instead
     ---------------------------------------------
 
     Open your browser and go to 
-    http://www.freebasic.net/wiki/wikka.php?wakka=RecentChanges
+    https://www.freebasic.net/wiki/wikka.php?wakka=RecentChanges
 
     Then highlight the pages that have changed since your last download and
     copy the text to the clipboard.  Paste this in to an editor and save it

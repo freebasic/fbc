@@ -66,9 +66,9 @@ function ScanForImages _
 				sLink = token->action->GetParam( "link")
 
 				if( left( sUrl, 7 ) = "images/" ) then
-					sUrl = "http://www.freebasic.net/wiki/images/uploaded/" + sPageName + "/" + GetBaseName(sUrl)
+					sUrl = "https://www.freebasic.net/wiki/images/uploaded/" + sPageName + "/" + GetBaseName(sUrl)
 				elseif( left( sUrl, 8 ) = "/images/" ) then
-					sUrl = "http://www.freebasic.net/wiki/images/uploaded/" + sPageName + "/" + GetBaseName(sUrl)
+					sUrl = "https://www.freebasic.net/wiki/images/uploaded/" + sPageName + "/" + GetBaseName(sUrl)
 				end if
 
 				print #h, sPageName; ","; sUrl
