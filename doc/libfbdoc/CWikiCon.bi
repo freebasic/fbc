@@ -29,7 +29,8 @@ namespace fb.fbdoc
 
 		declare constructor _
 			( _
-				byval url as zstring ptr = NULL _
+				byval url as zstring ptr = NULL, _
+				byval ca_file as zstring ptr = NULL _
 			)
 
 		declare destructor _

@@ -41,11 +41,12 @@ namespace fb
 		
 		ctx = new CHttpCtx
 
-  		curl_global_init( CURL_GLOBAL_ALL )
+		curl_global_init( CURL_GLOBAL_ALL )
 
-  		ctx->curl = curl_easy_init()
+		ctx->curl = curl_easy_init()
 
- 		''curl_easy_setopt( ctx->curl, CURLOPT_VERBOSE, TRUE )
+		'' !!! TODO add verbose option for user
+		''curl_easy_setopt( ctx->curl, CURLOPT_VERBOSE, TRUE )
 
 		curl_easy_setopt( ctx->curl, CURLOPT_COOKIEFILE, "" )
 
@@ -53,9 +54,9 @@ namespace fb
 		'' curl_easy_setopt( ctx->curl, CURLOPT_PROXY, "http://proxyname:80" )
 		'' curl_easy_setopt( ctx->curl, CURLOPT_PROXYUSERPWD, "domain\username:password" )
  		'' curl_easy_setopt( ctx->curl, CURLOPT_PROXYAUTH, CURLAUTH_NTLM )
-		
+
 		ctx->headerlist = curl_slist_append( NULL, "Expect:" )
-  		
+
 	end constructor
 
 	'':::::
@@ -76,7 +77,7 @@ namespace fb
 			curl_easy_cleanup( ctx->curl )
 			ctx->curl = NULL
 		end if		
-		
+
 		delete ctx
 
 	end destructor
@@ -85,7 +86,8 @@ namespace fb
 	function CHttp.Post _
 		( _
 			byval url as zstring ptr, _
-			byval form as CHTtpForm ptr _
+			byval form as CHTtpForm ptr, _
+			byval ca_file as zstring ptr _
 		) as string
 
 		function = ""
@@ -104,7 +106,7 @@ namespace fb
 		curl_easy_setopt( ctx->curl, CURLOPT_HTTPHEADER, ctx->headerlist )
 		curl_easy_setopt( ctx->curl, CURLOPT_HTTPPOST, form->GetHandle() )
 
-		if( stream->Receive( url, FALSE ) ) then
+		if( stream->Receive( url, FALSE, ca_file ) ) then
     		function = stream->Read()
 		end if
     

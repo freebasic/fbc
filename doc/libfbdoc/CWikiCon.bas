@@ -33,6 +33,7 @@ namespace fb.fbdoc
 	type CWikiConCtx_
 		as CHttp ptr		http
 		as zstring ptr		url
+		as zstring ptr		ca_file
 		as zstring ptr		pagename
 		as integer			pageid
 		as string csrftoken
@@ -111,7 +112,7 @@ namespace fb.fbdoc
 
 	function CWikiConCtx.queryCsrfToken( ) as string
 		dim stream as CHttpStream = CHttpStream( http )
-		if( stream.Receive( build_url( @this, wakka_loginpage ), TRUE ) = FALSE ) then
+		if( stream.Receive( build_url( @this, wakka_loginpage ), TRUE, ca_file ) = FALSE ) then
 			return ""
 		end if
 		return extractCsrfToken( stream.Read() )
@@ -136,7 +137,8 @@ namespace fb.fbdoc
 	'':::::
 	constructor CWikiCon _
 		( _
-			byval url as zstring ptr _
+			byval url as zstring ptr, _
+			byval ca_file as zstring ptr = NULL _
 		)
 
 		ctx = new CWikiConCtx	
@@ -144,7 +146,14 @@ namespace fb.fbdoc
   		ctx->http = new CHttp
   		ctx->url = allocate( len( *url ) + 1 )
   		*ctx->url = *url
-  		
+
+		if( ca_file ) then
+  			ctx->ca_file = allocate( len( *ca_file ) + 1 )
+  			*ctx->ca_file = *ca_file
+		else
+			ctx->ca_file = NULL
+		end if
+
   		ctx->pagename = NULL
   		ctx->pageid = 0
 		
@@ -164,11 +173,16 @@ namespace fb.fbdoc
     		ctx->pagename = NULL
 		end if
 
+		if( ctx->ca_file <> NULL ) then
+    		deallocate( ctx->ca_file )
+    		ctx->ca_file = NULL
+		end if
+
 		if( ctx->url <> NULL ) then
     		deallocate( ctx->url )
     		ctx->url = NULL
 		end if
-		
+
 		if( ctx->http <> NULL ) then
 			delete ctx->http
 			ctx->http = NULL
@@ -221,7 +235,7 @@ namespace fb.fbdoc
 		form->Add( "submit", "Login" )
 		ctx->maybeAddCsrfTokenToForm( form )
 		
-		dim as string response = ctx->http->Post( build_url( ctx, wakka_loginpage ), form )
+		dim as string response = ctx->http->Post( build_url( ctx, wakka_loginpage ), form, ctx->ca_file )
 		
 		function = ( check_iserror( response ) = FALSE )
 		
@@ -338,7 +352,7 @@ namespace fb.fbdoc
 		dim as string body, URL
 		URL = build_url( ctx, NULL, wakka_getid )
 		
-		if( stream->Receive( URL, TRUE ) ) then
+		if( stream->Receive( URL, TRUE, ctx->ca_file ) ) then
 			body = stream->Read()
 		end if
 
@@ -383,7 +397,7 @@ namespace fb.fbdoc
 		dim URL as string
 		URL = build_url( ctx, NULL, rawmethod )
 
-		if( stream->Receive( URL, TRUE ) ) then
+		if( stream->Receive( URL, TRUE, ctx->ca_file ) ) then
 			body = stream->Read()
 			remove_http_headers( body )
 ''			remove_trailing_whitespace( body )
@@ -447,7 +461,7 @@ namespace fb.fbdoc
 		dim url as string 
 		URL = build_url( ctx, NULL, wakka_edit )
 
-		dim as string response = ctx->http->Post( url, form )
+		dim as string response = ctx->http->Post( url, form, ctx->ca_file )
 
 		dim as integer res = ( check_iserror( response ) = FALSE )
 
@@ -489,7 +503,7 @@ namespace fb.fbdoc
 		dim URL as string
 		URL = build_url( ctx, pagename, wakka_edit )
 		
-		dim as string response = ctx->http->Post( URL, form )
+		dim as string response = ctx->http->Post( URL, form, ctx->ca_file )
 		
 		dim as integer res = ( check_iserror( response ) = FALSE )
 

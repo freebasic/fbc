@@ -42,7 +42,8 @@ namespace fb
 		declare function Post _
 			( _
 				byval url as zstring ptr, _
-				byval form as CHttpForm ptr _
+				byval form as CHttpForm ptr, _
+				byval ca_file as zstring ptr _
 			) as string
 
 		declare function GetHandle _

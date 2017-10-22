@@ -113,7 +113,8 @@ namespace fb
 	function CHttpStream.Receive _
 		( _
 			byval url as zstring ptr, _
-			byval doreset as integer _
+			byval doreset as integer, _
+			byval ca_file as zstring ptr = NULL _
 		) as integer
 
 		dim as CURL ptr curl
@@ -146,10 +147,16 @@ namespace fb
  			curl_easy_reset( curl )
  		end if
 
-		'' curl_easy_setopt( curl, CURLOPT_VERBOSE, TRUE )
+		'' !!! TODO add verbose option for user
+		''curl_easy_setopt( curl, CURLOPT_VERBOSE, TRUE )
+
 		curl_easy_setopt( curl, CURLOPT_URL, url )
 		curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, @recv_cb )
 		curl_easy_setopt( curl, CURLOPT_WRITEDATA, @ctx->stream )
+
+		if( ca_file ) then
+			ret = curl_easy_setopt( curl, CURLOPT_CAINFO, ca_file )
+		end if
 
 		'' This option should not be needed.  It wasn't in earlier version
 		'' but some where between libcurl 7.16.0 and 7.16.2, there seems to
@@ -232,7 +239,8 @@ namespace fb
 			byval url as zstring ptr, _
 			byval data_ as any ptr, _
 			byval bytes as integer, _
-			byval doreset as integer _
+			byval doreset as integer, _
+			byval ca_file as zstring ptr = NULL _
 		) as integer
 
 		dim as CURL ptr curl
@@ -271,6 +279,10 @@ namespace fb
 		curl_easy_setopt( curl, CURLOPT_URL, url )
 		curl_easy_setopt( curl, CURLOPT_READFUNCTION, @send_cb )
 		curl_easy_setopt( curl, CURLOPT_READDATA, @ctx->stream )
+
+		if( ca_file ) then
+			curl_easy_setopt( curl, CURLOPT_CAINFO, ca_file )
+		end if
 
  		if( curl_easy_perform( curl ) <> 0 ) then
  			return FALSE

@@ -24,7 +24,7 @@
 
 namespace fb.fbdoc
 
-	declare sub Connection_SetUrl( byval url as zstring ptr )
+	declare sub Connection_SetUrl( byval url as zstring ptr, byval certificate as zstring ptr )
 	declare function Connection_Create( ) as CWikiCon ptr
 	declare sub Connection_Destroy( )
 
