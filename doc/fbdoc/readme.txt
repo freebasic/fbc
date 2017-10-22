@@ -21,7 +21,7 @@ License:
 Purpose of fbdoc:
 
   The main purpose of fbdoc is for the conversion and generation of the 
-  FreeBASIC manual from http://www.freebasic.net/wiki to other formats.
+  FreeBASIC manual from https://www.freebasic.net/wiki to other formats.
   Secondary to this purpose is the creation of tools that will help
   maintain or format the wakka script located online.
 
