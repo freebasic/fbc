@@ -13,21 +13,21 @@ Specifies field alignment.
 {{fbdoc item="filename" value="examples/manual/udt/field.bas"}}%%(freebasic)
 type bitmap_header field = 1
 	bfType          as ushort
-	bfsize          as uinteger
+	bfsize          as ulong
 	bfReserved1     as ushort
 	bfReserved2     as ushort
-	bfOffBits       as uinteger
-	biSize          as uinteger
-	biWidth         as uinteger
-	biHeight        as uinteger
+	bfOffBits       as ulong
+	biSize          as ulong
+	biWidth         as ulong
+	biHeight        as ulong
 	biPlanes        as ushort
 	biBitCount      as ushort
-	biCompression   as uinteger
-	biSizeImage     as uinteger
-	biXPelsPerMeter as uinteger
-	biYPelsPerMeter as uinteger
-	biClrUsed       as uinteger
-	biClrImportant  as uinteger
+	biCompression   as ulong
+	biSizeImage     as ulong
+	biXPelsPerMeter as ulong
+	biYPelsPerMeter as ulong
+	biClrUsed       as ulong
+	biClrImportant  as ulong
 end type
 
 dim bmp_header as bitmap_header

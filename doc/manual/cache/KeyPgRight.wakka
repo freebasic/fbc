@@ -40,7 +40,8 @@ print right(text, 5) 'displays " &#1084;&#1080;&#1088;!"
 
 {{fbdoc item="lang"}}
 	- The string type suffix "$" is obligatory in the //[[CompilerOptlang|-lang qb]]// dialect.
-	- The string type suffix "$" is optional in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang fb]]// dialects.
+	- The string type suffix "$" is optional in the //[[CompilerOptlang|-lang fblite]]// dialect.
+	- The string type suffix "$" is forbidden in the //[[CompilerOptlang|-lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
 	- QB does not support Unicode.

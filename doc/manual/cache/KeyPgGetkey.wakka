@@ -12,8 +12,9 @@ Returns the ascii code of the first key in the keyboard buffer
 
 {{fbdoc item="desc"}}
 	It returns the ascii code of the first key in the keyboard buffer. The key is removed from the buffer. If no key is present, ##**Getkey**## waits for it.
-	For extended keys (returning two characters), the extended code is returned in the first byte, and the regular code is returned in the second byte (the third and forth bytes being always null).
-	See example below.
+	For extended keys (returning two characters), the extended code is returned in the first byte, and the regular code is returned in the second byte (the third and fourth bytes always being null at least in console mode).
+	WARNING: In graphics mode and depending on the key pressed, ## ** Getkey ** ## may not always return the exact same value as in console mode (for a non-extended key, the most significant bit of the ascii code byte may be propagated to the higher 3 bytes of the return value, such as a sign bit).
+	For a compatible code of the 2 screen modes, see the example below.
 	
 	The key read is not echoed to the screen.
 	
@@ -21,7 +22,7 @@ Returns the ascii code of the first key in the keyboard buffer
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/input/getkey.bas"}}%%(freebasic)
-dim as integer foo
+dim as long foo
 do
 	foo = getkey
 	print "total return: " & foo
@@ -30,7 +31,7 @@ do
 		print "extended code: " & (foo and &hff)
 		print "regular code: " & (foo shr 8)
 	else
-		print "regular code: " & (foo)
+		print "regular code: " & (foo and &hff)
 	end if
 	print 
 loop until foo = 27

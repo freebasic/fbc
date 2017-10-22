@@ -4,7 +4,7 @@ Method attribute; specifies that a method must override a virtual
 {{fbdoc item="syntax"}}##
 	[[KeyPgType|Type]] //typename// [[KeyPgExtends|Extends]] //basename//
 		...
-		[[KeyPgDeclare|Declare]] [[KeyPgMemberSub|Sub]]|[[KeyPgMemberFunction|Function]]|[[KeyPgOperator|Operator]]|[[KeyPgProperty|Property]]|[[KeyPgDestructor|Destructor]] ... ( [//parameterlist//] ) [[[KeyPgAs|As]] //[[DataType|datatype]]//] **Override**
+		[[KeyPgDeclare|Declare]] [[KeyPgMemberSub|Sub]]|[[KeyPgMemberFunction|Function]]|[[KeyPgOperator|Operator]]|[[KeyPgProperty|Property]]|[[KeyPgDestructor|Destructor]] ... ( [//parameterlist//] ) [[ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|As]] //[[DataType|datatype]]//] **Override**
 		...
 	End Type
 ##

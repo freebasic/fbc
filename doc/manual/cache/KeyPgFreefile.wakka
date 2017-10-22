@@ -20,7 +20,7 @@ Returns a free file number
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/freefile.bas"}}%%(freebasic)
 ' Create a string and fill it.
-Dim buffer As String, f as integer
+Dim buffer As String, f as long
 buffer = "Hello World within a file."
 
 ' Find the first free file number.
@@ -41,7 +41,7 @@ End
 
 	When using multiple ##**Freefile**## statements, ##**Freefile**## should be used immediately before the ##[[KeyPgOpen|Open]]## statement:
 {{fbdoc item="filename" value="examples/manual/fileio/freefile-good.bas"}}%%(freebasic)
-dim fr as integer, fs as integer
+dim as long fr, fs
 ' The CORRECT way:
 fr = FREEFILE
 OPEN "File1" FOR INPUT AS #fr
@@ -52,7 +52,7 @@ OPEN "File2" FOR INPUT AS #fs
 
 	As opposed to:
 {{fbdoc item="filename" value="examples/manual/fileio/freefile-bad.bas"}}%%(freebasic)
-dim fr as integer, fs as integer
+dim as long fr, fs
 ' The WRONG way:
 fr = FREEFILE
 fs = FREEFILE '' fs has taken the same file number as fr
@@ -72,5 +72,6 @@ OPEN "file2" FOR INPUT AS #fs '' error: file number already opened
 	- ##[[KeyPgOpen|Open]]##
 	- ##[[KeyPgPutfileio|Put (File I/O)]]##
 	- ##[[KeyPgGetfileio|Get (File I/O)]]##
+	- ##[[KeyPgFileattr|FileAttr]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

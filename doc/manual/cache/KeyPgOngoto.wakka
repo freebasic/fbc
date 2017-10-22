@@ -37,5 +37,6 @@ End
 	- ##[[KeyPgSelectcase|Select Case]]##
 	- ##[[KeyPgOngosub|On...Gosub]]##
 	- ##[[KeyPgGoto|Goto]]##
+	- ##[[ProPgLabels|Labels]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

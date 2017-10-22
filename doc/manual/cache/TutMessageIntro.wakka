@@ -20,9 +20,6 @@ FreeBasic doesn't have a RAD system for Windows programming. To create a Windows
 Putting aside all the gritty details of the Windows API for the moment, it is important to understand the mechanism of messages in an SDK program. This is best accomplished by looking at our old friend, the Hello World program. In the examples\Windows\gui folder of the FreeBasic .15b distribution (which is required for the code in this article), there is a nice Hello World program that I am going to steal--I mean borrow, as the base for this example.
 
 ##%%(freebasic)
-option explicit
-option private
-
 #include once "windows.bi"
 
 declare function        WinMain     ( byval hInstance as HINSTANCE, _

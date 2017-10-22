@@ -8,7 +8,7 @@ To compile a new version of FB, you first need to [[DevGettingTheSourceCode|get 
 
 {{fbdoc item="subsect" value="Installing a MinGW-w64 toolchain"}}
 
-In this guide we will use a 32bit or 64bit [[mingw-w64.sourceforge.net|MinGW-w64]] toolchain to build the 32bit or 64bit version of FB, respectively. Visit [[http://sourceforge.net/projects/mingw-w64/files/]] and enter the [[http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/|Toolchains targetting Win64]] or [[http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/|Toolchains targetting Win32]] directory, depending on whether you want to compile a 32bit or 64bit version of FB. Enter the ##Personal Builds/mingw-builds/## subdirectory, choose the latest gcc version, then enter the ##threads-win32/sjlj/## subdirectory and download the toolchain package from there.
+In this guide we will use a 32bit or 64bit [[http://mingw-w64.sourceforge.net|MinGW-w64]] toolchain to build the 32bit or 64bit version of FB, respectively. Visit [[http://sourceforge.net/projects/mingw-w64/files/]] and enter the [[http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win64/|Toolchains targetting Win64]] or [[http://sourceforge.net/projects/mingw-w64/files/Toolchains%20targetting%20Win32/|Toolchains targetting Win32]] directory, depending on whether you want to compile a 32bit or 64bit version of FB. Enter the ##Personal Builds/mingw-builds/## subdirectory, choose the latest gcc version, then enter the ##threads-win32/sjlj/## subdirectory and download the toolchain package from there.
 
 Extract the toolchain into a new ##""C:\MinGW-w64""## directory, such that you end up with ##""C:\MinGW-w64\bin\gcc.exe""##. 
 

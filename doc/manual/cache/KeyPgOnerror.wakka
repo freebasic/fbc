@@ -76,7 +76,8 @@ errhandler:
 	- ##[[KeyPgError|Error]]##
 	- ##[[KeyPgLocal|Local]]##
 	- ##[[KeyPgErr|Err]]##
-	- [[TblRuntimeErrors|Runtime Error Codes]]
-	- [[ProPgErrorHandling|Error Handling]]
+	- ##[[TblRuntimeErrors|Runtime Error Codes]]##
+	- ##[[ProPgErrorHandling|Error Handling]]##
+	- ##[[ProPgLabels|Labels]]##
 
 {{fbdoc item="back" value="CatPgError|Error Handling Functions"}}

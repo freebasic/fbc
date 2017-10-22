@@ -48,5 +48,6 @@ Return
 	- ##[[KeyPgGosub|Gosub]]##
 	- ##[[KeyPgReturn|Return]]##
 	- ##[[KeyPgOptiongosub|Option Gosub]]##
+	- ##[[ProPgLabels|Labels]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

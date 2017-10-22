@@ -5,7 +5,7 @@ Returns the size of a variable or type in bytes.
 	**Sizeof** ( //variable// | [[DataType|DataType]] )
 ##
 {{fbdoc item="desc"}}
-	The ##**Sizeof**## operator returns the number of bytes taken up by a ##//variable//## or ##[[DataType|DataType]]##.
+	The ##**Sizeof**## operator returns an ##[[KeyPgInteger|Integer]]## value: the number of bytes taken up by a ##//variable//## or ##[[DataType|DataType]]##.
 	
 	Different from ##[[KeyPgLen|Len]]##, when used with fixed-length strings (including fixed-length ##[[KeyPgZstring|Zstring]]##s and ##[[KeyPgWstring|Wstring]]##s) it will return the number of bytes they use, and when used with variable-length strings, it will return the size of the string descriptor.
 	

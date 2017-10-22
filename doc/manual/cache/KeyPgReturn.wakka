@@ -2,7 +2,7 @@
 Control flow statement to return from a procedure or ##[[KeyPgGosub|Gosub]]##.
 
 {{fbdoc item="syntax"}}##
-	**Return** [ //expression// ]
+	**Return** //expression//
 //or//
 	**Return** [ //label// ]
 ##
@@ -80,5 +80,6 @@ print r3.numerator & "/" & r3.denominator%%
 	- ##[[KeyPgGosub|Gosub]]##
 	- ##[[KeyPgOptiongosub|Option Gosub]]##
 	- ##[[KeyPgOptionnogosub|Option Nogosub]]##
+	- ##[[ProPgLabels|Labels]]##
 
 {{fbdoc item="back" value="CatPgControlFlow|Control Flow"}}

@@ -18,6 +18,8 @@ Returns the color attribute of a specified pixel coordinate
 		the type of screen coordinate to return: one of the values ##0##, ##1##, ##2##, ##3##
 
 {{fbdoc item="ret"}}
+	The return datatype is always an ##[[KeyPgInteger|Integer]]##.
+	
 	If the ##//x//, //y//## coordinates of a pixel are provided **##Point##** returns the color attribute at the specified coordinates, as an 8-bit palette index in 8 bpp indexed modes, a 24-bit RGB value in 16 bpp modes (upper 8 bits of the integer unused, limited precision of R,G,B), and a 32-bit RGB or RGBA value in 32 bpp modes (upper 8 bits unused or holding Alpha).  Note that it does NOT return a 16-bit value (5 bits R + 6 bits G + 5 bits B).
 	
 	If the argument is a function index, **##Point##** returns one of the graphics cursor coordinates set by the last graphics command.

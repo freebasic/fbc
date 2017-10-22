@@ -26,6 +26,9 @@ Operator to delete data allocated with the ##[[KeyPgOpNew|New]]## operator
 	Calling ##**Delete**## on a null pointer induces no action.
 	
 	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]##.
+	
+	**Note:** Any operator ##**Delete[]**## (or the only overload operator ##**Delete**##) is not compatible with polymorphism, even using ##[[KeyPgOverride|Override]]## ##[[KeyPgVirtual|Virtual]]## ##[[KeyPgDestructor|Destructor]]## that may in addition induce crashing.
+	Instead of having to call such an operator ##**Delete([])**## on derived-type pointer, the safest way is to simply call (on base-type pointer) an overridden user ##[[KeyPgVirtual|Virtual]]## member procedure that will automatically launch the operator ##**Delete([])**## at derived-type level.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/delete.bas"}}%%(freebasic)

@@ -21,8 +21,15 @@ To install DJGPP, we need to download several packages which can be found on the
 	- ##make## (##mak*b.zip##)
 	- ##shellutils## (##shl*b.zip##)
 	- ##textutils## (##txt*b.zip##)
+	- ##pthreads## (##pth207b.zip##)
+	- ##socket## (##ls080b.zip##)
 
-Setup DJGPP by extracting everything into ##""C:\DJGPP""## and adding an environment variable named "DJGPP", set to ##""C:\DJGPP\djgpp.env""##.
+Setup DJGPP by extracting everything (except ls080b.zip) into ##""C:\DJGPP""## and adding an environment variable named "DJGPP", set to ##""C:\DJGPP\djgpp.env""##.
+From ls080b.zip, only the file libsocket.a would be needed, and it has to be installed into ##""C:\DJGPP\lib""##.
+The file pthread.h in ##""C:\DJGPP\include""## must be modified, by removing the lines:
+%%#include <sys/socket.h> /* for sockaddr /%%
+%%#include <sys/wtime.h> /* for struct timespec */%%
+%%#include <sys/select.h>%%
 
 It can be useful (especially when working in parallel with ""MinGW"") to use a batch script to launch a terminal with the DJGPP tools in its PATH environment variable, instead of modifying the system's global PATH environment variable:
 
@@ -63,6 +70,8 @@ This should have produced the ##fbc.exe## compiler and the libraries in ##lib\do
 You can copy more libraries if you need them, for example the ##""C:\DJGPP\lib\gcc\djgpp\[version]\libsupcxx.a""## ""C++"" support library, or others from the ##""C:\DJGPP\lib\""## directory.
 
 A note on ##libc.a##: FB needs a modified version of DJGPP's libc.a because DJGPP's libc.a contains a bug (see ##contrib/djgpp/readme.txt## from the fbc source code for more information). The FB makefile should have taken care of this and produced the modified version of libc.a at ##lib\dos\libc.a##. This should not be overwritten with DJGPP's original libc.a.
+
+Another note: if the runtime library is modified, the file symb_reg.txt (located in the dos subdirectory) might need to be updated. To do that, a compiled copy of the runtime library is needed, as well as the file maksymbr.exe (obtainable by compiling maksymbr.bas) and the file maksymbr.bat. These three files must be placed in the same directory, and maksymbr.bat must be invoked. A new file symb.reg is built, and it can be moved in the dos subdirectory to replace the old one. The runtime library must then be removed with "make clean", and rebuilt.
 
 Now, the new FB setup should be ready for use. You can use it right from the source tree or copy it somewhere else. The following are the relevant files and directories:
 

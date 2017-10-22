@@ -30,7 +30,7 @@ Starts a user-defined procedure with parameters in a separate execution thread
 	
 	When using **Threadcall**, parenthesis around the parameter list are required unless the subroutine has no parameters.
 	
-	WARNING: //Presently when **Threadcall** involves to pass parameters to the thread, there is no guarentee that the corresponding data are still maintained after the end of the **Threadcall** statement and this until the thread is launched. That can cause bad behavior.//	
+	WARNING: //Presently when **Threadcall** involves to pass parameters to the thread, there is no guarantee that the corresponding data are still maintained after the end of the **Threadcall** statement and this until the thread is launched. That can cause bad behavior.//	
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/threads/threadcall.bas"}}%%(freebasic)

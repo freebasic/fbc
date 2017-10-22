@@ -1,5 +1,6 @@
 {{fbdoc item="title" value="UINTEGER"}}----
-Standard data type: 32-bit or 64-bit unsigned, same size as ##[[KeyPgSizeof|SizeOf]]([[KeyPgAny|Any]] [[KeyPgPtr|Ptr]])##
+Standard data type: 32-bit or 64-bit unsigned, same size as ##[[KeyPgSizeof|SizeOf]]([[KeyPgAny|Any]] [[KeyPgPtr|Ptr]])##.
+Equivalent to ##[[KeyPgUnsigned|Unsigned]] [[KeyPgInteger|Integer]]##.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Uinteger**

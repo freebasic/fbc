@@ -3,10 +3,10 @@ Declares or defines a member procedure returning a value.
 
 {{fbdoc item="syntax"}}##
 	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] } //typename//
-		[[KeyPgDeclare|declare]] [ [[KeyPgStaticMember|static]] | [[KeyPgConstMember|const]] ] **Function** //fieldname// [//calling convention specifier//] [ [[KeyPgAlias|alias]] //external_name// ] ( [ //parameters// ] ) [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgStatic|Static]] ]
+		[[KeyPgDeclare|declare]] [ [[KeyPgStaticMember|static]] | [[KeyPgConstMember|const]] ] **Function** //fieldname// [//calling convention specifier//] [ [[KeyPgAlias|alias]] //external_name// ] ( [ //parameters// ] ) [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgStatic|Static]] ]
 	End { [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] }
 	
-	**Function** //typename//.//fieldname// ( [ //parameters// ] ) [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
+	**Function** //typename//.//fieldname// ( [ //parameters// ] ) [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] [ [[KeyPgExport|Export]] ]
 		//statements//
 	**End Function**
 ##
@@ -28,7 +28,7 @@ Declares or defines a member procedure returning a value.
 	##//typename//## is the name of the type for which the ##**Function**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace|Namespace]]##.
 	
 	A hidden ##[[KeyPgThis|this]]## parameter having the same type as ##//typename//## is passed to non-static member procedures.  ##[[KeyPgThis|this]]## is used to access the fields of the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgUnion|Union]]##.
-	To access duplicated symbols defined outside the Type, use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
+	To access duplicated symbols defined outside the Type, add one (or two) dot(s) as prefix: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
 	
 	A ##[[KeyPgStaticMember|Static (Member)]]## may be declared using the ##**Static**## specifier.  A ##[[KeyPgConstMember|Const (Member)]]## may be declared using the ##**Const**## specifier.
 	

@@ -53,7 +53,7 @@ Sleep
 %%
 
 {{fbdoc item="diff"}}
-	- In QB the syntax was ##OPEN "CON:" FOR INPUT|OUTPUT AS [#] //filenum//##
+	- In QB the syntax was ##OPEN "CON:" FOR INPUT|OUTPUT AS [#] //filenumber//##
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen|Open]]##

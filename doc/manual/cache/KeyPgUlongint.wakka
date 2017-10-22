@@ -1,5 +1,6 @@
 {{fbdoc item="title" value="ULONGINT"}}----
-Standard data type: 64 bit unsigned
+Standard data type: 64 bit unsigned.
+Equivalent to ##[[KeyPgUnsigned|Unsigned]] [[KeyPgLongint|Longint]]##.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Ulongint**
