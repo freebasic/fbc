@@ -49,6 +49,7 @@ using fbdoc
 
 const ManualDir = "../manual/"
 const default_wiki_url = "https://www.freebasic.net/wiki/wikka.php"
+const default_ca_file = ""
 const default_CacheDir = ManualDir + "cache/"
 const default_TocPage = "DocToc"
 
@@ -307,7 +308,7 @@ end sub
 	end if
 
 	'' Initialize the wiki connection - in case its needed
-	Connection_SetUrl( connopts->Get( "wiki_url", default_wiki_url), connopts->Get( "certificate", default_ca_file ) )
+	Connection_SetUrl( connopts->Get( "wiki_url", default_wiki_url ), connopts->Get( "certificate", default_ca_file ) )
 
 #if defined(HAVE_MYSQL)
 	'' If using SQL, get all the pages in to the cache now.
