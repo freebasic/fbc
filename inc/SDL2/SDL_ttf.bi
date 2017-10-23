@@ -1,8 +1,8 @@
-'' FreeBASIC binding for SDL2_ttf-2.0.12
+'' FreeBASIC binding for SDL2_ttf-2.0.14
 ''
 '' based on the C header files:
 ''   SDL_ttf:  A companion library to SDL for working with TrueType (tm) fonts
-''   Copyright (C) 2001-2013 Sam Lantinga <slouken@libsdl.org>
+''   Copyright (C) 2001-2016 Sam Lantinga <slouken@libsdl.org>
 ''
 ''   This software is provided 'as-is', without any express or implied
 ''   warranty.  In no event will the authors be held liable for any damages
@@ -35,7 +35,7 @@ extern "C"
 #define _SDL_TTF_H
 const SDL_TTF_MAJOR_VERSION = 2
 const SDL_TTF_MINOR_VERSION = 0
-const SDL_TTF_PATCHLEVEL = 12
+const SDL_TTF_PATCHLEVEL = 14
 #macro SDL_TTF_VERSION(X)
 	scope
 		(X)->major = SDL_TTF_MAJOR_VERSION
@@ -116,6 +116,7 @@ declare sub TTF_CloseFont(byval font as TTF_Font ptr)
 declare sub TTF_Quit()
 declare function TTF_WasInit() as long
 declare function TTF_GetFontKerningSize(byval font as TTF_Font ptr, byval prev_index as long, byval index as long) as long
+declare function TTF_GetFontKerningSizeGlyphs(byval font as TTF_Font ptr, byval previous_ch as Uint16, byval ch as Uint16) as long
 declare function TTF_SetError alias "SDL_SetError"(byval fmt as const zstring ptr, ...) as long
 declare function TTF_GetError alias "SDL_GetError"() as const zstring ptr
 
