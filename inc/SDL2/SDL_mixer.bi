@@ -1,8 +1,8 @@
-'' FreeBASIC binding for SDL2_mixer-2.0.0
+'' FreeBASIC binding for SDL2_mixer-2.0.1
 ''
 '' based on the C header files:
 ''   SDL_mixer:  An audio mixer library based on the SDL library
-''   Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
+''   Copyright (C) 1997-2016 Sam Lantinga <slouken@libsdl.org>
 ''
 ''   This software is provided 'as-is', without any express or implied
 ''   warranty.  In no event will the authors be held liable for any damages
@@ -34,7 +34,7 @@ extern "C"
 #define _SDL_MIXER_H
 const SDL_MIXER_MAJOR_VERSION = 2
 const SDL_MIXER_MINOR_VERSION = 0
-const SDL_MIXER_PATCHLEVEL = 0
+const SDL_MIXER_PATCHLEVEL = 1
 #macro SDL_MIXER_VERSION(X)
 	scope
 		(X)->major = SDL_MIXER_MAJOR_VERSION

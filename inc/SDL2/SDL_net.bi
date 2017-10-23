@@ -1,8 +1,8 @@
-'' FreeBASIC binding for SDL2_net-2.0.0
+'' FreeBASIC binding for SDL2_net-2.0.1
 ''
 '' based on the C header files:
 ''   SDL_net:  An example cross-platform network library for use with SDL
-''   Copyright (C) 1997-2013 Sam Lantinga <slouken@libsdl.org>
+''   Copyright (C) 1997-2016 Sam Lantinga <slouken@libsdl.org>
 ''   Copyright (C) 2012 Simeon Maxein <smaxein@googlemail.com>
 ''
 ''   This software is provided 'as-is', without any express or implied
@@ -36,7 +36,7 @@ extern "C"
 type SDLNet_version as SDL_version
 const SDL_NET_MAJOR_VERSION = 2
 const SDL_NET_MINOR_VERSION = 0
-const SDL_NET_PATCHLEVEL = 0
+const SDL_NET_PATCHLEVEL = 1
 #macro SDL_NET_VERSION(X)
 	scope
 		(X)->major = SDL_NET_MAJOR_VERSION
@@ -158,10 +158,16 @@ declare function SDLNet_GetError() as const zstring ptr
 		return (((cast(Uint32, area[0]) shl 24) or (cast(Uint32, area[1]) shl 16)) or (cast(Uint32, area[2]) shl 8)) or cast(Uint32, area[3])
 	end function
 #else
-	#define _SDLNet_Write16(value, areap) scope : *cptr(Uint16 ptr, areap) = SDL_Swap16(value) : end sco
-	#define _SDLNet_Write32(value, areap) scope : *cptr(Uint32 ptr, areap) = SDL_Swap32(value) : end sco
-	#define _SDLNet_Read16(areap) SDL_Swap16(*cptr(const Uint16 ptr, areap))
-	#define _SDLNet_Read32(areap) SDL_Swap32(*cptr(const Uint32 ptr, areap))
+	private sub _SDLNet_Write16(byval value as Uint16, byval areap as any ptr)
+		(*cptr(Uint16 ptr, areap)) = SDL_Swap16(value)
+	end sub
+
+	private sub _SDLNet_Write32(byval value as Uint32, byval areap as any ptr)
+		(*cptr(Uint32 ptr, areap)) = SDL_Swap32(value)
+	end sub
+
+	#define _SDLNet_Read16(areap) cast(Uint16, SDL_Swap16(*cptr(const Uint16 ptr, (areap))))
+	#define _SDLNet_Read32(areap) cast(Uint32, SDL_Swap32(*cptr(const Uint32 ptr, (areap))))
 #endif
 
 end extern
