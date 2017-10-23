@@ -2,6 +2,7 @@
 Library for using arbitrarily large integers. Note: This library seems to be dead, a possible alternative is [[ExtLibgmp|gmp]].
 
 Website: http://valyala.narod.ru/big_int/ (Russian) [the site apparently is gone]
+Github: https://github.com/valyala/big_int
 Platforms supported: ""Win32"", Linux
 Headers to include: big_int/big_int.bi
 Header version: from 2005

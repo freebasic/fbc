@@ -16,7 +16,7 @@ Statement block to allow implicit access to fields in a user defined type variab
 	Internally, a reference to the variable is taken at the start of the ##**With**## block, and then is used to calculate any element accesses within the block.  Note that this means that ##[[KeyPgGoto|Goto]]## should not be used to jump into a ##**With**## block, otherwise the reference will not have been set, and the results of trying to access it will be undefined.
 	
 	//Note for ##**With**## block used inside member procedure:
-	To access duplicated symbols defined outside the Type, use "##..""SomeSymbol""##".//
+	To access duplicated symbols defined outside the Type, add two dots as prefix: "##..""SomeSymbol""##" (inside a ##**With...End With**## block).//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/with-1.bas"}}%%(freebasic)

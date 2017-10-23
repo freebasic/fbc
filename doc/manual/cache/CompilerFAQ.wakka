@@ -105,7 +105,7 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item8"}}==Does ""FreeBASIC"" support Object Oriented Programming?==
-	""FreeBASIC"" (since version 0.90) supports classes (user-defined types) with member functions (methods), static methods, static member variables, constructors, destructors, properties, operator overloading, single inheritance, virtual and abstract methods (polymorphism) and run-time type information. Future plans regarding OOP functionality include adding support for multiple inheritance and/or interfaces. For more information see: [[TutBeginnersGuideToTypesAsObjects|A Beginners Guide to Types as Objects]].
+	""FreeBASIC"" (since version 0.90) supports classes (user-defined types) with member functions (methods), static methods, static member variables, constructors, destructors, properties, operator overloading, single inheritance, virtual and abstract methods (polymorphism) and Run-Time Type Information (RTTI). Future plans regarding OOP functionality include adding support for multiple inheritance and/or interfaces. For more information see: [[TutBeginnersGuideToTypesAsObjects|A Beginners Guide to Types as Objects]].
 
 {{anchor name="item0|Back to top"}}
 

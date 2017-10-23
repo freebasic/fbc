@@ -6,11 +6,14 @@ image_dir      = ../manual/html/images/
 fb_dir         = ../../
 
 [web]
-web_wiki_url = http://www.freebasic.net/wiki/wikka.php
+web_wiki_url = https://www.freebasic.net/wiki/wikka.php
+' web_certificate = path/filename.pem"
 web_username = 
 web_password = 
 
 [dev]
 dev_wiki_url = 
+' dev_certificate = path/filename.pem"
 dev_username = 
 dev_password = 
+

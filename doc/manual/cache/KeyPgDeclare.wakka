@@ -3,16 +3,16 @@ Declares a module-level or member procedure
 
 {{fbdoc item="syntax"}}##
 	**Declare** [[KeyPgSub|Sub]] //name// [ //param_list// ]
-	**Declare** [[KeyPgFunction|Function]] //name// [ //param_list// ] [[KeyPgAs|As]] //return_type//
-	**Declare** [[KeyPgOperator|Operator]] //op_symbol// //param_list// [ [[KeyPgAs|As]] //return_type// ]
+	**Declare** [[KeyPgFunction|Function]] //name// [ //param_list// ] [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|As]] //return_type//
+	**Declare** [[KeyPgOperator|Operator]] //op_symbol// //param_list// [ [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|As]] //return_type// ]
 	
 	Type //T//
 		**Declare** [[KeyPgConstructor|Constructor]] [ //param_list// ]
 		**Declare** [[KeyPgDestructor|Destructor]]
 		**Declare** [[KeyPgSub|Sub]] //name// [ //param_list// ]
-		**Declare** [[KeyPgFunction|Function]] //name// [ //param_list// ] [[KeyPgAs|As]] //return_type//
-		**Declare** [[KeyPgOperator|Operator]] //name// [ //param_list// ] [ [[KeyPgAs|As]] //return_type// ]
-		**Declare** [[KeyPgProperty|Property]] //name// [ ( [ //param_list// ] ) ] [ [[KeyPgAs|As]] //return_type// ]
+		**Declare** [[KeyPgFunction|Function]] //name// [ //param_list// ] [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|As]] //return_type//
+		**Declare** [[KeyPgOperator|Operator]] //name// [ //param_list// ] [ [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|As]] //return_type// ]
+		**Declare** [[KeyPgProperty|Property]] //name// [ ( [ //param_list// ] ) ] [ [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|As]] //return_type// ]
 	End Type
 ##
 {{fbdoc item="param"}}

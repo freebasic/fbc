@@ -8,9 +8,9 @@ Used with ##[[KeyPgRedim|Redim]]## to preserve contents will resizing an array
 	Used with ##[[KeyPgRedim|Redim]]## so that when an array is resized, data is not reset but is preserved. This means when the array is enlarged that only new data is reset, while the old data remains the same (but not necessarily at the same absolute addresses in memory).
 	
 	**NOTE**: ##**Redim** [[KeyPgPreserve|Preserve]]## may not work as expected in all cases:
-		##[[KeyPgPreserve|Preserve]]##'s current behavior is to keep the original data contiguous in memory, and only expand or truncate the size of the memory.
-		Its behavior is only well-defined when the upper bound is changed.  If the lower bound is changed, the current result is that the data is in effect shifted to start at the new lower bound.
-		If there are multiple dimensions, only the upper bound of the first dimension may be changed safely.  If lower-order dimensions are resized at all, the effects can be hard to predict.
+		##[[KeyPgPreserve|Preserve]]##'s current behavior is to keep the original data contiguous in memory, and only expand or truncate the size of the memory (if resizing is not possible, the whole original data block is first shifted to another memory location).
+		Its behavior (with a single dimension) is well-defined only when the upper bound is changed.  If the lower bound is changed, the current result is that the data is in effect shifted to start at the new lower bound.
+		If there are multiple dimensions, only the upper bound of only the first dimension may be changed safely.  If the first dimension is reduced, the existing mappable data may be lost.  If lower-order dimensions are resized at all, the effects can be hard to predict (because multidimensional arrays are stored in row-major order : values differing only in the last index are contiguous).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/preserve.bas"}}%%(freebasic)

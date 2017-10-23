@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -168,7 +168,7 @@ function WriteExampleFile( byref sPage as string, byref path as string, byref fi
 	idx = b.insert( idx, "'' NOTICE: This file is part of the FreeBASIC Compiler package and can't" )
 	idx = b.insert( idx, "''         be included in other distributions without authorization." )
 	idx = b.insert( idx, "''" )
-	idx = b.insert( idx, "'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=" & sPage )
+	idx = b.insert( idx, "'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=" & sPage )
 	idx = b.insert( idx, "'' --------" )
 
 	x = b.text_crlf()

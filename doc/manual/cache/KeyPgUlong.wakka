@@ -1,5 +1,6 @@
 {{fbdoc item="title" value="ULONG"}}----
-Standard data type: 32-bit unsigned integer
+Standard data type: 32-bit unsigned integer.
+Equivalent to ##[[KeyPgUnsigned|Unsigned]] [[KeyPgLong|Long]]##.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Ulong**

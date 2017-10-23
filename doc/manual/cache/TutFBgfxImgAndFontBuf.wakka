@@ -169,14 +169,14 @@ If what's contained in the first section of our buffer is the ##fb.Image## Heade
 
 One problem though!  If we add that size to our buffer address, to try and get a new one, we end up with strange results.  This is because our datatype isn't one byte long.  We have to cast to a ##[[KeyPgUbyte|Ubyte]] [[KeyPgPtr|Ptr]]## first, then add the address.  A ##[[KeyPgUbyte|Ubyte]]## is one byte long, so we'll get the exact byte we need in memory to work with.
 
-Finally, we're in 32-bits.  We just casted to a ##[[KeyPgUbyte|Ubyte]] [[KeyPgPtr|Ptr]]##.  Although we *can* just assign the uLong ptr the address of the ##[[KeyPgUbyte|Ubyte]]##, it's best practice to cast it to a ##[[KeyPgUlong|Ulong]] [[KeyPgPtr|Ptr]]## first.  We finally have the address of our pixels, in the right datatype (one per pixel!).  We could manipulate those pixels directly now, if we'd like.
+Finally, we're in 32-bits.  We just cast to a ##[[KeyPgUbyte|Ubyte]] [[KeyPgPtr|Ptr]]##.  Although we *can* just assign the uLong ptr the address of the ##[[KeyPgUbyte|Ubyte]]##, it's best practice to cast it to a ##[[KeyPgUlong|Ulong]] [[KeyPgPtr|Ptr]]## first.  We finally have the address of our pixels, in the right datatype (one per pixel!).  We could manipulate those pixels directly now, if we'd like.
 
 
 %%(freebasic)
   '' Print information stored in our buffer.
 Print "Image Width: " & myBuf->Width
 Print "Image Height: " & myBuf->Height
-Print "Image Bit Depth: " & myBuf->BPP
+Print "Image Byte Depth: " & myBuf->BPP
 Print "Image Pitch: " & myBuf->Pitch
 Print ""
 %%
@@ -236,7 +236,7 @@ Create our font buffer.  Remember, we need to add horizontal space for each char
 Dim as uByte ptr myHeader = cast(uByte ptr, myFont )
 %%
 
-Get the exact, casted, and having no warnings address of our font buffer.  The header goes on a byte by byte basis, so we can't work on this with an ##fb.Image## type.
+Get the exact, cast, and having no warnings address of our font buffer.  The header goes on a byte by byte basis, so we can't work on this with an ##fb.Image## type.
 
 
 %%(freebasic)

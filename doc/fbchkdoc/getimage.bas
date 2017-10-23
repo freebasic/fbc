@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -57,9 +57,11 @@ function GetImage( byref url as string, byref filename as string ) as integer
 
 	if(curl) then
 
+		'' !!! TODO add verbose option for user
+		''curl_easy_setopt( curl, CURLOPT_VERBOSE, 1 )
+
 		curl_easy_setopt( curl, CURLOPT_URL, url )
 		curl_easy_setopt( curl, CURLOPT_FRESH_CONNECT, TRUE )
-		''curl_easy_setopt( curl, CURLOPT_VERBOSE, 1 )
 
 		destFile = fopen( filename, "wb" )
 
@@ -171,7 +173,7 @@ while eof(h) = 0
 	if (i > 0) then
 		url = trim(mid(url,i+1))
 	end if
-	if( lcase(left( url, 7 )) = "http://" ) then
+	if( (lcase(left( url, 7 )) = "http://") or (lcase(left( url, 8 )) = "https://") ) then
 		filename = GetFileName( url )
 		if( filename > "" ) then
 			AddImageFile( url, image_dir + filename )

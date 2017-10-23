@@ -64,5 +64,6 @@ Object files, and therefore libraries, are platform specific and in some cases s
 	- ##[[KeyPgInclib|#inclib]]##
 	- ##[[KeyPgInclude|#include]]##
 	- [[CompilerOptlib|Compiler Option: -lib]]
+	- [[CompilerOptstatic|Compiler Option: -static]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

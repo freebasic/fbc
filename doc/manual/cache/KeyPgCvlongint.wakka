@@ -29,7 +29,7 @@ Converts a double-precision floating-point number or eight-byte string to a ##[[
 {{fbdoc item="filename" value="examples/manual/strings/cvlongint.bas"}}%%(freebasic)
 dim ll as longint, s as string
 s = "ABCDEFGH"
-ll = cvlongint(ll)
+ll = cvlongint(s)
 print using "s = ""&"""; s
 print using "ll = _&H&"; hex(ll)
 %%

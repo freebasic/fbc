@@ -11,7 +11,7 @@ Exchanges the values of two variables
 		A variable to swap.
 
 {{fbdoc item="desc"}}
-	Swaps the value of two variables.
+	Swaps the value of two variables, including UDT instances (swaps all data members).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/swap.bas"}}%%(freebasic)

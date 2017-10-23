@@ -1,580 +1,94 @@
-									  {{fbdoc item="section" value="Grammar Notation"}}
-
-**Format of a production**
-//left hand side//: right hand side;
-
-: should be read as 'is defined as'. 
-
-The right hand side of a production is terminated by a ;.
-
-A word in //italics// represent the name of a production (the left
-hand side of the production).
-
-Few operators are used to describe the ""FreeBASIC"" grammar.
-
-{{table columns="2" cellpadding="5" cells="operator;meaning;.;any character;*;0 or more (repetition);+;1 or more (repetition);?;optional (choice);();grouping;|;separator (separates alternatives);semicolon;end of production"}}
-
-Any symbol that appears on the right hand side of a production
-that is not an operator and does not appear in //italics//
-represents itself and appears **bold**.
-A symbol at the right hand side of a rule can refer to a production. 
-Such references are in //italics//. 
-
-For navigational purposes a reference is a link to the production 
-being referenced.
-
-When reading the grammar be aware that ""FreeBASIC"" is a case insensitive
-language.
-
-The grammar presented is not an exact statement of the ""FreeBASIC"" language.
-
-Go straight to: 
-//{{anchor name="program|program"}}//
-//{{anchor name="expression|expression"}}//
-
-{{fbdoc item="section" value="Tokens"}}
-
-//{{anchor name="white"}}white//: **\t** | 
-//{{anchor name="any_char"}}any_char//:&nbsp&nbsp&nbsp**any valid character**;---
-//{{anchor name="eol"}}eol//:&nbsp&nbsp&nbsp&nbsp**\n**|**\r**|**\n\r**;---
-//{{anchor name="statement_separator"}}statement_separator//: ( **:** | //{{anchor name="eol|eol"}}// )+;---
-//{{anchor name="dot"}}dot//:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp**.**;---
-//{{anchor name="sign"}}sign//:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp**+**|**-**;---
-//{{anchor name="alpha"}}alpha//:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp**a**|**b**|**c**|**d**|**e**|**f**|**g**|**h**|**i**|**j**|**k**|**l**|**m**|**n**|**p**|**q**|**r**|**s**|**t**|**v**|**w**|**x**|**y**|**z**;---
-//{{anchor name="digit"}}digit//:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp**0**|**1**|**2**|**3**|**4**|**5**|**6**|**7**|**8**|**9**;---
-//{{anchor name="hexdigit"}}hexdigit//:&nbsp&nbsp&nbsp**a**|**b**|**c**|**d**|**e**|**f**|//{{anchor name="digit|digit"}}//;---
-//{{anchor name="octdigit"}}octdigit//:&nbsp&nbsp&nbsp**0**|**1**|**2**|**3**|**4**|**5**|**6**|**7**;---
-//{{anchor name="bindigit"}}bindigit//:&nbsp&nbsp&nbsp**0**|**1**;---
-//{{anchor name="alphadigit"}}alphadigit//:&nbsp&nbsp//{{anchor name="alpha|alpha"}}//| //{{anchor name="digit|digit"}}//;---
-//{{anchor name="integer_suffix"}}integer_suffix//:&nbsp&nbsp&nbsp&nbsp&nbsp**%**|**&amp;**|**l**|**u**|**ul**|**ll**|**ull**;---
-//{{anchor name="floating_point_suffix"}}floating_point_suffix//:&nbsp&nbsp&nbsp&nbsp&nbsp**!**|**#**|**f**;---
-//{{anchor name="suffix"}}suffix//:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp//{{anchor name="integer_suffix|integer_suffix"}}//|//{{anchor name="floating_point_suffix|floating_point_suffix"}}//|**$**;---
-//{{anchor name="expchar"}}expchar//:&nbsp&nbsp**d**|**e**;---
-//{{anchor name="operator"}}operator//
-~: **=** | **<** | **>** |**<>** |**+** | **-** | **""*""** |  **@**
-~| **""&""** | **->** | **/** | **\** | **^** | **andalso**
-~| **orelse** | **and** | **or** | **xor** | **eqv** | **imp** 
-~| **+=** | **-=** | **""*=""** | **/=** | **\=**  | **^=** | **&=** |
-~| **and=** | **or=** | **xor=** | **eqv=** | **imp=**
-~| **new** | **delete** | **delete[]** | **cast** | **procptr**
-~| **varptr** | **strptr** | **sizeof** | **[]** | **()**
-~;
-
-//{{anchor name="binary_operator"}}binary_operator//
-~: **=** | **<** | **>** |**<>** |**+** | **-** |
-~| **""&""** | **->** | **/** | **\** | **^** 
-~| **+=** | **-=** | **""*=""** | **/=** | **\=**  | **^=** | **&=** |
-~| **and=** | **or=** | **xor=** | **eqv=** | **imp=**
-~| **andalso** | **orelse**
-~;
-
-//{{anchor name="identifier"}}identifier//
-~:&nbsp&nbsp(//{{anchor name="alpha|alpha"}}//)(//{{anchor name="alphadigit|alphadigit"}}//|**_**)*
-~|&nbsp&nbsp**_**(//{{anchor name="alphadigit|alphadigit"}}//|**_**)+
-~;
-
-//{{anchor name="literal"}}literal//
-~: //{{anchor name="sign|sign"}}//&nbsp//{{anchor name="integer_literal|integer_literal"}}//&nbsp//{{anchor name="integer_suffix|integer_suffix"}}//
-~|&nbsp//{{anchor name="sign|sign"}}//&nbsp//{{anchor name="floating_literal|floating_literal"}}//&nbsp//{{anchor name="floating_point_suffix|floating_point_suffix"}}//
-~|&nbsp//{{anchor name="string_literal|string_literal"}}//
-~;
-
-//{{anchor name="integer_literal"}}integer_literal//
-~: //{{anchor name="decimal_integer|decimal_integer"}}//
-~| //{{anchor name="hexadecimal_integer|hexadecimal_integer"}}//
-~| //{{anchor name="octal_integer|octal_integer"}}//
-~| //{{anchor name="binary_integer|binary_integer"}}//
-~;
-
-//{{anchor name="decimal_integer"}}decimal_integer//: //{{anchor name="digit|digit"}}//+;
-//{{anchor name="hexadecimal_integer"}}hexadecimal integer//: **&amp;h**//{{anchor name="hexdigit|hexdigit"}}//+;
-//{{anchor name="octal_integer"}}octal_integer//: **&amp;o**//{{anchor name="octdigit|octdigit"}}//+;
-//{{anchor name="binary_integer"}}binary_integer//: **&amp;b**//{{anchor name="bindigit|bindigit"}}//+;---
-
-//{{anchor name="floating_literal"}}floating_literal//
-~: //{{anchor name="digit|digit"}}//+(//{{anchor name="dot|dot"}}//(//{{anchor name="digit|digit"}}//+)?)?(//{{anchor name="exp_char|exp_char"}}//?(//{{anchor name="sign|sign"}}//?//{{anchor name="digit|digit"}}//+)?)?//{{anchor name="suffix|suffix"}}//?
-~|&nbsp(//{{anchor name="dot|dot"}}//(//{{anchor name="digit|digit"}}//+)?)?(//{{anchor name="exp_char|exp_char"}}//?(//{{anchor name="sign|sign"}}//?//{{anchor name="digit|digit"}}//+)?)?//{{anchor name="suffix|suffix"}}//?
-~;
-
-//{{anchor name="string_literal"}}string_literal//
-~: (**!**|**$**)?**"**(//{{anchor name="escape_sequence|escape_sequence"}}//|**&quot&quot**|//{{anchor name="any_char|any_char"}}//)***"** (//{{anchor name="white|white"}}//*//{{anchor name="string_literal|string_literal"}}//)*
-~;
-
-//{{anchor name="escape_sequence"}}escape_sequence//
-~: //{{anchor name="simple_escape_sequence|simple_escape_sequence"}}//
-~| //{{anchor name="unicode_escape_sequence|unicode_escape_sequence"}}//
-~| //{{anchor name="decimal_escape_sequence|decimal_escape_sequence"}}//
-~| //{{anchor name="hexadecimal_escape_sequence|hexadecimal_escape_sequence"}}//
-~| //{{anchor name="octal_escape_sequence|octal_escape_sequence"}}//
-~| //{{anchor name="binary_escape_sequence|binary_escape_sequence"}}//
-~;
-
-//{{anchor name="simple_escape_sequence"}}simple_escape_sequence//
-~: **\a**|**\b**|**\f**|**\l**|**\n**|**\r**|**\t**|**\v**|**\\**|**\'**|**\&quot**
-~;
-
-//{{anchor name="unicode_escape_sequence"}}unicode_escape_sequence//
-~: **\u**//{{anchor name="hexdigit|hexdigit"}} {{anchor name="hexdigit|hexdigit"}} {{anchor name="hexdigit|hexdigit"}} {{anchor name="hexdigit|hexdigit"}}//
-~;
-
-//{{anchor name="decimal_escape_sequence"}}decimal_escape_sequence//
-~: **\**//{{anchor name="digit|digit"}} {{anchor name="digit|digit"}} {{anchor name="digit|digit"}}//
-~;
-
-//{{anchor name="hexadecimal_escape_sequence"}}hexadecimal_escape_sequence//
-~: **\&h**//{{anchor name="hexdigit|hexdigit"}} {{anchor name="hexdigit|hexdigit"}}//
-~;
-
-//{{anchor name="octal_escape_sequence"}}octal_escape_sequence//
-~: **\&o**//{{anchor name="octdigit|octdigit"}} {{anchor name="octdigit|octdigit"}} {{anchor name="octdigit|octdigit"}}//
-~;
-
-//{{anchor name="binary_escape_sequence"}}binary_escape_sequence//
-~: **\&b**//{{anchor name="bindigit|bindigit"}} {{anchor name="bindigit|bindigit"}} {{anchor name="bindigit|bindigit"}} {{anchor name="bindigit|bindigit"}} {{anchor name="bindigit|bindigit"}} {{anchor name="bindigit|bindigit"}} {{anchor name="bindigit|bindigit"}} {{anchor name="bindigit|bindigit"}}//
-~;
-
-
-{{fbdoc item="section" value="Comment"}}
-
-//{{anchor name="comment"}}comment//
-~: ( **""'""** | **rem**) ((**$**//directive//) | (**any_char_but_eol**""*""))
-~;
-//{{anchor name="multiline_nested_comment"}}multiline_nested_comment//
-~: **/'** ( . | //{{anchor name="multiline_nested_comment|multiline_nested_comment"}}//)* **'/**;---
-
-{{fbdoc item="section" value="Toplevel"}}
-
-//{{anchor name="program"}}program//
-~: //{{anchor name="line|line"}}//* EOF?
-~;
-//{{anchor name="line"}}line//
-~: //{{anchor name="label|label"}}// (//{{anchor name="statement|statement"}}//|//{{anchor name="namespace_statement|namespace_statement"}}//)? //{{anchor name="comment|comment"}}//? //{{anchor name="eol|eol"}}//
-~;
-
-//{{anchor name="label"}}label//
-~: //{{anchor name="identifier|identifier"}}// **:**
-~;
-
-//{{anchor name="statement"}}//statement
-~: //{{anchor name="statement_separator|statement_separator"}}//?
-(//{{anchor name="declaration|declaration"}}// | //{{anchor name="procedure_call_or_assign|procedure_call_or_assign"}}// | //{{anchor name="compound_statement|compound_statement"}}// | //{{anchor name="quirk_statement|quirk_statement"}}// | //{{anchor name="assembler_block|assembler_block"}}// | //{{anchor name="assignment|assignment"}}// )?
-(//{{anchor name="statement_separator|statement_separator"}}// //{{anchor name="statement|statement"}}//)*
-~;
-
-//{{anchor name="declaration"}}declaration//
-~:(**public**|**private**)? 
-~~( 
-~~~(**static** 
-~~~~( //{{anchor name="function_definition|function_definition"}}//
-~~~~| //{{anchor name="sub_definition|sub_definition"}}// 
-~~~~| //{{anchor name="operator_definition|operator_definition"}}// 
-~~~~| //{{anchor name="constructor_definition|constructor_definition"}}// 
-~~~~| //{{anchor name="destructor_definition|destructor_definition"}}// 
-~~~~| //{{anchor name="property_definition|property_definition"}}//
-~~~~| //{{anchor name="variable_declaration|variable_declaration"}}//
-~~~~)
-~~~)
-~~| //{{anchor name="function_definition|function_definition"}}//
-~~| //{{anchor name="sub_definition|sub_definition"}}//
-~~| //{{anchor name="destructor_definition|destructor_definition"}}// 
-~~| //{{anchor name="property_definition|property_definition"}}//
-~~| //{{anchor name="constructor_definition|constructor_definition"}}//
-~~| //{{anchor name="operator_definition|operator_definition"}}//
-~~| //{{anchor name="const_declaration|const_declaration"}}//
-~~| //{{anchor name="type_or_union_declaration|type_or_union_declaration"}}//
-~~| //{{anchor name="variable_declaration|variable_declaration"}}//
-~~| //{{anchor name="enumeration_declaration|enumeration_declaration"}}//
-~~| //{{anchor name="auto_variable_declaration|auto_variable_declaration"}}//
-~~)
-~| **declare** //{{anchor name="procedure_declaration|procedure_declaration"}}//
-~;
-
-//{{anchor name="procedure_call_or_assign"}}procedure_call_or_assign//
-~: **call** //{{anchor name="identifier|identifier"}}// (**(**//procedure_parameter_list//**)**)?
-~| //{{anchor name="identifier|identifier"}}// //procedure_parameter_list//?
-~| (//{{anchor name="identifier|identifier"}}// | **function** | **operator** | **property**) **=** //{{anchor name="expression|expression"}}//
-~;
-
-//{{anchor name="compound_statement"}}compound_statement//
-~:  //{{anchor name="namespace_statement|namespace_statement"}}//
-~| //{{anchor name="scope_statement|scope_statement"}}//
-~| //{{anchor name="if_statement|if_statement"}}//
-~| //{{anchor name="for_statement|for_statement"}}//
-~| //{{anchor name="do_statement|do_statement"}}//
-~| //{{anchor name="while_statement|while_statement"}}//
-~| //{{anchor name="select_statement|select_statement"}}//
-~;
-
-//{{anchor name="namespace_statement"}}namespace_statement//
-~: **namespace** //{{anchor name="identifier|identifier"}}// (**alias** //{{anchor name="string_literal|string_literal"}}//)? (//{{anchor name="declaration|declaration"}}// | //{{anchor name="namespace_statement|namespace_statement"}}//)*  **end** **namespace**
-~;
-
-//{{anchor name="scope_statement"}}scope_statement//: **scope** //{{anchor name="statement_separator|statement_separator"}}// //{{anchor name="statement|statement"}}//* **end** **scope**
-~;
-
-//{{anchor name="if_statement"}}if_statement//
-~: //{{anchor name="short_if_statement|short_if_statement"}}// | //{{anchor name="long_if_statement|long_if_statement"}}//
-~;
-
-
-//{{anchor name="short_if_statement"}}short_if_statement//
-~: **if** //{{anchor name="expression|expression"}}// **then** //{{anchor name="statement_separator|statement_separator"}}// //{{anchor name="statement|statement"}}//
-**else** //{{anchor name="statement_separator|statement_separator"}}// //{{anchor name="statement|statement"}}//*
-(//{{anchor name="eol|eol"}}//| **end if** | **endif**)
-~;
-
-//{{anchor name="long_if_statement"}}long_if_statement//
-~: **if** //{{anchor name="expression|expression"}}// **then** //{{anchor name="statement_separator|statement_separator"}}// 
-//{{anchor name="statement|statement"}}//*  
-//{{anchor name="elseif_block|elseif_block"}}//* 
-(**else** //{{anchor name="statement_separator|statement_separator"}}// //{{anchor name="statement|statement"}}//*)?
-(**end** **if**|**endif**)
-~;
-
-//{{anchor name="elseif_block"}}elseif_block//
-~: **elseif** //{{anchor name="expression|expression"}}//  **then** //{{anchor name="statement_separator|statement_separator"}}// //{{anchor name="statement|statement"}}//*
-~;
-
-//{{anchor name="for_statement"}}for_statement//
-~: **for** //{{anchor name="identifier|identifier"}}// (**as** //{{anchor name="scalar|scalar"}}//)? **=** //{{anchor name="expression|expression"}}// **to** //{{anchor name="expression|expression"}}// (**step** //{{anchor name="expression|expression"}}//)? 
-(//{{anchor name="statement|statement"}}//|**exit for**(**,** **for**)* | **continue for** (**,** **for**)*)* **next** //{{anchor name="identifier|identifier"}}// (**,** //{{anchor name="identifier|identifier"}}//)* //{{anchor name="statement_separator|statement_separator"}}//
-~;
-
-//{{anchor name="do_statement"}}do_statement//
-~: **do** (**until**|**while**) //{{anchor name="expression|expression"}}// (//{{anchor name="statement|statement"}}//|**exit do** (**,** **do**)* | **continue do** (**,** **do**)*)* **loop**
-~| **do** (//{{anchor name="statement|statement"}}//|**exit do** (**,** **do**)* | **continue do** (**,** **do**)*)* **loop** (**until**|**while**) //{{anchor name="expression|expression"}}// //{{anchor name="statement_separator|statement_separator"}}//
-~;  
-
-//{{anchor name="while_statement"}}while_statement//
-~: **while** //{{anchor name="expression|expression"}}// //{{anchor name="statement_separator|statement_separator"}}//
-(//{{anchor name="statement|statement"}}// | **exit while** (**,** **while**)* | **continue while** (**,** **while**)*)*
-**wend**
-~;
-
-//{{anchor name="select_statement"}}select_statement//
-~: **select case** (**as** **const**) //{{anchor name="expression|expression"}}// //{{anchor name="case_statement|case_statement"}}//* **case else** //{{anchor name="statement_separator|statement_separator"}}// //{{anchor name="statement|statement"}}//* **end select**
-~;
-//{{anchor name="case_statement"}}case_statement//
-~: **case** //{{anchor name="case_expression|case_expression"}}// (**,** //{{anchor name="case_expression|case_expression"}}//)*
-~;
-//{{anchor name="case_expression"}}case_expression//
-~:  //{{anchor name="expression|expression"}}// | //{{anchor name="expression|expression"}}// **to** //{{anchor name="expression|expression"}}// | **is** (**>** | **<** | **>=** | **<=** | **=** | **<>**) //{{anchor name="expression|expression"}}//;   
-
-//{{anchor name="assembler_block"}}assembler_block//
-~:  **asm** //{{anchor name="comment|comment"}}//? //{{anchor name= "statement_separator"}}// (//asm_code// //{{anchor name="comment|comment"}}//? //{{anchor name="eol|eol"}}//)+ **end asm**
-~;
-
-//{{anchor name="assignment"}}assignment//
-~: **let**? //{{anchor name="variable|variable"}}// //{{anchor name="binary_operator|binary_operator"}}// **=** //{{anchor name="expression|expression"}}//
-~| //{{anchor name="variable|variable"}}// **(**//{{anchor name="procedure_parameter_list|procedure_parameter_list"}}//**)**
-~;
-
-//{{anchor name="variable"}}variable//
-~: //{{anchor name="highest_precedence_expression|highest_precedence_expression"}}//; 
-
-//{{anchor name="const_declaration"}}const_declaration//
-~: **const** (**as** //{{anchor name="symbol_type|symbol_type"}}//)? //const_assign// (**,** //const_assign//)*
-~;
-
-//{{anchor name="type_or_union_declaration"}}type_or_union_declaration//
-~:  //{{anchor name="type_declaration|type_declaration"}}// | //{{anchor name="union_declaration|union_declaration"}}//
-~;
-
-//{{anchor name="type_declaration"}}type_declaration//
-~: **type** //{{anchor name="identifier|identifier"}}// (**alias** //{{anchor name="string_literal|string_literal"}}//)? (**field** **=** //{{anchor name="expression|expression"}}//)? (//{{anchor name="comment|comment"}}//)? //{{anchor name="statement_separator|statement_separator"}}//
-~~//{{anchor name="type_member_declaration|type_member_declaration"}}//+
-~**end** **type**
-~;
-
-//{{anchor name="union_declaration"}}union_declaration//
-~: **union** //{{anchor name="identifier|identifier"}}// (**alias** //{{anchor name="string_literal|string_literal"}}//)? (**field** **=** //{{anchor name="expression|expression"}}//)? (//{{anchor name="comment|comment"}}//)? //{{anchor name="statement_separator|statement_separator"}}//
-~~//union_member_declaration//+
-~**end** **union**
-~;
-
-//{{anchor name="type_member_declaration"}}type_member_declaration//
-~: ( (**union**|**type**) //{{anchor name="comment|comment"}}//? //{{anchor name="statement_separator|statement_separator"}}// //{{anchor name="element_declaration|element_declaration"}}//+
-~**end** (**union**|**type**)
-~)
-~| //{{anchor name="element_declaration|element_declaration"}}//
-~| **as** as_element_declaration 
-~;
-											  
-
-//{{anchor name="variable_declaration"}}variable_declaration//
-~: (**redim** **preserve**?|**dim**|**common**) **shared**? //{{anchor name="symbol_type|symbol_type"}}//
-~| **extern** **import**? //{{anchor name="symbol_type|symbol_type"}}// **alias** //{{anchor name="string_literal|string_literal"}}//
-~| **static** //{{anchor name="symbol_type|symbol_type"}}//
-~;
-
-//{{anchor name="symbol_type"}}symbol_type//
-~: **const**? **unsigned**? 
-~(
-~  //{{anchor name="scalar|scalar"}}//
-~| **string** (**""*""** //{{anchor name="integer_literal|integer_literal"}}//)?
-~| **wstring** (**""*""** //{{anchor name="integer_literal|integer_literal"}}//)?
-~| //{{anchor name="user_defined_type|user_defined_type"}}//
-~| **function** (**(** //{{anchor name="parameters|parameters"}}// **)**) (**as** //{{anchor name="symbol_type|symbol_type"}}//)
-~| **sub** (**(** //{{anchor name="parameters|parameters"}}// **)**)
-~)(**const**? (**ptr**|**pointer**))*
-~;
-
-//{{anchor name="scalar"}}scalar//
-~: **byte**
-~| **ubyte**
-~| **short**
-~| **ushort**
-~| **integer**
-~| **uinteger**
-~| **longint**
-~| **ulongint**
-~| **long**
-~| **ulong**
-~| **single**
-~| **double**
-~;
-
-//{{anchor name="parameters"}}parameters//
-~: //{{anchor name="parameter|parameter"}}// (**,** //{{anchor name="parameter|parameter"}}//)*
-~;
-
-//{{anchor name="parameter"}}parameter//
-~: (**byval**|**byref**)? (//{{anchor name="identifier|identifier"}}// (**(** **)**)?)? **as** //{{anchor name="symbol_type|symbol_type"}}// (**=** //{{anchor name="literal|literal"}}//)?
-~;
-
-					   
-//{{anchor name="user_defined_type"}}user_defined_type//
-~: //{{anchor name="identifier|identifier"}}//
-~;
-
-
-//{{anchor name="procedure_declaration"}}procedure_declaration//
-~: **static**? (//{{anchor name="sub_declaration|sub_declaration"}}//|//{{anchor name="function_declaration|function_declaration"}}//|//{{anchor name="constructor_declaration|constructor_declaration"}}//|//{{anchor name="destructor_declaration|destructor_declaration"}}//|//{{anchor name="operator_declaration|operator_declaration"}}//)
-~;
-
-
-//{{anchor name="procedure_parameter_list"}}procedure_parameter_list//
-~: //{{anchor name="procedure_parameter|procedure_parameter"}}// (**,** //{{anchor name="procedure_parameter|procedure_parameter"}}//)*
-~;
-
-
-//{{anchor name="procedure_parameter"}}procedure_parameter//
-~: **byval**? (//{{anchor name="identifier|identifier"}}//(**(** **)**)? | //{{anchor name="expression|expression"}}// )
-~;
-
-
-{{fbdoc item="section" value="expressions"}}
-
-//{{anchor name="expression"}}expression//
-~: //{{anchor name="boolean_expression|boolean_expression"}}//
-~;
-
-//{{anchor name="boolean_expression"}}boolean_expression//
-~: //{{anchor name="logical_expression|logical_expression"}}//( ( **andalso** | **orelse** ) //{{anchor name="logical_expression|logical_expression"}}//)*
-~;
-
-//{{anchor name="logical_expression"}}logical_expression//
-~: //{{anchor name="logical_or_expression|logical_or_expression"}}// ( (**xor** | **eqv** | **imp**) //{{anchor name="logical_or_expression|logical_or_expression"}}// )*
-~;
-
-//{{anchor name="logical_or_expression"}}logical_or_expression//
-~:    //{{anchor name="logical_and_expression|logical_and_expression"}}//( **or** //{{anchor name="logical_and_expression|logical_and_expression"}}// )*
-~;
-
-//{{anchor name="logical_and_expression"}}logical_and_expression//
-~:  //{{anchor name="relational_expression|relational_expression"}}// ( **and** //{{anchor name="relational_expression|relational_expression"}}// )*
-~;
-
-//{{anchor name="relational_expression"}}relational_expression//
-~: //{{anchor name="concatenation_expression|concatenation_expression"}}// ( (**=**|**>**|**<**|**<>**|**<=**|**>=**) //{{anchor name="concatenation_expression|concatenation_expression"}}// )*
-~;
-
-//{{anchor name="concatenation_expression"}}concatenation_expression//
-~: //{{anchor name="add_expression|add_expression"}}//( **&** {{anchor name="add_expression|add_expression"}}//)*
-~;
-
-//{{anchor name="add_expression"}}add_expression//
-~: //{{anchor name="shift_expression|shift_expression"}}//( ( **+** | **-** ) //{{anchor name="shift_expression|shift_expression"}}// )*
-~;
-
-//{{anchor name="shift_expression"}}shift_expression//
-~: //{{anchor name="mod_expression|mod_expression"}}// ( (**shl** | **shr**) //{{anchor name="mod_expression|mod_expression"}}// )*
-~;
-
-//{{anchor name="mod_expression"}}mod_expression//
-~:   =   //{{anchor name="integer_division_expression|integer_division_expression"}}//( **mod** //{{anchor name="integer_division_expression|integer_division_expression"}}// )*
-~;
-
-//{{anchor name="integer_division_expression"}}//integer_division_expression//
-~: //{{anchor name="multiplication_expression|multiplication_expression"}}// ( **\** //{{anchor name="multiplication_expression|multiplication_expression"}}// )*
-~;
-
-//{{anchor name="multiplication_expression"}}multiplication_expression//
-~: //{{anchor name="exponentiation_expression|exponentiation_expression"}}// ( (**""*""** | **/**) //{{anchor name="exponentiation_expression|exponentiaton_expression"}}// )*
-~;
-
-//{{anchor name="exponentiation_expression"}}exponentiation_expression//
-~:  //{{anchor name="prefix_expression|prefix_expression"}}// ( **^** //{{anchor name="prefix_expression|prefix_expression"}}// )*
-~;
-
-//{{anchor name="prefix_expression"}}prefix_expression//
-~: (**-**|**+**) //{{anchor name="exponentiation_expression|exponentiation_expression"}}//
-~| **not** //{{anchor name="relational_expression|relational_expression"}}//
-~| //{{anchor name="highest_precedence_expression|highest_precedence_expression"}}//
-~;
-
-//{{anchor name="highest_precedence_expression"}}highest_precedence_expression//
-~: //{{anchor name="address_of_expression|address_of_expression"}}//
-~| ( //{{anchor name="dereference_expression|dereference_expression"}}// | //{{anchor name="casting_expression|casting_expression"}}// | //{{anchor name="pointer_type_casting_expression|pointer_type_casting_expression""}}// | //{{anchor name="parenthesised_expression|parenthesised_expression"}}// ) //{{anchor name="function_pointer_or_member_dereference"}}//
-~| //{{anchor name="anonymous_udt|anonymous_udt"}}//
-~| //{{anchor name="atom|atom"}}//
-~;
-
-//{{anchor name="address_of_expression"}}address_of_expression//
-~: **varptr** **(** highest_precedence_expression **)**
-~| **procptr** **(** //{{anchor name="identifier|identifier"}}// (**(****)**)? **)**
-~| **@** (//{{anchor name="identifier|identifier"}}// (**(****)**)? | //{{anchor name="highest_precedence_expression|highest_precedence_expression"}}//)
-~| **sadd**|**strptr** **(** //{{anchor name="expression|expression"}}// **)**
-~;
-
-//{{anchor name="dereference_expression"}}dereference_expression//
-~: **""*""**+ //{{anchor name="highest_precedence_expression|highest_precedence_expression"}}//
-~;
-
-//{{anchor name="casting_expression"}}casting_expression//
-~: **cast** **(** //{{anchor name="symbol_type|symbol_type"}}// **,** //{{anchor name="expression|expression"}}// **)**
-~;
-
-
-//{{anchor name="quirk_function"}}quirk_function//
-~: //{{anchor name="quirk_function_name|quirk_function_name"}}// //{{anchor name="procedure_parameter_list|procedure_parameter_list"}}//
-~;
-
-//{{anchor name="quirk_function_name"}}quirk_function_name//
-~: **mkd** | **mki** | **mkl** | **mklongint** | **mkshort**
-~| **cvd** | **cvi** | **cvl** | **cvlongint** | **cvs** | **cvshort**
-~| **asc** | **chr** | **instr** | **instrev** | **lcase** | **left** | **len** | **lset** | **ltrim** | **mid** | **right** | **rset** | **rtrim** | **space** | **string** | **ucase** | **wchr** | **wstr** | **wstring** 
-~| **abs** | **sgn** | **fix** | **frac** | **len** | **sizeof**,**sin** | **asin** | **cos** | **acos** | **tan** | **atn** | **sqr** | **log** | **exp** | **atan2** | **int**
-~| **peek**
-~| **lbound** | **ubound**
-~| **seek** | **input** | **open** | **close** | **get** | **put** | **name**
-~| **err**
-~| **iif**
-~| **va_first**
-~| **cbyte** | **cshort** | **cint** | **clng** | **clngint** | **cubyte** | **cushort** | **cuint** | **culng** | **culngint** | **csng** | **cdbl** | **csign** | **cunsg**
-~| **type**
-~| **view** | **width** | **color** | **screen**
-~;
-
-	 
-
-//{{anchor name="quirk_statement"}}quirk_statement//
-~: //{{anchor name="jump_statement|jump_statement"}}//
-~| //{{anchor name="print_statement|print_statement"}}//
-~| //{{anchor name="data_statement|data_statement"}}//
-~| //{{anchor name="array_statement|array_statement"}}//
-~| //{{anchor name="line_input_statement|line_input_statement"}}//
-~| //{{anchor name="input_statement|input_statement"}}//
-~| //{{anchor name="poke_statement|poke_statement"}}//
-~| //{{anchor name="file_statement|file_statement"}}//
-~| //{{anchor name="write_statement|write_statement"}}//
-~| //{{anchor name="error_statement|error_statement"}}//
-~| //{{anchor name="on_statement|on_statement"}}//
-~| //{{anchor name="view_statement|view_statement"}}//
-~| //{{anchor name="mid_statement|mid_statement"}}//
-~| //{{anchor name="lrset_statement|lrset_statement"}}//
-~| //{{anchor name="width_statement|width_statement"}}//
-~| //{{anchor name="color_statement|color_statement"}}//
-~| //{{anchor name="gfx_statement|gfx_statement"}}//
-~;
-
-//{{anchor name="jump_statement"}}jump_statement//
-~: **goto** //{{anchor name="identifier|identifier"}}//
-~;
-
-//{{anchor name="print_statement"}}print_statement//
-~: (**print** | **?**) (**#** //{{anchor name="expression|expression"}}// **,**)? (**using** //{{anchor name="expression|expression"}}// **;**)? (//{{anchor name="expression|expression"}}//? **;** | **,** )*; 
-   
-//{{anchor name="data_statement"}}data_statement//
-~: **restore** //{{anchor name="identifier|identifier"}}//
-~| **read** //{{anchor name="variable|variable"}}// (**,** //{{anchor name="variable|variable"}}//)*
-~| **data** //{{anchor name="literal|literal"}}// (**,** //{{anchor name="literal|literal"}}//)*
-~;
-
-//{{anchor name="array_statement"}}array_statement//
-~: **erase** //{{anchor name="variable|variable"}}// (**,** //{{anchor name="variable|variable"}}//)*
-~| **swap** //{{anchor name="variable|variable"}}// **,** //{{anchor name="variable|variable"}}// 
-~;
-
-//{{anchor name="line_input_statement"}}line_input_statement//
-~: **line** **input** **;**? (**#** //{{anchor name="expression|expression"}}//| //{{anchor name="expression|expression"}}//?) (**,** | **;** )? //{{anchor name="variable|variable"}}//?
-~;
-
-//{{anchor name="input_statement"}}input_statement//
-~: **input** **;**? ((**#** //{{anchor name="expression|expression"}}//| //{{anchor name="string_literal|string_literal"}}//) (**,** | **;**))? //{{anchor name="variable|variable"}}// (**,** //{{anchor name="variable|variable"}}//)*
-~;
-
-//{{anchor name="poke_statement"}}poke_statement//
-~: **poke** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}//
-~;
-
-//{{anchor name="file_statement"}}file_statement//
-~: **close** (**#**? //{{anchor name="expression|expression"}}//) (**,** **#**? //{{anchor name="expression|expression"}}//)*
-~| **seek** **#**? //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}//
-~| **put** **#** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}//? **,** //{{anchor name="expression|expression"}}//
-~| **get** **#** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}//? **,** //{{anchor name="variable|variable"}}//
-~| (**lock**|**unlock**) **#**? //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// (**to** //{{anchor name="expression|expression"}}//)?
-~| **name** //{{anchor name="expression|expression"}}// **as** //{{anchor name="expression|expression"}}//
-~;
-
-//{{anchor name="write_statement"}}write_statement//
-~: **write** (**#** //{{anchor name="expression|expression"}}//)? (//{{anchor name="expression|expression"}}//? **,** )*
-~;
-
-//{{anchor name="error_statement"}}error_statement//
-~: **error** //{{anchor name="expression|expression"}}//
-~| **err** **=** //{{anchor name="expression|expression"}}//
-~;
-
-//{{anchor name="on_statement"}}on_statement//
-~: **on** **local**? (**error** | //{{anchor name="expression|expression"}}//) **goto** identifier
-~;
-
-//{{anchor name="view_statement"}}view_statement//
-~: **view** (**print** (//{{anchor name="expression|expression"}}// **to** //{{anchor name="expression|expression"}}//)?)
-~;
-
-//{{anchor name="mid_statement"}}mid_statement//
-~: **mid** **(** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// (**,** //{{anchor name="expression|expression"}}//**)** **=** //{{anchor name="expression|expression"}}//
-~;
-
-//{{anchor name="lrset_statement"}}lrset_statement//
-~: **lset**|**rset** //{{anchor name="highest_precedence_expression|highest_precedence_expression"}}// **,** //{{anchor name="highest_precedence_expression|highest_precedence_expression"}}//
-~;
-
-//{{anchor name="width_statement"}}width_statement//
-~: **width** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// 
-~| **width** **lprint** //{{anchor name="expression|expression"}}//
-~| **width** (**#** //{{anchor name="expression|expression"}}//| //{{anchor name="expression|expression"}}//)**,** //{{anchor name="expression|expression"}}//
-~;
-
-//{{anchor name="color_statement"}}color_statement//
-~: **color** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}//
-~;
-
-//{{anchor name="gfx_statement"}}gfx_statement//
-~: **pset** ( //{{anchor name="expression|expression"}}// **,** )? **step**? **(** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// **)** (**,** //{{anchor name="expression|expression"}}// )?
-~| **line** ( //{{anchor name="expression|expression"}}// **,** )? **step**? (**(** expression **,** //{{anchor name="expression|expression"}}// **)** )? **-** **step**? **(** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// **)** (**,** //{{anchor name="expression|expression"}}//? (**,** //{{anchor name="string_literal|string_literal"}}//? (**,** //{{anchor name="expression|expression"}}// )?)?)? 
-~| **circle** ( //{{anchor name="expression|expression"}}// **,** )? **step**? **(** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// **)** **,** //{{anchor name="expression|expression"}}// ((**,** //{{anchor name="expression|expression"}}//? (**,** //{{anchor name="expression|expression"}}//? (**,** //{{anchor name="expression|expression"}}//? (**,** //{{anchor name="expression|expression"}}// (**,** //{{anchor name="expression|expression"}}//)? )? )?)?)?)?
-~| **paint** ( //{{anchor name="expression|expression"}}// **,** )? **step**? **(** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// **)** (**,** //{{anchor name="expression|expression"}}//? (**,** //{{anchor name="expression|expression"}}//? ) )
-~| **draw** ( expression **,** )? //{{anchor name="expression|expression"}}//
-~| **view** (**screen**? **(** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// **)** **-** **(** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// **)** (**,** //{{anchor name="expression|expression"}}//? (**,** //{{anchor name="expression|expression"}}//)?)? )?
-~| **palette** **get**? ((**using** //{{anchor name="variable|variable"}}//) | (//{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// (**,** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}//)?)?)
-~| **put** ( //{{anchor name="expression|expression"}}// **,** )? **step**? **(** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// **)** **,** ( **(** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// **)** **-** **(** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// **)** **,**)? //{{anchor name="variable|variable"}}// (**,** //{{anchor name="expression|expression"}}// (**,** //{{anchor name="expression|expression"}}//)?)?
-~| **get** ( //{{anchor name="expression|expression"}}// **,** )? **step**? **(** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// **)** **-** **step**? **(** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// **)** **,** //{{anchor name="variable|variable"}}//
-~| **screen** (//{{anchor name="integer_literal|integer_literal"}}// | ((//{{anchor name="expression|expression"}}// (((**,** //{{anchor name="expression|expression"}}//)? **,** //{{anchor name="expression|expression"}}//)? //{{anchor name="expression|expression"}}//)? **,** //{{anchor name="expression|expression"}}//))
-~| **screenres** //{{anchor name="expression|expression"}}// **,** //{{anchor name="expression|expression"}}// (((**,** //{{anchor name="expression|expression"}}//)? **,** //{{anchor name="expression|expression"}}//)? **,** //{{anchor name="expression|expression"}}//)?
-~;
-
-{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
-{{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="title" value="FreeBASIC Grammar"}}This page is under construction----
+
+The text on this page appearing below is not the complete FreeBASIC grammar. This page is an experimentation page to figure out what wakka lay - out works out best when publishing a grammar.
+
+The grammar as it will evolve on this page will consist of rules that consist of a left hand side and a right hand side separated by ** ::= **. 
+The grammar consists of (at least) three parts. The parts differ in what part of the FreeBASIC grammar is described and how the rhs of a rule should be interpreted.
+
+First there is the preprocessor grammar. 
+Secondly there is the context free grammar. All the rules from the context free grammar together describe the context free part of the FreeBASIC grammar. 
+Any word appearing on the rhs of a rule in UPPERCASE refers to a rule in the lexical grammar. If the color of the text is BLACK then it is not optional (it MUST appear in source code). If the color of the text is grey then the use of the word is optional.
+Any word appearing on the rhs of a rule in lowercase refers to a rule in the context free grammar. Optionality of a word in lowercase uses the same color scheme as that used for words in UPPERCASE (eg BLACK = must appear, grey = can appear).
+
+The third and final part of the grammar is the lexical grammar. The lexical grammar is described using a parsing expression grammar. Whitespace used in the parsing expression grammmar is insignificant. An example of a rule to clarify.
+
+DECLARE ::= D E C L A R E !id_char
+
+The spaces between the individual characters on the rhs (eg D E C L A R E) are only there for readability purposes. The keyword D E C L A R E (with spaces between the individual characters) is not a FreeBASIC keyword (whereas DECLARE is).
+
+Rules for optionality used in the lexical grammar are the same as those for the context free grammar (eg black = has to appear in code, grey = may appear in code). 
+Words in both UPPERCASE and lowercase refer to rules in the lexical grammar. 
+Words in lowercase refer to a rule with a rhs consisting of a pattern that goes beyond a single characterclass (eg [a-zA-Z] or [0-9b-v]), a single character or a string.
+Words in UPPERCASE refer to a rule with a rhs consisting of a single characterclass (eg [A-Z] or [a-z] or [0-9] etc...), a single character or a string.
+
+Whitespace between characters is insignificant in the lexical grammar. Spacing appearing on the rhs of a rule does not mean that the spacing should be matched in source code.
+
+##
+#context free grammar
+{{anchor name="function-declararion|function-declaration"}}""&nbsp;""::=""&nbsp;""**""<a style="color:BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iDECLARE">DECLARE</a>""** **""<a style="color:BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iFUNCTION">FUNCTION</a>""** {{anchor name="qualified-identifier|qualified-identifier}} ""<a style="color:#bfbfbf;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#procedure-specifiers">procedure-specifiers</a>"" ""<a style="color:#bfbfbf;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#parameter-list">parameter-list</a>"" **""<a style="color:BLACK" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iAS">AS</a>""** ""<a style="color:BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#type-name">type-name</a>""
+
+{{anchor name="procedure-specifiers|procedure-specifiers"}}""&nbsp;""::=""&nbsp;""to-be-done
+{{anchor name="parameter-list|parameter-list"}}""&nbsp;""::=""&nbsp;""to-be-done
+{{anchor name="type-name|type-name"}}""&nbsp;""::=""&nbsp;""to-be-done
+
+#lexical grammar
+""<a id="iDECLARE"></a>DECLARE&nbsp;&nbsp;::=&nbsp;&nbsp;<b><a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iD">D</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iE">E</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iC">C</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iL">L</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iA">A</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iR">R</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iE">E</a></b>
+!<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iid-char">id-char</a>""
+""<a id="iFUNCTION"></a>FUNCTION  ::=  <b><a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iF">F</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iU">U</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iN">N</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iC">C</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iT">T</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iI">I</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iO">O</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iN">N</a></b>
+!<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iid-char">id-char</a>""
+""<a id="iAS"></a>AS ::= <b><a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iA">A</a>
+<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iS">S</a></b> 
+!<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iid-char">id-char</a>""
+""<a id="iVIRTUAL"></a>VIRTUAL&nbsp;&nbsp;::=&nbsp;&nbsp;<b>
+<a style="color: BLACK"; href="https://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iV">V</a>
+<a style="color: BLACK"; href="https://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iI">I</a>
+<a style="color: BLACK"; href="https://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iR">R</a>
+<a style="color: BLACK"; href="https://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iT">T</a>
+<a style="color: BLACK"; href="https://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iU">U</a>
+<a style="color: BLACK"; href="https://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iA">A</a>
+<a style="color: BLACK"; href="https://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iL">L</a></b>
+!<a style="color: BLACK;" href="http://www.freebasic.net/wiki/wikka.php?wakka=FbGrammar#iid-char">id-char</a>""
+**
+""<a id="iA"></a>A&nbsp;&nbsp;::= [Aa]""
+""<a id="iB"></a>B&nbsp;&nbsp;::= [Bb]""
+""<a id="iC"></a>C&nbsp;&nbsp;::= [Cc]""
+""<a id="iD"></a>D&nbsp;&nbsp;::= [Dd]""
+""<a id="iE"></a>E&nbsp;&nbsp;::= [Ee]""
+""<a id="iF"></a>F&nbsp;&nbsp;::= [Ff]""
+""<a id="iG"></a>G&nbsp;&nbsp;::= [Gg]""
+""<a id="iH"></a>H&nbsp;&nbsp;::= [Hh]""
+""<a id="iI"></a>I&nbsp;&nbsp;::= [Ii]""
+""<a id="iJ"></a>J&nbsp;&nbsp;::= [Jj]""
+""<a id="iK"></a>K&nbsp;&nbsp;::= [Kk]""
+""<a id="iL"></a>L&nbsp;&nbsp;::= [Ll]""
+""<a id="iM"></a>M&nbsp;&nbsp;::= [Mm]""
+""<a id="iN"></a>N&nbsp;&nbsp;::= [Nn]""
+""<a id="iO"></a>O&nbsp;&nbsp;::= [Oo]""
+""<a id="iP"></a>P&nbsp;&nbsp;::= [Pp]""
+""<a id="iQ"></a>Q&nbsp;&nbsp;::= [Qq]""
+""<a id="iR"></a>R&nbsp;&nbsp;::= [Rr]""
+""<a id="iS"></a>S&nbsp;&nbsp;::= [Ss]""
+""<a id="iT"></a>T&nbsp;&nbsp;::= [Tt]""
+""<a id="iU"></a>U&nbsp;&nbsp;::= [Uu]""
+""<a id="iV"></a>V&nbsp;&nbsp;::= [Vv]""
+""<a id="iW"></a>W&nbsp;&nbsp;::= [Ww]""
+""<a id="iX"></a>X&nbsp;&nbsp;::= [Xx]""
+""<a id="iY"></a>Y&nbsp;&nbsp;::= [Yy]""
+""<a id="iZ"></a>Z&nbsp;&nbsp;::= [Zz]""
+
+""<a id="id1">virtual</a>""
+""<b><a style="color = BLACK;" id="iid-char"></a>id-char&nbsp;::= [A-Z0-9_]</a></b>""
+##**

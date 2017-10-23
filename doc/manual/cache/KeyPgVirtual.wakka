@@ -9,7 +9,7 @@ Declare virtual methods
 {{fbdoc item="desc"}}
 	**Virtual** methods are methods that can be overridden by data types derived from the type they were declared in, allowing for dynamic polymorphism. In contrast to ##[[KeyPgAbstract|Abstract]]## methods, virtual methods must have an implementation, which is used when the virtual is not overridden.
 	
-	A derived type can override virtual methods declared in its base type by declaring a method with the same identifier and signature, meaning same number and type of parameters, same return type (if any) and same calling convention:
+	A derived type can override virtual methods declared in its base type by declaring a method with the same identifier and signature, meaning same number and type of parameters (invariant parameters), same calling convention, and if any, same return type (or a covariant return type for return by reference or by pointer):
 		- if that differs only in parameter passing mode or calling convention or return type, then an overriding error is returned at compile time,
 		- otherwise shadowing only is permitted for any other signature difference, corresponding to case where both methods would be overloadable.
 	The property of being a virtual method is not implicitly inherited by the overriding method in the derived type. If this overriding method must be overridden in turn in a lower level derived type, it must also be declared as virtual.

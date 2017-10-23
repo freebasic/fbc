@@ -41,8 +41,6 @@ Notice the ***** prefix on aptr. The * is the reference operator. This is like m
 Here is a complete example program:
 
 ##%%(freebasic)
-option explicit
-
 dim aptr as integer ptr
 
 aptr = allocate(sizeof(integer))
@@ -63,8 +61,6 @@ Another use of a pointer is in a [[KeyPgType|Type]] definition. [[KeyPgType|Type
 (It should be stated that the Type definitions can now support variable length strings.)
 
 ##%%(freebasic)
-option explicit
-
 type mytptr
 	sptr as zstring ptr
 end type

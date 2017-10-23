@@ -5,6 +5,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 ======----{{anchor name="A"}} A----======
 
+**abstract member function**
+	A member function without body that must be overridden by a member function of a type more derived than the type it was declared in. See ##[[KeyPgAbstract|Abstract (member)]]##.
+
 **access rights**
 	The level of access associated with ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## members. Public members are accessible to any code; protected members are accessible to member functions and any derived ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## member functions; private members are accessible only to member functions of that ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##. By default, ##[[KeyPgType|Type]]## members have public access rights, while ##[[KeyPgClass|Class]]## members are private.
 
@@ -93,6 +96,12 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 **constructor (TYPE or CLASS)**
 	A special member function of a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## that is called when an object is instantiated.
+
+**contravariance (TYPE or CLASS)**
+	A typing rule for ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## that allows you to use a more generic (less derived) type than the one originally specified.
+
+**covariance (TYPE or CLASS)**
+	A typing rule for ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## that allows you to use a less generic (more derived) type than the one originally specified.
 
 **CVS**
 	Concurrent Versions System. The file manager implemented at Sourceforge where sources are stored, it keeps the history of the changes introduced by the developers.  Used by FB in the past. (see also SVN and GIT)
@@ -221,6 +230,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **include file**
 	A kind of source file that typically contains type definitions and declarations for variables and procedures that one or more other source files refer to. In general, these files provide a public interface to some module or modules, although a file that is [[KeyPgInclude|#include]]d can contain any text whatsoever.
 
+**inheritance (TYPE or CLASS)**
+	Inheritance is when deriving a type from a base type, by using the ##[[KeyPgExtends|Extends]]## declaration. Members of the base type become members of the derived type. ##[[KeyPgVisPrivate|Private]]## members of a base type are never directly accessible from a derived type, but can be accessed through calls to the ##[[KeyPgVisPublic|Public]]## and ##[[KeyPgVisProtected|Protected]]## members of the base type.
+
 **initialization**
 	The act of giving a variable a value at the point of its creation. For object instances, this involves calling one of its constructors. Not to be confused with assignment, which gives an already existing variable another value.
 
@@ -229,6 +241,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 **instantiate**
 	The act of creating an object of a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##, either directly with ##[[KeyPgDim|Dim]]##, or indirectly by, for example, passing an object to a procedure by value.
+
+**invariance (TYPE or CLASS)**
+	A typing rule for ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## that requires you to use exactly the same type as the one originally specified.
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -253,6 +268,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 **LGPL**
 	Shorthand for GNU Lesser General Public License.  Like the GNU GPL, but more permissive allowing non-(L)GPL'd works to be statically linked to the LGPL'd work, provided that the new work can have the LGPL'd portion relinked or replaced.
+
+**LHS**
+	Acronym for "Left Hand Side".
 
 **local variable**
 	A variable that is visible only within the scope in which it is declared, and that is destroyed when program execution leaves that scope.
@@ -296,6 +314,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 ======----{{anchor name="O"}} O----======
 
+**object (built-in TYPE or CLASS)**
+	##[[KeyPgObject|Object]]## is a built-in type which provides Run-Time Type Information (RTTI) for all types derived from it using the ##[[KeyPgExtends|Extends]]## declaration, allowing them to be used with ##[[KeyPgOpIs|Operator Is]]##, and to support ##[[KeyPgVirtual|Virtual]]## and ##[[KeyPgAbstract|Abstract]]## member functions.
+
 **object code**
 	Code in machine-readable form that can be executed by your computer's CPU and operating system, usually linked with libraries to create an executable file.
 
@@ -307,6 +328,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 **overload**
 	To declare a procedure having the same name as another, but with different parameters. Free functions, or module-level functions, can be overloaded using the ##[[KeyPgOverload|Overload]]## keyword. ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## member functions can be overloaded by default.
+
+**override**
+	Attribute to specify that a member function must override a ##[[KeyPgVirtual|Virtual]]## or ##[[KeyPgAbstract|Abstract]]## member function of a type less derived than the type it was declared in. Using the ##[[KeyPgOverride|Override]]## attribute, the compiler will show an error if the member function does not override anything.
 
 @@{{anchor name="Index|Back to top"}}@@
 
@@ -329,6 +353,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 **pointer**
 	A data type used to hold addresses. The kind of pointer determines how the data at the address is interpreted when the pointer is dereferenced, or when used with ##[[KeyPgOpPtrMemberAccess|Operator -> (Pointer to member access)]]##. See ##[[ProPgPointers|Pointers]]##.
+
+**polymorphism (TYPE or CLASS)**
+	Polymorphism is the ability of an object to provide different behaviors (use different implementations) depending on its own nature, specifically depending on position of its real type in the inheritance hierarchy. Polymorphism is achieved by overriding ##[[KeyPgVirtual|Virtual]]## or ##[[KeyPgAbstract|Abstract]]## member functions of the base type.
 
 **preprocessor**
 	The ""FreeBASIC"" preprocessor is responsible for expanding Macros and replacing Defined values with their values.
@@ -359,9 +386,18 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 **real number**
 	Any positive or negative number including fractions, irrational and transcendental numbers (like ##pi## or ##e##) and zero.  Variables containing a real number have a limited range and precision depending on the number of bits used to represent the number.  See: ##[[KeyPgSingle|Single]]## and ##[[KeyPgDouble|Double]]##.
 
+**reference**
+	A reference is an entity that is a way to access (in read and in write) data at memory location. A reference can be thought of as a pointer having as value the memory location, and which is implicitly dereferenced.  See: ##[[KeyPgByrefVariables|BYREF (variables)]]##.
+
 **registers**
 	Places inside the CPU for data storage. 80386 and compatible 32-bit models have EAX, EBX, ECX, EDX, ESI, EDI, EBP and ESP, plus some special (control/test/debug) registers. **NOT** related to "Windows registry".
-	
+
+**RHS**
+	Acronym for "Right Hand Side".
+
+**RTTI**
+	Acronym for "Run-Time Type Information". The ##[[KeyPgObject|Object]]## built-in type provides the RTTI capacity for all types derived from it using the ##[[KeyPgExtends|Extends]]## declaration, allowing them to be used with ##[[KeyPgOpIs|Operator Is]]##, and to support ##[[KeyPgVirtual|Virtual]]## and ##[[KeyPgAbstract|Abstract]]## member functions.
+
 @@{{anchor name="Index|Back to top"}}@@
 
 ======----{{anchor name="S"}} S----======
@@ -449,6 +485,9 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 **vector**
 	A series of data items in memory that can be accessed by an index number.  Similar to an array except that vector elements are not necessarily all contained within a single block of memory.
+
+**virtual member function**
+	A member function that can be overridden by a member function of a type more derived than the type it was declared in. See ##[[KeyPgVirtual|Virtual (member)]]##.
 
 @@{{anchor name="Index|Back to top"}}@@
 

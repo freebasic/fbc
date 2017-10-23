@@ -9,7 +9,7 @@ Debugging macro that prints a warning if an expression evaluates to 0.
 ##
 {{fbdoc item="param"}}
 	##//expression//##
-		Any valid expression.  If ##//expression//## evaluates to ##0##, a warning message is printed to stdout (console).
+		Any valid expression.  If ##//expression//## evaluates to ##0##, a warning message is printed to stderr (console).
 
 {{fbdoc item="desc"}}
 	The ##**ASSERTWARN**## macro is intended for use in debugging and works only if the ##-g## option is selected in the FBC command line. In this case it prints a warning message if ##//expression//## evaluates to ##0##. It doesn't stop the program execution like ##[[KeyPgAssert|ASSERT]]## does.

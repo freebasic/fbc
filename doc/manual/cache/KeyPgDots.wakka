@@ -2,7 +2,7 @@
 Used in place of procedure parameter to pass a variable number of arguments, or as the upper bound in an array declaration to denote that the number of elements will be determined by the initializer.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] { [[KeyPgSub|sub]] | [[KeyPgFunction|function]] } //proc_name// [[KeyPgCdecl|cdecl]] ( //param_list//, **...** )  { | [[KeyPgAs|As]] //return_type// }
+	[[KeyPgDeclare|declare]] { [[KeyPgSub|sub]] | [[KeyPgFunction|function]] } //proc_name// [[KeyPgCdecl|cdecl]] ( //param_list//, **...** )  { | [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|As]] //return_type// }
 	
 	[[KeyPgDim|dim]] //array_symbol// ([//lbound// [[KeyPgTo|to]]] **...**) [[[KeyPgAs|as]] [[DataType|datatype]]] => { //expression_list// }
 	

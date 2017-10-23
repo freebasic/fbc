@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -92,6 +92,8 @@ end function
 function IsUrl( byref word as string ) as integer
 	if( lcase(left( word, 7 )) = "http://" ) then
 		function = TRUE
+	elseif( lcase(left( word, 8 )) = "https://" ) then
+		function = TRUE
 	else
 		function = FALSE
 	end if
@@ -122,7 +124,7 @@ function GetWord( byref text as string, byref i as integer, byref j as integer )
 		wend
 
 		if( j <= len(text) ) then
-			if( lcase(mid( text, j, i - j + 1 )) = "http:" ) then
+			if( (lcase(mid( text, j, i - j + 1 )) = "http:") or (lcase(mid( text, j, i - j + 1 )) = "https:") ) then
 				while( i <= len(text) )
 					if( instr( numbers + letters + ":.%/" + "_", mid( text, i , 1 )) <> 0 ) then
 						i += 1

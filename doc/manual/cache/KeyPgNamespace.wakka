@@ -26,7 +26,7 @@ Declares a namespace block
 	Namespaces are commonly used in libraries where you don't want all the symbols from that library to crowd the user's space (called the global namespace). 
 	For example, if you used the "Forms" library, it might define the Point type for describing an X and Y coordinate, and you might also define it for another purpose. This can be resolved by creating the namespace Forms for the library, and then referring to its Point type as Forms.Point, and yours as just Point. 
 	
-	To access duplicated symbols defined in the global namespace, use: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
+	To access duplicated symbols defined in the global namespace, add one (or two) dot(s) as prefix: ##.""SomeSymbol""## (or ##..""SomeSymbol""## if inside a [[KeyPgWith|With..End With]] block).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/module/namespace.bas"}}%%(freebasic)

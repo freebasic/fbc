@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -235,6 +235,7 @@ end sub
 '' --------------------------------------------------------
 
 dim as string wiki_url, web_wiki_url, dev_wiki_url
+dim as string ca_file, web_ca_file, dev_ca_file
 dim as string def_cache_dir, web_cache_dir, dev_cache_dir
 dim as string sPage, sBody, cache_dir
 dim as integer i = 1
@@ -249,6 +250,8 @@ if( command(i) = "" ) then
 	print "   -web       get index from the web server (in " + default_optFile + ")"
 	print "   -dev       get index from the development server (in " + default_optFile + ")"
 	print "   -url URL   get index from URL"
+	print "   -certificate file"
+	print "              certificate to use to authenticate server (.pem)"
 	print
 	print "if -local is specified, then just read the file names from the cache:"
 	print "   -web       get page names from cache_dir"
@@ -264,6 +267,8 @@ scope
 	if( opts <> NULL ) then
 		web_wiki_url = opts->Get( "web_wiki_url" )
 		dev_wiki_url = opts->Get( "dev_wiki_url" )
+		web_ca_file = opts->Get( "web_certificate", "" )
+		dev_ca_file = opts->Get( "dev_certificate", "" )
 		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
 		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
 		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
@@ -280,19 +285,26 @@ while( command(i) > "" )
 		case "-web"
 			wiki_url = web_wiki_url 
 			cache_dir = def_cache_dir
+			ca_file = web_ca_file
 		case "-dev"
 			wiki_url = dev_wiki_url 
 			cache_dir = def_cache_dir
+			ca_file = dev_ca_file
 		case "-web+"
 			wiki_url = web_wiki_url 
 			cache_dir = web_cache_dir 
+			ca_file = web_ca_file
 		case "-dev+"
 			wiki_url = dev_wiki_url 
 			cache_dir = dev_cache_dir
+			ca_file = dev_ca_file
 		case "-url"
 			i += 1
 			wiki_url = command(i)
 			cache_dir = def_cache_dir
+		case "-certificate"
+			i += 1
+			ca_file = command(i)
 		case "-local"
 			blocal = TRUE
 		case else
@@ -321,13 +333,19 @@ else
 	scope
 		dim as CWikiCon ptr wikicon = NULL
 
-		wikicon = new CWikiCon( wiki_url )
+		wikicon = new CWikiCon( wiki_url, ca_file )
 		if wikicon = NULL then
 			print "Unable to create connection " + wiki_url
 			end 1
 		end if
 
 		print "URL: "; wiki_url
+
+		if( ca_file > "" ) then
+			print "Certificate: "; ca_file
+		else
+			print "Certificate: none"
+		end if
 
 		print "Loading '" + sPage + "': ";
 		if( wikicon->LoadPage( sPage, FALSE, FALSE, sBody ) = FALSE ) then

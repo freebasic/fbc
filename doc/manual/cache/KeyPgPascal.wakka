@@ -3,7 +3,7 @@ Specifies a //Pascal//-style calling convention in a procedure declaration
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgSub|Sub]] //name// **Pascal** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// )
-	[[KeyPgFunction|Function]] //name// **Pascal** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// ) [[KeyPgAs|as]] //return_type//
+	[[KeyPgFunction|Function]] //name// **Pascal** [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""alias"""//] ( //parameters// ) [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|as]] //return_type//
 ##
 {{fbdoc item="desc"}}
 	In procedure declarations, ##**Pascal**## specifies that a procedure will use the ##**Pascal**## calling convention. In the //Pascal// calling convention, any parameters are to be passed (pushed onto the stack) in the same order in which they are listed, that is, from left to right. The procedures need not preserve the ##EAX##, ##ECX## or ##EDX## registers, and must clean up the stack (pop any parameters) before it returns.

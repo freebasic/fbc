@@ -2,10 +2,11 @@
 Changes the next read location for values stored with the ##[[KeyPgData|Data]]## statement.
 
 {{fbdoc item="syntax"}}##
-	**Restore** //label//
+	**Restore** [//label//]
 ##
 {{fbdoc item="desc"}}
 	Sets the next-data-to-read pointer to the first element of the first ##[[KeyPgData|Data]]## statement after the label.  The label must be contained in the same module as the currently-executing code.  ##Restore## alters the normal top to bottom order in which ##Data## are ##[[KeyPgRead|Read]]##. It allows re-reading some ##Data## or using multiple sets of ##Data## in a single module.	
+	If label is omitted, the next-data-to-read pointer is set to the first ##Data## statement found in the module.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/data/restore.bas"}}%%(freebasic)
@@ -97,5 +98,6 @@ Data 546, 7894, 4589, 64657, 34554, "Hi!"
 {{fbdoc item="see"}}
 	- ##[[KeyPgData|Data]]##
 	- ##[[KeyPgRead|Read]]##
+	- ##[[ProPgLabels|Labels]]##
 
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

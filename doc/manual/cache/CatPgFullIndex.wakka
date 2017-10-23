@@ -90,8 +90,8 @@ Alphabetical listing of keywords, macros and procedures.
 {{fbdoc item="section" value="$"}}{{anchor name="dollar"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaDynamic|$DYNAMIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaInclude|$INCLUDE"}}
-	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaLang|$LANG"}}
+	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
 
 {{fbdoc item="section" value="A"}}{{anchor name="a"}}
 	- {{fbdoc item="keyword" value="KeyPgAbs|ABS"}}
@@ -108,11 +108,11 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgAny|ANY"}}
 	- {{fbdoc item="keyword" value="KeyPgAppend|APPEND"}}
 	- {{fbdoc item="keyword" value="KeyPgAs|AS"}}
-	- {{fbdoc item="keyword" value="KeyPgAssert|ASSERT"}}
-	- {{fbdoc item="keyword" value="KeyPgAssertwarn|ASSERTWARN"}}
 	- {{fbdoc item="keyword" value="KeyPgAsc|ASC"}}
 	- {{fbdoc item="keyword" value="KeyPgAsin|ASIN"}}
 	- {{fbdoc item="keyword" value="KeyPgAsm|ASM"}}
+	- {{fbdoc item="keyword" value="KeyPgAssert|ASSERT"}}
+	- {{fbdoc item="keyword" value="KeyPgAssertwarn|ASSERTWARN"}}
 	- {{fbdoc item="keyword" value="KeyPgAtan2|ATAN2"}}
 	- {{fbdoc item="keyword" value="KeyPgAtn|ATN"}}
 
@@ -367,9 +367,9 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgNaked|NAKED"}}
 	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
 	- {{fbdoc item="keyword" value="KeyPgNamespace|NAMESPACE"}}
-	- {{fbdoc item="keyword" value="KeyPgNext|NEXT"}}
 	- {{fbdoc item="keyword" value="KeyPgOpNew|NEW"}}
 	- {{fbdoc item="keyword" value="KeyPgOpPlacementNew|NEW (Placement)"}}
+	- {{fbdoc item="keyword" value="KeyPgNext|NEXT"}}
 	- {{fbdoc item="keyword" value="KeyPgResumenext|NEXT (RESUME)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpNot|NOT"}}
 	- {{fbdoc item="keyword" value="KeyPgNow|NOW"}}
@@ -473,8 +473,8 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgScreencopy|SCREENCOPY"}}
 	- {{fbdoc item="keyword" value="KeyPgScreencontrol|SCREENCONTROL"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenevent|SCREENEVENT"}}
-	- {{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenglproc|SCREENGLPROC"}}
+	- {{fbdoc item="keyword" value="KeyPgScreeninfo|SCREENINFO"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenlist|SCREENLIST"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenlock|SCREENLOCK"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenptr|SCREENPTR"}}
@@ -494,8 +494,8 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgShared|SHARED"}}
 	- {{fbdoc item="keyword" value="KeyPgShell|SHELL"}}
 	- {{fbdoc item="keyword" value="KeyPgOpShiftLeft|SHL"}}
-	- {{fbdoc item="keyword" value="KeyPgOpShiftRight|SHR"}}
 	- {{fbdoc item="keyword" value="KeyPgShort|SHORT"}}
+	- {{fbdoc item="keyword" value="KeyPgOpShiftRight|SHR"}}
 	- {{fbdoc item="keyword" value="KeyPgSin|SIN"}}
 	- {{fbdoc item="keyword" value="KeyPgSingle|SINGLE"}}
 	- {{fbdoc item="keyword" value="KeyPgSizeof|SIZEOF"}}
@@ -529,9 +529,9 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgThreadDetach|THREADDETACH"}}
 	- {{fbdoc item="keyword" value="KeyPgThreadWait|THREADWAIT"}}
 	- {{fbdoc item="keyword" value="KeyPgTime|TIME"}}
+	- {{fbdoc item="keyword" value="KeyPgTimer|TIMER"}}
 	- {{fbdoc item="keyword" value="KeyPgTimeserial|TIMESERIAL"}}
 	- {{fbdoc item="keyword" value="KeyPgTimeValue|TIMEVALUE"}}
-	- {{fbdoc item="keyword" value="KeyPgTimer|TIMER"}}
 	- {{fbdoc item="keyword" value="KeyPgTo|TO"}}
 	- {{fbdoc item="keyword" value="KeyPgTransGfx|TRANS (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgTrim|TRIM"}}
