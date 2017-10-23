@@ -4,7 +4,10 @@ set -ex
 sudo apt-get -y install \
 	libgl1-mesa-dev \
 	libglu1-mesa-dev \
-	libgpm-dev
+	libgpm-dev \
+	libcurl4-openssl-dev \
+	libmysqlclient-dev \
+	libaspell-dev
 if [ "$1" = "32" ]; then
 	sudo apt-get -y install \
 		gcc-multilib \

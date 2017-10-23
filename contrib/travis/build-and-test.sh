@@ -3,6 +3,7 @@ set -ex
 
 source "$(dirname "$0")/bootstrap-settings.sh"
 
+# Build fbc
 if [ "$1" = "32" ]; then
 	echo "CC = gcc -m32" > config.mk
 	echo "TARGET_ARCH = x86" >> config.mk
@@ -13,6 +14,7 @@ make -j$(nproc) clean-compiler
 make -j$(nproc) compiler FBC='bin/fbc1 -i inc' </dev/null
 rm bin/fbc1
 
+# Run fbc tests
 make cunit-tests </dev/null
 
 make log-tests </dev/null
@@ -26,3 +28,12 @@ if ! git diff-files --quiet --ignore-submodules; then
 	git diff
 	exit 1
 fi
+
+# Build fbdoc tools
+export FBC='../../bin/fbc -i ../../inc'
+cd doc/libfbdoc
+make
+cd ../fbdoc
+make
+cd ../fbchkdoc
+make
