@@ -43,7 +43,7 @@ namespace fb.fbdoc
 
 	declare function CapFirstLetter( byref a as string ) as string
 
-	declare function CellUnescapeCodes _
+	declare function UnescapeHtml _
 		( _
 			byref celltext as const string _
 		) as string

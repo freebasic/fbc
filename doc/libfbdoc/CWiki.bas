@@ -39,8 +39,7 @@ namespace fb.fbdoc
 							actionre, _
 							action2re, _
 							indentre, _
-							actionparamre, _
-							quotere
+							actionparamre
 
 		as CList ptr 		tokenlist
 		as CList ptr		actparamlist
@@ -280,12 +279,6 @@ namespace fb.fbdoc
 			exit function
 		end if
 
-		ctx->quotere = new CRegex( $"(&quot)", REGEX_OPT_CASELESS)
-		if( ctx->quotere = NULL ) then	
-			exit function
-		end if
-
-		
 
 		function = TRUE
 
@@ -296,11 +289,6 @@ namespace fb.fbdoc
  		( _
 			byval ctx as CWikiCtx ptr _
 		) 
-
-		if( ctx->quotere <> NULL ) then
-			delete ctx->quotere
-			ctx->quotere = NULL
-		end if
 
 		if( ctx->actionparamre <> NULL ) then
 			delete ctx->actionparamre
@@ -488,22 +476,7 @@ namespace fb.fbdoc
 				
 				param->name = *ctx->actionparamre->GetStr( 1 )
 				match = ctx->actionparamre->GetStr( 2 )
-
-				param->value = ""
-
-				if( ctx->quotere->Search( match ) ) then
-					dim as integer ofs = 0
-					do
-						dim as integer mofs = ctx->quotere->GetOfs( 0 )
-						param->value += mid( *match, 1+ofs, mofs-ofs ) + chr(34)
-						ofs = mofs + ctx->quotere->GetLen( 0 )
-					loop while ctx->quotere->SearchNext()
-					if( ofs < len( *match  ) ) then
-						param->value += mid( *match, 1+ofs )
-					end if
-				else
-					param->value = *match
-				end if
+				param->value = *match
 
 				last = param
 
