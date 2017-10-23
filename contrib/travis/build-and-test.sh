@@ -32,8 +32,8 @@ fi
 # Build fbdoc tools
 export FBC='../../bin/fbc -i ../../inc'
 cd doc/libfbdoc
-make
+make FBC="$FBC"
 cd ../fbdoc
-make
+make FBC="$FBC"
 cd ../fbchkdoc
-make
+make FBC="$FBC"
