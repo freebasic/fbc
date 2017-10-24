@@ -16,4 +16,3 @@ dev_wiki_url =
 ' dev_certificate = path/filename.pem"
 dev_username = 
 dev_password = 
-

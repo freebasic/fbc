@@ -108,7 +108,8 @@ namespace fb.fbdoc
 
 	type WikiToken_Link
 		as string 				url
-		as integer        linkclass
+		as integer				linkclass
+		as integer				pipechar
 	end type
 
 	type WikiToken_Code

@@ -758,7 +758,7 @@ namespace fb.fbdoc
 
 		res = _closeList( ctx )
 		
-		cellData = paramsTb->GetParam( "cells" )
+		cellData = UnescapeHtml( paramsTb->GetParam( "cells" ) )
 		strCols = paramsTb->GetParam( "columns" )
 
 		n = _index_cells( cellData, @cellTb )
@@ -781,7 +781,7 @@ namespace fb.fbdoc
 			if( cell = "###" ) then
 				res += "<td>&nbsp;</td>"
 			else
-				res += "<td>" + Text2Html( CellUnescapeCodes( cell ) ) + "</td>"
+				res += "<td>" + Text2Html( cell ) + "</td>"
 			end if
 			col += 1
 			if( col > cols ) then
