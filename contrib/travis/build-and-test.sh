@@ -4,13 +4,17 @@ set -ex
 source "$(dirname "$0")/bootstrap-settings.sh"
 
 # Build fbc
+rm -f config.mk
 if [ "$1" = "32" ]; then
-	echo "CC = gcc -m32" > config.mk
-	echo "TARGET_ARCH = x86" >> config.mk
+	echo "CC := gcc -m32" >> config.mk
+	echo "TARGET_ARCH := x86" >> config.mk
 fi
+echo "FBFLAGS := -g -exx -maxerr 1" >> config.mk
+echo "CFLAGS := -g -O2 -Werror -Wfatal-errors -DDEBUG" >> config.mk
 make -j$(nproc) FBC="$bootstrap_package/bin/fbc -i $bootstrap_package/inc" </dev/null
 mv bin/fbc bin/fbc1
 make -j$(nproc) clean-compiler
+# Rebuild fbc with itself
 make -j$(nproc) compiler FBC='bin/fbc1 -i inc' </dev/null
 rm bin/fbc1
 
