@@ -2,12 +2,14 @@
 set -ex
 
 sudo apt-get -y install \
+	g++ \
 	libgl1-mesa-dev \
 	libglu1-mesa-dev \
 	libgpm-dev
 if [ "$1" = "32" ]; then
 	sudo apt-get -y install \
 		gcc-multilib \
+		g++-multilib \
 		lib32ncurses5-dev \
 		libffi-dev:i386 \
 		libcunit1-dev:i386 \
