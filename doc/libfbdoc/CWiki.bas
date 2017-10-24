@@ -176,7 +176,11 @@ namespace fb.fbdoc
 			t += "%%"
 		case WIKI_TOKEN_LINK
 			if( token->text > "" ) then
-				t = "[[" + token->link->url + " " + token->text + "]]"
+				if( token->link->pipechar ) then
+					t = "[[" + token->link->url + "|" + token->text + "]]"
+				else
+					t = "[[" + token->link->url + " " + token->text + "]]"
+				end if
 			else
 				t = "[[" + token->link->url + "]]"
 			end if
@@ -622,10 +626,11 @@ namespace fb.fbdoc
 			token->link->url = *ctx->linkre->GetStr( 1 )
 			token->text = trim( *ctx->linkre->GetStr( 2 ) )
 
-			' !!! FIXME
-			' if( token->text = "" ) then
-			' 	token->text = token->link->url
-			' end if
+			if( token->text = "" ) then
+				token->link->pipechar = FALSE
+			else
+				token->link->pipechar = TRUE
+			end if
 
 			exit sub
 		end if
