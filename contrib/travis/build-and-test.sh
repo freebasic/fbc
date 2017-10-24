@@ -20,7 +20,7 @@ make cunit-tests </dev/null
 make log-tests </dev/null
 if grep RESULT=FAILED tests/failed-*.log; then
 	grep RESULT=FAILED tests/failed-*.log | while read ln; do
-		logfile="$(echo "$ln" | cut -d: -f2)"
+		logfile="tests/$(echo "$ln" | cut -d: -f2)"
 		echo
 		echo "$logfile"
 		echo
