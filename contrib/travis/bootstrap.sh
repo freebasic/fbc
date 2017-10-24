@@ -2,12 +2,14 @@
 set -ex
 
 sudo apt-get -y install \
+	g++ \
 	libgl1-mesa-dev \
 	libglu1-mesa-dev \
 	libgpm-dev
 if [ "$1" = "32" ]; then
 	sudo apt-get -y install \
 		gcc-multilib \
+		g++-multilib \
 		lib32ncurses5-dev \
 		libffi-dev:i386 \
 		libcunit1-dev:i386 \
@@ -15,7 +17,11 @@ if [ "$1" = "32" ]; then
 		libxext-dev:i386 \
 		libxpm-dev:i386 \
 		libxrender-dev:i386 \
-		libxrandr-dev:i386
+		libxrandr-dev:i386 \
+		libcurl4-openssl-dev:i386 \
+		libmysqlclient-dev:i386 \
+		libaspell-dev:i386 \
+		libpcre3-dev:i386
 else
 	sudo apt-get -y install \
 		libncurses-dev \
@@ -25,7 +31,11 @@ else
 		libxext-dev \
 		libxpm-dev \
 		libxrender-dev \
-		libxrandr-dev
+		libxrandr-dev \
+		libcurl4-openssl-dev \
+		libmysqlclient-dev \
+		libaspell-dev \
+		libpcre3-dev
 fi
 
 source "$(dirname "$0")/bootstrap-settings.sh"
