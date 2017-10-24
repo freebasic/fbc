@@ -42,7 +42,7 @@ int fb_PrinterOpen( DEV_LPT_INFO *devInfo, int iPort, const char *pszDeviceRaw )
 	{
 		if( lpt_proto!=NULL )
 			free(lpt_proto);
-			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
 	devInfo->iPort = iPort;

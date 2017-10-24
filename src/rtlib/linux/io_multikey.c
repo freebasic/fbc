@@ -269,9 +269,9 @@ static int keyboard_init(void)
 
 #ifndef DISABLE_X11
 	else {
-	    xlib = fb_hDynLoad("libX11.so", funcs, (void **)&X);
-	    if (!xlib)
-	        return -1;
+		xlib = fb_hDynLoad("libX11.so", funcs, (void **)&X);
+		if (!xlib)
+			return -1;
 
 		display = X.OpenDisplay(NULL);
 		if (!display)
