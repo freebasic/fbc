@@ -11,19 +11,19 @@ int fb_DevFileReadWstr( FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
     FB_LOCK();
 
     if( handle == NULL )
-    	fp = stdin;
+        fp = stdin;
     else
     {
-    	fp = (FILE*) handle->opaque;
-    	if( fp == stdout || fp == stderr )
-        	fp = stdin;
+        fp = (FILE*) handle->opaque;
+        if( fp == stdout || fp == stderr )
+            fp = stdin;
 
-		if( fp == NULL )
-		{
-			FB_UNLOCK();
-			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-		}
-	}
+        if( fp == NULL )
+        {
+            FB_UNLOCK();
+            return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        }
+    }
 
     chars = *pchars;
 

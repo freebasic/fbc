@@ -76,20 +76,20 @@ int fb_hArrayAlloc
 		array->ptr = malloc( size );
     
     if( array->ptr == NULL )
-    	return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+        return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
 
-	/* call ctor for each element */
-	if( ctor ) {
-		unsigned char *this_ = array->ptr;
-		while( elements > 0 )
-		{
-			/* !!!FIXME!!! check exceptions (only if rewritten in C++) */
-			ctor( this_ );
-			
-			this_ += element_len;
-			--elements;
-		}
-	}
+    /* call ctor for each element */
+    if( ctor ) {
+        unsigned char *this_ = array->ptr;
+        while( elements > 0 )
+        {
+            /* !!!FIXME!!! check exceptions (only if rewritten in C++) */
+            ctor( this_ );
+
+            this_ += element_len;
+            --elements;
+        }
+    }
 
 	DBG_ASSERT( array->element_len == element_len || array->element_len == 0 );
 	DBG_ASSERT( array->dimensions == dimensions || array->dimensions == 0 );

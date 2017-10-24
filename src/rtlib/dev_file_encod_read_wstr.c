@@ -15,11 +15,11 @@ int fb_DevFileReadEncodWstr( FB_FILE *handle, FB_WCHAR *dst, size_t *max_chars )
     if( fp == stdout || fp == stderr )
         fp = stdin;
 
-	if( fp == NULL )
-	{
-		FB_UNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
+    if( fp == NULL )
+    {
+        FB_UNLOCK();
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    }
 
 	/* do read */
 	chars = fb_hFileRead_UTFToWchar( fp, handle->encod, dst, chars );

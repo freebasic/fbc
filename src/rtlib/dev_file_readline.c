@@ -123,11 +123,11 @@ int fb_DevFileReadLine( FB_FILE *handle, FBSTRING *dst )
     if( fp==stdout || fp==stderr )
         fp = stdin;
 
-	if( fp == NULL )
-	{
-		FB_UNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
+    if( fp == NULL )
+    {
+        FB_UNLOCK();
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    }
 
     res = fb_DevFileReadLineDumb( fp, dst, NULL );
 

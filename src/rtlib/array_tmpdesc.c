@@ -67,14 +67,14 @@ FBARRAY *fb_ArrayAllocTempDesc
     *pdesc = array;
 
     if( array == NULL )
-    	return NULL;
-    	
-   	if( dimensions == 0) 
-   	{
-   		/* special case for GET temp arrays */
-   		array->size = 0;
-		return array;
-   	}
+        return NULL;
+
+    if( dimensions == 0)
+    {
+        /* special case for GET temp arrays */
+        array->size = 0;
+        return array;
+    }
 
     va_start( ap, dimensions );
 

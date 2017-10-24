@@ -47,26 +47,26 @@ FBCALL FBSTRING *fb_RTrimEx( FBSTRING *src, FBSTRING *pattern )
     else 
         len = 0;
 
-	if( len > 0 )
-	{
-		/* alloc temp string */
+    if( len > 0 )
+    {
+        /* alloc temp string */
         dst = fb_hStrAllocTemp_NoLock( NULL, len );
-		if( dst != NULL )
-		{
-			/* simple copy */
-			fb_hStrCopy( dst->data, src->data, len );
-		}
-		else
-			dst = &__fb_ctx.null_desc;
+        if( dst != NULL )
+        {
+            /* simple copy */
+            fb_hStrCopy( dst->data, src->data, len );
+        }
+        else
+            dst = &__fb_ctx.null_desc;
     }
-	else
-		dst = &__fb_ctx.null_desc;
+    else
+        dst = &__fb_ctx.null_desc;
 
-	/* del if temp */
-	fb_hStrDelTemp_NoLock( src );
-	fb_hStrDelTemp_NoLock( pattern );
+    /* del if temp */
+    fb_hStrDelTemp_NoLock( src );
+    fb_hStrDelTemp_NoLock( pattern );
 
-   	FB_STRUNLOCK();
+    FB_STRUNLOCK();
 
-	return dst;
+    return dst;
 }

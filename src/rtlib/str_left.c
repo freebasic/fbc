@@ -31,14 +31,14 @@ FBCALL FBSTRING *fb_LEFT( FBSTRING *src, ssize_t chars )
 			dst = &__fb_ctx.null_desc;
     }
     else
-    	dst = &__fb_ctx.null_desc;
+        dst = &__fb_ctx.null_desc;
 
-	/* del if temp */
-	fb_hStrDelTemp_NoLock( src );
+    /* del if temp */
+    fb_hStrDelTemp_NoLock( src );
 
-	FB_STRUNLOCK();
+    FB_STRUNLOCK();
 
-	return dst;
+    return dst;
 }
 
 

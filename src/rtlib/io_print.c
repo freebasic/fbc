@@ -24,10 +24,10 @@ void fb_PrintStringEx ( FB_FILE *handle, FBSTRING *s, int mask )
     if( (s == NULL) || (s->data == NULL) )
     	fb_PrintVoidEx( handle, mask );
     else
-    	fb_hPrintStrEx( handle, s->data, FB_STRSIZE(s), mask );
+        fb_hPrintStrEx( handle, s->data, FB_STRSIZE(s), mask );
 
-	/* del if temp */
-	fb_hStrDelTemp( s );
+    /* del if temp */
+    fb_hStrDelTemp( s );
 }
 
 /*:::::*/

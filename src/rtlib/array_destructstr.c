@@ -17,10 +17,10 @@ void fb_hArrayDtorStr( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx )
     ++dim;
 
     for( i = 1; i < array->dimensions; i++, dim++ )
-    	elements *= dim->elements;
+        elements *= dim->elements;
 
-	/* call dtors in the inverse order */
-	this_ = (FBSTRING *)array->ptr + (base_idx + (elements-1));
+    /* call dtors in the inverse order */
+    this_ = (FBSTRING *)array->ptr + (base_idx + (elements-1));
 
 	while( elements > 0 ) {
 		if( this_->data != NULL )

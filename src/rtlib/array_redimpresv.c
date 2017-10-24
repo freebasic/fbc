@@ -54,27 +54,27 @@ int fb_hArrayRealloc
 	/* realloc */
     array->ptr = realloc( array->ptr, size );
     if( array->ptr == NULL )
-    	return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+        return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
 
-	/* Have remainder? */
-	if( size > array->size ) {
-		/* Construct or clear new array elements: */
-		/* Clearing is not needed if not requested, or if ctors will be called
-		   (ctors take care of clearing themselves) */
-		this_ = ((unsigned char *)array->ptr) + array->size;
-		if( ctor ) {
-			size_t objects = (size - array->size) / element_len;
-			while( objects > 0 ) {
-				/* !!!FIXME!!! check exceptions (only if rewritten in C++) */
-				ctor( this_ );
+    /* Have remainder? */
+    if( size > array->size ) {
+        /* Construct or clear new array elements: */
+        /* Clearing is not needed if not requested, or if ctors will be called
+           (ctors take care of clearing themselves) */
+        this_ = ((unsigned char *)array->ptr) + array->size;
+        if( ctor ) {
+            size_t objects = (size - array->size) / element_len;
+            while( objects > 0 ) {
+                /* !!!FIXME!!! check exceptions (only if rewritten in C++) */
+                ctor( this_ );
 
-				this_ += element_len;
-				--objects;
-			}
-		} else if( doclear ) {
-			memset( (void *)this_, 0, size - array->size );
-		}
-	}
+                this_ += element_len;
+                --objects;
+            }
+        } else if( doclear ) {
+            memset( (void *)this_, 0, size - array->size );
+        }
+    }
 
 	DBG_ASSERT( array->element_len == element_len || array->element_len == 0 );
 	DBG_ASSERT( array->dimensions == dimensions || array->dimensions == 0 );
@@ -104,19 +104,19 @@ static int hRedim
 		va_list ap
 	)
 {
-	FB_DTORMULT dtor_mult;
+    FB_DTORMULT dtor_mult;
 
     /* new? */
     if( array->ptr == NULL )
-    	return fb_hArrayAlloc( array, element_len, doclear, NULL, dimensions, ap );
+        return fb_hArrayAlloc( array, element_len, doclear, NULL, dimensions, ap );
 
-	/* realloc.. */
-	if( isvarlen )
-		dtor_mult = &fb_hArrayDtorStr;
-	else
-		dtor_mult = NULL;
+    /* realloc.. */
+    if( isvarlen )
+        dtor_mult = &fb_hArrayDtorStr;
+    else
+        dtor_mult = NULL;
 
-	return fb_hArrayRealloc( array, element_len, doclear, NULL, dtor_mult, NULL, dimensions, ap );
+    return fb_hArrayRealloc( array, element_len, doclear, NULL, dtor_mult, NULL, dimensions, ap );
 }
 
 int fb_ArrayRedimPresvEx

@@ -15,17 +15,17 @@ int fb_DevFileReadEncod( FB_FILE *handle, void *dst, size_t *max_chars )
     if( fp == stdout || fp == stderr )
         fp = stdin;
 
-	if( fp == NULL )
-	{
-		FB_UNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
+    if( fp == NULL )
+    {
+        FB_UNLOCK();
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    }
 
-	/* do read */
-	chars = fb_hFileRead_UTFToChar( fp, handle->encod, dst, chars );
+    /* do read */
+    chars = fb_hFileRead_UTFToChar( fp, handle->encod, dst, chars );
 
-	/* fill with nulls if at eof */
-	if( chars != *max_chars )
+    /* fill with nulls if at eof */
+    if( chars != *max_chars )
         memset( ((char *)dst) + chars, 0, *max_chars - chars );
 
     *max_chars = chars;
