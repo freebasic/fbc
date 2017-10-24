@@ -20,7 +20,8 @@ if [ "$1" = "32" ]; then
 		libxrandr-dev:i386 \
 		libcurl4-openssl-dev:i386 \
 		libmysqlclient-dev:i386 \
-		libaspell-dev:i386
+		libaspell-dev:i386 \
+		libpcre3-dev:i386
 else
 	sudo apt-get -y install \
 		libncurses-dev \
@@ -33,7 +34,8 @@ else
 		libxrandr-dev \
 		libcurl4-openssl-dev \
 		libmysqlclient-dev \
-		libaspell-dev
+		libaspell-dev \
+		libpcre3-dev
 fi
 
 source "$(dirname "$0")/bootstrap-settings.sh"
