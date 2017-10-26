@@ -6,7 +6,7 @@ sudo apt-get -y install \
 	libgl1-mesa-dev \
 	libglu1-mesa-dev \
 	libgpm-dev
-if [ "$1" = "32" ]; then
+if [ "$FBTRAVIS_TARGET_BITS" = "32" ]; then
 	sudo apt-get -y install \
 		gcc-multilib \
 		g++-multilib \
@@ -45,7 +45,7 @@ wget -O $bootstrap_package.tar.xz \
 tar xf $bootstrap_package.tar.xz
 
 cd $bootstrap_package
-if [ "$1" = "32" ]; then
+if [ "$FBTRAVIS_TARGET_BITS" = "32" ]; then
 	echo "CC = gcc -m32" > config.mk
 	echo "AS = as --32" >> config.mk
 	echo "TARGET_ARCH = x86" >> config.mk

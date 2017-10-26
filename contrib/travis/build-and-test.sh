@@ -5,23 +5,37 @@ source "$(dirname "$0")/bootstrap-settings.sh"
 
 # Build fbc
 rm -f config.mk
-if [ "$1" = "32" ]; then
+if [ "$FBTRAVIS_TARGET_BITS" = "32" ]; then
 	echo "CC := gcc -m32" >> config.mk
 	echo "TARGET_ARCH := x86" >> config.mk
 fi
-echo "FBFLAGS := -g -exx -maxerr 1" >> config.mk
-echo "CFLAGS := -g -O2 -Werror -Wfatal-errors -DDEBUG" >> config.mk
+if [ "$FBTRAVIS_COMPILER_DEBUG" = "1" ]; then
+	echo "FBFLAGS += -g -exx" >> config.mk
+	echo "CFLAGS += -g -Werror -DDEBUG" >> config.mk
+else
+	echo "CFLAGS += -Werror" >> config.mk
+fi
 make -j$(nproc) FBC="$bootstrap_package/bin/fbc -i $bootstrap_package/inc" </dev/null
 mv bin/fbc bin/fbc1
 make -j$(nproc) clean-compiler
+
 # Rebuild fbc with itself
 make -j$(nproc) compiler FBC='bin/fbc1 -i inc' </dev/null
 rm bin/fbc1
 
 # Run fbc tests
-make cunit-tests </dev/null
+FBC_FOR_TESTS="$PWD/fbc -i $PWD/inc"
+if [ "$FBTRAVIS_TESTS_DEBUG" = "1" ]; then
+	FBC_FOR_TESTS="$FBC_FOR_TESTS -g -exx"
+fi
 
-make log-tests </dev/null
+cd tests
+make cunit-tests FBC="$FBC_FOR_TESTS" </dev/null
+cd ..
+
+cd tests
+make log-tests FBC="$FBC_FOR_TESTS" </dev/null
+cd ..
 if grep RESULT=FAILED tests/failed-*.log; then
 	grep RESULT=FAILED tests/failed-*.log | while read ln; do
 		logfile="tests/$(echo "$ln" | cut -d: -f2)"
@@ -33,7 +47,9 @@ if grep RESULT=FAILED tests/failed-*.log; then
 	exit 1
 fi
 
-make warning-tests </dev/null
+cd tests/warnings
+FBC="$FBC_FOR_TESTS" ./test.sh </dev/null
+cd ../..
 git update-index -q --ignore-submodules --refresh
 if ! git diff-files --quiet --ignore-submodules; then
 	git diff
@@ -41,10 +57,9 @@ if ! git diff-files --quiet --ignore-submodules; then
 fi
 
 # Build fbdoc tools
-export FBC='../../bin/fbc -i ../../inc'
 cd doc/libfbdoc
-make FBC="$FBC"
+make FBC="$FBC_FOR_TESTS"
 cd ../fbdoc
-make FBC="$FBC"
+make FBC="$FBC_FOR_TESTS"
 cd ../fbchkdoc
-make FBC="$FBC"
+make FBC="$FBC_FOR_TESTS"
