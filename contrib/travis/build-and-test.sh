@@ -49,8 +49,9 @@ fi
 
 # Always building warning-tests without -g -exx, because they give slightly different output when
 # built with -g -exx, due to unstable temp var names appearing in warning/error messages and such.
+FBC_FOR_WARNING_TESTS="$PWD/bin/fbc -i $PWD/inc"
 cd tests/warnings
-FBC="$PWD/bin/fbc -i $PWD/inc" ./test.sh </dev/null
+FBC="$FBC_FOR_WARNING_TESTS" ./test.sh </dev/null
 cd ../..
 git update-index -q --ignore-submodules --refresh
 if ! git diff-files --quiet --ignore-submodules; then
