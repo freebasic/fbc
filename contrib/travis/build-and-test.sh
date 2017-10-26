@@ -24,7 +24,7 @@ make -j$(nproc) compiler FBC='bin/fbc1 -i inc' </dev/null
 rm bin/fbc1
 
 # Run fbc tests
-FBC_FOR_TESTS="$PWD/fbc -i $PWD/inc"
+FBC_FOR_TESTS="$PWD/bin/fbc -i $PWD/inc"
 if [ "$FBTRAVIS_TESTS_DEBUG" = "1" ]; then
 	FBC_FOR_TESTS="$FBC_FOR_TESTS -g -exx"
 fi
