@@ -47,8 +47,10 @@ if grep RESULT=FAILED tests/failed-*.log; then
 	exit 1
 fi
 
+# Always building warning-tests without -g -exx, because they give slightly different output when
+# built with -g -exx, due to unstable temp var names appearing in warning/error messages and such.
 cd tests/warnings
-FBC="$FBC_FOR_TESTS" ./test.sh </dev/null
+FBC="$PWD/bin/fbc -i $PWD/inc" ./test.sh </dev/null
 cd ../..
 git update-index -q --ignore-submodules --refresh
 if ! git diff-files --quiet --ignore-submodules; then
