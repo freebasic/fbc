@@ -125,7 +125,8 @@ declare function hMakeParamDesc _
 		@"Array boundaries do not match the original EXTERN declaration", _
 		@"'SUB' or 'FUNCTION' without 'END SUB' or 'END FUNCTION'", _
 		@"Expected 'END SUB' or 'END FUNCTION'", _
-		@"Illegal parameter specification", _
+		@"Return type here does not match DECLARE prototype", _
+		@"Calling convention does not match DECLARE prototype", _
 		@"Variable not declared", _
 		@"Variable required", _
 		@"Illegal outside a compound statement", _
@@ -395,7 +396,7 @@ declare function hMakeParamDesc _
 		@"#ASSERT condition failed", _
 		@"Expected '>'", _
 		@"Invalid size", _
-		@"ALIAS name here is different from ALIAS given in DECLARE prototype", _
+		@"ALIAS name here does not match ALIAS given in DECLARE prototype", _
 		@"vararg parameters are only allowed in CDECL procedures", _
 		@"the first parameter in a procedure may not be vararg", _
 		@"CONST used on constructor (not needed)", _
