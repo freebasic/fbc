@@ -137,7 +137,7 @@ extern VID_Thumbnails as const GUID
 extern VID_ThumbStrip as const GUID
 extern SID_SInPlaceBrowser as const GUID
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	extern SID_SSearchBoxInfo as const GUID
 	extern SID_CommandsPropertyBag as const GUID
 #endif
@@ -175,7 +175,7 @@ extern CLSID_ACListISF as const GUID
 extern CLSID_ACLMRU as const GUID
 extern CLSID_ACLMulti as const GUID
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	extern CLSID_ACLCustomMRU as const GUID
 #endif
 
@@ -321,7 +321,7 @@ extern BHID_AssociationArray as const GUID
 extern BHID_Filter as const GUID
 extern BHID_EnumAssocHandlers as const GUID
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	extern SID_CtxQueryAssociations as const GUID
 #endif
 

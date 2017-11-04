@@ -35,7 +35,7 @@ end sub
 
 '' Asks libzip for information on file number 'i' in the .zip file,
 '' and then extracts it, while creating directories as needed.
-private sub unpack_zip_file(byval zip as zip ptr, byval i as integer)
+private sub unpack_zip_file(byval zip as any ptr, byval i as integer)
 	#define BUFFER_SIZE (1024 * 512)
 	static as ubyte chunk(0 to (BUFFER_SIZE - 1))
 	#define buffer (@chunk(0))
@@ -69,7 +69,7 @@ private sub unpack_zip_file(byval zip as zip ptr, byval i as integer)
 	end if
 
 	'' Input for the file comes from libzip
-	dim as zip_file ptr fi = zip_fopen_index(zip, i, 0)
+	dim as any ptr fi = zip_fopen_index(zip, i, 0)
 	do
 		'' Write out the file content as returned by zip_fread(), which
 		'' also does the decoding and everything.
@@ -99,7 +99,7 @@ private sub unpack_zip_file(byval zip as zip ptr, byval i as integer)
 end sub
 
 sub unpack_zip(byref archive as string)
-	dim as zip ptr zip = zip_open(archive, ZIP_CHECKCONS, NULL)
+	dim as any ptr zip = zip_open(archive, ZIP_CHECKCONS, NULL)
 	if (zip = NULL) then
 		print "could not open input file " & archive
 		return
@@ -115,6 +115,39 @@ end sub
 
 
 	unpack_zip("test.zip")
+%%
+{{fbdoc item="filename" value="examples/manual/libraries/zip2.bas"}}%%(freebasic)
+'' .zip packing using libzip
+#include "zip.bi"
+
+Sub zipAddFileFromString(ByVal fname As ZString Ptr, ByVal id_d As ZString Ptr, ByVal myData As Zstring Ptr)
+	Dim As Any Ptr pzo
+	Dim As Any Ptr pzsb
+   
+	pzo = zip_open(fname, ZIP_CREATE, 0)
+	If pzo = 0 Then End
+   
+	pzsb = zip_source_buffer(pzo, myData, Len(*myData), 0)
+	If pzsb = 0 Then End
+   
+	zip_file_add(pzo, id_d, pzsb, ZIP_FL_OVERWRITE)
+	zip_close(pzo)
+   
+	Print "OK"
+End Sub
+
+Dim As String mytext, myzipfile, myfile
+
+myText    = "<My text           >......6...3..2"
+myZipFile = "26.zip"
+myFile    = "file3.txt"
+
+zipAddFileFromString(myZipFile, myFile, myText)
+
+myFile    = "BIMBO/file3.txt"
+zipAddFileFromString(myZipFile, myFile, myText)
+
+Sleep
 %%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

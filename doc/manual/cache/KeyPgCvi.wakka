@@ -1,8 +1,12 @@
 {{fbdoc item="title" value="CVI"}}----
-Converts a single-precision floating-point number or string to an integer variable using a binary copy
+Converts a floating-point number or string to an integer variable using a binary copy
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cvi** ( [[KeyPgByval|byval]] //sng// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	32-bit:
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cvi** ( [[KeyPgByval|byval]] //f// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	64-bit:
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cvi** ( [[KeyPgByval|byval]] //f// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cvi** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cvi**<//bits>// ( //expr// [[KeyPgAs|as]] [[DataType]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]<//bits//>
 ##
@@ -12,8 +16,8 @@ Converts a single-precision floating-point number or string to an integer variab
 	//result// = **Cvi**<//bits//>( //expr// )
 ##
 {{fbdoc item="param"}}
-	##//sng//##
-		A ##[[KeyPgSingle|Single]]## floating-point number with a binary copy of an integer variable stored in it.
+	##//f//##
+		A floating-point number with a binary copy of an integer variable stored in it.  Its precision (##[[KeyPgSingle|Single]]## or ##[[KeyPgDouble|Double]]##) depends on the size of ##[[KeyPgInteger|Integer]]## on the current platform
 	##//str//##
 		A ##[[KeyPgString|String]]## with a binary copy of an integer variable stored in it.
 	##//bits//##
@@ -25,13 +29,18 @@ Converts a single-precision floating-point number or string to an integer variab
 	An ##[[KeyPgInteger|Integer]]## or ##[[KeyPgInteger|Integer]]<//bits//>## variable containing a binary copy of the input expression.
 
 {{fbdoc item="desc"}}
-	Returns an integer value using the binary data contained in a ##[[KeyPgSingle|Single]]##, or a ##[[KeyPgString|String]]##.  A value of zero (##0##) is returned if the string contains fewer characters than the size of the return type.
+	Returns an integer value using the binary data contained in a floating-point value, or a ##[[KeyPgString|String]]##.  A value of zero (##0##) is returned if the string contains fewer characters than the size of the return type.
 	
-	##**Cvi**## is used to convert strings created with ##[[KeyPgMki|Mki]]##.
+	##**Cvi**## can be used to convert strings created with ##[[KeyPgMki|Mki]]##.
 	
-	This function can also be used to convert 32-bit integer values from a memory or file buffer without the need for a ##[[KeyPgType|Type]]## structure.  However, just as with the type structure, special care should be taken when using ##**Cvi**## to convert strings that have been read from a buffer.
+	This function can also be used to convert ##[[KeyPgInteger|Integer]]##-sized values from a memory or file buffer without the need for a ##[[KeyPgType|Type]]## structure.  However, just as with the type structure, special care should be taken when using ##**Cvi**## to convert strings that have been read from a buffer.
 	
 	##**Cvi**## supports an optional ##<//bits//>## parameter before the argument.  If ##//bits//## is ##16##, ##[[KeyPgCvshort|Cvshort]]## will be called instead; if ##//bits//## is ##32##, ##[[KeyPgCvl|Cvl]]## will be called; if ##//bits//## is ##64##, ##[[KeyPgCvlongint|Cvlongint]]## will be called.  The return type and accepted argument types will depend on which function is called.  See each function's page for more information.
+	
+	##**Cvi**##'s behaviour changes depending on the size of the ##[[KeyPgInteger|Integer]]## data type on the current platform.
+	- For 16-bit ##[[KeyPgInteger|Integer]]## (//[[CompilerOptlang|-lang qb]]//), a 16-bit value is returned, and no floating-point types are accepted.
+	- For 32-bit ##[[KeyPgInteger|Integer]]##, a 32-bit value is returned, and numeric arguments are interpreted as ##[[KeyPgSingle|Single]]## precision values.
+	- For 64-bit ##[[KeyPgInteger|Integer]]##, a 64-bit value is returned, and numeric arguments are interpreted as ##[[KeyPgDouble|Double]]## precision values.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/cvi.bas"}}%%(freebasic)

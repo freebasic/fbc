@@ -12,25 +12,26 @@ Simply put, function overloading involves defining functions that have the same 
 
 
 ##%%(freebasic)
-option explicit      '' force explicit declaration of variables
-option byval         '' default passing convention as by value
+#lang "fblite"
+Option Explicit      '' force explicit declaration of variables
+Option ByVal         '' default passing convention as by value
 
 '' to declare functions with similar functionality but that accept different argument types,
 '' we 'simply' create new function names :(
-declare function print_byte( as byte )      '' outputs a stringified byte
-declare function print_short( as short )    '' outputs a stringified short
+Declare Function print_byte( As Byte )      '' outputs a stringified byte
+Declare Function print_short( As Short )    '' outputs a stringified short
 
-dim as byte b = 102
-dim as short s = 10240
+Dim As Byte b = 102
+Dim As Short s = 10240
 
 print_byte( b )
 print_short( s )
 
-sleep : end 0
+Sleep : End 0
 
 '' function definitions squished for brevity - don't do this outside a space-constrained  tutorial ;}
-function print_byte( n as byte ) : print str( n ) : return : end function
-function print_short( n as short ) : print str( n ) : return : end function
+Function print_byte( n As Byte ) : Print Str( n ) : Return 0 : End Function
+Function print_short( n As Short ) : Print Str( n ) : Return 0 : End Function
 %%##
 
 ----
@@ -44,21 +45,22 @@ There is, and don't call me Shirley. I mentioned before that the compiler uses t
 
 
 ##%%(freebasic)
-option explicit      '' force explicit declaration of variables
-option byval         '' default passing convention as by value
+#lang "fblite"
+Option Explicit      '' force explicit declaration of variables
+Option ByVal         '' default passing convention as by value
 
 '' to overload function print_numeric that we can redefine to accept different argument
 '' types while keeping the name intact, we use the OVERLOAD keyword on our intial function:
-declare function print_numeric overload( as byte )      '' outputs a stringified byte
-declare function print_numeric( as short )              '' outputs a stringified short
-declare function print_numeric( as integer )            '' outputs a stringified integer
-declare function print_numeric( as longint )            '' outputs a stringified longint
+Declare Function print_numeric Overload( As Byte )      '' outputs a stringified byte
+Declare Function print_numeric( As Short )              '' outputs a stringified short
+Declare Function print_numeric( As Integer )            '' outputs a stringified integer
+Declare Function print_numeric( As LongInt )            '' outputs a stringified longint
 
 '' define some variables
-dim as byte b = 102
-dim as short s = 10240
-dim as integer i = 1024000000
-dim as longint li = 1024000000000000000
+Dim As Byte b = 102
+Dim As Short s = 10240
+Dim As Integer i = 1024000000
+Dim As LongInt li = 1024000000000000000
 
 '' enter the wonderful world of function overloading :)
 print_numeric( b )
@@ -66,13 +68,13 @@ print_numeric( s )
 print_numeric( i )
 print_numeric( li )
 
-sleep : end 0
+Sleep : End 0
 
 '' define our function overloads
-function print_numeric( n as byte ) : print str( n ) : return : end function
-function print_numeric( n as short ) : print str( n ) : return : end function
-function print_numeric( n as integer ) : print str( n ) : return : end function
-function print_numeric( n as longint ) : print str( n ) : return : end function
+Function print_numeric( n As Byte ) : Print Str( n ) : Return 0 : End Function
+Function print_numeric( n As Short ) : Print Str( n ) : Return 0 : End Function
+Function print_numeric( n As Integer ) : Print Str( n ) : Return 0 : End Function
+Function print_numeric( n As LongInt ) : Print Str( n ) : Return 0 : End Function
 %%##
 
 ----

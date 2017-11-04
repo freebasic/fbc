@@ -28,15 +28,15 @@ FBCALL void fb_WstrAssignMid
 
     if( (start > 0) && (start <= dst_len) )
     {
-		--start;
+        --start;
 
         if( (len < 1) || (len > src_len) )
-			len = src_len;
+            len = src_len;
 
         if( start + len > dst_len )
-        	len = (dst_len - start) - 1;
+            len = (dst_len - start) - 1;
 
-		/* without the null-term */
-		fb_wstr_Move( &dst[start], src, len );
+        /* without the null-term */
+        fb_wstr_Move( &dst[start], src, len );
     }
 }

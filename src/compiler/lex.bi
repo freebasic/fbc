@@ -214,9 +214,7 @@ declare function lexGetLookAheadChar _
 		byval skipwhitespc as integer = FALSE _
 	) as uinteger
 
-declare function lexEatChar _
-	( _
-	) as uinteger
+declare sub lexEatChar( )
 
 declare function lexPeekCurrentLine _
 	( _

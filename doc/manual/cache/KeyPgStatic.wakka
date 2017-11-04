@@ -8,7 +8,7 @@ Defines variables, objects and arrays having static storage
 	
 		//or//
 		
-	[[KeyPgSub|Sub]]|[[KeyPgFunction|Function]] //procedurename// ( //parameters// ) [[[KeyPgAs|As]] [[DataType|DataType]]] **Static**
+	[[KeyPgSub|Sub]]|[[KeyPgFunction|Function]] //procedurename// ( //parameters// ) [[ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|As]] [[DataType|DataType]]] **Static**
 		...
 	[[KeyPgEndblock|End]] [[KeyPgSub|Sub]]|[[KeyPgFunction|Function]]
 ##

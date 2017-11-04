@@ -617,7 +617,7 @@ type SHCREATEPROCESSINFOW as _SHCREATEPROCESSINFOW
 type PSHCREATEPROCESSINFOW as _SHCREATEPROCESSINFOW ptr
 declare function SHCreateProcessAsUserW(byval pscpi as PSHCREATEPROCESSINFOW) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function SHEvaluateSystemCommandTemplate(byval pszCmdTemplate as PCWSTR, byval ppszApplication as PWSTR ptr, byval ppszCommandLine as PWSTR ptr, byval ppszParameters as PWSTR ptr) as HRESULT
 
 	type ASSOCCLASS as long
@@ -632,18 +632,21 @@ declare function SHCreateProcessAsUserW(byval pscpi as PSHCREATEPROCESSINFOW) as
 		ASSOCCLASS_SYSTEM_STR
 		ASSOCCLASS_FOLDER
 		ASSOCCLASS_STAR
-		ASSOCCLASS_FIXED_PROGID_STR
-		ASSOCCLASS_PROTOCOL_STR
+
+		#if _WIN32_WINNT = &h0602
+			ASSOCCLASS_FIXED_PROGID_STR
+			ASSOCCLASS_PROTOCOL_STR
+		#endif
 	end enum
 #endif
 
-#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0600)
 	type ASSOCIATIONELEMENT field = 1
 		ac as ASSOCCLASS
 		hkClass as HKEY
 		pszClass as PCWSTR
 	end type
-#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT >= &h0600)
 	type ASSOCIATIONELEMENT
 		ac as ASSOCCLASS
 		hkClass as HKEY
@@ -651,7 +654,7 @@ declare function SHCreateProcessAsUserW(byval pscpi as PSHCREATEPROCESSINFOW) as
 	end type
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function AssocCreateForClasses(byval rgClasses as const ASSOCIATIONELEMENT ptr, byval cClasses as ULONG, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 #endif
 
@@ -688,11 +691,11 @@ declare function SHEmptyRecycleBinW(byval hwnd as HWND, byval pszRootPath as LPC
 
 #ifdef UNICODE
 	declare function SHEmptyRecycleBin alias "SHEmptyRecycleBinW"(byval hwnd as HWND, byval pszRootPath as LPCWSTR, byval dwFlags as DWORD) as HRESULT
-#elseif (not defined(UNICODE)) and (((not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)) or defined(__FB_64BIT__))
+#elseif (not defined(UNICODE)) and (defined(__FB_64BIT__) or ((not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0600)))
 	declare function SHEmptyRecycleBin alias "SHEmptyRecycleBinA"(byval hwnd as HWND, byval pszRootPath as LPCSTR, byval dwFlags as DWORD) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type QUERY_USER_NOTIFICATION_STATE as long
 	enum
 		QUNS_NOT_PRESENT = 1
@@ -700,11 +703,20 @@ declare function SHEmptyRecycleBinW(byval hwnd as HWND, byval pszRootPath as LPC
 		QUNS_RUNNING_D3D_FULL_SCREEN = 3
 		QUNS_PRESENTATION_MODE = 4
 		QUNS_ACCEPTS_NOTIFICATIONS = 5
-		QUNS_QUIET_TIME = 6
-		QUNS_APP = 7
+
+		#if _WIN32_WINNT >= &h0601
+			QUNS_QUIET_TIME = 6
+		#endif
+
+		#if _WIN32_WINNT = &h0602
+			QUNS_APP = 7
+		#endif
 	end enum
 
 	declare function SHQueryUserNotificationState(byval pquns as QUERY_USER_NOTIFICATION_STATE ptr) as HRESULT
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	declare function SHGetPropertyStoreForWindow(byval hwnd as HWND, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 #elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	declare function SHEmptyRecycleBin alias "SHEmptyRecycleBinA"(byval hwnd as HWND, byval pszRootPath as LPCSTR, byval dwFlags as DWORD) as HRESULT
@@ -732,7 +744,7 @@ declare function SHEmptyRecycleBinW(byval hwnd as HWND, byval pszRootPath as LPC
 		dwInfoFlags as DWORD
 		guidItem as GUID
 
-		#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+		#if defined(__FB_64BIT__) and (_WIN32_WINNT >= &h0600)
 			hBalloonIcon as HICON
 		#endif
 	end type
@@ -758,7 +770,7 @@ declare function SHEmptyRecycleBinW(byval hwnd as HWND, byval pszRootPath as LPC
 		dwInfoFlags as DWORD
 		guidItem as GUID
 
-		#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+		#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0600)
 			hBalloonIcon as HICON
 		#endif
 	end type
@@ -789,7 +801,7 @@ type PNOTIFYICONDATAA as _NOTIFYICONDATAA ptr
 		dwInfoFlags as DWORD
 		guidItem as GUID
 
-		#if defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+		#if defined(__FB_64BIT__) and (_WIN32_WINNT >= &h0600)
 			hBalloonIcon as HICON
 		#endif
 	end type
@@ -815,7 +827,7 @@ type PNOTIFYICONDATAA as _NOTIFYICONDATAA ptr
 		dwInfoFlags as DWORD
 		guidItem as GUID
 
-		#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+		#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0600)
 			hBalloonIcon as HICON
 		#endif
 	end type
@@ -857,7 +869,7 @@ const NIN_BALLOONHIDE = WM_USER + 3
 const NIN_BALLOONTIMEOUT = WM_USER + 4
 const NIN_BALLOONUSERCLICK = WM_USER + 5
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const NIN_POPUPOPEN = WM_USER + 6
 	const NIN_POPUPCLOSE = WM_USER + 7
 #endif
@@ -869,7 +881,7 @@ const NIM_SETFOCUS = &h00000003
 const NIM_SETVERSION = &h00000004
 const NOTIFYICON_VERSION = 3
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const NOTIFYICON_VERSION_4 = 4
 #endif
 
@@ -879,11 +891,11 @@ const NIF_TIP = &h00000004
 const NIF_STATE = &h00000008
 const NIF_INFO = &h00000010
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const NIF_GUID = &h00000020
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const NIF_REALTIME = &h00000040
 	const NIF_SHOWTIP = &h00000080
 #endif
@@ -898,8 +910,11 @@ const NIIF_USER = &h00000004
 const NIIF_ICON_MASK = &h0000000f
 const NIIF_NOSOUND = &h00000010
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const NIIF_LARGE_ICON = &h00000020
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	const NIIF_RESPECT_QUIET_TIME = &h00000080
 #endif
 
@@ -1005,11 +1020,11 @@ declare function SHGetFileInfoW(byval pszPath as LPCWSTR, byval dwFileAttributes
 
 #ifdef UNICODE
 	declare function SHGetFileInfo alias "SHGetFileInfoW"(byval pszPath as LPCWSTR, byval dwFileAttributes as DWORD, byval psfi as SHFILEINFOW ptr, byval cbFileInfo as UINT, byval uFlags as UINT) as DWORD_PTR
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function SHGetFileInfo alias "SHGetFileInfoA"(byval pszPath as LPCSTR, byval dwFileAttributes as DWORD, byval psfi as SHFILEINFOA ptr, byval cbFileInfo as UINT, byval uFlags as UINT) as DWORD_PTR
 #endif
 
-#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0600)
 	type _SHSTOCKICONINFO field = 1
 		cbSize as DWORD
 		hIcon as HICON
@@ -1017,7 +1032,7 @@ declare function SHGetFileInfoW(byval pszPath as LPCWSTR, byval dwFileAttributes
 		iIcon as long
 		szPath as wstring * 260
 	end type
-#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT >= &h0600)
 	type _SHSTOCKICONINFO
 		cbSize as DWORD
 		hIcon as HICON
@@ -1027,7 +1042,7 @@ declare function SHGetFileInfoW(byval pszPath as LPCWSTR, byval dwFileAttributes
 	end type
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type SHSTOCKICONINFO as _SHSTOCKICONINFO
 	const SHGSI_ICONLOCATION = 0
 	const SHGSI_ICON = SHGFI_ICON
@@ -1162,11 +1177,11 @@ const SHGNLI_PREFIXNAME = &h000000002
 const SHGNLI_NOUNIQUE = &h000000004
 const SHGNLI_NOLNK = &h000000008
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const SHGNLI_NOLOCNAME = &h000000010
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	const SHGNLI_USEURLEXT = &h000000020
 #endif
 
@@ -1183,11 +1198,11 @@ declare function SHInvokePrinterCommandW(byval hwnd as HWND, byval uAction as UI
 
 #ifdef UNICODE
 	declare function SHInvokePrinterCommand alias "SHInvokePrinterCommandW"(byval hwnd as HWND, byval uAction as UINT, byval lpBuf1 as LPCWSTR, byval lpBuf2 as LPCWSTR, byval fModal as WINBOOL) as WINBOOL
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function SHInvokePrinterCommand alias "SHInvokePrinterCommandA"(byval hwnd as HWND, byval uAction as UINT, byval lpBuf1 as LPCSTR, byval lpBuf2 as LPCSTR, byval fModal as WINBOOL) as WINBOOL
 #endif
 
-#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0600)
 	type _OPEN_PRINTER_PROPS_INFOA field = 1
 		dwSize as DWORD
 		pszSheetName as LPSTR
@@ -1195,7 +1210,7 @@ declare function SHInvokePrinterCommandW(byval hwnd as HWND, byval uAction as UI
 		dwFlags as DWORD
 		bModal as WINBOOL
 	end type
-#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT >= &h0600)
 	type _OPEN_PRINTER_PROPS_INFOA
 		dwSize as DWORD
 		pszSheetName as LPSTR
@@ -1205,12 +1220,12 @@ declare function SHInvokePrinterCommandW(byval hwnd as HWND, byval uAction as UI
 	end type
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type OPEN_PRINTER_PROPS_INFOA as _OPEN_PRINTER_PROPS_INFOA
 	type POPEN_PRINTER_PROPS_INFOA as _OPEN_PRINTER_PROPS_INFOA ptr
 #endif
 
-#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0600)
 	type _OPEN_PRINTER_PROPS_INFOW field = 1
 		dwSize as DWORD
 		pszSheetName as LPWSTR
@@ -1218,7 +1233,7 @@ declare function SHInvokePrinterCommandW(byval hwnd as HWND, byval uAction as UI
 		dwFlags as DWORD
 		bModal as WINBOOL
 	end type
-#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT >= &h0600)
 	type _OPEN_PRINTER_PROPS_INFOW
 		dwSize as DWORD
 		pszSheetName as LPWSTR
@@ -1228,20 +1243,20 @@ declare function SHInvokePrinterCommandW(byval hwnd as HWND, byval uAction as UI
 	end type
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type OPEN_PRINTER_PROPS_INFOW as _OPEN_PRINTER_PROPS_INFOW
 	type POPEN_PRINTER_PROPS_INFOW as _OPEN_PRINTER_PROPS_INFOW ptr
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	type OPEN_PRINTER_PROPS_INFO as OPEN_PRINTER_PROPS_INFOW
 	type POPEN_PRINTER_PROPS_INFO as POPEN_PRINTER_PROPS_INFOW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	type OPEN_PRINTER_PROPS_INFO as OPEN_PRINTER_PROPS_INFOA
 	type POPEN_PRINTER_PROPS_INFO as POPEN_PRINTER_PROPS_INFOA
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const PRINT_PROP_FORCE_NAME = &h01
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	declare function SHInvokePrinterCommand alias "SHInvokePrinterCommandA"(byval hwnd as HWND, byval uAction as UINT, byval lpBuf1 as LPCSTR, byval lpBuf2 as LPCSTR, byval fModal as WINBOOL) as WINBOOL
@@ -1254,7 +1269,7 @@ const OFFLINE_STATUS_REMOTE = &h0002
 const OFFLINE_STATUS_INCOMPLETE = &h0004
 declare function SHSetLocalizedName(byval pszPath as PCWSTR, byval pszResModule as PCWSTR, byval idsRes as long) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function SHRemoveLocalizedName(byval pszPath as PCWSTR) as HRESULT
 	declare function SHGetLocalizedName(byval pszPath as PCWSTR, byval pszResModule as PWSTR, byval cch as UINT, byval pidsRes as long ptr) as HRESULT
 #endif
@@ -1273,11 +1288,11 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 
 #ifdef UNICODE
 	declare function IsLFNDrive alias "IsLFNDriveW"(byval pszPath as LPCWSTR) as WINBOOL
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0501)
 	declare function IsLFNDrive alias "IsLFNDriveA"(byval pszPath as LPCSTR) as WINBOOL
 #endif
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	declare function SHEnumerateUnreadMailAccountsA(byval hKeyUser as HKEY, byval dwIndex as DWORD, byval pszMailAddress as LPSTR, byval cchMailAddress as long) as HRESULT
 	declare function SHEnumerateUnreadMailAccountsW(byval hKeyUser as HKEY, byval dwIndex as DWORD, byval pszMailAddress as LPWSTR, byval cchMailAddress as long) as HRESULT
 	declare function SHGetUnreadMailCountA(byval hKeyUser as HKEY, byval pszMailAddress as LPCSTR, byval pdwCount as DWORD ptr, byval pFileTime as FILETIME ptr, byval pszShellExecuteCommand as LPSTR, byval cchShellExecuteCommand as long) as HRESULT
@@ -1286,18 +1301,25 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 	declare function SHSetUnreadMailCountW(byval pszMailAddress as LPCWSTR, byval dwCount as DWORD, byval pszShellExecuteCommand as LPCWSTR) as HRESULT
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0501)
 	declare function SHEnumerateUnreadMailAccounts alias "SHEnumerateUnreadMailAccountsW"(byval hKeyUser as HKEY, byval dwIndex as DWORD, byval pszMailAddress as LPWSTR, byval cchMailAddress as long) as HRESULT
 	declare function SHGetUnreadMailCount alias "SHGetUnreadMailCountW"(byval hKeyUser as HKEY, byval pszMailAddress as LPCWSTR, byval pdwCount as DWORD ptr, byval pFileTime as FILETIME ptr, byval pszShellExecuteCommand as LPWSTR, byval cchShellExecuteCommand as long) as HRESULT
 	declare function SHSetUnreadMailCount alias "SHSetUnreadMailCountW"(byval pszMailAddress as LPCWSTR, byval dwCount as DWORD, byval pszShellExecuteCommand as LPCWSTR) as HRESULT
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+#endif
+
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
+	declare function SHTestTokenMembership(byval hToken as HANDLE, byval ulRID as ULONG) as WINBOOL
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0501)
 	declare function SHEnumerateUnreadMailAccounts alias "SHEnumerateUnreadMailAccountsA"(byval hKeyUser as HKEY, byval dwIndex as DWORD, byval pszMailAddress as LPSTR, byval cchMailAddress as long) as HRESULT
 	declare function SHGetUnreadMailCount alias "SHGetUnreadMailCountA"(byval hKeyUser as HKEY, byval pszMailAddress as LPCSTR, byval pdwCount as DWORD ptr, byval pFileTime as FILETIME ptr, byval pszShellExecuteCommand as LPSTR, byval cchShellExecuteCommand as long) as HRESULT
 	declare function SHSetUnreadMailCount alias "SHSetUnreadMailCountA"(byval pszMailAddress as LPCSTR, byval dwCount as DWORD, byval pszShellExecuteCommand as LPCSTR) as HRESULT
 #endif
 
-#if _WIN32_WINNT >= &h0502
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
 	declare function SHTestTokenMembership(byval hToken as HANDLE, byval ulRID as ULONG) as WINBOOL
+#endif
+
+#if _WIN32_WINNT >= &h0501
 	declare function SHGetImageList(byval iImageList as long, byval riid as const IID const ptr, byval ppvObj as any ptr ptr) as HRESULT
 	const SHIL_LARGE = 0
 	const SHIL_SMALL = 1
@@ -1305,19 +1327,19 @@ declare function IsLFNDriveW(byval pszPath as LPCWSTR) as WINBOOL
 	const SHIL_SYSSMALL = 3
 #endif
 
-#if _WIN32_WINNT = &h0502
+#if (_WIN32_WINNT = &h0501) or (_WIN32_WINNT = &h0502)
 	const SHIL_LAST = SHIL_SYSSMALL
-#elseif _WIN32_WINNT = &h0602
+#elseif _WIN32_WINNT >= &h0600
 	const SHIL_JUMBO = 4
 	const SHIL_LAST = SHIL_JUMBO
 #endif
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	type PFNCANSHAREFOLDERW as function(byval pszPath as PCWSTR) as HRESULT
 	type PFNSHOWSHAREFOLDERUIW as function(byval hwndParent as HWND, byval pszPath as PCWSTR) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define WC_NETADDRESS wstr("msctls_netaddress")
 	declare function InitNetworkAddressControl() as WINBOOL
 	const NCM_GETADDRESS = WM_USER + 1

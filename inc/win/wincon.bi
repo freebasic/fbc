@@ -94,7 +94,7 @@ const MOUSE_MOVED = &h1
 const DOUBLE_CLICK = &h2
 const MOUSE_WHEELED = &h4
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const MOUSE_HWHEELED = &h8
 #endif
 
@@ -542,19 +542,19 @@ type CONSOLE_SCREEN_BUFFER_INFOEX as _CONSOLE_SCREEN_BUFFER_INFOEX
 type PCONSOLE_SCREEN_BUFFER_INFOEX as _CONSOLE_SCREEN_BUFFER_INFOEX ptr
 declare function GetConsoleHistoryInfo(byval lpConsoleHistoryInfo as PCONSOLE_HISTORY_INFO) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetConsoleOriginalTitleA(byval lpConsoleTitle as LPSTR, byval nSize as DWORD) as DWORD
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function GetConsoleOriginalTitle alias "GetConsoleOriginalTitleA"(byval lpConsoleTitle as LPSTR, byval nSize as DWORD) as DWORD
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetConsoleOriginalTitleW(byval lpConsoleTitle as LPWSTR, byval nSize as DWORD) as DWORD
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function GetConsoleOriginalTitle alias "GetConsoleOriginalTitleW"(byval lpConsoleTitle as LPWSTR, byval nSize as DWORD) as DWORD
 #endif
 

@@ -39,9 +39,9 @@ const SO_UPDATE_CONNECT_CONTEXT = &h7010
 const TCP_BSDURGENT = &h7000
 #define SIO_UDP_CONNRESET _WSAIOW(IOC_VENDOR, 12)
 
-#if _WIN32_WINNT = &h0502
+#if (_WIN32_WINNT = &h0501) or (_WIN32_WINNT = &h0502)
 	#define SIO_SOCKET_CLOSE_NOTIFY _WSAIOW(IOC_VENDOR, 13)
-#elseif _WIN32_WINNT = &h0602
+#elseif _WIN32_WINNT >= &h0600
 	#define SIO_BSP_HANDLE _WSAIOR(IOC_WS2, 27)
 	#define SIO_BSP_HANDLE_SELECT _WSAIOR(IOC_WS2, 28)
 	#define SIO_BSP_HANDLE_POLL _WSAIOR(IOC_WS2, 29)
@@ -226,7 +226,7 @@ const MSG_MCAST = &h0800
 type LPFN_WSARECVMSG as function(byval s as SOCKET, byval lpMsg as LPWSAMSG, byval lpdwNumberOfBytesRecvd as LPDWORD, byval lpOverlapped as LPWSAOVERLAPPED, byval lpCompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as INT_
 #define WSAID_WSARECVMSG (&hf689d7c8, &h6f1f, &h436b, (&h8a, &h53, &he5, &h4f, &he3, &h51, &hc3, &h22))
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type WSAPOLLDATA
 		result as long
 		fds as ULONG

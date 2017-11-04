@@ -233,16 +233,26 @@ enum
 	SLDF_FORCE_UNCNAME = &h00010000
 	SLDF_RUN_WITH_SHIMLAYER = &h00020000
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		SLDF_FORCE_NO_LINKTRACK = &h00040000
 		SLDF_ENABLE_TARGET_METADATA = &h00080000
 		SLDF_DISABLE_LINK_PATH_TRACKING = &h00100000
 		SLDF_DISABLE_KNOWNFOLDER_RELATIVE_TRACKING = &h00200000
+	#endif
+
+	#if _WIN32_WINNT = &h0600
+		SLDF_VALID = &h003ff7ff
+	#elseif _WIN32_WINNT >= &h0601
 		SLDF_NO_KF_ALIAS = &h00400000
 		SLDF_ALLOW_LINK_TO_LINK = &h00800000
 		SLDF_UNALIAS_ON_SAVE = &h01000000
 		SLDF_PREFER_ENVIRONMENT_PATH = &h02000000
 		SLDF_KEEP_LOCAL_IDLIST_FOR_UNC_TARGET = &h04000000
+	#endif
+
+	#if _WIN32_WINNT = &h0601
+		SLDF_VALID = &h07fff7ff
+	#elseif _WIN32_WINNT = &h0602
 		SLDF_PERSIST_VOLUME_ID_RELATIVE = &h08000000
 		SLDF_VALID = &h0ffff7ff
 	#endif
@@ -342,7 +352,7 @@ type LPEXP_SZ_LINK as EXP_SZ_LINK ptr
 const EXP_SZ_LINK_SIG = &ha0000001
 const EXP_SZ_ICON_SIG = &ha0000007
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type EXP_PROPERTYSTORAGE field = 1
 		cbSize as DWORD
 		dwSignature as DWORD
@@ -606,7 +616,7 @@ const FCIDM_TOOLBAR = FCIDM_BROWSERFIRST + 0
 const FCIDM_STATUS = FCIDM_BROWSERFIRST + 1
 const IDC_OFFLINE_HAND = 103
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const IDC_PANTOOL_HAND_OPEN = 104
 	const IDC_PANTOOL_HAND_CLOSED = 105
 #endif
@@ -619,7 +629,7 @@ const PANE_SSL = 4
 const PANE_NAVIGATION = 5
 const PANE_PROGRESS = 6
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const PANE_PRIVACY = 7
 #endif
 
@@ -637,7 +647,7 @@ declare function ILIsParent(byval pidl1 as LPCITEMIDLIST, byval pidl2 as LPCITEM
 declare function ILSaveToStream(byval pstm as IStream ptr, byval pidl as LPCITEMIDLIST) as HRESULT
 declare function ILLoadFromStream(byval pstm as IStream ptr, byval pidl as LPITEMIDLIST ptr) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function ILLoadFromStreamEx(byval pstm as IStream ptr, byval pidl as LPITEMIDLIST ptr) as HRESULT
 #endif
 
@@ -661,7 +671,7 @@ declare function ILCloneChild alias "ILCloneFirst"(byval pidl as LPCITEMIDLIST) 
 #define ILIsChild(P) (ILIsEmpty(P) orelse ILIsEmpty(ILNext(P)))
 declare function ILAppendID(byval pidl as LPITEMIDLIST, byval pmkid as LPCSHITEMID, byval fAppend as WINBOOL) as LPITEMIDLIST
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type tagGPFIDL_FLAGS as long
 	enum
 		GPFIDL_DEFAULT = &h0
@@ -682,12 +692,12 @@ declare function SHCreateDirectoryExW(byval hwnd as HWND, byval pszPath as LPCWS
 #ifdef UNICODE
 	declare function SHGetPathFromIDList alias "SHGetPathFromIDListW"(byval pidl as LPCITEMIDLIST, byval pszPath as LPWSTR) as WINBOOL
 	declare function SHCreateDirectoryEx alias "SHCreateDirectoryExW"(byval hwnd as HWND, byval pszPath as LPCWSTR, byval psa as const SECURITY_ATTRIBUTES ptr) as long
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function SHGetPathFromIDList alias "SHGetPathFromIDListA"(byval pidl as LPCITEMIDLIST, byval pszPath as LPSTR) as WINBOOL
 	declare function SHCreateDirectoryEx alias "SHCreateDirectoryExA"(byval hwnd as HWND, byval pszPath as LPCSTR, byval psa as const SECURITY_ATTRIBUTES ptr) as long
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const OFASI_EDIT = &h0001
 	const OFASI_OPENDESKTOP = &h0002
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
@@ -774,18 +784,22 @@ declare function SHGetFolderPathAndSubDirW(byval hwnd as HWND, byval csidl as lo
 	declare function SHGetFolderPath alias "SHGetFolderPathW"(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPWSTR) as HRESULT
 	declare function SHSetFolderPath alias "SHSetFolderPathW"(byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPCWSTR) as HRESULT
 	declare function SHGetFolderPathAndSubDir alias "SHGetFolderPathAndSubDirW"(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszSubDir as LPCWSTR, byval pszPath as LPWSTR) as HRESULT
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function SHGetSpecialFolderPath alias "SHGetSpecialFolderPathA"(byval hwnd as HWND, byval pszPath as LPSTR, byval csidl as long, byval fCreate as WINBOOL) as WINBOOL
 	declare function SHGetFolderPath alias "SHGetFolderPathA"(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPSTR) as HRESULT
 	declare function SHSetFolderPath alias "SHSetFolderPathA"(byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszPath as LPCSTR) as HRESULT
 	declare function SHGetFolderPathAndSubDir alias "SHGetFolderPathAndSubDirA"(byval hwnd as HWND, byval csidl as long, byval hToken as HANDLE, byval dwFlags as DWORD, byval pszSubDir as LPCSTR, byval pszPath as LPSTR) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type KNOWN_FOLDER_FLAG as long
 	enum
 		KF_FLAG_DEFAULT = &h00000000
-		KF_FLAG_NO_APPCONTAINER_REDIRECTION = &h00010000
+
+		#if _WIN32_WINNT >= &h0601
+			KF_FLAG_NO_APPCONTAINER_REDIRECTION = &h00010000
+		#endif
+
 		KF_FLAG_CREATE = &h00008000
 		KF_FLAG_DONT_VERIFY = &h00004000
 		KF_FLAG_DONT_UNEXPAND = &h00002000
@@ -800,6 +814,9 @@ declare function SHGetFolderPathAndSubDirW(byval hwnd as HWND, byval csidl as lo
 	declare function SHGetKnownFolderIDList(byval rfid as const KNOWNFOLDERID const ptr, byval dwFlags as DWORD, byval hToken as HANDLE, byval ppidl as LPITEMIDLIST ptr) as HRESULT
 	declare function SHSetKnownFolderPath(byval rfid as const KNOWNFOLDERID const ptr, byval dwFlags as DWORD, byval hToken as HANDLE, byval pszPath as PCWSTR) as HRESULT
 	declare function SHGetKnownFolderPath(byval rfid as const KNOWNFOLDERID const ptr, byval dwFlags as DWORD, byval hToken as HANDLE, byval ppszPath as PWSTR ptr) as HRESULT
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	declare function SHGetKnownFolderItem(byval rfid as const KNOWNFOLDERID const ptr, byval flags as KNOWN_FOLDER_FLAG, byval hToken as HANDLE, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
 	declare function SHGetSpecialFolderPath alias "SHGetSpecialFolderPathA"(byval hwnd as HWND, byval pszPath as LPSTR, byval csidl as long, byval fCreate as WINBOOL) as WINBOOL
@@ -820,7 +837,7 @@ const FCSM_ICONFILE = &h00000010
 const FCSM_LOGO = &h00000020
 const FCSM_FLAGS = &h00000040
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type SHFOLDERCUSTOMSETTINGS
 		dwSize as DWORD
 		dwMask as DWORD
@@ -935,7 +952,7 @@ enum
 	ISHCUTCMDID_DOWNLOADICON = 0
 	ISHCUTCMDID_INTSHORTCUTCREATE = 1
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		ISHCUTCMDID_COMMITHISTORY = 2
 		ISHCUTCMDID_SETUSERAWURL = 3
 	#endif
@@ -1009,11 +1026,11 @@ enum
 	ACLO_FAVORITES = 8
 	ACLO_FILESYSONLY = 16
 
-	#if _WIN32_WINNT >= &h0502
+	#if _WIN32_WINNT >= &h0501
 		ACLO_FILESYSDIRS = 32
 	#endif
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		ACLO_VIRTUALNAMESPACE = 64
 	#endif
 end enum
@@ -1041,14 +1058,14 @@ const PROGDLG_NOTIME = &h00000004
 const PROGDLG_NOMINIMIZE = &h00000008
 const PROGDLG_NOPROGRESSBAR = &h00000010
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const PROGDLG_MARQUEEPROGRESS = &h00000020
 	const PROGDLG_NOCANCEL = &h00000040
 #endif
 
 const PDTIMER_RESET = &h00000001
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const PDTIMER_PAUSE = &h00000002
 	const PDTIMER_RESUME = &h00000003
 #endif
@@ -1130,7 +1147,7 @@ end type
 
 type LPTHUMBNAILCAPTURE as IThumbnailCapture ptr
 
-#if _WIN32_WINNT = &h0502
+#if (_WIN32_WINNT = &h0501) or (_WIN32_WINNT = &h0502)
 	type _EnumImageStoreDATAtag
 		szPath as wstring * 260
 		ftTimeStamp as FILETIME
@@ -1397,7 +1414,7 @@ enum
 	FD_PROGRESSUI = &h4000
 	FD_LINKUI = &h8000
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		FD_UNICODE = clng(&h80000000)
 	#endif
 end enum
@@ -1478,7 +1495,7 @@ end type
 type DROPFILES as _DROPFILES
 type LPDROPFILES as _DROPFILES ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type FILE_ATTRIBUTES_ARRAY field = 1
 		cItems as UINT
 		dwSumFileAttributes as DWORD
@@ -1596,7 +1613,7 @@ const QITIPF_LINKNOTARGET = &h00000002
 const QITIPF_LINKUSETARGET = &h00000004
 const QITIPF_USESLOWTIP = &h00000008
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const QITIPF_SINGLELINE = &h00000010
 #endif
 
@@ -1609,7 +1626,7 @@ enum
 	SHARD_PATHA = &h00000002
 	SHARD_PATHW = &h00000003
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0601
 		SHARD_APPIDINFO = &h00000004
 		SHARD_APPIDINFOIDLIST = &h00000005
 		SHARD_LINK = &h00000006
@@ -1618,7 +1635,7 @@ enum
 	#endif
 end enum
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	type SHARDAPPIDINFO field = 1
 		psi as IShellItem ptr
 		pszAppID as PCWSTR
@@ -1630,9 +1647,9 @@ end enum
 	end type
 
 	type SHARDAPPIDINFOLINK field = 1
-		#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		#if defined(UNICODE) and (_WIN32_WINNT >= &h0601)
 			psl as IShellLinkW ptr
-		#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0601)
 			psl as IShellLinkA ptr
 		#endif
 
@@ -1698,7 +1715,7 @@ enum
 	SCNRT_DISABLE = 1
 end enum
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare sub SHChangeNotifyRegisterThread(byval status as SCNRT_STATUS)
 #endif
 
@@ -1731,7 +1748,7 @@ const SHDID_COMPUTER_IMAGING = 18
 const SHDID_COMPUTER_AUDIO = 19
 const SHDID_COMPUTER_SHAREDDOCS = 20
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SHDID_MOBILE_DEVICE = 21
 #endif
 
@@ -1761,7 +1778,7 @@ declare function RestartDialog(byval hwnd as HWND, byval pszPrompt as PCWSTR, by
 declare function RestartDialogEx(byval hwnd as HWND, byval pszPrompt as PCWSTR, byval dwReturn as DWORD, byval dwReasonCode as DWORD) as long
 declare function SHCoCreateInstance(byval pszCLSID as PCWSTR, byval pclsid as const CLSID ptr, byval pUnkOuter as IUnknown ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function SHCreateDataObject(byval pidlFolder as LPCITEMIDLIST, byval cidl as UINT, byval apidl as LPCITEMIDLIST ptr, byval pdtInner as IDataObject ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 #endif
 
@@ -1858,7 +1875,7 @@ declare sub SHDestroyPropSheetExtArray(byval hpsxa as HPSXA)
 declare function SHAddFromPropSheetExtArray(byval hpsxa as HPSXA, byval lpfnAddPage as LPFNADDPROPSHEETPAGE, byval lParam as LPARAM) as UINT
 declare function SHReplaceFromPropSheetExtArray(byval hpsxa as HPSXA, byval uPageID as UINT, byval lpfnReplaceWith as LPFNADDPROPSHEETPAGE, byval lParam as LPARAM) as UINT
 
-#if _WIN32_WINNT = &h0502
+#if (_WIN32_WINNT = &h0501) or (_WIN32_WINNT = &h0502)
 	type IDefViewFrameVtbl as IDefViewFrameVtbl_
 
 	type IDefViewFrame field = 1
@@ -2085,10 +2102,10 @@ declare function Win32DeleteFile(byval pszPath as PCWSTR) as WINBOOL
 declare function SHRestricted(byval rest as RESTRICTIONS) as DWORD
 declare function SignalFileOpen(byval pidl as LPCITEMIDLIST) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
-	declare function AssocGetDetailsOfPropKey(byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval pkey as const PROPERTYKEY ptr, byval pv as VARIANT ptr, byval pfFoundPropKey as WINBOOL ptr) as HRESULT
-#else
+#if _WIN32_WINNT <= &h0502
 	declare function SHLoadOLE(byval lParam as LPARAM) as HRESULT
+#else
+	declare function AssocGetDetailsOfPropKey(byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval pkey as const PROPERTYKEY ptr, byval pv as VARIANT ptr, byval pfFoundPropKey as WINBOOL ptr) as HRESULT
 #endif
 
 declare function SHStartNetConnectionDialogA(byval hwnd as HWND, byval pszRemoteName as LPCSTR, byval dwType as DWORD) as HRESULT
@@ -2111,9 +2128,12 @@ enum
 	OAIF_EXEC = &h4
 	OAIF_FORCE_REGISTRATION = &h8
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		OAIF_HIDE_REGISTRATION = &h20
 		OAIF_URL_PROTOCOL = &h40
+	#endif
+
+	#if _WIN32_WINNT = &h0602
 		OAIF_FILE_IS_URI = &h80
 	#endif
 end enum
@@ -2129,13 +2149,13 @@ end type
 type OPENASINFO as _openasinfo
 type POPENASINFO as _openasinfo ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function SHOpenWithDialog(byval hwndParent as HWND, byval poainfo as const OPENASINFO ptr) as HRESULT
 #endif
 
 declare function Shell_GetImageLists(byval phiml as HIMAGELIST ptr, byval phimlSmall as HIMAGELIST ptr) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function Shell_GetCachedImageIndexA(byval pszIconPath as LPCSTR, byval iIconIndex as long, byval uIconFlags as UINT) as long
 	declare function Shell_GetCachedImageIndexW(byval pszIconPath as LPCWSTR, byval iIconIndex as long, byval uIconFlags as UINT) as long
 	#ifdef UNICODE
@@ -2164,11 +2184,11 @@ const VALIDATEUNC_CONNECT = &h0001
 const VALIDATEUNC_NOUI = &h0002
 const VALIDATEUNC_PRINT = &h0004
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT <= &h0502
+	const VALIDATEUNC_VALID = &h0007
+#else
 	const VALIDATEUNC_PERSIST = &h0008
 	const VALIDATEUNC_VALID = &h000f
-#else
-	const VALIDATEUNC_VALID = &h0007
 #endif
 
 declare function SHValidateUNC(byval hwndOwner as HWND, byval pszFile as PWSTR, byval fConnect as UINT) as WINBOOL
@@ -2435,7 +2455,7 @@ type DEFCONTEXTMENU
 	aKeys as const HKEY ptr
 end type
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function SHCreateDefaultContextMenu(byval pdcm as const DEFCONTEXTMENU ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 #endif
 
@@ -2456,7 +2476,7 @@ type DFMICS
 	idDefMax as UINT
 	pici as LPCMINVOKECOMMANDINFO
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		punkSite as IUnknown ptr
 	#endif
 end type
@@ -2690,12 +2710,12 @@ type SHELLFLAGSTATE field = 1
 	fShowInfoTip : 1 as WINBOOL
 	fHideIcons : 1 as WINBOOL
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT <= &h0502
+		fRestFlags : 3 as UINT
+	#else
 		fAutoCheckSelect : 1 as WINBOOL
 		fIconsOnly : 1 as WINBOOL
 		fRestFlags : 1 as UINT
-	#else
-		fRestFlags : 3 as UINT
 	#endif
 end type
 
@@ -2724,17 +2744,20 @@ const SSF_NONETCRAWLING = &h00100000
 const SSF_STARTPANELON = &h00200000
 const SSF_SHOWSTARTPAGE = &h00400000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const SSF_AUTOCHECKSELECT = &h00800000
 	const SSF_ICONSONLY = &h01000000
 	const SSF_SHOWTYPEOVERLAY = &h02000000
+#endif
+
+#if _WIN32_WINNT = &h0602
 	const SSF_SHOWSTATUSBAR = &h04000000
 #endif
 
 declare sub SHGetSettings(byval psfs as SHELLFLAGSTATE ptr, byval dwMask as DWORD)
 declare function SHBindToParent(byval pidl as LPCITEMIDLIST, byval riid as const IID const ptr, byval ppv as any ptr ptr, byval ppidlLast as LPCITEMIDLIST ptr) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function SHBindToFolderIDListParent(byval psfRoot as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval riid as const IID const ptr, byval ppv as any ptr ptr, byval ppidlLast as LPCITEMIDLIST ptr) as HRESULT
 	declare function SHBindToFolderIDListParentEx(byval psfRoot as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval ppbc as IBindCtx ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr, byval ppidlLast as LPCITEMIDLIST ptr) as HRESULT
 	declare function SHBindToObject(byval psf as IShellFolder ptr, byval pidl as LPCITEMIDLIST, byval pbc as IBindCtx ptr, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
@@ -2824,9 +2847,11 @@ end type
 type AASHELLMENUITEM as tagAASHELLMENUITEM
 type LPAASHELLMENUITEM as tagAASHELLMENUITEM ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0601
 	declare function StgMakeUniqueName(byval pstgParent as IStorage ptr, byval pszFileSpec as PCWSTR, byval grfMode as DWORD, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
+#endif
 
+#if _WIN32_WINNT >= &h0600
 	type tagIESHORTCUTFLAGS as long
 	enum
 		IESHORTCUT_NEWBROWSER = &h01
@@ -2838,7 +2863,7 @@ type LPAASHELLMENUITEM as tagAASHELLMENUITEM ptr
 	type IESHORTCUTFLAGS as tagIESHORTCUTFLAGS
 #endif
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	declare function ImportPrivacySettings(byval pszFilename as PCWSTR, byval pfParsePrivacyPreferences as WINBOOL ptr, byval pfParsePerSiteRules as WINBOOL ptr) as WINBOOL
 	declare function DoPrivacyDlg(byval hwndOwner as HWND, byval pszUrl as PCWSTR, byval pPrivacyEnum as IEnumPrivacyRecords ptr, byval fReportAllSites as WINBOOL) as HRESULT
 #endif

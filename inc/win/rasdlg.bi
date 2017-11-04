@@ -162,7 +162,7 @@ const RASEDFLAG_NewBroadbandEntry = &h00000080
 const RASEDFLAG_InternetEntry = &h00000100
 const RASEDFLAG_NAT = &h00000200
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const RASEDFLAG_IncomingConnection = &h00000400
 #endif
 

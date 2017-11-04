@@ -11,6 +11,8 @@ Non-modifiable variable declaration.
 	
 	Specifying ##[[KeyPgString|String * size]]##, ##[[KeyPgZstring|Zstring * size]]## or ##[[KeyPgWstring|Wstring * size]]## as ##[[DataType|DataType]]## is not allowed.
 	Specifying ##[[KeyPgString|String]]## as ##[[DataType|DataType]]## is tolerated but without effect because the resulting type is always a ##[[KeyPgZstring|Zstring * size]]##.
+	
+	Constants follow visibility rules similar to those of variables for Namespace blocks, Type blocks, and compound block statements.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/variable/const.bas"}}%%(freebasic)

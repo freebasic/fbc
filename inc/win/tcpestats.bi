@@ -17,7 +17,7 @@
 
 #define _INC_TCPESTATS
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _TCP_ESTATS_BANDWIDTH_ROD_v0
 		OutboundBandwidth as ULONG64
 		InboundBandwidth as ULONG64

@@ -28,15 +28,15 @@ FBCALL void fb_StrAssignMid( FBSTRING *dst, ssize_t start, ssize_t len, FBSTRING
 
 	if( (start > 0) && (start <= dst_len) && (len != 0) )
     {
-		--start;
+        --start;
 
-		if( (len < 0) || (len > src_len) )
-			len = src_len;
+        if( (len < 0) || (len > src_len) )
+            len = src_len;
 
         if( start + len > dst_len )
-        	len = (dst_len - start);
+            len = (dst_len - start);
 
-		memcpy( dst->data + start, src->data, len );
+        memcpy( dst->data + start, src->data, len );
     }
 
 	/* del if temp */

@@ -464,6 +464,7 @@ extern void fb_hSoftCursorPaletteChanged(void);
 extern int fb_hColorDistance(int index, int r, int g, int b);
 extern void *fb_hPixelSetAlpha4(void *dest, int color, size_t size);
 extern ssize_t fb_hGetWindowHandle(void);
+extern ssize_t fb_hGetDisplayHandle(void);
 
 
 /* Public API */

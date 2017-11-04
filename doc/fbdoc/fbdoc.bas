@@ -1,5 +1,5 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2008 The FreeBASIC development team.
+''	Copyright (C) 2006-2017 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -48,7 +48,8 @@ using fb
 using fbdoc
 
 const ManualDir = "../manual/"
-const default_wiki_url = "http://www.freebasic.net/wiki/wikka.php"
+const default_wiki_url = "https://www.freebasic.net/wiki/wikka.php"
+const default_ca_file = ""
 const default_CacheDir = ManualDir + "cache/"
 const default_TocPage = "DocToc"
 
@@ -128,13 +129,15 @@ end sub
 		print "   -makepage pagename"
 		print "                  process a single page (and links on page) only"
 		print "   -maketitles    generate titles.txt"
+		print "   -certificate file"
+		print "              certificate to use to authenticate server (.pem)"
 		print ""
 		end 1
 	end if
 
 	if( bShowVersion ) then
 		print "FreeBASIC User's Manual Converter/Generator - Version 0.1b"
-		print "Copyright (C) 2006-2008 The FreeBASIC development team."
+		print "Copyright (C) 2006-2017 The FreeBASIC development team."
 		end 1
 	end if
 
@@ -258,7 +261,7 @@ end sub
 		else
 			if( open( sConnFile for output as #h ) = 0 ) then
 				print #h, "[Wiki Connection]"
-				print #h, "wiki_url = http://www.freebasic.net/wiki/wikka.php"
+				print #h, "wiki_url = https://www.freebasic.net/wiki/wikka.php"
 				print #h,
 
 				print #h, "[MySql Connection]"
@@ -305,7 +308,7 @@ end sub
 	end if
 
 	'' Initialize the wiki connection - in case its needed
-	Connection_SetUrl( connopts->Get( "wiki_url", default_wiki_url) )
+	Connection_SetUrl( connopts->Get( "wiki_url", default_wiki_url ), connopts->Get( "certificate", default_ca_file ) )
 
 #if defined(HAVE_MYSQL)
 	'' If using SQL, get all the pages in to the cache now.

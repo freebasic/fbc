@@ -819,7 +819,7 @@ const IOC_VENDOR = &h18000000
 #define SIO_QUERY_TARGET_PNP_HANDLE _WSAIOR(IOC_WS2, 24)
 #define SIO_ADDRESS_LIST_SORT _WSAIORW(IOC_WS2, 25)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define SIO_RESERVED_1 _WSAIOW(IOC_WS2, 26)
 	#define SIO_RESERVED_2 _WSAIOW(IOC_WS2, 33)
 #endif
@@ -897,7 +897,7 @@ const NS_NETBT = 13
 const NS_WINS = 14
 const NS_NLA = 15
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const NS_BTH = 16
 #endif
 
@@ -906,7 +906,7 @@ const NS_MS = 30
 const NS_STDA = 31
 const NS_NTDS = 32
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const NS_EMAIL = 37
 	const NS_PNRPNAME = 38
 	const NS_PNRPCLOUD = 39
@@ -1436,7 +1436,7 @@ declare function WSAProviderConfigChange(byval lpNotificationHandle as LPHANDLE,
 #define WSAGETSELECTEVENT(lParam) LOWORD(lParam)
 #define WSAGETSELECTERROR(lParam) HIWORD(lParam)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _WSANAMESPACE_INFOEXA
 		NSProviderId as GUID
 		dwNameSpace as DWORD
@@ -1464,17 +1464,17 @@ declare function WSAProviderConfigChange(byval lpNotificationHandle as LPHANDLE,
 	type LPWSANAMESPACE_INFOEXW as _WSANAMESPACE_INFOEXW ptr
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	type WSANAMESPACE_INFOEX as WSANAMESPACE_INFOEXW
 	type PWSANAMESPACE_INFOEX as PWSANAMESPACE_INFOEXW
 	type LPWSANAMESPACE_INFOEX as LPWSANAMESPACE_INFOEXW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	type WSANAMESPACE_INFOEX as WSANAMESPACE_INFOEXA
 	type PWSANAMESPACE_INFOEX as PWSANAMESPACE_INFOEXA
 	type LPWSANAMESPACE_INFOEX as LPWSANAMESPACE_INFOEXA
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _WSAQUERYSET2A
 		dwSize as DWORD
 		lpszServiceInstanceName as LPSTR
@@ -1543,24 +1543,24 @@ declare function WSAProviderConfigChange(byval lpNotificationHandle as LPHANDLE,
 	declare function WSAConnectByNameW(byval s as SOCKET, byval nodename as LPWSTR, byval servicename as LPWSTR, byval LocalAddressLength as LPDWORD, byval LocalAddress as LPSOCKADDR, byval RemoteAddressLength as LPDWORD, byval RemoteAddress as LPSOCKADDR, byval timeout as const PTIMEVAL, byval Reserved as LPWSAOVERLAPPED) as WINBOOL
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function WSAConnectByName alias "WSAConnectByNameW"(byval s as SOCKET, byval nodename as LPWSTR, byval servicename as LPWSTR, byval LocalAddressLength as LPDWORD, byval LocalAddress as LPSOCKADDR, byval RemoteAddressLength as LPDWORD, byval RemoteAddress as LPSOCKADDR, byval timeout as const PTIMEVAL, byval Reserved as LPWSAOVERLAPPED) as WINBOOL
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function WSAConnectByName alias "WSAConnectByNameA"(byval s as SOCKET, byval nodename as LPSTR, byval servicename as LPSTR, byval LocalAddressLength as LPDWORD, byval LocalAddress as LPSOCKADDR, byval RemoteAddressLength as LPDWORD, byval RemoteAddress as LPSOCKADDR, byval timeout as const PTIMEVAL, byval Reserved as LPWSAOVERLAPPED) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function WSAEnumNameSpaceProvidersExA(byval lpdwBufferLength as LPDWORD, byval lpnspBuffer as LPWSANAMESPACE_INFOEXA) as INT_
 	declare function WSAEnumNameSpaceProvidersExW(byval lpdwBufferLength as LPDWORD, byval lpnspBuffer as LPWSANAMESPACE_INFOEXW) as INT_
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function WSAEnumNameSpaceProvidersEx alias "WSAEnumNameSpaceProvidersExW"(byval lpdwBufferLength as LPDWORD, byval lpnspBuffer as LPWSANAMESPACE_INFOEXW) as INT_
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function WSAEnumNameSpaceProvidersEx alias "WSAEnumNameSpaceProvidersExA"(byval lpdwBufferLength as LPDWORD, byval lpnspBuffer as LPWSANAMESPACE_INFOEXA) as INT_
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function WSAPoll(byval fdarray as WSAPOLLFD ptr, byval nfds as ULONG, byval timeout as INT_) as long
 	declare function WSASendMsg(byval s as SOCKET, byval lpMsg as LPWSAMSG, byval dwFlags as DWORD, byval lpNumberOfBytesSent as LPDWORD, byval lpOverlapped as LPWSAOVERLAPPED, byval lpCompletionRoutine as LPWSAOVERLAPPED_COMPLETION_ROUTINE) as long
 #endif

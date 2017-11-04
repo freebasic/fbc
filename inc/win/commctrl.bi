@@ -146,7 +146,7 @@ const INFOTIPSIZE = 1024
 #define NM_RDOWN culng(NM_FIRST - 21)
 #define NM_THEMECHANGED culng(NM_FIRST - 22)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define NM_FONTCHANGED culng(NM_FIRST - 23)
 	#define NM_CUSTOMTEXT culng(NM_FIRST - 24)
 	#define NM_TVSTATEIMAGECHANGING culng(NM_FIRST - 24)
@@ -204,7 +204,7 @@ end type
 type NMCHAR as tagNMCHAR
 type LPNMCHAR as tagNMCHAR ptr
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	type tagNMCUSTOMTEXT
 		hdr as NMHDR
 		hDC as HDC
@@ -256,7 +256,7 @@ const WMN_LAST = culng(0u - 1200u)
 const BCN_FIRST = culng(0u - 1250u)
 const BCN_LAST = culng(0u - 1350u)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const TRBN_FIRST = culng(0u - 1501u)
 	const TRBN_LAST = culng(0u - 1519u)
 #endif
@@ -295,7 +295,7 @@ const CDIS_MARKED = &h80
 const CDIS_INDETERMINATE = &h100
 const CDIS_SHOWKEYBOARDCUES = &h200
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const CDIS_NEARHOT = &h0400
 	const CDIS_OTHERSIDEHOT = &h0800
 	const CDIS_DROPHILITED = &h1000
@@ -371,7 +371,7 @@ const ILC_PALETTE = &h800
 const ILC_MIRROR = &h2000
 const ILC_PERITEMMIRROR = &h8000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const ILC_ORIGINALSIZE = &h00010000
 	const ILC_HIGHQUALITYSCALE = &h00020000
 #endif
@@ -400,7 +400,7 @@ const ILD_PRESERVEALPHA = &h1000
 const ILD_SCALE = &h2000
 const ILD_DPISCALE = &h4000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const ILD_ASYNC = &h8000
 #endif
 
@@ -414,7 +414,7 @@ const ILS_SHADOW = &h2
 const ILS_SATURATE = &h4
 const ILS_ALPHA = &h8
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const ILGT_NORMAL = &h0
 	const ILGT_ASYNC = &h1
 	const HBITMAP_CALLBACK = cast(HBITMAP, -1)
@@ -494,7 +494,7 @@ const HDS_FULLDRAG = &h80
 const HDS_FILTERBAR = &h100
 const HDS_FLAT = &h200
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const HDS_CHECKBOXES = &h400
 	const HDS_NOSIZING = &h800
 	const HDS_OVERFLOW = &h1000
@@ -548,7 +548,7 @@ type _HD_ITEMA
 	as UINT type
 	pvFilter as any ptr
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		state as UINT
 	#endif
 end type
@@ -571,7 +571,7 @@ type _HD_ITEMW
 	as UINT type
 	pvFilter as any ptr
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		state as UINT
 	#endif
 end type
@@ -606,7 +606,7 @@ const HDI_DI_SETITEM = &h40
 const HDI_ORDER = &h80
 const HDI_FILTER = &h100
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const HDI_STATE = &h0200
 #endif
 
@@ -623,7 +623,7 @@ const HDF_IMAGE = &h800
 const HDF_SORTUP = &h400
 const HDF_SORTDOWN = &h200
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const HDF_CHECKBOX = &h40
 	const HDF_CHECKED = &h80
 	const HDF_FIXEDWIDTH = &h100
@@ -687,7 +687,7 @@ const HHT_BELOW = &h200
 const HHT_TORIGHT = &h400
 const HHT_TOLEFT = &h800
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const HHT_ONITEMSTATEICON = &h1000
 	const HHT_ONDROPDOWN = &h2000
 	const HHT_ONOVERFLOW = &h4000
@@ -735,7 +735,7 @@ const HDM_SETFILTERCHANGETIMEOUT = HDM_FIRST + 22
 const HDM_EDITFILTER = HDM_FIRST + 23
 #define Header_EditFilter(hwnd, i, fDiscardChanges) clng(SNDMSG((hwnd), HDM_EDITFILTER, cast(WPARAM, (i)), MAKELPARAM(fDiscardChanges, 0)))
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	#define HDM_TRANSLATEACCELERATOR CCM_TRANSLATEACCELERATOR
 #endif
 
@@ -743,7 +743,7 @@ const HDM_CLEARFILTER = HDM_FIRST + 24
 #define Header_ClearFilter(hwnd, i) clng(SNDMSG((hwnd), HDM_CLEARFILTER, cast(WPARAM, (i)), 0))
 #define Header_ClearAllFilters(hwnd) clng(SNDMSG((hwnd), HDM_CLEARFILTER, cast(WPARAM, -1), 0))
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const HDM_GETITEMDROPDOWNRECT = HDM_FIRST + 25
 	#define Header_GetItemDropDownRect(hwnd, iItem, lprc) cast(WINBOOL, SNDMSG((hwnd), HDM_GETITEMDROPDOWNRECT, cast(WPARAM, (iItem)), cast(LPARAM, (lprc))))
 	const HDM_GETOVERFLOWRECT = HDM_FIRST + 26
@@ -777,12 +777,12 @@ const HDN_ENDDRAG = culng(HDN_FIRST - 11)
 const HDN_FILTERCHANGE = culng(HDN_FIRST - 12)
 const HDN_FILTERBTNCLICK = culng(HDN_FIRST - 13)
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const HDN_BEGINFILTEREDIT = culng(HDN_FIRST - 14)
 	const HDN_ENDFILTEREDIT = culng(HDN_FIRST - 15)
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const HDN_ITEMSTATEICONCLICK = culng(HDN_FIRST - 16)
 	const HDN_ITEMKEYDOWN = culng(HDN_FIRST - 17)
 	const HDN_DROPDOWN = culng(HDN_FIRST - 18)
@@ -998,7 +998,7 @@ const TBCDRF_NOETCHEDEFFECT = &h100000
 const TBCDRF_BLENDICON = &h200000
 const TBCDRF_NOBACKGROUND = &h400000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const TBCDRF_USECDCOLORS = &h00800000
 #endif
 
@@ -1033,7 +1033,7 @@ const IDB_VIEW_LARGE_COLOR = 5
 const IDB_HIST_SMALL_COLOR = 8
 const IDB_HIST_LARGE_COLOR = 9
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const IDB_HIST_NORMAL = 12
 	const IDB_HIST_HOT = 13
 	const IDB_HIST_DISABLED = 14
@@ -1569,7 +1569,7 @@ const RBBIM_IDEALSIZE = &h200
 const RBBIM_LPARAM = &h400
 const RBBIM_HEADERSIZE = &h800
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const RBBIM_CHEVRONLOCATION = &h00001000
 	const RBBIM_CHEVRONSTATE = &h00002000
 #endif
@@ -1596,7 +1596,7 @@ type tagREBARBANDINFOA
 	lParam as LPARAM
 	cxHeader as UINT
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		rcChevronLocation as RECT
 		uChevronState as UINT
 	#endif
@@ -1633,7 +1633,7 @@ type tagREBARBANDINFOW
 	lParam as LPARAM
 	cxHeader as UINT
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		rcChevronLocation as RECT
 		uChevronState as UINT
 	#endif
@@ -1716,14 +1716,14 @@ const RB_GETUNICODEFORMAT = CCM_GETUNICODEFORMAT
 const RB_GETBANDMARGINS = WM_USER + 40
 const RB_SETWINDOWTHEME = CCM_SETWINDOWTHEME
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const RB_SETEXTENDEDSTYLE = WM_USER + 41
 	const RB_GETEXTENDEDSTYLE = WM_USER + 42
 #endif
 
 const RB_PUSHCHEVRON = WM_USER + 43
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const RB_SETBANDWIDTH = WM_USER + 44
 #endif
 
@@ -1738,7 +1738,7 @@ const RBN_DELETEDBAND = culng(RBN_FIRST - 7)
 const RBN_CHILDSIZE = culng(RBN_FIRST - 8)
 const RBN_CHEVRONPUSHED = culng(RBN_FIRST - 10)
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const RBN_SPLITTERDRAG = culng(RBN_FIRST - 11)
 #endif
 
@@ -1793,7 +1793,7 @@ end type
 type NMREBARCHEVRON as tagNMREBARCHEVRON
 type LPNMREBARCHEVRON as tagNMREBARCHEVRON ptr
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	type tagNMREBARSPLITTER
 		hdr as NMHDR
 		rcSizing as RECT
@@ -1824,7 +1824,7 @@ const RBHT_CLIENT = &h3
 const RBHT_GRABBER = &h4
 const RBHT_CHEVRON = &h8
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const RBHT_SPLITTER = &h10
 #endif
 
@@ -1920,7 +1920,7 @@ const TTS_NOFADE = &h20
 const TTS_BALLOON = &h40
 const TTS_CLOSE = &h80
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const TTS_USEVISUALSTYLE = &h100
 #endif
 
@@ -1942,7 +1942,7 @@ const TTI_INFO = 1
 const TTI_WARNING = 2
 const TTI_ERROR = 3
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const TTI_INFO_LARGE = 4
 	const TTI_WARNING_LARGE = 5
 	const TTI_ERROR_LARGE = 6
@@ -2246,11 +2246,11 @@ const TBS_TOOLTIPS = &h100
 const TBS_REVERSED = &h200
 const TBS_DOWNISLEFT = &h400
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const TBS_NOTIFYBEFOREMOVE = &h800
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const TBS_TRANSPARENTBKGND = &h1000
 #endif
 
@@ -2306,7 +2306,7 @@ const TBCD_TICS = &h1
 const TBCD_THUMB = &h2
 const TBCD_CHANNEL = &h3
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const TRBN_THUMBPOSCHANGING = culng(TRBN_FIRST - 1)
 
 	type tagTRBTHUMBPOSCHANGING
@@ -2426,7 +2426,7 @@ const PBM_SETBKCOLOR = CCM_SETBKCOLOR
 const PBS_MARQUEE = &h8
 const PBM_SETMARQUEE = WM_USER + 10
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const PBM_GETSTEP = WM_USER + 13
 	const PBM_GETBKCOLOR = WM_USER + 14
 	const PBM_GETBARCOLOR = WM_USER + 15
@@ -2563,7 +2563,7 @@ const LVIF_NORECOMPUTE = &h800
 const LVIF_GROUPID = &h100
 const LVIF_COLUMNS = &h200
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LVIF_COLFMT = &h10000
 #endif
 
@@ -2584,14 +2584,14 @@ const I_GROUPIDNONE = -2
 #define LVITEMA_V1_SIZE CCSIZEOF_STRUCT(LVITEMA, lParam)
 #define LVITEMW_V1_SIZE CCSIZEOF_STRUCT(LVITEMW, lParam)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define LVITEMA_V5_SIZE CCSIZEOF_STRUCT(LVITEMA, puColumns)
 	#define LVITEMW_V5_SIZE CCSIZEOF_STRUCT(LVITEMW, puColumns)
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	#define LVITEM_V5_SIZE LVITEMW_V5_SIZE
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	#define LVITEM_V5_SIZE LVITEMA_V5_SIZE
 #endif
 
@@ -2610,7 +2610,7 @@ type tagLVITEMA
 	cColumns as UINT
 	puColumns as PUINT
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		piColFmt as long ptr
 		iGroup as long
 	#endif
@@ -2634,7 +2634,7 @@ type tagLVITEMW
 	cColumns as UINT
 	puColumns as PUINT
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		piColFmt as long ptr
 		iGroup as long
 	#endif
@@ -2824,7 +2824,7 @@ type tagLVHITTESTINFO
 	iItem as long
 	iSubItem as long
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		iGroup as long
 	#endif
 end type
@@ -2872,7 +2872,7 @@ type tagLVCOLUMNA
 	iImage as long
 	iOrder as long
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		cxMin as long
 		cxDefault as long
 		cxIdeal as long
@@ -2892,7 +2892,7 @@ type tagLVCOLUMNW
 	iImage as long
 	iOrder as long
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		cxMin as long
 		cxDefault as long
 		cxIdeal as long
@@ -2925,7 +2925,7 @@ const LVCF_SUBITEM = &h8
 const LVCF_IMAGE = &h10
 const LVCF_ORDER = &h20
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LVCF_MINWIDTH = &h40
 	const LVCF_DEFAULTWIDTH = &h80
 	const LVCF_IDEALWIDTH = &h100
@@ -2939,7 +2939,7 @@ const LVCFMT_IMAGE = &h800
 const LVCFMT_BITMAP_ON_RIGHT = &h1000
 const LVCFMT_COL_HAS_IMAGES = &h8000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LVCFMT_FIXED_WIDTH = &h100
 	const LVCFMT_NO_DPI_SCALE = &h40000
 	const LVCFMT_FIXED_RATIO = &h80000
@@ -3119,7 +3119,7 @@ const LVS_EX_SINGLEROW = &h40000
 const LVS_EX_SNAPTOGRID = &h80000
 const LVS_EX_SIMPLESELECT = &h100000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LVS_EX_JUSTIFYCOLUMNS = &h200000
 	const LVS_EX_TRANSPARENTBKGND = &h400000
 	const LVS_EX_TRANSPARENTSHADOWTEXT = &h800000
@@ -3236,7 +3236,7 @@ const LVGF_STATE = &h4
 const LVGF_ALIGN = &h8
 const LVGF_GROUPID = &h10
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LVGF_SUBTITLE = &h100
 	const LVGF_TASK = &h200
 	const LVGF_DESCRIPTIONTOP = &h400
@@ -3276,7 +3276,7 @@ type tagLVGROUP
 	state as UINT
 	uAlign as UINT
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		pszSubtitle as LPWSTR
 		cchSubtitle as UINT
 		pszTask as LPWSTR
@@ -3297,7 +3297,7 @@ end type
 type LVGROUP as tagLVGROUP
 type PLVGROUP as tagLVGROUP ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define LVGROUP_V5_SIZE CCSIZEOF_STRUCT(LVGROUP, uAlign)
 #endif
 
@@ -3391,7 +3391,7 @@ const LVTVIF_FIXEDWIDTH = &h1
 const LVTVIF_FIXEDHEIGHT = &h2
 const LVTVIF_FIXEDSIZE = &h3
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LVTVIF_EXTENDED = &h4
 #endif
 
@@ -3417,7 +3417,7 @@ type tagLVTILEINFO
 	cColumns as UINT
 	puColumns as PUINT
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		piColFmt as long ptr
 	#endif
 end type
@@ -3485,7 +3485,7 @@ const LVM_MAPIDTOINDEX = LVM_FIRST + 181
 const LVM_ISITEMVISIBLE = LVM_FIRST + 182
 #define ListView_IsItemVisible(hwnd, index) cast(UINT, SNDMSG((hwnd), LVM_ISITEMVISIBLE, cast(WPARAM, (index)), cast(LPARAM, 0)))
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define ListView_SetGroupHeaderImageList(hwnd, himl) cast(HIMAGELIST, SNDMSG((hwnd), LVM_SETIMAGELIST, cast(WPARAM, LVSIL_GROUPHEADER), cast(LPARAM, cast(HIMAGELIST, (himl)))))
 	#define ListView_GetGroupHeaderImageList(hwnd) cast(HIMAGELIST, SNDMSG((hwnd), LVM_GETIMAGELIST, cast(WPARAM, LVSIL_GROUPHEADER), 0))
 	const LVM_GETEMPTYTEXT = LVM_FIRST + 204
@@ -3770,7 +3770,7 @@ type NMLVKEYDOWN as tagLVKEYDOWN
 type LPNMLVKEYDOWN as tagLVKEYDOWN ptr
 const LVN_MARQUEEBEGIN = culng(LVN_FIRST - 56)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type tagNMLVLINK
 		hdr as NMHDR
 		link as LITEM
@@ -3829,11 +3829,11 @@ const LVN_INCREMENTALSEARCHW = culng(LVN_FIRST - 63)
 
 #ifdef UNICODE
 	const LVN_INCREMENTALSEARCH = LVN_INCREMENTALSEARCHW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	const LVN_INCREMENTALSEARCH = LVN_INCREMENTALSEARCHA
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LVN_COLUMNDROPDOWN = culng(LVN_FIRST - 64)
 	const LVN_COLUMNOVERFLOWCLICK = culng(LVN_FIRST - 66)
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT <= &h0502)
@@ -3851,7 +3851,7 @@ type LPNMLVSCROLL as tagNMLVSCROLL ptr
 const LVN_BEGINSCROLL = culng(LVN_FIRST - 80)
 const LVN_ENDSCROLL = culng(LVN_FIRST - 81)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LVN_LINKCLICK = culng(LVN_FIRST - 84)
 	const EMF_CENTERED = &h1
 
@@ -3892,7 +3892,7 @@ const TVS_NONEVENHEIGHT = &h4000
 const TVS_NOHSCROLL = &h8000
 const TVS_EX_NOSINGLECOLLAPSE = &h1
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const TVS_EX_MULTISELECT = &h2
 	const TVS_EX_DOUBLEBUFFER = &h4
 	const TVS_EX_NOINDENTSTATE = &h8
@@ -3915,7 +3915,7 @@ const TVIF_SELECTEDIMAGE = &h20
 const TVIF_CHILDREN = &h40
 const TVIF_INTEGRAL = &h80
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const TVIF_STATEEX = &h100
 	const TVIF_EXPANDEDIMAGE = &h200
 #endif
@@ -3931,15 +3931,15 @@ const TVIS_OVERLAYMASK = &hf00
 const TVIS_STATEIMAGEMASK = &hF000
 const TVIS_USERMASK = &hF000
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const TVIS_EX_FLAT = &h1
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const TVIS_EX_DISABLED = &h2
 #endif
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const TVIS_EX_ALL = &h0002
 
 	type tagNMTVSTATEIMAGECHANGING
@@ -4006,13 +4006,13 @@ type tagTVITEMEXA
 	lParam as LPARAM
 	iIntegral as long
 
-	#if _WIN32_WINNT >= &h0502
+	#if _WIN32_WINNT >= &h0501
 		uStateEx as UINT
 		hwnd as HWND
 		iExpandedImage as long
 	#endif
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0601
 		iReserved as long
 	#endif
 end type
@@ -4033,13 +4033,13 @@ type tagTVITEMEXW
 	lParam as LPARAM
 	iIntegral as long
 
-	#if _WIN32_WINNT >= &h0502
+	#if _WIN32_WINNT >= &h0501
 		uStateEx as UINT
 		hwnd as HWND
 		iExpandedImage as long
 	#endif
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0601
 		iReserved as long
 	#endif
 end type
@@ -4171,7 +4171,7 @@ const TVGN_DROPHILITE = &h8
 const TVGN_CARET = &h9
 const TVGN_LASTVISIBLE = &ha
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const TVGN_NEXTSELECTED = &hb
 #endif
 
@@ -4188,7 +4188,7 @@ const TVSI_NOSINGLEEXPAND = &h8000
 #define TreeView_GetRoot(hwnd) TreeView_GetNextItem(hwnd, NULL, TVGN_ROOT)
 #define TreeView_GetLastVisible(hwnd) TreeView_GetNextItem(hwnd, NULL, TVGN_LASTVISIBLE)
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	#define TreeView_GetNextSelected(hwnd, hitem) TreeView_GetNextItem(hwnd, hitem, TVGN_NEXTSELECTED)
 #endif
 
@@ -4341,7 +4341,7 @@ const TVM_SETHOT = TV_FIRST + 58
 const TVM_SETAUTOSCROLLINFO = TV_FIRST + 59
 #define TreeView_SetAutoScrollInfo(hwnd, uPixPerSec, uUpdateTime) SNDMSG((hwnd), TVM_SETAUTOSCROLLINFO, cast(WPARAM, (uPixPerSec)), cast(LPARAM, (uUpdateTime)))
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const TVM_GETSELECTEDCOUNT = TV_FIRST + 70
 	#define TreeView_GetSelectedCount(hwnd) cast(DWORD, SNDMSG((hwnd), TVM_GETSELECTEDCOUNT, 0, 0))
 	const TVM_SHOWINFOTIP = TV_FIRST + 71
@@ -4466,11 +4466,11 @@ type TV_DISPINFO as NMTVDISPINFO
 
 #ifdef UNICODE
 	type LPNMTVDISPINFO as LPNMTVDISPINFOW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0501)
 	type LPNMTVDISPINFO as LPNMTVDISPINFOA
 #endif
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	type tagTVDISPINFOEXA
 		hdr as NMHDR
 		item as TVITEMEXA
@@ -4488,15 +4488,15 @@ type TV_DISPINFO as NMTVDISPINFO
 	type LPNMTVDISPINFOEXW as tagTVDISPINFOEXW ptr
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0501)
 	type NMTVDISPINFOEX as NMTVDISPINFOEXW
 	type LPNMTVDISPINFOEX as LPNMTVDISPINFOEXW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0501)
 	type NMTVDISPINFOEX as NMTVDISPINFOEXA
 	type LPNMTVDISPINFOEX as LPNMTVDISPINFOEXA
 #endif
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	type TV_DISPINFOEXA as NMTVDISPINFOEXA
 	type TV_DISPINFOEXW as NMTVDISPINFOEXW
 	type TV_DISPINFOEX as NMTVDISPINFOEX
@@ -4526,7 +4526,7 @@ const TVNRET_DEFAULT = 0
 const TVNRET_SKIPOLD = 1
 const TVNRET_SKIPNEW = 2
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const TVN_ITEMCHANGINGA = culng(TVN_FIRST - 16)
 	const TVN_ITEMCHANGINGW = culng(TVN_FIRST - 17)
 	const TVN_ITEMCHANGEDA = culng(TVN_FIRST - 18)
@@ -4745,7 +4745,7 @@ const CBES_EX_PATHWORDBREAKPROC = &h4
 const CBES_EX_NOSIZELIMIT = &h8
 const CBES_EX_CASESENSITIVE = &h10
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const CBES_EX_TEXTENDELLIPSIS = &h00000020
 #endif
 
@@ -5185,7 +5185,7 @@ type MCHITTESTINFO
 	uHit as UINT
 	st as SYSTEMTIME
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		rc as RECT
 		iOffset as long
 		iRow as long
@@ -5199,7 +5199,7 @@ const MCHT_TITLE = &h10000
 const MCHT_CALENDAR = &h20000
 const MCHT_TODAYLINK = &h30000
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const MCHT_CALENDARCONTROL = &h100000
 #endif
 
@@ -5238,7 +5238,7 @@ const MCM_SETUNICODEFORMAT = CCM_SETUNICODEFORMAT
 const MCM_GETUNICODEFORMAT = CCM_GETUNICODEFORMAT
 #define MonthCal_GetUnicodeFormat(hwnd) cast(WINBOOL, SNDMSG((hwnd), MCM_GETUNICODEFORMAT, 0, 0))
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const MCMV_MONTH = 0
 	const MCMV_YEAR = 1
 	const MCMV_DECADE = 2
@@ -5333,7 +5333,7 @@ const MCS_WEEKNUMBERS = &h4
 const MCS_NOTODAYCIRCLE = &h8
 const MCS_NOTODAY = &h10
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const MCS_NOTRAILINGDATES = &h40
 	const MCS_SHORTDAYSOFWEEK = &h80
 	const MCS_NOSELCHANGEONNAV = &h100
@@ -5346,11 +5346,11 @@ const GMR_DAYSTATE = 1
 
 #ifdef UNICODE
 	#define DATETIMEPICK_CLASS DATETIMEPICK_CLASSW
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	#define DATETIMEPICK_CLASS DATETIMEPICK_CLASSA
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type tagDATETIMEPICKERINFO
 		cbSize as DWORD
 		rcCheck as RECT
@@ -5398,7 +5398,7 @@ const DTM_SETMCFONT = DTM_FIRST + 9
 const DTM_GETMCFONT = DTM_FIRST + 10
 #define DateTime_GetMonthCalFont(hdp) SNDMSG(hdp, DTM_GETMCFONT, 0, 0)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const DTM_SETMCSTYLE = DTM_FIRST + 11
 	#define DateTime_SetMonthCalStyle(hdp, dwStyle) SNDMSG(hdp, DTM_SETMCSTYLE, 0, cast(LPARAM, dwStyle))
 	const DTM_GETMCSTYLE = DTM_FIRST + 12
@@ -5748,7 +5748,7 @@ type LPNMBCHOTITEM as tagNMBCHOTITEM ptr
 const BCN_HOTITEMCHANGE = culng(BCN_FIRST + &h1)
 const BST_HOT = &h0200
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const BST_DROPDOWNPUSHED = &h0400
 	const BS_SPLITBUTTON = &hc
 	const BS_DEFSPLITBUTTON = &hd
@@ -5835,7 +5835,7 @@ const EM_SHOWBALLOONTIP = ECM_FIRST + 3
 const EM_HIDEBALLOONTIP = ECM_FIRST + 4
 #define Edit_HideBalloonTip(hwnd) cast(WINBOOL, SNDMSG((hwnd), EM_HIDEBALLOONTIP, 0, 0))
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const EM_SETHILITE = ECM_FIRST + 5
 	#define Edit_SetHilite(hwndCtl, ichStart, ichEnd) SNDMSG((hwndCtl), EM_SETHILITE, (ichStart), (ichEnd))
 	const EM_GETHILITE = ECM_FIRST + 6
@@ -5884,7 +5884,7 @@ const CB_GETCUEBANNER = CBM_FIRST + 4
 const LWS_TRANSPARENT = &h1
 const LWS_IGNORERETURN = &h2
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LWS_NOPREFIX = &h4
 	const LWS_USEVISUALSTYLE = &h8
 	const LWS_USECUSTOMTEXT = &h10
@@ -5899,7 +5899,7 @@ const LIS_FOCUSED = &h1
 const LIS_ENABLED = &h2
 const LIS_VISITED = &h4
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const LIS_HOTTRACK = &h8
 	const LIS_DEFAULTCOLORS = &h10
 #endif
@@ -5909,7 +5909,7 @@ const LM_GETIDEALHEIGHT = WM_USER + &h301
 const LM_SETITEM = WM_USER + &h302
 const LM_GETITEM = WM_USER + &h303
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type PFTASKDIALOGCALLBACK as function(byval hwnd as HWND, byval msg as UINT, byval wParam as WPARAM, byval lParam as LPARAM, byval lpRefData as LONG_PTR) as HRESULT
 
 	type _TASKDIALOG_FLAGS as long
@@ -5930,7 +5930,11 @@ const LM_GETITEM = WM_USER + &h303
 		TDF_RTL_LAYOUT = &h2000
 		TDF_NO_DEFAULT_RADIO_BUTTON = &h4000
 		TDF_CAN_BE_MINIMIZED = &h8000
-		TDF_NO_SET_FOREGROUND = &h10000
+
+		#if _WIN32_WINNT = &h0602
+			TDF_NO_SET_FOREGROUND = &h10000
+		#endif
+
 		TDF_SIZE_TO_CONTENT = &h1000000
 	end enum
 
@@ -6082,7 +6086,7 @@ declare function DSA_SetItem(byval hdsa as HDSA, byval i as long, byval pitem as
 #define DSA_GetItemCount(hdsa) (*cptr(long ptr, (hdsa)))
 #define DSA_AppendItem(hdsa, pitem) DSA_InsertItem(hdsa, DA_LAST, pitem)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function DSA_Clone(byval hdsa as HDSA) as HDSA
 	declare function DSA_GetSize(byval hdsa as HDSA) as ULONGLONG
 	declare function DSA_Sort(byval pdsa as HDSA, byval pfnCompare as PFNDACOMPARE, byval lParam as LPARAM) as WINBOOL
@@ -6117,7 +6121,7 @@ declare function DPA_GetPtrIndex(byval hdpa as HDPA, byval p as const any ptr) a
 #define DPA_FastGetPtr(hdpa, i) DPA_GetPtrPtr(hdpa)[i]
 #define DPA_AppendPtr(hdpa, pitem) DPA_InsertPtr(hdpa, DA_LAST, pitem)
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function DPA_GetSize(byval hdpa as HDPA) as ULONGLONG
 #endif
 

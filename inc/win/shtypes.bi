@@ -124,7 +124,7 @@ end type
 type SHELLDETAILS as _SHELLDETAILS
 type LPSHELLDETAILS as _SHELLDETAILS ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type tagPERCEIVED as long
 	enum
 		PERCEIVED_TYPE_FIRST = -3

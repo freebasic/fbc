@@ -1,5 +1,5 @@
-{{fbdoc item="title" value="User Input"}}----
-Statements and procedures that get input from the user.
+{{fbdoc item="title" value="User Input (Runtime Library)"}}----
+Statements and procedures (from runtime library) that get input from the user.
 
 {{fbdoc item="desc"}}
 	These statements and procedures allow access to the keyboard buffer, and provide ways of getting input from the user.

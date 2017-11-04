@@ -2,7 +2,7 @@
 #define __CHTTPSTREAM_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2008 The FreeBASIC development team.
+''	Copyright (C) 2006-2017 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -41,7 +41,8 @@ namespace fb
 		declare function Receive _
 	 		( _
 				byval url as zstring ptr, _
-				byval doreset as integer = FALSE _
+				byval doreset as integer = FALSE, _
+				byval ca_file as zstring ptr = NULL _
 			) as integer
 
 
@@ -50,12 +51,13 @@ namespace fb
 			) as string
 
 		declare function Send _
-		( _
-			byval url as zstring ptr, _
-			byval data_ as any ptr, _
-			byval bytes as integer, _
-			byval doreset as integer = FALSE _
-		) as integer
+			( _
+				byval url as zstring ptr, _
+				byval data_ as any ptr, _
+				byval bytes as integer, _
+				byval doreset as integer = FALSE, _
+				byval ca_file as zstring ptr = NULL _
+			) as integer
 
 		ctx as CHttpStreamCtx ptr
 	

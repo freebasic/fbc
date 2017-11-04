@@ -11,7 +11,7 @@ Conditional function that returns one of two values.
 	##//expr_if_true//##
 		An expression to evaluate and return if ##//condition//## is true.
 		It must return:
-			- a numeric value, which can be an integer, floating point number or a pointer,
+			- a numeric value, which can be an integer, floating point number or a pointer, including Boolean,
 			- or a string value,
 			- or an UDT value.
 	##//expr_if_false//##
@@ -19,10 +19,14 @@ Conditional function that returns one of two values.
 		It must be same type as ##//expr_if_true//## (either numeric, either string or UDT).
 
 {{fbdoc item="desc"}}
-	##**IIf**## returns a different numeric or string or UDT value depending of the result of a conditional expression. Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
+	##**IIf**## returns a different numeric or string or UDT value (not a reference) depending of the result of a conditional expression evaluated at run-time. Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
 	
 	##**IIf**## only evaluates the expression that it needs to return.  This saves time, and can also be useful to prevent evaluating expressions that might be invalid depending on the ##//condition//##.
 	
+	When IIf treats expressions of mixed numeric types (conditional expression evaluated at run-time):
+		- if at least one expression is of floating-point type, the result type is the floating-point type (the bigger in case of two floating-point types),
+		- if the two expressions are of integer types, the result type is the bigger type of both (see [[ProPgDataConversion|Coercion and Conversion]] for the precise ranking of integer types).
+		
 	**Warning:** The ability to accept mixed numeric types, strings and UDTs is only supported from the fbc version 0.90.
 
 {{fbdoc item="ex"}}

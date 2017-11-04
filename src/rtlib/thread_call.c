@@ -167,9 +167,11 @@ FBTHREAD *fb_ThreadCall( void *proc, int abi, ssize_t stack_size, int num_args, 
             /* error, free all memory allocated up to this point */
             for( j=0; j<i; j++ )
             {
-                if( ffi_args[i]->type == FFI_TYPE_STRUCT )
-                    freeStruct( ffi_args[i] );
+                if( ffi_args[j]->type == FFI_TYPE_STRUCT )
+                    freeStruct( ffi_args[j] );
             }
+            free(values);
+            free(ffi_args);
             return NULL;
         }
         values[i] = va_arg( args_list, void * );

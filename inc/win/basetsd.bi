@@ -189,7 +189,7 @@ type PSIZE_T as ULONG_PTR ptr
 type SSIZE_T_ as LONG_PTR
 type PSSIZE_T as LONG_PTR ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const MAXUINT8 = cast(UINT8, not cast(UINT8, 0))
 	const MAXINT8 = cast(INT8, MAXUINT8 shr 1)
 	const MININT8 = cast(INT8, not MAXINT8)

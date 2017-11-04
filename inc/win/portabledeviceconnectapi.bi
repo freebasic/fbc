@@ -15,18 +15,21 @@
 
 #pragma once
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#include once "objbase.bi"
 #endif
 
-#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0601)
 	extern "Windows"
-#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT >= &h0601)
 	extern "C"
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	#define __INC_PORTABLEDEVICECONNECTAPI__
+#endif
+
+#if _WIN32_WINNT >= &h0601
 	#define __IConnectionRequestCallback_FWD_DEFINED__
 	type ILocationReport as IConnectionRequestCallback
 	type IConnectionRequestCallbackVtbl as IConnectionRequestCallbackVtbl_

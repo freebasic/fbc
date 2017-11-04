@@ -18,7 +18,7 @@ Sets the current cursor position
 	##//column//##
 		the 1-based horizontal character position in the console.
 	##//state//##
-		the state of the cursor. ##0## is off, ##1## is on (console-mode only).
+		the state of the cursor in console-mode only: ##0## is off, ##1## is on; text cursor is never visible in graphics mode.
 	##//start//##
 		Ignored. Allowed for //[[CompilerOptlang|-lang qb]]// dialect compatibility only.
 	##//stop//##

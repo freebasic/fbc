@@ -146,7 +146,7 @@ declare function ReadProcessorPwrScheme(byval as UINT, byval as PMACHINE_PROCESS
 declare function WriteProcessorPwrScheme(byval as UINT, byval as PMACHINE_PROCESSOR_POWER_POLICY) as WINBOOLEAN
 declare function ValidatePowerPolicies(byval as PGLOBAL_POWER_POLICY, byval as PPOWER_POLICY) as WINBOOLEAN
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const DEVICEPOWER_HARDWAREID = &h80000000
 	const DEVICEPOWER_FILTER_DEVICES_PRESENT = &h20000000
 	const DEVICEPOWER_AND_OPERATION = &h40000000

@@ -2,7 +2,7 @@
 #define __FBDOC_STRING_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 20062008 The FreeBASIC development team.
+''	Copyright (C) 2006-2017 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ namespace fb.fbdoc
 
 	declare function CapFirstLetter( byref a as string ) as string
 
-	declare function CellUnescapeCodes _
+	declare function UnescapeHtml _
 		( _
 			byref celltext as const string _
 		) as string

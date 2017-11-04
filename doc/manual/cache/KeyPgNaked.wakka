@@ -2,7 +2,7 @@
 Write functions without prolog/epilog code
 
 {{fbdoc item="syntax"}}##
-	{[[KeyPgSub|Sub]] | [[KeyPgFunction|Function]]} //identifier// **Naked** [//calling_convention//] ( //param_list// ) [[[KeyPgAs|As]] //data_type//]
+	{[[KeyPgSub|Sub]] | [[KeyPgFunction|Function]]} //identifier// **Naked** [//calling_convention//] ( //param_list// ) [[ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|As]] //data_type//]
 		//asm_statements//
 	[[KeyPgEndblock|End]] {[[KeyPgSub|Sub]] | [[KeyPgFunction|Function]]}
 ##

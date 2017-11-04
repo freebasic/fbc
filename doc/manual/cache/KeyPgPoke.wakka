@@ -23,6 +23,8 @@ Assigns a value to a location in memory.
 		##*cast(//datatype// ptr, //address//) = //value//##
 		
 	When ##//datatype//## is a user-defined type, ##**Poke**## assigns ##//value//## using the type's ##[[KeyPgOpLet|Operator Let]]##.
+	
+	**Note:** When using ##**Poke**##, the //[[CompilerOptexx|-exx]]// compiler option does not add code for null-pointer checking (no nullity test on the value of ##//address//##).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/poke.bas"}}%%(freebasic)

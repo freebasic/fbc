@@ -20,6 +20,8 @@ Gets the value of an arbitrary type at an address in memory
 		##*cast(ubyte ptr, //address//)##
 			or
 		##*cast(//datatype// ptr, //address//)##
+		
+	**Note:** When using ##**Peek**##, the //[[CompilerOptexx|-exx]]// compiler option does not add code for null-pointer checking (no nullity test on the value of ##//address//##).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/memory/peek.bas"}}%%(freebasic)

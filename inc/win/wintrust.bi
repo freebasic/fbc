@@ -720,9 +720,9 @@ end type
 type WIN_SPUB_TRUSTED_PUBLISHER_DATA as _WIN_SPUB_TRUSTED_PUBLISHER_DATA
 type LPWIN_SPUB_TRUSTED_PUBLISHER_DATA as _WIN_SPUB_TRUSTED_PUBLISHER_DATA ptr
 
-#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT = &h0602)
+#if (not defined(__FB_64BIT__)) and (_WIN32_WINNT >= &h0600)
 	declare sub WintrustSetDefaultIncludePEPageHashes stdcall(byval fIncludePEPageHashes as WINBOOL)
-#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT >= &h0600)
 	declare sub WintrustSetDefaultIncludePEPageHashes(byval fIncludePEPageHashes as WINBOOL)
 #endif
 

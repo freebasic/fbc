@@ -2,12 +2,12 @@
 Open a printer device
 
 {{fbdoc item="syntax"}}##
-	**Open Lpt** ["[LPT[x]:][//Printer_Name//][,//TITLE=Doc_Title//][,//EMU=TTY//]"] [For Input|Output] [[KeyPgAs|as]] #//filenum//
+	**Open Lpt** ["[LPT[x]:][//Printer_Name//][,//TITLE=Doc_Title//][,//EMU=TTY//]"] [For Input|Output] [[KeyPgAs|as]] #//filenumber//
 ##
 {{fbdoc item="usage"}}##
-	**Open Lpt** "LPT..." [[KeyPgAs|as]] [#]//filenum//
+	**Open Lpt** "LPT..." [[KeyPgAs|as]] [#]//filenumber//
 		//or//
-	//result// = **Open Lpt**( "LPT..."[,] [[KeyPgAs|as]] [#]//filenum// )
+	//result// = **Open Lpt**( "LPT..."[,] [[KeyPgAs|as]] [#]//filenumber// )
 ##
 {{fbdoc item="param"}}
 	##//x//##
@@ -20,7 +20,7 @@ Open a printer device
 		Emulation of TTY output on a windows GDI printer, using driver text imaging.  This parameter is ignored on DOS and Linux.
 	##For Input|Output##
 		clause is allowed for compatibility, but it is ignored.
-	##//filenum//##
+	##//filenumber//##
 		An unused file number to assign to the device.
 
 {{fbdoc item="ret"}}

@@ -683,3 +683,8 @@ ssize_t fb_hGetWindowHandle(void)
 {
 	return 0;
 }
+
+ssize_t fb_hGetDisplayHandle(void)
+{
+	return 0;
+}

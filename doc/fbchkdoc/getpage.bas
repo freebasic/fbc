@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ using fbdoc
 '' --------------------------------------------------------
 
 dim as string web_wiki_url, dev_wiki_url
+dim as string ca_file, web_ca_file, dev_ca_file
 dim as string def_cache_dir, web_cache_dir, dev_cache_dir
 
 dim as integer i = 1, webPageCount = 0, nfailedpages = 0
@@ -59,6 +60,8 @@ if( command(i) = "" ) then
 	print "   -dev       get pages from the development server in to cache_dir"
 	print "   -dev+      get pages from the development server in to dev_cache_dir"
 	print "   -url URL   get pages from URL"
+	print "   -certificate file"
+	print "              certificate to use to authenticate server (.pem)"
 	print
 	print "options:"
 	print "   pages      list of wiki pages on the command line"
@@ -74,6 +77,8 @@ scope
 	if( opts <> NULL ) then
 		web_wiki_url = opts->Get( "web_wiki_url" )
 		dev_wiki_url = opts->Get( "dev_wiki_url" )
+		web_ca_file = opts->Get( "web_certificate" )
+		dev_ca_file = opts->Get( "dev_certificate" )
 		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
 		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
 		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
@@ -93,19 +98,26 @@ while command(i) > ""
 		case "-web"
 			wiki_url = web_wiki_url 
 			cache_dir = def_cache_dir
+			ca_file = web_ca_file
 		case "-dev"
 			wiki_url = dev_wiki_url 
 			cache_dir = def_cache_dir
+			ca_file = dev_ca_file
 		case "-web+"
 			wiki_url = web_wiki_url 
 			cache_dir = web_cache_dir 
+			ca_file = web_ca_file
 		case "-dev+"
 			wiki_url = dev_wiki_url 
 			cache_dir = dev_cache_dir
+			ca_file = dev_ca_file
 		case "-url"
 			i += 1
 			wiki_url = command(i)
 			cache_dir = def_cache_dir
+		case "-certificate"
+			i += 1
+			ca_file = command(i)
 		case "-auto"
 			allow_retry = false
 		case else
@@ -167,9 +179,14 @@ do
 	end if
 
 	'' Initialize the wiki connection
-	Connection_SetUrl( wiki_url )
+	Connection_SetUrl( wiki_url, ca_file )
 
 	print "URL: "; wiki_url
+	if( ca_file > "" ) then
+		print "Certificate: "; ca_file
+	else
+		print "Certificate: none"
+	end if
 	print "cache: "; cache_dir
 
 	nfailedpages = 0

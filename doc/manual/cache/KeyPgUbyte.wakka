@@ -1,5 +1,6 @@
 {{fbdoc item="title" value="UBYTE"}}----
-Standard data type: 8 bit unsigned
+Standard data type: 8 bit unsigned.
+Equivalent to ##[[KeyPgUnsigned|Unsigned]] [[KeyPgByte|Byte]]##.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Ubyte**

@@ -880,9 +880,19 @@ ssize_t fb_hGetWindowHandle(void)
 	return (fb_x11.display ? fb_x11.window : 0);
 }
 
+ssize_t fb_hGetDisplayHandle(void)
+{
+	return (ssize_t)fb_x11.display;
+}
+
 #else
 
 ssize_t fb_hGetWindowHandle(void)
+{
+	return 0;
+}
+
+ssize_t fb_hGetDisplayHandle(void)
 {
 	return 0;
 }

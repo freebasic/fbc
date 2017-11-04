@@ -787,7 +787,7 @@ const RPC_IF_ALLOW_CALLBACKS_WITH_NO_AUTH = &h0010
 const RPC_IF_ALLOW_LOCAL_ONLY = &h0020
 const RPC_IF_SEC_NO_CACHE = &h0040
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _RPC_BINDING_HANDLE_OPTIONS_V1
 		Version as ulong
 		Flags as ulong
@@ -804,9 +804,9 @@ const RPC_IF_SEC_NO_CACHE = &h0040
 		AuthnLevel as ulong
 		AuthnSvc as ulong
 
-		#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+		#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 			AuthIdentity as SEC_WINNT_AUTH_IDENTITY_W ptr
-		#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+		#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 			AuthIdentity as SEC_WINNT_AUTH_IDENTITY_A ptr
 		#endif
 
@@ -838,13 +838,13 @@ const RPC_IF_SEC_NO_CACHE = &h0040
 	declare function RpcBindingCreateW(byval Template as RPC_BINDING_HANDLE_TEMPLATE ptr, byval Security as RPC_BINDING_HANDLE_SECURITY ptr, byval Options as RPC_BINDING_HANDLE_OPTIONS ptr, byval Binding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function RpcBindingCreate alias "RpcBindingCreateW"(byval Template as RPC_BINDING_HANDLE_TEMPLATE ptr, byval Security as RPC_BINDING_HANDLE_SECURITY ptr, byval Options as RPC_BINDING_HANDLE_OPTIONS ptr, byval Binding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function RpcBindingCreate alias "RpcBindingCreateA"(byval Template as RPC_BINDING_HANDLE_TEMPLATE ptr, byval Security as RPC_BINDING_HANDLE_SECURITY ptr, byval Options as RPC_BINDING_HANDLE_OPTIONS ptr, byval Binding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function RpcServerInqBindingHandle cdecl(byval Binding as RPC_BINDING_HANDLE ptr) as RPC_STATUS
 #endif
 

@@ -2,17 +2,17 @@
 Opens the console directly for input and output as a file
 
 {{fbdoc item="syntax"}}##
-	**[[KeyPgOpen|Open]] Scrn** [for //mode//] [[KeyPgAs|as]] [#]//filenum// [[KeyPgAs|as]] [[KeyPgLong|long]]
+	**[[KeyPgOpen|Open]] Scrn** [for //mode//] [[KeyPgAs|as]] [#]//filenumber// [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
-	**Open Scrn** [for //mode//] as [#]//filenum//
+	**Open Scrn** [for //mode//] as [#]//filenumber//
 		//or//
-	//result// = **Open Scrn**( [for //mode//[,]] as [#]//filenum// )
+	//result// = **Open Scrn**( [for //mode//[,]] as [#]//filenumber// )
 ##
 {{fbdoc item="param"}}
 	##//mode//##
 		Either ##[[KeyPgInputfilemode|Input]]## or ##[[KeyPgOutput|Output]]##.  If omitted, ##[[KeyPgOutput|Output]]## is assumed.
-	##//filenum//##
+	##//filenumber//##
 		An unused file number.
 
 {{fbdoc item="ret"}}
@@ -27,7 +27,7 @@ Opens the console directly for input and output as a file
 	
 	The ##[For Input|Output]## clause is allowed for compatibility, but is ignored.
 	
-	##//filenum//## is an unused file number.
+	##//filenumber//## is an unused file number.
 	
 	An unused file number can be found using ##[[KeyPgFreefile|FreeFile]]##.
 	

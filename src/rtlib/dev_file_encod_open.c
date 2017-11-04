@@ -54,13 +54,13 @@ static int hCheckBOM( FB_FILE *handle )
 		break;
 
     default:
-    	res = 0;
+        res = 0;
     }
 
     if( handle->mode == FB_FILE_MODE_APPEND )
-    	fseek( fp, 0, SEEK_END );
+        fseek( fp, 0, SEEK_END );
 
-	return res;
+    return res;
 }
 
 static int hWriteBOM( FB_FILE *handle )
@@ -87,11 +87,11 @@ static int hWriteBOM( FB_FILE *handle )
         /* !!!FIXME!!! only litle-endian supported */
         bom = 0x0000FEFF;
         if( fwrite( &bom, sizeof( UTF_32 ), 1, fp ) != 1 )
-        	return 0;
-		break;
+            return 0;
+        break;
 
     default:
-    	return 0;
+        return 0;
     }
 
 	return 1;

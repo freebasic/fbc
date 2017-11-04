@@ -1,5 +1,5 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2008 The FreeBASIC development team.
+''	Copyright (C) 2006-2017 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -758,7 +758,7 @@ namespace fb.fbdoc
 
 		res = _closeList( ctx )
 		
-		cellData = paramsTb->GetParam( "cells" )
+		cellData = UnescapeHtml( paramsTb->GetParam( "cells" ) )
 		strCols = paramsTb->GetParam( "columns" )
 
 		n = _index_cells( cellData, @cellTb )
@@ -781,7 +781,7 @@ namespace fb.fbdoc
 			if( cell = "###" ) then
 				res += "<td>&nbsp;</td>"
 			else
-				res += "<td>" + Text2Html( CellUnescapeCodes( cell ) ) + "</td>"
+				res += "<td>" + Text2Html( cell ) + "</td>"
 			end if
 			col += 1
 			if( col > cols ) then

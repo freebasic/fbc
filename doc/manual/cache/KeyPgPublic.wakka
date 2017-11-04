@@ -6,7 +6,7 @@ Specifies a procedure having external linkage.
 		//..procedure body..//
 	[[KeyPgEnd|End]] [[KeyPgSub|Sub]]
 	
-	**Public** [[KeyPgFunction|Function]] //procedure_name// [[[KeyPgCdecl|Cdecl]]|[[KeyPgStdcall|Stdcall]]|[[KeyPgPascal|Pascal]]] [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""external_name"""//] [([//parameter_list//])] [[KeyPgAs|as]] //return_type//  [[[KeyPgStatic|Static]]] [[[KeyPgExport|Export]]]
+	**Public** [[KeyPgFunction|Function]] //procedure_name// [[[KeyPgCdecl|Cdecl]]|[[KeyPgStdcall|Stdcall]]|[[KeyPgPascal|Pascal]]] [[[KeyPgOverload|Overload]]] [[[KeyPgAlias|Alias]] //"""external_name"""//] [([//parameter_list//])] [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] //return_type//  [[[KeyPgStatic|Static]]] [[[KeyPgExport|Export]]]
 		//..procedure body..//
 	[[KeyPgEnd|End]] [[KeyPgFunction|Function]]
 ##

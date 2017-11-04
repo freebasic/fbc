@@ -59,10 +59,10 @@ FBCALL void *fb_WstrAssignToAEx
 	if( dst == NULL )
 		return dst;
 
-    if( src != NULL )
-    	src_chars = fb_wstr_Len( src );
-    else
-    	src_chars = 0;
+	if( src != NULL )
+		src_chars = fb_wstr_Len( src );
+	else
+		src_chars = 0;
 
 	/* is dst var-len? */
 	if( dst_chars == -1 )

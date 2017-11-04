@@ -1,5 +1,6 @@
 {{fbdoc item="title" value="USHORT"}}----
-Standard data type: 16 bit unsigned
+Standard data type: 16 bit unsigned.
+Equivalent to ##[[KeyPgUnsigned|Unsigned]] [[KeyPgShort|Short]]##.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **Ushort**

@@ -39,13 +39,13 @@ Opens a disk file for reading or writing using file operations
 		Imposes restrictions on disk file access from other processes (threads or programs), can be either:
 			- ##Shared## //(the file can be freely accessed by other processes)//
 			- ##Lock## [##Read##] [##Write##] //(both read and write access can be denied to other processes)//
-	##//filenum//##
+	##//filenumber//##
 		An available file number to bind to the disk file, which can be found with ##[[KeyPgFreefile|Freefile]]##.
 	##//record_length//##
 		The size, in bytes, of each record read from or written to the disk file. The default is ##128##.
 
 {{fbdoc item="ret"}}
-	In the first usage, ##**Open()**## returns zero (##0##) on success and a non-zero error code otherwise.
+	In the first usage, ##**Open()**## returns a 32 bit ##[[KeyPgLong|Long]]## value: zero (##0##) on success and a non-zero error code otherwise.
 
 {{fbdoc item="desc"}}
 	Opens a disk file for reading and/or writing. The file number ##//file_num//## is bound to the file on disk, for use in subsequent file operations, such as ##[[KeyPgInputPp|Input #]]## and ##[[KeyPgLock|Lock]]##. The next available file number can be retrieved with ##[[KeyPgFreefile|Freefile]]##.
@@ -125,7 +125,7 @@ End If
 	- ##**Open**## can be called as a function that returns an error code.
 
 {{fbdoc item="lang"}}
-	- The //[[CompilerOptlang|-lang qb]]// dialect supports the old GW-BASIC-style syntax ##OPEN mode_string, #filenum, filename [length]## with mode_string being ##"I"## for input, ##"O"## for output, ##"A"## for append, ##"R"## for random, ##"B"## for binary. 
+	- The //[[CompilerOptlang|-lang qb]]// dialect supports the old GW-BASIC-style syntax ##OPEN mode_string, #filenumber, filename [length]## with mode_string being ##"I"## for input, ##"O"## for output, ##"A"## for append, ##"R"## for random, ##"B"## for binary. 
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgErr|Err]]## (and [[TblRuntimeErrors|a list of error codes]])

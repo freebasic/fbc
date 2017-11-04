@@ -129,7 +129,7 @@ sub cProgram()
 		end if
 
 		'' Emit the current line in text form, for debugging purposes
-		if( env.clopt.debug ) then
+		if( env.clopt.debuginfo ) then
 			if( env.includerec = 0 ) then
 				hEmitCurrentLineText( )
 			end if

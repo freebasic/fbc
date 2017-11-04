@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="DIR"}}----
-Searches for and returns information about an item in the filesystem; performs a directory search
+Searches for and returns information about an item in the filesystem; performs a directory searchattrib
 
 {{fbdoc item="syntax"}}##
 	# [[KeyPgInclude|include]] "dir.bi"
@@ -128,9 +128,9 @@ Do Until Len(fname) = 0 '' loop until Dir returns empty string
 			filecount += 1
 		End If
 		If (out_attr And fbReadOnly) <> 0 Then Print ", read-only";
-		If (out_attr And fbHidden) <> 0 Then Print ", hidden";
-		If (out_attr And fbSystem) <> 0 Then Print ", system";
-		If (out_attr And fbArchive) <> 0 Then Print ", archived";
+		If (out_attr And fbHidden  ) <> 0 Then Print ", hidden";
+		If (out_attr And fbSystem  ) <> 0 Then Print ", system";
+		If (out_attr And fbArchive ) <> 0 Then Print ", archived";
 		Print
 
 	End If

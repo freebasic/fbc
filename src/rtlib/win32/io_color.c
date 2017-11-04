@@ -54,7 +54,7 @@ int fb_ConsoleColor( int fc, int bc, int flags )
 
     SetConsoleTextAttribute( __fb_out_handle, fc + (bc << 4) );
 
-	return cur;
+    return cur;
 }
 
 int fb_ConsoleGetColorAttEx( HANDLE hConsole )
@@ -62,7 +62,7 @@ int fb_ConsoleGetColorAttEx( HANDLE hConsole )
     CONSOLE_SCREEN_BUFFER_INFO info;
     if( GetConsoleScreenBufferInfo( hConsole, &info )==0 )
         return 7;
-	return info.wAttributes;
+    return info.wAttributes;
 
 }
 

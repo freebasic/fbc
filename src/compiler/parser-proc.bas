@@ -140,7 +140,7 @@ private sub hCheckPrototype _
 	'' check return type
 	if( (symbGetFullType( proto ) <> proc_dtype) or _
 	    (symbGetSubtype( proto ) <> proc_subtype) ) then
-		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
+		errReport( FB_ERRMSG_RETURNTYPEMISMATCH, TRUE )
 	end if
 
 	'' check return method
@@ -151,7 +151,7 @@ private sub hCheckPrototype _
 
 	'' check calling convention
 	if( symbGetProcMode( proto ) <> mode ) then
-		errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE )
+		errReport( FB_ERRMSG_CALLINGCONVMISMATCH, TRUE )
 	end if
 
 	'' check arg count

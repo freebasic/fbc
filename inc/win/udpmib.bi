@@ -18,7 +18,7 @@
 #define _INC_UDPMIB
 const ANY_SIZE = 1
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _MIB_UDP6ROW
 		dwLocalAddr as IN6_ADDR
 		dwLocalScopeId as DWORD

@@ -157,7 +157,7 @@ function astNewDBG _
 
 	dim as ASTNODE ptr n = any
 
-	if( env.clopt.debug = FALSE ) then
+	if( env.clopt.debuginfo = FALSE ) then
 		return NULL
 	end if
 

@@ -20,7 +20,7 @@ Specifies a base type from which to derive a new type
 	
 	Extending the built-in ##[[KeyPgObject|Object]]## type allows a user-defined type to be used with ##[[KeyPgOpIs|Operator Is]]## to perform run-time type checks, to support ##[[KeyPgVirtual|Virtual]]## and ##[[KeyPgAbstract|Abstract]]## methods, and to use the ##[[KeyPgOverride|Override]]## method attribute.
 	
-	 **Note:** Derived UDT pointer can only be casted to "compatible" pointer types (up/down the inheritance hierarchy) or ##[[KeyPgAny|Any]] [[KeyPgPtr|Ptr]]##. Otherwise, cast to ##[[KeyPgAny|Any]] [[KeyPgPtr|Ptr]]## first.
+	 **Note:** UDT pointer can only be cast to pointer types of "widened compatibility" (up or even down in the inheritance hierarchy), or to ##[[KeyPgAny|Any]] [[KeyPgPtr|Ptr]]##. Otherwise, cast to ##[[KeyPgAny|Any]] [[KeyPgPtr|Ptr]]## first (or to ##[[KeyPgObject|Object]] [[KeyPgPtr|Ptr]]## first if both types are directly or indirectly derived from ##[[KeyPgObject|Object]]##).
 	
 	**Warning:** Before fbc version 0.24, these five keywords dedicated to inheritance ##**Extends**##, ##[[KeyPgBase|Base (member access)]]##, ##[[KeyPgBaseInit|Base (initializer)]]##, ##[[KeyPgObject|Object]]## and ##[[KeyPgOpIs|Operator Is]]## were not supported. Three new keywords ##[[KeyPgVirtual|Virtual]]##, ##[[KeyPgAbstract|Abstract]]##, and ##[[KeyPgOverride|Override]]## come with fbc version 0.90.
 

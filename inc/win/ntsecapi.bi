@@ -653,7 +653,7 @@ type PLSA_ENUMERATION_INFORMATION as _LSA_ENUMERATION_INFORMATION ptr
 declare function LsaFreeMemory(byval Buffer as PVOID) as NTSTATUS
 declare function LsaClose(byval ObjectHandle as LSA_HANDLE) as NTSTATUS
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _LSA_LAST_INTER_LOGON_INFO
 		LastSuccessfulLogon as LARGE_INTEGER
 		LastFailedLogon as LARGE_INTEGER
@@ -678,7 +678,7 @@ type _SECURITY_LOGON_SESSION_DATA
 	DnsDomainName as LSA_UNICODE_STRING
 	Upn as LSA_UNICODE_STRING
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		UserFlags as ULONG
 		LastLogonInfo as LSA_LAST_INTER_LOGON_INFO
 		LogonScript as LSA_UNICODE_STRING
@@ -1213,7 +1213,7 @@ enum
 	KerbTicketUnlockLogon = 11
 	KerbS4ULogon = 12
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0600
 		KerbCertificateLogon = 13
 		KerbCertificateS4ULogon = 14
 		KerbCertificateUnlockLogon = 15
@@ -1687,7 +1687,7 @@ end type
 type KERB_TRANSFER_CRED_REQUEST as _KERB_TRANSFER_CRED_REQUEST
 type PKERB_TRANSFER_CRED_REQUEST as _KERB_TRANSFER_CRED_REQUEST ptr
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	const PER_USER_POLICY_UNCHANGED = &h00
 	const PER_USER_AUDIT_SUCCESS_INCLUDE = &h01
 	const PER_USER_AUDIT_SUCCESS_EXCLUDE = &h02
@@ -1769,35 +1769,35 @@ type PKERB_TRANSFER_CRED_REQUEST as _KERB_TRANSFER_CRED_REQUEST ptr
 	declare function AuditLookupSubCategoryNameA(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPSTR ptr) as WINBOOLEAN
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function AuditLookupSubCategoryName alias "AuditLookupSubCategoryNameA"(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPSTR ptr) as WINBOOLEAN
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function AuditLookupSubCategoryNameW(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPWSTR ptr) as WINBOOLEAN
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function AuditLookupSubCategoryName alias "AuditLookupSubCategoryNameW"(byval pAuditSubCategoryGuid as const GUID ptr, byval ppszSubCategoryName as LPWSTR ptr) as WINBOOLEAN
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function AuditLookupCategoryNameA(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPSTR ptr) as WINBOOLEAN
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function AuditLookupCategoryName alias "AuditLookupCategoryNameA"(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPSTR ptr) as WINBOOLEAN
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function AuditLookupCategoryNameW(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPWSTR ptr) as WINBOOLEAN
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function AuditLookupCategoryName alias "AuditLookupCategoryNameW"(byval pAuditCategoryGuid as const GUID ptr, byval ppszCategoryName as LPWSTR ptr) as WINBOOLEAN
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function AuditLookupCategoryIdFromCategoryGuid(byval pAuditCategoryGuid as const GUID ptr, byval pAuditCategoryId as PPOLICY_AUDIT_EVENT_TYPE) as WINBOOLEAN
 	declare function AuditSetSecurity(byval SecurityInformation as SECURITY_INFORMATION, byval pSecurityDescriptor as PSECURITY_DESCRIPTOR) as WINBOOLEAN
 #endif

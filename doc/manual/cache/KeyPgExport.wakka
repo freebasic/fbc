@@ -2,7 +2,7 @@
 Declaration specifier to indicate that a procedure in a DLL should be visible from other programs
 
 {{fbdoc item="syntax"}}##
-	{ [[KeyPgSub|sub]] | [[KeyPgFunction|function]] } //proc_name// ( //argumentlist// ) [ [[KeyPgAs|as]] [[DataType|datatype]] ] **Export**
+	{ [[KeyPgSub|sub]] | [[KeyPgFunction|function]] } //proc_name// ( //argumentlist// ) [ [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]] ] **Export**
 ##
 {{fbdoc item="desc"}}
 	If a function is declared with this clause in a DLL, it is added to the public export table, so external programs can dynamically link to it using [[KeyPgDylibsymbol|Dylibsymbol]].

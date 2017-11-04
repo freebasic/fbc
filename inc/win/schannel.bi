@@ -427,12 +427,12 @@ declare function SslGetDefaultIssuers(byval pbIssuers as PBYTE, byval pcbIssuers
 #ifndef __FB_64BIT__
 	type SSL_CRACK_CERTIFICATE_FN as function stdcall(byval pbCertificate as PUCHAR, byval cbCertificate as DWORD, byval VerifySignature as WINBOOL, byval ppCertificate as PX509Certificate ptr) as WINBOOL
 	type SSL_FREE_CERTIFICATE_FN as sub stdcall(byval pCertificate as PX509Certificate)
-#elseif defined(__FB_64BIT__) and (_WIN32_WINNT = &h0602)
+#elseif defined(__FB_64BIT__) and (_WIN32_WINNT >= &h0600)
 	type SSL_CRACK_CERTIFICATE_FN as function(byval pbCertificate as PUCHAR, byval cbCertificate as DWORD, byval VerifySignature as WINBOOL, byval ppCertificate as PX509Certificate ptr) as WINBOOL
 	type SSL_FREE_CERTIFICATE_FN as sub(byval pCertificate as PX509Certificate)
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	type _SecPkgContext_EapPrfInfo
 		dwVersion as DWORD
 		cbPrfData as DWORD
@@ -440,7 +440,9 @@ declare function SslGetDefaultIssuers(byval pbIssuers as PBYTE, byval pcbIssuers
 
 	type SecPkgContext_EapPrfInfo as _SecPkgContext_EapPrfInfo
 	type PSecPkgContext_EapPrfInfo as _SecPkgContext_EapPrfInfo ptr
+#endif
 
+#if _WIN32_WINNT >= &h0601
 	type _SecPkgContext_SupportedSignatures
 		cSignatureAndHashAlgorithms as WORD
 		pSignatureAndHashAlgorithms as WORD ptr

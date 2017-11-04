@@ -1071,9 +1071,11 @@ declare function DeleteSecurityPackageW(byval pszPackageName as wstring ptr) as 
 	declare function DeleteSecurityPackage alias "DeleteSecurityPackageW"(byval pszPackageName as wstring ptr) as SECURITY_STATUS
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function ChangeAccountPassword(byval pszPackageName as wstring ptr, byval pszDomainName as wstring ptr, byval pszAccountName as wstring ptr, byval pszOldPassword as wstring ptr, byval pszNewPassword as wstring ptr, byval bImpersonating as WINBOOLEAN, byval dwReserved as ulong, byval pOutput as PSecBufferDesc) as SECURITY_STATUS
+#endif
 
+#if _WIN32_WINNT >= &h0601
 	type _CREDUIWIN_MARSHALED_CONTEXT
 		StructureType as GUID
 		cbHeaderLength as USHORT

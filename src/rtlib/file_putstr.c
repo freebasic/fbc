@@ -21,7 +21,7 @@ int fb_FilePutStrEx( FB_FILE *handle, fb_off_t pos, void *str, ssize_t str_len )
     if( str_len == -1 )
         fb_hStrDelTemp( (FBSTRING *)str );
 
-	return res;
+    return res;
 }
 
 FBCALL int fb_FilePutStr( int fnum, int pos, void *str, ssize_t str_len )

@@ -69,7 +69,7 @@ declare function StrToIntW(byval lpSrc as LPCWSTR) as long
 declare function StrToIntExA(byval pszString as LPCSTR, byval dwFlags as DWORD, byval piRet as long ptr) as WINBOOL
 declare function StrToIntExW(byval pszString as LPCWSTR, byval dwFlags as DWORD, byval piRet as long ptr) as WINBOOL
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	declare function StrToInt64ExA(byval pszString as LPCSTR, byval dwFlags as DWORD, byval pllRet as LONGLONG ptr) as WINBOOL
 	declare function StrToInt64ExW(byval pszString as LPCWSTR, byval dwFlags as DWORD, byval pllRet as LONGLONG ptr) as WINBOOL
 #endif
@@ -135,36 +135,36 @@ declare function StrCmpLogicalW(byval psz1 as LPCWSTR, byval psz2 as LPCWSTR) as
 declare function StrCatChainW(byval pszDst as LPWSTR, byval cchDst as DWORD, byval ichAt as DWORD, byval pszSrc as LPCWSTR) as DWORD
 declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBuf as LPWSTR, byval cchOutBuf as UINT, byval ppvReserved as any ptr ptr) as HRESULT
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function IsCharSpaceA(byval wch as CHAR) as WINBOOL
 	declare function IsCharSpaceW(byval wch as WCHAR) as WINBOOL
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function IsCharSpace alias "IsCharSpaceW"(byval wch as WCHAR) as WINBOOL
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function IsCharSpace alias "IsCharSpaceA"(byval wch as CHAR) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function StrCmpCA(byval pszStr1 as LPCSTR, byval pszStr2 as LPCSTR) as long
 	declare function StrCmpCW(byval pszStr1 as LPCWSTR, byval pszStr2 as LPCWSTR) as long
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function StrCmpC alias "StrCmpCW"(byval pszStr1 as LPCWSTR, byval pszStr2 as LPCWSTR) as long
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function StrCmpC alias "StrCmpCA"(byval pszStr1 as LPCSTR, byval pszStr2 as LPCSTR) as long
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function StrCmpICA(byval pszStr1 as LPCSTR, byval pszStr2 as LPCSTR) as long
 	declare function StrCmpICW(byval pszStr1 as LPCWSTR, byval pszStr2 as LPCWSTR) as long
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function StrCmpIC alias "StrCmpICW"(byval pszStr1 as LPCWSTR, byval pszStr2 as LPCWSTR) as long
-#elseif (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function StrCmpIC alias "StrCmpICA"(byval pszStr1 as LPCSTR, byval pszStr2 as LPCSTR) as long
 #endif
 
@@ -232,7 +232,7 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 	declare function StrPBrk alias "StrPBrkW"(byval psz as LPCWSTR, byval pszSet as LPCWSTR) as LPWSTR
 	declare function StrToIntEx alias "StrToIntExW"(byval pszString as LPCWSTR, byval dwFlags as DWORD, byval piRet as long ptr) as WINBOOL
 
-	#if _WIN32_WINNT >= &h0502
+	#if _WIN32_WINNT >= &h0501
 		declare function StrToInt64Ex alias "StrToInt64ExW"(byval pszString as LPCWSTR, byval dwFlags as DWORD, byval pllRet as LONGLONG ptr) as WINBOOL
 	#endif
 
@@ -247,7 +247,7 @@ declare function SHLoadIndirectString(byval pszSource as LPCWSTR, byval pszOutBu
 #endif
 
 #ifndef UNICODE
-	#if _WIN32_WINNT >= &h0502
+	#if _WIN32_WINNT >= &h0501
 		declare function StrToInt64Ex alias "StrToInt64ExA"(byval pszString as LPCSTR, byval dwFlags as DWORD, byval pllRet as LONGLONG ptr) as WINBOOL
 	#endif
 
@@ -969,7 +969,7 @@ declare function SHSetValueW(byval hkey as HKEY, byval pszSubKey as LPCWSTR, byv
 
 #if defined(UNICODE) and (_WIN32_WINNT >= &h0502)
 	declare function SHRegGetValue alias "SHRegGetValueW"(byval hkey as HKEY, byval pszSubKey as LPCWSTR, byval pszValue as LPCWSTR, byval dwFlags as SRRF, byval pdwType as DWORD ptr, byval pvData as any ptr, byval pcbData as DWORD ptr) as LONG
-#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT = &h0400)
+#elseif (not defined(__FB_64BIT__)) and (not defined(UNICODE)) and (_WIN32_WINNT <= &h0501)
 	declare function SHSetValue alias "SHSetValueA"(byval hkey as HKEY, byval pszSubKey as LPCSTR, byval pszValue as LPCSTR, byval dwType as DWORD, byval pvData as LPCVOID, byval cbData as DWORD) as DWORD
 #elseif (not defined(UNICODE)) and (_WIN32_WINNT >= &h0502)
 	declare function SHRegGetValue alias "SHRegGetValueA"(byval hkey as HKEY, byval pszSubKey as LPCSTR, byval pszValue as LPCSTR, byval dwFlags as SRRF, byval pdwType as DWORD ptr, byval pvData as any ptr, byval pcbData as DWORD ptr) as LONG
@@ -1184,7 +1184,7 @@ enum
 	ASSOCSTR_DEFAULTICON
 	ASSOCSTR_SHELLEXTENSION
 
-	#if _WIN32_WINNT = &h0602
+	#if _WIN32_WINNT >= &h0601
 		ASSOCSTR_DROPTARGET
 		ASSOCSTR_DELEGATEEXECUTE
 	#endif
@@ -1275,7 +1275,7 @@ declare function AssocQueryKeyW(byval flags as ASSOCF, byval key as ASSOCKEY, by
 	declare function AssocIsDangerous(byval pszAssoc as LPCWSTR) as WINBOOL
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function AssocGetPerceivedType(byval pszExt as LPCWSTR, byval ptype as PERCEIVED ptr, byval pflag as PERCEIVEDFLAG ptr, byval ppszType as LPWSTR ptr) as HRESULT
 #endif
 
@@ -1323,23 +1323,23 @@ declare function SHCreateStreamOnFileW(byval pszFile as LPCWSTR, byval grfMode a
 	declare function SHCreateStreamOnFile alias "SHCreateStreamOnFileW"(byval pszFile as LPCWSTR, byval grfMode as DWORD, byval ppstm as IStream ptr ptr) as HRESULT
 #endif
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	declare function SHCreateStreamOnFileEx(byval pszFile as LPCWSTR, byval grfMode as DWORD, byval dwAttributes as DWORD, byval fCreate as WINBOOL, byval pstmTemplate as IStream ptr, byval ppstm as IStream ptr ptr) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetAcceptLanguagesA(byval psz as LPSTR, byval pcch as DWORD ptr) as HRESULT
 #endif
 
-#if (not defined(UNICODE)) and (_WIN32_WINNT = &h0602)
+#if (not defined(UNICODE)) and (_WIN32_WINNT >= &h0600)
 	declare function GetAcceptLanguages alias "GetAcceptLanguagesA"(byval psz as LPSTR, byval pcch as DWORD ptr) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function GetAcceptLanguagesW(byval psz as LPWSTR, byval pcch as DWORD ptr) as HRESULT
 #endif
 
-#if defined(UNICODE) and (_WIN32_WINNT = &h0602)
+#if defined(UNICODE) and (_WIN32_WINNT >= &h0600)
 	declare function GetAcceptLanguages alias "GetAcceptLanguagesW"(byval psz as LPWSTR, byval pcch as DWORD ptr) as HRESULT
 #endif
 
@@ -1358,7 +1358,7 @@ declare function SHCreateStreamOnFileW(byval pszFile as LPCWSTR, byval grfMode a
 	declare function SHGetViewStatePropertyBag(byval pidl as LPCITEMIDLIST, byval pszBagName as LPCWSTR, byval dwFlags as DWORD, byval riid as const IID const ptr, byval ppv as any ptr ptr) as HRESULT
 #endif
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function SHAllocShared(byval pvData as const any ptr, byval dwSize as DWORD, byval dwProcessId as DWORD) as HANDLE
 	declare function SHFreeShared(byval hData as HANDLE, byval dwProcessId as DWORD) as WINBOOL
 	declare function SHLockShared(byval hData as HANDLE, byval dwProcessId as DWORD) as any ptr
@@ -1373,7 +1373,7 @@ const SHACF_URLMRU = &h00000004
 const SHACF_USETAB = &h00000008
 const SHACF_FILESYS_ONLY = &h00000010
 
-#if _WIN32_WINNT >= &h0502
+#if _WIN32_WINNT >= &h0501
 	const SHACF_FILESYS_DIRS = &h00000020
 #endif
 
@@ -1387,7 +1387,7 @@ declare function SHSetThreadRef(byval punk as IUnknown ptr) as HRESULT
 declare function SHGetThreadRef(byval ppunk as IUnknown ptr ptr) as HRESULT
 declare function SHSkipJunction(byval pbc as IBindCtx ptr, byval pclsid as const CLSID ptr) as WINBOOL
 
-#if _WIN32_WINNT = &h0602
+#if _WIN32_WINNT >= &h0600
 	declare function SHCreateThreadRef(byval pcRef as LONG ptr, byval ppunk as IUnknown ptr ptr) as HRESULT
 #endif
 

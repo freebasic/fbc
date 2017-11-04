@@ -17,7 +17,8 @@ Returns a reference to memory offset from an address
 		Any data type.
 
 {{fbdoc item="desc"}}
-	This operator returns a reference to a value some distance in memory from a base address. It is essentially shorthand for "##[[KeyPgOpValueOf|*]](//lhs// [[KeyPgOpAdd|+]] //rhs//)##"; both do exactly the same thing. Like pointer arithmetic, any type of ##[[KeyPgPointer|Pointer]]## can be indexed except for an ##[[KeyPgAny|Any]]## ##[[KeyPgPointer|Pointer]]##. Also, like pointer arithmetic, it is up to the user to make sure meaningful data is being accessed.
+	This operator returns a reference to a value some distance in memory from a base address. It is essentially shorthand for "##[[KeyPgOpValueOf|*]](//lhs// [[KeyPgOpAdd|+]] //rhs//)##" because the reference can be thought of as a pointer having as value the memory location "##(//lhs// [[KeyPgOpAdd|+]] //rhs//)##", and which is implicitly dereferenced; both do exactly the same thing.
+	Like pointer arithmetic, any type of ##[[KeyPgPointer|Pointer]]## can be indexed except for an ##[[KeyPgAny|Any]]## ##[[KeyPgPointer|Pointer]]##. Also, like pointer arithmetic, it is up to the user to make sure meaningful data is being accessed.
 	
 	When indexing a '2-dimensional' pointer (i.e. a ##//T// Ptr Ptr##), the first (leftmost) index is applied before the second: For example, ##//Pt//[//I1//][//I2//]## = ##*(//Pt//[//I1//] + //I2//)## = ##*(*(//Pt// + //I1//) + //I2//)##
 	In general, when using an '//n//-dimensional' pointer: ##//Pt//[//I1//][//I2//].....[//In//]##, the index order (from left to right) corresponds to the dereferencing order.

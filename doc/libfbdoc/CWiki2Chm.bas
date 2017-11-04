@@ -1,5 +1,5 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2008 The FreeBASIC development team.
+''	Copyright (C) 2006-2017 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -268,7 +268,7 @@ namespace fb.fbdoc
 			end if
 
 			sBodyHtml +=  DBG_INDENT + "<li><object type=""text/sitemap"">"
-			sBodyHtml +=  "<param name=""Name"" value=""" + page->GetFormattedTitle() + """>"
+			sBodyHtml +=  "<param name=""Name"" value=""" + Text2Html( page->GetFormattedTitle() ) + """>"
 			if( len( page->GetName()) > 0 ) then
 				sBodyHtml +=  "<param name=""Local"" value=""" + page->GetName() + ".html"">"
 			end if
@@ -364,7 +364,7 @@ namespace fb.fbdoc
 
 			'' If( page->GetEmitted() ) then
 				sBodyHtml +=  "<li><object type=""text/sitemap"">"
-				sBodyHtml +=  "<param name=""Name"" value=""" + page->GetFormattedTitle() + """>"
+				sBodyHtml +=  "<param name=""Name"" value=""" + Text2Html( page->GetFormattedTitle() ) + """>"
 				sBodyHtml +=  "<param name=""Local"" value=""" + page->GetName() + ".html"">"
 				sBodyHtml +=  "</object>" + crlf
 			'' end if

@@ -105,7 +105,7 @@
 	#define alloca(x) __builtin_alloca(x)
 #endif
 
-#if defined ENABLE_MT && !defined HOST_DOS && !defined HOST_XBOX
+#if defined ENABLE_MT && !defined HOST_XBOX
 	FBCALL void fb_Lock( void );
 	FBCALL void fb_Unlock( void );
 	FBCALL void fb_StrLock( void );

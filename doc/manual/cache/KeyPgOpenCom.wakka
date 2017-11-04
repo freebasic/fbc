@@ -2,15 +2,15 @@
 Opens a serial port for input and output
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Open Com** ( byref //options// [[KeyPgAs|as]] [[KeyPgString|string]], **AS** //filenum// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Open Com** ( byref //options// [[KeyPgAs|as]] [[KeyPgString|string]], **AS** //filenumber// [[KeyPgAs|as]] [[KeyPgLong|long]] ) [[KeyPgAs|as]] [[KeyPgLong|long]]
 ##
 {{fbdoc item="usage"}}##
-	//result// = **Open Com**( //options//[,] **AS**[#] //filenum// )
+	//result// = **Open Com**( //options//[,] **AS**[#] //filenumber// )
 ##
 {{fbdoc item="param"}}
 	##//options//##
 		A [[KeyPgString|string]] containing options used in controlling the port.
-	##//filenum//##
+	##//filenumber//##
 		The file number to bind to the port.
 
 {{fbdoc item="ret"}}

@@ -1,5 +1,5 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2008 The FreeBASIC development team.
+''	Copyright (C) 2006-2017 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -818,7 +818,7 @@ namespace fb.fbdoc
 
 		_closeList( ctx )
 		
-		cellData = paramsTb->GetParam( "cells" )
+		cellData = UnescapeHtml( paramsTb->GetParam( "cells" ) )
 		strCols =  paramsTb->GetParam( "columns" )
 
 		if( len( strCols ) > 0 ) then
@@ -847,10 +847,6 @@ namespace fb.fbdoc
 					if( *cellTb[i] = "###" ) then
 						cells( col, row ) = cell_space
 					else
-						'' hack: remove escape codes in table text
-						'' relies on the text returned being no longer than the original
-						*cellTb[i] = CellUnescapeCodes( *cellTb[i] )
-
 						cells( col, row ) = cellTb[i]
 					end if
 					if( len( *cells( col, row ) ) > sizes( col ) ) then

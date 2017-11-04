@@ -1,5 +1,5 @@
-{{fbdoc item="title" value="User Input Functions"}}----
-Procedures for working with mice, gaming devices and keyboards.
+{{fbdoc item="title" value="User Input Functions (Graphics Library)"}}----
+Procedures (from graphics library) for working with mice, gaming devices and keyboards.
 
 {{fbdoc item="desc"}}
 	These procedures provide access to external devices such as keyboards, mice and gamepads.

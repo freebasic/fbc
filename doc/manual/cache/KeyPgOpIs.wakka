@@ -17,7 +17,7 @@ Check if an object is compatible to a type derived from its compile-time type
 {{fbdoc item="desc"}}
 	The ##**Is**## operator must be used in conjunction with inheritance in order to check compatibility between objects and types from an inheritance structure extending the built-in ##[[KeyPgObject|Object]]## type.
 	
-	The ##**Is**## operator is a binary operator that checks whether an object is compatible to its derived types at run-time. Because ##**Is**## relies on run-time type information, it can only be used with types that are derived from the built-in ##[[KeyPgObject|Object]]## type using ##[[KeyPgExtends|Extends]]##. The compiler disallows using ##**Is**## for checks that can be solved at compile-time.
+	The ##**Is**## operator is a binary operator that checks whether an object is compatible to its derived types at run-time. Because ##**Is**## relies on Run-Time Type Information (RTTI), it can only be used with types that are derived from the built-in ##[[KeyPgObject|Object]]## type using ##[[KeyPgExtends|Extends]]##. The compiler disallows using ##**Is**## for checks that can be solved at compile-time.
 	
 	The ##**Is**## operator is successful not only for the real-type (the "lowest"), but also for its base-types, as long as they are still below the type of //expression// (the compile-time type). In order to determine the real-type, all possibilities from lowest to highest must be checked.
 	

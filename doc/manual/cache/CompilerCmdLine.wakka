@@ -36,7 +36,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptlang|-lang < name >"}}==
 		Select language mode: ##fb##, ##fblite##, ##qb##, ##deprecated##
 	=={{fbdoc item="keyword" value="CompilerOptforcelang|-forcelang < name >"}}==
-		Select language mode: ##fb##, ##fblite##, ##qb##, ##deprecated## (overides statements in code)
+		Select language mode: ##fb##, ##fblite##, ##qb##, ##deprecated## (overrides statements in code)
 
 {{fbdoc item="section" value="Code generation"}}
 	=={{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}==
