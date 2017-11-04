@@ -16,3 +16,6 @@
 /doc/fbdoc/fbdoc
 /doc/makefbhelp/makefbhelp
 /doc/fbchkdoc/fbchkdoc.ini
+*.undo
+*.fbp
+*.asm

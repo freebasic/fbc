@@ -273,6 +273,13 @@ sub edbgLineBegin _
     	exit sub
     end if
 
+	if( lnum<0 ) then
+		dim  dbg as AST_NODE_DBG ptr=-lnum
+		hEmitSTABS( STAB_TYPE_SOL,dbg->op, 0, 0,@"-1")
+		lnum=dbg->ex
+		delete dbg
+	end if
+	
     if( ctx.lnum > 0 ) then
     	ctx.pos = pos_ - ctx.pos
     	if( ctx.pos > 0 ) then

@@ -106,12 +106,15 @@ end sub
 '' Program = (Label? Statement? Comment?)* EOF?
 sub cProgram()
 	dim as integer startlevel = pp.level
+	dim dbg as AST_NODE_DBG ptr=any
+	DIM as ASTNODE ptr CurrLine=any,Currproc=ast.proc.Curr->r
 
 	'' For each line...
+	
+	'' line begin
+	CurrLine=astAdd(astNewDBG( AST_OP_DBG_LineINI, lexLineNum()))
+	
 	do
-		'' line begin
-		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
-
 		'' Label?
 		cLabel( )
 
@@ -154,7 +157,11 @@ sub cProgram()
 		'' A new statement starts behind EOL
 		'' (and EOF too, for implicitly generated code)
 		parser.stmt.cnt += 1  '' end-of-statement seen
-	loop while (lexGetToken() <> FB_TK_EOF)
+		
+		if (lexGetToken() = FB_TK_EOF) then exit do
+		'' line begin
+		astAdd(astNewDBG( AST_OP_DBG_LineINI, lexLineNum()))
+	loop
 
 	'' EOF
 	assert(lexGetToken() = FB_TK_EOF)
@@ -168,6 +175,36 @@ sub cProgram()
 	'' only check compound stmts if not parsing an include file
 	if (env.includerec = 0) then
 		cCompStmtCheck()
+	elseif(env.clopt.debug) then
+		while( Currproc )
+			' Skip over nodes that don't represent executable code
+			select case( Currproc->class )
+				case AST_NODECLASS_NOP, AST_NODECLASS_LABEL, _
+					AST_NODECLASS_DECL, AST_NODECLASS_LIT, _
+					AST_NODECLASS_DATASTMT, AST_NODECLASS_DBG _
+
+				case else
+					if CurrLine then
+						dbg=new AST_NODE_DBG
+						dbg->ex=CurrLine->dbg.ex
+						dbg->op=CAST(INTEGER,env.inf.incfile)
+						CurrLine->dbg.ex=-CAST(INTEGER,dbg)
+					EndIf
+
+					dbg=new AST_NODE_DBG
+					CurrLine=astAdd(astNewDBG( AST_OP_DBG_LineINI,-CAST(INTEGER,dbg)))
+					if CurrLine then
+						dbg->ex=0
+						dbg->op=CAST(INTEGER,@infileTb(env.includerec-1).name)
+						astAdd(astNewDBG(AST_OP_DBG_LineEND))
+					ELSE
+						delete dbg
+					EndIf
+					exit while
+			end select
+
+			Currproc = Currproc->next
+		wend
 	end if
 end sub
 
