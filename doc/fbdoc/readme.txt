@@ -142,15 +142,13 @@ Credits:
 
 Links:
 
-  o Official site: http://www.freebasic.net/ or
-                   http://fbc.sourceforge.net/ or
-                   http://www.sourceforge.net/projects/fbc
+  o Official site: https://www.freebasic.net/
 
   o External libraries:
 
-    - Curl: http://curl.haxx.se/
+    - Curl: https://curl.haxx.se/
 
-    - MySQL: http://dev.mysql.com/
+    - MySQL: https://dev.mysql.com/
 
     - PCRE: http://www.pcre.org/
     
