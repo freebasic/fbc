@@ -1,6 +1,7 @@
 Version 0.8b:
 
 [changed]
+- copyright updates for 2017
 - minor changes for fbc 0.20 compatibility
 
 

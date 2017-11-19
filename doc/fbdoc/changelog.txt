@@ -1,3 +1,10 @@
+
+October 25, 2017
+- copyright updates for 2017
+- support for custom certificate file to work with https://www.freebasic.net/wiki/
+- tools should recognize both http:// & https:// links in string comparisons
+- wiki snapshot
+
 October 25, 2010
 - moved libfbdoc and the output directories into their own directories to more
   easily allow for automatic creation of the FB manual releases.
