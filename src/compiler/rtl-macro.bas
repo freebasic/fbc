@@ -590,9 +590,9 @@ private sub hAddMacro( byval macdef as FB_RTL_MACRODEF ptr )
 		end if
 	next
 
-	'' only if debugging?
+	'' Only add the assert[warn]() macros in debug builds
 	if( (macdef->options and FB_RTL_OPT_DBGONLY) <> 0 ) then
-		if( env.clopt.debug = FALSE ) then
+		if( env.clopt.assertions = FALSE ) then
 			addbody = FALSE
 		end if
 	end if
