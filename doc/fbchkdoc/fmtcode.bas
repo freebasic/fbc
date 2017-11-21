@@ -25,6 +25,7 @@
 #include once "CFbCode.bi"
 #include once "fbdoc_string.bi"
 #include once "fbdoc_keywords.bi"
+#include once "fbchkdoc.bi"
 
 declare function _LookUpAttrib( byval attrib as integer ) as integer
 declare function _emitCode ( byref text as string ) as string
@@ -135,17 +136,31 @@ private function _emitCode ( byref text as string ) as string
 
 end function
 
-'' main entry point
-function FormatFbCode( byref txt as string ) as string
-	
+''
+function FormatFbCodeLoadKeywords( byref filename as string ) as boolean
+
 	static kw_loaded as integer = FALSE
 
 	if( kw_loaded = FALSE ) then
 		'' Load the keywords, this will allow keywords to be cased.
-		fbdoc_loadkeywords( "../manual/templates/default/keywords.lst" )
+
+		if( filename > "" ) then
+			function = ( fbdoc_loadkeywords( filename ) <> 0 )
+		else
+			function = ( fbdoc_loadkeywords( default_ManualDir + "templates/default/keywords.lst" ) <> 0 )
+		end if
+
 		kw_loaded = TRUE
+
 	end if
+
+end function
+
+'' main entry point
+function FormatFbCode( byref txt as string ) as string
+	
 
 	function = _emitCode( txt )
 
 end function
+

@@ -42,5 +42,6 @@ declare function ScanSourceDirsAndFiles( byref path as string, dirs() as string,
 
 '' fmtcode.bas
 declare function FormatFbCode( byref txt as string ) as string
+declare function FormatFbCodeLoadKeywords( byref filename as string ) as boolean
 
 #endif
