@@ -5,9 +5,11 @@ Emit the preprocessed input file only, do not compile
 	**-pp**
 ##
 {{fbdoc item="desc"}}
-	The ##-pp## compiler option enables the preprocessor-only mode. The code is parsed & checked as usual, but is not compiled. A pre-processed version of every input source.bas is generated, named source.pp.bas. 
+	The ##-pp## compiler option enables the preprocessor-only mode. The code is parsed & checked as usual, but is not compiled. For every input file <source>.bas passed to the compiler, a pre-processed version named <source>.pp.bas is generated.
+	Specifically, preprocessor commands such as conditional compilation (#if, #ifdef, #ifndef, etc.), text replacement (#define, #macro, etc.) and file inclusion (#include) are processed recursively, and the resulting expanded code is written to the pp.bas file.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
+	- [[CatPgPreProcess|Preprocessor commands]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

@@ -14,7 +14,7 @@ Set minimum warning level.
 	##**escape**##
 		Warn when string literals contain any number of escape characters (##\##).
 	##**pedantic**##
-		Equivalent to specifying the ##**param**## and ##**escape**## arguments.
+		Equivalent to specifying the ##**param**## and ##**escape**## arguments, plus length checking of parameters passed ##[[KeyPgByval|ByVal]]## and of any ##[[KeyPgCptr|Cptr]]## converting to pointer only.
 	##**next**##
 		Warn when ##[[KeyPgNext|Next]]## is followed by an identifier.
 

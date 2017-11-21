@@ -89,6 +89,6 @@ Whitespace between characters is insignificant in the lexical grammar. Spacing a
 ""<a id="iY"></a>Y&nbsp;&nbsp;::= [Yy]""
 ""<a id="iZ"></a>Z&nbsp;&nbsp;::= [Zz]""
 
-""<a id="id1">virtual</a>""
+""<a id="id1"></a>virtual""
 ""<b><a style="color = BLACK;" id="iid-char"></a>id-char&nbsp;::= [A-Z0-9_]</a></b>""
 ##**

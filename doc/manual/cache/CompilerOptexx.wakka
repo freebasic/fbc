@@ -5,7 +5,7 @@ Add error checking with ##[[KeyPgResume|Resume]]## support and array bounds and 
 	**-exx**
 ##
 {{fbdoc item="desc"}}
-	The ##-exx## compiler option adds error checking with ##[[KeyPgResume|Resume]]## support plus array bounds and null-pointer checking (including the procedure pointers).
+	The ##-exx## compiler option adds error checking with ##[[KeyPgResume|Resume]]## support, plus array bounds and non-null-pointer checking (including the procedure pointers).
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfberr|__FB_ERR__]]##

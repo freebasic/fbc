@@ -2,6 +2,7 @@
 ""FreeBASIC"" is distributed with many headers for common or popular libraries.  The headers allow a programmer to use functions available in these existing static or shared libraries (DLLs).  
 
 The libraries themselves are not distributed with ""FreeBASIC"", but most can be downloaded from the web and readily installed.  Some other libraries may need to be first compiled from sources to be used.  Please see the documentation for the specific library on how to configure, install, and use them.
+Note that the system architecture of the library has to match the architecture of the application. For example, to successfully use a library in a x86 (32-bit) application, a x86 (32-bit) library is required.
 
 Some static or shared libraries (DLLs) may be already present on the system since they might be part of ""FreeBASIC"" itself or the operating system.
 
@@ -44,7 +45,7 @@ MessageBox( null, "Hello World", "FreeBASIC", MB_OK )
 	Browse the "inc/win/" directory where ""FreeBASIC"" was installed to see all of the available Windows API headers.
 
 {{fbdoc item="section" value="Other Headers Provided"}}
-	Browse the "inc/" directory located where ""FreeBASIC"" was installed to find other headers.  It is possible that headers might be available for a library you need to use.  Some headers are located in "inc/" and others might be located in a sub-directory.  To include headers located in a subdirectory of "inc/", prefix the name of the header with the name of the directory where it is located.  For example:
+	See the [[ExtLibTOC|External Libraries Index]] for an overview of the additional headers shipped with ""FreeBASIC"".  The page also describes the file(s) that need to be included to use the library.  Alternatively one can browse the "inc/" directory located where ""FreeBASIC"" was installed to find other headers.  It is possible that headers might be available for a library you need to use.  Some headers are located in "inc/" and others might be located in a sub-directory.  To include headers located in a subdirectory of "inc/", prefix the name of the header with the name of the directory where it is located.  For example:
 {{fbdoc item="filename" value="examples/manual/proguide/libs/libs5.bas"}}%%(freebasic)
 '' located at inc/curl.bi
 #include once "curl.bi"
@@ -55,10 +56,14 @@ MessageBox( null, "Hello World", "FreeBASIC", MB_OK )
 
 {{fbdoc item="section" value="Requirements for Using Prebuilt Static Libraries"}}
 	- The source code must include the appropriate headers using ##[[KeyPgInclude|#include]]##.
-	- The static library must be linked at compile time by using either ##[[KeyPgInclib|#inclib]]## in the source code or by using the //-l// option on the command line to specify the name of the library.
+	- The static library must be linked at compile time by using either ##[[KeyPgInclib|#inclib]]## in the source code or by using the ##[[CompilerOptL|-l]]## option on the command line to specify the name of the library.
 
 {{fbdoc item="section" value="Requirements for Using Prebuilt Shared Libraries"}}
 	- The source code must include the appropriate headers using ##[[KeyPgInclude|#include]]##.
 	- The shared library (.DLL) must be present on the host computer where the compiled program will run.
+
+{{fbdoc item="see"}}
+	- [[ProPgStaticLibraries|Static Libraries]]
+	- [[ProPgSharedLibraries|Shared Libraries (DLLs)]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
