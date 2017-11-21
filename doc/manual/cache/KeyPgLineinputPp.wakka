@@ -33,7 +33,7 @@ print s
 	- None
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgLineInput|Line Input]]##
+	- ##[[KeyPgLineinput|Line Input]]##
 	- ##[[KeyPgInputPp|Input #]]##
 	- ##[[KeyPgOpen|Open]]##
 	- ##[[KeyPgInputfilemode|Input (file mode)]]##

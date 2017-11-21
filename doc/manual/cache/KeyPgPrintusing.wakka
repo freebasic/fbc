@@ -6,7 +6,7 @@ Outputs formatted text to the screen or output device
 ##
 {{fbdoc item="param"}}
 	##//filenum//##
-		The file number of a file or device opened for ##[[KeyPgOutput|Output]]## or ##[[KeyPgAppend|Append]]##.  (Alternatively ##[[KeyPgLprint|Lprint]]## may be used where appropriate, instead of ##[[KeyPgPrintpp|Print #]]##)
+		The file number of a file or device opened for ##[[KeyPgOutput|Output]]## or ##[[KeyPgAppend|Append]]##.  (Alternatively ##[[KeyPgLprint|Lprint]]## may be used where appropriate, instead of ##[[KeyPgPrintPp|Print #]]##)
 	##//printexpressionlist//##
 		Optional preceding list of items to print, separated by commas (##,##) or semi-colons (##;##) (see ##[[KeyPgPrint|Print]]## for more details).
 	##//formatstring//##
@@ -56,8 +56,8 @@ The last day in the year is 31 Dec%%
 {{fbdoc item="see"}}
 	- ##[[KeyPgPrint|Print]]##
 	- ##[[KeyPgPrint|?]]##
-	- ##[[KeyPgPrintpp|Print #]]##
-	- ##[[KeyPgPrintpp|? #]]##
+	- ##[[KeyPgPrintPp|Print #]]##
+	- ##[[KeyPgPrintPp|? #]]##
 	- ##[[KeyPgFormat|Format]]##
 	- ##[[KeyPgUsing|Using]]##
 	- ##[[KeyPgPalette|Palette Using]]##

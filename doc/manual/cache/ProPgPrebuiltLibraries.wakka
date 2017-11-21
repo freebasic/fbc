@@ -56,7 +56,7 @@ MessageBox( null, "Hello World", "FreeBASIC", MB_OK )
 
 {{fbdoc item="section" value="Requirements for Using Prebuilt Static Libraries"}}
 	- The source code must include the appropriate headers using ##[[KeyPgInclude|#include]]##.
-	- The static library must be linked at compile time by using either ##[[KeyPgInclib|#inclib]]## in the source code or by using the ##[[CompilerOptL|-l]]## option on the command line to specify the name of the library.
+	- The static library must be linked at compile time by using either ##[[KeyPgInclib|#inclib]]## in the source code or by using the ##[[CompilerOptl|-l]]## option on the command line to specify the name of the library.
 
 {{fbdoc item="section" value="Requirements for Using Prebuilt Shared Libraries"}}
 	- The source code must include the appropriate headers using ##[[KeyPgInclude|#include]]##.

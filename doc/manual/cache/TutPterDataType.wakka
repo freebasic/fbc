@@ -3,7 +3,7 @@
 
 The pointer data type is unique among the FreeBasic numeric data types. Instead of containing data, like the other numeric types, a pointer contains the memory address of data.
 
-On a 32-bit system, the pointer data type is 4 bytes (8 bytes on a 64-bit system). FreeBasic uses pointers for a number of functions such as [[KeyPgImageCreate|ImageCreate]], and pointers are used heavily in external libraries such as the Windows API. Pointers are also quite fast, since the compiler can directly access the memory location that a pointer points to. A proper understanding of pointers is essential to effective programming in FreeBasic.
+On a 32-bit system, the pointer data type is 4 bytes (8 bytes on a 64-bit system). FreeBasic uses pointers for a number of functions such as [[KeyPgImagecreate|ImageCreate]], and pointers are used heavily in external libraries such as the Windows API. Pointers are also quite fast, since the compiler can directly access the memory location that a pointer points to. A proper understanding of pointers is essential to effective programming in FreeBasic.
 
 For many beginning programmers, pointers seem like a strange and mysterious beast. However, if you keep one rule in mind, you should not have any problems using pointers in your program. The rule is very simple: a pointer contains an address, not data. If you keep this simple rule in mind, you should have no problems using pointers.
 

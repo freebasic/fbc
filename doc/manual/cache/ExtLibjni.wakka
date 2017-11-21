@@ -36,7 +36,7 @@ class MyLib {
 
 	- ##Test.java## - The Java main() that uses the Mylib class
 
-	{{fbdoc item="filename" value="examples/manual/libraries/jni/mylib.bas"}}%%(cpp)
+	{{fbdoc item="filename" value="examples/manual/libraries/jni/Test.java"}}%%(cpp)
 class Test {
 	public static void main(String[] args) {
 		MyLib lib = new MyLib();

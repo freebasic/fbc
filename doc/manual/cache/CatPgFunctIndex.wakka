@@ -74,6 +74,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDouble|DOUBLE"}}
 	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM"}}
 	- {{fbdoc item="keyword" value="KeyPgExtends|EXTENDS"}}
+	- {{fbdoc item="keyword" value="KeyPgImplements|IMPLEMENTS"}}
 	- {{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}}
 	- {{fbdoc item="keyword" value="KeyPgLong|LONG"}}
 	- {{fbdoc item="keyword" value="KeyPgLongint|LONGINT"}}
@@ -395,6 +396,8 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdfbargc|__FB_ARGC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbargv|__FB_ARGV__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbarm|__FB_ARM__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbasm|__FB_ASM__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdFBBackend|__FB_BACKEND__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBuildDate|__FB_BUILD_DATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbcygwin|__FB_CYGWIN__"}}
@@ -402,7 +405,10 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdos|__FB_DOS__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfberr|__FB_ERR__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbfpmode|__FB_FPMODE__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbfpu|__FB_FPFPU__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbfreebsd|__FB_FREEBSD__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbgcc|__FB_GCC__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblang|__FB_LANG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblinux|__FB_LINUX__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBMain|__FB_MAIN__"}}
@@ -419,12 +425,15 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdfboutexe|__FB_OUT_EXE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutlib|__FB_OUT_LIB__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfboutobj|__FB_OUT_OBJ__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbpcos|__FB_PCOS__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDdfbsignature|__FB_SIGNATURE__"}} 
 	- {{fbdoc item="keyword" value="KeyPgDdfbsse|__FB_SSE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbversion|__FB_VERSION__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerMajor|__FB_VER_MAJOR__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerMinor|__FB_VER_MINOR__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBVerPatch|__FB_VER_PATCH__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbunix|__FB_UNIX__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbvectorize|__FB_VECTORIZE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbwin32|__FB_WIN32__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbxbox|__FB_XBOX__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfile|__FILE__"}}

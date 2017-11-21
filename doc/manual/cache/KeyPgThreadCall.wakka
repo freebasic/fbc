@@ -25,8 +25,8 @@ Starts a user-defined procedure with parameters in a separate execution thread
 	
 	While most subroutines are supported, the following types of subroutines may not be called:
 		- Subroutines using [[KeyPgVaArg|variable arguments]]
-		- Subroutines with unions which are passed ##[[KeyPgByVal|Byval]]##
-		- Subroutines with user types containing unions, arrays, strings, or bitfields which are passed ##[[KeyPgByVal|Byval]]##
+		- Subroutines with unions which are passed ##[[KeyPgByval|Byval]]##
+		- Subroutines with user types containing unions, arrays, strings, or bitfields which are passed ##[[KeyPgByval|Byval]]##
 	
 	When using **Threadcall**, parenthesis around the parameter list are required unless the subroutine has no parameters.
 	
@@ -61,7 +61,7 @@ Print "All done (and without Dim Shared!)"
 {{fbdoc item="target"}}
 	- **Threadcall** is not available with the DOS version / target of ""FreeBASIC"", because multithreading is not supported by DOS kernel nor the used extender.
 	- In Linux the threads are always started in the order they are created, this can't be assumed in ""Win32"". It's an OS, not a ""FreeBASIC"" issue. 
-	- In Linux, the ##[[KeyPgStdCall|Stdcall]]## and ##[[KeyPgPascal|Pascal]]## calling conventions are not supported
+	- In Linux, the ##[[KeyPgStdcall|Stdcall]]## and ##[[KeyPgPascal|Pascal]]## calling conventions are not supported
 	- In Windows, the ##[[KeyPgPascal|Pascal]]## calling convention is not supported.
 
 {{fbdoc item="diff"}}

@@ -16,13 +16,13 @@ Fills a ##[[KeyPgWstring|wstring]]## with a certain length of a certain wide cha
 	##//ch_code//##
 		A ##[[KeyPgLong|long]]## specifying the Unicode char to be used to fill the string.
 	##//ch//##
-		A ##[[KeyPgwstring|wstring]]## whose first character is to be used to fill the string.
+		A ##[[KeyPgWstring|wstring]]## whose first character is to be used to fill the string.
 
 {{fbdoc item="ret"}}
-	The created ##[[KeyPgwstring|wstring]]##. An empty string will be returned if either ##//ch//## is an empty string, or ##//count// <= 0##.
+	The created ##[[KeyPgWstring|wstring]]##. An empty string will be returned if either ##//ch//## is an empty string, or ##//count// <= 0##.
 
 {{fbdoc item="desc"}}
-	##**Wstring**## generates a temporary ##[[KeyPgwstring|wstring]]## filled with ##//count//## copies of a [[Unicode|Unicode]] character. This string can be printed or assigned to a previously ##[[KeyPgDim|Dim]]##ed ##[[KeyPgwstring|wstring]]##.
+	##**Wstring**## generates a temporary ##[[KeyPgWstring|wstring]]## filled with ##//count//## copies of a [[Unicode|Unicode]] character. This string can be printed or assigned to a previously ##[[KeyPgDim|Dim]]##ed ##[[KeyPgWstring|wstring]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/strings/wstring.bas"}}%%(freebasic)

@@ -94,4 +94,4 @@ identify(@o)
 	- ##[[KeyPgIs|Is (Select Case)]]##
 	- ##[[KeyPgTypeof|Typeof]]##
  
-{{fbdoc item="back" value="CatPgOpConditional|Relational Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
+{{fbdoc item="back" value="CatPgOpConditional|Relational Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}{{fbdoc item="back" value="CatPgOpTypeclass|Type or Class Operators"}}
