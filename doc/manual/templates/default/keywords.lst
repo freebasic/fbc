@@ -1,3 +1,4 @@
+#assert
 #define
 #else
 #elseif
@@ -20,11 +21,13 @@ $Dynamic
 $Include
 $Lang
 $Static
+Abstract
 Assert
 AssertWarn
 Abs
 Access
 Acos
+Add
 Alias
 Allocate
 Alpha
@@ -38,6 +41,7 @@ Asin
 Asm
 Atan2
 Atn
+Base
 Bit
 BitReset
 BitSet
@@ -46,6 +50,7 @@ Beep
 Bin
 Binary
 BLoad
+Boolean
 BSave
 ByRef
 Byte
@@ -56,6 +61,7 @@ CallS
 Case
 Case Else
 Cast
+CBool
 CByte
 CDbl
 cdecl
@@ -125,6 +131,7 @@ DefStr
 DefUByte
 DefUInt
 DefULngInt
+DefLongInt
 DefUShort
 Delete
 Destructor
@@ -154,6 +161,7 @@ End Sub
 End With
 Enum
 Environ
+Event
 EOF
 Eqv
 Erase
@@ -178,7 +186,9 @@ Exit While
 Exp
 Explicit
 Export
+Extends
 Extern
+False
 Field
 FileAttr
 FileCopy
@@ -189,6 +199,7 @@ Fix
 Flip
 For
 Format
+Frac
 Fre
 FreeFile
 Function
@@ -209,6 +220,7 @@ ImageConvertRow
 ImageDestroy
 ImageInfo
 Imp
+Implememts
 Import
 Inkey
 Inp
@@ -220,6 +232,7 @@ InStrRev
 Int
 Integer
 Is
+IsRedirected
 IsDate
 Kill
 LoByte
@@ -234,6 +247,7 @@ Line
 Line Input
 Line Input #
 LOC
+LoByte
 Local
 Locate
 Lock
@@ -242,6 +256,8 @@ Log
 Long
 LongInt
 Loop
+LoWord
+LPos
 LPrint
 Lpt
 LSet
@@ -267,13 +283,16 @@ Name
 Namespace
 Next
 New
+Naked
 NoKeyword
 Not
 Now
+Object
 Oct
 OffsetOf
 On
 On Error
+Once
 Open
 Open Com
 Open Cons
@@ -296,7 +315,9 @@ OrElse
 Out
 Output
 Overload
+Override
 Paint
+PaintCoord
 Palette
 pascal
 PCopy
@@ -399,7 +420,9 @@ Tab
 Tan
 Then
 This
+ThreadCall
 ThreadCreate
+ThreadDetach
 ThreadWait
 Time
 Timer
@@ -408,12 +431,14 @@ TimeValue
 To
 Trans
 Trim
+True
 Type
 TypeOf
 UBound
 UByte
 UCase
 UInteger
+ULong
 ULongInt
 Union
 Unlock
@@ -433,6 +458,7 @@ ValULng
 VarPtr
 View
 View Print
+Virtual
 Wait
 WBin
 WChr
@@ -455,8 +481,13 @@ Xor
 Year
 ZString
 __DATE__
+__DATE_ISO__
+__FB_64BIT__
 __FB_ARGC__
 __FB_ARGV__
+__FB_ARM__
+__FB_ASM__
+__FB_BACKEND__
 __FB_BIGENDIAN__
 __FB_BUILD_DATE__
 __FB_CYGWIN__
@@ -464,7 +495,10 @@ __FB_DARWIN__
 __FB_DEBUG__
 __FB_DOS__
 __FB_ERR__
+__FB_FPMODE__
+__FB_FPU__
 __FB_FREEBSD__
+__FB_GCC__
 __FB_LANG__
 __FB_LINUX__
 __FB_MAIN__
@@ -476,13 +510,17 @@ __FB_OPTION_BYVAL__
 __FB_OPTION_DYNAMIC__
 __FB_OPTION_ESCAPE__
 __FB_OPTION_EXPLICIT__
+__FB_OPTION_GOSUB__
 __FB_OPTION_PRIVATE__
 __FB_OUT_DLL__
 __FB_OUT_EXE__
 __FB_OUT_LIB__
 __FB_OUT_OBJ__
+__FB_PCOS__
 __FB_SIGNATURE__
 __FB_SSE__
+__FB_UNIX__
+__FB_VECTORIZE__
 __FB_VERSION__
 __FB_VER_MAJOR__
 __FB_VER_MINOR__
