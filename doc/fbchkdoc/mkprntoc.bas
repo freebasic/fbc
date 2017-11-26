@@ -71,7 +71,7 @@ function MakeLink( byref sLink as string, byref sName as string ) as string
 	if( instr( sLink+sName, any "[]" ) > 0 ) then
 		function = "{{fbdoc item=""keyword"" value=""" + sLink + "|" + sName + """}}"
 	else
-		function = "[[" + sLink + " " + sName + "]]"
+		function = "[[" + sLink + "|" + sName + "]]"
 	end if
 end function
 
