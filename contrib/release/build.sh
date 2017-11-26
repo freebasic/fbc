@@ -219,8 +219,8 @@ win32-mingworg)
 	download_extract_mingw mpfr-3.1.2-2-mingw32-dll.tar.lzma
 
 	# Add ddraw.h and dinput.h for FB's gfxlib2
-	download dx80_mgw.zip http://alleg.sourceforge.net/files/dx80_mgw.zip
-	unzip ../input/dx80_mgw.zip include/ddraw.h include/dinput.h
+#	download dx80_mgw.zip http://alleg.sourceforge.net/files/dx80_mgw.zip
+#	unzip ../input/dx80_mgw.zip include/ddraw.h include/dinput.h
 
 	# Work around http://sourceforge.net/p/mingw/bugs/2039/
 	patch -p0 < ../mingworg-fix-wcharh.patch
@@ -482,3 +482,4 @@ dos)         dosbuild;;
 linux*)      linuxbuild   | tee log.txt 2>&1;;
 win32|win64) windowsbuild | tee log.txt 2>&1;;
 esac
+							
