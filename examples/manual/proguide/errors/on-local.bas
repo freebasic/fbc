@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgErrorHandling
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgErrorHandling
 '' --------
 
 '' Compile with -e
@@ -26,8 +26,8 @@ Sub foo
 	
   fail:
   errmsg = "Error " & Err & _
-	       " in function " & *Erfn & _
-	       " on line " & Erl
+		   " in function " & *Erfn & _
+		   " on line " & Erl
   Print errmsg
 	
 End Sub

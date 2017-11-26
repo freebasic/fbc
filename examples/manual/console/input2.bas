@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgInput
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgInput
 '' --------
 
 Dim As Double a, b
@@ -20,8 +20,8 @@ Do
 	Print
 	
 	Do
-	    Input "Would you like to enter some more numbers"; yn
-	    yn = LCase(yn)
+		Input "Would you like to enter some more numbers"; yn
+		yn = LCase(yn)
 	Loop Until yn = "y" Or yn = "n"
 	
 Loop While LCase(yn) = "y"

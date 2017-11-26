@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgStrig
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgStrig
 '' --------
 
 '' Compile with -lang qb
@@ -31,7 +31,7 @@ Do
 	Print "Press ESC to Quit"
 
 	If Inkey$ = Chr$(27) Then
-	    Exit Do
+		Exit Do
 	End If
 
 	Sleep 1

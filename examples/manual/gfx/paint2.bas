@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPaint
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPaint
 '' --------
 
 ' draws a circle and fills it with a checkered pattern
@@ -18,16 +18,16 @@ Const bit_depth = 8
 Function paint_pixel( ByVal c As UInteger, ByVal bit_depth_ As Integer ) As String
 	
 	If bit_depth_ <= 8 Then '' 8-bit:
-	    Function =  Chr( CUByte(c) )
-	    
+		Function =  Chr( CUByte(c) )
+		
 	ElseIf bit_depth_ <= 16 Then '' 16-bit:
-	    Function = MKShort( c Shr 3 And &h1f Or _
-	                        c Shr 5 And &h7e0 Or _
-	                        c Shr 8 And &hf800 )
-	    
+		Function = MKShort( c Shr 3 And &h1f Or _
+							c Shr 5 And &h7e0 Or _
+							c Shr 8 And &hf800 )
+		
 	ElseIf bit_depth_ <= 32 Then '' 32-bit:
-	    Function = MKL(c)
-	    
+		Function = MKL(c)
+		
 	End If
 	
 End Function
@@ -56,22 +56,22 @@ End If
 '' make the pattern to be used in Paint
 For y As UInteger = 0 To 7
 	For x As UInteger = 0 To 7
-	    
-	    '' choose the color of the pixel (c)
-	    If (x \ 4 + y \ 4) Mod 2 > 0 Then
-	        c = c1
-	    Else
-	        c = c2
-	    End If
-	    
-	    '' add the pixel to the pattern
-	    paint_pattern = paint_pattern + paint_pixel(c, bit_depth)
-	    
-	    '' the following line can be used if you want to draw the 
-	    '' pattern tile in the top left hand corner of the screen:
-	    
-	    ' pset (x, y), c
-	    
+		
+		'' choose the color of the pixel (c)
+		If (x \ 4 + y \ 4) Mod 2 > 0 Then
+			c = c1
+		Else
+			c = c2
+		End If
+		
+		'' add the pixel to the pattern
+		paint_pattern = paint_pattern + paint_pixel(c, bit_depth)
+		
+		'' the following line can be used if you want to draw the 
+		'' pattern tile in the top left hand corner of the screen:
+		
+		' pset (x, y), c
+		
 	Next x
 Next y
 

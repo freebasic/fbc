@@ -3,26 +3,26 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgField
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgField
 '' --------
 
 Type bitmap_header Field = 1
 	bfType          As UShort
-	bfsize          As UInteger
+	bfsize          As ULong
 	bfReserved1     As UShort
 	bfReserved2     As UShort
-	bfOffBits       As UInteger
-	biSize          As UInteger
-	biWidth         As UInteger
-	biHeight        As UInteger
+	bfOffBits       As ULong
+	biSize          As ULong
+	biWidth         As ULong
+	biHeight        As ULong
 	biPlanes        As UShort
 	biBitCount      As UShort
-	biCompression   As UInteger
-	biSizeImage     As UInteger
-	biXPelsPerMeter As UInteger
-	biYPelsPerMeter As UInteger
-	biClrUsed       As UInteger
-	biClrImportant  As UInteger
+	biCompression   As ULong
+	biSizeImage     As ULong
+	biXPelsPerMeter As ULong
+	biYPelsPerMeter As ULong
+	biClrUsed       As ULong
+	biClrImportant  As ULong
 End Type
 
 Dim bmp_header As bitmap_header

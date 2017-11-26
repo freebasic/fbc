@@ -3,30 +3,30 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgPrimer1
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgPrimer1
 '' --------
 
-Dim total As Single, count As Single, number As Single
-Dim text As String
+Dim As Single   total, count, number   ' multi variable declaration (same type)
+Dim As String   text
 
 Print "This program will calculate the sum and average for a"
-Print "list of numbers.  Enter an empty value to end."
+Print "list of numbers. Enter an empty value to see results."
 Print
 
 Do
-  Input "Enter a number : ", text
-  If text = "" Then
-	Exit Do
-  End If
-
-  count = count + 1
-  total = total + Val(text)
-
+  Input "Enter a number: ", text       ' get user input
+  If text = "" Then Exit Do            ' if empty -> quit Do/Loop
+  count += 1                           ' increment count by: 1
+  total += Val(text)                   ' add and assign new value
 Loop
 
 Print
-Print "You entered "; count; " numbers"
-Print "The sum is "; total
-If count <> 0 Then
-  Print "The average is "; total / count
-End If
+Print "You entered:    "; count; "  number(s)"
+Print "The sum is:     "; total
+
+If count > 0 Then Print "The average is: "; total / count
+
+Print
+Print "Any keypress ends program. ";
+
+Sleep

@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgType
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgType
 '' --------
 
 '' Example showing the problems with fixed length string fields in UDTs
@@ -15,7 +15,7 @@ Print "Using fixed-length string"
 
 Type hdr1 Field = 1
    As String*(6-1) sig /' We have to dimension the string with 1 char
-	                    '  less to avoid misalignments '/
+						'  less to avoid misalignments '/
    As UShort wid, hei
 End Type
 
@@ -31,7 +31,7 @@ If Left(h1->sig, 5) = "GIF89" Then Print "ok" Else Print "error"
 Function ub2str( ub() As UByte ) As String
 	Dim As String res = Space(UBound(ub) - LBound(ub) + 1)
 	For i As Integer = LBound(ub) To UBound(ub)
-	    res[i - LBound(ub)] = ub(i)
+		res[i - LBound(ub)] = ub(i)
 	Next
 	Function = res
 End Function

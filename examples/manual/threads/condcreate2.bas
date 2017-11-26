@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCondCreate
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCondCreate
 '' --------
 
 'Visual example of mutual exclusion + mutual synchronization between 2 threads
@@ -12,17 +12,20 @@
 'and the "main thread" plots the points.
 '
 'Principle of mutual exclusion + mutual synchronisation
-'          Thread#A                XOR + <==>           Thread#B
-'.....                                         .....
-'MutexLock(mut)                                MutexLock(mut)
-'  While Thread#A_signal <> false                While Thread#A_signal <> true
-'    CondWait(cond, mut)                           CondWait(cond, mut)
-'  Wend                                          Wend
-'  Do_something#A_with_exclusion                 Do_something#B_with_exclusion
-'  Thread#A_signal = true                        Thread#A_signal = false
-'  CondSignal(cond)                              CondSignal(cond)
-'MutexUnlock(mut)                              MutexUnlock(mut)
-'.....                                         .....
+'          Thread#A               XOR + <==>             Thread#B
+'.....                                          .....
+'MutexLock(mut)                                 MutexLock(mut)
+'  Do_something_with_exclusion                    Do_something_with_exclusion
+'  While bool#1 <> true <------------------------ bool#1 = true
+'    CondWait(cond#1, mut) <--------------------- CondSignal(cond#1)
+'  Wend <-----------------------------------.     Do_something_with_exclusion
+'  bool#1 = false               .---------- | --> While bool#2 <> true
+'  Do_something_with_exclusion  |   .------ | ----> CondWait(cond#2, mut)
+'  bool#2 = true ---------------'   |   .-- | --> Wend
+'  CondSignal(cond#2) --------------'   |   |     bool#2 = false
+'  Do_something_with_exclusion          |   |     Do_something_with_exclusion
+'MutexUnlock(mut) ----------------------'   '-- MutexUnlock(mut)
+'.....                                          .....
 '
 'Behavior:
 '- Unnecessary to pre-calculate the first point.
@@ -40,33 +43,40 @@
 Type ThreadUDT                                   'Generic user thread UDT
 	Dim handle As Any Ptr                        'Any Ptr handle to user thread
 	Dim sync As Any Ptr                          'Any Ptr handle to mutex
-	Dim cond As Any Ptr                          'Any Ptr handle to conditional
-	Dim ready As Byte                            'Boolean to coordinates ready
+	Dim cond1 As Any Ptr                         'Any Ptr handle to conditional1
+	Dim cond2 As Any Ptr                         'Any Ptr handle to conditional2
+	Dim ready1 As Byte                           'Boolean to coordinates ready1
+	Dim ready2 As Byte                           'Boolean to coordinates ready2
 	Dim quit As Byte                             'Boolean to end user thread
 	Declare Static Sub Thread (ByVal As Any Ptr) 'Generic user thread procedure
 	Dim procedure As Sub (ByVal As Any Ptr)      'Procedure(Any Ptr) to be executed by user thread
 	Dim p As Any Ptr                             'Any Ptr to pass to procedure executed by user thread
-	Const false As Byte = 0                      'Constante "false"
-	Const true As Byte = Not false               'Constante "true"
+	Const False As Byte = 0                      'Constante "false"
+	Const True As Byte = Not False               'Constante "true"
 End Type
 
 Static Sub ThreadUDT.Thread (ByVal param As Any Ptr) 'Generic user thread procedure
 	Dim tp As ThreadUDT Ptr = param                  'Casting to generic user thread UDT
 	Do
-	    Static As Integer I
-	    MutexLock(tp->sync)                          'Mutex (Lock) for user thread
-	    While tp->ready <> false                     'Process loop against spurious wakeups
-	      CondWait(tp->cond, tp->sync)               'CondWait to receive signal from main-thread
-	    Wend
-	    tp->procedure(tp->p)                         'Procedure(Any Ptr) to be executed by user thread
-	    I += 1
-	    Locate 30, 38
-	    Print I;
-	    tp->ready = true                             'Set ready
-	    CondSignal(tp->cond)                         'CondSignal to send signal to main thread
-	    MutexUnlock(tp->sync)                        'Mutex (Unlock) for user thread
-	    Sleep 5
-	Loop Until tp->quit = tp->true                   'Test for ending user thread
+		Static As Integer I
+		MutexLock(tp->sync)                          'Mutex (Lock) for user thread
+		tp->procedure(tp->p)                         'Procedure(Any Ptr) to be executed by user thread
+		I += 1
+		Locate 30, 38
+		Print I;
+		tp->ready1 = True                            'Set ready1
+		CondSignal(tp->cond1)                        'CondSignal to send signal1 to main thread
+		While tp->ready2 <> True                     'Process loop against spurious wakeups
+			CondWait(tp->cond2, tp->sync)            'CondWait to receive signal2 from main-thread
+		Wend
+		tp->ready2 = False
+		If tp->quit = tp->True Then                  'Test for ending user thread
+			MutexUnlock(tp->sync)                    'Mutex (Unlock) for user thread
+			Exit Do
+		End If
+		MutexUnlock(tp->sync)                        'Mutex (Unlock) for user thread
+		Sleep 5
+	Loop
 End Sub
 
 '-----------------------------------------------------------------------------------------------------
@@ -79,6 +89,7 @@ End Type
 Const x0 As Integer = 640 / 2
 Const y0 As Integer = 480 / 2
 Const r0 As Integer = 200
+
 Const pi As Single = 4 * Atn(1)
 
 Sub PointOnCircle (ByVal p As Any Ptr)
@@ -102,36 +113,39 @@ Dim Pptr As Point2D Ptr = New Point2D
 
 Dim Tptr As ThreadUDT Ptr = New ThreadUDT
 Tptr->sync = MutexCreate
-Tptr->cond = CondCreate
+Tptr->cond1 = CondCreate
+Tptr->cond2 = CondCreate
 Tptr->procedure = @PointOnCircle
 Tptr->p = Pptr
 Tptr->handle = ThreadCreate(@ThreadUDT.Thread, Tptr)
 
 Do
 	Static As Integer I
-	Sleep 5
-	MutexLock(Tptr->sync)              'Mutex (Lock) for main thread
-	While Tptr->ready <> Tptr->true    'Process loop against spurious wakeups
-	  CondWait(Tptr->cond, Tptr->sync) 'CondWait to receive signal from user-thread
+	MutexLock(Tptr->sync)                 'Mutex (Lock) for main thread
+	While Tptr->ready1 <> Tptr->True      'Process loop against spurious wakeups
+		CondWait(Tptr->cond1, Tptr->sync) 'CondWait to receive signal1 from user-thread
 	Wend
-	PSet (Pptr->x, Pptr->y)            'Plotting one point
+	Tptr->ready1 = Tptr->False
+	PSet (Pptr->x, Pptr->y)               'Plotting one point
 	I += 1
 	Locate 30, 62
 	Print I;
-	Tptr->ready = Tptr->false          'Reset ready
-	CondSignal(Tptr->cond)             'CondSignal to send signal to user thread
-	MutexUnlock(Tptr->sync)            'Mutex (Unlock) for main thread
-Loop Until Inkey <> ""
+	Tptr->ready2 = Tptr->True             'Set ready2
+	CondSignal(Tptr->cond2)               'CondSignal to send signal2 to user thread
+	If Inkey <> "" Then
+		Tptr->quit = Tptr->True           'Set quit
+		MutexUnlock(Tptr->sync)           'Mutex (Unlock) for main thread
+		Exit Do
+	End If
+	MutexUnlock(Tptr->sync)               'Mutex (Unlock) for main thread
+	Sleep 5
+Loop
  
-MutexLock(Tptr->sync)                  'Mutex (Lock) for main thread
-Tptr->ready = Tptr->false              'Reset ready
-Tptr->quit = Tptr->true                'Set quit
-CondSignal(Tptr->cond)                 'CondSignal to send signal to user thread
-MutexUnlock(Tptr->sync)                'Mutex (Unlock) for main thread
 
 ThreadWait(Tptr->handle)
 MutexDestroy(Tptr->sync)
-CondDestroy(Tptr->cond)
+CondDestroy(Tptr->cond1)
+CondDestroy(Tptr->cond2)
 Delete Tptr
 Delete Pptr
 

@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCondWait
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCondWait
 '' --------
 
 ' This simple example code demonstrates the use of several condition variable routines.
@@ -23,25 +23,25 @@ Dim Shared As Integer ok = 0
 Sub threadCount (ByVal p As Any Ptr)
 	Print "Starting threadCount(): thread#" & p
 	Do
-	    Print "threadCount(): thread#" & p & ", locking mutex"
-	    MutexLock(countMutex)
-	    count += 1
-	    ' Check the value of count and signal waiting thread when condition is reached.
-	    ' Note that this occurs while mutex is locked.
-	    If count >= countThreshold Then
-	        If count = countThreshold Then
-	            Print "threadCount(): thread#" & p & ", count = " & count & ", threshold reached, unlocking mutex"
-	            ok = 1
-	            CondSignal(countThresholdCV)
-	        Else
-	            Print "threadCount(): thread#" & p & ", count = " & count & ", threshold exceeded, unlocking mutex"
-	        End If
-	        MutexUnlock(countMutex)
-	        Exit Do
-	    End If
-	    Print "threadCount(): thread#" & p & ", count = " & count & ", unlocking mutex"
-	    MutexUnlock(countMutex)
-	    Sleep 100
+		Print "threadCount(): thread#" & p & ", locking mutex"
+		MutexLock(countMutex)
+		count += 1
+		' Check the value of count and signal waiting thread when condition is reached.
+		' Note that this occurs while mutex is locked.
+		If count >= countThreshold Then
+			If count = countThreshold Then
+				Print "threadCount(): thread#" & p & ", count = " & count & ", threshold reached, unlocking mutex"
+				ok = 1
+				CondSignal(countThresholdCV)
+			Else
+				Print "threadCount(): thread#" & p & ", count = " & count & ", threshold exceeded, unlocking mutex"
+			End If
+			MutexUnlock(countMutex)
+			Exit Do
+		End If
+		Print "threadCount(): thread#" & p & ", count = " & count & ", unlocking mutex"
+		MutexUnlock(countMutex)
+		Sleep 100
 	Loop
 End Sub
 
@@ -50,7 +50,7 @@ Sub threadWatch (ByVal p As Any Ptr)
 	MutexLock(countMutex)
 	' Note that the Condwait routine will automatically and atomically unlock mutex while it waits.
 	While ok = 0
-	    CondWait(countThresholdCV, countMutex)
+		CondWait(countThresholdCV, countMutex)
 	Wend
 	Print "threadWatch(): thread#" & p & ", condition signal received"
 	Print "threadWatch(): thread#" & p & ", count now = " & count & ", unlocking mutex"

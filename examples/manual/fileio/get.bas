@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgGetfileio
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgGetfileio
 '' --------
 
 Dim Shared f As Integer
@@ -30,7 +30,7 @@ Sub get_array()
 
 	' print out result
 	For i As Integer = 0 To 10-1
-	    Print an_array(i)
+		Print an_array(i)
 	Next
 	Print
 
@@ -48,7 +48,7 @@ Sub get_mem
 
 	' print out result using [] Pointer Indexing
 	For i As Integer = 0 To 5-1
-	    Print pmem[i]
+		Print pmem[i]
 	Next
 	Print
 

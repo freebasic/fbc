@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgMutexLock
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgMutexLock
 '' --------
 
 'Example of mutual exclusion for synchronization between 2 threads
@@ -29,18 +29,18 @@ Dim producer_id As Any Ptr
 
 Sub consumer ( ByVal param As Any Ptr )
 	For i As Integer = 0 To 9
-	    MutexLock produced
-	    Print , ",consumer gets:" ; i
-	    MutexUnlock consumed
-	    Sleep 5
+		MutexLock produced
+		Print , ",consumer gets:" ; i
+		MutexUnlock consumed
+		Sleep 5
 	Next i
 End Sub
 
 Sub producer ( ByVal param As Any Ptr )
 	For i As Integer = 0 To 9
-	    Print "Producer puts:" ; i;
-	    MutexUnlock produced
-	    MutexLock consumed
+		Print "Producer puts:" ; i;
+		MutexUnlock produced
+		MutexLock consumed
 	Sleep 5
 Next i
 End Sub

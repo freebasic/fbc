@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgMultikey
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgMultikey
 '' --------
 
 #include "fbgfx.bi"
@@ -27,9 +27,9 @@ Do
 	
 	' Lock the page while we work on it
 	ScreenLock
-	    ' Clear the screen and draw a circle at the position (x, y)
-	    Cls
-	    Circle(x, y), 30, , , , ,F
+		' Clear the screen and draw a circle at the position (x, y)
+		Cls
+		Circle(x, y), 30, , , , ,F
 	ScreenUnlock
 	
 	Sleep 15, 1

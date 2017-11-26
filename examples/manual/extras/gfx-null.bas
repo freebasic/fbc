@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=SrcPgGfxNull
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=SrcPgGfxNull
 '' --------
 
 '' Example of use of the GFX_NULL driver in windows
@@ -12,7 +12,7 @@
 '' The GfXLib is updated in the event loop
 
 #include "fbgfx.bi"
-#include once "windows.bi"
+#include Once "windows.bi"
 
 Using fb
 
@@ -81,7 +81,7 @@ End Function
 ''
 ''----------------------------------------------------------------------------
 Function WndProc ( ByVal hWnd As HWND,ByVal message As UINT, _
-	               ByVal wParam As WPARAM,ByVal lParam As LPARAM ) As LRESULT
+				   ByVal wParam As WPARAM,ByVal lParam As LPARAM ) As LRESULT
    
 	Function = 0
 
@@ -121,7 +121,7 @@ End Function
 		.lpszClassName = @szAppName
 	End With
 
-	If( RegisterClass( @wcls ) = FALSE ) Then 
+	If( RegisterClass( @wcls ) = False ) Then 
 		End
 	End If
 

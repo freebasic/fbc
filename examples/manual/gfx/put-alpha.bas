@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAlphaGfx
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAlphaGfx
 '' --------
 
 '' Set up a 32-bit screen
@@ -12,7 +12,7 @@ ScreenRes 320, 200, 32
 '' Draw checkered background
 For y As Integer = 0 To 199
 	For x As Integer = 0 To 319
-	    PSet (x, y), IIf((x Shr 2 Xor y Shr 2) And 1, RGB(160, 160, 160), RGB(128, 128, 128))
+		PSet (x, y), IIf((x Shr 2 Xor y Shr 2) And 1, RGB(160, 160, 160), RGB(128, 128, 128))
 	Next x
 Next y
 
@@ -20,23 +20,23 @@ Next y
 Dim img As Any Ptr = ImageCreate(32, 32, RGBA(0, 0, 0, 0))
 For y As Single = -15.5 To 15.5
 	For x As Single = -15.5 To 15.5
-	    Dim As Integer r, g, b, a
-	    If y <= 0 Then
-	        If x <= 0 Then
-	            r = 255: g = 0: b = 0   '' red
-	        Else
-	            r = 0: g = 0: b = 255   '' blue
-	        End If
-	    Else
-	        If x <= 0 Then
-	            r = 0: g = 255: b = 0   '' green
-	        Else
-	            r = 255: g = 0: b = 255 '' magenta (transparent mask color)
-	        End If
-	    End If
-	    a = 255 - (x ^ 2 + y ^ 2)
-	    If a < 0 Then a = 0': r = 255: g = 0: b = 255
-	    PSet img, (15.5 + x, 15.5 - y), RGBA(r, g, b, a)
+		Dim As Integer r, g, b, a
+		If y <= 0 Then
+			If x <= 0 Then
+				r = 255: g = 0: b = 0   '' red
+			Else
+				r = 0: g = 0: b = 255   '' blue
+			End If
+		Else
+			If x <= 0 Then
+				r = 0: g = 255: b = 0   '' green
+			Else
+				r = 255: g = 0: b = 255 '' magenta (transparent mask color)
+			End If
+		End If
+		a = 255 - (x ^ 2 + y ^ 2)
+		If a < 0 Then a = 0': r = 255: g = 0: b = 255
+		PSet img, (15.5 + x, 15.5 - y), RGBA(r, g, b, a)
 	Next x
 Next y
 

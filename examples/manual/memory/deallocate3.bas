@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDeallocate
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDeallocate
 '' --------
 
 Function createInteger() As Integer Ptr
@@ -17,7 +17,7 @@ End Sub
 
 Sub DeallocateExample3()
    Dim As Integer Ptr integerPtr = createInteger()       '' initialize pointer to
-	                                                     '' new memory address
+														 '' new memory address
 
    *integerPtr = 420                                     '' use pointer
    Print *integerPtr
