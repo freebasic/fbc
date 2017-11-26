@@ -44,6 +44,8 @@ using fbdoc
 '' --------------------------------------------------------
 
 dim shared as CWikiCache ptr wikicache
+dim shared opt_with_tut_pages as boolean = false
+dim shared opt_with_dev_pages as boolean = false
 
 declare sub MakeTOC( byval h as integer, byref sPage as string, byval baselevel as integer )
 
@@ -169,17 +171,37 @@ sub MakePage( byval h as integer, byref sPage as string, byval _this as CWiki pt
 					elseif( lcase(sLink) = lcase("CatPgOperators") ) then
 						
 						if( lcase(sPage) = lcase("DocToc") ) then
-							'' WriteText h, MakeLink( sLink, sName ), 0, baselevel + 1
+''							WriteText h, MakeLink( sLink, sName ), 0, baselevel + 1
 							MakeTOC( h, sLink, baselevel + 1 )
 						
 						elseif( lcase(sPage) = lcase("CatPgFullIndex") ) then
-							'' MakeTOC( h, "", baselevel + 1 )
+''							MakeTOC( h, "", baselevel + 1 )
 						
 						end if
 
 					elseif( lcase(sLink) = lcase("ExtLibTOC") ) then
 						WriteText h, "{{fbdoc item=""section"" value=""" + sName + """}}", 1, 0
-						MakeTOC( h, sLink, 1 )
+						MakeTOC( h, sLink, baselevel + 1 )
+
+					elseif( lcase(sLink) = lcase("CommunityTutorials") ) then
+						if( opt_with_tut_pages ) then
+							WriteText h, "{{fbdoc item=""section"" value=""" + sName + """}}", 1, 0
+							MakeTOC( h, sLink, baselevel + 1 )
+						else
+							sOut = MakeLink( sLink, sName )
+							break = 0
+							level = next_level
+						end if
+					
+					elseif( lcase(sLink) = lcase("DevToc") ) then
+						if( opt_with_dev_pages ) then
+							WriteText h, "{{fbdoc item=""section"" value=""" + sName + """}}", 1, 0
+							MakeTOC( h, sLink, baselevel + 1 )
+						else
+							sOut = MakeLink( sLink, sName )
+							break = 0
+							level = next_level
+						end if
 
 					elseif( lcase(sLink) = lcase("CatPgCompOpt") ) then
 ''						if( lcase(sPage) = lcase("CatPgProgrammer") ) then
@@ -192,11 +214,13 @@ sub MakePage( byval h as integer, byref sPage as string, byval _this as CWiki pt
 						MakeTOC( h, sLink, baselevel + 1 )
 
 					elseif( lcase(sLink) = lcase("CatPgFunctIndex") ) then
+						'' ignore
 					
 					elseif( lcase(sLink) = lcase("CatPgGfx") ) then
+						'' ignore
 
-					'elseif( left(lcase(sLink), 5) = lcase("CatPg") ) then
-					'	MakeTOC( h, sLink, baselevel + 1 )
+''					elseif( left(lcase(sLink), 5) = lcase("CatPg") ) then
+''						MakeTOC( h, sLink, baselevel + 1 )
 
 					else
 						sOut = MakeLink( sLink, sName )
@@ -220,6 +244,14 @@ sub MakePage( byval h as integer, byref sPage as string, byval _this as CWiki pt
 
 				end select
 
+			end if
+
+		case WIKI_TOKEN_LINK
+			
+			'' special hack for tutorials page
+
+			if( sPage = "CommunityTutorials" ) then
+				WriteText h, "[[" + token->link->url + "|" + token->text + "]]", 0, baselevel + level + 1
 			end if
 
 		end select
@@ -267,6 +299,8 @@ if( command(i) = "" ) then
 	print "   -web+      use files in web cache_dir"
 	print "   -dev       use files in cache_dir"
 	print "   -dev+      use files in dev cache_dir"
+	print "   -with-tut-pages  include tutorial pages"
+	print "   -with-dev-pages  include developer pages"
 	end 0
 end if
 
@@ -296,6 +330,10 @@ while( command(i) > "" )
 			cache_dir = web_cache_dir
 		case "-dev+"
 			cache_dir = dev_cache_dir
+		case "-with-tut-pages"
+			opt_with_tut_pages = true
+		case "-with_dev-pages"
+			opt_with_dev_pages = true
 		case else
 			print "Unrecognized option '" + command(i) + "'"
 			end 1
@@ -324,7 +362,9 @@ end if
 h = Freefile
 print "Writing " + cache_dir + "PrintToc.wakka"
 open cache_dir + "PrintToc.wakka" for output as #h
+
 MakeTOC( h, "DocToc", 0 )
+
 close #h
 
 end 0
