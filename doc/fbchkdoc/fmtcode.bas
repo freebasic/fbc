@@ -145,10 +145,9 @@ function FormatFbCodeLoadKeywords( byref filename as string ) as boolean
 		'' Load the keywords, this will allow keywords to be cased.
 
 		if( filename > "" ) then
-			function = ( fbdoc_loadkeywords( filename ) <> 0 )
-		else
-			function = ( fbdoc_loadkeywords( default_ManualDir + "templates/default/keywords.lst" ) <> 0 )
+			filename = default_ManualDir + "templates/default/keywords.lst"
 		end if
+		function = ( fbdoc_loadkeywords( filename ) <> 0 )
 
 		kw_loaded = TRUE
 
@@ -158,7 +157,6 @@ end function
 
 '' main entry point
 function FormatFbCode( byref txt as string ) as string
-	
 
 	function = _emitCode( txt )
 

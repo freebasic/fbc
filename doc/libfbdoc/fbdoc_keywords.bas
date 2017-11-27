@@ -82,7 +82,6 @@ namespace fb.fbdoc
 		keywordhash.alloc( 2000 )
 
 		if( keyworddata = "" ) then
-		exit function
 			print "Unable to open keywords file " & *sFileName 
 			return 0
 		end if

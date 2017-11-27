@@ -332,7 +332,7 @@ while( command(i) > "" )
 			cache_dir = dev_cache_dir
 		case "-with-tut-pages"
 			opt_with_tut_pages = true
-		case "-with_dev-pages"
+		case "-with-dev-pages"
 			opt_with_dev_pages = true
 		case else
 			print "Unrecognized option '" + command(i) + "'"
