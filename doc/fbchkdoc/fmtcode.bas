@@ -144,7 +144,7 @@ function FormatFbCodeLoadKeywords( byref filename as string ) as boolean
 	if( kw_loaded = FALSE ) then
 		'' Load the keywords, this will allow keywords to be cased.
 
-		if( filename > "" ) then
+		if( filename = "" ) then
 			filename = default_ManualDir + "templates/default/keywords.lst"
 		end if
 		function = ( fbdoc_loadkeywords( filename ) <> 0 )
