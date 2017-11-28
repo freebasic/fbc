@@ -27,9 +27,15 @@
 
 #include once "dir.bi"
 
+#ifndef false
 #define FALSE  0
+#endif
+#ifndef true
 #define TRUE   -1
+#endif
+#ifndef NULL
 #define NULL   0
+#endif
 
 #include once "file.bi"
 

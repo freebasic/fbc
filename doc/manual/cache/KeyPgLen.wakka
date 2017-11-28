@@ -3,7 +3,7 @@ Returns the length of an expression or data type
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Len** ( [[KeyPgByref|byref]] //expression// [[KeyPgAs|as]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Len** ( [[KeyPgByref|byref]] //expression// [[KeyPgAs|as]] [[KeyPgZString|zstring]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Len** ( [[KeyPgByref|byref]] //expression// [[KeyPgAs|as]] [[KeyPgZstring|zstring]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Len** ( [[KeyPgByref|byref]] //expression// [[KeyPgAs|as]] [[KeyPgWstring|wstring]] ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 	
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **Len** ( [[KeyPgByref|byref]] //expression// [[KeyPgAs|as]] [[DataType|datatype]] ) [[KeyPgAs|as]] [[DataType|datatype]]

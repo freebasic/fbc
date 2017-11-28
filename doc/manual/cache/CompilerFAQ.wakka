@@ -193,8 +193,10 @@
 	
 	//Static// and //variable-length// arrays don't use the program stack for their element data, so do not have the problem associated with //automatic// fixed-length arrays. See [[ProPgStorageClasses|Storage Classes]] for more information. Note that storing huge buffers as //static// or increasing the stack size far above the default is not a very good idea, since it increases the fixed amount of memory needed to load and start you program, even if most of it is not used later, and can result in performance degrade, or even refusing your program to load at all.    
 
+{{anchor name="item0|Back to top"}}
+
 {{anchor name="item25"}}==Why does my program fail to compile with the message 'cannot find -llibname'"?==
-	This is an error raised by the linker.  The program is supposed to link to an external library, designated in the program code with ##[[KeyPgInclib|#Inclib]]## or on the compiler command line with ##[[CompilerOptL|-l]]##.  However, the linker has been unable to find a matching file in any of the library paths.  Check the homepage of the library you want to compile with to find out how to download it, or check [[ExtLibTOC]] to see if information about the library can be found there.
+	This is an error raised by the linker.  The program is supposed to link to an external library, designated in the program code with ##[[KeyPgInclib|#Inclib]]## or on the compiler command line with ##[[CompilerOptl|-l]]##.  However, the linker has been unable to find a matching file in any of the library paths.  Check the homepage of the library you want to compile with to find out how to download it, or check [[ExtLibTOC]] to see if information about the library can be found there. For general information on libraries and how to use them see [[ProPgPrebuiltLibraries|Using Prebuilt Libraries]] and the related pages listed there.
 
 {{anchor name="item0|Back to top"}}
 

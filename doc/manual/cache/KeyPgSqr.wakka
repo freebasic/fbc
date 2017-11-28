@@ -21,7 +21,7 @@ Returns a square root of a number
 {{fbdoc item="desc"}}
 	This is the same as raising the argument ##//number//## to the one-half power: ##//y// = //x// [[KeyPgOpExponentiate|^]] (1/2)## . The required ##//number//## argument can be any valid numeric expression greater than or equal zero.
 	
-	If a ##[[KeyPglongint|Longint]]## or ##[[KeyPgUlongint|ULongint]]## is passed to ##**Sqr**##, it may be converted to ##[[KeyPgDouble|Double]]## precision first.  For numbers over ##2^52##, this will cause a very small loss of precision.  Without making any assumptions about the rounding method, the maximum error due to this will be ##**Sqr**(2^64) - **Sqr**(2^64-2^12)##, which is about ##4.8e-7##. However this may cause erroneous results if the floor or ceiling of this value is taken, and the result of this may be out by ##1##, particularly for square numbers and numbers that are close by.
+	If a ##[[KeyPgLongint|Longint]]## or ##[[KeyPgUlongint|ULongint]]## is passed to ##**Sqr**##, it may be converted to ##[[KeyPgDouble|Double]]## precision first.  For numbers over ##2^52##, this will cause a very small loss of precision.  Without making any assumptions about the rounding method, the maximum error due to this will be ##**Sqr**(2^64) - **Sqr**(2^64-2^12)##, which is about ##4.8e-7##. However this may cause erroneous results if the floor or ceiling of this value is taken, and the result of this may be out by ##1##, particularly for square numbers and numbers that are close by.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/sqr.bas"}}%%(freebasic)

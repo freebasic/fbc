@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CVLONGINT"}}----
-Converts a double-precision floating-point number or eight-byte string to a ##[[KeypgLongint|Longint]]## variable
+Converts a double-precision floating-point number or eight-byte string to a ##[[KeyPgLongint|Longint]]## variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cvlongint** ( [[KeyPgByval|byval]] //dbl// [[KeyPgAs|as]] [[KeyPgSingle|double]] ) [[KeyPgAs|as]] [[KeyPgLong|longint]]
@@ -11,7 +11,7 @@ Converts a double-precision floating-point number or eight-byte string to a ##[[
 ##
 {{fbdoc item="param"}}
 	##//dbl//##
-		A ##[[KeyPgDouble|Double]]## floating-point number with a binary copy of a ##[[keyPgLongint|Longint]]## variable stored in it.
+		A ##[[KeyPgDouble|Double]]## floating-point number with a binary copy of a ##[[KeyPgLongint|Longint]]## variable stored in it.
 	##//str//##
 		A ##[[KeyPgString|String]]## at least eight bytes in length with a binary copy of a ##[[KeyPgLongint|Longint]]## variable stored in it.
 

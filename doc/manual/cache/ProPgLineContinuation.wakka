@@ -36,7 +36,7 @@ The ##_## line continuation character can be inserted at pretty much any point i
 
 Be careful when adding the ##_## line continuation character right behind an identifier or keyword. It should be separated with at least one space character, otherwise it would be treated as part of the identifier or keyword.
 
-{{fbdoc item="filename" value="examples/manual/proguide/linecontinuation2.bas"}}%%(freebasic)
+{{fbdoc item="filename" value="examples/manual/proguide/linecontinuation3.bas"}}%%(freebasic)
 '' Declare variable "a_"
 '' (no line continuation happening, because the '_' character is part of
 '' the "a_" identifier)

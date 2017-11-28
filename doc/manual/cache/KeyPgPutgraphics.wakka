@@ -21,9 +21,9 @@ Copies an image on to another image or screen
 			##PRESET## : Source pixel values are 1's-complement negated before being copied.
 			##[[KeyPgTransGfx|TRANS]]## : Source pixel values are copied without modification. Does not draw source pixels of mask color. See below.
 		Background-dependent methods
-			##[[KeyPgAndGfx|AND]]## : Destination pixels are bitwise ##[[KeyPgOpand|AND]]##ed with source pixels. See below.
-			##[[KeyPgOrGfx|OR]]## : Destination pixels are bitwise ##[[KeyPgOpor|OR]]##ed with source pixels. See below.
-			##[[KeyPgXorGfx|XOR]]## : Destination pixels are bitwise ##[[KeyPgOpxor|XOR]]##ed with source pixels. See below.
+			##[[KeyPgAndGfx|AND]]## : Destination pixels are bitwise ##[[KeyPgOpAnd|AND]]##ed with source pixels. See below.
+			##[[KeyPgOrGfx|OR]]## : Destination pixels are bitwise ##[[KeyPgOpOr|OR]]##ed with source pixels. See below.
+			##[[KeyPgXorGfx|XOR]]## : Destination pixels are bitwise ##[[KeyPgOpXor|XOR]]##ed with source pixels. See below.
 			##[[KeyPgAlphaGfx|ALPHA]]## : Source is blended with a transparency factor specified either in the ##//value//## parameter, or in the image's individual pixels.  See below.
 			##[[KeyPgAddGfx|ADD]]##: Source is multiplied by a value and added with saturation to the destination. See below.
 			##[[KeyPgCustomgfx|CUSTOM]]## : Uses a user-defined function to perform blending the source with the destination. See below.

@@ -40,7 +40,7 @@ foo
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgPpAssert|#assert]]##
+	- ##[[KeyPgPpassert|#assert]]##
 	- ##[[KeyPgAssertwarn|ASSERTWARN]]##
 	
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

@@ -1,4 +1,5 @@
 [dirs]
+manual_dir     = ../manual/
 cache_dir      = ../manual/cache/
 web_cache_dir  = ../manual/cache.web/
 dev_cache_dir  = ../manual/cache.dev/

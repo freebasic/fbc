@@ -7,7 +7,7 @@
 
 
 	- Compile the source code for your program in debug mode
-		- use the ##[[CompilerOptG|-g]]## command-line option to add debugging support, e.g. ##fbc -g myapp.bas##.
+		- use the ##[[CompilerOptg|-g]]## command-line option to add debugging support, e.g. ##fbc -g myapp.bas##.
 		
 	- Load your compiled program in GDB 
 		- For example, in Windows/DOS: ##gdb myapp.exe##

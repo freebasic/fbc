@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgGetjoystick
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgGetjoystick
 '' --------
 
 Screen 12
@@ -35,10 +35,10 @@ Do
 	
 	'This tests to see which buttons from 1 to 27 are pressed. 
 	For a = 0 To 26 
-	    If (buttons And (1 Shl a)) Then 
-	        Print "Button ";a;" pressed.    "
-	    Else 
-	        Print "Button ";a;" not pressed."
-	    End If
+		If (buttons And (1 Shl a)) Then 
+			Print "Button ";a;" pressed.    "
+		Else 
+			Print "Button ";a;" not pressed."
+		End If
 	Next a
 Loop

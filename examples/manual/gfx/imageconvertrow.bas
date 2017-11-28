@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgImageConvertRow
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgImageConvertRow
 '' --------
 
 #include "fbgfx.bi"
@@ -33,7 +33,7 @@ If img8 = 0 Then Print "Imagecreate failed on img8!": Sleep: End
 '' fill 8-bit image with a pattern
 For y = 0 To h - 1
 	For x = 0 To w - 1
-	    PSet img8, (x, y), 56 + (x + y) Mod 24
+		PSet img8, (x, y), 56 + (x + y) Mod 24
 	Next x
 Next y
 
@@ -62,8 +62,8 @@ ImageInfo( img32, , , , pitch32, p32 )
 
 For y = 0 To h - 1
 	ImageConvertRow(@p8 [ y * pitch8 ],  8, _
-	                @p32[ y * pitch32], 32, _
-	                w)
+					@p32[ y * pitch32], 32, _
+					w)
 Next y
 
 

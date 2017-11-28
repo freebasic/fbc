@@ -87,8 +87,8 @@
 	{{fbdoc item="subsect" value="$"}}
 		[[KeyPgMetaDynamic|$DYNAMIC]]
 		[[KeyPgMetaInclude|$INCLUDE]]
-		[[KeyPgMetaStatic|$STATIC]]
 		[[KeyPgMetaLang|$LANG]]
+		[[KeyPgMetaStatic|$STATIC]]
 
 	{{fbdoc item="subsect" value="A"}}
 		[[KeyPgAbs|ABS]]
@@ -105,11 +105,11 @@
 		[[KeyPgAny|ANY]]
 		[[KeyPgAppend|APPEND]]
 		[[KeyPgAs|AS]]
-		[[KeyPgAssert|ASSERT]]
-		[[KeyPgAssertwarn|ASSERTWARN]]
 		[[KeyPgAsc|ASC]]
 		[[KeyPgAsin|ASIN]]
 		[[KeyPgAsm|ASM]]
+		[[KeyPgAssert|ASSERT]]
+		[[KeyPgAssertwarn|ASSERTWARN]]
 		[[KeyPgAtan2|ATAN2]]
 		[[KeyPgAtn|ATN]]
 
@@ -127,6 +127,7 @@
 		[[KeyPgBsave|BSAVE]]
 		[[KeyPgByref|BYREF (parameters)]]
 		[[KeyPgByrefFunction|BYREF (function results)]]
+		[[KeyPgByrefVariables|BYREF (variables)]]
 		[[KeyPgByte|BYTE]]
 		[[KeyPgByval|BYVAL]]
 
@@ -363,9 +364,9 @@
 		[[KeyPgNaked|NAKED]]
 		[[KeyPgName|NAME]]
 		[[KeyPgNamespace|NAMESPACE]]
-		[[KeyPgNext|NEXT]]
 		[[KeyPgOpNew|NEW]]
 		[[KeyPgOpPlacementNew|NEW (Placement)]]
+		[[KeyPgNext|NEXT]]
 		[[KeyPgResumenext|NEXT (RESUME)]]
 		[[KeyPgOpNot|NOT]]
 		[[KeyPgNow|NOW]]
@@ -469,8 +470,8 @@
 		[[KeyPgScreencopy|SCREENCOPY]]
 		[[KeyPgScreencontrol|SCREENCONTROL]]
 		[[KeyPgScreenevent|SCREENEVENT]]
-		[[KeyPgScreeninfo|SCREENINFO]]
 		[[KeyPgScreenglproc|SCREENGLPROC]]
+		[[KeyPgScreeninfo|SCREENINFO]]
 		[[KeyPgScreenlist|SCREENLIST]]
 		[[KeyPgScreenlock|SCREENLOCK]]
 		[[KeyPgScreenptr|SCREENPTR]]
@@ -490,8 +491,8 @@
 		[[KeyPgShared|SHARED]]
 		[[KeyPgShell|SHELL]]
 		[[KeyPgOpShiftLeft|SHL]]
-		[[KeyPgOpShiftRight|SHR]]
 		[[KeyPgShort|SHORT]]
+		[[KeyPgOpShiftRight|SHR]]
 		[[KeyPgSin|SIN]]
 		[[KeyPgSingle|SINGLE]]
 		[[KeyPgSizeof|SIZEOF]]
@@ -525,9 +526,9 @@
 		[[KeyPgThreadDetach|THREADDETACH]]
 		[[KeyPgThreadWait|THREADWAIT]]
 		[[KeyPgTime|TIME]]
+		[[KeyPgTimer|TIMER]]
 		[[KeyPgTimeserial|TIMESERIAL]]
 		[[KeyPgTimeValue|TIMEVALUE]]
-		[[KeyPgTimer|TIMER]]
 		[[KeyPgTo|TO]]
 		[[KeyPgTransGfx|TRANS (Graphics PUT)]]
 		[[KeyPgTrim|TRIM]]
@@ -600,7 +601,7 @@
 
 	{{fbdoc item="subsect" value="Z"}}
 		[[KeyPgZstring|ZSTRING]]
-	[[CatPgOpIndex|Operators List]]
+	[[CatPgOpIndex|Operator List]]
 
 	{{fbdoc item="subsect" value="Variables and Data Types"}}
 		[[CatPgVariables|Variable Declarations]]
@@ -934,8 +935,6 @@
 		[[ExtLibGLib|GLib]]
 		[[ExtLibwindows|Windows API]]
 		[[ExtLibX11|X11]]
-
-	{{fbdoc item="subsect" value="User Contributed Libraries"}}
 
 {{fbdoc item="section" value="Using the FreeBASIC compiler"}}
 	[[CompilerInstalling|Installing FreeBASIC]]

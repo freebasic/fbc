@@ -59,6 +59,6 @@ End Type
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgScreenEvent|ScreenEvent]]##
+	- ##[[KeyPgScreenevent|ScreenEvent]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

@@ -5,7 +5,7 @@ Display a tree of file names of #included files
 		""-showincludes""
 ##
 {{fbdoc item="desc"}}
-	Tells the compiler to display the file names of loaded source code files, in form of a tree. This includes the ""*.bas"" files at the toplevel, aswell as the names of ""#included"" files as they are being ""#included"". This is intended to be used for debugging ""#include"" dependencies, etc.
+	Tells the compiler to display the file names of loaded source code files, in form of a tree structure with indentation. This includes the ""*.bas"" files at the toplevel, aswell as the names of ""#included"" files as they are being ""#included"". This is intended to be used for debugging ""#include"" dependencies, etc.
 
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]

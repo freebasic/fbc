@@ -6,7 +6,7 @@ official documentation.
 
 For full documentation, please visit:
 
-   http://www.freebasic.net/wiki
+   https://www.freebasic.net/wiki
 
 
 This software has been provided as-is without any warranty whatsoever.

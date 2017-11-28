@@ -3,16 +3,26 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgLineContinuation
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgLineContinuation
 '' --------
 
-'' Declare variable "a_"
-'' (no line continuation happening, because the '_' character is part of
-'' the "a_" identifier)
-Dim As Integer a_
+'' Here's an example:
 
-'' Declare variable "a" and initialize to value 5
-'' (line continuation happening, because the '_' character
-'' was separated from the identifier "a" with a space character)
-Dim As Integer a _
-= 5
+Declare Sub drawRectangle( ByVal x As Integer, ByVal y As Integer, ByVal w As Integer, ByVal h As Integer )
+
+'' which can also be written as:
+
+Declare Sub drawRectangle( ByVal x As Integer, ByVal y As Integer, _
+						   ByVal w As Integer, ByVal h As Integer )
+
+'' or:
+
+Declare Sub drawRectangle _
+	( _
+		ByVal x As Integer, _
+		ByVal y As Integer, _
+		ByVal w As Integer, _
+		ByVal h As Integer _
+	)
+
+'' (or any other formatting you like)

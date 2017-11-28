@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgExtends
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgExtends
 '' --------
 
 ' Example using all eight keywords of inheritance:
@@ -12,7 +12,7 @@
 Type root Extends Object ' 'Extends' to activate RTTI by inheritance of predefined Object type
   Declare Function ObjectHierarchy () As String
   Declare Abstract Function ObjectRealType () As String ' 'Abstract' declares function without local body
-	                                                    '    which must be overriden
+														'    which must be overriden
   Dim Name As String
   Declare Virtual Destructor () ' 'Virtual' declares destructor with body ('Abstract' forbidden)
 Protected:
@@ -36,11 +36,11 @@ Type animal Extends root ' 'Extends' to inherit of root
   Declare Constructor (ByRef _name As String = "")
   Declare Function ObjectHierarchy () As String
   Declare Virtual Function ObjectRealType () As String Override ' 'Virtual' declares function with local
-	                                                            '    body which can be overriden
-	                                                            ' 'Override' to check if the function is
-	                                                            '    well an override
-  Declare virtual Destructor () Override ' 'Virtual' declares destructor with local body
-	                                     ' 'Override' to check if the destructor is well an override
+																'    body which can be overriden
+																' 'Override' to check if the function is
+																'    well an override
+  Declare Virtual Destructor () Override ' 'Virtual' declares destructor with local body
+										 ' 'Override' to check if the destructor is well an override
 End Type
 
 Constructor animal (ByRef _name As String = "")
@@ -64,7 +64,7 @@ Type dog Extends animal ' 'Extends' to inherit of animal
   Declare Constructor (ByRef _name As String = "")
   Declare Function ObjectHierarchy () As String
   Declare Function ObjectRealType () As String Override ' 'Override' to check if the function is well an
-	                                                    '    override
+														'    override
   Declare Destructor () Override ' 'Override' to check if the destructor is well an override
 End Type ' derived type may be member data empty
 
@@ -89,7 +89,7 @@ Type cat Extends animal ' 'Extends' to inherit of animal
   Declare Constructor (ByRef _name As String = "")
   Declare Function ObjectHierarchy () As String
   Declare Function ObjectRealType () As String Override ' 'Override' to check if the function is well an
-	                                                    '    override
+														'    override
   Declare Destructor () Override ' 'Override' to check if the destructor is well an override
 End Type ' derived type may be member data empty
 

@@ -349,7 +349,9 @@ end function
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string cache_dir, def_cache_dir, web_cache_dir, dev_cache_dir
+dim as string manual_dir, def_manual_dir
+dim as string cache_dir, def_cache_dir
+dim as string web_cache_dir, dev_cache_dir
 
 dim as integer i = 1, webPageCount = 0
 redim webPageList(1 to 1) as string
@@ -372,6 +374,7 @@ end if
 scope
 	dim as COptions ptr opts = new COptions( default_optFile )
 	if( opts <> NULL ) then
+		def_manual_dir = opts->Get( "manual_dir", default_ManualDir )
 		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
 		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
 		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
@@ -379,6 +382,7 @@ scope
 	else
 		'' print "Warning: unable to load options file '" + default_optFile + "'"
 		'' end 1
+		def_manual_dir = default_ManualDir
 		def_cache_dir = default_CacheDir
 		web_cache_dir = default_web_CacheDir
 		dev_cache_dir = default_dev_CacheDir
@@ -439,6 +443,10 @@ end if
 dim as CWikiCache ptr wikicache
 dim as string sPage, sBody
 
+if( manual_dir = "" ) then
+	manual_dir = default_ManualDir
+end if
+
 if( cache_dir = "" ) then
 	cache_dir = default_CacheDir
 end if
@@ -488,7 +496,7 @@ if( webPageCount > 0 ) then
 		end if
 	end scope
 
-	fb.fbdoc.fbdoc_loadkeywords( "../manual/templates/default/keywords.lst" )
+	FormatFbCodeLoadKeywords( manual_dir & "templates/default/keywords.lst" )
 	SpellCheck_Init( "en_US" )
 
 ''	h = freefile

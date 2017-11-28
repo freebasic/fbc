@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgEnd
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgEnd
 '' --------
 
 '' This program requests a string from the user, and returns an error
@@ -18,8 +18,8 @@ Function main() As Integer
 	'' If string is empty, print an error message and
 	'' return error code 1 (failure)
 	If( text = "" ) Then
-	    Print "ERROR: string was empty"
-	    Return 1
+		Print "ERROR: string was empty"
+		Return 1
 	End If
 
 	'' string is not empty, so print the string and

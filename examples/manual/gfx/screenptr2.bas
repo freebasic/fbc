@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreenptr
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreenptr
 '' --------
 
 Const SCREEN_WIDTH = 256, SCREEN_HEIGHT = 256
@@ -33,25 +33,25 @@ ScreenLock()
 	'' Iterate over all the pixels in the screen:
 	
 	For y As Integer = 0 To h - 1
-	    
-	    '' Set pixel address to the start of the row
-	    '' It's a 32-bit pixel, so use a ULong Ptr
-	    Dim As ULong Ptr pixel = row
-	    
-	    For x As Integer = 0 To w - 1
-	        
-	        '' Set the pixel value
-	        *pixel = RGB(x, x Xor y, y) 
-	        
-	        '' Get the next pixel address 
-	        '' (ULong Ptr will increment by 4 bytes)
-	        pixel += 1
-	        
-	    Next x
-	    
-	    '' Go to the next row
-	    row += pitch
-	    
+		
+		'' Set pixel address to the start of the row
+		'' It's a 32-bit pixel, so use a ULong Ptr
+		Dim As ULong Ptr pixel = row
+		
+		For x As Integer = 0 To w - 1
+			
+			'' Set the pixel value
+			*pixel = RGB(x, x Xor y, y) 
+			
+			'' Get the next pixel address 
+			'' (ULong Ptr will increment by 4 bytes)
+			pixel += 1
+			
+		Next x
+		
+		'' Go to the next row
+		row += pitch
+		
 	Next y
 
 '' Unlock the screen.

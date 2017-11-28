@@ -79,7 +79,12 @@ namespace fb.fbdoc
 
 		keyworddata = LoadFileAsString( sFileName )
 
-		keywordhash.alloc( 1000 )
+		keywordhash.alloc( 2000 )
+
+		if( keyworddata = "" ) then
+			print "Unable to open keywords file " & *sFileName 
+			return 0
+		end if
 
 		dim as integer n, b
 		dim as ubyte ptr p

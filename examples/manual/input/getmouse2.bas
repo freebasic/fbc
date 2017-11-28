@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgGetmouse
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgGetmouse
 '' --------
 
 'Example 2: type-union-type structure
@@ -11,12 +11,12 @@ Type mouse
 	As Integer res
 	As Integer x, y, wheel, clip
 	Union
-	    buttons As Integer
-	    Type
-	        Left:1 As Integer
-	        Right:1 As Integer
-	        middle:1 As Integer
-	    End Type
+		buttons As Integer
+		Type
+			Left:1 As Integer
+			Right:1 As Integer
+			middle:1 As Integer
+		End Type
 	End Union
 End Type
  

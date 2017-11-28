@@ -3,11 +3,11 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibZip
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibZip
 '' --------
 
 '' .zip unpacking using libzip
-#include once "zip.bi"
+#include Once "zip.bi"
 
 Sub create_parent_dirs(ByVal file As ZString Ptr)
 	'' Given a path like this:
@@ -32,7 +32,7 @@ End Sub
 
 '' Asks libzip for information on file number 'i' in the .zip file,
 '' and then extracts it, while creating directories as needed.
-Private Sub unpack_zip_file(ByVal zip As zip Ptr, ByVal i As Integer)
+Private Sub unpack_zip_file(ByVal zip As Any Ptr, ByVal i As Integer)
 	#define BUFFER_SIZE (1024 * 512)
 	Static As UByte chunk(0 To (BUFFER_SIZE - 1))
 	#define buffer (@chunk(0))
@@ -66,7 +66,7 @@ Private Sub unpack_zip_file(ByVal zip As zip Ptr, ByVal i As Integer)
 	End If
 
 	'' Input for the file comes from libzip
-	Dim As zip_file Ptr fi = zip_fopen_index(zip, i, 0)
+	Dim As Any Ptr fi = zip_fopen_index(zip, i, 0)
 	Do
 		'' Write out the file content as returned by zip_fread(), which
 		'' also does the decoding and everything.
@@ -96,7 +96,7 @@ Private Sub unpack_zip_file(ByVal zip As zip Ptr, ByVal i As Integer)
 End Sub
 
 Sub unpack_zip(ByRef archive As String)
-	Dim As zip Ptr zip = zip_open(archive, ZIP_CHECKCONS, NULL)
+	Dim As Any Ptr zip = zip_open(archive, ZIP_CHECKCONS, NULL)
 	If (zip = NULL) Then
 		Print "could not open input file " & archive
 		Return

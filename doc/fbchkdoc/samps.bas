@@ -35,6 +35,7 @@
 #include once "samps_file.bi"
 #include once "samps_wiki.bi"
 #include once "fbchkdoc.bi"
+#include once "fbdoc_keywords.bi"
 
 #inclib "fbdoc"
 #inclib "pcre"
@@ -134,6 +135,7 @@ dim shared refs( 1 to 4000 ) as REFTYPE
 
 dim shared as string sample_dir
 dim shared as string base_dir
+dim shared as string manual_dir
 dim shared as string wiki_cache_dir
 
 dim shared as integer webPageCount
@@ -779,10 +781,12 @@ sample_dir = "examples/manual/"
 scope
 	dim as COptions ptr opts = new COptions( default_optFile )
 	if( opts <> NULL ) then
+		manual_dir = opts->Get( "manual_dir", default_ManualDir )
 		wiki_cache_dir = opts->Get( "cache_dir", default_CacheDir )
 		base_dir = opts->Get( "fb_dir", default_fb_dir )
 		delete opts
 	else
+		manual_dir = default_ManualDir
 		wiki_cache_dir = default_CacheDir
 		base_dir = default_fb_dir
 	end if
@@ -812,8 +816,10 @@ end if
 logopen()
 
 	logprint "base_dir: " & base_dir
+	logprint "manual_dir: " & manual_dir
 	logprint "cache: " & wiki_cache_dir
 
+	FormatFbCodeLoadKeywords( manual_dir & "templates/default/keywords.lst" )
 
 if( (opt and opt_do_scan) <> 0 or (opt and opt_do_scan_incoming) <> 0 ) then
 

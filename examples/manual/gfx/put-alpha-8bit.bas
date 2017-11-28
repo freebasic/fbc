@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAlphaGfx
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAlphaGfx
 '' --------
 
 Dim As Any Ptr img8, img32
@@ -20,9 +20,9 @@ Color 255, 0
 img8 = ImageCreate(64, 64, 0,  8)
 For y = 0 To 63
 	For x = 0 To 63
-	    Dim As Single x2 = x - 31.5, y2 = y - 31.5
-	    Dim As Single t = Sqr(x2 ^ 2 + y2 ^ 2) / 5
-	    PSet img8, (x, y), Sin(t) ^ 2 * 255
+		Dim As Single x2 = x - 31.5, y2 = y - 31.5
+		Dim As Single t = Sqr(x2 ^ 2 + y2 ^ 2) / 5
+		PSet img8, (x, y), Sin(t) ^ 2 * 255
 	Next x
 Next y
 
@@ -35,7 +35,7 @@ Sleep
 ScreenRes 320, 200, 32
 For y = 0 To 199
 	For x = 0 To 319
-	    PSet (x, y), IIf(x - y And 3, RGB(160, 160, 160), RGB(128, 128, 128))
+		PSet (x, y), IIf(x - y And 3, RGB(160, 160, 160), RGB(128, 128, 128))
 	Next x
 Next y
 
@@ -43,7 +43,7 @@ Next y
 img32 = ImageCreate(64, 64, 0, 32)
 For y = 0 To 63
 	For x = 0 To 63
-	    PSet img32, (x, y), RGB(x * 4, y * 4, 128)
+		PSet img32, (x, y), RGB(x * 4, y * 4, 128)
 	Next x
 Next y
 

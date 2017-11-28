@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="CVSHORT"}}----
-Converts a two-byte string to a ##[[KeypgShort|Short]]## integer variable
+Converts a two-byte string to a ##[[KeyPgShort|Short]]## integer variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Cvshort** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgConstQualifier|const]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgShort|Short]]

@@ -4,6 +4,8 @@
 '' configuration file
 const default_optFile = "fbchkdoc.ini"
 
+const default_ManualDir = "../manual/"
+
 '' cache dirs
 const default_CacheDir = "../manual/cache/"
 const default_web_CacheDir = "../manual/cache.web/"
