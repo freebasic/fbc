@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgThreadDetach
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgThreadDetach
 '' --------
 
 #include "fbthread.bi"
@@ -13,8 +13,8 @@ Sub mythread( ByVal param As Any Ptr )
 End Sub
 
 Var thread = ThreadCreate( @mythread )
-threaddetach( thread )
+ThreadDetach( thread )
 
-threaddetach( ThreadCreate( @mythread ) )
+ThreadDetach( ThreadCreate( @mythread ) )
 
 Sleep

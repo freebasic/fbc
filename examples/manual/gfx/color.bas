@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgColor
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgColor
 '' --------
 
 ' Sets 320x240 in 32bpp color depth

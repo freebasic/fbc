@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibexpat
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibexpat
 '' --------
 
 '' XML file parser command line tool based on libexpat
@@ -11,9 +11,9 @@
 '' Can use zstring or wstring (libexpat or libexpatw):
 '#define XML_UNICODE
 
-#include once "expat.bi"
+#include Once "expat.bi"
 
-#define FALSE 0
+#define False 0
 #define NULL 0
 
 Const BUFFER_SIZE = 1024
@@ -109,7 +109,7 @@ End Sub
 
 	Static As UByte buffer(0 To (BUFFER_SIZE-1))
 
-	Dim As Integer reached_eof = FALSE
+	Dim As Integer reached_eof = False
 	Do
 		Dim As Integer size = BUFFER_SIZE
 		Dim As Integer result = Get(#1, , buffer(0), size, size)
@@ -118,13 +118,13 @@ End Sub
 			End 1
 		End If
 
-		reached_eof = (EOF(1) <> FALSE)
+		reached_eof = (EOF(1) <> False)
 
-		If (XML_Parse(parser, @buffer(0), size, reached_eof) = FALSE) Then
+		If (XML_Parse(parser, @buffer(0), size, reached_eof) = False) Then
 			Print filename & "(" & XML_GetCurrentLineNumber(parser) & "): Error from XML parser: "
 			Print *XML_ErrorString(XML_GetErrorCode(parser))
 			End 1
 		End If
-	Loop While (reached_eof = FALSE)
+	Loop While (reached_eof = False)
 
 	XML_ParserFree(parser)

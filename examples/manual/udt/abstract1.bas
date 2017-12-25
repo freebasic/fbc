@@ -3,22 +3,22 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAbstract
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAbstract
 '' --------
 
-Type Hello extends object
-	Declare abstract Sub hi( )
+Type Hello Extends Object
+	Declare Abstract Sub hi( )
 End Type
 
-Type HelloEnglish extends Hello
+Type HelloEnglish Extends Hello
 	Declare Sub hi( )
 End Type
 
-Type HelloFrench extends Hello
+Type HelloFrench Extends Hello
 	Declare Sub hi( )
 End Type
 
-Type HelloGerman extends Hello
+Type HelloGerman Extends Hello
 	Declare Sub hi( )
 End Type
 

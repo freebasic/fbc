@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreenevent
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreenevent
 '' --------
 
 '' include fbgfx.bi for some useful definitions
@@ -12,7 +12,7 @@
 Using fb '' constants and structures are stored in the FB namespace in lang fb
 #endif
 
-Dim e As EVENT
+Dim e As Event
 
 ScreenRes 640, 480
 Do

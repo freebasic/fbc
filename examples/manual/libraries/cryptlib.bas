@@ -3,10 +3,10 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibcryptlib
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibcryptlib
 '' --------
 
-#include once "cryptlib.bi"
+#include Once "cryptlib.bi"
 
 Function calc_hash( ByVal filename As String, ByVal algo As CRYPT_ALGO_TYPE ) As String
 	Const BUFFER_SIZE = 8192

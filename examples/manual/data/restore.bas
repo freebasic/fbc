@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgRestore
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgRestore
 '' --------
 
 ' Create an 2 arrays of integers and a 2 strings to hold the data.
