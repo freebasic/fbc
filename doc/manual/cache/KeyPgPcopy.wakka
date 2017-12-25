@@ -13,6 +13,9 @@ Copies one graphical or text page onto another
 	##//destination//##
 		page to copy to
 
+{{fbdoc item="ret"}}
+	Returns zero (##0##) if successful, or a non-zero error code to indicate a failure.
+
 {{fbdoc item="desc"}}
 	Copies one graphical or text video page to another. Useful for drawing all graphics on one invisible page and copying it to the active visible page - creating smooth graphics and animation. Known as 'double buffering' or 'page flipping'.
 	
@@ -21,7 +24,9 @@ Copies one graphical or text page onto another
 	If the ##//source//## argument is omitted, the current working page is assumed.  If the ##//destination//## page is omitted, the current visible page is assumed.
 	
 	##**Pcopy**## is inactive if the ##//destination//## page is locked.
-
+	
+	The error code returned by ##**Pcopy**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Pcopy**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
+	
 {{fbdoc item="ex"}}
 
 	{{fbdoc item="filename" value="examples/manual/gfx/pcopy.bas"}}%%(freebasic)

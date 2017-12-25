@@ -14,6 +14,8 @@ Preprocessor symbols defined by the compiler.
 	Defines that provide information about the operating system environment.
 **{{anchor name="CONTEXT|Context-specific Information"}}**
 	Defines that provide context information about the compilation process.
+**{{anchor name="CONSTANTS|Constants"}}**
+	Built-in constants.
 
 <<{{anchor name="PLATFORM"}}{{fbdoc item="section" value="Platform Information"}}
 	=={{fbdoc item="keyword" value="KeyPgDdfbwin32|__FB_WIN32__"}}==
@@ -127,6 +129,10 @@ Preprocessor symbols defined by the compiler.
 		True (##-1##) if variables and objects need to be explicitly declared, zero (##0##) otherwise.
 	=={{fbdoc item="keyword" value="KeyPgDdfboptionprivate|__FB_OPTION_PRIVATE__"}}==
 		True (##-1##) if all procedures are private by default, zero (##0##) otherwise.
+
+{{anchor name="CONSTANTS"}}{{fbdoc item="section" value="Constants"}}
+	=={{fbdoc item="keyword" value="KeyPgFalse|FALSE"}} and {{fbdoc item="keyword" value="KeyPgTrue|TRUE"}}==
+		Intrinsic constants for the Boolean data type.
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
