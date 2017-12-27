@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgFixLenArrays
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgFixLenArrays
 '' --------
 
 Dim a(1) As Integer  '' 1-dimensional, 2 elements (0 and 1)

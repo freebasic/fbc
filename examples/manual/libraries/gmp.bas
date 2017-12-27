@@ -3,10 +3,10 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibgmp
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibgmp
 '' --------
 
-#include once "gmp.bi"
+#include Once "gmp.bi"
 
 Dim As mpz_ptr bignum = Allocate(SizeOf(__mpz_struct))
 mpz_init_set_si(bignum, 2)

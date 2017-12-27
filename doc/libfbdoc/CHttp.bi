@@ -31,6 +31,9 @@ namespace fb
 
 	type CHttp
 
+		declare static sub GlobalInit()
+
+
 		declare constructor _
 			( _
 			)

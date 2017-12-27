@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgImageInfo
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgImageInfo
 '' --------
 
 '' Create 32-bit graphics screen and image.
@@ -22,7 +22,7 @@ End If
 
 '' Draw a pattern on the image by directly manipulating pixel memory.
 For y As Integer = 0 To 63
-	Dim row As ulong Ptr = pixels + y * pitch
+	Dim row As ULong Ptr = pixels + y * pitch
 	
 	For x As Integer = 0 To 63
 		row[x] = RGB(x * 4, y * 4, (x Xor y) * 4)

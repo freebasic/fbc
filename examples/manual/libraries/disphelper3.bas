@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibdisphelper
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibdisphelper
 '' --------
 
 '' VB Script example
@@ -24,8 +24,8 @@ Sub RunScript _
 	DISPATCH_OBJ(control)
 	If (SUCCEEDED(dhCreateObject("MSScriptControl.ScriptControl", NULL, @control))) Then
 		If (SUCCEEDED(dhPutValue(control, ".Language = %T", language))) Then
-			dhPutValue(control, ".AllowUI = %b", TRUE)
-			dhPutValue(control, ".UseSafeSubset = %b", FALSE)
+			dhPutValue(control, ".AllowUI = %b", True)
+			dhPutValue(control, ".UseSafeSubset = %b", False)
 
 			If (result) Then
 				dhGetValue(result_identifier, result, control, ".Eval(%T)", script)
@@ -38,8 +38,8 @@ Sub RunScript _
 	SAFE_RELEASE(control)
 End Sub
 
-	dhInitialize(TRUE)
-	dhToggleExceptions(TRUE)
+	dhInitialize(True)
+	dhToggleExceptions(True)
 
 	'' VBScript sample
 	RunScript(NULL, NULL, !"MsgBox(\"This Is a VBScript test.\" & vbcrlf & \"It worked!\",64 Or 3)", "VBScript")
@@ -52,4 +52,4 @@ End Sub
 	Print "Press any key to exit..."
 	Sleep
 
-	dhUninitialize(TRUE)
+	dhUninitialize(True)

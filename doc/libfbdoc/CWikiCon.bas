@@ -135,6 +135,11 @@ namespace fb.fbdoc
 	end sub
 
 	'':::::
+	static sub CWikiCon.GlobalInit()
+		CHttp.GlobalInit()
+	end sub
+
+	'':::::
 	constructor CWikiCon _
 		( _
 			byval url as zstring ptr, _

@@ -3,12 +3,12 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibIL
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibIL
 '' --------
 
 '' DevIL example
 
-#include once "IL/il.bi"
+#include Once "IL/il.bi"
 
 '' Version check
 If (ilGetInteger(IL_VERSION_NUM) < IL_VERSION) Then

@@ -3,12 +3,12 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibzlib
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibzlib
 '' --------
 
 '' Zlib compress/decompress example, by yetifoot
 
-#include once "zlib.bi"
+#include Once "zlib.bi"
 
 Dim As Integer errlev
 

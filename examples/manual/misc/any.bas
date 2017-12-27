@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAny
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAny
 '' --------
 
 Declare Sub echo(ByVal x As Any Ptr) '' echo will accept any pointer type

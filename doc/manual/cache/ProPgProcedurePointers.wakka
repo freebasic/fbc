@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="Pointers to Procedures"}}----
 Pointers that point to procedures
-
+	
 	Just as pointers can be made to point to an ##[[KeyPgInteger|Integer]]## or ##[[KeyPgSingle|Single]]## type, pointers can also point to procedures, that is, they can store the address of a procedure.
 
 {{fbdoc item="section" value="Declaration"}}
@@ -33,6 +33,8 @@ print "3 + 4 = " & pFunc(3, 4)
 %%
 	For a calling example of subroutine pointer, see the ##[[KeyPgOpAt|Operator @ (Address of)]]## page.
 	
+	**Note:** When calling a procedure through a procedure pointer, parentheses surrounding the argument list (even empty) are mandatory to resolve ambiguity with a simple access to the pointer value.
+
 {{fbdoc item="section" value="Passing procedure pointers to procedures"}}
 	Passing procedure pointers to other procedures is similar as well:
 

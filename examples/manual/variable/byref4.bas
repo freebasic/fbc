@@ -14,10 +14,10 @@
 '' If in the first line of the below code, FALSE is put instead TRUE, the polymorphism by virtuality is no more activated.
 
 
-#define virtuality TRUE
+#define virtuality True
 
 Type myBase Extends Object
-  #if virtuality = TRUE
+  #if virtuality = True
 	Declare Virtual Sub hello()
   #else
 	Declare Sub Hello()

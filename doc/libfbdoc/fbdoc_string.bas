@@ -68,44 +68,46 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
-	Function ReplaceQuotes(byref a as string, byref q as string) As String
-	  Dim b As String, bOK As integer
-	  If Len(a) >= 2 Then
-		If Left(a, 1) = """" And Right(a, 1) = """" Then
-		  bOK = True
-		ElseIf Left(a, 1) = "'" And Right(a, 1) = "'" Then
-		  bOK = True
-		ElseIf Left(a, 1) = "`" And Right(a, 1) = "'" Then
-		  bOK = True
-		End If
-		If bOK Then
-		  b = Mid(a, 2, Len(a) - 2)
-		Else
-		  b = a
-		End If
-	  Else
-		b = a
-	  End If
-  
-	  Select Case Left(q, 1)
-	  Case ""
-	  Case """"
-		b = """" & b & """"
-	  Case "'"
-		b = "'" & b & "'"
-	  Case "`"
-		b = "`" & b & "'"
-	  Case Else
-		b = Left(q, 1) & b & Left(q, 1)
-	  End Select
-  
-	  ReplaceQuotes = b
-	End Function
+	function ReplaceQuotes(byref a as string, byref q as string) As String
+
+		dim b as string, bOK as integer
+		if len(a) >= 2 then
+			if left(a, 1) = """" and right(a, 1) = """" then
+				bok = true
+			elseif left(a, 1) = "'" and right(a, 1) = "'" then
+				bok = true
+			elseif left(a, 1) = "`" and right(a, 1) = "'" then
+				bok = true
+			end if
+			if bok then
+				b = mid(a, 2, len(a) - 2)
+			else
+				b = a
+			end if
+		else
+			b = a
+		end if
+
+		select case left(q, 1)
+		case ""
+		case """"
+			b = """" & b & """"
+		case "'"
+			b = "'" & b & "'"
+		case "`"
+			b = "`" & b & "'"
+		case else
+			b = left(q, 1) & b & right(q, 1)
+		end select
+
+		replacequotes = b
+
+	end function
 
 	'':::::
-	Function StripQuotes (byref a As String) As String
-	  return ReplaceQuotes(a, "")
-	End Function
+	function StripQuotes (byref a As String) As String
+		return ReplaceQuotes(a, "")
+	end function
 
 	'':::::
 	function LoadFileAsString _

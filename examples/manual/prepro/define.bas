@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPpdefine
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPpdefine
 '' --------
 
 '' Definition and check
@@ -13,8 +13,8 @@
 #endif
 
 '' Simple definition/text replacement
-#define FALSE 0
-#define TRUE (Not FALSE)
+#define False 0
+#define True (Not False)
 
 '' Function-like definition
 #define MyRGB(R,G,B) (((R)Shl 16)  Or ((G)Shl 8) Or (B)) 

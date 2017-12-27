@@ -16,7 +16,7 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 	##//num_pages//##
 		The number of video pages to create, defaults to ##1##. (see below)
 	##//flags//##
-		Used to set various properties of the screen, including fullscreen mode and the graphics driver used. (see below or the standard header "fbgfx.bi" for available flags)
+		Used to set various properties of the screen, including fullscreen mode and graphics driver priority. (see below or the standard header "fbgfx.bi" for available flags)
 	##//refresh_rate//##
 		The desired refresh rate of the screen, only has an effect for fullscreen modes, and some systems and drivers only. Defaults to an appropriate value, invalid refresh rates will be ignored.
 
@@ -24,7 +24,7 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 	Returns zero (##0##) if successful, or a non-zero error code to indicate a failure. //[[ProPgErrorHandling|(throws a runtime error)]]// (???)
 
 {{fbdoc item="desc"}}
-	##**Screenres**## tells the compiler to link the [[GfxLib]] and initializes a QB-only, QB-on-GUI or ""OpenGL"" graphics mode, depending on the ##//flags//## setting
+	##**Screenres**## tells the compiler to link the [[GfxLib]] and initializes a QB-only, QB-on-GUI or ""OpenGL"" graphics mode, depending on the ##//flags//## setting.
 	
 	##**Screenres**##  clears the created window or the full screen. In non-fullscreen modes, the resolution does not have to match any resolution of the graphics card. Resolutions like ##555x111## are possible, ""GfxLib"" will create a window of such size. See the page [[GfxLib|GfxLib overview]] for DOS issues.
 	

@@ -29,7 +29,8 @@ APPS := \
     getimage$(EXEEXT) \
     spellit$(EXEEXT) \
     spell$(EXEEXT) \
-    samps$(EXEEXT)
+    samps$(EXEEXT) \
+	pretty$(EXEEXT)
 
 SAMPS_SRCS := \
     samps.bas \
@@ -104,6 +105,9 @@ spell$(EXEEXT): spell.bas spellcheck.bas $(LIBFUNCS) $(DEPS)
 
 samps$(EXEEXT): $(SAMPS_SRCS) $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $(SAMPS_SRCS) $(FBLFLAGS) -x $@
+
+pretty$(EXEEXT): pretty.bas $(LIBFUNCS) $(DEPS)
+	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
 $(LIBFUNCS): $(LIBFUNCS_SRC) $(HEADERS)
 	$(FBC) -lib -x $@ $(LIBFUNCS_SRC) $(FBCFLAGS)

@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgWstring
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgWstring
 '' --------
 
 Dim As WString Ptr str2

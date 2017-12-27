@@ -3,12 +3,12 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibfmod
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibfmod
 '' --------
 
 '' mp3 player based on FMOD
 
-#include once "fmod.bi"
+#include Once "fmod.bi"
 
 Const SOUND_FILE = "test.mp3"
 

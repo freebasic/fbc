@@ -3,10 +3,10 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibbigint
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibbigint
 '' --------
 
-#include once "big_int/big_int_full.bi"
+#include Once "big_int/big_int_full.bi"
 
 Sub print_num(ByVal num As big_int Ptr)
 	Dim As big_int_str Ptr s = big_int_str_create(1)

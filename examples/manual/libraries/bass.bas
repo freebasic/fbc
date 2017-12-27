@@ -3,10 +3,10 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibbass
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibbass
 '' --------
 
-#include once "bass.bi"
+#include Once "bass.bi"
 
 Const SOUND_FILE = "test.mod"
 
@@ -20,14 +20,14 @@ If (BASS_Init(-1, 44100, 0, 0, 0) = 0) Then
 	End 1
 End If
 
-Dim As HMUSIC test = BASS_MusicLoad(FALSE, @SOUND_FILE, 0, 0, BASS_MUSIC_LOOP, 0)
+Dim As HMUSIC test = BASS_MusicLoad(False, @SOUND_FILE, 0, 0, BASS_MUSIC_LOOP, 0)
 If (test = 0) Then
 	Print "BASS could not load '" & SOUND_FILE & "'"
 	BASS_Free()
 	End 1
 End If
 
-BASS_ChannelPlay(test, FALSE)
+BASS_ChannelPlay(test, False)
 
 Print "Sound playing; waiting to keypress to stop and exit..."
 Sleep

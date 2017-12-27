@@ -3,12 +3,12 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibaspell
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibaspell
 '' --------
 
 '' GNU-ASspell example, converted from http://aspell.net/win32/
 
-#include once "aspell.bi"
+#include Once "aspell.bi"
 
 Dim As AspellConfig Ptr spell_config = new_aspell_config()
 
