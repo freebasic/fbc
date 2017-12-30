@@ -69,6 +69,7 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 		( 3, "qword ptr" ), _ '' double
 		( 0, ""          ), _ '' string
 		( 0, "byte ptr"  ), _ '' fix-len string
+		( 0, "dword ptr" ), _ '' va_list
 		( 2, "dword ptr" ), _ '' struct
 		( 0, ""          ), _ '' namespace
 		( 2, "dword ptr" ), _ '' function

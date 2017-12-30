@@ -257,6 +257,7 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 	@"double"   , _ '' double
 	@"FBSTRING" , _ '' string
 	NULL        , _ '' fix-len string
+	@"__builtin_va_list"  , _ '' va_list
 	NULL        , _ '' struct
 	NULL        , _ '' namespace
 	NULL        , _ '' function

@@ -483,6 +483,8 @@ enum FB_TOKEN
     
     FB_TK_THREADCALL
 
+	FB_TK_VA_LIST
+
 	FB_TOKENS = FB_TK_THREADCALL - FB_TK_EOF
 end enum
 

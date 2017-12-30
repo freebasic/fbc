@@ -71,7 +71,8 @@ declare function hGetDataType _
 		11, _                                   '' single
 		12, _                                   '' double
 		13, _                                   '' string
-		14 _                                    '' fix-len string
+		14, _                                   '' fix-len string
+		 8 _                                    '' va_list (not sure what to do with this)
 	}
 
 	dim shared stabsTb(0 to ...) as const zstring ptr = _
