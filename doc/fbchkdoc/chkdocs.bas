@@ -69,6 +69,8 @@ enum LINK_FLAGS
 	FLAG_FILE_NOT_FOUND			= 1 shl 14
 	FLAG_FILE_DUPLICATE			= 1 shl 15
 
+	FLAG_PAGE_DEVPG             = 1 shl 16
+
 end enum
 
 Type PageInfo_t
@@ -558,11 +560,10 @@ sub Links_Add( byref sName as string, byref sType as string, byref sLink as stri
 
 		end select
 
-		select case left( lcase( .sName ), 5 )
-		case "keypg"
+		if( left( lcase( .sName ), 5 ) = "keypg" ) then
 			.flags or= FLAG_PAGE_KEYPG
 
-		case "catpg", "docto" '' FIXME => doctoc
+		elseif( ( left( lcase( .sName ), 5 ) = "catpg" ) orelse ( lcase( .sName ) = "doctoc" ) ) then
 			.flags or= FLAG_PAGE_CATPG
 
 			j = cint( pagehash_lcase.getinfo( lcase(.sLink) ))
@@ -585,11 +586,16 @@ sub Links_Add( byref sName as string, byref sType as string, byref sLink as stri
 				'' LINKS TO NON-EXISTANT PAGE
 
 			end if
+		elseif( lcase( .sName ) = "devtoc" ) then
+			.flags or= FLAG_PAGE_DEVPG
 
-		case "propg"
+		elseif( left( lcase( .sName ), 3 ) = "dev" ) then
+			.flags or= FLAG_PAGE_DEVPG
+
+		elseif( left( lcase( .sName ), 5 ) = "propg" ) then
 			.flags or= FLAG_PAGE_PROPG
 
-		end select
+		end if
 
 		select case left( lcase( .sLink ), 5 )
 		case "keypg"
@@ -963,8 +969,19 @@ end function
 
 '':::::
 sub Check_MissingPages()
+
+	/' 
+		we are looking for pages that have a
+		link on (some) page, but do not exist as a topic
+		- sometimes gives a false positives since the 
+		  link name might be mispelled or incorrect, in 
+		  that case, fix the link rather than add the
+		  page
+	'/
+
 	dim i as integer
-	logprint "Checking missing pages:"
+
+	logprint "Checking missing pages (links to non-existant page):"
 	
 	Temps_Clear()
 
@@ -977,7 +994,7 @@ sub Check_MissingPages()
 	next
 
 	if nTemps = 0 then
-		logprint "No missing pages"
+		logprint "No missing pages (links with no path)"
 	else
 		for i = 1 to nTemps
 			logprint "Missing page '" + sTemps(i) + "'"
@@ -990,6 +1007,14 @@ end sub
 
 '':::::
 sub Check_NameCase( byref outfile as string )
+
+	/'
+		we are checking that the link name as it appears in
+		the topic matches the case of the topic as it is saved in the
+		database.  Mismatched name case can cause problems for html
+		links on systems where case of file name is important.
+	'/
+
 	dim i as integer, c as integer, j as integer, h as integer, body as string
 
 	logprint "Checking mismatched name case in links:"
@@ -1044,11 +1069,18 @@ end sub
 '':::::
 sub Check_Headers()
 
+	/'
+		report the results of Links_LoadFromPage_ScanHeader()
+		check is not actually made here, we are just reporting the
+		results from what was discovered when the page was loaded
+		and scanned.
+	'/
+
 	dim as integer i, j, msg, c
 
 	Temps_Clear()
 
-	logprint "Checking headers:"
+	logprint "Checking wikka topic headers:"
 
 	for j = 1 to nPages
 		
@@ -1091,9 +1123,16 @@ end sub
 '':::::
 sub Check_DuplicateFilenames()
 
+	/'
+		report the results of duplicate sample filesname
+		check is not acutally done here, we are just reporting
+		the results of what was found through Samps_Add()
+		and Links_LoadFromPage_Scan()
+	'/
+
 	dim as integer j, msg, c
 
-	logprint "Checking duplicate filenames:"
+	logprint "Checking for duplicate sample filenames:"
 
 	c = 0
 	for j = 1 to nSamps
@@ -1104,9 +1143,9 @@ sub Check_DuplicateFilenames()
 	next
 
 	if c = 0 then
-		logprint "No duplicate file names"
+		logprint "No duplicate sample file names"
 	else
-		logprint "Found " + str(c) + " pages with duplicate file names"
+		logprint "Found " + str(c) + " pages with duplicate sample file names"
 	end if
 	logprint
 
@@ -1114,6 +1153,13 @@ end sub
 
 '':::::
 sub Check_ImageFilenames( byref image_path as string )
+
+	/'
+		scan through all of the image links found on pages
+		and check that we have the image file stored
+		in the image_path - report any image files that
+		are missing
+	'/
 
 	dim as integer i, j, msg, c
 	dim as string url, filename
@@ -1157,33 +1203,69 @@ end sub
 
 '':::::
 sub Check_IndexLinks( byref mode as string )
+
+	/'
+		check that the index topics CatPgFullIndex or CatPgFunctIndex
+		fully include links to all the KepPg pages.
+	'/
+	
 	dim as integer i
 	dim pg as string
+	dim opsonly as integer = false
 	Temps_Clear()
 
-	if( mode = "full" ) then
+	select case mode
+	case "full"
 		pg = "CatPgFullIndex"
-	else
+	case "func"
 		pg = "CatPgFunctIndex"
-	end if
+	case "ops"
+		pg = "CatPgOpIndex"
+		opsonly = true
+	case else
+		logprint "Internal error: invalid Check_IndexLinks(""" & mode & """)"
+		end 1
+	end select
 
 	logprint "Checking '" + pg + "':"
-	logprint "    Ignoring 'KeyPgOp*' pages"
 
-	for i = 1 to nPages
-		if( (sPages(i).flags and FLAG_PAGE_KEYPG) <> 0 ) then
-			if( Links_Exists( pg, sPages(i).sName, "" ) = FALSE ) then
-				if( Links_Exists( "CatPgOperators", sPages(i).sName, "" ) = FALSE ) then
-					if( lcase(sPages(i).sName) = "keypgoperator" ) then
-						Temps_Add( sPages(i).sName )
-					elseif( lcase(left(sPages(i).sName,7)) = "keypgop" ) then
-					else
-						Temps_Add( sPages(i).sName )
-					end if
+	if( opsonly ) then
+
+		logprint "    Ignoring anything but 'KeyPgOp[A-Z]*' pages"
+
+		for i = 1 to nPages
+			if( (sPages(i).flags and FLAG_PAGE_KEYPG) <> 0 ) then
+				if( lcase(left(sPages(i).sName,7)) = "keypgop" ) then
+					select case mid(sPages(i).sName,8,1)
+					case "A" to "Z"
+						if( Links_Exists( pg, sPages(i).sName, "" ) = FALSE ) then
+							Temps_Add( sPages(i).sName )
+						endif
+					end select
 				end if
-			endif
-		end if
-	next
+			end if
+		next
+
+	else
+
+		logprint "    Ignoring 'KeyPgOp*' pages"
+
+		for i = 1 to nPages
+			if( (sPages(i).flags and FLAG_PAGE_KEYPG) <> 0 ) then
+				if( Links_Exists( pg, sPages(i).sName, "" ) = FALSE ) then
+					if( Links_Exists( "CatPgOperators", sPages(i).sName, "" ) = FALSE ) then
+						if( lcase(sPages(i).sName) = "keypgoperator" ) then
+							Temps_Add( sPages(i).sName )
+						elseif( lcase(left(sPages(i).sName,7)) = "keypgop" ) then
+						else
+							Temps_Add( sPages(i).sName )
+						end if
+					end if
+				endif
+			end if
+		next
+
+	end if
 
 	if nTemps = 0 then
 		logprint "All keypages on '" + pg + "'"
@@ -1227,7 +1309,7 @@ sub Check_MissingBacklinks()
 			and pg <> "catpgopindex" ) then
 
 			if( sLinks(i).sType <> "back" ) then
-				if left(pg, 5) = "catpg" or pg = "doctoc" or pg = "catpgprogrammer" then
+				if left(pg, 5) = "catpg" or pg = "doctoc" or pg = "catpgprogrammer" or pg = "devtoc" then
 					if( sLinks(i).sType = "keyword" ) then
 						b = TRUE
 					elseif( pg = "doctoc" or pg = "catpgprogrammer" ) then
@@ -1454,6 +1536,8 @@ enum OPTIONS
 
 	OPT_IMAGES = 16384
 
+	OPT_OPS_INDEX = 32768
+
 	OPT_ALL_LINKS = _
 		OPT_MISSING_PAGES _
 		or OPT_FULL_INDEX _
@@ -1465,7 +1549,8 @@ enum OPTIONS
 		or OPT_NOT_LINKED _
 		or OPT_PRINT_TOC _
 		or OPT_NO_TITLE _
-		or OPT_IMAGES
+		or OPT_IMAGES _
+		or OPT_OPS_INDEX
 
 	OPT_ALL_TOKEN = _
 		OPT_HEADERS _
@@ -1490,10 +1575,11 @@ if command(i) = "" then
 	print
 	print "   z       load links from files instead of scanning pages"
 	print
-	print "   a       perform all link checks ( m full func n b k q c p d f i )"
+	print "   a       perform all link checks ( m full func ops n b k q c p d f i )"
 	print "   m       check missing pages"
 	print "   full    check CatPgFullIndex links"
 	print "   func    check CatPgFunctIndex links"
+	print "   ops     check CatPgOpIndex links"
 	print "   b       check missing backlinks"
 	print "   k       check invalid backlinks"
 	print "   q       check KeyPg, CatPg, ProPg, no back link at all"
@@ -1559,6 +1645,8 @@ while command(i) > ""
 		opt or= OPT_FULL_INDEX
 	case "func"
 		opt or= OPT_FUNCT_INDEX
+	case "ops"
+		opt or= OPT_OPS_INDEX
 	case "n"
 		opt or= OPT_LINK_NAME_CASE
 	case "b"
@@ -1648,6 +1736,11 @@ end if
 if( (opt and OPT_FUNCT_INDEX) <> 0 ) then
 	Check_IndexLinks("func")
 	Timer_Mark("Check_IndexLinks(""func"")")
+end if
+
+if( (opt and OPT_OPS_INDEX) <> 0 ) then
+	Check_IndexLinks("ops")
+	Timer_Mark("Check_IndexLinks(""ops"")")
 end if
 
 if( (opt and OPT_MISSING_BACKLINK) <> 0 ) then
