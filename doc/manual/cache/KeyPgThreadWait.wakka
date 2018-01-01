@@ -18,6 +18,8 @@ Waits for a thread to finish execution and releases the thread handle
 	In order to release a thread handle without waiting for the thread to finish, use ##[[KeyPgThreadDetach|ThreadDetach]]##.
 	
 	**""ThreadWait""** does not force the thread to end; if a thread requires a signal to force its end, a mechanism such as shared variables and mutexes must be used.
+	
+	In order to avoid memory leaks, the safe way to end a thread is to always signal to it that it must end, and then call **""ThreadWait""** on that thread except if ##[[KeyPgThreadDetach|ThreadDetach]]## has previously been called.
 
 {{fbdoc item="ex"}}
 	See the ##[[KeyPgThreadCreate|Threadcreate]]## examples.

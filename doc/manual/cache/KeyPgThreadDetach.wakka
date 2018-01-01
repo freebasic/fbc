@@ -16,8 +16,10 @@ Releases a thread handle without waiting for the thread to finish
 	**""ThreadDetach""** releases resources associated with a thread handle returned by ##[[KeyPgThreadCreate|ThreadCreate]]## or ##[[KeyPgThreadCall|ThreadCall]]##. The thread handle will be destroyed by **""ThreadDetach""** and cannot be used anymore.
 	Unlike ##[[KeyPgThreadWait|ThreadWait]]##, **""ThreadDetach""** does not wait for the thread to finish and thread execution continues independently. Any allocated resources will be freed once the thread exits.
 	
-	**Note:** As **""ThreadDetach""** destroys the thread handle, ##[[KeyPgThreadWait|ThreadWait]]## can no longer check for the thread ending, and even the use of ##[[KeyPgThreadWait|ThreadWait]]## becomes unpredictable (may crash the program).
-	The use between ##[[KeyPgThreadWait|ThreadWait]]## and **""ThreadDetach""** must be exclusive.
+	In order to avoid memory leaks, the safe way to end a thread is to always signal to it that it must end, and then call ##[[KeyPgThreadWait|ThreadWait]]## on that thread except if **""ThreadDetach""** has previously been called.
+	
+	**Note:** As **""ThreadDetach""** destroys the thread handle, ##[[KeyPgThreadWait|ThreadWait]]## can no longer check for the thread ending, and even the use of ##[[KeyPgThreadWait|ThreadWait]]## becomes unpredictable (may crash the program). The use between ##[[KeyPgThreadWait|ThreadWait]]## and **""ThreadDetach""** must be exclusive.
+	But mutexes and conditional variables can also be used with detached threads.
 
 {{fbdoc item="ex"}}
 	{{fbdoc item="filename" value="examples/manual/threads/threadsdetach.bas"}}%%(freebasic)
