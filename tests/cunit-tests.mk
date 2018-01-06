@@ -49,20 +49,23 @@ SRCLIST := $(patsubst .bmk,.bas,$(SRCLIST))
 
 # ------------------------------------------------------------------------
 
+MAINBAS := fbc-tests
 MAINEXE := fbc-tests$(TARGET_EXEEXT)
 
-FBCU_DIR := fbcu
-FBCU_INC := $(FBCU_DIR)/include
-FBCU_LIB := $(FBCU_DIR)/
-FBCU_BIN := $(FBCU_DIR)/libfbcu.a
+SRCLIST += ./$(MAINBAS).bas
 
-FBCU_LIBS := -l cunit -l fbcu
+FBCU_DIR := fbcunit
+FBCU_INC := $(FBCU_DIR)/inc
+FBCU_LIB := $(FBCU_DIR)/lib
+FBCU_BIN := $(FBCU_LIB)/libfbcunit.a
+
+FBCU_LIBS := -l fbcunit
 
 ifeq ($(TARGET_OS),win32)
     FBCU_LIBS += -l user32
 endif
 
-FBC_CFLAGS := -c -w 3 -i $(FBCU_INC) 
+FBC_CFLAGS := -c -w 3 -i $(FBCU_INC) -m $(MAINBAS)
 ifneq ($(HOST),dos)
 	FBC_CFLAGS += -mt
 endif
@@ -85,7 +88,7 @@ ifneq ($(GEN),)
 	FBC_CFLAGS += -gen $(GEN)
 endif
 
-FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_DIR) -x $(MAINEXE)
+FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_LIB) -x $(MAINEXE)
 ifdef DEBUG
 	FBC_LFLAGS += -g
 endif
