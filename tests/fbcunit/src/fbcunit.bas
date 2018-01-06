@@ -46,16 +46,16 @@
 
 #include once "fbcunit_types.bi"
 
-redim shared fbcu_suites(1 to FBCU_SUITE_COUNT_START) as FBCU_SUITE
-dim shared fbcu_suites_max as integer = FBCU_SUITE_COUNT_START
+redim shared fbcu_suites() as FBCU_SUITE
+dim shared fbcu_suites_max as integer = 0
 dim shared fbcu_suites_count as integer = 0
 
-redim shared fbcu_tests(1 to FBCU_SUITE_COUNT_START*2) as FBCU_TEST
-dim shared fbcu_tests_max as integer = FBCU_SUITE_COUNT_START*2
+redim shared fbcu_tests() as FBCU_TEST
+dim shared fbcu_tests_max as integer = 0
 dim shared fbcu_tests_count as integer = 0
 
-redim shared fbcu_cases(1 to FBCU_SUITE_COUNT_START*4) as FBCU_CASE
-dim shared fbcu_cases_max as integer = FBCU_SUITE_COUNT_START*4
+redim shared fbcu_cases() as FBCU_CASE
+dim shared fbcu_cases_max as integer = 0
 dim shared fbcu_cases_count as integer = 0
 
 #define INVALID_INDEX 0
@@ -103,9 +103,9 @@ declare function hash_add ( byval s as const zstring ptr, byval suite_index as c
 
 #define INVALID_HASH_INDEX -1
 
-redim shared hash( 0 to FBCU_SUITE_COUNT_START*2 - 1) as integer
-dim shared hash_size as integer = FBCU_SUITE_COUNT_START*2
-dim shared hash_count as integer
+redim shared hash() as integer
+dim shared hash_size as integer = 0
+dim shared hash_count as integer = 0
 
 private function hash_compute ( byval s as const zstring ptr ) as uinteger
 	dim index as uinteger = 0, n as integer = len( *s )
@@ -116,6 +116,11 @@ private function hash_compute ( byval s as const zstring ptr ) as uinteger
 end function
 
 private sub hash_grow()
+	if( hash_size = 0 ) then
+		hash_size = 32
+		redim hash(0 to hash_size-1) as integer
+		exit sub
+	end if
 	hash_size *= 2
 	redim hash(0 to hash_size-1) as integer
 	for index as integer = 0 to hash_size-1
@@ -128,6 +133,9 @@ end sub
 
 '' returns index in to hash()
 private function hash_find ( byval s as const zstring ptr ) as integer
+	if( hash_size = 0 ) then
+		hash_grow()
+	end if
 	dim index as integer = hash_compute( s ) mod hash_size
 	dim start as integer = index
 	while( hash(index) )
@@ -203,9 +211,12 @@ namespace fbcu
 			exit sub
 		end if
 
-		if( fbcu_suites_count >= fbcu_suites_max ) then
+		if( fbcu_suites_max = 0 ) then
+			fbcu_suites_max = FBCU_SUITE_COUNT_START
+			redim fbcu_suites( 1 to fbcu_suites_max ) as FBCU_SUITE
+		elseif( fbcu_suites_count >= fbcu_suites_max ) then
 			fbcu_suites_max = fbcu_suites_max * 2
-			redim preserve fbcu_suites( 1 to fbcu_suites_max )
+			redim preserve fbcu_suites( 1 to fbcu_suites_max ) as FBCU_SUITE
 		end if
 
 		fbcu_suites_count += 1
@@ -267,9 +278,12 @@ namespace fbcu
 			add_suite( )
 		end if
 
-		if( fbcu_tests_count >= fbcu_tests_max ) then
+		if( fbcu_tests_max = 0 ) then
+			fbcu_tests_max = FBCU_SUITE_COUNT_START
+			redim fbcu_tests( 1 to fbcu_tests_max ) as FBCU_TEST
+		elseif( fbcu_tests_count >= fbcu_tests_max ) then
 			fbcu_tests_max = fbcu_tests_max * 2
-			redim preserve fbcu_tests( 1 to fbcu_tests_max )
+			redim preserve fbcu_tests( 1 to fbcu_tests_max ) as FBCU_TEST
 		end if
 			
 		fbcu_tests_count += 1
@@ -353,9 +367,12 @@ namespace fbcu
 
 			fbcu_tests( fbcu_test_index ).assert_fail_count += 1
 
-			if( fbcu_cases_count >= fbcu_cases_max ) then
+			if( fbcu_cases_max = 0 ) then
+				fbcu_cases_max = FBCU_SUITE_COUNT_START
+				redim fbcu_cases( 1 to fbcu_cases_max ) as FBCU_CASE
+			elseif( fbcu_cases_count >= fbcu_cases_max ) then
 				fbcu_cases_max = fbcu_cases_max * 2
-				redim preserve fbcu_cases( 1 to fbcu_cases_max )
+				redim preserve fbcu_cases( 1 to fbcu_cases_max ) as FBCU_CASE
 			end if
 
 			fbcu_cases_count += 1

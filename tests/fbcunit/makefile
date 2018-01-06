@@ -44,7 +44,7 @@ ifneq ($(FPU),)
 	FBCFLAGS += -fpu $(FPU)
 endif
 
-FBCFLAGS += -g -exx -i ./inc
+FBCFLAGS += -mt -g -exx -i ./inc
 
 .SUFFIXES: .bas
 

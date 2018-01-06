@@ -1,7 +1,7 @@
 	fbcunit - FreeBASIC Compiler Unit Testing Component
 	Copyright (C) 2017-2018 Jeffery R. Marshall (coder[at]execulink[dot]com)
 
-fbcunit version 0.5
+fbcunit version 0.6
 -------------------
 	Unit testing component for fbc compiler.  Provides macros 
 	and common code for unit testing fbc compiled sources. 

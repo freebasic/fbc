@@ -1,13 +1,21 @@
+Version 0.6
+
+[changed]
+- shared dynamic arrays are intialized on first use
+
+
 Version 0.5
 
 [changed]
 - License is GNU Lesser General Public License Version 2.1 (or later) plus linking exception -- see license.txt
+
 
 Version 0.4
 
 [added]
 - explicit copyright notices on source files and in the readme.txt
 - junit compatible xml report generator
+
 
 Version 0.3
 
