@@ -1,0 +1,89 @@
+FBC := fbc
+
+ECHO := echo
+
+LIBRARY := lib/libfbcunit.a
+SRCS    := src/fbcunit.bas
+SRCS    += src/fbcunit_qb.bas
+SRCS    += src/fbcunit_console.bas
+SRCS    += src/fbcunit_report.bas
+HDRS    := inc/fbcunit.bi
+HDRS    := src/fbcunit_types.bi
+HDRS    += src/fbcunit_console.bi
+HDRS    += src/fbcunit_report.bi
+
+TEST_SRCS := tests/tests.bas
+TEST_SRCS += tests/fbcu_sanity.bas
+TEST_SRCS += tests/fbcu_multiple.bas
+TEST_SRCS += tests/fbcu_global.bas
+TEST_SRCS += tests/fbcu_many_tests.bas
+TEST_SRCS += tests/fbcu_append.bas
+TEST_SRCS += tests/fbcu_append2.bas
+
+TEST_OBJS := $(patsubst %.bas,%.o,$(TEST_SRCS))
+
+TEST_EXE  := tests/tests.exe
+
+EXAMPLES := examples/ex01.exe
+EXAMPLES += examples/ex02.exe
+EXAMPLES += examples/ex03.exe
+EXAMPLES += examples/ex04.exe
+EXAMPLES += examples/ex05.exe
+EXAMPLES += examples/ex06.exe
+EXAMPLES += examples/ex07.exe
+EXAMPLES += examples/ex08.exe
+EXAMPLES += examples/ex09.exe
+
+FBCFLAGS += -g -exx -i ./inc
+
+.SUFFIXES: .bas
+
+VPATH = .
+
+.PHONY: all
+all: library
+
+.PHONY: help
+help:
+	@$(ECHO) "usage: make target [options]"
+	@$(ECHO) ""
+	@$(ECHO) "Targets:"
+	@$(ECHO) "   help           - displays this information"
+	@$(ECHO) "   library        - builds $(LIBRARY)"
+	@$(ECHO) "   tests          - builds tests for fbcunit"
+	@$(ECHO) "   examples       - builds all the examples"
+	@$(ECHO) "   everything     - builds library, tests, examples"
+	@$(ECHO) "   clean          - cleans up all built files"
+	@$(ECHO) ""
+	@$(ECHO) "Options:"
+	@$(ECHO) "   FBC=/path/fbc  - set path to FBC compiler"
+
+.PHONY: everything
+everything: library tests examples
+
+.PHONY: library
+library: $(LIBRARY)
+
+.PHONY: tests
+tests: $(TEST_EXE) 
+
+.PHONY: examples
+examples: $(EXAMPLES)
+
+$(LIBRARY): $(SRCS) $(HDRS)
+	$(FBC) $(FBCFLAGS) -lib $(SRCS) -x $@
+
+tests/%.o: tests/%.bas $(HDRS)
+	$(FBC) $(FBCFLAGS) -m tests -c $< -o $@
+
+examples/%.exe: examples/%.bas $(HDRS) $(LIBRARY)
+	$(FBC) $(FBCFLAGS) $< -p ./lib -x $@
+
+$(TEST_EXE): $(TEST_OBJS) $(LIBRARY)
+	$(FBC) $(FBCFLAGS) $(TEST_OBJS) -p ./lib -x $@
+
+.PHONY: clean
+clean:
+	-rm -f $(LIBRARY)
+	-rm -f $(TEST_OBJS) $(TEST_EXE)
+	-rm -f $(EXAMPLES)
