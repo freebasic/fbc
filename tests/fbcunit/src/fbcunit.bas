@@ -118,10 +118,9 @@ end function
 private sub hash_grow()
 	if( hash_size = 0 ) then
 		hash_size = 32
-		redim hash(0 to hash_size-1) as integer
-		exit sub
+	else
+		hash_size *= 2
 	end if
-	hash_size *= 2
 	redim hash(0 to hash_size-1) as integer
 	for index as integer = 0 to hash_size-1
 		hash(index) = 0
