@@ -5,7 +5,7 @@ This is the directory for FreeBASIC compiler and runtime tests.
 
 Requirements - Windows / Linux / Dos
 ------------------------------------
-   - FreeBASIC Compiler 0.20.0 or above
+   - FreeBASIC Compiler 1.06.0 or above
    - make, sh, find, xargs, grep, sed, cat, rm
 
 Summary
@@ -22,10 +22,10 @@ Making the Tests
 
 The following two commands will make all tests:
 
-make cunit-tests
+$ make unit-tests
    generates fbc-tests[.exe]
 
-make log-tests
+$ make log-tests
    generates failed-test-fb.log
    generates failed-test-qb.log
    generates failed-test-deprecated.log
@@ -33,13 +33,13 @@ make log-tests
 
 Other Examples:
 
-Use 'make cunit-tests' to build the cunit-compatible tests.  This
+Use 'make unit-tests' to build the fbcunit-compatible tests.  This
 will create fbc-tests[.exe] at the top of the tree.
 
-If the fbcu library is not already made, 'make cunit-tests' 
-will automatically make it with the options fail=1 basic=1.
+If the fbcunit library is not already made, 'make unit-tests' 
+will automatically make it.
 
-Use 'make log-tests' to build all non-cunit type tests.  This will
+Use 'make log-tests' to build all non-fbcunit type tests.  This will
 create log files, which are summarized and saved in 'failed.log'
 for any failed tests.
 
@@ -97,18 +97,31 @@ By default '-lang fb' tests are collected unless 'FB_LANG=?' option
 is given.
 
 
-fbcu/cunit tests (cunit-tests)
+fbcunit tests (unit-tests)
 ------------------------------
 
-fbcu/cunit compatible tests are linked with the fbcu and cunit
-libraries and most follow a structure as shown in the following
+fbcunit compatible tests are linked with the fbcunit
+library and most follow a structure as shown in the following
 example:
 
-Sample FBCU/CUNIT compatible test
+Sample FBCUNIT compatible test (using SUITE/TEST macros)
 
-   ' TEST_MODE : CUNIT_COMPATIBLE
+   ' TEST_MODE : FBCUNIT_COMPATIBLE
 
-   #include "fbcu.bi"
+   #include "fbcunit.bi"
+   SUITE( pretest )
+      TEST( test_true )
+	      CU_ASSERT_TRUE( -1 ) 
+      END_TEST
+   END_SUITE
+   ' EOF
+
+
+Sample FBCUNIT compatible test (using the 'old' way)
+
+   ' TEST_MODE : FBCUNIT_COMPATIBLE
+
+   #include "fbcunit.bi"
 
    namespace fbc_tests.pretest
 
@@ -118,7 +131,7 @@ Sample FBCU/CUNIT compatible test
 
    private sub ctor () constructor
 
-     fbcu.add_suite("fb-tests-cunit-pretests")
+     fbcu.add_suite("fbc_tests.pretest")
      fbcu.add_test("test_true", @test_true)
 
    end sub
@@ -126,14 +139,14 @@ Sample FBCU/CUNIT compatible test
    end namespace
    ' EOF
 
-Consult the cunit documentation for a listing of available
+Consult the fbcunit documentation for a listing of available
 assertions and testing methods.
 
 
-non-cunit compatible test (log-tests)
+non-unit compatible test (log-tests)
 -------------------------------------
 
-Each non-fbcu/cunit compatible test should have one of the following 
+Each non-fbcunit compatible test should have one of the following 
 test-mode tags present in the source file:
 
 ' One of:
@@ -156,7 +169,7 @@ files.  An example .bmk file:
 # One of:
 # TEST_MODE : MULTI_MODULE_OK
 # TEST_MODE : MULTI_MODULE_FAIL
-# TEST_MODE : CUNIT_COMPATIBLE
+# TEST_MODE : FBCUNIT_COMPATIBLE
 
 MAIN := my_test.bas
 SRCS := my_test1.bas my_test2.bas my_test3.bas
@@ -185,11 +198,11 @@ dirlist.mk
    list of directories that to be testsed.  Edit this file when new
    directories are added to the testing tree.
 
-cunit-tests.mk
-   a sub-makefile for building cunit compatible tests
+unit-tests.mk
+   a sub-makefile for building fbcunit compatible tests
 
 log-tests.mk
-   a sub-makefile for building all other tests that are not cunit 
+   a sub-makefile for building all other tests that are not fbcunit 
    compatible.
 
 bmk-make.mk
@@ -198,9 +211,9 @@ bmk-make.mk
 common.mk
    some common variables needed by most other makefiles
 
-cunit-tests.inc
-   generated automatically when 'make cunit-tests' is invoked.
-   Lists all of the cunit-compatible tests.
+unit-tests.inc
+   generated automatically when 'make unit-tests' is invoked.
+   Lists all of the fbcunit-compatible tests.
 
 log-tests.inc
    generated automatically when 'make log-tests' is invoked.

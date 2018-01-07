@@ -1,7 +1,7 @@
-# cunit-tests.mk
+# log-tests.mk
 # This file is part of the FreeBASIC test suite
 #
-# make file for building non-cunit tests
+# make file for building non-fbcunit tests
 #
 
 # ------------------------------------------------------------------------

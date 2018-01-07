@@ -1,7 +1,7 @@
-# cunit-tests.mk
+# unit-tests.mk
 # This file is part of the FreeBASIC test suite
 #
-# make file for building cunit compatible tests with fbcu
+# make file for building fbcunit tests
 #
 
 # ------------------------------------------------------------------------
@@ -36,13 +36,13 @@ endif
 
 # ------------------------------------------------------------------------
 
-CUNIT_TESTS_INC := cunit-tests.inc
+UNIT_TESTS_INC := unit-tests.inc
 
 SRCLIST :=
 ifeq ($(MAKECMDGOALS),mostlyclean)
--include $(CUNIT_TESTS_INC)
+-include $(UNIT_TESTS_INC)
 else
-include $(CUNIT_TESTS_INC)
+include $(UNIT_TESTS_INC)
 endif
 SRCLIST := $(sort $(SRCLIST))
 SRCLIST := $(patsubst .bmk,.bas,$(SRCLIST))
@@ -112,36 +112,36 @@ OBJLIST := $(SRCLIST:%.bas=%.o)
 #: targets
 #
 
-all : make_fbcu $(CUNIT_TESTS_INC) build_tests run_tests
+all : make_fbcu $(UNIT_TESTS_INC) build_tests run_tests
 
 .PHONY: make_fbcu $(FBCU_BIN)
 make_fbcu : $(FBCU_BIN)
 	cd $(FBCU_DIR) && make FPU=$(FPU) ARCH=$(ARCH) TARGET=$(TARGET)
 
 # ------------------------------------------------------------------------
-# Auto-generate the file CUNIT_TESTS_INC - needed by this makefile
+# Auto-generate the file UNIT_TESTS_INC - needed by this makefile
 # Find all *.bas files containing '# include [once] "fbcu.bi"'
 # from all dirs listed in DIRLIST from DIRLIST_INC
 #
 #
-$(CUNIT_TESTS_INC) : $(DIRLIST_INC)
-	@$(PRINTF) "Generating $(CUNIT_TESTS_INC) : "
-	@$(ECHO) "# This file automatically generated - DO NOT EDIT" > $(CUNIT_TESTS_INC)
-	@$(ECHO) "#" >> $(CUNIT_TESTS_INC)
+$(UNIT_TESTS_INC) : $(DIRLIST_INC)
+	@$(PRINTF) "Generating $(UNIT_TESTS_INC) : "
+	@$(ECHO) "# This file automatically generated - DO NOT EDIT" > $(UNIT_TESTS_INC)
+	@$(ECHO) "#" >> $(UNIT_TESTS_INC)
 	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '#[[:space:]]*include[[:space:]](once)*[[:space:]]*\"fbcu\.bi\"' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST \+\= \.\/\1/g' \
->> $(CUNIT_TESTS_INC)
+>> $(UNIT_TESTS_INC)
 	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
-| $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*CUNIT_COMPATIBLE' \
+| $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*FBCUNIT_COMPATIBLE' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST \+\= \.\/\1/g' \
->> $(CUNIT_TESTS_INC)
+>> $(UNIT_TESTS_INC)
 	@$(ECHO) "Done"
 
 # ------------------------------------------------------------------------
 
 .PHONY: build_tests
-build_tests : $(OBJLIST) $(CUNIT_TESTS_INC)
+build_tests : $(OBJLIST) $(UNIT_TESTS_INC)
 	$(FBC) $(FBC_LFLAGS) $(OBJLIST)
 
 .PHONY: run_tests
@@ -160,7 +160,7 @@ clean_main_exe :
 
 .PHONY: clean_tests
 clean_tests :
-	@$(ECHO) Cleaning cunit-tests files ...
+	@$(ECHO) Cleaning unit-tests files ...
 	@$(RM) $(OBJLIST)
 
 .PHONY: clean_fbcu
@@ -169,5 +169,5 @@ clean_fbcu :
 
 .PHONY: clean_include
 clean_include :
-	$(RM) $(CUNIT_TESTS_INC)
+	$(RM) $(UNIT_TESTS_INC)
 

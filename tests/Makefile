@@ -40,20 +40,20 @@ endif
 # build sub-targets based on FB_LANG option
 #
 ifeq ($(FB_LANG),)
-REQ_MOSTLYCLEAN := mostlyclean-cunit mostlyclean-fb mostlyclean-qb mostlyclean-deprecated
-REQ_CLEAN := clean-cunit clean-fb clean-qb clean-deprecated
+REQ_MOSTLYCLEAN := mostlyclean-unit mostlyclean-fb mostlyclean-qb mostlyclean-deprecated
+REQ_CLEAN := clean-unit clean-fb clean-qb clean-deprecated
 REQ_TESTS := log-tests-fb log-tests-qb log-tests-deprecated
 REQ_FAILED := failed-tests-fb failed-tests-qb failed-tests-deprecated
 else
-REQ_MOSTLYCLEAN := mostlyclean-cunit mostlyclean-$(FB_LANG)
-REQ_CLEAN := clean-cunit clean-$(FB_LANG)
+REQ_MOSTLYCLEAN := mostlyclean-unit mostlyclean-$(FB_LANG)
+REQ_CLEAN := clean-unit clean-$(FB_LANG)
 REQ_TESTS := log-tests-$(FB_LANG)
 REQ_FAILED := failed-tests-$(FB_LANG)
 endif
 
 # ------------------------------------------------------------------------
 
-CUNITTESTS_MAKEFILE := cunit-tests.mk
+UNITTESTS_MAKEFILE := unit-tests.mk
 LOGTESTS_MAKEFILE := log-tests.mk
 
 
@@ -63,8 +63,8 @@ all :
 
 	@$(ECHO) "usage: make target [options]"
 	@$(ECHO) ""
-	@$(ECHO) "Targets: (using cunit):"
-	@$(ECHO) "   cunit-tests"
+	@$(ECHO) "Targets:"
+	@$(ECHO) "   unit-tests"
 	@$(ECHO) "   log-tests"
 	@$(ECHO) "   failed-tests"
 	@$(ECHO) "   check"
@@ -85,10 +85,10 @@ all :
 	@$(ECHO) "   check"
 	@$(ECHO) ""
 	@$(ECHO) "Example: make all available tests"
-	@$(ECHO) "   make cunit-tests"
+	@$(ECHO) "   make unit-tests"
 	@$(ECHO) "   make log-tests"
 	@$(ECHO) ""
-	@$(ECHO) "Example: make obj -lang qb tests"
+	@$(ECHO) "Example: make the -lang qb tests"
 	@$(ECHO) "   make log-tests FB_LANG=qb"
 	@$(ECHO) ""
 
@@ -137,11 +137,16 @@ check :
 
 
 # ------------------------------------------------------------------------
-# make cunit compatible tests
+# make fbcunit compatible tests
 #
+.PHONY: unit-tests
+unit-tests :
+	$(MAKE) -f $(UNITTESTS_MAKEFILE)
+
+# !!! DEPRECATED TARGET !!! -- callers should use 'unit-tests'
 .PHONY: cunit-tests
-cunit-tests :
-	$(MAKE) -f $(CUNITTESTS_MAKEFILE) fail=1 basic=1
+cunit-tests : unit-tests
+
 
 # ------------------------------------------------------------------------
 # make log-test compatible tests
@@ -194,9 +199,9 @@ failed-tests-deprecated :
 .PHONY: mostlyclean
 mostlyclean : $(REQ_MOSTLYCLEAN)
 
-.PHONY: mostlyclean-cunit
-mostlyclean-cunit :
-	cd . && $(MAKE) -f $(CUNITTESTS_MAKEFILE) mostlyclean
+.PHONY: mostlyclean-unit
+mostlyclean-unit :
+	cd . && $(MAKE) -f $(UNITTESTS_MAKEFILE) mostlyclean
 
 .PHONY: mostlyclean-fb
 mostlyclean-fb :
@@ -214,9 +219,9 @@ mostlyclean-deprecated :
 .PHONY:  clean
  clean : $(REQ_CLEAN)
 
-.PHONY: clean-cunit
-clean-cunit :
-	cd . && $(MAKE) -f $(CUNITTESTS_MAKEFILE) clean
+.PHONY: clean-unit
+clean-unit :
+	cd . && $(MAKE) -f $(UNITTESTS_MAKEFILE) clean
 
 .PHONY: clean-fb
 clean-fb :
