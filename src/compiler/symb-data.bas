@@ -8,7 +8,7 @@
 
 '' same order as FB_DATATYPE
 dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
-{ _
+{ _ '' class              size  signed intrank remaptype         sizetype             name
 	( FB_DATACLASS_UNKNOWN,  0, FALSE,  0, FB_DATATYPE_VOID    , -1                 , @"any"      ), _
 	( FB_DATACLASS_INTEGER,  1, TRUE ,  1, FB_DATATYPE_BOOLEAN , FB_SIZETYPE_BOOLEAN, @"boolean"  ), _
 	( FB_DATACLASS_INTEGER,  1, TRUE , 10, FB_DATATYPE_BYTE    , FB_SIZETYPE_INT8   , @"byte"     ), _
