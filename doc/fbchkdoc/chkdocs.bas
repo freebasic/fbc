@@ -1479,8 +1479,6 @@ end enum
 
 dim opt as OPTIONS
 
-cache_dir = default_CacheDir
-
 if command(i) = "" then
 	print "chkdocs [options]"
 	print
@@ -1604,6 +1602,10 @@ Timer_Begin()
 logopen()
 
 logprint "chkdocs: " + format( now(), "yyyy/mm/dd hh:mm:ss" )
+
+if( cache_dir = "" ) then
+	cache_dir = def_cache_dir
+end if
 logprint "cache: " & cache_dir
 logprint
 

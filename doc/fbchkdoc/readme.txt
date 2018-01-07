@@ -113,6 +113,10 @@ configuration settings file.  fbchkdoc.ini may contain user names and
 passwords and to avoid having it committed to SVN by accident, it has a 
 different name. A description of the options in this file are below:
 
+    manual_dir
+        normally '../manual'.  Relative to this directory, there needs to
+        be a few other sub directoried and files, like templates and html.
+
     cache_dir
         normally '../manual/cache'.  This is where the wakka source files are
         stored and modified.

@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCondSignal
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCondSignal
 '' --------
 
 ' This very simple example code demonstrates the use of several condition variable routines.
@@ -12,16 +12,18 @@
 ' The thread complements the string, then sends a condition signal.
 '
 'Principle of mutual exclusion + simple synchronization
-'          Thread#A                XOR + ==>            Thread#B
-'.....                                         .....
-'MutexLock(mut)                                MutexLock(mut)
-'  Do_something#A_with_exclusion                 While Thread#A_signal <> true
-'  Thread#A_signal = true                          CondWait(cond, mut)
-'  CondSignal(cond)                              Wend
-'MutexUnlock(mut)                                Do_something#B_with_exclusion
-'.....                                           Thread#A_signal = false
-'                                              MutexUnlock(mut)
-'                                              .....
+'          Thread#A             XOR + ==>            Thread#B
+'.....                                     .....
+'MutexLock(mut)                            MutexLock(mut)
+'  Do_something_with_exclusion               Do_something_with_exclusion
+'  Thread_signal = true -------------------> While Thread_signal <> true
+'  CondSignal(cond) -------------------------> CondWait(cond, mut)
+'  Do_something_with_exclusion      .------> Wend
+'MutexUnlock(mut) ------------------'        Thread_signal = false
+'.....                                       Do_something_with_exclusion
+'.....                                     MutexUnlock(mut)
+'.....                                     .....
+
 
 Dim Shared As Any Ptr mutex
 Dim Shared As Any Ptr cond

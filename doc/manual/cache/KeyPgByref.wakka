@@ -15,6 +15,8 @@ Declaration specifier to explicitly pass a parameter by reference
 	Opposite of ##[[KeyPgByval|ByVal]]##.
 	
 	**Note:** A constant or a literal expression can also be passed to such a procedure (which gets by reference), but they are obviously not modifiable. In that case, the compiler passes by reference a temporary variable initialized with the constant or the literal expression.
+	
+	**Warning:** When passing by reference, it is recommended to pass an argument of the same type (or fully compatible, like a derived type for example) as that of the declared parameter. Although in some cases the compiler accepts to pass a different type, often the result is not the one expected.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/byref.bas"}}%%(freebasic)

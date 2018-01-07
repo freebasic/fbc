@@ -3,12 +3,12 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibspidermonkey
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibspidermonkey
 '' --------
 
 '' Callback example: Functions that are used by the Javascript code,
 '' but are implemented in FB.
-#include once "spidermonkey/jsapi.bi"
+#include Once "spidermonkey/jsapi.bi"
 
 Dim Shared As JSClass global_class = _
 ( _

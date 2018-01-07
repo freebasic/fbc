@@ -42,13 +42,13 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}==
 		Set the target platform for cross compilation
 	=={{fbdoc item="keyword" value="CompilerOptgen|-gen < backend >"}}==
-		Sets the compiler backend (default is 'gas').
+		Sets the compiler backend (default is 'gas')
 	=={{fbdoc item="keyword" value="CompilerOptasm|-asm < format >"}}==
-		Sets the assembler format for Asm block.
+		Sets the assembler format for Asm block
 	=={{fbdoc item="keyword" value="CompilerOptarch|-arch < type >"}}==
 		Set target architecture (default: ##486##)
 	=={{fbdoc item="keyword" value="CompilerOptoptimization|-O < level >"}}==
-		Set the optimization level (-gen gcc).
+		Set the optimization level (-gen gcc)
 	=={{fbdoc item="keyword" value="CompilerOptvec|-vec < level >"}}==
 		Set level of vector optimizations enabled by the compiler (default: ##0##)
 	=={{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}==
@@ -56,7 +56,9 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="compileroptfpmode|-fpmode < type >"}}==
 		Select between fast and accurate floating-point operations (default: ##PRECISE##)
 	=={{fbdoc item="keyword" value="CompilerOptz|-z < value >"}}==
-		Sets miscellaneous or experimental options.
+		Sets miscellaneous or experimental options
+	=={{fbdoc item="keyword" value="CompilerOptpic|-pic"}}==
+		Generate position-independent code (non-x86 Unix shared libs)
 
 {{fbdoc item="section" value="Compilation"}}
 	=={{fbdoc item="keyword" value="CompilerOptm|-m < name >"}}==
@@ -70,7 +72,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptex|-ex"}}==
 		Add error checking with RESUME support
 	=={{fbdoc item="keyword" value="CompilerOptexx|-exx"}}==
-		Same as ##-ex## plus array bounds and null-pointer checking
+		Same as ##-ex##, plus array bounds and non-null-pointer checking
 	=={{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}==
 		Pass options to GAS (separated by commas)
 	=={{fbdoc item="keyword" value="CompilerOptWc|-Wc < opt >"}}==
@@ -110,7 +112,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}==
 		Set the compiler prefix path
 	=={{fbdoc item="keyword" value="CompilerOptversion|-version"}}==
-		Show compiler version on the command line, do not compile or link.
+		Show compiler version on the command line, do not compile or link
 	=={{fbdoc item="keyword" value="CompilerOptv|-v"}}==
 		Be verbose
 	=={{fbdoc item="keyword" value="CompilerOptprint|-print < option >"}}==
@@ -135,6 +137,8 @@ Using the **fbc** command-line.
 		Only stop parsing if <val> errors occurred
 	=={{fbdoc item="keyword" value="CompilerOptnoerrline|-noerrline"}}==
 		Do not show source line where error occurred
+	=={{fbdoc item="keyword" value="CompilerOptshowincludes|-showincludes"}}==
+		Display a tree of file names of #included files
 
 {{fbdoc item="section" value="Target specific"}}
 	=={{fbdoc item="keyword" value="CompilerOpts|-s < name >"}}==

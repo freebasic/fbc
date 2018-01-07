@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgData
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgData
 '' --------
 
 ' Create an array of 5 integers and a string to hold the data.

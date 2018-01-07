@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSetmouse
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgSetmouse
 '' --------
 
 Dim As Integer x, y, buttons
@@ -17,8 +17,8 @@ Do
 	Do: Sleep 1: Loop While GetMouse( x, y , , buttons) <> 0
 
 	If buttons And 1 Then
-	    ' on left mouse click, center mouse
-	    SetMouse 320, 240
+		' on left mouse click, center mouse
+		SetMouse 320, 240
 	End If
 
 	' run loop until a key is pressed or the window is closed

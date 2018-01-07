@@ -3,16 +3,16 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgTransGfx
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgTransGfx
 '' --------
 
 Function trans32 ( ByVal source_pixel As UInteger, ByVal destination_pixel As UInteger, ByVal parameter As Any Ptr ) As UInteger
 	'' returns the source pixel
 	'' unless it is &hff00ff (magenta), then return the destination pixel
 	If (source_pixel And &hffffff) <> &hff00ff Then
-	    Return source_pixel
+		Return source_pixel
 	Else
-	    Return destination_pixel
+		Return destination_pixel
 	End If
 End Function
 

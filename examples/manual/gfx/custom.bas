@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCustomgfx
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCustomgfx
 '' --------
 
 Function dither ( ByVal source_pixel As UInteger, ByVal destination_pixel As UInteger, ByVal parameter As Any Ptr ) As UInteger
@@ -14,9 +14,9 @@ Function dither ( ByVal source_pixel As UInteger, ByVal destination_pixel As UIn
 	If parameter <> 0 Then threshold = *CPtr(Single Ptr, parameter)
 	
 	If Rnd() < threshold Then
-	    Return source_pixel
+		Return source_pixel
 	Else
-	    Return destination_pixel
+		Return destination_pixel
 	End If
 	
 End Function

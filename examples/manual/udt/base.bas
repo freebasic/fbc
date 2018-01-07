@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgBase
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgBase
 '' --------
 
 Type Parent
@@ -20,7 +20,7 @@ Sub Parent.show()
 	Print "parent", a
 End Sub
 
-Type Child extends Parent
+Type Child Extends Parent
 	As Integer a
 	Declare Constructor(ByVal As Integer = 0)
 	Declare Sub show()
@@ -40,7 +40,7 @@ Sub Child.show()
 	Print "child", Base.a, a
 End Sub
 
-Type GrandChild extends Child
+Type GrandChild Extends Child
 	As Integer a
 	Declare Constructor(ByVal As Integer = 0)
 	Declare Sub show()

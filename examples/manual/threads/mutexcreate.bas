@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgMutexCreate
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgMutexCreate
 '' --------
 
 'Visual example of mutual exclusion between 2 threads by using Mutex:
@@ -39,22 +39,22 @@ Type ThreadUDT                                   'Generic user thread UDT
 	Declare Static Sub Thread (ByVal As Any Ptr) 'Generic user thread procedure
 	Dim procedure As Sub (ByVal As Any Ptr)      'Procedure(Any Ptr) to be executed by user thread
 	Dim p As Any Ptr                             'Any Ptr to pass to procedure executed by user thread
-	Const false As Byte = 0                      'Constante "false"
-	Const true As Byte = Not false               'Constante "true"
+	Const False As Byte = 0                      'Constante "false"
+	Const True As Byte = Not False               'Constante "true"
 End Type
 
 Static Sub ThreadUDT.Thread (ByVal param As Any Ptr) 'Generic user thread procedure
 	Dim tp As ThreadUDT Ptr = param                  'Casting to generic user thread UDT
 	Do
-	    Static As Integer I
-	    MutexLock(tp->sync)                          'Mutex (Lock) for user thread
-	    tp->procedure(tp->p)                         'Procedure(Any Ptr) to be executed by user thread
-	    I += 1
-	    Locate 30, 38
-	    Print I;
-	    MutexUnlock(tp->sync)                        'Mutex (Unlock) for user thread
-	    Sleep 5
-	Loop Until tp->quit = tp->true                   'Test for ending user thread
+		Static As Integer I
+		MutexLock(tp->sync)                          'Mutex (Lock) for user thread
+		tp->procedure(tp->p)                         'Procedure(Any Ptr) to be executed by user thread
+		I += 1
+		Locate 30, 38
+		Print I;
+		MutexUnlock(tp->sync)                        'Mutex (Unlock) for user thread
+		Sleep 5
+	Loop Until tp->quit = tp->True                   'Test for ending user thread
 End Sub
 
 '-----------------------------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ Do
 	MutexUnlock(Tptr->sync) 'Mutex (Unlock) for main thread
 Loop Until Inkey <> ""
  
-Tptr->quit = Tptr->true
+Tptr->quit = Tptr->True
 ThreadWait(Tptr->handle)
 MutexDestroy(Tptr->sync)
 Delete Tptr

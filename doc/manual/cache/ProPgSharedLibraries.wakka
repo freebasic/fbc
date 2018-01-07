@@ -122,7 +122,7 @@ function AddNumbers alias "AddNumbers"( byval a as integer, byval b as integer )
 end function
 %%
 	
-	{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/mydll.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/proguide/shared-lib/load.bas"}}%%(freebasic)
 '' load.bas: Loads mydll.dll (or libmydll.so) at runtime, calls one of mydll's
 '' functions and prints the result. mydll is not needed at compile time.
 '' compile as: fbc test.bas

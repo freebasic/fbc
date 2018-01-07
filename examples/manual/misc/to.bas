@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgTo
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgTo
 '' --------
 
 '' this program uses bound variables along with the TO keyword to create an array, store random
@@ -34,17 +34,17 @@ For it = minimum_temp_count To maximum_temp_count
    '' display a message based on temperature using our min/max danger zone bounds
    Select Case array( it )
 	  Case min_low_danger To max_low_danger
-	     Color 11
-	     Print "Temperature" ; it ; " is in the low danger zone at" ; array( it ) ; " degrees!"
+		 Color 11
+		 Print "Temperature" ; it ; " is in the low danger zone at" ; array( it ) ; " degrees!"
 	  Case min_medium_danger To max_medium_danger
-	     Color 14
-	     Print "Temperature" ; it ; " is in the medium danger zone at" ; array( it ) ; " degrees!"
+		 Color 14
+		 Print "Temperature" ; it ; " is in the medium danger zone at" ; array( it ) ; " degrees!"
 	  Case min_high_danger To max_high_danger
-	     Color 12
-	     Print "Temperature" ; it ; " is in the high danger zone at" ; array( it ) ; " degrees!"
+		 Color 12
+		 Print "Temperature" ; it ; " is in the high danger zone at" ; array( it ) ; " degrees!"
 	  Case Else
-	     Color 3
-	     Print "Temperature" ; it ; " is safe at" ; array( it ) ; " degrees."
+		 Color 3
+		 Print "Temperature" ; it ; " is safe at" ; array( it ) ; " degrees."
    End Select
 
 Next it

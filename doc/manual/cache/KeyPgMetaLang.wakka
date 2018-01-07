@@ -37,4 +37,4 @@ Metacommand statement to set the compiler dialect.
 	- [[CompilerOptforcelang|Compiler Option: -forcelang]]
 	- [[CompilerDialects|FreeBASIC Dialects]]
 
-{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}
+{{fbdoc item="back" value="CatPgCompilerSwitches|Compiler Switches"}}{{fbdoc item="back" value="CatPgPreProcess|Preprocessor"}}

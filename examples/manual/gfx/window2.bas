@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgWindow
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgWindow
 '' --------
 
 '' The program shows how changing the view coordinates mapping for the current viewport changes the size of a figure drawn on the screen.

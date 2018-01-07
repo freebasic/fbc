@@ -1,0 +1,71 @@
+Version 0.6
+
+[changed]
+- shared dynamic arrays are intialized on first use
+
+
+Version 0.5
+
+[changed]
+- License is GNU Lesser General Public License Version 2.1 (or later) plus linking exception -- see license.txt
+
+
+Version 0.4
+
+[added]
+- explicit copyright notices on source files and in the readme.txt
+- junit compatible xml report generator
+
+
+Version 0.3
+
+[added]
+- CU_ASSERT_DOUBLE_EQUAL() macro added - it is needed for fbc compiler test suite
+- fbcu.check_internal_state() performs checks on the internal data
+- console print logger calls crt fprintf directly - using fbc's OPEN in the library can interfere with unit tests
+
+[changed]
+- run_tests() now takes a verbose parameter
+- run_tests() returns true=success, false=fail
+- run_tests() checks return values from SUITE_INIT and SUITE_CLEANUP and reports failures
+- CU_ASSERT_() now takes boolean data type as value argument (was long)
+
+[fixed]
+- hash table look up for suite names was failing when index was 0 (zero)
+- CU_PASS() definition was incorrect
+- CU_FAIL() definition was incorrect
+- CU_ASSERT_TRUE() was comparing "=true" and needs to compare "<>false"
+
+
+Version 0.2
+
+[added]
+- dual api for using fbcunit in -lang qb
+- internal: use a singly linked lists to run tests for each test
+- internal: use a hash for suite name lookups
+- SUITE_INIT & SUITE_EXIT macros
+
+[changed]
+- fbcunit.bi reorganized to separate helper macros and code emitters
+
+[fixed]
+- find_suite() has always returning INVALID_INDEX
+- unable to append tests to existing suite due to duplicate constructor names
+- make constructors private to avoid name collisions
+- lang qb: fix pseudo namespace "tests"
+
+
+Version 0.1
+
+[added]
+- add defines FBCU_VER_MAJOR, FBCU_VER_MINOR
+- add macros SUITE(), END_SUITE, TEST(), END_TEST
+
+[changed]
+- simplify makefiles - one remaining in top level
+
+
+Version 0.0
+
+[added]
+- base code (from another project) and set namespace to fbcunit

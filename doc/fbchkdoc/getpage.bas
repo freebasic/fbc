@@ -159,7 +159,7 @@ wend
 
 '' URL must be set
 if( len( wiki_url ) = 0 ) then
-	print "wiki_url not set."
+	print "wiki_url not set. use -url, -web, -web+, -dev, -dev+"
 	end 1
 end if
 

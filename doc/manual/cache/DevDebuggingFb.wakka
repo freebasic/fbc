@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="Debugging FB"}}----
 
-For debugging and development it's a good idea to build the compiler with -g and -exx to enable assertions and NULL pointer/array boundary checks. For the rtlib/gfxlib2 code, -DDEBUG enables the assertions. Just update config.mk and (re)build. Example config.mk settings:
+For debugging and development it's a good idea to build the compiler with -g and -exx to enable assertions, plus array boundary and non-null-pointer checks. For the rtlib/gfxlib2 code, -DDEBUG enables the assertions. Just update config.mk and (re)build. Example config.mk settings:
 
 %%FBFLAGS := -g -exx
 CFLAGS := -g -O0 -DDEBUG

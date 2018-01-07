@@ -3,32 +3,40 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgInputfilemode
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgInputfilemode
 '' --------
 
 Dim ff As UByte
 Dim randomvar As Integer
 Dim name_str As String
-Dim age_ubyte As UByte
+Dim age As Integer
+
+'' collect the test data and output to file with Write #
+Input "What is your name? ", name_str
+Input "What is your age? ", age
+Randomize
+Print
 
 ff = FreeFile
-Input "What is your name? ",name_str
-Input "What is your age? ",age_ubyte
 Open "testfile" For Output As #ff
-Write #ff, Int(Rnd(0)*42),name_str,age_ubyte
+Write #ff, Int(Rnd*42), name_str, age
 Close #ff
-randomvar=0
-name_str=""
-age_ubyte=0
 
+'' clear variables
+randomvar = 0
+name_str = ""
+age = 0
+
+'' input the variables, using Input #
+ff = FreeFile
 Open "testfile" For Input As #ff
-Input #ff, randomvar,name_str,age_ubyte
+Input #ff, randomvar, name_str, age
 Close #ff
 
-Print "Random Number was: ", randomvar
-Print "Your name is: " + name_str
-Print "Your age is: " + Str(age_ubyte)
+Print "Random Number was: " & randomvar
+Print "Your name is: " & name_str
+Print "Your age is: " & age
 
-'File outputted by this sample will look like this,
-'minus the comment of course:
+'File outputted by this sample will look something like this
+'(not including the leading comment marker):
 '23,"Your Name",19

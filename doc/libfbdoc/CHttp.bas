@@ -35,6 +35,11 @@ namespace fb
 	end type
 
 	'':::::
+	static sub CHttp.GlobalInit()
+		curl_global_init( CURL_GLOBAL_ALL )
+	end sub
+
+	'':::::
 	constructor CHttp _
 		( _
 		)

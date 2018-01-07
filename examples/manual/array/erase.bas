@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgErase
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgErase
 '' --------
 
 Dim MyArray1(1 To 10) As Integer

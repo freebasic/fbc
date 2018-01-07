@@ -1,3 +1,6 @@
+October 25, 2017
+- copyright updates for 2017
+
 April 9, 2008
 - added first version of texinfo emitter (W.I.P.) cloned from the plain
   text emitter.

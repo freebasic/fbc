@@ -3,14 +3,14 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgBaseInit
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgBaseInit
 '' --------
 
 Type SimpleParent
 	As Integer a, b, c
 End Type
 
-Type Child extends SimpleParent
+Type Child Extends SimpleParent
 	Declare Constructor( )
 End Type
 

@@ -47,6 +47,6 @@ close #f
 {{fbdoc item="see"}}
 	- ##[[KeyPgOpen|Open]]##
 	- ##[[KeyPgUnlock|Unlock]]##
-	- ##[[KeyPgScreenLock|ScreenLock]]##
+	- ##[[KeyPgScreenlock|ScreenLock]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

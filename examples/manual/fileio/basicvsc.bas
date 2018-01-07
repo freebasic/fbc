@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgFileIO
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgFileIO
 '' --------
 
 Data " File I/O example & test GET vs FREAD | (CL) 2008-10-12 Public Domain "

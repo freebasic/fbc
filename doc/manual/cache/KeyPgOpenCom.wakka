@@ -17,7 +17,7 @@ Opens a serial port for input and output
 	##**Open Com()**## returns a 32 bit ##[[KeyPgLong|Long]]##: a zero (##0##) on success and a non-zero error code otherwise.
 
 {{fbdoc item="desc"}}
-	This command opens a serial port of the PC, allowing to send and receive data by using the normal file commands as ##[[KeyPgPrintpp|Print  #]]##, ##[[KeyPgInputpp|Input #]]##, ##[[KeyPgGetfileio|Get #]]##, ...
+	This command opens a serial port of the PC, allowing to send and receive data by using the normal file commands as ##[[KeyPgPrintPp|Print  #]]##, ##[[KeyPgInputPp|Input #]]##, ##[[KeyPgGetfileio|Get #]]##, ...
 	
 	The main parameter is a ##[[KeyPgString|String]]## that describes, at the very least, which communications port to open. It has the format:
 	

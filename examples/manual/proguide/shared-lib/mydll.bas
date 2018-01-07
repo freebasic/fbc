@@ -3,46 +3,22 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgSharedLibraries
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgSharedLibraries
 '' --------
 
-'' load.bas: Loads mydll.dll (or libmydll.so) at runtime, calls one of mydll's
-'' functions and prints the result. mydll is not needed at compile time.
-'' compile as: fbc test.bas
+'' mydll.bas
+'' compile as: fbc -dll mydll.bas
+'' This will create mydll.dll (and libmydll.dll.a import library) on Windows,
+'' and libmydll.so on Linux.
 ''
-'' Note: The compiled mydll.dll (or libmydll.so) dynamic library is expected
-'' to be available in the current directory.
+'' Note: libmydll.dll.a is an import library, it's only needed when creating 
+'' an executable that calls any of mydll's functions, only distribute 
+'' the DLL files with your apps, do not include the import libraries, 
+'' they are useless to end-users.
 
-'' Note we specify just "mydll" as library file name; this is to ensure
-'' compatibility between Windows and Linux, where a dynamic library
-'' has different file name and extension.
-Dim As Any Ptr library = DyLibLoad( "mydll" )
-If( library = 0 ) Then
-	Print "Failed to load the mydll dynamic library, aborting program..."
-	End 1
-End If
-
-'' This function pointer will be used to call the function from mydll, after
-'' the address has been found. Note: It must have the same calling
-'' convention and parameters.
-Dim AddNumbers As Function( ByVal As Integer, ByVal As Integer ) As Integer
-AddNumbers = DyLibSymbol( library, "AddNumbers" )
-If( AddNumbers = 0 ) Then
-	Print "Could not retrieve the AddNumbers() function's address from the mydll library, aborting program..."
-	End 1
-End If
-
-Randomize Timer
-
-Dim As Integer x = Rnd * 10
-Dim As Integer y = Rnd * 10
-
-Print x; " +"; y; " ="; AddNumbers( x, y )
-
-'' Done with the library; the OS will automatically unload libraries loaded
-'' by a process when it terminates, but we can also force unloading during
-'' our program execution to save resources; this is what the next line does.
-'' Remember that once you unload a previously loaded library, all the symbols
-'' you got from it via dylibsymbol will become invalid, and accessing them
-'' will cause the application to crash.
-DyLibFree( library )
+'' Simple exported function; the <alias "..."> disables FB's default
+'' all-upper-case name mangling, so the DLL will export AddNumbers() instead of
+'' ADDNUMBERS().
+Function AddNumbers Alias "AddNumbers"( ByVal a As Integer, ByVal b As Integer ) As Integer Export
+	Function = a + b
+End Function

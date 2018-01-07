@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAddGfx
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAddGfx
 '' --------
 
 ''open a graphics window
@@ -16,9 +16,9 @@ Circle c, (r, r), r, RGB(255, 255, 192), , , 1, f
 
 ''put the sprite at three different multipier
 ''levels, overlapping each other in the middle
-Put (146 - r, 108 - r), c, add,  64
-Put (174 - r, 108 - r), c, add, 128
-Put (160 - r,  84 - r), c, add, 192
+Put (146 - r, 108 - r), c, Add,  64
+Put (174 - r, 108 - r), c, Add, 128
+Put (160 - r,  84 - r), c, Add, 192
 
 ''free the memory used by the sprite
 ImageDestroy c

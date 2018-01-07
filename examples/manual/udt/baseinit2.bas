@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgBaseInit
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgBaseInit
 '' --------
 
 Type ComplexParent
@@ -15,7 +15,7 @@ Constructor ComplexParent( ByVal i As Integer = 0 )
 	this.i = i
 End Constructor
 
-Type Child extends ComplexParent
+Type Child Extends ComplexParent
 	Declare Constructor( )
 	Declare Constructor( ByRef As Child )
 End Type

@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreencontrol
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgScreencontrol
 '' --------
 
 '' include fbgfx.bi for some useful definitions
@@ -12,7 +12,7 @@
 '' use FB namespace for easy access to types/constants
 Using FB
 
-Dim e As EVENT
+Dim e As Event
 Dim As Integer x0, y0, x, y
 Dim As Integer shakes = 0
 Dim As Any Ptr img
@@ -26,47 +26,47 @@ ScreenControl GET_WINDOW_POS, x0, y0
 Do
 
 	If (shakes > 0) Then
-	    
-	    '' do a shake of the window
+		
+		'' do a shake of the window
 
-	    If (shakes > 1) Then
+		If (shakes > 1) Then
 
-	        '' move window to a random position near its original coordinates
-	        x = x0 + Int(32 * (Rnd() - 0.5))
-	        y = y0 + Int(32 * (Rnd() - 0.5))
-	        ScreenControl SET_WINDOW_POS, x, y
+			'' move window to a random position near its original coordinates
+			x = x0 + Int(32 * (Rnd() - 0.5))
+			y = y0 + Int(32 * (Rnd() - 0.5))
+			ScreenControl SET_WINDOW_POS, x, y
 
-	    Else
+		Else
 
-	        '' move window back to its original coordinates
-	        ScreenControl SET_WINDOW_POS, x0, y0
+			'' move window back to its original coordinates
+			ScreenControl SET_WINDOW_POS, x0, y0
 
-	    End If
+		End If
 
-	    shakes -= 1
+		shakes -= 1
 
 	End If
 
 	If (ScreenEvent(@e)) Then
-	    Select Case e.type
-	    
-	    '' user pressed the mouse button
-	    Case EVENT_MOUSE_BUTTON_PRESS
+		Select Case e.type
+		
+		'' user pressed the mouse button
+		Case EVENT_MOUSE_BUTTON_PRESS
 
-	        If (shakes = 0) Then
-	            '' set to do 20 shakes
-	            shakes = 20
+			If (shakes = 0) Then
+				'' set to do 20 shakes
+				shakes = 20
 
-	            '' find current window coordinates to shake around
-	            ScreenControl GET_WINDOW_POS, x0, y0
-	        End If
+				'' find current window coordinates to shake around
+				ScreenControl GET_WINDOW_POS, x0, y0
+			End If
 
-	    '' user closed the window or pressed a key
-	    Case EVENT_WINDOW_CLOSE, EVENT_KEY_PRESS
-	        '' exit to end of program
-	        Exit Do
+		'' user closed the window or pressed a key
+		Case EVENT_WINDOW_CLOSE, EVENT_KEY_PRESS
+			'' exit to end of program
+			Exit Do
 
-	    End Select
+		End Select
 	End If
 
 	'' free up CPU for other programs

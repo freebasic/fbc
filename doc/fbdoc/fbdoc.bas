@@ -47,10 +47,10 @@
 using fb
 using fbdoc
 
-const ManualDir = "../manual/"
+const default_ManualDir = "../manual/"
 const default_wiki_url = "https://www.freebasic.net/wiki/wikka.php"
 const default_ca_file = ""
-const default_CacheDir = ManualDir + "cache/"
+const default_CacheDir = default_ManualDir + "cache/"
 const default_TocPage = "DocToc"
 
 enum OUTPUT_FORMATS
@@ -71,6 +71,7 @@ end sub
 '' --------------------------------------------------------------------------
 
 	dim as integer CacheRefreshMode = CWikiCache.CACHE_REFRESH_IFMISSING
+	dim as string sManualDir = default_ManualDir
 	dim as string sCacheDir = default_CacheDir
 	dim as string sOutputDir = ""
 	dim as string sConnFile, sLangFile, sTocTitle, sDocToc, sTemplateDir
@@ -263,6 +264,8 @@ end sub
 				print #h, "[Wiki Connection]"
 				print #h, "wiki_url = https://www.freebasic.net/wiki/wikka.php"
 				print #h,
+				print #h, "[dirs]"
+				print #h, "manual_dir = ./"
 
 				print #h, "[MySql Connection]"
 				print #h, "db_host = localhost"
@@ -288,8 +291,11 @@ end sub
 		end 1
 	end if
 
+	'' if 'manual_dir' exists in the options, let it override any default set
+	sManualDir = connopts->Get( "manual_dir", sManualDir )
+
 	'' Load language options
-	sLangFile = ManualDir + "templates/default/lang/en/common.ini"
+	sLangFile = sManualDir + "templates/default/lang/en/common.ini"
 	if( Lang.LoadOptions( sLangFile ) = FALSE ) then
 		print "Unable to load language file '" + sLangFile + "'"
 		end 1
@@ -361,7 +367,7 @@ end sub
 	end if
 
 	'' Load Keywords
-	fbdoc_loadkeywords( ManualDir + "templates/default/keywords.lst" )
+	fbdoc_loadkeywords( sManualDir + "templates/default/keywords.lst" )
 
 	if( bMakeTitles ) then
 		'misc_dump_keypageslist( paglist, "keypages.txt" )
@@ -378,8 +384,8 @@ end sub
 	if( ( bEmitFormats and OUT_CHM ) <> 0 )then
 
 		'' Generate CHM
-		sOutputDir = ManualDir + "html/"
-		sTemplateDir = ManualDir + "templates/default/code/"
+		sOutputDir = sManualDir + "html/"
+		sTemplateDir = sManualDir + "templates/default/code/"
 
 		hMkdir( sOutputDir )
 
@@ -401,8 +407,8 @@ end sub
 	if( ( bEmitFormats and OUT_FBHELP ) <> 0 )then
 
 		'' Generate fbhelp output for fbhelp console viewer
-		sOutputDir = ManualDir + "fbhelp/"
-		sTemplateDir = ManualDir + "templates/default/code/"
+		sOutputDir = sManualDir + "fbhelp/"
+		sTemplateDir = sManualDir + "templates/default/code/"
 
 		hMkdir( sOutputDir )
 
@@ -419,8 +425,8 @@ end sub
 	if( ( bEmitFormats and OUT_TXT ) <> 0 )then
 
 		'' Generate ascii Txt output for single txt file
-		sOutputDir = ManualDir + "txt/"
-		sTemplateDir = ManualDir + "templates/default/code/"
+		sOutputDir = sManualDir + "txt/"
+		sTemplateDir = sManualDir + "templates/default/code/"
 
 		hMkdir( sOutputDir )
 
@@ -437,8 +443,8 @@ end sub
 	if( ( bEmitFormats and OUT_TEXINFO ) <> 0 )then
 
 		'' Generate ascii Txt output for single txt file
-		sOutputDir = ManualDir + "texinfo/"
-		sTemplateDir = ManualDir + "templates/default/code/"
+		sOutputDir = sManualDir + "texinfo/"
+		sTemplateDir = sManualDir + "templates/default/code/"
 
 		hMkdir( sOutputDir )
 

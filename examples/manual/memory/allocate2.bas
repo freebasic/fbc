@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAllocate
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgAllocate
 '' --------
 
 '' Bad example of Allocate usage, causing memory leaks
@@ -15,7 +15,7 @@ Sub BadAllocateExample()
 	p = Allocate(420)   '' assign pointer to new memory
 
 	p = Allocate(420)   '' reassign same pointer to different memory,
-	                    '' old address is lost and that memory is leaked
+						'' old address is lost and that memory is leaked
 
 	Deallocate(p)
 

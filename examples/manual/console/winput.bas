@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgWinput
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgWinput
 '' --------
 
 Dim char As WString * 2
@@ -21,27 +21,27 @@ If Open(filename For Input Encoding enc As #f) = 0 Then
 	Print "Press space to read a character from the file, or escape to exit."
 	
 	Do
-	    
-	    Select Case Input(1)
-	    
-	    Case " " 'Space
-	        
-	        If EOF(f) Then
-	            
-	            Print "You have reached the end of the file."
-	            Exit Do
-	            
-	        End If
-	        
-	        char = WInput(1, f)
-	        Print char & " (char no " & Asc(char) & ")"
-	        
-	    Case Chr(27) 'Escape
-	        
-	        Exit Do
-	        
-	    End Select
-	    
+		
+		Select Case Input(1)
+		
+		Case " " 'Space
+			
+			If EOF(f) Then
+				
+				Print "You have reached the end of the file."
+				Exit Do
+				
+			End If
+			
+			char = WInput(1, f)
+			Print char & " (char no " & Asc(char) & ")"
+			
+		Case Chr(27) 'Escape
+			
+			Exit Do
+			
+		End Select
+		
 	Loop
 	
 	Close #f

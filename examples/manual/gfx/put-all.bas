@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPutgraphics
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPutgraphics
 '' --------
 
 Declare Function checkered_blend( ByVal src As UInteger, ByVal dest As UInteger, ByVal param As Any Ptr ) As UInteger
@@ -36,7 +36,7 @@ Declare Function checkered_blend( ByVal src As UInteger, ByVal dest As UInteger,
    Put Step( 16,20 ), sprite, Trans
    Put Step( -16,20 ), sprite, Alpha, 96
    Put Step( 16,20 ), sprite, Alpha
-   Put Step( -16,20 ), sprite, add, 192
+   Put Step( -16,20 ), sprite, Add, 192
    Put Step( 16,20 ), sprite, Custom, @checkered_blend, @counter
    
    '' print a description near each demo

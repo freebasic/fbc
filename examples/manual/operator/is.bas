@@ -3,23 +3,23 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpIs
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpIs
 '' --------
 
-Type Vehicle extends object
+Type Vehicle Extends Object
 	As String Name
 End Type
 
-Type Car extends Vehicle
+Type Car Extends Vehicle
 End Type
 
-Type Cabriolet extends Car
+Type Cabriolet Extends Car
 End Type
 
-Type Bike extends Vehicle
+Type Bike Extends Vehicle
 End Type
 
-Sub identify(ByVal p As object Ptr)
+Sub identify(ByVal p As Object Ptr)
 	Print "Identifying:"
 
 	'' Not a Vehicle object?

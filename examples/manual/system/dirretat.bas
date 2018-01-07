@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDir
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDir
 '' --------
 
 '' Example of using DIR function and retrieving attributes
@@ -26,20 +26,20 @@ Do Until Len(fname) = 0 '' loop until Dir returns empty string
 
 	If (fname <> ".") And (fname <> "..") Then '' ignore current and parent directory entries
 
-	    Print fname,
+		Print fname,
 
-	    If (out_attr And fbDirectory) <> 0 Then
-	        Print "- directory";
-	        dircount += 1
-	    Else
-	        Print "- file";
-	        filecount += 1
-	    End If
-	    If (out_attr And fbReadOnly) <> 0 Then Print ", read-only";
-	    If (out_attr And fbHidden) <> 0 Then Print ", hidden";
-	    If (out_attr And fbSystem) <> 0 Then Print ", system";
-	    If (out_attr And fbArchive) <> 0 Then Print ", archived";
-	    Print
+		If (out_attr And fbDirectory) <> 0 Then
+			Print "- directory";
+			dircount += 1
+		Else
+			Print "- file";
+			filecount += 1
+		End If
+		If (out_attr And fbReadOnly) <> 0 Then Print ", read-only";
+		If (out_attr And fbHidden  ) <> 0 Then Print ", hidden";
+		If (out_attr And fbSystem  ) <> 0 Then Print ", system";
+		If (out_attr And fbArchive ) <> 0 Then Print ", archived";
+		Print
 
 	End If
 

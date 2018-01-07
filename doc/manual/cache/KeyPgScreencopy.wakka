@@ -13,6 +13,9 @@ Copies the contents of a graphical page into another graphical page
 	##//to_page//##
 		page to copy to
 
+{{fbdoc item="ret"}}
+	Returns zero (##0##) if successful, or a non-zero error code to indicate a failure.
+
 {{fbdoc item="desc"}}
 	##//from_page//## is the page to copy from. If this argument is omitted, the current work page is assumed.  ##//to_page//## is the page to copy to. If this argument is omitted, the currently visible page is assumed.  Page numbers range from ##0## to ##//num_pages// - 1##, where ##//num_pages//## is the number of pages specified when setting the graphics mode with ##[[KeyPgScreenres|Screenres]]## or ##[[KeyPgScreengraphics|Screen]]##.
 	
@@ -21,7 +24,9 @@ Copies the contents of a graphical page into another graphical page
 	##**Screencopy**## is inactive if the destination page is locked.
 	
 	There are two other functions similar to this: ##[[KeyPgFlip|Flip]]## and ##[[KeyPgPcopy|PCopy]]##.  ##[[KeyPgFlip|Flip]]## is designed to work in ""OpenGL"" modes, while ##[[KeyPgPcopy|PCopy]]## supports console pages on some platforms.  Both do the same thing as ##**Screencopy**## in normal graphics modes.
-
+	
+	The error code returned by ##**Screencopy**## can be checked using ##[[KeyPgErr|Err]]## in the next line. The function version of  ##**Screencopy**## returns directly the error code as a 32 bit ##[[KeyPgLong|Long]]##.
+	
 {{fbdoc item="ex"}}
 	See also ##[[KeyPgScreenset|Screenset]]## example.
 

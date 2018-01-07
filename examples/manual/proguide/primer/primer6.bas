@@ -3,10 +3,10 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgPrimer1
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgPrimer1
 '' --------
 
-Dim a As Integer, b As Integer, r As Integer
+Dim As Integer a, b, r
 Input "Enter a number:", a
 Input "Enter another number:", b
 

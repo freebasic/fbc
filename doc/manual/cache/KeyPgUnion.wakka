@@ -19,7 +19,7 @@ Declares a union user defined type.
 {{fbdoc item="desc"}}
 	Unions are similar to a ##[[KeyPgType|Type]]## structure, except that the elements of a union occupy the same space in memory.
 	Like Type, Union can use the optional ##[[KeyPgField|Field]] = //number//## specifier and supports also inheritance through the use of the [[KeyPgExtends|Extends]] keyword.
-	Unlike Type, Union can not contain variable-length strings, and more generally fields (or can not have bases) with constructors or destructors.
+	Unlike Type, Union can not contain variable-length strings, and more generally fields (or can not have bases) with constructors or destructors. Therefore, Union does not support to inherit from the ##[[KeyPgObject|Object]]## built-in type.
 	The size of the Union is the size of the largest data item. A data item can be an unnamed ##[[KeyPgType|Type]]##. Since they occupy the same space, only a single element can be used.
 	
 	Unions support member functions including ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##, ##[[KeyPgMemberFunction|Function]]##, ##[[KeyPgOperator|Operator]]##, ##[[KeyPgProperty|Property]]## and ##[[KeyPgMemberSub|Sub]]##. All members of a union are public and access control is not supported. 
@@ -27,6 +27,8 @@ Declares a union user defined type.
 	Nested unnamed type or union cannot have procedure members or static data members (same restriction for local named type/union).
 	
 	A ##**Union**## can be passed as a user defined type to overloaded operator functions.
+	
+	**Note:** When ##**Union**## extends a base, it can be confusing because no new fields are added to the base, but instead the base is added to the derived Union. This means that fields in the derived Union can share the same memory space like the base. Of course it can be dangerous, but that is always the problem with Unions.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/union.bas"}}%%(freebasic)

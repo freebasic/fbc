@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibfreetype2
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibfreetype2
 '' --------
 
 '' Example of rendering a char using freetype
@@ -52,8 +52,8 @@ Dim As FT_Bitmap Ptr bitmap = @face->glyph->bitmap
 
 For y As Integer = 0 To (bitmap->rows - 1)
 	For x As Integer = 0 To (bitmap->Width - 1)
-	    Dim As Integer col = bitmap->buffer[y * bitmap->pitch + x]
-	    PSet(x, y), RGB(col, col, col)
+		Dim As Integer col = bitmap->buffer[y * bitmap->pitch + x]
+		PSet(x, y), RGB(col, col, col)
 	Next
 Next
 

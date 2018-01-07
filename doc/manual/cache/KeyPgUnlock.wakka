@@ -32,6 +32,6 @@ Removes a previous access restriction (lock) on a file
 {{fbdoc item="see"}}
 	- ##[[KeyPgLock|Lock]]##
 	- ##[[KeyPgOpen|Open]]##
-	- ##[[KeyPgScreenUnlock|ScreenUnlock]]##
+	- ##[[KeyPgScreenunlock|ScreenUnlock]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

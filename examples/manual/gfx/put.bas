@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPutgraphics
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPutgraphics
 '' --------
 
 '' set up the screen and fill the background with a color

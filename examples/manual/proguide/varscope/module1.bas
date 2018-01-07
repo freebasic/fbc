@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ProPgVariableScope
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgVariableScope
 '' --------
 
 '' compile with:
@@ -14,7 +14,7 @@
 Declare Sub Print_Values()
 Common m1 As Integer
 Common m2 As Integer
-	                  ' This is executed after all other modules
+					  ' This is executed after all other modules
 m1 = 1
 
 Print "Module1"       

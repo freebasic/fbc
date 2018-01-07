@@ -132,7 +132,7 @@ function ReadExampleFile( byref path as string, byref filename as string, byval 
 end function
 
 ''
-function WriteExampleFile( byref sPage as string, byref path as string, byref filename as string, byref text as string, byval CompareFirst as integer, byref RefID as string ) as integer
+function WriteExampleFile( byref sPage as string, byref path as string, byref filename as string, byref text as string, byval CompareFirst as integer, byref RefID as string, byval force as boolean ) as integer
 	
 	dim x as string, b as buffer, idx as integer, text2 as string, b2 as buffer
 
@@ -154,7 +154,9 @@ function WriteExampleFile( byref sPage as string, byref path as string, byref fi
 		if( CompareFirst <> FALSE ) then
 			if( CompareBuffersEqual( b, b2 )) then
 				'' logprint "SKIPPED: " & filename & " is up to date"
-				exit function
+				if( force = false ) then
+					exit function
+				end if
 			end if
 		end if
 	end if

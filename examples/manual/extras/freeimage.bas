@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibfreeimage
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibfreeimage
 '' --------
 
 '' Code example for loading all common image types using FreeImage.
@@ -24,25 +24,25 @@ Function FI_Load(filename As String) As Any Ptr
 	'' Find out the image format
 	Dim As FREE_IMAGE_FORMAT form = FreeImage_GetFileType(StrPtr(filename), 0)
 	If form = FIF_UNKNOWN Then
-	    form = FreeImage_GetFIFFromFilename(StrPtr(filename))
+		form = FreeImage_GetFIFFromFilename(StrPtr(filename))
 	End If
 
 	'' Exit if unknown
 	If form = FIF_UNKNOWN Then
-	    Return NULL
+		Return NULL
 	End If
 
 	'' Always load jpegs accurately
 	Dim As UInteger flags = 0
 	If form = FIF_JPEG Then
-	    flags = JPEG_ACCURATE
+		flags = JPEG_ACCURATE
 	End If
 
 	'' Load the image into memory
 	Dim As FIBITMAP Ptr image = FreeImage_Load(form, StrPtr(filename), flags)
 	If image = NULL Then
-	    '' FreeImage failed to read in the image
-	    Return NULL
+		'' FreeImage failed to read in the image
+		Return NULL
 	End If
 
 	'' Flip the image so it matches FB's coordinate system
@@ -66,9 +66,9 @@ Function FI_Load(filename As String) As Any Ptr
 
 	'' And copy over the pixels, row by row
 	For y As Integer = 0 To (h - 1)
-	    memcpy(target + (y * target_pitch), _
-	           source + (y * source_pitch), _
-	           w * 4)
+		memcpy(target + (y * target_pitch), _
+			   source + (y * source_pitch), _
+			   w * 4)
 	Next
 
 	FreeImage_Unload(image32)

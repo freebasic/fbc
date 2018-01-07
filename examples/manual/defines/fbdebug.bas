@@ -3,11 +3,11 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDdfbdebug
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDdfbdebug
 '' --------
 
 #if __FB_DEBUG__ <> 0
-	    #print Debug mode 
+		#print Debug mode 
 #else 
-	    #print Release mode 
+		#print Release mode 
 #endif

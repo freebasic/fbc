@@ -3,13 +3,13 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=ExtLibcurl
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ExtLibcurl
 '' --------
 
 '' Curl HTTP Get example
 
-#include once "curl.bi"
-#include once "crt/string.bi"
+#include Once "curl.bi"
+#include Once "crt/string.bi"
 
 '' this callback will be called when any data is received
 Private Function write_callback cdecl _

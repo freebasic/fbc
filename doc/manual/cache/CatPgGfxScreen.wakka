@@ -12,6 +12,8 @@ Statements and procedures that work with the graphics display.
 	Procedures that provide direct access to framebuffer memory.
 **{{anchor name="METRICS|Screen Metrics"}}**
 	Procedures that control the way coordinates are interpreted.
+**{{anchor name="TYPES|Screen Data Types"}}**
+	Data types and data definitions for screen functions.
 
 <<{{anchor name="MODES"}}{{fbdoc item="section" value="Working with screen modes"}}
 	=={{fbdoc item="keyword" value="KeyPgScreenlist|SCREENLIST"}}==
@@ -55,6 +57,11 @@ Statements and procedures that work with the graphics display.
 		Converts coordinates between physical and view mappings.
 	=={{fbdoc item="keyword" value="KeyPgPointCoord|POINTCOORD"}}==
 		Queries ##[[KeyPgDraw|Draw]]##'s pen position.
+
+{{anchor name="TYPES"}}{{fbdoc item="section" value="Screen Data Types"}}
+	=={{fbdoc item="keyword" value="KeyPgEvent|EVENT"}}==
+		Data type for [[KeyPgScreenevent|ScreenEvent]] function.
+
 >>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

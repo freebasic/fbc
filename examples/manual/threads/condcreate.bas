@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCondCreate
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgCondCreate
 '' --------
 
 ''
@@ -31,7 +31,7 @@ Sub mythread(ByVal id_ptr As Any Ptr)
 	'' wait for the start signal
 	MutexLock hmutexstart
 	Do While start = 0   
-	    CondWait hcondstart, hmutexstart
+		CondWait hcondstart, hmutexstart
 	Loop
 
 	'' now this thread holds the lock on hmutexstart
@@ -40,7 +40,7 @@ Sub mythread(ByVal id_ptr As Any Ptr)
 
 	'' print out the number of this thread
 	For i As Integer = 1 To 40
-	    Print id;
+		Print id;
 	Next i
 End Sub
 
@@ -58,7 +58,7 @@ MutexLock(hmutexready)
 For i As Integer = 1 To 9
 	threads(i) = ThreadCreate(@mythread, Cast(Any Ptr, i))
 	If threads(i) = 0 Then
-	    Print "unable to create thread"
+		Print "unable to create thread"
 	End If
 Next i
 
@@ -80,7 +80,7 @@ MutexUnlock hmutexstart
 '' wait for all threads to complete
 For i As Integer = 1 To 9
 	If threads(i) <> 0 Then
-	    ThreadWait threads(i)
+		ThreadWait threads(i)
 	End If
 Next i
 

@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgFornext
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgFornext
 '' --------
 
 Print "counting from 3 to 0, with a step of -0.5"

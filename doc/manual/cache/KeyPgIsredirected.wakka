@@ -55,6 +55,6 @@ End If
 	- New to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgreset|Reset(streamno)]]##
+	- ##[[KeyPgReset|Reset(streamno)]]##
 
 {{fbdoc item="back" value="CatPgOpsys|Operating System Functions"}}

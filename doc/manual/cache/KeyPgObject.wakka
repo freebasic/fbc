@@ -33,4 +33,4 @@ Built-in type providing run-time type information
 	- ##[[KeyPgVirtual|Virtual]]##
 	- ##[[KeyPgAbstract|Abstract]]##
 
-{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

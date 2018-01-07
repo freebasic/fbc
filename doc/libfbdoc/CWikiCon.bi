@@ -27,6 +27,8 @@ namespace fb.fbdoc
 		
 	type CWikiCon
 
+		declare static sub GlobalInit()
+
 		declare constructor _
 			( _
 				byval url as zstring ptr = NULL, _

@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDeallocate
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDeallocate
 '' --------
 
 '' WARNING: "evil" example showing how things should NOT be done
@@ -22,7 +22,7 @@ Sub DeallocateExample2()
    anotherIntegerPtr = 0                       '' and zero other pointer
 
 '' *integerPtr = 420                           '' undefined behavior; original
-	                                           '' pointer is invalid
+											   '' pointer is invalid
 End Sub
 
    DeallocateExample2()

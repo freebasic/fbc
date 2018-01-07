@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpAnd
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpAnd
 '' --------
 
 ' Using the AND operator on two conditional expressions

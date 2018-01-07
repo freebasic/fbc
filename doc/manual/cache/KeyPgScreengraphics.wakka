@@ -16,7 +16,7 @@ Initializes a graphics mode using QB-like mode numbers
 	##//num_pages//##
 		is the number of video pages you want, see below.  If omitted, it defaults to ##1##.
 	##//flags//##
-		Are used to select several things as graphics driver, fullscreen mode. There are constants predefined in the ##fbgfx.bi## file ready to use.  See the page [[KeyPgScreenres|Screenres]] for available flags.
+		Are used to select several things as graphics driver priority, fullscreen mode. There are constants predefined in the ##fbgfx.bi## file ready to use.  See the page [[KeyPgScreenres|Screenres]] for available flags.
 	##//refresh_rate//##
 		requests a refresh rate.  If it is not available in the present card or the parameter is omitted, ""FreeBASIC"" chooses the rate automatically.
 	##//active_page//##

@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgUnion
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgUnion
 '' --------
 
 ' Example 1: bitfields.
@@ -36,8 +36,8 @@ Type CompType
 	s As String * 20
 	ui As Byte 'Flag to tell us what to use in union.
 	Union 
-	    au As UByte
-	    bu As Integer
+		au As UByte
+		bu As Integer
 	End Union
 End Type
 

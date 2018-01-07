@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgIsredirected
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgIsredirected
 '' --------
 
 '' A Windows based example, just for the use principle
@@ -23,12 +23,12 @@ End If
 
 If Command() = "" Then  '' First process without stdin redirection
   '' Check stdin redirection
-  Print "First process without stdin redirection: IsRedirected(-1) = "; Isredirected(-1)
+  Print "First process without stdin redirection: IsRedirected(-1) = "; IsRedirected(-1)
   '' Creation of asynchronous second process with stdin redirected from file.exe
   Shell("start /d " & pathExe & " /b " & fileExe & redirection & " secondprocess")
   '' Waiting for termination of asynchronous second process
   Sleep
 ElseIf Command() = "secondprocess" Then  '' Second process with stdin redirection
   '' Check stdin redirection
-  Print "Second process with stdin redirection  : IsRedirected(-1) = "; Isredirected(-1)
+  Print "Second process with stdin redirection  : IsRedirected(-1) = "; IsRedirected(-1)
 End If

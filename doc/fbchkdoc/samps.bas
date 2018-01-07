@@ -35,6 +35,7 @@
 #include once "samps_file.bi"
 #include once "samps_wiki.bi"
 #include once "fbchkdoc.bi"
+#include once "fbdoc_keywords.bi"
 
 #inclib "fbdoc"
 #inclib "pcre"
@@ -115,14 +116,14 @@ dim shared commands( 0 to cmd_count - 1 ) as COMMAND_TYPE = { _
 	( @"lf",       opt_do_scan                  , @cmd_lf_proc,        @"[dirs...]"             , @"rewrites files with LF line endings" ), _
 	( @"crlf",     opt_do_scan                  , @cmd_crlf_proc,      @"[dirs...]"             , @"rewrites files with CRLF line endings" ), _
 	( @"insert",   opt_do_scan or opt_do_refids , @cmd_insert_proc,    @"[dirs...]"             , @"inserts *old* sources to pages" ), _
-	( @"extract",  opt_get_pages                , @cmd_extract_proc,   @"[pages...] [@pagelist]", @"extracts sample files from pages" ), _
+	( @"extract",  opt_get_pages                , @cmd_extract_proc,   @"[pages...] [@pagelist]", @"extracts sample files from pages (optional --force)" ), _
 	( @"update",   opt_get_pages                , @cmd_update_proc,    @"[pages...] [@pagelist]", @"updates pages with sample files" ), _
 	( @"setfb",    opt_get_pages                , @cmd_set_fb_proc,    @"[pages...] [@pagelist]", @"set freebasic code tags" ), _
-	( @"getex",    opt_get_pages                , @cmd_getex_proc,     @"[pages...] [@pagelist]", @"extract unnamed examples" ), _
+	( @"getex",    opt_get_pages                , @cmd_getex_proc,     @"[pages...] [@pagelist]", @"extract unnamed examples (optional --force)" ), _
 	( @"namefix",  opt_do_scan                  , @cmd_namefix_proc,   @"[dirs...]"             , @"fix embedded filenames" ), _
 	( @"killref",  opt_do_scan                  , @cmd_killref_proc,   @"[dirs...]"             , @"delete embedded $$REF: magic" ), _
 	( @"move",     opt_do_scan_incoming         , @cmd_move_proc,      @""                      , @"move files from incoming to other path/name" ), _
-	( @"addlang",  opt_do_scan or opt_do_pageids, @cmd_addlang_proc,   @"[dirs...]"             , @"add #lang" ) _
+	( @"addlang",  opt_do_scan or opt_do_pageids, @cmd_addlang_proc,   @"[dirs...]"             , @"add #lang (optional --force)" ) _
 }
 
 '' !!! FIXME !!! - these should not be fixed size
@@ -134,11 +135,14 @@ dim shared refs( 1 to 4000 ) as REFTYPE
 
 dim shared as string sample_dir
 dim shared as string base_dir
+dim shared as string manual_dir
 dim shared as string wiki_cache_dir
 
 dim shared as integer webPageCount
 dim shared webPageList() as string
 dim shared wikicache as CWikiCache ptr = NULL
+
+dim shared opt_force as boolean = false
 
 '' ==========
 '' COMMANDS
@@ -383,7 +387,7 @@ function cmd_extract_proc() as integer
 				if( wikiex->filename > "" ) then
 				'' !!! FIXME !!! - only allow "examples/manual/"
 					if( left( wikiex->filename, len( sample_dir ) ) = sample_dir ) then
-						if( WriteExampleFile( sPage, base_dir, wikiex->filename, wikiex->text, TRUE, "" ) ) then
+						if( WriteExampleFile( sPage, base_dir, wikiex->filename, wikiex->text, TRUE, "", opt_force ) ) then
 							''
 						end if
 					else
@@ -506,7 +510,7 @@ function cmd_getex_proc() as integer
 			dim wikiex as WikiExample ptr = new WikiExample( wiki )
 			while( wikiex->FindNext() )
 				if( wikiex->filename = "" ) then
-					WriteExampleFile( sPage, base_dir, sample_dir & "incoming/" & wikiex->refid & ".bas", wikiex->text, FALSE, wikiex->refid )
+					WriteExampleFile( sPage, base_dir, sample_dir & "incoming/" & wikiex->refid & ".bas", wikiex->text, FALSE, wikiex->refid, opt_force )
 				end if
 			wend
 			delete wikiex
@@ -754,7 +758,7 @@ function cmd_addlang_proc() as integer
 
 		if( changed ) then
 			text = b1.text()
-			if( WriteExampleFile( refs(i).pagename, base_dir, sample_dir & refs(i).filename, text, TRUE, "" ) ) then
+			if( WriteExampleFile( refs(i).pagename, base_dir, sample_dir & refs(i).filename, text, TRUE, "", opt_force ) ) then
 				''
 			end if
 		end if
@@ -779,10 +783,12 @@ sample_dir = "examples/manual/"
 scope
 	dim as COptions ptr opts = new COptions( default_optFile )
 	if( opts <> NULL ) then
+		manual_dir = opts->Get( "manual_dir", default_ManualDir )
 		wiki_cache_dir = opts->Get( "cache_dir", default_CacheDir )
 		base_dir = opts->Get( "fb_dir", default_fb_dir )
 		delete opts
 	else
+		manual_dir = default_ManualDir
 		wiki_cache_dir = default_CacheDir
 		base_dir = default_fb_dir
 	end if
@@ -812,8 +818,10 @@ end if
 logopen()
 
 	logprint "base_dir: " & base_dir
+	logprint "manual_dir: " & manual_dir
 	logprint "cache: " & wiki_cache_dir
 
+	FormatFbCodeLoadKeywords( manual_dir & "templates/default/keywords.lst" )
 
 if( (opt and opt_do_scan) <> 0 or (opt and opt_do_scan_incoming) <> 0 ) then
 
@@ -916,6 +924,13 @@ if( (opt and opt_get_pages) <> 0 ) then
 					close #h
 				end if
 			end scope
+		elseif left( command(i), 2) = "--" then
+			select case lcase(command(i))
+			case "--force"
+				opt_force = true
+			case else
+				logprint "Unrecognized option '" + command(i) + "'"
+			end select
 		else
 			webPageCount += 1
 			if( webPageCount > ubound(webPageList) ) then

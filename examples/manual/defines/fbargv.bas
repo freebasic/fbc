@@ -3,7 +3,7 @@
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDdfbargv
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgDdfbargv
 '' --------
 
 Declare Function main _
@@ -22,7 +22,7 @@ Private Function main _
 
   Dim i As Integer
   For i = 0 To argc - 1
-	    Print "arg "; i; " = '"; *argv[i]; "'"
+		Print "arg "; i; " = '"; *argv[i]; "'"
   Next i
 
   Return 0

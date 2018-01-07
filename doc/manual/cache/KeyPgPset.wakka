@@ -21,7 +21,7 @@ Plots a single pixel
 	
 	##//color//## specifies the color attribute, as an 8-bit palette index in 8 bpp indexed modes, a 24-bit RGB value in 16 bpp modes (upper 8 bits of the integer unused, limited precision of R,G,B), and a 32-bit RGB or RGBA value in 32 bpp modes (upper 8 bits unused or holding Alpha). Note that it does NOT accept a 16-bit value (5 bits R + 6 bits G + 5 bits B).  If omitted, ##//color//## defaults to the current foreground color.
 	
-	Speed note: while ##**PSet**## provides valid results, it is quite slow to call repeatedly due to the overhead of additional calculations and checks. Much better performance can be achieved by using direct memory access using the results obtained from ##[[KeyPgImageinfo|Imageinfo]]## and ##[[KeyPgScreeninfo|Screeninfo]]##/##[[KeyPgScreenptr|ScreenPtr]]##.
+	Speed note: while ##**PSet**## provides valid results, it is quite slow to call repeatedly due to the overhead of additional calculations and checks. Much better performance can be achieved by using direct memory access using the results obtained from ##[[KeyPgImageInfo|Imageinfo]]## and ##[[KeyPgScreeninfo|Screeninfo]]##/##[[KeyPgScreenptr|ScreenPtr]]##.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/pset.bas"}}%%(freebasic)
