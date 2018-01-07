@@ -23,6 +23,8 @@ ifndef FBC
 FBC := fbc$(EXEEXT)
 endif
 
+UNITTEST_RUN_ARGS :=
+
 # verify the FB_LANG option
 #
 ifneq ($(FB_LANG),)
@@ -80,6 +82,7 @@ all :
 	@$(ECHO) "   ARCH=arch (default is 486)"
 	@$(ECHO) "   OS=DOS"
 	@$(ECHO) "   FPU=fpu | sse"
+	@$(ECHO) "   UNITTEST_RUN_ARGS="args"
 	@$(ECHO) ""
 	@$(ECHO) "Targets: Configuration and Checks"
 	@$(ECHO) "   check"
@@ -141,7 +144,7 @@ check :
 #
 .PHONY: unit-tests
 unit-tests :
-	$(MAKE) -f $(UNITTESTS_MAKEFILE)
+	$(MAKE) -f $(UNITTESTS_MAKEFILE) UNITTEST_RUN_ARGS="$(UNITTEST_RUN_ARGS)"
 
 # !!! DEPRECATED TARGET !!! -- callers should use 'unit-tests'
 .PHONY: cunit-tests

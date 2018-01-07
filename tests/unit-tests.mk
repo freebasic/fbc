@@ -8,6 +8,8 @@
 
 include common.mk
 
+UNITTEST_RUN_ARGS :=
+
 ifeq ($(HOST),dos)
 SHELL = /bin/sh
 else
@@ -146,7 +148,7 @@ build_tests : $(OBJLIST) $(UNIT_TESTS_INC)
 
 .PHONY: run_tests
 run_tests : build_tests
-	./$(MAINEXE)
+	./$(MAINEXE) $(UNITTEST_RUN_ARGS)
 
 .PHONY: clean
 clean : clean_main_exe clean_tests clean_fbcu clean_include
