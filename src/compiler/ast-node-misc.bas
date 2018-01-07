@@ -152,8 +152,7 @@ end function
 function astNewDBG _
 	( _
 		byval op as integer, _
-		byval ex as integer, _
-		byval filename As ZString Ptr _
+		byval ex as integer _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -166,14 +165,13 @@ function astNewDBG _
 
 	n->dbg.op = op
 	n->dbg.ex = ex
-	n->dbg.filename = filename
 
 	function = n
 end function
 
 function astLoadDBG( byval n as ASTNODE ptr ) as IRVREG ptr
 	if( ast.doemit ) then
-		irEmitDBG( n->dbg.op, astGetProc( )->sym, n->dbg.ex, n->dbg.filename )
+		irEmitDBG( n->dbg.op, astGetProc( )->sym, n->dbg.ex )
 	end if
 
 	function = NULL
@@ -433,7 +431,7 @@ private function astSetBitfield _
 
 	'' boolean bitfield? - do a bool conversion before the bitfield store
 	if( symbGetType( bitfield ) = FB_DATATYPE_BOOLEAN ) then
-		if( (r->class <> AST_NODECLASS_CONV) orelse (astGetFullType( r ) <> FB_DATATYPE_BOOLEAN) ) then
+		if( r->class <> AST_NODECLASS_CONV ) then
 			r = astNewCONV( FB_DATATYPE_BOOLEAN, NULL, r )
 		end if
 		r = astNewCONV( FB_DATATYPE_UINT, NULL, r )
@@ -839,7 +837,7 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_TOUNSIGNED"      , '/ @"TOUNSIGNED"   /' , 0 '/ ) _
 }
 
-function astDumpOpToStr( byval op as AST_OP ) as string
+function astDumpOp( byval op as AST_OP ) as string
 	if(( op > AST_OPCODES - 1 ) or ( op < 0 )) then
 		return "OP:" + str(op)
 	end if
@@ -876,35 +874,49 @@ private function hSymbToStr _
 end function
 
 '':::::
+private function hAstNodeTypeToStr _
+	( _
+		byval n as ASTNODE ptr _
+	) as string
+
+	if( n = NULL ) then return ""
+
+	return symbTypeToStr( n->dtype, n->subtype )
+
+end function
+
+'':::::
 private function hAstNodeToStr _
 	( _
 		byval n as ASTNODE ptr _
 	) as string
 
+	#define NODE_TYPE ( " (" & hAstNodeTypeToStr( n ) & ")" )
+
 	select case as const n->class
 	case AST_NODECLASS_BOP
-		return astDumpOpToStr( n->op.op ) & " =-= " & hSymbToStr( n->op.ex )
+		return astDumpOp( n->op.op ) & " =-= " & hSymbToStr( n->op.ex ) & NODE_TYPE
 
 	case AST_NODECLASS_UOP
-		return astDumpOpToStr( n->op.op )
+		return astDumpOp( n->op.op ) & NODE_TYPE
 
 	case AST_NODECLASS_CONST
 		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-			return str( astConstGetFloat( n ) )
+			return str( astConstGetFloat( n ) ) & NODE_TYPE
 		end if
-		return str( astConstGetInt( n ) )
+		return str( astConstGetInt( n ) ) & NODE_TYPE
 
 	case AST_NODECLASS_VAR
-		return "VAR( " & *iif( n->sym, symbGetName( n->sym ), @"<NULL>" ) & " )"
+		return "VAR( " & *iif( n->sym, symbGetName( n->sym ), @"<NULL>" ) & " )" & NODE_TYPE
 
 	case AST_NODECLASS_FIELD
-		return "FIELD( " & *symbGetName( n->sym ) & " )"
+		return "FIELD( " & *symbGetName( n->sym ) & " )" & NODE_TYPE
 
 	case AST_NODECLASS_DECL
 		if( n->sym ) then
 			return "DECL( " & *symbGetName( n->sym ) & " )"
 		end if
-		return "DECL"
+		return "DECL" & NODE_TYPE
 
 	case AST_NODECLASS_CALL
 		return "CALL( " & *symbGetName( n->sym ) & " )"
@@ -913,7 +925,7 @@ private function hAstNodeToStr _
 		return "LABEL: " & hSymbToStr( n->sym )
 
 	case AST_NODECLASS_BRANCH
-		return "BRANCH: " & astDumpOpToStr( n->op.op ) & " " & hSymbToStr( n->op.ex )
+		return "BRANCH: " & astDumpOp( n->op.op ) & " " & hSymbToStr( n->op.ex )
 
 	case AST_NODECLASS_SCOPEBEGIN
 		return "SCOPEBEGIN: " & hSymbToStr( n->sym )
@@ -922,7 +934,7 @@ private function hAstNodeToStr _
 		return "TYPEINI_ASSIGN( offset=" & n->typeini.ofs & " )"
 
 	case else
-		return hAstNodeClassToStr( n->class )
+		return hAstNodeClassToStr( n->class ) & NODE_TYPE
 	end select
 
 end function
@@ -949,7 +961,7 @@ private sub astDumpTreeEx _
 	's += "[" + hex( n, 8 ) + "] "
 	s += hAstNodeToStr( n )
 #if __FB_DEBUG__
-	s += " " + typeDumpToStr( n->dtype, n->subtype )
+	s += " " + typeDump( n->dtype, n->subtype )
 #endif
 	dbg_astOutput( s, col, just, depth )
 
@@ -1012,7 +1024,7 @@ function astDumpInline( byval n as ASTNODE ptr ) as string
 		s = "<NULL>"
 	else
 		s += hAstNodeClassToStr( n->class )
-		's += typeDumpToStr( n->dtype, n->subtype )
+		's += typeDump( n->dtype, n->subtype )
 
 		var have_data = (n->sym <> NULL) or (n->l <> NULL) or (n->r <> NULL)
 		select case as const( n->class )
@@ -1026,7 +1038,7 @@ function astDumpInline( byval n as ASTNODE ptr ) as string
 
 		select case as const( n->class )
 		case AST_NODECLASS_BOP, AST_NODECLASS_UOP
-			s += astDumpOpToStr( n->op.op ) + ", "
+			s += astDumpOp( n->op.op ) + ", "
 		case AST_NODECLASS_CONST
 			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
 				s += str( astConstGetFloat( n ) ) + ", "
@@ -1073,7 +1085,7 @@ sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
 	else
 		's += "[" + hex( n ) + "] "
 		s += hAstNodeClassToStr( n->class )
-		s += typeDumpToStr( n->dtype, n->subtype )
+		s += typeDump( n->dtype, n->subtype )
 
 		select case as const( n->class )
 		case AST_NODECLASS_MEM
@@ -1090,14 +1102,10 @@ sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
 		case AST_NODECLASS_IDX     : if( n->idx.ofs  ) then s += " ofs=" & n->idx.ofs
 			if( n->idx.mult <> 1 ) then s += " mult=" & n->idx.mult
 		case AST_NODECLASS_BOP, AST_NODECLASS_UOP
-			s += " " + astDumpOpToStr( n->op.op )
+			s += " " + astDumpOp( n->op.op )
 		case AST_NODECLASS_CONV
-			if( n->cast.doconv = FALSE and n->cast.convconst = FALSE ) then
+			if( n->cast.doconv = FALSE ) then
 				s += " noconv"
-			elseif( n->cast.doconv ) then
-				s += " conv"
-			elseif( n->cast.convconst ) then
-				s += " convconst"
 			end if
 		case AST_NODECLASS_CONST
 			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
@@ -1118,7 +1126,7 @@ sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
 					s += *n->sym->id.name
 				end if
 			#else
-				s += " " + symbDumpToStr( n->sym )
+				s += " " + symbDump( n->sym )
 			#endif
 		end if
 	end if
