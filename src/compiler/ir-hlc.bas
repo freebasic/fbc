@@ -144,6 +144,7 @@ enum
 	EXPRCLASS_CAST
 	EXPRCLASS_UOP
 	EXPRCLASS_BOP
+	EXPRCLASS_VA_ARG
 end enum
 
 type EXPRNODE
@@ -1713,6 +1714,18 @@ private function exprNewCAST _
 	function = n
 end function
 
+private function exprNewVA_ARG _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval l as EXPRNODE ptr _
+	) as EXPRNODE ptr
+
+	var n = exprNew( EXPRCLASS_VA_ARG, dtype, subtype )
+	n->l = l
+	function = n
+end function
+
 private function exprNewSYM( byval sym as FBSYMBOL ptr ) as EXPRNODE ptr
 	dim as EXPRNODE ptr n = any
 	dim as integer dtype = any
@@ -2211,7 +2224,14 @@ private function hUopToStr _
 	case else
 		is_builtin = TRUE
 
-		if( dtype = FB_DATATYPE_SINGLE ) then
+		if( dtype = FB_DATATYPE_VA_LIST ) then
+			select case as const( op )
+			case AST_OP_VA_START : function = @"__builtin_va_start"
+			case AST_OP_VA_END   : function = @"__builtin_va_end"
+			case AST_OP_VA_COPY  : function = @"__builtin_va_copy"
+			case else             : assert( FALSE )
+			end select
+		elseif( dtype = FB_DATATYPE_SINGLE ) then
 			select case as const( op )
 			case AST_OP_SIN   : function = @"__builtin_sinf"
 			case AST_OP_ASIN  : function = @"__builtin_asinf"
@@ -2292,6 +2312,14 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 		'' (type)l
 		ctx.exprtext += "(" + hEmitType( n->dtype, n->subtype ) + ")"
 		hExprFlush( n->l, TRUE )
+
+	case EXPRCLASS_VA_ARG
+		'' __builtin_va_arg(l, type)
+		ctx.exprtext += "__builtin_va_arg( "
+		hExprFlush( n->l, TRUE )
+		ctx.exprtext += ", "
+		ctx.exprtext += hEmitType( n->dtype, n->subtype )
+		ctx.exprtext += ")"
 
 	case EXPRCLASS_UOP
 		ctx.exprtext += *hUopToStr( n->op, n->dtype, is_builtin )
@@ -2374,6 +2402,7 @@ private sub exprDump( byval n as EXPRNODE ptr )
 		@"IMM" , _ '' EXPRCLASS_IMM
 		@"SYM" , _ '' EXPRCLASS_SYM
 		@"CAST", _ '' EXPRCLASS_CAST
+		@"VA_ARG", _ '' EXPRCLASS_VA_ARG
 		@"UOP" , _ '' EXPRCLASS_UOP
 		@"BOP"   _ '' EXPRCLASS_BOP
 	}
@@ -2392,7 +2421,7 @@ private sub exprDump( byval n as EXPRNODE ptr )
 	case EXPRCLASS_SYM
 		hSym2Text( s, n->sym )
 
-	case EXPRCLASS_CAST
+	case EXPRCLASS_CAST, EXPRCLASS_VA_ARG
 		s += hEmitType( n->dtype, n->subtype )
 
 	case EXPRCLASS_UOP
@@ -2415,7 +2444,7 @@ private sub exprDump( byval n as EXPRNODE ptr )
 	print s
 
 	select case( n->class )
-	case EXPRCLASS_CAST, EXPRCLASS_UOP
+	case EXPRCLASS_CAST, EXPRCLASS_UOP, EXPRCLASS_VA_ARG
 		exprDump( n->l )
 	case EXPRCLASS_BOP
 		exprDump( n->l )
