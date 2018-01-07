@@ -827,6 +827,10 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_MEMSWAP"         , '/ @"MEMSWAP"      /' , 0 '/ ), _
 	( /' @"AST_OP_MEMCLEAR"        , '/ @"MEMCLEAR"     /' , 0 '/ ), _
 	( /' @"AST_OP_STKCLEAR"        , '/ @"STKCLEAR"     /' , 0 '/ ), _
+	( /' @"AST_OP_VA_START"        , '/ @"VA_START"     /' , 0 '/ ), _
+	( /' @"AST_OP_VA_END"          , '/ @"VA_END"       /' , 0 '/ ), _
+	( /' @"AST_OP_VA_COPY"         , '/ @"VA_COPY"      /' , 0 '/ ), _
+	( /' @"AST_OP_VA_ARG"          , '/ @"VA_ARG"       /' , 0 '/ ), _
 	( /' @"AST_OP_DBG_LINEINI"     , '/ @"DBG_LINEINI"  /' , 0 '/ ), _
 	( /' @"AST_OP_DBG_LINEEND"     , '/ @"DBG_LINEEND"  /' , 0 '/ ), _
 	( /' @"AST_OP_DBG_SCOPEINI"    , '/ @"DBG_SCOPEINI" /' , 0 '/ ), _
