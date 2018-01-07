@@ -1,5 +1,7 @@
-# include "fbcu.bi"
+#include "fbcu.bi"
 
+#define NULL 0
+      
 namespace fbc_tests.pointers.new_delete
 
 namespace defaultInit
@@ -34,7 +36,7 @@ namespace defaultInit
 		ctordtorudt_dtors += 1
 	end destructor
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		#macro check( T )
 			scope
 				var p = new T
@@ -341,7 +343,7 @@ namespace newQuirkInit
 		function = 2.5
 	end function
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		var a1 = new T1( getT1( ) )
 		var b1 = new T1( type<T1>( 123 ) )
 		var c1 = new T1( type( 123 ) )
@@ -426,7 +428,7 @@ namespace vectorNew
 		T4_dtor_count += 1
 	end destructor
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		#macro check( T )
 			scope
 				var p = new T[10]
@@ -620,7 +622,7 @@ namespace newAsFieldInit
 		delete pi2
 	end destructor
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		dim as t a, b, c, d, e, f
 	end sub
 end namespace
@@ -633,7 +635,7 @@ namespace newSideFx
 		function = 123
 	end function
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		CU_ASSERT( count = 0 )
 		var p = new integer( f( ) )
 		CU_ASSERT( *p = 123 )
@@ -658,7 +660,7 @@ namespace vectorNewSideFx
 	destructor DtorUDT( )
 	end destructor
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		'' new type[elementsexpr]
 
 		scope
@@ -735,7 +737,7 @@ namespace vectorNewCtorList
 		function = type( p->i )
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim x as UDT
 		CU_ASSERT( x.i = 0 )
 		x = f( new ClassUDT[1] )
@@ -764,7 +766,7 @@ namespace vectorNewComplexElements
 		i as integer
 	end type
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		ctors = 0
 		dtors = 0
 		scope
@@ -794,7 +796,7 @@ namespace vectorNewComplexElements
 end namespace
 
 namespace placementNewPod
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim as integer ptr buffer = callocate( sizeof( integer ) * 3 )
 
 		dim as integer ptr p = new(buffer+1) integer (111)
@@ -820,7 +822,7 @@ namespace placementNewCtor
 		i = 111
 	end constructor
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim as CtorUdt ptr buffer = callocate( sizeof( CtorUdt ) * 3 )
 
 		dim as CtorUdt ptr p = new(buffer+1) CtorUdt
@@ -852,7 +854,7 @@ namespace placementNewCtorDtor
 		dtors += 1
 	end destructor
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim as CtorDtorUdt ptr buffer = callocate( sizeof( CtorDtorUdt ) * 3 )
 
 		dim as CtorDtorUdt ptr p = new(buffer+1) CtorDtorUdt
@@ -868,7 +870,7 @@ namespace placementNewCtorDtor
 end namespace
 
 namespace placementVectorNewPod
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim as integer ptr buffer = callocate( sizeof( integer ) * 5 )
 		buffer[0] = &hAA
 		buffer[1] = &hBB
@@ -900,7 +902,7 @@ namespace placementVectorNewCtor
 		ctors += 1
 	end constructor
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim as CtorUdt ptr buffer = callocate( sizeof( CtorUdt ) * 5 )
 		buffer[0].i = &hAA
 		buffer[1].i = &hBB
@@ -938,7 +940,7 @@ namespace placementVectorNewCtorDtor
 		dtors += 1
 	end destructor
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim as CtorDtorUdt ptr buffer = callocate( sizeof( CtorDtorUdt ) * 5 )
 		buffer[0].i = &hAA
 		buffer[1].i = &hBB
@@ -978,7 +980,7 @@ namespace deleteDerivedPtr
 	destructor Child( )
 	end destructor
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		scope
 			var p = new Child( )
 			CU_ASSERT( p->i = 123 )
@@ -1004,7 +1006,7 @@ namespace deleteSideFx1
 		function = p
 	end function
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		p = new integer( 123 )
 		CU_ASSERT( *p = 123 )
 		CU_ASSERT( count = 0 )
@@ -1022,7 +1024,7 @@ namespace deleteSideFx2
 		function = p
 	end function
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		p = new integer[5]
 		CU_ASSERT( count = 0 )
 		delete[] f( )
@@ -1047,7 +1049,7 @@ namespace deleteSideFx3
 		function = p
 	end function
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		p = new T
 		CU_ASSERT( count = 0 )
 		delete f( )
@@ -1072,7 +1074,7 @@ namespace deleteSideFx4
 		function = p
 	end function
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		p = new T[2]
 		CU_ASSERT( count = 0 )
 		delete[] f( )
@@ -1091,7 +1093,7 @@ namespace deleteNull
 		CU_FAIL( )
 	end destructor
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		dim as T ptr a = 0
 		CU_ASSERT( a = 0 )
 		delete a
@@ -1106,28 +1108,28 @@ end namespace
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "fbc_tests.pointers.new-delete" )
-	fbcu.add_test( "default initialization", @defaultInit.test )
+	fbcu.add_test( "default initialization", @defaultInit.test_proc )
 	fbcu.add_test( "New with int/float initializer", @newIntFloatInit )
 	fbcu.add_test( "New with string initializer", @newStringInit )
 	fbcu.add_test( "New with UDT initializer", @newUDTInit )
-	fbcu.add_test( "Some obscure NEW initializers", @newQuirkInit.test )
-	fbcu.add_test( "New[]", @vectorNew.test )
-	fbcu.add_test( "New as field initializer", @newAsFieldInit.test )
-	fbcu.add_test( "New + side-effects", @newSideFx.test )
-	fbcu.add_test( "New[sidefx]", @vectorNewSideFx.test )
-	fbcu.add_test( "new[iif + TYPEINIs]", @vectorNewComplexElements.test )
-	fbcu.add_test( "new(address) integer", @placementNewPod.test )
-	fbcu.add_test( "new(address) CtorUdt", @placementNewCtor.test )
-	fbcu.add_test( "new(address) CtorDtorUdt", @placementNewCtorDtor.test )
-	fbcu.add_test( "new(address) integer[]", @placementVectorNewPod.test )
-	fbcu.add_test( "new(address) CtorUdt[]", @placementVectorNewCtor.test )
-	fbcu.add_test( "new(address) CtorDtorUdt[]", @placementVectorNewCtorDtor.test )
-	fbcu.add_test( "Delete on derived UDT pointers", @deleteDerivedPtr.test )
-	fbcu.add_test( "Delete + side-effects 1", @deleteSideFx1.test )
-	fbcu.add_test( "Delete + side-effects 2", @deleteSideFx2.test )
-	fbcu.add_test( "Delete + side-effects 3", @deleteSideFx3.test )
-	fbcu.add_test( "Delete + side-effects 4", @deleteSideFx4.test )
-	fbcu.add_test( "Delete on NULL pointer", @deleteNull.test )
+	fbcu.add_test( "Some obscure NEW initializers", @newQuirkInit.test_proc )
+	fbcu.add_test( "New[]", @vectorNew.test_proc )
+	fbcu.add_test( "New as field initializer", @newAsFieldInit.test_proc )
+	fbcu.add_test( "New + side-effects", @newSideFx.test_proc )
+	fbcu.add_test( "New[sidefx]", @vectorNewSideFx.test_proc )
+	fbcu.add_test( "new[iif + TYPEINIs]", @vectorNewComplexElements.test_proc )
+	fbcu.add_test( "new(address) integer", @placementNewPod.test_proc )
+	fbcu.add_test( "new(address) CtorUdt", @placementNewCtor.test_proc )
+	fbcu.add_test( "new(address) CtorDtorUdt", @placementNewCtorDtor.test_proc )
+	fbcu.add_test( "new(address) integer[]", @placementVectorNewPod.test_proc )
+	fbcu.add_test( "new(address) CtorUdt[]", @placementVectorNewCtor.test_proc )
+	fbcu.add_test( "new(address) CtorDtorUdt[]", @placementVectorNewCtorDtor.test_proc )
+	fbcu.add_test( "Delete on derived UDT pointers", @deleteDerivedPtr.test_proc )
+	fbcu.add_test( "Delete + side-effects 1", @deleteSideFx1.test_proc )
+	fbcu.add_test( "Delete + side-effects 2", @deleteSideFx2.test_proc )
+	fbcu.add_test( "Delete + side-effects 3", @deleteSideFx3.test_proc )
+	fbcu.add_test( "Delete + side-effects 4", @deleteSideFx4.test_proc )
+	fbcu.add_test( "Delete on NULL pointer", @deleteNull.test_proc )
 end sub
 
 end namespace

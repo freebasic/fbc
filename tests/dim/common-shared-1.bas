@@ -18,7 +18,7 @@ private sub f( )
 	redim arrayi6(6 to 6) as integer
 end sub
 
-private sub test cdecl( )
+private sub test_proc cdecl( )
 	CU_ASSERT( lbound( arrayi1 ) = 1 ) : CU_ASSERT( ubound( arrayi1 ) = 1 )
 	CU_ASSERT( lbound( arrayi2 ) = 2 ) : CU_ASSERT( ubound( arrayi2 ) = 2 )
 	CU_ASSERT( lbound( arrayi3 ) = 3 ) : CU_ASSERT( ubound( arrayi3 ) = 3 )
@@ -39,7 +39,7 @@ end sub
 namespace shadowingACommon
 	common shared i as integer
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		CU_ASSERT( i = 0 )
 		i = 1
 		CU_ASSERT( i = 1 )
@@ -61,6 +61,6 @@ end namespace
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "fbc_tests.dim.common-shared-1" )
-	fbcu.add_test( "test", @test )
-	fbcu.add_test( "shadowing a COMMON", @shadowingACommon.test )
+	fbcu.add_test( "test", @test_proc )
+	fbcu.add_test( "shadowing a COMMON", @shadowingACommon.test_proc )
 end sub

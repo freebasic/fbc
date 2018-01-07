@@ -68,7 +68,7 @@ end namespace
 	'' defining an extern outside the orignal ns (as in C++)
 	dim fbc_tests.ns.dups.outer.dupvar as fbc_tests.ns.dups.outer.duptype = ( TEST_VAL )
 
-private sub test cdecl 	
+private sub test_proc cdecl 	
 
 	scope 
    		'' see the "using outer" above
@@ -90,6 +90,6 @@ end sub
 private sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.namespace.dups")
-	fbcu.add_test("test 1", @test)
+	fbcu.add_test("test 1", @test_proc)
 	
 end sub

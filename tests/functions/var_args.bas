@@ -16,7 +16,7 @@ const TEST_F as single = 1.234567
 const TEST_D as double = 1.23456789012345
 const TEST_Z as string = "FoO BaR!"
 
-sub test cdecl (fmtstr as string, ...)
+sub test_proc cdecl (fmtstr as string, ...)
 	dim as any ptr arg
 	dim as zstring ptr p
 	dim as integer i, char
@@ -97,7 +97,7 @@ sub test_1 cdecl ()
 	dim as string vs = TEST_Z
 	dim as zstring * 32 z = TEST_Z
 
-	test( "%b %c %s %r %i %j %l %m %f %d %z %z", _
+	test_proc( "%b %c %s %r %i %j %l %m %f %d %z %z", _
 		   b, ub, s, us, i, ui, l, ul, f, d, vs, z )
 end sub
 

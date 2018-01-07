@@ -1,6 +1,8 @@
-﻿# include "fbcu.bi"
+# include "fbcu.bi"
 
 #include once "utf_conv.bi"
+
+#include once "crt/string.bi"
 
 namespace fbc_tests.wstrings.utf_conv
 

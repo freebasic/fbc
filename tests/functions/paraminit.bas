@@ -2,6 +2,8 @@
 
 namespace fbc_tests.functions.paraminit
 
+#define NULL 0
+
 #macro hScopeChecks( code )
 	sub check1( )
 		code

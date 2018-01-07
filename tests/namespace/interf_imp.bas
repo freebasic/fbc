@@ -26,7 +26,7 @@ namespace fbc_tests.ns.interf_imp
 	
 end namespace
 
-private sub test cdecl	
+private sub test_proc cdecl	
 	dim f as fbc_tests.ns.interf_imp.foo = ( TEST_VAL1 )
 	CU_ASSERT( fbc_tests.ns.interf_imp.bar( @f ) = TEST_VAL1 + 1 )
 	
@@ -42,6 +42,6 @@ end sub
 private sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.namespace.interf_imp")
-	fbcu.add_test("test", @test)
+	fbcu.add_test("test", @test_proc)
 	
 end sub

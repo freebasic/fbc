@@ -1,4 +1,6 @@
-# include "fbcu.bi"
+#include "fbcu.bi"
+
+#define NULL 0
 
 namespace fbc_tests.swp.intfloat
 

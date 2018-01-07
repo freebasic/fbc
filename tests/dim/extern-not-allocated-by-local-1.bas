@@ -10,7 +10,7 @@ scope
 	static should_not_be_allocated_by_local_i2 as integer = -2
 end scope
 
-private sub test cdecl( )
+private sub test_proc cdecl( )
 	dim should_not_be_allocated_by_local_i3 as integer = -3
 	static should_not_be_allocated_by_local_i4 as integer = -4
 
@@ -34,5 +34,5 @@ end sub
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "fbc_tests.dim.extern-not-allocated-by-local-1" )
-	fbcu.add_test( "test", @test )
+	fbcu.add_test( "test", @test_proc )
 end sub

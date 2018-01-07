@@ -46,7 +46,7 @@ namespace fbc_tests.ns.reimp2.bar
 
 end namespace
 
-private sub test cdecl
+private sub test_proc cdecl
 	'' t1 and t2 imported indirectly from the "using foo" inside the bar namespace
 	foobar( type<t1>( TEST_T1 ) )
 	foobar( type<t2>( TEST_T2 ) )
@@ -55,7 +55,7 @@ end sub
 private sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.namespace.reimp2")
-	fbcu.add_test("test", @test)
+	fbcu.add_test("test", @test_proc)
 	
 end sub
 

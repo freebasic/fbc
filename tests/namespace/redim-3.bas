@@ -37,7 +37,7 @@ private sub f3( )
 	redim array4(3 to 3) as integer
 end sub
 
-private sub test cdecl( )
+private sub test_proc cdecl( )
 	CU_ASSERT( lbound( array1 ) = 0 ) : CU_ASSERT( ubound( array1 ) = -1 )
 	CU_ASSERT( lbound( array2 ) = 0 ) : CU_ASSERT( ubound( array2 ) = -1 )
 	CU_ASSERT( lbound( array3 ) = 0 ) : CU_ASSERT( ubound( array3 ) = -1 )
@@ -67,5 +67,5 @@ end sub
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "fbc_tests.namespace.redim-3" )
-	fbcu.add_test( "test", @test )
+	fbcu.add_test( "test", @test_proc )
 end sub

@@ -26,7 +26,7 @@ sub concatTest cdecl ()
 		end if
 	#endmacro
 
-	#macro TEST(a, b)
+	#macro TEST_(a, b)
 		scope
 			'var cat = (a) + (b)
 			dim as string cat = (a) + (b)
@@ -37,10 +37,10 @@ sub concatTest cdecl ()
 	#endmacro
 
 	#macro TESTP(ca, cb)
-		TEST(    ca,     cb)
-		TEST(    ca, *p##cb)
-		TEST(*p##ca,     cb)
-		TEST(*p##ca, *p##cb)
+		TEST_(    ca,     cb)
+		TEST_(    ca, *p##cb)
+		TEST_(*p##ca,     cb)
+		TEST_(*p##ca, *p##cb)
 	#endmacro
 
 	#macro TESTC(a, b)

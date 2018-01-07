@@ -37,7 +37,7 @@ namespace fbc_tests.compound.for_UDT_counter
 		private:
 			as integer is_up
 			
-			declare function test( byref end_cond as foo##__TYPE__ ) as integer
+			declare function test_method( byref end_cond as foo##__TYPE__ ) as integer
 		end type
 		
 		constructor foo##__TYPE__( )

@@ -34,7 +34,7 @@ namespace fbc_tests.ns.reimp3.bar
 end namespace
 
 
-private sub test cdecl
+private sub test_proc cdecl
 	using fbc_tests.ns.reimp3.bar
 	
 	CU_ASSERT( foobar( type<t1>( 0 ) ) = TEST_T1 )
@@ -45,6 +45,6 @@ end sub
 private sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.namespace.reimp3")
-	fbcu.add_test("test", @test)
+	fbcu.add_test("test", @test_proc)
 	
 end sub
