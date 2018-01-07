@@ -43,15 +43,6 @@ Use 'make log-tests' to build all non-cunit type tests.  This will
 create log files, which are summarized and saved in 'failed.log'
 for any failed tests.
 
-Use 'make log-tests ALLOW_CUNIT=1' to build the cunit tests along
-with the log-tests.  ALLOW_CUNIT=1 is slower than actually linking
-with the fbcu/cunit library, but should allow tests to be run
-without needing the libcunit.a library.
-
-When 'ALLOW_CUNIT=1' is used, fbcu/fake/fbcu.bi is used as a
-replacement for fbcu/include/fbcu.bi.  This alternate include file
-may be needed for building the tests under DOS.
-
 Use 'make failed-tests' to rebuild just those tests that failed in
 the last testing session using 'make log-tests'.
 
@@ -60,9 +51,6 @@ rescan directories for new or dropped test files.
 
 Use 'make mostlyclean' to clean-up nearly all the files when it is
 known that no tests have been added or dropped between test sessions.
-
-If 'make log-tests ALLOW_CUNIT=1' was used to build the tests then
-'make clean ALLOW_CUNIT=1' must be used to clean-up.
 
 Use 'make log-tests FB_LANG=fb | qb | deprecated' to make a specific
 set of -lang tests.
@@ -223,50 +211,5 @@ failed.log
    information on a specific failed test, view the '.log' saved in
    the same directory as the test file.
 
-
-How to make libcunit.a on DOS
------------------------------
-I had some trouble using the usual configure/make scipts and wrote
-this makefile for dos to compile the cunit library.
-
-## get and unzip CUnit-2.1-0-src.zip
-##
-## place this makefile in Cunit-2.1-0/cunit
-## and save as 'makefile.dos'.  
-## Then build libcunit.a by running
-##   'make -f makefile.dos'
-##
-## Finally, 
-##    copy libcunit.a to FreeBASIC/lib/dos
-
-RM = rm
-AR = ar
-GCC = gcc
-
-SRCS := Sources/Automated/Automated.c
-SRCS += Sources/Basic/Basic.c
-SRCS += Sources/Console/Console.c
-SRCS += Sources/Framework/CUError.c
-SRCS += Sources/Framework/MyMem.c
-SRCS += Sources/Framework/TestDB.c
-SRCS += Sources/Framework/TestRun.c
-SRCS += Sources/Framework/Util.c
-
-OBJS := $(patsubst %.c,%.o,$(SRCS))
-
-LIBNAME = libcunit.a
-
-%.o : %.c
-	$(GCC) -c $< -I./Headers -o $@
-
-all: $(LIBNAME)
-
-$(LIBNAME): $(OBJS)
-	$(AR) cru $(LIBNAME) $(OBJS)
-
-.PHONY: clean
-clean:
-	$(RM) -f $(OBJS)
-	$(RM) -f $(LIBNAME)
 
 ## EOF
