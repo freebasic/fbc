@@ -59,7 +59,7 @@
 #   bindist    Create binary FB release packages from current build directory content
 #   mingw-libs Standalone: Copy libraries from MinGW toolchain into lib/win32/ etc.
 #
-#   cunit-tests  (Convenience wrappers around tests/Makefile, running the tests
+#   unit-tests   (Convenience wrappers around tests/Makefile, running the tests
 #   log-tests     using the newly built fbc)
 #   warning-tests
 #   clean-tests
@@ -684,10 +684,10 @@ help:
 
 ################################################################################
 
-.PHONY: cunit-tests log-tests clean-tests
+.PHONY: unit-tests log-tests clean-tests
 
-cunit-tests:
-	cd tests && make cunit-tests FBC="`pwd`/../$(FBC_EXE) -i `pwd`/../inc"
+unit-tests:
+	cd tests && make unit-tests FBC="`pwd`/../$(FBC_EXE) -i `pwd`/../inc"
 
 log-tests:
 	cd tests && make   log-tests FBC="`pwd`/../$(FBC_EXE) -i `pwd`/../inc"
