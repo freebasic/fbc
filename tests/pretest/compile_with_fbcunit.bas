@@ -1,7 +1,7 @@
 
 ' TEST_MODE : FBCUNIT_COMPATIBLE
 
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
 namespace fbc_tests.pretest
 
