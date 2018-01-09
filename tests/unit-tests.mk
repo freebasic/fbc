@@ -8,7 +8,9 @@
 
 include common.mk
 
+ifndef UNITTEST_RUN_ARGS
 UNITTEST_RUN_ARGS :=
+endif
 
 ifeq ($(HOST),dos)
 SHELL = /bin/sh
@@ -114,10 +116,13 @@ OBJLIST := $(SRCLIST:%.bas=%.o)
 #: targets
 #
 
-all : make_fbcu $(UNIT_TESTS_INC) build_tests run_tests
+.PHONY: all
+all : make_fbcunit $(UNIT_TESTS_INC) build_tests run_tests
 
-.PHONY: make_fbcu $(FBCU_BIN)
-make_fbcu : $(FBCU_BIN)
+.PHONY: make_fbcunit
+make_fbcunit : $(FBCU_BIN)
+
+$(FBCU_BIN) :
 	cd $(FBCU_DIR) && make FPU=$(FPU) ARCH=$(ARCH) TARGET=$(TARGET)
 
 # ------------------------------------------------------------------------

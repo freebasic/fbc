@@ -111,7 +111,7 @@ Sample FBCUNIT compatible test (using SUITE/TEST macros)
    #include "fbcunit.bi"
    SUITE( pretest )
       TEST( test_true )
-	      CU_ASSERT_TRUE( -1 ) 
+	      CU_ASSERT_TRUE( true ) 
       END_TEST
    END_SUITE
    ' EOF
@@ -126,7 +126,7 @@ Sample FBCUNIT compatible test (using the 'old' way)
    namespace fbc_tests.pretest
 
    sub test_true cdecl ()
-     CU_ASSERT_TRUE( -1 )
+     CU_ASSERT_TRUE( true )
    end sub
 
    private sub ctor () constructor
