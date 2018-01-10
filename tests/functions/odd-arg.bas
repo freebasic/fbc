@@ -201,7 +201,7 @@ sub testUdtParam cdecl( )
 	'' sizeof( UDT ) = 3 etc., where the ASM backend has to take care
 	'' to not access more memory than it should...
 
-	#macro test( N )
+	#macro test_params( N )
 		CU_ASSERT( sizeof( UDT##N ) = N )
 
 		dim as UDT##N x##N
@@ -235,14 +235,14 @@ sub testUdtParam cdecl( )
 		deallocate( parray##N )
 	#endmacro
 
-	test( 1 )
-	test( 2 )
-	test( 3 )
-	test( 4 )
-	test( 5 )
-	test( 6 )
-	test( 7 )
-	test( 8 )
+	test_params( 1 )
+	test_params( 2 )
+	test_params( 3 )
+	test_params( 4 )
+	test_params( 5 )
+	test_params( 6 )
+	test_params( 7 )
+	test_params( 8 )
 end sub
 
 sub ctor( ) constructor

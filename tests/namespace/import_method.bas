@@ -30,7 +30,7 @@ namespace ns2
 end namespace
 
 
-private sub test cdecl
+private sub test_proc cdecl
 	dim as ns2.UDT t
 	
 	t.proc1
@@ -42,6 +42,6 @@ private sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.namespace.import_method")
 	
-	fbcu.add_test("test", @test)
+	fbcu.add_test("test", @test_proc)
 	
 end sub

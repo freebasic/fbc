@@ -5,7 +5,7 @@ This is the directory for FreeBASIC compiler and runtime tests.
 
 Requirements - Windows / Linux / Dos
 ------------------------------------
-   - FreeBASIC Compiler 0.20.0 or above
+   - FreeBASIC Compiler 1.06.0 or above
    - make, sh, find, xargs, grep, sed, cat, rm
 
 Summary
@@ -22,10 +22,10 @@ Making the Tests
 
 The following two commands will make all tests:
 
-make cunit-tests
+$ make unit-tests
    generates fbc-tests[.exe]
 
-make log-tests
+$ make log-tests
    generates failed-test-fb.log
    generates failed-test-qb.log
    generates failed-test-deprecated.log
@@ -33,24 +33,15 @@ make log-tests
 
 Other Examples:
 
-Use 'make cunit-tests' to build the cunit-compatible tests.  This
+Use 'make unit-tests' to build the fbcunit-compatible tests.  This
 will create fbc-tests[.exe] at the top of the tree.
 
-If the fbcu library is not already made, 'make cunit-tests' 
-will automatically make it with the options fail=1 basic=1.
+If the fbcunit library is not already made, 'make unit-tests' 
+will automatically make it.
 
-Use 'make log-tests' to build all non-cunit type tests.  This will
+Use 'make log-tests' to build all non-fbcunit type tests.  This will
 create log files, which are summarized and saved in 'failed.log'
 for any failed tests.
-
-Use 'make log-tests ALLOW_CUNIT=1' to build the cunit tests along
-with the log-tests.  ALLOW_CUNIT=1 is slower than actually linking
-with the fbcu/cunit library, but should allow tests to be run
-without needing the libcunit.a library.
-
-When 'ALLOW_CUNIT=1' is used, fbcu/fake/fbcu.bi is used as a
-replacement for fbcu/include/fbcu.bi.  This alternate include file
-may be needed for building the tests under DOS.
 
 Use 'make failed-tests' to rebuild just those tests that failed in
 the last testing session using 'make log-tests'.
@@ -60,9 +51,6 @@ rescan directories for new or dropped test files.
 
 Use 'make mostlyclean' to clean-up nearly all the files when it is
 known that no tests have been added or dropped between test sessions.
-
-If 'make log-tests ALLOW_CUNIT=1' was used to build the tests then
-'make clean ALLOW_CUNIT=1' must be used to clean-up.
 
 Use 'make log-tests FB_LANG=fb | qb | deprecated' to make a specific
 set of -lang tests.
@@ -109,28 +97,41 @@ By default '-lang fb' tests are collected unless 'FB_LANG=?' option
 is given.
 
 
-fbcu/cunit tests (cunit-tests)
+fbcunit tests (unit-tests)
 ------------------------------
 
-fbcu/cunit compatible tests are linked with the fbcu and cunit
-libraries and most follow a structure as shown in the following
+fbcunit compatible tests are linked with the fbcunit
+library and most follow a structure as shown in the following
 example:
 
-Sample FBCU/CUNIT compatible test
+Sample FBCUNIT compatible test (using SUITE/TEST macros)
 
-   ' TEST_MODE : CUNIT_COMPATIBLE
+   ' TEST_MODE : FBCUNIT_COMPATIBLE
 
-   #include "fbcu.bi"
+   #include "fbcunit.bi"
+   SUITE( pretest )
+      TEST( test_true )
+	      CU_ASSERT_TRUE( true ) 
+      END_TEST
+   END_SUITE
+   ' EOF
+
+
+Sample FBCUNIT compatible test (using the 'old' way)
+
+   ' TEST_MODE : FBCUNIT_COMPATIBLE
+
+   #include "fbcunit.bi"
 
    namespace fbc_tests.pretest
 
    sub test_true cdecl ()
-     CU_ASSERT_TRUE( -1 )
+     CU_ASSERT_TRUE( true )
    end sub
 
    private sub ctor () constructor
 
-     fbcu.add_suite("fb-tests-cunit-pretests")
+     fbcu.add_suite("fbc_tests.pretest")
      fbcu.add_test("test_true", @test_true)
 
    end sub
@@ -138,14 +139,14 @@ Sample FBCU/CUNIT compatible test
    end namespace
    ' EOF
 
-Consult the cunit documentation for a listing of available
+Consult the fbcunit documentation for a listing of available
 assertions and testing methods.
 
 
-non-cunit compatible test (log-tests)
+non-unit compatible test (log-tests)
 -------------------------------------
 
-Each non-fbcu/cunit compatible test should have one of the following 
+Each non-fbcunit compatible test should have one of the following 
 test-mode tags present in the source file:
 
 ' One of:
@@ -168,7 +169,7 @@ files.  An example .bmk file:
 # One of:
 # TEST_MODE : MULTI_MODULE_OK
 # TEST_MODE : MULTI_MODULE_FAIL
-# TEST_MODE : CUNIT_COMPATIBLE
+# TEST_MODE : FBCUNIT_COMPATIBLE
 
 MAIN := my_test.bas
 SRCS := my_test1.bas my_test2.bas my_test3.bas
@@ -197,11 +198,11 @@ dirlist.mk
    list of directories that to be testsed.  Edit this file when new
    directories are added to the testing tree.
 
-cunit-tests.mk
-   a sub-makefile for building cunit compatible tests
+unit-tests.mk
+   a sub-makefile for building fbcunit compatible tests
 
 log-tests.mk
-   a sub-makefile for building all other tests that are not cunit 
+   a sub-makefile for building all other tests that are not fbcunit 
    compatible.
 
 bmk-make.mk
@@ -210,9 +211,9 @@ bmk-make.mk
 common.mk
    some common variables needed by most other makefiles
 
-cunit-tests.inc
-   generated automatically when 'make cunit-tests' is invoked.
-   Lists all of the cunit-compatible tests.
+unit-tests.inc
+   generated automatically when 'make unit-tests' is invoked.
+   Lists all of the fbcunit-compatible tests.
 
 log-tests.inc
    generated automatically when 'make log-tests' is invoked.
@@ -223,50 +224,5 @@ failed.log
    information on a specific failed test, view the '.log' saved in
    the same directory as the test file.
 
-
-How to make libcunit.a on DOS
------------------------------
-I had some trouble using the usual configure/make scipts and wrote
-this makefile for dos to compile the cunit library.
-
-## get and unzip CUnit-2.1-0-src.zip
-##
-## place this makefile in Cunit-2.1-0/cunit
-## and save as 'makefile.dos'.  
-## Then build libcunit.a by running
-##   'make -f makefile.dos'
-##
-## Finally, 
-##    copy libcunit.a to FreeBASIC/lib/dos
-
-RM = rm
-AR = ar
-GCC = gcc
-
-SRCS := Sources/Automated/Automated.c
-SRCS += Sources/Basic/Basic.c
-SRCS += Sources/Console/Console.c
-SRCS += Sources/Framework/CUError.c
-SRCS += Sources/Framework/MyMem.c
-SRCS += Sources/Framework/TestDB.c
-SRCS += Sources/Framework/TestRun.c
-SRCS += Sources/Framework/Util.c
-
-OBJS := $(patsubst %.c,%.o,$(SRCS))
-
-LIBNAME = libcunit.a
-
-%.o : %.c
-	$(GCC) -c $< -I./Headers -o $@
-
-all: $(LIBNAME)
-
-$(LIBNAME): $(OBJS)
-	$(AR) cru $(LIBNAME) $(OBJS)
-
-.PHONY: clean
-clean:
-	$(RM) -f $(OBJS)
-	$(RM) -f $(LIBNAME)
 
 ## EOF

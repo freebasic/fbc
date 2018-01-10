@@ -1,5 +1,6 @@
-# include "fbcu.bi"
+#include "fbcu.bi"
 #include once "fbgfx.bi"
+#include once "crt/string.bi"
 
 namespace fbc_tests.gfx.fb_image_expr
 

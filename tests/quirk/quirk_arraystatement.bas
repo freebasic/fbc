@@ -5,8 +5,8 @@ Type testing_type
 End Type
 
 private sub quirk_arraystatement_inWith cdecl( )
-	Dim test As testing_type
-	With test
+	Dim test_udt As testing_type
+	With test_udt
 		.meep( 0 ) = 69
 		.meep( 1 ) = 420
 
@@ -18,8 +18,8 @@ private sub quirk_arraystatement_inWith cdecl( )
 end sub
 
 private sub quirk_arrayfunction_inWith cdecl( )
-	Dim test As testing_type
-	With test
+	Dim test_udt As testing_type
+	With test_udt
 		CU_ASSERT( lbound( .meep ) = 0 )
 		CU_ASSERT( ubound( .meep ) = 1 )
 	End With

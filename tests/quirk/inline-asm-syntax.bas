@@ -1,6 +1,6 @@
 #include "fbcu.bi"
 
-private sub test cdecl( )
+private sub test_proc cdecl( )
 	dim a as long = 1
 	dim inc as integer = &hdeadbeef
 
@@ -34,5 +34,5 @@ end sub
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "fbc_tests.quirk.inline-asm-syntax" )
-	fbcu.add_test( "test", @test )
+	fbcu.add_test( "test", @test_proc )
 end sub

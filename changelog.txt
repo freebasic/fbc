@@ -2,6 +2,7 @@ Version 1.06.0
 
 [changed]
 - Adjusted warning text for "mixed bool/nonbool operands" warning
+- test-suite uses libfbcunit for unit testing framework
 
 [added]
 - -noobjinfo option to disable the writing/reading of compile-time library and other linking options from/to .o and .a files. This also disables the use of fbextra.x (the supplemental linker script) for discarding the .fbctinf sections, which is useful when using the gold linker that doesn't support this kind of linker script.

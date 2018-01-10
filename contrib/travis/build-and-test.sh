@@ -30,7 +30,7 @@ if [ "$FBTRAVIS_TESTS_DEBUG" = "1" ]; then
 fi
 
 cd tests
-make cunit-tests FBC="$FBC_FOR_TESTS" </dev/null
+make unit-tests FBC="$FBC_FOR_TESTS" </dev/null
 cd ..
 
 cd tests

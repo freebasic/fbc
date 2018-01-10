@@ -1,5 +1,7 @@
 # include "fbcu.bi"
 
+#define NULL 0
+
 namespace fbc_tests.structs.dynamic_array_fields
 
 type FBARRAYDIM
@@ -82,7 +84,7 @@ namespace descriptorAllocation
 		array(any, any, any, any, any, any, any, any)	as integer
 	end type
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		CU_ASSERT( sizeof( UDT1 ) = sizeof( FBARRAY1 ) )
 		CU_ASSERT( sizeof( UDT2 ) = sizeof( integer ) + sizeof( FBARRAY1 ) + sizeof( integer ) )
 		CU_ASSERT( sizeof( UDT3 ) = (sizeof( FBARRAY1 ) * 3) + sizeof( UDT2 ) )
@@ -126,7 +128,7 @@ namespace descriptorInitAndCleanUp
 		array3(any, any) as DtorUdt
 	end type
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		scope
 			dim x as UDT1
 
@@ -201,7 +203,7 @@ namespace copyPod
 		array(any, any) as integer
 	end type
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		'' Shouldn't crash etc.
 		scope
 			dim as UDT1 a, b
@@ -390,7 +392,7 @@ namespace copyString
 		array(any, any) as string
 	end type
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		'' Shouldn't crash etc.
 		scope
 			dim as UDT1 a, b
@@ -582,7 +584,7 @@ namespace copyClass
 		array(any, any) as MyClass
 	end type
 
-	private sub test cdecl( )
+	private sub test_proc cdecl( )
 		'' Shouldn't crash etc.
 		scope
 			dim as UDT1 a, b
@@ -827,7 +829,7 @@ namespace redimMakesDynamic
 		redim array(0 to 0) as integer
 	end type
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		'' Should only allocate descriptor for 1 dimension
 		CU_ASSERT( sizeof( UDT ) = sizeof( FBARRAY1 ) )
 
@@ -852,7 +854,7 @@ namespace dimWithNonConstBoundsMakesDynamic
 		dim array(i to i) as integer
 	end type
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		'' Should only allocate descriptor for 1 dimension
 		CU_ASSERT( sizeof( UDT ) = sizeof( FBARRAY1 ) )
 
@@ -877,7 +879,7 @@ namespace initialBounds
 		array3(iif( a > 5, 1, 2 ) to 3) as integer  '' even one using a temp var!
 	end type
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		CU_ASSERT( sizeof( UDT ) = sizeof( FBARRAY1 ) + sizeof( FBARRAY2 ) + sizeof( FBARRAY1 ) )
 
 		scope
@@ -967,7 +969,7 @@ namespace scoping
 		redim a(0 to 0) as string
 	end sub
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim x as UDT
 		CU_ASSERT( lbound( a ) = 0 )
 		CU_ASSERT( ubound( a ) = -1 )
@@ -1003,15 +1005,15 @@ end namespace
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "fbc_tests.structs.dynamic-array-fields")
-	fbcu.add_test( "descriptor allocation", @descriptorAllocation.test )
-	fbcu.add_test( "descriptor init & clean up", @descriptorInitAndCleanUp.test )
-	fbcu.add_test( "copy pod", @copyPod.test )
-	fbcu.add_test( "copy string", @copyString.test )
-	fbcu.add_test( "copy class", @copyClass.test )
-	fbcu.add_test( "redimMakesDynamic", @redimMakesDynamic.test )
-	fbcu.add_test( "dimWithNonConstBoundsMakesDynamic", @dimWithNonConstBoundsMakesDynamic.test )
-	fbcu.add_test( "initialBounds", @initialBounds.test )
-	fbcu.add_test( "scoping", @scoping.test )
+	fbcu.add_test( "descriptor allocation", @descriptorAllocation.test_proc )
+	fbcu.add_test( "descriptor init & clean up", @descriptorInitAndCleanUp.test_proc )
+	fbcu.add_test( "copy pod", @copyPod.test_proc )
+	fbcu.add_test( "copy string", @copyString.test_proc )
+	fbcu.add_test( "copy class", @copyClass.test_proc )
+	fbcu.add_test( "redimMakesDynamic", @redimMakesDynamic.test_proc )
+	fbcu.add_test( "dimWithNonConstBoundsMakesDynamic", @dimWithNonConstBoundsMakesDynamic.test_proc )
+	fbcu.add_test( "initialBounds", @initialBounds.test_proc )
+	fbcu.add_test( "scoping", @scoping.test_proc )
 end sub
 
 end namespace

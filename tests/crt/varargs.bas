@@ -4,6 +4,10 @@
 namespace fbc_tests.crt.varargs
 
 private sub test cdecl( )
+
+#ifndef snprintf
+	CU_FAIL( snprintf not available for this target )
+#else
 	'' To test varargs even under -gen gcc, when other vararg tests are
 	'' disabled due to va_first() being disallowed in -gen gcc
 	const BUFFER_SIZE = 128
@@ -12,6 +16,8 @@ private sub test cdecl( )
 	dim as zstring ptr pz = @"hello"
 	snprintf( @z, BUFFER_SIZE, "%i %s %i", i, pz, clng( 456 ) )
 	CU_ASSERT( z = "123 hello 456" )
+#endif
+
 end sub
 
 private sub ctor( ) constructor

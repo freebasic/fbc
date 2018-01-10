@@ -93,7 +93,7 @@ namespace fbc_tests.ns.outside
 namespace procs
 	hProcTest( )
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		'' outside-of-original namespace REDIM should be allowed,
 		'' it's not really declaration but code, but it happens to
 		'' be handled by the same parser...
@@ -113,7 +113,7 @@ end namespace
 namespace vars
 	hVarTest( )
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		CU_ASSERT( varA.varB.i1 = 0 )
 		CU_ASSERT( varA.varB.i2 = 0 )
 		CU_ASSERT( varA.varB.i3 = 0 )
@@ -135,7 +135,7 @@ namespace op
 		as integer a
 	end type
 
-	declare sub test( )
+	declare sub test_proc( )
 
 	'' if global operators are allowed inside namespaces...
 	declare operator +( a as UDT, b as UDT ) as integer
@@ -146,7 +146,7 @@ namespace op
 end namespace
 
 '' and outside-of-namespace bodies like this are allowed...
-sub op.test( )
+sub op.test_proc( )
 end sub
 
 '' then this outside-of-namespace operator body should be allowed too:
@@ -371,8 +371,8 @@ end sub
 
 private sub modctor( ) constructor
 	fbcu.add_suite( "fbc_tests.namespace.outside" )
-	fbcu.add_test( "normal procedures", @procs.test )
-	fbcu.add_test( "variables", @vars.test )
+	fbcu.add_test( "normal procedures", @procs.test_proc )
+	fbcu.add_test( "variables", @vars.test_proc )
 	fbcu.add_test( "operator", @testOp )
 	fbcu.add_test( "constructor", @testCtor )
 	fbcu.add_test( "destructor", @testDtor )

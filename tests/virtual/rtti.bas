@@ -46,7 +46,7 @@ namespace simple
 		end if
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		var pluto = Dog( "Pluto" )
 		var tom = Cat( "Tom" )
 		CU_ASSERT( getAction( pluto ) = DOG_ACTION )
@@ -61,16 +61,16 @@ namespace emptyVtable
 	'' This is also a -gen gcc regression test, where the vtable was emitted with
 	'' zero size but an initialzer with 2 elements, causing gcc to warn.
 	type UDT extends object
-		declare function test( ) as integer
+		declare function test_proc( ) as integer
 	end type
 
-	function UDT.test( ) as integer
+	function UDT.test_proc( ) as integer
 		function = 123
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim x as UDT
-		CU_ASSERT( x.test( ) = 123 )
+		CU_ASSERT( x.test_proc( ) = 123 )
 	end sub
 end namespace
 
@@ -86,7 +86,7 @@ namespace rttiHandlesNamespaces1
 		end namespace
 	end namespace
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		scope
 			dim pudt1 as UDT1 ptr = new UDT1
 			CU_ASSERT( (*pudt1 is ns1.UDT1) = 0 )
@@ -144,7 +144,7 @@ namespace dtorsResetVptr
 		function = &hB
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		CU_ASSERT( adtors = 0 )
 		CU_ASSERT( bdtors = 0 )
 		scope
@@ -160,10 +160,10 @@ end namespace
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "fbc_tests.virtual.rtti" )
-	fbcu.add_test( "Is operator", @simple.test )
-	fbcu.add_test( "empty vtable", @emptyVtable.test )
-	fbcu.add_test( "RTTI handles namespaces", @rttiHandlesNamespaces1.test )
-	fbcu.add_test( "dtorsResetVptr", @dtorsResetVptr.test )
+	fbcu.add_test( "Is operator", @simple.test_proc )
+	fbcu.add_test( "empty vtable", @emptyVtable.test_proc )
+	fbcu.add_test( "RTTI handles namespaces", @rttiHandlesNamespaces1.test_proc )
+	fbcu.add_test( "dtorsResetVptr", @dtorsResetVptr.test_proc )
 end sub
 
 end namespace

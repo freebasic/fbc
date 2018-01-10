@@ -120,7 +120,7 @@ namespace fbc_tests.numbers.cast_f2ll
 	end sub
 
 	sub test_cast_hiconst_ull cdecl()
-		#macro test(dval, ullval)
+		#macro test_cast(dval, ullval)
 		scope
 			const as double d = dval
 			const as ulongint ull = ullval
@@ -132,14 +132,14 @@ namespace fbc_tests.numbers.cast_f2ll
 		#endmacro
 
 		'' sanity checks
-		test( 1.5, 2 )
-		test( 2^32, &H100000000ull )
+		test_cast( 1.5, 2 )
+		test_cast( 2^32, &H100000000ull )
 
 		'' numbers over 2^63 can't be converted properly with just clngint()
-		test( 2^63,               &H8000000000000000ull )
-		test( 2^63 * 1.5,         &HC000000000000000ull )
-		test( 2^63 + 2^(63 - 52), &H8000000000000800ull )
-		test( 2^64 - 2^(63 - 52), &HFFFFFFFFFFFFF800ull )
+		test_cast( 2^63,               &H8000000000000000ull )
+		test_cast( 2^63 * 1.5,         &HC000000000000000ull )
+		test_cast( 2^63 + 2^(63 - 52), &H8000000000000800ull )
+		test_cast( 2^64 - 2^(63 - 52), &HFFFFFFFFFFFFF800ull )
 
 	end sub
 

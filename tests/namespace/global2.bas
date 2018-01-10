@@ -15,7 +15,7 @@ namespace fbc_tests.ns.glob2
 	end function
 end namespace
 
-private sub test cdecl
+private sub test_proc cdecl
 	using fbc_tests.ns.glob2
 	
 	CU_ASSERT( func( ) = GLOB_VAL )
@@ -30,6 +30,6 @@ private sub ctor () constructor
 
 	fbcu.add_suite("fbc_tests.namespace.global2")
 	
-	fbcu.add_test("test", @test)
+	fbcu.add_test("test", @test_proc)
 	
 end sub

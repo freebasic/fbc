@@ -21,7 +21,7 @@ function fbc_tests.ns.extimp.func( byval foo as bar ptr ) as integer
   
 end function
 
-private sub test cdecl
+private sub test_proc cdecl
 
 	CU_ASSERT_TRUE( fbc_tests.ns.extimp.func( 0 ) )
 
@@ -30,6 +30,6 @@ end sub
 private sub ctor () constructor
 
 	fbcu.add_suite( "fbc_tests.namespace.extimp" )
-	fbcu.add_test( "test", @test )
+	fbcu.add_test( "test", @test_proc )
 	
 end sub

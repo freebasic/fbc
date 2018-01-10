@@ -1,7 +1,7 @@
 
-' TEST_MODE : CUNIT_COMPATIBLE
+' TEST_MODE : FBCUNIT_COMPATIBLE
 
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
 namespace fbc_tests.pretest
 
@@ -11,7 +11,7 @@ end sub
 
 private sub ctor () constructor
 
-  fbcu.add_suite("fbc_tests.pretest.compile_with_cunit")
+  fbcu.add_suite("fbc_tests.pretest.compile_with_fbcunit")
   fbcu.add_test("test_true", @test_true)
 
 end sub

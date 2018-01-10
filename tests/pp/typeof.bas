@@ -1,5 +1,7 @@
 #include "fbcu.bi"
 
+#define NULL 0
+
 namespace fbc_tests.pp.typeof_
 
 #macro clear_func(__type__)
@@ -15,7 +17,7 @@ namespace fbc_tests.pp.typeof_
 clear_func(integer)
 clear_func(string)
 
-sub test cdecl( )
+sub test_proc cdecl( )
 	dim as integer i = 69
 	dim as string s = "R&E 2007"
 	dim as integer ptr                             pi
@@ -157,7 +159,7 @@ namespace namespaces
 	#assert typeof(b.T) = "FBC_TESTS.PP.TYPEOF_.NAMESPACES.B.T"
 	#assert typeof(a.T) <> typeof(b.T)
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		scope
 			using a
 			#assert typeof(T) = typeof(a.T)
@@ -174,8 +176,8 @@ end namespace
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "fbc_tests.pp.typeof" )
-	fbcu.add_test( "typeof() with PP", @test )
-	fbcu.add_test( "namespaces", @namespaces.test )
+	fbcu.add_test( "typeof() with PP", @test_proc )
+	fbcu.add_test( "namespaces", @namespaces.test_proc )
 end sub
 
 end namespace

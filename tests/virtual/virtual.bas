@@ -136,7 +136,7 @@ namespace overridingWorks
 		CU_ASSERT( rb.i =  4 ) : CU_ASSERT( rb.toString( ) = "&h00000004" )
 	end sub
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim xa as A = A( 10 )
 		CU_ASSERT( xa.i = 10 ) : CU_ASSERT( xa.toString( ) = "10" )
 		xa.subtract( 4 )
@@ -209,7 +209,7 @@ namespace overridingVsShadowing
 		CU_ASSERT( rb.f2( ) = &hB2 )
 	end sub
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim xa as A
 		CU_ASSERT( xa.f1( ) = &hA1 )
 		CU_ASSERT( xa.f2( ) = &hA2 )
@@ -273,7 +273,7 @@ namespace overridingOverloadedMethods
 		function = &hB3
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim pa as A ptr
 
 		pa = new A
@@ -306,7 +306,7 @@ namespace virtualProperties
 	property B.f(              ) as integer : Bgets += 1 : property = &hB : end property
 	property B.f( i as integer )            : Bsets += 1 :                : end property
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim pa as A ptr
 
 		Agets = 0
@@ -368,7 +368,7 @@ namespace virtualOperators
 	operator A.@( ) as any ptr : operator = cptr( any ptr, &hA ) : end operator
 	operator B.@( ) as any ptr : operator = cptr( any ptr, &hB ) : end operator
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim s as string, i as integer, x1 as UDT1
 
 		scope
@@ -457,7 +457,7 @@ namespace differentSignatureIsntOverridden
 		function = &hB1
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim pa as A ptr
 		dim xb as B
 		pa = @xb
@@ -485,7 +485,7 @@ namespace virtualDtor
 		callsB += 1
 	end destructor
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		callsA = 0 : callsB = 0
 		scope
 			dim x as A
@@ -550,7 +550,7 @@ namespace virtualDtorDestructsField
 		callsB += 1
 	end destructor
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		#macro check( stmt, expectedA, expectedFA, expectedB )
 			callsA = 0
 			callsFA = 0
@@ -601,7 +601,7 @@ namespace virtualDtorDestructsBase
 		callsC += 1
 	end destructor
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		#macro check( stmt, expectedA, expectedB, expectedC )
 			callsA = 0
 			callsB = 0
@@ -661,7 +661,7 @@ namespace implicitDtorOverrides
 		'' override it.
 	end type
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		callsA = 0
 		callsFB = 0
 		scope
@@ -720,7 +720,7 @@ namespace vtableSlotsReused1
 	function C.f2( ) as integer : function = &hC2 : end function
 	function C.f3( ) as integer : function = &hC3 : end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		scope
 			dim p as A ptr = new C
 			CU_ASSERT( p->f1( ) = &hC1 )
@@ -780,7 +780,7 @@ namespace vtableSlotsReused2
 	function C.f2( ) as integer : function = &hC2 : end function
 	function C.f3( ) as integer : function = &hC3 : end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		scope
 			dim p as A ptr = new A
 			CU_ASSERT( p->f1( ) = &hA1 )
@@ -856,7 +856,7 @@ namespace vtableSlotsReusedProperties
 	property C.f(              ) as integer : Cgets += 1 : property = &hC : end property
 	property C.f( i as integer )            : Csets += 1 :                : end property
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		#macro resetCounts( )
 			Agets = 0 : Asets = 0
 			Bgets = 0 : Bsets = 0
@@ -935,7 +935,7 @@ namespace vtableSlotsReusedOperators
 	operator B.let( rhs as integer ) : Blets += 1 : end operator
 	operator C.let( rhs as integer ) : Clets += 1 : end operator
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		#macro check( Tpointer, Tobject, Alets_, Blets_, Clets_ )
 			Alets = 0
 			Blets = 0
@@ -980,7 +980,7 @@ namespace vtableSlotsReusedDtor
 	destructor B( ) : callsB += 1 : end destructor
 	destructor C( ) : callsC += 1 : end destructor
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		#macro check( Tpointer, Tobject, callsA_, callsB_, callsC_ )
 			callsA = 0
 			callsB = 0
@@ -1036,7 +1036,7 @@ namespace noImplicitVirtual
 	function C.f2( ) as integer : function = &hC2 : end function
 	function D.f2( ) as integer : function = &hD2 : end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		scope
 			dim p as A ptr = new B
 			CU_ASSERT( p->f1( ) = &hB1 ) '' A.f1() is overridden by B.f1()
@@ -1118,7 +1118,7 @@ namespace virtualsAreInherited1
 	function A.f1( ) as integer : function = &hA1 : end function
 	function C.f1( ) as integer : function = &hC1 : end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		scope
 			dim p as A ptr = new A
 			CU_ASSERT( p->f1( ) = &hA1 )
@@ -1174,7 +1174,7 @@ namespace virtualsAreInherited2
 
 	function C.f1( ) as integer : function = &hC1 : end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		scope
 			dim p as A ptr = new C
 			CU_ASSERT( p->f1( ) = &hC1 ) '' should not crash because it should have been overridden
@@ -1215,7 +1215,7 @@ namespace returnByrefAbstract
 		function = x
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		CU_ASSERT( f( ).f( ) = 123 )
 	end sub
 end namespace
@@ -1239,7 +1239,7 @@ namespace externC
 		function = &hB
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim p as A ptr = new B
 		CU_ASSERT( p->foo( 123 ) = &hB )
 		delete p
@@ -1265,7 +1265,7 @@ namespace externCxx
 		function = &hB
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim p as A ptr = new B
 		CU_ASSERT( p->foo( 123 ) = &hB )
 		delete p
@@ -1291,7 +1291,7 @@ namespace externWindows
 		function = &hB
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim p as A ptr = new B
 		CU_ASSERT( p->foo( 123 ) = &hB )
 		delete p
@@ -1321,7 +1321,7 @@ namespace externWindowsMs
 		function = &hB
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim p as A ptr = new B
 		CU_ASSERT( p->foo( 123 ) = &hB )
 		delete p
@@ -1358,7 +1358,7 @@ namespace explicitBase
 		i += &hB
 	end sub
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim i as integer
 
 		dim as A ptr pa = new B
@@ -1381,7 +1381,7 @@ namespace bydescParamGccWarningRegressionTest
 	type UDT extends object
 		i as integer
 
-		declare function test( ) as integer
+		declare function test_proc( ) as integer
 		declare virtual function f( array() as integer ) as integer
 	end type
 
@@ -1389,16 +1389,16 @@ namespace bydescParamGccWarningRegressionTest
 		function = array(0)
 	end function
 
-	function UDT.test( ) as integer
+	function UDT.test_proc( ) as integer
 		dim as integer temp()
 		redim temp(0 to 1)
 		temp(0) = 111
 		function = f( temp() )
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim x as UDT
-		CU_ASSERT( x.test( ) = 111 )
+		CU_ASSERT( x.test_proc( ) = 111 )
 	end sub
 end namespace
 
@@ -1449,7 +1449,7 @@ namespace bydescParams1
 		function = &hB8
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim array0() as integer
 		dim array1(any) as integer
 		dim array2(any, any) as integer
@@ -1521,7 +1521,7 @@ namespace bydescParams2
 		function = &hB8
 	end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		dim array1(any) as integer
 		dim array2(any, any) as integer
 		dim array8(any, any, any, any, any, any, any, any) as integer
@@ -1578,7 +1578,7 @@ namespace callingConventions
 	function B.fstdcall stdcall( i as integer, s as string ) as integer : function = &hB2 : end function
 	function B.fpascal  pascal ( i as integer, s as string ) as integer : function = &hB3 : end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		scope
 			var pa = new A
 			CU_ASSERT( pa->fcdecl  ( 0, "" ) = &hA1 )
@@ -1620,7 +1620,7 @@ namespace callConstVirtual
 	function B.f1( ) as integer : function = &hB1 : end function
 	function B.f2( ) as integer : function = &hB2 : end function
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		scope
 			dim p as A ptr = new B
 			CU_ASSERT( p->f1( ) = &hB1 )
@@ -1651,7 +1651,7 @@ namespace constObjectWithVirtualDtor
 	destructor A( ) : adtors += 1 : end destructor
 	destructor B( ) : bdtors += 1 : end destructor
 
-	sub test cdecl( )
+	sub test_proc cdecl( )
 		adtors = 0
 		bdtors = 0
 		scope
@@ -1715,36 +1715,36 @@ end namespace
 
 private sub ctor( ) constructor
 	fbcu.add_suite( "fbc_tests.virtual.virtual" )
-	fbcu.add_test( "basic overriding", @overridingWorks.test )
-	fbcu.add_test( "Overriding vs. shadowing", @overridingVsShadowing.test )
-	fbcu.add_test( "Methods with a different signature are not overridden", @differentSignatureIsntOverridden.test )
-	fbcu.add_test( "Overriding overloaded methods", @overridingOverloadedMethods.test )
-	fbcu.add_test( "VIRTUAL properties", @virtualProperties.test )
-	fbcu.add_test( "VIRTUAL operators", @virtualOperators.test )
-	fbcu.add_test( "VIRTUAL dtor", @virtualDtor.test )
-	fbcu.add_test( "VIRTUAL dtor still calls field dtor", @virtualDtorDestructsField.test )
-	fbcu.add_test( "VIRTUAL dtor still calls base dtor", @virtualDtorDestructsBase.test )
-	fbcu.add_test( "implicit dtor also overrides", @implicitDtorOverrides.test )
-	fbcu.add_test( "virtuals reuse vtable slots #1", @vtableSlotsReused1.test )
-	fbcu.add_test( "virtuals reuse vtable slots #2", @vtableSlotsReused2.test )
-	fbcu.add_test( "virtual properties reuse vtable slots", @vtableSlotsReusedProperties.test )
-	fbcu.add_test( "virtual operators reuse vtable slots", @vtableSlotsReusedOperators.test )
-	fbcu.add_test( "virtual dtors reuse vtable slots", @vtableSlotsReusedDtor.test )
-	fbcu.add_test( "overrides are not made virtual automatically", @noImplicitVirtual.test )
-	fbcu.add_test( "VIRTUALs are inherited even if not overridden #1", @virtualsAreInherited1.test )
-	fbcu.add_test( "VIRTUALs are inherited even if not overridden #2", @virtualsAreInherited2.test )
-	fbcu.add_test( "BYREF return of abstract UDT", @returnByrefAbstract.test )
-	fbcu.add_test( "overriding an EXTERN C method", @externC.test )
-	fbcu.add_test( "overriding an EXTERN C++ method", @externCxx.test )
-	fbcu.add_test( "overriding an EXTERN Windows method", @externWindows.test )
-	fbcu.add_test( "overriding an EXTERN Windows-MS method", @externWindowsMs.test )
-	fbcu.add_test( "explicit BASE access", @explicitBase.test )
-	fbcu.add_test( "bydescParamGccWarningRegressionTest", @bydescParamGccWarningRegressionTest.test )
-	fbcu.add_test( "bydescParams1", @bydescParams1.test )
-	fbcu.add_test( "bydescParams2", @bydescParams2.test )
-	fbcu.add_test( "callingConventions", @callingConventions.test )
-	fbcu.add_test( "callConstVirtual", @callConstVirtual.test )
-	fbcu.add_test( "constObjectWithVirtualDtor", @constObjectWithVirtualDtor.test )
+	fbcu.add_test( "basic overriding", @overridingWorks.test_proc )
+	fbcu.add_test( "Overriding vs. shadowing", @overridingVsShadowing.test_proc )
+	fbcu.add_test( "Methods with a different signature are not overridden", @differentSignatureIsntOverridden.test_proc )
+	fbcu.add_test( "Overriding overloaded methods", @overridingOverloadedMethods.test_proc )
+	fbcu.add_test( "VIRTUAL properties", @virtualProperties.test_proc )
+	fbcu.add_test( "VIRTUAL operators", @virtualOperators.test_proc )
+	fbcu.add_test( "VIRTUAL dtor", @virtualDtor.test_proc )
+	fbcu.add_test( "VIRTUAL dtor still calls field dtor", @virtualDtorDestructsField.test_proc )
+	fbcu.add_test( "VIRTUAL dtor still calls base dtor", @virtualDtorDestructsBase.test_proc )
+	fbcu.add_test( "implicit dtor also overrides", @implicitDtorOverrides.test_proc )
+	fbcu.add_test( "virtuals reuse vtable slots #1", @vtableSlotsReused1.test_proc )
+	fbcu.add_test( "virtuals reuse vtable slots #2", @vtableSlotsReused2.test_proc )
+	fbcu.add_test( "virtual properties reuse vtable slots", @vtableSlotsReusedProperties.test_proc )
+	fbcu.add_test( "virtual operators reuse vtable slots", @vtableSlotsReusedOperators.test_proc )
+	fbcu.add_test( "virtual dtors reuse vtable slots", @vtableSlotsReusedDtor.test_proc )
+	fbcu.add_test( "overrides are not made virtual automatically", @noImplicitVirtual.test_proc )
+	fbcu.add_test( "VIRTUALs are inherited even if not overridden #1", @virtualsAreInherited1.test_proc )
+	fbcu.add_test( "VIRTUALs are inherited even if not overridden #2", @virtualsAreInherited2.test_proc )
+	fbcu.add_test( "BYREF return of abstract UDT", @returnByrefAbstract.test_proc )
+	fbcu.add_test( "overriding an EXTERN C method", @externC.test_proc )
+	fbcu.add_test( "overriding an EXTERN C++ method", @externCxx.test_proc )
+	fbcu.add_test( "overriding an EXTERN Windows method", @externWindows.test_proc )
+	fbcu.add_test( "overriding an EXTERN Windows-MS method", @externWindowsMs.test_proc )
+	fbcu.add_test( "explicit BASE access", @explicitBase.test_proc )
+	fbcu.add_test( "bydescParamGccWarningRegressionTest", @bydescParamGccWarningRegressionTest.test_proc )
+	fbcu.add_test( "bydescParams1", @bydescParams1.test_proc )
+	fbcu.add_test( "bydescParams2", @bydescParams2.test_proc )
+	fbcu.add_test( "callingConventions", @callingConventions.test_proc )
+	fbcu.add_test( "callConstVirtual", @callConstVirtual.test_proc )
+	fbcu.add_test( "constObjectWithVirtualDtor", @constObjectWithVirtualDtor.test_proc )
 end sub
 
 end namespace

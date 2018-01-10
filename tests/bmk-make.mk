@@ -5,7 +5,7 @@
 # and testing run-time assertions
 #
 # expected usage
-# make -f bmk-make.mk [clean] { BMK=? | FILE=? } TEST_MODE=? [ALLOW_CUNIT=0|1]
+# make -f bmk-make.mk [clean] { BMK=? | FILE=? } TEST_MODE=?
 #   clean
 #       clean files
 #   BMK=/path/filename.bmk
@@ -117,10 +117,6 @@ endif
 
 FBC_CFLAGS += -g -w 0 
 FBC_LFLAGS += -g
-
-ifeq ($(ALLOW_CUNIT),1)
-FBC_CFLAGS += -i fbcu/fake
-endif
 
 OBJS := $(addsuffix .o,$(basename $(SRCSX)))
 
