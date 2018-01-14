@@ -240,7 +240,7 @@ End Scope
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgClass|Class]]##
-	- ##[[KeyPgClass|Enum]]##
+	- ##[[KeyPgEnum|Enum]]##
 	- ##[[KeyPgType|Type]]##
 	- [[ProPgDataConversion|Coercion and Conversion]]
 
