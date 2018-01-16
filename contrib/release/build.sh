@@ -50,7 +50,7 @@
 # 
 # TODO:
 #   - win32: fbdoc CHM
-#   - win32/win64: build libcunit too, package the libffi/libcunit builds
+#   - package libffi
 #
 set -e
 
@@ -97,6 +97,23 @@ cd build
 buildinfo=../output/buildinfo-$target.txt
 echo "fbc $fbccommit $target, build based on:" > $buildinfo
 echo >> $buildinfo
+
+copyfile() {
+	srcfile="$1"
+	dstfile="$2"
+	
+	if [ -f "$dstfile" ]; then
+		echo "cached      $dstfile"
+	else
+		if [ -f "$srcfile" ]; then
+			echo "copying $srcfile to $dstfile"
+			cp -p "$srcfile" "$dstfile"
+		else
+			echo "$srcfile not found, stopping"
+			exit 1
+		fi
+	fi
+}
 
 download() {
 	filename="$1"
@@ -150,34 +167,52 @@ dos)
 		download "DJGPP/${package}.zip" "${DJGPP_MIRROR}${dir}${package}.zip"
 	}
 
-	djver=204
-	gccver=492
-	djgppgccversiondir=4.92
-	bnuver=225
+#	djver=204
+#	gccver=492
+#	djgppgccversiondir=4.92
+#	bnuver=225
+#	gdbver=771
+#	djpkg=beta
+
+   	djver=205
+	gccver=710
+	djgppgccversiondir=7.1.0
+	bnuver=229
 	gdbver=771
+	djpkg=current
 
 	# binutils/gcc/gdb (needs updating to new versions)
-	download_djgpp beta/v2gnu/ bnu${bnuver}b
-	download_djgpp beta/v2gnu/ gcc${gccver}b
-	download_djgpp beta/v2gnu/ gpp${gccver}b
-	download_djgpp beta/v2gnu/ gdb${gdbver}b
+	download_djgpp ${djpkg}/v2gnu/ bnu${bnuver}b
+	download_djgpp ${djpkg}/v2gnu/ gcc${gccver}b
+	download_djgpp ${djpkg}/v2gnu/ gpp${gccver}b
+	download_djgpp ${djpkg}/v2gnu/ gdb${gdbver}b
 
 	# rest to complete the DJGPP install (usually no changes needed)
-	download_djgpp beta/v2/ djdev${djver}
-	download_djgpp beta/v2gnu/ fil41b
-	download_djgpp beta/v2gnu/ mak40b
-	download_djgpp beta/v2gnu/ shl2011b
+	download_djgpp ${djpkg}/v2/ djdev${djver}
+
+#	download_djgpp ${djpkg}/v2gnu/ fil41b
+#	download_djgpp ${djpkg}/v2gnu/ mak40b
+#	download_djgpp ${djpkg}/v2gnu/ shl2011b
+
+	download_djgpp ${djpkg}/v2gnu/ fil41br2
+	download_djgpp ${djpkg}/v2gnu/ mak421b
+	download_djgpp ${djpkg}/v2gnu/ shl2011br2
 
 	# Sources for stuff that goes into the FB-dos package (needs updating to new versions)
-	download_djgpp beta/v2gnu/ bnu${bnuver}s
-	download_djgpp beta/v2gnu/ gcc${gccver}s
-	download_djgpp beta/v2gnu/ gdb${gdbver}s
-	download_djgpp beta/v2/    djlsr${djver}
+	download_djgpp ${djpkg}/v2gnu/ bnu${bnuver}s
+	download_djgpp ${djpkg}/v2gnu/ gcc${gccver}s
+	download_djgpp ${djpkg}/v2gnu/ gdb${gdbver}s
+	download_djgpp ${djpkg}/v2/    djlsr${djver}
 
 	unzip -q ../input/DJGPP/djdev${djver}.zip
-	unzip -q ../input/DJGPP/shl2011b.zip
-	unzip -q ../input/DJGPP/fil41b.zip
-	unzip -q ../input/DJGPP/mak40b.zip
+	
+#	unzip -q ../input/DJGPP/shl2011b.zip
+#	unzip -q ../input/DJGPP/fil41b.zip
+#	unzip -q ../input/DJGPP/mak40b.zip
+	unzip -q ../input/DJGPP/shl2011br2.zip
+	unzip -q ../input/DJGPP/fil41br2.zip
+	unzip -q ../input/DJGPP/mak421b.zip
+	
 	unzip -q ../input/DJGPP/gdb${gdbver}b.zip
 	unzip -q ../input/DJGPP/bnu${bnuver}b.zip
 	unzip -q ../input/DJGPP/gcc${gccver}b.zip
@@ -219,8 +254,13 @@ win32-mingworg)
 	download_extract_mingw mpfr-3.1.2-2-mingw32-dll.tar.lzma
 
 	# Add ddraw.h and dinput.h for FB's gfxlib2
+#   THIS DOES NOT EXIST ANYMORE
 #	download dx80_mgw.zip http://alleg.sourceforge.net/files/dx80_mgw.zip
 #	unzip ../input/dx80_mgw.zip include/ddraw.h include/dinput.h
+
+	# Add ddraw.h and dinput.h for FB's gfxlib2
+	copyfile "../input/MinGW.org/ddraw.h" "include/ddraw.h"
+	copyfile "../input/MinGW.org/dinput.h" "include/dinput.h"
 
 	# Work around http://sourceforge.net/p/mingw/bugs/2039/
 	patch -p0 < ../mingworg-fix-wcharh.patch
@@ -482,4 +522,3 @@ dos)         dosbuild;;
 linux*)      linuxbuild   | tee log.txt 2>&1;;
 win32|win64) windowsbuild | tee log.txt 2>&1;;
 esac
-							
