@@ -12,7 +12,7 @@ $(FBTITLE).exe: makescript.bas template.nsi $(FBTITLE).zip \
 	$(FBTITLE)/fbc.exe -g -exx -d FBVERSION=$(FBVERSION) makescript.bas
 	find $(FBTITLE) -type f | LC_ALL=C sort | sed -e 's,^$(FBTITLE)/,,g' > files.lst
 	unix2dos files.lst
-	makescript.exe files.lst template.nsi installer.nsi
+	./makescript.exe files.lst template.nsi installer.nsi
 	rm files.lst
 	$(FBTITLE)/fbc.exe open-console.bas
 	cp installer.nsi open-console.exe fblogo.ico $(FBTITLE)
