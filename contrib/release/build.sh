@@ -59,18 +59,30 @@ usage() {
 	exit 1
 }
 
-target="$1"
-case "$target" in
+# parse command line arguments
+while [[ $# -gt 0 ]] 
+do
+arg="$1"
+case $arg in
 dos|linux-x86|linux-x86_64|win32|win64)
-	fbtarget=$target;;
+	target="$1"
+	fbtarget=$target
+	shift
+	;;
 win32-mingworg)
-	fbtarget=win32;;
+	target="$1"
+	fbtarget=win32
+	shift
+	;;
 *)
-	usage;;
+	fbccommit="$1"
+	shift
+	;;	
 esac
+done
 
-fbccommit="$2"
-if [ -z "$fbccommit" ]; then
+# need a target and a commit id
+if [ -z "$target" -o -z "$fbccommit" ]; then
 	usage
 fi
 
@@ -167,13 +179,6 @@ dos)
 		download "DJGPP/${package}.zip" "${DJGPP_MIRROR}${dir}${package}.zip"
 	}
 
-#	djver=204
-#	gccver=492
-#	djgppgccversiondir=4.92
-#	bnuver=225
-#	gdbver=771
-#	djpkg=beta
-
    	djver=205
 	gccver=710
 	djgppgccversiondir=7.1.0
@@ -190,10 +195,6 @@ dos)
 	# rest to complete the DJGPP install (usually no changes needed)
 	download_djgpp ${djpkg}/v2/ djdev${djver}
 
-#	download_djgpp ${djpkg}/v2gnu/ fil41b
-#	download_djgpp ${djpkg}/v2gnu/ mak40b
-#	download_djgpp ${djpkg}/v2gnu/ shl2011b
-
 	download_djgpp ${djpkg}/v2gnu/ fil41br2
 	download_djgpp ${djpkg}/v2gnu/ mak421b
 	download_djgpp ${djpkg}/v2gnu/ shl2011br2
@@ -206,9 +207,6 @@ dos)
 
 	unzip -q ../input/DJGPP/djdev${djver}.zip
 	
-#	unzip -q ../input/DJGPP/shl2011b.zip
-#	unzip -q ../input/DJGPP/fil41b.zip
-#	unzip -q ../input/DJGPP/mak40b.zip
 	unzip -q ../input/DJGPP/shl2011br2.zip
 	unzip -q ../input/DJGPP/fil41br2.zip
 	unzip -q ../input/DJGPP/mak421b.zip
@@ -252,11 +250,6 @@ win32-mingworg)
 	download_extract_mingw gmp-5.1.2-1-mingw32-dll.tar.lzma
 	download_extract_mingw mpc-1.0.1-2-mingw32-dll.tar.lzma
 	download_extract_mingw mpfr-3.1.2-2-mingw32-dll.tar.lzma
-
-	# Add ddraw.h and dinput.h for FB's gfxlib2
-#   THIS DOES NOT EXIST ANYMORE
-#	download dx80_mgw.zip http://alleg.sourceforge.net/files/dx80_mgw.zip
-#	unzip ../input/dx80_mgw.zip include/ddraw.h include/dinput.h
 
 	# Add ddraw.h and dinput.h for FB's gfxlib2
 	copyfile "../input/MinGW.org/ddraw.h" "include/ddraw.h"
