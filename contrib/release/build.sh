@@ -15,7 +15,7 @@
 # ENABLE_STANDALONE, except for the directory layout). This way we avoid
 # unnecessary full rebuilds.
 #
-# ./build.sh <target> <fbc-commit-id>
+# ./build.sh <target> <fbc-commit-id> [--offline]
 #
 # <target> can be one of:
 #   dos
@@ -33,6 +33,10 @@
 #       64bit MinGW-w64 build: must run on Win64. Uses Win32 MSYS, but overrides
 #       the FB makefile's uname check in order to build for 64bit instead of
 #       32bit.
+#
+# --offline
+#   when given, build.sh will stop with exit code 1 if the file is not already in
+#   in the download cache
 #
 # Requirements:
 #   - MSYS environment on Windows with: bash, wget/curl, zip, unzip, patch, make, findutils
@@ -55,7 +59,7 @@
 set -e
 
 usage() {
-	echo "usage: ./build.sh dos|linux-x86|linux-x86_64|win32|win32-mingworg|win64 <fbc commit id>"
+	echo "usage: ./build.sh dos|linux-x86|linux-x86_64|win32|win32-mingworg|win64 <fbc commit id> [--offline]"
 	exit 1
 }
 
@@ -64,6 +68,10 @@ while [[ $# -gt 0 ]]
 do
 arg="$1"
 case $arg in
+--offline)
+	offline=Y
+	shift
+	;;
 dos|linux-x86|linux-x86_64|win32|win64)
 	target="$1"
 	fbtarget=$target
@@ -85,6 +93,9 @@ done
 if [ -z "$target" -o -z "$fbccommit" ]; then
 	usage
 fi
+
+# default values if none given
+offline=${offline:-N}
 
 echo "building FB-$target (uname = `uname`, uname -m = `uname -m`)"
 mkdir -p input
@@ -134,12 +145,18 @@ download() {
 	if [ -f "../input/$filename" ]; then
 		echo "cached      $filename"
 	else
-		echo "downloading $filename"
-		#if ! wget -O "../input/$filename" "$url"; then
-		if ! curl -L -o "../input/$filename" "$url"; then
-			echo "download failed"
-			rm -f "../input/$filename"
+		if [ $offline = "Y" ]; then
+			echo "not cached  $filename"
+			echo "in offline mode, stopping"
 			exit 1
+		else
+			echo "downloading $filename"
+			#if ! wget -O "../input/$filename" "$url"; then
+			if ! curl -L -o "../input/$filename" "$url"; then
+				echo "download failed"
+				rm -f "../input/$filename"
+				exit 1
+			fi	
 		fi
 	fi
 
@@ -264,7 +281,7 @@ win64)
 	;;
 esac
 
-bootfb_title=FreeBASIC-1.04.0-$fbtarget
+bootfb_title=FreeBASIC-1.05.0-$fbtarget
 
 case $fbtarget in
 linux*)
