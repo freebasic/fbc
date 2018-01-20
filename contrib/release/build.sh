@@ -15,7 +15,7 @@
 # ENABLE_STANDALONE, except for the directory layout). This way we avoid
 # unnecessary full rebuilds.
 #
-# ./build.sh <target> <fbc-commit-id> [--offline]
+# ./build.sh <target> <fbc-commit-id> [--offline] [--repo url] [--remote name]
 #
 # <target> can be one of:
 #   dos
@@ -38,6 +38,14 @@
 #   when given, build.sh will stop with exit code 1 if the file is not already in
 #   in the download cache
 #
+# --repo url
+#   specify an additional repo url to fetch in to the local repo other than the 
+#   official https://github.com/freebasic/fbc.git repo
+#
+# --remote name
+#   specify the remote name to use when referring to the other repo url
+#   default is 'other'
+#
 # Requirements:
 #   - MSYS environment on Windows with: bash, wget/curl, zip, unzip, patch, make, findutils
 #     (win32/win64 builds need to be able to run ./configure scripts, to build libffi)
@@ -59,7 +67,7 @@
 set -e
 
 usage() {
-	echo "usage: ./build.sh dos|linux-x86|linux-x86_64|win32|win32-mingworg|win64 <fbc commit id> [--offline]"
+	echo "usage: ./build.sh dos|linux-x86|linux-x86_64|win32|win32-mingworg|win64 <fbc commit id> [--offline] [--repo url] [--remote name]"
 	exit 1
 }
 
@@ -71,6 +79,14 @@ case $arg in
 --offline)
 	offline=Y
 	shift
+	;;
+--repo)
+	repo_url="$2"
+	shift; shift
+	;;
+--remote)
+	remote_name="$2"
+	shift; shift
 	;;
 dos|linux-x86|linux-x86_64|win32|win64)
 	target="$1"
@@ -97,7 +113,19 @@ fi
 # default values if none given
 offline=${offline:-N}
 
+# if we have an alternate repo url, then set a default value for the remote name
+# otherwise we are only using the official repo, so set the remote name to origin
+if [ ! -z "$repo_url" ]; then
+	remote_name=${remote_name:-other}
+else
+	remote_name=${remote_name:-origin}
+fi
+
 echo "building FB-$target (uname = `uname`, uname -m = `uname -m`)"
+echo "from repository: https://github.com/freebasic/fbc.git"
+if [ ! -z "$repo_url" ]; then
+	echo "from repository: $repo_url"
+fi
 mkdir -p input
 mkdir -p output
 rm -rf build
@@ -105,14 +133,32 @@ mkdir build
 
 echo "updating input/fbc repo"
 cd input
+
+# origin/master must be the official repo, always get it first
 if [ ! -d fbc ]; then
-	git clone https://github.com/freebasic/fbc.git
+	git clone "https://github.com/freebasic/fbc.git" fbc
 fi
+
 cd fbc
-git fetch
-git fetch --tags
+
+git fetch origin
+git fetch --tags origin
 git remote prune origin
 git reset --hard origin/master
+
+# if given an alternate repo url, then make sure the
+# remote name refers to the alternate repo url
+if [ ! -z "$repo_url" ]; then
+	if git remote | grep -Fxq "$remote_name"; then
+		git remote remove "$remote_name"
+	fi
+	git remote add "$remote_name" "$repo_url"
+	git fetch "$remote_name"
+	git fetch --tags "$remote_name"
+	git remote prune "$remote_name"
+	git reset --hard "$remote_name"/"$fbccommit"
+fi
+
 cd ../..
 
 cd build
@@ -295,7 +341,7 @@ linux*)
 
 	# fbc sources
 	cp -R ../input/fbc .
-	cd fbc && git reset --hard "$fbccommit" && cd ..
+	cd fbc && git reset --hard "$remote_name"/"$fbccommit" && cd ..
 
 	mkdir tempinstall
 	;;
@@ -307,7 +353,7 @@ linux*)
 
 	# fbc sources
 	cp -R ../input/fbc fbc
-	cd fbc && git reset --hard "$fbccommit" && cd ..
+	cd fbc && git reset --hard "$remote_name"/"$fbccommit" && cd ..
 	echo "prefix := `pwd -W`" > fbc/config.mk
 
 	# On 64bit, we have to override the FB makefile's uname check, because MSYS uname reports 32bit still
