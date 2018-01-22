@@ -47,6 +47,7 @@ Version 1.06.0
 - #851: '#LINE line filename' only changed the source filename in error messages, not in debug info
 - #832: Fix bug allowing QB style suffixes on all keywords, regardless of -lang
 - #841: The unary negation operator gave different result signedness when used on constant instead of non-constant expression. Now the result is always signed.
+- Incorrect C++ mangling for BYREF parameters using built-in types
 
 
 Version 1.05.0
