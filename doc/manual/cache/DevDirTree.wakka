@@ -1,1 +1,38 @@
-Delete me! moved to [[DevNormalVsStandalone]]
+{{fbdoc item="title" value="FreeBASIC Installation Directory Tree"}}----
+
+When built from source, ""FreeBASIC"" can be configured for and installed in one of these two directory layouts:
+
+{{fbdoc item="section" value="Standalone tree"}}
+
+	The standalone tree is intended to be used for self-contained installations such as the traditional FB-win32 and FB-dos releases. fbc is located at the toplevel, while the other compiler tools are put in the ##bin/## sub-directory. This is the easier directory layout. It also allows adding fbc to the PATH, without having to add the whole ##bin/## directory.
+	
+		- bin/
+			- ld.exe
+			- //other tools...//
+		- include/
+			- fbgfx.bi
+			- //other headers...//
+		- lib/
+			- libfb.a
+			- //other libraries...//
+		- fbc.exe
+
+{{fbdoc item="section" value="Standard Unix layout"}}
+
+	The standard Unix-like directory layout is the default. It is most commonly used for the FB-linux releases, but also allows installing ""FreeBASIC"" into ""MinGW"" or DJGPP trees. The two big differences to the standalone layout are fbc being located inside the ##bin/## directory (like other programs and compilers), and FB headers and libraries using an additional ##freebasic/## sub-directory (to avoid interfering with system headers or other libraries).
+	
+		- bin/
+			- fbc.exe
+			- ld.exe
+			- //other tools...//
+		- include/
+			- freebasic/
+				- fbgfx.bi
+				- //other headers...//
+		- lib/
+			- freebasic/
+				- libfb.a
+				- //other libraries...//
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

@@ -1,1 +1,173 @@
-Delete me! Content moved to [[DevBuild]].
+{{fbdoc item="title" value="Compiling from SVN for Win32, using MinGW/MSYS"}}----
+This guide shows how to compile a win32 ""FreeBASIC"" (compiler and libraries) using ""MinGW""/MSYS and a win32 version of ""FreeBASIC"".
+
+{{fbdoc item="section" value="Setting up the environment"}}
+
+	Choose a place for the SVN ""FreeBASIC"", for example ##C:\""FreeBASIC""##. Then checkout the current development base [[https://fbc.svn.sourceforge.net/svnroot/fbc/trunk/FreeBASIC]] into ##C:\""FreeBASIC""## using an SVN client.
+	
+	A working ""FreeBASIC"" installation is needed; this guide assumes it is in C:\""FreeBASIC""-0.21.1-win32, but of course it can be somewhere else too. It should also be possible to use FB 0.20.0, and maybe even earlier versions, to compile the current FB. The working fbc has to be in the PATH, or you'll have to specifiy ##FBC=C:/path/to/fbc## manually when configuring.
+
+	The ""MinGW"" and MSYS downloads can be found on [[http://www.mingw.org]] and their Sourceforge page. ""MinGW""/MSYS are split up into many packages, representing the individual tools you might or might not need. The "core" (GCC, binutils, mingw runtime, Windows API libraries) can be found under ""BaseSystem"" in the Downloads area on Sourceforge. You can use the installer tool provided by ""MinGW"" to install everything, and/or manually download and extract the needed packages. Besides ""MinGW""'s GCC port, there also is [[http://tdm-gcc.tdragon.net/ TDM-GCC]], which can be used instead of ""MinGW""'s GCC. TDM-GCC seems to be more stable & up-to-date recently, compared to ""MinGW""'s GCC.
+	
+	The required ""MinGW"" packages in general:
+		- ##gcc-core##
+		- ##""gcc-g++""##
+		- ##binutils##
+		- ##mingwrt##
+		- ##w32api##
+		- ##make##
+	
+	These are the packages used to make the ""FreeBASIC""-0.21 releases:
+		TDM-GCC 4.4.1 (from [[http://sourceforge.net/downloads/tdm-gcc/]])
+			- ##gcc-4.4.1-tdm-2-core.tar.gz## ([[http://sourceforge.net/projects/tdm-gcc/files/TDM-GCC%204.4%20series/4.4.1-tdm-2%20SJLJ/gcc-4.4.1-tdm-2-core.zip/ link]])
+			- ##""gcc-4.4.1-tdm-2-g++.tar.gz""## ([[http://sourceforge.net/projects/tdm-gcc/files/TDM-GCC%204.4%20series/4.4.1-tdm-2%20SJLJ/gcc-4.4.1-tdm-2-g%2B%2B.tar.gz/ link]])
+		""MinGW"" environment with binutils 2.19.1 (from [[http://sourceforge.net/downloads/mingw]])
+			- ##binutils-2.19.1-mingw32-bin.tar.gz## ([[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/GNU-Binutils/binutils-2.19.1/binutils-2.19.1-mingw32-bin.tar.gz/ link]])
+			- ##mingwrt-3.17-mingw32-dev.tar.gz## ([[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/mingwrt-3.17/mingwrt-3.17-mingw32-dev.tar.gz/ link]])
+			- ##mingwrt-3.17-mingw32-dll.tar.gz## ([[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/RuntimeLibrary/MinGW-RT/mingwrt-3.17/mingwrt-3.17-mingw32-dll.tar.gz/ link]])
+			- ##w32api-3.14-mingw32-dev.tar.gz## ([[http://sourceforge.net/projects/mingw/files/MinGW/BaseSystem/RuntimeLibrary/Win32-API/w32api-3.14/w32api-3.14-mingw32-dev.tar.gz/ link]])
+			- ##make-3.81-20090914-mingw32-bin.tar.gz## ([[http://sourceforge.net/projects/mingw/files/MinGW/make/make-3.81-20090914-mingw32/make-3.81-20090914-mingw32-bin.tar.gz/ link]])
+			- ##gettext-0.17-1-mingw32-dev.tar.lzma## (for libintl.a) ([[http://sourceforge.net/projects/mingw/files/MinGW/gettext/gettext-0.17-1/gettext-0.17-1-mingw32-dev.tar.lzma/download link]])
+	
+	This is what the current ""FreeBASIC"" source code is supposed to work with. A more recent GCC (like GCC 4.5.0) might require extra work to get to compile ""FreeBASIC"", if ""FreeBASIC"" hasn't been updated to it yet. For example, the libgcc.a from ""MinGW""'s GCC 4.5.0 currently requires libgcc_eh.a to be linked in, which fbc doesn't do yet. TDM-GCC 4.5.0 could work though, because it doesn't require libgcc_eh. Previous ""MinGW"" versions should work fine too (for example GCC 3.4.5 with binutils 2.16/2.17).
+	
+	""MinGW""/TDM-GCC packages are supposed to be extracted to ##C:\""MinGW""##, and MSYS should be installed to ##C:\msys\1.0##. You should add ##C:\""MinGW""\bin## to the PATH, so gcc & co will be found. If you add ##C:\msys\1.0\bin## to your PATH, you can compile ""FreeBASIC"" from a cmd.exe prompt instead of using the MSYS shell.
+	
+	In order to compile ""FreeBASIC""'s gfxlib, ""DirectX"" headers are needed in ##C:\""MinGW""\include##, specifically ##ddraw.h## and ##dinput.h##. You can get the headers from here: [[http://alleg.sourceforge.net/files/dx80_mgw.zip]]
+
+{{fbdoc item="section" value="Compiling FreeBASIC"}}
+
+	Open up an MSYS shell and enter the following commands. You can also use a cmd.exe/DOS prompt; then you might need to use backslashes instead of forward-slashes in the ##cd## commands, and invoke the ../../configure scripts via ##sh ../../configure##.
+	
+	%%cd C:/FreeBASIC%%
+	
+	Compile the new fbc.exe:
+	
+	%%cd src/compiler/obj/win32
+../../configure --enable-standalone
+make
+make install
+cd ../../../..%%
+	
+	Compile the new libfb.a and libfbmt.a:
+	
+	%%cd src/rtlib/obj/win32
+../../configure CFLAGS=-O2
+make
+make MULTITHREADED=1
+make install
+cd ../../../..%%
+	
+	Compile the new libfbgfx.a:
+	
+	%%cd src/gfxlib2/obj/win32
+../../configure CFLAGS=-O2
+make
+make install
+cd ../../../..%%
+	
+	C:\""FreeBASIC"" now contains the new fbc.exe, while C:\""FreeBASIC""\lib\win32 contains the new fb/fbmt/fbgfx libraries.
+
+{{fbdoc item="section" value="Making the new FreeBASIC tree usable"}}
+
+	Several files need to be copied into the C:\""FreeBASIC"" tree to enable it to compile ""FreeBASIC"" programs (and ""FreeBASIC"" itself again; those cases are marked with "for rebuilding").
+	
+	From C:\""FreeBASIC""-0.21.1-win32 into C:\""FreeBASIC""\bin\win32: 
+		- ##ar.exe##
+		- ##as.exe##
+		- ##dlltool.exe##
+		- ##ld.exe##
+		- ##""GoRC.exe""##
+	
+	From ##C:\""MinGW""\lib\gcc\mingw32\4.4.1## into ##C:\""FreeBASIC""\lib\win32##:
+		- ##crtbegin.o##
+		- ##crtend.o##
+		- ##libgcc.a##
+		- ##""libsupc++.a""##
+	
+	From ##C:\""MinGW""\lib## into ##C:\""FreeBASIC""\lib\win32##:
+		- ##crt2.o##
+		- ##dllcrt2.o##
+		- ##gcrt2.o##
+		- ##libadvapi32.a##
+		- ##libbfd.a## (for rebuilding)
+		- ##libgdi32.a##
+		- ##libgmon.a##
+		- ##libiberty.a## (for rebuilding)
+		- ##libintl.a## (for rebuilding)
+		- ##libkernel32.a##
+		- ##libmingw32.a##
+		- ##libmingwex.a##
+		- ##libmoldname.a##
+		- ##libmsvcrt.a##
+		- ##libuser32.a##
+		- ##libwinmm.a##
+		- ##libwinspool.a##
+
+	The advapi32, gdi32, kernel32, msvcrt, user32, winmm and winspool libraries may also be renamed to *.dll.a instead of just *.a if you prefer.
+	
+	Now you can use C:\""FreeBASIC"" instead of C:\""FreeBASIC""-0.21.1-win32 to compile FB programs.
+	You can copy more Windows API libraries (or others), if/when you want/need them.
+
+{{fbdoc item="section" value="Recompiling after SVN updates or changes to the source code"}}
+
+	For convenience you can rebuild the compiler and libraries (or just the changed component) in the same directory as before, using the same commands as before. However there may be chicken-egg problems after updates to the build system or the rtlib/gfxlib interface. Building fbc first avoids chicken-egg problems between fbc and the runtime libraries, but not all problems can be avoided while rebuilding in the same tree. It is safer (but more work) to use two separate FB directories (one being a working FB installation, the other being the tree you want to compile). 
+
+{{fbdoc item="section" value="Useful options for building rtlib and gfxlib"}}
+
+	{{fbdoc item="subsect" value="configure"}}
+	
+		- ##CC=<c:/path/to/gcc.exe>##
+			(Useful if not using the default from the system)
+		
+		- ##RANLIB=<c:/path/to/ranlib.exe>##
+		
+		- ##CFLAGS=<gcc compile options>##
+			Useful to override the default "-O2 -g" and just use "-O2", unless you want debug symbols.
+		
+		You can pass these to the makefile too, but by passing them to configure they will be written to the makefile and you won't have to remember them the next time you're make'ing.
+	
+	{{fbdoc item="subsect" value="make"}}
+	
+		- ##AR=<c:/path/to/ar.exe>##
+			(The AR variable is not forwarded by configure currently, so it has to be passed to the makefile)
+
+{{fbdoc item="section" value="Useful options for building the compiler"}}
+
+	{{fbdoc item="subsect" value="configure"}}
+	
+		- ##--disable-objinfo##
+			If specified fbc will not be linked against libbfd/libiberty/libintl. This can save a lot of trouble during compilation of fbc, at the cost of the [[DevObjinfo objinfo feature]] being disabled.
+	
+		- ##--enable-standalone## (This is always used for the ""FreeBASIC""-win32 release)
+			Build a standalone fbc that can run from the ""FreeBASIC"" tree. It will seek binutils and libraries in the ""FreeBASIC"" tree.
+	
+		- ##--prefix=C:/path/to/somewhere##
+			Changes the /usr/local prefix to something else. Only useful for the non-standalone build.
+			For example:
+				##../../configure --prefix=C:/""FreeBASIC""##
+			Then ##install.sh -i## will install into C:\""FreeBASIC"" instead of /usr/local (and fbc will use C:\""FreeBASIC"" instead of /usr/local to find binutils, libraries and headers).
+			
+			Note: MSYS maps ##/usr/local## to ##C:\msys\1.0\local##.
+	
+		- ##--enable-crosscomp-<target>##
+			fbc will be compiled supporting cross-compilation for the specified target. To actually cross-compile something though additional binutils and libraries will be needed in the ""FreeBASIC""/bin/<target> and ""FreeBASIC""/lib/<target> directories. Besides, this may only work with the standalone build of fbc.
+			For example:
+				##../../configure --enable-crosscomp-dos##
+		
+		- ##FBC=<c:/path/to/fbc.exe>##
+	
+	{{fbdoc item="subsect" value="make"}}
+	
+		- ##DEBUG=1##
+			fbc will be compiled with ##-g##. Useful for debugging fbc.
+			For example:
+				##make DEBUG=1##	
+	
+		- ##EXTRAERR=1##
+			fbc will be compiled with ##-exx##. Useful for debugging fbc. The resulting fbc will be notably slower.
+	
+		- ##FB_BFD=1 BFD_VER=<XXX>##
+			This will result in fbc using FB libbfd headers to use libbfd directly, instead of using the system's C libbfd headers through fbc's default C libbfd wrapper. The FB libbfd header version must be specified, for example ##BFD_VER=217##. The libbfd.a that this fbc will be linked against must match this version exactly.
+
+{{fbdoc item="back" value="SVNCompile|Compiling from SVN"}}

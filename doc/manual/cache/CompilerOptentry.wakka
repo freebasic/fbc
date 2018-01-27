@@ -1,1 +1,22 @@
-delete me
+{{fbdoc item="title" value="Compiler Option: -entry"}}----
+Main file without extension to indicate the main module
+
+{{fbdoc item="syntax"}}##
+	**-entry** < //source file// >
+##
+{{fbdoc item="param"}}
+	##//source file//##
+		The name without extension of the main module source file
+
+{{fbdoc item="desc"}}
+	The ##-entry## compiler option specifies a main entry point for a source file; the argument is the name of a source file minus its extension. If "-m" or "-entry" is not specified, the first source file listed is given a main entry point. When using the "-c" switch, "-m" or "-entry" must be specified when compiling a main source file.  Same as "-m" compiler option.
+
+	The intrinsic macro ##[[KeyPgDdFBMain __FB_MAIN__]]## is defined in the main module and not defined in other modules.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdFBMain __FB_MAIN__]]##
+	- [[CompilerOptc Compiler Option: -c]]
+	- [[CompilerOptm Compiler Option: -m]]
+	- [[CompilerCmdLine Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

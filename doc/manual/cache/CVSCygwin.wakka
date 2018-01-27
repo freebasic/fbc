@@ -1,1 +1,100 @@
-Delete me! Content moved to [[DevBuild]].
+{{fbdoc item="title" value="Compiling from CVS for Cygwin"}}----
+At the moment, there is no standard distribution for Cygwin.  Therefore, if you wish to have a Cygwin-specific build of FreeBASIC, you'll have to build it yourself.  
+
+	=={{anchor name="setup|Setting up the Cygwin environment"}}==
+		- {{anchor name="setup1|Install the packages for Cygwin"}}
+		- {{anchor name="setup3|Add the FreeBASIC program"}}
+
+	=={{anchor name="making|Making the FreeBASIC executable and libraries"}}==
+		- {{anchor name="making1|Download the FreeBASIC sources"}}
+		- {{anchor name="making2|Make rtlib"}}
+		- {{anchor name="making3|Make gfxlib"}}
+		- {{anchor name="making4|Make fbc"}}
+
+	=={{anchor name="updating|Updating the FreeBASIC software installed in Cygwin"}}==
+		- {{anchor name="updating1|Replace the old .bi files with the new ones from the source folder"}}
+		- {{anchor name="updating2|Replace the old compiler and library files with the new ones you've just made"}}
+		- {{anchor name="updating3|Copy MinGW-specific library to FB linker library directory if it's not included already"}}
+
+	{{anchor name="setup"}}===Setting up the Cygwin environment===
+
+		{{anchor name="setup1"}}==Install the packages for Cygwin==
+			You will need to have Cygwin installed with standard development tools, including:
+				- gcc
+				- perl 
+				- cocom
+				- cvs
+
+		{{anchor name="setup3"}}==Add the ""FreeBASIC"" program==
+			(For the following steps, you will need to type these commands into a Cygwin terminal.)
+
+			%%mkdir ~/FBbin
+cd ~/FBbin
+cp -rv "/cygdrive/c/Program Files/FreeBASIC"/* .
+echo 'export PATH=~/FBbin:$PATH' >> ~/.bashrc%%
+
+			Then close the Cygwin shell window and start another.
+
+	{{anchor name="making"}}===Making the ""FreeBASIC"" executable and libraries===
+		
+		(For the following steps, you will need to type these commands into a Cygwin terminal.)
+		
+		{{anchor name="making1"}}==Download the ""FreeBASIC"" sources==
+			
+			For the latest source code, you will need to download it from ""SourceForge"" using CVS.
+
+			%%cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/fbc login
+mkdir ~/fbccvs
+cd ~/fbccvs
+cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/fbc co FreeBASIC
+cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/fbc logout%%
+
+		{{anchor name="making2"}}==Make rtlib==
+			%%cd ~/fbccvs/FreeBASIC/src/rtlib
+autoreconf
+cd ~/fbccvs/FreeBASIC/src/rtlib/obj/cygwin
+chmod +x ../../configure
+../../configure
+make && make MULTITHREADED=1%%
+
+		{{anchor name="making3"}}==Make gfxlib==
+			
+			%%cd ~/fbccvs/FreeBASIC/src/gfxlib2/obj/cygwin
+chmod +x ../../configure
+../../configure
+make%%
+		
+		{{anchor name="making4"}}==Make fbc==
+			
+			%%cd ~/fbccvs/FreeBASIC/src/compiler/obj/cygwin
+chmod +x ../../configure
+../../configure
+make%%
+
+
+	{{anchor name="updating"}}===Updating the ""FreeBASIC"" software installed in Cygwin===
+		
+		The following steps will update the copy of ""FreeBASIC"" you installed in ~/FBbin
+		(Again, the commands should be typed into a Cygwin terminal)
+		
+		{{anchor name="updating1"}}==Replace the old .bi files with the new ones from the source folder==
+			
+			%%rm -rfv ~/FBbin/inc/*
+cp -rfv ~/fbccvs/FreeBASIC/inc/* ~/FBbin/inc%%
+		
+		{{anchor name="updating2"}}==Replace the old compiler and library files with the new ones you've just made==
+			
+			%%cp -fv ~/fbccvs/FreeBASIC/src/compiler/obj/cygwin/fbc_new.exe ~/FBbin/fbc.exe
+cp -fv ~/fbccvs/FreeBASIC/src/rtlib/obj/cygwin/*.a ~/FBbin/lib/cygwin
+cp -fv ~/fbccvs/FreeBASIC/src/gfxlib2/obj/cygwin/*.a ~/FBbin/lib/cygwin%%
+		
+		{{anchor name="updating3"}}==Copy ""MinGW""-specific library to FB linker library directory if it's not included already==
+			
+			%%cp /lib/mingw/libmingwex.a ~/FBbin/lib/win32%%
+	
+	And you're ready to roll! The newest FB is now in your Cygwin ~/FBbin.
+	
+	Note: recently it has come to light that although the above often works, there can be chicken-and-egg-related problems. Please see this forum thread for info:
+	http://www.freebasic.net/forum/viewtopic.php?p=32260
+
+{{fbdoc item="back" value="CVSCompile|Compiling from CVS"}}

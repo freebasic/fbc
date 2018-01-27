@@ -1,1 +1,17 @@
-Remove me (now at [[DevBuild]])
+{{fbdoc item="title" value="Source code repository"}}----
+
+All ""FreeBASIC""-related source code is available in [[http://fbc.git.sourceforge.net/ Git repositories hosted on Sourceforge]]. 
+Note that around July 2011 we switched from SVN to Git. All the history was imported into a new Git repository; the old SVN repository still exists on Sourceforge, but it's no longer used.
+
+There are multiple Git repositories:
+
+	- ##ciavc-notify## -- A [[http://cia.vc]] notification sending git update hook, used for the ##fbc## repo.
+		%%git clone git://fbc.git.sourceforge.net/gitroot/fbc/ciavc-notify%%
+	
+	- ##fbc## -- The ""FreeBASIC"" Compiler source code:
+		%%git clone git://fbc.git.sourceforge.net/gitroot/fbc/fbc%%
+
+	- ##fbcsvn2git## -- The script used to convert the fbc SVN repo to Git.
+		%%git clone git://fbc.git.sourceforge.net/gitroot/fbc/fbcsvn2git%%
+
+{{fbdoc item="back" value="DevToc|Table of Contents"}}

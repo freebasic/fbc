@@ -1,1 +1,7 @@
-Delete me! Content moved to [[DevBuild]].
+{{fbdoc item="title" value="Compiling from SVN for Cygwin"}}----
+At the moment, there is no standard distribution for Cygwin.  Therefore, if you wish to have a Cygwin-specific build of FreeBASIC, you'll have to build it yourself.  You should only build for Cygwin if you wish to use a linux library that does not have a Windows port. I will not go over the details for installing Cygwin, if you need more information see http://www.cygwin.com/ .
+
+After Cygwin is properly installed the Linux specific instructions found under //[[SVNLinux Compiling from SVN for Linux]]// should produce the expected results. Instead of running the installation script "install.sh" you should copy fbc.exe and the bin and lib directories to your installation directory.
+
+
+{{fbdoc item="back" value="SVNCompile|Compiling from SVN"}}

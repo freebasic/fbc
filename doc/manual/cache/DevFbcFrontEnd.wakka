@@ -1,1 +1,105 @@
-Remove me!
+{{fbdoc item="title" value="Front end"}}----
+
+''##fbc.bas##'': Main module, command line parsing, calls/uses the .bas parser/compiler, archiver/assembler/linker invocation
+''##fbc_<target>.bas##'': Most target-specific parts of this
+''##fb-objinfo.bas##'': [[DevObjinfo objinfo]] reader/writer
+''##c-objinfo.bas##'': C libbfd wrapper
+
+	When ##fbc.exe## is started like this:
+		##$ fbc program.bas##
+	it will read in the ""FreeBASIC"" source code in ##program.bas##, checking it for syntax errors, and write out a ##program.asm## file containing the resulting program. Then ##fbc.exe## launches ##as.exe## (the GNU assembler) to turn the ##.asm## into an object file named ##program.o##. After that, ##ld.exe## (the GNU linker) is launched to create the final executable ##program.exe## from ##program.o## and (if necessary) libraries like ""FreeBASIC""'s runtime or graphics library.
+
+{{fbdoc item="section" value="Startup"}}
+
+	The first thing that's done in fbc.bas is to call fbcInit(), which in turn initializes the main fbc module as well as the other modules. Initialization consists of allocating a lot of stuff like lists or hash tables, and setting default values for many options.
+
+{{fbdoc item="section" value="Command line input"}}
+	''##fbc.bas:parseCmd()##''
+	
+	fbc reads in all its command line arguments via command() and stores them in a list of strings. Then the list is parsed from beginning to end. If an argument is an ##@file## type of option, the ##file## is read in too (''##fbc.bas:parseCmdFile()##'') and all the command line options from it are appended to the list. @file's can be nested too and are only really useful when using a DOS fbc, because then the length of the command line is limited by DOS and using @file lets you work around that limitation.
+
+{{fbdoc item="section" value="Which -target was used (cross compilation or not)?"}}
+	''##fbc.bas:processTargetOptions(), initTarget()##''
+	
+	Once all command line options are known and present in one list, that list is searched for ##-target## arguments. The first one found will be used to initialize fbc to that target.
+	
+	The fbc module uses a vtbl-like structure containing a bunch of function pointers that will be filled in by the appropriate ''##fbc-<target>.bas:fbcInit_<target>()##'' function, depending on which target was chosen. The default target (to be used if no -target is passed) is the one this fbc.exe was compiled to run on.
+	
+	The target specific fbc "interface implementations" will later take care of the assembling, linking and/or archiving processes, which e.g. on linux are different than on win32.
+	
+	Besides that -target also affects some command line options. For example ##-s {gui|console}## is specific to win32/cygwin targets.
+
+{{fbdoc item="section" value="Parsing the (rest of the) command line options"}}
+	''##fbc.bas:processOptions()##''
+	
+	After the target is known, the command line can be analyzed. All command line options have been put into a hash table before (in fbcInit()), and now every argument that starts with a ##'-'## is looked up in that hash table. Depending on what option it is, the next argument may be needed too. This is also where the first error messages might occur.
+	
+	Everything that does not belong to an option is treated as input file, whose type is determined based on the file name's extension.
+	
+	If an option or filename extension is not recognized, they will be passed to a target specific function which can test for target specific options or input files.
+	
+	For example:
+		Finding ##-g## results in fbc telling the fb module to enable the debugging compilation option.
+		Finding ##-x filename## causes fbc to store the ##filename## and remember it for later, so it can be passed on to the linker which will then use that output file name.
+		All found ##*.bas## files are added to an fbc.bas internal list (to be worked off later).
+		All ##*.rc## files found while ##-target win32## is used will be added to a list in fbc-win32.bas (it too will be worked off later).
+	
+	Note that fbc parses the whole command line before doing anything else, so the order of command line arguments does not matter.
+	
+	The ##-o filename## option is the only exception to this. Since it is associated with an input .bas, and there can be multiply .bas passed to fbc, the -o option must be placed appropriately, so the command line parser can tell which -o belongs to which .bas.
+	For example, this could not be solved:
+		##$ fbc -o a.o -o b.o a.bas b.bas##
+	It has to be written as:
+		##$ fbc a.bas -o a.o b.bas -o b.o##
+	which is easily understood: The parser decides that a.o belongs to a.bas, and b.o to b.bas, because that's the trivial thing to do when going from left to right. The .o filename will be stored together with the .bas filename in the .bas file list (which is even called input/output file list). Currently the implementation only allows -o to be used behind the .bas, not in front of it.
+	
+	In case no command line options were passed (or only a -target option), fbc will show some help output: A list of recognized input file types and command line options (including target specific ones) (''##fbc.bas:printOptions()##'').
+
+{{fbdoc item="section" value="Should fbc even do anything?"}}
+
+	If ##-version## was found on the command line, this is where fbc prints some version output and stops (''##fbc.bas:printVersion()##'').
+
+{{fbdoc item="section" value="Determining the main module"}}
+	''##fbc.bas:setMainModule()##''
+	
+	If ##-m <path/name>## was given on the command line, the input file path/name.bas will be treated as main module. It will be used to determine the name for the output executable/library (unless -x was used), and the compiler will emit the implicit main function in this module (module-level code in non-main modules is put into a static constructor).
+
+{{fbdoc item="section" value="Compiling .bas files"}}
+	''##fbc.bas:compileFiles()##''
+	
+	For each .bas file in the .bas list, the FB parser & compiler (''##fb.bas:fbCompile()##'') is called. The information passed to fbCompile() is the input .bas file name and whether that's the main module.
+	
+	In case the FB parser finds a #lang or '$lang statement, it will change the FB dialect setting (-lang) and return early, and fbc will restart the parser by calling fbCompile() again. (That's just how FB parser restarts are implemented at the moment; it might aswell have been hidden away from the fbc frontend module.) Since this -lang changes are supposed to affect one module only, fbc remembers the current language setting, and restores it after fbCompile() finished.
+	
+	In case the FB parser encounters any ###inclib "libname"## or ###libpath "libpath"## statements, or any ##LIB "libname"## modifiers, it will tell fbc about it, so the libraries will be linked in later.
+	
+	fbCompile() will eventually (if there was no error) create an .asm file (or a .c file if -gen gcc was used) for us.
+
+{{fbdoc item="section" value="Assembling the created .asm files"}}
+	''##fbc.bas:assembleFiles()##''
+	
+	For ##-gen gas## this reaches ''##assembleFile_GAS()##'' which exec()'s as.exe after putting together the command line for it.
+	If ##-gen gcc## was specified, ''##assembleFile_GCC()##'' will be used, which launches gcc.exe and has slightly more command line options to take care of.
+
+{{fbdoc item="section" value="Archiving (static) libraries"}}
+	''##fbc.bas:archiveFiles()##''
+	
+	If -lib was passed to fbc, it will now call the target-specific archiving function, which for example launches ar.exe to create a lib*.a file from all the compiled .o files plus all .o's or .a's passed on command line. Then fbc is done and stops.
+
+{{fbdoc item="section" value="Linking executables and shared libraries/DLLs"}}
+	fbc scans all object files (also those in libraries) that are supposed to be linked together and reads in [[DevObjinfo objinfo]], i.e. further libraries/or library search paths will be added here (''##fbc.bas:collectObjInfo()##'').
+	
+	Then the default libraries (rtlib, gfxlib, target specific libs) will be added, unless the -nodeflibs options was used (''##fbc.bas:getDefaultLibs()##'').
+	
+	A target specific compiling function will be used to compile gimmicks like .rc's (with GoRC on win32) and .xpm's (linux). (fbc.bas:compileResFiles())
+	
+	In order to create a shared library/DLL or an executable, the target-specific linking function will be used (''##fbc.bas:linkFiles()##''). It puts together the command line for the linker and then invokes ld.exe. This is where the important things happen besides compilation, for example (on win32) linking in crt2.o, crtbegin.o, user objects and libraries, fbrt0.o, crtend.o.
+	
+	The win32 DLL creation additionally creates an import library for the DLL (see ''##fbc_win32.bas##'').
+
+{{fbdoc item="section" value="Cleanup"}}
+	''##fbc.bas:delFiles()##''
+	
+	Finally fbc deletes all temporary files (.asm's, .o's), unless options like -R or -C were used. Then fbc is done and stops.
+
+{{fbdoc item="back" value="DevToc|Table of Contents"}}

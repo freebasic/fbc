@@ -1,1 +1,19 @@
-Delete me! Content moved to [[DevBuild]].
+{{fbdoc item="title" value="Compiling from SVN"}}----
+
+The source code of ""FreeBASIC"" is maintained on Sourceforge using a Subversion source control system (SVN), which allows different developers to work on the source code at the same time. It is possible for users to download this source code using anonymous read access and compile it using GNU development tools.
+
+Compiling the SVN is not recommended for most users. ""FreeBASIC"" is a self-hosting compiler, still in active development, so there will be times when the current SVN cannot be compiled by the last official release. Note also that the procedures for building the compiler from SVN described here may change with future versions of ""FreeBASIC"".
+
+The following guidelines are provided as a resource for those interested in learning how to compile the SVN. They describe the procedures to build the source code of ""FreeBASIC"" from the current code base (trunk) in SVN.
+
+On Windows, ""MinGW""/""MSYS"" is used to compile ""FreeBASIC"". Linux users will usually have the required development tools installed on their system already. The Cygwin build may be useful for Windows users wishing to access Linux libraries in windows. The DOS build is normally compiled on Windows using DJGPP . Advanced users may be able to cross-compile between other builds, but the correct development tools and libraries would be needed, and it has not been widely tested.
+
+	{{fbdoc item="keyword" value="SVNCygwin|Compiling from SVN for Cygwin"}}
+	{{fbdoc item="keyword" value="SVNWin32MSYS|Compiling from SVN for Win32, using MSYS on Win32"}}
+	{{fbdoc item="keyword" value="SVNDOSWin32|Compiling from SVN for DOS on Win32"}}
+	{{fbdoc item="keyword" value="SVNLinux|Compiling from SVN for Linux"}}
+	{{fbdoc item="keyword" value="SVNFreeBSD|Compiling from SVN for FreeBSD"}}
+
+There is no official "daily SVN build" provided by the development team.  However, there may be people in the ""FreeBASIC"" community who provide this service.  Check for Sticky threads on the [[http://www.freebasic.net/forum FreeBASIC forum]], in your operating system's subforum, to find out whether this service is available for your OS, and what its status is.
+
+{{fbdoc item="back" value="DevToc|Table Of Content"}}

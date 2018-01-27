@@ -1,1 +1,42 @@
-Remove me!
+{{fbdoc item="title" value="Source code style"}}----
+
+The first fbc was written in VB-DOS, but shortly after that it was converted to the still young FB and then could compile itself. This has often caused chicken-egg problems in the past, when implementing new language features and using them in the compiler itself. Nowadays fbc can be considered fairly stable, especially since the 0.20 release. Of course the code base was heavily influenced by chicken-egg work-arounds, or simply the limits of early FB versions, but still, fbc being a self-hosting compiler is one the most fun things about fbc. 
+
+The code is best viewed with tabs expanded to 4 spaces. Tabs/spaces are mixed, even in single lines, this really is pretty messed up. 
+
+The coding style can easily be seen by taking a look in one of the modules. Generally it is followed consistently, with small exceptions introduced by the different developers who have worked on the code (and unfortunately didn't always follow the style). Even the style used in the rtlib/gfxlib's C code is similar to the compiler's FB code.
+
+{{fbdoc item="section" value="Naming conventions"}}
+
+	Functions: ''##astNewBOP()##''
+		Global/inter-module functions are prefixed with the name of the module they belong to, with the exception of the parser's functions, which are simply prefixed with "c", probably for "compile". Helper functions are prefixed with "h" and often are private to a module.
+		
+	Macros: ''##symbGetName()##''
+		Macros use the same naming convention as functions, which can be confusing.
+		
+	Constants/#define's: ''##FB_VERSION##''
+		All upper-case, using underscores to separate words.
+		
+	Types/Structures: ''##TLIST##''
+		All upper-case, no underscores, core data structure objects are prefixed with a ##T##, to avoid the collision between e.g. ##LIST## and ##list##.
+		
+	Variables & Fields: ''##dtype##'', ''##is_variadic##''
+		All lower-case, often using underscores to separate words.
+
+{{fbdoc item="section" value="Class-like objects and modules"}}
+
+	A lot of the code is structured in a sort-of class-like design. Besides the core data-structures being "objects", also the compiler's important modules use global structs ("contexts"/static objects) to store information on what they're doing, and also have sort-of constructor/destructor functions. For example:
+	
+		''##dim shared as FBCCTX fbc##''
+		''##fbcInit()##''
+		''##fbcEnd()##''
+
+	Most important things are stored in the contexts, which are usually only accessed by the module they belong to. Yet they're global, to allow all the macros to work (and some hacky stuff). 
+
+{{fbdoc item="section" value="Inside the modules"}}
+
+	Local variables are often placed at the begin of functions, often uninitialized (##= any##). This style is not followed everywhere anymore though. One has to be very careful about whether and when variables are initialized when using the first style (uninitialized variables led to several bugs already).
+
+	Function parameters usually use ##byval## and pointers to UDTs. However there are exceptions using ##byref## to return values (Attention must be paid here), or passing arrays/UDTs ##byref##. ##byval##/##byref## are always specified explicitly.
+
+{{fbdoc item="back" value="DevToc|Table of Contents"}}
