@@ -30,7 +30,7 @@ Returns the short circuit-and (conjunction) of two numeric values
 	
 	{{table columns="3" cellpadding="2" cells="Lhs Value;Rhs Value;Result;0;-;0;nonzero;0;0;nonzero;nonzero;-1"}}
 	
-	Short-circuiting is performed - only expressions needed to calculate the result are evaluated.
+	Short-circuiting is performed - only expressions needed to calculate the result are evaluated.  The left hand side ##//lhs//## is evaluated first, and only if it evaluates to non-zero (true) is the right hand side ##//rhs//## also evaluated.  If the left hand side evaluation ##//lhs//## returns zero (false), it is known that at that point that the overall condition is false, so the right hand side ##//rhs//## is not evaluated (skipped).
 	
 	The return type is almost always an ##[[KeyPgInteger|Integer]]##, of the value ##0## or ##-1##, denoting false and true respectively. Except if the left and right-hand side types are both ##[[KeyPgBoolean|Boolean]]##, then the return type is also ##[[KeyPgBoolean|Boolean]]##.
 	
