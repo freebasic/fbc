@@ -82,22 +82,22 @@ namespace cpp_mangle
 
 	// long = 32 bit
 
-	unsigned long cpp_byval_u32( unsigned long a )
+	unsigned int cpp_byval_u32( unsigned int a )
 	{
 		return a;
 	}
 	
-	signed long cpp_byval_s32( signed long a )
+	signed int cpp_byval_s32( signed int a )
 	{
 		return a;
 	}
 	
-	unsigned long cpp_byref_u32( unsigned long &a )
+	unsigned int cpp_byref_u32( unsigned int &a )
 	{
 		return a;
 	} 
 
-	signed long cpp_byref_s32( signed long &a )
+	signed int cpp_byref_s32( signed int &a )
 	{
 		return a;
 	} 
