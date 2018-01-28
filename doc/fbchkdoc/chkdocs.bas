@@ -81,8 +81,8 @@ type PageInfo_t
 End type
 
 type LinkInfo_t
-  sName as string
-  sType as string
+  sName as string    '' page name
+  sType as string    '' link type
   sLink as string
   flags as integer
 end type
@@ -130,7 +130,6 @@ redim shared sImages() as ImageInfo_t
 redim preserve sImages(1 to 1) as ImageInfo_t
 dim shared nImages as integer = 0, maxImages as integer = 1
 
-
 redim shared sTemps() as TempInfo_t
 redim preserve sTemps(1 to 1) as TempInfo_t
 dim shared nTemps as integer = 0, maxTemps as integer = 1
@@ -162,6 +161,41 @@ end type
 dim shared as timers_t timers(1 to 20)
 dim shared as integer ntimers = 0
 
+dim shared token_names(0 to WIKI_TOKENS-1) as zstring ptr = _
+{ _
+	@"WIKI_TOKEN_NULL", _
+	@"WIKI_TOKEN_LT", _
+	@"WIKI_TOKEN_GT", _
+	@"WIKI_TOKEN_BOXLEFT", _
+	@"WIKI_TOKEN_BOXRIGHT", _
+	@"WIKI_TOKEN_CLEAR", _
+	@"WIKI_TOKEN_KBD", _
+	@"WIKI_TOKEN_BOLD", _
+	@"WIKI_TOKEN_ITALIC", _
+	@"WIKI_TOKEN_UNDERLINE", _
+	@"WIKI_TOKEN_MONOSPACE", _
+	@"WIKI_TOKEN_NOTES", _
+	@"WIKI_TOKEN_STRIKE", _
+	@"WIKI_TOKEN_CENTER", _
+	@"WIKI_TOKEN_HEADER", _
+	@"WIKI_TOKEN_NEWLINE", _
+	@"WIKI_TOKEN_CODE", _
+	@"WIKI_TOKEN_PRE", _
+	@"WIKI_TOKEN_LINK", _
+	@"WIKI_TOKEN_ACTION", _
+	@"WIKI_TOKEN_INDENT", _
+	@"WIKI_TOKEN_LIST", _
+	@"WIKI_TOKEN_TEXT", _
+	@"WIKI_TOKEN_FORCENL", _
+	@"WIKI_TOKEN_HORZLINE", _
+	@"WIKI_TOKEN_SECT_ITEM", _
+	@"WIKI_TOKEN_ACTION_TB", _
+	@"WIKI_TOKEN_ACTION_IMG", _
+	@"WIKI_TOKEN_BOLD_SECTION", _
+	@"WIKI_TOKEN_RAW" _
+}
+
+dim shared token_counts(0 to WIKI_TOKENS-1) as integer
 
 '' ----------------------------------------------------
 
@@ -657,6 +691,8 @@ sub Links_LoadFromPage_Scan _
 	token = tokenlist->GetHead()
 
 	while( token <> NULL )
+
+		token_counts( token->id ) += 1
 
 		if( token->id = WIKI_TOKEN_ACTION ) then
 
@@ -1374,6 +1410,15 @@ sub Check_InvalidBacklinks()
 						else
 							b = TRUE
 						end if
+
+					'' if it's a Dev* page, always allow backlinks to DevToc and DocToc
+					elseif( lcase(left(pg,3)) = "dev" ) then
+						if( lcase(sLinks(i).sLink) = lcase("DocToc") ) then
+						elseif( lcase(sLinks(i).sLink) = lcase("DevToc") ) then
+						else
+							b = TRUE
+						end if
+
 					else
 						b = TRUE
 					end if
@@ -1519,6 +1564,19 @@ sub Check_DocPagesMissingTitles()
 
 end sub
 
+'':::::
+sub Report_TokenCounts()
+
+	logprint "Token Counts"
+
+	for i as integer = 0 to WIKI_TOKENS-1
+		print left( *token_names(i) & space(30), 30 ) & token_counts(i)
+	next
+
+	logprint
+
+end sub
+
 
 '' --------------------------------------------------------
 '' MAIN
@@ -1549,6 +1607,8 @@ enum OPTIONS
 
 	OPT_OPS_INDEX = 32768
 
+	OPT_TOKEN_COUNTS = 65536
+
 	OPT_ALL_LINKS = _
 		OPT_MISSING_PAGES _
 		or OPT_FULL_INDEX _
@@ -1565,7 +1625,8 @@ enum OPTIONS
 
 	OPT_ALL_TOKEN = _
 		OPT_HEADERS _
-		or OPT_DUP_FILE_NAME
+		or OPT_DUP_FILE_NAME _
+		or OPT_TOKEN_COUNTS
 
 	OPT_ALL = _
 		OPT_ALL_LINKS _
@@ -1806,6 +1867,12 @@ if( (opt and OPT_IMAGES) <> 0 ) then
 	'' Image file names
 	Check_ImageFilenames( image_dir )
 	Timer_Mark("Check_ImageFilenames()")
+end if
+
+if( (opt and OPT_TOKEN_COUNTS) <> 0 ) then
+	'' token counts
+	Report_TokenCounts()
+	Timer_Mark("Report_TokenCounts()")
 end if
 
 logprint
