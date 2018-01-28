@@ -73,32 +73,37 @@ enum LINK_FLAGS
 
 end enum
 
-Type PageInfo_t
+type PageInfo_t
 	sName as string
 	flags as integer
 	sTitle as string
 	msg as integer
-End Type
+End type
 
-Type LinkInfo_t
+type LinkInfo_t
   sName as string
   sType as string
   sLink as string
   flags as integer
-End Type
+end type
 
-Type SampInfo_t
+type SampInfo_t
 	sFile as string
 	sPage as string
 	flags as integer
-End Type
+end type
 
-Type ImageInfo_t
+type ImageInfo_t
 	sUrl as string
 	sLink as string
 	sPage as string
 	flags as integer
-end Type
+end type
+
+type TempInfo_t
+	text as string
+	extra as string
+end type
 
 dim shared cache_dir as string
 
@@ -126,8 +131,8 @@ redim preserve sImages(1 to 1) as ImageInfo_t
 dim shared nImages as integer = 0, maxImages as integer = 1
 
 
-redim shared sTemps() as string
-redim preserve sTemps(1 to 1) as string
+redim shared sTemps() as TempInfo_t
+redim preserve sTemps(1 to 1) as TempInfo_t
 dim shared nTemps as integer = 0, maxTemps as integer = 1
 
 dim shared temphash as HASH
@@ -251,12 +256,12 @@ end sub
 sub Temps_Clear ()
 	nTemps = 0
 	maxTemps = 1
-	redim sTemps( 1 to maxTemps ) as string
+	redim sTemps( 1 to maxTemps ) as TempInfo_t
 	temphash.clear()
 end sub
 
 '':::::
-sub Temps_Add( byref text as string, byval bAllowDup as integer = FALSE )
+sub Temps_Add( byref text as string, byref extra as string = "", byval bAllowDup as integer = FALSE )
 
 	dim as integer i
 
@@ -272,9 +277,10 @@ sub Temps_Add( byref text as string, byval bAllowDup as integer = FALSE )
 		nTemps += 1
 		if nTemps > maxTemps then
 			maxTemps *= 2
-			redim preserve sTemps( 1 to maxTemps ) as string
+			redim preserve sTemps( 1 to maxTemps ) as TempInfo_t
 		end if
-		sTemps(i) = text
+		sTemps(i).text = text
+		sTemps(i).extra = extra
 		temphash.add( text )
 	end if
 
@@ -766,7 +772,7 @@ end function
 function is_header_text( byval token as WikiToken ptr ) as integer
 	'' TEXT
 	if( token <> NULL ) then
-		if( token->id = WIKI_TOKEN_TEXT ) then
+		if( ( token->id = WIKI_TOKEN_TEXT ) or ( token->id = WIKI_TOKEN_RAW ) )then
 			return 0
 		end if
 	end if
@@ -789,6 +795,10 @@ function Links_LoadFromPage_ScanHeader _
 		byref sName as string, _
 		byval wiki as CWiki ptr _
 	) as integer
+
+	/'
+		check that certain kinds of pages start off with correct formats
+	'/
 
 	dim as string text, sPage, sItem, sValue, sTitle, n
 	dim as CList ptr tokenlist
@@ -820,6 +830,7 @@ function Links_LoadFromPage_ScanHeader _
 		CHK_TOKEN( is_newline )
 
 	elseif lcase(left(sName,5)) = "propg" _
+		or lcase(left(sName,3)) = "dev" _
 		or lcase(left(sName,3)) = "tbl" then
 
 		CHK_TOKEN( is_fbdoc_title )
@@ -844,7 +855,7 @@ function Links_LoadFromPage_ScanHeader _
 		CHK_TOKEN( is_newline )
 
 	else
-		msg = - 1
+		msg = -1
 
 	end if
 
@@ -988,7 +999,7 @@ sub Check_MissingPages()
 	for i = 1 to nLinks
 		if( (sLinks(i).flags and FLAG_LINK_URL ) = 0 ) then
 			if Pages_Exists( sLinks(i).sLink, FALSE ) = FALSE then
-				Temps_Add( sLinks(i).sLink )
+				Temps_Add( sLinks(i).sLink, sLinks(i).sName )
 			end if
 		end if
 	next
@@ -997,9 +1008,9 @@ sub Check_MissingPages()
 		logprint "No missing pages (links with no path)"
 	else
 		for i = 1 to nTemps
-			logprint "Missing page '" + sTemps(i) + "'"
+			logprint "Missing page '" + sTemps(i).text + "' (first occurance on '" & sTemps(i).extra & "')"
 		next
-		logprint "Found " + str(nTemps) + " links to missing pages"
+		logprint "Found links to " + str(nTemps) + " missing pages"
 	end if
 	logprint
 
@@ -1052,7 +1063,7 @@ sub Check_NameCase( byref outfile as string )
 		h = freefile
 		open outfile for output as #h
 		for i = 1 to nTemps
-			print #h, sTemps(i)
+			print #h, sTemps(i).text
 		next
 		close #h
 	end if
@@ -1110,7 +1121,7 @@ sub Check_Headers()
 	logprint "Pages not checked for headers"
 	if nTemps > 0 then
 		for i = 1 to nTemps
-			logprint "'" + sTemps(i) + "'"
+			logprint "'" + sTemps(i).text + "'"
 		next
 	end if
 	logprint str(nTemps) + " pages(s) not checked."
@@ -1271,7 +1282,7 @@ sub Check_IndexLinks( byref mode as string )
 		logprint "All keypages on '" + pg + "'"
 	else
 		for i = 1 to nTemps
-			logprint "'" + pg + "' is missing '" + sTemps(i) + "'"
+			logprint "'" + pg + "' is missing '" + sTemps(i).text + "'"
 		next
 		logprint "Found " + str(nTemps) + " links missing"
 	end if
