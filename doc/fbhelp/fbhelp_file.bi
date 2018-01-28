@@ -3,7 +3,7 @@
 
 '
 '  fbhelp - FreeBASIC help viewer
-'  Copyright (C) 2006-2017 Jeffery R. Marshall (coder[at]execulink.com)
+'  Copyright (C) 2006-2018 Jeffery R. Marshall (coder[at]execulink.com)
 '
 '
 'License:

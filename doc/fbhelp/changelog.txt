@@ -1,3 +1,9 @@
+Version 1.00:
+
+[changed]
+- copyright updates for 2018
+
+
 Version 0.8b:
 
 [changed]
