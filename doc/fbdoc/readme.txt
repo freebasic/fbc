@@ -55,12 +55,13 @@ Compiling:
 
   o Requirements:
 
-    - FreeBASIC Compiler version 0.17 or greater and compatible build 
+    - FreeBASIC Compiler version 1.04.0 or greater and compatible build 
       environment.
     - Windows or Linux OS (DOS not supported)
     - pcre
     - libcurl
-    - internet connection ( optional, to download wiki pages not in SVN )
+    - internet connection ( optional, to download wiki pages not in git
+	  repository )
     - make
 
 
