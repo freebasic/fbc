@@ -1,6 +1,6 @@
 
   fbdoc - FreeBASIC User's Manual Converter/Generator
-  Copyright (C) 2006-2017 The FreeBASIC development team.
+  Copyright (C) 2006-2018 The FreeBASIC development team.
 
 License:
 
@@ -36,10 +36,8 @@ Purpose of fbdoc:
   change in future, but for now, the focus is on supporting the maintenance
   conversion and generation of the FreeBASIC manuaul.
 
-  There will likely never be a binary distribution of fbdoc until FreeBASIC
-  is very mature. Currently not only do the fbdoc sources change often, but 
-  also the on-line wakka source script.  So there's no guarantee that older 
-  versions of the doc converter will work correctly with newer versions of 
+  There will likely never be a binary distribution of fbdoc. It is built 
+  from sources.  The doc converter is modified as needed to build the
   the on-line docs.
 
   Finally, aside from the FreeBASIC compiler itself, fbdoc serves as a test
@@ -75,10 +73,10 @@ Running:
     - In the directory where fbdoc executable was made, type "fbdoc -makeini"
       and this will create a default "fbdoc.ini".  Edit the file to configure
       connection settings.  However, this step is not required if building
-      from SVN only.
+      from git repository only.
 
 
-  o Building the CHM from SVN:
+  o Building the CHM from Git Repository:
 
     - In the directory where fbdoc executable was made, 
       type "fbdoc -usecache -chm"

@@ -1,5 +1,5 @@
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
-''	Copyright (C) 2006-2017 The FreeBASIC development team.
+''	Copyright (C) 2006-2018 The FreeBASIC development team.
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -137,8 +137,8 @@ end sub
 	end if
 
 	if( bShowVersion ) then
-		print "FreeBASIC User's Manual Converter/Generator - Version 0.1b"
-		print "Copyright (C) 2006-2017 The FreeBASIC development team."
+		print "FreeBASIC User's Manual Converter/Generator - Version 1.00"
+		print "Copyright (C) 2006-2018 The FreeBASIC development team."
 		end 1
 	end if
 
