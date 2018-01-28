@@ -1625,8 +1625,7 @@ enum OPTIONS
 
 	OPT_ALL_TOKEN = _
 		OPT_HEADERS _
-		or OPT_DUP_FILE_NAME _
-		or OPT_TOKEN_COUNTS
+		or OPT_DUP_FILE_NAME
 
 	OPT_ALL = _
 		OPT_ALL_LINKS _
@@ -1664,6 +1663,7 @@ if command(i) = "" then
 	print "   t       perform all token checks ( h n )"
 	print "   h       check page headers"
 	print "   n       check name case in links"
+	print "   tc      report token counts"
 	print
 	print "   e       check everything! ( a t )"
 	print
@@ -1743,6 +1743,8 @@ while command(i) > ""
 		opt or= OPT_DUP_FILE_NAME
 	case "i"
 		opt or= OPT_IMAGES
+	case "tc"
+		opt or= OPT_TOKEN_COUNTS
 
 	case else
 		print "option '"; command(i); "' ignored"
