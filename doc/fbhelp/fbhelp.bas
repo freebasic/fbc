@@ -126,11 +126,11 @@ end enum
 	pexepath = FixPath( exepath )
 	filename = pExePath + "fbhelp.dat"
 
-	if( HelpFile_Open( filename ) = FALSE ) then
+	if( HelpFile_Open( filename, TRUE ) = FALSE ) then
 
 		filename = pExePath + "fbhelp.daz"
 
-		if( HelpFile_Open( filename ) = FALSE ) then
+		if( HelpFile_Open( filename, FALSE ) = FALSE ) then
 
 			print "unable to open help file"
 			end 1
