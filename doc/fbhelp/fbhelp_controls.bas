@@ -213,7 +213,15 @@ public function Forms_Draw _
 			end if
 		end if
 	next i
-	
+
+	msg.id = MSG_UPDATE
+
+	for i = 1 to frm->nControls
+		if( (ctl->flags and (CONTROL_FLAG_UPDATE)) <> 0 ) then
+			ctl->handler( ctl, @msg )
+		end if
+	next i
+		
 	Screen_BlinkCursor()
 
 	return ret

@@ -32,7 +32,7 @@ type HFILE as FILE ptr
 #else
 
 #include "zlib.bi"
-type HFILE as gzfile ptr
+type HFILE as gzfile
 #define hf_open( _filename, _mode )     gzopen( _filename, _mode )
 #define hf_seek( _h, _offset, _origin ) gzseek( _h, _offset, _origin )
 #define hf_read( _h, _buffer, _length ) gzread( _h, _buffer, _length )

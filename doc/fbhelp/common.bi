@@ -1,7 +1,9 @@
 #ifndef __COMMON_BI__
 #define __COMMON_BI__
 
+#ifndef NULL
 #define NULL 0
+#endif
 
 type rect_t
 	x as integer

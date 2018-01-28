@@ -130,17 +130,6 @@ public function InputBox_show cdecl _
 
 		Forms_Draw( @frm, FALSE )
 
-		'' FIXME: Should be part of Forms_draw
-		if( CtlNeedUpdate( @edit ) ) then
-			EditBox_Update( @edit )
-		end if
-
-		for i = 1 to count
-			if( CtlNeedUpdate( @btn(i) ) ) then
-				Button_Update( @btn(i) )
-			end if
-		next i
-
 		if( Screen_MouseInstalled() <> FALSE ) then
 			Screen_GetMouse( mx, my, mz, mb )
 			Controls_ProcessMouse( mx, my, mz, mb )

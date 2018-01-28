@@ -3,6 +3,10 @@ Version 1.00:
 [changed]
 - copyright updates for 2018
 
+[fixed]
+- internal, control updates are moved in to Forms_Draw()
+- warning on pointer types for compressed file
+
 
 Version 0.8b:
 
