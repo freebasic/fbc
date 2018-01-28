@@ -44,6 +44,22 @@ private function Msgbox_Handler _
 end function
 
 '':::::
+
+#if __FB_GCC__
+
+public function MsgBox_show cdecl _
+	( _
+		byval text as zstring ptr, _
+		byval title as zstring ptr, _
+		byval count as integer, _
+		byval btn1 as zstring ptr = NULL, _
+		byval btn2 as zstring ptr = NULL, _
+		byval btn3 as zstring ptr = NULL, _
+		byval btn4 as zstring ptr = NULL _
+	) as integer
+
+#else
+
 public function MsgBox_show cdecl _
 	( _
 		byval text as zstring ptr, _
@@ -51,6 +67,8 @@ public function MsgBox_show cdecl _
 		byval count as integer, _
 		... _
 	) as integer
+
+#endif
 
 	dim as string k
 	dim as integer mx,my,mz,mb
@@ -93,17 +111,26 @@ public function MsgBox_show cdecl _
 	Forms_Add_Control @frm, cast( control_t ptr, @label )
 
 	xoffset = ((w - 2) - (count * 10) - ((count - 1) * 5)) \ 2
+
+	#if not __FB_GCC__
 	arg = va_first
+	#endif
+
 	for i = 1 to count
 		Control_Set @frm, @btn(i).ctl, x + xoffset + (i - 1) * 15, y + h - 3, 10, 1, DEFAULT_FORECOLOR, DEFAULT_BACKCOLOR, CONTROL_FLAG_REDRAW or CONTROL_FLAG_VISIBLE, i
 		with btn(i)
 			.ctl.handler = @Button_Default_Handler
+			#if not __FB_GCC__
 			.text = *va_arg( arg, zstring ptr )
+			#else
+			.text = *iif( i=1, btn1, iif( i=2, btn2, iif( i=3, btn3, iif(i=4, btn4, NULL))))
+			#endif
 		end with
 		Forms_Add_Control @frm, cast( control_t ptr, @btn(i) )
+		#if not __FB_GCC__
 		arg = va_next( arg, zstring ptr )
+		#endif
 	next i
-
 
 	Forms_Add @frm
 
