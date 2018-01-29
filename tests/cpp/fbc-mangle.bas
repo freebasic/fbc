@@ -1,17 +1,21 @@
 ' TEST_MODE : MULTI_MODULE_TEST
 
+'' test mapping of basic data types between fbc and g++
+'' with c++ name mangling
+
 #ifdef __FB_64BIT__
 
 	type cxxint as long
-	
-	/' !!!
-	this will never work on win64, fbc custom mangles INTEGER and there is no other 
-	data type that will return the "m" and "l" suffixes for C's long int.
-	'/
 	type cxxlongint as integer
 
-#else
+	/' !!!
+		cxxlongint will never work on win64, fbc custom mangles INTEGER and there is 
+		no other data type that will return the "m" and "l" suffixes for c's long int.
+	'/
 
+#else
+	
+	'' 32-bit
 	type cxxint as integer
 	type cxxlongint as long
 
@@ -141,7 +145,7 @@ scope
 	ASSERT( cpp_byref_sshort(ss) = &h7fff )
 
 end scope
-'/
+
 scope
 
 	''  c = signed|unsigned int
@@ -164,7 +168,7 @@ scope
 end scope
 
 /' !!! there is no name mangling on win64 that can
-map to gcc long in
+       map to g++ long int
 
 scope
 
