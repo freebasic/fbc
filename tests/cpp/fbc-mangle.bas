@@ -9,8 +9,12 @@
 	type cxxlongint as integer
 
 	/' !!!
-		cxxlongint will never work on win64, fbc custom mangles INTEGER and there is 
+		cxxlongint will currently fail on win64, fbc custom mangles INTEGER and there is 
 		no other data type that will return the "m" and "l" suffixes for c's long int.
+		The specific test that fails is skipped over using and and #ifdef.  To have a basic
+		datatype on win64 that can map to g++ long int, one possible solution would be
+		change the overloading allowed for the c++ mangled names onlym what would have to
+		be added to fbc.
 	'/
 
 #else
@@ -167,8 +171,12 @@ scope
 
 end scope
 
+#if (not defined(__FB_64BIT__)) or defined(__FB_UNIX__)
+
 /' !!! there is no name mangling on win64 that can
-       map to g++ long int
+       map to g++ long int, only allow the test on
+	   32-bit or unix
+'/
 
 scope
 
@@ -191,7 +199,7 @@ scope
 
 end scope
 
-'/
+#endif
 
 scope
 
