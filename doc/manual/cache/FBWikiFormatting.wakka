@@ -59,47 +59,58 @@ In all of the examples following, the markup line with the formatting codes is f
 
 {{fbdoc item="section" value="Indented text"}}
 	You can indent text using a tilde (~) or a tab:
-
+	
 	##~Indented##
 	##~~Double Indented##
 	##~~~Triple Indented##
 	##~Indented##
+	
 
 ~Indented
 ~~Double Indented
 ~~~Tripple Indented
 ~Indented
 
+
 	##Indented (1 tab)##
 		##Double Indented (2 tabs)##
 			##Tripple Indented (3 tabs)##
 	##Indented (1 tab)##
+
 
 	Indented
 		Double Indented
 			Tripple Indented
 	Indented
 
+
 {{fbdoc item="section" value="Images"}}
 	See [[FBWikiGraphics|FBWikiGraphics]] for more information on displaying graphics in the wiki.
 
 {{fbdoc item="section" value="Links"}}
 	On the wiki you can use a ##""WikiName""## to refer to a page directly without any markup, however, in the converted documentation it will just be a normal text.
-
-	##""FBWikiFormatting""##
-	FBWikiFormatting
-
+	
+		##""FBWikiFormatting""##
+		FBWikiFormatting
+	
 	Add a forced link using the following markup ##""[[pagename|description]]""##:
-
-	##""[[FBWiki|FreeBASIC Wiki]]""##
-	[[FBWiki|FreeBASIC Wiki]]
-
+	
+		##""[[FBWiki|FreeBASIC Wiki]]""##
+		[[FBWiki|FreeBASIC Wiki]]
+	
 	Use the ##""{{fbdoc}}""## action.  See [[FBWikiFbdocAction|fbdoc action]] for more information.
-
+	
 	Add a forced link by surrounding an url with ##""[[""## and ##""]]""##
-
-	##""[[https://www.freebasic.net|FreeBASIC Website]]""##
-	[[https://www.freebasic.net|FreeBASIC Website]]
+	
+		##""[[https://www.freebasic.net|FreeBASIC Website]]""##
+		[[https://www.freebasic.net|FreeBASIC Website]]
+	
+	Link to a place on the same page using the ##{{anchor}}## action.  Create an invisible anchor somewhere on the page with:
+	##""{{anchor name="item1"}}""##{{anchor name="item1"}}
+	
+	Then link to that anchor with:
+	##""{{anchor name="item1|Jump to Item #1"}}""##
+	{{anchor name="item1|Jump to Item #1"}}
 
 {{fbdoc item="section" value="Tables"}}
 	The ""{{table}}"" action is recognized by the document generators, using the following format.
