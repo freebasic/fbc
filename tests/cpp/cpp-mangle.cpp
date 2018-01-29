@@ -1,6 +1,6 @@
 namespace cpp_mangle 
 {
-	// boolean
+	// bool
 
 	bool cpp_byval_bool( bool a )
 	{
@@ -36,90 +36,112 @@ namespace cpp_mangle
 		return a;
 	} 
 
-	// byte = 8 bit
+	// char = 8 bit
 
-	unsigned char cpp_byval_u8( unsigned char a )
+	unsigned char cpp_byval_uchar( unsigned char a )
 	{
 		return a;
 	}
 
-	signed char cpp_byval_s8( signed char a )
-	{
-		return a;
-	}
-	
-	unsigned char cpp_byref_u8( unsigned char &a )
-	{
-		return a;
-	} 
-
-   	signed char cpp_byref_s8( signed char &a )
-	{
-		return a;
-	} 
-
-	// short = 16 bit
-
-	unsigned short cpp_byval_u16( unsigned short a )
+	signed char cpp_byval_schar( signed char a )
 	{
 		return a;
 	}
 	
-	signed short cpp_byval_s16( signed short a )
-	{
-		return a;
-	}
-	
-	unsigned short cpp_byref_u16( unsigned short &a )
+	unsigned char cpp_byref_uchar( unsigned char &a )
 	{
 		return a;
 	} 
 
-	signed short cpp_byref_s16( signed short &a )
+   	signed char cpp_byref_schar( signed char &a )
 	{
 		return a;
 	} 
 
-	// long = 32 bit
+	// short int = 16 bit
 
-	unsigned int cpp_byval_u32( unsigned int a )
+	unsigned short cpp_byval_ushort( unsigned short int a )
 	{
 		return a;
 	}
 	
-	signed int cpp_byval_s32( signed int a )
+	signed short cpp_byval_sshort( signed short int a )
 	{
 		return a;
 	}
 	
-	unsigned int cpp_byref_u32( unsigned int &a )
+	unsigned short cpp_byref_ushort( unsigned short int &a )
 	{
 		return a;
 	} 
 
-	signed int cpp_byref_s32( signed int &a )
+	signed short cpp_byref_sshort( signed short int &a )
 	{
 		return a;
 	} 
 
-	// long long = 64 bit
+	// int
 
-	unsigned long long cpp_byval_u64( unsigned long long a )
+	unsigned int cpp_byval_uint( unsigned int a )
 	{
 		return a;
 	}
 	
-	signed long long cpp_byval_s64( signed long long a )
+	signed int cpp_byval_sint( signed int a )
 	{
 		return a;
 	}
 	
-	unsigned long long cpp_byref_u64( unsigned long long &a )
+	unsigned int cpp_byref_uint( unsigned int &a )
 	{
 		return a;
 	} 
 
-	signed long long cpp_byref_s64( signed long long &a )
+	signed int cpp_byref_sint( signed int &a )
+	{
+		return a;
+	} 
+
+	// long int
+
+	unsigned long int cpp_byval_ulongint( unsigned long int a )
+	{
+		return a;
+	}
+	
+	signed long int cpp_byval_slongint( signed long int a )
+	{
+		return a;
+	}
+	
+	unsigned long int cpp_byref_ulongint( unsigned long int &a )
+	{
+		return a;
+	} 
+
+	signed long int cpp_byref_slongint( signed long int &a )
+	{
+		return a;
+	} 
+
+	// long long int = 64 bit
+
+	unsigned long long int cpp_byval_ulonglongint( unsigned long long int a )
+	{
+		return a;
+	}
+	
+	signed long long int cpp_byval_slonglongint( signed long long int a )
+	{
+		return a;
+	}
+	
+	unsigned long long int cpp_byref_ulonglongint( unsigned long long int &a )
+	{
+		return a;
+	} 
+
+	signed long long int cpp_byref_slonglongint( signed long long int &a )
 	{
 		return a;
 	} 
