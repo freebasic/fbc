@@ -148,7 +148,7 @@ while( command(i) > "" )
 wend
 
 if( cache_dir = "" ) then
-	cache_dir = def_CacheDir
+	cache_dir = def_cache_dir
 end if
 print "cache: "; cache_dir
 
