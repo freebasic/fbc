@@ -35,7 +35,22 @@
 
 #pragma once
 
+#ifdef ZLIB_USE_ZLIB1
+#define NAMEDEF 
+#inclib "zlib1"
+#endif
+#ifdef ZLIB_USE_Z
+#define NAMEDEF
 #inclib "z"
+#endif
+#ifdef ZLIB_USE_LIBZLIB
+#define NAMEDEF
+#inclib "libzlib"
+#endif
+
+#ifndef NAMEDEF
+#inclib "z"
+#endif
 
 #include once "crt/long.bi"
 #include once "crt/stdarg.bi"
