@@ -1,0 +1,273 @@
+======Wikka Formatting Guide======---<<===General Guidelines===If a markup sequence is not in these guidelines, then it is not officially supported. Use caution when implementing markup that is not officially supported by this document, as undocumented functionality may change with version updates.--- ---Unless otherwise stated in these guidelines, all markup is line based, that is, a newline character should not intervene. These are identified as 'inline' markup.<<::c::---===Escaping Markup===---Anything between 2 sets of double-quotes is not formatted.
+This is the equivalent of escaping a character(s):--- ---<<
+~##""**two bold &#34&#34**&#34&#34 stars**""##
+
+~**two bold ""**"" stars**
+<<In this case, the second set of ""**"" (escaped) stars will be ignored, //i.e.,// will not terminate the bold markup.--- ---You can also use double-quote escaping to avoid linking of ""CamelCase"" words, e.g.---<<
+~##""""WikiWord"" is not parsed as a link""##
+
+~""WikiWord"" is not parsed as a link
+<<::c::===1. Text Formatting===---<<
+~##""**I'm bold**""##
+
+~**I'm bold**
+<<::c::<<
+~##""//I'm italic text!//""##
+
+~//I'm italic text!//
+<<::c::<<
+~##""__And I'm underlined!__""##
+
+~__And I'm underlined!__
+<<::c::<<
+~##""##Monospace text##""##
+
+~##Monospace text##
+<<::c::<<
+~##""''Highlighted text''""## (using 2 single quotes)
+
+~''Highlighted text''
+<<::c::<<
+~##""++Strike through text++""##
+
+~++Strike through text++
+<<::c::<<
+~##""££Text insertion££""##
+
+~ ££Text insertion££
+<<::c::<<
+~##""¥¥Text deletion¥¥""##
+
+~ ¥¥Text deletion¥¥
+<<::c::<<
+~##""#%Press any key#%""##
+
+~#%Press any key#%
+<<::c::<<
+~##""@@Center text@@""##
+
+~@@Center text@@
+<<::c::Elides (hides) content from displaying.  Eliminates trailing whitespace so there are no unsightly gaps in output. Useful for commenting Wikka markup.---<<
+~##""/*Elided content (eliminates trailing whitespace)*/""##
+
+~/*Elided content (eliminates trailing whitespace)*/
+
+<--//there was a comment here followed by whitespace in the markup//
+<<::c::Elides (hides) content from displaying.  Preserves trailing
+whitespace (note the gap).---<<
+~##""``Elided content (preserves trailing whitespace)``""##
+
+~``Elided content (preserves trailing whitespace)``
+
+<--//there was a comment here followed by ws in the markup//
+<<::c::---===2. Headers===---Use between six ##=## (for the biggest header) and two ##=## (for the smallest header) on both sides of a text to render it as a header.--- ---<<
+~##""======Really big header======""##
+
+~======Really big header======
+<<::c::<<
+~##""=====Rather big header=====""##
+
+~=====Rather big header=====
+<<::c::<<
+~##""====Medium header====""##
+
+~====Medium header====
+<<::c::<<
+~##""===Not-so-big header===""##
+
+~===Not-so-big header===
+<<::c::<<
+~##""==Smallish header==""##
+
+~==Smallish header==
+<<::c::---===3. Horizontal separator===
+~##""----""##
+
+----
+---===4. Forced line break===---
+~##""Line 1---Line 2""##
+
+Line 1---Line 2
+---===5. Lists and indents===---You can indent text using a tilde (~), a tab, or four spaces (which will auto-convert into a tab).---<<
+##""~This text is indented<br />~~This text is double-indented<br />    This text is also indented""## <<::c::<<
+~This text is indented
+~~This text is double-indented
+~This text is also indented
+<<::c::---To create bulleted/ordered lists, use the following markup (you can always use 4 spaces instead of a tilde):--- ---**Bulleted lists**---<<
+##""~- Line one""##
+##""~- Line two""##
+<<::c::<<
+~- Line one
+~- Line two
+<<::c::---**Numbered lists**---<<
+##""~1) Line one""##
+##""~1) Line two""##
+<<::c::<<
+~1) Line one
+~1) Line two
+<<::c::---**Ordered lists using uppercase characters**---<<
+##""~A) Line one""##
+##""~A) Line two""##
+<<::c::<<
+~A) Line one 
+~A) Line two 
+<<::c::---**Ordered lists using lowercase characters**---<<
+##""~a) Line one""##
+##""~a) Line two""##
+<<::c::<<
+~a) Line one 
+~a) Line two
+<<::c::---**Ordered lists using uppercase Roman numerals**---<<
+##""~I) Line one""##
+##""~I) Line two""##
+<<::c::<<
+~I) Line one 
+~I) Line two
+<<::c::---**Ordered lists using lowercase Roman numerals**---<<
+##""~i) Line one""##
+##""~i) Line two""##
+<<::c::<<
+~i) Line one 
+~i) Line two 
+<<::c::---===6. Inline comments===---To format some text as an inline comment, use an indent (tilde, tab, or four spaces) followed by a **""&""**.--- ---<<
+##""~& Comment""##
+##""~~& Subcomment""##
+##""~~~& Subsubcomment""##
+<<::c::<<
+~& Comment 
+~~& Subcomment 
+~~~& Subsubcomment 
+<<::c::--- ---===7. Images===---To place images on a Wiki page, you can use the ##image## action.--- ---Image links can be external or internal Wiki links. You don't need to enter a link at all, and in that case just an image will be inserted. You can use the optional classes ##left## and ##right## to float images left and right. You don't need to use all those attributes, only ##url## is required while ##alt## is recommended for
+accessibility.--- ---<<
+~##""{{image class="center" alt="DVD logo" title="An image link" url="images/dvdvideo.gif" link="RecentChanges"}}""##
+---
+~{{image class="center" alt="DVD logo" title="An image link" url="images/dvdvideo.gif" link="RecentChanges"}}
+<<::c::---===8. Links===---To create a ** link to a wiki page ** you can use any of the
+following options:--- ---
+~- Type a ##""WikiName""## (works only for page names with no whitespace): --- --- ##""FormattingRules""## --- FormattingRules --- ---
+---
+~- Add a forced link surrounding the page name by ##""[[""## and ##""]]""## (everything after the | will be shown as description): --- --- ##""[[SandBox|Test
+your formatting skills]]""## --- [[SandBox|Test your formatting skills]] --- --- ##""[[SandBox|沙箱]]""## --- [[SandBox|沙箱]] --- ---
+---
+~- Add an image with a link (see instructions above)
+--- ---To ** link to external pages **, you can do any of the following:--- ---
+~- Type a URL inside the page: --- --- ##""http://blog.wikkawiki.org""## --- http://blog.wikkawiki.org --- --- 
+---
+~- Add a forced link surrounding the URL by ##""[[""## and ##""]]""## (everything after the | will be shown as description): --- --- ##""[[http://docs.wikkawiki.org|Wikka documentation]]""## --- [[http://docs.wikkawiki.org|Wikka documentation]] --- --- ##""[[community@wikkawiki.org|Wikka community list]]""## --- [[community@wikkawiki.org|Wikka community list]] --- ---
+---
+~- Add an image with a link (see instructions above) 
+---
+~- Add an interwiki link ([[InterWiki browse the list of available interwiki tags]]): --- --- ##""WikiPedia:WikkaWiki""## --- WikiPedia:WikkaWiki --- --- ##""Google:CSS""## --- Google:CSS --- --- ##""Thesaurus:Happy""## --- Thesaurus:Happy --- ---
+--- ---===9. Tables===---<<The ##table## action has been deprecated as of Wikka version 1.2 and has been replaced with the syntax that follows. Please visit the [[Docs:TableActionInfo|Wikka documentation server]] for information about the older ##table## action.<<::c::---Tables can be created using two pipe (##""||""##) symbols.  Everything in a single line is rendered as a table row.--- ---**Example:**--- ---
+##""||Cell 1||Cell 2||""##
+
+||Cell 1||Cell 2||
+--- ---Header cells can be rendered by placing an equals sign between the pipes.--- ---**Example:**
+##""|=|Header 1|=|Header 2||""##
+##""||Cell 1||Cell 2||""##
+
+|=|Header 1|=|Header 2||
+||Cell 1||Cell 2||
+--- ---Row and column spans are specified with ##x:## and ##y:## in parentheses just after the pipes.--- ---**Example:**--- ---
+##""|=| |=|(x:2)Columns||""##
+##""|=|(y:2) Rows||Cell 1||Cell 2||""##
+##""||Cell 3||Cell 4||""##
+
+|=| |=|(x:2)Columns||
+|=|(y:2) Rows||Cell 1||Cell 2||
+||Cell 3||Cell 4||
+--- ---Many additional features are available using table markup.  A more comprehensive table markup guide is available on this server's TableMarkup page. A complete syntax reference is available on this server's TableMarkupReference page.--- ---===10. Colored Text===---Colored text can be created using the ##color## action:---<<
+~##""{{color c="blue" text="This is a test"}}""##
+~{{color c="blue" text="This is a test"}}
+<<::c::---You can also use hex values:---<<
+~##""{{color hex="#DD0000" text="This is another test"}}""## 
+~{{color hex="#DD0000" text="This is another test"}}
+<<::c::---Alternatively, you can specify a foreground and background color using the ##fg## and ##bg## parameters (they accept both named and hex values):---<<
+~##""{{color fg="#FF0000" bg="#000000" text="This is colored text on colored background"}}""##
+~{{color fg="#FF0000" bg="#000000" text="This is colored text on colored background"}}
+<<::c::<<
+~##""{{color fg="yellow" bg="black" text="This is colored text on colored background"}}""##
+~{{color fg="yellow" bg="black" text="This is colored text on colored background"}}
+<<::c::--- ---===11. Floats===---To create a ** left floated box **, use two ##<## characters before and after the block.--- ---**Example:**--- ---
+~~##""<< Some text in a left-floated box hanging around. << Some more text as a filler. Some more text as a filler. Some more text as a filler.  Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler.""##--- ---<< Some text in a left-floated box hanging around. << Some more text as a filler. Some more text as a filler. Some more text as a filler.  Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler.
+::c::
+To create a ** right floated box **, use two ##>## characters before and after the block.--- ---**Example:**--- ---
+~##"">> Some text in a right-floated box hanging around. >> Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler.""##--- --->> Some text in a right-floated box hanging around. >> Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler. Some more text as a filler.
+::c::
+** Note: Use ##""::c::""## to clear floated blocks. **--- ---===12. Code formatters===---You can easily embed code blocks in a wiki page using a simple markup. Anything within a code block is displayed literally.  To create a ** generic code block ** you can use the following markup:--- ---
+~##""%% This is a code block %%""##. 
+
+%% This is a code block %%
+---To create a ** code block with syntax highlighting **, you need to specify a // code formatter // (see below for a list of available code formatters).--- ---
+~##""%%(""{{color c="red" text="php"}}"")<br /><?php<br />echo "Hello, World!";<br />?><br />%%""##
+---
+%%(php)
+<?php
+echo "Hello, World!";
+?>
+%%
+--- ---You can also specify an optional // starting line // number.---
+~##""%%(php;""{{color c="red" text="15"}}"")<br /><?php<br />echo "Hello, World!";<br />?><br />%%""##
+---
+%%(php;15)
+<?php
+echo "Hello, World!";
+?>
+%%
+--- ---If you specify a // filename //, this will be used for downloading the code.---
+~##""%%(php;15;""{{color c="red" text="test.php"}}"")<br /><?php<br />echo "Hello, World!";<br />?><br />%%""##
+---
+%%(php;15;test.php)
+<?php
+echo "Hello, World!";
+?>
+%%
+--- ---
+|?|List of available code formatters||
+||
+|=|Language|=|Formatter|=|Language|=|Formatter|=|Language|=|Formatter||
+|#|
+|=|Actionscript||##actionscript##|=|ABAP||##abap##|=|ADA||##ada##||
+|=|Apache Log||##apache##|=|""AppleScript""||##applescript##|=|ASM||##asm##||
+|=|ASP||##asp##|=|""AutoIT""||##autoit##|=|Bash||##bash##||
+|=|""BlitzBasic""||##blitzbasic##|=|""Basic4GL""||##basic4gl##|=|bnf||##bnf##||
+|=|C||##c##|=|C for Macs||##c_mac##|=|C#||##csharp##||
+|=|C""++""||##cpp##|=|C""++"" (+QT)||##cpp-qt##|=|CAD DCL||##caddcl##||
+|=|""CadLisp""||##cadlisp##|=|CFDG||##cfdg##|=|""ColdFusion""||##cfm##||
+|=|CSS||##css##|=|D||##d##|=|Delphi||##delphi##||
+|=|Diff-Output||##diff##|=|DIV||##div##|=|DOS||##dos##||
+|=|Dot||##dot##|=|Eiffel||##eiffel##|=|Fortran||##fortran##||
+|=|""FreeBasic""||##freebasic##|=|FOURJ's Genero 4GL||##genero##|=|GML||##gml##||
+|=|Groovy||##groovy##|=|Haskell||##haskell##|=|HTML||##html4strict##||
+|=|INI||##ini##|=|Inno Script||##inno##|=|Io||##io##||
+|=|Java 5||##java5##|=|Java||##java##|=|Javascript||##javascript##||
+|=|""LaTeX""||##latex##|=|Lisp||##lisp##|=|Lua||##lua##||
+|=|Matlab||##matlab##|=|mIRC Scripting||##mirc##|=|Microchip Assembler||##mpasm##||
+|=|Microsoft Registry||##reg##|=|Motorola 68k Assembler||##m68k##|=|""MySQL""||##mysql##||
+|=|NSIS||##nsis##|=|Objective C||##objc##|=|""OpenOffice"" BASIC||##oobas##||
+|=|Objective Caml||##ocaml##|=|Objective Caml (brief)||##ocaml-brief##|=|Oracle 8||##oracle8##||
+|=|Pascal||##pascal##|=|Per (FOURJ's Genero 4GL)||##per##|=|Perl||##perl##||
+|=|PHP||##php##|=|PHP (brief)||##php-brief##|=|PL/SQL||##plsql##||
+|=|Python||##phyton##|=|Q(uick)BASIC||##qbasic##|=|robots.txt||##robots##||
+|=|Ruby on Rails||##rails##|=|Ruby||##ruby##|=|SAS||##sas##||
+|=|Scheme||##scheme##|=|sdlBasic||##sdlbasic##|=|Smarty||##smarty##||
+|=|SQL||##sql##|=|TCL/iTCL||##tcl##|=|T-SQL||##tsql##||
+|=|Text||##text##|=|thinBasic||##thinbasic##|=|Unoidl||##idl##||
+|=|VB.NET||##vbnet##|=|VHDL||##vhdl##|=|Visual BASIC||##vb##||
+|=|Visual Fox Pro||##visualfoxpro##|=|""WinBatch""||##winbatch##|=|XML||##xml##||
+|=|X""++""||##xpp##|=|""ZiLOG"" Z80 Assembler||##z80##|=| ||
+--- ---===13. Mindmaps===---Wikka has native support for [[Wikka:FreeMind|mindmaps]].  There are two options for embedding a mindmap in a wiki page.--- --- **Option 1:** Upload a ""FreeMind"" file to a webserver, and then place a link to it on a wikka page: ##""http://yourdomain.com/freemind/freemind.mm""## No special formatting is necessary.  --- ---**Option 2:** Paste the ""FreeMind"" data directly into a wikka page:
+
+~-Open a ""FreeMind"" file with a text editor.
+~-Select all, and copy the data.
+~-Browse to your Wikka site and paste the Freemind data into a page.
+::c::
+---===14. Embedded HTML===---You can easily paste HTML in a wiki page by wrapping it into two sets of doublequotes.--- ---
+~##""[html code]""##
+<<
+~##""y = x<sup>n+1</sup>""##
+~""y = x<sup>n+1</sup>""
+<<::c::<<
+~##""<acronym title="Cascade Style Sheet">CSS</acronym>""##
+~""<acronym title="Cascade Style Sheet">CSS</acronym>""
+<<::c::---By default, some HTML tags are removed by the ""SafeHTML"" parser to protect against potentially dangerous code.  The list of tags that are stripped can be found on the Wikka:SafeHTML page.--- ---It is possible to allow // all // HTML tags to be used, see Wikka:UsingHTML for more information.--- --- ----CategoryWiki

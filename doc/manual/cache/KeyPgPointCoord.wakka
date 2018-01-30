@@ -3,6 +3,8 @@ Queries ##[[KeyPgDraw|Draw]]##'s pen position in graphics mode
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|Declare]] [[KeyPgFunction|Function]] ""PointCoord""( [[KeyPgByval|ByVal]] //func// [[KeyPgAs|As]] [[KeyPgLong|Long]] ) [[KeyPgAs|As]] [[KeyPgSingle|Single]]
+##
+{{fbdoc item="usage"}}##
 	//result// = ""PointCoord""( //func// )
 ##
 {{fbdoc item="desc"}}

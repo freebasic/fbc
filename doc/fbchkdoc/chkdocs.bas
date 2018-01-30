@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2018 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -69,34 +69,41 @@ enum LINK_FLAGS
 	FLAG_FILE_NOT_FOUND			= 1 shl 14
 	FLAG_FILE_DUPLICATE			= 1 shl 15
 
+	FLAG_PAGE_DEVPG             = 1 shl 16
+
 end enum
 
-Type PageInfo_t
+type PageInfo_t
 	sName as string
 	flags as integer
 	sTitle as string
 	msg as integer
-End Type
+End type
 
-Type LinkInfo_t
-  sName as string
-  sType as string
+type LinkInfo_t
+  sName as string    '' page name
+  sType as string    '' link type
   sLink as string
   flags as integer
-End Type
+end type
 
-Type SampInfo_t
+type SampInfo_t
 	sFile as string
 	sPage as string
 	flags as integer
-End Type
+end type
 
-Type ImageInfo_t
+type ImageInfo_t
 	sUrl as string
 	sLink as string
 	sPage as string
 	flags as integer
-end Type
+end type
+
+type TempInfo_t
+	text as string
+	extra as string
+end type
 
 dim shared cache_dir as string
 
@@ -123,9 +130,8 @@ redim shared sImages() as ImageInfo_t
 redim preserve sImages(1 to 1) as ImageInfo_t
 dim shared nImages as integer = 0, maxImages as integer = 1
 
-
-redim shared sTemps() as string
-redim preserve sTemps(1 to 1) as string
+redim shared sTemps() as TempInfo_t
+redim preserve sTemps(1 to 1) as TempInfo_t
 dim shared nTemps as integer = 0, maxTemps as integer = 1
 
 dim shared temphash as HASH
@@ -155,6 +161,41 @@ end type
 dim shared as timers_t timers(1 to 20)
 dim shared as integer ntimers = 0
 
+dim shared token_names(0 to WIKI_TOKENS-1) as zstring ptr = _
+{ _
+	@"WIKI_TOKEN_NULL", _
+	@"WIKI_TOKEN_LT", _
+	@"WIKI_TOKEN_GT", _
+	@"WIKI_TOKEN_BOXLEFT", _
+	@"WIKI_TOKEN_BOXRIGHT", _
+	@"WIKI_TOKEN_CLEAR", _
+	@"WIKI_TOKEN_KBD", _
+	@"WIKI_TOKEN_BOLD", _
+	@"WIKI_TOKEN_ITALIC", _
+	@"WIKI_TOKEN_UNDERLINE", _
+	@"WIKI_TOKEN_MONOSPACE", _
+	@"WIKI_TOKEN_NOTES", _
+	@"WIKI_TOKEN_STRIKE", _
+	@"WIKI_TOKEN_CENTER", _
+	@"WIKI_TOKEN_HEADER", _
+	@"WIKI_TOKEN_NEWLINE", _
+	@"WIKI_TOKEN_CODE", _
+	@"WIKI_TOKEN_PRE", _
+	@"WIKI_TOKEN_LINK", _
+	@"WIKI_TOKEN_ACTION", _
+	@"WIKI_TOKEN_INDENT", _
+	@"WIKI_TOKEN_LIST", _
+	@"WIKI_TOKEN_TEXT", _
+	@"WIKI_TOKEN_FORCENL", _
+	@"WIKI_TOKEN_HORZLINE", _
+	@"WIKI_TOKEN_SECT_ITEM", _
+	@"WIKI_TOKEN_ACTION_TB", _
+	@"WIKI_TOKEN_ACTION_IMG", _
+	@"WIKI_TOKEN_BOLD_SECTION", _
+	@"WIKI_TOKEN_RAW" _
+}
+
+dim shared token_counts(0 to WIKI_TOKENS-1) as integer
 
 '' ----------------------------------------------------
 
@@ -249,12 +290,12 @@ end sub
 sub Temps_Clear ()
 	nTemps = 0
 	maxTemps = 1
-	redim sTemps( 1 to maxTemps ) as string
+	redim sTemps( 1 to maxTemps ) as TempInfo_t
 	temphash.clear()
 end sub
 
 '':::::
-sub Temps_Add( byref text as string, byval bAllowDup as integer = FALSE )
+sub Temps_Add( byref text as string, byref extra as string = "", byval bAllowDup as integer = FALSE )
 
 	dim as integer i
 
@@ -270,9 +311,10 @@ sub Temps_Add( byref text as string, byval bAllowDup as integer = FALSE )
 		nTemps += 1
 		if nTemps > maxTemps then
 			maxTemps *= 2
-			redim preserve sTemps( 1 to maxTemps ) as string
+			redim preserve sTemps( 1 to maxTemps ) as TempInfo_t
 		end if
-		sTemps(i) = text
+		sTemps(i).text = text
+		sTemps(i).extra = extra
 		temphash.add( text )
 	end if
 
@@ -558,11 +600,10 @@ sub Links_Add( byref sName as string, byref sType as string, byref sLink as stri
 
 		end select
 
-		select case left( lcase( .sName ), 5 )
-		case "keypg"
+		if( left( lcase( .sName ), 5 ) = "keypg" ) then
 			.flags or= FLAG_PAGE_KEYPG
 
-		case "catpg", "docto" '' FIXME => doctoc
+		elseif( ( left( lcase( .sName ), 5 ) = "catpg" ) orelse ( lcase( .sName ) = "doctoc" ) ) then
 			.flags or= FLAG_PAGE_CATPG
 
 			j = cint( pagehash_lcase.getinfo( lcase(.sLink) ))
@@ -585,11 +626,16 @@ sub Links_Add( byref sName as string, byref sType as string, byref sLink as stri
 				'' LINKS TO NON-EXISTANT PAGE
 
 			end if
+		elseif( lcase( .sName ) = "devtoc" ) then
+			.flags or= FLAG_PAGE_DEVPG
 
-		case "propg"
+		elseif( left( lcase( .sName ), 3 ) = "dev" ) then
+			.flags or= FLAG_PAGE_DEVPG
+
+		elseif( left( lcase( .sName ), 5 ) = "propg" ) then
 			.flags or= FLAG_PAGE_PROPG
 
-		end select
+		end if
 
 		select case left( lcase( .sLink ), 5 )
 		case "keypg"
@@ -645,6 +691,8 @@ sub Links_LoadFromPage_Scan _
 	token = tokenlist->GetHead()
 
 	while( token <> NULL )
+
+		token_counts( token->id ) += 1
 
 		if( token->id = WIKI_TOKEN_ACTION ) then
 
@@ -760,7 +808,7 @@ end function
 function is_header_text( byval token as WikiToken ptr ) as integer
 	'' TEXT
 	if( token <> NULL ) then
-		if( token->id = WIKI_TOKEN_TEXT ) then
+		if( ( token->id = WIKI_TOKEN_TEXT ) or ( token->id = WIKI_TOKEN_RAW ) )then
 			return 0
 		end if
 	end if
@@ -783,6 +831,10 @@ function Links_LoadFromPage_ScanHeader _
 		byref sName as string, _
 		byval wiki as CWiki ptr _
 	) as integer
+
+	/'
+		check that certain kinds of pages start off with correct formats
+	'/
 
 	dim as string text, sPage, sItem, sValue, sTitle, n
 	dim as CList ptr tokenlist
@@ -814,6 +866,7 @@ function Links_LoadFromPage_ScanHeader _
 		CHK_TOKEN( is_newline )
 
 	elseif lcase(left(sName,5)) = "propg" _
+		or lcase(left(sName,3)) = "dev" _
 		or lcase(left(sName,3)) = "tbl" then
 
 		CHK_TOKEN( is_fbdoc_title )
@@ -838,7 +891,7 @@ function Links_LoadFromPage_ScanHeader _
 		CHK_TOKEN( is_newline )
 
 	else
-		msg = - 1
+		msg = -1
 
 	end if
 
@@ -963,26 +1016,37 @@ end function
 
 '':::::
 sub Check_MissingPages()
+
+	/' 
+		we are looking for pages that have a
+		link on (some) page, but do not exist as a topic
+		- sometimes gives a false positives since the 
+		  link name might be mispelled or incorrect, in 
+		  that case, fix the link rather than add the
+		  page
+	'/
+
 	dim i as integer
-	logprint "Checking missing pages:"
+
+	logprint "Checking missing pages (links to non-existant page):"
 	
 	Temps_Clear()
 
 	for i = 1 to nLinks
 		if( (sLinks(i).flags and FLAG_LINK_URL ) = 0 ) then
 			if Pages_Exists( sLinks(i).sLink, FALSE ) = FALSE then
-				Temps_Add( sLinks(i).sLink )
+				Temps_Add( sLinks(i).sLink, sLinks(i).sName )
 			end if
 		end if
 	next
 
 	if nTemps = 0 then
-		logprint "No missing pages"
+		logprint "No missing pages (links with no path)"
 	else
 		for i = 1 to nTemps
-			logprint "Missing page '" + sTemps(i) + "'"
+			logprint "Missing page '" + sTemps(i).text + "' (first occurance on '" & sTemps(i).extra & "')"
 		next
-		logprint "Found " + str(nTemps) + " links to missing pages"
+		logprint "Found links to " + str(nTemps) + " missing pages"
 	end if
 	logprint
 
@@ -990,6 +1054,14 @@ end sub
 
 '':::::
 sub Check_NameCase( byref outfile as string )
+
+	/'
+		we are checking that the link name as it appears in
+		the topic matches the case of the topic as it is saved in the
+		database.  Mismatched name case can cause problems for html
+		links on systems where case of file name is important.
+	'/
+
 	dim i as integer, c as integer, j as integer, h as integer, body as string
 
 	logprint "Checking mismatched name case in links:"
@@ -1027,7 +1099,7 @@ sub Check_NameCase( byref outfile as string )
 		h = freefile
 		open outfile for output as #h
 		for i = 1 to nTemps
-			print #h, sTemps(i)
+			print #h, sTemps(i).text
 		next
 		close #h
 	end if
@@ -1044,11 +1116,18 @@ end sub
 '':::::
 sub Check_Headers()
 
+	/'
+		report the results of Links_LoadFromPage_ScanHeader()
+		check is not actually made here, we are just reporting the
+		results from what was discovered when the page was loaded
+		and scanned.
+	'/
+
 	dim as integer i, j, msg, c
 
 	Temps_Clear()
 
-	logprint "Checking headers:"
+	logprint "Checking wikka topic headers:"
 
 	for j = 1 to nPages
 		
@@ -1078,7 +1157,7 @@ sub Check_Headers()
 	logprint "Pages not checked for headers"
 	if nTemps > 0 then
 		for i = 1 to nTemps
-			logprint "'" + sTemps(i) + "'"
+			logprint "'" + sTemps(i).text + "'"
 		next
 	end if
 	logprint str(nTemps) + " pages(s) not checked."
@@ -1091,9 +1170,16 @@ end sub
 '':::::
 sub Check_DuplicateFilenames()
 
+	/'
+		report the results of duplicate sample filesname
+		check is not acutally done here, we are just reporting
+		the results of what was found through Samps_Add()
+		and Links_LoadFromPage_Scan()
+	'/
+
 	dim as integer j, msg, c
 
-	logprint "Checking duplicate filenames:"
+	logprint "Checking for duplicate sample filenames:"
 
 	c = 0
 	for j = 1 to nSamps
@@ -1104,9 +1190,9 @@ sub Check_DuplicateFilenames()
 	next
 
 	if c = 0 then
-		logprint "No duplicate file names"
+		logprint "No duplicate sample file names"
 	else
-		logprint "Found " + str(c) + " pages with duplicate file names"
+		logprint "Found " + str(c) + " pages with duplicate sample file names"
 	end if
 	logprint
 
@@ -1114,6 +1200,13 @@ end sub
 
 '':::::
 sub Check_ImageFilenames( byref image_path as string )
+
+	/'
+		scan through all of the image links found on pages
+		and check that we have the image file stored
+		in the image_path - report any image files that
+		are missing
+	'/
 
 	dim as integer i, j, msg, c
 	dim as string url, filename
@@ -1157,39 +1250,75 @@ end sub
 
 '':::::
 sub Check_IndexLinks( byref mode as string )
+
+	/'
+		check that the index topics CatPgFullIndex or CatPgFunctIndex
+		fully include links to all the KepPg pages.
+	'/
+	
 	dim as integer i
 	dim pg as string
+	dim opsonly as integer = false
 	Temps_Clear()
 
-	if( mode = "full" ) then
+	select case mode
+	case "full"
 		pg = "CatPgFullIndex"
-	else
+	case "func"
 		pg = "CatPgFunctIndex"
-	end if
+	case "ops"
+		pg = "CatPgOpIndex"
+		opsonly = true
+	case else
+		logprint "Internal error: invalid Check_IndexLinks(""" & mode & """)"
+		end 1
+	end select
 
 	logprint "Checking '" + pg + "':"
-	logprint "    Ignoring 'KeyPgOp*' pages"
 
-	for i = 1 to nPages
-		if( (sPages(i).flags and FLAG_PAGE_KEYPG) <> 0 ) then
-			if( Links_Exists( pg, sPages(i).sName, "" ) = FALSE ) then
-				if( Links_Exists( "CatPgOperators", sPages(i).sName, "" ) = FALSE ) then
-					if( lcase(sPages(i).sName) = "keypgoperator" ) then
-						Temps_Add( sPages(i).sName )
-					elseif( lcase(left(sPages(i).sName,7)) = "keypgop" ) then
-					else
-						Temps_Add( sPages(i).sName )
-					end if
+	if( opsonly ) then
+
+		logprint "    Ignoring anything but 'KeyPgOp[A-Z]*' pages"
+
+		for i = 1 to nPages
+			if( (sPages(i).flags and FLAG_PAGE_KEYPG) <> 0 ) then
+				if( lcase(left(sPages(i).sName,7)) = "keypgop" ) then
+					select case mid(sPages(i).sName,8,1)
+					case "A" to "Z"
+						if( Links_Exists( pg, sPages(i).sName, "" ) = FALSE ) then
+							Temps_Add( sPages(i).sName )
+						endif
+					end select
 				end if
-			endif
-		end if
-	next
+			end if
+		next
+
+	else
+
+		logprint "    Ignoring 'KeyPgOp*' pages"
+
+		for i = 1 to nPages
+			if( (sPages(i).flags and FLAG_PAGE_KEYPG) <> 0 ) then
+				if( Links_Exists( pg, sPages(i).sName, "" ) = FALSE ) then
+					if( Links_Exists( "CatPgOperators", sPages(i).sName, "" ) = FALSE ) then
+						if( lcase(sPages(i).sName) = "keypgoperator" ) then
+							Temps_Add( sPages(i).sName )
+						elseif( lcase(left(sPages(i).sName,7)) = "keypgop" ) then
+						else
+							Temps_Add( sPages(i).sName )
+						end if
+					end if
+				endif
+			end if
+		next
+
+	end if
 
 	if nTemps = 0 then
 		logprint "All keypages on '" + pg + "'"
 	else
 		for i = 1 to nTemps
-			logprint "'" + pg + "' is missing '" + sTemps(i) + "'"
+			logprint "'" + pg + "' is missing '" + sTemps(i).text + "'"
 		next
 		logprint "Found " + str(nTemps) + " links missing"
 	end if
@@ -1227,7 +1356,7 @@ sub Check_MissingBacklinks()
 			and pg <> "catpgopindex" ) then
 
 			if( sLinks(i).sType <> "back" ) then
-				if left(pg, 5) = "catpg" or pg = "doctoc" or pg = "catpgprogrammer" then
+				if left(pg, 5) = "catpg" or pg = "doctoc" or pg = "catpgprogrammer" or pg = "devtoc" then
 					if( sLinks(i).sType = "keyword" ) then
 						b = TRUE
 					elseif( pg = "doctoc" or pg = "catpgprogrammer" ) then
@@ -1281,6 +1410,15 @@ sub Check_InvalidBacklinks()
 						else
 							b = TRUE
 						end if
+
+					'' if it's a Dev* page, always allow backlinks to DevToc and DocToc
+					elseif( lcase(left(pg,3)) = "dev" ) then
+						if( lcase(sLinks(i).sLink) = lcase("DocToc") ) then
+						elseif( lcase(sLinks(i).sLink) = lcase("DevToc") ) then
+						else
+							b = TRUE
+						end if
+
 					else
 						b = TRUE
 					end if
@@ -1426,6 +1564,19 @@ sub Check_DocPagesMissingTitles()
 
 end sub
 
+'':::::
+sub Report_TokenCounts()
+
+	logprint "Token Counts"
+
+	for i as integer = 0 to WIKI_TOKENS-1
+		print left( *token_names(i) & space(30), 30 ) & token_counts(i)
+	next
+
+	logprint
+
+end sub
+
 
 '' --------------------------------------------------------
 '' MAIN
@@ -1454,6 +1605,10 @@ enum OPTIONS
 
 	OPT_IMAGES = 16384
 
+	OPT_OPS_INDEX = 32768
+
+	OPT_TOKEN_COUNTS = 65536
+
 	OPT_ALL_LINKS = _
 		OPT_MISSING_PAGES _
 		or OPT_FULL_INDEX _
@@ -1465,7 +1620,8 @@ enum OPTIONS
 		or OPT_NOT_LINKED _
 		or OPT_PRINT_TOC _
 		or OPT_NO_TITLE _
-		or OPT_IMAGES
+		or OPT_IMAGES _
+		or OPT_OPS_INDEX
 
 	OPT_ALL_TOKEN = _
 		OPT_HEADERS _
@@ -1490,10 +1646,11 @@ if command(i) = "" then
 	print
 	print "   z       load links from files instead of scanning pages"
 	print
-	print "   a       perform all link checks ( m full func n b k q c p d f i )"
+	print "   a       perform all link checks ( m full func ops n b k q c p d f i )"
 	print "   m       check missing pages"
 	print "   full    check CatPgFullIndex links"
 	print "   func    check CatPgFunctIndex links"
+	print "   ops     check CatPgOpIndex links"
 	print "   b       check missing backlinks"
 	print "   k       check invalid backlinks"
 	print "   q       check KeyPg, CatPg, ProPg, no back link at all"
@@ -1506,6 +1663,7 @@ if command(i) = "" then
 	print "   t       perform all token checks ( h n )"
 	print "   h       check page headers"
 	print "   n       check name case in links"
+	print "   tc      report token counts"
 	print
 	print "   e       check everything! ( a t )"
 	print
@@ -1559,6 +1717,8 @@ while command(i) > ""
 		opt or= OPT_FULL_INDEX
 	case "func"
 		opt or= OPT_FUNCT_INDEX
+	case "ops"
+		opt or= OPT_OPS_INDEX
 	case "n"
 		opt or= OPT_LINK_NAME_CASE
 	case "b"
@@ -1583,6 +1743,8 @@ while command(i) > ""
 		opt or= OPT_DUP_FILE_NAME
 	case "i"
 		opt or= OPT_IMAGES
+	case "tc"
+		opt or= OPT_TOKEN_COUNTS
 
 	case else
 		print "option '"; command(i); "' ignored"
@@ -1650,6 +1812,11 @@ if( (opt and OPT_FUNCT_INDEX) <> 0 ) then
 	Timer_Mark("Check_IndexLinks(""func"")")
 end if
 
+if( (opt and OPT_OPS_INDEX) <> 0 ) then
+	Check_IndexLinks("ops")
+	Timer_Mark("Check_IndexLinks(""ops"")")
+end if
+
 if( (opt and OPT_MISSING_BACKLINK) <> 0 ) then
 	Check_MissingBacklinks()
 	Timer_Mark("Check_MissingBacklinks()")
@@ -1702,6 +1869,12 @@ if( (opt and OPT_IMAGES) <> 0 ) then
 	'' Image file names
 	Check_ImageFilenames( image_dir )
 	Timer_Mark("Check_ImageFilenames()")
+end if
+
+if( (opt and OPT_TOKEN_COUNTS) <> 0 ) then
+	'' token counts
+	Report_TokenCounts()
+	Timer_Mark("Report_TokenCounts()")
 end if
 
 logprint

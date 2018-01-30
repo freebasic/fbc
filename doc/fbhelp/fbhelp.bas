@@ -1,5 +1,5 @@
 ''  fbhelp - FreeBASIC help viewer
-''  Copyright (C) 2006-2017 Jeffery R. Marshall (coder[at]execulink.com)
+''  Copyright (C) 2006-2018 Jeffery R. Marshall (coder[at]execulink.com)
 
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -126,11 +126,11 @@ end enum
 	pexepath = FixPath( exepath )
 	filename = pExePath + "fbhelp.dat"
 
-	if( HelpFile_Open( filename ) = FALSE ) then
+	if( HelpFile_Open( filename, TRUE ) = FALSE ) then
 
 		filename = pExePath + "fbhelp.daz"
 
-		if( HelpFile_Open( filename ) = FALSE ) then
+		if( HelpFile_Open( filename, FALSE ) = FALSE ) then
 
 			print "unable to open help file"
 			end 1

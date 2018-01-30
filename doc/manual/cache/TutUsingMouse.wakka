@@ -25,7 +25,7 @@ In FreeBasic, there's basically 2 commands that you need to worry about when try
 {{fbdoc item="title" value="GETMOUSE"}}
 ----
 {{fbdoc item="syntax"}}
-GETMOUSE x, y[, [wheel][, [buttons]]]
+result = GetMouse (x, y [, [ wheel ] [, [ buttons ] [, [ clip ]]]])
 
 {{fbdoc item="desc"}}
 GETMOUSE retrieves the mouse position and button status. 
@@ -36,6 +36,8 @@ Mouse position is stored in X and Y when the function is called. If the mouse is
 
 'buttons' stores the button status. On function termination, this will return a bitmask holding buttons status. Bit 0 is set if left mouse button is down; bit 1 is set if right mouse button is down; bit 2 is set if middle mouse button is down.
 
+'clip' stores the mouse clipping status; if 1, the mouse is currently clipped to the graphics window; if 0, the mouse is not clipped.
+
 *GETMOUSE is for use in graphics modes, set using the SCREEEN command ONLY.*
 
 
@@ -43,7 +45,7 @@ Mouse position is stored in X and Y when the function is called. If the mouse is
 {{fbdoc item="title" value="SETMOUSE"}}
 ----
 {{fbdoc item="syntax"}}
-SETMOUSE x, y, visibility
+result = SetMouse([ x ] [, [ y ] [, [ visibility ] [, [ clip ]]]])
 
 {{fbdoc item="desc"}}
 SETMOUSE will set the X,Y coordinates of the mouse pointer, as well as setting it's visibility. 
@@ -51,6 +53,8 @@ SETMOUSE will set the X,Y coordinates of the mouse pointer, as well as setting i
 Mouse position is set using the X and Y parameters. 
 
 The mouse will be visible if visibility is set to 1, and invisible if visibility is set to 0.
+
+clip - 1 indicates mouse is clipped to graphics window, 0 indicates no clipping
 
 *SETMOUSE is intended for graphics modes initiated using the SCREEN statement only.*
 
@@ -66,7 +70,7 @@ Here are a set of constants that I declare at the beginning of the module. This 
 	CONST SHOWMOUSE = 1
 	CONST HIDEMOUSE = 0 
 %%
-As a first step in this example, we will be declaring variables that we will be using throughout the example program. Of course you don't have to declare your variables, but me I like to do so because when you do so you know exactly why you're declaring your variables. To me that's good practice.
+As a first step in this example, we will be declaring variables that we will be using throughout the example program. Of course you don't have to declare your variables, but me I like to do so because when you do so you know exactly why you're declaring your variables. To me that's good practice. Editors Note: In #lang FB you must declare variables before using them. 
 %%(freebasic)
 	DIM CurrentX AS INTEGER 
 	DIM CurrentY AS INTEGER
@@ -74,7 +78,7 @@ As a first step in this example, we will be declaring variables that we will be 
 	DIM CanExit AS INTEGER
 	DIM AS STRING A,B,C
 %%
-The idea here is to do everything within a loop so that we can also control how the program exits. So we'll create a loop that will exit when the "Can********Exit" variable is equal to 0. In the loop we'll Interrogate the mouse and print some basic values. (This part is extracted from the example provided in the GETMOUSE syntax explanation in the gfxlib.txt file). Don't forget to set your graphics mode as it is a must to get valid return values from the mouse commands. We'll use Screen 12 for our example.
+The idea here is to do everything within a loop so that we can also control how the program exits. So we'll create a loop that will exit when the "Can********Exit" variable is equal to 0. In the loop we'll interrogate the mouse and print some basic values. (This part is extracted from the example provided in the GETMOUSE syntax explanation in the gfxlib.txt file). Don't forget to set your graphics mode as it is a must to get valid return values from the mouse commands. We'll use Screen 12 for our example.
 %%(freebasic)
 SCREEN 12 
 CanExit = 1
@@ -106,7 +110,7 @@ For the next step, since we want to control a bit what's happening with the mous
 	 GETMOUSE CurrentX, CurrentY, , MouseButtons
 	LOOP 
 %%
-Basically we print the line that has " | FIRST | SECOND | THIRD | EXIT | " at the top of the screen. And we go into the loop that interrogates the mouse. Of course, right now nothing will happen if you press a button because there is no code for it. In our example, we'll add code that simple prints which option was selected. If the user selects the EXIT option, we'll print the Option and we'll exit the loop. We'll also add a print statement outside the loop with a sleep to tell the use that we are truely outside the loop and therefore the program is ended. With all this, the code should now look like this. I am putting the whole source file here so you can cut and paste it easily.
+Basically we print the line that has " | FIRST | SECOND | THIRD | EXIT | " at the top of the screen. And we go into the loop that interrogates the mouse. Of course, right now nothing will happen if you press a button because there is no code for it. In our example, we'll add code that simple prints which option was selected. If the user selects the EXIT option, we'll print the Option and we'll exit the loop. We'll also add a print statement outside the loop with a sleep to tell the use that we are truly outside the loop and therefore the program is ended. With all this, the code should now look like this. I am putting the whole source file here so you can cut and paste it easily.
 %%(freebasic)
 CONST LEFTBUTTON   = 1
 CONST MIDDLEBUTTON = 4   ' UNUSED IN THIS DEMO

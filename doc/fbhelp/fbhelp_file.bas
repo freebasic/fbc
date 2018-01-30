@@ -1,5 +1,5 @@
 ''  fbhelp - FreeBASIC help viewer
-''  Copyright (C) 2006-2017 Jeffery R. Marshall (coder[at]execulink.com)
+''  Copyright (C) 2006-2018 Jeffery R. Marshall (coder[at]execulink.com)
 
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -22,21 +22,38 @@
 
 #ifdef NO_COMPRESSION
 
-#include "crt.bi"
-type HFILE as FILE ptr
-#define hf_open( _filename, _mode )     fopen( _filename, _mode )
-#define hf_seek( _h, _offset, _origin ) fseek( _h, _offset, _origin )
-#define hf_read( _h, _buffer, _length ) fread( _buffer, 1, _length, _h )
-#define hf_close( _h )                  fclose(_h)
+	#include "crt.bi"
+
+	type HFILE as FILE ptr
+
+	#define hf_open( _filename, _mode )     fopen( _filename, _mode )
+	#define hf_seek( _h, _offset, _origin ) fseek( _h, _offset, _origin )
+	#define hf_read( _h, _buffer, _length ) fread( _buffer, 1, _length, _h )
+	#define hf_close( _h )                  fclose(_h)
 
 #else
 
-#include "zlib.bi"
-type HFILE as gzfile ptr
-#define hf_open( _filename, _mode )     gzopen( _filename, _mode )
-#define hf_seek( _h, _offset, _origin ) gzseek( _h, _offset, _origin )
-#define hf_read( _h, _buffer, _length ) gzread( _h, _buffer, _length )
-#define hf_close( _h )                  gzclose(_h)
+	#include "zlib.bi"
+
+	type HFILE as gzfile
+
+	#define hf_open( _filename, _mode )     gzopen( _filename, _mode )
+
+	#if defined( __FB_WIN32__ )
+		'' on windows, gzseek() is bugged on uncompressed streams and only succeed after a gzrewind()
+		dim shared hf_is_uncompressed as integer = FALSE
+		private sub hf_rewind( byval h as HFILE )
+			if( hf_is_uncompressed <> 0 ) then
+				gzrewind( h )
+			end if
+		end sub
+		#define hf_seek( _h, _offset, _origin )  hf_rewind( _h ) : gzseek( _h, _offset, _origin )
+	#else
+		#define hf_seek( _h, _offset, _origin ) gzseek( _h, _offset, _origin )
+	#endif
+
+	#define hf_read( _h, _buffer, _length ) gzread( _h, _buffer, _length )
+	#define hf_close( _h )                  gzclose(_h)
 
 #endif
 
@@ -49,29 +66,29 @@ type HFILE as gzfile ptr
 #define ID_NAME mkID( "NAME" )
 #define ID_PAGE mkID( "PAGE" )
 
+type INTEGER32 as long
 
-type head_t
-	index_start as integer
-	names_start as integer
-	pages_start as integer
-	reserved as integer
+type head_t field=1
+	index_start as INTEGER32
+	names_start as INTEGER32
+	pages_start as INTEGER32
+	reserved as INTEGER32
 end type
 
-type index_read_t
-	nameposn as integer
-	fileposn as integer
+type index_read_t field=1
+	nameposn as INTEGER32
+	fileposn as INTEGER32
 end type
 
-type index_t
+type index_t field=1
 	pagename as zstring ptr
-	fileposn as integer
+	fileposn as INTEGER32
 end type
 
 
 dim shared hf_handle as HFILE
 
 dim shared hf_count as integer
-dim shared hf_index_read as index_read_t ptr
 dim shared hf_index as index_t ptr
 dim shared hf_names as ubyte ptr
 
@@ -101,8 +118,8 @@ end function
 '':::::
 private function ReadNames ( byval h as HFILE ) as integer
 
-	dim id as integer
-	dim as integer size
+	dim id as INTEGER32
+	dim size as INTEGER32
 
 	hf_seek(h, head.names_start, SEEK_SET)
 
@@ -129,8 +146,11 @@ end function
 '':::::
 private function Readindex ( byval h as HFILE ) as integer
 
-	dim id as integer
-	dim as integer count, i, size
+	dim id as INTEGER32
+	dim count as INTEGER32
+	dim size as INTEGER32
+	dim i as integer
+	dim rec as index_read_t
 
 	hf_seek( h, head.index_start, SEEK_SET )
 
@@ -142,21 +162,20 @@ private function Readindex ( byval h as HFILE ) as integer
 
 	hf_read(h,@count,sizeof(count))
 
-	hf_index_read = callocate( count * sizeof( index_t ) )
+	hf_index = callocate( count * sizeof( index_t ) )
 
-	if( hf_index_read = NULL ) then
+	if( hf_index = NULL ) then
 		return FALSE
 	end if
 
 	for i = 0 to count - 1
-		hf_read(h,hf_index_read + i,sizeof( index_t ))
+		hf_read(h,@rec,sizeof( index_read_t ))
+
+		hf_index[i].pagename = cast( zstring ptr, hf_names + rec.nameposn )
+		hf_index[i].fileposn = rec.fileposn
+
 	next i
 
-	for i = 0 to count - 1
-		hf_index_read[i].nameposn += cast(integer, hf_names)
-	next i
-
-	hf_index = cast( index_t ptr, hf_index_read)
 	hf_count = count
 
 	return TRUE
@@ -176,16 +195,9 @@ public sub HelpFile_Close ( )
 		hf_names = NULL
 	end if
 
-	if( hf_index_read <> NULL ) then
-		deallocate hf_index_read
-		hf_index = NULL
-		hf_index_read = NULL
-	end if
-
 	if( hf_index <> NULL ) then
 		deallocate hf_index
 		hf_index = NULL
-		hf_index_read = NULL
 	end if
 
 end sub
@@ -193,12 +205,15 @@ end sub
 '':::::
 public function HelpFile_Open _
 	( _
-		byval filename as zstring ptr _
+		byval filename as zstring ptr, _
+		byval uncompressed as integer = 0 _
 	) as integer
 
 	dim as HFILE h
 
 	HelpFile_Close ( )
+
+	hf_is_uncompressed = uncompressed
 
 	h = hf_open( filename, "rb" )
 	if( h = NULL ) then
@@ -229,8 +244,9 @@ end function
 '':::::
 public function HelpFile_SeekPage( byval pagename as zstring ptr ) as integer
 
-	dim as integer i, size
-	dim id as integer
+	dim i as integer
+	dim id as INTEGER32
+	dim size as INTEGER32
 
 	if( hf_handle = 0 ) then
 		return -1

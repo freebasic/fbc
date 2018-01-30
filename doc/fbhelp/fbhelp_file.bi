@@ -3,7 +3,7 @@
 
 '
 '  fbhelp - FreeBASIC help viewer
-'  Copyright (C) 2006-2017 Jeffery R. Marshall (coder[at]execulink.com)
+'  Copyright (C) 2006-2018 Jeffery R. Marshall (coder[at]execulink.com)
 '
 '
 'License:
@@ -30,7 +30,8 @@
 
 	declare function HelpFile_Open _
 		( _
-			byval filename as zstring ptr _
+			byval filename as zstring ptr, _
+			byval uncompressed as integer = 0 _
 		) as integer
 
 	declare function HelpFile_SeekPage( byval pagename as zstring ptr ) as integer

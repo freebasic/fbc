@@ -10,7 +10,7 @@ FreeBASIC's greatest strength is it's ability to seamlessly integrate with a num
 
 These libraries are particularly useful because they tend to provide functions for games. 
 
-SDL is a library with graphics and input support built in, and a bunch of sub-libraries for [[http://SDL_net|network]], [[http://SDL_ttf|TrueType font support]], and [[http://SDL_mixer|audio]]. It can be used with [[OpenGL]], but I won't be covering that today.
+SDL is a library with graphics and input support built in, and a bunch of sub-libraries for [[https://www.libsdl.org/projects/SDL_net/|network]], [[https://www.libsdl.org/projects/SDL_ttf/|TrueType font support]], and [[https://www.libsdl.org/projects/SDL_mixer/|audio]]. It can be used with [[OpenGL]], but I won't be covering that today.
 
 TinyPTC is primarily a graphics library, the simplest one available. It does little more than give you a pointer to the graphics reigon to draw to.
 

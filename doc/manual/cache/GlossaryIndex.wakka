@@ -193,7 +193,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	See: Image Buffer. An image buffer in ""FreeBASIC""'s native format.
 
 **GIT**
-	The file manager implemented at Sourceforge where sources are stored, it keeps the history of the changes introduced by the developers.  Used by FB now. (see also CVS , SVN and [[Git]]).
+	The file manager implemented at Sourceforge where sources are stored, it keeps the history of the changes introduced by the developers.  Used by FB now. (see also CVS , SVN and GIT).
 
 **global variable**
 	A variable that is visible to all procedures within a module, across multiple modules, or both. See ##[[KeyPgCommon|Common]]## and ##[[KeyPgExtern|Extern]]##.

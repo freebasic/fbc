@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2018 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ end function
 sub DeleteExtraFiles _
 	( _
 		byref path as string, _
-		byval issvn as integer, _
+		byval isgit as integer, _
 		byval nodelete as integer _
 	)
 
@@ -67,10 +67,10 @@ sub DeleteExtraFiles _
 	while( d > "" )
 		if( filehash.test( lcase(d) ) = FALSE ) then
 			dim n as string = ReplacePathChar( path + d, asc("/") )
-			if( issvn ) then
+			if( isgit ) then
 				print "Removing '" + n + "'"
 				if( nodelete = FALSE ) then
-					shell !"svn rm \"" + n + !"\""
+					shell !"git rm \"" + n + !"\""
 				end if
 			else
 				print "Deleting '" + path + d + "'"
@@ -90,14 +90,14 @@ end sub
 '' --------------------------------------------------------
 
 dim as string cache_dir, def_cache_dir, web_cache_dir, dev_cache_dir
-dim as integer i = 1, issvn = FALSE, nodelete = FALSE
+dim as integer i = 1, isgit = FALSE, nodelete = FALSE
 
 if( command(i) = "" ) then
 	print "delextra [options]"
 	print
 	print "   -n         only print what would happen but don't"
 	print "                 actually delete any files"
-	print "   -svn       use 'svn rm' instead of file system delete"
+	print "   -git       use 'git rm' instead of file system delete"
 	print
 	print "   -web       delete extra files in cache_dir"
 	print "   -web+      delete extra files in web cache_dir"
@@ -132,8 +132,8 @@ while( command(i) > "" )
 			cache_dir = web_cache_dir
 		case "-dev+"
 			cache_dir = dev_cache_dir
-		case "-svn"
-			issvn = TRUE
+		case "-git"
+			isgit = TRUE
 		case "-n"
 			nodelete = TRUE
 		case else
@@ -148,7 +148,7 @@ while( command(i) > "" )
 wend
 
 if( cache_dir = "" ) then
-	cache_dir = default_CacheDir
+	cache_dir = def_cache_dir
 end if
 print "cache: "; cache_dir
 
@@ -158,4 +158,4 @@ if( ReadIndex( def_index_file ) = FALSE ) then
 	end 1
 end if
 
-DeleteExtraFiles( cache_dir, issvn, nodelete )
+DeleteExtraFiles( cache_dir, isgit, nodelete )

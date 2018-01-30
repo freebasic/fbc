@@ -28,7 +28,9 @@ Declares a union user defined type.
 	
 	A ##**Union**## can be passed as a user defined type to overloaded operator functions.
 	
-	**Note:** When ##**Union**## extends a base, it can be confusing because no new fields are added to the base, but instead the base is added to the derived Union. This means that fields in the derived Union can share the same memory space like the base. Of course it can be dangerous, but that is always the problem with Unions.
+	**Note:** When ##**Union**## extends a base, it can be confusing because no new fields are added to the base, but instead the base is added to the derived Union. This means that fields in the derived Union can share the same memory space like the base (here it doesn't matter whether the base is a Union or not). Of course it can be dangerous, but that is always the problem with Unions.
+	If only the base is a Union, then it won't be affected by fields from the derived UDT.
+	Since Union is not allowed to have complex fields (i.e. UDTs with constructor/destructor, or dynamic strings), a derived Union cannot be allowed to have (contain) a complex base.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/union.bas"}}%%(freebasic)

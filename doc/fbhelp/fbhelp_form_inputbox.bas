@@ -1,5 +1,5 @@
 ''  fbhelp - FreeBASIC help viewer
-''  Copyright (C) 2006-2017 Jeffery R. Marshall (coder[at]execulink.com)
+''  Copyright (C) 2006-2018 Jeffery R. Marshall (coder[at]execulink.com)
 
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -45,6 +45,23 @@ private function Inputbox_Handler _
 end function
 
 '':::::
+
+#if __FB_GCC__
+
+public function InputBox_show cdecl _
+	( _
+		byref result as string, _
+		byval text as zstring ptr, _
+		byval title as zstring ptr, _
+		byval count as integer, _
+		byval btn1 as zstring ptr = NULL, _
+		byval btn2 as zstring ptr = NULL, _
+		byval btn3 as zstring ptr = NULL, _
+		byval btn4 as zstring ptr = NULL _
+	) as integer
+
+#else
+
 public function InputBox_show cdecl _
 	( _
 		byref result as string, _
@@ -53,6 +70,8 @@ public function InputBox_show cdecl _
 		byval count as integer, _
 		... _
 	) as integer
+
+#endif
 
 	dim as string k
 	dim as integer mx,my,mz,mb
@@ -99,15 +118,23 @@ public function InputBox_show cdecl _
 	Forms_Add_Control @frm, cast( control_t ptr, @edit )
 
 	xoffset = ((w - 2) - (count * 10) - ((count - 1) * 5)) \ 2
+	#if not __FB_GCC__
 	arg = va_first
+	#endif
 	for i = 1 to count
 		Control_Set @frm, @btn(i).ctl, x + xoffset + (i - 1) * 15, y + h - 3, 10, 1, DEFAULT_FORECOLOR, DEFAULT_BACKCOLOR, CONTROL_FLAG_REDRAW or CONTROL_FLAG_VISIBLE, i
 		with btn(i)
 			.ctl.handler = @Button_Default_Handler
+			#if not __FB_GCC__
 			.text = *va_arg( arg, zstring ptr )
+			#else
+			.text = *iif( i=1, btn1, iif( i=2, btn2, iif( i=3, btn3, iif(i=4, btn4, NULL))))
+			#endif
 		end with
 		Forms_Add_Control @frm, cast( control_t ptr, @btn(i) )
+		#if not __FB_GCC__
 		arg = va_next( arg, zstring ptr )
+		#endif
 	next i
 
 
@@ -129,17 +156,6 @@ public function InputBox_show cdecl _
 	do
 
 		Forms_Draw( @frm, FALSE )
-
-		'' FIXME: Should be part of Forms_draw
-		if( CtlNeedUpdate( @edit ) ) then
-			EditBox_Update( @edit )
-		end if
-
-		for i = 1 to count
-			if( CtlNeedUpdate( @btn(i) ) ) then
-				Button_Update( @btn(i) )
-			end if
-		next i
 
 		if( Screen_MouseInstalled() <> FALSE ) then
 			Screen_GetMouse( mx, my, mz, mb )

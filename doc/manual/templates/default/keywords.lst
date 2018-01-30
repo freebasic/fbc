@@ -45,7 +45,6 @@ Base
 Bit
 BitReset
 BitSet
-Base
 Beep
 Bin
 Binary
@@ -124,13 +123,11 @@ DefDbl
 defined
 DefInt
 DefLng
-DefLngInt
 DefShort
 DefSng
 DefStr
 DefUByte
 DefUInt
-DefULngInt
 DefLongInt
 DefUShort
 Delete
@@ -235,8 +232,6 @@ Is
 IsRedirected
 IsDate
 Kill
-LoByte
-LoWord
 LBound
 LCase
 Left
@@ -322,15 +317,12 @@ Palette
 pascal
 PCopy
 Peek
-PeekI
-PeekS
 Pipe
 PMap
 Point
+PointCoord
 Pointer
 Poke
-PokeI
-PokeS
 Pos
 Preserve
 PReset

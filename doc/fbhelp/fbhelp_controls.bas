@@ -1,5 +1,5 @@
 ''  fbhelp - FreeBASIC help viewer
-''  Copyright (C) 2006-2017 Jeffery R. Marshall (coder[at]execulink.com)
+''  Copyright (C) 2006-2018 Jeffery R. Marshall (coder[at]execulink.com)
 
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -213,7 +213,15 @@ public function Forms_Draw _
 			end if
 		end if
 	next i
-	
+
+	msg.id = MSG_UPDATE
+
+	for i = 1 to frm->nControls
+		if( (ctl->flags and (CONTROL_FLAG_UPDATE)) <> 0 ) then
+			ctl->handler( ctl, @msg )
+		end if
+	next i
+		
 	Screen_BlinkCursor()
 
 	return ret

@@ -1,0 +1,172 @@
+{{fbdoc item="title" value="FBWiki Formatting Codes"}}----
+Describes the formatting codes to be used in this wiki.
+
+This guideline describes the formatting codes that are allowed in the FBWiki.  This is a subset of the markup codes supported by the on-line wikka engine.  Because this wiki is also converted to other formats, like html and plan-text, only a few of markup codes can be used by the ""FreeBASIC"" documentation and manual generators.
+
+In all of the examples following, the markup line with the formatting codes is followed by the output.
+
+{{fbdoc item="section" value="Escaping Text"}}
+	Anything between 2 sets of double-quotes is not formatted.  
+	
+	##""**two bold &#34&#34**&#34&#34 stars**""##
+	**two bold ""**"" stars**
+
+	You can also use double-quote escaping to avoid linking of ""CamelCase"" words
+	
+	##""""WikiWord"" is not parsed as a link""##
+	""WikiWord"" is not parsed as a link
+
+{{fbdoc item="section" value="Text Formatting"}}
+	Examples for **bold**, //italic//, __underline__, ##monospace##, ++strike through++, and centered markup follow:
+	
+	##""**I'm bold**""##
+	**I'm bold**
+	
+	##""//I'm italic text!//""##
+	//I'm italic text!//
+	
+	##""__And I'm underlined!__""##
+	__And I'm underlined!__
+	
+	##""##Monospace text##""##
+	##Monospace text##
+	
+	##""++Strike through text++""##
+	++Strike through text++
+	
+	##""@@Center text@@""##
+	@@Center text@@
+
+{{fbdoc item="section" value="Headers"}}
+	The wiki will recognize markup using two ##=## for the smallest header up to six ##=## for the largest.  The ##fbdoc## manual generator treats all as the same size when converted.
+	
+	##==Header==##
+	==Header==
+	
+	Recommend using ##""{{fbdoc}}""## action for sections and subsections.  See [[FBWikiFbdocAction|fbdoc action]]. page.
+
+{{fbdoc item="section" value="Horizontal Separator"}}
+	Creates a horizontal separator line across the page.
+	
+	##""----""##
+----
+
+	
+{{fbdoc item="section" value="Forced line break"}}
+
+	##""Line 1---Line 2""##
+	Line 1---Line 2
+
+{{fbdoc item="section" value="Indented text"}}
+	You can indent text using a tilde (~) or a tab:
+	
+	##~Indented##
+	##~~Double Indented##
+	##~~~Triple Indented##
+	##~Indented##
+	
+
+~Indented
+~~Double Indented
+~~~Tripple Indented
+~Indented
+
+
+	##Indented (1 tab)##
+		##Double Indented (2 tabs)##
+			##Tripple Indented (3 tabs)##
+	##Indented (1 tab)##
+
+
+	Indented
+		Double Indented
+			Tripple Indented
+	Indented
+
+
+{{fbdoc item="section" value="Images"}}
+	See [[FBWikiGraphics|FBWikiGraphics]] for more information on displaying graphics in the wiki.
+
+{{fbdoc item="section" value="Links"}}
+	On the wiki you can use a ##""WikiName""## to refer to a page directly without any markup, however, in the converted documentation it will just be a normal text.
+	
+		##""FBWikiFormatting""##
+		FBWikiFormatting
+	
+	Add a forced link using the following markup ##""[[pagename|description]]""##:
+	
+		##""[[FBWiki|FreeBASIC Wiki]]""##
+		[[FBWiki|FreeBASIC Wiki]]
+	
+	Use the ##""{{fbdoc}}""## action.  See [[FBWikiFbdocAction|fbdoc action]] for more information.
+	
+	Add a forced link by surrounding an url with ##""[[""## and ##""]]""##
+	
+		##""[[https://www.freebasic.net|FreeBASIC Website]]""##
+		[[https://www.freebasic.net|FreeBASIC Website]]
+	
+	Link to a place on the same page using the ##{{anchor}}## action.  Create an invisible anchor somewhere on the page with:
+	##""{{anchor name="item1"}}""##{{anchor name="item1"}}
+	
+	Then link to that anchor with:
+	##""{{anchor name="item1|Jump to Item #1"}}""##
+	{{anchor name="item1|Jump to Item #1"}}
+
+{{fbdoc item="section" value="Tables"}}
+	The ""{{table}}"" action is recognized by the document generators, using the following format.
+
+	##""{{table columns="5" cellpadding="2" cells="A;B;A and B;A or B;0;0;0;0;0;1;0;1;1;0;0;1;1;1;1;1"}}""##
+	{{table columns="5" cellpadding="2" cells="A;B;A and B;A or B;0;0;0;0;0;1;0;1;1;0;0;1;1;1;1;1"}}
+
+
+{{fbdoc item="section" value="Left and Right Columns of Text"}}
+	To create a left and right columns of text, use two ##<## characters before and after the left block, and use two ##>## characters before and after the right block.
+
+	##""<<""##
+	##""LEFT""##
+	##""LEFT""##
+	##""LEFT""##
+	##""<<>>""##
+	##""RIGHT""##
+	##""RIGHT""##
+	##""RIGHT""##
+	##"">>""##
+
+<<
+LEFT
+LEFT
+LEFT
+<<>>
+RIGHT
+RIGHT
+RIGHT
+>>
+::c::
+	** Note: Use ##""::c::""## to clear left and right columns.**
+
+
+{{fbdoc item="section" value="Code Formatters"}}
+	You can easily embed code blocks in a wiki page using a simple markup. Anything within a code block is displayed literally.  To create a ** generic code block ** you can use the following markup:
+
+	##""%% This is a code block %%""##.
+	%% This is a code block %%
+
+	To create a **code block with syntax highlighting**, you need to specify a // code formatter // (see below for a list of available code formatters)
+
+	##""%%(freebasic)""##
+	##""print "Hello, World!"""##
+	##""%%""##
+
+	%%(freebasic)
+	print "Hello, World!"
+	%%
+
+	The documentation generators will recognize ##"qbasic"##, ##"freebasic"##, and ##"c"##, as valid code formatters.
+
+
+{{fbdoc item="section" value="Embedded HTML"}}
+	You can easily paste HTML in a wiki page by wrapping it into two sets of doublequotes.
+
+	##&#34;&#34;&amp;lt;<br\>&amp;gt;&#34;&#34;##
+	##""&lt;<br \>&gt;""##
+

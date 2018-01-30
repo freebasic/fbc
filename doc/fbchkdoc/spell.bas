@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2018 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -444,11 +444,11 @@ dim as CWikiCache ptr wikicache
 dim as string sPage, sBody
 
 if( manual_dir = "" ) then
-	manual_dir = default_ManualDir
+	manual_dir = def_manual_dir
 end if
 
 if( cache_dir = "" ) then
-	cache_dir = default_CacheDir
+	cache_dir = def_cache_dir
 end if
 print "cache: "; cache_dir
 

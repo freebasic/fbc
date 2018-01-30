@@ -78,6 +78,7 @@ Notice that the parameter is qualified with ##Byref##. This is important since y
 ##Byval##, or //By Value//, on the other hand makes a copy of the parameter, and any changes you make inside the sub or func are local and will not be reflected in the actual variable that was passed. The ##Byval## parameter points to a copy of the variable not the actual variable itself.
 
 The default for ""FreeBASIC"" .17 is to pass parameters using ##Byval##. In order to change a passed parameter, you need to specify the ##Byref## qualifier. In this example, the subroutine updates the the department id of the employee type, so the parameter is qualified as ##Byref## so that the subroutine can update the dept field of the type variable.
+(Editors Note: Byval remains the default in the current version of FreeBASIC (1.05))
 
 On the other hand you may not need to update the type as in the following code fragment.
 
@@ -240,7 +241,7 @@ End Type
 
 For 2 byte alignment you would use ##field = 2##. If no ##field = //property//## is assigned, then the padding will be ##4## bytes. If you are reading a type definition created by ""FreeBASIC"" using the default alignment, then you do not need to use the ##field## property.
 
-{{table columns="1" cellpadding="2" cells=" If you are reading a ""Quick Basic"" type record, then you will need to use ##field = 1##, as QB used byte alignment by default."}}
+If you are reading a "Quick Basic" type record, then you will need to use ##field = 1##, as QB used byte alignment by default.
 
 === Type Initialization ===
 

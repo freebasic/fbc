@@ -1,3 +1,6 @@
+January 28, 2018
+- set version number at 1.00 - it's been at 0.1 long enough
+- copyright updates for 2018
 
 October 25, 2017
 - copyright updates for 2017

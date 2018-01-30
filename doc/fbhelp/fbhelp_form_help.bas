@@ -1,5 +1,5 @@
 ''  fbhelp - FreeBASIC help viewer
-''  Copyright (C) 2006-2017 Jeffery R. Marshall (coder[at]execulink.com)
+''  Copyright (C) 2006-2018 Jeffery R. Marshall (coder[at]execulink.com)
 
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -108,11 +108,6 @@ public sub HelpScreen_Show( byval pexepath as zstring ptr )
 	do
 
 		Forms_Draw( @frm, FALSE )
-
-		'' FIXME: Should be part of Forms_draw
-		if( CtlNeedUpdate( @hlp ) ) then
-			HelpBox_Update( @hlp )
-		end if
 
 		if( Screen_MouseInstalled() <> FALSE ) then
 			Screen_GetMouse( mx, my, mz, mb )

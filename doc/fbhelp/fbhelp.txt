@@ -1,5 +1,5 @@
-  fbhelp - FreeBASIC help viewer v0.8b
-  Copyright (C) 2006-2017 Jeffery R. Marshall (coder[at]execulink.com)
+  fbhelp - FreeBASIC help viewer version 1.00
+  Copyright (C) 2006-2018 Jeffery R. Marshall (coder[at]execulink.com)
 
 
 License:
@@ -69,7 +69,8 @@ Running:
   The command line options must use "-" as the prefix in the linux 
   version.
 
-  Both the dos version and the windows version will run in a dos window.
+  Both the dos version and the windows version will run in a dos window
+  in older windows, otherwise, must use the windows version.
 
   Only the dos version will run under dos and requires CWSDMPI.EXE or
   other DPMI to be available.
@@ -141,10 +142,10 @@ Usage:
 Compiling:
 
   o Requirements:
-      - fbhelp sources ( http://fbc.svn.sourceforge.net/svnroot/fbc/trunk/fbdocs/fbdoc )
+      - fbhelp sources ( https://github.com/freebasic/fbc/tree/master/doc/fbhelp )
       - if fbhelp sources are not available from the website, please contact
         Jeff Marshall ( coder[at]execulink[dot]com )
-      - FreeBASIC version 0.17b or later ( http://www.freebasic.net/ )
+      - FreeBASIC version 0.17b or later ( https://www.freebasic.net/ )
       - zlib libraries ( http://www.zlib.net/ )
 
   o Making:
