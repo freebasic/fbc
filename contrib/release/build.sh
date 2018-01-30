@@ -34,17 +34,24 @@
 #       the FB makefile's uname check in order to build for 64bit instead of
 #       32bit.
 #
+# <fbc-commit-id>
+#   can be:
+#       - a SHA-1 hash to refer to a specific commit
+#       - a branch or tag name in origin remote
+#       - a remote branch or tag name, must specify "remote-name/branch".
+#
 # --offline
 #   when given, build.sh will stop with exit code 1 if the file is not already in
-#   in the download cache
+#   in the download cache.
 #
 # --repo url
 #   specify an additional repo url to fetch in to the local repo other than the 
-#   official https://github.com/freebasic/fbc.git repo
+#   official https://github.com/freebasic/fbc.git repo.
 #
 # --remote name
-#   specify the remote name to use when referring to the other repo url
-#   default is 'other'
+#   specifies the remote name to add and use when referring to the other repo url.
+#   remote name will default to 'other' if the --repo option was given.
+#   remote name will default to 'origin' if the --repo option was not given.
 #
 # Requirements:
 #   - MSYS environment on Windows with: bash, wget/curl, zip, unzip, patch, make, findutils
@@ -156,7 +163,7 @@ if [ ! -z "$repo_url" ]; then
 	git fetch "$remote_name"
 	git fetch --tags "$remote_name"
 	git remote prune "$remote_name"
-	git reset --hard "$remote_name"/"$fbccommit"
+	git reset --hard "$fbccommit"
 fi
 
 cd ../..
@@ -341,7 +348,7 @@ linux*)
 
 	# fbc sources
 	cp -R ../input/fbc .
-	cd fbc && git reset --hard "$remote_name"/"$fbccommit" && cd ..
+	cd fbc && git reset --hard "$fbccommit" && cd ..
 
 	mkdir tempinstall
 	;;
@@ -353,7 +360,7 @@ linux*)
 
 	# fbc sources
 	cp -R ../input/fbc fbc
-	cd fbc && git reset --hard "$remote_name"/"$fbccommit" && cd ..
+	cd fbc && git reset --hard "$fbccommit" && cd ..
 	echo "prefix := `pwd -W`" > fbc/config.mk
 
 	# On 64bit, we have to override the FB makefile's uname check, because MSYS uname reports 32bit still
