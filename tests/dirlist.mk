@@ -11,6 +11,7 @@ comments \
 compound \
 console \
 const \
+cpp \
 crt \
 data \
 datetime \
