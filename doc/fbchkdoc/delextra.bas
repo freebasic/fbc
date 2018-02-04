@@ -31,8 +31,12 @@
 using fb
 using fbdoc
 
+const def_index_file = hardcoded.default_index_file
+
 dim shared pagehash as HASH
 dim shared filehash as HASH
+
+'' --------------------------------------------------------
 
 ''
 function ReadIndex( byref f as string ) as integer
@@ -84,15 +88,41 @@ sub DeleteExtraFiles _
 
 end sub
 
-
 '' --------------------------------------------------------
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string cache_dir, def_cache_dir, web_cache_dir, dev_cache_dir
-dim as integer i = 1, isgit = FALSE, nodelete = FALSE
+'' from cmd_opts.bas
+extern cmd_opt_help as boolean
+extern cache_dir as string
 
-if( command(i) = "" ) then
+'' private options
+dim isgit as boolean = false
+dim nodelete as boolean = false
+
+'' enable cache
+cmd_opts_init( CMD_OPTS_ENABLE_CACHE )
+
+dim i as integer = 1
+while( command(i) > "" )
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
+		select case lcase(command(i))
+		case "-git"
+			isgit = TRUE
+		case "-n"
+			nodelete = TRUE
+		case else
+			cmd_opts_unrecognized_die( i )
+		end select
+	else
+		cmd_opts_unexpected_die( i )
+	end if
+	i += 1
+wend	
+
+if( cmd_opt_help ) then
 	print "delextra [options]"
 	print
 	print "   -n         only print what would happen but don't"
@@ -106,50 +136,11 @@ if( command(i) = "" ) then
 	end 0
 end if
 
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		delete opts
-	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		def_cache_dir = default_CacheDir
-		web_cache_dir = default_web_CacheDir
-		dev_cache_dir = default_dev_CacheDir
-	end if
-end scope
+cmd_opts_resolve()
+cmd_opts_check()
 
-while( command(i) > "" )
-	if( left(command(i), 1) = "-" ) then
-		select case lcase(command(i))
-		case "-web", "-dev"
-			cache_dir = def_cache_dir
-		case "-web+"
-			cache_dir = web_cache_dir
-		case "-dev+"
-			cache_dir = dev_cache_dir
-		case "-git"
-			isgit = TRUE
-		case "-n"
-			nodelete = TRUE
-		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
-		end select
-	else
-		print "Unexpected option '" + command(i) + "'"
-		end 1
-	end if
-	i += 1
-wend
+'' --------------------------------------------------------
 
-if( cache_dir = "" ) then
-	cache_dir = def_cache_dir
-end if
 print "cache: "; cache_dir
 
 print "Reading '" + def_index_file + "' ..."

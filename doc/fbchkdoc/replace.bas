@@ -28,9 +28,14 @@
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
+#include once "funcs.bi"
 
 using fb
 using fbdoc
+
+const def_index_file = hardcoded.default_index_file
+
+'' --------------------------------------------------------
 
 '':::::
 function xxReplaceSubStr _
@@ -94,83 +99,27 @@ end sub
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string wiki_url, cache_dir
-dim as string web_wiki_url, dev_wiki_url
-dim as string def_cache_dir, web_cache_dir, dev_cache_dir
+'' from cmd_opts.bas
+extern cmd_opt_help as boolean
+extern wiki_url as string
+extern cache_dir as string
 
-type replace_t
-	sName as string
-	sOld as string
-	sNew as string
-end type
+'' private options
+dim f as string
+dim sComment as string
+dim bNoSave as boolean = false
+dim bHTML as boolean = false
+dim bProcess as boolean = true
 
-dim replace(1 to 1000) as replace_t
-dim count as integer = 0
-dim as string sComment, f
-dim as string sName, sOld, sNew, x, text, newtext
-dim as integer h, i = 1, bNoSave = FALSE, bHTML = FALSE, bProcess = TRUE
+'' enable cache
+cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_AUTOCACHE )
 
-if( command(i) = "" ) then
-	print "replace [-f] file.txt [-c comment] [-n] [-r] [-s] [options...]"
-	print
-	print "   -f file.txt  specifies a file in the following format:"
-	print "                    page,oldtext,newtext"
-	print
-	print "   -c comment   specifies the comment"
-	print "   -s           skip processing"
-	print "   -n           don't save the changes."
-	print "   -r           create html page with clone and delete links"
-	print
-	print "   -web         replace files in cache_dir"
-	print "   -web+        replace files in web cache_dir"
-	print "   -dev         replace files in cache_dir"
-	print "   -dev+        replace files in dev cache_dir"
-	print
-	print "   automatically writes 'changed.txt' with a list of changed page names"
-	print "   (i.e. can then use 'putpage web @changed.txt')"
-	end 0
-end if
-
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		web_wiki_url = opts->Get( "web_wiki_url" )
-		dev_wiki_url = opts->Get( "dev_wiki_url" )
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		delete opts
-	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		def_cache_dir = default_CacheDir
-		web_cache_dir = default_web_CacheDir
-		dev_cache_dir = default_dev_CacheDir
-	end if
-end scope
-
+dim i as integer = 1
 while( command(i) > "" )
-	if( left(command(i), 1) = "-" ) then
-
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
 		select case lcase(command(i))
-		case "-web"
-			wiki_url = web_wiki_url
-			cache_dir = def_cache_dir
-		case "-dev"
-			wiki_url = dev_wiki_url
-			cache_dir = def_cache_dir
-		case "-web+"
-			wiki_url = web_wiki_url
-			cache_dir = web_cache_dir
-		case "-dev+"
-			wiki_url = dev_wiki_url
-			cache_dir = dev_cache_dir
-		case "-url"
-			i+= 1
-			wiki_url = command(i)
-			cache_dir = def_cache_dir
-
 		case "-c"
 			i += 1
 			sComment = command(i)
@@ -189,31 +138,66 @@ while( command(i) > "" )
 			bHTML = TRUE
 
 		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
-
+			cmd_opts_unrecognized_die( i )
 		end select
-
 	else
 		f = command(i)
-
 	end if
-
 	i += 1
 wend
 
+if( cmd_opt_help ) then
+	print "replace [-f] file.txt [-c comment] [-n] [-r] [-s] [options...]"
+	print
+	print "   -f file.txt  specifies a file in the following format:"
+	print "                    page,oldtext,newtext"
+	print
+	print "   -c comment   specifies the comment"
+	print "   -s           skip processing"
+	print "   -n           don't save the changes."
+	print "   -r           create html page with clone and delete links"
+	print
+	print "   -web         replace files in cache_dir"
+	print "   -web+        replace files in web cache_dir"
+	print "   -dev         replace files in cache_dir"
+	print "   -dev+        replace files in dev cache_dir"
+	print
+	print "   automatically writes 'changed.txt' with a list of changed page names"
+	print "   (i.e. can then use 'putpage -web @changed.txt')"
+	end 0
+end if
+
+cmd_opts_resolve()
+
 if f = "" then
 	print "filename not specified"
+end if
+
+if( cache_dir = "" ) then
+	cmd_opts_die( "no cache directory specified" )
 end if
 
 '' generating HTML?
 if( bHTML ) then
 	'' URL must be set
 	if( len( wiki_url ) = 0 ) then
-		print "wiki_url not set."
-		end 1
+		cmd_opts_die( "wiki_url not set." )
 	end if
 end if
+
+
+'' --------------------------------------------------------
+
+type replace_t
+	sName as string
+	sOld as string
+	sNew as string
+end type
+
+dim replace(1 to 1000) as replace_t
+dim count as integer = 0
+dim as string sName, sOld, sNew, x, text, newtext
+dim as integer h
 
 if( open( f for input as #2 ) <> 0 ) then
 	print "Unable to open '"; f; "'"
@@ -239,9 +223,6 @@ if( bProcess ) then
 		kill "changed.txt"
 	end if
 
-	if( cache_dir = "" ) then
-		cache_dir = def_cache_dir
-	end if
 	print "cache: "; cache_dir
 
 	if( open( def_index_file for input as #1 ) <> 0 ) then

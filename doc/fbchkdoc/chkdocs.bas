@@ -105,9 +105,11 @@ type TempInfo_t
 	extra as string
 end type
 
-dim shared cache_dir as string
+'' from cmd_opts.bas
+extern cache_dir as string
+extern image_dir as string
 
-const PageIndex_File = def_index_file
+const PageIndex_File = hardcoded.default_index_file
 const DocPages_File = "DocPages.txt"
 const LinkList_File = "linklist.csv"
 const FixList_File = "fixlist.txt"
@@ -1582,10 +1584,9 @@ end sub
 '' MAIN
 '' --------------------------------------------------------
 
-dim i as integer = 1
-dim as string def_cache_dir, web_cache_dir, dev_cache_dir, image_dir
-
 enum OPTIONS
+	OPT_NONE = 0
+
 	OPT_MISSING_PAGES = 1
 	OPT_FULL_INDEX = 2
 	OPT_FUNCT_INDEX = 4
@@ -1633,9 +1634,76 @@ enum OPTIONS
 
 end enum
 
-dim opt as OPTIONS
+'' froms cmd_opts.bas
+extern cmd_opt_help as boolean
 
-if command(i) = "" then
+'' private options
+dim opt as OPTIONS = OPT_NONE
+
+'' enable cache
+cmd_opts_init( CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_IMAGE or CMD_OPTS_ENABLE_AUTOCACHE )
+
+dim i as integer = 1
+while( command(i) > "" )
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
+		cmd_opts_unrecognized_die( i )
+	else
+		select case lcase(command(i))
+		case "z"
+			opt or= OPT_LOAD_FROM_FILE
+
+		case "e"
+			opt or= OPT_ALL
+			opt or= OPT_TIMER_LOG
+
+		case "a"
+			opt or= OPT_ALL_LINKS
+			opt or= OPT_TIMER_LOG
+		case "m"
+			opt or= OPT_MISSING_PAGES
+		case "full"
+			opt or= OPT_FULL_INDEX
+		case "func"
+			opt or= OPT_FUNCT_INDEX
+		case "ops"
+			opt or= OPT_OPS_INDEX
+		case "n"
+			opt or= OPT_LINK_NAME_CASE
+		case "b"
+			opt or= OPT_MISSING_BACKLINK
+		case "k"
+			opt or= OPT_INVALID_BACKLINK
+		case "q"
+			opt or= OPT_NO_BACKLINK
+		case "c"
+			opt or= OPT_NOT_LINKED
+		case "p"
+			opt or= OPT_PRINT_TOC
+		case "d"
+			opt or= OPT_NO_TITLE
+
+		case "t"
+			opt or= OPT_ALL_TOKEN
+			opt or= OPT_TIMER_LOG
+		case "h"
+			opt or= OPT_HEADERS
+		case "f"
+			opt or= OPT_DUP_FILE_NAME
+		case "i"
+			opt or= OPT_IMAGES
+		case "tc"
+			opt or= OPT_TOKEN_COUNTS
+
+		case else
+			print "option '"; command(i); "' ignored"
+		end select
+	end if
+	i += 1
+wend	
+
+if( cmd_opt_help ) then
 	print "chkdocs [options]"
 	print
 	print "options:"
@@ -1670,104 +1738,20 @@ if command(i) = "" then
 	end 0
 end if
 
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		image_dir = opts->Get( "image_dir", default_image_dir )
-		delete opts
-	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		def_cache_dir = default_CacheDir
-		web_cache_dir = default_web_CacheDir
-		dev_cache_dir = default_dev_CacheDir
-		image_dir = default_image_dir
-	end if
-end scope
-
-opt = 0
-
-while command(i) > ""
-	
-	select case lcase(command(i))
-	case "-web", "-dev"
-		cache_dir = def_cache_dir
-	case "-web+"
-		cache_dir = web_cache_dir
-	case "-dev+"
-		cache_dir = dev_cache_dir
-
-	case "z"
-		opt or= OPT_LOAD_FROM_FILE
-
-	case "e"
-		opt or= OPT_ALL
-		opt or= OPT_TIMER_LOG
-
-	case "a"
-		opt or= OPT_ALL_LINKS
-		opt or= OPT_TIMER_LOG
-	case "m"
-		opt or= OPT_MISSING_PAGES
-	case "full"
-		opt or= OPT_FULL_INDEX
-	case "func"
-		opt or= OPT_FUNCT_INDEX
-	case "ops"
-		opt or= OPT_OPS_INDEX
-	case "n"
-		opt or= OPT_LINK_NAME_CASE
-	case "b"
-		opt or= OPT_MISSING_BACKLINK
-	case "k"
-		opt or= OPT_INVALID_BACKLINK
-	case "q"
-		opt or= OPT_NO_BACKLINK
-	case "c"
-		opt or= OPT_NOT_LINKED
-	case "p"
-		opt or= OPT_PRINT_TOC
-	case "d"
-		opt or= OPT_NO_TITLE
-
-	case "t"
-		opt or= OPT_ALL_TOKEN
-		opt or= OPT_TIMER_LOG
-	case "h"
-		opt or= OPT_HEADERS
-	case "f"
-		opt or= OPT_DUP_FILE_NAME
-	case "i"
-		opt or= OPT_IMAGES
-	case "tc"
-		opt or= OPT_TOKEN_COUNTS
-
-	case else
-		print "option '"; command(i); "' ignored"
-	end select
-
-	i += 1
-
-wend
+cmd_opts_resolve()
+cmd_opts_check()
 
 if( (opt and OPT_ALL) = 0 ) then
 	print "No options specified"
 	end 1
 end if
 
+'' --------------------------------------------------------
+
 Timer_Begin()
 
 logopen()
-
 logprint "chkdocs: " + format( now(), "yyyy/mm/dd hh:mm:ss" )
-
-if( cache_dir = "" ) then
-	cache_dir = def_cache_dir
-end if
 logprint "cache: " & cache_dir
 logprint
 

@@ -50,6 +50,8 @@ dim shared CurrentPage as string
 dim shared haveTitle as integer
 dim shared counter as integer
 
+'' --------------------------------------------------------
+
 ''
 function IsKeyword( byref word as string ) as integer
 	dim kw as string
@@ -349,15 +351,30 @@ end function
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string manual_dir, def_manual_dir
-dim as string cache_dir, def_cache_dir
-dim as string web_cache_dir, dev_cache_dir
+'' from cmd_opts.bas
+extern cmd_opt_help as boolean
+extern cache_dir as string
+extern manual_dir as string
+extern webPageCount as integer
+extern webPageList() as string
+extern webCommentList() as string
 
-dim as integer i = 1, webPageCount = 0
-redim webPageList(1 to 1) as string
-dim as string cmt
+'' enable url and cache
+cmd_opts_init( CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_AUTOCACHE or CMD_OPTS_ENABLE_MANUAL )
 
-if( command(i) = "" ) then
+dim i as integer = 1
+while( command(i) > "" )
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
+		cmd_opts_unrecognized_die( i )
+	else
+		cmd_opts_unexpected_die( i )
+	end if
+	i += 1
+wend	
+
+if( cmd_opt_help ) then
 	print "spell [pages] [@pagelist] [options]"
 	print
 	print "   pages      list of wiki pages on the command line"
@@ -370,87 +387,19 @@ if( command(i) = "" ) then
 	end 0
 end if
 
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		def_manual_dir = opts->Get( "manual_dir", default_ManualDir )
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		delete opts
-	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		def_manual_dir = default_ManualDir
-		def_cache_dir = default_CacheDir
-		web_cache_dir = default_web_CacheDir
-		dev_cache_dir = default_dev_CacheDir
-	end if
-end scope
+cmd_opts_resolve()
+cmd_opts_check()
 
-while command(i) > ""
-	if( left(command(i), 1) = "-" ) then
-		select case lcase(command(i))
-		case "-web", "-dev"
-			cache_dir = def_cache_dir
-		case "-web+"
-			cache_dir = web_cache_dir
-		case "-dev+"
-			cache_dir = dev_cache_dir
-		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
-		end select
-	else
-		if left( command(i), 1) = "@" then
-			scope
-				dim h as integer, x as string
-				h = freefile
-				if open( mid(command(i),2) for input access read as #h ) <> 0 then
-					print "Error reading '" + command(i) + "'"
-				else
-					while eof(h) = 0
-						line input #h, x
-						x = ParsePageName( x, cmt )
-						if( x > "" ) then 
-							webPageCount += 1
-							if( webPageCount > ubound(webPageList) ) then
-								redim preserve webPageList(1 to Ubound(webPageList) * 2)
-							end if
-							webPageList(webPageCount) = x
-						end if
-					wend
-					close #h
-				end if
-			end scope
-		else
-			webPageCount += 1
-			if( webPageCount > ubound(webPageList) ) then
-				redim preserve webPageList(1 to Ubound(webPageList) * 2)
-			end if
-			webPageList(webPageCount) = command(i)		
-		end if
-	end if
-	i += 1
-wend
-
+'' no pages? nothing to do...
 if( webPageCount = 0 ) then
 	print "no pages specified."
 	end 1
 end if
 
+'' --------------------------------------------------------
+
 dim as CWikiCache ptr wikicache
 dim as string sPage, sBody
-
-if( manual_dir = "" ) then
-	manual_dir = def_manual_dir
-end if
-
-if( cache_dir = "" ) then
-	cache_dir = def_cache_dir
-end if
-print "cache: "; cache_dir
 
 '' Initialize the cache
 wikicache = new CWikiCache( cache_dir, CWikiCache.CACHE_REFRESH_NONE )

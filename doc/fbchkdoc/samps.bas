@@ -769,6 +769,7 @@ function cmd_addlang_proc() as integer
 
 end function
 
+
 '' ==========
 '' MAIN
 '' ==========
@@ -781,16 +782,17 @@ sample_dir = "examples/manual/"
 
 '' read defaults from the configuration file (if it exists)
 scope
-	dim as COptions ptr opts = new COptions( default_optFile )
+	'' !!! FIXME !!! - this should use cmd_opts.bas
+	dim as COptions ptr opts = new COptions( hardcoded.default_ini_file )
 	if( opts <> NULL ) then
-		manual_dir = opts->Get( "manual_dir", default_ManualDir )
-		wiki_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		base_dir = opts->Get( "fb_dir", default_fb_dir )
+		manual_dir = opts->Get( "manual_dir", hardcoded.default_manual_dir )
+		wiki_cache_dir = opts->Get( "cache_dir", hardcoded.default_def_cache_dir )
+		base_dir = opts->Get( "fb_dir", hardcoded.default_fb_dir )
 		delete opts
 	else
-		manual_dir = default_ManualDir
-		wiki_cache_dir = default_CacheDir
-		base_dir = default_fb_dir
+		manual_dir = hardcoded.default_manual_dir
+		wiki_cache_dir = hardcoded.default_def_cache_dir
+		base_dir = hardcoded.default_fb_dir
 	end if
 end scope
 

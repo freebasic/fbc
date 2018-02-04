@@ -38,16 +38,14 @@
 using fb
 using fbdoc
 
-
-'' --------------------------------------------------------
-'' MAIN
-'' --------------------------------------------------------
-
+'' private options
 dim shared as CWikiCache ptr wikicache
 dim shared opt_with_tut_pages as boolean = false
 dim shared opt_with_dev_pages as boolean = false
 
 declare sub MakeTOC( byval h as integer, byref sPage as string, byval baselevel as integer )
+
+'' --------------------------------------------------------
 
 ''
 sub WriteText( byval h as integer, byref sOut as string, byval break as integer, byval indent as integer )
@@ -287,12 +285,36 @@ sub MakeTOC( byval h as integer, byref sPage as string, byval baselevel as integ
 
 end sub
 
+'' --------------------------------------------------------
 '' MAIN
+'' --------------------------------------------------------
 
-dim as string cache_dir, def_cache_dir, web_cache_dir, dev_cache_dir
-dim as integer i = 1, h
+'' from cmd_opts.bas
+extern cmd_opt_help as boolean
+extern cache_dir as string
 
-if( command(i) = "" ) then
+cmd_opts_init( CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_AUTOCACHE )
+
+dim i as integer = 1
+while( command(i) > "" )
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
+		select case lcase(command(i))
+		case "-with-tut-pages"
+			opt_with_tut_pages = true
+		case "-with-dev-pages"
+			opt_with_dev_pages = true
+		case else
+			cmd_opts_unrecognized_die( i )
+		end select
+	else
+		cmd_opts_unexpected_die( i )
+	end if
+	i += 1
+wend	
+
+if( cmd_opt_help ) then
 	print "mkprntoc [options]"
 	print
 	print "   -web       use files in cache_dir"
@@ -304,53 +326,15 @@ if( command(i) = "" ) then
 	end 0
 end if
 
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		delete opts
-	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		def_cache_dir = default_CacheDir
-		web_cache_dir = default_web_CacheDir
-		dev_cache_dir = default_dev_CacheDir
-	end if
-end scope
+cmd_opts_resolve()
+cmd_opts_check()
 
-while( command(i) > "" )
-	if( left(command(i), 1) = "-" ) then
-		select case lcase(command(i))
-		case "-web", "-dev"
-			cache_dir = def_cache_dir
-		case "-web+"
-			cache_dir = web_cache_dir
-		case "-dev+"
-			cache_dir = dev_cache_dir
-		case "-with-tut-pages"
-			opt_with_tut_pages = true
-		case "-with-dev-pages"
-			opt_with_dev_pages = true
-		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
-		end select
-	else
-		print "Unexpected option '" + command(i) + "'"
-		end 1
-	end if
-	i += 1
-wend
-
-if( cache_dir = "" ) then
-	cache_dir = default_CacheDir
-end if
-print "cache: "; cache_dir
+'' --------------------------------------------------------
 
 dim as string sPage, sBody
+dim as integer h
+
+print "cache: "; cache_dir
 
 '' Initialize the cache
 wikicache = new CWikiCache( cache_dir, CWikiCache.CACHE_REFRESH_NONE )

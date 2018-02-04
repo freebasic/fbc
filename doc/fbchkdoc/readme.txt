@@ -49,7 +49,7 @@ Table of Contents:
        5.4 Name case fixups
        5.5 Update PrintToc
        5.6 Sychronizing Wiki Samples
-       5.7 Synchronizing Wiki with SVN
+       5.7 Synchronizing Wiki with GIT repo
     6. Authors
     7. Notes
 
@@ -84,13 +84,16 @@ issue.
    ============
 
     Because these tools are so specific to FreeBASIC and its wiki, there is
-no binary package.  Checkout /fbc/trunk/fbdocs from sourceforge.net to get 
+no binary package.  Checkout https:/www.github.com/freebasic/fbc to get 
 all the sources needed. Required to build and run are: FreeBASIC, curl, pcre, 
 fbdoc (found in ../fbdoc), ASpell, make, and probably a few other libs or 
 commands.
 
     The utilities use relative paths by default.  Always run the utilities
-so that ./fbchkdoc is the current working directory.
+so that ./fbchkdoc is the current working directory.  However, if you
+correctly set-up a fbchkdoc.ini file, the exes can be located anywhere, and
+you can use the current directory, which contatins fbchkdoc.ini as the
+working directory.
 
 
 2. Compiling
@@ -110,53 +113,84 @@ they can be specified in the fbchkdoc.ini configuration file.
 
     Copy fbchkdoc.org to fbchkdoc.ini.  fbchkdoc.org is a template for the 
 configuration settings file.  fbchkdoc.ini may contain user names and 
-passwords and to avoid having it committed to SVN by accident, it has a 
-different name. A description of the options in this file are below:
+passwords and to avoid having it committed to GIT or SVN by accident, it has
+a different name.  Alternatively, you can use your own ini file by passing
+the '-ini FILE' command line option to any of the tools.
+
+
+    A description of the options in this file are below:
 
     manual_dir
         normally '../manual'.  Relative to this directory, there needs to
-        be a few other sub directoried and files, like templates and html.
+        be a few other sub directories and files, like templates and html.
+        Set or override this option from the command line using the
+        '-manual_dir DIR' command line option.
 
     cache_dir
         normally '../manual/cache'.  This is where the wakka source files are
-        stored and modified.
+        stored and modified.  This cache directory is selected when the
+        '-web' or '-dev' command line option is given.  Set or override this
+        option from the command line using the '-cache DIR' command line
+        option.
 
-	web_cache_dir    
+    web_cache_dir    
         also for storing wakka files.  Typically an extra copy of cache_dir.
         Not used by any of these tools, but useful for comparing one snapshot
         of the wiki with another.  For example, after making changes to
-        cache_dir, changes (diff) can be inspected.  Though not needed as
-        much since wakka files are also stored in SVN.
+        cache_dir, changes (diff) can be inspected.  If working with a git
+        repository then can also perform a diff with another commit.  This
+        cache directory is selected when the '-web+' command line option is
+        given.  Set or override this option from the command line using the
+        '-cache DIR' command line option.
 
     dev_cache_dir    
         like web_cache_dir, excect a duplicate of the off-line server's wiki.
+        This cache directory is selected when the '-dev+' command line option
+        is given.  Set or override this option from the command line using
+        the '-cache DIR' command line option.
 
     image_dir
-        location of the images (used in the wiki)
+        location of the images (used in the wiki).  Set or override this
+        option with the '-image_dir DIR' command line option.
 
     fb_dir
         top-level FreeBASIC directory
 
     web_wiki_url
-        the location of the on-line wiki.
+        the location of the on-line wiki.  This url is selected when the
+        '-web' or '-web+' command line option is given.  Set or override 
+        this url with the '-url URL' command line option'
 
     web_username, web_password
         the username and password for the on-line wiki.  These options are 
-        only if writing (saving files) to the on-line wiki.
+        only if writing (saving files) to the on-line wiki.  This user
+        name and password selected when the '-web' or '-web+' command line
+        option is given.  Set or override these options with 
+        '-u USER -p PASS' command line options.
 
     dev_wiki_url
         the location of the secondary "off-line" duplicate wiki.  This url
         is required only if there is a secondary wiki that can be used.
+        This url is selected when the '-dev' or '-dev+' command line options
+        are given.  Set or override this url with the '-url URL' command
+        line option
 
     web_cert_file
-        path and file name to the certificate for web url
+        path and file name to the certificate for web url.  Selected when the
+        '-web' or '-web+' command line option given.  Set or override this
+        option with the '-certificate FILE' command line option.
 
     dev_cert_file
-        path and file name to the certificate for dev url
+        path and file name to the certificate for dev url.  Selected when the
+        '-dev' or '-dev+' command line option given.  Set or override this
+        option with the '-certificate FILE' command line option.
 
     dev_username, dev_password
         the username and password for the off-line wiki.  These options are 
-        only if writing (saving files) to the off-line wiki.
+        only if writing (saving files) to the off-line wiki.  This user
+        name and password selected when the '-dev' or '-dev+' command line
+        option is given.  Set or override these options with 
+        '-u USER -p PASS' command line options.
 
 
     Why all the extra directories and extra wiki, you ask? I have all these 
@@ -397,15 +431,15 @@ formats).
 
     Typical usage:
         $ ./getindex -web
-        $ ./delextra -web -svn
+        $ ./delextra -web -git
 
     This utility will delete (or remove) the extra *.wakka files in the cache 
 directory not present in the PageIndex for the wiki.  Type './delextra' 
 without any command line arguments to see a full list of options.
 
     When pages are deleted from the wiki, old file names will persist in the
-cache directories.  Use this utility to purge deleted wiki pages.  Pass "-svn"
-on the command line to use "svn rm" instead of FreeBASIC's built-in KILL
+cache directories.  Use this utility to purge deleted wiki pages.  Pass "-git"
+on the command line to use "git rm" instead of FreeBASIC's built-in KILL
 statement.
 
 
@@ -521,7 +555,7 @@ this tools set.
 
     Use this sparingly as it takes a *long* time and needlessly taxes the
 server.  If you don't need the most up to date wiki pages, use the snapshot
-in SVN instead
+at https://www.github.com/freebasic/fbc instead
 
 
 5.2 Downloading changed pages since last download
@@ -560,8 +594,8 @@ working set.
     $ ./getpage -dev @list.txt
 
     Then use a diff tool to compare the two sets of files in the cache dir 
-and the web_cache dir.  Of course, if the snap-shot of the wiki in SVN is
-up to date, you can also use SVN diff to query changes.
+and the web_cache dir.  Of course, if the snap-shot of the wiki in GIT is
+up to date, you can also use GIT diff to query changes.
 
 
 5.4 Name case fix-ups
@@ -602,7 +636,7 @@ examples/manual/samples.bas program can be used to compile all, or
 a specified directory of sample sources and optionally report an error.
 
     Assuming that PageIndex.txt and the cache directory is up to date, these
-commands will help synchronize the samples with SVN
+commands will help synchronize the samples with GIT
 
     Find out if new samples were added or changed:
     $ ./samps check @PageIndex.txt
@@ -610,10 +644,10 @@ commands will help synchronize the samples with SVN
     Extract them from the cache directory to the sample directory:
     $ ./samps extract @PageIndex.txt
 
-    Note: SVN commands to add files or set properties are not automatically
-    issued, so remember to 'svn add' any new samples.
+    Note: GIT commands to add files or set properties are not automatically
+    issued, so remember to 'git add' any new samples.
 
-    Check for deleted samples, and use 'svn rm' to get rid of them:
+    Check for deleted samples, and use 'git rm' to get rid of them:
     $ ./samps checkex
 
     Most of the time you should assume that the wiki has the most up to date
@@ -626,11 +660,11 @@ commands will help synchronize the samples with SVN
 
 
 
-5.7 Synchronizing Wiki with SVN
-    ---------------------------
+5.7 Synchronizing Wiki with GIT repo
+    --------------------------------
 
     The following is a list of "things to do" if you are going to maintain the
-wiki, SVN, examples, etc, on a regular basis:
+wiki, GIT, examples, etc, on a regular basis:
 
     1) Get the most up to date PageIndex.txt
     $ ./getindex -web
@@ -665,8 +699,8 @@ wiki, SVN, examples, etc, on a regular basis:
     $ ./samps extract @PageIndex.txt
     $ ./samps checkex @PageIndex.txt
 
-    The samps utility will not automatically 'svn add' or 'svn delete' files
-    so be sure to make the appropriate changes to svn.  If no samples were
+    The samps utility will not automatically 'git add' or 'git rm' files
+    so be sure to make the appropriate changes to git.  If no samples were
     added or changed, proceed to step 8.
 
     7) Build and run examples/manual/samples.bas. This should test all of the
@@ -678,9 +712,10 @@ wiki, SVN, examples, etc, on a regular basis:
     8) By this point, the wiki, cache directory, and examples should be in
     good working condition.  Proceed to the fbdoc directory to generate the
     output formats needed.  Once you are satisfied with the results, be sure
-    to commit the cache directory to SVN.
+    to commit the cache directory to GIT.
 
-    9) You are done.  The wiki and examples have been synchronized with SVN.
+    9) You are done.  The wiki and examples have been synchronized with the
+    git repository.
 
 
 6. Authors
@@ -702,7 +737,7 @@ name or format that was convenient and then get in the habit of using it.
 These utilities are a means to an end.  They are intended to help get a
 (sometimes boring) job completed.  They could be totally obsolete should the
 documentation ever move to a different wiki application.  The strategy so far
-has been to do the least amount of work possible and still complete the task
+has been to do the least amount of work possible and still complete the task.
 
     If you make any changes to these sources, please feel free to add your 
 name to the Authors and be sure to update any relevant parts of this file.

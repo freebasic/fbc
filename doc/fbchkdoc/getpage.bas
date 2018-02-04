@@ -36,138 +36,82 @@
 using fb
 using fbdoc
 
-
 '' --------------------------------------------------------
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string web_wiki_url, dev_wiki_url
-dim as string ca_file, web_ca_file, dev_ca_file
-dim as string def_cache_dir, web_cache_dir, dev_cache_dir
+'' from cmd_opts.bas
+extern cmd_opt_help as boolean
+extern wiki_url as string
+extern cache_dir as string
+extern ca_file as string
+extern webPageCount as integer
+extern webPageList() as string
+extern webCommentList() as string
 
-dim as integer i = 1, webPageCount = 0, nfailedpages = 0
-redim webPageList(1 to 1) as string
-redim failedpages(1 to 1) as string
-dim as string wiki_url, cache_dir, cmt
-var allow_retry = true
+'' private options
+dim allow_retry as boolean = true
 
-if( command(i) = "" ) then
-	print "getpage {server} [pages] [@pagelist]"
-	print
-	print "server:"
-	print "   -web       get pages from the web server in to cache_dir"
-	print "   -web+      get pages from the web server in to web_cache_dir"
-	print "   -dev       get pages from the development server in to cache_dir"
-	print "   -dev+      get pages from the development server in to dev_cache_dir"
-	print "   -url URL   get pages from URL"
-	print "   -certificate file"
-	print "              certificate to use to authenticate server (.pem)"
-	print
-	print "options:"
-	print "   pages      list of wiki pages on the command line"
-	print "   @pagelist	 text file with a list of pages, one per line"
-	print "   -auto      don't ask for user input, don't retry failed downloads"
-	print
-	end 1
-end if
+'' enable url and cache
+cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_PAGELIST )
 
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		web_wiki_url = opts->Get( "web_wiki_url" )
-		dev_wiki_url = opts->Get( "dev_wiki_url" )
-		web_ca_file = opts->Get( "web_certificate" )
-		dev_ca_file = opts->Get( "dev_certificate" )
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		delete opts
-	else
-		print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		def_cache_dir = default_CacheDir
-		web_cache_dir = default_web_CacheDir
-		dev_cache_dir = default_dev_CacheDir
-	end if
-end scope
-
-while command(i) > ""
-	if( left( command(i), 1 ) = "-" ) then
+dim i as integer = 1
+while( command(i) > "" )
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
 		select case lcase(command(i))
-		case "-web"
-			wiki_url = web_wiki_url 
-			cache_dir = def_cache_dir
-			ca_file = web_ca_file
-		case "-dev"
-			wiki_url = dev_wiki_url 
-			cache_dir = def_cache_dir
-			ca_file = dev_ca_file
-		case "-web+"
-			wiki_url = web_wiki_url 
-			cache_dir = web_cache_dir 
-			ca_file = web_ca_file
-		case "-dev+"
-			wiki_url = dev_wiki_url 
-			cache_dir = dev_cache_dir
-			ca_file = dev_ca_file
-		case "-url"
-			i += 1
-			wiki_url = command(i)
-			cache_dir = def_cache_dir
-		case "-certificate"
-			i += 1
-			ca_file = command(i)
 		case "-auto"
 			allow_retry = false
 		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
+			cmd_opts_unrecognized_die( i )
 		end select
 	else
-		if left( command(i), 1) = "@" then
-			scope
-				dim h as integer, x as string
-				h = freefile
-				if open( mid(command(i),2) for input access read as #h ) <> 0 then
-					print "Error reading '" + command(i) + "'"
-				else
-					while eof(h) = 0
-						line input #h, x
-						x = ParsePageName( x, cmt )
-						if( x > "" ) then 
-							webPageCount += 1
-							if( webPageCount > ubound(webPageList) ) then
-								redim preserve webPageList(1 to Ubound(webPageList) * 2)
-							end if
-							webPageList(webPageCount) = x
-						end if
-					wend
-					close #h
-				end if
-			end scope
-		else
-			webPageCount += 1
-			if( webPageCount > ubound(webPageList) ) then
-				redim preserve webPageList(1 to Ubound(webPageList) * 2)
-			end if
-			webPageList(webPageCount) = command(i)		
-		end if
+		cmd_opts_unexpected_die( i )
 	end if
 	i += 1
-wend
+wend	
 
-'' URL must be set
-if( len( wiki_url ) = 0 ) then
-	print "wiki_url not set. use -url, -web, -web+, -dev, -dev+"
+if( cmd_opt_help ) then
+	print "getpage {server} [options] [pages] [@pagelist]"
+	print
+	print "{server}:"
+	print "   -web             get pages from the web server in to cache_dir"
+	print "   -web+            get pages from the web server in to web_cache_dir"
+	print "   -dev             get pages from the development server in to cache_dir"
+	print "   -dev+            get pages from the development server in to dev_cache_dir"
+	print "   -url URL         get pages from URL (overrides other options)"
+	print "   -certificate FILE"
+	print "                    certificate to use to authenticate server (.pem)"
+	print "   -cache DIR       override the cache directory location"
+	print
+	print "options:"
+	print "   pages            list of wiki pages on the command line"
+	print "   @pagelist	       text file with a list of pages, one per line"
+	print "   -auto            don't ask for user input, don't retry failed downloads"
+	print
+	print "general options:"
+	print "   -h, -help,       show the help information"
+	print "   -ini file        set ini file name (instead of" & hardcoded.default_ini_file & ")"
+	print "   -print           print active options and quit"
+	print "   -v               be verbose"
+	print
 	end 1
 end if
+
+cmd_opts_resolve()
+cmd_opts_check()
 
 '' no pages? nothing to do...
 if( webPageCount = 0 ) then
 	print "no pages specified."
 	end 1
 end if
+
+'' --------------------------------------------------------
+
+dim as integer nfailedpages = 0
+redim failedpages(1 to 1) as string
 
 '' main loop - has option to retry/list failed pages
 do
