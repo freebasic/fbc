@@ -21,6 +21,7 @@
 
 '' fbdoc headers
 #include once "fbdoc_defs.bi"
+#include once "fbdoc_string.bi"
 #include once "COptions.bi"
 #include once "hash.bi"
 
@@ -39,7 +40,19 @@ dim shared filehash as HASH
 '' --------------------------------------------------------
 
 ''
-function ReadIndex( byref f as string ) as integer
+sub loghtml( byref x as string, byval bNew as integer = FALSE )
+	dim h as integer = freefile
+	if( bNew ) then
+		open "delete.html" for output as #h
+	else
+		open "delete.html" for append as #h
+	end if
+	print #h, x
+	close #h
+end sub
+
+''
+function ReadIndex( byref f as const string ) as boolean
 	dim as string x
 	dim as integer h
 	h = freefile
@@ -59,22 +72,66 @@ function ReadIndex( byref f as string ) as integer
 end function
 
 ''
+function ScanForDeleteMe _
+	( _
+		filename as const string _
+	) as boolean
+
+	dim sBody as string
+	dim chk as string = "!!! DELETE ME !!!"
+
+	sBody = LoadFileAsString( filename )
+	if( left( ucase( ltrim( sBody, any " " & chr(9))), len( chk ) ) = chk ) then
+		function = true
+	else
+		function = false
+	end if
+
+end function
+
+''
 sub DeleteExtraFiles _
 	( _
-		byref path as string, _
-		byval isgit as integer, _
-		byval nodelete as integer _
+		byref path as const string, _
+		byval isgit as boolean, _
+		byval nodelete as boolean, _
+		byval doscan as boolean, _
+		byval bHTML as boolean, _
+		byref wiki_url as const string _
 	)
 
 	dim d as string, i as integer
+	dim remove as boolean
+	dim pagename as string
+
+	if( bHTML ) then
+		loghtml( "", TRUE )
+		loghtml( "<html><body>" )
+	end if
+
 	d = dir( path + "*.wakka" )
 	while( d > "" )
+		
+		pagename = left( d, len(d) - len(".wakka") )
+
 		if( filehash.test( lcase(d) ) = FALSE ) then
+			remove = true
+		elseif( ScanForDeleteMe( path + d ) ) then
+			remove = true
+		else
+			remove = false
+		end if
+
+		if( bHTML and remove ) then
+			loghtml( "<a href=""" + wiki_url + "?wakka=" + pagename + "/delete"">" + pagename + "/delete</a><br>" )
+		end if
+
+		if( remove ) then
 			dim n as string = ReplacePathChar( path + d, asc("/") )
 			if( isgit ) then
 				print "Removing '" + n + "'"
 				if( nodelete = FALSE ) then
-					shell !"git rm \"" + n + !"\""
+					shell !"git -C \"" & path & !"\" rm \"" + n + !"\""
 				end if
 			else
 				print "Deleting '" + path + d + "'"
@@ -83,8 +140,14 @@ sub DeleteExtraFiles _
 				end if
 			end if
 		end if
+
 		d = dir()
 	wend
+
+	if( bHTML ) then
+		loghtml( "" )
+		loghtml( "</body></html>" )
+	end if
 
 end sub
 
@@ -95,13 +158,16 @@ end sub
 '' from cmd_opts.bas
 extern cmd_opt_help as boolean
 extern cache_dir as string
+extern wiki_url as string
 
 '' private options
 dim isgit as boolean = false
 dim nodelete as boolean = false
+dim doscan as boolean = false
+dim bHTML as boolean = false
 
 '' enable cache
-cmd_opts_init( CMD_OPTS_ENABLE_CACHE )
+cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE )
 
 dim i as integer = 1
 while( command(i) > "" )
@@ -109,10 +175,14 @@ while( command(i) > "" )
 		continue while
 	elseif( left( command(i), 1 ) = "-" ) then
 		select case lcase(command(i))
+		case "-scan"
+			doscan = true
+		case "-html"
+			bHTML = true
 		case "-git"
-			isgit = TRUE
+			isgit = true
 		case "-n"
-			nodelete = TRUE
+			nodelete = true
 		case else
 			cmd_opts_unrecognized_die( i )
 		end select
@@ -127,6 +197,8 @@ if( cmd_opt_help ) then
 	print
 	print "   -n         only print what would happen but don't"
 	print "                 actually delete any files"
+	print "   -scan      scan page for !!! DELETE ME !!!"
+	print "   -html      write delete.html helper file"
 	print "   -git       use 'git rm' instead of file system delete"
 	print
 	print "   -web       delete extra files in cache_dir"
@@ -149,4 +221,4 @@ if( ReadIndex( def_index_file ) = FALSE ) then
 	end 1
 end if
 
-DeleteExtraFiles( cache_dir, isgit, nodelete )
+DeleteExtraFiles( cache_dir, isgit, nodelete, doscan, bHTML, wiki_url )
