@@ -1,9 +1,0 @@
-!!! DELETE ME !!!
-
-GD is a graphics library for dynamically manipulating images. It can create GIFs, JPEGs, PNGs, and WBMPs. 
-
-GD can create images composed of lines, arcs, text (using program-selected fonts), other images, and multiple colors. Version 2.0 adds support for truecolor images, alpha channels, resampling (for smooth resizing of truecolor images), and many other features.
-
-{{fbdoc item="see"}}
-- Wikipedia:GD_Graphics_Library
-- [[http://www.libgd.org/|Home page]]
