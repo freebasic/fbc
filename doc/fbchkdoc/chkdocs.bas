@@ -47,63 +47,31 @@ using fbdoc
 enum LINK_FLAGS
 	FLAG_NONE                   = 0
 
-	FLAG_LINK_KEYPG				= 1 shl 0
-	FLAG_LINK_CATPG				= 1 shl 1
-	FLAG_LINK_PROPG				= 1 shl 2
+	FLAG_LINK_KEYPG				= 1 shl 0   '' dest link page begins with 'KeyPg'
+	FLAG_LINK_CATPG				= 1 shl 1   '' dest link page begins with 'CatPg'
+	FLAG_LINK_PROPG				= 1 shl 2   '' dest link page begins with 'ProPg'
+	FLAG_LINK_DEVPG             = 1 shl 3   '' dest link page begins with 'Dev'
 
-	FLAG_LINK_BACK				= 1	shl 3
-	FLAG_LINK_LINK				= 1 shl 4
-	FLAG_LINK_URL				= 1 shl 5
-	FLAG_LINK_KEYWORD			= 1 shl 6
+	FLAG_LINK_BACK				= 1	shl 4   '' dest link is {{fbdoc item="back" value=".."}}
+	FLAG_LINK_LINK				= 1 shl 5   '' dest link is a wiki link specified with [[ ]]
+	FLAG_LINK_URL				= 1 shl 6   '' dest link is an url link specified with [[url]]
+	FLAG_LINK_KEYWORD			= 1 shl 7   '' dest link is {{fbdoc item="keyword" value=".."}}
 
-	FLAG_PAGE_KEYPG				= 1 shl 7
-	FLAG_PAGE_CATPG				= 1 shl 8 
-	FLAG_PAGE_PROPG				= 1 shl 9
+	FLAG_PAGE_KEYPG				= 1 shl 8   '' page name begins with "KeyPg"
+	FLAG_PAGE_CATPG				= 1 shl 9   '' page name begins with "CatPg"
+	FLAG_PAGE_PROPG				= 1 shl 10  '' page name begins with "ProPg"
+	FLAG_PAGE_DEVPG             = 1 shl 11  '' page name begins with 'Dev'
 
-	FLAG_PAGE_DOCPAGE			= 1 shl 10  
+	FLAG_PAGE_DOCPAGE			= 1 shl 12  '' page is reachable from DocToc
 
-	FLAG_PAGE_HASBACKLINK		= 1 shl 11
-	FLAG_PAGE_LINKED_FROM_CATPG = 1 shl 12
-	FLAG_PAGE_LINKED_FROM_INDEX = 1 shl 13
+	FLAG_PAGE_HASBACKLINK		= 1 shl 13  '' page contains at least one backlink
+	FLAG_PAGE_LINKED_FROM_CATPG = 1 shl 14  '' page is linked from DocToc, or CatPg*
+	FLAG_PAGE_LINKED_FROM_INDEX = 1 shl 15  '' page is linked from CatPgFunctIndex, CatPgFullIndex, CatPgGfx, CatPgOpIndex, CatPgCompOpt
 
-	FLAG_FILE_NOT_FOUND			= 1 shl 14
-	FLAG_FILE_DUPLICATE			= 1 shl 15
-
-	FLAG_PAGE_DEVPG             = 1 shl 16
+	FLAG_FILE_NOT_FOUND			= 1 shl 16
+	FLAG_FILE_DUPLICATE			= 1 shl 17  '' {{fbdoc item="filename" value="..."}} filename value is used more than once (duplicate)
 
 end enum
-
-type PageInfo_t
-	sName as string
-	flags as integer
-	sTitle as string
-	msg as integer
-End type
-
-type LinkInfo_t
-  sName as string    '' page name
-  sType as string    '' link type
-  sLink as string
-  flags as integer
-end type
-
-type SampInfo_t
-	sFile as string
-	sPage as string
-	flags as integer
-end type
-
-type ImageInfo_t
-	sUrl as string
-	sLink as string
-	sPage as string
-	flags as integer
-end type
-
-type TempInfo_t
-	text as string
-	extra as string
-end type
 
 '' from cmd_opts.bas
 extern cache_dir as string
@@ -114,54 +82,6 @@ const DocPages_File = "DocPages.txt"
 const LinkList_File = "linklist.csv"
 const FixList_File = "fixlist.txt"
 const SampList_File = "samplist.log"
-
-''
-redim shared sPages() as PageInfo_t
-redim preserve sPages(1 to 1) as PageInfo_t
-dim shared nPages as integer = 0, maxPages as integer = 1
-
-redim shared sLinks() as LinkInfo_t
-redim preserve sLinks(1 to 1) as LinkInfo_t
-dim shared nLinks as integer = 0, maxLinks as integer = 1
-
-redim shared sSamps() as SampInfo_t
-redim preserve sSamps(1 to 1) as SampInfo_t
-dim shared nSamps as integer = 0, maxSamps as integer = 1
-
-redim shared sImages() as ImageInfo_t
-redim preserve sImages(1 to 1) as ImageInfo_t
-dim shared nImages as integer = 0, maxImages as integer = 1
-
-redim shared sTemps() as TempInfo_t
-redim preserve sTemps(1 to 1) as TempInfo_t
-dim shared nTemps as integer = 0, maxTemps as integer = 1
-
-dim shared temphash as HASH
-
-dim shared pagehash as HASH
-dim shared pagehash_lcase as HASH
-dim shared pagehash_keypg as HASH
-dim shared pagehash_catpg as HASH
-dim shared pagehash_scanned as HASH
-
-dim shared linkhash as HASH
-dim shared linkhash_back as HASH
-dim shared linkhash_link as HASH
-dim shared linkhash_url as HASH
-dim shared linkhash_keyword as HASH
-
-dim shared samphash as HASH
-
-dim shared imagehash as HASH
-
-type timers_t
-	text as string
-	value as double
-	lapsed as double
-end type
-
-dim shared as timers_t timers(1 to 20)
-dim shared as integer ntimers = 0
 
 dim shared token_names(0 to WIKI_TOKENS-1) as zstring ptr = _
 { _
@@ -199,8 +119,20 @@ dim shared token_names(0 to WIKI_TOKENS-1) as zstring ptr = _
 
 dim shared token_counts(0 to WIKI_TOKENS-1) as integer
 
-'' ----------------------------------------------------
+'' ----------------------------------------------
+'' TIMERS
+'' ----------------------------------------------
 
+type timers_t
+	text as string
+	value as double
+	lapsed as double
+end type
+
+dim shared as timers_t timers(1 to 30)
+dim shared as integer ntimers = 0
+
+'':::::
 sub Timer_Begin()
 	ntimers += 1
 	timers( ntimers ).text = "BEGIN"
@@ -208,6 +140,7 @@ sub Timer_Begin()
 	timers( ntimers ).lapsed = 0
 end sub
 
+'':::::
 sub Timer_Mark( byref text as string )
 	ntimers += 1
 	timers( ntimers ).text = text
@@ -215,6 +148,7 @@ sub Timer_Mark( byref text as string )
 	timers( ntimers ).lapsed = timers( ntimers ).value - timers( ntimers - 1 ).value
 end sub
 
+'':::::
 sub Timer_End()
 	ntimers += 1
 	timers( ntimers ).text = "END"
@@ -222,6 +156,7 @@ sub Timer_End()
 	timers( ntimers ).lapsed = timers( ntimers ).value - timers( 1 ).value
 end sub
 
+'':::::
 sub Timer_Dump()
 	dim h as integer, i as integer
 	h = freefile
@@ -234,17 +169,19 @@ sub Timer_Dump()
 	close #h
 end sub
 
+'' ----------------------------------------------
+'' LOG FILE
+'' ----------------------------------------------
 
-'' ----------------------------------------------------
-
-'':::::
 dim shared logfileH as integer
 
+'':::::
 sub logopen()
 	logfileH = freefile
 	open "results.txt" for output as #logfileH
 end sub
 
+'':::::
 sub logprint( byref txt as string = "" )
 	'if( txt ) > "" then
 		print txt
@@ -254,6 +191,7 @@ sub logprint( byref txt as string = "" )
 	'end if
 end sub
 
+'':::::
 sub logclose()
 	if logfileH <> 0 then
 		close #logfileH
@@ -286,7 +224,20 @@ sub WriteTextFile( byref sFile as string, byref text as string )
 	end if
 end sub
 
-'' ----------------------------------------------------
+'' ----------------------------------------------
+'' TEMPORARY LIST
+'' ----------------------------------------------
+
+type TempInfo_t
+	text as string
+	extra as string
+end type
+
+redim shared sTemps() as TempInfo_t
+redim preserve sTemps(1 to 1) as TempInfo_t
+dim shared nTemps as integer = 0, maxTemps as integer = 1
+
+dim shared temphash as HASH
 
 '':::::
 sub Temps_Clear ()
@@ -317,12 +268,120 @@ sub Temps_Add( byref text as string, byref extra as string = "", byval bAllowDup
 		end if
 		sTemps(i).text = text
 		sTemps(i).extra = extra
-		temphash.add( text )
+		temphash.add( text, cast(any ptr, nTemps) )
 	end if
 
 end sub
 
-'' ----------------------------------------------------
+'':::::
+function Temps_Exists( byref text as string ) as integer
+	function = temphash.test( text )
+end function
+
+'' ----------------------------------------------
+'' FILES
+'' ----------------------------------------------
+
+type FileInfo_t
+	sFileName as string
+end type
+
+redim shared sFiles() as FileInfo_t
+redim preserve sFiles(1 to 1) as FileInfo_t
+dim shared nFiles as integer = 0, maxFiles as integer = 1
+
+dim shared filehash as HASH
+dim shared filehash_lcase as HASH
+
+'':::::
+sub Files_Clear ()
+	nFiles = 0
+	maxFiles = 1
+	redim sFiles( 1 to maxFiles ) as FileInfo_t
+	filehash.clear()
+	filehash_lcase.clear()
+end sub
+
+'':::::
+sub Files_Add( byref filename as string, byval bAllowDup as integer = FALSE )
+
+	dim as integer i
+
+	if( bAllowDup <> FALSE ) then
+		i = nfiles + 1
+	else
+		if( filehash.test( filename ) = 0 ) then
+			i = nfiles + 1
+		end if
+	end if
+
+	if( i > nfiles ) then
+		nfiles += 1
+		if nfiles > maxFiles then
+			maxfiles *= 2
+			redim preserve sFiles( 1 to maxFiles ) as FileInfo_t
+		end if
+		sFiles(i).sFileName = filename
+		filehash.add( filename, cast(any ptr, nFiles) )
+		filehash_lcase.add( lcase( filename ), cast(any ptr, nFiles) )
+	end if
+
+end sub
+
+'':::::
+sub Files_LoadFromCache( byref path as const string )
+	dim as string d
+
+	Files_Clear
+
+	d = dir( path + "*.wakka" )
+	while d > ""
+		Files_Add left( d, len(d) - 6 )
+		d = dir()
+	wend
+
+	logprint "Found " & nFiles & " *.wakka files in the cache directory."
+
+end sub
+
+'' ----------------------------------------------
+'' PAGES
+'' ----------------------------------------------
+
+type SPECIAL_PAGE_INFO
+	name as zstring ptr
+end type
+
+''
+dim shared Special_Pages_tbl( 1 to ... ) as zstring ptr = _
+	{ _
+		( @"DocToc" ), _
+		( @"DevToc" ), _
+		( @"CommunityTutorials" ), _
+		( @"CatPgFullIndex" ), _
+		( @"CatPgFunctIndex" ), _
+		( @"CatPgGfx" ), _
+		( @"CatPgOpIndex" ), _
+		( @"CatPgCompOpt" ) _
+	}
+
+type PageInfo_t
+	sName as string
+	flags as integer
+	sTitle as string
+	msg as integer
+End type
+
+redim shared sPages() as PageInfo_t
+redim preserve sPages(1 to 1) as PageInfo_t
+dim shared nPages as integer = 0, maxPages as integer = 1
+
+dim shared pagehash as HASH
+dim shared pagehash_lcase as HASH
+dim shared pagehash_keypg as HASH
+dim shared pagehash_catpg as HASH
+dim shared pagehash_devpg as HASH
+dim shared pagehash_scanned as HASH
 
 '':::::
 sub Pages_Clear ()
@@ -333,6 +392,7 @@ sub Pages_Clear ()
 	pagehash_lcase.clear()
 	pagehash_catpg.clear()
 	pagehash_keypg.clear()
+	pagehash_devpg.clear()
 	pagehash_scanned.clear()
 end sub
 
@@ -365,6 +425,15 @@ sub Pages_Add ( byref d as string, byref t as string = "" )
 		case "catpg"
 			.flags or= FLAG_PAGE_CATPG
 			pagehash_catpg.add( lcase(.sName), cast(any ptr, nPages) )
+
+		case else
+
+			select case lcase(left(d, 3))
+			case "dev"
+				.flags or= FLAG_PAGE_DEVPG
+				pagehash_devpg.add( lcase(.sName), cast(any ptr, nPages) )
+
+			end select
 
 		end select				
 	end with
@@ -416,22 +485,6 @@ sub Pages_LoadFromFile( byref sFileName as string, byval mask as integer = 0 )
 end sub
 
 '':::::
-sub Pages_LoadFromCache()
-	dim as string d
-
-	Pages_Clear
-
-	d = dir( cache_dir + "*.wakka" )
-	while d > ""
-		Pages_Add Trim(d)
-		d = dir()
-	wend
-
-	logprint "Found " & nPages & " pages."
-
-end sub
-
-'':::::
 sub Pages_SaveToFile( byref sFileName as string, byval mask as integer = -1 )
 
 	dim as integer i, h, c = 0
@@ -460,7 +513,21 @@ function Pages_Exists( byref sPageName as string, byval bCaseSensitive as intege
 	end if
 end function
 
-'' ----------------------------------------------------
+'' ----------------------------------------------
+'' SAMPLES
+'' ----------------------------------------------
+
+type SampInfo_t
+	sFile as string
+	sPage as string
+	flags as integer
+end type
+
+redim shared sSamps() as SampInfo_t
+redim preserve sSamps(1 to 1) as SampInfo_t
+dim shared nSamps as integer = 0, maxSamps as integer = 1
+
+dim shared samphash as HASH
 
 '':::::
 sub Samps_Clear()
@@ -514,9 +581,23 @@ sub Samps_SaveToFile( byref sFileName as string, byval mask as integer = -1 )
 
 end sub
 
-'' ----------------------------------------------------
+'' ----------------------------------------------
+'' IMAGES
+'' ----------------------------------------------
 
-'':::::
+type ImageInfo_t
+	sUrl as string
+	sLink as string
+	sPage as string
+	flags as integer
+end type
+
+redim shared sImages() as ImageInfo_t
+redim preserve sImages(1 to 1) as ImageInfo_t
+dim shared nImages as integer = 0, maxImages as integer = 1
+
+dim shared imagehash as HASH
+
 sub Images_Clear()
 	nImages = 0
 	maxImages = 1
@@ -549,8 +630,26 @@ sub Images_Add( byref sUrl as string, byref sLink as string, byref sPage as stri
 	
 end sub
 
+'' ----------------------------------------------
+'' LINKS
+'' ----------------------------------------------
 
-'' ----------------------------------------------------
+type LinkInfo_t
+  sName as string    '' page name (source)
+  sType as string    '' link type
+  sLink as string    '' destination
+  flags as integer
+end type
+
+redim shared sLinks() as LinkInfo_t
+redim preserve sLinks(1 to 1) as LinkInfo_t
+dim shared nLinks as integer = 0, maxLinks as integer = 1
+
+dim shared linkhash as HASH
+dim shared linkhash_back as HASH
+dim shared linkhash_link as HASH
+dim shared linkhash_url as HASH
+dim shared linkhash_keyword as HASH
 
 '':::::
 sub Links_Clear()
@@ -646,6 +745,11 @@ sub Links_Add( byref sName as string, byref sType as string, byref sLink as stri
 			.flags or= FLAG_LINK_CATPG
 		case "propg"
 			.flags or= FLAG_LINK_PROPG
+		case else
+			select case left( lcase( .sLink ), 3 )
+			case "dev"
+				.flags or= FLAG_LINK_DEVPG
+			end select
 		end select
 
 
@@ -1014,13 +1118,137 @@ function Links_Exists( byref sPageName as string, byref sLinkName as string, byr
 
 end function
 
-'' ----------------------------------------------------
+'' ----------------------------------------------
+'' CHECKS
+'' ----------------------------------------------
+
+'':::::
+sub Check_Filenames()
+
+	/' looking for 
+	   - duplicate wiki pagenames
+	   - duplicate cache filenames
+	   - cache filename exists but wiki pagename does not
+	   - wiki pagename exists but cache filename does not
+	'/
+
+	logprint "Checking that wiki page names match cache filenames:"
+
+	dim i as integer
+	dim j as integer
+	dim n as integer
+	dim found as integer = 0
+
+	'' test for duplicate filenames
+	n = 0
+	for i = 1 to nFiles
+		j = cint( filehash_lcase.getinfo( lcase( sFiles(i).sFileName ) ) )
+		if( j <> i ) then
+			logprint "file name '" & sFiles(j).sFileName & "' is duplicate of '" & sFiles(i).sFileName
+			n += 1
+		end if
+	next
+	if( n = 0 ) then
+		logprint "No duplicate *.wakka file names found in the cache directory"
+	end if
+
+	'' test for duplicate wiki page names
+	n = 0
+	for i = 1 to nPages
+		j = cint( pagehash_lcase.getinfo( lcase( sPages(i).sName ) ) )
+		if( j <> i ) then
+			logprint "wiki page '" & sPages(j).sName & "' is duplicate of '" & sPages(i).sName
+			n += 1
+		end if
+	next
+	if( n = 0 ) then
+		logprint "No duplicate page names found in the wiki page index"
+	end if
+
+	'' test for file names that exist, but wiki page is missing
+	for i = 1 to nFiles
+		if( pagehash.test( sFiles(i).sFileName ) = 0 ) then
+			logprint "'" & sFiles(i).sFileName & "' exist in cache dir but not wiki index"
+		end if
+	next
+
+	'' test for page names that exist, but cache dir filename is missing
+	for i = 1 to nPages
+		if( filehash.test( sPages(i).sName ) = 0 ) then
+			logprint "'" & sPages(i).sName & "' is wiki page but does not exist in cache dir"
+		end if
+	next 
+
+	logprint
+
+end sub
+
+'':::::
+sub Check_DeletedPages()
+
+	/' 
+		we are looking for pages that have "!!! DELETE ME !!!"
+		as the starting text.  If we find any, remove them
+		from our list of pages to scan
+	'/
+
+	dim i as integer
+	dim sBody as string
+	dim f as string
+	dim chk as string = "!!! DELETE ME !!!"
+
+	dim keep_pages( 1 to 2, 1 to nPages + 1) as string
+	dim n_keep_pages as integer = 0
+	dim n_delete_pages as integer = 0
+	dim n_empty_pages as integer = 0
+
+	logprint "Checking for deleted pages (pages marked for removal !!! DELETE ME !!!):"
+
+	Temps_Clear()
+
+	for i = 1 to nPages
+		f = cache_dir + sPages(i).sName + ".wakka"
+		sBody = LoadFileAsString( f )
+		if( left( ucase( ltrim( sBody, any " " & chr(9))), len( chk ) ) = chk ) then
+			n_delete_pages += 1
+			Temps_Add( sPages(i).sName )
+		elseif( trim( sBody, any chr(9, 10, 13, 32) ) = "" ) then
+			n_empty_pages += 1
+			Temps_Add( sPages(i).sName )
+		else
+			n_keep_pages += 1
+			keep_pages( 1, n_keep_pages ) = sPages(i).sName
+			keep_pages( 2, n_keep_pages ) = sPages(i).sTitle
+		end if
+	next
+
+	if nTemps = 0 then
+		logprint "No pages marked for delete and no pages empty"
+	else
+		for i = 1 to nTemps
+			logprint "marked for delete or empty '" + sTemps(i).text + "'"
+		next
+		logprint "Found " + str( n_delete_pages ) + " pages marked for delete, removed from scan"
+		logprint "Found " + str( n_empty_pages ) + " empty pages, removed from scan"
+	end if
+
+	'' rebuild the pages list without the deleted pages
+	Pages_Clear()
+
+	for i = 1 to n_keep_pages
+		Pages_Add( keep_pages(1, i), keep_pages(2, i) )
+	next
+
+	logprint str(n_keep_pages) + " pages to be scanned"
+	logprint
+
+end sub
 
 '':::::
 sub Check_MissingPages()
 
 	/' 
-		we are looking for pages that have a
+		we are looking for pages (i.e. wanted pages) that have a
 		link on (some) page, but do not exist as a topic
 		- sometimes gives a false positives since the 
 		  link name might be mispelled or incorrect, in 
@@ -1049,6 +1277,44 @@ sub Check_MissingPages()
 			logprint "Missing page '" + sTemps(i).text + "' (first occurance on '" & sTemps(i).extra & "')"
 		next
 		logprint "Found links to " + str(nTemps) + " missing pages"
+	end if
+	logprint
+
+end sub
+
+'':::::
+sub Check_OrphanPages()
+
+	/' 
+		look for pages that are not linked from anywhere
+	'/
+
+	dim i as integer
+	dim n_orphan as integer
+
+	logprint "Checking orphan pages (pages with no links to them):"
+	logprint "    these pages might be CamelCase only links on wiki"
+	
+	Temps_Clear()
+
+	'' find all pages that are linked to
+	for i = 1 to nLinks
+		if( (sLinks(i).flags and (FLAG_LINK_LINK or FLAG_LINK_KEYWORD)) <> 0 ) then
+			Temps_Add( sLinks(i).sLink )
+		end if
+	next
+
+	for i = 1 to nPages
+		if( temphash.test( sPages(i).sName ) = 0 ) then
+			n_orphan += 1
+			logprint "orphan page '" + sPages(i).sName + "'"
+		end if
+	next
+
+	if n_orphan = 0 then
+		logprint "No orphan pages"
+	else
+		logprint "Found links to " + str(n_orphan) + " orphan pages"
 	end if
 	logprint
 
@@ -1170,7 +1436,7 @@ end sub
 
 
 '':::::
-sub Check_DuplicateFilenames()
+sub Check_DuplicateSampleFilenames()
 
 	/'
 		report the results of duplicate sample filesname
@@ -1504,6 +1770,7 @@ sub Check_PrintToc()
 
 end sub
 
+'':::::
 sub Check_PagesNotLinked()
 
 	dim as integer j, c = 0
@@ -1524,6 +1791,7 @@ sub Check_PagesNotLinked()
 
 end sub
 
+'':::::
 sub Check_PagesNoBackLink()
 
 	dim as integer j, c = 0
@@ -1545,6 +1813,7 @@ sub Check_PagesNoBackLink()
 
 end sub
 
+'':::::
 sub Check_DocPagesMissingTitles()
 
 	dim as integer j, c = 0
@@ -1580,35 +1849,33 @@ sub Report_TokenCounts()
 end sub
 
 
-'' --------------------------------------------------------
+'' ----------------------------------------------
 '' MAIN
-'' --------------------------------------------------------
+'' ----------------------------------------------
 
 enum OPTIONS
 	OPT_NONE = 0
 
-	OPT_MISSING_PAGES = 1
-	OPT_FULL_INDEX = 2
-	OPT_FUNCT_INDEX = 4
-	OPT_LINK_NAME_CASE = 8
-	OPT_MISSING_BACKLINK = 16
-	OPT_INVALID_BACKLINK = 32
-	OPT_NO_BACKLINK = 64
-	OPT_HEADERS = 128
-	OPT_NOT_LINKED = 256
-	OPT_PRINT_TOC = 512
-
-	OPT_LOAD_FROM_FILE = 1024
-	OPT_TIMER_LOG = 2048
-
-	OPT_NO_TITLE = 4096
-	OPT_DUP_FILE_NAME = 8192
-
-	OPT_IMAGES = 16384
-
-	OPT_OPS_INDEX = 32768
-
-	OPT_TOKEN_COUNTS = 65536
+	OPT_MISSING_PAGES    = 1 shl 0
+	OPT_FULL_INDEX       = 1 shl 1
+	OPT_FUNCT_INDEX      = 1 shl 2
+	OPT_LINK_NAME_CASE   = 1 shl 3
+	OPT_MISSING_BACKLINK = 1 shl 4
+	OPT_INVALID_BACKLINK = 1 shl 5
+	OPT_NO_BACKLINK      = 1 shl 6
+	OPT_HEADERS          = 1 shl 7
+	OPT_NOT_LINKED       = 1 shl 8
+	OPT_PRINT_TOC        = 1 shl 9
+	OPT_LOAD_FROM_FILE   = 1 shl 10
+	OPT_TIMER_LOG        = 1 shl 11
+	OPT_NO_TITLE         = 1 shl 12
+	OPT_DUP_SAMPLE_FILE  = 1 shl 13
+	OPT_IMAGES           = 1 shl 14
+	OPT_OPS_INDEX        = 1 shl 15
+	OPT_TOKEN_COUNTS     = 1 shl 16
+	OPT_DELETED_PAGES    = 1 shl 17
+	OPT_ORPHAN_PAGES     = 1 shl 18
+	OPT_FILENAMES        = 1 shl 19
 
 	OPT_ALL_LINKS = _
 		OPT_MISSING_PAGES _
@@ -1626,10 +1893,13 @@ enum OPTIONS
 
 	OPT_ALL_TOKEN = _
 		OPT_HEADERS _
-		or OPT_DUP_FILE_NAME
+		or OPT_DUP_SAMPLE_FILE
 
 	OPT_ALL = _
 		OPT_ALL_LINKS _
+		or OPT_DELETED_PAGES _
+		or OPT_ORPHAN_PAGES _
+		or OPT_FILENAMES _
 		or OPT_ALL_TOKEN
 
 end enum
@@ -1663,6 +1933,10 @@ while( command(i) > "" )
 			opt or= OPT_TIMER_LOG
 		case "m"
 			opt or= OPT_MISSING_PAGES
+		case "del"
+			opt or= OPT_DELETED_PAGES
+		case "o"
+			opt or= OPT_ORPHAN_PAGES
 		case "full"
 			opt or= OPT_FULL_INDEX
 		case "func"
@@ -1690,7 +1964,7 @@ while( command(i) > "" )
 		case "h"
 			opt or= OPT_HEADERS
 		case "f"
-			opt or= OPT_DUP_FILE_NAME
+			opt or= OPT_DUP_SAMPLE_FILE
 		case "i"
 			opt or= OPT_IMAGES
 		case "tc"
@@ -1733,7 +2007,10 @@ if( cmd_opt_help ) then
 	print "   n       check name case in links"
 	print "   tc      report token counts"
 	print
-	print "   e       check everything! ( a t )"
+	print "   del     check deleted pages"
+	print "   o       check orphaned pages"
+	print
+	print "   e       check everything! ( a t del o )"
 	print
 	end 0
 end if
@@ -1746,7 +2023,7 @@ if( (opt and OPT_ALL) = 0 ) then
 	end 1
 end if
 
-'' --------------------------------------------------------
+'' ----------------------------------------------
 
 Timer_Begin()
 
@@ -1759,9 +2036,23 @@ Timer_Mark("Startup")
 
 ''
 Pages_Clear
+Files_Clear
 Samps_Clear
 
+Files_LoadFromCache( cache_dir )
 Pages_LoadFromFile( PageIndex_File )
+
+logprint
+
+if( (opt and OPT_FILENAMES) <> 0 ) then
+	Check_FileNames()
+	Timer_Mark("Check_Cache_FileNames()")
+end if
+
+if( (opt and OPT_DELETED_PAGES) <> 0 ) then
+	Check_DeletedPages()
+	Timer_Mark("Check_DeletedPages()")
+end if
 
 Links_Clear
 
@@ -1784,6 +2075,11 @@ Timer_Mark("Page Loading/Scanning")
 if( (opt and OPT_MISSING_PAGES) <> 0 ) then
 	Check_MissingPages()
 	Timer_Mark("Check_MissingPages()")
+end if
+
+if( (opt and OPT_ORPHAN_PAGES) <> 0 ) then
+	Check_OrphanPages()
+	Timer_Mark("Check_OrpanPages()")
 end if
 
 if( (opt and OPT_FULL_INDEX) <> 0 ) then
@@ -1843,10 +2139,10 @@ if( (opt and OPT_NO_TITLE) <> 0 ) then
 	Timer_Mark("Check_DocPagesMissingTitles()")
 end if
 
-if( (opt and OPT_DUP_FILE_NAME) <> 0 ) then
-	'' duplicated file names
-	Check_DuplicateFilenames()
-	Timer_Mark("Check_DuplicateFilenames()")
+if( (opt and OPT_DUP_SAMPLE_FILE) <> 0 ) then
+	'' duplicated sample file names
+	Check_DuplicateSampleFilenames()
+	Timer_Mark("Check_DuplicateSampleFilenames()")
 end if
 
 if( (opt and OPT_IMAGES) <> 0 ) then
