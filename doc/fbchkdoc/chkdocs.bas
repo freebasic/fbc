@@ -506,7 +506,7 @@ end sub
 '':::::
 function Pages_Exists( byref sPageName as string, byval bCaseSensitive as integer ) as integer
 	dim i as integer
-	if( bCaseSensitive = 0 ) then
+	if( bCaseSensitive ) then
 		function = pagehash.test( sPageName )
 	else
 		function = pagehash_lcase.test( lcase(sPageName))
@@ -1264,7 +1264,7 @@ sub Check_MissingPages()
 
 	for i = 1 to nLinks
 		if( (sLinks(i).flags and FLAG_LINK_URL ) = 0 ) then
-			if Pages_Exists( sLinks(i).sLink, FALSE ) = FALSE then
+			if Pages_Exists( sLinks(i).sLink, TRUE ) = FALSE then
 				Temps_Add( sLinks(i).sLink, sLinks(i).sName )
 			end if
 		end if
@@ -1836,6 +1836,78 @@ sub Check_DocPagesMissingTitles()
 end sub
 
 '':::::
+sub Check_TokenUnescapedCamelCase()
+
+	dim i as integer
+	dim f as string
+	dim sBody as string
+	dim text as string
+	dim wiki as CWiki Ptr
+	dim token as WikiToken ptr
+	dim wikipage as string
+	
+	const PATTERN = $"\b([A-Z]+[a-z]+[A-Z0-9][A-Za-z0-9]*)\b"
+
+	dim re as CRegex ptr = new CRegex( PATTERN, REGEX_OPT_DOTALL )
+	
+	logprint "Checking DocPages for unescaped camel case links to missing pages:"
+
+	Temps_Clear()
+
+	wiki = new CWiki
+
+	for i = 1 to nPages
+
+		if( ( sPages(i).flags and FLAG_PAGE_DOCPAGE ) <> 0 ) then
+
+			f = cache_dir + sPages(i).sName + ".wakka"
+			sBody = LoadFileAsString( f )
+			wiki->Parse( sPages(i).sName, sBody )
+
+			token = wiki->GetTokenList()->GetHead()
+			do while( token <> NULL )
+
+				select case as const token->id
+				case WIKI_TOKEN_TEXT
+
+					dim text as zstring ptr = strptr( token->text )
+					if( re->Search( text ) ) then
+						dim as integer ofs = 0
+						do
+							wikipage = *re->GetStr( 0 )
+							Temps_Add( wikipage )
+							if( Pages_Exists( wikipage, TRUE ) = false ) then
+								logprint "'" & sPages(i).sName & "' has """ & *re->GetStr( 0 ) & """"
+							end if
+						loop while re->SearchNext()
+					end if
+				end select
+
+
+				token = wiki->GetTokenList()->GetNext( token )
+			loop
+
+		end if
+
+	next
+
+	delete re
+	delete wiki
+	wiki = NULL
+
+	logprint
+
+	logprint "Wiki pages linked by CamelCase wiki link"
+
+	for i = 1 to nTemps
+		logprint "'" + sTemps(i).text + "'"
+	next
+
+	logprint
+
+end sub
+
+'':::::
 sub Report_TokenCounts()
 
 	logprint "Token Counts"
@@ -1873,9 +1945,10 @@ enum OPTIONS
 	OPT_IMAGES           = 1 shl 14
 	OPT_OPS_INDEX        = 1 shl 15
 	OPT_TOKEN_COUNTS     = 1 shl 16
-	OPT_DELETED_PAGES    = 1 shl 17
-	OPT_ORPHAN_PAGES     = 1 shl 18
-	OPT_FILENAMES        = 1 shl 19
+	OPT_TOKEN_CAMEL_CASE = 1 shl 17
+	OPT_DELETED_PAGES    = 1 shl 18
+	OPT_ORPHAN_PAGES     = 1 shl 19
+	OPT_FILENAMES        = 1 shl 20
 
 	OPT_ALL_LINKS = _
 		OPT_MISSING_PAGES _
@@ -1893,7 +1966,8 @@ enum OPTIONS
 
 	OPT_ALL_TOKEN = _
 		OPT_HEADERS _
-		or OPT_DUP_SAMPLE_FILE
+		or OPT_DUP_SAMPLE_FILE _
+		or OPT_TOKEN_CAMEL_CASE
 
 	OPT_ALL = _
 		OPT_ALL_LINKS _
@@ -1969,6 +2043,8 @@ while( command(i) > "" )
 			opt or= OPT_IMAGES
 		case "tc"
 			opt or= OPT_TOKEN_COUNTS
+		case "cc"
+			opt or= OPT_TOKEN_CAMEL_CASE
 
 		case else
 			print "option '"; command(i); "' ignored"
@@ -2006,6 +2082,7 @@ if( cmd_opt_help ) then
 	print "   h       check page headers"
 	print "   n       check name case in links"
 	print "   tc      report token counts"
+	print "   cc      report unescaped camel case word"
 	print
 	print "   del     check deleted pages"
 	print "   o       check orphaned pages"
@@ -2155,6 +2232,12 @@ if( (opt and OPT_TOKEN_COUNTS) <> 0 ) then
 	'' token counts
 	Report_TokenCounts()
 	Timer_Mark("Report_TokenCounts()")
+end if
+
+if( (opt and OPT_TOKEN_CAMEL_CASE) <> 0 ) then
+	'' find unescaped camel case words
+	Check_TokenUnescapedCamelCase()
+	Timer_Mark("Check_TokenUnescapedCamelCase()")
 end if
 
 logprint
