@@ -25,7 +25,7 @@ In FreeBasic, there's basically 2 commands that you need to worry about when try
 {{fbdoc item="title" value="GETMOUSE"}}
 ----
 {{fbdoc item="syntax"}}
-result = GetMouse (x, y [, [ wheel ] [, [ buttons ] [, [ clip ]]]])
+result = ""GetMouse"" (x, y [, [ wheel ] [, [ buttons ] [, [ clip ]]]])
 
 {{fbdoc item="desc"}}
 GETMOUSE retrieves the mouse position and button status. 
@@ -45,7 +45,7 @@ Mouse position is stored in X and Y when the function is called. If the mouse is
 {{fbdoc item="title" value="SETMOUSE"}}
 ----
 {{fbdoc item="syntax"}}
-result = SetMouse([ x ] [, [ y ] [, [ visibility ] [, [ clip ]]]])
+result = ""SetMouse""([ x ] [, [ y ] [, [ visibility ] [, [ clip ]]]])
 
 {{fbdoc item="desc"}}
 SETMOUSE will set the X,Y coordinates of the mouse pointer, as well as setting it's visibility. 

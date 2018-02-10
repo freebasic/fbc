@@ -77,7 +77,7 @@ For example, to define a cube in space, you would use the y,x,z format, where y 
 Dim myCube(y, x, z) as Integer. 
 %%
 
-##MyCube(10, 10, 10)## would create a cube with 11 vertical units, 0 to 10, 11 horizontal units, 0 to 10 and 10 depth units, 0 to 10. To access the center of the cube, you would use ##iCenter = myCube(5, 5, 5)##. 
+##""MyCube(10, 10, 10)""## would create a cube with 11 vertical units, 0 to 10, 11 horizontal units, 0 to 10 and 10 depth units, 0 to 10. To access the center of the cube, you would use ##iCenter = myCube(5, 5, 5)##. 
 
 You will probably never need to use arrays of more than three dimensions, unless you are doing some advanced mathematical calculations. However, if you need to use higher-dimensional arrays, the same principles apply.
 
@@ -87,7 +87,7 @@ The arrays described above are static arrays; the array size cannot change durin
 
 Static arrays, the arrays described above, are kept on the heap, but dynamic arrays are allocated from the computer's pool of memory. The compiler dynamically allocates memory for the array based on the requested dimensions of the array.
 
-You specify a dynamic array by using the ##ReDim## keyword.
+You specify a dynamic array by using the ##""ReDim""## keyword.
 
 %%(freebasic)
 Redim myArray(1 to 5, 1 to 5) as Integer
@@ -99,11 +99,11 @@ If you don't know the needed array bounds at the start of the program execution,
 Dim myArray() as Integer
 %%
 
-In this case the compiler sets a default value of 0 for the array size. You can then use the ##ReDim## at some point in the program to set the array bounds.
+In this case the compiler sets a default value of 0 for the array size. You can then use the ##""ReDim""## at some point in the program to set the array bounds.
 
-=== ReDim and ReDim Preserve ===
+=== ""ReDim"" and ""ReDim"" Preserve ===
 
-Dynamic arrays can change sizes during execution. ##ReDim## will clear the contents of the array to the default data type values, while ##ReDim Preserve## will keep intact the existing contents, unless the array size is smaller than the previous size.
+Dynamic arrays can change sizes during execution. ##""ReDim""## will clear the contents of the array to the default data type values, while ##""ReDim Preserve""## will keep intact the existing contents, unless the array size is smaller than the previous size.
 
 === Array Functions ===
 

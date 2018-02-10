@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="The Select Case Statement"}}----
 //Written by [[WikiRick|rdc]]//
 
-The Select Case block can be viewed as an optimized If-ElseIf ladder, and works in much the same way. The standard Select Case can use any of the standard data types for <expression> and the specialized Select Case As Const format is optimized for integer values.
+The Select Case block can be viewed as an optimized If-""ElseIf"" ladder, and works in much the same way. The standard Select Case can use any of the standard data types for <expression> and the specialized Select Case As Const format is optimized for integer values.
 
 This code snippet shows the syntax of the standard select case. Expression is usually a variable which can be of any of the standard data types, or individual elements of a Type or array. 
 
@@ -84,7 +84,7 @@ In the program, when you press a key, the value is translated to a number using 
 
 The compiler will check the value of keycode against the Case ranges to see if the block should execute. If keycode falls within a particular range, the Print statement will execute, and then the flow of the program will continue with the next line following the End Select. If keycode doesn't match any Case range, then the program will continue with the next line following the End Select.
 
-A Select Case can usually be translated from an If-Elseif ladder. To illustrate this, the previous program is shown below as an If-ElseIf ladder.
+A Select Case can usually be translated from an If-Elseif ladder. To illustrate this, the previous program is shown below as an If-""ElseIf"" ladder.
 
 %%(freebasic)
 'Ascii code of key press
@@ -106,6 +106,6 @@ Loop Until keycode = 27 '27 is the ascii code for Escape
 End
 %%
 
-If you compare the two programs, you can see that the logic is quite similar, however the Select Case is much more readable and understandable than the If-ElseIf ladder.
+If you compare the two programs, you can see that the logic is quite similar, however the Select Case is much more readable and understandable than the If-""ElseIf"" ladder.
 
 //Last Reviewed by ""Sancho3"" on February 06, 2018//

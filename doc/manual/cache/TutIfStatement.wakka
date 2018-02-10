@@ -43,7 +43,7 @@ ElseIf <expression> Then
 End If
 %%
 
-In this format if <expression> is True then the code following the Then is executed. If the answer is False then the ElseIf is executed. If the ElseIf is True, the code following the Then (of the ElseIf) is executed, otherwise the code following the End If is executed. You can have as many ElseIf statements as you need to fully cover the range of questions you need to ask.
+In this format if <expression> is True then the code following the Then is executed. If the answer is False then the ""ElseIf"" is executed. If the ""ElseIf"" is True, the code following the Then (of the ""ElseIf"") is executed, otherwise the code following the End If is executed. You can have as many ""ElseIf"" statements as you need to fully cover the range of questions you need to ask.
 
 %%(freebasic)
 If <expression> Then
@@ -55,7 +55,7 @@ Else
 End If
 %%
 
-This format is a combination of all the other formats. If <expression> is True then the code following the Then is executed. If the answer is False then the ElseIf is executed. If the ElseIf is True, the code following the Then (of the ElseIf) is executed, otherwise the code following the Else is executed.
+This format is a combination of all the other formats. If <expression> is True then the code following the Then is executed. If the answer is False then the ""ElseIf"" is executed. If the ""ElseIf"" is True, the code following the Then (of the ""ElseIf"") is executed, otherwise the code following the Else is executed.
 
 This format enables you to ask a series of questions and if the answer is False to all the questions, you can take a default course of action based on the Else block.
 
@@ -95,7 +95,7 @@ If var were to contain the value of 3, then Not 3 is -4, which will be regarded 
 
 === Overlapping Conditions ===
 
-When using compound conditions care must be taken to ensure that the conditions do not overlap. In most cases overlapping conditions will produce unpredictable results. Each condition must produce a unique result, and the combination of the individual results, must itself express a unique result. This is very important in If-ElseIf constructs; an overlapping condition within an If-ElseIf block may execute the wrong code at the wrong time.
+When using compound conditions care must be taken to ensure that the conditions do not overlap. In most cases overlapping conditions will produce unpredictable results. Each condition must produce a unique result, and the combination of the individual results, must itself express a unique result. This is very important in If-""ElseIf"" constructs; an overlapping condition within an If-""ElseIf"" block may execute the wrong code at the wrong time.
 
 === Nested If Statements ===
 
