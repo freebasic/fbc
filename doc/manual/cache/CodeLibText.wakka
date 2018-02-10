@@ -1,0 +1,19 @@
+!!! DELETE ME !!!
+
+{{anchor name="TEXT"}}{{fbdoc item="section" value="Text/Parser Code"}}
+	[[http://hmcsoft.org/p/libini.php Cross Platform INI library by SirMud]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7437 XML Parser by Pritchard]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=5693 Expression Parser by yetifoot]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8680 Turing Machine by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7321 Roman Numeral to Integer Conversion by stylin]]
+	[[http://www.freebasic.net/forum/viewtopic.php?p=35589 Unicode console calender, by zippy and voodooattack]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8636 FB source to  highlighted HTML by Kristopher Windsor]]
+	[[http://www.execulink.com/~coder/freebasic/docs.html Portable help (not .chm) viewer by coderjeff]]
+	[[http://www.execulink.com/~coder/freebasic/lisp.html Lisp interpreter by coderjeff]]
+	
+	==Cryptography==
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7379 MARS encryption by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7667 AES Encryption/Decryption by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=7273 DES/LUCIFER Encryption/Decryption by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=5288 MD5 Calculator by DOS386]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=9496 Tiger Hash by Mindless]]

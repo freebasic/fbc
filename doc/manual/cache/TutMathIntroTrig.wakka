@@ -155,3 +155,5 @@ This means the same as {{fbdoc item="keyword" value="KeyPgSin|SIN"}}(y)*{{fbdoc 
 {{fbdoc item="keyword" value="KeyPgTan|TAN"}}(y) = {{fbdoc item="keyword" value="KeyPgSin|SIN"}}((y)/{{fbdoc item="keyword" value="KeyPgCos|COS"}}(y)
 
 There are several more useful identities out there. Search for trigonometric identities or consult any higher mathematical reference.
+
+//Last reviewed by ""sancho3"" on February 08, 2018//

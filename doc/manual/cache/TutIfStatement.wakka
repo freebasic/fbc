@@ -184,3 +184,7 @@ End If
 %%
 
 Remember that the And operator will only return True if both operands return True. If value is 6, 6 is greater than 5 and 6 is also less than 7, so both statements are True and the expression evaluates to True.
+
+Editors Note: See also [[KeyPgOpAndAlso|AndAlso]] and [[KeyPgOpOrElse|OrElse]]
+
+//Last Reviewed By ""Sancho3"", February 06, 2018//

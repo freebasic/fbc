@@ -80,7 +80,7 @@ Pointer indexing works the same way as pointer arithmetic, but the details are h
 Freebasic has a set of pointer functions to complement the pointer operators.
 
 ~- [[KeyPgCptr|Cptr]] Converts expression to a data_type pointer. Expression can be another pointer or an integer.
-~- [[KeyPgPeek|Peek]] Returns the contents of memory location pointer to by pointer. Data_type specifies the type of expected data.
+~- [[KeyPgPeek|Peek]] Returns the contents of memory location pointed to by pointer. Data_type specifies the type of expected data.
 ~- [[KeyPgPoke|Poke]] Puts the value of expression into the memory location pointed to by pointer. The data_type specifies the type of data being placed into the memory location.
 ~- [[KeyPgSadd|Sadd]] Returns the location in memory where the string data in a dynamic string is located.
 ~- [[KeyPgOpStrptr|Strptr]] The same as Sadd.
@@ -225,6 +225,7 @@ Next
 %%
 
 This code snippet uses the index method to load the actual data into the memory segments. Notice that this looks and acts just like a two-dimensional array. While this may not seem useful within this context, you could use this code to create a dynamic array within a type definition. Since you cannot have a standard dynamic array within a type, this allows you get the same functionality.
+//Editors Note: Dynamic arrays are allowed in recent releases of FreeBASIC//
 
 One thing you need to be aware of is how to deallocate a structure such as this. The rule is to just do the reverse of the allocation operations. Since the last allocate operation initialized the data memory segments, you deallocate these memory segments first and then you can deallocate the base pointer.
 
@@ -239,3 +240,5 @@ Deallocate myMemArray
 %%
 
 You need to be sure that you deallocate in the right order, otherwise you will end up with memory segments that are not freed, but inaccessible. These are memory leaks and can cause a whole host of problems in your program.
+
+//Last reviewed by ""sancho3"" on February 07, 2018// 

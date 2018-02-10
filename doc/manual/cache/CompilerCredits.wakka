@@ -19,11 +19,11 @@
 	- **Mark Junker** (mjscod[at]gmx.de):
 		Author of huge parts of the runtime (printing support, date/time, functions, SCR/LPTx/COM/console/keyboard I/O), Cygwin port, first FB installer scripts.
 	- **Matthew Fearnley** (matthew.w.fearnley[at]gmail.com):
-		Print Using & Co, ImageInfo, and others, dialect specifics, optimization improvements in the compiler, many fixes and improvements.
+		Print Using & Co, ""ImageInfo"", and others, dialect specifics, optimization improvements in the compiler, many fixes and improvements.
 	- **Ruben Rodriguez** (rubentbstk[at]gmail.com):
 		Var keyword, const specifier, placement new, operator overloading and, other OOP-related work, C BFD wrapper, many fixes and improvements.
 	- **Simon Nash**:
-		AndAlso/OrElse operators, ellipsis for array initializers, miscellaneous fixes and improvements.
+		""AndAlso""/""OrElse"" operators, ellipsis for array initializers, miscellaneous fixes and improvements.
 
 ==__Contributors__==
 
@@ -44,7 +44,7 @@
 	- **Dumbledore**:
 		wx-c headers & examples
 	- **dr0p** (dr0p[at]perfectbg.com):
-		PostgreSQL headers & examples
+		""PostgreSQL"" headers & examples
 	- **Edmond Leung** (leung.edmond[at]gmail.com):
 		SDL headers & examples
 	- **Eric Lope** (vic_viperph[at]yahoo.com):
@@ -54,17 +54,17 @@
 	- **fsw** (fsw.fb[at]comcast.net):
 		Win32 API headers, Gtk/Glade/wx-c examples
 	- **Garvan O'Keeffe** (sisophon2001[at]yahoo.com):
-		FB ports of many NeHe OpenGL lessons, PDFlib examples
+		FB ports of many ""NeHe"" OpenGL lessons, PDFlib examples
 	- **Hans L. Nemeschkal** (Hans.Leo.Nemeschkal[at]univie.ac.at):
 		DISLIN headers
 	- **Jofers** (spam[at]betterwebber.com):
-		ThreadCall keyword, libffi/libjit headers, FreeType examples
+		""ThreadCall"" keyword, libffi/libjit headers, ""FreeType"" examples
 	- **Jose Manuel Postigo** (postigo[at]uma.es):
 		Linux serial devices support
 	- **Laanan Fisher** (laananfisher[at]gmail.com):
 		FB test suite using CUnit
 	- **Matthew Riley** (pestery):
-		OpenGL, GLFW, glext, FreeGLUT, cryptlib headers
+		OpenGL, GLFW, glext, ""FreeGLUT"", cryptlib headers
 	- **Matthias Faust** (matthias_faust[at]web.de):
 		SDL_ttf headers & examples
 	- **Marzec**:
@@ -81,14 +81,14 @@
 		GSL matrix example
 	- **Saga Musix** (Jojo):
 		BASS examples with sounds
-	- **Sisophon2001**:
+	- **""Sisophon2001""**:
 		gfxlib2 fixes, Nehe OpenGL lesson ports
 	- **Sterling Christensen** (sterling[at]engineer.com):
 		Ex-project-member, author of FB's initial QB-like graphics library
-	- **TeeEmCee**:
+	- **""TeeEmCee""**:
 		gfxlib2 fixes
 	- **TJF** (Thomas.Freiherr[at]gmx.net):
-		ARM port, GTK+, glib, Cairo, Pango headers & examples, SQLiteExtensions headers
+		ARM port, GTK+, glib, Cairo, Pango headers & examples, ""SQLiteExtensions"" headers
 	- **zydon**:
 		Win32 API examples
 
@@ -96,10 +96,10 @@
 
 	- **Plasma**:
 		Owner of the freebasic.net domain and main site hoster, many thanks to, him.
-	- **VonGodric**:
+	- **""VonGodric""**:
 		Author of the first FreeBASIC IDE: FBIDE.
 	- **Everybody that helped writing the documentation** (and in special Nexinarus who started it):
-		http://www.freebasic.net/wiki/wikka.php?wakka=ContributorList
+		https://www.freebasic.net/wiki/wikka.php?wakka=ContributorList
 	- All users that reported bugs, requested features and as such helped improving the compiler, language and run-time libraries.
 
 {{fbdoc item="back" value="FBWiki|Main Page"}}

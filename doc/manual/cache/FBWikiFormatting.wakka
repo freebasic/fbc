@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="FBWiki Formatting Codes"}}----
 Describes the formatting codes to be used in this wiki.
 
-This guideline describes the formatting codes that are allowed in the FBWiki.  This is a subset of the markup codes supported by the on-line wikka engine.  Because this wiki is also converted to other formats, like html and plan-text, only a few of markup codes can be used by the ""FreeBASIC"" documentation and manual generators.
+This guideline describes the formatting codes that are allowed in the FBWiki.  This is a subset of the markup codes supported by the on-line wikka engine.  Because this wiki is also converted to other formats, like html and plain-text, only a few of markup codes can be used by the ""FreeBASIC"" documentation and manual generators.
 
 In all of the examples following, the markup line with the formatting codes is followed by the output.
 
@@ -13,7 +13,7 @@ In all of the examples following, the markup line with the formatting codes is f
 
 	You can also use double-quote escaping to avoid linking of ""CamelCase"" words
 	
-	##""""WikiWord"" is not parsed as a link""##
+	##""&#34&#34WikiWord&#34&#34 is not parsed as a link""##
 	""WikiWord"" is not parsed as a link
 
 {{fbdoc item="section" value="Text Formatting"}}
@@ -40,13 +40,13 @@ In all of the examples following, the markup line with the formatting codes is f
 {{fbdoc item="section" value="Headers"}}
 	The wiki will recognize markup using two ##=## for the smallest header up to six ##=## for the largest.  The ##fbdoc## manual generator treats all as the same size when converted.
 	
-	##==Header==##
+	##""==""Header""==""##
 	==Header==
 	
 	Recommend using ##""{{fbdoc}}""## action for sections and subsections.  See [[FBWikiFbdocAction|fbdoc action]]. page.
 
 {{fbdoc item="section" value="Horizontal Separator"}}
-	Creates a horizontal separator line across the page.
+	Creates a horizontal separator line across the page.  On some displays, this line is very faint and difficult to see; but it is there.
 	
 	##""----""##
 ----
@@ -105,7 +105,7 @@ In all of the examples following, the markup line with the formatting codes is f
 		##""[[https://www.freebasic.net|FreeBASIC Website]]""##
 		[[https://www.freebasic.net|FreeBASIC Website]]
 	
-	Link to a place on the same page using the ##{{anchor}}## action.  Create an invisible anchor somewhere on the page with:
+	Link to a place on the same page using the ##""{{""anchor""}}""## action.  Create an invisible anchor somewhere on the page with:
 	##""{{anchor name="item1"}}""##{{anchor name="item1"}}
 	
 	Then link to that anchor with:
@@ -115,8 +115,8 @@ In all of the examples following, the markup line with the formatting codes is f
 {{fbdoc item="section" value="Tables"}}
 	The ""{{table}}"" action is recognized by the document generators, using the following format.
 
-	##""{{table columns="5" cellpadding="2" cells="A;B;A and B;A or B;0;0;0;0;0;1;0;1;1;0;0;1;1;1;1;1"}}""##
-	{{table columns="5" cellpadding="2" cells="A;B;A and B;A or B;0;0;0;0;0;1;0;1;1;0;0;1;1;1;1;1"}}
+	##""{{table columns="4" cellpadding="2" cells="A;B;A and B;A or B;0;0;0;0;0;1;0;1;1;0;0;1;1;1;1;1"}}""##
+	{{table columns="4" cellpadding="2" cells="A;B;A and B;A or B;0;0;0;0;0;1;0;1;1;0;0;1;1;1;1;1"}}
 
 
 {{fbdoc item="section" value="Left and Right Columns of Text"}}

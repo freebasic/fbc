@@ -133,3 +133,5 @@ print "aptr: "; *mytype.sptr
 %%##
 
 Pointers can be confusing for the uninitiated, however they need not be if it is kept in mind that the pointer doesn't contain data, it simply points to some data. The pointer is a memory address, and you manipulate that data through the reference operator *. It really isn't much different than a normal variable.
+
+//Last reviewed by ""sancho3"" on February 07, 2018//

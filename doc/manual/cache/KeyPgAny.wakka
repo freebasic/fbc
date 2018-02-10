@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ANY"}}----
-##**Any**## is used as a placeholder for a type or value in various ways.
+The ##**Any**## keyword is used as a placeholder for a type or value in various ways.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDim|Dim]] //identifier// [[KeyPgAs|As]] **Any** [[KeyPgPointer|Pointer]]|[[KeyPgPtr|Ptr]]

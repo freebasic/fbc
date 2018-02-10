@@ -2,7 +2,7 @@
 
 Let's try to compile a big (4000+ lines) graphical QB program in FreeBasic, to see how compatible FB is with QB.
 As an example I will use Jark's TCRay a great raytracer with quadric, cubic and quadratic shapes, perlin noise programmed in 2004. You can get TCRay.zip from
-http://www.mandelbrot-dazibao.com/Programs/Programs.htm
+http://www.petesqbsite.com/downloads/graphics.shtml
 
 Notice TCRay is a QB4.5 interpreted program, Jark never had the patience to compile his work,
 he just tested it interpreted and went on adding features.

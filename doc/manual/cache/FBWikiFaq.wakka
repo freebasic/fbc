@@ -36,7 +36,7 @@
 
 {{anchor name="item4"}}==How do I add my tutorial to the community tutorials?==
 	A tutorial might be a work that is already written or it might be a work in progress.  In both cases you can add the tutorial as follows:
-		- Login into your Wiki account. Note: use same name and password as in the forum, you can't register into the Wiki, the Login/Register form is disabled for registering.
+		- Login into your Wiki account. ++Use same name and password as in the forum++.  **Note: currently, Login/Register form is disabled** due to spam attacks in the past.  To create an account for this wiki, visit [[https://www.freebasic.net/forum/viewtopic.php?f=9&t=25849|Wiki signups]] in the forum.
 		- Go to the [[CommunityTutorials|Community Tutorials]] page
 		- Edit the tutorials page and add a link to your tutorial in the appropriate section.  If your tutorial does not fit in to any of the existing sections, add a new section.
 		- Look at the links already on the tutorials page for examples of how your link should be added.
@@ -47,7 +47,7 @@
 		- If the tutorial is a work in progress, please return to finish it.
 
 {{anchor name="item5"}}==What formatting style should I use on my tutorial?==
-	The overall style for your tutorial is up to you.  There are no specific rules for how you //must// format it, but you may want to look at other tutorials of pages in the FreeBASIC manual for some ideas.  The [[FormattingRules|formatting codes]] used are the same as any other page in the wiki.  We only ask that all sample code be enclosed between tags where ##**""%""""%""( freebasic )**## is the starting tag and ##**""%""""%""**## is the ending tag so it is recognized by our document converters.
+	The overall style for your tutorial is up to you.  There are no specific rules for how you //must// format it, but you may want to look at other tutorials of pages in the FreeBASIC manual for some ideas.  The [[FBWikiFormatting|formatting codes]] used are the same as any other page in the wiki.  We only ask that all sample code be enclosed between tags where ##**""%""""%""( freebasic )**## is the starting tag and ##**""%""""%""**## is the ending tag so it is recognized by our document converters.
 
 {{anchor name="item6"}}==Why haven't I been recognized for my contributions to the wiki?==
 	There is no specific person keeping track of the contributions made to the documentation.  

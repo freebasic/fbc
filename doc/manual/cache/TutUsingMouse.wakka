@@ -13,7 +13,7 @@ After doing some searches, I quickly noticed that there simply wasn't an officia
 
 As with most tutorials, this one too can be better explained with the use of an example program. We will be creating a very simple program that acts upon the user's interaction with the mouse and certain areas of the screen. It should provide the bases of code needed to efficiently operate and control the mouse in your own programming projects.
 
-IMPORTANT: It is mandatory that you set yourself in a graphic mode in order to use the mouse. the mouse commands will always return -1 for a value if the graphic mode is not set.
+//Editors Note: The mouse functions will work with a graphics window as demonstrated in this tutorial. They will work with console window however in Windows, Quick Edit mode must be turned off.//
 
 ==THE SAMPLE PROGRAM DESCRIPTION==
 
@@ -169,3 +169,5 @@ As always, if you have any questions regarding this tutorial or any other I've w
 MystikShadows
 Stéphane Richard
 srichard@adaworld.com 
+
+//Last Reviewed by ""Sancho3"" on February 06, 2018//

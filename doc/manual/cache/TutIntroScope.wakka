@@ -96,3 +96,5 @@ Variables declared within a control block, such as a For-Next, exist as long as 
 == Scope...End Scope Variables ==
 
 Variables declared within a scope block exist as long as the the scope block exists. Once the program leaves the scope block, any variables created within the scope block are destroyed.
+
+//Last Reviewed by ""Sancho3"" on February 06, 2018//

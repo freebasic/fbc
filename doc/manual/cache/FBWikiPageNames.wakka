@@ -10,8 +10,11 @@ Most page name prefixes have been chosen to help the document converters to proc
 	[[DocToc|DocToc]] - ""FreeBASIC Manual"" - Table of Contents
 		Any page that is reachable through the links on this page is considered to be part of the ""FreeBASIC"" Manual and will be included in the downloadable versions of the documentation.
 
+	[[DevToc|DevToc]] - ""FreeBASIC Developer"" - Table of Contents
+		Table of contents for topics related to developing ""FreeBASIC"" itself and compiler internals.  Developer pages linked from this page are part of the ""FreeBASIC"" Manual in some converted formats, otherwise are available only online.
+
 	[[CommunityTutorials|CommunityTutorials]] - Community Tutorials
-		Main page for community submitted tutorials.  These pages are not part of the ""FreeBASIC"" Manual and are available only online.
+		Main page for community submitted tutorials.  Tutorial pages linked from this page are part of the ""FreeBASIC"" Manual in some converted formats, otherwise are available only online.
 
 	[[FBWikiHelp|FBWikiHelp]] - FB Wiki - Help
 		The "help on help" starting point for the online documentation.
@@ -28,13 +31,14 @@ Most page name prefixes have been chosen to help the document converters to proc
 ==Programmer's Guide Pages==
 	Page names that begin with **""ProPg""** indicate a page that is part of the [[CatPgProgrammer|Programmer's Guide]].  These page names have special meaning to the document converters when automatically building a full table of contents and applying styles.
 
+==Developer Pages==
+	Page names that begin with **""Dev""** are reserved for developer pages, that document topics such as compiling ""FreeBASIC"" from sources and compiler internals.
+
 ==Tutorial Pages==
 	Page names that begin with **""Tut""** are reserved for tutorial pages linked from [[CommunityTutorials|Community Tutorials]].  The first letter of each word in the name of the tutorial will be capitalized e.g. **""TutHelloWorld""**
 
 ==Other Page Prefixes==
 	- **""Compiler*""** pages - reserved for pages that document the compiler itself (for example command line options).
-	- **""SVN*""** pages - reserved for instructions on compiling the compiler and runtime library from sources.
-	- **""Dev*""** pages - reserved for pages that document the internals of the ""FreeBASIC"" compiler and runtime libraries. Starting point: [[DevToc|DevToc]]
 	- **""Faq*""** pages - reserved for pages that provide answers to a list of Frequently Asked Questions.
 	- **""KeyPgPp*""** pages - like a **""KeyPg*""** page except reserved for preprocessor directives.  e.g. [[KeyPgPpdefine|KeyPgPpdefine]]
 	- **""SrcPg*""** pages - a source example.

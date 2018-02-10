@@ -342,3 +342,5 @@ myVariantd.d = 356.56
 {{table columns="1" cellpadding="2" cells=" You cannot use dynamic strings within a union."}}
 
 Using a combination of ##//unions//## and ##//type//##s within a program allows you to design custom data types that have a lot of flexibility, but care must be taken to ensure that you are using the data constructs correctly. Improper use of these data types can lead to hard-to-find bugs. The benefits however, out-weigh the risks and once mastered, are a powerful programming tool.
+
+//Last Reviewed by ""Sancho3"" on February 06, 2018//

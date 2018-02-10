@@ -1,3 +1,5 @@
+!!! DELETE ME !!!
+
 =====Quick Introduction=====
 This tutorial covers ideas behind casting pointers, and what data is cast.  I don't know the technical workings in the compiler, but I do know this works, and it's convenient if you are working with lots of information, that has a base-type of some sorts that it builds off of.  Hopefully, this will make more sense as we go on.
 

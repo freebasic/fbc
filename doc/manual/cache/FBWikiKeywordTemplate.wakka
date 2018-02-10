@@ -1,8 +1,8 @@
 {{fbdoc item="title" value="Keyword Template"}}----
-Keyword template.
+Keyword template - short description of the keyword goes here.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""MyFunction""**( //param1// [[KeyPgAs|as]] [[KeyPgString|string]], //param2// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = &H1234 ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **""MyFunction""**( [[KeyPgByval|byval]] //param1// [[KeyPgAs|as]] [[KeyPgString|string]], //param2// [[KeyPgAs|as]] [[KeyPgInteger|integer]] = &H1234 ) [[KeyPgAs|as]] [[KeyPgInteger|integer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **""MyFunction""**( //param1// [, //param2// ] )
@@ -14,13 +14,18 @@ Keyword template.
 		Parameter description.
 
 {{fbdoc item="ret"}}
-	Returns a value of zero (0) if successful, and a non-zero error code on failure.
+	Description of the return value (if any), eg: Returns a value of zero (0) if successful, and a non-zero error code on failure.
 
 {{fbdoc item="desc"}}
 	This topic can be copied and pasted in to a newly created keyword.
+	
+	A lengthy description of the keyword
+	
+	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/check/FBWikiKeywordTemplate_1.bas"}}%%(freebasic)
+Examples go here.  To include the example in the examples/manual folder, markup each code example with ""{{fbdoc item="filename" ...}}"" action.
+""{{fbdoc item="filename" value="examples/manual/check/MyFunction.bas"}}""%%(freebasic)
 '' sample code
 '' sample code
 '' sample code
@@ -34,15 +39,19 @@ sample output
 %%
 
 {{fbdoc item="lang"}}
+	- List of the differences in each dialect, e.g:
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__MyFunction""**##.
 	- Supported only with //[[CompilerOptlang|-lang fb]]//.
 
 {{fbdoc item="target"}}
-	- None
+	- List of platform-specific differences
 
 {{fbdoc item="diff"}}
+	- List of differences from QBASIC, e.g:
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- List of other related keywords
 	- ##[[FBWikiKeywordTemplate|Keyword Template]]##
 
 {{fbdoc item="back" value="FBWikiHelp|FB Wiki - Help"}}

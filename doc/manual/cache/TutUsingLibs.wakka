@@ -126,3 +126,5 @@ tinyPTC: PTC_Close ()
 %%
 That's all there is to quitting!
 As you can see, there is nothing inherently more difficult in using libraries in FreeBASIC compared to QuickBASIC. In fact, because coders don't need to jump through hoops to get to memory, it's actually much easier, even with the more modern OS and hardware.
+
+//Last Reviewed by ""Sancho3"" on February 06, 2018//

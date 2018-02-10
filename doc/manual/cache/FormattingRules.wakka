@@ -1,5 +1,6 @@
 !!! DELETE ME !!!
 
+
 ======Wikka Formatting Guide======---<<===General Guidelines===If a markup sequence is not in these guidelines, then it is not officially supported. Use caution when implementing markup that is not officially supported by this document, as undocumented functionality may change with version updates.--- ---Unless otherwise stated in these guidelines, all markup is line based, that is, a newline character should not intervene. These are identified as 'inline' markup.<<::c::---===Escaping Markup===---Anything between 2 sets of double-quotes is not formatted.
 This is the equivalent of escaping a character(s):--- ---<<
 ~##""**two bold &#34&#34**&#34&#34 stars**""##
@@ -91,7 +92,7 @@ whitespace (note the gap).---<<
 
 Line 1---Line 2
 ---===5. Lists and indents===---You can indent text using a tilde (~), a tab, or four spaces (which will auto-convert into a tab).---<<
-##""~This text is indented<br />~~This text is double-indented<br />    This text is also indented""## <<::c::<<
+##""~This text is indented<br />~~This text is double-indented<br />    This text is also indented""## <<::c::<<
 ~This text is indented
 ~~This text is double-indented
 ~This text is also indented

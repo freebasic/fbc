@@ -47,7 +47,8 @@ Print
 'Save the current array size
 tmp = myType.size
 'Now resize the array
-myType.darray = Reallocate(myType.darray, 10)
+'myType.darray = Reallocate(myType.darray, 10)
+myType.darray = Reallocate(myType.darray, 10 * sizeof(integer)) ' Editors Note: above code line changed to this
 'Set the length indicator
 myType.size = 10
 
@@ -111,7 +112,9 @@ This section simply prints out the values using the same method that was used to
 Of course, this should be a dynamic array, so you should be able to resize the array, and this is exactly what the next section of code will do.
 %%(freebasic)
 tmp = myType.size
-myType.darray = Reallocate(myType.darray, 10)
+'myType.darray = Reallocate(myType.darray, 10)
+myType.darray = Reallocate(myType.darray, 10 * sizeof(integer)) ' Editors Note: above code line changed to this
+
 myType.size = 10
 %%
 The first line of code saves the current size of the array so that the new memory segment can be initialized while not overwriting any existing data. You will see this in a moment.
@@ -213,3 +216,5 @@ Print "Press any key..."
 
 Sleep
 %%
+
+//Last reviewed by ""sancho3"" on February 08, 2018  Notes: Error in code fixed and noted//
