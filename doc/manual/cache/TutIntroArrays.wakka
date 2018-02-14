@@ -1,13 +1,13 @@
 {{fbdoc item="title" value="Introduction To Arrays"}}----
 //Written by [[WikiRick|rdc]]//
 
-Arrays are probably the single most useful programming construct  that is available to you in FreeBasic. Many problems that you will try to solve with a programming solution involve data arranged in tabular format, and arrays are perfect for managing this type of data. Understanding arrays is a crucial skill in becoming a competent programmer.
+Arrays are probably the single most useful programming construct  that is available to you in ""FreeBASIC"". Many problems that you will try to solve with a programming solution involve data arranged in tabular format, and arrays are perfect for managing this type of data. Understanding arrays is a crucial skill in becoming a competent programmer.
 
-Arrays are contiguous memory segments of a single or composite data type. You can think of an array as a table, with rows and columns of data. An array can have one or more rows, and each row can have one or more columns. The number of rows and columns define the dimensions of the array. FreeBasic uses the row-major scheme for arrays, which means that the first dimension references the row in an array that has more than one dimension. FreeBasic supports up to eight dimensions in an array.
+Arrays are contiguous memory segments of a single or composite data type. You can think of an array as a table, with rows and columns of data. An array can have one or more rows, and each row can have one or more columns. The number of rows and columns define the dimensions of the array. ""FreeBASIC"" uses the row-major scheme for arrays, which means that the first dimension references the row in an array that has more than one dimension. ""FreeBASIC"" supports up to eight dimensions in an array.
 
 === One-Dimensional Arrays ===
 
-An array with a single row is called a one-dimensional array. If an array is a single-dimensional array, then the row is not defined in the declaration, only the number of columns in the row. Since an array requires a minimum of one row, the row is understood to exist in this case. The following code snippets create a single-dimension integer array using the different array definition schemes available in FreeBasic.
+An array with a single row is called a one-dimensional array. If an array is a single-dimensional array, then the row is not defined in the declaration, only the number of columns in the row. Since an array requires a minimum of one row, the row is understood to exist in this case. The following code snippets create a single-dimension integer array using the different array definition schemes available in ""FreeBASIC"".
 
 %%(freebasic)
 Dim myArray(10) as Integer
@@ -208,7 +208,7 @@ You can also dimension multidimensional arrays in the same manner, by specifying
 Dim bArray(1 to 2, 1 to 5) As Integer => {{1, 2, 3, 4, 5},{6, 7, 8, 9, 10}}
 %%
 
-In this example, the first block, ##{1, 2, 3, 4, 5}##, corresponds to row 1, and the second block, ##{6, 7, 8, 9, 10}##, corresponds to row 2. Remember that FreeBasic arrays are row-major, so the row is specified before the column. When you initialize an array in this manner, you must be sure that the number of elements defined will fit into the array.
+In this example, the first block, ##{1, 2, 3, 4, 5}##, corresponds to row 1, and the second block, ##{6, 7, 8, 9, 10}##, corresponds to row 2. Remember that ""FreeBASIC"" arrays are row-major, so the row is specified before the column. When you initialize an array in this manner, you must be sure that the number of elements defined will fit into the array.
 
 === Type Array Initialization ===
 

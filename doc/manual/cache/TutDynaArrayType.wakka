@@ -3,9 +3,9 @@
 
 === Introduction ===
 
-A dynamic array in a type definition is a very useful feature, but FreeBasic doesn't support it before version 1.00.0. Or rather, it doesn't support it directly before that version. However, you can create dynamic arrays by using pointers and the associated memory functions.
+A dynamic array in a type definition is a very useful feature, but ""FreeBASIC"" doesn't support it before version 1.00.0. Or rather, it doesn't support it directly before that version. However, you can create dynamic arrays by using pointers and the associated memory functions.
 
-An array is simply a contiguous block of memory that holds a certain data type. Arrays in FreeBasic use an array descriptor to describe the data contained within the array, and you can use this same technique to build a dynamic array within a type. The two elements you need within your type-def are a pointer to a particular data type, and a size indicator. 
+An array is simply a contiguous block of memory that holds a certain data type. Arrays in ""FreeBASIC"" use an array descriptor to describe the data contained within the array, and you can use this same technique to build a dynamic array within a type. The two elements you need within your type-def are a pointer to a particular data type, and a size indicator. 
 
 You can then use the ptr field to allocate a block of memory to the needed size, and save that size in the size indicator field. The size field is used to tell you how many elements are currently in the array. Once the array has been initialized, you can then use pointer indexing to access each element in the array.
 

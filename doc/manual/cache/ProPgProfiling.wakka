@@ -10,7 +10,7 @@ The three basic steps to profiling a program are:
 	- 2) Run the program to collection information ( stored in ##gmon.out## ).
 	- 3) Analyze the information collected using GPROF.
 
-Full documentation on GPROF is available here: [[http://www.gnu.org/software/binutils/manual/gprof-2.9.1/gprof.html|http://www.gnu.org/software/binutils/manual/gprof-2.9.1/gprof.html]].  If the documentation has moved from that location, simply search the web for "GNU GPROF" and a relevant link should be returned.
+Full documentation on GPROF is available here: [[https://ftp.gnu.org/old-gnu/Manuals/gprof-2.9.1/html_mono/gprof.html|https://ftp.gnu.org/old-gnu/Manuals/gprof-2.9.1/html_mono/gprof.html]].  If the documentation has moved from that location, simply search the web for "GNU GPROF" and a relevant link should be returned.
 
 ""FreeBASIC"" supports function profiling; not basic-block or line-by-line profiling.
 

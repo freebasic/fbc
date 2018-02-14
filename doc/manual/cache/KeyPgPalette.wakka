@@ -86,6 +86,7 @@ sleep
 	- ##[[KeyPgScreengraphics|Screen (Graphics)]]##
 	- ##[[KeyPgColor|Color]]##
 	- ##[[KeyPgUsing|Using]]##
-	- ##[[GfxInternalFormats|Internal Pixel Formats]]##
+	- [[GfxInternalFormats|Internal Pixel Formats]]
+	- [[GfxDefPalettes|Default Palettes]]
 
 {{fbdoc item="back" value="CatPgGfx2D|2D Drawing Functions"}}

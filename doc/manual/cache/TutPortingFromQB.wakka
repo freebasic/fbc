@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="Compiling a Big QB program in FB"}}----
 
-Let's try to compile a big (4000+ lines) graphical QB program in FreeBasic, to see how compatible FB is with QB.
+Let's try to compile a big (4000+ lines) graphical QB program in ""FreeBASIC"", to see how compatible FB is with QB.
 As an example I will use Jark's TCRay a great raytracer with quadric, cubic and quadratic shapes, perlin noise programmed in 2004. You can get TCRay.zip from
 http://www.petesqbsite.com/downloads/graphics.shtml
 
@@ -19,22 +19,22 @@ The program is made of has 3 files:
 **In ""TCLib17.bas""**
 It is a "pure QB" SVGA library. Most of its functions are obsoleted by FB as they are implemented as QB-style keywords.  I had my share in developing that lib so you can trust me for this part ;)
 
-Comment out the contents of the ClearScreen sub and add this
+Comment out the contents of the ""ClearScreen"" sub and add this
 ##CLS##
 
-Comment out the contents of the Point24 sub and add this:
+Comment out the contents of the ""Point24"" sub and add this:
 ##a& = Point(x%,y%)
 red% = a& Shr 16
 green% = (a& Shr 8) And 255
 blue% = a& And 255## 	
 
-Comment out the contents of the Pset24 sub and add this:
+Comment out the contents of the ""Pset24"" sub and add this:
 ##PSet (x%,y%), red% Shl 16 Or green Shl 8 Or blue##
 
 Comment out the contents of the Screenshot sub and add this:
 ##BSave Name$+".bmp"##
 
-Comment out the contents of the ""SelectVga"" sub, we will work with a fixed size most pc's will support.  Comment out the contents of the ""SetText sub"", we are able to output text in HiRes graphics so mode switching is not required.
+Comment out the contents of the ""SelectVga"" sub, we will work with a fixed size most pc's will support.  Comment out the contents of the ""SetText sub"", we are able to output text in ""HiRes"" graphics so mode switching is not required.
 
 Comment out the contents of the ""SetVGA"" Sub excluding the Powers of two calculation at the end and add these four lines:
 ##Screen 20,32 '1024x768, 32 bits
@@ -43,7 +43,7 @@ scrwidth=1024
 Fullscreen##
 
 
-**In TCRay17.bas**
+**In ""TCRay17"".bas**
 Add a ""SetSVGA"" as the first line in the Menu sub (we are not switching modes so mode must be set before outputting text),
 
 ==Compiling==
@@ -61,7 +61,7 @@ Add:
 ## #undefine RGB##
 Before the line giving the error.
 
-ERROR: Duplicated definition, found 'ScreenRes' ([[KeyPgScreenres|ScreenRes]] is a keyword in FB)
+ERROR: Duplicated definition, found '""ScreenRes""' ([[KeyPgScreenres|ScreenRes]] is a keyword in FB)
 Add:
 ## #undefine ""ScreenRes""##
 Before the line giving the error.
@@ -101,7 +101,7 @@ Ok. At this point all modules compile. We're now going to fix a few linker error
 After compiling the linker ties together all the modules with a runtime library, finds the final addresses of every sub/function and substitutes the labels in the calls with these addresses.  If a sub/function is called in the code and its nowhere to be found, the linker complains and gives us the name of the offending function. It can't give us the line numbers (the linker doesn't work with the source) so we will have to do a text search to find where the problem occurs.  Notice the linker gives us "mangled" function names (an ampersand and the size of the parameters passed is added to the end), just ignore the ampersand and what's after.
 
 ""TcRay21C.o:fake:(.text+0x174d):"" undefined reference to `LINE24@20'
-A call to an undefined Line24 sub is made in the program, you can find this call inside Draw.Axis, in ""TCRay21.bas"", a sub that's it's never called (you can do a search to confirrm it)
+A call to an undefined ""Line24"" sub is made in the program, you can find this call inside Draw.Axis, in ""TCRay21.bas"", a sub that's it's never called (you can do a search to confirrm it)
 Probably the QB4.5 compiler would complain too about this. (Remember: this program never compiled in QB4.5) Just comment out the contents of the sub Draw.Axis 
 
 ""TcRay21C.o:fake:(.text+0x181b3):"" undefined reference to `FFIX@0'

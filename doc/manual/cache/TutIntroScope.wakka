@@ -3,7 +3,7 @@
 
 === Variable Scope ===
 
-Scope refers to the visibility of a variable, where you can access a variable within a program. Before you can understand the different levels of scope, you need to understand the structure of a program in FreeBasic.
+Scope refers to the visibility of a variable, where you can access a variable within a program. Before you can understand the different levels of scope, you need to understand the structure of a program in ""FreeBASIC"".
 
 == Program Structure ==
 

@@ -164,7 +164,7 @@ Sleep
 %%
 
 {{fbdoc item="lang"}}
-	- Only supported in -lang fb, -lang fblite and -lang deprecated dialects.
+	- Only supported in //[[CompilerOptlang|-lang fb]]//, //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang deprecated]]// dialects.
 
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC"".

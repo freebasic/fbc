@@ -89,7 +89,7 @@ If either of the statements within the parenthesis evaluate to 0, then And will 
 
 === The Not Problem ===
 
-The Not bitwise operator can be a problem in an If statement. You may be used to writing //If Not var Then//, with Not performing a logical, rather than a bitwise operation. In FreeBasic Not performs a bitwise operation, not a logical operation. 
+The Not bitwise operator can be a problem in an If statement. You may be used to writing //If Not var Then//, with Not performing a logical, rather than a bitwise operation. In ""FreeBASIC"" Not performs a bitwise operation, not a logical operation. 
 
 If var were to contain the value of 3, then Not 3 is -4, which will be regarded as a True result and the code following the Then will be executed, which is probably not what you wanted. Instead of writing //If Not var Then//, you should write //If var <> 0 Then//.
 

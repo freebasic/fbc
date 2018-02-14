@@ -10,13 +10,13 @@ In order to demonstrate that it is not necessary to have an OO language this exa
 
 The code was tested using FB 0.16 for win32.
 
-If you have to concatenate a lot of strings in most Basics you usually find that it is a time consuming process.  Actually FreeBasic string operations are remarkably quick but you can still do better using a string builder.
+If you have to concatenate a lot of strings in most Basics you usually find that it is a time consuming process.  Actually ""FreeBASIC"" string operations are remarkably quick but you can still do better using a string builder.
 
 A string builder is simply a class that maintains a string buffer in such a way as to avoid repeated calls to the memory allocation function because this is a relatively expensive operation.  The methods of the class provide ways of manipulating the buffer and converting between it and the native string type.
 
 The trick that makes it faster than the built type for large strings and large numbers of appends is that the string is held in a heap allocated buffer that is always larger than the actual length of the string.  This means that appending to the end of the string usually simply means copying the contents of the new string to the memory location following the last character of the current string.  In this implementation the buffer is a ZString so it is easy to convert it to an ordinary dynamic string.
 
-The FreeBasic module encapsulates a type definition for a struct.  Instances of this struct hold the attributes of the object.  The methods are simply normal FreeBasic public functions and subs defined in the same module.  When you want to call a method you use the normal FreeBasic syntax:
+The ""FreeBASIC"" module encapsulates a type definition for a struct.  Instances of this struct hold the attributes of the object.  The methods are simply normal ""FreeBASIC"" public functions and subs defined in the same module.  When you want to call a method you use the normal ""FreeBASIC"" syntax:
 %%(freebasic) s = StringB_ToString(AStringBInstance)%%
 
 By convention all methods names begin with the name of the class and an underscore and the first argument is always the instance of the type.  This argument should always be passed by reference to ensure that changes to the state are permanent and also to avoid unnecessary, time-consuming, copying.

@@ -108,7 +108,7 @@ close #1
 %%
 
 {{fbdoc item="diff"}}
-	- Care must be taken with dynamic or fixed length strings inside user defined types (UDT), see the warning at KeyPgType.
+	- Care must be taken with dynamic or fixed length strings inside user defined types (UDT), see the warning at [[KeyPgType|Type]].
 	- The keyword ##[[KeyPgField|Field]]## can only be used with ##[[KeyPgType|Type]]## to specify the packing of the UDT. 
 
 {{fbdoc item="see"}}

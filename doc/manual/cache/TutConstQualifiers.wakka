@@ -3,9 +3,9 @@ Note:  As with all things regarding scope, Const qualifiers may be a bit difficu
 
 Also note my cliche title, which I chose because of it's clicheness.
 
-What the heck are Const qualifiers?  Const qualifiers are a feature recently added to the language (fbc 0.18.3);  they're a standard part of C""++"" and now they exist in FreeBasic too.  Const qualifiers are yet another form of protection - they allow some "variables" to act like constants to certain parts of your program, in other words some parts of the program are allowed to access (read) them but not modify them.  Just another kind of type safety, really, but an extremely useful one.  In particular, they are very useful in OO situations, but you can probably benefit from them to some degree even if you aren't interested in OOP.
+What the heck are Const qualifiers?  Const qualifiers are a feature recently added to the language (fbc 0.18.3);  they're a standard part of C""++"" and now they exist in ""FreeBASIC"" too.  Const qualifiers are yet another form of protection - they allow some "variables" to act like constants to certain parts of your program, in other words some parts of the program are allowed to access (read) them but not modify them.  Just another kind of type safety, really, but an extremely useful one.  In particular, they are very useful in OO situations, but you can probably benefit from them to some degree even if you aren't interested in OOP.
 
-The Const qualifier in FreeBasic is essentially an extension to data type declarations, and they may be used with Dim, UDT members, and procedure parameters.  Generally you put it right after the "As" part of the variables's data type declaration:
+The Const qualifier in ""FreeBASIC"" is essentially an extension to data type declarations, and they may be used with Dim, UDT members, and procedure parameters.  Generally you put it right after the "As" part of the variables's data type declaration:
 
 %%(freebasic)
 Dim As Const Integer my_const_int = 5
@@ -166,7 +166,7 @@ If you have any other difficulties with Const qualifiers, remember that even tho
 
 If you still don't understand Const qualifiers, you probably are a newbie who doesn't know much about scope yet anyways - and that's fine, you'll learn as you go.  Eventually some decent documentation for this feature will be created, but until then this is all you have.  Bear in mind:  if you don't understand how they work, you probably won't need them.  I for one have written fine programs long before they were around, and I'll probably continue to do so without using them anywhere they aren't needed.  There are specific instances when they're useful, and if you understand those instances then you may as well use them when those instances arise.  But if you don't understand, that's fine!
 
-Finally, here are some links that should be helpful.  The first is a C""++"" documentation page about Const qualifiers in C""++"" - of course, it only makes sense if you understand C""++"", and they also talk about things we don't have yet (i.e., Const methods).  Nevertheless it's a fine place to start if you know any C""++"", so check it out if you like.  There is also a link to a forum topic in which I asked about FreeBasic development (and learned about Const qualifiers), and a link to the original ""SourceForge"" Feature Request page in which Const qualifiers were originally requested as a feature:
+Finally, here are some links that should be helpful.  The first is a C""++"" documentation page about Const qualifiers in C""++"" - of course, it only makes sense if you understand C""++"", and they also talk about things we don't have yet (i.e., Const methods).  Nevertheless it's a fine place to start if you know any C""++"", so check it out if you like.  There is also a link to a forum topic in which I asked about ""FreeBASIC"" development (and learned about Const qualifiers), and a link to the original ""SourceForge"" Feature Request page in which Const qualifiers were originally requested as a feature:
 
 https://isocpp.org/wiki/faq/const-correctness
 http://www.freebasic.net/forum/viewtopic.php?t=9975&postdays=0&postorder=asc&start=0

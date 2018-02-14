@@ -10,19 +10,17 @@ Please edit this page to remove items when they are written or add items when th
 	Expressions (Add to "Statements and Expressions" on CatPgProgrammer)
 	See [[CatPgProgrammer|Programmer's Guide]] (W.I.P.)
 	Need to split Return-from-gosub and Return-from-proc (See KeyPgReturn)
-	Dedicated page for ##[[KeyPgScreengraphics|Screen]]##'s QB/page-choosing mode - perhaps KeyPgScreenqb or KeyPgScreenpage...?  (quick fb example added to KeyPgPcopy for now...)
+	Dedicated page for ##[[KeyPgScreengraphics|Screen]]##'s QB/page-choosing mode - perhaps KeyPgScreenqb ++or KeyPgScreenpage...++?  (quick fb example added to KeyPgPcopy for now...)
 
 {{fbdoc item="section" value="Pages missing/incorrect examples"}}
 	None known (but if found, please edit this page)
 
 {{fbdoc item="section" value="Misc wishlist"}}
-	CVS SNV GIT (many pages about former CVS SVN stuff, little about GIT)
 	Warn in all non-portable or "evil" examples
 	File I/O: FB commands vs "CRT"
 	Consistent policy about "FB version diff" [[KeyPgImageInfo]] [[KeyPgRem]]
 	FB source file size limit
 	"returning references" stuff (PEEK, (), [], ... total 7 pages BUMP'ed today)
-	Various outdated pages {delete} or update them [[FBWikiDownloads]] [[GFXLib2]]
 	"-gen GCC" document how to get it working (esp. in DOS)
 
 {{fbdoc item="back" value="FBWiki|Main Page"}}
