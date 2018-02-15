@@ -126,6 +126,10 @@ This gives an angle of about 0.6435 radians, or around 36.9 degrees. The FreeBAS
 	- {{fbdoc item="keyword" value="KeyPgAsin|ASIN"}} (arcsine)
 	- {{fbdoc item="keyword" value="KeyPgCos|ACOS"}} (arccosine)
 	- {{fbdoc item="keyword" value="KeyPgAtn|ATN"}} (arctan, there is also {{fbdoc item="keyword" value="KeyPgAtan2|ATAN2"}} which takes the opposite and adjacent sides of the triangle, not their ratio)
+//Editors note:  
+ATN returns the arctangent of the argument number as a Double within the range of -Pi/2 to Pi/2. 
+ATAN2 returns the arctangent of the ratio y/x as a Double within the range of -Pi to Pi
+//
 
 **Other Trigonometric functions**
 
@@ -156,4 +160,4 @@ This means the same as {{fbdoc item="keyword" value="KeyPgSin|SIN"}}(y)*{{fbdoc 
 
 There are several more useful identities out there. Search for trigonometric identities or consult any higher mathematical reference.
 
-//Last reviewed by ""sancho3"" on February 08, 2018//
+//Last reviewed by ""sancho3"" on February 15, 2018 Note: Added clarification of ATN and ATAN2 funcitons as requested//

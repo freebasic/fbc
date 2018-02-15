@@ -118,6 +118,10 @@ In all of the examples following, the markup line with the formatting codes is f
 	##""{{table columns="4" cellpadding="2" cells="A;B;A and B;A or B;0;0;0;0;0;1;0;1;1;0;0;1;1;1;1;1"}}""##
 	{{table columns="4" cellpadding="2" cells="A;B;A and B;A or B;0;0;0;0;0;1;0;1;1;0;0;1;1;1;1;1"}}
 
+	Some characters have special meaning to HTML and may be escapedin the ##""{{table}}""## action.  **Notice that the HTML escapes do not have the semicolon '##;##' suffix shown in this table**.  They need the semicolon suffix, however, it is currently impossible to display a semicolon in a table because the semicolon is the cell delimiter.
+	##""{{table columns="3" cellpadding="2" cells="Display;Escape;Description;&amp;;&amp;amp;Ampersand;&gt;;&amp;gt;Greater Than;&lt;;&amp;lt;Less Than;&quot;;&amp;quot;Double Quote;A;&amp;#065;Character value [0-255]"}}""##
+	{{table columns="3" cellpadding="2" cells="Display;Escape;Description;&amp;;&amp;amp;Ampersand;&gt;;&amp;gt;Greater Than;&lt;;&amp;lt;Less Than;&quot;;&amp;quot;Double Quote;A;&amp;#065;Character value [0-255]"}}
+
 
 {{fbdoc item="section" value="Left and Right Columns of Text"}}
 	To create a left and right columns of text, use two ##<## characters before and after the left block, and use two ##>## characters before and after the right block.

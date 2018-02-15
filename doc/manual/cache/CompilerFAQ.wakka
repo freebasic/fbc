@@ -24,7 +24,7 @@
 	==- {{anchor name="item22|Can I have an offline version of the documentation?"}}==
 	==- {{anchor name="item23|What's the idea behind the FB dialects?"}}==
 	==- {{anchor name="item24|Why does my program crash when I define an array larger than xx?"}}==
-	==- {{anchor name="item25|Why does my program fail to compile with the message 'cannot find -llibname'"?}}==
+	==- {{anchor name="item25|Why does my program fail to compile with the message 'cannot find -llibname'?"}}==
 
 **Advanced ""FreeBASIC""**
 

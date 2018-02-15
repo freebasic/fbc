@@ -10,7 +10,7 @@ Standard variable types and limits.
 
 {{fbdoc item="section" value="String Types"}}
 
-~~{{table columns="5" cellpadding="2" cells="Type ; Character Size (in bytes) ; Minimum Size (in characters) ; Maximum Size (in characters) ; Literal Suffix ; String ; 1 ; 0 ; [**]32bit: +2147483647, 64bit: +9223372036854775807 ; $ ; Zstring ; 1 ; 0 ; [**]32bit: +2147483647, 64bit: +9223372036854775807 ; [N/A] ; Wstring ; [*] ; [*]0 ; [*,**]32bit: +2147483647, 64bit: +9223372036854775807 ; [N/A]""}}
+~~{{table columns="5" cellpadding="2" cells="Type ; Character Size (in bytes) ; Minimum Size (in characters) ; Maximum Size (in characters) ; Literal Suffix ; String ; 1 ; 0 ; [**]32bit: +2147483647, 64bit: +9223372036854775807 ; $ ; Zstring ; 1 ; 0 ; [**]32bit: +2147483647, 64bit: +9223372036854775807 ; [N/A] ; Wstring ; [*] ; [*]0 ; [*,**]32bit: +2147483647, 64bit: +9223372036854775807 ; [N/A]"}}
 
 ~&[*] //Unicode, or "wide", characters vary in both size and availability with platform.//
 ~&[""**""] //All runtime library string procedures take and produce ##[[KeyPgInteger|Integer]]## values for sizes and positions. The actual maximum size will vary (smaller) with storage location and/or platform.//
