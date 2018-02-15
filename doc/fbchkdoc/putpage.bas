@@ -85,24 +85,14 @@ if( cmd_opt_help ) then
 	print "   -web+            put pages on the web server from web_cache_dir"
 	print "   -dev             put pages on the development server from cache_dir"
 	print "   -dev+            put pages on the development server from dev_cache_dir"
-	print "   -url URL         put pages on URL from cache_dir (overrides other options)"
-	print "   -certificate FILE"
-	print "                    certificate to use to authenticate server (.pem)"
-	print "   -cache DIR       override the cache directory location"
 	print
 	print "options:"
-	print "   pages            list of wiki pages on the command line"
-	print "   @pagelist	       text file with a list of pages, one per line"
 	print "   -comment         prompt for comment line when storing pages"
 	print "   -comment1        prompt for comment line only once"
 	print "   -u user          specifiy wiki account username"
 	print "   -p pass          specifiy wiki account password"
 	print
-	print "general options:"
-	print "   -h, -help        show the help information"
-	print "   -ini file        set ini file name (instead of" & hardcoded.default_ini_file & ")"
-	print "   -print           print active options and quit"
-	print "   -v               be verbose"
+	cmd_opts_show_help( "put page to", false )
 	print
 	end 1
 end if

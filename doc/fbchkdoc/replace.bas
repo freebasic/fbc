@@ -149,21 +149,20 @@ wend
 if( cmd_opt_help ) then
 	print "replace [-f] file.txt [-c comment] [-n] [-r] [-s] [options...]"
 	print
+	print "options:"
 	print "   -f file.txt  specifies a file in the following format:"
 	print "                    page,oldtext,newtext"
 	print
 	print "   -c comment   specifies the comment"
 	print "   -s           skip processing"
-	print "   -n           don't save the changes."
+	print "   -n           don't save the changes"
 	print "   -r           create html page with clone and delete links"
 	print
-	print "   -web         replace files in cache_dir"
-	print "   -web+        replace files in web cache_dir"
-	print "   -dev         replace files in cache_dir"
-	print "   -dev+        replace files in dev cache_dir"
+	cmd_opts_show_help( "replace files in" )
 	print
 	print "   automatically writes 'changed.txt' with a list of changed page names"
 	print "   (i.e. can then use 'putpage -web @changed.txt')"
+	print
 	end 0
 end if
 

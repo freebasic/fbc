@@ -195,16 +195,14 @@ wend
 if( cmd_opt_help ) then
 	print "delextra [options]"
 	print
-	print "   -n         only print what would happen but don't"
-	print "                 actually delete any files"
-	print "   -scan      scan page for !!! DELETE ME !!!"
-	print "   -html      write delete.html helper file"
-	print "   -git       use 'git rm' instead of file system delete"
+	print "options:"
+	cmd_opts_show_help_item( "-n", "only print what would happen but don't actually delete any files" )
+	cmd_opts_show_help_item( "-scan", "scan page for !!! DELETE ME !!!" )
+	cmd_opts_show_help_item( "-html", "write 'delete.html' helper file" )
+	cmd_opts_show_help_item( "-git", "use 'git rm' instead of file system delete" )
 	print
-	print "   -web       delete extra files in cache_dir"
-	print "   -web+      delete extra files in web cache_dir"
-	print "   -dev       delete extra files in cache_dir"
-	print "   -dev+      delete extra files in dev cache_dir"
+	cmd_opts_show_help( "delete extra files in" )
+	print
 	end 0
 end if
 

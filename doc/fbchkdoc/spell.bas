@@ -377,13 +377,8 @@ wend
 if( cmd_opt_help ) then
 	print "spell [pages] [@pagelist] [options]"
 	print
-	print "   pages      list of wiki pages on the command line"
-	print "   @pagelist	 text file with a list of pages, one per line"
+	cmd_opts_show_help( "spellcheck" )
 	print
-	print "   -web       spellcheck files in cache_dir"
-	print "   -web+      spellcheck files in web cache_dir"
-	print "   -dev       spellcheck files in cache_dir"
-	print "   -dev+      spellcheck files in dev cache_dir"
 	end 0
 end if
 

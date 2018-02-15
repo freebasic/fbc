@@ -80,21 +80,8 @@ if( cmd_opt_help ) then
 	print "   -web+            get pages from the web server in to web_cache_dir"
 	print "   -dev             get pages from the development server in to cache_dir"
 	print "   -dev+            get pages from the development server in to dev_cache_dir"
-	print "   -url URL         get pages from URL (overrides other options)"
-	print "   -certificate FILE"
-	print "                    certificate to use to authenticate server (.pem)"
-	print "   -cache DIR       override the cache directory location"
 	print
-	print "options:"
-	print "   pages            list of wiki pages on the command line"
-	print "   @pagelist	       text file with a list of pages, one per line"
-	print "   -auto            don't ask for user input, don't retry failed downloads"
-	print
-	print "general options:"
-	print "   -h, -help,       show the help information"
-	print "   -ini file        set ini file name (instead of" & hardcoded.default_ini_file & ")"
-	print "   -print           print active options and quit"
-	print "   -v               be verbose"
+	cmd_opts_show_help( "get page from", false )
 	print
 	end 1
 end if

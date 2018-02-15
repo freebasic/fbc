@@ -276,10 +276,6 @@ if( cmd_opt_help ) then
 	print "   -web+            get index from the web server url"
 	print "   -dev             get index from the development server url"
 	print "   -dev+            get index from the development server url"
-	print "   -url URL         get index from URL (overrides other options)"
-	print "   -certificate FILE"
-	print "                    certificate to use to authenticate server (.pem)"
-	print "   -cache DIR       override the cache directory location"
 	print
 	print "options:"
 	print "   -local           use local cache only, don't query server, just"
@@ -291,11 +287,8 @@ if( cmd_opt_help ) then
 	print "   -dev             get page names from cache_dir"
 	print "   -dev+            get page names from dev_cache_dir"
 	print
-	print "general options:"
-	print "   -h, -help        show the help information"
-	print "   -ini file        set ini file name (instead of" & hardcoded.default_ini_file & ")"
-	print "   -print           print active options and quit"
-	print "   -v               be verbose"
+	cmd_opts_show_help( "get index from", false )
+	print
 	end 0
 end if
 

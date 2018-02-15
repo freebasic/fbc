@@ -66,5 +66,7 @@ declare sub cmd_opts_unexpected_die( byval i as const integer )
 declare function cmd_opts_read( byref i as integer ) as boolean
 declare function cmd_opts_resolve() as boolean
 declare function cmd_opts_check() as boolean
+declare sub cmd_opts_show_help( byref action as const string = "", byval locations as boolean = true )
+declare sub cmd_opts_show_help_item( byref opt_name as const string, byref opt_desc as const string )
 
 #endif

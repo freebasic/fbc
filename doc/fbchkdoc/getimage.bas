@@ -164,6 +164,9 @@ if( cmd_opt_help ) then
 	print "                    following format, one image per line:"
 	print
 	print "                    PageName,URL"
+	print
+	cmd_opts_show_help( "" )
+	print
 	end 0
 end if
 

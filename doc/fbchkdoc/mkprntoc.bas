@@ -317,13 +317,13 @@ wend
 if( cmd_opt_help ) then
 	print "mkprntoc [options]"
 	print
-	print "   -web       use files in cache_dir"
-	print "   -web+      use files in web cache_dir"
-	print "   -dev       use files in cache_dir"
-	print "   -dev+      use files in dev cache_dir"
+	print "options:"
 	print "   -with-tut-pages  include tutorial pages"
 	print "   -with-dev-pages  include developer pages"
-	end 0
+	print
+	cmd_opts_show_help()
+	print
+ 	end 0
 end if
 
 cmd_opts_resolve()

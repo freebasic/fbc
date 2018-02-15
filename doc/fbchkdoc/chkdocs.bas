@@ -76,6 +76,7 @@ end enum
 '' from cmd_opts.bas
 extern cache_dir as string
 extern image_dir as string
+extern cmd_opt_verbose as boolean
 
 const PageIndex_File = hardcoded.default_index_file
 const DocPages_File = "DocPages.txt"
@@ -365,11 +366,20 @@ dim shared Special_Pages_tbl( 1 to ... ) as zstring ptr = _
 		( @"CatPgCompOpt" ) _
 	}
 
+enum PAGEINFO_HEADER_MSG
+	PAGEINFO_HEADER_MSG_INVALID
+	PAGEINFO_HEADER_MSG_NONE
+	PAGEINFO_HEADER_MSG_NO_TITLE
+	PAGEINFO_HEADER_MSG_NO_HORZLINE
+	PAGEINFO_HEADER_MSG_NO_NEWLINE
+	PAGEINFO_HEADER_MSG_NO_INTRO_TEXT
+end enum
+
 type PageInfo_t
 	sName as string
 	flags as integer
 	sTitle as string
-	msg as integer
+	header_msg as PAGEINFO_HEADER_MSG
 End type
 
 redim shared sPages() as PageInfo_t
@@ -382,6 +392,7 @@ dim shared pagehash_keypg as HASH
 dim shared pagehash_catpg as HASH
 dim shared pagehash_devpg as HASH
 dim shared pagehash_scanned as HASH
+dim shared pagehash_ops as HASH
 
 '':::::
 sub Pages_Clear ()
@@ -394,6 +405,7 @@ sub Pages_Clear ()
 	pagehash_keypg.clear()
 	pagehash_devpg.clear()
 	pagehash_scanned.clear()
+	pagehash_ops.clear()
 end sub
 
 '':::::
@@ -876,16 +888,17 @@ function is_fbdoc_title( byval token as WikiToken ptr ) as integer
 	'' ((fbdoc item="title" ...}}
 	if( token <> NULL ) then
 		if( token->id = WIKI_TOKEN_ACTION ) then
+			'' normally expect all pages to start with {{{fbdoc item="title" ... }}
 			if lcase(token->action->name) = "fbdoc" then
 				sItem = token->action->GetParam( "item" )
 				sValue = token->action->GetParam( "value" )
 				if( lcase(sItem) = "title" ) then
-					return 0
+					return PAGEINFO_HEADER_MSG_NONE
 				end if
 			end if
 		end if
 	end if
-	return 1
+	return PAGEINFO_HEADER_MSG_NO_TITLE
 end function
 
 '':::::
@@ -893,10 +906,10 @@ function is_horzline( byval token as WikiToken ptr ) as integer
 	'' ----
 	if( token <> NULL ) then
 		if( token->id = WIKI_TOKEN_HORZLINE ) then
-			return 0
+			return PAGEINFO_HEADER_MSG_NONE
 		end if
 	end if
-	return 2
+	return PAGEINFO_HEADER_MSG_NO_HORZLINE
 end function
 
 '':::::
@@ -904,10 +917,10 @@ function is_newline( byval token as WikiToken ptr ) as integer
 	'' NEWLINE
 	if( token <> NULL ) then
 		if( token->id = WIKI_TOKEN_NEWLINE ) then
-			return 0
+			return PAGEINFO_HEADER_MSG_NONE
 		end if
 	end if
-	return 3
+	return PAGEINFO_HEADER_MSG_NO_NEWLINE
 end function
 
 '':::::
@@ -915,17 +928,17 @@ function is_header_text( byval token as WikiToken ptr ) as integer
 	'' TEXT
 	if( token <> NULL ) then
 		if( ( token->id = WIKI_TOKEN_TEXT ) or ( token->id = WIKI_TOKEN_RAW ) )then
-			return 0
+			return PAGEINFO_HEADER_MSG_NONE
 		end if
 	end if
-	return 4
+	return PAGEINFO_HEADER_MSG_NO_INTRO_TEXT
 end function
 
 '':::::
 #macro CHK_TOKEN( f )
 	if( token <> NULL ) then
-		if( msg = 0 ) then
-			if( msg = 0 ) then msg = f( token )
+		if( msg = PAGEINFO_HEADER_MSG_NONE ) then
+			if( msg = PAGEINFO_HEADER_MSG_NONE ) then msg = f( token )
 			token = tokenlist->GetNext( token )
 		end if
 	end if
@@ -949,10 +962,12 @@ function Links_LoadFromPage_ScanHeader _
 
 	tokenlist = wiki->GetTokenList()
 
-	msg = 0
+	msg = PAGEINFO_HEADER_MSG_NONE
 	token = tokenlist->GetHead()
 
 	if lcase(left(sName,5)) = "keypg" _
+		or lcase(left(sName,5)) = "propg" _
+		or lcase(left(sName,6)) = "fbwiki" _
 		or lcase(left(sName,3)) = "gfx" _
 		or lcase(left(sName,3)) = "src" then
 
@@ -966,12 +981,7 @@ function Links_LoadFromPage_ScanHeader _
 		CHK_TOKEN( is_horzline )
 		CHK_TOKEN( is_newline )
 
-	elseif lcase(left(sName,8)) = "compiler" then
-		CHK_TOKEN( is_fbdoc_title )
-		CHK_TOKEN( is_horzline )
-		CHK_TOKEN( is_newline )
-
-	elseif lcase(left(sName,5)) = "propg" _
+	elseif lcase(left(sName,8)) = "compiler" _
 		or lcase(left(sName,3)) = "dev" _
 		or lcase(left(sName,3)) = "tbl" then
 
@@ -985,11 +995,11 @@ function Links_LoadFromPage_ScanHeader _
 		CHK_TOKEN( is_horzline )
 		CHK_TOKEN( is_newline )
 
-
 	elseif lcase(left(sName,3)) = "tut" _
 		or lcase(left(sName,3)) = "cvs" _
 		or lcase(left(sName,3)) = "svn" _
 		or lcase(left(sName,3)) = "faq" _
+		or lcase(left(sName,3)) = "ext" _
 		then
 
 		CHK_TOKEN( is_fbdoc_title )
@@ -997,7 +1007,7 @@ function Links_LoadFromPage_ScanHeader _
 		CHK_TOKEN( is_newline )
 
 	else
-		msg = -1
+		msg = PAGEINFO_HEADER_MSG_INVALID
 
 	end if
 
@@ -1037,7 +1047,7 @@ sub Links_LoadFromPage _
 	if sBody > "" then
 		wiki->Parse( sPages(j).sName, sBody )
 		Links_LoadFromPage_Scan( j, exflags, wiki, sPageTitle )
-		sPages(j).msg = Links_LoadFromPage_ScanHeader( sPages(j).sName, wiki )
+		sPages(j).header_msg = Links_LoadFromPage_ScanHeader( sPages(j).sName, wiki )
 	end if
 
 	delete wiki 
@@ -1212,9 +1222,11 @@ sub Check_DeletedPages()
 		if( left( ucase( ltrim( sBody, any " " & chr(9))), len( chk ) ) = chk ) then
 			n_delete_pages += 1
 			Temps_Add( sPages(i).sName )
+			logprint "marked for delete '" + sPages(i).sName + "'"
 		elseif( trim( sBody, any chr(9, 10, 13, 32) ) = "" ) then
 			n_empty_pages += 1
 			Temps_Add( sPages(i).sName )
+			logprint "empty page '" + sPages(i).sName + "'"
 		else
 			n_keep_pages += 1
 			keep_pages( 1, n_keep_pages ) = sPages(i).sName
@@ -1225,9 +1237,6 @@ sub Check_DeletedPages()
 	if nTemps = 0 then
 		logprint "No pages marked for delete and no pages empty"
 	else
-		for i = 1 to nTemps
-			logprint "marked for delete or empty '" + sTemps(i).text + "'"
-		next
 		logprint "Found " + str( n_delete_pages ) + " pages marked for delete, removed from scan"
 		logprint "Found " + str( n_empty_pages ) + " empty pages, removed from scan"
 	end if
@@ -1395,24 +1404,24 @@ sub Check_Headers()
 
 	Temps_Clear()
 
-	logprint "Checking wikka topic headers:"
+	logprint "Checking topic headers:"
 
 	for j = 1 to nPages
 		
-		select case sPages(j).msg
-		case 1
+		select case sPages(j).header_msg
+		case PAGEINFO_HEADER_MSG_NO_TITLE
 			logprint "'" + sPages(j).sName + "' has invalid title"
 			c += 1
-		case 2
+		case PAGEINFO_HEADER_MSG_NO_HORZLINE
 			logprint "'" + sPages(j).sName + "' has invalid horzline"
 			c += 1
-		case 3
+		case PAGEINFO_HEADER_MSG_NO_NEWLINE
 			logprint "'" + sPages(j).sName + "' has invalid newline"
 			c += 1
-		case 4
+		case PAGEINFO_HEADER_MSG_NO_INTRO_TEXT
 			logprint "'" + sPages(j).sName + "' has invalid starting text"
 			c += 1
-		case -1
+		case PAGEINFO_HEADER_MSG_INVALID
 			Temps_Add( sPages(j).sName )
 		end select
 
@@ -1421,16 +1430,16 @@ sub Check_Headers()
 	logprint "Found " + str(c) + " invalid headers"
 	logprint
 
-/'
-	logprint "Pages not checked for headers"
-	if nTemps > 0 then
-		for i = 1 to nTemps
-			logprint "'" + sTemps(i).text + "'"
-		next
+	if( cmd_opt_verbose ) then
+		logprint "Pages not checked for valid topic headers"
+		if nTemps > 0 then
+			for i = 1 to nTemps
+				logprint "'" + sTemps(i).text + "'"
+			next
+		end if
+		logprint str(nTemps) + " pages(s) not checked."
+		logprint
 	end if
-	logprint str(nTemps) + " pages(s) not checked."
-	logprint
-'/
 
 end sub
 
@@ -1520,8 +1529,18 @@ end sub
 sub Check_IndexLinks( byref mode as string )
 
 	/'
-		check that the index topics CatPgFullIndex or CatPgFunctIndex
-		fully include links to all the KepPg pages.
+		check that the index topics:
+
+		CatPgFullIndex 
+		  - has a link to all KeyPg* pages
+		  - do not report pages already linked from CatPgOp*
+
+		CatPgFunctIndex
+		  - has a link to all KeyPg* pages
+		  - do not report pages already linked from CatPgOp*
+
+		CatPgOpIndex
+		  - links to CatPgOp* pages that link to KeyPgOp* pages
 	'/
 	
 	dim as integer i
@@ -1870,6 +1889,8 @@ sub Check_TokenUnescapedCamelCase()
 				select case as const token->id
 				case WIKI_TOKEN_TEXT
 
+					'' Search text for CamelCase words
+					
 					dim text as zstring ptr = strptr( token->text )
 					if( re->Search( text ) ) then
 						dim as integer ofs = 0
@@ -1891,18 +1912,29 @@ sub Check_TokenUnescapedCamelCase()
 
 	next
 
+	if( nTemps = 0 ) then
+		logprint "No pages with unescaped CamelCase links to missing pages"
+	else
+		logprint "Found " + str(nTemps) + " pages with unescaped CamelCase links to missing pages"
+	end if
+	logprint
+
+
 	delete re
 	delete wiki
 	wiki = NULL
 
-	logprint
-
-	logprint "Wiki pages linked by CamelCase wiki link"
+	logprint "Wiki pages linked only by CamelCase wiki links"
 
 	for i = 1 to nTemps
 		logprint "'" + sTemps(i).text + "'"
 	next
 
+	if( nTemps = 0 ) then
+		logprint "No wiki pages linked only by CamelCase wiki links"
+	else
+		logprint "Found " + str(nTemps) + " wiki pages linked only by CamelCase wiki links"
+	end if
 	logprint
 
 end sub
@@ -2057,11 +2089,6 @@ if( cmd_opt_help ) then
 	print "chkdocs [options]"
 	print
 	print "options:"
-	print "   -web    check cache dir"
-	print "   -web+   check web cache dir"
-	print "   -dev    check cache dir"
-	print "   -dev+   check dev cache dir"
-	print
 	print "   z       load links from files instead of scanning pages"
 	print
 	print "   a       perform all link checks ( m full func ops n b k q c p d f i )"
@@ -2088,6 +2115,8 @@ if( cmd_opt_help ) then
 	print "   o       check orphaned pages"
 	print
 	print "   e       check everything! ( a t del o )"
+	print
+	cmd_opts_show_help( "check" )
 	print
 	end 0
 end if

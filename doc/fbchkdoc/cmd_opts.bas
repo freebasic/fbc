@@ -34,12 +34,13 @@ using fbdoc
 '' ------------------------------------
 
 '' scan the command line options: we need to save these for later.
-'' we might have '-ini file' option on the command line which we
+'' we might have '-ini FILE' option on the command line which we
 '' need to know first, because we are going to 1) read the ini
 '' file, then 2) override the values with any other options given
 '' on the command line
 
 extern cmd_opt_help as boolean
+extern cmd_opt_verbose as boolean
 
 dim shared cmd_opt_enable_url as boolean
 dim shared cmd_opt_enable_cache as boolean
@@ -134,7 +135,7 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 	cmd_opt_verbose = false  '' -v given on command line
 	cmd_opt_print = false    '' -print options given
 	cmd_opt_ini = false      '' -ini given on command line
-	cmd_opt_ini_file = ""    '' value of '-ini file' given on command line
+	cmd_opt_ini_file = ""    '' value of '-ini FILE' given on command line
 
 	'' url & cache options
 
@@ -146,7 +147,7 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 	cmd_opt_cache_dir = ""   '' value of '-cache DIR' given on command line
 
 	cmd_opt_url = false      '' -url given on command line
-	cmd_opt_url_name = ""    '' value of '-url name' given on command line
+	cmd_opt_url_name = ""    '' value of '-url URL' given on command line
 
 	cmd_opt_ca = false       '' -certificate given on command line
 	cmd_opt_ca_file = ""     '' value of '-certificate FILE' given on command line 
@@ -221,7 +222,7 @@ function cmd_opts_read( byref i as integer ) as boolean
 		case "-v"
 			cmd_opt_verbose = true
 
-		case "-print"
+		case "-printopts"
 			cmd_opt_print = true
 
 		case "-web", "-dev", "-web+", "-dev+"
@@ -265,21 +266,6 @@ function cmd_opts_read( byref i as integer ) as boolean
 				return false
 			end if
 
-		case "-cache"
-
-			if( cmd_opt_enable_cache ) then
-
-				if( cmd_opt_cache ) then
-					cmd_opts_duplicate_die( i )
-				end if
-				cmd_opt_cache = true
-				i += 1
-				cmd_opt_cache_dir = command(i)
-
-			else
-				return false
-			end if
-
 		case "-certificate"
 
 			if( cmd_opt_enable_url ) then
@@ -290,6 +276,21 @@ function cmd_opts_read( byref i as integer ) as boolean
 				cmd_opt_ca = true
 				i += 1
 				cmd_opt_ca_file = command(i)
+
+			else
+				return false
+			end if
+
+		case "-cache"
+
+			if( cmd_opt_enable_cache ) then
+
+				if( cmd_opt_cache ) then
+					cmd_opts_duplicate_die( i )
+				end if
+				cmd_opt_cache = true
+				i += 1
+				cmd_opt_cache_dir = command(i)
 
 			else
 				return false
@@ -439,7 +440,7 @@ function cmd_opts_resolve() as boolean
 	dim as string def_image_dir = hardcoded.default_image_dir
 	dim as string def_manual_dir = hardcoded.default_manual_dir
 
-	'' -ini file on the command line overrides the hardcoded value
+	'' -ini FILE on the command line overrides the hardcoded value
 	if( cmd_opt_ini ) then
 		ini_file = cmd_opt_ini_file
 	end if
@@ -464,7 +465,7 @@ function cmd_opts_resolve() as boolean
 			def_manual_dir = opts->Get( "manual_dir" )
 			delete opts
 		elseif( cmd_opt_ini ) then
-			'' if we explicitly gave the -ini file option, report the error
+			'' if we explicitly gave the -ini FILE option, report the error
 			cmd_opts_die( "Warning: unable to load options file '" + ini_file + "'" )
 		end if
 	end scope
@@ -583,3 +584,94 @@ function cmd_opts_check() as boolean
 	function = true
 
 end function
+
+''
+sub cmd_opts_show_help_item _
+	( _
+		byref opt_name as const string, _
+		byref opt_desc as const string _
+	)
+
+	const indent as integer = 3
+	const col1 as integer = 20
+
+	if( (len(opt_name) + indent) > col1 - 2 ) then
+		print space(indent); opt_name
+		print space(col1); opt_desc
+	else
+		print space(indent); opt_name; space( col1 - len(opt_name) - indent ); opt_desc
+	end if
+
+end sub
+
+''
+sub cmd_opts_show_help( byref action as const string = "", locations as boolean = true )
+
+	dim a as string = "use"
+
+	if( action <> "" ) then
+		a = action
+	end if
+
+		print "general options:"
+		print "   -h, -help        show the help information"
+		print "   -ini FILE        set ini file name (instead of '" & hardcoded.default_ini_file & "')"
+		print "   -printopts       print active options and quit"
+		print "   -v               be verbose"
+		print
+
+	if( cmd_opt_enable_pagelist ) then
+		print "   pages            list of wiki pages on the command line"
+		print "   @pagelist	       text file with a list of pages, one per line"
+		print
+	end if
+
+	if( locations ) then
+
+	if( cmd_opt_enable_url and cmd_opt_enable_cache ) then
+		print "   -web             " & a & " web server url and cache_dir files"
+		print "   -web+            " & a & " web server url and web_cache_dir files"
+		print "   -dev             " & a & " development server url and cache_dir files"
+		print "   -dev+            " & a & " development server url and dev_cache_dir files"
+		print
+	elseif( cmd_opt_enable_url ) then
+		print "   -web             " & a & " web server url"
+		print "   -web+            " & a & " web server url"
+		print "   -dev             " & a & " development server url"
+		print "   -dev+            " & a & " development server url"
+		print
+	elseif( cmd_opt_enable_cache ) then
+		print "   -web             " & a & " cache_dir files"
+		print "   -web+            " & a & " web_cache_dir files"
+		print "   -dev             " & a & " cache_dir files"
+		print "   -dev+            " & a & " dev_cache_dir files"
+		print
+	end if
+
+	end if
+
+	if( cmd_opt_enable_url ) then
+		print "   -url URL         get pages from URL (overrides other options)"
+		print "   -certificate FILE"
+		print "                    certificate to use to authenticate server (.pem)"
+	end if
+
+	if( cmd_opt_enable_login ) then
+		print "   -u user          specifiy wiki account username"
+		print "   -p pass          specifiy wiki account password"
+	end if
+
+	if( cmd_opt_enable_cache ) then
+		print "   -cache DIR       override the cache directory location"
+	end if
+
+	if( cmd_opt_enable_image) then
+		print "   -image_dir DIR   override the image directory location"
+	end if
+
+	if( cmd_opt_enable_manual ) then
+		print "   -manual_dir DIR  override the manual directory location"
+	end if
+
+
+end sub

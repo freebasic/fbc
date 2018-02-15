@@ -92,13 +92,8 @@ wend
 if( cmd_opt_help ) then
 	print "rebuild [pages] [@pagelist] [options]"
 	print
-	print "   pages      list of wiki pages on the command line"
-	print "   @pagelist	 text file with a list of pages, one per line"
+	cmd_opts_show_help( "rebuild files in" )
 	print
-	print "   -web       rebuild files in cache_dir"
-	print "   -web+      rebuild files in web cache_dir"
-	print "   -dev       rebuild files in cache_dir"
-	print "   -dev+      rebuild files in dev cache_dir"
 	end 0
 end if
 
