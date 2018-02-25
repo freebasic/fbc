@@ -50,7 +50,8 @@ TEMP_FILES := \
     mkerrtxt$(EXEEXT) \
     mkerrtxt.bas \
     imagelist.txt \
-    imagepages.txt
+    imagepages.txt \
+	delete.html
 
 HEADERS := $(wildcard *.bi)
 DEPS = ../libfbdoc/libfbdoc.a $(HEADERS)

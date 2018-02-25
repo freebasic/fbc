@@ -33,8 +33,10 @@ using fb
 using fbdoc
 
 const def_index_file = hardcoded.default_index_file
+const def_output_file = "delete.html"
+const wakka_extension = "wakka"
+const DELETE_ME_SENTINEL = "!!! DELETE ME !!!"
 
-dim shared pagehash as HASH
 dim shared filehash as HASH
 
 '' --------------------------------------------------------
@@ -43,9 +45,9 @@ dim shared filehash as HASH
 sub loghtml( byref x as string, byval bNew as integer = FALSE )
 	dim h as integer = freefile
 	if( bNew ) then
-		open "delete.html" for output as #h
+		open def_output_file for output as #h
 	else
-		open "delete.html" for append as #h
+		open def_output_file for append as #h
 	end if
 	print #h, x
 	close #h
@@ -54,15 +56,13 @@ end sub
 ''
 function ReadIndex( byref f as const string ) as boolean
 	dim as string x
-	dim as integer h
-	h = freefile
+	dim as integer h = freefile
 	if( open( f for input access read as #h ) = 0 ) then
 		while eof(h) = 0
 			line input #h, x
 			x = trim(x)
 			if( len(x) > 0 ) then
-				pagehash.add( x )
-				filehash.add( lcase(x) + ".wakka" )
+				filehash.add( lcase(x) + "." + wakka_extension )
 			end if
 		wend
 		close #h
@@ -72,20 +72,22 @@ function ReadIndex( byref f as const string ) as boolean
 end function
 
 ''
-function ScanForDeleteMe _
+function ShouldRemove _
 	( _
-		filename as const string _
+		byref path as const string, _
+		byref filename as const string, _
+		byval doscan as const boolean _
 	) as boolean
 
-	dim sBody as string
-	dim chk as string = "!!! DELETE ME !!!"
-
-	sBody = LoadFileAsString( filename )
-	if( left( ucase( ltrim( sBody, any " " & chr(9))), len( chk ) ) = chk ) then
-		function = true
-	else
-		function = false
+	if( filehash.test( lcase(filename) ) ) then
+		if( doscan ) then
+			dim sBody as string = LoadFileAsString( path + filename )
+			return left( ucase( ltrim( sBody, any " " & chr(9))), len( DELETE_ME_SENTINEL ) ) = DELETE_ME_SENTINEL
+		end if
+		return false
 	end if
+
+	return true
 
 end function
 
@@ -100,41 +102,36 @@ sub DeleteExtraFiles _
 		byref wiki_url as const string _
 	)
 
-	dim d as string, i as integer
-	dim remove as boolean
-	dim pagename as string
-
 	if( bHTML ) then
 		loghtml( "", TRUE )
 		loghtml( "<html><body>" )
 	end if
 
-	d = dir( path + "*.wakka" )
+	dim d as string = dir( path + "*." + wakka_extension )
 	while( d > "" )
 		
-		pagename = left( d, len(d) - len(".wakka") )
+		if( ShouldRemove( path, d, doscan ) ) then
 
-		if( filehash.test( lcase(d) ) = FALSE ) then
-			remove = true
-		elseif( ScanForDeleteMe( path + d ) ) then
-			remove = true
-		else
-			remove = false
-		end if
+			if( bHTML ) then
+				dim pagename as string = left( d, len(d) - len("." + wakka_extension) )
+				loghtml( "<a href=""" + wiki_url + "?wakka=" + pagename + "/delete"">" + pagename + "/delete</a><br>" )
+			end if
 
-		if( bHTML and remove ) then
-			loghtml( "<a href=""" + wiki_url + "?wakka=" + pagename + "/delete"">" + pagename + "/delete</a><br>" )
-		end if
-
-		if( remove ) then
 			dim n as string = ReplacePathChar( path + d, asc("/") )
 			if( isgit ) then
 				print "Removing '" + n + "'"
+				dim cmd as string = !"git -C \"" & path & !"\" rm \"" + n + !"\""
+				if( app_opt.verbose ) then
+					print "   SHELL: " & cmd
+				end if
 				if( nodelete = FALSE ) then
-					shell !"git -C \"" & path & !"\" rm \"" + n + !"\""
+					shell cmd
 				end if
 			else
 				print "Deleting '" + path + d + "'"
+				if( app_opt.verbose ) then
+					print "   KILL: " & n
+				end if
 				if( nodelete = FALSE ) then
 					kill n
 				end if
@@ -192,8 +189,8 @@ if( app_opt.help ) then
 	print
 	print "options:"
 	cmd_opts_show_help_item( "-n", "only print what would happen but don't actually delete any files" )
-	cmd_opts_show_help_item( "-scan", "scan page for !!! DELETE ME !!!" )
-	cmd_opts_show_help_item( "-html", "write 'delete.html' helper file" )
+	cmd_opts_show_help_item( "-scan", "scan page for " + DELETE_ME_SENTINEL )
+	cmd_opts_show_help_item( "-html", "write '" + def_output_file + "' helper file" )
 	cmd_opts_show_help_item( "-git", "use 'git rm' instead of file system delete" )
 	print
 	cmd_opts_show_help( "delete extra files in" )
