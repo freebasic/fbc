@@ -9,9 +9,12 @@ sudo apt-get -y install \
 	libglu1-mesa-dev \
 	libgpm-dev
 if [ "$FBTRAVIS_TARGET_BITS" = "32" ]; then
+	# Installing gcc-multilib separately from the 32bit libs,
+	# because apparently it can fail otherwise.
 	sudo apt-get -y install \
 		gcc-multilib \
-		g++-multilib \
+		g++-multilib
+	sudo apt-get -y install \
 		lib32ncurses5-dev \
 		libffi-dev:i386 \
 		libcunit1-dev:i386 \
