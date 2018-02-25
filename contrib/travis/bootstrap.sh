@@ -1,6 +1,9 @@
 #!/bin/bash
 set -ex
 
+# Upgrade gcc, otherwise installing gcc-multilib may fail
+sudo apt-get -y upgrade gcc
+
 sudo apt-get -y install \
 	g++ \
 	libgl1-mesa-dev \
