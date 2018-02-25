@@ -1940,6 +1940,113 @@ sub Check_TokenUnescapedCamelCase()
 end sub
 
 '':::::
+function TestForUnescapedHtml _
+	( _
+		byref text as const string _
+	) as boolean
+
+	'' Search text for unescaped html
+	'' &amp; &gt; &lt; &quot; &#000 
+
+	dim as string HtmlCodes(0 to ...) = { "amp", "quot", "lt", "gt" } 
+	dim i as integer = 1
+
+	do
+		i = instr(i, text, "&") 
+		if i = 0 then
+			return false
+		end if
+
+		if( asc( text , i + 1 ) = asc( "#" ) ) then
+			dim as integer j = i + 2
+			dim as integer c = 0
+			do
+				select case asc( text, j )
+				case asc("0") to asc("9")
+					if( c <= 255 ) then c = c * 10 + asc( text, j ) - asc("0")
+				case else
+					exit do
+				end select
+				j += 1
+			loop
+			if c > 0 then
+				return true
+			end if
+		else
+			for q as integer = 0 to ubound(HtmlCodes) step 2
+				if( mid( text, i + 1, len( HtmlCodes(q) )) = HtmlCodes(q) ) then
+					dim as integer j = i + len( HtmlCodes(q) ) + 1
+					if( mid( text, j, 1) = ";" ) then 
+						return true
+					end if
+					i += len( HtmlCodes(q+1) ) - 1
+					exit for
+				end if
+			next
+		end if
+
+		i += 1
+	loop
+
+	return false
+
+end function
+
+'':::::
+sub Check_TokenHtml()
+
+	dim i as integer
+	dim f as string
+	dim sBody as string
+	dim text as string
+	dim wiki as CWiki Ptr
+	dim token as WikiToken ptr
+	
+	logprint "Checking pages for unescaped HTML:"
+
+	Temps_Clear()
+
+	wiki = new CWiki
+
+	for i = 1 to nPages
+
+		'' if( ( sPages(i).flags and FLAG_PAGE_DOCPAGE ) <> 0 ) then
+
+			f = cache_dir + sPages(i).sName + ".wakka"
+			sBody = LoadFileAsString( f )
+			wiki->Parse( sPages(i).sName, sBody )
+
+			token = wiki->GetTokenList()->GetHead()
+			do while( token <> NULL )
+
+				select case as const token->id
+				case WIKI_TOKEN_TEXT, WIKI_TOKEN_RAW
+
+					if( TestForUnescapedHtml( token->text ) ) then
+						Temps_Add( sPages(i).sName )
+						logprint "'" & sPages(i).sName & "'"
+						exit do
+					end if
+				end select
+
+				token = wiki->GetTokenList()->GetNext( token )
+			loop
+
+		'' end if
+
+	next
+
+	if( nTemps = 0 ) then
+		logprint "No pages with unescaped HTML"
+	else
+		logprint "Found " + str(nTemps) + " pages with some unescaped HTML"
+	end if
+	logprint
+
+
+end sub
+
+'':::::
 sub Report_TokenCounts()
 
 	logprint "Token Counts"
@@ -1978,9 +2085,10 @@ enum OPTIONS
 	OPT_OPS_INDEX        = 1 shl 15
 	OPT_TOKEN_COUNTS     = 1 shl 16
 	OPT_TOKEN_CAMEL_CASE = 1 shl 17
-	OPT_DELETED_PAGES    = 1 shl 18
-	OPT_ORPHAN_PAGES     = 1 shl 19
-	OPT_FILENAMES        = 1 shl 20
+	OPT_TOKEN_HTML       = 1 shl 18
+	OPT_DELETED_PAGES    = 1 shl 19
+	OPT_ORPHAN_PAGES     = 1 shl 20
+	OPT_FILENAMES        = 1 shl 21
 
 	OPT_ALL_LINKS = _
 		OPT_MISSING_PAGES _
@@ -1999,7 +2107,8 @@ enum OPTIONS
 	OPT_ALL_TOKEN = _
 		OPT_HEADERS _
 		or OPT_DUP_SAMPLE_FILE _
-		or OPT_TOKEN_CAMEL_CASE
+		or OPT_TOKEN_CAMEL_CASE _
+		or OPT_TOKEN_HTML
 
 	OPT_ALL = _
 		OPT_ALL_LINKS _
@@ -2077,6 +2186,8 @@ while( command(i) > "" )
 			opt or= OPT_TOKEN_COUNTS
 		case "cc"
 			opt or= OPT_TOKEN_CAMEL_CASE
+		case "html"
+			opt or= OPT_TOKEN_HTML
 
 		case else
 			print "option '"; command(i); "' ignored"
@@ -2110,6 +2221,7 @@ if( cmd_opt_help ) then
 	print "   n       check name case in links"
 	print "   tc      report token counts"
 	print "   cc      report unescaped camel case word"
+	print "   html    report unescaped html in normal text"
 	print
 	print "   del     check deleted pages"
 	print "   o       check orphaned pages"
@@ -2267,6 +2379,12 @@ if( (opt and OPT_TOKEN_CAMEL_CASE) <> 0 ) then
 	'' find unescaped camel case words
 	Check_TokenUnescapedCamelCase()
 	Timer_Mark("Check_TokenUnescapedCamelCase()")
+end if
+
+if( (opt and OPT_TOKEN_HTML) <> 0 ) then
+	'' find html escapes in text
+	Check_TokenHtml()
+	Timer_Mark("Check_TokenHtml()")
 end if
 
 logprint
