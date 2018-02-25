@@ -42,21 +42,27 @@ declare function cmd_opts_check() as boolean
 declare sub cmd_opts_show_help( byref action as const string = "", byval locations as boolean = true )
 declare sub cmd_opts_show_help_item( byref opt_name as const string, byref opt_desc as const string )
 
-'' command line options
-extern cmd_opt_help as boolean
-extern cmd_opt_verbose as boolean
+type CMD_OPTS_GLOBAL
 
-''resolved options
-extern wiki_url as string
-extern cache_dir as string
-extern ca_file as string
-extern wiki_username as string
-extern wiki_password as string
-extern image_dir as string
-extern manual_dir as string
+	'' command line options
+	help as boolean
+	verbose as boolean
 
-extern webPageCount as integer
-extern webPageList(any) as string
-extern webPageComments(any) as string
-	
+	''resolved options
+	wiki_url as string
+	cache_dir as string
+	ca_file as string
+	wiki_username as string
+	wiki_password as string
+	image_dir as string
+	manual_dir as string
+
+	webPageCount as integer
+	webPageList(any) as string
+	webPageComments(any) as string
+
+end type
+
+extern app_opt as CMD_OPTS_GLOBAL
+
 #endif

@@ -22,7 +22,6 @@
 '' fbdoc headers
 #include once "fbdoc_defs.bi"
 #include once "fbdoc_string.bi"
-#include once "COptions.bi"
 #include once "hash.bi"
 
 '' fbchkdoc headers
@@ -188,7 +187,7 @@ while( command(i) > "" )
 	i += 1
 wend	
 
-if( cmd_opt_help ) then
+if( app_opt.help ) then
 	print "delextra [options]"
 	print
 	print "options:"
@@ -207,7 +206,7 @@ cmd_opts_check()
 
 '' --------------------------------------------------------
 
-print "cache: "; cache_dir
+print "cache: "; app_opt.cache_dir
 
 print "Reading '" + def_index_file + "' ..."
 if( ReadIndex( def_index_file ) = FALSE ) then
@@ -215,4 +214,4 @@ if( ReadIndex( def_index_file ) = FALSE ) then
 	end 1
 end if
 
-DeleteExtraFiles( cache_dir, isgit, nodelete, doscan, bHTML, wiki_url )
+DeleteExtraFiles( app_opt.cache_dir, isgit, nodelete, doscan, bHTML, app_opt.wiki_url )

@@ -40,24 +40,7 @@ using fbdoc
 '' file, then 2) override the values with any other options given
 '' on the command line
 
-dim shared cmd_opt_help as boolean
-dim shared cmd_opt_verbose as boolean
-
-'' ------------------------------------
-'' resolved options
-'' ------------------------------------
-
-dim shared wiki_url as string
-dim shared cache_dir as string
-dim shared ca_file as string
-dim shared wiki_username as string
-dim shared wiki_password as string
-dim shared image_dir as string
-dim shared manual_dir as string
-
-dim shared webPageCount as integer
-dim shared webPageList() as string
-dim shared webPageComments() as string
+dim shared app_opt as CMD_OPTS_GLOBAL
 
 '' ------------------------------------
 '' private options
@@ -127,8 +110,9 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 
 	'' general options
 
-	cmd_opt_help = false     '' -h, -help given on command line
-	cmd_opt_verbose = false  '' -v given on command line
+	app_opt.help = false     '' -h, -help given on command line
+	app_opt.verbose = false  '' -v given on command line
+
 	cmd_opt.print = false    '' -printopts options given
 	cmd_opt.ini = false      '' -ini given on command line
 	cmd_opt.ini_file = ""    '' value of '-ini FILE' given on command line
@@ -164,20 +148,20 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 
 	'' resolved options
 
-	wiki_url = ""        '' export: resolved wiki url
-	cache_dir = ""       '' export: resolved cache directory
-	ca_file = ""         '' export: resolved certificate _file
-	wiki_username = ""   '' export: resolved user
-	wiki_password = ""   '' export: resolved pass
-	image_dir = ""       '' export: image directory
-	manual_dir = ""      '' export: manual directory
+	app_opt.wiki_url = ""        '' export: resolved wiki url
+	app_opt.cache_dir = ""       '' export: resolved cache directory
+	app_opt.ca_file = ""         '' export: resolved certificate _file
+	app_opt.wiki_username = ""   '' export: resolved user
+	app_opt.wiki_password = ""   '' export: resolved pass
+	app_opt.image_dir = ""       '' export: image directory
+	app_opt.manual_dir = ""      '' export: manual directory
 
-	webPageCount = 0
-	redim webPageList(1 to 1) as string
-	redim webPageComments(1 to 1) as string
+	app_opt.webPageCount = 0
+	redim app_opt.webPageList(1 to 1) as string
+	redim app_opt.webPageComments(1 to 1) as string
 
 	if( command(1) = "" ) then
-		cmd_opt_help = true
+		app_opt.help = true
 	end if
 
 end sub
@@ -204,6 +188,20 @@ sub cmd_opts_unexpected_die( byval i as const integer )
 end sub
 
 ''
+sub cmd_opts_add_webpage( byref pagename as const string, byref cmt as const string )
+	with app_opt
+		.webPageCount += 1
+		if( .webPageCount > ubound(.webPageList) ) then
+			redim preserve .webPageList(1 to Ubound(.webPageList) * 2)
+			redim preserve .webPageComments(1 to Ubound(.webPageComments) * 2)
+		end if
+		.webPageList(.webPageCount) = pagename
+		.webPageComments(.webPageCount) = cmt
+	end with
+end sub
+
+
+''
 function cmd_opts_read( byref i as integer ) as boolean
 
 	'' return true if we processed the option
@@ -213,10 +211,10 @@ function cmd_opts_read( byref i as integer ) as boolean
 
 		select case lcase(command(i))
 		case "-h", "-help"
-			cmd_opt_help = true
+			app_opt.help = true
 
 		case "-v"
-			cmd_opt_verbose = true
+			app_opt.verbose = true
 
 		case "-printopts"
 			cmd_opt.print = true
@@ -377,26 +375,14 @@ function cmd_opts_read( byref i as integer ) as boolean
 							line input #h, x
 							x = ParsePageName( x, cmt )
 							if( x > "" ) then 
-								webPageCount += 1
-								if( webPageCount > ubound(webPageList) ) then
-									redim preserve webPageList(1 to Ubound(webPageList) * 2)
-									redim preserve webPageComments(1 to Ubound(webPageComments) * 2)
-								end if
-								webPageList(webPageCount) = x
-								webPageComments(webPageCount) = cmt
+								cmd_opts_add_webpage( x, cmt )
 							end if
 						wend
 						close #h
 					end if
 				end scope
 			else
-				webPageCount += 1
-				if( webPageCount > ubound(webPageList) ) then
-					redim preserve webPageList(1 to Ubound(webPageList) * 2)
-					redim preserve webPageComments(1 to Ubound(webPageComments) * 2)
-				end if
-				webPageList(webPageCount) = command(i)		
-				webPageComments(webPageCount) = ""
+				cmd_opts_add_webpage( command(i), "" )
 			end if
 
 		else
@@ -469,62 +455,62 @@ function cmd_opts_resolve() as boolean
 	'' now apply the command line overrides
 	if( cmd_opt.web ) then
 		if( cmd_opt.alt ) then
-			cache_dir = web_cache_dir
+			app_opt.cache_dir = web_cache_dir
 		else
-			cache_dir = def_cache_dir
+			app_opt.cache_dir = def_cache_dir
 		end if
-		wiki_url = web_wiki_url
-		ca_file = web_ca_file
-		wiki_username = web_user
-		wiki_password = web_pass
+		app_opt.wiki_url = web_wiki_url
+		app_opt.ca_file = web_ca_file
+		app_opt.wiki_username = web_user
+		app_opt.wiki_password = web_pass
 	end if
 
 	if( cmd_opt.dev ) then
 		if( cmd_opt.alt ) then
-			cache_dir = dev_cache_dir
+			app_opt.cache_dir = dev_cache_dir
 		else
-			cache_dir = def_cache_dir
+			app_opt.cache_dir = def_cache_dir
 		end if
-		wiki_url = dev_wiki_url
-		ca_file = dev_ca_file
-		wiki_username = dev_user
-		wiki_password = dev_pass
+		app_opt.wiki_url = dev_wiki_url
+		app_opt.ca_file = dev_ca_file
+		app_opt.wiki_username = dev_user
+		app_opt.wiki_password = dev_pass
 	end if
 
 	if( cmd_opt.cache ) then
-		cache_dir = cmd_opt.cache_dir
+		app_opt.cache_dir = cmd_opt.cache_dir
 	end if
 
-	if( cache_dir = "" and cmd_opt.enable_autocache ) then
-		cache_dir = def_cache_dir
+	if( app_opt.cache_dir = "" and cmd_opt.enable_autocache ) then
+		app_opt.cache_dir = def_cache_dir
 	end if
 
 	if( cmd_opt.url ) then
-		wiki_url = cmd_opt.url_name
+		app_opt.wiki_url = cmd_opt.url_name
 	end if
 
 	if( cmd_opt.ca ) then
-		ca_file = cmd_opt.ca_file
+		app_opt.ca_file = cmd_opt.ca_file
 	end if
 
 	if( cmd_opt.user ) then
-		wiki_username = cmd_opt.username
+		app_opt.wiki_username = cmd_opt.username
 	end if
 
 	if( cmd_opt.pass ) then
-		wiki_password = cmd_opt.password
+		app_opt.wiki_password = cmd_opt.password
 	end if
 
 	if( cmd_opt.image ) then
-		image_dir = cmd_opt.image_dir
+		app_opt.image_dir = cmd_opt.image_dir
 	else
-		image_dir = def_image_dir
+		app_opt.image_dir = def_image_dir
 	end if
 
 	if( cmd_opt.manual ) then
-		manual_dir = cmd_opt.manual_dir
+		app_opt.manual_dir = cmd_opt.manual_dir
 	else
-		manual_dir = def_manual_dir
+		app_opt.manual_dir = def_manual_dir
 	end if
 
 	if( cmd_opt.print ) then
@@ -544,13 +530,13 @@ function cmd_opts_resolve() as boolean
 		print "def_image_dir = " & def_image_dir
 		print "def_manual_dir = " & def_manual_dir
 		print
-		print "wiki_url = " & wiki_url
-		print "cache_dir = " & cache_dir
-		print "ca_file = " & ca_file
-		print "wiki_username = " & wiki_username
+		print "wiki_url = " & app_opt.wiki_url
+		print "cache_dir = " & app_opt.cache_dir
+		print "ca_file = " & app_opt.ca_file
+		print "wiki_username = " & app_opt.wiki_username
 		print "wiki_password = " & "*****"
-		print "image_dir = " & image_dir
-		print "manual_dir = " & manual_dir
+		print "image_dir = " & app_opt.image_dir
+		print "manual_dir = " & app_opt.manual_dir
 		print
 
 		end 1
@@ -566,13 +552,13 @@ function cmd_opts_check() as boolean
 
 	if( cmd_opt.enable_cache ) then
 		'' check that we have the values we need
-		if( cache_dir = "" ) then
+		if( app_opt.cache_dir = "" ) then
 			cmd_opts_die( "no cache directory specified" )
 		end if
 	end if
 
 	if( cmd_opt.enable_url ) then
-		if( wiki_url = "" ) then
+		if( app_opt.wiki_url = "" ) then
 			cmd_opts_die( "no url specified" )
 		end if
 	end if

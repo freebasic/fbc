@@ -22,11 +22,7 @@
 '' fbdoc headers
 #include once "CWiki.bi"
 #include once "CWikiCache.bi"
-#include once "CRegex.bi"
-#include once "list.bi"
-#include once "fbdoc_defs.bi"
 #include once "fbdoc_string.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
@@ -108,7 +104,7 @@ while( command(i) > "" )
 	i += 1
 wend
 
-if( cmd_opt_help ) then
+if( app_opt.help ) then
 	print "mkimglst [pages] [@pagelist] [options]"
 	print
 	cmd_opts_show_help( "scan for image files in" )
@@ -120,7 +116,7 @@ cmd_opts_resolve()
 cmd_opts_check()
 
 '' no pages? nothing to do...
-if( webPageCount = 0 ) then
+if( app_opt.webPageCount = 0 ) then
 	print "no pages specified."
 	end 1
 end if
@@ -130,16 +126,16 @@ end if
 dim as CWikiCache ptr wikicache
 dim as string sPage, sBody
 
-print "cache: "; cache_dir
+print "cache: "; app_opt.cache_dir
 
 '' Initialize the cache
-wikicache = new CWikiCache( cache_dir, CWikiCache.CACHE_REFRESH_NONE )
+wikicache = new CWikiCache( app_opt.cache_dir, CWikiCache.CACHE_REFRESH_NONE )
 if wikicache = NULL then
-	print "Unable to use local cache dir " + cache_dir
+	print "Unable to use local cache dir " + app_opt.cache_dir
 	end 1
 end if
 
-if( webPageCount > 0 ) then
+if( app_opt.webPageCount > 0 ) then
 	dim as integer i, h, h2
 	dim as string ret
 
@@ -148,9 +144,9 @@ if( webPageCount > 0 ) then
 	h2 = freefile
 	open "imagepages.txt" for output as #h2
 
-	for i = 1 to webPageCount
+	for i = 1 to app_opt.webPageCount
 
-		sPage = webPageList(i)
+		sPage = app_opt.webPageList(i)
 
 		print "Loading '" + sPage + "':" ; 
 		if( wikicache->LoadPage( sPage, sBody ) ) = FALSE then

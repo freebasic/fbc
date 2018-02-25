@@ -22,10 +22,6 @@
 '' fbdoc headers
 #include once "CWiki.bi"
 #include once "CWikiCache.bi"
-#include once "CRegex.bi"
-#include once "list.bi"
-#include once "CWakka2fbhelp.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
@@ -311,7 +307,7 @@ while( command(i) > "" )
 	i += 1
 wend	
 
-if( cmd_opt_help ) then
+if( app_opt.help ) then
 	print "mkprntoc [options]"
 	print
 	print "options:"
@@ -331,18 +327,18 @@ cmd_opts_check()
 dim as string sPage, sBody
 dim as integer h
 
-print "cache: "; cache_dir
+print "cache: "; app_opt.cache_dir
 
 '' Initialize the cache
-wikicache = new CWikiCache( cache_dir, CWikiCache.CACHE_REFRESH_NONE )
+wikicache = new CWikiCache( app_opt.cache_dir, CWikiCache.CACHE_REFRESH_NONE )
 if wikicache = NULL then
-	print "Unable to use local cache dir " + cache_dir
+	print "Unable to use local cache dir " + app_opt.cache_dir
 	end 1
 end if
 
 h = Freefile
-print "Writing " + cache_dir + "PrintToc.wakka"
-open cache_dir + "PrintToc.wakka" for output as #h
+print "Writing " + app_opt.cache_dir + "PrintToc.wakka"
+open app_opt.cache_dir + "PrintToc.wakka" for output as #h
 
 MakeTOC( h, "DocToc", 0 )
 

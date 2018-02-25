@@ -31,7 +31,6 @@
 #include once "list.bi"
 #include once "CWiki.bi"
 #include once "hash.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
@@ -1035,7 +1034,7 @@ sub Links_LoadFromPage _
 
 	pagehash_scanned.add( lcase(sPages(j).sName), cast(any ptr, j) )
 
-	f = cache_dir + sPages(j).sName + ".wakka"
+	f = app_opt.cache_dir + sPages(j).sName + ".wakka"
 
 	print ".";
 
@@ -1213,7 +1212,7 @@ sub Check_DeletedPages()
 	Temps_Clear()
 
 	for i = 1 to nPages
-		f = cache_dir + sPages(i).sName + ".wakka"
+		f = app_opt.cache_dir + sPages(i).sName + ".wakka"
 		sBody = LoadFileAsString( f )
 		if( left( ucase( ltrim( sBody, any " " & chr(9))), len( chk ) ) = chk ) then
 			n_delete_pages += 1
@@ -1426,7 +1425,7 @@ sub Check_Headers()
 	logprint "Found " + str(c) + " invalid headers"
 	logprint
 
-	if( cmd_opt_verbose ) then
+	if( app_opt.verbose ) then
 		logprint "Pages not checked for valid topic headers"
 		if nTemps > 0 then
 			for i = 1 to nTemps
@@ -1739,7 +1738,7 @@ sub Check_PrintToc()
 
 	logprint "Checking PrintToc for missing pages:"
 
-	f = cache_dir + "PrintToc.wakka"
+	f = app_opt.cache_dir + "PrintToc.wakka"
 	logprint "Reading '" + f + "'"
 
 	sBody = LoadFileAsString( f )
@@ -1875,7 +1874,7 @@ sub Check_TokenUnescapedCamelCase()
 
 		if( ( sPages(i).flags and FLAG_PAGE_DOCPAGE ) <> 0 ) then
 
-			f = cache_dir + sPages(i).sName + ".wakka"
+			f = app_opt.cache_dir + sPages(i).sName + ".wakka"
 			sBody = LoadFileAsString( f )
 			wiki->Parse( sPages(i).sName, sBody )
 
@@ -2008,7 +2007,7 @@ sub Check_TokenHtml()
 
 		'' if( ( sPages(i).flags and FLAG_PAGE_DOCPAGE ) <> 0 ) then
 
-			f = cache_dir + sPages(i).sName + ".wakka"
+			f = app_opt.cache_dir + sPages(i).sName + ".wakka"
 			sBody = LoadFileAsString( f )
 			wiki->Parse( sPages(i).sName, sBody )
 
@@ -2189,7 +2188,7 @@ while( command(i) > "" )
 	i += 1
 wend	
 
-if( cmd_opt_help ) then
+if( app_opt.help ) then
 	print "chkdocs [options]"
 	print
 	print "options:"
@@ -2240,7 +2239,7 @@ Timer_Begin()
 
 logopen()
 logprint "chkdocs: " + format( now(), "yyyy/mm/dd hh:mm:ss" )
-logprint "cache: " & cache_dir
+logprint "cache: " & app_opt.cache_dir
 logprint
 
 Timer_Mark("Startup")
@@ -2250,7 +2249,7 @@ Pages_Clear
 Files_Clear
 Samps_Clear
 
-Files_LoadFromCache( cache_dir )
+Files_LoadFromCache( app_opt.cache_dir )
 Pages_LoadFromFile( PageIndex_File )
 
 logprint
@@ -2358,7 +2357,7 @@ end if
 
 if( (opt and OPT_IMAGES) <> 0 ) then
 	'' Image file names
-	Check_ImageFilenames( image_dir )
+	Check_ImageFilenames( app_opt.image_dir )
 	Timer_Mark("Check_ImageFilenames()")
 end if
 

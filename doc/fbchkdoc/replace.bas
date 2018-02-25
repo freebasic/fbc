@@ -24,7 +24,6 @@
 
 '' fbdoc headers
 #include "fbdoc_string.bi"
-#include "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
@@ -142,7 +141,7 @@ while( command(i) > "" )
 	i += 1
 wend
 
-if( cmd_opt_help ) then
+if( app_opt.help ) then
 	print "replace [-f] file.txt [-c comment] [-n] [-r] [-s] [options...]"
 	print
 	print "options:"
@@ -168,14 +167,14 @@ if f = "" then
 	print "filename not specified"
 end if
 
-if( cache_dir = "" ) then
+if( app_opt.cache_dir = "" ) then
 	cmd_opts_die( "no cache directory specified" )
 end if
 
 '' generating HTML?
 if( bHTML ) then
 	'' URL must be set
-	if( len( wiki_url ) = 0 ) then
+	if( len( app_opt.wiki_url ) = 0 ) then
 		cmd_opts_die( "wiki_url not set." )
 	end if
 end if
@@ -218,7 +217,7 @@ if( bProcess ) then
 		kill "changed.txt"
 	end if
 
-	print "cache: "; cache_dir
+	print "cache: "; app_opt.cache_dir
 
 	if( open( def_index_file for input as #1 ) <> 0 ) then
 		print "Unable to open '" + def_index_file + "'"
@@ -229,7 +228,7 @@ if( bProcess ) then
 		line input #1, x
 		x = Trim(x)
 		if( x > "" ) then
-			f = cache_dir + x + ".wakka"
+			f = app_opt.cache_dir + x + ".wakka"
 			text = LoadFileAsString( f )
 			newtext = text
 
@@ -272,16 +271,16 @@ if( bHTML ) then
 		loghtml( "<tr>" )
 
 		loghtml( "<td>" )
-		loghtml( "<a href=""" + wiki_url + "?wakka=" + replace(i).sOld + "/clone"">" + replace(i).sOld + "/clone</a><br>" )
+		loghtml( "<a href=""" + app_opt.wiki_url + "?wakka=" + replace(i).sOld + "/clone"">" + replace(i).sOld + "/clone</a><br>" )
 
 		loghtml( "<td>" )
-		loghtml( "<a href=""" + wiki_url + "?wakka=" + replace(i).sNew + """>" + replace(i).sNew + "</a><br>" )
+		loghtml( "<a href=""" + app_opt.wiki_url + "?wakka=" + replace(i).sNew + """>" + replace(i).sNew + "</a><br>" )
 
 		loghtml( "<td>" )
-		loghtml( "<a href=""" + wiki_url + "?wakka=" + replace(i).sOld + """>" + replace(i).sOld + "</a><br>" )
+		loghtml( "<a href=""" + app_opt.wiki_url + "?wakka=" + replace(i).sOld + """>" + replace(i).sOld + "</a><br>" )
 
 		loghtml( "<td>" )
-		loghtml( "<a href=""" + wiki_url + "?wakka=" + replace(i).sOld + "/delete"">" + replace(i).sOld + "/delete</a><br>" )
+		loghtml( "<a href=""" + app_opt.wiki_url + "?wakka=" + replace(i).sOld + "/delete"">" + replace(i).sOld + "/delete</a><br>" )
 
 	next
 	loghtml( "</table>" )

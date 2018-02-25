@@ -23,7 +23,6 @@
 #include once "fbdoc_cache.bi"
 #include once "fbdoc_loader.bi"
 #include once "fbdoc_loader_web.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
@@ -64,7 +63,7 @@ while( command(i) > "" )
 	i += 1
 wend	
 
-if( cmd_opt_help ) then
+if( app_opt.help ) then
 	print "getpage {server} [options] [pages] [@pagelist]"
 	print
 	print "{server}:"
@@ -82,7 +81,7 @@ cmd_opts_resolve()
 cmd_opts_check()
 
 '' no pages? nothing to do...
-if( webPageCount = 0 ) then
+if( app_opt.webPageCount = 0 ) then
 	print "no pages specified."
 	end 1
 end if
@@ -96,42 +95,42 @@ redim failedpages(1 to 1) as string
 do
 
 	'' Initialize the cache
-	if LocalCache_Create( cache_dir, CWikiCache.CACHE_REFRESH_ALL ) = FALSE then
-		print "Unable to use local cache dir " + cache_dir
+	if LocalCache_Create( app_opt.cache_dir, CWikiCache.CACHE_REFRESH_ALL ) = FALSE then
+		print "Unable to use local cache dir " + app_opt.cache_dir
 		end 1
 	end if
 
 	'' Initialize the wiki connection
-	Connection_SetUrl( wiki_url, ca_file )
+	Connection_SetUrl( app_opt.wiki_url, app_opt.ca_file )
 
-	print "URL: "; wiki_url
-	if( ca_file > "" ) then
-		print "Certificate: "; ca_file
+	print "URL: "; app_opt.wiki_url
+	if( app_opt.ca_file > "" ) then
+		print "Certificate: "; app_opt.ca_file
 	else
 		print "Certificate: none"
 	end if
-	print "cache: "; cache_dir
+	print "cache: "; app_opt.cache_dir
 
 	nfailedpages = 0
 
-	if( webPageCount > 0 ) then
+	if( app_opt.webPageCount > 0 ) then
 		dim as integer i, j
 		dim as string ret
-		for i = 1 to webPageCount
-			ret = LoadPage( webPageList(i), FALSE, TRUE )
+		for i = 1 to app_opt.webPageCount
+			ret = LoadPage( app_opt.webPageList(i), FALSE, TRUE )
 			if( ret = "" ) then
-				print "Failed to load '" & webPageList(i) & "'"
+				print "Failed to load '" & app_opt.webPageList(i) & "'"
 				nfailedpages += 1
 				redim preserve failedpages( 1 to nfailedpages )
-				failedpages(nfailedpages) = webPageList(i)
+				failedpages(nfailedpages) = app_opt.webPageList(i)
 			end if
 
 			if( inkey = chr(27) ) then
 				
-				for j = i + 1 to webPageCount
+				for j = i + 1 to app_opt.webPageCount
 					nfailedpages += 1
 					redim preserve failedpages( 1 to nfailedpages )
-					failedpages(nfailedpages) = webPageList(j)
+					failedpages(nfailedpages) = app_opt.webPageList(j)
 				next
 
 				exit for
@@ -163,9 +162,9 @@ do
 			case "y"
 				
 				for i = 1 to nfailedpages
-					webPageList(i) = failedpages(i)
+					app_opt.webPageList(i) = failedpages(i)
 				next
-				webPageCount = nfailedpages
+				app_opt.webPageCount = nfailedpages
 
 				exit do
 

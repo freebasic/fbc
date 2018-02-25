@@ -21,7 +21,6 @@
 
 '' fbdoc headers
 #include once "CWikiCon.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
@@ -263,7 +262,7 @@ while( command(i) > "" )
 	i += 1
 wend	
 
-if( cmd_opt_help ) then
+if( app_opt.help ) then
 	print "getindex {server} [options]"
 	print
 	print "{server}:"
@@ -299,11 +298,11 @@ sPage = "PageIndex"
 
 if( blocal ) then
 
-	ScanCacheDir( cache_dir )
+	ScanCacheDir( app_opt.cache_dir )
 
 else
 
-	if( len( wiki_url ) = 0 ) then
+	if( len( app_opt.wiki_url ) = 0 ) then
 		print "wiki_url not set. use -url, -web, -web+, -dev, or -dev+"
 		end 1
 	end if
@@ -312,16 +311,16 @@ else
 	scope
 		dim as CWikiCon ptr wikicon = NULL
 
-		wikicon = new CWikiCon( wiki_url, ca_file )
+		wikicon = new CWikiCon( app_opt.wiki_url, app_opt.ca_file )
 		if wikicon = NULL then
-			print "Unable to create connection " + wiki_url
+			print "Unable to create connection " + app_opt.wiki_url
 			end 1
 		end if
 
-		print "URL: "; wiki_url
+		print "URL: "; app_opt.wiki_url
 
-		if( ca_file > "" ) then
-			print "Certificate: "; ca_file
+		if( app_opt.ca_file > "" ) then
+			print "Certificate: "; app_opt.ca_file
 		else
 			print "Certificate: none"
 		end if

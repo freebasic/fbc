@@ -23,7 +23,6 @@
 #include once "fbdoc_cache.bi"
 #include once "fbdoc_loader.bi"
 #include once "fbdoc_loader_web.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
@@ -67,7 +66,7 @@ while( command(i) > "" )
 	i += 1
 wend
 
-if( cmd_opt_help ) then
+if( app_opt.help ) then
 	print "putpage {server} [options] [pages] [@pagelist]"
 	print
 	print "{server}:"
@@ -100,38 +99,38 @@ sNoteDef = ""
 dim as CWikiCache ptr wikicache = NULL
 dim as CWikiCon ptr wikicon = NULL
 
-if( webPageCount = 0 ) then
+if( app_opt.webPageCount = 0 ) then
 	print "No pages specified"
 end if
 
 '' Initialize the cache
-wikicache = new CWikiCache( cache_dir, CWikiCache.CACHE_REFRESH_NONE )
+wikicache = new CWikiCache( app_opt.cache_dir, CWikiCache.CACHE_REFRESH_NONE )
 if wikicache = NULL then
-	print "Unable to use local cache dir " + cache_dir
+	print "Unable to use local cache dir " + app_opt.cache_dir
 	end 1
 end if
 
-wikicon = new CWikiCon( wiki_url, ca_file )
+wikicon = new CWikiCon( app_opt.wiki_url, app_opt.ca_file )
 if wikicon = NULL then
-	print "Unable to create connection " + wiki_url
+	print "Unable to create connection " + app_opt.wiki_url
 	delete wikicache
 	end 1
 end if
 
 '' we have web pages? go to work...
-if( webPageCount > 0 ) then
+if( app_opt.webPageCount > 0 ) then
 	dim as integer i
 	dim as string ret
-	print "URL: "; wiki_url
-	if( ca_file > "" ) then
-		print "Certificate: "; ca_file
+	print "URL: "; app_opt.wiki_url
+	if( app_opt.ca_file > "" ) then
+		print "Certificate: "; app_opt.ca_file
 	else
 		print "Certificate: none"
 	end if
-	print "cache: "; cache_dir
-	for i = 1 to webPageCount
-		sPage = webPageList(i)
-		sComment = webPageComments(i)
+	print "cache: "; app_opt.cache_dir
+	for i = 1 to app_opt.webPageCount
+		sPage = app_opt.webPageList(i)
+		sComment = app_opt.webPageComments(i)
 		sBody = ""
 		print "Loading '" + sPage + "': ";
 		if( wikicache->LoadPage( sPage, sBody ) ) = FALSE then
@@ -140,7 +139,7 @@ if( webPageCount > 0 ) then
 			print "OK"
 			if( wikicon->LoadPage( sPage, TRUE, TRUE, sBodyOld ) <> FALSE ) then
 				if( wikicon->GetPageID() > 0 ) then
-					if( wikicon->Login( wiki_username, wiki_password ) ) = FALSE then
+					if( wikicon->Login( app_opt.wiki_username, app_opt.wiki_password ) ) = FALSE then
 						print "Unable to login"
 					else
 						if( iComment > 0 ) then
@@ -172,7 +171,7 @@ if( webPageCount > 0 ) then
 					end if
 				else
 					print "Unable to get existing page ID - will try to store as a new page .."
-					if( wikicon->Login( wiki_username, wiki_password ) ) = FALSE then
+					if( wikicon->Login( app_opt.wiki_username, app_opt.wiki_password ) ) = FALSE then
 						print "Unable to login"
 					else
 						print "Storing '" + sPage + "': ";

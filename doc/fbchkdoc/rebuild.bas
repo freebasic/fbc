@@ -21,7 +21,6 @@
 
 '' fbdoc headers
 #include once "CWiki.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
@@ -83,7 +82,7 @@ while( command(i) > "" )
 	i += 1
 wend	
 
-if( cmd_opt_help ) then
+if( app_opt.help ) then
 	print "rebuild [pages] [@pagelist] [options]"
 	print
 	cmd_opts_show_help( "rebuild files in" )
@@ -95,7 +94,7 @@ cmd_opts_resolve()
 cmd_opts_check()
 
 '' no pages? nothing to do...
-if( webPageCount = 0 ) then
+if( app_opt.webPageCount = 0 ) then
 	print "no pages specified."
 	end 1
 end if
@@ -105,22 +104,22 @@ end if
 dim as string sPage, sBody1, sBody2, f
 dim as CWiki ptr wiki
 
-print "cache: "; cache_dir
+print "cache: "; app_opt.cache_dir
 
-for i = 1 to webpagecount
+for i = 1 to app_opt.webpagecount
 
 	wiki = new CWiki
 
-	sPage = webpagelist(i)
+	sPage = app_opt.webpagelist(i)
 
-	f = cache_dir + sPage + ".wakka"
+	f = app_opt.cache_dir + sPage + ".wakka"
 	sBody1 = ReadTextFile( f )
 
 	wiki->Parse( sPage, sBody1 )
 	sBody2 = ""
 	sBody2 = wiki->Build()
 
-	f = cache_dir + sPage + ".wakka"
+	f = app_opt.cache_dir + sPage + ".wakka"
 	if( sBody1 <> sBody2 ) then
 		print "Rewriting '" + sPage + "'"
 		WriteTextFile( f, sBody2 )

@@ -22,9 +22,6 @@
 #include once "curl.bi"
 #include once "crt/stdio.bi"
 
-'' fbdoc headers
-#include once "COptions.bi"
-
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
@@ -154,7 +151,7 @@ while( command(i) > "" )
 	i += 1
 wend
 
-if( cmd_opt_help ) then
+if( app_opt.help ) then
 	print "getimage imagelist.txt"
 	print
 	print "   imagelist.txt    text file listing images to get in the"
@@ -191,7 +188,7 @@ while eof(h) = 0
 	if( (lcase(left( url, 7 )) = "http://") or (lcase(left( url, 8 )) = "https://") ) then
 		filename = GetFileName( url )
 		if( filename > "" ) then
-			AddImageFile( url, image_dir + filename )
+			AddImageFile( url, app_opt.image_dir + filename )
 		end if
 	end if
 	
