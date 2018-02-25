@@ -422,7 +422,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (fb_hWin32Init(title, w, h, depth, refresh_rate, flags)){
 		return -1;
 	}
-	if (__fb_gl_params.mode_2d==2){
+	if (__fb_gl_params.mode_2d == DRIVER_OGL_2D_AUTO_SYNC){
 		fb_wgl.MakeCurrent(NULL, NULL);
 #ifdef HOST_MINGW
 		/* Note: _beginthreadex()'s last parameter cannot be NULL,
@@ -521,7 +521,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if ((samples_attrib) && (*samples_attrib > 0)){
 		__fb_gl.Enable(GL_MULTISAMPLE_ARB);
 	}
-	if (__fb_gl_params.mode_2d!=0){
+	if (__fb_gl_params.mode_2d != DRIVER_OGL_2D_NONE){
 		fb_hGL_ScreenCreate();
 	}
 	return 0;
@@ -556,7 +556,7 @@ static void driver_unlock(void)
 
 static void driver_flip(void)
 {
-	if (__fb_gl_params.mode_2d==1){
+	if (__fb_gl_params.mode_2d == DRIVER_OGL_2D_MANUAL_SYNC){
 		fb_hGL_SetupProjection();
 	}
 	SwapBuffers(hdc);

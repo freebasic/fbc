@@ -46,8 +46,9 @@ namespace FB
 					 GFX_MULTISAMPLE			= &h40000
 
 	'Constants for OpenGL 2D render
-	const as integer OGL_MANUAL_SYNC 			= 1, _
-                     OGL_AUTO_SYNC 				= 2
+	const as integer OGL_2D_NONE        		= 0, _
+					 OGL_2D_MANUAL_SYNC			= 1, _
+                     OGL_2D_AUTO_SYNC			= 2
 					 
 	'' Constants accepted by ScreenControl
 	''
@@ -87,7 +88,9 @@ namespace FB
 					 SET_GL_ACCUM_GREEN_BITS	= 114	, _
 					 SET_GL_ACCUM_BLUE_BITS		= 115	, _
 					 SET_GL_ACCUM_ALPHA_BITS	= 116	, _
-					 SET_GL_NUM_SAMPLES			= 117
+					 SET_GL_NUM_SAMPLES			= 117	, _
+					 SET_GL_2D_MODE				= 150	, _
+					 SET_GL_SCALE				= 151
 	'' Commands:
 	const as integer POLL_EVENTS				= 200
 	
