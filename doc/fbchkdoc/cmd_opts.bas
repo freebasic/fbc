@@ -40,48 +40,8 @@ using fbdoc
 '' file, then 2) override the values with any other options given
 '' on the command line
 
-dim shared cmd_opt_enable_url as boolean
-dim shared cmd_opt_enable_cache as boolean
-dim shared cmd_opt_enable_login as boolean
-dim shared cmd_opt_enable_image as boolean
-dim shared cmd_opt_enable_autocache as boolean
-dim shared cmd_opt_enable_pagelist as boolean
-dim shared cmd_opt_enable_manual as boolean
-
 dim shared cmd_opt_help as boolean
 dim shared cmd_opt_verbose as boolean
-dim shared cmd_opt_print as boolean
-
-dim shared cmd_opt_web as boolean
-dim shared cmd_opt_dev as boolean
-dim shared cmd_opt_alt as boolean
-
-dim shared cmd_opt_cache as boolean
-dim shared cmd_opt_cache_dir as string
-
-dim shared cmd_opt_url as boolean
-dim shared cmd_opt_url_name as string
-
-dim shared cmd_opt_ini as boolean
-dim shared cmd_opt_ini_file as string
-
-dim shared cmd_opt_ca as boolean
-dim shared cmd_opt_ca_file as string
-
-dim shared cmd_opt_user as boolean
-dim shared cmd_opt_username as string
-
-dim shared cmd_opt_pass as boolean
-dim shared cmd_opt_password as string
-
-dim shared cmd_opt_image as boolean
-dim shared cmd_opt_image_dir as string
-
-dim shared cmd_opt_page as boolean
-dim shared cmd_opt_pagefile as string
-
-dim shared cmd_opt_manual as boolean
-dim shared cmd_opt_manual_dir as string
 
 '' ------------------------------------
 '' resolved options
@@ -99,6 +59,56 @@ dim shared webPageCount as integer
 dim shared webPageList() as string
 dim shared webPageComments() as string
 
+'' ------------------------------------
+'' private options
+'' ------------------------------------
+
+type CMD_OPTS_PRIVATE
+
+	enable_url as boolean        '' enable use of url to connect to or choose location of a wiki
+	enable_cache as boolean      '' enable use of a cache (local file location)
+	enable_login as boolean      '' enable user and password options
+	enable_image as boolean      '' enable the image dir option
+	enable_autocache as boolean  '' automatically select a cache if none given on the command line
+	enable_pagelist as boolean   '' enable reading in a text file with a list of page names
+	enable_manual as boolean     '' enable the manual dir option
+
+	print as boolean             '' -printopts option on command line
+
+	web as boolean               '' -web or -web+ given on command line
+	dev as boolean               '' -dev or -dev+ given on command line
+	alt as boolean               '' -web+ or -dev+ given on command line
+
+	cache as boolean             '' -cache DIR option on command line
+	cache_dir as string          '' value of '-cache DIR' given on command line
+
+	url as boolean               '' -url given on command line
+	url_name as string           '' value of '-url URL' given on command line
+
+	ini as boolean               '' -ini FILE option on command line
+	ini_file as string           '' value of '-ini FILE' given on command line
+
+	ca as boolean                '' -certificate given on command line
+	ca_file as string            '' value of '-certificate FILE' given on command line 
+
+	user as boolean              '' -u given on command line
+	username as string           '' value of -u NAME given on command line
+
+	pass as boolean              '' -p given on command line
+	password as string           '' value of -p WORD given on command line
+
+	image as boolean             '' -image_dir given on command line
+	image_dir as string          '' value of '-image_dir DIR' given on command line
+
+	page as boolean              '' @FILE option given on command line 
+	pagefile as string           '' value of filename for '@FILE' given on command line
+
+	manual as boolean            '' -manual_dir given on command line
+	manual_dir as string         '' value of '-manual_dir DIR' given on command line
+
+end type
+
+dim shared cmd_opt as CMD_OPTS_PRIVATE
 
 '' ------------------------------------
 '' API
@@ -107,50 +117,50 @@ dim shared webPageComments() as string
 ''
 sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS ) 
 
-	cmd_opt_enable_url = cbool( opts_flags and CMD_OPTS_ENABLE_URL )
-	cmd_opt_enable_cache = cbool( opts_flags and CMD_OPTS_ENABLE_CACHE )
-	cmd_opt_enable_login = cbool( opts_flags and CMD_OPTS_ENABLE_LOGIN )
-	cmd_opt_enable_image = cbool( opts_flags and CMD_OPTS_ENABLE_IMAGE )
-	cmd_opt_enable_autocache = cbool( opts_flags and CMD_OPTS_ENABLE_AUTOCACHE )
-	cmd_opt_enable_pagelist = cbool( opts_flags and CMD_OPTS_ENABLE_PAGELIST )
-	cmd_opt_enable_manual = cbool( opts_flags and CMD_OPTS_ENABLE_MANUAL )
+	cmd_opt.enable_url = cbool( opts_flags and CMD_OPTS_ENABLE_URL )
+	cmd_opt.enable_cache = cbool( opts_flags and CMD_OPTS_ENABLE_CACHE )
+	cmd_opt.enable_login = cbool( opts_flags and CMD_OPTS_ENABLE_LOGIN )
+	cmd_opt.enable_image = cbool( opts_flags and CMD_OPTS_ENABLE_IMAGE )
+	cmd_opt.enable_autocache = cbool( opts_flags and CMD_OPTS_ENABLE_AUTOCACHE )
+	cmd_opt.enable_pagelist = cbool( opts_flags and CMD_OPTS_ENABLE_PAGELIST )
+	cmd_opt.enable_manual = cbool( opts_flags and CMD_OPTS_ENABLE_MANUAL )
 
 	'' general options
 
 	cmd_opt_help = false     '' -h, -help given on command line
 	cmd_opt_verbose = false  '' -v given on command line
-	cmd_opt_print = false    '' -print options given
-	cmd_opt_ini = false      '' -ini given on command line
-	cmd_opt_ini_file = ""    '' value of '-ini FILE' given on command line
+	cmd_opt.print = false    '' -printopts options given
+	cmd_opt.ini = false      '' -ini given on command line
+	cmd_opt.ini_file = ""    '' value of '-ini FILE' given on command line
 
 	'' url & cache options
 
-	cmd_opt_web = false	     '' -web or -web+ given on command line
-	cmd_opt_dev = false      '' -dev or -dev+ given on command line
-	cmd_opt_alt = false      '' -web+ or -dev+ given on command line
+	cmd_opt.web = false	     '' -web or -web+ given on command line
+	cmd_opt.dev = false      '' -dev or -dev+ given on command line
+	cmd_opt.alt = false      '' -web+ or -dev+ given on command line
 
-	cmd_opt_cache = false    '' -cache given on command line
-	cmd_opt_cache_dir = ""   '' value of '-cache DIR' given on command line
+	cmd_opt.cache = false    '' -cache given on command line
+	cmd_opt.cache_dir = ""   '' value of '-cache DIR' given on command line
 
-	cmd_opt_url = false      '' -url given on command line
-	cmd_opt_url_name = ""    '' value of '-url URL' given on command line
+	cmd_opt.url = false      '' -url given on command line
+	cmd_opt.url_name = ""    '' value of '-url URL' given on command line
 
-	cmd_opt_ca = false       '' -certificate given on command line
-	cmd_opt_ca_file = ""     '' value of '-certificate FILE' given on command line 
+	cmd_opt.ca = false       '' -certificate given on command line
+	cmd_opt.ca_file = ""     '' value of '-certificate FILE' given on command line 
 
 	'' login options
 
-	cmd_opt_user = false     '' -u given on command line
-	cmd_opt_username = ""    '' value of -u NAME given on command line
+	cmd_opt.user = false     '' -u given on command line
+	cmd_opt.username = ""    '' value of -u NAME given on command line
 
-	cmd_opt_pass = false     '' -p given on command line
-	cmd_opt_password = ""    '' value of -p WORD given on command line
+	cmd_opt.pass = false     '' -p given on command line
+	cmd_opt.password = ""    '' value of -p WORD given on command line
 
-	cmd_opt_image = false    '' -image_dir given on command line
-	cmd_opt_image_dir = ""   '' value of '-image_dir DIR' given on command line
+	cmd_opt.image = false    '' -image_dir given on command line
+	cmd_opt.image_dir = ""   '' value of '-image_dir DIR' given on command line
 
-	cmd_opt_manual = false   '' -manual_dir given on command line
-	cmd_opt_manual_dir = ""  '' value of '-manual_dir DIR' given on command line
+	cmd_opt.manual = false   '' -manual_dir given on command line
+	cmd_opt.manual_dir = ""  '' value of '-manual_dir DIR' given on command line
 
 	'' resolved options
 
@@ -209,28 +219,28 @@ function cmd_opts_read( byref i as integer ) as boolean
 			cmd_opt_verbose = true
 
 		case "-printopts"
-			cmd_opt_print = true
+			cmd_opt.print = true
 
 		case "-web", "-dev", "-web+", "-dev+"
 	
-			if( cmd_opt_enable_url or cmd_opt_enable_cache ) then
+			if( cmd_opt.enable_url or cmd_opt.enable_cache ) then
 
-				if( cmd_opt_dev or cmd_opt_web ) then
+				if( cmd_opt.dev or cmd_opt.web ) then
 					print "-web, -web+, -dev, -dev+ option can only be specified once"
 					end 1
 				end if
 
 				select case lcase(command(i))
 				case "-dev"
-					cmd_opt_dev = true
+					cmd_opt.dev = true
 				case "-web"
-					cmd_opt_web = true
+					cmd_opt.web = true
 				case "-dev+"
-					cmd_opt_dev = true
-					cmd_opt_alt = true
+					cmd_opt.dev = true
+					cmd_opt.alt = true
 				case "-web+"
-					cmd_opt_web = true
-					cmd_opt_alt = true
+					cmd_opt.web = true
+					cmd_opt.alt = true
 				end select
 
 			else
@@ -239,14 +249,14 @@ function cmd_opts_read( byref i as integer ) as boolean
 
 		case "-url"
 
-			if( cmd_opt_enable_url ) then
+			if( cmd_opt.enable_url ) then
 
-				if( cmd_opt_url ) then
+				if( cmd_opt.url ) then
 					cmd_opts_duplicate_die( i )
 				end if
-				cmd_opt_url = true
+				cmd_opt.url = true
 				i += 1
-				cmd_opt_url_name = command(i)
+				cmd_opt.url_name = command(i)
 
 			else
 				return false
@@ -254,14 +264,14 @@ function cmd_opts_read( byref i as integer ) as boolean
 
 		case "-certificate"
 
-			if( cmd_opt_enable_url ) then
+			if( cmd_opt.enable_url ) then
 
-				if( cmd_opt_ca ) then
+				if( cmd_opt.ca ) then
 					cmd_opts_duplicate_die( i )
 				end if
-				cmd_opt_ca = true
+				cmd_opt.ca = true
 				i += 1
-				cmd_opt_ca_file = command(i)
+				cmd_opt.ca_file = command(i)
 
 			else
 				return false
@@ -269,14 +279,14 @@ function cmd_opts_read( byref i as integer ) as boolean
 
 		case "-cache"
 
-			if( cmd_opt_enable_cache ) then
+			if( cmd_opt.enable_cache ) then
 
-				if( cmd_opt_cache ) then
+				if( cmd_opt.cache ) then
 					cmd_opts_duplicate_die( i )
 				end if
-				cmd_opt_cache = true
+				cmd_opt.cache = true
 				i += 1
-				cmd_opt_cache_dir = command(i)
+				cmd_opt.cache_dir = command(i)
 
 			else
 				return false
@@ -284,14 +294,14 @@ function cmd_opts_read( byref i as integer ) as boolean
 
 		case "-u"
 
-			if( cmd_opt_enable_login ) then
+			if( cmd_opt.enable_login ) then
 				
-				if( cmd_opt_user ) then
+				if( cmd_opt.user ) then
 					cmd_opts_duplicate_die( i )
 				end if
-				cmd_opt_user = true
+				cmd_opt.user = true
 				i += 1
-				cmd_opt_username = command(i)
+				cmd_opt.username = command(i)
 
 			else
 				return false
@@ -299,14 +309,14 @@ function cmd_opts_read( byref i as integer ) as boolean
 
 		case "-p"
 
-			if( cmd_opt_enable_login ) then
+			if( cmd_opt.enable_login ) then
 				
-				if( cmd_opt_pass ) then
+				if( cmd_opt.pass ) then
 					cmd_opts_duplicate_die( i )
 				end if
-				cmd_opt_pass = true
+				cmd_opt.pass = true
 				i += 1
-				cmd_opt_password = command(i)
+				cmd_opt.password = command(i)
 
 			else
 				return false
@@ -314,14 +324,14 @@ function cmd_opts_read( byref i as integer ) as boolean
 
 		case "-image_dir"
 
-			if( cmd_opt_enable_image ) then
+			if( cmd_opt.enable_image ) then
 				
-				if( cmd_opt_image ) then
+				if( cmd_opt.image ) then
 					cmd_opts_duplicate_die( i )
 				end if
-				cmd_opt_image = true
+				cmd_opt.image = true
 				i += 1
-				cmd_opt_image_dir = command(i)
+				cmd_opt.image_dir = command(i)
 
 			else
 				return false
@@ -329,33 +339,33 @@ function cmd_opts_read( byref i as integer ) as boolean
 
 		case "-manual_dir"
 
-			if( cmd_opt_enable_manual ) then
+			if( cmd_opt.enable_manual ) then
 				
-				if( cmd_opt_manual ) then
+				if( cmd_opt.manual ) then
 					cmd_opts_duplicate_die( i )
 				end if
-				cmd_opt_manual = true
+				cmd_opt.manual = true
 				i += 1
-				cmd_opt_manual_dir = command(i)
+				cmd_opt.manual_dir = command(i)
 
 			else
 				return false
 			end if
 
 		case "-ini"
-			if( cmd_opt_ini ) then
+			if( cmd_opt.ini ) then
 				cmd_opts_duplicate_die( i )
 			end if
-			cmd_opt_ini = true
+			cmd_opt.ini = true
 			i += 1
-			cmd_opt_ini_file = command(i)
+			cmd_opt.ini_file = command(i)
 
 		case else
 			return false
 		end select
 
 	else
-		if( cmd_opt_enable_pagelist ) then
+		if( cmd_opt.enable_pagelist ) then
 			if left( command(i), 1) = "@" then
 				scope
 					dim h as integer, x as string, cmt as string
@@ -427,8 +437,8 @@ function cmd_opts_resolve() as boolean
 	dim as string def_manual_dir = hardcoded.default_manual_dir
 
 	'' -ini FILE on the command line overrides the hardcoded value
-	if( cmd_opt_ini ) then
-		ini_file = cmd_opt_ini_file
+	if( cmd_opt.ini ) then
+		ini_file = cmd_opt.ini_file
 	end if
 
 	'' read defaults from the configuration file (if it exists)
@@ -450,15 +460,15 @@ function cmd_opts_resolve() as boolean
 			def_image_dir = opts->Get( "image_dir" )
 			def_manual_dir = opts->Get( "manual_dir" )
 			delete opts
-		elseif( cmd_opt_ini ) then
+		elseif( cmd_opt.ini ) then
 			'' if we explicitly gave the -ini FILE option, report the error
 			cmd_opts_die( "Warning: unable to load options file '" + ini_file + "'" )
 		end if
 	end scope
 
 	'' now apply the command line overrides
-	if( cmd_opt_web ) then
-		if( cmd_opt_alt ) then
+	if( cmd_opt.web ) then
+		if( cmd_opt.alt ) then
 			cache_dir = web_cache_dir
 		else
 			cache_dir = def_cache_dir
@@ -469,8 +479,8 @@ function cmd_opts_resolve() as boolean
 		wiki_password = web_pass
 	end if
 
-	if( cmd_opt_dev ) then
-		if( cmd_opt_alt ) then
+	if( cmd_opt.dev ) then
+		if( cmd_opt.alt ) then
 			cache_dir = dev_cache_dir
 		else
 			cache_dir = def_cache_dir
@@ -481,43 +491,43 @@ function cmd_opts_resolve() as boolean
 		wiki_password = dev_pass
 	end if
 
-	if( cmd_opt_cache ) then
-		cache_dir = cmd_opt_cache_dir
+	if( cmd_opt.cache ) then
+		cache_dir = cmd_opt.cache_dir
 	end if
 
-	if( cache_dir = "" and cmd_opt_enable_autocache ) then
+	if( cache_dir = "" and cmd_opt.enable_autocache ) then
 		cache_dir = def_cache_dir
 	end if
 
-	if( cmd_opt_url ) then
-		wiki_url = cmd_opt_url_name
+	if( cmd_opt.url ) then
+		wiki_url = cmd_opt.url_name
 	end if
 
-	if( cmd_opt_ca ) then
-		ca_file = cmd_opt_ca_file
+	if( cmd_opt.ca ) then
+		ca_file = cmd_opt.ca_file
 	end if
 
-	if( cmd_opt_user ) then
-		wiki_username = cmd_opt_username
+	if( cmd_opt.user ) then
+		wiki_username = cmd_opt.username
 	end if
 
-	if( cmd_opt_pass ) then
-		wiki_password = cmd_opt_password
+	if( cmd_opt.pass ) then
+		wiki_password = cmd_opt.password
 	end if
 
-	if( cmd_opt_image ) then
-		image_dir = cmd_opt_image_dir
+	if( cmd_opt.image ) then
+		image_dir = cmd_opt.image_dir
 	else
 		image_dir = def_image_dir
 	end if
 
-	if( cmd_opt_manual ) then
-		manual_dir = cmd_opt_manual_dir
+	if( cmd_opt.manual ) then
+		manual_dir = cmd_opt.manual_dir
 	else
 		manual_dir = def_manual_dir
 	end if
 
-	if( cmd_opt_print ) then
+	if( cmd_opt.print ) then
 		
 		print "ini_file = " & ini_file
 		print
@@ -554,14 +564,14 @@ end function
 ''
 function cmd_opts_check() as boolean
 
-	if( cmd_opt_enable_cache ) then
+	if( cmd_opt.enable_cache ) then
 		'' check that we have the values we need
 		if( cache_dir = "" ) then
 			cmd_opts_die( "no cache directory specified" )
 		end if
 	end if
 
-	if( cmd_opt_enable_url ) then
+	if( cmd_opt.enable_url ) then
 		if( wiki_url = "" ) then
 			cmd_opts_die( "no url specified" )
 		end if
@@ -606,7 +616,7 @@ sub cmd_opts_show_help( byref action as const string = "", locations as boolean 
 		print "   -v               be verbose"
 		print
 
-	if( cmd_opt_enable_pagelist ) then
+	if( cmd_opt.enable_pagelist ) then
 		print "   pages            list of wiki pages on the command line"
 		print "   @pagelist	       text file with a list of pages, one per line"
 		print
@@ -614,19 +624,19 @@ sub cmd_opts_show_help( byref action as const string = "", locations as boolean 
 
 	if( locations ) then
 
-	if( cmd_opt_enable_url and cmd_opt_enable_cache ) then
+	if( cmd_opt.enable_url and cmd_opt.enable_cache ) then
 		print "   -web             " & a & " web server url and cache_dir files"
 		print "   -web+            " & a & " web server url and web_cache_dir files"
 		print "   -dev             " & a & " development server url and cache_dir files"
 		print "   -dev+            " & a & " development server url and dev_cache_dir files"
 		print
-	elseif( cmd_opt_enable_url ) then
+	elseif( cmd_opt.enable_url ) then
 		print "   -web             " & a & " web server url"
 		print "   -web+            " & a & " web server url"
 		print "   -dev             " & a & " development server url"
 		print "   -dev+            " & a & " development server url"
 		print
-	elseif( cmd_opt_enable_cache ) then
+	elseif( cmd_opt.enable_cache ) then
 		print "   -web             " & a & " cache_dir files"
 		print "   -web+            " & a & " web_cache_dir files"
 		print "   -dev             " & a & " cache_dir files"
@@ -636,26 +646,26 @@ sub cmd_opts_show_help( byref action as const string = "", locations as boolean 
 
 	end if
 
-	if( cmd_opt_enable_url ) then
+	if( cmd_opt.enable_url ) then
 		print "   -url URL         get pages from URL (overrides other options)"
 		print "   -certificate FILE"
 		print "                    certificate to use to authenticate server (.pem)"
 	end if
 
-	if( cmd_opt_enable_login ) then
+	if( cmd_opt.enable_login ) then
 		print "   -u user          specifiy wiki account username"
 		print "   -p pass          specifiy wiki account password"
 	end if
 
-	if( cmd_opt_enable_cache ) then
+	if( cmd_opt.enable_cache ) then
 		print "   -cache DIR       override the cache directory location"
 	end if
 
-	if( cmd_opt_enable_image) then
+	if( cmd_opt.enable_image) then
 		print "   -image_dir DIR   override the image directory location"
 	end if
 
-	if( cmd_opt_enable_manual ) then
+	if( cmd_opt.enable_manual ) then
 		print "   -manual_dir DIR  override the manual directory location"
 	end if
 
