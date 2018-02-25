@@ -36,6 +36,7 @@
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 '' libs
 #inclib "pcre"
@@ -72,11 +73,6 @@ enum LINK_FLAGS
 	FLAG_FILE_DUPLICATE			= 1 shl 17  '' {{fbdoc item="filename" value="..."}} filename value is used more than once (duplicate)
 
 end enum
-
-'' from cmd_opts.bas
-extern cache_dir as string
-extern image_dir as string
-extern cmd_opt_verbose as boolean
 
 const PageIndex_File = hardcoded.default_index_file
 const DocPages_File = "DocPages.txt"
@@ -2118,9 +2114,6 @@ enum OPTIONS
 		or OPT_ALL_TOKEN
 
 end enum
-
-'' froms cmd_opts.bas
-extern cmd_opt_help as boolean
 
 '' private options
 dim opt as OPTIONS = OPT_NONE

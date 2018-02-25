@@ -26,6 +26,7 @@
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 '' libs
 #inclib "fbdoc"
@@ -66,13 +67,6 @@ end sub
 '' --------------------------------------------------------
 '' MAIN
 '' --------------------------------------------------------
-
-'' from cmd_opts.bas
-extern cmd_opt_help as boolean
-extern cache_dir as string
-extern webPageCount as integer
-extern webPageList() as string
-extern webCommentList() as string
 
 '' enable url and cache
 cmd_opts_init( CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_AUTOCACHE or CMD_OPTS_ENABLE_PAGELIST )

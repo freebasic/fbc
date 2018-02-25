@@ -28,6 +28,7 @@
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 ''
 const MAX_IMAGEFILES = 100
@@ -134,10 +135,6 @@ end function
 '' --------------------------------------------------------
 '' MAIN
 '' --------------------------------------------------------
-
-'' from cmd_opts.bas
-extern cmd_opt_help as boolean
-extern image_dir as string
 
 '' private options
 dim f as string

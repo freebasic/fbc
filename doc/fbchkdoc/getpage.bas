@@ -28,6 +28,7 @@
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 '' libs
 #inclib "pcre"
@@ -39,15 +40,6 @@ using fbdoc
 '' --------------------------------------------------------
 '' MAIN
 '' --------------------------------------------------------
-
-'' from cmd_opts.bas
-extern cmd_opt_help as boolean
-extern wiki_url as string
-extern cache_dir as string
-extern ca_file as string
-extern webPageCount as integer
-extern webPageList() as string
-extern webCommentList() as string
 
 '' private options
 dim allow_retry as boolean = true

@@ -26,6 +26,7 @@
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 '' libs
 #inclib "pcre"
@@ -238,12 +239,6 @@ end sub
 '' --------------------------------------------------------
 '' MAIN
 '' --------------------------------------------------------
-
-'' from cmd_opts.bas
-extern cmd_opt_help as boolean
-extern wiki_url as string
-extern cache_dir as string
-extern ca_file as string
 
 '' private options
 dim as boolean blocal = false '' -local given on command line

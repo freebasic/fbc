@@ -28,6 +28,7 @@ using fbdoc
 
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 '' ------------------------------------
 '' command line options
@@ -38,9 +39,6 @@ using fbdoc
 '' need to know first, because we are going to 1) read the ini
 '' file, then 2) override the values with any other options given
 '' on the command line
-
-extern cmd_opt_help as boolean
-extern cmd_opt_verbose as boolean
 
 dim shared cmd_opt_enable_url as boolean
 dim shared cmd_opt_enable_cache as boolean
@@ -88,18 +86,6 @@ dim shared cmd_opt_manual_dir as string
 '' ------------------------------------
 '' resolved options
 '' ------------------------------------
-
-extern wiki_url as string
-extern cache_dir as string
-extern ca_file as string
-extern wiki_username as string
-extern wiki_password as string
-extern image_dir as string
-extern manual_dir as string
-
-extern webPageCount as integer
-extern webPageList() as string
-extern webPageComments() as string
 
 dim shared wiki_url as string
 dim shared cache_dir as string

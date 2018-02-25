@@ -30,6 +30,7 @@
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 '' libs
 #inclib "pcre"
@@ -288,10 +289,6 @@ end sub
 '' --------------------------------------------------------
 '' MAIN
 '' --------------------------------------------------------
-
-'' from cmd_opts.bas
-extern cmd_opt_help as boolean
-extern cache_dir as string
 
 cmd_opts_init( CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_AUTOCACHE )
 

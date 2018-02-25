@@ -44,29 +44,4 @@ declare function ScanSourceDirsAndFiles( byref path as string, dirs() as string,
 declare function FormatFbCode( byref txt as string ) as string
 declare function FormatFbCodeLoadKeywords( byref filename as string ) as boolean
 
-
-'' cmd_opts.bas
-enum CMD_OPTS_ENABLE_FLAGS
-	CMD_OPTS_ENABLE_NONE = 0
-	CMD_OPTS_ENABLE_URL = 1
-	CMD_OPTS_ENABLE_CACHE = 2
-	CMD_OPTS_ENABLE_LOGIN = 4
-	CMD_OPTS_ENABLE_IMAGE = 8
-	CMD_OPTS_ENABLE_PAGELIST = 16
-	CMD_OPTS_ENABLE_MANUAL = 32
-
-	CMD_OPTS_ENABLE_AUTOCACHE = &h1000
-
-end enum
-
-declare sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS ) 
-declare sub cmd_opts_die( byref msg as const string )
-declare sub cmd_opts_unrecognized_die( byval i as const integer )
-declare sub cmd_opts_unexpected_die( byval i as const integer )
-declare function cmd_opts_read( byref i as integer ) as boolean
-declare function cmd_opts_resolve() as boolean
-declare function cmd_opts_check() as boolean
-declare sub cmd_opts_show_help( byref action as const string = "", byval locations as boolean = true )
-declare sub cmd_opts_show_help_item( byref opt_name as const string, byref opt_desc as const string )
-
 #endif
