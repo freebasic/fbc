@@ -11,7 +11,7 @@ Normally, you would access the data directly through the use of variables. When 
 
 Using pointers is a bit different. Imagine you have a little scrap of paper that will represent our pointer. Right now it is blank and doesn't point to anything. This undefined pointer can't be used until it is initialized. To initialize the pointer, write a 1 on it. Now our pointer is "pointing" to hole 1 in our egg carton. To put data (an egg) in hole 1, we look at our scrap of paper, match it to hole 1 and place the egg in the hole. To retrieve the egg we do just the opposite. We match our slip of paper to hole 1 and then grab the egg. All the putting and getting of the egg has to be done through the slip of paper and is called dereferencing the pointer. That is, we get to the data through the reference contained in the pointer, the number 1. The pointer doesn't contain the data; it contains a reference to the data.
 
-In FreeBasic we define a pointer using the [[KeyPgDim|Dim]] and [[KeyPgPtr|Ptr]] statements:
+In ""FreeBASIC"" we define a pointer using the [[KeyPgDim|Dim]] and [[KeyPgPtr|Ptr]] statements:
 
 ##%%(freebasic)
 dim aptr as integer ptr
@@ -54,9 +54,9 @@ The [[KeyPgDeallocate|deallocate]] function frees the memory pointed at by aptr,
 
 **What Good are Pointers?**
 
-A major reason for adding pointers to FreeBasic is that many external libraries require pointers to type structures and pointers to strings. For example, the Win32 API has many structures that must be filled out and then passed to a function through a pointer.
+A major reason for adding pointers to ""FreeBASIC"" is that many external libraries require pointers to type structures and pointers to strings. For example, the Win32 API has many structures that must be filled out and then passed to a function through a pointer.
 
-Another use of a pointer is in a [[KeyPgType|Type]] definition. [[KeyPgType|Type]] defs in FreeBasic can only contain fixed length strings, but what if you don't know the length of a string until the program is running? A pointer can serve this purpose.
+Another use of a pointer is in a [[KeyPgType|Type]] definition. [[KeyPgType|Type]] defs in ""FreeBASIC"" can only contain fixed length strings, but what if you don't know the length of a string until the program is running? A pointer can serve this purpose.
 
 (It should be stated that the Type definitions can now support variable length strings.)
 
@@ -73,7 +73,7 @@ declare function pSetString(byval s as string) as zstring ptr
 dim mytype as mytptr
 
 'Set a variable string into the type def
-mytype.sptr = pSetString("Hello World From FreeBasic!")
+mytype.sptr = pSetString("Hello World From FreeBASIC!")
 print "aptr: "; *mytype.sptr
 deallocate(mytype.sptr)
 sleep
@@ -100,7 +100,7 @@ dim mytype as mytptr
 We then call our function pSetString to get the address of the variable length string we want in our [[KeyPgType|type]] def.
 
 ##%%(freebasic)
-mytype.sptr = pSetString("Hello World From FreeBasic!")
+mytype.sptr = pSetString("Hello World From FreeBASIC!")
 %%##
 
 Remember sptr is defined as a pointer, not a string variable, so pSetString is returning a pointer (memory address) to the string not the string itself. In other words, if the string is in hole #1, pSetString returns 1.
@@ -133,3 +133,5 @@ print "aptr: "; *mytype.sptr
 %%##
 
 Pointers can be confusing for the uninitiated, however they need not be if it is kept in mind that the pointer doesn't contain data, it simply points to some data. The pointer is a memory address, and you manipulate that data through the reference operator *. It really isn't much different than a normal variable.
+
+//Last reviewed by ""sancho3"" on February 07, 2018//

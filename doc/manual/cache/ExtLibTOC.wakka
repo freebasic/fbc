@@ -114,3 +114,4 @@ This is the list of external library bindings currently included in ""FreeBASIC"
 	{{fbdoc item="keyword" value="ExtLibX11|X11"}} - Windowing system commonly used on Linux systems
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}

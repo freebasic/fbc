@@ -7,7 +7,7 @@ If you are using the ##""FreeBASIC-x.xx.x-win32""## package, you can use our pre
 	- ##bin\win32\gcc.exe##
 	- ##bin\libexec\gcc\i686-w64-mingw32\x.x.x\cc1.exe##
 
-You can also download ""Win32"" versions of gcc directly from the [[http://www.mingw.org/|""MinGW.org""]] or [[http://sourceforge.net/projects/mingw-w64/|""MinGW-w64""]] projects.
+You can also download ""Win32"" versions of gcc directly from the [[http://www.mingw.org/|MinGW.org]] or [[http://sourceforge.net/projects/mingw-w64/|MinGW-w64]] projects.
 
 {{fbdoc item="section" value="Windows 64bit"}}
 

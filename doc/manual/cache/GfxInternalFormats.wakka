@@ -1,4 +1,5 @@
 {{fbdoc item="title" value="Internal graphics formats"}}----
+Information on the internal formats used by ""FreeBASIC"" to represent graphics.
 
 **Pixel formats**
 	

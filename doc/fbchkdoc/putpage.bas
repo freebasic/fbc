@@ -23,11 +23,11 @@
 #include once "fbdoc_cache.bi"
 #include once "fbdoc_loader.bi"
 #include once "fbdoc_loader_web.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 '' libs
 #inclib "pcre"
@@ -41,199 +41,96 @@ using fbdoc
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string web_wiki_url, dev_wiki_url
-dim as string ca_file, web_ca_file, dev_ca_file
-dim as string def_cache_dir, web_cache_dir, dev_cache_dir
-dim as string web_user, web_pass, dev_user, dev_pass
-
-dim as string sPage, sBody, sNote, sBodyOld, sUserName, sPassword, sNoteDef
+'' private options
 dim as integer iComment = 0
 
-sUserName = ""
-sPassword = ""
+'' enable url, cache, and login
+cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_LOGIN or CMD_OPTS_ENABLE_PAGELIST )
+
+dim i as integer = 1
+while( command(i) > "" )
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
+		select case lcase(command(i))
+		case "-comment"
+			iComment = 1
+		case "-comment1"
+			iComment = 2
+		case else
+			cmd_opts_unrecognized_die( i )
+		end select
+	else
+		cmd_opts_unexpected_die( i )
+	end if
+	i += 1
+wend
+
+if( app_opt.help ) then
+	print "putpage {server} [options] [pages] [@pagelist]"
+	print
+	print "{server}:"
+	print "   -web             put pages on the web server from cache_dir"
+	print "   -web+            put pages on the web server from web_cache_dir"
+	print "   -dev             put pages on the development server from cache_dir"
+	print "   -dev+            put pages on the development server from dev_cache_dir"
+	print
+	print "options:"
+	print "   -comment         prompt for comment line when storing pages"
+	print "   -comment1        prompt for comment line only once"
+	print "   -u user          specifiy wiki account username"
+	print "   -p pass          specifiy wiki account password"
+	print
+	cmd_opts_show_help( "put page to", false )
+	print
+	end 1
+end if
+
+cmd_opts_resolve()
+cmd_opts_check()
+
+'' --------------------------------------------------------
+
+dim as string sPage, sBody, sNote, sBodyOld, sNoteDef, sComment
+
 sNote = "Auto-update"
 sNoteDef = ""
 
 dim as CWikiCache ptr wikicache = NULL
 dim as CWikiCon ptr wikicon = NULL
 
-dim as integer i = 1, webPageCount = 0
-redim webPageList(1 to 1) as string, webPageComments(1 to 1) as string
-dim as string wiki_url, cache_dir, cmt, sComment
-
-if( command(i) = "" ) then
-	print "putpage {location} [options]"
-	print
-	print "location:"
-	print "   -web       put pages on the web server from cache_dir"
-	print "   -web+      put pages on the web server from web_cache_dir"
-	print "   -dev       put pages on the development server from cache_dir"
-	print "   -dev+      put pages on the development server from dev_cache_dir"
-	print "   -url URL   put pages on URL from cache_dir"
-	print
-	print "options:"
-	print "   pages      list of wiki pages on the command line"
-	print "   @pagelist	 text file with a list of pages, one per line"
-	print "   -comment   prompt for comment line when storing pages"
-	print "   -comment1  prompt for comment line only once"
-	print "   -u user    specifiy wiki account username"
-	print "   -p pass    specifiy wiki account password"
-	print "   -certificate file"
-	print "              certificate to use to authenticate server (.pem)"
-	print
-	end 1
-end if
-
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		web_wiki_url = opts->Get( "web_wiki_url" )
-		dev_wiki_url = opts->Get( "dev_wiki_url" )
-		web_ca_file = opts->Get( "web_certificate", "" )
-		dev_ca_file = opts->Get( "dev_certificate", "" )
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		web_user = opts->Get( "web_username" )
-		web_pass = opts->Get( "web_password" )
-		dev_user = opts->Get( "dev_username" )
-		dev_pass = opts->Get( "dev_password" )
-		delete opts
-	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		def_cache_dir = default_CacheDir
-		web_cache_dir = default_web_CacheDir
-		dev_cache_dir = default_dev_CacheDir
-	end if
-end scope
-
-while command(i) > ""
-	if( left( command(i), 1 ) = "-" ) then
-		select case lcase(command(i))
-		case "-web"
-			wiki_url = web_wiki_url 
-			cache_dir = def_cache_dir
-			sUserName = web_user
-			sPassword = web_pass
-			ca_file = web_ca_file
-		case "-dev"
-			wiki_url = dev_wiki_url 
-			cache_dir = def_cache_dir
-			sUserName = dev_user
-			sPassword = dev_pass
-			ca_file = dev_ca_file
-		case "-web+"
-			wiki_url = web_wiki_url 
-			cache_dir = web_cache_dir
-			sUserName = web_user
-			sPassword = web_pass
-			ca_file = web_ca_file
-		case "-dev+"
-			wiki_url = dev_wiki_url 
-			cache_dir = dev_cache_dir
-			sUserName = dev_user
-			sPassword = dev_pass
-			ca_file = dev_ca_file
-		case "-url"
-			i += 1
-			wiki_url = command(i)
-			cache_dir = def_cache_dir
-			sUserName = ""
-			sPassword = ""
-		case "-certificate"
-			i += 1
-			ca_file = command(i)
-		case "-u"
-			i += 1
-			sUserName = command(i)
-		case "-p"
-			i += 1
-			sPassword = command(i)
-		case "-comment"
-			iComment = 1
-		case "-comment1"
-			iComment = 2
-		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
-		end select
-	else
-		if left( command(i), 1) = "@" then
-			scope
-				dim h as integer, x as string
-				h = freefile
-				if open( mid(command(i),2) for input access read as #h ) <> 0 then
-					print "Error reading '" + command(i) + "'"
-				else
-					while eof(h) = 0
-						line input #h, x
-						x = ParsePageName( x, cmt )
-						if( x > "" ) then 
-							webPageCount += 1
-							if( webPageCount > ubound(webPageList) ) then
-								redim preserve webPageList(1 to Ubound(webPageList) * 2)
-								redim preserve webPageComments(1 to Ubound(webPageComments) * 2)
-							end if
-							webPageList(webPageCount) = x
-							webPageComments(webPageCount) = cmt
-						end if
-					wend
-					close #h
-				end if
-			end scope
-		else
-			webPageCount += 1
-			if( webPageCount > ubound(webPageList) ) then
-				redim preserve webPageList(1 to Ubound(webPageList) * 2)
-				redim preserve webPageComments(1 to Ubound(webPageComments) * 2)
-			end if
-			webPageList(webPageCount) = command(i)		
-			webPageComments(webPageCount) = ""
-		end if
-	end if
-	i += 1
-wend
-
-'' URL must be set
-if( len( wiki_url ) = 0 ) then
-	print "wiki_url not set. use -url, -web, -web+, -dev, -dev+"
-	end 1
-end if
-
-if( webPageCount = 0 ) then
+if( app_opt.webPageCount = 0 ) then
 	print "No pages specified"
 end if
 
 '' Initialize the cache
-wikicache = new CWikiCache( cache_dir, CWikiCache.CACHE_REFRESH_NONE )
+wikicache = new CWikiCache( app_opt.cache_dir, CWikiCache.CACHE_REFRESH_NONE )
 if wikicache = NULL then
-	print "Unable to use local cache dir " + cache_dir
+	print "Unable to use local cache dir " + app_opt.cache_dir
 	end 1
 end if
 
-wikicon = new CWikiCon( wiki_url, ca_file )
+wikicon = new CWikiCon( app_opt.wiki_url, app_opt.ca_file )
 if wikicon = NULL then
-	print "Unable to create connection " + wiki_url
+	print "Unable to create connection " + app_opt.wiki_url
 	delete wikicache
 	end 1
 end if
 
 '' we have web pages? go to work...
-if( webPageCount > 0 ) then
+if( app_opt.webPageCount > 0 ) then
 	dim as integer i
 	dim as string ret
-	print "URL: "; wiki_url
-	if( ca_file > "" ) then
-		print "Certificate: "; ca_file
+	print "URL: "; app_opt.wiki_url
+	if( app_opt.ca_file > "" ) then
+		print "Certificate: "; app_opt.ca_file
 	else
 		print "Certificate: none"
 	end if
-	print "cache: "; cache_dir
-	for i = 1 to webPageCount
-		sPage = webPageList(i)
-		sComment = webPageComments(i)
+	print "cache: "; app_opt.cache_dir
+	for i = 1 to app_opt.webPageCount
+		sPage = app_opt.webPageList(i)
+		sComment = app_opt.webPageComments(i)
 		sBody = ""
 		print "Loading '" + sPage + "': ";
 		if( wikicache->LoadPage( sPage, sBody ) ) = FALSE then
@@ -242,7 +139,7 @@ if( webPageCount > 0 ) then
 			print "OK"
 			if( wikicon->LoadPage( sPage, TRUE, TRUE, sBodyOld ) <> FALSE ) then
 				if( wikicon->GetPageID() > 0 ) then
-					if( wikicon->Login( sUserName, sPassword ) ) = FALSE then
+					if( wikicon->Login( app_opt.wiki_username, app_opt.wiki_password ) ) = FALSE then
 						print "Unable to login"
 					else
 						if( iComment > 0 ) then
@@ -274,7 +171,7 @@ if( webPageCount > 0 ) then
 					end if
 				else
 					print "Unable to get existing page ID - will try to store as a new page .."
-					if( wikicon->Login( sUserName, sPassword ) ) = FALSE then
+					if( wikicon->Login( app_opt.wiki_username, app_opt.wiki_password ) ) = FALSE then
 						print "Unable to login"
 					else
 						print "Storing '" + sPage + "': ";

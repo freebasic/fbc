@@ -259,15 +259,15 @@ Print a.x[0], a.x[1], b.x[0], b.x[1]
 
 This may seem quite complex at first, it's worth just reading through it again, and experimenting with the examples, it's not too tricky once you're used to it.
 
-**Passing objects to functions ByVal**
+**Passing objects to functions ""ByVal""**
 ----
 
-The idea of deep and shallow copies also applies to passing an object to a function by value.  When you pass a reference to an object (ByRef), you can modify the object, and these modifications will persist, however you can also pass by value, which will mean you can modify it without the changes persisting outside of the function.  When an object is passed by value to a function, a new copy is created, and if that object has a copy constructor, then this is invoked, if it doesn't, then the hidden shallow copy is performed.  Once the function ends, the objects destructor is called.
+The idea of deep and shallow copies also applies to passing an object to a function by value.  When you pass a reference to an object (""ByRef""), you can modify the object, and these modifications will persist, however you can also pass by value, which will mean you can modify it without the changes persisting outside of the function.  When an object is passed by value to a function, a new copy is created, and if that object has a copy constructor, then this is invoked, if it doesn't, then the hidden shallow copy is performed.  Once the function ends, the objects destructor is called.
 
 **New/Delete**
 ----
 
-New and delete are special operators for dynamically allocating memory, then destroying it.  Because it is used with dynamic memory, it is used with pointers.  In all the examples up until now, we just used Dim to create our objects, this will create them on the stack, but by using new we can create them dynamically, which can allow more flexibility, just like using Allocate/DeAllocate with normal memory.  Another important thing about new, is that you don't need to check if the pointer is NULL after new, like you would if you did allocate.  If new fails, it causes an exception, which will end the program.  In later versions of FreeBASIC, it is likely that some kind of try..catch mechanism will be created to allow better exception handling, but as of the time of writing, this is not yet implemented.  
+New and delete are special operators for dynamically allocating memory, then destroying it.  Because it is used with dynamic memory, it is used with pointers.  In all the examples up until now, we just used Dim to create our objects, this will create them on the stack, but by using new we can create them dynamically, which can allow more flexibility, just like using Allocate/""DeAllocate"" with normal memory.  Another important thing about new, is that you don't need to check if the pointer is NULL after new, like you would if you did allocate.  If new fails, it causes an exception, which will end the program.  In later versions of FreeBASIC, it is likely that some kind of try..catch mechanism will be created to allow better exception handling, but as of the time of writing, this is not yet implemented.  
 
 There are two different varieties of the new/delete.  The first type, creates just a single element or object, for example:
 
@@ -366,7 +366,7 @@ Delete[] bar
 
 When you run this code, you will see that three constructor/destructor pairs are called, because we created an array of three instances of foo.
 
-You must remember to call Delete, or Delete[] for any memory allocated with New, or you will cause a memory leak, just like the way you must rememeber to call DeAllocate for any memory you allocate with the Allocate function.
+You must remember to call Delete, or Delete[] for any memory allocated with New, or you will cause a memory leak, just like the way you must rememeber to call ""DeAllocate"" for any memory you allocate with the Allocate function.
 
 **Name Mangling**
 ----
@@ -446,7 +446,7 @@ When using GDB, these will be shown as follows (note in ""C++"" they use :: wher
 
   BAR::BAR()            - The default constructor
   BAR::BAR(BAR&)        - The copy constructor (& in ""C++"" means a reference, like byref)
-  BAR::BAR(int)         - The constructor taking an integer argument (note there is no special symbol to denote ByVal, as this is the default passing method in C/""C++"")
+  BAR::BAR(int)         - The constructor taking an integer argument (note there is no special symbol to denote ""ByVal"", as this is the default passing method in C/""C++"")
   BAR::~BAR()           - The destructor
   BAR::operator void*() - A cast to Any ptr (void is similar to Any, * means pointer)
   BAR::operator=(int)   - The assignment operator (Let), dentoted by '=', in C/""C++"" '=' is assignment, '""==""' is equality testing.
@@ -479,3 +479,5 @@ http://www.freebasic.net/wiki/wikka.php?wakka=KeyPgOpDelete
 http://en.wikipedia.org/wiki/Copy_constructor
 http://en.wikipedia.org/wiki/Object_copy
 http://en.wikipedia.org/wiki/Name_mangling
+
+//Last Reviewed by ""Sancho3"" on February 06, 2018//

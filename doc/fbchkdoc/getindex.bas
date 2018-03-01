@@ -21,10 +21,11 @@
 
 '' fbdoc headers
 #include once "CWikiCon.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
+#include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 '' libs
 #inclib "pcre"
@@ -36,9 +37,13 @@ using fbdoc
 #include "crt/stdlib.bi"
 #include "crt/string.bi"
 
+const def_index_file = hardcoded.default_index_file
+
 '' temporary files
 const def_html_file = "PageIndex.html"
 const def_text_file = "PageIndex0.txt"
+
+'' --------------------------------------------------------
 
 ''
 sub RemoveHTMLtags _
@@ -234,98 +239,71 @@ end sub
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string wiki_url, web_wiki_url, dev_wiki_url
-dim as string ca_file, web_ca_file, dev_ca_file
-dim as string def_cache_dir, web_cache_dir, dev_cache_dir
-dim as string sPage, sBody, cache_dir
-dim as integer i = 1
-dim as integer blocal = FALSE
+'' private options
+dim as boolean blocal = false '' -local given on command line
 
-sPage = "PageIndex"
+'' enable url and cache
+cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE )
 
-if( command(i) = "" ) then
-	print "getindex [-local] {server}"
-	print
-	print "server:"
-	print "   -web       get index from the web server (in " + default_optFile + ")"
-	print "   -dev       get index from the development server (in " + default_optFile + ")"
-	print "   -url URL   get index from URL"
-	print "   -certificate file"
-	print "              certificate to use to authenticate server (.pem)"
-	print
-	print "if -local is specified, then just read the file names from the cache:"
-	print "   -web       get page names from cache_dir"
-	print "   -web+      get page names from web_cache_dir"
-	print "   -dev       get page names from cache_dir"
-	print "   -dev+      get page names from dev_cache_dir"
-	end 0
-end if
-
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		web_wiki_url = opts->Get( "web_wiki_url" )
-		dev_wiki_url = opts->Get( "dev_wiki_url" )
-		web_ca_file = opts->Get( "web_certificate", "" )
-		dev_ca_file = opts->Get( "dev_certificate", "" )
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		delete opts
-	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-	end if
-end scope
-
+dim i as integer = 1
 while( command(i) > "" )
-	if( left( command(i), 1 ) = "-" ) then
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
 		select case lcase(command(i))
-		case "-web"
-			wiki_url = web_wiki_url 
-			cache_dir = def_cache_dir
-			ca_file = web_ca_file
-		case "-dev"
-			wiki_url = dev_wiki_url 
-			cache_dir = def_cache_dir
-			ca_file = dev_ca_file
-		case "-web+"
-			wiki_url = web_wiki_url 
-			cache_dir = web_cache_dir 
-			ca_file = web_ca_file
-		case "-dev+"
-			wiki_url = dev_wiki_url 
-			cache_dir = dev_cache_dir
-			ca_file = dev_ca_file
-		case "-url"
-			i += 1
-			wiki_url = command(i)
-			cache_dir = def_cache_dir
-		case "-certificate"
-			i += 1
-			ca_file = command(i)
 		case "-local"
 			blocal = TRUE
 		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
+			cmd_opts_unrecognized_die( i )
 		end select
 	else
-		print "Unexpected option '" + command(i) + "'"
-		end 1
+		cmd_opts_unexpected_die( i )
 	end if
 	i += 1
-wend
+wend	
+
+if( app_opt.help ) then
+	print "getindex {server} [options]"
+	print
+	print "{server}:"
+	print "   -web             get index from the web server url"
+	print "   -web+            get index from the web server url"
+	print "   -dev             get index from the development server url"
+	print "   -dev+            get index from the development server url"
+	print
+	print "options:"
+	print "   -local           use local cache only, don't query server, just"
+	print "                        read the cache dir to get the list of page names"
+	print
+	print "if -local is specified, then just read the file names from the cache:"
+	print "   -web             get page names from cache_dir"
+	print "   -web+            get page names from web_cache_dir"
+	print "   -dev             get page names from cache_dir"
+	print "   -dev+            get page names from dev_cache_dir"
+	print
+	cmd_opts_show_help( "get index from", false )
+	print
+	end 0
+end if
+
+cmd_opts_resolve()
+cmd_opts_check()
+
+'' --------------------------------------------------------
+
+dim sPage as string 
+dim sBody as string
+
+sPage = "PageIndex"
 
 if( blocal ) then
 
-	ScanCacheDir( cache_dir )
+	ScanCacheDir( app_opt.cache_dir )
 
 else
 
-	if( len( wiki_url ) = 0 ) then
-		print "wiki_url not set. use -url, -web, -web+, -dev, -dev+"
+	if( len( app_opt.wiki_url ) = 0 ) then
+		print "wiki_url not set. use -url, -web, -web+, -dev, or -dev+"
 		end 1
 	end if
 
@@ -333,16 +311,16 @@ else
 	scope
 		dim as CWikiCon ptr wikicon = NULL
 
-		wikicon = new CWikiCon( wiki_url, ca_file )
+		wikicon = new CWikiCon( app_opt.wiki_url, app_opt.ca_file )
 		if wikicon = NULL then
-			print "Unable to create connection " + wiki_url
+			print "Unable to create connection " + app_opt.wiki_url
 			end 1
 		end if
 
-		print "URL: "; wiki_url
+		print "URL: "; app_opt.wiki_url
 
-		if( ca_file > "" ) then
-			print "Certificate: "; ca_file
+		if( app_opt.ca_file > "" ) then
+			print "Certificate: "; app_opt.ca_file
 		else
 			print "Certificate: none"
 		end if

@@ -74,6 +74,7 @@
 	
 	{{fbdoc item="keyword" value="CompilerErrMsg|Compiler Error Messages"}}
 	{{fbdoc item="keyword" value="CompilerTools|Tools used by fbc"}}
+	{{fbdoc item="keyword" value="CompilerInstallingGcc|Installing gcc for -gen gcc"}}
 	
 {{fbdoc item="section" value="FreeBASIC dialects and QBASIC"}}
 	

@@ -21,11 +21,11 @@
 
 '' fbdoc headers
 #include once "CWiki.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 '' libs
 #inclib "fbdoc"
@@ -33,6 +33,8 @@
 
 using fb
 using fbdoc
+
+'' --------------------------------------------------------
 
 '':::::
 function ReadTextFile( byref sFile as string ) as string
@@ -65,115 +67,59 @@ end sub
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string cache_dir, def_cache_dir, web_cache_dir, dev_cache_dir
+'' enable url and cache
+cmd_opts_init( CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_AUTOCACHE or CMD_OPTS_ENABLE_PAGELIST )
 
-dim as integer i = 1, webPageCount = 0
-redim webPageList(1 to 1) as string
-dim as string cmt, x
+dim i as integer = 1
+while( command(i) > "" )
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
+		cmd_opts_unrecognized_die( i )
+	else
+		cmd_opts_unexpected_die( i )
+	end if
+	i += 1
+wend	
 
-if( command(i) = "" ) then
+if( app_opt.help ) then
 	print "rebuild [pages] [@pagelist] [options]"
 	print
-	print "   pages      list of wiki pages on the command line"
-	print "   @pagelist	 text file with a list of pages, one per line"
+	cmd_opts_show_help( "rebuild files in" )
 	print
-	print "   -web       rebuild files in cache_dir"
-	print "   -web+      rebuild files in web cache_dir"
-	print "   -dev       rebuild files in cache_dir"
-	print "   -dev+      rebuild files in dev cache_dir"
 	end 0
 end if
 
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		delete opts
-	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		def_cache_dir = default_CacheDir
-		web_cache_dir = default_web_CacheDir
-		dev_cache_dir = default_dev_CacheDir
-	end if
-end scope
+cmd_opts_resolve()
+cmd_opts_check()
 
-while command(i) > ""
-	if( left(command(i), 1) = "-" ) then
-		select case lcase(command(i))
-		case "-web", "-dev"
-			cache_dir = def_cache_dir
-		case "-web+"
-			cache_dir = web_cache_dir
-		case "-dev+"
-			cache_dir = dev_cache_dir
-		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
-		end select
-	else
-		if left( command(i), 1) = "@" then
-			scope
-				dim h as integer, x as string
-				h = freefile
-				if open( mid(command(i),2) for input access read as #h ) <> 0 then
-					print "Error reading '" + command(i) + "'"
-				else
-					while eof(h) = 0
-						line input #h, x
-						x = ParsePageName( x, cmt )
-						if( x > "" ) then 
-							webPageCount += 1
-							if( webPageCount > ubound(webPageList) ) then
-								redim preserve webPageList(1 to Ubound(webPageList) * 2)
-							end if
-							webPageList(webPageCount) = x
-						end if
-					wend
-					close #h
-				end if
-			end scope
-		else
-			webPageCount += 1
-			if( webPageCount > ubound(webPageList) ) then
-				redim preserve webPageList(1 to Ubound(webPageList) * 2)
-			end if
-			webPageList(webPageCount) = command(i)		
-		end if
-	end if
-	i += 1
-wend
-
-if( webPageCount = 0 ) then
+'' no pages? nothing to do...
+if( app_opt.webPageCount = 0 ) then
 	print "no pages specified."
 	end 1
 end if
 
+'' --------------------------------------------------------
+
 dim as string sPage, sBody1, sBody2, f
 dim as CWiki ptr wiki
 
-if( cache_dir = "" ) then
-	cache_dir = default_CacheDir
-end if
-print "cache: "; cache_dir
+print "cache: "; app_opt.cache_dir
 
-for i = 1 to webpagecount
+for i = 1 to app_opt.webpagecount
 
 	wiki = new CWiki
 
-	sPage = webpagelist(i)
+	sPage = app_opt.webpagelist(i)
 
-	f = cache_dir + sPage + ".wakka"
+	f = app_opt.cache_dir + sPage + ".wakka"
 	sBody1 = ReadTextFile( f )
 
 	wiki->Parse( sPage, sBody1 )
 	sBody2 = ""
 	sBody2 = wiki->Build()
 
-	f = cache_dir + sPage + ".wakka"
+	f = app_opt.cache_dir + sPage + ".wakka"
 	if( sBody1 <> sBody2 ) then
 		print "Rewriting '" + sPage + "'"
 		WriteTextFile( f, sBody2 )
@@ -182,4 +128,3 @@ for i = 1 to webpagecount
 	delete wiki
 
 next
-

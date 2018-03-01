@@ -23,11 +23,11 @@
 #include once "fbdoc_cache.bi"
 #include once "fbdoc_loader.bi"
 #include once "fbdoc_loader_web.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 '' libs
 #inclib "pcre"
@@ -36,179 +36,101 @@
 using fb
 using fbdoc
 
-
 '' --------------------------------------------------------
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string web_wiki_url, dev_wiki_url
-dim as string ca_file, web_ca_file, dev_ca_file
-dim as string def_cache_dir, web_cache_dir, dev_cache_dir
+'' private options
+dim allow_retry as boolean = true
 
-dim as integer i = 1, webPageCount = 0, nfailedpages = 0
-redim webPageList(1 to 1) as string
-redim failedpages(1 to 1) as string
-dim as string wiki_url, cache_dir, cmt
-var allow_retry = true
+'' enable url and cache
+cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_PAGELIST )
 
-if( command(i) = "" ) then
-	print "getpage {server} [pages] [@pagelist]"
-	print
-	print "server:"
-	print "   -web       get pages from the web server in to cache_dir"
-	print "   -web+      get pages from the web server in to web_cache_dir"
-	print "   -dev       get pages from the development server in to cache_dir"
-	print "   -dev+      get pages from the development server in to dev_cache_dir"
-	print "   -url URL   get pages from URL"
-	print "   -certificate file"
-	print "              certificate to use to authenticate server (.pem)"
-	print
-	print "options:"
-	print "   pages      list of wiki pages on the command line"
-	print "   @pagelist	 text file with a list of pages, one per line"
-	print "   -auto      don't ask for user input, don't retry failed downloads"
-	print
-	end 1
-end if
-
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		web_wiki_url = opts->Get( "web_wiki_url" )
-		dev_wiki_url = opts->Get( "dev_wiki_url" )
-		web_ca_file = opts->Get( "web_certificate" )
-		dev_ca_file = opts->Get( "dev_certificate" )
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		delete opts
-	else
-		print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		def_cache_dir = default_CacheDir
-		web_cache_dir = default_web_CacheDir
-		dev_cache_dir = default_dev_CacheDir
-	end if
-end scope
-
-while command(i) > ""
-	if( left( command(i), 1 ) = "-" ) then
+dim i as integer = 1
+while( command(i) > "" )
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
 		select case lcase(command(i))
-		case "-web"
-			wiki_url = web_wiki_url 
-			cache_dir = def_cache_dir
-			ca_file = web_ca_file
-		case "-dev"
-			wiki_url = dev_wiki_url 
-			cache_dir = def_cache_dir
-			ca_file = dev_ca_file
-		case "-web+"
-			wiki_url = web_wiki_url 
-			cache_dir = web_cache_dir 
-			ca_file = web_ca_file
-		case "-dev+"
-			wiki_url = dev_wiki_url 
-			cache_dir = dev_cache_dir
-			ca_file = dev_ca_file
-		case "-url"
-			i += 1
-			wiki_url = command(i)
-			cache_dir = def_cache_dir
-		case "-certificate"
-			i += 1
-			ca_file = command(i)
 		case "-auto"
 			allow_retry = false
 		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
+			cmd_opts_unrecognized_die( i )
 		end select
 	else
-		if left( command(i), 1) = "@" then
-			scope
-				dim h as integer, x as string
-				h = freefile
-				if open( mid(command(i),2) for input access read as #h ) <> 0 then
-					print "Error reading '" + command(i) + "'"
-				else
-					while eof(h) = 0
-						line input #h, x
-						x = ParsePageName( x, cmt )
-						if( x > "" ) then 
-							webPageCount += 1
-							if( webPageCount > ubound(webPageList) ) then
-								redim preserve webPageList(1 to Ubound(webPageList) * 2)
-							end if
-							webPageList(webPageCount) = x
-						end if
-					wend
-					close #h
-				end if
-			end scope
-		else
-			webPageCount += 1
-			if( webPageCount > ubound(webPageList) ) then
-				redim preserve webPageList(1 to Ubound(webPageList) * 2)
-			end if
-			webPageList(webPageCount) = command(i)		
-		end if
+		cmd_opts_unexpected_die( i )
 	end if
 	i += 1
-wend
+wend	
 
-'' URL must be set
-if( len( wiki_url ) = 0 ) then
-	print "wiki_url not set. use -url, -web, -web+, -dev, -dev+"
+if( app_opt.help ) then
+	print "getpage {server} [options] [pages] [@pagelist]"
+	print
+	print "{server}:"
+	print "   -web             get pages from the web server in to cache_dir"
+	print "   -web+            get pages from the web server in to web_cache_dir"
+	print "   -dev             get pages from the development server in to cache_dir"
+	print "   -dev+            get pages from the development server in to dev_cache_dir"
+	print
+	cmd_opts_show_help( "get page from", false )
+	print
 	end 1
 end if
 
+cmd_opts_resolve()
+cmd_opts_check()
+
 '' no pages? nothing to do...
-if( webPageCount = 0 ) then
+if( app_opt.webPageCount = 0 ) then
 	print "no pages specified."
 	end 1
 end if
+
+'' --------------------------------------------------------
+
+dim as integer nfailedpages = 0
+redim failedpages(1 to 1) as string
 
 '' main loop - has option to retry/list failed pages
 do
 
 	'' Initialize the cache
-	if LocalCache_Create( cache_dir, CWikiCache.CACHE_REFRESH_ALL ) = FALSE then
-		print "Unable to use local cache dir " + cache_dir
+	if LocalCache_Create( app_opt.cache_dir, CWikiCache.CACHE_REFRESH_ALL ) = FALSE then
+		print "Unable to use local cache dir " + app_opt.cache_dir
 		end 1
 	end if
 
 	'' Initialize the wiki connection
-	Connection_SetUrl( wiki_url, ca_file )
+	Connection_SetUrl( app_opt.wiki_url, app_opt.ca_file )
 
-	print "URL: "; wiki_url
-	if( ca_file > "" ) then
-		print "Certificate: "; ca_file
+	print "URL: "; app_opt.wiki_url
+	if( app_opt.ca_file > "" ) then
+		print "Certificate: "; app_opt.ca_file
 	else
 		print "Certificate: none"
 	end if
-	print "cache: "; cache_dir
+	print "cache: "; app_opt.cache_dir
 
 	nfailedpages = 0
 
-	if( webPageCount > 0 ) then
+	if( app_opt.webPageCount > 0 ) then
 		dim as integer i, j
 		dim as string ret
-		for i = 1 to webPageCount
-			ret = LoadPage( webPageList(i), FALSE, TRUE )
+		for i = 1 to app_opt.webPageCount
+			ret = LoadPage( app_opt.webPageList(i), FALSE, TRUE )
 			if( ret = "" ) then
-				print "Failed to load '" & webPageList(i) & "'"
+				print "Failed to load '" & app_opt.webPageList(i) & "'"
 				nfailedpages += 1
 				redim preserve failedpages( 1 to nfailedpages )
-				failedpages(nfailedpages) = webPageList(i)
+				failedpages(nfailedpages) = app_opt.webPageList(i)
 			end if
 
 			if( inkey = chr(27) ) then
 				
-				for j = i + 1 to webPageCount
+				for j = i + 1 to app_opt.webPageCount
 					nfailedpages += 1
 					redim preserve failedpages( 1 to nfailedpages )
-					failedpages(nfailedpages) = webPageList(j)
+					failedpages(nfailedpages) = app_opt.webPageList(j)
 				next
 
 				exit for
@@ -240,9 +162,9 @@ do
 			case "y"
 				
 				for i = 1 to nfailedpages
-					webPageList(i) = failedpages(i)
+					app_opt.webPageList(i) = failedpages(i)
 				next
-				webPageCount = nfailedpages
+				app_opt.webPageCount = nfailedpages
 
 				exit do
 

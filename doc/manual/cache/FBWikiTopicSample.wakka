@@ -57,7 +57,6 @@ Brief sentence describing intent of function.
 {{fbdoc item="usage"}}##
 	//result// = **Function**( //param1// [, //param2// ] )
 ##
-
 {{fbdoc item="param"}}
 	##//param1//##
 		A description of parameter.  Format of parameter is ##//monospaced italic//## with one indent.  Description of parameter is normal text with two indents.
@@ -100,7 +99,7 @@ sample output
 
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
-	- In the ////[[CompilerOptlang|-lang qb]]// dialect, ...
+	- In the //[[CompilerOptlang|-lang qb]]// dialect, ...
 	- etc
 
 {{fbdoc item="target"}}

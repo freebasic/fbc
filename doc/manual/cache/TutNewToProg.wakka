@@ -188,3 +188,5 @@ Pixel:  One 'dot' on your monitor.  Monitors are made up of thousands of tiny do
 Syntax:  How words are grouped together.  Your syntax in programming are sets of rules that tell you what code can be placed where.  It makes sure that only logical code is allowed.  Ex:  Print "Hi".  PRINT is the COMMAND, "Hi" is what the command will PRINT.  Make sense?
 
 Variable:  A word that holds data in programming.  You assign these words values, and with those values, you can save information on your program.
+
+//Last Reviewed by ""Sancho3"" on February 06, 2018//

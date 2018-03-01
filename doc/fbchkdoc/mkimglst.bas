@@ -22,15 +22,12 @@
 '' fbdoc headers
 #include once "CWiki.bi"
 #include once "CWikiCache.bi"
-#include once "CRegex.bi"
-#include once "list.bi"
-#include once "fbdoc_defs.bi"
 #include once "fbdoc_string.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 '' libs
 #inclib "pcre"
@@ -39,6 +36,9 @@
 using fb
 using fbdoc
 
+'' --------------------------------------------------------
+
+''
 function ScanForImages _
 	( _
 		byval _this as CWiki ptr, _
@@ -85,114 +85,57 @@ function ScanForImages _
 	
 end function
 
-
 '' --------------------------------------------------------
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string cache_dir, def_cache_dir, web_cache_dir, dev_cache_dir
+'' enable url and cache
+cmd_opts_init( CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_AUTOCACHE or CMD_OPTS_ENABLE_PAGELIST )
 
-dim as integer i = 1, webPageCount = 0
-redim webPageList(1 to 1) as string
-dim as string cmt
-
-if( command(i) = "" ) then
-	print "mkimglst [pages] [@pagelist] [options]"
-	print
-	print "   pages      list of wiki pages on the command line"
-	print "   @pagelist  text file with a list of pages, one per line"
-	print
-	print "   -web       rebuild files in cache_dir"
-	print "   -web+      rebuild files in web cache_dir"
-	print "   -dev       rebuild files in cache_dir"
-	print "   -dev+      rebuild files in dev cache_dir"
-	end 0
-end if
-
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		delete opts
+dim i as integer = 1
+while( command(i) > "" )
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
+		cmd_opts_unrecognized_die( i )
 	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		def_cache_dir = default_CacheDir
-		web_cache_dir = default_web_CacheDir
-		dev_cache_dir = default_dev_CacheDir
-	end if
-end scope
-
-while command(i) > ""
-	if( left(command(i), 1) = "-" ) then
-		select case lcase(command(i))
-		case "-web", "-dev"
-			cache_dir = def_cache_dir
-		case "-web+"
-			cache_dir = web_cache_dir
-		case "-dev+"
-			cache_dir = dev_cache_dir
-		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
-		end select
-	else
-		if left( command(i), 1) = "@" then
-			scope
-				dim h as integer, x as string
-				h = freefile
-				if open( mid(command(i),2) for input access read as #h ) <> 0 then
-					print "Error reading '" + command(i) + "'"
-				else
-					while eof(h) = 0
-						line input #h, x
-						x = ParsePageName( x, cmt )
-						if( x > "" ) then 
-							webPageCount += 1
-							if( webPageCount > ubound(webPageList) ) then
-								redim preserve webPageList(1 to Ubound(webPageList) * 2)
-							end if
-							webPageList(webPageCount) = x
-						end if
-					wend
-					close #h
-				end if
-			end scope
-		else
-			webPageCount += 1
-			if( webPageCount > ubound(webPageList) ) then
-				redim preserve webPageList(1 to Ubound(webPageList) * 2)
-			end if
-			webPageList(webPageCount) = command(i)		
-		end if
+		cmd_opts_unexpected_die( i )
 	end if
 	i += 1
 wend
 
-if( webPageCount = 0 ) then
+if( app_opt.help ) then
+	print "mkimglst [pages] [@pagelist] [options]"
+	print
+	cmd_opts_show_help( "scan for image files in" )
+	print
+	end 0
+end if
+
+cmd_opts_resolve()
+cmd_opts_check()
+
+'' no pages? nothing to do...
+if( app_opt.webPageCount = 0 ) then
 	print "no pages specified."
 	end 1
 end if
 
+'' --------------------------------------------------------
+
 dim as CWikiCache ptr wikicache
 dim as string sPage, sBody
 
-if( cache_dir = "" ) then
-	cache_dir = default_CacheDir
-end if
-print "cache: "; cache_dir
+print "cache: "; app_opt.cache_dir
 
 '' Initialize the cache
-wikicache = new CWikiCache( cache_dir, CWikiCache.CACHE_REFRESH_NONE )
+wikicache = new CWikiCache( app_opt.cache_dir, CWikiCache.CACHE_REFRESH_NONE )
 if wikicache = NULL then
-	print "Unable to use local cache dir " + cache_dir
+	print "Unable to use local cache dir " + app_opt.cache_dir
 	end 1
 end if
 
-if( webPageCount > 0 ) then
+if( app_opt.webPageCount > 0 ) then
 	dim as integer i, h, h2
 	dim as string ret
 
@@ -201,9 +144,9 @@ if( webPageCount > 0 ) then
 	h2 = freefile
 	open "imagepages.txt" for output as #h2
 
-	for i = 1 to webPageCount
+	for i = 1 to app_opt.webPageCount
 
-		sPage = webPageList(i)
+		sPage = app_opt.webPageList(i)
 
 		print "Loading '" + sPage + "':" ; 
 		if( wikicache->LoadPage( sPage, sBody ) ) = FALSE then

@@ -235,7 +235,7 @@ End Type
 
 Then you would build it like ##type(xpart, ypart, zpart)##.
 
-Most or all operators can be overloaded, and most of them are binary ops, meaning they have two operands like the + example above.  Some are unary ops having only a right hand side, like ##Not## and unary minus.  They would be done like '##Operator Not(ByRef rhs As bar) As bar##'.
+Most or all operators can be overloaded, and most of them are binary ops, meaning they have two operands like the + example above.  Some are unary ops having only a right hand side, like ##Not## and unary minus.  They would be done like '##""Operator Not(ByRef rhs As bar) As bar""##'.
 
 There are some special cases where they have to be declared inside the ##Type##; these are the assignment operators and casts.
 
@@ -357,3 +357,5 @@ I hope this tutorial has been useful for you, although there are still a few thi
 	- ##[[KeyPgVisPublic|Public:]]##
 	- ##[[KeyPgVisPrivate|Private:]]##
 	- ##[[KeyPgVisProtected|Protected:]]##
+
+//Last Reviewed by ""Sancho3"" on February 06, 2018//

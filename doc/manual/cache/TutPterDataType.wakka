@@ -1,15 +1,15 @@
 {{fbdoc item="title" value="The Pointer Data Type"}}----
 //Written by [[WikiRick|rdc]]//
 
-The pointer data type is unique among the FreeBasic numeric data types. Instead of containing data, like the other numeric types, a pointer contains the memory address of data.
+The pointer data type is unique among the ""FreeBASIC"" numeric data types. Instead of containing data, like the other numeric types, a pointer contains the memory address of data.
 
-On a 32-bit system, the pointer data type is 4 bytes (8 bytes on a 64-bit system). FreeBasic uses pointers for a number of functions such as [[KeyPgImagecreate|ImageCreate]], and pointers are used heavily in external libraries such as the Windows API. Pointers are also quite fast, since the compiler can directly access the memory location that a pointer points to. A proper understanding of pointers is essential to effective programming in FreeBasic.
+On a 32-bit system, the pointer data type is 4 bytes (8 bytes on a 64-bit system). ""FreeBASIC"" uses pointers for a number of functions such as [[KeyPgImagecreate|ImageCreate]], and pointers are used heavily in external libraries such as the Windows API. Pointers are also quite fast, since the compiler can directly access the memory location that a pointer points to. A proper understanding of pointers is essential to effective programming in ""FreeBASIC"".
 
 For many beginning programmers, pointers seem like a strange and mysterious beast. However, if you keep one rule in mind, you should not have any problems using pointers in your program. The rule is very simple: a pointer contains an address, not data. If you keep this simple rule in mind, you should have no problems using pointers.
 
 === Pointers and Memory ===
 
-You can think of the memory in your computer as a set of post office boxes (P.O. Box) at your local post office. When you go in to rent a P.O. Box, the clerk will give you a number, such as 100. This is the address of your P.O. Box. You decide to write the number down an a slip of paper and put it in your wallet. The next day you go to the post office and pull out the slip of paper. You locate box 100 and look inside the box and find a nice stack of junk mail. Of course, you want to toss the junk mail, but there isn't a trash can handy, so you decide to just put the mail back in the box and toss it later. Working with pointers in FreeBasic is very similar to using a P.O. Box.
+You can think of the memory in your computer as a set of post office boxes (P.O. Box) at your local post office. When you go in to rent a P.O. Box, the clerk will give you a number, such as 100. This is the address of your P.O. Box. You decide to write the number down an a slip of paper and put it in your wallet. The next day you go to the post office and pull out the slip of paper. You locate box 100 and look inside the box and find a nice stack of junk mail. Of course, you want to toss the junk mail, but there isn't a trash can handy, so you decide to just put the mail back in the box and toss it later. Working with pointers in ""FreeBASIC"" is very similar to using a P.O. Box.
 
 When you declare a pointer, it isn't pointing to anything which is analogous to the blank slip of paper. In order to use a pointer, it must be initialized to a memory address, which is the same as writing down the number 100 on the slip of paper.  Once you have the address, find the right P.O. Box, you can dereference the pointer, open the mail box, to add or retrieve data from the pointed-to memory location. As you can see there are three basic steps to using pointers.
 
@@ -21,7 +21,7 @@ This isn't really any different than using a standard variable, and you use poin
 
 === Typed and Untyped Pointers ===
 
-FreeBasic has two types of pointers, typed and untyped. A typed pointer is declared with an asscoaited data type.
+""FreeBASIC"" has two types of pointers, typed and untyped. A typed pointer is declared with an asscoaited data type.
 
 %%(freebasic)
 Dim myPointer as Integer Ptr
@@ -39,13 +39,13 @@ Untyped pointers have no type checking and default to size of byte. Untyped poin
 
 === Pointer Operators ===
 
-FreeBasic has the following [[CatPgOpPoint|pointer operators]].
+""FreeBASIC"" has the following [[CatPgOpPoint|pointer operators]].
 
 You will notice that the addressof operator not only returns the memory address of a variable, but it can also return the address of a subroutine or function. You would use the address of a subroutine or function to create a callback function such as used in the CRT QSort function.
 
 === Memory Functions ===
 
-FreeBasic also has a number of [[CatPgMemory|memory functions]] that are used with pointers.
+""FreeBASIC"" also has a number of [[CatPgMemory|memory functions]] that are used with pointers.
 
 These functions are useful for creating a number of dynamic structures such as linked lists, ragged or dynamic arrays and buffers used with third party libraries.
 
@@ -63,7 +63,7 @@ All of these functions will return a memory address if successful. If the functi
 
 === Pointer Arithmetic and Pointer Indexing ===
 
-When you create a memory segment using the allocation functions, you will need a way to access the data contained within the segment. In FreeBasic there are two methods for accessing data in the segment; using the indirection operator with pointer arithmetic, and pointer indexing.
+When you create a memory segment using the allocation functions, you will need a way to access the data contained within the segment. In ""FreeBASIC"" there are two methods for accessing data in the segment; using the indirection operator with pointer arithmetic, and pointer indexing.
 
 Pointer arithmetic, as the name suggests, adds and subtracts values to a pointer to access individual elements within a memory segment. When you create a typed pointer such as Dim myPointer as Integer ptr, the compiler knows that the data being used with this pointer is of size Integer or 4 bytes. The pointer, when initialized, points to the first element of the segment. You can express this as *(myPtr + 0). To access the second element, you need to add 1 to the pointer, which can be expressed as *(myPtr + 1).
 
@@ -80,7 +80,7 @@ Pointer indexing works the same way as pointer arithmetic, but the details are h
 Freebasic has a set of pointer functions to complement the pointer operators.
 
 ~- [[KeyPgCptr|Cptr]] Converts expression to a data_type pointer. Expression can be another pointer or an integer.
-~- [[KeyPgPeek|Peek]] Returns the contents of memory location pointer to by pointer. Data_type specifies the type of expected data.
+~- [[KeyPgPeek|Peek]] Returns the contents of memory location pointed to by pointer. Data_type specifies the type of expected data.
 ~- [[KeyPgPoke|Poke]] Puts the value of expression into the memory location pointed to by pointer. The data_type specifies the type of data being placed into the memory location.
 ~- [[KeyPgSadd|Sadd]] Returns the location in memory where the string data in a dynamic string is located.
 ~- [[KeyPgOpStrptr|Strptr]] The same as Sadd.
@@ -189,7 +189,7 @@ qsort @myArray(0), 10, SizeOf(Integer), @QCompare
 
 === Pointer to Pointer ===
 
-In FreeBasic you can create a pointer to any of the supported data types, including the pointer data type. A pointer to a pointer is useful in situations where you need to return a pointer to a function or in creating specialized data structures such as linked-lists and ragged arrays. A pointer to a pointer is called multi-level indirection.
+In ""FreeBASIC"" you can create a pointer to any of the supported data types, including the pointer data type. A pointer to a pointer is useful in situations where you need to return a pointer to a function or in creating specialized data structures such as linked-lists and ragged arrays. A pointer to a pointer is called multi-level indirection.
 
 One application of a pointer to pointer is the creation of a memory segment that behaves just like an array. For example, suppose you want to create a memory segment to hold an unknown number of integers. You can create a dynamic memory segment that you can resize as needed during runtime to handle as many integers as you need. You would start by creating a pointer-to-pointer variable.
 
@@ -225,6 +225,7 @@ Next
 %%
 
 This code snippet uses the index method to load the actual data into the memory segments. Notice that this looks and acts just like a two-dimensional array. While this may not seem useful within this context, you could use this code to create a dynamic array within a type definition. Since you cannot have a standard dynamic array within a type, this allows you get the same functionality.
+//Editors Note: Dynamic arrays are allowed in recent releases of FreeBASIC//
 
 One thing you need to be aware of is how to deallocate a structure such as this. The rule is to just do the reverse of the allocation operations. Since the last allocate operation initialized the data memory segments, you deallocate these memory segments first and then you can deallocate the base pointer.
 
@@ -239,3 +240,5 @@ Deallocate myMemArray
 %%
 
 You need to be sure that you deallocate in the right order, otherwise you will end up with memory segments that are not freed, but inaccessible. These are memory leaks and can cause a whole host of problems in your program.
+
+//Last reviewed by ""sancho3"" on February 07, 2018// 

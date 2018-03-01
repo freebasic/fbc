@@ -2,10 +2,10 @@
 Welcome to our world!  This page is an overview of our online warehouse of knowledge.  Enjoy your surfing and we hope this will be the first of many visits.
 
 {{fbdoc item="section" value="Introduction"}}
-	""FreeBASIC"" is a free 32-bit compiler for the BASIC language.  It is open source and //[[GnuLicenses|licensed under the GPL]]//. It is designed to be syntax compatible with QuickBASIC, while expanding on the language and capabilities. It can create programs for MS-Windows, DOS and Linux, and is being ported to other platforms. See //[[CompilerAbout|About FreeBASIC]]// and //[[CompilerFeatures|Main Features]]//.
+	""FreeBASIC"" is a free, BASIC compiler for Windows (32-bit and 64-bit), 32 bit protected-mode DOS (COFF executables, like DJGPP), and Linux (x86, x86_64, and ARM).  It is open source and //[[GnuLicenses|licensed under the GPL]]//. It is designed to be syntax compatible with QuickBASIC, while expanding on the language and capabilities. It can create programs for MS-Windows, DOS and Linux, and is being ported to other platforms. See //[[CompilerAbout|About FreeBASIC]]// and //[[CompilerFeatures|Main Features]]//.
 
 {{fbdoc item="section" value="Latest Version"}}
-	""FreeBASIC"" is a beta release compiler and development is ongoing.  With each full update, many features are added, and bugs from previous releases are fixed.  To see the latest version available, visit [[http://www.freebasic.net/forum/viewforum.php?f=1|the News section on the forum]].
+	""FreeBASIC"" is a beta release compiler and development is ongoing.  With each full update, many features are added, and bugs from previous releases are fixed.  To see the latest version available, visit [[https://www.freebasic.net/forum/viewforum.php?f=1|the News section on the forum]].
 
 {{fbdoc item="section" value="Requirements and Installation"}}
 	Minimum hardware is listed on the //[[CompilerRequirements|Requirements]]// page.  Visit our //[[CompilerRequirements|Installation]]// page for setting up ""FreeBASIC"" on your computer.
@@ -17,7 +17,7 @@ Welcome to our world!  This page is an overview of our online warehouse of knowl
 	""FreeBASIC"" is designed to be syntax compatible with [[QuickBASIC]].  For best code-compatibility with ""QuickBASIC"", the //[[CompilerDialects|QB dialect]]// can be used when compiling source code. See //[[CompilerDialects|FreeBASIC Dialects]]// and //[[LangQB|Differences from QB]]//.
 
 {{fbdoc item="section" value="Documentation"}}
-	All official documentation can be found online in the wiki at [[http://www.freebasic.net/wiki]].  The online documentation is the most up-to-date resource available.  In all cases it can be regarded as the correct version.  The downloadable versions of the manual are snapshots of the documentation available at a particular time and should be mostly correct for a specific released version of the compiler.  However, we do not maintain multiple versions of the documentation so there may be some discrepancies.
+	All official documentation can be found online in the wiki at [[https://www.freebasic.net/wiki]].  The online documentation is the most up-to-date resource available.  In all cases it can be regarded as the correct version.  The downloadable versions of the manual are snapshots of the documentation available at a particular time and should be mostly correct for a specific released version of the compiler.  However, we do not maintain multiple versions of the documentation so there may be some discrepancies.
 
 {{fbdoc item="section" value="Starting points in the Manual"}}
 	- [[DocToc|Table of Contents]]
@@ -25,8 +25,8 @@ Welcome to our world!  This page is an overview of our online warehouse of knowl
 	- [[CatPgProgrammer|Programmer's Guide]]
 
 {{fbdoc item="section" value="Starting points on the Web"}}
-	- Official Website at [[http://www.freebasic.net|http://www.freebasic.net]]
-	- Official Forums at [[http://www.freebasic.net/forum|http://www.freebasic.net/forum]]
+	- Official Website at [[https://www.freebasic.net|https://www.freebasic.net]]
+	- Official Forums at [[https://www.freebasic.net/forum|https://www.freebasic.net/forum]]
 
 Thank you for using ""FreeBASIC"".  Happy coding!
 

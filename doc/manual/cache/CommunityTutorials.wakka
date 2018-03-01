@@ -1,4 +1,4 @@
-{{image url="/images/fbwct.png"}} ----
+{{image url="/images/fbwct.png"}}{{fbdoc item="title" value="Community Tutorials"}}----
 Tutorials submitted by the FreeBASIC community:
 << {{fbdoc item="section" value="Getting Started"}}
 	-[[TutGettingStartedQB|Getting Started with FreeBASIC]] //by [[JasonFirth|SJ Zero]]//

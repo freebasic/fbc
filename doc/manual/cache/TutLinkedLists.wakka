@@ -382,3 +382,5 @@ End Sub
 %%
 
 If you haven't noticed already, ""ListAdd"" and ""ListAddHead"" return a pointer to the data you inputted. The sample code (see above) shows how to use this functionality. ""ListRemove"" returns a pointer to next node. That's how ""ListRemoveAll"" removes the nodes. ""ListRemoveAll"" is the only function that doesn't return anything. There is no need, since the whole list will be empty after you have called it.
+
+//Last edited by ""sancho3"" on February 8, 2018//

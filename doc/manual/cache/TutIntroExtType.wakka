@@ -257,7 +257,7 @@ Constructor MyRect (xx_ As Integer, yy_ As Integer, w_ As Integer, _
 	this.Fillcolor_ = fc_
 End Constructor
 %%
-The Methods and Properties are defined using the Sub/Function/Property methodname.TypeName syntax. This tells the compiler how to match up methods with the proper type definition. The Constructors are defined with the type name for the same reason. The //this// identifier is a hidden parameter that is passed to the methods that refers to the defined type. You use the //this// identifier to specify that you want to access the type constructs.
+The Methods and Properties are defined using the Sub/Function/Property ##""TypeName.methodname""## syntax. This tells the compiler how to match up methods with the proper type definition. The Constructors are defined with the type name for the same reason. The //this// identifier is a hidden parameter that is passed to the methods that refers to the defined type. You use the //this// identifier to specify that you want to access the type constructs.
 
 === Using Your Object===
 
