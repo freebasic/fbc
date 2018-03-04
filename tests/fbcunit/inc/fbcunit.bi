@@ -13,7 +13,7 @@
 ---------------------------------------------------------'/
 
 #define FBCU_VER_MAJOR 0
-#define FBCU_VER_MINOR 6
+#define FBCU_VER_MINOR 7
 
 #inclib "fbcunit"
 
