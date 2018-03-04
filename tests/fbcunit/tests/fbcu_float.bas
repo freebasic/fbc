@@ -41,6 +41,8 @@ SUITE( floating_point )
 		dim a as double = 1.0000000000000000#
 		dim b as double = 1.0000000000000002#
 		dim ulps as longint = 1
+		CU_ASSERT( fbcu.dblIsNan( a ) = false )
+		CU_ASSERT( fbcu.dblULP( a, b ) = ulps )
 		CU_ASSERT_DOUBLE_APPROX( a, b, ulps )
 	END_TEST
 
