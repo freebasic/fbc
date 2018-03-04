@@ -146,7 +146,16 @@
 #define CU_FAIL( a )                 fbcu.CU_ASSERT_( false, __FILE__, __LINE__, __FUNCTION__, "CU_FAIL(" #a ")" )
 #define CU_FAIL_FATAL( a )           fbcu.CU_ASSERT_FATAL_( false, __FILE__, __LINE__, __FUNCTION__, "CU_FAIL_FATAL(" #a ")" )
 #define CU_PASS( a )                 fbcu.CU_ASSERT_( true , __FILE__, __LINE__, __FUNCTION__, "CU_PASS(" #a ")" )
-#define CU_ASSERT_DOUBLE_EQUAL( a, e, g ) fbcu.CU_ASSERT_( (abs(cdbl(a)-cdbl(e)) <= abs(cdbl(g))), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_DOUBLE_EQUAL(" #a "," #e "," #g ")" )
+#define CU_ASSERT_DOUBLE_EXACT( a, e )     fbcu.CU_ASSERT_( (cdbl(a) = cdbl(e)), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_DOUBLE_EXACT(" #a "," #e ")" )
+#define CU_ASSERT_DOUBLE_EQUAL( a, e, g )  fbcu.CU_ASSERT_( (abs(cdbl(a)-cdbl(e)) <= abs(cdbl(g))), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_DOUBLE_EQUAL(" #a "," #e "," #g ")" )
+#if( __FB_LANG__ = "qb" )
+#define CU_ASSERT_DOUBLE_APPROX( a, e, u ) fbcu.CU_ASSERT_( fbcu.dblApprox(cdbl(a), cdbl(e), __clngint(u)), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_DOUBLE_APPROX(" #a "," #e "," #u ")" )
+#else
+#define CU_ASSERT_DOUBLE_APPROX( a, e, u ) fbcu.CU_ASSERT_( fbcu.dblApprox(cdbl(a), cdbl(e), clngint(u)), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_DOUBLE_APPROX(" #a "," #e "," #u ")" )
+#endif
+#define CU_ASSERT_SINGLE_EXACT( a, e )     fbcu.CU_ASSERT_( (csng(a) = csng(e)), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_SINGLE_EXACT(" #a "," #e ")" )
+#define CU_ASSERT_SINGLE_EQUAL( a, e, g )  fbcu.CU_ASSERT_( (abs(csng(a)-csng(e)) <= abs(csng(g))), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_SINGLE_EQUAL(" #a "," #e "," #g ")" )
+#define CU_ASSERT_SINGLE_APPROX( a, e, u ) fbcu.CU_ASSERT_( fbcu.sngApprox(csng(a), csng(e), clng(u)), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_SINGLE_APPROX(" #a "," #e "," #u ")" )
 
 
 /'-----------------------------
@@ -454,6 +463,42 @@
 		( _
 		)
 
+	declare function fbcu.sngIsNan alias "fbcu_sngIsNan_qb_" _
+		( _
+			byval a as single _
+		) as __boolean
+
+	declare function fbcu.sngULP alias "fbcu_sngULP_qb_" _
+		( _
+			byval a as single, _
+			byval a as single _
+		) as long
+
+	declare function fbcu.sngApprox alias "fbcu_sngApprox_qb_" _
+		( _
+			byval a as single, _
+			byval b as single, _
+			byval ulps as long = 1 _
+		) as __boolean
+
+	declare function fbcu.dblIsNan alias "fbcu_dblIsNan_qb_" _
+		( _
+			byval a as double _
+		) as __boolean
+
+	declare function fbcu.dblULP alias "fbcu_dblULP_qb_" _
+		( _
+			byval a as double, _
+			byval a as double _
+		) as __longint
+
+	declare function fbcu.dblApprox alias "fbcu_dblApprox_qb_" _
+		( _
+			byval a as double, _
+			byval b as double, _
+			byval ulps as __longint = 1 _
+		) as __boolean
+
 	declare sub fbcu.CU_ASSERT_ alias "fbcu_CU_ASSERT_qb_" _
 		( _
 			byval value as __boolean, _
@@ -524,6 +569,42 @@ namespace fbcu
 	declare sub show_results _
 		( _
 		)
+
+	declare function sngIsNan _
+		( _
+			byval a as single _
+		) as boolean
+
+	declare function sngULP _
+		( _
+			byval a as single, _
+			byval a as single _
+		) as long
+
+	declare function sngApprox _
+		( _
+			byval a as single, _
+			byval b as single, _
+			byval ulps as long = 1 _
+		) as boolean
+
+	declare function dblIsNan _
+		( _
+			byval a as double _
+		) as boolean
+
+	declare function dblULP _
+		( _
+			byval a as double, _
+			byval a as double _
+		) as longint
+
+	declare function dblApprox _
+		( _
+			byval a as double, _
+			byval b as double, _
+			byval ulps as longint = 1 _
+		) as boolean
 
 	declare sub CU_ASSERT_ _
 		( _

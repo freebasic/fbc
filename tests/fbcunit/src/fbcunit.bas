@@ -688,6 +688,134 @@ namespace fbcu
 	end sub
 
 	''
+	function sngIsNan _
+		( _
+			byval a as single _
+		) as boolean
+
+		dim ia as long = *cast( long ptr, @a )
+
+		'' NAN = exponent all 1's and mantissa not zero
+		return cbool( ((ia and &h7f800000) = &h7f800000 ) _
+			  andalso ((ia and &h007fffff) <> 0) )
+
+	end function
+
+	''
+	function sngULP _
+		( _
+			byval a as single, _
+			byval b as single _
+		) as long
+
+		dim ia as long = *cast( long ptr, @a )
+		dim ib as long = *cast( long ptr, @b )
+
+		if( sngIsNan(a) ) then
+			return &h7fffffff
+		end if
+
+		if( sngIsNan(b) ) then
+			return &h7fffffff
+		end if
+
+		'' signs different?
+		if( (ia and &h80000000) <> (ib and &h80000000) ) then
+
+			'' compare -0 and +0
+			if( a = b ) then
+				return 0
+			end if
+
+			'' assume big diff
+			return &h7fffffff
+		
+		end if
+			
+		'' signs are the same, return |ia-ib|
+		ia and= &h7fffffff
+		ib and= &h7fffffff
+		return iif( ia>ib, ia-ib, ib-ia )
+
+	end function
+
+	''
+	function sngApprox _
+		( _
+			byval a as single, _
+			byval b as single, _
+			byval ulps as long = 1 _
+		) as boolean
+
+		function = cbool( sngULP(a, b) <= ulps )
+
+	end function
+
+	''
+	function dblIsNan _
+		( _
+			byval a as double _
+		) as boolean
+
+		dim ia as longint = *cast( longint ptr, @a )
+
+		'' NAN = exponent all 1's and mantissa not zero
+		return cbool( ((ia and &h7ff0000000000000ll) = &h7ff0000000000000ll ) _
+			  andalso ((ia and &h000fffffffffffffll) <> 0ll) )
+
+	end function
+
+	''
+	function dblULP _
+		( _
+			byval a as double, _
+			byval b as double _
+		) as longint
+
+		dim ia as longint = *cast( longint ptr, @a )
+		dim ib as longint = *cast( longint ptr, @b )
+
+		if( dblIsNan(a) ) then
+			return &h7fffffffffffffffll
+		end if
+
+		if( dblIsNan(b) ) then
+			return &h7fffffffffffffffll
+		end if
+		
+		'' signs different?
+		if( (ia and &h8000000000000000ll) <> (ib and &h8000000000000000ll) ) then
+
+			'' compare -0 and +0
+			if( a = b ) then
+				return 0
+			end if
+
+			'' assume big diff
+			return &h7fffffffffffffffll
+		
+		end if
+			
+		'' signs are the same, return |ia-ib|
+		ia and= &h7fffffffffffffffll
+		ib and= &h7fffffffffffffffll
+		return iif( ia>ib, ia-ib, ib-ia )
+
+	end function
+
+	''
+	function dblApprox _
+		( _
+			byval a as double, _
+			byval b as double, _
+			byval ulps as longint = 1 _
+		) as boolean
+
+		function = cbool( dblULP(a, b) <= ulps )
+
+	end function
+
+	''
 	sub CU_ASSERT_ _
 		( _
 			byval value as boolean, _

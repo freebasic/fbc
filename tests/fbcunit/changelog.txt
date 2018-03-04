@@ -1,5 +1,18 @@
 Version 0.7
 
+[added]
+- CU_ASSERT_SINGLE_EQUAL() API macro - for singles using epsilon granularity
+- CU_ASSERT_SINGLE_EXACT() API macro - direct and exact comparison between singles
+- CU_ASSERT_DOUBLE_EXACT() API macro - direct and exact comparison between doubles
+- CU_ASSERT_DOUBLE_APPROX() API macro - wrapper for dblApprox() function
+- CU_ASSERT_SINGLE_APPROX() API macro - wrapper for sngApprox() function
+- fbcu.dblIsNan() API function - check if double is not a number
+- fbcu.dblULP() API function - get units in last place distance for doubles
+- fbcu.dblApprox() API function - units in last place comparison for doubles
+- fbcu.sngIsNan() API function - check if single is not a number
+- fbcu.sngULP() API function - get units in last place distance for singles
+- fbcu.sngApprox() API function - units in last place comparison for singles
+
 [fixed]
 - suite names are now allowed to have '.' in the name
 
