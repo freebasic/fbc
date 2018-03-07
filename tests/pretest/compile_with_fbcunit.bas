@@ -3,17 +3,14 @@
 
 #include "fbcunit.bi"
 
-namespace fbc_tests.pretest
+/'
+	Expected results:
+		1) compile as part of fbc-tests through unit-tests.mk
+		2) reported as success by fbcunit unit testing framework
+'/
 
-sub test_true cdecl ()
-  CU_ASSERT_TRUE( -1 )
-end sub
-
-private sub ctor () constructor
-
-  fbcu.add_suite("fbc_tests.pretest.compile_with_fbcunit")
-  fbcu.add_test("test_true", @test_true)
-
-end sub
-
-end namespace
+SUITE( fbc_tests.pretest.compile_with_fbcunit )
+	TEST( test_true )
+		CU_ASSERT_TRUE( -1 )
+	END_TEST
+END_SUITE
