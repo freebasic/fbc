@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 data_1:
 data -1, "true"
@@ -22,11 +22,11 @@ data -1, &hffffffff
 data  0, &b0
 data -1, &b1
 
-namespace fbc_tests.boolean_.data_
+SUITE( fbc_tests.boolean_.data_ )
 
 	'' RTLIB - DATAREADBOOL
 
-	sub data_read_boolean cdecl ( )
+	TEST( data_read_boolean )
 		
 		dim i as integer
 		dim c as integer
@@ -36,11 +36,7 @@ namespace fbc_tests.boolean_.data_
 			read i, b
 			CU_ASSERT_EQUAL( i, cint(b) )
 		next
-	end sub
 
-	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean.boolean_data")
-		fbcu.add_test("data_read_boolean", @data_read_boolean)
-	end sub
+	END_TEST
 
-end namespace
+END_SUITE

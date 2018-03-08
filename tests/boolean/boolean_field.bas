@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 '' - don't mix false/true intrinsic constants 
 ''   of the compiler in with the tests
@@ -8,7 +8,7 @@
 #define FALSE 0
 #define TRUE (-1)
 
-namespace fbc_tests.boolean_.field_
+SUITE( fbc_tests.boolean_.field_ )
 
 	type T1
 		i as integer
@@ -27,16 +27,16 @@ namespace fbc_tests.boolean_.field_
 		b as T2
 	end union
 
-	sub test1 cdecl ( )
+	TEST( offsets )
 		dim as T1 a
 		dim as T2 b
 
 		CU_ASSERT_EQUAL( offsetof(T1, i), offsetof(T2, i) )
 		CU_ASSERT_EQUAL( offsetof(T1, b), offsetof(T2, b) )
 		CU_ASSERT_EQUAL( offsetof(T1, j), offsetof(T2, j) )
-	end sub
+	END_TEST
 
-	sub test2 cdecl ( )
+	TEST( assignment )
 		dim as T1 a
 
 		a.b = 0
@@ -47,9 +47,9 @@ namespace fbc_tests.boolean_.field_
 
 		a.b = 256
 		CU_ASSERT_EQUAL( a.b, TRUE )
-	end sub
+	END_TEST
 
-	sub test3 cdecl ( )
+	TEST( boolean_storage )
 		dim as U a
 
 		a.a.b = 0
@@ -63,9 +63,9 @@ namespace fbc_tests.boolean_.field_
 		a.a.b = 256
 		CU_ASSERT_EQUAL( a.a.b, TRUE )
 		CU_ASSERT_EQUAL( a.b.b, 1 )
-	end sub
+	END_TEST
 
-	sub test4 cdecl ( )
+	TEST( indirect_storage )
 		dim as U a
 
 		'' Storing into the byte, instead of the boolean -- should only
@@ -78,14 +78,6 @@ namespace fbc_tests.boolean_.field_
 		a.b.b = 1
 		CU_ASSERT_EQUAL( a.a.b, TRUE )
 		CU_ASSERT_EQUAL( a.b.b, 1 )
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean.boolean_field")
-		fbcu.add_test("test1", @test1)
-		fbcu.add_test("test2", @test2)
-		fbcu.add_test("test3", @test3)
-		fbcu.add_test("test4", @test4)
-	end sub
-
-end namespace
+END_SUITE

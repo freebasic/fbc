@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 '' - don't mix false/true intrinsic constants 
 ''   of the compiler in with the tests
@@ -8,10 +8,10 @@
 #define FALSE 0
 #define TRUE (-1)
 
-namespace fbc_tests.boolean_.ptr_
+SUITE( fbc_tests.boolean_.ptr_ )
 
 	''
-	sub test1 cdecl ( )
+	TEST( compare )
 
 		dim as boolean i
 		dim as boolean ptr b = @i
@@ -21,13 +21,7 @@ namespace fbc_tests.boolean_.ptr_
 		i =  2: CU_ASSERT_EQUAL( *b, cbool(i) )
 		i = -1: CU_ASSERT_EQUAL( *b, cbool(i) )
 
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.boolean.boolean_ptr")
-		fbcu.add_test("test1", @test1)
-		
-	end sub
-	
-end namespace
+END_SUITE

@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 '' - don't mix false/true intrinsic constants 
 ''   of the compiler in with the tests
@@ -11,11 +11,11 @@
 const FALSE_STRING = "false"
 const TRUE_STRING = "true"
 
-namespace fbc_tests.boolean_.str_
+SUITE( fbc_tests.boolean_.str_ )
 
 	'' RTLIB - BOOL2STR
 
-	sub str_true_false_constants cdecl ( )
+	TEST( str_true_false_constants )
 
 		'' check that BOOL->STR is returning "false" | "true"
 		
@@ -27,18 +27,18 @@ namespace fbc_tests.boolean_.str_
 		b = TRUE
 		CU_ASSERT_EQUAL( str(b), TRUE_STRING)
 
-	end sub
+	END_TEST
 	
-	sub str_const_comparison cdecl ( )
+	TEST( str_const_comparison )
 
 		'' check conversion in const comparison
 
 		CU_ASSERT_EQUAL( str(cbool(FALSE)), FALSE_STRING )
 		CU_ASSERT_EQUAL( str(cbool(TRUE)), TRUE_STRING )
 
-	end sub
+	END_TEST
 
-	sub str_const_assignment cdecl ( )
+	TEST( str_const_assignment )
 
 		'' check conversion in const assignment
 
@@ -50,9 +50,9 @@ namespace fbc_tests.boolean_.str_
 		e = str(cbool(TRUE))
 		CU_ASSERT_EQUAL( e, TRUE_STRING )
 
-	end sub
+	END_TEST
 	
-	sub str_conv_initialize cdecl ( )
+	TEST( str_conv_initialize )
 
 		'' check conversion on initialize
 
@@ -69,10 +69,11 @@ namespace fbc_tests.boolean_.str_
 
 		CU_ASSERT_EQUAL( s3, str(b2) )
 		CU_ASSERT_EQUAL( s4, str(b2) )
-	end sub
+
+	END_TEST
 
 	
-	sub str_conv_expression cdecl ( )
+	TEST( str_conv_expression )
 
 		'' check conversion of bool expressions
 
@@ -97,9 +98,9 @@ namespace fbc_tests.boolean_.str_
 		CU_ASSERT_EQUAL( str(b1 = b2), FALSE_STRING )
 		CU_ASSERT_EQUAL( str(b1 <> b2), TRUE_STRING )
 
-	end sub
+	END_TEST
 
-	sub str_conv_variable cdecl ( )
+	TEST( str_conv_variable )
 		
 		'' check conversion of bool variable
 
@@ -114,9 +115,9 @@ namespace fbc_tests.boolean_.str_
 		s = str(b)
 		CU_ASSERT_EQUAL( s, TRUE_STRING )
 
-	end sub
+	END_TEST
 	
-	sub str_conv_concatenate cdecl ( )
+	TEST( str_conv_concatenate )
 
 		'' check string concatenate
 
@@ -134,17 +135,6 @@ namespace fbc_tests.boolean_.str_
 
 		CU_ASSERT_EQUAL( s, t )
 
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean.boolean_str")
-		fbcu.add_test("str_true_false_constants", @str_true_false_constants)
-		fbcu.add_test("str_const_comparison", @str_const_comparison)
-		fbcu.add_test("str_const_assignment", @str_const_assignment)
-		fbcu.add_test("str_conv_initialize", @str_conv_initialize)
-		fbcu.add_test("str_conv_expression", @str_conv_expression)
-		fbcu.add_test("str_conv_variable", @str_conv_variable)
-		fbcu.add_test("str_conv_concatenate", @str_conv_concatenate)
-	end sub
-
-end namespace
+END_SUITE
