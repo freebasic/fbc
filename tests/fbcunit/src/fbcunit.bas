@@ -702,7 +702,7 @@ namespace fbcu
 	end function
 
 	''
-	function sngULP _
+	function sngULPdiff _
 		( _
 			byval a as single, _
 			byval b as single _
@@ -747,7 +747,7 @@ namespace fbcu
 			byval ulps as long = 1 _
 		) as boolean
 
-		function = cbool( sngULP(a, b) <= ulps )
+		function = cbool( sngULPdiff(a, b) <= ulps )
 
 	end function
 
@@ -766,7 +766,7 @@ namespace fbcu
 	end function
 
 	''
-	function dblULP _
+	function dblULPdiff _
 		( _
 			byval a as double, _
 			byval b as double _
@@ -811,7 +811,7 @@ namespace fbcu
 			byval ulps as longint = 1 _
 		) as boolean
 
-		function = cbool( dblULP(a, b) <= ulps )
+		function = cbool( dblULPdiff(a, b) <= ulps )
 
 	end function
 

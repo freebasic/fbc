@@ -468,7 +468,7 @@
 			byval a as single _
 		) as __boolean
 
-	declare function fbcu.sngULP alias "fbcu_sngULP_qb_" _
+	declare function fbcu.sngULPdiff alias "fbcu_sngULPdiff_qb_" _
 		( _
 			byval a as single, _
 			byval a as single _
@@ -486,7 +486,7 @@
 			byval a as double _
 		) as __boolean
 
-	declare function fbcu.dblULP alias "fbcu_dblULP_qb_" _
+	declare function fbcu.dblULPdiff alias "fbcu_dblULPdiff_qb_" _
 		( _
 			byval a as double, _
 			byval a as double _
@@ -575,7 +575,7 @@ namespace fbcu
 			byval a as single _
 		) as boolean
 
-	declare function sngULP _
+	declare function sngULPdiff _
 		( _
 			byval a as single, _
 			byval a as single _
@@ -593,7 +593,7 @@ namespace fbcu
 			byval a as double _
 		) as boolean
 
-	declare function dblULP _
+	declare function dblULPdiff _
 		( _
 			byval a as double, _
 			byval a as double _

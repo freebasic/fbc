@@ -7,10 +7,10 @@ Version 0.7
 - CU_ASSERT_DOUBLE_APPROX() API macro - wrapper for dblApprox() function
 - CU_ASSERT_SINGLE_APPROX() API macro - wrapper for sngApprox() function
 - fbcu.dblIsNan() API function - check if double is not a number
-- fbcu.dblULP() API function - get units in last place distance for doubles
+- fbcu.dblULPdiff() API function - get units in last place difference for doubles
 - fbcu.dblApprox() API function - units in last place comparison for doubles
 - fbcu.sngIsNan() API function - check if single is not a number
-- fbcu.sngULP() API function - get units in last place distance for singles
+- fbcu.sngULPdiff() API function - get units in last place difference for singles
 - fbcu.sngApprox() API function - units in last place comparison for singles
 
 [fixed]

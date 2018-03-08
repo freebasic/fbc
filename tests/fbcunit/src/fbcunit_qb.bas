@@ -85,13 +85,13 @@ function fbcu_sngIsNan_qb_ alias "fbcu_sngIsNan_qb_" _
 end function
 
 ''
-function fbcu_sngULP_qb_ alias "fbcu_sngULP_qb_" _
+function fbcu_sngULPdiff_qb_ alias "fbcu_sngULPdiff_qb_" _
 	( _
 		byval a as single, _
 		byval b as single _
 	) as long
 
-	function = fbcu.sngULP( a, b )
+	function = fbcu.sngULPdiff( a, b )
 
 end function
 
@@ -118,13 +118,13 @@ function fbcu_dblIsNan_qb_ alias "fbcu_dblIsNan_qb_" _
 end function
 
 ''
-function fbcu_dblULP_qb_ alias "fbcu_dblULP_qb_" _
+function fbcu_dblULPdiff_qb_ alias "fbcu_dblULPdiff_qb_" _
 	( _
 		byval a as double, _
 		byval b as double _
 	) as longint
 
-	function = fbcu.dblULP( a, b )
+	function = fbcu.dblULPdiff( a, b )
 
 end function
 

@@ -44,7 +44,7 @@ SUITE( qb )
 		u = 1
 
 		CU_ASSERT( fbcu.sngIsNan( n ) = false )
-		CU_ASSERT( fbcu.sngULP( n, c ) = u )
+		CU_ASSERT( fbcu.sngULPdiff( n, c ) = u )
 		CU_ASSERT_SINGLE_APPROX( n, c, u )
 
 	END_TEST
@@ -74,7 +74,7 @@ SUITE( qb )
 		u = 1
 
 		CU_ASSERT( fbcu.dblIsNan( n ) = false )
-		CU_ASSERT( fbcu.dblULP( n, c ) = u )
+		CU_ASSERT( fbcu.dblULPdiff( n, c ) = u )
 		CU_ASSERT_DOUBLE_APPROX( n, c, u )
 		
 	END_TEST
