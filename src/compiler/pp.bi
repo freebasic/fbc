@@ -30,6 +30,7 @@ type PP_CTX
 	argtblist	as TLIST
 	level 		as integer
 	skipping	as integer
+	invoking	as integer		'' to let macros passed to other macros by name
 end type
 
 declare sub ppInit _

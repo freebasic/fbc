@@ -5,6 +5,7 @@
 #include once "list.bi"
 #include once "pool.bi"
 #include once "ast-op.bi"
+#include once "stack.bi"
 
 ''
 enum FB_DATACLASS
@@ -730,9 +731,19 @@ type SYMB_DEF_PARAM
 	index			as uinteger
 end type
 
+type SYMB_DEF_UniqueId_Elm
+	name			as zstring ptr
+end type
+
+type SYMB_DEF_UniqueId
+	stack			as TSTACK					'' of SYMB_DEF_UniqueId_Elm
+	name			as zstring ptr				'' current unique id
+end type
+
 type SYMB_DEF_CTX
 	paramlist		as TLIST					'' define parameters
 	toklist			as TLIST					'' define tokens
+	uniqueid		as SYMB_DEF_UniqueId
 
 	'' macros only..
 	param			as integer					'' param count

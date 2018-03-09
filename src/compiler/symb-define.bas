@@ -11,6 +11,7 @@
 #include once "list.bi"
 #include once "lex.bi"
 #include once "hlp.bi"
+#include once "stack.bi"
 
 #include once "datetime.bi"
 #include once "string.bi"
@@ -172,6 +173,39 @@ private function hDefAsm_cb( ) as string
 	end select
 end function
 
+private function hDefUniqueIdPush_cb( ) as string
+	if( symb.def.uniqueid.name <> NULL ) then
+		dim as SYMB_DEF_UniqueId_Elm ptr stk = stackPush( @symb.def.uniqueid.stack )
+		stk->name = symb.def.uniqueid.name
+	end if
+	
+	var id = symbUniqueId()
+	symb.def.uniqueid.name = allocate(len(*id)+1)
+	*symb.def.uniqueid.name = *id
+	
+	function = ""
+end function
+
+private function hDefUniqueId_cb( ) as string
+	function = *symb.def.uniqueid.name
+end function
+
+private function hDefUniqueIdPop_cb( ) as string	
+	if( symb.def.uniqueid.name <> NULL ) then
+		deallocate(symb.def.uniqueid.name)
+	end if
+	
+	dim as SYMB_DEF_UniqueId_Elm ptr stk = stackGetTOS( @symb.def.uniqueid.stack )
+	if( stk <> NULL ) then
+		symb.def.uniqueid.name = stk->name
+		stackPop( @symb.def.uniqueid.stack )
+	else
+		symb.def.uniqueid.name = NULL
+	end if
+	
+	function = ""
+end function
+
 '' Intrinsic #defines which are always defined
 dim shared defTb(0 to ...) as SYMBDEF => _
 { _
@@ -208,7 +242,10 @@ dim shared defTb(0 to ...) as SYMBDEF => _
 	(@"__FB_BACKEND__"        , NULL          , FB_DEFINE_FLAGS_STR, @hDefBackend_cb    ), _
 	(@"__FB_FPU__"            , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpu_cb        ), _
 	(@"__FB_FPMODE__"         , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpmode_cb     ), _
-	(@"__FB_GCC__"            , NULL          , 0                  , @hDefGcc_cb        )  _
+	(@"__FB_GCC__"            , NULL          , 0                  , @hDefGcc_cb        ), _
+	(@"__FB_UNIQUEID_PUSH__"  , NULL          , 0				   , @hDefUniqueIdPush_cb),  _
+	(@"__FB_UNIQUEID__"       , NULL          , 0				   , @hDefUniqueId_cb   ), _
+	(@"__FB_UNIQUEID_POP__"   , NULL          , 0				   , @hDefUniqueIdPop_cb) _
 }
 
 sub symbDefineInit _
@@ -221,6 +258,8 @@ sub symbDefineInit _
 
 	listInit( @symb.def.paramlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), LIST_FLAGS_NOCLEAR )
 	listInit( @symb.def.toklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
+	stackNew( @symb.def.uniqueid.stack, 16, len( SYMB_DEF_UniqueId_Elm ), true )
+	symb.def.uniqueid.name = NULL
 
 	'' add the pre-defines
 	for i as integer = 0 to ubound( defTb )
@@ -286,6 +325,7 @@ sub symbDefineEnd( )
 
 	symb.def.param = 0
 
+	stackFree( @symb.def.uniqueid.stack )
 	listEnd( @symb.def.paramlist )
 	listEnd( @symb.def.toklist )
 
