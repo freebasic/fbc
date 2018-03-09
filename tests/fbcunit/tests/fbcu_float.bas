@@ -23,6 +23,8 @@ SUITE( floating_point )
 		CU_ASSERT( fbcu.sngIsInf( a ) = false )
 		CU_ASSERT( fbcu.sngULPdiff( a, b ) = ulps )
 		CU_ASSERT_SINGLE_APPROX( a, b, ulps )
+		CU_ASSERT_SINGLE_APPROX( a, a - fbcu.sngULP(a), ulps )
+		CU_ASSERT_SINGLE_APPROX( a, a + fbcu.sngULP(a) * 2, ulps )
 	END_TEST
 
 	TEST( double_exact )
@@ -46,6 +48,8 @@ SUITE( floating_point )
 		CU_ASSERT( fbcu.dblIsInf( a ) = false )
 		CU_ASSERT( fbcu.dblULPdiff( a, b ) = ulps )
 		CU_ASSERT_DOUBLE_APPROX( a, b, ulps )
+		CU_ASSERT_DOUBLE_APPROX( a, a - fbcu.dblULP(a), ulps )
+		CU_ASSERT_DOUBLE_APPROX( a, a + fbcu.dblULP(a), ulps )
 	END_TEST
 
 END_SUITE

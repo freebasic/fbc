@@ -716,6 +716,23 @@ namespace fbcu
 	end function
 
 	''
+	function sngULP _
+		( _
+			byval a as single _
+		) as single
+
+		if( sngIsNan(a) orelse sngIsInf(a) ) then
+			return a
+		end if
+
+		dim ia as long = *cast( long ptr, @a )
+		ia -= 1
+
+		return a - *cast( single ptr, @ia )
+		
+	end function
+
+	''
 	function sngULPdiff _
 		( _
 			byval a as single, _
@@ -790,6 +807,23 @@ namespace fbcu
 		'' INF = exponent all 1's and mantissa zero
 		return cbool( ((ia and &h7ff0000000000000ll) = &h7ff0000000000000ll ) _
 			  andalso ((ia and &h000fffffffffffffll) = 0ll) )
+
+	end function
+
+	''
+	function dblULP _
+		( _
+			byval a as double _
+		) as double
+
+		if( dblIsNan(a) orelse dblIsInf(a) ) then
+			return a
+		end if
+
+		dim ia as longint = *cast( longint ptr, @a )
+		ia -= 1
+
+		return a - *cast( double ptr, @ia )
 
 	end function
 

@@ -95,6 +95,16 @@ function fbcu_sngIsInf_qb_ alias "fbcu_sngIsInf_qb_" _
 end function
 
 ''
+function fbcu_sngULP_qb_ alias "fbcu_sngULP_qb_" _
+	( _
+		byval a as single _
+	) as long
+
+	function = fbcu.sngULP( a )
+
+end function
+
+''
 function fbcu_sngULPdiff_qb_ alias "fbcu_sngULPdiff_qb_" _
 	( _
 		byval a as single, _
@@ -134,6 +144,16 @@ function fbcu_dblIsInf_qb_ alias "fbcu_dblIsInf_qb_" _
 	) as boolean
 
 	function = fbcu.dblIsInf( a )
+
+end function
+
+''
+function fbcu_dblULP_qb_ alias "fbcu_dblULP_qb_" _
+	( _
+		byval a as double _
+	) as longint
+
+	function = fbcu.dblULP( a )
 
 end function
 

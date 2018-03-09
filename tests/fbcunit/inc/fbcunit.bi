@@ -473,10 +473,15 @@
 			byval a as single _
 		) as __boolean
 
+	declare function fbcu.sngULP alias "fbcu_sngULP_qb_" _
+		( _
+			byval a as single _
+		) as single
+
 	declare function fbcu.sngULPdiff alias "fbcu_sngULPdiff_qb_" _
 		( _
 			byval a as single, _
-			byval a as single _
+			byval b as single _
 		) as long
 
 	declare function fbcu.sngApprox alias "fbcu_sngApprox_qb_" _
@@ -496,10 +501,15 @@
 			byval a as double _
 		) as __boolean
 
+	declare function fbcu.dblULP alias "fbcu_dblULP_qb_" _
+		( _
+			byval a as double _
+		) as double
+
 	declare function fbcu.dblULPdiff alias "fbcu_dblULPdiff_qb_" _
 		( _
 			byval a as double, _
-			byval a as double _
+			byval b as double _
 		) as __longint
 
 	declare function fbcu.dblApprox alias "fbcu_dblApprox_qb_" _
@@ -590,10 +600,15 @@ namespace fbcu
 			byval a as single _
 		) as boolean
 
+	declare function sngULP _
+		( _
+			byval a as single _
+		) as single
+
 	declare function sngULPdiff _
 		( _
 			byval a as single, _
-			byval a as single _
+			byval b as single _
 		) as long
 
 	declare function sngApprox _
@@ -613,10 +628,15 @@ namespace fbcu
 			byval a as double _
 		) as boolean
 
+	declare function dblULP _
+		( _
+			byval a as double _
+		) as double
+
 	declare function dblULPdiff _
 		( _
 			byval a as double, _
-			byval a as double _
+			byval b as double _
 		) as longint
 
 	declare function dblApprox _
