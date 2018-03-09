@@ -20,6 +20,7 @@ SUITE( floating_point )
 		dim b as single = 1.0000001!
 		dim ulps as long = 1
 		CU_ASSERT( fbcu.sngIsNan( a ) = false )
+		CU_ASSERT( fbcu.sngIsInf( a ) = false )
 		CU_ASSERT( fbcu.sngULPdiff( a, b ) = ulps )
 		CU_ASSERT_SINGLE_APPROX( a, b, ulps )
 	END_TEST
@@ -42,6 +43,7 @@ SUITE( floating_point )
 		dim b as double = 1.0000000000000002#
 		dim ulps as longint = 1
 		CU_ASSERT( fbcu.dblIsNan( a ) = false )
+		CU_ASSERT( fbcu.dblIsInf( a ) = false )
 		CU_ASSERT( fbcu.dblULPdiff( a, b ) = ulps )
 		CU_ASSERT_DOUBLE_APPROX( a, b, ulps )
 	END_TEST

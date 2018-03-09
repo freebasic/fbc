@@ -468,6 +468,11 @@
 			byval a as single _
 		) as __boolean
 
+	declare function fbcu.sngIsInf alias "fbcu_sngIsInf_qb_" _
+		( _
+			byval a as single _
+		) as __boolean
+
 	declare function fbcu.sngULPdiff alias "fbcu_sngULPdiff_qb_" _
 		( _
 			byval a as single, _
@@ -482,6 +487,11 @@
 		) as __boolean
 
 	declare function fbcu.dblIsNan alias "fbcu_dblIsNan_qb_" _
+		( _
+			byval a as double _
+		) as __boolean
+
+	declare function fbcu.dblIsInf alias "fbcu_dblIsInf_qb_" _
 		( _
 			byval a as double _
 		) as __boolean
@@ -575,6 +585,11 @@ namespace fbcu
 			byval a as single _
 		) as boolean
 
+	declare function sngIsInf _
+		( _
+			byval a as single _
+		) as boolean
+
 	declare function sngULPdiff _
 		( _
 			byval a as single, _
@@ -589,6 +604,11 @@ namespace fbcu
 		) as boolean
 
 	declare function dblIsNan _
+		( _
+			byval a as double _
+		) as boolean
+
+	declare function dblIsInf _
 		( _
 			byval a as double _
 		) as boolean

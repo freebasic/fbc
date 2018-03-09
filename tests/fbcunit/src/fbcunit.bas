@@ -702,6 +702,20 @@ namespace fbcu
 	end function
 
 	''
+	function sngIsInf _
+		( _
+			byval a as single _
+		) as boolean
+
+		dim ia as long = *cast( long ptr, @a )
+
+		'' INF = exponent all 1's and mantissa zero
+		return cbool( ((ia and &h7f800000) = &h7f800000 ) _
+			  andalso ((ia and &h007fffff) = 0) )
+
+	end function
+
+	''
 	function sngULPdiff _
 		( _
 			byval a as single, _
@@ -762,6 +776,20 @@ namespace fbcu
 		'' NAN = exponent all 1's and mantissa not zero
 		return cbool( ((ia and &h7ff0000000000000ll) = &h7ff0000000000000ll ) _
 			  andalso ((ia and &h000fffffffffffffll) <> 0ll) )
+
+	end function
+
+	''
+	function dblIsInf _
+		( _
+			byval a as double _
+		) as boolean
+
+		dim ia as longint = *cast( longint ptr, @a )
+
+		'' INF = exponent all 1's and mantissa zero
+		return cbool( ((ia and &h7ff0000000000000ll) = &h7ff0000000000000ll ) _
+			  andalso ((ia and &h000fffffffffffffll) = 0ll) )
 
 	end function
 
