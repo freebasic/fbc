@@ -92,14 +92,6 @@ SUITE( fbc_tests.boolean_.bitfield )
 		c : 1 as boolean
 	end type
 
-	#macro do_test(assignment)
-		scope
-			dim x as UDT
-			assignment
-			print x.a, x.b, x.c
-		end scope
-	#endmacro
-
 	TEST( assignment_unsigned_const )
 
 		scope
@@ -131,6 +123,63 @@ SUITE( fbc_tests.boolean_.bitfield )
 	TEST( assignment_unsigned_variable )
 
 		dim value as uinteger = 1
+		scope
+			dim x as UDT
+			x.a = value
+			CU_ASSERT_EQUAL( x.a, -1 )
+			CU_ASSERT_EQUAL( x.b, 0 )
+			CU_ASSERT_EQUAL( x.c, 0 )
+		end scope
+
+		scope
+			dim x as UDT
+			x.b = value
+			CU_ASSERT_EQUAL( x.a, 0 )
+			CU_ASSERT_EQUAL( x.b, -1 )
+			CU_ASSERT_EQUAL( x.c, 0 )
+		end scope
+
+		scope
+			dim x as UDT
+			x.c = value
+			CU_ASSERT_EQUAL( x.a, 0 )
+			CU_ASSERT_EQUAL( x.b, 0 )
+			CU_ASSERT_EQUAL( x.c, -1 )
+		end scope
+
+	END_TEST
+
+	TEST( assignment_signed_const )
+
+		scope
+			dim x as UDT
+			x.a = 1
+			CU_ASSERT_EQUAL( x.a, -1 )
+			CU_ASSERT_EQUAL( x.b, 0 )
+			CU_ASSERT_EQUAL( x.c, 0 )
+		end scope
+
+		scope
+			dim x as UDT
+			x.b = 1
+			CU_ASSERT_EQUAL( x.a, 0 )
+			CU_ASSERT_EQUAL( x.b, -1 )
+			CU_ASSERT_EQUAL( x.c, 0 )
+		end scope
+
+		scope
+			dim x as UDT
+			x.c = 1
+			CU_ASSERT_EQUAL( x.a, 0 )
+			CU_ASSERT_EQUAL( x.b, 0 )
+			CU_ASSERT_EQUAL( x.c, -1 )
+		end scope
+
+	END_TEST
+
+	TEST( assignment_signed_variable )
+
+		dim value as integer = 1
 		scope
 			dim x as UDT
 			x.a = value
