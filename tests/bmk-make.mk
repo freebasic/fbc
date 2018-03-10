@@ -87,6 +87,9 @@ endif
 ifeq ($(ENABLE_CHECK_BUGS),1)
 	FBC_CFLAGS += -d ENABLE_CHECK_BUGS=$(ENABLE_CHECK_BUGS)
 endif
+ifeq ($(ENABLE_CONSOLE_OUTPUT),1)
+	FBC_CFLAGS += -d ENABLE_CONSOLE_OUTPUT=$(ENABLE_CONSOLE_OUTPUT)
+endif
 
 # The default target has to appear before "include $(BMK)", which might
 # define other targets.

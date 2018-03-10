@@ -26,6 +26,9 @@ endif
 ENABLE_CHECK_BUGS :=
 export ENABLE_CHECK_BUGS
 
+ENABLE_CONSOLE_OUTPUT :=
+export ENABLE_CONSOLE_OUTPUT
+
 UNITTEST_RUN_ARGS :=
 export UNITTEST_RUN_ARGS
 
@@ -88,6 +91,7 @@ all :
 	@$(ECHO) "   FPU=fpu | sse"
 	@$(ECHO) "   UNITTEST_RUN_ARGS=args"
 	@$(ECHO) "   ENABLE_CHECK_BUGS=1"
+	@$(ECHO) "   ENABLE_CONSOLE_OUTPUT=1"
 	@$(ECHO) ""
 	@$(ECHO) "Targets: Configuration and Checks"
 	@$(ECHO) "   check"

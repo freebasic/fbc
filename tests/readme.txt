@@ -87,6 +87,10 @@ ENABLE_CHECK_BUGS=1
    Adds '-d ENABLE_CHECK_BUGS=1' when compiling tests. This is used
    enable additional tests for known bugs that are not yet fixed.
 
+ENABLE_CONSOLE_OUTPUT=1
+   Add '-d ENABLE_CONSOLE_OUTPUT' when compiling tests. This is used
+   to turn on printing output to the console.
+
 How the tests are collected
 ---------------------------
 

@@ -65,6 +65,10 @@ ifndef ENABLE_CHECK_BUGS
 ENABLE_CHECK_BUGS :=
 endif
 
+ifndef ENABLE_CONSOLE_OUTPUT
+ENABLE_CONSOLE_OUTPUT :=
+endif
+
 .SUFFIXES:
 .SUFFIXES: .bmk .bas
 
@@ -158,6 +162,9 @@ endif
 
 ifeq ($(ENABLE_CHECK_BUGS),1)
 	FBC_CFLAGS += -d ENABLE_CHECK_BUGS=$(ENABLE_CHECK_BUGS)
+endif
+ifeq ($(ENABLE_CONSOLE_OUTPUT),1)
+	FBC_CFLAGS += -d ENABLE_CONSOLE_OUTPUT=$(ENABLE_CONSOLE_OUTPUT)
 endif
 
 # ------------------------------------------------------------------------
