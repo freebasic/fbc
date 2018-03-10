@@ -120,6 +120,10 @@ SUITE( fbc_tests.boolean_.bitfield )
 
 	END_TEST
 
+#if ENABLE_CHECK_BUGS
+	#print enable check for #872 broken boolean bitfield runtime assignments from unsigned values
+	#print see bug #872 at https://sourceforge.net/p/fbc/bugs/872/
+
 	TEST( assignment_unsigned_variable )
 
 		dim value as uinteger = 1
@@ -205,5 +209,7 @@ SUITE( fbc_tests.boolean_.bitfield )
 		end scope
 
 	END_TEST
+
+#endif
 
 END_SUITE
