@@ -187,8 +187,6 @@ private function hMacro_getArg( byval argtb as LEXPP_ARGTB ptr, byval num as int
 		ZstrAssignW(@res, dt)
 	end if
 	
-	hUcase(res, res)
-	
 	function = res
 	
 end function
@@ -255,31 +253,85 @@ private function hDefUniqueIdPop_cb( byval argtb as LEXPP_ARGTB ptr, byval errnu
 	function = ""
 end function
 
-private function hDefArgSplit_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 	var arg = hMacro_getArg( argtb, 0 )
 	var sep = hMacro_getArg( argtb, 1 )
-	var ret = hMacro_getArg( argtb, 2 )
-	if( arg = null or sep = null or ret = null ) then
+	if( arg = null or sep = null ) then
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
 		return ""
 	end if
 
-	var cnt = 0
-	var retn = valint(*ret)
+	dim tokens() as string
+	var numtoks = hStr2Tok(arg, tokens())
 	
-	redim res() as string
-	hSplitStr(*arg, *sep, res())
-	
-	if( retn < 1 or retn > ubound(res)+1 ) then
+	if( numtoks = 0 ) then
 		*errnum = FB_ERRMSG_SYNTAXERROR
 		return ""
 	end if
 	
-	ZstrFree(ret)
+	hUcase(sep, sep)
+	
+	var res = ""
+	for i as integer = 0 to numtoks-1
+		if( ucase(tokens(i)) = *sep ) then
+			for j as integer = 0 to i - 1
+				if( j > 0 ) then
+					res += " "
+				end if
+				res += tokens(j)
+			next
+			exit for
+		end if
+	next
+	
 	ZstrFree(sep)
 	ZstrFree(arg)
 	
-	function = res(retn-1)
+	if( len(res) = 0 ) then
+		*errnum = FB_ERRMSG_SYNTAXERROR
+	end if
+	return res
+	
+end function
+
+private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+	var arg = hMacro_getArg( argtb, 0 )
+	var sep = hMacro_getArg( argtb, 1 )
+	if( arg = null or sep = null ) then
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+		return ""
+	end if
+
+	dim tokens() as string
+	var numtoks = hStr2Tok(arg, tokens())
+	
+	if( numtoks = 0 ) then
+		*errnum = FB_ERRMSG_SYNTAXERROR
+		return ""
+	end if
+	
+	hUcase(sep, sep)
+	
+	var res = ""
+	for i as integer = 0 to numtoks-1
+		if( ucase(tokens(i)) = *sep ) then
+			for j as integer = i + 1 to numtoks-1
+				if( len(res) > 0 ) then
+					res += " "
+				end if
+				res += tokens(j)
+			next
+			exit for
+		end if
+	next
+	
+	ZstrFree(sep)
+	ZstrFree(arg)
+	
+	if( len(res) = 0 ) then
+		*errnum = FB_ERRMSG_SYNTAXERROR
+	end if
+	return res
 	
 end function
 
@@ -336,7 +388,8 @@ dim shared macroTb(0 to ...) as SYMBMACRO => _
 	(@"__FB_UNIQUEID_PUSH__"  , @hDefUniqueIdPush_cb	, 1, { (@"ID") } ),  _
 	(@"__FB_UNIQUEID__"       , @hDefUniqueId_cb 		, 1, { (@"ID") } ), _
 	(@"__FB_UNIQUEID_POP__"   , @hDefUniqueIdPop_cb		, 1, { (@"ID") } ), _
-	(@"__FB_ARGSPLIT__"   	  , @hDefArgSplit_cb		, 3, { (@"ARG"), (@"SEP"), (@"RETNUM") } ) _
+	(@"__FB_ARG_LEFT__"   	  , @hDefArgLeft_cb			, 2, { (@"ARG"), (@"SEP") } ), _
+	(@"__FB_ARG_RIGHT__"   	  , @hDefArgRight_cb		, 2, { (@"ARG"), (@"SEP") } ) _
 }
 
 sub symbDefineInit _

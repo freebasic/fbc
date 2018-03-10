@@ -362,8 +362,10 @@ enum FB_DEFINE_FLAGS
 	FB_DEFINE_FLAGS_VARIADIC	= &h00000004
 end enum
 
+type LEXPP_ARGTB_ as LEXPP_ARGTB ptr
+
 type FBS_DEFINE_PROC as function( ) as string
-type FBS_MACRO_PROC as function( byval argtb as any /'LEXPP_ARGTB'/ ptr, byval errnum as integer ptr ) as string
+type FBS_MACRO_PROC as function( byval argtb as LEXPP_ARGTB_, byval errnum as integer ptr ) as string
 
 type FBS_DEFINE
 	params			as integer
