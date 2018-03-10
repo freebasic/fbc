@@ -17,17 +17,6 @@
 				   LEXCHECK_NOQUOTES or _
 				   LEXCHECK_NOSYMBOL)
 
-type LEXPP_ARG
-	union
-		text		as DZSTRING
-		textw		as DWSTRING
-	end union
-end type
-
-type LEXPP_ARGTB
-	tb(0 to FB_MAXDEFINEARGS-1) as LEXPP_ARG
-end type
-
 ''::::
 sub ppDefineInit( )
 
@@ -242,68 +231,83 @@ private function hLoadMacro _
 
 	text = ""
 
-	if( argtb ) then
-		dt = symbGetDefineHeadToken( s )
-		do while( dt )
-			select case as const( symbGetDefTokType( dt ) )
-			'' parameter?
-			case FB_DEFTOK_TYPE_PARAM
-				assert( symbGetDefTokParamNum( dt ) <= num )
-				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+	'' should we call a function to get definition text?
+	if( symbGetMacroCallback( s ) <> NULL ) then
+		'' call function
+		var errnum = FB_ERRMSG_OK
+		var res = symbGetMacroCallback( s )( argtb, @errnum )
+		if( errnum = FB_ERRMSG_OK ) then
+			text = res
+		else
+			hReportMacroError( s, errnum )
+		end if
 
-				'' Only if not empty ("..." param can be empty)
-				if( argtext <> NULL ) then
-					text += *argtext
-				end if
+	'' just load text as-is
+	else
+		if( argtb ) then
+			dt = symbGetDefineHeadToken( s )
+			do while( dt )
+				select case as const( symbGetDefTokType( dt ) )
+				'' parameter?
+				case FB_DEFTOK_TYPE_PARAM
+					assert( symbGetDefTokParamNum( dt ) <= num )
+					argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 
-			'' stringize parameter?
-			case FB_DEFTOK_TYPE_PARAMSTR
-				assert( symbGetDefTokParamNum( dt ) <= num )
-				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+					'' Only if not empty ("..." param can be empty)
+					if( argtext <> NULL ) then
+						text += *argtext
+					end if
 
-				'' Only if not empty ("..." param can be empty)
-				if( argtext <> NULL ) then
-					'' don't escape, preserve the sequencies as-is
-					text += "$" + QUOTE
-					text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
-					text += QUOTE
-				else
-					'' If it's empty, produce an empty string ("")
-					text += """"""
-				end if
+				'' stringize parameter?
+				case FB_DEFTOK_TYPE_PARAMSTR
+					assert( symbGetDefTokParamNum( dt ) <= num )
+					argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 
-			'' ordinary text..
-			case FB_DEFTOK_TYPE_TEX
-				text += *symbGetDefTokText( dt )
+					'' Only if not empty ("..." param can be empty)
+					if( argtext <> NULL ) then
+						'' don't escape, preserve the sequencies as-is
+						text += "$" + QUOTE
+						text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
+						text += QUOTE
+					else
+						'' If it's empty, produce an empty string ("")
+						text += """"""
+					end if
 
-			'' unicode text?
-			case FB_DEFTOK_TYPE_TEXW
-				text += str( *symbGetDefTokTextW( dt ) )
-			end select
+				'' ordinary text..
+				case FB_DEFTOK_TYPE_TEX
+					text += *symbGetDefTokText( dt )
 
-			'' next
-			dt = symbGetDefTokNext( dt )
-		loop
+				'' unicode text?
+				case FB_DEFTOK_TYPE_TEXW
+					text += str( *symbGetDefTokTextW( dt ) )
+				end select
 
-		'' free args text
-		do while( num > 0 )
-			num -= 1
-			DZstrAssign( argtb->tb(num).text, NULL )
-		loop
+				'' next
+				dt = symbGetDefTokNext( dt )
+			loop
 
-		listDelNode( @pp.argtblist, argtb )
+			'' free args text
+			do while( num > 0 )
+				num -= 1
+				DZstrAssign( argtb->tb(num).text, NULL )
+			loop
+
+			listDelNode( @pp.argtblist, argtb )
+		end if
+		
+		if( readdchar <> -1 ) then
+			text += chr(readdchar)
+		end if
+
 	end if
 	
-	if( readdchar <> -1 ) then
-		text += chr(readdchar)
-	end if
-
 	if( lex.ctx->deflen = 0 ) then
 		DZstrAssign( lex.ctx->deftext, text )
 	else
 		DZstrAssign( lex.ctx->deftext, text + *lex.ctx->defptr )
 	end if
-	
+
 	pp.invoking -= 1
 	
 	function = len( text )
@@ -590,53 +594,67 @@ private function hLoadMacroW _
 	'' text = ""
 	DWstrAssign( text, NULL )
 
-	if( argtb ) then
-		dt = symbGetDefineHeadToken( s )
-		do while( dt )
-			select case as const( symbGetDefTokType( dt ) )
-			'' parameter?
-			case FB_DEFTOK_TYPE_PARAM
-				assert( symbGetDefTokParamNum( dt ) <= num )
-				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+	'' should we call a function to get definition text?
+	if( symbGetMacroCallback( s ) <> NULL ) then
+		'' call function
+		var errnum = FB_ERRMSG_OK
+		var res = symbGetMacroCallback( s )( argtb, @errnum )
+		if( errnum = FB_ERRMSG_OK ) then
+			DWstrAssignA( text, res )
+		else
+			hReportMacroError( s, errnum )
+		end if
 
-				'' Only if not empty ("..." param can be empty)
-				if( argtext <> NULL ) then
-					DWstrConcatAssign( text, argtext )
-				end if
+	'' just load text as-is
+	else
+		if( argtb ) then
+			dt = symbGetDefineHeadToken( s )
+			do while( dt )
+				select case as const( symbGetDefTokType( dt ) )
+				'' parameter?
+				case FB_DEFTOK_TYPE_PARAM
+					assert( symbGetDefTokParamNum( dt ) <= num )
+					argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
 
-			'' stringize parameter?
-			case FB_DEFTOK_TYPE_PARAMSTR
-				assert( symbGetDefTokParamNum( dt ) <= num )
-				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+					'' Only if not empty ("..." param can be empty)
+					if( argtext <> NULL ) then
+						DWstrConcatAssign( text, argtext )
+					end if
 
-				'' Only if not empty ("..." param can be empty)
-				if( argtext <> NULL ) then
-					'' don't escape, preserve the sequencies as-is
-					DWstrConcatAssign( text, "$" + QUOTE )
-					DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
-					DWstrConcatAssign( text, QUOTE )
-				end if
+				'' stringize parameter?
+				case FB_DEFTOK_TYPE_PARAMSTR
+					assert( symbGetDefTokParamNum( dt ) <= num )
+					argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
 
-			'' ordinary text..
-			case FB_DEFTOK_TYPE_TEX
-				DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
+					'' Only if not empty ("..." param can be empty)
+					if( argtext <> NULL ) then
+						'' don't escape, preserve the sequencies as-is
+						DWstrConcatAssign( text, "$" + QUOTE )
+						DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
+						DWstrConcatAssign( text, QUOTE )
+					end if
 
-			'' unicode text?
-			case FB_DEFTOK_TYPE_TEXW
-				DWstrConcatAssign( text, symbGetDefTokTextW( dt ) )
-			end select
+				'' ordinary text..
+				case FB_DEFTOK_TYPE_TEX
+					DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
 
-			'' next
-			dt = symbGetDefTokNext( dt )
-		loop
+				'' unicode text?
+				case FB_DEFTOK_TYPE_TEXW
+					DWstrConcatAssign( text, symbGetDefTokTextW( dt ) )
+				end select
 
-		'' free args text
-		do while( num > 0 )
-			num -= 1
-			DWstrAssign( argtb->tb(num).textw, NULL )
-		loop
+				'' next
+				dt = symbGetDefTokNext( dt )
+			loop
 
-		listDelNode( @pp.argtblist, argtb )
+			'' free args text
+			do while( num > 0 )
+				num -= 1
+				DWstrAssign( argtb->tb(num).textw, NULL )
+			loop
+
+			listDelNode( @pp.argtblist, argtb )
+		end if
 	end if
 
 	if( readdchar <> -1 ) then

@@ -134,6 +134,19 @@ type LEX_CTX
 	insidemacro 	as integer
 end type
 
+
+type LEXPP_ARG
+	union
+		text		as DZSTRING
+		textw		as DWSTRING
+	end union
+end type
+
+type LEXPP_ARGTB
+	tb(0 to FB_MAXDEFINEARGS-1) as LEXPP_ARG
+end type
+
+
 declare sub lexInit _
 	( _
 		byval isinclude as integer _

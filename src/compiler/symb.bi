@@ -363,6 +363,7 @@ enum FB_DEFINE_FLAGS
 end enum
 
 type FBS_DEFINE_PROC as function( ) as string
+type FBS_MACRO_PROC as function( byval argtb as any /'LEXPP_ARGTB'/ ptr, byval errnum as integer ptr ) as string
 
 type FBS_DEFINE
 	params			as integer
@@ -376,7 +377,10 @@ type FBS_DEFINE
 
 	isargless		as integer
     flags           as FB_DEFINE_FLAGS			'' bit 0: 1=numeric, 0=string
-	proc			as FBS_DEFINE_PROC
+	union
+		dproc			as FBS_DEFINE_PROC
+		mproc			as FBS_MACRO_PROC
+	end union
 end type
 
 '' forward definition
@@ -733,11 +737,15 @@ end type
 
 type SYMB_DEF_UniqueId_Elm
 	name			as zstring ptr
+	prev			as SYMB_DEF_UniqueId_Elm ptr
+end type
+
+type SYMB_DEF_UniqueId_Stack
+	top				as SYMB_DEF_UniqueId_Elm ptr
 end type
 
 type SYMB_DEF_UniqueId
-	stack			as TSTACK					'' of SYMB_DEF_UniqueId_Elm
-	name			as zstring ptr				'' current unique id
+	dict			as THASH					'' of SYMB_DEF_UniqueId_Stack
 end type
 
 type SYMB_DEF_CTX
@@ -2138,7 +2146,9 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetDefParamNum(a) a->num
 
-#define symbGetDefineCallback(d) d->def.proc
+#define symbGetDefineCallback(d) d->def.dproc
+
+#define symbGetMacroCallback(d) d->def.mproc
 
 #define symbGetDefineIsArgless(d) d->def.isargless
 

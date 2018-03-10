@@ -1255,3 +1255,43 @@ function hIsValidHexDigit( byval ch as integer ) as integer
 	           ((ch >= asc( "a" )) and (ch <= asc( "f" ))) or _
 	           ((ch >= asc( "A" )) and (ch <= asc( "F" )))
 end function
+
+sub hSplitStr(byref txt as string, byref del as string, res() as string)
+
+	var items = 10
+	redim dpos(0 to items-1) as integer
+	
+	var dellen = len(del)
+	
+	var x = 1
+	var p = 0
+	do 
+		x = instr(x, txt, del)
+		if( x > 0 ) then
+			if( p >= items ) then
+				items += 10
+				redim preserve dpos(0 to items-1)
+			end if
+			dpos(p) = x
+			x += dellen
+		end if
+		p += 1
+	loop until x = 0
+	
+	var cnt = p - 1
+	if( cnt = 0 ) then
+		redim res(0 to 0)
+		res(0) = txt
+		return
+	end if
+	
+	redim res(0 to cnt)
+	res(0) = Left(txt, dpos(0) - 1 )
+	p = 1
+	do until p = cnt
+		res(p) = mid(txt, dpos(p - 1) + dellen, dpos(p) - dpos(p - 1) - dellen )
+		p += 1
+	loop
+	res(cnt) = mid(txt, dpos(cnt - 1) + dellen)
+   
+end sub

@@ -11,29 +11,26 @@
 #include once "list.bi"
 #include once "lex.bi"
 #include once "hlp.bi"
-#include once "stack.bi"
 
 #include once "datetime.bi"
 #include once "string.bi"
-
-type DEFCALLBACK as function() as string
 
 type SYMBDEF
 	name			as const zstring ptr
 	value			as zstring ptr
 	flags			as integer  '' FB_DEFINE_FLAGS_*
-	proc			as DEFCALLBACK
+	proc			as FBS_DEFINE_PROC
 end type
 
-private function hDefFile_cb( ) as string static
+private function hDefFile_cb() as string static
 	function = env.inf.name
 end function
 
-private function hDefPath_cb( ) as string static
+private function hDefPath_cb() as string static
 	function = fbGetInputFileParentDir( )
 end function
 
-private function hDefFunction_cb( ) as string
+private function hDefFunction_cb() as string
 	if( symbGetIsMainProc( parser.currproc ) ) then
 		function = FB_MAINPROCNAME
 	elseif( symbGetIsModLevelProc( parser.currproc ) ) then
@@ -43,71 +40,71 @@ private function hDefFunction_cb( ) as string
 	end if
 end function
 
-private function hDefLine_cb( ) as string static
+private function hDefLine_cb() as string static
 	function = str( lexLineNum( ) )
 end function
 
-private function hDefDate_cb( ) as string static
+private function hDefDate_cb() as string static
 	function = date
 end function
 
-private function hDefDateISO_cb( ) as string static
+private function hDefDateISO_cb() as string static
 	function = format( now( ), "yyyy-mm-dd" )
 end function
 
-private function hDefTime_cb( ) as string static
+private function hDefTime_cb() as string static
 	function = time
 end function
 
-private function hDefMultithread_cb( ) as string static
+private function hDefMultithread_cb() as string static
 	function = str( env.clopt.multithreaded )
 end function
 
-private function hDefOptByval_cb ( ) as string
+private function hDefOptByval_cb() as string
 	function = str( env.opt.parammode = FB_PARAMMODE_BYVAL )
 end function
 
-private function hDefOptDynamic_cb ( ) as string
+private function hDefOptDynamic_cb() as string
 	function = str( env.opt.dynamic = TRUE )
 end function
 
-private function hDefOptEscape_cb ( ) as string
+private function hDefOptEscape_cb() as string
 	function = str( env.opt.escapestr = TRUE )
 end function
 
-private function hDefOptExplicit_cb ( ) as string
+private function hDefOptExplicit_cb() as string
 	function = str( env.opt.explicit = TRUE )
 end function
 
-private function hDefOptPrivate_cb ( ) as string
+private function hDefOptPrivate_cb() as string
 	function = str( env.opt.procpublic = FALSE )
 end function
 
-private function hDefOptGosub_cb ( ) as string
+private function hDefOptGosub_cb() as string
 	function = str( env.opt.gosub = TRUE )
 end function
 
-private function hDefOutExe_cb ( ) as string
+private function hDefOutExe_cb() as string
 	function = str( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE )
 end function
 
-private function hDefOutLib_cb ( ) as string
+private function hDefOutLib_cb() as string
 	function = str( env.clopt.outtype = FB_OUTTYPE_STATICLIB )
 end function
 
-private function hDefOutDll_cb ( ) as string
+private function hDefOutDll_cb() as string
 	function = str( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB )
 end function
 
-private function hDefOutObj_cb ( ) as string
+private function hDefOutObj_cb() as string
 	function = str( env.clopt.outtype = FB_OUTTYPE_OBJECT )
 end function
 
-private function hDefDebug_cb ( ) as string
+private function hDefDebug_cb() as string
 	function = str( env.clopt.assertions )
 end function
 
-private function hDefErr_cb ( ) as string
+private function hDefErr_cb() as string
     dim as integer res = &h0000
 
 	if( env.clopt.errorcheck ) then
@@ -125,11 +122,11 @@ private function hDefErr_cb ( ) as string
 	function = str( res )
 end function
 
-private function hDefLang_cb ( ) as string
+private function hDefLang_cb() as string static
 	function = fbGetLangName( env.clopt.lang )
 end function
 
-private function hDefBackend_cb ( ) as string
+private function hDefBackend_cb() as string static
 	select case env.clopt.backend
 	case FB_BACKEND_GAS
 		function = "gas"
@@ -140,7 +137,7 @@ private function hDefBackend_cb ( ) as string
 	end select
 end function
 
-private function hDefFpu_cb ( ) as string
+private function hDefFpu_cb() as string static
 	select case fbGetOption( FB_COMPOPT_FPUTYPE )
 	case FB_FPUTYPE_FPU
 		return "x87"
@@ -151,7 +148,7 @@ private function hDefFpu_cb ( ) as string
 	end select
 end function
 
-private function hDefFpmode_cb ( ) as string
+private function hDefFpmode_cb() as string static
 	select case fbGetOption( FB_COMPOPT_FPMODE )
 	case FB_FPMODE_PRECISE
 		return "precise"
@@ -162,49 +159,130 @@ private function hDefFpmode_cb ( ) as string
 	end select
 end function
 
-private function hDefGcc_cb( ) as string static
+private function hDefGcc_cb() as string static
 	function = str( (env.clopt.backend = FB_BACKEND_GCC) )
 end function
 
-private function hDefAsm_cb( ) as string
+private function hDefAsm_cb() as string
 	select case( env.clopt.asmsyntax )
 	case FB_ASMSYNTAX_INTEL : function = "intel"
 	case FB_ASMSYNTAX_ATT   : function = "att"
 	end select
 end function
 
-private function hDefUniqueIdPush_cb( ) as string
-	if( symb.def.uniqueid.name <> NULL ) then
-		dim as SYMB_DEF_UniqueId_Elm ptr stk = stackPush( @symb.def.uniqueid.stack )
-		stk->name = symb.def.uniqueid.name
-	end if
+private function hMacro_getArg( byval argtb as LEXPP_ARGTB ptr, byval num as integer = 0 ) as zstring ptr
+	dim as zstring ptr res = NULL
 	
-	var id = symbUniqueId()
-	symb.def.uniqueid.name = allocate(len(*id)+1)
-	*symb.def.uniqueid.name = *id
-	
-	function = ""
-end function
-
-private function hDefUniqueId_cb( ) as string
-	function = *symb.def.uniqueid.name
-end function
-
-private function hDefUniqueIdPop_cb( ) as string	
-	if( symb.def.uniqueid.name <> NULL ) then
-		deallocate(symb.def.uniqueid.name)
-	end if
-	
-	dim as SYMB_DEF_UniqueId_Elm ptr stk = stackGetTOS( @symb.def.uniqueid.stack )
-	if( stk <> NULL ) then
-		symb.def.uniqueid.name = stk->name
-		stackPop( @symb.def.uniqueid.stack )
+	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+		var dt = argtb->tb(num).text.data
+		if( dt = NULL ) then
+			return null
+		end if
+		ZstrAssign(@res, dt)
 	else
-		symb.def.uniqueid.name = NULL
+		var dt = argtb->tb(num).textw.data
+		if( dt = NULL ) then
+			return null
+		end if
+		ZstrAssignW(@res, dt)
+	end if
+	
+	hUcase(res, res)
+	
+	function = res
+	
+end function
+	
+private function hDefUniqueIdPush_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+	
+	var id = hMacro_getArg( argtb )
+	if( id = null ) then
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+		return ""
+	end if
+	
+	var stk = cast(SYMB_DEF_UniqueId_Stack ptr, hashLookup(@symb.def.uniqueid.dict, id))
+	
+	if( stk = NULL ) then
+		stk = callocate(len(SYMB_DEF_UniqueId_Stack))
+		hashAdd(@symb.def.uniqueid.dict, id, stk, cuint( INVALID ))
+	else
+		ZstrFree(id)
+	end if
+
+	var elm = cast(SYMB_DEF_UniqueId_Elm ptr, allocate(len(SYMB_DEF_UniqueId_Elm)))
+	
+	var uid = symbUniqueId()
+	elm->name = allocate(len(*uid)+1)
+	*elm->name = *uid
+	elm->prev = stk->top
+
+	stk->top = elm
+	
+	function = ""
+end function
+
+private function hDefUniqueId_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+	var id = hMacro_getArg( argtb )
+	if( id = null ) then
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+		return ""
+	end if
+	
+	var stk = cast(SYMB_DEF_UniqueId_Stack ptr, hashLookup(@symb.def.uniqueid.dict, id))
+	
+	ZstrFree(id)
+	
+	function = iif(stk <> NULL, *stk->top->name, "")
+end function
+
+private function hDefUniqueIdPop_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string	
+	var id = hMacro_getArg( argtb )
+	if( id = null ) then
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+		return ""
+	end if
+	
+	var stk = cast(SYMB_DEF_UniqueId_Stack ptr, hashLookup(@symb.def.uniqueid.dict, id))
+	
+	ZstrFree(id)
+	
+	if( stk <> NULL ) then
+		deallocate(stk->top->name)
+		stk->top = stk->top->prev
 	end if
 	
 	function = ""
 end function
+
+private function hDefArgSplit_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+	var arg = hMacro_getArg( argtb, 0 )
+	var sep = hMacro_getArg( argtb, 1 )
+	var ret = hMacro_getArg( argtb, 2 )
+	if( arg = null or sep = null or ret = null ) then
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+		return ""
+	end if
+
+	var cnt = 0
+	var retn = valint(*ret)
+	
+	redim res() as string
+	hSplitStr(*arg, *sep, res())
+	
+	if( retn < 1 or retn > ubound(res)+1 ) then
+		*errnum = FB_ERRMSG_SYNTAXERROR
+		return ""
+	end if
+	
+	ZstrFree(ret)
+	ZstrFree(sep)
+	ZstrFree(arg)
+	
+	function = res(retn-1)
+	
+end function
+
 
 '' Intrinsic #defines which are always defined
 dim shared defTb(0 to ...) as SYMBDEF => _
@@ -242,10 +320,23 @@ dim shared defTb(0 to ...) as SYMBDEF => _
 	(@"__FB_BACKEND__"        , NULL          , FB_DEFINE_FLAGS_STR, @hDefBackend_cb    ), _
 	(@"__FB_FPU__"            , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpu_cb        ), _
 	(@"__FB_FPMODE__"         , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpmode_cb     ), _
-	(@"__FB_GCC__"            , NULL          , 0                  , @hDefGcc_cb        ), _
-	(@"__FB_UNIQUEID_PUSH__"  , NULL          , 0				   , @hDefUniqueIdPush_cb),  _
-	(@"__FB_UNIQUEID__"       , NULL          , 0				   , @hDefUniqueId_cb   ), _
-	(@"__FB_UNIQUEID_POP__"   , NULL          , 0				   , @hDefUniqueIdPop_cb) _
+	(@"__FB_GCC__"            , NULL          , 0                  , @hDefGcc_cb        ) _
+}
+
+type SYMBMACRO
+	name			as const zstring ptr
+	proc			as FBS_MACRO_PROC
+	nparams			as integer
+	params(0 to 4)	as const zstring ptr
+end type
+
+'' Intrinsic #macros which are always defined
+dim shared macroTb(0 to ...) as SYMBMACRO => _
+{ _
+	(@"__FB_UNIQUEID_PUSH__"  , @hDefUniqueIdPush_cb	, 1, { (@"ID") } ),  _
+	(@"__FB_UNIQUEID__"       , @hDefUniqueId_cb 		, 1, { (@"ID") } ), _
+	(@"__FB_UNIQUEID_POP__"   , @hDefUniqueIdPop_cb		, 1, { (@"ID") } ), _
+	(@"__FB_ARGSPLIT__"   	  , @hDefArgSplit_cb		, 3, { (@"ARG"), (@"SEP"), (@"RETNUM") } ) _
 }
 
 sub symbDefineInit _
@@ -258,8 +349,7 @@ sub symbDefineInit _
 
 	listInit( @symb.def.paramlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), LIST_FLAGS_NOCLEAR )
 	listInit( @symb.def.toklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
-	stackNew( @symb.def.uniqueid.stack, 16, len( SYMB_DEF_UniqueId_Elm ), true )
-	symb.def.uniqueid.name = NULL
+	hashInit( @symb.def.uniqueid.dict, 16, true )
 
 	'' add the pre-defines
 	for i as integer = 0 to ubound( defTb )
@@ -315,6 +405,20 @@ sub symbDefineInit _
 
 	hashInit( @symb.def.paramhash, FB_MAXDEFINEARGS )
 
+	'' add the macros
+	for i as integer = 0 to ubound( macroTb )
+		
+		var firstparam = symbAddDefineParam( NULL, macroTb(i).params(0) )
+
+		var lastparam = firstparam
+		for j as integer = 1 to macroTb(i).nparams-1
+			lastparam = symbAddDefineParam( lastparam, macroTb(i).params(j) )
+		next	
+			
+		var sym = symbAddDefineMacro( macroTb(i).name, NULL, macroTb(i).nparams, firstparam, 0 )
+		sym->def.mproc = macroTb(i).proc
+	next
+	
 end sub
 
 '':::::
@@ -325,7 +429,7 @@ sub symbDefineEnd( )
 
 	symb.def.param = 0
 
-	stackFree( @symb.def.uniqueid.stack )
+	hashEnd( @symb.def.uniqueid.dict )
 	listEnd( @symb.def.paramlist )
 	listEnd( @symb.def.toklist )
 
@@ -363,7 +467,7 @@ function symbAddDefine _
 	sym->def.params	= 0
 	sym->def.paramhead = NULL
 	sym->def.isargless = isargless
-	sym->def.proc = proc
+	sym->def.dproc = proc
     sym->def.flags = flags
 
 	function = sym
@@ -402,7 +506,7 @@ function symbAddDefineW _
 	sym->def.params = 0
 	sym->def.paramhead = NULL
 	sym->def.isargless = isargless
-	sym->def.proc = proc
+	sym->def.dproc = proc
     sym->def.flags = flags
 
 	function = sym
@@ -438,7 +542,7 @@ function symbAddDefineMacro _
 	sym->def.params = params
 	sym->def.paramhead = paramhead
 	sym->def.isargless = FALSE
-	sym->def.proc = NULL
+	sym->def.mproc = NULL
     sym->def.flags = flags
 
 	function = sym
