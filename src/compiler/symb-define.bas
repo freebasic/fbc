@@ -331,10 +331,27 @@ private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 	if( len(res) = 0 ) then
 		*errnum = FB_ERRMSG_SYNTAXERROR
 	end if
-	return res
+	
+	function =  res
 	
 end function
 
+private function hDefJoin_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+	var l = hMacro_getArg( argtb, 0 )
+	var r = hMacro_getArg( argtb, 1 )
+	if( l = null or r = null ) then
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+		return ""
+	end if
+	
+	var res = *l + *r
+
+	ZstrFree(l)
+	ZstrFree(r)
+	
+	function = res
+	
+end function
 
 '' Intrinsic #defines which are always defined
 dim shared defTb(0 to ...) as SYMBDEF => _
@@ -389,7 +406,8 @@ dim shared macroTb(0 to ...) as SYMBMACRO => _
 	(@"__FB_UNIQUEID__"       , @hDefUniqueId_cb 		, 1, { (@"ID") } ), _
 	(@"__FB_UNIQUEID_POP__"   , @hDefUniqueIdPop_cb		, 1, { (@"ID") } ), _
 	(@"__FB_ARG_LEFTOF__"     , @hDefArgLeft_cb			, 2, { (@"ARG"), (@"SEP") } ), _
-	(@"__FB_ARG_RIGHTOF__"    , @hDefArgRight_cb		, 2, { (@"ARG"), (@"SEP") } ) _
+	(@"__FB_ARG_RIGHTOF__"    , @hDefArgRight_cb		, 2, { (@"ARG"), (@"SEP") } ), _
+	(@"__FB_JOIN__"    		  , @hDefJoin_cb			, 2, { (@"L"), (@"R") } ) _
 }
 
 sub symbDefineInit _
