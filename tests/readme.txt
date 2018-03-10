@@ -83,6 +83,9 @@ TARGET=arch-os-variant
 FPU=FPU|SSE
    Adds '-fpu FPU|SSE' option when compiling tests.
 
+ENABLE_CHECK_BUGS=1
+   Adds '-d ENABLE_CHECK_BUGS=1' when compiling tests. This is used
+   enable additional tests for known bugs that are not yet fixed.
 
 How the tests are collected
 ---------------------------

@@ -84,6 +84,10 @@ ifeq ($(TARGET_ARCH),x86_64)
 	CFLAGS := -m64
 endif
 
+ifeq ($(ENABLE_CHECK_BUGS),1)
+	FBC_CFLAGS += -d ENABLE_CHECK_BUGS=$(ENABLE_CHECK_BUGS)
+endif
+
 # The default target has to appear before "include $(BMK)", which might
 # define other targets.
 all : $(RUN_TEST)

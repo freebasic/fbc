@@ -61,6 +61,10 @@ ifeq ($(DIRLIST),)
 $(error No directories specified in $(DIRLIST_INC))
 endif
 
+ifndef ENABLE_CHECK_BUGS
+ENABLE_CHECK_BUGS :=
+endif
+
 .SUFFIXES:
 .SUFFIXES: .bmk .bas
 
@@ -150,6 +154,10 @@ endif
 
 ifneq ($(FB_LANG),)
 FBC_CFLAGS += -lang $(FB_LANG)
+endif
+
+ifeq ($(ENABLE_CHECK_BUGS),1)
+	FBC_CFLAGS += -d ENABLE_CHECK_BUGS=$(ENABLE_CHECK_BUGS)
 endif
 
 # ------------------------------------------------------------------------
