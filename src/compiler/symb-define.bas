@@ -388,8 +388,8 @@ dim shared macroTb(0 to ...) as SYMBMACRO => _
 	(@"__FB_UNIQUEID_PUSH__"  , @hDefUniqueIdPush_cb	, 1, { (@"ID") } ),  _
 	(@"__FB_UNIQUEID__"       , @hDefUniqueId_cb 		, 1, { (@"ID") } ), _
 	(@"__FB_UNIQUEID_POP__"   , @hDefUniqueIdPop_cb		, 1, { (@"ID") } ), _
-	(@"__FB_ARG_LEFT__"   	  , @hDefArgLeft_cb			, 2, { (@"ARG"), (@"SEP") } ), _
-	(@"__FB_ARG_RIGHT__"   	  , @hDefArgRight_cb		, 2, { (@"ARG"), (@"SEP") } ) _
+	(@"__FB_ARG_LEFTOF__"     , @hDefArgLeft_cb			, 2, { (@"ARG"), (@"SEP") } ), _
+	(@"__FB_ARG_RIGHTOF__"    , @hDefArgRight_cb		, 2, { (@"ARG"), (@"SEP") } ) _
 }
 
 sub symbDefineInit _
