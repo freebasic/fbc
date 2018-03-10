@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.const_.byval_ok
+SUITE( fbc_tests.const_.byval_ok )
 		
 	type vec
 		as integer x, y, z
@@ -12,16 +12,9 @@ namespace fbc_tests.const_.byval_ok
 		cu_assert( x.z = 3 )
 	end sub
 	
-	sub test cdecl( )
+	TEST( const_to_byval )
 		dim as const vec foo = (1, 2, 3)
 		b( foo )
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.const.byval_ok")
-		fbcu.add_test("const to byval is ok", @test)
-	
-	end sub
-	
-end namespace
+END_SUITE

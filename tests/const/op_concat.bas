@@ -1,8 +1,8 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.const_.op_concat
+SUITE( fbc_tests.const_.op_concat )
 	
-	sub test cdecl( )
+	TEST( concat )
 		
 		dim as const string foo = "hello"
 		dim as string bar
@@ -13,13 +13,6 @@ namespace fbc_tests.const_.op_concat
 		
 		CU_ASSERT( bar = "hellohellohellohello" )
 		
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.const.op_concat")
-		fbcu.add_test("& operator", @test)
-	
-	end sub
-	
-end namespace
+END_SUITE

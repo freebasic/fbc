@@ -231,5 +231,7 @@ failed.log
    information on a specific failed test, view the '.log' saved in
    the same directory as the test file.
 
+const/generator
+   helper program and database to generate and check const type tests
 
 ## EOF
