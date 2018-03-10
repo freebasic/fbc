@@ -1,4 +1,4 @@
-# include once "fbcu.bi"
+# include once "fbcunit.bi"
 
 '//
 '//	Common routines for console tests

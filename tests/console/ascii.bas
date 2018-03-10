@@ -1,4 +1,4 @@
-# include once "fbcu.bi"
+# include once "fbcunit.bi"
 
 '//
 '//	Test app for console mode
@@ -7,6 +7,9 @@
 '//
 
 #include once "common.bi"
+
+'' TODO: change to SUITE() & TEST() 
+''   after improving fbcunit API (see below)
 
 namespace fbc_tests.console.ascii
 
@@ -35,8 +38,9 @@ end sub
 
 private sub ctor () constructor
 
-'// fbcu should handle this internally ...
-# if defined(FBCU_CONFIG_TEST_OUTPUT)
+'// fbcunit should handle this internally ...
+'// need to add capability to fbcunit
+# if ENABLE_CONSOLE_OUTPUT
 	fbcu.add_suite("fbc_tests.console.ascii")
 	fbcu.add_test("test 1", @test_1)
 # endif
