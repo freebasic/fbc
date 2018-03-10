@@ -171,11 +171,18 @@ scope
 
 end scope
 
-#if (not defined(__FB_64BIT__)) or defined(__FB_UNIX__)
+#ifndef ENABLE_CHECK_BUGS
+#define ENABLE_CHECK_BUGS 0
+#endif
+#if (not defined(__FB_64BIT__)) or defined(__FB_UNIX__) or (ENABLE_CHECK_BUGS=1)
+
+	#print see fbc/src/compiler/symb-mangling.bas:hMangleBuiltInType()
+	#print possibly related: https://sourceforge.net/p/fbc/bugs/828/
 
 /' !!! there is no name mangling on win64 that can
        map to g++ long int, only allow the test on
-	   32-bit or unix
+	   32-bit or unix or if we explicitly enable
+	   bug checks
 '/
 
 scope
