@@ -1,4 +1,4 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
 #include "extern-not-allocated-by-local.bi"
 
@@ -10,7 +10,7 @@ scope
 	static should_not_be_allocated_by_local_i2 as integer = -2
 end scope
 
-private sub test_proc cdecl( )
+private sub test_proc
 	dim should_not_be_allocated_by_local_i3 as integer = -3
 	static should_not_be_allocated_by_local_i4 as integer = -4
 
@@ -32,7 +32,8 @@ private sub test_proc cdecl( )
 	static should_not_be_allocated_by_local_i8 as integer = -8
 end sub
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.dim.extern-not-allocated-by-local-1" )
-	fbcu.add_test( "test", @test_proc )
-end sub
+SUITE( fbc_tests.dim_ )
+	TEST( extern_not_allocated_by_local_1 )
+		test_proc
+	END_TEST
+END_SUITE

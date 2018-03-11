@@ -1,21 +1,16 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.dim_.redim_param
+SUITE( fbc_tests.dim_.redim_param )
 	
 	sub foo ( b() as integer )
 		redim b(1)
 	end sub
 
-	sub bar cdecl( )
+	TEST( ok_to_redim_array_params )
 		dim as integer b( )
 		foo( b() )
 
 		CU_ASSERT_EQUAL( 1, ubound(b) )
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.dim.redim_param")
-		fbcu.add_test("ok_to_redim_array_params", @bar)
-	end sub
-
-end namespace
+END_SUITE

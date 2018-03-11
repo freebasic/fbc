@@ -1,4 +1,5 @@
-namespace fbc_tests.dim_.byref_
+SUITE( fbc_tests.dim_.byref_ )
+
 namespace externs
 	extern i as integer
 	extern byref ri as integer
@@ -8,4 +9,6 @@ namespace externs
 		static byref ri as integer
 	end type
 end namespace
-end namespace
+
+END_SUITE
+

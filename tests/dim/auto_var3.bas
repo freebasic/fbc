@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.dim_.auto_var3
+SUITE( fbc_tests.dim_.auto_var3 )
 
 	Type MyType
 	    Declare Constructor (x As Integer, y As Integer)
@@ -16,17 +16,10 @@ namespace fbc_tests.dim_.auto_var3
 	    Return MyType(10, 20)
 	End Function
 	
-	sub ctor_fallback cdecl ( )
+	TEST( ctor_fallback )
 		var mt1 = CreateTest()
 		CU_ASSERT( mt1.m_x = 10 )
 		CU_ASSERT( mt1.m_y = 20 )
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.dim.auto_var3")
-		fbcu.add_test("ctor_fallback", @ctor_fallback)
-	
-	end sub
-
-end namespace
+END_SUITE

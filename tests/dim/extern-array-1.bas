@@ -1,4 +1,4 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
 #include "extern-array-1.bi"
 
@@ -12,13 +12,8 @@ redim shared externarray7(7 to 7) as integer
 dim externarray8(any) as integer
 redim externarray9(9 to 9) as integer
 
-namespace fbc_tests.dim_.extern_array_1
+SUITE( fbc_tests.dim_.extern_array_1 )
 
 hInsertTest1( )
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.dim.extern-array-1" )
-	fbcu.add_test( "1", @test1 )
-end sub
-
-end namespace
+END_SUITE

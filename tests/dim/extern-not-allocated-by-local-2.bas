@@ -1,4 +1,4 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
 #include "extern-not-allocated-by-local.bi"
 
@@ -11,7 +11,7 @@ dim should_not_be_allocated_by_local_i6 as integer = 6
 dim should_not_be_allocated_by_local_i7 as integer = 7
 dim should_not_be_allocated_by_local_i8 as integer = 8
 
-private sub test_proc cdecl( )
+private sub test_proc
 	CU_ASSERT( should_not_be_allocated_by_local_i1 = 1 )
 	CU_ASSERT( should_not_be_allocated_by_local_i2 = 2 )
 	CU_ASSERT( should_not_be_allocated_by_local_i3 = 3 )
@@ -22,7 +22,8 @@ private sub test_proc cdecl( )
 	CU_ASSERT( should_not_be_allocated_by_local_i8 = 8 )
 end sub
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.dim.extern-not-allocated-by-local-2" )
-	fbcu.add_test( "test", @test_proc )
-end sub
+SUITE( fbc_tests.dim_ )
+	TEST( extern_not_allocated_by_local_2 )
+		test_proc
+	END_TEST
+END_SUITE
