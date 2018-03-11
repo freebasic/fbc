@@ -12,4 +12,4 @@ SUITE( fbc_tests.const_.ptrassign )
 		*c = @a
 	END_TEST
 	
-end namespace
+END_SUITE
