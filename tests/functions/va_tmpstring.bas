@@ -1,50 +1,55 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 #if __FB_BACKEND__ = "gas"
 
-namespace fbc_tests.functions.va_tempstring
+SUITE( fbc_tests.functions.va_tempstring )
 
 	dim shared strtb(1 to 2) as zstring * 6+1 => { "ABCdef", "defABC" }
 
-function toupperz( byval s as string ) as string
-	return ucase( s )
-end function
+	function toupperz( byval s as string ) as string
+		return ucase( s )
+	end function
 
-function tolowerz( byval s as string ) as string
-	return lcase( s )
-end function
+	function tolowerz( byval s as string ) as string
+		return lcase( s )
+	end function
 
-function concatz( byval s1 as string, byval s2 as string ) as string
-	return s1 + s2
-end function
+	function concatz( byval s1 as string, byval s2 as string ) as string
+		return s1 + s2
+	end function
 
-sub printstrings cdecl ( byval cnt as integer, ... )
-	dim va as any ptr
-	dim i as integer
+	sub printstrings cdecl ( byval cnt as integer, ... )
+		dim va as any ptr
+		dim i as integer
 
-	va = va_first( )
+		va = va_first( )
 
-	for i = 1 to cnt
-		CU_ASSERT( *va_arg( va, zstring ptr ) = strtb(i) )
-		va = va_next( va, zstring ptr )
-	next
-end sub
+		for i = 1 to cnt
+			CU_ASSERT( *va_arg( va, zstring ptr ) = strtb(i) )
+			va = va_next( va, zstring ptr )
+		next
+	end sub
 
-sub test_1 cdecl ()
-	dim s as string
-	dim z as zstring * 3+1
+	TEST( tempStringArg )
+		dim s as string
+		dim z as zstring * 3+1
 
-	s = "AbC"
-	z = "dEf"
+		s = "AbC"
+		z = "dEf"
 
-	printstrings 2, concatz( toupperz( s ), tolowerz( z ) ), concatz( tolowerz( z ), toupperz( s ) )
-end sub
+		printstrings 2, concatz( toupperz( s ), tolowerz( z ) ), concatz( tolowerz( z ), toupperz( s ) )
+	END_TEST
 
-sub ctor () constructor
-	fbcu.add_suite("fbc_tests.functions.va_tmpstring")
-	fbcu.add_test("test_1", @test_1)
-end sub
+END_SUITE
 
-end namespace
+#else
+
+#if ENABLE_CHECK_BUGS
+SUITE( fbc_tests.functions.va_tempstring )
+	TEST( tempStringArg )
+		CU_FAIL()
+	END_TEST
+END_SUITE
+#endif
 
 #endif

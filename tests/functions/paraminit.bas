@@ -1,6 +1,8 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.functions.paraminit
+'' !!! TODO !!! convert to TEST() framework
+
+SUITE( fbc_tests.functions.paraminit )
 
 #define NULL 0
 
@@ -371,4 +373,4 @@ private sub ctor( ) constructor
 	fbcu.add_test( "new[] ctorlist", @vectorNewCtorList          .test )
 end sub
 
-end namespace
+END_SUITE

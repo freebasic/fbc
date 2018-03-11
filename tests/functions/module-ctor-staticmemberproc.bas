@@ -1,34 +1,29 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.functions.module_ctor
+SUITE( fbc_tests.functions.module_ctor )
 
-type UDT
-	dummy as integer
+	type UDT
+		dummy as integer
 
-	static as integer i1, i2
+		static as integer i1, i2
 
-	declare static sub ctor1( )
-	declare static sub ctor2( )
-end type
+		declare static sub ctor1( )
+		declare static sub ctor2( )
+	end type
 
-dim as integer UDT.i1, UDT.i2
+	dim as integer UDT.i1, UDT.i2
 
-static sub UDT.ctor1( ) constructor
-	i1 = 111
-end sub
+	static sub UDT.ctor1( ) constructor
+		i1 = 111
+	end sub
 
-sub UDT.ctor2( ) constructor
-	i2 = 222
-end sub
+	sub UDT.ctor2( ) constructor
+		i2 = 222
+	end sub
 
-sub test cdecl( )
-	CU_ASSERT( UDT.i1 = 111 )
-	CU_ASSERT( UDT.i2 = 222 )
-end sub
+	TEST( all )
+		CU_ASSERT( UDT.i1 = 111 )
+		CU_ASSERT( UDT.i2 = 222 )
+	END_TEST
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.functions.module-ctor-staticmemberproc" )
-	fbcu.add_test( "test", @test )
-end sub
-
-end namespace
+END_SUITE

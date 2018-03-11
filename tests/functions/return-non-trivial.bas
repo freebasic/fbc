@@ -1,8 +1,7 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.structs.return_non_trivial
+SUITE( fbc_tests.structs.return_non_trivial )
 
-namespace nonTrivialDueToField
 	'' UDTs can become non-trivial as a result of containing a non-trivial
 	'' field. The compiler must be careful to take this into account when
 	'' determining how to return an UDT from a function (in registers or
@@ -27,16 +26,10 @@ namespace nonTrivialDueToField
 		function = type( (123) )
 	end function
 
-	sub test cdecl( )
+	TEST( nonTrivialDueToField )
 		CU_ASSERT( dtors = 0 )
 		CU_ASSERT( f().a.i = 123 )
 		CU_ASSERT( dtors = 2 )
-	end sub
-end namespace
+	END_TEST
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.functions.return-non-trivial" )
-	fbcu.add_test( "nonTrivialDueToField", @nonTrivialDueToField.test )
-end sub
-
-end namespace
+END_SUITE
