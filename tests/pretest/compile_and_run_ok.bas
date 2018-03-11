@@ -9,7 +9,7 @@
 		1) compile
 		2) execute with no assertions failed and 
 		   return exit code of zero (success)
-		3) reported as success by log-tests.mk 
+		3) reported as success by log-tests.mk
 '/
 
 ASSERT( 0=0 )
