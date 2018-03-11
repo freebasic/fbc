@@ -1,21 +1,22 @@
-# include once "fbcu.bi"
+# include once "fbcunit.bi"
 
-namespace fbc_tests.expressions.div_by_zero
+SUITE( fbc_tests.expressions.div_by_zero )
 
-private sub test cdecl( )
-	dim as double a = 1, b = 0, c
+	TEST( testproc )
+		dim as double a = 1, b = 0, c
 
-	c = 1.0 / 0.0  '' no compile error, but returns INF
-	c = a / 0.0    '' no compile error, but returns INF
-	c = 1.0 / b    '' no runtime error, but returns INF
-	c = a / b      '' no runtime error, but returns INF
+		c = 1.0 / 0.0  '' no compile error, but returns INF
+		CU_ASSERT_TRUE( fbcu.dblIsInf(c) )
 
-	CU_PASS( )
-end sub
+		c = a / 0.0    '' no compile error, but returns INF
+		CU_ASSERT_TRUE( fbcu.dblIsInf(c) )
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.expressions.div-by-zero" )
-	fbcu.add_test( "test", @test )
-end sub
+		c = 1.0 / b    '' no runtime error, but returns INF
+		CU_ASSERT_TRUE( fbcu.dblIsInf(c) )
 
-end namespace
+		c = a / b      '' no runtime error, but returns INF
+		CU_ASSERT_TRUE( fbcu.dblIsInf(c) )
+
+	END_TEST
+
+END_SUITE
