@@ -6,7 +6,7 @@ SUITE( fbc_tests.compound.select_const )
 	const TRUE = not FALSE
 
 	''::::
-	TEST( test_single_1 )
+	TEST( case_single_value )
 
 	const TEST = 100
 		
@@ -45,7 +45,7 @@ SUITE( fbc_tests.compound.select_const )
 	END_TEST
 
 	''::::
-	TEST( test_single_2 )
+	TEST( case_mutiple_value )
 
 	const TEST = 1000
 		
@@ -84,7 +84,7 @@ SUITE( fbc_tests.compound.select_const )
 	END_TEST
 
 	''::::
-	TEST( test_range_1 )
+	TEST( case_single_range )
 
 	const TEST = 100
 		
@@ -123,7 +123,7 @@ SUITE( fbc_tests.compound.select_const )
 	END_TEST
 
 	''::::
-	TEST( test_range_2 )
+	TEST( case_multiple_range )
 
 	const TEST = 1000
 		
@@ -161,7 +161,7 @@ SUITE( fbc_tests.compound.select_const )
 
 	END_TEST
 
-	TEST( testEmptyJumpTable )
+	TEST( emptyJumpTable )
 		dim as integer i = 456
 
 		select case as const( i )
@@ -172,7 +172,7 @@ SUITE( fbc_tests.compound.select_const )
 		CU_ASSERT( i = 123 )
 	END_TEST
 
-	TEST( testTypes )
+	TEST( types )
 
 		#macro TEST_TYPE(T, T_MAX_)
 		scope
@@ -417,7 +417,7 @@ SUITE( fbc_tests.compound.select_const )
 
 	END_TEST
 
-	TEST( testMaxRange )
+	TEST( maxRange )
 		dim i as uinteger
 
 		i = 0
@@ -451,7 +451,7 @@ SUITE( fbc_tests.compound.select_const )
 		end select
 	END_TEST
 
-	TEST( testMaxValue )
+	TEST( maxValue )
 		scope
 			#ifdef __FB_64BIT__
 				var ok = false

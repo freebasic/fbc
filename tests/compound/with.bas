@@ -2,11 +2,8 @@
 
 SUITE( fbc_tests.compound.with_ )
 
-	'' use of namespaces here will work even though it
-	'' breaks the usual pattern of SUITE() & TEST()
-
 	''
-	namespace ns_basics
+	namespace ns1
 
 		dim shared i as integer = 123
 
@@ -85,7 +82,7 @@ SUITE( fbc_tests.compound.with_ )
 	end namespace
 
 	''
-	namespace ns_tempvarVsRecursion
+	namespace ns2
 		type UDT
 			i as integer
 		end type
@@ -131,7 +128,7 @@ SUITE( fbc_tests.compound.with_ )
 	end namespace
 
 	''
-	namespace ns_implicitAddrOfPeek
+	namespace ns3
 		type NormalUdt
 			i as integer
 		end type
@@ -188,7 +185,7 @@ SUITE( fbc_tests.compound.with_ )
 	end namespace
 
 	''
-	namespace ns_functionResult
+	namespace ns4
 		'' WITH must take special care when given a function call which returns
 		'' an UDT, because it may be returned in registers on Win32.
 
@@ -253,7 +250,7 @@ SUITE( fbc_tests.compound.with_ )
 	end namespace
 
 	''
-	namespace ns_temporaries
+	namespace ns5
 		'' WITH should extend the lifetime of any temp vars from the given
 		'' expression, such that they're not destroyed until END WITH (or any
 		'' other EXIT/RETURN/GOTO out of the WITH block)
@@ -299,7 +296,7 @@ SUITE( fbc_tests.compound.with_ )
 			CU_ASSERT( dtors = 1 )
 		end function
 
-		TEST( testCtorsDtors )
+		TEST( CtorsDtors )
 			ctors = 0
 			dtors = 0
 			scope
@@ -415,7 +412,7 @@ SUITE( fbc_tests.compound.with_ )
 			CU_FAIL( )
 		end sub
 
-		TEST( testScopeBreaks )
+		TEST( ScopeBreaks )
 			''
 			'' EXIT DO
 			''
@@ -532,7 +529,7 @@ SUITE( fbc_tests.compound.with_ )
 			udt2dtors += 1
 		end destructor
 
-		TEST( testMultipleTemps )
+		TEST( MultipleTemps )
 			'' The live of *both* temporaries should be extended, not just
 			'' the "toplevel" one which is accessed by the WITH.
 			ctors = 0

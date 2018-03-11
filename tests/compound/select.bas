@@ -6,7 +6,7 @@ SUITE( fbc_tests.compound.select_ )
 	const TRUE = not FALSE
 
 	''::::
-	TEST( test_single_1 )
+	TEST( case_single_value )
 
 	const TEST = 100
 		
@@ -45,7 +45,7 @@ SUITE( fbc_tests.compound.select_ )
 	END_TEST
 
 	''::::
-	TEST( test_single_2 )
+	TEST( case_multiple_value )
 
 	const TEST = -100
 		
@@ -84,7 +84,7 @@ SUITE( fbc_tests.compound.select_ )
 	END_TEST
 
 	''::::
-	TEST( test_range_1 )
+	TEST( case_single_range )
 
 	const TEST = 100
 		
@@ -123,7 +123,7 @@ SUITE( fbc_tests.compound.select_ )
 	END_TEST
 
 	''::::
-	TEST( test_range_2 )
+	TEST( case_multiple_range )
 
 	const TEST = -100
 		
@@ -162,7 +162,7 @@ SUITE( fbc_tests.compound.select_ )
 	END_TEST
 
 	''::::
-	TEST( test_is_1 )
+	TEST( case_is_single_value )
 
 	const TEST = 100
 		
@@ -201,7 +201,7 @@ SUITE( fbc_tests.compound.select_ )
 	END_TEST
 
 	''::::
-	TEST( test_is_2 )
+	TEST( case_is_multiple_value )
 
 	const TEST = -100
 		
@@ -239,7 +239,7 @@ SUITE( fbc_tests.compound.select_ )
 
 	END_TEST
 
-	TEST( testStringConcat )
+	TEST( case_string )
 		dim as string s = "a"
 
 		select case( s + "b" )
@@ -309,7 +309,7 @@ SUITE( fbc_tests.compound.select_ )
 	dim shared as integer globali = 123
 	dim shared as integer globalarray(0 to 1) = { 123, 456 }
 
-	TEST( testExpressions )
+	TEST( expressions )
 		scope
 			static as integer statici = 123
 			static as integer staticarray(0 to 1) = { 123, 456 }
@@ -426,7 +426,7 @@ SUITE( fbc_tests.compound.select_ )
 		function = @w
 	end function
 
-	TEST( testSidefx )
+	TEST( sideEffects )
 		CU_ASSERT( intcalls = 0 )
 		check( sidefxInt( ), 123 )
 		CU_ASSERT( intcalls = 1 )
