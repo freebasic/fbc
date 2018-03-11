@@ -61,7 +61,7 @@ end enum
 	#print typeof( A mod B )
 
 	#print
-	#print bit ops (A, B):
+	#print "bit" ops (A, B):
 	#print
 
 	#print A shl B = non-float =
