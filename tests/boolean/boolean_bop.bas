@@ -182,7 +182,7 @@ SUITE( fbc_tests.boolean_.bop )
 
 	END_TEST
 
-	TEST( testPureBooleanBops )
+	TEST( pureBooleanBops )
 		#macro check( l, bop, r, expectedResult )
 			scope
 				dim as boolean b1, b2, b3

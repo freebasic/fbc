@@ -10,7 +10,7 @@ const TRUE = -1
 
 SUITE( fbc_tests.boolean_.conversions )
 
-	TEST( testCompileTime )
+	TEST( compileTime )
 
 		'' test compile time conversion of constant=>boolean
 
@@ -90,7 +90,7 @@ SUITE( fbc_tests.boolean_.conversions )
 
 	END_TEST
 
-	TEST( testRunTime )
+	TEST( runTime )
 
 		'' test run time conversion of variable=>boolean
 
@@ -184,7 +184,7 @@ SUITE( fbc_tests.boolean_.conversions )
 
 	END_TEST
 
-	TEST( testAssignToBoolVar )
+	TEST( assignToBoolVar )
 		
 		'' test implicit conversion of variable=>boolean on 
 		'' assignment to boolean variable
@@ -280,7 +280,7 @@ SUITE( fbc_tests.boolean_.conversions )
 
 	END_TEST
 
-	TEST( testAssignFromBoolConst )
+	TEST( assignFromBoolConst )
 
 		'' test conversion of boolean=>constant
 
@@ -335,7 +335,7 @@ SUITE( fbc_tests.boolean_.conversions )
 
 	END_TEST
 
-	TEST( testAssignFromBoolVar )
+	TEST( assignFromBoolVar )
 
 		'' test conversion of boolean=>variable
 

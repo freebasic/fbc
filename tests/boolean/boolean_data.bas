@@ -32,6 +32,12 @@ SUITE( fbc_tests.boolean_.data_ )
 		dim c as integer
 		dim b as boolean
 
+		'' need to RESTORE here, out-of-order
+		'' module constructors might mess with
+		'' our starting point
+
+		restore data_1
+
 		for c = 1 to 20
 			read i, b
 			CU_ASSERT_EQUAL( i, cint(b) )
