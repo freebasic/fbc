@@ -17,17 +17,6 @@
 				   LEXCHECK_NOQUOTES or _
 				   LEXCHECK_NOSYMBOL)
 
-type LEXPP_ARG
-	union
-		text		as DZSTRING
-		textw		as DWSTRING
-	end union
-end type
-
-type LEXPP_ARGTB
-	tb(0 to FB_MAXDEFINEARGS-1) as LEXPP_ARG
-end type
-
 ''::::
 sub ppDefineInit( )
 
@@ -68,7 +57,7 @@ private function hLoadMacro _
 
     dim as FB_DEFPARAM ptr param = any, nextparam = any
     dim as FB_DEFTOK ptr dt = any
-    dim as FBTOKEN t = any
+	dim as FBTOKEN t = any
     dim as LEXPP_ARGTB ptr argtb = any
 	dim as integer prntcnt = any, num = any, reached_vararg = any, is_variadic = any
     dim as zstring ptr argtext = any
@@ -76,17 +65,26 @@ private function hLoadMacro _
 
 	function = -1
 
+	var isParentLess = false
+	
 	'' '('?
 	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
-		'' not an error, macro can be passed as param to other macros
-		exit function
+		isParentLess = true
+		if( pp.invoking > 0 ) then
+			'' not an error, macro can be passed as param to other macros
+			exit function
+		end if
 	end if
 
 	if (isMacroAllowed(s) = FALSE) then
 		exit function
 	end if
+	
+	pp.invoking += 1
 
-	lexEatChar( )
+	if( not isParentLess ) then
+		lexEatChar( )
+	end if
 
 	'' allocate a new arg list (support recursion)
 	param = symbGetDefineHeadParam( s )
@@ -101,6 +99,8 @@ private function hLoadMacro _
 
     '' Variadic macro?
     is_variadic = ((s->def.flags and FB_DEFINE_FLAGS_VARIADIC) <> 0)
+	
+	var readdchar = -1
 
 	'' for each arg
 	num = 0   '' num represents the current last cleared/used entry in the argtb
@@ -131,10 +131,12 @@ private function hLoadMacro _
 
 			'' )
 			case CHAR_RPRNT
-				prntcnt -= 1
-				'' Closing ')'?
-				if( prntcnt = 0 ) then
-					exit do
+				if( prntcnt > 0 ) then
+					prntcnt -= 1
+					'' Closing ')'?
+					if( prntcnt = 0 ) then
+						exit do
+					end if
 				end if
 
 			'' ,
@@ -149,13 +151,24 @@ private function hLoadMacro _
 					end if
 				end if
 
+			case FB_TK_STMTSEP
+				if( isParentLess ) then
+					readdchar = CHAR_COLON
+					prntcnt = 0
+					exit do
+				end if
+			
 			case FB_TK_EOL, FB_TK_EOF
-				hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
-				'' Recovery: pretend to be at the closing ')'
+				if( not isParentLess ) then
+					hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
+				else
+					readdchar = iif(t.id = FB_TK_EOF, 0, CHAR_LF)
+				end if
 				prntcnt = 0
 				exit do
+			
 			end select
-
+			
 			if( argtb <> NULL ) then
 	   			if( t.dtype <> FB_DATATYPE_WCHAR ) then
 	    			DZstrConcatAssign( argtb->tb(num).text, t.text )
@@ -218,64 +231,85 @@ private function hLoadMacro _
 
 	text = ""
 
-	if( argtb ) then
-		dt = symbGetDefineHeadToken( s )
-		do while( dt )
-			select case as const( symbGetDefTokType( dt ) )
-			'' parameter?
-			case FB_DEFTOK_TYPE_PARAM
-				assert( symbGetDefTokParamNum( dt ) <= num )
-				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+	'' should we call a function to get definition text?
+	if( symbGetMacroCallback( s ) <> NULL ) then
+		'' call function
+		var errnum = FB_ERRMSG_OK
+		var res = symbGetMacroCallback( s )( argtb, @errnum )
+		if( errnum = FB_ERRMSG_OK ) then
+			text = res
+		else
+			hReportMacroError( s, errnum )
+		end if
 
-				'' Only if not empty ("..." param can be empty)
-				if( argtext <> NULL ) then
-					text += *argtext
-				end if
+	'' just load text as-is
+	else
+		if( argtb ) then
+			dt = symbGetDefineHeadToken( s )
+			do while( dt )
+				select case as const( symbGetDefTokType( dt ) )
+				'' parameter?
+				case FB_DEFTOK_TYPE_PARAM
+					assert( symbGetDefTokParamNum( dt ) <= num )
+					argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 
-			'' stringize parameter?
-			case FB_DEFTOK_TYPE_PARAMSTR
-				assert( symbGetDefTokParamNum( dt ) <= num )
-				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+					'' Only if not empty ("..." param can be empty)
+					if( argtext <> NULL ) then
+						text += *argtext
+					end if
 
-				'' Only if not empty ("..." param can be empty)
-				if( argtext <> NULL ) then
-					'' don't escape, preserve the sequencies as-is
-					text += "$" + QUOTE
-					text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
-					text += QUOTE
-				else
-					'' If it's empty, produce an empty string ("")
-					text += """"""
-				end if
+				'' stringize parameter?
+				case FB_DEFTOK_TYPE_PARAMSTR
+					assert( symbGetDefTokParamNum( dt ) <= num )
+					argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 
-			'' ordinary text..
-			case FB_DEFTOK_TYPE_TEX
-				text += *symbGetDefTokText( dt )
+					'' Only if not empty ("..." param can be empty)
+					if( argtext <> NULL ) then
+						'' don't escape, preserve the sequencies as-is
+						text += "$" + QUOTE
+						text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
+						text += QUOTE
+					else
+						'' If it's empty, produce an empty string ("")
+						text += """"""
+					end if
 
-			'' unicode text?
-			case FB_DEFTOK_TYPE_TEXW
-				text += str( *symbGetDefTokTextW( dt ) )
-			end select
+				'' ordinary text..
+				case FB_DEFTOK_TYPE_TEX
+					text += *symbGetDefTokText( dt )
 
-			'' next
-			dt = symbGetDefTokNext( dt )
-		loop
+				'' unicode text?
+				case FB_DEFTOK_TYPE_TEXW
+					text += str( *symbGetDefTokTextW( dt ) )
+				end select
 
-		'' free args text
-		do while( num > 0 )
-			num -= 1
-			DZstrAssign( argtb->tb(num).text, NULL )
-		loop
+				'' next
+				dt = symbGetDefTokNext( dt )
+			loop
 
-		listDelNode( @pp.argtblist, argtb )
+			'' free args text
+			do while( num > 0 )
+				num -= 1
+				DZstrAssign( argtb->tb(num).text, NULL )
+			loop
+
+			listDelNode( @pp.argtblist, argtb )
+		end if
+		
+		if( readdchar <> -1 ) then
+			text += chr(readdchar)
+		end if
+
 	end if
-
+	
 	if( lex.ctx->deflen = 0 ) then
 		DZstrAssign( lex.ctx->deftext, text )
 	else
 		DZstrAssign( lex.ctx->deftext, text + *lex.ctx->defptr )
 	end if
 
+	pp.invoking -= 1
+	
 	function = len( text )
 
 end function
@@ -324,18 +358,25 @@ private function hLoadDefine _
 
 			'' arg-less macro?
 			if( symbGetDefineIsArgless( s ) ) then
+				var isParentLess = false
 				'' '('?
 				if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
+					isParentLess = true
 					'' not an error, macro can be passed as param to other macros
-					exit function
+					if( pp.invoking > 0 ) then
+						exit function
+					end if
 				end if
-				lexEatChar( )
-
-				'' ')'
-				if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
-					errReport( FB_ERRMSG_EXPECTEDRPRNT )
-				else
+				
+				if( not isParentLess ) then
 					lexEatChar( )
+
+					'' ')'
+					if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
+						errReport( FB_ERRMSG_EXPECTEDRPRNT )
+					else
+						lexEatChar( )
+					end if
 				end if
 			end if
 
@@ -387,17 +428,26 @@ private function hLoadMacroW _
 
 	function = -1
 
+	var isParentLess = false
+	
 	'' '('?
 	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
-		'' not an error, macro can be passed as param to other macros
-		exit function
+		isParentLess = true
+		if( pp.invoking > 0 ) then
+			'' not an error, macro can be passed as param to other macros
+			exit function
+		end if
 	end if
 
 	if (isMacroAllowed(s) = FALSE) then
 		exit function
 	end if
 
-	lexEatChar( )
+	pp.invoking += 1
+
+	if( not isParentLess ) then
+		lexEatChar( )
+	end if
 
 	'' allocate a new arg list (because the recursivity)
 	param = symbGetDefineHeadParam( s )
@@ -413,6 +463,8 @@ private function hLoadMacroW _
     '' Variadic macro?
     is_variadic = ((s->def.flags and FB_DEFINE_FLAGS_VARIADIC) <> 0)
 
+	var readdchar = -1
+	
 	'' for each arg
 	num = 0    '' num represents the current last cleared/used entry in the argtb
 	do
@@ -442,10 +494,12 @@ private function hLoadMacroW _
 
 			'' )
 			case CHAR_RPRNT
-				prntcnt -= 1
-				'' Closing ')'?
-				if( prntcnt = 0 ) then
-					exit do
+				if( prntcnt > 0 ) then
+					prntcnt -= 1
+					'' Closing ')'?
+					if( prntcnt = 0 ) then
+						exit do
+					end if
 				end if
 
 			'' ,
@@ -460,10 +514,19 @@ private function hLoadMacroW _
 					end if
 				end if
 
-			''
+			case FB_TK_STMTSEP
+				if( isParentLess ) then
+					readdchar = CHAR_COLON
+					prntcnt = 0
+					exit do
+				end if
+			
 			case FB_TK_EOL, FB_TK_EOF
-				hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
-				'' Recovery: pretend to be at the closing ')'
+				if( not isParentLess ) then
+					hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
+				else
+					readdchar = iif(t.id = FB_TK_EOF, 0, CHAR_LF)
+				end if
 				prntcnt = 0
 				exit do
 			end select
@@ -531,53 +594,71 @@ private function hLoadMacroW _
 	'' text = ""
 	DWstrAssign( text, NULL )
 
-	if( argtb ) then
-		dt = symbGetDefineHeadToken( s )
-		do while( dt )
-			select case as const( symbGetDefTokType( dt ) )
-			'' parameter?
-			case FB_DEFTOK_TYPE_PARAM
-				assert( symbGetDefTokParamNum( dt ) <= num )
-				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+	'' should we call a function to get definition text?
+	if( symbGetMacroCallback( s ) <> NULL ) then
+		'' call function
+		var errnum = FB_ERRMSG_OK
+		var res = symbGetMacroCallback( s )( argtb, @errnum )
+		if( errnum = FB_ERRMSG_OK ) then
+			DWstrAssignA( text, res )
+		else
+			hReportMacroError( s, errnum )
+		end if
 
-				'' Only if not empty ("..." param can be empty)
-				if( argtext <> NULL ) then
-					DWstrConcatAssign( text, argtext )
-				end if
+	'' just load text as-is
+	else
+		if( argtb ) then
+			dt = symbGetDefineHeadToken( s )
+			do while( dt )
+				select case as const( symbGetDefTokType( dt ) )
+				'' parameter?
+				case FB_DEFTOK_TYPE_PARAM
+					assert( symbGetDefTokParamNum( dt ) <= num )
+					argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
 
-			'' stringize parameter?
-			case FB_DEFTOK_TYPE_PARAMSTR
-				assert( symbGetDefTokParamNum( dt ) <= num )
-				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+					'' Only if not empty ("..." param can be empty)
+					if( argtext <> NULL ) then
+						DWstrConcatAssign( text, argtext )
+					end if
 
-				'' Only if not empty ("..." param can be empty)
-				if( argtext <> NULL ) then
-					'' don't escape, preserve the sequencies as-is
-					DWstrConcatAssign( text, "$" + QUOTE )
-					DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
-					DWstrConcatAssign( text, QUOTE )
-				end if
+				'' stringize parameter?
+				case FB_DEFTOK_TYPE_PARAMSTR
+					assert( symbGetDefTokParamNum( dt ) <= num )
+					argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
 
-			'' ordinary text..
-			case FB_DEFTOK_TYPE_TEX
-				DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
+					'' Only if not empty ("..." param can be empty)
+					if( argtext <> NULL ) then
+						'' don't escape, preserve the sequencies as-is
+						DWstrConcatAssign( text, "$" + QUOTE )
+						DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
+						DWstrConcatAssign( text, QUOTE )
+					end if
 
-			'' unicode text?
-			case FB_DEFTOK_TYPE_TEXW
-				DWstrConcatAssign( text, symbGetDefTokTextW( dt ) )
-			end select
+				'' ordinary text..
+				case FB_DEFTOK_TYPE_TEX
+					DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
 
-			'' next
-			dt = symbGetDefTokNext( dt )
-		loop
+				'' unicode text?
+				case FB_DEFTOK_TYPE_TEXW
+					DWstrConcatAssign( text, symbGetDefTokTextW( dt ) )
+				end select
 
-		'' free args text
-		do while( num > 0 )
-			num -= 1
-			DWstrAssign( argtb->tb(num).textw, NULL )
-		loop
+				'' next
+				dt = symbGetDefTokNext( dt )
+			loop
 
-		listDelNode( @pp.argtblist, argtb )
+			'' free args text
+			do while( num > 0 )
+				num -= 1
+				DWstrAssign( argtb->tb(num).textw, NULL )
+			loop
+
+			listDelNode( @pp.argtblist, argtb )
+		end if
+	end if
+
+	if( readdchar <> -1 ) then
+		DWstrConcatAssignA( text, chr(readdchar) )
 	end if
 
 	if( lex.ctx->deflen = 0 ) then
@@ -586,6 +667,8 @@ private function hLoadMacroW _
 		DWstrAssign( lex.ctx->deftextw, *text.data + *lex.ctx->defptrw )
 	end if
 
+	pp.invoking -= 1
+	
 	function = len( *text.data )
 
 end function
@@ -633,18 +716,25 @@ private function hLoadDefineW _
 		else
 			'' arg-less macro?
 			if( symbGetDefineIsArgless( s ) ) then
+				var isParentLess = false
 				'' '('?
 				if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
+					isParentLess = true
 					'' not an error, macro can be passed as param to other macros
-					exit function
+					if( pp.invoking > 0 ) then
+						exit function
+					end if
 				end if
-				lexEatChar( )
-
-				'' ')'
-				if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
-					errReport( FB_ERRMSG_EXPECTEDRPRNT )
-				else
+				
+				if( not isParentLess ) then
 					lexEatChar( )
+
+					'' ')'
+					if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
+						errReport( FB_ERRMSG_EXPECTEDRPRNT )
+					else
+						lexEatChar( )
+					end if
 				end if
 			end if
 

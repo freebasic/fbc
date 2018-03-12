@@ -62,8 +62,8 @@ sub symbMangleEnd( )
 	flistEnd( @ctx.flist  )
 end sub
 
-function symbUniqueId( ) as zstring ptr
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
+function symbUniqueId( byval validfbname as boolean ) as zstring ptr
+	if( env.clopt.backend = FB_BACKEND_GCC and not validfbname ) then
 		ctx.tempstr = "tmp$"
 		ctx.tempstr += str( ctx.uniqueidcount )
 	else

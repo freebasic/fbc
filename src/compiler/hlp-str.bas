@@ -1255,3 +1255,105 @@ function hIsValidHexDigit( byval ch as integer ) as integer
 	           ((ch >= asc( "a" )) and (ch <= asc( "f" ))) or _
 	           ((ch >= asc( "A" )) and (ch <= asc( "F" )))
 end function
+
+'':::::
+sub hSplitStr(byref txt as string, byref del as string, res() as string)
+
+	var items = 10
+	redim dpos(0 to items-1) as integer
+	
+	var dellen = len(del)
+	
+	var cnt = 0
+	var p = 1
+	do 
+		p = instr(p, txt, del)
+		if( p > 0 ) then
+			if( cnt >= items ) then
+				items += 10
+				redim preserve dpos(0 to items-1)
+			end if
+			dpos(cnt) = p
+			p += dellen
+		end if
+		cnt += 1
+	loop until( p = 0 )
+	
+	cnt -= 1
+	if( cnt = 0 ) then
+		redim res(0 to 0)
+		res(0) = txt
+		return
+	end if
+	
+	redim res(0 to cnt)
+	res(0) = Left(txt, dpos(0) - 1 )
+	p = 1
+	do until( p = cnt )
+		res(p) = mid(txt, dpos(p - 1) + dellen, dpos(p) - dpos(p - 1) - dellen )
+		p += 1
+	loop
+	res(cnt) = mid(txt, dpos(cnt - 1) + dellen)
+   
+end sub
+
+'':::::
+function hStr2Tok(byval txt as const zstring ptr, res() as string) as integer
+
+	var items = 10
+	
+	var t = 0
+	var lc = 32UL
+	var s = cast(const ubyte ptr, txt)	
+	do while( *s <> 0 )
+		var c = cast(uinteger, *s)
+		
+		if( c = 7 ) then
+			c = 32
+		end if
+		
+		if( c = 32 ) then
+			if( lc <> 32 ) then
+				t += 1
+			end if
+		end if
+		
+		lc = c
+		s += 1
+	loop
+
+	if( lc <> 32 ) then
+		t += 1
+	end if
+	
+	if( t = 0 ) then
+		return 0
+	end if
+	
+	redim res(0 to t-1)
+	
+	t = 0
+	lc = 32
+	s = cast(const ubyte ptr, txt)	
+	do while( *s <> 0 )
+		var c = cast(uinteger, *s)
+		
+		if( c = 7 ) then
+			c = 32
+		end if
+		
+		if( c = 32 ) then
+			if( lc <> 32 ) then
+				t += 1
+			end if
+		else
+			res(t) += chr(c)
+		end if
+		
+		lc = c
+		s += 1
+	loop
+	
+	function = iif(lc <> 32, t + 1, t)
+	
+end function

@@ -132,6 +132,10 @@ declare function hCharNeedsEscaping _
 
 declare function hIsValidHexDigit( byval ch as integer ) as integer
 
+declare sub hSplitStr(byref txt as string, byref del as string, res() as string)
+
+declare function hStr2Tok(byval txt as const zstring ptr, res() as string) as integer
+
 '':::::
 #define ZstrAllocate(chars) xallocate( chars + 1 )
 

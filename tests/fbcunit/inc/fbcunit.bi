@@ -373,7 +373,7 @@
 	#undef TMP_FBCUNIT_SUITE_IN_CLEANUP
 #endmacro
 
-#macro TEST( test_name )
+#macro INI_TEST( test_name )
 	#if defined( TMP_FBCUNIT_TEST_NAME )
 		#error FBCUNIT: tests can not be nested or missing "END_TEST"
 	#elseif defined( TMP_FBCUNIT_SUITE_IN_INIT )
