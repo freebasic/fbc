@@ -42,3 +42,6 @@ fbcunit TODO/BUG list:
 		END_SUITE_CLEANUP
 	END_SUITE
 
+[ ] allowing adding flags to individual tests, especially:
+	TEST_SET_CONSOLE(1) - indicate that test generates console output
+	TEST_SET_INTERACTIVE(1) - indicates test is interactive
