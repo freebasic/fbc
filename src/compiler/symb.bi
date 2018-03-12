@@ -1743,7 +1743,7 @@ declare function symbCanDuplicate _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-declare function symbUniqueId( ) as zstring ptr
+declare function symbUniqueId( byval validfbname as boolean = false ) as zstring ptr
 declare function symbUniqueLabel( ) as zstring ptr
 declare function symbMakeProfileLabelName( ) as zstring ptr
 declare function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr

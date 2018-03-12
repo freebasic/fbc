@@ -210,7 +210,7 @@ private function hDefUniqueIdPush_cb( byval argtb as LEXPP_ARGTB ptr, byval errn
 
 	var elm = cast(SYMB_DEF_UniqueId_Elm ptr, allocate(len(SYMB_DEF_UniqueId_Elm)))
 	
-	var uid = symbUniqueId()
+	var uid = symbUniqueId(true)
 	elm->name = allocate(len(*uid)+1)
 	*elm->name = *uid
 	elm->prev = stk->top
