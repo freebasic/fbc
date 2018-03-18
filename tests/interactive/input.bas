@@ -1,7 +1,7 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 #include once "../console/common.bi"
 
-namespace fbc_tests.interactive.input_
+SUITE( fbc_tests.interactive.input_ )
 
 	''
 	''	Test app for console mode
@@ -12,7 +12,7 @@ namespace fbc_tests.interactive.input_
 
 	dim shared as integer w, h
 
-	sub test_1 cdecl ()
+	private sub test_proc
 
 		using fbc_tests.console
 		
@@ -128,17 +128,14 @@ namespace fbc_tests.interactive.input_
 		
 	end sub
 
-	sub ctor () constructor
-
 	'// !!! TODO !!! improve fbcunit API (see below)
 	'// we want to compile the test and only run it if an option is given
 	'// fbcunit should handle this internally ...
 	'// need to add capability to fbcunit
-	# if defined (FBCU_CONFIG_TEST_USER_INPUT)
-		fbcu.add_suite("fbc_tests.interactive.input")
-		fbcu.add_test("test_1", @test_1)
-	# endif
+	#if ENABLE_INTERACTIVE
+	TEST( default )
+		test_proc
+	END_TEST
+	#endif
 
-	end sub
-
-end namespace
+END_SUITE
