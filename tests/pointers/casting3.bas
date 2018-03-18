@@ -1,35 +1,26 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
+SUITE( fbc_tests.pointers.casting3 )
 
+	type foo 
+	  s as string 
+	  l as longint
+	end type 
 
-namespace fbc_tests.pointers.casting3
+	TEST( all )
 
-type foo 
-  s as string 
-  l as longint
-end type 
+		const TEST_VAL = &hdeadbeefdeadc0de
 
-sub test cdecl ()
+		dim as foo ptr bar
 
-const TEST_VAL = &hdeadbeefdeadc0de
+		bar = allocate( len( foo ) ) 
 
-	dim as foo ptr bar
+		bar->l = TEST_VAL
 
-	bar = allocate( len( foo ) ) 
+		*cast( byte ptr, @bar->l ) = 0
 
-	bar->l = TEST_VAL
+		CU_ASSERT_EQUAL( bar->l, (TEST_VAL and not 255) )
 
-	*cast( byte ptr, @bar->l ) = 0
+	END_TEST
 
-	CU_ASSERT_EQUAL( bar->l, (TEST_VAL and not 255) )
-
-end sub
-
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.pointers.casting3")
-	fbcu.add_test("test", @test)
-
-end sub
-
-end namespace
+END_SUITE

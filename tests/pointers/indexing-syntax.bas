@@ -1,4 +1,7 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
+
+'' !!! TODO !!!
+'' does this need to be module level?
 
 type UDT
 	as integer a, b, c
@@ -8,7 +11,7 @@ private function f1( i as integer ) as integer
 	function = i + 1
 end function
 
-private sub testVarPtrIndexing cdecl( )
+private sub varPtrIndexing_proc
 	dim i as integer = 123, s as string = "abc"
 	dim x as UDT = ( 4, 5, 6 )
 
@@ -31,7 +34,8 @@ private sub testVarPtrIndexing cdecl( )
 	CU_ASSERT( *( @pi[1] ) = &h11223344 )
 end sub
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.pointers.indexing-syntax" )
-	fbcu.add_test( "indexing directly on VARPTR() & co", @testVarPtrIndexing )
-end sub
+SUITE( fbc_tests.pointers.indexing_syntax )
+	TEST( varPtrIndexing )
+		varPtrIndexing_proc
+	END_TEST
+END_SUITE

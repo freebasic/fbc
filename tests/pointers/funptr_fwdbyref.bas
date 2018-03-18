@@ -1,57 +1,48 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
+SUITE( fbc_tests.pointers.funcptr_fwdbyref )
 
+	enum TEST_RES
+		TEST_FOO 
+		TEST_BAR
+	end enum
 
-namespace fbc_tests.pointers.funcptr_fwdbyref
+	type foo_ as foo
+	type bar_ as bar
 
-enum TEST_RES
-	TEST_FOO 
-	TEST_BAR
-end enum
+	type fooproto as function(byref as foo_) as TEST_RES
+	type barproto as function(byref as bar_) as TEST_RES
 
-type foo_ as foo
-type bar_ as bar
+	declare function fun overload (byref as foo_) as TEST_RES
+	declare function fun overload (byref as bar_) as TEST_RES
 
-type fooproto as function(byref as foo_) as TEST_RES
-type barproto as function(byref as bar_) as TEST_RES
+	type foo
+		foo as fooproto
+	end type
 
-declare function fun overload (byref as foo_) as TEST_RES
-declare function fun overload (byref as bar_) as TEST_RES
+	type bar
+		bar as barproto
+	end type
 
-type foo
-	foo as fooproto
-end type
+	function fun(byref p as foo) as TEST_RES
+		function = TEST_FOO
+	end function
 
-type bar
-	bar as barproto
-end type
+	function fun(byref p as bar) as TEST_RES
+		function = TEST_BAR
+	end function
 
-function fun(byref p as foo) as TEST_RES
-	function = TEST_FOO
-end function
+	TEST( all )
 
-function fun(byref p as bar) as TEST_RES
-	function = TEST_BAR
-end function
+		dim f as foo
+		dim b as bar
+		
+		f.foo = @fun
+		b.bar = @fun
+		
+		CU_ASSERT_EQUAL( f.foo(f), TEST_FOO )
+		CU_ASSERT_EQUAL( b.bar(b), TEST_BAR )
 
-sub test cdecl ()
+	END_TEST
 
-	dim f as foo
-	dim b as bar
-	
-	f.foo = @fun
-	b.bar = @fun
-	
-	CU_ASSERT_EQUAL( f.foo(f), TEST_FOO )
-	CU_ASSERT_EQUAL( b.bar(b), TEST_BAR )
-
-end sub
-
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.pointers.funptr_fwdbyref")
-	fbcu.add_test("test", @test)
-
-end sub
-
-end namespace
+END_SUITE

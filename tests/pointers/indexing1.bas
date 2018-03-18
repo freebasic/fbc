@@ -1,31 +1,22 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
+SUITE( fbc_tests.pointers.indexing1 )
 
+	TEST( all )
 
-namespace fbc_tests.pointers.indexing1
+		dim i as integer, dp as integer pointer
+		dim array(0 to 4) as integer 
 
-sub test cdecl ()
+		for i = 0 to 4 
+  			array(i) = i 
+		next 
 
-	dim i as integer, dp as integer pointer
-	dim array(0 to 4) as integer 
+		dp = @array(0)
 
-	for i = 0 to 4 
-  		array(i) = i 
-	next 
+		for i = 0 to 4 
+  			CU_ASSERT_EQUAL( dp[i], i )
+		next 
 
-	dp = @array(0)
+	END_TEST
 
-	for i = 0 to 4 
-  		CU_ASSERT_EQUAL( dp[i], i )
-	next 
-
-end sub
-
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.pointers.indexing1")
-	fbcu.add_test("test", @test)
-
-end sub
-
-end namespace
+END_SUITE

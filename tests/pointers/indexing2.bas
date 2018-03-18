@@ -1,44 +1,42 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.pointers.indexing2
+SUITE( fbc_tests.pointers.indexing2 )
 
 	dim shared dp as integer pointer pointer 
 	dim shared array(0 to 4) as integer 
 
-sub test cdecl ()
+	TEST( index )
 
-	*dp = @array(0) 
+		*dp = @array(0) 
   
-	dim i as integer
-	for i = 0 to 4 
-  		CU_ASSERT_EQUAL( *(*dp + i), i )
-	next 
+		dim i as integer
+		for i = 0 to 4 
+  			CU_ASSERT_EQUAL( *(*dp + i), i )
+		next 
 
-end sub
+	END_TEST
 
-private function init cdecl () as long
-	dim i as integer
-	for i = 0 to 4 
-  		array(i) = i 
-	next 
+	SUITE_INIT
+		dim i as integer
+		for i = 0 to 4 
+  			array(i) = i 
+		next 
 
-	dp = allocate( len(integer pointer pointer) ) 
-	if (0 = dp) then return -1
-	*dp = allocate( len(integer pointer) ) 
-	if (0 = *dp) then return -1
+		dp = allocate( len(integer pointer pointer) ) 
+		if (0 = dp) then return -1
+		*dp = allocate( len(integer pointer) ) 
+		if (0 = *dp) then return -1
 
-	return 0
-end function
+		return 0
+	END_SUITE_INIT
 
-private function cleanup cdecl () as long
-'	deallocate (*dp)
-'	deallocate (dp)
-	return 0
-end function
+	SUITE_CLEANUP
+	'	!!! TODO !!!
+	'   why is this commented out?
 
-private sub ctor () constructor
-	fbcu.add_suite("fbc_tests.pointers.indexing2", @init, @cleanup)
-	fbcu.add_test("test", @test)
-end sub
+	'	deallocate (*dp)
+	'	deallocate (dp)
+		return 0
+	END_SUITE_CLEANUP
 
-end namespace
+END_SUITE
