@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.ns.using_reimp2
+SUITE( fbc_tests.namespace_.using_reimp2 )
 
 	namespace ns_a		
 	end namespace
@@ -21,15 +21,8 @@ namespace fbc_tests.ns.using_reimp2
 		using ns_c
 	end namespace
 
-	sub test_1 cdecl
+	TEST( all )
 		CU_ASSERT_EQUAL( ns_b.foo, 1 )
-	end sub	
+	END_TEST
 
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.namespace.using_reimp2")
-		fbcu.add_test("#1", @test_1)
-		
-	end sub
-
-end namespace
+END_SUITE

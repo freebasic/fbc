@@ -1,8 +1,8 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 dim shared as integer foo = -1
 
-namespace fbc_tests.ns.dups2
+SUITE( fbc_tests.namespace_.dups2 )
 
 	namespace ns1
 		dim as integer foo = 1
@@ -25,33 +25,25 @@ namespace fbc_tests.ns.dups2
 	end namespace	
 	
 	namespace ns3
-		sub test
+		sub dotest
 			CU_ASSERT_EQUAL( foo, 3 )
 			CU_ASSERT_EQUAL( ns3.foo, 3 )
 			CU_ASSERT_EQUAL( .foo, -1 )
 		end sub
 	end namespace
 		
-	sub test_1 cdecl
-		ns3.test
+	TEST( named )
+		ns3.dotest
 		CU_ASSERT_EQUAL( ns3.fun(0), -1234 )
-	end sub
+	END_TEST
 		
-	sub test_2 cdecl
+	TEST( using_ )
 		using ns3
 		dim as integer foo = 4
 		CU_ASSERT_EQUAL( foo, 4 )
 		CU_ASSERT_EQUAL( .foo, -1 )
 		CU_ASSERT_EQUAL( ns3.foo, 3 )
 		CU_ASSERT_EQUAL( ns3.fun(0), -1234 )
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.namespace.dups2")
-		fbcu.add_test("#1", @test_1)
-		fbcu.add_test("#2", @test_2)
-		
-	end sub
-
-end namespace
+END_SUITE

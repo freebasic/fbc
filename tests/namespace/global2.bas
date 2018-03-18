@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 #define global .
 	
@@ -9,27 +9,25 @@ private function func( ) as integer
 	function = GLOB_VAL
 end function
 
-namespace fbc_tests.ns.glob2
+namespace module.ns.glob2
 	function func( ) as integer
 		function = LOCA_VAL
 	end function
 end namespace
 
-private sub test_proc cdecl
-	using fbc_tests.ns.glob2
+private sub test_proc( )
+	using module.ns.glob2
 	
 	CU_ASSERT( func( ) = GLOB_VAL )
 	CU_ASSERT( .func( ) = GLOB_VAL )
 	CU_ASSERT( ..func( ) = GLOB_VAL )
 	CU_ASSERT( global.func( ) = GLOB_VAL )
 	
-	CU_ASSERT( fbc_tests.ns.glob2.func( ) = LOCA_VAL )
+	CU_ASSERT( module.ns.glob2.func( ) = LOCA_VAL )
 end sub
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.namespace.global2")
-	
-	fbcu.add_test("test", @test_proc)
-	
-end sub
+SUITE( fbc_tests.namespace_.global2 )
+	TEST( all )
+		test_proc
+	END_TEST
+END_SUITE

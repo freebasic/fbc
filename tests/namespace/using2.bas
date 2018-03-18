@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.ns.using2
+SUITE( fbc_tests.namespace_.using2 )
 
 	namespace ns1
 		dim as integer foo = 1
@@ -17,18 +17,11 @@ namespace fbc_tests.ns.using2
 		dim as integer foo = 3
 	end namespace
 	
-	sub test_1 cdecl
+	TEST( all )
 		using ns3
 		dim as integer foo = 4
 		
 		CU_ASSERT_EQUAL( ns3.bar, 1234 )
-	end sub	
+	END_TEST
 
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.namespace.using2")
-		fbcu.add_test("#1", @test_1)
-		
-	end sub
-
-end namespace
+END_SUITE

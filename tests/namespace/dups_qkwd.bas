@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.ns.dups_qkwd
+SUITE( fbc_tests.ns.dups_qkwd )
 	namespace ns_a
 		type line
 			x as integer
@@ -14,10 +14,10 @@ namespace fbc_tests.ns.dups_qkwd
 	
 	end namespace
 	
-	sub test_1 cdecl
+	TEST( test1 )
 		dim as ns_a.line l = ( 5678 )
 		ns_a.do_test( l )
-	end sub
+	END_TEST
 	
 	namespace ns_1
 		type line
@@ -34,17 +34,9 @@ namespace fbc_tests.ns.dups_qkwd
 		end sub
 	end namespace
 	
-	sub test_2 cdecl
+	TEST( test2 )
 		dim as ns_1.line l = ( -5678 )
 		ns_2.do_test( l )
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.namespace.dups_qkwd")
-		fbcu.add_test("#1", @test_1)
-		fbcu.add_test("#2", @test_2)
-		
-	end sub
-	
-end namespace
+END_SUITE
