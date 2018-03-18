@@ -1,30 +1,23 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.overload_.op_deref2
+SUITE( fbc_tests.overload_.op_deref2 )
 
-type bar
-	data as integer
-end type
+	type bar
+		data as integer
+	end type
 
-type foo
-	b as bar
-end type
+	type foo
+		b as bar
+	end type
 
-operator -> ( byref lhs as foo ) as bar
-	return lhs.b
-end operator
+	operator -> ( byref lhs as foo ) as bar
+		return lhs.b
+	end operator
 
-sub test_1 cdecl
-	dim as foo f = ( ( 1234 ) )
-	
-	CU_ASSERT_EQUAL( f->data, 1234 )
-end sub
+	TEST( all )
+		dim as foo f = ( ( 1234 ) )
+		
+		CU_ASSERT_EQUAL( f->data, 1234 )
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.overload.op_deref2")
-	fbcu.add_test("1", @test_1)
-
-end sub
-
-end namespace
+END_SUITE

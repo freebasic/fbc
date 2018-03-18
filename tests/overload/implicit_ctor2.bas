@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 /' 
  '
@@ -10,7 +10,7 @@
  '
  '/
 
-namespace fbc_tests.overload_.implicit_ctor2
+SUITE( fbc_tests.overload_.implicit_ctor2 )
 	
 	enum thing
 		one
@@ -37,20 +37,13 @@ namespace fbc_tests.overload_.implicit_ctor2
 		return type( r.__ + a )
 	end operator
 	
-	sub the_test cdecl ( )
+	TEST( construction )
 		
 		dim as thing bar = one
 		dim as foo a = one + 1
 		
 		CU_ASSERT( a.__ = two )
 		
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.overload.implicit_ctor2")
-		fbcu.add_test("Test Construction 2", @the_test)
-	
-	end sub
-	
-end namespace
+END_SUITE

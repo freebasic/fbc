@@ -1,36 +1,29 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.overload_.op_to_ptr
-
-type foo
-    declare operator cast() as double ptr
-    declare operator cast() as integer ptr
+SUITE( fbc_tests.overload_.op_to_ptr )
+	
+	type foo
+		declare operator cast() as double ptr
+		declare operator cast() as integer ptr
     
-    i as integer = -1234
-    d as double = 5678.9
-end type
+		i as integer = -1234
+		d as double = 5678.9
+	end type
 
-operator foo.cast() as double ptr
-    return @d
-end operator
+	operator foo.cast() as double ptr
+		return @d
+	end operator
 
-operator foo.cast() as integer ptr
-    return @i
-end operator
+	operator foo.cast() as integer ptr
+		return @i
+	end operator
 
-sub test_1 cdecl
-    dim bar as foo
+	TEST( all )
+		dim bar as foo
     
-    CU_ASSERT_EQUAL( *cast(integer ptr, bar), -1234 )
-    CU_ASSERT_EQUAL( *cast(double ptr, bar), 5678.9 )
+		CU_ASSERT_EQUAL( *cast(integer ptr, bar), -1234 )
+		CU_ASSERT_EQUAL( *cast(double ptr, bar), 5678.9 )
     
-end sub
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.overload.op_to_ptr")
-	fbcu.add_test("1", @test_1)
-
-end sub
-
-end namespace
+END_SUITE
