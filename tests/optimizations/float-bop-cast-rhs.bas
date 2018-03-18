@@ -1,6 +1,10 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
-private sub testCodeGeneration cdecl( )
+'' !!! TODO !!!
+'' does this test need to be module level?
+'' can wrap this in SUITE()?
+
+private sub code_generation_proc
 	'' -gen gas should generate good code for all of these
 
 	#macro check( TL, TR, rhsexpr )
@@ -106,7 +110,7 @@ private sub testCodeGeneration cdecl( )
 	check( double, double, csng( r ) )
 end sub
 
-private sub testNoConvCasts cdecl( )
+private sub noconv_casts_proc
 	dim d as double, i as integer = -1, u as uinteger = -1
 
 	CU_ASSERT(     cint(i) = -1 )
@@ -135,8 +139,11 @@ private sub testNoConvCasts cdecl( )
 #endif
 end sub
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.optimizations.float-bop-cast-rhs" )
-	fbcu.add_test( "code generation", @testCodeGeneration )
-	fbcu.add_test( "noconv CASTs", @testNoConvCasts )
-end sub
+SUITE( fbc_tests.optimizations.float_bop_cast_rhs )
+	TEST( code_generation )
+		code_generation_proc
+	END_TEST
+	TEST( noconv_casts )
+		noconv_casts_proc
+	END_TEST
+END_SUITE

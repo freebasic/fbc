@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.optimizations.vector
+SUITE( fbc_tests.optimizations.vector )
 
 	type FVec2
 		as single x, y
@@ -31,7 +31,7 @@ namespace fbc_tests.optimizations.vector
 
 	'' -- FVec2 --
 
-	sub test1 cdecl ()
+	TEST( fvec2_simple )
 
 		a2 = type(1.5f,  0.75f)
 		b2 = type(0.25f, 2.5f)
@@ -42,10 +42,9 @@ namespace fbc_tests.optimizations.vector
 		CU_ASSERT_EQUAL( c2.x,  2.1875f )
 		CU_ASSERT_EQUAL( c2.y, -5.6875f )
 
-	end sub
+	END_TEST
 
-
-	sub test2 cdecl ()
+	TEST( fvec2_swizzle )
 
 		''tests swizzle
 
@@ -58,11 +57,11 @@ namespace fbc_tests.optimizations.vector
 		CU_ASSERT_EQUAL( c2.x, 0.25f )
 		CU_ASSERT_EQUAL( c2.y, 0.75f )
 
-	end sub
+	END_TEST
 
 	'' -- FVec3 --
 
-	sub test3 cdecl ()
+	TEST( fvec3_simple )
 
 		dim as FVec3 a3, b3, c3
 
@@ -77,9 +76,9 @@ namespace fbc_tests.optimizations.vector
 		CU_ASSERT_EQUAL( c3.y,  5.6875f )
 		CU_ASSERT_EQUAL( c3.z, -2.0f	)
 
-	end sub
+	END_TEST
 
-	sub test4 cdecl ()
+	TEST( fvec3_swizzle )
 
 		'' tests swizzle
 
@@ -96,11 +95,11 @@ namespace fbc_tests.optimizations.vector
 		CU_ASSERT_EQUAL( c3.y,  2.0f  )
 		CU_ASSERT_EQUAL( c3.z,  1.25f )
 
-	end sub
+	END_TEST
 
 	'' -- FVec4 --
 
-	sub test5 cdecl ()
+	TEST( fvec4_simple )
 
 		dim as FVec4 a4, b4, c4
 
@@ -117,9 +116,9 @@ namespace fbc_tests.optimizations.vector
 		CU_ASSERT_EQUAL( c4.z,  2.375f  )
 		CU_ASSERT_EQUAL( c4.w,  1.4375f )
 
-	end sub
+	END_TEST
 
-	sub test6 cdecl ()
+	TEST( fvec4_swizzle )
 
 		'' tests swizzle
 
@@ -138,12 +137,12 @@ namespace fbc_tests.optimizations.vector
 		CU_ASSERT_EQUAL( c4.z, -0.6f	)
 		CU_ASSERT_EQUAL( c4.w,  0.9375f )
 
-	end sub
+	END_TEST
 
 	''
 	'' intra-expression vectorization (single precision)
 	''
-	sub test7 cdecl ()
+	TEST( fvec2_intra )
 
 		dim as FVec2 a2, b2, c2
 
@@ -156,12 +155,12 @@ namespace fbc_tests.optimizations.vector
 		CU_ASSERT_EQUAL( c2.x,  0.25f )
 		CU_ASSERT_EQUAL( c2.y,  0.0f  )
 
-	end sub
+	END_TEST
 
 	''
 	'' simple arithmetic (double precision)
 	''
-	sub test8 cdecl ()
+	TEST( dvec2_simple )
 
 		dim as DVec2 d, e, f
 
@@ -174,9 +173,9 @@ namespace fbc_tests.optimizations.vector
 		CU_ASSERT_EQUAL( f.x,  2.1875d )
 		CU_ASSERT_EQUAL( f.y, -5.6875d )
 
-	end sub
+	END_TEST
 
-	sub test9 cdecl ()
+	TEST( dvec2_swizzle )
 		'' tests swizzle
 
 		dim as DVec2 d, e, f
@@ -190,12 +189,12 @@ namespace fbc_tests.optimizations.vector
 		CU_ASSERT_EQUAL( f.x, 16.0d )
 		CU_ASSERT_EQUAL( f.y,  3.5d )
 
-	end sub
+	END_TEST
 
 	''
 	'' intra-expression vectorization (double precision)
 	''
-	sub test10 cdecl ()
+	TEST( dvec2_intra )
 
 		dim as DVec2 d, e, f
 
@@ -207,7 +206,7 @@ namespace fbc_tests.optimizations.vector
 		CU_ASSERT_EQUAL( f.x, 1.25d )
 		CU_ASSERT_EQUAL( f.y, 0.0d  )
 
-	end sub
+	END_TEST
 
 
 	''
@@ -221,42 +220,19 @@ namespace fbc_tests.optimizations.vector
 		return 1.0d
 	end function
 
-	sub test11 cdecl ()
+	TEST( negate )
 		'' negate
 		CU_ASSERT_EQUAL( -aux1f(), -1.0f )
+	END_TEST
 
-	end sub
-
-	sub test12 cdecl ()
+	TEST( sgn_ )
 		'' sgn()
 		CU_ASSERT_EQUAL( sgn(aux1f()), 1.0f )
+	END_TEST
 
-	end sub
-
-	sub test13 cdecl ()
+	TEST( sqr_ )
 		'' sqr()
 		CU_ASSERT_EQUAL( sqr(aux1d()), sqr(1.0d) )
+	END_TEST
 
-	end sub
-
-
-	private sub ctor () constructor
-
-		fbcu.add_suite("fbc_tests.optimizations.vector")
-		fbcu.add_test("test1", @test1)
-		fbcu.add_test("test2", @test2)
-		fbcu.add_test("test3", @test3)
-		fbcu.add_test("test4", @test4)
-		fbcu.add_test("test5", @test5)
-		fbcu.add_test("test6", @test6)
-		fbcu.add_test("test7", @test7)
-		fbcu.add_test("test8", @test8)
-		fbcu.add_test("test9", @test9)
-		fbcu.add_test("test10", @test10)
-		fbcu.add_test("test11", @test11)
-		fbcu.add_test("test12", @test12)
-		fbcu.add_test("test13", @test13)
-
-	end sub
-
-end namespace
+END_SUITE
