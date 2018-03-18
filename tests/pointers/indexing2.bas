@@ -31,9 +31,7 @@ SUITE( fbc_tests.pointers.indexing2 )
 	END_SUITE_INIT
 
 	SUITE_CLEANUP
-	'	!!! TODO !!!
-	'   why is this commented out?
-
+	'	!!! TODO !!! why are following lines commented out?
 	'	deallocate (*dp)
 	'	deallocate (dp)
 		return 0
