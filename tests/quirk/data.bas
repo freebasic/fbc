@@ -1,4 +1,4 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
 data_1:
 data 1
@@ -13,49 +13,41 @@ data "-4", "-5", "-6"
 data_3:
 data 1/2, 2/2, 3/2, 4/2, 5/2, 6/2
 
-namespace fbc_tests.quirk.data_
+SUITE( fbc_tests.quirk.data_ )
 
-sub test_1 cdecl
-	dim as integer i, v
+	TEST( integer_ )
+		dim as integer i, v
 
-	restore data_1
-	for i = 1 to 6
-		read v
-		CU_ASSERT_EQUAL( v, i )
-	next
+		restore data_1
+		for i = 1 to 6
+			read v
+			CU_ASSERT_EQUAL( v, i )
+		next
 
-end sub
+	END_TEST
 
-sub test_2 cdecl
-	dim as integer i
-	dim as string v
+	TEST( string_ )
+		dim as integer i
+		dim as string v
 
-	restore data_2
-	for i = 1 to 6
-		read v
-		CU_ASSERT_EQUAL( v, str(-i) )
-	next
+		restore data_2
+		for i = 1 to 6
+			read v
+			CU_ASSERT_EQUAL( v, str(-i) )
+		next
 
-end sub
+	END_TEST
 
-sub test_3 cdecl
-	dim as integer i
-	dim as double v
+	TEST( float )
+		dim as integer i
+		dim as double v
 
-	for i = 1 to 6
-		read v
-		CU_ASSERT_EQUAL( v, i/2 )
-	next
+		restore data_3
+		for i = 1 to 6
+			read v
+			CU_ASSERT_EQUAL( v, i/2 )
+		next
 
-end sub
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.quirk.data")
-	fbcu.add_test("1", @test_1)
-	fbcu.add_test("2", @test_2)
-	fbcu.add_test("3", @test_3)
-
-end sub
-
-end namespace
+END_SUITE

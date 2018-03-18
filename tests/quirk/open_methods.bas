@@ -1,6 +1,6 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.quirk.open_methods
+SUITE( fbc_tests.quirk.open_methods )
 
 	type foo
 		declare function binary() as integer
@@ -29,14 +29,8 @@ namespace fbc_tests.quirk.open_methods
 		end if
 	end function
     
-	sub bar cdecl()
-	end sub
+	TEST( compile )
+		CU_PASS()
+	END_TEST
     
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.quirk.open_methods")
-		fbcu.add_test("dummy test", @bar)
-	
-	end sub
-
-end namespace
+END_SUITE

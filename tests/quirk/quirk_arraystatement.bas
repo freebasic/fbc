@@ -1,32 +1,32 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-Type testing_type
-	meep(1) As Integer
-End Type
+SUITE( fbc_tests.quirk.arraystatement )
 
-private sub quirk_arraystatement_inWith cdecl( )
-	Dim test_udt As testing_type
-	With test_udt
-		.meep( 0 ) = 69
-		.meep( 1 ) = 420
+	Type testing_type
+		meep(1) As Integer
+	End Type
 
-		erase .meep
+	'' ERASE inside WITH
+	TEST( eraseInsideWith )
+		Dim test_udt As testing_type
+		With test_udt
+			.meep( 0 ) = 69
+			.meep( 1 ) = 420
 
-		CU_ASSERT( .meep( 0 ) = 0 )
-		CU_ASSERT( .meep( 1 ) = 0 )
-	End With
-end sub
+			erase .meep
 
-private sub quirk_arrayfunction_inWith cdecl( )
-	Dim test_udt As testing_type
-	With test_udt
-		CU_ASSERT( lbound( .meep ) = 0 )
-		CU_ASSERT( ubound( .meep ) = 1 )
-	End With
-end sub
+			CU_ASSERT( .meep( 0 ) = 0 )
+			CU_ASSERT( .meep( 1 ) = 0 )
+		End With
+	END_TEST
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.quirk.quirk_arraystatement" )
-	fbcu.add_test( "ERASE inside WITH", @quirk_arraystatement_inWith )
-	fbcu.add_test( "L/UBOUND inside WITH", @quirk_arrayfunction_inWith )
-end sub
+	'' L/UBOUND inside WITH
+	TEST( boundInsideWith )
+		Dim test_udt As testing_type
+		With test_udt
+			CU_ASSERT( lbound( .meep ) = 0 )
+			CU_ASSERT( ubound( .meep ) = 1 )
+		End With
+	END_TEST
+
+END_SUITE
