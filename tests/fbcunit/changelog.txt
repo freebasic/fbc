@@ -16,9 +16,12 @@ Version 0.7
 - fbcu.sngULP() API function - calculate units in last place for single
 - fbcu.sngULPdiff() API function - get units in last place difference for singles
 - fbcu.sngApprox() API function - units in last place comparison for singles
+- TEST_GROUP( group_name ) and END_TEST_GROUP macros added
 
 [fixed]
 - suite names are now allowed to have '.' in the name
+- SUITE() uses 'fbcu_global' by default if no suite_name given
+- TEST() uses 'default' by default if no test_name given
 
 
 Version 0.6

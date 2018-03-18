@@ -58,6 +58,9 @@
 #if defined(TMP_FBCUNIT_SUITE_NAME)
 	#error "TMP_FBCUNIT_SUITE_NAME" symbol is reserved for fbcunit
 #endif
+#if defined(TMP_FBCUNIT_TEST_GROUP_NAME)
+	#error "TMP_FBCUNIT_TEST_GROUP_NAME" symbol is reserved for fbcunit
+#endif
 #if defined(TMP_FBCUNIT_TEST_NAME)
 	#error "TMP_FBCUNIT_TEST_NAME" symbol is reserved for fbcunit
 #endif
@@ -114,6 +117,18 @@
 #endif
 #if defined(END_TEST_EMIT)
 	#error "END_TEST_EMIT" symbol is reserved for fbcunit
+#endif
+#if defined(TEST_GROUP)
+	#error "TEST_GROUP" symbol is reserved for fbcunit
+#endif
+#if defined(TEST_GROUP_EMIT)
+	#error "TEST_GROUP_EMIT" symbol is reserved for fbcunit
+#endif
+#if defined(END_TEST_GROUP)
+	#error "END_TEST_GROUP" symbol is reserved for fbcunit
+#endif
+#if defined(END_TEST_GROUP_EMIT)
+	#error "END_TEST_GROUP_EMIT" symbol is reserved for fbcunit
 #endif
 #if defined(FBCU_TRACE)
 	#error "FBCU_TRACE" symbol is reserved for fbcunit
@@ -211,12 +226,20 @@
 			FBCU_TRACE( "END_SUITE_CLEANUP" )
 		#endmacro
 
+		#macro TEST_GROUP_EMIT( group_name )
+			#error FBCUNIT: not allowed "TEST_GROUP"
+		#endmacro
+
+		#macro END_TEST_GROUP_EMIT( group_name )
+			#error FBCUNIT: not allowed "END_TEST_GROUP"
+		#endmacro
+
 		#macro TEST_EMIT( suite_name, test_name )
 			sub tests.##suite_name##.##test_name cdecl ()
 			FBCU_TRACE( "TEST" tests.fbcu_global.##test_name )
 		#endmacro
 
-		#macro END_TEST_EMIT( suite_name, test_name, global )
+		#macro END_TEST_EMIT( suite_name, group_name, test_name, global )
 			end sub
 			__private sub tests.##suite_name##.##test_name##_ctor cdecl () __constructor
 				fbcu.add_test( #test_name, __procptr(tests.##suite_name##.##test_name), global )
@@ -267,15 +290,29 @@
 			FBCU_TRACE( "END_SUITE_CLEANUP" )
 		#endmacro
 
+		#macro TEST_GROUP_EMIT( group_name )
+			namespace group_name
+			FBCU_TRACE( "TEST_GROUP" )
+		#endmacro
+
+		#macro END_TEST_GROUP_EMIT( group_name )
+			end namespace
+			FBCU_TRACE( "END_TEST_GROUP" suite_name )
+		#endmacro
+
 		#macro TEST_EMIT( suite_name, test_name )
 				sub test_name cdecl ()
 			FBCU_TRACE( "TEST" test_name )
 		#endmacro
 
-		#macro END_TEST_EMIT( suite_name, test_name, global )
+		#macro END_TEST_EMIT( suite_name, group_name, test_name, global )
 				end sub
 				private sub test_name##_ctor cdecl () constructor
+				#if #group_name > ""
+					fbcu.add_test( #group_name + "." + #test_name, procptr(test_name), global )
+				#else
 					fbcu.add_test( #test_name, procptr(test_name), global )
+				#endif
 				end sub
 			FBCU_TRACE( "END_TEST" test_name )
 		#endmacro
@@ -295,13 +332,19 @@
 	#if defined( TMP_FBCUNIT_SUITE_NAME )
 		#error FBCUNIT: test suites can not be nested, or missing "END_SUITE" before "SUITE"
 	#endif
-	#define TMP_FBCUNIT_SUITE_NAME suite_name
-	SUITE_EMIT( suite_name )
+	#if #suite_name > ""
+		#define TMP_FBCUNIT_SUITE_NAME suite_name
+	#else
+		#define TMP_FBCUNIT_SUITE_NAME fbcu_global
+	#endif
+	SUITE_EMIT( TMP_FBCUNIT_SUITE_NAME )
 #endmacro
 
 #macro END_SUITE
 	#if not defined( TMP_FBCUNIT_SUITE_NAME )
 		#error FBCUNIT: unexpected "END_SUITE"
+	#elseif defined( TMP_FBCUNIT_TEST_GROUP_NAME )
+		#error FBCUNIT: missing "END_TEST_GROUP" before "END_SUITE"
 	#elseif defined( TMP_FBCUNIT_TEST_NAME )
 		#error FBCUNIT: missing "END_TEST" before "END_SUITE"
 	#elseif defined( TMP_FBCUNIT_SUITE_IN_INIT )
@@ -382,6 +425,33 @@
 	#undef TMP_FBCUNIT_SUITE_IN_CLEANUP
 #endmacro
 
+#macro TEST_GROUP( group_name )
+	#if defined( TMP_FBCUNIT_TEST_GROUP_NAME )
+		#error FBCUNIT: test groups can not be nested or missing "END_TEST_GROUP"
+	#elseif defined( TMP_FBCUNIT_SUITE_IN_INIT )
+		#error FBCUNIT: missing "END_SUITE_INIT" before "TEST_GROUP"
+	#elseif defined( TMP_FBCUNIT_SUITE_IN_CLEANUP )
+		#error FBCUNIT: missing "END_SUITE_CLEANUP" before "TEST_GROUP"
+	#elseif not defined( TMP_FBCUNIT_SUITE_NAME )
+		#error FBCUNIT: "TEST_GROUP" can only be used in a "SUITE"
+	#endif
+	#if #group_name > ""
+		#define TMP_FBCUNIT_TEST_GROUP_NAME group_name
+	#else
+		#error FBCUNIT: missing group name in "TEST_GROUP"
+	#endif
+	TEST_GROUP_EMIT( group_name )
+#endmacro
+
+#macro END_TEST_GROUP
+	#if defined( TMP_FBCUNIT_TEST_GROUP_NAME )
+		END_TEST_GROUP_EMIT( TMP_FBCUNIT_TEST_GROUP_NAME )
+	#else
+		#error FBCUNIT: mismatched "END_TEST_GROUP"
+	#endif
+	#undef TMP_FBCUNIT_TEST_GROUP_NAME
+#endmacro
+
 #macro TEST( test_name )
 	#if defined( TMP_FBCUNIT_TEST_NAME )
 		#error FBCUNIT: tests can not be nested or missing "END_TEST"
@@ -390,21 +460,32 @@
 	#elseif defined( TMP_FBCUNIT_SUITE_IN_CLEANUP )
 		#error FBCUNIT: missing "END_SUITE_CLEANUP" before "TEST"
 	#endif
-	#define TMP_FBCUNIT_TEST_NAME test_name
+	#if #test_name > ""
+		#define TMP_FBCUNIT_TEST_NAME test_name
+	#else
+		#define TMP_FBCUNIT_TEST_NAME default
+	#endif
 	#if defined( TMP_FBCUNIT_SUITE_NAME )
 		TEST_EMIT( TMP_FBCUNIT_SUITE_NAME, TMP_FBCUNIT_TEST_NAME )
 	#else
 		TEST_EMIT( fbcu_global, TMP_FBCUNIT_TEST_NAME )
 	#endif
-    
 #endmacro
 
 #macro END_TEST
 	#if defined( TMP_FBCUNIT_TEST_NAME )
 		#if defined( TMP_FBCUNIT_SUITE_NAME )
-			END_TEST_EMIT( TMP_FBCUNIT_SUITE_NAME, TMP_FBCUNIT_TEST_NAME, false )
+			#if defined( TMP_FBCUNIT_TEST_GROUP_NAME )
+			END_TEST_EMIT( TMP_FBCUNIT_SUITE_NAME, TMP_FBCUNIT_TEST_GROUP_NAME, TMP_FBCUNIT_TEST_NAME, false )
+			#else
+			END_TEST_EMIT( TMP_FBCUNIT_SUITE_NAME, , TMP_FBCUNIT_TEST_NAME, false )
+			#endif
 		#else
-			END_TEST_EMIT( fbcu_global, TMP_FBCUNIT_TEST_NAME, true )
+			#if defined( TMP_FBCUNIT_TEST_GROUP_NAME )
+			END_TEST_EMIT( fbcu_global, TMP_FBCUNIT_TEST_GROUP_NAME, TMP_FBCUNIT_TEST_NAME, true )
+			#else
+			END_TEST_EMIT( fbcu_global, , TMP_FBCUNIT_TEST_NAME, true )
+			#endif
 		#endif
 	#else
 		#error FBCUNIT: mismatched "END_TEST"

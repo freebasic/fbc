@@ -1,10 +1,16 @@
 #include once "fbcunit.bi"
 
-SUITE( fbcunit.nested.namespaces )
+SUITE( fbcunit.namespaces )
 
 	TEST( do_test )
 		CU_ASSERT( true )
 	END_TEST
+
+	namespace nested
+		TEST( proc )
+			CU_ASSERT( true )
+		END_TEST
+	end namespace
 
 END_SUITE
 
@@ -16,7 +22,7 @@ namespace scoped
 	END_SUITE
 end namespace
 
-SUITE( fbcunit.parent )
+SUITE( fbcunit.grouped )
 
 	dim called as integer = 0
 	dim flag as boolean = false
@@ -40,22 +46,22 @@ SUITE( fbcunit.parent )
 		do_check()
 	END_TEST
 
-	namespace child_a	
+	TEST_GROUP( group_a	)
 		TEST( proc )
 			called += 1
 			flag_a = true
 			CU_ASSERT( true )
 			do_check()
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace child_b
+	TEST_GROUP( group_b )
 		TEST( proc )
 			called += 1
 			flag_b = true
 			CU_ASSERT( true )
 			do_check()
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

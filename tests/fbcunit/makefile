@@ -21,6 +21,7 @@ TEST_SRCS += tests/fbcu_append.bas
 TEST_SRCS += tests/fbcu_append2.bas
 TEST_SRCS += tests/fbcu_float.bas
 TEST_SRCS += tests/fbcu_namespace.bas
+TEST_SRCS += tests/fbcu_default.bas
 
 TEST_OBJS := $(patsubst %.bas,%.o,$(TEST_SRCS))
 
