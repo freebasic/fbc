@@ -2,7 +2,7 @@
 
 SUITE( fbc_tests.const_.const_decl )
 
-	namespace ns1
+	TEST_GROUP( syntax )
 		const a = 1
 		const b as integer = 2
 		const as integer c = 3
@@ -10,7 +10,7 @@ SUITE( fbc_tests.const_.const_decl )
 		const g = 7, h = 8, i = 9
 		const j = 3 + (2 * 300)
 
-		TEST( syntax )
+		TEST( default )
 			CU_ASSERT( a = 1 )
 			CU_ASSERT( b = 2 )
 			CU_ASSERT( c = 3 )
@@ -22,9 +22,9 @@ SUITE( fbc_tests.const_.const_decl )
 			CU_ASSERT( i = 9 )
 			CU_ASSERT( j = 603 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns2
+	TEST_GROUP( explicitTypes )
 		type UDT
 			i as integer
 		end type
@@ -71,7 +71,7 @@ SUITE( fbc_tests.const_.const_decl )
 		#assert typeof( pw   ) = typeof( wstring ptr )
 		#assert typeof( psub ) = typeof(      sub( ) )
 
-		TEST( explicitTypes )
+		TEST( default )
 			CU_ASSERT( b    = 0   )
 			CU_ASSERT( ub   = 0   )
 			CU_ASSERT( sh   = 0   )
@@ -93,9 +93,9 @@ SUITE( fbc_tests.const_.const_decl )
 			CU_ASSERT( pw   = 0   )
 			CU_ASSERT( psub = 0   )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns3
+	TEST_GROUP( implicitTypes )
 		type UDT
 			i as integer
 		end type
@@ -142,7 +142,7 @@ SUITE( fbc_tests.const_.const_decl )
 		#assert typeof( pw   ) = typeof( wstring ptr )
 		#assert typeof( psub ) = typeof(      sub( ) )
 
-		TEST( implicitTypes )
+		TEST( default )
 			CU_ASSERT( b    = 0   )
 			CU_ASSERT( ub   = 0   )
 			CU_ASSERT( sh   = 0   )
@@ -164,6 +164,6 @@ SUITE( fbc_tests.const_.const_decl )
 			CU_ASSERT( pw   = 0   )
 			CU_ASSERT( psub = 0   )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE
