@@ -11,7 +11,7 @@ SUITE( fbc_tests.threads.racecondition )
 
 		declare sub cb( byval i as any ptr )
 
-		TEST( default )
+		sub test_proc
 			dim htb(0 to NUM_THREADS-1) as any ptr
 			dim i as integer
 
@@ -32,7 +32,7 @@ SUITE( fbc_tests.threads.racecondition )
 
 			print "Exiting.."
 			sleep 1000
-		END_TEST
+		end sub
 
 		sub cb( byval i as any ptr )
 			sleep rnd * 100
