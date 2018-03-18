@@ -1,106 +1,95 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
+SUITE( fbc_tests.structs.bitfield_access )
 
+	const TEST_W = 200
+	const TEST_H = 100
+		
+	type foo_1 field=1 
+		as short                 bpp :3
+		as short                 w   :8 
+		as short                 h   :8
+	end type 
 
-namespace fbc_tests.structs.bitfield_access
+	type foo_2 field=1 
+		as short                 bpp :3
+		as short                 w   :8
+		as short                 h
+	end type 
 
-const TEST_W = 200
-const TEST_H = 100
-	
-type foo_1 field=1 
-	as short                 bpp :3
-	as short                 w   :8 
-	as short                 h   :8
-end type 
+	type foo_3 field=1 
+		as short                 bpp :3
+		as integer               w   :8 
+		as integer               h
+	end type 
 
-type foo_2 field=1 
-	as short                 bpp :3
-	as short                 w   :8
-	as short                 h
-end type 
+	TEST( test1 )
 
-type foo_3 field=1 
-	as short                 bpp :3
-	as integer               w   :8 
-	as integer               h
-end type 
+		dim as foo_1 f
+		
+		f.w = TEST_W
+		f.h = TEST_H
+		
+		dim as integer res = f.w * f.h
+		
+		CU_ASSERT_EQUAL( res, TEST_W * TEST_H )
 
+	END_TEST
 
-sub test_1 cdecl ()
+	TEST( test2 )
 
-	dim as foo_1 f
-	
-	f.w = TEST_W
-	f.h = TEST_H
-	
-	dim as integer res = f.w * f.h
-	
-	CU_ASSERT_EQUAL( res, TEST_W * TEST_H )
+		dim as foo_2 f
+		
+		f.w = TEST_W
+		f.h = TEST_H
+		
+		dim as integer res = f.w * f.h
+		
+		CU_ASSERT_EQUAL( res, TEST_W * TEST_H )
 
-end sub
+	END_TEST
 
-sub test_2 cdecl ()
+	TEST( test3 )
 
-	dim as foo_2 f
-	
-	f.w = TEST_W
-	f.h = TEST_H
-	
-	dim as integer res = f.w * f.h
-	
-	CU_ASSERT_EQUAL( res, TEST_W * TEST_H )
+		dim as foo_3 f
+		
+		f.w = TEST_W
+		f.h = TEST_H
+		
+		dim as integer res = f.w * f.h
+		
+		CU_ASSERT_EQUAL( res, TEST_W * TEST_H )
 
-end sub
+	END_TEST
 
-sub test_3 cdecl ()
+	dim shared as foo_1 f4
 
-	dim as foo_3 f
-	
-	f.w = TEST_W
-	f.h = TEST_H
-	
-	dim as integer res = f.w * f.h
-	
-	CU_ASSERT_EQUAL( res, TEST_W * TEST_H )
+	TEST( test4 )
 
-end sub
+		f4.w = TEST_W
+		f4.h = TEST_H
+		
+		dim as integer res = f4.w * f4.h
+		
+		CU_ASSERT_EQUAL( res, TEST_W * TEST_H )
 
-dim shared as foo_1 f4
+	END_TEST
 
-sub test_4 cdecl ()
+	'' Nested field access
+	TEST( nested )
+		type A
+			as integer i : 1
+		end type
 
-	f4.w = TEST_W
-	f4.h = TEST_H
-	
-	dim as integer res = f4.w * f4.h
-	
-	CU_ASSERT_EQUAL( res, TEST_W * TEST_H )
+		type B
+			as A a
+		end type
 
-end sub
+		dim as B b
 
-sub testNested cdecl( )
-	type A
-		as integer i : 1
-	end type
+		b.a.i = 1
 
-	type B
-		as A a
-	end type
+		CU_ASSERT( b.a.i = 1 )
+	END_TEST
 
-	dim as B b
-
-	b.a.i = 1
-
-	CU_ASSERT( b.a.i = 1 )
-end sub
-
-private sub ctor( ) constructor
-	fbcu.add_suite("fbc_tests.structs.bitfield_access")
-	fbcu.add_test("test_1", @test_1)
-	fbcu.add_test("test_2", @test_2)
-	fbcu.add_test("test_3", @test_3)
-	fbcu.add_test("test_4", @test_4)
-	fbcu.add_test("Nested field access", @testNested)
-end sub
-
-end namespace
+END_SUITE

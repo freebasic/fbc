@@ -1,65 +1,58 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.str_redim
+SUITE( fbc_tests.structs.str_redim )
 
-dim shared as integer bar_cnt = 0
+	dim shared as integer bar_cnt = 0
 
-const FOO_LBOUND = 0
-const FOO_UBOUND = 1
+	const FOO_LBOUND = 0
+	const FOO_UBOUND = 1
 
-type bar
-	value as integer
-	foo(FOO_LBOUND to FOO_UBOUND) as string
-	declare constructor ()
-	declare destructor ()
-end type
+	type bar
+		value as integer
+		foo(FOO_LBOUND to FOO_UBOUND) as string
+		declare constructor ()
+		declare destructor ()
+	end type
 
-constructor bar()
-	value = bar_cnt
-	bar_cnt += 1
-	
-	dim as integer i
-	for i = FOO_LBOUND to FOO_UBOUND
-		foo(i) = str( i )
-	next
-end constructor
-
-destructor bar( )
-	bar_cnt -= 1
-end destructor
-
-#macro test_chk()
-	scope
-		dim as integer i, j
-		for i = lbound( array ) to ubound( array )
-			CU_ASSERT_EQUAL( array(i).value, i )
-			for j = FOO_LBOUND to FOO_UBOUND
-				CU_ASSERT_EQUAL( array(i).foo(j), str(j) )	
-			next
+	constructor bar()
+		value = bar_cnt
+		bar_cnt += 1
+		
+		dim as integer i
+		for i = FOO_LBOUND to FOO_UBOUND
+			foo(i) = str( i )
 		next
-	end scope
-#endmacro
+	end constructor
 
-sub test cdecl	
-	redim as bar array(0 to 1)
-	test_chk()
-	
-	redim array(0 to 2)
-	test_chk()
+	destructor bar( )
+		bar_cnt -= 1
+	end destructor
 
-	redim array(0 to 1)
-	test_chk()
+	#macro test_chk()
+		scope
+			dim as integer i, j
+			for i = lbound( array ) to ubound( array )
+				CU_ASSERT_EQUAL( array(i).value, i )
+				for j = FOO_LBOUND to FOO_UBOUND
+					CU_ASSERT_EQUAL( array(i).foo(j), str(j) )	
+				next
+			next
+		end scope
+	#endmacro
 
-	redim array(0 to 3)
-	test_chk()
+	TEST( all )
+		redim as bar array(0 to 1)
+		test_chk()
+		
+		redim array(0 to 2)
+		test_chk()
 
-end sub
+		redim array(0 to 1)
+		test_chk()
 
-private sub ctor () constructor
+		redim array(0 to 3)
+		test_chk()
 
-	fbcu.add_suite("fbc_tests.structs.str_redim")
-	fbcu.add_test( "test", @test)
+	END_TEST
 
-end sub
-	
-end namespace
+END_SUITE

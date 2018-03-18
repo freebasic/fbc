@@ -1,579 +1,553 @@
-# include "fbcu.bi"
-
-namespace fbc_tests.structs.implicit_methods
-
-namespace copyCtorUdt
-	dim shared as integer ctors, copyctors, lets
-
-	type Nested
-		i as integer
-		declare constructor( )
-		declare constructor( byref rhs as const Nested )
-		declare operator let( byref rhs as const Nested )
-	end type
-
-	constructor Nested( )
-		ctors += 1
-	end constructor
-
-	constructor Nested( byref rhs as const Nested )
-		copyctors += 1
-	end constructor
-
-	operator Nested.let( byref rhs as const Nested )
-		this.i = rhs.i
-		lets += 1
-	end operator
-
-	type UDT
-		myfield as Nested
-	end type
-
-	sub test cdecl( )
-		CU_ASSERT( ctors = 0 )
-		CU_ASSERT( copyctors = 0 )
-		CU_ASSERT( lets = 0 )
-
-		dim x1 as UDT
-		CU_ASSERT( ctors = 1 )
-		CU_ASSERT( copyctors = 0 )
-		CU_ASSERT( lets = 0 )
-
-		dim x2 as UDT = x1
-		CU_ASSERT( ctors = 2 )
-		CU_ASSERT( copyctors = 0 )
-		CU_ASSERT( lets = 1 )
-	end sub
-end namespace
-
-namespace copyCtorConstUdt
-	dim shared as integer ctors, copyctors, lets
-
-	type Nested
-		i as integer
-		declare constructor( )
-		declare constructor( byref rhs as const Nested )
-		declare operator let( byref rhs as const Nested )
-	end type
-
-	constructor Nested( )
-		ctors += 1
-	end constructor
-
-	constructor Nested( byref rhs as const Nested )
-		copyctors += 1
-	end constructor
-
-	operator Nested.let( byref rhs as const Nested )
-		this.i = rhs.i
-		lets += 1
-	end operator
-
-	type UDT
-		myfield as Nested
-	end type
-
-	sub test cdecl( )
-		CU_ASSERT( ctors = 0 )
-		CU_ASSERT( copyctors = 0 )
-		CU_ASSERT( lets = 0 )
-
-		dim x1 as const UDT = UDT( )
-		CU_ASSERT( ctors = 1 )
-		CU_ASSERT( copyctors = 0 )
-		CU_ASSERT( lets = 0 )
-
-		dim x2 as UDT = x1
-		CU_ASSERT( ctors = 2 )
-		CU_ASSERT( copyctors = 0 )
-		CU_ASSERT( lets = 1 )
-	end sub
-end namespace
-
-namespace copyCtorString
-	type UDT
-		s as string
-	end type
-
-	sub test cdecl( )
-		dim x1 as UDT
-		x1.s = "abc"
-
-		dim x2 as UDT = x1
-		CU_ASSERT( x2.s = "abc" )
-
-		CU_ASSERT( strptr( x1.s ) <> strptr( x2.s ) )
-	end sub
-end namespace
-
-namespace copyCtorConstString
-	type UDT
-		s as string
-		declare constructor( byref as string )
-	end type
-
-	constructor UDT( byref s as string )
-		this.s = s
-	end constructor
-
-	sub test cdecl( )
-		dim x1 as const UDT = UDT( "abc" )
-		CU_ASSERT( x1.s = "abc" )
-
-		dim x2 as UDT = x1
-		CU_ASSERT( x2.s = "abc" )
-
-		CU_ASSERT( strptr( x1.s ) <> strptr( x2.s ) )
-	end sub
-end namespace
-
-namespace copyLetUdt
-	dim shared as integer ctors, copyctors, lets
-
-	type Nested
-		i as integer
-		declare constructor( )
-		declare constructor( byref rhs as const Nested )
-		declare operator let( byref rhs as const Nested )
-	end type
-
-	constructor Nested( )
-		ctors += 1
-	end constructor
-
-	constructor Nested( byref rhs as const Nested )
-		copyctors += 1
-	end constructor
-
-	operator Nested.let( byref rhs as const Nested )
-		this.i = rhs.i
-		lets += 1
-	end operator
-
-	type UDT
-		myfield as Nested
-	end type
-
-	sub test cdecl( )
-		CU_ASSERT( ctors = 0 )
-		CU_ASSERT( copyctors = 0 )
-		CU_ASSERT( lets = 0 )
-
-		dim as UDT x1, x2
-		CU_ASSERT( ctors = 2 )
-		CU_ASSERT( copyctors = 0 )
-		CU_ASSERT( lets = 0 )
-
-		x2 = x1
-		CU_ASSERT( ctors = 2 )
-		CU_ASSERT( copyctors = 0 )
-		CU_ASSERT( lets = 1 )
-	end sub
-end namespace
-
-namespace copyLetConstUdt
-	dim shared as integer ctors, copyctors, lets
-
-	type Nested
-		i as integer
-		declare constructor( )
-		declare constructor( byref rhs as const Nested )
-		declare operator let( byref rhs as const Nested )
-	end type
-
-	constructor Nested( )
-		ctors += 1
-	end constructor
-
-	constructor Nested( byref rhs as const Nested )
-		copyctors += 1
-	end constructor
-
-	operator Nested.let( byref rhs as const Nested )
-		this.i = rhs.i
-		lets += 1
-	end operator
-
-	type UDT
-		myfield as Nested
-	end type
-
-	sub test cdecl( )
-		CU_ASSERT( ctors = 0 )
-		CU_ASSERT( copyctors = 0 )
-		CU_ASSERT( lets = 0 )
-
-		dim as const UDT x1 = UDT( )
-		dim as UDT x2
-		CU_ASSERT( ctors = 2 )
-		CU_ASSERT( copyctors = 0 )
-		CU_ASSERT( lets = 0 )
-
-		x2 = x1
-		CU_ASSERT( ctors = 2 )
-		CU_ASSERT( copyctors = 0 )
-		CU_ASSERT( lets = 1 )
-	end sub
-end namespace
-
-namespace copyLetString
-	type UDT
-		s as string
-	end type
-
-	sub test cdecl( )
-		dim as UDT x1, x2
-		x1.s = "abc"
-
-		x2 = x1
-		CU_ASSERT( x2.s = "abc" )
-
-		CU_ASSERT( strptr( x1.s ) <> strptr( x2.s ) )
-	end sub
-end namespace
-
-namespace copyLetConstString
-	type UDT
-		s as string
-		declare constructor( byref as string )
-	end type
-
-	constructor UDT( byref s as string )
-		this.s = s
-	end constructor
-
-	sub test cdecl( )
-		dim x1 as const UDT = UDT( "abc" )
-		CU_ASSERT( x1.s = "abc" )
-
-		dim x2 as UDT = UDT( "foo" )
-		CU_ASSERT( x2.s = "foo" )
-
-		x2 = x1
-		CU_ASSERT( x2.s = "abc" )
-
-		CU_ASSERT( strptr( x1.s ) <> strptr( x2.s ) )
-	end sub
-end namespace
-
-''
-'' We have to detect copy-constructors or copy-LET-overloads even if their
-'' parameter if a forward reference to the UDT, otherwise we'd add the implicit
-'' copyctor/copylet despite the user-defined ones already being there, and then
-'' we'd end up with duplicate definitions...
-''
-namespace copyCtorFwdref1
-	dim shared as integer copyctors
-
-	type UDT as UDT_
-
-	type UDT_
-		i as integer
-		declare constructor( )
-		declare constructor( byref as UDT )
-	end type
-
-	constructor UDT_( )
-	end constructor
-
-	sub test cdecl( )
-		dim as UDT_ a
-		CU_ASSERT( copyctors = 0 )
-
-		dim as UDT_ b = a
-		CU_ASSERT( copyctors = 1 )
-	end sub
-
-	constructor UDT_( byref rhs as UDT )
-		copyctors += 1
-	end constructor
-end namespace
-
-namespace copyCtorFwdref2
-	dim shared as integer copyctors
-
-	type UDT as UDT_
-
-	type UDT_
-		i as integer
-		declare constructor( )
-		declare constructor( byref as UDT )
-	end type
-
-	constructor UDT_( )
-	end constructor
-
-	constructor UDT_( byref rhs as UDT )
-		copyctors += 1
-	end constructor
-
-	sub test cdecl( )
-		dim as UDT_ a
-		CU_ASSERT( copyctors = 0 )
-
-		dim as UDT_ b = a
-		CU_ASSERT( copyctors = 1 )
-	end sub
-end namespace
-
-namespace copyCtorConstFwdref1
-	dim shared as integer copyctors
-
-	type UDT as UDT_
-
-	type UDT_
-		i as integer
-		declare constructor( )
-		declare constructor( byref as const UDT )
-	end type
-
-	constructor UDT_( )
-	end constructor
-
-	sub test cdecl( )
-		scope
-			dim as UDT_ a
+#include "fbcunit.bi"
+
+SUITE( fbc_tests.structs.implicit_methods )
+
+	TEST_GROUP( copyCtorUdt )
+		dim shared as integer ctors, copyctors, lets
+
+		type Nested
+			i as integer
+			declare constructor( )
+			declare constructor( byref rhs as const Nested )
+			declare operator let( byref rhs as const Nested )
+		end type
+
+		constructor Nested( )
+			ctors += 1
+		end constructor
+
+		constructor Nested( byref rhs as const Nested )
+			copyctors += 1
+		end constructor
+
+		operator Nested.let( byref rhs as const Nested )
+			this.i = rhs.i
+			lets += 1
+		end operator
+
+		type UDT
+			myfield as Nested
+		end type
+
+		TEST( default )
+			CU_ASSERT( ctors = 0 )
 			CU_ASSERT( copyctors = 0 )
+			CU_ASSERT( lets = 0 )
 
-			dim as UDT_ b = a
-			CU_ASSERT( copyctors = 1 )
-		end scope
-		copyctors = 0
-
-		scope
-			dim as const UDT_ a = UDT_( )
+			dim x1 as UDT
+			CU_ASSERT( ctors = 1 )
 			CU_ASSERT( copyctors = 0 )
+			CU_ASSERT( lets = 0 )
 
-			dim as UDT_ b = a
-			CU_ASSERT( copyctors = 1 )
-		end scope
-	end sub
-
-	constructor UDT_( byref rhs as const UDT )
-		copyctors += 1
-	end constructor
-end namespace
-
-namespace copyCtorConstFwdref2
-	dim shared as integer copyctors
-
-	type UDT as UDT_
-
-	type UDT_
-		i as integer
-		declare constructor( )
-		declare constructor( byref as const UDT )
-	end type
-
-	constructor UDT_( )
-	end constructor
-
-	constructor UDT_( byref rhs as const UDT )
-		copyctors += 1
-	end constructor
-
-	sub test cdecl( )
-		scope
-			dim as UDT_ a
+			dim x2 as UDT = x1
+			CU_ASSERT( ctors = 2 )
 			CU_ASSERT( copyctors = 0 )
+			CU_ASSERT( lets = 1 )
+		END_TEST
+	END_TEST_GROUP
 
-			dim as UDT_ b = a
-			CU_ASSERT( copyctors = 1 )
-		end scope
-		copyctors = 0
+	TEST_GROUP( copyCtorConstUdt )
+		dim shared as integer ctors, copyctors, lets
 
-		scope
-			dim as const UDT_ a = UDT_( )
+		type Nested
+			i as integer
+			declare constructor( )
+			declare constructor( byref rhs as const Nested )
+			declare operator let( byref rhs as const Nested )
+		end type
+
+		constructor Nested( )
+			ctors += 1
+		end constructor
+
+		constructor Nested( byref rhs as const Nested )
+			copyctors += 1
+		end constructor
+
+		operator Nested.let( byref rhs as const Nested )
+			this.i = rhs.i
+			lets += 1
+		end operator
+
+		type UDT
+			myfield as Nested
+		end type
+
+		TEST( default )
+			CU_ASSERT( ctors = 0 )
 			CU_ASSERT( copyctors = 0 )
+			CU_ASSERT( lets = 0 )
 
-			dim as UDT_ b = a
-			CU_ASSERT( copyctors = 1 )
-		end scope
-	end sub
-end namespace
+			dim x1 as const UDT = UDT( )
+			CU_ASSERT( ctors = 1 )
+			CU_ASSERT( copyctors = 0 )
+			CU_ASSERT( lets = 0 )
 
-namespace copyLetFwdref1
-	dim shared as integer copylets
+			dim x2 as UDT = x1
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( copyctors = 0 )
+			CU_ASSERT( lets = 1 )
+		END_TEST
+	END_TEST_GROUP
 
-	type UDT as UDT_
+	TEST_GROUP( copyCtorString )
+		type UDT
+			s as string
+		end type
 
-	type UDT_
-		i as integer
-		declare operator let( byref as UDT )
-	end type
+		TEST( default )
+			dim x1 as UDT
+			x1.s = "abc"
 
-	sub test cdecl( )
-		dim as UDT_ a, b
-		CU_ASSERT( copylets = 0 )
+			dim x2 as UDT = x1
+			CU_ASSERT( x2.s = "abc" )
 
-		b = a
-		CU_ASSERT( copylets = 1 )
-	end sub
+			CU_ASSERT( strptr( x1.s ) <> strptr( x2.s ) )
+		END_TEST
+	END_TEST_GROUP
 
-	operator UDT_.let( byref rhs as UDT )
-		copylets += 1
-	end operator
-end namespace
+	TEST_GROUP( copyCtorConstString )
+		type UDT
+			s as string
+			declare constructor( byref as string )
+		end type
 
-namespace copyLetFwdref2
-	dim shared as integer copylets
+		constructor UDT( byref s as string )
+			this.s = s
+		end constructor
 
-	type UDT as UDT_
+		TEST( default )
+			dim x1 as const UDT = UDT( "abc" )
+			CU_ASSERT( x1.s = "abc" )
 
-	type UDT_
-		i as integer
-		declare operator let( byref as UDT )
-	end type
+			dim x2 as UDT = x1
+			CU_ASSERT( x2.s = "abc" )
 
-	operator UDT_.let( byref rhs as UDT )
-		copylets += 1
-	end operator
+			CU_ASSERT( strptr( x1.s ) <> strptr( x2.s ) )
+		END_TEST
+	END_TEST_GROUP
 
-	sub test cdecl( )
-		dim as UDT_ a, b
-		CU_ASSERT( copylets = 0 )
+	TEST_GROUP( copyLetUdt )
+		dim shared as integer ctors, copyctors, lets
 
-		b = a
-		CU_ASSERT( copylets = 1 )
-	end sub
-end namespace
+		type Nested
+			i as integer
+			declare constructor( )
+			declare constructor( byref rhs as const Nested )
+			declare operator let( byref rhs as const Nested )
+		end type
 
-namespace copyLetConstFwdref1
-	dim shared as integer copylets
+		constructor Nested( )
+			ctors += 1
+		end constructor
 
-	type UDT as UDT_
+		constructor Nested( byref rhs as const Nested )
+			copyctors += 1
+		end constructor
 
-	type UDT_
-		i as integer
-		declare operator let( byref as const UDT )
-	end type
+		operator Nested.let( byref rhs as const Nested )
+			this.i = rhs.i
+			lets += 1
+		end operator
 
-	sub test cdecl( )
-		scope
-			dim as UDT_ a, b
-			CU_ASSERT( copylets = 0 )
+		type UDT
+			myfield as Nested
+		end type
 
-			b = a
-			CU_ASSERT( copylets = 1 )
-		end scope
-		copylets = 0
+		TEST( default )
+			CU_ASSERT( ctors = 0 )
+			CU_ASSERT( copyctors = 0 )
+			CU_ASSERT( lets = 0 )
 
-		scope
-			dim a as const UDT_ = ( 123 )
-			dim b as UDT_
-			CU_ASSERT( copylets = 0 )
+			dim as UDT x1, x2
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( copyctors = 0 )
+			CU_ASSERT( lets = 0 )
 
-			b = a
-			CU_ASSERT( copylets = 1 )
-		end scope
-	end sub
+			x2 = x1
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( copyctors = 0 )
+			CU_ASSERT( lets = 1 )
+		END_TEST
+	END_TEST_GROUP
 
-	operator UDT_.let( byref rhs as const UDT )
-		copylets += 1
-	end operator
-end namespace
+	TEST_GROUP( copyLetConstUdt )
+		dim shared as integer ctors, copyctors, lets
 
-namespace copyLetConstFwdref2
-	dim shared as integer copylets
+		type Nested
+			i as integer
+			declare constructor( )
+			declare constructor( byref rhs as const Nested )
+			declare operator let( byref rhs as const Nested )
+		end type
 
-	type UDT as UDT_
+		constructor Nested( )
+			ctors += 1
+		end constructor
 
-	type UDT_
-		i as integer
-		declare operator let( byref as const UDT )
-	end type
+		constructor Nested( byref rhs as const Nested )
+			copyctors += 1
+		end constructor
 
-	operator UDT_.let( byref rhs as const UDT )
-		copylets += 1
-	end operator
+		operator Nested.let( byref rhs as const Nested )
+			this.i = rhs.i
+			lets += 1
+		end operator
 
-	sub test cdecl( )
-		scope
-			dim as UDT_ a, b
-			CU_ASSERT( copylets = 0 )
+		type UDT
+			myfield as Nested
+		end type
 
-			b = a
-			CU_ASSERT( copylets = 1 )
-		end scope
-		copylets = 0
+		TEST( default )
+			CU_ASSERT( ctors = 0 )
+			CU_ASSERT( copyctors = 0 )
+			CU_ASSERT( lets = 0 )
 
-		scope
-			dim a as const UDT_ = ( 123 )
-			dim b as UDT_
-			CU_ASSERT( copylets = 0 )
+			dim as const UDT x1 = UDT( )
+			dim as UDT x2
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( copyctors = 0 )
+			CU_ASSERT( lets = 0 )
 
-			b = a
-			CU_ASSERT( copylets = 1 )
-		end scope
-	end sub
-end namespace
+			x2 = x1
+			CU_ASSERT( ctors = 2 )
+			CU_ASSERT( copyctors = 0 )
+			CU_ASSERT( lets = 1 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace virtualWithByvalSelfResult
-	'' An UDT with a virtual method that returns the UDT itself byval.
+	TEST_GROUP( copyLetString )
+		type UDT
+			s as string
+		end type
+
+		TEST( default )
+			dim as UDT x1, x2
+			x1.s = "abc"
+
+			x2 = x1
+			CU_ASSERT( x2.s = "abc" )
+
+			CU_ASSERT( strptr( x1.s ) <> strptr( x2.s ) )
+		END_TEST
+	END_TEST_GROUP
+
+	TEST_GROUP( copyLetConstString )
+		type UDT
+			s as string
+			declare constructor( byref as string )
+		end type
+
+		constructor UDT( byref s as string )
+			this.s = s
+		end constructor
+
+		TEST( default )
+			dim x1 as const UDT = UDT( "abc" )
+			CU_ASSERT( x1.s = "abc" )
+
+			dim x2 as UDT = UDT( "foo" )
+			CU_ASSERT( x2.s = "foo" )
+
+			x2 = x1
+			CU_ASSERT( x2.s = "abc" )
+
+			CU_ASSERT( strptr( x1.s ) <> strptr( x2.s ) )
+		END_TEST
+	END_TEST_GROUP
+
 	''
-	'' fbc must be careful to declare implicit members, calculate the UDT
-	'' return type, and implement implicit members in the right order,
-	'' otherwise some code (such as the function pointers for vtable slots)
-	'' may try to use the UDT return type while it's not known yet.
+	'' We have to detect copy-constructors or copy-LET-overloads even if their
+	'' parameter if a forward reference to the UDT, otherwise we'd add the implicit
+	'' copyctor/copylet despite the user-defined ones already being there, and then
+	'' we'd end up with duplicate definitions...
+	''
+	TEST_GROUP( copyCtorFwdref1 )
+		dim shared as integer copyctors
 
-	type UDT extends object
-		i as integer = 123
-		declare virtual function f() as UDT
-	end type
+		type UDT as UDT_
 
-	function UDT.f() as UDT
-		function = type()
-	end function
+		type UDT_
+			i as integer
+			declare constructor( )
+			declare constructor( byref as UDT )
+		end type
 
-	sub test cdecl( )
-		dim as UDT a, b
-		CU_ASSERT( a.i = 123 )
-		CU_ASSERT( b.i = 123 )
+		constructor UDT_( )
+		end constructor
 
-		a.i = 0
-		b.i = 0
-		CU_ASSERT( a.i = 0 )
-		CU_ASSERT( b.i = 0 )
+		TEST( default )
+			dim as UDT_ a
+			CU_ASSERT( copyctors = 0 )
 
-		b = a.f()
-		CU_ASSERT( a.i = 0 )
-		CU_ASSERT( b.i = 123 )
+			dim as UDT_ b = a
+			CU_ASSERT( copyctors = 1 )
+		END_TEST
 
-		a.i = 0
-		b.i = 0
-		CU_ASSERT( a.i = 0 )
-		CU_ASSERT( b.i = 0 )
+		constructor UDT_( byref rhs as UDT )
+			copyctors += 1
+		end constructor
+	END_TEST_GROUP
 
-		a = a.f()
-		CU_ASSERT( a.i = 123 )
-		CU_ASSERT( b.i = 0 )
-	end sub
-end namespace
+	TEST_GROUP( copyCtorFwdref2 )
+		dim shared as integer copyctors
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.structs.implicit-methods" )
+		type UDT as UDT_
 
-	fbcu.add_test( "copyCtorUdt"        , @copyCtorUdt.test )
-	fbcu.add_test( "copyCtorConstUdt"   , @copyCtorConstUdt.test )
-	fbcu.add_test( "copyCtorString"     , @copyCtorString.test )
-	fbcu.add_test( "copyCtorConstString", @copyCtorConstString.test )
+		type UDT_
+			i as integer
+			declare constructor( )
+			declare constructor( byref as UDT )
+		end type
 
-	fbcu.add_test( "copyLetUdt"        , @copyLetUdt.test )
-	fbcu.add_test( "copyLetConstUdt"   , @copyLetConstUdt.test )
-	fbcu.add_test( "copyLetString"     , @copyLetString.test )
-	fbcu.add_test( "copyLetConstString", @copyLetConstString.test )
+		constructor UDT_( )
+		end constructor
 
-	fbcu.add_test( "copyCtorFwdref1"     , @copyCtorFwdref1.test )
-	fbcu.add_test( "copyCtorFwdref2"     , @copyCtorFwdref2.test )
-	fbcu.add_test( "copyCtorConstFwdref1", @copyCtorConstFwdref1.test )
-	fbcu.add_test( "copyCtorConstFwdref2", @copyCtorConstFwdref2.test )
+		constructor UDT_( byref rhs as UDT )
+			copyctors += 1
+		end constructor
 
-	fbcu.add_test( "copyLetFwdref1"     , @copyLetFwdref1.test )
-	fbcu.add_test( "copyLetFwdref2"     , @copyLetFwdref2.test )
-	fbcu.add_test( "copyLetConstFwdref1", @copyLetConstFwdref1.test )
-	fbcu.add_test( "copyLetConstFwdref2", @copyLetConstFwdref2.test )
+		TEST( default )
+			dim as UDT_ a
+			CU_ASSERT( copyctors = 0 )
 
-	fbcu.add_test( "virtualWithByvalSelfResult", @virtualWithByvalSelfResult.test )
-end sub
+			dim as UDT_ b = a
+			CU_ASSERT( copyctors = 1 )
+		END_TEST
+	END_TEST_GROUP
 
-end namespace
+	TEST_GROUP( copyCtorConstFwdref1 )
+		dim shared as integer copyctors
+
+		type UDT as UDT_
+
+		type UDT_
+			i as integer
+			declare constructor( )
+			declare constructor( byref as const UDT )
+		end type
+
+		constructor UDT_( )
+		end constructor
+
+		TEST( default )
+			scope
+				dim as UDT_ a
+				CU_ASSERT( copyctors = 0 )
+
+				dim as UDT_ b = a
+				CU_ASSERT( copyctors = 1 )
+			end scope
+			copyctors = 0
+
+			scope
+				dim as const UDT_ a = UDT_( )
+				CU_ASSERT( copyctors = 0 )
+
+				dim as UDT_ b = a
+				CU_ASSERT( copyctors = 1 )
+			end scope
+		END_TEST
+
+		constructor UDT_( byref rhs as const UDT )
+			copyctors += 1
+		end constructor
+	END_TEST_GROUP
+
+	TEST_GROUP( copyCtorConstFwdref2 )
+		dim shared as integer copyctors
+
+		type UDT as UDT_
+
+		type UDT_
+			i as integer
+			declare constructor( )
+			declare constructor( byref as const UDT )
+		end type
+
+		constructor UDT_( )
+		end constructor
+
+		constructor UDT_( byref rhs as const UDT )
+			copyctors += 1
+		end constructor
+
+		TEST( default )
+			scope
+				dim as UDT_ a
+				CU_ASSERT( copyctors = 0 )
+
+				dim as UDT_ b = a
+				CU_ASSERT( copyctors = 1 )
+			end scope
+			copyctors = 0
+
+			scope
+				dim as const UDT_ a = UDT_( )
+				CU_ASSERT( copyctors = 0 )
+
+				dim as UDT_ b = a
+				CU_ASSERT( copyctors = 1 )
+			end scope
+		END_TEST
+	END_TEST_GROUP
+
+	TEST_GROUP( copyLetFwdref1 )
+		dim shared as integer copylets
+
+		type UDT as UDT_
+
+		type UDT_
+			i as integer
+			declare operator let( byref as UDT )
+		end type
+
+		TEST( default )
+			dim as UDT_ a, b
+			CU_ASSERT( copylets = 0 )
+
+			b = a
+			CU_ASSERT( copylets = 1 )
+		END_TEST
+
+		operator UDT_.let( byref rhs as UDT )
+			copylets += 1
+		end operator
+	END_TEST_GROUP
+
+	TEST_GROUP( copyLetFwdref2 )
+		dim shared as integer copylets
+
+		type UDT as UDT_
+
+		type UDT_
+			i as integer
+			declare operator let( byref as UDT )
+		end type
+
+		operator UDT_.let( byref rhs as UDT )
+			copylets += 1
+		end operator
+
+		TEST( default )
+			dim as UDT_ a, b
+			CU_ASSERT( copylets = 0 )
+
+			b = a
+			CU_ASSERT( copylets = 1 )
+		END_TEST
+	END_TEST_GROUP
+
+	TEST_GROUP( copyLetConstFwdref1 )
+		dim shared as integer copylets
+
+		type UDT as UDT_
+
+		type UDT_
+			i as integer
+			declare operator let( byref as const UDT )
+		end type
+
+		TEST( default )
+			scope
+				dim as UDT_ a, b
+				CU_ASSERT( copylets = 0 )
+
+				b = a
+				CU_ASSERT( copylets = 1 )
+			end scope
+			copylets = 0
+
+			scope
+				dim a as const UDT_ = ( 123 )
+				dim b as UDT_
+				CU_ASSERT( copylets = 0 )
+
+				b = a
+				CU_ASSERT( copylets = 1 )
+			end scope
+		END_TEST
+
+		operator UDT_.let( byref rhs as const UDT )
+			copylets += 1
+		end operator
+	END_TEST_GROUP
+
+	TEST_GROUP( copyLetConstFwdref2 )
+		dim shared as integer copylets
+
+		type UDT as UDT_
+
+		type UDT_
+			i as integer
+			declare operator let( byref as const UDT )
+		end type
+
+		operator UDT_.let( byref rhs as const UDT )
+			copylets += 1
+		end operator
+
+		TEST( default )
+			scope
+				dim as UDT_ a, b
+				CU_ASSERT( copylets = 0 )
+
+				b = a
+				CU_ASSERT( copylets = 1 )
+			end scope
+			copylets = 0
+
+			scope
+				dim a as const UDT_ = ( 123 )
+				dim b as UDT_
+				CU_ASSERT( copylets = 0 )
+
+				b = a
+				CU_ASSERT( copylets = 1 )
+			end scope
+		END_TEST
+	END_TEST_GROUP
+
+	TEST_GROUP( virtualWithByvalSelfResult )
+		'' An UDT with a virtual method that returns the UDT itself byval.
+		''
+		'' fbc must be careful to declare implicit members, calculate the UDT
+		'' return type, and implement implicit members in the right order,
+		'' otherwise some code (such as the function pointers for vtable slots)
+		'' may try to use the UDT return type while it's not known yet.
+
+		type UDT extends object
+			i as integer = 123
+			declare virtual function f() as UDT
+		end type
+
+		function UDT.f() as UDT
+			function = type()
+		end function
+
+		TEST( default )
+			dim as UDT a, b
+			CU_ASSERT( a.i = 123 )
+			CU_ASSERT( b.i = 123 )
+
+			a.i = 0
+			b.i = 0
+			CU_ASSERT( a.i = 0 )
+			CU_ASSERT( b.i = 0 )
+
+			b = a.f()
+			CU_ASSERT( a.i = 0 )
+			CU_ASSERT( b.i = 123 )
+
+			a.i = 0
+			b.i = 0
+			CU_ASSERT( a.i = 0 )
+			CU_ASSERT( b.i = 0 )
+
+			a = a.f()
+			CU_ASSERT( a.i = 123 )
+			CU_ASSERT( b.i = 0 )
+		END_TEST
+	END_TEST_GROUP
+
+END_SUITE

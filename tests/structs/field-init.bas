@@ -1,400 +1,395 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.field_init
+SUITE( fbc_tests.structs.field_init )
 
-namespace pod
-	type A
-		as integer i, j, k
-	end type
+	'' POD field init
+	TEST_GROUP( pod )
+		type A
+			as integer i, j, k
+		end type
 
-	type B
-		c as A = (1, 2, 3)
-		d as A = (4, 5, 6)
-	end type
+		type B
+			c as A = (1, 2, 3)
+			d as A = (4, 5, 6)
+		end type
 
-	type Integers
-		as integer a = 1, b = 2, c = 3
-	end type
+		type Integers
+			as integer a = 1, b = 2, c = 3
+		end type
 
-	private sub test cdecl( )
-		dim x as B
+		TEST( default )
+			dim x as B
 
-		CU_ASSERT( x.c.i = 1 )
-		CU_ASSERT( x.c.j = 2 )
-		CU_ASSERT( x.c.k = 3 )
+			CU_ASSERT( x.c.i = 1 )
+			CU_ASSERT( x.c.j = 2 )
+			CU_ASSERT( x.c.k = 3 )
 
-		CU_ASSERT( x.d.i = 4 )
-		CU_ASSERT( x.d.j = 5 )
-		CU_ASSERT( x.d.k = 6 )
+			CU_ASSERT( x.d.i = 4 )
+			CU_ASSERT( x.d.j = 5 )
+			CU_ASSERT( x.d.k = 6 )
 
-		dim as Integers ints
-		CU_ASSERT( ints.a = 1 )
-		CU_ASSERT( ints.b = 2 )
-		CU_ASSERT( ints.c = 3 )
-	end sub
-end namespace
+			dim as Integers ints
+			CU_ASSERT( ints.a = 1 )
+			CU_ASSERT( ints.b = 2 )
+			CU_ASSERT( ints.c = 3 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace complex
-	type A
-		as string s = "123"
-		declare constructor( )
-		declare constructor( byref as string )
-	end type
+	'' Complex field init
+	TEST_GROUP( complex )
+		type A
+			as string s = "123"
+			declare constructor( )
+			declare constructor( byref as string )
+		end type
 
-	constructor A( )
-	end constructor
+		constructor A( )
+		end constructor
 
-	constructor A( byref s as string )
-		this.s = s
-	end constructor
+		constructor A( byref s as string )
+			this.s = s
+		end constructor
 
-	type B
-		as A a = A( "456" )
-	end type
+		type B
+			as A a = A( "456" )
+		end type
 
-	private sub test cdecl( )
-		dim as A a1
-		CU_ASSERT( a1.s = "123" )
+		TEST( default )
+			dim as A a1
+			CU_ASSERT( a1.s = "123" )
 
-		dim as A a2 = A( "234" )
-		CU_ASSERT( a2.s = "234" )
+			dim as A a2 = A( "234" )
+			CU_ASSERT( a2.s = "234" )
 
-		dim as B b1
-		CU_ASSERT( b1.a.s = "456" )
-	end sub
-end namespace
+			dim as B b1
+			CU_ASSERT( b1.a.s = "456" )
+		END_TEST
+	END_TEST_GROUP
 
-namespace anyinit
-	dim shared as integer ctor_count
+	'' '= ANY' UDT field init
+	TEST_GROUP( anyInit )
+		dim shared as integer ctor_count
 
-	type Nested
-		as integer i
-		declare constructor( )
-	end type
+		type Nested
+			as integer i
+			declare constructor( )
+		end type
 
-	constructor Nested( )
-		ctor_count += 1
-	end constructor
+		constructor Nested( )
+			ctor_count += 1
+		end constructor
 
-	type Parent
-		as Nested nested = any
-		declare constructor( )
-	end type
+		type Parent
+			as Nested nested = any
+			declare constructor( )
+		end type
 
-	constructor Parent( )
-		CU_ASSERT( ctor_count = 0 )
-		nested.constructor( )
-		CU_ASSERT( ctor_count = 1 )
-	end constructor
+		constructor Parent( )
+			CU_ASSERT( ctor_count = 0 )
+			nested.constructor( )
+			CU_ASSERT( ctor_count = 1 )
+		end constructor
 
-	'' Even the =Any initializer should cause an implicit ctor to be added,
-	'' for consistency
-	type A
-		i as integer = any
-	end type
+		'' Even the =Any initializer should cause an implicit ctor to be added,
+		'' for consistency
+		type A
+			i as integer = any
+		end type
 
-	type B
-		i as integer = any
-		declare constructor( )
-	end type
+		type B
+			i as integer = any
+			declare constructor( )
+		end type
 
-	constructor B( )
-		i = 111
-	end constructor
+		constructor B( )
+			i = 111
+		end constructor
 
-	private sub test cdecl( )
-		CU_ASSERT( ctor_count = 0 )
-		dim as Parent x
-		CU_ASSERT( ctor_count = 1 )
+		TEST( default )
+			CU_ASSERT( ctor_count = 0 )
+			dim as Parent x
+			CU_ASSERT( ctor_count = 1 )
 
-		dim xa as A = A( )
+			dim xa as A = A( )
 
-		dim xb as B
-		CU_ASSERT( xb.i = 111 )
-	end sub
-end namespace
+			dim xb as B
+			CU_ASSERT( xb.i = 111 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace arrays
-	'' ubyte
-	const TEST_F1_0 = &h11
-	const TEST_F1_1 = &h12
-	const TEST_F1_2 = &h13
-
-	'' ushort
-	const TEST_F2_0 = &h2122
-	const TEST_F2_1 = &h2324
-	const TEST_F2_2 = &h2526
-
-	'' uinteger
-	const TEST_F3_0 = &h31323334
-	const TEST_F3_1 = &h35363738
-
-	'' uinteger
-	const TEST_F4_1 = &h41424344
-	const TEST_F4_2 = &h45464748
-
-	'' string
-	const TEST_F5_0 = "First"
-	const TEST_F5_1 = "Second"
-
-	type foo field = 1
-		pad as integer = 1234
-		f1(0 to 2) as ubyte = { TEST_F1_0, TEST_F1_1, TEST_F1_2 }
-		f2(0 to 2) as ushort = { TEST_F2_0, TEST_F2_1, TEST_F2_2 }
-		f3(0 to 1) as uinteger = { TEST_F3_0, TEST_F3_1 }
-		f4(1 to 2) as uinteger = { TEST_F4_1, TEST_F4_2 }
-		f5(0 to 1) as string = { TEST_F5_0, TEST_F5_1 }
-	end type
-
-	type bar field = 1
-		f1 as ubyte
-		f2 as ushort
-		f3 as uinteger
-	end type
-
-	type baz field = 1
-		pad as integer = 5678
-		b1( 0 to 1 ) as bar = { _
-			(TEST_F1_0, TEST_F2_0, TEST_F3_0), _
-			(TEST_F1_1, TEST_F2_1, TEST_F3_1) _
-		}
-		b2( 0 to 1 ) as bar = { _
-			(TEST_F1_1, TEST_F2_1, TEST_F3_1),_
-			(TEST_F1_0, TEST_F2_0, TEST_F3_0) _
-		}
-	end type
-
-	private sub test1 cdecl( )
-		dim f as foo
-
-		CU_ASSERT_EQUAL( f.pad, 1234 )
-
+	'' arrays
+	TEST_GROUP( arrays )
 		'' ubyte
-		CU_ASSERT_EQUAL( f.f1(0), TEST_F1_0 )
-		CU_ASSERT_EQUAL( f.f1(1), TEST_F1_1 )
-		CU_ASSERT_EQUAL( f.f1(2), TEST_F1_2 )
+		const TEST_F1_0 = &h11
+		const TEST_F1_1 = &h12
+		const TEST_F1_2 = &h13
 
 		'' ushort
-		CU_ASSERT_EQUAL( f.f2(0), TEST_F2_0 )
-		CU_ASSERT_EQUAL( f.f2(1), TEST_F2_1 )
-		CU_ASSERT_EQUAL( f.f2(2), TEST_F2_2 )
+		const TEST_F2_0 = &h2122
+		const TEST_F2_1 = &h2324
+		const TEST_F2_2 = &h2526
 
 		'' uinteger
-		CU_ASSERT_EQUAL( f.f3(0), TEST_F3_0 )
-		CU_ASSERT_EQUAL( f.f3(1), TEST_F3_1 )
+		const TEST_F3_0 = &h31323334
+		const TEST_F3_1 = &h35363738
 
 		'' uinteger
-		CU_ASSERT_EQUAL( f.f4(1), TEST_F4_1 )
-		CU_ASSERT_EQUAL( f.f4(2), TEST_F4_2 )
+		const TEST_F4_1 = &h41424344
+		const TEST_F4_2 = &h45464748
 
-		''string
-		CU_ASSERT_EQUAL( f.f5(0), TEST_F5_0 )
-		CU_ASSERT_EQUAL( f.f5(1), TEST_F5_1 )
-	end sub
+		'' string
+		const TEST_F5_0 = "First"
+		const TEST_F5_1 = "Second"
 
-	private sub test2 cdecl( )
-		dim f as baz
+		type foo field = 1
+			pad as integer = 1234
+			f1(0 to 2) as ubyte = { TEST_F1_0, TEST_F1_1, TEST_F1_2 }
+			f2(0 to 2) as ushort = { TEST_F2_0, TEST_F2_1, TEST_F2_2 }
+			f3(0 to 1) as uinteger = { TEST_F3_0, TEST_F3_1 }
+			f4(1 to 2) as uinteger = { TEST_F4_1, TEST_F4_2 }
+			f5(0 to 1) as string = { TEST_F5_0, TEST_F5_1 }
+		end type
 
-		CU_ASSERT_EQUAL( f.pad, 5678 )
+		type bar field = 1
+			f1 as ubyte
+			f2 as ushort
+			f3 as uinteger
+		end type
 
-		CU_ASSERT_EQUAL( f.b1(0).f1, TEST_F1_0 )
-		CU_ASSERT_EQUAL( f.b1(0).f2, TEST_F2_0 )
-		CU_ASSERT_EQUAL( f.b1(0).f3, TEST_F3_0 )
+		type baz field = 1
+			pad as integer = 5678
+			b1( 0 to 1 ) as bar = { _
+				(TEST_F1_0, TEST_F2_0, TEST_F3_0), _
+				(TEST_F1_1, TEST_F2_1, TEST_F3_1) _
+			}
+			b2( 0 to 1 ) as bar = { _
+				(TEST_F1_1, TEST_F2_1, TEST_F3_1),_
+				(TEST_F1_0, TEST_F2_0, TEST_F3_0) _
+			}
+		end type
 
-		CU_ASSERT_EQUAL( f.b1(1).f1, TEST_F1_1 )
-		CU_ASSERT_EQUAL( f.b1(1).f2, TEST_F2_1 )
-		CU_ASSERT_EQUAL( f.b1(1).f3, TEST_F3_1 )
+		TEST( array1 )
+			dim f as foo
 
-		CU_ASSERT_EQUAL( f.b2(0).f1, TEST_F1_1 )
-		CU_ASSERT_EQUAL( f.b2(0).f2, TEST_F2_1 )
-		CU_ASSERT_EQUAL( f.b2(0).f3, TEST_F3_1 )
+			CU_ASSERT_EQUAL( f.pad, 1234 )
 
-		CU_ASSERT_EQUAL( f.b2(1).f1, TEST_F1_0 )
-		CU_ASSERT_EQUAL( f.b2(1).f2, TEST_F2_0 )
-		CU_ASSERT_EQUAL( f.b2(1).f3, TEST_F3_0 )
-	end sub
-end namespace
+			'' ubyte
+			CU_ASSERT_EQUAL( f.f1(0), TEST_F1_0 )
+			CU_ASSERT_EQUAL( f.f1(1), TEST_F1_1 )
+			CU_ASSERT_EQUAL( f.f1(2), TEST_F1_2 )
 
-namespace nestedArrays
-	'' ubyte
-	const TEST_F1_0 = &h11
-	const TEST_F1_1 = &h12
-	const TEST_F1_2 = &h13
+			'' ushort
+			CU_ASSERT_EQUAL( f.f2(0), TEST_F2_0 )
+			CU_ASSERT_EQUAL( f.f2(1), TEST_F2_1 )
+			CU_ASSERT_EQUAL( f.f2(2), TEST_F2_2 )
 
-	'' ushort
-	const TEST_F2_0 = &h2122
-	const TEST_F2_1 = &h2324
-	const TEST_F2_2 = &h2526
+			'' uinteger
+			CU_ASSERT_EQUAL( f.f3(0), TEST_F3_0 )
+			CU_ASSERT_EQUAL( f.f3(1), TEST_F3_1 )
 
-	'' uinteger
-	const TEST_F3_0 = &h31323334
-	const TEST_F3_1 = &h35363738
+			'' uinteger
+			CU_ASSERT_EQUAL( f.f4(1), TEST_F4_1 )
+			CU_ASSERT_EQUAL( f.f4(2), TEST_F4_2 )
 
-	type foo field = 1
-		pad as integer
-		f1(0 to 2) as ubyte 
-		f2(0 to 2) as ushort 
-		f3(0 to 1) as uinteger 
-	end type
+			''string
+			CU_ASSERT_EQUAL( f.f5(0), TEST_F5_0 )
+			CU_ASSERT_EQUAL( f.f5(1), TEST_F5_1 )
+		END_TEST
 
-	type bar field = 1
-		pad as integer
-		f(0 to 1) as foo
-	end type
+		TEST( array2 )
+			dim f as baz
 
-	type foobar field = 1
-		pad as integer = 1234
-		b( 0 to 1 ) as bar = { _
-			/' b(0) '/ _
-			( _
-				/' pad '/ _
-				111, _
-				{ _
-					/' f(0) '/ _
-					( 222, _
-						{ TEST_F1_0, TEST_F1_1, TEST_F1_2 }, _
-						{ TEST_F2_0, TEST_F2_1, TEST_F2_2 }, _
-						{ TEST_F3_0, TEST_F3_1 } _
-					), _
-					/' f(1) '/ _
-					( 333, _
-						{ TEST_F1_0 + 1, TEST_F1_1 + 1, TEST_F1_2 + 1 }, _
-						{ TEST_F2_0 + 1, TEST_F2_1 + 1, TEST_F2_2 + 1 }, _
-						{ TEST_F3_0 + 1, TEST_F3_1 + 1 } _
-					) _
-				} _
-			), _
-			/' b(1) '/ _
-			( _
-				/' pad '/ _
-				444, _
-				{ _
-					/' f(0) '/ _
-					( 555, _
-						{ TEST_F1_0 + 2, TEST_F1_1 + 2, TEST_F1_2 + 2 }, _
-						{ TEST_F2_0 + 2, TEST_F2_1 + 2, TEST_F2_2 + 2 }, _
-						{ TEST_F3_0 + 2, TEST_F3_1 + 2 } _
-					), _
-					/' f(1) '/ _
-					( 666, _
-						{ TEST_F1_0 + 3, TEST_F1_1 + 3, TEST_F1_2 + 3 }, _
-						{ TEST_F2_0 + 3, TEST_F2_1 + 3, TEST_F2_2 + 3 }, _
-						{ TEST_F3_0 + 3, TEST_F3_1 + 3 } _
-					) _
-				} _
-			) _
-		}
-	end type
+			CU_ASSERT_EQUAL( f.pad, 5678 )
 
-	private sub test cdecl( )
-		dim f as foobar
+			CU_ASSERT_EQUAL( f.b1(0).f1, TEST_F1_0 )
+			CU_ASSERT_EQUAL( f.b1(0).f2, TEST_F2_0 )
+			CU_ASSERT_EQUAL( f.b1(0).f3, TEST_F3_0 )
 
-		CU_ASSERT_EQUAL( f.pad            , 1234 )
+			CU_ASSERT_EQUAL( f.b1(1).f1, TEST_F1_1 )
+			CU_ASSERT_EQUAL( f.b1(1).f2, TEST_F2_1 )
+			CU_ASSERT_EQUAL( f.b1(1).f3, TEST_F3_1 )
 
-		'' --- b(0)
+			CU_ASSERT_EQUAL( f.b2(0).f1, TEST_F1_1 )
+			CU_ASSERT_EQUAL( f.b2(0).f2, TEST_F2_1 )
+			CU_ASSERT_EQUAL( f.b2(0).f3, TEST_F3_1 )
 
-		CU_ASSERT_EQUAL( f.b(0).pad       , 111 )
+			CU_ASSERT_EQUAL( f.b2(1).f1, TEST_F1_0 )
+			CU_ASSERT_EQUAL( f.b2(1).f2, TEST_F2_0 )
+			CU_ASSERT_EQUAL( f.b2(1).f3, TEST_F3_0 )
+		END_TEST
+	END_TEST_GROUP
 
-		'' --- b(0).f(0)
-		CU_ASSERT_EQUAL( f.b(0).f(0).pad  , 222 )
-
+	'' Nested arrays
+	TEST_GROUP( nestedArrays )
 		'' ubyte
-		CU_ASSERT_EQUAL( f.b(0).f(0).f1(0), TEST_F1_0 )
-		CU_ASSERT_EQUAL( f.b(0).f(0).f1(1), TEST_F1_1 )
-		CU_ASSERT_EQUAL( f.b(0).f(0).f1(2), TEST_F1_2 )
+		const TEST_F1_0 = &h11
+		const TEST_F1_1 = &h12
+		const TEST_F1_2 = &h13
 
 		'' ushort
-		CU_ASSERT_EQUAL( f.b(0).f(0).f2(0), TEST_F2_0 )
-		CU_ASSERT_EQUAL( f.b(0).f(0).f2(1), TEST_F2_1 )
-		CU_ASSERT_EQUAL( f.b(0).f(0).f2(2), TEST_F2_2 )
+		const TEST_F2_0 = &h2122
+		const TEST_F2_1 = &h2324
+		const TEST_F2_2 = &h2526
 
 		'' uinteger
-		CU_ASSERT_EQUAL( f.b(0).f(0).f3(0), TEST_F3_0 )
-		CU_ASSERT_EQUAL( f.b(0).f(0).f3(1), TEST_F3_1 )
+		const TEST_F3_0 = &h31323334
+		const TEST_F3_1 = &h35363738
 
-		'' --- b(0).f(1)
-		CU_ASSERT_EQUAL( f.b(0).f(1).pad  , 333 )
+		type foo field = 1
+			pad as integer
+			f1(0 to 2) as ubyte 
+			f2(0 to 2) as ushort 
+			f3(0 to 1) as uinteger 
+		end type
 
-		'' ubyte
-		CU_ASSERT_EQUAL( f.b(0).f(1).f1(0), TEST_F1_0 + 1 )
-		CU_ASSERT_EQUAL( f.b(0).f(1).f1(1), TEST_F1_1 + 1 )
-		CU_ASSERT_EQUAL( f.b(0).f(1).f1(2), TEST_F1_2 + 1 )
+		type bar field = 1
+			pad as integer
+			f(0 to 1) as foo
+		end type
 
-		'' ushort
-		CU_ASSERT_EQUAL( f.b(0).f(1).f2(0), TEST_F2_0 + 1 )
-		CU_ASSERT_EQUAL( f.b(0).f(1).f2(1), TEST_F2_1 + 1 )
-		CU_ASSERT_EQUAL( f.b(0).f(1).f2(2), TEST_F2_2 + 1 )
+		type foobar field = 1
+			pad as integer = 1234
+			b( 0 to 1 ) as bar = { _
+				/' b(0) '/ _
+				( _
+					/' pad '/ _
+					111, _
+					{ _
+						/' f(0) '/ _
+						( 222, _
+							{ TEST_F1_0, TEST_F1_1, TEST_F1_2 }, _
+							{ TEST_F2_0, TEST_F2_1, TEST_F2_2 }, _
+							{ TEST_F3_0, TEST_F3_1 } _
+						), _
+						/' f(1) '/ _
+						( 333, _
+							{ TEST_F1_0 + 1, TEST_F1_1 + 1, TEST_F1_2 + 1 }, _
+							{ TEST_F2_0 + 1, TEST_F2_1 + 1, TEST_F2_2 + 1 }, _
+							{ TEST_F3_0 + 1, TEST_F3_1 + 1 } _
+						) _
+					} _
+				), _
+				/' b(1) '/ _
+				( _
+					/' pad '/ _
+					444, _
+					{ _
+						/' f(0) '/ _
+						( 555, _
+							{ TEST_F1_0 + 2, TEST_F1_1 + 2, TEST_F1_2 + 2 }, _
+							{ TEST_F2_0 + 2, TEST_F2_1 + 2, TEST_F2_2 + 2 }, _
+							{ TEST_F3_0 + 2, TEST_F3_1 + 2 } _
+						), _
+						/' f(1) '/ _
+						( 666, _
+							{ TEST_F1_0 + 3, TEST_F1_1 + 3, TEST_F1_2 + 3 }, _
+							{ TEST_F2_0 + 3, TEST_F2_1 + 3, TEST_F2_2 + 3 }, _
+							{ TEST_F3_0 + 3, TEST_F3_1 + 3 } _
+						) _
+					} _
+				) _
+			}
+		end type
 
-		'' uinteger
-		CU_ASSERT_EQUAL( f.b(0).f(1).f3(0), TEST_F3_0 + 1 )
-		CU_ASSERT_EQUAL( f.b(0).f(1).f3(1), TEST_F3_1 + 1 )
+		TEST( default )
+			dim f as foobar
 
-		'' --- b(1)
+			CU_ASSERT_EQUAL( f.pad            , 1234 )
 
-		CU_ASSERT_EQUAL( f.b(1).pad       , 444 )
+			'' --- b(0)
 
-		'' --- b(1).f(0)
-		CU_ASSERT_EQUAL( f.b(1).f(0).pad  , 555 )
+			CU_ASSERT_EQUAL( f.b(0).pad       , 111 )
 
-		'' ubyte
-		CU_ASSERT_EQUAL( f.b(1).f(0).f1(0), TEST_F1_0 + 2 )
-		CU_ASSERT_EQUAL( f.b(1).f(0).f1(1), TEST_F1_1 + 2 )
-		CU_ASSERT_EQUAL( f.b(1).f(0).f1(2), TEST_F1_2 + 2 )
+			'' --- b(0).f(0)
+			CU_ASSERT_EQUAL( f.b(0).f(0).pad  , 222 )
 
-		'' ushort
-		CU_ASSERT_EQUAL( f.b(1).f(0).f2(0), TEST_F2_0 + 2 )
-		CU_ASSERT_EQUAL( f.b(1).f(0).f2(1), TEST_F2_1 + 2 )
-		CU_ASSERT_EQUAL( f.b(1).f(0).f2(2), TEST_F2_2 + 2 )
+			'' ubyte
+			CU_ASSERT_EQUAL( f.b(0).f(0).f1(0), TEST_F1_0 )
+			CU_ASSERT_EQUAL( f.b(0).f(0).f1(1), TEST_F1_1 )
+			CU_ASSERT_EQUAL( f.b(0).f(0).f1(2), TEST_F1_2 )
 
-		'' uinteger
-		CU_ASSERT_EQUAL( f.b(1).f(0).f3(0), TEST_F3_0 + 2 )
-		CU_ASSERT_EQUAL( f.b(1).f(0).f3(1), TEST_F3_1 + 2 )
+			'' ushort
+			CU_ASSERT_EQUAL( f.b(0).f(0).f2(0), TEST_F2_0 )
+			CU_ASSERT_EQUAL( f.b(0).f(0).f2(1), TEST_F2_1 )
+			CU_ASSERT_EQUAL( f.b(0).f(0).f2(2), TEST_F2_2 )
 
-		'' --- b(1).f(1)
-		CU_ASSERT_EQUAL( f.b(1).f(1).pad  , 666 )
+			'' uinteger
+			CU_ASSERT_EQUAL( f.b(0).f(0).f3(0), TEST_F3_0 )
+			CU_ASSERT_EQUAL( f.b(0).f(0).f3(1), TEST_F3_1 )
 
-		'' ubyte
-		CU_ASSERT_EQUAL( f.b(1).f(1).f1(0), TEST_F1_0 + 3 )
-		CU_ASSERT_EQUAL( f.b(1).f(1).f1(1), TEST_F1_1 + 3 )
-		CU_ASSERT_EQUAL( f.b(1).f(1).f1(2), TEST_F1_2 + 3 )
+			'' --- b(0).f(1)
+			CU_ASSERT_EQUAL( f.b(0).f(1).pad  , 333 )
 
-		'' ushort
-		CU_ASSERT_EQUAL( f.b(1).f(1).f2(0), TEST_F2_0 + 3 )
-		CU_ASSERT_EQUAL( f.b(1).f(1).f2(1), TEST_F2_1 + 3 )
-		CU_ASSERT_EQUAL( f.b(1).f(1).f2(2), TEST_F2_2 + 3 )
+			'' ubyte
+			CU_ASSERT_EQUAL( f.b(0).f(1).f1(0), TEST_F1_0 + 1 )
+			CU_ASSERT_EQUAL( f.b(0).f(1).f1(1), TEST_F1_1 + 1 )
+			CU_ASSERT_EQUAL( f.b(0).f(1).f1(2), TEST_F1_2 + 1 )
 
-		'' uinteger
-		CU_ASSERT_EQUAL( f.b(1).f(1).f3(0), TEST_F3_0 + 3 )
-		CU_ASSERT_EQUAL( f.b(1).f(1).f3(1), TEST_F3_1 + 3 )
-	end sub
-end namespace
+			'' ushort
+			CU_ASSERT_EQUAL( f.b(0).f(1).f2(0), TEST_F2_0 + 1 )
+			CU_ASSERT_EQUAL( f.b(0).f(1).f2(1), TEST_F2_1 + 1 )
+			CU_ASSERT_EQUAL( f.b(0).f(1).f2(2), TEST_F2_2 + 1 )
 
-namespace strings
-	type A
-		as string i = "123", j = "abcde", k = wstr( "fOoBaR" )
-	end type
+			'' uinteger
+			CU_ASSERT_EQUAL( f.b(0).f(1).f3(0), TEST_F3_0 + 1 )
+			CU_ASSERT_EQUAL( f.b(0).f(1).f3(1), TEST_F3_1 + 1 )
 
-	type B
-		c as A
-	end type
+			'' --- b(1)
 
-	private sub test cdecl( )
-		dim x as B
-		CU_ASSERT( x.c.i = "123" )
-		CU_ASSERT( x.c.j = "abcde" )
-		CU_ASSERT( x.c.k = "fOoBaR" )
-	end sub
-end namespace
+			CU_ASSERT_EQUAL( f.b(1).pad       , 444 )
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.structs.field-init")
-	fbcu.add_test( "POD field init", @pod.test )
-	fbcu.add_test( "Complex field init", @complex.test )
-	fbcu.add_test( "'= ANY' UDT field init", @anyinit.test )
-	fbcu.add_test( "Arrays #1", @arrays.test1 )
-	fbcu.add_test( "Arrays #2", @arrays.test2 )
-	fbcu.add_test( "Nested arrays", @nestedArrays.test )
-	fbcu.add_test( "String field init", @strings.test )
-end sub
+			'' --- b(1).f(0)
+			CU_ASSERT_EQUAL( f.b(1).f(0).pad  , 555 )
 
-end namespace
+			'' ubyte
+			CU_ASSERT_EQUAL( f.b(1).f(0).f1(0), TEST_F1_0 + 2 )
+			CU_ASSERT_EQUAL( f.b(1).f(0).f1(1), TEST_F1_1 + 2 )
+			CU_ASSERT_EQUAL( f.b(1).f(0).f1(2), TEST_F1_2 + 2 )
+
+			'' ushort
+			CU_ASSERT_EQUAL( f.b(1).f(0).f2(0), TEST_F2_0 + 2 )
+			CU_ASSERT_EQUAL( f.b(1).f(0).f2(1), TEST_F2_1 + 2 )
+			CU_ASSERT_EQUAL( f.b(1).f(0).f2(2), TEST_F2_2 + 2 )
+
+			'' uinteger
+			CU_ASSERT_EQUAL( f.b(1).f(0).f3(0), TEST_F3_0 + 2 )
+			CU_ASSERT_EQUAL( f.b(1).f(0).f3(1), TEST_F3_1 + 2 )
+
+			'' --- b(1).f(1)
+			CU_ASSERT_EQUAL( f.b(1).f(1).pad  , 666 )
+
+			'' ubyte
+			CU_ASSERT_EQUAL( f.b(1).f(1).f1(0), TEST_F1_0 + 3 )
+			CU_ASSERT_EQUAL( f.b(1).f(1).f1(1), TEST_F1_1 + 3 )
+			CU_ASSERT_EQUAL( f.b(1).f(1).f1(2), TEST_F1_2 + 3 )
+
+			'' ushort
+			CU_ASSERT_EQUAL( f.b(1).f(1).f2(0), TEST_F2_0 + 3 )
+			CU_ASSERT_EQUAL( f.b(1).f(1).f2(1), TEST_F2_1 + 3 )
+			CU_ASSERT_EQUAL( f.b(1).f(1).f2(2), TEST_F2_2 + 3 )
+
+			'' uinteger
+			CU_ASSERT_EQUAL( f.b(1).f(1).f3(0), TEST_F3_0 + 3 )
+			CU_ASSERT_EQUAL( f.b(1).f(1).f3(1), TEST_F3_1 + 3 )
+		END_TEST
+	END_TEST_GROUP
+
+	'' String field init
+	TEST_GROUP( strings )
+		type A
+			as string i = "123", j = "abcde", k = wstr( "fOoBaR" )
+		end type
+
+		type B
+			c as A
+		end type
+
+		TEST( default )
+			dim x as B
+			CU_ASSERT( x.c.i = "123" )
+			CU_ASSERT( x.c.j = "abcde" )
+			CU_ASSERT( x.c.k = "fOoBaR" )
+		END_TEST
+	END_TEST_GROUP
+
+END_SUITE

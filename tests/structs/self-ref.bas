@@ -1,26 +1,21 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.selfref
+SUITE( fbc_tests.structs.selfref )
 
-'' C backend regression test
-type T
-	as T ptr ptr ptr ppp
-	as integer a
-end type
+	'' C backend regression test
+	type T
+		as T ptr ptr ptr ppp
+		as integer a
+	end type
 
-sub test cdecl( )
-	dim as T x
-	dim as T ptr p = @x
-	dim as T ptr ptr pp = @p
-	x.ppp = @pp
-	x.a = 123
+	TEST( all )
+		dim as T x
+		dim as T ptr p = @x
+		dim as T ptr ptr pp = @p
+		x.ppp = @pp
+		x.a = 123
 
-	CU_ASSERT( (**x.ppp)->a = 123 )
-end sub
+		CU_ASSERT( (**x.ppp)->a = 123 )
+	END_TEST
 
-private sub ctor( ) constructor
-	fbcu.add_suite("fbc_tests.structs.self-ref")
-	fbcu.add_test( "test", @test )
-end sub
-
-end namespace
+END_SUITE

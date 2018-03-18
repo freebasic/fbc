@@ -1,73 +1,66 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.obj_property_idx
+SUITE( fbc_tests.structs.obj_property_idx )
 
-type foo
-	dim as integer __bar(0 to 9)
-	declare property bar(index as integer) as integer
-	declare property bar(index as string) as integer
-	declare property bar(index as integer, value as integer)
-	declare property bar(index as string, value as integer)
-	declare property bar(index as integer, value as string)
-	declare property bar(index as string, value as string)
-end type
+	type foo
+		dim as integer __bar(0 to 9)
+		declare property bar(index as integer) as integer
+		declare property bar(index as string) as integer
+		declare property bar(index as integer, value as integer)
+		declare property bar(index as string, value as integer)
+		declare property bar(index as integer, value as string)
+		declare property bar(index as string, value as string)
+	end type
 
-property foo.bar(index as integer) as integer
+	property foo.bar(index as integer) as integer
 
-	return __bar(index)
+		return __bar(index)
 
-end property
+	end property
 
-property foo.bar(index as string) as integer
+	property foo.bar(index as string) as integer
 
-	return __bar(cint(index))
+		return __bar(cint(index))
 
-end property
+	end property
 
-property foo.bar(index as integer, value as integer)
+	property foo.bar(index as integer, value as integer)
 
-	__bar(index) = value
+		__bar(index) = value
 
-end property
+	end property
 
-property foo.bar(index as string, value as integer)
+	property foo.bar(index as string, value as integer)
 
-	__bar(cint(index)) = value
+		__bar(cint(index)) = value
 
-end property
+	end property
 
-property foo.bar(index as integer, value as string)
+	property foo.bar(index as integer, value as string)
 
-	__bar(index) = cint(value)
+		__bar(index) = cint(value)
 
-end property
+	end property
 
-property foo.bar(index as string, value as string)
+	property foo.bar(index as string, value as string)
 
-	__bar(cint(index)) = cint(value)
+		__bar(cint(index)) = cint(value)
 
-end property
+	end property
 
-sub test cdecl
-	dim f as foo
-	
-	f.bar(0) = 1234
-	f.bar("1") = 5678
-	f.bar(2) = "-1234"
-	f.bar("3") = "-5678"
+	TEST( all )
+		dim f as foo
+		
+		f.bar(0) = 1234
+		f.bar("1") = 5678
+		f.bar(2) = "-1234"
+		f.bar("3") = "-5678"
 
-	CU_ASSERT_EQUAL( f.bar(0), 1234 )
-	CU_ASSERT_EQUAL( f.bar("1"), 5678 )
-	CU_ASSERT_EQUAL( f.bar(2), -1234 )
-	CU_ASSERT_EQUAL( f.bar("3"), -5678 )
-	
-end sub
+		CU_ASSERT_EQUAL( f.bar(0), 1234 )
+		CU_ASSERT_EQUAL( f.bar("1"), 5678 )
+		CU_ASSERT_EQUAL( f.bar(2), -1234 )
+		CU_ASSERT_EQUAL( f.bar("3"), -5678 )
+		
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.structs.obj_property_idx")
-	fbcu.add_test( "test", @test)
-
-end sub
-	
-end namespace		
+END_SUITE

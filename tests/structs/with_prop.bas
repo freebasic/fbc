@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.with_prop
+SUITE( fbc_tests.structs.with_prop )
 
 	type foo
 	
@@ -19,7 +19,8 @@ namespace fbc_tests.structs.with_prop
 		this.core = i
 	end property
 	
-	sub test_stuff cdecl( )
+	'' properties and with
+	TEST( properties )
 		dim as foo bar
 		bar.the_pointer = new foo
 		with *( bar.the_pointer )
@@ -27,13 +28,6 @@ namespace fbc_tests.structs.with_prop
 			delete .the_pointer
 		end with
 		delete bar.the_pointer
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.structs.with_prop")
-		fbcu.add_test("properties and with", @test_stuff)
-	
-	end sub
-
-end namespace
+END_SUITE
