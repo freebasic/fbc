@@ -1,15 +1,15 @@
 '' UDT params (because they are/were treated differently than non-UDT params
 '' by the initializer expression parser)
 
-namespace anon
+TEST_GROUP( PARAM_NS.anon )
 	sub tester( PARAM_MODE x as UDT = type<UDT>( 123 ) )
 		CU_ASSERT( x.i = 123 )
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace global
+TEST_GROUP( PARAM_NS.global )
 	dim shared globalx as UDT = ( 123 )
 
 	sub tester( PARAM_MODE x as UDT = globalx )
@@ -17,9 +17,9 @@ namespace global
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace addrofGlobal
+TEST_GROUP( PARAM_NS.addrofGlobal )
 	dim shared globalx as UDT = ( 456 )
 
 	sub tester( PARAM_MODE px as UDT ptr = @globalx )
@@ -27,9 +27,9 @@ namespace addrofGlobal
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callResultUdt
+TEST_GROUP( PARAM_NS.callResultUdt )
 	'' UDT result temp var (function returns result on stack)
 
 	function f( ) as BigUDT
@@ -41,9 +41,9 @@ namespace callResultUdt
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgIif
+TEST_GROUP( PARAM_NS.callArgIif )
 	'' iif() temp var
 	function f( byval i as integer ) as UDT
 		function = type( i )
@@ -54,9 +54,9 @@ namespace callArgIif
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgByrefConstant
+TEST_GROUP( PARAM_NS.callArgByrefConstant )
 	'' temp var to hold constants passed to byref params
 	function f( byref i as integer ) as UDT
 		function = type( i )
@@ -67,9 +67,9 @@ namespace callArgByrefConstant
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgByvalNonTrivialUDT
+TEST_GROUP( PARAM_NS.callArgByvalNonTrivialUDT )
 	'' When passing an UDT with dtor/copyctor/virtual members BYVAL,
 	'' there will actually be a temp var created which is passed BYREF
 	'' implicitly as in C++.
@@ -86,9 +86,9 @@ namespace callArgByvalNonTrivialUDT
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgBydescStatic
+TEST_GROUP( PARAM_NS.callArgBydescStatic )
 	'' temp array descriptor when passing static array BYDESC
 	dim shared as integer globalarray(0 to 3) = { 1, 2, 3, 4 }
 
@@ -101,9 +101,9 @@ namespace callArgBydescStatic
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgBydescField
+TEST_GROUP( PARAM_NS.callArgBydescField )
 	'' temp array descriptor when passing field array BYDESC
 
 	type ArrayFieldUDT
@@ -121,9 +121,9 @@ namespace callArgBydescField
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgStringLiteral
+TEST_GROUP( PARAM_NS.callArgStringLiteral )
 	'' temp string when passing a literal to a BYREF AS STRING
 	dim shared as integer calls
 
@@ -136,9 +136,9 @@ namespace callArgStringLiteral
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgIntResultInRegsToByref
+TEST_GROUP( PARAM_NS.callArgIntResultInRegsToByref )
 	'' When passing a function returning a value in registers to a BYREF
 	'' param, a temp var is created to be able to do addrof for the BYREF.
 
@@ -157,9 +157,9 @@ namespace callArgIntResultInRegsToByref
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgUdtResultInRegsToByref
+TEST_GROUP( PARAM_NS.callArgUdtResultInRegsToByref )
 	'' Same, but with UDT result in regs, being passed to a BYREF param
 
 	function f1( ) as UDT
@@ -175,9 +175,9 @@ namespace callArgUdtResultInRegsToByref
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace ptrchk
+TEST_GROUP( PARAM_NS.ptrchk )
 	'' PTRCHKs (under -exx) use temp vars too
 	dim shared as UDT globalx = ( 456 )
 	dim shared as UDT ptr globalpx = @globalx
@@ -187,9 +187,9 @@ namespace ptrchk
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace boundchk
+TEST_GROUP( PARAM_NS.boundchk )
 	'' BOUNDCHKs, ditto
 	dim shared as UDT globalxarray(0 to 1) = { ( 12 ), ( 34 ) }
 	dim shared as integer globali = 1
@@ -199,9 +199,9 @@ namespace boundchk
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace ctors1
+TEST_GROUP( PARAM_NS.ctors1 )
 	type UDT1
 		i as integer
 		declare constructor( PARAM_MODE i as integer = 123 )
@@ -237,9 +237,9 @@ namespace ctors1
 
 	dim shared p as UDT3 ptr
 	hScopeChecks( p = new UDT3 : CU_ASSERT( p->x2.x1.i = 789 ) : delete p : p = NULL )
-end namespace
+END_TEST_GROUP
 
-namespace ctors2
+TEST_GROUP( PARAM_NS.ctors2 )
 	'' Same as ctors1 but with the param initializer expressions on both
 	'' ctor declarations and bodies
 
@@ -278,9 +278,9 @@ namespace ctors2
 
 	dim shared p as UDT3 ptr
 	hScopeChecks( p = new UDT3 : CU_ASSERT( p->x2.x1.i = 789 ) : delete p : p = NULL )
-end namespace
+END_TEST_GROUP
 
-namespace ctors5
+TEST_GROUP( PARAM_NS.ctors5 )
 	type UDT
 		dummy as integer
 		declare constructor( )
@@ -304,9 +304,9 @@ namespace ctors5
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace ctorTempArrayDesc
+TEST_GROUP( PARAM_NS.ctorTempArrayDesc )
 	type BydescCtorUDT
 		declare constructor( array() as integer )
 		dummy as integer
@@ -327,9 +327,9 @@ namespace ctorTempArrayDesc
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace vectorNewCtorList
+TEST_GROUP( PARAM_NS.vectorNewCtorList )
 	dim shared as integer calls
 
 	function sidefx( ) as integer
@@ -347,9 +347,9 @@ namespace vectorNewCtorList
 	end sub
 
 	hScopeChecks( CU_ASSERT( calls = 0 ) : tester( ) : CU_ASSERT( calls = 1 ) : calls = 0 )
-end namespace
+END_TEST_GROUP
 
-namespace iif_
+TEST_GROUP( PARAM_NS.iif_ )
 	dim shared as UDT globalx1 = ( 123 ), globalx2 = ( 456 )
 
 	sub tester( PARAM_MODE x as UDT = iif( cond, globalx1, globalx2 ) )
@@ -357,12 +357,12 @@ namespace iif_
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace iifAnon
+TEST_GROUP( PARAM_NS.iifAnon )
 	sub tester( PARAM_MODE x as UDT = iif( cond, type<UDT>( 123 ), type<UDT>( 456 ) ) )
 		CU_ASSERT( x.i = 456 )
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
