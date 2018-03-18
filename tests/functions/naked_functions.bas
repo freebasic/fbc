@@ -27,7 +27,7 @@ SUITE( fbc_tests.functions.naked_functions )
 		#endif
 	end function
 
-	TEST( all )
+	TEST( default )
 		CU_ASSERT_EQUAL( add_cdecl( 3, 7 ), 10 )
 		CU_ASSERT( foo = 123 ) '' Ensure "foo" is referenced and will be emitted by fbc
 	END_TEST

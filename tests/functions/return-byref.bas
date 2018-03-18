@@ -2,7 +2,7 @@
 
 SUITE( fbc_tests.functions.return_byref )
 
-	namespace ns1
+	TEST_GROUP( returnGlobal )
 		'' UDT that fits into registers
 		type UDT1
 			i as integer
@@ -78,7 +78,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' returning globals
-		TEST( returnGlobal )
+		TEST( default )
 			CU_ASSERT( b = 0 )
 			CU_ASSERT( f1( ) = 12 )
 			CU_ASSERT( f1( ) = b )
@@ -111,9 +111,9 @@ SUITE( fbc_tests.functions.return_byref )
 			CU_ASSERT( f11( ) = 12 )
 			CU_ASSERT( f12( ) = 34 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns2
+	TEST_GROUP( returnStatic )
 		function f1( ) byref as byte
 			static as byte b = 12
 			function = b
@@ -141,16 +141,16 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' returning statics
-		TEST( returnStatic )
+		TEST( default )
 			CU_ASSERT( f1( ) = 12 )
 			CU_ASSERT( f2( ) = 34 )
 			CU_ASSERT( f3( ) = "56" )
 			CU_ASSERT( f4( ) = "testing" )
 			CU_ASSERT( f5( ) = wstr( "testing" ) )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns3
+	TEST_GROUP( withBlock )
 		type UDT
 			i as integer
 		end type
@@ -161,7 +161,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' WITH block
-		TEST( withBlock )
+		TEST( default )
 			with( f( ) )
 				CU_ASSERT( .i = 0 )
 				.i = 456
@@ -171,9 +171,9 @@ SUITE( fbc_tests.functions.return_byref )
 				CU_ASSERT( .i = 456 )
 			end with
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns4
+	TEST_GROUP( addrofResult )
 		dim shared as integer i
 
 		function f( ) byref as integer
@@ -181,7 +181,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' @ byref result
-		TEST( addrofResult )
+		TEST( default )
 			'' The extra parentheses are needed to prevent taking the
 			'' address of the function itself, when we just wanted to
 			'' cancel out the implicit DEREF.
@@ -189,9 +189,9 @@ SUITE( fbc_tests.functions.return_byref )
 
 			CU_ASSERT( varptr( f( ) ) = @i )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns5
+	TEST_GROUP( resultMemberAccess )
 		'' syntax of member access, but really it will be a member deref
 
 		type UDT
@@ -204,13 +204,13 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' member access
-		TEST( resultMemberAccess )
+		TEST( default )
 			CU_ASSERT( f( ).a = 123 )
 			CU_ASSERT( 456 = f( ).b )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns6
+	TEST_GROUP( resultPtrDeref )
 		'' not much special about this, just the pointer being returned BYREF
 
 		type UDT
@@ -251,7 +251,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' ptr Deref
-		TEST( resultPtrDeref )
+		TEST( default )
 			CU_ASSERT( *f1( ) = 789 )
 
 			CU_ASSERT( f2( )->a = 123 )
@@ -262,9 +262,9 @@ SUITE( fbc_tests.functions.return_byref )
 			CU_ASSERT( *f3( ) = *f4( ) )
 			CU_ASSERT( *f5( ) = wstr( "abc" ) )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns7
+	TEST_GROUP( resultPtrIndexing )
 		dim shared as integer array(0 to 1) = { 11, 22 }
 
 		function f( ) byref as integer ptr
@@ -272,13 +272,13 @@ SUITE( fbc_tests.functions.return_byref )
 			function = pi
 		end function
 
-		TEST( resultPtrIndexing )
+		TEST( default )
 			CU_ASSERT( f( )[0] = 11 )
 			CU_ASSERT( f( )[1] = 22 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns8
+	TEST_GROUP( resultIndexing )
 		dim shared as integer array(0 to 1) = { 11, 22 }
 
 		function f( ) byref as integer
@@ -286,15 +286,15 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' ptr indexing
-		TEST( resultIndexing )
+		TEST( default )
 			CU_ASSERT( (@(f( )))[0] = 11 )
 			CU_ASSERT( (@(f( )))[1] = 22 )
 			CU_ASSERT( (varptr( f( ) ))[0] = 11 )
 			CU_ASSERT( (varptr( f( ) ))[1] = 22 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns9
+	TEST_GROUP( returnProcptr )
 		function foo( ) as integer
 			function = 1122
 		end function
@@ -305,12 +305,12 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' procptr
-		TEST( returnProcptr )
+		TEST( default )
 			CU_ASSERT( f( )( ) = 1122 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns10
+	TEST_GROUP( returnBydescArrayElement )
 		function f1( array() as integer ) byref as integer
 			function = array(0)
 		end function
@@ -320,7 +320,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' returning bydesc array element
-		TEST( returnBydescArrayElement )
+		TEST( default )
 			dim array(0 to 3) as integer = { 111, 222, 333, 444 }
 			CU_ASSERT( f1( array() ) = 111 )
 			CU_ASSERT( f2( array(), 0 ) = 111 )
@@ -334,9 +334,9 @@ SUITE( fbc_tests.functions.return_byref )
 			f2( array(), 3 ) = 666
 			CU_ASSERT( array(3) = 666 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns11
+	TEST_GROUP( toByvalParam )
 		function f( ) byref as integer
 			static i as integer = 3344
 			function = i
@@ -348,12 +348,12 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' byref result -> byval param
-		TEST( toByvalParam )
+		TEST( default )
 			CU_ASSERT( test1( f( ) ) = 3344 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns12
+	TEST_GROUP( toByrefParam )
 		dim shared globali as integer = 5566
 
 		function f( ) byref as integer
@@ -368,12 +368,12 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' byref result -> byref param
-		TEST( toByrefParam )
+		TEST( default )
 			CU_ASSERT( test1( f( ) ) = 5566 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns13
+	TEST_GROUP( properties )
 		type UDT
 			i as integer
 			declare property f( ) byref as integer
@@ -389,7 +389,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end property
 
 		'' properties
-		TEST( properties )
+		TEST( default )
 			dim x as UDT
 			x.i = 123
 			CU_ASSERT( x.f = 123 )
@@ -398,9 +398,9 @@ SUITE( fbc_tests.functions.return_byref )
 			CU_ASSERT( x.i = 124 )
 			CU_ASSERT( x.f = 124 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns14
+	TEST_GROUP( operators )
 		type UDT
 			i as integer
 
@@ -445,7 +445,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end operator
 
 		'' operators
-		TEST( operators )
+		TEST( default )
 			dim as integer count
 
 			dim x as UDT = ( 123 )
@@ -461,9 +461,9 @@ SUITE( fbc_tests.functions.return_byref )
 			next
 			CU_ASSERT( count = 5 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns15
+	TEST_GROUP( ignoreResult )
 		dim shared as integer calls
 
 		function f( ) byref as integer
@@ -473,7 +473,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' ignore results
-		TEST( ignoreResult )
+		TEST( default )
 			CU_ASSERT( calls = 0 )
 			f( )
 			f( ) 'comment
@@ -482,9 +482,9 @@ SUITE( fbc_tests.functions.return_byref )
 			f( ) : f( ) 'stmtsep
 			CU_ASSERT( calls = 6 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns16
+	TEST_GROUP( ctorDtorUdt )
 		dim shared as integer ctorcalls, dtorcalls
 
 		type UDT
@@ -516,7 +516,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' UDT with ctor/dtor
-		TEST( ctorDtorUdt )
+		TEST( default )
 			CU_ASSERT( ctorcalls = 1 )
 			scope  '' scope to capture any temp vars, just in case
 				CU_ASSERT( f( ).dummy = 123 )
@@ -525,9 +525,9 @@ SUITE( fbc_tests.functions.return_byref )
 			CU_ASSERT( ctorcalls = 1 )
 			CU_ASSERT( dtorcalls = 0 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns17
+	TEST_GROUP( funcptr )
 		dim shared as integer x1 = 123, x2 = 789
 
 		function f1( ) byref as integer
@@ -539,7 +539,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' function pointer
-		TEST( funcptr )
+		TEST( default )
 			dim p as function( ) byref as integer = @f1
 			CU_ASSERT( f1( ) = 123 )
 			CU_ASSERT(  p( ) = 123 )
@@ -551,9 +551,9 @@ SUITE( fbc_tests.functions.return_byref )
 			CU_ASSERT(  p( ) = 789 )
 			CU_ASSERT( f2( ) = 789 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns18
+	TEST_GROUP( byrefToByref )
 		function f1( byref i as integer ) byref as integer
 			function = i
 		end function
@@ -572,7 +572,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' BYREF to BYREF
-		TEST( byrefToByref )
+		TEST( default )
 			dim i as integer = 456
 			CU_ASSERT( f1( 123 ) = 123 )
 			CU_ASSERT( f1( i ) = i )
@@ -585,9 +585,9 @@ SUITE( fbc_tests.functions.return_byref )
 
 			CU_ASSERT( f4( f2( ) ) = 789 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns19
+	TEST_GROUP( referenceToTreeUsingLocals )
 		'' Some expression trees can include/use locals without really being
 		'' references to locals themselves; thus they should be allowed
 
@@ -623,7 +623,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' tree using locals
-		TEST( referenceToTreeUsingLocals )
+		TEST( default )
 			CU_ASSERT( f1( ) = 12 )
 			CU_ASSERT( @(f1( )) = @globalarray(0) )
 			CU_ASSERT( f2( ) = 78 )
@@ -631,9 +631,9 @@ SUITE( fbc_tests.functions.return_byref )
 			CU_ASSERT( f3( ) = 56 )
 			CU_ASSERT( f4( ) = 34 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns20
+	TEST_GROUP( explicitByval )
 		dim shared i as integer = 123
 
 		function f1( ) byref as integer
@@ -647,15 +647,15 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' explicit BYVAL
-		TEST( explicitByval )
+		TEST( default )
 			CU_ASSERT( f1( ) = 123 )
 			CU_ASSERT( f2( ) = 123 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 #if ENABLE_CHECK_BUGS
 
-	namespace ns21
+	TEST_GROUP( byrefResultAsLvalue )
 		type UDT
 			as integer a, b
 		end type
@@ -687,7 +687,7 @@ SUITE( fbc_tests.functions.return_byref )
 			function = x2
 		end function
 
-		TEST( byrefResultAsLvalue )
+		TEST( default )
 			i = 0 : CU_ASSERT( f1( ) = "a" )
 			i = 1 : CU_ASSERT( f1( ) = "b" )
 			i = 2 : CU_ASSERT( f1( ) = "c" )
@@ -746,11 +746,11 @@ SUITE( fbc_tests.functions.return_byref )
 			CU_ASSERT( f4( 0 ).a = 22 )
 			CU_ASSERT( f4( 0 ).b = 33 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 #endif
 
-	namespace ns22
+	TEST_GROUP( protoReturningFwdref )
 		type typedef as fwdref
 
 		'' As with BYREF parameters, BYREF AS FWDREF is allowed, but only in
@@ -765,12 +765,12 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 
 		'' returning a forward ref
-		TEST( protoReturningFwdref )
+		TEST( default )
 			CU_ASSERT( f( ) = 123 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns23
+	TEST_GROUP( cxxMangling )
 		extern "C++"
 			'' The BYREF result in function pointer parameters must be included
 			'' in the C++ mangling. These 4 overloads should all have different
@@ -813,7 +813,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end extern
 
 		'' C++ mangling
-		TEST( cxxMangling )
+		TEST( default )
 			dim p1 as function cdecl( ) as integer
 			dim p2 as function cdecl( ) as const integer
 			dim p3 as function cdecl( ) byref as integer
@@ -829,9 +829,9 @@ SUITE( fbc_tests.functions.return_byref )
 			CU_ASSERT( f2( p3 ) = 3 )
 			CU_ASSERT( f2( p4 ) = 4 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns24
+	TEST_GROUP( returnVsFunction )
 		'' For functions returning BYREF, both RETURN and FUNCTION= should be
 		'' allowed to assign results, no matter what result type it is, since
 		'' it's just a pointer, and the function doesn't actually have to call
@@ -888,7 +888,7 @@ SUITE( fbc_tests.functions.return_byref )
 			exit function
 		end function
 
-		TEST( returnVsFunction )
+		TEST( default )
 			CU_ASSERT( @(getInteger1( )) = @ireturn )
 			CU_ASSERT( @(getInteger2( )) = @ireturn )
 			CU_ASSERT( @(getInteger3( )) = 0 )
@@ -898,9 +898,9 @@ SUITE( fbc_tests.functions.return_byref )
 			CU_ASSERT( @(getCtorUdt3( )) = 0 )
 			CU_ASSERT( @(getCtorUdt4( )) = @ctorudtreturn )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns25
+	TEST_GROUP( derefConst )
 		type UDT
 			a as integer
 			b as integer
@@ -918,11 +918,11 @@ SUITE( fbc_tests.functions.return_byref )
 			function = cptr(UDT ptr, 0)->b
 		end function
 
-		TEST( derefConst )
+		TEST( default )
 			CU_ASSERT( @(offsetof_a( )) = offsetof( UDT, a ) )
 			CU_ASSERT( @(offsetof_b( )) = offsetof( UDT, b ) )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 	namespace constness
 		function f1() byref as const integer
@@ -931,7 +931,7 @@ SUITE( fbc_tests.functions.return_byref )
 		end function
 	end namespace
 
-	namespace ns27
+	TEST_GROUP( returnCtorCall )
 		'' In return-byval functions, RETURN can call a ctor to construct the result.
 		'' This shouldn't be done in return-byref functions, because there is no
 		'' result object (it's just a pointer).
@@ -966,7 +966,7 @@ SUITE( fbc_tests.functions.return_byref )
 			return *p
 		end function
 
-		TEST( returnCtorCall )
+		TEST( default )
 			CU_ASSERT( ctorcalls = 0 )
 			CU_ASSERT( ptrctorcalls = 0 )
 			CU_ASSERT( copyctorcalls = 0 )
@@ -992,6 +992,6 @@ SUITE( fbc_tests.functions.return_byref )
 
 			delete p
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

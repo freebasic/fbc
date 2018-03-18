@@ -21,7 +21,7 @@ SUITE( fbc_tests.functions.module_ctor )
 		i2 = 222
 	end sub
 
-	TEST( all )
+	TEST( default )
 		CU_ASSERT( UDT.i1 = 111 )
 		CU_ASSERT( UDT.i2 = 222 )
 	END_TEST

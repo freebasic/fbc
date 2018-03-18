@@ -16,7 +16,7 @@ SUITE( fbc_tests.functions.bydesc )
 		end sub
 	end namespace
 
-	namespace test1
+	TEST_GROUP( test1 )
 		const ARRAY_LB = 0
 		const ARRAY_UB = 9
 
@@ -56,9 +56,9 @@ SUITE( fbc_tests.functions.bydesc )
 			fillArray( globalarray() )
 			doTestPre( globalarray() )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace test2
+	TEST_GROUP( test2 )
 		const ARRAY_LB1 = 1
 		const ARRAY_UB1 = 3
 		const ARRAY_LB2 = 2
@@ -96,9 +96,9 @@ SUITE( fbc_tests.functions.bydesc )
 		TEST( param2 )
 			doTestPre( globalarray() )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace testString
+	TEST_GROUP( string_ )
 		const ARRAY_LB = 0
 		const ARRAY_UB = 9
 
@@ -138,9 +138,9 @@ SUITE( fbc_tests.functions.bydesc )
 			fillArray( globalarray() )
 			doTestPre( globalarray() )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace arrayField
+	TEST_GROUP( arrayField )
 		const ARRAY_LB = 0
 		const ARRAY_UB = 9
 
@@ -190,9 +190,9 @@ SUITE( fbc_tests.functions.bydesc )
 			fillArray( globaludtarray(1).field1() )
 			doTest( globaludtarray(1).field1() )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace stringArrayField
+	TEST_GROUP( stringArrayField )
 		const ARRAY_LB = 0
 		const ARRAY_UB = 9
 
@@ -242,9 +242,9 @@ SUITE( fbc_tests.functions.bydesc )
 			fillArray( globaludtarray(1).field1() )
 			doTest( globaludtarray(1).field1() )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace testPointers
+	TEST_GROUP( pointers )
 		'' -gen gcc regression test (handling of array descriptors if it's an
 		'' array of pointers)
 
@@ -272,7 +272,7 @@ SUITE( fbc_tests.functions.bydesc )
 			CU_ASSERT( *array(0) = 123 )
 			CU_ASSERT( *array(1) = 456 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE
 

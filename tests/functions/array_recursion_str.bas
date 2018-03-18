@@ -31,7 +31,7 @@ SUITE( fbc_tests.functions.array_recursion_str )
 		
 	end sub
 
-	TEST( all )
+	TEST( default )
 
 		dim array1(-2 to 2) as string
 		dim i as integer

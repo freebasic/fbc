@@ -32,7 +32,7 @@ SUITE( fbc_tests.functions.byval_string )
 		CU_ASSERT( *p = expected )
 	end sub
 
-	TEST( all )
+	TEST( default )
 		dim s as string => "1"
 		dim f as string * 31 => "12"
 		dim z as zstring * 32 => "123"

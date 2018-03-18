@@ -44,7 +44,7 @@ SUITE( fbc_tests.functions.str_recursion )
 
 	end sub
 
-	TEST( all )
+	TEST( default )
 
 		dim s as string
 		dim z as zstring * 15+1

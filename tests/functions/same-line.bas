@@ -14,7 +14,7 @@ SUITE( fbc_tests.functions.sameline )
 	end function
 
 	'' procedures closed/opened on the same line
-	TEST( all )
+	TEST( default )
 		f1( )
 		f2( )
 		CU_ASSERT( f3( ) = 3 )

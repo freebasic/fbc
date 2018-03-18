@@ -14,7 +14,7 @@ SUITE( fbc_tests.functions.str_z_and_dyn )
 	declare function sconcat1 ( byval s as string ) as string
 	declare function sconcat2 ( byref s as string ) as string
 		
-	TEST( all )
+	TEST( default )
 
 		dim z1 as zstring ptr
 		dim z2 as zstring * TOTLEN+1

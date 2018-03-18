@@ -4,7 +4,7 @@ SUITE( fbc_tests.functions.udt_result )
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-	namespace ns1
+	TEST_GROUP( simpleUDT )
 
 		const TEST_X = 1234
 		const TEST_Y = 5678
@@ -75,11 +75,11 @@ SUITE( fbc_tests.functions.udt_result )
 			CU_ASSERT( d_array(0).y = TEST_Y - 1 )
 		END_TEST
 
-	end namespace
+	END_TEST_GROUP
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-	namespace ns2
+	TEST_GROUP( complexUDT )
 
 		dim shared as integer ctorcount
 
@@ -97,13 +97,13 @@ SUITE( fbc_tests.functions.udt_result )
 			'' result should still be constructed
 		end function
 
-		TEST( complexUDT )
+		TEST( default )
 			dim as UDT x
 			CU_ASSERT( ctorcount = 1 )
 			x = f( )
 			CU_ASSERT( ctorcount = 2 )
 		END_TEST
 
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

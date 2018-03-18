@@ -122,7 +122,7 @@ SUITE( fbc_tests.functions.temp_strings )
 		function = pw
 	end function
 
-	TEST( all )
+	TEST( default )
 		dim s as string => MAGIC_S
 		dim f as string * 31 => MAGIC_S
 		dim z as zstring * 32 => MAGIC_S

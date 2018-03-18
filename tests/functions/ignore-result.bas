@@ -425,7 +425,7 @@ SUITE( fbc_tests.functions.ignore_result )
 		CU_ASSERT( cdouble = 0 ) : cint( fdouble( ) ) : CU_ASSERT( cdouble = 1 ) : cdouble = 0
 	END_TEST
 
-	namespace ns1
+	TEST_GROUP( temporaryDescriptors )
 		'' Testing exhaustion of the rtlib's FB_STR_TMPDESCRIPTORS limit,
 		'' so this should be > that
 		const N = 500
@@ -434,7 +434,7 @@ SUITE( fbc_tests.functions.ignore_result )
 			function = str( i )
 		end function
 
-		TEST( temporaryDescriptors )
+		TEST( default )
 			'' Pre-calculate the number strings to ensure we have some proper strings to
 			'' compare against below
 			static numbers(0 to N-1) as zstring * 32
@@ -454,6 +454,6 @@ SUITE( fbc_tests.functions.ignore_result )
 				CU_ASSERT( "<" + f( i ) + ">" = numbers(i) )
 			next
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

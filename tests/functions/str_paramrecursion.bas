@@ -37,7 +37,7 @@ SUITE( fbc_tests.functions.str_paramrecursion )
 
 	end function
 
-	TEST( all )
+	TEST( default )
 
 		dim s as string
 		dim z as zstring * 3+1

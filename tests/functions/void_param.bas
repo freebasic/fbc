@@ -6,7 +6,7 @@ SUITE( fbc_tests.functions.void_param )
 	declare  sub test_byval( byref p as any )
 	declare  sub test_str( byref p as any )
 		
-	TEST( all )
+	TEST( default )
 
 		test_const 1234
 		test_const byval 1234
