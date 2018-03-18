@@ -2,7 +2,7 @@
 
 SUITE( fbc_tests.expressions.memberderef )
 
-	namespace ns_syntax
+	TEST_GROUP( syntax )
 		type UDT
 			i as integer
 		end type
@@ -11,7 +11,7 @@ SUITE( fbc_tests.expressions.memberderef )
 		dim shared p as UDT ptr = @x
 		dim shared pp as UDT ptr ptr = @p
 
-		TEST( syntax )
+		TEST( default )
 			CU_ASSERT( p->i = 123 )
 			CU_ASSERT( (*p).i = 123 )
 			CU_ASSERT( p[0].i = 123 )
@@ -22,6 +22,6 @@ SUITE( fbc_tests.expressions.memberderef )
 			CU_ASSERT( (**pp).i = 123 )
 			CU_ASSERT( (*pp)[0].i = 123 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

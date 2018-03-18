@@ -4,7 +4,7 @@ SUITE( fbc_tests.expressions.dynamic_array_fields )
 
 	const EPSILON_SNG as single = 1.1929093e-7
 
-	namespace arrayAccess
+	TEST_GROUP( arrayAccess )
 		type UDT1
 			array(any) as integer
 		end type
@@ -80,9 +80,9 @@ SUITE( fbc_tests.expressions.dynamic_array_fields )
 				CU_ASSERT( p[i] = i )
 			next
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns1
+	TEST_GROUP( compileTimeDtype )
 		'' Array accesses should produce the proper dtype at compile-time
 
 		type UDT
@@ -92,7 +92,7 @@ SUITE( fbc_tests.expressions.dynamic_array_fields )
 		end type
 
 		'' compile time dtype
-		TEST( compileTimeDtype )
+		TEST( default )
 			dim x as UDT
 			#assert typeof( x.array1(0) ) = typeof( integer )
 			#assert typeof( x.array2(0) ) = typeof( string )
@@ -109,9 +109,9 @@ SUITE( fbc_tests.expressions.dynamic_array_fields )
 			#assert typeof( s ) = typeof( string )
 			#assert typeof( f ) = typeof( single )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns2
+	TEST_GROUP( complexDtypes )
 		'' Testing float/string/UDT elements, not just integers
 
 		dim shared as integer ctorudt_ctors, dtorudt_dtors, _
@@ -158,7 +158,7 @@ SUITE( fbc_tests.expressions.dynamic_array_fields )
 		end type
 
 		'' complex dtypes
-		TEST( complexDtypes )
+		TEST( default )
 			scope
 				dim x as TestUdt
 
@@ -224,9 +224,9 @@ SUITE( fbc_tests.expressions.dynamic_array_fields )
 			CU_ASSERT( ctordtorudt_ctors = 2 )
 			CU_ASSERT( ctordtorudt_dtors = 2 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns3
+	TEST_GROUP( passingBydesc )
 		'' Testing whether dynamic array fields can be passed BYDESC nicely,
 		'' and even be REDIM'ed through the BYDESC param.
 		type UDT
@@ -255,7 +255,7 @@ SUITE( fbc_tests.expressions.dynamic_array_fields )
 		end sub
 
 		'' BYDESC
-		TEST( passingBydesc )
+		TEST( default )
 			dim x as UDT
 
 			CU_ASSERT( getLbound( x.array() ) = 0 )
@@ -279,9 +279,9 @@ SUITE( fbc_tests.expressions.dynamic_array_fields )
 			CU_ASSERT( getLbound( x.array() ) = 100 )
 			CU_ASSERT( getUbound( x.array() ) = 200 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns4
+	TEST_GROUP( sidefxRemoval )
 		'' The compiler must properly handle side effects in the UDT variable
 		'' expression (matters because the varexpr is re-used in multiple places
 		'' to read out fields from the descriptor, especially with -exx) or one
@@ -305,7 +305,7 @@ SUITE( fbc_tests.expressions.dynamic_array_fields )
 		end function
 
 		'' side-effect removal
-		TEST( sidefxRemoval )
+		TEST( default )
 			dim x as UDT
 			redim x.array(0 to 9)
 
@@ -324,6 +324,6 @@ SUITE( fbc_tests.expressions.dynamic_array_fields )
 			CU_ASSERT( fudt( ).array(0) = 0 )
 			CU_ASSERT( fudtcalls = 1 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

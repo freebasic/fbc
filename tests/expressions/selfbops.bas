@@ -2,13 +2,13 @@
 
 SUITE( fbc_tests.expressions.selfbops )
 
-	namespace ns1
+	TEST_GROUP( bitfields )
 		type UDT
 			a : 1 as integer
 			b : 4 as integer
 		end type
 
-		TEST( bitfields )
+		TEST( default )
 			scope
 				dim x as UDT
 				CU_ASSERT( x.a = 0 )
@@ -62,9 +62,9 @@ SUITE( fbc_tests.expressions.selfbops )
 				CU_ASSERT( px->b = 1 )
 			end scope
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns2
+	TEST_GROUP( sidefxRemoval )
 		dim shared as integer f1calls, f2calls
 		dim shared as integer i
 
@@ -78,7 +78,7 @@ SUITE( fbc_tests.expressions.selfbops )
 			function = i
 		end function
 
-		TEST( sidefxRemoval )
+		TEST( default )
 			dim array(0 to 0) as integer
 			CU_ASSERT( f1calls = 0 )
 			CU_ASSERT( array(0) = 0 )
@@ -92,9 +92,9 @@ SUITE( fbc_tests.expressions.selfbops )
 			CU_ASSERT( f2calls = 1 )
 			CU_ASSERT( i = 456 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns3
+	TEST_GROUP( sidefxRemovalWithBitfields )
 		type UDT
 			a : 1 as integer
 			b : 1 as integer
@@ -108,7 +108,7 @@ SUITE( fbc_tests.expressions.selfbops )
 			function = x
 		end function
 
-		TEST( sidefxRemovalWithBitfields )
+		TEST( default )
 			CU_ASSERT( fcalls = 0 )
 			CU_ASSERT( x.a = 0 )
 			CU_ASSERT( x.b = 0 )
@@ -121,9 +121,9 @@ SUITE( fbc_tests.expressions.selfbops )
 			CU_ASSERT( x.a = 1 )
 			CU_ASSERT( x.b = 1 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns4
+	TEST_GROUP( sidefxRemovalWithStringConcat )
 		dim shared as integer fcalls
 		dim shared as integer globali
 		dim shared as string a, b
@@ -138,7 +138,7 @@ SUITE( fbc_tests.expressions.selfbops )
 			function = globali
 		end function
 
-		TEST( sidefxRemovalWithStringConcat )
+		TEST( default )
 			a = "a"
 			b = "b"
 
@@ -151,6 +151,6 @@ SUITE( fbc_tests.expressions.selfbops )
 			CU_ASSERT( fcalls = 2 )
 			CU_ASSERT( globali = 10 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

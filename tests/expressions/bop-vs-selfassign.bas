@@ -87,7 +87,7 @@ SUITE( fbc_tests.expressions.bop_vs_selfassign )
 		CU_ASSERT( s = "11" )
 	END_TEST
 
-	namespace ns1
+	TEST_GROUP( returnByrefAssignment )
 		'' With functions with byref result, there is a parsing ambiguity:
 		''    f (0) + = 1
 		''
@@ -111,7 +111,7 @@ SUITE( fbc_tests.expressions.bop_vs_selfassign )
 			function = s
 		end function
 
-		TEST( returnByrefAssignment )
+		TEST( default )
 			fi(0) and= 1
 			fi(0) or= 1
 			fi(0) andalso= 1
@@ -150,6 +150,6 @@ SUITE( fbc_tests.expressions.bop_vs_selfassign )
 			fs(0) &=> 1
 			CU_ASSERT( fs(0) = "11" )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

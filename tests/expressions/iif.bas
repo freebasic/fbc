@@ -20,12 +20,12 @@ SUITE( fbc_tests.expressions.iif_ )
 		const TEST_VAL as integer = 1234
 
 		dim value as integer = TEST_VAL
-		dim test as integer = 0
+		dim test_int as integer = 0
 
-		value += iif (test > 5, 10, -10) + iif (test < 5, 10, -10)
+		value += iif (test_int > 5, 10, -10) + iif (test_int < 5, 10, -10)
 		CU_ASSERT_EQUAL( value, TEST_VAL )
 
-		value += iif (test > -5, 10, -10) + iif (test < -5, 10, -10)
+		value += iif (test_int > -5, 10, -10) + iif (test_int < -5, 10, -10)
 		CU_ASSERT_EQUAL( value, TEST_VAL )
 	END_TEST
 
@@ -695,7 +695,7 @@ SUITE( fbc_tests.expressions.iif_ )
 		CU_ASSERT( iif( condfalse, 0, cptr( integer ptr, 1 ) ) = cptr( integer ptr, 1 ) )
 	END_TEST
 
-	namespace ns1
+	TEST_GROUP( iifTempVarDefCtor )
 		dim shared as integer ctors
 
 		type CtorUdt
@@ -708,7 +708,7 @@ SUITE( fbc_tests.expressions.iif_ )
 		end constructor
 
 		'' iif() ctors
-		TEST( iifTempVarDefCtor )
+		TEST( default )
 			CU_ASSERT( ctors = 0 )
 			dim as CtorUdt a, b
 			CU_ASSERT( ctors = 2 )
@@ -745,9 +745,9 @@ SUITE( fbc_tests.expressions.iif_ )
 			CU_ASSERT( ctors = 8 )
 			CU_ASSERT( a.i = 0 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns2
+	TEST_GROUP( iifTempVarDefCtorAndCopyCtor )
 		dim shared as integer defctors, copyctors
 
 		type CtorUdt
@@ -766,7 +766,7 @@ SUITE( fbc_tests.expressions.iif_ )
 		end constructor
 
 		'' iif() ctors
-		TEST( iifTempVarDefCtorAndCopyCtor )
+		TEST( default )
 			CU_ASSERT(  defctors = 0 )
 			CU_ASSERT( copyctors = 0 )
 
@@ -836,9 +836,9 @@ SUITE( fbc_tests.expressions.iif_ )
 			CU_ASSERT( copyctors = 6 )
 			CU_ASSERT( a.i = 0 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns3
+	TEST_GROUP( iifTempVarIntCtor )
 		dim shared as integer ctors
 
 		type CtorUdt
@@ -852,7 +852,7 @@ SUITE( fbc_tests.expressions.iif_ )
 		end constructor
 
 		'' iif() ctors
-		TEST( iifTempVarIntCtor )
+		TEST( default )
 			CU_ASSERT( ctors = 0 )
 			dim as CtorUdt a = CtorUdt( 0 )
 			CU_ASSERT( ctors = 1 )
@@ -873,9 +873,9 @@ SUITE( fbc_tests.expressions.iif_ )
 			CU_ASSERT( ctors = 5 )
 			CU_ASSERT( a.i = 123 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns4
+	TEST_GROUP( iifTempVarIntCtorAndCopyCtor )
 		dim shared as integer intctors, copyctors
 
 		type CtorUdt
@@ -895,7 +895,7 @@ SUITE( fbc_tests.expressions.iif_ )
 		end constructor
 
 		'' iif() ctors
-		TEST( iifTempVarIntCtorAndCopyCtor )
+		TEST( default )
 			CU_ASSERT(  intctors = 0 )
 			CU_ASSERT( copyctors = 0 )
 
@@ -927,9 +927,9 @@ SUITE( fbc_tests.expressions.iif_ )
 			CU_ASSERT( copyctors = 2 )
 			CU_ASSERT( a.i = 0 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns5
+	TEST_GROUP( iifTempVarDefCtorAndIntCtor )
 		dim shared as integer defctors, intctors
 
 		type CtorUdt
@@ -948,7 +948,7 @@ SUITE( fbc_tests.expressions.iif_ )
 		end constructor
 
 		'' iif() ctors
-		TEST( iifTempVarDefCtorAndIntCtor )
+		TEST( default )
 			CU_ASSERT( defctors = 0 )
 			CU_ASSERT( intctors = 0 )
 
@@ -994,15 +994,15 @@ SUITE( fbc_tests.expressions.iif_ )
 			CU_ASSERT( intctors = 2 )
 			CU_ASSERT( a.i = 123 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns6
+	TEST_GROUP( iifStringIndexingOrMemberAccess )
 		type UDT
 			as integer i, j
 		end type
 
 		'' member access
-		TEST( iifStringIndexingOrMemberAccess )
+		TEST( default )
 			'' member access
 			dim as UDT xa = ( 1, 2 ), xb = ( 3, 4 )
 			CU_ASSERT( iif( condtrue , xa, xb ).i = 1 )
@@ -1044,9 +1044,9 @@ SUITE( fbc_tests.expressions.iif_ )
 			CU_ASSERT( iif( condfalse, wa, wb )[1] = wb[1] )
 			CU_ASSERT( iif( condfalse, wa, wb )[2] = wb[2] )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns7
+	TEST_GROUP( iifProcPtrs )
 		sub sub1( )
 		end sub
 
@@ -1062,7 +1062,7 @@ SUITE( fbc_tests.expressions.iif_ )
 		end function
 
 		'' procptrs
-		TEST( iifProcPtrs )
+		TEST( default )
 			dim as sub( ) psub1, psub2
 			CU_ASSERT( iif( condtrue, psub1, psub2 ) = 0 )
 
@@ -1077,7 +1077,7 @@ SUITE( fbc_tests.expressions.iif_ )
 			CU_ASSERT( (iif( condtrue , pf1, pf2 ))( ) = 1 )
 			CU_ASSERT( (iif( condfalse, pf1, pf2 ))( ) = 2 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 	'' string iif vs. rtl error checking
 	TEST( iifRtlErrorChecking )
