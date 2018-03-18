@@ -8,7 +8,7 @@
 
 #include once "common.bi"
 
-'' TODO: change to SUITE() & TEST() 
+'' !!! TODO !!!: change to SUITE() & TEST() 
 ''   after improving fbcunit API (see below)
 
 namespace fbc_tests.console.ascii
