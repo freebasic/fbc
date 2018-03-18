@@ -1,51 +1,41 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
+'' option escape
 
+SUITE( fbc_tests.wstrings.unc )
 
-'option escape
+	TEST( escape )
 
-namespace fbc_tests.wstrings.unc
+		#define hello !"\u039a\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 "
+		#define world !"\u03ba\u03cc\u03c3\u03bc\u03b5!"
+		#define helloworld hello + world
 
-sub test_esc cdecl ()
+		dim as wstring * 128 hw1 = !"\u039a\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 \u03ba\u03cc\u03c3\u03bc\u03b5!"
+		dim as wstring * 128 hw2 = helloworld
 
-#define hello !"\u039a\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 "
-#define world !"\u03ba\u03cc\u03c3\u03bc\u03b5!"
-#define helloworld hello + world
+		CU_ASSERT( hw1 = hw2 )
 
-	dim as wstring * 128 hw1 = !"\u039a\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 \u03ba\u03cc\u03c3\u03bc\u03b5!"
-	dim as wstring * 128 hw2 = helloworld
+		CU_ASSERT( hw1 = helloworld )
 
-	CU_ASSERT( hw1 = hw2 )
+		CU_ASSERT( helloworld = hw2 )
 
-	CU_ASSERT( hw1 = helloworld )
+	END_TEST
 
-	CU_ASSERT( helloworld = hw2 )
+	TEST( noescape )
 
-end sub
+		#define hello $"\u039a\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 "
+		#define world $"\u03ba\u03cc\u03c3\u03bc\u03b5!"
+		#define helloworld hello + world
 
-sub test_noesc cdecl ()
+		dim as wstring * 128 hw1 = $"\u039a\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 \u03ba\u03cc\u03c3\u03bc\u03b5!"
+		dim as wstring * 128 hw2 = helloworld
 
-#define hello $"\u039a\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 "
-#define world $"\u03ba\u03cc\u03c3\u03bc\u03b5!"
-#define helloworld hello + world
+		CU_ASSERT( hw1 = hw2 )
 
-	dim as wstring * 128 hw1 = $"\u039a\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 \u03ba\u03cc\u03c3\u03bc\u03b5!"
-	dim as wstring * 128 hw2 = helloworld
+		CU_ASSERT( hw1 = helloworld )
 
-	CU_ASSERT( hw1 = hw2 )
+		CU_ASSERT( helloworld = hw2 )
 
-	CU_ASSERT( hw1 = helloworld )
+	END_TEST
 
-	CU_ASSERT( helloworld = hw2 )
-
-end sub
-
-sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.wstring.unc")
-	fbcu.add_test("test_esc", @test_esc)
-	fbcu.add_test("test_esc", @test_noesc)
-
-end sub
-
-end namespace
+END_SUITE
