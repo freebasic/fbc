@@ -1,8 +1,10 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
+
+'' !!! TODO !!! does dos port support threads or no?
 
 #ifndef __FB_DOS__
 
-namespace fbc_tests.threads.threadcall_tests
+SUITE( fbc_tests.threads.threadcall_tests )
 
     declare sub Overloaded overload ( byval i as integer )
     declare sub Overloaded( byref s as string )
@@ -108,7 +110,7 @@ namespace fbc_tests.threads.threadcall_tests
         end sub
     end namespace
 
-    sub threadcall_test cdecl( )
+    TEST( default )
         dim thread as any ptr
         dim i as integer, ui as uinteger, l as longint, ul as ulongint
         dim d as double
@@ -122,10 +124,10 @@ namespace fbc_tests.threads.threadcall_tests
         dim as any ptr testWindowsMs_thread
 
         '' call threads
-#ifdef __FB_WIN32__
+	#ifdef __FB_WIN32__
         SmallInt_Thread = threadcall SmallInt( 20, 1, 19, 2 )
         testWindowsMs_thread = threadcall testWindowsMs( )
-#endif
+	#endif
         BigInt_Thread = threadcall BigInt( i, ui, l, ul )
         s1 = "fourteen"
         FloatStr_Thread = threadcall FloatStr( 15.00, d, s1 )
@@ -138,10 +140,10 @@ namespace fbc_tests.threads.threadcall_tests
         Namespace_Thread = threadcall ThreadCallNS.ns
         ONamespace_Thread = threadcall ThreadCallONS.ns
 
-#ifdef __FB_WIN32__
+	#ifdef __FB_WIN32__
         threadwait SmallInt_Thread
         threadwait testWindowsMs_thread
-#endif
+	#endif
         threadwait BigInt_Thread
         threadwait FloatStr_Thread
         threadwait TypeArray_Thread
@@ -166,13 +168,8 @@ namespace fbc_tests.threads.threadcall_tests
         CU_ASSERT_TRUE( OverloadedStr_Executed = -1 )
         CU_ASSERT_TRUE( Namespace_Executed = -1 )
         CU_ASSERT_TRUE( OtherNamespace_Executed = -1 )
-    end sub
+    END_TEST
 
-    private sub ctor () constructor
-        fbcu.add_suite( "fbc_tests.threads.threadcall" )
-        fbcu.add_test( "threadcall_test", @threadcall_test )
-    end sub
+END_SUITE
 
-end namespace
-
-#endif 
+#endif
