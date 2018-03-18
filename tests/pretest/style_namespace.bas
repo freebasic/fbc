@@ -20,7 +20,7 @@
 
 SUITE( fbc_tests.pretest.style_namespace )
 
-	namespace ns1
+	TEST_GROUP( ns1 )
 
 		const x = -1
 
@@ -28,9 +28,9 @@ SUITE( fbc_tests.pretest.style_namespace )
 			CU_ASSERT_TRUE( x )
 		END_TEST
 
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns2
+	TEST_GROUP( ns2 )
 
 		const x = 0
 
@@ -38,6 +38,6 @@ SUITE( fbc_tests.pretest.style_namespace )
 			CU_ASSERT_FALSE( x )
 		END_TEST
 
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE
