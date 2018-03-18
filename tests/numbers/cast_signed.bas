@@ -1,30 +1,25 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.numbers.cast_signed
+SUITE( fbc_tests.numbers.cast_signed )
 
-private sub test cdecl( )
-	dim as integer i, i0
+	TEST( all )
+		dim as integer i, i0
 
-	i0 = &hFF               : i = cbyte  ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
-	i0 = &hFFFF             : i = cbyte  ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
-	i0 = &hFFFF             : i = cshort ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
-	i0 = &hFFFFFFFF         : i = cbyte  ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
-	i0 = &hFFFFFFFF         : i = cshort ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
-	i0 = &hFFFFFFFF         : i = clng   ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
-#ifdef __FB_64BIT__
-	i0 = &hFFFFFFFFFFFFFFFF : i = cbyte  ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
-	i0 = &hFFFFFFFFFFFFFFFF : i = cshort ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
-	i0 = &hFFFFFFFFFFFFFFFF : i = clngint( i0 ) : CU_ASSERT( i = -1 ) : i = 0
-	i0 = &hFFFFFFFFFFFFFFFF : i = cint   ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
-#else
-	i0 = &hFFFFFFFF         : i = cint   ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
-#endif
+		i0 = &hFF               : i = cbyte  ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+		i0 = &hFFFF             : i = cbyte  ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+		i0 = &hFFFF             : i = cshort ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+		i0 = &hFFFFFFFF         : i = cbyte  ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+		i0 = &hFFFFFFFF         : i = cshort ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+		i0 = &hFFFFFFFF         : i = clng   ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+	#ifdef __FB_64BIT__
+		i0 = &hFFFFFFFFFFFFFFFF : i = cbyte  ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+		i0 = &hFFFFFFFFFFFFFFFF : i = cshort ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+		i0 = &hFFFFFFFFFFFFFFFF : i = clngint( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+		i0 = &hFFFFFFFFFFFFFFFF : i = cint   ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+	#else
+		i0 = &hFFFFFFFF         : i = cint   ( i0 ) : CU_ASSERT( i = -1 ) : i = 0
+	#endif
 
-end sub
+	END_TEST
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.numbers.cast_signed" )
-	fbcu.add_test( "test", @test )
-end sub
-
-end namespace
+END_SUITE

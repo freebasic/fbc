@@ -1,7 +1,10 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
+
+'' !!! TODO !!!, needed? was this for testing only?
 #undef CU_ASSERT_EQUAL
 #define CU_ASSERT_EQUAL(a, b) if (a) <> (b) then print (a), (b) end if: CU_ASSERT( (a) = (b) )
-namespace fbc_tests.numbers.cast_f2ll
+
+SUITE( fbc_tests.numbers.cast_f2ll )
 
 	sub checkcast(byval x as double, byval ull as ulongint)
 
@@ -83,7 +86,7 @@ namespace fbc_tests.numbers.cast_f2ll
 
 	end sub
 
-	sub test_cast_ll cdecl()
+	TEST( cast_ll )
 
 		dim as longint n = 1ll
 		dim as double x = 1.0
@@ -117,9 +120,9 @@ namespace fbc_tests.numbers.cast_f2ll
 			next j
 		next i
 
-	end sub
+	END_TEST
 
-	sub test_cast_hiconst_ull cdecl()
+	TEST( cast_hiconst_ull )
 		#macro test_cast(dval, ullval)
 		scope
 			const as double d = dval
@@ -141,14 +144,6 @@ namespace fbc_tests.numbers.cast_f2ll
 		test_cast( 2^63 + 2^(63 - 52), &H8000000000000800ull )
 		test_cast( 2^64 - 2^(63 - 52), &HFFFFFFFFFFFFF800ull )
 
-	end sub
+	END_TEST
 
-	sub ctor () constructor
-
-		fbcu.add_suite("fbc_tests.numbers.cast_f2ll")
-		fbcu.add_test("test_cast_ll",  @test_cast_ll)
-		fbcu.add_test("test_cast_hiconst_ull",  @test_cast_hiconst_ull)
-
-	end sub
-
-end namespace
+END_SUITE
