@@ -8,33 +8,33 @@ SUITE( fbc_tests.compound.select_ )
 	''::::
 	TEST( case_single_value )
 
-	const TEST = 100
+	const TEST_VAL = 100
 		
-		dim as integer v = TEST
+		dim as integer v = TEST_VAL
 		dim as integer ok
 		
 		select case v
-		case TEST - 5
+		case TEST_VAL - 5
 			ok = FALSE
-		case TEST - 4
+		case TEST_VAL - 4
 			ok = FALSE
-		case TEST - 3
+		case TEST_VAL - 3
 			ok = FALSE
-		case TEST - 2
+		case TEST_VAL - 2
 			ok = FALSE
-		case TEST - 1
+		case TEST_VAL - 1
 			ok = FALSE
-		case TEST + 1
+		case TEST_VAL + 1
 			ok = FALSE
-		case TEST + 2
+		case TEST_VAL + 2
 			ok = FALSE
-		case TEST + 3
+		case TEST_VAL + 3
 			ok = FALSE
-		case TEST + 4
+		case TEST_VAL + 4
 			ok = FALSE
-		case TEST + 5
+		case TEST_VAL + 5
 			ok = FALSE
-		case TEST
+		case TEST_VAL
 			ok = TRUE
 		case else
 			ok = FALSE
@@ -47,33 +47,33 @@ SUITE( fbc_tests.compound.select_ )
 	''::::
 	TEST( case_multiple_value )
 
-	const TEST = -100
+	const TEST_VAL = -100
 		
-		dim as integer v = TEST
+		dim as integer v = TEST_VAL
 		dim as integer ok
 		
 		select case v
-		case TEST - 5, TEST - 6, TEST - 7, TEST - 8
+		case TEST_VAL - 5, TEST_VAL - 6, TEST_VAL - 7, TEST_VAL - 8
 			ok = FALSE
-		case TEST - 4, TEST - 5, TEST - 6
+		case TEST_VAL - 4, TEST_VAL - 5, TEST_VAL - 6
 			ok = FALSE
-		case TEST - 3, TEST - 4
+		case TEST_VAL - 3, TEST_VAL - 4
 			ok = FALSE
-		case TEST - 2
+		case TEST_VAL - 2
 			ok = FALSE
-		case TEST - 1
+		case TEST_VAL - 1
 			ok = FALSE
-		case TEST + 1
+		case TEST_VAL + 1
 			ok = FALSE
-		case TEST + 2
+		case TEST_VAL + 2
 			ok = FALSE
-		case TEST + 3, TEST + 4
+		case TEST_VAL + 3, TEST_VAL + 4
 			ok = FALSE
-		case TEST + 4, TEST + 5, TEST + 6
+		case TEST_VAL + 4, TEST_VAL + 5, TEST_VAL + 6
 			ok = FALSE
-		case TEST + 5, TEST + 6, TEST + 7, TEST + 8
+		case TEST_VAL + 5, TEST_VAL + 6, TEST_VAL + 7, TEST_VAL + 8
 			ok = FALSE
-		case TEST
+		case TEST_VAL
 			ok = TRUE
 		case else
 			ok = FALSE
@@ -86,33 +86,33 @@ SUITE( fbc_tests.compound.select_ )
 	''::::
 	TEST( case_single_range )
 
-	const TEST = 100
+	const TEST_VAL = 100
 		
-		dim as integer v = TEST
+		dim as integer v = TEST_VAL
 		dim as integer ok
 		
 		select case v
-		case TEST - 8 to TEST - 5
+		case TEST_VAL - 8 to TEST_VAL - 5
 			ok = FALSE
-		case TEST - 6 to TEST - 4
+		case TEST_VAL - 6 to TEST_VAL - 4
 			ok = FALSE
-		case TEST - 4 to TEST - 3
+		case TEST_VAL - 4 to TEST_VAL - 3
 			ok = FALSE
-		case TEST - 2 to TEST - 2
+		case TEST_VAL - 2 to TEST_VAL - 2
 			ok = FALSE
-		case TEST - 1 
+		case TEST_VAL - 1 
 			ok = FALSE
-		case TEST + 1
+		case TEST_VAL + 1
 			ok = FALSE
-		case TEST + 2 to TEST + 2
+		case TEST_VAL + 2 to TEST_VAL + 2
 			ok = FALSE
-		case TEST + 3 to TEST + 4
+		case TEST_VAL + 3 to TEST_VAL + 4
 			ok = FALSE
-		case TEST + 4 to TEST + 6
+		case TEST_VAL + 4 to TEST_VAL + 6
 			ok = FALSE
-		case TEST + 5 to TEST + 8
+		case TEST_VAL + 5 to TEST_VAL + 8
 			ok = FALSE
-		case TEST - 1 to TEST + 1
+		case TEST_VAL - 1 to TEST_VAL + 1
 			ok = TRUE
 		case else
 			ok = FALSE
@@ -125,33 +125,33 @@ SUITE( fbc_tests.compound.select_ )
 	''::::
 	TEST( case_multiple_range )
 
-	const TEST = -100
+	const TEST_VAL = -100
 		
-		dim as integer v = TEST
+		dim as integer v = TEST_VAL
 		dim as integer ok
 		
 		select case v
-		case TEST - 8 to TEST - 5, TEST - 12 to TEST - 9
+		case TEST_VAL - 8 to TEST_VAL - 5, TEST_VAL - 12 to TEST_VAL - 9
 			ok = FALSE
-		case TEST - 6 to TEST - 4, TEST - 7 to TEST - 5
+		case TEST_VAL - 6 to TEST_VAL - 4, TEST_VAL - 7 to TEST_VAL - 5
 			ok = FALSE
-		case TEST - 4 to TEST - 3, TEST - 5 to TEST - 4
+		case TEST_VAL - 4 to TEST_VAL - 3, TEST_VAL - 5 to TEST_VAL - 4
 			ok = FALSE
-		case TEST - 2 to TEST - 2
+		case TEST_VAL - 2 to TEST_VAL - 2
 			ok = FALSE
-		case TEST - 1 
+		case TEST_VAL - 1 
 			ok = FALSE
-		case TEST + 1
+		case TEST_VAL + 1
 			ok = FALSE
-		case TEST + 2 to TEST + 2
+		case TEST_VAL + 2 to TEST_VAL + 2
 			ok = FALSE
-		case TEST + 3 to TEST + 4, TEST + 4 to TEST + 5
+		case TEST_VAL + 3 to TEST_VAL + 4, TEST_VAL + 4 to TEST_VAL + 5
 			ok = FALSE
-		case TEST + 4 to TEST + 6, TEST + 4 to TEST + 7
+		case TEST_VAL + 4 to TEST_VAL + 6, TEST_VAL + 4 to TEST_VAL + 7
 			ok = FALSE
-		case TEST + 5 to TEST + 8, TEST + 9 to TEST + 12
+		case TEST_VAL + 5 to TEST_VAL + 8, TEST_VAL + 9 to TEST_VAL + 12
 			ok = FALSE
-		case TEST - 1 to TEST + 1
+		case TEST_VAL - 1 to TEST_VAL + 1
 			ok = TRUE
 		case else
 			ok = FALSE
@@ -164,33 +164,33 @@ SUITE( fbc_tests.compound.select_ )
 	''::::
 	TEST( case_is_single_value )
 
-	const TEST = 100
+	const TEST_VAL = 100
 		
-		dim as integer v = TEST
+		dim as integer v = TEST_VAL
 		dim as integer ok
 		
 		select case v
-		case is < TEST - 5
+		case is < TEST_VAL - 5
 			ok = FALSE
-		case is <= TEST - 4
+		case is <= TEST_VAL - 4
 			ok = FALSE
-		case is < TEST - 3
+		case is < TEST_VAL - 3
 			ok = FALSE
-		case is < TEST - 2
+		case is < TEST_VAL - 2
 			ok = FALSE
-		case is <= TEST - 1
+		case is <= TEST_VAL - 1
 			ok = FALSE
-		case is > TEST + 1
+		case is > TEST_VAL + 1
 			ok = FALSE
-		case is >= TEST + 2
+		case is >= TEST_VAL + 2
 			ok = FALSE
-		case is > TEST + 3
+		case is > TEST_VAL + 3
 			ok = FALSE
-		case is >= TEST + 4
+		case is >= TEST_VAL + 4
 			ok = FALSE
-		case is > TEST + 5
+		case is > TEST_VAL + 5
 			ok = FALSE
-		case is >= TEST
+		case is >= TEST_VAL
 			ok = TRUE
 		case else
 			ok = FALSE
@@ -203,33 +203,33 @@ SUITE( fbc_tests.compound.select_ )
 	''::::
 	TEST( case_is_multiple_value )
 
-	const TEST = -100
+	const TEST_VAL = -100
 		
-		dim as integer v = TEST
+		dim as integer v = TEST_VAL
 		dim as integer ok
 		
 		select case v
-		case is < TEST - 5, is < TEST - 6, is < TEST - 7, is < TEST - 8
+		case is < TEST_VAL - 5, is < TEST_VAL - 6, is < TEST_VAL - 7, is < TEST_VAL - 8
 			ok = FALSE
-		case is <= TEST - 4, is <= TEST - 5, is <= TEST - 6
+		case is <= TEST_VAL - 4, is <= TEST_VAL - 5, is <= TEST_VAL - 6
 			ok = FALSE
-		case is < TEST - 3, is < TEST - 4
+		case is < TEST_VAL - 3, is < TEST_VAL - 4
 			ok = FALSE
-		case is < TEST - 2
+		case is < TEST_VAL - 2
 			ok = FALSE
-		case is <= TEST - 1
+		case is <= TEST_VAL - 1
 			ok = FALSE
-		case is > TEST + 1
+		case is > TEST_VAL + 1
 			ok = FALSE
-		case is >= TEST + 2
+		case is >= TEST_VAL + 2
 			ok = FALSE
-		case is > TEST + 3, is > TEST + 4
+		case is > TEST_VAL + 3, is > TEST_VAL + 4
 			ok = FALSE
-		case is >= TEST + 4, is >= TEST + 5, is >= TEST + 6
+		case is >= TEST_VAL + 4, is >= TEST_VAL + 5, is >= TEST_VAL + 6
 			ok = FALSE
-		case is > TEST + 5, is > TEST + 6, is > TEST + 7, is > TEST + 8
+		case is > TEST_VAL + 5, is > TEST_VAL + 6, is > TEST_VAL + 7, is > TEST_VAL + 8
 			ok = FALSE
-		case is <= TEST
+		case is <= TEST_VAL
 			ok = TRUE
 		case else
 			ok = FALSE
