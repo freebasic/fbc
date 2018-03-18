@@ -3,7 +3,7 @@
 SUITE( fbc_tests.compound.with_ )
 
 	''
-	namespace ns1
+	TEST_GROUP( basics )
 
 		dim shared i as integer = 123
 
@@ -20,7 +20,7 @@ SUITE( fbc_tests.compound.with_ )
 			this.i = i + 1
 		end constructor
 
-		TEST( basics )
+		TEST( default )
 			dim as UDT x1, x2
 			x1.i = 456
 
@@ -79,10 +79,10 @@ SUITE( fbc_tests.compound.with_ )
 			end with
 		END_TEST
 
-	end namespace
+	END_TEST_GROUP
 
 	''
-	namespace ns2
+	TEST_GROUP( tempvarVsRecursion )
 		type UDT
 			i as integer
 		end type
@@ -122,13 +122,14 @@ SUITE( fbc_tests.compound.with_ )
 			end with
 		end sub
 
-		TEST( tempvarVsRecursion )
+		TEST( default )
 			f1( )
 		END_TEST
-	end namespace
+
+	END_TEST_GROUP
 
 	''
-	namespace ns3
+	TEST_GROUP( implicitAddrOfPeek )
 		type NormalUdt
 			i as integer
 		end type
@@ -137,7 +138,7 @@ SUITE( fbc_tests.compound.with_ )
 			j as integer
 		end type
 
-		TEST( implicitAddrOfPeek )
+		TEST( default )
 			dim pany as any ptr
 			dim pinteger as integer ptr
 			dim pnormal1 as NormalUdt ptr
@@ -182,10 +183,11 @@ SUITE( fbc_tests.compound.with_ )
 				CU_ASSERT( sizeof( .j ) = sizeof( integer ) )
 			end with
 		END_TEST
-	end namespace
+
+	END_TEST_GROUP
 
 	''
-	namespace ns4
+	TEST_GROUP( functionResult )
 		'' WITH must take special care when given a function call which returns
 		'' an UDT, because it may be returned in registers on Win32.
 
@@ -221,7 +223,7 @@ SUITE( fbc_tests.compound.with_ )
 			return type( { 0, 1, 2, 3, i, 5, 6, 7, 8, 9 } )
 		end function
 
-		TEST( functionResult )
+		TEST( default )
 			with( fByteUdt( 111 ) )
 				CU_ASSERT( .i = 111 )
 			end with
@@ -247,10 +249,10 @@ SUITE( fbc_tests.compound.with_ )
 				CU_ASSERT( .i(9) = 9 )
 			end with
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 	''
-	namespace ns5
+	TEST_GROUP( CtorsDtors )
 		'' WITH should extend the lifetime of any temp vars from the given
 		'' expression, such that they're not destroyed until END WITH (or any
 		'' other EXIT/RETURN/GOTO out of the WITH block)
@@ -296,7 +298,7 @@ SUITE( fbc_tests.compound.with_ )
 			CU_ASSERT( dtors = 1 )
 		end function
 
-		TEST( CtorsDtors )
+		TEST( default )
 			ctors = 0
 			dtors = 0
 			scope
@@ -550,6 +552,6 @@ SUITE( fbc_tests.compound.with_ )
 			CU_ASSERT( udt2dtors = 1 )
 		END_TEST
 
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE
