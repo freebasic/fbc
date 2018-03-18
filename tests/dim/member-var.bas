@@ -2,7 +2,7 @@
 
 SUITE( fbc_tests.dim_.member_var )
 
-	namespace ns1
+	TEST_GROUP( basicUsage )
 		'' Checking that declarations & "bodies" are accepted,
 		'' also usage in expressions and assignments
 
@@ -24,7 +24,7 @@ SUITE( fbc_tests.dim_.member_var )
 		var UDT.i = 456
 
 		'' basic declaration/usage
-		TEST( basicUsage )
+		TEST( default )
 			CU_ASSERT( UDT.a = 0 )
 			CU_ASSERT( UDT.b = 0 )
 			CU_ASSERT( UDT.c = 0 )
@@ -63,9 +63,9 @@ SUITE( fbc_tests.dim_.member_var )
 
 			CU_ASSERT( @UDT.a = @x.a )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns2
+	TEST_GROUP( arrayAccessParsing )
 		'' Checking that the parser accepts array accesses on member vars
 
 		type UDT
@@ -77,7 +77,7 @@ SUITE( fbc_tests.dim_.member_var )
 		dim UDT.a(0 to 1) as integer
 
 		'' array access parsing
-		TEST( arrayAccessParsing )
+		TEST( default )
 			UDT.a(0) = 1
 			UDT.a(1) = 2
 			CU_ASSERT( UDT.a(0) = 1 )
@@ -106,9 +106,9 @@ SUITE( fbc_tests.dim_.member_var )
 			CU_ASSERT( y(1).a(0) = 5 )
 			CU_ASSERT( y(1).a(1) = 6 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns3
+	TEST_GROUP( udtFieldAccessParsing )
 		'' Same for field accesses
 
 		type OtherUDT
@@ -128,7 +128,7 @@ SUITE( fbc_tests.dim_.member_var )
 		end type
 
 		'' field access parsing
-		TEST( udtFieldAccessParsing )
+		TEST( default )
 			UDT.a.a = 1
 			UDT.a.b = 2
 			CU_ASSERT( UDT.a.a = 1 )
@@ -155,9 +155,9 @@ SUITE( fbc_tests.dim_.member_var )
 			CU_ASSERT( y.x.a.a = 5 )
 			CU_ASSERT( y.x.a.b = 6 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns4
+	TEST_GROUP( pointerDerefParsing )
 		type OtherUDT
 			as integer a, b
 		end type
@@ -189,7 +189,7 @@ SUITE( fbc_tests.dim_.member_var )
 		end function
 
 		'' pointer deref parsing
-		TEST( pointerDerefParsing )
+		TEST( default )
 			UDT.p1 = @x1
 			UDT.p2 = @x2
 
@@ -310,9 +310,9 @@ SUITE( fbc_tests.dim_.member_var )
 			CU_ASSERT( (* (*y).p2) .b = 3 )
 			CU_ASSERT( (*((*y).p2)).b = 3 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns5
+	TEST_GROUP( memberVarOutsideOfOriginalNamespace )
 		namespace a
 			namespace b
 				type UDT
@@ -328,7 +328,7 @@ SUITE( fbc_tests.dim_.member_var )
 		dim a.b.UDT.i2 as integer
 
 		'' member var bodies outside of parent namespace
-		TEST( memberVarOutsideOfOriginalNamespace )
+		TEST( default )
 			a.b.UDT.i1 = 123
 			CU_ASSERT( a.b.UDT.i1 = 123 )
 
@@ -340,9 +340,9 @@ SUITE( fbc_tests.dim_.member_var )
 			CU_ASSERT( x.i1 = 123 )
 			CU_ASSERT( x.i2 = 456 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns6
+	TEST_GROUP( memberVarWithInitializers )
 		type UDT
 			static i as integer
 			static array(0 to 2) as short
@@ -353,15 +353,15 @@ SUITE( fbc_tests.dim_.member_var )
 		dim UDT.array(0 to 2) as short = { 1, 2, 3 }
 
 		'' member var bodies with initializers
-		TEST( memberVarWithInitializers )
+		TEST( default )
 			CU_ASSERT( UDT.i = 123 )
 			CU_ASSERT( UDT.array(0) = 1 )
 			CU_ASSERT( UDT.array(1) = 2 )
 			CU_ASSERT( UDT.array(2) = 3 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns7
+	TEST_GROUP( inheritedMemberVars )
 		type A extends object
 			static i1 as integer
 			static i3 as integer
@@ -374,7 +374,7 @@ SUITE( fbc_tests.dim_.member_var )
 		dim as integer A.i1, A.i3, B.i1, B.i2
 
 		'' inherited member vars
-		TEST( inheritedMemberVars )
+		TEST( default )
 			A.i1 = 1
 			A.i3 = 2
 
@@ -398,9 +398,9 @@ SUITE( fbc_tests.dim_.member_var )
 			CU_ASSERT( xb.i2 = 4 )
 			CU_ASSERT( xb.i3 = 2 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns8
+	TEST_GROUP( parentUdtAsDataType )
 		'' Static member variables using the parent UDT should be allocated with
 		'' the proper size, even if they are declared above all/some fields.
 
@@ -417,7 +417,7 @@ SUITE( fbc_tests.dim_.member_var )
 		dim shared UDT.x as UDT    '' shouldn't have zero size
 		dim shared as long i1, i2  '' should be in separate memory
 
-		TEST( parentUdtAsDataType )
+		TEST( default )
 			UDT.x.i1 = 1
 			UDT.x.i2 = 2
 
@@ -429,6 +429,6 @@ SUITE( fbc_tests.dim_.member_var )
 			CU_ASSERT( @UDT.x.i1 <> @i1 )
 			CU_ASSERT( @UDT.x.i2 <> @i2 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

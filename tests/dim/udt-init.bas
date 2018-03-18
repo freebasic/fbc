@@ -2,7 +2,7 @@
 
 SUITE( fbc_tests.dim_.udt_init )
 
-	namespace ns1
+	TEST_GROUP( initObject )
 		type rational
 			num as integer
 			den as integer
@@ -20,7 +20,7 @@ SUITE( fbc_tests.dim_.udt_init )
 			function = res
 		end function
 
-		TEST( initObject )
+		TEST( default )
 			dim as rational rt(0 to 1) = _
 			{ _
 				add( type(1,2)   , type(3,4)   ), _
@@ -61,9 +61,9 @@ SUITE( fbc_tests.dim_.udt_init )
 			CU_ASSERT( arraytype(1).c(1) = 4*2 )
 			CU_ASSERT( arraytype(1).d = 6*2 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns2
+	TEST_GROUP( padding )
 		TEST( padding1 )
 			dim as integer array(0 to 9) = { 0, 1, 2, 3, 4 }
 			dim as integer i
@@ -90,9 +90,9 @@ SUITE( fbc_tests.dim_.udt_init )
 				CU_ASSERT( .f5 = 0 )
 			end with
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns3
+	TEST_GROUP( anyinit )
 		dim shared as integer ctor_count
 
 		type T
@@ -105,7 +105,7 @@ SUITE( fbc_tests.dim_.udt_init )
 		end constructor
 
 		'= ANY' UDT variable initializer
-		TEST( anyinit )
+		TEST( default )
 			CU_ASSERT( ctor_count = 0 )
 			scope
 				dim as T x = any
@@ -115,9 +115,9 @@ SUITE( fbc_tests.dim_.udt_init )
 			end scope
 			CU_ASSERT( ctor_count = 1 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns4
+	TEST_GROUP( obj1 )
 		type T
 			declare constructor
 			declare constructor (i as integer)
@@ -138,15 +138,15 @@ SUITE( fbc_tests.dim_.udt_init )
 			return T(420)
 		end function
 
-		TEST( obj1 )
+		TEST( default )
 			dim x as T = f( )
 			with x
 				CU_ASSERT( (.i or .j or .k or .l or .m) = 0 )
 			end with
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns5
+	TEST_GROUP( obj2 )
 		type T
 			declare constructor
 			declare constructor (i as integer)
@@ -167,15 +167,15 @@ SUITE( fbc_tests.dim_.udt_init )
 			return T(420)
 		end function
 
-		TEST( obj2 )
+		TEST( default )
 			dim x as T = f( )
 			with x
 				CU_ASSERT( (.i + .j + .k + .l + .m) = 15 )
 			end with
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns6
+	TEST_GROUP( obj3 )
 		type T
 			declare constructor
 			declare constructor (i as integer)
@@ -198,7 +198,7 @@ SUITE( fbc_tests.dim_.udt_init )
 			return T(420)
 		end function
 
-		TEST( obj3 )
+		TEST( default )
 			dim x as T = f( )
 			with x
 				CU_ASSERT( ( .i = 420 ) )
@@ -208,9 +208,9 @@ SUITE( fbc_tests.dim_.udt_init )
 				CU_ASSERT( ( .m = 0 ) )
 			end with
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns6
+	TEST_GROUP( derived )
 		type UDT1
 			as integer i11, i12
 		end type
@@ -231,7 +231,7 @@ SUITE( fbc_tests.dim_.udt_init )
 			as integer i51, i52, i53, i54, i55
 		end type
 
-		TEST( derived )
+		TEST( default )
 			dim u1 as UDT5 = ( 1, 2, 3, 4, 5, 6, 7, 8, 9 )
 			dim u2 as UDT5
 			u2 = type( 1, 2, 3, 4, 5, 6, 7, 8, 9 )
@@ -276,9 +276,9 @@ SUITE( fbc_tests.dim_.udt_init )
 			CU_ASSERT( u2.i54 = 0 )
 			CU_ASSERT( u2.i55 = 0 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns7
+	TEST_GROUP( dtorOnly )
 		type DtorUDT
 			i as integer
 			declare destructor( )
@@ -292,7 +292,7 @@ SUITE( fbc_tests.dim_.udt_init )
 		dim shared as DtorUDT globalx1 = ( 123 )
 
 		'' dtor-UDT init
-		TEST( dtorOnly )
+		TEST( default )
 			'' ditto
 			static as DtorUDT staticx1 = ( 123 )
 
@@ -302,6 +302,6 @@ SUITE( fbc_tests.dim_.udt_init )
 			CU_ASSERT( staticx1.i = 123 )
 			CU_ASSERT( localx1.i = 123 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

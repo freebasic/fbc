@@ -54,7 +54,7 @@ SUITE( fbc_tests.dim_.redim_ )
 		CU_ASSERT_EQUAL( ubound(foo), 4 )
 	END_TEST
 
-	namespace ns1
+	TEST_GROUP( typeless )
 		dim shared globalarray() as string
 
 		private function globalarrayLbound( ) as integer
@@ -65,7 +65,7 @@ SUITE( fbc_tests.dim_.redim_ )
 			function = ubound( globalarray )
 		end function
 
-		TEST( typeless )
+		TEST( default )
 			'' Typeless REDIM, should redim the global array, and not create
 			'' a local var that shadows the global.
 			redim globalarray(1 to 2)
@@ -76,14 +76,14 @@ SUITE( fbc_tests.dim_.redim_ )
 			CU_ASSERT( globalarrayLbound( ) = 1 )
 			CU_ASSERT( globalarrayUbound( ) = 2 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 	'' Regression test for #3474348
-	namespace ns2
+	TEST_GROUP( commonRedimRedim )
 		common array() as integer
 
 		'' Common/Redim/Redim
-		TEST( commonRedimRedim )
+		TEST( default )
 			redim array(0 to 4) as integer
 			CU_ASSERT( lbound( array ) = 0 )
 			CU_ASSERT( ubound( array ) = 4 )
@@ -92,9 +92,9 @@ SUITE( fbc_tests.dim_.redim_ )
 			CU_ASSERT( lbound( array ) = 0 )
 			CU_ASSERT( ubound( array ) = 9 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns3
+	TEST_GROUP( commonDim )
 		common array() as integer
 
 		private function f( ) as integer
@@ -104,7 +104,7 @@ SUITE( fbc_tests.dim_.redim_ )
 		end function
 
 		'' Common/Dim
-		TEST( commonDim )
+		TEST( default )
 			'' Dim is allowed after Common -- as in QB.
 			dim array(0 to 4) as integer
 
@@ -113,7 +113,7 @@ SUITE( fbc_tests.dim_.redim_ )
 
 			CU_ASSERT( f( ) = 4 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 	'' Regression test for #3510684: An array using a different mangling, which
 	'' affects the array descriptor too -- should still work just the same.
@@ -132,7 +132,7 @@ SUITE( fbc_tests.dim_.redim_ )
 		CU_ASSERT( global2(0) = 123 )
 	END_TEST
 
-	namespace ns4
+	TEST_GROUP( dtorOnlyElements )
 		type DtorUdt
 			i as integer
 			declare destructor( )
@@ -145,7 +145,7 @@ SUITE( fbc_tests.dim_.redim_ )
 		'' allocating this many DtorUdt's from heap
 		const ARRAY_SIZE = 1024
 
-		TEST( dtorOnlyElementsAreClearedRedim )
+		TEST( areClearedRedim )
 			'' new array
 			redim array(0 to ARRAY_SIZE-1) as DtorUdt
 			for i as integer = lbound( array ) to ubound( array )
@@ -159,7 +159,7 @@ SUITE( fbc_tests.dim_.redim_ )
 			next
 		END_TEST
 
-		TEST( dtorOnlyElementsAreClearedRedimPreserve )
+		TEST( areClearedRedimPreserve )
 			'' new array
 			redim preserve array(0 to ARRAY_SIZE-1) as DtorUdt
 			for i as integer = lbound( array ) to ubound( array )
@@ -172,15 +172,15 @@ SUITE( fbc_tests.dim_.redim_ )
 				CU_ASSERT( array(i).i = 0 )
 			next
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns5
+	TEST_GROUP( dynamicArrayVarAsExpression )
 		'' Dynamic array variable given to REDIM in form of an expression,
 		'' instead of just as plain identifier.
 
 		dim shared global1() as integer
 
-		TEST( dynamicArrayVarAsExpression )
+		TEST( default )
 			CU_ASSERT( lbound( global1 ) = 0 ) : CU_ASSERT( ubound( global1 ) = -1 )
 
 			redim (global1)(1 to 1)
@@ -192,9 +192,9 @@ SUITE( fbc_tests.dim_.redim_ )
 			redim (local1)(1 to 1)
 			CU_ASSERT( lbound( local1 ) = 1 ) : CU_ASSERT( ubound( local1 ) = 1 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns6
+	TEST_GROUP( staticMemberDynamicArrayAccess )
 		'' REDIM'ing a dynamic array that is a static member in a UDT.
 
 		type UDT
@@ -241,7 +241,7 @@ SUITE( fbc_tests.dim_.redim_ )
 			redim array(l to u)
 		end sub
 
-		TEST( staticMemberDynamicArrayAccess )
+		TEST( default )
 			#macro expectbounds( l, u )
 				CU_ASSERT( lbound( UDT.array ) = l )
 				CU_ASSERT( ubound( UDT.array ) = u )
@@ -288,9 +288,9 @@ SUITE( fbc_tests.dim_.redim_ )
 			UDT.f6( 1, 1 )
 			expectbounds( 1, 1 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns7
+	TEST_GROUP( dynamicArrayFieldsGlobal )
 		type UDT
 			array1(any) as integer
 			array2(any) as integer
@@ -299,7 +299,7 @@ SUITE( fbc_tests.dim_.redim_ )
 		dim shared globalx as UDT
 		dim shared pglobalx as UDT ptr = @globalx
 
-		TEST( dynamicArrayFieldsGlobal )
+		TEST( default )
 			#macro expectbounds( l1, u1, l2, u2 )
 				CU_ASSERT( lbound( globalx.array1 ) = l1 ) : CU_ASSERT( ubound( globalx.array1 ) = u1 )
 				CU_ASSERT( lbound( globalx.array2 ) = l2 ) : CU_ASSERT( ubound( globalx.array2 ) = u2 )
@@ -321,15 +321,15 @@ SUITE( fbc_tests.dim_.redim_ )
 			redim pglobalx->array2(2 to 2)
 			expectbounds( 1, 1, 2, 2 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns8
+	TEST_GROUP( dynamicArrayFieldsLocal )
 		type UDT
 			array1(any) as integer
 			array2(any) as integer
 		end type
 
-		TEST( dynamicArrayFieldsLocal )
+		TEST( default )
 			dim x as UDT
 			dim px as UDT ptr = @x
 
@@ -354,9 +354,9 @@ SUITE( fbc_tests.dim_.redim_ )
 			redim px->array2(2 to 2)
 			expectbounds( 1, 1, 2, 2 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns9
+	TEST_GROUP( implicitThisExplicitType )
 		'' REDIMs in methods should redim array fields, instead of making new
 		'' local arrays
 
@@ -374,7 +374,7 @@ SUITE( fbc_tests.dim_.redim_ )
 			redim array(2 to 2)
 		end sub
 
-		TEST( implicitThisExplicitType )
+		TEST( default )
 			dim x as UDT
 			CU_ASSERT( lbound( x.array ) = 0 )
 			CU_ASSERT( ubound( x.array ) = -1 )
@@ -385,6 +385,6 @@ SUITE( fbc_tests.dim_.redim_ )
 			CU_ASSERT( lbound( x.array ) = 2 )
 			CU_ASSERT( ubound( x.array ) = 2 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

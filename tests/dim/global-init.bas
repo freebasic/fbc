@@ -2,16 +2,16 @@
 
 SUITE( fbc_tests.dim_.global_init )
 
-	namespace ns1
+	TEST_GROUP( addrofGlobal )
 		'' -gen gcc regression test: This shouldn't trigger a gcc warning.
 		dim shared a as integer
 		dim shared b as integer = @a
-		TEST( addrofGlobal )
+		TEST( default )
 			CU_ASSERT( b = @a )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns2
+	TEST_GROUP( dimTypeiniConstant )
 		dim shared   b as     byte = type<    byte>( 1)
 		dim shared  ub as    ubyte = type<   ubyte>( 2)
 		dim shared  sh as    short = type<   short>( 3)
@@ -27,7 +27,7 @@ SUITE( fbc_tests.dim_.global_init )
 		dim shared   z as zstring * 32 = type<string>( "13" )
 		dim shared   w as wstring * 32 = type<string>( "14" )
 		dim shared pany as any ptr = type<any ptr>( cptr( any ptr, 15 ) )
-		TEST( dimTypeiniConstant )
+		TEST( default )
 			CU_ASSERT(   b =  1 )
 			CU_ASSERT(  ub =  2 )
 			CU_ASSERT(  sh =  3 )
@@ -44,9 +44,9 @@ SUITE( fbc_tests.dim_.global_init )
 			CU_ASSERT(   w = "14" )
 			CU_ASSERT( pany = cptr( any ptr, 15 ) )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns3
+	TEST_GROUP( autoTypeiniConstant )
 		var shared   b = type<    byte>( 1)
 		var shared  ub = type<   ubyte>( 2)
 		var shared  sh = type<   short>( 3)
@@ -60,7 +60,7 @@ SUITE( fbc_tests.dim_.global_init )
 		var shared   f = type<  single>(11)
 		var shared   d = type<  double>(12)
 		var shared pany = type<any ptr>( cptr( any ptr, 15 ) )
-		TEST( autoTypeiniConstant )
+		TEST( default )
 			CU_ASSERT(   b =  1 )
 			CU_ASSERT(  ub =  2 )
 			CU_ASSERT(  sh =  3 )
@@ -75,9 +75,9 @@ SUITE( fbc_tests.dim_.global_init )
 			CU_ASSERT(   d = 12 )
 			CU_ASSERT( pany = cptr( any ptr, 15 ) )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns4
+	TEST_GROUP( typeiniOffset )
 		dim shared i as integer
 		dim shared a as integer ptr = @i
 		#ifdef __FB_64BIT__
@@ -85,18 +85,18 @@ SUITE( fbc_tests.dim_.global_init )
 		#else
 			dim shared b as long = @i
 		#endif
-		TEST( typeiniOffset )
+		TEST( default )
 			CU_ASSERT( a = @i )
 			CU_ASSERT( b = cint( @i ) )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns5
+	TEST_GROUP( autoOffset )
 		var shared i = 0
 		var shared a = @i
-		TEST( autoOffset )
+		TEST( default )
 			CU_ASSERT( a = @i )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

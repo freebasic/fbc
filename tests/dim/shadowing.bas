@@ -96,7 +96,7 @@ SUITE( fbc_tests.dim_.shadowing )
 		expectbounds( 1, 1 )
 	END_TEST
 
-	namespace ns1
+	TEST_GROUP( dimImplicitThisField )
 		type UDT
 			i as integer
 			array(0 to 1) as integer
@@ -116,12 +116,12 @@ SUITE( fbc_tests.dim_.shadowing )
 		end function
 
 		'' dim shadowing implicit THIS field
-		TEST( dimImplicitThisField )
+		TEST( default )
 			dim x as UDT
 			CU_ASSERT( @x.i <> x.f1( ) )
 			CU_ASSERT( @x.array(0) <> x.f2( ) )
 		END_TEST
 
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

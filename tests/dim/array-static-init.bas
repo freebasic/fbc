@@ -15,7 +15,7 @@ SUITE( fbc_tests.dim_.array_static_init )
 		CU_ASSERT_EQUAL( pf->bar(3), -1234 )
 	END_TEST
 
-	namespace ns1
+	TEST_GROUP( regression3544952 )
 		'' Regression test for #3544952; this should compile fine
 		type Parent
 			a as integer
@@ -28,12 +28,12 @@ SUITE( fbc_tests.dim_.array_static_init )
 		type FwdrefChild extends Parent
 		end type
 
-		TEST( regression3544952 )
+		TEST( default )
 			'' This REDIM ensures the array is used/referenced,
 			'' forcing the static array desciptor to be emitted,
 			'' which caused the problem.
 			redim array(0 to 0)
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE

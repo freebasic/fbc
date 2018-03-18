@@ -3,7 +3,7 @@
 
 SUITE( fbc_tests.dim_.byref_ )
 
-	namespace ns1
+	TEST_GROUP( simpleVars )
 		'' Globals
 		dim shared gi as integer = 123
 
@@ -23,7 +23,7 @@ SUITE( fbc_tests.dim_.byref_ )
 			i += 1
 		end sub
 
-		TEST( simpleVars )
+		TEST( default )
 			'' Globals
 			scope
 				CU_ASSERT( gr1 = 123 ) : CU_ASSERT( @gr1 = @gi )
@@ -106,9 +106,9 @@ SUITE( fbc_tests.dim_.byref_ )
 				CU_ASSERT( i = 112 )
 			end scope
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns2
+	TEST_GROUP( allDtypes )
 		type PodUdt
 			i as integer
 		end type
@@ -175,7 +175,7 @@ SUITE( fbc_tests.dim_.byref_ )
 		dim shared byref as Parent rparent1 = xchild
 		dim shared byref rparent2 as Parent = xchild
 
-		TEST( allDtypes )
+		TEST( default )
 			s = "11"
 
 			CU_ASSERT( rb   = 1 )
@@ -466,16 +466,16 @@ SUITE( fbc_tests.dim_.byref_ )
 				CU_ASSERT( rpany = cptr( any ptr, 16 ) )
 			end scope
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns3
+	TEST_GROUP( callByrefFunctionPtrThroughByref )
 		dim shared i as integer = 123
 
 		function f( ) byref as integer
 			function = i
 		end function
 
-		TEST( callByrefFunctionPtrThroughByref )
+		TEST( default )
 			CU_ASSERT( f( ) = 123 )
 			CU_ASSERT( @(f( )) = @i )
 
@@ -487,9 +487,9 @@ SUITE( fbc_tests.dim_.byref_ )
 			CU_ASSERT( p2( ) = 123 )
 			CU_ASSERT( @(p2( )) = @i )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns4
+	TEST_GROUP( noCtorsCalled )
 		dim shared as integer ctors, dtors
 
 		type ClassUdt
@@ -534,7 +534,7 @@ SUITE( fbc_tests.dim_.byref_ )
 		dim shared byref globaludtref1 as ClassUdt = globaludt
 		var shared byref globaludtref2             = globaludt
 
-		TEST( noCtorsCalled )
+		TEST( default )
 			CU_ASSERT( ctors = 1 )
 			CU_ASSERT( dtors = 0 )
 
@@ -555,9 +555,9 @@ SUITE( fbc_tests.dim_.byref_ )
 			CU_ASSERT( ctors = 1 )
 			CU_ASSERT( dtors = 0 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
-	namespace ns5
+	TEST_GROUP( privateDtor )
 		type UDT
 			private:
 				dummy as integer
@@ -573,7 +573,7 @@ SUITE( fbc_tests.dim_.byref_ )
 			delete @this
 		end sub
 
-		TEST( privateDtor )
+		TEST( default )
 			dim as UDT ptr p = new UDT
 
 			'' It should be allowed to create a reference to a UDT even if
@@ -582,7 +582,7 @@ SUITE( fbc_tests.dim_.byref_ )
 
 			p->free()
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 	namespace externs
 		TEST( globalExterns )

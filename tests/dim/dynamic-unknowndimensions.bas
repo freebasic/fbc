@@ -2,7 +2,7 @@
 
 SUITE( fbc_tests.dim_.dynamic_unknowndimensions )
 
-	namespace ns1
+	TEST_GROUP( uboundDimensionCount )
 		'' With the compiler tracking the dimension count of dynamic arrays
 		'' at compile-time, check whether it doesn't get confused with
 		'' allocated & unallocated dynamic arrays.
@@ -13,7 +13,7 @@ SUITE( fbc_tests.dim_.dynamic_unknowndimensions )
 		end sub
 
 		'' ubound() dimension count
-		TEST( uboundDimensionCount )
+		TEST( default )
 			'' We've seen array1() being REDIM'ed to 3 dimensions, but at
 			'' runtime it's unallocated here still.
 			CU_ASSERT( ubound( array1, 0 ) = 0 )
@@ -29,6 +29,6 @@ SUITE( fbc_tests.dim_.dynamic_unknowndimensions )
 			redim array2(0 to 1)
 			CU_ASSERT( ubound( array2, 0 ) = 1 )
 		END_TEST
-	end namespace
+	END_TEST_GROUP
 
 END_SUITE
