@@ -1,34 +1,26 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.pp.inconce1
+SUITE( fbc_tests.pp.inc_once1 )
 
-sub test1 cdecl
+	TEST( test1 )
 
-  dim inc_counter1 as integer = 0
+	  dim inc_counter1 as integer = 0
 
-#include "inc1.bi"
-  CU_ASSERT_EQUAL( inc_counter1, 1 )
+	#include "inc1.bi"
+	  CU_ASSERT_EQUAL( inc_counter1, 1 )
 
-#include "inc1.bi"
-  CU_ASSERT_EQUAL( inc_counter1, 2 )
+	#include "inc1.bi"
+	  CU_ASSERT_EQUAL( inc_counter1, 2 )
 
-#include once "../pp/inc1.bi"
-  CU_ASSERT_EQUAL( inc_counter1, 2 )
+	#include once "../pp/inc1.bi"
+	  CU_ASSERT_EQUAL( inc_counter1, 2 )
 
-#include once "../pp/inc1.bi"
-  CU_ASSERT_EQUAL( inc_counter1, 2 )
+	#include once "../pp/inc1.bi"
+	  CU_ASSERT_EQUAL( inc_counter1, 2 )
 
-#include "../pp/inc1.bi"
-  CU_ASSERT_EQUAL( inc_counter1, 3 )
+	#include "../pp/inc1.bi"
+	  CU_ASSERT_EQUAL( inc_counter1, 3 )
 
-end sub
+	END_TEST
 
-
-private sub ctor () constructor
-
-  fbcu.add_suite("fbc_tests.pp.inc_once1")
-  fbcu.add_test("test1", @test1)
-
-end sub
-
-end namespace
+END_SUITE

@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 # macro hello1( )
 	 	
@@ -30,26 +30,18 @@
 	 
 # endmacro
 
-namespace fbc_tests.macros.macro_trim
+SUITE( fbc_tests.macros.macro_trim )
 
-sub noArgTest cdecl ()
+	TEST( noArgTest )
 
-  CU_ASSERT_EQUAL( hello1( ) + world1( ), "helloworld!" ) 
+	  CU_ASSERT_EQUAL( hello1( ) + world1( ), "helloworld!" ) 
 
-end sub
+	END_TEST
   
-sub withArgTest cdecl ()
+	TEST( withArgTest )
 
-  CU_ASSERT_EQUAL( hello2( __ ) + world2( __ ), "helloworld!" ) 
+	  CU_ASSERT_EQUAL( hello2( __ ) + world2( __ ), "helloworld!" ) 
 
-end sub
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.pp.macro_trim")
-	fbcu.add_test("noArgTest", @noArgTest)
-	fbcu.add_test("withArgTest", @withArgTest)
-
-end sub
-
-end namespace
+END_SUITE

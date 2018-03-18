@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 '' - don't mix false/true intrinsic constants 
 ''   of the compiler in with these tests
@@ -10,49 +10,40 @@
 
 # define FOO TRUE
 
-namespace fbc_tests.macros.conditional
+SUITE( fbc_tests.macros.conditional )
 
-sub ifEqualityTest cdecl ()
+	TEST( ifEqualityTest )
 
-# if FOO = TRUE
-CU_PASS("")
-# else
-CU_FAIL_FATAL("")
-# endif
+		# if FOO = TRUE
+		CU_PASS("")
+		# else
+		CU_FAIL_FATAL("")
+		# endif
 
-end sub
+	END_TEST
 
-sub ifInequalityTest cdecl ()
+	TEST( ifInequalityTest )
 
-# if FOO <> FALSE and not defined(BAR)
-CU_PASS("")
-# else
-CU_FAIL_FATAL("")
-# endif
+		# if FOO <> FALSE and not defined(BAR)
+		CU_PASS("")
+		# else
+		CU_FAIL_FATAL("")
+		# endif
 
-end sub
+	END_TEST
 
-sub elseifDefinedTest cdecl ()
+	TEST( elseifDefinedTest )
 
-# if defined(FOO) and defined(BAR)
-CU_FAIL_FATAL("")
-# elseif not defined(FOO) and defined(BAR)
-CU_FAIL_FATAL("")
-# elseif defined(FOO) and not defined(BAR)
-CU_PASS("")
-# elseif not defined(FOO) or not defined(BAR)
-CU_FAIL_FATAL("")
-# endif
+		# if defined(FOO) and defined(BAR)
+		CU_FAIL_FATAL("")
+		# elseif not defined(FOO) and defined(BAR)
+		CU_FAIL_FATAL("")
+		# elseif defined(FOO) and not defined(BAR)
+		CU_PASS("")
+		# elseif not defined(FOO) or not defined(BAR)
+		CU_FAIL_FATAL("")
+		# endif
 
-end sub
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.pp.conditional")
-	fbcu.add_test("ifEqualityTest", @ifEqualityTest)
-	fbcu.add_test("ifInequalityTest", @ifInequalityTest)
-	fbcu.add_test("elseifDefinedTest", @elseifDefinedTest)
-
-end sub
-
-end namespace
+END_SUITE
