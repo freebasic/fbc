@@ -80,6 +80,8 @@ SUITE( fbc_tests.typedef.backpatch )
 
 	END_TEST
 
+	#if __FB_BACKEND__ = "gas"
+
 	'' BYREF AS FWDREF param length
 	TEST_GROUP( byrefFwdrefParamLength )
 		type UDT as FWDREF
@@ -107,17 +109,13 @@ SUITE( fbc_tests.typedef.backpatch )
 			function = result
 		end function
 
-		sub test_proc( )
+		TEST( default )
 			dim x as UDT
 			CU_ASSERT( f1( x, 123, 456, 789 ) = 123 + 456 + 789 )
-		end sub
-
-		#if __FB_BACKEND__ = "gas"
-		TEST( default )
-			test_proc
 		END_TEST
-		#endif
 
 	END_TEST_GROUP
+
+	#endif
 
 END_SUITE
