@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.pointers.ptrToFuncArray )
+SUITE( fbc_tests.pointers.array_ptr_fn )
 
 	const TEST_VAL = &hdeadbeef
 
@@ -18,8 +18,7 @@ SUITE( fbc_tests.pointers.ptrToFuncArray )
 	dim shared i as integer = 5
 	dim shared j as integer = 3
 	
-	TEST( all )
-
+	TEST( ptrToFuncArray )
 		CU_ASSERT_EQUAL( *fnarray(i)[j]( 1, 2, 3 ), TEST_VAL )
 
 	END_TEST
