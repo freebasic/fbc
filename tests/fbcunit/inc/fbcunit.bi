@@ -242,7 +242,7 @@
 		#macro END_TEST_EMIT( suite_name, group_name, test_name, global )
 			end sub
 			__private sub tests.##suite_name##.##test_name##_ctor cdecl () __constructor
-				fbcu.add_test( #test_name, __procptr(tests.##suite_name##.##test_name), global )
+				fbcu.add_test( #suite_name, #test_name, __procptr(tests.##suite_name##.##test_name), global )
 			end sub
 			FBCU_TRACE( "END_TEST" test_name )
 		#endmacro
@@ -257,11 +257,11 @@
 		#macro END_SUITE_EMIT( suite_name, id )
 				private sub suite##_ctor##id cdecl () constructor
 					#if (defined( TMP_FBCUNIT_SUITE_HAVE_INIT ) andalso defined( TMP_FBCUNIT_SUITE_HAVE_CLEANUP ))
-						fbcu.add_suite( #suite_name, procptr(init), procptr(cleanup) )
+						fbcu.add_suite( #suite_name, procptr(tests.##suite_name##.init), procptr(tests.##suite_name##.cleanup) )
 					#elseif defined( TMP_FBCUNIT_SUITE_HAVE_INIT )
-						fbcu.add_suite( #suite_name, procptr(init), FBCU_NULL )
+						fbcu.add_suite( #suite_name, procptr(tests.##suite_name##.init), FBCU_NULL )
 					#elseif defined( TMP_FBCUNIT_SUITE_HAVE_CLEANUP )
-						fbcu.add_suite( #suite_name, FBCU_NULL, procptr(cleanup) )
+						fbcu.add_suite( #suite_name, FBCU_NULL, procptr(tests.##suite_name##.cleanup) )
 					#else
 						fbcu.add_suite( #suite_name, FBCU_NULL, FBCU_NULL )
 					#endif
@@ -309,9 +309,9 @@
 				end sub
 				private sub test_name##_ctor cdecl () constructor
 				#if #group_name > ""
-					fbcu.add_test( #group_name + "." + #test_name, procptr(test_name), global )
+					fbcu.add_test( #suite_name, #group_name + "." + #test_name, procptr(test_name), global )
 				#else
-					fbcu.add_test( #test_name, procptr(test_name), global )
+					fbcu.add_test( #suite_name, #test_name, procptr(test_name), global )
 				#endif
 				end sub
 			FBCU_TRACE( "END_TEST" test_name )
@@ -520,6 +520,7 @@
 
 	declare sub fbcu.add_test alias "fbcu_add_test_qb" _
 		( _
+			byval suite_name as __zstring __ptr = FBCU_NULL, _
 			byval test_name as __zstring __ptr = FBCU_NULL, _
 			byval test_proc as sub cdecl ( ) = FBCU_NULL, _
 			byval is_global as __boolean = __false _
@@ -647,6 +648,7 @@ namespace fbcu
 
 	declare sub add_test _
 		( _
+			byval suite_name as zstring ptr = FBCU_NULL, _
 			byval test_name as zstring ptr = FBCU_NULL, _
 			byval test_proc as sub cdecl ( ) = FBCU_NULL, _
 			byval is_global as boolean = false _

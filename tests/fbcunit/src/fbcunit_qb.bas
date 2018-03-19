@@ -45,12 +45,13 @@ end function
 ''
 sub fbcu_add_test_qb alias "fbcu_add_test_qb" _
 	( _
+		byval suite_name as zstring ptr = FBCU_NULL, _
 		byval test_name as zstring ptr = FBCU_NULL, _
 		byval test_proc as sub cdecl ( ) = FBCU_NULL, _
 		byval is_global as boolean = false _
 	)
 	
-	fbcu.add_test( test_name, test_proc, is_global )
+	fbcu.add_test( suite_name, test_name, test_proc, is_global )
 
 end sub
 

@@ -207,6 +207,16 @@ namespace fbcu
 		fbcu_suite_index = find_suite( suite_name )
 
 		if( fbcu_suite_index <> INVALID_INDEX ) then
+			with fbcu_suites( fbcu_suite_index )
+				if( init_proc ) then
+					'' !!! FIXME !!! - if suite was already added we should generate an error or keep a list of init procs
+					.init_proc = init_proc
+				end if
+				if( term_proc ) then
+					'' !!! FIXME !!! - if suite was already added we should generate an error or keep a list of cleanup procs
+					.term_proc = term_proc
+				end if
+			end with
 			exit sub
 		end if
 
@@ -225,7 +235,7 @@ namespace fbcu
 			if( suite_name ) then
 				.name = *suite_name
 			else
-				.name = "[global]"
+				.name = "fbcu_global"
 			end if
 
 			.name_nocase = lcase(.name)
@@ -264,6 +274,7 @@ namespace fbcu
 	''
 	sub add_test _
 		( _
+			byval suite_name as zstring ptr, _
 			byval test_name as zstring ptr, _
 			byval test_proc as sub cdecl ( ), _
 			byval is_global as boolean = false _
@@ -273,8 +284,10 @@ namespace fbcu
 			fbcu_suite_index = fbcu_suite_default_index
 		end if
 		
+		fbcu_suite_index = find_suite( suite_name )
+
 		if( fbcu_suite_index = INVALID_INDEX ) then
-			add_suite( )
+			add_suite( suite_name )
 		end if
 
 		if( fbcu_tests_max = 0 ) then

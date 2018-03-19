@@ -45,3 +45,7 @@ fbcunit TODO/BUG list:
 [ ] allowing adding flags to individual tests, especially:
 	TEST_SET_CONSOLE(1) - indicate that test generates console output
 	TEST_SET_INTERACTIVE(1) - indicates test is interactive
+
+[ ] add_suite() might be called with same name as a suite already
+	added but with different init/cleanup procs.  fbcunit framework
+	should maintain a list of init/cleanup procs instead of just one

@@ -18,6 +18,9 @@ Version 0.7
 - fbcu.sngApprox() API function - units in last place comparison for singles
 - TEST_GROUP( group_name ) and END_TEST_GROUP macros added
 
+[changed]
+- add_test() API function changed to require suite name.  Module constructors might execute in any order and can't depend on add_suite called before add_test
+
 [fixed]
 - suite names are now allowed to have '.' in the name
 - SUITE() uses 'fbcu_global' by default if no suite_name given
