@@ -24,9 +24,10 @@ namespace fbc_tests.pretest.style_direct
 
 	private sub ctor () constructor
 	
-		fbcu.add_suite("fbc_tests.pretest.style_direct")
-		fbcu.add_test("test1", @test1)
-		fbcu.add_test("test2", @test2)
+		#define SUITE_NAME "fbc_tests.pretest.style_direct"
+		fbcu.add_suite( SUITE_NAME )
+		fbcu.add_test( SUITE_NAME, "test1", @test1)
+		fbcu.add_test( SUITE_NAME, "test2", @test2)
 	
 	end sub
 
