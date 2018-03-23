@@ -5,6 +5,11 @@
 '' Local (scoped) vars should not cause EXTERNs to be allocated, even if
 '' shadowing them.
 
+'' See:
+''  - extern-not-allocated-by-local.bi
+''  - extern-not-allocated-by-local-1.bas
+''  - extern-not-allocated-by-local-2.bas
+
 scope
 	dim should_not_be_allocated_by_local_i1 as integer = -1
 	static should_not_be_allocated_by_local_i2 as integer = -2
@@ -32,8 +37,8 @@ private sub test_proc
 	static should_not_be_allocated_by_local_i8 as integer = -8
 end sub
 
-SUITE( fbc_tests.dim_ )
-	TEST( extern_not_allocated_by_local_1 )
+SUITE( fbc_tests.dim_.extern_not_allocated_by_local_1 )
+	TEST( default )
 		test_proc
 	END_TEST
 END_SUITE

@@ -2,6 +2,11 @@
 
 #include "extern-not-allocated-by-local.bi"
 
+'' See:
+''  - extern-not-allocated-by-local.bi
+''  - extern-not-allocated-by-local-1.bas
+''  - extern-not-allocated-by-local-2.bas
+
 dim should_not_be_allocated_by_local_i1 as integer = 1
 dim should_not_be_allocated_by_local_i2 as integer = 2
 dim should_not_be_allocated_by_local_i3 as integer = 3
@@ -22,8 +27,8 @@ private sub test_proc
 	CU_ASSERT( should_not_be_allocated_by_local_i8 = 8 )
 end sub
 
-SUITE( fbc_tests.dim_ )
-	TEST( extern_not_allocated_by_local_2 )
+SUITE( fbc_tests.dim_.extern_not_allocated_by_local_2 )
+	TEST( default )
 		test_proc
 	END_TEST
 END_SUITE

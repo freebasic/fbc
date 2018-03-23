@@ -2,6 +2,12 @@
 
 #include "common-shared.bi"
 
+'' COMMON SHARED in the global namespace test
+'' See:
+''  - common-shared.bi
+''  - common-shared-1.bas
+''  - common-shared-2.bas
+
 '' REDIM'ing a COMMON (dynamic) array
 '' Note: DIM works like REDIM for COMMONs; SHARED is mostly ignored
 
@@ -59,8 +65,8 @@ namespace shadowingACommon
 	end sub
 end namespace
 
-SUITE( fbc_tests.dim_ )
-	TEST( common_shared_1 )
+SUITE( fbc_tests.dim_.common_shared_1 )
+	TEST( default )
 		test_proc
 	END_TEST
 	TEST( shadowing_a_common )
