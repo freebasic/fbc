@@ -255,7 +255,7 @@
 		#endmacro
 
 		#macro END_SUITE_EMIT( suite_name, id )
-				private sub suite##_ctor##id cdecl () constructor
+				private sub suite_ctor##id cdecl () constructor
 					#if (defined( TMP_FBCUNIT_SUITE_HAVE_INIT ) andalso defined( TMP_FBCUNIT_SUITE_HAVE_CLEANUP ))
 						fbcu.add_suite( #suite_name, procptr(tests.##suite_name##.init), procptr(tests.##suite_name##.cleanup) )
 					#elseif defined( TMP_FBCUNIT_SUITE_HAVE_INIT )

@@ -49,3 +49,10 @@ fbcunit TODO/BUG list:
 [ ] add_suite() might be called with same name as a suite already
 	added but with different init/cleanup procs.  fbcunit framework
 	should maintain a list of init/cleanup procs instead of just one
+
+[ ] SUITE() can be used in more than one module with the same name,
+	that's OK, however, the constructor might be duplicated at the
+	END_SUITE - It uses the __LINE__ built-in to generate unique 
+	identifiers.  This falls apart however,	when END_SUITE is used 
+	for the same suite, in multiple files and happens to land on the 
+	exact same line number.
