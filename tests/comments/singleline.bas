@@ -27,24 +27,20 @@ rem comment _
 #error X1 should be defined
 #endif
 
-#if ENABLE_CHECK_BUGS
+'$=f#
+'$=f#
+'$=f#
+'$=f#
+'$=f#
 
-#print enable check for #866 fbc throws lexer errors in comments stating with $ 
-#print see bug #866 at https://sourceforge.net/p/fbc/bugs/866/
-#print introduced by #832 QB type suffixes allowed on any keywords 
-#print see bug #832 at https://sourceforge.net/p/fbc/bugs/832/
-
-
-'$=f#
-'$=f#
-'$=f#
-'$=f#
-'$=f#
+''$=f#
+''$=f#
+''$=f#
+''$=f#
+''$=f#
 
 rem ${f!
 rem $=f# 
 rem $^f$
 rem $-f%
 rem $@f&
-
-#endif

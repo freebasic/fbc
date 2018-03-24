@@ -386,6 +386,12 @@ private sub hReadIdentifier _
 		byval flags as LEXCHECK _
 	)
 
+	#macro hCheckIdentifierSuffix()
+		if( (fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE) and ((flags and LEXCHECK_ALLOWSUFFIX) = 0) ) then
+			errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
+		end if
+	#endmacro
+
 	dim as integer skipchar = any
 
 	'' (ALPHA | '_' )
@@ -442,24 +448,23 @@ private sub hReadIdentifier _
 
 	'' [SUFFIX]
 	dtype = FB_DATATYPE_INVALID
-
 	if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 		select case as const lexCurrentChar( )
 		'' '%'?
 		case FB_TK_INTTYPECHAR
-			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
+			hCheckIdentifierSuffix()
 			dtype = env.lang.integerkeyworddtype
 			lexEatChar( )
 
 		'' '&'?
 		case FB_TK_LNGTYPECHAR
-			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
+			hCheckIdentifierSuffix()
 			dtype = FB_DATATYPE_LONG
 			lexEatChar( )
 
 		'' '!'?
 		case FB_TK_SGNTYPECHAR
-			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
+			hCheckIdentifierSuffix()
 			dtype = FB_DATATYPE_SINGLE
 			lexEatChar( )
 
@@ -467,14 +472,14 @@ private sub hReadIdentifier _
 		case FB_TK_DBLTYPECHAR
 			'' isn't it a '##'?
 			if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
-				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
+				hCheckIdentifierSuffix()
 				dtype = FB_DATATYPE_DOUBLE
 				lexEatChar( )
 			end if
 
 		'' '$'?
 		case FB_TK_STRTYPECHAR
-			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then errReportNotAllowed(FB_LANG_QB, FB_ERRMSG_SUFFIXONLYVALIDINLANG, "")
+			hCheckIdentifierSuffix()
 			dtype = FB_DATATYPE_STRING
 			lexEatChar( )
 		end select
@@ -1843,7 +1848,7 @@ read_char:
 		'' '/'?
 		case CHAR_SLASH
 			t->class = FB_TKCLASS_OPERATOR
-			'' in lang fb, only check for multiline comment if not inside
+			'' only check for multiline comment if not inside
 			'' a single line comment already (thanks to VonGodric for help)
 			if( (flags and LEXCHECK_NOMULTILINECOMMENT) = 0 or _
 				 fbLangIsSet( FB_LANG_FB ) = FALSE ) then

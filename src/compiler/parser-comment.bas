@@ -27,10 +27,9 @@ function cComment _
 		'' to the lexSkipToken() calls for '$' and from cDirective(),
 		'' when parsing a $ meta command)
 		lex.ctx->reclevel += 1
-		lexSkipToken( LEX_FLAGS )
-
+		lexSkipToken( LEX_FLAGS or LEXCHECK_ALLOWSUFFIX )
 		if( lexGetToken( LEX_FLAGS ) = FB_TK_DIRECTIVECHAR ) then
-			lexSkipToken( LEX_FLAGS )
+			lexSkipToken( LEX_FLAGS or LEXCHECK_ALLOWSUFFIX )
 			cDirective( )
 		else
 			lexSkipLine( )
@@ -171,7 +170,6 @@ private sub cDirective( ) static
 		case FB_TK_EOL, FB_TK_EOF
 			exit do
 		end select
-
-		lexSkipToken( )
+		lexSkipToken( LEX_FLAGS or LEXCHECK_ALLOWSUFFIX )
 	loop
 end sub
