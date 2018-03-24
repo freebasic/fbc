@@ -4,7 +4,13 @@
 '//	Common routines for console tests
 '//
 
-SUITE( fbc_tests.console )
+'' !!! TODO !!! these common functions need not follow the fbcunit suite naming
+'' they just need to be callable - fix this when fixing ENABLE_CONSOLE_OUTPUT
+'' See:
+''  - console/ascii.bas
+''  - interactive/input.bas
+
+namespace tests.fbc_tests.console
 
 	'':::::
 	sub draw_rect( byval x as integer, byval y as integer, byval w as integer, byval h as integer )
@@ -33,4 +39,4 @@ SUITE( fbc_tests.console )
 		print s;
 	end sub
 
-END_SUITE
+end namespace
