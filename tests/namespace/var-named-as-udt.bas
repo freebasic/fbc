@@ -1,41 +1,36 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.ns.var_named_as_udt
+SUITE( fbc_tests.namespace_.var_named_as_udt )
 
-type UDT1
-	i as integer
-end type
-
-namespace ns1
-	type B
+	type UDT1
 		i as integer
-		declare function foo( ) as integer
 	end type
 
-	function B.foo( ) as integer
-		function = i
-	end function
-end namespace
+	namespace ns1
+		type B
+			i as integer
+			declare function foo( ) as integer
+		end type
 
-sub test cdecl( )
-	'' Allowed because UDT1 is a POD UDT, not a "class"
-	dim udt1 as UDT1 = ( 123 )
-	CU_ASSERT( udt1.i = 123 )
-	udt1.i = 456
-	CU_ASSERT( udt1.i = 456 )
+		function B.foo( ) as integer
+			function = i
+		end function
+	end namespace
 
-	'' This works because it's a different namespace,
-	'' even though B is a class
-	using ns1
-	dim b as B = ( 123 )
-	CU_ASSERT( b.i = 123 )
-	b.i = 456
-	CU_ASSERT( b.foo( ) = 456 )
-end sub
+	TEST( all )
+		'' Allowed because UDT1 is a POD UDT, not a "class"
+		dim udt1 as UDT1 = ( 123 )
+		CU_ASSERT( udt1.i = 123 )
+		udt1.i = 456
+		CU_ASSERT( udt1.i = 456 )
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.namespace.var-named-as-udt" )
-	fbcu.add_test( "test", @test )
-end sub
+		'' This works because it's a different namespace,
+		'' even though B is a class
+		using ns1
+		dim b as B = ( 123 )
+		CU_ASSERT( b.i = 123 )
+		b.i = 456
+		CU_ASSERT( b.foo( ) = 456 )
+	END_TEST
 
-end namespace
+END_SUITE

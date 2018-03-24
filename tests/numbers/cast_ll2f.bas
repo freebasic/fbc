@@ -1,10 +1,10 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.numbers.cast_ll2f
+SUITE( fbc_tests.numbers.cast_ll2f )
 
 	const c as longint = 1ll shl 32
 
-	sub test_cast_ull cdecl()
+	TEST( cast_ull )
 
 		dim as ulongint n = 1ull
 		dim as double x = 1.0
@@ -27,9 +27,9 @@ namespace fbc_tests.numbers.cast_ll2f
 
 		next
 
-	end sub
+	END_TEST
 
-	sub test_cast_ll cdecl()
+	TEST( cast_ll )
 
 		dim as longint n = 1ll
 		dim as double x = 1.0
@@ -57,14 +57,6 @@ namespace fbc_tests.numbers.cast_ll2f
 
 		cu_assert_equal( cdbl(n), -n )
 
-	end sub
+	END_TEST
 
-	sub ctor () constructor
-
-		fbcu.add_suite("fbc_tests.numbers.cast_ll2f")
-		fbcu.add_test("test_cast_ll",  @test_cast_ll)
-		fbcu.add_test("test_cast_ull", @test_cast_ull)
-
-	end sub
-
-end namespace
+END_SUITE

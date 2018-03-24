@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 '' - don't mix false/true intrinsic constants 
 ''   of the compiler in with the tests
@@ -8,10 +8,10 @@
 #define FALSE 0
 #define TRUE (-1)
 
-namespace fbc_tests.boolean_.uop
+SUITE( fbc_tests.boolean_.uop )
 
 	''
-	sub test1 cdecl ( )
+	TEST( test1 )
 
 		#macro dot( op, arg )
 			a = (arg)
@@ -35,14 +35,6 @@ namespace fbc_tests.boolean_.uop
 		dot( -, FALSE )
 		dot( -, TRUE )
 
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.boolean.boolean_uop")
-		fbcu.add_test("test1", @test1)
-		
-	end sub
-	
-end namespace
-			
+END_SUITE

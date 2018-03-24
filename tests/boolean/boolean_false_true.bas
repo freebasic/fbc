@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 '' commonly used in C-headers
 #define PP_FALSE   0
@@ -30,10 +30,10 @@ enum ENUM_BOOLEAN
 	ENUM_TRUE
 end enum
 
-namespace fbc_tests.boolean_.false_true
+SUITE( fbc_tests.boolean_.false_true )
 
 	''
-	sub test1 cdecl ()
+	TEST( intrinsic )
 	
 		CU_ASSERT( false = cbool(0) )
 		CU_ASSERT( cint(false) = cint(0) )
@@ -48,9 +48,9 @@ namespace fbc_tests.boolean_.false_true
 		CU_ASSERT( sizeof( false ) = 1 )
 		CU_ASSERT( sizeof( true ) = 1 )
 
-	end sub
+	END_TEST
 
-	sub test2 cdecl ()
+	TEST( definitions )
 
 		'' some of these tests are slightly cooked:
 		'' obviously assert( -1 = 1 ) will *never* succeed.  
@@ -219,14 +219,6 @@ namespace fbc_tests.boolean_.false_true
 		CU_ASSERT_EQUAL( ENUM_TRUE<>0, BOOLEAN_TRUE )
 		CU_ASSERT_EQUAL( ENUM_TRUE, ENUM_TRUE )
 
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.boolean.boolean_false_true")
-		fbcu.add_test("test1", @test1)
-		fbcu.add_test("test2", @test2)
-		
-	end sub
-	
-end namespace
+END_SUITE

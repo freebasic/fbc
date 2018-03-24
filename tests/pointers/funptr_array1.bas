@@ -1,46 +1,38 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
+SUITE( fbc_tests.pointers.funptr_array1 )
 
+	enum TEST_RES
+		TEST_1	= 1
+	end enum
 
+	type foo 
+		bar(0 to 1) as function () as TEST_RES
+	end type 
 
-namespace fbc_tests.pointers.funcptr_array1
+	function bar() as TEST_RES
+		function = TEST_1
+	end function
 
-enum TEST_RES
-	TEST_1	= 1
-end enum
+		dim shared fp as foo ptr
 
-type foo 
-    bar(0 to 1) as function () as TEST_RES
-end type 
+	TEST( all )
+		CU_ASSERT_EQUAL( fp->bar(1)(), TEST_1 )
+	END_TEST
 
-function bar() as TEST_RES
-    function = TEST_1
-end function
+	SUITE_INIT
+		fp = callocate(sizeof(foo))
+		if (0 = fp) then
+			return -1
+		end if
+		
+		fp->bar(1) = @bar
+		return 0
+	END_SUITE_INIT
 
-	dim shared fp as foo ptr
+	SUITE_CLEANUP
+		deallocate(fp)
+		return 0
+	END_SUITE_CLEANUP
 
-sub test1 cdecl ()
-	CU_ASSERT_EQUAL( fp->bar(1)(), TEST_1 )
-end sub
-
-function init cdecl () as long
-	fp = callocate(sizeof(foo))
-	if (0 = fp) then
-		return -1
-	end if
-	
-	fp->bar(1) = @bar
-	return 0
-end function
-
-function cleanup cdecl () as long
-	deallocate(fp)
-	return 0
-end function
-
-sub ctor () constructor
-	fbcu.add_suite("fbc_tests.pointers.funptr_array1", @init, @cleanup)
-	fbcu.add_test("test1", @test1)
-end sub
-
-end namespace
+END_SUITE

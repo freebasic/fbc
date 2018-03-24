@@ -1,20 +1,13 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.const_.const_to_const
+SUITE( fbc_tests.const_.const_to_const )
 	
 	sub foo( byref bas as const string )
 	end sub
 	
-	sub test cdecl( )
+	TEST( const_arg )
 		dim as const string bar = "hi"
 		foo( bar )
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.const.const_to_const")
-		fbcu.add_test("offset", @test)
-	
-	end sub
-	
-end namespace
+END_SUITE

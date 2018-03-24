@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 #macro testfor_types( from_, to_, stp_ )
 
@@ -54,40 +54,34 @@
 	end scope
 #endmacro
 
-namespace fbc_tests.compound.for_step
+SUITE( fbc_tests.compound.for_step )
 
-private sub testPositiveStep cdecl()
-	testfor_types( 10, 20, 1 )
-	testfor_types( 10, 20, 1f )
-	testfor_types( 10, 20, 1u )
+	TEST( for_positive_step )
+		testfor_types( 10, 20, 1 )
+		testfor_types( 10, 20, 1f )
+		testfor_types( 10, 20, 1u )
 
-	'' should detect that unsigned step>=0 and that (0+step) > 1
-	'' (just as with any step > 1) and therefore loop exactly once
-	testfor_to( ubyte   , 0, 1, 1u shl 7 )
-	testfor_to( ushort  , 0, 1, 1u shl 15 )
-	testfor_to( uinteger, 0, 1, 1u shl 31 )
-	testfor_to( ulong   , 0, 1, 1u shl 31 )
-	testfor_to( ulongint, 0, 1, 1ull shl 63 )
+		'' should detect that unsigned step>=0 and that (0+step) > 1
+		'' (just as with any step > 1) and therefore loop exactly once
+		testfor_to( ubyte   , 0, 1, 1u shl 7 )
+		testfor_to( ushort  , 0, 1, 1u shl 15 )
+		testfor_to( uinteger, 0, 1, 1u shl 31 )
+		testfor_to( ulong   , 0, 1, 1u shl 31 )
+		testfor_to( ulongint, 0, 1, 1ull shl 63 )
 
-	testfor_to( byte   , -1   shl  6, 0, 1u   shl  7 )
-	testfor_to( short  , -1   shl 14, 0, 1u   shl 15 )
-	testfor_to( integer, -1   shl 30, 0, 1u   shl 31 )
-	testfor_to( long   , -1   shl 30, 0, 1u   shl 31 )
-	testfor_to( longint, -1ll shl 62, 0, 1ull shl 63 )
+		testfor_to( byte   , -1   shl  6, 0, 1u   shl  7 )
+		testfor_to( short  , -1   shl 14, 0, 1u   shl 15 )
+		testfor_to( integer, -1   shl 30, 0, 1u   shl 31 )
+		testfor_to( long   , -1   shl 30, 0, 1u   shl 31 )
+		testfor_to( longint, -1ll shl 62, 0, 1ull shl 63 )
 
-end sub
+	END_TEST
 
-private sub testNegativeStep cdecl()
+	TEST( for_negative_step )
 
-	testfor_types( 20, 10, -1 )
-	testfor_types( 20, 10, -1f )
+		testfor_types( 20, 10, -1 )
+		testfor_types( 20, 10, -1f )
 
-end sub
+	END_TEST
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.compound.for-step" )
-	fbcu.add_test( "FOR with positive STEP", @testPositiveStep )
-	fbcu.add_test( "FOR with negative STEP", @testNegativeStep )
-end sub
-
-end namespace
+END_SUITE

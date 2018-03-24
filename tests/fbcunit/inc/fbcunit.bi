@@ -13,7 +13,7 @@
 ---------------------------------------------------------'/
 
 #define FBCU_VER_MAJOR 0
-#define FBCU_VER_MINOR 6
+#define FBCU_VER_MINOR 7
 
 #inclib "fbcunit"
 
@@ -57,6 +57,9 @@
 
 #if defined(TMP_FBCUNIT_SUITE_NAME)
 	#error "TMP_FBCUNIT_SUITE_NAME" symbol is reserved for fbcunit
+#endif
+#if defined(TMP_FBCUNIT_TEST_GROUP_NAME)
+	#error "TMP_FBCUNIT_TEST_GROUP_NAME" symbol is reserved for fbcunit
 #endif
 #if defined(TMP_FBCUNIT_TEST_NAME)
 	#error "TMP_FBCUNIT_TEST_NAME" symbol is reserved for fbcunit
@@ -115,6 +118,18 @@
 #if defined(END_TEST_EMIT)
 	#error "END_TEST_EMIT" symbol is reserved for fbcunit
 #endif
+#if defined(TEST_GROUP)
+	#error "TEST_GROUP" symbol is reserved for fbcunit
+#endif
+#if defined(TEST_GROUP_EMIT)
+	#error "TEST_GROUP_EMIT" symbol is reserved for fbcunit
+#endif
+#if defined(END_TEST_GROUP)
+	#error "END_TEST_GROUP" symbol is reserved for fbcunit
+#endif
+#if defined(END_TEST_GROUP_EMIT)
+	#error "END_TEST_GROUP_EMIT" symbol is reserved for fbcunit
+#endif
 #if defined(FBCU_TRACE)
 	#error "FBCU_TRACE" symbol is reserved for fbcunit
 #endif
@@ -146,7 +161,16 @@
 #define CU_FAIL( a )                 fbcu.CU_ASSERT_( false, __FILE__, __LINE__, __FUNCTION__, "CU_FAIL(" #a ")" )
 #define CU_FAIL_FATAL( a )           fbcu.CU_ASSERT_FATAL_( false, __FILE__, __LINE__, __FUNCTION__, "CU_FAIL_FATAL(" #a ")" )
 #define CU_PASS( a )                 fbcu.CU_ASSERT_( true , __FILE__, __LINE__, __FUNCTION__, "CU_PASS(" #a ")" )
-#define CU_ASSERT_DOUBLE_EQUAL( a, e, g ) fbcu.CU_ASSERT_( (abs(cdbl(a)-cdbl(e)) <= abs(cdbl(g))), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_DOUBLE_EQUAL(" #a "," #e "," #g ")" )
+#define CU_ASSERT_DOUBLE_EXACT( a, e )     fbcu.CU_ASSERT_( (cdbl(a) = cdbl(e)), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_DOUBLE_EXACT(" #a "," #e ")" )
+#define CU_ASSERT_DOUBLE_EQUAL( a, e, g )  fbcu.CU_ASSERT_( (abs(cdbl(a)-cdbl(e)) <= abs(cdbl(g))), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_DOUBLE_EQUAL(" #a "," #e "," #g ")" )
+#if( __FB_LANG__ = "qb" )
+#define CU_ASSERT_DOUBLE_APPROX( a, e, u ) fbcu.CU_ASSERT_( fbcu.dblApprox(cdbl(a), cdbl(e), __clngint(u)), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_DOUBLE_APPROX(" #a "," #e "," #u ")" )
+#else
+#define CU_ASSERT_DOUBLE_APPROX( a, e, u ) fbcu.CU_ASSERT_( fbcu.dblApprox(cdbl(a), cdbl(e), clngint(u)), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_DOUBLE_APPROX(" #a "," #e "," #u ")" )
+#endif
+#define CU_ASSERT_SINGLE_EXACT( a, e )     fbcu.CU_ASSERT_( (csng(a) = csng(e)), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_SINGLE_EXACT(" #a "," #e ")" )
+#define CU_ASSERT_SINGLE_EQUAL( a, e, g )  fbcu.CU_ASSERT_( (abs(csng(a)-csng(e)) <= abs(csng(g))), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_SINGLE_EQUAL(" #a "," #e "," #g ")" )
+#define CU_ASSERT_SINGLE_APPROX( a, e, u ) fbcu.CU_ASSERT_( fbcu.sngApprox(csng(a), csng(e), clng(u)), __FILE__, __LINE__, __FUNCTION__, "CU_ASSERT_SINGLE_APPROX(" #a "," #e "," #u ")" )
 
 
 /'-----------------------------
@@ -202,15 +226,23 @@
 			FBCU_TRACE( "END_SUITE_CLEANUP" )
 		#endmacro
 
+		#macro TEST_GROUP_EMIT( group_name )
+			#error FBCUNIT: not allowed "TEST_GROUP"
+		#endmacro
+
+		#macro END_TEST_GROUP_EMIT( group_name )
+			#error FBCUNIT: not allowed "END_TEST_GROUP"
+		#endmacro
+
 		#macro TEST_EMIT( suite_name, test_name )
 			sub tests.##suite_name##.##test_name cdecl ()
 			FBCU_TRACE( "TEST" tests.fbcu_global.##test_name )
 		#endmacro
 
-		#macro END_TEST_EMIT( suite_name, test_name, global )
+		#macro END_TEST_EMIT( suite_name, group_name, test_name, global )
 			end sub
 			__private sub tests.##suite_name##.##test_name##_ctor cdecl () __constructor
-				fbcu.add_test( #test_name, __procptr(tests.##suite_name##.##test_name), global )
+				fbcu.add_test( #suite_name, #test_name, __procptr(tests.##suite_name##.##test_name), global )
 			end sub
 			FBCU_TRACE( "END_TEST" test_name )
 		#endmacro
@@ -223,13 +255,13 @@
 		#endmacro
 
 		#macro END_SUITE_EMIT( suite_name, id )
-				private sub suite_name##_ctor##id cdecl () constructor
+				private sub suite_ctor##id cdecl () constructor
 					#if (defined( TMP_FBCUNIT_SUITE_HAVE_INIT ) andalso defined( TMP_FBCUNIT_SUITE_HAVE_CLEANUP ))
-						fbcu.add_suite( #suite_name, procptr(init), procptr(cleanup) )
+						fbcu.add_suite( #suite_name, procptr(tests.##suite_name##.init), procptr(tests.##suite_name##.cleanup) )
 					#elseif defined( TMP_FBCUNIT_SUITE_HAVE_INIT )
-						fbcu.add_suite( #suite_name, procptr(init), FBCU_NULL )
+						fbcu.add_suite( #suite_name, procptr(tests.##suite_name##.init), FBCU_NULL )
 					#elseif defined( TMP_FBCUNIT_SUITE_HAVE_CLEANUP )
-						fbcu.add_suite( #suite_name, FBCU_NULL, procptr(cleanup) )
+						fbcu.add_suite( #suite_name, FBCU_NULL, procptr(tests.##suite_name##.cleanup) )
 					#else
 						fbcu.add_suite( #suite_name, FBCU_NULL, FBCU_NULL )
 					#endif
@@ -258,15 +290,29 @@
 			FBCU_TRACE( "END_SUITE_CLEANUP" )
 		#endmacro
 
+		#macro TEST_GROUP_EMIT( group_name )
+			namespace group_name
+			FBCU_TRACE( "TEST_GROUP" )
+		#endmacro
+
+		#macro END_TEST_GROUP_EMIT( group_name )
+			end namespace
+			FBCU_TRACE( "END_TEST_GROUP" suite_name )
+		#endmacro
+
 		#macro TEST_EMIT( suite_name, test_name )
 				sub test_name cdecl ()
 			FBCU_TRACE( "TEST" test_name )
 		#endmacro
 
-		#macro END_TEST_EMIT( suite_name, test_name, global )
+		#macro END_TEST_EMIT( suite_name, group_name, test_name, global )
 				end sub
 				private sub test_name##_ctor cdecl () constructor
-					fbcu.add_test( #test_name, procptr(test_name), global )
+				#if #group_name > ""
+					fbcu.add_test( #suite_name, #group_name + "." + #test_name, procptr(test_name), global )
+				#else
+					fbcu.add_test( #suite_name, #test_name, procptr(test_name), global )
+				#endif
 				end sub
 			FBCU_TRACE( "END_TEST" test_name )
 		#endmacro
@@ -286,13 +332,19 @@
 	#if defined( TMP_FBCUNIT_SUITE_NAME )
 		#error FBCUNIT: test suites can not be nested, or missing "END_SUITE" before "SUITE"
 	#endif
-	#define TMP_FBCUNIT_SUITE_NAME suite_name
-	SUITE_EMIT( suite_name )
+	#if #suite_name > ""
+		#define TMP_FBCUNIT_SUITE_NAME suite_name
+	#else
+		#define TMP_FBCUNIT_SUITE_NAME fbcu_global
+	#endif
+	SUITE_EMIT( TMP_FBCUNIT_SUITE_NAME )
 #endmacro
 
 #macro END_SUITE
 	#if not defined( TMP_FBCUNIT_SUITE_NAME )
 		#error FBCUNIT: unexpected "END_SUITE"
+	#elseif defined( TMP_FBCUNIT_TEST_GROUP_NAME )
+		#error FBCUNIT: missing "END_TEST_GROUP" before "END_SUITE"
 	#elseif defined( TMP_FBCUNIT_TEST_NAME )
 		#error FBCUNIT: missing "END_TEST" before "END_SUITE"
 	#elseif defined( TMP_FBCUNIT_SUITE_IN_INIT )
@@ -373,6 +425,33 @@
 	#undef TMP_FBCUNIT_SUITE_IN_CLEANUP
 #endmacro
 
+#macro TEST_GROUP( group_name )
+	#if defined( TMP_FBCUNIT_TEST_GROUP_NAME )
+		#error FBCUNIT: test groups can not be nested or missing "END_TEST_GROUP"
+	#elseif defined( TMP_FBCUNIT_SUITE_IN_INIT )
+		#error FBCUNIT: missing "END_SUITE_INIT" before "TEST_GROUP"
+	#elseif defined( TMP_FBCUNIT_SUITE_IN_CLEANUP )
+		#error FBCUNIT: missing "END_SUITE_CLEANUP" before "TEST_GROUP"
+	#elseif not defined( TMP_FBCUNIT_SUITE_NAME )
+		#error FBCUNIT: "TEST_GROUP" can only be used in a "SUITE"
+	#endif
+	#if #group_name > ""
+		#define TMP_FBCUNIT_TEST_GROUP_NAME group_name
+	#else
+		#error FBCUNIT: missing group name in "TEST_GROUP"
+	#endif
+	TEST_GROUP_EMIT( group_name )
+#endmacro
+
+#macro END_TEST_GROUP
+	#if defined( TMP_FBCUNIT_TEST_GROUP_NAME )
+		END_TEST_GROUP_EMIT( TMP_FBCUNIT_TEST_GROUP_NAME )
+	#else
+		#error FBCUNIT: mismatched "END_TEST_GROUP"
+	#endif
+	#undef TMP_FBCUNIT_TEST_GROUP_NAME
+#endmacro
+
 #macro TEST( test_name )
 	#if defined( TMP_FBCUNIT_TEST_NAME )
 		#error FBCUNIT: tests can not be nested or missing "END_TEST"
@@ -381,21 +460,32 @@
 	#elseif defined( TMP_FBCUNIT_SUITE_IN_CLEANUP )
 		#error FBCUNIT: missing "END_SUITE_CLEANUP" before "TEST"
 	#endif
-	#define TMP_FBCUNIT_TEST_NAME test_name
+	#if #test_name > ""
+		#define TMP_FBCUNIT_TEST_NAME test_name
+	#else
+		#define TMP_FBCUNIT_TEST_NAME default
+	#endif
 	#if defined( TMP_FBCUNIT_SUITE_NAME )
 		TEST_EMIT( TMP_FBCUNIT_SUITE_NAME, TMP_FBCUNIT_TEST_NAME )
 	#else
 		TEST_EMIT( fbcu_global, TMP_FBCUNIT_TEST_NAME )
 	#endif
-    
 #endmacro
 
 #macro END_TEST
 	#if defined( TMP_FBCUNIT_TEST_NAME )
 		#if defined( TMP_FBCUNIT_SUITE_NAME )
-			END_TEST_EMIT( TMP_FBCUNIT_SUITE_NAME, TMP_FBCUNIT_TEST_NAME, false )
+			#if defined( TMP_FBCUNIT_TEST_GROUP_NAME )
+			END_TEST_EMIT( TMP_FBCUNIT_SUITE_NAME, TMP_FBCUNIT_TEST_GROUP_NAME, TMP_FBCUNIT_TEST_NAME, false )
+			#else
+			END_TEST_EMIT( TMP_FBCUNIT_SUITE_NAME, , TMP_FBCUNIT_TEST_NAME, false )
+			#endif
 		#else
-			END_TEST_EMIT( fbcu_global, TMP_FBCUNIT_TEST_NAME, true )
+			#if defined( TMP_FBCUNIT_TEST_GROUP_NAME )
+			END_TEST_EMIT( fbcu_global, TMP_FBCUNIT_TEST_GROUP_NAME, TMP_FBCUNIT_TEST_NAME, true )
+			#else
+			END_TEST_EMIT( fbcu_global, , TMP_FBCUNIT_TEST_NAME, true )
+			#endif
 		#endif
 	#else
 		#error FBCUNIT: mismatched "END_TEST"
@@ -430,6 +520,7 @@
 
 	declare sub fbcu.add_test alias "fbcu_add_test_qb" _
 		( _
+			byval suite_name as __zstring __ptr = FBCU_NULL, _
 			byval test_name as __zstring __ptr = FBCU_NULL, _
 			byval test_proc as sub cdecl ( ) = FBCU_NULL, _
 			byval is_global as __boolean = __false _
@@ -453,6 +544,62 @@
 	declare sub fbcu.show_results alias "fbcu_show_results_qb" _
 		( _
 		)
+
+	declare function fbcu.sngIsNan alias "fbcu_sngIsNan_qb_" _
+		( _
+			byval a as single _
+		) as __boolean
+
+	declare function fbcu.sngIsInf alias "fbcu_sngIsInf_qb_" _
+		( _
+			byval a as single _
+		) as __boolean
+
+	declare function fbcu.sngULP alias "fbcu_sngULP_qb_" _
+		( _
+			byval a as single _
+		) as single
+
+	declare function fbcu.sngULPdiff alias "fbcu_sngULPdiff_qb_" _
+		( _
+			byval a as single, _
+			byval b as single _
+		) as long
+
+	declare function fbcu.sngApprox alias "fbcu_sngApprox_qb_" _
+		( _
+			byval a as single, _
+			byval b as single, _
+			byval ulps as long = 1 _
+		) as __boolean
+
+	declare function fbcu.dblIsNan alias "fbcu_dblIsNan_qb_" _
+		( _
+			byval a as double _
+		) as __boolean
+
+	declare function fbcu.dblIsInf alias "fbcu_dblIsInf_qb_" _
+		( _
+			byval a as double _
+		) as __boolean
+
+	declare function fbcu.dblULP alias "fbcu_dblULP_qb_" _
+		( _
+			byval a as double _
+		) as double
+
+	declare function fbcu.dblULPdiff alias "fbcu_dblULPdiff_qb_" _
+		( _
+			byval a as double, _
+			byval b as double _
+		) as __longint
+
+	declare function fbcu.dblApprox alias "fbcu_dblApprox_qb_" _
+		( _
+			byval a as double, _
+			byval b as double, _
+			byval ulps as __longint = 1 _
+		) as __boolean
 
 	declare sub fbcu.CU_ASSERT_ alias "fbcu_CU_ASSERT_qb_" _
 		( _
@@ -501,6 +648,7 @@ namespace fbcu
 
 	declare sub add_test _
 		( _
+			byval suite_name as zstring ptr = FBCU_NULL, _
 			byval test_name as zstring ptr = FBCU_NULL, _
 			byval test_proc as sub cdecl ( ) = FBCU_NULL, _
 			byval is_global as boolean = false _
@@ -524,6 +672,62 @@ namespace fbcu
 	declare sub show_results _
 		( _
 		)
+
+	declare function sngIsNan _
+		( _
+			byval a as single _
+		) as boolean
+
+	declare function sngIsInf _
+		( _
+			byval a as single _
+		) as boolean
+
+	declare function sngULP _
+		( _
+			byval a as single _
+		) as single
+
+	declare function sngULPdiff _
+		( _
+			byval a as single, _
+			byval b as single _
+		) as long
+
+	declare function sngApprox _
+		( _
+			byval a as single, _
+			byval b as single, _
+			byval ulps as long = 1 _
+		) as boolean
+
+	declare function dblIsNan _
+		( _
+			byval a as double _
+		) as boolean
+
+	declare function dblIsInf _
+		( _
+			byval a as double _
+		) as boolean
+
+	declare function dblULP _
+		( _
+			byval a as double _
+		) as double
+
+	declare function dblULPdiff _
+		( _
+			byval a as double, _
+			byval b as double _
+		) as longint
+
+	declare function dblApprox _
+		( _
+			byval a as double, _
+			byval b as double, _
+			byval ulps as longint = 1 _
+		) as boolean
 
 	declare sub CU_ASSERT_ _
 		( _

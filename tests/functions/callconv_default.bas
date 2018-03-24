@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.functions.callconv_default
+SUITE( fbc_tests.functions.callconv_default )
 	
 	type bar_f as bar
 	
@@ -35,7 +35,7 @@ namespace fbc_tests.functions.callconv_default
 		function = 0
 	end function
 	
-	sub test cdecl( )
+	TEST( byrefType )
 		dim as bar baz
 		dim as bar ptr baz_ptr = @baz
 		
@@ -47,9 +47,9 @@ namespace fbc_tests.functions.callconv_default
 		
 		CU_ASSERT_EQUAL( baz_ptr, @baz )
 		
-	end sub
+	END_TEST
 	
-	sub test2 cdecl ( )
+	TEST( byrefString )
 		
 		dim as string s
 		
@@ -63,9 +63,9 @@ namespace fbc_tests.functions.callconv_default
 		
 		CU_ASSERT_EQUAL( s_10, "some long " )
 		
-	end sub
+	END_TEST
 	
-	sub test3 cdecl( )
+	TEST( byvalNumber )
 		
 		dim as integer i = 69
 		
@@ -73,9 +73,9 @@ namespace fbc_tests.functions.callconv_default
 		
 		CU_ASSERT_EQUAL( i, 69 )
 		
-	end sub
+	END_TEST
 	
-	sub test4 cdecl( )
+	TEST( byrefFwdType )
 		
 		dim as bar_f baz2
 		
@@ -83,16 +83,6 @@ namespace fbc_tests.functions.callconv_default
 		
 		CU_ASSERT_EQUAL( baz2.x, 69 )
 		
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.functions.callconv_default")
-		fbcu.add_test("test", @test)
-		fbcu.add_test("test2", @test2)
-		fbcu.add_test("test3", @test3)
-		fbcu.add_test("test4", @test4)
-	
-	end sub
-	
-end namespace
+END_SUITE

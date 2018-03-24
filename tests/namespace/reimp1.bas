@@ -2,12 +2,12 @@
 '' namespace re-implementation + USING test
 ''
 
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 const TEST_T1 = -123
 const TEST_T2 = 123
 
-namespace fbc_tests.ns.reimp1.foo 
+namespace reimp1.foo 
 
 	type t1
 		field1 as byte 
@@ -15,7 +15,7 @@ namespace fbc_tests.ns.reimp1.foo
 
 end namespace 
 
-namespace fbc_tests.ns.reimp1.bar 
+namespace reimp1.bar 
 
 	using foo 
 	
@@ -25,7 +25,7 @@ namespace fbc_tests.ns.reimp1.bar
 
 end namespace 
 
-namespace fbc_tests.ns.reimp1.foo 
+namespace reimp1.foo 
 
 	type t2
 		field1 as ubyte
@@ -33,7 +33,7 @@ namespace fbc_tests.ns.reimp1.foo
 
 end namespace 
 
-namespace fbc_tests.ns.reimp1.bar 
+namespace reimp1.bar 
 
 	using foo
 	
@@ -43,14 +43,9 @@ namespace fbc_tests.ns.reimp1.bar
 
 end namespace
 
-private sub test_proc cdecl
-	fbc_tests.ns.reimp1.bar.foobar( type<fbc_tests.ns.reimp1.foo.t1>( TEST_T1 ) )
-	fbc_tests.ns.reimp1.bar.foobar( type<fbc_tests.ns.reimp1.foo.t2>( TEST_T2 ) )
-end sub
-
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.namespace.reimp1")
-	fbcu.add_test("test", @test_proc)
-	
-end sub
+SUITE( fbc_tests.namespace_.reimp1 )
+	TEST( all )
+		..reimp1.bar.foobar( type<..reimp1.foo.t1>( TEST_T1 ) )
+		..reimp1.bar.foobar( type<..reimp1.foo.t2>( TEST_T2 ) )
+	END_TEST
+END_SUITE

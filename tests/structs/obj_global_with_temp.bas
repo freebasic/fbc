@@ -1,35 +1,28 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.obj_global_with_temp
+SUITE( fbc_tests.structs.obj_global_with_temp )
 
-type UDT
-	s as string
-	declare constructor (byref as string)
-end type
+	type UDT
+		s as string
+		declare constructor (byref as string)
+	end type
  
-constructor UDT (byref s as string)
-	this.s = s
-end constructor
+	constructor UDT (byref s as string)
+		this.s = s
+	end constructor
  
-	'' temp strings will be created (because it's a byref param and a 
-	'' zstring arg is being passed), and moved to GLOBAL_I()
-	dim shared g_array(0) as UDT = { UDT( "string1" ) }
-	
-	'' ditto
-	static shared gs_array(0) as UDT = { UDT( "string2" ) }
+		'' temp strings will be created (because it's a byref param and a 
+		'' zstring arg is being passed), and moved to GLOBAL_I()
+		dim shared g_array(0) as UDT = { UDT( "string1" ) }
+		
+		'' ditto
+		static shared gs_array(0) as UDT = { UDT( "string2" ) }
  
-sub test1 cdecl
+	TEST( all )
 
-	CU_ASSERT_EQUAL( g_array(0).s, "string1" )
-	CU_ASSERT_EQUAL( gs_array(0).s, "string2" )
+		CU_ASSERT_EQUAL( g_array(0).s, "string1" )
+		CU_ASSERT_EQUAL( gs_array(0).s, "string2" )
+		
+	END_TEST
 	
-end sub
-
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.structs.obj_global_with_temp")
-	fbcu.add_test( "1", @test1)
-
-end sub
-	
-end namespace	
+END_SUITE

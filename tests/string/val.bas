@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 #macro TestVal(s_, t_)
 	scope
@@ -36,9 +36,9 @@
 	end scope
 #endmacro
 
-namespace fbc_tests.string_.val_
+SUITE( fbc_tests.string_.val_ )
 
-	sub test1 cdecl ()
+	TEST( test1 )
 
 		TestVal(    "&haxxxxf", 10     )
 		TestValInt( "&haxxxxf", 10, 10 )
@@ -56,9 +56,9 @@ namespace fbc_tests.string_.val_
 		TestValInt( "&b10114", 11, 11 )
 		TestValLng( "&b10114", 11, 11 )
 
-	end sub
+	END_TEST
 
-	sub test2 cdecl ()
+	TEST( test2 )
 
 		'' 2^53-1
 		TestVal(    "9007199254740991",  9007199254740991                   )
@@ -112,9 +112,9 @@ namespace fbc_tests.string_.val_
 		TestVal(    "-9223372036854775808", -9.223372036854775808e+18                 )
 		TestValLng( "-9223372036854775808", -9223372036854775808, 9223372036854775808 )
 
-	end sub
+	END_TEST
 
-	sub test3 cdecl ()
+	TEST( test3 )
 
 		'' 2^31
 		TestVal(    "&H80000000",  2147483648            )
@@ -178,9 +178,9 @@ namespace fbc_tests.string_.val_
 		TestVal(    "&B1111111111111111111111111111111111111111111111111111111111111111", -1                       )
 		TestValLng( "&B1111111111111111111111111111111111111111111111111111111111111111", -1, 18446744073709551615 )
 
-	end sub
+	END_TEST
 
-	sub test0x cdecl( )
+	TEST( test0x )
 		'' FB val() is typically implemented via CRT strtod() which
 		'' recognizes the 0x or 0X prefix for hexadecimal numbers.
 		'' FB val() shouldn't recognize the 0x/0X prefix though.
@@ -194,16 +194,6 @@ namespace fbc_tests.string_.val_
 
 		CU_ASSERT( val( "&hF" ) = 15.0 )
 		CU_ASSERT( val( "&HF" ) = 15.0 )
-	end sub
+	END_TEST
 
-	sub ctor () constructor
-
-		fbcu.add_suite("fbc_tests.string.val")
-		fbcu.add_test("test1", @test1)
-		fbcu.add_test("test2", @test2)
-		fbcu.add_test("test3", @test3)
-		fbcu.add_test("test0x", @test0x)
-
-	end sub
-
-end namespace
+END_SUITE

@@ -12,6 +12,14 @@ ifndef UNITTEST_RUN_ARGS
 UNITTEST_RUN_ARGS :=
 endif
 
+ifndef ENABLE_CHECK_BUGS
+ENABLE_CHECK_BUGS :=
+endif
+
+ifndef ENABLE_CONSOLE_OUTPUT
+ENABLE_CONSOLE_OUTPUT :=
+endif
+
 ifeq ($(HOST),dos)
 SHELL = /bin/sh
 else
@@ -101,6 +109,13 @@ ifdef ARCH
 endif
 ifdef TARGET
 	FBC_LFLAGS += -target $(TARGET)
+endif
+
+ifeq ($(ENABLE_CHECK_BUGS),1)
+	FBC_CFLAGS += -d ENABLE_CHECK_BUGS=$(ENABLE_CHECK_BUGS)
+endif
+ifeq ($(ENABLE_CONSOLE_OUTPUT),1)
+	FBC_CFLAGS += -d ENABLE_CONSOLE_OUTPUT=$(ENABLE_CONSOLE_OUTPUT)
 endif
 
 OBJLIST := $(SRCLIST:%.bas=%.o)

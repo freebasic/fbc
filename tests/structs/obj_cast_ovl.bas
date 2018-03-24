@@ -1,7 +1,6 @@
+#include "fbcunit.bi"
 
-# include "fbcu.bi"
-
-namespace fbc_tests.structs.obj_cast_ovl
+SUITE( fbc_tests.structs.obj_cast_ovl )
 
 	type A
 	    member as integer
@@ -24,16 +23,9 @@ namespace fbc_tests.structs.obj_cast_ovl
 		return -1
 	end function
 	
-sub test1 cdecl	
-		dim x as B
-		CU_ASSERT( f( x ) )
-end sub
+	TEST( all )
+			dim x as B
+			CU_ASSERT( f( x ) )
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.structs.obj_cast_ovl")
-	fbcu.add_test( "test 1", @test1)
-
-end sub
-	
-end namespace	
+END_SUITE

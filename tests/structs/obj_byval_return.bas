@@ -1,58 +1,49 @@
+#include "fbcunit.bi"
 
-# include "fbcu.bi"
+SUITE( fbc_tests.structs.obj_byval_ret )
 
-namespace fbc_tests.structs.obj_byval_ret
+	type bar1
+	  as single x, y, z
+	  declare function foo(as bar1) as bar1
+	end type
 
-type bar1
-  as single x, y, z
-  declare function foo(as bar1) as bar1
-end type
+	function bar1.foo(b as bar1) as bar1
+	  return type(b.x+1.0, b.y+2.0, b.z+3.0)
+	end function
 
-function bar1.foo(b as bar1) as bar1
-  return type(b.x+1.0, b.y+2.0, b.z+3.0)
-end function
+	TEST( default ) '' bar1_test
+		dim as bar1 b = type(0, 0, 0)
+		
+		b = b.foo( b )
+		
+		CU_ASSERT_EQUAL( b.x, 1.0 )
+		CU_ASSERT_EQUAL( b.y, 2.0 )
+		CU_ASSERT_EQUAL( b.z, 3.0 )
 
-sub test_bar1 cdecl	
-	dim as bar1 b = type(0, 0, 0)
-	
-	b = b.foo( b )
-	
-	CU_ASSERT_EQUAL( b.x, 1.0 )
-	CU_ASSERT_EQUAL( b.y, 2.0 )
-	CU_ASSERT_EQUAL( b.z, 3.0 )
+	END_TEST
 
-end sub
+	type bar2
+	  as single x, y, z
+	  declare function foo(as bar2) as bar2
+	  declare destructor()
+	end type
 
-type bar2
-  as single x, y, z
-  declare function foo(as bar2) as bar2
-  declare destructor()
-end type
+	destructor bar2()
+	end destructor
 
-destructor bar2()
-end destructor
+	function bar2.foo(b as bar2) as bar2
+	  return type(b.x+1.0, b.y+2.0, b.z+3.0)
+	end function
 
-function bar2.foo(b as bar2) as bar2
-  return type(b.x+1.0, b.y+2.0, b.z+3.0)
-end function
+	TEST( bar2_test )
+		dim as bar2 b = type(-1, -2, -3)
+		
+		b = b.foo( b )
+		
+		CU_ASSERT_EQUAL( b.x, 0 )
+		CU_ASSERT_EQUAL( b.y, 0 )
+		CU_ASSERT_EQUAL( b.z, 0 )
 
-sub test_bar2 cdecl	
-	dim as bar2 b = type(-1, -2, -3)
-	
-	b = b.foo( b )
-	
-	CU_ASSERT_EQUAL( b.x, 0 )
-	CU_ASSERT_EQUAL( b.y, 0 )
-	CU_ASSERT_EQUAL( b.z, 0 )
+	END_TEST
 
-end sub
-
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.structs.obj_byval_return")
-	fbcu.add_test( "bar1", @test_bar1)
-	fbcu.add_test( "bar2", @test_bar2)
-
-end sub
-	
-end namespace	
+END_SUITE

@@ -1,36 +1,29 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.file_.pipe_
+SUITE( fbc_tests.file_.pipe_ )
 
-const filename = "./file/pipe.bas"
+	const filename = "./file/pipe.bas"
 
-sub test cdecl ()
+	TEST( pipeInput )
 
-	if open pipe ( "ls " + filename for input As #1) = 0 then
+		if open pipe ( "ls " + filename for input As #1) = 0 then
 
-		dim as string text
-		dim as integer files = 0
+			dim as string text
+			dim as integer files = 0
 
-		do while not eof(1)
-			input #1, text
-			if len( trim( text ) ) > 0 then files += 1
-		loop
+			do while not eof(1)
+				input #1, text
+				if len( trim( text ) ) > 0 then files += 1
+			loop
 
-		CU_ASSERT_EQUAL( files, 1 )
+			CU_ASSERT_EQUAL( files, 1 )
 
-		close #1
+			close #1
 
-	else
-		CU_FAIL( "file not found" )
-	end if
+		else
+			CU_FAIL( "file not found" )
+		end if
 
-end sub
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.file.pipe")
-	fbcu.add_test("1", @test)
-	
-end sub
-
-end namespace
+END_SUITE

@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 #include once "fbgfx.bi"
 
 '' We have to ensure that we can compare RGBA color values without running into
@@ -15,43 +15,38 @@
 ''
 '' Point() returns an Integer, which hold an RGBA value or a palette index.
 
-namespace fbc_tests.gfx.point_
+SUITE( fbc_tests.gfx.point_ )
 
-const SCREEN_W = 16
-const SCREEN_H = 16
+	const SCREEN_W = 16
+	const SCREEN_H = 16
 
-private sub test cdecl( )
-	CU_ASSERT( screenres( SCREEN_W, SCREEN_H, 32, , fb.GFX_NULL ) = 0 )
+	TEST( rgba_ )
+		CU_ASSERT( screenres( SCREEN_W, SCREEN_H, 32, , fb.GFX_NULL ) = 0 )
 
-	line (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,255,0), bf
-	CU_ASSERT( point( 0, 0 ) = rgb(0,255,0) )
-	CU_ASSERT( point( 0, 0 ) = &hFF00FF00 )
-	CU_ASSERT( point( 0, 0 ) = cint( rgb(0,255,0) ) )
-	CU_ASSERT( cuint( point( 0, 0 ) ) = rgb(0,255,0) )
-	CU_ASSERT( cuint( point( 0, 0 ) ) = &hFF00FF00u )
+		line (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,255,0), bf
+		CU_ASSERT( point( 0, 0 ) = rgb(0,255,0) )
+		CU_ASSERT( point( 0, 0 ) = &hFF00FF00 )
+		CU_ASSERT( point( 0, 0 ) = cint( rgb(0,255,0) ) )
+		CU_ASSERT( cuint( point( 0, 0 ) ) = rgb(0,255,0) )
+		CU_ASSERT( cuint( point( 0, 0 ) ) = &hFF00FF00u )
 
-	CU_ASSERT( culng( point( 0, 0 ) ) =        rgb(0,255,0)   )
-	CU_ASSERT(        point( 0, 0 )   = culng( rgb(0,255,0) ) )
-	CU_ASSERT( culng( point( 0, 0 ) ) = culng( rgb(0,255,0) ) )
+		CU_ASSERT( culng( point( 0, 0 ) ) =        rgb(0,255,0)   )
+		CU_ASSERT(        point( 0, 0 )   = culng( rgb(0,255,0) ) )
+		CU_ASSERT( culng( point( 0, 0 ) ) = culng( rgb(0,255,0) ) )
 
-	line (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(255,0,0), bf
-	CU_ASSERT( point( 0, 0 ) = rgb(255,0,0) )
-	CU_ASSERT( point( 0, 0 ) = &hFFFF0000 )
-	CU_ASSERT( point( 0, 0 ) = cint( rgb(255,0,0) ) )
-	CU_ASSERT( cuint( point( 0, 0 ) ) = rgb(255,0,0) )
-	CU_ASSERT( cuint( point( 0, 0 ) ) = &hFFFF0000u )
+		line (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(255,0,0), bf
+		CU_ASSERT( point( 0, 0 ) = rgb(255,0,0) )
+		CU_ASSERT( point( 0, 0 ) = &hFFFF0000 )
+		CU_ASSERT( point( 0, 0 ) = cint( rgb(255,0,0) ) )
+		CU_ASSERT( cuint( point( 0, 0 ) ) = rgb(255,0,0) )
+		CU_ASSERT( cuint( point( 0, 0 ) ) = &hFFFF0000u )
 
-	CU_ASSERT( culng( point( 0, 0 ) ) =        rgb(255,0,0)   )
-	CU_ASSERT(        point( 0, 0 )   = culng( rgb(255,0,0) ) )
-	CU_ASSERT( culng( point( 0, 0 ) ) = culng( rgb(255,0,0) ) )
+		CU_ASSERT( culng( point( 0, 0 ) ) =        rgb(255,0,0)   )
+		CU_ASSERT(        point( 0, 0 )   = culng( rgb(255,0,0) ) )
+		CU_ASSERT( culng( point( 0, 0 ) ) = culng( rgb(255,0,0) ) )
 
-	#assert( typeof( point( 0, 0 ) ) = typeof( integer ) )
-	#assert( typeof( rgb(0,0,0)    ) = typeof( uinteger ) )
-end sub
+		#assert( typeof( point( 0, 0 ) ) = typeof( integer ) )
+		#assert( typeof( rgb(0,0,0)    ) = typeof( uinteger ) )
+	END_TEST
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.gfx.point" )
-	fbcu.add_test( "test", @test )
-end sub
-
-end namespace
+END_SUITE

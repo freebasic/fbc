@@ -1,23 +1,16 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.overloads.sub_call2
+SUITE( fbc_tests.overloads.sub_call2 )
 
-sub foo overload ()
-end sub
+	sub foo overload ()
+	end sub
  
-function foo overload (byval v as integer) as integer
-	function = v
-end function
+	function foo overload (byval v as integer) as integer
+		function = v
+	end function
 
-sub test_basic cdecl ()
-	CU_ASSERT_EQUAL( foo(1234), 1234 )
-end sub
+	TEST( simple )
+		CU_ASSERT_EQUAL( foo(1234), 1234 )
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.overload.sub_call2")
-	fbcu.add_test("test_basic", @test_basic)
-
-end sub
-
-end namespace
+END_SUITE

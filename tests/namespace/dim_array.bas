@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 namespace fbc_tests.ns.dim_.inner
 
@@ -30,7 +30,7 @@ end namespace
 namespace fbc_tests.ns.dim_.outer1
 	using inner
 
-	sub dotest cdecl()
+	sub dotest
 		dim as integer i
 		for i = lbound(array) to ubound(array)
 			array(i) = 0
@@ -43,7 +43,7 @@ end namespace
 namespace fbc_tests.ns.dim_.outer2
 	using inner
 
-	sub dotest cdecl()
+	sub dotest
 		dim as integer i
 		for i = lbound(array) to ubound(array)
 			array(i) = i
@@ -53,16 +53,20 @@ namespace fbc_tests.ns.dim_.outer2
 
 end namespace
 
-private function init cdecl () as long
-	redim fbc_tests.ns.dim_.inner.array(0 to 2)
-	function = 0
-end function
+SUITE( fbc_tests.namespace_.dim_array )
 
-private sub ctor () constructor
-	fbcu.add_suite("fbc_tests.namespace.dim_array", @init)
-	
-	fbcu.add_test("test 1", @fbc_tests.ns.dim_.outer2.dotest)
-	
-	using fbc_tests.ns.dim_.outer1
-	fbcu.add_test("test 2", @dotest)
-end sub
+	SUITE_INIT
+		redim ..fbc_tests.ns.dim_.inner.array(0 to 2)
+		function = 0
+	END_SUITE_INIT
+
+	TEST( outer_named )
+		..fbc_tests.ns.dim_.outer2.dotest
+	END_TEST
+
+	TEST( outer_using )
+		using ..fbc_tests.ns.dim_.outer1
+		dotest
+	END_TEST
+
+END_SUITE

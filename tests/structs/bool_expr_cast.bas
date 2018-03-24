@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.bool_expr_cast
+SUITE( fbc_tests.structs.bool_expr_cast )
 
 	#macro buildCheck( __TYPE__, __ISPTR__ )
 		#undef __PTROPT__
@@ -64,71 +64,52 @@ namespace fbc_tests.structs.bool_expr_cast
 	buildCheck( single , 1 )
 	buildCheck( double , 1 )
 
-	sub test_byte cdecl( )
+	TEST( byte_ )
 		doTest( byte   , 0 )
-	end sub
+	END_TEST
 	
-	sub test_short cdecl
+	TEST( short_ )
 		doTest( short  , 0 )
-	end sub
+	END_TEST
 
-	sub test_int cdecl
+	TEST( integer_ )
 		doTest( integer, 0 )
-	end sub
+	END_TEST
 
-	sub test_long cdecl
+	TEST( long_ )
 		doTest( longint, 0 )
-	end sub
+	END_TEST
 
-	sub test_single cdecl
+	TEST( single_ )
 		doTest( single , 0 )
-	end sub
+	END_TEST
 
-	sub test_dbl cdecl
+	TEST( double_ )
 		doTest( double , 0 )
-	end sub
+	END_TEST
 
-	sub test_ptr_any cdecl( )
+	TEST( ptr_any )
 		doTest( any   , 1 )
-	end sub
+	END_TEST
 	
-	sub test_ptr_short cdecl
+	TEST( ptr_short )
 		doTest( short  , 1 )
-	end sub
+	END_TEST
 
-	sub test_ptr_int cdecl
+	TEST( ptr_int )
 		doTest( integer, 1 )
-	end sub
+	END_TEST
 
-	sub test_ptr_long cdecl
+	TEST( ptr_long )
 		doTest( longint, 1 )
-	end sub
+	END_TEST
 
-	sub test_ptr_single cdecl
+	TEST( ptr_single )
 		doTest( single , 1 )
-	end sub
+	END_TEST
 
-	sub test_ptr_dbl cdecl
+	TEST( ptr_double )
 		doTest( double , 1 )
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.structs.bool_expr_cast")
-		
-		fbcu.add_test("byte", @test_byte)
-		fbcu.add_test("short", @test_short)
-		fbcu.add_test("integer", @test_int)
-		fbcu.add_test("longint", @test_long)
-		fbcu.add_test("single", @test_single)
-		fbcu.add_test("double", @test_dbl)
-	
-		fbcu.add_test("any ptr", @test_ptr_any)
-		fbcu.add_test("short ptr", @test_ptr_short)
-		fbcu.add_test("integer ptr", @test_ptr_int)
-		fbcu.add_test("longint ptr", @test_ptr_long)
-		fbcu.add_test("single ptr", @test_ptr_single)
-		fbcu.add_test("double ptr", @test_ptr_dbl)
-	end sub
-
-end namespace
-	
+END_SUITE

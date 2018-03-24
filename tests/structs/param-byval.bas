@@ -1,354 +1,345 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.param_byval
+SUITE( fbc_tests.structs.param_byval )
 
-namespace defCtor
-	dim shared as integer ctors
+	TEST_GROUP( defCtor )
+		dim shared as integer ctors
 
-	type UDT
-		i as integer
-		declare constructor( )
-	end type
+		type UDT
+			i as integer
+			declare constructor( )
+		end type
 
-	constructor UDT( )
-		ctors += 1
-	end constructor
+		constructor UDT( )
+			ctors += 1
+		end constructor
 
-	dim shared as UDT x0
+		dim shared as UDT x0
 
-	function hPassByval1( byval x as UDT ) as integer
-		function = x.i
-		x.i = 111
-	end function
+		function hPassByval1( byval x as UDT ) as integer
+			function = x.i
+			x.i = 111
+		end function
 
-	function hPassByval2( byval x as UDT = x0 ) as integer
-		function = x.i
-		x.i = 222
-	end function
+		function hPassByval2( byval x as UDT = x0 ) as integer
+			function = x.i
+			x.i = 222
+		end function
 
-	function hPassByval3( byval x as UDT = UDT( ) ) as integer
-		function = x.i
-		x.i = 333
-	end function
+		function hPassByval3( byval x as UDT = UDT( ) ) as integer
+			function = x.i
+			x.i = 333
+		end function
 
-	sub test cdecl( )
-		CU_ASSERT( ctors = 1 )
+		TEST( default )
+			CU_ASSERT( ctors = 1 )
 
-		dim as UDT x
-		CU_ASSERT( ctors = 2 )
+			dim as UDT x
+			CU_ASSERT( ctors = 2 )
 
-		x.i = 123
-		CU_ASSERT( hPassByval1( x ) = 123 )
-		CU_ASSERT( x.i = 123 )
-		CU_ASSERT( ctors = 2 )
+			x.i = 123
+			CU_ASSERT( hPassByval1( x ) = 123 )
+			CU_ASSERT( x.i = 123 )
+			CU_ASSERT( ctors = 2 )
 
-		CU_ASSERT( hPassByval1( UDT( ) ) = 0 )
-		CU_ASSERT( ctors = 3 )
+			CU_ASSERT( hPassByval1( UDT( ) ) = 0 )
+			CU_ASSERT( ctors = 3 )
 
-		x0.i = 456
-		CU_ASSERT( hPassByval2( ) = 456 )
-		CU_ASSERT( x0.i = 456 )
-		CU_ASSERT( ctors = 3 )
+			x0.i = 456
+			CU_ASSERT( hPassByval2( ) = 456 )
+			CU_ASSERT( x0.i = 456 )
+			CU_ASSERT( ctors = 3 )
 
-		CU_ASSERT( hPassByval3( ) = 0 )
-		CU_ASSERT( ctors = 4 )
-	end sub
-end namespace
+			CU_ASSERT( hPassByval3( ) = 0 )
+			CU_ASSERT( ctors = 4 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace defCtorAndCopyCtor
-	dim shared as integer defctors, copyctors
+	TEST_GROUP( defCtorAndCopyCtor )
+		dim shared as integer defctors, copyctors
 
-	type UDT
-		i as integer
-		declare constructor( )
-		declare constructor( as UDT )
-	end type
+		type UDT
+			i as integer
+			declare constructor( )
+			declare constructor( as UDT )
+		end type
 
-	constructor UDT( )
-		defctors += 1
-	end constructor
+		constructor UDT( )
+			defctors += 1
+		end constructor
 
-	constructor UDT( rhs as UDT )
-		copyctors += 1
-		this.i = rhs.i
-	end constructor
+		constructor UDT( rhs as UDT )
+			copyctors += 1
+			this.i = rhs.i
+		end constructor
 
-	dim shared as UDT x0
+		dim shared as UDT x0
 
-	function hPassByval1( byval x as UDT ) as integer
-		function = x.i
-		x.i = 111
-	end function
+		function hPassByval1( byval x as UDT ) as integer
+			function = x.i
+			x.i = 111
+		end function
 
-	function hPassByval2( byval x as UDT = x0 ) as integer
-		function = x.i
-		x.i = 222
-	end function
+		function hPassByval2( byval x as UDT = x0 ) as integer
+			function = x.i
+			x.i = 222
+		end function
 
-	function hPassByval3( byval x as UDT = UDT( ) ) as integer
-		function = x.i
-		x.i = 333
-	end function
+		function hPassByval3( byval x as UDT = UDT( ) ) as integer
+			function = x.i
+			x.i = 333
+		end function
 
-	sub test cdecl( )
-		CU_ASSERT(  defctors = 1 )
-		CU_ASSERT( copyctors = 0 )
+		TEST( default )
+			CU_ASSERT(  defctors = 1 )
+			CU_ASSERT( copyctors = 0 )
 
-		dim as UDT x
-		CU_ASSERT(  defctors = 2 )
-		CU_ASSERT( copyctors = 0 )
+			dim as UDT x
+			CU_ASSERT(  defctors = 2 )
+			CU_ASSERT( copyctors = 0 )
 
-		x.i = 123
-		CU_ASSERT( hPassByval1( x ) = 123 )
-		CU_ASSERT( x.i = 123 )
-		CU_ASSERT(  defctors = 2 )
-		CU_ASSERT( copyctors = 1 )
+			x.i = 123
+			CU_ASSERT( hPassByval1( x ) = 123 )
+			CU_ASSERT( x.i = 123 )
+			CU_ASSERT(  defctors = 2 )
+			CU_ASSERT( copyctors = 1 )
 
-		CU_ASSERT( hPassByval1( UDT( ) ) = 0 )
-		CU_ASSERT(  defctors = 3 )
-		CU_ASSERT( copyctors = 1 )
+			CU_ASSERT( hPassByval1( UDT( ) ) = 0 )
+			CU_ASSERT(  defctors = 3 )
+			CU_ASSERT( copyctors = 1 )
 
-		x0.i = 456
-		CU_ASSERT( hPassByval2( ) = 456 )
-		CU_ASSERT( x0.i = 456 )
-		CU_ASSERT(  defctors = 3 )
-		CU_ASSERT( copyctors = 2 )
+			x0.i = 456
+			CU_ASSERT( hPassByval2( ) = 456 )
+			CU_ASSERT( x0.i = 456 )
+			CU_ASSERT(  defctors = 3 )
+			CU_ASSERT( copyctors = 2 )
 
-		CU_ASSERT( hPassByval3( ) = 0 )
-		CU_ASSERT(  defctors = 4 )
-		CU_ASSERT( copyctors = 2 )
-	end sub
-end namespace
+			CU_ASSERT( hPassByval3( ) = 0 )
+			CU_ASSERT(  defctors = 4 )
+			CU_ASSERT( copyctors = 2 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace intCtor
-	dim shared as integer ctors
+	TEST_GROUP( intCtor )
+		dim shared as integer ctors
 
-	type UDT
-		i as integer
-		declare constructor( as integer )
-	end type
+		type UDT
+			i as integer
+			declare constructor( as integer )
+		end type
 
-	constructor UDT( i as integer )
-		ctors += 1
-		this.i = i
-	end constructor
+		constructor UDT( i as integer )
+			ctors += 1
+			this.i = i
+		end constructor
 
-	dim shared as UDT x0 = UDT( 456 )
+		dim shared as UDT x0 = UDT( 456 )
 
-	function hPassByval1( byval x as UDT ) as integer
-		function = x.i
-		x.i = 111
-	end function
+		function hPassByval1( byval x as UDT ) as integer
+			function = x.i
+			x.i = 111
+		end function
 
-	function hPassByval2( byval x as UDT = x0 ) as integer
-		function = x.i
-		x.i = 222
-	end function
+		function hPassByval2( byval x as UDT = x0 ) as integer
+			function = x.i
+			x.i = 222
+		end function
 
-	function hPassByval3( byval x as UDT = UDT( 789 ) ) as integer
-		function = x.i
-		x.i = 333
-	end function
-
-	'' implicit construction
-	function hPassByval4( byval x as UDT = 3344 ) as integer
-		function = x.i
-		x.i = 444
-	end function
-
-	sub test cdecl( )
-		CU_ASSERT( ctors = 1 )
-
-		dim as UDT x = UDT( 123 )
-		CU_ASSERT( ctors = 2 )
-
-		CU_ASSERT( hPassByval1( x ) = 123 )
-		CU_ASSERT( x.i = 123 )
-		CU_ASSERT( ctors = 2 )
-
-		CU_ASSERT( hPassByval1( UDT( 456 ) ) = 456 )
-		CU_ASSERT( ctors = 3 )
-
-		CU_ASSERT( hPassByval2( ) = 456 )
-		CU_ASSERT( x0.i = 456 )
-		CU_ASSERT( ctors = 3 )
-
-		CU_ASSERT( hPassByval3( ) = 789 )
-		CU_ASSERT( ctors = 4 )
+		function hPassByval3( byval x as UDT = UDT( 789 ) ) as integer
+			function = x.i
+			x.i = 333
+		end function
 
 		'' implicit construction
-		CU_ASSERT( hPassByval1( 1122 ) = 1122 )
-		CU_ASSERT( ctors = 5 )
+		function hPassByval4( byval x as UDT = 3344 ) as integer
+			function = x.i
+			x.i = 444
+		end function
 
-		CU_ASSERT( hPassByval4( ) = 3344 )
-		CU_ASSERT( ctors = 6 )
-	end sub
-end namespace
+		TEST( default )
+			CU_ASSERT( ctors = 1 )
 
-namespace intCtorAndCopyCtor
-	dim shared as integer intctors, copyctors
+			dim as UDT x = UDT( 123 )
+			CU_ASSERT( ctors = 2 )
 
-	type UDT
-		i as integer
-		declare constructor( as integer )
-		declare constructor( as UDT )
-	end type
+			CU_ASSERT( hPassByval1( x ) = 123 )
+			CU_ASSERT( x.i = 123 )
+			CU_ASSERT( ctors = 2 )
 
-	constructor UDT( i as integer )
-		intctors += 1
-		this.i = i
-	end constructor
+			CU_ASSERT( hPassByval1( UDT( 456 ) ) = 456 )
+			CU_ASSERT( ctors = 3 )
 
-	constructor UDT( rhs as UDT )
-		copyctors += 1
-		this.i = rhs.i
-	end constructor
+			CU_ASSERT( hPassByval2( ) = 456 )
+			CU_ASSERT( x0.i = 456 )
+			CU_ASSERT( ctors = 3 )
 
-	dim shared as UDT x0 = UDT( 456 )
+			CU_ASSERT( hPassByval3( ) = 789 )
+			CU_ASSERT( ctors = 4 )
 
-	function hPassByval1( byval x as UDT ) as integer
-		function = x.i
-		x.i = 111
-	end function
+			'' implicit construction
+			CU_ASSERT( hPassByval1( 1122 ) = 1122 )
+			CU_ASSERT( ctors = 5 )
 
-	function hPassByval2( byval x as UDT = x0 ) as integer
-		function = x.i
-		x.i = 222
-	end function
+			CU_ASSERT( hPassByval4( ) = 3344 )
+			CU_ASSERT( ctors = 6 )
+		END_TEST
+	END_TEST_GROUP
 
-	function hPassByval3( byval x as UDT = UDT( 789 ) ) as integer
-		function = x.i
-		x.i = 333
-	end function
+	TEST_GROUP( intCtorAndCopyCtor )
+		dim shared as integer intctors, copyctors
 
-	'' implicit construction
-	function hPassByval4( byval x as UDT = 3344 ) as integer
-		function = x.i
-		x.i = 444
-	end function
+		type UDT
+			i as integer
+			declare constructor( as integer )
+			declare constructor( as UDT )
+		end type
 
-	sub test cdecl( )
-		CU_ASSERT(  intctors = 1 )
-		CU_ASSERT( copyctors = 0 )
+		constructor UDT( i as integer )
+			intctors += 1
+			this.i = i
+		end constructor
 
-		dim as UDT x = UDT( 123 )
-		CU_ASSERT(  intctors = 2 )
-		CU_ASSERT( copyctors = 0 )
+		constructor UDT( rhs as UDT )
+			copyctors += 1
+			this.i = rhs.i
+		end constructor
 
-		CU_ASSERT( hPassByval1( x ) = 123 )
-		CU_ASSERT( x.i = 123 )
-		CU_ASSERT(  intctors = 2 )
-		CU_ASSERT( copyctors = 1 )
+		dim shared as UDT x0 = UDT( 456 )
 
-		CU_ASSERT( hPassByval1( UDT( 456 ) ) = 456 )
-		CU_ASSERT(  intctors = 3 )
-		CU_ASSERT( copyctors = 1 )
+		function hPassByval1( byval x as UDT ) as integer
+			function = x.i
+			x.i = 111
+		end function
 
-		CU_ASSERT( hPassByval2( ) = 456 )
-		CU_ASSERT( x0.i = 456 )
-		CU_ASSERT(  intctors = 3 )
-		CU_ASSERT( copyctors = 2 )
+		function hPassByval2( byval x as UDT = x0 ) as integer
+			function = x.i
+			x.i = 222
+		end function
 
-		CU_ASSERT( hPassByval3( ) = 789 )
-		CU_ASSERT(  intctors = 4 )
-		CU_ASSERT( copyctors = 2 )
+		function hPassByval3( byval x as UDT = UDT( 789 ) ) as integer
+			function = x.i
+			x.i = 333
+		end function
 
 		'' implicit construction
-		CU_ASSERT( hPassByval1( 1122 ) = 1122 )
-		CU_ASSERT(  intctors = 5 )
-		CU_ASSERT( copyctors = 2 )
+		function hPassByval4( byval x as UDT = 3344 ) as integer
+			function = x.i
+			x.i = 444
+		end function
 
-		CU_ASSERT( hPassByval4( ) = 3344 )
-		CU_ASSERT(  intctors = 6 )
-		CU_ASSERT( copyctors = 2 )
-	end sub
-end namespace
+		TEST( default )
+			CU_ASSERT(  intctors = 1 )
+			CU_ASSERT( copyctors = 0 )
 
-namespace defCtorAndIntCtor
-	dim shared as integer defctors, intctors
+			dim as UDT x = UDT( 123 )
+			CU_ASSERT(  intctors = 2 )
+			CU_ASSERT( copyctors = 0 )
 
-	type UDT
-		i as integer
-		declare constructor( )
-		declare constructor( as integer )
-	end type
+			CU_ASSERT( hPassByval1( x ) = 123 )
+			CU_ASSERT( x.i = 123 )
+			CU_ASSERT(  intctors = 2 )
+			CU_ASSERT( copyctors = 1 )
 
-	constructor UDT( )
-		defctors += 1
-	end constructor
+			CU_ASSERT( hPassByval1( UDT( 456 ) ) = 456 )
+			CU_ASSERT(  intctors = 3 )
+			CU_ASSERT( copyctors = 1 )
 
-	constructor UDT( i as integer )
-		intctors += 1
-		this.i = i
-	end constructor
+			CU_ASSERT( hPassByval2( ) = 456 )
+			CU_ASSERT( x0.i = 456 )
+			CU_ASSERT(  intctors = 3 )
+			CU_ASSERT( copyctors = 2 )
 
-	dim shared as UDT x0 = UDT( 456 )
+			CU_ASSERT( hPassByval3( ) = 789 )
+			CU_ASSERT(  intctors = 4 )
+			CU_ASSERT( copyctors = 2 )
 
-	function hPassByval1( byval x as UDT ) as integer
-		function = x.i
-		x.i = 111
-	end function
+			'' implicit construction
+			CU_ASSERT( hPassByval1( 1122 ) = 1122 )
+			CU_ASSERT(  intctors = 5 )
+			CU_ASSERT( copyctors = 2 )
 
-	function hPassByval2( byval x as UDT = x0 ) as integer
-		function = x.i
-		x.i = 222
-	end function
+			CU_ASSERT( hPassByval4( ) = 3344 )
+			CU_ASSERT(  intctors = 6 )
+			CU_ASSERT( copyctors = 2 )
+		END_TEST
+	END_TEST_GROUP
 
-	function hPassByval3( byval x as UDT = UDT( 789 ) ) as integer
-		function = x.i
-		x.i = 333
-	end function
+	TEST_GROUP( defCtorAndIntCtor )
+		dim shared as integer defctors, intctors
 
-	'' implicit construction
-	function hPassByval4( byval x as UDT = 3344 ) as integer
-		function = x.i
-		x.i = 444
-	end function
+		type UDT
+			i as integer
+			declare constructor( )
+			declare constructor( as integer )
+		end type
 
-	sub test cdecl( )
-		CU_ASSERT( defctors = 0 )
-		CU_ASSERT( intctors = 1 )
+		constructor UDT( )
+			defctors += 1
+		end constructor
 
-		dim as UDT x = UDT( 123 )
-		CU_ASSERT( defctors = 0 )
-		CU_ASSERT( intctors = 2 )
+		constructor UDT( i as integer )
+			intctors += 1
+			this.i = i
+		end constructor
 
-		CU_ASSERT( hPassByval1( x ) = 123 )
-		CU_ASSERT( x.i = 123 )
-		CU_ASSERT( defctors = 0 )
-		CU_ASSERT( intctors = 2 )
+		dim shared as UDT x0 = UDT( 456 )
 
-		CU_ASSERT( hPassByval1( UDT( 456 ) ) = 456 )
-		CU_ASSERT( defctors = 0 )
-		CU_ASSERT( intctors = 3 )
+		function hPassByval1( byval x as UDT ) as integer
+			function = x.i
+			x.i = 111
+		end function
 
-		CU_ASSERT( hPassByval2( ) = 456 )
-		CU_ASSERT( x0.i = 456 )
-		CU_ASSERT( defctors = 0 )
-		CU_ASSERT( intctors = 3 )
+		function hPassByval2( byval x as UDT = x0 ) as integer
+			function = x.i
+			x.i = 222
+		end function
 
-		CU_ASSERT( hPassByval3( ) = 789 )
-		CU_ASSERT( defctors = 0 )
-		CU_ASSERT( intctors = 4 )
+		function hPassByval3( byval x as UDT = UDT( 789 ) ) as integer
+			function = x.i
+			x.i = 333
+		end function
 
 		'' implicit construction
-		CU_ASSERT( hPassByval1( 1122 ) = 1122 )
-		CU_ASSERT( defctors = 0 )
-		CU_ASSERT( intctors = 5 )
+		function hPassByval4( byval x as UDT = 3344 ) as integer
+			function = x.i
+			x.i = 444
+		end function
 
-		CU_ASSERT( hPassByval4( ) = 3344 )
-		CU_ASSERT( defctors = 0 )
-		CU_ASSERT( intctors = 6 )
-	end sub
-end namespace
+		TEST( default )
+			CU_ASSERT( defctors = 0 )
+			CU_ASSERT( intctors = 1 )
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.structs.param-byval" )
-	fbcu.add_test( "1", @defCtor.test )
-	fbcu.add_test( "2", @defCtorAndCopyCtor.test )
-	fbcu.add_test( "3", @intCtor.test )
-	fbcu.add_test( "4", @intCtorAndCopyCtor.test )
-	fbcu.add_test( "5", @defCtorAndIntCtor.test )
-end sub
+			dim as UDT x = UDT( 123 )
+			CU_ASSERT( defctors = 0 )
+			CU_ASSERT( intctors = 2 )
 
-end namespace
+			CU_ASSERT( hPassByval1( x ) = 123 )
+			CU_ASSERT( x.i = 123 )
+			CU_ASSERT( defctors = 0 )
+			CU_ASSERT( intctors = 2 )
+
+			CU_ASSERT( hPassByval1( UDT( 456 ) ) = 456 )
+			CU_ASSERT( defctors = 0 )
+			CU_ASSERT( intctors = 3 )
+
+			CU_ASSERT( hPassByval2( ) = 456 )
+			CU_ASSERT( x0.i = 456 )
+			CU_ASSERT( defctors = 0 )
+			CU_ASSERT( intctors = 3 )
+
+			CU_ASSERT( hPassByval3( ) = 789 )
+			CU_ASSERT( defctors = 0 )
+			CU_ASSERT( intctors = 4 )
+
+			'' implicit construction
+			CU_ASSERT( hPassByval1( 1122 ) = 1122 )
+			CU_ASSERT( defctors = 0 )
+			CU_ASSERT( intctors = 5 )
+
+			CU_ASSERT( hPassByval4( ) = 3344 )
+			CU_ASSERT( defctors = 0 )
+			CU_ASSERT( intctors = 6 )
+		END_TEST
+	END_TEST_GROUP
+
+END_SUITE

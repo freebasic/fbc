@@ -83,6 +83,13 @@ TARGET=arch-os-variant
 FPU=FPU|SSE
    Adds '-fpu FPU|SSE' option when compiling tests.
 
+ENABLE_CHECK_BUGS=1
+   Adds '-d ENABLE_CHECK_BUGS=1' when compiling tests. This is used
+   enable additional tests for known bugs that are not yet fixed.
+
+ENABLE_CONSOLE_OUTPUT=1
+   Add '-d ENABLE_CONSOLE_OUTPUT' when compiling tests. This is used
+   to turn on printing output to the console.
 
 How the tests are collected
 ---------------------------
@@ -224,5 +231,10 @@ failed.log
    information on a specific failed test, view the '.log' saved in
    the same directory as the test file.
 
+const/generator
+   helper program and database to generate and check const type tests
+
+optimizations\generator
+   helper program to create extensive 'math-torture-*.bas' tests
 
 ## EOF

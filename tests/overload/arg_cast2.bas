@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 	
-namespace fbc_tests.overloads.arg_cast2
+SUITE( fbc_tests.overloads.arg_cast2 )
 	
     Type CPos
         as integer x, y
@@ -37,15 +37,9 @@ namespace fbc_tests.overloads.arg_cast2
         m_rects(0 to 3) as Crect
     end type
     
-    sub dummy cdecl( )
+    TEST( dummy )
     	'' this just has to compile
-    end sub
+    	CU_PASS()
+    END_TEST
 
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.overload.arg_cast2")
-		fbcu.add_test("n_a", @dummy)
-	
-	end sub
-
-end namespace
+END_SUITE

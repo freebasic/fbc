@@ -1,9 +1,9 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
 #undef short
 type short as integer
 
-private sub testRedefStandardType cdecl( )
+private sub testRedefStandardType
 	CU_ASSERT( sizeof( short ) = sizeof( integer ) )
 end sub
 
@@ -11,13 +11,13 @@ private function f1( ) as integer
 	function = 123
 end function
 
-private sub testPreUndefFunction cdecl( )
+private sub testPreUndefFunction
 	CU_ASSERT( f1( ) = 123 )
 end sub
 
 #undef f1
 
-private sub testPostUndefFunction cdecl( )
+private sub testPostUndefFunction
 	'' Wouldn't be allowed if function f1 still existed
 	dim f1 as integer = 777
 	CU_ASSERT( f1 = 777 )
@@ -27,11 +27,11 @@ private function f1 alias "f2"( ) as integer
 	function = 456
 end function
 
-private sub testRedefFunction cdecl( )
+private sub testRedefFunction
 	CU_ASSERT( f1( ) = 456 )
 end sub
 
-private sub testUndefConstants cdecl( )
+private sub testUndefConstants
 	#define FOO 123
 	CU_ASSERT( FOO = 123 )
 	#undef FOO
@@ -66,13 +66,13 @@ namespace N
 	dim shared as integer i = 123
 end namespace
 
-private sub testPreUndefNamespace cdecl( )
+private sub testPreUndefNamespace
 	CU_ASSERT( N.i = 123 )
 end sub
 
 #undef N
 
-private sub testPostUndefNamespace cdecl( )
+private sub testPostUndefNamespace
 	'' Wouldn't be allowed if namespace N existed
 	dim as integer N = 456
 	CU_ASSERT( N = 456 )
@@ -82,7 +82,7 @@ namespace N alias "N2"
 	dim shared as integer i = 456
 end namespace
 
-private sub testRedefNamespace cdecl( )
+private sub testRedefNamespace
 	CU_ASSERT( N.i = 456 )
 	using N
 	CU_ASSERT( i = 456 )
@@ -90,7 +90,7 @@ private sub testRedefNamespace cdecl( )
 	CU_ASSERT( i = 456 )
 end sub
 
-private sub testRegression1 cdecl( )
+private sub testRegression1
 	'' Shouldn't cause a compiler crash
 	dim j as integer ptr = allocate( 4 )
 	deallocate( j )
@@ -98,15 +98,36 @@ private sub testRegression1 cdecl( )
 	#undef deallocate
 end sub
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.quirk.undef" )
-	fbcu.add_test( "redefining a standard type", @testRedefStandardType )
-	fbcu.add_test( "before undeffing a function", @testPreUndefFunction )
-	fbcu.add_test( "after undeffing the function", @testPostUndefFunction )
-	fbcu.add_test( "after redefining the function", @testRedefFunction )
-	fbcu.add_test( "constants", @testUndefConstants )
-	fbcu.add_test( "before undeffing the namespace", @testPreUndefNamespace )
-	fbcu.add_test( "after undeffing the namespace", @testPostUndefNamespace )
-	fbcu.add_test( "after redefining the namespace", @testRedefNamespace )
-	fbcu.add_test( "regression test 1", @testRegression1 )
-end sub
+SUITE( fbc_tests.quirk.undef_ )
+
+	'' assuming that these tests need to be module level
+
+	TEST( redefStandardType )
+		testRedefStandardType
+	END_TEST
+	TEST( preUndefFunction )
+		testPreUndefFunction
+	END_TEST
+	TEST( postUndefFunction )
+		testPostUndefFunction
+	END_TEST
+	TEST( redefFunction )
+		testRedefFunction
+	END_TEST
+	TEST( undefConstants )
+		testUndefConstants
+	END_TEST
+	TEST( preUndefNamespace )
+		testPreUndefNamespace
+	END_TEST
+	TEST( postUndefNamespace )
+		testPostUndefNamespace
+	END_TEST
+	TEST( redefNamespace )
+		testRedefNamespace
+	END_TEST
+	TEST( regression1 )
+		testRegression1
+	END_TEST
+
+END_SUITE

@@ -42,3 +42,17 @@ fbcunit TODO/BUG list:
 		END_SUITE_CLEANUP
 	END_SUITE
 
+[ ] allowing adding flags to individual tests, especially:
+	TEST_SET_CONSOLE(1) - indicate that test generates console output
+	TEST_SET_INTERACTIVE(1) - indicates test is interactive
+
+[ ] add_suite() might be called with same name as a suite already
+	added but with different init/cleanup procs.  fbcunit framework
+	should maintain a list of init/cleanup procs instead of just one
+
+[ ] SUITE() can be used in more than one module with the same name,
+	that's OK, however, the constructor might be duplicated at the
+	END_SUITE - It uses the __LINE__ built-in to generate unique 
+	identifiers.  This falls apart however,	when END_SUITE is used 
+	for the same suite, in multiple files and happens to land on the 
+	exact same line number.

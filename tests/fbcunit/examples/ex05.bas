@@ -31,9 +31,10 @@ namespace ex05
 	end sub
 
 	sub ctor cdecl () constructor
-		fbcu.add_suite( "ex05", @init, @cleanup )
-		fbcu.add_test( "test1", @test1 )
-		fbcu.add_test( "test2", @test2 )
+		#define SUITE_NAME "ex05"
+		fbcu.add_suite( SUITE_NAME, @init, @cleanup )
+		fbcu.add_test( SUITE_NAME, "test1", @test1 )
+		fbcu.add_test( SUITE_NAME, "test2", @test2 )
 	end sub
 
 end namespace

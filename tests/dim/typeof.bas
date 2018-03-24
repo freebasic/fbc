@@ -1,8 +1,9 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.dim_.typeof_
+SUITE( fbc_tests.dim_.typeof_ )
 
-	sub test_it cdecl( )
+	'' typeof() with dim
+	TEST( typeof_dim )
 	    
 		var foo = cast(integer, 0)
 		
@@ -13,13 +14,6 @@ namespace fbc_tests.dim_.typeof_
 		
 		CU_ASSERT( bar = &Hbaddf00d )
 
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.dim.typeof")
-		fbcu.add_test("typeof() with dim", @test_it)
-	
-	end sub
-
-end namespace
+END_SUITE

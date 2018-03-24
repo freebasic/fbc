@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 '' - don't mix false/true intrinsic constants 
 ''   of the compiler in with the tests
@@ -8,9 +8,9 @@
 #define FALSE 0
 #define TRUE (-1)
 
-namespace fbc_tests.boolean_.boolean_
+SUITE( fbc_tests.boolean_.boolean_ )
 
-	sub sizeof_boolean cdecl ( )
+	TEST( sizeof_boolean )
 		dim as boolean b
 		dim as integer i
 
@@ -22,9 +22,9 @@ namespace fbc_tests.boolean_.boolean_
 
 		i = sizeof(b)
 		CU_ASSERT_EQUAL( i, 1 )
-	end sub
+	END_TEST
 
-	sub convert_cbool cdecl ( )
+	TEST( convert_cbool )
 		dim as integer b
 		dim as integer i
 		dim as integer n
@@ -79,9 +79,9 @@ namespace fbc_tests.boolean_.boolean_
 		b = cbool(n)
 		i = __cbool(n)
 		CU_ASSERT_EQUAL( b, i )
-	end sub
+	END_TEST
 
-	sub convert_cbool_literal cdecl ( )
+	TEST( convert_cbool_literal )
 		dim as boolean b
 
 		b = cbool(0)
@@ -98,9 +98,9 @@ namespace fbc_tests.boolean_.boolean_
 
 		b = cbool(256)
 		CU_ASSERT_EQUAL( b, TRUE )
-	end sub
+	END_TEST
 
-	sub convert_cbool_variable cdecl ( )
+	TEST( convert_cbool_variable )
 		dim as integer b
 		dim as integer i
 
@@ -123,9 +123,9 @@ namespace fbc_tests.boolean_.boolean_
 		i = 256
 		b = cbool(i)
 		CU_ASSERT_EQUAL( b, TRUE )
-	end sub
+	END_TEST
 
-	sub assign_literal cdecl ( )
+	TEST( assign_literal )
 		dim as boolean b
 		CU_ASSERT_EQUAL( b, FALSE )
 
@@ -143,9 +143,9 @@ namespace fbc_tests.boolean_.boolean_
 
 		b = 256
 		CU_ASSERT_EQUAL( b, TRUE )
-	end sub
+	END_TEST
 
-	sub assign_integer cdecl ( )
+	TEST( assign_integer )
 		dim as boolean b
 		dim as integer i
 
@@ -170,12 +170,12 @@ namespace fbc_tests.boolean_.boolean_
 		i = 256
 		b = i
 		CU_ASSERT_EQUAL( b, TRUE )
-	end sub
+	END_TEST
 
 	dim shared global1 as boolean = TRUE
 	dim shared global2 as boolean = FALSE
 
-	sub initializer_literal cdecl ( )
+	TEST( initializer_literal )
 		CU_ASSERT( global1 = TRUE )
 		CU_ASSERT( global2 = FALSE )
 
@@ -198,9 +198,9 @@ namespace fbc_tests.boolean_.boolean_
 
 		dim as boolean e = 256
 		CU_ASSERT_EQUAL( e, TRUE )
-	end sub
+	END_TEST
 
-	sub initializer_variable cdecl ( )
+	TEST( initializer_variable )
 		dim i as integer
 
 		i = 0
@@ -223,17 +223,6 @@ namespace fbc_tests.boolean_.boolean_
 		CU_ASSERT_EQUAL( c, TRUE )
 		CU_ASSERT_EQUAL( d, TRUE )
 		CU_ASSERT_EQUAL( e, TRUE )
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean.boolean")
-		fbcu.add_test("sizeof_boolean", @sizeof_boolean)
-		fbcu.add_test("convert_cbool", @convert_cbool)
-		fbcu.add_test("convert_cbool_literal", @convert_cbool_literal)
-		fbcu.add_test("convert_cbool_variable", @convert_cbool_variable)
-		fbcu.add_test("assign_literal", @assign_literal)
-		fbcu.add_test("assign_integer", @assign_integer)
-		fbcu.add_test("initializer_literal", @initializer_literal)
-		fbcu.add_test("initializer_variable", @initializer_variable)
-	end sub
-end namespace
+END_SUITE

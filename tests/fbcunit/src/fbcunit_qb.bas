@@ -45,12 +45,13 @@ end function
 ''
 sub fbcu_add_test_qb alias "fbcu_add_test_qb" _
 	( _
+		byval suite_name as zstring ptr = FBCU_NULL, _
 		byval test_name as zstring ptr = FBCU_NULL, _
 		byval test_proc as sub cdecl ( ) = FBCU_NULL, _
 		byval is_global as boolean = false _
 	)
 	
-	fbcu.add_test( test_name, test_proc, is_global )
+	fbcu.add_test( suite_name, test_name, test_proc, is_global )
 
 end sub
 
@@ -73,6 +74,112 @@ sub fbcu_show_results_qb alias "fbcu_show_results_qb" _
 	fbcu.show_results()
 
 end sub
+
+''
+function fbcu_sngIsNan_qb_ alias "fbcu_sngIsNan_qb_" _
+	( _
+		byval a as single _
+	) as boolean
+
+	function = fbcu.sngIsNan( a )
+
+end function
+
+''
+function fbcu_sngIsInf_qb_ alias "fbcu_sngIsInf_qb_" _
+	( _
+		byval a as single _
+	) as boolean
+
+	function = fbcu.sngIsInf( a )
+
+end function
+
+''
+function fbcu_sngULP_qb_ alias "fbcu_sngULP_qb_" _
+	( _
+		byval a as single _
+	) as long
+
+	function = fbcu.sngULP( a )
+
+end function
+
+''
+function fbcu_sngULPdiff_qb_ alias "fbcu_sngULPdiff_qb_" _
+	( _
+		byval a as single, _
+		byval b as single _
+	) as long
+
+	function = fbcu.sngULPdiff( a, b )
+
+end function
+
+''
+function fbcu_sngApprox_qb_ alias "fbcu_sngApprox_qb_" _
+	( _
+		byval a as single, _
+		byval b as single, _
+		byval ulps as long = 1 _
+	) as boolean
+
+	function = fbcu.sngApprox( a, b, ulps )
+
+end function
+
+''
+function fbcu_dblIsNan_qb_ alias "fbcu_dblIsNan_qb_" _
+	( _
+		byval a as double _
+	) as boolean
+
+	function = fbcu.dblIsNan( a )
+
+end function
+
+''
+function fbcu_dblIsInf_qb_ alias "fbcu_dblIsInf_qb_" _
+	( _
+		byval a as double _
+	) as boolean
+
+	function = fbcu.dblIsInf( a )
+
+end function
+
+''
+function fbcu_dblULP_qb_ alias "fbcu_dblULP_qb_" _
+	( _
+		byval a as double _
+	) as longint
+
+	function = fbcu.dblULP( a )
+
+end function
+
+''
+function fbcu_dblULPdiff_qb_ alias "fbcu_dblULPdiff_qb_" _
+	( _
+		byval a as double, _
+		byval b as double _
+	) as longint
+
+	function = fbcu.dblULPdiff( a, b )
+
+end function
+
+''
+function fbcu_dblApprox_qb_ alias "fbcu_dblApprox_qb_" _
+	( _
+		byval a as double, _
+		byval b as double, _
+		byval ulps as longint = 1 _
+	) as boolean
+
+	function = fbcu.dblApprox( a, b, ulps )
+
+end function
 
 ''
 sub fbcu_CU_ASSERT_qb_ alias "fbcu_CU_ASSERT_qb_" _

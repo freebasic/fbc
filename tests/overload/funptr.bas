@@ -1,73 +1,61 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
+SUITE( fbc_tests.overloads.funptr )
 
+	type sub_wo_params_t as sub () 
+	type sub_w_params_t as sub ( byval as integer ) 
 
-namespace fbc_tests.overloads.funptr
+	enum
+		WITHOUT_PARAMS
+		WITH_PARAMS
+	end enum
 
-type sub_wo_params_t as sub () 
-type sub_w_params_t as sub ( byval as integer ) 
+	function proc overload (byval s as sub_wo_params_t ptr ) as integer
+	   function = WITHOUT_PARAMS
+	end function 
 
-enum
-	WITHOUT_PARAMS
-	WITH_PARAMS
-end enum
+	function proc overload (byval s as sub_w_params_t ptr ) as integer
+	   function = WITH_PARAMS
+	end function 
 
-function proc overload (byval s as sub_wo_params_t ptr ) as integer
-   function = WITHOUT_PARAMS
-end function 
+	sub sub_wo_params ( )
+	end sub 
 
-function proc overload (byval s as sub_w_params_t ptr ) as integer
-   function = WITH_PARAMS
-end function 
+	sub sub_w_params ( byval i as integer )
+	end sub 
 
-sub sub_wo_params ( )
-end sub 
+	TEST( initialization_wo_params )
+		dim fn as sub_wo_params_t = @sub_wo_params
+		dim pfn as sub_wo_params_t ptr = @fn
 
-sub sub_w_params ( byval i as integer )
-end sub 
+		CU_ASSERT_EQUAL( proc( pfn ), WITHOUT_PARAMS )
+	END_TEST
 
-sub test_initialization_wo_params cdecl ()
-	dim fn as sub_wo_params_t = @sub_wo_params
-	dim pfn as sub_wo_params_t ptr = @fn
+	TEST( assignment_wo_params )
+		dim fn as sub_wo_params_t
+		dim pfn as sub_wo_params_t ptr
 
-	CU_ASSERT_EQUAL( proc( pfn ), WITHOUT_PARAMS )
-end sub
+		fn = @sub_wo_params
+		pfn = @fn
 
-sub test_assignment_wo_params cdecl ()
-	dim fn as sub_wo_params_t
-	dim pfn as sub_wo_params_t ptr
+		CU_ASSERT_EQUAL( proc( pfn ), WITHOUT_PARAMS )
+	END_TEST
 
-	fn = @sub_wo_params
-	pfn = @fn
+	TEST( initialization_w_params )
+		dim fn as sub_w_params_t = @sub_w_params
+		dim pfn as sub_w_params_t ptr = @fn
 
-	CU_ASSERT_EQUAL( proc( pfn ), WITHOUT_PARAMS )
-end sub
+		CU_ASSERT_EQUAL( proc( pfn ), WITH_PARAMS )
+	END_TEST
 
-sub test_initialization_w_params cdecl ()
-	dim fn as sub_w_params_t = @sub_w_params
-	dim pfn as sub_w_params_t ptr = @fn
+	TEST( assignment_w_params ) 
+		dim fn as sub_w_params_t
+		dim pfn as sub_w_params_t ptr
 
-	CU_ASSERT_EQUAL( proc( pfn ), WITH_PARAMS )
-end sub
+		fn = @sub_w_params
+		pfn = @fn
 
-sub test_assignment_w_params cdecl ()
-	dim fn as sub_w_params_t
-	dim pfn as sub_w_params_t ptr
+		CU_ASSERT_EQUAL( proc( pfn ), WITH_PARAMS )
+	END_TEST
 
-	fn = @sub_w_params
-	pfn = @fn
-
-	CU_ASSERT_EQUAL( proc( pfn ), WITH_PARAMS )
-end sub
-
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.overload.funptr")
-	fbcu.add_test("test_initialization_wo_params", @test_initialization_wo_params)
-	fbcu.add_test("test_assignment_wo_params", @test_assignment_wo_params)
-	fbcu.add_test("test_initialization_w_params", @test_initialization_w_params)
-	fbcu.add_test("test_assignment_w_params", @test_assignment_w_params)
-
-end sub
-
-end namespace
+END_SUITE

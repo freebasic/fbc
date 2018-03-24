@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.dim_.return_notreg2
+SUITE( fbc_tests.functions.return_notreg2 )
 	
 	type foo
 		x(63) as integer
@@ -12,20 +12,12 @@ namespace fbc_tests.dim_.return_notreg2
 		end if
 	end function
 	
-	sub test1 cdecl ( )
+	TEST( testproc )
 		dim as foo thing
 		thing = heh( )
 		for i as integer = 0 to 63
 			CU_ASSERT( thing.x(i) = 0 )
 		next
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.functions.return_notreg2")
-		fbcu.add_test("test 1", @test1)
-	
-	end sub
-	
-end namespace
-			
+END_SUITE

@@ -1,25 +1,20 @@
-#include once "fbcu.bi"
+#include once "fbcunit.bi"
 #include once "crt/long.bi"
 
-namespace fbc_tests.crt.clong_
+SUITE( fbc_tests.crt.clong_ )
 
-sub test cdecl( )
-	CU_ASSERT( sizeof( clong ) = sizeof( culong ) )
+	TEST( clong_size )
+		CU_ASSERT( sizeof( clong ) = sizeof( culong ) )
 
-	#ifdef __FB_64BIT__
-		#ifdef __FB_WIN32__
-			CU_ASSERT( sizeof( clong ) = 4 )
+		#ifdef __FB_64BIT__
+			#ifdef __FB_WIN32__
+				CU_ASSERT( sizeof( clong ) = 4 )
+			#else
+				CU_ASSERT( sizeof( clong ) = 8 )
+			#endif
 		#else
-			CU_ASSERT( sizeof( clong ) = 8 )
+			CU_ASSERT( sizeof( clong ) = 4 )
 		#endif
-	#else
-		CU_ASSERT( sizeof( clong ) = 4 )
-	#endif
-end sub
+	END_TEST
 
-sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.crt.clong" )
-	fbcu.add_test( "test", @test )
-end sub
-
-end namespace
+END_SUITE

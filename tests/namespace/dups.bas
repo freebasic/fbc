@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 const TEST_VAL = 1234
 
@@ -10,7 +10,7 @@ type duptype field=1
 	a as byte
 end type
 
-namespace fbc_tests.ns.dups
+namespace module.ns.dups
 	namespace type_ns
 		'' dup should be allowed, different ns'
 		type duptype
@@ -40,19 +40,19 @@ namespace fbc_tests.ns.dups
 	end namespace
 end namespace
 
-	'' a dup var declared in the global ns
-	dim dupvar as integer = 0
+'' a dup var declared in the global ns
+dim dupvar as integer = 0
 
-	''
-	using fbc_tests.ns.dups.outer
+''
+using module.ns.dups.outer
 
 '' defining a prototyped function outside the original ns (as in C++)
-private function fbc_tests.ns.dups.outer.inner.dupfunc( ) as integer
+private function module.ns.dups.outer.inner.dupfunc( ) as integer
 	function = dupvar.b
 end function
 
 '' creating more ns symbols (as in C++)
-namespace fbc_tests.ns.dups.outer
+namespace module.ns.dups.outer
 	namespace inner
 	
 		sub resetvar( )
@@ -65,31 +65,28 @@ namespace fbc_tests.ns.dups.outer
 	end namespace
 end namespace
 
-	'' defining an extern outside the orignal ns (as in C++)
-	dim fbc_tests.ns.dups.outer.dupvar as fbc_tests.ns.dups.outer.duptype = ( TEST_VAL )
+'' defining an extern outside the orignal ns (as in C++)
+dim module.ns.dups.outer.dupvar as module.ns.dups.outer.duptype = ( TEST_VAL )
 
-private sub test_proc cdecl 	
+SUITE( fbc_tests.namespace_.dups )
 
-	scope 
-   		'' see the "using outer" above
-   		using inner
+	TEST( all )
 
-   		'' calling the dup function defined in global ns (exp. scope resolution needed)
-   		CU_ASSERT( .dupfunc( ) = 0 )
-   		
-   		CU_ASSERT( fbc_tests.ns.dups.outer.inner.dupfunc( ) = TEST_VAL )
+		scope 
+   			'' see the "using outer" above
+   			using inner
 
-   		'' outer.inner
-   		resetvar
-   		
-   		CU_ASSERT( fbc_tests.ns.dups.outer.inner.dupfunc( ) = 0 )
-	end scope
+   			'' calling the dup function defined in global ns (exp. scope resolution needed)
+   			CU_ASSERT( .dupfunc( ) = 0 )
+   			
+   			CU_ASSERT( module.ns.dups.outer.inner.dupfunc( ) = TEST_VAL )
 
-end sub
+   			'' outer.inner
+   			resetvar
+   			
+   			CU_ASSERT( module.ns.dups.outer.inner.dupfunc( ) = 0 )
+		end scope
 
-private sub ctor () constructor
+	END_TEST
 
-	fbcu.add_suite("fbc_tests.namespace.dups")
-	fbcu.add_test("test 1", @test_proc)
-	
-end sub
+END_SUITE

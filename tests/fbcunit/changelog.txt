@@ -1,3 +1,32 @@
+Version 0.7
+
+[added]
+- CU_ASSERT_SINGLE_EQUAL() API macro - for singles using epsilon granularity
+- CU_ASSERT_SINGLE_EXACT() API macro - direct and exact comparison between singles
+- CU_ASSERT_DOUBLE_EXACT() API macro - direct and exact comparison between doubles
+- CU_ASSERT_DOUBLE_APPROX() API macro - wrapper for dblApprox() function
+- CU_ASSERT_SINGLE_APPROX() API macro - wrapper for sngApprox() function
+- fbcu.dblIsNan() API function - check if double is not a number
+- fbcu.dblIsInf() API function - check if double is infinity
+- fbcu.dblULP() API function - calculate units in last place for double
+- fbcu.dblULPdiff() API function - get units in last place difference for doubles
+- fbcu.dblApprox() API function - units in last place comparison for doubles
+- fbcu.sngIsNan() API function - check if single is not a number
+- fbcu.sngIsInf() API function - check if single is infinity
+- fbcu.sngULP() API function - calculate units in last place for single
+- fbcu.sngULPdiff() API function - get units in last place difference for singles
+- fbcu.sngApprox() API function - units in last place comparison for singles
+- TEST_GROUP( group_name ) and END_TEST_GROUP macros added
+
+[changed]
+- add_test() API function changed to require suite name.  Module constructors might execute in any order and can't depend on add_suite called before add_test
+
+[fixed]
+- suite names are now allowed to have '.' in the name
+- SUITE() uses 'fbcu_global' by default if no suite_name given
+- TEST() uses 'default' by default if no test_name given
+
+
 Version 0.6
 
 [changed]

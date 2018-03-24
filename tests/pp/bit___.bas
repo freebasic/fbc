@@ -1,8 +1,8 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.macros.bit___
+SUITE( fbc_tests.macros.bit___ )
 
-	sub test_literals cdecl( )
+	TEST( literals )
 		
 		CU_ASSERT( bit( 224, 0 ) = 0 )
 		CU_ASSERT( bit( 224, 1 ) = 0 )
@@ -14,9 +14,9 @@ namespace fbc_tests.macros.bit___
 		CU_ASSERT( bit( 224, 7 ) = -1 )
 		CU_ASSERT( bit( 224, 8 ) = 0 )
 		
-	end sub
+	END_TEST
     
-    sub test64 cdecl()
+    TEST( longint_bit )
         
         for i as integer = 0 to 63
 	        for j as integer = 0 to 63
@@ -35,15 +35,6 @@ namespace fbc_tests.macros.bit___
 			next
 		next
     
-    end sub
+    END_TEST
 
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.pp.bit___")
-		fbcu.add_test("test_longint_bit", @test64)
-		fbcu.add_test("test_literals", @test_literals)
-
-	end sub
-
-end namespace
-	
+END_SUITE

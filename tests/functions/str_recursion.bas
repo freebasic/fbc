@@ -1,73 +1,63 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
+
+SUITE( fbc_tests.functions.str_recursion )
+
+	const TEST_VALUE_1 = "abcDEFghi"
+	const TEST_VALUE_2 = "0123456789"
 
 
+	'':::::
+	sub f1( byval s1 as string, byref s2 as string )
 
+		CU_ASSERT( s1 = TEST_VALUE_1 )
+		CU_ASSERT( s2 = TEST_VALUE_2 )
 
-namespace fbc_tests.functions.str_recursion
+	end sub
 
-const TEST_VALUE_1 = "abcDEFghi"
-const TEST_VALUE_2 = "0123456789"
+	'':::::
+	sub f2( byref s1 as string, byval s2 as string )
 
+		CU_ASSERT( s1 = TEST_VALUE_1 )
+		CU_ASSERT( s2 = TEST_VALUE_2 )
+		
+		f1( s1, s2 )
 
-'':::::
-sub f1( byval s1 as string, byref s2 as string )
+	end sub
 
-	CU_ASSERT( s1 = TEST_VALUE_1 )
-	CU_ASSERT( s2 = TEST_VALUE_2 )
+	'':::::
+	sub f3( byval s1 as string, byref s2 as string )
 
-end sub
+		CU_ASSERT( s1 = TEST_VALUE_1 )
+		CU_ASSERT( s2 = TEST_VALUE_2 )
 
-'':::::
-sub f2( byref s1 as string, byval s2 as string )
+		f2( s1, s2 )
 
-	CU_ASSERT( s1 = TEST_VALUE_1 )
-	CU_ASSERT( s2 = TEST_VALUE_2 )
-	
-	f1( s1, s2 )
+	end sub
 
-end sub
+	'':::::
+	sub f4( byval s1 as zstring ptr, byval s2 as string )
 
-'':::::
-sub f3( byval s1 as string, byref s2 as string )
+		CU_ASSERT( *s1 = TEST_VALUE_1 )
+		CU_ASSERT( s2 = TEST_VALUE_2 )
+		
+		f3( *s1, s2 )
 
-	CU_ASSERT( s1 = TEST_VALUE_1 )
-	CU_ASSERT( s2 = TEST_VALUE_2 )
+	end sub
 
-	f2( s1, s2 )
+	TEST( default )
 
-end sub
+		dim s as string
+		dim z as zstring * 15+1
+		
+		s = TEST_VALUE_1
+		z = TEST_VALUE_2
+		
+		f3 s, z
+		
+		f2 s, z
+		
+		f4 strptr( s ), z
+		
+	END_TEST
 
-'':::::
-sub f4( byval s1 as zstring ptr, byval s2 as string )
-
-	CU_ASSERT( *s1 = TEST_VALUE_1 )
-	CU_ASSERT( s2 = TEST_VALUE_2 )
-	
-	f3( *s1, s2 )
-
-end sub
-
-sub test_1 cdecl ()
-
-	dim s as string
-	dim z as zstring * 15+1
-	
-	s = TEST_VALUE_1
-	z = TEST_VALUE_2
-	
-	f3 s, z
-	
-	f2 s, z
-	
-	f4 strptr( s ), z
-	
-end sub
-
-sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.functions.str_recursion")
-	fbcu.add_test("test_1", @test_1)
-
-end sub
-
-end namespace
+END_SUITE

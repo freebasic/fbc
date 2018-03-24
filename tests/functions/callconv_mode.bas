@@ -1,5 +1,4 @@
-# include "fbcu.bi"
-
+# include "fbcunit.bi"
 
 #define PARAM1 byval a as integer
 #define PARAM2 byref b as string
@@ -9,7 +8,7 @@
 #define A2 "2"
 #define A3 3.5
 
-namespace fbc_tests.functions.callconv_mode
+SUITE( fbc_tests.functions.callconv_mode )
 
 	'' STDCALL proc
 	sub Fstdcall stdcall ( PARAM1, PARAM2, PARAM3 )
@@ -33,31 +32,31 @@ namespace fbc_tests.functions.callconv_mode
 	end sub
 	
 	''
-	sub test1 cdecl( )
+	TEST( callStdCall )
 
 		'' Call STDCALL proc
 		Fstdcall( A1, A2, A3 )
 
-	end sub
+	END_TEST
 
 	''
-	sub test2 cdecl( )
+	TEST( callPascal )
 
 		'' Call PASCAL proc
 		Fpascal( A1, A2, A3 )
 
-	end sub
+	END_TEST
 
 	''
-	sub test3 cdecl( )
+	TEST( callCdecl )
 
 		'' Call CDECL proc
 		Fcdecl( A1, A2, A3 )
 
-	end sub
+	END_TEST
 
 	''
-	sub test4 cdecl( )
+	TEST( callStdcallPascalReversed )
 
 		'' Call STDCALL proc with PASCAL call-convention
 		'' arguments are reversed, but stack clean-up is the same
@@ -69,10 +68,10 @@ namespace fbc_tests.functions.callconv_mode
 
 		F( A3, A2, A1 )
 
-	end sub
+	END_TEST
 
 	''
-	sub test5 cdecl( )
+	TEST( callPascalStdcallReversed )
 
 		'' Call PASCAL proc with STDCALL call-convention
 		'' arguments are reversed, but stack clean-up is the same
@@ -84,17 +83,6 @@ namespace fbc_tests.functions.callconv_mode
 
 		F( A3, A2, A1 )
 
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.functions.callconv_mode")
-		fbcu.add_test("test1", @test1)
-		fbcu.add_test("test2", @test2)
-		fbcu.add_test("test3", @test3)
-		fbcu.add_test("test4", @test4)
-		fbcu.add_test("test5", @test5)
-	
-	end sub
-
-end namespace
+END_SUITE

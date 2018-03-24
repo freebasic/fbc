@@ -1,29 +1,22 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.overloads.sub_call
+SUITE( fbc_tests.overloads.sub_call )
 
-const TEST_VAL = 1234
+	const TEST_VAL = 1234
 
-type udt : __ as byte : end type 
+	type udt : __ as byte : end type 
 
-function proc overload (byval udt as udt) as udt 
-	CU_FAIL_FATAL("")
-	return udt
-end function 
+	function proc overload (byval udt as udt) as udt 
+		CU_FAIL_FATAL("")
+		return udt
+	end function 
 
-sub proc overload (byval i as integer) 
-	CU_ASSERT_EQUAL( i, TEST_VAL )
-end sub 
+	sub proc overload (byval i as integer) 
+		CU_ASSERT_EQUAL( i, TEST_VAL )
+	end sub 
 
-private sub test_basic cdecl ()
-	proc( TEST_VAL )
-end sub
+	TEST( simple )
+		proc( TEST_VAL )
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.overload.sub_call")
-	fbcu.add_test("test_basic", @test_basic)
-
-end sub
-
-end namespace
+END_SUITE

@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 '' - don't mix false/true intrinsic constants 
 ''   of the compiler in with the tests
@@ -8,10 +8,10 @@
 #define FALSE 0
 #define TRUE (-1)
 
-namespace fbc_tests.boolean_.bop
+SUITE( fbc_tests.boolean_.bop )
 
 	''
-	sub test1 cdecl ( )
+	TEST( bop_const )
 
 		#macro dot( arg1, op, arg2 )
 			a = arg1
@@ -82,9 +82,9 @@ namespace fbc_tests.boolean_.bop
 		dot( TRUE, orelse, FALSE )
 		dot( TRUE, orelse, TRUE )
 
-	end sub
+	END_TEST
 	
-	sub test2 cdecl ( )
+	TEST( bop_compare )
 
 		#define lhs_CIF  cint(FALSE)
 		#define lhs_CIT  cint(TRUE)
@@ -180,9 +180,9 @@ namespace fbc_tests.boolean_.bop
 		r = (lhs_VBF = rhs_VBT): CU_ASSERT( r = FALSE )
 		r = (lhs_VBT = rhs_VBT): CU_ASSERT( r = TRUE  )
 
-	end sub
+	END_TEST
 
-	sub testPureBooleanBops cdecl( )
+	TEST( pureBooleanBops )
 		#macro check( l, bop, r, expectedResult )
 			scope
 				dim as boolean b1, b2, b3
@@ -290,15 +290,6 @@ namespace fbc_tests.boolean_.bop
 		check( -1, orelse,  0, -1 )
 		check( -1, orelse,  1, -1 )
 		check( -1, orelse, -1, -1 )
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-
-		fbcu.add_suite("fbc_tests.boolean.boolean_bop")
-		fbcu.add_test("test1", @test1 )
-		fbcu.add_test("test2", @test2 )
-		fbcu.add_test( "testPureBooleanBops", @testPureBooleanBops )
-
-	end sub
-
-end namespace
+END_SUITE

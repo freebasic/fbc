@@ -1,7 +1,6 @@
+#include "fbcunit.bi"
 
-# include "fbcu.bi"
-
-namespace fbc_tests.structs.obj_cast_ovl2
+SUITE( fbc_tests.structs.obj_cast_ovl2 )
     
     type LivingThing
         declare constructor( a as integer )
@@ -30,23 +29,16 @@ namespace fbc_tests.structs.obj_cast_ovl2
     	return LivingThing( 1234 )
 	end operator
 	
-sub test1 cdecl	
-	dim as Animal an
-	dim as Dog dg
+	TEST( all )
+		dim as Animal an
+		dim as Dog dg
+		
+		'' should this be supported? (C++ doesn't allow that)
+		
+		'' this will be converted to: animal.let( a, dog.cast( LivingThing, d ) )
+		an = dg
+		
+		CU_ASSERT_EQUAL( an.b, -1234 )
+	END_TEST
 	
-	'' should this be supported? (C++ doesn't allow that)
-	
-	'' this will be converted to: animal.let( a, dog.cast( LivingThing, d ) )
-	an = dg
-	
-	CU_ASSERT_EQUAL( an.b, -1234 )
-end sub
-
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.structs.obj_cast_ovl2")
-	fbcu.add_test( "test 1", @test1)
-
-end sub
-	
-end namespace	
+END_SUITE

@@ -207,6 +207,16 @@ namespace fbcu
 		fbcu_suite_index = find_suite( suite_name )
 
 		if( fbcu_suite_index <> INVALID_INDEX ) then
+			with fbcu_suites( fbcu_suite_index )
+				if( init_proc ) then
+					'' !!! FIXME !!! - if suite was already added we should generate an error or keep a list of init procs
+					.init_proc = init_proc
+				end if
+				if( term_proc ) then
+					'' !!! FIXME !!! - if suite was already added we should generate an error or keep a list of cleanup procs
+					.term_proc = term_proc
+				end if
+			end with
 			exit sub
 		end if
 
@@ -225,7 +235,7 @@ namespace fbcu
 			if( suite_name ) then
 				.name = *suite_name
 			else
-				.name = "[global]"
+				.name = "fbcu_global"
 			end if
 
 			.name_nocase = lcase(.name)
@@ -264,6 +274,7 @@ namespace fbcu
 	''
 	sub add_test _
 		( _
+			byval suite_name as zstring ptr, _
 			byval test_name as zstring ptr, _
 			byval test_proc as sub cdecl ( ), _
 			byval is_global as boolean = false _
@@ -273,8 +284,10 @@ namespace fbcu
 			fbcu_suite_index = fbcu_suite_default_index
 		end if
 		
+		fbcu_suite_index = find_suite( suite_name )
+
 		if( fbcu_suite_index = INVALID_INDEX ) then
-			add_suite( )
+			add_suite( suite_name )
 		end if
 
 		if( fbcu_tests_max = 0 ) then
@@ -686,6 +699,196 @@ namespace fbcu
 		print_output( )
 
 	end sub
+
+	''
+	function sngIsNan _
+		( _
+			byval a as single _
+		) as boolean
+
+		dim ia as long = *cast( long ptr, @a )
+
+		'' NAN = exponent all 1's and mantissa not zero
+		return cbool( ((ia and &h7f800000) = &h7f800000 ) _
+			  andalso ((ia and &h007fffff) <> 0) )
+
+	end function
+
+	''
+	function sngIsInf _
+		( _
+			byval a as single _
+		) as boolean
+
+		dim ia as long = *cast( long ptr, @a )
+
+		'' INF = exponent all 1's and mantissa zero
+		return cbool( ((ia and &h7f800000) = &h7f800000 ) _
+			  andalso ((ia and &h007fffff) = 0) )
+
+	end function
+
+	''
+	function sngULP _
+		( _
+			byval a as single _
+		) as single
+
+		if( sngIsNan(a) orelse sngIsInf(a) ) then
+			return a
+		end if
+
+		dim ia as long = *cast( long ptr, @a )
+		ia -= 1
+
+		return a - *cast( single ptr, @ia )
+		
+	end function
+
+	''
+	function sngULPdiff _
+		( _
+			byval a as single, _
+			byval b as single _
+		) as long
+
+		dim ia as long = *cast( long ptr, @a )
+		dim ib as long = *cast( long ptr, @b )
+
+		if( sngIsNan(a) ) then
+			return &h7fffffff
+		end if
+
+		if( sngIsNan(b) ) then
+			return &h7fffffff
+		end if
+
+		'' signs different?
+		if( (ia and &h80000000) <> (ib and &h80000000) ) then
+
+			'' compare -0 and +0
+			if( a = b ) then
+				return 0
+			end if
+
+			'' assume big diff
+			return &h7fffffff
+		
+		end if
+			
+		'' signs are the same, return |ia-ib|
+		ia and= &h7fffffff
+		ib and= &h7fffffff
+		return iif( ia>ib, ia-ib, ib-ia )
+
+	end function
+
+	''
+	function sngApprox _
+		( _
+			byval a as single, _
+			byval b as single, _
+			byval ulps as long = 1 _
+		) as boolean
+
+		function = cbool( sngULPdiff(a, b) <= ulps )
+
+	end function
+
+	''
+	function dblIsNan _
+		( _
+			byval a as double _
+		) as boolean
+
+		dim ia as longint = *cast( longint ptr, @a )
+
+		'' NAN = exponent all 1's and mantissa not zero
+		return cbool( ((ia and &h7ff0000000000000ll) = &h7ff0000000000000ll ) _
+			  andalso ((ia and &h000fffffffffffffll) <> 0ll) )
+
+	end function
+
+	''
+	function dblIsInf _
+		( _
+			byval a as double _
+		) as boolean
+
+		dim ia as longint = *cast( longint ptr, @a )
+
+		'' INF = exponent all 1's and mantissa zero
+		return cbool( ((ia and &h7ff0000000000000ll) = &h7ff0000000000000ll ) _
+			  andalso ((ia and &h000fffffffffffffll) = 0ll) )
+
+	end function
+
+	''
+	function dblULP _
+		( _
+			byval a as double _
+		) as double
+
+		if( dblIsNan(a) orelse dblIsInf(a) ) then
+			return a
+		end if
+
+		dim ia as longint = *cast( longint ptr, @a )
+		ia -= 1
+
+		return a - *cast( double ptr, @ia )
+
+	end function
+
+	''
+	function dblULPdiff _
+		( _
+			byval a as double, _
+			byval b as double _
+		) as longint
+
+		dim ia as longint = *cast( longint ptr, @a )
+		dim ib as longint = *cast( longint ptr, @b )
+
+		if( dblIsNan(a) ) then
+			return &h7fffffffffffffffll
+		end if
+
+		if( dblIsNan(b) ) then
+			return &h7fffffffffffffffll
+		end if
+		
+		'' signs different?
+		if( (ia and &h8000000000000000ll) <> (ib and &h8000000000000000ll) ) then
+
+			'' compare -0 and +0
+			if( a = b ) then
+				return 0
+			end if
+
+			'' assume big diff
+			return &h7fffffffffffffffll
+		
+		end if
+			
+		'' signs are the same, return |ia-ib|
+		ia and= &h7fffffffffffffffll
+		ib and= &h7fffffffffffffffll
+		return iif( ia>ib, ia-ib, ib-ia )
+
+	end function
+
+	''
+	function dblApprox _
+		( _
+			byval a as double, _
+			byval b as double, _
+			byval ulps as longint = 1 _
+		) as boolean
+
+		function = cbool( dblULPdiff(a, b) <= ulps )
+
+	end function
 
 	''
 	sub CU_ASSERT_ _

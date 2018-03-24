@@ -6,7 +6,7 @@
 ''   test suite
 
 TEST( default1 )
-	CU_ASSERT( *fbcu.get_suite_name() = "[global]" )
+	CU_ASSERT( *fbcu.get_suite_name() = "fbcu_global" )
 	CU_ASSERT( true )
 END_TEST
 

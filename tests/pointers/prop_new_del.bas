@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.pointers.prop_new_del
+SUITE( fbc_tests.pointers.prop_new_del )
 
 	type foo
 	
@@ -19,7 +19,7 @@ namespace fbc_tests.pointers.prop_new_del
 		core = i
 	end property
 	
-	sub test_stuff cdecl( )
+	TEST( all )
 		
 		dim as foo bar
 		
@@ -28,14 +28,6 @@ namespace fbc_tests.pointers.prop_new_del
 			delete bar.the_pointer
 		next
 	
-	end sub
+	END_TEST
 
-	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.pointers.prop_new_del")
-		fbcu.add_test("Properties with new/delete", @test_stuff)
-	
-	end sub
-
-end namespace
+END_SUITE

@@ -1,25 +1,15 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
+SUITE( fbc_tests.numbers.hexliteral )
 
+	TEST( all )
 
+		dim as ulongint lint
 
-namespace fbc_tests.numbers.hexliteral
+		lint = ((&hffffffff00000000ull shr 32) And &hffffffffll) 
 
-sub test1 cdecl ()
+		CU_ASSERT_EQUAL( lint, 4294967295ll )
 
-	dim as ulongint lint
+	END_TEST
 
-	lint = ((&hffffffff00000000ull shr 32) And &hffffffffll) 
-
-	CU_ASSERT_EQUAL( lint, 4294967295ll )
-
-end sub
-
-sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.numbers.hexliteral")
-	fbcu.add_test("test1", @test1)
-
-end sub
-
-end namespace
+END_SUITE

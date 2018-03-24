@@ -1,6 +1,8 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
-private sub test1_0 cdecl( )
+'' assuming that this test needs to be module level
+
+private sub test1_0_proc()
 	dim i as integer
 
 	i = 0
@@ -13,7 +15,7 @@ private sub test1_0 cdecl( )
 	exit1:
 end sub
 
-private sub test1_1 cdecl( )
+private sub test1_1_proc()
 	dim i as integer
 
 	i = 1
@@ -23,7 +25,7 @@ private sub test1_1 cdecl( )
 	label1:
 end sub
 
-private sub test1_2 cdecl( )
+private sub test1_2_proc()
 	dim i as integer
 
 	i = 2
@@ -36,7 +38,7 @@ private sub test1_2 cdecl( )
 	exit1:
 end sub
 
-private sub test4_0 cdecl( )
+private sub test4_0_proc()
 	dim i as integer
 
 	i = 0
@@ -52,7 +54,7 @@ private sub test4_0 cdecl( )
 	exit1:
 end sub
 
-private sub test4_1 cdecl( )
+private sub test4_1_proc()
 	dim i as integer
 
 	i = 1
@@ -69,7 +71,7 @@ private sub test4_1 cdecl( )
 	exit1:
 end sub
 
-private sub test4_2 cdecl( )
+private sub test4_2_proc()
 	dim i as integer
 
 	i = 2
@@ -87,7 +89,7 @@ private sub test4_2 cdecl( )
 	exit1:
 end sub
 
-private sub test4_3 cdecl( )
+private sub test4_3_proc()
 	dim i as integer
 
 	i = 3
@@ -105,7 +107,7 @@ private sub test4_3 cdecl( )
 	exit1:
 end sub
 
-private sub test4_4 cdecl( )
+private sub test4_4_proc()
 	dim i as integer
 
 	i = 4
@@ -119,7 +121,7 @@ private sub test4_4 cdecl( )
 	label4:
 end sub
 
-private sub test4_5 cdecl( )
+private sub test4_5_proc()
 	dim i as integer
 
 	i = 5
@@ -135,15 +137,33 @@ private sub test4_5 cdecl( )
 	exit1:
 end sub
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.quirk.on-goto" )
-	fbcu.add_test( "1 0", @test1_0 )
-	fbcu.add_test( "1 1", @test1_1 )
-	fbcu.add_test( "1 2", @test1_2 )
-	fbcu.add_test( "4 0", @test4_0 )
-	fbcu.add_test( "4 1", @test4_1 )
-	fbcu.add_test( "4 2", @test4_2 )
-	fbcu.add_test( "4 3", @test4_3 )
-	fbcu.add_test( "4 4", @test4_4 )
-	fbcu.add_test( "4 5", @test4_5 )
-end sub
+SUITE( fbc_tests.quirk.on_goto )
+	TEST( test1_0 )
+		test1_0_proc
+	END_TEST
+	TEST( test1_1 )
+		test1_1_proc
+	END_TEST
+	TEST( test1_2 )
+		test1_2_proc
+	END_TEST
+	TEST( test4_0 )
+		test4_0_proc
+	END_TEST
+	TEST( test4_1 )
+		test4_1_proc
+	END_TEST
+	TEST( test4_2 )
+		test4_2_proc
+	END_TEST
+	TEST( test4_3 )
+		test4_3_proc
+	END_TEST
+	TEST( test4_4 )
+		test4_4_proc
+	END_TEST
+	TEST( test4_5 )
+		test4_5_proc
+	END_TEST
+
+END_SUITE

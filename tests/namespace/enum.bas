@@ -1,22 +1,22 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 const TEST_VAL1 = 1234
 const TEST_VAL2 = 5678
 
-namespace fbc_tests.ns.enum_
+namespace module.ns.enum_
 	enum bar
     	one = TEST_VAL1
         two = TEST_VAL2
 	end enum 
 
 	namespace inner
-		private sub test_3 cdecl
-			dim as fbc_tests.ns.enum_.bar b = fbc_tests.ns.enum_.one
+		private sub test3_proc( )
+			dim as module.ns.enum_.bar b = module.ns.enum_.one
 			CU_ASSERT( b = TEST_VAL1 )
-			CU_ASSERT( fbc_tests.ns.enum_.two = TEST_VAL2 )
+			CU_ASSERT( module.ns.enum_.two = TEST_VAL2 )
 		end sub
 
-		private sub test_4 cdecl
+		private sub test4_proc( )
 			dim as bar b = one
 			CU_ASSERT( b = TEST_VAL1 )
 			CU_ASSERT( two = TEST_VAL2 )
@@ -24,14 +24,14 @@ namespace fbc_tests.ns.enum_
 	end namespace
 end namespace 
 
-private sub test_1 cdecl
-	dim as fbc_tests.ns.enum_.bar b = fbc_tests.ns.enum_.one
+private sub test1_proc( )
+	dim as module.ns.enum_.bar b = module.ns.enum_.one
 	CU_ASSERT( b = TEST_VAL1 )
-	CU_ASSERT( fbc_tests.ns.enum_.two = TEST_VAL2 )
+	CU_ASSERT( module.ns.enum_.two = TEST_VAL2 )
 end sub
 
-private sub test_2 cdecl
-	using fbc_tests.ns.enum_
+private sub test2_proc( )
+	using module.ns.enum_
 	dim as bar b = one
 	CU_ASSERT( b = TEST_VAL1 )
 	CU_ASSERT( two = TEST_VAL2 )
@@ -69,7 +69,7 @@ dim shared myenum2 as Enum2
 dim shared myenum3 as Enum3 '' just to test that the enum id can be used outside the extern
 dim shared myenum4 as Enum4
 
-private sub test5 cdecl( )
+private sub test5_proc( )
 	CU_ASSERT( Enum1Const1 = 1 )
 	CU_ASSERT( GlobalConst1 = 111 )
 	CU_ASSERT( Enum1.Enum1Const1 = 1 )
@@ -89,12 +89,22 @@ private sub test5 cdecl( )
 	CU_ASSERT( Enum4.GlobalConst4 = 2 )
 end sub
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.namespace.enum" )
-	fbcu.add_test("test 1", @test_1)
-	fbcu.add_test("test 2", @test_2)
-	fbcu.add_test("test 3", @fbc_tests.ns.enum_.inner.test_3)
-	using fbc_tests.ns.enum_
-	fbcu.add_test("test 4", @inner.test_4)
-	fbcu.add_test( "5", @test5 )
-end sub
+SUITE( fbc_tests.namespace_.enum_ )
+	TEST( test1 )
+		test1_proc
+	END_TEST
+	TEST( test2 )
+		test2_proc
+	END_TEST
+	TEST( test3 )
+		module.ns.enum_.inner.test3_proc
+	END_TEST
+	TEST( test4 )
+		using module.ns.enum_
+		inner.test4_proc
+	END_TEST
+	TEST( test5 )
+		using module.ns.enum_
+		test5_proc
+	END_TEST
+END_SUITE

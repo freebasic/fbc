@@ -1,26 +1,18 @@
-# include once "fbcu.bi"
+# include once "fbcunit.bi"
 # include once "crt.bi"
 
+SUITE( fbc_tests.crt.stdout_ )
 
+	'// !!! TODO !!! improve fbcunit API (see below)
+	'// we want to compile the test and only run it if an option is given
+	'// fbcunit should handle this internally ...
+	'// need to add capability to fbcunit
 
-	
-namespace fbc_tests.crt.stdoutTest
+	# if ENABLE_CONSOLE_OUTPUT
+		TEST( test1 )
+			fputs( "hello", stdout )
+			CU_PASS("just a compile check")
+		END_TEST
+	# endif
 
-sub test cdecl ()
-
-	fputs( "hello", stdout )
-	CU_PASS("just a compile check")
-
-end sub
-
-sub ctor () constructor
-
-'// fbcu should handle this internally ...
-# if defined(FBCU_CONFIG_TEST_OUTPUT)
-	fbcu.add_suite("fbc_tests.crt.stdout")
-	fbcu.add_test("test", @test)
-# endif
-
-end sub
-
-end namespace
+END_SUITE

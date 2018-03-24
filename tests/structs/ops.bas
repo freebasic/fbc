@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.operators
+SUITE( fbc_tests.structs.ops )
 
 	type mytype
 		as integer value
@@ -64,7 +64,7 @@ namespace fbc_tests.structs.operators
 	makebop(EQV)
 
 
-	sub test cdecl ()
+	TEST( all )
 		dim as mytype a = (1), b = (2)
 
 		testop(ABS)
@@ -105,13 +105,6 @@ namespace fbc_tests.structs.operators
 		testbop(IMP)
 		testbop(EQV)
 
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-
-		fbcu.add_suite("fbc_tests.structs.ops")
-		fbcu.add_test( "test", @test)
-
-	end sub
-
-end namespace
+END_SUITE

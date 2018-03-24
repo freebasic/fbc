@@ -1,333 +1,329 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.expressions.dynamic_array_fields
+SUITE( fbc_tests.expressions.dynamic_array_fields )
 
-const EPSILON_SNG as single = 1.1929093e-7
+	const EPSILON_SNG as single = 1.1929093e-7
 
-namespace arrayAccess
-	type UDT1
-		array(any) as integer
-	end type
+	TEST_GROUP( arrayAccess )
+		type UDT1
+			array(any) as integer
+		end type
 
-	type UDT2
-		array(any, any) as integer
-	end type
+		type UDT2
+			array(any, any) as integer
+		end type
 
-	private sub testSimple cdecl( )
-		dim x as UDT1
+		'' simple array access
+		TEST( simpleArrayAccess )
+			dim x as UDT1
 
-		redim x.array(0 to 9)
+			redim x.array(0 to 9)
 
-		for i as integer = 0 to 9
-			x.array(i) = i
-		next
-
-		for i as integer = 0 to 9
-			CU_ASSERT( x.array(i) = i )
-		next
-
-		var p = @x.array(0)
-		for i as integer = 0 to 9
-			CU_ASSERT( p[i] = i )
-		next
-	end sub
-
-	private sub testDiff cdecl( )
-		dim x as UDT1
-
-		redim x.array(10 to 19)
-
-		for i as integer = 10 to 19
-			x.array(i) = i
-		next
-
-		for i as integer = 10 to 19
-			CU_ASSERT( x.array(i) = i )
-		next
-
-		var p = @x.array(10)
-		for i as integer = 0 to 9
-			CU_ASSERT( p[i] = i + 10 )
-		next
-	end sub
-
-	private sub testMultipleDimensions cdecl( )
-		dim x as UDT2
-
-		redim x.array(0 to 4, 0 to 1)
-
-		var counter = 0
-		for i as integer = 0 to 4
-			for j as integer = 0 to 1
-				x.array(i, j) = counter
-				counter += 1
+			for i as integer = 0 to 9
+				x.array(i) = i
 			next
-		next
 
-		counter = 0
-		for i as integer = 0 to 4
-			for j as integer = 0 to 1
-				CU_ASSERT( x.array(i, j) = counter )
-				counter += 1
+			for i as integer = 0 to 9
+				CU_ASSERT( x.array(i) = i )
 			next
-		next
 
-		var p = @x.array(0, 0)
-		for i as integer = 0 to (5 * 2)-1
-			CU_ASSERT( p[i] = i )
-		next
-	end sub
-end namespace
+			var p = @x.array(0)
+			for i as integer = 0 to 9
+				CU_ASSERT( p[i] = i )
+			next
+		END_TEST
 
-namespace compileTimeDtype
-	'' Array accesses should produce the proper dtype at compile-time
+		'' array access with diff
+		TEST( arrayAccessDiff )
+			dim x as UDT1
 
-	type UDT
-		array1(any) as integer
-		array2(any) as string
-		array3(any) as single
-	end type
+			redim x.array(10 to 19)
 
-	private sub test cdecl( )
-		dim x as UDT
-		#assert typeof( x.array1(0) ) = typeof( integer )
-		#assert typeof( x.array2(0) ) = typeof( string )
-		#assert typeof( x.array3(0) ) = typeof( single )
+			for i as integer = 10 to 19
+				x.array(i) = i
+			next
 
-		redim x.array1(0 to 0)
-		redim x.array2(0 to 0)
-		redim x.array3(0 to 0)
+			for i as integer = 10 to 19
+				CU_ASSERT( x.array(i) = i )
+			next
 
-		var i = x.array1(0)
-		var s = x.array2(0)
-		var f = x.array3(0)
-		#assert typeof( i ) = typeof( integer )
-		#assert typeof( s ) = typeof( string )
-		#assert typeof( f ) = typeof( single )
-	end sub
-end namespace
+			var p = @x.array(10)
+			for i as integer = 0 to 9
+				CU_ASSERT( p[i] = i + 10 )
+			next
+		END_TEST
 
-namespace complexDtypes
-	'' Testing float/string/UDT elements, not just integers
+		'' multi-dimensional array access
+		TEST( multipleDimensions )
+			dim x as UDT2
 
-	dim shared as integer ctorudt_ctors, dtorudt_dtors, _
-		ctordtorudt_ctors, ctordtorudt_dtors
+			redim x.array(0 to 4, 0 to 1)
 
-	type CtorUdt
-		i as integer
-		declare constructor( )
-	end type
+			var counter = 0
+			for i as integer = 0 to 4
+				for j as integer = 0 to 1
+					x.array(i, j) = counter
+					counter += 1
+				next
+			next
 
-	constructor CtorUdt( )
-		ctorudt_ctors += 1
-	end constructor
+			counter = 0
+			for i as integer = 0 to 4
+				for j as integer = 0 to 1
+					CU_ASSERT( x.array(i, j) = counter )
+					counter += 1
+				next
+			next
 
-	type DtorUdt
-		i as integer
-		declare destructor( )
-	end type
+			var p = @x.array(0, 0)
+			for i as integer = 0 to (5 * 2)-1
+				CU_ASSERT( p[i] = i )
+			next
+		END_TEST
+	END_TEST_GROUP
 
-	destructor DtorUdt( )
-		dtorudt_dtors += 1
-	end destructor
+	TEST_GROUP( compileTimeDtype )
+		'' Array accesses should produce the proper dtype at compile-time
 
-	type CtorDtorUdt
-		i as integer
-		declare constructor( )
-		declare destructor( )
-	end type
+		type UDT
+			array1(any) as integer
+			array2(any) as string
+			array3(any) as single
+		end type
 
-	constructor CtorDtorUdt( )
-		ctordtorudt_ctors += 1
-	end constructor
+		'' compile time dtype
+		TEST( default )
+			dim x as UDT
+			#assert typeof( x.array1(0) ) = typeof( integer )
+			#assert typeof( x.array2(0) ) = typeof( string )
+			#assert typeof( x.array3(0) ) = typeof( single )
 
-	destructor CtorDtorUdt( )
-		ctordtorudt_dtors += 1
-	end destructor
+			redim x.array1(0 to 0)
+			redim x.array2(0 to 0)
+			redim x.array3(0 to 0)
 
-	type TestUdt
-		array1(any) as string
-		array2(any) as single
-		array3(any) as CtorUdt
-		array4(any) as DtorUdt
-		array5(any) as CtorDtorUdt
-	end type
+			var i = x.array1(0)
+			var s = x.array2(0)
+			var f = x.array3(0)
+			#assert typeof( i ) = typeof( integer )
+			#assert typeof( s ) = typeof( string )
+			#assert typeof( f ) = typeof( single )
+		END_TEST
+	END_TEST_GROUP
 
-	private sub test cdecl( )
-		scope
-			dim x as TestUdt
+	TEST_GROUP( complexDtypes )
+		'' Testing float/string/UDT elements, not just integers
 
-			CU_ASSERT( ctorudt_ctors = 0 )
-			CU_ASSERT( dtorudt_dtors = 0 )
-			CU_ASSERT( ctordtorudt_ctors = 0 )
-			CU_ASSERT( ctordtorudt_dtors = 0 )
+		dim shared as integer ctorudt_ctors, dtorudt_dtors, _
+			ctordtorudt_ctors, ctordtorudt_dtors
 
-			redim x.array1(0 to 1)
-			redim x.array2(0 to 1)
+		type CtorUdt
+			i as integer
+			declare constructor( )
+		end type
 
-			CU_ASSERT( ctorudt_ctors = 0 )
-			CU_ASSERT( dtorudt_dtors = 0 )
-			CU_ASSERT( ctordtorudt_ctors = 0 )
-			CU_ASSERT( ctordtorudt_dtors = 0 )
+		constructor CtorUdt( )
+			ctorudt_ctors += 1
+		end constructor
 
-			redim x.array3(0 to 1)
+		type DtorUdt
+			i as integer
+			declare destructor( )
+		end type
+
+		destructor DtorUdt( )
+			dtorudt_dtors += 1
+		end destructor
+
+		type CtorDtorUdt
+			i as integer
+			declare constructor( )
+			declare destructor( )
+		end type
+
+		constructor CtorDtorUdt( )
+			ctordtorudt_ctors += 1
+		end constructor
+
+		destructor CtorDtorUdt( )
+			ctordtorudt_dtors += 1
+		end destructor
+
+		type TestUdt
+			array1(any) as string
+			array2(any) as single
+			array3(any) as CtorUdt
+			array4(any) as DtorUdt
+			array5(any) as CtorDtorUdt
+		end type
+
+		'' complex dtypes
+		TEST( default )
+			scope
+				dim x as TestUdt
+
+				CU_ASSERT( ctorudt_ctors = 0 )
+				CU_ASSERT( dtorudt_dtors = 0 )
+				CU_ASSERT( ctordtorudt_ctors = 0 )
+				CU_ASSERT( ctordtorudt_dtors = 0 )
+
+				redim x.array1(0 to 1)
+				redim x.array2(0 to 1)
+
+				CU_ASSERT( ctorudt_ctors = 0 )
+				CU_ASSERT( dtorudt_dtors = 0 )
+				CU_ASSERT( ctordtorudt_ctors = 0 )
+				CU_ASSERT( ctordtorudt_dtors = 0 )
+
+				redim x.array3(0 to 1)
+
+				CU_ASSERT( ctorudt_ctors = 2 )
+				CU_ASSERT( dtorudt_dtors = 0 )
+				CU_ASSERT( ctordtorudt_ctors = 0 )
+				CU_ASSERT( ctordtorudt_dtors = 0 )
+
+				redim x.array4(0 to 1)
+
+				CU_ASSERT( ctorudt_ctors = 2 )
+				CU_ASSERT( dtorudt_dtors = 0 )
+				CU_ASSERT( ctordtorudt_ctors = 0 )
+				CU_ASSERT( ctordtorudt_dtors = 0 )
+
+				redim x.array5(0 to 1)
+
+				CU_ASSERT( ctorudt_ctors = 2 )
+				CU_ASSERT( dtorudt_dtors = 0 )
+				CU_ASSERT( ctordtorudt_ctors = 2 )
+				CU_ASSERT( ctordtorudt_dtors = 0 )
+
+				x.array1(0) = "aaaaaaaa"
+				x.array1(1) = "bb"
+				x.array2(0) = 1.5f
+				x.array2(1) = 20.8f
+				x.array3(0).i = 1
+				x.array3(1).i = 2
+				x.array4(0).i = 3
+				x.array4(1).i = 4
+				x.array5(0).i = 5
+				x.array5(1).i = 6
+
+				CU_ASSERT( x.array1(0) = "aaaaaaaa" )
+				CU_ASSERT( x.array1(1) = "bb" )
+				CU_ASSERT( abs( x.array2(0) - 1.5f ) < EPSILON_SNG )
+				CU_ASSERT( abs( x.array2(1) - 20.8f ) < EPSILON_SNG )
+				CU_ASSERT( x.array3(0).i = 1 )
+				CU_ASSERT( x.array3(1).i = 2 )
+				CU_ASSERT( x.array4(0).i = 3 )
+				CU_ASSERT( x.array4(1).i = 4 )
+				CU_ASSERT( x.array5(0).i = 5 )
+				CU_ASSERT( x.array5(1).i = 6 )
+			end scope
 
 			CU_ASSERT( ctorudt_ctors = 2 )
-			CU_ASSERT( dtorudt_dtors = 0 )
-			CU_ASSERT( ctordtorudt_ctors = 0 )
-			CU_ASSERT( ctordtorudt_dtors = 0 )
-
-			redim x.array4(0 to 1)
-
-			CU_ASSERT( ctorudt_ctors = 2 )
-			CU_ASSERT( dtorudt_dtors = 0 )
-			CU_ASSERT( ctordtorudt_ctors = 0 )
-			CU_ASSERT( ctordtorudt_dtors = 0 )
-
-			redim x.array5(0 to 1)
-
-			CU_ASSERT( ctorudt_ctors = 2 )
-			CU_ASSERT( dtorudt_dtors = 0 )
+			CU_ASSERT( dtorudt_dtors = 2 )
 			CU_ASSERT( ctordtorudt_ctors = 2 )
-			CU_ASSERT( ctordtorudt_dtors = 0 )
+			CU_ASSERT( ctordtorudt_dtors = 2 )
+		END_TEST
+	END_TEST_GROUP
 
-			x.array1(0) = "aaaaaaaa"
-			x.array1(1) = "bb"
-			x.array2(0) = 1.5f
-			x.array2(1) = 20.8f
-			x.array3(0).i = 1
-			x.array3(1).i = 2
-			x.array4(0).i = 3
-			x.array4(1).i = 4
-			x.array5(0).i = 5
-			x.array5(1).i = 6
+	TEST_GROUP( passingBydesc )
+		'' Testing whether dynamic array fields can be passed BYDESC nicely,
+		'' and even be REDIM'ed through the BYDESC param.
+		type UDT
+			array(any) as integer
+		end type
 
-			CU_ASSERT( x.array1(0) = "aaaaaaaa" )
-			CU_ASSERT( x.array1(1) = "bb" )
-			CU_ASSERT( abs( x.array2(0) - 1.5f ) < EPSILON_SNG )
-			CU_ASSERT( abs( x.array2(1) - 20.8f ) < EPSILON_SNG )
-			CU_ASSERT( x.array3(0).i = 1 )
-			CU_ASSERT( x.array3(1).i = 2 )
-			CU_ASSERT( x.array4(0).i = 3 )
-			CU_ASSERT( x.array4(1).i = 4 )
-			CU_ASSERT( x.array5(0).i = 5 )
-			CU_ASSERT( x.array5(1).i = 6 )
-		end scope
+		function getLbound( array() as integer ) as integer
+			function = lbound( array )
+		end function
 
-		CU_ASSERT( ctorudt_ctors = 2 )
-		CU_ASSERT( dtorudt_dtors = 2 )
-		CU_ASSERT( ctordtorudt_ctors = 2 )
-		CU_ASSERT( ctordtorudt_dtors = 2 )
-	end sub
-end namespace
+		function getUbound( array() as integer ) as integer
+			function = ubound( array )
+		end function
 
-namespace passingBydesc
-	'' Testing whether dynamic array fields can be passed BYDESC nicely,
-	'' and even be REDIM'ed through the BYDESC param.
-	type UDT
-		array(any) as integer
-	end type
+		function sumArray( array() as integer ) as integer
+			var sum = 0
+			for i as integer = lbound( array ) to ubound( array )
+				CU_ASSERT( array(i) = i )
+				sum += array(i)
+			next
+			function = sum
+		end function
 
-	function getLbound( array() as integer ) as integer
-		function = lbound( array )
-	end function
+		sub resize( array() as integer )
+			redim array(100 to 200)
+		end sub
 
-	function getUbound( array() as integer ) as integer
-		function = ubound( array )
-	end function
+		'' BYDESC
+		TEST( default )
+			dim x as UDT
 
-	function sumArray( array() as integer ) as integer
-		var sum = 0
-		for i as integer = lbound( array ) to ubound( array )
-			CU_ASSERT( array(i) = i )
-			sum += array(i)
-		next
-		function = sum
-	end function
+			CU_ASSERT( getLbound( x.array() ) = 0 )
+			CU_ASSERT( getUbound( x.array() ) = -1 )
 
-	sub resize( array() as integer )
-		redim array(100 to 200)
-	end sub
+			redim x.array(10 to 20)
+			CU_ASSERT( getLbound( x.array() ) = 10 )
+			CU_ASSERT( getUbound( x.array() ) = 20 )
 
-	private sub test cdecl( )
-		dim x as UDT
+			var sum = 0
+			for i as integer = lbound( x.array ) to ubound( x.array )
+				x.array(i) = i
+				sum += i
+			next
 
-		CU_ASSERT( getLbound( x.array() ) = 0 )
-		CU_ASSERT( getUbound( x.array() ) = -1 )
+			CU_ASSERT( sumArray( x.array() ) = sum )
 
-		redim x.array(10 to 20)
-		CU_ASSERT( getLbound( x.array() ) = 10 )
-		CU_ASSERT( getUbound( x.array() ) = 20 )
+			CU_ASSERT( getLbound( x.array() ) = 10 )
+			CU_ASSERT( getUbound( x.array() ) = 20 )
+			resize( x.array() )
+			CU_ASSERT( getLbound( x.array() ) = 100 )
+			CU_ASSERT( getUbound( x.array() ) = 200 )
+		END_TEST
+	END_TEST_GROUP
 
-		var sum = 0
-		for i as integer = lbound( x.array ) to ubound( x.array )
-			x.array(i) = i
-			sum += i
-		next
+	TEST_GROUP( sidefxRemoval )
+		'' The compiler must properly handle side effects in the UDT variable
+		'' expression (matters because the varexpr is re-used in multiple places
+		'' to read out fields from the descriptor, especially with -exx) or one
+		'' of the index expressions (matters especially with -exx).
 
-		CU_ASSERT( sumArray( x.array() ) = sum )
+		type UDT
+			array(any) as integer
+		end type
 
-		CU_ASSERT( getLbound( x.array() ) = 10 )
-		CU_ASSERT( getUbound( x.array() ) = 20 )
-		resize( x.array() )
-		CU_ASSERT( getLbound( x.array() ) = 100 )
-		CU_ASSERT( getUbound( x.array() ) = 200 )
-	end sub
-end namespace
+		dim shared globalx as UDT
+		dim shared as integer f1calls, fudtcalls
 
-namespace sidefxRemoval
-	'' The compiler must properly handle side effects in the UDT variable
-	'' expression (matters because the varexpr is re-used in multiple places
-	'' to read out fields from the descriptor, especially with -exx) or one
-	'' of the index expressions (matters especially with -exx).
+		function f1( ) as integer
+			f1calls += 1
+			function = 1
+		end function
 
-	type UDT
-		array(any) as integer
-	end type
+		function fudt( ) byref as UDT
+			fudtcalls += 1
+			function = globalx
+		end function
 
-	dim shared globalx as UDT
-	dim shared as integer f1calls, fudtcalls
+		'' side-effect removal
+		TEST( default )
+			dim x as UDT
+			redim x.array(0 to 9)
 
-	function f1( ) as integer
-		f1calls += 1
-		function = 1
-	end function
+			for i as integer = 0 to 9
+				x.array(i) = i * 123
+			next
 
-	function fudt( ) byref as UDT
-		fudtcalls += 1
-		function = globalx
-	end function
+			CU_ASSERT( f1calls = 0 )
+			CU_ASSERT( x.array(f1( )) = 1 * 123 )
+			CU_ASSERT( f1calls = 1 )
+			CU_ASSERT( x.array(f1( ) + 3) = 4 * 123 )
+			CU_ASSERT( f1calls = 2 )
 
-	private sub test cdecl( )
-		dim x as UDT
-		redim x.array(0 to 9)
+			redim globalx.array(0 to 0)
+			CU_ASSERT( fudtcalls = 0 )
+			CU_ASSERT( fudt( ).array(0) = 0 )
+			CU_ASSERT( fudtcalls = 1 )
+		END_TEST
+	END_TEST_GROUP
 
-		for i as integer = 0 to 9
-			x.array(i) = i * 123
-		next
-
-		CU_ASSERT( f1calls = 0 )
-		CU_ASSERT( x.array(f1( )) = 1 * 123 )
-		CU_ASSERT( f1calls = 1 )
-		CU_ASSERT( x.array(f1( ) + 3) = 4 * 123 )
-		CU_ASSERT( f1calls = 2 )
-
-		redim globalx.array(0 to 0)
-		CU_ASSERT( fudtcalls = 0 )
-		CU_ASSERT( fudt( ).array(0) = 0 )
-		CU_ASSERT( fudtcalls = 1 )
-	end sub
-end namespace
-
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.expressions.dynamic-array-fields")
-	fbcu.add_test( "simple array access", @arrayAccess.testSimple )
-	fbcu.add_test( "array access with diff", @arrayAccess.testDiff )
-	fbcu.add_test( "multi-dimensional array access", @arrayAccess.testMultipleDimensions )
-	fbcu.add_test( "compile time dtype", @compileTimeDtype.test )
-	fbcu.add_test( "complex dtypes", @complexDtypes.test )
-	fbcu.add_test( "BYDESC", @passingBydesc.test )
-	fbcu.add_test( "side-effect removal", @sidefxRemoval.test )
-end sub
-
-end namespace
+END_SUITE
