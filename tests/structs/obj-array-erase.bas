@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.structs.erase_obj )
+SUITE( fbc_tests.structs.obj_array_erase )
 
 	'' ERASE for fixed-size arrays = fb_ArrayClear[Obj] =
 	'' 1) dtor calls 2) clear 3) ctor calls (reinit)

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overload_.new_del )
+SUITE( fbc_tests.overload_.op_new_delete )
 
 	dim shared as integer call_cnt = 0, vec_call_cnt = 0
 

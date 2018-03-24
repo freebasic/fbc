@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.functions.sameline )
+SUITE( fbc_tests.functions.same_line )
 
 	'' Should compile fine, even under -g
 	sub f1( )

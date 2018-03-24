@@ -1,6 +1,6 @@
 # include "fbcunit.bi"
 
-SUITE( fbc_tests.structs.return_non_trivial )
+SUITE( fbc_tests.functions.return_non_trivial )
 
 	'' UDTs can become non-trivial as a result of containing a non-trivial
 	'' field. The compiler must be careful to take this into account when

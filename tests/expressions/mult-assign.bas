@@ -1,6 +1,6 @@
 # include once "fbcunit.bi"
 
-SUITE( fbc_tests.expressions.multasgn )
+SUITE( fbc_tests.expressions.mult_assign )
 
 	type triplet
 		dim as short a = any, b = any

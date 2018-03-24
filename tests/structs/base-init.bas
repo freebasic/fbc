@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.structs.based_init )
+SUITE( fbc_tests.structs.base_init )
 
 	'' Implicit base default ctor call
 	TEST_GROUP( implicitBaseDefCtor )

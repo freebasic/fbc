@@ -14,7 +14,7 @@ namespace foo
 	end sub
 end namespace
 
-SUITE( fbc_tests.namespace_.redim_ )
+SUITE( fbc_tests.namespace_.redim_1 )
 
 	TEST( redim1 )
 		redim as integer foo.bar(0 to 2)

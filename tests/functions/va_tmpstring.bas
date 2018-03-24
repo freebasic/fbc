@@ -2,7 +2,7 @@
 
 #if __FB_BACKEND__ = "gas"
 
-SUITE( fbc_tests.functions.va_tempstring )
+SUITE( fbc_tests.functions.va_tmpstring )
 
 	dim shared strtb(1 to 2) as zstring * 6+1 => { "ABCdef", "defABC" }
 
@@ -45,7 +45,7 @@ END_SUITE
 #else
 
 #if ENABLE_CHECK_BUGS
-SUITE( fbc_tests.functions.va_tempstring )
+SUITE( fbc_tests.functions.va_tmpstring )
 	TEST( tempStringArg )
 		CU_FAIL()
 	END_TEST

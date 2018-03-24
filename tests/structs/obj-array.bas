@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.structs.array )
+SUITE( fbc_tests.structs.obj_array )
 
 	'' object array, ctor only
 	TEST_GROUP( ctoronly )

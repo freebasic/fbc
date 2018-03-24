@@ -1,6 +1,6 @@
 # include "fbcunit.bi"
 
-SUITE( fbc_tests.compound.rtl_cb )
+SUITE( fbc_tests.functions.rtl_cb )
 
 	'' take sleep's address
     TEST( addressOfSleepRtl )

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.structs.op_acc_mode )
+SUITE( fbc_tests.structs.op_access_mode )
 
 	type foo
 		as byte pad

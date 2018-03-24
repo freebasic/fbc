@@ -807,7 +807,7 @@ SUITE( fbc_tests.pointers.new_delete )
 
 	'' new(address) integer
 	TEST_GROUP( placementNewPod )
-		TEST ( default )
+		TEST( default )
 			dim as integer ptr buffer = callocate( sizeof( integer ) * 3 )
 
 			dim as integer ptr p = new(buffer+1) integer (111)

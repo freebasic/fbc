@@ -53,7 +53,7 @@ END_SUITE
 #else
 
 #if ENABLE_CHECK_BUGS
-SUITE( fbc_tests.functions.va_tempstring )
+SUITE( fbc_tests.functions.naked_ctor )
 	TEST( nakedCtorsDtors )
 		CU_FAIL()
 	END_TEST

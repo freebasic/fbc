@@ -2,7 +2,7 @@
 
 #define expr(a,b,c) ( (a) - ( (b)+1 )*3 + (c) )
 
-SUITE( fbc_tests.optimizations.side_effects )
+SUITE( fbc_tests.optimizations.mul_dist )
 
 	TEST( distributive_multiplication )
 

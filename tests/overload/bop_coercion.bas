@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overload_.bop_coersion )
+SUITE( fbc_tests.overload_.bop_coercion )
 
 	enum TEST_RES
 		TEST_RES_MV_MV = 1

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.structs.operators )
+SUITE( fbc_tests.structs.ops )
 
 	type mytype
 		as integer value

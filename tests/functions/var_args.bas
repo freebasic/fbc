@@ -218,7 +218,7 @@ END_SUITE
 #else
 
 #if ENABLE_CHECK_BUGS
-SUITE( fbc_tests.functions.va_tempstring )
+SUITE( fbc_tests.functions.var_args )
 	TEST( va_next_ )
 		CU_FAIL()
 	END_TEST

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overload_.bop_coersion2 )
+SUITE( fbc_tests.overload_.bop_coercion2 )
 
 	enum TEST_RES
 		TEST_RES_byte

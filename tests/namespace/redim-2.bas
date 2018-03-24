@@ -2,7 +2,7 @@
 
 redim shared foo(1 to 2) as integer
 
-SUITE( fbc_tests.namespace_.redim_ )
+SUITE( fbc_tests.namespace_.redim_2 )
 
 	private sub test1
 		CU_ASSERT_EQUAL( ubound(foo),  2 )

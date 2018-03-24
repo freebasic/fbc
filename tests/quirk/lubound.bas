@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.optimizations.array_bound )
+SUITE( fbc_tests.optimizations.lubound )
 
 	dim shared array1(0 to 1) as integer
 	dim shared array2(123 to 456) as integer
@@ -46,7 +46,7 @@ SUITE( fbc_tests.optimizations.array_bound )
 
 	end sub
 
-	TEST( all )
+	TEST( array_bound )
 		CU_ASSERT( ARRAY1_L = 0 )
 		CU_ASSERT( ARRAY1_U = 1 )
 		CU_ASSERT( ARRAY2_L = 123 )

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.only_one_vararg_in_type )
+SUITE( fbc_tests.overloads.type_vararg )
 
 	type foo
 		declare function bar cdecl( byval i as integer, ... ) as integer
@@ -8,7 +8,7 @@ SUITE( fbc_tests.overloads.only_one_vararg_in_type )
 		as integer baz
 	end type
 
-	TEST( all )
+	TEST( only_one_vararg_in_type )
 		'' this just has to compile!
 		CU_ASSERT_EQUAL( 1, 1 )
 	END_TEST

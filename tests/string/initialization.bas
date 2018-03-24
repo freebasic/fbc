@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.string_.init )
+SUITE( fbc_tests.string_.initialization )
 
 	Type foo
 		As String one, two, three

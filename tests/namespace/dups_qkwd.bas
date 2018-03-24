@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.ns.dups_qkwd )
+SUITE( fbc_tests.namespace_.dups_qkwd )
 	namespace ns_a
 		type line
 			x as integer

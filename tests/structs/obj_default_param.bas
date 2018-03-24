@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.structs.obj_defparam )
+SUITE( fbc_tests.structs.obj_default_param )
 
 	const TEST_VAL = &hdeadc0de
 

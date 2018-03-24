@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.string_.mid_stmt_deref_destination )
+SUITE( fbc_tests.string_.mid_stmt_dref_dest )
         
     TEST( assignment )
     	dim as string f = " "

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.pointers.funcptr_expr )
+SUITE( fbc_tests.pointers.funptr_expr )
 
 	sub f1( )
 	end sub

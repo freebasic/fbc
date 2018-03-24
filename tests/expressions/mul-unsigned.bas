@@ -1,6 +1,6 @@
 # include once "fbcunit.bi"
 
-SUITE( fbc_tests.expressions.mulunsigned )
+SUITE( fbc_tests.expressions.mul_unsigned )
 
 	TEST( testUlongint )
 		#macro test_mul( NA, NB, NR )

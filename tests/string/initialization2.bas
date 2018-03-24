@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.string_.init2 )
+SUITE( fbc_tests.string_.initialization2 )
 
 	TEST( test1 )
 

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.swp.strings )
+SUITE( fbc_tests.swap_.strings )
 
 	'' SWAP on local vars
 	TEST( localVars )

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.swp.sidefx )
+SUITE( fbc_tests.swap_.sidefx )
 
 	dim shared as integer f1_calls
 	private function f1( ) as integer ptr

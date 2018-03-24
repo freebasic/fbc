@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.structs.selfref )
+SUITE( fbc_tests.structs.self_ref )
 
 	'' C backend regression test
 	type T

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.pointers.funcptr_mangling )
+SUITE( fbc_tests.pointers.funptr_mangling )
 
 	''
 	'' no warnings should be shown (bug report #1523070)

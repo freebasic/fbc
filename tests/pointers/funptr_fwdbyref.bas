@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.pointers.funcptr_fwdbyref )
+SUITE( fbc_tests.pointers.funptr_fwdbyref )
 
 	enum TEST_RES
 		TEST_FOO 

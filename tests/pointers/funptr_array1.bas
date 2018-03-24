@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.pointers.funcptr_array1 )
+SUITE( fbc_tests.pointers.funptr_array1 )
 
 	enum TEST_RES
 		TEST_1	= 1

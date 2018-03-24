@@ -1,6 +1,6 @@
 # include "fbcunit.bi"
 
-SUITE( fbc_tests.dim_.return_notreg )
+SUITE( fbc_tests.functions.return_notreg )
 	
 	type foo
 		x(63) as integer

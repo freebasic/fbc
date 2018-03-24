@@ -41,7 +41,7 @@ END_SUITE
 #else
 
 #if ENABLE_CHECK_BUGS
-SUITE( fbc_tests.functions.va_tempstring )
+SUITE( fbc_tests.functions.va_strings )
 	TEST( varArgStrings )
 		CU_FAIL()
 	END_TEST

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.optimizations.constant_index )
+SUITE( fbc_tests.optimizations.const_idx )
 
 	TEST( index1 )
 		dim as integer x = 0, brd(8, 8, 9)

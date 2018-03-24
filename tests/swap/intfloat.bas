@@ -2,7 +2,7 @@
 
 #define NULL 0
 
-SUITE( fbc_tests.swp.intfloat )
+SUITE( fbc_tests.swap_.intfloat )
 
 	dim shared as integer global_a
 	dim shared as integer global_b
