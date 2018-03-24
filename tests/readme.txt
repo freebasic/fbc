@@ -234,4 +234,7 @@ failed.log
 const/generator
    helper program and database to generate and check const type tests
 
+optimizations\generator
+   helper program to create extensive 'math-torture-*.bas' tests
+
 ## EOF
