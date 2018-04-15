@@ -674,6 +674,11 @@ private sub hEmitUDT( byval s as FBSYMBOL ptr, byval is_ptr as integer )
 		'' see main's locals from elsewhere)
 		if( symbGetScope( s ) = FB_MAINSCOPE ) then
 			section += 1
+
+		'' global namespace due the implicit MAIN?
+		elseif( symbGetNamespace( s ) = @symbGetGlobalNamespc( ) ) then
+			section += 1
+
 		end if
 
 		'' Switching from a parent to a child scope isn't allowed,
