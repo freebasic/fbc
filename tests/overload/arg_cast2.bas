@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 	
-SUITE( fbc_tests.overloads.arg_cast2 )
+SUITE( fbc_tests.overload_.arg_cast2 )
 	
     Type CPos
         as integer x, y

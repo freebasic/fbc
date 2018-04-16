@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.sub_call2 )
+SUITE( fbc_tests.overload_.sub_call2 )
 
 	sub foo overload ()
 	end sub

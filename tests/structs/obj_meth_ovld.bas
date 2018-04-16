@@ -4,7 +4,7 @@
 		tests method overloading for TYPEs
 '/
 
-SUITE( fbc_tests.struct.obj_meth_ovld )
+SUITE( fbc_tests.structs.obj_meth_ovld )
 
 	enum e_Param_t
 		e_VoidParam

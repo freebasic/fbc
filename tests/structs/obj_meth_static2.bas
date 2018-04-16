@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.struct.obj_meth_static2 )
+SUITE( fbc_tests.structs.obj_meth_static2 )
 
 	enum TEST_RES
 		TEST_RES_INT

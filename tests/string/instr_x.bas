@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.string_.instr_X )
+SUITE( fbc_tests.string_.instr_x )
 
 	'' partial string test
 	TEST( wholeStringTest )

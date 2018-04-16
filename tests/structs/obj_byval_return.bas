@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.structs.obj_byval_ret )
+SUITE( fbc_tests.structs.obj_byval_return )
 
 	type bar1
 	  as single x, y, z

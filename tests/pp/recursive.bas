@@ -5,7 +5,7 @@
 #define foo3(p) foo1(foo2 p)
 #define foo4(p) foo1(foo2(p))
 
-SUITE( fbc_tests.macros.recursive )
+SUITE( fbc_tests.pp.recursive )
 
 	TEST( recursive_ )
 

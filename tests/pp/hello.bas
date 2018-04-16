@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.macros.hello )
+SUITE( fbc_tests.pp.hello )
 
 	#define merge(seq) letter seq
 	#define letter(seq) #seq + letter

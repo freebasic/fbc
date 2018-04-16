@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.op_ctor_coercion_udt )
+SUITE( fbc_tests.overload_.op_ctor_coercion_udt )
 
 	enum TEST_TYPE
 		TEST_TYPE_BAR = 1

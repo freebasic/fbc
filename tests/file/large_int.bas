@@ -1,6 +1,6 @@
 # include "fbcunit.bi"
 
-SUITE( fbc_tests.file_.input_large_int )
+SUITE( fbc_tests.file_.large_int )
 
 	const DEC_COUNT = 18
 	const HEX_COUNT = 16

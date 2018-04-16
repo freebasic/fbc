@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.test_anontype )
+SUITE( fbc_tests.overload_.anontype )
 
 	type udt1
 		a as integer

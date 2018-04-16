@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 	
-SUITE( fbc_tests.overloads.arg_cast )
+SUITE( fbc_tests.overload_.arg_cast )
 	
 	type A
 		member as integer

@@ -8,7 +8,7 @@
 #define FALSE 0
 #define TRUE (-1)
 
-SUITE( fbc_tests.boolean_.bop )
+SUITE( fbc_tests.boolean_.boolean_bop )
 
 	''
 	TEST( bop_const )

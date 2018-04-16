@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.wstrings.woct_ )
+SUITE( fbc_tests.wstring_.woct_ )
 
 	TEST( long_ )
 		const TEST_VAL as ulongint = &o1777777777777777777777ULL

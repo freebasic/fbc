@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.struct.obj_meth_ovld_sub )
+SUITE( fbc_tests.structs.obj_meth_ovld_sub )
 
 	type foo
 		as integer sub_called = 0

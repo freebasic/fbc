@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.string_.instrrev_X )
+SUITE( fbc_tests.string_.instrrev_x )
 
 	'' whole string test
 	TEST( wholeStringTest )

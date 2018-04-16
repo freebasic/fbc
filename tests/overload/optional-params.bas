@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.optional_params )
+SUITE( fbc_tests.overload_.optional_params )
 
 	TEST_GROUP( regression1 )
 		function f overload( byval i as integer, byref s as string ) as integer

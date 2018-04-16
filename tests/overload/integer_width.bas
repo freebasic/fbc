@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.integer_width )
+SUITE( fbc_tests.overload_.integer_width )
 
 	function hexa overload ( byval l as any ptr ) as integer
 		function = 1

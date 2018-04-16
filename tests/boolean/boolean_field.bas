@@ -8,7 +8,7 @@
 #define FALSE 0
 #define TRUE (-1)
 
-SUITE( fbc_tests.boolean_.field_ )
+SUITE( fbc_tests.boolean_.boolean_field )
 
 	type T1
 		i as integer

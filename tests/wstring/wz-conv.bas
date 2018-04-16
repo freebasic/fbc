@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.wstrings.wz_conv )
+SUITE( fbc_tests.wstring_.wz_conv )
 
 	TEST( wstringToZstring )
 		dim w as wstring * 50

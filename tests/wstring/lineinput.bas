@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.wstrings.lineinput )
+SUITE( fbc_tests.wstring_.lineinput )
 
 	dim shared as zstring ptr encodings(0 to ...) = _
 	{ _
@@ -10,7 +10,7 @@ SUITE( fbc_tests.wstrings.lineinput )
 		@"utf32" _
 	}
 
-	TEST( wstring_ )
+	TEST( lineinput_wstring )
 		for enc as integer = 0 to ubound(encodings)
 			if open( "wstring/lineinput-" + *encodings(enc) + ".txt" for input encoding *encodings(enc) as #1 ) <> 0 then
 				CU_FAIL("failed to open file")
@@ -37,7 +37,7 @@ SUITE( fbc_tests.wstrings.lineinput )
 		next
 	END_TEST
 
-	TEST( string_ )
+	TEST( lineinput_string )
 		for enc as integer = 0 to ubound(encodings)
 			if open( "wstring/lineinput-" + *encodings(enc) + ".txt" for input encoding *encodings(enc) as #1 ) <> 0 then
 				CU_FAIL("failed to open file")

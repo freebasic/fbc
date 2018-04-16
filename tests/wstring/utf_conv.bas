@@ -2,9 +2,9 @@
 #include once "utf_conv.bi"
 #include once "crt/string.bi"
 
-SUITE( fbc_tests.wstrings.utf_conv )
+SUITE( fbc_tests.wstring_.utf_conv )
 
-	TEST( zstring_ )
+	TEST( zstringToUTF )
 		dim as zstring ptr srcstr = @"ã é ô"
 		dim as byte ptr utfstr
 		dim as integer bytes
@@ -20,7 +20,7 @@ SUITE( fbc_tests.wstrings.utf_conv )
 		deallocate( utfstr )
 	END_TEST
 
-	TEST( wstring_ )
+	TEST( wstringToUTF )
 		dim as wstring ptr srcstr = @wstr("ã é ô")
 		dim as byte ptr utfstr
 		dim as integer bytes

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.test_addressof )
+SUITE( fbc_tests.overload_.addressof )
 
 	enum RESULT
 	   RESULT_INT

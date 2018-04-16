@@ -2,7 +2,7 @@
 
 '' option escape
 
-SUITE( fbc_tests.wstrings.uniseq )
+SUITE( fbc_tests.wstring_.uniseq )
 
 	const TESTVALUE_1 = !"A\u0022\u0023B\u0024\u0025C\u0026"
 	const TESTVALUE_2 = !"\t\u0022\u0023\r\u0024\u0025C\u0026\n"

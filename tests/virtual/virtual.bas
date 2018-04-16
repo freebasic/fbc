@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.virt.virt )
+SUITE( fbc_tests.virtual_.virtual_ )
 
 	namespace declarations
 		type A extends object

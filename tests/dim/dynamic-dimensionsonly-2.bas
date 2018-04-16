@@ -1,8 +1,17 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.dim_.dynamic_dimensionsonly )
+'' See:
+''    dynamic-dimensionsonly.bi
+''    dynamic-dimensionsonly-1.bas
+''    dynamic-dimensionsonly-2.bas
 
+namespace dynamic_dimensionsonly
 	#include "dynamic-dimensionsonly.bi"
+end namespace
+
+SUITE( fbc_tests.dim_.dynamic_dimensionsonly_2 )
+
+	using dynamic_dimensionsonly
 
 	TEST( proc_2 )
 		CU_ASSERT( ubound( array1, 0 ) = 0 )

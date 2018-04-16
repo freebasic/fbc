@@ -10,7 +10,7 @@
 
 # define FOO TRUE
 
-SUITE( fbc_tests.macros.conditional )
+SUITE( fbc_tests.pp.conditional )
 
 	TEST( ifEqualityTest )
 

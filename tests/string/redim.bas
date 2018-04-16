@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.strings.redim_ )
+SUITE( fbc_tests.string_.redim_ )
 
 	#macro test_set()
 		for i = lbound( array ) to ubound( array )

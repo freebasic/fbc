@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.op_cast_coercion )
+SUITE( fbc_tests.overload_.op_cast_coercion )
 
 	const TEST_VAL_BYTE = 1
 	const TEST_VAL_SHORT = 2

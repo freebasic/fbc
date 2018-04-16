@@ -11,7 +11,7 @@
 #define min9(a,b,c,d,e,f,g,h,i,j) iif(a <= b, min8(a,c,d,e,f,g,h,i,j), min8(b,c,d,e,f,g,h,i,j))
 #define minA(a,b,c,d,e,f,g,h,i,j,k) iif(a <= b, min9(a,c,d,e,f,g,h,i,j,k), min9(b,c,d,e,f,g,h,i,j,k))
 
-SUITE( fbc_tests.macros.minTests )
+SUITE( fbc_tests.pp.min )
 
 	TEST( all )
 

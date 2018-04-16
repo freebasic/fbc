@@ -4,7 +4,7 @@
 
 #ifndef __FB_DOS__
 
-SUITE( fbc_tests.threads.threadcall_tests )
+SUITE( fbc_tests.threads.threadcall_ )
 
     declare sub Overloaded overload ( byval i as integer )
     declare sub Overloaded( byref s as string )

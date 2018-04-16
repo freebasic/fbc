@@ -22,7 +22,7 @@ data -1, &hffffffff
 data  0, &b0
 data -1, &b1
 
-SUITE( fbc_tests.boolean_.data_ )
+SUITE( fbc_tests.boolean_.boolean_data )
 
 	'' RTLIB - DATAREADBOOL
 

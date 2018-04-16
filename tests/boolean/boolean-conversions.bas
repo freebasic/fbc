@@ -8,7 +8,7 @@
 const FALSE = 0
 const TRUE = -1
 
-SUITE( fbc_tests.boolean_.conversions )
+SUITE( fbc_tests.boolean_.boolean_conversions )
 
 	TEST( compileTime )
 
