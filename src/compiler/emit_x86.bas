@@ -6335,7 +6335,6 @@ private sub _emitLOADB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 		hPUSH aux
 		outp "fild dword ptr [esp]"
-		outp "fchs"
 		outp "add esp, 4"
 
 		if( isfree = FALSE ) then

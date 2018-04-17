@@ -382,12 +382,8 @@ SUITE( fbc_tests.boolean_.conversions )
 		ull  = boolvar : CU_ASSERT( ull = culngint(boolvar) )
 		i    = boolvar : CU_ASSERT( i = cint(boolvar) )
 		ui   = boolvar : CU_ASSERT( ui = cuint(boolvar) )
-#if ENABLE_CHECK_BUGS
-		#print enable check for #875 boolean to float conversion gives wrong sign
-		#print see bug #875 at https://sourceforge.net/p/fbc/bugs/875/
 		f    = boolvar : CU_ASSERT( f = csng(boolvar) )
 		d    = boolvar : CU_ASSERT( d = cdbl(boolvar) )
-#endif
 		bool = boolvar : CU_ASSERT( bool = cbool(boolvar) )
 
 	END_TEST
