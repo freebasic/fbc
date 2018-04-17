@@ -78,6 +78,34 @@ end sub
 '' ----------------------
 
 ''
+private function srip_trailing_underscore _
+	( _
+		byref d as const string _
+	) as string
+
+	'' replace "_." with "."
+	'' replace "_" + EOL' with EOL
+
+	dim ret as string = ""
+	dim n as integer = len(d)
+
+	for i as integer = 1 to n
+		dim ch as string = mid(d,i,1)
+		if( ch = "_" ) then
+			if( i = n ) then
+				continue for
+			elseif( mid(d,i+1,1) = "." ) then
+				continue for
+			end if
+		end if
+		ret &= ch
+	next
+
+	function = ret
+
+end function
+
+''
 private function escape_xml _
 	( _
 		byref d as const string _
@@ -102,6 +130,16 @@ private function escape_xml _
 	next
 
 	function = ret
+
+end function
+
+''
+private function convert_name _
+	( _
+		byref d as const string _
+	) as string
+
+	function = escape_xml( srip_trailing_underscore( d ) )
 
 end function
 
@@ -136,7 +174,7 @@ namespace fbcu
 
 		with suite_rec
 
-			x = "name=""" & escape_xml ( .name ) & """"
+			x = "name=""" & convert_name ( .name ) & """"
 			x &= " errors=""" & 0 & """"
 			x &= " tests=""" & .test_count & """"
 			x &= " failures=""" & .test_fail_count & """"
@@ -164,8 +202,8 @@ namespace fbcu
 
 		with test_rec
 				
-			x = "classname=""" & escape_xml( suite_rec.name ) & """"
-			x &= " name=""" & escape_xml ( .name ) & """"
+			x = "classname=""" & convert_name( suite_rec.name ) & """"
+			x &= " name=""" & convert_name ( .name ) & """"
 
 			if( .assert_fail_count = 0 ) then
 				report_write( "<testcase " & x & !" />\n" )

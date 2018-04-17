@@ -20,6 +20,7 @@ Version 0.7
 
 [changed]
 - add_test() API function changed to require suite name.  Module constructors might execute in any order and can't depend on add_suite called before add_test
+- xml output strips trailing underscores
 
 [fixed]
 - suite names are now allowed to have '.' in the name
