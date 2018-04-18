@@ -78,7 +78,7 @@ end sub
 '' ----------------------
 
 ''
-private function srip_trailing_underscore _
+private function strip_trailing_underscore _
 	( _
 		byref d as const string _
 	) as string
@@ -139,7 +139,7 @@ private function convert_name _
 		byref d as const string _
 	) as string
 
-	function = escape_xml( srip_trailing_underscore( d ) )
+	function = escape_xml( strip_trailing_underscore( d ) )
 
 end function
 
