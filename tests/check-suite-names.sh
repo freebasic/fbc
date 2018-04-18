@@ -40,10 +40,10 @@ do_clean () {
 
 do_check () {
 
-	# search for *.bas files containing SUITE lines
+	# search for *.bas files containing SUITE lines (ignore case)
 	# output from grep expected to be './dir/file.bas:line:SUITE( fbc_tests.dir.file)'
 	# note that the pattern contains a literal tab character
-	grep -r -n --include=*.bas --exclude-dir=fbcunit -e '^[ 	]*SUITE.*(.*)$' . > ${tmpfile}1.lst 
+	grep -i -r -n --include=*.bas --exclude-dir=fbcunit -e '^[ 	]*SUITE.*(.*).*$' . > ${tmpfile}1.lst 
 
 	# extract dir/file and dir.file from previous output
 	# write to a new file in the format 'dir1:file1:dir2:file2:original-grep-match'
