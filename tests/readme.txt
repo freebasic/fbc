@@ -167,6 +167,7 @@ Files are scanned for these tags to build of list of tests to perform,
 the method to use when performing the test and the expected result.
 Files that do not have one of the tags present may not get tested.
 
+
 Mutli-module tests and encoded files
 ------------------------------------
 
@@ -236,5 +237,11 @@ const/generator
 
 optimizations\generator
    helper program to create extensive 'math-torture-*.bas' tests
+
+check-suite-names.sh
+   maintenance tool to test that SUITE() names in basic source files are
+   named in an expected way.  Test suite names should match the
+   directory/filename.bas where they are written.  See comments in the bash
+   script for more information on the method used.
 
 ## EOF
