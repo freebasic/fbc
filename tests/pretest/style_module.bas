@@ -9,7 +9,7 @@
 	the SUITE()/END_SUITE block.
 
 	The suite name typically has the form:
-	  SUITE( fbc_tests.<PATHNAME>.<FILENAME> )
+''	  SUITE( fbc_tests.<PATHNAME>.<FILENAME> )
 
 '/
 
