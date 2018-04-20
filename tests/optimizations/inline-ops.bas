@@ -213,4 +213,83 @@ SUITE( fbc_tests.optimizations.inline_ops )
 
 	END_TEST
 
+	
+	'' reciprocal 
+
+	type TDIV
+		__ as integer
+	end type
+	operator / ( byval x as single, byref y as const TDIV ) as single
+		operator = 888 '' cook a value to test with
+	end operator
+
+	type TSQR
+		__ as integer
+	end type
+	operator sqr ( byref x as const TSQR ) as single
+		operator = 16 '' cook a value to test with
+	end operator
+
+	TEST( reciprocal )
+
+		'' in some modes (i.e. -gen gas -fpmode fast -fpu sse )
+		'' AST optimizer will replace expressions with equivalent
+		'' reciprocal instructions.  We can't prove that the
+		'' optimization actually took place unless we look at the
+		'' ASM/C code generated, but we can prove that fb code has 
+		'' valid results for all forms.
+
+		scope
+			'' 1! / single
+			dim x as single = 5
+			dim r as single
+			r = 1! / x
+			CU_ASSERT_DOUBLE_EQUAL( r, 0.2, EPSILON_SNG )
+		end scope
+
+		scope
+			'' 1! / double
+			dim x as double = 5
+			dim r as single
+			r = 1! / x
+			CU_ASSERT_DOUBLE_EQUAL( r, 0.2, EPSILON_SNG )
+		end scope
+
+		scope
+			'' 1! / integer
+			dim x as integer = 5
+			dim r as single
+			r = 1! / x
+			CU_ASSERT_DOUBLE_EQUAL( r, 0.2, EPSILON_SNG )
+		end scope
+
+		scope
+			'' 1! / sqr(number)
+			dim x as single = 0.0025
+			dim r as single
+			r = 1! / sqr(x)
+			CU_ASSERT_DOUBLE_EQUAL( r, 20, EPSILON_SNG )
+		end scope
+
+		'' For overloaded / and SQR(), prove that the
+		'' optimization is not used.
+
+		scope
+			'' 1! / UDT
+			dim x as TDIV
+			dim r as single
+			r =  1! / x
+			CU_ASSERT_DOUBLE_EQUAL( r, 888, EPSILON_SNG )
+		end scope
+
+		scope
+			'' 1! / SQR(UDT)
+			dim x as TSQR
+			dim r as single
+			r =  1! / sqr(x)
+			CU_ASSERT_DOUBLE_EQUAL( r, 0.0625, EPSILON_SNG )
+		end scope
+
+	END_TEST
+
 END_SUITE
