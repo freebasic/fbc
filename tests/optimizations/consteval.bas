@@ -7,10 +7,26 @@ SUITE( fbc_tests.optimizations.consteval )
 
 		const EPSILON_SNG as single = 1.19290929e-7
 
+		'' fast floating point is NOT precise, the compiler should have been
+		'' built with -fpmode precise, so we may have differences when
+		'' comparing const evaulation and runtime evaluation
+
+		#if __FB_FPMODE__ = "fast"
+			const EPSILON_SNG_FPU as single = EPSILON_SNG * 1000
+		#else
+			const EPSILON_SNG_FPU as single = EPSILON_SNG
+		#endif
+
 		#macro checkUop( func, value )
 			f = value
 			CU_ASSERT_DOUBLE_EQUAL( func( value ), func( f     ), EPSILON_SNG )
 			CU_ASSERT_DOUBLE_EQUAL( func( f     ), func( value ), EPSILON_SNG )
+		#endmacro
+
+		#macro checkUopFPU( func, value )
+			f = value
+			CU_ASSERT_DOUBLE_EQUAL( func( value ), func( f     ), EPSILON_SNG_FPU )
+			CU_ASSERT_DOUBLE_EQUAL( func( f     ), func( value ), EPSILON_SNG_FPU )
 		#endmacro
 
 		'' -
@@ -26,20 +42,20 @@ SUITE( fbc_tests.optimizations.consteval )
 		CU_ASSERT_EQUAL( sgn(  0.0f ),  0 )
 		CU_ASSERT_EQUAL( sgn( -1.0f ), -1 )
 		'' sin
-		checkUop( sin,  1.0f )
-		checkUop( sin,  0.5f )
-		checkUop( sin, -0.5f )
-		checkUop( sin, -1.0f )
+		checkUopFPU( sin,  1.0f )
+		checkUopFPU( sin,  0.5f )
+		checkUopFPU( sin, -0.5f )
+		checkUopFPU( sin, -1.0f )
 		'' asin
 		checkUop( asin,  1.0f )
 		checkUop( asin,  0.5f )
 		checkUop( asin, -0.5f )
 		checkUop( asin, -1.0f )
 		'' cos
-		checkUop( cos,  1.0f )
-		checkUop( cos,  0.5f )
-		checkUop( cos, -0.5f )
-		checkUop( cos, -1.0f )
+		checkUopFPU( cos,  1.0f )
+		checkUopFPU( cos,  0.5f )
+		checkUopFPU( cos, -0.5f )
+		checkUopFPU( cos, -1.0f )
 		'' acos
 		checkUop( acos,  1.0f )
 		checkUop( acos,  0.5f )

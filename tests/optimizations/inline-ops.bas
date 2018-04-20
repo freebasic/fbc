@@ -7,6 +7,17 @@ SUITE( fbc_tests.optimizations.inline_ops )
 	const EPSILON_SNG as single = 1.19290929e-7
 	const EPSILON_DBL as double = 2.2204460492503131e-016
 
+	'' fast floating point is NOT precise
+	#if __FB_FPMODE__ = "fast"
+		'' good to about 3 decimal places for 
+		'' cos/sin on -gen gas -fpu sse -fpmode fast
+		const EPSILON_SNG_FPU as single = EPSILON_SNG * 2000
+		const EPSILON_DBL_FPU as double = EPSILON_DBL * 2000
+	#else
+		const EPSILON_SNG_FPU as single = EPSILON_SNG
+		const EPSILON_DBL_FPU as double = EPSILON_DBL
+	#endif
+
 	#define hFixF( x ) (floorf( abs( x ) ) * sgn( x ))
 	#define hFixD( x ) ( floor( abs( x ) ) * sgn( x ))
 
@@ -165,9 +176,9 @@ SUITE( fbc_tests.optimizations.inline_ops )
 		for v as single = -1 to 1 step .01
 			CU_ASSERT_DOUBLE_EQUAL( frac( v ), (v - hFixF( v )) , EPSILON_SNG )
 			CU_ASSERT_DOUBLE_EQUAL(  fix( v ), hFixF( v ), EPSILON_SNG )
-			CU_ASSERT_DOUBLE_EQUAL(  sin( v ),  sinf( v ), EPSILON_SNG )
+			CU_ASSERT_DOUBLE_EQUAL(  sin( v ),  sinf( v ), EPSILON_SNG_FPU )
 			CU_ASSERT_DOUBLE_EQUAL( asin( v ), alt_asin( v ), EPSILON_SNG )
-			CU_ASSERT_DOUBLE_EQUAL(  cos( v ),  cosf( v ), EPSILON_SNG )
+			CU_ASSERT_DOUBLE_EQUAL(  cos( v ),  cosf( v ), EPSILON_SNG_FPU )
 			CU_ASSERT_DOUBLE_EQUAL( acos( v ), acosf( v ), EPSILON_SNG )
 			CU_ASSERT_DOUBLE_EQUAL(  tan( v ),  tanf( v ), EPSILON_SNG )
 			CU_ASSERT_DOUBLE_EQUAL(  atn( v ), atanf( v ), EPSILON_SNG )
@@ -244,7 +255,7 @@ SUITE( fbc_tests.optimizations.inline_ops )
 			dim x as single = 5
 			dim r as single
 			r = 1! / x
-			CU_ASSERT_DOUBLE_EQUAL( r, 0.2, EPSILON_SNG )
+			CU_ASSERT_DOUBLE_EQUAL( r, 0.2, EPSILON_SNG_FPU )
 		end scope
 
 		scope
@@ -287,7 +298,7 @@ SUITE( fbc_tests.optimizations.inline_ops )
 			dim x as TSQR
 			dim r as single
 			r =  1! / sqr(x)
-			CU_ASSERT_DOUBLE_EQUAL( r, 0.0625, EPSILON_SNG )
+			CU_ASSERT_DOUBLE_EQUAL( r, 0.0625, EPSILON_SNG_FPU )
 		end scope
 
 	END_TEST
