@@ -8,7 +8,7 @@
 #define FALSE 0
 #define TRUE (-1)
 
-SUITE( fbc_tests.boolean_.ptr_ )
+SUITE( fbc_tests.boolean_.boolean_ptr )
 
 	''
 	TEST( compare )

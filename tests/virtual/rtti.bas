@@ -2,7 +2,7 @@
 
 #include once "fbrtti.bi"
 
-SUITE( fbc_tests.virt.rtti )
+SUITE( fbc_tests.virtual_.rtti )
 
 	'' Is operator
 	TEST_GROUP( simple )

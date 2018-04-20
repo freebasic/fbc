@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.wstrings.symb )
+SUITE( fbc_tests.wstring_.symb )
 
 	TEST( default )
 

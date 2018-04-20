@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.wstrings.trim_ )
+SUITE( fbc_tests.wstring_.trim_ )
 
 	dim shared result as integer
 	dim shared str_ret as string

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.wstrings.len_ )
+SUITE( fbc_tests.wstring_.len_ )
 
 	const TEST_LIT = "abcdef"
 	const TEST_LEN = 32

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.bydesc )
+SUITE( fbc_tests.overload_.bydesc )
 
 	TEST_GROUP( simple )
 		enum RESULT

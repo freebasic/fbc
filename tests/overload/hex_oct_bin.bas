@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.hex_oct_bin )
+SUITE( fbc_tests.overload_.hex_oct_bin )
 
 	TEST( nonConst )
 		type T

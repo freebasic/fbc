@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.sub_call )
+SUITE( fbc_tests.overload_.sub_call )
 
 	const TEST_VAL = 1234
 

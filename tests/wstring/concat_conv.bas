@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.wstrings.concat_conv )
+SUITE( fbc_tests.wstring_.concat_conv )
 
 	const TESTVALUE_1 = "abcd"
 	const TESTVALUE_2 = "EFGH"

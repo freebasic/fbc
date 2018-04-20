@@ -8,7 +8,7 @@ test_data:
 data TEST_VALUE_1, TEST_VALUE_2, TEST_VALUE_3	
 data TEST_VALUE_1, TEST_VALUE_2, TEST_VALUE_3	
 
-SUITE( fbc_tests.wstrings.data_ )
+SUITE( fbc_tests.wstring_.data_ )
 
 	declare sub run_test( byval s1 as wstring ptr, byval s2 as wstring ptr )
 

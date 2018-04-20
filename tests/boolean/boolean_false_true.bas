@@ -30,7 +30,7 @@ enum ENUM_BOOLEAN
 	ENUM_TRUE
 end enum
 
-SUITE( fbc_tests.boolean_.false_true )
+SUITE( fbc_tests.boolean_.boolean_false_true )
 
 	''
 	TEST( intrinsic )

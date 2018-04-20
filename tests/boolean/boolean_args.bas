@@ -8,7 +8,7 @@
 #define FALSE 0
 #define TRUE (-1)
 
-SUITE( fbc_tests.boolean_.args )
+SUITE( fbc_tests.boolean_.boolean_args )
 
 	''
 	sub foo1( byval b as boolean, byval i as integer )

@@ -15,7 +15,7 @@
 '' the usual byte-by-byte copy that would overwrite the vptr.
 ''
 
-SUITE( fbc_tests.virt.byval_copy )
+SUITE( fbc_tests.virtual_.byval_copy )
 
 	TEST_GROUP( noFieldsRetainsVptr )
 		type A extends object

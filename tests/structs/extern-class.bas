@@ -1,7 +1,12 @@
 #include "fbcunit.bi"
 #include "extern-class.bi"
 
-SUITE( fbc_tests.structs.extern_class )
+'' See:
+''   extern-class.bi
+''   extern-class.bas
+''   extern-class-test.bas
+
+namespace extern_class
 
 	constructor T1( byval i as integer )
 		this.i = i
@@ -17,5 +22,6 @@ SUITE( fbc_tests.structs.extern_class )
 	dim shared as T2 global2
 	dim shared as T2 fixarray2(0 to 1)
 
-END_SUITE
+end namespace
+
 

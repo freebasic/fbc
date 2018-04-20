@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.virt.compatible_override )
+SUITE( fbc_tests.virtual_.compatible_override )
 
 	''
 	'' We can allow overrides even if the signature differs from the corresponding

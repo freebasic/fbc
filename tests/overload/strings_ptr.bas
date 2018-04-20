@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.strings_ptr )
+SUITE( fbc_tests.overload_.strings_ptr )
 
 	enum RESULT
 		RESULT_W

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.wstrings.asc_ )
+SUITE( fbc_tests.wstring_.asc_ )
 
 	const TEST_A = asc( wstr( "abc" ), 1 )
 	const TEST_B = asc( wstr( "abc" ), 2 )

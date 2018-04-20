@@ -1,6 +1,6 @@
 # include "fbcunit.bi"
 
-SUITE( fbc_tests.functions.module_ctor )
+SUITE( fbc_tests.functions.module_ctor_staticmemberproc )
 
 	type UDT
 		dummy as integer

@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.derived )
+SUITE( fbc_tests.overload_.derived )
 
 	type A
 		as integer dummy

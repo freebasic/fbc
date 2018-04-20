@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.structs.bitfield_conversions )
+SUITE( fbc_tests.structs.bitfield_conv )
 
 	const TEST_W = 123
 	const TEST_H = 77

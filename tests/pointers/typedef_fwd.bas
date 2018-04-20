@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.pointers.typedef_fwdref )
+SUITE( fbc_tests.pointers.typedef_fwd )
 
 	type foo as bar
 

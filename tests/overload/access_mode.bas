@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.access_mode )
+SUITE( fbc_tests.overload_.access_mode )
 
 	type foo
 		as byte pad

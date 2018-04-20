@@ -4,10 +4,12 @@
 
 #define QT(s) ("""" & (s) & """")
 
-#define PRINT_USING( fmt, num, cmp ) _
+'' last output on a line wrapper
+#define PRINT_USING_N( fmt, num, cmp ) _
 	print #(1), using ( QT(fmt) & ", " & QT("&") ); num; cmp
 
-#define PRINT_USING_( fmt, num, cmp ) _
+'' continuing output on a line wrapper
+#define PRINT_USING_1( fmt, num, cmp ) _
 	print #(1), using ( QT(fmt) & ", " & QT("&") & ", "); num; cmp; : _
 	print #(1), ,
 
@@ -46,7 +48,7 @@
 #endmacro
 
 
-SUITE( fbc_tests.string_.printusing )
+SUITE( fbc_tests.string_.print_using )
 
 	private sub test_ll( _
 			byref fmt as string, _
@@ -55,26 +57,26 @@ SUITE( fbc_tests.string_.printusing )
 			byval do_fp as integer = 1)
 
 		if num = clng(num) then
-			PRINT_USING_( fmt & "%", clng(num), cmp & "%" )
+			PRINT_USING_1( fmt & "%", clng(num), cmp & "%" )
 		end if
 		if num = culng(num) then
-			PRINT_USING_( fmt & "u", culng(num), cmp & "u" )
+			PRINT_USING_1( fmt & "u", culng(num), cmp & "u" )
 		end if
 		if cunsg(abs(num)) <= 1 shl 23 then
-			PRINT_USING_( fmt & "_!", csng(num), cmp & "!" )
+			PRINT_USING_1( fmt & "_!", csng(num), cmp & "!" )
 		end if
 		if do_fp andalso cunsg(abs(num)) <= 1ull shl 52 then
-			PRINT_USING_( fmt & "_#", cdbl(num), cmp & "#" )
+			PRINT_USING_1( fmt & "_#", cdbl(num), cmp & "#" )
 		end if
 		if num >= 0 then
-			PRINT_USING_( fmt & "ull", culngint(num), cmp & "ull" )
+			PRINT_USING_1( fmt & "ull", culngint(num), cmp & "ull" )
 		end if
 
 		if num = cint(cbool(num)) and (instr(fmt, "&") = 0) then
-			PRINT_USING_( fmt & "b", num, cmp & "b" )
+			PRINT_USING_1( fmt & "b", num, cmp & "b" )
 		end if
 
-		PRINT_USING( fmt & "ll", num, cmp & "ll" )
+		PRINT_USING_N( fmt & "ll", num, cmp & "ll" )
 
 	end sub
 
@@ -85,22 +87,22 @@ SUITE( fbc_tests.string_.printusing )
 			byval do_fp as integer = 1)
 
 		if num < 1ull shl 31 then
-			PRINT_USING_( fmt & "%", clng(num), cmp & "%" )
+			PRINT_USING_1( fmt & "%", clng(num), cmp & "%" )
 		end if
 		if num < 1ull shl 32 then
-			PRINT_USING_( fmt & "u", culng(num), cmp & "u" )
+			PRINT_USING_1( fmt & "u", culng(num), cmp & "u" )
 		end if
 		if num <= 1ull shl 23 then
-			PRINT_USING_( fmt & "_!", cdbl(num), cmp & "!" )
+			PRINT_USING_1( fmt & "_!", cdbl(num), cmp & "!" )
 		end if
 		if do_fp andalso num <= 1ull shl 52 then
-			PRINT_USING_( fmt & "_#", cdbl(num), cmp & "#" )
+			PRINT_USING_1( fmt & "_#", cdbl(num), cmp & "#" )
 		end if
 		if num < 1ull shl 63 then
-			PRINT_USING_( fmt & "ll", clngint(num), cmp & "ll" )
+			PRINT_USING_1( fmt & "ll", clngint(num), cmp & "ll" )
 		end if
 
-		PRINT_USING( fmt & "ull", num, cmp & "ull" )
+		PRINT_USING_N( fmt & "ull", num, cmp & "ull" )
 
 	end sub
 
@@ -109,7 +111,7 @@ SUITE( fbc_tests.string_.printusing )
 			byval num as double, _
 			byref cmp as string)
 
-		PRINT_USING( fmt & "_#", num, cmp & "#" )
+		PRINT_USING_N( fmt & "_#", num, cmp & "#" )
 
 	end sub
 
@@ -118,7 +120,7 @@ SUITE( fbc_tests.string_.printusing )
 			byval num as single, byval num2 as single, _
 			byref cmp as string)
 
-		PRINT_USING( fmt & "_!", csng(num);csng(num2), cmp & "!" )
+		PRINT_USING_N( fmt & "_!", csng(num);csng(num2), cmp & "!" )
 
 	end sub
 
@@ -131,9 +133,9 @@ SUITE( fbc_tests.string_.printusing )
 		'' note: num is a Double to prevent
 		'' decimal vals getting corrupted in Double test
 
-		PRINT_USING( fmt & "_!", csng(num), cmp & "!" )
+		PRINT_USING_N( fmt & "_!", csng(num), cmp & "!" )
 		if( do_dbl ) then
-			PRINT_USING( fmt & "_#", cdbl(num), cmp & "#" )
+			PRINT_USING_N( fmt & "_#", cdbl(num), cmp & "#" )
 		end if
 
 	end sub
@@ -143,7 +145,7 @@ SUITE( fbc_tests.string_.printusing )
 			byref s as string, _
 			byref cmp as string)
 
-		PRINT_USING( fmt & "_$", s, cmp & "$" )
+		PRINT_USING_N( fmt & "_$", s, cmp & "$" )
 
 	end sub
 
@@ -154,7 +156,7 @@ SUITE( fbc_tests.string_.printusing )
 
 		if instr(fmt, "&") then
 			'' test true/false
-			PRINT_USING( fmt & "b", iif(num, "true", "false"), cmp & "b" )
+			PRINT_USING_N( fmt & "b", iif(num, "true", "false"), cmp & "b" )
 		else
 			test_ll( fmt, clngint(num), cmp )
 		end if
@@ -301,7 +303,7 @@ SUITE( fbc_tests.string_.printusing )
 		print #1, ",",  "3_1_4_"
 
 
-		PRINT_USING( "&#&#.#&#^^^&&", _
+		PRINT_USING_N( "&#&#.#&#^^^&&", _
 					 1; 2; 3; 4.0; 5; 6E+0; 7; 8, _
 					 "1234.056E+078" )
 

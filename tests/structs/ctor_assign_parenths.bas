@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.structs.ctor_assign_parenth )
+SUITE( fbc_tests.structs.ctor_assign_parenths )
 	
 	type Vector2D
 		as single x,y

@@ -7,7 +7,7 @@
 	use throughout the test suite.
 
 	The suite name typically has the form:
-	  SUITE( fbc_tests.<PATHNAME>.<FILENAME> )
+''	  SUITE( fbc_tests.<PATHNAME>.<FILENAME> )
 
 	The names of the tests should be meaningful.  If you
 	find tests where they are not, e.g. test1...test#, 

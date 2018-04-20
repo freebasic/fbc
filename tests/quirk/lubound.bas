@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.optimizations.lubound )
+SUITE( fbc_tests.quirk.lubound )
 
 	dim shared array1(0 to 1) as integer
 	dim shared array2(123 to 456) as integer

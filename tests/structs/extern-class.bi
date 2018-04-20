@@ -1,4 +1,9 @@
-SUITE( fbc_tests.structs.extern_class )
+'' See:
+''   extern-class.bi
+''   extern-class.bas
+''   extern-class-test.bas
+
+namespace extern_class
 
 	type T1
 		as integer i
@@ -16,5 +21,6 @@ SUITE( fbc_tests.structs.extern_class )
 	extern as T2 global2
 	extern as T2 fixarray2(0 to 1)
 
-END_SUITE
+end namespace
+
 

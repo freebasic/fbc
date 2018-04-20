@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overload_.rtl )
+SUITE( fbc_tests.overload_.rtl_str )
 
 	TEST( all )
 		dim s as string = "13"

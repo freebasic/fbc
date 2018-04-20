@@ -11,7 +11,7 @@
 const FALSE_STRING = "false"
 const TRUE_STRING = "true"
 
-SUITE( fbc_tests.boolean_.str_ )
+SUITE( fbc_tests.boolean_.boolean_str )
 
 	'' RTLIB - BOOL2STR
 

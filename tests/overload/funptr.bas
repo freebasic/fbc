@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.funptr )
+SUITE( fbc_tests.overload_.funptr )
 
 	type sub_wo_params_t as sub () 
 	type sub_w_params_t as sub ( byval as integer ) 

@@ -8,7 +8,7 @@
 	exist within a single SUITE().
 
 	The suite name typically has the form:
-	  SUITE( fbc_tests.<PATHNAME>.<FILENAME> )
+''	  SUITE( fbc_tests.<PATHNAME>.<FILENAME> )
 
 	The namespaces used are not reported in the
 	fbc-tests report.  There may be cases in the

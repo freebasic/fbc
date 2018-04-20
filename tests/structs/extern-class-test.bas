@@ -1,7 +1,14 @@
 #include "fbcunit.bi"
 #include "extern-class.bi"
 
-SUITE( fbc_tests.structs.extern_class )
+'' See:
+''   extern-class.bi
+''   extern-class.bas
+''   extern-class-test.bas
+
+SUITE( fbc_tests.structs.extern_class_test )
+
+	using extern_class
 
 	TEST( all )
 		CU_ASSERT( global1.i = 123 )

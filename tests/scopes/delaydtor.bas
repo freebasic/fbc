@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.scopes.delaydtors )
+SUITE( fbc_tests.scopes.delaydtor )
 	
 	type X
 		i as integer

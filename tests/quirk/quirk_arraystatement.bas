@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.quirk.arraystatement )
+SUITE( fbc_tests.quirk.quirk_arraystatement )
 
 	Type testing_type
 		meep(1) As Integer

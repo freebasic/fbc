@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.macros.macro_nested1 )
+SUITE( fbc_tests.pp.macro_nested1 )
 
 	# macro create_macro( name_, params_, body_ )
 		# undef name_

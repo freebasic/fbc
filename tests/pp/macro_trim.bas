@@ -30,7 +30,7 @@
 	 
 # endmacro
 
-SUITE( fbc_tests.macros.macro_trim )
+SUITE( fbc_tests.pp.macro_trim )
 
 	TEST( noArgTest )
 

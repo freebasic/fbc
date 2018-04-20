@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.const_enum )
+SUITE( fbc_tests.overload_.const_enum )
 
 	enum
 		RES_ENUM

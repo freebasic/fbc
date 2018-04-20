@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.type_vararg )
+SUITE( fbc_tests.overload_.type_vararg )
 
 	type foo
 		declare function bar cdecl( byval i as integer, ... ) as integer

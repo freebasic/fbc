@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.wstrings.utf8 )
+SUITE( fbc_tests.wstring_.utf8 )
 
 	#define hello "Καλημέρα "
 	#define world "κόσμε!"

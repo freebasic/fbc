@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.wstrings.select_ )
+SUITE( fbc_tests.wstring_.select_ )
 
 	TEST( default )
 

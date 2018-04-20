@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.macros.bit___ )
+SUITE( fbc_tests.pp.bit___ )
 
 	TEST( literals )
 		

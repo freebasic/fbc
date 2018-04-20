@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.macros.variadic )
+SUITE( fbc_tests.pp.variadic )
 
 	#define stringify(x) #x
 

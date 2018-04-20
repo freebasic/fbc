@@ -8,7 +8,7 @@
 #define FALSE 0
 #define TRUE (-1)
 
-SUITE( fbc_tests.boolean_.bitfield )
+SUITE( fbc_tests.boolean_.boolean_bitfield )
 	type T1
 		union
 			type

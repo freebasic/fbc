@@ -11,7 +11,7 @@
 const FALSE_WSTRING = wstr("false")
 const TRUE_WSTRING = wstr("true")
 
-SUITE( fbc_tests.boolean_.wstr_ )
+SUITE( fbc_tests.boolean_.boolean_wstr )
 
 	'' RTLIB - BOOL2WSTR
 

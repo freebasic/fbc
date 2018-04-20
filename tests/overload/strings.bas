@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.overloads.strings )
+SUITE( fbc_tests.overload_.strings )
 
 	enum RESULT
 	   RESULT_ZSTRING

@@ -2,7 +2,7 @@
 
 '' option escape
 
-SUITE( fbc_tests.wstrings.unc )
+SUITE( fbc_tests.wstring_.unc )
 
 	TEST( escape )
 

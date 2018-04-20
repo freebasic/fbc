@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-suite( fbc_tests.structs.ctor_union_copy )
+SUITE( fbc_tests.structs.ctor_union_copy )
 
 	const TEST_F0 = 1234
 	const TEST_F4 = 12345.6

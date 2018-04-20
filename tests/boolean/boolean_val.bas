@@ -11,7 +11,7 @@
 const FALSE_STRING = "false"
 const TRUE_STRING = "true"
 
-SUITE( fbc_tests.boolean_.val_ )
+SUITE( fbc_tests.boolean_.boolean_val )
 
 	'' -----------------------------------
 	'' RTLIB - STR2BOOL - valbool(string)

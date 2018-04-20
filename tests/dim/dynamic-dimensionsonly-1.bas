@@ -1,13 +1,22 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.dim_.dynamic_dimensionsonly )
+'' See:
+''    dynamic-dimensionsonly.bi
+''    dynamic-dimensionsonly-1.bas
+''    dynamic-dimensionsonly-2.bas
 
+namespace dynamic_dimensionsonly
 	#include "dynamic-dimensionsonly.bi"
 
 	dim array1(any) as integer
 	dim array2(any, any) as integer
 
 	dim shared array3(any, any, any) as integer
+end namespace
+
+SUITE( fbc_tests.dim_.dynamic_dimensionsonly_1 )
+
+	using dynamic_dimensionsonly
 
 	TEST( proc_1 )
 
