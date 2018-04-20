@@ -30,7 +30,7 @@ SUITE( fbc_tests.optimizations.inline_ops )
 		end if
 	end function
 
-	TEST( all )
+	TEST( sgn_ )
 
 		scope
 			dim as long l
@@ -57,6 +57,10 @@ SUITE( fbc_tests.optimizations.inline_ops )
 			ll = &hFFFFFFFFFFFFFFFFll : CU_ASSERT_EQUAL( sgn( ll ), -1 )
 			ll = &h8000000000000000ll : CU_ASSERT_EQUAL( sgn( ll ), -1 )
 		end scope
+
+	END_TEST
+
+	TEST( abs_ )
 
 		'' Not all the abs() tests below are useful to test abs(), but they
 		'' also help testing -gen gcc's number literal emitting.
@@ -136,11 +140,33 @@ SUITE( fbc_tests.optimizations.inline_ops )
 			CU_ASSERT_DOUBLE_EQUAL( int( v ), floor( v ), EPSILON_DBL )
 		next
 
+	END_TEST
+
+
+	'' transcendental tests
+
+	#ifdef __FB_DOS__
+		'' djgpp's math lib has an implementation that requires 2 * EPSILON_SNG to
+		'' pass the single asin() tests, we could increase epsilon, or calculate with
+		'' alternate asin() function
+		#if ENABLE_CHECK_BUGS
+			#define alt_asin asinf
+		#else
+			private function alt_asin( byval x as single ) as single
+				function = atan2(x, sqr( 1! - x*x ))
+			end function
+		#endif
+	#else
+		#define alt_asin asinf
+	#endif
+
+    TEST( transcendental )
+
 		for v as single = -1 to 1 step .01
 			CU_ASSERT_DOUBLE_EQUAL( frac( v ), (v - hFixF( v )) , EPSILON_SNG )
 			CU_ASSERT_DOUBLE_EQUAL(  fix( v ), hFixF( v ), EPSILON_SNG )
 			CU_ASSERT_DOUBLE_EQUAL(  sin( v ),  sinf( v ), EPSILON_SNG )
-			CU_ASSERT_DOUBLE_EQUAL( asin( v ), asinf( v ), EPSILON_SNG )
+			CU_ASSERT_DOUBLE_EQUAL( asin( v ), alt_asin( v ), EPSILON_SNG )
 			CU_ASSERT_DOUBLE_EQUAL(  cos( v ),  cosf( v ), EPSILON_SNG )
 			CU_ASSERT_DOUBLE_EQUAL( acos( v ), acosf( v ), EPSILON_SNG )
 			CU_ASSERT_DOUBLE_EQUAL(  tan( v ),  tanf( v ), EPSILON_SNG )
@@ -184,6 +210,7 @@ SUITE( fbc_tests.optimizations.inline_ops )
 			b = 5.0
 			CU_ASSERT_DOUBLE_EQUAL( atan2( a, b ), atan2_( a, b ), EPSILON_DBL )
 		end scope
+
 	END_TEST
 
 END_SUITE
