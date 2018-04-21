@@ -89,6 +89,8 @@ all :
 	@$(ECHO) "   ARCH=arch (default is 486)"
 	@$(ECHO) "   OS=DOS"
 	@$(ECHO) "   FPU=fpu | sse"
+	@$(ECHO) "   FPMODE=fast | precise"
+	@$(ECHO) "   GEN=gas | gcc"
 	@$(ECHO) "   UNITTEST_RUN_ARGS=args"
 	@$(ECHO) "   ENABLE_CHECK_BUGS=1"
 	@$(ECHO) "   ENABLE_CONSOLE_OUTPUT=1"

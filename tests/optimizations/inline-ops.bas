@@ -7,6 +7,17 @@ SUITE( fbc_tests.optimizations.inline_ops )
 	const EPSILON_SNG as single = 1.19290929e-7
 	const EPSILON_DBL as double = 2.2204460492503131e-016
 
+	'' fast floating point is NOT precise
+	#if __FB_FPMODE__ = "fast"
+		'' good to about 3 decimal places for 
+		'' cos/sin on -gen gas -fpu sse -fpmode fast
+		const EPSILON_SNG_FPU as single = EPSILON_SNG * 2000
+		const EPSILON_DBL_FPU as double = EPSILON_DBL * 2000
+	#else
+		const EPSILON_SNG_FPU as single = EPSILON_SNG
+		const EPSILON_DBL_FPU as double = EPSILON_DBL
+	#endif
+
 	#define hFixF( x ) (floorf( abs( x ) ) * sgn( x ))
 	#define hFixD( x ) ( floor( abs( x ) ) * sgn( x ))
 
@@ -30,7 +41,7 @@ SUITE( fbc_tests.optimizations.inline_ops )
 		end if
 	end function
 
-	TEST( all )
+	TEST( sgn_ )
 
 		scope
 			dim as long l
@@ -57,6 +68,10 @@ SUITE( fbc_tests.optimizations.inline_ops )
 			ll = &hFFFFFFFFFFFFFFFFll : CU_ASSERT_EQUAL( sgn( ll ), -1 )
 			ll = &h8000000000000000ll : CU_ASSERT_EQUAL( sgn( ll ), -1 )
 		end scope
+
+	END_TEST
+
+	TEST( abs_ )
 
 		'' Not all the abs() tests below are useful to test abs(), but they
 		'' also help testing -gen gcc's number literal emitting.
@@ -136,12 +151,34 @@ SUITE( fbc_tests.optimizations.inline_ops )
 			CU_ASSERT_DOUBLE_EQUAL( int( v ), floor( v ), EPSILON_DBL )
 		next
 
+	END_TEST
+
+
+	'' transcendental tests
+
+	#ifdef __FB_DOS__
+		'' djgpp's math lib has an implementation that requires 2 * EPSILON_SNG to
+		'' pass the single asin() tests, we could increase epsilon, or calculate with
+		'' alternate asin() function
+		#if ENABLE_CHECK_BUGS
+			#define alt_asin asinf
+		#else
+			private function alt_asin( byval x as single ) as single
+				function = atan2(x, sqr( 1! - x*x ))
+			end function
+		#endif
+	#else
+		#define alt_asin asinf
+	#endif
+
+    TEST( transcendental )
+
 		for v as single = -1 to 1 step .01
 			CU_ASSERT_DOUBLE_EQUAL( frac( v ), (v - hFixF( v )) , EPSILON_SNG )
 			CU_ASSERT_DOUBLE_EQUAL(  fix( v ), hFixF( v ), EPSILON_SNG )
-			CU_ASSERT_DOUBLE_EQUAL(  sin( v ),  sinf( v ), EPSILON_SNG )
-			CU_ASSERT_DOUBLE_EQUAL( asin( v ), asinf( v ), EPSILON_SNG )
-			CU_ASSERT_DOUBLE_EQUAL(  cos( v ),  cosf( v ), EPSILON_SNG )
+			CU_ASSERT_DOUBLE_EQUAL(  sin( v ),  sinf( v ), EPSILON_SNG_FPU )
+			CU_ASSERT_DOUBLE_EQUAL( asin( v ), alt_asin( v ), EPSILON_SNG )
+			CU_ASSERT_DOUBLE_EQUAL(  cos( v ),  cosf( v ), EPSILON_SNG_FPU )
 			CU_ASSERT_DOUBLE_EQUAL( acos( v ), acosf( v ), EPSILON_SNG )
 			CU_ASSERT_DOUBLE_EQUAL(  tan( v ),  tanf( v ), EPSILON_SNG )
 			CU_ASSERT_DOUBLE_EQUAL(  atn( v ), atanf( v ), EPSILON_SNG )
@@ -184,6 +221,86 @@ SUITE( fbc_tests.optimizations.inline_ops )
 			b = 5.0
 			CU_ASSERT_DOUBLE_EQUAL( atan2( a, b ), atan2_( a, b ), EPSILON_DBL )
 		end scope
+
+	END_TEST
+
+	
+	'' reciprocal 
+
+	type TDIV
+		__ as integer
+	end type
+	operator / ( byval x as single, byref y as const TDIV ) as single
+		operator = 888 '' cook a value to test with
+	end operator
+
+	type TSQR
+		__ as integer
+	end type
+	operator sqr ( byref x as const TSQR ) as single
+		operator = 16 '' cook a value to test with
+	end operator
+
+	TEST( reciprocal )
+
+		'' in some modes (i.e. -gen gas -fpmode fast -fpu sse )
+		'' AST optimizer will replace expressions with equivalent
+		'' reciprocal instructions.  We can't prove that the
+		'' optimization actually took place unless we look at the
+		'' ASM/C code generated, but we can prove that fb code has 
+		'' valid results for all forms.
+
+		scope
+			'' 1! / single
+			dim x as single = 5
+			dim r as single
+			r = 1! / x
+			CU_ASSERT_DOUBLE_EQUAL( r, 0.2, EPSILON_SNG_FPU )
+		end scope
+
+		scope
+			'' 1! / double
+			dim x as double = 5
+			dim r as single
+			r = 1! / x
+			CU_ASSERT_DOUBLE_EQUAL( r, 0.2, EPSILON_SNG )
+		end scope
+
+		scope
+			'' 1! / integer
+			dim x as integer = 5
+			dim r as single
+			r = 1! / x
+			CU_ASSERT_DOUBLE_EQUAL( r, 0.2, EPSILON_SNG )
+		end scope
+
+		scope
+			'' 1! / sqr(number)
+			dim x as single = 0.0025
+			dim r as single
+			r = 1! / sqr(x)
+			CU_ASSERT_DOUBLE_EQUAL( r, 20, EPSILON_SNG )
+		end scope
+
+		'' For overloaded / and SQR(), prove that the
+		'' optimization is not used.
+
+		scope
+			'' 1! / UDT
+			dim x as TDIV
+			dim r as single
+			r =  1! / x
+			CU_ASSERT_DOUBLE_EQUAL( r, 888, EPSILON_SNG )
+		end scope
+
+		scope
+			'' 1! / SQR(UDT)
+			dim x as TSQR
+			dim r as single
+			r =  1! / sqr(x)
+			CU_ASSERT_DOUBLE_EQUAL( r, 0.0625, EPSILON_SNG_FPU )
+		end scope
+
 	END_TEST
 
 END_SUITE

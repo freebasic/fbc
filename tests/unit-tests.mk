@@ -96,6 +96,9 @@ endif
 ifneq ($(FPU),)
 	FBC_CFLAGS += -fpu $(FPU)
 endif
+ifneq ($(FPMODE),)
+	FBC_CFLAGS += -fpmode $(FPMODE)
+endif
 ifneq ($(GEN),)
 	FBC_CFLAGS += -gen $(GEN)
 endif

@@ -1067,6 +1067,9 @@ private function hGetOperatorName( byval proc as FBSYMBOL ptr ) as const zstring
 	case AST_OP_ATAN
 		function = @"v13atn"
 
+	case AST_OP_SQRT
+		function = @"v13sqr"
+
 	case AST_OP_NEW, AST_OP_NEW_SELF
 		function = @"nw"
 
