@@ -3043,8 +3043,8 @@ private sub _emitJmpTb _
 		byval labels as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as ulongint, _
-		byval maxval as ulongint _
+		byval bias as ulongint, _
+		byval span as ulongint _
 	)
 
 	dim as string tb, temp, ln
@@ -3068,50 +3068,44 @@ private sub _emitJmpTb _
 
 	tb = *symbUniqueId( )
 
-	l = exprNewIMMi( maxval - minval + 1 )
+	l = exprNewIMMi( span + 1 )
 	hWriteLine( "static const void* " + tb + "[" + exprFlush( l ) + "] = {", TRUE )
 	sectionIndent( )
 
-	if( minval <= maxval ) then
-		var i = 0
-		var value = minval
-		do
-			assert( i < labelcount )
+	var i = 0
+	var value = 0
+	do
+		assert( i < labelcount )
 
-			dim as FBSYMBOL ptr label
-			if( value = values[i] ) then
-				label = labels[i]
-				i += 1
-			else
-				label = deflabel
-			end if
-			hWriteLine( "&&" + *symbGetMangledName( label ) + ",", TRUE )
+		dim as FBSYMBOL ptr label
+		if( value = values[i] ) then
+			label = labels[i]
+			i += 1
+		else
+			label = deflabel
+		end if
+		hWriteLine( "&&" + *symbGetMangledName( label ) + ",", TRUE )
 
-			if( value = maxval ) then
-				exit do
-			end if
-			value += 1
-		loop
-	end if
+		if( value = span ) then
+			exit do
+		end if
+		value += 1
+	loop
 
 	sectionUnindent( )
 	hWriteLine( "};", TRUE )
 
-	if( minval > 0 ) then
-		'' if( temp < minval ) goto deflabel
-		l = exprNewTEXT( dtype, NULL, temp )
-		l = exprNewBOP( AST_OP_LT, l, exprNewIMMi( minval, dtype ) )
-		hWriteLine( "if( " + exprFlush( l ) + " ) goto " + *symbGetMangledName( deflabel ) + ";", TRUE )
-	end if
-
-	'' if( temp > maxval ) then goto deflabel
+	'' if( (temp-bias) > span ) then goto deflabel
 	l = exprNewTEXT( dtype, NULL, temp )
-	l = exprNewBOP( AST_OP_GT, l, exprNewIMMi( maxval, dtype ) )
+	if( bias <> 0 ) then
+		l = exprNewBOP( AST_OP_SUB, l, exprNewIMMi( bias, dtype ) )
+	end if
+	l = exprNewBOP( AST_OP_GT, l, exprNewIMMi( span, dtype ) )
 	hWriteLine( "if( " + exprFlush( l ) + " ) goto " + *symbGetMangledName( deflabel ) + ";", TRUE )
 
-	'' l = jumptable[l - minval]
+	'' l = jumptable[l - bias]
 	l = exprNewTEXT( dtype, NULL, temp )
-	l = exprNewBOP( AST_OP_SUB, l, exprNewIMMi( minval, dtype ) )
+	l = exprNewBOP( AST_OP_SUB, l, exprNewIMMi( bias, dtype ) )
 	hWriteLine( "goto *" + tb + "[" + exprFlush( l ) + "];", TRUE )
 
 end sub

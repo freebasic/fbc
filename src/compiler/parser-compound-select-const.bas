@@ -33,6 +33,7 @@ sub cSelConstStmtBegin()
 	dim as FBSYMBOL ptr sym, el, cl
 	dim as FB_CMPSTMTSTK ptr stk
 	dim as integer options = any
+	dim as integer dtype = any
 
 	''
 	'' Open outer scope (perhaps not really needed, but done to match the
@@ -77,13 +78,22 @@ sub cSelConstStmtBegin()
 		expr = astNewCONSTi( 0 )
 	end if
 
-	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
-		if( typeGetSize( astGetDataType( expr ) ) <= typeGetSize( FB_DATATYPE_UINT ) ) then
+	'' keep track of original data type
+	dtype = astGetDataType( expr )
+
+	if( dtype <> FB_DATATYPE_UINT ) then
+		if( typeGetSize( dtype ) <= typeGetSize( FB_DATATYPE_UINT ) ) then
 			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 		else
 			expr = astNewCONV( FB_DATATYPE_ULONGINT, NULL, expr )
 		end if
 	end if
+
+	'' remap CHAR and WCHAR to work with cConstIntExpr()
+	select case dtype
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+		dtype = typeGetRemapType( dtype )
+	end select
 
 	'' add labels
 	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
@@ -122,8 +132,8 @@ sub cSelConstStmtBegin()
 	stk->select.casecnt = 0
 	stk->select.const_.base = ctx.base
 	stk->select.const_.deflabel = NULL
-	stk->select.const_.minval = &hFFFFFFFFFFFFFFFFull
-	stk->select.const_.maxval = 0
+	stk->select.const_.dtype = dtype
+	stk->select.const_.bias = 0
 	stk->select.cmplabel = cl
 	stk->select.endlabel = el
 	stk->select.outerscopenode = outerscopenode
@@ -209,49 +219,50 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 
 	do
 		'' ConstExpression{int}
-		dim as ulongint value = cConstIntExpr( cExpression( ), symbGetType( stk->select.sym ) )
+		dim as ulongint value = cConstIntExpr( cExpression( ), stk->select.const_.dtype ) - stk->select.const_.bias
 
-		var minval = stk->select.const_.minval
-		var maxval = stk->select.const_.maxval
-
+		'' first case?
+		if( swtbase = ctx.base ) then
+			stk->select.const_.bias = value - FB_MAXJUMPTBSLOTS
+			value -= stk->select.const_.bias
+		end if
+			
 		'' TO?
 		dim as ulongint tovalue
 		if( lexGetToken( ) = FB_TK_TO ) then
 			lexSkipToken( )
 
 			'' ConstExpression{int}
-			tovalue = cConstIntExpr( cExpression( ), symbGetType( stk->select.sym ) )
+			tovalue = cConstIntExpr( cExpression( ), stk->select.const_.dtype ) - stk->select.const_.bias
 
-			if( value > tovalue ) then
+			if( tovalue < value ) then
 				errReport( FB_ERRMSG_INVALIDCASERANGE )
 				tovalue = value
 			end if
+
 		else
 			tovalue = value
 		end if
 
+		'' not possible to fit case value range in the jump table?
+		if( (tovalue - value + 1) > (FB_MAXJUMPTBSLOTS - ctx.base) ) then
+			errReport( FB_ERRMSG_RANGETOOLARGE )
+			continue do
+		end if
+
+		assert( value <= (FB_MAXJUMPTBSLOTS*2) )
+		assert( tovalue <= (FB_MAXJUMPTBSLOTS*2) )
+		assert( tovalue >= value )
+
 		'' Add Case values in range
 		do
-			assert( value <= tovalue )
-			if( value < minval ) then
-				minval = value
-			end if
-			if( value > maxval ) then
-				maxval = value
-			end if
-
-			'' too big?
-			if( (minval > maxval) or ((maxval - minval + 1) > FB_MAXJUMPTBSLOTS) ) then
-				errReport( FB_ERRMSG_RANGETOOLARGE )
-				'' error recovery: reset values and abort,
-				'' to avoid excessive looping in case of code like "0 to 4294967295u"
-				minval = stk->select.const_.minval
-				maxval = stk->select.const_.maxval
-				exit do
-			end if
-
 			if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
-				errReport( FB_ERRMSG_DUPDEFINITION )
+				if( ctx.base >= FB_MAXJUMPTBSLOTS ) then
+					errReport( FB_ERRMSG_TOOMANYLABELS )
+				else
+					errReport( FB_ERRMSG_DUPDEFINITION )
+				end if
+				exit do
 			end if
 
 			'' "Early" exit check to avoid overflow problems
@@ -261,8 +272,6 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 			value += 1
 		loop
 
-		stk->select.const_.minval = minval
-		stk->select.const_.maxval = maxval
 	loop while( hMatch( CHAR_COMMA ) )
 
 	''
@@ -298,13 +307,25 @@ sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
     '' emit comp label
     astAdd( astNewLABEL( stk->select.cmplabel ) )
 
+	'' re-bias case values and set max value
+	dim as ulongint span = 0
+	if( ctx.base > stk->select.const_.base ) then
+		dim as ulongint adjust_bias = ctx.casevalues(stk->select.const_.base)
+		for i as integer = stk->select.const_.base to ctx.base - 1
+			ctx.casevalues(i) -= adjust_bias
+			if( ctx.casevalues(i) > span ) then
+				span = ctx.casevalues(i)
+			end if
+		next
+		stk->select.const_.bias += adjust_bias
+	end if
+
 	astAdd( astBuildJMPTB( stk->select.sym, _
 	                       @ctx.casevalues(stk->select.const_.base), _
 	                       @ctx.caselabels(stk->select.const_.base), _
 	                       ctx.base - stk->select.const_.base, _
 	                       deflabel, _
-	                       stk->select.const_.minval, _
-	                       stk->select.const_.maxval ) )
+	                       stk->select.const_.bias, span ) )
 
     ctx.base = stk->select.const_.base
 

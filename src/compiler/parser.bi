@@ -72,8 +72,8 @@ end type
 type FB_CMPSTMT_SELCONST
 	base			as integer
 	deflabel 		as FBSYMBOL ptr
-	minval			as ulongint
-	maxval			as ulongint
+	dtype			as integer  '' original data type SELECT CASE AS CONST converts sym to u(long)int
+	bias			as ulongint '' bias (distance to zero)
 end type
 
 type FB_CMPSTMT_SELECT

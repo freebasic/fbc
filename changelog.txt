@@ -3,6 +3,7 @@ Version 1.06.0
 [changed]
 - Adjusted warning text for "mixed bool/nonbool operands" warning
 - test-suite uses libfbcunit for unit testing framework
+- SELECT CASE AS CONST respects data type and will show overflow warnings on out-of-range constants
 
 [added]
 - -noobjinfo option to disable the writing/reading of compile-time library and other linking options from/to .o and .a files. This also disables the use of fbextra.x (the supplemental linker script) for discarding the .fbctinf sections, which is useful when using the gold linker that doesn't support this kind of linker script.
@@ -54,7 +55,8 @@ Version 1.06.0
 - #875: Fix bug where boolean variable to single/double conversion gives wrong sign on -gen gas -fpu x87 & sse
 - #872: Fix broken boolean bitfield runtime assignments from unsigned values 
 - Fixed inline asm procedure name mangling bug (missing underscore prefix) with -gen gcc -asm intel on dos/win32
-
+- #878: Fix fbc-64bit hangs on 'Case True' + 'Case False' inside 'Select Case As const'
+- Fix SELECT CASE AS CONST to allow both signed & unsigned case range values
 
 Version 1.05.0
 
