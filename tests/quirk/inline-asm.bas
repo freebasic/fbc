@@ -9,17 +9,27 @@ sub quirk_inline_asm_f1 cdecl alias "quirk_inline_asm_f1"()
 end sub
 
 private sub test_proc
+
+	#define quirk_name quirk_inline_asm_f1
+
+	#ifndef __FB_64BIT__
+		#if __FB_GCC__
+			#undef quirk_name
+			#define quirk_name _quirk_inline_asm_f1
+		#endif
+	#endif
+
 	CU_ASSERT( f1calls = 0 )
-	asm call quirk_inline_asm_f1
+	asm call quirk_name
 	CU_ASSERT( f1calls = 1 )
 
 	dim f1address as any ptr
 	asm
 		#ifdef __FB_64BIT__
-			mov rax, offset quirk_inline_asm_f1
+			mov rax, offset quirk_name
 			mov [f1address], rax
 		#else
-			mov eax, offset quirk_inline_asm_f1
+			mov eax, offset quirk_name
 			mov [f1address], eax
 		#endif
 	end asm
