@@ -3294,12 +3294,15 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 
 		select case( n->type )
 		case AST_ASMTOK_TEXT
+			'' -asm intel: ASM keywords, string literals, constants, etc.
+			'' -asm att: String literals containing the ASM, tokens for the constraints lists, etc.
+			'' Symbol references in the asm strings for -asm att must use the ASM name already,
+			'' since we don't parse the string literal content.
 			asmcode += *n->text
 
 		case AST_ASMTOK_SYMB
-			if( sectionInsideProc( ) ) then
-				var id = symbGetMangledName( n->sym )
-				if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
+			if( env.clopt.asmsyntax = FB_ASMSYNTAX_INTEL ) then
+				if( sectionInsideProc( ) ) then
 					select case( n->sym->class )
 					case FB_SYMBCLASS_VAR
 						'' Referencing a variable: insert %N place-holder...
@@ -3317,13 +3320,13 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 							if( len( inputconstraints ) > 0 ) then
 								inputconstraints  += ", "
 							end if
-							inputconstraints  +=  """m"" (" + *id + ")"
+							inputconstraints  +=  """m"" (" + *symbGetMangledName( n->sym ) + ")"
 						else
 							'' read+write output operand constraint: "+m" (symbol)
 							if( len( outputconstraints ) > 0 ) then
 								outputconstraints += ", "
 							end if
-							outputconstraints += """+m"" (" + *id + ")"
+							outputconstraints += """+m"" (" + *symbGetMangledName( n->sym ) + ")"
 						end if
 
 					case FB_SYMBCLASS_LABEL
@@ -3336,20 +3339,25 @@ private sub _emitAsmLine( byval asmtokenhead as ASTASMTOK ptr )
 						if( len( labellist ) > 0 ) then
 							labellist += ", "
 						end if
-						labellist += *id
+						labellist += *symbGetMangledName( n->sym )
 
 					case else
-						'' Referencing a procedure: emit as-is, no gcc constraints needed
-						asmcode += *id
+						'' Referencing a procedure: no gcc constraints needed;
+						'' instead emit the symbol directly with its ASM name.
+						asmcode += hGetMangledNameForASM( n->sym, TRUE )
 					end select
 				else
-					'' -asm att: Expecting FB inline asm to be in gcc's format already,
-					'' emit everything as-is.
-					asmcode += *id
+					'' Inside NAKED procedure: Currently emitted as pure inline asm,
+					'' so constraints are (hopefully!?) not needed.
+					asmcode += hGetMangledNameForASM( n->sym, TRUE )
 				end if
 			else
-				'' In NAKED procedure
-				asmcode += hGetMangledNameForASM( n->sym, TRUE )
+				'' -asm att: Since the FB inline asm is in gcc's format already,
+				'' AST_ASMTOK_SYMB can only appear for symbol tokens in the constraints list,
+				'' for which we must emit the symbol with its C name.
+				'' FIXME: AST_ASMTOK_SYMB (reference to C symbol) can't be supported inside NAKED procedures currently,
+				'' because they are emitted as pure inline asm (string literals).
+				asmcode += *symbGetMangledName( n->sym )
 			end if
 
 		end select
