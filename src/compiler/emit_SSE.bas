@@ -13,6 +13,8 @@
 #include once "symb.bi"
 #include once "emit-private.bi"
 
+dim shared _emitLOADB2F_x86 as sub( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
 private sub hULONG2DBL _
 	( _
 		byval svreg as IRVREG ptr _
@@ -38,6 +40,29 @@ private sub hULONG2DBL _
 
 end sub
 
+private sub _emitLOADB2F_SSE( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+
+	dim as string dst
+	dim as integer ddsize = any
+	
+	'' load source to ST(0)
+	_emitLOADB2F_x86( dvreg, svreg )
+	
+	hPrepOperand( dvreg, dst )
+	ddsize = typeGetSize( dvreg->dtype )
+
+	'' pop from FPU STACK and load to SSE register
+	outp "sub esp" + COMMA + str( ddsize )
+	if( ddsize > 4 ) then
+		outp "fstp qword ptr [esp]"
+		outp "movlpd " + dst + COMMA + "qword ptr [esp]"
+	else
+		outp "fstp dword ptr [esp]"
+		outp "movss " + dst + COMMA + "dword ptr [esp]"
+	end if
+	outp "add esp" + COMMA + str( ddsize )
+
+end sub
 
 '':::::
 private sub _emitSTORF2L_SSE _
@@ -2882,11 +2907,13 @@ function _init_opFnTB_SSE _
 	) as integer
 
 	'' load
+	_emitLOADB2F_x86 = _opFnTB_SSE[EMIT_OP_LOADB2F]
 	_opFnTB_SSE[EMIT_OP_LOADF2I] = EMIT_CBENTRY(LOADF2I_SSE)
 	_opFnTB_SSE[EMIT_OP_LOADI2F] = EMIT_CBENTRY(LOADI2F_SSE)
 	_opFnTB_SSE[EMIT_OP_LOADF2L] = EMIT_CBENTRY(LOADF2L_SSE)
 	_opFnTB_SSE[EMIT_OP_LOADL2F] = EMIT_CBENTRY(LOADL2F_SSE)
 	_opFnTB_SSE[EMIT_OP_LOADF2F] = EMIT_CBENTRY(LOADF2F_SSE)
+	_opFnTB_SSE[EMIT_OP_LOADB2F] = EMIT_CBENTRY(LOADB2F_SSE)
 
 	'' store
 	_opFnTB_SSE[EMIT_OP_STORF2I] = EMIT_CBENTRY(STORF2I_SSE)
