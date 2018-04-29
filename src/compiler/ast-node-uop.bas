@@ -176,6 +176,7 @@ function astNewUOP _
 	'' see also astNewBOP()
 	''
 	'' - do nothing if operand is boolean with NOT operator
+	'' - do nothing if operand is constant and had a suffix
 	
 	do_promote = (env.clopt.lang <> FB_LANG_QB) and (typeGetClass( o->dtype ) = FB_DATACLASS_INTEGER)
 
@@ -187,6 +188,12 @@ function astNewUOP _
 		else
 			'' no other operation allowed with booleans
 			exit function
+		end if
+
+	'' if the original constant had a suffix, keep original data type
+	elseif( astIsConst( o ) ) then
+		if( o->val.hassuffix ) then
+			do_promote = FALSE
 		end if
 	end if
 

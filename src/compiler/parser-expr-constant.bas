@@ -109,26 +109,32 @@ end function
 
 function cNumLiteral( byval skiptoken as integer ) as ASTNODE ptr
 	dim as integer dtype = any
+	dim as ASTNODE ptr expr = any
 
 	dtype = lexGetType( )
 
 	select case( dtype )
 	case FB_DATATYPE_DOUBLE
-		function = astNewCONSTf( val( *lexGetText( ) ), dtype )
+		expr = astNewCONSTf( val( *lexGetText( ) ), dtype )
 
 	case FB_DATATYPE_SINGLE
 		dim fval as single = val( *lexGetText( ) )
-		function = astNewCONSTf( fval , dtype )
+		expr = astNewCONSTf( fval , dtype )
 
 	case else
 		if( typeIsSigned( dtype ) ) then
-			function = astNewCONSTi( clngint( *lexGetText( ) ), dtype )
+			expr = astNewCONSTi( clngint( *lexGetText( ) ), dtype )
 		else
-			function = astNewCONSTi( culngint( *lexGetText( ) ), dtype )
+			expr = astNewCONSTi( culngint( *lexGetText( ) ), dtype )
 		end if
 	end select
+
+	'' record that it is a suffixed constant
+	expr->val.hassuffix = lexGetHasSuffix()
 
 	if( skiptoken ) then
 		lexSkipToken( )
 	end if
+
+	function = expr
 end function

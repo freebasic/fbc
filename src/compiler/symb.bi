@@ -315,11 +315,13 @@ type FBNAMESPC
     ext				as FBNAMESPC_EXT ptr
 end type
 
-union FBVALUE
-	s			as FBSYMBOL_ ptr
-	i			as longint
-	f			as double
-end union
+type FBVALUE
+	union
+		s			as FBSYMBOL_ ptr
+		i			as longint
+		f			as double
+	end union
+end type
 
 '' keyword
 type FBS_KEYWORD
@@ -634,6 +636,16 @@ type FBVAR_DATA
 	prev			as FBSYMBOL_ ptr
 end type
 
+type FBS_CONST '' extends FBVALUE
+	union
+		value		as FBVALUE
+		s			as FBSYMBOL_ ptr
+		i			as longint
+		f			as double
+	end union
+	hassuffix		as integer
+end type
+
 type FBS_VAR
 	union
 		littext		as zstring ptr
@@ -696,7 +708,7 @@ type FBSYMBOL
 
 	union
 		var_		as FBS_VAR
-		val			as FBVALUE  '' constants
+		val			as FBS_CONST  '' constants
 		udt			as FBS_STRUCT
 		enum_		as FBS_ENUM
 		proc		as FBS_PROC
@@ -2092,7 +2104,7 @@ declare function symbGetUDTBaseLevel _
 
 #define symbIsNameSpace(s) (s->class = FB_SYMBCLASS_NAMESPACE)
 
-#define symbGetConstVal( sym )   (@((sym)->val))
+#define symbGetConstVal( sym )   (@((sym)->val.value))
 #define symbGetConstStr( sym )   ((sym)->val.s)
 #define symbGetConstInt( sym )   ((sym)->val.i)
 #define symbGetConstFloat( sym ) ((sym)->val.f)

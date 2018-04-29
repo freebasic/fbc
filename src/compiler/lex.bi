@@ -60,6 +60,7 @@ type FBTOKEN
 	union
 		prdpos		as integer					'' period '.' pos in symbol names
 		hasesc		as integer					'' any '\' in literals
+		hassuffix	as integer					'' numeric litteral has suffix 
 	end union
 
 	after_space		as integer
@@ -242,6 +243,8 @@ declare function lexPeekCurrentLine _
 #define lexGetPeriodPos( ) lex.ctx->head->prdpos
 
 #define lexGetHasSlash( ) lex.ctx->head->hasesc
+
+#define lexGetHasSuffix( ) lex.ctx->head->hassuffix
 
 #define lexGetHead( ) lex.ctx->head
 
