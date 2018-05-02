@@ -219,13 +219,15 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 
 	do
 		'' ConstExpression{int}
-		dim as ulongint value = cConstIntExpr( cExpression( ), stk->select.const_.dtype ) - stk->select.const_.bias
+		dim as ulongint value = cConstIntExpr( cExpression( ), stk->select.const_.dtype )
 
 		'' first case?
 		if( swtbase = ctx.base ) then
 			stk->select.const_.bias = value - FB_MAXJUMPTBSLOTS
-			value -= stk->select.const_.bias
 		end if
+
+		'' bias the value
+		value -= stk->select.const_.bias
 			
 		'' TO?
 		dim as ulongint tovalue
@@ -233,7 +235,8 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 			lexSkipToken( )
 
 			'' ConstExpression{int}
-			tovalue = cConstIntExpr( cExpression( ), stk->select.const_.dtype ) - stk->select.const_.bias
+			tovalue = cConstIntExpr( cExpression( ), stk->select.const_.dtype )
+			tovalue -= stk->select.const_.bias
 
 			if( tovalue < value ) then
 				errReport( FB_ERRMSG_INVALIDCASERANGE )
