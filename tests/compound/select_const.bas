@@ -487,6 +487,7 @@ SUITE( fbc_tests.compound.select_const )
 			#endif
 		end scope
 
+		/' warning will follow, though still works '/
 		scope
 			var ok = false
 			dim i as uinteger = -1

@@ -181,6 +181,75 @@ private function hSelConstAddCase _
 	function = TRUE
 end function
 
+''
+type RANGEVALUES
+	as longint smin
+	as longint smax
+	as ulongint umax
+end type
+
+''
+function cConstIntExprRanged _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval todtype as integer _
+	) as longint
+
+	static range( FB_SIZETYPE_BOOLEAN to FB_SIZETYPE_UINT64 ) as RANGEVALUES = _
+		{ _
+			/' FB_SIZETYPE_BOOLEAN '/ ( -1, 0, 0 ),  _
+			/' FB_SIZETYPE_INT8    '/ ( -128, 127, 127 ), _
+			/' FB_SIZETYPE_UINT8   '/ ( 0, 127, 255 ), _
+			/' FB_SIZETYPE_INT16   '/ ( -32768, 32767, 32767 ), _
+			/' FB_SIZETYPE_UINT16  '/ ( 0, 32767, 65535 ), _
+			/' FB_SIZETYPE_INT32   '/ ( -2147483648ll, 2147483647ll, 2147483647ll ), _
+			/' FB_SIZETYPE_UINT32  '/ ( 0, 2147483647ll, 4294967295ll ),  _
+			/' FB_SIZETYPE_INT64   '/ ( -9223372036854775808ull, 9223372036854775807ull, 9223372036854775807ull ), _
+			/' FB_SIZETYPE_UINT64  '/ ( 0, 9223372036854775807ull, 18446744073709551615ull ) _
+		}
+
+	dim as longint value = any
+	dim as integer dtype = any
+	dim as integer result = any
+	dim as RANGEVALUES ptr r = any
+
+	r = @range( typeGetSizeType( todtype ) )
+
+	dtype = astGetDataType( expr )
+
+	'' cConstIntExpr() will flush expr
+	value = cConstIntExpr( expr, FB_DATATYPE_LONGINT )
+
+	if( typeIsSigned( dtype ) ) then
+		if( typeIsSigned( todtype ) ) then
+			result = (value >= r->smin) and (value <= r->smax)
+		else
+			if( dtype = FB_DATATYPE_LONGINT and todtype = FB_DATATYPE_ULONGINT ) then
+				result = (value >= 0) and (culngint(value) <= culngint(r->smax))
+			else
+				result = (value >= 0) and (culngint(value) <= culngint(r->umax))
+			end if
+		endif
+	else
+		if( typeIsSigned( todtype ) ) then
+			if( dtype = FB_DATATYPE_ULONGINT and todtype = FB_DATATYPE_LONGINT ) then
+				result = (culngint(value) <= culngint(r->smax))
+			else
+				result = (culngint(value) <= culngint(r->umax))
+			end if
+		else
+			result = (culngint(value) <= r->umax)
+		endif
+	end if
+
+	if( not result ) then
+		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+	end if
+
+	function = value
+
+end function
+
 '' cSelConstStmtNext  =  CASE (ELSE | (ConstExpression{int} (',' ConstExpression{int})*)) .
 sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 	'' CASE
@@ -219,7 +288,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 
 	do
 		'' ConstExpression{int}
-		dim as ulongint value = cConstIntExpr( cExpression( ), stk->select.const_.dtype )
+		dim as ulongint value = cConstIntExprRanged( cExpression( ), stk->select.const_.dtype )
 
 		'' first case?
 		if( swtbase = ctx.base ) then
@@ -235,7 +304,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 			lexSkipToken( )
 
 			'' ConstExpression{int}
-			tovalue = cConstIntExpr( cExpression( ), stk->select.const_.dtype )
+			tovalue = cConstIntExprRanged( cExpression( ), stk->select.const_.dtype )
 			tovalue -= stk->select.const_.bias
 
 			if( tovalue < value ) then
