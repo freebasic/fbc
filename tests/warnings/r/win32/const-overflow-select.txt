@@ -2,3 +2,5 @@ SELECT CONST with 64bit value, no warning (should use 64bit temp var):
 also no warning for CASE value > 32bit:
 CASE with 64bit value, causes a warning because it's a SELECT CONST with 32bit value:
 	Overflow in constant conversion
+SELECT CONST with 64bit expression, causes a warning because it's used with 32bit value:
+	Overflow in constant conversion
