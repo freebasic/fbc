@@ -63,10 +63,20 @@ function cConstIntExprRanged _
 
 	r = @range( typeGetSizeType( todtype ) )
 
+	if( expr = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		expr = astNewCONSTi( 0, todtype )
+	end if
+
+	if( astIsCONST( expr ) = FALSE ) then
+		errReport( FB_ERRMSG_EXPECTEDCONST )
+		astDelTree( expr )
+		expr = astNewCONSTi( 0, FB_DATATYPE_LONGINT )
+	end if
+
 	dtype = astGetDataType( expr )
 
-	'' cConstIntExpr() will flush expr
-	value = cConstIntExpr( expr, FB_DATATYPE_LONGINT )
+	value = astConstFlushToInt( expr, FB_DATATYPE_LONGINT )
 
 	if( typeIsSigned( dtype ) ) then
 		if( typeIsSigned( todtype ) ) then
