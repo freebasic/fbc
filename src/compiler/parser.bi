@@ -801,6 +801,11 @@ declare function cConstIntExpr _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer = FB_DATATYPE_INTEGER _
 	) as longint
+declare function cConstIntExprRanged _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval dtype as integer = FB_DATATYPE_INTEGER _
+	) as longint
 declare function cOperatorNew( ) as ASTNODE ptr
 declare sub cOperatorDelete( )
 
