@@ -32,9 +32,6 @@ SUITE( fbc_tests.boolean_.boolean_uop )
 		dot( not, FALSE )
 		dot( not, TRUE )
 
-		dot( -, FALSE )
-		dot( -, TRUE )
-
 	END_TEST
 	
 END_SUITE
