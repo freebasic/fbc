@@ -46,13 +46,17 @@ SUITE( fbc_tests.threads.threadcall_ )
     end extern
 
     sub BigInt cdecl( byref i as integer, byref ui as uinteger, _
-        byref l as longint, byref ul as ulongint )
+        byref l as longint, byref ul as ulongint, _
+        byref i4 as long, byref ui4 as ulong _
+		 )
         
         ' Output by reference
         i = 17
         ui = 3
         l = 16
         ul = 4
+        i4 = 15
+        ui4 = 5
     end sub
 
     sub FloatStr ( byval s as single, byref d as double, byref s1 as string )
@@ -113,6 +117,7 @@ SUITE( fbc_tests.threads.threadcall_ )
     TEST( default )
         dim thread as any ptr
         dim i as integer, ui as uinteger, l as longint, ul as ulongint
+        dim i4 as long, iu4 as ulong
         dim d as double
         dim as string s1, s2
         dim bv as integer ptr, cu as ComplexUDT, AnArray( 0 to 1 ) as string
@@ -128,7 +133,7 @@ SUITE( fbc_tests.threads.threadcall_ )
         SmallInt_Thread = threadcall SmallInt( 20, 1, 19, 2 )
         testWindowsMs_thread = threadcall testWindowsMs( )
 	#endif
-        BigInt_Thread = threadcall BigInt( i, ui, l, ul )
+        BigInt_Thread = threadcall BigInt( i, ui, l, ul, i4, iu4 )
         s1 = "fourteen"
         FloatStr_Thread = threadcall FloatStr( 15.00, d, s1 )
         TypeArray_Thread = threadcall TypeArray( su, cu, AnArray(), byval @bv )
@@ -155,7 +160,7 @@ SUITE( fbc_tests.threads.threadcall_ )
         threadwait ONamespace_Thread
 
         '' check byref args
-        CU_ASSERT_TRUE( i = 17 and ui = 3 and l = 16 and ul = 4 )
+        CU_ASSERT_TRUE( i = 17 and ui = 3 and l = 16 and ul = 4 and i4 = 15 and iu4 = 5 )
         CU_ASSERT_TRUE( d > 12.99 and d < 13.01 and s1 = "five" )
         CU_ASSERT_TRUE( cu.c(0) = 7 and cu.c(1) = 11 and cu.c(2) = 8 )
         CU_ASSERT_TRUE( cu.d = "ten" and AnArray(0) = "ten" )
