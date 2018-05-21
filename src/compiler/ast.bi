@@ -115,6 +115,16 @@ type AST_NODE_ARG
 	lgt				as longint						'' length, used to push UDT's by value
 end type
 
+type AST_NODE_CONST '' extends FBVALUE
+	union
+		value		as FBVALUE
+		s			as FBSYMBOL_ ptr
+		i			as longint
+		f			as double
+	end union
+	hassuffix		as integer
+end type
+
 type AST_NODE_VAR
 	ofs				as longint						'' offset
 end type
@@ -260,7 +270,7 @@ type ASTNODE
 	vector			as integer					'' 0, 2, 3, or 4 (> 2 for single only)
 
 	union
-		val			as FBVALUE    '' CONST nodes
+		val			as AST_NODE_CONST
 		var_		as AST_NODE_VAR
 		idx			as AST_NODE_IDX
 		ptr			as AST_NODE_PTR
@@ -1419,7 +1429,7 @@ declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
 
 #define astIsCAST(n) (n->class = AST_NODECLASS_CONV)
 
-#define astConstGetVal( n ) (@(n)->val)
+#define astConstGetVal( n ) (@(n)->val.value)
 #define astConstGetFloat( n ) ((n)->val.f)
 #define astConstGetInt( n ) ((n)->val.i)
 #define astConstGetUint( n ) cunsg( (n)->val.i )

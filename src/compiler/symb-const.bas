@@ -35,7 +35,8 @@ function symbAddConst _
 		exit function
 	end if
 
-	sym->val = *value
+	sym->val.value = *value
+	sym->val.hassuffix = FALSE
 
 	function = sym
 end function
