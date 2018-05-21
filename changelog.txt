@@ -53,6 +53,7 @@ Version 1.06.0
 - #844: Fix bug in -gen gcc due to duplicated type (struct) names in the main module and global namespace
 - #875: Fix bug where boolean variable to single/double conversion gives wrong sign on -gen gas -fpu x87 & sse
 - #872: Fix broken boolean bitfield runtime assignments from unsigned values 
+- #876: ThreadCall does not support subroutine with [U]Long type parameter
 - Fixed inline asm procedure name mangling bug (missing underscore prefix) with -gen gcc -asm intel on dos/win32
 
 
