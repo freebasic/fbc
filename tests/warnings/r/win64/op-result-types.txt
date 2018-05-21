@@ -18457,13 +18457,13 @@ INTEGER
 
 0l:
 not:
-INTEGER
+LONG
 negation:
-INTEGER
+LONG
 abs:
-INTEGER
+LONG
 sgn:
-INTEGER
+LONG
 sin:
 DOUBLE
 asin:
@@ -18525,13 +18525,13 @@ INTEGER
 
 0ul:
 not:
-INTEGER
+ULONG
 negation:
-INTEGER
+LONG
 abs:
-INTEGER
+ULONG
 sgn:
-INTEGER
+LONG
 sin:
 DOUBLE
 asin:
@@ -18593,13 +18593,13 @@ INTEGER
 
 0ll:
 not:
-INTEGER
+LONGINT
 negation:
-INTEGER
+LONGINT
 abs:
-INTEGER
+LONGINT
 sgn:
-INTEGER
+LONGINT
 sin:
 DOUBLE
 asin:
@@ -18661,13 +18661,13 @@ INTEGER
 
 0ull:
 not:
-UINTEGER
+ULONGINT
 negation:
-INTEGER
+LONGINT
 abs:
-UINTEGER
+ULONGINT
 sgn:
-INTEGER
+LONGINT
 sin:
 DOUBLE
 asin:
