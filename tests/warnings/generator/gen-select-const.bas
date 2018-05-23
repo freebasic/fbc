@@ -67,14 +67,14 @@ Data type range and test value matrix
 
 type VALUEINFO
 	index as integer
-	value as zstring * 24
+	value as zstring * 30
 	over32bit as integer
 	reserved as integer
 end type
 
 dim values( -14 to 16 ) as VALUEINFO = _
 	{ _
-		( -14, "-9223372036854775808ll" , true , false ), _
+		( -14, "(-9223372036854775807ll-1ll)" , true , false ), _
 		( -13, "-4294967297ll"          , true , false ), _
 		( -12, "-4294967296ll"          , true , false ), _
 		( -11, "-2147483649ll"          , true , false ), _
@@ -113,19 +113,24 @@ type TYPEINFO
 	conv as zstring * 12  '' casting function
 	value_idx1 as integer '' first value in the data type's range
 	value_idx2 as integer '' last value in the data type's range
+	is32or64 as integer   '' type depends on being 32bit or 64bit
 end type
 
 dim types( 0 to ... ) as TYPEINFO = _
 	{ _
-		( "boolean" , 1, "cbool"   ,  -1,  0 ), _
-		( "byte"    , 1, "cbyte"   ,  -2,  2 ), _
-		( "ubyte"   , 1, "cubyte"  ,   0,  4 ), _
-		( "short"   , 2, "cshort"  ,  -6,  6 ), _
-		( "ushort"  , 2, "cushort" ,   0,  8 ), _
-		( "long"    , 4, "clng"    , -10, 10 ), _
-		( "ulong"   , 4, "culng"   ,   0, 12 ), _
-		( "longint" , 8, "clngint" , -14, 14 ), _
-		( "ulongint", 8, "culngint",   0, 16 ) _
+		( "boolean" , 1, "cbool"   ,  -1,  0, 0 ), _
+		( "byte"    , 1, "cbyte"   ,  -2,  2, 0 ), _
+		( "ubyte"   , 1, "cubyte"  ,   0,  4, 0 ), _
+		( "short"   , 2, "cshort"  ,  -6,  6, 0 ), _
+		( "ushort"  , 2, "cushort" ,   0,  8, 0 ), _
+		( "long"    , 4, "clng"    , -10, 10, 0 ), _
+		( "ulong"   , 4, "culng"   ,   0, 12, 0 ), _
+		( "integer" , 4, "cint"    , -10, 10, 1 ), _
+		( "uinteger", 4, "cuint"   ,   0, 12, 1 ), _
+		( "integer" , 8, "cint"    , -14, 14, 2 ), _
+		( "uinteger", 8, "cuint"   ,   0, 16, 2 ), _
+		( "longint" , 8, "clngint" , -14, 14, 0 ), _
+		( "ulongint", 8, "culngint",   0, 16, 0 ) _
 	}
 
 dim x as string
@@ -176,11 +181,36 @@ for select_idx as integer = lbound(types) to ubound(types)
 	print "#print SELECT CASE AS CONST " & ucase( types(select_idx).dtype )
 	print
 
+	select case types(select_idx).is32or64
+	case 1
+		print "	#ifndef __FB_64BIT__"
+	case 2
+		print "	#ifdef __FB_64BIT__"
+	end select
+
 	'' CASE
 	for case_idx as integer = lbound(types) to ubound(types)
+
+		if( types(select_idx).is32or64 > 0 ) then
+			if( types(case_idx).is32or64 > 0 ) then
+				if( types(select_idx).is32or64 <> types(case_idx).is32or64 ) then
+					continue for
+				end if
+			end if
+		end if
+			
+		if( types(select_idx).is32or64 = 0 ) then
+			select case types(case_idx).is32or64
+			case 1
+				print "	#ifndef __FB_64BIT__"
+			case 2
+				print "	#ifdef __FB_64BIT__"
+			end select
+		end if
 		
 		'' VALUE
 		for value_idx as integer = types(case_idx).value_idx1 to types(case_idx).value_idx2
+
 			x = chr(9) & "chkwarn( " 
 			x &= types(select_idx).dtype
 			x &= ", "
@@ -212,8 +242,21 @@ for select_idx as integer = lbound(types) to ubound(types)
 
 			print x
 		next
+
+		if( types(select_idx).is32or64 = 0 ) then
+			select case types(case_idx).is32or64
+			case 1, 2
+				print "	#endif"
+			end select
+		end if
+
 		print
 	next
+
+	select case types(select_idx).is32or64
+	case 1, 2
+		print "	#endif"
+	end select
 
 	print
 
