@@ -15,17 +15,21 @@ function cConstIntExpr _
 		byval dtype as integer _
 	) as longint
 
+	'' bad expression? fake a constant value
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		expr = astNewCONSTi( 0, dtype )
 	end if
 
+	'' not a CONST? delete the tree and fake a constant value
 	if( astIsCONST( expr ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDCONST )
 		astDelTree( expr )
 		expr = astNewCONSTi( 0, dtype )
 	end if
 
+	'' flush the expr to the specified dtype.  
+	'' default is FB_DATATYPE_INTEGER, if not specified in call to cConstIntExpr()
 	function = astConstFlushToInt( expr, dtype )
 end function
 
@@ -52,7 +56,7 @@ function cConstIntExprRanged _
 			/' FB_SIZETYPE_UINT16  '/ ( 0, 32767, 65535 ), _
 			/' FB_SIZETYPE_INT32   '/ ( -2147483648ll, 2147483647ll, 2147483647ull ), _
 			/' FB_SIZETYPE_UINT32  '/ ( 0, 2147483647ll, 4294967295ull ),  _
-			/' FB_SIZETYPE_INT64   '/ ( -9223372036854775808ll, 9223372036854775807ll, 9223372036854775807ull ), _
+			/' FB_SIZETYPE_INT64   '/ ( -9223372036854775808ull, 9223372036854775807ll, 9223372036854775807ull ), _
 			/' FB_SIZETYPE_UINT64  '/ ( 0, 9223372036854775807ll, 18446744073709551615ull ) _
 		}
 
@@ -63,37 +67,41 @@ function cConstIntExprRanged _
 
 	r = @range( typeGetSizeType( todtype ) )
 
+	'' bad expression? fake a constant value
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		expr = astNewCONSTi( 0, todtype )
 	end if
 
+	'' not a CONST? delete the tree and fake a longint constant value
 	if( astIsCONST( expr ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDCONST )
 		astDelTree( expr )
 		expr = astNewCONSTi( 0, FB_DATATYPE_LONGINT )
 	end if
 
+	'' save the dtype of the expression before we flush the ast to longint
 	dtype = astGetDataType( expr )
 
+	'' flush the expr to longint, it's the largest signed integer datatype we have
 	value = astConstFlushToInt( expr, FB_DATATYPE_LONGINT )
 
 	if( typeIsSigned( dtype ) ) then
 		if( typeIsSigned( todtype ) ) then
 			result = (value >= r->smin) and (value <= r->smax)
 		else
-			if( dtype = FB_DATATYPE_LONGINT and todtype = FB_DATATYPE_ULONGINT ) then
+			if( typeGetSizeType(dtype) = FB_SIZETYPE_INT64 and typeGetSizeType(todtype) = FB_SIZETYPE_UINT64 ) then
 				result = (value >= 0) and (culngint(value) <= culngint(r->smax))
 			else
-				result = (value >= 0) and (culngint(value) <= culngint(r->umax))
+				result = (value >= 0) and (culngint(value) <= r->umax)
 			end if
 		endif
 	else
 		if( typeIsSigned( todtype ) ) then
-			if( dtype = FB_DATATYPE_ULONGINT and todtype = FB_DATATYPE_LONGINT ) then
+			if( typeGetSizeType(dtype) = FB_SIZETYPE_UINT64 and typeGetSizeType(todtype) = FB_SIZETYPE_INT64 ) then
 				result = (culngint(value) <= culngint(r->smax))
 			else
-				result = (culngint(value) <= culngint(r->umax))
+				result = (culngint(value) <= r->umax)
 			end if
 		else
 			result = (culngint(value) <= r->umax)
