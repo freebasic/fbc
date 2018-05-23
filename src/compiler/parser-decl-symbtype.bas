@@ -49,15 +49,15 @@ function cConstIntExprRanged _
 
 	static range( FB_SIZETYPE_BOOLEAN to FB_SIZETYPE_UINT64 ) as RANGEVALUES = _
 		{ _
-			/' FB_SIZETYPE_BOOLEAN '/ ( -1, 0, 0 ),  _
-			/' FB_SIZETYPE_INT8    '/ ( -128, 127, 127 ), _
-			/' FB_SIZETYPE_UINT8   '/ ( 0, 127, 255 ), _
-			/' FB_SIZETYPE_INT16   '/ ( -32768, 32767, 32767 ), _
-			/' FB_SIZETYPE_UINT16  '/ ( 0, 32767, 65535 ), _
-			/' FB_SIZETYPE_INT32   '/ ( -2147483648ll, 2147483647ll, 2147483647ull ), _
-			/' FB_SIZETYPE_UINT32  '/ ( 0, 2147483647ll, 4294967295ull ),  _
-			/' FB_SIZETYPE_INT64   '/ ( -9223372036854775808ull, 9223372036854775807ll, 9223372036854775807ull ), _
-			/' FB_SIZETYPE_UINT64  '/ ( 0, 9223372036854775807ll, 18446744073709551615ull ) _
+			/' FB_SIZETYPE_BOOLEAN '/ (                  -1ull,                  0ll,                  0ull ), _
+			/' FB_SIZETYPE_INT8    '/ (               -&h80ull,               &h7fll,               &h7full ), _
+			/' FB_SIZETYPE_UINT8   '/ (                   0ll ,               &h7fll,               &hffull ), _
+			/' FB_SIZETYPE_INT16   '/ (             -&h8000ull,             &h7fffll,             &h7fffull ), _
+			/' FB_SIZETYPE_UINT16  '/ (                   0ll ,             &h7fffll,             &hffffull ), _
+			/' FB_SIZETYPE_INT32   '/ (         -&h80000000ull,         &h7fffffffll,         &h7fffffffull ), _
+			/' FB_SIZETYPE_UINT32  '/ (                   0ll ,         &h7fffffffll,         &hffffffffull ), _
+			/' FB_SIZETYPE_INT64   '/ ( -&h8000000000000000ull, &h7fffffffffffffffll, &h7fffffffffffffffull ), _
+			/' FB_SIZETYPE_UINT64  '/ (                   0ll , &h7fffffffffffffffll, &hffffffffffffffffull ) _
 		}
 
 	dim as longint value = any
