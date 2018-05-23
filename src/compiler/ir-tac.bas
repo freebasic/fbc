@@ -648,12 +648,12 @@ private sub _emitJmpTb _
 		byval labels as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as ulongint, _
-		byval maxval as ulongint _
+		byval bias as ulongint, _
+		byval span as ulongint _
 	)
 
 	_flush( )
-	emitJMPTB( tbsym, values, labels, labelcount, deflabel, minval, maxval )
+	emitJMPTB( tbsym, values, labels, labelcount, deflabel, bias, span )
 
 end sub
 

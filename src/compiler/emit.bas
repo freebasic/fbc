@@ -190,7 +190,7 @@ sub emitFlush( )
 			cast( EMIT_JTBCB, emit.opFnTb[EMIT_OP_JMPTB] )( n->jtb.tbsym, _
 				n->jtb.values, n->jtb.labels, _
 				n->jtb.labelcount, n->jtb.deflabel, _
-				n->jtb.minval, n->jtb.maxval )
+				n->jtb.bias, n->jtb.span )
 
 			deallocate( n->jtb.values )
 			deallocate( n->jtb.labels )
@@ -1460,8 +1460,8 @@ function emitJMPTB _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as ulongint, _
-		byval maxval as ulongint _
+		byval bias as ulongint, _
+		byval span as ulongint _
 	) as EMIT_NODE ptr
 
 	dim as EMIT_NODE ptr n = any
@@ -1485,8 +1485,8 @@ function emitJMPTB _
 	n->jtb.labels = labels
 	n->jtb.labelcount = labelcount
 	n->jtb.deflabel = deflabel
-	n->jtb.minval = minval
-	n->jtb.maxval = maxval
+	n->jtb.bias = bias
+	n->jtb.span = span
 
 	function = n
 end function

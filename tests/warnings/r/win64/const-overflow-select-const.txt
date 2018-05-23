@@ -1,0 +1,1924 @@
+----BOOLEAN ----
+SELECT CASE AS CONST BOOLEAN
+CASE cbool ( -1 )
+CASE cbool ( 0 )
+CASE cbyte ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbyte ( -1 )
+CASE cbyte ( 0 )
+CASE cbyte ( 1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbyte ( 127 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cubyte ( 0 )
+CASE cubyte ( 1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cubyte ( 127 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cubyte ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cubyte ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -1 )
+CASE cshort ( 0 )
+CASE cshort ( 1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 127 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 0 )
+CASE cushort ( 1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 127 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -1 )
+CASE clng ( 0 )
+CASE clng ( 1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 127 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 0 )
+CASE culng ( 1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 127 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -9223372036854775808ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967297ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967296ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483649ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -1 )
+CASE clngint ( 0 )
+CASE clngint ( 1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 127 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 0 )
+CASE culngint ( 1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 127 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775808ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 18446744073709551615ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+----BYTE ----
+SELECT CASE AS CONST BYTE
+CASE cbool ( -1 )
+CASE cbool ( 0 )
+CASE cbyte ( -128 )
+CASE cbyte ( -1 )
+CASE cbyte ( 0 )
+CASE cbyte ( 1 )
+CASE cbyte ( 127 )
+CASE cubyte ( 0 )
+CASE cubyte ( 1 )
+CASE cubyte ( 127 )
+CASE cubyte ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cubyte ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -128 )
+CASE cshort ( -1 )
+CASE cshort ( 0 )
+CASE cshort ( 1 )
+CASE cshort ( 127 )
+CASE cshort ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 0 )
+CASE cushort ( 1 )
+CASE cushort ( 127 )
+CASE cushort ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -128 )
+CASE clng ( -1 )
+CASE clng ( 0 )
+CASE clng ( 1 )
+CASE clng ( 127 )
+CASE clng ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 0 )
+CASE culng ( 1 )
+CASE culng ( 127 )
+CASE culng ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -9223372036854775808ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967297ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967296ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483649ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -128 )
+CASE clngint ( -1 )
+CASE clngint ( 0 )
+CASE clngint ( 1 )
+CASE clngint ( 127 )
+CASE clngint ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 0 )
+CASE culngint ( 1 )
+CASE culngint ( 127 )
+CASE culngint ( 128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 255 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775808ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 18446744073709551615ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+----UBYTE ----
+SELECT CASE AS CONST UBYTE
+CASE cbool ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbool ( 0 )
+CASE cbyte ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbyte ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbyte ( 0 )
+CASE cbyte ( 1 )
+CASE cbyte ( 127 )
+CASE cubyte ( 0 )
+CASE cubyte ( 1 )
+CASE cubyte ( 127 )
+CASE cubyte ( 128 )
+CASE cubyte ( 255 )
+CASE cshort ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 0 )
+CASE cshort ( 1 )
+CASE cshort ( 127 )
+CASE cshort ( 128 )
+CASE cshort ( 255 )
+CASE cshort ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 0 )
+CASE cushort ( 1 )
+CASE cushort ( 127 )
+CASE cushort ( 128 )
+CASE cushort ( 255 )
+CASE cushort ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 0 )
+CASE clng ( 1 )
+CASE clng ( 127 )
+CASE clng ( 128 )
+CASE clng ( 255 )
+CASE clng ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 0 )
+CASE culng ( 1 )
+CASE culng ( 127 )
+CASE culng ( 128 )
+CASE culng ( 255 )
+CASE culng ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -9223372036854775808ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967297ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967296ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483649ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 0 )
+CASE clngint ( 1 )
+CASE clngint ( 127 )
+CASE clngint ( 128 )
+CASE clngint ( 255 )
+CASE clngint ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 0 )
+CASE culngint ( 1 )
+CASE culngint ( 127 )
+CASE culngint ( 128 )
+CASE culngint ( 255 )
+CASE culngint ( 256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 32767 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775808ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 18446744073709551615ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+----SHORT ----
+SELECT CASE AS CONST SHORT
+CASE cbool ( -1 )
+CASE cbool ( 0 )
+CASE cbyte ( -128 )
+CASE cbyte ( -1 )
+CASE cbyte ( 0 )
+CASE cbyte ( 1 )
+CASE cbyte ( 127 )
+CASE cubyte ( 0 )
+CASE cubyte ( 1 )
+CASE cubyte ( 127 )
+CASE cubyte ( 128 )
+CASE cubyte ( 255 )
+CASE cshort ( -32768 )
+CASE cshort ( -257 )
+CASE cshort ( -256 )
+CASE cshort ( -129 )
+CASE cshort ( -128 )
+CASE cshort ( -1 )
+CASE cshort ( 0 )
+CASE cshort ( 1 )
+CASE cshort ( 127 )
+CASE cshort ( 128 )
+CASE cshort ( 255 )
+CASE cshort ( 256 )
+CASE cshort ( 32767 )
+CASE cushort ( 0 )
+CASE cushort ( 1 )
+CASE cushort ( 127 )
+CASE cushort ( 128 )
+CASE cushort ( 255 )
+CASE cushort ( 256 )
+CASE cushort ( 32767 )
+CASE cushort ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cushort ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32768 )
+CASE clng ( -257 )
+CASE clng ( -256 )
+CASE clng ( -129 )
+CASE clng ( -128 )
+CASE clng ( -1 )
+CASE clng ( 0 )
+CASE clng ( 1 )
+CASE clng ( 127 )
+CASE clng ( 128 )
+CASE clng ( 255 )
+CASE clng ( 256 )
+CASE clng ( 32767 )
+CASE clng ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 0 )
+CASE culng ( 1 )
+CASE culng ( 127 )
+CASE culng ( 128 )
+CASE culng ( 255 )
+CASE culng ( 256 )
+CASE culng ( 32767 )
+CASE culng ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -9223372036854775808ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967297ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967296ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483649ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32768 )
+CASE clngint ( -257 )
+CASE clngint ( -256 )
+CASE clngint ( -129 )
+CASE clngint ( -128 )
+CASE clngint ( -1 )
+CASE clngint ( 0 )
+CASE clngint ( 1 )
+CASE clngint ( 127 )
+CASE clngint ( 128 )
+CASE clngint ( 255 )
+CASE clngint ( 256 )
+CASE clngint ( 32767 )
+CASE clngint ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 0 )
+CASE culngint ( 1 )
+CASE culngint ( 127 )
+CASE culngint ( 128 )
+CASE culngint ( 255 )
+CASE culngint ( 256 )
+CASE culngint ( 32767 )
+CASE culngint ( 32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 65535 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775808ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 18446744073709551615ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+----USHORT ----
+SELECT CASE AS CONST USHORT
+CASE cbool ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbool ( 0 )
+CASE cbyte ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbyte ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbyte ( 0 )
+CASE cbyte ( 1 )
+CASE cbyte ( 127 )
+CASE cubyte ( 0 )
+CASE cubyte ( 1 )
+CASE cubyte ( 127 )
+CASE cubyte ( 128 )
+CASE cubyte ( 255 )
+CASE cshort ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 0 )
+CASE cshort ( 1 )
+CASE cshort ( 127 )
+CASE cshort ( 128 )
+CASE cshort ( 255 )
+CASE cshort ( 256 )
+CASE cshort ( 32767 )
+CASE cushort ( 0 )
+CASE cushort ( 1 )
+CASE cushort ( 127 )
+CASE cushort ( 128 )
+CASE cushort ( 255 )
+CASE cushort ( 256 )
+CASE cushort ( 32767 )
+CASE cushort ( 32768 )
+CASE cushort ( 65535 )
+CASE clng ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 0 )
+CASE clng ( 1 )
+CASE clng ( 127 )
+CASE clng ( 128 )
+CASE clng ( 255 )
+CASE clng ( 256 )
+CASE clng ( 32767 )
+CASE clng ( 32768 )
+CASE clng ( 65535 )
+CASE clng ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 0 )
+CASE culng ( 1 )
+CASE culng ( 127 )
+CASE culng ( 128 )
+CASE culng ( 255 )
+CASE culng ( 256 )
+CASE culng ( 32767 )
+CASE culng ( 32768 )
+CASE culng ( 65535 )
+CASE culng ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -9223372036854775808ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967297ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967296ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483649ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 0 )
+CASE clngint ( 1 )
+CASE clngint ( 127 )
+CASE clngint ( 128 )
+CASE clngint ( 255 )
+CASE clngint ( 256 )
+CASE clngint ( 32767 )
+CASE clngint ( 32768 )
+CASE clngint ( 65535 )
+CASE clngint ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 0 )
+CASE culngint ( 1 )
+CASE culngint ( 127 )
+CASE culngint ( 128 )
+CASE culngint ( 255 )
+CASE culngint ( 256 )
+CASE culngint ( 32767 )
+CASE culngint ( 32768 )
+CASE culngint ( 65535 )
+CASE culngint ( 65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 2147483647ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775808ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 18446744073709551615ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+----LONG ----
+SELECT CASE AS CONST LONG
+CASE cbool ( -1 )
+CASE cbool ( 0 )
+CASE cbyte ( -128 )
+CASE cbyte ( -1 )
+CASE cbyte ( 0 )
+CASE cbyte ( 1 )
+CASE cbyte ( 127 )
+CASE cubyte ( 0 )
+CASE cubyte ( 1 )
+CASE cubyte ( 127 )
+CASE cubyte ( 128 )
+CASE cubyte ( 255 )
+CASE cshort ( -32768 )
+CASE cshort ( -257 )
+CASE cshort ( -256 )
+CASE cshort ( -129 )
+CASE cshort ( -128 )
+CASE cshort ( -1 )
+CASE cshort ( 0 )
+CASE cshort ( 1 )
+CASE cshort ( 127 )
+CASE cshort ( 128 )
+CASE cshort ( 255 )
+CASE cshort ( 256 )
+CASE cshort ( 32767 )
+CASE cushort ( 0 )
+CASE cushort ( 1 )
+CASE cushort ( 127 )
+CASE cushort ( 128 )
+CASE cushort ( 255 )
+CASE cushort ( 256 )
+CASE cushort ( 32767 )
+CASE cushort ( 32768 )
+CASE cushort ( 65535 )
+CASE clng ( -2147483648ll )
+CASE clng ( -65537 )
+CASE clng ( -65536 )
+CASE clng ( -32769 )
+CASE clng ( -32768 )
+CASE clng ( -257 )
+CASE clng ( -256 )
+CASE clng ( -129 )
+CASE clng ( -128 )
+CASE clng ( -1 )
+CASE clng ( 0 )
+CASE clng ( 1 )
+CASE clng ( 127 )
+CASE clng ( 128 )
+CASE clng ( 255 )
+CASE clng ( 256 )
+CASE clng ( 32767 )
+CASE clng ( 32768 )
+CASE clng ( 65535 )
+CASE clng ( 65536 )
+CASE clng ( 2147483647ull )
+CASE culng ( 0 )
+CASE culng ( 1 )
+CASE culng ( 127 )
+CASE culng ( 128 )
+CASE culng ( 255 )
+CASE culng ( 256 )
+CASE culng ( 32767 )
+CASE culng ( 32768 )
+CASE culng ( 65535 )
+CASE culng ( 65536 )
+CASE culng ( 2147483647ull )
+CASE culng ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culng ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -9223372036854775808ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967297ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967296ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483649ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483648ll )
+CASE clngint ( -65537 )
+CASE clngint ( -65536 )
+CASE clngint ( -32769 )
+CASE clngint ( -32768 )
+CASE clngint ( -257 )
+CASE clngint ( -256 )
+CASE clngint ( -129 )
+CASE clngint ( -128 )
+CASE clngint ( -1 )
+CASE clngint ( 0 )
+CASE clngint ( 1 )
+CASE clngint ( 127 )
+CASE clngint ( 128 )
+CASE clngint ( 255 )
+CASE clngint ( 256 )
+CASE clngint ( 32767 )
+CASE clngint ( 32768 )
+CASE clngint ( 65535 )
+CASE clngint ( 65536 )
+CASE clngint ( 2147483647ull )
+CASE clngint ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 0 )
+CASE culngint ( 1 )
+CASE culngint ( 127 )
+CASE culngint ( 128 )
+CASE culngint ( 255 )
+CASE culngint ( 256 )
+CASE culngint ( 32767 )
+CASE culngint ( 32768 )
+CASE culngint ( 65535 )
+CASE culngint ( 65536 )
+CASE culngint ( 2147483647ull )
+CASE culngint ( 2147483648ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 4294967295ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775808ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 18446744073709551615ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+----ULONG ----
+SELECT CASE AS CONST ULONG
+CASE cbool ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbool ( 0 )
+CASE cbyte ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbyte ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbyte ( 0 )
+CASE cbyte ( 1 )
+CASE cbyte ( 127 )
+CASE cubyte ( 0 )
+CASE cubyte ( 1 )
+CASE cubyte ( 127 )
+CASE cubyte ( 128 )
+CASE cubyte ( 255 )
+CASE cshort ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 0 )
+CASE cshort ( 1 )
+CASE cshort ( 127 )
+CASE cshort ( 128 )
+CASE cshort ( 255 )
+CASE cshort ( 256 )
+CASE cshort ( 32767 )
+CASE cushort ( 0 )
+CASE cushort ( 1 )
+CASE cushort ( 127 )
+CASE cushort ( 128 )
+CASE cushort ( 255 )
+CASE cushort ( 256 )
+CASE cushort ( 32767 )
+CASE cushort ( 32768 )
+CASE cushort ( 65535 )
+CASE clng ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 0 )
+CASE clng ( 1 )
+CASE clng ( 127 )
+CASE clng ( 128 )
+CASE clng ( 255 )
+CASE clng ( 256 )
+CASE clng ( 32767 )
+CASE clng ( 32768 )
+CASE clng ( 65535 )
+CASE clng ( 65536 )
+CASE clng ( 2147483647ull )
+CASE culng ( 0 )
+CASE culng ( 1 )
+CASE culng ( 127 )
+CASE culng ( 128 )
+CASE culng ( 255 )
+CASE culng ( 256 )
+CASE culng ( 32767 )
+CASE culng ( 32768 )
+CASE culng ( 65535 )
+CASE culng ( 65536 )
+CASE culng ( 2147483647ull )
+CASE culng ( 2147483648ull )
+CASE culng ( 4294967295ull )
+CASE clngint ( -9223372036854775808ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967297ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967296ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483649ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 0 )
+CASE clngint ( 1 )
+CASE clngint ( 127 )
+CASE clngint ( 128 )
+CASE clngint ( 255 )
+CASE clngint ( 256 )
+CASE clngint ( 32767 )
+CASE clngint ( 32768 )
+CASE clngint ( 65535 )
+CASE clngint ( 65536 )
+CASE clngint ( 2147483647ull )
+CASE clngint ( 2147483648ull )
+CASE clngint ( 4294967295ull )
+CASE clngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 0 )
+CASE culngint ( 1 )
+CASE culngint ( 127 )
+CASE culngint ( 128 )
+CASE culngint ( 255 )
+CASE culngint ( 256 )
+CASE culngint ( 32767 )
+CASE culngint ( 32768 )
+CASE culngint ( 65535 )
+CASE culngint ( 65536 )
+CASE culngint ( 2147483647ull )
+CASE culngint ( 2147483648ull )
+CASE culngint ( 4294967295ull )
+CASE culngint ( 4294967296ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775807ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 9223372036854775808ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 18446744073709551615ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+----LONGINT ----
+SELECT CASE AS CONST LONGINT
+CASE cbool ( -1 )
+CASE cbool ( 0 )
+CASE cbyte ( -128 )
+CASE cbyte ( -1 )
+CASE cbyte ( 0 )
+CASE cbyte ( 1 )
+CASE cbyte ( 127 )
+CASE cubyte ( 0 )
+CASE cubyte ( 1 )
+CASE cubyte ( 127 )
+CASE cubyte ( 128 )
+CASE cubyte ( 255 )
+CASE cshort ( -32768 )
+CASE cshort ( -257 )
+CASE cshort ( -256 )
+CASE cshort ( -129 )
+CASE cshort ( -128 )
+CASE cshort ( -1 )
+CASE cshort ( 0 )
+CASE cshort ( 1 )
+CASE cshort ( 127 )
+CASE cshort ( 128 )
+CASE cshort ( 255 )
+CASE cshort ( 256 )
+CASE cshort ( 32767 )
+CASE cushort ( 0 )
+CASE cushort ( 1 )
+CASE cushort ( 127 )
+CASE cushort ( 128 )
+CASE cushort ( 255 )
+CASE cushort ( 256 )
+CASE cushort ( 32767 )
+CASE cushort ( 32768 )
+CASE cushort ( 65535 )
+CASE clng ( -2147483648ll )
+CASE clng ( -65537 )
+CASE clng ( -65536 )
+CASE clng ( -32769 )
+CASE clng ( -32768 )
+CASE clng ( -257 )
+CASE clng ( -256 )
+CASE clng ( -129 )
+CASE clng ( -128 )
+CASE clng ( -1 )
+CASE clng ( 0 )
+CASE clng ( 1 )
+CASE clng ( 127 )
+CASE clng ( 128 )
+CASE clng ( 255 )
+CASE clng ( 256 )
+CASE clng ( 32767 )
+CASE clng ( 32768 )
+CASE clng ( 65535 )
+CASE clng ( 65536 )
+CASE clng ( 2147483647ull )
+CASE culng ( 0 )
+CASE culng ( 1 )
+CASE culng ( 127 )
+CASE culng ( 128 )
+CASE culng ( 255 )
+CASE culng ( 256 )
+CASE culng ( 32767 )
+CASE culng ( 32768 )
+CASE culng ( 65535 )
+CASE culng ( 65536 )
+CASE culng ( 2147483647ull )
+CASE culng ( 2147483648ull )
+CASE culng ( 4294967295ull )
+CASE clngint ( -9223372036854775808ll )
+CASE clngint ( -4294967297ll )
+CASE clngint ( -4294967296ll )
+CASE clngint ( -2147483649ll )
+CASE clngint ( -2147483648ll )
+CASE clngint ( -65537 )
+CASE clngint ( -65536 )
+CASE clngint ( -32769 )
+CASE clngint ( -32768 )
+CASE clngint ( -257 )
+CASE clngint ( -256 )
+CASE clngint ( -129 )
+CASE clngint ( -128 )
+CASE clngint ( -1 )
+CASE clngint ( 0 )
+CASE clngint ( 1 )
+CASE clngint ( 127 )
+CASE clngint ( 128 )
+CASE clngint ( 255 )
+CASE clngint ( 256 )
+CASE clngint ( 32767 )
+CASE clngint ( 32768 )
+CASE clngint ( 65535 )
+CASE clngint ( 65536 )
+CASE clngint ( 2147483647ull )
+CASE clngint ( 2147483648ull )
+CASE clngint ( 4294967295ull )
+CASE clngint ( 4294967296ull )
+CASE clngint ( 9223372036854775807ull )
+CASE culngint ( 0 )
+CASE culngint ( 1 )
+CASE culngint ( 127 )
+CASE culngint ( 128 )
+CASE culngint ( 255 )
+CASE culngint ( 256 )
+CASE culngint ( 32767 )
+CASE culngint ( 32768 )
+CASE culngint ( 65535 )
+CASE culngint ( 65536 )
+CASE culngint ( 2147483647ull )
+CASE culngint ( 2147483648ull )
+CASE culngint ( 4294967295ull )
+CASE culngint ( 4294967296ull )
+CASE culngint ( 9223372036854775807ull )
+CASE culngint ( 9223372036854775808ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE culngint ( 18446744073709551615ull )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+----ULONGINT ----
+SELECT CASE AS CONST ULONGINT
+CASE cbool ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbool ( 0 )
+CASE cbyte ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbyte ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cbyte ( 0 )
+CASE cbyte ( 1 )
+CASE cbyte ( 127 )
+CASE cubyte ( 0 )
+CASE cubyte ( 1 )
+CASE cubyte ( 127 )
+CASE cubyte ( 128 )
+CASE cubyte ( 255 )
+CASE cshort ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE cshort ( 0 )
+CASE cshort ( 1 )
+CASE cshort ( 127 )
+CASE cshort ( 128 )
+CASE cshort ( 255 )
+CASE cshort ( 256 )
+CASE cshort ( 32767 )
+CASE cushort ( 0 )
+CASE cushort ( 1 )
+CASE cushort ( 127 )
+CASE cushort ( 128 )
+CASE cushort ( 255 )
+CASE cushort ( 256 )
+CASE cushort ( 32767 )
+CASE cushort ( 32768 )
+CASE cushort ( 65535 )
+CASE clng ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clng ( 0 )
+CASE clng ( 1 )
+CASE clng ( 127 )
+CASE clng ( 128 )
+CASE clng ( 255 )
+CASE clng ( 256 )
+CASE clng ( 32767 )
+CASE clng ( 32768 )
+CASE clng ( 65535 )
+CASE clng ( 65536 )
+CASE clng ( 2147483647ull )
+CASE culng ( 0 )
+CASE culng ( 1 )
+CASE culng ( 127 )
+CASE culng ( 128 )
+CASE culng ( 255 )
+CASE culng ( 256 )
+CASE culng ( 32767 )
+CASE culng ( 32768 )
+CASE culng ( 65535 )
+CASE culng ( 65536 )
+CASE culng ( 2147483647ull )
+CASE culng ( 2147483648ull )
+CASE culng ( 4294967295ull )
+CASE clngint ( -9223372036854775808ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967297ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -4294967296ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483649ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -2147483648ll )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65537 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -65536 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32769 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -32768 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -257 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -256 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -129 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -128 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( -1 )
+warning in CASE expected: Overflow in constant conversion
+	Overflow in constant conversion
+CASE clngint ( 0 )
+CASE clngint ( 1 )
+CASE clngint ( 127 )
+CASE clngint ( 128 )
+CASE clngint ( 255 )
+CASE clngint ( 256 )
+CASE clngint ( 32767 )
+CASE clngint ( 32768 )
+CASE clngint ( 65535 )
+CASE clngint ( 65536 )
+CASE clngint ( 2147483647ull )
+CASE clngint ( 2147483648ull )
+CASE clngint ( 4294967295ull )
+CASE clngint ( 4294967296ull )
+CASE clngint ( 9223372036854775807ull )
+CASE culngint ( 0 )
+CASE culngint ( 1 )
+CASE culngint ( 127 )
+CASE culngint ( 128 )
+CASE culngint ( 255 )
+CASE culngint ( 256 )
+CASE culngint ( 32767 )
+CASE culngint ( 32768 )
+CASE culngint ( 65535 )
+CASE culngint ( 65536 )
+CASE culngint ( 2147483647ull )
+CASE culngint ( 2147483648ull )
+CASE culngint ( 4294967295ull )
+CASE culngint ( 4294967296ull )
+CASE culngint ( 9223372036854775807ull )
+CASE culngint ( 9223372036854775808ull )
+CASE culngint ( 18446744073709551615ull )

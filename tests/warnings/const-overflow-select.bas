@@ -14,6 +14,7 @@ dim as long l
 select case as const( l )
 #print "CASE with 64bit value, causes a warning because it's a SELECT CONST with 32bit value:"
 case &hFF00000000ull
+#print "SELECT CONST with 64bit expression, causes a warning because it's used with 32bit value:"
 end select
 
 #endif

@@ -29,6 +29,85 @@ function cConstIntExpr _
 	function = astConstFlushToInt( expr, dtype )
 end function
 
+''
+type RANGEVALUES
+	as longint smin
+	as longint smax
+	as ulongint umax
+end type
+
+''
+function cConstIntExprRanged _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval todtype as integer _
+	) as longint
+
+	static range( FB_SIZETYPE_BOOLEAN to FB_SIZETYPE_UINT64 ) as RANGEVALUES = _
+		{ _
+			/' FB_SIZETYPE_BOOLEAN '/ ( -1, 0, 0 ),  _
+			/' FB_SIZETYPE_INT8    '/ ( -128, 127, 127 ), _
+			/' FB_SIZETYPE_UINT8   '/ ( 0, 127, 255 ), _
+			/' FB_SIZETYPE_INT16   '/ ( -32768, 32767, 32767 ), _
+			/' FB_SIZETYPE_UINT16  '/ ( 0, 32767, 65535 ), _
+			/' FB_SIZETYPE_INT32   '/ ( -2147483648ll, 2147483647ll, 2147483647ull ), _
+			/' FB_SIZETYPE_UINT32  '/ ( 0, 2147483647ll, 4294967295ull ),  _
+			/' FB_SIZETYPE_INT64   '/ ( -9223372036854775808ll, 9223372036854775807ll, 9223372036854775807ull ), _
+			/' FB_SIZETYPE_UINT64  '/ ( 0, 9223372036854775807ll, 18446744073709551615ull ) _
+		}
+
+	dim as longint value = any
+	dim as integer dtype = any
+	dim as integer result = any
+	dim as RANGEVALUES ptr r = any
+
+	r = @range( typeGetSizeType( todtype ) )
+
+	if( expr = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		expr = astNewCONSTi( 0, todtype )
+	end if
+
+	if( astIsCONST( expr ) = FALSE ) then
+		errReport( FB_ERRMSG_EXPECTEDCONST )
+		astDelTree( expr )
+		expr = astNewCONSTi( 0, FB_DATATYPE_LONGINT )
+	end if
+
+	dtype = astGetDataType( expr )
+
+	value = astConstFlushToInt( expr, FB_DATATYPE_LONGINT )
+
+	if( typeIsSigned( dtype ) ) then
+		if( typeIsSigned( todtype ) ) then
+			result = (value >= r->smin) and (value <= r->smax)
+		else
+			if( dtype = FB_DATATYPE_LONGINT and todtype = FB_DATATYPE_ULONGINT ) then
+				result = (value >= 0) and (culngint(value) <= culngint(r->smax))
+			else
+				result = (value >= 0) and (culngint(value) <= culngint(r->umax))
+			end if
+		endif
+	else
+		if( typeIsSigned( todtype ) ) then
+			if( dtype = FB_DATATYPE_ULONGINT and todtype = FB_DATATYPE_LONGINT ) then
+				result = (culngint(value) <= culngint(r->smax))
+			else
+				result = (culngint(value) <= culngint(r->umax))
+			end if
+		else
+			result = (culngint(value) <= r->umax)
+		endif
+	end if
+
+	if( not result ) then
+		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
+	end if
+
+	function = value
+
+end function
+
 private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
 	dim as integer dtype = any, mode = any, attrib = any
 	dim as FBSYMBOL ptr proc = any, subtype = any

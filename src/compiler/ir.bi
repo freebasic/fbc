@@ -291,8 +291,8 @@ type IR_VTBL
 		byval labels as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as ulongint, _
-		byval maxval as ulongint _
+		byval bias as ulongint, _
+		byval span as ulongint _
 	)
 
 	emitMem as sub _
@@ -550,7 +550,7 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irEmitCOMMENT(text) ir.vtbl.emitComment( text )
 
-#define irEmitJMPTB( v1, tbsym, values, labels, labelcount, deflabel, minval, maxval ) ir.vtbl.emitJmpTb( v1, tbsym, values, labels, labelcount, deflabel, minval, maxval )
+#define irEmitJMPTB( v1, tbsym, values, labels, labelcount, deflabel, bias, span ) ir.vtbl.emitJmpTb( v1, tbsym, values, labels, labelcount, deflabel, bias, span )
 
 #define irGetDistance(vreg) ir.vtbl.getDistance( vreg )
 

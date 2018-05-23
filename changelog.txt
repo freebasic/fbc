@@ -3,6 +3,8 @@ Version 1.06.0
 [changed]
 - Adjusted warning text for "mixed bool/nonbool operands" warning
 - test-suite uses libfbcunit for unit testing framework
+- SELECT CASE AS CONST respects data type and will show overflow warnings on out-of-range constants
+- boolean: don't allow NEG unary op '-' on boolean data types
 
 [added]
 - -noobjinfo option to disable the writing/reading of compile-time library and other linking options from/to .o and .a files. This also disables the use of fbextra.x (the supplemental linker script) for discarding the .fbctinf sections, which is useful when using the gold linker that doesn't support this kind of linker script.
@@ -56,6 +58,8 @@ Version 1.06.0
 - #876: ThreadCall does not support subroutine with [U]Long type parameter
 - #877: fix SLEEP behaviour in linux console and wait for key presses, and do not affect input buffer.  Match linux SLEEP to behaviour on Windows.
 - Fixed inline asm procedure name mangling bug (missing underscore prefix) with -gen gcc -asm intel on dos/win32
+- #878: Fix fbc-64bit hangs on 'Case True' + 'Case False' inside 'Select Case As const'
+- Fix SELECT CASE AS CONST to allow both signed & unsigned case range values
 
 
 Version 1.05.0

@@ -188,12 +188,23 @@ SUITE( fbc_tests.compound.select_const )
 
 			while v <= MIN( T_MAX - 1, 4097 )
 
-				select case as const v
-				case 0 to 4096
-					ok = (v >= 0 and v <= 4096)
-				case else
-					ok = (v < 0 or v > 4096)
-				end select
+				'' byte or ubyte?
+				#if( sizeof(T) = 1 )
+					select case as const v
+					case 0 to 64
+						ok = (v >= 0 and v <= 64)
+					case else
+						ok = (v < 0 or v > 64)
+					end select
+				#else
+					select case as const v
+					case 0 to 4096
+						ok = (v >= 0 and v <= 4096)
+					case else
+						ok = (v < 0 or v > 4096)
+					end select
+				#endif
+
 				CU_ASSERT_EQUAL( ok, TRUE )
 
 				v += 1
@@ -476,6 +487,7 @@ SUITE( fbc_tests.compound.select_const )
 			#endif
 		end scope
 
+		/' warning will follow, though still works '/
 		scope
 			var ok = false
 			dim i as uinteger = -1
@@ -499,6 +511,157 @@ SUITE( fbc_tests.compound.select_const )
 			end select
 			CU_ASSERT( ok )
 		end scope
+	END_TEST
+
+	TEST( boolean_ )
+		scope
+			var ok = false
+			dim i as boolean = false
+			select case as const i
+			case false
+				ok = true
+			case true
+				CU_FAIL( )
+			case else
+				CU_FAIL( )
+			end select 
+			CU_ASSERT( ok )
+		end scope
+
+		scope
+			var ok = false
+			dim i as boolean = true
+			select case as const i
+			case false
+				CU_FAIL( )
+			case true
+				ok = true
+			case else
+				CU_FAIL( )
+			end select 
+			CU_ASSERT( ok )
+		end scope
+	END_TEST
+
+	TEST( zstringDeref )
+		
+		dim s as string = "1234567890abcdefghijABCDEFGHIJ" + chr(250)
+		dim p as zstring ptr = strptr( s )
+
+		while *p
+			select case as const *p
+			case asc("A") to asc("Z")
+				CU_ASSERT( (*p >= asc("A")) and (*p <= ASC("Z")) )
+			case asc("0") to asc("9")
+				CU_ASSERT( (*p >= asc("0")) and (*p <= ASC("9")) )
+			case 250
+				CU_ASSERT( (*p = 250) )
+			case else
+				CU_ASSERT( not (((*p >= asc("A")) and (*p <= ASC("Z"))) or ((*p >= asc("0")) and (*p <= ASC("9")))) )
+			end select
+			p += 1
+		wend
+
+	END_TEST
+
+	TEST( RangeEdges )
+
+		dim as integer ok, nok
+		
+		#macro TEST_RANGE( T, a, b, c, d, p, f )
+			scope
+				ok = 0
+				nok = 0
+				dim v as T
+				v = a
+				do
+					select case as const v
+					case (c) to (d)
+						CU_ASSERT( (v>=(c)) and (v<=(d)) )
+						ok += 1
+					case else
+						CU_ASSERT( not ((v>=(c)) and (v<=(d))) )
+						nok += 1
+					end select
+					if( v = b ) then
+						exit do
+					end if
+					v += 1
+				loop
+				CU_ASSERT_EQUAL( p, ok )
+				CU_ASSERT_EQUAL( f, nok )
+			end scope
+		#endmacro
+
+		#macro TEST_RANGE_EDGES( T, a, b ) 
+			TEST_RANGE( T, a+0, a+10, a+0, a+0, 1, 10 )
+			TEST_RANGE( T, a+0, a+10, a+0, a+1, 2,  9 )
+			TEST_RANGE( T, a+0, a+10, a+1, a+1, 1, 10 )
+			TEST_RANGE( T, a+0, a+10, a+1, a+2, 2,  9 )
+			TEST_RANGE( T, a+0, a+10, a+2, a+2, 1, 10 )
+
+			TEST_RANGE( T, a+0, a+10, a+0, a+3, 4,  7 )
+			TEST_RANGE( T, a+0, a+10, a+1, a+4, 4,  7 )
+			TEST_RANGE( T, a+0, a+10, a+2, a+5, 4,  7 )
+
+			TEST_RANGE( T, a+1, a+10, a+0, a+0, 0, 10 )
+			TEST_RANGE( T, a+1, a+10, a+0, a+1, 1,  9 )
+			TEST_RANGE( T, a+1, a+10, a+1, a+1, 1,  9 )
+			TEST_RANGE( T, a+1, a+10, a+1, a+2, 2,  8 )
+			TEST_RANGE( T, a+1, a+10, a+2, a+2, 1,  9 )
+
+			TEST_RANGE( T, b-10, b-0, b-0, b-0, 1, 10 )
+			TEST_RANGE( T, b-10, b-0, b-1, b-0, 2,  9 )
+			TEST_RANGE( T, b-10, b-0, b-1, b-1, 1, 10 )
+			TEST_RANGE( T, b-10, b-0, b-2, b-1, 2,  9 )
+			TEST_RANGE( T, b-10, b-0, b-2, b-2, 1, 10 )
+
+			TEST_RANGE( T, b-10, b-0, b-3, b-0, 4,  7 )
+			TEST_RANGE( T, b-10, b-0, b-4, b-1, 4,  7 )
+			TEST_RANGE( T, b-10, b-0, b-5, b-2, 4,  7 )
+
+			TEST_RANGE( T, b-10, b-1, b-0, b-0, 0, 10 )
+			TEST_RANGE( T, b-10, b-1, b-1, b-0, 1,  9 )
+			TEST_RANGE( T, b-10, b-1, b-1, b-1, 1,  9 )
+			TEST_RANGE( T, b-10, b-1, b-2, b-1, 2,  8 )
+			TEST_RANGE( T, b-10, b-1, b-2, b-2, 1,  9 )
+		#endmacro
+
+		'' byte range edges and near zero
+		TEST_RANGE_EDGES( byte, -128, 127 )
+		TEST_RANGE_EDGES( byte, -2, 2 )
+		TEST_RANGE_EDGES( ubyte, 0, 255 )
+
+		TEST_RANGE_EDGES( short, -129, 128 )
+		TEST_RANGE_EDGES( short, -1, 256 )
+		TEST_RANGE_EDGES( long, -129, 128 )
+		TEST_RANGE_EDGES( long, -1, 256 )
+		TEST_RANGE_EDGES( longint, -129, 128 )
+		TEST_RANGE_EDGES( longint, -1, 256 )
+
+		'' short range edges and near zero
+		TEST_RANGE_EDGES( short, -32768, 32767 )
+		TEST_RANGE_EDGES( short, -2, 2 )
+		TEST_RANGE_EDGES( ushort, 0, 65535 )
+
+		TEST_RANGE_EDGES( long, -32769, 32768 )
+		TEST_RANGE_EDGES( long, 0, 65536 )
+		TEST_RANGE_EDGES( longint, -32769, 32768 )
+		TEST_RANGE_EDGES( longint, 0, 65536 )
+
+		'' long range edges and near zero
+		TEST_RANGE_EDGES( long, -2147483648, 2147483647 )
+		TEST_RANGE_EDGES( long, -2, 2 )
+		TEST_RANGE_EDGES( ulong, 0, 4294967295 )
+
+		TEST_RANGE_EDGES( longint, -2147483649ll, 2147483648ll )
+		TEST_RANGE_EDGES( longint, 0, 4294967296ll )
+
+		'' longint range edges and near zero
+		TEST_RANGE_EDGES( longint, -9223372036854775808ll, 9223372036854775807ll  )
+		TEST_RANGE_EDGES( longint, -2ll, 2ll )
+		TEST_RANGE_EDGES( ulongint, 0, 18446744073709551615ull )
+
 	END_TEST
 
 END_SUITE
