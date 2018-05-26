@@ -47,7 +47,7 @@ detect:
 	/* no CPUID; assume 386 and check if 486 (try toggling bit 18 (AC) of EFLAGS) */
 	mov ebx, 0x30000000
 	mov ecx, esp
-	and esp, 0xFFFFFFFB /* round ESP down to a multiple of 4 (must be aligned if AC becomes enabled) */
+	and esp, 0xFFFFFFFC /* round ESP down to a multiple of 4 (must be aligned if AC becomes enabled) */
 	pushfd
 	pop eax
 	mov edx, eax
@@ -71,6 +71,7 @@ cpu486_not_found:
 cpuid_ok:
 	mov eax, 1
 	cpuid
+	mov al, 0
 	shl eax, 20
 	and edx, 0x0FFFFFFF /* low 28 bits of feature flags */
 	or eax, edx
