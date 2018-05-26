@@ -801,6 +801,12 @@ declare function cConstIntExpr _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer = FB_DATATYPE_INTEGER _
 	) as longint
+declare function hIsConstInRange _
+	( _
+		byval dtype as integer, _
+		byval value as longint, _
+		byval todtype as integer _
+	) as integer
 declare function cConstIntExprRanged _
 	( _
 		byval expr as ASTNODE ptr, _

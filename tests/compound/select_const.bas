@@ -568,11 +568,18 @@ SUITE( fbc_tests.compound.select_const )
 
 		dim as integer ok, nok
 		
-		#macro TEST_RANGE( T, a, b, c, d, p, f )
+		#macro TEST_RANGE( T, a, b, c_, d_, p, f )
 			scope
 				ok = 0
 				nok = 0
 				dim v as T
+				#if LITERAL
+					#define c c_
+					#define d d_
+				#else
+					const c as T = c_
+					const d as T = d_
+				#endif
 				v = a
 				do
 					select case as const v
@@ -627,40 +634,68 @@ SUITE( fbc_tests.compound.select_const )
 			TEST_RANGE( T, b-10, b-1, b-2, b-2, 1,  9 )
 		#endmacro
 
-		'' byte range edges and near zero
-		TEST_RANGE_EDGES( byte, -128, 127 )
-		TEST_RANGE_EDGES( byte, -2, 2 )
-		TEST_RANGE_EDGES( ubyte, 0, 255 )
+		#macro TEST_RANGES()
+			'' byte range edges and near zero
+			TEST_RANGE_EDGES( byte, -128, 127 )
+			TEST_RANGE_EDGES( byte, -2, 2 )
+			TEST_RANGE_EDGES( ubyte, 0, 255 )
 
-		TEST_RANGE_EDGES( short, -129, 128 )
-		TEST_RANGE_EDGES( short, -1, 256 )
-		TEST_RANGE_EDGES( long, -129, 128 )
-		TEST_RANGE_EDGES( long, -1, 256 )
-		TEST_RANGE_EDGES( longint, -129, 128 )
-		TEST_RANGE_EDGES( longint, -1, 256 )
+			TEST_RANGE_EDGES( short, -129, 128 )
+			TEST_RANGE_EDGES( short, -1, 256 )
+			TEST_RANGE_EDGES( long, -129, 128 )
+			TEST_RANGE_EDGES( long, -1, 256 )
+			TEST_RANGE_EDGES( integer, -129, 128 )
+			TEST_RANGE_EDGES( integer, -1, 256 )
+			TEST_RANGE_EDGES( longint, -129, 128 )
+			TEST_RANGE_EDGES( longint, -1, 256 )
 
-		'' short range edges and near zero
-		TEST_RANGE_EDGES( short, -32768, 32767 )
-		TEST_RANGE_EDGES( short, -2, 2 )
-		TEST_RANGE_EDGES( ushort, 0, 65535 )
+			'' short range edges and near zero
+			TEST_RANGE_EDGES( short, -32768, 32767 )
+			TEST_RANGE_EDGES( short, -2, 2 )
+			TEST_RANGE_EDGES( ushort, 0, 65535 )
 
-		TEST_RANGE_EDGES( long, -32769, 32768 )
-		TEST_RANGE_EDGES( long, 0, 65536 )
-		TEST_RANGE_EDGES( longint, -32769, 32768 )
-		TEST_RANGE_EDGES( longint, 0, 65536 )
+			TEST_RANGE_EDGES( long, -32769, 32768 )
+			TEST_RANGE_EDGES( long, 0, 65536 )
+			TEST_RANGE_EDGES( integer, -32769, 32768 )
+			TEST_RANGE_EDGES( integer, 0, 65536 )
+			TEST_RANGE_EDGES( longint, -32769, 32768 )
+			TEST_RANGE_EDGES( longint, 0, 65536 )
 
-		'' long range edges and near zero
-		TEST_RANGE_EDGES( long, -2147483648, 2147483647 )
-		TEST_RANGE_EDGES( long, -2, 2 )
-		TEST_RANGE_EDGES( ulong, 0, 4294967295 )
+			'' long range edges and near zero
+			TEST_RANGE_EDGES( long, -2147483648, 2147483647 )
+			TEST_RANGE_EDGES( long, -2, 2 )
+			TEST_RANGE_EDGES( ulong, 0, 4294967295 )
 
-		TEST_RANGE_EDGES( longint, -2147483649ll, 2147483648ll )
-		TEST_RANGE_EDGES( longint, 0, 4294967296ll )
+			TEST_RANGE_EDGES( longint, -2147483649ll, 2147483648ll )
+			TEST_RANGE_EDGES( longint, 0, 4294967296ll )
 
-		'' longint range edges and near zero
-		TEST_RANGE_EDGES( longint, -9223372036854775808ll, 9223372036854775807ll  )
-		TEST_RANGE_EDGES( longint, -2ll, 2ll )
-		TEST_RANGE_EDGES( ulongint, 0, 18446744073709551615ull )
+			#ifdef __FB_64BIT__
+				TEST_RANGE_EDGES( integer, -9223372036854775807ll-1ll, 9223372036854775807ll  )
+				TEST_RANGE_EDGES( integer, -2ll, 2ll )
+				TEST_RANGE_EDGES( uinteger, 0, 18446744073709551615ull )
+			#else
+				TEST_RANGE_EDGES( integer, -2147483648, 2147483647 )
+				TEST_RANGE_EDGES( integer, -2, 2 )
+				TEST_RANGE_EDGES( uinteger, 0, 4294967295 )
+
+				TEST_RANGE_EDGES( longint, -2147483649ll, 2147483648ll )
+				TEST_RANGE_EDGES( longint, 0, 4294967296ll )
+			#endif
+
+			'' longint range edges and near zero
+			TEST_RANGE_EDGES( longint, -9223372036854775807ll-1ll, 9223372036854775807ll  )
+			TEST_RANGE_EDGES( longint, -2ll, 2ll )
+			TEST_RANGE_EDGES( ulongint, 0, 18446744073709551615ull )
+		#endmacro
+
+		'' Test Ranges using literal values
+		#define LITERAL TRUE
+		TEST_RANGES()
+
+		'' Test Ranges using a CONST symbol
+		#undef LITERAL
+		#define LITERAL FALSE
+		TEST_RANGES()
 
 	END_TEST
 
