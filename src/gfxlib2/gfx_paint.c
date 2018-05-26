@@ -149,7 +149,7 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 			}
 
 			if (__fb_gfx->framebuffer == context->line[0])
-				__fb_gfx->dirty[context->view_y + y] = TRUE;
+				__fb_gfx->dirty[y] = TRUE;
 		}
 	}
 	free(span);
