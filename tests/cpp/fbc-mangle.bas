@@ -3,11 +3,8 @@
 '' test mapping of basic data types between fbc and g++
 '' with c++ name mangling
 
-#ifdef __FB_64BIT__
-
-	type cxxint as long
-	type cxxlongint as integer
-
+type cxxint as long
+type cxxlongint as integer
 	/' !!!
 		cxxlongint will currently fail on win64, fbc custom mangles INTEGER and there is 
 		no other data type that will return the "m" and "l" suffixes for c's long int.
@@ -16,14 +13,6 @@
 		change the overloading allowed for the c++ mangled names onlym what would have to
 		be added to fbc.
 	'/
-
-#else
-	
-	'' 32-bit
-	type cxxint as integer
-	type cxxlongint as long
-
-#endif
 
 extern "c++"
 
