@@ -40,12 +40,18 @@ type RANGEVALUES
 	as ulongint umax
 end type
 
-''
-function cConstIntExprRanged _
+function hIsConstInRange _
 	( _
-		byval expr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval value as longint, _
 		byval todtype as integer _
-	) as longint
+	) as integer
+
+	'' TODO:
+	'' - consider moving this table to symb-data.bas
+	'' - consider using in astCheckConst(), possibly? with -w pedantic
+	'' - consider adding src/compiler/fb-limit.bi or inc/fb-limit.bi.  These
+	''   limit values are used in several locations in fbc compiler source.
 
 	static range( FB_SIZETYPE_BOOLEAN to FB_SIZETYPE_UINT64 ) as RANGEVALUES = _
 		{ _
@@ -60,12 +66,45 @@ function cConstIntExprRanged _
 			/' FB_SIZETYPE_UINT64  '/ (                   0ll , &h7fffffffffffffffll, &hffffffffffffffffull ) _
 		}
 
+	dim as RANGEVALUES ptr r = @range( typeGetSizeType( todtype ) )
+
+	if( typeIsSigned( dtype ) ) then
+		if( typeIsSigned( todtype ) ) then
+			function = (value >= r->smin) and (value <= r->smax)
+		else
+			if( typeGetSizeType(dtype) = FB_SIZETYPE_INT64 and typeGetSizeType(todtype) = FB_SIZETYPE_UINT64 ) then
+				function = (value >= 0) and (culngint(value) <= culngint(r->smax))
+			else
+				function = (value >= 0) and (culngint(value) <= r->umax)
+			end if
+		endif
+	else
+		if( typeIsSigned( todtype ) ) then
+			if( typeGetSizeType(dtype) = FB_SIZETYPE_UINT64 and typeGetSizeType(todtype) = FB_SIZETYPE_INT64 ) then
+				function = (culngint(value) <= culngint(r->smax))
+			else
+				function = (culngint(value) <= r->umax)
+			end if
+		else
+			function = (culngint(value) <= r->umax)
+		endif
+	end if
+
+end function
+
+''
+function cConstIntExprRanged _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval todtype as integer _
+	) as longint
+
+	'' - this function is very similar cConstIntExpr() except that
+	''   we need to save the dtype of expr before it is flushed, but
+	''   if expr was invalid it might be NULL
+
 	dim as longint value = any
 	dim as integer dtype = any
-	dim as integer result = any
-	dim as RANGEVALUES ptr r = any
-
-	r = @range( typeGetSizeType( todtype ) )
 
 	'' bad expression? fake a constant value
 	if( expr = NULL ) then
@@ -86,29 +125,7 @@ function cConstIntExprRanged _
 	'' flush the expr to longint, it's the largest signed integer datatype we have
 	value = astConstFlushToInt( expr, FB_DATATYPE_LONGINT )
 
-	if( typeIsSigned( dtype ) ) then
-		if( typeIsSigned( todtype ) ) then
-			result = (value >= r->smin) and (value <= r->smax)
-		else
-			if( typeGetSizeType(dtype) = FB_SIZETYPE_INT64 and typeGetSizeType(todtype) = FB_SIZETYPE_UINT64 ) then
-				result = (value >= 0) and (culngint(value) <= culngint(r->smax))
-			else
-				result = (value >= 0) and (culngint(value) <= r->umax)
-			end if
-		endif
-	else
-		if( typeIsSigned( todtype ) ) then
-			if( typeGetSizeType(dtype) = FB_SIZETYPE_UINT64 and typeGetSizeType(todtype) = FB_SIZETYPE_INT64 ) then
-				result = (culngint(value) <= culngint(r->smax))
-			else
-				result = (culngint(value) <= r->umax)
-			end if
-		else
-			result = (culngint(value) <= r->umax)
-		endif
-	end if
-
-	if( not result ) then
+	if( not hIsConstInRange( dtype, value, todtype ) ) then
 		errReportWarn( FB_WARNINGMSG_CONVOVERFLOW )
 	end if
 
