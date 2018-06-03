@@ -878,7 +878,7 @@ declare sub emitFlush _
 
 #define emitGetResultReg( dtype, dclass, reg, reg2 ) emit.vtbl.getResultReg( dtype, dclass, reg, reg2 )
 
-#define emitSection( sec, priority ) emit.vtbl.setSection( sec, priority )
+#define emitSetSection( sec, priority ) emit.vtbl.setSection( sec, priority )
 
 ''::::
 #define EMIT_REGSETUSED(c,r) emit.regUsedTB(c) or= (1 shl r)

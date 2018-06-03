@@ -193,7 +193,7 @@ private sub hEmitSTABD _
 end sub
 
 '':::::
-private sub hLABEL _
+private sub hSTABLABEL _
 	( _
 		byval label as zstring ptr _
 	) static
@@ -233,8 +233,8 @@ sub edbgEmitHeader( byval filename as zstring ptr )
     hEmitSTABS( STAB_TYPE_SO, filename, 0, 0, lname )
 
 	''
-	emitSECTION( IR_SECTION_CODE, 0 )
-	hLABEL( lname )
+	emitSetSection( IR_SECTION_CODE, 0 )
+	hSTABLABEL( lname )
 
 	'' (known) type definitions
 	for i as integer = lbound( stabsTb ) to ubound( stabsTb )
@@ -254,13 +254,13 @@ sub edbgEmitFooter( ) static
 		exit sub
 	end if
 
-	emitSECTION( IR_SECTION_CODE, 0 )
+	emitSetSection( IR_SECTION_CODE, 0 )
 
 	'' no checkings after this
 	lname = *symbUniqueLabel( )
 	hEmitSTABS( STAB_TYPE_SO, "", 0, 0, lname )
 
-	hLABEL( lname )
+	hSTABLABEL( lname )
 
 end sub
 
@@ -291,7 +291,7 @@ sub edbgLineBegin _
     ctx.lnum = lnum
     if( ctx.isnewline ) then
     	ctx.label = symbAddLabel( NULL )
-    	hLABEL( symbGetMangledName( ctx.label ) )
+    	hSTABLABEL( symbGetMangledName( ctx.label ) )
     	ctx.isnewline = FALSE
     end if
 
@@ -413,7 +413,7 @@ sub edbgEmitScopeINI _
     	exit sub
     end if
 
-    hLABEL( symbGetMangledName( s->scp.dbg.inilabel ) )
+    hSTABLABEL( symbGetMangledName( s->scp.dbg.inilabel ) )
 
 end sub
 
@@ -427,7 +427,7 @@ sub edbgEmitScopeEND _
     	exit sub
     end if
 
-    hLABEL( symbGetMangledName( s->scp.dbg.endlabel ) )
+    hSTABLABEL( symbGetMangledName( s->scp.dbg.endlabel ) )
 
 end sub
 
@@ -644,7 +644,7 @@ sub edbgEmitProcFooter _
     hDeclLocalVars( proc, proc, initlabel, exitlabel )
 
 	lname = *symbUniqueLabel( )
-	hLABEL( lname )
+	hSTABLABEL( lname )
 
 	'' emit end proc (FUN with a null string)
 	hEmitSTABS( STAB_TYPE_FUN, "", 0, 0, lname + "-" + procname )
@@ -1028,7 +1028,7 @@ sub edbgInclude( byval incfile as zstring ptr )
 	'' fbc only emits types actually used, the end result is that
 	'' type information from a header (.BI) is often different from
 	'' one object module to another is generally not used in the
-	'' way that BINCL/EINCL/EXCL was intented.
+	'' way that BINCL/EINCL/EXCL was intended.
 
 	'' incfile is the new include file or main file name
 
@@ -1042,10 +1042,10 @@ sub edbgInclude( byval incfile as zstring ptr )
 		exit sub
 	end If
 
-	emitSECTION( IR_SECTION_CODE, 0 )
+	emitSetSection( IR_SECTION_CODE, 0 )
 	lname = *symbUniqueLabel( )
 	hEmitSTABS( STAB_TYPE_SOL, incfile, 0, 0, lname )
-	hLABEL( lname )
+	hSTABLABEL( lname )
 
 	ctx.incfile = incfile
 end sub
