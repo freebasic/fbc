@@ -61,7 +61,7 @@ Version 1.06.0
 - Fixed inline asm procedure name mangling bug (missing underscore prefix) with -gen gcc -asm intel on dos/win32
 - #878: Fix fbc-64bit hangs on 'Case True' + 'Case False' inside 'Select Case As const'
 - Fix SELECT CASE AS CONST to allow both signed & unsigned case range values
-- #822, #814: Compiler crash when initializing shared reference (DIM SHARED BYREF) with non-constant initializer (e.g. another reference, or dynamic array element)
+- #822, #814, #842: Compiler crash when initializing static/shared reference (DIM SHARED/STATIC BYREF) with non-constant initializer (e.g. another reference, or dynamic array element)
 
 
 Version 1.05.0
