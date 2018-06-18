@@ -556,7 +556,6 @@ private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL 
 		end if
 	'' literal string..
 	else
-		var sdtype = symbGetType( sym )
 		'' not a wstring?
 		if( sdtype <> FB_DATATYPE_WCHAR ) then
 			'' convert?
