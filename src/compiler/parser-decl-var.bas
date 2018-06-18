@@ -824,7 +824,7 @@ private sub hValidateGlobalVarInit( byval sym as FBSYMBOL ptr, byref initree as 
 
 	'' Disallow initialization of global dynamic strings
 	'' (not implemented - requires executing code)
-	if( symbGetType( sym ) = FB_DATATYPE_STRING ) then
+	if( (symbGetType( sym ) = FB_DATATYPE_STRING) and (not symbIsRef( sym )) ) then
 		errReport( FB_ERRMSG_CANTINITDYNAMICSTRINGS, TRUE )
 		astDelTree( initree )
 		initree = NULL
@@ -833,7 +833,7 @@ private sub hValidateGlobalVarInit( byval sym as FBSYMBOL ptr, byref initree as 
 
 	'' Check for constant initializer?
 	'' (doing this check first, it results in a nicer error message)
-	if( symbHasCtor( sym ) = FALSE ) then
+	if( (not symbHasCtor( sym )) or symbIsRef( sym ) ) then
 		if( astTypeIniIsConst( initree ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDCONST )
 			astDelTree( initree )
@@ -877,9 +877,7 @@ private function hCheckAndBuildByrefInitializer( byval sym as FBSYMBOL ptr, byre
 	astTypeIniAddAssign( initree, astNewADDROF( expr ), sym, ptrdtype, ptrsubtype )
 	astTypeIniEnd( initree, TRUE )
 
-	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) <> 0 ) then
-		hCheckVarsUsedInGlobalInit( sym, initree )
-	end if
+	hValidateGlobalVarInit( sym, initree )
 
 	function = initree
 end function
