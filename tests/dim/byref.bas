@@ -608,4 +608,25 @@ SUITE( fbc_tests.dim_.byref_ )
 		externs.globalExterns_proc
 	END_TEST
 
+	TEST_GROUP( globalConstantInitWithoutOffset )
+		type UDT1
+			dummy as integer
+		end type
+
+		type UDT2
+			dummy as integer
+			static byref r1 as UDT1
+			static byref r2 as UDT1
+		end type
+
+		'' Initializer for global ref var using a constant that is not an offset
+		dim byref UDT2.r1 as UDT1 = *cptr(UDT1 ptr, 0)
+		dim byref UDT2.r2 as UDT1 = *cptr(UDT1 ptr, 123)
+
+		TEST( default )
+			CU_ASSERT( @UDT2.r1 = 0 )
+			CU_ASSERT( @UDT2.r2 = 123 )
+		END_TEST
+	END_TEST_GROUP
+
 END_SUITE

@@ -522,7 +522,15 @@ private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL 
 	if( sym = NULL ) then
 		sym = basesym
 	end if
+
 	var sdtype = symbGetType( sym )
+	var sfulldtype = symbGetType( sym )
+	if( symbIsRef( sym ) ) then
+		'' Initializers for references initialize the pointer,
+		'' not an object of the symbol's type.
+		sdtype = typeAddrOf( sdtype )
+		sfulldtype = typeAddrOf( sfulldtype )
+	end if
 
 	'' Get rhs expression
 	var expr = n->l
@@ -543,7 +551,7 @@ private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL 
 		else
 			'' different types?
 			if( edtype <> sdtype ) then
-				expr = astNewCONV( symbGetFullType( sym ), symbGetSubtype( sym ), expr, AST_CONVOPT_DONTCHKPTR )
+				expr = astNewCONV( sfulldtype, symbGetSubtype( sym ), expr, AST_CONVOPT_DONTCHKPTR )
 				assert( expr <> NULL )
 			end if
 
