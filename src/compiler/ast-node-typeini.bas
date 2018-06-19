@@ -524,7 +524,7 @@ private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL 
 	end if
 
 	var sdtype = symbGetType( sym )
-	var sfulldtype = symbGetType( sym )
+	var sfulldtype = symbGetFullType( sym )
 	if( symbIsRef( sym ) ) then
 		'' Initializers for references initialize the pointer,
 		'' not an object of the symbol's type.
