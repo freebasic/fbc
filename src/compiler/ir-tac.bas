@@ -725,11 +725,17 @@ private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
 end sub
 
 private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
-	emitVARINIi( symbGetType( sym ), value )
+	dim realtype as integer
+	dim realsubtype as FBSYMBOL ptr
+	symbGetRealType( sym, realtype, realsubtype )
+	emitVARINIi( realtype, value )
 end sub
 
 private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )
-	emitVARINIf( symbGetType( sym ), value )
+	dim realtype as integer
+	dim realsubtype as FBSYMBOL ptr
+	symbGetRealType( sym, realtype, realsubtype )
+	emitVARINIf( realtype, value )
 end sub
 
 private sub _emitVarIniOfs _
