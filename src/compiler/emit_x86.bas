@@ -4153,8 +4153,30 @@ private sub hCMPI _
 		ostr = "test " + dst + COMMA + dst
 		outp ostr
 	else
-		ostr = "cmp " + dst + COMMA + src
-		outp ostr
+
+		'' immediate and offset? it's invalid for CMP so use a temp reg
+		if( (svreg->typ = IR_VREGTYPE_IMM) and (dvreg->typ = IR_VREGTYPE_OFS) ) then
+
+			dim reg as integer, isfree as integer, rname as string
+			reg = hFindRegNotInVreg( dvreg )
+			rname = *hGetRegName( dvreg->dtype, reg )
+			isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
+
+			if( isfree = FALSE ) then
+				hPUSH( rname )
+			end if
+
+			outp "mov " + rname + COMMA + dst
+			outp "cmp " + rname + COMMA + src
+
+			if( isfree = FALSE ) then
+				hPop( rname )
+			end if
+
+		else
+			outp "cmp " + dst + COMMA + src
+
+		end if
 	end if
 
 	'' no result to be set? just branch
