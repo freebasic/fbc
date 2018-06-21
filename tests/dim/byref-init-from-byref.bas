@@ -115,7 +115,7 @@ dim    shared byref as T T73 = T72
 static shared byref as T T74 = T73
 
 
-'' UDT with static byref fields
+'' UDT2 with static byref fields
 
 type T1
 	dim as integer F
@@ -129,9 +129,9 @@ type T2
 	static byref as T1 R4
 end type
 
-dim shared T2_Initializer as T1
+dim shared T1_Initializer as T1
 
-dim byref as T1 T2.R1 = T2_Initializer
+dim byref as T1 T2.R1 = T1_Initializer
 dim byref as T1 T2.R2 = T2.R1
 dim byref as T1 T2.R3 = T2.R2
 dim byref as T1 T2.R4 = T2.R3
@@ -140,6 +140,11 @@ dim shared byref as T1 RT1 = T2.R1
 dim shared byref as T1 RT2 = T2.R2
 dim shared byref as T1 RT3 = T2.R3
 dim shared byref as T1 RT4 = T2.R4
+
+static shared byref as T1 SRT1 = RT1
+static shared byref as T1 SRT2 = RT2
+static shared byref as T1 SRT3 = RT3
+static shared byref as T1 SRT4 = RT4
 
 
 SUITE( fbc_tests.dim_.byref_init_from_byref )
@@ -274,10 +279,10 @@ SUITE( fbc_tests.dim_.byref_init_from_byref )
 	END_TEST
 
 	TEST( UDT_static_local_to_static_shared )
-		static byref as T b = T51
-		static byref as T c = T54
+		static byref as T b = T71
+		static byref as T c = T74
 		dim    byref as T d = c
-		CheckAddrs( T51, b, c, d )
+		CheckAddrs( T71, b, c, d )
 	END_TEST
 
 	'' -------- UDT2 -------------------
@@ -290,5 +295,47 @@ SUITE( fbc_tests.dim_.byref_init_from_byref )
 		CheckAddrs( RT1, RT2, RT3, RT4 )
 	END_TEST
 
-	
+	TEST( UDT2_static_to_shared )
+		CheckAddrs( SRT1, SRT2, SRT3, SRT4 )
+	END_TEST
+
+	TEST( UDT2_check_all )
+		static byref as T1 a = T2.R1
+		static byref as T1 b = RT1
+		dim    byref as T1 c = SRT1
+		dim    byref as T1 d = c
+		CheckAddrs( T2.R1, RT1, SRT1, a )
+		CheckAddrs( T2.R2, RT2, SRT2, b )
+		CheckAddrs( T2.R3, RT3, SRT3, c )
+		CheckAddrs( T2.R4, RT4, SRT4, d )
+	END_TEST
+
+	TEST( UDT2_local_to_shared )
+		static byref as T1 b = RT1
+		dim    byref as T1 c = RT4
+		dim    byref as T1 d = c
+		CheckAddrs( RT1, b, c, d )
+	END_TEST
+
+	TEST( UDT2_local_to_static_shared )
+		static byref as T1 b = SRT1
+		dim    byref as T1 c = SRT4
+		dim    byref as T1 d = c
+		CheckAddrs( SRT1, b, c, d )
+	END_TEST
+
+	TEST( UDT2_static_local_to_shared )
+		static byref as T1 b = RT1
+		static byref as T1 c = RT4
+		dim    byref as T1 d = c
+		CheckAddrs( RT1, b, c, d )
+	END_TEST
+
+	TEST( UDT2_static_local_to_static_shared )
+		static byref as T1 b = SRT1
+		static byref as T1 c = SRT4
+		dim    byref as T1 d = c
+		CheckAddrs( SRT1, b, c, d )
+	END_TEST
+
 END_SUITE

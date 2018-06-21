@@ -866,7 +866,7 @@ private function hResolveRefToRefInitializer( byval dtype as integer, byval expr
 
 	if( expr andalso astIsDEREF( expr ) ) then
 		if( expr->l andalso astIsVAR( expr->l ) ) then
-			if( expr->l->sym andalso symbIsRef( expr->l->sym ) ) then
+			if( expr->l->sym andalso symbIsRef( expr->l->sym ) andalso symbIsVar( expr->l->sym ) ) then
 				tree = expr->l->sym->var_.initree
 				if( tree andalso astIsTYPEINI( tree ) ) then
 					if( tree->l andalso tree->l->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
