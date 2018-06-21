@@ -2019,6 +2019,8 @@ private sub hFlushCOMP _
 		doload = TRUE
 	elseif( v1_typ = IR_VREGTYPE_IMM) then          '' /
 		doload = TRUE
+	elseif( v1_typ = IR_VREGTYPE_OFS and v2_typ = IR_VREGTYPE_IMM ) then
+		doload = TRUE
 	elseif( v2_typ <> IR_VREGTYPE_REG ) then        '' /
 		if( v2_typ <> IR_VREGTYPE_IMM ) then
 			doload = TRUE
