@@ -653,8 +653,6 @@ SUITE( fbc_tests.functions.return_byref )
 		END_TEST
 	END_TEST_GROUP
 
-#if ENABLE_CHECK_BUGS
-
 	TEST_GROUP( byrefResultAsLvalue )
 		type UDT
 			as integer a, b
@@ -701,6 +699,7 @@ SUITE( fbc_tests.functions.return_byref )
 			i = 1 : CU_ASSERT( f1( ) = "y" )
 			i = 2 : CU_ASSERT( f1( ) = "z" )
 
+#if ENABLE_CHECK_BUGS
 			CU_ASSERT( f2( 0 ) = "a" ) '' <<-- fail
 			CU_ASSERT( f2( 1 ) = "b" ) '' <<-- fail
 			CU_ASSERT( f2( 2 ) = "c" ) '' <<-- fail
@@ -708,6 +707,7 @@ SUITE( fbc_tests.functions.return_byref )
 			CU_ASSERT( f2( 0 ) = "a" ) '' <<-- fail
 			CU_ASSERT( f2( 1 ) = "y" )
 			CU_ASSERT( f2( 2 ) = "c" ) '' <<-- fail
+#endif
 			(f2( 0 )) = "x"
 			(f2( 2 )) = "z"
 			CU_ASSERT( f2( 0 ) = "x" )
@@ -747,8 +747,6 @@ SUITE( fbc_tests.functions.return_byref )
 			CU_ASSERT( f4( 0 ).b = 33 )
 		END_TEST
 	END_TEST_GROUP
-
-#endif
 
 	TEST_GROUP( protoReturningFwdref )
 		type typedef as fwdref
