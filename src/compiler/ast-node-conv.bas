@@ -339,7 +339,9 @@ function astNewCONV _
 
 					if( (options and AST_CONVOPT_DONTCHKPTR) = 0 ) then
 						if( n->cast.convconst ) then
-							errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
+							if( fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
+								errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
+							end if
 						end if
 					end if
 
@@ -495,7 +497,9 @@ function astNewCONV _
 		n->cast.convconst = ( typeGetConstMask( ldtype ) <> typeGetConstMask( to_dtype ) )
 		if( (options and AST_CONVOPT_DONTCHKPTR) = 0 ) then
 			if( n->cast.convconst ) then
-				errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
+				if( fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
+					errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
+				end if
 			end if
 		end if
 	end if
