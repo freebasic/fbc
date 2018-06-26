@@ -66,6 +66,7 @@ Version 1.06.0
 - ASM backend: Fix bad code generated for comparisons such as IF @globalvar = 0 THEN
 - #884: FORMATing dates can deadlock under Unix
 - #642, #886: CASTs involving CONST qualifiers solved out too early allowing invalid statements to be compiled
+- #801: *@(expr) solved to (expr) did not cleanly remove null ptr checks allowing invalid datatype assignment with -exx.  *PTRCHK(@expr) solves to (expr).
 
 
 Version 1.05.0
