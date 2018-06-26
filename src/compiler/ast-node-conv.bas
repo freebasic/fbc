@@ -337,8 +337,10 @@ function astNewCONV _
 
 					n->cast.convconst = true
 
-					if( n->cast.convconst ) then
-						errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
+					if( (options and AST_CONVOPT_DONTCHKPTR) = 0 ) then
+						if( n->cast.convconst ) then
+							errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
+						end if
 					end if
 
 				end if
@@ -491,8 +493,10 @@ function astNewCONV _
 	'' TODO: merge with hCheckPtr()?
 	if( typeIsPtr( ldtype ) and typeIsPtr( to_dtype ) ) then
 		n->cast.convconst = ( typeGetConstMask( ldtype ) <> typeGetConstMask( to_dtype ) )
-		if( n->cast.convconst ) then
-			errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
+		if( (options and AST_CONVOPT_DONTCHKPTR) = 0 ) then
+			if( n->cast.convconst ) then
+				errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
+			end if
 		end if
 	end if
 
