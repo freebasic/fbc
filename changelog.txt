@@ -64,6 +64,7 @@ Version 1.06.0
 - Fix SELECT CASE AS CONST to allow both signed & unsigned case range values
 - #822, #814, #842: Compiler crash when initializing static/shared reference (DIM SHARED/STATIC BYREF) with non-constant initializer (e.g. another reference, or dynamic array element)
 - ASM backend: Fix bad code generated for comparisons such as IF @globalvar = 0 THEN
+- #884: FORMATing dates can deadlock under Unix
 
 
 Version 1.05.0

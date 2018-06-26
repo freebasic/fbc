@@ -142,7 +142,7 @@ FBSTRING *fb_hBuildDouble
     LenTotal = LenSign + LenFix + LenDecPoint + LenFrac;
 
 	/* alloc temp string */
-    dst = fb_hStrAllocTemp_NoLock( NULL, LenTotal );
+    dst = fb_hStrAllocTemp( NULL, LenTotal );
 	if( dst != NULL )
 	{
         if( LenSign!=0 ) {
@@ -1154,6 +1154,7 @@ FBCALL FBSTRING *fb_hStrFormat
 
     fb_ErrorSetNum( FB_RTERROR_OK );
 
+    /* Lock to prevent inconsistent results if fb_I18nSet() called? */
     FB_LOCK();
     pszIntlResult = fb_IntlGet( eFIL_NumDecimalPoint, FALSE );
     chDecimalPoint = (( pszIntlResult==NULL ) ? '.' : *pszIntlResult );
@@ -1170,8 +1171,6 @@ FBCALL FBSTRING *fb_hStrFormat
     if( chThousandsSep==0 )
         chThousandsSep = ',';
 
-    FB_STRLOCK();
-
     if( mask == NULL || mask_length==0 ) 
     {
         dst = fb_hBuildDouble( value, chDecimalPoint, 0 );
@@ -1187,7 +1186,7 @@ FBCALL FBSTRING *fb_hStrFormat
                               chThousandsSep, chDecimalPoint,
                               chDateSep, chTimeSep ) ) 
         {
-            dst = fb_hStrAllocTemp_NoLock( NULL, info.length_min + info.length_opt );
+            dst = fb_hStrAllocTemp( NULL, info.length_min + info.length_opt );
             if( dst == NULL ) 
             {
                 fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
@@ -1204,8 +1203,6 @@ FBCALL FBSTRING *fb_hStrFormat
             }
         }
     }
-
-    FB_STRUNLOCK();
 
     return dst;
 }
