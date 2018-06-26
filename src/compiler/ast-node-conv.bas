@@ -327,8 +327,20 @@ function astNewCONV _
 					'' to the expression parser
 					n = astNewNode( AST_NODECLASS_CONV, to_dtype, to_subtype )
 					n->l = l
+
 					n->cast.doconv = FALSE
 					n->cast.do_convfd2fs = FALSE
+					
+					'' Discarding const qualifier bits ?
+					'' TODO: reuse symbCheckConstAssign()?
+					'' TODO: merge with hCheckPtr()?
+
+					n->cast.convconst = true
+
+					if( n->cast.convconst ) then
+						errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
+					end if
+
 				end if
 			else
 				n = l
@@ -472,6 +484,17 @@ function astNewCONV _
 	n->l = l
 	n->cast.doconv = doconv
 	n->cast.do_convfd2fs = FALSE
+	n->cast.convconst = FALSE
+
+	'' Discarding const qualifier bits ?
+	'' TODO: reuse symbCheckConstAssign()?
+	'' TODO: merge with hCheckPtr()?
+	if( typeIsPtr( ldtype ) and typeIsPtr( to_dtype ) ) then
+		n->cast.convconst = ( typeGetConstMask( ldtype ) <> typeGetConstMask( to_dtype ) )
+		if( n->cast.convconst ) then
+			errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
+		end if
+	end if
 
 	if( env.clopt.backend = FB_BACKEND_GAS ) then
 		if( doconv ) then
@@ -560,6 +583,14 @@ function astLoadCONV _
 
 	vs = astLoad( l )
 
+	'' n->cast
+	'' doconv convconst    do_convfd2fs
+	'' false  false        n/a           same size
+	'' false  true         n/a           same size - different const qualifiers, doesn't matter now
+	'' true   false        false         different sizes
+	'' true   false        true          convert floating point double to single
+	'' true   true         n/a           different sizes  - different const qualifiers, doesn't matter now
+
 	if( ast.doemit ) then
 		vs->vector = n->vector
 		if( n->cast.doconv ) then
@@ -593,7 +624,7 @@ end function
 function astSkipNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
 	function = n
 	if( n->class = AST_NODECLASS_CONV ) then
-		if( n->cast.doconv = FALSE ) then
+		if( n->cast.doconv = FALSE and n->cast.convconst = FALSE ) then
 			function = n->l
 		end if
 	end if
@@ -602,7 +633,7 @@ end function
 function astRemoveNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
 	function = n
 	if( n->class = AST_NODECLASS_CONV ) then
-		if( n->cast.doconv = FALSE ) then
+		if( n->cast.doconv = FALSE and n->cast.convconst = FALSE ) then
 			function = n->l
 			n->l = NULL
 			astDelTree( n )

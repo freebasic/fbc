@@ -81,7 +81,8 @@ declare function hMakeParamDesc _
 		( 0, @"Mismatching parameter initializer" ), _
 		( 1, @"" ), _  '' FB_WARNINGMSG_AMBIGIOUSLENSIZEOF
 		( 0, @"Suspicious logic operation, mixed boolean and non-boolean operands" ), _
-		( 0, @"Redefinition of intrinsic" ) _
+		( 0, @"Redefinition of intrinsic" ), _
+		( 0, @"CONST qualifier discarded" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _

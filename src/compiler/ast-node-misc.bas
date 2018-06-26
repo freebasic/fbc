@@ -1090,8 +1090,12 @@ sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
 		case AST_NODECLASS_BOP, AST_NODECLASS_UOP
 			s += " " + astDumpOp( n->op.op )
 		case AST_NODECLASS_CONV
-			if( n->cast.doconv = FALSE ) then
+			if( n->cast.doconv = FALSE and n->cast.convconst = FALSE ) then
 				s += " noconv"
+			elseif( n->cast.doconv ) then
+				s += " conv"
+			elseif( n->cast.convconst ) then
+				s += " convconst"
 			end if
 		case AST_NODECLASS_CONST
 			if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then

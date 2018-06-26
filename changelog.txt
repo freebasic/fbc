@@ -65,6 +65,7 @@ Version 1.06.0
 - #822, #814, #842: Compiler crash when initializing static/shared reference (DIM SHARED/STATIC BYREF) with non-constant initializer (e.g. another reference, or dynamic array element)
 - ASM backend: Fix bad code generated for comparisons such as IF @globalvar = 0 THEN
 - #884: FORMATing dates can deadlock under Unix
+- #642, #886: CASTs involving CONST qualifiers solved out too early allowing invalid statements to be compiled
 
 
 Version 1.05.0

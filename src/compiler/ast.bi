@@ -244,8 +244,9 @@ type AST_NODE_LINK
 end type
 
 type AST_NODE_CAST
-	doconv 			as integer						'' do conversion (TRUE or FALSE)
-	do_convfd2fs		as integer  '' whether or not to ensure truncation in double2single conversions
+	doconv 			as integer	'' do conversion (TRUE or FALSE)
+	do_convfd2fs	as integer  '' whether or not to ensure truncation in double2single conversions
+	convconst		as integer	'' const qualifier bits discarded/changed in the conversion (TRUE or FALSE)
 end type
 
 ''
