@@ -161,10 +161,9 @@ function rtlNullPtrCheck _
    	proc = astNewCALL( PROCLOOKUP( NULLPTRCHK ) )
 
 	'' ptr
-	'' we are CASTing to any ptr, so quiet the ptr checks with AST_CONVOPT_DONTCHKPTR
-	'' astNewCONV => hCheckPtr() will allow any ptr even without this option.
+	'' we are forcing a CAST to any ptr, so quiet the const checks with AST_CONVOPT_DONTWARNCONST
 	if( astNewARG( proc, _
-				   astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, p, AST_CONVOPT_DONTCHKPTR ), _
+				   astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, p, AST_CONVOPT_DONTWARNCONST ), _
 				   typeAddrOf( FB_DATATYPE_VOID ) ) = NULL ) then
 		exit function
 	end if

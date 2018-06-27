@@ -331,20 +331,16 @@ function astNewCONV _
 					n->cast.doconv = FALSE
 					n->cast.do_convfd2fs = FALSE
 					
-					'' Discarding const qualifier bits ?
-					'' TODO: reuse symbCheckConstAssign()?
-					'' TODO: merge with hCheckPtr()?
+					'' data types and levels of pointer inderection are the same,
+					'' always record this as const conversion
+					n->cast.convconst = TRUE
 
-					n->cast.convconst = true
-
-					if( (options and AST_CONVOPT_DONTCHKPTR) = 0 ) then
-						if( n->cast.convconst ) then
-							if( fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
-								errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
-							end if
+					if( (options and AST_CONVOPT_DONTWARNCONST) = 0 ) then
+						if( fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
+							'' TODO: return this warning to the caller?
+							errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
 						end if
 					end if
-
 				end if
 			else
 				n = l
@@ -490,13 +486,33 @@ function astNewCONV _
 	n->cast.do_convfd2fs = FALSE
 	n->cast.convconst = FALSE
 
-	'' Discarding const qualifier bits ?
+	'' Discarding/changing const qualifier bits ?
 	'' TODO: reuse symbCheckConstAssign()?
 	'' TODO: merge with hCheckPtr()?
+
 	if( typeIsPtr( ldtype ) and typeIsPtr( to_dtype ) ) then
-		n->cast.convconst = ( typeGetConstMask( ldtype ) <> typeGetConstMask( to_dtype ) )
-		if( (options and AST_CONVOPT_DONTCHKPTR) = 0 ) then
-			if( n->cast.convconst ) then
+		
+		var cbits = typeGetConstMask( ldtype )
+		var to_cbits = typeGetConstMask( to_dtype )
+
+		'' differing levels of inderection?
+		if( typeGetPtrCnt( ldtype ) <> typeGetPtrCnt( to_dtype ) ) then
+			
+			'' increasing? check if we changed/gained any const bits
+			if( typeGetPtrCnt( to_dtype ) > typeGetPtrCnt( ldtype ) ) then
+				cbits shl= (typeGetPtrCnt( to_dtype ) - typeGetPtrCnt( ldtype ))
+				
+			'' decreasing. check if we changed/lost any const bits
+			else
+				to_cbits shl= (typeGetPtrCnt( ldtype ) - typeGetPtrCnt( to_dtype ))
+				
+			end if
+		end if
+
+		n->cast.convconst = ( cbits <> to_cbits )
+	
+		if( n->cast.convconst ) then
+			if( (options and AST_CONVOPT_DONTWARNCONST) = 0 ) then
 				if( fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
 					errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
 				end if
