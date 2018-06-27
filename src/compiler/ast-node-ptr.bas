@@ -43,7 +43,7 @@ function astNewDEREF _
 				'' TODO: remove null-ptr checks in ptr indexing
 
 				if( (t->l->class = AST_NODECLASS_ADDROF) or _
-					(t->l->class = AST_NODECLASS_OFFSET and t->ofs.ofs = 0) ) then
+					(t->l->class = AST_NODECLASS_OFFSET and t->l->ofs.ofs = 0) ) then
 
 					'' delete the null ptr check func call
 					astDelTree( t->r )	
