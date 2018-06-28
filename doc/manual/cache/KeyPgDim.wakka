@@ -223,4 +223,6 @@ Deallocate(s3)
 	- ##[[KeyPgUbound|UBound]]##
 	- ##[[KeyPgDots|... (Ellipsis)]]##
 	- ##[[KeyPgAny|Any]]##
+	- [[ProPgProcedurePointers|Pointers to Procedures]]
+
 {{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

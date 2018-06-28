@@ -41,7 +41,7 @@ End If
 %% 
 
 {{fbdoc item="diff"}}
-	- Must compile with //[[CompilerOptex|-ex]]// option
+	- Must compile with //[[CompilerOptex|-ex]]// or //[[CompilerOptexx|-exx]]// option
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgErr|Err]]##

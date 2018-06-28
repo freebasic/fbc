@@ -14,9 +14,12 @@ Standard data type: 8 bit character string
 	
 	In a ##**Zstring**##, ##[[KeyPgLen|Len]]## returns the size of the contained string and ##[[KeyPgSizeof|Sizeof]]## returns the space allocated to the ##**Zstring**##.  ##[[KeyPgSizeof|Sizeof]]## only works if the size is known by the compiler, i.e. a fixed-size ##**Zstring**## variable is passed directly, not as a dereferenced pointer or a ##[[KeyPgByref|Byref]]## function argument.
 	
-	This type is provided for easy interfacing with C libraries and to also replace the fixed-length strings, that can't be managed through pointers. Any intrinsic string functions like ##[[KeyPgLeft|Left]]## will work with ##**Zstring**##'s too, plus any string operator.
+	Any intrinsic string functions like ##[[KeyPgLeft|Left]]## will work with ##**Zstring**##'s too, plus any string operator.
 	
-	**Note :** When any operand of the '##=##' operator (assignment or equal) consists in dereferencing a '##Zstring Ptr##' pointer ('##pz##'), this can give a '##Zstring##' string or a '##Ubyte##' character, depending on the other operand. If the other operand is numeric, so the dereferenced '##Zstring Ptr##' pointer ('##*pz##') will be treated as a '##Ubyte##' reference to the one character pointed. If a '##Zstring##' pointer indexing '##[]##' operator is used as dereferencing syntax ('##pz[n]##'), it is basically a short-cut version of the '##String##' indexing '##[]##' operator ('##(*pz)[n]##').
+	This type is provided for easy interfacing with C libraries and to also replace the fixed-length strings, that can't be managed through pointers.
+	Any string type argument may be directly passed to a procedure referring to a parameter declared as ##**Zstring** [[KeyPgPtr|ptr]]##. The compiler performs itself an automatic conversion (without warning message) between any string type argument and the ##**Zstring** [[KeyPgPtr|ptr]]## type parameter.
+	
+	**Note :** When any operand of a binary operator (as assignment, equal, +, *, ...) consists in dereferencing a '##Zstring Ptr##' pointer ('##pz##'), this can give a '##Zstring##' string or a '##Ubyte##' character, depending on the other operand. If the other operand is numeric, so the dereferenced '##Zstring Ptr##' pointer ('##*pz##') will be treated as a '##Ubyte##' reference to the one character pointed. If a '##Zstring##' pointer indexing '##[]##' operator is used as dereferencing syntax ('##pz[n]##'), it is basically a short-cut version of the '##String##' indexing '##[]##' operator ('##(*pz)[n]##').
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/zstring.bas"}}%%(freebasic)

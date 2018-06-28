@@ -116,7 +116,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptv|-v"}}==
 		Be verbose
 	=={{fbdoc item="keyword" value="CompilerOptprint|-print < option >"}}==
-		Display certain information (##host##, ##target##, etc.)
+		Display certain information (##fblibdir##, ##host##, ##target##, ##x##)
 	=={{fbdoc item="keyword" value="CompilerOptpp|-pp"}}==
 		Emit the preprocessed input file only, do not compile
 	=={{fbdoc item="keyword" value="CompilerOptr|-r"}}==
@@ -137,6 +137,8 @@ Using the **fbc** command-line.
 		Only stop parsing if <val> errors occurred
 	=={{fbdoc item="keyword" value="CompilerOptnoerrline|-noerrline"}}==
 		Do not show source line where error occurred
+	=={{fbdoc item="keyword" value="CompilerOptnoobjinfo|-noobjinfo"}}==
+		Do not read/write compile-time info from/to .o and .a files
 	=={{fbdoc item="keyword" value="CompilerOptshowincludes|-showincludes"}}==
 		Display a tree of file names of #included files
 

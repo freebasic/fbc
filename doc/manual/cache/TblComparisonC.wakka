@@ -5,22 +5,22 @@
 
 {{fbdoc item="subsect" value="variable declaration"}}
 <<##int a;
-int a, b, c;##<<>>##dim a as integer
-dim as integer a, b, c##>>
+int a, b, c;##<<>>##dim a as long
+dim as long a, b, c##>>
 
 
 {{fbdoc item="subsect" value="uninitialized variable"}}
-<<##int a;##<<>>##dim a as integer = any##>>
+<<##int a;##<<>>##dim a as long = any##>>
 
 {{fbdoc item="subsect" value="zero-initialized variable"}}
-<<##int a = 0;##<<>>##dim a as integer##>>
+<<##int a = 0;##<<>>##dim a as long##>>
 
 {{fbdoc item="subsect" value="initialized variable"}}
-<<##int a = 123;##<<>>##dim a as integer = 123##>>
+<<##int a = 123;##<<>>##dim a as long = 123##>>
 
 {{fbdoc item="subsect" value="array"}}
 <<##int a[4];
-a[0] = 1;##<<>>##dim a(0 to 3) as integer
+a[0] = 1;##<<>>##dim a(0 to 3) as long
 a(0) = 1##>>
 
 
@@ -28,8 +28,8 @@ a(0) = 1##>>
 <<##int a;
 int *p;
 p = &a;
-*p = 123;##<<>>##dim a as integer
-dim p as integer ptr
+*p = 123;##<<>>##dim a as long
+dim p as long ptr
 p = @a
 *p = 123##>>
 
@@ -40,13 +40,13 @@ p = @a
 <<##struct UDT {
 	int myfield;
 }##<<>>##type UDT
-	myfield as integer
+	myfield as long
 end type##>>
 
 
 
 {{fbdoc item="subsect" value="typedef, type alias"}}
-<<##typedef int myint;##<<>>##type myint as integer##>>
+<<##typedef int myint;##<<>>##type myint as long##>>
 
 {{fbdoc item="subsect" value="struct pointer"}}
 <<##struct UDT x;
@@ -61,12 +61,12 @@ p->myfield = 123##>>
 
 
 {{fbdoc item="subsect" value="function declaration"}}
-<<##int foo( void );##<<>>##declare function foo( ) as integer##>>
+<<##int foo( void );##<<>>##declare function foo( ) as long##>>
 
 {{fbdoc item="subsect" value="function body"}}
 <<##int foo( void ) {
 	return 123;
-}##<<>>##function foo( ) as integer
+}##<<>>##function foo( ) as long
 	return 123
 end function##>>
 
@@ -83,7 +83,7 @@ end sub##>>
 
 {{fbdoc item="subsect" value="byval parameters"}}
 <<##void foo( int param );
-foo( a );##<<>>##declare sub foo( byval param as integer )
+foo( a );##<<>>##declare sub foo( byval param as long )
 foo( a );##>>
 
 
@@ -92,7 +92,7 @@ foo( a );##>>
 foo( &a );
 
 void foo( int& param );
-foo( a );##<<>>##declare sub foo( byref param as integer )
+foo( a );##<<>>##declare sub foo( byref param as long )
 foo( a )##
 
 
@@ -113,7 +113,7 @@ foo( a )##
 {{fbdoc item="subsect" value="for loop"}}
 <<##for (int i = 0; i < 10; ""i++"") {
 	...
-}##<<>>##for i as integer = 0 to 9
+}##<<>>##for i as long = 0 to 9
 	...
 next##>>
 
@@ -245,3 +245,5 @@ int main() {
 
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
+
+//Last reviewed by ""MrSwiss"" on April 6, 2018 Note: changed Integer to Long (where needed)//

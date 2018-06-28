@@ -17,7 +17,7 @@ Please edit this page to remove items when they are written or add items when th
 
 {{fbdoc item="section" value="Misc wishlist"}}
 	Warn in all non-portable or "evil" examples
-	File I/O: FB commands vs "CRT"
+	File I/O: FB commands vs "CRT". [[ProPgFileIO]] 
 	Consistent policy about "FB version diff" [[KeyPgImageInfo]] [[KeyPgRem]]
 	FB source file size limit
 	"returning references" stuff (PEEK, (), [], ... total 7 pages BUMP'ed today)

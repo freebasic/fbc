@@ -6,7 +6,7 @@ Declares a reference
 	//or//
 		##([[KeyPgDim|Dim]] | [[KeyPgStatic|Static]]) [[[KeyPgShared|Shared]]] **Byref** As [[DataType|DataType]] //name1// = //variable1// [, //name2// = //variable2//, ...]##
 	//or//
-		##[[KeyPgVar|Var]] [[[KeyPgShared|Shared]]] **Byref** As [[DataType|DataType]] //name1// = //variable1// [, **Byref** //name2// = //variable2//, ...]##
+		##[[KeyPgVar|Var]] [[[KeyPgShared|Shared]]] **Byref** //name1// = //variable1// [, **Byref** //name2// = //variable2//, ...]##
 
 {{fbdoc item="param"}}
 	##//name//##

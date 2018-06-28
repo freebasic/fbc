@@ -9,6 +9,8 @@ Returns the size of a variable or type in bytes.
 	
 	Different from ##[[KeyPgLen|Len]]##, when used with fixed-length strings (including fixed-length ##[[KeyPgZstring|Zstring]]##s and ##[[KeyPgWstring|Wstring]]##s) it will return the number of bytes they use, and when used with variable-length strings, it will return the size of the string descriptor.
 	
+	When a variable from a given namespace is accessed with the namespace's name prefix, wrap the argument to ##**Sizeof**## with parentheses to force it to be seen as an expression. For example ##Sizeof((namespace_name.variable))##.
+	
 	If there is both a user defined type and a variable visible with the same name in the current scope, the user defined type takes precedence over the variable.  To ensure that the ##**Sizeof**## takes the variable instead of the user defined type, wrap the argument to ##**Sizeof**## with parentheses to force it to be seen as an expression.  For example ##Sizeof((variable))##.
 	
 	Note: When used with arrays, ##**Sizeof**## returns the size of a single element of the array.  This differs from its behavior in C, where arrays could only be a fixed size, and ##sizeof()## would return the number of it used.

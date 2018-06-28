@@ -43,6 +43,8 @@ Defines a procedure
 	
 	Sub is the same as ##[[KeyPgFunction|Function]]##, except it does not allow a value to be returned.
 	
+	When calling a subroutine, parentheses after the subroutine name (surrounding the argument list if any) are optional.
+	
 	The second syntax defines either a constructor or destructor using the ##[[KeyPgModuleConstructor|Constructor]]## and ##[[KeyPgModuleDestructor|Destructor]]## keywords, respectively. Constructor subroutines are executed before the first line of code in the module, while destructors execute on module exit. Note the public access specifier and empty parameter list for both constructors and destructors.
 
 {{fbdoc item="ex"}}

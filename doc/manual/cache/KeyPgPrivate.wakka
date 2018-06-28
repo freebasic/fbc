@@ -14,6 +14,8 @@ Specifies a procedure having internal linkage
 	In procedure definitions (forbidden at declaration line level), ##**Private**## specifies that a procedure has internal linkage, meaning its name is not visible to external modules.
 	Therefore among the compiled modules, two procedures with the same identifier, but defined inside different modules, may exist if both are ##**Private**##.
 	
+	The compiler removes the ##**Private**## procedures that are not called, but this does not currently work for ##**Private**## procedures that are only called by other ##**Private**## procedures that are not called themselves, because the first one appears as being called.
+	
 	The ##[[KeyPgOptionprivate|Option Private]]## statement allows procedures to be defined with internal linkage by default.
 
 {{fbdoc item="ex"}}

@@ -27,7 +27,9 @@ Sets the current cursor position
 {{fbdoc item="ret"}}
 	Returns a 32 bit ##[[KeyPgLong|Long]]## containing the current cursor position and state. The [[KeyPgLoByte|low byte of the low word]] contains the column, the [[KeyPgHibyte|high byte of the low word]] contains the row, and the [[KeyPgHiword|high word]] contains the cursor state.
 	
-	If any of the //row//, //column// or //state// parameters were just set by the call to **Locate**, then the return value will reflect these new values, not the previous ones. If any of the parameters were omitted in the call to **Locate**, then the return value will reflect the current values, which are the same as before the call to **Locate**.
+	If any of the //row//, //column// or //state// parameters were just set by the call to ##**Locate**##, then the return value will reflect these new values, not the previous ones. If any of the parameters were omitted in the call to ##**Locate**##, then the return value will reflect the current values, which are the same as before the call to ##**Locate**##.
+	
+	##**Locate**## will attempt to position the cursor at the specified row and column. If the position is beyond the screen extents, cursor will not reposition. And next ##[[KeyPgPrint|Print]]## to the screen will continue at last valid cursor position.  When printing to the last line of the screen, and the ##[[KeyPgPrint|Print]]## statement has a new line character, the screen will scroll and reposition the cursor automatically to the last line, column 1.
 
 {{fbdoc item="desc"}}
 	Sets the text cursor in both graphics and console modes.
@@ -59,6 +61,7 @@ wend
 
 {{fbdoc item="diff"}}
 	- The ##//start//## and ##//stop//## arguments have no effect in ""FreeBASIC"".
+	- QB will raise an error if ##//row//## or ##//column//## are beyond the screen extents.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCsrlin|Csrlin]]##

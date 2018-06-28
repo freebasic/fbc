@@ -14,7 +14,7 @@ Specifies private member access control in a ##[[KeyPgType|Type]]## or ##[[KeyPg
 		declarations for fields, functions, or enumerations
 
 {{fbdoc item="desc"}}
-	##**Private:**## indicates that ##//member declarations//## following it have private access.  Private members are accessible only from inside a member function for the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##.
+	##**Private:**## indicates that ##//member declarations//## following it have private access.  Private members are accessible only from inside a member function for the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## (so not accessible from inside a member function for types or classes which are derived from the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##).
 	
 	##//member declarations//## following ##**Private:**## are private until a different access control specifier is given, like ##[[KeyPgVisPublic|Public:]]## or ##[[KeyPgVisProtected|Protected:]]##.
 	
