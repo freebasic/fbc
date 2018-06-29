@@ -1,0 +1,44 @@
+{{fbdoc item="title" value="FUNCTION Pointer"}}----
+Data type that stores a pointer to a ##[[KeyPgFunction|FUNCTION]]## procedure returning a value
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] [[KeyPgFunction|Function]] [[[KeyPgCdecl|CDecl]]|[[KeyPgPascal|Pascal]]|[[KeyPgStdcall|StdCall]]] [( [//parameter_list//] )] [ [[KeyPgByrefFunction|ByRef]] ] [[[KeyPgAs|As]] //return_type//] [= //initializer//]
+##
+{{fbdoc item="param"}}
+	##//parameter_list//##: parameter[, parameter[, ...]]
+	##//parameter//##: ##[[[KeyPgByref|ByRef]]|[[KeyPgByval|ByVal]]] //identifier// [[[KeyPgAs|As]] //type//] [= //default_value//]##
+		##//identifier//##: the name of the variable referenced in the subroutine
+		##//type//##: the type of variable
+		##//default_value//##: the value of the argument if none is specified in the call
+	##//return_value//##: the value returned from the function
+	##//intializer//##: address of a subroutine to set as the intial value
+
+{{fbdoc item="desc"}}
+	A ##[[KeyPgFunction|Function]]## pointer is a procedure pointer that stores the memory location of compiled code that returns a value.  If no intializer is given the default initial value is zero (0).
+	
+	The memory address for the ##[[KeyPgFunction|Function]]## procedure can be assigned to the variable by taking the address of a subroutine with ##[[KeyPgOpProcPtr|ProcPtr]]## or ##[[KeyPgOpAt|Operator @ (Address of)]]##.
+	
+	The procedure must match the same ##[[KeyPgFunction|Function]]## declaration as the declared ##[[KeyPgFunction|Function]]## pointer.
+	
+	To call the subroutine assigned, use the ##//variable//## name as if it were a normal declared ##[[KeyPgFunction|Function]]##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/datatype/funcptr.bas"}}%%(freebasic)
+function ConcatSelf( x as string ) as string
+	return x & x
+end function
+
+dim x as Function( x as string ) as string = procptr( ConcatSelf )
+
+print x( "Hello" )
+%%
+	 	
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgOpProcPtr|ProcPtr]]##
+	- ##[[KeyPgOpAt|Operator @ (Address of)]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

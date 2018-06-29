@@ -1,0 +1,51 @@
+{{fbdoc item="title" value="SUB Pointer"}}----
+Data type that stores a pointer to a ##[[KeyPgSub|SUB]]## procedure
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] [[KeyPgSub|Sub]] [[[KeyPgCdecl|CDecl]]|[[KeyPgPascal|Pascal]]|[[KeyPgStdcall|StdCall]]] [( [//parameter_list//] )] [= //initializer//]
+##
+{{fbdoc item="param"}}
+		##//parameter_list//##: parameter[, parameter[, ...]]
+		##//parameter//##: ##[[[KeyPgByref|ByRef]]|[[KeyPgByval|ByVal]]] //identifier// [[[KeyPgAs|As]] //type//] [= //default_value//]##
+			##//identifier//##: the name of the variable referenced in the subroutine
+			##//type//##: the type of variable
+			##//default_value//##: the value of the argument if none is specified in the call
+		##//intializer//##: address of a subroutine to set as the intial value
+
+{{fbdoc item="desc"}}
+	A ##[[KeyPgSub|Sub]]## pointer is a procedure pointer that stores the memory location of compiled code.  If no intializer is given the default initial value is zero (0).
+	
+	The memory address for the ##[[KeyPgSub|Sub]]## procedure can be assigned to the variable by taking the address of a subroutine with ##[[KeyPgOpProcPtr|ProcPtr]]## or ##[[KeyPgOpAt|Operator @ (Address of)]]##.
+	
+	The procedure must match the same ##[[KeyPgSub|Sub]]## declaration as the declared ##[[KeyPgSub|Sub]]## pointer.
+	
+	To call the subroutine assigned, use the ##//variable//## name as if it were a normal declared ##[[KeyPgSub|Sub]]##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/datatype/funcptr.bas"}}%%(freebasic)
+	sub Hello()
+		print "Hello"
+	end sub
+
+	sub Goodbye()
+		print "Goodbye"
+	end sub
+
+	dim x as Sub() = procptr( Hello )
+
+	x()
+
+	x = @Goodbye  '' or procptr(Goodbye)
+
+	x()
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgOpProcPtr|ProcPtr]]##
+	- ##[[KeyPgOpAt|Operator @ (Address of)]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}
