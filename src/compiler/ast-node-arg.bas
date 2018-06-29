@@ -249,6 +249,8 @@ private sub hStrArgToStrPtrParam _
 			n->l = hAllocTmpString( parent, n->l, FALSE )
 		end if
 
+		'' *cast( [const] zstring const ptr ptr, @expr )
+		'' Don't worry about preserving CONST bits, astNewARG() should have checked.
 		n->l = astBuildStrPtr( n->l )
 
 	case FB_DATATYPE_FIXSTR
@@ -273,7 +275,8 @@ end sub
 
 sub hBuildByrefArg( byval param as FBSYMBOL ptr, byval n as ASTNODE ptr )
 	n->l = astNewADDROF( astRemoveNoConvCAST( n->l ) )
-	n->l = astNewCONV( typeAddrOf( symbGetFullType( param ) ), symbGetSubtype( param ), n->l )
+	'' Don't warn on CONST qualifier changes, astNewARG() should have checked
+	n->l = astNewCONV( typeAddrOf( symbGetFullType( param ) ), symbGetSubtype( param ), n->l, AST_CONVOPT_DONTWARNCONST )
 	assert( n->l )
 	n->arg.mode = FB_PARAMMODE_BYVAL
 end sub

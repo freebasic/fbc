@@ -670,7 +670,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			errReportEx( FB_ERRMSG_INVALIDDATATYPES, "for STRPTR" )
 		end select
 
-		'' varlen? do: *cast( zstring ptr ptr, @expr )
+		'' varlen? do: *cast( [const] zstring const ptr ptr, @expr )
 		if( dtype = FB_DATATYPE_STRING ) then
 			expr = astBuildStrPtr( expr )
 

@@ -190,7 +190,19 @@ function astBuildDerefAddrOf overload _
 		n = astNewBOP( AST_OP_ADD, n, offsetexpr )
 	end if
 
-	n = astNewCONV( typeAddrOf( dtype ), subtype, n, AST_CONVOPT_DONTCHKPTR )
+	'' Don't warn on CONST qualifier changes, astBuildDerefAddrOf() is only 
+	'' called for internal expressions in:
+	''		- astBuildVarField(), 
+	''		- hShallowCopy()
+	''		- hCallCtorList()
+	''		- cDynamicArrayIndex()
+	''		- cVariableEx()
+	''		- hAssignDynamicArray()
+	'' Except:
+	''		- astTypeIniFlush(), HOWEVER, astNewASSIGN() does it's own 
+	''		  checks and calls astNewCONV()
+
+	n = astNewCONV( typeAddrOf( dtype ), subtype, n, AST_CONVOPT_DONTCHKPTR or AST_CONVOPT_DONTWARNCONST )
 	n = astNewDEREF( n )
 
 	if( maybeafield ) then
@@ -998,7 +1010,8 @@ function astBuildStrPtr( byval lhs as ASTNODE ptr ) as ASTNODE ptr
 	dtype = typeSetIsConst( typeAddrOf( dtype ) )
 	dtype = typeAddrOf( dtype )
 
-	expr = astNewDEREF( astNewCONV( dtype, NULL, astNewADDROF( lhs ) ) )
+	'' Don't warn on CONST qualifier changes, we are explicitly forcing the conversion
+	expr = astNewDEREF( astNewCONV( dtype, NULL, astNewADDROF( lhs ), AST_CONVOPT_DONTWARNCONST ) )
 
 	return expr
 end function
