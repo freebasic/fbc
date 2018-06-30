@@ -16,6 +16,8 @@ CONST UBYTE PTR
 CONST UBYTE PTR
 CONST UBYTE PTR
 No Warnings
+1 Warning
+1 Warning
 --- LOCAL CONST INTEGER
 No Warnings
 No Warnings

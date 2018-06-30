@@ -32,6 +32,8 @@
 
 '' --------------------------------------------------------
 
+'' internal init should not give warning
+
 WARN( 0 )
 
 type T_modlevel
@@ -40,12 +42,16 @@ end type
 
 '' --------------------------------------------------------
 
+'' internal init should not give warning
+
 scope
 	WARN( 0 )
 	dim s as const string = ""
 end scope
 
 '' --------------------------------------------------------
+
+'' internal init should not give warning
 
 WARN( 0 )
 
@@ -57,6 +63,8 @@ end type
 
 '' ----------------
 
+'' internal init should not give warning
+
 WARN( 0 )
 
 type OBJECT1 extends OBJECT
@@ -65,6 +73,9 @@ type OBJECT1 extends OBJECT
 end type
 
 '' ----------------
+
+'' internal casts to [const] zstring const ptr ptr
+'' should not give warning
 
 WARN( 0 )
 
@@ -96,6 +107,8 @@ end scope
 
 '' --------------------------------------------------------
 
+'' from sf.net #801
+
 WARN( 0 )
 
 scope 
@@ -106,13 +119,29 @@ scope
 	dim x as UDT
 
 	/'
-	'' FIXME: move to unit tests, error expected
+	'' !!! FIXME: move to unit tests, error expected
 	type<UDT>(1) = x
 	*@type<UDT>(1) = x
 	'/
 
 	type<UDT>(0).i = 1
 	*@type<UDT>(0).i = 1
+end scope
+
+'' ----------------
+
+'' from sf.net #642
+
+scope
+
+	dim as const integer a = 256
+
+	WARN( 1 ) '' !!! FIXME/investigate
+	clear a, 0, sizeof(integer)
+
+	WARN( 1 ) '' !!! FIXME/investigate
+	poke integer, @a, 257
+
 end scope
 
 '' --------------------------------------------------------
@@ -219,6 +248,9 @@ end scope
 
 '' --------------------------------------------------------
 
+'' internal array expressions should not give warning
+'' only access to the data type represented
+
 #print "--- LOCAL CONST INTEGER ARRAY"
 
 scope
@@ -294,6 +326,9 @@ end scope
 
 '' --------------------------------------------------------
 
+'' internal array expressions should not give warning
+'' only access to the data type represented
+
 #print "--- LOCAL INTEGER ARRAY"
 
 scope
@@ -367,6 +402,8 @@ end scope
 
 '' --------------------------------------------------------
 
+'' from sf.net #642
+
 #print "--- LOCAL INTEGER and BYTE PTR"
 
 scope
@@ -415,6 +452,8 @@ end scope
 	end scope
 
 '' --------------------------------------------------------
+
+'' from PR#90 discussion
 
 #print "--- PROCEDURE POINTERS"
 
