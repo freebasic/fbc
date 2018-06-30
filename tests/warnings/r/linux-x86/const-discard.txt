@@ -1,0 +1,91 @@
+No Warnings
+No Warnings
+No Warnings
+No Warnings
+No Warnings
+5 UBYTE PTR to follow
+UBYTE PTR
+UBYTE PTR
+UBYTE PTR
+UBYTE PTR
+UBYTE PTR
+5 CONST UBYTE PTR to follow
+CONST UBYTE PTR
+CONST UBYTE PTR
+CONST UBYTE PTR
+CONST UBYTE PTR
+CONST UBYTE PTR
+No Warnings
+--- LOCAL CONST INTEGER
+No Warnings
+No Warnings
+1 Warning
+	CONST qualifier discarded
+1 Warning
+	CONST qualifier discarded
+No Warnings
+No Warnings
+1 Warning
+	CONST qualifier discarded
+1 Warning
+	CONST qualifier discarded
+--- LOCAL INTEGER
+No Warnings
+No Warnings
+No Warnings
+1 Warning
+	CONST qualifier discarded
+1 Warning
+	CONST qualifier discarded
+No Warnings
+No Warnings
+--- LOCAL CONST INTEGER ARRAY
+No Warnings
+No Warnings
+6 Warnings
+	CONST qualifier discarded
+	CONST qualifier discarded
+	CONST qualifier discarded
+	CONST qualifier discarded
+	CONST qualifier discarded
+	CONST qualifier discarded
+No Warnings
+6 Warnings
+	CONST qualifier discarded
+	CONST qualifier discarded
+	CONST qualifier discarded
+	CONST qualifier discarded
+	CONST qualifier discarded
+	CONST qualifier discarded
+--- LOCAL INTEGER ARRAY
+No Warnings
+No Warnings
+6 Warnings
+6 Warnings
+	CONST qualifier discarded
+	CONST qualifier discarded
+	CONST qualifier discarded
+	CONST qualifier discarded
+	CONST qualifier discarded
+	CONST qualifier discarded
+No Warnings
+No Warnings
+--- LOCAL INTEGER and BYTE PTR
+1 Warning
+	CONST qualifier discarded
+1 Warning
+	Suspicious pointer assignment
+No Warnings
+1 Warning
+	CONST qualifier discarded
+2 Warnings
+	CONST qualifier discarded
+	Suspicious pointer assignment
+--- MULTIPLE CAST
+2 Warnings
+	CONST qualifier discarded
+	CONST qualifier discarded
+--- PROCEDURE POINTERS
+2 Warnings
+	Suspicious pointer assignment
+2 Warnings

@@ -335,11 +335,9 @@ function astNewCONV _
 					'' always record this as const conversion
 					n->cast.convconst = TRUE
 
-					if( (options and AST_CONVOPT_DONTWARNCONST) = 0 ) then
-						if( fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
+					if( (options and AST_CONVOPT_DONTWARNCONST) = 0 orelse fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
 							'' TODO: return this warning to the caller?
 							errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
-						end if
 					end if
 				end if
 			else
@@ -512,10 +510,8 @@ function astNewCONV _
 		n->cast.convconst = ( cbits <> to_cbits )
 	
 		if( n->cast.convconst ) then
-			if( (options and AST_CONVOPT_DONTWARNCONST) = 0 ) then
-				if( fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
+			if( (options and AST_CONVOPT_DONTWARNCONST) = 0 orelse fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
 					errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
-				end if
 			end if
 		end if
 	end if
