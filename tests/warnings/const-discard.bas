@@ -29,7 +29,6 @@
 	#endif
 #endmacro
 
-
 '' --------------------------------------------------------
 
 '' internal init should not give warning

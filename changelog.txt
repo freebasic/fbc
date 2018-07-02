@@ -15,7 +15,7 @@ Version 1.06.0
 - Updated bindings: SDL2 2.0.6, SDL2_image 2.0.1, SDL2_mixer 2.0.1, SDL2_net 2.0.1, SDL2_ttf 2.0.14
 - allow overload operator SQR()
 - allow [static] shared byref variables to be initialized with byref variable
-- warning '-w constness' to enable 'CONST qualifier discarded' warning, otherwise, tests/warnings/test.sh fails
+- warning '-w constness' to enable 'CONST qualifier discarded' warning
 
 [fixed]
 - win/d3dx9.bi no longer has a hard-coded #inclib "d3dx9d". d3dx9d.dll is apparently not a generally valid choice. In practice programs have to be linked against d3dx9_33.dll or d3dx9_39.dll, etc.
