@@ -1,4 +1,6 @@
 #!/bin/bash
+# We have to redirect stdin to /dev/null for all fbc invocations,
+# otherwise it hangs trying to interact with tty which doesn't exist.
 set -ex
 
 source "$(dirname "$0")/bootstrap-settings.sh"
@@ -61,8 +63,8 @@ fi
 
 # Build fbdoc tools
 cd doc/libfbdoc
-make FBC="$FBC_FOR_TESTS"
+make FBC="$FBC_FOR_TESTS" </dev/null
 cd ../fbdoc
-make FBC="$FBC_FOR_TESTS"
+make FBC="$FBC_FOR_TESTS" </dev/null
 cd ../fbchkdoc
-make FBC="$FBC_FOR_TESTS"
+make FBC="$FBC_FOR_TESTS" </dev/null
