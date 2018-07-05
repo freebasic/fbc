@@ -317,7 +317,7 @@ function astNewCONV _
 	if( typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( to_dtype ) ) then
 		if( l->subtype = to_subtype ) then
 			'' Only CONST bits changed?
-			if( ldtype <> to_dtype ) then
+			if( typeGetConstMask( ldtype ) <> typeGetConstMask( to_dtype ) ) then
 				'' CONST node? Evaluate at compile-time
 				if( astIsCONST( l ) ) then
 					astSetType( l, to_dtype, to_subtype )
