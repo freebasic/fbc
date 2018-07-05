@@ -64,8 +64,13 @@ const FB_DT_PTRLEVELS		= 8					'' max levels of pointer indirection
 const FB_DT_PTRPOS			= 5
 const FB_DT_CONSTPOS		= FB_DT_PTRPOS + 4
 
-const FB_OVLPROC_HALFMATCH = FB_DATATYPES
-const FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
+enum FB_OVLPROC_MATCH_SCORE
+	FB_OVLPROC_NO_MATCH = 0
+	FB_OVLPROC_LOWEST_MATCH = 1
+	FB_OVLPROC_TYPEMATCH = FB_DATATYPES
+	FB_OVLPROC_HALFMATCH = FB_OVLPROC_TYPEMATCH
+	FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
+end enum
 
 enum
 	FB_SIZETYPE_BOOLEAN = 0
@@ -979,7 +984,8 @@ declare function symbCalcProcMatch _
 		byval l as FBSYMBOL ptr, _
 		byval r as FBSYMBOL ptr, _
 		byref errmsg as integer _
-	) as integer
+	) as FB_OVLPROC_MATCH_SCORE
+
 declare sub symbProcCheckOverridden _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -1665,7 +1671,7 @@ declare function typeCalcMatch _
 		byval lparammode as integer, _
 		byval rdtype as integer, _
 		byval rsubtype as FBSYMBOL ptr _
-	) as integer
+	) as FB_OVLPROC_MATCH_SCORE
 
 declare sub symbHashListAdd _
 	( _

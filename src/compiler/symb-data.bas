@@ -516,18 +516,18 @@ function typeCalcMatch _
 		byval lparammode as integer, _
 		byval rdtype as integer, _
 		byval rsubtype as FBSYMBOL ptr _
-	) as integer
+	) as FB_OVLPROC_MATCH_SCORE
 
 	if( (ldtype = rdtype) and (lsubtype = rsubtype) ) then
 		return FB_OVLPROC_FULLMATCH
 	end if
 
 	if( typeGetPtrCnt( ldtype ) <> typeGetPtrCnt( rdtype ) ) then
-		return 0
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	if( symbCheckConstAssign( ldtype, rdtype, lsubtype, rsubtype, lparammode ) = FALSE ) then
-		return 0
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) and (lsubtype = rsubtype) ) then
@@ -552,7 +552,7 @@ function typeCalcMatch _
 			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( ldt, rdt )
 		end if
 
-		return 0
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	select case( ldt )
@@ -572,5 +572,5 @@ function typeCalcMatch _
 		return symbCalcProcMatch( lsubtype, rsubtype, 0 )
 	end select
 
-	function = 0
+	function = FB_OVLPROC_NO_MATCH
 end function

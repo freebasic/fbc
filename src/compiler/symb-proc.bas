@@ -1648,11 +1648,11 @@ private function hCalcTypesDiff _
 		byval arg_subtype as FBSYMBOL ptr, _
 	  	byval arg_expr as ASTNODE ptr, _
 	  	byval mode as FB_PARAMMODE = 0 _
-	) as integer
+	) as FB_OVLPROC_MATCH_SCORE
 
 	dim as integer arg_dclass = any, param_dt = any, arg_dt = any
 
-	function = 0
+	function = FB_OVLPROC_NO_MATCH
 
     '' don't take the const qualifier into account
     param_dtype = typeGetDtAndPtrOnly( param_dtype )
@@ -1682,7 +1682,7 @@ private function hCalcTypesDiff _
 				case FB_DATATYPE_WCHAR
 					return FB_OVLPROC_HALFMATCH
 				end select
-				return 0
+				return FB_OVLPROC_NO_MATCH
 			case FB_DATATYPE_WCHAR
 				select case( arg_dtype )
 				case FB_DATATYPE_CHAR
@@ -1690,7 +1690,7 @@ private function hCalcTypesDiff _
 				case FB_DATATYPE_WCHAR
 					return FB_OVLPROC_FULLMATCH
 				end select
-				return 0
+				return FB_OVLPROC_NO_MATCH
 
 			'' z/wstring ptr params:
 			'' - allow z/wstring or z/wstring ptr args, corresponding
@@ -1718,11 +1718,11 @@ private function hCalcTypesDiff _
 				select case( arg_dtype )
 				case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 					if( arg_expr = NULL ) then
-						return 0
+						return FB_OVLPROC_NO_MATCH
 					end if
 
 					if( astIsDEREF( arg_expr ) = FALSE ) then
-						return 0
+						return FB_OVLPROC_NO_MATCH
 					end if
 				end select
 			end select
@@ -1739,12 +1739,12 @@ private function hCalcTypesDiff _
 				if( typeIsPtr( arg_dtype ) = FALSE ) then
 					'' not an expression?
 					if( arg_expr = NULL ) then
-						return 0
+						return FB_OVLPROC_NO_MATCH
 					end if
 
 					'' Allow passing literal 0 (with some non-ptr integer type) to the ptr
 					if( astCheckConvNonPtrToPtr( param_dtype, arg_dtype, arg_expr, 0 ) <> FB_ERRMSG_OK ) then
-						return 0
+						return FB_OVLPROC_NO_MATCH
 					end if
 
 					'' Allow passing a literal 0 integer to a pointer parameter,
@@ -1752,8 +1752,8 @@ private function hCalcTypesDiff _
 					'' the literal 0 integer to actual integer parameters (which are
 					'' scored based on FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB...,
 					'' which is why we have to choose something that's hopefully lower
-					'' but still > 0 here).
-					return 1
+					'' but still > FB_OVLPROC_NO_MATCH here).
+					return FB_OVLPROC_LOWEST_MATCH
 				end if
 
 				'' Any Ptr parameters can accept all pointer arguments, as in C++.
@@ -1770,7 +1770,7 @@ private function hCalcTypesDiff _
 			elseif( typeIsPtr( arg_dtype ) ) then
 				'' Param isn't a pointer, but arg is:
 				'' no match -- pointers don't match integers
-				return 0
+				return FB_OVLPROC_NO_MATCH
 			end if
 
 			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
@@ -1778,7 +1778,7 @@ private function hCalcTypesDiff _
 		'' float? (ok due the auto-coercion, unless it's a pointer)
 		case FB_DATACLASS_FPOINT
 			if( typeIsPtr( param_dtype ) ) then
-				return 0
+				return FB_OVLPROC_NO_MATCH
 			end if
 
 			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( typeGet( arg_dtype ), typeGet( param_dtype ) )
@@ -1803,7 +1803,7 @@ private function hCalcTypesDiff _
 		'' only accept if it's an integer (but pointers)
 		case FB_DATACLASS_INTEGER
 			if( typeIsPtr( arg_dtype ) ) then
-				return 0
+				return FB_OVLPROC_NO_MATCH
 			end if
 
 			if( arg_dtype = FB_DATATYPE_ENUM ) then
@@ -1851,7 +1851,7 @@ private function hCheckOvlParam _
 	  	byval arg_expr as ASTNODE ptr, _
 		byval arg_mode as integer, _
 		byref constonly_diff as integer _
-	) as integer
+	) as FB_OVLPROC_MATCH_SCORE
 
 	dim as integer param_dtype = any, arg_dtype = any, param_ptrcnt = any
 	dim as integer const_matches = any
@@ -1865,7 +1865,7 @@ private function hCheckOvlParam _
 		if( symbParamIsOptional( param ) ) then
 			return FB_OVLPROC_FULLMATCH
 		else
-			return 0
+			return FB_OVLPROC_NO_MATCH
 		end if
     end if
 
@@ -1881,16 +1881,16 @@ private function hCheckOvlParam _
 	case FB_PARAMMODE_BYDESC
 		'' but arg isn't?
 		if( arg_mode <> FB_PARAMMODE_BYDESC ) then
-			return 0
+			return FB_OVLPROC_NO_MATCH
 		end if
 
 		'' not a full match?
         if( param_dtype <> arg_dtype ) then
-        	return 0
+        	return FB_OVLPROC_NO_MATCH
         end if
 
         if( param_subtype <> arg_subtype ) then
-        	return 0
+        	return FB_OVLPROC_NO_MATCH
         end if
 
 		assert( astIsVAR( arg_expr ) or astIsFIELD( arg_expr ) )
@@ -1902,7 +1902,7 @@ private function hCheckOvlParam _
 		if( param->param.bydescdimensions > 0 ) then
 			if( (param->param.bydescdimensions <> symbGetArrayDimensions( array )) and _
 			    (symbGetArrayDimensions( array ) > 0) ) then
-				return 0
+				return FB_OVLPROC_NO_MATCH
 			end if
 		end if
 
@@ -1915,7 +1915,7 @@ private function hCheckOvlParam _
 			'' invalid type? refuse..
 			if( (typeGetClass( arg_dtype ) <> FB_DATACLASS_INTEGER) or _
 				(typeGetSize( arg_dtype ) <> env.pointersize) ) then
-				return 0
+				return FB_OVLPROC_NO_MATCH
 			end if
 
 			'' pretend param is a pointer
@@ -1926,7 +1926,7 @@ private function hCheckOvlParam _
 
 	'' arg passed by descriptor? refuse..
 	if( arg_mode = FB_PARAMMODE_BYDESC ) then
-		return 0
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	static as integer cast_rec_cnt = 0, ctor_rec_cnt = 0
@@ -1958,7 +1958,7 @@ private function hCheckOvlParam _
 			end select
 		end if
 
-		if( match > 0 ) then
+		if( match > FB_OVLPROC_NO_MATCH ) then
 			'' In either case, we still have to check CONSTness (no point choosing a
 			'' BYREF AS CONST FOO overload parameter for a non-const FOO argument,
 			'' because it couldn't be passed anyways)
@@ -1986,7 +1986,7 @@ private function hCheckOvlParam _
 			end if
 
 			'' Same/compatible type, but mismatch due to CONSTness
-			return 0
+			return FB_OVLPROC_NO_MATCH
 		end if
 	end if
 
@@ -1999,19 +1999,19 @@ private function hCheckOvlParam _
 
         '' and at last, try implicit casting..
         hCheckCastOvlEx( cast_rec_cnt, param_dtype, param_subtype, arg_expr )
-		return 0
+		return FB_OVLPROC_NO_MATCH
 
 	'' enum param? refuse any other argument type, even integers,
 	'' or operator overloading wouldn't work (as in C++)
     case FB_DATATYPE_ENUM
-       	return 0
+       	return FB_OVLPROC_NO_MATCH
 
     case else
 		select case arg_dtype
 		'' UDT arg? try implicit casting..
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
 			hCheckCastOvlEx( cast_rec_cnt, symbGetFullType( param ), param_subtype, arg_expr )
-			return 0
+			return FB_OVLPROC_NO_MATCH
 		end select
     end select
 
@@ -2378,7 +2378,7 @@ private function hCheckCastOvl _
 		byval proc as FBSYMBOL ptr, _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr _
-	) as integer
+	) as FB_OVLPROC_MATCH_SCORE
 
 	dim as integer proc_dtype = any
 	dim as FBSYMBOL ptr proc_subtype = any
@@ -2394,7 +2394,7 @@ private function hCheckCastOvl _
 		end if
 
 		if( typeIsPtr( proc_dtype ) ) then
-			return 0
+			return FB_OVLPROC_NO_MATCH
 		end if
 	end if
 
@@ -2404,13 +2404,13 @@ private function hCheckCastOvl _
 	'' UDT or enum? can't be different (this is the last resource,
 	'' don't try to do coercion inside a casting routine)
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-		return 0
+		return FB_OVLPROC_NO_MATCH
 
 	case else
 		select case typeGet( to_dtype )
 		'' UDT arg? refuse
 		case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
-			return 0
+			return FB_OVLPROC_NO_MATCH
 		end select
 
 	end select
@@ -2640,24 +2640,24 @@ private function symbCalcParamMatch _
 	( _
 		byval l as FBSYMBOL ptr, _
 		byval r as FBSYMBOL ptr _
-	) as integer
+	) as FB_OVLPROC_MATCH_SCORE
 
 	assert( l->class = FB_SYMBCLASS_PARAM )
 	assert( r->class = FB_SYMBCLASS_PARAM )
 
 	var match = typeCalcMatch( l->typ, l->subtype, l->param.mode, r->typ, r->subtype )
-	if( match = 0 ) then
-		return 0
+	if( match = FB_OVLPROC_NO_MATCH ) then
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	if( l->param.mode <> r->param.mode ) then
-		return 0
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	'' Check Bydesc dimensions
 	if( l->param.mode = FB_PARAMMODE_BYDESC ) then
 		if( l->param.bydescdimensions <> r->param.bydescdimensions ) then
-			return 0
+			return FB_OVLPROC_NO_MATCH
 		end if
 	end if
 
@@ -2707,7 +2707,7 @@ function symbCalcProcMatch _
 		byval l as FBSYMBOL ptr, _
 		byval r as FBSYMBOL ptr, _
 		byref errmsg as integer _
-	) as integer
+	) as FB_OVLPROC_MATCH_SCORE
 
 	assert( symbIsProc( l ) )
 	assert( symbIsProc( r ) )
@@ -2721,21 +2721,21 @@ function symbCalcProcMatch _
 	var match = typeCalcMatch( l->typ, l->subtype, _
 			iif( symbIsRef( l ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
 			r->typ, r->subtype )
-	if( match = 0 ) then
+	if( match = FB_OVLPROC_NO_MATCH ) then
 		errmsg = FB_ERRMSG_OVERRIDERETTYPEDIFFERS
-		return 0
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	'' Does one have a BYREF result, but not the other?
 	if( symbIsRef( l ) <> symbIsRef( r ) ) then
 		errmsg = FB_ERRMSG_OVERRIDERETTYPEDIFFERS
-		return 0
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	'' Different calling convention?
 	if( symbAreProcModesEqual( l, r ) = FALSE ) then
 		errmsg = FB_ERRMSG_OVERRIDECALLCONVDIFFERS
-		return 0
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	'' If one is a CONST member method, the other must be too
@@ -2746,13 +2746,13 @@ function symbCalcProcMatch _
 		else
 			errmsg = FB_ERRMSG_OVERRIDEISCONSTMEMBER
 		end if
-		return 0
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	'' Different parameter count?
 	if( symbGetProcParams( l ) <> symbGetProcParams( r ) ) then
 		errmsg = FB_ERRMSG_OVERRIDEPARAMSDIFFER
-		return 0
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	'' Check each parameter's mode and type
@@ -2781,9 +2781,9 @@ function symbCalcProcMatch _
 		'' to check whether the lparam could be passed to the rparam,
 		'' when calling r through l.
 		var parammatch = symbCalcParamMatch( rparam, lparam )
-		if( parammatch = 0 ) then
+		if( parammatch = FB_OVLPROC_NO_MATCH ) then
 			errmsg = FB_ERRMSG_OVERRIDEPARAMSDIFFER
-			return 0
+			return FB_OVLPROC_NO_MATCH
 		end if
 
 		'' Decrease overall match if a single param scored lower
@@ -2817,7 +2817,7 @@ sub symbProcCheckOverridden _
 		'' in registers).
 
 		dim errmsg as integer
-		if( symbCalcProcMatch( overridden, proc, errmsg ) = 0 ) then
+		if( symbCalcProcMatch( overridden, proc, errmsg ) = FB_OVLPROC_NO_MATCH ) then
 			if( is_implicit and _
 			    (errmsg = FB_ERRMSG_OVERRIDECALLCONVDIFFERS) ) then
 				'' symbUdtDeclareDefaultMembers() uses this to check
