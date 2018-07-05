@@ -181,8 +181,10 @@ scope
 
 	scope
 		WARN( 1 )
+		#print FIXME
 		dim p as integer ptr = cast( integer ptr, @x )
 		WARN( 1 )
+		#print FIXME
 		p = cast( integer ptr, @x )
 	end scope
 
@@ -347,6 +349,7 @@ scope
 
 	scope
 		WARN( 6 )
+		#print TODO: assigning non-const-ptr to const-ptr is safe, warn only if -w constness given
 		dim p0 as const integer ptr = cast( integer ptr, @x(0) )
 		dim p1 as const integer ptr = cast( integer ptr, @x(i) )
 		dim p2 as const integer ptr = cast( integer ptr, @x(1+i) )
@@ -474,7 +477,8 @@ scope
 
 	ptr_const   = @sub_const   '' safe, same type
 
-	WARN( 2 ) '' !!! FIXME
+	WARN( 2 ) 
+	#print FIXME
 	ptr_const   = @sub_noconst '' unsafe, because when calling through the ptr the param appears const, but the sub actually modifies it
 
 	ptr_noconst = @sub_const   '' safe, ptr allows more than the sub will do
@@ -483,11 +487,78 @@ scope
 
 	print cptr(sub(byref as const integer), @sub_const) '' safe
 
-	WARN( 2 ) '' !!! FIXME
+	WARN( 2 )
+	#print FIXME
 	print cptr(sub(byref as const integer), @sub_noconst) '' unsafe, currently no warning even with -w constness
 
 	print cptr(sub(byref as integer), @sub_const) '' safe
 
 	print cptr(sub(byref as integer), @sub_noconst) '' safe
 
+end scope
+
+'' --------------------------------------------------------
+
+#print "--- RTLIB DEALLOCATE"
+
+scope
+	type T
+		nc as const zstring ptr
+		n as zstring ptr
+		ic as const integer ptr
+		i as integer ptr
+	end type
+
+	dim x as T
+
+	'' should not get warnings when allocating/deallocating
+	'' a const {datatype} ptr.  We only need to guarentee
+	'' that the data is not modified when accessed though
+	'' the const type.  We make no guarantees about the pointer
+	'' itself; which includes deallocation.
+
+	'' no warnings expected
+
+	WARN( 0 )
+	x.nc = callocate( 10 )
+	deallocate( x.nc )
+
+	WARN( 0 )
+	x.n = callocate( 10 )
+	deallocate( x.n )
+
+	WARN( 0 )
+	x.ic = callocate( 10 )
+	deallocate( x.ic )
+
+	WARN( 0 )
+	x.i = callocate( 10 )
+	deallocate( x.i )
+
+end scope
+
+'' --------------------------------------------------------
+
+#print "--- CRT memcpy"
+
+declare function memcpy (byval as any ptr, byval as const any ptr, byval as integer ) as any ptr
+
+scope
+	dim x as byte ptr
+	
+	dim xc as const byte ptr = allocate(10)
+	dim i as integer
+
+	'' safe, should not warn
+	WARN(0)
+	memcpy( x, x, 5 )
+
+	WARN(0)
+	memcpy( x, xc, 5 )
+
+	WARN(0)
+	memcpy( x + i, x, 5 )
+
+	WARN(0)
+	memcpy( x + i, xc, 5 )
 end scope

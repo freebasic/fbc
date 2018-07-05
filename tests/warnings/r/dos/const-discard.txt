@@ -28,8 +28,10 @@ No Warnings
 No Warnings
 No Warnings
 1 Warning
+FIXME
 	CONST qualifier discarded
 1 Warning
+FIXME
 	CONST qualifier discarded
 --- LOCAL INTEGER
 No Warnings
@@ -63,6 +65,7 @@ No Warnings
 No Warnings
 No Warnings
 6 Warnings
+TODO: assigning non-const-ptr to const-ptr is safe, warn only if -w constness given
 6 Warnings
 	CONST qualifier discarded
 	CONST qualifier discarded
@@ -89,5 +92,21 @@ No Warnings
 	CONST qualifier discarded
 --- PROCEDURE POINTERS
 2 Warnings
+FIXME
 	Suspicious pointer assignment
 2 Warnings
+FIXME
+--- RTLIB DEALLOCATE
+No Warnings
+	CONST qualifier discarded, at parameter 1 of DEALLOCATE()
+No Warnings
+No Warnings
+	CONST qualifier discarded, at parameter 1 of DEALLOCATE()
+No Warnings
+--- CRT memcpy
+No Warnings
+	CONST qualifier discarded, at parameter 2 of MEMCPY()
+No Warnings
+No Warnings
+	CONST qualifier discarded, at parameter 2 of MEMCPY()
+No Warnings
