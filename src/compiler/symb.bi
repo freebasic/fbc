@@ -1804,7 +1804,7 @@ declare function symbGetCompOpOvlHead _
 
 declare sub symbSetCompOpOvlHead _
 	( _
-		byval syn as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
 	)
 

@@ -1943,7 +1943,7 @@ private function hCheckOvlParam _
 		'' with the closest base type.
 		''
 		var baselevel = 0
-		var match = 0
+		dim match as FB_OVLPROC_MATCH_SCORE = FB_OVLPROC_NO_MATCH
 		if( param_subtype = arg_subtype ) then
 			match = FB_OVLPROC_FULLMATCH
 		else
@@ -2037,7 +2037,7 @@ function symbFindClosestOvlProc _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr ovl = any, closest_proc = any, param = any
-	dim as integer arg_matches = any, matches = any
+	dim as FB_OVLPROC_MATCH_SCORE arg_matches = any, matches = any
 	dim as integer max_matches = any, exact_matches = any
 	dim as integer matchcount = any
 	dim as FB_CALL_ARG ptr arg = any
@@ -2086,7 +2086,7 @@ function symbFindClosestOvlProc _
 				param = param->next
 			end if
 
-			matches = 0
+			matches = FB_OVLPROC_NO_MATCH
 			exact_matches = 0
 
 			'' for each arg..
@@ -2094,8 +2094,8 @@ function symbFindClosestOvlProc _
 			for i as integer = 0 to args-1
 				dim as integer arg_constonly_diff = FALSE
 				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode, arg_constonly_diff )
-				if( arg_matches = 0 ) then
-					matches = 0
+				if( arg_matches = FB_OVLPROC_NO_MATCH ) then
+					matches = FB_OVLPROC_NO_MATCH
 					exit for
 				end if
 
@@ -2113,7 +2113,7 @@ function symbFindClosestOvlProc _
 
 			'' If there were no args, then assume it's a match and
 			'' then check the remaining params, if any.
-			var is_match = (args = 0) or (matches > 0)
+			var is_match = (args = 0) or (matches > FB_OVLPROC_NO_MATCH)
 
 			'' Fewer args than params? Check whether the missing ones are optional.
 			for i as integer = args to params-1
