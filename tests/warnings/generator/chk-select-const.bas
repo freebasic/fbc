@@ -45,12 +45,12 @@ while eof(1) = 0
 		if left( x, 8 ) = "warning " then
 			mode = 1
 		else
-			if instr( x, "warning" ) > 0 then
+			if instr( 2, x, "warning" ) > 0 then
 				print "line " & lineno & " - unexpected warning"
 			end if
 		end if
 	else
-		if instr( x, "warning" ) = 0 then
+		if instr( 2, x, "warning" ) = 0 then
 			print "line " & lineno & " - expected warning"
 		end if
 		mode = 0
