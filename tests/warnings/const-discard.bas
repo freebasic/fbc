@@ -20,16 +20,20 @@
 #endmacro
 
 #macro WARN( W )
-	#if (W=1) 
-		#print 1 Warning
-	#elseif (W>1)
-		#print W Warnings
+	#if (W=0) 
+	#elseif (W=1)
+		#print warning expected
+	#elseif (W=2)
+		#print 2 warnings expected
 	#else
-		#print No Warnings
+		#print argument must be 0 or 1 or 2
+		#error
 	#endif
 #endmacro
 
 '' --------------------------------------------------------
+
+#print "---- INTERNAL CONVERSIONS"
 
 '' internal init should not give warning
 
@@ -129,23 +133,25 @@ end scope
 
 '' ----------------
 
+#print "---- RTLIB"
+
 '' from sf.net #642
 
 scope
 
 	dim as const integer a = 256
 
-	WARN( 1 ) '' !!! FIXME/investigate
+	WARN( 1 )
 	clear a, 0, sizeof(integer)
 
-	WARN( 1 ) '' !!! FIXME/investigate
+	WARN( 1 )
 	poke integer, @a, 257
 
 end scope
 
 '' --------------------------------------------------------
 
-#print "--- LOCAL CONST INTEGER"
+#print "---- LOCAL CONST INTEGER"
 
 scope
 	WARN( 0 )
@@ -181,10 +187,8 @@ scope
 
 	scope
 		WARN( 1 )
-		#print FIXME
 		dim p as integer ptr = cast( integer ptr, @x )
 		WARN( 1 )
-		#print FIXME
 		p = cast( integer ptr, @x )
 	end scope
 
@@ -200,7 +204,7 @@ end scope
 
 '' --------------------------------------------------------
 
-#print "--- LOCAL INTEGER"
+#print "---- LOCAL INTEGER"
 
 scope
 	WARN( 0 )
@@ -252,7 +256,7 @@ end scope
 '' internal array expressions should not give warning
 '' only access to the data type represented
 
-#print "--- LOCAL CONST INTEGER ARRAY"
+#print "---- LOCAL CONST INTEGER ARRAY"
 
 scope
 	WARN( 0 )
@@ -262,52 +266,76 @@ scope
 	scope
 		WARN( 0 )
 		dim p0 as const integer ptr = @x(0)
-		dim p1 as const integer ptr = @x(i)
-		dim p2 as const integer ptr = @x(1+i)
+		dim p1 as const integer ptr = @x(1)
+		dim p2 as const integer ptr = @x(i)
+		dim p3 as const integer ptr = @x(1+i)
 		p0 = @x(0)
-		p1 = @x(i)
-		p2 = @x(1+i)
+		p1 = @x(1)
+		p2 = @x(i)
+		p3 = @x(1+i)
 	end scope
 
 	scope
-		WARN( 6 )
+		WARN( 1 )
 		dim p0 as const integer ptr = cast( integer ptr, @x(0) )
-		dim p1 as const integer ptr = cast( integer ptr, @x(i) )
-		dim p2 as const integer ptr = cast( integer ptr, @x(1+i) )
+		WARN( 1 )
+		dim p1 as const integer ptr = cast( integer ptr, @x(1) )
+		WARN( 1 )
+		dim p2 as const integer ptr = cast( integer ptr, @x(i) )
+		WARN( 1 )
+		dim p3 as const integer ptr = cast( integer ptr, @x(1+i) )
+		WARN( 1 )
 		p0 = cast( integer ptr, @x(0) )
-		p1 = cast( integer ptr, @x(i) )
-		p2 = cast( integer ptr, @x(1+i) )
+		WARN( 1 )
+		p1 = cast( integer ptr, @x(1) )
+		WARN( 1 )
+		p2 = cast( integer ptr, @x(i) )
+		WARN( 1 )
+		p3 = cast( integer ptr, @x(1+i) )
 	end scope
 
 	scope
 		WARN( 0 )
 		dim p0 as const integer ptr = cast( const integer ptr, @x(0) )
-		dim p1 as const integer ptr = cast( const integer ptr, @x(i) )
+		dim p1 as const integer ptr = cast( const integer ptr, @x(1) )
+		dim p3 as const integer ptr = cast( const integer ptr, @x(i) )
 		dim p2 as const integer ptr = cast( const integer ptr, @x(1+i) )
 		p0 = cast( const integer ptr, @x(0) )
-		p1 = cast( const integer ptr, @x(i) )
-		p2 = cast( const integer ptr, @x(1+i) )
+		p1 = cast( const integer ptr, @x(1) )
+		p2 = cast( const integer ptr, @x(i) )
+		p3 = cast( const integer ptr, @x(1+i) )
 	end scope
 
 	#if (ENABLE_SHOW_EXPECTED_ERRORS<>0)
 	scope
 		WARN_AND_ERROR( 3, 6 )
 		dim p0 as integer ptr = @x(0)
-		dim p1 as integer ptr = @x(i)
-		dim p2 as integer ptr = @x(1+i)
+		dim p1 as integer ptr = @x(1)
+		dim p2 as integer ptr = @x(i)
+		dim p3 as integer ptr = @x(1+i)
 		p0 = @x(0)
-		p1 = @x(i)
-		p2 = @x(1+i)
+		p1 = @x(1)
+		p2 = @x(i)
+		p3 = @x(1+i)
 	end scope
 	#endif
 
 	scope
-		WARN( 6 )
+		WARN( 1 )
 		dim p0 as integer ptr = cast( integer ptr, @x(0) )
-		dim p1 as integer ptr = cast( integer ptr, @x(i) )
-		dim p2 as integer ptr = cast( integer ptr, @x(1+i) )
+		WARN( 1 )
+		dim p1 as integer ptr = cast( integer ptr, @x(1) )
+		WARN( 1 )
+		dim p2 as integer ptr = cast( integer ptr, @x(i) )
+		WARN( 1 )
+		dim p3 as integer ptr = cast( integer ptr, @x(1+i) )
+		WARN( 1 )
 		p0 = cast( integer ptr, @x(0) )
-		p1 = cast( integer ptr, @x(i) )
+		WARN( 1 )
+		p1 = cast( integer ptr, @x(1) )
+		WARN( 1 )
+		p2 = cast( integer ptr, @x(i) )
+		WARN( 1 )
 		p2 = cast( integer ptr, @x(1+i) )
 	end scope
 
@@ -315,11 +343,13 @@ scope
 	scope
 		WARN_AND_ERROR( 3, 6 )
 		dim p0 as integer ptr = cast( const integer ptr, @x(0) )
-		dim p1 as integer ptr = cast( const integer ptr, @x(i) )
-		dim p2 as integer ptr = cast( integer ptr, @x(1+i) )
+		dim p1 as integer ptr = cast( const integer ptr, @x(1) )
+		dim p2 as integer ptr = cast( const integer ptr, @x(i) )
+		dim p3 as integer ptr = cast( const integer ptr, @x(1+i) )
 		p0 = cast( const integer ptr, @x(0) )
-		p1 = cast( const integer ptr, @x(i) )
-		p2 = cast( const integer ptr, @x(1+i) )
+		p1 = cast( const integer ptr, @x(1) )
+		p2 = cast( const integer ptr, @x(i) )
+		p3 = cast( const integer ptr, @x(1+i) )
 	end scope
 	#endif
 
@@ -330,7 +360,7 @@ end scope
 '' internal array expressions should not give warning
 '' only access to the data type represented
 
-#print "--- LOCAL INTEGER ARRAY"
+#print "---- LOCAL INTEGER ARRAY"
 
 scope
 	WARN( 0 )
@@ -340,63 +370,87 @@ scope
 	scope
 		WARN( 0 )
 		dim p0 as const integer ptr = @x(0)
-		dim p1 as const integer ptr = @x(i)
-		dim p2 as const integer ptr = @x(1+i)
+		dim p1 as const integer ptr = @x(1)
+		dim p2 as const integer ptr = @x(i)
+		dim p3 as const integer ptr = @x(1+i)
 		p0 = @x(0)
-		p1 = @x(i)
-		p2 = @x(1+i)
+		p1 = @x(1)
+		p2 = @x(i)
+		p3 = @x(1+i)
 	end scope
 
 	scope
-		WARN( 6 )
 		#print TODO: assigning non-const-ptr to const-ptr is safe, warn only if -w constness given
+		WARN( 0 )
 		dim p0 as const integer ptr = cast( integer ptr, @x(0) )
-		dim p1 as const integer ptr = cast( integer ptr, @x(i) )
-		dim p2 as const integer ptr = cast( integer ptr, @x(1+i) )
+		WARN( 0 )
+		dim p1 as const integer ptr = cast( integer ptr, @x(1) )
+		WARN( 0 )
+		dim p2 as const integer ptr = cast( integer ptr, @x(i) )
+		WARN( 0 )
+		dim p3 as const integer ptr = cast( integer ptr, @x(1+i) )
+		WARN( 0 )
 		p0 = cast( integer ptr, @x(0) )
-		p1 = cast( integer ptr, @x(i) )
-		p2 = cast( integer ptr, @x(1+i) )
+		WARN( 0 )
+		p1 = cast( integer ptr, @x(1) )
+		WARN( 0 )
+		p2 = cast( integer ptr, @x(i) )
+		WARN( 0 )
+		p3 = cast( integer ptr, @x(1+i) )
 	end scope
 
 	scope
-		WARN( 6 )
+		WARN( 1 )
 		dim p0 as const integer ptr = cast( const integer ptr, @x(0) )
-		dim p1 as const integer ptr = cast( const integer ptr, @x(i) )
-		dim p2 as const integer ptr = cast( const integer ptr, @x(1+i) )
+		WARN( 1 )
+		dim p1 as const integer ptr = cast( const integer ptr, @x(1) )
+		WARN( 1 )
+		dim p2 as const integer ptr = cast( const integer ptr, @x(i) )
+		WARN( 1 )
+		dim p3 as const integer ptr = cast( const integer ptr, @x(1+i) )
+		WARN( 1 )
 		p0 = cast( const integer ptr, @x(0) )
+		WARN( 1 )
 		p1 = cast( const integer ptr, @x(i) )
+		WARN( 1 )
 		p2 = cast( const integer ptr, @x(1+i) )
 	end scope
 
 	scope
 		WARN( 0 )
 		dim p0 as integer ptr = @x(0)
-		dim p1 as integer ptr = @x(i)
-		dim p2 as integer ptr = @x(1+i)
+		dim p1 as integer ptr = @x(1)
+		dim p2 as integer ptr = @x(i)
+		dim p3 as integer ptr = @x(1+i)
 		p0 = @x(0)
-		p1 = @x(i)
-		p2 = @x(1+i)
+		p1 = @x(1)
+		p2 = @x(i)
+		p3 = @x(1+i)
 	end scope
 
 	scope
 		WARN( 0 )
 		dim p0 as integer ptr = cast( integer ptr, @x(0) )
-		dim p1 as integer ptr = cast( integer ptr, @x(i) )
-		dim p2 as integer ptr = cast( integer ptr, @x(1+i) )
+		dim p1 as integer ptr = cast( integer ptr, @x(1) )
+		dim p2 as integer ptr = cast( integer ptr, @x(i) )
+		dim p3 as integer ptr = cast( integer ptr, @x(1+i) )
 		p0 = cast( integer ptr, @x(0) )
-		p1 = cast( integer ptr, @x(i) )
-		p2 = cast( integer ptr, @x(1+i) )
+		p1 = cast( integer ptr, @x(1) )
+		p2 = cast( integer ptr, @x(i) )
+		p3 = cast( integer ptr, @x(1+i) )
 	end scope
 
 	#if (ENABLE_SHOW_EXPECTED_ERRORS<>0)
 	scope
 		WARN_AND_ERROR( 9, 6 )
 		dim p0 as integer ptr = cast( const integer ptr, @x(0) )
-		dim p1 as integer ptr = cast( const integer ptr, @x(i) )
-		dim p2 as integer ptr = cast( const integer ptr, @x(1+i) )
+		dim p1 as integer ptr = cast( const integer ptr, @x(1) )
+		dim p2 as integer ptr = cast( const integer ptr, @x(i) )
+		dim p3 as integer ptr = cast( const integer ptr, @x(1+i) )
 		p0 = cast( const integer ptr, @x(0) )
-		p1 = cast( const integer ptr, @x(i) )
-		p2 = cast( const integer ptr, @x(1+i) )
+		p1 = cast( const integer ptr, @x(1) )
+		p2 = cast( const integer ptr, @x(i) )
+		p3 = cast( const integer ptr, @x(1+i) )
 	end scope
 	#endif
 
@@ -406,50 +460,51 @@ end scope
 
 '' from sf.net #642
 
-#print "--- LOCAL INTEGER and BYTE PTR"
+#print "---- LOCAL INTEGER and BYTE PTR"
 
 scope
 	scope
-		WARN( 1 )
 		dim x as const integer = 1
 		dim p as const integer ptr = @x
+		WARN( 1 )
 		*cast(byte ptr, p) = 1
 	end scope
 
 	scope
-		WARN( 1 )
 		dim x as const integer = 1
+		WARN( 1 )
 		dim p as const integer ptr = cast( const byte ptr, @x )
 	end scope
 
 	scope
-		WARN( 0 )
 		dim x as const integer = 1
+		WARN( 0 )
 		dim p as const byte ptr = cast( const byte ptr, @x )
 	end scope
 
 	scope
-		WARN( 1 )
 		dim x as const integer = 1
+		WARN( 1 )
 		dim p as byte ptr = cast( byte ptr, @x )
 	end scope
 
 	scope
-		WARN( 2 )
 		dim x as const integer = 1
+		WARN( 0 )
 		dim p as const integer ptr = @x
+		WARN( 2 )
 		p = cast( byte ptr, @x )
 	end scope
 end scope
 
 '' --------------------------------------------------------
 
-#print "--- MULTIPLE CAST"
+#print "---- MULTIPLE CAST"
 
 	scope
-		WARN( 2 )
 		dim i as const integer = 123
 		dim p as integer ptr
+		WARN( 2 )
 		p = cast( integer ptr, cast( const integer ptr, cast( integer, cast( integer ptr, @i ) ) ) )
 	end scope
 
@@ -457,7 +512,7 @@ end scope
 
 '' from PR#90 discussion
 
-#print "--- PROCEDURE POINTERS"
+#print "---- PROCEDURE POINTERS"
 
 sub sub_const(byref i as const integer)
 	print i
@@ -477,8 +532,7 @@ scope
 
 	ptr_const   = @sub_const   '' safe, same type
 
-	WARN( 2 ) 
-	#print FIXME
+	WARN( 1 ) 
 	ptr_const   = @sub_noconst '' unsafe, because when calling through the ptr the param appears const, but the sub actually modifies it
 
 	ptr_noconst = @sub_const   '' safe, ptr allows more than the sub will do
@@ -487,8 +541,7 @@ scope
 
 	print cptr(sub(byref as const integer), @sub_const) '' safe
 
-	WARN( 2 )
-	#print FIXME
+	WARN( 1 ) 
 	print cptr(sub(byref as const integer), @sub_noconst) '' unsafe, currently no warning even with -w constness
 
 	print cptr(sub(byref as integer), @sub_const) '' safe
@@ -499,12 +552,12 @@ end scope
 
 '' --------------------------------------------------------
 
-#print "--- RTLIB DEALLOCATE"
+#print "---- RTLIB DEALLOCATE"
 
 scope
 	type T
-		nc as const zstring ptr
-		n as zstring ptr
+		zc as const zstring ptr
+		z as zstring ptr
 		ic as const integer ptr
 		i as integer ptr
 	end type
@@ -512,7 +565,7 @@ scope
 	dim x as T
 
 	'' should not get warnings when allocating/deallocating
-	'' a const {datatype} ptr.  We only need to guarentee
+	'' a const {datatype} ptr.  We only need to guarantee
 	'' that the data is not modified when accessed though
 	'' the const type.  We make no guarantees about the pointer
 	'' itself; which includes deallocation.
@@ -520,12 +573,12 @@ scope
 	'' no warnings expected
 
 	WARN( 0 )
-	x.nc = callocate( 10 )
-	deallocate( x.nc )
+	x.zc = callocate( 10 )
+	deallocate( x.zc )
 
 	WARN( 0 )
-	x.n = callocate( 10 )
-	deallocate( x.n )
+	x.z = callocate( 10 )
+	deallocate( x.z )
 
 	WARN( 0 )
 	x.ic = callocate( 10 )
@@ -539,7 +592,7 @@ end scope
 
 '' --------------------------------------------------------
 
-#print "--- CRT memcpy"
+#print "---- CRT memcpy"
 
 declare function memcpy (byval as any ptr, byval as const any ptr, byval as integer ) as any ptr
 

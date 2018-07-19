@@ -735,7 +735,7 @@ function rtlArrayBoundsCheck _
    	proc = astNewCALL( f )
 
 	'' idx
-	if( astNewARG( proc, astNewCONV( FB_DATATYPE_INTEGER, NULL, idx ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONV( FB_DATATYPE_INTEGER, NULL, idx, AST_CONVOPT_DONTWARNCONST ) ) = NULL ) then
 		exit function
 	end if
 
