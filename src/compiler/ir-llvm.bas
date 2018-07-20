@@ -155,7 +155,7 @@ const MAXVARINISCOPES = 128
 
 type IRLLVMCONTEXT
 	indent				as integer  '' current indentation used by hWriteLine()
-	linenum				as integer
+   lnum            as integer
 
 	varini				as string
 	variniscopelevel		as integer
@@ -185,7 +185,8 @@ declare sub _emitDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+      byval lnum as Integer, _
+      ByVal filename As ZString Ptr = 0 _
 	)
 declare function hVregToStr( byval vreg as IRVREG ptr ) as string
 declare sub hEmitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
@@ -885,7 +886,7 @@ private function _emitBegin( ) as integer
 	ctx.head_txt = ""
 	ctx.body_txt = ""
 	ctx.foot_txt = ""
-	ctx.linenum = 0
+   ctx.lnum = 0
 	ctx.section = SECTION_HEAD
 
 	for i as integer = 0 to BUILTIN__COUNT-1
@@ -2080,13 +2081,18 @@ private sub _emitDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+      byval lnum as Integer, _
+      ByVal filename As ZString Ptr _
 	)
 
-	if( op = AST_OP_DBG_LINEINI ) then
-		hWriteLine( "#line " & ex & " """ & hReplace( env.inf.name, "\", $"\\" ) & """" )
-		ctx.linenum = ex
-	end if
+   if( op = AST_OP_DBG_LINEINI ) Then
+      If filename<>0 Then
+         hWriteLine( "#line " & lnum & " """ & hReplace( filename, "\", $"\\" ) & """" )
+      Else
+         hWriteLine( "#line " & lnum & " """ & hReplace( env.inf.name, "\", $"\\" ) & """" )
+      End If
+      ctx.lnum = lnum
+   end If
 
 end sub
 

@@ -192,7 +192,7 @@ type IRHLCCTX
 	section				as integer '' Current section to write to
 	sectiongosublevel		as integer
 
-	linenum				as integer
+   lnum            as integer
 	escapedinputfilename		as string
 	usedbuiltins			as uinteger  '' BUILTIN_*
 
@@ -223,7 +223,8 @@ declare sub _emitDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+      byval lnum as Integer, _
+      ByVal filename As ZString Ptr = 0 _
 	)
 
 declare sub exprFreeNode( byval n as EXPRNODE ptr )
@@ -385,7 +386,7 @@ private sub hWriteLine( byref s as string, byval noline as integer = FALSE )
 	static as string ln
 
 	if( env.clopt.debuginfo and (noline = FALSE) ) then
-		ln = "#line " + str( ctx.linenum )
+      ln = "#line " + str( ctx.lnum )
 		ln += " """ + ctx.escapedinputfilename + """"
 		sectionWriteLine( ln )
 	end if
@@ -1249,7 +1250,7 @@ private function _emitBegin( ) as integer
 
 	ctx.section = -1
 	ctx.sectiongosublevel = 0
-	ctx.linenum = 0
+   ctx.lnum = 0
 	ctx.usedbuiltins = 0
 	ctx.globalvarpass = 0
 	hUpdateCurrentFileName( env.inf.name )
@@ -3158,11 +3159,13 @@ private sub _emitDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+      byval lnum as Integer, _
+      ByVal filename As ZString Ptr _
 	)
 
 	if( op = AST_OP_DBG_LINEINI ) then
-		ctx.linenum = ex
+      ctx.lnum = lnum
+      If filename<>0 Then hUpdateCurrentFileName(filename)
 	end if
 
 end sub

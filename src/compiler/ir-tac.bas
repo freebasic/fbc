@@ -106,7 +106,8 @@ declare sub hFlushDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+      byval ex as Integer, _
+      ByVal filename As ZString Ptr _
 	)
 
 declare sub hFlushLIT( byval op as integer, byval text as zstring ptr )
@@ -294,7 +295,8 @@ private sub _emit _
 		byval v2 as IRVREG ptr, _
 		byval vr as IRVREG ptr, _
 		byval ex1 as FBSYMBOL ptr = NULL, _
-		byval ex2 as integer = 0 _
+      byval ex2 as integer = 0, _
+      byval ex3 as ZString Ptr = 0 _
 	) static
 
     dim as IRTAC ptr t
@@ -317,7 +319,8 @@ private sub _emit _
 
     t->ex1 = ex1
     t->ex2 = ex2
-
+    t->ex3 = ex3
+   
     ctx.taccnt += 1
 
 end sub
@@ -679,10 +682,11 @@ private sub _emitDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+      byval ex       As Integer, _
+      ByVal filename As ZString Ptr _
 	)
 
-	_emit( op, NULL, NULL, NULL, proc, ex )
+   _emit( op, NULL, NULL, NULL, proc, ex, filename )
 
 end sub
 
@@ -1361,7 +1365,7 @@ private sub _flush static
 			hFlushMEM( op, v1, v2, t->ex2, t->ex1 )
 
 		case AST_NODECLASS_DBG
-			hFlushDBG( op, t->ex1, t->ex2 )
+         hFlushDBG( op, t->ex1, t->ex2, t->ex3 )
 
 		case AST_NODECLASS_LIT
 			hFlushLIT( op, cast( any ptr, t->ex1 ) )
@@ -2397,12 +2401,13 @@ private sub hFlushDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+      byval ex as Integer, _
+      ByVal filename As ZString Ptr _
 	)
 
 	select case as const op
 	case AST_OP_DBG_LINEINI
-		emitDBGLineBegin( proc, ex )
+      emitDBGLineBegin( proc, ex, filename )
 
 	case AST_OP_DBG_LINEEND
 		emitDBGLineEnd( proc, ex )

@@ -199,6 +199,7 @@ type EMIT_DBGNODE
 	op			as integer
 	sym			as FBSYMBOL ptr
 	lnum		as integer
+   filename As ZString Ptr
 	pos			as integer
 end type
 
@@ -261,7 +262,8 @@ type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
 
 type EMIT_DBGCB as sub( byval sym as FBSYMBOL ptr, _
 						byval lnum as integer, _
-						byval pos as integer )
+                  byval pos as Integer, _
+                  ByVal filename As ZString Ptr =0 )
 
 '' if changed, update the _vtbl symbols at emit_*.bas::*_ctor
 type EMIT_VTBL
@@ -790,7 +792,8 @@ declare function emitSTKCLEAR _
 declare function emitDBGLineBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+      byval ex as Integer, _
+      ByVal filename As ZString Ptr _
 	) as EMIT_NODE ptr
 
 declare function emitDBGLineEnd _
