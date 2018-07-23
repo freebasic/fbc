@@ -1,7 +1,10 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
+
+'' !!! TODO !!!, needed? was this for testing only?
 #undef CU_ASSERT_EQUAL
 #define CU_ASSERT_EQUAL(a, b) if (a) <> (b) then print (a), (b) end if: CU_ASSERT( (a) = (b) )
-namespace fbc_tests.numbers.cast_f2ll
+
+SUITE( fbc_tests.numbers.cast_f2ll )
 
 	sub checkcast(byval x as double, byval ull as ulongint)
 
@@ -83,7 +86,7 @@ namespace fbc_tests.numbers.cast_f2ll
 
 	end sub
 
-	sub test_cast_ll cdecl()
+	TEST( cast_ll )
 
 		dim as longint n = 1ll
 		dim as double x = 1.0
@@ -117,10 +120,10 @@ namespace fbc_tests.numbers.cast_f2ll
 			next j
 		next i
 
-	end sub
+	END_TEST
 
-	sub test_cast_hiconst_ull cdecl()
-		#macro test(dval, ullval)
+	TEST( cast_hiconst_ull )
+		#macro test_cast(dval, ullval)
 		scope
 			const as double d = dval
 			const as ulongint ull = ullval
@@ -132,23 +135,15 @@ namespace fbc_tests.numbers.cast_f2ll
 		#endmacro
 
 		'' sanity checks
-		test( 1.5, 2 )
-		test( 2^32, &H100000000ull )
+		test_cast( 1.5, 2 )
+		test_cast( 2^32, &H100000000ull )
 
 		'' numbers over 2^63 can't be converted properly with just clngint()
-		test( 2^63,               &H8000000000000000ull )
-		test( 2^63 * 1.5,         &HC000000000000000ull )
-		test( 2^63 + 2^(63 - 52), &H8000000000000800ull )
-		test( 2^64 - 2^(63 - 52), &HFFFFFFFFFFFFF800ull )
+		test_cast( 2^63,               &H8000000000000000ull )
+		test_cast( 2^63 * 1.5,         &HC000000000000000ull )
+		test_cast( 2^63 + 2^(63 - 52), &H8000000000000800ull )
+		test_cast( 2^64 - 2^(63 - 52), &HFFFFFFFFFFFFF800ull )
 
-	end sub
+	END_TEST
 
-	sub ctor () constructor
-
-		fbcu.add_suite("fbc_tests.numbers.cast_f2ll")
-		fbcu.add_test("test_cast_ll",  @test_cast_ll)
-		fbcu.add_test("test_cast_hiconst_ull",  @test_cast_hiconst_ull)
-
-	end sub
-
-end namespace
+END_SUITE

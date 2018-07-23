@@ -17,6 +17,10 @@ Declaration specifier to explicitly pass a parameter by value
 	The ##**Byval**## keyword is also used in the context of ##Byref## [[KeyPgByref|parameters]] and [[KeyPgByrefFunction|function results]], where it can be used to explicitly override the by-reference semantics in order to pass or assign a pointer as-is to a ##Byref## parameter or function result. For reference:
 		- [[ProPgPassingArguments|Manually passing pointers to by-reference parameters]]
 		- [[ProPgReturnValue|Manually returning pointers as-is from Byref functions]]
+		
+
+	**Note:** ##**Byval**## (passing by copy) is good for small objects (4 or 8 bytes, a bit more will still be ok) that are easy to copy, like numeric types. Passing ##**Byval**## avoids the overhead of the pointer used by ##[[KeyPgByref|ByRef]]##.
+	##[[KeyPgByref|ByRef]]## is better for passing huge objects like strings or big UDTs that should not be copied. Even though ##[[KeyPgByref|ByRef]]## has some overhead because it has to pass a pointer (and dereference at each access to the object), this is still better than copying a multitude of bytes on to the stack every-time the procedure is called.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/byval.bas"}}%%(freebasic)

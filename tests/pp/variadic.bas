@@ -1,37 +1,30 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.macros.variadic
+SUITE( fbc_tests.pp.variadic )
 
-#define stringify(x) #x
+	#define stringify(x) #x
 
-#define identity(x...) x
-#define nothing(x...)
+	#define identity(x...) x
+	#define nothing(x...)
 
-#define add(a, b) (a + b)
-#define add2(operands...) add(operands)
+	#define add(a, b) (a + b)
+	#define add2(operands...) add(operands)
 
-#define f1(a, b...) a b
+	#define f1(a, b...) a b
 
-sub expansion cdecl ()
-	CU_ASSERT_EQUAL( identity( 5 ), 5 )
-	CU_ASSERT_EQUAL( stringify( identity( 5 ) ), "5" )
-	CU_ASSERT_EQUAL( stringify( ( identity( a, b, c ) ) ), "( a, b, c )" )
-    CU_ASSERT_EQUAL( add2( 3, 4 ), 7 )
-    nothing(r,a(n)+dom.)
+	TEST( expansion )
+		CU_ASSERT_EQUAL( identity( 5 ), 5 )
+		CU_ASSERT_EQUAL( stringify( identity( 5 ) ), "5" )
+		CU_ASSERT_EQUAL( stringify( ( identity( a, b, c ) ) ), "( a, b, c )" )
+		CU_ASSERT_EQUAL( add2( 3, 4 ), 7 )
+		nothing(r,a(n)+dom.)
 
-	identity()
-	nothing()
+		identity()
+		nothing()
 
-	f1()  '' Ok -- param 'a' is empty, and vararg param 'b...' not specified, so empty aswell (only ok because it's vararg)
-	f1(:)
-	f1(:,:)
-end sub
+		f1()  '' Ok -- param 'a' is empty, and vararg param 'b...' not specified, so empty aswell (only ok because it's vararg)
+		f1(:)
+		f1(:,:)
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.pp.variadic")
-	fbcu.add_test("expansion", @expansion)
-
-end sub
-
-end namespace
+END_SUITE

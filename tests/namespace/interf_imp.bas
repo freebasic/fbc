@@ -1,10 +1,10 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 const TEST_VAL1 = 1234
 const TEST_VAL2 = 5678
 
 '' interface
-namespace fbc_tests.ns.interf_imp
+namespace module.ns.interf_imp
 
 	type foo_ as foo
 	
@@ -14,7 +14,7 @@ end namespace
 
 '' implementation
 
-namespace fbc_tests.ns.interf_imp
+namespace module.ns.interf_imp
 
 	type foo
 		f as integer
@@ -26,22 +26,21 @@ namespace fbc_tests.ns.interf_imp
 	
 end namespace
 
-private sub test cdecl	
-	dim f as fbc_tests.ns.interf_imp.foo = ( TEST_VAL1 )
-	CU_ASSERT( fbc_tests.ns.interf_imp.bar( @f ) = TEST_VAL1 + 1 )
+private sub test_proc
+	dim f as module.ns.interf_imp.foo = ( TEST_VAL1 )
+	CU_ASSERT( module.ns.interf_imp.bar( @f ) = TEST_VAL1 + 1 )
 	
 	scope
-		using fbc_tests.ns.interf_imp
-		dim f as fbc_tests.ns.interf_imp.foo = ( TEST_VAL2 )
-		CU_ASSERT( fbc_tests.ns.interf_imp.bar( @f ) = TEST_VAL2 + 1 )
+		using module.ns.interf_imp
+		dim f as module.ns.interf_imp.foo = ( TEST_VAL2 )
+		CU_ASSERT( module.ns.interf_imp.bar( @f ) = TEST_VAL2 + 1 )
 	end scope
 	
-	CU_ASSERT( fbc_tests.ns.interf_imp.bar( @f ) = TEST_VAL1 + 1 )
+	CU_ASSERT( module.ns.interf_imp.bar( @f ) = TEST_VAL1 + 1 )
 end sub
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.namespace.interf_imp")
-	fbcu.add_test("test", @test)
-	
-end sub
+SUITE( fbc_tests.namespace_.interf_imp )
+	TEST( all )
+		test_proc
+	END_TEST
+END_SUITE

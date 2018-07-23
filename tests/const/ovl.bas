@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.const_.ovl
+SUITE( fbc_tests.const_.ovl )
 
 	'' ----------
 	
@@ -28,7 +28,7 @@ namespace fbc_tests.const_.ovl
 	        return 6
 	end function
 	
-	sub test1 cdecl ( )
+	TEST( ovl_1 )
 		dim i as integer = 1
 		dim ci as const integer = 2
 		dim pi as integer ptr = @i
@@ -46,7 +46,7 @@ namespace fbc_tests.const_.ovl
 		cu_assert_equal( 5, foo( i ) )
 		cu_assert_equal( 6, foo( ci ) )
 
-	end sub
+	END_TEST
 
 	'' ----------
 	
@@ -66,7 +66,7 @@ namespace fbc_tests.const_.ovl
 		return 4
 	end function
 
-	sub test2 cdecl ( )
+	TEST( ovl_2 )
 		dim a as integer = 1
 		dim b as const integer = 2
 
@@ -76,7 +76,7 @@ namespace fbc_tests.const_.ovl
 		cu_assert_equal( 3, foo2( b, a ) )
 		cu_assert_equal( 4, foo2( b, b ) )
 
-	end sub
+	END_TEST
 
 	'' ----------
 	
@@ -88,7 +88,7 @@ namespace fbc_tests.const_.ovl
 		return 4
 	end function
 
-	sub test3 cdecl ( )
+	TEST( ovl_3 )
 		dim a as integer = 1
 		dim b as const integer = 2
 
@@ -98,7 +98,7 @@ namespace fbc_tests.const_.ovl
 		cu_assert_equal( 4, foo3( b, a ) )
 		cu_assert_equal( 4, foo3( b, b ) )
 
-	end sub
+	END_TEST
 
 	'' ----------
 	
@@ -110,7 +110,7 @@ namespace fbc_tests.const_.ovl
 		return 4
 	end function
 
-	sub test4 cdecl ( )
+	TEST( ovl_4 )
 		dim a as integer = 1
 		dim b as const integer = 2
 
@@ -120,19 +120,6 @@ namespace fbc_tests.const_.ovl
 		cu_assert_equal( 3, foo4( b, a ) )
 		cu_assert_equal( 4, foo4( b, b ) )
 
-	end sub
-
-	'' ----------
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.const.ovl")
-		fbcu.add_test("ovl_1", @test1)
-		fbcu.add_test("ovl_2", @test2)
-		fbcu.add_test("ovl_3", @test3)
-		fbcu.add_test("ovl_4", @test4)
-	
-	end sub
-	
-end namespace
-	
+END_SUITE

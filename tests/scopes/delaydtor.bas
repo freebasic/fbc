@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.scopes.delaydtors
+SUITE( fbc_tests.scopes.delaydtor )
 	
 	type X
 		i as integer
@@ -27,16 +27,8 @@ namespace fbc_tests.scopes.delaydtors
 		CU_ASSERT( cnt = 1 )
 	end sub
 	
-	sub test1 cdecl( )
+	TEST( all )
 		proc(T(420))
-	end sub
+	END_TEST
 	
-	sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.scopes.delaydtor")
-		fbcu.add_test("dtor delay", @test1)
-	
-	end sub
-	
-end namespace
-	
+END_SUITE

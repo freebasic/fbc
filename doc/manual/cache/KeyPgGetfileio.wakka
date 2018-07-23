@@ -36,74 +36,76 @@ Reads data from a file to a buffer
 	##**Get**## can be used as a function, and will return ##0## on success or an error code on failure.	
 	
 	For files opened in ##[[KeyPgRandom|Random]]## mode, the size in bytes of the data to read must match the specified record size.
+	
+	//Note: If a dereferenced [w/z]string pointer is passed to ##**Get**##, the ##//amount//## parameter is not taken into account as it is by passing a dereferenced numeric pointer. But instead, the pointed buffer must begin with at least as many non-zero elements as the number of elements to read.//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/get.bas"}}%%(freebasic)
-dim shared f as integer
+Dim Shared f As Integer
 
-sub get_integer()
+Sub get_long()
 
-	dim buffer as integer ' Integer variable
+	Dim buffer As Long ' Long variable
 
-	' Read an Integer (4 bytes) from the file into buffer, using file number "f".
-	get #f, , buffer
-
-	' print out result
-	print buffer
-	print
-
-end sub
-
-sub get_array()
-
-	dim an_array(0 to 10-1) as integer ' array of Integers
-
-	' Read 10 Integers (10 * 4 = 40 bytes) from the file into an_array, using file number "f".
-	get #f, , an_array()
+	' Read a Long (4 bytes) from the file into buffer, using file number "f".
+	Get #f, , buffer
 
 	' print out result
-	for i as integer = 0 to 10-1
-		print an_array(i)
-	next
-	print
+	Print buffer
+	Print
 
-end sub
+End Sub
 
-sub get_mem
+Sub get_array()
 
-	dim pmem as integer ptr
+	Dim an_array(0 To 10-1) As Long ' array of Longs
 
-	' allocate memory for 5 Integers
-	pmem = allocate(5 * sizeof(integer))
+	' Read 10 Longs (10 * 4 = 40 bytes) from the file into an_array, using file number "f".
+	Get #f, , an_array()
 
-	' Read 5 integers (5 * 4 = 20 bytes) from the file into allocated memory
-	get #f, , *pmem, 5 ' Note pmem must be dereferenced (*pmem, or pmem[0])
+	' print out result
+	For i As Integer = 0 To 10-1
+		Print an_array(i)
+	Next
+	Print
+
+End Sub
+
+Sub get_mem
+
+	Dim pmem As Long Ptr
+
+	' allocate memory for 5 Longs
+	pmem = Allocate(5 * SizeOf(Long))
+
+	' Read 5 Longs (5 * 4 = 20 bytes) from the file into allocated memory
+	Get #f, , *pmem, 5 ' Note pmem must be dereferenced (*pmem, or pmem[0])
 
 	' print out result using [] Pointer Indexing
-	for i as integer = 0 to 5-1
-		print pmem[i]
-	next
-	print
+	For i As Integer = 0 To 5-1
+		Print pmem[i]
+	Next
+	Print
 
 	' free pointer memory to prevent memory leak
-	deallocate pmem
+	Deallocate pmem
 
-end sub
+End Sub
 
 ' Find the first free file file number.
-f = freefile
+f = FreeFile
 
 ' Open the file "file.ext" for binary usage, using the file number "f".
-open "file.ext" for binary as #f
+Open "file.ext" For Binary As #f
 
-  get_integer()
+  get_long()
 
   get_array()
 
   get_mem()
 
 ' Close the file.  
-close #f
+Close #f
 %%
 
 {{fbdoc item="filename" value="examples/manual/fileio/get-file.bas"}}%%(freebasic)

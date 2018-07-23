@@ -30,7 +30,7 @@ This is a list of function prototypes in the standard C library in alphabetical 
 	
 	For example **##atoi(a as zstring ptr) as integer##** means that the function **##atoi##** returns a value of type **integer** and requires a character **zstring ptr** as its argument. 
 	
-	**Note:** In order to make calling the C runtime functions very easy, any string type argument may be directly passed to a procedure referring to a parameter declared as 'zstring ptr'. The compiler performs itself an automatic conversion (without warning message) between string and 'zstring ptr'.
+	**Note:** In order to make calling the C runtime functions very easy, any string type argument may be directly passed to a procedure referring to a parameter declared as 'zstring ptr'. The compiler performs itself an automatic conversion (without warning message) between any string type argument and the 'zstring ptr' type parameter.
 
 {{anchor name="ALPHA"}}{{fbdoc item="section" value="Alphabetical List"}}
 

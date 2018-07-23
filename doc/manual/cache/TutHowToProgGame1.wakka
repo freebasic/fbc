@@ -1,13 +1,13 @@
-{{fbdoc item="title" value="How to Program a Game: Lesson 1"}}
+{{fbdoc item="title" value="How to Program a Game: Lesson 1"}}----
 
 {{fbdoc item="section" value="Introduction by Lachie Dazdarian"}}
 The objective of this series of lessons is to help newbies who know very little of BASIC to learn the basics of programming in FreeBASIC necessary to create any computer game. Some elementary BASIC knowledge would help a lot, though I believe that people who don't know BASIC at all should comprehend these lessons too. I'm using here the word (well, it's an acronym) "BASIC" and not FreeBASIC, because if you know the basics of QuickBASIC, Visual BASIC or any other variant of BASIC, these lessons should be easy to comprehend.
 
-I'm starting this series because I feel that tutorials of this kind were always something what our community was lacking, even before FreeBASIC. I've corresponded during my programming lifetime with quite few programming newbies, and they all had almost identical problems when trying to program a game. So I think I'm able to detect what beginners need quite well and on what way the stuff needs to be explained to them. I also remember my beginnings and the problems I had with using separated routines that were never meant to be combined and used to create a game. The breaking point for me was the moment when I discovered RelLib (a QuickBASIC graphics library by R.E.Lope) and the scrolling engine that was created with it. That scrolling engine motivated me to explore its mechanics and expand on it (with some help from R.E.Lope). In one single moment I acquired the ability to program most of the stuff (necessary to complete a game) by myself. It's like driving a bike. The moment when you acquire the actual skill lasts for one second.
+I'm starting this series because I feel that tutorials of this kind were always something what our community was lacking, even before FreeBASIC. I've corresponded during my programming lifetime with quite few programming newbies, and they all had almost identical problems when trying to program a game. So I think I'm able to detect what beginners need quite well and on what way the stuff needs to be explained to them. I also remember my beginnings and the problems I had with using separated routines that were never meant to be combined and used to create a game. The breaking point for me was the moment when I discovered ""RelLib"" (a QuickBASIC graphics library by R.E.Lope) and the scrolling engine that was created with it. That scrolling engine motivated me to explore its mechanics and expand on it (with some help from R.E.Lope). In one single moment I acquired the ability to program most of the stuff (necessary to complete a game) by myself. It's like driving a bike. The moment when you acquire the actual skill lasts for one second.
 
-So that's my goal with this series. To learn you enough so you would be self-sufficient in 90% of cases. And the best way to learn new things is to see them applied. Many tutorials fail in this by being too generic. You will always need help from more expert programmers, but the point is that you don't need it on every step. Have in mind that this depends on the type of game you are developing and the graphics library / tools you are using.
+So that's my goal with this series. To teach you enough so you would be self-sufficient in 90% of cases. And the best way to learn new things is to see them applied. Many tutorials fail in this by being too generic. You will always need help from more expert programmers, but the point is that you don't need it on every step. Have in mind that this depends on the type of game you are developing and the graphics library / tools you are using.
 
-The example programs and mini-games we'll create will be coded in GFXlib (the FreeBASIC's built-in graphics library). Lynn's Legacy, ArKade, Mighty Line and Poxie were coded in it (among many others), and I think those games are good references. But don't worry. Switching from one graphics library to another is relatively easy when you know how to code in at least one.
+The example programs and mini-games we'll create will be coded in GFXlib (the FreeBASIC's built-in graphics library). Lynn's Legacy, ""ArKade"", Mighty Line and Poxie were coded in it (among many others), and I think those games are good references. But don't worry. Switching from one graphics library to another is relatively easy when you know how to code in at least one.
 
 This tutorial will not deal with raycasting engines (3D programming) or something "advance" like that. If you want that but are a beginner, you NEED the following lessons FIRST.
 
@@ -41,7 +41,12 @@ We can set a loop on more ways (with WHILE:WEND statements, using the GOTO state
 	' We'll put our statements here later
 	LOOP UNTIL INKEY$ = "Q" or INKEY$ = "q"
 %%
-
+(Editors Note: The suffixes on commands such as the $ on INKEY$ is:
+obligatory in the -lang qb dialect.
+optional in the -lang fblite dialect.
+forbidden in the -lang fb dialec 
+Check the documentation for the specific keyword)
+ 
 If you compile this code and run it, you'll get a small black empty 320*200 window which you can turn off by pushing the letter Q (you might need to hold it). The program simply loops until you press "Q or "q". I used both upper and lower case "Q" symbol in case Caps Lock is turned on on your keyboard. INKEY$ is a statement that returns the last key pushed on the keyboard. I will explain later why it shouldn't be used with games and what's a better substitute.
 
 To draw a circle we'll use the CIRCLE statement (refer to GFXlib's documentation). Check the following code:
@@ -87,7 +92,7 @@ Or...
 	DIM [AS type_of_variable] variable1, variable2, variable3, ... 
 %%
 
-The data inside [ ] is optional and the brackets are not used. Types of variables available in FreeBASIC are BYTE, SHORT, INTEGER, STRING, SINGLE, DOUBLE and few others, but I don't find details about them important on this level. What you need to know now is that you should declare variables or arrays AS INTEGER when they hold graphics data (memory buffers holding graphics) or when they represent data which doesn't need decimal precision (number of lives, points, etc.). Variables that need decimal precision are declared AS SINGLE or DOUBLE. Those are usually variables used in games which rely on physics formulae like arcade car driving games or jump 'n run games (gravity effect). Simply, the difference between the speed of two pixels per cycle and the speed of one pixel per cycle is most often too large, and in those limits you can't emulate effects like fluid movement on the most satisfactory way. Also, behind DIM you should put SHARED which makes that the specific variable readable in the entire program (all subroutines). Don't use SHARED only with variables declared inside subroutines (I do it very rarely). If you are going to declare ARRAYS inside a subroutine, I advise you to replace DIM with REDIM. Strings are used to hold text data. Like YourName = "Dodo", but you need to declare YourName AS STRING first.
+The data inside [ ] is optional and the brackets are not used. Types of variables available in FreeBASIC are BYTE, SHORT, INTEGER, STRING, SINGLE, DOUBLE and few others, but I don't find details about them important on this level. What you need to know now is that you should declare variables or arrays AS INTEGER when they hold graphics data (memory buffers holding graphics) or when they represent data which doesn't need decimal precision (number of lives, points, etc.). Variables that need decimal precision are declared AS SINGLE or DOUBLE. Those are usually variables used in games which rely on physics formulae like arcade car driving games or jump 'n run games (gravity effect). Simply, the difference between the speed of two pixels per cycle and the speed of one pixel per cycle is most often too large, and in those limits you can't emulate effects like fluid movement on the most satisfactory way. Also, behind DIM you should put SHARED which makes that the specific variable readable in the entire program (all subroutines). Don't use SHARED only with variables declared inside subroutines (I do it very rarely). If you are going to declare ARRAYS inside a subroutine, I advise you to replace DIM with REDIM. Strings are used to hold text data. Like ""YourName"" = "Dodo", but you need to declare ""YourName"" AS STRING first.
 
 Now I will introduce a new statement instead of INKEY$ which can detect multiple keypresses and is much more responsive (perfect response) than INKEY$. The flaw of INKEY$, as well as being very non-responsive (which you probably were able to detect when trying to shut down the previously compiled examples), is that it can detect only one keypress at any given moment which renders it completely unusable in games.
 
@@ -171,7 +176,7 @@ The last version of the code does not represent the desirable way of coding, but
 
 The way variables are declared in the above code is not the most convenient in larger projects where we have huge amount of variables usually associated to several objects (an object can be the player, enemy or anything that is defined with MORE THAN ONE variable).
 
-So first we'll define a user defined data type with the statement TYPE that can contain more variables/arrays (stay with me). We'll name this user data type ObjectType. The code:
+So first we'll define a user defined data type with the statement TYPE that can contain more variables/arrays (stay with me). We'll name this user data type ""ObjectType"". The code:
 
 %%(freebasic)
 	TYPE ObjectType
@@ -190,7 +195,7 @@ After this we declare our circle as an object:
 	' the statement CIRCLE, thus "CircleM".
 %%
 
-How is this method beneficial? It allows us to manage the program variables on a more efficient and cleaner way. Instead of (in this example) having to declare each circle's characteristic (it's position, speed, etc.) separately, we'll simply use a type:def that includes all these variables and associate a variable or an array to it (in this case that's CircleM). So now the circle's x position is flagged with CircleM.X, circle's y position with CircleM.Y and circle's speed with CircleM.speed. I hope you see now why this is better. One user defined type can be connected with more variables or arrays. In this example you can add another object with something like DIM SHARED EnemyCircle(8) AS ObjectType which would allow us to manage 8 "evil" circles with a specific set of routines (an AI of some sort) using the variables from the ObjectType type:def (x, y, speed), and these circles could "attack" the user's circle on some way. In the next lesson all this will become more clear. Have in mind that not ALL variables need to be declared using a type:def. This is only for "objects" in your game that are defined (characterized) with more variables (like a hero determined by health, money, score, strength, etc.).
+How is this method beneficial? It allows us to manage the program variables on a more efficient and cleaner way. Instead of (in this example) having to declare each circle's characteristic (it's position, speed, etc.) separately, we'll simply use a type:def that includes all these variables and associate a variable or an array to it (in this case that's ""CircleM""). So now the circle's x position is flagged with ""CircleM"".X, circle's y position with ""CircleM"".Y and circle's speed with ""CircleM"".speed. I hope you see now why this is better. One user defined type can be connected with more variables or arrays. In this example you can add another object with something like DIM SHARED ""EnemyCircle""(8) AS ""ObjectType"" which would allow us to manage 8 "evil" circles with a specific set of routines (an AI of some sort) using the variables from the ""ObjectType"" type:def (x, y, speed), and these circles could "attack" the user's circle on some way. In the next lesson all this will become more clear. Have in mind that not ALL variables need to be declared using a type:def. This is only for "objects" in your game that are defined (characterized) with more variables (like a hero determined by health, money, score, strength, etc.).
 
 After the change the final version of the code looks like this:
 
@@ -250,6 +255,7 @@ In this section we'll start to code our mini-game which won't be completed in th
 First I'll show you what graphics we'll be using. We are going to work in 8-bit color depth mode, so the images that we are going to use need to be saved in that mode (256 colors mode). For warrior sprites I'll use the sprites of the main character from my first game Dark Quest.
 
 http://hmcsoft.org/fb/htpagl1-sprites.png
+(Editors Note: The link above is not active anymore. The game Dark Quest is still available for download at http://lachie.phatcode.net/downloads.php)
 
 As you see this image features 12 sprites of our warrior, each 20*20 pixels large. Two for each direction (walk animation) and one sprite for each direction when the warrior is swinging with his sword. Sword swinging won't be implemented in the first lesson but will become necessary later.
 

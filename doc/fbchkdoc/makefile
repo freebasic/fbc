@@ -8,6 +8,7 @@ endif
 FBC := fbc
 
 LIBFUNCS_SRC := \
+	cmd_opts.bas \
     funcs.bas \
     funcsdir.bas \
     fmtcode.bas \
@@ -49,7 +50,8 @@ TEMP_FILES := \
     mkerrtxt$(EXEEXT) \
     mkerrtxt.bas \
     imagelist.txt \
-    imagepages.txt
+    imagepages.txt \
+	delete.html
 
 HEADERS := $(wildcard *.bi)
 DEPS = ../libfbdoc/libfbdoc.a $(HEADERS)
@@ -64,7 +66,7 @@ endif
 .PHONY: all
 all: $(APPS) ../libfbdoc/libfbdoc.a
 
-getindex$(EXEEXT): getindex.bas $(DEPS)
+getindex$(EXEEXT): getindex.bas $(LIBFUNCS) $(DEPS)
 	$(FBC) $(FBCFLAGS) $< $(FBLFLAGS) -x $@
 
 getpage$(EXEEXT): getpage.bas $(LIBFUNCS) $(DEPS)

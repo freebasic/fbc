@@ -18,6 +18,9 @@ Conditional function that returns one of two values.
 		An expression to evaluate and return if ##//condition//## is false.
 		It must be same type as ##//expr_if_true//## (either numeric, either string or UDT).
 
+{{fbdoc item="ret"}}
+	if ##//condition//## is non-zero, ##//expr_if_true//##, otherwise ##//expr_if_false//##
+
 {{fbdoc item="desc"}}
 	##**IIf**## returns a different numeric or string or UDT value (not a reference) depending of the result of a conditional expression evaluated at run-time. Its typical use is in the middle of an expression; it avoids splitting it to put a conditional in the middle.
 	

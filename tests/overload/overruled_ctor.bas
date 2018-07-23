@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 /' 
  '
@@ -12,7 +12,7 @@
  '
  '/
 
-namespace fbc_tests.overload_.overruled_ctor
+SUITE( fbc_tests.overload_.overruled_ctor )
 	
 	enum thing explicit
 		
@@ -44,7 +44,7 @@ namespace fbc_tests.overload_.overruled_ctor
 		return type( 69 )
 	end operator
 	
-	sub the_test cdecl ( )
+	TEST( construction )
 		
 		dim as thing a_thing
 		
@@ -52,13 +52,6 @@ namespace fbc_tests.overload_.overruled_ctor
 		var res2 = a_thing + a_thing
 		var res3 = 69      + a_thing
 		
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.overload.overruled_ctor")
-		fbcu.add_test("Test Constructor", @the_test)
-	
-	end sub
-	
-end namespace
+END_SUITE

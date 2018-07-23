@@ -1,4 +1,4 @@
-namespace constant
+TEST_GROUP( PARAM_NS.constant )
 	'' temp var to hold constants passed to BYREF params,
 	'' and testing the BYVAL version too just to ensure it's still working.
 	sub tester( PARAM_MODE i as integer = 123 )
@@ -6,9 +6,9 @@ namespace constant
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace global
+TEST_GROUP( PARAM_NS.global )
 	dim shared globali as integer = 456
 
 	sub tester( PARAM_MODE i as integer = globali )
@@ -16,18 +16,18 @@ namespace global
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace iif_
+TEST_GROUP( PARAM_NS.iif_ )
 	'' iif() temp var
 	sub tester( PARAM_MODE i as integer = iif( cond, 1, 2 ) )
 		CU_ASSERT( i = 2 )
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace intResult
+TEST_GROUP( PARAM_NS.intResult )
 	function f( ) as integer
 		function = 123
 	end function
@@ -37,9 +37,9 @@ namespace intResult
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace addrofGlobal
+TEST_GROUP( PARAM_NS.addrofGlobal )
 	dim shared globali as integer = 456
 
 	sub tester( PARAM_MODE pi as integer ptr = @globali )
@@ -47,9 +47,9 @@ namespace addrofGlobal
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgBigResultUdtToByref
+TEST_GROUP( PARAM_NS.callArgBigResultUdtToByref )
 	'' UDT result temp var (function returns result on stack)
 
 	function f1( ) as BigUDT
@@ -65,9 +65,9 @@ namespace callArgBigResultUdtToByref
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgBigResultUdtToByval
+TEST_GROUP( PARAM_NS.callArgBigResultUdtToByval )
 	'' UDT result temp var (function returns result on stack)
 
 	function f1( ) as BigUDT
@@ -83,9 +83,9 @@ namespace callArgBigResultUdtToByval
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgByvalNonTrivialUDT
+TEST_GROUP( PARAM_NS.callArgByvalNonTrivialUDT )
 	'' When passing an UDT with dtor/copyctor/virtual members BYVAL,
 	'' there will actually be a temp var created which is passed BYREF
 	'' implicitly as in C++.
@@ -102,9 +102,9 @@ namespace callArgByvalNonTrivialUDT
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgBydescStatic
+TEST_GROUP( PARAM_NS.callArgBydescStatic )
 	'' temp array descriptor when passing static array BYDESC
 	dim shared as integer globalarray(0 to 3) = { 1, 2, 3, 4 }
 
@@ -117,9 +117,9 @@ namespace callArgBydescStatic
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgBydescField
+TEST_GROUP( PARAM_NS.callArgBydescField )
 	'' temp array descriptor when passing field array BYDESC
 
 	type ArrayFieldUDT
@@ -137,9 +137,9 @@ namespace callArgBydescField
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgStringLiteral
+TEST_GROUP( PARAM_NS.callArgStringLiteral )
 	'' temp string when passing a literal to a BYREF AS STRING
 	dim shared as integer calls
 
@@ -152,9 +152,9 @@ namespace callArgStringLiteral
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgIntResultInRegsToByref
+TEST_GROUP( PARAM_NS.callArgIntResultInRegsToByref )
 	'' When passing a function returning a value in registers to a BYREF
 	'' param, a temp var is created to be able to do addrof for the BYREF.
 
@@ -173,9 +173,9 @@ namespace callArgIntResultInRegsToByref
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace callArgUdtResultInRegsToByref
+TEST_GROUP( PARAM_NS.callArgUdtResultInRegsToByref )
 	'' Same, but with UDT result in regs, being passed to a BYREF param
 
 	function f1( ) as UDT
@@ -191,9 +191,9 @@ namespace callArgUdtResultInRegsToByref
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace ptrchk
+TEST_GROUP( PARAM_NS.ptrchk )
 	'' PTRCHKs (under -exx) use temp vars too
 	dim shared as integer globali = 456
 	dim shared as integer ptr globalpi = @globali
@@ -203,9 +203,9 @@ namespace ptrchk
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP
 
-namespace boundchk
+TEST_GROUP( PARAM_NS.boundchk )
 	'' BOUNDCHKs, ditto
 	dim shared as integer globaliarray(0 to 1) = { 12, 34 }
 	dim shared as integer globali = 1
@@ -215,4 +215,4 @@ namespace boundchk
 	end sub
 
 	hScopeChecks( tester( ) )
-end namespace
+END_TEST_GROUP

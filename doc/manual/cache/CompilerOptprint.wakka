@@ -9,7 +9,7 @@ Print out information
 	
 	Currently, the following -print options are recognized:
 	
-	{{table columns="2" cellpadding="1" cells="option;effect;host;Prints the host system on which fbc is running;target;Prints the target system for which fbc is compiling (can be affected by the -target option);x;Prints the file name of the output executable or library that fbc will or would generate (named after the -x option), depending on other command line options"}}
+	{{table columns="2" cellpadding="1" cells="option;effect;fblibdir;Prints the compiler's lib/ path;host;Prints the host system on which fbc is running;target;Prints the target system for which fbc is compiling (can be affected by the -target option);x;Prints the file name of the output executable or library that fbc will or would generate (named after the -x option), depending on other command line options"}}
 
 {{fbdoc item="ex"}}
 	A [[http://en.wikipedia.org/wiki/Make_(software)|makefile]] could use ##target := $(shell $(FBC) -print target)## to find out the compilation target, which would even work when cross-compiling, with ##FBC## set to something like ##fbc -target foo##.

@@ -4,6 +4,9 @@ Data types whose values are addresses in memory.
 {{fbdoc item="section" value="Declaration"}}
 	Pointers are [[ProPgVariables|Variables]] whose values are addresses in memory, and they are said to 'point' to this memory. The type of data that is pointed to depends on the type of pointer (an ##[[KeyPgInteger|Integer]] [[KeyPgPointer|Pointer]]## points to ##[[KeyPgInteger|Integer]]## data). Pointers are declared like any other variable, with the suffix "##pointer##" or "##ptr##" following the type name.
 
+{{fbdoc item="section" value="Assigning pointer variables"}}
+	A pointer is a memory address and the value of the pointer itself is that memory address.  To assign a pointer variable is to assign it a memory address to something.  One way to assign a pointer a memory address is to take the address of some other variable in the program using ##[[KeyPgOpAt|Operator @]]## (Address of).
+
 {{fbdoc item="section" value="Accessing pointed to data"}}
 	The data pointed to by a pointer can be accessed with ##[[KeyPgOpValueOf|Operator *]]## (Value of). This operator returns a reference to the data that its operand points to. The following,
 

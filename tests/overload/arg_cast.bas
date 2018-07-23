@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 	
-namespace fbc_tests.overloads.arg_cast
+SUITE( fbc_tests.overload_.arg_cast )
 	
 	type A
 		member as integer
@@ -15,16 +15,9 @@ namespace fbc_tests.overloads.arg_cast
 	sub f overload (x as integer) : CU_ASSERT(0): end sub
 	sub f (x as A) : end sub
 	
-	sub the_test cdecl ( )
+	TEST( arg_udt_cast )
 		/'dim x as B
 		f x'/
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.overload.arg_cast")
-		fbcu.add_test("test_arg_udt_cast", @the_test)
-	
-	end sub
-
-end namespace
+END_SUITE

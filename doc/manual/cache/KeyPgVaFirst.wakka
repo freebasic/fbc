@@ -37,7 +37,7 @@ The output would look like:
 259.927405
 %%
 
-{{fbdoc item="filename" value="examples/manual/procs/vararg2.bas}}%%(freebasic)
+{{fbdoc item="filename" value="examples/manual/procs/vararg2.bas"}}%%(freebasic)
 '' Example of a simple custom printf
 sub myprintf cdecl(byref formatstring as string, ...)
 	'' Get the pointer to the first var-arg

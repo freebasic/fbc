@@ -16,7 +16,8 @@ Finds the arcsine of a number
 
 {{fbdoc item="desc"}}
 	##**Asin**## returns the arcsine of the argument ##//number//## as a ##[[KeyPgDouble|Double]]## within the range of -[[TutMathAngles|Pi]]/2 to [[TutMathAngles|Pi]]/2.  The arcsine is the inverse of the ##[[KeyPgSin|Sin]]## function. The returned angle is measured in [[TutMathAngles|radians]] (not [[TutMathAngles|degrees]]).
-
+	
+	##**Asin**## can be overloaded as operator to accept user-defined types.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/asin.bas"}}%%(freebasic)

@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2018 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -22,11 +22,10 @@
 #include once "curl.bi"
 #include once "crt/stdio.bi"
 
-'' fbdoc headers
-#include once "COptions.bi"
-
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
+#include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 ''
 const MAX_IMAGEFILES = 100
@@ -39,6 +38,8 @@ end type
 dim shared curl as CURL ptr
 dim shared ImageFiles(1 to MAX_IMAGEFILES ) as ImageFile
 dim shared NumImageFiles as integer = 0
+
+'' --------------------------------------------------------
 
 '':::::
 function writeFunction cdecl ( byval buf as any ptr, byval size as size_t, byval nmemb as size_t , byval stream as any ptr) as size_t
@@ -132,33 +133,44 @@ end function
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string f, filename, url, image_dir
-dim as integer h, i = 1
+'' private options
+dim f as string
 
-if( command(1) = "" ) then
+'' enable image dir
+cmd_opts_init( CMD_OPTS_ENABLE_IMAGE )
+
+dim i as integer = 1
+while( command(i) > "" )
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
+		cmd_opts_unrecognized_die( i )
+	else
+		f = command(i)
+	end if
+	i += 1
+wend
+
+if( app_opt.help ) then
 	print "getimage imagelist.txt"
 	print
 	print "   imagelist.txt    text file listing images to get in the"
 	print "                    following format, one image per line:"
 	print
 	print "                    PageName,URL"
+	print
+	cmd_opts_show_help( "" )
+	print
 	end 0
 end if
 
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as fb.fbdoc.COptions ptr opts = new fb.fbdoc.COptions( default_optFile )
-	if( opts <> NULL ) then
-		image_dir = opts->Get( "image_dir", default_image_dir )
-		delete opts
-	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		image_dir = default_image_dir
-	end if
-end scope
+cmd_opts_resolve()
+cmd_opts_check()
 
-f = command(1)
+'' --------------------------------------------------------
+
+dim as string filename, url
+dim as integer h
 
 h = freefile
 if( open( f for input access read as #h ) <> 0 ) then
@@ -176,7 +188,7 @@ while eof(h) = 0
 	if( (lcase(left( url, 7 )) = "http://") or (lcase(left( url, 8 )) = "https://") ) then
 		filename = GetFileName( url )
 		if( filename > "" ) then
-			AddImageFile( url, image_dir + filename )
+			AddImageFile( url, app_opt.image_dir + filename )
 		end if
 	end if
 	

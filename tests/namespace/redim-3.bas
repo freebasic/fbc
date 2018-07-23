@@ -1,4 +1,4 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
 common shared array1() as integer
 common shared array2() as integer
@@ -37,7 +37,7 @@ private sub f3( )
 	redim array4(3 to 3) as integer
 end sub
 
-private sub test cdecl( )
+private sub test_proc
 	CU_ASSERT( lbound( array1 ) = 0 ) : CU_ASSERT( ubound( array1 ) = -1 )
 	CU_ASSERT( lbound( array2 ) = 0 ) : CU_ASSERT( ubound( array2 ) = -1 )
 	CU_ASSERT( lbound( array3 ) = 0 ) : CU_ASSERT( ubound( array3 ) = -1 )
@@ -65,7 +65,8 @@ private sub test cdecl( )
 	CU_ASSERT( lbound( array4 ) = 3 ) : CU_ASSERT( ubound( array4 ) = 3 )
 end sub
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.namespace.redim-3" )
-	fbcu.add_test( "test", @test )
-end sub
+SUITE( fbc_tests.namespace_.redim_3 )
+	TEST( all )
+		test_proc
+	END_TEST
+END_SUITE

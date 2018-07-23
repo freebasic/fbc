@@ -1,60 +1,48 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
+SUITE( fbc_tests.string_.compare )
 
+	dim shared as string s1, s2
 
+	TEST( equalSizeTest )
 
-namespace fbc_tests.string_.compare
+		s1 = "a"
+		s2 = "b"
 
-dim shared as string s1, s2
+		CU_ASSERT( s1<>s2 )
+		CU_ASSERT( s1<s2 )
 
-sub equalSizeTest cdecl ()
+		s1 = "b"
+		s2 = "a"
 
-	s1 = "a"
-	s2 = "b"
+		CU_ASSERT( s1<>s2 )
+		CU_ASSERT( s1>s2 )
 
-	CU_ASSERT( s1<>s2 )
-	CU_ASSERT( s1<s2 )
+	END_TEST
 
-	s1 = "b"
-	s2 = "a"
+	TEST( equalTest )
 
-	CU_ASSERT( s1<>s2 )
-	CU_ASSERT( s1>s2 )
+		s1 = "a"
+		s2 = "a"
 
-end sub
+		CU_ASSERT( s1=s2 )
 
-sub equalTest cdecl ()
+	END_TEST
 
-	s1 = "a"
-	s2 = "a"
+	TEST( unequalSizeTest )
 
-	CU_ASSERT( s1=s2 )
+		s1 = "a"
+		s2 = "ab"
 
-end sub
+		CU_ASSERT( s1<>s2 )
+		CU_ASSERT( s1<s2 )
 
-sub unequalSizeTest cdecl ()
+		s1 = "ab"
+		s2 = "a"
 
-	s1 = "a"
-	s2 = "ab"
+		CU_ASSERT( s1<>s2 )
+		CU_ASSERT( s1>s2 )
 
-	CU_ASSERT( s1<>s2 )
-	CU_ASSERT( s1<s2 )
+	END_TEST
 
-	s1 = "ab"
-	s2 = "a"
-
-	CU_ASSERT( s1<>s2 )
-	CU_ASSERT( s1>s2 )
-
-end sub
-
-sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.string.compare")
-	fbcu.add_test("equalSizeTest", @equalSizeTest)
-	fbcu.add_test("equalTest", @equalTest)
-	fbcu.add_test("unequalSizeTest", @unequalSizeTest)
-
-end sub
-
-end namespace
+END_SUITE

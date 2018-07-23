@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.ctor_assign_parenth
+SUITE( fbc_tests.structs.ctor_assign_parenths )
 	
 	type Vector2D
 		as single x,y
@@ -10,7 +10,7 @@ namespace fbc_tests.structs.ctor_assign_parenth
 		return type<Vector2D>( lhs.x + rhs.x, lhs.y + rhs.y )
 	end Operator
 	
-	sub new_style cdecl ( )
+	TEST( new_style )
 		dim as vector2d v1,v2
 		
 		v1.x = 3
@@ -23,22 +23,13 @@ namespace fbc_tests.structs.ctor_assign_parenth
 		
 		CU_ASSERT_EQUAL(v3.x, 8)
 		CU_ASSERT_EQUAL(v3.y, 10)
-		
-	end sub
+	END_TEST
 	
-	sub old_style cdecl ( )
+	TEST( old_style )
 		dim as vector2d v = (10, 20)
 		
 		CU_ASSERT_EQUAL(v.x, 10)
 		CU_ASSERT_EQUAL(v.y, 20)
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.structs.ctor_assign_parenths")
-		fbcu.add_test("new", @new_style)
-		fbcu.add_test("old", @old_style)
-	
-	end sub
-		
-end namespace
+END_SUITE

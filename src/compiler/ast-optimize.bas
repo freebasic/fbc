@@ -1739,19 +1739,22 @@ private function hOptReciprocal _
 		if( astIsCONST( l ) ) then
 			if( (astGetDataType( l ) = FB_DATATYPE_SINGLE) andalso (astConstGetFloat( l ) = 1.0) ) then
 				r = n->r
-				if( astIsUOP( r, AST_OP_SQRT ) ) then
-					'' change this to a rsqrt
-					*n = *r
-					n->class = AST_NODECLASS_UOP
-					n->op.op = AST_OP_RSQRT
-					astDelNode( r )
-					astDelNode( l )
-				elseif( astGetDataType( r ) = FB_DATATYPE_SINGLE ) then
-					'' change this to a rcp
-					astDelNode( n )
-					n = astNewUOP( AST_OP_RCP, r )
-					astDelNode( l )
-				end if
+				select case as const astGetDataClass( r )
+				case FB_DATACLASS_INTEGER, FB_DATACLASS_FPOINT
+					if( astIsUOP( r, AST_OP_SQRT ) ) then
+						'' change this to a rsqrt
+						*n = *r
+						n->class = AST_NODECLASS_UOP
+						n->op.op = AST_OP_RSQRT
+						astDelNode( r )
+						astDelNode( l )
+					elseif( astGetDataType( r ) = FB_DATATYPE_SINGLE ) then
+						'' change this to a rcp
+						astDelNode( n )
+						n = astNewUOP( AST_OP_RCP, r )
+						astDelNode( l )
+					end if
+				end select
 			end if
 		end if
 	end if

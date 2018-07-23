@@ -1,13 +1,13 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.optimizations.side_effects
+SUITE( fbc_tests.optimizations.side_effects )
 
 	function modify_a( byref a as integer ) as integer
 		a += 1
 		return 1
 	end function
 
-	sub test_side_effects cdecl( )
+	TEST( all )
 
 		dim as integer a = 0, b
 
@@ -28,13 +28,6 @@ namespace fbc_tests.optimizations.side_effects
 
 		CU_ASSERT_EQUAL( a, 9 )
 
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.optimizations.side_effects")
-		fbcu.add_test("Optimizing expressions with side-effects", @test_side_effects)
-		
-	end sub
-
-end namespace
+END_SUITE

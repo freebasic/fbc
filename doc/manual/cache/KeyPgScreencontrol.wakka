@@ -43,6 +43,7 @@ Sets or gets internal graphics library settings
 		[OUT] ##//param//## title
 	- ##GET_WINDOW_HANDLE## (##2##) Returns a handle to the program window.
 		[OUT] ##//param1//## handle; this is a ##HWND## in Windows, a "Window" XID in X11
+		[OUT] ##//param2//## display ptr in X11
 	- (*) ##GET_DESKTOP_SIZE## (##3##) Returns the desktop size, in pixels.
 		[OUT] ##//param1//## width
 		[OUT] ##//param2//## height

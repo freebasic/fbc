@@ -6,7 +6,7 @@ If you're new to programming in general, you should probably learn what some bas
 	-Syntax
 	-Program Flow
 **Variables**
-	-Basic DataTypes
+	{{anchor name="datatypes|-Basic DataTypes"}}
 **Input/Output (IO)**
 
 The above being the most important programming concepts for an absolute beginner to programming to learn.  I will go over how these concepts work in FreeBASIC.  It is also important to learn how to use the manual, located at www.freebasic.net/wiki  Most programming communities and language will have manuals with both descriptions and demonstrations.  ALWAYS refer to the manual before looking elsewhere.  Chances are the information you want is in the manual, and if it's not, it can be added.
@@ -67,7 +67,7 @@ The most simple syntax for DIM is:  DIM [""VariableName""] AS [""DataType""] [="
 
 What this does, is it tells FreeBASIC:
 - We're making a variable, because we typed in the command DIM
-- We're naming the variable [""VariableName""] (Where ""VariableName"" is the name of the variable you want to make.  A variable can be named X, Y, AlexPritchard, BLahblh, Foo, etc.)
+- We're naming the variable [""VariableName""] (Where ""VariableName"" is the name of the variable you want to make.  A variable can be named X, Y, ""AlexPritchard"", BLahblh, Foo, etc.)
 - We're specifying the type of variable, because we typed in AS after ""VariableName""
 - We're making the variable of the type [""DataType""] (Datatype can be something that holds numbers, letters, or a whole bunch of stuff!)
 - We can also assign the value of the variable by putting EQUALS (=) after our variable creation.
@@ -81,6 +81,7 @@ SLEEP
 
 In our program, we created foo. FOO was created as an INTEGER (A [[CatPgStdDataTypes|datatype]] which holds numbers) We gave foo the value of 5.  We then call the command PRINT, which PRINTS information on our screen.  We PRINT foo, so the number 5 should be PRINTed on the screen.  We then SLEEP, which pauses our program until we hit a key.
 
+{{anchor name="datatypes"}}
 ==Basic ""DataTypes""==
 
 Variables are a tough subject, I think, to begin with in programming.  There's a lot of different types of variables!  The type of variable is the data type.  'The kind of data that's held in this type of variable', and you wondered why they shortened it to datatype?  ^^;;  For starters, we'll get you familiar with these types of variables:
@@ -187,3 +188,5 @@ Pixel:  One 'dot' on your monitor.  Monitors are made up of thousands of tiny do
 Syntax:  How words are grouped together.  Your syntax in programming are sets of rules that tell you what code can be placed where.  It makes sure that only logical code is allowed.  Ex:  Print "Hi".  PRINT is the COMMAND, "Hi" is what the command will PRINT.  Make sense?
 
 Variable:  A word that holds data in programming.  You assign these words values, and with those values, you can save information on your program.
+
+//Last Reviewed by ""Sancho3"" on February 06, 2018//

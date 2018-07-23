@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 '' - don't mix false/true intrinsic constants 
 ''   of the compiler in with the tests
@@ -8,7 +8,7 @@
 #define FALSE 0
 #define TRUE (-1)
 
-namespace fbc_tests.boolean_.args
+SUITE( fbc_tests.boolean_.boolean_args )
 
 	''
 	sub foo1( byval b as boolean, byval i as integer )
@@ -16,7 +16,7 @@ namespace fbc_tests.boolean_.args
 	end sub
 
 	''
-	sub pass_by_value cdecl ( )
+	TEST( pass_by_value )
 
 		dim as integer i
 
@@ -34,7 +34,7 @@ namespace fbc_tests.boolean_.args
 		i = -1: foo1(  i, -1 )
 		i = 256: foo1(  i, 256 )
 
-	end sub
+	END_TEST
 
 	''
 	sub foo2( byref b as boolean, byval i as integer )
@@ -42,7 +42,7 @@ namespace fbc_tests.boolean_.args
 	end sub
 
 	''
-	sub pass_by_ref cdecl ( )
+	TEST( pass_by_ref )
 
 		dim as boolean b
 
@@ -69,7 +69,7 @@ namespace fbc_tests.boolean_.args
 		b = 256: foo2(  b, 256 )
 		CU_ASSERT_EQUAL( b, TRUE )
 
-	end sub
+	END_TEST
 
 	''
 	sub foo3( byval b as boolean ptr, byval i as integer )
@@ -77,7 +77,7 @@ namespace fbc_tests.boolean_.args
 	end sub
 
 	''
-	sub pass_by_pointer cdecl ( )
+	TEST( pass_by_pointer )
 
 		dim b as boolean
 		dim pb as boolean ptr = @b
@@ -102,7 +102,7 @@ namespace fbc_tests.boolean_.args
 		CU_ASSERT_EQUAL( *pb, TRUE )
 		CU_ASSERT_EQUAL( b, TRUE )
 
-	end sub
+	END_TEST
 
 	''
 	function foo4( byval i as integer ) as boolean
@@ -110,7 +110,7 @@ namespace fbc_tests.boolean_.args
 	end function
 
 	''
-	sub return_bool cdecl ( )
+	TEST( return_bool )
 		
 		dim as integer i
 
@@ -135,7 +135,7 @@ namespace fbc_tests.boolean_.args
 		i = foo4(256)
 		CU_ASSERT_EQUAL( i, TRUE )
 
-	end sub
+	END_TEST
 
 	''
 	sub foo5( byref b as boolean, byval i as integer )
@@ -150,7 +150,7 @@ namespace fbc_tests.boolean_.args
 	end sub
 
 	''
-	sub pass_by_ref_mod cdecl ( )
+	TEST( pass_by_ref_mod )
 
 		dim as boolean b
 
@@ -180,18 +180,6 @@ namespace fbc_tests.boolean_.args
 		b =  256: foo6(  b, 256 )
 		CU_ASSERT_EQUAL( b, TRUE )
 
-	end sub
+	END_TEST
 
-	''
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.boolean.boolean_args")
-		fbcu.add_test("pass_by_value", @pass_by_value)
-		fbcu.add_test("pass_by_ref", @pass_by_ref)
-		fbcu.add_test("pass_by_ref_mod", @pass_by_ref_mod)
-		fbcu.add_test("pass_by_pointer", @pass_by_pointer)
-		fbcu.add_test("return_bool", @return_bool)
-		
-	end sub
-	
-end namespace
+END_SUITE

@@ -9,7 +9,7 @@ extern externarray8(any) as integer
 extern externarray9(any) as integer
 
 #macro hInsertTest1( )
-	sub test1 cdecl( )
+	TEST( testproc )
 		CU_ASSERT( externarray1(0) = 1 )
 		CU_ASSERT( externarray1(1) = 2 )
 		CU_ASSERT( lbound( externarray1 ) = 0 )
@@ -50,5 +50,5 @@ extern externarray9(any) as integer
 
 		CU_ASSERT( lbound( externarray9 ) = 9 )
 		CU_ASSERT( ubound( externarray9 ) = 9 )
-	end sub
+	END_TEST
 #endmacro

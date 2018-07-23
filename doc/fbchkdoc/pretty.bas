@@ -24,19 +24,16 @@ end if
 dim filename as string = command(1)
 
 '' read defaults from the configuration file (if it exists)
+'' !!! FIXME !!! this should use cmd_opts.bas
 scope
-	dim as COptions ptr opts = new COptions( default_optFile )
+	dim as COptions ptr opts = new COptions( hardcoded.default_ini_file )
 	if( opts <> NULL ) then
-		manual_dir = opts->Get( "manual_dir", default_ManualDir )
+		manual_dir = opts->Get( "manual_dir", hardcoded.default_manual_dir )
 		delete opts
 	else
-		def_manual_dir = default_ManualDir
+		manual_dir = hardcoded.default_manual_dir
 	end if
 end scope
-
-if( manual_dir = "" ) then
-	manual_dir = default_ManualDir
-end if
 
 FormatFbCodeLoadKeywords( manual_dir & "templates/default/keywords.lst" )
 

@@ -1,6 +1,12 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
 #include "common-shared.bi"
+
+'' COMMON SHARED in the global namespace test
+'' See:
+''  - common-shared.bi
+''  - common-shared-1.bas
+''  - common-shared-2.bas
 
 '' REDIM'ing a COMMON (dynamic) array
 '' Note: DIM works like REDIM for COMMONs; SHARED is mostly ignored
@@ -18,7 +24,7 @@ private sub f( )
 	redim arrayi6(6 to 6) as integer
 end sub
 
-private sub test cdecl( )
+private sub test_proc
 	CU_ASSERT( lbound( arrayi1 ) = 1 ) : CU_ASSERT( ubound( arrayi1 ) = 1 )
 	CU_ASSERT( lbound( arrayi2 ) = 2 ) : CU_ASSERT( ubound( arrayi2 ) = 2 )
 	CU_ASSERT( lbound( arrayi3 ) = 3 ) : CU_ASSERT( ubound( arrayi3 ) = 3 )
@@ -39,7 +45,7 @@ end sub
 namespace shadowingACommon
 	common shared i as integer
 
-	private sub test cdecl( )
+	private sub test_proc
 		CU_ASSERT( i = 0 )
 		i = 1
 		CU_ASSERT( i = 1 )
@@ -59,8 +65,11 @@ namespace shadowingACommon
 	end sub
 end namespace
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.dim.common-shared-1" )
-	fbcu.add_test( "test", @test )
-	fbcu.add_test( "shadowing a COMMON", @shadowingACommon.test )
-end sub
+SUITE( fbc_tests.dim_.common_shared_1 )
+	TEST( default )
+		test_proc
+	END_TEST
+	TEST( shadowing_a_common )
+		shadowingACommon.test_proc
+	END_TEST
+END_SUITE

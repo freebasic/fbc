@@ -64,3 +64,5 @@ CONST RADToDeg AS DOUBLE = 57.29577951308233	  '' 180/PI
 **Gradients**
 
 Gradients are used mainly in some forms of engineering. Within the gradient system a circle has 400 grads.
+
+//Last reviewed by ""sancho3"" on February 08, 2018//

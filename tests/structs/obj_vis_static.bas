@@ -1,32 +1,25 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.obj_vis_static
+SUITE( fbc_tests.structs.obj_vis_static )
 
-type foo
-	pad as integer
-	
-	declare static function bar(i as integer) as integer
-private:
-	declare static function bar as integer
-end type
+	type foo
+		pad as integer
+		
+		declare static function bar(i as integer) as integer
+	private:
+		declare static function bar as integer
+	end type
 
-function foo.bar as integer 
-	return 1234 
-end function
+	function foo.bar as integer 
+		return 1234 
+	end function
 
-function foo.bar(i as integer) as integer 
-	return -1234 
-end function
+	function foo.bar(i as integer) as integer 
+		return -1234 
+	end function
 
-sub test_1 cdecl	
-	CU_ASSERT_EQUAL( foo.bar(1), -1234 )
-end sub
+	TEST( all )
+		CU_ASSERT_EQUAL( foo.bar(1), -1234 )
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.structs.obj_vis_static")
-	fbcu.add_test( "#1", @test_1)
-
-end sub
-	
-end namespace	
+END_SUITE

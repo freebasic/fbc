@@ -61,6 +61,8 @@ Command line compiler options for the fbc compiler:
 		- Do not include the default libraries
 	{{fbdoc item="keyword" value="CompilerOptnoerrline|-noerrline"}}
 		- Do not show source line where error occurred
+	{{fbdoc item="keyword" value="CompilerOptnoobjinfo|-noobjinfo"}}
+		- Do not read/write compile-time info from/to .o and .a files
 	{{fbdoc item="keyword" value="CompilerOpto|-o < name >"}}
 		- Set object file path/name (must be passed after the .bas file)
 	{{fbdoc item="keyword" value="CompilerOptoptimization|-O < level >"}}
@@ -74,7 +76,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOptprefix|-prefix < path >"}}
 		- Set the compiler prefix path
 	{{fbdoc item="keyword" value="CompilerOptprint|-print < option >"}}
-		- Let the compiler display certain information (##host##, ##target##, ##x##)
+		- Let the compiler display certain information (##fblibdir##, ##host##, ##target##, ##x##)
 	{{fbdoc item="keyword" value="CompilerOptprofile|-profile"}}
 		- Enable function profiling
 	{{fbdoc item="keyword" value="CompilerOptr|-r"}}
@@ -91,10 +93,10 @@ Command line compiler options for the fbc compiler:
 		- Display a tree of file names of ""#included"" files
 	{{fbdoc item="keyword" value="CompilerOptstatic|-static"}}
 		- Prefer static libraries over dynamic ones when linking
-	{{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}
-		- Set the target platform for cross compilation
 	{{fbdoc item="keyword" value="CompilerOptt|-t < value >"}}
 		- Set stack size in kbytes (default: 1M)
+	{{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}
+		- Set the target platform for cross compilation
 	{{fbdoc item="keyword" value="CompilerOptv|-v"}}
 		- Be verbose
 	{{fbdoc item="keyword" value="CompilerOptvec|-vec < level >"}}

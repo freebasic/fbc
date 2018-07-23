@@ -1,21 +1,16 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.const_.cast_const_away
+SUITE( fbc_tests.const_.cast_const_away )
 
-sub test cdecl( )
-	dim i as integer = 456
-	dim pci as const integer ptr = @i
+	TEST( away )
+		dim i as integer = 456
+		dim pci as const integer ptr = @i
 
-	CU_ASSERT( *pci = 456 )
+		CU_ASSERT( *pci = 456 )
 
-	*cptr( integer ptr, pci ) = 123
+		*cptr( integer ptr, pci ) = 123
 
-	CU_ASSERT( *pci = 123 )
-end sub
+		CU_ASSERT( *pci = 123 )
+	END_TEST
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.const.cast-const-away" )
-	fbcu.add_test( "1", @test )
-end sub
-
-end namespace
+END_SUITE

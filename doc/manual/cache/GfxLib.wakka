@@ -1,6 +1,5 @@
 {{fbdoc item="title" value="GfxLib - FreeBASIC graphics library overview"}}----
-
-""GfxLib"" is the built-in graphics library included in ""FreeBASIC"". As well as re-creating every ""QuickBASIC"" graphics command, ""GfxLib"" has built-in commands to handle input from the keyboard and mouse. Major contributors of the library are Lillo, ""CoderJeff"" and ""DrV"".
+The libary named ""GfxLib"" is the built-in graphics library included in ""FreeBASIC"". As well as re-creating every ""QuickBASIC"" graphics command, ""GfxLib"" has built-in commands to handle input from the keyboard and mouse. Major contributors of the library are Lillo, ""coderJeff"" and ""DrV"".
 
 The library supports various drivers depending on the platform: 
 		

@@ -1,27 +1,19 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.pointers.field_array_desc
+SUITE( fbc_tests.pointers.field_array_desc )
 
-type foo
-  bar(0 To 2) as integer
-end type
+	type foo
+	  bar(0 To 2) as integer
+	end type
 
-sub test cdecl ()
+	TEST( derefArray )
 
-	dim f as foo
-	dim pf as foo ptr = @f
+		dim f as foo
+		dim pf as foo ptr = @f
 
-  	CU_ASSERT_EQUAL( lbound(pf->bar), 0 )
-  	CU_ASSERT_EQUAL( ubound(pf->bar), 2 )
+  		CU_ASSERT_EQUAL( lbound(pf->bar), 0 )
+  		CU_ASSERT_EQUAL( ubound(pf->bar), 2 )
 
-end sub
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.pointers.field_array_desc")
-	fbcu.add_test("test", @test)
-
-end sub
-
-end namespace
-	
+END_SUITE

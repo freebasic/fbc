@@ -1,10 +1,102 @@
 {{fbdoc item="title" value="FreeBASIC Manual Downloads"}}----
 
-Downloads of previous versions of the manual.
+Downloads links for current and previous versions of the manual.
 
-Since this manual is for a beta compiler still in development, we do not maintain multiple versions of the wiki.  Any downloadable documentation made available from time to time is just a snapshot of this wiki.  The following is a list of documentation that should be approximately correct for each official release of the compiler packages.
+Any downloadable documentation made available is a snapshot of the wiki available at the time of the compiler's packaged release.  The following is a list of documentation that should be approximately correct for each official release of the compiler packages.
 
-http://sourceforge.net/projects/fbc/files/Older%20versions/
+https://sourceforge.net/projects/fbc/files/Older%20versions/
+
+{{fbdoc item="section" value="Version 1.05 Snapshots"}}
+
+	""FreeBASIC v1.05.0b (2016.01.31)""
+	https://downloads.sourceforge.net/fbc/FB-manual-1.05.0-chm.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.05.0-fbhelp.zip?download 
+	https://downloads.sourceforge.net/fbc/FB-manual-1.05.0-html.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.05.0-txt.zip?download
+
+{{fbdoc item="section" value="Version 1.04 Snapshots"}}
+
+	""FreeBASIC v1.04.0b (2015.10.01)""
+	https://downloads.sourceforge.net/fbc/FB-manual-1.04.0-chm.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.04.0-fbhelp.zip?download 
+	https://downloads.sourceforge.net/fbc/FB-manual-1.04.0-html.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.04.0-txt.zip?download
+
+{{fbdoc item="section" value="Version 1.03 Snapshots"}}
+
+	""FreeBASIC v1.03.0b (2015.07.01)""
+	https://downloads.sourceforge.net/fbc/FB-manual-1.03.0-chm.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.03.0-fbhelp.zip?download 
+	https://downloads.sourceforge.net/fbc/FB-manual-1.03.0-html.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.03.0-txt.zip?download
+
+{{fbdoc item="section" value="Version 1.02 Snapshots"}}
+
+	""FreeBASIC v1.02.1b (2015.04.06)""
+	https://downloads.sourceforge.net/fbc/FB-manual-1.02.1-chm.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.02.1-fbhelp.zip?download 
+	https://downloads.sourceforge.net/fbc/FB-manual-1.02.1-html.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.02.1-txt.zip?download
+
+	""FreeBASIC v1.02.0b (2014.12.28)""
+	https://downloads.sourceforge.net/fbc/FB-manual-1.02.0-chm.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.02.0-fbhelp.zip?download 
+	https://downloads.sourceforge.net/fbc/FB-manual-1.02.0-html.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.02.0-txt.zip?download
+
+{{fbdoc item="section" value="Version 1.01 Snapshots"}}
+
+	""FreeBASIC v1.01.0b (2014.09.14)""
+	https://downloads.sourceforge.net/fbc/FB-manual-1.01.0-chm.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.01.0-fbhelp.zip?download 
+	https://downloads.sourceforge.net/fbc/FB-manual-1.01.0-html.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.01.0-txt.zip?download
+
+{{fbdoc item="section" value="Version 1.00 Snapshots"}}
+
+	""FreeBASIC v1.00.0b (2014.09.14)""
+	https://downloads.sourceforge.net/fbc/FB-manual-1.00.0-chm.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.00.0-fbhelp.zip?download 
+	https://downloads.sourceforge.net/fbc/FB-manual-1.00.0-html.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-1.00.0-txt.zip?download
+
+{{fbdoc item="section" value="Version 0.90 Snapshots"}}
+
+	""FreeBASIC v0.90.1b (2013.07.17)""
+	https://downloads.sourceforge.net/fbc/FB-manual-0.90.1-chm.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-0.90.1-fbhelp.zip?download 
+	https://downloads.sourceforge.net/fbc/FB-manual-0.90.1-html.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-0.90.1-txt.zip?download
+
+	""FreeBASIC v0.90.0b (2013.06.24)""
+	https://downloads.sourceforge.net/fbc/FB-manual-0.90.0-chm.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-0.90.0-fbhelp.zip?download 
+	https://downloads.sourceforge.net/fbc/FB-manual-0.90.0-html.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-0.90.0-txt.zip?download
+
+{{fbdoc item="section" value="Version 0.24 Snapshots"}}
+
+	""FreeBASIC v0.24.0b (2012.08.20)""
+	https://downloads.sourceforge.net/fbc/FB-manual-0.24.0-chm.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-0.24.0-fbhelp.zip?download 
+	https://downloads.sourceforge.net/fbc/FB-manual-0.24.0-html.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-0.24.0-txt.zip?download
+
+{{fbdoc item="section" value="Version 0.23 Snapshots"}}
+
+	""FreeBASIC v0.23.0b (2011.08.07)""
+	https://downloads.sourceforge.net/fbc/FB-manual-0.23.0-chm.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-0.23.0-fbhelp.zip?download 
+	https://downloads.sourceforge.net/fbc/FB-manual-0.23.0-html.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-0.23.0-txt.zip?download
+
+{{fbdoc item="section" value="Version 0.22 Snapshots"}}
+
+	""FreeBASIC v0.22.0b (2011.05.08)""
+	https://downloads.sourceforge.net/fbc/FB-manual-0.22.0-chm.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-0.22.0-fbhelp.zip?download 
+	https://downloads.sourceforge.net/fbc/FB-manual-0.22.0-html.zip?download
+	https://downloads.sourceforge.net/fbc/FB-manual-0.22.0-txt.zip?download
 
 {{fbdoc item="section" value="Version 0.21 Snapshots"}}
 	
@@ -66,9 +158,5 @@ http://sourceforge.net/projects/fbc/files/Older%20versions/
 	""FreeBASIC v0.14b (2005.07.24)""
 	http://downloads.sourceforge.net/fbc/FB-manual-chm-5.nov.2005.zip?download
 
-{{fbdoc item="section" value="Conversion to Other Formats"}}
-	
-	Other formats of the documentation (FBHELP, TXT, HTML) can also be downloaded from:
-	[[http://www.execulink.com/~coder/freebasic/docs.html|execulink.com/~coder/freebasic/docs.html]] (last update in 2008)
 
 {{fbdoc item="back" value="FBWiki|Main Page"}}

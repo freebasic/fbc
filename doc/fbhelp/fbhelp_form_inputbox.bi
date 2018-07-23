@@ -2,7 +2,7 @@
 #define __FBHELP_FORM_INPUTBOX_BI__
 
 ''  fbhelp - FreeBASIC help viewer
-''  Copyright (C) 2006-2017 Jeffery R. Marshall (coder[at]execulink.com)
+''  Copyright (C) 2006-2018 Jeffery R. Marshall (coder[at]execulink.com)
 
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -19,6 +19,22 @@
 ''	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301 USA.
 
 
+#if __FB_GCC__
+
+	declare function InputBox_show cdecl _
+		( _
+			byref result as string, _
+			byval text as zstring ptr, _
+			byval title as zstring ptr, _
+			byval count as integer, _
+			byval btn1 as zstring ptr = NULL, _
+			byval btn2 as zstring ptr = NULL, _
+			byval btn3 as zstring ptr = NULL, _
+			byval btn4 as zstring ptr = NULL _
+		) as integer
+
+#else
+
 	declare function InputBox_show cdecl _
 		( _
 			byref result as string, _
@@ -27,5 +43,7 @@
 			byval count as integer, _
 			... _
 		) as integer
+
+#endif
 
 #endif

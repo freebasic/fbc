@@ -51,6 +51,8 @@ Dim b as byte = &B10000000
 	- "##LL##", are considered as signed 64 bit integers. (##[[KeyPgLongint|Longint]]##)
 	- "##ULL##", are considered as unsigned 64 bit integers. (##[[KeyPgUlongint|Ulongint]]##)
 	
+	Negative (-) and positive (+) signs that prefix a numeric literal, are not part of the numeric literal.  expressions (like "##-1L##") are parsed as the negate operator applied to the value represented by the positive literal ("##1L##"), which may involve implicit type conversions.  Same behavior when an explicit "##+##" sign precedes the integer literal.
+	
 	The prefixes, suffixes, and hexadecimal letter digits are all case-insensitive.
 	
 {{fbdoc item="filename" value="examples/manual/proguide/literals/intsuff.bas"}}%%(freebasic)

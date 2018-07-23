@@ -1,3 +1,14 @@
+Version 1.00:
+
+[changed]
+- copyright updates for 2018
+
+[fixed]
+- internal, control updates are moved in to Forms_Draw()
+- warning on pointer types for compressed file
+- on windows, gzseek() was failing on uncompressed streams,  succeeds if gzrewind() is called first.
+
+
 Version 0.8b:
 
 [changed]

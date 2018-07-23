@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.ns.using_nested
+SUITE( fbc_tests.namespace_.using_nested )
 
 	namespace ns_a
 		dim as integer foo = &hdeadbeef
@@ -17,16 +17,9 @@ namespace fbc_tests.ns.using_nested
 		using ns_b
 	end namespace
 	
-	sub test_1 cdecl	
+	TEST( all )
 		CU_ASSERT_EQUAL( ns_c.foo, &hdeadbeef )
 		CU_ASSERT_EQUAL( ns_c.inner.foo, &hdeadbeef )
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.namespace.using_nested")
-		fbcu.add_test("#1", @test_1)
-		
-	end sub
-
-end namespace		
+END_SUITE

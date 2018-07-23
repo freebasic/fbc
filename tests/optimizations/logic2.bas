@@ -1,8 +1,8 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.optimizations.logic2
+SUITE( fbc_tests.optimizations.logic2 )
 	
-	sub test cdecl( )
+	TEST( test1 )
 		dim as string source = "this is a test"
 		
 		if instr("huh", source) > 0 and 0 then
@@ -22,9 +22,9 @@ namespace fbc_tests.optimizations.logic2
 		else 
 			CU_ASSERT( -1 )
 		end if
-	end sub
+	END_TEST
 	
-	sub test2 cdecl( )
+	TEST( test2 )
 		if left("huh", 3) > "" and 0 then
 			CU_ASSERT( 0 )
 		else 
@@ -36,9 +36,9 @@ namespace fbc_tests.optimizations.logic2
 		else 
 			CU_ASSERT( -1 )
 		end if
-	end sub
+	END_TEST
 	
-	sub test3 cdecl( )
+	TEST( test3 )
 		dim A as string
 		A = "test 1..2..3..4...5..6...7..8...9..10"
 		' print len(A) > 15 and 0  ' when this line is uncommented this part of the test succeeds,
@@ -53,15 +53,6 @@ namespace fbc_tests.optimizations.logic2
 		else 
 			CU_ASSERT( -1 )
 		end if
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.optimizations.logic2")
-		fbcu.add_test("1", @test)
-		fbcu.add_test("2", @test2)
-		fbcu.add_test("3", @test3)
-	
-	end sub
-	
-end namespace
+END_SUITE

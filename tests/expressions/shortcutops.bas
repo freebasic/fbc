@@ -1,6 +1,6 @@
-#Include "fbcu.bi"
+#Include "fbcunit.bi"
 
-Namespace fbc_tests.expressions.shortcutops
+SUITE( fbc_tests.expressions.shortcutops )
 
 	dim shared check_count as integer
 
@@ -25,7 +25,7 @@ Namespace fbc_tests.expressions.shortcutops
 		function = n
 	end function
 
-	Sub test1 Cdecl 
+	TEST( bop_const )
 		' General consts
 		CU_ASSERT( (0 andalso 0) = 0 )
 		CU_ASSERT( (0 andalso 1) = 0 )
@@ -36,9 +36,9 @@ Namespace fbc_tests.expressions.shortcutops
 		CU_ASSERT( (0 orelse 1) = -1 )
 		CU_ASSERT( (1 orelse 0) = -1 )
 		CU_ASSERT( (1 orelse 1) = -1 )
-	End Sub
+	END_TEST
 
-	Sub test2 Cdecl 
+	TEST( bop_func )
 		' Functions
 		CU_ASSERT( (ai() andalso ai()) = 0 )
 		CU_ASSERT( (ai() andalso bi()) = 0 )
@@ -49,9 +49,9 @@ Namespace fbc_tests.expressions.shortcutops
 		CU_ASSERT( (ai() orelse bi()) = -1 )
 		CU_ASSERT( (bi() orelse ai()) = -1 )
 		CU_ASSERT( (bi() orelse bi()) = -1 )
-	End Sub
+	END_TEST
 
-	Sub test3 Cdecl 
+	TEST( bop_float_const )
 		' General consts
 		CU_ASSERT( (0.0 andalso 0.0) = 0 )
 		CU_ASSERT( (0.0 andalso 1.0) = 0 )
@@ -62,9 +62,9 @@ Namespace fbc_tests.expressions.shortcutops
 		CU_ASSERT( (0.0 orelse 1.0) = -1 )
 		CU_ASSERT( (1.0 orelse 0.0) = -1 )
 		CU_ASSERT( (1.0 orelse 1.0) = -1 )
-		End Sub
+	END_TEST
 
-	Sub test4 Cdecl 
+	TEST( bop_float_func )
 		' Functions
 		CU_ASSERT( (af() andalso af()) = 0 )
 		CU_ASSERT( (af() andalso bf()) = 0 )
@@ -75,9 +75,9 @@ Namespace fbc_tests.expressions.shortcutops
 		CU_ASSERT( (af() orelse bf()) = -1 )
 		CU_ASSERT( (bf() orelse af()) = -1 )
 		CU_ASSERT( (bf() orelse bf()) = -1 )
-	End Sub
+	END_TEST
 
-	Sub test5 Cdecl 
+	TEST( multiple )
 		' Try some larger ones
 		CU_ASSERT( (ai() andalso ai() andalso ai()) = 0)
 		CU_ASSERT( (ai() andalso bi() andalso ai()) = 0)
@@ -98,9 +98,9 @@ Namespace fbc_tests.expressions.shortcutops
 		CU_ASSERT( (ai() orelse bi() orelse bi()) = -1)
 		CU_ASSERT( (bi() orelse ai() orelse bi()) = -1)
 		CU_ASSERT( (bi() orelse bi() orelse bi()) = -1)
-	End Sub
+	END_TEST
 
-	Sub test6 Cdecl 
+	TEST( verify_shortcut )
 		' Check the rhs really isn't being exectuted
 		dim as integer temp
 		
@@ -109,9 +109,9 @@ Namespace fbc_tests.expressions.shortcutops
 		
 		temp = check(1) orelse check(1)
 		CU_ASSERT( check_count = 2 )
-	End Sub
+	END_TEST
 
-	Sub test7 Cdecl 
+	TEST( selfop )
 		' Try a few self ops
 		dim as integer t1, t2
 		
@@ -154,9 +154,9 @@ Namespace fbc_tests.expressions.shortcutops
 		t2 = 1
 		t1 orelse= t2
 		CU_ASSERT( t1 = -1 )
-	End Sub
+	END_TEST
 
-	sub test8 Cdecl
+	TEST( pointer_ops )
 
 		'' check pointer ops
 
@@ -276,20 +276,6 @@ Namespace fbc_tests.expressions.shortcutops
 		CU_ASSERT( (p1 orelse v1) = -1 )
 		CU_ASSERT( (v1 orelse p1) = -1 )
 
-	end sub
+	END_TEST
 
-	Private Sub ctor () Constructor
-	   
-		fbcu.add_suite("fbc_tests.expressions.shortcutops")
-		fbcu.add_test("test1", @test1)
-		fbcu.add_test("test2", @test2)
-		fbcu.add_test("test3", @test3)
-		fbcu.add_test("test4", @test4)
-		fbcu.add_test("test5", @test5)
-		fbcu.add_test("test6", @test6)
-		fbcu.add_test("test7", @test7)
-		fbcu.add_test("test8", @test8)
-
-	End Sub
-
-End Namespace
+END_SUITE

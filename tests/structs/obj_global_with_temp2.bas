@@ -1,8 +1,8 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.obj_global_with_temp2
+SUITE( fbc_tests.structs.obj_global_with_temp2 )
 
-	namespace test1
+	TEST_GROUP( test1 )
 	
 		type UDT1
 			declare constructor (byref as string)
@@ -20,18 +20,18 @@ namespace fbc_tests.structs.obj_global_with_temp2
 		
 		dim shared g_array(0) as UDT2
 			 
-		sub test cdecl
+		TEST( default )
 		
 			dim as integer i
 			
 			for i = 0 to 2
 				CU_ASSERT_EQUAL( g_array(0).t(i).s, "string" + str(i) )
 			next
-		end sub
+		END_TEST
 		
-	end namespace
+	END_TEST_GROUP
 
-	namespace test2
+	TEST_GROUP( test2 )
 	
 		type UDT1
 			declare constructor (byref as string)
@@ -64,7 +64,7 @@ namespace fbc_tests.structs.obj_global_with_temp2
 		
 		dim shared g_array(0) as UDT3
 			 
-		sub test cdecl
+		TEST( default )
 			dim as integer i
 			
 			for i = 0 to 2
@@ -76,16 +76,8 @@ namespace fbc_tests.structs.obj_global_with_temp2
 			next
 			
 			CU_ASSERT_EQUAL( g_array(0).pad, 1234 )
-		end sub
+		END_TEST
 		
-	end namespace
+	END_TEST_GROUP
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.structs.obj_global_with_temp2")
-	fbcu.add_test( "1", @test1.test)
-	fbcu.add_test( "2", @test2.test)
-
-end sub
-	
-end namespace	
+END_SUITE

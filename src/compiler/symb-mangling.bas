@@ -247,15 +247,6 @@ private function hAbbrevFind _
 		return -1
 	end if
 
-	'' builtin?
-	if( subtype = NULL ) then
-		if( typeIsPtr( dtype ) = FALSE ) then
-			if( typeGet( dtype ) <> FB_DATATYPE_STRING ) then
-				return -1
-			end if
-		end if
-	end if
-
 	'' for each item..
 	n = flistGetHead( @ctx.flist )
 	do while( n <> NULL )
@@ -272,6 +263,8 @@ private function hAbbrevFind _
 	function = -1
 end function
 
+'' Add qualified/non-built-in type to lookup table for substitution/compression
+'' according to Itanium C++ ABI.
 private function hAbbrevAdd _
 	( _
 		byval dtype as integer, _
@@ -329,15 +322,8 @@ function hMangleBuiltInType _
 	assert( dtype = typeGetDtOnly( dtype ) )
 
 	''
-	'' According to the Itanium C++ ABI, C++ built-in type aren't considered
-	'' for abbreviation, while other types are.
-	''
-	'' For FB this means that some of FB built-ins can be mangled as C++
-	'' built-ins without having to do hAbbrevAdd(), while others (e.g.
-	'' FBSTRING) must be mangled as UDT or custom/vendor-specific types for
-	'' which we must do hAbbrevAdd().
-	''
-	'' This way our abbreviations stay compatible to GCC and demanglers.
+	'' Plain unqualified C++ built-in types are not considered for abbreviation.
+	'' However, custom/vendor-specific types still are.
 	''
 	'' This only matters when hMangleBuiltInType() is called from
 	'' symbMangleType(), but it does not matter when hMangleBuiltInType() is
@@ -1080,6 +1066,9 @@ private function hGetOperatorName( byval proc as FBSYMBOL ptr ) as const zstring
 
 	case AST_OP_ATAN
 		function = @"v13atn"
+
+	case AST_OP_SQRT
+		function = @"v13sqr"
 
 	case AST_OP_NEW, AST_OP_NEW_SELF
 		function = @"nw"

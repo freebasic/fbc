@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.file_.input_large_int
+SUITE( fbc_tests.file_.large_int )
 
 	const DEC_COUNT = 18
 	const HEX_COUNT = 16
@@ -23,6 +23,7 @@ namespace fbc_tests.file_.input_large_int
 		1, 2, 3, 4,             _
 		1, 7, 15, 15 }
 
+	'' !!! FIXME !!! - this needs to be an option to regenerate
 #if 0
 	sub generate_csv () constructor
 		
@@ -127,7 +128,7 @@ namespace fbc_tests.file_.input_large_int
 		
 	end sub
 
-	sub run_test cdecl ()
+	TEST( run_test )
 
 #macro TYPE_TEST( t )
 		open "./file/large_int.csv" for input as #1
@@ -162,14 +163,6 @@ namespace fbc_tests.file_.input_large_int
 		TYPE_TEST(   single )
 		TYPE_TEST(   double )
 
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-
-		fbcu.add_suite("fbc_tests.file.large_int")
-
-		fbcu.add_test("run_test", @run_test)
-
-	end sub
-
-end namespace
+END_SUITE

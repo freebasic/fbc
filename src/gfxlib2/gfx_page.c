@@ -18,7 +18,7 @@ FBCALL int fb_GfxFlip(int from_page, int to_page)
 	}
 
 #ifndef DISABLE_OPENGL
-	if (__fb_gfx->driver->flip && __fb_gl_params.mode_2d!=2) {
+	if (__fb_gfx->driver->flip && (__fb_gl_params.mode_2d != DRIVER_OGL_2D_AUTO_SYNC)) {
 #else
 	if (__fb_gfx->driver->flip) {
 #endif

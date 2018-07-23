@@ -24,7 +24,7 @@ Called automatically when a class or user defined type goes out of scope or is d
 	
 	The destructor in a type is called before the destructors on any of its fields.  Therefore, all fields are accessible with the hidden ##[[KeyPgThis|this]]## parameter in the destructor body.
 	
-	Only one destructor may be declared and defined per type.
+	Only one destructor may be declared and defined per type (but several destructors can be called in a chained way if the type contains or inherits other types with their own destructors).
 	
 	Since the ##[[KeyPgEnd|End]]## statement does not close any scope, object destructors will not automatically be called if the ##[[KeyPgEnd|End]]## statement is used to terminate the program.
 	

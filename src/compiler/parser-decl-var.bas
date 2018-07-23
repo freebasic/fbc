@@ -824,7 +824,7 @@ private sub hValidateGlobalVarInit( byval sym as FBSYMBOL ptr, byref initree as 
 
 	'' Disallow initialization of global dynamic strings
 	'' (not implemented - requires executing code)
-	if( symbGetType( sym ) = FB_DATATYPE_STRING ) then
+	if( (symbGetType( sym ) = FB_DATATYPE_STRING) and (not symbIsRef( sym )) ) then
 		errReport( FB_ERRMSG_CANTINITDYNAMICSTRINGS, TRUE )
 		astDelTree( initree )
 		initree = NULL
@@ -833,7 +833,7 @@ private sub hValidateGlobalVarInit( byval sym as FBSYMBOL ptr, byref initree as 
 
 	'' Check for constant initializer?
 	'' (doing this check first, it results in a nicer error message)
-	if( symbHasCtor( sym ) = FALSE ) then
+	if( (not symbHasCtor( sym )) or symbIsRef( sym ) ) then
 		if( astTypeIniIsConst( initree ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDCONST )
 			astDelTree( initree )
@@ -854,6 +854,49 @@ private function hBuildFakeByrefInitExpr( byval dtype as integer, byval subtype 
 	function = astNewDEREF( expr )
 end function
 
+'' resolve reference to a reference
+private function hResolveRefToRefInitializer( byval dtype as integer, byval expr as ASTNODE ptr ) as ASTNODE ptr
+
+	dim tree as ASTNODE ptr = any
+	dim n as ASTNODE ptr = any
+
+	'' if initializer expr is a REF VAR, then crawl the INITREE of the var
+	'' it references for a VAR initializer.  If none found just return the 
+	'' original expr.
+
+	if( expr andalso astIsDEREF( expr ) ) then
+		if( expr->l andalso astIsVAR( expr->l ) ) then
+			if( expr->l->sym andalso symbIsRef( expr->l->sym ) andalso symbIsVar( expr->l->sym ) ) then
+				tree = expr->l->sym->var_.initree
+				if( tree andalso astIsTYPEINI( tree ) ) then
+					if( tree->l andalso tree->l->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
+						n = tree->l->l
+						if( n ) then
+
+							select case astGetClass( n )
+							case AST_NODECLASS_OFFSET
+								n = n->l
+								if( n andalso astIsVAR( n ) ) then
+									'' compatible types?
+									if( astGetFullType( n ) = dtype ) then
+										astDelTree( expr )
+										expr = astCloneTree( n )
+									end if
+								end if
+							end select
+
+						end if
+					end if
+				end if
+
+			end if
+		end if
+	end if
+
+	function = expr
+
+end function
+
 private function hCheckAndBuildByrefInitializer( byval sym as FBSYMBOL ptr, byref expr as ASTNODE ptr ) as ASTNODE ptr
 	'' Check data types, CONSTness, etc.
 	var ok = astCheckByrefAssign( sym->typ, sym->subtype, expr )
@@ -866,6 +909,8 @@ private function hCheckAndBuildByrefInitializer( byval sym as FBSYMBOL ptr, byre
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 		astDelTree( expr )
 		expr = hBuildFakeByrefInitExpr( sym->typ, sym->subtype )
+	else
+		expr = hResolveRefToRefInitializer( sym->typ, expr )
 	end if
 
 	'' Build the TYPEINI for initializing the reference/pointer
@@ -877,9 +922,7 @@ private function hCheckAndBuildByrefInitializer( byval sym as FBSYMBOL ptr, byre
 	astTypeIniAddAssign( initree, astNewADDROF( expr ), sym, ptrdtype, ptrsubtype )
 	astTypeIniEnd( initree, TRUE )
 
-	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) <> 0 ) then
-		hCheckVarsUsedInGlobalInit( sym, initree )
-	end if
+	hValidateGlobalVarInit( sym, initree )
 
 	function = initree
 end function

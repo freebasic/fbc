@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2018 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -145,7 +145,7 @@ function FormatFbCodeLoadKeywords( byref filename as string ) as boolean
 		'' Load the keywords, this will allow keywords to be cased.
 
 		if( filename = "" ) then
-			filename = default_ManualDir + "templates/default/keywords.lst"
+			filename = hardcoded.default_manual_dir + "templates/default/keywords.lst"
 		end if
 		function = ( fbdoc_loadkeywords( filename ) <> 0 )
 

@@ -1,33 +1,26 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.obj_ptrto_static
+SUITE( fbc_tests.structs.obj_ptrto_static )
 
-type foo
-	pad as integer
+	type foo
+		pad as integer
+		
+		declare static function bar(i as integer) as integer
+	private:
+		declare static function bar as integer
+	end type
+
+	function foo.bar as integer 
+		return 1234 
+	end function
+
+	function foo.bar(i as integer) as integer 
+		return -1234 
+	end function
+
+	TEST( all )
+		dim as function(as integer) as integer fn = @foo.bar
+		CU_ASSERT_EQUAL( fn(1), -1234 )
+	END_TEST
 	
-	declare static function bar(i as integer) as integer
-private:
-	declare static function bar as integer
-end type
-
-function foo.bar as integer 
-	return 1234 
-end function
-
-function foo.bar(i as integer) as integer 
-	return -1234 
-end function
-
-sub test_1 cdecl	
-	dim as function(as integer) as integer fn = @foo.bar
-	CU_ASSERT_EQUAL( fn(1), -1234 )
-end sub
-
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.structs.obj_ptrto_static")
-	fbcu.add_test( "#1", @test_1)
-
-end sub
-	
-end namespace	
+END_SUITE

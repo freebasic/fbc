@@ -2,9 +2,9 @@
 '' external implementation
 ''
 
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.ns.extimp
+namespace module.ns.extimp
 
   type bar
 		field as integer
@@ -15,21 +15,20 @@ namespace fbc_tests.ns.extimp
 end namespace
 
 '' external implementation, the param depends on a ns symbol too
-function fbc_tests.ns.extimp.func( byval foo as bar ptr ) as integer
+function module.ns.extimp.func( byval foo as bar ptr ) as integer
   
   return 1
   
 end function
 
-private sub test cdecl
+private sub test_proc
 
-	CU_ASSERT_TRUE( fbc_tests.ns.extimp.func( 0 ) )
+	CU_ASSERT_TRUE( module.ns.extimp.func( 0 ) )
 
 end sub
 
-private sub ctor () constructor
-
-	fbcu.add_suite( "fbc_tests.namespace.extimp" )
-	fbcu.add_test( "test", @test )
-	
-end sub
+SUITE( fbc_tests.namespace_.extimp )
+	TEST( all )
+		test_proc
+	END_TEST
+END_SUITE

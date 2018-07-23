@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.ns.using_nested2
+SUITE( fbc_tests.namespace_.using_nested2 )
 
 	namespace ns_a
 		dim as integer foo = 1
@@ -20,15 +20,8 @@ namespace fbc_tests.ns.using_nested2
 		end namespace
 	end namespace
 	
-	sub test_1 cdecl	
+	TEST( all )
 		ns_b.inner.func()
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.namespace.using_nested2")
-		fbcu.add_test("#1", @test_1)
-		
-	end sub
-
-end namespace		
+END_SUITE

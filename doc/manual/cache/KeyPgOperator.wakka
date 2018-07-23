@@ -42,9 +42,11 @@ Declares or defines an overloaded operator.
 	##//assignment_op//## 
 		##let += -= *= &= /= \= mod= shl= shr= and= or= xor= imp= eqv= ^=##
 	##//unary_op//##
-		##""-"" not * -> abs sgn fix frac int exp log sin asin cos acos tan atn len##
+		##""-"" not * -> abs sgn fix frac int exp log sin asin cos acos tan atn len sqr##
 	##//binary_op//##
 		##+ - * & / \ mod shl shr and or xor imp eqv ^ = <> < > <= >=##
+		
+	**Note:** ##sqr## can be overloaded as operator to accept user-defined types only from fbc version 1.06.
 
 {{fbdoc item="desc"}}
 	The built in operators like ##=##, ##+##, and ##cast## have predefined behaviors when used in expressions.  These operators can be overloaded to do something other than predefined operations when at least one of the arguments to the operator is a ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, ##[[KeyPgEnum|Enum]]##, or ##[[KeyPgUnion|Union]]## data type.
@@ -57,7 +59,7 @@ Declares or defines an overloaded operator.
 	
 	Unary operators must be declared outside the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgEnum|Enum]]## and have a return data type explicitly declared.  Unary operators can be overloaded to return any valid data type, except for ##[[KeyPgOpPtrMemberAccess|Operator -> (Pointer to member access)]]## which must return a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## data type.
 	
-	Binary operators must be declared outside the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgEnum|Enum]]## and have a return data type explicitly declared.  Binary operators can be overloaded with valid data types, except for relational operators, which must return ##[[KeyPgInteger|Integer]]##.
+	Binary operators must be declared outside the ##[[KeyPgType|Type]]##, ##[[KeyPgClass|Class]]##, or ##[[KeyPgEnum|Enum]]## and have a return data type explicitly declared.  Binary operators can be overloaded with valid data types, including for relational operators, which can also return any valid data type.
 	
 	##[[KeyPgLet|Let]]## refers to the assignment operator, as in ##LET a=b##. The ##[[KeyPgLet|Let]]## keyword is omitted in common practice, and is not allowed in the //[[CompilerOptlang|-lang fb]]// dialect.  However, ##[[KeyPgOpLetlist|Let()]]## can be used to assign the fields of a UDT to multiple variables.
 	
@@ -240,7 +242,7 @@ End Scope
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgClass|Class]]##
-	- ##[[KeyPgClass|Enum]]##
+	- ##[[KeyPgEnum|Enum]]##
 	- ##[[KeyPgType|Type]]##
 	- [[ProPgDataConversion|Coercion and Conversion]]
 

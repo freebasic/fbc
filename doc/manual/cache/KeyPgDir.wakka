@@ -29,9 +29,13 @@ Searches for and returns information about an item in the filesystem; performs a
 	If no item matching the name ##//item_spec//## or the attribute mask ##//attrib_mask//## was found, then ##//out_attrib//## (or ##*//p_out_attrib//##) is assigned to zero and an empty string is returned. Otherwise, ##//out_attrib//## (or ##*//p_out_attrib//##) is assigned the attribute mask of the item, and the item name, without a path, is returned.
 
 {{fbdoc item="desc"}}
-	If ##//item_spec//## contains an absolute path, then the first procedure searches the filesystem for an item that matches the name ##//item_spec//## and whose attributes are all contained in ##//attrib_mask//##. Otherwise, it searches relative to the current directory (see ##[[KeyPgCurdir|CurDir]]##). In any case, if a matching item is not found, ##//out_attrib//## is assigned to zero and an empty string is returned. Otherwise, ##//out_attrib//## is assigned with the attribute flags of the item, and the name of the item, without a path, is returned.
+	##**Dir**## returns the first filesystem item that matches the ##//item_spec//## passed as an argument. To retrieve the next file items that match this ##//item_spec//## pattern, call ##**Dir**## again without this argument (or with an empty string).
+	So to obtain a list of items in a directory, ##**Dir**## needs to be invoked multiple times returning one item per invocation.
 	
-	##//item_spec//## may include an asterisk (##*##, for matching any adjacent characters) or one or more question marks (##?##, for matching any individual character). If it does, the procedure searches for the first such item. If found, subsequent calls with ##//item_spec//## omitted, or set to an empty string, will return the next item matching the name ##//item_spec//## until no more such items are found. If ##//attrib_mask//## is omitted from these subsequent calls, the procedure searches for items with the same attributes as in the previous call.
+	If ##//item_spec//## contains an absolute path, then the first procedure searches the filesystem for an item that matches the name ##//item_spec//## and whose attributes are all contained in ##//attrib_mask//##. Otherwise, it searches relative to the current directory (see ##[[KeyPgCurdir|CurDir]]##). In any case, if a matching item is not found, ##//out_attrib//## is assigned to zero and an empty string is returned. Otherwise, ##//out_attrib//## is assigned with the attribute flags of the item, and the name of the item, without a path, is returned.
+	##//item_spec//## may include an asterisk (##*##, for matching any adjacent characters) or one or more question marks (##?##, for matching any individual character). If it does, the procedure searches for the first such item.
+	
+	If an item is found, subsequent calls with ##//item_spec//## omitted, or set to an empty string, will return the next item matching the name ##//item_spec//## until no more such items are found. If ##//attrib_mask//## is omitted from these subsequent calls, the procedure searches for items with the same attributes as in the previous call.
 	
 	The second syntax behaves the same as ##**Dir**( //item_spec//, //attrib_mask//, *//p_out_attrib// )##.
 	The third syntax behaves the same as ##**Dir**( "####", , //out_attrib// )##.
@@ -75,7 +79,6 @@ Searches for and returns information about an item in the filesystem; performs a
 	
 	In general it is not possible to use ##//attrib_mask//## to include a file/folder with one set of attributes while excluding a file/folder with a different set.  For example, it is not possible to scan for read-only directories while excluding read-only files (unless the files also have other attributes).  Finer control can be gained by checking the ##//out_attrib//## value for the desired set of attributes.
 
-
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/dir.bas"}}%%(freebasic)
 #include "dir.bi" 'provides constants to use for the attrib_mask parameter
@@ -84,7 +87,7 @@ sub list_files (byref filespec as string, byval attrib as integer)
 	dim as string filename = dir(filespec, attrib) ' Start a file search with the specified filespec/attrib *AND* get the first filename.
 	do while len(filename) > 0 ' If len(filename) is 0, exit the loop: no more filenames are left to be read.
 		print filename
-		filename = dir()
+		filename = dir() ' Search for (and get) the next item matching the initially specified filespec/attrib.
 	loop
 end sub
 
@@ -96,7 +99,6 @@ print "archive files:"
 list_files "*", fbArchive
 %%
 
-{{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/dirretat.bas"}}%%(freebasic)
 '' Example of using DIR function and retrieving attributes
 

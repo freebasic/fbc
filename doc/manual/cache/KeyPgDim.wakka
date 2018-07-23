@@ -102,12 +102,12 @@ Dim array(1 To 2, 6, 3 To 5) As Single
 
 {{fbdoc item="section" value="Initializers"}}
 	Arrays, variables, strings, and user defined types (UDTs) are initialized to zero (or ##[[KeyPgFalse|False]]## for ##[[KeyPgBoolean|Boolean]]##) or null strings by default when they are created.
-
+	
 	To avoid the overhead of default variable initialization, the ##**Any**## initializer can be used with ##**Dim**## to tell the compiler to only reserve the place for the variable in memory but not initialize it, so the variable will contain garbage. In this case the programmer should not make assumptions about the initial values.
 	
 	Fixed-length arrays, variables, zstrings and UDTs may be given a value at the time of their declaration by following the variable declaration with an initializer.  Note the difference between initializing different types. Arrays, variables and UDTs are initialized as they would in a normal assignment, using an equal ( ##=## ) sign.  The ##=>## sign can be used, allowing to avoid the declaration resembling an expression when declaring fixed length strings.
 	
-	 Array values are given in comma-delimited values enclosed by curly brackets, and UDT values are given in comma delimited values enclosed by parenthesis.  These methods of initializing variables can be nested within one another for complex assignments. Nesting allows for arrays of any dimension to be initialized.
+	Array values are given in comma-delimited values enclosed by curly brackets, and UDT values are given in comma delimited values enclosed by parenthesis.  These methods of initializing variables can be nested within one another for complex assignments. Nesting allows for arrays of any dimension to be initialized.
 
 {{fbdoc item="filename" value="examples/manual/check/KeyPgDim_5.bas"}}%%(freebasic)
 '' Declare an array of 2 by 5 elements
@@ -223,4 +223,6 @@ Deallocate(s3)
 	- ##[[KeyPgUbound|UBound]]##
 	- ##[[KeyPgDots|... (Ellipsis)]]##
 	- ##[[KeyPgAny|Any]]##
+	- [[ProPgProcedurePointers|Pointers to Procedures]]
+
 {{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

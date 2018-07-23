@@ -1,8 +1,8 @@
 ':: ctor_byref : constructor calls when passed bydesc
  
-# include "fbcu.bi"
+#include "fbcunit.bi"
  
-namespace fbc_tests.structs.ctor_bydesc
+SUITE( fbc_tests.structs.ctor_bydesc )
  
 	type foo
 		array as double ptr
@@ -29,7 +29,7 @@ namespace fbc_tests.structs.ctor_bydesc
 		next
 	end sub
 	
-	sub test_local cdecl
+	TEST( local )
 		dim arr1(1 To 3) As double = {1, 2, 3}
 		dim arr2(1 To 4) As double = {-1, -2, -3, -4}
 		dim footb(1 To 2) As foo = {arr1(), arr2()}
@@ -40,9 +40,9 @@ namespace fbc_tests.structs.ctor_bydesc
 	    CU_ASSERT( footb(2).items = 4 )
 
 		do_test( footb() )
-	end sub
+	END_TEST
 	
-	sub test_static_local cdecl
+	TEST( static_local )
 		static arr1(1 To 3) As double = {1, 2, 3}
 		static arr2(1 To 4) As double = {-1, -2, -3, -4}
 		static footb(1 To 2) As foo = {arr1(), arr2()}
@@ -53,26 +53,19 @@ namespace fbc_tests.structs.ctor_bydesc
 	    CU_ASSERT( footb(2).items = 4 )
 
 		do_test( footb() )
-	end sub
+	END_TEST
 	
-		dim shared g_arr1(1 To 3) As double = {1, 2, 3}
-		dim shared g_arr2(1 To 4) As double = {-1, -2, -3, -4}
-		dim shared g_footb(1 To 2) As foo = {g_arr1(), g_arr2()}
+	dim shared g_arr1(1 To 3) As double = {1, 2, 3}
+	dim shared g_arr2(1 To 4) As double = {-1, -2, -3, -4}
+	dim shared g_footb(1 To 2) As foo = {g_arr1(), g_arr2()}
 	
-	sub test_global cdecl
+	TEST( global )
 	    CU_ASSERT( g_footb(1).array = @g_arr1(1) )
 	    CU_ASSERT( g_footb(1).items = 3 )
 	    CU_ASSERT( g_footb(2).array = @g_arr2(1) )
 	    CU_ASSERT( g_footb(2).items = 4 )
 
 		do_test( g_footb() )
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.structs.ctor_bydesc")
-		fbcu.add_test("test_local", @test_local)
-		fbcu.add_test("test_static_local", @test_static_local)
-		fbcu.add_test("test_global", @test_global)
-	end sub
- 
-end namespace
+END_SUITE

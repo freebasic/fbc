@@ -43,7 +43,7 @@ ElseIf <expression> Then
 End If
 %%
 
-In this format if <expression> is True then the code following the Then is executed. If the answer is False then the ElseIf is executed. If the ElseIf is True, the code following the Then (of the ElseIf) is executed, otherwise the code following the End If is executed. You can have as many ElseIf statements as you need to fully cover the range of questions you need to ask.
+In this format if <expression> is True then the code following the Then is executed. If the answer is False then the ""ElseIf"" is executed. If the ""ElseIf"" is True, the code following the Then (of the ""ElseIf"") is executed, otherwise the code following the End If is executed. You can have as many ""ElseIf"" statements as you need to fully cover the range of questions you need to ask.
 
 %%(freebasic)
 If <expression> Then
@@ -55,7 +55,7 @@ Else
 End If
 %%
 
-This format is a combination of all the other formats. If <expression> is True then the code following the Then is executed. If the answer is False then the ElseIf is executed. If the ElseIf is True, the code following the Then (of the ElseIf) is executed, otherwise the code following the Else is executed.
+This format is a combination of all the other formats. If <expression> is True then the code following the Then is executed. If the answer is False then the ""ElseIf"" is executed. If the ""ElseIf"" is True, the code following the Then (of the ""ElseIf"") is executed, otherwise the code following the Else is executed.
 
 This format enables you to ask a series of questions and if the answer is False to all the questions, you can take a default course of action based on the Else block.
 
@@ -89,13 +89,13 @@ If either of the statements within the parenthesis evaluate to 0, then And will 
 
 === The Not Problem ===
 
-The Not bitwise operator can be a problem in an If statement. You may be used to writing //If Not var Then//, with Not performing a logical, rather than a bitwise operation. In FreeBasic Not performs a bitwise operation, not a logical operation. 
+The Not bitwise operator can be a problem in an If statement. You may be used to writing //If Not var Then//, with Not performing a logical, rather than a bitwise operation. In ""FreeBASIC"" Not performs a bitwise operation, not a logical operation. 
 
 If var were to contain the value of 3, then Not 3 is -4, which will be regarded as a True result and the code following the Then will be executed, which is probably not what you wanted. Instead of writing //If Not var Then//, you should write //If var <> 0 Then//.
 
 === Overlapping Conditions ===
 
-When using compound conditions care must be taken to ensure that the conditions do not overlap. In most cases overlapping conditions will produce unpredictable results. Each condition must produce a unique result, and the combination of the individual results, must itself express a unique result. This is very important in If-ElseIf constructs; an overlapping condition within an If-ElseIf block may execute the wrong code at the wrong time.
+When using compound conditions care must be taken to ensure that the conditions do not overlap. In most cases overlapping conditions will produce unpredictable results. Each condition must produce a unique result, and the combination of the individual results, must itself express a unique result. This is very important in If-""ElseIf"" constructs; an overlapping condition within an If-""ElseIf"" block may execute the wrong code at the wrong time.
 
 === Nested If Statements ===
 
@@ -184,3 +184,7 @@ End If
 %%
 
 Remember that the And operator will only return True if both operands return True. If value is 6, 6 is greater than 5 and 6 is also less than 7, so both statements are True and the expression evaluates to True.
+
+Editors Note: See also [[KeyPgOpAndAlso|AndAlso]] and [[KeyPgOpOrElse|OrElse]]
+
+//Last Reviewed By ""Sancho3"", February 06, 2018//

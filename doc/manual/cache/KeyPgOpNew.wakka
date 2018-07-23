@@ -28,7 +28,7 @@ Operator to dynamically allocate memory and construct data of a specified type.
 {{fbdoc item="desc"}}
 	The ##**New**## operator dynamically allocates memory and constructs a specified data type.
 	
-	For simple types, like integers, an initial value can be given. For types without constructors, initial values can be specified for each field (either with default initializer at data-field declaration, or with initializer list as in ##**New** //datatype// (**initializers, ..**)## if all type data-fields are numeric primitives only and without any default initializers). Types that have constructors can have their constructors called by ##**New**## as well. If no initializers are given, the default values for those types will be set.
+	For simple types, like integers, an initial value can be given. For types without constructors, initial values can be specified for each field (either with default initializer at data-field declaration, or with initializer list as in ##**New** //datatype// (**initializers, ..**)## if all type data-fields are numeric primitives only and without any default initializers). For types with at least one constructor, the initialize list (if any) must match an existing constructor. If no initializers are given, the default values for those types will be set.
 	
 	##**New[]**## is the array-version of the ##**New**## operator and allocates enough memory for the specified number of objects.  The default constructor for the type will be used to set the initial values for each item.
 	

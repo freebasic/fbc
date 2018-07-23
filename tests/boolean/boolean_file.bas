@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 '' - don't mix false/true intrinsic constants 
 ''   of the compiler in with the tests
@@ -11,13 +11,13 @@
 const FALSE_STRING = "false"
 const TRUE_STRING = "true"
 
-namespace fbc_tests.boolean_.file_
+SUITE( fbc_tests.boolean_.boolean_file )
 
 	'' RTLIB - PRINTBOOL
 	''       - WRITEBOOL
 	''       - INPUTBOOL
 
-	sub io_test_ascii cdecl ( )
+	TEST( io_test_ascii )
 
 		dim h as integer = freefile
 		dim b as boolean
@@ -65,9 +65,9 @@ namespace fbc_tests.boolean_.file_
 
 		kill "boolean/data-ascii-test.txt"
 
-	end sub
+	END_TEST
 
-	sub io_test_utf16le cdecl ( )
+	TEST( io_test_utf16le )
 
 		dim h as integer = freefile
 		dim b as boolean
@@ -115,9 +115,9 @@ namespace fbc_tests.boolean_.file_
 
 		kill "boolean/data-utf16le-test.txt"
 
-	end sub
+	END_TEST
 
-	sub io_test_binary cdecl ( )
+	TEST( io_test_binary )
 
 		dim h as integer = freefile
 		dim b as boolean
@@ -161,13 +161,6 @@ namespace fbc_tests.boolean_.file_
 
 		kill "boolean/data-binary-test.dat"
 
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean.boolean_file")
-		fbcu.add_test("io_test_utf16le", @io_test_ascii)
-		fbcu.add_test("io_test_utf16le", @io_test_utf16le)
-		fbcu.add_test("io_test_binary", @io_test_binary)
-	end sub
-
-end namespace
+END_SUITE

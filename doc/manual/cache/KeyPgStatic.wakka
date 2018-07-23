@@ -75,5 +75,6 @@ Number of times called: 2
 	- ##[[KeyPgMemberSub|Sub (Member)]]##, ##[[KeyPgMemberFunction|Function (Member)]]##
 	- ##[[KeyPgOptionstatic|Option Static]]##
 	- ##[[ProPgStorageClasses|Storage Classes]]##
+	- [[ProPgProcedurePointers|Pointers to Procedures]]
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVariables|Variable Declarations"}}

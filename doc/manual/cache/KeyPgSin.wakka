@@ -18,6 +18,8 @@ Returns the sine of an angle
 	The argument ##//angle//## is measured in [[TutMathAngles|radians]] (not [[TutMathAngles|degrees]]).
 	
 	The value returned by this function is undefined for values of ##//angle//## with an absolute value of ##2 ^ 63## or greater.
+	
+	##**Sin**## can be overloaded as operator to accept user-defined types.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/sin.bas"}}%%(freebasic)

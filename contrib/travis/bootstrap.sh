@@ -1,15 +1,20 @@
 #!/bin/bash
 set -ex
 
-sudo apt-get -y install \
+# Install/upgrade gcc, otherwise installing gcc-multilib may fail
+sudo apt-get -y --no-install-recommends install \
+	gcc \
 	g++ \
 	libgl1-mesa-dev \
 	libglu1-mesa-dev \
 	libgpm-dev
 if [ "$FBTRAVIS_TARGET_BITS" = "32" ]; then
-	sudo apt-get -y install \
+	# Installing gcc-multilib separately from the 32bit libs,
+	# because apparently it can fail otherwise.
+	sudo apt-get -y --no-install-recommends install \
 		gcc-multilib \
-		g++-multilib \
+		g++-multilib
+	sudo apt-get -y --no-install-recommends install \
 		lib32ncurses5-dev \
 		libffi-dev:i386 \
 		libcunit1-dev:i386 \
@@ -23,7 +28,7 @@ if [ "$FBTRAVIS_TARGET_BITS" = "32" ]; then
 		libaspell-dev:i386 \
 		libpcre3-dev:i386
 else
-	sudo apt-get -y install \
+	sudo apt-get -y --no-install-recommends install \
 		libncurses-dev \
 		libffi-dev \
 		libcunit1-dev \

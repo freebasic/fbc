@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 # include "vbcompat.bi"
 
 declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as long )
@@ -36,62 +36,54 @@ tests_datevalue:
 	data "08-05/2005",        0
 	data "."
 
-namespace fbc_tests.datetime.testdate
+SUITE( fbc_tests.datetime.testdate )
 
-sub test_dateserial cdecl ()
+	TEST( dateserial_ )
 
-	fb_I18nSet 0
-    dim as integer serial_date, test_value, do_dmy_check
-	dim as integer chk_day, chk_month, chk_year, chk_dow
-    dim sDay as string
+		fb_I18nSet 0
+		dim as integer serial_date, test_value, do_dmy_check
+		dim as integer chk_day, chk_month, chk_year, chk_dow
+		dim sDay as string
 
-    restore tests_dateserial
-    read sDay
-    while sDay<>"."
-        chk_day = val(sDay)
-        read chk_month, chk_year, do_dmy_check, chk_dow, serial_date
-        test_value = dateserial( chk_year, chk_month, chk_day )
-        CU_ASSERT( test_value = serial_date )
-        CU_ASSERT( weekday( serial_date ) = chk_dow )
-        if( do_dmy_check ) then
-            CU_ASSERT( chk_day = day(serial_date) )
-            CU_ASSERT( chk_month = month(serial_date) )
-            CU_ASSERT( chk_year = year(serial_date) )
-        end if
-    	read sDay
-    wend
+		restore tests_dateserial
+		read sDay
+		while sDay<>"."
+			chk_day = val(sDay)
+			read chk_month, chk_year, do_dmy_check, chk_dow, serial_date
+			test_value = dateserial( chk_year, chk_month, chk_day )
+			CU_ASSERT( test_value = serial_date )
+			CU_ASSERT( weekday( serial_date ) = chk_dow )
+			if( do_dmy_check ) then
+				CU_ASSERT( chk_day = day(serial_date) )
+				CU_ASSERT( chk_month = month(serial_date) )
+				CU_ASSERT( chk_year = year(serial_date) )
+			end if
+    		read sDay
+		wend
 
-end sub
+	END_TEST
 
-sub test_datevalue cdecl ()
+	TEST( datevalue_ )
 
-	fb_I18nSet 0
-	dim as integer chk_day, chk_month, chk_year, serial_date, want_ok
-    dim sDate as string
+		fb_I18nSet 0
+		dim as integer chk_day, chk_month, chk_year, serial_date, want_ok
+		dim sDate as string
 
-    restore tests_datevalue
-    read sDate
-    while sDate<>"."
-        read want_ok
+		restore tests_datevalue
+		read sDate
+		while sDate<>"."
+			read want_ok
 
-        serial_date = datevalue(sDate)
+			serial_date = datevalue(sDate)
         
-        if want_ok=1 then
-            read chk_day, chk_month, chk_year
-	        CU_ASSERT( serial_date = dateserial( chk_year, chk_month, chk_day ) )
-        end if
+			if want_ok=1 then
+				read chk_day, chk_month, chk_year
+				CU_ASSERT( serial_date = dateserial( chk_year, chk_month, chk_day ) )
+			end if
 
-    	read sDate
-    wend
+    		read sDate
+		wend
 
-end sub
+	END_TEST
 
-sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.datetime.testdate")
-	fbcu.add_test("test_dateserial", @test_dateserial)
-	fbcu.add_test("test_datevalue", @test_datevalue)
-
-end sub
-
-end namespace
+END_SUITE

@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 namespace ns1
 	function bar as integer
@@ -30,7 +30,7 @@ namespace ns2
 end namespace
 
 
-private sub test cdecl
+private sub test_proc
 	dim as ns2.UDT t
 	
 	t.proc1
@@ -38,10 +38,8 @@ private sub test cdecl
 
 end sub
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.namespace.import_method")
-	
-	fbcu.add_test("test", @test)
-	
-end sub
+SUITE( fbc_tests.namespace_.import_method )
+	TEST( all )
+		test_proc
+	END_TEST
+END_SUITE

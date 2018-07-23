@@ -3,7 +3,7 @@ Handling runtime errors.
 	
 	""FreeBASIC"" can handle the errors in the following ways:
 	- By default the program does nothing with the errors - they are silently ignored and code continues. In this case code should process possible errors in the next line by using the ##[[KeyPgErr|Err]]## function.
-	- If compiled with //[[CompilerOpte|-e]]// or //[[CompilerOptex|-ex]]// options, ""FreeBASIC"" uses QB-like error handling.
+	- If compiled with //[[CompilerOpte|-e]]//, //[[CompilerOptex|-ex]]// or //[[CompilerOptexx|-exx]]// options, ""FreeBASIC"" uses QB-like error handling.
 	- **Future** OOP versions of ""FreeBASIC"" may have a java-like TRY..CATCH...FINALLY exception handler implemented.
 	
 	**NOTE:** The following information is valid unless the error produces an OS General Protection Fault (for example if the program writes outside the process memory area). In these cases the OS will immediately stop the program and issue an error: nothing can avoid it from inside ""FreeBASIC"".
@@ -29,7 +29,7 @@ Sleep
 %%
 
 {{fbdoc item="section" value="QuickBASIC-like error handling"}}
-	If the  //[[CompilerOpte|-e]]// or //[[CompilerOptex|-ex]]// switch is used at compile time, the program is expected to have a QB-like error handler enabled. If no handler processes the error, the program stops with an error.
+	If the  //[[CompilerOpte|-e]]//, //[[CompilerOptex|-ex]]// or //[[CompilerOptexx|-exx]]// switch is used at compile time, the program is expected to have a QB-like error handler enabled. If no handler processes the error, the program stops with an error.
 	
 	Notice: if QB-Like error handling is used, the programmer should be prepared to handle all error conditions.
 
@@ -90,7 +90,7 @@ End Sub
 %%
 
 	If the //[[CompilerOpte|-e]]// switch is used (whatever the //[[CompilerOptlang|-lang]]// dialect), the error handler must terminate the program. 
-	With //[[CompilerOptex|-ex]]// and //[[CompilerOptlang|-lang qb]]// dialect only, the error routine can end by using ##[[KeyPgResume|Resume]]## (retries the statement that caused the error) or ##[[KeyPgResumenext|Resume Next]]## (continues at the next instruction) .
+	With (//[[CompilerOptex|-ex]]// or //[[CompilerOptexx|-exx]]//) and //[[CompilerOptlang|-lang qb]]// dialect only, the error routine can end by using ##[[KeyPgResume|Resume]]## (retries the statement that caused the error) or ##[[KeyPgResumenext|Resume Next]]## (continues at the next instruction) .
 
 {{fbdoc item="section" value="Error codes"}}
 	See [[TblRuntimeErrors|Runtime Error Codes]] for a listing of runtime error numbers and their associated meaning.

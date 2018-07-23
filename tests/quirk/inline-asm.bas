@@ -1,4 +1,4 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
 #if __FB_ASM__ = "intel"
 
@@ -8,7 +8,7 @@ sub quirk_inline_asm_f1 cdecl alias "quirk_inline_asm_f1"()
 	f1calls += 1
 end sub
 
-private sub test cdecl( )
+private sub test_proc
 	CU_ASSERT( f1calls = 0 )
 	asm call quirk_inline_asm_f1
 	CU_ASSERT( f1calls = 1 )
@@ -42,9 +42,14 @@ label3:
 	end asm
 end sub
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.quirk.inline-asm" )
-	fbcu.add_test( "test", @test )
-end sub
+SUITE( fbc_tests.quirk.inline_asm )
+
+	'' assuming these tests need to be module level
+
+	TEST( default )
+		test_proc
+	END_TEST
+
+END_SUITE
 
 #endif

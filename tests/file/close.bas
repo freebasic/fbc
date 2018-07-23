@@ -1,135 +1,126 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.file_.close_
+SUITE( fbc_tests.file_.close_ )
 
-const filename = "./file/close.bas"
+	const filename = "./file/close.bas"
 
-#macro TEST_CLOSE_STMT(err_expected, params...)
-scope
-	close params
-	dim as integer e = err()
-	CU_ASSERT_EQUAL(e, err_expected)
-end scope
-#endmacro
+	#macro TEST_CLOSE_STMT(err_expected, params...)
+	scope
+		close params
+		dim as integer e = err()
+		CU_ASSERT_EQUAL(e, err_expected)
+	end scope
+	#endmacro
 
-enum FB_RTERROR
-	OK = 0
-	ILLEGALFUNCTIONCALL = 1
-end enum
+	enum FB_RTERROR
+		OK = 0
+		ILLEGALFUNCTIONCALL = 1
+	end enum
 
-const FALSE = 0
-const TRUE = -1
+	const FALSE = 0
+	const TRUE = -1
 
-private function openfile(byval fn as integer) as integer
+	private function openfile(byval fn as integer) as integer
 
-	CU_ASSERT_EQUAL( fn, freefile() )
+		CU_ASSERT_EQUAL( fn, freefile() )
 
-	if( open( filename, for input, as #fn ) <> OK ) then
-		CU_FAIL( "File open error" )
-		return FALSE
-	else
-		CU_ASSERT_EQUAL( freefile(), fn+1 )
-		return TRUE
-	end if
+		if( open( filename, for input, as #fn ) <> OK ) then
+			CU_FAIL( "File open error" )
+			return FALSE
+		else
+			CU_ASSERT_EQUAL( freefile(), fn+1 )
+			return TRUE
+		end if
 
-end function
+	end function
 
-sub close1 cdecl ()
+	TEST( close1 )
 
-	'' close(0) should fail
-	CU_ASSERT_EQUAL( close(0), ILLEGALFUNCTIONCALL )
-
-	'' make sure freefile() is 1
-	CU_ASSERT_EQUAL( freefile(), 1 )
-
-	CU_ASSERT_EQUAL( close(1), ILLEGALFUNCTIONCALL )
-
-	'' open file at #1
-	if openfile( 1 ) then
-
-		'' close(0) should fail, and no files should be closed
-		'' (old behaviour: close(0) would close all files)
+		'' close(0) should fail
 		CU_ASSERT_EQUAL( close(0), ILLEGALFUNCTIONCALL )
 
-		'' make sure freefile() is still 2 (so #1 hasn't been closed)
-		CU_ASSERT_EQUAL( freefile(), 2 )
+		'' make sure freefile() is 1
+		CU_ASSERT_EQUAL( freefile(), 1 )
 
-	end if
+		CU_ASSERT_EQUAL( close(1), ILLEGALFUNCTIONCALL )
 
-	'' close(1) should close file #1 and return no error
-	CU_ASSERT_EQUAL( close(1), 0 )
+		'' open file at #1
+		if openfile( 1 ) then
 
-	'' freefile() should be 1 again
-	CU_ASSERT_EQUAL( freefile(), 1 )
+			'' close(0) should fail, and no files should be closed
+			'' (old behaviour: close(0) would close all files)
+			CU_ASSERT_EQUAL( close(0), ILLEGALFUNCTIONCALL )
 
-	'' close(1) should fail again
-	CU_ASSERT_EQUAL( close(1), ILLEGALFUNCTIONCALL )
+			'' make sure freefile() is still 2 (so #1 hasn't been closed)
+			CU_ASSERT_EQUAL( freefile(), 2 )
 
-end sub
+		end if
 
-sub closeall cdecl ()
+		'' close(1) should close file #1 and return no error
+		CU_ASSERT_EQUAL( close(1), 0 )
 
-	'' close() with no open files should give no error
-	CU_ASSERT_EQUAL( close(), OK )
+		'' freefile() should be 1 again
+		CU_ASSERT_EQUAL( freefile(), 1 )
 
-	'' open file at #1
-	if openfile( 1 ) then
-		'' freefile() should now be 2
-		CU_ASSERT_EQUAL( freefile(), 2 )
-	end if
+		'' close(1) should fail again
+		CU_ASSERT_EQUAL( close(1), ILLEGALFUNCTIONCALL )
 
-	'' open file at #2
-	openfile( 2 )
+	END_TEST
 
-	'' close() should close all files and return no error
-	CU_ASSERT_EQUAL( close(), OK )
+	TEST( closeall )
 
-	'' freefile() should now be 1 again
-	CU_ASSERT_EQUAL( freefile(), 1 )
+		'' close() with no open files should give no error
+		CU_ASSERT_EQUAL( close(), OK )
 
-	'' #1 and #2 should be closed, so these should fail
-	CU_ASSERT_EQUAL( close(1), ILLEGALFUNCTIONCALL )
-	CU_ASSERT_EQUAL( close(2), ILLEGALFUNCTIONCALL )
+		'' open file at #1
+		if openfile( 1 ) then
+			'' freefile() should now be 2
+			CU_ASSERT_EQUAL( freefile(), 2 )
+		end if
 
-	'' close() should still return no error
-	CU_ASSERT_EQUAL( close(), OK )
+		'' open file at #2
+		openfile( 2 )
 
-end sub
+		'' close() should close all files and return no error
+		CU_ASSERT_EQUAL( close(), OK )
 
-sub closestmt cdecl ()
+		'' freefile() should now be 1 again
+		CU_ASSERT_EQUAL( freefile(), 1 )
 
-	'' close (no params) should succeed.
-	TEST_CLOSE_STMT( OK, )
+		'' #1 and #2 should be closed, so these should fail
+		CU_ASSERT_EQUAL( close(1), ILLEGALFUNCTIONCALL )
+		CU_ASSERT_EQUAL( close(2), ILLEGALFUNCTIONCALL )
 
-	openfile( 1 )
-	openfile( 2 )
+		'' close() should still return no error
+		CU_ASSERT_EQUAL( close(), OK )
 
-	CU_ASSERT_EQUAL( freefile(), 3 )
+	END_TEST
 
-	'' both should be closed, no error returned (although err() will only show the success of #2)
-	TEST_CLOSE_STMT( OK, #1, #2 )
+	TEST( closestmt )
 
-#if __FB_ERR__ = 0
-	'' close #1 and close #2 should now fail
-	TEST_CLOSE_STMT( ILLEGALFUNCTIONCALL, #1 )
-	TEST_CLOSE_STMT( ILLEGALFUNCTIONCALL, #2 )
-#endif
+		'' close (no params) should succeed.
+		TEST_CLOSE_STMT( OK, )
 
-	openfile( 1 )
-	openfile( 2 )
+		openfile( 1 )
+		openfile( 2 )
 
-	'' "close" should close both and succeed
-	TEST_CLOSE_STMT( OK, )
+		CU_ASSERT_EQUAL( freefile(), 3 )
 
-end sub
+		'' both should be closed, no error returned (although err() will only show the success of #2)
+		TEST_CLOSE_STMT( OK, #1, #2 )
 
-private sub ctor () constructor
+	#if __FB_ERR__ = 0
+		'' close #1 and close #2 should now fail
+		TEST_CLOSE_STMT( ILLEGALFUNCTIONCALL, #1 )
+		TEST_CLOSE_STMT( ILLEGALFUNCTIONCALL, #2 )
+	#endif
 
-	fbcu.add_suite("fbc_tests.file.close")
-	fbcu.add_test("close1", @close1)
-	fbcu.add_test("closeall", @closeall)
-	fbcu.add_test("closestmt", @closestmt)
+		openfile( 1 )
+		openfile( 2 )
 
-end sub
+		'' "close" should close both and succeed
+		TEST_CLOSE_STMT( OK, )
 
-end namespace
+	END_TEST
+
+END_SUITE

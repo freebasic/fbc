@@ -1,20 +1,26 @@
 {{fbdoc item="title" value="Installing"}}----
 Installing ""FreeBASIC"", any additionally needed packages, and perhaps a text editor or IDE.
 
+//Note: If the user specifies directory names during the installation of the different components, it is recommended in the chosen names to use only alphanumeric ASCII characters without accent and preferably not any space, otherwise some paths might not work as expected.//
+
 {{fbdoc item="section" value="Windows 32bit"}}
 
-	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/|FreeBASIC-x.xx.x-win32.exe]] installer
-	1) Run it and click through it. The installer will install ""FreeBASIC"" at ##""C:\%ProgramFiles%\FreeBASIC""##, or if you chose a different installation directory, in your chosen directory. Start Menu shortcuts to the website will be installed as well.
+	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/|FreeBASIC-x.xx.x-win32.zip]] package, or the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/|FreeBASIC-x.xx.x-win32.exe]] installer (not recommended for Windows 7 and later versions).
+	1) Depending on the chosen method:
+		- Zip package: Extract it where you like, for example at ##""...\FreeBASIC""## (no further installation required to use fbc).
+		- Installer (not recommended for Windows 7 and later versions): Run it and click through it. The installer will install ""FreeBASIC"" at ##""C:\%ProgramFiles%\FreeBASIC""##, or if you chose a different installation directory, in your chosen directory. Start Menu shortcuts to the website will be installed as well.
 	1) Unless you already have a source code editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":
 		- [[http://fbide.freebasic.net/|FBIDE]]
 		- [[http://radasm.cherrytree.at/fbedit/|FBEdit]]
-	
-	To uninstall ""FreeBASIC"", remove it from the system's list of installed software ([[http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/win_addprog_window_component.mspx|Add/remove programs]], [[http://windows.microsoft.com/en-US/windows-vista/Uninstall-or-change-a-program|Uninstall or change a program]]).
+		
+	To uninstall ""FreeBASIC"":
+			- If previously installed using zip package: simply deleted the directory where you extracted it.
+			- If previously installed using installer: remove it from the system's list of installed software ([[http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/win_addprog_window_component.mspx|Add/remove programs]], [[http://windows.microsoft.com/en-US/windows-vista/Uninstall-or-change-a-program|Uninstall or change a program]]).
 
-{{fbdoc item="section" value="Windows x64"}}
+{{fbdoc item="section" value="Windows 64bit"}}
 
-	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/|FreeBASIC-x.xx.x-win64.zip]] package
-	1) Extract it where you like, for example at ##""C:\%ProgramFiles%\FreeBASIC""## (no further installation required to use fbc).
+	1) Download the latest [[https://sourceforge.net/projects/fbc/files/Binaries%20-%20Windows/|FreeBASIC-x.xx.x-win64.zip]] package.
+	1) Extract it where you like, for example at ##""...\FreeBASIC""## (no further installation required to use fbc).
 	1) You may want to install a source code editor or IDE; also see the **Windows 32bit** section.
 	
 	To uninstall ""FreeBASIC"", simply deleted the directory where you extracted it.
@@ -64,7 +70,8 @@ $ sudo ./install.sh -i%%
 				- ncurses-devel
 				- libffi46-devel
 				- xorg-x11-devel
-		
+
+				
 		For 32bit development on a 64bit system:
 			- Debian/Ubuntu:
 				- gcc-multilib
@@ -80,10 +87,12 @@ $ sudo ./install.sh -i%%
 				- xorg-x11-libXrender-devel-32bit
 				- xorg-x11-libXpm-devel-32bit
 				- libffi46-devel-32bit
-	
+
+				
 	1) Unless you already have a text editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":
 		- [[http://www.geany.org/|Geany]]
-	
+
+		
 	To uninstall ""FreeBASIC"" from ##/usr/local##, you can run the install.sh script again, but with the -u option: ##sudo ./install.sh -u##
 
 {{fbdoc item="section" value="DOS"}}

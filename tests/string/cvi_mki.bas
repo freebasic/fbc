@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.string_.cvi_mki
+SUITE( fbc_tests.string_.cvi_mki )
 
 	const as double  cv_d  = 1.646488698019057e+098
 	const as single  cv_s  = 3.629605e+012         
@@ -13,7 +13,7 @@ namespace fbc_tests.string_.cvi_mki
 		const as integer cv_i = cv_l
 	#endif
 
-	sub CVXtest cdecl ()
+	TEST( CVX )
 
 		dim as double d = cvd("TESTTEST")
 		dim as single s = cvs("TESTTEST")
@@ -34,14 +34,14 @@ namespace fbc_tests.string_.cvi_mki
 		CU_ASSERT_EQUAL( mkshort  (cv_sh), "TE" )
 		CU_ASSERT_EQUAL( mklongint(cv_li), "TESTTEST" )
 
-	end sub
+	END_TEST
 
 	const as double  m_d  = 10000
 	const as integer m_i  = 10000
 	const as long    m_l  = 10000
 	const as longint m_li = 10000
 
-	sub MKXtest cdecl ()
+	TEST( MKX )
 	
 		dim as string mkd_d, mkd_i, mkd_l, mkd_li
 		dim as string mks_d, mks_i, mks_l, mks_li
@@ -78,14 +78,6 @@ namespace fbc_tests.string_.cvi_mki
 		testMKX(mkshort)
 		testMKX(mklongint)
 		
-	end sub	
+	END_TEST
 
-	sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.string.cvi_mki")
-		fbcu.add_test("cvi", @CVXtest)
-		fbcu.add_test("mki", @MKXtest)
-	
-	end sub
-
-end namespace
+END_SUITE

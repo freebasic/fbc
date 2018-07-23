@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="Using the Mouse in FreeBASIC"}}----
 
-After doing some searches, I quickly noticed that there simply wasn't an official tutorial or technique for manipulating the mouse in a windows console application in FreeBasic. Therefore, I decided to write this technique in order to give such an example to the FreeBasic Community. As you know A Windows Console is already mouse aware by ways of the fact that it is a windows console, which means it's created with the use of the Windows API, which means that the mouse can be accessed from the Console Window. So There's no need to turn the mouse on or off in your code. All you need to do is Get or Set the X and Y coordinates and get the states of the mouse buttons. We will be covering the following subjects in this tutorial.
+After doing some searches, I quickly noticed that there simply wasn't an official tutorial or technique for manipulating the mouse in a windows console application in ""FreeBASIC"". Therefore, I decided to write this technique in order to give such an example to the ""FreeBASIC"" Community. As you know A Windows Console is already mouse aware by ways of the fact that it is a windows console, which means it's created with the use of the Windows API, which means that the mouse can be accessed from the Console Window. So There's no need to turn the mouse on or off in your code. All you need to do is Get or Set the X and Y coordinates and get the states of the mouse buttons. We will be covering the following subjects in this tutorial.
 
 	-Getting Mouse Coordinates:
 	  The mouse cursor, when the mouse is moved, continuously updates its position. You can get these values to determine where the pointer currently is on the screen.
@@ -13,19 +13,19 @@ After doing some searches, I quickly noticed that there simply wasn't an officia
 
 As with most tutorials, this one too can be better explained with the use of an example program. We will be creating a very simple program that acts upon the user's interaction with the mouse and certain areas of the screen. It should provide the bases of code needed to efficiently operate and control the mouse in your own programming projects.
 
-IMPORTANT: It is mandatory that you set yourself in a graphic mode in order to use the mouse. the mouse commands will always return -1 for a value if the graphic mode is not set.
+//Editors Note: The mouse functions will work with a graphics window as demonstrated in this tutorial. They will work with console window however in Windows, Quick Edit mode must be turned off.//
 
 ==THE SAMPLE PROGRAM DESCRIPTION==
 
-For the sake of a demonstration program, things will be quite simple and as straightforward as it possibly can. The program will show 3 items at the top of the screen and depending on which one you click a different message will be displayed on the screen. This should give you enough information to know how to work with the mouse in FreeBasic.
+For the sake of a demonstration program, things will be quite simple and as straightforward as it possibly can. The program will show 3 items at the top of the screen and depending on which one you click a different message will be displayed on the screen. This should give you enough information to know how to work with the mouse in ""FreeBASIC"".
 
-In FreeBasic, there's basically 2 commands that you need to worry about when trying to handle the mouse in your projects. Here they are with their syntax explained as per the documentation.
+In ""FreeBASIC"", there's basically 2 commands that you need to worry about when trying to handle the mouse in your projects. Here they are with their syntax explained as per the documentation.
 
 --------------------------------------------------------------------------------
 {{fbdoc item="title" value="GETMOUSE"}}
 ----
 {{fbdoc item="syntax"}}
-GETMOUSE x, y[, [wheel][, [buttons]]]
+result = ""GetMouse"" (x, y [, [ wheel ] [, [ buttons ] [, [ clip ]]]])
 
 {{fbdoc item="desc"}}
 GETMOUSE retrieves the mouse position and button status. 
@@ -36,6 +36,8 @@ Mouse position is stored in X and Y when the function is called. If the mouse is
 
 'buttons' stores the button status. On function termination, this will return a bitmask holding buttons status. Bit 0 is set if left mouse button is down; bit 1 is set if right mouse button is down; bit 2 is set if middle mouse button is down.
 
+'clip' stores the mouse clipping status; if 1, the mouse is currently clipped to the graphics window; if 0, the mouse is not clipped.
+
 *GETMOUSE is for use in graphics modes, set using the SCREEEN command ONLY.*
 
 
@@ -43,7 +45,7 @@ Mouse position is stored in X and Y when the function is called. If the mouse is
 {{fbdoc item="title" value="SETMOUSE"}}
 ----
 {{fbdoc item="syntax"}}
-SETMOUSE x, y, visibility
+result = ""SetMouse""([ x ] [, [ y ] [, [ visibility ] [, [ clip ]]]])
 
 {{fbdoc item="desc"}}
 SETMOUSE will set the X,Y coordinates of the mouse pointer, as well as setting it's visibility. 
@@ -51,6 +53,8 @@ SETMOUSE will set the X,Y coordinates of the mouse pointer, as well as setting i
 Mouse position is set using the X and Y parameters. 
 
 The mouse will be visible if visibility is set to 1, and invisible if visibility is set to 0.
+
+clip - 1 indicates mouse is clipped to graphics window, 0 indicates no clipping
 
 *SETMOUSE is intended for graphics modes initiated using the SCREEN statement only.*
 
@@ -66,7 +70,7 @@ Here are a set of constants that I declare at the beginning of the module. This 
 	CONST SHOWMOUSE = 1
 	CONST HIDEMOUSE = 0 
 %%
-As a first step in this example, we will be declaring variables that we will be using throughout the example program. Of course you don't have to declare your variables, but me I like to do so because when you do so you know exactly why you're declaring your variables. To me that's good practice.
+As a first step in this example, we will be declaring variables that we will be using throughout the example program. Of course you don't have to declare your variables, but me I like to do so because when you do so you know exactly why you're declaring your variables. To me that's good practice. Editors Note: In #lang FB you must declare variables before using them. 
 %%(freebasic)
 	DIM CurrentX AS INTEGER 
 	DIM CurrentY AS INTEGER
@@ -74,7 +78,7 @@ As a first step in this example, we will be declaring variables that we will be 
 	DIM CanExit AS INTEGER
 	DIM AS STRING A,B,C
 %%
-The idea here is to do everything within a loop so that we can also control how the program exits. So we'll create a loop that will exit when the "Can********Exit" variable is equal to 0. In the loop we'll Interrogate the mouse and print some basic values. (This part is extracted from the example provided in the GETMOUSE syntax explanation in the gfxlib.txt file). Don't forget to set your graphics mode as it is a must to get valid return values from the mouse commands. We'll use Screen 12 for our example.
+The idea here is to do everything within a loop so that we can also control how the program exits. So we'll create a loop that will exit when the "Can********Exit" variable is equal to 0. In the loop we'll interrogate the mouse and print some basic values. (This part is extracted from the example provided in the GETMOUSE syntax explanation in the gfxlib.txt file). Don't forget to set your graphics mode as it is a must to get valid return values from the mouse commands. We'll use Screen 12 for our example.
 %%(freebasic)
 SCREEN 12 
 CanExit = 1
@@ -106,7 +110,7 @@ For the next step, since we want to control a bit what's happening with the mous
 	 GETMOUSE CurrentX, CurrentY, , MouseButtons
 	LOOP 
 %%
-Basically we print the line that has " | FIRST | SECOND | THIRD | EXIT | " at the top of the screen. And we go into the loop that interrogates the mouse. Of course, right now nothing will happen if you press a button because there is no code for it. In our example, we'll add code that simple prints which option was selected. If the user selects the EXIT option, we'll print the Option and we'll exit the loop. We'll also add a print statement outside the loop with a sleep to tell the use that we are truely outside the loop and therefore the program is ended. With all this, the code should now look like this. I am putting the whole source file here so you can cut and paste it easily.
+Basically we print the line that has " | FIRST | SECOND | THIRD | EXIT | " at the top of the screen. And we go into the loop that interrogates the mouse. Of course, right now nothing will happen if you press a button because there is no code for it. In our example, we'll add code that simple prints which option was selected. If the user selects the EXIT option, we'll print the Option and we'll exit the loop. We'll also add a print statement outside the loop with a sleep to tell the use that we are truly outside the loop and therefore the program is ended. With all this, the code should now look like this. I am putting the whole source file here so you can cut and paste it easily.
 %%(freebasic)
 CONST LEFTBUTTON   = 1
 CONST MIDDLEBUTTON = 4   ' UNUSED IN THIS DEMO
@@ -157,7 +161,7 @@ You can see the many IF statements in this last piece of code. The numbers that 
 
 ==IN CONCLUSION==
 
-As you can see, using the mouse has been made very simple in FreeBasic. You can use simple statement like the print command to draw your screens or you can use graphics command like LINE to draw your screens graphically. No matter which way you choose to draw your screens with, the SETMOUSE and GETMOUSE statement will work the same way and return the very same values. All you have to do is get that information and make your programs do what you want them to do if they press a button, select an option, or even in the case of a game, you could easily make the main character move towards the location where you clicked on the screen as well. The choice is up to you.
+As you can see, using the mouse has been made very simple in ""FreeBASIC"". You can use simple statement like the print command to draw your screens or you can use graphics command like LINE to draw your screens graphically. No matter which way you choose to draw your screens with, the SETMOUSE and GETMOUSE statement will work the same way and return the very same values. All you have to do is get that information and make your programs do what you want them to do if they press a button, select an option, or even in the case of a game, you could easily make the main character move towards the location where you clicked on the screen as well. The choice is up to you.
 
 As always, if you have any questions regarding this tutorial or any other I've written, feel free to email me and we'll see what we can do about solving your particular problem.
 
@@ -165,3 +169,5 @@ As always, if you have any questions regarding this tutorial or any other I've w
 MystikShadows
 Stéphane Richard
 srichard@adaworld.com 
+
+//Last Reviewed by ""Sancho3"" on February 06, 2018//

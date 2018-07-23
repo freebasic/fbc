@@ -1,4 +1,4 @@
-# include once "fbcu.bi"
+# include once "fbcunit.bi"
 # include once "vbcompat.bi"
 
 declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as long )
@@ -66,89 +66,81 @@ tests_timevalue:
 	data "00:00:60",          0
 	data "."
 
-namespace fbc_tests.datetime.testtime
+SUITE( fbc_tests.datetime.testtime )
 
-sub test_timeserial cdecl ()
-	fb_I18nSet 0
-	dim as double serial_time, test_value
-	dim as integer chk_hour, chk_minute, chk_second
-	dim sHour as string
+	TEST( timeserial_ )
+		fb_I18nSet 0
+		dim as double serial_time, test_value
+		dim as integer chk_hour, chk_minute, chk_second
+		dim sHour as string
 
-	restore tests_timeserial
-	read sHour
-	while sHour<>"."
-	   chk_hour = val(sHour)
-	   read chk_minute, chk_second, serial_time
-	   test_value = timeserial( chk_hour, chk_minute, chk_second )
-	   CU_ASSERT( DBL_COMPARE(test_value,serial_time) )
-	   while( chk_second>=60 )
-	   	chk_second -= 60
-	      chk_minute += 1
-	   wend
-	   while( chk_second<=-60 )
-	   	chk_second += 60
-	      chk_minute -= 1
-	   wend
-	   while( chk_minute>=60 )
-	   	chk_minute -= 60
-	      chk_hour += 1
-	   wend
-	   while( chk_minute<=-60 )
-	   	chk_minute += 60
-	      chk_hour -= 1
-	   wend
-	   chk_hour mod= 24
-
-	   '' special handling for VB quirk (when fix(serial_time)=0)
-	   if( chk_hour < 0 and chk_minute >= 0 and chk_second >= 0 ) then
-	      chk_hour = -chk_hour
-	   elseif( chk_hour = 0 and chk_minute < 0 and chk_second >= 0 ) then
-	      chk_minute = -chk_minute
-	   elseif( chk_hour = 0 and chk_minute = 0 and chk_second < 0 ) then
-	      chk_second = -chk_second
-	   end if
-
-	   CU_ASSERT( chk_hour = hour(serial_time) )
-	   CU_ASSERT( chk_minute = minute(serial_time) )
-	   CU_ASSERT( chk_second = second(serial_time) )
-
+		restore tests_timeserial
 		read sHour
-	wend
+		while sHour<>"."
+		   chk_hour = val(sHour)
+		   read chk_minute, chk_second, serial_time
+		   test_value = timeserial( chk_hour, chk_minute, chk_second )
+		   CU_ASSERT( DBL_COMPARE(test_value,serial_time) )
+		   while( chk_second>=60 )
+	   		chk_second -= 60
+			  chk_minute += 1
+		   wend
+		   while( chk_second<=-60 )
+	   		chk_second += 60
+			  chk_minute -= 1
+		   wend
+		   while( chk_minute>=60 )
+	   		chk_minute -= 60
+			  chk_hour += 1
+		   wend
+		   while( chk_minute<=-60 )
+	   		chk_minute += 60
+			  chk_hour -= 1
+		   wend
+		   chk_hour mod= 24
 
-end sub
+		   '' special handling for VB quirk (when fix(serial_time)=0)
+		   if( chk_hour < 0 and chk_minute >= 0 and chk_second >= 0 ) then
+			  chk_hour = -chk_hour
+		   elseif( chk_hour = 0 and chk_minute < 0 and chk_second >= 0 ) then
+			  chk_minute = -chk_minute
+		   elseif( chk_hour = 0 and chk_minute = 0 and chk_second < 0 ) then
+			  chk_second = -chk_second
+		   end if
 
-sub test_timevalue cdecl ()
+		   CU_ASSERT( chk_hour = hour(serial_time) )
+		   CU_ASSERT( chk_minute = minute(serial_time) )
+		   CU_ASSERT( chk_second = second(serial_time) )
 
-	fb_I18nSet 0
-	dim as double  serial_time, calc_serial_time
-	dim as integer chk_hour, chk_minute, chk_second
-	dim as integer want_ok
-	dim sTime as string
+			read sHour
+		wend
 
-	restore tests_timevalue
-	read sTime
-	while sTime<>"."
-	   read want_ok
-	   serial_time = timevalue(sTime)
+	END_TEST
 
-	   if want_ok=1 then
-	      read chk_hour, chk_minute, chk_second
-	      ' Store result in a temporary variable to avoid rounding errors
-	      calc_serial_time = timeserial( chk_hour, chk_minute, chk_second )
-	      CU_ASSERT( serial_time = calc_serial_time )
-	   end if
+	TEST( timevalue_ )
 
+		fb_I18nSet 0
+		dim as double  serial_time, calc_serial_time
+		dim as integer chk_hour, chk_minute, chk_second
+		dim as integer want_ok
+		dim sTime as string
+
+		restore tests_timevalue
 		read sTime
-	wend
+		while sTime<>"."
+		   read want_ok
+		   serial_time = timevalue(sTime)
 
-end sub
+		   if want_ok=1 then
+			  read chk_hour, chk_minute, chk_second
+			  ' Store result in a temporary variable to avoid rounding errors
+			  calc_serial_time = timeserial( chk_hour, chk_minute, chk_second )
+			  CU_ASSERT( serial_time = calc_serial_time )
+		   end if
 
-sub ctor () constructor
+			read sTime
+		wend
 
-	fbcu.add_suite("fbc_tests.datetime.testtime")
-	fbcu.add_test("test_timeserial", @test_timeserial)
-	fbcu.add_test("test_timevalue", @test_timevalue)
+	END_TEST
 
-end sub
-
-end namespace
+END_SUITE

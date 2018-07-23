@@ -2,6 +2,9 @@ Version 1.06.0
 
 [changed]
 - Adjusted warning text for "mixed bool/nonbool operands" warning
+- test-suite uses libfbcunit for unit testing framework
+- SELECT CASE AS CONST respects data type and will show overflow warnings on out-of-range constants
+- boolean: don't allow NEG unary op '-' on boolean data types
 
 [added]
 - -noobjinfo option to disable the writing/reading of compile-time library and other linking options from/to .o and .a files. This also disables the use of fbextra.x (the supplemental linker script) for discarding the .fbctinf sections, which is useful when using the gold linker that doesn't support this kind of linker script.
@@ -10,6 +13,8 @@ Version 1.06.0
 - Windows API binding updated to additionally support _WIN32_WINNT &h0501, &h0600, &h0601
 - Under X11, ScreenControl GET_WINDOW_HANDLE places the Display ptr in param2
 - Updated bindings: SDL2 2.0.6, SDL2_image 2.0.1, SDL2_mixer 2.0.1, SDL2_net 2.0.1, SDL2_ttf 2.0.14
+- allow overload operator SQR()
+- allow [static] shared byref variables to be initialized with byref variable
 
 [fixed]
 - win/d3dx9.bi no longer has a hard-coded #inclib "d3dx9d". d3dx9d.dll is apparently not a generally valid choice. In practice programs have to be linked against d3dx9_33.dll or d3dx9_39.dll, etc.
@@ -45,8 +50,21 @@ Version 1.06.0
 - #846: Fix compiler crash on global variable initializer with type<T>(...) expression where T isn't a UDT
 - #847: Windows API binding: Fixed winnt.bi SECURITY_*_AUTHORITY initializers
 - #851: '#LINE line filename' only changed the source filename in error messages, not in debug info
+- #857: PAINT used in a VIEWport and without delimitation border induces segmentation violation when ending code
 - #832: Fix bug allowing QB style suffixes on all keywords, regardless of -lang
 - #841: The unary negation operator gave different result signedness when used on constant instead of non-constant expression. Now the result is always signed.
+- Incorrect C++ mangling for BYREF parameters using built-in types
+- #844: Fix bug in -gen gcc due to duplicated type (struct) names in the main module and global namespace
+- #875: Fix bug where boolean variable to single/double conversion gives wrong sign on -gen gas -fpu x87 & sse
+- #872: Fix broken boolean bitfield runtime assignments from unsigned values 
+- #876: ThreadCall does not support subroutine with [U]Long type parameter
+- #877: fix SLEEP behaviour in linux console and wait for key presses, and do not affect input buffer.  Match linux SLEEP to behaviour on Windows.
+- Fixed inline asm procedure name mangling bug (missing underscore prefix) with -gen gcc -asm intel on dos/win32
+- #878: Fix fbc-64bit hangs on 'Case True' + 'Case False' inside 'Select Case As const'
+- Fix SELECT CASE AS CONST to allow both signed & unsigned case range values
+- #822, #814, #842: Compiler crash when initializing static/shared reference (DIM SHARED/STATIC BYREF) with non-constant initializer (e.g. another reference, or dynamic array element)
+- ASM backend: Fix bad code generated for comparisons such as IF @globalvar = 0 THEN
+- #884: FORMATing dates can deadlock under Unix
 
 
 Version 1.05.0

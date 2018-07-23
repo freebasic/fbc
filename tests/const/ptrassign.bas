@@ -1,8 +1,8 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-namespace fbc_tests.const_.ptrassign
+SUITE( fbc_tests.const_.ptrassign )
 	
-	sub test cdecl( )
+	TEST( test_ptr )
 		dim as const integer a = 0
 		dim as const integer ptr b
 		dim as const integer ptr ptr c 
@@ -10,13 +10,6 @@ namespace fbc_tests.const_.ptrassign
 		b = @a
 		c = @b
 		*c = @a
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.const.ptrassign")
-		fbcu.add_test("assign const ptr", @test)
-	
-	end sub
-	
-end namespace
+END_SUITE

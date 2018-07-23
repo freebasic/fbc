@@ -94,13 +94,17 @@ private function cGOTBStmt _
 
 	exitlabel = symbAddLabel( NULL )
 
-	'' Fill beginning of values buffer with the 1,2,3,4,... values
+	'' labelcount = l, minval = 1, maxval = l
+	'' astBuildJMPTB expects values to be biased
+	''  bias = 1, span = labelcount-1
+
+	'' Fill beginning of values buffer with the 1,2,3,4,... values (1 biased)
 	for i as integer = 0 to l - 1
-		values(i) = i + 1
+		values(i) = i
 	next
 
-	'' labelcount = l, minval = 1, maxval = l
-	expr = astBuildJMPTB( sym, @values(0), @labels(0), l, exitlabel, 1, l )
+	'' don't let span underflow
+	expr = astBuildJMPTB( sym, @values(0), @labels(0), l, exitlabel, 1, iif(l, l-1, 0) )
 
 	if( isgoto ) then
 		astAdd( expr )

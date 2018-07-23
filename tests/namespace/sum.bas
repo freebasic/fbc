@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 extern "c++"
 
@@ -6,7 +6,7 @@ extern "c++"
 		as integer i
 	end type
 	
-	namespace fbc_tests.ns.sum.outer
+	namespace module.ns.sum.outer
 		type foo
 			as integer i
 		end type
@@ -30,22 +30,20 @@ extern "c++"
 
 end extern
 
-private sub test cdecl
+private sub test_proc
 	dim as baz z = ( 1 )
-	dim as fbc_tests.ns.sum.outer.foo f1 = ( 1 ), f2 = ( 1 )
-	dim as fbc_tests.ns.sum.outer.inner.bar b = ( 1 )
+	dim as module.ns.sum.outer.foo f1 = ( 1 ), f2 = ( 1 )
+	dim as module.ns.sum.outer.inner.bar b = ( 1 )
 	
 	dim as integer res
 	
-	res = fbc_tests.ns.sum.outer.inner.dosum( @z, @f1, @f2, @b )
+	res = module.ns.sum.outer.inner.dosum( @z, @f1, @f2, @b )
 	
 	CU_ASSERT( res = 4 )
 end sub
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.namespace.sum")
-	fbcu.add_test("test", @test)
-	
-end sub
-
+SUITE( fbc_tests.namespace_.sum )
+	TEST( all )
+		test_proc
+	END_TEST
+END_SUITE

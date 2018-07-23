@@ -1,3 +1,9 @@
+'' COMMON SHARED in the global namespace test
+'' See:
+''  - common-shared.bi
+''  - common-shared-1.bas
+''  - common-shared-2.bas
+
 common shared arrayi1() as integer
 common shared arrayi2() as integer
 common shared arrayi3() as integer

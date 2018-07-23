@@ -174,7 +174,7 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_TEMP			= &h00400000
     FB_SYMBATTRIB_DESCRIPTOR	= &h00800000
 	FB_SYMBATTRIB_FUNCRESULT	= &h01000000
-	FB_SYMBATTRIB_REF               = &h02000000    '' procedures returning BYREF
+	FB_SYMBATTRIB_REF               = &h02000000    '' VARs/FIELDs (if declared with BYREF), PROCs (functions/function pointers returning BYREF)
 	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' UDT members only
 	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' ditto
 	FB_SYMBATTRIB_NAKED         = &h10000000  '' procedures only

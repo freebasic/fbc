@@ -1,108 +1,100 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.overloads.optional_params
+SUITE( fbc_tests.overload_.optional_params )
 
-namespace testRegression1
-	function f overload( byval i as integer, byref s as string ) as integer
-		function = 1
-	end function
-	function f overload( byval i as integer, byval j as integer = 0, byval k as integer = 0, byval l as integer = 0, byval m as integer = 0, byval n as integer = 0 ) as integer
-		function = 2
-	end function
+	TEST_GROUP( regression1 )
+		function f overload( byval i as integer, byref s as string ) as integer
+			function = 1
+		end function
+		function f overload( byval i as integer, byval j as integer = 0, byval k as integer = 0, byval l as integer = 0, byval m as integer = 0, byval n as integer = 0 ) as integer
+			function = 2
+		end function
 
-	sub test cdecl( )
-		CU_ASSERT( f( 0, "hi"          ) = 1 )
-		CU_ASSERT( f( 0                ) = 2 )
-		CU_ASSERT( f( 0, 0             ) = 2 )
-		CU_ASSERT( f( 0, 0, 0          ) = 2 )
-		CU_ASSERT( f( 0, 0, 0, 0       ) = 2 )
-		CU_ASSERT( f( 0, 0, 0, 0, 0    ) = 2 )
-		CU_ASSERT( f( 0, 0, 0, 0, 0, 0 ) = 2 )
-	end sub
-end namespace
+		TEST( default )
+			CU_ASSERT( f( 0, "hi"          ) = 1 )
+			CU_ASSERT( f( 0                ) = 2 )
+			CU_ASSERT( f( 0, 0             ) = 2 )
+			CU_ASSERT( f( 0, 0, 0          ) = 2 )
+			CU_ASSERT( f( 0, 0, 0, 0       ) = 2 )
+			CU_ASSERT( f( 0, 0, 0, 0, 0    ) = 2 )
+			CU_ASSERT( f( 0, 0, 0, 0, 0, 0 ) = 2 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace testRegression2
-	function f overload( p1 as ulongint, p2 as integer, p3 as integer = 0, p4 as integer = 0 ) as integer
-		function = 1
-	end function
-	function f overload( p1 as ulongint, p2 as string ) as integer
-		function = 2
-	end function
+	TEST_GROUP( regression2 )
+		function f overload( p1 as ulongint, p2 as integer, p3 as integer = 0, p4 as integer = 0 ) as integer
+			function = 1
+		end function
+		function f overload( p1 as ulongint, p2 as string ) as integer
+			function = 2
+		end function
 
-	sub test cdecl( )
-		CU_ASSERT( f( 1,   2       ) = 1 )
-		CU_ASSERT( f( 1,   2, 3    ) = 1 )
-		CU_ASSERT( f( 1,   2, 3, 4 ) = 1 )
-		CU_ASSERT( f( 1, "2"       ) = 2 )
-	end sub
-end namespace
+		TEST( default )
+			CU_ASSERT( f( 1,   2       ) = 1 )
+			CU_ASSERT( f( 1,   2, 3    ) = 1 )
+			CU_ASSERT( f( 1,   2, 3, 4 ) = 1 )
+			CU_ASSERT( f( 1, "2"       ) = 2 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace testRegression3
-	function f overload( p1 as integer, p2 as integer, p3 as integer = 0, p4 as integer = 0 ) as integer
-		function = 1
-	end function
-	function f overload( p1 as integer, p2 as string ) as integer
-		function = 2
-	end function
+	TEST_GROUP( regression3 )
+		function f overload( p1 as integer, p2 as integer, p3 as integer = 0, p4 as integer = 0 ) as integer
+			function = 1
+		end function
+		function f overload( p1 as integer, p2 as string ) as integer
+			function = 2
+		end function
 
-	sub test cdecl( )
-		CU_ASSERT( f( 1,   2       ) = 1 )
-		CU_ASSERT( f( 1,   2, 3    ) = 1 )
-		CU_ASSERT( f( 1,   2, 3, 4 ) = 1 )
-		CU_ASSERT( f( 1, "2"       ) = 2 )
-	end sub
-end namespace
+		TEST( default )
+			CU_ASSERT( f( 1,   2       ) = 1 )
+			CU_ASSERT( f( 1,   2, 3    ) = 1 )
+			CU_ASSERT( f( 1,   2, 3, 4 ) = 1 )
+			CU_ASSERT( f( 1, "2"       ) = 2 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace testRegression4
-	function f overload( p1 as integer, p2 as integer, p3 as integer = 0, p4 as integer = 0 ) as integer
-		function = 1
-	end function
-	function f overload( p1 as integer, p2 as string, p3 as integer = 0, p4 as integer = 0 ) as integer
-		function = 2
-	end function
+	TEST_GROUP( regression4 )
+		function f overload( p1 as integer, p2 as integer, p3 as integer = 0, p4 as integer = 0 ) as integer
+			function = 1
+		end function
+		function f overload( p1 as integer, p2 as string, p3 as integer = 0, p4 as integer = 0 ) as integer
+			function = 2
+		end function
 
-	sub test cdecl( )
-		CU_ASSERT( f( 1,   2       ) = 1 )
-		CU_ASSERT( f( 1,   2, 3    ) = 1 )
-		CU_ASSERT( f( 1,   2, 3, 4 ) = 1 )
-		CU_ASSERT( f( 1, "2"       ) = 2 )
-		CU_ASSERT( f( 1, "2", 3    ) = 2 )
-		CU_ASSERT( f( 1, "2", 3, 4 ) = 2 )
-	end sub
-end namespace
+		TEST( default )
+			CU_ASSERT( f( 1,   2       ) = 1 )
+			CU_ASSERT( f( 1,   2, 3    ) = 1 )
+			CU_ASSERT( f( 1,   2, 3, 4 ) = 1 )
+			CU_ASSERT( f( 1, "2"       ) = 2 )
+			CU_ASSERT( f( 1, "2", 3    ) = 2 )
+			CU_ASSERT( f( 1, "2", 3, 4 ) = 2 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace testNoParams1
-	function f overload( ) as integer
-		function = 1
-	end function
-	function f overload( p1 as integer = 0 ) as integer
-		function = 2
-	end function
+	TEST_GROUP( noParams1 )
+		function f overload( ) as integer
+			function = 1
+		end function
+		function f overload( p1 as integer = 0 ) as integer
+			function = 2
+		end function
 
-	sub test cdecl( )
-		CU_ASSERT( f( 0 ) = 2 )
-	end sub
-end namespace
+		TEST( default )
+			CU_ASSERT( f( 0 ) = 2 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace testNoParams2
-	function f overload( p1 as integer = 0 ) as integer
-		function = 1
-	end function
-	function f overload( ) as integer
-		function = 2
-	end function
+	TEST_GROUP( noParams2 )
+		function f overload( p1 as integer = 0 ) as integer
+			function = 1
+		end function
+		function f overload( ) as integer
+			function = 2
+		end function
 
-	sub test cdecl( )
-		CU_ASSERT( f( 0 ) = 1 )
-	end sub
-end namespace
+		TEST( default )
+			CU_ASSERT( f( 0 ) = 1 )
+		END_TEST
+	END_TEST_GROUP
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.overload.optional-params" )
-	fbcu.add_test( "regression test 1", @testRegression1.test )
-	fbcu.add_test( "regression test 2", @testRegression2.test )
-	fbcu.add_test( "no params 1", @testNoParams1.test )
-	fbcu.add_test( "no params 2", @testNoParams2.test )
-end sub
-
-end namespace
+END_SUITE

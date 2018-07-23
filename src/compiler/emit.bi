@@ -183,8 +183,8 @@ type EMIT_JTBNODE
 	labelcount			as integer
 
 	deflabel			as FBSYMBOL ptr
-	minval				as ulongint
-	maxval				as ulongint
+	bias				as ulongint
+	span				as ulongint
 end type
 
 type EMIT_MEMNODE
@@ -250,8 +250,8 @@ type EMIT_JTBCB as sub _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as ulongint, _
-		byval maxval as ulongint _
+		byval bias as ulongint, _
+		byval span as ulongint _
 	)
 
 type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
@@ -422,8 +422,8 @@ declare function emitJMPTB _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as ulongint, _
-		byval maxval as ulongint _
+		byval bias as ulongint, _
+		byval span as ulongint _
 	) as EMIT_NODE ptr
 
 declare function emitCALL _

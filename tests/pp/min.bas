@@ -1,6 +1,4 @@
-# include "fbcu.bi"
-
-
+#include "fbcunit.bi"
 
 #define min1(a,b) iif(a <= b, a, b)
 #define min2(a,b,c) iif(a <= b, min1(a,c), min1(b,c))
@@ -13,21 +11,14 @@
 #define min9(a,b,c,d,e,f,g,h,i,j) iif(a <= b, min8(a,c,d,e,f,g,h,i,j), min8(b,c,d,e,f,g,h,i,j))
 #define minA(a,b,c,d,e,f,g,h,i,j,k) iif(a <= b, min9(a,c,d,e,f,g,h,i,j,k), min9(b,c,d,e,f,g,h,i,j,k))
 
-namespace fbc_tests.macros.minTests
+SUITE( fbc_tests.pp.min )
 
-sub test cdecl ()
+	TEST( all )
 
-	dim res as integer = minA(9,8,7,6,5,4,3,2,1,0,-1)
-	
-	CU_ASSERT_EQUAL( res, -1 )
+		dim res as integer = minA(9,8,7,6,5,4,3,2,1,0,-1)
+		
+		CU_ASSERT_EQUAL( res, -1 )
 
-end sub
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.pp.min")
-	fbcu.add_test("test", @test)
-
-end sub
-
-end namespace
+END_SUITE

@@ -16,6 +16,8 @@ Returns ##//e//## raised to the power of a given number
 
 {{fbdoc item="desc"}}
 	The mathematical constant ##//e//##, also called Euler's constant, is the base of the ##Exp## and ##[[KeyPgLog|Log]]## and is an irrational and transcendental number. The value of ##//e//## to twenty significant figures is: ##2.7182818284590452354##. The required ##//number//## argument can be any valid numeric expression within range of the function. If ##//number//## is too large, ##**Exp**## returns infinity.  If ##//number//## is too small, ##**Exp**## returns zero (##0.0##).  If ##//number//## is zero, ##1.0## is returned. The exact limit on ##//number//## is based on the math processor.
+	
+	##**Exp**## can be overloaded as operator to accept user-defined types.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/exp.bas"}}%%(freebasic)

@@ -20,6 +20,8 @@ SLEEP
 
 Now press F5. Congratulations, you've just seen how much like QB FreeBASIC really is. Now you can use most console commands for QB just like you remember. For example: 
 
+//Last Reviewed by ""Sancho3"" on February 06, 2018//
+
 %%
 LOCATE 10,10
 PRINT "I'm the center of the universe!"

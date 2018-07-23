@@ -15,7 +15,9 @@ Returns the arctangent of a number
 	The angle, in radians, whose tangent is ##//number//##, in the range [-Pi/2..Pi/2].
 
 {{fbdoc item="desc"}}
-	##Atn## returns the arctangent of the argument ##//number//## as a ##[[KeyPgDouble|Double]]## within the range of -[[TutMathAngles|Pi]]/2 to [[TutMathAngles|Pi]]/2.  The arctangent is the inverse of the ##[[KeyPgTan|Tan]]## function. The returned angle is measured in [[TutMathAngles|radians]] (not [[TutMathAngles|degrees]]).
+	##**Atn**## returns the arctangent of the argument ##//number//## as a ##[[KeyPgDouble|Double]]## within the range of -[[TutMathAngles|Pi]]/2 to [[TutMathAngles|Pi]]/2.  The arctangent is the inverse of the ##[[KeyPgTan|Tan]]## function. The returned angle is measured in [[TutMathAngles|radians]] (not [[TutMathAngles|degrees]]).
+	
+	##**Atn**## can be overloaded as operator to accept user-defined types.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/atn.bas"}}%%(freebasic)

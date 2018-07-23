@@ -3,9 +3,9 @@ Note:  As with all things regarding scope, Const qualifiers may be a bit difficu
 
 Also note my cliche title, which I chose because of it's clicheness.
 
-What the heck are Const qualifiers?  Const qualifiers are a feature recently added to the language (fbc 0.18.3);  they're a standard part of C""++"" and now they exist in FreeBasic too.  Const qualifiers are yet another form of protection - they allow some "variables" to act like constants to certain parts of your program, in other words some parts of the program are allowed to access (read) them but not modify them.  Just another kind of type safety, really, but an extremely useful one.  In particular, they are very useful in OO situations, but you can probably benefit from them to some degree even if you aren't interested in OOP.
+What the heck are Const qualifiers?  Const qualifiers are a feature recently added to the language (fbc 0.18.3);  they're a standard part of C""++"" and now they exist in ""FreeBASIC"" too.  Const qualifiers are yet another form of protection - they allow some "variables" to act like constants to certain parts of your program, in other words some parts of the program are allowed to access (read) them but not modify them.  Just another kind of type safety, really, but an extremely useful one.  In particular, they are very useful in OO situations, but you can probably benefit from them to some degree even if you aren't interested in OOP.
 
-The Const qualifier in FreeBasic is essentially an extension to data type declarations, and they may be used with Dim, UDT members, and procedure parameters.  Generally you put it right after the "As" part of the variables's data type declaration:
+The Const qualifier in ""FreeBASIC"" is essentially an extension to data type declarations, and they may be used with Dim, UDT members, and procedure parameters.  Generally you put it right after the "As" part of the variables's data type declaration:
 
 %%(freebasic)
 Dim As Const Integer my_const_int = 5
@@ -39,7 +39,7 @@ Sub my_sub (some_num As Integer)
 End Sub
 %%
 
-Normally functions are allowed to modify the variables you send to them.  Of course, whether they modify the original variable or just a local copy of the variable depends on whether you use ByVal or ByRef (and of course pointers is a whole different things altogether), but they normally are allowed to modify a variable.  This may be undesirable, for whatever reason, and the Const qualifier exists to prevent that.  In the function given above, some_num can be modified by the function.  Normally it would only be a local copy that is modified, which is fine, since it won't affect the original Const Integer, but what if we declare the function like this?
+Normally functions are allowed to modify the variables you send to them.  Of course, whether they modify the original variable or just a local copy of the variable depends on whether you use ""ByVal"" or ""ByRef"" (and of course pointers is a whole different things altogether), but they normally are allowed to modify a variable.  This may be undesirable, for whatever reason, and the Const qualifier exists to prevent that.  In the function given above, some_num can be modified by the function.  Normally it would only be a local copy that is modified, which is fine, since it won't affect the original Const Integer, but what if we declare the function like this?
 
 %%(freebasic)
 Sub my_sub (ByRef some_num As Integer)
@@ -52,7 +52,7 @@ Now my_sub has direct access to whatever variable you pass to it, and for that r
 my_sub(my_const_int)
 %%
 
-Why?  Simply because the function may modify the variable.  We don't know for sure that it will, of course, but it might, so we can't do that.  In fact, the error you'll get if you try to compile that is "Invalid assignment/conversion."  It's almost as if the Const Integer is a different variable type, but only when it's ByRef.  In that case, it would act like trying to pass a string to an integer argument (or vice-versa).  Yet if it's not passed ByRef, we don't have a problem, since there's no way the function can possibly modify the variable!
+Why?  Simply because the function may modify the variable.  We don't know for sure that it will, of course, but it might, so we can't do that.  In fact, the error you'll get if you try to compile that is "Invalid assignment/conversion."  It's almost as if the Const Integer is a different variable type, but only when it's ""ByRef"".  In that case, it would act like trying to pass a string to an integer argument (or vice-versa).  Yet if it's not passed ""ByRef"", we don't have a problem, since there's no way the function can possibly modify the variable!
 
 And of course, if we did something like this:
 
@@ -67,7 +67,7 @@ Then it compiles just fine, but if you try to do the following within the functi
 some_num = 3
 %%
 
-Why?  Once again, the original variable has been passed ByRef to the sub.  It's now in local scope, but because it's ByRef, any modifications to the variable would modify the original, which cannot be done.  Once again, it's entirely possible to create a copy of the variable and modify it all you want:
+Why?  Once again, the original variable has been passed ""ByRef"" to the sub.  It's now in local scope, but because it's ""ByRef"", any modifications to the variable would modify the original, which cannot be done.  Once again, it's entirely possible to create a copy of the variable and modify it all you want:
 
 %%(freebasic)
 Dim As Integer copy_of_some_num = some_num
@@ -114,7 +114,7 @@ Dim As Const my_type t
 t.t_int = 3
 %%
 
-As for the OOP side of things (and if you aren't interested in OOP you can skip this part) - you may be wondering about methods.  Methods implicitly pass the object ByRef as this when called.  Is there a way to create constant objects?  Of course!  We've already seen that.  But some object methods will modify the object, and some won't.  Is there a distinction?  The answer is yes.  As of November 23, 2007, we now have Const procs.  That means you can do this:
+As for the OOP side of things (and if you aren't interested in OOP you can skip this part) - you may be wondering about methods.  Methods implicitly pass the object ""ByRef"" as this when called.  Is there a way to create constant objects?  Of course!  We've already seen that.  But some object methods will modify the object, and some won't.  Is there a distinction?  The answer is yes.  As of November 23, 2007, we now have Const procs.  That means you can do this:
 
 %%(freebasic)
 Type my_object
@@ -153,7 +153,7 @@ u.modifier_sub()
 Sleep
 %%
 
-Once again, the way this works is based on the simple rule.  Since the implicitly passed copy of this is passed ByRef, any method is normally able to modify the contents of the object - and if the object is declared As Const, that's not supposed to happen!  Thus, there are essentially two kinds of method.  The two kinds are given names in the C""++"" documentation page (listed below in the references):  there are mutators and inspectors.  Mutators may modify objects, but inspectors do not.  Thus, for objects declared As Const, only the inspector methods for those objects may be used - while all methods may be called for non-Const objects.  The inspector methods are, of course, the ones declared as Const methods.  Thus, for Const objects only their Const methods may be used.
+Once again, the way this works is based on the simple rule.  Since the implicitly passed copy of this is passed ""ByRef"", any method is normally able to modify the contents of the object - and if the object is declared As Const, that's not supposed to happen!  Thus, there are essentially two kinds of method.  The two kinds are given names in the C""++"" documentation page (listed below in the references):  there are mutators and inspectors.  Mutators may modify objects, but inspectors do not.  Thus, for objects declared As Const, only the inspector methods for those objects may be used - while all methods may be called for non-Const objects.  The inspector methods are, of course, the ones declared as Const methods.  Thus, for Const objects only their Const methods may be used.
 
 
 This is all very good, but some of you may be asking - Why do I need this?  Well, a direct answer would be out of the *scope* (heh) of this tutorial, so I'll counter - why do we need scope at all?  The reason for Const qualifiers (and the future Const methods) is the same as the reason for scope within procedures and modules, and the same reason for hiding of variables in objects:  because we want to be certain that something won't unexpectedly change in the middle of the program, when we least expect it.  Sometimes we want things to change, and that's when we //don't// use the Const qualifier.  But when you want something to stay what it is, you use the Const qualifier, and you can be certain it will not change (and the compiler won't compile the code if there is danger of it happening!)  This is the definition of Const, how it works, and it's the reason you use it!  And in general, it's the reason you use //any// scoping control or data hiding.
@@ -166,8 +166,8 @@ If you have any other difficulties with Const qualifiers, remember that even tho
 
 If you still don't understand Const qualifiers, you probably are a newbie who doesn't know much about scope yet anyways - and that's fine, you'll learn as you go.  Eventually some decent documentation for this feature will be created, but until then this is all you have.  Bear in mind:  if you don't understand how they work, you probably won't need them.  I for one have written fine programs long before they were around, and I'll probably continue to do so without using them anywhere they aren't needed.  There are specific instances when they're useful, and if you understand those instances then you may as well use them when those instances arise.  But if you don't understand, that's fine!
 
-Finally, here are some links that should be helpful.  The first is a C""++"" documentation page about Const qualifiers in C""++"" - of course, it only makes sense if you understand C""++"", and they also talk about things we don't have yet (i.e., Const methods).  Nevertheless it's a fine place to start if you know any C""++"", so check it out if you like.  There is also a link to a forum topic in which I asked about FreeBasic development (and learned about Const qualifiers), and a link to the original SourceForge Feature Request page in which Const qualifiers were originally requested as a feature:
+Finally, here are some links that should be helpful.  The first is a C""++"" documentation page about Const qualifiers in C""++"" - of course, it only makes sense if you understand C""++"", and they also talk about things we don't have yet (i.e., Const methods).  Nevertheless it's a fine place to start if you know any C""++"", so check it out if you like.  There is also a link to a forum topic in which I asked about ""FreeBASIC"" development (and learned about Const qualifiers), and a link to the original ""SourceForge"" Feature Request page in which Const qualifiers were originally requested as a feature:
 
-http://www.parashift.com/c++-faq-lite/const-correctness.html
+https://isocpp.org/wiki/faq/const-correctness
 http://www.freebasic.net/forum/viewtopic.php?t=9975&postdays=0&postorder=asc&start=0
 http://sourceforge.net/tracker/index.php?func=detail&aid=1480621&group_id=122342&atid=693199

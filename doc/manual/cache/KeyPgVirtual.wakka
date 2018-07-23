@@ -34,60 +34,119 @@ Declare virtual methods
 	A derived static method cannot override a base virtual/abstract method, but can shadow any base method (including virtual/abstract).
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/udt/virtual1.bas"}}%%(freebasic)
-type Hello extends object
-	declare virtual sub hi( )
-end type
-
-type HelloEnglish extends Hello
-	declare sub hi( )
-end type
-
-type HelloFrench extends Hello
-	declare sub hi( )
-end type
-
-type HelloGerman extends Hello
-	declare sub hi( )
-end type
+{{fbdoc item="filename" value="examples/manual/udt/virtual1.bas"}}
+%%(freebasic)
+'' Example with overriding subroutines
 
 
-sub Hello.hi( )
-	print "hi!"
-end sub
+Type Hello Extends Object
+	Declare Virtual Sub hi( )
+End Type
 
-sub HelloEnglish.hi( )
-	print "hello!"
-end sub
+Type HelloEnglish Extends Hello
+	Declare Sub hi( )            '' overriding subroutine
+End Type
 
-sub HelloFrench.hi( )
-	print "Salut!"
-end sub
+Type HelloFrench Extends Hello
+	Declare Sub hi( )            '' overriding subroutine
+End Type
 
-sub HelloGerman.hi( )
-	print "Hallo!"
-end sub
+Type HelloGerman Extends Hello
+	Declare Sub hi( )            '' overriding subroutine
+End Type
 
 
-	randomize( timer( ) )
+Sub Hello.hi( )
+	Print "hi!"
+End Sub
 
-	dim as Hello ptr h
+Sub HelloEnglish.hi( )           '' overriding subroutine
+	Print "hello!"
+End Sub
 
-	for i as integer = 0 to 9
-		select case( int( rnd( ) * 4 ) + 1 )
-		case 1
-			h = new HelloEnglish
-		case 2
-			h = new HelloFrench
-		case 3
-			h = new HelloGerman
-		case else
-			h = new Hello
-		end select
+Sub HelloFrench.hi( )            '' overriding subroutine
+	Print "Salut!"
+End Sub
 
-		h->hi( )
-		delete h
-	next
+Sub HelloGerman.hi( )            '' overriding subroutine
+	Print "Hallo!"
+End Sub
+
+
+Randomize( Timer( ) )
+
+Dim As Hello Ptr h
+
+For i As Integer = 0 To 9
+	Select Case( Int( Rnd( ) * 4 ) + 1 )
+	Case 1
+		h = New HelloEnglish
+	Case 2
+		h = New HelloFrench
+	Case 3
+		h = New HelloGerman
+	Case Else
+		h = New Hello
+	End Select
+
+	h->hi( )
+	Delete h
+Next
+
+Sleep
+%%
+{{fbdoc item="filename" value="examples/manual/udt/virtual2.bas"}}
+%%(freebasic)
+'' Example with overriding destructor and
+''              overriding function with covariant return
+
+
+Type myBase Extends Object
+  Declare Virtual Function clone () As myBase Ptr
+  Declare Virtual Sub Destroy ()
+End Type
+
+Function myBase.clone () As myBase Ptr
+  Dim As myBase Ptr pp = New myBase(This)
+  Print "myBase.clone() As myBase Ptr", pp
+  Function = pp
+End Function
+
+Sub myBase.Destroy ()
+  Print "myBase.Destroy()", , @This
+  Delete @This
+End Sub
+
+
+Type myDerived Extends myBase
+  Declare Function clone () As myDerived Ptr     '' overriding member function with covariant return
+  Declare Sub Destroy ()                         '' overriding member subroutine
+End Type
+
+Function myDerived.clone () As myDerived Ptr     '' overriding member function with covariant return
+  Dim As myDerived Ptr pc = New myDerived(This)
+  Print "myDerived.clone() As myDerived Ptr", pc
+  Function = pc
+End Function
+
+Sub myDerived.Destroy ()                         '' overriding member subroutine
+  Print "myDerived.Destroy()", , @This
+  Delete @This
+End Sub
+
+
+Dim As myDerived c
+
+Dim As myBase Ptr ppc = @c
+Dim As myDerived Ptr pcc = @c
+
+Dim As myBase Ptr ppc1 = ppc->clone()            '' using base pointers and polymorphism
+Dim As myDerived Ptr pcc1 = pcc->clone()         '' using derived pointers and covariance of return value
+Print
+ppc1->Destroy()                                  '' using base pointer and polymorphism
+pcc1->Destroy()                                  '' using derived pointer
+
+Sleep
 %%
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.

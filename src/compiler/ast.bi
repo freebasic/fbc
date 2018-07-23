@@ -167,8 +167,8 @@ type AST_NODE_JMPTB
 	labelcount			as integer
 
 	deflabel			as FBSYMBOL ptr
-	minval				as ulongint
-	maxval				as ulongint
+	bias				as ulongint
+	span				as ulongint
 end type
 
 type AST_NODE_DBG
@@ -731,8 +731,8 @@ declare function astBuildJMPTB _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as ulongint, _
-		byval maxval as ulongint _
+		byval bias as ulongint, _
+		byval span as ulongint _
 	) as ASTNODE ptr
 
 declare function astNewLOOP _

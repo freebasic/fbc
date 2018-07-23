@@ -1,9 +1,6 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-
-
-
-namespace fbc_tests.compound.for_UDT_counter
+SUITE( fbc_tests.compound.for_UDT_counter )
 
 	#macro makeTest( __TYPE__ )
 		defineTest( __TYPE__ )
@@ -37,7 +34,7 @@ namespace fbc_tests.compound.for_UDT_counter
 		private:
 			as integer is_up
 			
-			declare function test( byref end_cond as foo##__TYPE__ ) as integer
+			declare function test_method( byref end_cond as foo##__TYPE__ ) as integer
 		end type
 		
 		constructor foo##__TYPE__( )
@@ -128,46 +125,38 @@ namespace fbc_tests.compound.for_UDT_counter
 	
 	makeTest( byte )
 	makeTest( short )
+	makeTest( long )
 	makeTest( integer )
 	makeTest( single )
 	makeTest( double )
 	makeTest( longint )
     
-    sub test_byte cdecl( )
+    TEST( test_byte )
 		doTest( byte )
-	end sub
+	END_TEST
 
-    sub test_short cdecl( )
+    TEST( test_short )
 		doTest( short )
-	end sub
+	END_TEST
 
-    sub test_int cdecl( )
+    TEST( test_long )
+		doTest( long )
+	END_TEST
+
+    TEST( test_int )
 		doTest( integer )
-	end sub
+	END_TEST
 
-    sub test_single cdecl( )
+    TEST( test_single )
 		doTest( single )
-	end sub
+	END_TEST
 
-    sub test_dbl cdecl( )
+    TEST( test_dbl )
 		doTest( double )
-	end sub
+	END_TEST
 
-    sub test_long cdecl( )
+    TEST( test_longint )
 		doTest( longint )
-	end sub
+	END_TEST
 
-
-sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.compound.for_UDT_counter")
-	fbcu.add_test("byte", @test_byte)
-	fbcu.add_test("short", @test_short)
-	fbcu.add_test("integer", @test_int)
-	fbcu.add_test("single", @test_single)
-	fbcu.add_test("double", @test_dbl)
-	fbcu.add_test("longint", @test_long)
-
-end sub
-
-end namespace
+END_SUITE

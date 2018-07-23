@@ -1,23 +1,16 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.string_.init2
+SUITE( fbc_tests.string_.initialization2 )
 
-sub test_1 cdecl ()
+	TEST( test1 )
 
-	dim as string a = "abc"
-	dim as string b = a
-	dim as string c = a + b
-	
-	CU_ASSERT_EQUAL( b, "abc" )
-	CU_ASSERT_EQUAL( c, "abcabc" )
+		dim as string a = "abc"
+		dim as string b = a
+		dim as string c = a + b
+		
+		CU_ASSERT_EQUAL( b, "abc" )
+		CU_ASSERT_EQUAL( c, "abcabc" )
 
-end sub
+	END_TEST
 
-sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.string.initialization2")
-	fbcu.add_test("#1", @test_1)
-
-end sub
-
-end namespace
+END_SUITE

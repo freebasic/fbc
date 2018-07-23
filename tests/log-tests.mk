@@ -1,7 +1,7 @@
-# cunit-tests.mk
+# log-tests.mk
 # This file is part of the FreeBASIC test suite
 #
-# make file for building non-cunit tests
+# make file for building non-fbcunit tests
 #
 
 # ------------------------------------------------------------------------
@@ -61,6 +61,14 @@ ifeq ($(DIRLIST),)
 $(error No directories specified in $(DIRLIST_INC))
 endif
 
+ifndef ENABLE_CHECK_BUGS
+ENABLE_CHECK_BUGS :=
+endif
+
+ifndef ENABLE_CONSOLE_OUTPUT
+ENABLE_CONSOLE_OUTPUT :=
+endif
+
 .SUFFIXES:
 .SUFFIXES: .bmk .bas
 
@@ -107,9 +115,6 @@ OBJLIST_COMPILE_ONLY_FAIL := $(addsuffix .o,$(basename $(SRCLIST_COMPILE_ONLY_FA
 LOGLIST_COMPILE_ONLY_FAIL := $(addsuffix .log,$(basename $(SRCLIST_COMPILE_ONLY_FAIL)))
 
 # COMPILE_AND_RUN_OK
-ifeq ($(ALLOW_CUNIT),1)
-SRCLIST_COMPILE_AND_RUN_OK += $(SRCLIST_CUNIT)
-endif
 SRCLIST_COMPILE_AND_RUN_OK := $(filter %.bas,$(patsubst %.bmk,%.bas,$(SRCLIST_COMPILE_AND_RUN_OK)))
 OBJLIST_COMPILE_AND_RUN_OK := $(addsuffix .o,$(basename $(SRCLIST_COMPILE_AND_RUN_OK)))
 APPLIST_COMPILE_AND_RUN_OK := $(addsuffix $(TARGET_EXEEXT),$(basename $(SRCLIST_COMPILE_AND_RUN_OK)))
@@ -153,6 +158,13 @@ endif
 
 ifneq ($(FB_LANG),)
 FBC_CFLAGS += -lang $(FB_LANG)
+endif
+
+ifeq ($(ENABLE_CHECK_BUGS),1)
+	FBC_CFLAGS += -d ENABLE_CHECK_BUGS=$(ENABLE_CHECK_BUGS)
+endif
+ifeq ($(ENABLE_CONSOLE_OUTPUT),1)
+	FBC_CFLAGS += -d ENABLE_CONSOLE_OUTPUT=$(ENABLE_CONSOLE_OUTPUT)
 endif
 
 # ------------------------------------------------------------------------
@@ -322,13 +334,6 @@ $(LOG_TESTS_INC) :
 	@$(FIND) $(DIRLIST) -type f -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*MULTI_MODULE_FAIL' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST_MULTI_MODULE_FAIL \+\= \.\/\1/g' \
->> $(LOG_TESTS_INC)
-	@$(ECHO) "#" >> $(LOG_TESTS_INC)
-
-	@$(PRINTF) "."
-	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
-| $(XARGS) $(GREP) -l -i -E '#[[:space:]]*include[[:space:]](once)*[[:space:]]*\"fbcu\.bi\"' \
-| $(SED) -e 's/\(^.*\)/\SRCLIST_CUNIT \+\= \.\/\1/g' \
 >> $(LOG_TESTS_INC)
 	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 

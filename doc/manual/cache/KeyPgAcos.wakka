@@ -15,7 +15,9 @@ Finds the arccosine of an angle
 	The arccosine of ##//number//##, in radians, in the range [0..Pi].
 
 {{fbdoc item="desc"}}
-	##Acos## returns the arccosine of the argument ##//number//## as a ##[[KeyPgDouble|Double]]## within the range of 0 to [[TutMathAngles|Pi]].  The arccosine is the inverse of the ##[[KeyPgCos|Cos]]## function. The returned angle is measured in [[TutMathAngles|radians]] (not [[TutMathAngles|degrees]]).
+	##**Acos**## returns the arccosine of the argument ##//number//## as a ##[[KeyPgDouble|Double]]## within the range of 0 to [[TutMathAngles|Pi]].  The arccosine is the inverse of the ##[[KeyPgCos|Cos]]## function. The returned angle is measured in [[TutMathAngles|radians]] (not [[TutMathAngles|degrees]]).
+	
+	##**Acos**## can be overloaded as operator to accept user-defined types.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/math/acos.bas"}}%%(freebasic)

@@ -1,29 +1,23 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.with_and_len
+SUITE( fbc_tests.structs.with_and_len )
 
 	type foo
 		bar as string
 	end type
 
-	sub with_and_len_ cdecl ()
+	TEST( with_and_len_ )
 		dim baz as foo
 		with baz
 			CU_assert( len( .bar ) = 0 )
 			CU_assert( .bar = "" )
 		end with
-	end sub
+	END_TEST
 
-	sub len_no_with cdecl ()
+	TEST( len_no_with )
 		dim baz as foo
 		CU_assert( len( string ) = sizeof( string ) )
 		CU_assert( len( baz.bar ) = 0 )
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.structs.with_and_len")
-		fbcu.add_test("with and len", @with_and_len_)
-		fbcu.add_test("with no len", @len_no_with)
-	end sub
-
-end namespace
+END_SUITE

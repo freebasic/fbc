@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 # include "vbcompat.bi"
 
 tests_num:
@@ -165,61 +165,56 @@ tests_dt:
 
 declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as long )
 
-namespace fbc_tests.string_.format_
+SUITE( fbc_tests.string_.format_ )
 
-sub numberFormatTest cdecl ()
-	dim as string sValue, sMask, sWanted, sResult
-	dim as double dblValue
+	TEST( numberFormatTest )
+		dim as string sValue, sMask, sWanted, sResult
+		dim as double dblValue
 
-	restore tests_num
-	read sValue
-	while sValue<>"."
-	    dblValue = val(sValue)
-	    read sMask, sWanted
-'        print sWanted,
-	    sResult = Format(dblValue, sMask)
-'        print sResult
-        CU_ASSERT_EQUAL( sWanted, sResult )
-        read sValue
-	wend
+		restore tests_num
+		read sValue
+		while sValue<>"."
+			dblValue = val(sValue)
+			read sMask, sWanted
+	'        print sWanted,
+			sResult = Format(dblValue, sMask)
+	'        print sResult
+			CU_ASSERT_EQUAL( sWanted, sResult )
+			read sValue
+		wend
 
-end sub
+	END_TEST
 
-sub dateFormatTest cdecl ()
-	dim as string sValue, sMask, sWanted, sResult
-	dim as double dblValue
+	TEST( dateFormatTest )
+		dim as string sValue, sMask, sWanted, sResult
+		dim as double dblValue
 
-	restore tests_dt
-	read sValue
-	while sValue<>"."
-	    dblValue = datevalue(sValue) + timevalue(sValue)
-	    read sMask, sWanted
-'        print sWanted,
-	    sResult = Format(dblValue, sMask)
-'        print sResult
-        CU_ASSERT_EQUAL( sWanted, sResult )
-        read sValue
-	wend
+		restore tests_dt
+		read sValue
+		while sValue<>"."
+			dblValue = datevalue(sValue) + timevalue(sValue)
+			read sMask, sWanted
+	'        print sWanted,
+			sResult = Format(dblValue, sMask)
+	'        print sResult
+			CU_ASSERT_EQUAL( sWanted, sResult )
+			read sValue
+		wend
 
-	CU_ASSERT( len( format(now(), "yyyy.mm.dd") ) > 0 )
-end sub
+		CU_ASSERT( len( format(now(), "yyyy.mm.dd") ) > 0 )
+	END_TEST
 
-function init cdecl () as long
-	' Turn off I18N and L10N
-	fb_I18nSet 0
-	return 0
-end function
+	SUITE_INIT
+		' Turn off I18N and L10N
+		fb_I18nSet 0
+		return 0
+	END_SUITE_INIT
 
-function cleanup cdecl () as long
-	' Turn on I18N and L10N
-	fb_I18nSet 1
-	return 0
-end function
+	SUITE_CLEANUP
+		' Turn on I18N and L10N
+		fb_I18nSet 1
+		return 0
+	END_SUITE_CLEANUP
 
-sub ctor () constructor
-	fbcu.add_suite("fbc_tests.string.format", @init, @cleanup)
-	fbcu.add_test("number format test", @numberFormatTest)
-	fbcu.add_test("date format test", @dateFormatTest)
-end sub
 
-end namespace
+END_SUITE

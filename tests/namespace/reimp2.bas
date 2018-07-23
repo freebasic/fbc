@@ -2,12 +2,12 @@
 '' namespace re-implementation + USING test
 ''
 
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
 const TEST_T1 = -123
 const TEST_T2 = 123
 
-namespace fbc_tests.ns.reimp2.foo 
+namespace module.ns.reimp2.foo 
 
 	type t1
 		field1 as byte 
@@ -15,7 +15,7 @@ namespace fbc_tests.ns.reimp2.foo
 
 end namespace 
 
-namespace fbc_tests.ns.reimp2.bar 
+namespace module.ns.reimp2.bar 
 
 	using foo 
 	
@@ -25,7 +25,7 @@ namespace fbc_tests.ns.reimp2.bar
 
 end namespace 
 
-namespace fbc_tests.ns.reimp2.foo 
+namespace module.ns.reimp2.foo 
 
 	type t2
 		field1 as ubyte
@@ -34,9 +34,9 @@ namespace fbc_tests.ns.reimp2.foo
 end namespace 
 
 	'' imported before the re-implementation
-	using fbc_tests.ns.reimp2.bar
+	using module.ns.reimp2.bar
 
-namespace fbc_tests.ns.reimp2.bar 
+namespace module.ns.reimp2.bar 
 
 	using foo
 	
@@ -46,16 +46,11 @@ namespace fbc_tests.ns.reimp2.bar
 
 end namespace
 
-private sub test cdecl
-	'' t1 and t2 imported indirectly from the "using foo" inside the bar namespace
-	foobar( type<t1>( TEST_T1 ) )
-	foobar( type<t2>( TEST_T2 ) )
-end sub
+SUITE( fbc_tests.namespace_.reimp2 )
+	TEST( all )
+		'' t1 and t2 imported indirectly from the "using foo" inside the bar namespace
+		foobar( type<t1>( TEST_T1 ) )
+		foobar( type<t2>( TEST_T2 ) )
+	END_TEST
 
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.namespace.reimp2")
-	fbcu.add_test("test", @test)
-	
-end sub
-
+END_SUITE

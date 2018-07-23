@@ -11,6 +11,8 @@ Statement to begin a new scope block
 	
 	When a variable is (re)defined with ##[[KeyPgDim|Dim]]## within a scope structure, this local working variable can be used from its (re)definition until the end of the scope.  During this time, any variables outside the scope that have the same name will be ignored, and will not be accessible by that name. Any statements in the Scope block before the variable is redefined will use the variable as defined outside the Scope.
 	
+	The local variables are reserved on stack at granularity level of each procedure (including the main part of the program), not at granularity level of each individual scope block. So a same memory space can be used by local variables belonging to different scope blocks.
+	
 	##**Scope..End Scope**## is not permitted when compiling with in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="ex"}}

@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2018 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -21,31 +21,48 @@
 
 '' fbdoc headers
 #include once "fbdoc_defs.bi"
-#include once "COptions.bi"
+#include once "fbdoc_string.bi"
 #include once "hash.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 using fb
 using fbdoc
 
-dim shared pagehash as HASH
+const def_index_file = hardcoded.default_index_file
+const def_output_file = "delete.html"
+const wakka_extension = "wakka"
+const DELETE_ME_SENTINEL = "!!! DELETE ME !!!"
+
 dim shared filehash as HASH
 
+'' --------------------------------------------------------
+
 ''
-function ReadIndex( byref f as string ) as integer
+sub loghtml( byref x as string, byval bNew as integer = FALSE )
+	dim h as integer = freefile
+	if( bNew ) then
+		open def_output_file for output as #h
+	else
+		open def_output_file for append as #h
+	end if
+	print #h, x
+	close #h
+end sub
+
+''
+function ReadIndex( byref f as const string ) as boolean
 	dim as string x
-	dim as integer h
-	h = freefile
+	dim as integer h = freefile
 	if( open( f for input access read as #h ) = 0 ) then
 		while eof(h) = 0
 			line input #h, x
 			x = trim(x)
 			if( len(x) > 0 ) then
-				pagehash.add( x )
-				filehash.add( lcase(x) + ".wakka" )
+				filehash.add( lcase(x) + "." + wakka_extension )
 			end if
 		wend
 		close #h
@@ -55,102 +72,138 @@ function ReadIndex( byref f as string ) as integer
 end function
 
 ''
+function ShouldRemove _
+	( _
+		byref path as const string, _
+		byref filename as const string, _
+		byval doscan as const boolean _
+	) as boolean
+
+	if( filehash.test( lcase(filename) ) ) then
+		if( doscan ) then
+			dim sBody as string = LoadFileAsString( path + filename )
+			return left( ucase( ltrim( sBody, any " " & chr(9))), len( DELETE_ME_SENTINEL ) ) = DELETE_ME_SENTINEL
+		end if
+		return false
+	end if
+
+	return true
+
+end function
+
+''
 sub DeleteExtraFiles _
 	( _
-		byref path as string, _
-		byval issvn as integer, _
-		byval nodelete as integer _
+		byref path as const string, _
+		byval isgit as boolean, _
+		byval nodelete as boolean, _
+		byval doscan as boolean, _
+		byval bHTML as boolean, _
+		byref wiki_url as const string _
 	)
 
-	dim d as string, i as integer
-	d = dir( path + "*.wakka" )
+	if( bHTML ) then
+		loghtml( "", TRUE )
+		loghtml( "<html><body>" )
+	end if
+
+	dim d as string = dir( path + "*." + wakka_extension )
 	while( d > "" )
-		if( filehash.test( lcase(d) ) = FALSE ) then
+		
+		if( ShouldRemove( path, d, doscan ) ) then
+
+			if( bHTML ) then
+				dim pagename as string = left( d, len(d) - len("." + wakka_extension) )
+				loghtml( "<a href=""" + wiki_url + "?wakka=" + pagename + "/delete"">" + pagename + "/delete</a><br>" )
+			end if
+
 			dim n as string = ReplacePathChar( path + d, asc("/") )
-			if( issvn ) then
+			if( isgit ) then
 				print "Removing '" + n + "'"
+				dim cmd as string = !"git -C \"" & path & !"\" rm \"" + n + !"\""
+				if( app_opt.verbose ) then
+					print "   SHELL: " & cmd
+				end if
 				if( nodelete = FALSE ) then
-					shell !"svn rm \"" + n + !"\""
+					shell cmd
 				end if
 			else
 				print "Deleting '" + path + d + "'"
+				if( app_opt.verbose ) then
+					print "   KILL: " & n
+				end if
 				if( nodelete = FALSE ) then
 					kill n
 				end if
 			end if
 		end if
+
 		d = dir()
 	wend
 
-end sub
+	if( bHTML ) then
+		loghtml( "" )
+		loghtml( "</body></html>" )
+	end if
 
+end sub
 
 '' --------------------------------------------------------
 '' MAIN
 '' --------------------------------------------------------
 
-dim as string cache_dir, def_cache_dir, web_cache_dir, dev_cache_dir
-dim as integer i = 1, issvn = FALSE, nodelete = FALSE
+'' private options
+dim isgit as boolean = false
+dim nodelete as boolean = false
+dim doscan as boolean = false
+dim bHTML as boolean = false
 
-if( command(i) = "" ) then
+'' enable cache
+cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE )
+
+dim i as integer = 1
+while( command(i) > "" )
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
+		select case lcase(command(i))
+		case "-scan"
+			doscan = true
+		case "-html"
+			bHTML = true
+		case "-git"
+			isgit = true
+		case "-n"
+			nodelete = true
+		case else
+			cmd_opts_unrecognized_die( i )
+		end select
+	else
+		cmd_opts_unexpected_die( i )
+	end if
+	i += 1
+wend	
+
+if( app_opt.help ) then
 	print "delextra [options]"
 	print
-	print "   -n         only print what would happen but don't"
-	print "                 actually delete any files"
-	print "   -svn       use 'svn rm' instead of file system delete"
+	print "options:"
+	cmd_opts_show_help_item( "-n", "only print what would happen but don't actually delete any files" )
+	cmd_opts_show_help_item( "-scan", "scan page for " + DELETE_ME_SENTINEL )
+	cmd_opts_show_help_item( "-html", "write '" + def_output_file + "' helper file" )
+	cmd_opts_show_help_item( "-git", "use 'git rm' instead of file system delete" )
 	print
-	print "   -web       delete extra files in cache_dir"
-	print "   -web+      delete extra files in web cache_dir"
-	print "   -dev       delete extra files in cache_dir"
-	print "   -dev+      delete extra files in dev cache_dir"
+	cmd_opts_show_help( "delete extra files in" )
+	print
 	end 0
 end if
 
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		delete opts
-	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		def_cache_dir = default_CacheDir
-		web_cache_dir = default_web_CacheDir
-		dev_cache_dir = default_dev_CacheDir
-	end if
-end scope
+cmd_opts_resolve()
+cmd_opts_check()
 
-while( command(i) > "" )
-	if( left(command(i), 1) = "-" ) then
-		select case lcase(command(i))
-		case "-web", "-dev"
-			cache_dir = def_cache_dir
-		case "-web+"
-			cache_dir = web_cache_dir
-		case "-dev+"
-			cache_dir = dev_cache_dir
-		case "-svn"
-			issvn = TRUE
-		case "-n"
-			nodelete = TRUE
-		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
-		end select
-	else
-		print "Unexpected option '" + command(i) + "'"
-		end 1
-	end if
-	i += 1
-wend
+'' --------------------------------------------------------
 
-if( cache_dir = "" ) then
-	cache_dir = default_CacheDir
-end if
-print "cache: "; cache_dir
+print "cache: "; app_opt.cache_dir
 
 print "Reading '" + def_index_file + "' ..."
 if( ReadIndex( def_index_file ) = FALSE ) then
@@ -158,4 +211,4 @@ if( ReadIndex( def_index_file ) = FALSE ) then
 	end 1
 end if
 
-DeleteExtraFiles( cache_dir, issvn, nodelete )
+DeleteExtraFiles( app_opt.cache_dir, isgit, nodelete, doscan, bHTML, app_opt.wiki_url )

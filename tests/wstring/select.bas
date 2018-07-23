@@ -1,36 +1,26 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
+SUITE( fbc_tests.wstring_.select_ )
 
+	TEST( default )
 
-
-namespace fbc_tests.wstrings.select_
-
-sub test_1 cdecl ()
-
-	dim w as wstring * 10 => "abc"
+		dim w as wstring * 10 => "abc"
+			
+		select case w
+		case "1" to "10"
+			CU_ASSERT( 0 )
 		
-	select case w
-	case "1" to "10"
-		CU_ASSERT( 0 )
-	
-	case "def"		
-		CU_ASSERT( 0 )
-	
-	case "abc"
-		CU_ASSERT( -1 )
+		case "def"		
+			CU_ASSERT( 0 )
 		
-	case else
-		CU_ASSERT( 0 )	
-	
-	end select
+		case "abc"
+			CU_ASSERT( -1 )
+			
+		case else
+			CU_ASSERT( 0 )	
+		
+		end select
 
-end sub
+	END_TEST
 
-sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.wstring.select")
-	fbcu.add_test("test_1", @test_1)
-
-end sub
-
-end namespace
+END_SUITE

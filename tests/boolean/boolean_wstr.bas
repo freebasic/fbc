@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 '' - don't mix false/true intrinsic constants 
 ''   of the compiler in with the tests
@@ -11,11 +11,11 @@
 const FALSE_WSTRING = wstr("false")
 const TRUE_WSTRING = wstr("true")
 
-namespace fbc_tests.boolean_.wstr_
+SUITE( fbc_tests.boolean_.boolean_wstr )
 
 	'' RTLIB - BOOL2WSTR
 
-	sub wstr_true_false_constants cdecl ( )
+	TEST( wstr_true_false_constants )
 
 		'' check that BOOL->WSTR is returning _LC("false") | _LC("true")
 		
@@ -27,18 +27,18 @@ namespace fbc_tests.boolean_.wstr_
 		b = TRUE
 		CU_ASSERT_EQUAL( wstr(b), TRUE_WSTRING)
 
-	end sub
+	END_TEST
 	
-	sub wstr_const_comparison cdecl ( )
+	TEST( wstr_const_comparison )
 
 		'' check conversion in const comparison
 
 		CU_ASSERT_EQUAL( wstr(cbool(FALSE)), FALSE_WSTRING )
 		CU_ASSERT_EQUAL( wstr(cbool(TRUE)), TRUE_WSTRING )
 
-	end sub
+	END_TEST
 
-	sub wstr_const_assignment cdecl ( )
+	TEST( wstr_const_assignment )
 
 		'' check conversion in const assignment
 
@@ -50,9 +50,9 @@ namespace fbc_tests.boolean_.wstr_
 		e = wstr(cbool(TRUE))
 		CU_ASSERT_EQUAL( e, TRUE_WSTRING )
 
-	end sub
+	END_TEST
 	
-	sub wstr_conv_initialize cdecl ( )
+	TEST( wstr_conv_initialize )
 
 		'' check conversion on initialize
 
@@ -70,10 +70,9 @@ namespace fbc_tests.boolean_.wstr_
 		CU_ASSERT_EQUAL( s3, wstr(b2) )
 		CU_ASSERT_EQUAL( s4, wstr(b2) )
 
-	end sub
-
+	END_TEST
 	
-	sub wstr_conv_expression cdecl ( )
+	TEST( wstr_conv_expression )
 
 		'' check conversion of bool expressions
 
@@ -98,9 +97,9 @@ namespace fbc_tests.boolean_.wstr_
 		CU_ASSERT_EQUAL( wstr(b1 = b2), FALSE_WSTRING )
 		CU_ASSERT_EQUAL( wstr(b1 <> b2), TRUE_WSTRING )
 
-	end sub
+	END_TEST
 
-	sub wstr_conv_variable cdecl ( )
+	TEST( wstr_conv_variable )
 		
 		'' check conversion of bool variable
 
@@ -115,9 +114,9 @@ namespace fbc_tests.boolean_.wstr_
 		s = wstr(b)
 		CU_ASSERT_EQUAL( s, TRUE_WSTRING )
 
-	end sub
+	END_TEST
 	
-	sub wstr_conv_concatenate cdecl ( )
+	TEST( wstr_conv_concatenate )
 
 		'' check wstring concatenate
 
@@ -135,17 +134,6 @@ namespace fbc_tests.boolean_.wstr_
 
 		CU_ASSERT_EQUAL( s, t )
 
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean.boolean_wstr")
-		fbcu.add_test("wstr_true_false_constants", @wstr_true_false_constants)
-		fbcu.add_test("wstr_const_comparison", @wstr_const_comparison)
-		fbcu.add_test("wstr_const_assignment", @wstr_const_assignment)
-		fbcu.add_test("wstr_conv_initialize", @wstr_conv_initialize)
-		fbcu.add_test("wstr_conv_expression", @wstr_conv_expression)
-		fbcu.add_test("wstr_conv_variable", @wstr_conv_variable)
-		fbcu.add_test("wstr_conv_concatenate", @wstr_conv_concatenate)
-	end sub
-
-end namespace
+END_SUITE

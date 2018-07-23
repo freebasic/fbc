@@ -1,122 +1,114 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.anon_assign
+SUITE( fbc_tests.structs.anon_assign )
 
-type t
-	a as short
-	b as integer
-	c(0 to 1) as single
-	d as double
-end type
-
-sub test_1 cdecl ()
-	dim as t udt = (1, 2, {3, 4}, 5 ) 
-	
-	CU_ASSERT_EQUAL( udt.a, 1 )
-	CU_ASSERT_EQUAL( udt.b, 2 )
-	CU_ASSERT_EQUAL( udt.c(0), 3 )
-	CU_ASSERT_EQUAL( udt.c(1), 4 )
-	CU_ASSERT_EQUAL( udt.d, 5 )
-end sub
-
-sub test_2 cdecl ()
-	static as t udt = (1, 2, {3, 4}, 5 ) 
-	
-	CU_ASSERT_EQUAL( udt.a, 1 )
-	CU_ASSERT_EQUAL( udt.b, 2 )
-	CU_ASSERT_EQUAL( udt.c(0), 3 )
-	CU_ASSERT_EQUAL( udt.c(1), 4 )
-	CU_ASSERT_EQUAL( udt.d, 5 )
-end sub
-
-sub test_3 cdecl ()
-	dim as t udt
-	
-	udt = type( -1, -2, {-3, -4}, -5 )
-
-	CU_ASSERT_EQUAL( udt.a, -1 )
-	CU_ASSERT_EQUAL( udt.b, -2 )
-	CU_ASSERT_EQUAL( udt.c(0), -3 )
-	CU_ASSERT_EQUAL( udt.c(1), -4 )
-	CU_ASSERT_EQUAL( udt.d, -5 )	
-end sub
-
-sub test_4  cdecl ()
-	static as t udt
-	
-	udt = type( -1, -2, {-3, -4}, -5 )
-
-	CU_ASSERT_EQUAL( udt.a, -1 )
-	CU_ASSERT_EQUAL( udt.b, -2 )
-	CU_ASSERT_EQUAL( udt.c(0), -3 )
-	CU_ASSERT_EQUAL( udt.c(1), -4 )
-	CU_ASSERT_EQUAL( udt.d, -5 )	
-end sub
-
-namespace ctorcallDespiteConstBits
-	dim shared as integer ctors
-
-	type UDT
-		i as integer
-		declare constructor( )
+	type t
+		a as short
+		b as integer
+		c(0 to 1) as single
+		d as double
 	end type
 
-	constructor UDT( )
-		ctors += 1
-	end constructor
+	TEST( test1 )
+		dim as t udt = (1, 2, {3, 4}, 5 ) 
+		
+		CU_ASSERT_EQUAL( udt.a, 1 )
+		CU_ASSERT_EQUAL( udt.b, 2 )
+		CU_ASSERT_EQUAL( udt.c(0), 3 )
+		CU_ASSERT_EQUAL( udt.c(1), 4 )
+		CU_ASSERT_EQUAL( udt.d, 5 )
+	END_TEST
 
-	sub test cdecl( )
-		CU_ASSERT( ctors = 0 )
-		dim x as UDT
-		x.i = 123
+	TEST( test2 )
+		static as t udt = (1, 2, {3, 4}, 5 ) 
+		
+		CU_ASSERT_EQUAL( udt.a, 1 )
+		CU_ASSERT_EQUAL( udt.b, 2 )
+		CU_ASSERT_EQUAL( udt.c(0), 3 )
+		CU_ASSERT_EQUAL( udt.c(1), 4 )
+		CU_ASSERT_EQUAL( udt.d, 5 )
+	END_TEST
 
-		CU_ASSERT( ctors = 1 )
+	TEST( test3 )
+		dim as t udt
+		
+		udt = type( -1, -2, {-3, -4}, -5 )
 
-		'' This should be parsed as ctor call, not as UDT initializer,
-		'' despite the CONST
-		x = type<const UDT>( )
+		CU_ASSERT_EQUAL( udt.a, -1 )
+		CU_ASSERT_EQUAL( udt.b, -2 )
+		CU_ASSERT_EQUAL( udt.c(0), -3 )
+		CU_ASSERT_EQUAL( udt.c(1), -4 )
+		CU_ASSERT_EQUAL( udt.d, -5 )	
+	END_TEST
 
-		CU_ASSERT( x.i = 0 )
-		CU_ASSERT( ctors = 2 )
-	end sub
-end namespace
+	TEST( test4 )
+		static as t udt
+		
+		udt = type( -1, -2, {-3, -4}, -5 )
 
-namespace anonCtorCallInit
-	type A
-		i as integer
-		declare constructor( )
-	end type
+		CU_ASSERT_EQUAL( udt.a, -1 )
+		CU_ASSERT_EQUAL( udt.b, -2 )
+		CU_ASSERT_EQUAL( udt.c(0), -3 )
+		CU_ASSERT_EQUAL( udt.c(1), -4 )
+		CU_ASSERT_EQUAL( udt.d, -5 )	
+	END_TEST
 
-	constructor A( )
-		i = 123
-	end constructor
+	'' ctorcall + CONST bits
+	TEST_GROUP( ctorcallDespiteConstBits )
+		dim shared as integer ctors
 
-	type B
-		i as integer
-		declare function f( byref x as A = type( ) ) as integer
-	end type
+		type UDT
+			i as integer
+			declare constructor( )
+		end type
 
-	function B.f( byref x as A ) as integer
-		function = x.i
-	end function
+		constructor UDT( )
+			ctors += 1
+		end constructor
 
-	sub test cdecl( )
-		dim xa as A = type( )
-		CU_ASSERT( xa.i = 123 )
+		TEST( default )
+			CU_ASSERT( ctors = 0 )
+			dim x as UDT
+			x.i = 123
 
-		dim xb as B
-		CU_ASSERT( xb.f( ) = 123 )
-	end sub
-end namespace
+			CU_ASSERT( ctors = 1 )
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.structs.anon-assign" )
-	fbcu.add_test("test_1", @test_1)
-	fbcu.add_test("test_2", @test_2)
-	fbcu.add_test("test_3", @test_3)
-	fbcu.add_test("test_4", @test_4)
-	fbcu.add_test( "ctorcall + CONST bits", @ctorcallDespiteConstBits.test )
-	fbcu.add_test( "type() initializer for UDTs with ctor", @anonCtorCallInit.test )
-end sub
+			'' This should be parsed as ctor call, not as UDT initializer,
+			'' despite the CONST
+			x = type<const UDT>( )
 
-end namespace
+			CU_ASSERT( x.i = 0 )
+			CU_ASSERT( ctors = 2 )
+		END_TEST
+	END_TEST_GROUP
+
+	'' type() initializer for UDTs with ctor
+	TEST_GROUP( anonCtorCallInit )
+		type A
+			i as integer
+			declare constructor( )
+		end type
+
+		constructor A( )
+			i = 123
+		end constructor
+
+		type B
+			i as integer
+			declare function f( byref x as A = type( ) ) as integer
+		end type
+
+		function B.f( byref x as A ) as integer
+			function = x.i
+		end function
+
+		TEST( default )
+			dim xa as A = type( )
+			CU_ASSERT( xa.i = 123 )
+
+			dim xb as B
+			CU_ASSERT( xb.f( ) = 123 )
+		END_TEST
+	END_TEST_GROUP
+
+END_SUITE

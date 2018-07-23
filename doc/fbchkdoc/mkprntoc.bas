@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2017 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2018 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -22,14 +22,11 @@
 '' fbdoc headers
 #include once "CWiki.bi"
 #include once "CWikiCache.bi"
-#include once "CRegex.bi"
-#include once "list.bi"
-#include once "CWakka2fbhelp.bi"
-#include once "COptions.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
+#include once "cmd_opts.bi"
 
 '' libs
 #inclib "pcre"
@@ -38,16 +35,14 @@
 using fb
 using fbdoc
 
-
-'' --------------------------------------------------------
-'' MAIN
-'' --------------------------------------------------------
-
+'' private options
 dim shared as CWikiCache ptr wikicache
 dim shared opt_with_tut_pages as boolean = false
 dim shared opt_with_dev_pages as boolean = false
 
 declare sub MakeTOC( byval h as integer, byref sPage as string, byval baselevel as integer )
+
+'' --------------------------------------------------------
 
 ''
 sub WriteText( byval h as integer, byref sOut as string, byval break as integer, byval indent as integer )
@@ -287,81 +282,63 @@ sub MakeTOC( byval h as integer, byref sPage as string, byval baselevel as integ
 
 end sub
 
+'' --------------------------------------------------------
 '' MAIN
+'' --------------------------------------------------------
 
-dim as string cache_dir, def_cache_dir, web_cache_dir, dev_cache_dir
-dim as integer i = 1, h
+cmd_opts_init( CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_AUTOCACHE )
 
-if( command(i) = "" ) then
-	print "mkprntoc [options]"
-	print
-	print "   -web       use files in cache_dir"
-	print "   -web+      use files in web cache_dir"
-	print "   -dev       use files in cache_dir"
-	print "   -dev+      use files in dev cache_dir"
-	print "   -with-tut-pages  include tutorial pages"
-	print "   -with-dev-pages  include developer pages"
-	end 0
-end if
-
-'' read defaults from the configuration file (if it exists)
-scope
-	dim as COptions ptr opts = new COptions( default_optFile )
-	if( opts <> NULL ) then
-		def_cache_dir = opts->Get( "cache_dir", default_CacheDir )
-		web_cache_dir = opts->Get( "web_cache_dir", default_web_CacheDir )
-		dev_cache_dir = opts->Get( "dev_cache_dir", default_dev_CacheDir )
-		delete opts
-	else
-		'' print "Warning: unable to load options file '" + default_optFile + "'"
-		'' end 1
-		def_cache_dir = default_CacheDir
-		web_cache_dir = default_web_CacheDir
-		dev_cache_dir = default_dev_CacheDir
-	end if
-end scope
-
+dim i as integer = 1
 while( command(i) > "" )
-	if( left(command(i), 1) = "-" ) then
+	if( cmd_opts_read( i ) ) then
+		continue while
+	elseif( left( command(i), 1 ) = "-" ) then
 		select case lcase(command(i))
-		case "-web", "-dev"
-			cache_dir = def_cache_dir
-		case "-web+"
-			cache_dir = web_cache_dir
-		case "-dev+"
-			cache_dir = dev_cache_dir
 		case "-with-tut-pages"
 			opt_with_tut_pages = true
 		case "-with-dev-pages"
 			opt_with_dev_pages = true
 		case else
-			print "Unrecognized option '" + command(i) + "'"
-			end 1
+			cmd_opts_unrecognized_die( i )
 		end select
 	else
-		print "Unexpected option '" + command(i) + "'"
-		end 1
+		cmd_opts_unexpected_die( i )
 	end if
 	i += 1
-wend
+wend	
 
-if( cache_dir = "" ) then
-	cache_dir = default_CacheDir
+if( app_opt.help ) then
+	print "mkprntoc [options]"
+	print
+	print "options:"
+	print "   -with-tut-pages  include tutorial pages"
+	print "   -with-dev-pages  include developer pages"
+	print
+	cmd_opts_show_help()
+	print
+ 	end 0
 end if
-print "cache: "; cache_dir
+
+cmd_opts_resolve()
+cmd_opts_check()
+
+'' --------------------------------------------------------
 
 dim as string sPage, sBody
+dim as integer h
+
+print "cache: "; app_opt.cache_dir
 
 '' Initialize the cache
-wikicache = new CWikiCache( cache_dir, CWikiCache.CACHE_REFRESH_NONE )
+wikicache = new CWikiCache( app_opt.cache_dir, CWikiCache.CACHE_REFRESH_NONE )
 if wikicache = NULL then
-	print "Unable to use local cache dir " + cache_dir
+	print "Unable to use local cache dir " + app_opt.cache_dir
 	end 1
 end if
 
 h = Freefile
-print "Writing " + cache_dir + "PrintToc.wakka"
-open cache_dir + "PrintToc.wakka" for output as #h
+print "Writing " + app_opt.cache_dir + "PrintToc.wakka"
+open app_opt.cache_dir + "PrintToc.wakka" for output as #h
 
 MakeTOC( h, "DocToc", 0 )
 

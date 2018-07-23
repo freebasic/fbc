@@ -1,4 +1,4 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
 '' - don't mix false/true intrinsic constants 
 ''   of the compiler in with the tests
@@ -11,11 +11,13 @@
 const FALSE_STRING = "false"
 const TRUE_STRING = "true"
 
-namespace fbc_tests.boolean_.val_
+SUITE( fbc_tests.boolean_.boolean_val )
 
+	'' -----------------------------------
 	'' RTLIB - STR2BOOL - valbool(string)
+	'' -----------------------------------
 	
-	sub valbool_const_str cdecl ( )
+	TEST( valbool_const_str )
 		
 		'' constants
 
@@ -40,9 +42,9 @@ namespace fbc_tests.boolean_.val_
 		CU_ASSERT_EQUAL( cbool(FALSE), cbool("&b0") )
 		CU_ASSERT_EQUAL( cbool(TRUE) , cbool("&b1") )
 
-	end sub
+	END_TEST
 
-	sub valbool_variable_str cdecl ( )
+	TEST( valbool_variable_str )
 
 		'' variables
 
@@ -69,14 +71,14 @@ namespace fbc_tests.boolean_.val_
 		s = "&b0"        : CU_ASSERT_EQUAL( cbool(FALSE), cbool(s) )
 		s = "&b1"        : CU_ASSERT_EQUAL( cbool(TRUE) , cbool(s) )
 
-	end sub
+	END_TEST
 
 
-	'' ----------------------------------
-	'' RLIB - STR2BOOL - valbool(wstring)
-	'' ----------------------------------
+	'' -----------------------------------
+	'' RTLIB - STR2BOOL - valbool(wstring)
+	'' -----------------------------------
 
-	sub valbool_const_wstr cdecl ( )
+	TEST( valbool_const_wstr )
 
 		'' constants
 		CU_ASSERT_EQUAL( cbool(TRUE) , cbool(wstr("true")) )
@@ -100,9 +102,9 @@ namespace fbc_tests.boolean_.val_
 		CU_ASSERT_EQUAL( cbool(FALSE), cbool(wstr("&b0")) )
 		CU_ASSERT_EQUAL( cbool(TRUE) , cbool(wstr("&b1")) )
 
-	end sub
+	END_TEST
 
-	sub valbool_variable_wstr cdecl ( )
+	TEST( valbool_variable_wstr )
 
 		'' variables
 
@@ -129,14 +131,6 @@ namespace fbc_tests.boolean_.val_
 		s = wstr("&b0")        : CU_ASSERT_EQUAL( cbool(FALSE), cbool(s) )
 		s = wstr("&b1")        : CU_ASSERT_EQUAL( cbool(TRUE) , cbool(s) )
 
-	end sub
+	END_TEST
 
-	private sub ctor () constructor
-		fbcu.add_suite("fbc_tests.boolean.boolean_val")
-		fbcu.add_test("valbool_const_str", @valbool_const_str)
-		fbcu.add_test("valbool_variable_str", @valbool_variable_str)
-		fbcu.add_test("valbool_const_wstr", @valbool_const_wstr)
-		fbcu.add_test("valbool_variable_wstr", @valbool_variable_wstr)
-	end sub
-
-end namespace
+END_SUITE

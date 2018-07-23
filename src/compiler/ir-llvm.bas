@@ -1993,8 +1993,8 @@ private sub _emitJmpTb _
 		byval labels as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as ulongint, _
-		byval maxval as ulongint _
+		byval bias as ulongint, _
+		byval span as ulongint _
 	)
 
 	hAstCommand( "jmptb " + vregPretty( v1 ) )
@@ -2013,7 +2013,7 @@ private sub _emitJmpTb _
 
 	ctx.indent += 1
 	for i as integer = 0 to labelcount - 1
-		ln = dtype + " " & values[i] & ", "
+		ln = dtype + " " & (values[i]+bias) & ", "
 		ln += "label %" + *symbGetMangledName( labels[i] )
 		hWriteLine( ln )
 	next

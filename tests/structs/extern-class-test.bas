@@ -1,21 +1,23 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 #include "extern-class.bi"
 
-namespace fbc_tests.structs.extern_class
+'' See:
+''   extern-class.bi
+''   extern-class.bas
+''   extern-class-test.bas
 
-private sub test cdecl( )
-	CU_ASSERT( global1.i = 123 )
-	CU_ASSERT( fixarray1(0).i = 456 )
-	CU_ASSERT( fixarray1(1).i = 789 )
+SUITE( fbc_tests.structs.extern_class_test )
 
-	CU_ASSERT( global2.i = 321 )
-	CU_ASSERT( fixarray2(0).i = 321 )
-	CU_ASSERT( fixarray2(1).i = 321 )
-end sub
+	using extern_class
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.structs.extern-class-test" )
-	fbcu.add_test( "test", @test )
-end sub
+	TEST( all )
+		CU_ASSERT( global1.i = 123 )
+		CU_ASSERT( fixarray1(0).i = 456 )
+		CU_ASSERT( fixarray1(1).i = 789 )
 
-end namespace
+		CU_ASSERT( global2.i = 321 )
+		CU_ASSERT( fixarray2(0).i = 321 )
+		CU_ASSERT( fixarray2(1).i = 321 )
+	END_TEST
+
+END_SUITE

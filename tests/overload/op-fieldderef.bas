@@ -1,89 +1,81 @@
-#include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.overload_.op_fieldderef
+SUITE( fbc_tests.overload_.op_fieldderef )
 
-namespace simple
-	type UDT
-		i as integer
-	end type
+	TEST_GROUP( simple )
+		type UDT
+			i as integer
+		end type
 
-	dim shared globali as integer = 123
+		dim shared globali as integer = 123
 
-	operator ->(byref l as UDT) as UDT
-		l.i += 100
-		operator = l
-	end operator
+		operator ->(byref l as UDT) as UDT
+			l.i += 100
+			operator = l
+		end operator
 
-	sub test cdecl( )
-		dim x as UDT
-		x.i = 400
-		CU_ASSERT( x->i = 500 )
-		CU_ASSERT( (x)->i = 600 )
-	end sub
-end namespace
+		TEST( default )
+			dim x as UDT
+			x.i = 400
+			CU_ASSERT( x->i = 500 )
+			CU_ASSERT( (x)->i = 600 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace withSingleDeref
-	type UDT
-		pi as integer ptr
-	end type
+	TEST_GROUP( withSingleDeref )
+		type UDT
+			pi as integer ptr
+		end type
 
-	dim shared globali as integer = 123
+		dim shared globali as integer = 123
 
-	operator ->(byref l as UDT) as UDT
-		operator = l
-	end operator
+		operator ->(byref l as UDT) as UDT
+			operator = l
+		end operator
 
-	sub test cdecl( )
-		dim x as UDT
-		x.pi = @globali
-		CU_ASSERT( x->*pi = 123 )
-	end sub
-end namespace
+		TEST( default )
+			dim x as UDT
+			x.pi = @globali
+			CU_ASSERT( x->*pi = 123 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace withMultiDeref
-	type UDT
-		pppi as integer ptr ptr ptr
-	end type
+	TEST_GROUP( withMultiDeref )
+		type UDT
+			pppi as integer ptr ptr ptr
+		end type
 
-	dim shared globali as integer = 123
-	dim shared globalpi as integer ptr = @globali
-	dim shared globalppi as integer ptr ptr = @globalpi
+		dim shared globali as integer = 123
+		dim shared globalpi as integer ptr = @globali
+		dim shared globalppi as integer ptr ptr = @globalpi
 
-	operator ->(byref l as UDT) as UDT
-		operator = l
-	end operator
+		operator ->(byref l as UDT) as UDT
+			operator = l
+		end operator
 
-	sub test cdecl( )
-		dim x as UDT
-		x.pppi = @globalppi
-		CU_ASSERT( x->***pppi = 123 )
-	end sub
-end namespace
+		TEST( default )
+			dim x as UDT
+			x.pppi = @globalppi
+			CU_ASSERT( x->***pppi = 123 )
+		END_TEST
+	END_TEST_GROUP
 
-namespace parenthesized
-	type T
-		elem as integer
-	end type
+	TEST_GROUP( parenthesized )
+		type T
+			elem as integer
+		end type
 
-	operator ->(x as T) as T
-		operator = x
-	end operator
+		operator ->(x as T) as T
+			operator = x
+		end operator
 
-	sub test cdecl()
-		dim as T x
-		x.elem = 123
-		CU_ASSERT( x->elem = 123 )
-		CU_ASSERT( (@x)[0]->elem = 123 )
-		CU_ASSERT( (x)->elem = 123 )
-	end sub
-end namespace
+		TEST( default )
+			dim as T x
+			x.elem = 123
+			CU_ASSERT( x->elem = 123 )
+			CU_ASSERT( (@x)[0]->elem = 123 )
+			CU_ASSERT( (x)->elem = 123 )
+		END_TEST
+	END_TEST_GROUP
 
-private sub ctor( ) constructor
-	fbcu.add_suite( "fbc_tests.overload.op-fieldderef" )
-	fbcu.add_test( "simple", @simple.test )
-	fbcu.add_test( "withSingleDeref", @withSingleDeref.test )
-	fbcu.add_test( "withMultiDeref", @withMultiDeref.test )
-	fbcu.add_test( "parenthesized", @parenthesized.test )
-end sub
-
-end namespace
+END_SUITE

@@ -1,6 +1,6 @@
-# include "fbcu.bi"
+#include "fbcunit.bi"
 
-namespace fbc_tests.structs.const_method
+SUITE( fbc_tests.structs.const_method )
 	
 	type foo
 		
@@ -16,7 +16,7 @@ namespace fbc_tests.structs.const_method
 	sub foo.bar2( )
 	end sub
 	
-	sub test cdecl( )
+	TEST( all )
 		dim as foo baz
 		
 		baz.bar( )
@@ -25,13 +25,6 @@ namespace fbc_tests.structs.const_method
 		dim as const foo baz2 = (3)
 		
 		baz2.bar( )
-	end sub
+	END_TEST
 	
-	private sub ctor () constructor
-	
-		fbcu.add_suite("fbc_tests.structs.const_method")
-		fbcu.add_test("const_method", @test)
-	
-	end sub
-	
-end namespace
+END_SUITE

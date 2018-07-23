@@ -1,0 +1,13 @@
+{{fbdoc item="title" value="Compiler Option: -noobjinfo"}}----
+Do not read/write compile-time info from/to .o and .a files
+
+{{fbdoc item="syntax"}}##
+	**-noobjinfo**
+##
+{{fbdoc item="desc"}}
+	The ##-noobjinfo## compiler option disables the writing/reading of compile-time library and other linking options from/to .o and .a files. This also disables the use of fbextra.x (the supplemental linker script) for discarding the .fbctinf sections, which is useful when using the gold linker that doesn't support this kind of linker script.
+
+{{fbdoc item="see"}}
+	- [[CompilerCmdLine|Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

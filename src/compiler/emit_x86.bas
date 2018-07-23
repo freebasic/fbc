@@ -1218,8 +1218,8 @@ private sub _emitJMPTB _
 		byval labels1 as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as ulongint, _
-		byval maxval as ulongint _
+		byval bias as ulongint, _
+		byval span as ulongint _
 	)
 
 	dim as string deflabelname, tb
@@ -1231,7 +1231,9 @@ private sub _emitJMPTB _
 	tb = *symbGetMangledName( tbsym )
 
 	''
-	'' Emit entries for each value from minval to maxval.
+	'' Emit entries for each value from 0 to span.
+	'' minval = bias
+	'' maxval = register(bias+span)
 	'' Each value that is in the values1 array uses the corresponding label
 	'' from the labels1 array; all other values use the default label.
 	''
@@ -1244,27 +1246,26 @@ private sub _emitJMPTB _
 	''
 
 	outEx( tb + ":" + NEWLINE )
-	if( minval <= maxval ) then
-		var i = 0
-		var value = minval
-		do
-			assert( i < labelcount )
 
-			dim as FBSYMBOL ptr label
-			if( value = values1[i] ) then
-				label = labels1[i]
-				i += 1
-			else
-				label = deflabel
-			end if
-			outp( *_getTypeString( FB_DATATYPE_UINT ) + " " + *symbGetMangledName( label ) )
+	var i = 0
+	var value = 0
+	do
+		assert( i < labelcount )
 
-			if( value = maxval ) then
-				exit do
-			end if
-			value += 1
-		loop
-	end if
+		dim as FBSYMBOL ptr label
+		if( value = values1[i] ) then
+			label = labels1[i]
+			i += 1
+		else
+			label = deflabel
+		end if
+		outp( *_getTypeString( FB_DATATYPE_UINT ) + " " + *symbGetMangledName( label ) )
+
+		if( value = span ) then
+			exit do
+		end if
+		value += 1
+	loop
 
 end sub
 
@@ -6335,7 +6336,6 @@ private sub _emitLOADB2F( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
 
 		hPUSH aux
 		outp "fild dword ptr [esp]"
-		outp "fchs"
 		outp "add esp, 4"
 
 		if( isfree = FALSE ) then

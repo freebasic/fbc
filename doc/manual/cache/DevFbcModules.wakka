@@ -1,4 +1,5 @@
-{{fbdoc item="title" value="Quick overview of all modules"}}(Only somewhat sorted)----
+{{fbdoc item="title" value="Quick overview of all modules"}}----
+(Only somewhat sorted)
 
 ''fbc''
 	Frontend: main module, entry point, command-line handling, assembling/linking/etc.

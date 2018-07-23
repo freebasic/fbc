@@ -648,12 +648,12 @@ private sub _emitJmpTb _
 		byval labels as FBSYMBOL ptr ptr, _
 		byval labelcount as integer, _
 		byval deflabel as FBSYMBOL ptr, _
-		byval minval as ulongint, _
-		byval maxval as ulongint _
+		byval bias as ulongint, _
+		byval span as ulongint _
 	)
 
 	_flush( )
-	emitJMPTB( tbsym, values, labels, labelcount, deflabel, minval, maxval )
+	emitJMPTB( tbsym, values, labels, labelcount, deflabel, bias, span )
 
 end sub
 
@@ -725,11 +725,17 @@ private sub _emitVarIniEnd( byval sym as FBSYMBOL ptr )
 end sub
 
 private sub _emitVarIniI( byval sym as FBSYMBOL ptr, byval value as longint )
-	emitVARINIi( symbGetType( sym ), value )
+	dim realtype as integer
+	dim realsubtype as FBSYMBOL ptr
+	symbGetRealType( sym, realtype, realsubtype )
+	emitVARINIi( realtype, value )
 end sub
 
 private sub _emitVarIniF( byval sym as FBSYMBOL ptr, byval value as double )
-	emitVARINIf( symbGetType( sym ), value )
+	dim realtype as integer
+	dim realsubtype as FBSYMBOL ptr
+	symbGetRealType( sym, realtype, realsubtype )
+	emitVARINIf( realtype, value )
 end sub
 
 private sub _emitVarIniOfs _
@@ -2012,6 +2018,8 @@ private sub hFlushCOMP _
 	elseif( v1_dclass = FB_DATACLASS_FPOINT ) then	'' /
 		doload = TRUE
 	elseif( v1_typ = IR_VREGTYPE_IMM) then          '' /
+		doload = TRUE
+	elseif( v1_typ = IR_VREGTYPE_OFS and v2_typ = IR_VREGTYPE_IMM ) then
 		doload = TRUE
 	elseif( v2_typ <> IR_VREGTYPE_REG ) then        '' /
 		if( v2_typ <> IR_VREGTYPE_IMM ) then
