@@ -571,6 +571,10 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.objinfo = value
 	case FB_COMPOPT_SHOWINCLUDES
 		env.clopt.showincludes = value
+		case FB_COMPOPT_FIXDEBUGINFO
+			env.clopt.fixdebuginfo = value
+		Case FB_COMPOPT_BUILDBYCSTYLE
+			env.clopt.buildbycstyle = value
 	end select
 end sub
 
@@ -643,6 +647,10 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.objinfo
 	case FB_COMPOPT_SHOWINCLUDES
 		function = env.clopt.showincludes
+	case FB_COMPOPT_FIXDEBUGINFO
+		function = env.clopt.fixdebuginfo
+	Case FB_COMPOPT_BUILDBYCSTYLE
+		function = env.clopt.buildbycstyle
 
 	case else
 		function = 0

@@ -1866,6 +1866,10 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		select case( lcase( arg ) )
 		case "gosub-setjmp"
 			fbSetOption( FB_COMPOPT_GOSUBSETJMP, TRUE )
+				case "fixdebug"
+					fbSetOption( FB_COMPOPT_FIXDEBUGINFO, TRUE )
+				case "cstyle"
+					fbSetOption( FB_COMPOPT_BUILDBYCSTYLE, TRUE )
 		case else
 			hFatalInvalidOption( arg )
 		end select
@@ -3393,6 +3397,8 @@ private sub hPrintOptions( )
 	print "  -Wl <a,b,c>      Pass options to 'ld'"
 	print "  -x <file>        Set output executable/library file name"
 	print "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
+	print "  -z fixdebug      Fix Debug Informations"
+	print "  -z cstyle        Use Case sensitive for Building APP"
 end sub
 
 private sub hAppendConfigInfo( byref config as string, byval info as zstring ptr )

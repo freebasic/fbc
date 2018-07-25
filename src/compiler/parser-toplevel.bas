@@ -108,7 +108,7 @@ sub cProgram()
 	dim as integer startlevel = pp.level
 	dim dbg as AST_NODE_DBG ptr=any
 	DIM as ASTNODE ptr CurrLine=any,Currproc=ast.proc.Curr->r
-
+    Dim As Integer IsFixDebug=(fbGetOption( FB_COMPOPT_FIXDEBUGINFO ) <>0) And (fbGetOption( FB_COMPOPT_DEBUGINFO )<>0) 
 	'' For each line...
 	
 	'' line begin
@@ -175,7 +175,7 @@ sub cProgram()
 	'' only check compound stmts if not parsing an include file
 	if (env.includerec = 0) then
 		cCompStmtCheck()
-	elseif(env.clopt.debug) then
+	ElseIf (IsFixDebug<>0) then
 		while( Currproc )
 			' Skip over nodes that don't represent executable code
 			select case( Currproc->class )

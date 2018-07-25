@@ -7095,8 +7095,11 @@ private sub _procFooter _
 
 	''
 	hDestroyFrame( proc, bytestopop )
-
-	if( symbIsNaked( proc ) = FALSE ) then'No need when it is Naked proc.(DestroyFrame's code is empty)
+	If (env.clopt.fixdebuginfo =TRUE)  Then
+		if( symbIsNaked( proc ) = FALSE ) then'No need when it is Naked proc.(DestroyFrame's code is empty)
+			edbgEmitLineFlush( proc, proc->proc.ext->dbg.endline, exitlabel )
+		EndIf
+	Else
 		edbgEmitLineFlush( proc, proc->proc.ext->dbg.endline, exitlabel )
 	EndIf
 

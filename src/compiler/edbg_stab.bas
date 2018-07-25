@@ -273,7 +273,7 @@ sub edbgLineBegin _
     	exit sub
     end if
 
-	if( lnum<0 ) then
+	if(lnum<0 And (env.clopt.fixdebuginfo <> FALSE )) then
 		dim  dbg as AST_NODE_DBG ptr=-lnum
 		hEmitSTABS( STAB_TYPE_SOL,dbg->op, 0, 0,@"-1")
 		lnum=dbg->ex

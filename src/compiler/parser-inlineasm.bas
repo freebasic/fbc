@@ -315,6 +315,7 @@ end function
 ''					  END ASM .
 function cAsmBlock as integer
 	dim as integer issingleline = any,isIgnoreline = any
+	Dim As Integer IsFixDebug=fbGetOption( FB_COMPOPT_FIXDEBUGINFO ) 
 
 	function = FALSE
 
@@ -333,6 +334,7 @@ function cAsmBlock as integer
 
 	'' (Comment SttSeparator)?
 	issingleline = FALSE
+	isIgnoreline = FALSE
 	if( cComment( ) ) then
 		'' emit the current line in text form
 		hEmitCurrLine( )
@@ -349,10 +351,12 @@ function cAsmBlock as integer
 	end if
 
 	'' (AsmCode Comment? NewLine)+
-	do
-		isIgnoreline=IgnoreDbg4AsmCode()
+	Do
+		If IsFixDebug Then
+			isIgnoreline=IgnoreDbg4AsmCode()
+		EndIf
 
-		if( issingleline = FALSE and isIgnoreline=false) then
+		if( issingleline = FALSE and isIgnoreline=FALSE) then
 			astAdd(astNewDBG(AST_OP_DBG_LINEINI, lexLineNum()))
 		end if
 
@@ -385,7 +389,7 @@ function cAsmBlock as integer
 			hSkipUntil( FB_TK_EOL, TRUE )
 		end select
 
-		if( issingleline = FALSE  and isIgnoreline=false) then
+		if( issingleline = FALSE  and isIgnoreline=FALSE) then
 			astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
 		end if
 	loop
