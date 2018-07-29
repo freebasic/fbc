@@ -243,8 +243,8 @@ sub AmbigiousSizeofInfo.maybeWarn( byval tk as integer, byval refers_to_type as 
 	end if
 
 	var msg = "Ambigious " + hGetTokenDescription( tk ) + "()"
-	msg += ", referring to " + symbDumpPretty( sym1 )
-	msg += ", instead of " + symbDumpPretty( sym2 )
+	msg += ", referring to " + symbDumpPrettyToStr( sym1 )
+	msg += ", instead of " + symbDumpPrettyToStr( sym2 )
 	errReportWarn( FB_WARNINGMSG_AMBIGIOUSLENSIZEOF, , , msg )
 end sub
 

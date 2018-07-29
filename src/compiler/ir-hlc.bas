@@ -2358,7 +2358,7 @@ private sub exprDump( byval n as EXPRNODE ptr )
 	}
 
 	s += *names(n->class)
-	s += typeDump( n->dtype, n->subtype )
+	s += typeDumpToStr( n->dtype, n->subtype )
 	s += " "
 
 	select case as const( n->class )

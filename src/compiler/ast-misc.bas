@@ -985,7 +985,7 @@ sub astDtorListDump( )
 	print "-------------- dtorlist: ------------------"
 	i = listGetTail( @ast.dtorlist )
 	while( i )
-		print "    ";symbDump( i->sym );" cookie: ";i->cookie;" refcount: ";i->refcount;" has dtor? ";hHasDtor( i->sym )
+		print "    ";symbDumpToStr( i->sym );" cookie: ";i->cookie;" refcount: ";i->refcount;" has dtor? ";hHasDtor( i->sym )
 		i = listGetPrev( i )
 	wend
 end sub

@@ -280,7 +280,7 @@ function vregDump( byval v as IRVREG ptr ) as string
 		end if
 	end if
 
-	s += " " + typeDump( v->dtype, v->subtype )
+	s += " " + typeDumpToStr( v->dtype, v->subtype )
 
 	if( v->typ <> IR_VREGTYPE_REG ) then
 		if( v->vidx ) then

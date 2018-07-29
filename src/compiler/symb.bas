@@ -2058,7 +2058,7 @@ static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPOR
 }
 
 '' For debugging
-function typeDump _
+function typeDumpToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -2177,6 +2177,10 @@ function typeDump _
 	function = dump
 end function
 
+sub typeDump( byval dtype as integer, byval subtype as FBSYMBOL ptr )
+	print typeDumpToStr( dtype, subtype )
+end sub
+
 private sub hDumpName( byref s as string, byval sym as FBSYMBOL ptr )
 	if( sym = @symbGetGlobalNamespc( ) ) then
 		s += "<global namespace>"
@@ -2202,7 +2206,7 @@ private sub hDumpName( byref s as string, byval sym as FBSYMBOL ptr )
 #endif
 end sub
 
-function symbDump( byval sym as FBSYMBOL ptr ) as string
+function symbDumpToStr( byval sym as FBSYMBOL ptr ) as string
 	dim as string s
 
 	if( sym = NULL ) then
@@ -2320,7 +2324,7 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 
 	if( sym->class = FB_SYMBCLASS_NSIMPORT ) then
 		s += "from: "
-		s += symbDump( sym->nsimp.imp_ns )
+		s += symbDumpToStr( sym->nsimp.imp_ns )
 		return s
 	end if
 
@@ -2340,7 +2344,7 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 		s += "("
 		var param = symbGetProcHeadParam( sym )
 		while( param )
-			s += symbDump( param )
+			s += symbDumpToStr( param )
 			param = param->next
 			if( param ) then
 				s += ", "
@@ -2418,10 +2422,10 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 			case FB_DATATYPE_ENUM
 				s += "<enum>"
 			case else
-				s += typeDump( sym->typ, NULL )
+				s += typeDumpToStr( sym->typ, NULL )
 			end select
 		else
-			s += typeDump( sym->typ, sym->subtype )
+			s += typeDumpToStr( sym->typ, sym->subtype )
 		end if
 	end if
 
@@ -2436,6 +2440,10 @@ function symbDump( byval sym as FBSYMBOL ptr ) as string
 	function = s
 end function
 
+sub symbDump( byval sym as FBSYMBOL ptr )
+	print symbDumpToStr( sym )
+end sub
+
 sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
 	select case( ns->class )
 	case FB_SYMBCLASS_STRUCT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_NAMESPACE
@@ -2444,11 +2452,11 @@ sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
 		print "symbDumpNamespace(): not a namespace"
 	end select
 
-	print symbDump( ns ) + ":"
+	print symbDumpToStr( ns ) + ":"
 
 	var i = symbGetCompSymbTb( ns ).head
 	while( i )
-		print "    symtb: " + symbDump( i )
+		print "    symtb: " + symbDumpToStr( i )
 		i = i->next
 	wend
 
@@ -2466,10 +2474,10 @@ sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
 			''   other symbols   = shadowed symbols from parent scopes
 			dim as FBSYMBOL ptr sym = hashitem->data
 			var bucketprefix = "    hashtb[" & index & "]: "
-			print bucketprefix + *hashitem->name + " = " + symbDump( sym )
+			print bucketprefix + *hashitem->name + " = " + symbDumpToStr( sym )
 			while( sym->hash.next )
 				sym = sym->hash.next
-				print space(len(bucketprefix)) + "next: " + symbDump( sym )
+				print space(len(bucketprefix)) + "next: " + symbDumpToStr( sym )
 			wend
 			hashitem = hashitem->next
 		wend
@@ -2486,7 +2494,7 @@ sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 		do
 			var sym = chain_->sym
 			do
-				print "   " & i & "  " + symbDump( sym )
+				print "   " & i & "  " + symbDumpToStr( sym )
 				sym = sym->hash.next
 			loop while( sym )
 			i += 1
@@ -2516,6 +2524,6 @@ dim shared as zstring ptr classnamesPretty(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIM
 	@"namespace import" _
 }
 
-function symbDumpPretty( byval sym as FBSYMBOL ptr ) as string
+function symbDumpPrettyToStr( byval sym as FBSYMBOL ptr ) as string
 	function = *classnamesPretty(sym->class) + " " + *sym->id.name
 end function

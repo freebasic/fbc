@@ -1469,7 +1469,7 @@ extern ast as ASTCTX
 
 extern ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO
 
-declare function astDumpOp( byval op as AST_OP ) as string
+declare function astDumpOpToStr( byval op as AST_OP ) as string
 
 declare sub astDumpTree _
 	( _

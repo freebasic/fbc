@@ -2491,7 +2491,7 @@ declare sub symbForEachGlobal _
 	)
 
 #if __FB_DEBUG__
-declare function typeDump _
+declare function typeDumpToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -2499,8 +2499,9 @@ declare function typeDump _
 '' For debugging, e.g. use like this:
 ''  symbTrace(a), "(replacing this)"
 ''  symbTrace(b), "(with this)"
-#define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): "; symbDump( s )
-declare function symbDump( byval s as FBSYMBOL ptr ) as string
+#define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): "; symbDumpToStr( s )
+declare function symbDumpToStr( byval s as FBSYMBOL ptr ) as string
+declare sub symbDump( byval s as FBSYMBOL ptr )
 declare sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
 declare sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 
@@ -2508,7 +2509,7 @@ declare sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 #define symbDescriptorHasRoomFor( sym, dimensions ) (symbGetLen( sym ) = env.pointersize * (((dimensions) * 3) + 5))
 #endif
 
-declare function symbDumpPretty( byval sym as FBSYMBOL ptr ) as string
+declare function symbDumpPrettyToStr( byval sym as FBSYMBOL ptr ) as string
 
 ''
 '' inter-module globals
