@@ -5,6 +5,22 @@
 
 #define ENABLE_SHOW_EXPECTED_ERRORS 0
 
+
+/'
+To check first time run, use this helper tool:
+	$ cd ./generator
+	$ fbc -w constness ../const-discard.bas -c > const-discard.log 
+	$ fbc chk-warning-log.bas
+	$ ./chk-warning-log const-discard.log > chk-const-discard.log
+
+	Line numbers reported in ./chk-const-discard.log refer to line 
+	numbers in const-discard.log which can then be referenced to line 
+	numbers in ../const-discard.bas
+
+	If no differences found, ./chk-const-discard.log is empty file.
+
+'/
+
 '' --------------------------------------------------------
 
 #macro WARN_AND_ERROR( W, E )
