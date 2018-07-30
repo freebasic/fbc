@@ -1970,14 +1970,9 @@ private function hCheckOvlParam _
 				return match
 			end if
 
-			'' not a function pointer?
-			if( typeGet( param_dtype ) = FB_DATATYPE_FUNCTION ) then
-			
-				'' Exact same CONSTs? Then there's no point in calling symbCheckConstAssign(), unless it is a 
-				if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
-					return match
-				end if
-
+			'' Exact same CONSTs? Then there's no point in calling symbCheckConstAssign().
+			if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
+				return match
 			end if
 
 			'' Check whether CONSTness allows passing the arg to the param.

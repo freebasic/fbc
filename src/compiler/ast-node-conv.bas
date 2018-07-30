@@ -337,7 +337,6 @@ function astNewCONV _
 
 					if( (options and AST_CONVOPT_DONTWARNCONST) = 0 ) then
 						if( fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
-							'' TODO: return this warning to the caller?
 							errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
 						end if
 					end if
@@ -489,13 +488,11 @@ function astNewCONV _
 	'' Discarding/changing const qualifier bits ?
 	if( typeIsPtr( ldtype ) and typeIsPtr( to_dtype ) ) then
 
-		select case typeGetDtOnly( to_dtype )
-		case FB_DATATYPE_FUNCTION
-			'' TODO: verify use of FB_OVLPROC_HALFMATCH for function pointer types differing only by const params
-			n->cast.convconst = ( typeCalcMatch( to_dtype, to_subtype, FB_PARAMMODE_BYREF, ldtype, l->subtype ) < FB_OVLPROC_HALFMATCH )
-		case else
+		if( (typeGetDtOnly( to_dtype ) = FB_DATATYPE_FUNCTION) and (typeGetDtOnly( ldtype ) = FB_DATATYPE_FUNCTION) ) then
+			n->cast.convconst = ( symbCheckConstAssignFuncPtr( to_dtype, ldtype, to_subtype, l->subtype ) = FALSE )
+		else
 			n->cast.convconst = ( symbCheckConstAssign( to_dtype, ldtype, to_subtype, l->subtype ) = FALSE )
-		end select
+		end if
 	
 		if( n->cast.convconst ) then
 			if( (options and AST_CONVOPT_DONTWARNCONST) = 0 ) then

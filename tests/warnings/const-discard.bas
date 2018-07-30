@@ -1,9 +1,12 @@
 '' CONST qualifier discarded warnings
 
-'' set to 1 to see errors, compile with -maxerr 1000 
-'' to see all errors
+'' this test needs constness warnings turned on
+#pragma constness=true
 
 #define ENABLE_SHOW_EXPECTED_ERRORS 0
+
+'' set to 1 to see errors, compile with -maxerr 1000 
+'' to see all errors
 
 
 /'

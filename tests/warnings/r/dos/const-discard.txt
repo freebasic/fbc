@@ -1,8 +1,4 @@
-No Warnings
-No Warnings
-No Warnings
-No Warnings
-No Warnings
+---- INTERNAL CONVERSIONS
 5 UBYTE PTR to follow
 UBYTE PTR
 UBYTE PTR
@@ -15,98 +11,93 @@ CONST UBYTE PTR
 CONST UBYTE PTR
 CONST UBYTE PTR
 CONST UBYTE PTR
-No Warnings
-1 Warning
-1 Warning
---- LOCAL CONST INTEGER
-No Warnings
-No Warnings
-1 Warning
+---- RTLIB
+warning expected
+warning expected
+---- LOCAL CONST INTEGER
+warning expected
 	CONST qualifier discarded
-1 Warning
+warning expected
 	CONST qualifier discarded
-No Warnings
-No Warnings
-1 Warning
-FIXME
+warning expected
 	CONST qualifier discarded
-1 Warning
-FIXME
+warning expected
 	CONST qualifier discarded
---- LOCAL INTEGER
-No Warnings
-No Warnings
-No Warnings
-1 Warning
+---- LOCAL INTEGER
+warning expected
 	CONST qualifier discarded
-1 Warning
+warning expected
 	CONST qualifier discarded
-No Warnings
-No Warnings
---- LOCAL CONST INTEGER ARRAY
-No Warnings
-No Warnings
-6 Warnings
+---- LOCAL CONST INTEGER ARRAY
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
-No Warnings
-6 Warnings
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
---- LOCAL INTEGER ARRAY
-No Warnings
-No Warnings
-6 Warnings
+warning expected
+	CONST qualifier discarded
+warning expected
+	CONST qualifier discarded
+warning expected
+	CONST qualifier discarded
+warning expected
+	CONST qualifier discarded
+---- LOCAL INTEGER ARRAY
 TODO: assigning non-const-ptr to const-ptr is safe, warn only if -w constness given
-6 Warnings
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
+warning expected
 	CONST qualifier discarded
-No Warnings
-No Warnings
---- LOCAL INTEGER and BYTE PTR
-1 Warning
+warning expected
 	CONST qualifier discarded
-1 Warning
+---- LOCAL INTEGER and BYTE PTR
+warning expected
+	CONST qualifier discarded
+warning expected
 	Suspicious pointer assignment
-No Warnings
-1 Warning
+warning expected
 	CONST qualifier discarded
-2 Warnings
+2 warnings expected
 	CONST qualifier discarded
 	Suspicious pointer assignment
---- MULTIPLE CAST
-2 Warnings
+---- MULTIPLE CAST
+2 warnings expected
 	CONST qualifier discarded
 	CONST qualifier discarded
---- PROCEDURE POINTERS
-2 Warnings
-FIXME
+---- PROCEDURE POINTERS
+2 warnings expected
 	Suspicious pointer assignment
-2 Warnings
-FIXME
---- RTLIB DEALLOCATE
-No Warnings
+	CONST qualifier discarded
+warning expected
+	CONST qualifier discarded
+---- RTLIB DEALLOCATE
 	CONST qualifier discarded, at parameter 1 of DEALLOCATE()
-No Warnings
-No Warnings
 	CONST qualifier discarded, at parameter 1 of DEALLOCATE()
-No Warnings
---- CRT memcpy
-No Warnings
-	CONST qualifier discarded, at parameter 2 of MEMCPY()
-No Warnings
-No Warnings
-	CONST qualifier discarded, at parameter 2 of MEMCPY()
-No Warnings
+---- CRT memcpy

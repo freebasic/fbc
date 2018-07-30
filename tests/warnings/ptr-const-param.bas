@@ -1,3 +1,8 @@
+'' ensure const discarded warnings are turned off
+'' else, we get additional warnings
+
+#pragma constness=false
+
 #print "BYREF parameter CONSTness"
 scope
 	dim _i__ as sub( byref as       integer           )

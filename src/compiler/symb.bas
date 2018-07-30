@@ -1982,6 +1982,65 @@ function symbCheckConstAssign _
 	function = TRUE
 end function
 
+function symbCheckConstAssignFuncPtr _
+	( _
+		byval ldtype as FB_DATATYPE, _
+		byval rdtype as FB_DATATYPE, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval rsubtype as FBSYMBOL ptr, _
+		byval mode as FB_PARAMMODE = 0, _
+		byref matches as integer = 0 _
+	) as integer
+
+	function = FALSE
+
+	assert( typeGetDtOnly( ldType ) = FB_DATATYPE_FUNCTION )
+	assert( typeGetDtOnly( rdType ) = FB_DATATYPE_FUNCTION )
+	assert( symbIsProc( lsubtype ) )
+	assert( symbIsProc( rsubtype ) )
+
+	'' check top level
+	if( symbCheckConstAssign( ldtype, rdtype, lsubtype, rsubtype, mode, matches ) = FALSE ) then
+		exit function
+	end if
+
+	'' not a function pointer?
+	if( ( typeGetDtOnly( ldType ) <> FB_DATATYPE_FUNCTION ) or ( typeGetDtOnly( rdType ) <> FB_DATATYPE_FUNCTION ) ) then
+		exit function
+	end if
+
+	'' Check each parameter
+	var lparam = symbGetProcHeadParam( lsubtype )
+	var rparam = symbGetProcHeadParam( rsubtype )
+
+	while( lparam )
+
+		var l = symbGetFullType( lparam )
+		var r = symbGetFullType( rparam )
+		var ls = symbGetSubType( lparam )
+		var rs = symbGetSubType( rparam )
+		var lm = symbGetParamMode( lparam )
+
+		'' sub types are also function pointers?
+		if( ( typeGetDtOnly( l ) = FB_DATATYPE_FUNCTION ) and ( typeGetDtOnly( r ) = FB_DATATYPE_FUNCTION ) ) then
+			if( symbCheckConstAssignFuncPtr( l, r, ls, rs, lm ) = FALSE ) then
+				exit function
+			end if
+
+		else
+			if( symbCheckConstAssign( l, r, ls, rs, lm ) = FALSE ) then
+				exit function
+			end if
+
+		end if
+
+		lparam = lparam->next
+		rparam = rparam->next
+	wend
+
+	function = TRUE
+end function
+
 private sub hForEachGlobal _
 	( _
 		byval sym as FBSYMBOL ptr, _
