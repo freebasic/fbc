@@ -1920,9 +1920,14 @@ function symbCheckConstAssign _
 	function = FALSE
 	matches = 0
 
-	'' no consts? short-circuit
-	if( (typeGetConstMask( ldtype ) or typeGetConstMask( rdtype )) = 0 ) then
-		return TRUE
+	'' not a function pointer?
+	if( ( typeGetDtOnly( ldType ) <> FB_DATATYPE_FUNCTION ) and ( typeGetDtOnly( rdType ) <> FB_DATATYPE_FUNCTION ) ) then
+
+		'' no consts? short-circuit
+		if( (typeGetConstMask( ldtype ) or typeGetConstMask( rdtype )) = 0 ) then
+			return TRUE
+		end if
+
 	end if
 
 	'' vararg? they aren't type safe anyway

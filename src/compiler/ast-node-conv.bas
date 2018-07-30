@@ -487,29 +487,15 @@ function astNewCONV _
 	n->cast.convconst = FALSE
 
 	'' Discarding/changing const qualifier bits ?
-	'' TODO: reuse symbCheckConstAssign()?
-	'' TODO: merge with hCheckPtr()?
-
 	if( typeIsPtr( ldtype ) and typeIsPtr( to_dtype ) ) then
-		
-		var cbits = typeGetConstMask( ldtype )
-		var to_cbits = typeGetConstMask( to_dtype )
 
-		'' differing levels of inderection?
-		if( typeGetPtrCnt( ldtype ) <> typeGetPtrCnt( to_dtype ) ) then
-			
-			'' increasing? check if we changed/gained any const bits
-			if( typeGetPtrCnt( to_dtype ) > typeGetPtrCnt( ldtype ) ) then
-				cbits shl= (typeGetPtrCnt( to_dtype ) - typeGetPtrCnt( ldtype ))
-				
-			'' decreasing. check if we changed/lost any const bits
-			else
-				to_cbits shl= (typeGetPtrCnt( ldtype ) - typeGetPtrCnt( to_dtype ))
-				
-			end if
-		end if
-
-		n->cast.convconst = ( cbits <> to_cbits )
+		select case typeGetDtOnly( to_dtype )
+		case FB_DATATYPE_FUNCTION
+			'' TODO: verify use of FB_OVLPROC_HALFMATCH for function pointer types differing only by const params
+			n->cast.convconst = ( typeCalcMatch( to_dtype, to_subtype, FB_PARAMMODE_BYREF, ldtype, l->subtype ) < FB_OVLPROC_HALFMATCH )
+		case else
+			n->cast.convconst = ( symbCheckConstAssign( to_dtype, ldtype, to_subtype, l->subtype ) = FALSE )
+		end select
 	
 		if( n->cast.convconst ) then
 			if( (options and AST_CONVOPT_DONTWARNCONST) = 0 ) then

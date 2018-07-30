@@ -548,7 +548,7 @@ scope
 
 	ptr_const   = @sub_const   '' safe, same type
 
-	WARN( 1 ) 
+	WARN( 2 ) 
 	ptr_const   = @sub_noconst '' unsafe, because when calling through the ptr the param appears const, but the sub actually modifies it
 
 	ptr_noconst = @sub_const   '' safe, ptr allows more than the sub will do

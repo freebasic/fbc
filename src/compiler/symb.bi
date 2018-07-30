@@ -54,7 +54,7 @@ end enum
 const FB_DATATYPES = (FB_DATATYPE_XMMWORD - FB_DATATYPE_VOID) + 1
 
 const FB_DT_TYPEMASK 		= &b00000000000000000000000000011111 '' max 32 built-in dts
-const FB_DT_PTRMASK  		= &b00000000000000000000000111100000
+const FB_DT_PTRMASK  		= &b00000000000000000000000111100000 '' level of pointer indirection
 const FB_DT_CONSTMASK		= &b00000000000000111111111000000000 '' PTRLEVELS + 1 bit-masks
 const FB_DATATYPE_REFERENCE	= &b00000000000010000000000000000000 '' used for mangling BYREF parameters
 const FB_DATATYPE_INVALID	= &b10000000000000000000000000000000
@@ -1878,7 +1878,7 @@ declare function symbCheckConstAssign _
 		byval lsubtype as FBSYMBOL ptr, _
 		byval rsubtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE = 0, _
-		byref misses as integer = 0 _
+		byref matches as integer = 0 _
 	) as integer
 
 declare function symbAllocOvlCallArg _

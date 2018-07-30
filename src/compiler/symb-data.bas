@@ -506,9 +506,15 @@ end function
 ''    l = r
 '' where l could be a reference or a variable (parameters, function results,
 '' variables...) and r is the source (e.g. the argument in case of parameters).
-''  result = 0  =>  incompatible
-''  otherwise   =>  compatible, and the result is a matching score
-''                  (FB_OVLPROC_FULLMATCH etc.)
+''
+'' result:
+''
+'' FB_OVLPROC_NO_MATCH         => incompatible
+'' FB_OVLPROC_HALFMATCH        => compatible, differs only in CONST or is derived UDT
+'' FB_OVLPROC_HALFMATCH - rank => compatible, same sized integer
+'' symbCalcProcMatch() > 0     => compatible, lowest scoring parameter
+'' FB_OVLPROC_FULLMATCH        => compatible, exact match
+''
 function typeCalcMatch _
 	( _
 		byval ldtype as integer, _

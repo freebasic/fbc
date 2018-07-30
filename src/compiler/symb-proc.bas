@@ -1641,22 +1641,24 @@ end function
 '':::::
 private function hCalcTypesDiff _
 	( _
-		byval param_dtype as integer, _
+		byval param_dtype_in as integer, _
 		byval param_subtype as FBSYMBOL ptr, _
 		byval param_ptrcnt as integer, _
-		byval arg_dtype as integer, _
+		byval arg_dtype_in as integer, _
 		byval arg_subtype as FBSYMBOL ptr, _
 	  	byval arg_expr as ASTNODE ptr, _
 	  	byval mode as FB_PARAMMODE = 0 _
 	) as FB_OVLPROC_MATCH_SCORE
 
 	dim as integer arg_dclass = any, param_dt = any, arg_dt = any
+	dim as integer param_dtype, arg_dtype
 
 	function = FB_OVLPROC_NO_MATCH
 
     '' don't take the const qualifier into account
-    param_dtype = typeGetDtAndPtrOnly( param_dtype )
-    arg_dtype = typeGetDtAndPtrOnly( arg_dtype )
+	'' TODO: allow const/non-const matching, but return different match score?
+	param_dtype = typeGetDtAndPtrOnly( param_dtype_in )
+	arg_dtype = typeGetDtAndPtrOnly( arg_dtype_in )
 
 	arg_dclass = typeGetClass( arg_dtype )
 
@@ -1968,9 +1970,14 @@ private function hCheckOvlParam _
 				return match
 			end if
 
-			'' Exact same CONSTs? Then there's no point in calling symbCheckConstAssign().
-			if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
-				return match
+			'' not a function pointer?
+			if( typeGet( param_dtype ) = FB_DATATYPE_FUNCTION ) then
+			
+				'' Exact same CONSTs? Then there's no point in calling symbCheckConstAssign(), unless it is a 
+				if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
+					return match
+				end if
+
 			end if
 
 			'' Check whether CONSTness allows passing the arg to the param.
@@ -2037,9 +2044,8 @@ function symbFindClosestOvlProc _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr ovl = any, closest_proc = any, param = any
-	dim as FB_OVLPROC_MATCH_SCORE arg_matches = any, matches = any
-	dim as integer max_matches = any, exact_matches = any
-	dim as integer matchcount = any
+	dim as FB_OVLPROC_MATCH_SCORE arg_matchscore = any, matchscore = any, max_matchscore = any
+	dim as integer exact_matches = any, matchcount = any
 	dim as FB_CALL_ARG ptr arg = any
 
 	*err_num = FB_ERRMSG_OK
@@ -2049,7 +2055,7 @@ function symbFindClosestOvlProc _
 	end if
 
 	closest_proc = NULL
-	max_matches = 0
+	max_matchscore = FB_OVLPROC_NO_MATCH
 	matchcount = 0  '' number of matching procedures found
 
 	dim as integer is_property = symbIsProperty( ovl_head_proc )
@@ -2086,25 +2092,25 @@ function symbFindClosestOvlProc _
 				param = param->next
 			end if
 
-			matches = FB_OVLPROC_NO_MATCH
+			matchscore = FB_OVLPROC_NO_MATCH
 			exact_matches = 0
 
 			'' for each arg..
 			arg = arg_head
 			for i as integer = 0 to args-1
 				dim as integer arg_constonly_diff = FALSE
-				arg_matches = hCheckOvlParam( ovl, param, arg->expr, arg->mode, arg_constonly_diff )
-				if( arg_matches = FB_OVLPROC_NO_MATCH ) then
-					matches = FB_OVLPROC_NO_MATCH
+				arg_matchscore = hCheckOvlParam( ovl, param, arg->expr, arg->mode, arg_constonly_diff )
+				if( arg_matchscore = FB_OVLPROC_NO_MATCH ) then
+					matchscore = FB_OVLPROC_NO_MATCH
 					exit for
 				end if
 
 				'' exact checks are required for operator overload candidates
-				if( (arg_matches = FB_OVLPROC_FULLMATCH) or arg_constonly_diff ) then
+				if( (arg_matchscore = FB_OVLPROC_FULLMATCH) or arg_constonly_diff ) then
 					exact_matches += 1
 				end if
 
-				matches += arg_matches
+				matchscore += arg_matchscore
 
 				'' next param
 				param = param->next
@@ -2113,7 +2119,7 @@ function symbFindClosestOvlProc _
 
 			'' If there were no args, then assume it's a match and
 			'' then check the remaining params, if any.
-			var is_match = (args = 0) or (matches > FB_OVLPROC_NO_MATCH)
+			var is_match = (args = 0) or (matchscore > FB_OVLPROC_NO_MATCH)
 
 			'' Fewer args than params? Check whether the missing ones are optional.
 			for i as integer = args to params-1
@@ -2130,9 +2136,8 @@ function symbFindClosestOvlProc _
 
 			if( is_match ) then
 				'' First match, or better match than any previous overload?
-				if( (matchcount = 0) or (matches > max_matches) ) then
+				if( (matchcount = 0) or (matchscore > max_matchscore) ) then
 					dim as integer eligible = TRUE
-
 					'' an operator overload candidate is only eligible if
 					'' there is at least one exact arg match
 					if( options and FB_SYMBLOOKUPOPT_BOP_OVL ) then
@@ -2142,12 +2147,12 @@ function symbFindClosestOvlProc _
 					'' it's eligible, update
 					if( eligible ) then
 						closest_proc = ovl
-						max_matches = matches
+						max_matchscore = matchscore
 						matchcount = 1
 					end if
 
-				'' Same score than best previous overload?
-				elseif( matches = max_matches ) then
+				'' Same score as best previous overload?
+				elseif( matchscore = max_matchscore ) then
 					matchcount += 1
 				end if
 			end if
@@ -2461,27 +2466,28 @@ function symbFindCastOvlProc _
    	end if
 
 	dim as FBSYMBOL ptr p = any, proc = any, closest_proc = any
-	dim as integer matches = any, max_matches = any, matchcount = any
+	dim as FB_OVLPROC_MATCH_SCORE matchscore = any, max_matchscore = any
+	dim as integer matchcount = any
 
 	'' must check the return type, not the parameter..
 	closest_proc = NULL
-	max_matches = 0
-	matchcount = 0
+	max_matchscore = FB_OVLPROC_NO_MATCH
+	matchcount = FB_OVLPROC_NO_MATCH
 
 	if( typeGet( to_dtype ) <> FB_DATATYPE_VOID ) then
 		'' for each overloaded proc..
 		proc = proc_head
 		do while( proc <> NULL )
 
-			matches = hCheckCastOvl( proc, to_dtype, to_subtype )
-			if( matches > max_matches ) then
+			matchscore = hCheckCastOvl( proc, to_dtype, to_subtype )
+			if( matchscore > max_matchscore ) then
 		   		closest_proc = proc
-		   		max_matches = matches
+		   		max_matchscore = matchscore
 				matchcount = 1
 
 			'' same? ambiguity..
-			elseif( matches = max_matches ) then
-				if( max_matches > 0 ) then
+			elseif( matchscore = max_matchscore ) then
+				if( max_matchscore > 0 ) then
 					matchcount += 1
 				end if
 			end if
