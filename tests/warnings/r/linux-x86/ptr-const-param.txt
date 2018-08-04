@@ -1,3 +1,4 @@
+ASSIGNMENT
 BYREF parameter CONSTness
 no warnings:
 8 warnings:
@@ -16,3 +17,22 @@ no warnings:
 	Suspicious pointer assignment
 	Suspicious pointer assignment
 	Suspicious pointer assignment
+PARAMETER
+BYREF parameter CONSTness
+no warnings:
+8 warnings:
+	Passing different pointer types, at parameter 1 of BYREF_CI__()
+	Passing different pointer types, at parameter 1 of BYREF__ICP()
+	Passing different pointer types, at parameter 1 of BYREF__ICP()
+	Passing different pointer types, at parameter 1 of BYREF_CI_P()
+	Passing different pointer types, at parameter 1 of BYREF_CI_P()
+	Passing different pointer types, at parameter 1 of BYREF_CICP()
+	Passing different pointer types, at parameter 1 of BYREF_CICP()
+	Passing different pointer types, at parameter 1 of BYREF_CICP()
+BYVAL parameter CONSTness
+no warnings:
+4 warnings:
+	Passing different pointer types, at parameter 1 of BYVAL_CI_P()
+	Passing different pointer types, at parameter 1 of BYVAL_CI_P()
+	Passing different pointer types, at parameter 1 of BYVAL_CICP()
+	Passing different pointer types, at parameter 1 of BYVAL_CICP()
