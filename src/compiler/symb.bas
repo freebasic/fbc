@@ -2015,20 +2015,24 @@ function symbCheckConstAssignFuncPtr _
 
 	while( lparam )
 
-		var l = symbGetFullType( lparam )
-		var r = symbGetFullType( rparam )
-		var ls = symbGetSubType( lparam )
-		var rs = symbGetSubType( rparam )
-		var lm = symbGetParamMode( lparam )
+		'' reverse the assignment checking parameter vs parameter
+		'' we want to check that it is safe to access argument using
+		'' right hand side parameter type, as if we were assigning
+		'' left side to right side.
+		var r = symbGetFullType( lparam )
+		var l = symbGetFullType( rparam )
+		var rs = symbGetSubType( lparam )
+		var ls = symbGetSubType( rparam )
+		var m = symbGetParamMode( lparam )
 
 		'' sub types are also function pointers?
 		if( ( typeGetDtOnly( l ) = FB_DATATYPE_FUNCTION ) and ( typeGetDtOnly( r ) = FB_DATATYPE_FUNCTION ) ) then
-			if( symbCheckConstAssignFuncPtr( l, r, ls, rs, lm ) = FALSE ) then
+			if( symbCheckConstAssignFuncPtr( l, r, ls, rs, m ) = FALSE ) then
 				exit function
 			end if
 
 		else
-			if( symbCheckConstAssign( l, r, ls, rs, lm ) = FALSE ) then
+			if( symbCheckConstAssign( l, r, ls, rs, m ) = FALSE ) then
 				exit function
 			end if
 

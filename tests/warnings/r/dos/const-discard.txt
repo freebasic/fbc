@@ -1,4 +1,9 @@
 ---- INTERNAL CONVERSIONS
+none expected
+none expected
+none expected
+none expected
+none expected
 5 UBYTE PTR to follow
 UBYTE PTR
 UBYTE PTR
@@ -11,24 +16,36 @@ CONST UBYTE PTR
 CONST UBYTE PTR
 CONST UBYTE PTR
 CONST UBYTE PTR
+none expected
 ---- RTLIB
 warning expected
 warning expected
 ---- LOCAL CONST INTEGER
+none expected
+none expected
 warning expected
 	CONST qualifier discarded
 warning expected
 	CONST qualifier discarded
+none expected
+none expected
 warning expected
 	CONST qualifier discarded
 warning expected
 	CONST qualifier discarded
 ---- LOCAL INTEGER
+none expected
+none expected
+none expected
 warning expected
 	CONST qualifier discarded
 warning expected
 	CONST qualifier discarded
+none expected
+none expected
 ---- LOCAL CONST INTEGER ARRAY
+none expected
+none expected
 warning expected
 	CONST qualifier discarded
 warning expected
@@ -45,6 +62,7 @@ warning expected
 	CONST qualifier discarded
 warning expected
 	CONST qualifier discarded
+none expected
 warning expected
 	CONST qualifier discarded
 warning expected
@@ -62,7 +80,17 @@ warning expected
 warning expected
 	CONST qualifier discarded
 ---- LOCAL INTEGER ARRAY
+none expected
+none expected
 TODO: assigning non-const-ptr to const-ptr is safe, warn only if -w constness given
+none expected
+none expected
+none expected
+none expected
+none expected
+none expected
+none expected
+none expected
 warning expected
 	CONST qualifier discarded
 warning expected
@@ -77,13 +105,17 @@ warning expected
 	CONST qualifier discarded
 warning expected
 	CONST qualifier discarded
+none expected
+none expected
 ---- LOCAL INTEGER and BYTE PTR
 warning expected
 	CONST qualifier discarded
 warning expected
 	Suspicious pointer assignment
+none expected
 warning expected
 	CONST qualifier discarded
+none expected
 2 warnings expected
 	CONST qualifier discarded
 	Suspicious pointer assignment
@@ -92,12 +124,296 @@ warning expected
 	CONST qualifier discarded
 	CONST qualifier discarded
 ---- PROCEDURE POINTERS
+ASSIGNMENT
+none expected
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+none expected
+none expected
+EXPRESSION
+none expected
+warning expected
+	CONST qualifier discarded
+none expected
+none expected
+BYREF PARAMETER
+none expected
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYREF_CI__()
+	CONST qualifier discarded, at parameter 1 of BYREF_CI__()
+warning expected
+	Passing different pointer types, at parameter 1 of BYREF__I_P()
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYREF__ICP()
+	CONST qualifier discarded, at parameter 1 of BYREF__ICP()
+warning expected
+	Passing different pointer types, at parameter 1 of BYREF_CI_P()
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYREF_CICP()
+	CONST qualifier discarded, at parameter 1 of BYREF_CICP()
+none expected
+none expected
+warning expected
+	Passing different pointer types, at parameter 1 of BYREF__I_P()
+warning expected
+	Passing different pointer types, at parameter 1 of BYREF__ICP()
+warning expected
+	Passing different pointer types, at parameter 1 of BYREF_CI_P()
+warning expected
+	Passing different pointer types, at parameter 1 of BYREF_CICP()
+warning expected
+	Passing different pointer types, at parameter 1 of BYREF__I__()
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYREF_CI__()
+	CONST qualifier discarded, at parameter 1 of BYREF_CI__()
+none expected
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYREF__ICP()
+	CONST qualifier discarded, at parameter 1 of BYREF__ICP()
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYREF_CI_P()
+	CONST qualifier discarded, at parameter 1 of BYREF_CI_P()
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYREF_CICP()
+	CONST qualifier discarded, at parameter 1 of BYREF_CICP()
+warning expected
+	Passing different pointer types, at parameter 1 of BYREF__I__()
+warning expected
+	Passing different pointer types, at parameter 1 of BYREF_CI__()
+none expected
+none expected
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYREF_CI_P()
+	CONST qualifier discarded, at parameter 1 of BYREF_CI_P()
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYREF_CICP()
+	CONST qualifier discarded, at parameter 1 of BYREF_CICP()
+warning expected
+	Passing different pointer types, at parameter 1 of BYREF__I__()
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYREF_CI__()
+	CONST qualifier discarded, at parameter 1 of BYREF_CI__()
+none expected
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYREF__ICP()
+	CONST qualifier discarded, at parameter 1 of BYREF__ICP()
+none expected
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYREF_CICP()
+	CONST qualifier discarded, at parameter 1 of BYREF_CICP()
+warning expected
+	Passing different pointer types, at parameter 1 of BYREF__I__()
+warning expected
+	Passing different pointer types, at parameter 1 of BYREF_CI__()
+none expected
+none expected
+none expected
+none expected
+BYVAL PARAMETER
+none expected
+none expected
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL__I_P()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL__ICP()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL_CI_P()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL_CICP()
+none expected
+none expected
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL__I_P()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL__ICP()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL_CI_P()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL_CICP()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL__I__()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL_CI__()
+none expected
+none expected
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYVAL_CI_P()
+	CONST qualifier discarded, at parameter 1 of BYVAL_CI_P()
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYVAL_CICP()
+	CONST qualifier discarded, at parameter 1 of BYVAL_CICP()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL__I__()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL_CI__()
+none expected
+none expected
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYVAL_CI_P()
+	CONST qualifier discarded, at parameter 1 of BYVAL_CI_P()
+2 warnings expected
+	Passing different pointer types, at parameter 1 of BYVAL_CICP()
+	CONST qualifier discarded, at parameter 1 of BYVAL_CICP()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL__I__()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL_CI__()
+none expected
+none expected
+none expected
+none expected
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL__I__()
+warning expected
+	Passing different pointer types, at parameter 1 of BYVAL_CI__()
+none expected
+none expected
+none expected
+none expected
+BYREF ASSIGNMENT
+none expected
 2 warnings expected
 	Suspicious pointer assignment
 	CONST qualifier discarded
 warning expected
+	Suspicious pointer assignment
+2 warnings expected
+	Suspicious pointer assignment
 	CONST qualifier discarded
+warning expected
+	Suspicious pointer assignment
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+none expected
+none expected
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+none expected
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+none expected
+none expected
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+warning expected
+	Suspicious pointer assignment
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+none expected
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+none expected
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+none expected
+none expected
+none expected
+none expected
+BYVAL ASSIGNMENT
+none expected
+none expected
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+none expected
+none expected
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+none expected
+none expected
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+none expected
+none expected
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings expected
+	Suspicious pointer assignment
+	CONST qualifier discarded
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+none expected
+none expected
+none expected
+none expected
+warning expected
+	Suspicious pointer assignment
+warning expected
+	Suspicious pointer assignment
+none expected
+none expected
+none expected
+none expected
 ---- RTLIB DEALLOCATE
+none expected
 	CONST qualifier discarded, at parameter 1 of DEALLOCATE()
+none expected
+none expected
 	CONST qualifier discarded, at parameter 1 of DEALLOCATE()
+none expected
 ---- CRT memcpy
+none expected
+none expected
+none expected
+none expected

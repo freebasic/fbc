@@ -24,6 +24,10 @@ To check first time run, use this helper tool:
 
 '/
 
+'' !!! FIXME !!!: if we already get a warning on different
+'' pointer types, warning on CONSTness also is probably
+'' meaningless.
+
 '' --------------------------------------------------------
 
 #macro WARN_AND_ERROR( W, E )
@@ -39,7 +43,8 @@ To check first time run, use this helper tool:
 #endmacro
 
 #macro WARN( W )
-	#if (W=0) 
+	#if (W=0)
+		#print none expected
 	#elseif (W=1)
 		#print warning expected
 	#elseif (W=2)
@@ -549,23 +554,422 @@ scope
 	dim ptr_const as type_const
 	dim ptr_noconst as type_noconst
 
-	ptr_const   = @sub_const   '' safe, same type
+	#print ASSIGNMENT
 
+	WARN( 0 )
+	ptr_const   = @sub_const   '' safe, same type
 	WARN( 2 ) 
 	ptr_const   = @sub_noconst '' unsafe, because when calling through the ptr the param appears const, but the sub actually modifies it
-
+	WARN( 0 )
 	ptr_noconst = @sub_const   '' safe, ptr allows more than the sub will do
-
+	WARN( 0 )
 	ptr_noconst = @sub_noconst '' safe, same type
 
+	#print EXPRESSION
+
+	WARN( 0 )
 	print cptr(sub(byref as const integer), @sub_const) '' safe
-
 	WARN( 1 ) 
-	print cptr(sub(byref as const integer), @sub_noconst) '' unsafe, currently no warning even with -w constness
-
+	print cptr(sub(byref as const integer), @sub_noconst) '' unsafe, warn
+	WARN( 0 )
 	print cptr(sub(byref as integer), @sub_const) '' safe
-
+	WARN( 0 )
 	print cptr(sub(byref as integer), @sub_noconst) '' safe
+end scope
+
+'' from tests/warnings/ptr-const-param.bas
+
+declare sub byref__i__	( byval as sub( byref as       integer           ) )
+declare sub byref_ci__	( byval as sub( byref as const integer           ) )
+declare sub byref__i_p	( byval as sub( byref as       integer       ptr ) )
+declare sub byref__icp	( byval as sub( byref as       integer const ptr ) )
+declare sub byref_ci_p	( byval as sub( byref as const integer       ptr ) )
+declare sub byref_cicp	( byval as sub( byref as const integer const ptr ) )
+
+scope
+	#print BYREF PARAMETER
+
+	dim _i__ as sub( byref as       integer           )
+	dim ci__ as sub( byref as const integer           )
+	dim _i_p as sub( byref as       integer       ptr )
+	dim _icp as sub( byref as       integer const ptr )
+	dim ci_p as sub( byref as const integer       ptr )
+	dim cicp as sub( byref as const integer const ptr )
+
+	WARN( 0 )
+	byref__i__( _i__ ) '' safe, same type
+	WARN( 2 )
+	byref_ci__( _i__ ) '' unsafe, ptr can do more than param allows
+	WARN( 1 )
+	byref__i_p( _i__ ) '' unsafe, different types
+	WARN( 2 )
+	byref__icp( _i__ ) '' unsafe, different types
+	WARN( 1 )
+	byref_ci_p( _i__ ) '' unsafe, different types
+	WARN( 2 )
+	byref_cicp( _i__ ) '' unsafe, different types
+
+	WARN( 0 )
+	byref__i__( ci__ ) '' safe, param allows more than ptr will do
+	WARN( 0 )
+	byref_ci__( ci__ ) '' safe, same type
+	WARN( 1 )
+	byref__i_p( ci__ ) '' unsafe, different types
+	WARN( 1 )
+	byref__icp( ci__ ) '' unsafe, different types
+	WARN( 1 )
+	byref_ci_p( ci__ ) '' unsafe, different types
+	WARN( 1 )
+	byref_cicp( ci__ ) '' unsafe, different types
+
+	WARN( 1 )
+	byref__i__( _i_p ) '' unsafe, different types
+	WARN( 2 )
+	byref_ci__( _i_p ) '' unsafe, different types
+	WARN( 0 )
+	byref__i_p( _i_p ) '' safe, same type
+	WARN( 2 )
+	byref__icp( _i_p ) '' unsafe, ptr can do more than param allows
+	WARN( 2 )
+	byref_ci_p( _i_p ) '' unsafe, ptr can do more than param allows
+	WARN( 2 )
+	byref_cicp( _i_p ) '' unsafe, ptr can do more than param allows
+
+	WARN( 1 )
+	byref__i__( _icp ) '' unsafe, different types
+	WARN( 1 )
+	byref_ci__( _icp ) '' unsafe, different types
+	WARN( 0 )
+	byref__i_p( _icp ) '' safe, param allows more then ptr will do
+	WARN( 0 )
+	byref__icp( _icp ) '' safe, same type
+	WARN( 2 )
+	byref_ci_p( _icp ) '' unsafe, different types
+	WARN( 2 )
+	byref_cicp( _icp ) '' unsafe, ptr can do more than param allows
+
+	WARN( 1 )
+	byref__i__( ci_p ) '' unsafe, different types
+	WARN( 2 )
+	byref_ci__( ci_p ) '' unsafe, different types
+	WARN( 0 )
+	byref__i_p( ci_p ) '' safe, param allows more then ptr will do
+	WARN( 2 )
+	byref__icp( ci_p ) '' unsafe, different types
+	WARN( 0 )
+	byref_ci_p( ci_p ) '' safe, same type
+	WARN( 2 )
+	byref_cicp( ci_p ) '' unsafe, ptr can do more than param allows
+
+	WARN( 1 )
+	byref__i__( cicp ) '' unsafe, different types
+	WARN( 1 )
+	byref_ci__( cicp ) '' unsafe, different types
+	WARN( 0 )
+	byref__i_p( cicp ) '' safe, param allows more then ptr will do
+	WARN( 0 )
+	byref__icp( cicp ) '' safe, param allows more then ptr will do
+	WARN( 0 )
+	byref_ci_p( cicp ) '' safe, param allows more then ptr will do
+	WARN( 0 )
+	byref_cicp( cicp ) '' safe, same type
+
+end scope
+
+'' from tests/warnings/ptr-const-param.bas
+
+declare sub byval__i__	( byval as sub( byval as       integer           ) )
+declare sub byval_ci__	( byval as sub( byval as const integer           ) )
+declare sub byval__i_p	( byval as sub( byval as       integer       ptr ) )
+declare sub byval__icp	( byval as sub( byval as       integer const ptr ) )
+declare sub byval_ci_p	( byval as sub( byval as const integer       ptr ) )
+declare sub byval_cicp	( byval as sub( byval as const integer const ptr ) )
+
+scope
+	#print BYVAL PARAMETER
+
+	dim _i__ as sub( byval as       integer           )
+	dim ci__ as sub( byval as const integer           )
+	dim _i_p as sub( byval as       integer       ptr )
+	dim _icp as sub( byval as       integer const ptr )
+	dim ci_p as sub( byval as const integer       ptr )
+	dim cicp as sub( byval as const integer const ptr )
+
+	WARN( 0 )
+	byval__i__( _i__ ) '' safe, same type
+	WARN( 0 )
+	byval_ci__( _i__ ) '' safe, byval makes copy
+	WARN( 1 )
+	byval__i_p( _i__ ) '' unsafe, different types
+	WARN( 1 )
+	byval__icp( _i__ ) '' unsafe, different types
+	WARN( 1 )
+	byval_ci_p( _i__ ) '' unsafe, different types
+	WARN( 1 )
+	byval_cicp( _i__ ) '' unsafe, different types
+
+	WARN( 0 )
+	byval__i__( ci__ ) '' safe, param allows more than ptr will do
+	WARN( 0 )
+	byval_ci__( ci__ ) '' safe, same type
+	WARN( 1 )
+	byval__i_p( ci__ ) '' unsafe, different types
+	WARN( 1 )
+	byval__icp( ci__ ) '' unsafe, different types
+	WARN( 1 )
+	byval_ci_p( ci__ ) '' unsafe, different types
+	WARN( 1 )
+	byval_cicp( ci__ ) '' unsafe, different types
+
+	WARN( 1 )
+	byval__i__( _i_p ) '' unsafe, different types
+	WARN( 1 )
+	byval_ci__( _i_p ) '' unsafe, different types
+	WARN( 0 )
+	byval__i_p( _i_p ) '' safe, same type
+	WARN( 0 )
+	byval__icp( _i_p ) '' safe, byval makes copy
+	WARN( 2 )
+	byval_ci_p( _i_p ) '' unsafe, ptr can do more than param allows
+	WARN( 2 )
+	byval_cicp( _i_p ) '' unsafe, ptr can do more than param allows
+
+	WARN( 1 )
+	byval__i__( _icp ) '' unsafe, different types
+	WARN( 1 )
+	byval_ci__( _icp ) '' unsafe, different types
+	WARN( 0 )
+	byval__i_p( _icp ) '' safe, param allows more then ptr will do
+	WARN( 0 )
+	byval__icp( _icp ) '' safe, same type
+	WARN( 2 )
+	byval_ci_p( _icp ) '' unsafe, different types
+	WARN( 2 )
+	byval_cicp( _icp ) '' unsafe, ptr can do more than param allows
+
+	WARN( 1 )
+	byval__i__( ci_p ) '' unsafe, different types
+	WARN( 1 )
+	byval_ci__( ci_p ) '' unsafe, different types
+	WARN( 0 )
+	byval__i_p( ci_p ) '' safe, param allows more then ptr will do
+	WARN( 0 )
+	byval__icp( ci_p ) '' safe, byval makes copy
+	WARN( 0 )
+	byval_ci_p( ci_p ) '' safe, same type
+	WARN( 0 )
+	byval_cicp( ci_p ) '' safe, byval makes copy
+
+	WARN( 1 )
+	byval__i__( cicp ) '' unsafe, different types
+	WARN( 1 )
+	byval_ci__( cicp ) '' unsafe, different types
+	WARN( 0 )
+	byval__i_p( cicp ) '' safe, param allows more then ptr will do
+	WARN( 0 )
+	byval__icp( cicp ) '' safe, param allows more then ptr will do
+	WARN( 0 )
+	byval_ci_p( cicp ) '' safe, param allows more then ptr will do
+	WARN( 0 )
+	byval_cicp( cicp ) '' safe, same type
+
+end scope
+
+'' from tests/warnings/ptr-const-param.bas
+
+declare sub sub_byref__i__	( byref as       integer           )
+declare sub sub_byref_ci__	( byref as const integer           )
+declare sub sub_byref__i_p	( byref as       integer       ptr )
+declare sub sub_byref__icp	( byref as       integer const ptr )
+declare sub sub_byref_ci_p	( byref as const integer       ptr )
+declare sub sub_byref_cicp	( byref as const integer const ptr )
+
+scope
+	#print BYREF ASSIGNMENT
+
+	dim _i__ as sub( byref as       integer           )
+	dim ci__ as sub( byref as const integer           )
+	dim _i_p as sub( byref as       integer       ptr )
+	dim _icp as sub( byref as       integer const ptr )
+	dim ci_p as sub( byref as const integer       ptr )
+	dim cicp as sub( byref as const integer const ptr )
+
+	WARN( 0 )
+	_i__ = @sub_byref__i__ '' safe, same type
+	WARN( 2 )
+	ci__ = @sub_byref__i__ '' unsafe, ptr can do more than param allows
+	WARN( 1 )
+	_i_p = @sub_byref__i__ '' unsafe, different types
+	WARN( 2 )
+	_icp = @sub_byref__i__ '' unsafe, different types
+	WARN( 1 )
+	ci_p = @sub_byref__i__ '' unsafe, different types
+	WARN( 2 )
+	cicp = @sub_byref__i__ '' unsafe, different types
+
+	WARN( 0 )
+	_i__ = @sub_byref_ci__ '' safe, param allows more than ptr will do
+	WARN( 0 )
+	ci__ = @sub_byref_ci__ '' safe, same type
+	WARN( 1 )
+	_i_p = @sub_byref_ci__ '' unsafe, different types
+	WARN( 1 )
+	_icp = @sub_byref_ci__ '' unsafe, different types
+	WARN( 1 )
+	ci_p = @sub_byref_ci__ '' unsafe, different types
+	WARN( 1 )
+	cicp = @sub_byref_ci__ '' unsafe, different types
+
+	WARN( 1 )
+	_i__ = @sub_byref__i_p '' unsafe, different types
+	WARN( 2 )
+	ci__ = @sub_byref__i_p '' unsafe, different types
+	WARN( 0 )
+	_i_p = @sub_byref__i_p '' safe, same type
+	WARN( 2 )
+	_icp = @sub_byref__i_p '' unsafe, ptr can do more than param allows
+	WARN( 2 )
+	ci_p = @sub_byref__i_p '' unsafe, ptr can do more than param allows
+	WARN( 2 )
+	cicp = @sub_byref__i_p '' unsafe, ptr can do more than param allows
+
+	WARN( 1 )
+	_i__ = @sub_byref__icp '' unsafe, different types
+	WARN( 1 )
+	ci__ = @sub_byref__icp '' unsafe, different types
+	WARN( 0 )
+	_i_p = @sub_byref__icp '' safe, param allows more then ptr will do
+	WARN( 0 )
+	_icp = @sub_byref__icp '' safe, same type
+	WARN( 2 )
+	ci_p = @sub_byref__icp '' unsafe, different types
+	WARN( 2 )
+	cicp = @sub_byref__icp '' unsafe, ptr can do more than param allows
+
+	WARN( 1 )
+	_i__ = @sub_byref_ci_p '' unsafe, different types
+	WARN( 2 )
+	ci__ = @sub_byref_ci_p '' unsafe, different types
+	WARN( 0 )
+	_i_p = @sub_byref_ci_p '' safe, param allows more then ptr will do
+	WARN( 2 )
+	_icp = @sub_byref_ci_p '' unsafe, different types
+	WARN( 0 )
+	ci_p = @sub_byref_ci_p '' safe, same type
+	WARN( 2 )
+	cicp = @sub_byref_ci_p '' unsafe, ptr can do more than param allows
+
+	WARN( 1 )
+	_i__ = @sub_byref_cicp '' unsafe, different types
+	WARN( 1 )
+	ci__ = @sub_byref_cicp '' unsafe, different types
+	WARN( 0 )
+	_i_p = @sub_byref_cicp '' safe, param allows more then ptr will do
+	WARN( 0 )
+	_icp = @sub_byref_cicp '' safe, param allows more then ptr will do
+	WARN( 0 )
+	ci_p = @sub_byref_cicp '' safe, param allows more then ptr will do
+	WARN( 0 )
+	cicp = @sub_byref_cicp '' safe, same type
+
+end scope
+
+'' from tests/warnings/ptr-const-param.bas
+
+declare sub sub_byval__i__	( byval as       integer           )
+declare sub sub_byval_ci__	( byval as const integer           )
+declare sub sub_byval__i_p	( byval as       integer       ptr )
+declare sub sub_byval__icp	( byval as       integer const ptr )
+declare sub sub_byval_ci_p	( byval as const integer       ptr )
+declare sub sub_byval_cicp	( byval as const integer const ptr )
+
+scope
+	#print BYVAL ASSIGNMENT
+
+	dim _i__ as sub( byval as       integer           )
+	dim ci__ as sub( byval as const integer           )
+	dim _i_p as sub( byval as       integer       ptr )
+	dim _icp as sub( byval as       integer const ptr )
+	dim ci_p as sub( byval as const integer       ptr )
+	dim cicp as sub( byval as const integer const ptr )
+
+	WARN( 0 )
+	_i__ = @sub_byval__i__ '' safe, same type
+	WARN( 0 )
+	ci__ = @sub_byval__i__ '' safe, byval makes copy
+	WARN( 1 )
+	_i_p = @sub_byval__i__ '' unsafe, different types
+	WARN( 1 )
+	_icp = @sub_byval__i__ '' unsafe, different types
+	WARN( 1 )
+	ci_p = @sub_byval__i__ '' unsafe, different types
+	WARN( 1 )
+	cicp = @sub_byval__i__ '' unsafe, different types
+
+	WARN( 0 )
+	_i__ = @sub_byval_ci__ '' safe, param allows more than ptr will do
+	WARN( 0 )
+	ci__ = @sub_byval_ci__ '' safe, same type
+	WARN( 1 )
+	_i_p = @sub_byval_ci__ '' unsafe, different types
+	WARN( 1 )
+	_icp = @sub_byval_ci__ '' unsafe, different types
+	WARN( 1 )
+	ci_p = @sub_byval_ci__ '' unsafe, different types
+	WARN( 1 )
+	cicp = @sub_byval_ci__ '' unsafe, different types
+
+	WARN( 1 )
+	_i__ = @sub_byval__i_p '' unsafe, different types
+	WARN( 1 )
+	ci__ = @sub_byval__i_p '' unsafe, different types
+	WARN( 0 )
+	_i_p = @sub_byval__i_p '' safe, same type
+	WARN( 0 )
+	_icp = @sub_byval__i_p '' safe, byval makes copy
+	WARN( 2 )
+	ci_p = @sub_byval__i_p '' unsafe, ptr can do more than param allows
+	WARN( 2 )
+	cicp = @sub_byval__i_p '' unsafe, ptr can do more than param allows
+
+	WARN( 1 )
+	_i__ = @sub_byval__icp '' unsafe, different types
+	WARN( 1 )
+	ci__ = @sub_byval__icp '' unsafe, different types
+	WARN( 0 )
+	_i_p = @sub_byval__icp '' safe, param allows more then ptr will do
+	WARN( 0 )
+	_icp = @sub_byval__icp '' safe, same type
+	WARN( 2 )
+	ci_p = @sub_byval__icp '' unsafe, different types
+	WARN( 2 )
+	cicp = @sub_byval__icp '' unsafe, ptr can do more than param allows
+
+	WARN( 1 )
+	_i__ = @sub_byval_ci_p '' unsafe, different types
+	WARN( 1 )
+	ci__ = @sub_byval_ci_p '' unsafe, different types
+	WARN( 0 )
+	_i_p = @sub_byval_ci_p '' safe, param allows more then ptr will do
+	WARN( 0 )
+	_icp = @sub_byval_ci_p '' safe, byval makes copy
+	WARN( 0 )
+	ci_p = @sub_byval_ci_p '' safe, same type
+	WARN( 0 )
+	cicp = @sub_byval_ci_p '' safe, byval makes copy
+
+	WARN( 1 )
+	_i__ = @sub_byval_cicp '' unsafe, different types
+	WARN( 1 )
+	ci__ = @sub_byval_cicp '' unsafe, different types
+	WARN( 0 )
+	_i_p = @sub_byval_cicp '' safe, param allows more then ptr will do
+	WARN( 0 )
+	_icp = @sub_byval_cicp '' safe, param allows more then ptr will do
+	WARN( 0 )
+	ci_p = @sub_byval_cicp '' safe, param allows more then ptr will do
+	WARN( 0 )
+	cicp = @sub_byval_cicp '' safe, same type
 
 end scope
 
