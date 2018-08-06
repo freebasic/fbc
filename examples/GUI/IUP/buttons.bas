@@ -1,10 +1,10 @@
- 
+﻿ 
 #include once "IUP/iup.bi" 
 
 #define NULL 0 
 
-declare function ok_onclick cdecl (byval handler as Ihandle ptr) as integer 
-declare function close_onclick cdecl (byval handler as Ihandle ptr) as integer 
+declare function ok_onclick cdecl (byval handler as Ihandle ptr) as long 
+declare function close_onclick cdecl (byval handler as Ihandle ptr) as long 
 
 	if( IupOpen( NULL, NULL ) = IUP_ERROR ) then
 		end 1
@@ -40,7 +40,7 @@ declare function close_onclick cdecl (byval handler as Ihandle ptr) as integer
 	end 0
 
 '' 
-function ok_onclick cdecl (byval handler as Ihandle ptr) as integer 
+function ok_onclick cdecl (byval handler as Ihandle ptr) as long 
   
   IupMessage( "IupMessage", "Press OK" ) 
   
@@ -49,7 +49,7 @@ function ok_onclick cdecl (byval handler as Ihandle ptr) as integer
 end function 
 
 '' 
-function close_onclick cdecl (byval handler as Ihandle ptr) as integer 
+function close_onclick cdecl (byval handler as Ihandle ptr) as long 
   
   function = IUP_CLOSE
 

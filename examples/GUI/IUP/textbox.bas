@@ -1,4 +1,4 @@
-#include once "IUP/iup.bi"
+﻿#include once "IUP/iup.bi"
 const NULL = 0
 const NEWLINE = !"\n"
 
@@ -11,7 +11,7 @@ function on_click_ok cdecl(byval handler as Ihandle ptr) as long
 
 	print "OK clicked! content of textbox: <" + text + ">"
 
-	IupSetAttribute(label, IUP_TITLE, _
+	IupSetStrAttribute(label, IUP_TITLE, _
 		"Thanks. You entered <" + text + ">." + NEWLINE + _
 		"val() result: " & val(text) & ". " + NEWLINE + _
 		"IupGetInt() result: " & IupGetInt(textbox, IUP_VALUE) & "." + NEWLINE + _
