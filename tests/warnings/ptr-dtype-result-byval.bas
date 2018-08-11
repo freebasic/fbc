@@ -132,7 +132,7 @@ testNoWarning( pi  , pui  )
 
 #macro checkLhsAndRhs( lhs, rhs )
 	#if #lhs <> #rhs
-		test( lhs, rhs, 1 )
+		test( lhs, rhs, 2 )
 	#endif
 #endmacro
 

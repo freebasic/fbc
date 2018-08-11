@@ -1,24 +1,56 @@
 no warnings:
-1 warning:
+2 warnings:
 	Suspicious pointer assignment
-8 warnings:
+	Return type mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return type mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
 no warnings:
-1 warning:
+2 warnings:
 	Suspicious pointer assignment
-8 warnings:
+	Return type mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return type mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch

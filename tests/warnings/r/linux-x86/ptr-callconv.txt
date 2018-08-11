@@ -1,15 +1,31 @@
 no warnings:
-4 warnings:
-	Suspicious pointer assignment
-	Suspicious pointer assignment
-	Suspicious pointer assignment
-	Suspicious pointer assignment
 2 warnings:
 	Suspicious pointer assignment
-	Suspicious pointer assignment
+	Calling convention mismatch
 2 warnings:
 	Suspicious pointer assignment
-	Suspicious pointer assignment
+	Calling convention mismatch
 2 warnings:
 	Suspicious pointer assignment
+	Calling convention mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Calling convention mismatch
+2 warnings:
+	Suspicious pointer assignment
+	Calling convention mismatch
+2 warnings:
+	Suspicious pointer assignment
+	Calling convention mismatch
+2 warnings:
+	Suspicious pointer assignment
+	Calling convention mismatch
+2 warnings:
+	Suspicious pointer assignment
+	Calling convention mismatch
+2 warnings:
+	Suspicious pointer assignment
+	Calling convention mismatch
+2 warnings:
+	Suspicious pointer assignment
+	Calling convention mismatch

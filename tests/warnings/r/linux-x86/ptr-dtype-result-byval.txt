@@ -46,2871 +46,4305 @@ pi =pw, no warning:
 pw =pi, no warning:
 pui =pw, no warning:
 pw =pui, no warning:
-b =sh, 1 warning:
+b =sh, 2 warning:
 	Suspicious pointer assignment
-b =ush, 1 warning:
+	Return type mismatch
+b =ush, 2 warning:
 	Suspicious pointer assignment
-b =l, 1 warning:
+	Return type mismatch
+b =l, 2 warning:
 	Suspicious pointer assignment
-b =ul, 1 warning:
+	Return type mismatch
+b =ul, 2 warning:
 	Suspicious pointer assignment
-b =ll, 1 warning:
+	Return type mismatch
+b =ll, 2 warning:
 	Suspicious pointer assignment
-b =ull, 1 warning:
+	Return type mismatch
+b =ull, 2 warning:
 	Suspicious pointer assignment
-b =i, 1 warning:
+	Return type mismatch
+b =i, 2 warning:
 	Suspicious pointer assignment
-b =ui, 1 warning:
+	Return type mismatch
+b =ui, 2 warning:
 	Suspicious pointer assignment
-b =f, 1 warning:
+	Return type mismatch
+b =f, 2 warning:
 	Suspicious pointer assignment
-b =d, 1 warning:
+	Return type mismatch
+b =d, 2 warning:
 	Suspicious pointer assignment
-b =s, 1 warning:
+	Return type mismatch
+b =s, 2 warning:
 	Suspicious pointer assignment
-b =udt1, 1 warning:
+	Return type mismatch
+b =udt1, 2 warning:
 	Suspicious pointer assignment
-b =udt2, 1 warning:
+	Return type mismatch
+b =udt2, 2 warning:
 	Suspicious pointer assignment
-b =psub, 1 warning:
+	Return type mismatch
+b =psub, 2 warning:
 	Suspicious pointer assignment
-b =pfi, 1 warning:
+	Return type mismatch
+b =pfi, 2 warning:
 	Suspicious pointer assignment
-b =pany, 1 warning:
+	Return type mismatch
+b =pany, 2 warning:
 	Suspicious pointer assignment
-b =pb, 1 warning:
+	Return type mismatch
+b =pb, 2 warning:
 	Suspicious pointer assignment
-b =pub, 1 warning:
+	Return type mismatch
+b =pub, 2 warning:
 	Suspicious pointer assignment
-b =psh, 1 warning:
+	Return type mismatch
+b =psh, 2 warning:
 	Suspicious pointer assignment
-b =push, 1 warning:
+	Return type mismatch
+b =push, 2 warning:
 	Suspicious pointer assignment
-b =pl, 1 warning:
+	Return type mismatch
+b =pl, 2 warning:
 	Suspicious pointer assignment
-b =pul, 1 warning:
+	Return type mismatch
+b =pul, 2 warning:
 	Suspicious pointer assignment
-b =pll, 1 warning:
+	Return type mismatch
+b =pll, 2 warning:
 	Suspicious pointer assignment
-b =pull, 1 warning:
+	Return type mismatch
+b =pull, 2 warning:
 	Suspicious pointer assignment
-b =pi, 1 warning:
+	Return type mismatch
+b =pi, 2 warning:
 	Suspicious pointer assignment
-b =pui, 1 warning:
+	Return type mismatch
+b =pui, 2 warning:
 	Suspicious pointer assignment
-b =pf, 1 warning:
+	Return type mismatch
+b =pf, 2 warning:
 	Suspicious pointer assignment
-b =pd, 1 warning:
+	Return type mismatch
+b =pd, 2 warning:
 	Suspicious pointer assignment
-b =ps, 1 warning:
+	Return type mismatch
+b =ps, 2 warning:
 	Suspicious pointer assignment
-b =pz, 1 warning:
+	Return type mismatch
+b =pz, 2 warning:
 	Suspicious pointer assignment
-b =pw, 1 warning:
+	Return type mismatch
+b =pw, 2 warning:
 	Suspicious pointer assignment
-b =pudt1, 1 warning:
+	Return type mismatch
+b =pudt1, 2 warning:
 	Suspicious pointer assignment
-b =pudt2, 1 warning:
+	Return type mismatch
+b =pudt2, 2 warning:
 	Suspicious pointer assignment
-b =pfwd1, 1 warning:
+	Return type mismatch
+b =pfwd1, 2 warning:
 	Suspicious pointer assignment
-b =pdwf2, 1 warning:
+	Return type mismatch
+b =pdwf2, 2 warning:
 	Suspicious pointer assignment
-b =ppsub, 1 warning:
+	Return type mismatch
+b =ppsub, 2 warning:
 	Suspicious pointer assignment
-b =ppfi, 1 warning:
+	Return type mismatch
+b =ppfi, 2 warning:
 	Suspicious pointer assignment
-ub =sh, 1 warning:
+	Return type mismatch
+ub =sh, 2 warning:
 	Suspicious pointer assignment
-ub =ush, 1 warning:
+	Return type mismatch
+ub =ush, 2 warning:
 	Suspicious pointer assignment
-ub =l, 1 warning:
+	Return type mismatch
+ub =l, 2 warning:
 	Suspicious pointer assignment
-ub =ul, 1 warning:
+	Return type mismatch
+ub =ul, 2 warning:
 	Suspicious pointer assignment
-ub =ll, 1 warning:
+	Return type mismatch
+ub =ll, 2 warning:
 	Suspicious pointer assignment
-ub =ull, 1 warning:
+	Return type mismatch
+ub =ull, 2 warning:
 	Suspicious pointer assignment
-ub =i, 1 warning:
+	Return type mismatch
+ub =i, 2 warning:
 	Suspicious pointer assignment
-ub =ui, 1 warning:
+	Return type mismatch
+ub =ui, 2 warning:
 	Suspicious pointer assignment
-ub =f, 1 warning:
+	Return type mismatch
+ub =f, 2 warning:
 	Suspicious pointer assignment
-ub =d, 1 warning:
+	Return type mismatch
+ub =d, 2 warning:
 	Suspicious pointer assignment
-ub =s, 1 warning:
+	Return type mismatch
+ub =s, 2 warning:
 	Suspicious pointer assignment
-ub =udt1, 1 warning:
+	Return type mismatch
+ub =udt1, 2 warning:
 	Suspicious pointer assignment
-ub =udt2, 1 warning:
+	Return type mismatch
+ub =udt2, 2 warning:
 	Suspicious pointer assignment
-ub =psub, 1 warning:
+	Return type mismatch
+ub =psub, 2 warning:
 	Suspicious pointer assignment
-ub =pfi, 1 warning:
+	Return type mismatch
+ub =pfi, 2 warning:
 	Suspicious pointer assignment
-ub =pany, 1 warning:
+	Return type mismatch
+ub =pany, 2 warning:
 	Suspicious pointer assignment
-ub =pb, 1 warning:
+	Return type mismatch
+ub =pb, 2 warning:
 	Suspicious pointer assignment
-ub =pub, 1 warning:
+	Return type mismatch
+ub =pub, 2 warning:
 	Suspicious pointer assignment
-ub =psh, 1 warning:
+	Return type mismatch
+ub =psh, 2 warning:
 	Suspicious pointer assignment
-ub =push, 1 warning:
+	Return type mismatch
+ub =push, 2 warning:
 	Suspicious pointer assignment
-ub =pl, 1 warning:
+	Return type mismatch
+ub =pl, 2 warning:
 	Suspicious pointer assignment
-ub =pul, 1 warning:
+	Return type mismatch
+ub =pul, 2 warning:
 	Suspicious pointer assignment
-ub =pll, 1 warning:
+	Return type mismatch
+ub =pll, 2 warning:
 	Suspicious pointer assignment
-ub =pull, 1 warning:
+	Return type mismatch
+ub =pull, 2 warning:
 	Suspicious pointer assignment
-ub =pi, 1 warning:
+	Return type mismatch
+ub =pi, 2 warning:
 	Suspicious pointer assignment
-ub =pui, 1 warning:
+	Return type mismatch
+ub =pui, 2 warning:
 	Suspicious pointer assignment
-ub =pf, 1 warning:
+	Return type mismatch
+ub =pf, 2 warning:
 	Suspicious pointer assignment
-ub =pd, 1 warning:
+	Return type mismatch
+ub =pd, 2 warning:
 	Suspicious pointer assignment
-ub =ps, 1 warning:
+	Return type mismatch
+ub =ps, 2 warning:
 	Suspicious pointer assignment
-ub =pz, 1 warning:
+	Return type mismatch
+ub =pz, 2 warning:
 	Suspicious pointer assignment
-ub =pw, 1 warning:
+	Return type mismatch
+ub =pw, 2 warning:
 	Suspicious pointer assignment
-ub =pudt1, 1 warning:
+	Return type mismatch
+ub =pudt1, 2 warning:
 	Suspicious pointer assignment
-ub =pudt2, 1 warning:
+	Return type mismatch
+ub =pudt2, 2 warning:
 	Suspicious pointer assignment
-ub =pfwd1, 1 warning:
+	Return type mismatch
+ub =pfwd1, 2 warning:
 	Suspicious pointer assignment
-ub =pdwf2, 1 warning:
+	Return type mismatch
+ub =pdwf2, 2 warning:
 	Suspicious pointer assignment
-ub =ppsub, 1 warning:
+	Return type mismatch
+ub =ppsub, 2 warning:
 	Suspicious pointer assignment
-ub =ppfi, 1 warning:
+	Return type mismatch
+ub =ppfi, 2 warning:
 	Suspicious pointer assignment
-sh =b, 1 warning:
+	Return type mismatch
+sh =b, 2 warning:
 	Suspicious pointer assignment
-sh =ub, 1 warning:
+	Return type mismatch
+sh =ub, 2 warning:
 	Suspicious pointer assignment
-sh =l, 1 warning:
+	Return type mismatch
+sh =l, 2 warning:
 	Suspicious pointer assignment
-sh =ul, 1 warning:
+	Return type mismatch
+sh =ul, 2 warning:
 	Suspicious pointer assignment
-sh =ll, 1 warning:
+	Return type mismatch
+sh =ll, 2 warning:
 	Suspicious pointer assignment
-sh =ull, 1 warning:
+	Return type mismatch
+sh =ull, 2 warning:
 	Suspicious pointer assignment
-sh =i, 1 warning:
+	Return type mismatch
+sh =i, 2 warning:
 	Suspicious pointer assignment
-sh =ui, 1 warning:
+	Return type mismatch
+sh =ui, 2 warning:
 	Suspicious pointer assignment
-sh =f, 1 warning:
+	Return type mismatch
+sh =f, 2 warning:
 	Suspicious pointer assignment
-sh =d, 1 warning:
+	Return type mismatch
+sh =d, 2 warning:
 	Suspicious pointer assignment
-sh =s, 1 warning:
+	Return type mismatch
+sh =s, 2 warning:
 	Suspicious pointer assignment
-sh =udt1, 1 warning:
+	Return type mismatch
+sh =udt1, 2 warning:
 	Suspicious pointer assignment
-sh =udt2, 1 warning:
+	Return type mismatch
+sh =udt2, 2 warning:
 	Suspicious pointer assignment
-sh =psub, 1 warning:
+	Return type mismatch
+sh =psub, 2 warning:
 	Suspicious pointer assignment
-sh =pfi, 1 warning:
+	Return type mismatch
+sh =pfi, 2 warning:
 	Suspicious pointer assignment
-sh =pany, 1 warning:
+	Return type mismatch
+sh =pany, 2 warning:
 	Suspicious pointer assignment
-sh =pb, 1 warning:
+	Return type mismatch
+sh =pb, 2 warning:
 	Suspicious pointer assignment
-sh =pub, 1 warning:
+	Return type mismatch
+sh =pub, 2 warning:
 	Suspicious pointer assignment
-sh =psh, 1 warning:
+	Return type mismatch
+sh =psh, 2 warning:
 	Suspicious pointer assignment
-sh =push, 1 warning:
+	Return type mismatch
+sh =push, 2 warning:
 	Suspicious pointer assignment
-sh =pl, 1 warning:
+	Return type mismatch
+sh =pl, 2 warning:
 	Suspicious pointer assignment
-sh =pul, 1 warning:
+	Return type mismatch
+sh =pul, 2 warning:
 	Suspicious pointer assignment
-sh =pll, 1 warning:
+	Return type mismatch
+sh =pll, 2 warning:
 	Suspicious pointer assignment
-sh =pull, 1 warning:
+	Return type mismatch
+sh =pull, 2 warning:
 	Suspicious pointer assignment
-sh =pi, 1 warning:
+	Return type mismatch
+sh =pi, 2 warning:
 	Suspicious pointer assignment
-sh =pui, 1 warning:
+	Return type mismatch
+sh =pui, 2 warning:
 	Suspicious pointer assignment
-sh =pf, 1 warning:
+	Return type mismatch
+sh =pf, 2 warning:
 	Suspicious pointer assignment
-sh =pd, 1 warning:
+	Return type mismatch
+sh =pd, 2 warning:
 	Suspicious pointer assignment
-sh =ps, 1 warning:
+	Return type mismatch
+sh =ps, 2 warning:
 	Suspicious pointer assignment
-sh =pz, 1 warning:
+	Return type mismatch
+sh =pz, 2 warning:
 	Suspicious pointer assignment
-sh =pw, 1 warning:
+	Return type mismatch
+sh =pw, 2 warning:
 	Suspicious pointer assignment
-sh =pudt1, 1 warning:
+	Return type mismatch
+sh =pudt1, 2 warning:
 	Suspicious pointer assignment
-sh =pudt2, 1 warning:
+	Return type mismatch
+sh =pudt2, 2 warning:
 	Suspicious pointer assignment
-sh =pfwd1, 1 warning:
+	Return type mismatch
+sh =pfwd1, 2 warning:
 	Suspicious pointer assignment
-sh =pdwf2, 1 warning:
+	Return type mismatch
+sh =pdwf2, 2 warning:
 	Suspicious pointer assignment
-sh =ppsub, 1 warning:
+	Return type mismatch
+sh =ppsub, 2 warning:
 	Suspicious pointer assignment
-sh =ppfi, 1 warning:
+	Return type mismatch
+sh =ppfi, 2 warning:
 	Suspicious pointer assignment
-ush =b, 1 warning:
+	Return type mismatch
+ush =b, 2 warning:
 	Suspicious pointer assignment
-ush =ub, 1 warning:
+	Return type mismatch
+ush =ub, 2 warning:
 	Suspicious pointer assignment
-ush =l, 1 warning:
+	Return type mismatch
+ush =l, 2 warning:
 	Suspicious pointer assignment
-ush =ul, 1 warning:
+	Return type mismatch
+ush =ul, 2 warning:
 	Suspicious pointer assignment
-ush =ll, 1 warning:
+	Return type mismatch
+ush =ll, 2 warning:
 	Suspicious pointer assignment
-ush =ull, 1 warning:
+	Return type mismatch
+ush =ull, 2 warning:
 	Suspicious pointer assignment
-ush =i, 1 warning:
+	Return type mismatch
+ush =i, 2 warning:
 	Suspicious pointer assignment
-ush =ui, 1 warning:
+	Return type mismatch
+ush =ui, 2 warning:
 	Suspicious pointer assignment
-ush =f, 1 warning:
+	Return type mismatch
+ush =f, 2 warning:
 	Suspicious pointer assignment
-ush =d, 1 warning:
+	Return type mismatch
+ush =d, 2 warning:
 	Suspicious pointer assignment
-ush =s, 1 warning:
+	Return type mismatch
+ush =s, 2 warning:
 	Suspicious pointer assignment
-ush =udt1, 1 warning:
+	Return type mismatch
+ush =udt1, 2 warning:
 	Suspicious pointer assignment
-ush =udt2, 1 warning:
+	Return type mismatch
+ush =udt2, 2 warning:
 	Suspicious pointer assignment
-ush =psub, 1 warning:
+	Return type mismatch
+ush =psub, 2 warning:
 	Suspicious pointer assignment
-ush =pfi, 1 warning:
+	Return type mismatch
+ush =pfi, 2 warning:
 	Suspicious pointer assignment
-ush =pany, 1 warning:
+	Return type mismatch
+ush =pany, 2 warning:
 	Suspicious pointer assignment
-ush =pb, 1 warning:
+	Return type mismatch
+ush =pb, 2 warning:
 	Suspicious pointer assignment
-ush =pub, 1 warning:
+	Return type mismatch
+ush =pub, 2 warning:
 	Suspicious pointer assignment
-ush =psh, 1 warning:
+	Return type mismatch
+ush =psh, 2 warning:
 	Suspicious pointer assignment
-ush =push, 1 warning:
+	Return type mismatch
+ush =push, 2 warning:
 	Suspicious pointer assignment
-ush =pl, 1 warning:
+	Return type mismatch
+ush =pl, 2 warning:
 	Suspicious pointer assignment
-ush =pul, 1 warning:
+	Return type mismatch
+ush =pul, 2 warning:
 	Suspicious pointer assignment
-ush =pll, 1 warning:
+	Return type mismatch
+ush =pll, 2 warning:
 	Suspicious pointer assignment
-ush =pull, 1 warning:
+	Return type mismatch
+ush =pull, 2 warning:
 	Suspicious pointer assignment
-ush =pi, 1 warning:
+	Return type mismatch
+ush =pi, 2 warning:
 	Suspicious pointer assignment
-ush =pui, 1 warning:
+	Return type mismatch
+ush =pui, 2 warning:
 	Suspicious pointer assignment
-ush =pf, 1 warning:
+	Return type mismatch
+ush =pf, 2 warning:
 	Suspicious pointer assignment
-ush =pd, 1 warning:
+	Return type mismatch
+ush =pd, 2 warning:
 	Suspicious pointer assignment
-ush =ps, 1 warning:
+	Return type mismatch
+ush =ps, 2 warning:
 	Suspicious pointer assignment
-ush =pz, 1 warning:
+	Return type mismatch
+ush =pz, 2 warning:
 	Suspicious pointer assignment
-ush =pw, 1 warning:
+	Return type mismatch
+ush =pw, 2 warning:
 	Suspicious pointer assignment
-ush =pudt1, 1 warning:
+	Return type mismatch
+ush =pudt1, 2 warning:
 	Suspicious pointer assignment
-ush =pudt2, 1 warning:
+	Return type mismatch
+ush =pudt2, 2 warning:
 	Suspicious pointer assignment
-ush =pfwd1, 1 warning:
+	Return type mismatch
+ush =pfwd1, 2 warning:
 	Suspicious pointer assignment
-ush =pdwf2, 1 warning:
+	Return type mismatch
+ush =pdwf2, 2 warning:
 	Suspicious pointer assignment
-ush =ppsub, 1 warning:
+	Return type mismatch
+ush =ppsub, 2 warning:
 	Suspicious pointer assignment
-ush =ppfi, 1 warning:
+	Return type mismatch
+ush =ppfi, 2 warning:
 	Suspicious pointer assignment
-l =b, 1 warning:
+	Return type mismatch
+l =b, 2 warning:
 	Suspicious pointer assignment
-l =ub, 1 warning:
+	Return type mismatch
+l =ub, 2 warning:
 	Suspicious pointer assignment
-l =sh, 1 warning:
+	Return type mismatch
+l =sh, 2 warning:
 	Suspicious pointer assignment
-l =ush, 1 warning:
+	Return type mismatch
+l =ush, 2 warning:
 	Suspicious pointer assignment
-l =ll, 1 warning:
+	Return type mismatch
+l =ll, 2 warning:
 	Suspicious pointer assignment
-l =ull, 1 warning:
+	Return type mismatch
+l =ull, 2 warning:
 	Suspicious pointer assignment
-l =f, 1 warning:
+	Return type mismatch
+l =f, 2 warning:
 	Suspicious pointer assignment
-l =d, 1 warning:
+	Return type mismatch
+l =d, 2 warning:
 	Suspicious pointer assignment
-l =s, 1 warning:
+	Return type mismatch
+l =s, 2 warning:
 	Suspicious pointer assignment
-l =udt1, 1 warning:
+	Return type mismatch
+l =udt1, 2 warning:
 	Suspicious pointer assignment
-l =udt2, 1 warning:
+	Return type mismatch
+l =udt2, 2 warning:
 	Suspicious pointer assignment
-l =psub, 1 warning:
+	Return type mismatch
+l =psub, 2 warning:
 	Suspicious pointer assignment
-l =pfi, 1 warning:
+	Return type mismatch
+l =pfi, 2 warning:
 	Suspicious pointer assignment
-l =pany, 1 warning:
+	Return type mismatch
+l =pany, 2 warning:
 	Suspicious pointer assignment
-l =pb, 1 warning:
+	Return type mismatch
+l =pb, 2 warning:
 	Suspicious pointer assignment
-l =pub, 1 warning:
+	Return type mismatch
+l =pub, 2 warning:
 	Suspicious pointer assignment
-l =psh, 1 warning:
+	Return type mismatch
+l =psh, 2 warning:
 	Suspicious pointer assignment
-l =push, 1 warning:
+	Return type mismatch
+l =push, 2 warning:
 	Suspicious pointer assignment
-l =pl, 1 warning:
+	Return type mismatch
+l =pl, 2 warning:
 	Suspicious pointer assignment
-l =pul, 1 warning:
+	Return type mismatch
+l =pul, 2 warning:
 	Suspicious pointer assignment
-l =pll, 1 warning:
+	Return type mismatch
+l =pll, 2 warning:
 	Suspicious pointer assignment
-l =pull, 1 warning:
+	Return type mismatch
+l =pull, 2 warning:
 	Suspicious pointer assignment
-l =pi, 1 warning:
+	Return type mismatch
+l =pi, 2 warning:
 	Suspicious pointer assignment
-l =pui, 1 warning:
+	Return type mismatch
+l =pui, 2 warning:
 	Suspicious pointer assignment
-l =pf, 1 warning:
+	Return type mismatch
+l =pf, 2 warning:
 	Suspicious pointer assignment
-l =pd, 1 warning:
+	Return type mismatch
+l =pd, 2 warning:
 	Suspicious pointer assignment
-l =ps, 1 warning:
+	Return type mismatch
+l =ps, 2 warning:
 	Suspicious pointer assignment
-l =pz, 1 warning:
+	Return type mismatch
+l =pz, 2 warning:
 	Suspicious pointer assignment
-l =pw, 1 warning:
+	Return type mismatch
+l =pw, 2 warning:
 	Suspicious pointer assignment
-l =pudt1, 1 warning:
+	Return type mismatch
+l =pudt1, 2 warning:
 	Suspicious pointer assignment
-l =pudt2, 1 warning:
+	Return type mismatch
+l =pudt2, 2 warning:
 	Suspicious pointer assignment
-l =pfwd1, 1 warning:
+	Return type mismatch
+l =pfwd1, 2 warning:
 	Suspicious pointer assignment
-l =pdwf2, 1 warning:
+	Return type mismatch
+l =pdwf2, 2 warning:
 	Suspicious pointer assignment
-l =ppsub, 1 warning:
+	Return type mismatch
+l =ppsub, 2 warning:
 	Suspicious pointer assignment
-l =ppfi, 1 warning:
+	Return type mismatch
+l =ppfi, 2 warning:
 	Suspicious pointer assignment
-ul =b, 1 warning:
+	Return type mismatch
+ul =b, 2 warning:
 	Suspicious pointer assignment
-ul =ub, 1 warning:
+	Return type mismatch
+ul =ub, 2 warning:
 	Suspicious pointer assignment
-ul =sh, 1 warning:
+	Return type mismatch
+ul =sh, 2 warning:
 	Suspicious pointer assignment
-ul =ush, 1 warning:
+	Return type mismatch
+ul =ush, 2 warning:
 	Suspicious pointer assignment
-ul =ll, 1 warning:
+	Return type mismatch
+ul =ll, 2 warning:
 	Suspicious pointer assignment
-ul =ull, 1 warning:
+	Return type mismatch
+ul =ull, 2 warning:
 	Suspicious pointer assignment
-ul =f, 1 warning:
+	Return type mismatch
+ul =f, 2 warning:
 	Suspicious pointer assignment
-ul =d, 1 warning:
+	Return type mismatch
+ul =d, 2 warning:
 	Suspicious pointer assignment
-ul =s, 1 warning:
+	Return type mismatch
+ul =s, 2 warning:
 	Suspicious pointer assignment
-ul =udt1, 1 warning:
+	Return type mismatch
+ul =udt1, 2 warning:
 	Suspicious pointer assignment
-ul =udt2, 1 warning:
+	Return type mismatch
+ul =udt2, 2 warning:
 	Suspicious pointer assignment
-ul =psub, 1 warning:
+	Return type mismatch
+ul =psub, 2 warning:
 	Suspicious pointer assignment
-ul =pfi, 1 warning:
+	Return type mismatch
+ul =pfi, 2 warning:
 	Suspicious pointer assignment
-ul =pany, 1 warning:
+	Return type mismatch
+ul =pany, 2 warning:
 	Suspicious pointer assignment
-ul =pb, 1 warning:
+	Return type mismatch
+ul =pb, 2 warning:
 	Suspicious pointer assignment
-ul =pub, 1 warning:
+	Return type mismatch
+ul =pub, 2 warning:
 	Suspicious pointer assignment
-ul =psh, 1 warning:
+	Return type mismatch
+ul =psh, 2 warning:
 	Suspicious pointer assignment
-ul =push, 1 warning:
+	Return type mismatch
+ul =push, 2 warning:
 	Suspicious pointer assignment
-ul =pl, 1 warning:
+	Return type mismatch
+ul =pl, 2 warning:
 	Suspicious pointer assignment
-ul =pul, 1 warning:
+	Return type mismatch
+ul =pul, 2 warning:
 	Suspicious pointer assignment
-ul =pll, 1 warning:
+	Return type mismatch
+ul =pll, 2 warning:
 	Suspicious pointer assignment
-ul =pull, 1 warning:
+	Return type mismatch
+ul =pull, 2 warning:
 	Suspicious pointer assignment
-ul =pi, 1 warning:
+	Return type mismatch
+ul =pi, 2 warning:
 	Suspicious pointer assignment
-ul =pui, 1 warning:
+	Return type mismatch
+ul =pui, 2 warning:
 	Suspicious pointer assignment
-ul =pf, 1 warning:
+	Return type mismatch
+ul =pf, 2 warning:
 	Suspicious pointer assignment
-ul =pd, 1 warning:
+	Return type mismatch
+ul =pd, 2 warning:
 	Suspicious pointer assignment
-ul =ps, 1 warning:
+	Return type mismatch
+ul =ps, 2 warning:
 	Suspicious pointer assignment
-ul =pz, 1 warning:
+	Return type mismatch
+ul =pz, 2 warning:
 	Suspicious pointer assignment
-ul =pw, 1 warning:
+	Return type mismatch
+ul =pw, 2 warning:
 	Suspicious pointer assignment
-ul =pudt1, 1 warning:
+	Return type mismatch
+ul =pudt1, 2 warning:
 	Suspicious pointer assignment
-ul =pudt2, 1 warning:
+	Return type mismatch
+ul =pudt2, 2 warning:
 	Suspicious pointer assignment
-ul =pfwd1, 1 warning:
+	Return type mismatch
+ul =pfwd1, 2 warning:
 	Suspicious pointer assignment
-ul =pdwf2, 1 warning:
+	Return type mismatch
+ul =pdwf2, 2 warning:
 	Suspicious pointer assignment
-ul =ppsub, 1 warning:
+	Return type mismatch
+ul =ppsub, 2 warning:
 	Suspicious pointer assignment
-ul =ppfi, 1 warning:
+	Return type mismatch
+ul =ppfi, 2 warning:
 	Suspicious pointer assignment
-ll =b, 1 warning:
+	Return type mismatch
+ll =b, 2 warning:
 	Suspicious pointer assignment
-ll =ub, 1 warning:
+	Return type mismatch
+ll =ub, 2 warning:
 	Suspicious pointer assignment
-ll =sh, 1 warning:
+	Return type mismatch
+ll =sh, 2 warning:
 	Suspicious pointer assignment
-ll =ush, 1 warning:
+	Return type mismatch
+ll =ush, 2 warning:
 	Suspicious pointer assignment
-ll =l, 1 warning:
+	Return type mismatch
+ll =l, 2 warning:
 	Suspicious pointer assignment
-ll =ul, 1 warning:
+	Return type mismatch
+ll =ul, 2 warning:
 	Suspicious pointer assignment
-ll =i, 1 warning:
+	Return type mismatch
+ll =i, 2 warning:
 	Suspicious pointer assignment
-ll =ui, 1 warning:
+	Return type mismatch
+ll =ui, 2 warning:
 	Suspicious pointer assignment
-ll =f, 1 warning:
+	Return type mismatch
+ll =f, 2 warning:
 	Suspicious pointer assignment
-ll =d, 1 warning:
+	Return type mismatch
+ll =d, 2 warning:
 	Suspicious pointer assignment
-ll =s, 1 warning:
+	Return type mismatch
+ll =s, 2 warning:
 	Suspicious pointer assignment
-ll =udt1, 1 warning:
+	Return type mismatch
+ll =udt1, 2 warning:
 	Suspicious pointer assignment
-ll =udt2, 1 warning:
+	Return type mismatch
+ll =udt2, 2 warning:
 	Suspicious pointer assignment
-ll =psub, 1 warning:
+	Return type mismatch
+ll =psub, 2 warning:
 	Suspicious pointer assignment
-ll =pfi, 1 warning:
+	Return type mismatch
+ll =pfi, 2 warning:
 	Suspicious pointer assignment
-ll =pany, 1 warning:
+	Return type mismatch
+ll =pany, 2 warning:
 	Suspicious pointer assignment
-ll =pb, 1 warning:
+	Return type mismatch
+ll =pb, 2 warning:
 	Suspicious pointer assignment
-ll =pub, 1 warning:
+	Return type mismatch
+ll =pub, 2 warning:
 	Suspicious pointer assignment
-ll =psh, 1 warning:
+	Return type mismatch
+ll =psh, 2 warning:
 	Suspicious pointer assignment
-ll =push, 1 warning:
+	Return type mismatch
+ll =push, 2 warning:
 	Suspicious pointer assignment
-ll =pl, 1 warning:
+	Return type mismatch
+ll =pl, 2 warning:
 	Suspicious pointer assignment
-ll =pul, 1 warning:
+	Return type mismatch
+ll =pul, 2 warning:
 	Suspicious pointer assignment
-ll =pll, 1 warning:
+	Return type mismatch
+ll =pll, 2 warning:
 	Suspicious pointer assignment
-ll =pull, 1 warning:
+	Return type mismatch
+ll =pull, 2 warning:
 	Suspicious pointer assignment
-ll =pi, 1 warning:
+	Return type mismatch
+ll =pi, 2 warning:
 	Suspicious pointer assignment
-ll =pui, 1 warning:
+	Return type mismatch
+ll =pui, 2 warning:
 	Suspicious pointer assignment
-ll =pf, 1 warning:
+	Return type mismatch
+ll =pf, 2 warning:
 	Suspicious pointer assignment
-ll =pd, 1 warning:
+	Return type mismatch
+ll =pd, 2 warning:
 	Suspicious pointer assignment
-ll =ps, 1 warning:
+	Return type mismatch
+ll =ps, 2 warning:
 	Suspicious pointer assignment
-ll =pz, 1 warning:
+	Return type mismatch
+ll =pz, 2 warning:
 	Suspicious pointer assignment
-ll =pw, 1 warning:
+	Return type mismatch
+ll =pw, 2 warning:
 	Suspicious pointer assignment
-ll =pudt1, 1 warning:
+	Return type mismatch
+ll =pudt1, 2 warning:
 	Suspicious pointer assignment
-ll =pudt2, 1 warning:
+	Return type mismatch
+ll =pudt2, 2 warning:
 	Suspicious pointer assignment
-ll =pfwd1, 1 warning:
+	Return type mismatch
+ll =pfwd1, 2 warning:
 	Suspicious pointer assignment
-ll =pdwf2, 1 warning:
+	Return type mismatch
+ll =pdwf2, 2 warning:
 	Suspicious pointer assignment
-ll =ppsub, 1 warning:
+	Return type mismatch
+ll =ppsub, 2 warning:
 	Suspicious pointer assignment
-ll =ppfi, 1 warning:
+	Return type mismatch
+ll =ppfi, 2 warning:
 	Suspicious pointer assignment
-ull =b, 1 warning:
+	Return type mismatch
+ull =b, 2 warning:
 	Suspicious pointer assignment
-ull =ub, 1 warning:
+	Return type mismatch
+ull =ub, 2 warning:
 	Suspicious pointer assignment
-ull =sh, 1 warning:
+	Return type mismatch
+ull =sh, 2 warning:
 	Suspicious pointer assignment
-ull =ush, 1 warning:
+	Return type mismatch
+ull =ush, 2 warning:
 	Suspicious pointer assignment
-ull =l, 1 warning:
+	Return type mismatch
+ull =l, 2 warning:
 	Suspicious pointer assignment
-ull =ul, 1 warning:
+	Return type mismatch
+ull =ul, 2 warning:
 	Suspicious pointer assignment
-ull =i, 1 warning:
+	Return type mismatch
+ull =i, 2 warning:
 	Suspicious pointer assignment
-ull =ui, 1 warning:
+	Return type mismatch
+ull =ui, 2 warning:
 	Suspicious pointer assignment
-ull =f, 1 warning:
+	Return type mismatch
+ull =f, 2 warning:
 	Suspicious pointer assignment
-ull =d, 1 warning:
+	Return type mismatch
+ull =d, 2 warning:
 	Suspicious pointer assignment
-ull =s, 1 warning:
+	Return type mismatch
+ull =s, 2 warning:
 	Suspicious pointer assignment
-ull =udt1, 1 warning:
+	Return type mismatch
+ull =udt1, 2 warning:
 	Suspicious pointer assignment
-ull =udt2, 1 warning:
+	Return type mismatch
+ull =udt2, 2 warning:
 	Suspicious pointer assignment
-ull =psub, 1 warning:
+	Return type mismatch
+ull =psub, 2 warning:
 	Suspicious pointer assignment
-ull =pfi, 1 warning:
+	Return type mismatch
+ull =pfi, 2 warning:
 	Suspicious pointer assignment
-ull =pany, 1 warning:
+	Return type mismatch
+ull =pany, 2 warning:
 	Suspicious pointer assignment
-ull =pb, 1 warning:
+	Return type mismatch
+ull =pb, 2 warning:
 	Suspicious pointer assignment
-ull =pub, 1 warning:
+	Return type mismatch
+ull =pub, 2 warning:
 	Suspicious pointer assignment
-ull =psh, 1 warning:
+	Return type mismatch
+ull =psh, 2 warning:
 	Suspicious pointer assignment
-ull =push, 1 warning:
+	Return type mismatch
+ull =push, 2 warning:
 	Suspicious pointer assignment
-ull =pl, 1 warning:
+	Return type mismatch
+ull =pl, 2 warning:
 	Suspicious pointer assignment
-ull =pul, 1 warning:
+	Return type mismatch
+ull =pul, 2 warning:
 	Suspicious pointer assignment
-ull =pll, 1 warning:
+	Return type mismatch
+ull =pll, 2 warning:
 	Suspicious pointer assignment
-ull =pull, 1 warning:
+	Return type mismatch
+ull =pull, 2 warning:
 	Suspicious pointer assignment
-ull =pi, 1 warning:
+	Return type mismatch
+ull =pi, 2 warning:
 	Suspicious pointer assignment
-ull =pui, 1 warning:
+	Return type mismatch
+ull =pui, 2 warning:
 	Suspicious pointer assignment
-ull =pf, 1 warning:
+	Return type mismatch
+ull =pf, 2 warning:
 	Suspicious pointer assignment
-ull =pd, 1 warning:
+	Return type mismatch
+ull =pd, 2 warning:
 	Suspicious pointer assignment
-ull =ps, 1 warning:
+	Return type mismatch
+ull =ps, 2 warning:
 	Suspicious pointer assignment
-ull =pz, 1 warning:
+	Return type mismatch
+ull =pz, 2 warning:
 	Suspicious pointer assignment
-ull =pw, 1 warning:
+	Return type mismatch
+ull =pw, 2 warning:
 	Suspicious pointer assignment
-ull =pudt1, 1 warning:
+	Return type mismatch
+ull =pudt1, 2 warning:
 	Suspicious pointer assignment
-ull =pudt2, 1 warning:
+	Return type mismatch
+ull =pudt2, 2 warning:
 	Suspicious pointer assignment
-ull =pfwd1, 1 warning:
+	Return type mismatch
+ull =pfwd1, 2 warning:
 	Suspicious pointer assignment
-ull =pdwf2, 1 warning:
+	Return type mismatch
+ull =pdwf2, 2 warning:
 	Suspicious pointer assignment
-ull =ppsub, 1 warning:
+	Return type mismatch
+ull =ppsub, 2 warning:
 	Suspicious pointer assignment
-ull =ppfi, 1 warning:
+	Return type mismatch
+ull =ppfi, 2 warning:
 	Suspicious pointer assignment
-i =b, 1 warning:
+	Return type mismatch
+i =b, 2 warning:
 	Suspicious pointer assignment
-i =ub, 1 warning:
+	Return type mismatch
+i =ub, 2 warning:
 	Suspicious pointer assignment
-i =sh, 1 warning:
+	Return type mismatch
+i =sh, 2 warning:
 	Suspicious pointer assignment
-i =ush, 1 warning:
+	Return type mismatch
+i =ush, 2 warning:
 	Suspicious pointer assignment
-i =ll, 1 warning:
+	Return type mismatch
+i =ll, 2 warning:
 	Suspicious pointer assignment
-i =ull, 1 warning:
+	Return type mismatch
+i =ull, 2 warning:
 	Suspicious pointer assignment
-i =f, 1 warning:
+	Return type mismatch
+i =f, 2 warning:
 	Suspicious pointer assignment
-i =d, 1 warning:
+	Return type mismatch
+i =d, 2 warning:
 	Suspicious pointer assignment
-i =s, 1 warning:
+	Return type mismatch
+i =s, 2 warning:
 	Suspicious pointer assignment
-i =udt1, 1 warning:
+	Return type mismatch
+i =udt1, 2 warning:
 	Suspicious pointer assignment
-i =udt2, 1 warning:
+	Return type mismatch
+i =udt2, 2 warning:
 	Suspicious pointer assignment
-i =psub, 1 warning:
+	Return type mismatch
+i =psub, 2 warning:
 	Suspicious pointer assignment
-i =pfi, 1 warning:
+	Return type mismatch
+i =pfi, 2 warning:
 	Suspicious pointer assignment
-i =pany, 1 warning:
+	Return type mismatch
+i =pany, 2 warning:
 	Suspicious pointer assignment
-i =pb, 1 warning:
+	Return type mismatch
+i =pb, 2 warning:
 	Suspicious pointer assignment
-i =pub, 1 warning:
+	Return type mismatch
+i =pub, 2 warning:
 	Suspicious pointer assignment
-i =psh, 1 warning:
+	Return type mismatch
+i =psh, 2 warning:
 	Suspicious pointer assignment
-i =push, 1 warning:
+	Return type mismatch
+i =push, 2 warning:
 	Suspicious pointer assignment
-i =pl, 1 warning:
+	Return type mismatch
+i =pl, 2 warning:
 	Suspicious pointer assignment
-i =pul, 1 warning:
+	Return type mismatch
+i =pul, 2 warning:
 	Suspicious pointer assignment
-i =pll, 1 warning:
+	Return type mismatch
+i =pll, 2 warning:
 	Suspicious pointer assignment
-i =pull, 1 warning:
+	Return type mismatch
+i =pull, 2 warning:
 	Suspicious pointer assignment
-i =pi, 1 warning:
+	Return type mismatch
+i =pi, 2 warning:
 	Suspicious pointer assignment
-i =pui, 1 warning:
+	Return type mismatch
+i =pui, 2 warning:
 	Suspicious pointer assignment
-i =pf, 1 warning:
+	Return type mismatch
+i =pf, 2 warning:
 	Suspicious pointer assignment
-i =pd, 1 warning:
+	Return type mismatch
+i =pd, 2 warning:
 	Suspicious pointer assignment
-i =ps, 1 warning:
+	Return type mismatch
+i =ps, 2 warning:
 	Suspicious pointer assignment
-i =pz, 1 warning:
+	Return type mismatch
+i =pz, 2 warning:
 	Suspicious pointer assignment
-i =pw, 1 warning:
+	Return type mismatch
+i =pw, 2 warning:
 	Suspicious pointer assignment
-i =pudt1, 1 warning:
+	Return type mismatch
+i =pudt1, 2 warning:
 	Suspicious pointer assignment
-i =pudt2, 1 warning:
+	Return type mismatch
+i =pudt2, 2 warning:
 	Suspicious pointer assignment
-i =pfwd1, 1 warning:
+	Return type mismatch
+i =pfwd1, 2 warning:
 	Suspicious pointer assignment
-i =pdwf2, 1 warning:
+	Return type mismatch
+i =pdwf2, 2 warning:
 	Suspicious pointer assignment
-i =ppsub, 1 warning:
+	Return type mismatch
+i =ppsub, 2 warning:
 	Suspicious pointer assignment
-i =ppfi, 1 warning:
+	Return type mismatch
+i =ppfi, 2 warning:
 	Suspicious pointer assignment
-ui =b, 1 warning:
+	Return type mismatch
+ui =b, 2 warning:
 	Suspicious pointer assignment
-ui =ub, 1 warning:
+	Return type mismatch
+ui =ub, 2 warning:
 	Suspicious pointer assignment
-ui =sh, 1 warning:
+	Return type mismatch
+ui =sh, 2 warning:
 	Suspicious pointer assignment
-ui =ush, 1 warning:
+	Return type mismatch
+ui =ush, 2 warning:
 	Suspicious pointer assignment
-ui =ll, 1 warning:
+	Return type mismatch
+ui =ll, 2 warning:
 	Suspicious pointer assignment
-ui =ull, 1 warning:
+	Return type mismatch
+ui =ull, 2 warning:
 	Suspicious pointer assignment
-ui =f, 1 warning:
+	Return type mismatch
+ui =f, 2 warning:
 	Suspicious pointer assignment
-ui =d, 1 warning:
+	Return type mismatch
+ui =d, 2 warning:
 	Suspicious pointer assignment
-ui =s, 1 warning:
+	Return type mismatch
+ui =s, 2 warning:
 	Suspicious pointer assignment
-ui =udt1, 1 warning:
+	Return type mismatch
+ui =udt1, 2 warning:
 	Suspicious pointer assignment
-ui =udt2, 1 warning:
+	Return type mismatch
+ui =udt2, 2 warning:
 	Suspicious pointer assignment
-ui =psub, 1 warning:
+	Return type mismatch
+ui =psub, 2 warning:
 	Suspicious pointer assignment
-ui =pfi, 1 warning:
+	Return type mismatch
+ui =pfi, 2 warning:
 	Suspicious pointer assignment
-ui =pany, 1 warning:
+	Return type mismatch
+ui =pany, 2 warning:
 	Suspicious pointer assignment
-ui =pb, 1 warning:
+	Return type mismatch
+ui =pb, 2 warning:
 	Suspicious pointer assignment
-ui =pub, 1 warning:
+	Return type mismatch
+ui =pub, 2 warning:
 	Suspicious pointer assignment
-ui =psh, 1 warning:
+	Return type mismatch
+ui =psh, 2 warning:
 	Suspicious pointer assignment
-ui =push, 1 warning:
+	Return type mismatch
+ui =push, 2 warning:
 	Suspicious pointer assignment
-ui =pl, 1 warning:
+	Return type mismatch
+ui =pl, 2 warning:
 	Suspicious pointer assignment
-ui =pul, 1 warning:
+	Return type mismatch
+ui =pul, 2 warning:
 	Suspicious pointer assignment
-ui =pll, 1 warning:
+	Return type mismatch
+ui =pll, 2 warning:
 	Suspicious pointer assignment
-ui =pull, 1 warning:
+	Return type mismatch
+ui =pull, 2 warning:
 	Suspicious pointer assignment
-ui =pi, 1 warning:
+	Return type mismatch
+ui =pi, 2 warning:
 	Suspicious pointer assignment
-ui =pui, 1 warning:
+	Return type mismatch
+ui =pui, 2 warning:
 	Suspicious pointer assignment
-ui =pf, 1 warning:
+	Return type mismatch
+ui =pf, 2 warning:
 	Suspicious pointer assignment
-ui =pd, 1 warning:
+	Return type mismatch
+ui =pd, 2 warning:
 	Suspicious pointer assignment
-ui =ps, 1 warning:
+	Return type mismatch
+ui =ps, 2 warning:
 	Suspicious pointer assignment
-ui =pz, 1 warning:
+	Return type mismatch
+ui =pz, 2 warning:
 	Suspicious pointer assignment
-ui =pw, 1 warning:
+	Return type mismatch
+ui =pw, 2 warning:
 	Suspicious pointer assignment
-ui =pudt1, 1 warning:
+	Return type mismatch
+ui =pudt1, 2 warning:
 	Suspicious pointer assignment
-ui =pudt2, 1 warning:
+	Return type mismatch
+ui =pudt2, 2 warning:
 	Suspicious pointer assignment
-ui =pfwd1, 1 warning:
+	Return type mismatch
+ui =pfwd1, 2 warning:
 	Suspicious pointer assignment
-ui =pdwf2, 1 warning:
+	Return type mismatch
+ui =pdwf2, 2 warning:
 	Suspicious pointer assignment
-ui =ppsub, 1 warning:
+	Return type mismatch
+ui =ppsub, 2 warning:
 	Suspicious pointer assignment
-ui =ppfi, 1 warning:
+	Return type mismatch
+ui =ppfi, 2 warning:
 	Suspicious pointer assignment
-f =b, 1 warning:
+	Return type mismatch
+f =b, 2 warning:
 	Suspicious pointer assignment
-f =ub, 1 warning:
+	Return type mismatch
+f =ub, 2 warning:
 	Suspicious pointer assignment
-f =sh, 1 warning:
+	Return type mismatch
+f =sh, 2 warning:
 	Suspicious pointer assignment
-f =ush, 1 warning:
+	Return type mismatch
+f =ush, 2 warning:
 	Suspicious pointer assignment
-f =l, 1 warning:
+	Return type mismatch
+f =l, 2 warning:
 	Suspicious pointer assignment
-f =ul, 1 warning:
+	Return type mismatch
+f =ul, 2 warning:
 	Suspicious pointer assignment
-f =ll, 1 warning:
+	Return type mismatch
+f =ll, 2 warning:
 	Suspicious pointer assignment
-f =ull, 1 warning:
+	Return type mismatch
+f =ull, 2 warning:
 	Suspicious pointer assignment
-f =i, 1 warning:
+	Return type mismatch
+f =i, 2 warning:
 	Suspicious pointer assignment
-f =ui, 1 warning:
+	Return type mismatch
+f =ui, 2 warning:
 	Suspicious pointer assignment
-f =d, 1 warning:
+	Return type mismatch
+f =d, 2 warning:
 	Suspicious pointer assignment
-f =s, 1 warning:
+	Return type mismatch
+f =s, 2 warning:
 	Suspicious pointer assignment
-f =udt1, 1 warning:
+	Return type mismatch
+f =udt1, 2 warning:
 	Suspicious pointer assignment
-f =udt2, 1 warning:
+	Return type mismatch
+f =udt2, 2 warning:
 	Suspicious pointer assignment
-f =psub, 1 warning:
+	Return type mismatch
+f =psub, 2 warning:
 	Suspicious pointer assignment
-f =pfi, 1 warning:
+	Return type mismatch
+f =pfi, 2 warning:
 	Suspicious pointer assignment
-f =pany, 1 warning:
+	Return type mismatch
+f =pany, 2 warning:
 	Suspicious pointer assignment
-f =pb, 1 warning:
+	Return type mismatch
+f =pb, 2 warning:
 	Suspicious pointer assignment
-f =pub, 1 warning:
+	Return type mismatch
+f =pub, 2 warning:
 	Suspicious pointer assignment
-f =psh, 1 warning:
+	Return type mismatch
+f =psh, 2 warning:
 	Suspicious pointer assignment
-f =push, 1 warning:
+	Return type mismatch
+f =push, 2 warning:
 	Suspicious pointer assignment
-f =pl, 1 warning:
+	Return type mismatch
+f =pl, 2 warning:
 	Suspicious pointer assignment
-f =pul, 1 warning:
+	Return type mismatch
+f =pul, 2 warning:
 	Suspicious pointer assignment
-f =pll, 1 warning:
+	Return type mismatch
+f =pll, 2 warning:
 	Suspicious pointer assignment
-f =pull, 1 warning:
+	Return type mismatch
+f =pull, 2 warning:
 	Suspicious pointer assignment
-f =pi, 1 warning:
+	Return type mismatch
+f =pi, 2 warning:
 	Suspicious pointer assignment
-f =pui, 1 warning:
+	Return type mismatch
+f =pui, 2 warning:
 	Suspicious pointer assignment
-f =pf, 1 warning:
+	Return type mismatch
+f =pf, 2 warning:
 	Suspicious pointer assignment
-f =pd, 1 warning:
+	Return type mismatch
+f =pd, 2 warning:
 	Suspicious pointer assignment
-f =ps, 1 warning:
+	Return type mismatch
+f =ps, 2 warning:
 	Suspicious pointer assignment
-f =pz, 1 warning:
+	Return type mismatch
+f =pz, 2 warning:
 	Suspicious pointer assignment
-f =pw, 1 warning:
+	Return type mismatch
+f =pw, 2 warning:
 	Suspicious pointer assignment
-f =pudt1, 1 warning:
+	Return type mismatch
+f =pudt1, 2 warning:
 	Suspicious pointer assignment
-f =pudt2, 1 warning:
+	Return type mismatch
+f =pudt2, 2 warning:
 	Suspicious pointer assignment
-f =pfwd1, 1 warning:
+	Return type mismatch
+f =pfwd1, 2 warning:
 	Suspicious pointer assignment
-f =pdwf2, 1 warning:
+	Return type mismatch
+f =pdwf2, 2 warning:
 	Suspicious pointer assignment
-f =ppsub, 1 warning:
+	Return type mismatch
+f =ppsub, 2 warning:
 	Suspicious pointer assignment
-f =ppfi, 1 warning:
+	Return type mismatch
+f =ppfi, 2 warning:
 	Suspicious pointer assignment
-d =b, 1 warning:
+	Return type mismatch
+d =b, 2 warning:
 	Suspicious pointer assignment
-d =ub, 1 warning:
+	Return type mismatch
+d =ub, 2 warning:
 	Suspicious pointer assignment
-d =sh, 1 warning:
+	Return type mismatch
+d =sh, 2 warning:
 	Suspicious pointer assignment
-d =ush, 1 warning:
+	Return type mismatch
+d =ush, 2 warning:
 	Suspicious pointer assignment
-d =l, 1 warning:
+	Return type mismatch
+d =l, 2 warning:
 	Suspicious pointer assignment
-d =ul, 1 warning:
+	Return type mismatch
+d =ul, 2 warning:
 	Suspicious pointer assignment
-d =ll, 1 warning:
+	Return type mismatch
+d =ll, 2 warning:
 	Suspicious pointer assignment
-d =ull, 1 warning:
+	Return type mismatch
+d =ull, 2 warning:
 	Suspicious pointer assignment
-d =i, 1 warning:
+	Return type mismatch
+d =i, 2 warning:
 	Suspicious pointer assignment
-d =ui, 1 warning:
+	Return type mismatch
+d =ui, 2 warning:
 	Suspicious pointer assignment
-d =f, 1 warning:
+	Return type mismatch
+d =f, 2 warning:
 	Suspicious pointer assignment
-d =s, 1 warning:
+	Return type mismatch
+d =s, 2 warning:
 	Suspicious pointer assignment
-d =udt1, 1 warning:
+	Return type mismatch
+d =udt1, 2 warning:
 	Suspicious pointer assignment
-d =udt2, 1 warning:
+	Return type mismatch
+d =udt2, 2 warning:
 	Suspicious pointer assignment
-d =psub, 1 warning:
+	Return type mismatch
+d =psub, 2 warning:
 	Suspicious pointer assignment
-d =pfi, 1 warning:
+	Return type mismatch
+d =pfi, 2 warning:
 	Suspicious pointer assignment
-d =pany, 1 warning:
+	Return type mismatch
+d =pany, 2 warning:
 	Suspicious pointer assignment
-d =pb, 1 warning:
+	Return type mismatch
+d =pb, 2 warning:
 	Suspicious pointer assignment
-d =pub, 1 warning:
+	Return type mismatch
+d =pub, 2 warning:
 	Suspicious pointer assignment
-d =psh, 1 warning:
+	Return type mismatch
+d =psh, 2 warning:
 	Suspicious pointer assignment
-d =push, 1 warning:
+	Return type mismatch
+d =push, 2 warning:
 	Suspicious pointer assignment
-d =pl, 1 warning:
+	Return type mismatch
+d =pl, 2 warning:
 	Suspicious pointer assignment
-d =pul, 1 warning:
+	Return type mismatch
+d =pul, 2 warning:
 	Suspicious pointer assignment
-d =pll, 1 warning:
+	Return type mismatch
+d =pll, 2 warning:
 	Suspicious pointer assignment
-d =pull, 1 warning:
+	Return type mismatch
+d =pull, 2 warning:
 	Suspicious pointer assignment
-d =pi, 1 warning:
+	Return type mismatch
+d =pi, 2 warning:
 	Suspicious pointer assignment
-d =pui, 1 warning:
+	Return type mismatch
+d =pui, 2 warning:
 	Suspicious pointer assignment
-d =pf, 1 warning:
+	Return type mismatch
+d =pf, 2 warning:
 	Suspicious pointer assignment
-d =pd, 1 warning:
+	Return type mismatch
+d =pd, 2 warning:
 	Suspicious pointer assignment
-d =ps, 1 warning:
+	Return type mismatch
+d =ps, 2 warning:
 	Suspicious pointer assignment
-d =pz, 1 warning:
+	Return type mismatch
+d =pz, 2 warning:
 	Suspicious pointer assignment
-d =pw, 1 warning:
+	Return type mismatch
+d =pw, 2 warning:
 	Suspicious pointer assignment
-d =pudt1, 1 warning:
+	Return type mismatch
+d =pudt1, 2 warning:
 	Suspicious pointer assignment
-d =pudt2, 1 warning:
+	Return type mismatch
+d =pudt2, 2 warning:
 	Suspicious pointer assignment
-d =pfwd1, 1 warning:
+	Return type mismatch
+d =pfwd1, 2 warning:
 	Suspicious pointer assignment
-d =pdwf2, 1 warning:
+	Return type mismatch
+d =pdwf2, 2 warning:
 	Suspicious pointer assignment
-d =ppsub, 1 warning:
+	Return type mismatch
+d =ppsub, 2 warning:
 	Suspicious pointer assignment
-d =ppfi, 1 warning:
+	Return type mismatch
+d =ppfi, 2 warning:
 	Suspicious pointer assignment
-s =b, 1 warning:
+	Return type mismatch
+s =b, 2 warning:
 	Suspicious pointer assignment
-s =ub, 1 warning:
+	Return type mismatch
+s =ub, 2 warning:
 	Suspicious pointer assignment
-s =sh, 1 warning:
+	Return type mismatch
+s =sh, 2 warning:
 	Suspicious pointer assignment
-s =ush, 1 warning:
+	Return type mismatch
+s =ush, 2 warning:
 	Suspicious pointer assignment
-s =l, 1 warning:
+	Return type mismatch
+s =l, 2 warning:
 	Suspicious pointer assignment
-s =ul, 1 warning:
+	Return type mismatch
+s =ul, 2 warning:
 	Suspicious pointer assignment
-s =ll, 1 warning:
+	Return type mismatch
+s =ll, 2 warning:
 	Suspicious pointer assignment
-s =ull, 1 warning:
+	Return type mismatch
+s =ull, 2 warning:
 	Suspicious pointer assignment
-s =i, 1 warning:
+	Return type mismatch
+s =i, 2 warning:
 	Suspicious pointer assignment
-s =ui, 1 warning:
+	Return type mismatch
+s =ui, 2 warning:
 	Suspicious pointer assignment
-s =f, 1 warning:
+	Return type mismatch
+s =f, 2 warning:
 	Suspicious pointer assignment
-s =d, 1 warning:
+	Return type mismatch
+s =d, 2 warning:
 	Suspicious pointer assignment
-s =udt1, 1 warning:
+	Return type mismatch
+s =udt1, 2 warning:
 	Suspicious pointer assignment
-s =udt2, 1 warning:
+	Return type mismatch
+s =udt2, 2 warning:
 	Suspicious pointer assignment
-s =psub, 1 warning:
+	Return type mismatch
+s =psub, 2 warning:
 	Suspicious pointer assignment
-s =pfi, 1 warning:
+	Return type mismatch
+s =pfi, 2 warning:
 	Suspicious pointer assignment
-s =pany, 1 warning:
+	Return type mismatch
+s =pany, 2 warning:
 	Suspicious pointer assignment
-s =pb, 1 warning:
+	Return type mismatch
+s =pb, 2 warning:
 	Suspicious pointer assignment
-s =pub, 1 warning:
+	Return type mismatch
+s =pub, 2 warning:
 	Suspicious pointer assignment
-s =psh, 1 warning:
+	Return type mismatch
+s =psh, 2 warning:
 	Suspicious pointer assignment
-s =push, 1 warning:
+	Return type mismatch
+s =push, 2 warning:
 	Suspicious pointer assignment
-s =pl, 1 warning:
+	Return type mismatch
+s =pl, 2 warning:
 	Suspicious pointer assignment
-s =pul, 1 warning:
+	Return type mismatch
+s =pul, 2 warning:
 	Suspicious pointer assignment
-s =pll, 1 warning:
+	Return type mismatch
+s =pll, 2 warning:
 	Suspicious pointer assignment
-s =pull, 1 warning:
+	Return type mismatch
+s =pull, 2 warning:
 	Suspicious pointer assignment
-s =pi, 1 warning:
+	Return type mismatch
+s =pi, 2 warning:
 	Suspicious pointer assignment
-s =pui, 1 warning:
+	Return type mismatch
+s =pui, 2 warning:
 	Suspicious pointer assignment
-s =pf, 1 warning:
+	Return type mismatch
+s =pf, 2 warning:
 	Suspicious pointer assignment
-s =pd, 1 warning:
+	Return type mismatch
+s =pd, 2 warning:
 	Suspicious pointer assignment
-s =ps, 1 warning:
+	Return type mismatch
+s =ps, 2 warning:
 	Suspicious pointer assignment
-s =pz, 1 warning:
+	Return type mismatch
+s =pz, 2 warning:
 	Suspicious pointer assignment
-s =pw, 1 warning:
+	Return type mismatch
+s =pw, 2 warning:
 	Suspicious pointer assignment
-s =pudt1, 1 warning:
+	Return type mismatch
+s =pudt1, 2 warning:
 	Suspicious pointer assignment
-s =pudt2, 1 warning:
+	Return type mismatch
+s =pudt2, 2 warning:
 	Suspicious pointer assignment
-s =pfwd1, 1 warning:
+	Return type mismatch
+s =pfwd1, 2 warning:
 	Suspicious pointer assignment
-s =pdwf2, 1 warning:
+	Return type mismatch
+s =pdwf2, 2 warning:
 	Suspicious pointer assignment
-s =ppsub, 1 warning:
+	Return type mismatch
+s =ppsub, 2 warning:
 	Suspicious pointer assignment
-s =ppfi, 1 warning:
+	Return type mismatch
+s =ppfi, 2 warning:
 	Suspicious pointer assignment
-udt1 =b, 1 warning:
+	Return type mismatch
+udt1 =b, 2 warning:
 	Suspicious pointer assignment
-udt1 =ub, 1 warning:
+	Return type mismatch
+udt1 =ub, 2 warning:
 	Suspicious pointer assignment
-udt1 =sh, 1 warning:
+	Return type mismatch
+udt1 =sh, 2 warning:
 	Suspicious pointer assignment
-udt1 =ush, 1 warning:
+	Return type mismatch
+udt1 =ush, 2 warning:
 	Suspicious pointer assignment
-udt1 =l, 1 warning:
+	Return type mismatch
+udt1 =l, 2 warning:
 	Suspicious pointer assignment
-udt1 =ul, 1 warning:
+	Return type mismatch
+udt1 =ul, 2 warning:
 	Suspicious pointer assignment
-udt1 =ll, 1 warning:
+	Return type mismatch
+udt1 =ll, 2 warning:
 	Suspicious pointer assignment
-udt1 =ull, 1 warning:
+	Return type mismatch
+udt1 =ull, 2 warning:
 	Suspicious pointer assignment
-udt1 =i, 1 warning:
+	Return type mismatch
+udt1 =i, 2 warning:
 	Suspicious pointer assignment
-udt1 =ui, 1 warning:
+	Return type mismatch
+udt1 =ui, 2 warning:
 	Suspicious pointer assignment
-udt1 =f, 1 warning:
+	Return type mismatch
+udt1 =f, 2 warning:
 	Suspicious pointer assignment
-udt1 =d, 1 warning:
+	Return type mismatch
+udt1 =d, 2 warning:
 	Suspicious pointer assignment
-udt1 =s, 1 warning:
+	Return type mismatch
+udt1 =s, 2 warning:
 	Suspicious pointer assignment
-udt1 =udt2, 1 warning:
+	Return type mismatch
+udt1 =udt2, 2 warning:
 	Suspicious pointer assignment
-udt1 =psub, 1 warning:
+	Return type mismatch
+udt1 =psub, 2 warning:
 	Suspicious pointer assignment
-udt1 =pfi, 1 warning:
+	Return type mismatch
+udt1 =pfi, 2 warning:
 	Suspicious pointer assignment
-udt1 =pany, 1 warning:
+	Return type mismatch
+udt1 =pany, 2 warning:
 	Suspicious pointer assignment
-udt1 =pb, 1 warning:
+	Return type mismatch
+udt1 =pb, 2 warning:
 	Suspicious pointer assignment
-udt1 =pub, 1 warning:
+	Return type mismatch
+udt1 =pub, 2 warning:
 	Suspicious pointer assignment
-udt1 =psh, 1 warning:
+	Return type mismatch
+udt1 =psh, 2 warning:
 	Suspicious pointer assignment
-udt1 =push, 1 warning:
+	Return type mismatch
+udt1 =push, 2 warning:
 	Suspicious pointer assignment
-udt1 =pl, 1 warning:
+	Return type mismatch
+udt1 =pl, 2 warning:
 	Suspicious pointer assignment
-udt1 =pul, 1 warning:
+	Return type mismatch
+udt1 =pul, 2 warning:
 	Suspicious pointer assignment
-udt1 =pll, 1 warning:
+	Return type mismatch
+udt1 =pll, 2 warning:
 	Suspicious pointer assignment
-udt1 =pull, 1 warning:
+	Return type mismatch
+udt1 =pull, 2 warning:
 	Suspicious pointer assignment
-udt1 =pi, 1 warning:
+	Return type mismatch
+udt1 =pi, 2 warning:
 	Suspicious pointer assignment
-udt1 =pui, 1 warning:
+	Return type mismatch
+udt1 =pui, 2 warning:
 	Suspicious pointer assignment
-udt1 =pf, 1 warning:
+	Return type mismatch
+udt1 =pf, 2 warning:
 	Suspicious pointer assignment
-udt1 =pd, 1 warning:
+	Return type mismatch
+udt1 =pd, 2 warning:
 	Suspicious pointer assignment
-udt1 =ps, 1 warning:
+	Return type mismatch
+udt1 =ps, 2 warning:
 	Suspicious pointer assignment
-udt1 =pz, 1 warning:
+	Return type mismatch
+udt1 =pz, 2 warning:
 	Suspicious pointer assignment
-udt1 =pw, 1 warning:
+	Return type mismatch
+udt1 =pw, 2 warning:
 	Suspicious pointer assignment
-udt1 =pudt1, 1 warning:
+	Return type mismatch
+udt1 =pudt1, 2 warning:
 	Suspicious pointer assignment
-udt1 =pudt2, 1 warning:
+	Return type mismatch
+udt1 =pudt2, 2 warning:
 	Suspicious pointer assignment
-udt1 =pfwd1, 1 warning:
+	Return type mismatch
+udt1 =pfwd1, 2 warning:
 	Suspicious pointer assignment
-udt1 =pdwf2, 1 warning:
+	Return type mismatch
+udt1 =pdwf2, 2 warning:
 	Suspicious pointer assignment
-udt1 =ppsub, 1 warning:
+	Return type mismatch
+udt1 =ppsub, 2 warning:
 	Suspicious pointer assignment
-udt1 =ppfi, 1 warning:
+	Return type mismatch
+udt1 =ppfi, 2 warning:
 	Suspicious pointer assignment
-udt2 =b, 1 warning:
+	Return type mismatch
+udt2 =b, 2 warning:
 	Suspicious pointer assignment
-udt2 =ub, 1 warning:
+	Return type mismatch
+udt2 =ub, 2 warning:
 	Suspicious pointer assignment
-udt2 =sh, 1 warning:
+	Return type mismatch
+udt2 =sh, 2 warning:
 	Suspicious pointer assignment
-udt2 =ush, 1 warning:
+	Return type mismatch
+udt2 =ush, 2 warning:
 	Suspicious pointer assignment
-udt2 =l, 1 warning:
+	Return type mismatch
+udt2 =l, 2 warning:
 	Suspicious pointer assignment
-udt2 =ul, 1 warning:
+	Return type mismatch
+udt2 =ul, 2 warning:
 	Suspicious pointer assignment
-udt2 =ll, 1 warning:
+	Return type mismatch
+udt2 =ll, 2 warning:
 	Suspicious pointer assignment
-udt2 =ull, 1 warning:
+	Return type mismatch
+udt2 =ull, 2 warning:
 	Suspicious pointer assignment
-udt2 =i, 1 warning:
+	Return type mismatch
+udt2 =i, 2 warning:
 	Suspicious pointer assignment
-udt2 =ui, 1 warning:
+	Return type mismatch
+udt2 =ui, 2 warning:
 	Suspicious pointer assignment
-udt2 =f, 1 warning:
+	Return type mismatch
+udt2 =f, 2 warning:
 	Suspicious pointer assignment
-udt2 =d, 1 warning:
+	Return type mismatch
+udt2 =d, 2 warning:
 	Suspicious pointer assignment
-udt2 =s, 1 warning:
+	Return type mismatch
+udt2 =s, 2 warning:
 	Suspicious pointer assignment
-udt2 =udt1, 1 warning:
+	Return type mismatch
+udt2 =udt1, 2 warning:
 	Suspicious pointer assignment
-udt2 =psub, 1 warning:
+	Return type mismatch
+udt2 =psub, 2 warning:
 	Suspicious pointer assignment
-udt2 =pfi, 1 warning:
+	Return type mismatch
+udt2 =pfi, 2 warning:
 	Suspicious pointer assignment
-udt2 =pany, 1 warning:
+	Return type mismatch
+udt2 =pany, 2 warning:
 	Suspicious pointer assignment
-udt2 =pb, 1 warning:
+	Return type mismatch
+udt2 =pb, 2 warning:
 	Suspicious pointer assignment
-udt2 =pub, 1 warning:
+	Return type mismatch
+udt2 =pub, 2 warning:
 	Suspicious pointer assignment
-udt2 =psh, 1 warning:
+	Return type mismatch
+udt2 =psh, 2 warning:
 	Suspicious pointer assignment
-udt2 =push, 1 warning:
+	Return type mismatch
+udt2 =push, 2 warning:
 	Suspicious pointer assignment
-udt2 =pl, 1 warning:
+	Return type mismatch
+udt2 =pl, 2 warning:
 	Suspicious pointer assignment
-udt2 =pul, 1 warning:
+	Return type mismatch
+udt2 =pul, 2 warning:
 	Suspicious pointer assignment
-udt2 =pll, 1 warning:
+	Return type mismatch
+udt2 =pll, 2 warning:
 	Suspicious pointer assignment
-udt2 =pull, 1 warning:
+	Return type mismatch
+udt2 =pull, 2 warning:
 	Suspicious pointer assignment
-udt2 =pi, 1 warning:
+	Return type mismatch
+udt2 =pi, 2 warning:
 	Suspicious pointer assignment
-udt2 =pui, 1 warning:
+	Return type mismatch
+udt2 =pui, 2 warning:
 	Suspicious pointer assignment
-udt2 =pf, 1 warning:
+	Return type mismatch
+udt2 =pf, 2 warning:
 	Suspicious pointer assignment
-udt2 =pd, 1 warning:
+	Return type mismatch
+udt2 =pd, 2 warning:
 	Suspicious pointer assignment
-udt2 =ps, 1 warning:
+	Return type mismatch
+udt2 =ps, 2 warning:
 	Suspicious pointer assignment
-udt2 =pz, 1 warning:
+	Return type mismatch
+udt2 =pz, 2 warning:
 	Suspicious pointer assignment
-udt2 =pw, 1 warning:
+	Return type mismatch
+udt2 =pw, 2 warning:
 	Suspicious pointer assignment
-udt2 =pudt1, 1 warning:
+	Return type mismatch
+udt2 =pudt1, 2 warning:
 	Suspicious pointer assignment
-udt2 =pudt2, 1 warning:
+	Return type mismatch
+udt2 =pudt2, 2 warning:
 	Suspicious pointer assignment
-udt2 =pfwd1, 1 warning:
+	Return type mismatch
+udt2 =pfwd1, 2 warning:
 	Suspicious pointer assignment
-udt2 =pdwf2, 1 warning:
+	Return type mismatch
+udt2 =pdwf2, 2 warning:
 	Suspicious pointer assignment
-udt2 =ppsub, 1 warning:
+	Return type mismatch
+udt2 =ppsub, 2 warning:
 	Suspicious pointer assignment
-udt2 =ppfi, 1 warning:
+	Return type mismatch
+udt2 =ppfi, 2 warning:
 	Suspicious pointer assignment
-psub =b, 1 warning:
+	Return type mismatch
+psub =b, 2 warning:
 	Suspicious pointer assignment
-psub =ub, 1 warning:
+	Return type mismatch
+psub =ub, 2 warning:
 	Suspicious pointer assignment
-psub =sh, 1 warning:
+	Return type mismatch
+psub =sh, 2 warning:
 	Suspicious pointer assignment
-psub =ush, 1 warning:
+	Return type mismatch
+psub =ush, 2 warning:
 	Suspicious pointer assignment
-psub =l, 1 warning:
+	Return type mismatch
+psub =l, 2 warning:
 	Suspicious pointer assignment
-psub =ul, 1 warning:
+	Return type mismatch
+psub =ul, 2 warning:
 	Suspicious pointer assignment
-psub =ll, 1 warning:
+	Return type mismatch
+psub =ll, 2 warning:
 	Suspicious pointer assignment
-psub =ull, 1 warning:
+	Return type mismatch
+psub =ull, 2 warning:
 	Suspicious pointer assignment
-psub =i, 1 warning:
+	Return type mismatch
+psub =i, 2 warning:
 	Suspicious pointer assignment
-psub =ui, 1 warning:
+	Return type mismatch
+psub =ui, 2 warning:
 	Suspicious pointer assignment
-psub =f, 1 warning:
+	Return type mismatch
+psub =f, 2 warning:
 	Suspicious pointer assignment
-psub =d, 1 warning:
+	Return type mismatch
+psub =d, 2 warning:
 	Suspicious pointer assignment
-psub =s, 1 warning:
+	Return type mismatch
+psub =s, 2 warning:
 	Suspicious pointer assignment
-psub =udt1, 1 warning:
+	Return type mismatch
+psub =udt1, 2 warning:
 	Suspicious pointer assignment
-psub =udt2, 1 warning:
+	Return type mismatch
+psub =udt2, 2 warning:
 	Suspicious pointer assignment
-psub =pfi, 1 warning:
+	Return type mismatch
+psub =pfi, 2 warning:
 	Suspicious pointer assignment
-psub =pany, 1 warning:
+	Return type mismatch
+psub =pany, 2 warning:
 	Suspicious pointer assignment
-psub =pb, 1 warning:
+	Return type mismatch
+psub =pb, 2 warning:
 	Suspicious pointer assignment
-psub =pub, 1 warning:
+	Return type mismatch
+psub =pub, 2 warning:
 	Suspicious pointer assignment
-psub =psh, 1 warning:
+	Return type mismatch
+psub =psh, 2 warning:
 	Suspicious pointer assignment
-psub =push, 1 warning:
+	Return type mismatch
+psub =push, 2 warning:
 	Suspicious pointer assignment
-psub =pl, 1 warning:
+	Return type mismatch
+psub =pl, 2 warning:
 	Suspicious pointer assignment
-psub =pul, 1 warning:
+	Return type mismatch
+psub =pul, 2 warning:
 	Suspicious pointer assignment
-psub =pll, 1 warning:
+	Return type mismatch
+psub =pll, 2 warning:
 	Suspicious pointer assignment
-psub =pull, 1 warning:
+	Return type mismatch
+psub =pull, 2 warning:
 	Suspicious pointer assignment
-psub =pi, 1 warning:
+	Return type mismatch
+psub =pi, 2 warning:
 	Suspicious pointer assignment
-psub =pui, 1 warning:
+	Return type mismatch
+psub =pui, 2 warning:
 	Suspicious pointer assignment
-psub =pf, 1 warning:
+	Return type mismatch
+psub =pf, 2 warning:
 	Suspicious pointer assignment
-psub =pd, 1 warning:
+	Return type mismatch
+psub =pd, 2 warning:
 	Suspicious pointer assignment
-psub =ps, 1 warning:
+	Return type mismatch
+psub =ps, 2 warning:
 	Suspicious pointer assignment
-psub =pz, 1 warning:
+	Return type mismatch
+psub =pz, 2 warning:
 	Suspicious pointer assignment
-psub =pw, 1 warning:
+	Return type mismatch
+psub =pw, 2 warning:
 	Suspicious pointer assignment
-psub =pudt1, 1 warning:
+	Return type mismatch
+psub =pudt1, 2 warning:
 	Suspicious pointer assignment
-psub =pudt2, 1 warning:
+	Return type mismatch
+psub =pudt2, 2 warning:
 	Suspicious pointer assignment
-psub =pfwd1, 1 warning:
+	Return type mismatch
+psub =pfwd1, 2 warning:
 	Suspicious pointer assignment
-psub =pdwf2, 1 warning:
+	Return type mismatch
+psub =pdwf2, 2 warning:
 	Suspicious pointer assignment
-psub =ppsub, 1 warning:
+	Return type mismatch
+psub =ppsub, 2 warning:
 	Suspicious pointer assignment
-psub =ppfi, 1 warning:
+	Return type mismatch
+psub =ppfi, 2 warning:
 	Suspicious pointer assignment
-pfi =b, 1 warning:
+	Return type mismatch
+pfi =b, 2 warning:
 	Suspicious pointer assignment
-pfi =ub, 1 warning:
+	Return type mismatch
+pfi =ub, 2 warning:
 	Suspicious pointer assignment
-pfi =sh, 1 warning:
+	Return type mismatch
+pfi =sh, 2 warning:
 	Suspicious pointer assignment
-pfi =ush, 1 warning:
+	Return type mismatch
+pfi =ush, 2 warning:
 	Suspicious pointer assignment
-pfi =l, 1 warning:
+	Return type mismatch
+pfi =l, 2 warning:
 	Suspicious pointer assignment
-pfi =ul, 1 warning:
+	Return type mismatch
+pfi =ul, 2 warning:
 	Suspicious pointer assignment
-pfi =ll, 1 warning:
+	Return type mismatch
+pfi =ll, 2 warning:
 	Suspicious pointer assignment
-pfi =ull, 1 warning:
+	Return type mismatch
+pfi =ull, 2 warning:
 	Suspicious pointer assignment
-pfi =i, 1 warning:
+	Return type mismatch
+pfi =i, 2 warning:
 	Suspicious pointer assignment
-pfi =ui, 1 warning:
+	Return type mismatch
+pfi =ui, 2 warning:
 	Suspicious pointer assignment
-pfi =f, 1 warning:
+	Return type mismatch
+pfi =f, 2 warning:
 	Suspicious pointer assignment
-pfi =d, 1 warning:
+	Return type mismatch
+pfi =d, 2 warning:
 	Suspicious pointer assignment
-pfi =s, 1 warning:
+	Return type mismatch
+pfi =s, 2 warning:
 	Suspicious pointer assignment
-pfi =udt1, 1 warning:
+	Return type mismatch
+pfi =udt1, 2 warning:
 	Suspicious pointer assignment
-pfi =udt2, 1 warning:
+	Return type mismatch
+pfi =udt2, 2 warning:
 	Suspicious pointer assignment
-pfi =psub, 1 warning:
+	Return type mismatch
+pfi =psub, 2 warning:
 	Suspicious pointer assignment
-pfi =pany, 1 warning:
+	Return type mismatch
+pfi =pany, 2 warning:
 	Suspicious pointer assignment
-pfi =pb, 1 warning:
+	Return type mismatch
+pfi =pb, 2 warning:
 	Suspicious pointer assignment
-pfi =pub, 1 warning:
+	Return type mismatch
+pfi =pub, 2 warning:
 	Suspicious pointer assignment
-pfi =psh, 1 warning:
+	Return type mismatch
+pfi =psh, 2 warning:
 	Suspicious pointer assignment
-pfi =push, 1 warning:
+	Return type mismatch
+pfi =push, 2 warning:
 	Suspicious pointer assignment
-pfi =pl, 1 warning:
+	Return type mismatch
+pfi =pl, 2 warning:
 	Suspicious pointer assignment
-pfi =pul, 1 warning:
+	Return type mismatch
+pfi =pul, 2 warning:
 	Suspicious pointer assignment
-pfi =pll, 1 warning:
+	Return type mismatch
+pfi =pll, 2 warning:
 	Suspicious pointer assignment
-pfi =pull, 1 warning:
+	Return type mismatch
+pfi =pull, 2 warning:
 	Suspicious pointer assignment
-pfi =pi, 1 warning:
+	Return type mismatch
+pfi =pi, 2 warning:
 	Suspicious pointer assignment
-pfi =pui, 1 warning:
+	Return type mismatch
+pfi =pui, 2 warning:
 	Suspicious pointer assignment
-pfi =pf, 1 warning:
+	Return type mismatch
+pfi =pf, 2 warning:
 	Suspicious pointer assignment
-pfi =pd, 1 warning:
+	Return type mismatch
+pfi =pd, 2 warning:
 	Suspicious pointer assignment
-pfi =ps, 1 warning:
+	Return type mismatch
+pfi =ps, 2 warning:
 	Suspicious pointer assignment
-pfi =pz, 1 warning:
+	Return type mismatch
+pfi =pz, 2 warning:
 	Suspicious pointer assignment
-pfi =pw, 1 warning:
+	Return type mismatch
+pfi =pw, 2 warning:
 	Suspicious pointer assignment
-pfi =pudt1, 1 warning:
+	Return type mismatch
+pfi =pudt1, 2 warning:
 	Suspicious pointer assignment
-pfi =pudt2, 1 warning:
+	Return type mismatch
+pfi =pudt2, 2 warning:
 	Suspicious pointer assignment
-pfi =pfwd1, 1 warning:
+	Return type mismatch
+pfi =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pfi =pdwf2, 1 warning:
+	Return type mismatch
+pfi =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pfi =ppsub, 1 warning:
+	Return type mismatch
+pfi =ppsub, 2 warning:
 	Suspicious pointer assignment
-pfi =ppfi, 1 warning:
+	Return type mismatch
+pfi =ppfi, 2 warning:
 	Suspicious pointer assignment
-pany =b, 1 warning:
+	Return type mismatch
+pany =b, 2 warning:
 	Suspicious pointer assignment
-pany =ub, 1 warning:
+	Return type mismatch
+pany =ub, 2 warning:
 	Suspicious pointer assignment
-pany =sh, 1 warning:
+	Return type mismatch
+pany =sh, 2 warning:
 	Suspicious pointer assignment
-pany =ush, 1 warning:
+	Return type mismatch
+pany =ush, 2 warning:
 	Suspicious pointer assignment
-pany =l, 1 warning:
+	Return type mismatch
+pany =l, 2 warning:
 	Suspicious pointer assignment
-pany =ul, 1 warning:
+	Return type mismatch
+pany =ul, 2 warning:
 	Suspicious pointer assignment
-pany =ll, 1 warning:
+	Return type mismatch
+pany =ll, 2 warning:
 	Suspicious pointer assignment
-pany =ull, 1 warning:
+	Return type mismatch
+pany =ull, 2 warning:
 	Suspicious pointer assignment
-pany =i, 1 warning:
+	Return type mismatch
+pany =i, 2 warning:
 	Suspicious pointer assignment
-pany =ui, 1 warning:
+	Return type mismatch
+pany =ui, 2 warning:
 	Suspicious pointer assignment
-pany =f, 1 warning:
+	Return type mismatch
+pany =f, 2 warning:
 	Suspicious pointer assignment
-pany =d, 1 warning:
+	Return type mismatch
+pany =d, 2 warning:
 	Suspicious pointer assignment
-pany =s, 1 warning:
+	Return type mismatch
+pany =s, 2 warning:
 	Suspicious pointer assignment
-pany =udt1, 1 warning:
+	Return type mismatch
+pany =udt1, 2 warning:
 	Suspicious pointer assignment
-pany =udt2, 1 warning:
+	Return type mismatch
+pany =udt2, 2 warning:
 	Suspicious pointer assignment
-pany =psub, 1 warning:
+	Return type mismatch
+pany =psub, 2 warning:
 	Suspicious pointer assignment
-pany =pfi, 1 warning:
+	Return type mismatch
+pany =pfi, 2 warning:
 	Suspicious pointer assignment
-pany =pb, 1 warning:
+	Return type mismatch
+pany =pb, 2 warning:
 	Suspicious pointer assignment
-pany =pub, 1 warning:
+	Return type mismatch
+pany =pub, 2 warning:
 	Suspicious pointer assignment
-pany =psh, 1 warning:
+	Return type mismatch
+pany =psh, 2 warning:
 	Suspicious pointer assignment
-pany =push, 1 warning:
+	Return type mismatch
+pany =push, 2 warning:
 	Suspicious pointer assignment
-pany =pl, 1 warning:
+	Return type mismatch
+pany =pl, 2 warning:
 	Suspicious pointer assignment
-pany =pul, 1 warning:
+	Return type mismatch
+pany =pul, 2 warning:
 	Suspicious pointer assignment
-pany =pll, 1 warning:
+	Return type mismatch
+pany =pll, 2 warning:
 	Suspicious pointer assignment
-pany =pull, 1 warning:
+	Return type mismatch
+pany =pull, 2 warning:
 	Suspicious pointer assignment
-pany =pi, 1 warning:
+	Return type mismatch
+pany =pi, 2 warning:
 	Suspicious pointer assignment
-pany =pui, 1 warning:
+	Return type mismatch
+pany =pui, 2 warning:
 	Suspicious pointer assignment
-pany =pf, 1 warning:
+	Return type mismatch
+pany =pf, 2 warning:
 	Suspicious pointer assignment
-pany =pd, 1 warning:
+	Return type mismatch
+pany =pd, 2 warning:
 	Suspicious pointer assignment
-pany =ps, 1 warning:
+	Return type mismatch
+pany =ps, 2 warning:
 	Suspicious pointer assignment
-pany =pz, 1 warning:
+	Return type mismatch
+pany =pz, 2 warning:
 	Suspicious pointer assignment
-pany =pw, 1 warning:
+	Return type mismatch
+pany =pw, 2 warning:
 	Suspicious pointer assignment
-pany =pudt1, 1 warning:
+	Return type mismatch
+pany =pudt1, 2 warning:
 	Suspicious pointer assignment
-pany =pudt2, 1 warning:
+	Return type mismatch
+pany =pudt2, 2 warning:
 	Suspicious pointer assignment
-pany =pfwd1, 1 warning:
+	Return type mismatch
+pany =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pany =pdwf2, 1 warning:
+	Return type mismatch
+pany =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pany =ppsub, 1 warning:
+	Return type mismatch
+pany =ppsub, 2 warning:
 	Suspicious pointer assignment
-pany =ppfi, 1 warning:
+	Return type mismatch
+pany =ppfi, 2 warning:
 	Suspicious pointer assignment
-pb =b, 1 warning:
+	Return type mismatch
+pb =b, 2 warning:
 	Suspicious pointer assignment
-pb =ub, 1 warning:
+	Return type mismatch
+pb =ub, 2 warning:
 	Suspicious pointer assignment
-pb =sh, 1 warning:
+	Return type mismatch
+pb =sh, 2 warning:
 	Suspicious pointer assignment
-pb =ush, 1 warning:
+	Return type mismatch
+pb =ush, 2 warning:
 	Suspicious pointer assignment
-pb =l, 1 warning:
+	Return type mismatch
+pb =l, 2 warning:
 	Suspicious pointer assignment
-pb =ul, 1 warning:
+	Return type mismatch
+pb =ul, 2 warning:
 	Suspicious pointer assignment
-pb =ll, 1 warning:
+	Return type mismatch
+pb =ll, 2 warning:
 	Suspicious pointer assignment
-pb =ull, 1 warning:
+	Return type mismatch
+pb =ull, 2 warning:
 	Suspicious pointer assignment
-pb =i, 1 warning:
+	Return type mismatch
+pb =i, 2 warning:
 	Suspicious pointer assignment
-pb =ui, 1 warning:
+	Return type mismatch
+pb =ui, 2 warning:
 	Suspicious pointer assignment
-pb =f, 1 warning:
+	Return type mismatch
+pb =f, 2 warning:
 	Suspicious pointer assignment
-pb =d, 1 warning:
+	Return type mismatch
+pb =d, 2 warning:
 	Suspicious pointer assignment
-pb =s, 1 warning:
+	Return type mismatch
+pb =s, 2 warning:
 	Suspicious pointer assignment
-pb =udt1, 1 warning:
+	Return type mismatch
+pb =udt1, 2 warning:
 	Suspicious pointer assignment
-pb =udt2, 1 warning:
+	Return type mismatch
+pb =udt2, 2 warning:
 	Suspicious pointer assignment
-pb =psub, 1 warning:
+	Return type mismatch
+pb =psub, 2 warning:
 	Suspicious pointer assignment
-pb =pfi, 1 warning:
+	Return type mismatch
+pb =pfi, 2 warning:
 	Suspicious pointer assignment
-pb =pany, 1 warning:
+	Return type mismatch
+pb =pany, 2 warning:
 	Suspicious pointer assignment
-pb =psh, 1 warning:
+	Return type mismatch
+pb =psh, 2 warning:
 	Suspicious pointer assignment
-pb =push, 1 warning:
+	Return type mismatch
+pb =push, 2 warning:
 	Suspicious pointer assignment
-pb =pl, 1 warning:
+	Return type mismatch
+pb =pl, 2 warning:
 	Suspicious pointer assignment
-pb =pul, 1 warning:
+	Return type mismatch
+pb =pul, 2 warning:
 	Suspicious pointer assignment
-pb =pll, 1 warning:
+	Return type mismatch
+pb =pll, 2 warning:
 	Suspicious pointer assignment
-pb =pull, 1 warning:
+	Return type mismatch
+pb =pull, 2 warning:
 	Suspicious pointer assignment
-pb =pi, 1 warning:
+	Return type mismatch
+pb =pi, 2 warning:
 	Suspicious pointer assignment
-pb =pui, 1 warning:
+	Return type mismatch
+pb =pui, 2 warning:
 	Suspicious pointer assignment
-pb =pf, 1 warning:
+	Return type mismatch
+pb =pf, 2 warning:
 	Suspicious pointer assignment
-pb =pd, 1 warning:
+	Return type mismatch
+pb =pd, 2 warning:
 	Suspicious pointer assignment
-pb =ps, 1 warning:
+	Return type mismatch
+pb =ps, 2 warning:
 	Suspicious pointer assignment
-pb =pw, 1 warning:
+	Return type mismatch
+pb =pw, 2 warning:
 	Suspicious pointer assignment
-pb =pudt1, 1 warning:
+	Return type mismatch
+pb =pudt1, 2 warning:
 	Suspicious pointer assignment
-pb =pudt2, 1 warning:
+	Return type mismatch
+pb =pudt2, 2 warning:
 	Suspicious pointer assignment
-pb =pfwd1, 1 warning:
+	Return type mismatch
+pb =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pb =pdwf2, 1 warning:
+	Return type mismatch
+pb =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pb =ppsub, 1 warning:
+	Return type mismatch
+pb =ppsub, 2 warning:
 	Suspicious pointer assignment
-pb =ppfi, 1 warning:
+	Return type mismatch
+pb =ppfi, 2 warning:
 	Suspicious pointer assignment
-pub =b, 1 warning:
+	Return type mismatch
+pub =b, 2 warning:
 	Suspicious pointer assignment
-pub =ub, 1 warning:
+	Return type mismatch
+pub =ub, 2 warning:
 	Suspicious pointer assignment
-pub =sh, 1 warning:
+	Return type mismatch
+pub =sh, 2 warning:
 	Suspicious pointer assignment
-pub =ush, 1 warning:
+	Return type mismatch
+pub =ush, 2 warning:
 	Suspicious pointer assignment
-pub =l, 1 warning:
+	Return type mismatch
+pub =l, 2 warning:
 	Suspicious pointer assignment
-pub =ul, 1 warning:
+	Return type mismatch
+pub =ul, 2 warning:
 	Suspicious pointer assignment
-pub =ll, 1 warning:
+	Return type mismatch
+pub =ll, 2 warning:
 	Suspicious pointer assignment
-pub =ull, 1 warning:
+	Return type mismatch
+pub =ull, 2 warning:
 	Suspicious pointer assignment
-pub =i, 1 warning:
+	Return type mismatch
+pub =i, 2 warning:
 	Suspicious pointer assignment
-pub =ui, 1 warning:
+	Return type mismatch
+pub =ui, 2 warning:
 	Suspicious pointer assignment
-pub =f, 1 warning:
+	Return type mismatch
+pub =f, 2 warning:
 	Suspicious pointer assignment
-pub =d, 1 warning:
+	Return type mismatch
+pub =d, 2 warning:
 	Suspicious pointer assignment
-pub =s, 1 warning:
+	Return type mismatch
+pub =s, 2 warning:
 	Suspicious pointer assignment
-pub =udt1, 1 warning:
+	Return type mismatch
+pub =udt1, 2 warning:
 	Suspicious pointer assignment
-pub =udt2, 1 warning:
+	Return type mismatch
+pub =udt2, 2 warning:
 	Suspicious pointer assignment
-pub =psub, 1 warning:
+	Return type mismatch
+pub =psub, 2 warning:
 	Suspicious pointer assignment
-pub =pfi, 1 warning:
+	Return type mismatch
+pub =pfi, 2 warning:
 	Suspicious pointer assignment
-pub =pany, 1 warning:
+	Return type mismatch
+pub =pany, 2 warning:
 	Suspicious pointer assignment
-pub =psh, 1 warning:
+	Return type mismatch
+pub =psh, 2 warning:
 	Suspicious pointer assignment
-pub =push, 1 warning:
+	Return type mismatch
+pub =push, 2 warning:
 	Suspicious pointer assignment
-pub =pl, 1 warning:
+	Return type mismatch
+pub =pl, 2 warning:
 	Suspicious pointer assignment
-pub =pul, 1 warning:
+	Return type mismatch
+pub =pul, 2 warning:
 	Suspicious pointer assignment
-pub =pll, 1 warning:
+	Return type mismatch
+pub =pll, 2 warning:
 	Suspicious pointer assignment
-pub =pull, 1 warning:
+	Return type mismatch
+pub =pull, 2 warning:
 	Suspicious pointer assignment
-pub =pi, 1 warning:
+	Return type mismatch
+pub =pi, 2 warning:
 	Suspicious pointer assignment
-pub =pui, 1 warning:
+	Return type mismatch
+pub =pui, 2 warning:
 	Suspicious pointer assignment
-pub =pf, 1 warning:
+	Return type mismatch
+pub =pf, 2 warning:
 	Suspicious pointer assignment
-pub =pd, 1 warning:
+	Return type mismatch
+pub =pd, 2 warning:
 	Suspicious pointer assignment
-pub =ps, 1 warning:
+	Return type mismatch
+pub =ps, 2 warning:
 	Suspicious pointer assignment
-pub =pw, 1 warning:
+	Return type mismatch
+pub =pw, 2 warning:
 	Suspicious pointer assignment
-pub =pudt1, 1 warning:
+	Return type mismatch
+pub =pudt1, 2 warning:
 	Suspicious pointer assignment
-pub =pudt2, 1 warning:
+	Return type mismatch
+pub =pudt2, 2 warning:
 	Suspicious pointer assignment
-pub =pfwd1, 1 warning:
+	Return type mismatch
+pub =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pub =pdwf2, 1 warning:
+	Return type mismatch
+pub =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pub =ppsub, 1 warning:
+	Return type mismatch
+pub =ppsub, 2 warning:
 	Suspicious pointer assignment
-pub =ppfi, 1 warning:
+	Return type mismatch
+pub =ppfi, 2 warning:
 	Suspicious pointer assignment
-psh =b, 1 warning:
+	Return type mismatch
+psh =b, 2 warning:
 	Suspicious pointer assignment
-psh =ub, 1 warning:
+	Return type mismatch
+psh =ub, 2 warning:
 	Suspicious pointer assignment
-psh =sh, 1 warning:
+	Return type mismatch
+psh =sh, 2 warning:
 	Suspicious pointer assignment
-psh =ush, 1 warning:
+	Return type mismatch
+psh =ush, 2 warning:
 	Suspicious pointer assignment
-psh =l, 1 warning:
+	Return type mismatch
+psh =l, 2 warning:
 	Suspicious pointer assignment
-psh =ul, 1 warning:
+	Return type mismatch
+psh =ul, 2 warning:
 	Suspicious pointer assignment
-psh =ll, 1 warning:
+	Return type mismatch
+psh =ll, 2 warning:
 	Suspicious pointer assignment
-psh =ull, 1 warning:
+	Return type mismatch
+psh =ull, 2 warning:
 	Suspicious pointer assignment
-psh =i, 1 warning:
+	Return type mismatch
+psh =i, 2 warning:
 	Suspicious pointer assignment
-psh =ui, 1 warning:
+	Return type mismatch
+psh =ui, 2 warning:
 	Suspicious pointer assignment
-psh =f, 1 warning:
+	Return type mismatch
+psh =f, 2 warning:
 	Suspicious pointer assignment
-psh =d, 1 warning:
+	Return type mismatch
+psh =d, 2 warning:
 	Suspicious pointer assignment
-psh =s, 1 warning:
+	Return type mismatch
+psh =s, 2 warning:
 	Suspicious pointer assignment
-psh =udt1, 1 warning:
+	Return type mismatch
+psh =udt1, 2 warning:
 	Suspicious pointer assignment
-psh =udt2, 1 warning:
+	Return type mismatch
+psh =udt2, 2 warning:
 	Suspicious pointer assignment
-psh =psub, 1 warning:
+	Return type mismatch
+psh =psub, 2 warning:
 	Suspicious pointer assignment
-psh =pfi, 1 warning:
+	Return type mismatch
+psh =pfi, 2 warning:
 	Suspicious pointer assignment
-psh =pany, 1 warning:
+	Return type mismatch
+psh =pany, 2 warning:
 	Suspicious pointer assignment
-psh =pb, 1 warning:
+	Return type mismatch
+psh =pb, 2 warning:
 	Suspicious pointer assignment
-psh =pub, 1 warning:
+	Return type mismatch
+psh =pub, 2 warning:
 	Suspicious pointer assignment
-psh =pl, 1 warning:
+	Return type mismatch
+psh =pl, 2 warning:
 	Suspicious pointer assignment
-psh =pul, 1 warning:
+	Return type mismatch
+psh =pul, 2 warning:
 	Suspicious pointer assignment
-psh =pll, 1 warning:
+	Return type mismatch
+psh =pll, 2 warning:
 	Suspicious pointer assignment
-psh =pull, 1 warning:
+	Return type mismatch
+psh =pull, 2 warning:
 	Suspicious pointer assignment
-psh =pi, 1 warning:
+	Return type mismatch
+psh =pi, 2 warning:
 	Suspicious pointer assignment
-psh =pui, 1 warning:
+	Return type mismatch
+psh =pui, 2 warning:
 	Suspicious pointer assignment
-psh =pf, 1 warning:
+	Return type mismatch
+psh =pf, 2 warning:
 	Suspicious pointer assignment
-psh =pd, 1 warning:
+	Return type mismatch
+psh =pd, 2 warning:
 	Suspicious pointer assignment
-psh =ps, 1 warning:
+	Return type mismatch
+psh =ps, 2 warning:
 	Suspicious pointer assignment
-psh =pz, 1 warning:
+	Return type mismatch
+psh =pz, 2 warning:
 	Suspicious pointer assignment
-psh =pw, 1 warning:
+	Return type mismatch
+psh =pw, 2 warning:
 	Suspicious pointer assignment
-psh =pudt1, 1 warning:
+	Return type mismatch
+psh =pudt1, 2 warning:
 	Suspicious pointer assignment
-psh =pudt2, 1 warning:
+	Return type mismatch
+psh =pudt2, 2 warning:
 	Suspicious pointer assignment
-psh =pfwd1, 1 warning:
+	Return type mismatch
+psh =pfwd1, 2 warning:
 	Suspicious pointer assignment
-psh =pdwf2, 1 warning:
+	Return type mismatch
+psh =pdwf2, 2 warning:
 	Suspicious pointer assignment
-psh =ppsub, 1 warning:
+	Return type mismatch
+psh =ppsub, 2 warning:
 	Suspicious pointer assignment
-psh =ppfi, 1 warning:
+	Return type mismatch
+psh =ppfi, 2 warning:
 	Suspicious pointer assignment
-push =b, 1 warning:
+	Return type mismatch
+push =b, 2 warning:
 	Suspicious pointer assignment
-push =ub, 1 warning:
+	Return type mismatch
+push =ub, 2 warning:
 	Suspicious pointer assignment
-push =sh, 1 warning:
+	Return type mismatch
+push =sh, 2 warning:
 	Suspicious pointer assignment
-push =ush, 1 warning:
+	Return type mismatch
+push =ush, 2 warning:
 	Suspicious pointer assignment
-push =l, 1 warning:
+	Return type mismatch
+push =l, 2 warning:
 	Suspicious pointer assignment
-push =ul, 1 warning:
+	Return type mismatch
+push =ul, 2 warning:
 	Suspicious pointer assignment
-push =ll, 1 warning:
+	Return type mismatch
+push =ll, 2 warning:
 	Suspicious pointer assignment
-push =ull, 1 warning:
+	Return type mismatch
+push =ull, 2 warning:
 	Suspicious pointer assignment
-push =i, 1 warning:
+	Return type mismatch
+push =i, 2 warning:
 	Suspicious pointer assignment
-push =ui, 1 warning:
+	Return type mismatch
+push =ui, 2 warning:
 	Suspicious pointer assignment
-push =f, 1 warning:
+	Return type mismatch
+push =f, 2 warning:
 	Suspicious pointer assignment
-push =d, 1 warning:
+	Return type mismatch
+push =d, 2 warning:
 	Suspicious pointer assignment
-push =s, 1 warning:
+	Return type mismatch
+push =s, 2 warning:
 	Suspicious pointer assignment
-push =udt1, 1 warning:
+	Return type mismatch
+push =udt1, 2 warning:
 	Suspicious pointer assignment
-push =udt2, 1 warning:
+	Return type mismatch
+push =udt2, 2 warning:
 	Suspicious pointer assignment
-push =psub, 1 warning:
+	Return type mismatch
+push =psub, 2 warning:
 	Suspicious pointer assignment
-push =pfi, 1 warning:
+	Return type mismatch
+push =pfi, 2 warning:
 	Suspicious pointer assignment
-push =pany, 1 warning:
+	Return type mismatch
+push =pany, 2 warning:
 	Suspicious pointer assignment
-push =pb, 1 warning:
+	Return type mismatch
+push =pb, 2 warning:
 	Suspicious pointer assignment
-push =pub, 1 warning:
+	Return type mismatch
+push =pub, 2 warning:
 	Suspicious pointer assignment
-push =pl, 1 warning:
+	Return type mismatch
+push =pl, 2 warning:
 	Suspicious pointer assignment
-push =pul, 1 warning:
+	Return type mismatch
+push =pul, 2 warning:
 	Suspicious pointer assignment
-push =pll, 1 warning:
+	Return type mismatch
+push =pll, 2 warning:
 	Suspicious pointer assignment
-push =pull, 1 warning:
+	Return type mismatch
+push =pull, 2 warning:
 	Suspicious pointer assignment
-push =pi, 1 warning:
+	Return type mismatch
+push =pi, 2 warning:
 	Suspicious pointer assignment
-push =pui, 1 warning:
+	Return type mismatch
+push =pui, 2 warning:
 	Suspicious pointer assignment
-push =pf, 1 warning:
+	Return type mismatch
+push =pf, 2 warning:
 	Suspicious pointer assignment
-push =pd, 1 warning:
+	Return type mismatch
+push =pd, 2 warning:
 	Suspicious pointer assignment
-push =ps, 1 warning:
+	Return type mismatch
+push =ps, 2 warning:
 	Suspicious pointer assignment
-push =pz, 1 warning:
+	Return type mismatch
+push =pz, 2 warning:
 	Suspicious pointer assignment
-push =pw, 1 warning:
+	Return type mismatch
+push =pw, 2 warning:
 	Suspicious pointer assignment
-push =pudt1, 1 warning:
+	Return type mismatch
+push =pudt1, 2 warning:
 	Suspicious pointer assignment
-push =pudt2, 1 warning:
+	Return type mismatch
+push =pudt2, 2 warning:
 	Suspicious pointer assignment
-push =pfwd1, 1 warning:
+	Return type mismatch
+push =pfwd1, 2 warning:
 	Suspicious pointer assignment
-push =pdwf2, 1 warning:
+	Return type mismatch
+push =pdwf2, 2 warning:
 	Suspicious pointer assignment
-push =ppsub, 1 warning:
+	Return type mismatch
+push =ppsub, 2 warning:
 	Suspicious pointer assignment
-push =ppfi, 1 warning:
+	Return type mismatch
+push =ppfi, 2 warning:
 	Suspicious pointer assignment
-pl =b, 1 warning:
+	Return type mismatch
+pl =b, 2 warning:
 	Suspicious pointer assignment
-pl =ub, 1 warning:
+	Return type mismatch
+pl =ub, 2 warning:
 	Suspicious pointer assignment
-pl =sh, 1 warning:
+	Return type mismatch
+pl =sh, 2 warning:
 	Suspicious pointer assignment
-pl =ush, 1 warning:
+	Return type mismatch
+pl =ush, 2 warning:
 	Suspicious pointer assignment
-pl =l, 1 warning:
+	Return type mismatch
+pl =l, 2 warning:
 	Suspicious pointer assignment
-pl =ul, 1 warning:
+	Return type mismatch
+pl =ul, 2 warning:
 	Suspicious pointer assignment
-pl =ll, 1 warning:
+	Return type mismatch
+pl =ll, 2 warning:
 	Suspicious pointer assignment
-pl =ull, 1 warning:
+	Return type mismatch
+pl =ull, 2 warning:
 	Suspicious pointer assignment
-pl =i, 1 warning:
+	Return type mismatch
+pl =i, 2 warning:
 	Suspicious pointer assignment
-pl =ui, 1 warning:
+	Return type mismatch
+pl =ui, 2 warning:
 	Suspicious pointer assignment
-pl =f, 1 warning:
+	Return type mismatch
+pl =f, 2 warning:
 	Suspicious pointer assignment
-pl =d, 1 warning:
+	Return type mismatch
+pl =d, 2 warning:
 	Suspicious pointer assignment
-pl =s, 1 warning:
+	Return type mismatch
+pl =s, 2 warning:
 	Suspicious pointer assignment
-pl =udt1, 1 warning:
+	Return type mismatch
+pl =udt1, 2 warning:
 	Suspicious pointer assignment
-pl =udt2, 1 warning:
+	Return type mismatch
+pl =udt2, 2 warning:
 	Suspicious pointer assignment
-pl =psub, 1 warning:
+	Return type mismatch
+pl =psub, 2 warning:
 	Suspicious pointer assignment
-pl =pfi, 1 warning:
+	Return type mismatch
+pl =pfi, 2 warning:
 	Suspicious pointer assignment
-pl =pany, 1 warning:
+	Return type mismatch
+pl =pany, 2 warning:
 	Suspicious pointer assignment
-pl =pb, 1 warning:
+	Return type mismatch
+pl =pb, 2 warning:
 	Suspicious pointer assignment
-pl =pub, 1 warning:
+	Return type mismatch
+pl =pub, 2 warning:
 	Suspicious pointer assignment
-pl =psh, 1 warning:
+	Return type mismatch
+pl =psh, 2 warning:
 	Suspicious pointer assignment
-pl =push, 1 warning:
+	Return type mismatch
+pl =push, 2 warning:
 	Suspicious pointer assignment
-pl =pll, 1 warning:
+	Return type mismatch
+pl =pll, 2 warning:
 	Suspicious pointer assignment
-pl =pull, 1 warning:
+	Return type mismatch
+pl =pull, 2 warning:
 	Suspicious pointer assignment
-pl =pf, 1 warning:
+	Return type mismatch
+pl =pf, 2 warning:
 	Suspicious pointer assignment
-pl =pd, 1 warning:
+	Return type mismatch
+pl =pd, 2 warning:
 	Suspicious pointer assignment
-pl =ps, 1 warning:
+	Return type mismatch
+pl =ps, 2 warning:
 	Suspicious pointer assignment
-pl =pz, 1 warning:
+	Return type mismatch
+pl =pz, 2 warning:
 	Suspicious pointer assignment
-pl =pudt1, 1 warning:
+	Return type mismatch
+pl =pudt1, 2 warning:
 	Suspicious pointer assignment
-pl =pudt2, 1 warning:
+	Return type mismatch
+pl =pudt2, 2 warning:
 	Suspicious pointer assignment
-pl =pfwd1, 1 warning:
+	Return type mismatch
+pl =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pl =pdwf2, 1 warning:
+	Return type mismatch
+pl =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pl =ppsub, 1 warning:
+	Return type mismatch
+pl =ppsub, 2 warning:
 	Suspicious pointer assignment
-pl =ppfi, 1 warning:
+	Return type mismatch
+pl =ppfi, 2 warning:
 	Suspicious pointer assignment
-pul =b, 1 warning:
+	Return type mismatch
+pul =b, 2 warning:
 	Suspicious pointer assignment
-pul =ub, 1 warning:
+	Return type mismatch
+pul =ub, 2 warning:
 	Suspicious pointer assignment
-pul =sh, 1 warning:
+	Return type mismatch
+pul =sh, 2 warning:
 	Suspicious pointer assignment
-pul =ush, 1 warning:
+	Return type mismatch
+pul =ush, 2 warning:
 	Suspicious pointer assignment
-pul =l, 1 warning:
+	Return type mismatch
+pul =l, 2 warning:
 	Suspicious pointer assignment
-pul =ul, 1 warning:
+	Return type mismatch
+pul =ul, 2 warning:
 	Suspicious pointer assignment
-pul =ll, 1 warning:
+	Return type mismatch
+pul =ll, 2 warning:
 	Suspicious pointer assignment
-pul =ull, 1 warning:
+	Return type mismatch
+pul =ull, 2 warning:
 	Suspicious pointer assignment
-pul =i, 1 warning:
+	Return type mismatch
+pul =i, 2 warning:
 	Suspicious pointer assignment
-pul =ui, 1 warning:
+	Return type mismatch
+pul =ui, 2 warning:
 	Suspicious pointer assignment
-pul =f, 1 warning:
+	Return type mismatch
+pul =f, 2 warning:
 	Suspicious pointer assignment
-pul =d, 1 warning:
+	Return type mismatch
+pul =d, 2 warning:
 	Suspicious pointer assignment
-pul =s, 1 warning:
+	Return type mismatch
+pul =s, 2 warning:
 	Suspicious pointer assignment
-pul =udt1, 1 warning:
+	Return type mismatch
+pul =udt1, 2 warning:
 	Suspicious pointer assignment
-pul =udt2, 1 warning:
+	Return type mismatch
+pul =udt2, 2 warning:
 	Suspicious pointer assignment
-pul =psub, 1 warning:
+	Return type mismatch
+pul =psub, 2 warning:
 	Suspicious pointer assignment
-pul =pfi, 1 warning:
+	Return type mismatch
+pul =pfi, 2 warning:
 	Suspicious pointer assignment
-pul =pany, 1 warning:
+	Return type mismatch
+pul =pany, 2 warning:
 	Suspicious pointer assignment
-pul =pb, 1 warning:
+	Return type mismatch
+pul =pb, 2 warning:
 	Suspicious pointer assignment
-pul =pub, 1 warning:
+	Return type mismatch
+pul =pub, 2 warning:
 	Suspicious pointer assignment
-pul =psh, 1 warning:
+	Return type mismatch
+pul =psh, 2 warning:
 	Suspicious pointer assignment
-pul =push, 1 warning:
+	Return type mismatch
+pul =push, 2 warning:
 	Suspicious pointer assignment
-pul =pll, 1 warning:
+	Return type mismatch
+pul =pll, 2 warning:
 	Suspicious pointer assignment
-pul =pull, 1 warning:
+	Return type mismatch
+pul =pull, 2 warning:
 	Suspicious pointer assignment
-pul =pf, 1 warning:
+	Return type mismatch
+pul =pf, 2 warning:
 	Suspicious pointer assignment
-pul =pd, 1 warning:
+	Return type mismatch
+pul =pd, 2 warning:
 	Suspicious pointer assignment
-pul =ps, 1 warning:
+	Return type mismatch
+pul =ps, 2 warning:
 	Suspicious pointer assignment
-pul =pz, 1 warning:
+	Return type mismatch
+pul =pz, 2 warning:
 	Suspicious pointer assignment
-pul =pudt1, 1 warning:
+	Return type mismatch
+pul =pudt1, 2 warning:
 	Suspicious pointer assignment
-pul =pudt2, 1 warning:
+	Return type mismatch
+pul =pudt2, 2 warning:
 	Suspicious pointer assignment
-pul =pfwd1, 1 warning:
+	Return type mismatch
+pul =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pul =pdwf2, 1 warning:
+	Return type mismatch
+pul =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pul =ppsub, 1 warning:
+	Return type mismatch
+pul =ppsub, 2 warning:
 	Suspicious pointer assignment
-pul =ppfi, 1 warning:
+	Return type mismatch
+pul =ppfi, 2 warning:
 	Suspicious pointer assignment
-pll =b, 1 warning:
+	Return type mismatch
+pll =b, 2 warning:
 	Suspicious pointer assignment
-pll =ub, 1 warning:
+	Return type mismatch
+pll =ub, 2 warning:
 	Suspicious pointer assignment
-pll =sh, 1 warning:
+	Return type mismatch
+pll =sh, 2 warning:
 	Suspicious pointer assignment
-pll =ush, 1 warning:
+	Return type mismatch
+pll =ush, 2 warning:
 	Suspicious pointer assignment
-pll =l, 1 warning:
+	Return type mismatch
+pll =l, 2 warning:
 	Suspicious pointer assignment
-pll =ul, 1 warning:
+	Return type mismatch
+pll =ul, 2 warning:
 	Suspicious pointer assignment
-pll =ll, 1 warning:
+	Return type mismatch
+pll =ll, 2 warning:
 	Suspicious pointer assignment
-pll =ull, 1 warning:
+	Return type mismatch
+pll =ull, 2 warning:
 	Suspicious pointer assignment
-pll =i, 1 warning:
+	Return type mismatch
+pll =i, 2 warning:
 	Suspicious pointer assignment
-pll =ui, 1 warning:
+	Return type mismatch
+pll =ui, 2 warning:
 	Suspicious pointer assignment
-pll =f, 1 warning:
+	Return type mismatch
+pll =f, 2 warning:
 	Suspicious pointer assignment
-pll =d, 1 warning:
+	Return type mismatch
+pll =d, 2 warning:
 	Suspicious pointer assignment
-pll =s, 1 warning:
+	Return type mismatch
+pll =s, 2 warning:
 	Suspicious pointer assignment
-pll =udt1, 1 warning:
+	Return type mismatch
+pll =udt1, 2 warning:
 	Suspicious pointer assignment
-pll =udt2, 1 warning:
+	Return type mismatch
+pll =udt2, 2 warning:
 	Suspicious pointer assignment
-pll =psub, 1 warning:
+	Return type mismatch
+pll =psub, 2 warning:
 	Suspicious pointer assignment
-pll =pfi, 1 warning:
+	Return type mismatch
+pll =pfi, 2 warning:
 	Suspicious pointer assignment
-pll =pany, 1 warning:
+	Return type mismatch
+pll =pany, 2 warning:
 	Suspicious pointer assignment
-pll =pb, 1 warning:
+	Return type mismatch
+pll =pb, 2 warning:
 	Suspicious pointer assignment
-pll =pub, 1 warning:
+	Return type mismatch
+pll =pub, 2 warning:
 	Suspicious pointer assignment
-pll =psh, 1 warning:
+	Return type mismatch
+pll =psh, 2 warning:
 	Suspicious pointer assignment
-pll =push, 1 warning:
+	Return type mismatch
+pll =push, 2 warning:
 	Suspicious pointer assignment
-pll =pl, 1 warning:
+	Return type mismatch
+pll =pl, 2 warning:
 	Suspicious pointer assignment
-pll =pul, 1 warning:
+	Return type mismatch
+pll =pul, 2 warning:
 	Suspicious pointer assignment
-pll =pi, 1 warning:
+	Return type mismatch
+pll =pi, 2 warning:
 	Suspicious pointer assignment
-pll =pui, 1 warning:
+	Return type mismatch
+pll =pui, 2 warning:
 	Suspicious pointer assignment
-pll =pf, 1 warning:
+	Return type mismatch
+pll =pf, 2 warning:
 	Suspicious pointer assignment
-pll =pd, 1 warning:
+	Return type mismatch
+pll =pd, 2 warning:
 	Suspicious pointer assignment
-pll =ps, 1 warning:
+	Return type mismatch
+pll =ps, 2 warning:
 	Suspicious pointer assignment
-pll =pz, 1 warning:
+	Return type mismatch
+pll =pz, 2 warning:
 	Suspicious pointer assignment
-pll =pw, 1 warning:
+	Return type mismatch
+pll =pw, 2 warning:
 	Suspicious pointer assignment
-pll =pudt1, 1 warning:
+	Return type mismatch
+pll =pudt1, 2 warning:
 	Suspicious pointer assignment
-pll =pudt2, 1 warning:
+	Return type mismatch
+pll =pudt2, 2 warning:
 	Suspicious pointer assignment
-pll =pfwd1, 1 warning:
+	Return type mismatch
+pll =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pll =pdwf2, 1 warning:
+	Return type mismatch
+pll =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pll =ppsub, 1 warning:
+	Return type mismatch
+pll =ppsub, 2 warning:
 	Suspicious pointer assignment
-pll =ppfi, 1 warning:
+	Return type mismatch
+pll =ppfi, 2 warning:
 	Suspicious pointer assignment
-pull =b, 1 warning:
+	Return type mismatch
+pull =b, 2 warning:
 	Suspicious pointer assignment
-pull =ub, 1 warning:
+	Return type mismatch
+pull =ub, 2 warning:
 	Suspicious pointer assignment
-pull =sh, 1 warning:
+	Return type mismatch
+pull =sh, 2 warning:
 	Suspicious pointer assignment
-pull =ush, 1 warning:
+	Return type mismatch
+pull =ush, 2 warning:
 	Suspicious pointer assignment
-pull =l, 1 warning:
+	Return type mismatch
+pull =l, 2 warning:
 	Suspicious pointer assignment
-pull =ul, 1 warning:
+	Return type mismatch
+pull =ul, 2 warning:
 	Suspicious pointer assignment
-pull =ll, 1 warning:
+	Return type mismatch
+pull =ll, 2 warning:
 	Suspicious pointer assignment
-pull =ull, 1 warning:
+	Return type mismatch
+pull =ull, 2 warning:
 	Suspicious pointer assignment
-pull =i, 1 warning:
+	Return type mismatch
+pull =i, 2 warning:
 	Suspicious pointer assignment
-pull =ui, 1 warning:
+	Return type mismatch
+pull =ui, 2 warning:
 	Suspicious pointer assignment
-pull =f, 1 warning:
+	Return type mismatch
+pull =f, 2 warning:
 	Suspicious pointer assignment
-pull =d, 1 warning:
+	Return type mismatch
+pull =d, 2 warning:
 	Suspicious pointer assignment
-pull =s, 1 warning:
+	Return type mismatch
+pull =s, 2 warning:
 	Suspicious pointer assignment
-pull =udt1, 1 warning:
+	Return type mismatch
+pull =udt1, 2 warning:
 	Suspicious pointer assignment
-pull =udt2, 1 warning:
+	Return type mismatch
+pull =udt2, 2 warning:
 	Suspicious pointer assignment
-pull =psub, 1 warning:
+	Return type mismatch
+pull =psub, 2 warning:
 	Suspicious pointer assignment
-pull =pfi, 1 warning:
+	Return type mismatch
+pull =pfi, 2 warning:
 	Suspicious pointer assignment
-pull =pany, 1 warning:
+	Return type mismatch
+pull =pany, 2 warning:
 	Suspicious pointer assignment
-pull =pb, 1 warning:
+	Return type mismatch
+pull =pb, 2 warning:
 	Suspicious pointer assignment
-pull =pub, 1 warning:
+	Return type mismatch
+pull =pub, 2 warning:
 	Suspicious pointer assignment
-pull =psh, 1 warning:
+	Return type mismatch
+pull =psh, 2 warning:
 	Suspicious pointer assignment
-pull =push, 1 warning:
+	Return type mismatch
+pull =push, 2 warning:
 	Suspicious pointer assignment
-pull =pl, 1 warning:
+	Return type mismatch
+pull =pl, 2 warning:
 	Suspicious pointer assignment
-pull =pul, 1 warning:
+	Return type mismatch
+pull =pul, 2 warning:
 	Suspicious pointer assignment
-pull =pi, 1 warning:
+	Return type mismatch
+pull =pi, 2 warning:
 	Suspicious pointer assignment
-pull =pui, 1 warning:
+	Return type mismatch
+pull =pui, 2 warning:
 	Suspicious pointer assignment
-pull =pf, 1 warning:
+	Return type mismatch
+pull =pf, 2 warning:
 	Suspicious pointer assignment
-pull =pd, 1 warning:
+	Return type mismatch
+pull =pd, 2 warning:
 	Suspicious pointer assignment
-pull =ps, 1 warning:
+	Return type mismatch
+pull =ps, 2 warning:
 	Suspicious pointer assignment
-pull =pz, 1 warning:
+	Return type mismatch
+pull =pz, 2 warning:
 	Suspicious pointer assignment
-pull =pw, 1 warning:
+	Return type mismatch
+pull =pw, 2 warning:
 	Suspicious pointer assignment
-pull =pudt1, 1 warning:
+	Return type mismatch
+pull =pudt1, 2 warning:
 	Suspicious pointer assignment
-pull =pudt2, 1 warning:
+	Return type mismatch
+pull =pudt2, 2 warning:
 	Suspicious pointer assignment
-pull =pfwd1, 1 warning:
+	Return type mismatch
+pull =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pull =pdwf2, 1 warning:
+	Return type mismatch
+pull =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pull =ppsub, 1 warning:
+	Return type mismatch
+pull =ppsub, 2 warning:
 	Suspicious pointer assignment
-pull =ppfi, 1 warning:
+	Return type mismatch
+pull =ppfi, 2 warning:
 	Suspicious pointer assignment
-pi =b, 1 warning:
+	Return type mismatch
+pi =b, 2 warning:
 	Suspicious pointer assignment
-pi =ub, 1 warning:
+	Return type mismatch
+pi =ub, 2 warning:
 	Suspicious pointer assignment
-pi =sh, 1 warning:
+	Return type mismatch
+pi =sh, 2 warning:
 	Suspicious pointer assignment
-pi =ush, 1 warning:
+	Return type mismatch
+pi =ush, 2 warning:
 	Suspicious pointer assignment
-pi =l, 1 warning:
+	Return type mismatch
+pi =l, 2 warning:
 	Suspicious pointer assignment
-pi =ul, 1 warning:
+	Return type mismatch
+pi =ul, 2 warning:
 	Suspicious pointer assignment
-pi =ll, 1 warning:
+	Return type mismatch
+pi =ll, 2 warning:
 	Suspicious pointer assignment
-pi =ull, 1 warning:
+	Return type mismatch
+pi =ull, 2 warning:
 	Suspicious pointer assignment
-pi =i, 1 warning:
+	Return type mismatch
+pi =i, 2 warning:
 	Suspicious pointer assignment
-pi =ui, 1 warning:
+	Return type mismatch
+pi =ui, 2 warning:
 	Suspicious pointer assignment
-pi =f, 1 warning:
+	Return type mismatch
+pi =f, 2 warning:
 	Suspicious pointer assignment
-pi =d, 1 warning:
+	Return type mismatch
+pi =d, 2 warning:
 	Suspicious pointer assignment
-pi =s, 1 warning:
+	Return type mismatch
+pi =s, 2 warning:
 	Suspicious pointer assignment
-pi =udt1, 1 warning:
+	Return type mismatch
+pi =udt1, 2 warning:
 	Suspicious pointer assignment
-pi =udt2, 1 warning:
+	Return type mismatch
+pi =udt2, 2 warning:
 	Suspicious pointer assignment
-pi =psub, 1 warning:
+	Return type mismatch
+pi =psub, 2 warning:
 	Suspicious pointer assignment
-pi =pfi, 1 warning:
+	Return type mismatch
+pi =pfi, 2 warning:
 	Suspicious pointer assignment
-pi =pany, 1 warning:
+	Return type mismatch
+pi =pany, 2 warning:
 	Suspicious pointer assignment
-pi =pb, 1 warning:
+	Return type mismatch
+pi =pb, 2 warning:
 	Suspicious pointer assignment
-pi =pub, 1 warning:
+	Return type mismatch
+pi =pub, 2 warning:
 	Suspicious pointer assignment
-pi =psh, 1 warning:
+	Return type mismatch
+pi =psh, 2 warning:
 	Suspicious pointer assignment
-pi =push, 1 warning:
+	Return type mismatch
+pi =push, 2 warning:
 	Suspicious pointer assignment
-pi =pll, 1 warning:
+	Return type mismatch
+pi =pll, 2 warning:
 	Suspicious pointer assignment
-pi =pull, 1 warning:
+	Return type mismatch
+pi =pull, 2 warning:
 	Suspicious pointer assignment
-pi =pf, 1 warning:
+	Return type mismatch
+pi =pf, 2 warning:
 	Suspicious pointer assignment
-pi =pd, 1 warning:
+	Return type mismatch
+pi =pd, 2 warning:
 	Suspicious pointer assignment
-pi =ps, 1 warning:
+	Return type mismatch
+pi =ps, 2 warning:
 	Suspicious pointer assignment
-pi =pz, 1 warning:
+	Return type mismatch
+pi =pz, 2 warning:
 	Suspicious pointer assignment
-pi =pudt1, 1 warning:
+	Return type mismatch
+pi =pudt1, 2 warning:
 	Suspicious pointer assignment
-pi =pudt2, 1 warning:
+	Return type mismatch
+pi =pudt2, 2 warning:
 	Suspicious pointer assignment
-pi =pfwd1, 1 warning:
+	Return type mismatch
+pi =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pi =pdwf2, 1 warning:
+	Return type mismatch
+pi =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pi =ppsub, 1 warning:
+	Return type mismatch
+pi =ppsub, 2 warning:
 	Suspicious pointer assignment
-pi =ppfi, 1 warning:
+	Return type mismatch
+pi =ppfi, 2 warning:
 	Suspicious pointer assignment
-pui =b, 1 warning:
+	Return type mismatch
+pui =b, 2 warning:
 	Suspicious pointer assignment
-pui =ub, 1 warning:
+	Return type mismatch
+pui =ub, 2 warning:
 	Suspicious pointer assignment
-pui =sh, 1 warning:
+	Return type mismatch
+pui =sh, 2 warning:
 	Suspicious pointer assignment
-pui =ush, 1 warning:
+	Return type mismatch
+pui =ush, 2 warning:
 	Suspicious pointer assignment
-pui =l, 1 warning:
+	Return type mismatch
+pui =l, 2 warning:
 	Suspicious pointer assignment
-pui =ul, 1 warning:
+	Return type mismatch
+pui =ul, 2 warning:
 	Suspicious pointer assignment
-pui =ll, 1 warning:
+	Return type mismatch
+pui =ll, 2 warning:
 	Suspicious pointer assignment
-pui =ull, 1 warning:
+	Return type mismatch
+pui =ull, 2 warning:
 	Suspicious pointer assignment
-pui =i, 1 warning:
+	Return type mismatch
+pui =i, 2 warning:
 	Suspicious pointer assignment
-pui =ui, 1 warning:
+	Return type mismatch
+pui =ui, 2 warning:
 	Suspicious pointer assignment
-pui =f, 1 warning:
+	Return type mismatch
+pui =f, 2 warning:
 	Suspicious pointer assignment
-pui =d, 1 warning:
+	Return type mismatch
+pui =d, 2 warning:
 	Suspicious pointer assignment
-pui =s, 1 warning:
+	Return type mismatch
+pui =s, 2 warning:
 	Suspicious pointer assignment
-pui =udt1, 1 warning:
+	Return type mismatch
+pui =udt1, 2 warning:
 	Suspicious pointer assignment
-pui =udt2, 1 warning:
+	Return type mismatch
+pui =udt2, 2 warning:
 	Suspicious pointer assignment
-pui =psub, 1 warning:
+	Return type mismatch
+pui =psub, 2 warning:
 	Suspicious pointer assignment
-pui =pfi, 1 warning:
+	Return type mismatch
+pui =pfi, 2 warning:
 	Suspicious pointer assignment
-pui =pany, 1 warning:
+	Return type mismatch
+pui =pany, 2 warning:
 	Suspicious pointer assignment
-pui =pb, 1 warning:
+	Return type mismatch
+pui =pb, 2 warning:
 	Suspicious pointer assignment
-pui =pub, 1 warning:
+	Return type mismatch
+pui =pub, 2 warning:
 	Suspicious pointer assignment
-pui =psh, 1 warning:
+	Return type mismatch
+pui =psh, 2 warning:
 	Suspicious pointer assignment
-pui =push, 1 warning:
+	Return type mismatch
+pui =push, 2 warning:
 	Suspicious pointer assignment
-pui =pll, 1 warning:
+	Return type mismatch
+pui =pll, 2 warning:
 	Suspicious pointer assignment
-pui =pull, 1 warning:
+	Return type mismatch
+pui =pull, 2 warning:
 	Suspicious pointer assignment
-pui =pf, 1 warning:
+	Return type mismatch
+pui =pf, 2 warning:
 	Suspicious pointer assignment
-pui =pd, 1 warning:
+	Return type mismatch
+pui =pd, 2 warning:
 	Suspicious pointer assignment
-pui =ps, 1 warning:
+	Return type mismatch
+pui =ps, 2 warning:
 	Suspicious pointer assignment
-pui =pz, 1 warning:
+	Return type mismatch
+pui =pz, 2 warning:
 	Suspicious pointer assignment
-pui =pudt1, 1 warning:
+	Return type mismatch
+pui =pudt1, 2 warning:
 	Suspicious pointer assignment
-pui =pudt2, 1 warning:
+	Return type mismatch
+pui =pudt2, 2 warning:
 	Suspicious pointer assignment
-pui =pfwd1, 1 warning:
+	Return type mismatch
+pui =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pui =pdwf2, 1 warning:
+	Return type mismatch
+pui =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pui =ppsub, 1 warning:
+	Return type mismatch
+pui =ppsub, 2 warning:
 	Suspicious pointer assignment
-pui =ppfi, 1 warning:
+	Return type mismatch
+pui =ppfi, 2 warning:
 	Suspicious pointer assignment
-pf =b, 1 warning:
+	Return type mismatch
+pf =b, 2 warning:
 	Suspicious pointer assignment
-pf =ub, 1 warning:
+	Return type mismatch
+pf =ub, 2 warning:
 	Suspicious pointer assignment
-pf =sh, 1 warning:
+	Return type mismatch
+pf =sh, 2 warning:
 	Suspicious pointer assignment
-pf =ush, 1 warning:
+	Return type mismatch
+pf =ush, 2 warning:
 	Suspicious pointer assignment
-pf =l, 1 warning:
+	Return type mismatch
+pf =l, 2 warning:
 	Suspicious pointer assignment
-pf =ul, 1 warning:
+	Return type mismatch
+pf =ul, 2 warning:
 	Suspicious pointer assignment
-pf =ll, 1 warning:
+	Return type mismatch
+pf =ll, 2 warning:
 	Suspicious pointer assignment
-pf =ull, 1 warning:
+	Return type mismatch
+pf =ull, 2 warning:
 	Suspicious pointer assignment
-pf =i, 1 warning:
+	Return type mismatch
+pf =i, 2 warning:
 	Suspicious pointer assignment
-pf =ui, 1 warning:
+	Return type mismatch
+pf =ui, 2 warning:
 	Suspicious pointer assignment
-pf =f, 1 warning:
+	Return type mismatch
+pf =f, 2 warning:
 	Suspicious pointer assignment
-pf =d, 1 warning:
+	Return type mismatch
+pf =d, 2 warning:
 	Suspicious pointer assignment
-pf =s, 1 warning:
+	Return type mismatch
+pf =s, 2 warning:
 	Suspicious pointer assignment
-pf =udt1, 1 warning:
+	Return type mismatch
+pf =udt1, 2 warning:
 	Suspicious pointer assignment
-pf =udt2, 1 warning:
+	Return type mismatch
+pf =udt2, 2 warning:
 	Suspicious pointer assignment
-pf =psub, 1 warning:
+	Return type mismatch
+pf =psub, 2 warning:
 	Suspicious pointer assignment
-pf =pfi, 1 warning:
+	Return type mismatch
+pf =pfi, 2 warning:
 	Suspicious pointer assignment
-pf =pany, 1 warning:
+	Return type mismatch
+pf =pany, 2 warning:
 	Suspicious pointer assignment
-pf =pb, 1 warning:
+	Return type mismatch
+pf =pb, 2 warning:
 	Suspicious pointer assignment
-pf =pub, 1 warning:
+	Return type mismatch
+pf =pub, 2 warning:
 	Suspicious pointer assignment
-pf =psh, 1 warning:
+	Return type mismatch
+pf =psh, 2 warning:
 	Suspicious pointer assignment
-pf =push, 1 warning:
+	Return type mismatch
+pf =push, 2 warning:
 	Suspicious pointer assignment
-pf =pl, 1 warning:
+	Return type mismatch
+pf =pl, 2 warning:
 	Suspicious pointer assignment
-pf =pul, 1 warning:
+	Return type mismatch
+pf =pul, 2 warning:
 	Suspicious pointer assignment
-pf =pll, 1 warning:
+	Return type mismatch
+pf =pll, 2 warning:
 	Suspicious pointer assignment
-pf =pull, 1 warning:
+	Return type mismatch
+pf =pull, 2 warning:
 	Suspicious pointer assignment
-pf =pi, 1 warning:
+	Return type mismatch
+pf =pi, 2 warning:
 	Suspicious pointer assignment
-pf =pui, 1 warning:
+	Return type mismatch
+pf =pui, 2 warning:
 	Suspicious pointer assignment
-pf =pd, 1 warning:
+	Return type mismatch
+pf =pd, 2 warning:
 	Suspicious pointer assignment
-pf =ps, 1 warning:
+	Return type mismatch
+pf =ps, 2 warning:
 	Suspicious pointer assignment
-pf =pz, 1 warning:
+	Return type mismatch
+pf =pz, 2 warning:
 	Suspicious pointer assignment
-pf =pw, 1 warning:
+	Return type mismatch
+pf =pw, 2 warning:
 	Suspicious pointer assignment
-pf =pudt1, 1 warning:
+	Return type mismatch
+pf =pudt1, 2 warning:
 	Suspicious pointer assignment
-pf =pudt2, 1 warning:
+	Return type mismatch
+pf =pudt2, 2 warning:
 	Suspicious pointer assignment
-pf =pfwd1, 1 warning:
+	Return type mismatch
+pf =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pf =pdwf2, 1 warning:
+	Return type mismatch
+pf =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pf =ppsub, 1 warning:
+	Return type mismatch
+pf =ppsub, 2 warning:
 	Suspicious pointer assignment
-pf =ppfi, 1 warning:
+	Return type mismatch
+pf =ppfi, 2 warning:
 	Suspicious pointer assignment
-pd =b, 1 warning:
+	Return type mismatch
+pd =b, 2 warning:
 	Suspicious pointer assignment
-pd =ub, 1 warning:
+	Return type mismatch
+pd =ub, 2 warning:
 	Suspicious pointer assignment
-pd =sh, 1 warning:
+	Return type mismatch
+pd =sh, 2 warning:
 	Suspicious pointer assignment
-pd =ush, 1 warning:
+	Return type mismatch
+pd =ush, 2 warning:
 	Suspicious pointer assignment
-pd =l, 1 warning:
+	Return type mismatch
+pd =l, 2 warning:
 	Suspicious pointer assignment
-pd =ul, 1 warning:
+	Return type mismatch
+pd =ul, 2 warning:
 	Suspicious pointer assignment
-pd =ll, 1 warning:
+	Return type mismatch
+pd =ll, 2 warning:
 	Suspicious pointer assignment
-pd =ull, 1 warning:
+	Return type mismatch
+pd =ull, 2 warning:
 	Suspicious pointer assignment
-pd =i, 1 warning:
+	Return type mismatch
+pd =i, 2 warning:
 	Suspicious pointer assignment
-pd =ui, 1 warning:
+	Return type mismatch
+pd =ui, 2 warning:
 	Suspicious pointer assignment
-pd =f, 1 warning:
+	Return type mismatch
+pd =f, 2 warning:
 	Suspicious pointer assignment
-pd =d, 1 warning:
+	Return type mismatch
+pd =d, 2 warning:
 	Suspicious pointer assignment
-pd =s, 1 warning:
+	Return type mismatch
+pd =s, 2 warning:
 	Suspicious pointer assignment
-pd =udt1, 1 warning:
+	Return type mismatch
+pd =udt1, 2 warning:
 	Suspicious pointer assignment
-pd =udt2, 1 warning:
+	Return type mismatch
+pd =udt2, 2 warning:
 	Suspicious pointer assignment
-pd =psub, 1 warning:
+	Return type mismatch
+pd =psub, 2 warning:
 	Suspicious pointer assignment
-pd =pfi, 1 warning:
+	Return type mismatch
+pd =pfi, 2 warning:
 	Suspicious pointer assignment
-pd =pany, 1 warning:
+	Return type mismatch
+pd =pany, 2 warning:
 	Suspicious pointer assignment
-pd =pb, 1 warning:
+	Return type mismatch
+pd =pb, 2 warning:
 	Suspicious pointer assignment
-pd =pub, 1 warning:
+	Return type mismatch
+pd =pub, 2 warning:
 	Suspicious pointer assignment
-pd =psh, 1 warning:
+	Return type mismatch
+pd =psh, 2 warning:
 	Suspicious pointer assignment
-pd =push, 1 warning:
+	Return type mismatch
+pd =push, 2 warning:
 	Suspicious pointer assignment
-pd =pl, 1 warning:
+	Return type mismatch
+pd =pl, 2 warning:
 	Suspicious pointer assignment
-pd =pul, 1 warning:
+	Return type mismatch
+pd =pul, 2 warning:
 	Suspicious pointer assignment
-pd =pll, 1 warning:
+	Return type mismatch
+pd =pll, 2 warning:
 	Suspicious pointer assignment
-pd =pull, 1 warning:
+	Return type mismatch
+pd =pull, 2 warning:
 	Suspicious pointer assignment
-pd =pi, 1 warning:
+	Return type mismatch
+pd =pi, 2 warning:
 	Suspicious pointer assignment
-pd =pui, 1 warning:
+	Return type mismatch
+pd =pui, 2 warning:
 	Suspicious pointer assignment
-pd =pf, 1 warning:
+	Return type mismatch
+pd =pf, 2 warning:
 	Suspicious pointer assignment
-pd =ps, 1 warning:
+	Return type mismatch
+pd =ps, 2 warning:
 	Suspicious pointer assignment
-pd =pz, 1 warning:
+	Return type mismatch
+pd =pz, 2 warning:
 	Suspicious pointer assignment
-pd =pw, 1 warning:
+	Return type mismatch
+pd =pw, 2 warning:
 	Suspicious pointer assignment
-pd =pudt1, 1 warning:
+	Return type mismatch
+pd =pudt1, 2 warning:
 	Suspicious pointer assignment
-pd =pudt2, 1 warning:
+	Return type mismatch
+pd =pudt2, 2 warning:
 	Suspicious pointer assignment
-pd =pfwd1, 1 warning:
+	Return type mismatch
+pd =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pd =pdwf2, 1 warning:
+	Return type mismatch
+pd =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pd =ppsub, 1 warning:
+	Return type mismatch
+pd =ppsub, 2 warning:
 	Suspicious pointer assignment
-pd =ppfi, 1 warning:
+	Return type mismatch
+pd =ppfi, 2 warning:
 	Suspicious pointer assignment
-ps =b, 1 warning:
+	Return type mismatch
+ps =b, 2 warning:
 	Suspicious pointer assignment
-ps =ub, 1 warning:
+	Return type mismatch
+ps =ub, 2 warning:
 	Suspicious pointer assignment
-ps =sh, 1 warning:
+	Return type mismatch
+ps =sh, 2 warning:
 	Suspicious pointer assignment
-ps =ush, 1 warning:
+	Return type mismatch
+ps =ush, 2 warning:
 	Suspicious pointer assignment
-ps =l, 1 warning:
+	Return type mismatch
+ps =l, 2 warning:
 	Suspicious pointer assignment
-ps =ul, 1 warning:
+	Return type mismatch
+ps =ul, 2 warning:
 	Suspicious pointer assignment
-ps =ll, 1 warning:
+	Return type mismatch
+ps =ll, 2 warning:
 	Suspicious pointer assignment
-ps =ull, 1 warning:
+	Return type mismatch
+ps =ull, 2 warning:
 	Suspicious pointer assignment
-ps =i, 1 warning:
+	Return type mismatch
+ps =i, 2 warning:
 	Suspicious pointer assignment
-ps =ui, 1 warning:
+	Return type mismatch
+ps =ui, 2 warning:
 	Suspicious pointer assignment
-ps =f, 1 warning:
+	Return type mismatch
+ps =f, 2 warning:
 	Suspicious pointer assignment
-ps =d, 1 warning:
+	Return type mismatch
+ps =d, 2 warning:
 	Suspicious pointer assignment
-ps =s, 1 warning:
+	Return type mismatch
+ps =s, 2 warning:
 	Suspicious pointer assignment
-ps =udt1, 1 warning:
+	Return type mismatch
+ps =udt1, 2 warning:
 	Suspicious pointer assignment
-ps =udt2, 1 warning:
+	Return type mismatch
+ps =udt2, 2 warning:
 	Suspicious pointer assignment
-ps =psub, 1 warning:
+	Return type mismatch
+ps =psub, 2 warning:
 	Suspicious pointer assignment
-ps =pfi, 1 warning:
+	Return type mismatch
+ps =pfi, 2 warning:
 	Suspicious pointer assignment
-ps =pany, 1 warning:
+	Return type mismatch
+ps =pany, 2 warning:
 	Suspicious pointer assignment
-ps =pb, 1 warning:
+	Return type mismatch
+ps =pb, 2 warning:
 	Suspicious pointer assignment
-ps =pub, 1 warning:
+	Return type mismatch
+ps =pub, 2 warning:
 	Suspicious pointer assignment
-ps =psh, 1 warning:
+	Return type mismatch
+ps =psh, 2 warning:
 	Suspicious pointer assignment
-ps =push, 1 warning:
+	Return type mismatch
+ps =push, 2 warning:
 	Suspicious pointer assignment
-ps =pl, 1 warning:
+	Return type mismatch
+ps =pl, 2 warning:
 	Suspicious pointer assignment
-ps =pul, 1 warning:
+	Return type mismatch
+ps =pul, 2 warning:
 	Suspicious pointer assignment
-ps =pll, 1 warning:
+	Return type mismatch
+ps =pll, 2 warning:
 	Suspicious pointer assignment
-ps =pull, 1 warning:
+	Return type mismatch
+ps =pull, 2 warning:
 	Suspicious pointer assignment
-ps =pi, 1 warning:
+	Return type mismatch
+ps =pi, 2 warning:
 	Suspicious pointer assignment
-ps =pui, 1 warning:
+	Return type mismatch
+ps =pui, 2 warning:
 	Suspicious pointer assignment
-ps =pf, 1 warning:
+	Return type mismatch
+ps =pf, 2 warning:
 	Suspicious pointer assignment
-ps =pd, 1 warning:
+	Return type mismatch
+ps =pd, 2 warning:
 	Suspicious pointer assignment
-ps =pz, 1 warning:
+	Return type mismatch
+ps =pz, 2 warning:
 	Suspicious pointer assignment
-ps =pw, 1 warning:
+	Return type mismatch
+ps =pw, 2 warning:
 	Suspicious pointer assignment
-ps =pudt1, 1 warning:
+	Return type mismatch
+ps =pudt1, 2 warning:
 	Suspicious pointer assignment
-ps =pudt2, 1 warning:
+	Return type mismatch
+ps =pudt2, 2 warning:
 	Suspicious pointer assignment
-ps =pfwd1, 1 warning:
+	Return type mismatch
+ps =pfwd1, 2 warning:
 	Suspicious pointer assignment
-ps =pdwf2, 1 warning:
+	Return type mismatch
+ps =pdwf2, 2 warning:
 	Suspicious pointer assignment
-ps =ppsub, 1 warning:
+	Return type mismatch
+ps =ppsub, 2 warning:
 	Suspicious pointer assignment
-ps =ppfi, 1 warning:
+	Return type mismatch
+ps =ppfi, 2 warning:
 	Suspicious pointer assignment
-pz =b, 1 warning:
+	Return type mismatch
+pz =b, 2 warning:
 	Suspicious pointer assignment
-pz =ub, 1 warning:
+	Return type mismatch
+pz =ub, 2 warning:
 	Suspicious pointer assignment
-pz =sh, 1 warning:
+	Return type mismatch
+pz =sh, 2 warning:
 	Suspicious pointer assignment
-pz =ush, 1 warning:
+	Return type mismatch
+pz =ush, 2 warning:
 	Suspicious pointer assignment
-pz =l, 1 warning:
+	Return type mismatch
+pz =l, 2 warning:
 	Suspicious pointer assignment
-pz =ul, 1 warning:
+	Return type mismatch
+pz =ul, 2 warning:
 	Suspicious pointer assignment
-pz =ll, 1 warning:
+	Return type mismatch
+pz =ll, 2 warning:
 	Suspicious pointer assignment
-pz =ull, 1 warning:
+	Return type mismatch
+pz =ull, 2 warning:
 	Suspicious pointer assignment
-pz =i, 1 warning:
+	Return type mismatch
+pz =i, 2 warning:
 	Suspicious pointer assignment
-pz =ui, 1 warning:
+	Return type mismatch
+pz =ui, 2 warning:
 	Suspicious pointer assignment
-pz =f, 1 warning:
+	Return type mismatch
+pz =f, 2 warning:
 	Suspicious pointer assignment
-pz =d, 1 warning:
+	Return type mismatch
+pz =d, 2 warning:
 	Suspicious pointer assignment
-pz =s, 1 warning:
+	Return type mismatch
+pz =s, 2 warning:
 	Suspicious pointer assignment
-pz =udt1, 1 warning:
+	Return type mismatch
+pz =udt1, 2 warning:
 	Suspicious pointer assignment
-pz =udt2, 1 warning:
+	Return type mismatch
+pz =udt2, 2 warning:
 	Suspicious pointer assignment
-pz =psub, 1 warning:
+	Return type mismatch
+pz =psub, 2 warning:
 	Suspicious pointer assignment
-pz =pfi, 1 warning:
+	Return type mismatch
+pz =pfi, 2 warning:
 	Suspicious pointer assignment
-pz =pany, 1 warning:
+	Return type mismatch
+pz =pany, 2 warning:
 	Suspicious pointer assignment
-pz =psh, 1 warning:
+	Return type mismatch
+pz =psh, 2 warning:
 	Suspicious pointer assignment
-pz =push, 1 warning:
+	Return type mismatch
+pz =push, 2 warning:
 	Suspicious pointer assignment
-pz =pl, 1 warning:
+	Return type mismatch
+pz =pl, 2 warning:
 	Suspicious pointer assignment
-pz =pul, 1 warning:
+	Return type mismatch
+pz =pul, 2 warning:
 	Suspicious pointer assignment
-pz =pll, 1 warning:
+	Return type mismatch
+pz =pll, 2 warning:
 	Suspicious pointer assignment
-pz =pull, 1 warning:
+	Return type mismatch
+pz =pull, 2 warning:
 	Suspicious pointer assignment
-pz =pi, 1 warning:
+	Return type mismatch
+pz =pi, 2 warning:
 	Suspicious pointer assignment
-pz =pui, 1 warning:
+	Return type mismatch
+pz =pui, 2 warning:
 	Suspicious pointer assignment
-pz =pf, 1 warning:
+	Return type mismatch
+pz =pf, 2 warning:
 	Suspicious pointer assignment
-pz =pd, 1 warning:
+	Return type mismatch
+pz =pd, 2 warning:
 	Suspicious pointer assignment
-pz =ps, 1 warning:
+	Return type mismatch
+pz =ps, 2 warning:
 	Suspicious pointer assignment
-pz =pw, 1 warning:
+	Return type mismatch
+pz =pw, 2 warning:
 	Suspicious pointer assignment
-pz =pudt1, 1 warning:
+	Return type mismatch
+pz =pudt1, 2 warning:
 	Suspicious pointer assignment
-pz =pudt2, 1 warning:
+	Return type mismatch
+pz =pudt2, 2 warning:
 	Suspicious pointer assignment
-pz =pfwd1, 1 warning:
+	Return type mismatch
+pz =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pz =pdwf2, 1 warning:
+	Return type mismatch
+pz =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pz =ppsub, 1 warning:
+	Return type mismatch
+pz =ppsub, 2 warning:
 	Suspicious pointer assignment
-pz =ppfi, 1 warning:
+	Return type mismatch
+pz =ppfi, 2 warning:
 	Suspicious pointer assignment
-pw =b, 1 warning:
+	Return type mismatch
+pw =b, 2 warning:
 	Suspicious pointer assignment
-pw =ub, 1 warning:
+	Return type mismatch
+pw =ub, 2 warning:
 	Suspicious pointer assignment
-pw =sh, 1 warning:
+	Return type mismatch
+pw =sh, 2 warning:
 	Suspicious pointer assignment
-pw =ush, 1 warning:
+	Return type mismatch
+pw =ush, 2 warning:
 	Suspicious pointer assignment
-pw =l, 1 warning:
+	Return type mismatch
+pw =l, 2 warning:
 	Suspicious pointer assignment
-pw =ul, 1 warning:
+	Return type mismatch
+pw =ul, 2 warning:
 	Suspicious pointer assignment
-pw =ll, 1 warning:
+	Return type mismatch
+pw =ll, 2 warning:
 	Suspicious pointer assignment
-pw =ull, 1 warning:
+	Return type mismatch
+pw =ull, 2 warning:
 	Suspicious pointer assignment
-pw =i, 1 warning:
+	Return type mismatch
+pw =i, 2 warning:
 	Suspicious pointer assignment
-pw =ui, 1 warning:
+	Return type mismatch
+pw =ui, 2 warning:
 	Suspicious pointer assignment
-pw =f, 1 warning:
+	Return type mismatch
+pw =f, 2 warning:
 	Suspicious pointer assignment
-pw =d, 1 warning:
+	Return type mismatch
+pw =d, 2 warning:
 	Suspicious pointer assignment
-pw =s, 1 warning:
+	Return type mismatch
+pw =s, 2 warning:
 	Suspicious pointer assignment
-pw =udt1, 1 warning:
+	Return type mismatch
+pw =udt1, 2 warning:
 	Suspicious pointer assignment
-pw =udt2, 1 warning:
+	Return type mismatch
+pw =udt2, 2 warning:
 	Suspicious pointer assignment
-pw =psub, 1 warning:
+	Return type mismatch
+pw =psub, 2 warning:
 	Suspicious pointer assignment
-pw =pfi, 1 warning:
+	Return type mismatch
+pw =pfi, 2 warning:
 	Suspicious pointer assignment
-pw =pany, 1 warning:
+	Return type mismatch
+pw =pany, 2 warning:
 	Suspicious pointer assignment
-pw =pb, 1 warning:
+	Return type mismatch
+pw =pb, 2 warning:
 	Suspicious pointer assignment
-pw =pub, 1 warning:
+	Return type mismatch
+pw =pub, 2 warning:
 	Suspicious pointer assignment
-pw =psh, 1 warning:
+	Return type mismatch
+pw =psh, 2 warning:
 	Suspicious pointer assignment
-pw =push, 1 warning:
+	Return type mismatch
+pw =push, 2 warning:
 	Suspicious pointer assignment
-pw =pll, 1 warning:
+	Return type mismatch
+pw =pll, 2 warning:
 	Suspicious pointer assignment
-pw =pull, 1 warning:
+	Return type mismatch
+pw =pull, 2 warning:
 	Suspicious pointer assignment
-pw =pf, 1 warning:
+	Return type mismatch
+pw =pf, 2 warning:
 	Suspicious pointer assignment
-pw =pd, 1 warning:
+	Return type mismatch
+pw =pd, 2 warning:
 	Suspicious pointer assignment
-pw =ps, 1 warning:
+	Return type mismatch
+pw =ps, 2 warning:
 	Suspicious pointer assignment
-pw =pz, 1 warning:
+	Return type mismatch
+pw =pz, 2 warning:
 	Suspicious pointer assignment
-pw =pudt1, 1 warning:
+	Return type mismatch
+pw =pudt1, 2 warning:
 	Suspicious pointer assignment
-pw =pudt2, 1 warning:
+	Return type mismatch
+pw =pudt2, 2 warning:
 	Suspicious pointer assignment
-pw =pfwd1, 1 warning:
+	Return type mismatch
+pw =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pw =pdwf2, 1 warning:
+	Return type mismatch
+pw =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pw =ppsub, 1 warning:
+	Return type mismatch
+pw =ppsub, 2 warning:
 	Suspicious pointer assignment
-pw =ppfi, 1 warning:
+	Return type mismatch
+pw =ppfi, 2 warning:
 	Suspicious pointer assignment
-pudt1 =b, 1 warning:
+	Return type mismatch
+pudt1 =b, 2 warning:
 	Suspicious pointer assignment
-pudt1 =ub, 1 warning:
+	Return type mismatch
+pudt1 =ub, 2 warning:
 	Suspicious pointer assignment
-pudt1 =sh, 1 warning:
+	Return type mismatch
+pudt1 =sh, 2 warning:
 	Suspicious pointer assignment
-pudt1 =ush, 1 warning:
+	Return type mismatch
+pudt1 =ush, 2 warning:
 	Suspicious pointer assignment
-pudt1 =l, 1 warning:
+	Return type mismatch
+pudt1 =l, 2 warning:
 	Suspicious pointer assignment
-pudt1 =ul, 1 warning:
+	Return type mismatch
+pudt1 =ul, 2 warning:
 	Suspicious pointer assignment
-pudt1 =ll, 1 warning:
+	Return type mismatch
+pudt1 =ll, 2 warning:
 	Suspicious pointer assignment
-pudt1 =ull, 1 warning:
+	Return type mismatch
+pudt1 =ull, 2 warning:
 	Suspicious pointer assignment
-pudt1 =i, 1 warning:
+	Return type mismatch
+pudt1 =i, 2 warning:
 	Suspicious pointer assignment
-pudt1 =ui, 1 warning:
+	Return type mismatch
+pudt1 =ui, 2 warning:
 	Suspicious pointer assignment
-pudt1 =f, 1 warning:
+	Return type mismatch
+pudt1 =f, 2 warning:
 	Suspicious pointer assignment
-pudt1 =d, 1 warning:
+	Return type mismatch
+pudt1 =d, 2 warning:
 	Suspicious pointer assignment
-pudt1 =s, 1 warning:
+	Return type mismatch
+pudt1 =s, 2 warning:
 	Suspicious pointer assignment
-pudt1 =udt1, 1 warning:
+	Return type mismatch
+pudt1 =udt1, 2 warning:
 	Suspicious pointer assignment
-pudt1 =udt2, 1 warning:
+	Return type mismatch
+pudt1 =udt2, 2 warning:
 	Suspicious pointer assignment
-pudt1 =psub, 1 warning:
+	Return type mismatch
+pudt1 =psub, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pfi, 1 warning:
+	Return type mismatch
+pudt1 =pfi, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pany, 1 warning:
+	Return type mismatch
+pudt1 =pany, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pb, 1 warning:
+	Return type mismatch
+pudt1 =pb, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pub, 1 warning:
+	Return type mismatch
+pudt1 =pub, 2 warning:
 	Suspicious pointer assignment
-pudt1 =psh, 1 warning:
+	Return type mismatch
+pudt1 =psh, 2 warning:
 	Suspicious pointer assignment
-pudt1 =push, 1 warning:
+	Return type mismatch
+pudt1 =push, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pl, 1 warning:
+	Return type mismatch
+pudt1 =pl, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pul, 1 warning:
+	Return type mismatch
+pudt1 =pul, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pll, 1 warning:
+	Return type mismatch
+pudt1 =pll, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pull, 1 warning:
+	Return type mismatch
+pudt1 =pull, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pi, 1 warning:
+	Return type mismatch
+pudt1 =pi, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pui, 1 warning:
+	Return type mismatch
+pudt1 =pui, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pf, 1 warning:
+	Return type mismatch
+pudt1 =pf, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pd, 1 warning:
+	Return type mismatch
+pudt1 =pd, 2 warning:
 	Suspicious pointer assignment
-pudt1 =ps, 1 warning:
+	Return type mismatch
+pudt1 =ps, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pz, 1 warning:
+	Return type mismatch
+pudt1 =pz, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pw, 1 warning:
+	Return type mismatch
+pudt1 =pw, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pudt2, 1 warning:
+	Return type mismatch
+pudt1 =pudt2, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pfwd1, 1 warning:
+	Return type mismatch
+pudt1 =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pudt1 =pdwf2, 1 warning:
+	Return type mismatch
+pudt1 =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pudt1 =ppsub, 1 warning:
+	Return type mismatch
+pudt1 =ppsub, 2 warning:
 	Suspicious pointer assignment
-pudt1 =ppfi, 1 warning:
+	Return type mismatch
+pudt1 =ppfi, 2 warning:
 	Suspicious pointer assignment
-pudt2 =b, 1 warning:
+	Return type mismatch
+pudt2 =b, 2 warning:
 	Suspicious pointer assignment
-pudt2 =ub, 1 warning:
+	Return type mismatch
+pudt2 =ub, 2 warning:
 	Suspicious pointer assignment
-pudt2 =sh, 1 warning:
+	Return type mismatch
+pudt2 =sh, 2 warning:
 	Suspicious pointer assignment
-pudt2 =ush, 1 warning:
+	Return type mismatch
+pudt2 =ush, 2 warning:
 	Suspicious pointer assignment
-pudt2 =l, 1 warning:
+	Return type mismatch
+pudt2 =l, 2 warning:
 	Suspicious pointer assignment
-pudt2 =ul, 1 warning:
+	Return type mismatch
+pudt2 =ul, 2 warning:
 	Suspicious pointer assignment
-pudt2 =ll, 1 warning:
+	Return type mismatch
+pudt2 =ll, 2 warning:
 	Suspicious pointer assignment
-pudt2 =ull, 1 warning:
+	Return type mismatch
+pudt2 =ull, 2 warning:
 	Suspicious pointer assignment
-pudt2 =i, 1 warning:
+	Return type mismatch
+pudt2 =i, 2 warning:
 	Suspicious pointer assignment
-pudt2 =ui, 1 warning:
+	Return type mismatch
+pudt2 =ui, 2 warning:
 	Suspicious pointer assignment
-pudt2 =f, 1 warning:
+	Return type mismatch
+pudt2 =f, 2 warning:
 	Suspicious pointer assignment
-pudt2 =d, 1 warning:
+	Return type mismatch
+pudt2 =d, 2 warning:
 	Suspicious pointer assignment
-pudt2 =s, 1 warning:
+	Return type mismatch
+pudt2 =s, 2 warning:
 	Suspicious pointer assignment
-pudt2 =udt1, 1 warning:
+	Return type mismatch
+pudt2 =udt1, 2 warning:
 	Suspicious pointer assignment
-pudt2 =udt2, 1 warning:
+	Return type mismatch
+pudt2 =udt2, 2 warning:
 	Suspicious pointer assignment
-pudt2 =psub, 1 warning:
+	Return type mismatch
+pudt2 =psub, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pfi, 1 warning:
+	Return type mismatch
+pudt2 =pfi, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pany, 1 warning:
+	Return type mismatch
+pudt2 =pany, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pb, 1 warning:
+	Return type mismatch
+pudt2 =pb, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pub, 1 warning:
+	Return type mismatch
+pudt2 =pub, 2 warning:
 	Suspicious pointer assignment
-pudt2 =psh, 1 warning:
+	Return type mismatch
+pudt2 =psh, 2 warning:
 	Suspicious pointer assignment
-pudt2 =push, 1 warning:
+	Return type mismatch
+pudt2 =push, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pl, 1 warning:
+	Return type mismatch
+pudt2 =pl, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pul, 1 warning:
+	Return type mismatch
+pudt2 =pul, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pll, 1 warning:
+	Return type mismatch
+pudt2 =pll, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pull, 1 warning:
+	Return type mismatch
+pudt2 =pull, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pi, 1 warning:
+	Return type mismatch
+pudt2 =pi, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pui, 1 warning:
+	Return type mismatch
+pudt2 =pui, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pf, 1 warning:
+	Return type mismatch
+pudt2 =pf, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pd, 1 warning:
+	Return type mismatch
+pudt2 =pd, 2 warning:
 	Suspicious pointer assignment
-pudt2 =ps, 1 warning:
+	Return type mismatch
+pudt2 =ps, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pz, 1 warning:
+	Return type mismatch
+pudt2 =pz, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pw, 1 warning:
+	Return type mismatch
+pudt2 =pw, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pudt1, 1 warning:
+	Return type mismatch
+pudt2 =pudt1, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pfwd1, 1 warning:
+	Return type mismatch
+pudt2 =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pudt2 =pdwf2, 1 warning:
+	Return type mismatch
+pudt2 =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pudt2 =ppsub, 1 warning:
+	Return type mismatch
+pudt2 =ppsub, 2 warning:
 	Suspicious pointer assignment
-pudt2 =ppfi, 1 warning:
+	Return type mismatch
+pudt2 =ppfi, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =b, 1 warning:
+	Return type mismatch
+pfwd1 =b, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =ub, 1 warning:
+	Return type mismatch
+pfwd1 =ub, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =sh, 1 warning:
+	Return type mismatch
+pfwd1 =sh, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =ush, 1 warning:
+	Return type mismatch
+pfwd1 =ush, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =l, 1 warning:
+	Return type mismatch
+pfwd1 =l, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =ul, 1 warning:
+	Return type mismatch
+pfwd1 =ul, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =ll, 1 warning:
+	Return type mismatch
+pfwd1 =ll, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =ull, 1 warning:
+	Return type mismatch
+pfwd1 =ull, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =i, 1 warning:
+	Return type mismatch
+pfwd1 =i, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =ui, 1 warning:
+	Return type mismatch
+pfwd1 =ui, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =f, 1 warning:
+	Return type mismatch
+pfwd1 =f, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =d, 1 warning:
+	Return type mismatch
+pfwd1 =d, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =s, 1 warning:
+	Return type mismatch
+pfwd1 =s, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =udt1, 1 warning:
+	Return type mismatch
+pfwd1 =udt1, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =udt2, 1 warning:
+	Return type mismatch
+pfwd1 =udt2, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =psub, 1 warning:
+	Return type mismatch
+pfwd1 =psub, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pfi, 1 warning:
+	Return type mismatch
+pfwd1 =pfi, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pany, 1 warning:
+	Return type mismatch
+pfwd1 =pany, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pb, 1 warning:
+	Return type mismatch
+pfwd1 =pb, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pub, 1 warning:
+	Return type mismatch
+pfwd1 =pub, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =psh, 1 warning:
+	Return type mismatch
+pfwd1 =psh, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =push, 1 warning:
+	Return type mismatch
+pfwd1 =push, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pl, 1 warning:
+	Return type mismatch
+pfwd1 =pl, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pul, 1 warning:
+	Return type mismatch
+pfwd1 =pul, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pll, 1 warning:
+	Return type mismatch
+pfwd1 =pll, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pull, 1 warning:
+	Return type mismatch
+pfwd1 =pull, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pi, 1 warning:
+	Return type mismatch
+pfwd1 =pi, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pui, 1 warning:
+	Return type mismatch
+pfwd1 =pui, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pf, 1 warning:
+	Return type mismatch
+pfwd1 =pf, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pd, 1 warning:
+	Return type mismatch
+pfwd1 =pd, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =ps, 1 warning:
+	Return type mismatch
+pfwd1 =ps, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pz, 1 warning:
+	Return type mismatch
+pfwd1 =pz, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pw, 1 warning:
+	Return type mismatch
+pfwd1 =pw, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pudt1, 1 warning:
+	Return type mismatch
+pfwd1 =pudt1, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pudt2, 1 warning:
+	Return type mismatch
+pfwd1 =pudt2, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =pdwf2, 1 warning:
+	Return type mismatch
+pfwd1 =pdwf2, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =ppsub, 1 warning:
+	Return type mismatch
+pfwd1 =ppsub, 2 warning:
 	Suspicious pointer assignment
-pfwd1 =ppfi, 1 warning:
+	Return type mismatch
+pfwd1 =ppfi, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =b, 1 warning:
+	Return type mismatch
+pdwf2 =b, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =ub, 1 warning:
+	Return type mismatch
+pdwf2 =ub, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =sh, 1 warning:
+	Return type mismatch
+pdwf2 =sh, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =ush, 1 warning:
+	Return type mismatch
+pdwf2 =ush, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =l, 1 warning:
+	Return type mismatch
+pdwf2 =l, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =ul, 1 warning:
+	Return type mismatch
+pdwf2 =ul, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =ll, 1 warning:
+	Return type mismatch
+pdwf2 =ll, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =ull, 1 warning:
+	Return type mismatch
+pdwf2 =ull, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =i, 1 warning:
+	Return type mismatch
+pdwf2 =i, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =ui, 1 warning:
+	Return type mismatch
+pdwf2 =ui, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =f, 1 warning:
+	Return type mismatch
+pdwf2 =f, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =d, 1 warning:
+	Return type mismatch
+pdwf2 =d, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =s, 1 warning:
+	Return type mismatch
+pdwf2 =s, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =udt1, 1 warning:
+	Return type mismatch
+pdwf2 =udt1, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =udt2, 1 warning:
+	Return type mismatch
+pdwf2 =udt2, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =psub, 1 warning:
+	Return type mismatch
+pdwf2 =psub, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pfi, 1 warning:
+	Return type mismatch
+pdwf2 =pfi, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pany, 1 warning:
+	Return type mismatch
+pdwf2 =pany, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pb, 1 warning:
+	Return type mismatch
+pdwf2 =pb, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pub, 1 warning:
+	Return type mismatch
+pdwf2 =pub, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =psh, 1 warning:
+	Return type mismatch
+pdwf2 =psh, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =push, 1 warning:
+	Return type mismatch
+pdwf2 =push, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pl, 1 warning:
+	Return type mismatch
+pdwf2 =pl, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pul, 1 warning:
+	Return type mismatch
+pdwf2 =pul, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pll, 1 warning:
+	Return type mismatch
+pdwf2 =pll, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pull, 1 warning:
+	Return type mismatch
+pdwf2 =pull, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pi, 1 warning:
+	Return type mismatch
+pdwf2 =pi, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pui, 1 warning:
+	Return type mismatch
+pdwf2 =pui, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pf, 1 warning:
+	Return type mismatch
+pdwf2 =pf, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pd, 1 warning:
+	Return type mismatch
+pdwf2 =pd, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =ps, 1 warning:
+	Return type mismatch
+pdwf2 =ps, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pz, 1 warning:
+	Return type mismatch
+pdwf2 =pz, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pw, 1 warning:
+	Return type mismatch
+pdwf2 =pw, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pudt1, 1 warning:
+	Return type mismatch
+pdwf2 =pudt1, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pudt2, 1 warning:
+	Return type mismatch
+pdwf2 =pudt2, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =pfwd1, 1 warning:
+	Return type mismatch
+pdwf2 =pfwd1, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =ppsub, 1 warning:
+	Return type mismatch
+pdwf2 =ppsub, 2 warning:
 	Suspicious pointer assignment
-pdwf2 =ppfi, 1 warning:
+	Return type mismatch
+pdwf2 =ppfi, 2 warning:
 	Suspicious pointer assignment
-ppsub =b, 1 warning:
+	Return type mismatch
+ppsub =b, 2 warning:
 	Suspicious pointer assignment
-ppsub =ub, 1 warning:
+	Return type mismatch
+ppsub =ub, 2 warning:
 	Suspicious pointer assignment
-ppsub =sh, 1 warning:
+	Return type mismatch
+ppsub =sh, 2 warning:
 	Suspicious pointer assignment
-ppsub =ush, 1 warning:
+	Return type mismatch
+ppsub =ush, 2 warning:
 	Suspicious pointer assignment
-ppsub =l, 1 warning:
+	Return type mismatch
+ppsub =l, 2 warning:
 	Suspicious pointer assignment
-ppsub =ul, 1 warning:
+	Return type mismatch
+ppsub =ul, 2 warning:
 	Suspicious pointer assignment
-ppsub =ll, 1 warning:
+	Return type mismatch
+ppsub =ll, 2 warning:
 	Suspicious pointer assignment
-ppsub =ull, 1 warning:
+	Return type mismatch
+ppsub =ull, 2 warning:
 	Suspicious pointer assignment
-ppsub =i, 1 warning:
+	Return type mismatch
+ppsub =i, 2 warning:
 	Suspicious pointer assignment
-ppsub =ui, 1 warning:
+	Return type mismatch
+ppsub =ui, 2 warning:
 	Suspicious pointer assignment
-ppsub =f, 1 warning:
+	Return type mismatch
+ppsub =f, 2 warning:
 	Suspicious pointer assignment
-ppsub =d, 1 warning:
+	Return type mismatch
+ppsub =d, 2 warning:
 	Suspicious pointer assignment
-ppsub =s, 1 warning:
+	Return type mismatch
+ppsub =s, 2 warning:
 	Suspicious pointer assignment
-ppsub =udt1, 1 warning:
+	Return type mismatch
+ppsub =udt1, 2 warning:
 	Suspicious pointer assignment
-ppsub =udt2, 1 warning:
+	Return type mismatch
+ppsub =udt2, 2 warning:
 	Suspicious pointer assignment
-ppsub =psub, 1 warning:
+	Return type mismatch
+ppsub =psub, 2 warning:
 	Suspicious pointer assignment
-ppsub =pfi, 1 warning:
+	Return type mismatch
+ppsub =pfi, 2 warning:
 	Suspicious pointer assignment
-ppsub =pany, 1 warning:
+	Return type mismatch
+ppsub =pany, 2 warning:
 	Suspicious pointer assignment
-ppsub =pb, 1 warning:
+	Return type mismatch
+ppsub =pb, 2 warning:
 	Suspicious pointer assignment
-ppsub =pub, 1 warning:
+	Return type mismatch
+ppsub =pub, 2 warning:
 	Suspicious pointer assignment
-ppsub =psh, 1 warning:
+	Return type mismatch
+ppsub =psh, 2 warning:
 	Suspicious pointer assignment
-ppsub =push, 1 warning:
+	Return type mismatch
+ppsub =push, 2 warning:
 	Suspicious pointer assignment
-ppsub =pl, 1 warning:
+	Return type mismatch
+ppsub =pl, 2 warning:
 	Suspicious pointer assignment
-ppsub =pul, 1 warning:
+	Return type mismatch
+ppsub =pul, 2 warning:
 	Suspicious pointer assignment
-ppsub =pll, 1 warning:
+	Return type mismatch
+ppsub =pll, 2 warning:
 	Suspicious pointer assignment
-ppsub =pull, 1 warning:
+	Return type mismatch
+ppsub =pull, 2 warning:
 	Suspicious pointer assignment
-ppsub =pi, 1 warning:
+	Return type mismatch
+ppsub =pi, 2 warning:
 	Suspicious pointer assignment
-ppsub =pui, 1 warning:
+	Return type mismatch
+ppsub =pui, 2 warning:
 	Suspicious pointer assignment
-ppsub =pf, 1 warning:
+	Return type mismatch
+ppsub =pf, 2 warning:
 	Suspicious pointer assignment
-ppsub =pd, 1 warning:
+	Return type mismatch
+ppsub =pd, 2 warning:
 	Suspicious pointer assignment
-ppsub =ps, 1 warning:
+	Return type mismatch
+ppsub =ps, 2 warning:
 	Suspicious pointer assignment
-ppsub =pz, 1 warning:
+	Return type mismatch
+ppsub =pz, 2 warning:
 	Suspicious pointer assignment
-ppsub =pw, 1 warning:
+	Return type mismatch
+ppsub =pw, 2 warning:
 	Suspicious pointer assignment
-ppsub =pudt1, 1 warning:
+	Return type mismatch
+ppsub =pudt1, 2 warning:
 	Suspicious pointer assignment
-ppsub =pudt2, 1 warning:
+	Return type mismatch
+ppsub =pudt2, 2 warning:
 	Suspicious pointer assignment
-ppsub =pfwd1, 1 warning:
+	Return type mismatch
+ppsub =pfwd1, 2 warning:
 	Suspicious pointer assignment
-ppsub =pdwf2, 1 warning:
+	Return type mismatch
+ppsub =pdwf2, 2 warning:
 	Suspicious pointer assignment
-ppsub =ppfi, 1 warning:
+	Return type mismatch
+ppsub =ppfi, 2 warning:
 	Suspicious pointer assignment
-ppfi =b, 1 warning:
+	Return type mismatch
+ppfi =b, 2 warning:
 	Suspicious pointer assignment
-ppfi =ub, 1 warning:
+	Return type mismatch
+ppfi =ub, 2 warning:
 	Suspicious pointer assignment
-ppfi =sh, 1 warning:
+	Return type mismatch
+ppfi =sh, 2 warning:
 	Suspicious pointer assignment
-ppfi =ush, 1 warning:
+	Return type mismatch
+ppfi =ush, 2 warning:
 	Suspicious pointer assignment
-ppfi =l, 1 warning:
+	Return type mismatch
+ppfi =l, 2 warning:
 	Suspicious pointer assignment
-ppfi =ul, 1 warning:
+	Return type mismatch
+ppfi =ul, 2 warning:
 	Suspicious pointer assignment
-ppfi =ll, 1 warning:
+	Return type mismatch
+ppfi =ll, 2 warning:
 	Suspicious pointer assignment
-ppfi =ull, 1 warning:
+	Return type mismatch
+ppfi =ull, 2 warning:
 	Suspicious pointer assignment
-ppfi =i, 1 warning:
+	Return type mismatch
+ppfi =i, 2 warning:
 	Suspicious pointer assignment
-ppfi =ui, 1 warning:
+	Return type mismatch
+ppfi =ui, 2 warning:
 	Suspicious pointer assignment
-ppfi =f, 1 warning:
+	Return type mismatch
+ppfi =f, 2 warning:
 	Suspicious pointer assignment
-ppfi =d, 1 warning:
+	Return type mismatch
+ppfi =d, 2 warning:
 	Suspicious pointer assignment
-ppfi =s, 1 warning:
+	Return type mismatch
+ppfi =s, 2 warning:
 	Suspicious pointer assignment
-ppfi =udt1, 1 warning:
+	Return type mismatch
+ppfi =udt1, 2 warning:
 	Suspicious pointer assignment
-ppfi =udt2, 1 warning:
+	Return type mismatch
+ppfi =udt2, 2 warning:
 	Suspicious pointer assignment
-ppfi =psub, 1 warning:
+	Return type mismatch
+ppfi =psub, 2 warning:
 	Suspicious pointer assignment
-ppfi =pfi, 1 warning:
+	Return type mismatch
+ppfi =pfi, 2 warning:
 	Suspicious pointer assignment
-ppfi =pany, 1 warning:
+	Return type mismatch
+ppfi =pany, 2 warning:
 	Suspicious pointer assignment
-ppfi =pb, 1 warning:
+	Return type mismatch
+ppfi =pb, 2 warning:
 	Suspicious pointer assignment
-ppfi =pub, 1 warning:
+	Return type mismatch
+ppfi =pub, 2 warning:
 	Suspicious pointer assignment
-ppfi =psh, 1 warning:
+	Return type mismatch
+ppfi =psh, 2 warning:
 	Suspicious pointer assignment
-ppfi =push, 1 warning:
+	Return type mismatch
+ppfi =push, 2 warning:
 	Suspicious pointer assignment
-ppfi =pl, 1 warning:
+	Return type mismatch
+ppfi =pl, 2 warning:
 	Suspicious pointer assignment
-ppfi =pul, 1 warning:
+	Return type mismatch
+ppfi =pul, 2 warning:
 	Suspicious pointer assignment
-ppfi =pll, 1 warning:
+	Return type mismatch
+ppfi =pll, 2 warning:
 	Suspicious pointer assignment
-ppfi =pull, 1 warning:
+	Return type mismatch
+ppfi =pull, 2 warning:
 	Suspicious pointer assignment
-ppfi =pi, 1 warning:
+	Return type mismatch
+ppfi =pi, 2 warning:
 	Suspicious pointer assignment
-ppfi =pui, 1 warning:
+	Return type mismatch
+ppfi =pui, 2 warning:
 	Suspicious pointer assignment
-ppfi =pf, 1 warning:
+	Return type mismatch
+ppfi =pf, 2 warning:
 	Suspicious pointer assignment
-ppfi =pd, 1 warning:
+	Return type mismatch
+ppfi =pd, 2 warning:
 	Suspicious pointer assignment
-ppfi =ps, 1 warning:
+	Return type mismatch
+ppfi =ps, 2 warning:
 	Suspicious pointer assignment
-ppfi =pz, 1 warning:
+	Return type mismatch
+ppfi =pz, 2 warning:
 	Suspicious pointer assignment
-ppfi =pw, 1 warning:
+	Return type mismatch
+ppfi =pw, 2 warning:
 	Suspicious pointer assignment
-ppfi =pudt1, 1 warning:
+	Return type mismatch
+ppfi =pudt1, 2 warning:
 	Suspicious pointer assignment
-ppfi =pudt2, 1 warning:
+	Return type mismatch
+ppfi =pudt2, 2 warning:
 	Suspicious pointer assignment
-ppfi =pfwd1, 1 warning:
+	Return type mismatch
+ppfi =pfwd1, 2 warning:
 	Suspicious pointer assignment
-ppfi =pdwf2, 1 warning:
+	Return type mismatch
+ppfi =pdwf2, 2 warning:
 	Suspicious pointer assignment
-ppfi =ppsub, 1 warning:
+	Return type mismatch
+ppfi =ppsub, 2 warning:
 	Suspicious pointer assignment
+	Return type mismatch

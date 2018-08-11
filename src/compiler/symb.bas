@@ -2018,9 +2018,9 @@ function symbCheckConstAssignFuncPtr _
 		exit function
 	end if
 
-	'' Return warnings only even though some checks are not CONSTness releated.  We could
+	'' Return warnings even though some checks are not CONSTness releated.  We could
 	'' promote them to errors, but that will cause many tests to break, and really, we are
-	'' not specifically checking the assignment, but the function pointer compatibility.
+	'' not specifically checking the assignment, but rather the function pointer compatibility.
 	'' So we should get a suspicious pointer warning anyway, plus one of these here.
 
 	'' similar to symbCalcProcMatch(), however, only checking function pointer assignments.

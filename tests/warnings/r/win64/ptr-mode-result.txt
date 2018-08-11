@@ -1,7 +1,13 @@
 2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
 no warnings:
 2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch
