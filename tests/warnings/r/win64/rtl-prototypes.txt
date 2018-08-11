@@ -1,0 +1,517 @@
+---- rtlArray
+function fb_ArrayRedimEx
+function fb_ArrayRedimPresvEx
+function fb_ArrayRedimObj
+function fb_ArrayRedimPresvObj
+function fb_ArrayRedimTo
+sub fb_ArrayDestructObj
+sub fb_ArrayDestructStr
+function fb_ArrayClear
+function fb_ArrayClearObj
+function fb_ArrayErase
+function fb_ArrayEraseObj
+sub fb_ArrayStrErase
+function fb_ArrayLBound
+function fb_ArrayUBound
+function fb_ArraySngBoundChk
+function fb_ArrayBoundChk
+---- rtlConsole
+function fb_ConsoleView
+function fb_ReadXY
+function fb_Width
+function fb_WidthDev
+function fb_WidthFile
+function locate alias "fb_Locate"
+function pos alias "fb_GetX"
+function pos alias "fb_Pos"
+function csrlin alias "fb_GetY"
+sub cls alias "fb_Cls"
+function fb_Color
+function inkey alias "fb_Inkey"
+function getkey alias "fb_Getkey"
+function pcopy alias "fb_PageCopy"
+function fb_PageSet
+---- rtlData
+sub fb_DataRestore
+sub fb_DataReadStr
+sub fb_DataReadWstr
+sub fb_DataReadBool
+sub fb_DataReadByte
+sub fb_DataReadShort
+sub fb_DataReadInt
+sub fb_DataReadLongint
+sub fb_DataReadUByte
+sub fb_DataReadUShort
+sub fb_DataReadUInt
+sub fb_DataReadULongint
+sub fb_DataReadSingle
+sub fb_DataReadDouble
+---- rtlError
+function fb_ErrorThrowAt
+function fb_ErrorThrowEx
+function fb_ErrorSetHandler
+function fb_ErrorGetNum
+function fb_ErrorSetNum
+function fb_ErrorResume
+function fb_ErrorResumeNext
+function erl alias "fb_ErrorGetLineNum"
+function erfn alias "fb_ErrorGetFuncName"
+function ermn alias "fb_ErrorGetModName"
+function fb_ErrorSetModName
+function fb_ErrorSetFuncName
+sub fb_Assert
+sub fb_Assert alias "fb_AssertW"
+sub fb_AssertWarn
+sub fb_AssertWarn alias "fb_AssertWarnW"
+---- rtlFile
+function fb_FileOpen
+function fb_FileOpenEncod
+function fb_FileOpenShort
+function fb_FileOpenCons
+function fb_FileOpenErr
+function fb_FileOpenPipe
+function fb_FileOpenScrn
+function fb_FileOpenLpt
+function fb_FileOpenCom
+function fb_FileOpenQB
+function fb_FileClose
+function fb_FileCloseAll
+function fb_FilePut
+function fb_FilePutLarge
+function fb_FilePutStr
+function fb_FilePutStrLarge
+function fb_FilePutArray
+function fb_FilePutArrayLarge
+function fb_FileGet
+function fb_FileGetLarge
+function fb_FileGetStr
+function fb_FileGetWstr
+function fb_FileGetStrLarge
+function fb_FileGetWstrLarge
+function fb_FileGetArray
+function fb_FileGetArrayLarge
+function fb_FileGetIOB
+function fb_FileGetLargeIOB
+function fb_FileGetStrIOB
+function fb_FileGetWstrIOB
+function fb_FileGetStrLargeIOB
+function fb_FileGetWstrLargeIOB
+function fb_FileGetArrayIOB
+function fb_FileGetArrayLargeIOB
+function fb_FileTell
+function fb_FileSeek
+function fb_FileSeekLarge
+function fb_FileStrInput
+function fb_FileLineInput
+function fb_FileLineInputWstr
+function fb_LineInput
+function fb_LineInputWstr
+function fb_FileInput
+function fb_ConsoleInput
+function fb_InputBool
+function fb_InputByte
+function fb_InputUbyte
+function fb_InputShort
+function fb_InputUshort
+function fb_InputInt
+function fb_InputUint
+function fb_InputLongint
+function fb_InputUlongint
+function fb_InputSingle
+function fb_InputDouble
+function fb_InputString
+function fb_InputWstr
+function fb_FileLock
+function fb_FileLockLarge
+function fb_FileUnlock
+function fb_FileUnlockLarge
+function fb_rename alias "rename"
+function fb_FileWstrInput
+function freefile alias "fb_FileFree"
+function eof alias "fb_FileEof"
+function kill alias "fb_FileKill"
+sub reset alias "fb_FileReset"
+sub reset alias "fb_FileResetEx"
+function lof alias "fb_FileSize"
+function loc alias "fb_FileLocation"
+function lpos alias "fb_LPos"
+---- rtlGfx
+sub fb_GfxPset
+function fb_GfxPoint
+sub fb_GfxLine
+sub fb_GfxEllipse
+sub fb_GfxPaint
+sub fb_GfxDraw
+function fb_GfxDrawString
+sub fb_GfxView
+sub fb_GfxWindow
+sub fb_GfxPalette
+sub fb_GfxPaletteUsing
+sub fb_GfxPaletteUsing64
+sub fb_GfxPaletteGet
+sub fb_GfxPaletteGet64
+sub fb_GfxPaletteGetUsing
+sub fb_GfxPaletteGetUsing64
+function fb_GfxPut
+function fb_GfxGet
+function fb_GfxScreen
+function fb_GfxScreenQB
+function screenres alias "fb_GfxScreenRes"
+function bload alias "fb_GfxBload"
+function bsave alias "fb_GfxBsave"
+function bsave alias "fb_GfxBsaveEx"
+function flip alias "fb_GfxFlip"
+function screencopy alias "fb_GfxFlip"
+function pointcoord alias "fb_GfxCursor"
+function pmap alias "fb_GfxPMap"
+function out alias "fb_Out"
+function inp alias "fb_In"
+function wait alias "fb_Wait"
+function screensync alias "fb_GfxWaitVSync"
+function screenset alias "fb_GfxPageSet"
+sub screenlock alias "fb_GfxLock"
+sub screenunlock alias "fb_GfxUnlock"
+function screenptr alias "fb_GfxScreenPtr"
+sub windowtitle alias "fb_GfxSetWindowTitle"
+function multikey alias "fb_Multikey"
+function getmouse alias "fb_GetMouse"
+function getmouse alias "fb_GetMouse64"
+function setmouse alias "fb_SetMouse"
+function getjoystick alias "fb_GfxGetJoystick"
+sub screeninfo alias "fb_GfxScreenInfo"
+function screenlist alias "fb_GfxScreenList"
+function fb_GfxImageCreate
+function fb_GfxImageCreateQB
+sub imagedestroy alias "fb_GfxImageDestroy"
+function imageinfo alias "fb_GfxImageInfo"
+sub imageconvertrow alias "fb_GfxImageConvertRow"
+function screenevent alias "fb_GfxEvent"
+sub screencontrol alias "fb_GfxControl_s"
+sub screencontrol alias "fb_GfxControl_i"
+function screenglproc alias "fb_GfxGetGLProcAddress"
+sub fb_hPutTrans
+sub fb_hPutPSet
+sub fb_hPutPReset
+sub fb_hPutAnd
+sub fb_hPutOr
+sub fb_hPutXor
+sub fb_hPutAlpha
+sub fb_hPutBlend
+sub fb_hPutAdd
+sub fb_hPutCustom
+---- rtlMath
+function fb___divdi3 alias "__divdi3"
+function fb___udivdi3 alias "__udivdi3"
+function fb___moddi3 alias "__moddi3"
+function fb___umoddi3 alias "__umoddi3"
+function fb___fixunsdfdi alias "__fixunsdfdi"
+function fb_Pow alias "pow"
+sub randomize alias "fb_Randomize"
+function rnd alias "fb_Rnd"
+---- rtlMem
+function fb_NullPtrChk
+sub fb_MemSwap
+sub fb_MemCopyClear
+function fre alias "fb_GetMemAvail"
+function allocate alias "malloc"
+function callocate alias "calloc"
+function reallocate alias "realloc"
+sub deallocate alias "free"
+function clear alias "memset"
+---- rtlPrint
+sub fb_PrintVoid
+sub fb_PrintBool
+sub fb_PrintByte
+sub fb_PrintUByte
+sub fb_PrintShort
+sub fb_PrintUShort
+sub fb_PrintInt
+sub fb_PrintUInt
+sub fb_PrintLongint
+sub fb_PrintULongint
+sub fb_PrintSingle
+sub fb_PrintDouble
+sub fb_PrintString
+sub fb_PrintWstr
+sub fb_LPrintVoid
+sub fb_LPrintBool
+sub fb_LPrintByte
+sub fb_LPrintUByte
+sub fb_LPrintShort
+sub fb_LPrintUShort
+sub fb_LPrintInt
+sub fb_LPrintUInt
+sub fb_LPrintLongint
+sub fb_LPrintULongint
+sub fb_LPrintSingle
+sub fb_LPrintDouble
+sub fb_LPrintString
+sub fb_LPrintWstr
+sub fb_PrintSPC
+sub fb_PrintTab
+sub fb_WriteVoid
+sub fb_WriteBool
+sub fb_WriteByte
+sub fb_WriteUByte
+sub fb_WriteShort
+sub fb_WriteUShort
+sub fb_WriteInt
+sub fb_WriteUInt
+sub fb_WriteLongint
+sub fb_WriteULongint
+sub fb_WriteSingle
+sub fb_WriteDouble
+sub fb_WriteString
+sub fb_WriteWstr
+function fb_PrintUsingInit
+function fb_PrintUsingStr
+function fb_PrintUsingWstr
+function fb_PrintUsingSingle
+function fb_PrintUsingDouble
+function fb_PrintUsingLongint
+function fb_PrintUsingULongint
+function fb_PrintUsingBoolean
+function fb_PrintUsingEnd
+function fb_LPrintUsingInit
+---- rtlProfile_64
+---- rtlProfile_32
+---- rtlProfile_XX
+---- rtlString
+function fb_StrInit
+function fb_WstrAssignToA_Init
+function fb_StrAssign
+function fb_WstrAssign
+function fb_WstrAssignFromA
+function fb_WstrAssignToA
+sub fb_StrDelete
+function fb_hStrDelTemp
+sub fb_WstrDelete
+function fb_StrConcat
+function fb_WstrConcat
+function fb_WstrConcatWA
+function fb_WstrConcatAW
+function fb_StrCompare
+function fb_WstrCompare
+function fb_StrConcatAssign
+function fb_WstrConcatAssign
+function fb_StrAllocTempResult
+function fb_StrAllocTempDescF
+function fb_StrAllocTempDescZ
+function fb_StrAllocTempDescZEx
+function fb_WstrAlloc
+function fb_BoolToStr
+function fb_IntToStr
+function fb_BoolToWstr
+function fb_IntToWstr
+function fb_UIntToStr
+function fb_UIntToWstr
+function fb_LongintToStr
+function fb_LongintToWstr
+function fb_ULongintToStr
+function fb_ULongintToWstr
+function fb_FloatToStr
+function fb_FloatToWstr
+function fb_DoubleToStr
+function fb_DoubleToWstr
+function fb_WstrToStr
+function fb_StrToWstr
+function fb_StrMid
+function fb_WstrMid
+sub fb_StrAssignMid
+sub fb_WstrAssignMid
+function fb_StrFill1
+function fb_WstrFill1
+function fb_StrFill2
+function fb_WstrFill2
+function fb_StrLen
+function fb_WstrLen
+sub fb_StrLset
+sub fb_WstrLset
+sub fb_StrRset
+sub fb_WstrRset
+function fb_ASC
+function fb_WstrAsc
+function fb_CHR
+function fb_WstrChr
+function fb_StrInstr
+function fb_WstrInstr
+function fb_StrInstrAny
+function fb_WstrInstrAny
+function fb_StrInstrRev
+function fb_WstrInstrRev
+function fb_StrInstrRevAny
+function fb_WstrInstrRevAny
+function fb_TRIM
+function fb_WstrTrim
+function fb_TrimAny
+function fb_WstrTrimAny
+function fb_TrimEx
+function fb_WstrTrimEx
+function fb_RTRIM
+function fb_WstrRTrim
+function fb_RTrimAny
+function fb_WstrRTrimAny
+function fb_RTrimEx
+function fb_WstrRTrimEx
+function fb_LTRIM
+function fb_WstrLTrim
+function fb_LTrimAny
+function fb_WstrLTrimAny
+function fb_LTrimEx
+function fb_WstrLTrimEx
+sub fb_StrSwap
+sub fb_WstrSwap
+function val alias "fb_VAL"
+function val alias "fb_WstrVal"
+function fb_VALBOOL
+function fb_VALBOOL alias "fb_WstrValBool"
+function valint alias "fb_VALINT"
+function valint alias "fb_WstrValInt"
+function valuint alias "fb_VALUINT"
+function valuint alias "fb_WstrValUInt"
+function vallng alias "fb_VALLNG"
+function vallng alias "fb_WstrValLng"
+function valulng alias "fb_VALULNG"
+function valulng alias "fb_WstrValULng"
+function hex alias "fb_HEX_b"
+function hex alias "fb_HEX_s"
+function hex alias "fb_HEX_i"
+function hex alias "fb_HEX_l"
+function hex alias "fb_HEX_p"
+function hex alias "fb_HEXEx_b"
+function hex alias "fb_HEXEx_s"
+function hex alias "fb_HEXEx_i"
+function hex alias "fb_HEXEx_l"
+function hex alias "fb_HEXEx_p"
+function whex alias "fb_WstrHex_b"
+function whex alias "fb_WstrHex_s"
+function whex alias "fb_WstrHex_i"
+function whex alias "fb_WstrHex_l"
+function whex alias "fb_WstrHex_p"
+function whex alias "fb_WstrHexEx_b"
+function whex alias "fb_WstrHexEx_s"
+function whex alias "fb_WstrHexEx_i"
+function whex alias "fb_WstrHexEx_l"
+function whex alias "fb_WstrHexEx_p"
+function oct alias "fb_OCT_b"
+function oct alias "fb_OCT_s"
+function oct alias "fb_OCT_i"
+function oct alias "fb_OCT_l"
+function oct alias "fb_OCT_p"
+function oct alias "fb_OCTEx_b"
+function oct alias "fb_OCTEx_s"
+function oct alias "fb_OCTEx_i"
+function oct alias "fb_OCTEx_l"
+function oct alias "fb_OCTEx_p"
+function woct alias "fb_WstrOct_b"
+function woct alias "fb_WstrOct_s"
+function woct alias "fb_WstrOct_i"
+function woct alias "fb_WstrOct_l"
+function woct alias "fb_WstrOct_p"
+function woct alias "fb_WstrOctEx_b"
+function woct alias "fb_WstrOctEx_s"
+function woct alias "fb_WstrOctEx_i"
+function woct alias "fb_WstrOctEx_l"
+function woct alias "fb_WstrOctEx_p"
+function bin alias "fb_BIN_b"
+function bin alias "fb_BIN_s"
+function bin alias "fb_BIN_i"
+function bin alias "fb_BIN_l"
+function bin alias "fb_BIN_p"
+function bin alias "fb_BINEx_b"
+function bin alias "fb_BINEx_s"
+function bin alias "fb_BINEx_i"
+function bin alias "fb_BINEx_l"
+function bin alias "fb_BINEx_p"
+function wbin alias "fb_WstrBin_b"
+function wbin alias "fb_WstrBin_s"
+function wbin alias "fb_WstrBin_i"
+function wbin alias "fb_WstrBin_l"
+function wbin alias "fb_WstrBin_p"
+function wbin alias "fb_WstrBinEx_b"
+function wbin alias "fb_WstrBinEx_s"
+function wbin alias "fb_WstrBinEx_i"
+function wbin alias "fb_WstrBinEx_l"
+function wbin alias "fb_WstrBinEx_p"
+function fb_MKD
+function fb_MKS
+function fb_MKSHORT
+function fb_MKI
+function fb_MKL
+function fb_MKLONGINT
+function left alias "fb_LEFT"
+function left alias "fb_WstrLeft"
+function right alias "fb_RIGHT"
+function right alias "fb_WstrRight"
+function space alias "fb_SPACE"
+function wspace alias "fb_WstrSpace"
+function fb_StrLcase2
+function fb_WstrLcase2
+function fb_StrUcase2
+function fb_WstrUcase2
+function fb_CVD alias "fb_CVD"
+function fb_CVS alias "fb_CVS"
+function fb_CVSHORT alias "fb_CVSHORT"
+function fb_CVL
+function fb_CVLONGINT alias "fb_CVLONGINT"
+function fb_CVDFROMLONGINT alias "fb_CVDFROMLONGINT"
+function fb_CVSFROML alias "fb_CVSFROML"
+function fb_CVLFROMS alias "fb_CVLFROMS"
+function fb_CVLONGINTFROMD alias "fb_CVLONGINTFROMD"
+---- rtlSystem
+sub fb_Init
+sub fb_InitSignals
+sub fb___main alias "__main"
+sub fb_End
+function fb_atexit alias "atexit"
+function command alias "fb_Command"
+function curdir alias "fb_CurDir"
+function exepath alias "fb_ExePath"
+function timer alias "fb_Timer"
+function time alias "fb_Time"
+function date alias "fb_Date"
+function shell alias "fb_Shell"
+sub system alias "fb_End"
+sub stop alias "fb_End"
+function run alias "fb_Run"
+function chain alias "fb_Chain"
+function exec alias "fb_Exec"
+function environ alias "fb_GetEnviron"
+function setenviron alias "fb_SetEnviron"
+sub sleep alias "fb_Sleep"
+function sleep alias "fb_SleepEx"
+function dir alias "fb_DirNext"
+function dir alias "fb_DirNext64"
+function dir alias "fb_DirNext"
+function dir alias "fb_DirNext64"
+function dir alias "fb_Dir"
+function dir alias "fb_Dir64"
+function dir alias "fb_Dir"
+function dir alias "fb_Dir64"
+function settime alias "fb_SetTime"
+function setdate alias "fb_SetDate"
+function threadcreate alias "fb_ThreadCreate"
+sub threadwait alias "fb_ThreadWait"
+function fb_ThreadCall
+function mutexcreate alias "fb_MutexCreate"
+sub mutexdestroy alias "fb_MutexDestroy"
+sub mutexlock alias "fb_MutexLock"
+sub mutexunlock alias "fb_MutexUnlock"
+function condcreate alias "fb_CondCreate"
+sub conddestroy alias "fb_CondDestroy"
+sub condsignal alias "fb_CondSignal"
+sub condbroadcast alias "fb_CondBroadcast"
+sub condwait alias "fb_CondWait"
+function dylibload alias "fb_DylibLoad"
+function dylibsymbol alias "fb_DylibSymbol"
+function dylibsymbol alias "fb_DylibSymbolByOrd"
+sub dylibfree alias "fb_DylibFree"
+sub beep alias "fb_Beep"
+function mkdir alias "fb_MkDir"
+function rmdir alias "fb_RmDir"
+function chdir alias "fb_ChDir"
+---- rtlGosub
+---- rtlGosub_win32
+---- rtlGosub_other
+---- rtlOOP
+function fb_IsTypeOf
