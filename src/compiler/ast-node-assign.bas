@@ -200,7 +200,7 @@ private function hCheckConstAndPointerOps _
 	function = FALSE
 
 	'' lhs marked CONST? disallow the assignment then.
-	if( symbCheckConstAssign( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
+	if( symbCheckConstAssignTopLevel( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
 		exit function
 	end if

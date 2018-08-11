@@ -532,7 +532,7 @@ function typeCalcMatch _
 		return FB_OVLPROC_NO_MATCH
 	end if
 
-	if( symbCheckConstAssign( ldtype, rdtype, lsubtype, rsubtype, lparammode ) = FALSE ) then
+	if( symbCheckConstAssignTopLevel( ldtype, rdtype, lsubtype, rsubtype, lparammode ) = FALSE ) then
 		return FB_OVLPROC_NO_MATCH
 	end if
 

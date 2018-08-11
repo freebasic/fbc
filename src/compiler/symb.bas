@@ -1870,18 +1870,23 @@ function symbCheckAccess( byval sym as FBSYMBOL ptr ) as integer
 	function = FALSE
 end function
 
-function symbCheckConstAssign _
+function symbCheckConstAssignTopLevel _
 	( _
 		byval ldtype as FB_DATATYPE, _
 		byval rdtype as FB_DATATYPE, _
 		byval lsubtype as FBSYMBOL ptr, _
 		byval rsubtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE = 0, _
-		byref matches as integer = 0 _
+		byref matches as integer = 0, _
+		byref errmsg as FB_ERRMSG = 0, _
+		byref wrnmsg as FB_WARNINGMSG = 0 _
 	) as integer
 
 	dim as integer i = any, lcount = any, rcount = any, rmatches = any
 	dim as integer lconst = any, rconst = any
+
+	errmsg = 0
+	wrnmsg = 0
 
 	''
 	'' Toplevel const:
@@ -1920,7 +1925,7 @@ function symbCheckConstAssign _
 	function = FALSE
 	matches = 0
 
-	'' not a function pointer?
+	'' neither is a function pointer?
 	if( ( typeGetDtOnly( ldType ) <> FB_DATATYPE_FUNCTION ) and ( typeGetDtOnly( rdType ) <> FB_DATATYPE_FUNCTION ) ) then
 
 		'' no consts? short-circuit
@@ -1989,23 +1994,66 @@ function symbCheckConstAssignFuncPtr _
 		byval lsubtype as FBSYMBOL ptr, _
 		byval rsubtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE = 0, _
-		byref matches as integer = 0 _
+		byref matches as integer = 0, _
+		byref errmsg as FB_ERRMSG = 0, _
+		byref wrnmsg as FB_WARNINGMSG = 0 _
 	) as integer
 
+	'' return value:
+	'' TRUE = assignment is comatible
+	'' FALSE = assignment is not compatible
+
 	function = FALSE
+
+	errmsg = FB_ERRMSG_OK '' FB_ERRMSG
+	wrnmsg = 0            '' FB_WARNINGMSG
 
 	assert( typeGetDtOnly( ldType ) = FB_DATATYPE_FUNCTION )
 	assert( typeGetDtOnly( rdType ) = FB_DATATYPE_FUNCTION )
 	assert( symbIsProc( lsubtype ) )
 	assert( symbIsProc( rsubtype ) )
 
-	'' check top level
-	if( symbCheckConstAssign( ldtype, rdtype, lsubtype, rsubtype, mode, matches ) = FALSE ) then
+	'' not a function pointer?
+	if( ( typeGetDtOnly( ldType ) <> FB_DATATYPE_FUNCTION ) or ( typeGetDtOnly( rdType ) <> FB_DATATYPE_FUNCTION ) ) then
 		exit function
 	end if
 
-	'' not a function pointer?
-	if( ( typeGetDtOnly( ldType ) <> FB_DATATYPE_FUNCTION ) or ( typeGetDtOnly( rdType ) <> FB_DATATYPE_FUNCTION ) ) then
+	'' Return warnings only even though some checks are not CONSTness releated.  We could
+	'' promote them to errors, but that will cause many tests to break, and really, we are
+	'' not specifically checking the assignment, but the function pointer compatibility.
+	'' So we should get a suspicious pointer warning anyway, plus one of these here.
+
+	'' similar to symbCalcProcMatch(), however, only checking function pointer assignments.
+
+	'' check for identical return type
+	var match = typeCalcMatch( lsubtype->typ, lsubtype->subtype, _
+			iif( symbIsRef( lsubtype ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
+			rsubtype->typ, rsubtype->subtype )
+	if( match = FB_OVLPROC_NO_MATCH ) then
+		wrnmsg = FB_WARNINGMSG_RETURNTYPEMISMATCH
+		exit function
+	end if
+
+	'' Does one have a BYREF result, but not the other?
+	if( symbIsRef( lsubtype ) <> symbIsRef( rsubtype ) ) then
+		wrnmsg = FB_WARNINGMSG_RETURNMETHODMISMATCH
+		exit function
+	end if
+
+	'' Different calling convention?
+	if( symbAreProcModesEqual( lsubtype, rsubtype ) = FALSE ) then
+		wrnmsg = FB_WARNINGMSG_CALLINGCONVMISMATCH
+		exit function
+	end if
+
+	'' not same number of args
+	if( symbGetProcParams( lsubtype ) <> symbGetProcParams( rsubtype ) ) then
+		wrnmsg = FB_WARNINGMSG_ARGCNTMISMATCH
+		exit function
+	end if
+
+	'' check top level
+	if( symbCheckConstAssignTopLevel( ldtype, rdtype, lsubtype, rsubtype, mode, matches, errmsg, wrnmsg ) = FALSE ) then
 		exit function
 	end if
 
@@ -2025,17 +2073,8 @@ function symbCheckConstAssignFuncPtr _
 		var ls = symbGetSubType( rparam )
 		var m = symbGetParamMode( lparam )
 
-		'' sub types are also function pointers?
-		if( ( typeGetDtOnly( l ) = FB_DATATYPE_FUNCTION ) and ( typeGetDtOnly( r ) = FB_DATATYPE_FUNCTION ) ) then
-			if( symbCheckConstAssignFuncPtr( l, r, ls, rs, m ) = FALSE ) then
-				exit function
-			end if
-
-		else
-			if( symbCheckConstAssign( l, r, ls, rs, m ) = FALSE ) then
-				exit function
-			end if
-
+		if( symbCheckConstAssign( l, r, ls, rs, m, , errmsg, wrnmsg ) = FALSE ) then
+			exit function
 		end if
 
 		lparam = lparam->next
@@ -2043,6 +2082,27 @@ function symbCheckConstAssignFuncPtr _
 	wend
 
 	function = TRUE
+end function
+
+function symbCheckConstAssign _
+	( _
+		byval ldtype as FB_DATATYPE, _
+		byval rdtype as FB_DATATYPE, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval rsubtype as FBSYMBOL ptr, _
+		byval mode as FB_PARAMMODE = 0, _
+		byref matches as integer = 0, _
+		byref errmsg as FB_ERRMSG = 0, _
+		byref wrnmsg as FB_WARNINGMSG = 0 _
+	) as integer
+
+	'' both types function pointer?
+	if( ( typeGetDtOnly( ldType ) = FB_DATATYPE_FUNCTION ) and ( typeGetDtOnly( rdType ) = FB_DATATYPE_FUNCTION ) ) then
+		return symbCheckConstAssignFuncPtr( ldtype, rdtype, lsubtype, rsubtype, mode, matches, errmsg, wrnmsg )
+	else
+		return symbCheckConstAssignTopLevel( ldtype, rdtype, lsubtype, rsubtype, mode, matches, errmsg, wrnmsg )
+	end if
+
 end function
 
 private sub hForEachGlobal _

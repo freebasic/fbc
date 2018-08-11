@@ -1970,13 +1970,13 @@ private function hCheckOvlParam _
 				return match
 			end if
 
-			'' Exact same CONSTs? Then there's no point in calling symbCheckConstAssign().
+			'' Exact same CONSTs? Then there's no point in calling symbCheckConstAssignTopLevel().
 			if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
 				return match
 			end if
 
 			'' Check whether CONSTness allows passing the arg to the param.
-			if( symbCheckConstAssign( param_dtype, arg_dtype, param_subtype, arg_subtype, symbGetParamMode( param ), const_matches ) ) then
+			if( symbCheckConstAssignTopLevel( param_dtype, arg_dtype, param_subtype, arg_subtype, symbGetParamMode( param ), const_matches ) ) then
 				'' They're compatible despite having different CONSTs -- e.g. "non-const Foo" passed to "Byref As Const Foo".
 				'' Treat it as lower score match than an exact match.
 				'' TODO: Fix and use const_matches

@@ -305,7 +305,7 @@ function astNewCONV _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
-	dim as integer ldclass = any, ldtype = any, errmsg = any, doconv = any
+	dim as integer ldclass = any, ldtype = any, errmsg = any, wrnmsg = any, doconv = any
 
 	if( perrmsg ) then
 		*perrmsg = FB_ERRMSG_OK
@@ -488,18 +488,37 @@ function astNewCONV _
 	'' Discarding/changing const qualifier bits ?
 	if( typeIsPtr( ldtype ) and typeIsPtr( to_dtype ) ) then
 
-		if( (typeGetDtOnly( to_dtype ) = FB_DATATYPE_FUNCTION) and (typeGetDtOnly( ldtype ) = FB_DATATYPE_FUNCTION) ) then
-			n->cast.convconst = ( symbCheckConstAssignFuncPtr( to_dtype, ldtype, to_subtype, l->subtype ) = FALSE )
-		else
-			n->cast.convconst = ( symbCheckConstAssign( to_dtype, ldtype, to_subtype, l->subtype ) = FALSE )
+		errmsg = 0
+		wrnmsg = 0
+
+		n->cast.convconst = ( symbCheckConstAssign( to_dtype, ldtype, to_subtype, l->subtype, , , errmsg, wrnmsg ) = FALSE )
+
+		'' error message takes priority over warning messages
+		if( (options and AST_CONVOPT_DONTCHKPTR) = 0 ) then
+			if( errmsg <> FB_ERRMSG_OK ) then
+				if( perrmsg ) then
+					*perrmsg = errmsg
+				end if
+				astDelTree( n )
+				exit function
+			end if
 		end if
-	
+		
+		'' else check if const conversion
 		if( n->cast.convconst ) then
 			if( (options and AST_CONVOPT_DONTWARNCONST) = 0 ) then
 				if( fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
-					errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
+					'' specific warning message takes priority over const warning
+					if( wrnmsg = 0 ) then
+						wrnmsg = FB_WARNINGMSG_CONSTQUALIFIERDISCARDED
+					end if
 				end if
 			end if
+		end if
+	
+		'' warning? show it now
+		if( wrnmsg <> 0 ) then
+			errReportWarn( wrnmsg )
 		end if
 	end if
 
