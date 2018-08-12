@@ -148,7 +148,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr, byval all_c
 					dim as integer dtype = any
 					dim as ASTNODE ptr param_optval = any
 					if( .isopt ) then
-						select case as const .dtype
+						select case as const typeGetDtAndPtrOnly( .dtype )
 						case FB_DATATYPE_STRING
 							'' only NULL can be used
 							param_optval = astNewCONSTstr( "" )
@@ -168,7 +168,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr, byval all_c
 
 								with procdef->paramTb(i)
 									if( .isopt ) then
-										select case as const .dtype
+										select case as const typeGetDtAndPtrOnly( .dtype )
 										case FB_DATATYPE_STRING
 											'' only NULL can be used
 											inner_param_optval = astNewCONSTstr( "" )

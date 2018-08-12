@@ -3033,7 +3033,7 @@
 
 	ID( sub fb_End )
 	scope
-		dim chk as sub fbcall ( byval as long )
+		dim chk as sub fbcall ( byval as const long )
 		chk = procptr( fb_End )
 	end scope
 
@@ -3045,7 +3045,7 @@
 
 	ID( function command alias "fb_Command" )
 	scope
-		dim chk as function fbcall ( byval as long = -1 ) as string
+		dim chk as function fbcall ( byval as const long = -1 ) as string
 		chk = procptr( command )
 	end scope
 
@@ -3081,69 +3081,69 @@
 
 	ID( function shell alias "fb_Shell" )
 	scope
-		dim chk as function fbcall ( byref as string = "" ) as long
+		dim chk as function fbcall ( byref as const string = "" ) as long
 		chk = procptr( shell )
 	end scope
 
 	ID( sub system alias "fb_End" )
 	scope
-		dim chk as sub fbcall ( byval as long = 0 )
+		dim chk as sub fbcall ( byval as const long = 0 )
 		chk = procptr( system )
 	end scope
 
 	ID( sub stop alias "fb_End" )
 	scope
-		dim chk as sub fbcall ( byval as long = 0 )
+		dim chk as sub fbcall ( byval as const long = 0 )
 		chk = procptr( stop )
 	end scope
 
 	ID( function run alias "fb_Run" )
 	scope
-		dim chk as function fbcall ( byref as string, byref as string = "" ) as long
+		dim chk as function fbcall ( byref as const string, byref as const string = "" ) as long
 		chk = procptr( run )
 	end scope
 
 	ID( function chain alias "fb_Chain" )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( chain )
 	end scope
 
 	ID( function exec alias "fb_Exec" )
 	scope
-		dim chk as function fbcall ( byref as string, byref as string ) as long
+		dim chk as function fbcall ( byref as const string, byref as const string ) as long
 		chk = procptr( exec )
 	end scope
 
 	ID( function environ alias "fb_GetEnviron" )
 	scope
-		dim chk as function fbcall ( byref as string ) as string
+		dim chk as function fbcall ( byref as const string ) as string
 		chk = procptr( environ )
 	end scope
 
 	ID( function setenviron alias "fb_SetEnviron" )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( setenviron )
 	end scope
 
 	ID( sub sleep alias "fb_Sleep" )
 	scope
-		dim chk as sub fbcall ( byval as long = -1 )
+		dim chk as sub fbcall ( byval as const long = -1 )
 		chk = procptr( sleep )
 	end scope
 
 #if __FB_LANG__ = "qb"
 	ID( sub sleep alias "fb_SleepQB" )
 	scope
-		dim chk as sub fbcall ( byval as long = -1 )
+		dim chk as sub fbcall ( byval as const long = -1 )
 		chk = procptr( sleep )
 	end scope
 #endif
 
 	ID( function sleep alias "fb_SleepEx" )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long ) as long
 		chk = procptr( sleep )
 	end scope
 
@@ -3173,43 +3173,43 @@
 
 	ID( function dir alias "fb_Dir" )
 	scope
-		dim chk as function fbcall ( byref as string, byval as long = 33, byval as long ptr = 0 ) as string
+		dim chk as function fbcall ( byref as const string, byval as const long = 33, byval as long ptr = 0 ) as string
 		chk = procptr( dir )
 	end scope
 
 	ID( function dir alias "fb_Dir64" )
 	scope
-		dim chk as function fbcall ( byref as string, byval as long = 33, byval as longint ptr ) as string
+		dim chk as function fbcall ( byref as const string, byval as const long = 33, byval as longint ptr ) as string
 		chk = procptr( dir )
 	end scope
 
 	ID( function dir alias "fb_Dir" )
 	scope
-		dim chk as function fbcall ( byref as string, byval as long = 33, byref as long ) as string
+		dim chk as function fbcall ( byref as const string, byval as const long = 33, byref as long ) as string
 		chk = procptr( dir )
 	end scope
 
 	ID( function dir alias "fb_Dir64" )
 	scope
-		dim chk as function fbcall ( byref as string, byval as long = 33, byref as longint ) as string
+		dim chk as function fbcall ( byref as const string, byval as const long = 33, byref as longint ) as string
 		chk = procptr( dir )
 	end scope
 
 	ID( function settime alias "fb_SetTime" )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( settime )
 	end scope
 
 	ID( function setdate alias "fb_SetDate" )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( setdate )
 	end scope
 
 	ID( function threadcreate alias "fb_ThreadCreate" )
 	scope
-		dim chk as function fbcall ( byval as sub (  byval as any ptr ), byval as any ptr = 0, byval as integer = 0 ) as any ptr
+		dim chk as function fbcall ( byval as sub (  byval as any ptr ), byval as any ptr = 0, byval as const integer = 0 ) as any ptr
 		chk = procptr( threadcreate )
 	end scope
 
@@ -3221,7 +3221,7 @@
 
 	ID( function fb_ThreadCall )
 	scope
-		dim chk as function cdecl ( byval as any ptr, byval as long, byval as integer, byval as long, ... ) as any ptr
+		dim chk as function cdecl ( byval as any ptr, byval as const long, byval as const integer, byval as const long, ... ) as any ptr
 		chk = procptr( fb_ThreadCall )
 	end scope
 
@@ -3281,19 +3281,19 @@
 
 	ID( function dylibload alias "fb_DylibLoad" )
 	scope
-		dim chk as function fbcall ( byref as string ) as any ptr
+		dim chk as function fbcall ( byref as const string ) as any ptr
 		chk = procptr( dylibload )
 	end scope
 
 	ID( function dylibsymbol alias "fb_DylibSymbol" )
 	scope
-		dim chk as function fbcall ( byval as any ptr, byref as string ) as any ptr
+		dim chk as function fbcall ( byval as any ptr, byref as const string ) as any ptr
 		chk = procptr( dylibsymbol )
 	end scope
 
 	ID( function dylibsymbol alias "fb_DylibSymbolByOrd" )
 	scope
-		dim chk as function fbcall ( byval as any ptr, byval as short ) as any ptr
+		dim chk as function fbcall ( byval as any ptr, byval as const short ) as any ptr
 		chk = procptr( dylibsymbol )
 	end scope
 
@@ -3311,19 +3311,19 @@
 
 	ID( function mkdir alias "fb_MkDir" )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( mkdir )
 	end scope
 
 	ID( function rmdir alias "fb_RmDir" )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( rmdir )
 	end scope
 
 	ID( function chdir alias "fb_ChDir" )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( chdir )
 	end scope
 
