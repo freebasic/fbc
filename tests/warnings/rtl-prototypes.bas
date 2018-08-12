@@ -821,85 +821,85 @@
 
 	ID( sub fb_GfxPset )
 	scope
-		dim chk as sub fbcall ( byval as any ptr = 0, byval as single, byval as single, byval as ulong, byval as long, byval as long )
+		dim chk as sub fbcall ( byval as any ptr = 0, byval as const single, byval as const single, byval as const ulong, byval as const long, byval as const long )
 		chk = procptr( fb_GfxPset )
 	end scope
 
 	ID( function fb_GfxPoint )
 	scope
-		dim chk as function fbcall ( byval as any ptr = 0, byval as single, byval as single ) as integer
+		dim chk as function fbcall ( byval as any ptr = 0, byval as const single, byval as const single ) as integer
 		chk = procptr( fb_GfxPoint )
 	end scope
 
 	ID( sub fb_GfxLine )
 	scope
-		dim chk as sub fbcall ( byval as any ptr = 0, byval as single, byval as single, byval as single, byval as single, byval as ulong, byval as long, byval as ulong = 65535, byval as long )
+		dim chk as sub fbcall ( byval as any ptr = 0, byval as const single, byval as const single, byval as const single, byval as const single, byval as const ulong, byval as const long, byval as const ulong = 65535, byval as const long )
 		chk = procptr( fb_GfxLine )
 	end scope
 
 	ID( sub fb_GfxEllipse )
 	scope
-		dim chk as sub fbcall ( byval as any ptr = 0, byval as single, byval as single, byval as single, byval as ulong, byval as single, byval as single, byval as single, byval as long, byval as long )
+		dim chk as sub fbcall ( byval as any ptr = 0, byval as const single, byval as const single, byval as const single, byval as const ulong, byval as const single, byval as const single, byval as const single, byval as const long, byval as const long )
 		chk = procptr( fb_GfxEllipse )
 	end scope
 
 	ID( sub fb_GfxPaint )
 	scope
-		dim chk as sub fbcall ( byval as any ptr = 0, byval as single, byval as single, byval as ulong, byval as ulong, byref as string, byval as long, byval as long )
+		dim chk as sub fbcall ( byval as any ptr = 0, byval as const single, byval as const single, byval as const ulong, byval as const ulong, byref as const string, byval as const long, byval as const long )
 		chk = procptr( fb_GfxPaint )
 	end scope
 
 	ID( sub fb_GfxDraw )
 	scope
-		dim chk as sub fbcall ( byval as any ptr = 0, byref as string )
+		dim chk as sub fbcall ( byval as any ptr = 0, byref as const string )
 		chk = procptr( fb_GfxDraw )
 	end scope
 
 	ID( function fb_GfxDrawString )
 	scope
-		dim chk as function fbcall ( byval as any ptr = 0, byval as single, byval as single, byval as long, byref as string, byval as ulong, byval as any ptr = 0, byval as long, byval as any ptr, byval as any ptr = 0, byval as any ptr ) as integer
+		dim chk as function fbcall ( byval as any ptr = 0, byval as const single, byval as const single, byval as const long, byref as const string, byval as const ulong, byval as const any ptr = 0, byval as const long, byval as any ptr, byval as any ptr = 0, byval as any ptr ) as integer
 		chk = procptr( fb_GfxDrawString )
 	end scope
 
 	ID( sub fb_GfxView )
 	scope
-		dim chk as sub fbcall ( byval as long = -32768, byval as long = -32768, byval as long = -32768, byval as long = -32768, byval as ulong = 0, byval as ulong = 0, byval as long )
+		dim chk as sub fbcall ( byval as const long = -32768, byval as const long = -32768, byval as const long = -32768, byval as const long = -32768, byval as const ulong = 0, byval as const ulong = 0, byval as const long )
 		chk = procptr( fb_GfxView )
 	end scope
 
 	ID( sub fb_GfxWindow )
 	scope
-		dim chk as sub fbcall ( byval as single = 0, byval as single = 0, byval as single = 0, byval as single = 0, byval as long = 0 )
+		dim chk as sub fbcall ( byval as const single = 0, byval as const single = 0, byval as const single = 0, byval as const single = 0, byval as const long = 0 )
 		chk = procptr( fb_GfxWindow )
 	end scope
 
 	ID( sub fb_GfxPalette )
 	scope
-		dim chk as sub fbcall ( byval as long = -1, byval as long = -1, byval as long = -1, byval as long = -1 )
+		dim chk as sub fbcall ( byval as const long = -1, byval as const long = -1, byval as const long = -1, byval as const long = -1 )
 		chk = procptr( fb_GfxPalette )
 	end scope
 
 	ID( sub fb_GfxPaletteUsing )
 	scope
-		dim chk as sub fbcall ( byval as long ptr )
+		dim chk as sub fbcall ( byval as const long ptr )
 		chk = procptr( fb_GfxPaletteUsing )
 	end scope
 
 	ID( sub fb_GfxPaletteUsing64 )
 	scope
-		dim chk as sub fbcall ( byval as longint ptr )
+		dim chk as sub fbcall ( byval as const longint ptr )
 		chk = procptr( fb_GfxPaletteUsing64 )
 	end scope
 
 	ID( sub fb_GfxPaletteGet )
 	scope
-		dim chk as sub fbcall ( byval as long = -1, byref as long, byref as long, byref as long )
+		dim chk as sub fbcall ( byval as const long = -1, byref as long, byref as long, byref as long )
 		chk = procptr( fb_GfxPaletteGet )
 	end scope
 
 	ID( sub fb_GfxPaletteGet64 )
 	scope
-		dim chk as sub fbcall ( byval as long = -1, byref as longint, byref as longint, byref as longint )
+		dim chk as sub fbcall ( byval as const long = -1, byref as longint, byref as longint, byref as longint )
 		chk = procptr( fb_GfxPaletteGet64 )
 	end scope
 
@@ -917,107 +917,107 @@
 
 	ID( function fb_GfxPut )
 	scope
-		dim chk as function fbcall ( byval as any ptr = 0, byval as single, byval as single, byval as any ptr, byval as long = -65536, byval as long = -65536, byval as long = -65536, byval as long = -65536, byval as long, byval as long, byval as any ptr, byval as long = -1, byval as any ptr = 0, byval as any ptr = 0 ) as long
+		dim chk as function fbcall ( byval as any ptr = 0, byval as const single, byval as const single, byval as const any ptr, byval as const long = -65536, byval as const long = -65536, byval as const long = -65536, byval as const long = -65536, byval as const long, byval as const long, byval as any ptr, byval as const long = -1, byval as any ptr = 0, byval as any ptr = 0 ) as long
 		chk = procptr( fb_GfxPut )
 	end scope
 
 	ID( function fb_GfxGet )
 	scope
-		dim chk as function fbcall ( byval as any ptr = 0, byval as single, byval as single, byval as single, byval as single, byval as any ptr, byval as long, bydesc as any ) as long
+		dim chk as function fbcall ( byval as const any ptr = 0, byval as const single, byval as const single, byval as const single, byval as const single, byval as any ptr, byval as const long, bydesc as const any ) as long
 		chk = procptr( fb_GfxGet )
 	end scope
 
 #if __FB_LANG__ <> "fb"
 	ID( function fb_GfxGetQB )
 	scope
-		dim chk as function fbcall ( byval as any ptr = 0, byval as single, byval as single, byval as single, byval as single, byval as any ptr, byval as long, bydesc as any ) as long
+		dim chk as function fbcall ( byval as const any ptr = 0, byval as const single, byval as const single, byval as const single, byval as const single, byval as any ptr, byval as const long, bydesc as any ) as long
 		chk = procptr( fb_GfxGetQB )
 	end scope
 #endif
 
 	ID( function fb_GfxScreen )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long = 8, byval as long = 0, byval as long = 0, byval as long = 0 ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long = 8, byval as const long = 0, byval as const long = 0, byval as const long = 0 ) as long
 		chk = procptr( fb_GfxScreen )
 	end scope
 
 	ID( function fb_GfxScreenQB )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long = -1, byval as long = -1 ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long = -1, byval as const long = -1 ) as long
 		chk = procptr( fb_GfxScreenQB )
 	end scope
 
 	ID( function screenres alias "fb_GfxScreenRes" )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byval as long = 8, byval as long = 1, byval as long = 0, byval as long = 0 ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, byval as const long = 8, byval as const long = 1, byval as const long = 0, byval as const long = 0 ) as long
 		chk = procptr( screenres )
 	end scope
 
 	ID( function bload alias "fb_GfxBload" )
 	scope
-		dim chk as function fbcall ( byref as string, byval as any ptr = 0, byval as any ptr = 0 ) as long
+		dim chk as function fbcall ( byref as const string, byval as any ptr = 0, byval as any ptr = 0 ) as long
 		chk = procptr( bload )
 	end scope
 
 #if __FB_LANG__ <> "fb"
 	ID( function bload alias "fb_GfxBloadQB" )
 	scope
-		dim chk as function fbcall ( byref as string, byval as any ptr = 0, byval as any ptr = 0 ) as long
+		dim chk as function fbcall ( byref as const string, byval as any ptr = 0, byval as any ptr = 0 ) as long
 		chk = procptr( bload )
 	end scope
 #endif
 
 	ID( function bsave alias "fb_GfxBsave" )
 	scope
-		dim chk as function fbcall ( byref as string, byval as any ptr, byval as ulong = 0, byval as any ptr = 0 ) as long
+		dim chk as function fbcall ( byref as const string, byval as const any ptr, byval as const ulong = 0, byval as const any ptr = 0 ) as long
 		chk = procptr( bsave )
 	end scope
 
 	ID( function bsave alias "fb_GfxBsaveEx" )
 	scope
-		dim chk as function fbcall ( byref as string, byval as any ptr, byval as ulong = 0, byval as any ptr, byval as long ) as long
+		dim chk as function fbcall ( byref as const string, byval as const any ptr, byval as const ulong = 0, byval as const any ptr, byval as const long ) as long
 		chk = procptr( bsave )
 	end scope
 
 	ID( function flip alias "fb_GfxFlip" )
 	scope
-		dim chk as function fbcall ( byval as long = -1, byval as long = -1 ) as long
+		dim chk as function fbcall ( byval as const long = -1, byval as const long = -1 ) as long
 		chk = procptr( flip )
 	end scope
 
 	ID( function screencopy alias "fb_GfxFlip" )
 	scope
-		dim chk as function fbcall ( byval as long = -1, byval as long = -1 ) as long
+		dim chk as function fbcall ( byval as const long = -1, byval as const long = -1 ) as long
 		chk = procptr( screencopy )
 	end scope
 
 	ID( function pointcoord alias "fb_GfxCursor" )
 	scope
-		dim chk as function fbcall ( byval as long ) as single
+		dim chk as function fbcall ( byval as const long ) as single
 		chk = procptr( pointcoord )
 	end scope
 
 	ID( function pmap alias "fb_GfxPMap" )
 	scope
-		dim chk as function fbcall ( byval as single, byval as long ) as single
+		dim chk as function fbcall ( byval as const single, byval as const long ) as single
 		chk = procptr( pmap )
 	end scope
 
 	ID( function out alias "fb_Out" )
 	scope
-		dim chk as function fbcall ( byval as ushort, byval as ubyte ) as long
+		dim chk as function fbcall ( byval as const ushort, byval as const ubyte ) as long
 		chk = procptr( out )
 	end scope
 
 	ID( function inp alias "fb_In" )
 	scope
-		dim chk as function fbcall ( byval as ushort ) as long
+		dim chk as function fbcall ( byval as const ushort ) as long
 		chk = procptr( inp )
 	end scope
 
 	ID( function wait alias "fb_Wait" )
 	scope
-		dim chk as function fbcall ( byval as ushort, byval as long, byval as long = 0 ) as long
+		dim chk as function fbcall ( byval as const ushort, byval as const long, byval as const long = 0 ) as long
 		chk = procptr( wait )
 	end scope
 
@@ -1029,7 +1029,7 @@
 
 	ID( function screenset alias "fb_GfxPageSet" )
 	scope
-		dim chk as function cdecl ( byval as long = -1, byval as long = -1 ) as long
+		dim chk as function cdecl ( byval as const long = -1, byval as const long = -1 ) as long
 		chk = procptr( screenset )
 	end scope
 
@@ -1041,7 +1041,7 @@
 
 	ID( sub screenunlock alias "fb_GfxUnlock" )
 	scope
-		dim chk as sub fbcall ( byval as long = -1, byval as long = -1 )
+		dim chk as sub fbcall ( byval as const long = -1, byval as const long = -1 )
 		chk = procptr( screenunlock )
 	end scope
 
@@ -1053,13 +1053,13 @@
 
 	ID( sub windowtitle alias "fb_GfxSetWindowTitle" )
 	scope
-		dim chk as sub fbcall ( byref as string )
+		dim chk as sub fbcall ( byref as const string )
 		chk = procptr( windowtitle )
 	end scope
 
 	ID( function multikey alias "fb_Multikey" )
 	scope
-		dim chk as function fbcall ( byval as long ) as long
+		dim chk as function fbcall ( byval as const long ) as long
 		chk = procptr( multikey )
 	end scope
 
@@ -1077,20 +1077,20 @@
 
 	ID( function setmouse alias "fb_SetMouse" )
 	scope
-		dim chk as function fbcall ( byval as long = -2147483648, byval as long = -2147483648, byval as long = -1, byval as long = -1 ) as long
+		dim chk as function fbcall ( byval as const long = -2147483648, byval as const long = -2147483648, byval as const long = -1, byval as const long = -1 ) as long
 		chk = procptr( setmouse )
 	end scope
 
 	ID( function getjoystick alias "fb_GfxGetJoystick" )
 	scope
-		dim chk as function fbcall ( byval as long, byref as integer = 0, byref as single = 0, byref as single = 0, byref as single = 0, byref as single = 0, byref as single = 0, byref as single = 0, byref as single = 0, byref as single = 0 ) as long
+		dim chk as function fbcall ( byval as const long, byref as integer = 0, byref as single = 0, byref as single = 0, byref as single = 0, byref as single = 0, byref as single = 0, byref as single = 0, byref as single = 0, byref as single = 0 ) as long
 		chk = procptr( getjoystick )
 	end scope
 
 #if __FB_LANG__ = "qb"
 	ID( function stick alias "fb_GfxStickQB" )
 	scope
-		dim chk as function fbcall ( byval as long ) as long
+		dim chk as function fbcall ( byval as const long ) as long
 		chk = procptr( stick )
 	end scope
 #endif
@@ -1098,7 +1098,7 @@
 #if __FB_LANG__ = "qb"
 	ID( function strig alias "fb_GfxStrigQB" )
 	scope
-		dim chk as function fbcall ( byval as long ) as long
+		dim chk as function fbcall ( byval as const long ) as long
 		chk = procptr( strig )
 	end scope
 #endif
@@ -1111,37 +1111,37 @@
 
 	ID( function screenlist alias "fb_GfxScreenList" )
 	scope
-		dim chk as function fbcall ( byval as long = 0 ) as long
+		dim chk as function fbcall ( byval as const long = 0 ) as long
 		chk = procptr( screenlist )
 	end scope
 
 	ID( function fb_GfxImageCreate )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byval as ulong = 0, byval as long = 0, byval as long = 0 ) as any ptr
+		dim chk as function fbcall ( byval as const long, byval as const long, byval as const ulong = 0, byval as const long = 0, byval as const long = 0 ) as any ptr
 		chk = procptr( fb_GfxImageCreate )
 	end scope
 
 	ID( function fb_GfxImageCreateQB )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byval as ulong = 0, byval as long = 0, byval as long = 0 ) as any ptr
+		dim chk as function fbcall ( byval as const long, byval as const long, byval as const ulong = 0, byval as const long = 0, byval as const long = 0 ) as any ptr
 		chk = procptr( fb_GfxImageCreateQB )
 	end scope
 
 	ID( sub imagedestroy alias "fb_GfxImageDestroy" )
 	scope
-		dim chk as sub fbcall ( byval as any ptr )
+		dim chk as sub fbcall ( byval as const any ptr )
 		chk = procptr( imagedestroy )
 	end scope
 
 	ID( function imageinfo alias "fb_GfxImageInfo" )
 	scope
-		dim chk as function fbcall ( byval as any ptr, byref as integer = 0, byref as integer = 0, byref as integer = 0, byref as integer = 0, byref as any ptr = 0, byref as integer = 0 ) as long
+		dim chk as function fbcall ( byval as const any ptr, byref as integer = 0, byref as integer = 0, byref as integer = 0, byref as integer = 0, byref as any ptr = 0, byref as integer = 0 ) as long
 		chk = procptr( imageinfo )
 	end scope
 
 	ID( sub imageconvertrow alias "fb_GfxImageConvertRow" )
 	scope
-		dim chk as sub fbcall ( byval as any ptr, byval as long, byval as any ptr, byval as long, byval as long, byval as long = 1 )
+		dim chk as sub fbcall ( byval as const any ptr, byval as const long, byval as any ptr, byval as const long, byval as const long, byval as const long = 1 )
 		chk = procptr( imageconvertrow )
 	end scope
 
@@ -1153,79 +1153,79 @@
 
 	ID( sub screencontrol alias "fb_GfxControl_s" )
 	scope
-		dim chk as sub fbcall ( byval as long, byref as string )
+		dim chk as sub fbcall ( byval as const long, byref as string )
 		chk = procptr( screencontrol )
 	end scope
 
 	ID( sub screencontrol alias "fb_GfxControl_i" )
 	scope
-		dim chk as sub fbcall ( byval as long, byref as integer = -2147483648, byref as integer = -2147483648, byref as integer = -2147483648, byref as integer = -2147483648 )
+		dim chk as sub fbcall ( byval as const long, byref as integer = -2147483648, byref as integer = -2147483648, byref as integer = -2147483648, byref as integer = -2147483648 )
 		chk = procptr( screencontrol )
 	end scope
 
 	ID( function screenglproc alias "fb_GfxGetGLProcAddress" )
 	scope
-		dim chk as function fbcall ( byval as zstring ptr ) as any ptr
+		dim chk as function fbcall ( byval as const zstring ptr ) as any ptr
 		chk = procptr( screenglproc )
 	end scope
 
 	ID( sub fb_hPutTrans )
 	scope
-		dim chk as sub cdecl ( byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as any ptr, byval as any ptr )
+		dim chk as sub cdecl ( byval as const ubyte ptr, byval as ubyte ptr, byval as const long, byval as const long, byval as const long, byval as const long, byval as const long, byval as any ptr, byval as any ptr )
 		chk = procptr( fb_hPutTrans )
 	end scope
 
 	ID( sub fb_hPutPSet )
 	scope
-		dim chk as sub cdecl ( byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as any ptr, byval as any ptr )
+		dim chk as sub cdecl ( byval as const ubyte ptr, byval as ubyte ptr, byval as const long, byval as const long, byval as const long, byval as const long, byval as const long, byval as any ptr, byval as any ptr )
 		chk = procptr( fb_hPutPSet )
 	end scope
 
 	ID( sub fb_hPutPReset )
 	scope
-		dim chk as sub cdecl ( byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as any ptr, byval as any ptr )
+		dim chk as sub cdecl ( byval as const ubyte ptr, byval as ubyte ptr, byval as const long, byval as const long, byval as const long, byval as const long, byval as const long, byval as any ptr, byval as any ptr )
 		chk = procptr( fb_hPutPReset )
 	end scope
 
 	ID( sub fb_hPutAnd )
 	scope
-		dim chk as sub cdecl ( byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as any ptr, byval as any ptr )
+		dim chk as sub cdecl ( byval as const ubyte ptr, byval as ubyte ptr, byval as const long, byval as const long, byval as const long, byval as const long, byval as const long, byval as any ptr, byval as any ptr )
 		chk = procptr( fb_hPutAnd )
 	end scope
 
 	ID( sub fb_hPutOr )
 	scope
-		dim chk as sub cdecl ( byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as any ptr, byval as any ptr )
+		dim chk as sub cdecl ( byval as const ubyte ptr, byval as ubyte ptr, byval as const long, byval as const long, byval as const long, byval as const long, byval as const long, byval as any ptr, byval as any ptr )
 		chk = procptr( fb_hPutOr )
 	end scope
 
 	ID( sub fb_hPutXor )
 	scope
-		dim chk as sub cdecl ( byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as any ptr, byval as any ptr )
+		dim chk as sub cdecl ( byval as const ubyte ptr, byval as ubyte ptr, byval as const long, byval as const long, byval as const long, byval as const long, byval as const long, byval as any ptr, byval as any ptr )
 		chk = procptr( fb_hPutXor )
 	end scope
 
 	ID( sub fb_hPutAlpha )
 	scope
-		dim chk as sub cdecl ( byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as any ptr, byval as any ptr )
+		dim chk as sub cdecl ( byval as const ubyte ptr, byval as ubyte ptr, byval as const long, byval as const long, byval as const long, byval as const long, byval as const long, byval as any ptr, byval as any ptr )
 		chk = procptr( fb_hPutAlpha )
 	end scope
 
 	ID( sub fb_hPutBlend )
 	scope
-		dim chk as sub cdecl ( byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as any ptr, byval as any ptr )
+		dim chk as sub cdecl ( byval as const ubyte ptr, byval as ubyte ptr, byval as const long, byval as const long, byval as const long, byval as const long, byval as const long, byval as any ptr, byval as any ptr )
 		chk = procptr( fb_hPutBlend )
 	end scope
 
 	ID( sub fb_hPutAdd )
 	scope
-		dim chk as sub cdecl ( byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as any ptr, byval as any ptr )
+		dim chk as sub cdecl ( byval as const ubyte ptr, byval as ubyte ptr, byval as const long, byval as const long, byval as const long, byval as const long, byval as const long, byval as any ptr, byval as any ptr )
 		chk = procptr( fb_hPutAdd )
 	end scope
 
 	ID( sub fb_hPutCustom )
 	scope
-		dim chk as sub cdecl ( byval as ubyte ptr, byval as ubyte ptr, byval as long, byval as long, byval as long, byval as long, byval as long, byval as any ptr, byval as any ptr )
+		dim chk as sub cdecl ( byval as const ubyte ptr, byval as ubyte ptr, byval as const long, byval as const long, byval as const long, byval as const long, byval as const long, byval as any ptr, byval as any ptr )
 		chk = procptr( fb_hPutCustom )
 	end scope
 

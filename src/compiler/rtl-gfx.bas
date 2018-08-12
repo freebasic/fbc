@@ -23,151 +23,151 @@ declare function hPorts_cb _
 		/' sub fb_GfxPset _
 			( _
 				byval target as any ptr = 0, _
-				byval x as single, _
-				byval y as single, _
-				byval color as ulong, _
-				byval coord_type as long, _
-				byval ispreset as long _
+				byval x as const single, _
+				byval y as const single, _
+				byval color as const ulong, _
+				byval coord_type as const long, _
+				byval ispreset as const long _
 			) '/ _
 		( _
 			@FB_RTL_GFXPSET, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			6, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' function fb_GfxPoint _
 			( _
 				byval target as any ptr = 0, _
-				byval x as single, _
-				byval y as single _
+				byval x as const single, _
+				byval y as const single _
 			) as integer '/ _
 		( _
 			@FB_RTL_GFXPOINT, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' sub fb_GfxLine _
 			( _
 				byval target as any ptr = 0, _
-				byval x1 as single = 0, _
-				byval y1 as single = 0, _
-				byval x2 as single = 0, _
-				byval y2 as single = 0, _
-				byval color as ulong = DEFAULT_COLOR, _
-				byval type as long = LINE_TYPE_LINE, _
-				byval style as ulong = &hFFFF, _
-				byval coord_type as long = COORD_TYPE_AA _
+				byval x1 as const single = 0, _
+				byval y1 as const single = 0, _
+				byval x2 as const single = 0, _
+				byval y2 as const single = 0, _
+				byval color as const ulong = DEFAULT_COLOR, _
+				byval type as const long = LINE_TYPE_LINE, _
+				byval style as const ulong = &hFFFF, _
+				byval coord_type as const long = COORD_TYPE_AA _
 			) '/ _
 		( _
 			@FB_RTL_GFXLINE, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			9, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, TRUE, &hFFFF ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, TRUE, &hFFFF ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' sub fb_GfxEllipse _
 			( _
 				byval target as any ptr = 0, _
-				byval x as single, _
-				byval y as single, _
-				byval radius as single, _
-				byval color as ulong = DEFAULT_COLOR, _
-				byval aspect as single = 0.0, _
-				byval start as single = 0.0, _
-				byval end as single = 6.283186, _
-				byval fill as long = 0, _
-				byval coord_type as long = COORD_TYPE_A _
+				byval x as const single, _
+				byval y as const single, _
+				byval radius as const single, _
+				byval color as const ulong = DEFAULT_COLOR, _
+				byval aspect as const single = 0.0, _
+				byval start as const single = 0.0, _
+				byval end as const single = 6.283186, _
+				byval fill as const long = 0, _
+				byval coord_type as const long = COORD_TYPE_A _
 			) '/ _
 		( _
 			@FB_RTL_GFXCIRCLE, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			10, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' sub fb_GfxPaint _
 			( _
 				byval target as any ptr = 0, _
-				byval fx as single, _
-				byval fy as single, _
-				byval color as ulong = DEFAULT_COLOR, _
-				byval border_color as ulong = DEFAULT_COLOR, _
-				byref pattern as string, _
-				byval mode as long = PAINT_TYPE_FILL, _
-				byval coord_type as long = COORD_TYPE_A _
+				byval fx as const single, _
+				byval fy as const single, _
+				byval color as const ulong = DEFAULT_COLOR, _
+				byval border_color as const ulong = DEFAULT_COLOR, _
+				byref pattern as const string, _
+				byval mode as const long = PAINT_TYPE_FILL, _
+				byval coord_type as const long = COORD_TYPE_A _
 			) '/ _
 		( _
 			@FB_RTL_GFXPAINT, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			8, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
-		/' sub fb_GfxDraw( byval target as any ptr = 0, byref cmd as string ) '/ _
+		/' sub fb_GfxDraw( byval target as any ptr = 0, byref cmd as const string ) '/ _
 		( _
 			@FB_RTL_GFXDRAW, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
 		), _
 		/' function fb_GfxDrawString _
 			( _
 				byval target as any ptr = 0, _
-				byval fx as single, _
-				byval fy as single, _
-				byval coord_type as long = COORD_TYPE_A, _
-				byref string as string, _
-				byval color as ulong = DEFAULT_COLOR, _
-				byval font as any ptr = 0, _
-				byval mode as long, _
+				byval fx as const single, _
+				byval fy as const single, _
+				byval coord_type as const long = COORD_TYPE_A, _
+				byref string as const string, _
+				byval color as const ulong = DEFAULT_COLOR, _
+				byval font as const any ptr = 0, _
+				byval mode as const long, _
 				byval putter as PUTTER ptr, _
 				byval blender as BLENDER ptr = 0, _
 				byval param as any ptr _
@@ -175,110 +175,110 @@ declare function hPorts_cb _
 		( _
 			@FB_RTL_GFXDRAWSTRING, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
+			@hGfxlib_cb, FB_RTL_OPT_ERROR, _
 			11, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_GfxView _
 			( _
-				byval x1 as long = -32768, _
-				byval y1 as long = -32768, _
-				byval x2 as long = -32768, _
-				byval y2 as long = -32768, _
-				byval fill_color as ulong = 0, _
-				byval border_color as ulong = 0, _
-				byval screen as long _
+				byval x1 as const long = -32768, _
+				byval y1 as const long = -32768, _
+				byval x2 as const long = -32768, _
+				byval y2 as const long = -32768, _
+				byval fill_color as const ulong = 0, _
+				byval border_color as const ulong = 0, _
+				byval screen as const long _
 			) '/ _
 		( _
 			@FB_RTL_GFXVIEW, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			7, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -32768 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -32768 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -32768 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -32768 ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -32768 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -32768 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -32768 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -32768 ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' sub fb_GfxWindow _
 			( _
-				byval x1 as single = 0, _
-				byval y1 as single = 0, _
-				byval x2 as single = 0, _
-				byval y2 as single = 0, _
-				byval screen as long = 0 _
+				byval x1 as const single = 0, _
+				byval y1 as const const single = 0, _
+				byval x2 as const single = 0, _
+				byval y2 as const single = 0, _
+				byval screen as const long = 0 _
 			) '/ _
 		( _
 			@FB_RTL_GFXWINDOW, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+			} _
 		), _
 		/' sub fb_GfxPalette _
 			( _
-				byval index as long = -1, _
-				byval r as long = -1, _
-				byval g as long = -1, _
-				byval b as long = -1 _
+				byval index as const long = -1, _
+				byval r as const long = -1, _
+				byval g as const long = -1, _
+				byval b as const long = -1 _
 			) '/ _
 		( _
 			@FB_RTL_GFXPALETTE, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+			} _
 		), _
-		/' sub fb_GfxPaletteUsing( byval data as long ptr ) '/ _
+		/' sub fb_GfxPaletteUsing( byval data as const long ptr ) '/ _
 		( _
 			@FB_RTL_GFXPALETTEUSING, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_LONG ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' sub fb_GfxPaletteUsing64( byval data as longint ptr ) '/ _
+		/' sub fb_GfxPaletteUsing64( byval data as const longint ptr ) '/ _
 		( _
 			@FB_RTL_GFXPALETTEUSING64, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_LONGINT ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' sub fb_GfxPaletteGet _
 			( _
-				byval index as long = -1, _
+				byval index as const long = -1, _
 				byref r as long, _
 				byref g as long, _
 				byref b as long _
@@ -289,7 +289,7 @@ declare function hPorts_cb _
 			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ) _
@@ -297,7 +297,7 @@ declare function hPorts_cb _
 		), _
 		/' sub fb_GfxPaletteGet64 _
 			( _
-				byval index as long = -1, _
+				byval index as const long = -1, _
 				byref r as longint, _
 				byref g as longint, _
 				byref b as longint _
@@ -308,7 +308,7 @@ declare function hPorts_cb _
 			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
 				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
@@ -337,49 +337,49 @@ declare function hPorts_cb _
 		/' function fb_GfxPut _
 			( _
 				byval target as any ptr = 0, _
-				byval x as single, _
-				byval y as single, _
-				byval src as any ptr, _
-				byval x1 as long = &hFFFF0000, _
-				byval y1 as long = &hFFFF0000, _
-				byval x2 as long = &hFFFF0000, _
-				byval y2 as long = &hFFFF0000, _
-				byval coord_type as long, _
-				byval mode as long, _
+				byval x as const single, _
+				byval y as const single, _
+				byval src as const any ptr, _
+				byval x1 as const long = &hFFFF0000, _
+				byval y1 as const long = &hFFFF0000, _
+				byval x2 as const long = &hFFFF0000, _
+				byval y2 as const long = &hFFFF0000, _
+				byval coord_type as const long, _
+				byval mode as const long, _
 				byval putter as PUTTER ptr, _
-				byval alpha as long = -1, _
+				byval alpha as const long = -1, _
 				byval blender as BLENDER ptr = 0, _
 				byval param as any ptr = 0 _
 			) as long '/ _
 		( _
 			@FB_RTL_GFXPUT, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_ERROR, _
+			@hGfxlib_cb, FB_RTL_OPT_ERROR, _
 			14, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+			} _
 		), _
 		/' function fb_GfxGet _
 			( _
-				byval target as any ptr = 0, _
-				byval x1 as single, _
-				byval y1 as single, _
-				byval x2 as single, _
-				byval y2 as single, _
+				byval target as const any ptr = 0, _
+				byval x1 as const single, _
+				byval y1 as const const single, _
+				byval x2 as const single, _
+				byval y2 as const single, _
 				byval dest as any ptr, _
 				byval coord_type as long, _
 				array() as any _
@@ -387,258 +387,258 @@ declare function hPorts_cb _
 		( _
 			@FB_RTL_GFXGET, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_FBONLY, _
+			@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_FBONLY, _
 			8, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYDESC, FALSE ) _
+			} _
 		), _
 		/' function fb_GfxGetQB _
 			( _
-				byval target as any ptr = 0, _
-				byval x1 as single, _
-				byval y1 as single, _
-				byval x2 as single, _
-				byval y2 as single, _
+				byval target as const any ptr = 0, _
+				byval x1 as const single, _
+				byval y1 as const single, _
+				byval x2 as const single, _
+				byval y2 as const single, _
 				byval dest as any ptr, _
-				byval coord_type as long, _
+				byval coord_type as const long, _
 				array() as any _
 			) as long '/ _
 		( _
 			@FB_RTL_GFXGETQB, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOFB, _
+			@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOFB, _
 			8, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' function fb_GfxScreen _
 			( _
-				byval mode as long, _
-				byval depth as long = 8, _
-				byval num_pages as long = 0, _
-		                byval flags as long = 0, _
-				byval refresh_rate as long = 0 _
+				byval mode as const long, _
+				byval depth as const long = 8, _
+				byval num_pages as const long = 0, _
+				byval flags as const long = 0, _
+				byval refresh_rate as const long = 0 _
 			) as long '/ _
 		( _
 			@FB_RTL_GFXSCREENSET, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 8 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 8 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+			} _
 		), _
 		/' function fb_GfxScreenQB _
 			( _
-				byval mode as long, _
-				byval visible as long = -1,
-				byval active as long = -1 _
+				byval mode as const long, _
+				byval visible as const long = -1,
+				byval active as const long = -1 _
 			) as long '/ _
 		( _
 			@FB_RTL_GFXSCREENSETQB, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+			} _
 		), _
 		/' function screenres _
 			( _
-				byval width as long, _
-				byval height as long, _
-				byval depth as long = 8, _
-				byval num_pages as long = 1, _
-				byval flags as long = 0, _
-				byval refresh_rate as long = 0 _
+				byval width as const long, _
+				byval height as const long, _
+				byval depth as const long = 8, _
+				byval num_pages as const long = 1, _
+				byval flags as const long = 0, _
+				byval refresh_rate as const long = 0 _
 			) as long '/ _
 		( _
 			@"screenres", @"fb_GfxScreenRes", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOQB, _
 			6, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 8 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 8 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+			} _
 		), _
 		/' function bload _
 			( _
-				byref filename as string, _
+				byref filename as const string, _
 				byval dest as any ptr = NULL, _
 				byval pal as any ptr = NULL _
 			) as long '/ _
 		( _
 			@"bload", @"fb_GfxBload", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_FBONLY, _
+			@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_FBONLY, _
 			3, _
 			{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, NULL ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, NULL ) _
-	 		} _
+			} _
 		), _
 		/' function bload _
 			( _
-				byref filename as string, _
+				byref filename as const string, _
 				byval dest as any ptr = NULL, _
 				byval pal as any ptr = NULL _
 			) as long '/ _
 		( _
 			@"bload", @"fb_GfxBloadQB", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOFB, _
+			@hGfxlib_cb, FB_RTL_OPT_ERROR or FB_RTL_OPT_NOFB, _
 			3, _
 			{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, NULL ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, NULL ) _
-	 		} _
+			} _
 		), _
 		/' function bsave overload _
 			( _
-				byref filename as string, _
-				byval src as any ptr, _
-				byval size as ulong = 0, _
-				byval pal as any ptr = 0 _
+				byref filename as const string, _
+				byval src as const any ptr, _
+				byval size as const ulong = 0, _
+				byval pal as const any ptr = 0 _
 			) as long '/ _
 		( _
 			@"bsave", @"fb_GfxBsave", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
+			@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
 			4, _
 			{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+			} _
 		), _
 		/' function bsave overload _
 			( _
-				byref filename as string, _
-				byval src as any ptr, _
-				byval size as ulong = 0, _
-				byval pal as any ptr, _
-				byval bitsperpixel as long _
+				byref filename as const string, _
+				byval src as const any ptr, _
+				byval size as const ulong = 0, _
+				byval pal as const any ptr, _
+				byval bitsperpixel as const long _
 			) as long '/ _
 		( _
 			@"bsave", @"fb_GfxBsaveEx", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
+			@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
 			5, _
 			{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' function flip _
 			( _
-				byval from_page as long = -1, _
-				byval to_page as long = -1 _
+				byval from_page as const long = -1, _
+				byval to_page as const long = -1 _
 			) as long '/ _
 		( _
 			@"flip", @"fb_GfxFlip", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+			} _
 		), _
 		/' function screencopy _
 			( _
-				byval from_page as long = -1, _
-				byval to_page as long = -1 _
+				byval from_page as const long = -1, _
+				byval to_page as const long = -1 _
 			) as long '/ _
 		( _
 			@"screencopy", @"fb_GfxFlip", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+			} _
 		), _
-		/' function pointcoord( byval func as long ) as single '/ _
+		/' function pointcoord( byval func as const long ) as single '/ _
 		( _
 			@"pointcoord", @"fb_GfxCursor", _
 			FB_DATATYPE_SINGLE, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
-		/' function pmap( byval coord as single, byval func as long ) as single '/ _
+		/' function pmap( byval coord as const single, byval func as const long ) as single '/ _
 		( _
 			@"pmap", @"fb_GfxPMap", _
 			FB_DATATYPE_SINGLE, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_SINGLE ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
-		/' function out( byval port as ushort, byval value as ubyte ) as long '/ _
+		/' function out( byval port as const ushort, byval value as const ubyte ) as long '/ _
 		( _
 			@"out", @"fb_Out", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			 @hPorts_cb, FB_RTL_OPT_ERROR, _
 			2, _
 			{ _
-				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_UBYTE, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_USHORT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
-		/' function inp( byval port as ushort ) as long '/ _
+		/' function inp( byval port as const ushort ) as long '/ _
 		( _
 			@"inp", @"fb_In", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			@hPorts_cb, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_USHORT ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' function wait _
 			( _
-				byval port as ushort, _
-				byval and as long, _
-				byval xor as long = 0 _
+				byval port as const ushort, _
+				byval and as const long, _
+				byval xor as const long = 0 _
 			) as long '/ _
 		( _
 			@"wait", @"fb_Wait", _
@@ -646,10 +646,10 @@ declare function hPorts_cb _
 			@hPorts_cb, FB_RTL_OPT_ERROR, _
 			3, _
 			{ _
-				( FB_DATATYPE_USHORT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_USHORT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+			} _
 		), _
 		/' function screensync( ) as long '/ _
 		( _
@@ -660,63 +660,63 @@ declare function hPorts_cb _
 		), _
 		/' function screenset cdecl _
 			( _
-				byval work_page as long = -1, _
-				byval visible_page as long = -1 _
+				byval work_page as const long = -1, _
+				byval visible_page as const long = -1 _
 			) as long '/ _
 		( _
 			@"screenset", @"fb_GfxPageSet", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_CDECL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+			} _
 		), _
 		/' sub screenlock( ) '/ _
 		( _
 			@"screenlock", @"fb_GfxLock", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
-		/' sub screenunlock( byval start_line as long, byval end_line as long ) '/ _
+		/' sub screenunlock( byval start_line as const long, byval end_line as const long ) '/ _
 		( _
 			@"screenunlock", @"fb_GfxUnlock", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+			} _
 		), _
 		/' function screenptr( ) as any ptr '/ _
 		( _
 			@"screenptr", @"fb_GfxScreenPtr", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
-		/' sub windowtitle( byref title as string ) '/ _
+		/' sub windowtitle( byref title as const string ) '/ _
 		( _
 			@"windowtitle", @"fb_GfxSetWindowTitle", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
 		), _
-		/' function multikey( byval scancode as long ) as long '/ _
+		/' function multikey( byval scancode as const long ) as long '/ _
 		( _
 			@"multikey", @"fb_Multikey", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' function getmouse overload _
 			( _
@@ -762,10 +762,10 @@ declare function hPorts_cb _
 		), _
 		/' function setmouse _
 			( _
-				byval x as long = &h80000000, _
-				byval y as long = &h80000000, _
-				byval cursor as long = -1, _
-				byval clip as long = -1 _
+				byval x as const long = &h80000000, _
+				byval y as const long = &h80000000, _
+				byval cursor as const long = -1, _
+				byval clip as const long = -1 _
 			) as long '/ _
 		( _
 			@"setmouse", @"fb_SetMouse", _
@@ -773,15 +773,15 @@ declare function hPorts_cb _
 			NULL, FB_RTL_OPT_NOQB, _
 			4, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &h80000000 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &h80000000 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &h80000000 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &h80000000 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+			} _
 		), _
 		/' function getjoystick _
 			( _
-				byval id as long, _
+				byval id as const long, _
 				byref buttons as integer = 0, _
 				byref a1 as single = 0, _
 				byref a2 as single = 0, _
@@ -795,10 +795,10 @@ declare function hPorts_cb _
 		( _
 			@"getjoystick", @"fb_GfxGetJoystick", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			10, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ), _
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
@@ -808,27 +808,27 @@ declare function hPorts_cb _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ), _
 				( FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0, TRUE ) _
-	 		} _
+			} _
 		), _
-		/' function stick( byval n as long ) as long '/ _
+		/' function stick( byval n as const long ) as long '/ _
 		( _
 			@"stick", @"fb_GfxStickQB", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_QBONLY, _
+			@hGfxlib_cb, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
-		/' function strig( byval n as long ) as long '/ _
+		/' function strig( byval n as const long ) as long '/ _
 		( _
 			@"strig", @"fb_GfxStrigQB", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_QBONLY, _
+			@hGfxlib_cb, FB_RTL_OPT_QBONLY, _
 			1, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' sub screeninfo _
 			( _
@@ -855,77 +855,77 @@ declare function hPorts_cb _
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, TRUE, NULL ) _
 			} _
 		), _
-		/' function screenlist( byval depth as long = 0 ) as long '/ _
+		/' function screenlist( byval depth as const long = 0 ) as long '/ _
 		( _
 			@"screenlist", @"fb_GfxScreenList", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+			} _
 		), _
 		/' function fb_GfxImageCreate _
 			( _
-				byval width as long, _
-				byval height as long, _
-				byval color as ulong = 0, _
-				byval depth as long = 0, _
-				byval flags as long = 0 _
+				byval width as const long, _
+				byval height as const long, _
+				byval color as const ulong = 0, _
+				byval depth as const long = 0, _
+				byval flags as const long = 0 _
 			) as any ptr '/ _
 		( _
 			@FB_RTL_GFXIMAGECREATE, NULL, _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_FBONLY, _
+			@hGfxlib_cb, FB_RTL_OPT_FBONLY, _
 			5, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+			} _
 		), _
 		/' function fb_GfxImageCreateQB _
 			( _
-				byval width as long, _
-				byval height as long, _
-				byval color as ulong = 0, _
-				byval depth as long = 0, _
-				byval flags as long = 0 _
+				byval width as const long, _
+				byval height as const long, _
+				byval color as const ulong = 0, _
+				byval depth as const long = 0, _
+				byval flags as const long = 0 _
 			) as any ptr '/ _
 		( _
 			@FB_RTL_GFXIMAGECREATEQB, NULL, _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+			} _
 		), _
-		/' sub imagedestroy( byval image as any ptr ) '/ _
+		/' sub imagedestroy( byval image as const any ptr ) '/ _
 		( _
 			@"imagedestroy", @"fb_GfxImageDestroy", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' function imageinfo _
 			( _
-				byval img     as any ptr, _
+				byval img	  as const any ptr, _
 				byref width   as integer = 0, _
 				byref height  as integer = 0, _
-				byref bpp     as integer = 0, _
+				byref bpp	  as integer = 0, _
 				byref pitch   as integer = 0, _
 				byref imgdata as any ptr = 0, _
-				byref size    as integer = 0 _
+				byref size	  as integer = 0 _
 			) as long '/ _
 		( _
 			@"imageinfo", @"fb_GfxImageInfo", _
@@ -933,7 +933,7 @@ declare function hPorts_cb _
 			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			7, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, 0 ), _
@@ -944,55 +944,55 @@ declare function hPorts_cb _
 		), _
 		/' sub imageconvertrow _
 			( _
-				byval src as any ptr, _
-				byval src_bpp as long, _
+				byval src as const any ptr, _
+				byval src_bpp as const long, _
 				byval dest as any ptr, _
-				byval dst_bpp as long, _
-				byval width as long, _
-				byval isrgb as long = 1 _
+				byval dst_bpp as const long, _
+				byval width as const long, _
+				byval isrgb as const long = 1 _
 			) '/ _
 		( _
 			@"imageconvertrow", @"fb_GfxImageConvertRow", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			6, _
 			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 1 ) _
-	 		} _
-	 	), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 1 ) _
+			} _
+		), _
 		/' function screenevent( byval event as EVENT ptr ) as long '/ _
 		( _
 			@"screenevent", @"fb_GfxEvent", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0, TRUE ) _
-	 		} _
+			} _
 		), _
 		/' sub screencontrol overload _
 			( _
-				byval what as long, _
+				byval what as const long, _
 				byref param as string _
 			) '/ _
 		( _
 			@"screencontrol", @"fb_GfxControl_s", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF ) _
-	 		} _
+			} _
 		), _
 		/' sub screencontrol overload _
 			( _
-				byval what as long, _
+				byval what as const long, _
 				byref param1 as integer = &h80000000, _
 				byref param2 as integer = &h80000000, _
 				byref param3 as integer = &h80000000, _
@@ -1001,326 +1001,326 @@ declare function hPorts_cb _
 		( _
 			@"screencontrol", @"fb_GfxControl_i", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, &h80000000 ), _
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, &h80000000 ), _
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, &h80000000 ), _
 				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYREF, TRUE, &h80000000 ) _
-	 		} _
+			} _
 		), _
-		/' function screenglproc( byval proc as zstring ptr ) as any ptr '/ _
+		/' function screenglproc( byval proc as const zstring ptr ) as any ptr '/ _
 		( _
 			@"screenglproc", @"fb_GfxGetGLProcAddress", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			@hGfxlib_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' sub fb_hPutTrans cdecl _
 			( _
-				byval src as ubyte ptr, _
+				byval src as const ubyte ptr, _
 				byval dest as ubyte ptr, _
-				byval w as long, _
-				byval h as long, _
-				byval src_pitch as long, _
-				byval dest_pitch as long, _
-				byval alpha as long, _
+				byval w as const long, _
+				byval h as const long, _
+				byval src_pitch as const long, _
+				byval dest_pitch as const long, _
+				byval alpha as const long, _
 				byval blender as BLENDER ptr, _
 				byval param as any ptr _
 			) '/ _
 		( _
 			@FB_RTL_GFXPUTTRANS, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-	 		9, _
-	 		{ _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			9, _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_UBYTE ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_hPutPSet cdecl _
 			( _
-				byval src as ubyte ptr, _
+				byval src as const ubyte ptr, _
 				byval dest as ubyte ptr, _
-				byval w as long, _
-				byval h as long, _
-				byval src_pitch as long, _
-				byval dest_pitch as long, _
-				byval alpha as long, _
+				byval w as const long, _
+				byval h as const long, _
+				byval src_pitch as const long, _
+				byval dest_pitch as const long, _
+				byval alpha as const long, _
 				byval blender as BLENDER ptr, _
 				byval param as any ptr _
 			) '/ _
 		( _
 			@FB_RTL_GFXPUTPSET, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-	 		9, _
-	 		{ _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			9, _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_UBYTE ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_hPutPReset cdecl _
 			( _
-				byval src as ubyte ptr, _
+				byval src as const ubyte ptr, _
 				byval dest as ubyte ptr, _
-				byval w as long, _
-				byval h as long, _
-				byval src_pitch as long, _
-				byval dest_pitch as long, _
-				byval alpha as long, _
+				byval w as const long, _
+				byval h as const long, _
+				byval src_pitch as const long, _
+				byval dest_pitch as const long, _
+				byval alpha as const long, _
 				byval blender as BLENDER ptr, _
 				byval param as any ptr _
 			) '/ _
 		( _
 			@FB_RTL_GFXPUTPRESET, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-	 		9, _
-	 		{ _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			9, _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_UBYTE ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_hPutAnd cdecl _
 			( _
-				byval src as ubyte ptr, _
+				byval src as const ubyte ptr, _
 				byval dest as ubyte ptr, _
-				byval w as long, _
-				byval h as long, _
-				byval src_pitch as long, _
-				byval dest_pitch as long, _
-				byval alpha as long, _
+				byval w as const long, _
+				byval h as const long, _
+				byval src_pitch as const long, _
+				byval dest_pitch as const long, _
+				byval alpha as const long, _
 				byval blender as BLENDER ptr, _
 				byval param as any ptr _
 			) '/ _
 		( _
 			@FB_RTL_GFXPUTAND, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-	 		9, _
-	 		{ _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			9, _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_UBYTE ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_hPutOr cdecl _
 			( _
-				byval src as ubyte ptr, _
+				byval src as const ubyte ptr, _
 				byval dest as ubyte ptr, _
-				byval w as long, _
-				byval h as long, _
-				byval src_pitch as long, _
-				byval dest_pitch as long, _
-				byval alpha as long, _
+				byval w as const long, _
+				byval h as const long, _
+				byval src_pitch as const long, _
+				byval dest_pitch as const long, _
+				byval alpha as const long, _
 				byval blender as BLENDER ptr, _
 				byval param as any ptr _
 			) '/ _
 		( _
 			@FB_RTL_GFXPUTOR, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-	 		9, _
-	 		{ _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			9, _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_UBYTE ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_hPutXor cdecl _
 			( _
-				byval src as ubyte ptr, _
+				byval src as const ubyte ptr, _
 				byval dest as ubyte ptr, _
-				byval w as long, _
-				byval h as long, _
-				byval src_pitch as long, _
-				byval dest_pitch as long, _
-				byval alpha as long, _
+				byval w as const long, _
+				byval h as const long, _
+				byval src_pitch as const long, _
+				byval dest_pitch as const long, _
+				byval alpha as const long, _
 				byval blender as BLENDER ptr, _
 				byval param as any ptr _
 			) '/ _
 		( _
 			@FB_RTL_GFXPUTXOR, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-	 		9, _
-	 		{ _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			9, _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_UBYTE ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_hPutAlpha cdecl _
 			( _
-				byval src as ubyte ptr, _
+				byval src as const ubyte ptr, _
 				byval dest as ubyte ptr, _
-				byval w as long, _
-				byval h as long, _
-				byval src_pitch as long, _
-				byval dest_pitch as long, _
-				byval alpha as long, _
+				byval w as const long, _
+				byval h as const long, _
+				byval src_pitch as const long, _
+				byval dest_pitch as const long, _
+				byval alpha as const long, _
 				byval blender as BLENDER ptr, _
 				byval param as any ptr _
 			) '/ _
 		( _
 			@FB_RTL_GFXPUTALPHA, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-	 		9, _
-	 		{ _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			9, _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_UBYTE ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_hPutBlend cdecl _
 			( _
-				byval src as ubyte ptr, _
+				byval src as const ubyte ptr, _
 				byval dest as ubyte ptr, _
-				byval w as long, _
-				byval h as long, _
-				byval src_pitch as long, _
-				byval dest_pitch as long, _
-				byval alpha as long, _
+				byval w as const long, _
+				byval h as const long, _
+				byval src_pitch as const long, _
+				byval dest_pitch as const long, _
+				byval alpha as const long, _
 				byval blender as BLENDER ptr, _
 				byval param as any ptr _
 			) '/ _
 		( _
 			@FB_RTL_GFXPUTBLEND, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-	 		9, _
-	 		{ _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			9, _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_UBYTE ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_hPutAdd cdecl _
 			( _
-				byval src as ubyte ptr, _
+				byval src as const ubyte ptr, _
 				byval dest as ubyte ptr, _
-				byval w as long, _
-				byval h as long, _
-				byval src_pitch as long, _
-				byval dest_pitch as long, _
-				byval alpha as long, _
+				byval w as const long, _
+				byval h as const long, _
+				byval src_pitch as const long, _
+				byval dest_pitch as const long, _
+				byval alpha as const long, _
 				byval blender as BLENDER ptr, _
 				byval param as any ptr _
 			) '/ _
 		( _
 			@FB_RTL_GFXPUTADD, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-	 		9, _
-	 		{ _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			9, _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_UBYTE ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
 		/' sub fb_hPutCustom cdecl _
 			( _
-				byval src as ubyte ptr, _
+				byval src as const ubyte ptr, _
 				byval dest as ubyte ptr, _
-				byval w as long, _
-				byval h as long, _
-				byval src_pitch as long, _
-				byval dest_pitch as long, _
-				byval alpha as long, _
+				byval w as const long, _
+				byval h as const long, _
+				byval src_pitch as const long, _
+				byval dest_pitch as const long, _
+				byval alpha as const long, _
 				byval blender as BLENDER ptr, _
 				byval param as any ptr _
 			) '/ _
 		( _
 			@FB_RTL_GFXPUTCUSTOM, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-	 		9, _
-	 		{ _
+			@hGfxlib_cb, FB_RTL_OPT_NONE, _
+			9, _
+			{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_UBYTE ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_UBYTE ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			} _
 		), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
-	 }
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
+	}
 
 '':::::
 sub rtlGfxModInit( )
 
-	rtlAddIntrinsicProcs( @funcdata(0) )
+	rtlAddIntrinsicProcs( @funcdata(0), TRUE )
 
 end sub
 
