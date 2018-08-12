@@ -21,6 +21,7 @@ none expected
 warning expected
 	CONST qualifier discarded
 warning expected
+	CONST qualifier discarded
 ---- LOCAL CONST INTEGER
 none expected
 none expected
