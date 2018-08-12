@@ -1459,43 +1459,43 @@
 
 	ID( function fb_NullPtrChk )
 	scope
-		dim chk as function fbcall ( byval as any ptr, byval as long, byval as zstring ptr ) as any ptr
+		dim chk as function fbcall ( byval as const any ptr, byval as const long, byval as const zstring ptr ) as any ptr
 		chk = procptr( fb_NullPtrChk )
 	end scope
 
 	ID( sub fb_MemSwap )
 	scope
-		dim chk as sub fbcall ( byref as any, byref as any, byval as integer )
+		dim chk as sub fbcall ( byref as any, byref as any, byval as const integer )
 		chk = procptr( fb_MemSwap )
 	end scope
 
 	ID( sub fb_MemCopyClear )
 	scope
-		dim chk as sub fbcall ( byref as any, byval as integer, byref as const any, byval as integer )
+		dim chk as sub fbcall ( byref as any, byval as const integer, byref as const any, byval as const integer )
 		chk = procptr( fb_MemCopyClear )
 	end scope
 
 	ID( function fre alias "fb_GetMemAvail" )
 	scope
-		dim chk as function fbcall ( byval as long = 0 ) as uinteger
+		dim chk as function fbcall ( byval as const long = 0 ) as uinteger
 		chk = procptr( fre )
 	end scope
 
 	ID( function allocate alias "malloc" )
 	scope
-		dim chk as function cdecl ( byval as uinteger ) as any ptr
+		dim chk as function cdecl ( byval as const uinteger ) as any ptr
 		chk = procptr( allocate )
 	end scope
 
 	ID( function callocate alias "calloc" )
 	scope
-		dim chk as function cdecl ( byval as uinteger, byval as uinteger = 1 ) as any ptr
+		dim chk as function cdecl ( byval as const uinteger, byval as const uinteger = 1 ) as any ptr
 		chk = procptr( callocate )
 	end scope
 
 	ID( function reallocate alias "realloc" )
 	scope
-		dim chk as function cdecl ( byval as const any ptr, byval as uinteger ) as any ptr
+		dim chk as function cdecl ( byval as const any ptr, byval as const uinteger ) as any ptr
 		chk = procptr( reallocate )
 	end scope
 
@@ -1507,7 +1507,7 @@
 
 	ID( function clear alias "memset" )
 	scope
-		dim chk as function cdecl ( byref as any, byval as long = 0, byval as uinteger ) as any ptr
+		dim chk as function cdecl ( byref as any, byval as const long = 0, byval as const uinteger ) as any ptr
 		chk = procptr( clear )
 	end scope
 
