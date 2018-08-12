@@ -408,10 +408,8 @@ none expected
 none expected
 ---- RTLIB DEALLOCATE
 none expected
-	CONST qualifier discarded, at parameter 1 of DEALLOCATE()
 none expected
 none expected
-	CONST qualifier discarded, at parameter 1 of DEALLOCATE()
 none expected
 ---- CRT memcpy
 none expected

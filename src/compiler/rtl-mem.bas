@@ -33,8 +33,8 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
 				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
@@ -42,7 +42,7 @@
 			( _
 				byref dst as any, _
 				byval dstlen as integer, _
-				byref src as any, _
+				byref src as const any, _
 				byval srclen as integer _
 			) '/ _
 		( _
@@ -51,9 +51,9 @@
 	 		NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
 				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ),FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
 				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
@@ -88,25 +88,25 @@
 				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, TRUE, 1 ) _
 	 		} _
 		), _
-		/' function reallocate cdecl( byval p as any ptr, byval size as uinteger ) as any ptr '/ _
+		/' function reallocate cdecl( byval p as const any ptr, byval size as uinteger ) as any ptr '/ _
 		( _
 			@"reallocate", @"realloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
  			NULL, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ), _
 				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' sub deallocate cdecl( byval p as any ptr ) '/ _
+		/' sub deallocate cdecl( byval p as const any ptr ) '/ _
 		( _
 			@"deallocate", @"free", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
 	 		NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ) _
 	 		} _
 		), _
 		/' function clear cdecl _
@@ -121,7 +121,7 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
 				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _

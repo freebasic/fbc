@@ -95,13 +95,13 @@
 
 	ID( function fb_ArraySngBoundChk )
 	scope
-		dim chk as function fbcall ( byval as uinteger, byval as uinteger, byval as long, byval as zstring ptr ) as any ptr
+		dim chk as function fbcall ( byval as uinteger, byval as uinteger, byval as long, byval as const zstring ptr ) as any ptr
 		chk = procptr( fb_ArraySngBoundChk )
 	end scope
 
 	ID( function fb_ArrayBoundChk )
 	scope
-		dim chk as function fbcall ( byval as integer, byval as integer, byval as integer, byval as long, byval as zstring ptr ) as any ptr
+		dim chk as function fbcall ( byval as integer, byval as integer, byval as integer, byval as long, byval as const zstring ptr ) as any ptr
 		chk = procptr( fb_ArrayBoundChk )
 	end scope
 
@@ -1471,7 +1471,7 @@
 
 	ID( sub fb_MemCopyClear )
 	scope
-		dim chk as sub fbcall ( byref as any, byval as integer, byref as any, byval as integer )
+		dim chk as sub fbcall ( byref as any, byval as integer, byref as const any, byval as integer )
 		chk = procptr( fb_MemCopyClear )
 	end scope
 
@@ -1495,13 +1495,13 @@
 
 	ID( function reallocate alias "realloc" )
 	scope
-		dim chk as function cdecl ( byval as any ptr, byval as uinteger ) as any ptr
+		dim chk as function cdecl ( byval as const any ptr, byval as uinteger ) as any ptr
 		chk = procptr( reallocate )
 	end scope
 
 	ID( sub deallocate alias "free" )
 	scope
-		dim chk as sub cdecl ( byval as any ptr )
+		dim chk as sub cdecl ( byval as const any ptr )
 		chk = procptr( deallocate )
 	end scope
 
