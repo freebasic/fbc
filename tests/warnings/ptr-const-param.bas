@@ -1,8 +1,3 @@
-'' ensure const discarded warnings are turned off
-'' else, we get additional warnings
-
-#pragma constness=false
-
 #print ASSIGNMENT
 
 #print "BYREF parameter CONSTness"
@@ -24,14 +19,21 @@ scope
 	ci_p = cicp
 
 	'' unsafe - a CONST can't be used instead of a non-CONST
-	#print "8 warnings:"
+	#print "2 warnings:"
 	ci__ = _i__
+	#print "2 warnings:"
 	_icp = _i_p
+	#print "2 warnings:"
 	_icp = ci_p
+	#print "2 warnings:"
 	ci_p = _i_p
+	#print "2 warnings:"
 	ci_p = _icp
+	#print "2 warnings:"
 	cicp = _i_p
+	#print "2 warnings:"
 	cicp = _icp
+	#print "2 warnings:"
 	cicp = ci_p
 end scope
 
@@ -56,10 +58,13 @@ scope
 	ci_p = cicp
 	cicp = ci_p
 
-	#print "4 warnings:"
+	#print "2 warnings:"
 	ci_p = _i_p
+	#print "2 warnings:"
 	ci_p = _icp
+	#print "2 warnings:"
 	cicp = _i_p
+	#print "2 warnings:"
 	cicp = _icp
 end scope
 
@@ -92,14 +97,21 @@ scope
 	byref_ci_p( cicp )
 
 	'' unsafe - a CONST can't be used instead of a non-CONST
-	#print "8 warnings:"
+	#print "2 warnings:"
 	byref_ci__( _i__ )
+	#print "2 warnings:"
 	byref__icp( _i_p )
+	#print "2 warnings:"
 	byref__icp( ci_p )
+	#print "2 warnings:"
 	byref_ci_p( _i_p )
+	#print "2 warnings:"
 	byref_ci_p( _icp )
+	#print "2 warnings:"
 	byref_cicp( _i_p )
+	#print "2 warnings:"
 	byref_cicp( _icp )
+	#print "2 warnings:"
 	byref_cicp( ci_p )
 end scope
 
@@ -132,9 +144,12 @@ scope
 	byval_ci_p( cicp )
 	byval_cicp( ci_p )
 
-	#print "4 warnings:"
+	#print "2 warnings:"
 	byval_ci_p( _i_p )
+	#print "2 warnings:"
 	byval_ci_p( _icp )
+	#print "2 warnings:"
 	byval_cicp( _i_p )
+	#print "2 warnings:"
 	byval_cicp( _icp )
 end scope

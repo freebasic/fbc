@@ -19,6 +19,7 @@ CONST UBYTE PTR
 none expected
 ---- RTLIB
 warning expected
+	CONST qualifier discarded
 warning expected
 ---- LOCAL CONST INTEGER
 none expected
@@ -82,7 +83,6 @@ warning expected
 ---- LOCAL INTEGER ARRAY
 none expected
 none expected
-TODO: assigning non-const-ptr to const-ptr is safe, warn only if -w constness given
 none expected
 none expected
 none expected

@@ -145,14 +145,9 @@ scope
 
 	dim x as UDT
 
-	/'
-	'' !!! FIXME: move to unit tests, error expected
-	type<UDT>(1) = x
-	*@type<UDT>(1) = x
-	'/
-
 	type<UDT>(0).i = 1
 	*@type<UDT>(0).i = 1
+
 end scope
 
 '' ----------------
@@ -166,7 +161,7 @@ scope
 	dim as const integer a = 256
 
 	WARN( 1 )
-	clear a, 0, sizeof(integer)
+	*cast( integer ptr, @a ) = 257
 
 	WARN( 1 )
 	poke integer, @a, 257
@@ -404,7 +399,6 @@ scope
 	end scope
 
 	scope
-		#print TODO: assigning non-const-ptr to const-ptr is safe, warn only if -w constness given
 		WARN( 0 )
 		dim p0 as const integer ptr = cast( integer ptr, @x(0) )
 		WARN( 0 )
