@@ -15,198 +15,198 @@
 	{ _
 		/' function fb_ConsoleView _
 			( _
-				byval toprow as long = 0, _
-				byval botrow as long = 0 _
+				byval toprow as const long = 0, _
+				byval botrow as const long = 0 _
 			) as long '/ _
 		( _
 			@FB_RTL_CONSOLEVIEW, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
-	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+			} _
 		), _
 		/' function fb_ReadXY _
 			( _
-				byval x as long, _
-				byval y as long, _
-				byval colorflag as long _
+				byval x as const long, _
+				byval y as const long, _
+				byval colorflag as const long _
 			) as ulong '/ _
 		( _
 			@FB_RTL_CONSOLEREADXY, NULL, _
 			FB_DATATYPE_ULONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		3, _
-	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+			} _
 		), _
 		/' function fb_Width _
 			( _
-				byval cols as long = -1, _
-				byval rows as long = -1 _
+				byval cols as const long = -1, _
+				byval rows as const long = -1 _
 			) as long '/ _
 		( _
 			@FB_RTL_WIDTH, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
-	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+			} _
 		), _
-		/' function fb_WidthDev( byref dev as string, byval width as long = -1 ) as long '/ _
+		/' function fb_WidthDev( byref dev as const string, byval width as const long = -1 ) as long '/ _
 		( _
 			@FB_RTL_WIDTHDEV, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
-	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+			} _
 		), _
-		/' function fb_WidthFile( byval fnum as long, byval width as long = -1 ) as long '/ _
+		/' function fb_WidthFile( byval fnum as const long, byval width as const long = -1 ) as long '/ _
 		( _
 			@FB_RTL_WIDTHFILE, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		2, _
-	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+			} _
 		), _
 		/' function locate _
 			( _
-				byval row as long = 0, _
-				byval col as long = 0, _
-				byval cursor as long = -1, _
-				byval start as long = 0, _
-				byval stop as long = 0 _
+				byval row as const long = 0, _
+				byval col as const long = 0, _
+				byval cursor as const long = -1, _
+				byval start as const long = 0, _
+				byval stop as const long = 0 _
 			) as long '/ _
 		( _
 			@"locate", @"fb_Locate", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		5, _
-	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE,0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE,0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE,0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE,0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+			} _
 		), _
 		/' function pos overload( ) as long '/ _
 		( _
 			@"pos", @"fb_GetX", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_OVER, _
-	 		0 _
+			NULL, FB_RTL_OPT_OVER, _
+			0 _
 		), _
-		/' function pos overload( byval dummy as long ) as long '/ _
+		/' function pos overload( byval dummy as const long ) as long '/ _
 		( _
 			@"pos", @"fb_Pos", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_OVER, _
+			NULL, FB_RTL_OPT_OVER, _
 			1, _
-	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' function csrlin( ) as long '/ _
 		( _
 			@"csrlin", @"fb_GetY", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		0 _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
 		), _
-		/' sub cls( byval mode as long = &hFFFF0000 ) '/ _
+		/' sub cls( byval mode as const long = &hFFFF0000 ) '/ _
 		( _
 			@"cls", @"fb_Cls", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		1, _
-	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ) _
-	 		} _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 ) _
+			} _
 		), _
 		/' function fb_Color _
 			( _
-				byval fc as long, _
-				byval bc as long, _
-				byval flags as long _
+				byval fc as const long, _
+				byval bc as const long, _
+				byval flags as const long _
 			) as long '/ _
 		( _
 			@FB_RTL_COLOR, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
-	 		3, _
-	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' function inkey( ) as string '/ _
 		( _
 			@"inkey", @"fb_Inkey", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_NOQB, _
-	 		0 _
+			0 _
 		), _
 		/' function inkey( ) as string '/ _
 		( _
 			@"inkey", @"fb_InkeyQB", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_STRSUFFIX or FB_RTL_OPT_QBONLY, _
-	 		0 _
+			0 _
 		), _
 		/' function getkey( ) as long '/ _
 		( _
 			@"getkey", @"fb_Getkey", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NOQB, _
-	 		0 _
-	 	), _
-		/' function pcopy( byval src as long = -1, byval dst as long = -1 ) as long '/ _
+			0 _
+		), _
+		/' function pcopy( byval src as const long = -1, byval dst as const long = -1 ) as long '/ _
 		( _
 			@"pcopy", @"fb_PageCopy", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+			} _
 		), _
-		/' function fb_PageSet( byval active as long = -1, byval visible as long = -1 ) as long '/ _
+		/' function fb_PageSet( byval active as const long = -1, byval visible as const long = -1 ) as long '/ _
 		( _
 			@FB_RTL_PAGESET, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+			} _
 		), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
-	 }
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
+	}
 
 '':::::
 sub rtlConsoleModInit( )
 
-	rtlAddIntrinsicProcs( @funcdata(0) )
+	rtlAddIntrinsicProcs( @funcdata(0), TRUE )
 
 end sub
 

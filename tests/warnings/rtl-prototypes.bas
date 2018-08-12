@@ -109,37 +109,37 @@
 
 	ID( function fb_ConsoleView )
 	scope
-		dim chk as function fbcall ( byval as long = 0, byval as long = 0 ) as long
+		dim chk as function fbcall ( byval as const long = 0, byval as const long = 0 ) as long
 		chk = procptr( fb_ConsoleView )
 	end scope
 
 	ID( function fb_ReadXY )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byval as long = 0 ) as ulong
+		dim chk as function fbcall ( byval as const long, byval as const long, byval as const long = 0 ) as ulong
 		chk = procptr( fb_ReadXY )
 	end scope
 
 	ID( function fb_Width )
 	scope
-		dim chk as function fbcall ( byval as long = -1, byval as long = -1 ) as long
+		dim chk as function fbcall ( byval as const long = -1, byval as const long = -1 ) as long
 		chk = procptr( fb_Width )
 	end scope
 
 	ID( function fb_WidthDev )
 	scope
-		dim chk as function fbcall ( byref as string, byval as long = -1 ) as long
+		dim chk as function fbcall ( byref as const string, byval as const long = -1 ) as long
 		chk = procptr( fb_WidthDev )
 	end scope
 
 	ID( function fb_WidthFile )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long = -1 ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long = -1 ) as long
 		chk = procptr( fb_WidthFile )
 	end scope
 
 	ID( function locate alias "fb_Locate" )
 	scope
-		dim chk as function fbcall ( byval as long = 0, byval as long = 0, byval as long = -1, byval as long = 0, byval as long = 0 ) as long
+		dim chk as function fbcall ( byval as const long = 0, byval as const long = 0, byval as const long = -1, byval as const long = 0, byval as const long = 0 ) as long
 		chk = procptr( locate )
 	end scope
 
@@ -151,7 +151,7 @@
 
 	ID( function pos alias "fb_Pos" )
 	scope
-		dim chk as function fbcall ( byval as long ) as long
+		dim chk as function fbcall ( byval as const long ) as long
 		chk = procptr( pos )
 	end scope
 
@@ -163,13 +163,13 @@
 
 	ID( sub cls alias "fb_Cls" )
 	scope
-		dim chk as sub fbcall ( byval as long = -65536 )
+		dim chk as sub fbcall ( byval as const long = -65536 )
 		chk = procptr( cls )
 	end scope
 
 	ID( function fb_Color )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byval as long ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, byval as const long ) as long
 		chk = procptr( fb_Color )
 	end scope
 
@@ -195,13 +195,13 @@
 
 	ID( function pcopy alias "fb_PageCopy" )
 	scope
-		dim chk as function fbcall ( byval as long = -1, byval as long = -1 ) as long
+		dim chk as function fbcall ( byval as const long = -1, byval as const long = -1 ) as long
 		chk = procptr( pcopy )
 	end scope
 
 	ID( function fb_PageSet )
 	scope
-		dim chk as function fbcall ( byval as long = -1, byval as long = -1 ) as long
+		dim chk as function fbcall ( byval as const long = -1, byval as const long = -1 ) as long
 		chk = procptr( fb_PageSet )
 	end scope
 
