@@ -100,7 +100,7 @@ sub rtlEnd
 
 end sub
 
-sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
+sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr, byval all_const as integer = FALSE )
 	dim as FBSYMBOL ptr param = any
     dim as integer callconv = any
 
@@ -217,7 +217,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 
 					param = symbAddProcParam( proc, NULL, dtype, subtype, iif( .mode = FB_PARAMMODE_BYDESC, -1, 0 ), .mode, 0 )
 
-					if( .check_const ) then
+					if( .check_const or all_const ) then
 						symbSetIsRTLConst( param )
 					end if
 
