@@ -1515,325 +1515,325 @@
 
 	ID( sub fb_PrintVoid )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const long )
 		chk = procptr( fb_PrintVoid )
 	end scope
 
 	ID( sub fb_PrintBool )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as boolean, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const boolean, byval as const long )
 		chk = procptr( fb_PrintBool )
 	end scope
 
 	ID( sub fb_PrintByte )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as byte, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const byte, byval as const long )
 		chk = procptr( fb_PrintByte )
 	end scope
 
 	ID( sub fb_PrintUByte )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as ubyte, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const ubyte, byval as const long )
 		chk = procptr( fb_PrintUByte )
 	end scope
 
 	ID( sub fb_PrintShort )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as short, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const short, byval as const long )
 		chk = procptr( fb_PrintShort )
 	end scope
 
 	ID( sub fb_PrintUShort )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as ushort, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const ushort, byval as const long )
 		chk = procptr( fb_PrintUShort )
 	end scope
 
 	ID( sub fb_PrintInt )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as long, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const long, byval as const long )
 		chk = procptr( fb_PrintInt )
 	end scope
 
 	ID( sub fb_PrintUInt )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as ulong, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const ulong, byval as const long )
 		chk = procptr( fb_PrintUInt )
 	end scope
 
 	ID( sub fb_PrintLongint )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as longint, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const longint, byval as const long )
 		chk = procptr( fb_PrintLongint )
 	end scope
 
 	ID( sub fb_PrintULongint )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as ulongint, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const ulongint, byval as const long )
 		chk = procptr( fb_PrintULongint )
 	end scope
 
 	ID( sub fb_PrintSingle )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as single, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const single, byval as const long )
 		chk = procptr( fb_PrintSingle )
 	end scope
 
 	ID( sub fb_PrintDouble )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as double, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const double, byval as const long )
 		chk = procptr( fb_PrintDouble )
 	end scope
 
 	ID( sub fb_PrintString )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byref as string, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byref as const string, byval as const long )
 		chk = procptr( fb_PrintString )
 	end scope
 
 	ID( sub fb_PrintWstr )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as wchar ptr, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const wchar ptr, byval as const long )
 		chk = procptr( fb_PrintWstr )
 	end scope
 
 	ID( sub fb_LPrintVoid )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const long )
 		chk = procptr( fb_LPrintVoid )
 	end scope
 
 	ID( sub fb_LPrintBool )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as boolean, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const boolean, byval as const long )
 		chk = procptr( fb_LPrintBool )
 	end scope
 
 	ID( sub fb_LPrintByte )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as byte, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const byte, byval as const long )
 		chk = procptr( fb_LPrintByte )
 	end scope
 
 	ID( sub fb_LPrintUByte )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as ubyte, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const ubyte, byval as const long )
 		chk = procptr( fb_LPrintUByte )
 	end scope
 
 	ID( sub fb_LPrintShort )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as short, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const short, byval as const long )
 		chk = procptr( fb_LPrintShort )
 	end scope
 
 	ID( sub fb_LPrintUShort )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as ushort, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const ushort, byval as const long )
 		chk = procptr( fb_LPrintUShort )
 	end scope
 
 	ID( sub fb_LPrintInt )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as long, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const long, byval as const long )
 		chk = procptr( fb_LPrintInt )
 	end scope
 
 	ID( sub fb_LPrintUInt )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as ulong, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const ulong, byval as const long )
 		chk = procptr( fb_LPrintUInt )
 	end scope
 
 	ID( sub fb_LPrintLongint )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as longint, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const longint, byval as const long )
 		chk = procptr( fb_LPrintLongint )
 	end scope
 
 	ID( sub fb_LPrintULongint )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as ulongint, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const ulongint, byval as const long )
 		chk = procptr( fb_LPrintULongint )
 	end scope
 
 	ID( sub fb_LPrintSingle )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as single, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const single, byval as const long )
 		chk = procptr( fb_LPrintSingle )
 	end scope
 
 	ID( sub fb_LPrintDouble )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as double, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const double, byval as const long )
 		chk = procptr( fb_LPrintDouble )
 	end scope
 
 	ID( sub fb_LPrintString )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byref as string, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byref as const string, byval as const long )
 		chk = procptr( fb_LPrintString )
 	end scope
 
 	ID( sub fb_LPrintWstr )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as wchar ptr, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const wchar ptr, byval as const long )
 		chk = procptr( fb_LPrintWstr )
 	end scope
 
 	ID( sub fb_PrintSPC )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as integer )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const integer )
 		chk = procptr( fb_PrintSPC )
 	end scope
 
 	ID( sub fb_PrintTab )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const long )
 		chk = procptr( fb_PrintTab )
 	end scope
 
 	ID( sub fb_WriteVoid )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const long )
 		chk = procptr( fb_WriteVoid )
 	end scope
 
 	ID( sub fb_WriteBool )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as boolean, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const boolean, byval as const long )
 		chk = procptr( fb_WriteBool )
 	end scope
 
 	ID( sub fb_WriteByte )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as byte, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const byte, byval as const long )
 		chk = procptr( fb_WriteByte )
 	end scope
 
 	ID( sub fb_WriteUByte )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as ubyte, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const ubyte, byval as const long )
 		chk = procptr( fb_WriteUByte )
 	end scope
 
 	ID( sub fb_WriteShort )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as short, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const short, byval as const long )
 		chk = procptr( fb_WriteShort )
 	end scope
 
 	ID( sub fb_WriteUShort )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as ushort, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const ushort, byval as const long )
 		chk = procptr( fb_WriteUShort )
 	end scope
 
 	ID( sub fb_WriteInt )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as long, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const long, byval as const long )
 		chk = procptr( fb_WriteInt )
 	end scope
 
 	ID( sub fb_WriteUInt )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as ulong, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const ulong, byval as const long )
 		chk = procptr( fb_WriteUInt )
 	end scope
 
 	ID( sub fb_WriteLongint )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as longint, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const longint, byval as const long )
 		chk = procptr( fb_WriteLongint )
 	end scope
 
 	ID( sub fb_WriteULongint )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as ulongint, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const ulongint, byval as const long )
 		chk = procptr( fb_WriteULongint )
 	end scope
 
 	ID( sub fb_WriteSingle )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as single, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const single, byval as const long )
 		chk = procptr( fb_WriteSingle )
 	end scope
 
 	ID( sub fb_WriteDouble )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as double, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const double, byval as const long )
 		chk = procptr( fb_WriteDouble )
 	end scope
 
 	ID( sub fb_WriteString )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byref as string, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byref as const string, byval as const long )
 		chk = procptr( fb_WriteString )
 	end scope
 
 	ID( sub fb_WriteWstr )
 	scope
-		dim chk as sub fbcall ( byval as long = 0, byval as wchar ptr, byval as long )
+		dim chk as sub fbcall ( byval as const long = 0, byval as const wchar ptr, byval as const long )
 		chk = procptr( fb_WriteWstr )
 	end scope
 
 	ID( function fb_PrintUsingInit )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( fb_PrintUsingInit )
 	end scope
 
 	ID( function fb_PrintUsingStr )
 	scope
-		dim chk as function fbcall ( byval as long, byref as string, byval as long ) as long
+		dim chk as function fbcall ( byval as const long, byref as const string, byval as const long ) as long
 		chk = procptr( fb_PrintUsingStr )
 	end scope
 
 	ID( function fb_PrintUsingWstr )
 	scope
-		dim chk as function fbcall ( byval as long, byval as wchar ptr, byval as long ) as long
+		dim chk as function fbcall ( byval as const long, byval as const wchar ptr, byval as const long ) as long
 		chk = procptr( fb_PrintUsingWstr )
 	end scope
 
 	ID( function fb_PrintUsingSingle )
 	scope
-		dim chk as function fbcall ( byval as long, byval as single, byval as long ) as long
+		dim chk as function fbcall ( byval as const long, byval as const single, byval as const long ) as long
 		chk = procptr( fb_PrintUsingSingle )
 	end scope
 
 	ID( function fb_PrintUsingDouble )
 	scope
-		dim chk as function fbcall ( byval as long, byval as double, byval as long ) as long
+		dim chk as function fbcall ( byval as const long, byval as const double, byval as const long ) as long
 		chk = procptr( fb_PrintUsingDouble )
 	end scope
 
 	ID( function fb_PrintUsingLongint )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, byval as long ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, byval as const long ) as long
 		chk = procptr( fb_PrintUsingLongint )
 	end scope
 
 	ID( function fb_PrintUsingULongint )
 	scope
-		dim chk as function fbcall ( byval as long, byval as ulongint, byval as long ) as long
+		dim chk as function fbcall ( byval as const long, byval as const ulongint, byval as const long ) as long
 		chk = procptr( fb_PrintUsingULongint )
 	end scope
 
 	ID( function fb_PrintUsingBoolean )
 	scope
-		dim chk as function fbcall ( byval as long, byval as boolean, byval as long ) as long
+		dim chk as function fbcall ( byval as const long, byval as const boolean, byval as const long ) as long
 		chk = procptr( fb_PrintUsingBoolean )
 	end scope
 
 	ID( function fb_PrintUsingEnd )
 	scope
-		dim chk as function fbcall ( byval as long ) as long
+		dim chk as function fbcall ( byval as const long ) as long
 		chk = procptr( fb_PrintUsingEnd )
 	end scope
 
 	ID( function fb_LPrintUsingInit )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( fb_LPrintUsingInit )
 	end scope
 
