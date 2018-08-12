@@ -393,67 +393,67 @@
 
 	ID( function fb_FileOpen )
 	scope
-		dim chk as function fbcall ( byref as string, byval as ulong, byval as ulong, byval as ulong, byval as long, byval as long ) as long
+		dim chk as function fbcall ( byref as const string, byval as const ulong, byval as const ulong, byval as const ulong, byval as const long, byval as const long ) as long
 		chk = procptr( fb_FileOpen )
 	end scope
 
 	ID( function fb_FileOpenEncod )
 	scope
-		dim chk as function fbcall ( byref as string, byval as ulong, byval as ulong, byval as ulong, byval as long, byval as long, byval as zstring ptr ) as long
+		dim chk as function fbcall ( byref as const string, byval as const ulong, byval as const ulong, byval as const ulong, byval as const long, byval as const long, byval as const zstring ptr ) as long
 		chk = procptr( fb_FileOpenEncod )
 	end scope
 
 	ID( function fb_FileOpenShort )
 	scope
-		dim chk as function fbcall ( byref as string, byval as long, byref as string, byval as long, byref as string, byref as string ) as long
+		dim chk as function fbcall ( byref as const string, byval as const long, byref as const string, byval as const long, byref as const string, byref as const string ) as long
 		chk = procptr( fb_FileOpenShort )
 	end scope
 
 	ID( function fb_FileOpenCons )
 	scope
-		dim chk as function fbcall ( byref as string, byval as ulong, byval as ulong, byval as ulong, byval as long, byval as long, byval as zstring ptr ) as long
+		dim chk as function fbcall ( byref as const string, byval as const ulong, byval as const ulong, byval as const ulong, byval as const long, byval as const long, byval as const zstring ptr ) as long
 		chk = procptr( fb_FileOpenCons )
 	end scope
 
 	ID( function fb_FileOpenErr )
 	scope
-		dim chk as function fbcall ( byref as string, byval as ulong, byval as ulong, byval as ulong, byval as long, byval as long, byval as zstring ptr ) as long
+		dim chk as function fbcall ( byref as const string, byval as const ulong, byval as const ulong, byval as const ulong, byval as const long, byval as const long, byval as const zstring ptr ) as long
 		chk = procptr( fb_FileOpenErr )
 	end scope
 
 	ID( function fb_FileOpenPipe )
 	scope
-		dim chk as function fbcall ( byref as string, byval as ulong, byval as ulong, byval as ulong, byval as long, byval as long, byval as zstring ptr ) as long
+		dim chk as function fbcall ( byref as const string, byval as const ulong, byval as const ulong, byval as const ulong, byval as const long, byval as const long, byval as const zstring ptr ) as long
 		chk = procptr( fb_FileOpenPipe )
 	end scope
 
 	ID( function fb_FileOpenScrn )
 	scope
-		dim chk as function fbcall ( byref as string, byval as ulong, byval as ulong, byval as ulong, byval as long, byval as long, byval as zstring ptr ) as long
+		dim chk as function fbcall ( byref as const string, byval as const ulong, byval as const ulong, byval as const ulong, byval as const long, byval as const long, byval as const zstring ptr ) as long
 		chk = procptr( fb_FileOpenScrn )
 	end scope
 
 	ID( function fb_FileOpenLpt )
 	scope
-		dim chk as function fbcall ( byref as string, byval as ulong, byval as ulong, byval as ulong, byval as long, byval as long, byval as zstring ptr ) as long
+		dim chk as function fbcall ( byref as const string, byval as const ulong, byval as const ulong, byval as const ulong, byval as const long, byval as const long, byval as const zstring ptr ) as long
 		chk = procptr( fb_FileOpenLpt )
 	end scope
 
 	ID( function fb_FileOpenCom )
 	scope
-		dim chk as function fbcall ( byref as string, byval as ulong, byval as ulong, byval as ulong, byval as long, byval as long, byval as zstring ptr ) as long
+		dim chk as function fbcall ( byref as const string, byval as const ulong, byval as const ulong, byval as const ulong, byval as const long, byval as const long, byval as const zstring ptr ) as long
 		chk = procptr( fb_FileOpenCom )
 	end scope
 
 	ID( function fb_FileOpenQB )
 	scope
-		dim chk as function fbcall ( byref as string, byval as ulong, byval as ulong, byval as ulong, byval as long, byval as long ) as long
+		dim chk as function fbcall ( byref as const string, byval as const ulong, byval as const ulong, byval as const ulong, byval as const long, byval as const long ) as long
 		chk = procptr( fb_FileOpenQB )
 	end scope
 
 	ID( function fb_FileClose )
 	scope
-		dim chk as function fbcall ( byval as long ) as long
+		dim chk as function fbcall ( byval as const long ) as long
 		chk = procptr( fb_FileClose )
 	end scope
 
@@ -465,193 +465,193 @@
 
 	ID( function fb_FilePut )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byref as any, byval as uinteger ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, byref as const any, byval as const uinteger ) as long
 		chk = procptr( fb_FilePut )
 	end scope
 
 	ID( function fb_FilePutLarge )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, byref as any, byval as uinteger ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, byref as const any, byval as const uinteger ) as long
 		chk = procptr( fb_FilePutLarge )
 	end scope
 
 	ID( function fb_FilePutStr )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byref as any, byval as integer ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, byref as const any, byval as const integer ) as long
 		chk = procptr( fb_FilePutStr )
 	end scope
 
 	ID( function fb_FilePutStrLarge )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, byref as any, byval as integer ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, byref as const any, byval as const integer ) as long
 		chk = procptr( fb_FilePutStrLarge )
 	end scope
 
 	ID( function fb_FilePutArray )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, bydesc as any ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, bydesc as const any ) as long
 		chk = procptr( fb_FilePutArray )
 	end scope
 
 	ID( function fb_FilePutArrayLarge )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, bydesc as any ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, bydesc as const any ) as long
 		chk = procptr( fb_FilePutArrayLarge )
 	end scope
 
 	ID( function fb_FileGet )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byref as any, byval as uinteger ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, byref as any, byval as const uinteger ) as long
 		chk = procptr( fb_FileGet )
 	end scope
 
 	ID( function fb_FileGetLarge )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, byref as any, byval as uinteger ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, byref as any, byval as const uinteger ) as long
 		chk = procptr( fb_FileGetLarge )
 	end scope
 
 	ID( function fb_FileGetStr )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byref as any, byval as integer ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, byref as any, byval as const integer ) as long
 		chk = procptr( fb_FileGetStr )
 	end scope
 
 	ID( function fb_FileGetWstr )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byref as wchar, byval as integer ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, byref as wchar, byval as const integer ) as long
 		chk = procptr( fb_FileGetWstr )
 	end scope
 
 	ID( function fb_FileGetStrLarge )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, byref as any, byval as integer ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, byref as any, byval as const integer ) as long
 		chk = procptr( fb_FileGetStrLarge )
 	end scope
 
 	ID( function fb_FileGetWstrLarge )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, byref as wchar, byval as integer ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, byref as wchar, byval as const integer ) as long
 		chk = procptr( fb_FileGetWstrLarge )
 	end scope
 
 	ID( function fb_FileGetArray )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, bydesc as any ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, bydesc as any ) as long
 		chk = procptr( fb_FileGetArray )
 	end scope
 
 	ID( function fb_FileGetArrayLarge )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, bydesc as any ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, bydesc as any ) as long
 		chk = procptr( fb_FileGetArrayLarge )
 	end scope
 
 	ID( function fb_FileGetIOB )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byref as any, byval as uinteger, byref as uinteger ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, byref as any, byval as const uinteger, byref as uinteger ) as long
 		chk = procptr( fb_FileGetIOB )
 	end scope
 
 	ID( function fb_FileGetLargeIOB )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, byref as any, byval as uinteger, byref as uinteger ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, byref as any, byval as const uinteger, byref as uinteger ) as long
 		chk = procptr( fb_FileGetLargeIOB )
 	end scope
 
 	ID( function fb_FileGetStrIOB )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byref as any, byval as integer, byref as uinteger ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, byref as any, byval as const integer, byref as uinteger ) as long
 		chk = procptr( fb_FileGetStrIOB )
 	end scope
 
 	ID( function fb_FileGetWstrIOB )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, byref as wchar, byval as integer, byref as uinteger ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, byref as wchar, byval as const integer, byref as uinteger ) as long
 		chk = procptr( fb_FileGetWstrIOB )
 	end scope
 
 	ID( function fb_FileGetStrLargeIOB )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, byref as any, byval as integer, byref as uinteger ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, byref as any, byval as const integer, byref as uinteger ) as long
 		chk = procptr( fb_FileGetStrLargeIOB )
 	end scope
 
 	ID( function fb_FileGetWstrLargeIOB )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, byref as wchar, byval as integer, byref as uinteger ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, byref as wchar, byval as const integer, byref as uinteger ) as long
 		chk = procptr( fb_FileGetWstrLargeIOB )
 	end scope
 
 	ID( function fb_FileGetArrayIOB )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long, bydesc as any, byref as uinteger ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long, bydesc as any, byref as uinteger ) as long
 		chk = procptr( fb_FileGetArrayIOB )
 	end scope
 
 	ID( function fb_FileGetArrayLargeIOB )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, bydesc as any, byref as uinteger ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, bydesc as any, byref as uinteger ) as long
 		chk = procptr( fb_FileGetArrayLargeIOB )
 	end scope
 
 	ID( function fb_FileTell )
 	scope
-		dim chk as function fbcall ( byval as long ) as longint
+		dim chk as function fbcall ( byval as const long ) as longint
 		chk = procptr( fb_FileTell )
 	end scope
 
 	ID( function fb_FileSeek )
 	scope
-		dim chk as function fbcall ( byval as long, byval as long ) as long
+		dim chk as function fbcall ( byval as const long, byval as const long ) as long
 		chk = procptr( fb_FileSeek )
 	end scope
 
 	ID( function fb_FileSeekLarge )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint ) as long
 		chk = procptr( fb_FileSeekLarge )
 	end scope
 
 	ID( function fb_FileStrInput )
 	scope
-		dim chk as function fbcall ( byval as integer, byval as long = 0 ) as string
+		dim chk as function fbcall ( byval as const integer, byval as const long = 0 ) as string
 		chk = procptr( fb_FileStrInput )
 	end scope
 
 	ID( function fb_FileLineInput )
 	scope
-		dim chk as function fbcall ( byval as long, byref as any, byval as integer, byval as long = 1 ) as long
+		dim chk as function fbcall ( byval as const long, byref as any, byval as const integer, byval as const long = 1 ) as long
 		chk = procptr( fb_FileLineInput )
 	end scope
 
 	ID( function fb_FileLineInputWstr )
 	scope
-		dim chk as function fbcall ( byval as long, byval as wchar ptr, byval as integer ) as long
+		dim chk as function fbcall ( byval as const long, byval as wchar ptr, byval as const integer ) as long
 		chk = procptr( fb_FileLineInputWstr )
 	end scope
 
 	ID( function fb_LineInput )
 	scope
-		dim chk as function fbcall ( byref as string, byref as any, byval as integer, byval as long, byval as long, byval as long = 1 ) as long
+		dim chk as function fbcall ( byref as const string, byref as any, byval as const integer, byval as const long, byval as const long, byval as const long = 1 ) as long
 		chk = procptr( fb_LineInput )
 	end scope
 
 	ID( function fb_LineInputWstr )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as wchar ptr, byval as integer, byval as long, byval as long ) as long
+		dim chk as function fbcall ( byval as const wchar ptr, byval as wchar ptr, byval as const integer, byval as const long, byval as const long ) as long
 		chk = procptr( fb_LineInputWstr )
 	end scope
 
 	ID( function fb_FileInput )
 	scope
-		dim chk as function fbcall ( byval as long ) as long
+		dim chk as function fbcall ( byval as const long ) as long
 		chk = procptr( fb_FileInput )
 	end scope
 
 	ID( function fb_ConsoleInput )
 	scope
-		dim chk as function fbcall ( byref as string, byval as long, byval as long ) as long
+		dim chk as function fbcall ( byref as const string, byval as const long, byval as const long ) as long
 		chk = procptr( fb_ConsoleInput )
 	end scope
 
@@ -723,49 +723,49 @@
 
 	ID( function fb_InputString )
 	scope
-		dim chk as function fbcall ( byref as any, byval as integer, byval as long = 1 ) as long
+		dim chk as function fbcall ( byref as any, byval as const integer, byval as const long = 1 ) as long
 		chk = procptr( fb_InputString )
 	end scope
 
 	ID( function fb_InputWstr )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as integer ) as long
+		dim chk as function fbcall ( byval as wchar ptr, byval as const integer ) as long
 		chk = procptr( fb_InputWstr )
 	end scope
 
 	ID( function fb_FileLock )
 	scope
-		dim chk as function fbcall ( byval as long, byval as ulong, byval as ulong = 0 ) as long
+		dim chk as function fbcall ( byval as const long, byval as const ulong, byval as const ulong = 0 ) as long
 		chk = procptr( fb_FileLock )
 	end scope
 
 	ID( function fb_FileLockLarge )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, byval as longint = 0 ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, byval as const longint = 0 ) as long
 		chk = procptr( fb_FileLockLarge )
 	end scope
 
 	ID( function fb_FileUnlock )
 	scope
-		dim chk as function fbcall ( byval as long, byval as ulong, byval as ulong = 0 ) as long
+		dim chk as function fbcall ( byval as const long, byval as const ulong, byval as const ulong = 0 ) as long
 		chk = procptr( fb_FileUnlock )
 	end scope
 
 	ID( function fb_FileUnlockLarge )
 	scope
-		dim chk as function fbcall ( byval as long, byval as longint, byval as longint = 0 ) as long
+		dim chk as function fbcall ( byval as const long, byval as const longint, byval as const longint = 0 ) as long
 		chk = procptr( fb_FileUnlockLarge )
 	end scope
 
 	ID( function fb_rename alias "rename" )
 	scope
-		dim chk as function cdecl ( byval as zstring ptr, byval as zstring ptr ) as long
+		dim chk as function cdecl ( byval as const zstring ptr, byval as const zstring ptr ) as long
 		chk = procptr( fb_rename )
 	end scope
 
 	ID( function fb_FileWstrInput )
 	scope
-		dim chk as function fbcall ( byval as integer, byval as long = 0 ) as wchar_ret
+		dim chk as function fbcall ( byval as const integer, byval as const long = 0 ) as wchar_ret
 		chk = procptr( fb_FileWstrInput )
 	end scope
 
@@ -777,13 +777,13 @@
 
 	ID( function eof alias "fb_FileEof" )
 	scope
-		dim chk as function fbcall ( byval as long ) as long
+		dim chk as function fbcall ( byval as const long ) as long
 		chk = procptr( eof )
 	end scope
 
 	ID( function kill alias "fb_FileKill" )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( kill )
 	end scope
 
@@ -795,25 +795,25 @@
 
 	ID( sub reset alias "fb_FileResetEx" )
 	scope
-		dim chk as sub fbcall ( byval as long )
+		dim chk as sub fbcall ( byval as const long )
 		chk = procptr( reset )
 	end scope
 
 	ID( function lof alias "fb_FileSize" )
 	scope
-		dim chk as function fbcall ( byval as long ) as longint
+		dim chk as function fbcall ( byval as const long ) as longint
 		chk = procptr( lof )
 	end scope
 
 	ID( function loc alias "fb_FileLocation" )
 	scope
-		dim chk as function fbcall ( byval as long ) as longint
+		dim chk as function fbcall ( byval as const long ) as longint
 		chk = procptr( loc )
 	end scope
 
 	ID( function lpos alias "fb_LPos" )
 	scope
-		dim chk as function fbcall ( byval as long ) as long
+		dim chk as function fbcall ( byval as const long ) as long
 		chk = procptr( lpos )
 	end scope
 
