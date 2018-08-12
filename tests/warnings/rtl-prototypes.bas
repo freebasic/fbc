@@ -215,13 +215,13 @@
 
 	ID( sub fb_DataReadStr )
 	scope
-		dim chk as sub fbcall ( byref as any, byval as integer, byval as long = 1 )
+		dim chk as sub fbcall ( byref as any, byval as const integer, byval as const long = 1 )
 		chk = procptr( fb_DataReadStr )
 	end scope
 
 	ID( sub fb_DataReadWstr )
 	scope
-		dim chk as sub fbcall ( byval as wchar ptr, byval as integer )
+		dim chk as sub fbcall ( byval as wchar ptr, byval as const integer )
 		chk = procptr( fb_DataReadWstr )
 	end scope
 
