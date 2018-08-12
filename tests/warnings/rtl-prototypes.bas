@@ -295,13 +295,13 @@
 
 	ID( function fb_ErrorThrowAt )
 	scope
-		dim chk as function cdecl ( byval as long, byval as zstring ptr, byval as any ptr, byval as any ptr ) as any ptr
+		dim chk as function cdecl ( byval as const long, byval as const zstring ptr, byval as const any ptr, byval as const any ptr ) as any ptr
 		chk = procptr( fb_ErrorThrowAt )
 	end scope
 
 	ID( function fb_ErrorThrowEx )
 	scope
-		dim chk as function cdecl ( byval as long, byval as long, byval as zstring ptr, byval as any ptr, byval as any ptr ) as any ptr
+		dim chk as function cdecl ( byval as const long, byval as const long, byval as const zstring ptr, byval as const any ptr, byval as const any ptr ) as any ptr
 		chk = procptr( fb_ErrorThrowEx )
 	end scope
 
@@ -319,7 +319,7 @@
 
 	ID( function fb_ErrorSetNum )
 	scope
-		dim chk as function fbcall ( byval as long ) as long
+		dim chk as function fbcall ( byval as const long ) as long
 		chk = procptr( fb_ErrorSetNum )
 	end scope
 
@@ -355,37 +355,37 @@
 
 	ID( function fb_ErrorSetModName )
 	scope
-		dim chk as function fbcall ( byval as zstring ptr ) as zstring ptr
+		dim chk as function fbcall ( byval as const zstring ptr ) as zstring ptr
 		chk = procptr( fb_ErrorSetModName )
 	end scope
 
 	ID( function fb_ErrorSetFuncName )
 	scope
-		dim chk as function fbcall ( byval as zstring ptr ) as zstring ptr
+		dim chk as function fbcall ( byval as const zstring ptr ) as zstring ptr
 		chk = procptr( fb_ErrorSetFuncName )
 	end scope
 
 	ID( sub fb_Assert )
 	scope
-		dim chk as sub fbcall ( byval as zstring ptr, byval as integer, byval as zstring ptr, byval as zstring ptr )
+		dim chk as sub fbcall ( byval as const zstring ptr, byval as const integer, byval as const zstring ptr, byval as const zstring ptr )
 		chk = procptr( fb_Assert )
 	end scope
 
 	ID( sub fb_Assert alias "fb_AssertW" )
 	scope
-		dim chk as sub fbcall ( byval as zstring ptr, byval as long, byval as zstring ptr, byval as wchar ptr )
+		dim chk as sub fbcall ( byval as const zstring ptr, byval as const long, byval as const zstring ptr, byval as const wchar ptr )
 		chk = procptr( fb_Assert )
 	end scope
 
 	ID( sub fb_AssertWarn )
 	scope
-		dim chk as sub fbcall ( byval as zstring ptr, byval as long, byval as zstring ptr, byval as zstring ptr )
+		dim chk as sub fbcall ( byval as const zstring ptr, byval as const long, byval as const zstring ptr, byval as const zstring ptr )
 		chk = procptr( fb_AssertWarn )
 	end scope
 
 	ID( sub fb_AssertWarn alias "fb_AssertWarnW" )
 	scope
-		dim chk as sub fbcall ( byval as zstring ptr, byval as long, byval as zstring ptr, byval as wchar ptr )
+		dim chk as sub fbcall ( byval as const zstring ptr, byval as const long, byval as const zstring ptr, byval as const wchar ptr )
 		chk = procptr( fb_AssertWarn )
 	end scope
 
