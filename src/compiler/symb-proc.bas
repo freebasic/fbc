@@ -1962,11 +1962,6 @@ private function hCheckOvlParam _
 			'' BYREF AS CONST FOO overload parameter for a non-const FOO argument,
 			'' because it couldn't be passed anyways)
 
-			'' ... except if it's a RTL procedure without RTL_CONST (then no CONST checking should be done)
-			if( symbGetIsRTL( parent ) and (not symbGetIsRTLConst( param )) ) then
-				return match
-			end if
-
 			'' Exact same CONSTs? Then there's no point in calling symbCheckConstAssignTopLevel().
 			if( typeGetConstMask( param_dtype ) = typeGetConstMask( arg_dtype ) ) then
 				return match

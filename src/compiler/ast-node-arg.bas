@@ -1015,8 +1015,7 @@ function astNewARG _
 	'' a ctor that can't initialize the object would be useless, and after
 	'' dtors run the object is dead anyways, so modifications made by the
 	'' dtor don't matter)
-	if( ((symbGetIsRTL( sym ) = FALSE) or symbGetIsRTLConst( param )) and _
-	    ((not symbIsInstanceParam( param )) or _
+	if( ((not symbIsInstanceParam( param )) or _
 	     ((sym->attrib and FB_SYMBATTRIB_NOTHISCONSTNESS) = 0)) ) then
 		if( symbCheckConstAssignTopLevel( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
 			if( symbIsInstanceParam( param ) ) then

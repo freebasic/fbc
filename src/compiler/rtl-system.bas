@@ -557,7 +557,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 '':::::
 sub rtlSystemModInit( )
 
-	rtlAddIntrinsicProcs( @funcdata(0), TRUE )
+	rtlAddIntrinsicProcs( @funcdata(0) )
 
 end sub
 

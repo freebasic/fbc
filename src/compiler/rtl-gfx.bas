@@ -219,7 +219,7 @@ declare function hPorts_cb _
 		/' sub fb_GfxWindow _
 			( _
 				byval x1 as const single = 0, _
-				byval y1 as const const single = 0, _
+				byval y1 as const single = 0, _
 				byval x2 as const single = 0, _
 				byval y2 as const single = 0, _
 				byval screen as const long = 0 _
@@ -377,7 +377,7 @@ declare function hPorts_cb _
 			( _
 				byval target as const any ptr = 0, _
 				byval x1 as const single, _
-				byval y1 as const const single, _
+				byval y1 as const single, _
 				byval x2 as const single, _
 				byval y2 as const single, _
 				byval dest as any ptr, _
@@ -1320,7 +1320,7 @@ declare function hPorts_cb _
 '':::::
 sub rtlGfxModInit( )
 
-	rtlAddIntrinsicProcs( @funcdata(0), TRUE )
+	rtlAddIntrinsicProcs( @funcdata(0) )
 
 end sub
 

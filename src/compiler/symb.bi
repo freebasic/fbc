@@ -2042,9 +2042,6 @@ declare function symbGetUDTBaseLevel _
 #define symbGetIsUnionField(s) ((s->stats and FB_SYMBSTATS_UNIONFIELD) <> 0)
 #define symbSetIsUnionField(s) s->stats or= FB_SYMBSTATS_UNIONFIELD
 
-#define symbGetIsRTLConst(s) ((s->stats and FB_SYMBSTATS_RTL_CONST) <> 0)
-#define symbSetIsRTLConst(s) s->stats or= FB_SYMBSTATS_RTL_CONST
-
 #define symbGetIsEmitted(s) ((s->stats and FB_SYMBSTATS_EMITTED) <> 0)
 #define symbSetIsEmitted(s) s->stats or= FB_SYMBSTATS_EMITTED
 

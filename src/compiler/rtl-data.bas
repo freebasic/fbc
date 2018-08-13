@@ -168,7 +168,7 @@
 '':::::
 sub rtlDataModInit( )
 
-	rtlAddIntrinsicProcs( @funcdata(0), TRUE )
+	rtlAddIntrinsicProcs( @funcdata(0) )
 
 end sub
 
