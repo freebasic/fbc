@@ -1656,7 +1656,7 @@ private function hCalcTypesDiff _
 	function = FB_OVLPROC_NO_MATCH
 
     '' don't take the const qualifier into account
-	'' TODO: allow const/non-const matching, but return different match score?
+
 	param_dtype = typeGetDtAndPtrOnly( param_dtype_in )
 	arg_dtype = typeGetDtAndPtrOnly( arg_dtype_in )
 
@@ -1676,7 +1676,7 @@ private function hCalcTypesDiff _
 			''   it's a DEREF or not (it can all be treated as string)
 			'' - disallow other args (passing BYVAL explicitly
 			''   should be handled by caller already)
-			select case( param_dtype )
+			select case( typeGetDtAndPtrOnly( param_dtype ) )
 			case FB_DATATYPE_CHAR
 				select case( arg_dtype )
 				case FB_DATATYPE_CHAR
@@ -1851,15 +1851,12 @@ private function hCheckOvlParam _
 		byval parent as FBSYMBOL ptr, _
 		byval param as FBSYMBOL ptr, _
 	  	byval arg_expr as ASTNODE ptr, _
-		byval arg_mode as integer, _
-		byref constonly_diff as integer _
+		byval arg_mode as integer _
 	) as FB_OVLPROC_MATCH_SCORE
 
 	dim as integer param_dtype = any, arg_dtype = any, param_ptrcnt = any
 	dim as integer const_matches = any
 	dim as FBSYMBOL ptr param_subtype = any, arg_subtype = any, array = any
-
-	constonly_diff = FALSE
 
 	'' arg not passed?
 	if( arg_expr = NULL ) then
@@ -1979,11 +1976,10 @@ private function hCheckOvlParam _
 			if( symbCheckConstAssignTopLevel( param_dtype, arg_dtype, param_subtype, arg_subtype, symbGetParamMode( param ), const_matches ) ) then
 				'' They're compatible despite having different CONSTs -- e.g. "non-const Foo" passed to "Byref As Const Foo".
 				'' Treat it as lower score match than an exact match.
-				'' TODO: Fix and use const_matches
-				constonly_diff = TRUE
-				if( match > FB_OVLPROC_HALFMATCH ) then
-					match -= FB_OVLPROC_HALFMATCH
+				if( match > FB_OVLPROC_TYPEMATCH ) then
+					match -= FB_DATATYPES
 				end if
+				match += const_matches
 				return match
 			end if
 
@@ -2093,15 +2089,14 @@ function symbFindClosestOvlProc _
 			'' for each arg..
 			arg = arg_head
 			for i as integer = 0 to args-1
-				dim as integer arg_constonly_diff = FALSE
-				arg_matchscore = hCheckOvlParam( ovl, param, arg->expr, arg->mode, arg_constonly_diff )
+				arg_matchscore = hCheckOvlParam( ovl, param, arg->expr, arg->mode )
 				if( arg_matchscore = FB_OVLPROC_NO_MATCH ) then
 					matchscore = FB_OVLPROC_NO_MATCH
 					exit for
 				end if
 
 				'' exact checks are required for operator overload candidates
-				if( (arg_matchscore = FB_OVLPROC_FULLMATCH) or arg_constonly_diff ) then
+				if( arg_matchscore >= FB_OVLPROC_TYPEMATCH ) then
 					exact_matches += 1
 				end if
 
@@ -2388,9 +2383,16 @@ private function hCheckCastOvl _
 
 	'' same types?
 	if( typeGetDtAndPtrOnly( proc_dtype ) = typeGetDtAndPtrOnly( to_dtype ) ) then
+		
 		'' same subtype?
 		if( proc_subtype = to_subtype ) then
-			return FB_OVLPROC_FULLMATCH
+
+			'' same const?
+			if( proc_subtype = to_subtype ) then
+				return FB_OVLPROC_FULLMATCH
+			end if
+
+			return FB_OVLPROC_TYPEMATCH
 		end if
 
 		if( typeIsPtr( proc_dtype ) ) then

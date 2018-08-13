@@ -509,11 +509,15 @@ end function
 ''
 '' result:
 ''
-'' FB_OVLPROC_NO_MATCH         => incompatible
-'' FB_OVLPROC_HALFMATCH        => compatible, differs only in CONST or is derived UDT
-'' FB_OVLPROC_HALFMATCH - rank => compatible, same sized integer
-'' symbCalcProcMatch() > 0     => compatible, lowest scoring parameter
-'' FB_OVLPROC_FULLMATCH        => compatible, exact match
+'' FB_OVLPROC_FULLMATCH              => compatible, exact match
+'' FB_OVLPROC_FULLMATCH - baselevel  => compatible, derived types
+'' FB_OVLPROC_TYPEMATCH + consts     => same type, different consts
+'' FB_OVLPROC_HALFMATCH              => compatible, same data type class
+'' FB_OVLPROC_HALFMATCH - rank       => compatible, distance between numeric types
+'' FB_OVLPROC_HALFMATCH - struct     => compatible, UDT ctor/cast
+'' FB_OVLPROC_LOWEST_MATCH           => compatible, lowest scoring parameter
+'' FB_OVLPROC_NO_MATCH               => incompatible
+
 ''
 function typeCalcMatch _
 	( _
@@ -524,6 +528,8 @@ function typeCalcMatch _
 		byval rsubtype as FBSYMBOL ptr _
 	) as FB_OVLPROC_MATCH_SCORE
 
+	dim const_matches as integer = 0
+
 	if( (ldtype = rdtype) and (lsubtype = rsubtype) ) then
 		return FB_OVLPROC_FULLMATCH
 	end if
@@ -532,12 +538,12 @@ function typeCalcMatch _
 		return FB_OVLPROC_NO_MATCH
 	end if
 
-	if( symbCheckConstAssignTopLevel( ldtype, rdtype, lsubtype, rsubtype, lparammode ) = FALSE ) then
+	if( symbCheckConstAssignTopLevel( ldtype, rdtype, lsubtype, rsubtype, lparammode, const_matches ) = FALSE ) then
 		return FB_OVLPROC_NO_MATCH
 	end if
 
 	if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) and (lsubtype = rsubtype) ) then
-		return FB_OVLPROC_HALFMATCH
+		return FB_OVLPROC_TYPEMATCH + const_matches
 	end if
 
 	'' We know that they're different (in terms of dtype or subtype or both),
