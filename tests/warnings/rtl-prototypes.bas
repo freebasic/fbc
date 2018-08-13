@@ -1871,178 +1871,178 @@
 
 	ID( function fb_StrInit )
 	scope
-		dim chk as function fbcall ( byref as any, byval as integer, byref as any, byval as integer, byval as long = 1 ) as string
+		dim chk as function fbcall ( byref as any, byval as const integer, byref as const any, byval as const integer, byval as const long = 1 ) as string
 		chk = procptr( fb_StrInit )
 	end scope
 
 	ID( function fb_WstrAssignToA_Init )
 	scope
-		dim chk as function fbcall ( byref as any, byval as integer, byval as wchar ptr, byval as integer ) as string
+		dim chk as function fbcall ( byref as any, byval as const integer, byval as const wchar ptr, byval as const integer ) as string
 		chk = procptr( fb_WstrAssignToA_Init )
 	end scope
 
 	ID( function fb_StrAssign )
 	scope
-		dim chk as function fbcall ( byref as any, byval as integer, byref as any, byval as integer, byval as long = 1 ) as string
+		dim chk as function fbcall ( byref as any, byval as const integer, byref as const any, byval as const integer, byval as const long = 1 ) as string
 		chk = procptr( fb_StrAssign )
 	end scope
 
 	ID( function fb_WstrAssign )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as integer, byval as wchar ptr ) as wchar ptr
+		dim chk as function fbcall ( byval as wchar ptr, byval as const integer, byval as const wchar ptr ) as wchar ptr
 		chk = procptr( fb_WstrAssign )
 	end scope
 
 	ID( function fb_WstrAssignFromA )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as integer, byref as any, byval as integer ) as wchar ptr
+		dim chk as function fbcall ( byval as wchar ptr, byval as const integer, byref as const any, byval as const integer ) as wchar ptr
 		chk = procptr( fb_WstrAssignFromA )
 	end scope
 
 	ID( function fb_WstrAssignToA )
 	scope
-		dim chk as function fbcall ( byref as any, byval as integer, byval as wchar ptr, byval as long ) as string
+		dim chk as function fbcall ( byref as any, byval as const integer, byval as const wchar ptr, byval as const long ) as string
 		chk = procptr( fb_WstrAssignToA )
 	end scope
 
 	ID( sub fb_StrDelete )
 	scope
-		dim chk as sub fbcall ( byref as string )
+		dim chk as sub fbcall ( byref as const string )
 		chk = procptr( fb_StrDelete )
 	end scope
 
 	ID( function fb_hStrDelTemp )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( fb_hStrDelTemp )
 	end scope
 
 	ID( sub fb_WstrDelete )
 	scope
-		dim chk as sub fbcall ( byval as wchar ptr )
+		dim chk as sub fbcall ( byval as const wchar ptr )
 		chk = procptr( fb_WstrDelete )
 	end scope
 
 	ID( function fb_StrConcat )
 	scope
-		dim chk as function fbcall ( byref as string, byref as any, byval as integer, byref as any, byval as integer ) as string
+		dim chk as function fbcall ( byref as string, byref as const any, byval as const integer, byref as const any, byval as const integer ) as string
 		chk = procptr( fb_StrConcat )
 	end scope
 
 	ID( function fb_WstrConcat )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as wchar ptr ) as wchar_ret
+		dim chk as function fbcall ( byval as const wchar ptr, byval as const wchar ptr ) as wchar_ret
 		chk = procptr( fb_WstrConcat )
 	end scope
 
 	ID( function fb_WstrConcatWA )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byref as any, byval as integer ) as wchar_ret
+		dim chk as function fbcall ( byval as const wchar ptr, byref as const any, byval as const integer ) as wchar_ret
 		chk = procptr( fb_WstrConcatWA )
 	end scope
 
 	ID( function fb_WstrConcatAW )
 	scope
-		dim chk as function fbcall ( byref as any, byval as integer, byval as wchar ptr ) as wchar_ret
+		dim chk as function fbcall ( byref as const any, byval as const integer, byval as const wchar ptr ) as wchar_ret
 		chk = procptr( fb_WstrConcatAW )
 	end scope
 
 	ID( function fb_StrCompare )
 	scope
-		dim chk as function fbcall ( byref as any, byval as integer, byref as any, byval as integer ) as long
+		dim chk as function fbcall ( byref as const any, byval as const integer, byref as const any, byval as const integer ) as long
 		chk = procptr( fb_StrCompare )
 	end scope
 
 	ID( function fb_WstrCompare )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as wchar ptr ) as long
+		dim chk as function fbcall ( byval as const wchar ptr, byval as const wchar ptr ) as long
 		chk = procptr( fb_WstrCompare )
 	end scope
 
 	ID( function fb_StrConcatAssign )
 	scope
-		dim chk as function fbcall ( byref as any, byval as integer, byref as any, byval as integer, byval as long = 1 ) as string
+		dim chk as function fbcall ( byref as any, byval as const integer, byref as const any, byval as const integer, byval as const long = 1 ) as string
 		chk = procptr( fb_StrConcatAssign )
 	end scope
 
 	ID( function fb_WstrConcatAssign )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as integer, byval as wchar ptr ) as wchar ptr
+		dim chk as function fbcall ( byval as wchar ptr, byval as const integer, byval as const wchar ptr ) as wchar ptr
 		chk = procptr( fb_WstrConcatAssign )
 	end scope
 
 	ID( function fb_StrAllocTempResult )
 	scope
-		dim chk as function fbcall ( byref as string ) as string
+		dim chk as function fbcall ( byref as const string ) as string
 		chk = procptr( fb_StrAllocTempResult )
 	end scope
 
 	ID( function fb_StrAllocTempDescF )
 	scope
-		dim chk as function fbcall ( byref as any, byval as integer ) as string
+		dim chk as function fbcall ( byref as const any, byval as const integer ) as string
 		chk = procptr( fb_StrAllocTempDescF )
 	end scope
 
 	ID( function fb_StrAllocTempDescZ )
 	scope
-		dim chk as function fbcall ( byval as zstring ptr ) as string
+		dim chk as function fbcall ( byval as const zstring ptr ) as string
 		chk = procptr( fb_StrAllocTempDescZ )
 	end scope
 
 	ID( function fb_StrAllocTempDescZEx )
 	scope
-		dim chk as function fbcall ( byval as zstring ptr, byval as integer ) as string
+		dim chk as function fbcall ( byval as const zstring ptr, byval as const integer ) as string
 		chk = procptr( fb_StrAllocTempDescZEx )
 	end scope
 
 	ID( function fb_WstrAlloc )
 	scope
-		dim chk as function fbcall ( byval as integer ) as wchar ptr
+		dim chk as function fbcall ( byval as const integer ) as wchar ptr
 		chk = procptr( fb_WstrAlloc )
 	end scope
 
 	ID( function fb_BoolToStr )
 	scope
-		dim chk as function fbcall ( byval as boolean ) as string
+		dim chk as function fbcall ( byval as const boolean ) as string
 		chk = procptr( fb_BoolToStr )
 	end scope
 
 	ID( function fb_IntToStr )
 	scope
-		dim chk as function fbcall ( byval as long ) as string
+		dim chk as function fbcall ( byval as const long ) as string
 		chk = procptr( fb_IntToStr )
 	end scope
 
 #if __FB_LANG__ = "qb"
 	ID( function fb_IntToStrQB )
 	scope
-		dim chk as function fbcall ( byval as long ) as string
+		dim chk as function fbcall ( byval as const long ) as string
 		chk = procptr( fb_IntToStrQB )
 	end scope
 #endif
 
 	ID( function fb_BoolToWstr )
 	scope
-		dim chk as function fbcall ( byval as boolean ) as wchar_ret
+		dim chk as function fbcall ( byval as const boolean ) as wchar_ret
 		chk = procptr( fb_BoolToWstr )
 	end scope
 
 	ID( function fb_IntToWstr )
 	scope
-		dim chk as function fbcall ( byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const long ) as wchar_ret
 		chk = procptr( fb_IntToWstr )
 	end scope
 
 	ID( function fb_UIntToStr )
 	scope
-		dim chk as function fbcall ( byval as ulong ) as string
+		dim chk as function fbcall ( byval as const ulong ) as string
 		chk = procptr( fb_UIntToStr )
 	end scope
 
 #if __FB_LANG__ = "qb"
 	ID( function fb_UIntToStrQB )
 	scope
-		dim chk as function fbcall ( byval as ulong ) as string
+		dim chk as function fbcall ( byval as const ulong ) as string
 		chk = procptr( fb_UIntToStrQB )
 	end scope
 #endif
@@ -2055,465 +2055,465 @@
 
 	ID( function fb_LongintToStr )
 	scope
-		dim chk as function fbcall ( byval as longint ) as string
+		dim chk as function fbcall ( byval as const longint ) as string
 		chk = procptr( fb_LongintToStr )
 	end scope
 
 #if __FB_LANG__ = "qb"
 	ID( function fb_LongintToStrQB )
 	scope
-		dim chk as function fbcall ( byval as longint ) as string
+		dim chk as function fbcall ( byval as const longint ) as string
 		chk = procptr( fb_LongintToStrQB )
 	end scope
 #endif
 
 	ID( function fb_LongintToWstr )
 	scope
-		dim chk as function fbcall ( byval as longint ) as wchar_ret
+		dim chk as function fbcall ( byval as const longint ) as wchar_ret
 		chk = procptr( fb_LongintToWstr )
 	end scope
 
 	ID( function fb_ULongintToStr )
 	scope
-		dim chk as function fbcall ( byval as ulongint ) as string
+		dim chk as function fbcall ( byval as const ulongint ) as string
 		chk = procptr( fb_ULongintToStr )
 	end scope
 
 #if __FB_LANG__ = "qb"
 	ID( function fb_ULongintToStrQB )
 	scope
-		dim chk as function fbcall ( byval as ulongint ) as string
+		dim chk as function fbcall ( byval as const ulongint ) as string
 		chk = procptr( fb_ULongintToStrQB )
 	end scope
 #endif
 
 	ID( function fb_ULongintToWstr )
 	scope
-		dim chk as function fbcall ( byval as ulongint ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulongint ) as wchar_ret
 		chk = procptr( fb_ULongintToWstr )
 	end scope
 
 	ID( function fb_FloatToStr )
 	scope
-		dim chk as function fbcall ( byval as single ) as string
+		dim chk as function fbcall ( byval as const single ) as string
 		chk = procptr( fb_FloatToStr )
 	end scope
 
 #if __FB_LANG__ = "qb"
 	ID( function fb_FloatToStrQB )
 	scope
-		dim chk as function fbcall ( byval as single ) as string
+		dim chk as function fbcall ( byval as const single ) as string
 		chk = procptr( fb_FloatToStrQB )
 	end scope
 #endif
 
 	ID( function fb_FloatToWstr )
 	scope
-		dim chk as function fbcall ( byval as single ) as wchar_ret
+		dim chk as function fbcall ( byval as const single ) as wchar_ret
 		chk = procptr( fb_FloatToWstr )
 	end scope
 
 	ID( function fb_DoubleToStr )
 	scope
-		dim chk as function fbcall ( byval as double ) as string
+		dim chk as function fbcall ( byval as const double ) as string
 		chk = procptr( fb_DoubleToStr )
 	end scope
 
 #if __FB_LANG__ = "qb"
 	ID( function fb_DoubleToStrQB )
 	scope
-		dim chk as function fbcall ( byval as double ) as string
+		dim chk as function fbcall ( byval as const double ) as string
 		chk = procptr( fb_DoubleToStrQB )
 	end scope
 #endif
 
 	ID( function fb_DoubleToWstr )
 	scope
-		dim chk as function fbcall ( byval as double ) as wchar_ret
+		dim chk as function fbcall ( byval as const double ) as wchar_ret
 		chk = procptr( fb_DoubleToWstr )
 	end scope
 
 	ID( function fb_WstrToStr )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr ) as string
+		dim chk as function fbcall ( byval as const wchar ptr ) as string
 		chk = procptr( fb_WstrToStr )
 	end scope
 
 	ID( function fb_StrToWstr )
 	scope
-		dim chk as function fbcall ( byval as zstring ptr ) as wchar_ret
+		dim chk as function fbcall ( byval as const zstring ptr ) as wchar_ret
 		chk = procptr( fb_StrToWstr )
 	end scope
 
 	ID( function fb_StrMid )
 	scope
-		dim chk as function fbcall ( byref as string, byval as integer, byval as integer ) as string
+		dim chk as function fbcall ( byref as const string, byval as const integer, byval as const integer ) as string
 		chk = procptr( fb_StrMid )
 	end scope
 
 	ID( function fb_WstrMid )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as integer, byval as integer ) as wchar_ret
+		dim chk as function fbcall ( byval as const wchar ptr, byval as const integer, byval as const integer ) as wchar_ret
 		chk = procptr( fb_WstrMid )
 	end scope
 
 	ID( sub fb_StrAssignMid )
 	scope
-		dim chk as sub fbcall ( byref as string, byval as integer, byval as integer, byref as string )
+		dim chk as sub fbcall ( byref as string, byval as const integer, byval as const integer, byref as const string )
 		chk = procptr( fb_StrAssignMid )
 	end scope
 
 	ID( sub fb_WstrAssignMid )
 	scope
-		dim chk as sub fbcall ( byval as wchar ptr, byval as integer, byval as integer, byval as integer, byval as wchar ptr )
+		dim chk as sub fbcall ( byval as wchar ptr, byval as const integer, byval as const integer, byval as const integer, byval as const wchar ptr )
 		chk = procptr( fb_WstrAssignMid )
 	end scope
 
 	ID( function fb_StrFill1 )
 	scope
-		dim chk as function fbcall ( byval as integer, byval as long ) as string
+		dim chk as function fbcall ( byval as const integer, byval as const long ) as string
 		chk = procptr( fb_StrFill1 )
 	end scope
 
 	ID( function fb_WstrFill1 )
 	scope
-		dim chk as function fbcall ( byval as integer, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const integer, byval as const long ) as wchar_ret
 		chk = procptr( fb_WstrFill1 )
 	end scope
 
 	ID( function fb_StrFill2 )
 	scope
-		dim chk as function fbcall ( byval as integer, byref as string ) as string
+		dim chk as function fbcall ( byval as const integer, byref as const string ) as string
 		chk = procptr( fb_StrFill2 )
 	end scope
 
 	ID( function fb_WstrFill2 )
 	scope
-		dim chk as function fbcall ( byval as integer, byval as wchar ptr ) as wchar_ret
+		dim chk as function fbcall ( byval as const integer, byval as const wchar ptr ) as wchar_ret
 		chk = procptr( fb_WstrFill2 )
 	end scope
 
 	ID( function fb_StrLen )
 	scope
-		dim chk as function fbcall ( byref as any, byval as integer ) as integer
+		dim chk as function fbcall ( byref as const any, byval as const integer ) as integer
 		chk = procptr( fb_StrLen )
 	end scope
 
 	ID( function fb_WstrLen )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr ) as integer
+		dim chk as function fbcall ( byval as const wchar ptr ) as integer
 		chk = procptr( fb_WstrLen )
 	end scope
 
 	ID( sub fb_StrLset )
 	scope
-		dim chk as sub fbcall ( byref as string, byref as string )
+		dim chk as sub fbcall ( byref as string, byref as const string )
 		chk = procptr( fb_StrLset )
 	end scope
 
 	ID( sub fb_WstrLset )
 	scope
-		dim chk as sub fbcall ( byval as wchar ptr, byval as wchar ptr )
+		dim chk as sub fbcall ( byval as wchar ptr, byval as const wchar ptr )
 		chk = procptr( fb_WstrLset )
 	end scope
 
 	ID( sub fb_StrRset )
 	scope
-		dim chk as sub fbcall ( byref as string, byref as string )
+		dim chk as sub fbcall ( byref as string, byref as const string )
 		chk = procptr( fb_StrRset )
 	end scope
 
 	ID( sub fb_WstrRset )
 	scope
-		dim chk as sub fbcall ( byval as wchar ptr, byval as wchar ptr )
+		dim chk as sub fbcall ( byval as wchar ptr, byval as const wchar ptr )
 		chk = procptr( fb_WstrRset )
 	end scope
 
 	ID( function fb_ASC )
 	scope
-		dim chk as function fbcall ( byref as string, byval as integer = 0 ) as ulong
+		dim chk as function fbcall ( byref as const string, byval as const integer = 0 ) as ulong
 		chk = procptr( fb_ASC )
 	end scope
 
 	ID( function fb_WstrAsc )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as integer = 0 ) as ulong
+		dim chk as function fbcall ( byval as const wchar ptr, byval as const integer = 0 ) as ulong
 		chk = procptr( fb_WstrAsc )
 	end scope
 
 	ID( function fb_CHR )
 	scope
-		dim chk as function cdecl ( byval as long, ... ) as string
+		dim chk as function cdecl ( byval as const long, ... ) as string
 		chk = procptr( fb_CHR )
 	end scope
 
 	ID( function fb_WstrChr )
 	scope
-		dim chk as function cdecl ( byval as long, ... ) as wchar_ret
+		dim chk as function cdecl ( byval as const long, ... ) as wchar_ret
 		chk = procptr( fb_WstrChr )
 	end scope
 
 	ID( function fb_StrInstr )
 	scope
-		dim chk as function fbcall ( byval as integer, byref as string, byref as string ) as integer
+		dim chk as function fbcall ( byval as const integer, byref as const string, byref as const string ) as integer
 		chk = procptr( fb_StrInstr )
 	end scope
 
 	ID( function fb_WstrInstr )
 	scope
-		dim chk as function fbcall ( byval as integer, byval as wchar ptr, byval as wchar ptr ) as integer
+		dim chk as function fbcall ( byval as const integer, byval as const wchar ptr, byval as const wchar ptr ) as integer
 		chk = procptr( fb_WstrInstr )
 	end scope
 
 	ID( function fb_StrInstrAny )
 	scope
-		dim chk as function fbcall ( byval as integer, byref as string, byref as string ) as integer
+		dim chk as function fbcall ( byval as const integer, byref as const string, byref as const string ) as integer
 		chk = procptr( fb_StrInstrAny )
 	end scope
 
 	ID( function fb_WstrInstrAny )
 	scope
-		dim chk as function fbcall ( byval as integer, byval as wchar ptr, byval as wchar ptr ) as integer
+		dim chk as function fbcall ( byval as const integer, byval as const wchar ptr, byval as const wchar ptr ) as integer
 		chk = procptr( fb_WstrInstrAny )
 	end scope
 
 	ID( function fb_StrInstrRev )
 	scope
-		dim chk as function fbcall ( byref as string, byref as string, byval as integer ) as integer
+		dim chk as function fbcall ( byref as const string, byref as const string, byval as const integer ) as integer
 		chk = procptr( fb_StrInstrRev )
 	end scope
 
 	ID( function fb_WstrInstrRev )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as wchar ptr, byval as integer ) as integer
+		dim chk as function fbcall ( byval as const wchar ptr, byval as const wchar ptr, byval as const integer ) as integer
 		chk = procptr( fb_WstrInstrRev )
 	end scope
 
 	ID( function fb_StrInstrRevAny )
 	scope
-		dim chk as function fbcall ( byref as string, byref as string, byval as integer ) as integer
+		dim chk as function fbcall ( byref as const string, byref as const string, byval as const integer ) as integer
 		chk = procptr( fb_StrInstrRevAny )
 	end scope
 
 	ID( function fb_WstrInstrRevAny )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as wchar ptr, byval as integer ) as integer
+		dim chk as function fbcall ( byval as const wchar ptr, byval as const wchar ptr, byval as const integer ) as integer
 		chk = procptr( fb_WstrInstrRevAny )
 	end scope
 
 	ID( function fb_TRIM )
 	scope
-		dim chk as function fbcall ( byref as string ) as string
+		dim chk as function fbcall ( byref as const string ) as string
 		chk = procptr( fb_TRIM )
 	end scope
 
 	ID( function fb_WstrTrim )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr ) as wchar_ret
+		dim chk as function fbcall ( byval as const wchar ptr ) as wchar_ret
 		chk = procptr( fb_WstrTrim )
 	end scope
 
 	ID( function fb_TrimAny )
 	scope
-		dim chk as function fbcall ( byref as string, byref as string ) as string
+		dim chk as function fbcall ( byref as const string, byref as const string ) as string
 		chk = procptr( fb_TrimAny )
 	end scope
 
 	ID( function fb_WstrTrimAny )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as wchar ptr ) as wchar_ret
+		dim chk as function fbcall ( byval as const wchar ptr, byval as const wchar ptr ) as wchar_ret
 		chk = procptr( fb_WstrTrimAny )
 	end scope
 
 	ID( function fb_TrimEx )
 	scope
-		dim chk as function fbcall ( byref as string, byref as string ) as string
+		dim chk as function fbcall ( byref as const string, byref as const string ) as string
 		chk = procptr( fb_TrimEx )
 	end scope
 
 	ID( function fb_WstrTrimEx )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as wchar ptr ) as wchar_ret
+		dim chk as function fbcall ( byval as const wchar ptr, byval as const wchar ptr ) as wchar_ret
 		chk = procptr( fb_WstrTrimEx )
 	end scope
 
 	ID( function fb_RTRIM )
 	scope
-		dim chk as function fbcall ( byref as string ) as string
+		dim chk as function fbcall ( byref as const string ) as string
 		chk = procptr( fb_RTRIM )
 	end scope
 
 	ID( function fb_WstrRTrim )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr ) as wchar_ret
+		dim chk as function fbcall ( byval as const wchar ptr ) as wchar_ret
 		chk = procptr( fb_WstrRTrim )
 	end scope
 
 	ID( function fb_RTrimAny )
 	scope
-		dim chk as function fbcall ( byref as string, byref as string ) as string
+		dim chk as function fbcall ( byref as const string, byref as const string ) as string
 		chk = procptr( fb_RTrimAny )
 	end scope
 
 	ID( function fb_WstrRTrimAny )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as wchar ptr ) as wchar_ret
+		dim chk as function fbcall ( byval as const wchar ptr, byval as const wchar ptr ) as wchar_ret
 		chk = procptr( fb_WstrRTrimAny )
 	end scope
 
 	ID( function fb_RTrimEx )
 	scope
-		dim chk as function fbcall ( byref as string, byref as string ) as string
+		dim chk as function fbcall ( byref as const string, byref as const string ) as string
 		chk = procptr( fb_RTrimEx )
 	end scope
 
 	ID( function fb_WstrRTrimEx )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as wchar ptr ) as wchar_ret
+		dim chk as function fbcall ( byval as const wchar ptr, byval as const wchar ptr ) as wchar_ret
 		chk = procptr( fb_WstrRTrimEx )
 	end scope
 
 	ID( function fb_LTRIM )
 	scope
-		dim chk as function fbcall ( byref as string ) as string
+		dim chk as function fbcall ( byref as const string ) as string
 		chk = procptr( fb_LTRIM )
 	end scope
 
 	ID( function fb_WstrLTrim )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr ) as wchar_ret
+		dim chk as function fbcall ( byval as const wchar ptr ) as wchar_ret
 		chk = procptr( fb_WstrLTrim )
 	end scope
 
 	ID( function fb_LTrimAny )
 	scope
-		dim chk as function fbcall ( byref as string, byref as string ) as string
+		dim chk as function fbcall ( byref as const string, byref as const string ) as string
 		chk = procptr( fb_LTrimAny )
 	end scope
 
 	ID( function fb_WstrLTrimAny )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as wchar ptr ) as wchar_ret
+		dim chk as function fbcall ( byval as const wchar ptr, byval as const wchar ptr ) as wchar_ret
 		chk = procptr( fb_WstrLTrimAny )
 	end scope
 
 	ID( function fb_LTrimEx )
 	scope
-		dim chk as function fbcall ( byref as string, byref as string ) as string
+		dim chk as function fbcall ( byref as const string, byref as const string ) as string
 		chk = procptr( fb_LTrimEx )
 	end scope
 
 	ID( function fb_WstrLTrimEx )
 	scope
-		dim chk as function fbcall ( byval as wchar ptr, byval as wchar ptr ) as wchar_ret
+		dim chk as function fbcall ( byval as const wchar ptr, byval as const wchar ptr ) as wchar_ret
 		chk = procptr( fb_WstrLTrimEx )
 	end scope
 
 	ID( sub fb_StrSwap )
 	scope
-		dim chk as sub fbcall ( byref as any, byval as integer, byval as long, byref as any, byval as integer, byval as long )
+		dim chk as sub fbcall ( byref as any, byval as const integer, byval as const long, byref as any, byval as const integer, byval as const long )
 		chk = procptr( fb_StrSwap )
 	end scope
 
 	ID( sub fb_WstrSwap )
 	scope
-		dim chk as sub fbcall ( byval as wchar ptr, byval as integer, byval as wchar ptr, byval as integer )
+		dim chk as sub fbcall ( byval as wchar ptr, byval as const integer, byval as wchar ptr, byval as const integer )
 		chk = procptr( fb_WstrSwap )
 	end scope
 
 	ID( function val alias "fb_VAL" )
 	scope
-		dim chk as function fbcall ( byref as string ) as double
+		dim chk as function fbcall ( byref as const string ) as double
 		chk = procptr( val )
 	end scope
 
 	ID( function val alias "fb_WstrVal" )
 	scope
-		dim chk as function fbcall ( byref as wchar ) as double
+		dim chk as function fbcall ( byref as const wchar ) as double
 		chk = procptr( val )
 	end scope
 
 	ID( function fb_VALBOOL )
 	scope
-		dim chk as function fbcall ( byref as string ) as boolean
+		dim chk as function fbcall ( byref as const string ) as boolean
 		chk = procptr( fb_VALBOOL )
 	end scope
 
 	ID( function fb_VALBOOL alias "fb_WstrValBool" )
 	scope
-		dim chk as function fbcall ( byref as wchar ) as boolean
+		dim chk as function fbcall ( byref as const wchar ) as boolean
 		chk = procptr( fb_VALBOOL )
 	end scope
 
 	ID( function valint alias "fb_VALINT" )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( valint )
 	end scope
 
 	ID( function valint alias "fb_WstrValInt" )
 	scope
-		dim chk as function fbcall ( byref as wchar ) as long
+		dim chk as function fbcall ( byref as const wchar ) as long
 		chk = procptr( valint )
 	end scope
 
 	ID( function valuint alias "fb_VALUINT" )
 	scope
-		dim chk as function fbcall ( byref as string ) as ulong
+		dim chk as function fbcall ( byref as const string ) as ulong
 		chk = procptr( valuint )
 	end scope
 
 	ID( function valuint alias "fb_WstrValUInt" )
 	scope
-		dim chk as function fbcall ( byref as wchar ) as ulong
+		dim chk as function fbcall ( byref as const wchar ) as ulong
 		chk = procptr( valuint )
 	end scope
 
 	ID( function vallng alias "fb_VALLNG" )
 	scope
-		dim chk as function fbcall ( byref as string ) as longint
+		dim chk as function fbcall ( byref as const string ) as longint
 		chk = procptr( vallng )
 	end scope
 
 	ID( function vallng alias "fb_WstrValLng" )
 	scope
-		dim chk as function fbcall ( byref as wchar ) as longint
+		dim chk as function fbcall ( byref as const wchar ) as longint
 		chk = procptr( vallng )
 	end scope
 
 	ID( function valulng alias "fb_VALULNG" )
 	scope
-		dim chk as function fbcall ( byref as string ) as ulongint
+		dim chk as function fbcall ( byref as const string ) as ulongint
 		chk = procptr( valulng )
 	end scope
 
 	ID( function valulng alias "fb_WstrValULng" )
 	scope
-		dim chk as function fbcall ( byref as wchar ) as ulongint
+		dim chk as function fbcall ( byref as const wchar ) as ulongint
 		chk = procptr( valulng )
 	end scope
 
 	ID( function hex alias "fb_HEX_b" )
 	scope
-		dim chk as function fbcall ( byval as ubyte ) as string
+		dim chk as function fbcall ( byval as const ubyte ) as string
 		chk = procptr( hex )
 	end scope
 
 	ID( function hex alias "fb_HEX_s" )
 	scope
-		dim chk as function fbcall ( byval as ushort ) as string
+		dim chk as function fbcall ( byval as const ushort ) as string
 		chk = procptr( hex )
 	end scope
 
 	ID( function hex alias "fb_HEX_i" )
 	scope
-		dim chk as function fbcall ( byval as ulong ) as string
+		dim chk as function fbcall ( byval as const ulong ) as string
 		chk = procptr( hex )
 	end scope
 
 	ID( function hex alias "fb_HEX_l" )
 	scope
-		dim chk as function fbcall ( byval as ulongint ) as string
+		dim chk as function fbcall ( byval as const ulongint ) as string
 		chk = procptr( hex )
 	end scope
 
@@ -2525,55 +2525,55 @@
 
 	ID( function hex alias "fb_HEXEx_b" )
 	scope
-		dim chk as function fbcall ( byval as ubyte, byval as long ) as string
+		dim chk as function fbcall ( byval as const ubyte, byval as const long ) as string
 		chk = procptr( hex )
 	end scope
 
 	ID( function hex alias "fb_HEXEx_s" )
 	scope
-		dim chk as function fbcall ( byval as ushort, byval as long ) as string
+		dim chk as function fbcall ( byval as const ushort, byval as const long ) as string
 		chk = procptr( hex )
 	end scope
 
 	ID( function hex alias "fb_HEXEx_i" )
 	scope
-		dim chk as function fbcall ( byval as ulong, byval as long ) as string
+		dim chk as function fbcall ( byval as const ulong, byval as const long ) as string
 		chk = procptr( hex )
 	end scope
 
 	ID( function hex alias "fb_HEXEx_l" )
 	scope
-		dim chk as function fbcall ( byval as ulongint, byval as long ) as string
+		dim chk as function fbcall ( byval as const ulongint, byval as const long ) as string
 		chk = procptr( hex )
 	end scope
 
 	ID( function hex alias "fb_HEXEx_p" )
 	scope
-		dim chk as function fbcall ( byval as const any ptr, byval as long ) as string
+		dim chk as function fbcall ( byval as const any ptr, byval as const long ) as string
 		chk = procptr( hex )
 	end scope
 
 	ID( function whex alias "fb_WstrHex_b" )
 	scope
-		dim chk as function fbcall ( byval as ubyte ) as wchar_ret
+		dim chk as function fbcall ( byval as const ubyte ) as wchar_ret
 		chk = procptr( whex )
 	end scope
 
 	ID( function whex alias "fb_WstrHex_s" )
 	scope
-		dim chk as function fbcall ( byval as ushort ) as wchar_ret
+		dim chk as function fbcall ( byval as const ushort ) as wchar_ret
 		chk = procptr( whex )
 	end scope
 
 	ID( function whex alias "fb_WstrHex_i" )
 	scope
-		dim chk as function fbcall ( byval as ulong ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulong ) as wchar_ret
 		chk = procptr( whex )
 	end scope
 
 	ID( function whex alias "fb_WstrHex_l" )
 	scope
-		dim chk as function fbcall ( byval as ulongint ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulongint ) as wchar_ret
 		chk = procptr( whex )
 	end scope
 
@@ -2585,55 +2585,55 @@
 
 	ID( function whex alias "fb_WstrHexEx_b" )
 	scope
-		dim chk as function fbcall ( byval as ubyte, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const ubyte, byval as const long ) as wchar_ret
 		chk = procptr( whex )
 	end scope
 
 	ID( function whex alias "fb_WstrHexEx_s" )
 	scope
-		dim chk as function fbcall ( byval as ushort, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const ushort, byval as const long ) as wchar_ret
 		chk = procptr( whex )
 	end scope
 
 	ID( function whex alias "fb_WstrHexEx_i" )
 	scope
-		dim chk as function fbcall ( byval as ulong, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulong, byval as const long ) as wchar_ret
 		chk = procptr( whex )
 	end scope
 
 	ID( function whex alias "fb_WstrHexEx_l" )
 	scope
-		dim chk as function fbcall ( byval as ulongint, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulongint, byval as const long ) as wchar_ret
 		chk = procptr( whex )
 	end scope
 
 	ID( function whex alias "fb_WstrHexEx_p" )
 	scope
-		dim chk as function fbcall ( byval as const any ptr, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const any ptr, byval as const long ) as wchar_ret
 		chk = procptr( whex )
 	end scope
 
 	ID( function oct alias "fb_OCT_b" )
 	scope
-		dim chk as function fbcall ( byval as ubyte ) as string
+		dim chk as function fbcall ( byval as const ubyte ) as string
 		chk = procptr( oct )
 	end scope
 
 	ID( function oct alias "fb_OCT_s" )
 	scope
-		dim chk as function fbcall ( byval as ushort ) as string
+		dim chk as function fbcall ( byval as const ushort ) as string
 		chk = procptr( oct )
 	end scope
 
 	ID( function oct alias "fb_OCT_i" )
 	scope
-		dim chk as function fbcall ( byval as ulong ) as string
+		dim chk as function fbcall ( byval as const ulong ) as string
 		chk = procptr( oct )
 	end scope
 
 	ID( function oct alias "fb_OCT_l" )
 	scope
-		dim chk as function fbcall ( byval as ulongint ) as string
+		dim chk as function fbcall ( byval as const ulongint ) as string
 		chk = procptr( oct )
 	end scope
 
@@ -2645,55 +2645,55 @@
 
 	ID( function oct alias "fb_OCTEx_b" )
 	scope
-		dim chk as function fbcall ( byval as ubyte, byval as long ) as string
+		dim chk as function fbcall ( byval as const ubyte, byval as const long ) as string
 		chk = procptr( oct )
 	end scope
 
 	ID( function oct alias "fb_OCTEx_s" )
 	scope
-		dim chk as function fbcall ( byval as ushort, byval as long ) as string
+		dim chk as function fbcall ( byval as const ushort, byval as const long ) as string
 		chk = procptr( oct )
 	end scope
 
 	ID( function oct alias "fb_OCTEx_i" )
 	scope
-		dim chk as function fbcall ( byval as ulong, byval as long ) as string
+		dim chk as function fbcall ( byval as const ulong, byval as const long ) as string
 		chk = procptr( oct )
 	end scope
 
 	ID( function oct alias "fb_OCTEx_l" )
 	scope
-		dim chk as function fbcall ( byval as ulongint, byval as long ) as string
+		dim chk as function fbcall ( byval as const ulongint, byval as const long ) as string
 		chk = procptr( oct )
 	end scope
 
 	ID( function oct alias "fb_OCTEx_p" )
 	scope
-		dim chk as function fbcall ( byval as const any ptr, byval as long ) as string
+		dim chk as function fbcall ( byval as const any ptr, byval as const long ) as string
 		chk = procptr( oct )
 	end scope
 
 	ID( function woct alias "fb_WstrOct_b" )
 	scope
-		dim chk as function fbcall ( byval as ubyte ) as wchar_ret
+		dim chk as function fbcall ( byval as const ubyte ) as wchar_ret
 		chk = procptr( woct )
 	end scope
 
 	ID( function woct alias "fb_WstrOct_s" )
 	scope
-		dim chk as function fbcall ( byval as ushort ) as wchar_ret
+		dim chk as function fbcall ( byval as const ushort ) as wchar_ret
 		chk = procptr( woct )
 	end scope
 
 	ID( function woct alias "fb_WstrOct_i" )
 	scope
-		dim chk as function fbcall ( byval as ulong ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulong ) as wchar_ret
 		chk = procptr( woct )
 	end scope
 
 	ID( function woct alias "fb_WstrOct_l" )
 	scope
-		dim chk as function fbcall ( byval as ulongint ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulongint ) as wchar_ret
 		chk = procptr( woct )
 	end scope
 
@@ -2705,55 +2705,55 @@
 
 	ID( function woct alias "fb_WstrOctEx_b" )
 	scope
-		dim chk as function fbcall ( byval as ubyte, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const ubyte, byval as const long ) as wchar_ret
 		chk = procptr( woct )
 	end scope
 
 	ID( function woct alias "fb_WstrOctEx_s" )
 	scope
-		dim chk as function fbcall ( byval as ushort, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const ushort, byval as const long ) as wchar_ret
 		chk = procptr( woct )
 	end scope
 
 	ID( function woct alias "fb_WstrOctEx_i" )
 	scope
-		dim chk as function fbcall ( byval as ulong, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulong, byval as const long ) as wchar_ret
 		chk = procptr( woct )
 	end scope
 
 	ID( function woct alias "fb_WstrOctEx_l" )
 	scope
-		dim chk as function fbcall ( byval as ulongint, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulongint, byval as const long ) as wchar_ret
 		chk = procptr( woct )
 	end scope
 
 	ID( function woct alias "fb_WstrOctEx_p" )
 	scope
-		dim chk as function fbcall ( byval as const any ptr, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const any ptr, byval as const long ) as wchar_ret
 		chk = procptr( woct )
 	end scope
 
 	ID( function bin alias "fb_BIN_b" )
 	scope
-		dim chk as function fbcall ( byval as ubyte ) as string
+		dim chk as function fbcall ( byval as const ubyte ) as string
 		chk = procptr( bin )
 	end scope
 
 	ID( function bin alias "fb_BIN_s" )
 	scope
-		dim chk as function fbcall ( byval as ushort ) as string
+		dim chk as function fbcall ( byval as const ushort ) as string
 		chk = procptr( bin )
 	end scope
 
 	ID( function bin alias "fb_BIN_i" )
 	scope
-		dim chk as function fbcall ( byval as ulong ) as string
+		dim chk as function fbcall ( byval as const ulong ) as string
 		chk = procptr( bin )
 	end scope
 
 	ID( function bin alias "fb_BIN_l" )
 	scope
-		dim chk as function fbcall ( byval as ulongint ) as string
+		dim chk as function fbcall ( byval as const ulongint ) as string
 		chk = procptr( bin )
 	end scope
 
@@ -2765,55 +2765,55 @@
 
 	ID( function bin alias "fb_BINEx_b" )
 	scope
-		dim chk as function fbcall ( byval as ubyte, byval as long ) as string
+		dim chk as function fbcall ( byval as const ubyte, byval as const long ) as string
 		chk = procptr( bin )
 	end scope
 
 	ID( function bin alias "fb_BINEx_s" )
 	scope
-		dim chk as function fbcall ( byval as ushort, byval as long ) as string
+		dim chk as function fbcall ( byval as const ushort, byval as const long ) as string
 		chk = procptr( bin )
 	end scope
 
 	ID( function bin alias "fb_BINEx_i" )
 	scope
-		dim chk as function fbcall ( byval as ulong, byval as long ) as string
+		dim chk as function fbcall ( byval as const ulong, byval as const long ) as string
 		chk = procptr( bin )
 	end scope
 
 	ID( function bin alias "fb_BINEx_l" )
 	scope
-		dim chk as function fbcall ( byval as ulongint, byval as long ) as string
+		dim chk as function fbcall ( byval as const ulongint, byval as const long ) as string
 		chk = procptr( bin )
 	end scope
 
 	ID( function bin alias "fb_BINEx_p" )
 	scope
-		dim chk as function fbcall ( byval as const any ptr, byval as long ) as string
+		dim chk as function fbcall ( byval as const any ptr, byval as const long ) as string
 		chk = procptr( bin )
 	end scope
 
 	ID( function wbin alias "fb_WstrBin_b" )
 	scope
-		dim chk as function fbcall ( byval as ubyte ) as wchar_ret
+		dim chk as function fbcall ( byval as const ubyte ) as wchar_ret
 		chk = procptr( wbin )
 	end scope
 
 	ID( function wbin alias "fb_WstrBin_s" )
 	scope
-		dim chk as function fbcall ( byval as ushort ) as wchar_ret
+		dim chk as function fbcall ( byval as const ushort ) as wchar_ret
 		chk = procptr( wbin )
 	end scope
 
 	ID( function wbin alias "fb_WstrBin_i" )
 	scope
-		dim chk as function fbcall ( byval as ulong ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulong ) as wchar_ret
 		chk = procptr( wbin )
 	end scope
 
 	ID( function wbin alias "fb_WstrBin_l" )
 	scope
-		dim chk as function fbcall ( byval as ulongint ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulongint ) as wchar_ret
 		chk = procptr( wbin )
 	end scope
 
@@ -2825,181 +2825,181 @@
 
 	ID( function wbin alias "fb_WstrBinEx_b" )
 	scope
-		dim chk as function fbcall ( byval as ubyte, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const ubyte, byval as const long ) as wchar_ret
 		chk = procptr( wbin )
 	end scope
 
 	ID( function wbin alias "fb_WstrBinEx_s" )
 	scope
-		dim chk as function fbcall ( byval as ushort, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const ushort, byval as const long ) as wchar_ret
 		chk = procptr( wbin )
 	end scope
 
 	ID( function wbin alias "fb_WstrBinEx_i" )
 	scope
-		dim chk as function fbcall ( byval as ulong, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulong, byval as const long ) as wchar_ret
 		chk = procptr( wbin )
 	end scope
 
 	ID( function wbin alias "fb_WstrBinEx_l" )
 	scope
-		dim chk as function fbcall ( byval as ulongint, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const ulongint, byval as const long ) as wchar_ret
 		chk = procptr( wbin )
 	end scope
 
 	ID( function wbin alias "fb_WstrBinEx_p" )
 	scope
-		dim chk as function fbcall ( byval as const any ptr, byval as long ) as wchar_ret
+		dim chk as function fbcall ( byval as const any ptr, byval as const long ) as wchar_ret
 		chk = procptr( wbin )
 	end scope
 
 	ID( function fb_MKD )
 	scope
-		dim chk as function fbcall ( byval as double ) as string
+		dim chk as function fbcall ( byval as const double ) as string
 		chk = procptr( fb_MKD )
 	end scope
 
 	ID( function fb_MKS )
 	scope
-		dim chk as function fbcall ( byval as single ) as string
+		dim chk as function fbcall ( byval as const single ) as string
 		chk = procptr( fb_MKS )
 	end scope
 
 	ID( function fb_MKSHORT )
 	scope
-		dim chk as function fbcall ( byval as short ) as string
+		dim chk as function fbcall ( byval as const short ) as string
 		chk = procptr( fb_MKSHORT )
 	end scope
 
 	ID( function fb_MKI )
 	scope
-		dim chk as function fbcall ( byval as integer ) as string
+		dim chk as function fbcall ( byval as const integer ) as string
 		chk = procptr( fb_MKI )
 	end scope
 
 	ID( function fb_MKL )
 	scope
-		dim chk as function fbcall ( byval as long ) as string
+		dim chk as function fbcall ( byval as const long ) as string
 		chk = procptr( fb_MKL )
 	end scope
 
 	ID( function fb_MKLONGINT )
 	scope
-		dim chk as function fbcall ( byval as longint ) as string
+		dim chk as function fbcall ( byval as const longint ) as string
 		chk = procptr( fb_MKLONGINT )
 	end scope
 
 	ID( function left alias "fb_LEFT" )
 	scope
-		dim chk as function fbcall ( byref as string, byval as integer ) as string
+		dim chk as function fbcall ( byref as const string, byval as const integer ) as string
 		chk = procptr( left )
 	end scope
 
 	ID( function left alias "fb_WstrLeft" )
 	scope
-		dim chk as function fbcall ( byref as wchar, byval as integer ) as wchar_ret
+		dim chk as function fbcall ( byref as const wchar, byval as const integer ) as wchar_ret
 		chk = procptr( left )
 	end scope
 
 	ID( function right alias "fb_RIGHT" )
 	scope
-		dim chk as function fbcall ( byref as string, byval as integer ) as string
+		dim chk as function fbcall ( byref as const string, byval as const integer ) as string
 		chk = procptr( right )
 	end scope
 
 	ID( function right alias "fb_WstrRight" )
 	scope
-		dim chk as function fbcall ( byref as wchar, byval as integer ) as wchar_ret
+		dim chk as function fbcall ( byref as const wchar, byval as const integer ) as wchar_ret
 		chk = procptr( right )
 	end scope
 
 	ID( function space alias "fb_SPACE" )
 	scope
-		dim chk as function fbcall ( byval as integer ) as string
+		dim chk as function fbcall ( byval as const integer ) as string
 		chk = procptr( space )
 	end scope
 
 	ID( function wspace alias "fb_WstrSpace" )
 	scope
-		dim chk as function fbcall ( byval as integer ) as wchar_ret
+		dim chk as function fbcall ( byval as const integer ) as wchar_ret
 		chk = procptr( wspace )
 	end scope
 
 	ID( function fb_StrLcase2 )
 	scope
-		dim chk as function fbcall ( byref as string, byval as long = 0 ) as string
+		dim chk as function fbcall ( byref as const string, byval as const long = 0 ) as string
 		chk = procptr( fb_StrLcase2 )
 	end scope
 
 	ID( function fb_WstrLcase2 )
 	scope
-		dim chk as function fbcall ( byref as wchar, byval as long = 0 ) as wchar_ret
+		dim chk as function fbcall ( byref as const wchar, byval as const long = 0 ) as wchar_ret
 		chk = procptr( fb_WstrLcase2 )
 	end scope
 
 	ID( function fb_StrUcase2 )
 	scope
-		dim chk as function fbcall ( byref as string, byval as long = 0 ) as string
+		dim chk as function fbcall ( byref as const string, byval as const long = 0 ) as string
 		chk = procptr( fb_StrUcase2 )
 	end scope
 
 	ID( function fb_WstrUcase2 )
 	scope
-		dim chk as function fbcall ( byref as wchar, byval as long = 0 ) as wchar_ret
+		dim chk as function fbcall ( byref as const wchar, byval as const long = 0 ) as wchar_ret
 		chk = procptr( fb_WstrUcase2 )
 	end scope
 
 	ID( function fb_CVD alias "fb_CVD" )
 	scope
-		dim chk as function fbcall ( byref as string ) as double
+		dim chk as function fbcall ( byref as const string ) as double
 		chk = procptr( fb_CVD )
 	end scope
 
 	ID( function fb_CVS alias "fb_CVS" )
 	scope
-		dim chk as function fbcall ( byref as string ) as single
+		dim chk as function fbcall ( byref as const string ) as single
 		chk = procptr( fb_CVS )
 	end scope
 
 	ID( function fb_CVSHORT alias "fb_CVSHORT" )
 	scope
-		dim chk as function fbcall ( byref as string ) as short
+		dim chk as function fbcall ( byref as const string ) as short
 		chk = procptr( fb_CVSHORT )
 	end scope
 
 	ID( function fb_CVL )
 	scope
-		dim chk as function fbcall ( byref as string ) as long
+		dim chk as function fbcall ( byref as const string ) as long
 		chk = procptr( fb_CVL )
 	end scope
 
 	ID( function fb_CVLONGINT alias "fb_CVLONGINT" )
 	scope
-		dim chk as function fbcall ( byref as string ) as longint
+		dim chk as function fbcall ( byref as const string ) as longint
 		chk = procptr( fb_CVLONGINT )
 	end scope
 
 	ID( function fb_CVDFROMLONGINT alias "fb_CVDFROMLONGINT" )
 	scope
-		dim chk as function fbcall ( byval as longint ) as double
+		dim chk as function fbcall ( byval as const longint ) as double
 		chk = procptr( fb_CVDFROMLONGINT )
 	end scope
 
 	ID( function fb_CVSFROML alias "fb_CVSFROML" )
 	scope
-		dim chk as function fbcall ( byval as long ) as single
+		dim chk as function fbcall ( byval as const long ) as single
 		chk = procptr( fb_CVSFROML )
 	end scope
 
 	ID( function fb_CVLFROMS alias "fb_CVLFROMS" )
 	scope
-		dim chk as function fbcall ( byval as single ) as long
+		dim chk as function fbcall ( byval as const single ) as long
 		chk = procptr( fb_CVLFROMS )
 	end scope
 
 	ID( function fb_CVLONGINTFROMD alias "fb_CVLONGINTFROMD" )
 	scope
-		dim chk as function fbcall ( byval as double ) as longint
+		dim chk as function fbcall ( byval as const double ) as longint
 		chk = procptr( fb_CVLONGINTFROMD )
 	end scope
 
