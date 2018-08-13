@@ -13,10 +13,10 @@
 		/' function fb_ArrayRedimEx cdecl _
 			( _
 				array() as any, _
-				byval elementlen as uinteger, _
-				byval doclear as long, _
-				byval isvarlen as long, _
-				byval dimensions as uinteger, _
+				byval elementlen as const uinteger, _
+				byval doclear as const long, _
+				byval isvarlen as const long, _
+				byval dimensions as const uinteger, _
 				... _
 			) as long '/ _
 		( _
@@ -26,20 +26,20 @@
 			6, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INVALID ), FB_PARAMMODE_VARARG, FALSE ) _
 			} _
 		), _
 		/' function fb_ArrayRedimPresvEx cdecl _
 			( _
 				array() as any, _
-				byval elementlen as uinteger, _
-				byval doclear as long, _
-				byval isvarlen as long, _
-				byval dimensions as uinteger, _
+				byval elementlen as const uinteger, _
+				byval doclear as const long, _
+				byval isvarlen as const long, _
+				byval dimensions as const uinteger, _
 				... _
 			) as integer '/ _
 		( _
@@ -49,20 +49,20 @@
 			6, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INVALID ), FB_PARAMMODE_VARARG, FALSE ) _
 			} _
 		), _
 		/' function fb_ArrayRedimObj cdecl _
 			( _
 				array() as any, _
-				byval elementlen as uinteger, _
+				byval elementlen as const uinteger, _
 				byval ctor as sub cdecl( byval this_ as any ptr), _
 				byval dtor as sub cdecl( byval this_ as any ptr), _
-				byval dimensions as uinteger, _
+				byval dimensions as const uinteger, _
 				... _
 			) as long '/ _
 		( _
@@ -72,20 +72,20 @@
 			6, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE ) _
 			} _
 		), _
 		/' function fb_ArrayRedimPresvObj cdecl _
 			( _
 				array() as any, _
-				byval elementlen as uinteger, _
+				byval elementlen as const uinteger, _
 				byval ctor as sub cdecl( ), _
 				byval dtor as sub cdecl( ), _
-				byval dimensions as uinteger, _
+				byval dimensions as const uinteger, _
 				... _
 			) as long '/ _
 		( _
@@ -95,10 +95,10 @@
 			6, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE ) _
 			} _
 		), _
@@ -106,7 +106,7 @@
 			( _
 				dest() as any, _
 				source() as any, _
-				byval isvarlen as long, _
+				byval isvarlen as const long, _
 				byval ctor as sub cdecl( byval this_ as any ptr), _
 				byval dtor as sub cdecl( byval this_ as any ptr) _
 			) as long '/ _
@@ -118,7 +118,7 @@
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
@@ -144,7 +144,7 @@
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
-		/' function fb_ArrayClear( array() as any, byval isvarlen as long ) as long '/ _
+		/' function fb_ArrayClear( array() as any, byval isvarlen as const long ) as long '/ _
 		( _
 			@FB_RTL_ARRAYCLEAR, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
@@ -152,7 +152,7 @@
 			2, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' function fb_ArrayClearObj _
@@ -160,7 +160,7 @@
 				array() as any, _
 				byval ctor as sub cdecl( ), _
 				byval dtor as sub cdecl( ), _
-				byval dofill as long _
+				byval dofill as const long _
 			) as long '/ _
 		( _
 			@FB_RTL_ARRAYCLEAROBJ, NULL, _
@@ -171,10 +171,10 @@
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' function fb_ArrayErase( array() as any, byval isvarlen as long ) as long '/ _
+		/' function fb_ArrayErase( array() as any, byval isvarlen as const long ) as long '/ _
 		( _
 			@FB_RTL_ARRAYERASE, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
@@ -182,7 +182,7 @@
 			2, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' function fb_ArrayEraseObj( array() as any, byval dtor as sub cdecl( ) ) as long '/ _
@@ -206,7 +206,7 @@
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
-		/' function fb_ArrayLBound( array() as any, byval dimension as integer ) as integer '/ _
+		/' function fb_ArrayLBound( array() as any, byval dimension as const integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYLBOUND, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
@@ -214,10 +214,10 @@
 			2, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' function fb_ArrayUBound( array() as any, byval dimension as integer ) as integer '/ _
+		/' function fb_ArrayUBound( array() as any, byval dimension as const integer ) as integer '/ _
 		( _
 			@FB_RTL_ARRAYUBOUND, NULL, _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
@@ -225,14 +225,14 @@
 			2, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' function fb_ArraySngBoundChk _
 			( _
-				byval idx as uinteger, _
-				byval ubound as uinteger, _
-				byval linenum as long, _
+				byval idx as const uinteger, _
+				byval ubound as const uinteger, _
+				byval linenum as const long, _
 				byval fname as const zstring ptr _
 			) as any ptr '/ _
 		( _
@@ -241,18 +241,18 @@
 			NULL, FB_RTL_OPT_CANBECLONED, _
 			4, _
 			{ _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ) _
 			} _
 		), _
 		/' function fb_ArrayBoundChk _
 			( _
-				byval idx as integer, _
-				byval lbound as integer, _
-				byval ubound as integer, _
-				byval linenum as long, _
+				byval idx as const integer, _
+				byval lbound as const integer, _
+				byval ubound as const integer, _
+				byval linenum as const long, _
 				byval fname as const zstring ptr _
 			) as any ptr '/ _
 		( _
@@ -261,10 +261,10 @@
 			NULL, FB_RTL_OPT_CANBECLONED, _
 			5, _
 			{ _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ) _
 			} _
 		), _

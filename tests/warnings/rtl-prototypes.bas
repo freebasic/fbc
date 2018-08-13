@@ -11,31 +11,31 @@
 
 	ID( function fb_ArrayRedimEx )
 	scope
-		dim chk as function cdecl ( bydesc as any, byval as uinteger, byval as long, byval as long, byval as uinteger, ... ) as long
+		dim chk as function cdecl ( bydesc as any, byval as const uinteger, byval as const long, byval as const long, byval as const uinteger, ... ) as long
 		chk = procptr( fb_ArrayRedimEx )
 	end scope
 
 	ID( function fb_ArrayRedimPresvEx )
 	scope
-		dim chk as function cdecl ( bydesc as any, byval as uinteger, byval as long, byval as long, byval as uinteger, ... ) as long
+		dim chk as function cdecl ( bydesc as any, byval as const uinteger, byval as const long, byval as const long, byval as const uinteger, ... ) as long
 		chk = procptr( fb_ArrayRedimPresvEx )
 	end scope
 
 	ID( function fb_ArrayRedimObj )
 	scope
-		dim chk as function cdecl ( bydesc as any, byval as uinteger, byval as any ptr, byval as any ptr, byval as uinteger, ... ) as long
+		dim chk as function cdecl ( bydesc as any, byval as const uinteger, byval as any ptr, byval as any ptr, byval as const uinteger, ... ) as long
 		chk = procptr( fb_ArrayRedimObj )
 	end scope
 
 	ID( function fb_ArrayRedimPresvObj )
 	scope
-		dim chk as function cdecl ( bydesc as any, byval as uinteger, byval as any ptr, byval as any ptr, byval as uinteger, ... ) as long
+		dim chk as function cdecl ( bydesc as any, byval as const uinteger, byval as any ptr, byval as any ptr, byval as const uinteger, ... ) as long
 		chk = procptr( fb_ArrayRedimPresvObj )
 	end scope
 
 	ID( function fb_ArrayRedimTo )
 	scope
-		dim chk as function fbcall ( bydesc as any, bydesc as any, byval as long, byval as any ptr, byval as any ptr ) as long
+		dim chk as function fbcall ( bydesc as any, bydesc as any, byval as const long, byval as any ptr, byval as any ptr ) as long
 		chk = procptr( fb_ArrayRedimTo )
 	end scope
 
@@ -53,19 +53,19 @@
 
 	ID( function fb_ArrayClear )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as long ) as long
+		dim chk as function fbcall ( bydesc as any, byval as const long ) as long
 		chk = procptr( fb_ArrayClear )
 	end scope
 
 	ID( function fb_ArrayClearObj )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as any ptr, byval as any ptr, byval as long ) as long
+		dim chk as function fbcall ( bydesc as any, byval as any ptr, byval as any ptr, byval as const long ) as long
 		chk = procptr( fb_ArrayClearObj )
 	end scope
 
 	ID( function fb_ArrayErase )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as long ) as long
+		dim chk as function fbcall ( bydesc as any, byval as const long ) as long
 		chk = procptr( fb_ArrayErase )
 	end scope
 
@@ -83,25 +83,25 @@
 
 	ID( function fb_ArrayLBound )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as integer ) as integer
+		dim chk as function fbcall ( bydesc as any, byval as const integer ) as integer
 		chk = procptr( fb_ArrayLBound )
 	end scope
 
 	ID( function fb_ArrayUBound )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as integer ) as integer
+		dim chk as function fbcall ( bydesc as any, byval as const integer ) as integer
 		chk = procptr( fb_ArrayUBound )
 	end scope
 
 	ID( function fb_ArraySngBoundChk )
 	scope
-		dim chk as function fbcall ( byval as uinteger, byval as uinteger, byval as long, byval as const zstring ptr ) as any ptr
+		dim chk as function fbcall ( byval as const uinteger, byval as const uinteger, byval as const long, byval as const zstring ptr ) as any ptr
 		chk = procptr( fb_ArraySngBoundChk )
 	end scope
 
 	ID( function fb_ArrayBoundChk )
 	scope
-		dim chk as function fbcall ( byval as integer, byval as integer, byval as integer, byval as long, byval as const zstring ptr ) as any ptr
+		dim chk as function fbcall ( byval as const integer, byval as const integer, byval as const integer, byval as const long, byval as const zstring ptr ) as any ptr
 		chk = procptr( fb_ArrayBoundChk )
 	end scope
 
