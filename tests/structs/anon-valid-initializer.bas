@@ -1,4 +1,4 @@
-' TEST_MODE : COMPILE_ONLY_FAIL
+' TEST_MODE : COMPILE_ONLY_OK
 
 '' from sf.net #801
 
@@ -12,9 +12,5 @@ scope
 	'' OK
    	type<UDT>(0).i = 1
 	*@type<UDT>(0).i = 1
-
-    '' Expected to fail
-	type<UDT>(1) = x
-	*@type<UDT>(1) = x
 
 end scope

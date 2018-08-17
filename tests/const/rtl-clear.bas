@@ -7,3 +7,5 @@ scope
 	dim as const integer a = 256
 
 	clear a, 0, sizeof(integer)
+
+end scope

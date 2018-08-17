@@ -16,7 +16,6 @@ CONST UBYTE PTR
 CONST UBYTE PTR
 CONST UBYTE PTR
 CONST UBYTE PTR
-none expected
 ---- RTLIB
 warning expected
 	CONST qualifier discarded
