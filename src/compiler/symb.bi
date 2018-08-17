@@ -1883,18 +1883,6 @@ declare function symbCheckConstAssignTopLevel _
 		byref wrnmsg as FB_WARNINGMSG = 0 _
 	) as integer
 
-declare function symbCheckConstAssignFuncPtr _
-	( _
-		byval ldtype as FB_DATATYPE, _
-		byval rdtype as FB_DATATYPE, _
-		byval lsubtype as FBSYMBOL ptr, _
-		byval rsubtype as FBSYMBOL ptr, _
-		byval mode as FB_PARAMMODE = 0, _
-		byref matches as integer = 0, _
-		byref errmsg as FB_ERRMSG = 0, _
-		byref wrnmsg as FB_WARNINGMSG = 0 _
-	) as integer
-
 declare function symbCheckConstAssign _
 	( _
 		byval ldtype as FB_DATATYPE, _

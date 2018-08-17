@@ -1676,7 +1676,7 @@ private function hCalcTypesDiff _
 			''   it's a DEREF or not (it can all be treated as string)
 			'' - disallow other args (passing BYVAL explicitly
 			''   should be handled by caller already)
-			select case( typeGetDtAndPtrOnly( param_dtype ) )
+			select case( param_dtype )
 			case FB_DATATYPE_CHAR
 				select case( arg_dtype )
 				case FB_DATATYPE_CHAR
@@ -2383,7 +2383,7 @@ private function hCheckCastOvl _
 		if( proc_subtype = to_subtype ) then
 
 			'' same const?
-			if( proc_subtype = to_subtype ) then
+			if( proc_dtype = to_dtype ) then
 				return FB_OVLPROC_FULLMATCH
 			end if
 
