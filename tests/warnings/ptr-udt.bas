@@ -63,7 +63,7 @@ end scope
 		#print "no warning:"
 		pa = pb  '' when calling pa() we expect an A, and get a B - actually safe (B is an A) since it's passed BYREF
 
-		#print "1 warning:"
+		#print "2 warnings:"
 		pb = pa  '' when calling pb() we expect a B, and get an A - unsafe
 	end scope
 
@@ -88,6 +88,7 @@ end scope
 		'' for allocating the temp var on stack, where the result will be
 		'' written by the callee. This must have the exact same size or there
 		'' will be a buffer overflow...
+		#print "2 warnings:"
 		pb = pa  '' caller expects a B, callee returns an A - unsafe
 	end scope
 

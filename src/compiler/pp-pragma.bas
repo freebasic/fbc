@@ -14,8 +14,12 @@ enum LEXPP_PRAGMAFLAG_ENUM
 	LEXPP_PRAGMAFLAG_CAN_PUSHPOP = 1
 	LEXPP_PRAGMAFLAG_CAN_ASSIGN = 2
 	LEXPP_PRAGMAFLAG_HAS_CALLBACK = 4
+	LEXPP_PRAGMAFLAG_PRESERVE_UNDER_PP = 8
+	LEXPP_PRAGMAFLAG_PDCHECK = 16
 
-	LEXPP_PRAGMAFLAG_DEFAULT = LEXPP_PRAGMAFLAG_CAN_PUSHPOP or LEXPP_PRAGMAFLAG_CAN_ASSIGN
+	LEXPP_PRAGMAFLAG_DEFAULT = LEXPP_PRAGMAFLAG_CAN_PUSHPOP or _
+								LEXPP_PRAGMAFLAG_CAN_ASSIGN or _
+								LEXPP_PRAGMAFLAG_PRESERVE_UNDER_PP
 end enum
 
 type LEXPP_PRAGMAOPT
@@ -27,6 +31,7 @@ end type
 enum LEXPP_PRAGMAOPT_ENUM
 	LEXPP_PRAGMAOPT_BITFIELD
 	LEXPP_PRAGMAOPT_ONCE
+	LEXPP_PRAGMAOPT_WARNCONSTNESS
 
 	LEXPP_PRAGMAS
 end enum
@@ -37,18 +42,19 @@ type LEXPP_PRAGMASTK
 end type
 
 '' globals
-	dim shared pragmaStk(0 to FB_COMPOPTIONS-1) as LEXPP_PRAGMASTK
+	dim shared pragmaStk(0 to LEXPP_PRAGMAS-1) as LEXPP_PRAGMASTK
 
 	'' same order as LEXPP_PRAGMAOPT_ENUM
 	dim shared pragmaOpt(0 to LEXPP_PRAGMAS-1) as LEXPP_PRAGMAOPT => _
 	{ _
 		("msbitfields", FB_COMPOPT_MSBITFIELDS, LEXPP_PRAGMAFLAG_DEFAULT         ), _
-		("once"       , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK    ) _
+		("once"       , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK    ), _
+		("constness"  , FB_PDCHECK_CONSTNESS  , LEXPP_PRAGMAFLAG_PDCHECK or LEXPP_PRAGMAFLAG_DEFAULT ) _
 	}
 
 sub ppPragmaInit( )
 	'' reset stacks
-	for i as integer = 0 to FB_COMPOPTIONS-1
+	for i as integer = 0 to LEXPP_PRAGMAS-1
 		pragmaStk(i).tos = 0
 	next
 end sub
@@ -56,8 +62,8 @@ end sub
 sub ppPragmaEnd( )
 end sub
 
-private sub pragmaPush( byval opt as integer, byval value as longint )
-	with pragmaStk(opt)
+private sub pragmaPush( byval pragmaIdx as LEXPP_PRAGMAOPT_ENUM, byval value as longint )
+	with pragmaStk(pragmaIdx)
 		if( .tos >= FB_MAXPRAGMARECLEVEL ) then
 			errReport( FB_ERRMSG_RECLEVELTOODEEP )
 			'' error recovery: skip
@@ -69,8 +75,8 @@ private sub pragmaPush( byval opt as integer, byval value as longint )
 	end with
 end sub
 
-private sub pragmaPop( byval opt as integer, byref value as longint )
-	with pragmaStk(opt)
+private sub pragmaPop( byval pragmaIdx as LEXPP_PRAGMAOPT_ENUM, byref value as longint )
+	with pragmaStk(pragmaIdx)
 		if( .tos <= 0 ) then
 			errReport( FB_ERRMSG_STACKUNDERFLOW )
 			'' error recovery: skip
@@ -148,12 +154,12 @@ sub ppPragma( )
 	lexSkipToken( )
 
 	if( ispop ) then
-		pragmaPop( pragmaOpt(p).opt, value )
+		pragmaPop( p, value )
 
 		'' Preserve msbitfields #pragmas under -pp
-		if( p = LEXPP_PRAGMAOPT_BITFIELD ) then
+		if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_PRESERVE_UNDER_PP) <> 0 ) then
 			if( env.ppfile_num > 0 ) then
-				lexPPOnlyEmitText( "#pragma pop(msbitfields)" )
+				lexPPOnlyEmitText( "#pragma pop(" + str( pragmaOpt(p).tk ) + ")" )
 			end if
 		end if
 	else
@@ -161,7 +167,11 @@ sub ppPragma( )
 		value = FALSE
 
 		if( ispush ) then
-			pragmaPush( pragmaOpt(p).opt, fbGetOption( pragmaOpt(p).opt ) )
+			if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_PDCHECK) <> 0 ) then
+				pragmaPush( p, fbPdCheckIsSet( pragmaOpt(p).opt ) )
+			else
+				pragmaPush( p, fbGetOption( pragmaOpt(p).opt ) )
+			end if
 
 			'' ','?
 			if( lexGetToken() = CHAR_COMMA ) then
@@ -189,15 +199,18 @@ sub ppPragma( )
 		if( value = FALSE ) then
 			'' expr
 			value = cConstIntExpr( cExpression( ) )
+			if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_PDCHECK) <> 0 ) then
+				value = (value <> 0)
+			end if
 		end if
 
-		'' Preserve msbitfields #pragmas under -pp
-		if( p = LEXPP_PRAGMAOPT_BITFIELD ) then
+		'' Preserve some #pragmas under -pp
+		if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_PRESERVE_UNDER_PP) <> 0 ) then
 			if( env.ppfile_num > 0 ) then
 				if( ispush ) then
-					lexPPOnlyEmitText( "#pragma push(msbitfields, " + str( value ) + ")" )
+					lexPPOnlyEmitText( "#pragma push(" + str( pragmaOpt(p).tk ) + ", " + str( value ) + ")" )
 				else
-					lexPPOnlyEmitText( "#pragma msbitfields = " + str( value ) )
+					lexPPOnlyEmitText( "#pragma " + str( pragmaOpt(p).tk ) + " = " + str( value ) )
 				end if
 			end if
 		end if
@@ -211,7 +224,12 @@ sub ppPragma( )
 		end select
 	else
 		if( (pragmaOpt(p).flags and (LEXPP_PRAGMAFLAG_CAN_PUSHPOP or LEXPP_PRAGMAFLAG_CAN_ASSIGN)) <> 0 ) then
-			fbChangeOption( pragmaOpt(p).opt, value )
+			if( (pragmaOpt(p).flags and LEXPP_PRAGMAFLAG_PDCHECK) <> 0 ) then
+				value = (value and pragmaOpt(p).opt) or (fbGetOption( FB_COMPOPT_PEDANTICCHK ) and not pragmaOpt(p).opt)
+				fbSetOption( FB_COMPOPT_PEDANTICCHK, value )
+			else
+				fbChangeOption( pragmaOpt(p).opt, value )
+			end if
 		end if
 	end if
 

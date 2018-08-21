@@ -54,7 +54,7 @@ end enum
 const FB_DATATYPES = (FB_DATATYPE_XMMWORD - FB_DATATYPE_VOID) + 1
 
 const FB_DT_TYPEMASK 		= &b00000000000000000000000000011111 '' max 32 built-in dts
-const FB_DT_PTRMASK  		= &b00000000000000000000000111100000
+const FB_DT_PTRMASK  		= &b00000000000000000000000111100000 '' level of pointer indirection
 const FB_DT_CONSTMASK		= &b00000000000000111111111000000000 '' PTRLEVELS + 1 bit-masks
 const FB_DATATYPE_REFERENCE	= &b00000000000010000000000000000000 '' used for mangling BYREF parameters
 const FB_DATATYPE_INVALID	= &b10000000000000000000000000000000
@@ -64,8 +64,13 @@ const FB_DT_PTRLEVELS		= 8					'' max levels of pointer indirection
 const FB_DT_PTRPOS			= 5
 const FB_DT_CONSTPOS		= FB_DT_PTRPOS + 4
 
-const FB_OVLPROC_HALFMATCH = FB_DATATYPES
-const FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
+enum FB_OVLPROC_MATCH_SCORE
+	FB_OVLPROC_NO_MATCH = 0
+	FB_OVLPROC_LOWEST_MATCH = 1
+	FB_OVLPROC_HALFMATCH = FB_DATATYPES
+	FB_OVLPROC_TYPEMATCH = FB_DATATYPES * 2
+	FB_OVLPROC_FULLMATCH = FB_DATATYPES * 3
+end enum
 
 enum
 	FB_SIZETYPE_BOOLEAN = 0
@@ -979,7 +984,8 @@ declare function symbCalcProcMatch _
 		byval l as FBSYMBOL ptr, _
 		byval r as FBSYMBOL ptr, _
 		byref errmsg as integer _
-	) as integer
+	) as FB_OVLPROC_MATCH_SCORE
+
 declare sub symbProcCheckOverridden _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -1665,7 +1671,7 @@ declare function typeCalcMatch _
 		byval lparammode as integer, _
 		byval rdtype as integer, _
 		byval rsubtype as FBSYMBOL ptr _
-	) as integer
+	) as FB_OVLPROC_MATCH_SCORE
 
 declare sub symbHashListAdd _
 	( _
@@ -1798,7 +1804,7 @@ declare function symbGetCompOpOvlHead _
 
 declare sub symbSetCompOpOvlHead _
 	( _
-		byval syn as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byval proc as FBSYMBOL ptr _
 	)
 
@@ -1865,6 +1871,16 @@ declare function symbGetDefaultParamMode _
 
 declare function symbVarCheckAccess( byval sym as FBSYMBOL ptr ) as integer
 
+declare function symbCheckConstAssignTopLevel _
+	( _
+		byval ldtype as FB_DATATYPE, _
+		byval rdtype as FB_DATATYPE, _
+		byval lsubtype as FBSYMBOL ptr, _
+		byval rsubtype as FBSYMBOL ptr, _
+		byval mode as FB_PARAMMODE = 0, _
+		byref matches as integer = 0 _
+	) as integer
+
 declare function symbCheckConstAssign _
 	( _
 		byval ldtype as FB_DATATYPE, _
@@ -1872,7 +1888,8 @@ declare function symbCheckConstAssign _
 		byval lsubtype as FBSYMBOL ptr, _
 		byval rsubtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE = 0, _
-		byref misses as integer = 0 _
+		byref matches as integer = 0, _
+		byref wrnmsg as FB_WARNINGMSG = 0 _
 	) as integer
 
 declare function symbAllocOvlCallArg _
@@ -2009,9 +2026,6 @@ declare function symbGetUDTBaseLevel _
 
 #define symbGetIsUnionField(s) ((s->stats and FB_SYMBSTATS_UNIONFIELD) <> 0)
 #define symbSetIsUnionField(s) s->stats or= FB_SYMBSTATS_UNIONFIELD
-
-#define symbGetIsRTLConst(s) ((s->stats and FB_SYMBSTATS_RTL_CONST) <> 0)
-#define symbSetIsRTLConst(s) s->stats or= FB_SYMBSTATS_RTL_CONST
 
 #define symbGetIsEmitted(s) ((s->stats and FB_SYMBSTATS_EMITTED) <> 0)
 #define symbSetIsEmitted(s) s->stats or= FB_SYMBSTATS_EMITTED
@@ -2485,7 +2499,7 @@ declare sub symbForEachGlobal _
 	)
 
 #if __FB_DEBUG__
-declare function typeDump _
+declare function typeDumpToStr _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
@@ -2493,8 +2507,9 @@ declare function typeDump _
 '' For debugging, e.g. use like this:
 ''  symbTrace(a), "(replacing this)"
 ''  symbTrace(b), "(with this)"
-#define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): "; symbDump( s )
-declare function symbDump( byval s as FBSYMBOL ptr ) as string
+#define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): "; symbDumpToStr( s )
+declare function symbDumpToStr( byval s as FBSYMBOL ptr ) as string
+declare sub symbDump( byval s as FBSYMBOL ptr )
 declare sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
 declare sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 
@@ -2502,7 +2517,7 @@ declare sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 #define symbDescriptorHasRoomFor( sym, dimensions ) (symbGetLen( sym ) = env.pointersize * (((dimensions) * 3) + 5))
 #endif
 
-declare function symbDumpPretty( byval sym as FBSYMBOL ptr ) as string
+declare function symbDumpPrettyToStr( byval sym as FBSYMBOL ptr ) as string
 
 ''
 '' inter-module globals

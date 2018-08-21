@@ -46,14 +46,14 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		0 _
 	 	), _
-		/' sub fb_End( byval errlevel as long ) '/ _
+		/' sub fb_End( byval errlevel as const long ) '/ _
 		( _
 			@FB_RTL_END, NULL, _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
 		/' function atexit cdecl( byval proc as sub cdecl() ) as long '/ _
@@ -66,14 +66,14 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
-		/' function command( byval argc as long = -1 ) as string '/ _
+		/' function command( byval argc as const long = -1 ) as string '/ _
 		( _
 			@"command", @"fb_Command", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_STRSUFFIX, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 	 	), _
 		/' function curdir( ) as string '/ _
@@ -111,117 +111,117 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		NULL, FB_RTL_OPT_STRSUFFIX, _
 	 		0 _
 	 	), _
-		/' function shell( byref program as string = "" ) as long '/ _
+		/' function shell( byref program as const string = "" ) as long '/ _
 		( _
 			@"shell", @"fb_Shell", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, TRUE, NULL ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, TRUE, NULL ) _
 	 		} _
 	 	), _
-		/' sub system( byval errlevel as long = 0 ) '/ _
+		/' sub system( byval errlevel as const long = 0 ) '/ _
 		( _
 			@"system", @"fb_End", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 	 	), _
-		/' sub stop( byval errlevel as long = 0 ) '/ _
+		/' sub stop( byval errlevel as const long = 0 ) '/ _
 		( _
 			@"stop", @"fb_End", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 	 	), _
-		/' function run( byref program as string, byref arguments as string = "" ) as long '/ _
+		/' function run( byref program as const string, byref arguments as const string = "" ) as long '/ _
 		( _
 			@"run", @"fb_Run", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		2, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, TRUE, NULL ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, TRUE, NULL ) _
 	 		} _
 	 	), _
-		/' function chain( byref program as string ) as long '/ _
+		/' function chain( byref program as const string ) as long '/ _
 		( _
 			@"chain", @"fb_Chain", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
-		/' function exec( byref program as string, byref args as string ) as long '/ _
+		/' function exec( byref program as const string, byref args as const string ) as long '/ _
 		( _
 			@"exec", @"fb_Exec", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NOQB, _
 	 		2, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
-		/' function environ( byref varname as string ) as string '/ _
+		/' function environ( byref varname as const string ) as string '/ _
 		( _
 			@"environ", @"fb_GetEnviron", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_STRSUFFIX, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
-		/' function setenviron( byref varname as string ) as long '/ _
+		/' function setenviron( byref varname as const string ) as long '/ _
 		( _
 			@"setenviron", @"fb_SetEnviron", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
-		/' sub sleep overload( byval msecs as long ) '/ _
+		/' sub sleep overload( byval msecs as const long ) '/ _
 		( _
 			@"sleep", @"fb_Sleep", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 	 	), _
-		/' sub sleep overload( byval secs as long ) '/ _
+		/' sub sleep overload( byval secs as const long ) '/ _
 		( _
 			@"sleep", @"fb_SleepQB", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_QBONLY, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, -1 ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
 	 	), _
-		/' function sleep overload( byval msecs as long, byval kind as long ) as long '/ _
+		/' function sleep overload( byval msecs as const long, byval kind as const long ) as long '/ _
 		( _
 			@"sleep", @"fb_SleepEx", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
 	 		2, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
 		/' function dir overload( byval out_attrib as long ptr = NULL ) as string '/ _
@@ -264,8 +264,8 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
-		/' function dir overload( byref mask as string, _
-				byval attrib_mask as long = &h21, _
+		/' function dir overload( byref mask as const string, _
+				byval attrib_mask as const long = &h21, _
 				byval out_attrib as long ptr = NULL ) as string '/ _
 		( _
 			@"dir", @"fb_Dir", _
@@ -273,13 +273,13 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 	 		3, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &h21 ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &h21 ), _
 				( typeAddrOf( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, NULL ) _
 	 		} _
 	 	), _
-		/' function dir overload( byref mask as string, _
-				byval attrib_mask as long = &h21, _
+		/' function dir overload( byref mask as const string, _
+				byval attrib_mask as const long = &h21, _
 				byval out_attrib as longint ptr ) as string '/ _
 		( _
 			@"dir", @"fb_Dir64", _
@@ -287,13 +287,13 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			3, _
 			{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &h21 ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &h21 ), _
 				( typeAddrOf( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' function dir overload( byref mask as string, _
-				byval attrib_mask as long = &h21, _
+		/' function dir overload( byref mask as const string, _
+				byval attrib_mask as const long = &h21, _
 				byref out_attrib as long ) as string '/ _
 		( _
 			@"dir", @"fb_Dir", _
@@ -301,13 +301,13 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 	 		3, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &h21 ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &h21 ), _
 				( FB_DATATYPE_LONG, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
-		/' function dir overload( byref mask as string, _
-				byval attrib_mask as long = &h21, _
+		/' function dir overload( byref mask as const string, _
+				byval attrib_mask as const long = &h21, _
 				byref out_attrib as longint ) as string '/ _
 		( _
 			@"dir", @"fb_Dir64", _
@@ -315,36 +315,36 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			3, _
 			{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, &h21 ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, &h21 ), _
 				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
-		/' function settime( byref time as string ) as long '/ _
+		/' function settime( byref time as const string ) as long '/ _
 		( _
 			@"settime", @"fb_SetTime", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
-		/' function setdate( byref date as string ) as long '/ _
+		/' function setdate( byref date as const string ) as long '/ _
 		( _
 			@"setdate", @"fb_SetDate", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
 		/' function threadcreate _
 			( _
 				byval proc as sub( byval param as any ptr ),
 				byval param as any ptr = 0, _
-				byval stack_size as integer = 0 _
+				byval stack_size as const integer = 0 _
 			) as any ptr '/ _
 		( _
 			@"threadcreate", @"fb_ThreadCreate", _
@@ -356,7 +356,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, NULL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 	 	), _
 		/' sub threadwait( byval thread as any ptr ) '/ _
@@ -369,8 +369,8 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
-		/' function fb_ThreadCall cdecl( byval proc as any ptr, byval abi as long, _
-				byval stack_size as integer, byval num_args as long, ... ) as any ptr '/ _
+		/' function fb_ThreadCall cdecl( byval proc as any ptr, byval abi as const long, _
+				byval stack_size as const integer, byval num_args as const long, ... ) as any ptr '/ _
 		( _
 			@"fb_ThreadCall", NULL, _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
@@ -378,9 +378,9 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 			5, _
 			{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_INVALID, FB_PARAMMODE_VARARG, FALSE ) _
 			} _
 		), _
@@ -469,17 +469,17 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
-		/' function dylibload( byref filename as string ) as any ptr '/ _
+		/' function dylibload( byref filename as const string ) as any ptr '/ _
 		( _
 			@"dylibload", @"fb_DylibLoad", _
 	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
-		/' function dylibsymbol overload( byval library as any ptr, byref symbol as string ) as any ptr '/ _
+		/' function dylibsymbol overload( byval library as any ptr, byref symbol as const string ) as any ptr '/ _
 		( _
 			@"dylibsymbol", @"fb_DylibSymbol", _
 	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
@@ -487,10 +487,10 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		2, _
 	 		{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
-		/' function dylibsymbol overload( byval library as any ptr, byval symbol as short ) as any ptr '/ _
+		/' function dylibsymbol overload( byval library as any ptr, byval symbol as const short ) as any ptr '/ _
 		( _
 			@"dylibsymbol", @"fb_DylibSymbolByOrd", _
 	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
@@ -498,7 +498,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		2, _
 	 		{ _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_SHORT, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_SHORT ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
 		/' sub dylibfree( byval library as any ptr ) '/ _
@@ -518,34 +518,34 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		0 _
 	 	), _
-		/' function mkdir( byref path as string ) as long '/ _
+		/' function mkdir( byref path as const string ) as long '/ _
 		( _
 			@"mkdir", @"fb_MkDir", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
-		/' function rmdir( byref path as string ) as long '/ _
+		/' function rmdir( byref path as const string ) as long '/ _
 		( _
 			@"rmdir", @"fb_RmDir", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
-		/' function chdir( byref path as string ) as long '/ _
+		/' function chdir( byref path as const string ) as long '/ _
 		( _
 			@"chdir", @"fb_ChDir", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ),FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 	 	), _
 	 	/' EOL '/ _

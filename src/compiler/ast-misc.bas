@@ -223,7 +223,7 @@ function astIsEqualParamInit _
 		'' symbols, but if they have the same signature they should still be
 		'' treated equal here.
 		if( typeGetDtOnly( l->dtype ) = FB_DATATYPE_FUNCTION ) then
-			if( symbCalcProcMatch( l->subtype, r->subtype, 0 ) = 0 ) then
+			if( symbCalcProcMatch( l->subtype, r->subtype, 0 ) = FB_OVLPROC_NO_MATCH ) then
 				exit function
 			end if
 		else
@@ -665,7 +665,7 @@ function astPtrCheck _
 	'' do this manually already (and if there is a CONSTness mismatch, they show an error,
 	'' not just a warning, which is astPtrCheck()'s main purpose).
 	function = (typeCalcMatch( typeGetDtAndPtrOnly( pdtype ), psubtype, pparammode, _
-	                           typeGetDtAndPtrOnly( edtype ), expr->subtype ) > 0)
+	                           typeGetDtAndPtrOnly( edtype ), expr->subtype ) > FB_OVLPROC_NO_MATCH)
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -985,7 +985,7 @@ sub astDtorListDump( )
 	print "-------------- dtorlist: ------------------"
 	i = listGetTail( @ast.dtorlist )
 	while( i )
-		print "    ";symbDump( i->sym );" cookie: ";i->cookie;" refcount: ";i->refcount;" has dtor? ";hHasDtor( i->sym )
+		print "    ";symbDumpToStr( i->sym );" cookie: ";i->cookie;" refcount: ";i->refcount;" has dtor? ";hHasDtor( i->sym )
 		i = listGetPrev( i )
 	wend
 end sub

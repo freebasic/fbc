@@ -126,6 +126,25 @@ testNoWarning( pi  , pui  )
 	testNoWarning( push, pw )
 #endif
 
+
+''
+'' Auto-generate tests that trigger 2 warnings
+'' due to mismatched return types
+
+#macro checkLhsAndRhs2( lhs, rhs )
+	#if #lhs <> #rhs
+		test( lhs, rhs, 2 )
+	#endif
+#endmacro
+
+#macro checkLhs2( lhs )
+	checkLhsAndRhs2( lhs, ppsub )
+	checkLhsAndRhs2( lhs, ppfi  )
+#endmacro
+
+checkLhs2( ppsub )
+checkLhs2( ppfi  )
+
 ''
 '' Auto-generate tests for remaining combinations, except self-assignments
 ''

@@ -334,7 +334,7 @@ private function vregPretty( byval v as IRVREG ptr ) as string
 		s += "*" & v->mult
 	end if
 
-	's += " " + typeDump( v->dtype, v->subtype )
+	's += " " + typeDumpToStr( v->dtype, v->subtype )
 
 	function = s
 end function
@@ -1535,7 +1535,7 @@ private sub _emitBop _
 		byval label as FBSYMBOL ptr _
 	)
 
-	var bopdump = vregPretty( v1 ) + " " + astDumpOp( op ) + " " + vregPretty( v2 )
+	var bopdump = vregPretty( v1 ) + " " + astDumpOpToStr( op ) + " " + vregPretty( v2 )
 	if( label ) then
 		hAstCommand( "branchbop " + bopdump )
 	elseif( vr = NULL ) then
@@ -1602,7 +1602,7 @@ private sub _emitUop _
 		byval vr as IRVREG ptr _
 	)
 
-	var uopdump = astDumpOp( op ) + " " + vregPretty( v1 )
+	var uopdump = astDumpOpToStr( op ) + " " + vregPretty( v1 )
 	if( vr = NULL ) then
 		hAstCommand( "selfuop " + uopdump )
 	else

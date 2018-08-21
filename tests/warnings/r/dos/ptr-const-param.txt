@@ -1,18 +1,82 @@
+ASSIGNMENT
 BYREF parameter CONSTness
 no warnings:
-8 warnings:
+2 warnings:
 	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings:
 	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings:
 	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings:
 	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings:
 	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings:
 	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings:
 	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings:
 	Suspicious pointer assignment
+	CONST qualifier discarded
 BYVAL parameter CONSTness
 no warnings:
-4 warnings:
+2 warnings:
 	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings:
 	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings:
 	Suspicious pointer assignment
+	CONST qualifier discarded
+2 warnings:
 	Suspicious pointer assignment
+	CONST qualifier discarded
+PARAMETER
+BYREF parameter CONSTness
+no warnings:
+2 warnings:
+	Passing different pointer types, at parameter 1 of BYREF_CI__()
+	CONST qualifier discarded, at parameter 1 of BYREF_CI__()
+2 warnings:
+	Passing different pointer types, at parameter 1 of BYREF__ICP()
+	CONST qualifier discarded, at parameter 1 of BYREF__ICP()
+2 warnings:
+	Passing different pointer types, at parameter 1 of BYREF__ICP()
+	CONST qualifier discarded, at parameter 1 of BYREF__ICP()
+2 warnings:
+	Passing different pointer types, at parameter 1 of BYREF_CI_P()
+	CONST qualifier discarded, at parameter 1 of BYREF_CI_P()
+2 warnings:
+	Passing different pointer types, at parameter 1 of BYREF_CI_P()
+	CONST qualifier discarded, at parameter 1 of BYREF_CI_P()
+2 warnings:
+	Passing different pointer types, at parameter 1 of BYREF_CICP()
+	CONST qualifier discarded, at parameter 1 of BYREF_CICP()
+2 warnings:
+	Passing different pointer types, at parameter 1 of BYREF_CICP()
+	CONST qualifier discarded, at parameter 1 of BYREF_CICP()
+2 warnings:
+	Passing different pointer types, at parameter 1 of BYREF_CICP()
+	CONST qualifier discarded, at parameter 1 of BYREF_CICP()
+BYVAL parameter CONSTness
+no warnings:
+2 warnings:
+	Passing different pointer types, at parameter 1 of BYVAL_CI_P()
+	CONST qualifier discarded, at parameter 1 of BYVAL_CI_P()
+2 warnings:
+	Passing different pointer types, at parameter 1 of BYVAL_CI_P()
+	CONST qualifier discarded, at parameter 1 of BYVAL_CI_P()
+2 warnings:
+	Passing different pointer types, at parameter 1 of BYVAL_CICP()
+	CONST qualifier discarded, at parameter 1 of BYVAL_CICP()
+2 warnings:
+	Passing different pointer types, at parameter 1 of BYVAL_CICP()
+	CONST qualifier discarded, at parameter 1 of BYVAL_CICP()

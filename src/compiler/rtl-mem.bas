@@ -11,109 +11,109 @@
 	{ _
 		/' function fb_NullPtrChk _
 			( _
-				byval p as any ptr, _
-				byval linenum as long, _
-				byval fname as zstring ptr _
+				byval p as const any ptr, _
+				byval linenum as const long, _
+				byval fname as const zstring ptr _
 			) as any ptr '/ _
 		( _
 			@FB_RTL_NULLPTRCHK, NULL, _
-	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_CANBECLONED, _
 			3, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
-		/' sub fb_MemSwap( byref dst as any, byref src as any, byval bytes as integer ) '/ _
+		/' sub fb_MemSwap( byref dst as any, byref src as any, byval bytes as const integer ) '/ _
 		( _
 			@FB_RTL_MEMSWAP, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
 		/' sub fb_MemCopyClear _
 			( _
 				byref dst as any, _
-				byval dstlen as integer, _
-				byref src as any, _
-				byval srclen as integer _
+				byval dstlen as const integer, _
+				byref src as const any, _
+				byval srclen as const integer _
 			) '/ _
 		( _
 			@FB_RTL_MEMCOPYCLEAR, NULL, _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
-		/' function fre( byval mode as long = 0 ) as uinteger '/ _
+		/' function fre( byval mode as const long = 0 ) as uinteger '/ _
 		( _
 			@"fre", @"fb_GetMemAvail", _
 			FB_DATATYPE_UINT, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_NONE, _
 			1, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+			} _
 		), _
-		/' function allocate cdecl( byval size as uinteger ) as any ptr '/ _
+		/' function allocate cdecl( byval size as const uinteger ) as any ptr '/ _
 		( _
 			@"allocate", @"malloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
-		/' function callocate cdecl( byval items as uinteger, byval size as uinteger = 1 ) as any ptr '/ _
+		/' function callocate cdecl( byval items as const uinteger, byval size as const uinteger = 1 ) as any ptr '/ _
 		( _
 			@"callocate", @"calloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
  			NULL, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, TRUE, 1 ) _
-	 		} _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, TRUE, 1 ) _
+			} _
 		), _
-		/' function reallocate cdecl( byval p as any ptr, byval size as uinteger ) as any ptr '/ _
+		/' function reallocate cdecl( byval p as const any ptr, byval size as const uinteger ) as any ptr '/ _
 		( _
 			@"reallocate", @"realloc", _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
- 			NULL, FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_NOQB, _
 			2, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ),FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
 		), _
-		/' sub deallocate cdecl( byval p as any ptr ) '/ _
+		/' sub deallocate cdecl( byval p as const any ptr ) '/ _
 		( _
 			@"deallocate", @"free", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
-	 		NULL, FB_RTL_OPT_NOQB, _
+			NULL, FB_RTL_OPT_NOQB, _
 			1, _
 			{ _
-				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ) _
+			} _
 		), _
 		/' function clear cdecl _
 			( _
 				byref dst as any, _
-				byval value as long = 0, _
-				byval bytes as uinteger _
+				byval value as const long = 0, _
+				byval bytes as const uinteger _
 			) as any ptr '/ _
 		( _
 			@"clear", @"memset", _
@@ -121,16 +121,16 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
-	 		} _
-	 	), _
-	 	/' EOL '/ _
-	 	( _
-	 		NULL _
-	 	) _
-	 }
+				( FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' EOL '/ _
+		( _
+			NULL _
+		) _
+	}
 
 '':::::
 sub rtlMemModInit( )
@@ -161,8 +161,9 @@ function rtlNullPtrCheck _
    	proc = astNewCALL( PROCLOOKUP( NULLPTRCHK ) )
 
 	'' ptr
+	'' we are forcing a CAST to any ptr, so quiet the const checks with AST_CONVOPT_DONTWARNCONST
 	if( astNewARG( proc, _
-				   astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, p ), _
+				   astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, p, AST_CONVOPT_DONTWARNCONST ), _
 				   typeAddrOf( FB_DATATYPE_VOID ) ) = NULL ) then
 		exit function
 	end if

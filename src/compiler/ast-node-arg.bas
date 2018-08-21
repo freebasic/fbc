@@ -249,6 +249,8 @@ private sub hStrArgToStrPtrParam _
 			n->l = hAllocTmpString( parent, n->l, FALSE )
 		end if
 
+		'' *cast( [const] zstring const ptr ptr, @expr )
+		'' Don't worry about preserving CONST bits, astNewARG() should have checked.
 		n->l = astBuildStrPtr( n->l )
 
 	case FB_DATATYPE_FIXSTR
@@ -273,7 +275,8 @@ end sub
 
 sub hBuildByrefArg( byval param as FBSYMBOL ptr, byval n as ASTNODE ptr )
 	n->l = astNewADDROF( astRemoveNoConvCAST( n->l ) )
-	n->l = astNewCONV( typeAddrOf( symbGetFullType( param ) ), symbGetSubtype( param ), n->l )
+	'' Don't warn on CONST qualifier changes, astNewARG() should have checked
+	n->l = astNewCONV( typeAddrOf( symbGetFullType( param ) ), symbGetSubtype( param ), n->l, AST_CONVOPT_DONTWARNCONST )
 	assert( n->l )
 	n->arg.mode = FB_PARAMMODE_BYVAL
 end sub
@@ -1012,10 +1015,9 @@ function astNewARG _
 	'' a ctor that can't initialize the object would be useless, and after
 	'' dtors run the object is dead anyways, so modifications made by the
 	'' dtor don't matter)
-	if( ((symbGetIsRTL( sym ) = FALSE) or symbGetIsRTLConst( param )) and _
-	    ((not symbIsInstanceParam( param )) or _
+	if( ((not symbIsInstanceParam( param )) or _
 	     ((sym->attrib and FB_SYMBATTRIB_NOTHISCONSTNESS) = 0)) ) then
-		if( symbCheckConstAssign( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
+		if( symbCheckConstAssignTopLevel( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
 			if( symbIsInstanceParam( param ) ) then
 				errReportParam( parent->sym, 0, NULL, FB_ERRMSG_CONSTUDTTONONCONSTMETHOD )
 			else

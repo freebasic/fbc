@@ -12,10 +12,10 @@
 	{ _
 		/' function fb_ErrorThrowAt cdecl _
 			( _
-				byval linenum as long, _
-				byval fname as zstring ptr, _
-				byval reslabel as any ptr, _
-				byval resnxtlabel as any ptr _
+				byval linenum as const long, _
+				byval fname as const zstring ptr, _
+				byval reslabel as const any ptr, _
+				byval resnxtlabel as const any ptr _
 			) as FB_ERRHANDLER '/ _
 		( _
 			@FB_RTL_ERRORTHROW, NULL, _
@@ -23,19 +23,19 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_ErrorThrowEx cdecl _
 			( _
-				byval errnum long, _
-				byval linenum as long, _
-				byval fname as zstring ptr, _
-				byval reslabel as any ptr, _
-				byval resnxtlabel as any ptr _
+				byval errnum as const long, _
+				byval linenum as const long, _
+				byval fname as const zstring ptr, _
+				byval reslabel as const any ptr, _
+				byval resnxtlabel as const any ptr _
 			) as FB_ERRHANDLER '/ _
 		( _
 			@FB_RTL_ERRORTHROWEX, NULL, _
@@ -43,11 +43,11 @@
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ),FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_VOID ) ),FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_ErrorSetHandler( byval newhandler as FB_ERRHANDLER ) as FB_ERRHANDLER '/ _
@@ -67,14 +67,14 @@
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
-		/' function fb_ErrorSetNum( byval errnum as long ) as long '/ _
+		/' function fb_ErrorSetNum( byval errnum as const long ) as long '/ _
 		( _
 			@FB_RTL_ERRORSETNUM, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_ErrorResume cdecl( ) as any ptr '/ _
@@ -112,32 +112,32 @@
 			NULL, FB_RTL_OPT_NOQB, _
 			0 _
 		), _
-		/' function fb_ErrorSetModName( byval mod_name as zstring ptr ) as zstring ptr '/ _
+		/' function fb_ErrorSetModName( byval mod_name as const zstring ptr ) as zstring ptr '/ _
 		( _
 			@FB_RTL_ERRORSETMODNAME, NULL, _
 			typeAddrOf( FB_DATATYPE_CHAR ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
-				( typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' function fb_ErrorSetFuncName( byval fun_name as zstring ptr ) as zstring ptr '/ _
+		/' function fb_ErrorSetFuncName( byval fun_name as const zstring ptr ) as zstring ptr '/ _
 		( _
 			@FB_RTL_ERRORSETFUNCNAME, NULL, _
 			typeAddrOf( FB_DATATYPE_CHAR ), FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
-				( typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' sub fb_Assert overload _
 			( _
-				byval filename as zstring ptr, _
-				byval linenum as long, _
-				byval funcname as zstring ptr, _
-				byval expression as zstring ptr _
+				byval filename as const zstring ptr, _
+				byval linenum as const long, _
+				byval funcname as const zstring ptr, _
+				byval expression as const zstring ptr _
 			) '/ _
 		( _
 			@"fb_Assert", NULL, _
@@ -145,18 +145,18 @@
 			NULL, FB_RTL_OPT_OVER, _
 			4, _
 	 		{ _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' sub fb_Assert overload alias "fb_AssertW" _
 			( _
-				byval filename as zstring ptr, _
-				byval linenum as long, _
-				byval funcname as zstring ptr, _
-				byval expression as wstring ptr _
+				byval filename as const zstring ptr, _
+				byval linenum as const long, _
+				byval funcname as const zstring ptr, _
+				byval expression as const wstring ptr _
 			) '/ _
 		( _
 			@"fb_Assert", @"fb_AssertW", _
@@ -164,18 +164,18 @@
 			NULL, FB_RTL_OPT_OVER, _
 			4, _
 	 		{ _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_WCHAR ),FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_WCHAR ) ),FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' sub fb_AssertWarn overload _
 			( _
-				byval filename as zstring ptr, _
-				byval linenum as long, _
-				byval funcname as zstring ptr, _
-				byval expression as zstring ptr _
+				byval filename as const zstring ptr, _
+				byval linenum as const long, _
+				byval funcname as const zstring ptr, _
+				byval expression as const zstring ptr _
 			) '/ _
 		( _
 			@"fb_AssertWarn", NULL, _
@@ -183,18 +183,18 @@
 			NULL, FB_RTL_OPT_OVER, _
 			4, _
 	 		{ _
-				( typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ),FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ),FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' sub fb_AssertWarn overload alias "fb_AssertWarnW" _
 			( _
-				byval fname as zstring ptr, _
-				byval linenum as long, _
-				byval funcname as zstring ptr, _
-				byval expression as wstring ptr _
+				byval fname as const zstring ptr, _
+				byval linenum as const long, _
+				byval funcname as const zstring ptr, _
+				byval expression as const wstring ptr _
 			) '/ _
 		( _
 			@"fb_AssertWarn", @"fb_AssertWarnW", _
@@ -202,10 +202,10 @@
 			NULL, FB_RTL_OPT_OVER, _
 			4, _
 	 		{ _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_WCHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
 	 	/' EOL '/ _

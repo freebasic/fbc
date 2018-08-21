@@ -36,6 +36,25 @@ function astNewDEREF _
 
 			case AST_NODECLASS_OFFSET
 				delchild = (t->ofs.ofs = 0)
+			
+			case AST_NODECLASS_PTRCHK
+
+				'' convert *PTRCHK(@expr) to (expr)
+				'' TODO: remove null-ptr checks in ptr indexing
+
+				if( (t->l->class = AST_NODECLASS_ADDROF) or _
+					(t->l->class = AST_NODECLASS_OFFSET and t->l->ofs.ofs = 0) ) then
+
+					'' delete the null ptr check func call
+					astDelTree( t->r )	
+
+					'' move to ADDROF/OFFSET node
+					t = t->l
+
+					delchild = TRUE
+				else
+					delchild = FALSE
+				end if
 
 			case else
 				delchild = FALSE
@@ -43,11 +62,18 @@ function astNewDEREF _
 
 			''
 			if( delchild ) then
+
 				n = t->l
-				astDelNode( t )
-				if( t <> l ) then
+
+				'' astSkipNoConvCAST() and removing the null pointer check
+				'' may have skipped multiple nodes
+				'' delete all nodes from L to T (up to but not including N)
+
+				while( l <> n )
+					t = l->l
 					astDelNode( l )
-				end if
+					l = t
+				wend
 
 				astSetType( n, dtype, subtype )
 				return n

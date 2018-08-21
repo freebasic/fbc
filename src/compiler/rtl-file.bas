@@ -12,12 +12,12 @@
 	{ _
 		/' function fb_FileOpen _
 			( _
-				byref str as string, _
-				byval mode as ulong, _
-				byval access as ulong, _
-				byval lock as ulong, _
-				byval fnum as long, _
-				byval len as long _
+				byref str as const string, _
+				byval mode as const ulong, _
+				byval access as const ulong, _
+				byval lock as const ulong, _
+				byval fnum as const long, _
+				byval len as const long _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEOPEN, NULL, _
@@ -25,23 +25,23 @@
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileOpenEncod _
 			( _
-				byref str as string, _
-				byval mode as ulong, _
-				byval access as ulong, _
-				byval lock as ulong, _
-				byval fnum as long, _
-				byval len as long, _
-				byval encoding as zstring ptr _
+				byref str as const string, _
+				byval mode as const ulong, _
+				byval access as const ulong, _
+				byval lock as const ulong, _
+				byval fnum as const long, _
+				byval len as const long, _
+				byval encoding as const zstring ptr _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEOPEN_ENCOD, NULL, _
@@ -49,23 +49,23 @@
 			NULL, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileOpenShort _
 			( _
-				byref str_file_mode as string, _
-				byval fnum as long, _
-				byref filename as string, _
-				byval len as long, _
-				byref str_access_mode as string, _
-				byref str_lock_mode as string _
+				byref str_file_mode as const string, _
+				byval fnum as const long, _
+				byref filename as const string, _
+				byval len as const long, _
+				byref str_access_mode as const string, _
+				byref str_lock_mode as const string _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEOPEN_SHORT, NULL, _
@@ -73,23 +73,23 @@
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileOpenCons _
 			( _
-				byref str_filename as string, _
-				byval mode as ulong, _
-				byval access as ulong, _
-				byval lock as ulong, _
-				byval fnum as long, _
-				byval len as long, _
-				byval encoding as zstring ptr _
+				byref str_filename as const string, _
+				byval mode as const ulong, _
+				byval access as const ulong, _
+				byval lock as const ulong, _
+				byval fnum as const long, _
+				byval len as const long, _
+				byval encoding as const zstring ptr _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEOPEN_CONS, NULL, _
@@ -97,24 +97,24 @@
 			NULL, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileOpenErr _
 			( _
-				byref str_filename as string, _
-				byval mode as ulong, _
-				byval access as ulong, _
-				byval lock as ulong, _
-				byval fnum as long, _
-				byval len as long, _
-				byval encoding as zstring ptr _
+				byref str_filename as const string, _
+				byval mode as const ulong, _
+				byval access as const ulong, _
+				byval lock as const ulong, _
+				byval fnum as const long, _
+				byval len as const long, _
+				byval encoding as const zstring ptr _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEOPEN_ERR, NULL, _
@@ -122,24 +122,24 @@
 			NULL, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileOpenPipe _
 			( _
-				byref str_filename as string, _
-				byval mode as ulong, _
-				byval access as ulong, _
-				byval lock as ulong, _
-				byval fnum as long, _
-				byval len as long, _
-				byval encoding as zstring ptr _
+				byref str_filename as const string, _
+				byval mode as const ulong, _
+				byval access as const ulong, _
+				byval lock as const ulong, _
+				byval fnum as const long, _
+				byval len as const long, _
+				byval encoding as const zstring ptr _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEOPEN_PIPE, NULL, _
@@ -147,24 +147,24 @@
 			NULL, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileOpenScrn _
 			( _
-				byref str_filename as string, _
-				byval mode as ulong, _
-				byval access as ulong, _
-				byval lock as ulong, _
-				byval fnum as long, _
-				byval len as long, _
-				byval encoding as zstring ptr _
+				byref str_filename as const string, _
+				byval mode as const ulong, _
+				byval access as const ulong, _
+				byval lock as const ulong, _
+				byval fnum as const long, _
+				byval len as const long, _
+				byval encoding as const zstring ptr _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEOPEN_SCRN, NULL, _
@@ -172,24 +172,24 @@
 			NULL, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileOpenLpt _
 			( _
-				byref str_filename as string, _
-				byval mode as ulong, _
-				byval access as ulong, _
-				byval lock as ulong, _
-				byval fnum as long, _
-				byval len as long, _
-				byval encoding as zstring ptr _
+				byref str_filename as const string, _
+				byval mode as const ulong, _
+				byval access as const ulong, _
+				byval lock as const ulong, _
+				byval fnum as const long, _
+				byval len as const long, _
+				byval encoding as const zstring ptr _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEOPEN_LPT, NULL, _
@@ -197,24 +197,24 @@
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileOpenCom _
 			( _
-				byref str_filename as string, _
-				byval mode as ulong, _
-				byval access as ulong, _
-				byval lock as ulong, _
-				byval fnum as long, _
-				byval len as long, _
-				byval encoding as zstring ptr _
+				byref str_filename as const string, _
+				byval mode as const ulong, _
+				byval access as const ulong, _
+				byval lock as const ulong, _
+				byval fnum as const long, _
+				byval len as const long, _
+				byval encoding as const zstring ptr _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEOPEN_COM, NULL, _
@@ -222,23 +222,23 @@
 			NULL, FB_RTL_OPT_NONE, _
 			7, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileOpenQB _
 			( _
-				byref s as string, _
-				byval mode as ulong, _
-				byval access as ulong, _
-				byval lock as ulong, _
-				byval filenum as long, _
-				byval len as long _
+				byref s as const string, _
+				byval mode as const ulong, _
+				byval access as const ulong, _
+				byval lock as const ulong, _
+				byval filenum as const long, _
+				byval len as const long _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEOPEN_QB, NULL, _
@@ -246,22 +246,22 @@
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' function fb_FileClose( byval fnum as long ) as long '/ _
+		/' function fb_FileClose( byval fnum as const long ) as long '/ _
 		( _
 			@FB_RTL_FILECLOSE, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileCloseAll( ) as long '/ _
@@ -273,10 +273,10 @@
 		), _
 		/' function fb_FilePut _
 			( _
-				byval fnum as long, _
-				byval pos as long, _
-				byref value as any, _
-				byval valuelen as uinteger _
+				byval fnum as const long, _
+				byval pos as const long, _
+				byref value as const any, _
+				byval valuelen as const uinteger _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEPUT, NULL, _
@@ -284,18 +284,18 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FilePutLarge _
 			( _
-				byval fnum as long, _
-				byval pos as longint, _
-				byref value as any, _
-				byval valuelen as uinteger _
+				byval fnum as const long, _
+				byval pos as const longint, _
+				byref value as const any, _
+				byval valuelen as const uinteger _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEPUTLARGE, NULL, _
@@ -303,18 +303,18 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FilePutStr _
 			( _
-				byval fnum as long, _
-				byval pos as long, _
-				byref str as any, _
-				byval str_len as integer _
+				byval fnum as const long, _
+				byval pos as const long, _
+				byref str as const any, _
+				byval str_len as const integer _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEPUTSTR, NULL, _
@@ -322,18 +322,18 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FilePutStrLarge _
 			( _
-				byval fnum as long, _
-				byval pos as longint, _
-				byref str as any, _
-				byval str_len as integer _
+				byval fnum as const long, _
+				byval pos as const longint, _
+				byref str as const any, _
+				byval str_len as const integer _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEPUTSTRLARGE, NULL, _
@@ -341,17 +341,17 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst(  FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FilePutArray _
 			( _
-				byval fnum as long, _
-				byval pos as long, _
-				array() as any _
+				byval fnum as const long, _
+				byval pos as const long, _
+				array() as const any _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEPUTARRAY, NULL, _
@@ -359,16 +359,16 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYDESC, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FilePutArrayLarge _
 			( _
-				byval fnum as long, _
-				byval pos as longint, _
-				array() as any _
+				byval fnum as const long, _
+				byval pos as const longint, _
+				array() as const any _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEPUTARRAYLARGE, NULL, _
@@ -376,17 +376,17 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYDESC, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileGet _
 			( _
-				byval fnum as long, _
-				byval pos as long, _
+				byval fnum as const long, _
+				byval pos as const long, _
 				byref value as any, _
-				byval valuelen as uinteger _
+				byval valuelen as const uinteger _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEGET, NULL, _
@@ -394,18 +394,18 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileGetLarge _
 			( _
-				byval fnum as long, _
-				byval pos as longint, _
+				byval fnum as const long, _
+				byval pos as const longint, _
 				byref value as any, _
-				byval valuelen as uinteger _
+				byval valuelen as const uinteger _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEGETLARGE, NULL, _
@@ -413,18 +413,18 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileGetStr _
 			( _
-				byval fnum as long, _
-				byval pos as long, _
+				byval fnum as const long, _
+				byval pos as const long, _
 				byref str as any, _
-				byval str_len as integer _
+				byval str_len as const integer _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEGETSTR, NULL, _
@@ -432,18 +432,18 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileGetWStr _
 			( _
-				byval fnum as long, _
-				byval pos as long, _
+				byval fnum as const long, _
+				byval pos as const long, _
 				byref dst as wstring, _
-				byval dst_chars as integer _
+				byval dst_chars as const integer _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEGETWSTR, NULL, _
@@ -451,18 +451,18 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_WCHAR, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' function fb_FileGetStrLarge _
 			( _
-				byval fnum as long, _
-				byval pos as longint, _
+				byval fnum as const long, _
+				byval pos as const longint, _
 				byref str as any, _
-				byval str_len as integer _
+				byval str_len as const integer _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEGETSTRLARGE, NULL, _
@@ -470,18 +470,18 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileGetWStrLarge _
 			( _
-				byval fnum as long, _
-				byval pos as longint, _
+				byval fnum as const long, _
+				byval pos as const longint, _
 				byref dst as wstring, _
-				byval dst_len as integer _
+				byval dst_len as const integer _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEGETWSTRLARGE, NULL, _
@@ -489,16 +489,16 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_WCHAR, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' function fb_FileGetArray _
 			( _
-				byval fnum as long, _
-				byval pos as long, _
+				byval fnum as const long, _
+				byval pos as const long, _
 				array() as any _
 			) as long '/ _
 		( _
@@ -507,15 +507,15 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileGetArrayLarge _
 			( _
-				byval fnum as long, _
-				byval pos as longint, _
+				byval fnum as const long, _
+				byval pos as const longint, _
 				array() as any _
 			) as long '/ _
 		( _
@@ -524,17 +524,17 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileGetIOB _
 			( _
-				byval fnum as long, _
-				byval pos as long, _
+				byval fnum as const long, _
+				byval pos as const long, _
 				byref dst as any, _
-				byval chars as uinteger, _
+				byval chars as const uinteger, _
 				byref bytesread as uinteger _
 			) as long '/ _
 		( _
@@ -543,19 +543,19 @@
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileGetLargeIOB _
 			( _
-				byval fnum as long, _
-				byval pos as longint, _
+				byval fnum as const long, _
+				byval pos as const longint, _
 				byref dst as any, _
-				byval chars as uinteger, _
+				byval chars as const uinteger, _
 				byref bytesread as uinteger _
 			) as long '/ _
 		( _
@@ -564,19 +564,19 @@
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileGetStrIOB _
 			( _
-				byval fnum as long, _
-				byval pos as long, _
+				byval fnum as const long, _
+				byval pos as const long, _
 				byref str as any, _
-				byval str_len as integer, _
+				byval str_len as const integer, _
 				byref bytesread as uinteger _
 			) as long '/ _
 		( _
@@ -585,19 +585,19 @@
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileGetWStrIOB _
 			( _
-				byval fnum as long, _
-				byval pos as long, _
+				byval fnum as const long, _
+				byval pos as const long, _
 				byref dst as wstring, _
-				byval dst_len as integer, _
+				byval dst_len as const integer, _
 				byref bytesread as uinteger _
 			) as long '/ _
 		( _
@@ -606,19 +606,19 @@
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_WCHAR, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
 		/' function fb_FileGetStrLargeIOB _
 			( _
-				byval fnum as long, _
-				byval pos as longint, _
+				byval fnum as const long, _
+				byval pos as const longint, _
 				byref str as any, _
-				byval str_len as integer, _
+				byval str_len as const integer, _
 				byref bytesread as uinteger _
 			) as long '/ _
 		( _
@@ -627,19 +627,19 @@
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileGetWStrLargeIOB _
 			( _
-				byval fnum as long, _
-				byval pos as longint, _
+				byval fnum as const long, _
+				byval pos as const longint, _
 				byref dst as wstring, _
-				byval dst_len as integer, _
+				byval dst_len as const integer, _
 				byref bytesread as uinteger _
 			) as long '/ _
 		( _
@@ -648,17 +648,17 @@
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_WCHAR, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
 		/' function fb_FileGetArrayIOB _
 			( _
-				byval fnum as long, _
-				byval pos as long, _
+				byval fnum as const long, _
+				byval pos as const long, _
 				array() as any, _
 				byref bytesread as uinteger _
 			) as long '/ _
@@ -668,16 +668,16 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
 				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
 		/' function fb_FileGetArrayLargeIOB _
 			( _
-				byval fnum as long, _
-				byval pos as longint, _
+				byval fnum as const long, _
+				byval pos as const longint, _
 				array() as any, _
 				byref bytesread as uinteger _
 			) as long '/ _
@@ -687,37 +687,37 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 			{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
 				( FB_DATATYPE_UINT, FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
-		/' function fb_FileTell( byval fnum as long ) as longint '/ _
+		/' function fb_FileTell( byval fnum as const long ) as longint '/ _
 		( _
 			@FB_RTL_FILETELL, NULL, _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' function fb_FileSeek( byval fnum as long, byval newpos as long ) as long '/ _
+		/' function fb_FileSeek( byval fnum as const long, byval newpos as const long ) as long '/ _
 		( _
 			@FB_RTL_FILESEEK, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileSeekLarge _
 			( _
-				byval fnum as long, _
-				byval newpos as longint _
+				byval fnum as const long, _
+				byval newpos as const longint _
 			) as long '/ _
 		( _
 			@FB_RTL_FILESEEKLARGE, NULL, _
@@ -725,14 +725,14 @@
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileStrInput _
 			( _
-				byval bytes as integer, _
-				byval fnum as long = 0 _
+				byval bytes as const integer, _
+				byval fnum as const long = 0 _
 			) as string '/ _
 		( _
 			@FB_RTL_FILESTRINPUT, NULL, _
@@ -740,16 +740,16 @@
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 			} _
 		), _
 		/' function fb_FileLineInput _
 			( _
-				byval fnum as long, _
+				byval fnum as const long, _
 				byref dst as any, _
-				byval dst_len as integer, _
-				byval fillrem as long = 1 _
+				byval dst_len as const integer, _
+				byval fillrem as const long = 1 _
 			) as long '/ _
 		( _
 			@FB_RTL_FILELINEINPUT, NULL, _
@@ -757,17 +757,17 @@
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 1 ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 1 ) _
 	 		} _
 		), _
 		/' function fb_FileLineInputWstr _
 			( _
-				byval fnum as long, _
+				byval fnum as const long, _
 				byval dst as wstring ptr, _
-				byval max_chars as integer _
+				byval max_chars as const integer _
 			) as long '/ _
 		( _
 			@FB_RTL_FILELINEINPUTWSTR, NULL, _
@@ -775,19 +775,19 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_LineInput _
 			( _
-				byref text as string, _
+				byref text as const string, _
 				byref dst as any, _
-				byval dst_len as integer, _
-				byval fillrem as long, _
-				byval addquestion as long, _
-				byval addnewline as long = 1 _
+				byval dst_len as const integer, _
+				byval fillrem as const long, _
+				byval addquestion as const long, _
+				byval addnewline as const long = 1 _
 			) as long '/ _
 		( _
 			@FB_RTL_CONSOLELINEINPUT, NULL, _
@@ -795,21 +795,21 @@
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 1 ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 1 ) _
 	 		} _
 		), _
 		/' function fb_LineInputWstr _
 			( _
-				byval text as wstring ptr, _
+				byval text as const wstring ptr, _
 				byval dst as wstring ptr, _
-				byval max_chars as integer, _
-				byval addquestion as long, _
-				byval addnewline as long _
+				byval max_chars as const integer, _
+				byval addquestion as const long, _
+				byval addnewline as const long _
 			) as long '/ _
 		( _
 			@FB_RTL_CONSOLELINEINPUTWSTR, NULL, _
@@ -817,28 +817,28 @@
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
 	 		{ _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_WCHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' function fb_FileInput( byval fnum as long ) as long '/ _
+		/' function fb_FileInput( byval fnum as const long ) as long '/ _
 		( _
 			@FB_RTL_FILEINPUT, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_ConsoleInput _
 			( _
-				byref text as string, _
-				byval addquestion as long, _
-				byval addnewline as long _
+				byref text as const string, _
+				byval addquestion as const long, _
+				byval addnewline as const long _
 			) as long '/ _
 		( _
 			@FB_RTL_CONSOLEINPUT, NULL, _
@@ -846,9 +846,9 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_InputBool( byref dst as boolean ) as long '/ _
@@ -964,8 +964,8 @@
 		/' function fb_InputString _
 			( _
 				byref dst as any, _
-				byval strlen as integer, _
-				byval fillrem as long = 1 _
+				byval strlen as const integer, _
+				byval fillrem as const long = 1 _
 			) as long '/ _
 		( _
 			@FB_RTL_INPUTSTR, NULL, _
@@ -974,14 +974,14 @@
 			3, _
 	 		{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 1 ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 1 ) _
 	 		} _
 		), _
 		/' function fb_InputWstr _
 			( _
 				byval str as wstring ptr, _
-				byval length as integer _
+				byval length as const integer _
 			) as long '/ _
 		( _
 			@FB_RTL_INPUTWSTR, NULL, _
@@ -990,14 +990,14 @@
 			2, _
 	 		{ _
 				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileLock _
 			( _
-				byval fnum as long, _
-				byval inipos as ulong, _
-				byval endpos as ulong _
+				byval fnum as const long, _
+				byval inipos as const ulong, _
+				byval endpos as const ulong _
 			) as long '/ _
 		( _
 			@FB_RTL_FILELOCK, NULL, _
@@ -1005,16 +1005,16 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
 		/' function fb_FileLockLarge _
 			( _
-				byval fnum as long, _
-				byval inipos as longint, _
-				byval endpos as longint _
+				byval fnum as const long, _
+				byval inipos as const longint, _
+				byval endpos as const longint _
 			) as long '/ _
 		( _
 			@FB_RTL_FILELOCKLARGE, NULL, _
@@ -1022,16 +1022,16 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
 		/' function fb_FileUnlock _
 			( _
-				byval fnum as long, _
-				byval inipos as ulong, _
-				byval endpos as ulong _
+				byval fnum as const long, _
+				byval inipos as const ulong, _
+				byval endpos as const ulong _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEUNLOCK, NULL, _
@@ -1039,16 +1039,16 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_ULONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
 		/' function fb_FileUnlockLarge _
 			( _
-				byval fnum as long, _
-				byval inipos as longint, _
-				byval endpos as longint _
+				byval fnum as const long, _
+				byval inipos as const longint, _
+				byval endpos as const longint _
 			) as long '/ _
 		( _
 			@FB_RTL_FILEUNLOCKLARGE, NULL, _
@@ -1056,15 +1056,15 @@
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONGINT ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 	 		} _
 		), _
 		/' function fb_rename alias "rename" cdecl _
 			( _
-				byval oldname as zstring ptr, _
-				byval newname as zstring ptr _
+				byval oldname as const zstring ptr, _
+				byval newname as const zstring ptr _
 			) as long '/ _
 		( _
 			@FB_RTL_FILERENAME, @"rename", _
@@ -1072,14 +1072,14 @@
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 	 		{ _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
 		/' function fb_FileWstrInput _
 			( _
-				byval chars as integer, _
-				byval fnum as long = 0 _
+				byval chars as const integer, _
+				byval fnum as const long = 0 _
 			) as wstring '/ _
 		( _
 			@FB_RTL_FILEWSTRINPUT, NULL, _
@@ -1087,8 +1087,8 @@
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE ), _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, TRUE, 0 ) _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, 0 ) _
 			} _
 		), _
 		/' function freefile( ) as long '/ _
@@ -1098,24 +1098,24 @@
 			NULL, FB_RTL_OPT_NONE, _
 			0 _
 		), _
-		/' function eof( byval fnum as long ) as long '/ _
+		/' function eof( byval fnum as const long ) as long '/ _
 		( _
 			@"eof", @"fb_FileEof", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' function kill( byref str as string ) as long '/ _
+		/' function kill( byref str as const string ) as long '/ _
 		( _
 			@"kill", @"fb_FileKill", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
-				( FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' sub reset overload( ) '/ _
@@ -1125,44 +1125,44 @@
 			NULL, FB_RTL_OPT_OVER, _
 			0 _
 		), _
-		/' sub reset overload( byval streamno as long ) '/ _
+		/' sub reset overload( byval streamno as const long ) '/ _
 		( _
 			@"reset", @"fb_FileResetEx", _
 			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER, _
 			1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' function lof( byval fnum as long ) as longint '/ _
+		/' function lof( byval fnum as const long ) as longint '/ _
 		( _
 			@"lof", @"fb_FileSize", _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' function loc( byval fnum as long ) as longint '/ _
+		/' function loc( byval fnum as const long ) as longint '/ _
 		( _
 			@"loc", @"fb_FileLocation", _
 			FB_DATATYPE_LONGINT, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
-		/' function lpos( byval printer_index as long ) as long '/ _
+		/' function lpos( byval printer_index as const long ) as long '/ _
 		( _
 			@"lpos", @"fb_LPos", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		@rtlPrinter_cb, FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
-				( FB_DATATYPE_LONG, FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
 	 	/' EOL '/ _

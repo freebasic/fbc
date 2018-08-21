@@ -200,7 +200,7 @@ private function hCheckConstAndPointerOps _
 	function = FALSE
 
 	'' lhs marked CONST? disallow the assignment then.
-	if( symbCheckConstAssign( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
+	if( symbCheckConstAssignTopLevel( ldtype, rdtype, l->subtype, r->subtype ) = FALSE ) then
 		errReport( FB_ERRMSG_ILLEGALASSIGNMENT, TRUE )
 		exit function
 	end if
@@ -379,7 +379,7 @@ function astCheckByrefAssign _
 		byval lsubtype as FBSYMBOL ptr, _
 		byval r as ASTNODE ptr _
 	) as integer
-	function = (typeCalcMatch( ldtype, lsubtype, FB_PARAMMODE_BYREF, r->dtype, r->subtype ) > 0)
+	function = (typeCalcMatch( ldtype, lsubtype, FB_PARAMMODE_BYREF, r->dtype, r->subtype ) > FB_OVLPROC_NO_MATCH)
 end function
 
 private function hShallowCopy _
