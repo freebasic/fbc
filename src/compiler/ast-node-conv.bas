@@ -488,22 +488,10 @@ function astNewCONV _
 	'' Discarding/changing const qualifier bits ?
 	if( typeIsPtr( ldtype ) and typeIsPtr( to_dtype ) ) then
 
-		errmsg = 0
 		wrnmsg = 0
 
-		n->cast.convconst = ( symbCheckConstAssign( to_dtype, ldtype, to_subtype, l->subtype, , , errmsg, wrnmsg ) = FALSE )
+		n->cast.convconst = ( symbCheckConstAssign( to_dtype, ldtype, to_subtype, l->subtype, , , wrnmsg ) = FALSE )
 
-		'' error message takes priority over warning messages
-		if( (options and AST_CONVOPT_DONTCHKPTR) = 0 ) then
-			if( errmsg <> FB_ERRMSG_OK ) then
-				if( perrmsg ) then
-					*perrmsg = errmsg
-				end if
-				astDelTree( n )
-				exit function
-			end if
-		end if
-		
 		'' else check if const conversion
 		if( n->cast.convconst ) then
 			if( (options and AST_CONVOPT_DONTWARNCONST) = 0 ) then

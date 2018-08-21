@@ -1877,9 +1877,7 @@ function symbCheckConstAssignTopLevel _
 		byval lsubtype as FBSYMBOL ptr, _
 		byval rsubtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE = 0, _
-		byref matches as integer = 0, _
-		byref errmsg as FB_ERRMSG = 0, _
-		byref wrnmsg as FB_WARNINGMSG = 0 _
+		byref matches as integer = 0 _
 	) as integer
 
 	dim as integer i = any, lcount = any, rcount = any, rmatches = any
@@ -1979,7 +1977,7 @@ function symbCheckConstAssignTopLevel _
 	function = TRUE
 end function
 
-function hSymbCheckConstAssignFuncPtr _
+private function hSymbCheckConstAssignFuncPtr _
 	( _
 		byval ldtype as FB_DATATYPE, _
 		byval rdtype as FB_DATATYPE, _
@@ -1987,7 +1985,6 @@ function hSymbCheckConstAssignFuncPtr _
 		byval rsubtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE = 0, _
 		byref matches as integer = 0, _
-		byref errmsg as FB_ERRMSG = 0, _
 		byref wrnmsg as FB_WARNINGMSG = 0 _
 	) as integer
 
@@ -1997,6 +1994,10 @@ function hSymbCheckConstAssignFuncPtr _
 
 	function = FALSE
 
+	'' TODO
+	'' 1) consider also combining (in some way) with symbCalcProcMatch()
+	'' 2) the structure of the call is very similar
+	'' 3) possibly leading towards a generic type compatibility check
 
 	assert( typeGetDtOnly( ldType ) = FB_DATATYPE_FUNCTION )
 	assert( typeGetDtOnly( rdType ) = FB_DATATYPE_FUNCTION )
@@ -2053,7 +2054,7 @@ function hSymbCheckConstAssignFuncPtr _
 		var ls = symbGetSubType( rparam )
 		var m = symbGetParamMode( lparam )
 
-		if( symbCheckConstAssign( l, r, ls, rs, m, , errmsg, wrnmsg ) = FALSE ) then
+		if( symbCheckConstAssign( l, r, ls, rs, m, , wrnmsg ) = FALSE ) then
 			exit function
 		end if
 
@@ -2072,22 +2073,28 @@ function symbCheckConstAssign _
 		byval rsubtype as FBSYMBOL ptr, _
 		byval mode as FB_PARAMMODE = 0, _
 		byref matches as integer = 0, _
-		byref errmsg as FB_ERRMSG = 0, _
 		byref wrnmsg as FB_WARNINGMSG = 0 _
 	) as integer
 
+	'' TODO:
+	'' 1) consider combining 
+	''      - symbCheckConstAssign()
+	''      - hSymbCheckConstAssignFuncPtr()
+	''      - symbCheckConstAssignTopLevel()
+	'' 2) callers of symbCheckConstAssignTopLevel() need to respond to errors 
+	''    and warnings if calling symbCheckConstAssign() instead
+
 	dim ret as integer = any
 
-	errmsg = FB_ERRMSG_OK '' FB_ERRMSG
 	wrnmsg = 0            '' FB_WARNINGMSG
 	
 	'' check top-level const
-	ret = symbCheckConstAssignTopLevel( ldtype, rdtype, lsubtype, rsubtype, mode, matches, errmsg, wrnmsg )
+	ret = symbCheckConstAssignTopLevel( ldtype, rdtype, lsubtype, rsubtype, mode, matches )
 	
 	if( ret ) then
 		'' both types function pointer?
 		if( ( typeGetDtOnly( ldType ) = FB_DATATYPE_FUNCTION ) and ( typeGetDtOnly( rdType ) = FB_DATATYPE_FUNCTION ) ) then
-			ret and= hSymbCheckConstAssignFuncPtr( ldtype, rdtype, lsubtype, rsubtype, mode, matches, errmsg, wrnmsg )
+			ret and= hSymbCheckConstAssignFuncPtr( ldtype, rdtype, lsubtype, rsubtype, mode, matches, wrnmsg )
 		end if
 	end if
 
