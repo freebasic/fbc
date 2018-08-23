@@ -24,7 +24,7 @@ Specifies file or device to be opened for binary mode
 	
 	##//filename//## must be a string expression resulting in a legal file name in the target OS, without wildcards. The file will be sought for in the present directory, unless a path is given.
 				
-	##//Access_type//## By default ##**Binary**## mode allows to both read and write the file, unless an ##[[KeyPgAccess|Access]]## type is specified, it mus be one of: 
+	##//Access_type//## By default ##**Binary**## mode allows to both read and write the file, unless an ##[[KeyPgAccess|Access]]## type is specified, it must be one of: 
 		- ##**Read**## - the file is opened for input only
 		- ##**Write**## - the file is opened for output only
 		- ##**Read Write**## - the file is opened for input and output (the default)
