@@ -63,7 +63,7 @@ private function hCallCtorList _
     dim as FBSYMBOL ptr cnt = any, label = any, iter = any
     dim as ASTNODE ptr tree = any
 
-	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
+	cnt = symbAddTempVar( FB_DATATYPE_UINT )
 	label = symbAddLabel( NULL )
 	iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
@@ -199,7 +199,7 @@ function astBuildNewOp _
 		if( save_elmts ) then
 			'' length + sizeof( integer )   (to store the vector size)
 			lenexpr = astNewBOP( AST_OP_ADD, lenexpr, _
-					astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ), FB_DATATYPE_UINT ) )
+					astNewCONSTi( typeGetSize( FB_DATATYPE_UINT ), FB_DATATYPE_UINT ) )
 		end if
 
 		newexpr = rtlMemNewOp( op, lenexpr, dtype, subtype )
@@ -216,15 +216,15 @@ function astBuildNewOp _
 		'' *tempptr = elements
 		tree = astNewLINK( tree, _
 			astNewASSIGN( _
-				astNewDEREF( astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_INTEGER ) ) ), _
+				astNewDEREF( astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_UINT ) ) ), _
 				hElements( elementsexpr, elementstreecount ), _
 				AST_OPOPT_ISINI ) )
 
-		'' tempptr += len( integer )
+		'' tempptr += len( uinteger )
 		tree = astNewLINK( tree, _
 			astNewSelfBOP( AST_OP_ADD_SELF, _
 				astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_VOID ) ), _
-				astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ) ), _
+				astNewCONSTi( typeGetSize( FB_DATATYPE_UINT ) ), _
 				NULL ) )
 	end if
 
@@ -271,15 +271,15 @@ private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
 
 	'' DELETE[]'s counter is at: cast(integer ptr, vector)[-1]
 
-	'' elmts = *cast( integer ptr, cast( any ptr, vector ) + -sizeof( integer ) )
+	'' elmts = *cast( uinteger ptr, cast( any ptr, vector ) + -sizeof( uinteger ) )
 	'' (using AST_CONVOPT_DONTCHKPTR to support derived UDT pointers)
 	tree = astBuildVarAssign( _
 		elmts, _
 		astNewDEREF( _
-			astNewCONV( typeAddrOf( FB_DATATYPE_INTEGER ), NULL, _
+			astNewCONV( typeAddrOf( FB_DATATYPE_UINT ), NULL, _
 				astNewBOP( AST_OP_ADD, _
 					astCloneTree( ptrexpr ), _
-					astNewCONSTi( -typeGetSize( FB_DATATYPE_INTEGER ) ) ), _
+					astNewCONSTi( -typeGetSize( FB_DATATYPE_UINT ) ) ), _
 				AST_CONVOPT_DONTCHKPTR ) ), _
 		AST_OPOPT_ISINI )
 
