@@ -505,7 +505,7 @@ function astNewCONV _
 			'' specific warning message takes priority over const warning
 			if( wrnmsg <> 0 ) then
 				if( (options and AST_CONVOPT_DONTWARNFUNCPTR) = 0 ) then
-					errReportWarn( wrnmsg )
+					errReportWarn( wrnmsg, , , strptr(" in function pointer") )
 				end if
 
 			'' else, must be const warning
