@@ -362,6 +362,13 @@ private function hCast( byval options as AST_CONVOPT ) as ASTNODE ptr
 	end if
 
 	options or= AST_CONVOPT_CHECKSTR
+
+	'' -w constness implies -w funcptr
+	if( (fbPdCheckIsSet( FB_PDCHECK_CASTFUNCPTR ) = FALSE) _
+		and (fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) = FALSE) ) then
+		options or= AST_CONVOPT_DONTWARNFUNCPTR
+	end if
+
 	expr = astNewCONV( dtype, subtype, expr, options, @errmsg )
 	if( expr = NULL ) then
 		if( errmsg = FB_ERRMSG_OK ) then

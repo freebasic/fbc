@@ -492,22 +492,36 @@ function astNewCONV _
 
 		n->cast.convconst = ( symbCheckConstAssign( to_dtype, ldtype, to_subtype, l->subtype, , , wrnmsg ) = FALSE )
 
+		'' -w funcptr  -w constness
+		''    no           no          don't warn anything         
+		''    yes          yes         warn everything
+		''    yes          no          warn if wrnmsg<>0
+		''    no           yes         warn everything (-w constness implies -w funcptr)
+
 		'' else check if const conversion
 		if( n->cast.convconst ) then
-			if( (options and AST_CONVOPT_DONTWARNCONST) = 0 ) then
-				if( fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
-					'' specific warning message takes priority over const warning
-					if( wrnmsg = 0 ) then
-						wrnmsg = FB_WARNINGMSG_CONSTQUALIFIERDISCARDED
+
+			'' wrnmsg is <> 0 only if funcptr check failed
+			'' specific warning message takes priority over const warning
+			if( wrnmsg <> 0 ) then
+				if( (options and AST_CONVOPT_DONTWARNFUNCPTR) = 0 ) then
+					errReportWarn( wrnmsg )
+				end if
+
+			'' else, must be const warning
+			else
+
+				if( (options and AST_CONVOPT_DONTWARNCONST) = 0 ) then
+					if( fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
+						errReportWarn( FB_WARNINGMSG_CONSTQUALIFIERDISCARDED )
 					end if
 				end if
+
 			end if
+
 		end if
 	
-		'' warning? show it now
-		if( wrnmsg <> 0 ) then
-			errReportWarn( wrnmsg )
-		end if
+
 	end if
 
 	if( env.clopt.backend = FB_BACKEND_GAS ) then
