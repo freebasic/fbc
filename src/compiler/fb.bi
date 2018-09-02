@@ -250,7 +250,7 @@ type FBCMMLINEOPT
 	profile         as integer              '' build profiling code (default = false)
 
 	'' error/warning reporting behaviour
-	warninglevel    as integer              '' (default = 0)
+	warninglevel    as integer              '' (default = FB_WARNINGMSGS_DEFAULT_LEVEL)
 	showerror       as integer              '' show line giving error (default = true)
 	maxerrors       as integer              '' max number errors the parser will show
 	pdcheckopt      as FB_PDCHECK           '' pedantic checks
