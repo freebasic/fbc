@@ -466,7 +466,7 @@ sub fbGlobalInit()
 	env.clopt.resumeerr     = FALSE
 	env.clopt.profile       = FALSE
 
-	env.clopt.warninglevel  = 0
+	env.clopt.warninglevel  = FB_WARNINGMSGS_DEFAULT_LEVEL
 	env.clopt.showerror     = TRUE
 	env.clopt.maxerrors     = FB_DEFAULT_MAXERRORS
 	env.clopt.pdcheckopt    = FB_PDCHECK_NONE

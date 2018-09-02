@@ -2086,8 +2086,6 @@ function symbCheckConstAssign _
 
 	dim ret as integer = any
 
-	wrnmsg = 0            '' FB_WARNINGMSG
-	
 	'' check top-level const
 	ret = symbCheckConstAssignTopLevel( ldtype, rdtype, lsubtype, rsubtype, mode, matches )
 	

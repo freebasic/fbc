@@ -1,56 +1,56 @@
 no warnings:
 2 warnings:
 	Suspicious pointer assignment
-	Return type mismatch
+	Return type mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return type mismatch
+	Return type mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 no warnings:
 2 warnings:
 	Suspicious pointer assignment
-	Return type mismatch
+	Return type mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return type mismatch
+	Return type mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
-	Return method mismatch
+	Return method mismatch in function pointer
