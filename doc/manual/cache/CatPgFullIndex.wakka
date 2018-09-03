@@ -273,6 +273,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgFreefile|FREEFILE"}}
 	- {{fbdoc item="keyword" value="KeyPgFunction|FUNCTION"}}
 	- {{fbdoc item="keyword" value="KeyPgMemberFunction|FUNCTION (Member)"}}
+	- {{fbdoc item="keyword" value="KeyPgFunctionPtr|FUNCTION (Pointer)"}}
 
 {{fbdoc item="section" value="G"}}{{anchor name="g"}}
 	- {{fbdoc item="keyword" value="KeyPgGetgraphics|GET (Graphics)"}}
@@ -516,6 +517,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgOpStrptr|STRPTR"}}
 	- {{fbdoc item="keyword" value="KeyPgSub|SUB"}}
 	- {{fbdoc item="keyword" value="KeyPgMemberSub|SUB (Member)"}}
+	- {{fbdoc item="keyword" value="KeyPgSubPtr|SUB (Pointer)"}}
 	- {{fbdoc item="keyword" value="KeyPgSwap|SWAP"}}
 	- {{fbdoc item="keyword" value="KeyPgSystem|SYSTEM"}}
 

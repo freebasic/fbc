@@ -15,7 +15,7 @@ Data type that stores a pointer to a ##[[KeyPgSub|SUB]]## procedure
 {{fbdoc item="desc"}}
 	A ##[[KeyPgSub|Sub]]## pointer is a procedure pointer that stores the memory location of compiled code.  If no intializer is given the default initial value is zero (0).
 	
-	The memory address for the ##[[KeyPgSub|Sub]]## procedure can be assigned to the variable by taking the address of a subroutine with ##[[KeyPgOpProcPtr|ProcPtr]]## or ##[[KeyPgOpAt|Operator @ (Address of)]]##.
+	The memory address for the ##[[KeyPgSub|Sub]]## procedure can be assigned to the variable by taking the address of a subroutine with ##[[KeyPgOpProcptr|ProcPtr]]## or ##[[KeyPgOpAt|Operator @ (Address of)]]##.
 	
 	The procedure must match the same ##[[KeyPgSub|Sub]]## declaration as the declared ##[[KeyPgSub|Sub]]## pointer.
 	
@@ -117,7 +117,7 @@ s2_ptr("PI", 3.14)
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgSub|Sub]]##
-	- ##[[KeyPgOpProcPtr|ProcPtr]]##
+	- ##[[KeyPgOpProcptr|ProcPtr]]##
 	- ##[[KeyPgOpAt|Operator @ (Address of)]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

@@ -1,0 +1,36 @@
+{{fbdoc item="title" value="Operator Delete Overload"}}----
+Member operator to overload memory deallocation process part provided by ##[[KeyPgOpDelete|Operator Delete Statement]]## when applying to a UDT (User Defined Type).
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **delete** ( //buf//  [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **delete[]** ( //buf//  [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
+##
+{{fbdoc item="param"}}
+	##//buf//## 
+		A pointer to memory that has been allocated by ##[[KeyPgOpNewOverload|New Overload]]## operator or ##**New[] Overload**## operator, the array-version of ##[[KeyPgOpNewOverload|New Overload]]## operator.
+
+{{fbdoc item="desc"}}
+	The member operator ##**Delete Overload**## overloads the memory deallocation process part provided by the ##[[KeyPgOpDelete|Delete Statement]]## operator when applying to a UDT (User Defined Type). So the user can define its own memory deallocation process part.
+	But before that, the UDT instance destruction process part provided by the ##[[KeyPgOpDelete|Delete Statement]]## operator is not modified.
+	
+	##**Delete[] Overload**## operator is the array-version of ##**Delete Overload**## operator and overloads the memory deallocation process provided by the ##**Delete[] Statement**## operator when applying to a UDT (User Defined Type).
+	
+	Memory freed with ##**Delete Overload**## operator must have be allocated with ##[[KeyPgOpNewOverload|New Overload]]## operator. Memory freed with ##**Delete[] Overload**## operator must have been allocated with ##**New[] Overload operator**##, the array-version of ##[[KeyPgOpNewOverload|New Overload]]## operator. You cannot mix and match the different versions of the operators.
+	
+	Member operators ##**Delete Overload**##, and ##**Delete[] Overload**## are always static, even if not explicitly declared (##[[KeyPgStaticMember|static]]## keyword is unnecessary but allowed). Thus, they do not have an implicit ##[[KeyPgThis|This]]## instance argument passed to them (because instance already been destroyed).
+
+{{fbdoc item="ex"}}
+	See the ##[[KeyPgOpNewOverload|New Overload]]## operator examples.
+
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpDelete|Delete Statement]]##
+	- ##[[KeyPgOpNewOverload|New Overload]]##
+	- ##[[KeyPgDeallocate|Deallocate]]##
+
+{{fbdoc item="back" value="CatPgOpMemory|Memory Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}
