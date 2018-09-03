@@ -12,6 +12,7 @@ dim byref_i as function( ) byref as integer
 
 #print "2 warnings:"
 byval_i = byref_i
+#print "2 warnings:"
 byref_i = byval_i
 
 #print "no warnings:"
@@ -20,4 +21,5 @@ byref_i = @returnByrefInteger
 
 #print "2 warnings:"
 byval_i = @returnByrefInteger
+#print "2 warnings:"
 byref_i = @returnInteger

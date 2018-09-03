@@ -46,6 +46,12 @@ pi =pw, no warning:
 pw =pi, no warning:
 pui =pw, no warning:
 pw =pui, no warning:
+ppsub =ppfi, 2 warning:
+	Suspicious pointer assignment
+	Return type mismatch in function pointer
+ppfi =ppsub, 2 warning:
+	Suspicious pointer assignment
+	Return type mismatch in function pointer
 b =sh, 1 warning:
 	Suspicious pointer assignment
 b =ush, 1 warning:
@@ -1182,6 +1188,7 @@ psub =udt2, 1 warning:
 	Suspicious pointer assignment
 psub =pfi, 1 warning:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
 psub =pany, 1 warning:
 	Suspicious pointer assignment
 psub =pb, 1 warning:
@@ -1226,6 +1233,7 @@ psub =ppsub, 1 warning:
 	Suspicious pointer assignment
 psub =ppfi, 1 warning:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
 pfi =b, 1 warning:
 	Suspicious pointer assignment
 pfi =ub, 1 warning:
@@ -1258,6 +1266,7 @@ pfi =udt2, 1 warning:
 	Suspicious pointer assignment
 pfi =psub, 1 warning:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
 pfi =pany, 1 warning:
 	Suspicious pointer assignment
 pfi =pb, 1 warning:
@@ -1300,6 +1309,7 @@ pfi =pdwf2, 1 warning:
 	Suspicious pointer assignment
 pfi =ppsub, 1 warning:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
 pfi =ppfi, 1 warning:
 	Suspicious pointer assignment
 pany =b, 1 warning:
@@ -2796,6 +2806,7 @@ ppsub =psub, 1 warning:
 	Suspicious pointer assignment
 ppsub =pfi, 1 warning:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
 ppsub =pany, 1 warning:
 	Suspicious pointer assignment
 ppsub =pb, 1 warning:
@@ -2836,8 +2847,6 @@ ppsub =pfwd1, 1 warning:
 	Suspicious pointer assignment
 ppsub =pdwf2, 1 warning:
 	Suspicious pointer assignment
-ppsub =ppfi, 1 warning:
-	Suspicious pointer assignment
 ppfi =b, 1 warning:
 	Suspicious pointer assignment
 ppfi =ub, 1 warning:
@@ -2870,6 +2879,7 @@ ppfi =udt2, 1 warning:
 	Suspicious pointer assignment
 ppfi =psub, 1 warning:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
 ppfi =pfi, 1 warning:
 	Suspicious pointer assignment
 ppfi =pany, 1 warning:
@@ -2911,6 +2921,4 @@ ppfi =pudt2, 1 warning:
 ppfi =pfwd1, 1 warning:
 	Suspicious pointer assignment
 ppfi =pdwf2, 1 warning:
-	Suspicious pointer assignment
-ppfi =ppsub, 1 warning:
 	Suspicious pointer assignment

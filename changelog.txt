@@ -5,6 +5,8 @@ Version 1.06.0
 - test-suite uses libfbcunit for unit testing framework
 - SELECT CASE AS CONST respects data type and will show overflow warnings on out-of-range constants
 - boolean: don't allow NEG unary op '-' on boolean data types
+- All fb RTL functions are checked for CONSTness, CONST qualifiers added to fb rtlib built-in prototypes (sf.net #727)
+- WSTRING can be a return type, but only for prototypes (DECLARE) and function pointers, this allows getting PROCPTR() of all fb built-in run time functions
 
 [added]
 - -noobjinfo option to disable the writing/reading of compile-time library and other linking options from/to .o and .a files. This also disables the use of fbextra.x (the supplemental linker script) for discarding the .fbctinf sections, which is useful when using the gold linker that doesn't support this kind of linker script.
@@ -15,6 +17,8 @@ Version 1.06.0
 - Updated bindings: SDL2 2.0.6, SDL2_image 2.0.1, SDL2_mixer 2.0.1, SDL2_net 2.0.1, SDL2_ttf 2.0.14
 - allow overload operator SQR()
 - allow [static] shared byref variables to be initialized with byref variable
+- warning '-w constness' to enable 'CONST qualifier discarded' warning on command line
+- #pragma constness to enable/disable 'CONST qualifier discarded' warning in source code
 
 [fixed]
 - win/d3dx9.bi no longer has a hard-coded #inclib "d3dx9d". d3dx9d.dll is apparently not a generally valid choice. In practice programs have to be linked against d3dx9_33.dll or d3dx9_39.dll, etc.
@@ -65,6 +69,9 @@ Version 1.06.0
 - #822, #814, #842: Compiler crash when initializing static/shared reference (DIM SHARED/STATIC BYREF) with non-constant initializer (e.g. another reference, or dynamic array element)
 - ASM backend: Fix bad code generated for comparisons such as IF @globalvar = 0 THEN
 - #884: FORMATing dates can deadlock under Unix
+- #642, #886: CASTs involving CONST qualifiers solved out too early allowing invalid statements to be compiled
+- #801: *@(expr) solved to (expr) did not cleanly remove null ptr checks allowing invalid datatype assignment with -exx.  *PTRCHK(@expr) solves to (expr).
+- #880: Overload binary operators now support covariant arguments, overloaded procedure resolution changed especially with respect to CONST and non-CONST parameters
 
 
 Version 1.05.0

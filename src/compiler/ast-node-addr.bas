@@ -217,7 +217,8 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 		if( t <> l ) then
 			astDelNode( l )  '' CONV that was skipped above
 		end if
-		return astNewCONV( dtype, subtype, n, AST_CONVOPT_DONTCHKPTR )
+		'' Don't warn CONST changes, we should have already got the warnings on previous CONV node's
+		return astNewCONV( dtype, subtype, n, AST_CONVOPT_DONTCHKPTR or AST_CONVOPT_DONTWARNCONST )
 	end if
 
 	'' alloc new node

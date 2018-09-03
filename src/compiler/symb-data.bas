@@ -506,9 +506,19 @@ end function
 ''    l = r
 '' where l could be a reference or a variable (parameters, function results,
 '' variables...) and r is the source (e.g. the argument in case of parameters).
-''  result = 0  =>  incompatible
-''  otherwise   =>  compatible, and the result is a matching score
-''                  (FB_OVLPROC_FULLMATCH etc.)
+''
+'' result:
+''
+'' FB_OVLPROC_FULLMATCH              => compatible, exact match
+'' FB_OVLPROC_FULLMATCH - baselevel  => compatible, derived types
+'' FB_OVLPROC_TYPEMATCH + consts     => same type, different consts
+'' FB_OVLPROC_HALFMATCH              => compatible, same data type class
+'' FB_OVLPROC_HALFMATCH - rank       => compatible, distance between numeric types
+'' FB_OVLPROC_HALFMATCH - struct     => compatible, UDT ctor/cast
+'' FB_OVLPROC_LOWEST_MATCH           => compatible, lowest scoring parameter
+'' FB_OVLPROC_NO_MATCH               => incompatible
+
+''
 function typeCalcMatch _
 	( _
 		byval ldtype as integer, _
@@ -516,22 +526,24 @@ function typeCalcMatch _
 		byval lparammode as integer, _
 		byval rdtype as integer, _
 		byval rsubtype as FBSYMBOL ptr _
-	) as integer
+	) as FB_OVLPROC_MATCH_SCORE
+
+	dim const_matches as integer = 0
 
 	if( (ldtype = rdtype) and (lsubtype = rsubtype) ) then
 		return FB_OVLPROC_FULLMATCH
 	end if
 
 	if( typeGetPtrCnt( ldtype ) <> typeGetPtrCnt( rdtype ) ) then
-		return 0
+		return FB_OVLPROC_NO_MATCH
 	end if
 
-	if( symbCheckConstAssign( ldtype, rdtype, lsubtype, rsubtype, lparammode ) = FALSE ) then
-		return 0
+	if( symbCheckConstAssignTopLevel( ldtype, rdtype, lsubtype, rsubtype, lparammode, const_matches ) = FALSE ) then
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	if( (typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( rdtype )) and (lsubtype = rsubtype) ) then
-		return FB_OVLPROC_HALFMATCH
+		return FB_OVLPROC_TYPEMATCH + const_matches
 	end if
 
 	'' We know that they're different (in terms of dtype or subtype or both),
@@ -552,7 +564,7 @@ function typeCalcMatch _
 			return FB_OVLPROC_HALFMATCH - symb_dtypeMatchTB( ldt, rdt )
 		end if
 
-		return 0
+		return FB_OVLPROC_NO_MATCH
 	end if
 
 	select case( ldt )
@@ -572,5 +584,5 @@ function typeCalcMatch _
 		return symbCalcProcMatch( lsubtype, rsubtype, 0 )
 	end select
 
-	function = 0
+	function = FB_OVLPROC_NO_MATCH
 end function

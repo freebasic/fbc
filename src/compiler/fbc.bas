@@ -1816,11 +1816,14 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbc.showversion = TRUE
 
 	case OPT_W
-		dim as integer value = -2
+		dim as integer value = FB_WARNINGMSGS_LOWEST_LEVEL - 1
 
 		select case (arg)
 		case "all"
-			value = -1
+			value = FB_WARNINGMSGS_LOWEST_LEVEL
+
+		case "none"
+			value = FB_WARNINGMSGS_HIGHEST_LEVEL + 1
 
 		case "param"
 			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
@@ -1838,15 +1841,27 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
 						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_SIGNEDNESS )
 
+		case "constness"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_CONSTNESS )
+			value = FB_WARNINGMSGS_LOWEST_LEVEL
+
+		case "funcptr"
+			fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+						 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_CASTFUNCPTR )
+			value = FB_WARNINGMSGS_LOWEST_LEVEL
+
 		case "pedantic"
 			fbSetOption( FB_COMPOPT_PEDANTICCHK, FB_PDCHECK_DEFAULT )
-			value = -1
+			if( value > FB_WARNINGMSGS_DEFAULT_LEVEL ) then
+				value = FB_WARNINGMSGS_DEFAULT_LEVEL
+			end if
 
 		case else
 			value = clng( arg )
 		end select
 
-		if( value >= -1 ) then
+		if( value >= FB_WARNINGMSGS_LOWEST_LEVEL ) then
 			fbSetOption( FB_COMPOPT_WARNINGLEVEL, value )
 		end if
 

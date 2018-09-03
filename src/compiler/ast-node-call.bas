@@ -55,7 +55,7 @@ function astNewCALL _
 	''
 	if( ptrexpr ) then
 		assert( astGetDataType( ptrexpr ) = typeAddrOf( FB_DATATYPE_FUNCTION ) )
-		assert( (ptrexpr->subtype = sym) or (symbCalcProcMatch( ptrexpr->subtype, sym, 0 ) > 0) )
+		assert( (ptrexpr->subtype = sym) or (symbCalcProcMatch( ptrexpr->subtype, sym, 0 ) > FB_OVLPROC_NO_MATCH) )
 		sym = ptrexpr->subtype
 	end if
 

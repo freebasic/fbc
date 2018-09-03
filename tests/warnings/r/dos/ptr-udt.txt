@@ -15,27 +15,35 @@ no warnings:
 	Suspicious pointer assignment
 testing INHERIT1 and INHERIT2
 no warning:
-1 warning:
+2 warnings:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
 1 warning:
 	Suspicious pointer assignment
 no warning:
 2 warnings:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
 	Suspicious pointer assignment
 testing RTTI1 and RTTI2
 no warning:
-1 warning:
+2 warnings:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
 1 warning:
 	Suspicious pointer assignment
 no warning:
 2 warnings:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
 2 warnings:
 	Suspicious pointer assignment
 	Suspicious pointer assignment

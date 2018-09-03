@@ -399,6 +399,11 @@ sub cProcRetType _
 		options or= FB_SYMBTYPEOPT_ISBYREF
 	end if
 
+	' prototype? allow wstring
+	if( is_proto ) then
+		options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
+	end if
+
 	if( cSymbolType( dtype, subtype, , , options ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake a type
@@ -407,10 +412,19 @@ sub cProcRetType _
 	else
 		'' check for invalid types
 		select case( typeGetDtAndPtrOnly( dtype ) )
-		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			'' FIXSTR is never allowed; ZSTRING/WSTRING only if BYREF
+		case FB_DATATYPE_WCHAR
+			'' WSTRING allowed only if BYREF, or is prototype
+			if( ((attrib and FB_SYMBATTRIB_REF) = 0) and (is_proto = FALSE) ) then
+				errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
+				'' error recovery: fake a type
+				dtype = FB_DATATYPE_STRING
+				subtype = NULL
+			end if
+
+		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+			'' FIXSTR is never allowed; ZSTRING only if BYREF
 			if( ((attrib and FB_SYMBATTRIB_REF) = 0) or _
-			    (typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_FIXSTR) ) then
+				(typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_FIXSTR) ) then
 				errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
 				'' error recovery: fake a type
 				dtype = FB_DATATYPE_STRING

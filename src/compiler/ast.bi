@@ -244,8 +244,9 @@ type AST_NODE_LINK
 end type
 
 type AST_NODE_CAST
-	doconv 			as integer						'' do conversion (TRUE or FALSE)
-	do_convfd2fs		as integer  '' whether or not to ensure truncation in double2single conversions
+	doconv 			as integer	'' do conversion (TRUE or FALSE)
+	do_convfd2fs	as integer  '' whether or not to ensure truncation in double2single conversions
+	convconst		as integer	'' const qualifier bits discarded/changed in the conversion (TRUE or FALSE)
 end type
 
 ''
@@ -529,6 +530,8 @@ enum AST_CONVOPT
 	AST_CONVOPT_CHECKSTR = &h2
 	AST_CONVOPT_PTRONLY  = &h4
 	AST_CONVOPT_DONTCHKPTR = &h8
+	AST_CONVOPT_DONTWARNCONST = &h10
+	AST_CONVOPT_DONTWARNFUNCPTR = &h20
 end enum
 
 declare function astNewCONV _
@@ -1467,7 +1470,7 @@ extern ast as ASTCTX
 
 extern ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO
 
-declare function astDumpOp( byval op as AST_OP ) as string
+declare function astDumpOpToStr( byval op as AST_OP ) as string
 
 declare sub astDumpTree _
 	( _

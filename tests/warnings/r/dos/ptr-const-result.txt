@@ -1,24 +1,56 @@
 no warnings:
-1 warning:
+2 warnings:
 	Suspicious pointer assignment
-8 warnings:
+	Return type mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
 no warnings:
-1 warning:
+2 warnings:
 	Suspicious pointer assignment
-8 warnings:
+	Return type mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return type mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer
+2 warnings:
 	Suspicious pointer assignment
+	Return method mismatch in function pointer

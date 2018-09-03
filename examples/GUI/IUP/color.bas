@@ -1,10 +1,10 @@
-
+﻿
 #include once "IUP/iup.bi"
 
 #define NULL 0
 
 '':::::
-function ok_cb cdecl (byval handler as Ihandle ptr) as integer
+function ok_cb cdecl (byval handler as Ihandle ptr) as long
   dim as Ihandle ptr red_text
   dim as Ihandle ptr green_text
   dim as Ihandle ptr blue_text

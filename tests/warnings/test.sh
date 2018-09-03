@@ -31,7 +31,7 @@ function run_tests() {
 		echo "TEST $fbtarget $i"
 		withoutext=${i%.bas}
 
-		$FBC -target $fbtarget $i -r -m $withoutext | \
+		$FBC -w constness -target $fbtarget $i -r -m $withoutext | \
 			sed -e 's,^.*\.\(bas\|bi\)(.*) warning .*(.*): ,\t,g' > \
 			$txtdir/$withoutext.txt
 	done

@@ -89,10 +89,15 @@ function cPokeStmt( ) as integer
         end if
 	end select
 
-    expr1 = astNewDEREF( expr1, poketype, subtype )
+	'' try to convert address to poketype pointer to check constness
+	if( fbPdCheckIsSet( FB_PDCHECK_CONSTNESS ) ) then
+		expr1 = astNewCONV( typeAddrOf(poketype), subtype, expr1 )
+	end if
 
-    expr1 = astNewASSIGN( expr1, expr2 )
-    if( expr1 = NULL ) then
+	expr1 = astNewDEREF( expr1, poketype, subtype )
+
+	expr1 = astNewASSIGN( expr1, expr2 )
+	if( expr1 = NULL ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	else
 		astAdd( expr1 )

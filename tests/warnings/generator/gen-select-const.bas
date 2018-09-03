@@ -1,6 +1,6 @@
 /'
 
-Generates const-overflow-select-const.bas
+Generates ../const-overflow-select-const.bas
 
 This test checks the warnings that could be generated at compile
 time by SELECT CASE AS CONST.  More specifically, it tests 
@@ -10,17 +10,20 @@ Usage:
 
 Generate the test source:
 	$ fbc gen-select-const.bas
-	$ ./gen-select-const > const-overflow-select-const.bas
+	$ ./gen-select-const > ../const-overflow-select-const.bas
 
 Generate the results of compiling the test source:
-	$ fbc -c const-overflow-select-const.bas > const-overflow-select-const.log
+	$ fbc -c ../const-overflow-select-const.bas > const-overflow-select-const.log
 
 To check first time run, use this helper tool:
-	$ fbc chk-select-const.bas
-	$ ./chk-select-const
+	$ fbc chk-warning-log.bas
+	$ ./chk-warning-log const-overflow-select-const.log > chk-select-const.log
 
-	Line numbers reported by ./chk-select-const refer to line numbers 
-	in const-overflow-select-const.log
+	Line numbers reported in ./chk-select-const.log refer to line numbers 
+	in const-overflow-select-const.log which can then be referenced to line
+	numbers in ../const-overflow-select-const.bas
+
+	If no differences found, ./chk-select-const.log is empty file.
 
 Data type range and test value matrix
 	B = boolean

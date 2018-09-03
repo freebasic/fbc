@@ -109,10 +109,12 @@ enum FB_PDCHECK
 	FB_PDCHECK_NEXTVAR      = &h00000008
 	FB_PDCHECK_CASTTONONPTR = &h00000010
 	FB_PDCHECK_SIGNEDNESS   = &h00000020
+	FB_PDCHECK_CASTFUNCPTR  = &h00000040
+	FB_PDCHECK_CONSTNESS    = &h00000080
 
 	FB_PDCHECK_ALL          = &hffffffff
 
-	FB_PDCHECK_DEFAULT      = FB_PDCHECK_ALL xor ( FB_PDCHECK_NEXTVAR or FB_PDCHECK_SIGNEDNESS )
+	FB_PDCHECK_DEFAULT      = FB_PDCHECK_ALL xor ( FB_PDCHECK_NEXTVAR or FB_PDCHECK_SIGNEDNESS or FB_PDCHECK_CASTFUNCPTR or FB_PDCHECK_CONSTNESS )
 end enum
 
 '' cpu types
@@ -251,7 +253,7 @@ type FBCMMLINEOPT
 	profile         as integer              '' build profiling code (default = false)
 
 	'' error/warning reporting behaviour
-	warninglevel    as integer              '' (default = 0)
+	warninglevel    as integer              '' (default = FB_WARNINGMSGS_DEFAULT_LEVEL)
 	showerror       as integer              '' show line giving error (default = true)
 	maxerrors       as integer              '' max number errors the parser will show
 	pdcheckopt      as FB_PDCHECK           '' pedantic checks
