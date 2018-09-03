@@ -15,7 +15,7 @@ Const SCREEN_H = 300
 ScreenRes SCREEN_W, SCREEN_H, 32
 
 '' Create a cairo drawing context, using the FB screen as surface.
-Var surface = cairo_image_surface_create_for_data(ScreenPtr(), CAIRO_FORMAT_ARGB32, SCREEN_W, SCREEN_H, SCREEN_W * SizeOf(Integer))
+Var surface = cairo_image_surface_create_for_data(ScreenPtr(), CAIRO_FORMAT_ARGB32, SCREEN_W, SCREEN_H, SCREEN_W * SizeOf(ULong))
 
 Var c = cairo_create(surface)
 

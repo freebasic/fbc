@@ -12,8 +12,11 @@
 '#define XML_UNICODE
 
 #include Once "expat.bi"
+#include Once "crt/mem.bi"
 
+#ifndef False
 #define False 0
+#endif
 #define NULL 0
 
 Const BUFFER_SIZE = 1024
@@ -30,8 +33,8 @@ Dim Shared As Context ctx
 Sub elementBegin cdecl _
 	( _
 		ByVal userdata As Any Ptr, _
-		ByVal element As XML_char Ptr, _
-		ByVal attributes As XML_char Ptr Ptr _
+		ByVal element As const XML_char Ptr, _
+		ByVal attributes As const XML_char Ptr Ptr _
 	)
 
 	'' Show its name
@@ -55,7 +58,7 @@ Sub elementBegin cdecl _
 End Sub
 
 '' Callback called by libexpat when end of XML tag is found
-Sub elementEnd cdecl(ByVal userdata As Any Ptr, ByVal element As XML_char Ptr)
+Sub elementEnd cdecl(ByVal userdata As Any Ptr, ByVal element As const XML_char Ptr)
 	'' Show text collected in charData() callback below
 	Print Space(ctx.nesting);ctx.text
 	ctx.text[0] = 0
@@ -66,7 +69,7 @@ End Sub
 Sub charData cdecl _
 	( _
 		ByVal userdata As Any Ptr, _
-		ByVal chars As XML_char Ptr, _  '' Note: not null-terminated
+		ByVal chars As const XML_char Ptr, _  '' Note: not null-terminated
 		ByVal length As Integer _
 	)
 
@@ -75,7 +78,7 @@ Sub charData cdecl _
 
 	'' Append to our buffer, if there still is free room, so we can print it out later
 	If (length <= (BUFFER_SIZE - ctx.textlength)) Then
-		fb_MemCopy(ctx.text[ctx.textlength], chars[0], length * SizeOf(XML_char))
+		memcpy(@ctx.text[ctx.textlength], @chars[0], length * SizeOf(XML_char))
 		ctx.textlength += length
 		ctx.text[ctx.textlength] = 0
 	End If

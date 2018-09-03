@@ -63,8 +63,8 @@ End Function
 	cryptInit( )
 
 	'' calculate hashes
-	Print "md5: "; calc_hash( filename, CRYPT_ALGO_MD5 )
-	Print "sha: "; calc_hash( filename, CRYPT_ALGO_SHA )
+	Print "md5:  "; calc_hash( filename, CRYPT_ALGO_MD5 )
+	Print "sha1: "; calc_hash( filename, CRYPT_ALGO_SHA1 )
 
 	'' shutdown cryptlib
 	cryptEnd( )

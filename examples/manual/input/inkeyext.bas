@@ -6,6 +6,10 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgInkey
 '' --------
 
+'' Compile with -lang fblite or qb
+
+#lang "fblite"
+
 #if __FB_LANG__ = "qb"
 #define EXTCHAR Chr$(0)
 #else

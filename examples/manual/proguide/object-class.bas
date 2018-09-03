@@ -9,10 +9,10 @@
 '' Sample Type showing available methods and operators
 '' Practically this is a pointless example, as the only
 '' data member is an Integer.  It serves only as a
-'' demonstration and guide.
+'' guide to syntax.
 ''
 '' There are many other combinations that can be
-'' used in pass parameters.  For simplicity
+'' used in passed parameters.  For simplicity
 '' This example only uses byref and type T
 '' where ever possible.
 
@@ -71,6 +71,13 @@ Type T
 
   '' Nonstatic Member Declarations:
 
+  '' Memory Allocation/Deallocation
+  
+  Declare Operator New ( ByVal size As UInteger ) As Any Ptr
+  Declare Operator New[] ( ByVal size As UInteger ) As Any Ptr
+  Declare Operator Delete ( ByVal buf As Any Ptr )
+  Declare Operator Delete[] ( ByVal buf As Any Ptr )
+
   '' Assignment
 
   Declare Operator Let ( ByRef rhs As T )
@@ -85,7 +92,6 @@ Type T
 
   Declare Operator += ( ByRef rhs As T )
   Declare Operator += ( ByRef rhs As DataType )
-
   Declare Operator -= ( ByRef rhs As DataType )
   Declare Operator *= ( ByRef rhs As DataType )
   Declare Operator /= ( ByRef rhs As DataType )
@@ -99,30 +105,31 @@ Type T
   Declare Operator Imp= ( ByRef rhs As DataType )
   Declare Operator Eqv= ( ByRef rhs As DataType )
   Declare Operator ^= ( ByRef rhs As DataType )
-
+  Declare Operator &= ( ByRef rhs As DataType )
+  
   '' Address of
 
   Declare Operator @ () As DataType Ptr
 
   '' Constructors can be overloaded
 
-  Declare Constructor()
-  Declare Constructor( ByRef rhs As T )
-  Declare Constructor( ByRef rhs As DataType )
+  Declare Constructor ()
+  Declare Constructor ( ByRef rhs As T )
+  Declare Constructor ( ByRef rhs As DataType )
 
   '' There can be only one destructor
 
-  Declare Destructor()
+  Declare Destructor ()
 
   '' Nonstatic member functions and subs
   '' overloaded procs must have different parameters
 
-  Declare Function f( ) As DataType
-  Declare Function f( ByRef arg1 As DataType ) As DataType
+  Declare Function f ( ) As DataType
+  Declare Function f ( ByRef arg1 As DataType ) As DataType
 
-  Declare Sub s( )
-  Declare Sub s( ByRef arg1 As T )
-  Declare Sub s( ByRef arg1 As DataType )
+  Declare Sub s ( )
+  Declare Sub s ( ByRef arg1 As T )
+  Declare Sub s ( ByRef arg1 As DataType )
 
   '' Properties
 
@@ -131,6 +138,16 @@ Type T
 
   Declare Property pidx ( ByVal index As DataType ) As DataType
   Declare Property pidx ( ByVal index As DataType, ByRef new_value As DataType )
+
+  '' Iterator
+  
+  Declare Operator For ()
+  Declare Operator Step ()
+  Declare Operator Next ( ByRef cond As T ) As Integer
+
+  Declare Operator For ( ByRef stp As T )
+  Declare Operator Step ( ByRef stp As T )
+  Declare Operator Next ( ByRef cond As T, ByRef stp As T ) As Integer
 
 End Type
 
@@ -167,6 +184,13 @@ Declare Operator < ( ByRef lhs As T, ByRef rhs As DataType ) As DataType
 Declare Operator > ( ByRef lhs As T, ByRef rhs As DataType ) As DataType
 Declare Operator <= ( ByRef lhs As T, ByRef rhs As DataType ) As DataType
 Declare Operator >= ( ByRef lhs As T, ByRef rhs As DataType ) As DataType
+Declare Operator & ( ByRef lhs As T, ByRef rhs As DataType ) As DataType
+
+Declare Operator Abs ( ByRef arg As UDT ) As Double
+Declare Operator Fix ( ByRef arg As UDT ) As Double
+Declare Operator Frac ( ByRef arg As UDT ) As Double
+Declare Operator Int ( ByRef arg As UDT ) As Double
+Declare Operator Sgn ( ByRef arg As UDT ) As Double
 
 '' Global procedures (subs and funcs) can also accept the TYPE
 '' as a parameter or return it as a value, as could be done
@@ -180,6 +204,22 @@ Declare Operator >= ( ByRef lhs As T, ByRef rhs As DataType ) As DataType
 
 '' Name resolution in a NAMESPACE is same as other
 '' subs/funcs.  Use USING or prefix the namespace name
+
+Operator T.new ( ByVal size As UInteger ) As Any Ptr
+	Operator = Allocate( size )
+End Operator
+ 
+Operator T.new[] ( ByVal size As UInteger ) As Any Ptr
+	Operator = Allocate( size )
+End Operator
+
+Operator T.delete ( ByVal buf As Any Ptr )
+	Deallocate buf
+End Operator
+
+Operator T.delete[] ( ByVal buf As Any Ptr )
+	Deallocate buf
+End Operator
 
 Operator T.let ( ByRef rhs As T )
   value = rhs.value  
@@ -257,6 +297,11 @@ Operator T.^= ( ByRef rhs As DataType )
   value ^= rhs
 End Operator
 
+Operator T.&= ( ByRef rhs As DataType )
+  Dim tmp As String
+  tmp &= Str( rhs )
+End Operator
+
 Operator T.@ () As DataType Ptr
   Return( Cast( DataType Ptr, @This ))
 End Operator
@@ -264,21 +309,24 @@ End Operator
 
 '' Constructors:
 
-Constructor T()
+Constructor T ()
+  '' default constructor
   value = 0
 End Constructor
 
-Constructor T( ByRef rhs As T )
+Constructor T ( ByRef rhs As T )
+  '' copy constructor
   value = rhs.value
 End Constructor
 
-Constructor T( ByRef rhs As DataType )
+Constructor T ( ByRef rhs As DataType )
+  '' custom constructor
   value = rhs
 End Constructor
 
 '' There can be only one destructor
 
-Destructor T()
+Destructor T ()
   '' clean-up, none in this example
 End Destructor
 
@@ -382,20 +430,43 @@ Operator >= ( ByRef lhs As T, ByRef rhs As DataType ) As DataType
   Return (lhs.value >= rhs)
 End Operator
 
+Operator & ( ByRef lhs As T, ByRef rhs As DataType ) As DataType
+  Return Val(lhs.value & rhs)
+End Operator
+
+Operator Abs ( ByRef arg As UDT ) As Double
+	Return Abs(arg.value)
+End Operator
+
+Operator Fix ( ByRef arg As UDT ) As Double
+	Return Fix(arg.value)
+End Operator
+
+Operator Frac ( ByRef arg As UDT ) As Double
+	Return Frac(arg.value)
+End Operator
+
+Operator Int ( ByRef arg As UDT ) As Double
+	Return Int(arg.value)
+End Operator
+
+Operator Sgn ( ByRef arg As UDT ) As Double
+	Return Sgn(arg.value)
+End Operator
 
 '' Nonstatic member methods
 
-Function T.f( ) As DataType
+Function T.f ( ) As DataType
   Dim x As DataType
   Return x
 End Function
 
-Function T.f( ByRef arg1 As DataType ) As DataType
+Function T.f ( ByRef arg1 As DataType ) As DataType
   arg1 = this.value
   Return value
 End Function
 
-Sub T.s( )
+Sub T.s ( )
   '' refer to the type using
   
   '' with block
@@ -411,11 +482,11 @@ Sub T.s( )
 
 End Sub
 
-Sub T.s( ByRef arg1 As T )
+Sub T.s ( ByRef arg1 As T )
   value = arg1.value
 End Sub
 
-Sub T.s( ByRef arg1 As DataType )
+Sub T.s ( ByRef arg1 As DataType )
   value = arg1
 End Sub
 
@@ -439,6 +510,25 @@ Property T.pidx ( ByVal index As DataType, ByRef new_value As DataType )
   value_array( index ) = new_value
 End Property
 
+Operator T.for ()
+End Operator
+
+Operator T.step ()
+End Operator
+
+Operator T.next ( ByRef cond As T ) As Integer
+  Return 0
+End Operator
+
+Operator T.for ( ByRef stp As T )
+End Operator 
+
+Operator T.step ( ByRef stp As T )
+End Operator
+
+Operator T.next ( ByRef cond As T, ByRef stp As T ) As Integer
+  Return 0
+End Operator
 
 '' new, delete, delete[]
 

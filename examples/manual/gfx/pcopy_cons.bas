@@ -6,6 +6,10 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPcopy
 '' --------
 
+'' Compile with -lang fblite or qb
+
+#lang "fblite"
+
 '' Console mode example:
 
 '' Set the working page number to 0, and the visible page number to 1
