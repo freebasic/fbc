@@ -1,10 +1,6 @@
-{{fbdoc item="title" value="Operator Delete"}}----
-Operator to delete data allocated with the ##[[KeyPgOpNew|New]]## operator
+{{fbdoc item="title" value="Operator Delete Statement"}}----
+Operator to destroy data and free memory allocated with the ##[[KeyPgOpNew|Operator New Expression]]##
 
-{{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **delete** ( //buf//  [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
-	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **delete[]** ( //buf//  [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )
-##
 {{fbdoc item="usage"}}##
 	**Delete** //buf//
 		//or//
@@ -12,23 +8,23 @@ Operator to delete data allocated with the ##[[KeyPgOpNew|New]]## operator
 ##
 {{fbdoc item="param"}}
 	##//buf//## 
-		A pointer to memory that has been allocated by ##[[KeyPgOpNew|New]]## or ##[[KeyPgOpNew|New]][]## (a typed pointer must be provided in accordance to the data type to delete).
+		A pointer to memory that has been allocated by ##[[KeyPgOpNew|New Expression]]## operator or ##**New[] Expression**## operator, the array-version of ##[[KeyPgOpNew|New Expression]]## operator (a typed pointer must be provided in accordance to the data type to delete).
 
 {{fbdoc item="desc"}}
-	##**Delete**## is used to destroy and free the memory of an object created with ##[[KeyPgOpNew|New]]##. When deleting a TYPE, its destructor will be called. ##**Delete**## should only be used with addresses returned from ##[[KeyPgOpNew|New]]##.
+	The ##**Delete Statement**## operator is used to destroy and free the memory of an object created with ##[[KeyPgOpNew|New Expression]]## operator. When deleting a TYPE, its destructor will be called. ##**Delete Statement**## operator should only be used with addresses returned from ##[[KeyPgOpNew|New Expression]]## operator.
 	
-	The array version of ##**Delete**##, ##**Delete[]**##, is used to destroy an array of objects previously created with ##[[KeyPgOpNew|New]][]##. Destructors will be called here as well.
+	The array version of ##**Delete Statement**## operator, ##**Delete[] Statement**## operator, is used to destroy an array of objects previously created with ##**New[] Expression**## operator, the array-version of ##[[KeyPgOpNew|New Expression]]## operator. Destructors will be called here as well.
 	
-	##**Delete**## must be used with addresses returned from ##[[KeyPgOpNew|New]]##, and ##**Delete[]**## with ##[[KeyPgOpNew|New]][]##. You cannot mix and match the different versions of the operators.
+	##**Delete Statement**## operator must be used with addresses returned from ##[[KeyPgOpNew|New Expression]]## operator, and ##**Delete[] Statement**## operator with ##**New[] Expression**## operator, the array-version of ##[[KeyPgOpNew|New Expression]]## operator. You cannot mix and match the different versions of the operators.
 	
-	After the memory is deleted, the ##//buf//## pointer will be pointing at invalid memory. Calling ##**Delete**## twice on the same pointer value leads to undefined behaviour. It may be a good idea to set the //##buf//## pointer to null (##0##), in order to guard against later code using it accidentally, since null pointer dereferences are easier to find and debug.
+	After the memory is deleted, the ##//buf//## pointer will be pointing at invalid memory. Calling ##**Delete Expression**## twice on the same pointer value leads to undefined behavior. It may be a good idea to set the //##buf//## pointer to null (##0##), in order to guard against later code using it accidentally, since null pointer dereferences are easier to find and debug.
 	
-	Calling ##**Delete**## on a null pointer induces no action.
+	Calling ##**Delete Statement**## operator on a null pointer induces no action.
 	
-	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]##.
+	The memory deallocation process part provided by the ##**Delete Statement**## operator can be overloaded for user-defined types as a member operator ##[[KeyPgOpDeleteOverload|Delete Overload]]##. The previous process part for data destruction can never be modified.
 	
-	**Note:** Any operator ##**Delete[]**## (or the only overload operator ##**Delete**##) is not compatible with polymorphism, even using ##[[KeyPgOverride|Override]]## ##[[KeyPgVirtual|Virtual]]## ##[[KeyPgDestructor|Destructor]]## that may in addition induce crashing.
-	Instead of having to call such an operator ##**Delete([])**## on derived-type pointer, the safest way is to simply call (on base-type pointer) an overridden user ##[[KeyPgVirtual|Virtual]]## member procedure that will automatically launch the operator ##**Delete([])**## at derived-type level.
+	**Note:** Any operator ##**Delete[] Statement**## (or the only overload operator ##**Delete Statement**##) is not compatible with sub-type polymorphism, even using ##[[KeyPgOverride|Override]]## ##[[KeyPgVirtual|Virtual]]## ##[[KeyPgDestructor|Destructor]]## that may in addition induce crashing.
+	Instead of having to call such an operator ##**Delete([]) Statement**## on derived-type pointer, the safest way is to simply call (on base-type pointer) an overridden user ##[[KeyPgVirtual|Virtual]]## member procedure that will automatically launch the operator ##**Delete([]) Statement**## at derived-type level.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/delete.bas"}}%%(freebasic)
@@ -70,7 +66,8 @@ p = 0
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpNew|New]]##
+	- ##[[KeyPgOpNew|New Expression]]##
+	- ##[[KeyPgOpDeleteOverload|Delete Overload]]##
 	- ##[[KeyPgDeallocate|Deallocate]]##
 
 {{fbdoc item="back" value="CatPgOpMemory|Memory Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

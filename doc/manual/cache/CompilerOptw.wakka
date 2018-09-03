@@ -2,7 +2,7 @@
 Set minimum warning level.
 
 {{fbdoc item="syntax"}}##
-	**-w** //level// | **all** | **param** | **escape** | **pedantic** | **next**
+	**-w** //level// | **all** | **param** | **escape** | **pedantic** | **next** | **constness**
 ##
 {{fbdoc item="param"}}
 	##//level//##
@@ -17,11 +17,13 @@ Set minimum warning level.
 		Equivalent to specifying the ##**param**## and ##**escape**## arguments, plus length checking of parameters passed ##[[KeyPgByval|ByVal]]## and of any ##[[KeyPgCptr|Cptr]]## converting to pointer only.
 	##**next**##
 		Warn when ##[[KeyPgNext|Next]]## is followed by an identifier.
+	##**constness**##
+		Warn when ##[[KeyPgConstQualifier|CONST (Qualifier)]]## is discarded in an assignment.
 
 {{fbdoc item="desc"}}
 	The ##-w## compiler option determines which compiler warnings, if any, are output. Each possible warning is associated with a warning level, starting from zero (##0##) and increasing with the potential problems that may occur. A significantly high ##//level//## value will have the effect of suppressing all warning messages.
 	
-	Note that the ##**param**##, ##**escape**##, ##**pedantic**## and ##**next**## arguments provide additional warnings not ordinarily output, even by default.
+	Note that the ##**param**##, ##**escape**##, ##**pedantic**##, ##**next**## and ##**constness**## arguments provide additional warnings not ordinarily output, even by default.
 	
 	If the ##**-w**## option is not specified, it's as if ##**-w 0**## was used. The ##**-w**## option can be specified multiple times.
 

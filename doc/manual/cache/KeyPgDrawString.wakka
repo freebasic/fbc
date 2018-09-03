@@ -43,6 +43,8 @@ Graphics statement to render text to an image or screen.
 	
 	Note: If a custom font isn't supplied, **##Draw String##** will default to the standard font, as used by ##[[KeyPgPrint|Print]]##, with character size dictated by ##[[KeyPgWidth|Width]]##.  ##//method//## - if passed - will be ignored, and the text will be drawn using the color supplied, with a transparent background.
 	
+	**##Draw String##** coordinates are affected by custom coordinates system set via ##[[KeyPgWindow|Window]]## and ##[[KeyPgViewgraphics|View (Graphics)]]## statements, and the drawn text respects clipping rectangle set by ##[[KeyPgViewgraphics|View (Graphics)]]##.
+	
 	==The custom font format:==
 	The font is stored in a standard ##[[KeyPgGetgraphics|Get]]##/##[[KeyPgPutgraphics|Put]]## buffer; the font has to be stored in a buffer using the same depth as the current color depth, otherwise **##Draw String##** will bump out with an illegal function call runtime error.
 	

@@ -130,7 +130,7 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	Refers to the internal data structure used by the compiler and runtime library for managing variable length strings and arrays.
 
 **destroy (TYPE or CLASS)**
-	The act of deconstructing and deallocating memory for an object instance. When an object is destroyed, its destructor is called. This happens automatically when an object goes out of scope, or when ##[[KeyPgOpDelete|Delete]]## is called with a pointer to an object.
+	The act of deconstructing and deallocating memory for an object instance. When an object is destroyed, its destructor is called. This happens automatically when an object goes out of scope, or when ##[[KeyPgOpDelete|Delete (Statement)]]## is called with a pointer to an object.
 
 **destructor (module)**
 	A special type of module-level procedure that is automatically called at program termination. See ##[[KeyPgModuleDestructor|Destructor (Module)]]##.

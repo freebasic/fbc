@@ -213,7 +213,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDefuint|DEFUINT"}}
 	- {{fbdoc item="keyword" value="KeyPgDefulongint|DEFULONGINT"}}
 	- {{fbdoc item="keyword" value="KeyPgDefushort|DEFUSHORT"}}
-	- {{fbdoc item="keyword" value="KeyPgOpDelete|DELETE"}}
+	- {{fbdoc item="keyword" value="KeyPgOpDelete|DELETE (Statement)"}}
 	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}
 	- {{fbdoc item="keyword" value="KeyPgModuleDestructor|DESTRUCTOR (Module)"}}
 	- {{fbdoc item="keyword" value="KeyPgDim|DIM"}}
@@ -367,7 +367,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgNaked|NAKED"}}
 	- {{fbdoc item="keyword" value="KeyPgName|NAME"}}
 	- {{fbdoc item="keyword" value="KeyPgNamespace|NAMESPACE"}}
-	- {{fbdoc item="keyword" value="KeyPgOpNew|NEW"}}
+	- {{fbdoc item="keyword" value="KeyPgOpNew|NEW (Expression)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpPlacementNew|NEW (Placement)"}}
 	- {{fbdoc item="keyword" value="KeyPgNext|NEXT"}}
 	- {{fbdoc item="keyword" value="KeyPgResumenext|NEXT (RESUME)"}}

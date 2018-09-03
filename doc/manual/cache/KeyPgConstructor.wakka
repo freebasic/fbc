@@ -24,7 +24,7 @@ Called automatically when a class or user defined type is created
 	
 	A constructor method is passed a hidden ##[[KeyPgThis|this]]## parameter having the same type as ##//typename//##.  ##[[KeyPgThis|this]]## is optionally used to access the fields of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## which is to be initialized in the ##**Constructor**## method.
 	
-	Constructors are called when declaring global or local static instances of ##//typename//## and when allocating ##//typename//## dynamically using the ##[[KeyPgOpNew|New]]## operator. See examples below for different constructor syntaxes.
+	Constructors are called when declaring global or local static instances of ##//typename//## and when allocating ##//typename//## dynamically using the ##[[KeyPgOpNew|New Expression]]## operator. See examples below for different constructor syntaxes.
 	
 	A copy ##**Constructor**## is a special constructor that initializes a new object from an existing object. There are three general cases where the copy ##**Constructor**## is called: when instantiating one object and initializing it with another object (in one instruction), when passing an object by value, when an object is returned from a function by value (by using ##[[KeyPgReturn|Return]] //x//## statement).
 		Note: When an object is returned from a function by value, but by using ##**Function** = //x//## (or ##//function_identifier// = //x//##) assignment, the ##**Constructor**## is called once at first, and then the ##[[KeyPgOpLet|Let (Assign)]]## operator at each assignment.
@@ -189,7 +189,7 @@ Sleep
 {{fbdoc item="see"}}
 	- ##[[KeyPgClass|Class]]##
 	- ##[[KeyPgModuleConstructor|Constructor (Module)]]##
-	- ##[[KeyPgOpNew|New]]##
+	- ##[[KeyPgOpNew|New Expression]]##
 	- ##[[KeyPgDestructor|Destructor]]##
 	- ##[[KeyPgType|Type]]##
 	- [[ProPgDataConversion|Coercion and Conversion]]

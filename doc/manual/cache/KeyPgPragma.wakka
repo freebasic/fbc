@@ -11,7 +11,7 @@ Preprocessor directive
 {{fbdoc item="param"}}
 	Possible values for ##//option//## and related ##//value//##s:
 	
-	{{table columns="3" cellpadding="1" cells="Option; Value; Description; msbitfields; 0; Use bitfields compatible with gcc (default);###; -1 (or any other non-zero value); Use bitfields compatible with those used in Microsoft C compilers; once; N/A; cause the source file in which the pragma appears to behave as though it was included with #include once ..."}}
+	{{table columns="3" cellpadding="1" cells="Option; Value; Description; msbitfields; 0; Use bitfields compatible with gcc (default);###; -1 (or any other non-zero value); Use bitfields compatible with those used in Microsoft C compilers; once; N/A; cause the source file in which the pragma appears to behave as though it was included with #include once ...; constness; 0; cause the source file in which the pragma appears to disable 'CONST qualifier discarded' warning;###; -1 (or any other non-zero value); cause the source file in which the pragma appears to enable 'CONST qualifier discarded' warning"}}
 	
 	If //value// is not given, the compiler assumes //-1// (//TRUE//).
 

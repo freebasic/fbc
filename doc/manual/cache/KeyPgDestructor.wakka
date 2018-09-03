@@ -16,7 +16,7 @@ Called automatically when a class or user defined type goes out of scope or is d
 		name of the ##[[KeyPgType|Type]]## of ##[[KeyPgClass|Class]]##
 
 {{fbdoc item="desc"}}
-	The destructor method is called when a user defined ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## variable goes out of scope or is destroyed explicitly with the ##[[KeyPgOpDelete|Delete]]## operator.
+	The destructor method is called when a user defined ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]## variable goes out of scope or is destroyed explicitly with the ##[[KeyPgOpDelete|Delete Statement]]## operator.
 	
 	##//typename//## is the name of the type for which the ##**Destructor**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace|Namespace]]##.
 	
@@ -77,7 +77,7 @@ Destroying: main.x
 {{fbdoc item="see"}}
 	- ##[[KeyPgClass|Class]]##
 	- ##[[KeyPgConstructor|Constructor]]##
-	- ##[[KeyPgOpDelete|Delete]]##
+	- ##[[KeyPgOpDelete|Delete Statement]]##
 	- ##[[KeyPgModuleDestructor|Destructor (Module)]]##
 	- ##[[KeyPgType|Type]]##
 

@@ -210,7 +210,7 @@
 		[[KeyPgDefuint|DEFUINT]]
 		[[KeyPgDefulongint|DEFULONGINT]]
 		[[KeyPgDefushort|DEFUSHORT]]
-		[[KeyPgOpDelete|DELETE]]
+		[[KeyPgOpDelete|DELETE (Statement)]]
 		[[KeyPgDestructor|DESTRUCTOR]]
 		[[KeyPgModuleDestructor|DESTRUCTOR (Module)]]
 		[[KeyPgDim|DIM]]
@@ -364,7 +364,7 @@
 		[[KeyPgNaked|NAKED]]
 		[[KeyPgName|NAME]]
 		[[KeyPgNamespace|NAMESPACE]]
-		[[KeyPgOpNew|NEW]]
+		[[KeyPgOpNew|NEW (Expression)]]
 		[[KeyPgOpPlacementNew|NEW (Placement)]]
 		[[KeyPgNext|NEXT]]
 		[[KeyPgResumenext|NEXT (RESUME)]]
@@ -692,9 +692,11 @@
 		[[KeyPgOpIs|Operator Is (Run-time type information)]]
 
 	{{fbdoc item="subsect" value="Memory operators"}}
-		[[KeyPgOpNew|Operator New]]
+		[[KeyPgOpNew|Operator New Expression]]
+			[[KeyPgOpNewOverload|Operator New Overload]]
 		[[KeyPgOpPlacementNew|Operator Placement New]]
-		[[KeyPgOpDelete|Operator Delete]]
+		[[KeyPgOpDelete|Operator Delete Statement]]
+			[[KeyPgOpDeleteOverload|Operator Delete Overload]]
 
 	{{fbdoc item="subsect" value="Iterating operators"}}
 		[[KeyPgOpFor|Operator For]]

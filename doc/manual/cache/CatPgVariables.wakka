@@ -1,19 +1,19 @@
 {{fbdoc item="title" value="Variable Declarations"}}----
 Statements to declare and allocate space for variables.
 
-<<=={{fbdoc item="keyword" value="KeyPgDim|DIM"}}==
+<<**{{fbdoc item="keyword" value="KeyPgDim|DIM"}}**
 	Declares a variable at the current scope.
-=={{fbdoc item="keyword" value="KeyPgConst|CONST"}}==
+**{{fbdoc item="keyword" value="KeyPgConst|CONST"}}**
 	Declares a non-modifiable variable.
-=={{fbdoc item="keyword" value="KeyPgScope|SCOPE"}}==
+**{{fbdoc item="keyword" value="KeyPgScope|SCOPE"}}**
 	Begins a new scope block.
-=={{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}==
+**{{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}**
 	Declares variables in a procedure that retain their value between calls.
-<<>>=={{fbdoc item="keyword" value="KeyPgShared|SHARED"}}==
+<<>>**{{fbdoc item="keyword" value="KeyPgShared|SHARED"}}**
 	Used with ##[[KeyPgDim|Dim]]## allows variables to be visible throughout a module.
-=={{fbdoc item="keyword" value="KeyPgVar|VAR"}}==
+**{{fbdoc item="keyword" value="KeyPgVar|VAR"}}**
 	Declares variables where the data type is implied from an initializer.
-=={{fbdoc item="keyword" value="KeyPgByrefVariables|BYREF (variables)"}}==
+**{{fbdoc item="keyword" value="KeyPgByrefVariables|BYREF (variables)"}}**
 	Used with ##[[KeyPgDim|Dim]]## or ##[[KeyPgStatic|Static]]## or ##[[KeyPgVar|Var]]## allows to declare references.
 >>
 

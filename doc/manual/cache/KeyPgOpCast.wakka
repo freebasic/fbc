@@ -2,7 +2,7 @@
 Operator to convert a UDT (User Defined Type) variable into a specified data type
 
 {{fbdoc item="syntax"}}##
-	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] | [[KeyPgEnum|Enum]] } //typename//
+	{ [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] } //typename//
 		[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **cast** () [ [[KeyPgByrefFunction|byref]] ] [[KeyPgAs|as]] [[DataType|datatype]]
 		...
 	End { [[KeyPgType|Type]] | [[KeyPgClass|Class]] | [[KeyPgUnion|Union]] }
@@ -258,7 +258,7 @@ Sleep
 	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 
 {{fbdoc item="diff"}}
-	- New to ""FreeBASIC""
+	- New to ""FreeBASIC"".
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgCast|Cast]]##
