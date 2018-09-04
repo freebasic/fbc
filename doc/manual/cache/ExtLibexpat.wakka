@@ -14,121 +14,124 @@ Examples: in examples/xml/
 '' Can use zstring or wstring (libexpat or libexpatw):
 '#define XML_UNICODE
 
-#include once "expat.bi"
+#include Once "expat.bi"
+#include Once "crt/mem.bi"
 
-#define FALSE 0
+#ifndef False
+#define False 0
+#endif
 #define NULL 0
 
-const BUFFER_SIZE = 1024
+Const BUFFER_SIZE = 1024
 
-type Context
-	as integer nesting
-	as XML_char * (BUFFER_SIZE+1) text
-	as integer textlength
-end type
+Type Context
+	As Integer nesting
+	As XML_char * (BUFFER_SIZE+1) text
+	As Integer textlength
+End Type
 
-dim shared as Context ctx
+Dim Shared As Context ctx
 
 '' Callback called by libexpat when begin of XML tag is found
-sub elementBegin cdecl _
+Sub elementBegin cdecl _
 	( _
-		byval userdata as any ptr, _
-		byval element as XML_char ptr, _
-		byval attributes as XML_char ptr ptr _
+		ByVal userdata As Any Ptr, _
+		ByVal element As const XML_char Ptr, _
+		ByVal attributes As const XML_char Ptr Ptr _
 	)
 
 	'' Show its name
-	print space(ctx.nesting);*element;
+	Print Space(ctx.nesting);*element;
 
 	'' and its attributes (attributes are given as an array of XML_char pointers
 	'' much like argv, for each attribute there will apparently be the one
 	'' element representing the name and a second element representing the
 	'' specified value)
-	while (*attributes)
-		print " ";**attributes;
+	While (*attributes)
+		Print " ";**attributes;
 		attributes += 1
-		print "='";**attributes;"'";
+		Print "='";**attributes;"'";
 		attributes += 1
-	wend
-	print
+	Wend
+	Print
 
 	ctx.nesting += 1
 	ctx.text[0] = 0
 	ctx.textlength = 0
-end sub
+End Sub
 
 '' Callback called by libexpat when end of XML tag is found
-sub elementEnd cdecl(byval userdata as any ptr, byval element as XML_char ptr)
+Sub elementEnd cdecl(ByVal userdata As Any Ptr, ByVal element As const XML_char Ptr)
 	'' Show text collected in charData() callback below
-	print space(ctx.nesting);ctx.text
+	Print Space(ctx.nesting);ctx.text
 	ctx.text[0] = 0
 	ctx.textlength = 0
 	ctx.nesting -= 1
-end sub
+End Sub
 
-sub charData cdecl _
+Sub charData cdecl _
 	( _
-		byval userdata as any ptr, _
-		byval chars as XML_char ptr, _  '' Note: not null-terminated
-		byval length as integer _
+		ByVal userdata As Any Ptr, _
+		ByVal chars As const XML_char Ptr, _  '' Note: not null-terminated
+		ByVal length As Integer _
 	)
 
 	'' This callback will apparently recieve every data between xml tags
 	'' (really?), including newlines and space.
 
 	'' Append to our buffer, if there still is free room, so we can print it out later
-	if (length <= (BUFFER_SIZE - ctx.textlength)) then
-		fb_MemCopy(ctx.text[ctx.textlength], chars[0], length * sizeof(XML_char))
+	If (length <= (BUFFER_SIZE - ctx.textlength)) Then
+		memcpy(@ctx.text[ctx.textlength], @chars[0], length * SizeOf(XML_char))
 		ctx.textlength += length
 		ctx.text[ctx.textlength] = 0
-	end if
-end sub
+	End If
+End Sub
 
 ''
 '' Main
 ''
 
-	dim as string filename = command(1)
-	if (len(filename) = 0) then
-		print "Usage: expat <xmlfilename>"
-		end 1
-	end if
+	Dim As String filename = Command(1)
+	If (Len(filename) = 0) Then
+		Print "Usage: expat <xmlfilename>"
+		End 1
+	End If
 
-	dim as XML_Parser parser = XML_ParserCreate(NULL)
-	if (parser = NULL) then
-		print "XML_ParserCreate failed"
-		end 1
-	end if
+	Dim As XML_Parser parser = XML_ParserCreate(NULL)
+	If (parser = NULL) Then
+		Print "XML_ParserCreate failed"
+		End 1
+	End If
 
 	''XML_SetUserData(parser, userdata_pointer)
 	XML_SetElementHandler(parser, @elementBegin, @elementEnd)
 	XML_SetCharacterDataHandler(parser, @charData)
 
 
-	if (open(filename, for input, as #1)) then
-		print "Could not open file: '";filename;"'"
-		end 1
-	end if
+	If (Open(filename, For Input, As #1)) Then
+		Print "Could not open file: '";filename;"'"
+		End 1
+	End If
 
-	static as ubyte buffer(0 to (BUFFER_SIZE-1))
+	Static As UByte buffer(0 To (BUFFER_SIZE-1))
 
-	dim as integer reached_eof = FALSE
-	do
-		dim as integer size = BUFFER_SIZE
-		dim as integer result = get(#1, , buffer(0), size, size)
-		if (result or (size <= 0)) then
-			print "File input error"
-			end 1
-		end if
+	Dim As Integer reached_eof = False
+	Do
+		Dim As Integer size = BUFFER_SIZE
+		Dim As Integer result = Get(#1, , buffer(0), size, size)
+		If (result Or (size <= 0)) Then
+			Print "File input error"
+			End 1
+		End If
 
-		reached_eof = (eof(1) <> FALSE)
+		reached_eof = (EOF(1) <> False)
 
-		if (XML_Parse(parser, @buffer(0), size, reached_eof) = FALSE) then
-			print filename & "(" & XML_GetCurrentLineNumber(parser) & "): Error from XML parser: "
-			print *XML_ErrorString(XML_GetErrorCode(parser))
-			end 1
-		end if
-	loop while (reached_eof = FALSE)
+		If (XML_Parse(parser, @buffer(0), size, reached_eof) = False) Then
+			Print filename & "(" & XML_GetCurrentLineNumber(parser) & "): Error from XML parser: "
+			Print *XML_ErrorString(XML_GetErrorCode(parser))
+			End 1
+		End If
+	Loop While (reached_eof = False)
 
 	XML_ParserFree(parser)
 %%

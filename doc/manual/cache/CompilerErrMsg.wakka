@@ -14,7 +14,7 @@ During the program compilation three types of errors can arise:
 	- //7 Identifier's name too big, truncated//
 	- //8 Literal number too big, truncated//
 	- //9 Literal string too big, truncated//
-	- //10 UDT with pointer or var-len string fields//
+	- //10 UDT with pointer, var-len string, or var-len array fields//
 	- //11 Implicit variable allocation//
 	- //12 Missing closing quote in literal string//
 	- //13 Function result was not explicitly set//
@@ -41,7 +41,7 @@ During the program compilation three types of errors can arise:
 	- //34 '=' parsed as equality operator in function argument, not assignment to BYREF function result//
 	- //35 Mixing signed/unsigned operands//
 	- //36 Mismatching parameter initializer//
-	- //37 //
+	- //37 Ambiguous LEN or SIZEOF//
 	- //38 Suspicious logic operation, mixed boolean and non-boolean operands//
 	- //39 Redefinition of intrinsic//
 	- //40 CONST qualifier discarded//

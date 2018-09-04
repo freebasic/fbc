@@ -27,6 +27,10 @@ do
 loop until inkey = "q"
 %%
 {{fbdoc item="filename" value="examples/manual/input/inkeyext.bas"}}%%(freebasic)
+'' Compile with -lang fblite or qb
+
+#lang "fblite"
+
 #if __FB_LANG__ = "qb"
 #define EXTCHAR Chr$(0)
 #else

@@ -2,13 +2,15 @@
 Set minimum warning level.
 
 {{fbdoc item="syntax"}}##
-	**-w** //level// | **all** | **param** | **escape** | **pedantic** | **next** | **constness**
+	**-w** //level// | **all** | **none** | **param** | **escape** | **pedantic** | **next** | **funcptr** | **constness**
 ##
 {{fbdoc item="param"}}
 	##//level//##
-		Warning messages only with a level equal or greater to this value will be output.
+		Warning messages only with a level equal or greater to this value will be output.  
 	##**all**##
-		Equivalent to specifying a ##//level//## of zero (##0##).
+		Equivalent to specifying a ##//level//## of negative one (##-1##).
+	##**none**##
+		Suppresses all warnings.
 	##**param**##
 		Warn when procedure parameters aren't specified with either ##[[KeyPgByval|ByVal]]## or ##[[KeyPgByref|ByRef]]##.
 	##**escape**##
@@ -17,16 +19,20 @@ Set minimum warning level.
 		Equivalent to specifying the ##**param**## and ##**escape**## arguments, plus length checking of parameters passed ##[[KeyPgByval|ByVal]]## and of any ##[[KeyPgCptr|Cptr]]## converting to pointer only.
 	##**next**##
 		Warn when ##[[KeyPgNext|Next]]## is followed by an identifier.
+	##**funcptr**##
+		Warn on mismatched procedure pointers, including conversions in ##[[KeyPgCast|CAST]]## and ##[[KeyPgCptr|CPTR]]## expressions.  Implies '-w all'. Experimental.  Behaviour may change in future versions.
 	##**constness**##
-		Warn when ##[[KeyPgConstQualifier|CONST (Qualifier)]]## is discarded in an assignment.
+		Warn when ##[[KeyPgConstQualifier|CONST (Qualifier)]]## is discarded in an assignment. Implies '-w funcptr' and '-w all'.  Behaviour may change in future versions.
 
 {{fbdoc item="desc"}}
-	The ##-w## compiler option determines which compiler warnings, if any, are output. Each possible warning is associated with a warning level, starting from zero (##0##) and increasing with the potential problems that may occur. A significantly high ##//level//## value will have the effect of suppressing all warning messages.
+	The ##-w## compiler option determines which compiler warnings, if any, are output. Each possible warning is associated with a warning level, starting from negative one (##-1##) and increasing with the potential problems that may occur.
 	
-	Note that the ##**param**##, ##**escape**##, ##**pedantic**##, ##**next**## and ##**constness**## arguments provide additional warnings not ordinarily output, even by default.
+	The ##**param**##, ##**escape**##, ##**pedantic**##, ##**next**##, ##**funcptr**##, and ##**constness**## arguments provide additional warnings not ordinarily output, even by default.
 	
-	If the ##**-w**## option is not specified, it's as if ##**-w 0**## was used. The ##**-w**## option can be specified multiple times.
-
+	The default, if the ##**-w**## option is not specified, is as if ##**-w 0**## was used. The ##**-w**## option can be specified multiple times.  Warning messages having a level of ##-1## are not shown by default.
+	
+	##-w none##, or a significantly high ##//level//## value will have the effect of suppressing all warning messages. 
+	
 {{fbdoc item="see"}}
 	- [[CompilerCmdLine|Using the Command Line]]
 

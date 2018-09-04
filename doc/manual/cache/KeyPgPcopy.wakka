@@ -49,6 +49,10 @@ Sleep
 %%
 	
 	{{fbdoc item="filename" value="examples/manual/gfx/pcopy_cons.bas"}}%%(freebasic)
+'' Compile with -lang fblite or qb
+
+#lang "fblite"
+
 '' Console mode example:
 
 '' Set the working page number to 0, and the visible page number to 1

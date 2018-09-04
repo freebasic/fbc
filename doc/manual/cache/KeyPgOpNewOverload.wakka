@@ -99,34 +99,33 @@ Sleep
 	%%(freebasic)
 Type UDTmanager
   '' user UDT fields:
-	Dim As Byte b(1 to 1024*1024)
+	Dim As Byte b(1 To 1024*1024)
   '' manager fields:
 	Public:
-	  Declare Operator New[] (Byval size As Uinteger) As Any Ptr
-	  Declare Operator Delete[] (Byval buf As Any Ptr)
-	  Static As Uinteger maxmemory
+	  Declare Operator New[] (ByVal size As UInteger) As Any Ptr
+	  Declare Operator Delete[] (ByVal buf As Any Ptr)
+	  Static As UInteger maxmemory
 	Private:
 	  Static As Any Ptr address()
-	  Static As Uinteger bytes()
-	  Static upbound As Uinteger
-	  Declare Static Function printLine (Byref text As String, Byval index As Uinteger, Byval sign As Integer) As Uinteger
+	  Static As UInteger bytes()
+	  Static upbound As UInteger
+	  Declare Static Function printLine (ByRef text As String, ByVal index As UInteger, ByVal sign As Integer) As UInteger
 	  Declare Static Sub endProgram ()
 End Type
 
-Dim As Uinteger UDTmanager.maxmemory = 3 * 1024 * 1024 * 1024
-Redim UDTmanager.address(0)
-Redim UDTmanager.bytes(0)
-Dim UDTmanager.upbound As Uinteger = 0
+Dim As UInteger UDTmanager.maxmemory = 3 * 1024 * 1024 * 1024
+ReDim UDTmanager.address(0)
+ReDim UDTmanager.bytes(0)
+Dim UDTmanager.upbound As UInteger = 0
 
-Function UDTmanager.printLine (Byref text As String, Byval index As Uinteger, Byval sign As Integer) As Uinteger
+Function UDTmanager.printLine (ByRef text As String, ByVal index As UInteger, ByVal sign As Integer) As UInteger
   Dim As UInteger total = 0
-  For I As Uinteger = 1 To UDTmanager.upbound
+  For I As UInteger = 1 To UDTmanager.upbound
 	If I <> index Orelse Sgn(sign) > 0 Then
 	  total += UDTmanager.bytes(I)
 	End If
   Next I
-  Print text, "&h";
-  Print Hex(UDTmanager.address(index), Sizeof(Any Ptr) * 2),
+  Print text, "&h" & Hex(UDTmanager.address(index), SizeOf(Any Ptr) * 2),
   If sign <> 0 Then
 	Print Using " +####.## MB"; Sgn(sign) * Cast(Integer, UDTmanager.bytes(index) / 1024) / 1024;
   Else
@@ -142,8 +141,8 @@ Sub UDTmanager.endProgram ()
 	Deallocate UDTmanager.address(UDTmanager.upbound)
 	UDTmanager.printLine("memory deallocation forced", UDTmanager.upbound, -1)
 	UDTmanager.upbound -= 1
-	Redim Preserve UDTmanager.address(UDTmanager.upbound)
-	Redim Preserve UDTmanager.bytes(UDTmanager.upbound)
+	ReDim Preserve UDTmanager.address(UDTmanager.upbound)
+	ReDim Preserve UDTmanager.bytes(UDTmanager.upbound)
   Loop
   Print "end program forced"
   Print
@@ -151,12 +150,12 @@ Sub UDTmanager.endProgram ()
   End
 End Sub
 
-Operator UDTmanager.New[] (Byval size As Uinteger) As Any Ptr
+Operator UDTmanager.New[] (ByVal size As UInteger) As Any Ptr
   Dim As Any Ptr p = Allocate(size)
   If p > 0 Then
 	UDTmanager.upbound += 1
-	Redim Preserve UDTmanager.address(UDTmanager.upbound)
-	Redim Preserve UDTmanager.bytes(UDTmanager.upbound)
+	ReDim Preserve UDTmanager.address(UDTmanager.upbound)
+	ReDim Preserve UDTmanager.bytes(UDTmanager.upbound)
 	UDTmanager.address(UDTmanager.upbound) = p
 	UDTmanager.bytes(UDTmanager.upbound) = size
 	If UDTmanager.printLine("memory allocation", UDTmanager.upbound, +1) > UDTmanager.maxmemory Then
@@ -176,19 +175,19 @@ Operator UDTmanager.New[] (Byval size As Uinteger) As Any Ptr
   End If
 End Operator
 
-Operator UDTmanager.Delete[] (Byval buf As Any Ptr)
-  Dim As Uinteger found = 0
-  For I As Uinteger = 1 To UDTmanager.upbound
+Operator UDTmanager.Delete[] (ByVal buf As Any Ptr)
+  Dim As UInteger found = 0
+  For I As UInteger = 1 To UDTmanager.upbound
 	If UDTmanager.address(I) = buf Then
 	  Deallocate buf
 	  UDTmanager.printLine("memory deallocation", I, -1)
-	  For J As Uinteger = I + 1 To UDTmanager.upbound
+	  For J As UInteger = I + 1 To UDTmanager.upbound
 		UDTmanager.address(J - 1) = UDTmanager.address(J)
 		UDTmanager.bytes(J - 1) = UDTmanager.bytes(J)
 	  Next J
 	  UDTmanager.upbound -= 1
-	  Redim Preserve UDTmanager.address(UDTmanager.upbound)
-	  Redim Preserve UDTmanager.bytes(UDTmanager.upbound)
+	  ReDim Preserve UDTmanager.address(UDTmanager.upbound)
+	  ReDim Preserve UDTmanager.bytes(UDTmanager.upbound)
 	  found = 1
 	  Exit For
 	End If
@@ -201,7 +200,7 @@ Operator UDTmanager.Delete[] (Byval buf As Any Ptr)
 End Operator
 
 
-Print "Message",, "Address"& Space(Sizeof(Any Ptr)), "Size", "Total"
+Print "Message",, "Address" & Space(SizeOf(Any Ptr)), "Size", "Total"
 Print
 Randomize
 Dim As UDTmanager Ptr pu1 = New UDTmanager[Rnd() * 256 + 1]
