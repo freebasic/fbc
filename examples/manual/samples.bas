@@ -390,7 +390,8 @@ function DoCompile _
 		byref sourcedir as string, _
 		byref fbc as string, _
 		byref source as string, _
-		byref target as string _
+		byref target as string, _
+		byref opts as string _
 	) as integer
 
 	dim i as integer
@@ -409,7 +410,7 @@ function DoCompile _
 
 			args = sourcedir & source
 
-			args += " -x " & sourcedir & target
+			args += " " & opts & " -x " & sourcedir & target
 
 			print fbc & " " & args
 			ret = exec( fbc, args )
@@ -662,6 +663,7 @@ dim opt_specialonly as integer
 dim dirs() as string, ndirs as integer
 dim files() as string, nfiles as integer
 dim haderror as integer
+dim extra_opts as string = ""
 
 ndirs = 0
 nfiles = 0
@@ -711,6 +713,9 @@ case else
 	print "      -error"
 	print "         Abort on first error detected"
 	print
+	print "      -opts options"
+	print "         Add options to the command line" 
+	print
 	end
 end select
 
@@ -735,6 +740,10 @@ while( command(i) > "" )
 
 		case "-error"
 			opt_error = TRUE
+		
+		case "-opts"
+			i += 1
+			extra_opts = command(i)
 
 		case else
 			print "Unrecognized option '" & command(i) & "'"
@@ -813,7 +822,7 @@ case CMD_COMPILE, CMD_CLEAN
 			target = left(files(i), len(files(i))-4) & exe_ext
 
 			if( cmd = CMD_COMPILE ) then
-				if( DoCompile( sourcedir, fbc, files(i), target ) = BUILD_FAIL ) then
+				if( DoCompile( sourcedir, fbc, files(i), target, extra_opts ) = BUILD_FAIL ) then
 					haderror = TRUE
 					if( opt_error ) then
 						exit for
