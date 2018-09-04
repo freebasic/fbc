@@ -11,8 +11,11 @@ Control flow statement to return from a procedure or ##[[KeyPgGosub|Gosub]]##.
 	
 	Because ##[[KeyPgReturn|Return]]## could mean return-from-gosub or return-from-procedure, ##[[KeyPgOptiongosub|Option Gosub]]## and ##[[KeyPgOptionnogosub|Option Nogosub]]## can be used to enable and disable ##[[KeyPgGosub|Gosub]]## support.  When ##[[KeyPgGosub|Gosub]]## support is disabled, ##[[KeyPgReturn|Return]]## is then recognized as return-from-procedure.  When ##[[KeyPgGosub|Gosub]]## support is enabled, ##[[KeyPgReturn|Return]]## is then recognized as return-from-gosub.
 	
-	##**Return**## (from procedure) is used inside a procedure to exit the procedure possibly with a return value. A ##[[KeyPgSub|Sub]]## cannot specify a return return value.  In a ##[[KeyPgFunction|Function]]##, ##**Return**## must specify its return value.  ##**Return** //expression//## is roughly equivalent to the ##Function = //expression// : [[KeyPgExit|Exit]] Function## idiom.
-	
+	##**Return**## (from procedure) is used inside a procedure to exit the procedure possibly with a return value:
+		- A ##[[KeyPgSub|Sub]]## cannot specify a return return value. ##**Return**## is roughly equivalent to the ##[[KeyPgExit|Exit]] Sub## idiom.
+		- In a ##[[KeyPgFunction|Function]]##, ##**Return**## must specify its return value.  ##**Return** //expression//## is roughly equivalent to the ##Function = //expression// : [[KeyPgExit|Exit]] Function## idiom.
+
+		
 	##**Return**## (from gosub) is used to return control back to the statement immediately following a previous ##[[KeyPgGosub|Gosub]]## call. When used in combination with ##[[KeyPgGosub|Gosub]]##, no return value can be specified.  If the optional ##//label//## is specified, execution continues at the specified label.  If no ##[[KeyPgGosub|Gosub]]## was made, a runtime error is generated, and execution continues immediately after ##**Return**##.
 	
 	A ##[[KeyPgGosub|Gosub]]## should always have a matching ##**Return**## statement.  However, if ##**Return**## (from gosub) is used where no ##[[KeyPgGosub|Gosub]]## was made, a run-time error is generated.

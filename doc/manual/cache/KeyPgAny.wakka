@@ -41,7 +41,7 @@ The ##**Any**## keyword is used as a placeholder for a type or value in various 
 		
 		Comparison to ""C/C++"": This matches the behavior of a variable declaration without initialization value in ""C/C++"".
 		
-		Similar to **##Any##** initializers for variables, **##Any##** can also be used with the ##[[KeyPgOpNew|New]]## or ##[[KeyPgOpPlacementNew|Placement New]]## operators in order to leave the newly created object uninitialized (only allowed with data types that do not have constructors).
+		Similar to **##Any##** initializers for variables, **##Any##** can also be used with the ##[[KeyPgOpNew|New Expression]]## or ##[[KeyPgOpPlacementNew|Placement New]]## operators in order to leave the newly created object uninitialized (only allowed with data types that do not have constructors).
 		
 	- ""Instr/InstrRev"":
 		**##Any##** can be used with ##[[KeyPgInstr|Instr]]## or ##[[KeyPgInstrrev|InstrRev]]## as a qualifier for the ##//substring//## parameter, to indicate that any individual character in it may be matched.

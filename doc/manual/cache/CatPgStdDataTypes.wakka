@@ -7,6 +7,8 @@ Built-in data types
 	Types that store real number values, whose range and precision is determined by the size of the data type.
 **{{anchor name="BOOLEAN|Boolean types"}}**
 	Types that store boolean values.
+**{{anchor name="PROCTYPES|Procedure Types"}}**
+	Types that store pointers to procedures
 **{{anchor name="MODIFIERS|Data Type Modifiers"}}**
 	Specifies additional characteristics of a standard or user-defined data type.
 **{{anchor name="STRING|String types"}}**
@@ -35,6 +37,12 @@ Built-in data types
 {{anchor name="BOOLEAN"}}{{fbdoc item="section" value="Boolean types"}}
 	=={{fbdoc item="keyword" value="KeyPgBoolean|BOOLEAN"}}==
 		1-bit wide data types that store boolean values.
+
+{{anchor name="PROCTYPES"}}{{fbdoc item="section" value="Procedure Types"}}
+	=={{fbdoc item="keyword" value="KeyPgFunctionPtr|FUNCTION Pointer"}}==
+		Types that store a pointer to a function procedure
+	=={{fbdoc item="keyword" value="KeyPgSubPtr|SUB Pointer"}}==
+		Types that store a pointer to a sub procedure
 <<>>{{anchor name="MODIFIERS"}}{{fbdoc item="section" value="Data Type Modifiers"}}
 	=={{fbdoc item="keyword" value="KeyPgConstQualifier|CONST"}}==
 		Specifies a read only type.

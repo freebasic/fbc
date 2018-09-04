@@ -59,6 +59,10 @@ __##flags## details:__
 	
 __Other details__
 	While in windowed mode, clicking on the window close button will add a keypress of ##([[KeyPgChr|Chr]](255) & "k")## to the ##[[KeyPgInkey|Inkey]]## buffer.  Clicking on the Maximize window button will switch to fullscreen mode if possible.  A successful ##**Screen**## call sets currently visible and working pages both to page number ##0##, resets the palette to the specified mode one (see [[GfxDefPalettes|Default palettes]]), resets the clipping region to the size of the screen, disables custom coordinates mappings, moves the graphics cursor to the center of the screen, moves the text cursor to the top-left corner of the screen (but never visible on any graphics screen), and sets foreground and background colors to bright white and black respectively.
+	
+__Note on using ##Screen 0##__
+	##Screen 0## closes any graphics window, but also clears the console window if it exists.
+	##Screen 0, , , SCREEN_EXIT## (with ##SCREEN_EXIT=&h80000000##) also closes any graphics window, but does not clear the console window if it exists (previous text is preserved).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/screen.bas"}}%%(freebasic)

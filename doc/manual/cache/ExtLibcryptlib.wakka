@@ -9,70 +9,70 @@ Examples: in examples/math/cryptlib/
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/libraries/cryptlib.bas"}}%%(freebasic)
-#include once "cryptlib.bi"
+#include Once "cryptlib.bi"
 
-function calc_hash( byval filename as string, byval algo as CRYPT_ALGO_TYPE ) as string
-	const BUFFER_SIZE = 8192
-	dim as byte buffer( 0 to BUFFER_SIZE-1 )
+Function calc_hash( ByVal filename As String, ByVal algo As CRYPT_ALGO_TYPE ) As String
+	Const BUFFER_SIZE = 8192
+	Dim As Byte buffer( 0 To BUFFER_SIZE-1 )
 
 	'' create a new context using the wanted algorithm
-	dim as CRYPT_CONTEXT ctx
+	Dim As CRYPT_CONTEXT ctx
 	cryptCreateContext( @ctx, CRYPT_UNUSED, algo )
 
 	'' open input file in binary mode
-	dim as integer f = freefile()
-	if( open( filename for binary access read as #f ) <> 0 ) then
-		return ""
-	end if
+	Dim As Integer f = FreeFile()
+	If( Open( filename For Binary Access Read As #f ) <> 0 ) Then
+		Return ""
+	End If
 
 	'' read until end-of-file
-	do until( eof( f ) )
-		dim as integer oldpos = seek( f )
-		get #f, , buffer()
-		dim as integer readlength = seek( f ) - oldpos
+	Do Until( EOF( f ) )
+		Dim As Integer oldpos = Seek( f )
+		Get #f, , buffer()
+		Dim As Integer readlength = Seek( f ) - oldpos
 		'' encrypt
 		cryptEncrypt( ctx, @buffer(0), readlength )
-	loop
+	Loop
 
 	'' close input file
-	close #f
+	Close #f
 
 	'' finalize
 	cryptEncrypt( ctx, 0, 0 )
 
 	'' get the hash result
-	dim as integer buffersize = BUFFER_SIZE
+	Dim As Integer buffersize = BUFFER_SIZE
 	cryptGetAttributeString( ctx, CRYPT_CTXINFO_HASHVALUE, @buffer(0), @buffersize )
 
 	'' convert to hexadecimal
-	dim as string result = ""
-	for i as integer = 0 to buffersize-1
-		result += hex( buffer(i) )
-	next
+	Dim As String result = ""
+	For i As Integer = 0 To buffersize-1
+		result += Hex( buffer(i) )
+	Next
 	
 	'' free the context
 	cryptDestroyContext( ctx )
 
-	return result
-end function
+	Return result
+End Function
 
-	dim as string filename = trim( command(1) )
-	if( len( filename ) = 0 ) then
-		print "Usage: hash.exe filename"
-		end -1
-	end if
+	Dim As String filename = Trim( Command(1) )
+	If( Len( filename ) = 0 ) Then
+		Print "Usage: hash.exe filename"
+		End -1
+	End If
 
 	'' init cryptlib
 	cryptInit( )
 
 	'' calculate hashes
-	print "md5: "; calc_hash( filename, CRYPT_ALGO_MD5 )
-	print "sha: "; calc_hash( filename, CRYPT_ALGO_SHA )
+	Print "md5:  "; calc_hash( filename, CRYPT_ALGO_MD5 )
+	Print "sha1: "; calc_hash( filename, CRYPT_ALGO_SHA1 )
 
 	'' shutdown cryptlib
 	cryptEnd( )
 
-	sleep
+	Sleep
 %%
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

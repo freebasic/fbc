@@ -6,87 +6,81 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgFileIO
 '' --------
 
-Data " File I/O example & test GET vs FREAD | (CL) 2008-10-12 Public Domain "
-Data " http://www.freebasic.net/wiki/wikka.php?wakka=ProPgFileIO "
-Rem
-Rem Compile With FB 0.20 Or newer
-Rem
-Rem In the commandline supply preferably 2 different files of same big size
-Rem Default Is "BLAH" For both (bad)
-Rem In both loops (Get And FREAD) the last Read can be "empty" ... no problem
+'==== File I/O example / 2018-05-18 ====
 
-#include "crt\stdio.bi" '' Otherwise the "C"-stuff won't work
+Dim As String fileName = "test_123.tmp"
+Dim As ULong buffer(0 To 99) '100 x 4 bytes
+Dim As Integer numItems, result
 
-Dim As FILE  Ptr   QQ   '' This is the C-like file access pointer
-Dim As UByte Ptr   BUF  '' Buffer used for both FB-like and C-like read
-Dim As UInteger    FILN '' FB-like "filenumber"
+Print !"\n==== Using the C Runtime (CRT) file I/O ====\n"
 
-Dim As UInteger    AA, BB, CC, DD, EE
-Dim As ULongInt    II64 '' We do try to support files >= 4 GiB
+#include Once "crt/stdio.bi"
 
-Dim As String      VGSTEMP, VGSFILE1, VGSFILE2
+Dim As FILE Ptr filePtr
 
-? : Read VGSTEMP : ? VGSTEMP : Read VGSTEMP : ? VGSTEMP : ?
+'open in binary writing mode
+filePtr = fopen(fileName, "wb")
+If filePtr <> 0 Then
+	'write 75 x 4 = 300 bytes
+	numItems = fwrite(@buffer(0), SizeOf(buffer(0)), 75, filePtr)
+	Print "Number of bytes written: " & Str(numItems * SizeOf(buffer(0)))
+	Print "Number of items written: " & Str(numItems)
+	fclose(filePtr)
+Else
+	Print "Failed to open " & fileName & " for writing"
+End If
 
-VGSTEMP=Command$(1) : VGSFILE1="BLAH"
-If (VGSTEMP<>"") Then VGSFILE1=VGSTEMP
-VGSTEMP=Command$(2) : VGSFILE2=VGSFILE1
-If (VGSTEMP<>"") Then VGSFILE2=VGSTEMP
+'open in binary reading mode
+filePtr = fopen(fileName, "rb")
+If filePtr <> 0 Then
+	'skip the first 25 items
+	If fseek(filePtr, SizeOf(buffer(0)) * 25, SEEK_SET) <> 0 Then
+		Print "Failed to seek (set file stream position)"
+	End If
+	'try to read the next 100 items
+	numItems = fread(@buffer(0), SizeOf(buffer(0)), 100, filePtr)
+	Print "Number of bytes read: " & Str(numItems * SizeOf(buffer(0)))
+	Print "Number of items read: " & Str(numItems)
+	fclose(filePtr)
+Else
+	Print "Failed to open " & fileName & " for reading"
+End If
 
-BUF = Allocate(32768) '' 32 KiB - hoping it won't fail, BUF could be 0 ...
+result = remove(fileName) 'delete file
+If result = 0 Then Print "Removed: " & fileName
 
-? : ? "FB - OPEN - GET , """+VGSFILE1+"""": Sleep 1000
-FILN = FreeFile : AA=0 : II64=0 '' AA counts blocks per 32 KiB already read
-BB=Open (VGSFILE1 For Binary Access Read As #FILN)
-'' Result 0 is OK here, <>0 is evil
-'' "ACCESS READ" should prevent file creation if it doesn't exist
-? "OPEN result  : " ; BB
-If (BB=0) Then '' BB will be "reused" for timer below
-  BB=Cast(UInteger,(Timer*100)) '' No UINTEGER TIMER in FB, make units 10 ms
-  CC=Get (#FILN,,*BUF,32768,DD)
-  '' CC has the success status, 0 is OK, <>0 is bad
-  '' DD is the amount of data read
-  '' EOF is __NOT__ considered as error here
-  ? "0th GET      : ";CC;" ";DD
-  ? "2 bytes read : ";BUF[0];" ";BUF[1]
-  Do
-	AA=AA+1 : II64=II64+Cast(ULongInt,DD)
-	If (DD<32768) Or (CC<>0) Then Exit Do '' Give up
-	CC=Get (#FILN,,*BUF,32768,DD)
-  Loop
-  EE=Cast(UInteger,(Timer*100))-BB
-  ? "Time         : ";(EE+1)*10;" ms"
-  If (AA>1) Then ? "Last GET     : ";CC;" ";DD
-  ? "Got __EXACTLY__ ";II64;" bytes in ";AA;" calls"
-  Close #FILN
-ENDIF
+Print !"\n==== Using the FreeBASIC file I/O ====\n"
 
-? : ? "C - FOPEN - FREAD , """+VGSFILE2+"""" : Sleep 1000
-AA=0 : II64=0 '' AA counts blocks per 32 KiB already read
-QQ=FOPEN(VGSFILE2,"rb")
-'' Here 0 is evil and <>0 good, opposite from above !!!
-'' File will not be created if it doesn't exist (good)
-'' "rb" is case sensitive and must be lowercase, STRPTR seems not necessary
-? "FOPEN result : " ; QQ
-If (QQ<>0) Then
-  BB=Cast(UInteger,(Timer*100)) '' No UINTEGER TIMER in FB, make units 10 ms
-  DD=FREAD(BUF,1,32768,QQ) '' 1 is size of byte - can't live without :-D
-  '' Returns size of data read, <32768 on EOF, 0 after EOF, or "-1" on error
-  ? "0th FREAD    : ";DD
-  ? "2 bytes read : ";BUF[0];" ";BUF[1]
-  Do
-	AA=AA+1
-	If (DD<=32768) Then II64=II64+Cast(ULongInt,DD)
-	If (DD<>32768) Then Exit Do '' ERR or EOF
-	DD=FREAD(BUF,1,32768,QQ)
-  Loop
-  EE=Cast(UInteger,(Timer*100))-BB
-  ? "Time         : ";(EE+1)*10;" ms"
-  If (AA>1) Then ? "Last FREAD   : ";DD
-  ? "Got __EXACTLY__ ";II64;" bytes in ";AA;" calls"
-  FCLOSE(QQ)
-ENDIF
+Dim As Long fileNum
+Dim As Integer numBytes
 
-Deallocate(BUF): Sleep 1000 '' Crucial
+fileNum = FreeFile
+'open in binary writing mode
+If Open(fileName, For Binary, Access Write, As fileNum) = 0 Then
+	'write 75 x 4 = 300 bytes
+	result = Put(fileNum, , buffer(0), 75) 'No @buffer(0)
+	numBytes = Seek(fileNum) - 1 'FreeBASIC file position is 1-based
+	Print "Number of bytes written: " & Str(numBytes)
+	Print "Number of items written: " & Str(numBytes \ SizeOf(buffer(0)))
+	Close(fileNum)
+Else
+	Print "Failed to open " & fileName & " for writing"
+End If
 
-End
+'open in binary reading mode
+If Open(fileName, For Binary, Access Read, As fileNum) = 0 Then
+	'skip the first 25 items
+	Seek fileNum, 25 * SizeOf(buffer(0)) + 1 'Note: +1 & seek(...) not allowed
+	'try to read the next 100 items
+	result = Get(fileNum, , buffer(0), 100, numBytes)
+	Print "Number of bytes read: " & Str(numBytes)
+	Print "Number of items read: " & Str(numBytes \ SizeOf(buffer(0)))
+	Close(fileNum)
+Else
+	Print "Failed to open " & fileName & " for reading"
+End If
+
+result = Kill(fileName) 'delete file
+If result = 0 Then Print "Killed: " & fileName
+
+Print !"\n==== End ====\n"

@@ -210,7 +210,7 @@
 		[[KeyPgDefuint|DEFUINT]]
 		[[KeyPgDefulongint|DEFULONGINT]]
 		[[KeyPgDefushort|DEFUSHORT]]
-		[[KeyPgOpDelete|DELETE]]
+		[[KeyPgOpDelete|DELETE (Statement)]]
 		[[KeyPgDestructor|DESTRUCTOR]]
 		[[KeyPgModuleDestructor|DESTRUCTOR (Module)]]
 		[[KeyPgDim|DIM]]
@@ -270,6 +270,7 @@
 		[[KeyPgFreefile|FREEFILE]]
 		[[KeyPgFunction|FUNCTION]]
 		[[KeyPgMemberFunction|FUNCTION (Member)]]
+		[[KeyPgFunctionPtr|FUNCTION (Pointer)]]
 
 	{{fbdoc item="subsect" value="G"}}
 		[[KeyPgGetgraphics|GET (Graphics)]]
@@ -364,7 +365,7 @@
 		[[KeyPgNaked|NAKED]]
 		[[KeyPgName|NAME]]
 		[[KeyPgNamespace|NAMESPACE]]
-		[[KeyPgOpNew|NEW]]
+		[[KeyPgOpNew|NEW (Expression)]]
 		[[KeyPgOpPlacementNew|NEW (Placement)]]
 		[[KeyPgNext|NEXT]]
 		[[KeyPgResumenext|NEXT (RESUME)]]
@@ -513,6 +514,7 @@
 		[[KeyPgOpStrptr|STRPTR]]
 		[[KeyPgSub|SUB]]
 		[[KeyPgMemberSub|SUB (Member)]]
+		[[KeyPgSubPtr|SUB (Pointer)]]
 		[[KeyPgSwap|SWAP]]
 		[[KeyPgSystem|SYSTEM]]
 
@@ -692,9 +694,11 @@
 		[[KeyPgOpIs|Operator Is (Run-time type information)]]
 
 	{{fbdoc item="subsect" value="Memory operators"}}
-		[[KeyPgOpNew|Operator New]]
+		[[KeyPgOpNew|Operator New Expression]]
+		[[KeyPgOpNewOverload|Operator New Overload]]
 		[[KeyPgOpPlacementNew|Operator Placement New]]
-		[[KeyPgOpDelete|Operator Delete]]
+		[[KeyPgOpDelete|Operator Delete Statement]]
+		[[KeyPgOpDeleteOverload|Operator Delete Overload]]
 
 	{{fbdoc item="subsect" value="Iterating operators"}}
 		[[KeyPgOpFor|Operator For]]
@@ -973,6 +977,7 @@
 		[[CompilerOptmt|-mt]]
 		[[CompilerOptnodeflibs|-nodeflibs]]
 		[[CompilerOptnoerrline|-noerrline]]
+		[[CompilerOptnoobjinfo|-noobjinfo]]
 		[[CompilerOpto|-o < name >]]
 		[[CompilerOptoptimization|-O < level >]]
 		[[CompilerOptp|-p < name >]]
@@ -988,8 +993,8 @@
 		[[CompilerOpts|-s < name >]]
 		[[CompilerOptshowincludes|-showincludes]]
 		[[CompilerOptstatic|-static]]
-		[[CompilerOpttarget|-target < platform >]]
 		[[CompilerOptt|-t < value >]]
+		[[CompilerOpttarget|-target < platform >]]
 		[[CompilerOptv|-v]]
 		[[CompilerOptvec|-vec < level >]]
 		[[CompilerOptversion|-version]]
@@ -1002,6 +1007,7 @@
 	[[DebuggerRunning|Debugging with FreeBASIC]]
 	[[CompilerErrMsg|Compiler Error Messages]]
 	[[CompilerTools|Tools used by fbc]]
+	[[CompilerInstallingGcc|Installing gcc for -gen gcc]]
 
 {{fbdoc item="section" value="FreeBASIC dialects and QBASIC"}}
 	[[CompilerQB|FreeBASIC and Qbasic]]

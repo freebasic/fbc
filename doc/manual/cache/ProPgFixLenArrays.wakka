@@ -22,12 +22,12 @@ static arrayOfShorts(420) as short
 	There are various ways to specify an array's amount of elements. Each array can have between 1 or 8 dimensions. Each dimension has a lower bound and an upper bound.
 	
 	{{fbdoc item="filename" value="examples/manual/proguide/arrays/fixedlen_bounds.bas"}}%%(freebasic)
-dim a(1) as integer  '' 1-dimensional, 2 elements (0 and 1)
-dim b(0 to 1) as integer  '' 1-dimensional, 2 elements (0 and 1)
-dim c(5 to 10) as integer  '' 1-dimensional, 5 elements (5, 6, 7, 8, 9 and 10)
+Dim a(1) As Integer  '' 1-dimensional, 2 elements (0 and 1)
+Dim b(0 To 1) As Integer  '' 1-dimensional, 2 elements (0 and 1)
+Dim c(5 To 10) As Integer  '' 1-dimensional, 5 elements (5, 6, 7, 8, 9 and 10)
 
-dim d(1 to 2, 1 to 2) as integer  '' 2-dimensional, 4 elements: (1,1), (1,2), (2,1), (2,2)
-dim e(255, 255, 255, 255) as integer '' 4-dimensional, 256 * 256 * 256 * 256 elements
+Dim d(1 To 2, 1 To 2) As Integer  '' 2-dimensional, 4 elements: (1,1), (1,2), (2,1), (2,2)
+Dim e(99, 99, 99, 99) As Integer '' 4-dimensional, 100 * 100 * 100 * 100 elements
 %%
 	
 	For an array to be declared fixed-length, the boundaries must be specified using only number literals or ##[[KeyPgConst|Const]]## values or ##[[KeyPgEnum|Enum]]## constants.

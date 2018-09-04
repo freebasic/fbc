@@ -19,6 +19,8 @@ Statement for sequenced pixel plotting
 	
 Commands to set the color, size and angle will take affect all subsequent ##**Draw**## operations.
 
+##**Draw**## respects the current clipping region as set by the ##[[KeyPgViewgraphics|View (Graphics)]]## statement, but its coordinates are not affected by the custom coordinates system.
+
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/draw.bas"}}%%(freebasic)
 screen 13

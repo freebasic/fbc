@@ -27,10 +27,14 @@ Operator to construct an object at a specified memory address.
 	For simple types, like integers, an initial value can be given. For types without ##[[KeyPgConstructor|constructor]]##s, initial values can be specified for each field (either with default initializer at data-field declaration, or with initializer list as in ##**New** //datatype// (**initializers, ..**)## if all type data-fields are numeric primitives only and without any default initializers). For types with at least one constructor, the initialize list (if any) must match an existing constructor. If no initializers are given, the default values for those types will be set.
 	
 	Memory is **not** allocated when using the ##**Placement New**## operator. Instead, the memory at the specified ##//address//## is used (the provided memory size must be large enough to contain all the placement).
-	It is incorrect to call ##[[KeyPgOpDelete|Delete]]## on the address. The proper way is to only call the destructor if one exists (implicitly or explicitly), with syntax as for a member method by using member access operator.
-	See examples below for proper //placement new// usage.
+	It is incorrect to call ##[[KeyPgOpDelete|Delete Statement]]## on the address. The proper way is to only call the destructor if one exists (implicitly or explicitly), with syntax as for a member method by using member access operator.
+	See examples below for proper ##**Placement New**## operator usage.
 	
 	Specifying an initial value of ##[[KeyPgAny|Any]]##, as in ##**New**(//address//)//datatype// (**Any**)## or ##**New**(//address//)//datatype//[//count//] {**Any**}## will not initialize the data.  This is only valid on data types that do not have constructors (otherwise for data types with constructors, syntax of simple pointer conversion, like //Cptr(datatype Ptr, address)//, can be substituted to the invalid use of New...Any).
+	
+	Because it does not provide any dynamic memory allocation process, the ##**Placement New**## operator (unlike the ##[[KeyPgOpNew|New Expression]]## operator) does not allow any overloading by a member operator for user-defined types.
+	
+	**Note:** Using ##//pointer// = **New**(//address//)//datatype//[//count//]## may be unsafe if ##//pointer//## was declared with a type different from ##//datatype//## (for sub-type polymorphism purpose for example), because the pointer arithmetic fails to access the elements if the pointer type size is different from the size of ##//datatype//## (when using ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer index)"}}## or adding an offset (element number) to the pointer).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/placement_new.bas"}}%%(freebasic)
@@ -79,6 +83,6 @@ End Scope
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDestructor|Destructor]]##
-	- ##[[KeyPgOpNew|New]]##
+	- ##[[KeyPgOpNew|New Expression]]##
 
 {{fbdoc item="back" value="CatPgOpMemory|Memory Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

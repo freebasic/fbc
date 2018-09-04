@@ -132,7 +132,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptcupp|-C"}}==
 		Do not delete the object file(s)
 	=={{fbdoc item="keyword" value="CompilerOptw|-w < value >"}}==
-		Set min warning level: ##all##, ##pedantic##, ##next## or a value
+		Set min warning level: ##all##, ##param##, ##escape##, ##pedantic##, ##next##, ##constness## or a value
 	=={{fbdoc item="keyword" value="CompilerOptmaxerr|-maxerr < val >"}}==
 		Only stop parsing if <val> errors occurred
 	=={{fbdoc item="keyword" value="CompilerOptnoerrline|-noerrline"}}==

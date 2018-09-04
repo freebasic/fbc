@@ -1,45 +1,79 @@
 {{fbdoc item="title" value="User Defined Types"}}----
 
-<<{{fbdoc item="section" value="Declaration"}}
-	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM...END ENUM"}}
-	- {{fbdoc item="keyword" value="KeyPgType|TYPE...END TYPE"}}
-	- {{fbdoc item="keyword" value="KeyPgClass|CLASS...END CLASS"}}
-	- {{fbdoc item="keyword" value="KeyPgUnion|UNION...END UNION"}}
-	- {{fbdoc item="keyword" value="KeyPgExtends|EXTENDS"}}
-	- {{fbdoc item="keyword" value="KeyPgImplements|IMPLEMENTS"}}
-	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
-	- {{fbdoc item="keyword" value="KeyPgObject|OBJECT"}}
+**{{anchor name="DECLARATION|Declaration"}}**
+	Declaring and describing user defined types
+**{{anchor name="REFERENCING|Referencing"}}**
+	Accessing data in a user defined type
+**{{anchor name="MEMBERPROC|Member Procedures"}}**
+	Declaring and defining methods related to a user defined type
+**{{anchor name="MEMBERACCESS|Member Access Control"}}**
+	Controlling when data and member procedures are accessed
 
-{{fbdoc item="section" value="Referencing"}}
-	- {{fbdoc item="keyword" value="KeyPgTypeTemp|Temporary Types"}}
-	- {{fbdoc item="keyword" value="KeyPgThis|THIS"}}
-	- {{fbdoc item="keyword" value="KeyPgBase|BASE (member access)"}}
-	- {{fbdoc item="keyword" value="KeyPgTypeAlias|Type Alias"}}
-	- {{fbdoc item="keyword" value="KeyPgWith|WITH"}}
-<<>>{{fbdoc item="section" value="Member Procedures"}}
-	- {{fbdoc item="keyword" value="KeyPgBaseInit|BASE (initialization)"}}
-	- {{fbdoc item="keyword" value="KeyPgConstructor|CONSTRUCTOR"}}
-	- {{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}
-	- {{fbdoc item="keyword" value="KeyPgMemberFunction|FUNCTION"}}
-	- {{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}
-	- {{fbdoc item="keyword" value="KeyPgOverride|OVERRIDE"}}
-	- {{fbdoc item="keyword" value="KeyPgProperty|PROPERTY"}}
-	- {{fbdoc item="keyword" value="KeyPgMemberSub|SUB"}}
-	- {{fbdoc item="keyword" value="KeyPgStaticMember|STATIC (Member)"}}
-	- {{fbdoc item="keyword" value="KeyPgVirtual|VIRTUAL"}}
-	- {{fbdoc item="keyword" value="KeyPgAbstract|ABSTRACT"}}
-	- {{fbdoc item="keyword" value="KeyPgConstMember|CONST (Member)"}}
+<<{{anchor name="DECLARATION"}}{{fbdoc item="section" value="Declarations"}}
+	=={{fbdoc item="keyword" value="KeyPgEnum|ENUM...END ENUM"}}==
+		User defined enumeration of values
+	=={{fbdoc item="keyword" value="KeyPgType|TYPE...END TYPE"}}==
+		User defined structure of non overlapping data and member procedures
+	=={{fbdoc item="keyword" value="KeyPgClass|CLASS...END CLASS"}}==
+		Not implemented.  Keyword reserved.
+	=={{fbdoc item="keyword" value="KeyPgUnion|UNION...END UNION"}}==
+		User defined structure of overlapping data
+	=={{fbdoc item="keyword" value="KeyPgExtends|EXTENDS"}}==
+		Extends an user defined type to derive another
+	=={{fbdoc item="keyword" value="KeyPgImplements|IMPLEMENTS"}}==
+		Not implemented.  Keyword reserved.
+	=={{fbdoc item="keyword" value="KeyPgField|FIELD"}}==
+		Specifies field alignment within a user defined type
+	=={{fbdoc item="keyword" value="KeyPgObject|OBJECT"}}==
+		Built-in type providing run-time type information
 
-{{fbdoc item="section" value="Member Access Control"}}
-	- {{fbdoc item="keyword" value="KeyPgVisPublic|PUBLIC: (Access Control)"}}
-	- {{fbdoc item="keyword" value="KeyPgVisPrivate|PRIVATE: (Access Control)"}}
-	- {{fbdoc item="keyword" value="KeyPgVisProtected|PROTECTED: (Access Control)"}}
+{{anchor name="REFERENCING"}}{{fbdoc item="section" value="Referencing"}}
+	=={{fbdoc item="keyword" value="KeyPgTypeTemp|Temporary Types"}}==
+		Creates a temporary copy of a user defined type
+	=={{fbdoc item="keyword" value="KeyPgThis|THIS"}}==
+		Built-in, hidden, parameter passed to non-static member procedures to access the user defined type instance
+	=={{fbdoc item="keyword" value="KeyPgBase|BASE (member access)"}}==
+		Built-in, hidden, variable to access the base user defined type instance in derived user defined types
+	=={{fbdoc item="keyword" value="KeyPgTypeAlias|Type Alias"}}==
+		Declares a user defined type from other user defined or standard data types
+	=={{fbdoc item="keyword" value="KeyPgWith|WITH"}}==
+		Compound statement to access the data and members of a user defined type
+		
+<<>>{{anchor name="MEMBERPROC"}}{{fbdoc item="section" value="Member Procedures"}}
+	=={{fbdoc item="keyword" value="KeyPgBaseInit|BASE (initialization)"}}==
+		Specifies an initializer for the base user defined type in derived user defined type constructors
+	=={{fbdoc item="keyword" value="KeyPgConstructor|CONSTRUCTOR"}}==
+		Declares or defines a member procedure that is automatically called when a user defined type is created
+	=={{fbdoc item="keyword" value="KeyPgDestructor|DESTRUCTOR"}}==
+		Declares or defines a member procedure that is automatically called when a user defined type is destroyed or goes out of scope
+	=={{fbdoc item="keyword" value="KeyPgMemberFunction|FUNCTION"}}==
+		Declares or defines a member procedure returning a value
+	=={{fbdoc item="keyword" value="KeyPgOperator|OPERATOR"}}==
+		Declares or defines an overloaded operator
+	=={{fbdoc item="keyword" value="KeyPgOverride|OVERRIDE"}}==
+		Member method attribute that specifies that the method is expected to override a virtual method in the base user defined type
+	=={{fbdoc item="keyword" value="KeyPgProperty|PROPERTY"}}==
+		Declares or defines property member procedures for a user defined type
+	=={{fbdoc item="keyword" value="KeyPgMemberSub|SUB"}}==
+		Declare or defines a member procedure
+	=={{fbdoc item="keyword" value="KeyPgStaticMember|STATIC (Member)"}}==
+		Declares or defines a member procedure or variable is static
+	=={{fbdoc item="keyword" value="KeyPgVirtual|VIRTUAL"}}==
+		Member method attribute that declares that a member must have an implementation
+	=={{fbdoc item="keyword" value="KeyPgAbstract|ABSTRACT"}}==
+		Member method attribute that declares that a member must be implemented in a derived user defined type
+	=={{fbdoc item="keyword" value="KeyPgConstMember|CONST (Member)"}}==
+		Member method attribute that declares or defines that the method is readonly and does not modify the user defined types's data
+
+{{anchor name="MEMBERACCESS"}}{{fbdoc item="section" value="Member Access Control"}}
+	=={{fbdoc item="keyword" value="KeyPgVisPublic|PUBLIC: (Access Control)"}}==
+		Data and members in a user defined type have public visibility
+	=={{fbdoc item="keyword" value="KeyPgVisPrivate|PRIVATE: (Access Control)"}}==
+		Data and members in a user defined type have private visibility
+	=={{fbdoc item="keyword" value="KeyPgVisProtected|PROTECTED: (Access Control)"}}==
+		Data and members in a user defined type have protected visibility
 >>
 
 ::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-
-
-
-   

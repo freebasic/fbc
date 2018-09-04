@@ -36,7 +36,7 @@ SLEEP
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpModulus|Operator + (Modulus)]]##
+	- ##[[KeyPgOpModulus|Operator Mod (Modulus)]]##
 	- [[CatPgMath|Mathematical Functions]]
 
 {{fbdoc item="back" value="CatPgOpAssignment|Assignment Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

@@ -1,7 +1,7 @@
 {{fbdoc item="title" value="Pointers, Data Types and Memory"}}----
 //Written by [[WikiRick|rdc]]//
 
-If you read the article [[TutPointers|Introduction to Pointers]] you know that pointers contain memory location addresses. You can manipulate the data in these memory locations using the reference operator *. Using pointers with single data item isn't a problem, but what if you need to store multiple data items together and manipulate them using a pointer? It can get a bit tricky unless you understand how data is stored in memory.
+If you read the article [[TutPointers|Introduction to Pointers]] you know that pointers contain memory location addresses. You can manipulate the data in these memory locations using the dereference operator *. Using pointers with single data item isn't a problem, but what if you need to store multiple data items together and manipulate them using a pointer? It can get a bit tricky unless you understand how data is stored in memory.
 
 A single memory location in a computer is 1 byte long. Big enough to hold a single ANSI character (as opposed to Unicode characters, which are wide characters and are two bytes. We won't be discussing Unicode characters in this article.) However, all data types are not a single byte in width. Here is a simple program that displays the length in bytes of each data type.
 
@@ -93,7 +93,7 @@ Sleep
 
 In this program we dimension two variables, an [[KeyPgInteger|integer]] and an [[KeyPgInteger|integer]] [[KeyPgPointer|pointer]], aptr. Aptr will point to our memory buffer that will contain two integers. The [[KeyPgAllocate|allocate]] function requires the size of the buffer we need, so we multiply the size of an [[KeyPgInteger|integer]] by 2 to reserve 8/16 bytes of memory (on 32/64bit systems, each integer will take 4/8 bytes of space (on 32/64bit systems). 
 
-After the allocation process, aptr contains the address of the first byte of our memory buffer. Storing the first integer is simply a matter of using the reference operator and setting the value to 1. To print out the value, we again just use *aptr.
+After the allocation process, aptr contains the address of the first byte of our memory buffer. Storing the first integer is simply a matter of using the dereference operator and setting the value to 1. To print out the value, we again just use *aptr.
 
 Now, let me ask you a question: How does the compiler know that the value 1 requires 4/8 bytes (on 32/64bit systems) and not 1 or 2 bytes? Because we dimensioned aptr as an //integer ptr//. The compiler knows that an integer takes 4/8 bytes (on 32/64bit systems) and so loads the data into four bytes of memory. This is why when we print out the value we get 1 and not some strange number.
 
@@ -104,7 +104,7 @@ To load the second value into our buffer, we use:
 %%##
 
 This may look a little strange at first glance. Aptr points to the first byte in our memory buffer. An integer is 4/8 bytes long (on 32/64bit systems), so to get to the next integer byte position, we must add 4/8 to the address (value of aptr). But the compiler knows that the data being used with this pointer is of size Integer or 4/8 bytes (on 32/64bit systems), so to access the second element, you need to only add 1 to the pointer, which can be expressed as *(aptr + 1).
-We need the parenthesis around the add operation because the reference operator * has a higher precedence than +. The parenthesis ensure that we perform the add operation first, and then apply the indirection operator.
+We need the parenthesis around the add operation because the dereference operator * has a higher precedence than +. The parenthesis ensure that we perform the add operation first, and then apply the indirection operator.
 
 Notice that we didn't increment aptr directly. If we did, aptr would no longer point to the start of the memory buffer and the program would crash when we deallocated the buffer since it would [[KeyPgDeallocate|deallocate]] memory outside the memory buffer. If the need arises to directly increment a pointer, then create a temporary pointer variable and increment that, rather than the pointer used in the original allocation. 
 

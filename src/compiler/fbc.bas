@@ -1462,7 +1462,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	FALSE, _ '' OPT_EX
 	FALSE, _ '' OPT_EXX
 	FALSE, _ '' OPT_EXPORT
-	FALSE, _ '' OPT_FORCELANG
+	TRUE,  _ '' OPT_FORCELANG
 	TRUE , _ '' OPT_FPMODE
 	TRUE , _ '' OPT_FPU
 	FALSE, _ '' OPT_G

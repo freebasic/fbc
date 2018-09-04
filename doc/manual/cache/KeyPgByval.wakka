@@ -39,8 +39,8 @@ End
 %%
 
 {{fbdoc item="lang"}}
-	- In the //[[CompilerOptlang|-lang fb]]// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString|String]]## and user-defined ##[[KeyPgType|Type]]## which are passed ##[[KeyPgByref|Byref]]## by default.
-	- In //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, ##**Byref**## is the default parameter passing convention.
+	- In the //[[CompilerOptlang|-lang fb]]// dialect, ##**Byval**## is the default parameter passing convention for all built-in types except ##[[KeyPgString|String]]## and user-defined ##[[KeyPgType|Type]]## which are passed ##[[KeyPgByref|Byref]]## by default. The ##[[KeyPgZstring|Zstring]]## and ##[[KeyPgWstring|Wstring]]## built-in types are also passed ##[[KeyPgByref|Byref]]## by default, but passing ##**Byval**## is forbidden. Arrays are always passed ##[[KeyPgByref|Byref]]## and the use of the specifier ##[[KeyPgByref|Byref]]## or ##**Byval**## is forbidden.
+	- In //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects, ##[[KeyPgByref|Byref]]## is the default parameter passing convention.
 
 {{fbdoc item="diff"}}
 	- QB only used ##**Byval**## in declarations to non-Basic subroutines

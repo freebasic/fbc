@@ -124,13 +124,13 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 	A source code statement (or statements) that allocates space for data or code.  For example, ##[[KeyPgSub|Sub]]## defines a procedure by allocating space for the program code it will contain.  Some statements can be both a declaration and a definition.  For example, ##[[KeyPgDim|Dim]]## both declares and defines a variable.
 
 **dereference**
-	The act of obtaining a value from memory at a given address. See ##[[KeyPgOpValueOf|Operator * (ValueOf)]]##, ##[[ProPgPointers|Pointers]]##.
+	The act of accessing (in read and in write) a variable stored at a given address. See ##[[KeyPgOpValueOf|Operator * (ValueOf)]]##, ##[[ProPgPointers|Pointers]]##.
 
 **descriptor**
 	Refers to the internal data structure used by the compiler and runtime library for managing variable length strings and arrays.
 
 **destroy (TYPE or CLASS)**
-	The act of deconstructing and deallocating memory for an object instance. When an object is destroyed, its destructor is called. This happens automatically when an object goes out of scope, or when ##[[KeyPgOpDelete|Delete]]## is called with a pointer to an object.
+	The act of deconstructing and deallocating memory for an object instance. When an object is destroyed, its destructor is called. This happens automatically when an object goes out of scope, or when ##[[KeyPgOpDelete|Delete (Statement)]]## is called with a pointer to an object.
 
 **destructor (module)**
 	A special type of module-level procedure that is automatically called at program termination. See ##[[KeyPgModuleDestructor|Destructor (Module)]]##.

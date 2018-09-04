@@ -74,6 +74,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDouble|DOUBLE"}}
 	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM"}}
 	- {{fbdoc item="keyword" value="KeyPgExtends|EXTENDS"}}
+	- {{fbdoc item="keyword" value="KeyPgFunctionPtr|FUNCTION (Pointer)"}}
 	- {{fbdoc item="keyword" value="KeyPgImplements|IMPLEMENTS"}}
 	- {{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}}
 	- {{fbdoc item="keyword" value="KeyPgLong|LONG"}}
@@ -85,6 +86,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgSingle|SINGLE"}}
 	- {{fbdoc item="keyword" value="KeyPgStatic|STATIC"}}
 	- {{fbdoc item="keyword" value="KeyPgString|STRING"}}
+	- {{fbdoc item="keyword" value="KeyPgSubPtr|SUB (Pointer)"}}
 	- {{fbdoc item="keyword" value="KeyPgType|TYPE"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeAlias|TYPE (Alias)"}}
 	- {{fbdoc item="keyword" value="KeyPgTypeTemp|TYPE (Temporary)"}}

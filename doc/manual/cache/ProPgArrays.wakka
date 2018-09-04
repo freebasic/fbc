@@ -23,7 +23,7 @@ next
 {{fbdoc item="section" value="Sizes and bounds"}}
 	The size of an array is equal to the number of elements it stores at any given time. An array can have a size of zero (0), meaning it's not storing any values at the moment--it's //empty//. If an array's size is greater than zero, that many elements are being stored. An array's size is equal to one more than the difference between its upper and lower bounds, or ##[[KeyPgUbound|ubound]](//array//) - [[KeyPgLbound|lbound]](//array//) + 1##.
 	
-	The lower and upper bounds not only determine the size of an array, but also the valid positions of individual elements. For example, an array with lower and upper bounds of zero (0) and four (4) stores five (5) elements, the first element being at position 0, the last at position 5. These bounds may be specified when the array is declared, or, for some arrays, changed by resizing the array. An array's lower and upper bounds can be retrieved using ##[[KeyPgLbound|Lbound]]## and ##[[KeyPgUbound|Ubound]]##, respectively.
+	The lower and upper bounds not only determine the size of an array, but also the valid positions of individual elements. For example, an array with a lower bound of zero (0) and an upper bound of four (4), stores five (5) elements, the first element being at position 0, the last at position 4. These bounds may be specified when the array is declared, or, for some arrays, changed by resizing the array. An array's lower and upper bounds can be retrieved using ##[[KeyPgLbound|Lbound]]## and ##[[KeyPgUbound|Ubound]]##, respectively.
 	
 	When creating or resizing an array, if a lower bound is not specified it defaults to zero (0).
 

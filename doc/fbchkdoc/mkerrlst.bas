@@ -31,8 +31,14 @@ end sub
 ''
 sub WriteFooterCode( byval h as integer )
 	print #h, !"print"
+	print #h, !"dim msg as string"
 	print #h, !"for i as integer = 1 to FB_WARNINGMSGS-1"
-	print #h, !"print chr(9) + \"- //\" + ltrim(str(i)) + \" \" + *warningMsgs(i).text + \"//\""
+	print #h, !"if i = FB_WARNINGMSG_AMBIGIOUSLENSIZEOF then"
+	print #h, !"msg = ""Ambiguous LEN or SIZEOF"""
+	print #h, !"else"
+	print #h, !"msg = *warningMsgs(i).text"
+	print #h, !"end if"
+	print #h, !"print chr(9) + \"- //\" + ltrim(str(i)) + \" \" + msg + \"//\""
 	print #h, !"next"
 	print #h, !"print: print: print"
 	print #h, !"for i as integer = 1 to FB_ERRMSGS-1"

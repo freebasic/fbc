@@ -1,0 +1,103 @@
+{{fbdoc item="title" value="FUNCTION Pointer"}}----
+Data type that stores a pointer to a ##[[KeyPgFunction|FUNCTION]]## procedure returning a value
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] [[KeyPgFunction|Function]] [[[KeyPgCdecl|CDecl]]|[[KeyPgPascal|Pascal]]|[[KeyPgStdcall|StdCall]]] [( [//parameter_list//] )] [ [[KeyPgByrefFunction|ByRef]] ] [[[KeyPgAs|As]] //return_type//] [= //initializer//]
+##
+{{fbdoc item="param"}}
+	##//parameter_list//##: parameter[, parameter[, ...]]
+	##//parameter//##: ##[[[KeyPgByref|ByRef]]|[[KeyPgByval|ByVal]]] //identifier// [[[KeyPgAs|As]] //type//] [= //default_value//]##
+		##//identifier//##: the name of the variable referenced in the subroutine
+		##//type//##: the type of variable
+		##//default_value//##: the value of the argument if none is specified in the call
+	##//return_value//##: the value returned from the function
+	##//intializer//##: address of a subroutine to set as the intial value
+
+{{fbdoc item="desc"}}
+	A ##[[KeyPgFunction|Function]]## pointer is a procedure pointer that stores the memory location of compiled code that returns a value.  If no intializer is given the default initial value is zero (0).
+	
+	The memory address for the ##[[KeyPgFunction|Function]]## procedure can be assigned to the variable by taking the address of a subroutine with ##[[KeyPgOpProcptr|ProcPtr]]## or ##[[KeyPgOpAt|Operator @ (Address of)]]##.
+	
+	The procedure must match the same ##[[KeyPgFunction|Function]]## declaration as the declared ##[[KeyPgFunction|Function]]## pointer.
+	
+	To call the subroutine assigned, use the ##//variable//## name as if it were a normal declared ##[[KeyPgFunction|Function]]##.
+	
+	One of the primary uses for procedure pointers is to create callback procedures. A callback procedure is a procedure created in the user program that is called by another procedure either from the user own code space or from an external library.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/datatype/funcptr.bas"}}%%(freebasic)
+function ConcatSelf( x as string ) as string
+	return x & x
+end function
+
+dim x as Function( x as string ) as string = procptr( ConcatSelf )
+
+print x( "Hello" )
+%%
+{{fbdoc item="filename" value="examples/manual/datatype/funcptr2.bas"}}%%(freebasic)
+Function x2 (Byval i As Integer) As Integer
+  Return i * 2
+End Function
+
+Function x3 (Byval i As Integer) As Integer
+  Return i * 3
+End Function
+
+Function operation (Byval i As Integer, Byval op As Function (Byval As Integer) As Integer) As Integer
+  Return op(i)
+End Function
+
+Print operation(4, @x2)
+Print operation(4, @x3)
+%%
+{{fbdoc item="filename" value="examples/manual/datatype/funcptr3.bas"}}%%(freebasic)
+' Example of basic callback Function mechanism to implement a key pressed event:
+' (the user callback Function address cannot be modified while the event thread is running)
+'   - An asynchronous thread tests the keyboard in a loop, and calls a user callback Function each time a key is pressed.
+'   - The callback Function address is passed to the thread.
+'   - The callback Function prints the character of the key pressed,
+'       but if the key pressed is <escape> it orders the thread to finish by using the function return value.
+'   - As the user callback address is passed to the thread as argument, it cannot be modified while the thread is running.
+
+
+'' thread Sub definition
+  Sub threadInkey (Byval p As Any Ptr)
+	If p > 0 Then                                                '' test condition callback Function defined
+	  Dim As Function (Byref As String) As Integer callback = p  '' convert the any ptr to a callback Function pointer
+	  Do
+		Dim As String s = Inkey
+		If s <> "" Then                                          '' test condition key pressed
+		  If callback(s) Then                                    '' test condition to finish thread
+			Exit Do
+		  End If
+		End If
+		Sleep 50
+	  Loop
+	End If
+  End Sub
+
+'' user callback Function definition
+  Function printInkey (Byref s As String) As Integer
+	If Asc(s) = 27 Then                                        '' test condition key pressed = <escape>
+	  Print
+	  Return -1                                                '' order thread to finish
+	Else
+	  Print s;
+	  Return 0                                                 '' order thread to continue
+	End If
+  End Function
+
+'' user main code
+  Dim As Any Ptr p = Threadcreate(@threadInkey, @printInkey)   '' launch the thread, passing the callback Function address
+  Threadwait(p)                                                '' wait for the thread finish
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgSub|Sub]]##
+	- ##[[KeyPgOpProcptr|ProcPtr]]##
+	- ##[[KeyPgOpAt|Operator @ (Address of)]]##
+
+{{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}

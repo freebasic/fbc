@@ -1,10 +1,6 @@
-{{fbdoc item="title" value="Operator New"}}----
+{{fbdoc item="title" value="Operator New Expression"}}----
 Operator to dynamically allocate memory and construct data of a specified type.
 
-{{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **new** ( //size// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]
-	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **new[]** ( //size// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]
-##
 {{fbdoc item="usage"}}##
 	//result// = **New** //[[DataType|datatype]]//
 		//or//
@@ -13,12 +9,10 @@ Operator to dynamically allocate memory and construct data of a specified type.
 	//result// = **New** //[[DataType|datatype]]//**[** //count// **]**
 ##
 {{fbdoc item="param"}}
-	##//size//## 
-		Number of bytes to allocate.
-	##//initializers//##
-		Initial value(s) for the variable.
 	##//datatype//##
 		Name of the data type to create.
+	##//initializers//##
+		Initial value(s) for the variable.
 	##//count//##
 		Exact number of elements to allocate.
 
@@ -26,19 +20,21 @@ Operator to dynamically allocate memory and construct data of a specified type.
 	A pointer of type [[DataType|datatype]] to the newly allocated data.
 
 {{fbdoc item="desc"}}
-	The ##**New**## operator dynamically allocates memory and constructs a specified data type.
+	The ##**New Expression**## operator dynamically allocates memory and constructs a specified data type.
 	
 	For simple types, like integers, an initial value can be given. For types without constructors, initial values can be specified for each field (either with default initializer at data-field declaration, or with initializer list as in ##**New** //datatype// (**initializers, ..**)## if all type data-fields are numeric primitives only and without any default initializers). For types with at least one constructor, the initialize list (if any) must match an existing constructor. If no initializers are given, the default values for those types will be set.
 	
-	##**New[]**## is the array-version of the ##**New**## operator and allocates enough memory for the specified number of objects.  The default constructor for the type will be used to set the initial values for each item.
+	##**New[] Expression**## operator is the array-version of the ##**New Expression**## operator and allocates enough memory for the specified number of objects. The default constructor for the type will be used to set the initial values for each item.
 	
-	Objects created with ##**New**## must be freed with ##[[KeyPgOpDelete|Delete]]##. Memory allocated with ##**New[]**## must be freed with ##**Delete[]**##, the array-version of ##[[KeyPgOpDelete|Delete]]##. You cannot mix and match the different versions of the operators.
+	Objects created with ##**New Expression**## operator must be freed with ##[[KeyPgOpDelete|Delete Statement]]## operator. Object array created with ##**New[] Expression**## operator must be freed with ##**Delete[] Statement**## operator, the array-version of ##[[KeyPgOpDelete|Delete Statement]]## operator. You cannot mix and match the different versions of the operators.
 	
 	Specifying an initial value of ##[[KeyPgAny|Any]]##, as in ##**New** //datatype// (**Any**)## will allocate memory for the type, but not initialize the data.  This is only valid on data types that do not have constructors (otherwise for data types with constructors, syntax of simple memory allocation with pointer conversion, like //Cptr(datatype Ptr, Allocate(Sizeof(datatype)))//, can be substituted to the invalid use of New...Any).
 	
 	Specifying an initial value of ##[[KeyPgAny|Any]]##, as in ##**New** //datatype//[//count//] {**Any**}## will allocate memory for the array, but not initialize the data.  This is only valid on data types that do not have constructors (otherwise for data types with constructors, syntax of simple memory allocation with pointer conversion, like //Cptr(datatype Ptr, Allocate(count * Sizeof(datatype)))//, can be substituted to the invalid use of New...Any).
 	
-	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]##.
+	The dynamic memory allocation process part provided by the ##**New Expression**## operator can be overloaded for user-defined types as a member operator ##[[KeyPgOpNewOverload|New Overload]]##. The following process part for data construction can never be modified.
+	
+	**Note:** Using ##//pointer// = **New** //datatype//[//count//]## may be unsafe if ##//pointer//## was declared with a type different from ##//datatype//## (for sub-type polymorphism purpose for example), because the pointer arithmetic fails to access the elements if the pointer type size is different from the size of ##//datatype//## (when using ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer index)"}}## or adding an offset (element number) to the pointer, or even when ##**Delete[] Statement**## itself (the array-version of ##[[KeyPgOpDelete|Delete Statement]]##) must destroy the elements).
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/new.bas"}}%%(freebasic)
@@ -80,7 +76,8 @@ end scope
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
-	- ##[[KeyPgOpDelete|Delete]]##
+	- ##[[KeyPgOpDelete|Delete Statement]]##
 	- ##[[KeyPgOpPlacementNew|Placement New]]##
+	- ##[[KeyPgOpNewOverload|New Overload]]##
 
 {{fbdoc item="back" value="CatPgOpMemory|Memory Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

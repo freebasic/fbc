@@ -1,0 +1,301 @@
+{{fbdoc item="title" value="Operator New Overload"}}----
+Member operator to overload dynamic memory allocation process part provided by ##[[KeyPgOpNew|Operator New Expression]]## when applying to a UDT (User Defined Type).
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **new** ( //size// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **new[]** ( //size// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]
+##
+{{fbdoc item="param"}}
+	##//size//## 
+		Number of bytes to allocate.
+	
+{{fbdoc item="ret"}}
+	A pointer of type [[KeyPgAny|any]] [[KeyPgPtr|ptr]] to the start of the newly allocated memory.
+
+{{fbdoc item="desc"}}
+	The member operator ##**New Overload**## overloads the dynamic memory allocation process part provided by the ##[[KeyPgOpNew|New Expression]]## operator when applying to a UDT (User Defined Type). So the user can define its own dynamic memory allocation process part.
+	But after that, the UDT instance construction process part provided by the ##[[KeyPgOpNew|New Expression]]## operator is not modified.
+	
+	##**New[] Overload**## operator is the array-version of the ##**New Overload**## operator and overloads the dynamic memory allocation process provided by the  ##**New[] Expression**## operator when applying to a UDT (User Defined Type).
+	
+	Memory allocated with ##**New Overload**## operator must be freed with ##[[KeyPgOpDeleteOverload|Delete Overload]]## operator. Memory allocated with ##**New[] Overload**## operator must be freed with ##**Delete[] Overload**## operator, the array-version of ##[[KeyPgOpDeleteOverload|Delete Overload]]## operator. You cannot mix and match the different versions of the operators.
+	
+	Member operators ##**New Overload**##, and ##**New[] Overload**## are always static, even if not explicitly declared (##[[KeyPgStaticMember|static]]## keyword is unnecessary but allowed). Thus, they do not have an implicit ##[[KeyPgThis|This]]## instance argument passed to them (because instance not yet been constructed).
+
+{{fbdoc item="ex"}}
+
+	Aligned memory allocator:
+		- by using the member operators "New Overload" and "Delete Overload", any created User object is aligned to a multiple of "ALIGN" bytes (256 bytes in this example),
+		- the real pointer of the allocated memory is saved just above the User pointer, in the padding block.
+{{fbdoc item="filename" value="examples/manual/udt/newoverload1.bas"}}
+	%%(freebasic)
+Const ALIGN = 256
+
+Type UDT
+  Dim As Byte a(0 to 10 * 1024 * 1024 - 1) '' 10 megabyte fixed array
+  Declare Operator New (Byval size As UInteger) As Any Ptr
+  Declare Operator Delete (Byval buffer As Any Ptr)
+  Declare Constructor ()
+  Declare Destructor ()
+End Type
+
+Operator UDT.New (Byval size As UInteger) As Any Ptr
+  Print "  Overloaded New operator, with parameter size = &h" & Hex(size)
+  Dim pOrig As Any Ptr = Callocate(ALIGN-1 + Sizeof(UDT Ptr) + size)
+  Dim pMin As Any Ptr = pOrig + Sizeof(UDT Ptr) 
+  Dim p As Any Ptr = pMin + ALIGN-1 - (Culng(pMin + ALIGN-1) Mod ALIGN)
+  Cast(Any Ptr Ptr, p)[-1] = pOrig
+  Operator = p
+  Print "  real pointer = &h" & Hex(pOrig), "return pointer = &h" & Hex(p)
+End Operator
+
+Operator UDT.Delete (Byval buffer As Any Ptr)
+  Print "  Overloaded Delete operator, with parameter buffer = &h" & Hex(buffer)
+  Dim pOrig As Any Ptr = Cast(Any Ptr Ptr, buffer)[-1]
+  Deallocate(pOrig)
+  Print "  real pointer = &h" & Hex(pOrig)
+End Operator
+
+Constructor UDT ()
+  Print "  Constructor, @This = &h" & Hex(@This)
+End Constructor
+
+Destructor UDT ()
+  Print "  Destructor, @This = &h" & Hex(@This)
+End destructor
+
+Print "'Dim As UDT Ptr p = New UDT'"
+Dim As UDT Ptr p = New UDT
+
+Print "  p = &h" & Hex(p)
+
+Print "'Delete p'"
+Delete p
+
+Sleep
+%%
+
+		Output example:
+		%%
+'Dim As UDT Ptr p = New UDT'
+  Overloaded New operator, with parameter size = &hA00000
+  real pointer = &h420020   return pointer = &h420100
+  Constructor, @This = &h420100
+  p = &h420100
+'Delete p'
+  Destructor, @This = &h420100
+  Overloaded Delete operator, with parameter buffer = &h420100
+  real pointer = &h420020
+%%
+
+	Dynamic allocation manager for UDT, by using the member operators "New[] Overload" and "Delete[] Overload":
+		- monitoring of memory allocations/deallocations: addresses, sizes and total memory used,
+		- detection of abnormal deallocation requests,
+		- detection of a failed allocation (Allocate() returning null pointer),
+		- detection of total allocated memory size exceeding a threshold,
+		- the last two detection cases induces an automatic memory freeing before forcing the program to end.
+	The principle is to manage a dynamic list of successful allocations, but not yet freed, containing the allocated addresses with their requested sizes:
+{{fbdoc item="filename" value="examples/manual/udt/newoverload2.bas"}}
+	%%(freebasic)
+Type UDTmanager
+  '' user UDT fields:
+	Dim As Byte b(1 To 1024*1024)
+  '' manager fields:
+	Public:
+	  Declare Operator New[] (ByVal size As UInteger) As Any Ptr
+	  Declare Operator Delete[] (ByVal buf As Any Ptr)
+	  Static As UInteger maxmemory
+	Private:
+	  Static As Any Ptr address()
+	  Static As UInteger bytes()
+	  Static upbound As UInteger
+	  Declare Static Function printLine (ByRef text As String, ByVal index As UInteger, ByVal sign As Integer) As UInteger
+	  Declare Static Sub endProgram ()
+End Type
+
+Dim As UInteger UDTmanager.maxmemory = 3 * 1024 * 1024 * 1024
+ReDim UDTmanager.address(0)
+ReDim UDTmanager.bytes(0)
+Dim UDTmanager.upbound As UInteger = 0
+
+Function UDTmanager.printLine (ByRef text As String, ByVal index As UInteger, ByVal sign As Integer) As UInteger
+  Dim As UInteger total = 0
+  For I As UInteger = 1 To UDTmanager.upbound
+	If I <> index Orelse Sgn(sign) > 0 Then
+	  total += UDTmanager.bytes(I)
+	End If
+  Next I
+  Print text, "&h" & Hex(UDTmanager.address(index), SizeOf(Any Ptr) * 2),
+  If sign <> 0 Then
+	Print Using " +####.## MB"; Sgn(sign) * Cast(Integer, UDTmanager.bytes(index) / 1024) / 1024;
+  Else
+	Print Using "( ####.## MB)"; UDTmanager.bytes(index) / 1024 / 1024;
+  End If
+  Print,
+  Print Using "###.## GB"; total / 1024 / 1024 / 1024
+  Return total
+End Function
+
+Sub UDTmanager.endProgram ()
+  Do While UDTmanager.upbound > 0
+	Deallocate UDTmanager.address(UDTmanager.upbound)
+	UDTmanager.printLine("memory deallocation forced", UDTmanager.upbound, -1)
+	UDTmanager.upbound -= 1
+	ReDim Preserve UDTmanager.address(UDTmanager.upbound)
+	ReDim Preserve UDTmanager.bytes(UDTmanager.upbound)
+  Loop
+  Print "end program forced"
+  Print
+  Sleep
+  End
+End Sub
+
+Operator UDTmanager.New[] (ByVal size As UInteger) As Any Ptr
+  Dim As Any Ptr p = Allocate(size)
+  If p > 0 Then
+	UDTmanager.upbound += 1
+	ReDim Preserve UDTmanager.address(UDTmanager.upbound)
+	ReDim Preserve UDTmanager.bytes(UDTmanager.upbound)
+	UDTmanager.address(UDTmanager.upbound) = p
+	UDTmanager.bytes(UDTmanager.upbound) = size
+	If UDTmanager.printLine("memory allocation", UDTmanager.upbound, +1) > UDTmanager.maxmemory Then
+	  UDTmanager.address(0) = p
+	  UDTmanager.bytes(0) = size
+	  Print
+	  UDTmanager.printLine("memory allocation exceeded", 0, 0)
+	  UDTmanager.endProgram()
+	End If
+	Return p
+  Else
+	UDTmanager.address(0) = p
+	UDTmanager.bytes(0) = size
+	Print
+	UDTmanager.printLine("memory allocation failed", 0, 0)
+	UDTmanager.endProgram()
+  End If
+End Operator
+
+Operator UDTmanager.Delete[] (ByVal buf As Any Ptr)
+  Dim As UInteger found = 0
+  For I As UInteger = 1 To UDTmanager.upbound
+	If UDTmanager.address(I) = buf Then
+	  Deallocate buf
+	  UDTmanager.printLine("memory deallocation", I, -1)
+	  For J As UInteger = I + 1 To UDTmanager.upbound
+		UDTmanager.address(J - 1) = UDTmanager.address(J)
+		UDTmanager.bytes(J - 1) = UDTmanager.bytes(J)
+	  Next J
+	  UDTmanager.upbound -= 1
+	  ReDim Preserve UDTmanager.address(UDTmanager.upbound)
+	  ReDim Preserve UDTmanager.bytes(UDTmanager.upbound)
+	  found = 1
+	  Exit For
+	End If
+  Next I
+  If found = 0 Then
+	UDTmanager.address(0) = buf
+	UDTmanager.bytes(0) = 0
+	UDTmanager.printLine("deallocation not matching", 0, 0)
+  End If
+End Operator
+
+
+Print "Message",, "Address" & Space(SizeOf(Any Ptr)), "Size", "Total"
+Print
+Randomize
+Dim As UDTmanager Ptr pu1 = New UDTmanager[Rnd() * 256 + 1]
+Dim As UDTmanager Ptr pu2 = New UDTmanager[Rnd() * 256 + 1]
+Dim As UDTmanager Ptr pu3 = Cast(UDTmanager Ptr, 1)
+Delete[] pu2
+Delete[] pu3
+Delete[] pu2
+Delete[] pu1
+Do
+  Dim As UDTmanager Ptr pu = New UDTmanager[Rnd() * 512 + 1]
+Loop
+%%
+
+		Output for fbc 32-bit (maximum dynamic data < 2 GB).
+		Here, program is stopped because of memory allocation failed:
+		%%
+Message                     Address       Size          Total
+
+memory allocation           &h020E0020       +99.00 MB    0.10 GB
+memory allocation           &h083F3020        +3.00 MB    0.10 GB
+memory deallocation         &h083F3020        -3.00 MB    0.10 GB
+deallocation not matching   &h00000001    (    0.00 MB)   0.10 GB
+deallocation not matching   &h083F3020    (    0.00 MB)   0.10 GB
+memory deallocation         &h020E0020       -99.00 MB    0.00 GB
+memory allocation           &h020ED020      +103.00 MB    0.10 GB
+memory allocation           &h087F2020      +106.00 MB    0.20 GB
+memory allocation           &h0F20D020      +230.00 MB    0.43 GB
+memory allocation           &h1D812020      +137.00 MB    0.56 GB
+memory allocation           &h2612C020      +377.00 MB    0.93 GB
+memory allocation           &h3DA30020      +275.00 MB    1.20 GB
+memory allocation           &h4ED40020      +220.00 MB    1.41 GB
+memory allocation           &h5C958020      +229.00 MB    1.64 GB
+
+memory allocation failed    &h00000000    (  142.00 MB)   1.64 GB
+memory deallocation forced  &h5C958020      -229.00 MB    1.41 GB
+memory deallocation forced  &h4ED40020      -220.00 MB    1.20 GB
+memory deallocation forced  &h3DA30020      -275.00 MB    0.93 GB
+memory deallocation forced  &h2612C020      -377.00 MB    0.56 GB
+memory deallocation forced  &h1D812020      -137.00 MB    0.43 GB
+memory deallocation forced  &h0F20D020      -230.00 MB    0.20 GB
+memory deallocation forced  &h087F2020      -106.00 MB    0.10 GB
+memory deallocation forced  &h020ED020      -103.00 MB    0.00 GB
+end program forced
+%%
+		Output for fbc 64-bit (maximum dynamic data < virtual memory).
+		Here, program is stopped because of total allocated memory size > 3 GB (adjustable threshold):
+		%%
+Message                     Address                     Size          Total
+
+memory allocation           &h0000000001EA5040            +105.00 MB    0.10 GB
+memory allocation           &h00000000087BC040             +93.00 MB    0.19 GB
+memory deallocation         &h00000000087BC040             -93.00 MB    0.10 GB
+deallocation not matching   &h0000000000000001          (    0.00 MB)   0.10 GB
+deallocation not matching   &h00000000087BC040          (    0.00 MB)   0.10 GB
+memory deallocation         &h0000000001EA5040            -105.00 MB    0.00 GB
+memory allocation           &h0000000001EA1040            +155.00 MB    0.15 GB
+memory allocation           &h000000000B9BF040            +165.00 MB    0.31 GB
+memory allocation           &h0000000015ED8040            +382.00 MB    0.69 GB
+memory allocation           &h000000002DCE7040            +458.00 MB    1.13 GB
+memory allocation           &h000000004A6FB040            +255.00 MB    1.38 GB
+memory allocation           &h000000005A607040             +96.00 MB    1.48 GB
+memory allocation           &h000000006061B040            +426.00 MB    1.89 GB
+memory allocation           &h000000007FFF9040            +221.00 MB    2.11 GB
+memory allocation           &h000000008DD03040            +119.00 MB    2.22 GB
+memory allocation           &h0000000095413040            +147.00 MB    2.37 GB
+memory allocation           &h000000009E727040            +217.00 MB    2.58 GB
+memory allocation           &h00000000AC03C040            +334.00 MB    2.91 GB
+memory allocation           &h00000000C0E4B040            +280.00 MB    3.18 GB
+
+memory allocation exceeded  &h00000000C0E4B040          (  280.00 MB)   3.18 GB
+memory deallocation forced  &h00000000C0E4B040            -280.00 MB    2.91 GB
+memory deallocation forced  &h00000000AC03C040            -334.00 MB    2.58 GB
+memory deallocation forced  &h000000009E727040            -217.00 MB    2.37 GB
+memory deallocation forced  &h0000000095413040            -147.00 MB    2.22 GB
+memory deallocation forced  &h000000008DD03040            -119.00 MB    2.11 GB
+memory deallocation forced  &h000000007FFF9040            -221.00 MB    1.89 GB
+memory deallocation forced  &h000000006061B040            -426.00 MB    1.48 GB
+memory deallocation forced  &h000000005A607040             -96.00 MB    1.38 GB
+memory deallocation forced  &h000000004A6FB040            -255.00 MB    1.13 GB
+memory deallocation forced  &h000000002DCE7040            -458.00 MB    0.69 GB
+memory deallocation forced  &h0000000015ED8040            -382.00 MB    0.31 GB
+memory deallocation forced  &h000000000B9BF040            -165.00 MB    0.15 GB
+memory deallocation forced  &h0000000001EA1040            -155.00 MB    0.00 GB
+end program forced
+%%
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgOpNew|New Expression]]##
+	- ##[[KeyPgOpDeleteOverload|Delete Overload]]##
+	- ##[[KeyPgAllocate|Allocate]]##
+
+{{fbdoc item="back" value="CatPgOpMemory|Memory Operators"}}{{fbdoc item="back" value="CatPgOperators|Operators"}}

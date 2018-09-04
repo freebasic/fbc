@@ -7,7 +7,6 @@
 '' --------
 
 '' Define a variable-length array with 5 elements
-''
 ReDim array(0 To 4) As Integer
 
 For index As Integer = LBound(array) To UBound(array)

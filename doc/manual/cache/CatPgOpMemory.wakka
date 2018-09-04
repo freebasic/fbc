@@ -3,12 +3,15 @@ Operators that work with memory
 
 The memory operators provide a way to dynamically allocate and deallocate variables and objects.
 
-<<=={{fbdoc item="keyword" value="KeyPgOpNew|Operator New"}}==
+<<=={{fbdoc item="keyword" value="KeyPgOpNew|Operator New Expression"}}==
 	Allocates memory for and constructs objects.
+	=={{fbdoc item="keyword" value="KeyPgOpNewOverload|Operator New Overload"}}==
+		Overloads memory allocation process of Operator New Expression when applying to UDT.
 =={{fbdoc item="keyword" value="KeyPgOpPlacementNew|Operator Placement New"}}==
 	Constructs objects at a specified memory location.
-<<>>=={{fbdoc item="keyword" value="KeyPgOpDelete|Operator Delete"}}==
+<<>>=={{fbdoc item="keyword" value="KeyPgOpDelete|Operator Delete Statement"}}==
 	Destroys and deallocates memory for objects.
->>::c::
+	=={{fbdoc item="keyword" value="KeyPgOpDeleteOverload|Operator Delete Overload"}}==
+		Overloads memory deallocation process of Operator Delete Statement when applying to UDT.>>::c::
 
 {{fbdoc item="back" value="CatPgOperators|Operators"}}

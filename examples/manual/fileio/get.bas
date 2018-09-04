@@ -8,11 +8,11 @@
 
 Dim Shared f As Integer
 
-Sub get_integer()
+Sub get_long()
 
-	Dim buffer As Integer ' Integer variable
+	Dim buffer As Long ' Long variable
 
-	' Read an Integer (4 bytes) from the file into buffer, using file number "f".
+	' Read a Long (4 bytes) from the file into buffer, using file number "f".
 	Get #f, , buffer
 
 	' print out result
@@ -23,9 +23,9 @@ End Sub
 
 Sub get_array()
 
-	Dim an_array(0 To 10-1) As Integer ' array of Integers
+	Dim an_array(0 To 10-1) As Long ' array of Longs
 
-	' Read 10 Integers (10 * 4 = 40 bytes) from the file into an_array, using file number "f".
+	' Read 10 Longs (10 * 4 = 40 bytes) from the file into an_array, using file number "f".
 	Get #f, , an_array()
 
 	' print out result
@@ -38,12 +38,12 @@ End Sub
 
 Sub get_mem
 
-	Dim pmem As Integer Ptr
+	Dim pmem As Long Ptr
 
-	' allocate memory for 5 Integers
-	pmem = Allocate(5 * SizeOf(Integer))
+	' allocate memory for 5 Longs
+	pmem = Allocate(5 * SizeOf(Long))
 
-	' Read 5 integers (5 * 4 = 20 bytes) from the file into allocated memory
+	' Read 5 Longs (5 * 4 = 20 bytes) from the file into allocated memory
 	Get #f, , *pmem, 5 ' Note pmem must be dereferenced (*pmem, or pmem[0])
 
 	' print out result using [] Pointer Indexing
@@ -63,7 +63,7 @@ f = FreeFile
 ' Open the file "file.ext" for binary usage, using the file number "f".
 Open "file.ext" For Binary As #f
 
-  get_integer()
+  get_long()
 
   get_array()
 
