@@ -110,7 +110,7 @@ sub cProgram()
 	'' For each line...
 	do
 		'' line begin
-		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
+		astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ) )
 
 		'' Label?
 		cLabel( )

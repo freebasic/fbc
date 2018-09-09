@@ -67,6 +67,7 @@ type IRTAC
 
 	ex1			as FBSYMBOL ptr					'' extra field, used by call/jmp
 	ex2			as integer						'' /
+	ex3			as zstring ptr					'' filename, used by DBG
 end type
 
 type IRVREG
@@ -319,7 +320,8 @@ type IR_VTBL
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+		byval ex as integer, _
+		byval filename As zstring ptr = 0 _
 	)
 
 	emitVarIniBegin as sub( byval sym as FBSYMBOL ptr )
@@ -598,7 +600,7 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 
 #define irEmitSCOPEEND(s) ir.vtbl.emitScopeEnd( s )
 
-#define irEmitDBG(op, proc, ex) ir.vtbl.emitDBG( op, proc, ex )
+#define irEmitDBG(op, proc, ex, filename) ir.vtbl.emitDBG( op, proc, ex, filename )
 
 #define irEmitDECL( sym ) ir.vtbl.emitDECL( sym )
 

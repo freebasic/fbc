@@ -9,7 +9,8 @@ declare sub edbgLineBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval lnum as integer, _
-		byval pos as integer _
+		byval pos as integer, _
+		byval filename as zstring ptr _
 	)
 
 declare sub edbgLineEnd _

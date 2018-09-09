@@ -223,7 +223,8 @@ declare sub _emitDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+		byval lnum as integer, _
+		ByVal filename As zstring ptr = 0 _
 	)
 
 declare sub exprFreeNode( byval n as EXPRNODE ptr )
@@ -3158,11 +3159,15 @@ private sub _emitDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+		byval lnum as integer, _
+		ByVal filename As zstring ptr _
 	)
 
 	if( op = AST_OP_DBG_LINEINI ) then
-		ctx.linenum = ex
+		ctx.linenum = lnum
+		if( filename <> NULL ) then
+			hUpdateCurrentFileName( filename )
+		end if
 	end if
 
 end sub

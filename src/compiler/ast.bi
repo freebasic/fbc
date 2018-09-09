@@ -173,6 +173,7 @@ end type
 
 type AST_NODE_DBG
 	ex				as integer
+	filename		as zstring ptr
 	op				as integer
 end type
 
@@ -794,7 +795,8 @@ declare function astNewASM( byval asmtokhead as ASTASMTOK ptr ) as ASTNODE ptr
 declare function astNewDBG _
 	( _
 		byval op as integer, _
-		byval ex as integer = 0 _
+		byval ex as integer = 0, _
+		byval filename as zstring ptr = 0 _
 	) as ASTNODE ptr
 
 declare function astNewMEM _

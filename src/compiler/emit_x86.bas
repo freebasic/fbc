@@ -6049,10 +6049,11 @@ private sub _emitLINEINI _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval lnum as integer, _
-		byval pos_ as integer _
+		byval pos_ as integer, _
+		byval filename As zstring ptr _
 	)
 
-	edbgLineBegin( proc, lnum, pos_ )
+	edbgLineBegin( proc, lnum, pos_, filename )
 
 end sub
 

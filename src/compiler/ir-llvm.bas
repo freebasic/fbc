@@ -185,7 +185,8 @@ declare sub _emitDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+		byval lnum as integer, _
+		ByVal filename As zstring ptr = 0 _
 	)
 declare function hVregToStr( byval vreg as IRVREG ptr ) as string
 declare sub hEmitConvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
@@ -2080,13 +2081,18 @@ private sub _emitDBG _
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-		byval ex as integer _
+		byval lnum as integer, _
+		ByVal filename As zstring ptr _
 	)
 
-	if( op = AST_OP_DBG_LINEINI ) then
-		hWriteLine( "#line " & ex & " """ & hReplace( env.inf.name, "\", $"\\" ) & """" )
-		ctx.linenum = ex
-	end if
+	if( op = AST_OP_DBG_LINEINI ) Then
+		if( filename <> NULL ) then
+			hWriteLine( "#line " & lnum & " """ & hReplace( filename, "\", $"\\" ) & """" )
+		else
+			hWriteLine( "#line " & lnum & " """ & hReplace( env.inf.name, "\", $"\\" ) & """" )
+		end if
+		ctx.linenum = lnum
+	end If
 
 end sub
 
