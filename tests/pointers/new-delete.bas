@@ -404,24 +404,29 @@ SUITE( fbc_tests.pointers.new_delete )
 		end type
 
 		dim shared as integer T2_ctor_count = 0
+		dim shared as integer T2_ctor_count_x = 0
 		type T2
 			as integer i
 			declare constructor( )
 		end type
 		constructor T2( )
 			T2_ctor_count += 1
+			T2_ctor_count_x += 1
 		end constructor
 
 		dim shared as integer T3_dtor_count = 0
+		dim shared as integer T3_dtor_count_x = 0
 		type T3
 			as integer i
 			declare destructor( )
 		end type
 		destructor T3( )
 			T3_dtor_count += 1
+			T3_dtor_count_x += 1
 		end destructor
 
 		dim shared as integer T4_ctor_count = 0, T4_dtor_count = 0
+		dim shared as integer T4_ctor_count_x = 0, T4_dtor_count_x = 0
 		type T4
 			as integer i
 			declare constructor( )
@@ -429,9 +434,11 @@ SUITE( fbc_tests.pointers.new_delete )
 		end type
 		constructor T4( )
 			T4_ctor_count += 1
+			T4_ctor_count_x += 1
 		end constructor
 		destructor T4( )
 			T4_dtor_count += 1
+			T4_dtor_count_x += 1
 		end destructor
 
 		TEST( default )
@@ -558,6 +565,18 @@ SUITE( fbc_tests.pointers.new_delete )
 			end scope
 
 			scope
+				var p = new T1[0]
+				CU_ASSERT( p <> NULL )
+				delete[] p
+			end scope
+
+			scope
+				var p = new T1[1]
+				CU_ASSERT( p[0].i = 0 )
+				delete[] p
+			end scope
+
+			scope
 				var p = new T1[2]
 				CU_ASSERT( p[0].i = 0 )
 				CU_ASSERT( p[1].i = 0 )
@@ -572,6 +591,14 @@ SUITE( fbc_tests.pointers.new_delete )
 				delete[] p
 			end scope
 
+			for n as integer = 0 to 2
+				var p = new T1[n]
+				CU_ASSERT( p <> NULL )
+				delete[] p
+			next
+
+			'' new T2[N]
+			CU_ASSERT( T2_ctor_count_x = 0 )
 			scope
 				CU_ASSERT( T2_ctor_count = 0 )
 				var p = new T2[2]
@@ -580,12 +607,82 @@ SUITE( fbc_tests.pointers.new_delete )
 			end scope
 
 			scope
+				T2_ctor_count_x = 0
+				var p = new T2[0]
+				CU_ASSERT( p <> NULL )
+				CU_ASSERT( T2_ctor_count_x = 0 )
+				delete[] p
+			end scope
+
+			scope
+				T2_ctor_count_x = 0
+				var p = new T2[1]
+				CU_ASSERT( T2_ctor_count_x = 1 )
+				delete[] p
+			end scope
+
+			scope
+				T2_ctor_count_x = 0
+				var p = new T2[2]
+				CU_ASSERT( T2_ctor_count_x = 2 )
+				delete[] p
+			end scope
+
+			for n as integer = 0 to 2
+				T2_ctor_count_x = 0
+				var p = new T2[n]
+				CU_ASSERT( p <> NULL )
+				CU_ASSERT( T2_ctor_count_x = n )
+				delete[] p
+			next
+
+			'' new T3[N]
+			CU_ASSERT( T3_dtor_count_x = 0 )
+
+			scope
 				CU_ASSERT( T3_dtor_count = 0 )
 				var p = new T3[2]
 				CU_ASSERT( T3_dtor_count = 0 )
 				delete[] p
 				CU_ASSERT( T3_dtor_count = 2 )
 			end scope
+
+			scope
+				T3_dtor_count_x = 0
+				var p = new T3[0]
+				CU_ASSERT( p <> NULL )
+				CU_ASSERT( T3_dtor_count_x = 0 )
+				delete[] p
+				CU_ASSERT( T3_dtor_count_x = 0 )
+			end scope
+
+			scope
+				T3_dtor_count_x = 0
+				var p = new T3[1]
+				CU_ASSERT( T3_dtor_count_x = 0 )
+				delete[] p
+				CU_ASSERT( T3_dtor_count_x = 1 )
+			end scope
+
+			scope
+				T3_dtor_count_x = 0
+				var p = new T3[2]
+				CU_ASSERT( T3_dtor_count_x = 0 )
+				delete[] p
+				CU_ASSERT( T3_dtor_count_x = 2 )
+			end scope
+
+			for n as integer = 0 to 2
+				T3_dtor_count_x = 0
+				var p = new T3[n]
+				CU_ASSERT( p <> NULL )
+				CU_ASSERT( T3_dtor_count_x = 0 )
+				delete[] p
+				CU_ASSERT( T3_dtor_count_x = n )
+			next
+
+			'' new T4[N]
+			CU_ASSERT( T4_ctor_count_x = 0 )
 
 			scope
 				CU_ASSERT( T4_ctor_count = 0 )
@@ -597,6 +694,53 @@ SUITE( fbc_tests.pointers.new_delete )
 				CU_ASSERT( T4_ctor_count = 2 )
 				CU_ASSERT( T4_dtor_count = 2 )
 			end scope
+
+			scope
+				T4_ctor_count_x = 0
+				T4_dtor_count_x = 0
+				var p = new T4[0]
+				CU_ASSERT( p <> NULL )
+				CU_ASSERT( T4_ctor_count_x = 0 )
+				CU_ASSERT( T4_dtor_count_x = 0 )
+				delete[] p
+				CU_ASSERT( T4_ctor_count_x = 0 )
+				CU_ASSERT( T4_dtor_count_x = 0 )
+			end scope
+
+			scope
+				T4_ctor_count_x = 0
+				T4_dtor_count_x = 0
+				var p = new T4[1]
+				CU_ASSERT( T4_ctor_count_x = 1 )
+				CU_ASSERT( T4_dtor_count_x = 0 )
+				delete[] p
+				CU_ASSERT( T4_ctor_count_x = 1 )
+				CU_ASSERT( T4_dtor_count_x = 1 )
+			end scope
+
+			scope
+				T4_ctor_count_x = 0
+				T4_dtor_count_x = 0
+				var p = new T4[2]
+				CU_ASSERT( T4_ctor_count_x = 2 )
+				CU_ASSERT( T4_dtor_count_x = 0 )
+				delete[] p
+				CU_ASSERT( T4_ctor_count_x = 2 )
+				CU_ASSERT( T4_dtor_count_x = 2 )
+			end scope
+
+			for n as integer = 0 to 2
+				T4_ctor_count_x = 0
+				T4_dtor_count_x = 0
+				var p = new T4[n]
+				CU_ASSERT( p <> NULL )
+				CU_ASSERT( T4_ctor_count_x = n )
+				CU_ASSERT( T4_dtor_count_x = 0 )
+				delete[] p
+				CU_ASSERT( T4_ctor_count_x = n )
+				CU_ASSERT( T4_dtor_count_x = n )
+			next
+
 		END_TEST
 	END_TEST_GROUP
 

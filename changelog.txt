@@ -73,6 +73,7 @@ Version 1.06.0
 - #801: *@(expr) solved to (expr) did not cleanly remove null ptr checks allowing invalid datatype assignment with -exx.  *PTRCHK(@expr) solves to (expr).
 - #880: Overload binary operators now support covariant arguments, overloaded procedure resolution changed especially with respect to CONST and non-CONST parameters
 - Fix for debugging lines in include files but not in procedures.  Filename debugging information added for module level statements in included files.
+- #699: fix new[0] causing infinite loop when calling constructor/destructor list
 
 
 Version 1.05.0

@@ -60,20 +60,21 @@ private function hCallCtorList _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr cnt = any, label = any, iter = any
+    dim as FBSYMBOL ptr cnt = any, label = any, exitlabel = any, iter = any
     dim as ASTNODE ptr tree = any
 
 	cnt = symbAddTempVar( FB_DATATYPE_UINT )
 	label = symbAddLabel( NULL )
+	exitlabel = symbAddLabel( NULL )
 	iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 	'' iter = @vector[0]
 	tree = astBuildVarAssign( iter, astNewVAR( tmp ), AST_OPOPT_ISINI )
 
-	'' for cnt = 0 to elements-1
+	'' while( cnt )
 	'' Note: Using a non-flushing LABEL here because the LABEL node will
 	'' end up as part of an expression tree, not as a "standalone statement"
-	tree = astBuildForBegin( tree, cnt, label, 0, FALSE /' non-flushing '/ )
+	tree = astBuildWhileCounterBegin( tree, cnt, label, exitlabel, elementsexpr, FALSE /' non-flushing '/ )
 
 	'' ctor( *iter )
 	tree = astNewLINK( tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
@@ -81,8 +82,8 @@ private function hCallCtorList _
 	'' iter += 1
 	tree = astNewLINK( tree, astBuildVarInc( iter, 1 ) )
 
-	'' next
-	tree = astBuildForEnd( tree, cnt, label, elementsexpr )
+	'' wend
+	tree = astBuildWhileCounterEnd( tree, cnt, label, exitlabel )
 
 	'' Wrap into LOOP node so astCloneTree() can clone the label and update
 	'' the loop code, because it's part of the new[] expression, and not
@@ -261,11 +262,12 @@ function astBuildNewOp _
 end function
 
 private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
-    dim as FBSYMBOL ptr cnt = any, label = any, iter = any, elmts = any
+    dim as FBSYMBOL ptr cnt = any, label = any, exitlabel = any, iter = any, elmts = any
     dim as ASTNODE ptr tree = any, expr = any
 
 	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
 	label = symbAddLabel( NULL )
+	exitlabel = symbAddLabel( NULL )
 	iter = symbAddTempVar( ptrexpr->dtype, ptrexpr->subtype )
 	elmts = symbAddTempVar( FB_DATATYPE_INTEGER )
 
@@ -291,8 +293,8 @@ private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
 					AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH ), _
 			AST_OPOPT_ISINI ) )
 
-	'' for cnt = 0 to elmts-1
-	tree = astBuildForBegin( tree, cnt, label, 0 )
+	'' while( counter )
+	tree = astBuildWhileCounterBegin( tree, cnt, label, exitlabel, astNewVAR( elmts ) )
 
 	'' iter -= 1
 	tree = astNewLINK( tree, astBuildVarInc( iter, -1 ) )
@@ -300,8 +302,8 @@ private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
 	'' dtor( *iter )
 	tree = astNewLINK( tree, astBuildVarDtorCall( astBuildVarDeref( iter ) ) )
 
-	'' next
-	tree = astBuildForEnd( tree, cnt, label, astNewVAR( elmts ) )
+	'' wend
+	tree = astBuildWhileCounterEnd( tree, cnt, label, exitlabel )
 
 	function = tree
 end function

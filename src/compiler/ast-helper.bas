@@ -284,6 +284,70 @@ end function
 '' loops
 ''
 
+'' While Counter:
+''
+''     CNT = INIVALUE
+''     WHILE( CNT )
+''        CNT -= 1
+''        <user code>
+''     WEND
+
+function astBuildWhileCounterBegin _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval cnt as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval exitlabel as FBSYMBOL ptr, _
+		byval initexpr as ASTNODE ptr, _
+		byval flush_label as integer _
+	) as ASTNODE ptr
+
+	'' counter = initvalue
+	tree = astNewLINK( tree, astBuildVarAssign( cnt, initexpr ) )
+
+	'' do
+	tree = astNewLINK( tree, astNewLABEL( label, flush_label ) )
+
+	'' if( counter = 0 ) then
+	''     goto exitlabel
+	'' end if
+	tree = astNewLINK( tree, _
+		astBuildBranch( _
+			astNewBOP( AST_OP_EQ, astNewVAR( cnt ), astNewCONSTi( 0 ) ), _
+			exitlabel, TRUE ) )
+
+	function = tree
+end function
+
+function astBuildWhileCounterEnd _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval cnt as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval exitlabel as FBSYMBOL ptr, _
+		byval flush_label as integer _
+	) as ASTNODE ptr
+
+	'' counter -= 1
+	tree = astNewLINK( tree, astBuildVarInc( cnt, -1 ) )
+
+	'' goto label
+	tree = astNewLINK( tree, astNewBranch( AST_OP_JMP, label ) )
+
+	'' loop
+	tree = astNewLINK( tree, astNewLABEL( exitlabel, flush_label ) )
+
+	function = tree
+end function
+
+'' For: 
+''
+''     CNT = INIVALUE
+''     DO
+''         <user code>
+''         CNT += 1
+''     LOOP UNTIL CNT=ENDVALUE
+
 function astBuildForBegin _
 	( _
 		byval tree as ASTNODE ptr, _
