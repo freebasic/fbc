@@ -152,8 +152,8 @@ end function
 function astNewDBG _
 	( _
 		byval op as integer, _
-      byval ex As Integer, _
-      byval filename As ZString Ptr _
+		byval ex as integer, _
+		byval filename As ZString Ptr _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
@@ -166,14 +166,14 @@ function astNewDBG _
 
 	n->dbg.op = op
 	n->dbg.ex = ex
-   n->dbg.filename = filename
+	n->dbg.filename = filename
 
 	function = n
 end function
 
 function astLoadDBG( byval n as ASTNODE ptr ) as IRVREG ptr
 	if( ast.doemit ) then
-      irEmitDBG( n->dbg.op, astGetProc( )->sym, n->dbg.ex, n->dbg.filename )
+		irEmitDBG( n->dbg.op, astGetProc( )->sym, n->dbg.ex, n->dbg.filename )
 	end if
 
 	function = NULL

@@ -67,7 +67,7 @@ type IRTAC
 
 	ex1			as FBSYMBOL ptr					'' extra field, used by call/jmp
 	ex2			as integer						'' /
-   ex3         As ZString Ptr
+	ex3			as zstring ptr					'' filename, used by DBG
 end type
 
 type IRVREG
@@ -320,8 +320,8 @@ type IR_VTBL
 	( _
 		byval op as integer, _
 		byval proc as FBSYMBOL ptr, _
-      byval ex       as Integer, _
-      ByVal filename As ZString Ptr = 0 _
+		byval ex as integer, _
+		byval filename As zstring ptr = 0 _
 	)
 
 	emitVarIniBegin as sub( byval sym as FBSYMBOL ptr )

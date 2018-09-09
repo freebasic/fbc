@@ -266,13 +266,13 @@ sub edbgLineBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval lnum as integer, _
-      byval pos_ as Integer, _
-      ByVal filename As ZString Ptr _
+		byval pos_ as integer, _
+		ByVal filename As zstring ptr _
 	)
 
 	if( env.clopt.debuginfo = FALSE ) then
     	exit sub
-   end If
+	end if
 
     if( ctx.lnum > 0 ) then
     	ctx.pos = pos_ - ctx.pos
@@ -282,7 +282,7 @@ sub edbgLineBegin _
     	end if
     end if
 
-    edbgInclude(filename)
+    edbgInclude( filename )
    
     ctx.pos = pos_
     ctx.lnum = lnum
@@ -533,7 +533,7 @@ sub edbgEmitProcHeader _
 
 	''
 	ctx.isnewline = TRUE
-   ctx.lnum        = 0
+	ctx.lnum      = 0
 	ctx.pos	  	  = 0
 	ctx.label	  = NULL
 
@@ -648,7 +648,7 @@ sub edbgEmitProcFooter _
 
 	''
 	ctx.isnewline = TRUE
-   ctx.lnum      = 0
+	ctx.lnum      = 0
 	ctx.pos	  	  = 0
 	ctx.label	  = NULL
 

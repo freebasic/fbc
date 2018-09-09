@@ -199,7 +199,7 @@ type EMIT_DBGNODE
 	op			as integer
 	sym			as FBSYMBOL ptr
 	lnum		as integer
-   filename As ZString Ptr
+	filename 	as zstring ptr
 	pos			as integer
 end type
 

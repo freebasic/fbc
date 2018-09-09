@@ -319,7 +319,7 @@ function cAsmBlock as integer
 	'' (AsmCode Comment? NewLine)+
 	do
 		if( issingleline = FALSE ) then
-         astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ),env.inf.incfile ))
+         astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ))
 		end if
 
 		cAsmCode( )

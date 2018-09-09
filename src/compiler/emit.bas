@@ -204,8 +204,8 @@ sub emitFlush( )
 		case EMIT_NODECLASS_DBG
 			cast( EMIT_DBGCB, emit.opFnTb[n->dbg.op] )( n->dbg.sym, _
 												   		n->dbg.lnum, _
-                                             n->dbg.pos, _
-                                             n->dbg.filename )
+												   		n->dbg.pos, _
+												   		n->dbg.filename )
 
 		end select
 
@@ -457,8 +457,8 @@ private function hNewDBG _
 		byval op as integer, _
 		byval sym as FBSYMBOL ptr, _
 		byval lnum as integer = 0, _
-      byval pos_ as integer = 0, _
-      ByVal filename As ZString Ptr =0  _
+		byval pos_ as integer = 0, _
+		byval filename As zstring ptr = 0  _
 	) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
@@ -468,7 +468,7 @@ private function hNewDBG _
 	n->dbg.op = op
 	n->dbg.sym = sym
 	n->dbg.lnum = lnum
-   n->dbg.filename = filename
+	n->dbg.filename = filename
 	n->dbg.pos = pos_
 
 	function = n
@@ -1635,11 +1635,11 @@ end function
 function emitDBGLineBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
-      byval lnum as Integer, _
-      ByVal filename As ZString Ptr _
+		byval lnum as integer, _
+		byval filename As zstring ptr _
 	) as EMIT_NODE ptr
 
-   function = hNewDBG( EMIT_OP_LINEINI, proc, lnum, emit.pos, filename )
+	function = hNewDBG( EMIT_OP_LINEINI, proc, lnum, emit.pos, filename )
 
 end function
 
