@@ -102,6 +102,8 @@ enum FB_MODEVIEW                    		'***** console/gui
 	FB_MODEVIEW_ISGUI                	'***** console/gui
 end enum 					'***** console/gui
 
+const FB_DEFAULT_MODEVIEW   =  FB_MODEVIEW_ISCONSOLE		 '***** console/gui
+
 '' pedantic checks
 enum FB_PDCHECK
 	FB_PDCHECK_NONE         = &h00000000
