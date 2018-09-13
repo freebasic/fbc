@@ -213,7 +213,7 @@ dim shared defTb(0 to ...) as SYMBDEF => _
 	(@"__FB_FPU__"            , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpu_cb        ), _
 	(@"__FB_FPMODE__"         , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpmode_cb     ), _
 	(@"__FB_GCC__"            , NULL          , 0                  , @hDefGcc_cb        )  _
-	(@"__FB_GUI__"            , NULL          , 0                  , @hDefViewGui_cb    )  _        '***** console/gui
+	(@"__FB_GUI__"            , NULL          , 0                  , @hDefViewGui_cb    )  _  '***** console/gui
 }
 
 sub symbDefineInit _
