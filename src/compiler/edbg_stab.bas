@@ -214,7 +214,9 @@ sub edbgEmitHeader( byval filename as zstring ptr )
 	ctx.typecnt 	= 1
 	ctx.label 		= NULL
 	ctx.incfile 	= NULL
-	ctx.filename	= *filename
+
+	'' ctx.filename is never used
+	ctx.filename   = *filename
 
 	'' emit source file name
 	lname = *symbUniqueLabel( )
@@ -240,7 +242,6 @@ sub edbgEmitHeader( byval filename as zstring ptr )
 
 	emitWriteStr( "" )
 
-	hEmitSTABS( STAB_TYPE_BINCL, filename, 0, 0 )
 end sub
 
 '':::::
@@ -1018,40 +1019,31 @@ end sub
 sub edbgInclude( byval incfile as zstring ptr )
 	dim as string lname
 
-	'' incfile is the new include file for which we should open a block.
-	'' incfile can be NULL to indicate that no next include file is coming,
-	'' in which case we just want to return to the toplevel .bas file name,
-	'' if we previously opened an include file block.
+	'' NOTE: originally, fbc used STAB_TYPE_BINCL and STAB_TYPE_EINCL
+	'' to mark the beginning and end of an include file.  The purpose
+	'' for these markers is so the linker (LD) can remove duplicate
+	'' debug type information from the final EXE.  However, because
+	'' fbc only emits types actually used, the end result is that
+	'' type information from a header (.BI) is often different from
+	'' one object module to another is generally not used in the
+	'' way that BINCL/EINCL/EXCL was intented.
 
-	'' Already in the correct block?
-	'' (same include file, or NULL for toplevel)
-	if( incfile = ctx.incfile ) then
+	'' incfile is the new include file or main file name
+
+	'' coming from _close incfile is null so no real need to change
+	If( incfile = NULL )Then
+		Exit Sub
+	EndIf
+
+	'' Already handling the correct name
+	if( incfile = ctx.incfile ) Then
 		exit sub
-	end if
+	end If
 
-	'' Currently in an include file block?
-	if( ctx.incfile ) then
-		'' Close it
-		hEmitSTABS( STAB_TYPE_EINCL, "", 0, 0 )
-
-		'' "Return" to the main filename, if no new include file block
-		'' will be opened
-		if( incfile = NULL ) then
-			emitSECTION( IR_SECTION_CODE, 0 )
-			lname = *symbUniqueLabel( )
-			hEmitSTABS( STAB_TYPE_SOL, ctx.filename, 0, 0, lname )
-			hLABEL( lname )
-		end if
-	end if
+	emitSECTION( IR_SECTION_CODE, 0 )
+	lname = *symbUniqueLabel( )
+	hEmitSTABS( STAB_TYPE_SOL, incfile, 0, 0, lname )
+	hLABEL( lname )
 
 	ctx.incfile = incfile
-
-	'' Open new include file block if needed
-	if( incfile ) then
-		hEmitSTABS( STAB_TYPE_BINCL, incfile, 0, 0 )
-		emitSECTION( IR_SECTION_CODE, 0 )
-		lname = *symbUniqueLabel( )
-		hEmitSTABS( STAB_TYPE_SOL, incfile, 0, 0, lname )
-		hLABEL( lname )
-	end if
 end sub
