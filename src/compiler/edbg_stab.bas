@@ -214,11 +214,7 @@ sub edbgEmitHeader( byval filename as zstring ptr )
 	ctx.typecnt 	= 1
 	ctx.label 		= NULL
 	ctx.incfile 	= NULL
-   #If defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
-      ctx.filename   = UCase(*filename)
-   #Else
-      ctx.filename   = *filename
-   #EndIf
+	ctx.filename   = *filename
 
 	'' emit source file name
 	lname = *symbUniqueLabel( )
@@ -1021,22 +1017,22 @@ end sub
 sub edbgInclude( byval incfile as zstring ptr )
 	dim as string lname
 
-   '' incfile is the new include file or main file name
+	'' incfile is the new include file or main file name
 
-   '' coming from _close incfile is null so no real need to change
-   If( incfile = NULL )Then
-      Exit Sub
-   EndIf
+	'' coming from _close incfile is null so no real need to change
+	If( incfile = NULL )Then
+		Exit Sub
+	EndIf
 
-   '' Already handling the correct name
-   if( incfile = ctx.incfile ) Then
-      exit sub
-   end If
-         
-   emitSECTION( IR_SECTION_CODE, 0 )
-   lname = *symbUniqueLabel( )
-   hEmitSTABS( STAB_TYPE_SOL, incfile, 0, 0, lname )
-   hLABEL( lname )
+	'' Already handling the correct name
+	if( incfile = ctx.incfile ) Then
+		exit sub
+	end If
 
-   ctx.incfile = incfile
+	emitSECTION( IR_SECTION_CODE, 0 )
+	lname = *symbUniqueLabel( )
+	hEmitSTABS( STAB_TYPE_SOL, incfile, 0, 0, lname )
+	hLABEL( lname )
+
+	ctx.incfile = incfile
 end sub
