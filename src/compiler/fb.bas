@@ -480,7 +480,7 @@ sub fbGlobalInit()
 	env.clopt.stacksize     = FB_DEFSTACKSIZE
 	env.clopt.objinfo       = TRUE
 	env.clopt.showincludes  = FALSE
-	env.clopt.modeview      = FB_DEFAULT_MODEVIEW
+	env.clopt.modeview      = FB_DEFAULT_MODEVIEW  '***** console/gui
 				
 	hUpdateLangOptions( )
 	hUpdateTargetOptions( )
