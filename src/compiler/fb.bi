@@ -92,7 +92,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_STACKSIZE            '' integer
 	FB_COMPOPT_OBJINFO              '' boolean: write/read .fbctinf sections etc.?
 	FB_COMPOPT_SHOWINCLUDES         '' boolean: -showincludes
-	FB_COMPOPT_MODEVIEW             '' new for console gui        '***** console/gui
+	FB_COMPOPT_MODEVIEW             '' new for console gui       '***** console/gui
 	
 	FB_COMPOPTIONS
 end enum
