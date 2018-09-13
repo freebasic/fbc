@@ -214,6 +214,8 @@ sub edbgEmitHeader( byval filename as zstring ptr )
 	ctx.typecnt 	= 1
 	ctx.label 		= NULL
 	ctx.incfile 	= NULL
+
+	'' ctx.filename is never used
 	ctx.filename   = *filename
 
 	'' emit source file name
@@ -1016,6 +1018,15 @@ end sub
 
 sub edbgInclude( byval incfile as zstring ptr )
 	dim as string lname
+
+	'' NOTE: originally, fbc used STAB_TYPE_BINCL and STAB_TYPE_EINCL
+	'' to mark the beginning and end of an include file.  The purpose
+	'' for these markers is so the linker (LD) can remove duplicate
+	'' debug type information from the final EXE.  However, because
+	'' fbc only emits types actually used, the end result is that
+	'' type information from a header (.BI) is often different from
+	'' one object module to another is generally not used in the
+	'' way that BINCL/EINCL/EXCL was intented.
 
 	'' incfile is the new include file or main file name
 
