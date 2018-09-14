@@ -288,8 +288,8 @@ end function
 ''
 ''     CNT = INIVALUE
 ''     WHILE( CNT )
-''        CNT -= 1
 ''        <user code>
+''        CNT -= 1
 ''     WEND
 
 function astBuildWhileCounterBegin _

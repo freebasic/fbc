@@ -32,8 +32,9 @@ function astNewMEM _
 	end if
 
 	'' when clearing/moving more than IR_MEMBLOCK_MAXLEN bytes, take
-	'' the adress-of and let emit() do the rest
-	if( lgt > blkmaxlen ) then
+	'' the adress-of and let emit() do the rest, or if blkmaxlen = 0,
+	'' then emit() always handles it, even when lgt=0
+	if( (lgt > blkmaxlen) or (blkmaxlen = 0) ) then
 		l = astNewADDROF( l )
 
 		if( op = AST_OP_MEMMOVE ) then
@@ -83,12 +84,16 @@ private function hCallCtorList _
 	tree = astNewLINK( tree, astBuildVarInc( iter, 1 ) )
 
 	'' wend
-	tree = astBuildWhileCounterEnd( tree, cnt, label, exitlabel )
+	tree = astBuildWhileCounterEnd( tree, cnt, label, exitlabel, FALSE )
 
 	'' Wrap into LOOP node so astCloneTree() can clone the label and update
 	'' the loop code, because it's part of the new[] expression, and not
 	'' a standalone statement.
-	function = astNewLOOP( label, tree )
+	tree = astNewLOOP( label, tree )
+
+	tree = astNewLOOP( exitlabel, tree )
+
+	function = tree
 end function
 
 private function hElements _
@@ -131,6 +136,7 @@ function astBuildNewOp _
 
 	dim as ASTNODE ptr lenexpr = any, tree = any
 	dim as integer save_elmts = any, init = any, elementstreecount = any
+	dim as FBSYMBOL ptr exitlabel = any
 
 	init = INIT_NONE
 	tree = NULL
@@ -212,6 +218,13 @@ function astBuildNewOp _
 	'' tempptr = new( len )
 	tree = astNewLINK( tree, astBuildVarAssign( tmp, newexpr, AST_OPOPT_ISINI ) )
 
+	'' if( tempptr <> NULL ) then
+	exitlabel = symbAddLabel( NULL )
+	
+	'' handle like IIF, we don't want dtors called if tempptr was never allocated
+	tree = astNewLINK( tree, _
+		astBuildBranch( astNewBOP( AST_OP_NE, astNewVAR( tmp ), astNewCONSTi( 0 ) ), exitlabel, FALSE, TRUE ) )
+
 	'' save elements count?
 	if( save_elmts ) then
 		'' *tempptr = elements
@@ -258,7 +271,17 @@ function astBuildNewOp _
 
 	end select
 
-	function = astNewLINK( tree, initexpr )
+	'' *tempptr = initializers
+	tree = astNewLINK( tree, initexpr )
+
+	'' end if
+	tree = astNewLINK( tree, astNewLABEL( exitlabel, FALSE ) )
+
+	'' because this is an expression, exitlabel must be cloned with a new label
+	'' instead of just copied.  astNewLOOP() allows this (but naming could be better).
+	tree = astNewLOOP( exitlabel, tree )
+
+	function = tree
 end function
 
 private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
