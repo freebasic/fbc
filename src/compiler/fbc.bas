@@ -924,7 +924,7 @@ private function hLinkFiles( ) as integer
 		ldcline += hFindLib( "crtend.o" )
 
 	end select
-	
+
 	if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_DARWIN ) then
 		ldcline += " -macosx_version_min 10.6"
 	end if
@@ -1755,9 +1755,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 	case OPT_S
 		fbc.subsystem = arg
-		select case( arg )                                                             '***** console/gui
-      			case "gui" : fbSetOption( FB_COMPOPT_MODEVIEW, FB_MODEVIEW_ISGUI )     '***** console/gui
-      		end select
+		select case( arg )
+      		case "gui" : fbSetOption( FB_COMPOPT_MODEVIEW, FB_MODEVIEW_GUI )
+      	end select
 
 	case OPT_SHOWINCLUDES
 		fbSetOption( FB_COMPOPT_SHOWINCLUDES, TRUE )
@@ -3206,7 +3206,7 @@ private sub hAddDefaultLibs( )
 			    defined(__FB_NETBSD__)
 				fbcAddDefLibPath( "/usr/X11R6/lib" )
 			#endif
-			
+
 			#if defined(__FB_DARWIN__) and defined(ENABLE_XQUARTZ)
 				fbcAddDefLibPAth( "/opt/X11/lib" )
 			#endif
