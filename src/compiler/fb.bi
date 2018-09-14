@@ -92,9 +92,17 @@ enum FB_COMPOPT
 	FB_COMPOPT_STACKSIZE            '' integer
 	FB_COMPOPT_OBJINFO              '' boolean: write/read .fbctinf sections etc.?
 	FB_COMPOPT_SHOWINCLUDES         '' boolean: -showincludes
+	FB_COMPOPT_MODEVIEW             ''__FB_GUI__
 
 	FB_COMPOPTIONS
 end enum
+
+enum FB_MODEVIEW
+	FB_MODEVIEW_CONSOLE = 0
+	FB_MODEVIEW_GUI
+end enum
+
+const FB_DEFAULT_MODEVIEW   =  FB_MODEVIEW_CONSOLE
 
 '' pedantic checks
 enum FB_PDCHECK
@@ -265,6 +273,7 @@ type FBCMMLINEOPT
 	stacksize       as integer
 	objinfo         as integer
 	showincludes    as integer
+	modeview        as FB_MODEVIEW
 end type
 
 '' features allowed in the selected language
