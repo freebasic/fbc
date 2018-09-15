@@ -125,7 +125,7 @@ SUITE( fbc_tests.gfx.image_expr )
 		CU_ASSERT( hImageIsFilledWithColor( a, rgb(255,0,0) ) )
 		hResetImageToBlack( a )
 
-		'' TODO: Palette Using
+		'' Palette Get Using is in tests/gfx/palette.bas
 
 		CU_ASSERT( hImageIsFilledWithColor( b, rgb(255,0,0) ) )
 		put a, (0, 0), b, pset
@@ -212,6 +212,12 @@ SUITE( fbc_tests.gfx.image_expr )
 			'' @array(0)
 			line @array(0), (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(255,0,0), bf
 			CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(255,0,0) ) )
+
+			'' byref pointer = @array(0)
+			var array0idx = @array(0)
+			var byref array0 = array0idx
+			line array0, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,0,255), bf
+			CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,0,255) ) )
 		end scope
 
 		'' array on heap:
@@ -235,6 +241,12 @@ SUITE( fbc_tests.gfx.image_expr )
 			'' @array(0)
 			line @array(0), (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(255,0,0), bf
 			CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(255,0,0) ) )
+
+			'' byref pointer = @array(0)
+			var array0idx = @array(0)
+			var byref array0 = array0idx
+			line array0, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,0,255), bf
+			CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,0,255) ) )
 		end scope
 
 		'' dynamic array, descriptor on stack:
@@ -258,6 +270,12 @@ SUITE( fbc_tests.gfx.image_expr )
 			'' @array(0)
 			line @array(0), (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(255,0,0), bf
 			CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(255,0,0) ) )
+
+			'' byref pointer = @array(0)
+			var array0idx = @array(0)
+			var byref array0 = array0idx
+			line array0, (0, 0) - (SCREEN_W-1, SCREEN_H-1), rgb(0,0,255), bf
+			CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,0,255) ) )
 		end scope
 
 		'' array field:
@@ -302,6 +320,11 @@ SUITE( fbc_tests.gfx.image_expr )
 
 			'' GET into pointer from array access
 			get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array(0)
+			CU_ASSERT( hImageIsFilledWithColor( array(0), rgb(0,255,0) ) )
+
+			'' GET into pointer from byref array access
+			var byref array0 = array(0)
+			get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array0
 			CU_ASSERT( hImageIsFilledWithColor( array(0), rgb(0,255,0) ) )
 
 			imagedestroy( array(0) )
@@ -365,6 +388,12 @@ SUITE( fbc_tests.gfx.image_expr )
 		'' @array(0)
 		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), @array(0)
 		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+
+		'' byref pointer = @array(0)
+		var array0idx = @array(0)
+		var byref array0 = array0idx
+		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array0
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
 	end sub
 
 	private sub hTestUdtWithMatchingCastArrayTarget( )
@@ -376,9 +405,20 @@ SUITE( fbc_tests.gfx.image_expr )
 		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array
 		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
 
+		'' array(0)
+		'' not tested, cast() is known to be used in this case
+
 		'' @array(0)
 		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), @array(0)
 		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+
+		'' byref pointer = @array(0)
+		var array0idx = @array(0)
+		var byref array0 = array0idx
+		get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array0
+		CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+
+	
 	end sub
 
 	'' GET from screen into some array...
@@ -430,6 +470,15 @@ SUITE( fbc_tests.gfx.image_expr )
 		scope
 			dim array(0 to IMAGE_BUFFER_SIZE-1) as ubyte
 			get (0, 0) - (SCREEN_W-1, SCREEN_H-1), @array(0)
+			CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+		end scope
+
+		'' byref pointer = @array(0)
+		scope
+			dim array(0 to IMAGE_BUFFER_SIZE-1) as ubyte
+			var array0idx = @array(0)
+			var byref array0 = array0idx
+			get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array0
 			CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
 		end scope
 
@@ -537,6 +586,15 @@ SUITE( fbc_tests.gfx.image_expr )
 		scope
 			dim array(0 to (IMAGE_BUFFER_SIZE\4)-1) as ulong
 			get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array(0)
+			CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
+		end scope
+
+		'' byref pointer = @array(0)
+		scope
+			dim array(0 to (IMAGE_BUFFER_SIZE\4)-1) as ulong
+			var array0idx = @array(0)
+			var byref array0 = array0idx
+			get (0, 0) - (SCREEN_W-1, SCREEN_H-1), array0
 			CU_ASSERT( hImageIsFilledWithColor( @array(0), rgb(0,255,0) ) )
 		end scope
 

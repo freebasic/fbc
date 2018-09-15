@@ -2015,7 +2015,8 @@ end function
 function rtlGfxPaletteUsing  _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
-		byval isget as integer _
+		byval isget as integer, _
+		byval is64bit as integer _
 	) as integer
 
     dim as ASTNODE ptr proc = any
@@ -2023,7 +2024,7 @@ function rtlGfxPaletteUsing  _
 
 	function = FALSE
 
-	if( typeGetSize( astGetDataType( arrayexpr ) ) = 8 ) then
+	if( is64bit ) then
 		if( isget ) then
 			f = PROCLOOKUP( GFXPALETTEGETUSING64 )
 		else

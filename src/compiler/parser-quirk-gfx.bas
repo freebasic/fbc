@@ -879,7 +879,7 @@ end function
 ''
 function cGfxPalette as integer
     dim as ASTNODE ptr arrayexpr, attexpr, rexpr, gexpr, bexpr
-	dim as integer isget
+	dim as integer isget, dptrsize
 
 	function = FALSE
 
@@ -892,7 +892,19 @@ function cGfxPalette as integer
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end if
-		function = rtlGfxPaletteUsing( arrayexpr, isget )
+
+		'' Choose either the 32 or 64-bit version
+
+		assert( typeIsPtr( astGetDataType( arrayexpr ) ) )
+
+		'' get the size of the data pointed to
+		dptrsize = typeGetSize( typeDeref( astGetDataType( arrayexpr ) ) )
+
+		if( dptrsize <> typeGetSize( FB_DATATYPE_LONG ) and dptrsize <> typeGetSize( FB_DATATYPE_LONGINT ) ) then
+			dptrsize = typeGetSize( FB_DATATYPE_INTEGER )
+		end if
+
+		function = rtlGfxPaletteUsing( arrayexpr, isget, (dptrsize = typeGetSize( FB_DATATYPE_LONGINT )) )
 	else
 		attexpr = NULL
 		rexpr = NULL

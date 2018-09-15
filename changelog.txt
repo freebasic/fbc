@@ -74,6 +74,7 @@ Version 1.06.0
 - #880: Overload binary operators now support covariant arguments, overloaded procedure resolution changed especially with respect to CONST and non-CONST parameters
 - Fix for debugging lines in include files but not in procedures.  Filename debugging information added for module level statements in included files.
 - #699: fix new[0] causing infinite loop when calling constructor/destructor list
+- #883: when mapping 32 & 64 bit functions for PALETTE [GET] USING, check the data type pointed to and choose one of LONG PTR, LONGINT PTR, INTEGER PTR
 
 
 Version 1.05.0
