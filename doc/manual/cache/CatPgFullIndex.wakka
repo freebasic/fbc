@@ -30,6 +30,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgDdfbfpu|__FB_FPU__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbfreebsd|__FB_FREEBSD__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbgcc|__FB_GCC__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbgui|__FB_GUI__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblang|__FB_LANG__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfblinux|__FB_LINUX__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBMain|__FB_MAIN__"}} 

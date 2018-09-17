@@ -491,6 +491,7 @@ __FB_FPMODE__
 __FB_FPU__
 __FB_FREEBSD__
 __FB_GCC__
+__FB_GUI__
 __FB_LANG__
 __FB_LINUX__
 __FB_MAIN__

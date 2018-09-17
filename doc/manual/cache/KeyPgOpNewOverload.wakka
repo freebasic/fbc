@@ -18,11 +18,74 @@ Member operator to overload dynamic memory allocation process part provided by #
 	
 	##**New[] Overload**## operator is the array-version of the ##**New Overload**## operator and overloads the dynamic memory allocation process provided by the  ##**New[] Expression**## operator when applying to a UDT (User Defined Type).
 	
-	Memory allocated with ##**New Overload**## operator must be freed with ##[[KeyPgOpDeleteOverload|Delete Overload]]## operator. Memory allocated with ##**New[] Overload**## operator must be freed with ##**Delete[] Overload**## operator, the array-version of ##[[KeyPgOpDeleteOverload|Delete Overload]]## operator. You cannot mix and match the different versions of the operators.
+	Memory allocated with ##**New Overload**## operator must be freed by also defining a ##[[KeyPgOpDeleteOverload|Delete Overload]]## operator. Memory allocated with ##**New[] Overload**## operator must be freed by also defining a ##**Delete[] Overload**## operator, the array-version of ##[[KeyPgOpDeleteOverload|Delete Overload]]## operator. You cannot mix and match the different versions of the operators.
 	
 	Member operators ##**New Overload**##, and ##**New[] Overload**## are always static, even if not explicitly declared (##[[KeyPgStaticMember|static]]## keyword is unnecessary but allowed). Thus, they do not have an implicit ##[[KeyPgThis|This]]## instance argument passed to them (because instance not yet been constructed).
 
 {{fbdoc item="ex"}}
+	Dynamic allocation displayer for UDT, by using the member operators "New([]) Overload" and "Delete([]) Overload" (very simple example, only for syntax usage):
+		- displaying of memory allocations: addresses, sizes,
+		- displaying of memory deallocations: addresses.
+{{fbdoc item="filename" value="examples/manual/udt/newoverload0.bas"}}
+	%%(freebasic)
+Type UDTdisplayer
+  '' user UDT fields:
+	Dim As Byte b(1 To 1024*1024)
+  '' display fields:
+	Public:
+	  Declare Operator New (ByVal size As UInteger) As Any Ptr
+	  Declare Operator Delete (ByVal buf As Any Ptr)
+	  Declare Operator New[] (ByVal size As UInteger) As Any Ptr
+	  Declare Operator Delete[] (ByVal buf As Any Ptr)
+	Private:
+	  Declare Static Function allocation (Byref N As String, Byval size As Uinteger) As Any Ptr
+	  Declare Static Sub deallocation (Byref D As String, Byval p As Any Ptr)
+End Type
+
+Operator UDTdisplayer.New (ByVal size As UInteger) As Any Ptr
+  Return UDTdisplayer.allocation("New", size)
+End Operator
+
+Operator UDTdisplayer.Delete (ByVal buf As Any Ptr)
+  UDTdisplayer.deallocation("Delete", buf)
+End Operator
+
+Operator UDTdisplayer.New[] (ByVal size As UInteger) As Any Ptr
+  Return UDTdisplayer.allocation("New[]", size)
+End Operator
+
+Operator UDTdisplayer.Delete[] (ByVal buf As Any Ptr)
+  UDTdisplayer.deallocation("Delete[]", buf)
+End Operator
+
+Function UDTdisplayer.allocation (Byref N As String, Byval size As Uinteger) As Any Ptr
+  Dim As Any Ptr p = Allocate(size)
+  Print "memory allocation for " & size & " bytes from '" & N & "' at address: " & p
+  Return p
+End Function
+
+Sub UDTdisplayer.deallocation (Byref D As String, Byval p As Any Ptr)
+  Print "memory deallocation from '" & D & "' at address " & p
+  Deallocate p
+End Sub
+
+
+Randomize
+Dim As UDTdisplayer Ptr pu1 = New UDTdisplayer
+Dim As UDTdisplayer Ptr pu2 = New UDTdisplayer[3]
+Delete pu1
+Delete[] pu2
+
+Sleep
+%%
+
+		Output example:
+		%%
+memory allocation for 1048576 bytes from 'New' at address: 32677920
+memory allocation for 3145728 bytes from 'New[]' at address: 33775648
+memory deallocation from 'Delete' at address 32677920
+memory deallocation from 'Delete[]' at address 33775648
+%%
 
 	Aligned memory allocator:
 		- by using the member operators "New Overload" and "Delete Overload", any created User object is aligned to a multiple of "ALIGN" bytes (256 bytes in this example),

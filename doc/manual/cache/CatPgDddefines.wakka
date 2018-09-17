@@ -70,6 +70,8 @@ Preprocessor symbols defined by the compiler.
 		Defined to either ##"gas"## or ##"gcc"## depending on [[CompilerOptgen|-gen]].
 	=={{fbdoc item="keyword" value="KeyPgDdfbgcc|__FB_GCC__"}}==
 		True (##-1##) if -gen gcc is used, false (##0##) otherwise.
+	=={{fbdoc item="keyword" value="KeyPgDdfbgui|__FB_GUI__"}}==
+		True (##-1##) if the ##"-s gui"## switch was used, false (##0##) otherwise.
 	=={{fbdoc item="keyword" value="KeyPgDdFBMain|__FB_MAIN__"}}==
 		Defined if compiling a module with an entry point.
 	=={{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}==

@@ -15,7 +15,7 @@ Statement to erase arrays
 	Using ##**Erase**## on a fixed-length array resets all elements without freeing the allocated memory.
 	In case of objects, there is destruction then re-construction.
 	
-	Using ##**Erase**## on a variable-length array (array already sized) frees the memory used by the element data (does not allow to after resize it with a different number of dimensions).
+	Using ##**Erase**## on a variable-length array (array already sized) frees the memory allocated for the array elements, but the array remains declared at its same scope level (with the same datatype and number of dimensions).
 	In case of objects, there is destruction before freeing memory.
 
 {{fbdoc item="ex"}}

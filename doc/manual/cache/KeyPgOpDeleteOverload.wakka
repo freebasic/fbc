@@ -15,7 +15,7 @@ Member operator to overload memory deallocation process part provided by ##[[Key
 	
 	##**Delete[] Overload**## operator is the array-version of ##**Delete Overload**## operator and overloads the memory deallocation process provided by the ##**Delete[] Statement**## operator when applying to a UDT (User Defined Type).
 	
-	Memory freed with ##**Delete Overload**## operator must have be allocated with ##[[KeyPgOpNewOverload|New Overload]]## operator. Memory freed with ##**Delete[] Overload**## operator must have been allocated with ##**New[] Overload operator**##, the array-version of ##[[KeyPgOpNewOverload|New Overload]]## operator. You cannot mix and match the different versions of the operators.
+	Memory freed with ##**Delete Overload**## operator must have be allocated by also defining a ##[[KeyPgOpNewOverload|New Overload]]## operator. Memory freed with ##**Delete[] Overload**## operator must have been allocated by also defining a ##**New[] Overload operator**##, the array-version of ##[[KeyPgOpNewOverload|New Overload]]## operator. You cannot mix and match the different versions of the operators.
 	
 	Member operators ##**Delete Overload**##, and ##**Delete[] Overload**## are always static, even if not explicitly declared (##[[KeyPgStaticMember|static]]## keyword is unnecessary but allowed). Thus, they do not have an implicit ##[[KeyPgThis|This]]## instance argument passed to them (because instance already been destroyed).
 
