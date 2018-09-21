@@ -32,8 +32,9 @@ function astNewMEM _
 	end if
 
 	'' when clearing/moving more than IR_MEMBLOCK_MAXLEN bytes, take
-	'' the adress-of and let emit() do the rest
-	if( lgt > blkmaxlen ) then
+	'' the adress-of and let emit() do the rest, or if blkmaxlen = 0,
+	'' then emit() always handles it, even when lgt=0
+	if( (lgt > blkmaxlen) or (blkmaxlen = 0) ) then
 		l = astNewADDROF( l )
 
 		if( op = AST_OP_MEMMOVE ) then
@@ -60,20 +61,21 @@ private function hCallCtorList _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr cnt = any, label = any, iter = any
+    dim as FBSYMBOL ptr cnt = any, label = any, exitlabel = any, iter = any
     dim as ASTNODE ptr tree = any
 
-	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
+	cnt = symbAddTempVar( FB_DATATYPE_UINT )
 	label = symbAddLabel( NULL )
+	exitlabel = symbAddLabel( NULL )
 	iter = symbAddTempVar( typeAddrOf( dtype ), subtype )
 
 	'' iter = @vector[0]
 	tree = astBuildVarAssign( iter, astNewVAR( tmp ), AST_OPOPT_ISINI )
 
-	'' for cnt = 0 to elements-1
+	'' while( cnt )
 	'' Note: Using a non-flushing LABEL here because the LABEL node will
 	'' end up as part of an expression tree, not as a "standalone statement"
-	tree = astBuildForBegin( tree, cnt, label, 0, FALSE /' non-flushing '/ )
+	tree = astBuildWhileCounterBegin( tree, cnt, label, exitlabel, elementsexpr, FALSE /' non-flushing '/ )
 
 	'' ctor( *iter )
 	tree = astNewLINK( tree, astBuildCtorCall( subtype, astBuildVarDeref( iter ) ) )
@@ -81,13 +83,17 @@ private function hCallCtorList _
 	'' iter += 1
 	tree = astNewLINK( tree, astBuildVarInc( iter, 1 ) )
 
-	'' next
-	tree = astBuildForEnd( tree, cnt, label, elementsexpr )
+	'' wend
+	tree = astBuildWhileCounterEnd( tree, cnt, label, exitlabel, FALSE )
 
 	'' Wrap into LOOP node so astCloneTree() can clone the label and update
 	'' the loop code, because it's part of the new[] expression, and not
 	'' a standalone statement.
-	function = astNewLOOP( label, tree )
+	tree = astNewLOOP( label, tree )
+
+	tree = astNewLOOP( exitlabel, tree )
+
+	function = tree
 end function
 
 private function hElements _
@@ -130,6 +136,7 @@ function astBuildNewOp _
 
 	dim as ASTNODE ptr lenexpr = any, tree = any
 	dim as integer save_elmts = any, init = any, elementstreecount = any
+	dim as FBSYMBOL ptr exitlabel = any
 
 	init = INIT_NONE
 	tree = NULL
@@ -199,7 +206,7 @@ function astBuildNewOp _
 		if( save_elmts ) then
 			'' length + sizeof( integer )   (to store the vector size)
 			lenexpr = astNewBOP( AST_OP_ADD, lenexpr, _
-					astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ), FB_DATATYPE_UINT ) )
+					astNewCONSTi( typeGetSize( FB_DATATYPE_UINT ), FB_DATATYPE_UINT ) )
 		end if
 
 		newexpr = rtlMemNewOp( op, lenexpr, dtype, subtype )
@@ -211,20 +218,27 @@ function astBuildNewOp _
 	'' tempptr = new( len )
 	tree = astNewLINK( tree, astBuildVarAssign( tmp, newexpr, AST_OPOPT_ISINI ) )
 
+	'' if( tempptr <> NULL ) then
+	exitlabel = symbAddLabel( NULL )
+	
+	'' handle like IIF, we don't want dtors called if tempptr was never allocated
+	tree = astNewLINK( tree, _
+		astBuildBranch( astNewBOP( AST_OP_NE, astNewVAR( tmp ), astNewCONSTi( 0 ) ), exitlabel, FALSE, TRUE ) )
+
 	'' save elements count?
 	if( save_elmts ) then
 		'' *tempptr = elements
 		tree = astNewLINK( tree, _
 			astNewASSIGN( _
-				astNewDEREF( astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_INTEGER ) ) ), _
+				astNewDEREF( astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_UINT ) ) ), _
 				hElements( elementsexpr, elementstreecount ), _
 				AST_OPOPT_ISINI ) )
 
-		'' tempptr += len( integer )
+		'' tempptr += len( uinteger )
 		tree = astNewLINK( tree, _
 			astNewSelfBOP( AST_OP_ADD_SELF, _
 				astNewVAR( tmp, , typeAddrOf( FB_DATATYPE_VOID ) ), _
-				astNewCONSTi( typeGetSize( FB_DATATYPE_INTEGER ) ), _
+				astNewCONSTi( typeGetSize( FB_DATATYPE_UINT ) ), _
 				NULL ) )
 	end if
 
@@ -257,29 +271,40 @@ function astBuildNewOp _
 
 	end select
 
-	function = astNewLINK( tree, initexpr )
+	'' *tempptr = initializers
+	tree = astNewLINK( tree, initexpr )
+
+	'' end if
+	tree = astNewLINK( tree, astNewLABEL( exitlabel, FALSE ) )
+
+	'' because this is an expression, exitlabel must be cloned with a new label
+	'' instead of just copied.  astNewLOOP() allows this (but naming could be better).
+	tree = astNewLOOP( exitlabel, tree )
+
+	function = tree
 end function
 
 private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
-    dim as FBSYMBOL ptr cnt = any, label = any, iter = any, elmts = any
+    dim as FBSYMBOL ptr cnt = any, label = any, exitlabel = any, iter = any, elmts = any
     dim as ASTNODE ptr tree = any, expr = any
 
 	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
 	label = symbAddLabel( NULL )
+	exitlabel = symbAddLabel( NULL )
 	iter = symbAddTempVar( ptrexpr->dtype, ptrexpr->subtype )
 	elmts = symbAddTempVar( FB_DATATYPE_INTEGER )
 
 	'' DELETE[]'s counter is at: cast(integer ptr, vector)[-1]
 
-	'' elmts = *cast( integer ptr, cast( any ptr, vector ) + -sizeof( integer ) )
+	'' elmts = *cast( uinteger ptr, cast( any ptr, vector ) + -sizeof( uinteger ) )
 	'' (using AST_CONVOPT_DONTCHKPTR to support derived UDT pointers)
 	tree = astBuildVarAssign( _
 		elmts, _
 		astNewDEREF( _
-			astNewCONV( typeAddrOf( FB_DATATYPE_INTEGER ), NULL, _
+			astNewCONV( typeAddrOf( FB_DATATYPE_UINT ), NULL, _
 				astNewBOP( AST_OP_ADD, _
 					astCloneTree( ptrexpr ), _
-					astNewCONSTi( -typeGetSize( FB_DATATYPE_INTEGER ) ) ), _
+					astNewCONSTi( -typeGetSize( FB_DATATYPE_UINT ) ) ), _
 				AST_CONVOPT_DONTCHKPTR ) ), _
 		AST_OPOPT_ISINI )
 
@@ -291,8 +316,8 @@ private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
 					AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH ), _
 			AST_OPOPT_ISINI ) )
 
-	'' for cnt = 0 to elmts-1
-	tree = astBuildForBegin( tree, cnt, label, 0 )
+	'' while( counter )
+	tree = astBuildWhileCounterBegin( tree, cnt, label, exitlabel, astNewVAR( elmts ) )
 
 	'' iter -= 1
 	tree = astNewLINK( tree, astBuildVarInc( iter, -1 ) )
@@ -300,8 +325,8 @@ private function hCallDtorList( byval ptrexpr as ASTNODE ptr ) as ASTNODE ptr
 	'' dtor( *iter )
 	tree = astNewLINK( tree, astBuildVarDtorCall( astBuildVarDeref( iter ) ) )
 
-	'' next
-	tree = astBuildForEnd( tree, cnt, label, astNewVAR( elmts ) )
+	'' wend
+	tree = astBuildWhileCounterEnd( tree, cnt, label, exitlabel )
 
 	function = tree
 end function

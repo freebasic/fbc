@@ -1174,6 +1174,25 @@ declare function astBuildDtorCall _
 		byval ignore_virtual as integer = FALSE _
 	) as ASTNODE ptr
 
+declare function astBuildWhileCounterBegin _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval cnt as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval exitlabel as FBSYMBOL ptr, _
+		byval initexpr as ASTNODE ptr, _
+		byval flush_label as integer = TRUE _
+	) as ASTNODE ptr
+
+declare function astBuildWhileCounterEnd _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval cnt as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval exitlabel as FBSYMBOL ptr, _
+		byval flush_label as integer = TRUE _
+	) as ASTNODE ptr
+
 declare function astBuildForBegin _
 	( _
 		byval tree as ASTNODE ptr, _

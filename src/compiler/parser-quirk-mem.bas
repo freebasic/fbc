@@ -114,8 +114,14 @@ function cOperatorNew( ) as ASTNODE ptr
 	if( elementsexpr = NULL ) then
 		elementsexpr = astNewCONSTi( 1, FB_DATATYPE_UINT )
 	else
-		'' hack(?): make sure it's a uinteger, otherwise it may crash later, fixes bug #2533376 (counting_pine)
-		elementsexpr = astNewCONV( FB_DATATYPE_UINT, NULL, elementsexpr )
+		'' Constant?
+		if( astIsCONST( elementsexpr ) ) then
+			'' check at compile time
+			elementsexpr = astNewCONSTi( cConstIntExprRanged( elementsexpr, FB_DATATYPE_UINT ), FB_DATATYPE_UINT )
+		else
+			'' make sure it's a uinteger, otherwise it may crash later, fixes bug #2533376 (counting_pine)
+			elementsexpr = astNewCONV( FB_DATATYPE_UINT, NULL, elementsexpr, AST_CONVOPT_SIGNCONV )
+		end if
 		if( elementsexpr = NULL ) then
 			errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
 			elementsexpr = astNewCONSTi( 1, FB_DATATYPE_UINT )
