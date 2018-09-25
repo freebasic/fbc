@@ -1655,7 +1655,8 @@ declare function rtlGfxPalette _
 declare function rtlGfxPaletteUsing _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
-		byval isget as integer _
+		byval isget as integer, _
+		byval is64bit as integer _
 	) as integer
 
 declare function rtlGfxPut _
