@@ -505,11 +505,13 @@ private function hNeedAlias( byval proc as FBSYMBOL ptr ) as integer
 		function = TRUE
 
 	'' For stdcall with @N suffix, if the function has a hidden UDT result
-	'' pointer parameter, we need the alias to get the correct @N suffix.
-	'' (gcc would calculate the parameter into the @N suffix, since it
-	'' doesn't know that the parameter is the special result parameter)
+	'' pointer parameter, or UDT's passed byval, we need the alias to get
+	'' the correct @N suffix. (gcc could calculate the wrong value into the
+	'' @N suffix, since it doesn't known about the special result parameter
+	'' or byval UDTs).  It should be safe to always generate the alias
+	'' ourselves since we already must control for the special cases.
 	case FB_FUNCMODE_STDCALL
-		function = symbProcReturnsOnStack( proc )
+		function = TRUE
 	end select
 end function
 
