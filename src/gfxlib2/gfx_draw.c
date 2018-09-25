@@ -220,9 +220,9 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				move = draw = TRUE;
 				break;
 
-			case 'F': case 'D': angle += 90;
-			case 'G': case 'L': angle += 90;
-			case 'H': case 'U': angle += 90;
+			case 'F': case 'D': angle += 90; /* fall through */
+			case 'G': case 'L': angle += 90; /* fall through */
+			case 'H': case 'U': angle += 90; /* fall through */
 			case 'E': case 'R':
 				diagonal = ((toupper(*c) >= 'E') && (toupper(*c) <= 'H'));
 				c++;
