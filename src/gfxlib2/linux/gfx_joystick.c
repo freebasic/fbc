@@ -34,7 +34,8 @@ FBCALL int fb_GfxGetJoystick(int id, ssize_t *buttons, float *a1, float *a2, flo
 	const char *device[] = { "/dev/input/js",
 							 "/dev/js",
 							 NULL };
-	char device_name[16];
+	/* overallocate device_name[] to prevent a sprintf() warning in GCC */
+	char device_name[13 + 11 + 1];
 	JOYDATA *joy;
 	JS_EVENT event;
 	int i, j, k, count = 0;
