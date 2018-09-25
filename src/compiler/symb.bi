@@ -57,12 +57,15 @@ const FB_DT_TYPEMASK 		= &b00000000000000000000000000011111 '' max 32 built-in d
 const FB_DT_PTRMASK  		= &b00000000000000000000000111100000 '' level of pointer indirection
 const FB_DT_CONSTMASK		= &b00000000000000111111111000000000 '' PTRLEVELS + 1 bit-masks
 const FB_DATATYPE_REFERENCE	= &b00000000000010000000000000000000 '' used for mangling BYREF parameters
+const FB_DT_MANGLEMASK      = &b00000001111100000000000000000000 '' used to modify mangling for builtin types
 const FB_DATATYPE_INVALID	= &b10000000000000000000000000000000
 
 const FB_DT_PTRLEVELS		= 8					'' max levels of pointer indirection
 
 const FB_DT_PTRPOS			= 5
 const FB_DT_CONSTPOS		= FB_DT_PTRPOS + 4
+
+const FB_DT_MANGLEPOS       = 20
 
 enum FB_OVLPROC_MATCH_SCORE
 	FB_OVLPROC_NO_MATCH = 0
@@ -2491,6 +2494,10 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 #define	typeIsRef( dt ) ((dt and FB_DATATYPE_REFERENCE) <> 0)
 #define	typeSetIsRef( dt ) (dt or FB_DATATYPE_REFERENCE)
 #define	typeUnsetIsRef( dt ) (dt and not FB_DATATYPE_REFERENCE)
+
+#define	typeIsMangleDt( dt ) (((dt and FB_DT_MANGLEMASK) <> 0))
+#define typeGetMangleDt( dt ) ((dt and FB_DT_MANGLEMASK) shr FB_DT_MANGLEPOS)
+#define typeSetMangleDt( dt, mangle_dt ) ((dt and not FB_DT_MANGLEMASK) or ((mangle_dt shl FB_DT_MANGLEPOS) and FB_DT_MANGLEMASK ))
 
 declare sub symbForEachGlobal _
 	( _

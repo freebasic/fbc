@@ -393,6 +393,38 @@ function hIntegerTypeFromBitSize _
 
 end function
 
+private function cMangleModifier _
+	( _
+	) as integer
+
+	static as zstring * FB_MAXNAMELEN+1 aliasid
+	function = FALSE
+
+	'' ALIAS?
+	if( lexGetToken( ) = FB_TK_ALIAS ) then
+		lexSkipToken( )
+
+		'' "long"
+		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
+			aliasid = *lexGetText( )
+			lexSkipToken( )
+
+			select case lcase( aliasid )
+			case "long"
+				function = fbIs64bit( ) and ((env.target.options and FB_TARGETOPT_UNIX) = 0)
+			case ""
+				errReport( FB_ERRMSG_EMPTYALIASSTRING )
+			case else
+				errReport( FB_ERRMSG_SYNTAXERROR )	
+			end select
+		else
+			errReport( FB_ERRMSG_SYNTAXERROR )
+		end if
+
+	end if
+
+end function
+
 '':::::
 ''SymbolType      =   CONST? UNSIGNED? (
 ''				      ANY
@@ -528,10 +560,16 @@ function cSymbolType _
 		case FB_TK_LONG
 			lexSkipToken( )
 			dtype = FB_DATATYPE_LONG
+			if( cMangleModifier() ) then
+				dtype = typeSetMangleDt( dtype, FB_DATATYPE_INTEGER )
+			end if
 
 		case FB_TK_ULONG
 			lexSkipToken( )
 			dtype = FB_DATATYPE_ULONG
+			if( cMangleModifier() ) then
+				dtype = typeSetMangleDt( dtype, FB_DATATYPE_UINT )
+			end if
 
 		case FB_TK_LONGINT
 			lexSkipToken( )
@@ -668,7 +706,11 @@ function cSymbolType _
 				dtype = FB_DATATYPE_UINT
 
 			case FB_DATATYPE_LONG
-				dtype = FB_DATATYPE_ULONG
+				if( typeIsMangleDt( dtype ) ) then
+					dtype = typeSetMangleDt( FB_DATATYPE_ULONG, FB_DATATYPE_UINT )
+				else
+					dtype = FB_DATATYPE_ULONG
+				end if
 
 			case FB_DATATYPE_LONGINT
 				dtype = FB_DATATYPE_ULONGINT

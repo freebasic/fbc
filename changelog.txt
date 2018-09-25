@@ -10,6 +10,7 @@ Version 1.06.0
 - WSTRING can be a return type, but only for prototypes (DECLARE) and function pointers, this allows getting PROCPTR() of all fb built-in run time functions
 
 [added]
+- Name mangling of Long parameters on Win64 are mangled to C++ int by default and to C++ long with a modifier in the form 'as [u]long alias "long"'.  The data type size is still 32bit but allows calling external C++ library expecting a C++ long.
 - -noobjinfo option to disable the writing/reading of compile-time library and other linking options from/to .o and .a files. This also disables the use of fbextra.x (the supplemental linker script) for discarding the .fbctinf sections, which is useful when using the gold linker that doesn't support this kind of linker script.
 - Linux console Inkey() now recognizes F11 and F12
 - 2D render through OpenGL on Windows and Linux via screencontrol (angros47)

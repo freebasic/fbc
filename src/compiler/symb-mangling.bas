@@ -319,7 +319,7 @@ function hMangleBuiltInType _
 		byref add_abbrev as integer _
 	) as zstring ptr
 
-	assert( dtype = typeGetDtOnly( dtype ) )
+	assert( dtype = (typeGetDtOnly( dtype ) or (dtype and FB_DT_MANGLEMASK)) )
 
 	''
 	'' Plain unqualified C++ built-in types are not considered for abbreviation.
@@ -357,14 +357,31 @@ function hMangleBuiltInType _
 	''    64bit fbc it was reversed, allowing the same FB and C++ code to work
 	''    together on both 32bit and 64bit.
 	''
+	''  - as special expection for windows 64bit, to get a 32bit type that will
+	''    mangle to C++ long, allow 'as [u]long alias "[u]long"' declarations.
+	''    The size of LONG/ULONG does not change, it's 32bit, only the mangling,
+	''    so fbc programs can call C++ code requiring 'long int' arguments.
+
 	if( fbIs64bit( ) and ((env.target.options and FB_TARGETOPT_UNIX) = 0) ) then
 		'' Windows 64bit
-		'' Itanium C++ ABI compatible mangling of non-C++ built-in types (vendor extended types):
-		''    u <length-of-id> <id>
-		select case( dtype )
-		case FB_DATATYPE_INTEGER : add_abbrev = TRUE : return @"u7INTEGER"  '' seems like a good choice
-		case FB_DATATYPE_UINT    : add_abbrev = TRUE : return @"u8UINTEGER"
-		end select
+
+		'' check for remapping of dtype mangling
+		if( typeIsMangleDt( dtype ) ) then
+			dtype = typeGetMangleDt( dtype )
+			'' Windows 64bit
+			select case( dtype )
+			case FB_DATATYPE_INTEGER : return @"l"  '' long
+			case FB_DATATYPE_UINT    : return @"m"  '' unsigned long
+			end select
+		else
+			'' Itanium C++ ABI compatible mangling of non-C++ built-in types (vendor extended types):
+			''    u <length-of-id> <id>
+			select case( dtype )
+			case FB_DATATYPE_INTEGER : add_abbrev = TRUE : return @"u7INTEGER"  '' seems like a good choice
+			case FB_DATATYPE_UINT    : add_abbrev = TRUE : return @"u8UINTEGER"
+			end select
+		end if
+
 	else
 		'' 32bit, Unix 64bit
 		select case( dtype )
@@ -480,7 +497,7 @@ sub symbMangleType _
 	''
 	'' Plain type without reference/pointer/const bits
 	''
-	assert( dtype = typeGetDtOnly( dtype ) )
+	assert( dtype = (typeGetDtOnly( dtype ) or (dtype and FB_DT_MANGLEMASK)) )
 
 	select case( dtype )
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
