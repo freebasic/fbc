@@ -1,17 +1,11 @@
 ' TEST_MODE : MULTI_MODULE_TEST
 
-#ifdef __FB_64BIT__
-	type cxxint as long
-#else
-	type cxxint as integer
-#endif
-
 '' simple
 
 extern "c++"
 	namespace cpp
-		declare function sum( byval a as cxxint, byval b as cxxint ) as cxxint
-		declare function dec( byval a as cxxint, byval b as cxxint ) as cxxint
+		declare function sum( byval a as long, byval b as long ) as long
+		declare function dec( byval a as long, byval b as long ) as long
 	end namespace
 end extern
 
@@ -23,8 +17,8 @@ end extern
 
 extern "c++"
 	namespace cpp.foo.bar
-		declare function sum( byval a as cxxint, byval b as cxxint ) as cxxint
-		declare function dec( byval a as cxxint, byval b as cxxint ) as cxxint
+		declare function sum( byval a as long, byval b as long ) as long
+		declare function dec( byval a as long, byval b as long ) as long
 	end namespace
 end extern
 
@@ -37,11 +31,11 @@ end extern
 extern "c++"
 	namespace cpp.foo.bar
 		type udt
-			v as cxxint
+			v as long
 		end type
 	
-		declare function sum_udt( byval a as udt ptr, byval b as udt ptr ) as cxxint
-		declare function dec_udt( byval a as udt ptr, byval b as udt ptr ) as cxxint
+		declare function sum_udt( byval a as udt ptr, byval b as udt ptr ) as long
+		declare function dec_udt( byval a as udt ptr, byval b as udt ptr ) as long
 	end namespace
 end extern
 
@@ -53,24 +47,24 @@ end extern
 extern "c++"
 	namespace cpp.foo.bar
 		type baz
-			v1 as cxxint
-			v2 as cxxint
+			v1 as long
+			v2 as long
 		end type
 	
 		declare function sum_fn( byval baz as baz ptr, _
-								 byval a as function cdecl(byval as baz ptr) as cxxint, _
-								 byval b as function cdecl(byval as baz ptr) as cxxint ) as cxxint
+								 byval a as function cdecl(byval as baz ptr) as long, _
+								 byval b as function cdecl(byval as baz ptr) as long ) as long
 		declare function dec_fn( byval baz as baz ptr, _
-								 byval a as function cdecl(byval as baz ptr) as cxxint, _
-								 byval b as function cdecl(byval as baz ptr) as cxxint ) as cxxint
+								 byval a as function cdecl(byval as baz ptr) as long, _
+								 byval b as function cdecl(byval as baz ptr) as long ) as long
 	end namespace
 end extern
 
-private function fun_v1 cdecl( byval baz as cpp.foo.bar.baz ptr) as cxxint
+private function fun_v1 cdecl( byval baz as cpp.foo.bar.baz ptr) as long
 	function = baz->v1
 end function
 
-private function fun_v2 cdecl ( byval baz as cpp.foo.bar.baz ptr) as cxxint
+private function fun_v2 cdecl ( byval baz as cpp.foo.bar.baz ptr) as long
 	function = baz->v2
 end function
 

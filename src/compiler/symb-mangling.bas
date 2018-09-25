@@ -319,7 +319,7 @@ function hMangleBuiltInType _
 		byref add_abbrev as integer _
 	) as zstring ptr
 
-	assert( dtype = typeGetDtOnly( dtype ) )
+	assert( dtype = (typeGetDtOnly( dtype ) or (dtype and FB_DT_MANGLEMASK)) )
 
 	''
 	'' Plain unqualified C++ built-in types are not considered for abbreviation.
@@ -336,74 +336,81 @@ function hMangleBuiltInType _
 		return @"8FBSTRING"
 	end if
 
-	if( fbIs64bit( ) ) then
-		'' By default on x86 we mangle INTEGER to "int", but on 64bit
-		'' our INTEGER becomes 64bit, while int stays 32bit, so we
-		'' really shouldn't use the same mangling in that case.
-		''
-		'' Mangling the 64bit INTEGER as "long long" would conflict
-		'' with the LONGINT mangling though (we cannot allow separate
-		'' INTEGER/LONGINT overloads in code but then generate the same
-		'' mangled id for them, the assembler/linker would complain).
-		''
-		'' Besides that, our LONG stays 32bit always, but "long" on
-		'' 64bit Linux changes to 64bit, so we shouldn't mangle LONG
-		'' to "long" in that case. It would still be possible on 64bit
-		'' Windows, because there "long" stays 32bit, but it seems best
-		'' to mangle LONG to "int" on 64bit consistently, since "int"
-		'' stays 32bit on both Linux and Windows.
-		''
-		'' That allows 64bit INTEGER to be mangled as 64bit long on
-		'' Linux & co, making GCC compatibility easier, it's only Win64
-		'' where we need a custom mangling.
-		''
-		'' Itanium C++ ABI compatible mangling of non-C++ built-in
-		'' types (vendor extended types):
-		''    u <length-of-id> <id>
+	''
+	'' Integer/Long mangling:
+	''
+	''           32bit        64bit
+	'' Integer   long         long (Unix) or INTEGER (Windows)
+	'' Long      int          int
+	'' LongInt   long long    long long
+	''
+	''  - Fundamental problem: FB and C++ types are different, an exact mapping
+	''    is impossible
+	''
+	''  - mangling should match the C/C++ binding recommendations, i.e. use Long
+	''    for int and Integer for things like ssize_t. On linux-x86_64 Integer
+	''    can be mangled as long, but on win64 the only 64bit integer type is
+	''    long long and that's already used for LongInt. So it seems that we have
+	''    to use a custom mangling for that case (INTEGER).
+	''
+	''  - 32bit fbc used to mangle Integer as int and Long as long, but to match
+	''    64bit fbc it was reversed, allowing the same FB and C++ code to work
+	''    together on both 32bit and 64bit.
+	''
+	''  - as special expection for windows 64bit, to get a 32bit type that will
+	''    mangle to C++ long, allow 'as [u]long alias "[u]long"' declarations.
+	''    The size of LONG/ULONG does not change, it's 32bit, only the mangling,
+	''    so fbc programs can call C++ code requiring 'long int' arguments.
 
-		if( env.target.options and FB_TARGETOPT_UNIX ) then
+	if( fbIs64bit( ) and ((env.target.options and FB_TARGETOPT_UNIX) = 0) ) then
+		'' Windows 64bit
+
+		'' check for remapping of dtype mangling
+		if( typeHasMangleDt( dtype ) ) then
+			dtype = typeGetMangleDt( dtype )
+			'' Windows 64bit
 			select case( dtype )
 			case FB_DATATYPE_INTEGER : return @"l"  '' long
 			case FB_DATATYPE_UINT    : return @"m"  '' unsigned long
 			end select
 		else
+			'' Itanium C++ ABI compatible mangling of non-C++ built-in types (vendor extended types):
+			''    u <length-of-id> <id>
 			select case( dtype )
 			case FB_DATATYPE_INTEGER : add_abbrev = TRUE : return @"u7INTEGER"  '' seems like a good choice
 			case FB_DATATYPE_UINT    : add_abbrev = TRUE : return @"u8UINTEGER"
 			end select
 		end if
 
-		select case( dtype )
-		case FB_DATATYPE_LONG    : return @"i"  '' int
-		case FB_DATATYPE_ULONG   : return @"j"  '' unsigned int
-		end select
 	else
+		'' 32bit, Unix 64bit
 		select case( dtype )
-		case FB_DATATYPE_INTEGER : return @"i"  '' int
-		case FB_DATATYPE_UINT    : return @"j"  '' unsigned int
-		case FB_DATATYPE_LONG    : return @"l"  '' long
-		case FB_DATATYPE_ULONG   : return @"m"  '' unsigned long
+		case FB_DATATYPE_INTEGER : return @"l"  '' long
+		case FB_DATATYPE_UINT    : return @"m"  '' unsigned long
 		end select
 	end if
+
+	'' dtype should be a FB_DATATYPE by now
+	assert( dtype = typeGetDtOnly( dtype ) )
 
 	static as zstring ptr typecodes(0 to FB_DATATYPES-1) => _
 	{ _
 		@"v", _ '' void
 		@"b", _ '' boolean
-		@"a", _ '' byte (signed char)
-		@"h", _ '' ubyte (unsigned char)
+		@"a", _ '' Byte: signed char
+		@"h", _ '' UByte: unsigned char
 		@"c", _ '' char
 		@"s", _ '' short
 		@"t", _ '' ushort
 		@"w", _ '' wchar
-		NULL, _ '' integer
-		NULL, _ '' uinteger
+		NULL, _ '' Integer
+		NULL, _ '' UInteger
 		NULL, _ '' enum
-		NULL, _ '' long
-		NULL, _ '' ulong
-		@"x", _ '' longint (long long)
-		@"y", _ '' ulongint (unsigned long long)
-		@"f", _ '' single
+		@"i", _ '' Long: int
+		@"j", _ '' ULong: unsigned int
+		@"x", _ '' LongInt: long long
+		@"y", _ '' ULongInt: unsigned long long
+		@"f", _ '' Single: float
 		@"d", _ '' double
 		NULL, _ '' var-len string
 		NULL, _ '' fix-len string
@@ -493,7 +500,7 @@ sub symbMangleType _
 	''
 	'' Plain type without reference/pointer/const bits
 	''
-	assert( dtype = typeGetDtOnly( dtype ) )
+	assert( dtype = (typeGetDtOnly( dtype ) or (dtype and FB_DT_MANGLEMASK)) )
 
 	select case( dtype )
 	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM

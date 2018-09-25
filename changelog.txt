@@ -1,6 +1,7 @@
 Version 1.06.0
 
 [changed]
+- Name mangling of Integer/Long parameters was reversed on 32bit to match 64bit, so the same FB and C++ code will be compatible on both 32bit and 64bit. Integer is mangled as C++ long (except on Win64), Long is mangled as C++ int.
 - Adjusted warning text for "mixed bool/nonbool operands" warning
 - test-suite uses libfbcunit for unit testing framework
 - SELECT CASE AS CONST respects data type and will show overflow warnings on out-of-range constants
@@ -9,6 +10,7 @@ Version 1.06.0
 - WSTRING can be a return type, but only for prototypes (DECLARE) and function pointers, this allows getting PROCPTR() of all fb built-in run time functions
 
 [added]
+- Name mangling of Long parameters on Win64 are mangled to C++ int by default and to C++ long with a modifier in the form 'as [u]long alias "long"'.  The data type size is still 32bit but allows calling external C++ library expecting a C++ long.
 - -noobjinfo option to disable the writing/reading of compile-time library and other linking options from/to .o and .a files. This also disables the use of fbextra.x (the supplemental linker script) for discarding the .fbctinf sections, which is useful when using the gold linker that doesn't support this kind of linker script.
 - Linux console Inkey() now recognizes F11 and F12
 - 2D render through OpenGL on Windows and Linux via screencontrol (angros47)
@@ -69,6 +71,7 @@ Version 1.06.0
 - #822, #814, #842: Compiler crash when initializing static/shared reference (DIM SHARED/STATIC BYREF) with non-constant initializer (e.g. another reference, or dynamic array element)
 - ASM backend: Fix bad code generated for comparisons such as IF @globalvar = 0 THEN
 - #884: FORMATing dates can deadlock under Unix
+- #890: Fix Bad @N stdcall suffix for non-trivial byval type parameters with -gen gcc
 - #642, #886: CASTs involving CONST qualifiers solved out too early allowing invalid statements to be compiled
 - #801: *@(expr) solved to (expr) did not cleanly remove null ptr checks allowing invalid datatype assignment with -exx.  *PTRCHK(@expr) solves to (expr).
 - #880: Overload binary operators now support covariant arguments, overloaded procedure resolution changed especially with respect to CONST and non-CONST parameters

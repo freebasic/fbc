@@ -3,27 +3,23 @@
 '' test mapping of basic data types between fbc and g++
 '' with c++ name mangling
 
-#ifdef __FB_64BIT__
+'' by default, fbc's Long/ULong data type maps to c's int type, and since 
+'' Integer/Uinteger are meant to be (consistently) 64bits in fbc-64bit,
+'' there is no other type that (by default) that can map to c's long int, 
+'' which is 32bit even on Win64.
 
-	type cxxint as long
-	type cxxlongint as integer
+'' So, in Win64, to allow calling an external library that needs a 'long int' 
+'' parameter there is the following, non-portable mangling modifier.  It is 
+'' ignored for all targets except for Win64
 
-	/' !!!
-		cxxlongint will currently fail on win64, fbc custom mangles INTEGER and there is 
-		no other data type that will return the "m" and "l" suffixes for c's long int.
-		The specific test that fails is skipped over using and and #ifdef.  To have a basic
-		datatype on win64 that can map to g++ long int, one possible solution would be
-		change the overloading allowed for the c++ mangled names onlym what would have to
-		be added to fbc.
-	'/
-
+#if defined(__FB_64BIT__) and not defined(__FB_UNIX__)
+	'' map fbc's 32bit 'LONG' type to Win64's 32bit 'long' type
+	type cxxlongint as long alias "long"
 #else
-	
-	'' 32-bit
-	type cxxint as integer
-	type cxxlongint as long
-
-#endif
+	'' otherwise, integer is used on 32bit and Unix-64bit consistently to map
+	'' fbc's 32/64bit 'INTEGER' type to the target 32/64bit 'long int' type
+	type cxxlongint as integer
+#endif 
 
 extern "c++"
 
@@ -48,10 +44,10 @@ namespace cpp_mangle
 	declare function cpp_byref_ushort( byref a as unsigned short ) as unsigned short
 	declare function cpp_byref_sshort( byref a as short ) as short
 
-   	declare function cpp_byval_uint( byval a as unsigned cxxint ) as unsigned cxxint
-	declare function cpp_byval_sint( byval a as cxxint ) as cxxint
-	declare function cpp_byref_uint( byref a as unsigned cxxint ) as unsigned cxxint
-	declare function cpp_byref_sint( byref a as cxxint ) as cxxint
+   	declare function cpp_byval_uint( byval a as unsigned long ) as unsigned long
+	declare function cpp_byval_sint( byval a as long ) as long
+	declare function cpp_byref_uint( byref a as unsigned long ) as unsigned long
+	declare function cpp_byref_sint( byref a as long ) as long
 
    	declare function cpp_byval_ulongint( byval a as unsigned cxxlongint ) as unsigned cxxlongint
 	declare function cpp_byval_slongint( byval a as cxxlongint ) as cxxlongint
@@ -153,15 +149,15 @@ end scope
 scope
 
 	''  c = signed|unsigned int
-	'' fb = [unsigned] long|integer
+	'' fb = [unsigned] long
 
 	ASSERT( cpp_byval_uint(0) = 0 )
 	ASSERT( cpp_byval_sint(0) = 0 )
 	ASSERT( cpp_byval_uint(&h7fffffff) = &h7fffffff )
 	ASSERT( cpp_byval_sint(&h7fffffff) = &h7fffffff )
 
-	dim ui as unsigned cxxint = 0
-	dim si as cxxint = 0
+	dim ui as unsigned long = 0
+	dim si as long = 0
 	ASSERT( cpp_byref_uint(ui) = 0 )
 	ASSERT( cpp_byref_sint(si) = 0 )
 	ui = &h7fffffff
@@ -171,24 +167,11 @@ scope
 
 end scope
 
-#ifndef ENABLE_CHECK_BUGS
-#define ENABLE_CHECK_BUGS 0
-#endif
-#if (not defined(__FB_64BIT__)) or defined(__FB_UNIX__) or (ENABLE_CHECK_BUGS=1)
-
-	#print see fbc/src/compiler/symb-mangling.bas:hMangleBuiltInType()
-	#print possibly related: https://sourceforge.net/p/fbc/bugs/828/
-
-/' !!! there is no name mangling on win64 that can
-       map to g++ long int, only allow the test on
-	   32-bit or unix or if we explicitly enable
-	   bug checks
-'/
-
 scope
 
 	'' c = signed|unsigned long int
-	'' fb = [unsigned] long|integer
+	'' fb = [unsigned] long alias "long"    on Win64
+	'' fb = [unsigned] integer              on everything else
 
 	ASSERT( cpp_byval_ulongint(0) = 0 )
 	ASSERT( cpp_byval_slongint(0) = 0 )
@@ -205,8 +188,6 @@ scope
 	ASSERT( cpp_byref_slongint(sl) = &h7fffffff )
 
 end scope
-
-#endif
 
 scope
 
