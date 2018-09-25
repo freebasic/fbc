@@ -5,7 +5,7 @@
 
 '' by default, fbc's Long/ULong data type maps to c's int type, and since 
 '' Integer/Uinteger are meant to be (consistently) 64bits in fbc-64bit,
-''  there is no other type that (by default) that can map to c's long int, 
+'' there is no other type that (by default) that can map to c's long int, 
 '' which is 32bit even on Win64.
 
 '' So, in Win64, to allow calling an external library that needs a 'long int' 
@@ -149,7 +149,7 @@ end scope
 scope
 
 	''  c = signed|unsigned int
-	'' fb = [unsigned] long|integer
+	'' fb = [unsigned] long
 
 	ASSERT( cpp_byval_uint(0) = 0 )
 	ASSERT( cpp_byval_sint(0) = 0 )
@@ -170,7 +170,8 @@ end scope
 scope
 
 	'' c = signed|unsigned long int
-	'' fb = [unsigned] long alias "long"
+	'' fb = [unsigned] long alias "long"    on Win64
+	'' fb = [unsigned] integer              on everything else
 
 	ASSERT( cpp_byval_ulongint(0) = 0 )
 	ASSERT( cpp_byval_slongint(0) = 0 )

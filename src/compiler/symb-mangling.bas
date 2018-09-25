@@ -366,7 +366,7 @@ function hMangleBuiltInType _
 		'' Windows 64bit
 
 		'' check for remapping of dtype mangling
-		if( typeIsMangleDt( dtype ) ) then
+		if( typeHasMangleDt( dtype ) ) then
 			dtype = typeGetMangleDt( dtype )
 			'' Windows 64bit
 			select case( dtype )
@@ -389,6 +389,9 @@ function hMangleBuiltInType _
 		case FB_DATATYPE_UINT    : return @"m"  '' unsigned long
 		end select
 	end if
+
+	'' dtype should be a FB_DATATYPE by now
+	assert( dtype = typeGetDtOnly( dtype ) )
 
 	static as zstring ptr typecodes(0 to FB_DATATYPES-1) => _
 	{ _
