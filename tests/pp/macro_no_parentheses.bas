@@ -1,25 +1,16 @@
-# include "fbcu.bi"
+# include "fbcunit.bi"
 
-# macro m1( foo, bar )
-	foo + bar
-# endmacro
+SUITE( fbc_tests.pp.macro_no_parentheses )
 
-namespace fbc_tests.macros.macro_no_parentheses
+	# macro m1( foo, bar )
+		foo + bar
+	# endmacro
 
-sub withArgTest cdecl ()
+	TEST( initializer )
 
-  var hello = m1 "hello", "!"
-  var world = m1 "world", "!"
+		var hello = m1 "hello", "!"
+		var world = m1 "world", "!"
   
-  CU_ASSERT_EQUAL( hello + world, "hello!world!" ) 
+  	END_TEST
 
-end sub
-
-private sub ctor () constructor
-
-	fbcu.add_suite("fbc_tests.pp.macro_no_parentheses")
-	fbcu.add_test("withArgTest", @withArgTest)
-
-end sub
-
-end namespace
+END_SUITE
