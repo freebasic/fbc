@@ -1850,8 +1850,7 @@ read_char:
 			t->class = FB_TKCLASS_OPERATOR
 			'' only check for multiline comment if not inside
 			'' a single line comment already (thanks to VonGodric for help)
-			if( (flags and LEXCHECK_NOMULTILINECOMMENT) = 0 or _
-				 fbLangIsSet( FB_LANG_FB ) = FALSE ) then
+			if( (flags and LEXCHECK_NOMULTILINECOMMENT) = 0 ) then
 				'' "/'"?
 				if( lexCurrentChar( ) = CHAR_APOST ) then
 					'' multi-line comment..
