@@ -93,14 +93,19 @@ static FB_WCHAR *hUTF8ToUTF16( const UTF_8 *src, FB_WCHAR *dst, ssize_t *chars )
 			{
 				case 5:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 4:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 3:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 2:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 1:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 0:
 					c += *src++;
 			}

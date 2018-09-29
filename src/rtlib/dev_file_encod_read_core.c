@@ -166,18 +166,23 @@ static ssize_t hUTF8ToUTF16( FILE *fp, FB_WCHAR *dst, ssize_t max_chars )
 			case 5:
 				wc += *p++;
 				wc <<= 6;
+				/* fall through */
 			case 4:
 				wc += *p++;
 				wc <<= 6;
+				/* fall through */
 			case 3:
 				wc += *p++;
 				wc <<= 6;
+				/* fall through */
 			case 2:
 				wc += *p++;
 				wc <<= 6;
+				/* fall through */
 			case 1:
 				wc += *p++;
 				wc <<= 6;
+				/* fall through */
 			case 0:
 				wc += *p++;
 		}
