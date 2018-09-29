@@ -26,14 +26,19 @@ char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, ssize_t *chars )
 			{
 				case 5:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 4:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 3:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 2:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 1:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 0:
 					c += *src++;
 			}
@@ -73,14 +78,19 @@ char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, ssize_t *chars )
 			{
 				case 5:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 4:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 3:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 2:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 1:
 					c += *src++; c <<= 6;
+					/* fall through */
 				case 0:
 					c += *src++;
 			}
