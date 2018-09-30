@@ -322,14 +322,8 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 
 		case WM_SIZE:
-		case WM_SYSKEYDOWN:
-			if (!fb_win32.is_active)
-				break;
-
-			{
-				int is_alt_enter = ((message == WM_SYSKEYDOWN) && (wParam == VK_RETURN) && (lParam & 0x20000000));
-				int is_maximize = ((message == WM_SIZE) && (wParam == SIZE_MAXIMIZED));
-				if ( is_maximize || is_alt_enter) {
+			if (fb_win32.is_active) {
+				if ( wParam == SIZE_MAXIMIZED ) {
 					if (has_focus) {
 						e.type = EVENT_MOUSE_EXIT;
 						fb_hPostEvent(&e);
@@ -337,9 +331,21 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 					ToggleFullScreen();
 					return FALSE;
 				}
-				if( message!=WM_SYSKEYDOWN )
-					break;
 			}
+			break;
+
+		case WM_SYSKEYDOWN:
+			if (fb_win32.is_active) {
+				if ( (wParam == VK_RETURN) && (lParam & 0x20000000) ) {
+					if (has_focus) {
+						e.type = EVENT_MOUSE_EXIT;
+						fb_hPostEvent(&e);
+					}
+					ToggleFullScreen();
+					return FALSE;
+				}
+			}
+			break;
 
 		case WM_KEYDOWN:
 		case WM_KEYUP:
