@@ -8,8 +8,9 @@ void fb_ConsoleClear( int mode )
 {
     int toprow, botrow;
 
-    if( mode==1 )
+    if( mode==1 ) {
         return;
+	}
 
 	if( (mode == 2) || (mode == (int)0xFFFF0000) ) {	/* same as gfxlib's DEFAULT_COLOR */
         fb_ConsoleGetView( &toprow, &botrow );
