@@ -37,12 +37,15 @@ static void hUTF16ToUTF8( const FB_WCHAR *src, ssize_t chars, UTF_8 *dst, ssize_
 		case 4:
 			*--dst = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
 			c >>= 6;
+			/* fall through */
 		case 3:
 			*--dst = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
 			c >>= 6;
+			/* fall through */
 		case 2:
 			*--dst = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
 			c >>= 6;
+			/* fall through */
 		case 1:
 			*--dst = (c | __fb_utf8_bmarkTb[bytes]);
 		}
