@@ -125,7 +125,7 @@ int fb_PrinterOpen( DEV_LPT_INFO *devInfo, int iPort, const char *pszDeviceRaw )
 
 	} else {
 		/* use direct port io */
-		filename = alloca( 16 );
+		filename = alloca( 7 + 11 + 1 );
 		sprintf(filename, "/dev/lp%d", (devInfo->iPort-1));
 		fp = fopen(filename, "wb");
 

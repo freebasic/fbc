@@ -159,6 +159,7 @@ void fb_FileInputNextTokenWstr( FB_WCHAR *buffer, ssize_t max_chars, int is_stri
 					goto exit;
 				}
 			}
+			goto savechar;
 
 		default:
 savechar:

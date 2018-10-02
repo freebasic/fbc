@@ -192,6 +192,7 @@ int fb_FileInputNextToken
 					goto exit;
 				}
 			}
+			goto savechar;
 
 		default:
 savechar:
