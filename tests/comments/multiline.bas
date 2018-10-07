@@ -49,3 +49,24 @@ end sub
 
 proc
 
+/'
+
+	multiline comments never check for '$' directives, 
+	so suffixes should never matter
+	
+	${f!
+	$=f# 
+	$^f$
+	$-f%
+	$@f&
+	
+	'${f!
+	'$=f# 
+	'$^f$
+	'$-f%
+	'$@f&
+	
+	$include 'does_not_matter'
+	$include "does_not_matter"
+
+'/
