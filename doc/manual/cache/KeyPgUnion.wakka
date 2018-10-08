@@ -19,8 +19,8 @@ Declares a union user defined type.
 {{fbdoc item="desc"}}
 	Unions are similar to a ##[[KeyPgType|Type]]## structure, except that the elements of a union occupy the same space in memory.
 	Like Type, Union can use the optional ##[[KeyPgField|Field]] = //number//## specifier and supports also inheritance through the use of the [[KeyPgExtends|Extends]] keyword.
-	Unlike Type, Union can not contain variable-length strings, and more generally fields (or can not have bases) with constructors or destructors. Therefore, Union does not support to inherit from the ##[[KeyPgObject|Object]]## built-in type.
-	The size of the Union is the size of the largest data item. A data item can be an unnamed ##[[KeyPgType|Type]]##. Since they occupy the same space, only a single element can be used.
+	Unlike Type, Union can not contain variable-length strings and arrays, and more generally fields (or can not have bases) with constructors or destructors. Therefore, Union does not support to inherit from the ##[[KeyPgObject|Object]]## built-in type.
+	The size of the Union is the size of the largest data item. A data item can be an unnamed ##[[KeyPgType|Type]]##. Since they occupy the same space, only one element can usually be used at a given time.
 	
 	Unions support member functions including ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##, ##[[KeyPgMemberFunction|Function]]##, ##[[KeyPgOperator|Operator]]##, ##[[KeyPgProperty|Property]]## and ##[[KeyPgMemberSub|Sub]]##. All members of a union are public and access control is not supported. 
 	
@@ -34,68 +34,132 @@ Declares a union user defined type.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/union.bas"}}%%(freebasic)
-' Example 1: bitfields.
-type unitType
- union
-  dim attributeMask as uinteger
-  type    ' 32-bit uintegers can support up to 32 attributes.
-   isMilitary         : 1 as uinteger
-   isMerchant         : 1 as uinteger
-  end type
- end union
-end type
+' Example 0: Little-endianness
+' For larger integer values (as the following Ulong data type),
+'   bytes are arranged in memory in 'little-endian' byte order
+'   (the least significant byte gets stored first).
 
-dim myunit as unitType
-myunit.isMilitary = 1
-myunit.isMerchant = 1
-print myunit.isMilitary    ' Result: 1.
-print myunit.isMerchant    ' Result: 1.
-print myunit.attributeMask ' Result: 3.
+Union UDU
+   ul As Ulong      ' 32-bit data type
+   Type
+	  ub0 As Ubyte  ' 8-bit data type
+	  ub1 As Ubyte  ' 8-bit data type
+	  ub2 As Ubyte  ' 8-bit data type
+	  ub3 As Ubyte  ' 8-bit data type
+   End Type
+End Union
+
+Dim As UDU u
+u.ul = &h12345678
+Print Hex(u.ul)                                       ' Result: 12345678
+Print Hex(u.ub3), Hex(u.ub2), Hex(u.ub1), Hex(u.ub0)  ' Result: 12   34   56   78
+
+Sleep
+%%
+{{fbdoc item="filename" value="examples/manual/udt/union1.bas"}}%%(freebasic)
+' Example 1: Only one union member can be relevantly accessed at a time
+Union member
+  username As String * 32
+  posts As Ulong
+End Union
+
+Dim As member userX
+userX.username = "Samantha"
+userX.posts = 1234
+
+Print userX.username  ' value of username corrupted because final value assigned to posts occupies same memory location
+'                     ' (and this is reason that value of posts is displayed well)
+Print userX.posts
+Print
+
+Dim As member userY
+userY.posts = 4321
+userY.username = "Alexander"
+
+Print userY.username
+Print userY.posts  ' value of posts corrupted because final value assigned to username occupies same memory location
+'                  ' (and this is reason that value of username is displayed well)
+Print
+
+Sleep
+%%
+{{fbdoc item="filename" value="examples/manual/udt/union2.bas"}}%%(freebasic)
+' Example 2: Alternative to RGBA keyword and allowing to retrieve elementary colors values
+UNION BGRA_UNION
+   colour AS ULONG
+   TYPE
+	  blue  AS UBYTE
+	  green AS UBYTE
+	  red   AS UBYTE
+	  alpha AS UBYTE
+   END TYPE
+END UNION
+
+DIM ubgra AS BGRA_UNION
+
+' Setting the individual color values...
+ubgra.red = &h33
+ubgra.green = &hcc
+ubgra.blue = &h66
+' We can get a ULONG value
+print HEX(ubgra.colour)  ' Result: 33CC66
+print
+
+' Setting a ULONG value...
+ubgra.colour = &h228844
+' We can get the individual color values
+print HEX(ubgra.red)    ' Result: 22
+print HEX(ubgra.green)  ' Result: 88
+print HEX(ubgra.blue)   ' Result: 44
+print
+
 sleep
+%%
+{{fbdoc item="filename" value="examples/manual/udt/union3.bas"}}%%(freebasic)
+' Example 3.
+' Define a simple union.
+Union AUnion
+	a As UByte
+	b As UInteger
+End Union
+' Define a composite type with an unnamed union.
+Type CompType
+	s As String * 20
+	ui As UByte 'Flag to tell us what to use in union.
+	Union
+		au As UByte
+		bu As UInteger
+	End Union
+End Type
 
-' Example 2.
-' Define our union.
-union AUnion
-	a as ubyte
-	b as integer
-end union
-' Define a composite type.
-type CompType
-	s as string * 20
-	ui as byte 'Flag to tell us what to use in union.
-	union 
-		au as ubyte
-		bu as integer
-	end union
-end type
+' Flags to let us know what to use in union,
+' because it's relevant to only use a single element of a union at a given time.
+Const IsInteger = 1
+Const IsUByte = 2
 
-' Flags to let us know what to use in union.
-' You can only use a single element of a union.
-const IsInteger = 1
-const IsUByte = 2
+Dim MyUnion As AUnion
+Dim MyComposite As CompType
 
-dim MyUnion as AUnion
-dim MyComposite as CompType
-
-' Can only set one value in union.
+' Only one field within the union is set, without choice criterion.
 MyUnion.a = 128
 
 MyComposite.s = "Type + Union"
 MyComposite.ui = IsInteger ' Tells us this is an integer union.
-MyComposite.bu = 1500
+MyComposite.bu = 1500      ' Field set according to the above flag.
 
-print "Union: ";MyUnion.a
+Print "Simple Union: ";MyUnion.a
 
-print "Composite: ";
-if MyComposite.ui = IsInteger then
-	print MyComposite.bu
-elseif MyComposite.ui = IsUByte then
-	print MyComposite.au
-else
-	print "Unknown type."
-end if
+Print MyComposite.s & ": ";
+If MyComposite.ui = IsInteger Then
+	Print MyComposite.bu
+ElseIf MyComposite.ui = IsUByte Then
+	Print MyComposite.au
+Else
+	Print "Unknown Type."
+End If
+Print
 
-sleep
+Sleep
 %%
 
 {{fbdoc item="lang"}}

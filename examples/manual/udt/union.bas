@@ -6,65 +6,24 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgUnion
 '' --------
 
-' Example 1: bitfields.
-Type unitType
- Union
-  Dim attributeMask As UInteger
-  Type    ' 32-bit uintegers can support up to 32 attributes.
-   isMilitary         : 1 As UInteger
-   isMerchant         : 1 As UInteger
-  End Type
- End Union
-End Type
+' Example 0: Little-endianness
+' For larger integer values (as the following Ulong data type),
+'   bytes are arranged in memory in 'little-endian' byte order
+'   (the least significant byte gets stored first).
 
-Dim myunit As unitType
-myunit.isMilitary = 1
-myunit.isMerchant = 1
-Print myunit.isMilitary    ' Result: 1.
-Print myunit.isMerchant    ' Result: 1.
-Print myunit.attributeMask ' Result: 3.
-Sleep
-
-' Example 2.
-' Define our union.
-Union AUnion
-	a As UByte
-	b As Integer
+Union UDU
+   ul As ULong      ' 32-bit data type
+   Type
+	  ub0 As UByte  ' 8-bit data type
+	  ub1 As UByte  ' 8-bit data type
+	  ub2 As UByte  ' 8-bit data type
+	  ub3 As UByte  ' 8-bit data type
+   End Type
 End Union
-' Define a composite type.
-Type CompType
-	s As String * 20
-	ui As Byte 'Flag to tell us what to use in union.
-	Union 
-		au As UByte
-		bu As Integer
-	End Union
-End Type
 
-' Flags to let us know what to use in union.
-' You can only use a single element of a union.
-Const IsInteger = 1
-Const IsUByte = 2
-
-Dim MyUnion As AUnion
-Dim MyComposite As CompType
-
-' Can only set one value in union.
-MyUnion.a = 128
-
-MyComposite.s = "Type + Union"
-MyComposite.ui = IsInteger ' Tells us this is an integer union.
-MyComposite.bu = 1500
-
-Print "Union: ";MyUnion.a
-
-Print "Composite: ";
-If MyComposite.ui = IsInteger Then
-	Print MyComposite.bu
-ElseIf MyComposite.ui = IsUByte Then
-	Print MyComposite.au
-Else
-	Print "Unknown type."
-End If
+Dim As UDU u
+u.ul = &h12345678
+Print Hex(u.ul)                                       ' Result: 12345678
+Print Hex(u.ub3), Hex(u.ub2), Hex(u.ub1), Hex(u.ub0)  ' Result: 12   34   56   78
 
 Sleep

@@ -6,12 +6,29 @@ fbc is written in FB itself, so you need a working fbc to build a new fbc. How t
 	
 	The ""FreeBASIC-x.xx.x-source-bootstrap"" package contains the FB sources plus precompiled compiler sources, for multiple targets. After extracting, this can be built without requiring an existing fbc:
 	%%make bootstrap%%
-	
 	(as long as the package contains the precompiled sources for the target system)
 	
 	This package can be created by running:
 	%%make bootstrap-dist%%
 	
+{{fbdoc item="section" value="Bootstrapping by creating and using a bootstrap package"}}
+
+	1) On a system with a working fbc compiler, create the bootstrap package:
+		%%make bootstrap-dist%%
+		creates ##FreeBASIC-x.xx.x-source-bootstrap.tar.xz##
+		
+	1) Take the bootstrap package to the new system and use it to build the bootstrap compiler:
+		%%cd ~
+tar xf ~/FreeBASIC-x.xx.x-source-bootstrap.tar.xz
+cd FreeBASIC-x.xx.x-source-bootstrap
+make bootstrap
+%%
+		
+	1) On the new system, assuming sources are in ~/fbc, use the bootstrap compiler to build fbc for the new system
+		%%cd ~/fbc
+make 'FBC=~/FreeBASIC-x.xx.x-source-bootstrap/bin/fbc -i ~/FreeBASIC-x.xx.x-source-bootstrap/inc'
+%%		
+		
 	Doing ##make bootstrap-dist##, taking the package to the target system, and then doing ##make bootstrap## can replace the manual steps below, as long as the target is already supported by these commands in the FB makefile.
 
 {{fbdoc item="section" value="Bootstrapping by precompiling the compiler sources"}}

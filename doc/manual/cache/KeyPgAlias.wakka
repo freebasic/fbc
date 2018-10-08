@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="ALIAS"}}----
-Clause of the ##[[KeyPgSub|Sub]]## and ##[[KeyPgFunction|Function]]## statements that provides an alternate internal name
+Clause of the ##[[KeyPgSub|Sub]]## and ##[[KeyPgFunction|Function]]## statements that provides an alternate internal name.
 
 {{fbdoc item="syntax"}}##
 	[[[KeyPgDeclare|declare]]] { [[KeyPgSub|sub]] | [[KeyPgFunction|function]] } //usablename// **Alias "//alternatename//"** (...)
@@ -23,6 +23,8 @@ Clause of the ##[[KeyPgSub|Sub]]## and ##[[KeyPgFunction|Function]]## statements
 	##Alias## is commonly used for procedures in libraries written in other languages when such procedure names are valid in the other language but invalid in BASIC.  When using ##Alias## with ##[[KeyPgDeclare|Declare]]##, only the alternate name is used by the linker.
 	
 	Differently from normal procedure names, ##Alias## does not change the case of the alternate name, so it is useful when external code requires an exported function with a particular name or with a particular case.
+	
+	##Alias## can also be used as modifier that specifies an alternate mangling for procedure parameters.  For example ##extern ""c+""""+"" : declare sub proc( byval as long **alias "long"** ) : end extern##.  This form of ##Alias## can only be used as in //##[unsigned] [u]long alias "long"##//.  The specific purpose is to allow FreeBASIC to call external ""c+""""+"" procedures (on win-64) requiring a 32-bit ##'long int'## type.  Usage of ##Alias## in this way affects win-64 targets only, and is ignored on all other targets.
 
 {{fbdoc item="ex"}}
 

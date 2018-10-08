@@ -17,7 +17,7 @@ Operator to dynamically allocate memory and construct data of a specified type.
 		Exact number of elements to allocate.
 
 {{fbdoc item="ret"}}
-	A pointer of type [[DataType|datatype]] to the newly allocated data.
+	A pointer of type [[DataType|datatype]] to the newly allocated data, or null pointer if the memory allocation failed.
 
 {{fbdoc item="desc"}}
 	The ##**New Expression**## operator dynamically allocates memory and constructs a specified data type.
@@ -31,6 +31,10 @@ Operator to dynamically allocate memory and construct data of a specified type.
 	Specifying an initial value of ##[[KeyPgAny|Any]]##, as in ##**New** //datatype// (**Any**)## will allocate memory for the type, but not initialize the data.  This is only valid on data types that do not have constructors (otherwise for data types with constructors, syntax of simple memory allocation with pointer conversion, like //Cptr(datatype Ptr, Allocate(Sizeof(datatype)))//, can be substituted to the invalid use of New...Any).
 	
 	Specifying an initial value of ##[[KeyPgAny|Any]]##, as in ##**New** //datatype//[//count//] {**Any**}## will allocate memory for the array, but not initialize the data.  This is only valid on data types that do not have constructors (otherwise for data types with constructors, syntax of simple memory allocation with pointer conversion, like //Cptr(datatype Ptr, Allocate(count * Sizeof(datatype)))//, can be substituted to the invalid use of New...Any).
+	
+	The total memory, in bytes, to be allocated with ##**New** //datatype//[//count//]## expression is calculated as ##//sizeof(datatype) * count//##, plus ##//sizeof(uinteger)//## if there is an implicit or explicit ##[[KeyPgDestructor|Destructor]]##.  The total memory requested in bytes to be allocated must not overflow the value that can be held by a ##[[KeyPgUinteger|Uinteger]]##.  The extra ##//uinteger//##, if allocated, stores the number of elements as part of the allocation, so that ##[[KeyPgOpDelete|Delete Statement]]## can determine the count of destructors to call.
+	
+	If the memory allocation fails, a null pointer is returned and no constructors are called.
 	
 	The dynamic memory allocation process part provided by the ##**New Expression**## operator can be overloaded for user-defined types as a member operator ##[[KeyPgOpNewOverload|New Overload]]##. The following process part for data construction can never be modified.
 	
