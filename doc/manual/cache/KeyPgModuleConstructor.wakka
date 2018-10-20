@@ -11,15 +11,23 @@ Specifies execution of a procedure before module-level code
 	
 	The procedure must have an empty parameter list.  A compile-time error will be generated if the ##**Constructor**## keyword is used in a Sub definition having one or more parameters. In a set of overloaded procedures, only one (1) constructor may be defined because of the ambiguity of having multiple Subs which take no arguments.
 	
-	In a single module, constructors normally execute in the reverse order in which they are defined.
+	In a single module, depending on the build and run-time environment of the target system:
+		- constructors may execute in which they are defined, or reverse order
+		- constructors may execute before or after global static variables having constructors
+		- constructors may execute before or after other module constructors having ##//priority//## attribute
+		- constructors with ##//priority//## attribute may execute before or after global static variables having constructors
 	
-	The ##//priority//## attribute, an integer between 101 and 65535, can be used to force constructors to be executed in a certain order.  The value of ##//priority//## has no specific meaning, only the relationship of the number with other constructor priorities.  101 is the highest priority and is executed first.  All constructors having a ##//priority//## attribute are executed before constructors with no attribute.  The priority value of 65535 is the same as not assigning a priority value.
+	The ##//priority//## attribute, an integer between 101 and 65535, can be used to force constructors to be executed in a certain order, relative to other constructors also having ##//priority//## attribute.  The value of ##//priority//## has no specific meaning, only the relationship of the number with other constructor priorities.  101 is the highest priority and is executed first, relative to other constructors also having ##//priority//## attribute.
 	
 	A module may define multiple constructor procedures, and multiple modules may define additional constructors provided no two ##[[KeyPgPublic|Public]]## constructors share the same //procedure_name//.
 	
 	When linking with modules that also define constructors, the order of execution is not guaranteed at link-time unless the ##//priority//## attribute is used. Therefore, special care should be taken when using constructors that may call on a secondary module also defining a constructor.  In such a case it is advisable to use a single constructor that explicitly calls initialization procedures in those modules.
 	
-	**Note:** A public static member procedure (Sub having empty parameter list) can also be defined as module constructor (also with the ##**Constructor**## keyword only used in Sub definition).
+	Public static member procedures (a ##[[KeyPgMemberSub|Sub]]## having an empty parameter list), of user defined ##[[KeyPgType|type]]## can be defined as a module constructor, by adding the ##**Constructor**## keyword used in the sub procedure definition.
+	
+	Initialization of static simple numeric type variables, that have a value that can be determined at compile time (for example, default zero, constants, pointers to static objects, pointers to functions, etc), are initialized before any code is executed.  These values are part of the executable image and have an initial value when the executable is loaded in to memory.  Trivial static globals where no code is needed to initialize, are guaranteed to be initialized and can be reliably used in all code, including global static object constructors and module constructors.
+	
+	The module constructor feature exposes a low-level link-time feature of the build and run-time environment.  Accessing global static objects having constructors from module constructors should be avoided due to variations in execution order on different build systems.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/mod-ctor.bas"}}%%(freebasic)

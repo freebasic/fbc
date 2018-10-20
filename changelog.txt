@@ -8,6 +8,7 @@ Version 1.06.0
 - boolean: don't allow NEG unary op '-' on boolean data types
 - All fb RTL functions are checked for CONSTness, CONST qualifiers added to fb rtlib built-in prototypes (sf.net #727)
 - WSTRING can be a return type, but only for prototypes (DECLARE) and function pointers, this allows getting PROCPTR() of all fb built-in run time functions
+- multiline comments are parsed in -lang fblite|qb|deprecated as in -lang fb for consistency
 
 [added]
 - Name mangling of Long parameters on Win64 are mangled to C++ int by default and to C++ long with a modifier in the form 'as [u]long alias "long"'.  The data type size is still 32bit but allows calling external C++ library expecting a C++ long.

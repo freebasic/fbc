@@ -1,0 +1,29 @@
+{{fbdoc item="title" value="__FB_GUI__"}}----
+Intrinsic define (macro value) set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_GUI__""
+##
+{{fbdoc item="desc"}}
+	##""__FB_GUI__""## indicates if the executable subsystem option '-s gui' was specified on the command line at the time of compilation.
+	
+	Returns non-zero (-1) if the executable subsystem option '-s gui' was specified. Returns zero (0) otherwise (no executable subsystem option specified, or executable subsystem option '-s console' specified).
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbgui.bas"}}%%(freebasic)
+#if __FB_GUI__ <> 0
+		#print Executable subsystem: gui
+#else 
+		#print Executable subsystem: console
+#endif
+%%
+{{fbdoc item="target"}}
+	- Supported on Windows and Cygwin only.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[CompilerOpts|Compiler Option: -s]]
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

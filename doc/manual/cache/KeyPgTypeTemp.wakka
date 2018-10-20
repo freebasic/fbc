@@ -28,6 +28,8 @@ Creates a temporary copy of a user defined type
 	
 	It can also be used as an even shorter shortcut than ##[[KeyPgWith|With]]## (see below) if you are changing all the data-fields (or the n firsts only).
 	
+	A temporary object is destroyed at the end of execution of the statement (where it's defined), but its corresponding allocated memory is not released and remains available (unused) until going out the scope where statement is.
+	
 	Note: ##[[KeyPgStatic|Static]]## qualifier used at procedure definition level does not apply to temporary types.
 
 {{fbdoc item="ex"}}
