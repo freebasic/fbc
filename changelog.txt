@@ -80,6 +80,7 @@ Version 1.06.0
 - #699: fix new[0] causing infinite loop when calling constructor/destructor list
 - #883: when mapping 32 & 64 bit functions for PALETTE [GET] USING, check the data type pointed to and choose one of LONG PTR, LONGINT PTR, INTEGER PTR
 - #866: fbc was throwing lexer errors in comments stating with $.  Comments are lexed for directives; allow suffixes in comments
+- #858: C backend: fix internal structure size mismatch due to wrong padding when nesting packed structures
 
 
 Version 1.05.0
