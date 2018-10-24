@@ -144,7 +144,7 @@ enum
 	EXPRCLASS_CAST
 	EXPRCLASS_UOP
 	EXPRCLASS_BOP
-	EXPRCLASS_VA_ARG
+	EXPRCLASS_MACRO
 end enum
 
 type EXPRNODE
@@ -1714,15 +1714,19 @@ private function exprNewCAST _
 	function = n
 end function
 
-private function exprNewVA_ARG _
+private function exprNewMACRO _
 	( _
+		byval op as AST_OP, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval l as EXPRNODE ptr _
+		byval l as EXPRNODE ptr, _
+		byval r as EXPRNODE ptr _
 	) as EXPRNODE ptr
 
-	var n = exprNew( EXPRCLASS_VA_ARG, dtype, subtype )
+	var n = exprNew( EXPRCLASS_MACRO, dtype, subtype )
+	n->op = op
 	n->l = l
+	n->r = r
 	function = n
 end function
 
@@ -2224,14 +2228,7 @@ private function hUopToStr _
 	case else
 		is_builtin = TRUE
 
-		if( dtype = FB_DATATYPE_VA_LIST ) then
-			select case as const( op )
-			case AST_OP_VA_START : function = @"__builtin_va_start"
-			case AST_OP_VA_END   : function = @"__builtin_va_end"
-			case AST_OP_VA_COPY  : function = @"__builtin_va_copy"
-			case else             : assert( FALSE )
-			end select
-		elseif( dtype = FB_DATATYPE_SINGLE ) then
+		if( dtype = FB_DATATYPE_SINGLE ) then
 			select case as const( op )
 			case AST_OP_SIN   : function = @"__builtin_sinf"
 			case AST_OP_ASIN  : function = @"__builtin_asinf"
@@ -2313,13 +2310,44 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 		ctx.exprtext += "(" + hEmitType( n->dtype, n->subtype ) + ")"
 		hExprFlush( n->l, TRUE )
 
-	case EXPRCLASS_VA_ARG
-		'' __builtin_va_arg(l, type)
-		ctx.exprtext += "__builtin_va_arg( "
-		hExprFlush( n->l, TRUE )
-		ctx.exprtext += ", "
-		ctx.exprtext += hEmitType( n->dtype, n->subtype )
-		ctx.exprtext += ")"
+	case EXPRCLASS_MACRO
+
+		select case( n->op )
+		case AST_OP_VA_ARG
+			'' cva_arg(l, type) := __builtin_va_arg(l, type)
+			ctx.exprtext += "__builtin_va_arg( "
+			hExprFlush( n->l, TRUE )
+			ctx.exprtext += ", "
+			ctx.exprtext += hEmitType( n->dtype, n->subtype )
+			ctx.exprtext += ")"
+
+		case AST_OP_VA_START
+
+			'' cva_start(l, r) := __builtin_va_arg(l, r)
+			ctx.exprtext += "__builtin_va_start( "
+			hExprFlush( n->l, TRUE )
+			ctx.exprtext += ", "
+			hExprFlush( n->r, TRUE )
+			ctx.exprtext += ")"
+			
+		case AST_OP_VA_END
+			'' cva_start(l) := __builtin_va_end(l)
+			ctx.exprtext += "__builtin_va_end( "
+			hExprFlush( n->l, TRUE )
+			ctx.exprtext += ")"
+
+		case AST_OP_VA_COPY
+			'' cva_start(l, r) := __builtin_va_copy(l, r)
+			ctx.exprtext += "__builtin_va_copy( "
+			hExprFlush( n->l, TRUE )
+			ctx.exprtext += ", "
+			hExprFlush( n->r, TRUE )
+			ctx.exprtext += ")"
+
+		case else
+			assert( FALSE )
+		end select
+
 
 	case EXPRCLASS_UOP
 		ctx.exprtext += *hUopToStr( n->op, n->dtype, is_builtin )
@@ -2402,9 +2430,9 @@ private sub exprDump( byval n as EXPRNODE ptr )
 		@"IMM" , _ '' EXPRCLASS_IMM
 		@"SYM" , _ '' EXPRCLASS_SYM
 		@"CAST", _ '' EXPRCLASS_CAST
-		@"VA_ARG", _ '' EXPRCLASS_VA_ARG
 		@"UOP" , _ '' EXPRCLASS_UOP
-		@"BOP"   _ '' EXPRCLASS_BOP
+		@"BOP" , _ '' EXPRCLASS_BOP
+		@"MACRO" _ '' EXPRCLASS_MACRO
 	}
 
 	s += *names(n->class)
@@ -2421,7 +2449,10 @@ private sub exprDump( byval n as EXPRNODE ptr )
 	case EXPRCLASS_SYM
 		hSym2Text( s, n->sym )
 
-	case EXPRCLASS_CAST, EXPRCLASS_VA_ARG
+	case EXPRCLASS_CAST
+		s += hEmitType( n->dtype, n->subtype )
+
+	case EXPRCLASS_MACRO
 		s += hEmitType( n->dtype, n->subtype )
 
 	case EXPRCLASS_UOP
@@ -2444,9 +2475,12 @@ private sub exprDump( byval n as EXPRNODE ptr )
 	print s
 
 	select case( n->class )
-	case EXPRCLASS_CAST, EXPRCLASS_UOP, EXPRCLASS_VA_ARG
+	case EXPRCLASS_CAST, EXPRCLASS_UOP
 		exprDump( n->l )
 	case EXPRCLASS_BOP
+		exprDump( n->l )
+		exprDump( n->r )
+	case EXPRCLASS_MACRO
 		exprDump( n->l )
 		exprDump( n->r )
 	end select
@@ -3177,6 +3211,40 @@ private sub _emitMem _
 
 end sub
 
+private sub _emitMacro _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	)
+
+	dim as EXPRNODE ptr l = any, r = any
+
+	select case op
+	case AST_OP_VA_START
+		l = exprNewVREG( v1 )
+		r = exprNewVREG( v2 )
+		hWriteLine( exprFlush( exprNewMACRO( op, FB_DATATYPE_INVALID, NULL, l, r ) ) + ";" )
+
+	case AST_OP_VA_END
+		l = exprNewVREG( v1 )
+		hWriteLine( exprFlush( exprNewMACRO( op, FB_DATATYPE_INVALID, NULL, l, NULL ) ) + ";" )
+
+	case AST_OP_VA_ARG
+		l = exprNewVREG( v1 )
+		l = exprNewMACRO( op, vr->dtype, vr->sym, l, NULL )
+		exprSTORE( vr, l )
+
+	case AST_OP_VA_COPY
+		l = exprNewVREG( v1 )
+		r = exprNewVREG( v2 )
+		hWriteLine( exprFlush( exprNewMACRO( op, FB_DATATYPE_INVALID, NULL, l, r ) ) + ";" )
+
+	end select
+	
+end sub
+
 private sub _emitDECL( byval sym as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr array = any
 
@@ -3835,6 +3903,7 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitBranch, _
 	@_emitJmpTb, _
 	@_emitMem, _
+	@_emitMacro, _
 	@_emitScopeBegin, _
 	@_emitScopeEnd, _
 	@_emitDECL, _

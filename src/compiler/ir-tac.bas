@@ -673,6 +673,17 @@ private sub _emitMem _
 
 end sub
 
+'':::::
+private sub _emitMacro _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	)
+	'' Used by C-emitter only
+end sub
+
 private sub _emitDECL( byval sym as FBSYMBOL ptr )
 	'' Nothing to do - used by C backend
 end sub
@@ -2692,6 +2703,7 @@ dim shared as IR_VTBL irtac_vtbl = _
 	@_emitBranch, _
 	@_emitJmpTb, _
 	@_emitMem, _
+	@_emitMacro, _
 	@_emitScopeBegin, _
 	@_emitScopeEnd, _
 	@_emitDECL, _

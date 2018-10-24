@@ -14,6 +14,7 @@ enum KWD_OPTION
 	KWD_OPTION_NO_QB 		= &h00000001
 	KWD_OPTION_STRSUFFIX	= &h00000002
 	KWD_OPTION_QB_ONLY		= &h00000004
+	KWD_OPTION_GCC_ONLY		= &h00000008
 end enum
 
 type SYMBKWD
@@ -267,7 +268,11 @@ dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	( @"DRAW"       , FB_TK_DRAW        , FB_TKCLASS_QUIRKWD ), _
 	( @"IMAGECREATE", FB_TK_IMAGECREATE , FB_TKCLASS_QUIRKWD , KWD_OPTION_NO_QB ), _
 	( @"THREADCALL" , FB_TK_THREADCALL  , FB_TKCLASS_QUIRKWD , KWD_OPTION_NO_QB ), _
-	( @"VA_LIST"    , FB_TK_VA_LIST     , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+	( @"CVA_LIST"   , FB_TK_CVA_LIST    , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB or KWD_OPTION_GCC_ONLY ), _
+	( @"CVA_START"  , FB_TK_CVA_START   , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB or KWD_OPTION_GCC_ONLY ), _
+	( @"CVA_END"    , FB_TK_CVA_END     , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB or KWD_OPTION_GCC_ONLY ), _
+	( @"CVA_ARG"    , FB_TK_CVA_ARG     , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB or KWD_OPTION_GCC_ONLY ), _
+	( @"CVA_COPY"   , FB_TK_CVA_COPY    , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB or KWD_OPTION_GCC_ONLY ), _
 	( NULL ) _
 }
 
@@ -281,6 +286,14 @@ sub symbKeywordInit( )
 
 	dim as integer i = 0
 	do until( kwdTb(i).name = NULL )
+
+		'' if gcc only and we're not using gcc then skip the keyword
+		if( (kwdTb(i).opt and KWD_OPTION_GCC_ONLY ) <> 0 ) then
+			if( env.clopt.backend <> FB_BACKEND_GCC ) then
+				i += 1
+				continue do
+			end if
+		end if
 
 		'' add the '__' prefix if the kwd wasn't present in QB and we are in '-lang qb' mode
 		dim as const zstring ptr kname = kwdTb(i).name

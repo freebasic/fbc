@@ -304,6 +304,14 @@ type IR_VTBL
 		byval bytes as longint _
 	)
 
+	emitMacro as sub _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	)
+
 	emitScopeBegin as sub _
 	( _
 		byval s as FBSYMBOL ptr _
@@ -440,6 +448,7 @@ type IR_VTBL
 	( _
 		byval reg as integer _
 	)
+
 end type
 
 enum IR_OPT
@@ -603,6 +612,8 @@ declare function vregDump( byval v as IRVREG ptr ) as string
 #define irEmitDBG(op, proc, ex, filename) ir.vtbl.emitDBG( op, proc, ex, filename )
 
 #define irEmitDECL( sym ) ir.vtbl.emitDECL( sym )
+
+#define irEmitMACRO(op, v1, v2, vr) ir.vtbl.emitMACRO( op, v1, v2, vr )
 
 
 #define irIsREG(v) (v->typ = IR_VREGTYPE_REG)
