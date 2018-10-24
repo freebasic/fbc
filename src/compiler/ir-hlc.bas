@@ -1038,6 +1038,23 @@ private sub hEmitStructWithFields( byval s as FBSYMBOL ptr )
 					ln += " __attribute__((packed, aligned(" + str( align ) + ")))"
 				end if
 			end if
+			
+			'' The alignment of nested structures which are packed with a 
+			'' smaller alignment than the natural or specified alignment of the
+			'' parent structure has to be specified explicitly,
+			'' otherwise the field will be packed too.
+			if ( align <= 0 orelse skip ) then
+				if( typeGet( dtype ) = FB_DATATYPE_STRUCT ) then
+					var effectivealign = typeCalcNaturalAlign( dtype, subtype )
+					if ( align > 0 andalso align < effectivealign ) then
+						effectivealign = align
+					end if
+					var fieldudtalign = symbGetUDTAlign( subtype )
+					if( fieldudtalign > 0 andalso effectivealign > fieldudtalign ) then
+						ln += " __attribute__((aligned(" + str( effectivealign ) + ")))"
+					end if
+				end if
+			end if
 
 			ln += ";"
 			hWriteLine( ln, TRUE )

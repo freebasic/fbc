@@ -1468,5 +1468,26 @@ SUITE( fbc_tests.structs.padding )
 		CU_ASSERT( x2.x1.i = 11 )
 		CU_ASSERT( x2.b = 22 )
 	END_TEST
+	
+	TEST( genGccUdtPackedFieldInUdt )
+		'' Regression test for -gen gcc's struct emitting
+		
+		type UDT1 field=1 '' packed UDT
+			a as byte     '' 1 byte
+			b as short    '' 2 bytes
+		end type
+		#assert sizeof( UDT1 ) = sizeof( byte ) + sizeof ( short )
+		#assert sizeof( UDT1 ) = 3
 
+		type UDT2 field=2  '' packed UDT
+			x1 as UDT1   '' UDT field, which is packed with field=1
+		end type
+		#assert sizeof( UDT2 ) = 4
+		#assert offsetof(UDT2, x1.b) = 1
+
+		dim x2 as UDT2 = ((11,22))
+		CU_ASSERT( x2.x1.a = 11 )
+		CU_ASSERT( x2.x1.b = 22 )
+	END_TEST
+	
 END_SUITE
