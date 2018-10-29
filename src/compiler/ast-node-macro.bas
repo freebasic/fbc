@@ -1,7 +1,7 @@
 '' AST va_list nodes
 '' l = arg1 expression; r = arg2 expression
 ''
-
+'' chng: oct/2018 written [jeffm]
 
 #include once "fb.bi"
 #include once "fbint.bi"
@@ -20,6 +20,19 @@ function astNewMACRO _
 
 	dim n as ASTNODE ptr = any
 
+	'' current node configuration is
+	''
+	''   n
+	''  / \
+	'' l   r
+	''
+	'' n = MACRO node, dtype/subtype to return (if any)
+	'' l = first argument (the cva_list object)
+	'' r = second argument (only used in cva_copy)
+	''
+	'' To make this node class more generic, need to add
+	'' sub-nodes to build a list of argument expressions
+
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_MACRO, dtype, subtype )
 
@@ -32,6 +45,22 @@ function astNewMACRO _
 	n->l = arg1
 	n->r = arg2
 	n->sym = arg1->sym
+
+	if( op = AST_OP_VA_ARG ) then
+		'' promote?
+		select case typeGetClass( dtype )
+		case FB_DATACLASS_INTEGER
+			if( typeGetSize( dtype ) < typeGetSize( FB_DATATYPE_INTEGER ) ) then
+				n->dtype = typeJoin( dtype, FB_DATATYPE_INTEGER )
+				n = astNewCONV( dtype, NULL, n )
+			end if
+		case FB_DATACLASS_FPOINT
+			if( typeGetSize( dtype ) < typeGetSize( FB_DATATYPE_DOUBLE ) ) then
+				n->dtype = typeJoin( dtype, FB_DATATYPE_DOUBLE )
+				n = astNewCONV( dtype, NULL, n )
+			end if
+		end select
+	end if
 
 	function = n
 
