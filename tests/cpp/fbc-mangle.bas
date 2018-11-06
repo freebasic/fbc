@@ -79,6 +79,9 @@ namespace cpp_mangle
 	declare function cpp_byref_double_const_ptr_ptr( byref a as double const ptr ptr ) as double
 	declare function cpp_byref_double_ptr_const_ptr( byref a as double ptr const ptr ) as double
 
+	declare function cpp_variadic_start( byval n as long, ... ) as long
+	declare function cpp_variadic_list( byval n as long, byval args as cva_list ) as long
+
 end namespace
 
 end extern
@@ -261,5 +264,16 @@ scope
 	ASSERT( cpp_byref_double_const_ptr_ptr( dpp ) = d )
 	ASSERT( cpp_byref_double_ptr_const_ptr( dpp ) = d )
 
+end scope
 
+sub variadic_list cdecl( byval n as long, ... )
+	dim x as cva_list = any
+	cva_start( x, n )
+	ASSERT( cpp_variadic_list( 3, x ) = 3 )
+	cva_end( x )
+end sub
+
+scope
+	ASSERT( cpp_variadic_start( 3, 1, 2, 3 ) = 3 )
+	variadic_list( 3, 1, 2, 3 )
 end scope

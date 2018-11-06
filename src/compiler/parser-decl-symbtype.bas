@@ -528,7 +528,12 @@ function cSymbolType _
 
 		case FB_TK_CVA_LIST
 			lexSkipToken( )
-			dtype = FB_DATATYPE_VA_LIST
+			'' !!! TODO !!! use FB_DATATYPE_VA_LIST only
+			if( env.clopt.backend = FB_BACKEND_GCC ) then
+				dtype = FB_DATATYPE_VA_LIST
+			else
+				dtype = typeAddrOf( FB_DATATYPE_CHAR )
+			end if
 
 		case FB_TK_INTEGER
 			lexSkipToken( )

@@ -414,7 +414,7 @@ function hMangleBuiltInType _
 		@"d", _ '' double
 		NULL, _ '' var-len string
 		NULL, _ '' fix-len string
-		NULL, _ '' va_list
+		@"Pc", _ '' va_list
 		NULL, _ '' struct
 		NULL, _ '' namespace
 		NULL, _ '' function

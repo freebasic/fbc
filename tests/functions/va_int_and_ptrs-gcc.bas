@@ -1,5 +1,4 @@
 # include "fbcunit.bi"
-# include once "cva_gas_helper.bi"
 
 SUITE( fbc_tests.functions.va_int_and_ptrs_gcc )
 

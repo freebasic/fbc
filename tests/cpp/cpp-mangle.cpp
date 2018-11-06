@@ -240,4 +240,16 @@ namespace cpp_mangle
 		return **a;
 	}
 
+	/* variadic functions */
+
+	int cpp_variadic_start( int n, ... )
+	{
+		return n;
+	}
+
+	int cpp_variadic_list( int n, __builtin_va_list args )
+	{
+		return n;
+	}
+
 }

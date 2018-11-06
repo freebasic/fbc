@@ -2323,7 +2323,7 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 
 		case AST_OP_VA_START
 
-			'' cva_start(l, r) := __builtin_va_arg(l, r)
+			'' cva_start(l, r) := __builtin_va_start(l, r)
 			ctx.exprtext += "__builtin_va_start( "
 			hExprFlush( n->l, TRUE )
 			ctx.exprtext += ", "

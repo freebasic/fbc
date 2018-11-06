@@ -47,7 +47,7 @@ END_SUITE
 #if ENABLE_CHECK_BUGS
 SUITE( fbc_tests.functions.va_tmpstring )
 	TEST( tempStringArg )
-		CU_FAIL()
+		CU_FAIL( )
 	END_TEST
 END_SUITE
 #endif
