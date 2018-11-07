@@ -157,6 +157,12 @@ function symbAddArrayDescriptorType _
 		aliasid &= dimensions
 	end if
 
+	'' top level const will be ignored in symbMangleType(), so use an alternate 
+	'' alias for const array descriptor dtypes to avoid alias conflicts
+	if( typeIsConst( arraydtype ) ) then
+		aliasid &= "K"
+	end if
+
 	'' Some unique internal id that allows this descriptor type to be looked
 	'' up later when we need one with the same dimensions & array dtype
 	'' again. '$' prefix ensures that there are no collisions with user's
