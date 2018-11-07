@@ -160,4 +160,58 @@ SUITE( fbc_tests.quirk.lubound )
 		hCheckBydesc( array10(), 31, 33 )
 	END_TEST
 
+	sub hCheckConstBydesc _
+		( _
+			array() as const integer, _
+			byval expectedlbound as integer, _
+			byval expectedubound as integer _
+		)
+
+		CU_ASSERT( lbound( array ) = expectedlbound )
+		CU_ASSERT( ubound( array ) = expectedubound )
+
+	end sub
+
+	dim shared const_array1(0 to 1) as const integer = {1, 2}
+	dim shared const_array2(123 to 127) as const integer = {3, 4, 5, 6, 7}
+	dim shared const_array9(11 to ...) as const integer = { 1, lbound( const_array9 ), 3 }
+
+	TEST( const_array_bound )
+
+		hCheckConstBydesc( const_array1(), 0, 1 )
+		hCheckConstBydesc( const_array2(), 123, 127 )
+		hCheckConstBydesc( const_array9(), 11, 13 )
+
+	END_TEST
+
+	type point
+		x as single
+		y as single
+	end type
+
+	type shape
+		points(any) as point
+	end type
+
+	sub const_udt_test (byref s as const shape)
+		CU_ASSERT( lbound(s.points) = 0 )
+		CU_ASSERT( ubound(s.points) = -1 )
+	end sub
+
+	TEST( const_UDT_array )
+
+		dim as shape s0
+		CU_ASSERT( lbound(s0.points) = 0 )
+		CU_ASSERT( ubound(s0.points) = -1 )
+
+		dim as const shape s = s0
+		CU_ASSERT( lbound(s.points) = 0 )
+		CU_ASSERT( ubound(s.points) = -1 )
+
+		const_udt_test( s0 )
+		const_udt_test( s )
+
+	END_TEST
+
+
 END_SUITE

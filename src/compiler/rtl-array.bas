@@ -213,7 +213,7 @@
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYDESC, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
@@ -224,7 +224,7 @@
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYDESC, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
