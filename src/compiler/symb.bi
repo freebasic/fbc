@@ -249,6 +249,12 @@ enum FB_MANGLING
 	FB_MANGLING_PASCAL
 end enum
 
+''
+enum FB_MANGLEOPT
+	FB_MANGLEOPT_NONE = 0          '' no special options
+	FB_MANGLEOPT_KEEPTOPCONST = 1  '' keep the top-level const when mangling
+end enum
+
 type FBSYMBOL_ as FBSYMBOL
 
 #ifndef ASTNODE_
@@ -1747,7 +1753,8 @@ declare sub symbMangleType _
 	( _
 		byref mangled as string, _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval options as FB_MANGLEOPT = FB_MANGLEOPT_NONE _
 	)
 declare sub symbMangleParam( byref mangled as string, byval param as FBSYMBOL ptr )
 

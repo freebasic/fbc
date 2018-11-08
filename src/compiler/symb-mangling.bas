@@ -183,7 +183,7 @@ private sub hMangleUdtId( byref mangled as string, byval sym as FBSYMBOL ptr )
 		mangled += "I" '' begin of template argument list
 
 		symbGetDescTypeArrayDtype( sym, arraydtype, arraysubtype )
-		symbMangleType( mangled, arraydtype, arraysubtype )
+		symbMangleType( mangled, arraydtype, arraysubtype, FB_MANGLEOPT_KEEPTOPCONST )
 
 		mangled += "E" '' end of template argument list
 	end if
@@ -429,7 +429,8 @@ sub symbMangleType _
 	( _
 		byref mangled as string, _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval options as FB_MANGLEOPT = FB_MANGLEOPT_NONE _
 	)
 
 	dim as FBSYMBOL ptr ns = any
@@ -449,6 +450,17 @@ sub symbMangleType _
 	if( typeGet( dtype ) = FB_DATATYPE_FWDREF ) then
 		'' Remap to STRUCT for mangling purposes
 		dtype = typeJoin( dtype and (not FB_DATATYPE_INVALID), FB_DATATYPE_STRUCT )
+	end if
+
+	'' const array?
+	if( typeIsConst( dtype ) ) then
+		if( (options and FB_MANGLEOPT_KEEPTOPCONST) <> 0 ) then
+			mangled += "K"
+			symbMangleType( mangled, dtype, subtype )
+
+			hAbbrevAdd( dtype, subtype )
+			exit sub
+		end if
 	end if
 
 	'' reference?
@@ -573,7 +585,7 @@ sub symbMangleParam( byref mangled as string, byval param as FBSYMBOL ptr )
 		'' Mangling array params as 'FBARRAY[1-8]<dtype>&' because
 		'' that's what they really are from C++'s point of view.
 		assert( symbIsDescriptor( param->param.bydescrealsubtype ) )
-		symbMangleType( mangled, typeSetIsRef( FB_DATATYPE_STRUCT ), param->param.bydescrealsubtype )
+		symbMangleType( mangled, typeSetIsRef( FB_DATATYPE_STRUCT ), param->param.bydescrealsubtype, FB_MANGLEOPT_KEEPTOPCONST )
 
 	case FB_PARAMMODE_VARARG
 		mangled += "z"
