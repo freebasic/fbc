@@ -452,49 +452,19 @@ sub symbMangleType _
 		dtype = typeJoin( dtype and (not FB_DATATYPE_INVALID), FB_DATATYPE_STRUCT )
 	end if
 
-	'' const array?
-	if( typeIsConst( dtype ) ) then
-		if( (options and FB_MANGLEOPT_KEEPTOPCONST) <> 0 ) then
-			mangled += "K"
-			symbMangleType( mangled, dtype, subtype )
-
-			hAbbrevAdd( dtype, subtype )
-			exit sub
-		end if
-	end if
-
 	'' reference?
 	if( typeIsRef( dtype ) ) then
-		'' const?
-		if( typeIsConst( dtype ) ) then
-			mangled += "RK"
-		else
-			mangled + = "R"
-		end if
+		mangled += "R"
 
-		symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype )
-
-		hAbbrevAdd( dtype, subtype )
-		exit sub
-	end if
-
-	'' pointer? (must be checked/emitted before CONST)
-	if( typeIsPtr( dtype ) ) then
-		'' const?
-		if( typeIsConstAt( dtype, 1 ) ) then
-			mangled += "PK"
-		else
-			mangled += "P"
-		end if
-
-		symbMangleType( mangled, typeDeref( dtype ), subtype )
+		symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype, FB_MANGLEOPT_KEEPTOPCONST )
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
 	end if
 
 	'' const?
-	if( typeGetConstMask( dtype ) ) then
+	if( typeIsConst( dtype ) ) then
+
 		'' The type has some CONST bits. For C++ mangling we remove the
 		'' toplevel one and recursively mangle the rest of the type.
 		''
@@ -503,7 +473,22 @@ sub symbMangleType _
 		'' difference. It's not allowed to have overloads that differ
 		'' only in BYVAL CONSTness. The CONST only matters if it's a
 		'' pointer or BYREF type.
+
+		if( (options and FB_MANGLEOPT_KEEPTOPCONST) <> 0 ) then
+			mangled += "K"
+		end if
+
 		symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype )
+
+		hAbbrevAdd( dtype, subtype )
+		exit sub
+	end if
+
+	'' pointer?
+	if( typeIsPtr( dtype ) ) then
+		mangled += "P"
+
+		symbMangleType( mangled, typeDeref( dtype ), subtype, FB_MANGLEOPT_KEEPTOPCONST )
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
