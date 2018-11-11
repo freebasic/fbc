@@ -82,6 +82,7 @@ Version 1.06.0
 - #866: fbc was throwing lexer errors in comments stating with $.  Comments are lexed for directives; allow suffixes in comments
 - #858: C backend: fix internal structure size mismatch due to wrong padding when nesting packed structures
 - C backend: fix array descriptor mangling to avoid naming conflicts where array data types differ only by const
+- #823: Function overload resolution for [const] array() and passing non-const array argument to const array parameter
 
 
 Version 1.05.0
