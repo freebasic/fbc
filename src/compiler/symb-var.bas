@@ -77,7 +77,7 @@ sub symbGetDescTypeArrayDtype _
 	fld = symbUdtGetFirstField( desctype )
 	assert( typeIsPtr( symbGetType( fld ) ) )
 
-	arraydtype = typeDeref( symbGetType( fld ) )
+	arraydtype = typeDeref( symbGetFullType( fld ) )
 	arraysubtype = fld->subtype
 
 end sub
@@ -160,10 +160,11 @@ function symbAddArrayDescriptorType _
 	'' Some unique internal id that allows this descriptor type to be looked
 	'' up later when we need one with the same dimensions & array dtype
 	'' again. '$' prefix ensures that there are no collisions with user's
-	'' ids.
+	'' ids.  Always keep the top-level const for array datatypes to avoid
+	'' conflicts between types differing only by const.
 	id = "$" + aliasid
 	id += "<"
-	symbMangleType( id, arraydtype, arraysubtype )
+	symbMangleType( id, arraydtype, arraysubtype, FB_MANGLEOPT_KEEPTOPCONST )
 	symbMangleResetAbbrev( )
 	id += ">"
 

@@ -146,4 +146,98 @@ namespace cpp_mangle
 		return a;
 	} 
 
+	/* byval const, pointer, reference */
+
+	double cpp_byval_const_double( const double a )
+	{
+		return a;
+	}
+
+	double cpp_byval_double_ptr( double* a )
+	{
+		return *a;
+	}
+
+	double cpp_byval_const_double_ptr( double const* a )
+	{
+		return *a;
+	}
+
+	double cpp_byval_double_const_ptr( double* const a )
+	{
+		return *a;
+	}
+
+	double cpp_byval_const_double_const_ptr( double const* const a )
+	{
+		return *a;
+	}
+
+	double cpp_byval_double_ptr_ptr( double** a )
+	{
+		return **a;
+	}
+
+	double cpp_byval_const_double_ptr_ptr( double const** a )
+	{
+		return **a;
+	}
+
+	double cpp_byval_double_const_ptr_ptr( double* const* a )
+	{
+		return **a;
+	}
+
+	double cpp_byval_double_ptr_const_ptr( double** const a )
+	{
+		return **a;
+	}
+
+	/* byval const, pointer, reference */
+
+	double cpp_byref_const_double( double const& a )
+	{
+		return a;
+	}
+
+	double cpp_byref_double_ptr( double*& a )
+	{
+		return *a;
+	}
+
+	double cpp_byref_const_double_ptr( double const*& a )
+	{
+		return *a;
+	}
+
+	double cpp_byref_double_const_ptr( double* const& a )
+	{
+		return *a;
+	}
+
+	double cpp_byref_const_double_const_ptr( double const* const& a )
+	{
+		return *a;
+	}
+
+	double cpp_byref_double_ptr_ptr( double**& a )
+	{
+		return **a;
+	}
+
+	double cpp_byref_const_double_ptr_ptr( double const**& a )
+	{
+		return **a;
+	}
+
+	double cpp_byref_double_const_ptr_ptr( double* const*& a )
+	{
+		return **a;
+	}
+
+	double cpp_byref_double_ptr_const_ptr( double** const& a )
+	{
+		return **a;
+	}
+
 }

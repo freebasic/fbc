@@ -415,3 +415,8 @@ none expected
 none expected
 none expected
 none expected
+---- Array in Const UDT
+none expected
+none expected
+none expected
+none expected

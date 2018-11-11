@@ -1883,18 +1883,17 @@ private function hCheckOvlParam _
 			return FB_OVLPROC_NO_MATCH
 		end if
 
-		'' not a full match?
-        if( param_dtype <> arg_dtype ) then
-        	return FB_OVLPROC_NO_MATCH
-        end if
+		var match = typeCalcMatch( param_dtype, param_subtype, symbGetParamMode( param ), arg_dtype, arg_subtype )
 
-        if( param_subtype <> arg_subtype ) then
-        	return FB_OVLPROC_NO_MATCH
-        end if
-
+		'' not same type?
+		if( match < FB_OVLPROC_TYPEMATCH ) then
+			return FB_OVLPROC_NO_MATCH
+		end if
+	
 		assert( astIsVAR( arg_expr ) or astIsFIELD( arg_expr ) )
 		array = arg_expr->sym
 		assert( symbIsArray( array ) )
+
 
 		'' If the BYDESC parameter has unknown dimensions, any array can be passed.
 		'' Otherwise, only arrays with unknown or matching dimensions can be passed.
@@ -1905,7 +1904,7 @@ private function hCheckOvlParam _
 			end if
 		end if
 
-		return FB_OVLPROC_FULLMATCH
+		return match
 
 	'' byref param?
 	case FB_PARAMMODE_BYREF

@@ -59,6 +59,26 @@ namespace cpp_mangle
 	declare function cpp_byref_ulonglongint( byref a as unsigned longint ) as unsigned longint 
 	declare function cpp_byref_slonglongint( byref a as longint ) as longint
 
+	declare function cpp_byval_const_double( byval a as const double ) as double
+	declare function cpp_byval_double_ptr( byval a as double ptr ) as double
+	declare function cpp_byval_const_double_ptr( byval a as const double ptr ) as double
+	declare function cpp_byval_double_const_ptr( byval a as double const ptr ) as double
+	declare function cpp_byval_const_double_const_ptr( byval a as const double const ptr ) as double
+	declare function cpp_byval_double_ptr_ptr( byval a as double ptr ptr ) as double
+	declare function cpp_byval_const_double_ptr_ptr( byval a as const double ptr ptr ) as double
+	declare function cpp_byval_double_const_ptr_ptr( byval a as double const ptr ptr ) as double
+	declare function cpp_byval_double_ptr_const_ptr( byval a as double ptr const ptr ) as double
+
+	declare function cpp_byref_const_double( byref a as const double ) as double
+	declare function cpp_byref_double_ptr( byref a as double ptr ) as double
+	declare function cpp_byref_const_double_ptr( byref a as const double ptr ) as double
+	declare function cpp_byref_double_const_ptr( byref a as double const ptr ) as double
+	declare function cpp_byref_const_double_const_ptr( byref a as const double const ptr ) as double
+	declare function cpp_byref_double_ptr_ptr( byref a as double ptr ptr ) as double
+	declare function cpp_byref_const_double_ptr_ptr( byref a as const double ptr ptr ) as double
+	declare function cpp_byref_double_const_ptr_ptr( byref a as double const ptr ptr ) as double
+	declare function cpp_byref_double_ptr_const_ptr( byref a as double ptr const ptr ) as double
+
 end namespace
 
 end extern
@@ -207,5 +227,39 @@ scope
 	sll = &h7fffffffffffffff
 	ASSERT( cpp_byref_ulonglongint(ull) = &h7fffffffffffffff )
 	ASSERT( cpp_byref_slonglongint(sll) = &h7fffffffffffffff )
+
+end scope
+
+scope
+	'' [const] pointers and references
+
+	dim d as double = 1
+	dim dp as double ptr = @d
+	dim dpp as double ptr ptr = @dp
+
+	ASSERT( cpp_byval_double( d ) = d )
+	ASSERT( cpp_byval_const_double( d ) = d )
+	ASSERT( cpp_byval_double_ptr( dp ) = d )
+	ASSERT( cpp_byval_const_double_ptr( dp ) = d )
+	ASSERT( cpp_byval_double_const_ptr( dp ) = d )
+	ASSERT( cpp_byval_const_double_const_ptr( dp ) = d )
+
+	ASSERT( cpp_byval_double_ptr_ptr( dpp ) = d )
+	ASSERT( cpp_byval_const_double_ptr_ptr( dpp ) = d )
+	ASSERT( cpp_byval_double_const_ptr_ptr( dpp ) = d )
+	ASSERT( cpp_byval_double_ptr_const_ptr( dpp ) = d )
+
+	ASSERT( cpp_byref_double( d ) = d )
+	ASSERT( cpp_byref_const_double( d ) = d )
+	ASSERT( cpp_byref_double_ptr( dp ) = d )
+	ASSERT( cpp_byref_const_double_ptr( dp ) = d )
+	ASSERT( cpp_byref_double_const_ptr( dp ) = d )
+	ASSERT( cpp_byref_const_double_const_ptr( dp ) = d )
+
+	ASSERT( cpp_byref_double_ptr_ptr( dpp ) = d )
+	ASSERT( cpp_byref_const_double_ptr_ptr( dpp ) = d )
+	ASSERT( cpp_byref_double_const_ptr_ptr( dpp ) = d )
+	ASSERT( cpp_byref_double_ptr_const_ptr( dpp ) = d )
+
 
 end scope
