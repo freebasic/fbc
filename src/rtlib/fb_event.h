@@ -142,6 +142,8 @@ typedef struct _EVENT EVENT;
 #define KEY_F8          FB_MAKE_EXT_KEY( 'B' )
 #define KEY_F9          FB_MAKE_EXT_KEY( 'C' )
 #define KEY_F10         FB_MAKE_EXT_KEY( 'D' )
+#define KEY_F11         FB_MAKE_EXT_KEY( 'E' )
+#define KEY_F12         FB_MAKE_EXT_KEY( 'F' )
 #define KEY_HOME        FB_MAKE_EXT_KEY( 'G' )
 #define KEY_UP          FB_MAKE_EXT_KEY( 'H' )
 #define KEY_PAGE_UP     FB_MAKE_EXT_KEY( 'I' )
