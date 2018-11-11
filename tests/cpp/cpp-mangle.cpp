@@ -163,7 +163,7 @@ namespace cpp_mangle
 		return *a;
 	}
 
-	double cpp_byval_double_const_ptr( double *const a )
+	double cpp_byval_double_const_ptr( double* const a )
 	{
 		return *a;
 	}
@@ -200,7 +200,7 @@ namespace cpp_mangle
 		return a;
 	}
 
-	double cpp_byref_double_ptr( double* &a )
+	double cpp_byref_double_ptr( double*& a )
 	{
 		return *a;
 	}
