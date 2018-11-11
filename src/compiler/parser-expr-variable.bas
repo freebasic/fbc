@@ -179,7 +179,7 @@ private function hFieldAccess _
 			'' Dynamic array field; access the descriptor field (same offset)
 			desc = symbGetArrayDescriptor( fld )
 			varexpr = astNewBOP( AST_OP_ADD, varexpr, offsetexpr )
-			varexpr = astNewCONV( typeAddrOf( symbGetFullType( desc ) ), symbGetSubtype( desc ), varexpr, AST_CONVOPT_DONTCHKPTR )
+			varexpr = astNewCONV( typeAddrOf( symbGetFullType( desc ) ), symbGetSubtype( desc ), varexpr, AST_CONVOPT_DONTCHKPTR or AST_CONVOPT_DONTWARNCONST )
 
 			tree = NULL
 			if( astHasSideFx( varexpr ) ) then
@@ -190,7 +190,7 @@ private function hFieldAccess _
 
 			'' *cptr( dtype ptr, var->descriptor.data + index )
 			varexpr = astNewBOP( AST_OP_ADD, varexpr, astNewCONSTi( symb.fbarray_data ) )
-			varexpr = astNewCONV( typeMultAddrOf( dtype, 2 ), subtype, varexpr, AST_CONVOPT_DONTCHKPTR )
+			varexpr = astNewCONV( typeMultAddrOf( dtype, 2 ), subtype, varexpr, AST_CONVOPT_DONTCHKPTR or AST_CONVOPT_DONTWARNCONST )
 			varexpr = astNewDEREF( varexpr )
 			varexpr = astNewBOP( AST_OP_ADD, varexpr, indexexpr )
 			varexpr = astNewDEREF( varexpr )

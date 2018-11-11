@@ -1014,3 +1014,29 @@ scope
 	WARN(0)
 	memcpy( x + i, xc, 5 )
 end scope
+
+'' --------------------------------------------------------
+
+'' from https://www.freebasic.net/forum/viewtopic.php?p=254288#p254288
+
+#print "---- Array in Const UDT"
+
+type point
+	x as single
+	y as single
+end type
+
+type shape
+	points(any) as point
+end type
+
+sub const_udt_array( byref s as const shape )
+	WARN(0)
+	print lbound(s.points)
+	WARN(0)
+	print ubound(s.points)
+	WARN(0)
+	print @s.points(0)
+	WARN(0)
+	print s.points(0).x
+end sub
