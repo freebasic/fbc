@@ -553,6 +553,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 
 	case FB_COMPOPT_GOSUBSETJMP
 		env.clopt.gosubsetjmp = value
+	case FB_COMPOPT_VALISTASPTR
+		env.clopt.valistasptr = value
 	case FB_COMPOPT_EXPORT
 		env.clopt.export = value
 	case FB_COMPOPT_MSBITFIELDS
@@ -630,6 +632,8 @@ function fbGetOption( byval opt as integer ) as integer
 
 	case FB_COMPOPT_GOSUBSETJMP
 		function = env.clopt.gosubsetjmp
+	case FB_COMPOPT_VALISTASPTR
+		function = env.clopt.valistasptr
 	case FB_COMPOPT_EXPORT
 		function = env.clopt.export
 	case FB_COMPOPT_MSBITFIELDS
