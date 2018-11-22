@@ -527,13 +527,16 @@ function cSymbolType _
 			dtype = FB_DATATYPE_USHORT
 
 		case FB_TK_CVA_LIST
-			lexSkipToken( )
 			'' !!! TODO !!! use FB_DATATYPE_VA_LIST only
-			if( env.clopt.backend = FB_BACKEND_GCC ) then
-				dtype = FB_DATATYPE_VA_LIST
-			else
-				dtype = typeAddrOf( FB_DATATYPE_CHAR )
-			end if
+
+			'' FB_DATATYPE_VA_LIST is handled as an unknown type 
+			'' and remains abstract until it must be solved
+			'' depending on target:
+			'' 'char*' => typeAddrOf( FB_DATATYPE_CHAR )
+			'' '__va_list_tag*' => typeAddrOf( FB_DATATYPE_STRUCT )
+
+			lexSkipToken( )
+			dtype = FB_DATATYPE_VA_LIST
 
 		case FB_TK_INTEGER
 			lexSkipToken( )

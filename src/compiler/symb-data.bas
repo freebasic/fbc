@@ -28,7 +28,7 @@ dim shared symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE => _
 	( FB_DATACLASS_FPOINT ,  8, TRUE ,  0, FB_DATATYPE_DOUBLE  , FB_SIZETYPE_FLOAT64, @"double"   ), _
 	( FB_DATACLASS_STRING , -1, FALSE,  0, FB_DATATYPE_STRING  , -1                 , @"string"   ), _
 	( FB_DATACLASS_STRING ,  1, FALSE,  0, FB_DATATYPE_FIXSTR  , -1                 , @"string"   ), _
-	( FB_DATACLASS_UNKNOWN, -1, FALSE,  0, FB_DATATYPE_VA_LIST , -1                 , @"va_list"  ), _  '' based on pointer
+	( FB_DATACLASS_UNKNOWN, -1, FALSE,  0, FB_DATATYPE_VA_LIST , -1                 , @"va_list"  ), _
 	( FB_DATACLASS_UDT    ,  0, FALSE,  0, FB_DATATYPE_STRUCT  , -1                 , @"type"     ), _
 	( FB_DATACLASS_UDT    ,  0, FALSE,  0, FB_DATATYPE_NAMESPC , -1                 , @"namepace" ), _
 	( FB_DATACLASS_PROC   ,  0, FALSE,  0, FB_DATATYPE_UINT    , -1                 , @"function" ), _  '' FB_DATATYPE_FUNCTION has zero size, so function pointer arithmetic is disallowed (-> symbCalcDerefLen())
@@ -138,6 +138,48 @@ sub symbDataInit( )
 		next
 
 	next
+
+	'' !!! TODO !!!
+	'' give cva_list type (aka va_list, __builtin_va_list) a size
+	'' - in GAS backend, we must have a size because we provide the
+	''   full implementation
+	'' - in GCC backend, we don't need the size to use the cva_* API
+	''   but without a size, we can't initialize the variable to
+	''   zero, or make the cva_type a UDT member, etc.
+
+	select case( env.clopt.target )
+	case FB_COMPTARGET_LINUX
+		if( fbIs64bit() ) then
+			''	From C definition:
+			''	typedef struct {
+			''		unsigned int gp_offset;
+			''		unsigned int fp_offset;
+			''		void *overflow_arg_area;
+			''		void *reg_save_area;
+			''	} va_list[1];
+			''
+			'' expected to mangled in C++ as "P13__va_list_tag"
+			symb_dtypeTB(FB_DATATYPE_VA_LIST ).size = 24
+
+		else
+			'' on 32-bit, va_list is a pointer
+			'' expected to be mangled in C++ as char* = "Pc"
+			symb_dtypeTB(FB_DATATYPE_VA_LIST).size = symb_dtypeTB(FB_DATATYPE_POINTER).size
+		end if
+	case else
+		'' FB_COMPTARGET_WIN32
+		'' FB_COMPTARGET_CYGWIN
+		'' FB_COMPTARGET_DOS
+		'' FB_COMPTARGET_XBOX
+		'' FB_COMPTARGET_FREEBSD
+		'' FB_COMPTARGET_OPENBSD
+		'' FB_COMPTARGET_DARWIN
+		'' FB_COMPTARGET_NETBSD
+		
+		'' for all other targets, assume va_list is a pointer on both 32-bit and 64-bit
+		'' expected to be mangled in C++ as char* = "Pc"
+		symb_dtypeTB(FB_DATATYPE_VA_LIST).size = symb_dtypeTB(FB_DATATYPE_POINTER).size
+	end select
 
 end sub
 

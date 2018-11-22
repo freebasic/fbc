@@ -270,13 +270,12 @@ sub variadic_list cdecl( byval n as long, ... )
 	dim x as cva_list = any
 	cva_start( x, n )
 	
-	'' !!! TODO !!! va_list type mangling
 	'' on windows 32-bit, mangled as "Pc"
 	'' on windows 64-bit, mangled as "Pc"
 	'' on ubuntu 32-bit, mangled as "Pc"
 	'' on ubuntu 64-bit, mangled as "P13__va_list_tag"
 	''
-	'' ASSERT( cpp_variadic_list( 3, x ) = 3 )
+	ASSERT( cpp_variadic_list( 3, x ) = 3 )
 	cva_end( x )
 end sub
 

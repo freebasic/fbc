@@ -47,6 +47,55 @@ private function hGetVarArgProcParam _
 
 end function
 
+private function hUseGccValistBuiltins() as boolean
+
+	'' backend  bits   builtin   ptr-expr
+	'' -------  -----  --------  -------------------------------------
+	'' gas      32     no        yes
+	'' gas      64     n/a       n/a
+	'' gcc      32     yes       only with "-z valist-is-ptr"
+	'' gcc      64     yes       only with "-z valist-is-ptr" and on win32
+	'' llvm     32     no        yes
+	'' llvm     64     no        ???
+	''
+	'' "-z valist-is-ptr" overides the use of builtins on backend/bits
+	'' that also support pointer expressions, and has no effect otherwise
+
+	select case env.clopt.backend
+	case FB_BACKEND_GCC
+		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+			function = iif( fbGetOption( FB_COMPOPT_VALISTASPTR ), FALSE, TRUE )
+		else
+			function = TRUE
+		end if
+
+	case FB_BACKEND_GAS
+		function = FALSE
+
+	case FB_BACKEND_LLVM
+		function = FALSE
+
+	case else
+		assert( FALSE )
+		function = FALSE
+
+	end select
+	
+end function
+
+private function hSolveValistAsPtr _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	'' cva_list? solve for the target	
+	if( n->dtype = FB_DATATYPE_VA_LIST ) then
+		n->dtype = typeAddrOf( FB_DATATYPE_VOID )
+	end if
+
+	function = n
+
+end function
 
 '':::::
 ''cVAFunct =     VA_FIRST ('(' ')')? .
@@ -81,10 +130,9 @@ function cVAFunct() as ASTNODE ptr
 		expr = astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, expr )
 
 		'' + paramlen( param )
-		function = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetLen( vararg_param ), FB_DATATYPE_UINT ) )
+		function = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetLen( vararg_param ), FB_DATATYPE_UINT ),,AST_OPOPT_NOCOERCION )
 	end if
 end function
-
 
 '':::::
 ''cVALISTFunct =     CVA_ARG ('(' ')')? .
@@ -145,23 +193,24 @@ function cVALISTFunct _
 		errReport( FB_ERRMSG_EXPECTEDRPRNT )
 	end if
 
-	if( env.clopt.backend = FB_BACKEND_GCC ) then
-		'' delegate to gcc backend to solve result = __builtin_va_arg( ap, type )		
+	if( hUseGccValistBuiltins() ) then
+		'' delegate to gcc backend to solve "result = __builtin_va_arg( ap, type )"
 		function = astNewMACRO( AST_OP_VA_ARG, expr, NULL, dtype, subtype )
+
 	else
-		'' 32-bit gas backend, modify expr variable, return expr variable before modification
+		'' pointer expression: modify expr variable & return value of expr variable before modification
 
 		'' size of parameter on the stack depends on stack alignment
 		dim lgt as integer = (symbCalcLen( dtype, subtype ) + env.pointersize - 1 and -env.pointersize)
 
-		'' expr + lgt	
-		var expr1 = astNewBOP( AST_OP_ADD, astNewVAR( astGetSymbol( expr ) ), astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
+		'' cptr( any ptr, expr ) + lgt	
+		var expr1 = astNewBOP( AST_OP_ADD, astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, hSolveValistAsPtr( astNewVAR( astGetSymbol( expr ) ) ) ), astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
 		
-		'' expr - lgt
-		var expr2 = astNewBOP( AST_OP_SUB, astNewVAR( astGetSymbol( expr ) ), astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
+		'' cptr( any ptr, expr ) - lgt
+		var expr2 = astNewBOP( AST_OP_SUB, astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, hSolveValistAsPtr( astNewVAR( astGetSymbol( expr ) ) ) ), astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
 
 		'' return ( expr += lgt: *cptr(dtype ptr, expr - lgt) )
-		function = astNewLink( astNewASSIGN( astNewVAR( astGetSymbol( expr ) ), expr1 ), astNewDEREF( expr2, dtype, subtype ), FALSE )
+		function = astNewLink( astNewASSIGN( astNewCONV( typeAddrOf( FB_DATATYPE_VOID ), NULL, hSolveValistAsPtr( astNewVAR( astGetSymbol( expr ) ) ) ), expr1 ), astNewDEREF( expr2, dtype, subtype ), FALSE )
 
 	end if
 
@@ -202,6 +251,7 @@ function cVALISTStmt _
 			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 		end if
 
+		'' list
 		expr1 = cExpression()
 
 		if( expr1 = NULL ) then
@@ -227,6 +277,7 @@ function cVALISTStmt _
 			lexSkipToken( )
 		end if
 
+		'' last_arg
 		expr2 = cExpression()
 
 		if( expr2 = NULL ) then
@@ -251,9 +302,12 @@ function cVALISTStmt _
 			errReport( FB_ERRMSG_EXPECTEDRPRNT )
 		end if
 
-		if( env.clopt.backend = FB_BACKEND_GCC ) then
-			'' delegate to gcc backend to solve __builtin_va_start( ap, param )
+		
+
+		if( hUseGccValistBuiltins() ) then
+			'' delegate to gcc backend to solve "__builtin_va_start( ap, param )"
 			astAdd( astNewMACRO( AST_OP_VA_START, expr1, expr2, FB_DATATYPE_INVALID, NULL ) )
+
 		else
 			'' @param
 			var expr = astNewADDROF( astNewVAR( vararg_sym ) )
@@ -264,8 +318,9 @@ function cVALISTStmt _
 			'' + paramlen( param )
 			expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetLen( vararg_param ), FB_DATATYPE_UINT ) )
 
-			'' + paramlen( param )
-			astAdd( astNewASSIGN( expr1, expr ) )
+			'' cptr( any ptr, list ) = first_vararg
+			astAdd( astNewASSIGN( hSolveValistAsPtr( expr1 ), expr ) )
+
 		end if
 		function = TRUE
 
@@ -290,11 +345,13 @@ function cVALISTStmt _
 			errReport( FB_ERRMSG_EXPECTEDRPRNT )
 		end if
 
-		if( env.clopt.backend = FB_BACKEND_GCC ) then
-			'' delegate to gcc backend to solve __builtin_va_end( ap )
+		if( hUseGccValistBuiltins() ) then
+			'' delegate to gcc backend to solve "__builtin_va_end( ap )"
 			astAdd( astNewMACRO( AST_OP_VA_END, expr1, expr2, FB_DATATYPE_INVALID, NULL ) )
+
 		else
-			'' no-op for 32-bit gas backend
+			'' pointer expression: no-op
+
 		end if
 		function = TRUE
 
@@ -328,12 +385,14 @@ function cVALISTStmt _
 			errReport( FB_ERRMSG_EXPECTEDRPRNT )
 		end if
 
-		if( env.clopt.backend = FB_BACKEND_GCC ) then
-			'' delegate to gcc backend to solve __builtin_va_copy( dst, src )
+		if( hUseGccValistBuiltins() ) then
+			'' delegate to gcc backend to solve "__builtin_va_copy( dst, src )"
 			astAdd( astNewMACRO( AST_OP_VA_COPY, expr1, expr2, FB_DATATYPE_INVALID, NULL ) )
+
 		else
-			'' 32-bit gas backend is assignment
-			astAdd( astNewASSIGN( expr1, expr2 ) )
+			'' pointer expression: assignment
+			astAdd( astNewASSIGN( hSolveValistAsPtr( expr1 ), hSolveValistAsPtr( expr2 ) ) )
+
 		end if
 		function = TRUE
 
