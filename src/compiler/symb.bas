@@ -46,6 +46,8 @@ declare sub 		symbCompRTTIEnd		( )
 
 declare sub 		symbKeywordConstsInit ( )
 
+declare sub			symbKeywordTypeInit	( )    
+
 declare function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 
 ''globals
@@ -163,6 +165,9 @@ sub symbInit _
 
 	''
 	symbKeywordConstsInit( )
+
+	''
+	symbKeywordTypeInit( )
 
     ''
     symb.inited = TRUE
@@ -2222,6 +2227,23 @@ function typeDumpToStr _
 				dump += "<invalid dtype " & dtypeonly & ">"
 			end if
 		end select
+
+		if( typeHasMangleDt( dtype ) ) then
+			dump += " alias """
+
+			select case typeGetMangleDt( dtype )
+			case FB_DATATYPE_CHAR
+				dump += "char"
+			case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
+				dump += "long"
+			case FB_DATATYPE_VA_LIST
+				dump += "va_list"
+			case else
+				dump += "<" & typeGetMangleDt( dtype ) & ">"
+			end select
+
+			dump += """"
+		end if
 
 		'' UDT name
 		select case( typeGetDtOnly( dtype ) )

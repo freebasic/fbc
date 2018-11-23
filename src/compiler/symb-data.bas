@@ -139,48 +139,6 @@ sub symbDataInit( )
 
 	next
 
-	'' !!! TODO !!!
-	'' give cva_list type (aka va_list, __builtin_va_list) a size
-	'' - in GAS backend, we must have a size because we provide the
-	''   full implementation
-	'' - in GCC backend, we don't need the size to use the cva_* API
-	''   but without a size, we can't initialize the variable to
-	''   zero, or make the cva_type a UDT member, etc.
-
-	select case( env.clopt.target )
-	case FB_COMPTARGET_LINUX
-		if( fbIs64bit() ) then
-			''	From C definition:
-			''	typedef struct {
-			''		unsigned int gp_offset;
-			''		unsigned int fp_offset;
-			''		void *overflow_arg_area;
-			''		void *reg_save_area;
-			''	} va_list[1];
-			''
-			'' expected to mangled in C++ as "P13__va_list_tag"
-			symb_dtypeTB(FB_DATATYPE_VA_LIST ).size = 24
-
-		else
-			'' on 32-bit, va_list is a pointer
-			'' expected to be mangled in C++ as char* = "Pc"
-			symb_dtypeTB(FB_DATATYPE_VA_LIST).size = symb_dtypeTB(FB_DATATYPE_POINTER).size
-		end if
-	case else
-		'' FB_COMPTARGET_WIN32
-		'' FB_COMPTARGET_CYGWIN
-		'' FB_COMPTARGET_DOS
-		'' FB_COMPTARGET_XBOX
-		'' FB_COMPTARGET_FREEBSD
-		'' FB_COMPTARGET_OPENBSD
-		'' FB_COMPTARGET_DARWIN
-		'' FB_COMPTARGET_NETBSD
-		
-		'' for all other targets, assume va_list is a pointer on both 32-bit and 64-bit
-		'' expected to be mangled in C++ as char* = "Pc"
-		symb_dtypeTB(FB_DATATYPE_VA_LIST).size = symb_dtypeTB(FB_DATATYPE_POINTER).size
-	end select
-
 end sub
 
 sub typeMax _

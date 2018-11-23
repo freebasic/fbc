@@ -466,6 +466,9 @@ declare function fbGetLangId _
 		byval txt as zstring ptr _
 	) as FB_LANG
 
+declare function fbUseGccValistBuiltins _
+	( _
+	) as boolean
 
 ''
 '' macros

@@ -390,30 +390,12 @@ function hMangleBuiltInType _
 		end select
 	end if
 
+	if( typeHasMangleDt( dtype ) ) then
+		dtype = typeGetMangleDt( dtype )
+	end if
+
 	'' dtype should be a FB_DATATYPE by now
 	assert( dtype = typeGetDtOnly( dtype ) )
-
-	'' va_list type mangling
-	''   on windows 32-bit, mangled as "Pc"
-	''   on windows 64-bit, mangled as "Pc"
-	''   on ubuntu 32-bit, mangled as "Pc"
-	''   on ubuntu 64-bit, mangled as "P13__va_list_tag"
-
-	if( dtype = FB_DATATYPE_VA_LIST ) then
-		'' if( env.clopt.backend = FB_BACKEND_GCC ) then
-
-		select case( env.clopt.target )
-		case FB_COMPTARGET_WIN32
-			function = @"Pc"
-		case else
-			if( fbIs64bit() ) then
-				function = @"P13__va_list_tag"
-			else
-				function = @"Pc"
-			end if
-		end select
-		exit function
-	end if
 
 	static as zstring ptr typecodes(0 to FB_DATATYPES-1) => _
 	{ _
@@ -436,7 +418,7 @@ function hMangleBuiltInType _
 		@"d", _ '' double
 		NULL, _ '' var-len string
 		NULL, _ '' fix-len string
-		NULL, _ '' va_list
+		@"c", _ '' va_list
 		NULL, _ '' struct
 		NULL, _ '' namespace
 		NULL, _ '' function

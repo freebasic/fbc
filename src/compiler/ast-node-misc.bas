@@ -941,7 +941,7 @@ private function hAstNodeToStr _
 		return "TYPEINI_ASSIGN( offset=" & n->typeini.ofs & " )"
 
 	case AST_NODECLASS_MACRO
-		return "MACRO: **" & astDumpOpToStr( n->op.op ) & "**" & NODE_TYPE & "**"
+		return "MACRO: " & astDumpOpToStr( n->op.op ) & " " & NODE_TYPE
 
 	case else
 		return hAstNodeClassToStr( n->class ) & NODE_TYPE

@@ -1450,3 +1450,40 @@ function fbGetLangId _
 	end select
 
 end function
+
+'':::::
+function fbUseGccValistBuiltins() as boolean
+
+	'' backend  bits   builtin   ptr-expr
+	'' -------  -----  --------  -------------------------------------
+	'' gas      32     no        yes
+	'' gas      64     n/a       n/a
+	'' gcc      32     yes       only with "-z valist-is-ptr"
+	'' gcc      64     yes       only with "-z valist-is-ptr" and on win32
+	'' llvm     32     no        yes
+	'' llvm     64     no        ???
+	''
+	'' "-z valist-is-ptr" overides the use of builtins on backend/bits
+	'' that also support pointer expressions, and has no effect otherwise
+
+	select case env.clopt.backend
+	case FB_BACKEND_GCC
+		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+			function = iif( fbGetOption( FB_COMPOPT_VALISTASPTR ), FALSE, TRUE )
+		else
+			function = TRUE
+		end if
+
+	case FB_BACKEND_GAS
+		function = FALSE
+
+	case FB_BACKEND_LLVM
+		function = FALSE
+
+	case else
+		assert( FALSE )
+		function = FALSE
+
+	end select
+	
+end function
