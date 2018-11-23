@@ -103,7 +103,7 @@ SUITE( fbc_tests.functions.va_cva_api )
 		f_test_copy( 10, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 )
 	END_TEST
 
-	sub f_test_list2 cdecl( byval n as integer, args as cva_list )
+	sub f_test_list2 cdecl( byval n as integer, byval args as cva_list )
 		
 		dim as cva_list x = any
 

@@ -1524,6 +1524,13 @@ private function hEmitType _
 	dim as string s
 	dim as integer ptrcount = any
 
+	'' !!! TODO !!!
+	'' this doesn't catch every code path, we can get
+	'' here where dtype has lost the MangleDt modifier
+	if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
+		dtype = typeJoin( dtype, FB_DATATYPE_VA_LIST )
+	end if
+
 	ptrcount = typeGetPtrCnt( dtype )
 	dtype = typeGetDtOnly( dtype )
 

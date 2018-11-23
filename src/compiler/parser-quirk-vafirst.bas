@@ -52,29 +52,36 @@ private function hSolveValistType _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
+	assert( n <> NULL )
+
 	'' solve the special cases before passing the expression on to gcc
+	''
 	'' if using FB_DATATYPE_VOID, it must be a pointer in fbc to give
 	'' it a size, but gcc just expects the expression without any
-	'' indirection, and we just want the value of the pointer.
+	'' indirection, because __builtin_va_list is already a pointer
+	'' type, so we remove one level of indirection and just pass
+	'' the value of the pointer expression.
+	''
+	'' if using FB_DATATYPE_STRUCT, it must be a struct in fbc to
+	'' give it the proper size, but fbc does not support array types.  
+	'' gcc expects a pointer to the struct as if it were an array
+	'' so we need to replace with __builtin_va_list ptr type here.
 
-	if( n ) then
+	if( n->l ) then hSolveValistType( n->l )
+	if( n->r ) then hSolveValistType( n->r )
 
-		hSolveValistType( n->l )
-		hSolveValistType( n->r )
+	if( typeGetMangleDt( n->dtype ) = FB_DATATYPE_VA_LIST ) then
 
-		if( typeGetMangleDt( n->dtype ) = FB_DATATYPE_VA_LIST ) then
+		select case typeGetDtOnly( n->dtype )
+		case FB_DATATYPE_VOID
+			'' cast( __builtin_va_list, *expr )
+			n->dtype = typeJoin( typeDeref( n->dtype ), FB_DATATYPE_VA_LIST )
 
-			select case typeGetDtOnly( n->dtype )
-			case FB_DATATYPE_VOID
-				'' cast( __builtin_va_list, expr )
-				n->dtype = typeJoin( typeDeref( n->dtype ), FB_DATATYPE_VA_LIST )
+		case FB_DATATYPE_STRUCT
+			'' cast( __builtin_va_list, expr )
+			n->dtype = typeJoin( n->dtype, FB_DATATYPE_VA_LIST )
 
-			case FB_DATATYPE_STRUCT
-				'' no need to do anything, just pass on to gcc
-
-			end select
-		end if
-
+		end select
 	end if
 
 	function = n

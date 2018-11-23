@@ -400,6 +400,8 @@ private function cMangleModifier _
 
 	function = FALSE
 
+	assert( dtype = typeGetDtOnly( dtype ) )
+
 	'' cMangleModifier(dtype)
 	'' returns:
 	''   FALSE = modifier given and invalid
