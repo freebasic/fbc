@@ -47,6 +47,87 @@ private function hGetVarArgProcParam _
 
 end function
 
+private function hCheckForValistCompatibleType _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval allow_const as integer _
+	) as integer
+
+	'' have expr?
+	if( expr = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: skip until ')'
+		astDelTree( expr )
+		hSkipUntil( CHAR_RPRNT, TRUE )
+		return FALSE
+	end if
+
+	'' const?
+	if( (astIsConstant( expr ) = TRUE) and (allow_const = FALSE) ) then
+		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
+		'' error recovery: skip until ')'
+		astDelTree( expr )
+		hSkipUntil( CHAR_RPRNT, TRUE )
+		return FALSE
+	end if
+
+	'' cva_list compatible type?
+	select case typeGetDtOnly( astGetDataType( expr ) )
+	case FB_DATATYPE_VOID, FB_DATATYPE_STRUCT
+		'' TODO: maybe can be more selective here
+		'' possibly checking target platform and known
+		'' compatible types
+		return TRUE
+	end select
+
+	'' invalid type
+	errReport( FB_ERRMSG_INVALIDDATATYPES )
+	'' error recovery: skip until ')'
+	hSkipUntil( CHAR_RPRNT, TRUE )
+	astDelTree( expr )
+	return FALSE
+
+end function
+
+private function hCheckLastParameterSymbol _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval vararg_param as FBSYMBOL ptr, _
+		byval vararg_sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+	assert( vararg_sym <> NULL )
+
+	if( expr = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: use the vararg_sym variable
+		return astNewVAR( vararg_sym )
+	end if
+
+	select case astGetClass( expr )
+	case AST_NODECLASS_VAR
+		if( astGetSymbol( expr ) = vararg_sym ) then
+			return expr
+		end if
+
+	'' string or array?
+	case AST_NODECLASS_DEREF, AST_NODECLASS_NIDXARRAY
+		if( astGetClass( expr->l ) = AST_NODECLASS_VAR ) then
+			if( astGetSymbol( expr->l ) = vararg_sym ) then
+				return expr
+			end if
+		end if
+
+	end select
+
+	errReportEx( FB_ERRMSG_EXPECTEDIDENTIFIER, symbGetName( vararg_param ) )
+	'' error recovery: use the vararg variable
+	astDelTree( expr )
+
+	return astNewVAR( vararg_sym )
+
+end function
+
 private function hSolveValistType _
 	( _
 		byval n as ASTNODE ptr _
@@ -151,23 +232,20 @@ function cVALISTFunct _
 
 	expr = cExpression()
 
-	'' expr must be a cva_list data type
-
 	'' no expression
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: skip until ')' and fake a node
 		hSkipUntil( CHAR_RPRNT, TRUE )
 		return astNewCONSTi( 0 )
-/' 
-	'' !!! TODO !!! check data type
-	elseif( astGetDataType( expr ) <> FB_DATATYPE_VA_LIST ) then
+	end if
+
+	if( hCheckForValistCompatibleType( expr, FALSE ) = FALSE ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 		'' error recovery: skip until ')' and fake a node
 		hSkipUntil( CHAR_RPRNT, TRUE )
 		astDelTree( expr )
 		return astNewCONSTi( 0 )
-'/
 	end if
 
 	'' ','
@@ -209,7 +287,6 @@ function cVALISTFunct _
 
 end function
 
-
 '':::::
 ''cVALISTStmt =      CVA_START ('(' expr ',' expr ')')?
 ''                 | CVA_END ('(' expr ')')?
@@ -221,7 +298,6 @@ function cVALISTStmt _
 	) as integer
 
 	dim as ASTNODE ptr expr1, expr2
-	dim as integer dtype
 	dim as FBSYMBOL ptr sym, subtype
 
 	function = FALSE
@@ -247,20 +323,8 @@ function cVALISTStmt _
 		'' list
 		expr1 = cExpression()
 
-		if( expr1 = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			'' error recovery: skip until ')'
-			hSkipUntil( CHAR_RPRNT, TRUE )
+		if( hCheckForValistCompatibleType( expr1, FALSE ) = FALSE ) then
 			return FALSE
-/'
-		'' !!! TODO !!! check data type
-		elseif( astGetDataType( expr1 ) <> FB_DATATYPE_VA_LIST ) then
-			errReport( FB_ERRMSG_INVALIDDATATYPES )
-			'' error recovery: skip until ')'
-			hSkipUntil( CHAR_RPRNT, TRUE )
-			astDelTree( expr1 )
-			return FALSE
-'/
 		end if
 
 		'' ','
@@ -270,22 +334,10 @@ function cVALISTStmt _
 			lexSkipToken( )
 		end if
 
-		'' last_arg
-		expr2 = cExpression()
+		'' last parameter before var-args?
+		expr2 = cVarOrDeref( FB_VAREXPROPT_NOARRAYCHECK )
 
-		if( expr2 = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-/'
-		'' !!! TODO !!! check data type
-
-		This kind of check won't work for strings
-
-		'' variable name must be last argument before the '...'
-		elseif( astGetSymbol( expr2 ) <> vararg_sym ) then
-			errReport( FB_ERRMSG_SYNTAXERROR )
-'/
-
-		end if
+		expr2 = hCheckLastParameterSymbol( expr2, vararg_param, vararg_sym )
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
@@ -322,9 +374,12 @@ function cVALISTStmt _
 			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 		end if
 
+		'' list
 		expr1 = cExpression()
 
-		'' !!! TODO !!! check data type
+		if( hCheckForValistCompatibleType( expr1, FALSE ) = FALSE ) then
+			return FALSE
+		end if
 
 		expr2 = NULL
 
@@ -353,9 +408,12 @@ function cVALISTStmt _
 			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 		end if
 
+		'' list
 		expr1 = cExpression()
 
-		'' !!! TODO !!! check data type
+		if( hCheckForValistCompatibleType( expr1, FALSE ) = FALSE ) then
+			return FALSE
+		end if
 
 		'' ','
 		if( lexGetToken( ) <> CHAR_COMMA ) then
@@ -366,7 +424,9 @@ function cVALISTStmt _
 
 		expr2 = cExpression()
 
-		'' !!! TODO !!! check data type
+		if( hCheckForValistCompatibleType( expr2, TRUE ) = FALSE ) then
+			return FALSE
+		end if
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then

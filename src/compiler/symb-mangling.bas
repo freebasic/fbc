@@ -393,6 +393,8 @@ function hMangleBuiltInType _
 	if( typeHasMangleDt( dtype ) ) then
 		if( typeGetDtOnly( dtype ) = FB_DATATYPE_STRUCT ) then
 			if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
+				'' !!! TODO !!! seems like this should be handled by
+				'' UDT name mangling, but somehow we get here anyway
 				return @"P13__va_list_tag"
 			end if
 		end if
