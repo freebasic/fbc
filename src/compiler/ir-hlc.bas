@@ -649,6 +649,15 @@ private function hGetUdtTag( byval sym as FBSYMBOL ptr ) as string
 end function
 
 private function hGetUdtId( byval sym as FBSYMBOL ptr ) as string
+
+	'' HACK: gcc's __builtin_va_list might mangle to __va_list_tag
+	if( sym->id.alias <> NULL ) then
+		if( *sym->id.alias = "__va_list_tag" ) then
+			function = *sym->id.alias
+			exit function
+		end if
+	endif
+
 	'' Prefixing the mangled name with a $ because it may start with a
 	'' number which isn't allowed in C.
 	function = "$" + *symbGetMangledName( sym )
@@ -1524,11 +1533,14 @@ private function hEmitType _
 	dim as string s
 	dim as integer ptrcount = any
 
-	'' !!! TODO !!!
-	'' this doesn't catch every code path, we can get
-	'' here where dtype has lost the MangleDt modifier
+	'' replace type with __builtin_va_list if
+	'' the mangle modifier was given
 	if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
 		dtype = typeJoin( dtype, FB_DATATYPE_VA_LIST )
+	elseif( subtype <> NULL ) then
+		if( typeGetMangleDt( symbGetFullType( subtype ) ) = FB_DATATYPE_VA_LIST ) then
+			dtype = typeJoin( dtype, FB_DATATYPE_VA_LIST )
+		end if
 	end if
 
 	ptrcount = typeGetPtrCnt( dtype )

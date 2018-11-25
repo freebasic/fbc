@@ -415,7 +415,7 @@ sub symbKeywordTypeInit( )
 	''			type cva_list as any alias "__builtin_va_list" ptr
 	''		#else
 	''			#if defined(__FB_64BIT__)
-	''				type __va_list_tag field = 1
+	''				type __va_list_tag alias "__va_list_tag"
 	''					as ulong gp_offset
 	''					as ulong fp_offset
 	''					as any ptr overflow_arg_area

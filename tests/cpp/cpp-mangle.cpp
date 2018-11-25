@@ -193,7 +193,7 @@ namespace cpp_mangle
 		return **a;
 	}
 
-	/* byval const, pointer, reference */
+	/* byref const, pointer, reference */
 
 	double cpp_byref_const_double( double const& a )
 	{
@@ -247,9 +247,18 @@ namespace cpp_mangle
 		return n;
 	}
 
-	int cpp_variadic_list( int n, __builtin_va_list args )
+	int cpp_variadic_list_byval( int n, __builtin_va_list args )
 	{
 		return n;
 	}
 
+	int cpp_variadic_list_byref( int n, __builtin_va_list &args )
+	{
+		return n;
+	}
+
+	int cpp_variadic_list_ptr( int n, __builtin_va_list *args )
+	{
+		return n;
+	}
 }

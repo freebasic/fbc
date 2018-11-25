@@ -391,13 +391,6 @@ function hMangleBuiltInType _
 	end if
 
 	if( typeHasMangleDt( dtype ) ) then
-		if( typeGetDtOnly( dtype ) = FB_DATATYPE_STRUCT ) then
-			if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
-				'' !!! TODO !!! seems like this should be handled by
-				'' UDT name mangling, but somehow we get here anyway
-				return @"P13__va_list_tag"
-			end if
-		end if
 		dtype = typeGetMangleDt( dtype )
 	end if
 
@@ -504,6 +497,24 @@ sub symbMangleType _
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
+	end if
+
+	'' struct with __builtin_va_list mangle modifier?
+	'' use the stuct name instead
+	if( typeHasMangleDt( dtype ) ) then
+		if( typeGetDtOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+			if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
+				mangled += "P"
+
+				'' !!! TODO !!!, if the type was passed as byval ptr or byref
+				'' need to mangle in "A1_" to indicate the array type
+				'' if( ??? ) then
+				''	mangled += "A1_"
+				'' end if
+
+				dtype = typeSetMangleDt( dtype, 0 )
+			end if
+		end if
 	end if
 
 	''
