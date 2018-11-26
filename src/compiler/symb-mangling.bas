@@ -507,7 +507,10 @@ sub symbMangleType _
 				mangled += "P"
 
 				'' !!! TODO !!!, if the type was passed as byval ptr or byref
-				'' need to mangle in "A1_" to indicate the array type
+				'' need to mangle in "A1_" to indicate the array type, but
+				'' not on aarch64, __va_list is a plain struct, it doesn't
+				'' need the array type specifier.
+
 				'' if( ??? ) then
 				''	mangled += "A1_"
 				'' end if

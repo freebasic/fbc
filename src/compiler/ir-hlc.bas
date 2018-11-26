@@ -650,12 +650,13 @@ end function
 
 private function hGetUdtId( byval sym as FBSYMBOL ptr ) as string
 
-	'' HACK: gcc's __builtin_va_list might mangle to __va_list_tag
+	'' HACK: gcc's __builtin_va_list needs an exact name
 	if( sym->id.alias <> NULL ) then
-		if( *sym->id.alias = "__va_list_tag" ) then
+		select case *sym->id.alias
+		case "__va_list_tag", "__va_list"
 			function = *sym->id.alias
 			exit function
-		end if
+		end select
 	endif
 
 	'' Prefixing the mangled name with a $ because it may start with a
@@ -2330,7 +2331,6 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 		hExprFlush( n->l, TRUE )
 
 	case EXPRCLASS_MACRO
-
 		select case( n->op )
 		case AST_OP_VA_ARG
 			'' cva_arg(l, type) := __builtin_va_arg(l, type)
@@ -2341,7 +2341,6 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 			ctx.exprtext += ")"
 
 		case AST_OP_VA_START
-
 			'' cva_start(l, r) := __builtin_va_start(l, r)
 			ctx.exprtext += "__builtin_va_start( "
 			hExprFlush( n->l, TRUE )
@@ -2350,13 +2349,13 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 			ctx.exprtext += ")"
 			
 		case AST_OP_VA_END
-			'' cva_start(l) := __builtin_va_end(l)
+			'' cva_end(l) := __builtin_va_end(l)
 			ctx.exprtext += "__builtin_va_end( "
 			hExprFlush( n->l, TRUE )
 			ctx.exprtext += ")"
 
 		case AST_OP_VA_COPY
-			'' cva_start(l, r) := __builtin_va_copy(l, r)
+			'' cva_copy(l, r) := __builtin_va_copy(l, r)
 			ctx.exprtext += "__builtin_va_copy( "
 			hExprFlush( n->l, TRUE )
 			ctx.exprtext += ", "

@@ -404,17 +404,27 @@ end sub
 '':::::
 sub symbKeywordTypeInit( )
 
-	dim as FBSYMBOL ptr sym = any
+	dim as FBSYMBOL ptr s = any
 	dim pid as zstring ptr = any 
 	dim dtype as integer = any
+
 
 	'' add the default cva_list type
 	''
 	''	#if (__FB_BACKEND__ = "gcc")
-	''		#if defined(__FB_WIN32__)
-	''			type cva_list as any alias "__builtin_va_list" ptr
-	''		#else
-	''			#if defined(__FB_64BIT__)
+	''		#if defined( __FB_64BIT__ ) 
+	''			#if defined( __FB_ARM__ )
+	''				type __va_list alias "__va_list"
+	''					as any ptr __stack
+	''					as any ptr __gr_top
+	''					as any ptr __vr_top
+	''					as long __gr_offs
+	''					as long __vr_offs
+	''				end type
+	''				type cva_list as __va_list alias "__builtin_va_list"
+	''			#elseif defined( __FB_WIN32__ )
+	''				type cva_list as any alias "__builtin_va_list" ptr
+	''			#else
 	''				type __va_list_tag alias "__va_list_tag"
 	''					as ulong gp_offset
 	''					as ulong fp_offset
@@ -422,9 +432,9 @@ sub symbKeywordTypeInit( )
 	''					as any ptr reg_save_area
 	''				end type  
 	''				type cva_list as __va_list_tag alias "__builtin_va_list"
-	''			#else
-	''				type cva_list as any alias "__builtin_va_list" ptr
-	''			#endif
+	''			#endif	
+	''		#else
+	''			type cva_list as any alias "__builtin_va_list" ptr
 	''		#endif
 	''	#else
 	''		type cva_list as any alias "char" ptr
@@ -438,66 +448,22 @@ sub symbKeywordTypeInit( )
 		pid = @"cva_list"
 	end if
 
-	enum CVA_LIST_TYPEDEF
-		CVA_LIST_POINTER
-		CVA_LIST_BUILTIN_POINTER
-		CVA_LIST_BUILTIN_C_STRUCT
-	end enum
+	'' add the default cva_list type
 
-	dim typedef as CVA_LIST_TYPEDEF = CVA_LIST_POINTER
-
-	select case env.clopt.backend
-	case FB_BACKEND_GCC
-
-		'' on gcc backend we prefer that the cva_list type
-		'' map to gcc's __builtin_va_list, which is a different
-		'' type depending on platform. We can override this with 
-		'' -z valist-as-ptr.  to force use of pointer expressions
-
-		if( fbGetOption( FB_COMPOPT_VALISTASPTR ) ) then
-			typedef = CVA_LIST_POINTER
-		else
-
-			select case env.clopt.target
-			case FB_COMPTARGET_WIN32
-				typedef = CVA_LIST_BUILTIN_POINTER
-			case else
-				if( fbIs64bit() ) then
-					typedef = CVA_LIST_BUILTIN_C_STRUCT
-				else
-					typedef = CVA_LIST_BUILTIN_POINTER
-				end if
-			end select
-		end if
-
-	case FB_BACKEND_GAS
-		typedef = CVA_LIST_POINTER
-
-	case FB_BACKEND_LLVM
-		'' ???
-		typedef = CVA_LIST_POINTER
-
-	case else
-		typedef = CVA_LIST_POINTER
-
-	end select
-
-	select case typedef
-	case CVA_LIST_BUILTIN_POINTER
+	select case fbGetBackendValistType()
+	case FB_CVA_LIST_BUILTIN_POINTER
 		'' cva_list as any alias "__builtin_va_list" ptr (built-in pointer expression)
 		dtype = typeSetMangleDt( typeAddrOf( FB_DATATYPE_VOID ), FB_DATATYPE_VA_LIST )
-		sym = symbAddTypedef( pid, dtype, NULL, typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) ) )
+		symbAddTypedef( pid, dtype, NULL, typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) ) )
 
-	case CVA_LIST_BUILTIN_C_STRUCT
+	case FB_CVA_LIST_BUILTIN_C_STD
 		'' cva_list is __builtin_va_list from C definition:
-		''	typedef struct {
+		''	typedef struct __va_list_tag {
 		''		unsigned int gp_offset;
 		''		unsigned int fp_offset;
 		''		void *overflow_arg_area;
 		''		void *reg_save_area;
 		''	} va_list[1];
-
-		dim s as FBSYMBOL ptr = any
 
 		s = symbStructBegin( NULL, NULL, NULL, "__va_list_tag", "__va_list_tag", FALSE, 0, FALSE, 0, 0 )
 
@@ -507,10 +473,10 @@ sub symbKeywordTypeInit( )
 		'' fp_offset as ulong
 		symbAddField( s, "fp_offset", 0, dTB(), FB_DATATYPE_ULONG, NULL, 0, 0, 0 )
 
-		'' overflow_arg_area as integer
+		'' overflow_arg_area as any ptr
 		symbAddField( s, "overflow_arg_area", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
-		'' reg_save_area as integer
+		'' reg_save_area as any ptr
 		symbAddField( s, "reg_save_area", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
 
 		'' end type
@@ -519,11 +485,44 @@ sub symbKeywordTypeInit( )
 		'' type cva_list as __va_list_tag alias "__builtin_va_list"
 		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
 
+	case FB_CVA_LIST_BUILTIN_AARCH64
+		'' cva_list is from ARM64 definition:
+		''	typdef struct __va_list {
+		''		void *__stack; 
+		''		void *__gr_top; 
+		''		void *__vr_top; 
+		''		int   __gr_offs; 
+		''		int   __vr_offs; 
+		''	} va_list;
+
+		s = symbStructBegin( NULL, NULL, NULL, "__va_list", "__va_list", FALSE, 0, FALSE, 0, 0 )
+
+		'' __stack as any ptr
+		symbAddField( s, "__stack", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+		'' __gr_top as any ptr
+		symbAddField( s, "__gr_top", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+		'' __vr_top as any ptr
+		symbAddField( s, "__vr_top", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+		'' __gr_offs as long
+		symbAddField( s, "__gr_offs", 0, dTB(), FB_DATATYPE_LONG, NULL, 0, 0, 0 )
+
+		'' __vr_offs as long
+		symbAddField( s, "__vr_offs", 0, dTB(), FB_DATATYPE_LONG, NULL, 0, 0, 0 )
+
+		'' end type
+		symbStructEnd( s )
+
+		'' type cva_list as __va_list alias "__builtin_va_list"
+		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
+
 	case else
-		'' CVA_LIST_POINTER
+		'' FB_CVA_LIST_POINTER
 		'' cva_list as any alias "char" ptr (pointer expression)
 		dtype = typeSetMangleDt( typeAddrOf( FB_DATATYPE_VOID ), FB_DATATYPE_CHAR )
-		sym = symbAddTypedef( pid, dtype, NULL, typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) ) )
+		symbAddTypedef( pid, dtype, NULL, typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) ) )
 
 	end select
 

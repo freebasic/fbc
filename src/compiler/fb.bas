@@ -1452,38 +1452,68 @@ function fbGetLangId _
 end function
 
 '':::::
-function fbUseGccValistBuiltins() as boolean
+function fbGetBackendValistType _	
+	( _
+	) as FB_CVA_LIST_TYPEDEF
 
-	'' backend  bits   builtin   ptr-expr
-	'' -------  -----  --------  -------------------------------------
-	'' gas      32     no        yes
-	'' gas      64     n/a       n/a
-	'' gcc      32     yes       only with "-z valist-is-ptr"
-	'' gcc      64     yes       only with "-z valist-is-ptr" and on win32
-	'' llvm     32     no        yes
-	'' llvm     64     no        ???
-	''
-	'' "-z valist-is-ptr" overides the use of builtins on backend/bits
-	'' that also support pointer expressions, and has no effect otherwise
+	dim typedef as FB_CVA_LIST_TYPEDEF = FB_CVA_LIST_POINTER
 
 	select case env.clopt.backend
 	case FB_BACKEND_GCC
-		if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
-			function = iif( fbGetOption( FB_COMPOPT_VALISTASPTR ), FALSE, TRUE )
-		else
-			function = TRUE
-		end if
+
+		select case( fbGetCpuFamily( ) )
+		case FB_CPUFAMILY_X86
+			typedef = FB_CVA_LIST_BUILTIN_POINTER
+
+		case FB_CPUFAMILY_X86_64
+			select case env.clopt.target
+			case FB_COMPTARGET_WIN32
+				typedef = FB_CVA_LIST_BUILTIN_POINTER
+			case else
+				if( fbIs64bit() ) then
+					typedef = FB_CVA_LIST_BUILTIN_C_STD
+				else
+					typedef = FB_CVA_LIST_BUILTIN_POINTER
+				end if
+			end select
+
+		case FB_CPUFAMILY_ARM
+			if( fbGetOption( FB_COMPOPT_VALISTASPTR ) ) then
+				typedef = FB_CVA_LIST_POINTER
+			else
+				typedef = FB_CVA_LIST_BUILTIN_POINTER
+			end if
+
+		case FB_CPUFAMILY_AARCH64
+			typedef = FB_CVA_LIST_BUILTIN_AARCH64
+
+		end select
 
 	case FB_BACKEND_GAS
-		function = FALSE
+		typedef = FB_CVA_LIST_POINTER
 
 	case FB_BACKEND_LLVM
-		function = FALSE
+		'' ???
+		typedef = FB_CVA_LIST_POINTER
 
 	case else
-		assert( FALSE )
-		function = FALSE
+		typedef = FB_CVA_LIST_POINTER
 
 	end select
-	
+
+	'' on gcc backend we prefer that the cva_list type
+	'' map to gcc's __builtin_va_list, which is a different
+	'' type depending on platform. If the combination of
+	'' target and arch support it, we can override this with 
+	'' -z valist-as-ptr to force use of pointer expressions
+	'' instead of builtins even though gcc is backend.
+
+	if( typedef = FB_CVA_LIST_BUILTIN_POINTER ) then
+		if( fbGetOption( FB_COMPOPT_VALISTASPTR ) ) then
+			typedef = FB_CVA_LIST_POINTER
+		endif
+	end if
+
+	function = typedef
+
 end function

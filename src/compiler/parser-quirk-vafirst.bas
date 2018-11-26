@@ -53,21 +53,15 @@ private function hCheckForValistCompatibleType _
 		byval allow_const as integer _
 	) as integer
 
-	'' have expr?
+	'' no expression?
 	if( expr = NULL ) then
-		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-		'' error recovery: skip until ')'
-		astDelTree( expr )
-		hSkipUntil( CHAR_RPRNT, TRUE )
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		return FALSE
 	end if
 
 	'' const?
-	if( (astIsConstant( expr ) = TRUE) and (allow_const = FALSE) ) then
+	if( astIsConstant( expr ) and (allow_const = FALSE) ) then
 		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED )
-		'' error recovery: skip until ')'
-		astDelTree( expr )
-		hSkipUntil( CHAR_RPRNT, TRUE )
 		return FALSE
 	end if
 
@@ -82,9 +76,6 @@ private function hCheckForValistCompatibleType _
 
 	'' invalid type
 	errReport( FB_ERRMSG_INVALIDDATATYPES )
-	'' error recovery: skip until ')'
-	hSkipUntil( CHAR_RPRNT, TRUE )
-	astDelTree( expr )
 	return FALSE
 
 end function
@@ -128,10 +119,10 @@ private function hCheckLastParameterSymbol _
 
 end function
 
-private function hSolveValistType _
+private sub hSolveValistType _
 	( _
 		byval n as ASTNODE ptr _
-	) as ASTNODE ptr
+	)
 
 	assert( n <> NULL )
 
@@ -144,9 +135,10 @@ private function hSolveValistType _
 	'' the value of the pointer expression.
 	''
 	'' if using FB_DATATYPE_STRUCT, it must be a struct in fbc to
-	'' give it the proper size, but fbc does not support array types.  
-	'' gcc expects a pointer to the struct as if it were an array
-	'' so we need to replace with __builtin_va_list ptr type here.
+	'' give it the proper size, but fbc does not support array 
+	'' typedefs as in C.  gcc expects a pointer to the struct as 
+	'' if it were an array so we need to replace with 
+	'' __builtin_va_list type here and let the backend handle it.
 
 	if( n->l ) then hSolveValistType( n->l )
 	if( n->r ) then hSolveValistType( n->r )
@@ -165,9 +157,7 @@ private function hSolveValistType _
 		end select
 	end if
 
-	function = n
-
-end function
+end sub
 
 '':::::
 ''cVAFunct =     VA_FIRST ('(' ')')? .
@@ -207,7 +197,7 @@ function cVAFunct() as ASTNODE ptr
 end function
 
 '':::::
-''cVALISTFunct =     CVA_ARG ('(' ')')? .
+''cVALISTFunct =     CVA_ARG ('(' expr ',' datatype ')')?
 ''
 function cVALISTFunct _
 	( _
@@ -230,18 +220,10 @@ function cVALISTFunct _
 		errReport( FB_ERRMSG_EXPECTEDLPRNT )
 	end if
 
-	expr = cExpression()
-
-	'' no expression
-	if( expr = NULL ) then
-		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-		'' error recovery: skip until ')' and fake a node
-		hSkipUntil( CHAR_RPRNT, TRUE )
-		return astNewCONSTi( 0 )
-	end if
+	'' cva_list variable?
+	expr = cVarOrDeref()
 
 	if( hCheckForValistCompatibleType( expr, FALSE ) = FALSE ) then
-		errReport( FB_ERRMSG_INVALIDDATATYPES )
 		'' error recovery: skip until ')' and fake a node
 		hSkipUntil( CHAR_RPRNT, TRUE )
 		astDelTree( expr )
@@ -255,8 +237,13 @@ function cVALISTFunct _
 		lexSkipToken( )
 	end if
 
+	'' datatype?
 	if( cSymbolType( dtype, subtype ) = FALSE ) then
-		return NULL
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+		'' error recovery: skip until ')' and fake a node
+		hSkipUntil( CHAR_RPRNT, TRUE )
+		astDelTree( expr )
+		return astNewCONSTi( 0 )
 	end if
 
 	'' ')'
@@ -266,13 +253,17 @@ function cVALISTFunct _
 
 	if( fbUseGccValistBuiltins() ) then
 		'' delegate to gcc backend to solve "result = __builtin_va_arg( ap, type )"
-		function = astNewMACRO( AST_OP_VA_ARG, hSolveValistType( expr ), NULL, dtype, subtype )
+		hSolveValistType( expr )
+		function = astNewMACRO( AST_OP_VA_ARG, expr, NULL, dtype, subtype )
 
 	else
 		'' pointer expression: modify expr variable & return value of expr variable before modification
+		'' based on:
+		'' #define __va_argsiz(t) (((sizeof(t) + sizeof(int) - 1) / sizeof(int)) * sizeof(int))
+		'' #define va_arg(ap, t) (((ap) = (ap) + __va_argsiz(t)), *((t*) (void*) ((ap) - __va_argsiz(t))))
 
 		'' size of parameter on the stack depends on stack alignment
-		dim lgt as integer = (symbCalcLen( dtype, subtype ) + env.pointersize - 1 and -env.pointersize)
+		dim lgt as longint = (symbCalcLen( dtype, subtype ) + env.pointersize - 1 and -env.pointersize)
 
 		'' cptr( any ptr, expr ) + lgt	
 		var expr1 = astNewBOP( AST_OP_ADD, astCloneTree( expr ), astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
@@ -288,7 +279,7 @@ function cVALISTFunct _
 end function
 
 '':::::
-''cVALISTStmt =      CVA_START ('(' expr ',' expr ')')?
+''cVALISTStmt =      CVA_START ('(' expr ',' parameter ')')?
 ''                 | CVA_END ('(' expr ')')?
 ''                 | CVA_COPY ('(' expr ',' expr ')')?
 ''
@@ -307,7 +298,6 @@ function cVALISTStmt _
 	select case as const tk
 	case FB_TK_CVA_START
 
-		dim as FBSYMBOL ptr vararg_proc = any, vararg_param = any, vararg_sym = any
 		if( hGetVarArgProcParam( vararg_proc, vararg_param, vararg_sym ) = FALSE ) then
 			exit function
 		end if
@@ -320,10 +310,13 @@ function cVALISTStmt _
 			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 		end if
 
-		'' list
-		expr1 = cExpression()
+		'' cva_list variable?
+		expr1 = cVarOrDeref( )
 
 		if( hCheckForValistCompatibleType( expr1, FALSE ) = FALSE ) then
+			'' error recovery: skip until ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
+			astDelTree( expr1 )
 			return FALSE
 		end if
 
@@ -336,7 +329,6 @@ function cVALISTStmt _
 
 		'' last parameter before var-args?
 		expr2 = cVarOrDeref( FB_VAREXPROPT_NOARRAYCHECK )
-
 		expr2 = hCheckLastParameterSymbol( expr2, vararg_param, vararg_sym )
 
 		'' ')'
@@ -346,9 +338,14 @@ function cVALISTStmt _
 
 		if( fbUseGccValistBuiltins() ) then
 			'' delegate to gcc backend to solve "__builtin_va_start( ap, param )"
-			astAdd( astNewMACRO( AST_OP_VA_START, hSolveValistType( expr1 ), expr2, FB_DATATYPE_INVALID, NULL ) )
+			hSolveValistType( expr1 )
+			astAdd( astNewMACRO( AST_OP_VA_START, expr1, expr2, FB_DATATYPE_INVALID, NULL ) )
 
 		else
+			'' pointer expression: first variable argument
+			'' based on:
+			'' #define va_start(ap, pN) ((ap) = ((va_list) (&pN) + __va_argsiz(pN)))
+
 			'' @param
 			var expr = astNewADDROF( astNewVAR( vararg_sym ) )
 
@@ -374,14 +371,15 @@ function cVALISTStmt _
 			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 		end if
 
-		'' list
-		expr1 = cExpression()
+		'' cva_list variable?
+		expr1 = cVarOrDeref()
 
 		if( hCheckForValistCompatibleType( expr1, FALSE ) = FALSE ) then
+			'' error recovery: skip until ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
+			astDelTree( expr1 )
 			return FALSE
 		end if
-
-		expr2 = NULL
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
@@ -390,10 +388,13 @@ function cVALISTStmt _
 
 		if( fbUseGccValistBuiltins() ) then
 			'' delegate to gcc backend to solve "__builtin_va_end( ap )"
-			astAdd( astNewMACRO( AST_OP_VA_END, hSolveValistType( expr1 ), expr2, FB_DATATYPE_INVALID, NULL ) )
+			hSolveValistType( expr1 )
+			astAdd( astNewMACRO( AST_OP_VA_END, expr1, NULL, FB_DATATYPE_INVALID, NULL ) )
 
 		else
 			'' pointer expression: no-op
+			'' based on:
+			'' #define va_end(ap)	((void)0)
 
 		end if
 		function = TRUE
@@ -408,10 +409,13 @@ function cVALISTStmt _
 			errReport( FB_ERRMSG_EXPECTEDLPRNT )
 		end if
 
-		'' list
-		expr1 = cExpression()
+		'' destination cva_list variable?
+		expr1 = cVarOrDeref()
 
 		if( hCheckForValistCompatibleType( expr1, FALSE ) = FALSE ) then
+			'' error recovery: skip until ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
+			astDelTree( expr1 )
 			return FALSE
 		end if
 
@@ -422,9 +426,14 @@ function cVALISTStmt _
 			lexSkipToken( )
 		end if
 
-		expr2 = cExpression()
+		'' source cva_list variable?
+		expr2 = cVarOrDeref()
 
 		if( hCheckForValistCompatibleType( expr2, TRUE ) = FALSE ) then
+			'' error recovery: skip until ')'
+			hSkipUntil( CHAR_RPRNT, TRUE )
+			astDelTree( expr1 )
+			astDelTree( expr2 )
 			return FALSE
 		end if
 
@@ -435,10 +444,15 @@ function cVALISTStmt _
 
 		if( fbUseGccValistBuiltins() ) then
 			'' delegate to gcc backend to solve "__builtin_va_copy( dst, src )"
-			astAdd( astNewMACRO( AST_OP_VA_COPY, hSolveValistType( expr1 ), hSolveValistType( expr2 ), FB_DATATYPE_INVALID, NULL ) )
+			hSolveValistType( expr1 )
+			hSolveValistType( expr2 )
+			astAdd( astNewMACRO( AST_OP_VA_COPY, expr1, expr2, FB_DATATYPE_INVALID, NULL ) )
 
 		else
 			'' pointer expression: assignment
+			'' based on:
+			'' #define va_copy(ap, src) ((dest) = (src))
+
 			astAdd( astNewASSIGN( expr1, expr2 ) )
 
 		end if

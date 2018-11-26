@@ -72,7 +72,6 @@ function astLoadMACRO _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr o = any
 	dim op as AST_OP
     dim as IRVREG ptr v1 = any, v2 = any, vr = any
 

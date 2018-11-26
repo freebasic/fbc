@@ -466,9 +466,16 @@ declare function fbGetLangId _
 		byval txt as zstring ptr _
 	) as FB_LANG
 
-declare function fbUseGccValistBuiltins _
-	( _
-	) as boolean
+enum FB_CVA_LIST_TYPEDEF
+	FB_CVA_LIST_POINTER
+	FB_CVA_LIST_BUILTIN_POINTER
+	FB_CVA_LIST_BUILTIN_C_STD
+	FB_CVA_LIST_BUILTIN_AARCH64
+end enum
+
+declare function fbGetBackendValistType () as FB_CVA_LIST_TYPEDEF
+
+#define fbUseGccValistBuiltins() (fbGetBackendValistType() <> FB_CVA_LIST_POINTER)
 
 ''
 '' macros
