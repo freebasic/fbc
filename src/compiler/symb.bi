@@ -1602,6 +1602,12 @@ declare function symbIsString _
 		byval dtype as integer _
 	) as integer
 
+declare function symbIsBuiltinValist _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
 declare function symbGetVarHasCtor _
 	( _
 		byval s as FBSYMBOL ptr _

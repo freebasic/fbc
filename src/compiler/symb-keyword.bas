@@ -448,7 +448,7 @@ sub symbKeywordTypeInit( )
 		pid = @"cva_list"
 	end if
 
-	'' add the default cva_list type
+	'' add the default cva_list type based on target options
 
 	select case fbGetBackendValistType()
 	case FB_CVA_LIST_BUILTIN_POINTER

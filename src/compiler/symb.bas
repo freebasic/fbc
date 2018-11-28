@@ -1583,6 +1583,34 @@ function symbIsString _
 
 end function
 
+'':::::
+function symbIsBuiltinValist _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
+
+	function = FALSE
+
+	if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
+		function = TRUE
+	elseif( subtype ) then
+		if( typeGetMangleDt( symbGetFullType( subtype ) ) = FB_DATATYPE_VA_LIST ) then
+			function = TRUE
+		else
+			select case typeGetDtOnly( symbGetFullType( subtype ) )
+			case FB_DATATYPE_STRUCT
+				if( subtype->id.alias ) then
+					select case *subtype->id.alias
+					case "__va_list", "__va_list_tag"
+						function = TRUE
+					end select
+				end if
+			end select
+		end if
+	end if
+end function
+
 function symbTypeToStr _
 	( _
 		byval dtype as integer, _

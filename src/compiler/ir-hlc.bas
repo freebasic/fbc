@@ -1537,10 +1537,17 @@ private function hEmitType _
 	'' replace type with __builtin_va_list if
 	'' the mangle modifier was given
 	if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
-		dtype = typeJoin( dtype, FB_DATATYPE_VA_LIST )
+		'' !!! TODO !!!
+		'' prefer that this check is based on dtype/subtype instead
+		'' of target options
+		if( fbGetBackendValistType() = FB_CVA_LIST_BUILTIN_POINTER ) then
+			dtype = typeJoinDtOnly( typeDeref(dtype), FB_DATATYPE_VA_LIST )
+		else
+			dtype = typeJoinDtOnly( dtype, FB_DATATYPE_VA_LIST )
+		end if
 	elseif( subtype <> NULL ) then
 		if( typeGetMangleDt( symbGetFullType( subtype ) ) = FB_DATATYPE_VA_LIST ) then
-			dtype = typeJoin( dtype, FB_DATATYPE_VA_LIST )
+			dtype = typeJoinDtOnly( dtype, FB_DATATYPE_VA_LIST )
 		end if
 	end if
 
@@ -2627,11 +2634,13 @@ private function exprNewVREG _
 			'' any structs involved? (note: FBSTRINGs are structs in the C code too!)
 			select case( typeGet( vreg->dtype ) )
 			case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
-				do_deref = TRUE
+				'' !!! TODO !!! replace this with a faster check
+				do_deref or= not symbIsBuiltinValist( symbGetFullType( vreg->sym ), symbGetSubType( vreg->sym ) )
 			case else
 				select case( typeGet( symdtype ) )
 				case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
-					do_deref = TRUE
+					'' !!! TODO !!! replace this with a faster check
+					do_deref or= not symbIsBuiltinValist( symbGetFullType( vreg->sym ), symbGetSubType( vreg->sym ) )
 				end select
 			end select
 		end if

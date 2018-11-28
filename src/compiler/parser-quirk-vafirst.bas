@@ -137,7 +137,7 @@ private sub hSolveValistType _
 	'' if using FB_DATATYPE_STRUCT, it must be a struct in fbc to
 	'' give it the proper size, but fbc does not support array 
 	'' typedefs as in C.  gcc expects a pointer to the struct as 
-	'' if it were an array so we need to replace with 
+	'' if it were an array so we need to replace with array or non-array
 	'' __builtin_va_list type here and let the backend handle it.
 
 	if( n->l ) then hSolveValistType( n->l )
@@ -148,11 +148,22 @@ private sub hSolveValistType _
 		select case typeGetDtOnly( n->dtype )
 		case FB_DATATYPE_VOID
 			'' cast( __builtin_va_list, *expr )
-			n->dtype = typeJoin( typeDeref( n->dtype ), FB_DATATYPE_VA_LIST )
+			n->dtype = typeJoinDtOnly( typeDeref( n->dtype ) , FB_DATATYPE_VA_LIST )
 
 		case FB_DATATYPE_STRUCT
-			'' cast( __builtin_va_list, expr )
-			n->dtype = typeJoin( n->dtype, FB_DATATYPE_VA_LIST )
+			'' !!! TODO !!!, would prefer that this check is based on the
+			'' dtype/subtype iteself rather than the target options
+
+			if( fbGetBackendValistType() = FB_CVA_LIST_BUILTIN_C_STD ) then
+				'' va_list[1] gets passed as a pointer
+				'' *cast( __builtin_va_list ptr, @expr )
+				n = astNewDeref( n, typeAddrOf( typeJoinDtOnly( n->dtype, FB_DATATYPE_VA_LIST ) ), astGetSubType( n ) )
+			else
+
+				'' cast( __builtin_va_list, expr )
+				n->dtype = typeJoinDtOnly( n->dtype, FB_DATATYPE_VA_LIST )
+
+			end if
 
 		end select
 	end if
