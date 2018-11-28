@@ -1332,6 +1332,7 @@ declare sub astSetType _
 declare function astSizeOf( byval n as ASTNODE ptr, byref is_fixlenstr as integer = FALSE ) as longint
 declare function astIsAccessToLocal( byval expr as ASTNODE ptr ) as integer
 declare function astIsRelationalBop( byval n as ASTNODE ptr ) as integer
+declare function astIsBuiltinValistCarray( byval n as ASTNODE ptr ) as integer
 
 declare function astGetOFFSETChildOfs( byval l as ASTNODE ptr ) as longint
 

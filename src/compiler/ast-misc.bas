@@ -1281,3 +1281,27 @@ function astIsRelationalBop( byval n as ASTNODE ptr ) as integer
 		function = astOpIsRelational( n->op.op )
 	end if
 end function
+
+function astIsBuiltinValistCarray( byval n as ASTNODE ptr ) as integer
+	function = FALSE
+
+	assert( n <> NULL )
+
+	var subtype = astGetSubtype( n )
+
+	'' !!! TODO !!!
+	'' replace this with a faster check
+
+	if( subtype ) then
+		select case typeGetDtOnly( symbGetFullType( subtype ) )
+		case FB_DATATYPE_STRUCT
+			if( subtype->id.alias ) then
+				select case *subtype->id.alias
+				case "__va_list", "__va_list_tag"
+					function = TRUE
+				end select
+			end if
+		end select
+	end if
+
+end function
