@@ -1470,19 +1470,11 @@ function fbGetBackendValistType _
 			case FB_COMPTARGET_WIN32
 				typedef = FB_CVA_LIST_BUILTIN_POINTER
 			case else
-				if( fbIs64bit() ) then
-					typedef = FB_CVA_LIST_BUILTIN_C_STD
-				else
-					typedef = FB_CVA_LIST_BUILTIN_POINTER
-				end if
+				typedef = FB_CVA_LIST_BUILTIN_C_STD
 			end select
 
 		case FB_CPUFAMILY_ARM
-			if( fbGetOption( FB_COMPOPT_VALISTASPTR ) ) then
-				typedef = FB_CVA_LIST_POINTER
-			else
-				typedef = FB_CVA_LIST_BUILTIN_POINTER
-			end if
+			typedef = FB_CVA_LIST_BUILTIN_POINTER
 
 		case FB_CPUFAMILY_AARCH64
 			typedef = FB_CVA_LIST_BUILTIN_AARCH64
