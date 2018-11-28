@@ -30,15 +30,8 @@ FBCALL FBSTRING *fb_LTrimAny
 		{
 			while ( len != 0 )
 	        {
-			ssize_t i;
-	            for( i=0; i!=len_pattern; ++i ) 
-	            {
-	                if( FB_MEMCHR( pattern->data, *pachText, len_pattern )!=NULL )
-	                    break;
-	            }
-	            
-	            if( i==len_pattern )
-	                break;
+	           if( FB_MEMCHR( pattern->data, *pachText, len_pattern )==NULL )
+	              break;
 
 	            --len;
 	            ++pachText;

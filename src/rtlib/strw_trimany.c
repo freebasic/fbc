@@ -17,34 +17,25 @@ FBCALL FB_WCHAR *fb_WstrTrimAny ( const FB_WCHAR *src, const FB_WCHAR *pattern )
         ssize_t len_pattern = fb_wstr_Len( pattern );
         pachText = src;
         len = fb_wstr_Len( src );
-		while ( len != 0 )
-        {
-            ssize_t i;
-            for( i=0; i!=len_pattern; ++i ) {
-                if( wcschr( pattern, *pachText )!=NULL ) {
-                    break;
-                }
-            }
-            if( i==len_pattern ) {
-                break;
-            }
-            --len;
-            ++pachText;
-		}
-		while ( len != 0 )
-        {
-            ssize_t i;
-            --len;
-            for( i=0; i!=len_pattern; ++i ) {
-                if( wcschr( pattern, pachText[len] )!=NULL ) {
-                    break;
-                }
-            }
-            if( i==len_pattern ) {
-                ++len;
-                break;
-            }
-		}
+		    if( len_pattern != 0 )
+		    {
+					while ( len != 0 )
+							{
+									if( wcschr( pattern, *pachText )==NULL ) {
+											break;
+									}
+									--len;
+									++pachText;
+					}
+					while ( len != 0 )
+							{
+									--len;
+									if( wcschr( pattern, pachText[len] )==NULL ) {
+											++len;
+											break;
+									}
+					}
+				}
 	}
 
 	if( len > 0 )

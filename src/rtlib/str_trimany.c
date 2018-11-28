@@ -26,14 +26,7 @@ FBCALL FBSTRING *fb_TrimAny( FBSTRING *src, FBSTRING *pattern )
 		{
 			while ( len != 0 )
 	        {
-	            ssize_t i;
-	            for( i=0; i!=len_pattern; ++i ) 
-	            {
-	                if( FB_MEMCHR( pattern->data, *pachText, len_pattern )!=NULL )
-	                    break;
-	            }
-	            
-	            if( i==len_pattern )
+	            if( FB_MEMCHR( pattern->data, *pachText, len_pattern )==NULL )
 	                break;
 
 	            --len;
@@ -41,15 +34,8 @@ FBCALL FBSTRING *fb_TrimAny( FBSTRING *src, FBSTRING *pattern )
 			}
 			while ( len != 0 )
 	        {
-	            ssize_t i;
 	            --len;
-	            for( i=0; i!=len_pattern; ++i ) 
-	            {
-	                if( FB_MEMCHR( pattern->data, pachText[len], len_pattern )!=NULL )
-	                    break;
-	            }
-	            
-	            if( i==len_pattern ) 
+	            if( FB_MEMCHR( pattern->data, pachText[len], len_pattern )==NULL ) 
 	            {
 	                ++len;
 	                break;
