@@ -390,6 +390,7 @@ function hMangleBuiltInType _
 		end select
 	end if
 
+	'' Still have a mangle data type? remap.
 	if( typeHasMangleDt( dtype ) ) then
 		dtype = typeGetMangleDt( dtype )
 	end if
@@ -461,7 +462,8 @@ sub symbMangleType _
 	if( typeIsRef( dtype ) ) then
 		mangled += "R"
 
-		symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype, FB_MANGLEOPT_KEEPTOPCONST )
+		symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype, _
+			options or FB_MANGLEOPT_HASREF or FB_MANGLEOPT_KEEPTOPCONST)
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
@@ -483,7 +485,8 @@ sub symbMangleType _
 			mangled += "K"
 		end if
 
-		symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype )
+		symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype, _
+			options and not FB_MANGLEOPT_KEEPTOPCONST )
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
@@ -493,7 +496,8 @@ sub symbMangleType _
 	if( typeIsPtr( dtype ) ) then
 		mangled += "P"
 
-		symbMangleType( mangled, typeDeref( dtype ), subtype, FB_MANGLEOPT_KEEPTOPCONST )
+		symbMangleType( mangled, typeDeref( dtype ), subtype, _
+			options or FB_MANGLEOPT_HASPTR or FB_MANGLEOPT_KEEPTOPCONST )
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
@@ -504,16 +508,19 @@ sub symbMangleType _
 	if( typeHasMangleDt( dtype ) ) then
 		if( typeGetDtOnly( dtype ) = FB_DATATYPE_STRUCT ) then
 			if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
-				mangled += "P"
 
-				'' !!! TODO !!!, if the type was passed as byval ptr or byref
+				'' if the type was passed as byval ptr or byref
 				'' need to mangle in "A1_" to indicate the array type, but
 				'' not on aarch64, __va_list is a plain struct, it doesn't
 				'' need the array type specifier.
 
-				'' if( ??? ) then
-				''	mangled += "A1_"
-				'' end if
+				if( symbIsValistStructArray( dtype, subtype ) ) then
+					if( (options and (FB_MANGLEOPT_HASREF or FB_MANGLEOPT_HASPTR)) <> 0 ) then
+						mangled += "A1_"
+					else
+						mangled += "P"
+					end if
+				end if
 
 				dtype = typeSetMangleDt( dtype, 0 )
 			end if

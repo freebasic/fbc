@@ -252,8 +252,10 @@ end enum
 
 ''
 enum FB_MANGLEOPT
-	FB_MANGLEOPT_NONE = 0          '' no special options
+	FB_MANGLEOPT_NONE         = 0  '' no special options
 	FB_MANGLEOPT_KEEPTOPCONST = 1  '' keep the top-level const when mangling
+	FB_MANGLEOPT_HASPTR       = 2  '' mangled type has is a pointer type
+	FB_MANGLEOPT_HASREF       = 4  '' mangled type has is reference type
 end enum
 
 type FBSYMBOL_ as FBSYMBOL
@@ -1602,11 +1604,9 @@ declare function symbIsString _
 		byval dtype as integer _
 	) as integer
 
-declare function symbIsBuiltinValist _
-	( _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
-	) as integer
+declare function symbGetValistType( byval dtype as integer, byval subtype as FBSYMBOL ptr ) as FB_CVA_LIST_TYPEDEF
+#define symbIsValistStructArray( dtype, subtype ) (symbGetValistType( dtype, subtype ) = FB_CVA_LIST_BUILTIN_C_STD)
+#define symbIsBuiltinVaListType( dtype, subtype ) (symbGetValistType( dtype, subtype ) > FB_CVA_LIST_POINTER)
 
 declare function symbGetVarHasCtor _
 	( _

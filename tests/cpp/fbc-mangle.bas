@@ -82,7 +82,9 @@ namespace cpp_mangle
 	declare function cpp_variadic_start( byval n as long, ... ) as long
 	declare function cpp_variadic_list_byval( byval n as long, byval args as cva_list ) as long
 	declare function cpp_variadic_list_byref( byval n as long, byref args as cva_list ) as long
+	declare function cpp_variadic_list_byref_ptr( byval n as long, byref args as cva_list ptr ) as long
 	declare function cpp_variadic_list_ptr( byval n as long, byval args as cva_list ptr ) as long
+	declare function cpp_variadic_list_ptr_ptr( byval n as long, byval args as cva_list ptr ptr ) as long
 
 end namespace
 
@@ -275,10 +277,6 @@ sub variadic_list_byval cdecl( byval n as long, ... )
 	cva_end( x )
 end sub
 
-/'
-!!! TODO !!! passing byref or by ptr will fail on linux 64-bit
-	due to the mangling
-
 sub variadic_list_byref cdecl( byval n as long, ... )
 	dim x as cva_list = any
 	cva_start( x, n )
@@ -286,17 +284,35 @@ sub variadic_list_byref cdecl( byval n as long, ... )
 	cva_end( x )
 end sub
 
+sub variadic_list_byref_ptr cdecl( byval n as long, ... )
+	dim x as cva_list = any
+	dim y as cva_list ptr = @x
+	cva_start( *y, n )
+	ASSERT( cpp_variadic_list_byref_ptr( 5, y ) = 5 )
+	cva_end( *y )
+end sub
+
 sub variadic_list_ptr cdecl( byval n as long, ... )
 	dim x as cva_list = any
 	cva_start( x, n )
-	ASSERT( cpp_variadic_list_ptr( 5, @x ) = 5 )
+	ASSERT( cpp_variadic_list_ptr( 6, @x ) = 6 )
 	cva_end( x )
 end sub
-'/
+
+sub variadic_list_ptr_ptr cdecl( byval n as long, ... )
+	dim x as cva_list = any
+	dim y as cva_list ptr = @x
+	cva_start( *y, n )
+	ASSERT( cpp_variadic_list_ptr_ptr( 7, @y ) = 7 )
+	cva_end( *y )
+end sub
 
 scope
 	ASSERT( cpp_variadic_start( 3, 1, 2, 3 ) = 3 )
 	variadic_list_byval( 3, 1, 2, 3 )
-''	variadic_list_byref( 3, 1, 2, 3 )
-''	variadic_list_ptr( 3, 1, 2, 3 )
+	variadic_list_byref( 3, 1, 2, 3 )
+	variadic_list_byref_ptr( 3, 1, 2, 3 )
+	variadic_list_ptr( 3, 1, 2, 3 )
+	variadic_list_ptr_ptr( 3, 1, 2, 3 )
 end scope
+

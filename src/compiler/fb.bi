@@ -467,6 +467,7 @@ declare function fbGetLangId _
 	) as FB_LANG
 
 enum FB_CVA_LIST_TYPEDEF
+	FB_CVA_LIST_NONE = 0
 	FB_CVA_LIST_POINTER
 	FB_CVA_LIST_BUILTIN_POINTER
 	FB_CVA_LIST_BUILTIN_C_STD
@@ -474,8 +475,6 @@ enum FB_CVA_LIST_TYPEDEF
 end enum
 
 declare function fbGetBackendValistType () as FB_CVA_LIST_TYPEDEF
-
-#define fbUseGccValistBuiltins() (fbGetBackendValistType() <> FB_CVA_LIST_POINTER)
 
 ''
 '' macros

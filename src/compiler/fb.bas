@@ -1456,7 +1456,7 @@ function fbGetBackendValistType _
 	( _
 	) as FB_CVA_LIST_TYPEDEF
 
-	dim typedef as FB_CVA_LIST_TYPEDEF = FB_CVA_LIST_POINTER
+	dim typedef as FB_CVA_LIST_TYPEDEF = FB_CVA_LIST_NONE
 
 	select case env.clopt.backend
 	case FB_BACKEND_GCC
@@ -1479,6 +1479,9 @@ function fbGetBackendValistType _
 		case FB_CPUFAMILY_AARCH64
 			typedef = FB_CVA_LIST_BUILTIN_AARCH64
 
+		case else
+			typedef = FB_CVA_LIST_BUILTIN_POINTER
+
 		end select
 
 	case FB_BACKEND_GAS
@@ -1492,6 +1495,8 @@ function fbGetBackendValistType _
 		typedef = FB_CVA_LIST_POINTER
 
 	end select
+
+	assert( typedef <> FB_CVA_LIST_NONE )
 
 	'' on gcc backend we prefer that the cva_list type
 	'' map to gcc's __builtin_va_list, which is a different

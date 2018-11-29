@@ -1584,31 +1584,87 @@ function symbIsString _
 end function
 
 '':::::
-function symbIsBuiltinValist _
+private function hValistNameToTypeLookup _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)  as FB_CVA_LIST_TYPEDEF
+
+	function = FB_CVA_LIST_NONE
+
+	if( sym->id.alias ) then
+		select case *sym->id.alias
+		case "__va_list"
+			function = FB_CVA_LIST_BUILTIN_AARCH64
+		case "__va_list_tag"
+			function = FB_CVA_LIST_BUILTIN_C_STD
+		end select
+	end if
+
+end function
+
+'':::::
+function symbGetValistType _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
-	) as integer
+	) as FB_CVA_LIST_TYPEDEF
 
-	function = FALSE
+	'' use dtype/subtype to determine what kind
+	'' of __builtin_va_list we have, or none
+	''
+	'' if gcc's builtin va_list is a pointer then it must
+	'' have the mangle modifer on the dtype to get recognized.
+	'' if it's just an ANY PTR with out any mangle modifer
+	'' then it might be used for va_list on the target, 
+	'' but we don't know, and it doesn't matter anyway
+	''
+	'' for the sructures, currently not storing any extra
+	'' information in the UDT so we are using the alias name
+	'' only to determine the following:
+	''   1) is a __builtin_va_list type?
+	''   2) is a struct type, or an array struct type?
+	''
+	'' in future, maybe could add the information to the UDT
+	'' and change the use of symbGetValistType() so that
+	'' callers are testing for a kind structure rather than
+	'' the specific ones we have by default.  That makes
+	'' the tests more generic.
+	
+	function = FB_CVA_LIST_NONE
 
 	if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
-		function = TRUE
-	elseif( subtype ) then
-		if( typeGetMangleDt( symbGetFullType( subtype ) ) = FB_DATATYPE_VA_LIST ) then
-			function = TRUE
-		else
-			select case typeGetDtOnly( symbGetFullType( subtype ) )
-			case FB_DATATYPE_STRUCT
-				if( subtype->id.alias ) then
-					select case *subtype->id.alias
-					case "__va_list", "__va_list_tag"
-						function = TRUE
-					end select
+		select case typeGetDtOnly( dtype )
+		case FB_DATATYPE_VOID
+			if( typeIsPtr( dtype ) ) then
+				function = FB_CVA_LIST_BUILTIN_POINTER
+			end if
+
+		case FB_DATATYPE_STRUCT
+			function = hValistNameToTypeLookup( subtype )
+
+		case else
+			if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
+				if( typeIsPtr( dtype ) ) then
+					function = FB_CVA_LIST_POINTER
 				end if
-			end select
-		end if
+			end if
+
+		end select
+
+	elseif( subtype ) then
+
+		select case typeGetDtOnly( symbGetFullType( subtype ) )
+		case FB_DATATYPE_VOID
+			if( typeGetMangleDt( symbGetFullType( subtype ) ) = FB_DATATYPE_VA_LIST ) then
+				function = FB_CVA_LIST_BUILTIN_POINTER
+			end if
+
+		case FB_DATATYPE_STRUCT
+			function = hValistNameToTypeLookup( subtype )
+		end select
+
 	end if
+
 end function
 
 function symbTypeToStr _

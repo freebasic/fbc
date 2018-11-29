@@ -252,12 +252,22 @@ namespace cpp_mangle
 		return n;
 	}
 
-	int cpp_variadic_list_byref( int n, __builtin_va_list &args )
+	int cpp_variadic_list_byref( int n, __builtin_va_list& args )
 	{
 		return n;
 	}
 
-	int cpp_variadic_list_ptr( int n, __builtin_va_list *args )
+	int cpp_variadic_list_byref_ptr( int n, __builtin_va_list*& args )
+	{
+		return n;
+	}
+
+	int cpp_variadic_list_ptr( int n, __builtin_va_list* args )
+	{
+		return n;
+	}
+
+	int cpp_variadic_list_ptr_ptr( int n, __builtin_va_list** args )
 	{
 		return n;
 	}

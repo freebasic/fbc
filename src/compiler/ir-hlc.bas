@@ -650,14 +650,12 @@ end function
 
 private function hGetUdtId( byval sym as FBSYMBOL ptr ) as string
 
-	'' HACK: gcc's __builtin_va_list needs an exact name
-	if( sym->id.alias <> NULL ) then
-		select case *sym->id.alias
-		case "__va_list_tag", "__va_list"
+	'' gcc's __builtin_va_list needs an exact name
+	select case symbGetValistType( symbGetFullType( sym ), symbGetSubtype( sym ) )
+	case FB_CVA_LIST_BUILTIN_C_STD, FB_CVA_LIST_BUILTIN_AARCH64
 			function = *sym->id.alias
 			exit function
-		end select
-	endif
+	end select
 
 	'' Prefixing the mangled name with a $ because it may start with a
 	'' number which isn't allowed in C.
@@ -1536,21 +1534,14 @@ private function hEmitType _
 
 	'' replace type with __builtin_va_list if
 	'' the mangle modifier was given
-	if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
-		'' !!! TODO !!!
-		'' prefer that this check is based on dtype/subtype instead
-		'' of target options
-		if( fbGetBackendValistType() = FB_CVA_LIST_BUILTIN_POINTER ) then
+	if( symbIsBuiltinVaListType( dtype, subtype ) ) then
+		select case symbGetValistType( dtype, subtype )
+		case FB_CVA_LIST_BUILTIN_POINTER
 			dtype = typeJoinDtOnly( typeDeref(dtype), FB_DATATYPE_VA_LIST )
-		else
+		case else
 			dtype = typeJoinDtOnly( dtype, FB_DATATYPE_VA_LIST )
-		end if
-	elseif( subtype <> NULL ) then
-		if( typeGetMangleDt( symbGetFullType( subtype ) ) = FB_DATATYPE_VA_LIST ) then
-			dtype = typeJoinDtOnly( dtype, FB_DATATYPE_VA_LIST )
-		end if
+		end select
 	end if
-
 	ptrcount = typeGetPtrCnt( dtype )
 	dtype = typeGetDtOnly( dtype )
 
@@ -2633,14 +2624,18 @@ private function exprNewVREG _
 
 			'' any structs involved? (note: FBSTRINGs are structs in the C code too!)
 			select case( typeGet( vreg->dtype ) )
-			case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
-				'' !!! TODO !!! replace this with a faster check
-				do_deref or= not symbIsBuiltinValist( symbGetFullType( vreg->sym ), symbGetSubType( vreg->sym ) )
+			case FB_DATATYPE_STRING
+				do_deref = TRUE
+			case FB_DATATYPE_STRUCT
+				'' don't deref if it is a va_list[1] type, unless we going to anyway
+				do_deref or= not symbIsValistStructArray( symbGetFullType( vreg->sym ), symbGetSubType( vreg->sym ) )
 			case else
 				select case( typeGet( symdtype ) )
-				case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
-					'' !!! TODO !!! replace this with a faster check
-					do_deref or= not symbIsBuiltinValist( symbGetFullType( vreg->sym ), symbGetSubType( vreg->sym ) )
+				case FB_DATATYPE_STRING
+					do_deref = TRUE
+				case FB_DATATYPE_STRUCT
+					'' don't deref if it is a va_list[1] type, unless we going to anyway
+					do_deref or= not symbIsValistStructArray( symbGetFullType( vreg->sym ), symbGetSubType( vreg->sym ) )
 				end select
 			end select
 		end if

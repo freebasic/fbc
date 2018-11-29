@@ -153,27 +153,22 @@ private sub hSolveValistType _
 
 	if( typeGetMangleDt( n->dtype ) = FB_DATATYPE_VA_LIST ) then
 
-		select case typeGetDtOnly( n->dtype )
-		case FB_DATATYPE_VOID
+		select case symbGetValistType( n->dtype, n->subtype )
+		case FB_CVA_LIST_POINTER, FB_CVA_LIST_BUILTIN_POINTER
 			'' cast( __builtin_va_list, *expr )
 			n->dtype = typeJoinDtOnly( typeDeref( n->dtype ) , FB_DATATYPE_VA_LIST )
 
-		case FB_DATATYPE_STRUCT
-			'' !!! TODO !!!, would prefer that this check is based on the
-			'' dtype/subtype itself rather than the target options
+		case FB_CVA_LIST_BUILTIN_C_STD
+			'' va_list[1] gets passed as a pointer
+			'' *cast( __builtin_va_list ptr, @expr )
+			n = astNewDeref( n, typeAddrOf( typeJoinDtOnly( n->dtype, FB_DATATYPE_VA_LIST ) ), astGetSubType( n ) )
 
-			if( fbGetBackendValistType() = FB_CVA_LIST_BUILTIN_C_STD ) then
-				'' va_list[1] gets passed as a pointer
-				'' *cast( __builtin_va_list ptr, @expr )
-				n = astNewDeref( n, typeAddrOf( typeJoinDtOnly( n->dtype, FB_DATATYPE_VA_LIST ) ), astGetSubType( n ) )
-			else
-
-				'' cast( __builtin_va_list, expr )
-				n->dtype = typeJoinDtOnly( n->dtype, FB_DATATYPE_VA_LIST )
-
-			end if
+		case else
+			'' cast( __builtin_va_list, expr )
+			n->dtype = typeJoinDtOnly( n->dtype, FB_DATATYPE_VA_LIST )
 
 		end select
+
 	end if
 
 end sub
@@ -270,7 +265,7 @@ function cVALISTFunct _
 		errReport( FB_ERRMSG_EXPECTEDRPRNT )
 	end if
 
-	if( fbUseGccValistBuiltins() ) then
+	if( symbIsBuiltinVaListType( astGetFullType( expr ), astGetSubtype( expr ) ) ) then
 		'' delegate to gcc backend to solve "result = __builtin_va_arg( ap, type )"
 		hSolveValistType( expr )
 		function = astNewMACRO( AST_OP_VA_ARG, expr, NULL, dtype, subtype )
@@ -308,7 +303,6 @@ function cVALISTStmt _
 	) as integer
 
 	dim as ASTNODE ptr expr1, expr2
-	dim as FBSYMBOL ptr sym, subtype
 
 	function = FALSE
 
@@ -355,7 +349,7 @@ function cVALISTStmt _
 			errReport( FB_ERRMSG_EXPECTEDRPRNT )
 		end if
 
-		if( fbUseGccValistBuiltins() ) then
+		if( symbIsBuiltinValistType( astGetFullType( expr1 ), astGetSubtype( expr1 ) ) ) then
 			'' delegate to gcc backend to solve "__builtin_va_start( ap, param )"
 			hSolveValistType( expr1 )
 			astAdd( astNewMACRO( AST_OP_VA_START, expr1, expr2, FB_DATATYPE_INVALID, NULL ) )
@@ -405,7 +399,7 @@ function cVALISTStmt _
 			errReport( FB_ERRMSG_EXPECTEDRPRNT )
 		end if
 
-		if( fbUseGccValistBuiltins() ) then
+		if( symbIsBuiltinValistType( astGetFullType( expr1 ), astGetSubtype( expr1 ) ) ) then
 			'' delegate to gcc backend to solve "__builtin_va_end( ap )"
 			hSolveValistType( expr1 )
 			astAdd( astNewMACRO( AST_OP_VA_END, expr1, NULL, FB_DATATYPE_INVALID, NULL ) )
@@ -461,7 +455,7 @@ function cVALISTStmt _
 			errReport( FB_ERRMSG_EXPECTEDRPRNT )
 		end if
 
-		if( fbUseGccValistBuiltins() ) then
+		if( symbIsBuiltinValistType( astGetFullType( expr1 ), astGetSubtype( expr1 ) ) ) then
 			'' delegate to gcc backend to solve "__builtin_va_copy( dst, src )"
 			hSolveValistType( expr1 )
 			hSolveValistType( expr2 )

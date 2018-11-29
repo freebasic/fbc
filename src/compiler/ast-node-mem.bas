@@ -36,16 +36,12 @@ function astNewMEM _
 	'' then emit() always handles it, even when lgt=0
 	if( (lgt > blkmaxlen) or (blkmaxlen = 0) ) then
 
-	if( astIsBuiltinValistCarray( l ) ) then
-			l = astNewDEREF( astNewCONV( typeMultAddrOf( FB_DATATYPE_UBYTE, 2 ), NULL, astNewAddrof( l ) ) )
-		else
+		if( symbIsValistStructArray( astGetFullType( l ), astGetSubType( l ) ) = FALSE ) then
 			l = astNewADDROF( l )
 		end if
 
 		if( op = AST_OP_MEMMOVE ) then
-			if( astIsBuiltinValistCarray( r ) ) then
-				r = astNewDEREF( astNewCONV( typeMultAddrOf( FB_DATATYPE_UBYTE, 2 ), NULL, astNewAddrof( r ) ) )
-			else
+			if( symbIsValistStructArray( astGetFullType( r ), astGetSubType( r ) ) = FALSE ) then
 				r = astNewADDROF( r )
 			end if
 		end if

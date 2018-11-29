@@ -210,4 +210,191 @@ SUITE( fbc_tests.functions.va_cva_api )
 	END_TEST
 
 
+	'' byval/byref/ptr arguments
+
+	#macro sum_cva_list_args( expr )
+
+		'' iterate using a copy
+		dim x as cva_list
+		cva_copy( x, expr )
+		dim d as integer = 0
+		for i as integer = 1 to n
+			d += cva_arg( x, integer )
+		next
+		cva_end( x )
+
+		'' iterate using argument passed
+		dim c as integer = 0
+		for i as integer = 1 to n
+			c += cva_arg( expr, integer )
+		next
+		CU_ASSERT( c = d )
+
+	#endmacro
+
+	function f_arg_byval ( total as integer, byval n as integer, byval args as cva_list ) as integer
+		sum_cva_list_args( args )
+		function = c
+	end function
+
+	function f_arg_byref ( total as integer, byval n as integer, byref args as cva_list ) as integer
+		sum_cva_list_args( args )
+		function = c
+	end function
+
+	function f_arg_byref_ptr ( total as integer, byval n as integer, byref args as cva_list ptr ) as integer
+		sum_cva_list_args( *args )
+		function = c
+	end function
+
+	function f_arg_ptr ( total as integer, byval n as integer, byval args as cva_list ptr ) as integer
+		sum_cva_list_args( *args )
+		function = c
+	end function
+
+	function f_arg_ptr_ptr ( total as integer, byval n as integer, byval args as cva_list ptr ptr ) as integer
+		sum_cva_list_args( **args )
+		function = c
+	end function
+
+	sub argument_tests cdecl( total as integer, byval n as integer, ... )
+		
+		dim as cva_list args
+
+		'' var passed byval
+		scope
+			cva_start( args, n )
+			CU_ASSERT( f_arg_byval( total, n, args ) = total )
+			cva_end( args )
+		end scope
+
+		'' byref var passed byval
+		scope
+			dim byref as cva_list r_args = args
+			cva_start( r_args, n )
+			CU_ASSERT( f_arg_byval( total, n, r_args ) = total )
+			cva_end( r_args )
+		end scope
+		
+		'' var passed byref
+		scope
+			cva_start( args, n )
+			CU_ASSERT( f_arg_byref( total, n, args ) = total )
+			cva_end( args )
+		end scope
+
+		'' byref var passed byref
+		scope
+			dim byref as cva_list r_args = args
+			cva_start( r_args, n )
+			CU_ASSERT( f_arg_byref( total, n, r_args ) = total )
+			cva_end( r_args )
+		end scope
+
+		'' pointer var passed byref
+		scope
+			dim as cva_list ptr pargs = @args
+			cva_start( *pargs, n )
+			CU_ASSERT( f_arg_byref_ptr( total, n, pargs ) = total )
+			cva_end( *pargs )
+		end scope
+
+		'' pointer var passed byval
+		scope
+			dim as cva_list ptr pargs = @args
+			cva_start( *pargs, n )
+			CU_ASSERT( f_arg_ptr( total, n, pargs ) = total )
+			cva_end( *pargs )
+		end scope
+
+		'' var passed by pointer
+		scope
+			cva_start( args, n )
+			CU_ASSERT( f_arg_ptr( total, n, @args ) = total )
+			cva_end( args )
+		end scope
+
+		'' multi indirection pointer
+		scope
+			dim as cva_list ptr pargs = @args
+			dim as cva_list ptr ptr ppargs = @pargs
+			cva_start( **ppargs, n )
+			CU_ASSERT( f_arg_ptr( total, n, *ppargs ) = total )
+			cva_end( **ppargs )
+		end scope
+
+		'' multi indirection pointer
+		scope
+			dim as cva_list ptr pargs = @args
+			cva_start( *pargs, n )
+			CU_ASSERT( f_arg_ptr_ptr( total, n, @pargs ) = total )
+			cva_end( *pargs )
+		end scope
+
+		'' multi indirection pointer
+		scope
+			dim as cva_list ptr pargs = @args
+			dim as cva_list ptr ptr ppargs = @pargs
+			cva_start( **ppargs, n )
+			CU_ASSERT( f_arg_ptr_ptr( total, n, ppargs ) = total )
+			cva_end( **ppargs )
+		end scope
+
+	end sub
+
+	TEST( arguments )
+		argument_tests( 4321, 4, 4000, 300, 20, 1 )
+	END_TEST
+
+	type udt_vararg
+		f1 as cva_list
+		f2 as cva_list
+	end type
+
+	sub complex_tests cdecl( total as integer, byval n as integer, ... )
+		dim u as udt_vararg
+
+		'' cva_list is udt field
+		scope
+			cva_start( u.f1, n )
+			sum_cva_list_args( u.f1 )
+			cva_end( u.f1 )
+		end scope
+
+		scope
+			cva_start( u.f2, n )
+			sum_cva_list_args( u.f2 )
+			cva_end( u.f2 )
+		end scope
+
+		'' cva_list is array element
+		dim a(1 to 2) as cva_list
+
+		scope
+			cva_start( a(1), n )
+			sum_cva_list_args( a(1) )
+			cva_end( a(1) )
+		end scope
+
+		scope
+			cva_start( a(2), n )
+			sum_cva_list_args( a(2) )
+			cva_end( a(2) )
+		end scope
+
+		'' cva_list is allocated on heap with new/delete
+		dim p as cva_list ptr = new cva_list
+		scope
+			cva_start( *p, n )
+			sum_cva_list_args( *p )
+			cva_end( *p )
+		end scope
+		delete p
+
+	end sub
+
+	TEST( complex )
+		complex_tests( 1234, 4, 1000, 200, 30, 4 )
+	END_TEST
+
 END_SUITE
