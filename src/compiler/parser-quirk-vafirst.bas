@@ -65,6 +65,14 @@ private function hCheckForValistCompatibleType _
 		return FALSE
 	end if
 
+	'' side effects? don't allow
+	if( astHasSideFx( expr ) ) then
+		'' !!! TODO !!!
+		'' better error message
+		errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+		return FALSE
+	end if
+
 	'' cva_list compatible type?
 	select case typeGetDtOnly( astGetDataType( expr ) )
 	case FB_DATATYPE_VOID, FB_DATATYPE_STRUCT
@@ -152,7 +160,7 @@ private sub hSolveValistType _
 
 		case FB_DATATYPE_STRUCT
 			'' !!! TODO !!!, would prefer that this check is based on the
-			'' dtype/subtype iteself rather than the target options
+			'' dtype/subtype itself rather than the target options
 
 			if( fbGetBackendValistType() = FB_CVA_LIST_BUILTIN_C_STD ) then
 				'' va_list[1] gets passed as a pointer
