@@ -439,19 +439,6 @@ sub cProcRetType _
 			'' error recovery: fake a type
 			dtype = typeAddrOf( dtype )
 			subtype = NULL
-
-		case else
-			if( typeIsPtr( dtype ) = FALSE ) then
-				'' !!! TODO !!!
-				'' Don't allow non-pointer cva_list types as return
-				'' it's too much trouble to handle...
-				if( symbIsBuiltinVaListType( dtype, subtype ) ) then
-					errReport( FB_ERRMSG_INVALIDDATATYPES )
-					'' error recovery: fake a type
-					dtype = typeAddrOf( dtype )
-					subtype = NULL
-				endif
-			end if
 		end select
 
 		if( (attrib and FB_SYMBATTRIB_REF) = 0 ) then

@@ -1591,13 +1591,15 @@ private function hValistNameToTypeLookup _
 
 	function = FB_CVA_LIST_NONE
 
-	if( sym->id.alias ) then
-		select case *sym->id.alias
-		case "__va_list"
-			function = FB_CVA_LIST_BUILTIN_AARCH64
-		case "__va_list_tag"
-			function = FB_CVA_LIST_BUILTIN_C_STD
-		end select
+	if( sym ) then
+		if( sym->id.alias ) then
+			select case *sym->id.alias
+			case "__va_list"
+				function = FB_CVA_LIST_BUILTIN_AARCH64
+			case "__va_list_tag"
+				function = FB_CVA_LIST_BUILTIN_C_STD
+			end select
+		end if
 	end if
 
 end function
