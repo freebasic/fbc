@@ -1142,7 +1142,7 @@ private sub hDump _
 			else
 				s += " "
 			end if
-			s += id + " = " + vregDump( v )
+			s += id + " = " + vregDumpToStr( v )
 			if( wrapline ) then
 				s += NEWLINE
 			else
@@ -1172,8 +1172,8 @@ function tacvregDump( byval tacvreg as IRTACVREG ptr ) as string
 		return "<NULL>"
 	end if
 	function = "IRTACVREG( " & _
-		"vreg=" & vregDump( tacvreg->vreg ) & ", " & _
-		"parent=" & vregDump( tacvreg->parent ) & ", " & _
+		"vreg=" & vregDumpToStr( tacvreg->vreg ) & ", " & _
+		"parent=" & vregDumpToStr( tacvreg->parent ) & ", " & _
 		"next=" & tacvregDump( tacvreg->next ) & " )"
 end function
 
