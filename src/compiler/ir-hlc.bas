@@ -539,7 +539,7 @@ private function hEmitProcHeader _
 	end if
 
 	'' Function result type (is 'void' for subs)
-	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
+	ln += hEmitType( symbGetProcRealType( proc ), _
 					symbGetProcRealSubtype( proc ) )
 
 	'' Calling convention if needed (for function pointers it's usually not

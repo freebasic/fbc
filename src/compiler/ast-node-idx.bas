@@ -61,9 +61,9 @@ function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
 				irEmitLOAD( vidx )
 			end if
 
-			vr = irAllocVRIDX( astGetDataType( n ), n->subtype, s, ofs, n->idx.mult, vidx )
+			vr = irAllocVRIDX( astGetFullType( n ), n->subtype, s, ofs, n->idx.mult, vidx )
 		else
-			vr = irAllocVRVAR( astGetDataType( n ), n->subtype, s, ofs )
+			vr = irAllocVRVAR( astGetFullType( n ), n->subtype, s, ofs )
 		end if
 
 		vr->vector = n->vector

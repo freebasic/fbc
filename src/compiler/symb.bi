@@ -2471,6 +2471,7 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 #define typeGet( dt ) iif( dt and FB_DT_PTRMASK, FB_DATATYPE_POINTER, dt and FB_DT_TYPEMASK )
 #define typeGetDtOnly( dt ) (dt and FB_DT_TYPEMASK)
 #define typeGetDtAndPtrOnly( dt ) (dt and (FB_DT_TYPEMASK or FB_DT_PTRMASK))
+#define typeGetDtPtrAndMangleDtOnly( dt ) (dt and (FB_DT_TYPEMASK or FB_DT_PTRMASK or FB_DT_MANGLEMASK))
 #define typeJoin( dt, ndt ) ((dt and (not (FB_DT_TYPEMASK or FB_DT_PTRMASK))) or (ndt and (FB_DT_TYPEMASK or FB_DT_PTRMASK)))
 #define typeJoinDtOnly( dt, ndt ) ((dt and (not FB_DT_TYPEMASK)) or (ndt and FB_DT_TYPEMASK))
 

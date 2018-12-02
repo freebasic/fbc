@@ -72,7 +72,7 @@ function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	if( ast.doemit ) then
-		vr = irAllocVRVAR( astGetDataType( n ), n->subtype, s, ofs )
+		vr = irAllocVRVAR( astGetFullType( n ), n->subtype, s, ofs )
 		vr->vector = n->vector
 	end if
 

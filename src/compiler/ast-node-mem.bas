@@ -35,15 +35,10 @@ function astNewMEM _
 	'' the adress-of and let emit() do the rest, or if blkmaxlen = 0,
 	'' then emit() always handles it, even when lgt=0
 	if( (lgt > blkmaxlen) or (blkmaxlen = 0) ) then
-
-		if( symbIsValistStructArray( astGetFullType( l ), astGetSubType( l ) ) = FALSE ) then
-			l = astNewADDROF( l )
-		end if
+		l = astNewADDROF( l )
 
 		if( op = AST_OP_MEMMOVE ) then
-			if( symbIsValistStructArray( astGetFullType( r ), astGetSubType( r ) ) = FALSE ) then
-				r = astNewADDROF( r )
-			end if
+			r = astNewADDROF( r )
 		end if
 	end if
 

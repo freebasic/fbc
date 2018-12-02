@@ -339,7 +339,7 @@ function astLoadUOP _
 
 	if( ast.doemit ) then
 		if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
-			vr = irAllocVREG( astGetDataType( o ), o->subtype )
+			vr = irAllocVREG( astGetFullType( o ), o->subtype )
 			v1->vector = n->vector
 			vr->vector = n->vector
 		else

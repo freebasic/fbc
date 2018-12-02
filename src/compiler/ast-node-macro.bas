@@ -91,7 +91,7 @@ function astLoadMACRO _
 	case AST_OP_VA_ARG
 		v1 = astLoad( n->l )
 		v2 = astLoad( n->r )
-		vr = irAllocVREG( astGetDataType( n ), astGetSubType( n ) )
+		vr = irAllocVREG( astGetFullType( n ), astGetSubType( n ) )
 
 	case AST_OP_VA_COPY
 		v1 = astLoad( n->l )

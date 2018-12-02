@@ -255,10 +255,10 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			'' When returning BYREF the CALL's dtype should have
 			'' been remapped by astBuildByrefResultDeref()
 			assert( iif( symbIsRef( proc ), _
-					astGetDataType( n ) = typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
+					typeGetDtPtrAndMangleDtOnly( astGetFullType( n ) ) = typeGetDtPtrAndMangleDtOnly( symbGetProcRealType( proc ) ), _
 					TRUE ) )
 
-			vr = irAllocVREG( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
+			vr = irAllocVREG( symbGetProcRealType( proc ), _
 							symbGetProcRealSubtype( proc ) )
 
 			if( proc->proc.returnMethod <> FB_RETURN_SSE ) then

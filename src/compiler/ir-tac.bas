@@ -901,6 +901,10 @@ private function _allocVreg _
 
 	dim as IRVREG ptr vr = any
 
+	'' ir-tac can't handle any extra bits in the DTYPE
+	'' other than PTR level and FB_DATATYPE
+	dtype = typeGetDtAndPtrOnly( dtype )
+
 	vr = hNewVR( dtype, subtype, IR_VREGTYPE_REG )
 
 	'' longint?
@@ -920,6 +924,8 @@ private function _allocVrImm _
 	) as IRVREG ptr
 
 	dim as IRVREG ptr vr = any
+
+	dtype = typeGetDtAndPtrOnly( dtype )
 
 	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
 
@@ -948,6 +954,8 @@ private function _allocVrImmF _
 	dim as IRVREG ptr vr = any
 	dim as FBSYMBOL ptr s = any
 
+	dtype = typeGetDtAndPtrOnly( dtype )
+
 	'' float immediates supported by the FPU?
 	if( irGetOption( IR_OPT_FPUIMMEDIATES ) ) then
 		vr = hNewVR( dtype, subtype, IR_VREGTYPE_IMM )
@@ -973,6 +981,8 @@ private function _allocVrVar _
 	dim as IRVREG ptr vr = any, va = any
 
 	assert( symbol )
+
+	dtype = typeGetDtAndPtrOnly( dtype )
 
 	vr = hNewVR( dtype, subtype, IR_VREGTYPE_VAR )
 
@@ -1003,6 +1013,8 @@ private function _allocVrIdx _
 
 	dim as IRVREG ptr vr = any, va = any
 
+	dtype = typeGetDtAndPtrOnly( dtype )
+
 	vr = hNewVR( dtype, subtype, IR_VREGTYPE_IDX )
 
 	vr->sym = symbol
@@ -1032,6 +1044,8 @@ private function _allocVrPtr _
 
 	dim as IRVREG ptr vr = any, va = any
 
+	dtype = typeGetDtAndPtrOnly( dtype )
+
 	vr = hNewVR( dtype, subtype, IR_VREGTYPE_PTR )
 
 	vr->ofs = ofs
@@ -1060,6 +1074,8 @@ private function _allocVrOfs _
 
 	dim as IRVREG ptr vr = any
 
+	dtype = typeGetDtAndPtrOnly( dtype )
+
 	vr = hNewVR( dtype, subtype, IR_VREGTYPE_OFS )
 
 	vr->sym = symbol
@@ -1076,6 +1092,8 @@ private sub _setVregDataType _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr _
 	)
+
+	dtype = typeGetDtAndPtrOnly( dtype )
 
 	if( vreg <> NULL ) then
 		vreg->dtype = typeGet( dtype )
