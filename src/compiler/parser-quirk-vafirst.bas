@@ -65,14 +65,6 @@ private function hCheckForValistCompatibleType _
 		return FALSE
 	end if
 
-	'' side effects? don't allow
-	if( astHasSideFx( expr ) ) then
-		'' !!! TODO !!!
-		'' better error message
-		errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-		return FALSE
-	end if
-
 	'' cva_list compatible type?
 	select case typeGetDtOnly( astGetDataType( expr ) )
 	case FB_DATATYPE_VOID, FB_DATATYPE_STRUCT
@@ -129,7 +121,7 @@ end function
 
 private sub hSolveValistType _
 	( _
-		byval n as ASTNODE ptr _
+		byref n as ASTNODE ptr _
 	)
 
 	assert( n <> NULL )
@@ -159,9 +151,20 @@ private sub hSolveValistType _
 			n->dtype = typeJoinDtOnly( typeDeref( n->dtype ) , FB_DATATYPE_VA_LIST )
 
 		case FB_CVA_LIST_BUILTIN_C_STD
-			'' va_list[1] gets passed as a pointer
-			'' *cast( __builtin_va_list ptr, @expr )
-			n = astNewDeref( n, typeAddrOf( typeJoinDtOnly( n->dtype, FB_DATATYPE_VA_LIST ) ), astGetSubType( n ) )
+			if( astIsVAR( n ) ) then
+				if( symbIsParamByval( astGetSymbol( n ) ) ) then
+					exit select
+					'' if VAR is a parameter, then it was passed as a struct pointer
+					n->dtype = typeJoinDtOnly( typeAddrOf( n->dtype ), FB_DATATYPE_VA_LIST )
+					
+					'' add the addrof/deref here so emitter can work with it
+					n = astNewDEREF( n )
+					exit select
+				end if
+			end if
+
+			'' cast( __builtin_va_list, expr )
+			n->dtype = typeJoinDtOnly( n->dtype, FB_DATATYPE_VA_LIST )
 
 		case else
 			'' cast( __builtin_va_list, expr )
@@ -271,22 +274,61 @@ function cVALISTFunct _
 		function = astNewMACRO( AST_OP_VA_ARG, expr, NULL, dtype, subtype )
 
 	else
-		'' pointer expression: modify expr variable & return value of expr variable before modification
+
+		'' pointer expression: modify expr/variable & return value of expr variable before modification
 		'' based on:
 		'' #define __va_argsiz(t) (((sizeof(t) + sizeof(int) - 1) / sizeof(int)) * sizeof(int))
 		'' #define va_arg(ap, t) (((ap) = (ap) + __va_argsiz(t)), *((t*) (void*) ((ap) - __va_argsiz(t))))
+		'' assign to a temp variable if anything but a variable
+
+		dim tree as ASTNODE ptr = NULL
+		dim temp as FBSYMBOL ptr = any
+
+		select case astGetClass( expr )
+		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD
+			'' use expr as-is, no side effects expected...
+			 
+		case AST_NODECLASS_DEREF
+			'' copy the reference to a variable, to prevent side effects
+			'' the cva_arg() pointer expression will update the referenced cva_list type
+			temp = symbAddTempVar( typeAddrOf( astGetFullType( expr ) ), astGetSubType( expr ) )
+
+			'' temp = @expr
+			tree = astNewASSIGN( astNewVAR( temp ), astNewADDROF( expr ), AST_OPOPT_DONTCHKPTR )
+
+			'' expr := *temp
+			expr = astNewDEREF( astNewVAR( temp ) )
+
+		'' anything else?
+		case else
+			'' copy the expression to a temporary variable to get the address
+			'' the cva_arg() pointer expression will work, but only the temp cva_list will be used
+			temp = symbAddTempVar( astGetFullType( expr ), astGetSubType( expr ) )
+
+			'' temp = expr
+			tree = astNewASSIGN( astNewVAR( temp ), expr, AST_OPOPT_DONTCHKPTR )
+
+			'' @temp
+			expr = astNewADDROF( astNewVAR( temp ) )
+
+		end select
 
 		'' size of parameter on the stack depends on stack alignment
 		dim lgt as longint = (symbCalcLen( dtype, subtype ) + env.pointersize - 1 and -env.pointersize)
 
-		'' cptr( any ptr, expr ) + lgt	
+		'' expr1 = cptr( any ptr, expr ) + lgt	
 		var expr1 = astNewBOP( AST_OP_ADD, astCloneTree( expr ), astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
-		
-		'' cptr( any ptr, expr ) - lgt
-		var expr2 = astNewBOP( AST_OP_SUB, astCloneTree( expr ), astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
 
-		'' return ( expr += lgt: *cptr(dtype ptr, expr - lgt) )
-		function = astNewLink( astNewASSIGN( expr, expr1 ), astNewDEREF( expr2, dtype, subtype ), FALSE )
+		'' *expr = expr1
+		tree = astNewLink( tree, astNewASSIGN( astCloneTree( expr ), expr1 ), AST_OPOPT_DONTCHKPTR )
+		
+		'' expr2 = cptr( any ptr, expr ) - lgt
+		var expr2 = astNewBOP( AST_OP_SUB, expr, astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
+
+		'' return *cptr(dtype ptr, expr2 )
+		tree = astNewLink( tree, astNewDEREF( expr2, dtype, subtype ), FALSE )
+
+		function = tree
 
 	end if
 
@@ -369,7 +411,7 @@ function cVALISTStmt _
 			expr = astNewBOP( AST_OP_ADD, expr, astNewCONSTi( symbGetLen( vararg_param ), FB_DATATYPE_UINT ) )
 
 			'' cptr( any ptr, list ) = first_vararg
-			astAdd( astNewASSIGN( expr1, expr ) )
+			astAdd( astNewASSIGN( expr1, expr, AST_OPOPT_DONTCHKPTR ) )
 
 		end if
 		function = TRUE
@@ -408,6 +450,7 @@ function cVALISTStmt _
 			'' pointer expression: no-op
 			'' based on:
 			'' #define va_end(ap)	((void)0)
+			astDelTree( expr1 )
 
 		end if
 		function = TRUE
@@ -466,7 +509,7 @@ function cVALISTStmt _
 			'' based on:
 			'' #define va_copy(ap, src) ((dest) = (src))
 
-			astAdd( astNewASSIGN( expr1, expr2 ) )
+			astAdd( astNewASSIGN( expr1, expr2, AST_OPOPT_DONTCHKPTR ) )
 
 		end if
 		function = TRUE

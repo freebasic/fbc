@@ -252,11 +252,18 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		if( astGetDataType( n ) = FB_DATATYPE_VOID ) then
 			vr = NULL
 		else
-			'' When returning BYREF the CALL's dtype should have
-			'' been remapped by astBuildByrefResultDeref()
-			assert( iif( symbIsRef( proc ), _
-					typeGetDtPtrAndMangleDtOnly( astGetFullType( n ) ) = typeGetDtPtrAndMangleDtOnly( symbGetProcRealType( proc ) ), _
-					TRUE ) )
+
+			'' va_list 
+			if( typeGetMangleDt( astGetFullType( n ) ) = FB_DATATYPE_VA_LIST ) then
+
+			else
+
+				'' When returning BYREF the CALL's dtype should have
+				'' been remapped by astBuildByrefResultDeref()
+				assert( iif( symbIsRef( proc ), _
+						typeGetDtPtrAndMangleDtOnly( astGetFullType( n ) ) = typeGetDtPtrAndMangleDtOnly( symbGetProcRealType( proc ) ), _
+						TRUE ) )
+			end if
 
 			vr = irAllocVREG( symbGetProcRealType( proc ), _
 							symbGetProcRealSubtype( proc ) )

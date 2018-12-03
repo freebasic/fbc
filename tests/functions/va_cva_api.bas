@@ -397,4 +397,144 @@ SUITE( fbc_tests.functions.va_cva_api )
 		complex_tests( 1234, 4, 1000, 200, 30, 4 )
 	END_TEST
 
+	function ret_valist_ptr( byval args as cva_list ptr ) as cva_list ptr
+		function = args
+	end function
+
+	sub proc_cva_list_ptr cdecl( byval n as integer, ... )
+		dim args as cva_list
+		dim x as cva_list ptr = @args
+		dim i as integer
+
+		cva_start( args, n )
+		dim arg1 as integer = cva_arg( args, integer )
+		dim arg2 as integer = cva_arg( args, integer )
+		dim arg3 as integer = cva_arg( args, integer )
+		dim arg4 as integer = cva_arg( args, integer )
+		cva_end( args )
+
+		cva_start( args, n )
+		x = ret_valist_ptr( @args )
+		CU_ASSERT( cva_arg( *x, integer ) = arg1 )
+		CU_ASSERT( cva_arg( *x, integer ) = arg2 )
+		CU_ASSERT( cva_arg( *x, integer ) = arg3 )
+		CU_ASSERT( cva_arg( *x, integer ) = arg4 )
+		cva_end( args )
+	end sub
+
+#if ENABLE_CHECK_BUGS
+
+	'' returning an array not allowed in gcc
+	'' this test will fail to compile in gcc on linux x86_64
+	'' to handle returning a byval cva_list, need to pass
+	'' it in a hidden argument and make the function void
+
+	function ret_valist_byval( byval args as cva_list ) as cva_list
+		function = args
+	end function
+
+	sub proc_cva_list_byval cdecl( byval n as integer, ... )
+		dim args as cva_list
+		dim x as cva_list
+		dim i as integer
+
+		cva_start( args, n )
+		dim arg1 as integer = cva_arg( args, integer )
+		dim arg2 as integer = cva_arg( args, integer )
+		dim arg3 as integer = cva_arg( args, integer )
+		dim arg4 as integer = cva_arg( args, integer )
+		cva_end( args )
+
+		cva_start( args, n )
+		x = ret_valist_byval( args )
+		CU_ASSERT( cva_arg( x, integer ) = arg1 )
+		CU_ASSERT( cva_arg( x, integer ) = arg2 )
+		CU_ASSERT( cva_arg( x, integer ) = arg3 )
+		CU_ASSERT( cva_arg( x, integer ) = arg4 )
+		cva_end( args )
+	end sub
+#else
+	sub proc_cva_list_byval cdecl( byval n as integer, ... )
+	end sub
+#endif
+
+	function ret_valist_byref( byref args as cva_list ) byref as cva_list
+		function = args
+	end function
+
+	sub proc_cva_list_byref cdecl( byval n as integer, ... )
+		dim args as cva_list
+		dim byref x as cva_list = args
+		dim i as integer
+
+		cva_start( args, n )
+		dim arg1 as integer = cva_arg( args, integer )
+		dim arg2 as integer = cva_arg( args, integer )
+		dim arg3 as integer = cva_arg( args, integer )
+		dim arg4 as integer = cva_arg( args, integer )
+		cva_end( args )
+
+		cva_start( args, n )
+		x = ret_valist_byref( args )
+		CU_ASSERT( cva_arg( x, integer ) = arg1 )
+		CU_ASSERT( cva_arg( x, integer ) = arg2 )
+		CU_ASSERT( cva_arg( x, integer ) = arg3 )
+		CU_ASSERT( cva_arg( x, integer ) = arg4 )
+		cva_end( args )
+	end sub
+
+	TEST( cva_list_return_byval )
+		proc_cva_list_byval( 4, 4000, 300, 200, 1 )
+		proc_cva_list_byref( 4, 4000, 300, 200, 1 )
+		proc_cva_list_ptr( 4, 4000, 300, 200, 1 )
+	END_TEST
+
+#if ENABLE_CHECK_BUGS
+	'' returning an array not allowed in gcc
+	'' this test will fail to compile in gcc on linux x86_64
+	'' to handle returning a byval cva_list, need to pass
+	'' it in a hidden argument and make the function void
+	function sidefx_byval( byval args as cva_list ) as cva_list
+		function = args
+	end function
+#endif
+
+	function sidefx_ptr( byval args as cva_list ptr ) as cva_list ptr
+		function = args
+	end function
+
+	function sidefx_byref( byref args as cva_list ) byref as cva_list
+		function = args
+	end function
+
+	sub proc_sidefx cdecl( byval n as integer, ... )
+		dim args as cva_list
+
+		cva_start( args, n )
+		dim arg1 as integer = cva_arg( args, integer )
+		dim arg2 as integer = cva_arg( args, integer )
+		dim arg3 as integer = cva_arg( args, integer )
+		dim arg4 as integer = cva_arg( args, integer )
+		dim arg5 as integer = cva_arg( args, integer )
+		dim arg6 as integer = cva_arg( args, integer )
+		cva_end( args )
+
+		cva_start( args, n )
+#if ENABLE_CHECK_BUGS
+		CU_ASSERT_EQUAL( cva_arg( sidefx_byval( args ), integer ), arg1 )
+		CU_ASSERT_EQUAL( cva_arg( sidefx_byval( args ), integer ), arg1 )
+#endif
+		CU_ASSERT_EQUAL( cva_arg( sidefx_byref( args ), integer ), arg1 )
+		CU_ASSERT_EQUAL( cva_arg( sidefx_byref( args ), integer ), arg2 )
+		CU_ASSERT_EQUAL( cva_arg( sidefx_byref( args ), integer ), arg3 )
+		CU_ASSERT_EQUAL( cva_arg( *sidefx_ptr( @args ), integer ), arg4 )
+		CU_ASSERT_EQUAL( cva_arg( *sidefx_ptr( @args ), integer ), arg5 )
+		CU_ASSERT_EQUAL( cva_arg( *sidefx_ptr( @args ), integer ), arg6 )
+		cva_end( args )
+	end sub
+
+	TEST( side_effects )
+		proc_sidefx( 6, 600000, 50000, 4000, 300, 20, 1 )
+	END_TEST
+
 END_SUITE
