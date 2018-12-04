@@ -431,7 +431,7 @@ sub symbKeywordTypeInit( )
 	''					as any ptr overflow_arg_area
 	''					as any ptr reg_save_area
 	''				end type  
-	''				type cva_list as __va_list_tag alias "__builtin_va_list"
+	''				type cva_list as __va_list_tag alias "__builtin_va_list[]"
 	''			#endif	
 	''		#else
 	''			type cva_list as any alias "__builtin_va_list" ptr
@@ -482,7 +482,12 @@ sub symbKeywordTypeInit( )
 		'' end type
 		symbStructEnd( s )
 
-		'' type cva_list as __va_list_tag alias "__builtin_va_list"
+		'' subtype mangle modifier
+		s = symbCloneSymbol( s )
+		symbSetUdtIsValistStruct( s )
+		symbSetUdtIsValistStructArray( s )
+
+		'' type cva_list as __va_list_tag alias "__builtin_va_list[]"
 		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
 
 	case FB_CVA_LIST_BUILTIN_AARCH64
@@ -514,6 +519,10 @@ sub symbKeywordTypeInit( )
 
 		'' end type
 		symbStructEnd( s )
+
+		'' subtype mangle modifier
+		s = symbCloneSymbol( s )
+		symbSetUdtIsValistStruct( s )
 
 		'' type cva_list as __va_list alias "__builtin_va_list"
 		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )

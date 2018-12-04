@@ -255,7 +255,8 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 			'' va_list 
 			if( typeGetMangleDt( astGetFullType( n ) ) = FB_DATATYPE_VA_LIST ) then
-
+				'' if dtype has a mangle modifier, let the emitter
+				'' handle the remapping
 			else
 
 				'' When returning BYREF the CALL's dtype should have

@@ -430,6 +430,9 @@ enum FB_UDTOPT
 	FB_UDTOPT_HASANONUNION          = &h2000
 	FB_UDTOPT_HASSTATICVAR          = &h4000
 	FB_UDTOPT_HASBITFIELD           = &h8000
+	FB_UDTOPT_ISVALISTSTRUCT        = &h10000
+	FB_UDTOPT_ISVALISTSTRUCTARRAY   = &h20000
+
 end enum
 
 type FB_STRUCT_DBG
@@ -459,7 +462,7 @@ type FBS_STRUCT
 	anonparent		as FBSYMBOL_ ptr
 	natalign		as integer					'' UDT's natural alignment based on largest natural field alignment
 	unpadlgt		as longint					'' unpadded len
-	options			as short					'' FB_UDTOPT
+	options			as long						'' FB_UDTOPT
 	bitpos			as ubyte
 	align			as ubyte
 
@@ -1930,6 +1933,7 @@ declare function symbGetUDTBaseLevel _
 		byval baseSym as FBSYMBOL ptr _
 	) as integer
 
+declare function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 ''
 '' macros
@@ -2240,6 +2244,12 @@ declare function symbGetUDTBaseLevel _
 
 #define symbSetUdtHasBitfield( s )   (s)->udt.options or= FB_UDTOPT_HASBITFIELD
 #define symbGetUdtHasBitfield( s ) (((s)->udt.options and FB_UDTOPT_HASBITFIELD) <> 0)
+
+#define symbSetUdtIsValistStruct( s )   (s)->udt.options or= FB_UDTOPT_ISVALISTSTRUCT
+#define symbGetUdtIsValistStruct( s ) (((s)->udt.options and FB_UDTOPT_ISVALISTSTRUCT) <> 0)
+
+#define symbSetUdtIsValistStructArray( s )   (s)->udt.options or= FB_UDTOPT_ISVALISTSTRUCTARRAY
+#define symbGetUdtIsValistStructArray( s ) (((s)->udt.options and FB_UDTOPT_ISVALISTSTRUCTARRAY) <> 0)
 
 #define symbGetUDTIsUnionOrAnon(s) (((s)->udt.options and (FB_UDTOPT_ISUNION or FB_UDTOPT_ISANON)) <> 0)
 

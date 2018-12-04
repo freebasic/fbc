@@ -395,19 +395,22 @@ end function
 
 private function cMangleModifier _
 	( _
-		byref dtype as integer _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
 	) as integer
 
 	function = FALSE
 
 	assert( dtype = typeGetDtOnly( dtype ) )
 
-	'' cMangleModifier(dtype)
+	'' cMangleModifier(dtype, subtype)
 	'' returns:
 	''   FALSE = modifier given and invalid
 	''   TRUE  = modifier is valid for the dtype, or none given
 	'' modifies:
 	''   dtype = original dtype with mangle modifier applied
+	''   subtype = original subtype, or a clone if there
+	''             are modifiers applied
 
 	'' we are checking for specific cases and the FB_DATATYPE
 	'' stored in the upper bits of the dtype in FB_DT_MANGLEMASK
@@ -457,8 +460,23 @@ private function cMangleModifier _
 
 			case "__builtin_va_list"
 				select case dtype
-				case FB_DATATYPE_VOID, FB_DATATYPE_STRUCT
+				case FB_DATATYPE_VOID
 					dtype = typeSetMangleDt( dtype, FB_DATATYPE_VA_LIST )
+				case FB_DATATYPE_STRUCT
+					dtype = typeSetMangleDt( dtype, FB_DATATYPE_VA_LIST )
+					subtype = symbCloneSymbol( subtype )
+					symbSetUdtIsValistStruct( subtype )
+				case else
+					errReport( FB_ERRMSG_SYNTAXERROR )	
+				end select
+
+			case "__builtin_va_list[]"
+				select case dtype
+				case FB_DATATYPE_STRUCT
+					dtype = typeSetMangleDt( dtype, FB_DATATYPE_VA_LIST )
+					subtype = symbCloneSymbol( subtype )
+					symbSetUdtIsValistStruct( subtype )
+					symbSetUdtIsValistStructArray( subtype )
 				case else
 					errReport( FB_ERRMSG_SYNTAXERROR )	
 				end select
@@ -549,7 +567,7 @@ function cSymbolType _
 		case FB_TK_ANY
 			lexSkipToken( )
 			dtype = FB_DATATYPE_VOID
-			cMangleModifier( dtype )
+			cMangleModifier( dtype, subtype )
 
 		case FB_TK_BOOLEAN
 			lexSkipToken( )
@@ -615,12 +633,12 @@ function cSymbolType _
 		case FB_TK_LONG
 			lexSkipToken( )
 			dtype = FB_DATATYPE_LONG
-			cMangleModifier( dtype )
+			cMangleModifier( dtype, subtype )
 
 		case FB_TK_ULONG
 			lexSkipToken( )
 			dtype = FB_DATATYPE_ULONG
-			cMangleModifier( dtype )
+			cMangleModifier( dtype, subtype )
 
 		case FB_TK_LONGINT
 			lexSkipToken( )
@@ -703,7 +721,7 @@ function cSymbolType _
 							dtype = FB_DATATYPE_STRUCT
 							subtype = sym
 							lgt = symbGetLen( sym )
-							cMangleModifier( dtype )
+							cMangleModifier( dtype, subtype )
 							exit do, do
 
 						case FB_SYMBCLASS_ENUM

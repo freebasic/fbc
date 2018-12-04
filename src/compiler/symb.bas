@@ -1465,12 +1465,18 @@ function symbCloneSymbol( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr
     	function = symbCloneLabel( s )
 
 	case FB_SYMBCLASS_STRUCT
-		'' Assuming only array descriptor types will ever be cloned
-		'' (most other structs would be too complex, especially classes)
-		assert( symbIsDescriptor( s ) )
 
-		symbGetDescTypeArrayDtype( s, arraydtype, arraysubtype )
-		function = symbAddArrayDescriptorType( symbGetDescTypeDimensions( s ), arraydtype, arraysubtype )
+		'' Assuming only simple UDTS (like array descriptor types) will ever be cloned
+		'' (most other structs would be too complex, especially classes)
+
+		assert( (s->udt.ext = NULL) )
+		
+		if( symbIsDescriptor( s ) ) then
+			symbGetDescTypeArrayDtype( s, arraydtype, arraysubtype )
+			function = symbAddArrayDescriptorType( symbGetDescTypeDimensions( s ), arraydtype, arraysubtype )
+		else
+			function = symbCloneSimpleStruct( s )
+		end if
 
     case else
 		assert( FALSE )
@@ -1584,27 +1590,6 @@ function symbIsString _
 end function
 
 '':::::
-private function hValistNameToTypeLookup _
-	( _
-		byval sym as FBSYMBOL ptr _
-	)  as FB_CVA_LIST_TYPEDEF
-
-	function = FB_CVA_LIST_NONE
-
-	if( sym ) then
-		if( sym->id.alias ) then
-			select case *sym->id.alias
-			case "__va_list"
-				function = FB_CVA_LIST_BUILTIN_AARCH64
-			case "__va_list_tag"
-				function = FB_CVA_LIST_BUILTIN_C_STD
-			end select
-		end if
-	end if
-
-end function
-
-'':::::
 function symbGetValistType _
 	( _
 		byval dtype as integer, _
@@ -1625,12 +1610,6 @@ function symbGetValistType _
 	'' only to determine the following:
 	''   1) is a __builtin_va_list type?
 	''   2) is a struct type, or an array struct type?
-	''
-	'' in future, maybe could add the information to the UDT
-	'' and change the use of symbGetValistType() so that
-	'' callers are testing for a kind structure rather than
-	'' the specific ones we have by default.  That makes
-	'' the tests more generic.
 	
 	function = FB_CVA_LIST_NONE
 
@@ -1642,7 +1621,15 @@ function symbGetValistType _
 			end if
 
 		case FB_DATATYPE_STRUCT
-			function = hValistNameToTypeLookup( subtype )
+			if( subtype ) then
+				if( symbGetUdtIsValistStruct( subtype ) ) then
+					if( symbGetUdtIsValistStructArray( subtype ) ) then
+						function = FB_CVA_LIST_BUILTIN_C_STD
+					else
+						function = FB_CVA_LIST_BUILTIN_AARCH64
+					end if
+				end if
+			end if
 
 		case else
 			if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
@@ -1662,7 +1649,14 @@ function symbGetValistType _
 			end if
 
 		case FB_DATATYPE_STRUCT
-			function = hValistNameToTypeLookup( subtype )
+			if( symbGetUdtIsValistStruct( subtype ) ) then
+				if( symbGetUdtIsValistStructArray( subtype ) ) then
+					function = FB_CVA_LIST_BUILTIN_C_STD
+				else
+					function = FB_CVA_LIST_BUILTIN_AARCH64
+				end if
+			end if
+
 		end select
 
 	end if
