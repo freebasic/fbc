@@ -1597,22 +1597,31 @@ function symbGetValistType _
 	) as FB_CVA_LIST_TYPEDEF
 
 	'' use dtype/subtype to determine what kind
-	'' of __builtin_va_list we have, or none
+	'' of __builtin_va_list we have, or maybe none
 	''
-	'' if gcc's builtin va_list is a pointer then it must
+	'' if gcc's builtin va_list is a pointer type, then it must
 	'' have the mangle modifer on the dtype to get recognized.
+	''
 	'' if it's just an ANY PTR with out any mangle modifer
 	'' then it might be used for va_list on the target, 
 	'' but we don't know, and it doesn't matter anyway
+	'' so just return FB_CVA_LIST_NONE
 	''
-	'' for the sructures, currently not storing any extra
-	'' information in the UDT so we are using the alias name
-	'' only to determine the following:
-	''   1) is a __builtin_va_list type?
-	''   2) is a struct type, or an array struct type?
+	'' for va_list structure type, we might be looking at a dtype
+	'' with a UDT subtype, or we might be looking at the UDT
+	'' itself.  Either way, we must look at the UDT itself to
+	'' determine if it is a struct or struct array type using
+	''   - symbGetUdtIsValistStruct()
+	''   - symbGetUdtIsValistStructArray()
+
+	'' Determine the following:
+	''   1) va_list type?  (any target/va_list type)
+	''   2) is a __builtin_va_list type? (gcc)
+	''   3) is a struct type, or an array struct type? (gcc)
 	
 	function = FB_CVA_LIST_NONE
 
+	'' mangle modifier?
 	if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
 		select case typeGetDtOnly( dtype )
 		case FB_DATATYPE_VOID
@@ -1640,6 +1649,7 @@ function symbGetValistType _
 
 		end select
 
+	'' maybe subtype has the infor.
 	elseif( subtype ) then
 
 		select case typeGetDtOnly( symbGetFullType( subtype ) )

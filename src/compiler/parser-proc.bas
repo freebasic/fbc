@@ -439,6 +439,18 @@ sub cProcRetType _
 			'' error recovery: fake a type
 			dtype = typeAddrOf( dtype )
 			subtype = NULL
+
+		case FB_DATATYPE_STRUCT
+			'' __builtin_va_list[] not allowed as a return type
+			if( subtype ) then
+				if( symbGetUdtIsValistStructArray( subtype ) ) then
+					errReport( FB_ERRMSG_INVALIDDATATYPES )
+					'' error recovery: fake a type
+					dtype = typeAddrOf( dtype )
+					subtype = NULL
+				end if
+			end if
+
 		end select
 
 		if( (attrib and FB_SYMBATTRIB_REF) = 0 ) then
