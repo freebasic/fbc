@@ -988,7 +988,7 @@ function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 	dim as FBSYMBOL ptr fld = any
 
 	'' only will work with very simple structs, no ctor/dtor's
-	'' no unions, etc...
+	'' no unions, bitfields, etc...
 
 	'' used for __builtin_va_list mangle modifier, we only ever refer to this struct
 	'' through the typedef, so it doesn't need a visible name

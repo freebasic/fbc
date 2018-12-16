@@ -153,20 +153,40 @@ private sub hSolveValistType _
 		case FB_CVA_LIST_BUILTIN_C_STD
 			if( astIsVAR( n ) ) then
 				if( symbIsParamByval( astGetSymbol( n ) ) ) then
-					exit select
-					'' if VAR is a parameter, then it was passed as a struct pointer
-					n->dtype = typeJoinDtOnly( typeAddrOf( n->dtype ), FB_DATATYPE_VA_LIST )
-					
-					'' add the addrof/deref here so emitter can work with it
-					n = astNewDEREF( n )
+
+					'' The dtype & subtype tell us that this is a
+					'' C struct array.  Only the pointer to the
+					'' array is acutally passed by value.  Taking
+					'' the address of this symbol actually gives
+					'' us the address of the passed-by-value-pointer
+					'' to the the array instead and we don't want that.
+					'' We also can't, deref the symbol directly, 
+					'' because C won't allow deref on an array.
+					''					
+					'' Give up and let gcc backend use the param var
+					'' symbol name as-is.  The mangle modifier will
+					'' let C backend know it's the va_list type, 
+					'' and exprNewVREG() won't try to deref it.
+
 					exit select
 				end if
 			end if
+
+			'' for anything else, replace the dtype here and let backend
+			'' handle it (though there are some casts in exprNewVREG that
+			'' could be solved out, TODO).  Taking the address of array
+			'' variable (in C) is the same address as just referencing
+			'' the array name.  e.g. "int a[10]", a == &a == &(a[0]), but
+			'' different pointer types
 
 			'' cast( __builtin_va_list, expr )
 			n->dtype = typeJoinDtOnly( n->dtype, FB_DATATYPE_VA_LIST )
 
 		case else
+			'' the only other type we are prepared to handle is that
+			'' cva_list type is a struct.  Just substitute the dtype
+			'' here and let the backend handle it as a struct.
+
 			'' cast( __builtin_va_list, expr )
 			n->dtype = typeJoinDtOnly( n->dtype, FB_DATATYPE_VA_LIST )
 
@@ -279,39 +299,59 @@ function cVALISTFunct _
 		'' based on:
 		'' #define __va_argsiz(t) (((sizeof(t) + sizeof(int) - 1) / sizeof(int)) * sizeof(int))
 		'' #define va_arg(ap, t) (((ap) = (ap) + __va_argsiz(t)), *((t*) (void*) ((ap) - __va_argsiz(t))))
-		'' assign to a temp variable if anything but a variable
 
 		dim tree as ASTNODE ptr = NULL
-		dim temp as FBSYMBOL ptr = any
 
-		select case astGetClass( expr )
-		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD
-			'' use expr as-is, no side effects expected...
-			 
-		case AST_NODECLASS_DEREF
-			'' copy the reference to a variable, to prevent side effects
-			'' the cva_arg() pointer expression will update the referenced cva_list type
-			temp = symbAddTempVar( typeAddrOf( astGetFullType( expr ) ), astGetSubType( expr ) )
+		'' cva_list expr is a pointer to the next argument:
+		'' 		*expr - the value of the next argument
+		'' 		expr  - memory location of the next argument
+		'' 		@expr - the address of the cva_list (typically a variable)
+		'' for the cva_arg( expr, type ) expression, we want an expr that
+		'' we can also update, so it must have an address we can write to.
+		'' The intended side effect of the cva_arg expression itself is
+		'' we are updating a variable (memory location) with a new
+		'' pointer value.  The undesired side effect occurs when the 
+		'' expression to aquire the memory location has side effects;
+		'' we need to duplicate that part of the expression.
 
-			'' temp = @expr
-			tree = astNewASSIGN( astNewVAR( temp ), astNewADDROF( expr ), AST_OPOPT_DONTCHKPTR )
+		if( astHasSideFx( expr ) ) then
+			if( astCanTakeAddrOf( expr ) ) then
+				'' we can take the address of the expression, but the
+				'' expression itself has side effects to aquire the
+				'' memory location.  Use a temp variable to hold the
+				'' result of aquiring the memory address (cva_list ptr).
+				'' Dereferencing the temp variable will give us the
+				'' cva_list type to use in the cva_arg expression.
+				''
+				'' copy the reference to a variable, to prevent duplicating side effects
+				'' the cva_arg() pointer expression will update the referenced cva_list type
 
-			'' expr := *temp
-			expr = astNewDEREF( astNewVAR( temp ) )
+				'' dim temp as cva_list ptr
+				'' temp = @expr
+				'' expr := *temp
 
-		'' anything else?
-		case else
-			'' copy the expression to a temporary variable to get the address
-			'' the cva_arg() pointer expression will work, but only the temp cva_list will be used
-			temp = symbAddTempVar( astGetFullType( expr ), astGetSubType( expr ) )
+				tree = astMakeRef( expr )
 
-			'' temp = expr
-			tree = astNewASSIGN( astNewVAR( temp ), expr, AST_OPOPT_DONTCHKPTR )
+			else
+				'' we can't take the address of the expression, but we 
+				'' need one.  And the expression itself also has side
+				'' effects.  Evaluate the expression to a temporary
+				'' variable, and because cva_list type is actually a 
+				'' a pointer, it should contain a pointer to the next
+				'' argument to read.
+				''
+				'' copy the expression (pointer to next arg) to a temporary
+				'' variable and get the address (reference to update).
+				'' the cva_arg() pointer expression will work, but only the
+				'' temp cva_list will be used, and the result discared.
 
-			'' @temp
-			expr = astNewADDROF( astNewVAR( temp ) )
+				'' dim temp as DATATYPE
+				'' temp = expr
+				'' expr := temp
+				tree = astRemSideFx( expr )
 
-		end select
+			end if
+		end if
 
 		'' size of parameter on the stack depends on stack alignment
 		dim lgt as longint = (symbCalcLen( dtype, subtype ) + env.pointersize - 1 and -env.pointersize)
@@ -319,7 +359,7 @@ function cVALISTFunct _
 		'' expr1 = cptr( any ptr, expr ) + lgt	
 		var expr1 = astNewBOP( AST_OP_ADD, astCloneTree( expr ), astNewCONSTi(lgt, FB_DATATYPE_UINT ) )
 
-		'' *expr = expr1
+		'' expr = expr1
 		tree = astNewLink( tree, astNewASSIGN( astCloneTree( expr ), expr1 ), AST_OPOPT_DONTCHKPTR )
 		
 		'' expr2 = cptr( any ptr, expr ) - lgt

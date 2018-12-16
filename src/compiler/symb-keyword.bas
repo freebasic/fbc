@@ -483,7 +483,8 @@ sub symbKeywordTypeInit( )
 		symbStructEnd( s )
 
 		'' subtype mangle modifier
-		s = symbCloneSymbol( s )
+		'' don't clone struct, back patch the original only, see note in cMangleModifier()
+		'' TODO: s = symbCloneSymbol( s )
 		symbSetUdtIsValistStruct( s )
 		symbSetUdtIsValistStructArray( s )
 
@@ -521,7 +522,8 @@ sub symbKeywordTypeInit( )
 		symbStructEnd( s )
 
 		'' subtype mangle modifier
-		s = symbCloneSymbol( s )
+		'' don't clone struct, back patch the original only, see note in cMangleModifier()
+		'' TODO: s = symbCloneSymbol( s )
 		symbSetUdtIsValistStruct( s )
 
 		'' type cva_list as __va_list alias "__builtin_va_list"

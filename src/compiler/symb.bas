@@ -1649,7 +1649,7 @@ function symbGetValistType _
 
 		end select
 
-	'' maybe subtype has the infor.
+	'' maybe subtype has the information
 	elseif( subtype ) then
 
 		select case typeGetDtOnly( symbGetFullType( subtype ) )

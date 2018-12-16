@@ -444,6 +444,7 @@ function astMakeRef( byref expr as ASTNODE ptr ) as ASTNODE ptr
 
 	assert( astCanTakeAddrOf( expr ) )
 
+	'' dim temp as DATATYPE ptr
 	temp = symbAddTempVar( typeAddrOf( expr->dtype ), expr->subtype )
 
 	'' temp = @expr
@@ -472,6 +473,7 @@ function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr
 
 	'' simple type..
 	case else
+		'' dim temp as DATATYPE
 		tmp = symbAddTempVar( n->dtype, n->subtype )
 
 		'' tmp = n
