@@ -441,13 +441,16 @@ sub cProcRetType _
 			subtype = NULL
 
 		case FB_DATATYPE_STRUCT
-			'' __builtin_va_list[] not allowed as a return type
+			'' __builtin_va_list[] not allowed as a byval return type
 			if( subtype ) then
 				if( symbGetUdtIsValistStructArray( subtype ) ) then
-					errReport( FB_ERRMSG_INVALIDDATATYPES )
-					'' error recovery: fake a type
-					dtype = typeAddrOf( dtype )
-					subtype = NULL
+					if( ((attrib and FB_SYMBATTRIB_REF) = 0) and _
+						typeIsPtr( dtype ) = FALSE ) then
+						errReport( FB_ERRMSG_INVALIDDATATYPES )
+						'' error recovery: fake a type
+						dtype = typeAddrOf( dtype )
+						subtype = NULL
+					end if
 				end if
 			end if
 

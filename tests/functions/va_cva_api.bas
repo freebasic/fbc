@@ -397,6 +397,26 @@ SUITE( fbc_tests.functions.va_cva_api )
 		complex_tests( 1234, 4, 1000, 200, 30, 4 )
 	END_TEST
 
+#if defined(__FB_LINUX__) and defined(__FB_64BIT__)
+	'' Returning an array not allowed in gcc and some 
+	'' tests will fail to compile in gcc on linux x86_64.
+	'' To handle returning a byval cva_list, would need to 
+	'' pass it in a hidden argument and make the function 
+	'' void, or possibly wrap the va_list type in another 
+	'' structure.  Generally, the copy assignment/passing
+	'' of va_list[0] in gcc is different from what fbc can
+	'' currently handle and should be avoided anyway.
+	#if ENABLE_CHECK_BUGS
+		#define VALIST_CAN_RETURN_BYVAL 1
+	#else
+		#define VALIST_CAN_RETURN_BYVAL 0
+	#endif
+#else
+	'' otherwise, assume it's OK for the platform (needs
+	'' testing on all target/arch, though).
+	#define VALIST_CAN_RETURN_BYVAL 1
+#endif
+
 	function ret_valist_ptr( byval args as cva_list ptr ) as cva_list ptr
 		function = args
 	end function
@@ -422,13 +442,7 @@ SUITE( fbc_tests.functions.va_cva_api )
 		cva_end( args )
 	end sub
 
-#if ENABLE_CHECK_BUGS
-
-	'' returning an array not allowed in gcc
-	'' this test will fail to compile in gcc on linux x86_64
-	'' to handle returning a byval cva_list, need to pass
-	'' it in a hidden argument and make the function void
-
+#if VALIST_CAN_RETURN_BYVAL
 	function ret_valist_byval( byval args as cva_list ) as cva_list
 		function = args
 	end function
@@ -489,11 +503,7 @@ SUITE( fbc_tests.functions.va_cva_api )
 		proc_cva_list_ptr( 4, 4000, 300, 200, 1 )
 	END_TEST
 
-#if ENABLE_CHECK_BUGS
-	'' returning an array not allowed in gcc
-	'' this test will fail to compile in gcc on linux x86_64
-	'' to handle returning a byval cva_list, need to pass
-	'' it in a hidden argument and make the function void
+#if VALIST_CAN_RETURN_BYVAL
 	function sidefx_byval( byval args as cva_list ) as cva_list
 		function = args
 	end function
@@ -520,7 +530,7 @@ SUITE( fbc_tests.functions.va_cva_api )
 		cva_end( args )
 
 		cva_start( args, n )
-#if ENABLE_CHECK_BUGS
+#if VALIST_CAN_RETURN_BYVAL
 		CU_ASSERT_EQUAL( cva_arg( sidefx_byval( args ), integer ), arg1 )
 		CU_ASSERT_EQUAL( cva_arg( sidefx_byval( args ), integer ), arg1 )
 #endif
