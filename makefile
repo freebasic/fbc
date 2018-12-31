@@ -202,6 +202,8 @@ else
       TARGET_OS := linux
     else ifneq ($(findstring MINGW,$(uname)),)
       TARGET_OS := win32
+	else ifneq ($(findstring MSYS_NT,$(uname)),)
+      TARGET_OS := win32
     else ifeq ($(uname),MS-DOS)
       TARGET_OS := dos
     else ifeq ($(uname),NetBSD)
