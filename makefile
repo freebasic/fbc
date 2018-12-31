@@ -547,6 +547,10 @@ $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S) | $(libdir)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
   # is very long...)
+	$(QUIET)rm -f $@
+	$(QUIET_AR)$(AR) rcs $@ $(libfbobjdir)/*.o
+else ifneq ($(findstring MSYS_NT,$(shell uname)),)
+	$(QUIET)rm -f $@
 	$(QUIET_AR)$(AR) rcs $@ $(libfbobjdir)/*.o
 else
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
@@ -565,6 +569,9 @@ $(libdir)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S) | $(libdir)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
   # is very long...)
+	$(QUIET)rm -f $@
+	$(QUIET_AR)$(AR) rcs $@ $(libfbmtobjdir)/*.o
+else ifneq ($(findstring MSYS_NT,$(shell uname)),)
 	$(QUIET)rm -f $@
 	$(QUIET_AR)$(AR) rcs $@ $(libfbmtobjdir)/*.o
 else
