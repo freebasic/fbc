@@ -20,6 +20,8 @@ Declares a namespace block
 	
 	Namespaces implicitly have public access and this is not modifiable.
 	A variable declared inside a namespace is always implicitly static and visible throughout the entire program even if the declaration modifier [[KeyPgShared|Shared]] is not specified (static and shared are optional, but this may improve code readability).
+	To access from outside a defined symbol in a namespace, add the namespace identifier followed by a dot as a prefix of the symbol, or bring the namespace symbols into the current scope by means of the [[KeyPgUsing|Using (Namespaces)]] statement.
+	
 	Namespaces do not have any effect on the visibility of a define.
 	It is possible to define a namespace in two or more declarations.
 	

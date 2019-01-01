@@ -63,7 +63,7 @@ Print "Background: " & HIWORD(c)
 
 #Include "fbgfx.bi"
 
-Dim As Integer fgcolor, bkcolor
+Dim As ULong fgcolor, bkcolor
 
 Screenres 500, 500, 32
 Width 500\8, 500\16

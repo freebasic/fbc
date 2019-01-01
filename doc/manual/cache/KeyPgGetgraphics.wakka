@@ -6,7 +6,7 @@ Gets a copy of a portion of the current work page or an image buffer
 ##
 {{fbdoc item="param"}}
 	##//source//##
-		the address of an image buffer.
+		the address of an image buffer. If it's omitted, the current work page is copied.
 	##STEP##
 		indicates that the following co-ordinates are not absolute co-ordinates.
 	##[STEP](//x1//, //y1//)##
@@ -70,6 +70,8 @@ put (150,150), image
 put (150,200), image
 put (150,250), image
 
+ImageDestroy(image)
+
 '' And a frame around a whole screen..
 line (0,0)-(400-1,300-1), rgb(255,255,0), b
 
@@ -89,6 +91,8 @@ while ((inkey() = "") and (x < 350))
 
 	x += 10
 wend
+
+ImageDestroy(big)
 %%
 
 {{fbdoc item="see"}}

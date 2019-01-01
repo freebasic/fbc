@@ -5,15 +5,15 @@ Intrinsic define set by the compiler
 	""__FB_WIN32__""
 ##
 {{fbdoc item="desc"}}
-	Define without a value created at compile time if compiling to the ""Win32"" target. Default in ""Win32"" hosted version, or active if the //[[CompilerOpttarget|-target win32]]// command line option is used. It can be used to compile parts of the program only if the target is ""Win32"".
+	Define without a value created at compile time if compiling to the ""Win (32-bit or 64-bit)"" target. Default in ""Win"" hosted version, or active if the //[[CompilerOpttarget|-target win32]]// or //[[CompilerOpttarget|-target win64]]// command line option is used. It can be used to compile parts of the program only if the target is ""Win"".
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbwin32.bas"}}%%(freebasic)
 #IFDEF __FB_WIN32__
-  ' ... instructions only for Win32 ...
+  ' ... instructions only for Win ...
   ' ... GetProcAddress ...
 #ELSE
-  ' ... instructions not for Win32 ...
+  ' ... instructions not for Win ...
 #ENDIF 
 %%
 

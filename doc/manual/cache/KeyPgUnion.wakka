@@ -17,20 +17,22 @@ Declares a union user defined type.
 		Any of the supported member functions
 
 {{fbdoc item="desc"}}
-	Unions are similar to a ##[[KeyPgType|Type]]## structure, except that the elements of a union occupy the same space in memory.
-	Like Type, Union can use the optional ##[[KeyPgField|Field]] = //number//## specifier and supports also inheritance through the use of the [[KeyPgExtends|Extends]] keyword.
-	Unlike Type, Union can not contain variable-length strings and arrays, and more generally fields (or can not have bases) with constructors or destructors. Therefore, Union does not support to inherit from the ##[[KeyPgObject|Object]]## built-in type.
-	The size of the Union is the size of the largest data item. A data item can be an unnamed ##[[KeyPgType|Type]]##. Since they occupy the same space, only one element can usually be used at a given time.
+	The data elements of a ##**Union**## occupy a common space in memory (same memory address for all data elements of the ##**Union**##). A data element of a ##**Union**## can be a simple data field or an unnamed ##[[KeyPgType|Type]]## block of data fields.
+	The size of the ##**Union**## is the size of the largest data element.
+	Since they occupy a common memory space, only one data element can usually be used at a given time (when a given data element is written, the other data elements sharing the common union space may be overwritten or mutilated).
 	
-	Unions support member functions including ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##, ##[[KeyPgMemberFunction|Function]]##, ##[[KeyPgOperator|Operator]]##, ##[[KeyPgProperty|Property]]## and ##[[KeyPgMemberSub|Sub]]##. All members of a union are public and access control is not supported. 
+	Like ##[[KeyPgType|Type]]##, ##**Union**## can use the optional ##[[KeyPgField|Field]] = //number//## specifier for field alignment, and supports also inheritance through the use of the [[KeyPgExtends|Extends]] keyword.
+	Unlike ##[[KeyPgType|Type]]##, ##**Union**## can not contain variable-length strings and arrays, and more generally can not have object fields (or bases) with constructors or destructors. Therefore, ##**Union**## does not support to inherit from the ##[[KeyPgObject|Object]]## built-in type.
 	
-	Nested unnamed type or union cannot have procedure members or static data members (same restriction for local named type/union).
+	A ##**Union**## supports member procedures including ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##, ##[[KeyPgMemberFunction|Function]]##, ##[[KeyPgOperator|Operator]]##, ##[[KeyPgProperty|Property]]## and ##[[KeyPgMemberSub|Sub]]##. All members of a ##**Union**## are public and access modifiers are not supported. 
 	
-	A ##**Union**## can be passed as a user defined type to overloaded operator functions.
+	Nested unnamed ##[[KeyPgType|Type]]## or ##**Union**## can not have procedure members or static data members (same restriction for local scope named Type/Union).
 	
-	**Note:** When ##**Union**## extends a base, it can be confusing because no new fields are added to the base, but instead the base is added to the derived Union. This means that fields in the derived Union can share the same memory space like the base (here it doesn't matter whether the base is a Union or not). Of course it can be dangerous, but that is always the problem with Unions.
-	If only the base is a Union, then it won't be affected by fields from the derived UDT.
-	Since Union is not allowed to have complex fields (i.e. UDTs with constructor/destructor, or dynamic strings), a derived Union cannot be allowed to have (contain) a complex base.
+	A ##**Union**## can be passed in a similar way of a User Defined Type to overloaded operator procedures.
+	
+	**Note:** When ##**Union**## extends a base, it can be confusing because no new fields are added to the base, but instead the base is added to the derived Union. This means that data elements in the derived Union can share the same memory space like the base (here it doesn't matter whether the base is a ##**Union**## or not). Of course it can be dangerous, but that is always the problem with Unions.
+	If only the base is a ##**Union**##, then it won't be affected by data elements from the derived UDT.
+	Since ##**Union**## is not allowed to have complex data elements (i.e. UDTs with constructor/destructor, or dynamic strings), a derived Union can not be allowed to have (contain) a complex base.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/union.bas"}}%%(freebasic)

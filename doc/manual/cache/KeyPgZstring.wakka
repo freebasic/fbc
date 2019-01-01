@@ -46,5 +46,6 @@ print len(*str2)     'returns 12, the size of the string it contains
 {{fbdoc item="see"}}
 	- ##[[KeyPgString|String]]##
 	- ##[[KeyPgWstring|Wstring]]##
+	- ##[[TblVarTypes|Standard Data Type Limits]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

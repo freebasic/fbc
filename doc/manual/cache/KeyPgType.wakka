@@ -54,6 +54,7 @@ Declares a user-defined type.
 	
 	//Variable-length data//
 	In ""FreeBASIC"", Type data structures must ultimately be fixed-size, such that the compiler knows how much memory to allocate for objects of that Type. Nevertheless, Types may contain variable-length (dynamic) string or array data members. However, the string's/array's data will not be embedded in the Type directly. Instead, the Type will only contain a ##[[KeyPgString|String]]##/array descriptor structure, which ""FreeBASIC"" uses behind the scenes to manage the variable-length string/array data. For sizing the structure of the array descriptor in the Type, a variable-length (dynamic) array data member must be always declared by using ##[[KeyPgAny|Any(s)]]## in place of the array bounds, in order to fix the amount of dimensions based on the number of Anys specified.
+	Variable-length array fields are considered as pseudo-objects when they are declared in a ##**Type**##, just like variable-length strings (the implicit copy constructor and the implicit let operator themselves support [re]sizing and copying such arrays).
 	
 	Because of that, saving such a Type into a file will write out the descriptor, not the actual string/array data. In order to embed strings/arrays into Types directly, fixed-length strings/arrays must be used.
 	

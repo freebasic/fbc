@@ -30,6 +30,8 @@ Operator to construct an object at a specified memory address.
 	It is incorrect to call ##[[KeyPgOpDelete|Delete Statement]]## on the address. The proper way is to only call the destructor if one exists (implicitly or explicitly), with syntax as for a member method by using member access operator.
 	See examples below for proper ##**Placement New**## operator usage.
 	
+	##**Placement New[]**## operator is the array-version of the ##**Placement New**## operator and constructs the specified number of objects from the specified memory location. The default constructor for the type will be used to set the initial values for each item.
+	
 	Specifying an initial value of ##[[KeyPgAny|Any]]##, as in ##**New**(//address//)//datatype// (**Any**)## or ##**New**(//address//)//datatype//[//count//] {**Any**}## will not initialize the data.  This is only valid on data types that do not have constructors (otherwise for data types with constructors, syntax of simple pointer conversion, like //Cptr(datatype Ptr, address)//, can be substituted to the invalid use of New...Any).
 	
 	Because it does not provide any dynamic memory allocation process, the ##**Placement New**## operator (unlike the ##[[KeyPgOpNew|New Expression]]## operator) does not allow any overloading by a member operator for user-defined types.

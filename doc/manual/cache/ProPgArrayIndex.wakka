@@ -100,5 +100,6 @@ END SUB
 	- ##[[KeyPgSub|Sub]]##
 	- [[ProPgVariables|Variables]] 
 	- [[ProPgVariableScope|Variable Scope]]
+	- ##[[TblVarTypes|Standard Data Type Limits]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
