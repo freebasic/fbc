@@ -481,9 +481,11 @@ windowsbuild() {
 	cd "$libffi_build"
 	if [ "$target" = win64 ]; then
 		CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32
-	else
+	elif [ "$target" = win32 ]; then
 		# force host even for 32-bit, we might be cross compiling from x86_64 to x86
 		CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static --host=i686-w64-mingw32
+	else
+		CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static
 	fi
 	make
 	case "$target" in
