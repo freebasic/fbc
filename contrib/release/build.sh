@@ -322,8 +322,14 @@ win32-mingworg)
 	download_extract_mingw mpfr-3.1.2-2-mingw32-dll.tar.lzma
 
 	# Add ddraw.h and dinput.h for FB's gfxlib2
-	copyfile "../input/MinGW.org/ddraw.h" "include/ddraw.h"
-	copyfile "../input/MinGW.org/dinput.h" "include/dinput.h"
+
+    # if ddraw.h & dinput.h were added manually:
+	# copyfile "../input/MinGW.org/ddraw.h" "include/ddraw.h"
+	# copyfile "../input/MinGW.org/dinput.h" "include/dinput.h"
+
+	# download link for dx80_mgw.zip from https://liballeg.org/old.html
+	download dx80_mgw.zip https://download.tuxfamily.org/allegro/files/dx80_mgw.zip
+	unzip ../input/dx80_mgw.zip include/ddraw.h include/dinput.h
 
 	# Work around http://sourceforge.net/p/mingw/bugs/2039/
 	patch -p0 < ../mingworg-fix-wcharh.patch
@@ -466,7 +472,7 @@ windowsbuild() {
 	# its gcc and not one from the host
 	origPATH="$PATH"
 	export PATH="$PWD/bin:$PATH"
-
+	
 	echo
 	echo "building libffi"
 	echo
@@ -476,7 +482,8 @@ windowsbuild() {
 	if [ "$target" = win64 ]; then
 		CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32
 	else
-		CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static
+		# force host even for 32-bit, we might be cross compiling from x86_64 to x86
+		CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static --host=i686-w64-mingw32
 	fi
 	make
 	case "$target" in
@@ -540,9 +547,12 @@ windowsbuild() {
 		;;
 	esac
 
-	# TODO: GoRC.exe should really be taken from its homepage
-	# <http://www.godevtool.com/>, but it was offline today
-	cp $bootfb_title/bin/$fbtarget/GoRC.exe		fbc/bin/$fbtarget
+	# get GoRC.exe from previous fb release
+	# cp $bootfb_title/bin/$fbtarget/GoRC.exe		fbc/bin/$fbtarget
+
+	# get GoRC.exe from author site
+	download "Gorc.zip" "http://www.godevtool.com/Gorc.zip"
+	unzip ../input/Gorc.zip GoRC.exe -d fbc/bin/$fbtarget
 
 	cp "$libffi_build"/.libs/libffi.a	fbc/lib/$fbtarget
 
