@@ -95,24 +95,24 @@ memory deallocation from 'Delete[]' at address 33775648
 Const ALIGN = 256
 
 Type UDT
-  Dim As Byte a(0 to 10 * 1024 * 1024 - 1) '' 10 megabyte fixed array
-  Declare Operator New (Byval size As UInteger) As Any Ptr
-  Declare Operator Delete (Byval buffer As Any Ptr)
+  Dim As Byte a(0 To 10 * 1024 * 1024 - 1) '' 10 megabyte fixed array
+  Declare Operator New (ByVal size As UInteger) As Any Ptr
+  Declare Operator Delete (ByVal buffer As Any Ptr)
   Declare Constructor ()
   Declare Destructor ()
 End Type
 
-Operator UDT.New (Byval size As UInteger) As Any Ptr
+Operator UDT.New (ByVal size As UInteger) As Any Ptr
   Print "  Overloaded New operator, with parameter size = &h" & Hex(size)
-  Dim pOrig As Any Ptr = Callocate(ALIGN-1 + Sizeof(UDT Ptr) + size)
-  Dim pMin As Any Ptr = pOrig + Sizeof(UDT Ptr) 
-  Dim p As Any Ptr = pMin + ALIGN-1 - (Culng(pMin + ALIGN-1) Mod ALIGN)
+  Dim pOrig As Any Ptr = CAllocate(ALIGN-1 + SizeOf(UDT Ptr) + size)
+  Dim pMin As Any Ptr = pOrig + SizeOf(UDT Ptr) 
+  Dim p As Any Ptr = pMin + ALIGN-1 - (CUInt(pMin + ALIGN-1) Mod ALIGN)
   Cast(Any Ptr Ptr, p)[-1] = pOrig
   Operator = p
   Print "  real pointer = &h" & Hex(pOrig), "return pointer = &h" & Hex(p)
 End Operator
 
-Operator UDT.Delete (Byval buffer As Any Ptr)
+Operator UDT.Delete (ByVal buffer As Any Ptr)
   Print "  Overloaded Delete operator, with parameter buffer = &h" & Hex(buffer)
   Dim pOrig As Any Ptr = Cast(Any Ptr Ptr, buffer)[-1]
   Deallocate(pOrig)
@@ -125,7 +125,7 @@ End Constructor
 
 Destructor UDT ()
   Print "  Destructor, @This = &h" & Hex(@This)
-End destructor
+End Destructor
 
 Print "'Dim As UDT Ptr p = New UDT'"
 Dim As UDT Ptr p = New UDT
@@ -184,7 +184,7 @@ Dim UDTmanager.upbound As UInteger = 0
 Function UDTmanager.printLine (ByRef text As String, ByVal index As UInteger, ByVal sign As Integer) As UInteger
   Dim As UInteger total = 0
   For I As UInteger = 1 To UDTmanager.upbound
-	If I <> index Orelse Sgn(sign) > 0 Then
+	If I <> index OrElse Sgn(sign) > 0 Then
 	  total += UDTmanager.bytes(I)
 	End If
   Next I
@@ -266,15 +266,15 @@ End Operator
 Print "Message",, "Address" & Space(SizeOf(Any Ptr)), "Size", "Total"
 Print
 Randomize
-Dim As UDTmanager Ptr pu1 = New UDTmanager[Rnd() * 256 + 1]
-Dim As UDTmanager Ptr pu2 = New UDTmanager[Rnd() * 256 + 1]
+Dim As UDTmanager Ptr pu1 = New UDTmanager[cuint(Rnd() * 256 + 1)]
+Dim As UDTmanager Ptr pu2 = New UDTmanager[cuint(Rnd() * 256 + 1)]
 Dim As UDTmanager Ptr pu3 = Cast(UDTmanager Ptr, 1)
 Delete[] pu2
 Delete[] pu3
 Delete[] pu2
 Delete[] pu1
 Do
-  Dim As UDTmanager Ptr pu = New UDTmanager[Rnd() * 512 + 1]
+  Dim As UDTmanager Ptr pu = New UDTmanager[cuint(Rnd() * 512 + 1)]
 Loop
 %%
 
