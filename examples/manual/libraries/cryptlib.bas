@@ -38,7 +38,7 @@ Function calc_hash( ByVal filename As String, ByVal algo As CRYPT_ALGO_TYPE ) As
 	cryptEncrypt( ctx, 0, 0 )
 
 	'' get the hash result
-	Dim As Integer buffersize = BUFFER_SIZE
+	Dim As Long buffersize = BUFFER_SIZE
 	cryptGetAttributeString( ctx, CRYPT_CTXINFO_HASHVALUE, @buffer(0), @buffersize )
 
 	'' convert to hexadecimal

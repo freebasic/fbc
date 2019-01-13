@@ -112,13 +112,13 @@ End Operator
 Print "Message",, "Address" & Space(SizeOf(Any Ptr)), "Size", "Total"
 Print
 Randomize
-Dim As UDTmanager Ptr pu1 = New UDTmanager[Rnd() * 256 + 1]
-Dim As UDTmanager Ptr pu2 = New UDTmanager[Rnd() * 256 + 1]
+Dim As UDTmanager Ptr pu1 = New UDTmanager[cuint(Rnd() * 256 + 1)]
+Dim As UDTmanager Ptr pu2 = New UDTmanager[cuint(Rnd() * 256 + 1)]
 Dim As UDTmanager Ptr pu3 = Cast(UDTmanager Ptr, 1)
 Delete[] pu2
 Delete[] pu3
 Delete[] pu2
 Delete[] pu1
 Do
-  Dim As UDTmanager Ptr pu = New UDTmanager[Rnd() * 512 + 1]
+  Dim As UDTmanager Ptr pu = New UDTmanager[cuint(Rnd() * 512 + 1)]
 Loop

@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgInteger
 '' --------
 
-#if __FB_64BIT__
+#ifdef __FB_64BIT__
 	Dim x As Integer = &H8000000000000000
 	Dim y As Integer = &H7FFFFFFFFFFFFFFF
 	Print "Integer Range = "; x; " to "; y

@@ -22,7 +22,7 @@ Operator UDT.New (ByVal size As UInteger) As Any Ptr
   Print "  Overloaded New operator, with parameter size = &h" & Hex(size)
   Dim pOrig As Any Ptr = CAllocate(ALIGN-1 + SizeOf(UDT Ptr) + size)
   Dim pMin As Any Ptr = pOrig + SizeOf(UDT Ptr) 
-  Dim p As Any Ptr = pMin + ALIGN-1 - (CULng(pMin + ALIGN-1) Mod ALIGN)
+  Dim p As Any Ptr = pMin + ALIGN-1 - (CUInt(pMin + ALIGN-1) Mod ALIGN)
   Cast(Any Ptr Ptr, p)[-1] = pOrig
   Operator = p
   Print "  real pointer = &h" & Hex(pOrig), "return pointer = &h" & Hex(p)
