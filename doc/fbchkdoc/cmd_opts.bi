@@ -2,7 +2,7 @@
 #define __FBCHKDOC_CMD_OPTS_BI__
 
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2018 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2019 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
