@@ -17,6 +17,7 @@ Returns the corresponding ASCII or Unicode integer representation of a character
 
 {{fbdoc item="ret"}}
 	The raw character value stored at ##//position//## in ##//str//##.
+	If both ##//str//## and ##//position//## can be evaluated at compile time (like ##**Asc**("a")## or ##**Asc**(chr(97))## or ##**Asc**("abc", 2)## ...), the value is returned in a ##[[KeyPgUinteger|uinteger]]## result, otherwise in a ##[[KeyPgUlong|ulong]]## result.
 
 {{fbdoc item="desc"}}
 	If ##//str//## is a ##[[KeyPgString|String]]## or a ##[[KeyPgZstring|ZString]]##, the ##[[KeyPgUbyte|UByte]]## value at that ##//position//## is returned. This will be a 7-bit [[CptAscii|ASCII]] code, or even a 8-bit character value from some code-page, depending on the string data stored in ##//str//##.
