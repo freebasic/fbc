@@ -342,7 +342,7 @@ else
   prefixincdir   := $(prefix)/include/$(FBNAME)
   prefixlibdir   := $(prefix)/$(libdir)
 endif
-fbcobjdir           := src/compiler/obj
+fbcobjdir           := src/compiler/obj/$(FBTARGET)
 libfbobjdir         := src/rtlib/obj/$(libsubdir)
 libfbpicobjdir      := src/rtlib/obj/$(libsubdir)/pic
 libfbmtobjdir       := src/rtlib/obj/$(libsubdir)/mt
