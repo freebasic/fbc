@@ -11,7 +11,7 @@
 #     to build (or a tag/branch name).
 #
 # The standalone fbc is built in the same directory as the normal fbc, by just
-# rebuilding src/compiler/obj/fbc.o (that's all that's affected by
+# rebuilding src/compiler/obj/$fbtarget/fbc.o (that's all that's affected by
 # ENABLE_STANDALONE, except for the directory layout). This way we avoid
 # unnecessary full rebuilds.
 #
@@ -428,7 +428,7 @@ EOF
 	cmd /c build.bat
 
 	echo "building standalone fbc:"
-	rm fbc/src/compiler/obj/fbc.o
+	rm fbc/src/compiler/obj/$fbtarget/fbc.o
 	cmd /c buildsa.bat
 
 	mkdir -p fbc/bin/dos
@@ -467,12 +467,20 @@ linuxbuild() {
 	cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
 }
 
-windowsbuild() {
-	# Add our toolchain's bin/ to the PATH, so hopefully we'll only use
-	# its gcc and not one from the host
-	origPATH="$PATH"
-	export PATH="$PWD/bin:$PATH"
-	
+libffibuild() {
+
+	# do we already have the files we need?
+	if [ -f "../input/$libffi_title/$target/ffi.h" ]; then
+	if [ -f "../input/$libffi_title/$target/ffitarget.h" ]; then
+	if [ -f "../input/$libffi_title/$target/libffi.a" ]; then
+		echo
+		echo "using cached libffi: $libffi_title/$target"
+		echo
+		return
+	fi
+	fi
+	fi
+
 	echo
 	echo "building libffi"
 	echo
@@ -488,12 +496,25 @@ windowsbuild() {
 		CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static
 	fi
 	make
-	case "$target" in
-	win32)		cp include/ffi.h include/ffitarget.h ../i686-w64-mingw32/include;;
-	win32-mingworg)	cp include/ffi.h include/ffitarget.h ../include;;
-	win64)		cp include/ffi.h include/ffitarget.h ../x86_64-w64-mingw32/include;;
-	esac
+	# stash some files in the input folder to make rebuilding faster
+	mkdir -p ../../input/$libffi_title/$target
+	cp include/ffi.h include/ffitarget.h ../../input/$libffi_title/$target
+	cp .libs/libffi.a ../../input/$libffi_title/$target 
 	cd ..
+}
+
+windowsbuild() {
+	# Add our toolchain's bin/ to the PATH, so hopefully we'll only use
+	# its gcc and not one from the host
+	origPATH="$PATH"
+	export PATH="$PWD/bin:$PATH"
+
+    libffibuild
+   	case "$target" in
+	win32)			cp ../input/$libffi_title/$target/ffi.h ../input/$libffi_title/$target/ffitarget.h ./i686-w64-mingw32/include;;
+	win32-mingworg)	cp ../input/$libffi_title/$target/ffi.h ../input/$libffi_title/$target/ffitarget.h ./include;;
+	win64)			cp ../input/$libffi_title/$target/ffi.h ../input/$libffi_title/$target/ffitarget.h ./x86_64-w64-mingw32/include;;
+	esac
 
 	cd fbc
 	echo
@@ -512,7 +533,7 @@ windowsbuild() {
 	echo
 	echo "building standalone fbc"
 	echo
-	rm src/compiler/obj/fbc.o
+	rm src/compiler/obj/$fbtarget/fbc.o
 	make ENABLE_STANDALONE=1
 	cd ..
 
@@ -556,7 +577,7 @@ windowsbuild() {
 	download "Gorc.zip" "http://www.godevtool.com/Gorc.zip"
 	unzip ../input/Gorc.zip GoRC.exe -d fbc/bin/$fbtarget
 
-	cp "$libffi_build"/.libs/libffi.a	fbc/lib/$fbtarget
+	cp ../input/$libffi_title/$target/libffi.a	fbc/lib/$fbtarget
 
 	# Reduce .exe sizes by dropping debug info
 	# (this was at least needed for MinGW.org's gdb, and probably nothing else,
