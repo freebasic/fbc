@@ -8,6 +8,7 @@ Requirements - Windows / Linux / Dos
    - FreeBASIC Compiler 1.06.0 or above
    - make, sh, find, xargs, grep, sed, cat, rm
 
+
 Summary
 -------
 
@@ -19,6 +20,11 @@ use 'make' to get a list of the options available.
 
 Making the Tests
 ----------------
+
+Note: you cannot run "make" from a Windows command prompt. Please use a preconfigured 
+unix like command shell like MSYS2 or similar when running tests in Windows. Make sure 
+gcc and fbc are on your path.
+
 
 The following two commands will make all tests:
 
@@ -56,8 +62,8 @@ Use 'make log-tests FB_LANG=fb | qb | deprecated' to make a specific
 set of -lang tests.
 
 
-Options
--------
+Environment Options
+-------------------
 OS=DOS
    Indicate that test suite is being built under a djgpp environment
 
@@ -98,7 +104,15 @@ All of the directories listed in 'dirlist.mk' in the makefile
 variable $(DIRLIST) are scanned for files with the extension
 '.bmk' or '.bas'.  When matching filenames are found, the contents
 of the file is then scanned to determine the method of testing
-needed for that specific file.
+needed for that specific file. For adding tests in a new folders
+you must manually add this folder in dirlist.mk.
+
+This scan autogenerates "unit-tests.inc", which holds all files to be 
+included in unit-tests. You may manually edit this file (remove unwanted
+entries) for restricting tests to one or more specific files.
+
+For forcing a rescan you should run "make clean", which will remove all
+files resulting from previous runs and leave a cleaned tests environment.
 
 By default '-lang fb' tests are collected unless 'FB_LANG=?' option
 is given.
@@ -118,7 +132,7 @@ Sample FBCUNIT compatible test (using SUITE/TEST macros)
    #include "fbcunit.bi"
    SUITE( pretest )
       TEST( test_true )
-	      CU_ASSERT_TRUE( true ) 
+          CU_ASSERT_TRUE( true ) 
       END_TEST
    END_SUITE
    ' EOF
@@ -147,7 +161,7 @@ Sample FBCUNIT compatible test (using the 'old' way)
    ' EOF
 
 Consult the fbcunit documentation for a listing of available
-assertions and testing methods.
+assertions and testing methods (tests\fbcunit\inc\fbcunit.b).
 
 
 non-unit compatible test (log-tests)

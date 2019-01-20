@@ -2846,7 +2846,11 @@ function rtlToStr _
     	end if
     end if
 
-    ''
+    '' try to cast an UDT to a WSTRING (ustring)
+    if astCanConvertUdtToWstring (expr) then    
+		return rtlWStrToA( expr )
+    end if  
+
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
 
@@ -2862,6 +2866,7 @@ function rtlToStr _
 			return expr
 		'' wstring? convert..
 		case FB_DATATYPE_WCHAR
+        '' ustring too
 			return rtlWStrToA( expr )
 		'' boolean?
 		case FB_DATATYPE_BOOLEAN
@@ -2946,6 +2951,11 @@ function rtlToWstr _
     	end if
     end if
 
+    '' try to cast an UDT to a WSTRING (ustring)
+    if astCanConvertUdtToWstring(expr) then     
+			return expr
+    end if  
+
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
 		'' Convert pointer to uinteger
@@ -3019,6 +3029,8 @@ function rtlStrToVal _
     dim as FBSYMBOL ptr f = any, s = any
     dim as FB_CALL_ARG arg = any
     dim as FB_ERRMSG err_num = any
+    '' ustring - flag for cbool
+    dim boolflag as long      
 
     function = NULL
 
@@ -3032,6 +3044,8 @@ function rtlStrToVal _
 		f = PROCLOOKUP( STR2DBL )
 
 	case FB_DATATYPE_BOOLEAN
+    '' ustring -> signal cbool
+    boolflag = 1                    
 		f = PROCLOOKUP( STR2BOOL )
 
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, _
@@ -3064,6 +3078,19 @@ function rtlStrToVal _
 	arg.expr = expr
 	arg.mode = INVALID
 	arg.next = NULL
+
+
+  dim udt_flag as long
+
+  '' only for "CBOOL" in case of ustring
+  if (boolflag = 1) then
+    '' can cast an UDT to a WSTRING - don´t convert actually (ustring)
+    if astCanConvertUdtToWstring(expr) then    
+      arg.expr->dtype = FB_DATATYPE_WCHAR
+      udt_flag = 1
+    end if
+  end if
+
 	f = symbFindClosestOvlProc( f, 1, @arg, @err_num )
     if( f = NULL ) then
     	exit function
@@ -3071,7 +3098,13 @@ function rtlStrToVal _
 
     proc = astNewCALL( f )
 
-    ''
+    '' ustring - only if cbool
+    if udt_flag = 1 then      
+       '' revert to UDT
+       expr->dtype = FB_DATATYPE_STRUCT           
+    end if
+
+    '' check if argument and f´s parameter match
     if( astNewARG( proc, expr ) = NULL ) then
     	exit function
     end if
@@ -3092,7 +3125,9 @@ function rtlStrMid _
 
     function = NULL
 
-	''
+    '' try to cast an UDT to a WSTRING (ustring)
+    astTryConvertUdtToWstring (expr1)           
+
     if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRMID ) )
     else
@@ -3130,7 +3165,10 @@ function rtlStrAssignMid _
 
     function = NULL
 
-	''
+
+    '' try to cast an UDT to a WSTRING (ustring)
+    astTryConvertUdtToWstring (expr1)           
+
     if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRASSIGNMID ) )
     	dst_len = -1
@@ -3183,7 +3221,9 @@ function rtlStrLRSet _
 
     function = FALSE
 
-	''
+    '' try to cast an UDT to a WSTRING (ustring)
+    astTryConvertUdtToWstring (dstexpr)        
+
 	if( astGetDataType( dstexpr ) <> FB_DATATYPE_WCHAR ) then
 		proc = astNewCALL( iif( is_rset, _
 		                        PROCLOOKUP( STRRSET ), _
@@ -3328,7 +3368,9 @@ function rtlStrAsc _
 
 	function = NULL
 
-    ''
+    '' try to cast an UDT to a WSTRING (ustring)
+    astTryConvertUdtToWstring (expr)            
+
     if( astGetDataType( expr ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRASC ) )
     else
@@ -3425,6 +3467,9 @@ function rtlStrInstr _
 
     function = NULL
 
+  '' try to cast an UDT to a WSTRING (ustring)
+  astTryConvertUdtToWstring (nd_text)         
+
 	dtype = astGetDataType( nd_text )
 
 	''
@@ -3476,6 +3521,9 @@ function rtlStrInstrRev _
 
 	function = NULL
 
+    '' try to cast an UDT to a WSTRING (ustring)
+    astTryConvertUdtToWstring (nd_text)         
+
 	dtype = astGetDataType( nd_text )
 
 	''
@@ -3525,6 +3573,9 @@ function rtlStrTrim _
     dim as integer dtype = any
 
     function = NULL
+
+    '' try to cast an UDT to a WSTRING (ustring)
+    astTryConvertUdtToWstring (nd_text)         
 
 	dtype = astGetDataType( nd_text )
 
@@ -3579,6 +3630,9 @@ function rtlStrRTrim _
 
     function = NULL
 
+    '' try to cast an UDT to a WSTRING (ustring)
+    astTryConvertUdtToWstring (nd_text)         
+
 	dtype = astGetDataType( nd_text )
 
 	''
@@ -3631,6 +3685,9 @@ function rtlStrLTrim _
     dim as integer dtype = any
 
     function = NULL
+
+    '' try to cast an UDT to a WSTRING (ustring)
+    astTryConvertUdtToWstring (nd_text)         
 
 	dtype = astGetDataType( nd_text )
 
@@ -3775,6 +3832,10 @@ function rtlStrCase _
 			end if
 		end if
 	end if
+
+
+    '' try to cast an UDT to a WSTRING (ustring)
+    astTryConvertUdtToWstring (expr)            
 
 	if( is_lcase ) then
 		if( astGetDataType( expr ) = FB_DATATYPE_WCHAR ) then

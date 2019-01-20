@@ -80,6 +80,10 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 		dstexpr = CREATEFAKEID( )
 	end if
 
+
+  '' try to cast an UDT to a WSTRING (ustring)
+  astTryConvertUdtToWstring (dstexpr)         
+
 	dtype1 = astGetDataType( dstexpr )
 	select case as const dtype1
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
@@ -125,6 +129,10 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 
 	'' Expression
 	hMatchExpressionEx( srcexpr, dtype1 )
+
+
+    '' try to cast an UDT to a WSTRING (ustring)
+    astTryConvertUdtToWstring (srcexpr)         
 
 	dtype2 = astGetDataType( srcexpr )
 	select case as const dtype2

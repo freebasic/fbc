@@ -32,6 +32,8 @@ enum LEXPP_PRAGMAOPT_ENUM
 	LEXPP_PRAGMAOPT_BITFIELD
 	LEXPP_PRAGMAOPT_ONCE
 	LEXPP_PRAGMAOPT_WARNCONSTNESS
+  '' ustring - Pragma USTRING
+  LEXPP_PRAGMAOPT_USTRING      
 
 	LEXPP_PRAGMAS
 end enum
@@ -49,7 +51,8 @@ end type
 	{ _
 		("msbitfields", FB_COMPOPT_MSBITFIELDS, LEXPP_PRAGMAFLAG_DEFAULT         ), _
 		("once"       , 0                     , LEXPP_PRAGMAFLAG_HAS_CALLBACK    ), _
-		("constness"  , FB_PDCHECK_CONSTNESS  , LEXPP_PRAGMAFLAG_PDCHECK or LEXPP_PRAGMAFLAG_DEFAULT ) _
+		("constness"  , FB_PDCHECK_CONSTNESS  , LEXPP_PRAGMAFLAG_PDCHECK or LEXPP_PRAGMAFLAG_DEFAULT ), _
+		("ustring"    , FB_COMPOPT_USTRING    , LEXPP_PRAGMAFLAG_HAS_CALLBACK    ) _ 
 	}
 
 sub ppPragmaInit( )
@@ -221,6 +224,11 @@ sub ppPragma( )
 		select case p
 		case LEXPP_PRAGMAOPT_ONCE
 			fbPragmaOnce()
+
+		case LEXPP_PRAGMAOPT_USTRING
+			'' set option for dynamic wide string (ustring)
+			fbSetOption( FB_COMPOPT_USTRING, -1 )     
+
 		end select
 	else
 		if( (pragmaOpt(p).flags and (LEXPP_PRAGMAFLAG_CAN_PUSHPOP or LEXPP_PRAGMAFLAG_CAN_ASSIGN)) <> 0 ) then

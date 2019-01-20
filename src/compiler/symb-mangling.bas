@@ -129,7 +129,8 @@ function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
 	function = sym->id.name
 end function
 
-sub symbSetName( byval s as FBSYMBOL ptr, byval name_ as zstring ptr )
+'' changed "name_" to "name_x" (avoid naming conflicts)
+sub symbSetName( byval s as FBSYMBOL ptr, byval name_x as zstring ptr )
 	dim as integer slen = any
 
 	'' assuming only params will change names, no mangling reseted
@@ -138,12 +139,12 @@ sub symbSetName( byval s as FBSYMBOL ptr, byval name_ as zstring ptr )
 		poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
 	end if
 
-	slen = len( *name_ )
+	slen = len( *name_x )
 	if( slen = 0 ) then
 		s->id.name = NULL
 	else
 		s->id.name = poolNewItem( @symb.namepool, slen + 1 ) 'ZStrAllocate( slen )
-		*s->id.name = *name_
+		*s->id.name = *name_x
 	end if
 end sub
 

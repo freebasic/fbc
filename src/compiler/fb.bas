@@ -574,6 +574,11 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.showincludes = value
 	case FB_COMPOPT_MODEVIEW
 		env.clopt.modeview = value
+
+	''ustring - dynamic wide string
+	case FB_COMPOPT_USTRING                       
+		env.clopt.ustring = value
+
 	end select
 end sub
 
@@ -648,6 +653,10 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.showincludes
 	case FB_COMPOPT_MODEVIEW
 		function = env.clopt.modeview
+
+	'' ustring - dynamic wide string
+	case FB_COMPOPT_USTRING                    
+		function = env.clopt.ustring
 
 	case else
 		function = 0

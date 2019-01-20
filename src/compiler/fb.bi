@@ -93,6 +93,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_OBJINFO              '' boolean: write/read .fbctinf sections etc.?
 	FB_COMPOPT_SHOWINCLUDES         '' boolean: -showincludes
 	FB_COMPOPT_MODEVIEW             ''__FB_GUI__
+	FB_COMPOPT_USTRING              '' ustring - implement dynamic wide string
 
 	FB_COMPOPTIONS
 end enum
@@ -274,6 +275,7 @@ type FBCMMLINEOPT
 	objinfo         as integer
 	showincludes    as integer
 	modeview        as FB_MODEVIEW
+    ustring         as integer              '' ustring - dynamic wide string
 end type
 
 '' features allowed in the selected language

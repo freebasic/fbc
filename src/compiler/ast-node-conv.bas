@@ -294,6 +294,56 @@ end function
 	end scope
 #endmacro
 
+
+'':::::
+FUNCTION astTryConvertUdtToWstring (byref expr as ASTNODE ptr) as boolean
+'***********************************************************************************************
+' try to convert UDT to WSTRING, if possible - convert and return true in this case
+'***********************************************************************************************
+dim as FBSYMBOL ptr proc = any
+dim as FB_ERRMSG err_num = any
+
+  if (env.clopt.ustring) then
+    select case astGetDataType(expr)
+      case FB_DATATYPE_STRUCT                         'UDT ?
+        proc = symbFindCastOvlProc(FB_DATATYPE_WCHAR, NULL, expr, @err_num) 'can cast to wstring ?
+          if (proc) then
+'                expr = astNewOvlCONV( FB_DATATYPE_WCHAR, NULL, expr )
+            expr = astBuildCall(proc, expr)           'convert
+            return true                               'success
+          end if
+      end select
+  end if
+
+  return false                                        'not possible
+
+
+end Function
+
+
+FUNCTION astCanConvertUdtToWstring (byref expr as ASTNODE ptr) as boolean
+'***********************************************************************************************
+' test, if UDT can be converted to WSTRING - return true, if this is possible
+'***********************************************************************************************
+dim as FBSYMBOL ptr proc = any
+dim as FB_ERRMSG err_num = any
+
+  if (env.clopt.ustring) then
+    select case astGetDataType(expr)
+      case FB_DATATYPE_STRUCT                         'UDT ?
+        proc = symbFindCastOvlProc(FB_DATATYPE_WCHAR, NULL, expr, @err_num) 'can cast to wstring ?
+          if (proc) then
+            return true                               'yes
+          end if
+      end select
+  end if
+
+  return false                                        'no
+
+
+end Function
+
+
 '':::::
 function astNewCONV _
 	( _
@@ -312,6 +362,16 @@ function astNewCONV _
 	end if
 
 	ldtype = astGetFullType( l )
+
+  '' ustring handling
+  dim udt_flag as long
+
+  '' can cast an UDT to a WSTRING - don´t convert actually to ustring
+  if astCanConvertUdtToWstring(l) then   
+    ldtype = FB_DATATYPE_WCHAR
+    udt_flag = 1
+  end if
+
 
 	'' same type?
 	if( typeGetDtAndPtrOnly( ldtype ) = typeGetDtAndPtrOnly( to_dtype ) ) then
@@ -350,7 +410,22 @@ function astNewCONV _
 	end if
 
 	'' try casting op overloading
+	select case as const typeGet( to_dtype )          
+  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+      '' special handling for ustring
+      if udt_flag = 0 then
+      	hDoGlobOpOverload( to_dtype, to_subtype, l )
+      end if
+
+
+    case else
 	hDoGlobOpOverload( to_dtype, to_subtype, l )
+
+  end select
+
+
+'	hDoGlobOpOverload( to_dtype, to_subtype, l )        'returns , if overloaded proc found
+
 
 	select case as const typeGet( to_dtype )
 	case FB_DATATYPE_VOID, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
