@@ -1,9 +1,9 @@
-#compile console exe 32 /o '"-gen gcc"
-#main_module
-
-#utility shell "copy.bat"
-
-#define ENABLE_STANDALONE
+'#compile console exe 32 /o '"-gen gcc"
+'#main_module
+'
+'#utility shell "copy.bat"
+'
+'#define ENABLE_STANDALONE
 '***********************************************************************************************
 ' end jk-ide changes
 '***********************************************************************************************
