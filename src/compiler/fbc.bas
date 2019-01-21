@@ -1,4 +1,7 @@
-'#compile console exe 32 /o '"-gen gcc"
+'#compile console exe 32 /o "-gen gcc -g"
+''#compile console exe 32 '/o "-gen gcc -g"
+''#compile console exe 64 /o "-gen gcc -g"
+''#compile console exe 32 /o "-gen gcc"
 '#main_module
 '
 '#utility shell "copy.bat"
