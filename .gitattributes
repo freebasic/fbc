@@ -1,0 +1,17 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+# BASIC source files (need cr/lf line endings)
+*.bas text
+*.bi text
+*.inc text
+*.h text
+*.txt text
+*.jkp text
+*.rc text
+
+*.gif binary
+*.jpg binary
+*.png binary
+
+./manual/cache/*.wakka eol=lf 
+./tests/file/big-list-eol-lf.txt eol=lf
