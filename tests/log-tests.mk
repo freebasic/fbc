@@ -75,6 +75,10 @@ endif
 # ------------------------------------------------------------------------
 
 LOG_TESTS_INC := log-tests-$(FB_LANG).inc
+LOG_TESTS_LOG_LST := log-tests-log-$(FB_LANG).lst
+LOG_TESTS_OBJ_LST := log-tests-obj-$(FB_LANG).lst
+
+LOG_TESTS_RESULTS_LOG := log-tests-results-$(FB_LANG).log
 FAILED_LOG_TESTS_INC := failed-log-tests-$(FB_LANG).inc
 FAILED_LOG := failed-$(FB_LANG).log
 
@@ -144,6 +148,12 @@ $(LOGLIST_MULTI_MODULE_OK) \
 $(LOGLIST_MULTI_MODULE_FAIL) \
 )
 
+OBJLIST_ALL := $(strip \
+$(OBJLIST_COMPILE_ONLY_OK) \
+$(OBJLIST_COMPILE_ONLY_FAIL) \
+$(OBJLIST_COMPILE_AND_RUN_OK) \
+$(OBJLIST_COMPILE_AND_RUN_FAIL) \
+) 
 
 # set ABORT_CMD := false to abort on failed tests, true to continue anyway
 ABORT_CMD := true
@@ -337,13 +347,34 @@ $(LOG_TESTS_INC) :
 >> $(LOG_TESTS_INC)
 	@$(ECHO) "#" >> $(LOG_TESTS_INC)
 
+# hack: use the auto-generated list of tests to create a temporary file
+# containing a list of all the .o & .log files.  The command line can be
+# very long and some shells (like cmd.exe) won't handle it.
+
+	@$(PRINTF) "."
+	@$(GREP) $(LOG_TESTS_INC) -i -e ".*+=.*\.b.*" \
+| $(SED) 's/^.* += \(.*\)\(\.b.*\)/\1\.o/g' \
+> $(LOG_TESTS_OBJ_LST)
+
+$(LOG_TESTS_LOG_LST) : $(LOG_TESTS_INC)
+	@$(PRINTF) "."
+	@$(GREP) $(LOG_TESTS_INC) -i -e "^.*+=.*\.b.*" \
+| $(SED) 's/^.* += \(.*\)\(\.b.*\)/\1\.log/g' \
+> $(LOG_TESTS_LOG_LST)
+
 	@$(ECHO) " Done"
 
 # ------------------------------------------------------------------------
 # results
 #
+# use xargs to manage the number of maximum number of arguments passed to grep and store the
+# results in a single file
+#
+#
+$(LOG_TESTS_RESULTS_LOG): $(LOG_TESTS_LOG_LST) $(LOGLIST_ALL)
+	@$(XARGS) -a $(LOG_TESTS_LOG_LST) $(GREP) -i -E '^.*[[:space:]]*:[[:space:]]*RESULT=FAILED' ; true > $@ 
 
-results : $(LOGLIST_ALL)
+results : $(LOG_TESTS_RESULTS_LOG)
 
 	@$(PRINTF) "\n\nFAILED LOG - for log-tests -lang $(FB_LANG)\n" > $(FAILED_LOG)
 
@@ -351,7 +382,7 @@ ifeq ($(LOGLIST_ALL),)
 	@$(PRINTF) "None Found\n\n" >> $(FAILED_LOG)
 else
 	@if  \
-$(GREP) -i -E '^.*[[:space:]]*:[[:space:]]*RESULT=FAILED' $(LOGLIST_ALL) \
+$(GREP) -i -E '^.*[[:space:]]*:[[:space:]]*RESULT=FAILED' $(LOG_TESTS_RESULTS_LOG) \
 	; then \
 		$(PRINTF) " \n" && \
 		true \
@@ -374,53 +405,29 @@ mostlyclean : clean_tests
 .PHONY: clean_tests
 clean_tests :
 	@$(ECHO) Cleaning log-tests for -lang $(FB_LANG) ...
-ifneq ($(OBJLIST_COMPILE_ONLY_OK),)
-	@$(RM) $(OBJLIST_COMPILE_ONLY_OK) 
+	$(RM) $(LOG_TESTS_RESULTS_LOG)
+ifneq ($(LOGLIST_ALL),)
+	@if [ -f $(LOG_TESTS_LOG_LST) ]; then $(XARGS) -r -a $(LOG_TESTS_LOG_LST) $(RM) ; fi
+	@if [ -f $(LOG_TESTS_OBJ_LST) ]; then $(XARGS) -r -a $(LOG_TESTS_OBJ_LST) $(RM) ; fi
 endif
-ifneq ($(LOGLIST_COMPILE_ONLY_OK),)
-	@$(RM) $(LOGLIST_COMPILE_ONLY_OK)
-endif
-ifneq ($(OBJLIST_COMPILE_ONLY_FAIL),)
-	@$(RM) $(OBJLIST_COMPILE_ONLY_FAIL) 
-endif
-ifneq ($(LOGLIST_COMPILE_ONLY_FAIL),)
-	@$(RM) $(LOGLIST_COMPILE_ONLY_FAIL)
-endif
+
 ifneq ($(APPLIST_COMPILE_AND_RUN_OK),)
 	@$(RM) $(APPLIST_COMPILE_AND_RUN_OK) 
-endif
-ifneq ($(OBJLIST_COMPILE_AND_RUN_OK),)
-	@$(RM) $(OBJLIST_COMPILE_AND_RUN_OK) 
-endif
-ifneq ($(LOGLIST_COMPILE_AND_RUN_OK),)
-	@$(RM) $(LOGLIST_COMPILE_AND_RUN_OK)
-endif
-ifneq ($(OBJLIST_COMPILE_AND_RUN_FAIL),)
-	@$(RM) $(OBJLIST_COMPILE_AND_RUN_FAIL) 
 endif
 ifneq ($(APPLIST_COMPILE_AND_RUN_FAIL),)
 	@$(RM) $(APPLIST_COMPILE_AND_RUN_FAIL) 
 endif
-ifneq ($(LOGLIST_COMPILE_AND_RUN_FAIL),)
-	@$(RM) $(LOGLIST_COMPILE_AND_RUN_FAIL)
-endif
 ifneq ($(SRCLIST_MULTI_MODULE_OK),)
 	@for s in $(SRCLIST_MULTI_MODULE_OK) ; do $(MAKE) -f bmk-make.mk clean BMK=$$s TEST_MODE=MULTI_MODULE_OK ; done
-endif
-ifneq ($(LOGLIST_MULTI_MODULE_OK),)
-	@$(RM) $(LOGLIST_MULTI_MODULE_OK) 
 endif
 ifneq ($(SRCLIST_MULTI_MODULE_FAIL),)
 	@for s in $(SRCLIST_MULTI_MODULE_FAIL) ; do $(MAKE) -f bmk-make.mk clean BMK=$$s TEST_MODE=MULTI_MODULE_FAIL ; done
 endif
-ifneq ($(LOGLIST_MULTI_MODULE_FAIL),)
-	@$(RM) $(LOGLIST_MULTI_MODULE_FAIL) 
-endif
 
 .PHONY: clean_include
 clean_include :
-	$(RM) $(LOG_TESTS_INC)
-	@$(RM) $(FAILED_LOG) 
+	$(RM) $(LOG_TESTS_INC) $(LOG_TESTS_LOG_LST) $(LOG_TESTS_OBJ_LST)
+	@$(RM) $(FAILED_LOG)
 
 .PHONY: clean_failed_include
 clean_failed_include :

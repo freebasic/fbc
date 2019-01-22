@@ -49,6 +49,7 @@ endif
 # ------------------------------------------------------------------------
 
 UNIT_TESTS_INC := unit-tests.inc
+UNIT_TESTS_OBJ_LST := unit-tests-obj.lst
 
 SRCLIST :=
 ifeq ($(MAKECMDGOALS),mostlyclean)
@@ -135,7 +136,7 @@ OBJLIST := $(SRCLIST:%.bas=%.o)
 #
 
 .PHONY: all
-all : make_fbcunit $(UNIT_TESTS_INC) build_tests run_tests
+all : make_fbcunit $(UNIT_TESTS_OBJ_LST) build_tests run_tests
 
 .PHONY: make_fbcunit
 make_fbcunit : $(FBCU_BIN)
@@ -154,20 +155,27 @@ $(UNIT_TESTS_INC) : $(DIRLIST_INC)
 	@$(ECHO) "# This file automatically generated - DO NOT EDIT" > $(UNIT_TESTS_INC)
 	@$(ECHO) "#" >> $(UNIT_TESTS_INC)
 	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
-| $(XARGS) $(GREP) -l -i -E '#[[:space:]]*include[[:space:]](once)*[[:space:]]*\"fbcu(nit)?\.bi\"' \
-| $(SED) -e 's/\(^.*\)/\SRCLIST \+\= \.\/\1/g' \
->> $(UNIT_TESTS_INC)
-	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
-| $(XARGS) $(GREP) -l -i -E '[[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*FBCUNIT_COMPATIBLE' \
+| $(XARGS) $(GREP) -l -i -E \
+'(#[[:space:]]*include[[:space:]](once)*[[:space:]]*\"fbcu(nit)?\.bi\")|([[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*FBCUNIT_COMPATIBLE)' \
 | $(SED) -e 's/\(^.*\)/\SRCLIST \+\= \.\/\1/g' \
 >> $(UNIT_TESTS_INC)
 	@$(ECHO) "Done"
 
+# hack: generate the file UNIT_TESTS_OBJ_LST from UNIT_TESTS_INC
+# Use the auto-generated list of tests to create a temporary file
+# containing a list of all the object files.  The command line can be
+# very long and some shells (like cmd.exe) won't handle it.
+
+$(UNIT_TESTS_OBJ_LST) : $(UNIT_TESTS_INC)
+	@$(GREP) $(UNIT_TESTS_INC) -i -e 'SRCLIST +=' \
+| $(SED) 's/^SRCLIST += \(.*\)\(\.b.*\)/\1\.o/g' \
+> $(UNIT_TESTS_OBJ_LST)
+
 # ------------------------------------------------------------------------
 
 .PHONY: build_tests
-build_tests : $(OBJLIST) $(UNIT_TESTS_INC)
-	$(FBC) $(FBC_LFLAGS) $(OBJLIST)
+build_tests : ./$(MAINBAS).o $(OBJLIST) $(UNIT_TESTS_OBJ_LST)
+	$(FBC) $(FBC_LFLAGS) @$(UNIT_TESTS_OBJ_LST) ./$(MAINBAS).o
 
 .PHONY: run_tests
 run_tests : build_tests
@@ -186,7 +194,8 @@ clean_main_exe :
 .PHONY: clean_tests
 clean_tests :
 	@$(ECHO) Cleaning unit-tests files ...
-	@$(RM) $(OBJLIST)
+	@$(RM) ./$(MAINBAS).o
+	@if [ -f $(UNIT_TESTS_OBJ_LST) ]; then $(XARGS) -r -a $(UNIT_TESTS_OBJ_LST) $(RM) ; fi
 
 .PHONY: clean_fbcu
 clean_fbcu :
@@ -194,5 +203,4 @@ clean_fbcu :
 
 .PHONY: clean_include
 clean_include :
-	$(RM) $(UNIT_TESTS_INC)
-
+	$(RM) $(UNIT_TESTS_INC) $(UNIT_TESTS_OBJ_LST)
