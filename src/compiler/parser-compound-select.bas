@@ -92,7 +92,10 @@ sub cSelectStmtBegin( )
 		expr = astNewCONSTi( 0 )
 	end if
 
-	'' can't be an UDT
+    '' try to cast an UDT to a WSTRING (ustring)
+    astTryConvertUdtToWstring (expr)             
+
+	'' can't be an UDT anymore
 	if( astGetDataType( expr ) = FB_DATATYPE_STRUCT ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )
 		astDelTree( expr )

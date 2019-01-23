@@ -58,7 +58,8 @@ function astBuildFakeWstringAssign _
 		t = astNewLINK( t, astRemSideFx( expr ), FALSE )
 	end if
 
-	assert( astGetDataType( expr ) = FB_DATATYPE_WCHAR )
+  '' ustring	assert( astGetDataType( expr ) = FB_DATATYPE_WCHAR )
+	assert( (astGetDataType( expr ) = FB_DATATYPE_WCHAR) or (astCanConvertUdtToWstring( expr )) )
 
 	'' wcharptr = WstrAlloc( WstrLen( expr ) )
 	t = astNewLINK( t, _

@@ -655,6 +655,16 @@ function cAddrOfExpression( ) as ASTNODE ptr
 
 		dim as integer dtype = astGetDataType( expr )
 
+    dim udt_flag as long = 0
+
+    '' can cast an UDT to a WSTRING ? (ustring)
+    if astCanConvertUdtToWstring(expr) then    
+    ' this is possibly dangerous, because all UDTs, which can cast to WSTRING get here.
+    ' but it is not made sure, that the first member variable points to the data (how ?)
+      udt_flag = 1
+
+    else
+
 		if( symbIsString( dtype ) = FALSE ) then
 			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			'' error recovery: skip until ')' and fake a node
@@ -662,6 +672,7 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			astDelTree( expr )
 			return astNewCONSTi( 0 )
 		end if
+    end if
 
 		'' check for invalid classes (functions, etc)
 
@@ -682,10 +693,38 @@ function cAddrOfExpression( ) as ASTNODE ptr
 			expr = astBuildStrPtr( expr )
 
 		'' anything else: do cast( zstring ptr, @expr )
+
 		else
-			expr = astNewCONV( typeAddrOf( FB_DATATYPE_CHAR ), _
-							   NULL, _
-							   astNewADDROF( expr ) )
+      '' is an USTRING ?
+      if (udt_flag) then
+        dtype = FB_DATATYPE_WCHAR
+        if( typeIsConst( expr->dtype ) ) then
+          dtype = typeSetIsConst( dtype )
+        end if
+        dtype = typeSetIsConst( typeAddrOf( dtype ) )
+        dtype = typeAddrOf( dtype )
+
+        '' Don't warn on CONST qualifier changes, we are explicitly forcing the conversion
+        expr = astNewDEREF( astNewCONV( dtype, NULL, astNewADDROF( expr ), AST_CONVOPT_DONTWARNCONST ) )
+
+      '' it is a WSTRING
+      else
+        if env.clopt.ustring then
+          if (dtype = FB_DATATYPE_WCHAR) then
+            expr = astNewCONV(typeAddrOf( FB_DATATYPE_WCHAR ), NULL, astNewADDROF( expr ) ) 'return a wstring ptr
+
+          else
+            expr = astNewCONV(typeAddrOf( FB_DATATYPE_CHAR ), NULL, astNewADDROF( expr ) ) 'return a zstring ptr
+          end if
+
+		else
+          expr = astNewCONV(typeAddrOf( FB_DATATYPE_CHAR ), NULL, astNewADDROF( expr ) ) 'return a zstring ptr
+        end if
+      end if
+
+'			expr = astNewCONV( typeAddrOf( FB_DATATYPE_CHAR ), _
+'							   NULL, _
+'							   astNewADDROF( expr ) )
 		end if
 
 		'' ')'

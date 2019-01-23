@@ -81,6 +81,12 @@ private function hScopedSwap( ) as integer
 		errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 	end if
 
+
+    '' try to cast an UDT to a WSTRING (ustring)
+    astTryConvertUdtToWstring (l)               
+    astTryConvertUdtToWstring (r)                    
+
+
 	dim as integer ldtype = astGetDataType( l )
 	dim as integer rdtype = astGetDataType( r )
 

@@ -6,6 +6,7 @@
 
 DIRLIST_FB := \
 pretest \
+array \
 boolean \
 comments \
 compound \
@@ -34,6 +35,7 @@ structs \
 swap \
 threads \
 typedef \
+ustring \
 virtual \
 visibility \
 wstring

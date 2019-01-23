@@ -535,6 +535,12 @@ enum AST_CONVOPT
 	AST_CONVOPT_DONTWARNFUNCPTR = &h20
 end enum
 
+
+'' ustring specific
+DECLARE FUNCTION astTryConvertUdtToWstring (byref expr as ASTNODE ptr) as boolean 
+DECLARE FUNCTION astCanConvertUdtToWstring (byref expr as ASTNODE ptr) as boolean
+
+
 declare function astNewCONV _
 	( _
 		byval to_dtype as integer, _

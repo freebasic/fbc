@@ -313,9 +313,83 @@ private function hOvlProcArgList _
 			end if
 
 			'' alloc a new arg
-			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
 
+      '' check for "ANY" -> insert new arg (1,) for "any", do special handling for pathname_
+      if env.clopt.ustring then                      
+        if proc->id.name = 0 then goto do_default
+
+        '' only for these procedure names (special handling strings.bi)
+        select case *proc->id.name  
+          case "TALLY", "PARSECOUNT", "PARSE_", "EXTRACT_", "REMAIN_", "REMOVE_", "REPLACE_"
+            if hMatch( FB_TK_ANY ) then
+              arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE ) 'new arg
+              arg->expr = astRemSideFx(arg->expr)     'create a ref, because there is nothing, we just fake it
+
+              arg->mode = FB_PARAMMODE_BYVAL          'byval
+              arg->expr->class = AST_NODECLASS_CONST  'a constant
+              arg->expr->dtype = FB_DATATYPE_LONG     'data type
+              arg->expr->val.i = 1                    'value
+'            arg->expr->val.s = 0                      'don´t set to 0 !!!
+
+              args += 1
+
+			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
+              hOvlProcArg( args - init_args, arg, have_eq_outside_parens, options )
+
+            else
+              arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
+              hOvlProcArg( args - init_args, arg, have_eq_outside_parens, options )
+            end if
+
+
+          '' only for "PATHNAME_" (special handling strings.bi)
+          case "PATHNAME_"
+            dim nn as long = 0
+
+            if args = 0 then                          'only, if it´s the first argument 
+              select case ucase(*lexGetText( ))
+                case "PATH"
+                  nn = 1
+                case "NAME"
+                  nn = 2
+                case "NAMEX"
+                  nn = 3
+                case "EXTN"
+                  nn = 4
+
+              end select
+
+              if nn then
+                lexSkipToken( )
+                
+                arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE ) 'new arg
+                arg->expr = astRemSideFx(arg->expr)       'create a ref, because there is nothing, we just fake it
+
+                arg->mode = FB_PARAMMODE_BYVAL          'byval
+                arg->expr->class = AST_NODECLASS_CONST  'a constant
+                arg->expr->dtype = FB_DATATYPE_LONG     'data type
+                arg->expr->val.i = nn                   'value
+
+                args += 1                               'one more argument
+
+                lexSkipToken( )
+              end if
+            end if
+
+            arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE ) 'regular processing
+            hOvlProcArg( args - init_args, arg, have_eq_outside_parens, options )
+
+          case else
+            arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
 			hOvlProcArg( args - init_args, arg, have_eq_outside_parens, options )
+
+        end select
+
+      else
+do_default:
+  			arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
+	  		hOvlProcArg( args - init_args, arg, have_eq_outside_parens, options )
+      end if
 
 			'' ','?
 			if( lexGetToken( ) <> CHAR_COMMA ) then

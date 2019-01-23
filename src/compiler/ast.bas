@@ -437,7 +437,8 @@ function astMakeRef( byref expr as ASTNODE ptr ) as ASTNODE ptr
 		end select
 	end if
 
-	assert( astCanTakeAddrOf( expr ) )
+  '' ustring
+	assert( (astCanTakeAddrOf( expr )) or (astCanConvertUdtToWstring( expr )) )
 
 	temp = symbAddTempVar( typeAddrOf( expr->dtype ), expr->subtype )
 

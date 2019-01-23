@@ -199,12 +199,52 @@ function astNewIIF _
 	dtype = FB_DATATYPE_INVALID
 	subtype = NULL
 
+  '' can to cast an UDT to a WSTRING (ustring)
+  if astCanConvertUdtToWstring (truexpr) then      
+    if astCanConvertUdtToWstring (falsexpr) then
+      '' both are ustring
+      dtype = FB_DATATYPE_WCHAR                      
+      subtype = NULL
+
+    else 
+      '' truexpr = ustring, falsexpr = something else
+
 	'' check types & find the iif() result type
+      if( hCheckTypes( FB_DATATYPE_WCHAR, truexpr->subtype, _       
+                       falsexpr->dtype, falsexpr->subtype, _
+                       dtype, subtype ) = FALSE ) then
+        exit function
+      end if
+    end if
+
+  '' truexpr <> ustring
+  else 
+    if astCanConvertUdtToWstring (falsexpr) then
+      '' falsexpr = ustring, truexpr = something else
+      if( hCheckTypes( truexpr->dtype, truexpr->subtype, _           
+                       FB_DATATYPE_WCHAR, falsexpr->subtype, _
+                       dtype, subtype ) = FALSE ) then
+        exit function
+      end if
+
+    else
+      '' none is ustring
 	if( hCheckTypes( truexpr->dtype, truexpr->subtype, _
 	                 falsexpr->dtype, falsexpr->subtype, _
 	                 dtype, subtype ) = FALSE ) then
 		exit function
 	end if
+    end if
+  end if
+
+
+'	'' check types & find the iif() result type
+'	if( hCheckTypes( truexpr->dtype, truexpr->subtype, _
+'	                 falsexpr->dtype, falsexpr->subtype, _
+'	                 dtype, subtype ) = FALSE ) then
+'		exit function
+'	end if
+
 
 	'' Merge CONST bits
 	''    byte ptr, const byte ptr  ->  const byte ptr

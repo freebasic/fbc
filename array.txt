@@ -1,0 +1,120 @@
+Array processing macros:
+
+array_sort    - sort all kinds of arrays in many ways including custom sort
+array_insert  - insert an element into an one-dimensional array an assign a value to it
+array_delete  - delete an element of an one-dimensional array and close the gap
+
+
+array_Sort(x, t, D, I, C)
+
+Syntax: array_sort(array, ascend/descend/@Customsortproc, dimension, index , count)
+
+Sorts a one-dimensional(!) fixed-size or dynamic array calling the C qsort function. 
+String sorting is case sensitive. Make it case insensitive by using a custom sort (ucase compare)
+
+5 Parameters:
+- x: array variable without brackets
+- t: "ac"/"{a}s{c}end", "dc"/"{d}es{c}end" or a pointer to a custom sort function (@customsortproc)
+     "a/descend_" replaces the last 4 parameters and sorts the first dimension entirely
+
+Example: array_sort(myarray, ascend_)
+
+- d: dimension
+- i: absolute index to start at (inside dimension)
+- c: count (# of elements to sort)
+
+the last three argumemts may be replaced by "ALL()", "ALL(1)", "ALL(2)" ...
+where the nimber inside the brackets denominates the dimension to sort entirely
+"ALL()" sorts the entire array over all dimensions
+
+Example: array_sort(myarray, ac, 2, 3, 4): sorts 4 elements in the 2. dimension
+                                           of myarray starting at myarray(2, 3)
+Example: array_sort(myarray, ac, all(3)) : sorts the 3. dimension of myarray entirely
+
+Example: array_sort(myarray, ascend_)    : sorts the 1. dimension of myarray entirely ascending
+
+ERR = 0 for success, = 6 for invalid index or dimension values, 7 for invalid custon sort proc
+any other value = run time error  
+
+
+prototype of a custom sort procedure:
+it must be CDECL, and you must choose the corresponding data type (zstring is just an example)
+
+
+PRIVATE FUNCTION CustomSortProc CDECL (BYVAL a AS zstring PTR, BYVAL b AS zstring PTR) AS LONG
+'***********************************************************************************************
+' qsort custom comparison function
+' return  1, if a should precede b in sorting
+' return -1, if b should precede a in sorting
+' return  0, if both are equal
+' for UDT: compare member variable(s) to get the desired order
+'***********************************************************************************************
+
+  if ucase(*a) > ucase(*b) then                       'make it case insensitive
+  if *a > *b then                                     'case sensitive
+    return 1
+  elseif *a < *b then
+    return -1
+  else
+    return 0
+  end if  
+
+
+END FUNCTION
+
+
+You may implement other predefined string sorting functions like: CompareStringEx
+
+CompareStringEx returns one of the following values if successful: 1,2,3 To maintain the C runtime
+convention of comparing strings, the value 2 can be subtracted from a nonzero return value.
+Then, the meaning of <0, ==0, and >0 is consistent with the C runtime.
+CSTR_LESS_THAN (-1). The string indicated by a is less in lexical value than the string indicated by b.
+CSTR_EQUAL (0). The string indicated by a is equivalent in lexical value to the string indicated by b.
+The two strings are equivalent for sorting purposes, although not necessarily identical.
+CSTR_GREATER_THAN (1). The string indicated by a is greater in lexical value than the string indicated by b.
+
+The function returns 0 if it does not succeed. To get extended error information, the application
+can call GetLastError, which can return one of the following error codes:
+ERROR_INVALID_FLAGS. The values supplied for flags were invalid.
+ERROR_INVALID_PARAMETER. Any of the parameter values was invalid.
+
+
+
+array_insert(a, i, v)                          'array, (absolute) index , value
+
+Syntax: array_insert(array, index, value)
+
+Inserts a new element at the specified index of a dynamic array and assigns a value to it
+this macro makes an array grow by on element, it fails for fixed-size arrays (cannot be redimed!)
+
+3 Parameters:
+- a: array (without brackets)
+- i: absolute index in the array where the new element will be inserted.
+- v: value of the new element. 
+     this may be a variable of the same type or constant where applicable
+     for UDTs not supporting the "=" operator, you must pass a variable of
+     the same type, initialzed to whatever is needed
+
+Example: array_insert(a, 5, 9)  inserts 9 at absolute position 5 in array a()
+
+ERR is set to 0 for success, to 99 for fixed-size arrays, 6 = invalid index
+any other value = run time error  
+
+
+
+array_delete(a, i)                             'array, (absolute) index
+
+Syntax: array_delete(array, index) 
+
+Deletes the element at the specified index of a dynamic array by shifting down all
+following elements, this macro makes an array shrink by on element, it works for fixed-size arrays too
+Please note: in case of a fixed-size array the last element will still be present
+(cannot be redimed!) but it will be reinitialzed to it´s default state
+
+2 Parameters:
+- a: array (without brackets)
+- i: absolute index in the array which will be deleted
+
+Example: array_delete(a, 5)  deletes element 5 in a()
+
+ERR is set to 0 for success, to 99 for fixed-size arrays, any other value = run time error  

@@ -1,0 +1,418 @@
+"ustring.bi"
+
+
+A new data type for FreeBASIC: USTRING
+
+USTRING is a zero terminated dynamic wide (unicode) string type, which can be used like any other available
+string type in FreeBASIC. All syntax elements working for strings, work for USTRINGs exactly the same
+way. USTRING is UTF16 Windows (not handling surrogate pairs) and UTF32 in Linux.
+
+You still cannot use wide strings for file operations, this is a feature yet to come. 
+
+There is one difference to the default behavior with USTRINGs: STRPTR now returns a pointer to the
+corresponding string´s data for all string types. That is, for a ZSTRING and a STRING STRPTR returns
+a ZSTRING PTR, and for WSTRING and USTRING STRPTR returns a WSTRING PTR.
+
+
+You must include "ustring.bi" into your code in order to use it. The underlying class-like type is
+an adaption of José Roca´s CWstr dynamic wide string type in WinFBX reduced to the absolute minimum.
+USTRINGs work for 32 and 64 bit in Windows and Linux. 
+
+In Windows you should implement WinFBX as a recommended alternative, but "ustring.bi" must be included 
+(after the "AFX\..." includes !) nevertheless for proper working. "ustring.bi" contains code for 
+activating the USTRING feature in the compiler and macros for switching the "USTRING" keyword to José´s "AFX.CBstr".
+
+The more there are new definitions, which might be useful when dealing with strings:
+
+"DSTR" dynamic string type,    = USTRING for UNICODE defined, STRING otherwise
+"ZSTR" zero terminated string, = WSTRING for UNICODE defined, ZSTRING otherwise
+
+This allows for writing code, which uses unicode string types for UNICODE defined and ascii string types otherwise
+the code will compile successfully in both cases.
+
+
+
+"stringex.bi"
+
+
+'***********************************************************************************************
+' new functions for string manipulation (work for ZSTRING, WSTRING, STRING and USTRING)
+
+' Due to automated conversion between wide and ascii strings, it doesn´t matter, which 
+' string types are used for passing and which for returning, you may even mix them. 
+
+' Obviously not all compbinations make sense though, even if the compiler accepts it.
+' Converting from ansi to wide strings is always a lossless conversion, but converting from wide 
+' to ansi is not always lossless and might result in data loss or corruption.
+
+' So as a rule of thumb: if the receiving string is an ansi type and the passed string(s)
+' is a (are) wide string(s), you might not always get what you expect
+
+' These functions don´t interpret UTF encoded strings other than UTF16for Windows and UTF 32 
+' for Linux, that is, it is possible to pass  e.g UTF8 strings, but the result cannot always 
+' be the expectd result, because there is no  automatic UTF8 conversion.
+'***********************************************************************************************
+
+LEFT_
+RIGHT_
+MID_
+
+
+Do what the corresponding statements without trailing underscore do. 
+This is to allow for a consistent syntax (appended "_")
+
+
+UCODE_
+
+Assigns a STRING to an USTRING, no conversion takes place, the data is just copied. 
+This is necessary to avoid automatic conversion
+
+Example: u = UCODE_(s) 
+
+
+ACODE_
+
+
+Assigns an USTRING to a STRING, no conversion takes place, the data is just copied. 
+This is necessary to avoid automatic conversion 
+
+Example: s = ACODE_(u) 
+
+
+INSERT_
+
+Inserts a string at a specified position within another string expression.
+Returns a string consisting of w with the string i inserted at position n. 
+If i is greater than the length of w or <= zero then  i is appended to w. 
+The first character in the string is position 1
+
+Syntax: Insert_(string to insert in, string to insert, position)
+
+Example: i = "12345"
+         i = (i, "asdf", 2)  => i: "1asdf2345"
+
+
+REPLACE_
+
+Within w replace all occurrences of one string with another string or all occurrences of 
+any of the individual characters specified in the m string with r
+The replacement can cause w to grow or condense in size. When a match is found, the 
+scan for the next match begins at the position immediately following the prior match.
+r can be a single character or a word. This function can be made case insensitive.
+The default is case sensitive and no "ANY" -> m is handled "as string"
+
+Syntax: Replace_(string to replace in, [any$,] char(s) to be replaced, replacement string [, case in/sensitive])
+
+Example: w = "aBcDeF" 
+         m = "cD"
+         r = "123"
+         s = REPLACE_(w, m, r)  => s: "aB123eF"
+
+         w = "aBcDeF" 
+         m = "cD"
+         r = "123"
+         s = REPLACE_(w, any m, r)  => s: "aB123123eF"
+
+         w = "aBcDeF" 
+         m = "cd"
+         r = "123"
+         s = REPLACE_(w, any m, r)  => s: "aB123eF"
+
+         w = "aBcDeF"
+         m = "cd"
+         r = "123"
+         s = REPLACE_(w, any m, r, 1)  => s: "aB123123eF"
+
+
+
+STRREVERSE_
+
+Reverses the contents of a string expression.
+
+Syntax: s = STRREVERSE_("xyz")
+
+Example: s = STRREVERSE_("xyz" => s: "zyx"
+
+
+
+REPEAT_
+
+Returns a string consisting of multiple copies of the specified string.
+This function is similar to STRING/WSTRING (which makes multiple copies of a single character).
+
+Syntax: s = Repeat_(times to repeat, string to repeat)
+
+Example: s = Repeat_(2, "xyz")  => s: "xyzxyz"
+
+
+
+EXTRACT_
+
+Complement to the Remain_ function. Extracts characters from a string up to a character
+or group of characters. Returns a substring of w starting with its first character 
+(or the character specified by nStart) and up to (but not including) the first occurrence
+of m. If m is not present in w (or is null) then all of w is returned from the nStart position.
+nStart is an optional starting position to begin searching and extracting. If nStart is not 
+specified, position 1 will be used. If nStart is zero, a nul string is returned. If nStart is 
+negative, ' the starting position is counted from right to left: if -1, the search begins at the
+last character; if -2, the second to last, and so forth. This function can be made case insensitive.
+The default is case sensitive and no "ANY" -> m is handled "as string"
+
+Syntax: Extract_([nStart,] string to be searched, [any$,] char(s) to be searched for [, case in/sensitive])
+
+Example: w = "aBcDeF" 
+         m = "cD"
+         s = EXTRACT_(w, m)  => s: "aB"
+
+         w = "aBcDeF" 
+         m = "cD"
+         s = EXTRACT_(2, w, m)  => s: "B"
+
+         w = "aBcDeF" 
+         m = "ec"
+         s = EXTRACT_(w, any m)  => s: "aB"
+
+         w = "aBcDeF" 
+         m = "eC"
+         s = EXTRACT_(w, any m, 1)  => s: "aB"
+
+
+REMAIN_
+
+Complement to the Extract_ function. Returns the portion of a string following the
+first occurrence of a character or group of characters.
+w is searched for the string specified in m If found, all characters
+after m are returned. If m is not present in w (or is null) then
+a zero-length empty string is returned.
+nStart is an optional starting position to begin searching. If nStart is not specified,
+position 1 will be used. If nStart is zero, a nul string is returned. If nStart is negative,
+the starting position is counted from right to left: if -1, the search begins at the last
+character; if -2, the second to last, and so forth. This function can be made case insensitive.
+The default is case sensitive and no "ANY" -> m is handled "as string"
+
+Syntax: Remain_([nStart,] string to be searched, [any$,] char(s) to be searched for [, case in/sensitive])
+
+Example: w = "aBcDeF" 
+         m = "cD"
+         s = REMAIN_(w, m)  => s: "eF"
+
+         w = "aBcDeF" 
+         m = "cD"
+         s = REMAIN_(4, w, m)  => s: ""
+
+         w = "aBcDeF" 
+         m = "cD"
+         s = REMAIN_(4, w, any m)  => s: "DeF"
+
+         w = "aBcDeF" 
+         m = "eC"
+         s = REMAIN_(w, any m, 1)  => s: "DeF"
+
+
+
+REMOVE_
+
+Returns a copy of string w with substrings m removed individually or in total.
+If m is not present in w, all of w is returned intact. This function can be made case insensitive.
+The default is case sensitive and no "ANY" -> m is handled "as string"
+
+Syntax: Remove_(string to remove from [,[any$,] string to remove] [, case in/sensitive])
+
+Example: w = "aBcDeF" 
+         m = "cD"
+         s = REMOVE_(w, m)  => s: "aBeF"
+
+         w = "aBcDeF" 
+         m = "ce"
+         s = REMOVE_(w, any m)  => s: "aBDF"
+
+         w = "aBcDeF" 
+         m = "eC"
+         s = EXTRACT_(w, any m, 1)  => s: "aBDF"
+
+
+PARSE_
+
+Returns a delimited field from a string expression.
+m contains a string of one or more characters that must be individually or fully matched to 
+be successful dependig on "IsAny". If n evaluates to zero or is outside of the actual field 
+count, an empty string is returned. If n is negative then fields are searched from the right 
+to left in w. M is case-sensitive.
+
+Syntax: parse_(string to parse, [[any,] delimiter string,] position)
+
+Example: w = " 1 2,3 4 5" 
+         m = " "
+         s = PARSE(w, m, 1)  => s: ""
+
+         w = " 1 2,3 4 5" 
+         m = " "
+         s = PARSE(w, m, 2)  => s: "1"
+
+         w = " 1 2,3 4 5" 
+         m = " "
+         s = PARSE(w, m, 3)  => s: "2,3"
+
+         w = " 1 2,3 4 5" 
+         m = " "
+         s = PARSE(w, m, 4)  => s: "4"
+
+         w = " 1 2,3 4 5" 
+         m = " ,"
+         s = PARSE(w, any m, 3)  => s: "2"
+
+         w = " 1 2,3 4 5" 
+         m = " ,"
+         s = PARSE(w, any m, 4)  => s: "3"
+
+         w = " 1 2,3 4 5" 
+         m = "2,3"
+         s = PARSE(w, m, 1)  => s: " 1 "
+
+
+
+LSET_
+
+return the n leftmost chars of w padded to the right with spaces or the first char of pad
+
+Syntax LSET_(string to pad, size of resultstring[, string to pad with])
+
+Example: w = "12345" 
+         p = " "
+         s = LSET_(w, 7, p)  => s: "12345  "
+
+         w = "12345" 
+         p = "xyz"
+         s = LSET_(w, 7, p)  => s: "12345xx"
+
+         w = "12345" 
+         p = "xyz"
+         s = LSET_(w, 4, p)  => s: "1234"
+
+
+RSET_
+
+return the n right chars of w padded to the left with spaces or the first char of pad
+
+Syntax RSET_(string to pad, size of resultstring[, string to pad with])
+
+Example: w = "12345" 
+         p = " "
+         s = RSET_(w, 7, p)  => s: "  12345"
+
+         w = "12345" 
+         p = "xyz"
+         s = RSET_(w, 7, p)  => s: "xx12345"
+
+         w = "12345" 
+         p = "xyz"
+         s = LSET_(w, 4, p)  => s: "2345"
+
+
+
+PATHNAME_
+
+Parses a path/file name to extract component parts.
+This function evaluates a text path/file text name, and returns a requested part of the
+name. The functionality is strictly one of string parsing alone.
+Use one of the following options to specify the requested part:
+ PATH    Returns the path portion of the path/file Name. That is the text up to and
+         including the last backslash (\) or colon (:).
+
+ NAME    Returns the name portion of the path/file Name. That is the text to the right
+         of the last backslash (\) or colon (:), ending just before the last period (.).
+
+ EXTN    Returns the extension portion of the path/file name. That is the last
+         period (.) in the string plus the text to the right of it.
+
+ NAMEX   Returns the name and the EXTN parts combined.
+
+
+Syntax: Pathname_(PATH|NAME|NAMEX|EXTN, filespec)
+
+Example: f = "c:\test\myfile.txt"
+         s = PATHNAME_(PATH, f)  => s: "c:\test\"
+         s = PATHNAME_(NAME, f)  => s: "myfile"
+         s = PATHNAME_(NAMEX, f)  => s: "myfile.txt"
+         s = PATHNAME_(EXTN, f)  => s: ".txt"
+
+
+
+SHRINK_
+
+Shrinks a string to be able to use a consistent single character delimiter.
+The purpose of this function is to create a string with consecutive data items (words)
+separated by a consistent single character. This makes it very straightforward to parse
+the results as needed.
+If m is not defined then all leading spaces and trailing spaces are removed entirely.
+All occurrences of two or more spaces are changed to a single space. Therefore, the new
+string returned consists of zero or more words, each separated by a single space character.
+If m is specified, it defines one or more delimiter characters to shrink. All leading
+and trailing mask characters are removed entirely. All occurrences of one or more mask
+characters are replaced with the first character of wszMask The new string returned consists
+of zero or more words, each separated by the character found in the first position of m.
+WhiteSpace is generally defined as the four common non-printing characters:
+Space, Tab, Carriage-Return, and Line-Feed. m = (W)Chr(32,9,13,10)
+
+Syntax: Shrink_(string to shrink[, char to shrink and to remove at the bgining and at the end])
+
+Example: w = " 1  2 3 4   5 " 
+         s = SHRINK_(w)  => s: "1 2 3 4 5"
+
+Example: w = "111223344551111111223344551" 
+         s = SHRINK_(w, "1")  => s: "22334455122334455"
+
+
+
+TALLY
+
+Count the number of occurrences of specified characters strings within a string.
+W is the string expression in which to count characters. M is a list of single characters 
+to be searched for individually or in total. A match on any one of which or a match in total
+will cause the count to be incremented for each occurrence. Note that repeated characters in m 
+will not increase the count, if characters a searched individually. If m is not present in w, 
+zero is returned. The default is: count entire string, count case sensitive
+
+Syntax: n = tally(string to count in, [any$,] string to find [, case in/sensitive]
+
+Example: w = "abcdefABCDEF" 
+         n = TALLY(w, "b")  => n: 1
+
+         w = "abcdefABCDEF" 
+         n = TALLY(w, "bc")  => n: 1
+
+         w = "abcdefABCDEF" 
+         n = TALLY(w, "bc", 1)  => n: 2
+
+         w = "abcdefABCDEF" 
+         n = TALLY(w, any "cba", 1)  => n: 6
+
+         w = "abcdefABCDEF" 
+         n = TALLY(w, any "cbaabc", 1)  => n: 6
+
+
+
+PARSECOUNT
+
+Returns the count of delimited fields from a string expression. To be used in conjunction
+with "PARSE_" for knowing how many fields tp parse are there
+If w is empty (a null string) or contains no delimiter character(s), the string
+is considered to contain exactly one sub-field. In this case, ParseCount returns the value 1.
+m contains a string (one or more characters) that are seached individually or must be fully 
+matched. The default is: count entire string, count case sensitive
+
+Syntax: n = parsecount(string to count in, [any$,] separating string [, case in/sensitive]
+
+Example: w = "abc def ABC DEF" 
+         n = PARSECOUNT(w)  => n: 4
+
+         w = "abc def ABC DEF" 
+         n = PARSECOUNT(w, "def")  => n: 2
+
+         w = "abc def ABC DEF" 
+         n = PARSECOUNT(w, any "def")  => n: 4
+
+         w = "abc def ABC DEF" 
+         n = PARSECOUNT(w, any "def", 1)  => n: 7
+
+
