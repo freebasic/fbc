@@ -251,7 +251,7 @@ dos)
 
    	djver=205
 	gccver=710
-	djgppgccversiondir=7.1.0
+	djgppgccversiondir=7
 	bnuver=229
 	gdbver=771
 	djpkg=current
@@ -268,6 +268,9 @@ dos)
 	download_djgpp ${djpkg}/v2gnu/ fil41br2
 	download_djgpp ${djpkg}/v2gnu/ mak421b
 	download_djgpp ${djpkg}/v2gnu/ shl2011br2
+	download_djgpp ${djpkg}/v2gnu/ pth207b 
+
+	download_djgpp ${djpkg}/v2tk/ ls080b 
 
 	# Sources for stuff that goes into the FB-dos package (needs updating to new versions)
 	download_djgpp ${djpkg}/v2gnu/ bnu${bnuver}s
@@ -275,16 +278,21 @@ dos)
 	download_djgpp ${djpkg}/v2gnu/ gdb${gdbver}s
 	download_djgpp ${djpkg}/v2/    djlsr${djver}
 
-	unzip -q ../input/DJGPP/djdev${djver}.zip
+	unzip -qo ../input/DJGPP/djdev${djver}.zip
 	
-	unzip -q ../input/DJGPP/shl2011br2.zip
-	unzip -q ../input/DJGPP/fil41br2.zip
-	unzip -q ../input/DJGPP/mak421b.zip
+	unzip -qo ../input/DJGPP/shl2011br2.zip
+	unzip -qo ../input/DJGPP/fil41br2.zip
+	unzip -qo ../input/DJGPP/mak421b.zip
+	unzip -qo ../input/DJGPP/pth207b.zip
+
+	unzip -qo ../input/DJGPP/ls080b.zip
 	
-	unzip -q ../input/DJGPP/gdb${gdbver}b.zip
-	unzip -q ../input/DJGPP/bnu${bnuver}b.zip
-	unzip -q ../input/DJGPP/gcc${gccver}b.zip
-	unzip -q ../input/DJGPP/gpp${gccver}b.zip
+	unzip -qo ../input/DJGPP/gdb${gdbver}b.zip
+	unzip -qo ../input/DJGPP/bnu${bnuver}b.zip
+	unzip -qo ../input/DJGPP/gcc${gccver}b.zip
+	unzip -qo ../input/DJGPP/gpp${gccver}b.zip
+	
+	patch -p0 < ../djgpp-fix-pthread.patch
 	;;
 win32)
 	get_mingww64_toolchain 32 i686
