@@ -80,7 +80,7 @@ DIM dwLen AS long
 
   dwLen = LEN(ansiStr)
   u = SPACE(dwLen)
-  ustring_mcpy(*u, cptr(any ptr, strptr(ansiStr)), dwLen)
+  memcpy(*u, cptr(any ptr, strptr(ansiStr)), dwLen)
 
 
   IF dwLen THEN RETURN u
@@ -108,7 +108,7 @@ DIM dwLen   AS long
 
   dwLen = LEN(w) * sizeof(wstring)
   ansiStr = SPACE(dwLen)
-  ustring_mcpy(cptr(any ptr, strptr(ansiStr)), cptr(any ptr, *w), dwLen)
+  memcpy(cptr(any ptr, strptr(ansiStr)), cptr(any ptr, *w), dwLen)
 
 
   IF dwLen THEN RETURN ansiStr
@@ -935,7 +935,14 @@ DIM nPos AS LONG
   IF LEN(w) = 0 THEN RETURN u                         'nothing to do
 
 
+#if defined(__FB_PCOS__)
   nPos = InstrRev(w, ANY ":/\")
+
+#else
+  nPos = InstrRev(w, ANY "/")
+#endif
+
+
   SELECT CASE oflag
     CASE 1                                            'returns the path portion of file spec
 '    CASE PATH_                                        'returns the path portion of file spec

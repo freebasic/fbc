@@ -20,13 +20,13 @@ dim w1 as Wstring * 260
 dim u1 as Ustring      
 
 
-  z = "c:\test test test\very_strange name.asdf.txt"
-  s = "c:\test test test\very_strange name.asdf.txt"
-  w = "c:\test test test\very_strange name.asdf.txt"
-  u = "c:\test test test\very_strange name.asdf.txt"
+  z = "c/test test test/very_strange name.asdf.txt"
+  s = "c/test test test/very_strange name.asdf.txt"
+  w = "c/test test test/very_strange name.asdf.txt"
+  u = "c/test test test/very_strange name.asdf.txt"
 
 
-      if pathname_(path, z) <> "c:\test test test\" then    
+      if pathname_(path, z) <> "c/test test test/" then    
         CU_FAIL(  pathname name zstring )
       else
         CU_PASS(  pathname name zstring )
@@ -54,7 +54,7 @@ dim u1 as Ustring
       end if
 
 
-      if pathname_(path, s) <> "c:\test test test\" then    
+      if pathname_(path, s) <> "c/test test test/" then    
         CU_FAIL(  pathname name string )
       else
         CU_PASS(  pathname name string )
@@ -82,7 +82,7 @@ dim u1 as Ustring
       end if
 
 
-      if pathname_(path, w) <> "c:\test test test\" then    
+      if pathname_(path, w) <> "c/test test test/" then    
         CU_FAIL(  pathname name wstring )
       else
         CU_PASS(  pathname name wstring )
@@ -110,7 +110,7 @@ dim u1 as Ustring
       end if
 
 
-      if pathname_(path, u) <> "c:\test test test\" then    
+      if pathname_(path, u) <> "c/test test test/" then    
         CU_FAIL(  pathname name ustring )
       else
         CU_PASS(  pathname name ustring )

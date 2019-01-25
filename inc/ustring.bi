@@ -77,65 +77,8 @@
 '***********************************************************************************************
 
 
-#ifdef  __FB_64BIT__
-private sub ustring_mcpy(byval dest as any ptr, byval src as any ptr, byval count as Uinteger)
-'***********************************************************************************************
-' memcpy replacement
-'***********************************************************************************************
+#include once "crt\mem.bi"
 
-asm
-  mov rdi, [dest]                                     'destination
-  mov rsi, [src]                                      'source
-  mov rcx, [count]                                    '# of byte to copy
-
-  shr rcx, 3                                          '/4
-  cld
-  
-  rep movsq                                           'copy qwords
-
-  mov rcx, [count]
-  and rcx, 7                                          'mod 8
-
-  rep movsb                                           'copy bytes
-
-end asm
-
-
-end sub
-
-
-#else
-
-
-private sub ustring_mcpy(byval dest as any ptr, byval src as any ptr, byval count as Ulong) 
-'***********************************************************************************************
-' memcpy replacement
-'***********************************************************************************************
-
-asm
-  mov edi, [dest]                                     'destination
-  mov esi, [src]                                      'source
-  mov ecx, [count]                                    '# of bytes to copy
-
-  shr ecx, 2                                          '/4 -> # of dwords to copy
-  cld
-  
-  rep movsd                                           'copy dwords
-
-  mov ecx, [count]
-  and ecx, 3                                          'mod 4
-
-  rep movsb                                           'copy remaining bytes
-
-end asm
-
-
-end sub
-#endif
-
-
-'***********************************************************************************************
-'***********************************************************************************************
 
 #IFNDEF __FB_DOS__
 
@@ -493,7 +436,7 @@ PRIVATE SUB DWSTR.ResizeBuffer (BYVAL nValue AS ulong)
 
   IF m_pBuffer THEN
      IF nValue < m_BufferLen THEN m_BufferLen = nValue
-     ustring_mcpy(pNewBuffer, m_pBuffer, m_BufferLen)
+     memcpy(pNewBuffer, m_pBuffer, m_BufferLen)
      Deallocate m_pBuffer
   END IF
   m_pBuffer = pNewBuffer
@@ -524,7 +467,7 @@ PRIVATE FUNCTION DWSTR.AppendBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nNumByte
   END IF
   IF m_pBuffer = 0 THEN RETURN FALSE
 
-  ustring_mcpy(m_pBuffer + m_BufferLen, addrMemory, nNumBytes)
+  memcpy(m_pBuffer + m_BufferLen, addrMemory, nNumBytes)
 
   m_BufferLen += nNumBytes
 
