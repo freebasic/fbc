@@ -156,7 +156,7 @@ $(UNIT_TESTS_INC) : $(DIRLIST_INC)
 	@$(ECHO) "#" >> $(UNIT_TESTS_INC)
 	@$(FIND) $(DIRLIST) -type f -name '*.bas' -or -name '*.bmk' \
 | $(XARGS) $(GREP) -l -i -E \
-'(#[[:space:]]*include[[:space:]](once)*[[:space:]]*\"fbcu(nit)?\.bi\")|([[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*FBCUNIT_COMPATIBLE)' \
+"(#[[:space:]]*include[[:space:]](once)*[[:space:]]*\"fbcu(nit)?\.bi\")|([[:space:]]*.[[:space:]]*TEST_MODE[[:space:]]*\:[[:space:]]*FBCUNIT_COMPATIBLE)" \
 | $(SED) -e 's/\(^.*\)/\SRCLIST \+\= \.\/\1/g' \
 >> $(UNIT_TESTS_INC)
 	@$(ECHO) "Done"
