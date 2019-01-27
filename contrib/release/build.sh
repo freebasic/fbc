@@ -444,6 +444,8 @@ EOF
 	cp lib/crt0.o lib/gcrt0.o lib/libdbg.a lib/libemu.a lib/libm.a fbc/lib/dos/
 	cp lib/libstdcxx.a fbc/lib/dos/libstdcx.a
 	cp lib/libsupcxx.a fbc/lib/dos/libsupcx.a
+	cp lib/libsocket.a fbc/lib/dos/libsocket.a
+	cp lib/libpthread.a fbc/lib/dos/libpthread.a
 	cp lib/gcc/djgpp/$djgppgccversiondir/libgcc.a fbc/lib/dos/
 
 	cd fbc
