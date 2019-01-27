@@ -41,5 +41,6 @@ declare function popen cdecl alias "popen" (byval as zstring ptr, byval as zstri
 declare function pclose cdecl alias "pclose" (byval as FILE ptr) as integer
 declare function getw cdecl alias "getw" (byval as FILE ptr) as integer
 declare function putw cdecl alias "putw" (byval as integer, byval as FILE ptr) as integer
+declare function snprintf cdecl alias "snprintf" (byval as zstring ptr, byval as size_t, byval as zstring ptr, ...) as long
 
 #endif
