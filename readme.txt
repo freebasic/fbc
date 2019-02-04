@@ -2,14 +2,14 @@
     FreeBASIC - A multi-platform BASIC Compiler
     Copyright (C) 2004-2016 The FreeBASIC development team.
 
-    Official site:      http://www.freebasic.net/
-    Forum:              http://www.freebasic.net/forum/
-    Online manual:      http://www.freebasic.net/wiki/DocToc
-    fbc project page:   http://www.sourceforge.net/projects/fbc/
+    Official site:      https://freebasic.net/
+    Forum:              https://freebasic.net/forum/
+    Online manual:      https://freebasic.net/wiki/DocToc
+    fbc project page:   https://sourceforge.net/projects/fbc/
     GitHub mirror:      https://github.com/freebasic/fbc
     IRC channel:        ##freebasic at chat.freenode.net
-    Features:           http://www.freebasic.net/wiki/CompilerFeatures
-    Requirements:       http://www.freebasic.net/wiki/CompilerRequirements
+    Features:           https://freebasic.net/wiki/CompilerFeatures
+    Requirements:       https://freebasic.net/wiki/CompilerRequirements
 
     FreeBASIC consists of fbc (the command line compiler), the runtime libraries
     (libfb and libfbgfx), and FreeBASIC header files for third-party libraries.
@@ -48,7 +48,7 @@
 
       Optionally, you can install a text editor or IDE which will invoke fbc.exe
       for you, for example:
-        FBIDE: http://fbide.freebasic.net/
+        FBIDE: https://fbide.freebasic.net/
         FBEdit: http://radasm.cherrytree.at/fbedit/
 
     Linux (if FreeBASIC is not available through your package manager):
@@ -80,7 +80,7 @@
 
       Optionally, you can install a text editor or IDE which will invoke fbc for
       your, for example:
-        Geany: www.geany.org (sudo apt-get install geany)
+        Geany: https://geany.org (sudo apt-get install geany)
 
     DOS:
       Download and extract the latest FreeBASIC-x.xx.x-dos.zip.
@@ -128,14 +128,14 @@
   o Included/used third-party tools and libraries:
 
     - DJGPP         http://www.delorie.com/
-    - GCC           http://gcc.gnu.org/
-    - GNU binutils  http://www.gnu.org/software/binutils/
-    - GNU debugger  http://www.gnu.org/software/gdb/
-    - GoRC          http://www.godevtool.com/
-    - LibFFI        http://sourceware.org/libffi/
+    - GCC           https://gcc.gnu.org/
+    - GNU binutils  https://gnu.org/software/binutils/
+    - GNU debugger  https://gnu.org/software/gdb/
+    - GoRC          http://godevtool.com/
+    - LibFFI        https://sourceware.org/libffi/
     - MinGW         http://www.mingw.org/
-    - MinGW-w64     http://mingw-w64.sourceforge.net/
-    - OpenXDK       http://openxdk.maturion.de/
+    - MinGW-w64     https://mingw-w64.org/
+    - OpenXDK       http://openxdk.sourceforge.net/
     - TDM-GCC       http://tdm-gcc.tdragon.net/
 
   o Credits
@@ -254,6 +254,6 @@
         Author of the first FreeBASIC IDE: FBIDE.
     - Everybody that helped writing the documentation (and in special Nexinarus 
       who started it)
-        http://www.freebasic.net/wiki/wikka.php?wakka=ContributorList
+        https://freebasic.net/wiki/ContributorList
     - All users that reported bugs, requested features and as such helped 
       improving the compiler, language and run-time libraries.
