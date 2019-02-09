@@ -486,6 +486,8 @@ Next
 Put (0,0), myBuf, pset
 sleep
 
+ImageDestroy( myBuf )
+
 
 /'
   ScreenPtr:

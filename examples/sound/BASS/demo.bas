@@ -8,7 +8,7 @@ If (HiWord(BASS_GetVersion()) <> BASSVERSION) Then
 End If
 
 ' Initialize BASS using the default device at 44.1 KHz.
-If (BASS_Init(-1, 44100, 0, 0, 0) <> TRUE) Then
+If (BASS_Init(-1, 44100, 0, 0, 0) = FALSE) Then
 	Print "Could not initialize audio! BASS returned error " & BASS_ErrorGetCode()
 	GetKey
 	End
@@ -86,7 +86,7 @@ Do
 	End Select
 
 	' Print music progress
-	Locate currentLine
+	Locate currentLine, 1
 	Dim As QWORD trackerPosition = BASS_ChannelGetPosition(musicHandle, BASS_POS_MUSIC_ORDER)
 	Dim As Double secondsPosition = BASS_ChannelBytes2Seconds(musicHandle, BASS_ChannelGetPosition(musicHandle, BASS_POS_BYTE))
 	Print "Music position: Order: " & LoWord(trackerPosition) & ", Row: " & HiWord(trackerPosition) & " (" & CInt(secondsPosition) & " seconds)    "

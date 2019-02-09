@@ -87,7 +87,7 @@ Dim e as double = 743.1E13
 Dim f as single = 743D! 
 %%
 
-	A suffix of "##!##" or "##F##" on a number specifies a single precision (32 bit total) floating point value.  A suffix of "##""#""##" specifies a double precision float.
+	A suffix of "##!##" or "##F##" on a number specifies a single precision (32 bit total) floating point value.  A suffix of "##""#""##" or "##D##" specifies a double precision float.
 	Note that the letter suffixes and exponent specifiers are all case-insensitive.
 
 {{fbdoc item="filename" value="examples/manual/proguide/literals/singsuff.bas"}}%%(freebasic)

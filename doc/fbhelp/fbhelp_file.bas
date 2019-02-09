@@ -36,12 +36,12 @@
 	#include "zlib.bi"
 
 	type HFILE as gzfile
+	dim shared hf_is_uncompressed as integer = FALSE
 
 	#define hf_open( _filename, _mode )     gzopen( _filename, _mode )
 
 	#if defined( __FB_WIN32__ )
 		'' on windows, gzseek() is bugged on uncompressed streams and only succeed after a gzrewind()
-		dim shared hf_is_uncompressed as integer = FALSE
 		private sub hf_rewind( byval h as HFILE )
 			if( hf_is_uncompressed <> 0 ) then
 				gzrewind( h )

@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="RANDOM"}}----
-Specifies file or device to be opened for binary mode
+Specifies file or device to be opened for random access mode
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgOpen|Open]] //filename// for **Random** [[[KeyPgAccess|Access]] //access_type//] [[[KeyPgLock|Lock]] //lock_type//] as [#]//filenum// [Len = //record_length//]

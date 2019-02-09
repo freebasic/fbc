@@ -89,6 +89,7 @@ dim as string filename = command(1)
 dim as any ptr image = FI_Load(filename)
 if image <> 0 then
 	put (0, 0), image
+	ImageDestroy(image)
 else
 	print "Problem while loading file : " & filename
 end if

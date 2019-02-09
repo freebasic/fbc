@@ -1,5 +1,5 @@
 ''  fbchkdoc - FreeBASIC Wiki Management Tools
-''	Copyright (C) 2008-2018 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2008-2019 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
@@ -451,7 +451,7 @@ function cmd_update_proc() as integer
 	h = freefile
 	open "changed.txt" for output as #h
 	for i = 1 to nchanges
-		print #h, " - " & changes(i) & " ? [example updated from SVN]"
+		print #h, " - " & changes(i) & " ? [example updated from repo]"
 	next
 	close #h
 

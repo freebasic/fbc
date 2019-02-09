@@ -25,7 +25,7 @@ Type mytype
 	var3 As ZString Ptr
 End Type
 
-Dim MyVar(2) As mytype => _
+Dim MyVar(0 to 1) As mytype => _
 	{ _
 		(1.0, 1, @"Hello"), _
 		(2.0, 2, @"GoodBye") _

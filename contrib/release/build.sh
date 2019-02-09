@@ -11,7 +11,7 @@
 #     to build (or a tag/branch name).
 #
 # The standalone fbc is built in the same directory as the normal fbc, by just
-# rebuilding src/compiler/obj/fbc.o (that's all that's affected by
+# rebuilding src/compiler/obj/$fbtarget/fbc.o (that's all that's affected by
 # ENABLE_STANDALONE, except for the directory layout). This way we avoid
 # unnecessary full rebuilds.
 #
@@ -251,7 +251,7 @@ dos)
 
    	djver=205
 	gccver=710
-	djgppgccversiondir=7.1.0
+	djgppgccversiondir=7
 	bnuver=229
 	gdbver=771
 	djpkg=current
@@ -268,6 +268,9 @@ dos)
 	download_djgpp ${djpkg}/v2gnu/ fil41br2
 	download_djgpp ${djpkg}/v2gnu/ mak421b
 	download_djgpp ${djpkg}/v2gnu/ shl2011br2
+	download_djgpp ${djpkg}/v2gnu/ pth207b 
+
+	download_djgpp ${djpkg}/v2tk/ ls080b 
 
 	# Sources for stuff that goes into the FB-dos package (needs updating to new versions)
 	download_djgpp ${djpkg}/v2gnu/ bnu${bnuver}s
@@ -275,16 +278,21 @@ dos)
 	download_djgpp ${djpkg}/v2gnu/ gdb${gdbver}s
 	download_djgpp ${djpkg}/v2/    djlsr${djver}
 
-	unzip -q ../input/DJGPP/djdev${djver}.zip
+	unzip -qo ../input/DJGPP/djdev${djver}.zip
 	
-	unzip -q ../input/DJGPP/shl2011br2.zip
-	unzip -q ../input/DJGPP/fil41br2.zip
-	unzip -q ../input/DJGPP/mak421b.zip
+	unzip -qo ../input/DJGPP/shl2011br2.zip
+	unzip -qo ../input/DJGPP/fil41br2.zip
+	unzip -qo ../input/DJGPP/mak421b.zip
+	unzip -qo ../input/DJGPP/pth207b.zip
+
+	unzip -qo ../input/DJGPP/ls080b.zip
 	
-	unzip -q ../input/DJGPP/gdb${gdbver}b.zip
-	unzip -q ../input/DJGPP/bnu${bnuver}b.zip
-	unzip -q ../input/DJGPP/gcc${gccver}b.zip
-	unzip -q ../input/DJGPP/gpp${gccver}b.zip
+	unzip -qo ../input/DJGPP/gdb${gdbver}b.zip
+	unzip -qo ../input/DJGPP/bnu${bnuver}b.zip
+	unzip -qo ../input/DJGPP/gcc${gccver}b.zip
+	unzip -qo ../input/DJGPP/gpp${gccver}b.zip
+	
+	patch -p0 < ../djgpp-fix-pthread.patch
 	;;
 win32)
 	get_mingww64_toolchain 32 i686
@@ -322,8 +330,14 @@ win32-mingworg)
 	download_extract_mingw mpfr-3.1.2-2-mingw32-dll.tar.lzma
 
 	# Add ddraw.h and dinput.h for FB's gfxlib2
-	copyfile "../input/MinGW.org/ddraw.h" "include/ddraw.h"
-	copyfile "../input/MinGW.org/dinput.h" "include/dinput.h"
+
+    # if ddraw.h & dinput.h were added manually:
+	# copyfile "../input/MinGW.org/ddraw.h" "include/ddraw.h"
+	# copyfile "../input/MinGW.org/dinput.h" "include/dinput.h"
+
+	# download link for dx80_mgw.zip from https://liballeg.org/old.html
+	download dx80_mgw.zip https://download.tuxfamily.org/allegro/files/dx80_mgw.zip
+	unzip ../input/dx80_mgw.zip include/ddraw.h include/dinput.h
 
 	# Work around http://sourceforge.net/p/mingw/bugs/2039/
 	patch -p0 < ../mingworg-fix-wcharh.patch
@@ -422,14 +436,17 @@ EOF
 	cmd /c build.bat
 
 	echo "building standalone fbc:"
-	rm fbc/src/compiler/obj/fbc.o
+	rm fbc/src/compiler/obj/$fbtarget/fbc.o
 	cmd /c buildsa.bat
 
 	mkdir -p fbc/bin/dos
 	cp bin/ar.exe bin/as.exe bin/gdb.exe bin/gprof.exe bin/ld.exe fbc/bin/dos/
+	cp bin/dxe3gen.exe fbc/bin/dos/
 	cp lib/crt0.o lib/gcrt0.o lib/libdbg.a lib/libemu.a lib/libm.a fbc/lib/dos/
 	cp lib/libstdcxx.a fbc/lib/dos/libstdcx.a
 	cp lib/libsupcxx.a fbc/lib/dos/libsupcx.a
+	cp lib/libsocket.a fbc/lib/dos/libsocket.a
+	cp lib/libpthread.a fbc/lib/dos/libpthread.a
 	cp lib/gcc/djgpp/$djgppgccversiondir/libgcc.a fbc/lib/dos/
 
 	cd fbc
@@ -461,11 +478,19 @@ linuxbuild() {
 	cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
 }
 
-windowsbuild() {
-	# Add our toolchain's bin/ to the PATH, so hopefully we'll only use
-	# its gcc and not one from the host
-	origPATH="$PATH"
-	export PATH="$PWD/bin:$PATH"
+libffibuild() {
+
+	# do we already have the files we need?
+	if [ -f "../input/$libffi_title/$target/ffi.h" ]; then
+	if [ -f "../input/$libffi_title/$target/ffitarget.h" ]; then
+	if [ -f "../input/$libffi_title/$target/libffi.a" ]; then
+		echo
+		echo "using cached libffi: $libffi_title/$target"
+		echo
+		return
+	fi
+	fi
+	fi
 
 	echo
 	echo "building libffi"
@@ -475,16 +500,32 @@ windowsbuild() {
 	cd "$libffi_build"
 	if [ "$target" = win64 ]; then
 		CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32
+	elif [ "$target" = win32 ]; then
+		# force host even for 32-bit, we might be cross compiling from x86_64 to x86
+		CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static --host=i686-w64-mingw32
 	else
 		CFLAGS=-O2 ../$libffi_title/configure --disable-shared --enable-static
 	fi
 	make
-	case "$target" in
-	win32)		cp include/ffi.h include/ffitarget.h ../i686-w64-mingw32/include;;
-	win32-mingworg)	cp include/ffi.h include/ffitarget.h ../include;;
-	win64)		cp include/ffi.h include/ffitarget.h ../x86_64-w64-mingw32/include;;
-	esac
+	# stash some files in the input folder to make rebuilding faster
+	mkdir -p ../../input/$libffi_title/$target
+	cp include/ffi.h include/ffitarget.h ../../input/$libffi_title/$target
+	cp .libs/libffi.a ../../input/$libffi_title/$target 
 	cd ..
+}
+
+windowsbuild() {
+	# Add our toolchain's bin/ to the PATH, so hopefully we'll only use
+	# its gcc and not one from the host
+	origPATH="$PATH"
+	export PATH="$PWD/bin:$PATH"
+
+    libffibuild
+   	case "$target" in
+	win32)			cp ../input/$libffi_title/$target/ffi.h ../input/$libffi_title/$target/ffitarget.h ./i686-w64-mingw32/include;;
+	win32-mingworg)	cp ../input/$libffi_title/$target/ffi.h ../input/$libffi_title/$target/ffitarget.h ./include;;
+	win64)			cp ../input/$libffi_title/$target/ffi.h ../input/$libffi_title/$target/ffitarget.h ./x86_64-w64-mingw32/include;;
+	esac
 
 	cd fbc
 	echo
@@ -503,7 +544,7 @@ windowsbuild() {
 	echo
 	echo "building standalone fbc"
 	echo
-	rm src/compiler/obj/fbc.o
+	rm src/compiler/obj/$fbtarget/fbc.o
 	make ENABLE_STANDALONE=1
 	cd ..
 
@@ -540,11 +581,14 @@ windowsbuild() {
 		;;
 	esac
 
-	# TODO: GoRC.exe should really be taken from its homepage
-	# <http://www.godevtool.com/>, but it was offline today
-	cp $bootfb_title/bin/$fbtarget/GoRC.exe		fbc/bin/$fbtarget
+	# get GoRC.exe from previous fb release
+	# cp $bootfb_title/bin/$fbtarget/GoRC.exe		fbc/bin/$fbtarget
 
-	cp "$libffi_build"/.libs/libffi.a	fbc/lib/$fbtarget
+	# get GoRC.exe from author site
+	download "Gorc.zip" "http://www.godevtool.com/Gorc.zip"
+	unzip ../input/Gorc.zip GoRC.exe -d fbc/bin/$fbtarget
+
+	cp ../input/$libffi_title/$target/libffi.a	fbc/lib/$fbtarget
 
 	# Reduce .exe sizes by dropping debug info
 	# (this was at least needed for MinGW.org's gdb, and probably nothing else,

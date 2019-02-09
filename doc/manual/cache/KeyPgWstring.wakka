@@ -60,5 +60,6 @@ print len(*str2)      'returns 12, the length of the string it points to
 	- ##[[KeyPgWhex|Whex]]##
 	- ##[[KeyPgWoct|Woct]]##
 	- ##[[KeyPgWinput|Winput()]]##
+	- ##[[TblVarTypes|Standard Data Type Limits]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

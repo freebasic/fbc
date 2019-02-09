@@ -84,6 +84,7 @@ Dim As String filename = Command(1)
 Dim As Any Ptr image = FI_Load(filename)
 If image <> 0 Then
 	Put (0, 0), image
+	ImageDestroy(image)
 Else
 	Print "Problem while loading file : " & filename
 End If

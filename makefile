@@ -202,6 +202,8 @@ else
       TARGET_OS := linux
     else ifneq ($(findstring MINGW,$(uname)),)
       TARGET_OS := win32
+	else ifneq ($(findstring MSYS_NT,$(uname)),)
+      TARGET_OS := win32
     else ifeq ($(uname),MS-DOS)
       TARGET_OS := dos
     else ifeq ($(uname),NetBSD)
@@ -340,7 +342,7 @@ else
   prefixincdir   := $(prefix)/include/$(FBNAME)
   prefixlibdir   := $(prefix)/$(libdir)
 endif
-fbcobjdir           := src/compiler/obj
+fbcobjdir           := src/compiler/obj/$(FBTARGET)
 libfbobjdir         := src/rtlib/obj/$(libsubdir)
 libfbpicobjdir      := src/rtlib/obj/$(libsubdir)/pic
 libfbmtobjdir       := src/rtlib/obj/$(libsubdir)/mt
@@ -545,6 +547,10 @@ $(libdir)/libfb.a: $(LIBFB_C) $(LIBFB_S) | $(libdir)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
   # is very long...)
+	$(QUIET)rm -f $@
+	$(QUIET_AR)$(AR) rcs $@ $(libfbobjdir)/*.o
+else ifneq ($(findstring MSYS_NT,$(shell uname)),)
+	$(QUIET)rm -f $@
 	$(QUIET_AR)$(AR) rcs $@ $(libfbobjdir)/*.o
 else
 	$(QUIET_AR)rm -f $@; $(AR) rcs $@ $^
@@ -563,6 +569,9 @@ $(libdir)/libfbmt.a: $(LIBFBMT_C) $(LIBFBMT_S) | $(libdir)
 ifeq ($(TARGET_OS),dos)
   # Avoid hitting the command line length limit (the libfb.a ar command line
   # is very long...)
+	$(QUIET)rm -f $@
+	$(QUIET_AR)$(AR) rcs $@ $(libfbmtobjdir)/*.o
+else ifneq ($(findstring MSYS_NT,$(shell uname)),)
 	$(QUIET)rm -f $@
 	$(QUIET_AR)$(AR) rcs $@ $(libfbmtobjdir)/*.o
 else

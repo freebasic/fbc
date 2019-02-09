@@ -33,6 +33,8 @@ Put (150,150), image
 Put (150,200), image
 Put (150,250), image
 
+ImageDestroy(image)
+
 '' And a frame around a whole screen..
 Line (0,0)-(400-1,300-1), RGB(255,255,0), b
 
@@ -52,3 +54,5 @@ While ((Inkey() = "") And (x < 350))
 
 	x += 10
 Wend
+
+ImageDestroy(big)
