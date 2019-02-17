@@ -333,6 +333,7 @@ examples/manual/array/lbound.bas
 examples/manual/array/preserve.bas
 examples/manual/array/redim.bas
 examples/manual/array/redim2d.bas
+examples/manual/array/redim3.bas
 examples/manual/array/ubound.bas
 examples/manual/array/ubound2.bas
 examples/manual/array/ubound3.bas
@@ -347,6 +348,8 @@ examples/manual/bits/lobyte.bas
 examples/manual/bits/loword.bas
 examples/manual/casting/boolean.bas
 examples/manual/casting/cast.bas
+examples/manual/casting/cast1.bas
+examples/manual/casting/cast2.bas
 examples/manual/casting/cbyte.bas
 examples/manual/casting/cdbl.bas
 examples/manual/casting/cint.bas
@@ -362,6 +365,15 @@ examples/manual/casting/culng.bas
 examples/manual/casting/culngint.bas
 examples/manual/casting/cunsg.bas
 examples/manual/casting/cushort.bas
+examples/manual/casting/opcast-ctor-oplet.bas
+examples/manual/casting/opcast1.bas
+examples/manual/casting/opcast2.bas
+examples/manual/casting/opcast3.bas
+examples/manual/casting/opcast4.bas
+examples/manual/casting/opcast5.bas
+examples/manual/check/FBWikiKeywordTemplate_1.bas
+examples/manual/check/FBWikiTopicSample_1.bas
+examples/manual/check/FBWikiTutorialTemplate_1.bas
 examples/manual/check/KeyPgClass_1.bas
 examples/manual/check/KeyPgCommand_Dos.bas
 examples/manual/check/KeyPgCommand_mingw.bas
@@ -410,6 +422,7 @@ examples/manual/control/exit.bas
 examples/manual/control/exit2.bas
 examples/manual/control/for-next.bas
 examples/manual/control/for-next2.bas
+examples/manual/control/for-next3.bas
 examples/manual/control/gosub.bas
 examples/manual/control/goto.bas
 examples/manual/control/gotonum.bas
@@ -442,6 +455,9 @@ examples/manual/datatype/const-ovl.bas
 examples/manual/datatype/const-ptr.bas
 examples/manual/datatype/const-var.bas
 examples/manual/datatype/double.bas
+examples/manual/datatype/funcptr.bas
+examples/manual/datatype/funcptr2.bas
+examples/manual/datatype/funcptr3.bas
 examples/manual/datatype/integer.bas
 examples/manual/datatype/long.bas
 examples/manual/datatype/longint.bas
@@ -453,6 +469,9 @@ examples/manual/datatype/string-buffer.bas
 examples/manual/datatype/string-constparam.bas
 examples/manual/datatype/string-qbsuffix.bas
 examples/manual/datatype/string-varlen.bas
+examples/manual/datatype/subptr.bas
+examples/manual/datatype/subptr2.bas
+examples/manual/datatype/subptr3.bas
 examples/manual/datatype/ubyte.bas
 examples/manual/datatype/ubyte2.bas
 examples/manual/datatype/uinteger.bas
@@ -489,6 +508,7 @@ examples/manual/debug/assert.bas
 examples/manual/debug/assertwarn.bas
 examples/manual/debug/stop.bas
 examples/manual/defines/date.bas
+examples/manual/defines/date_iso.bas
 examples/manual/defines/fb64bit.bas
 examples/manual/defines/fbargc.bas
 examples/manual/defines/fbargv.bas
@@ -504,6 +524,7 @@ examples/manual/defines/fberr.bas
 examples/manual/defines/fbfpmode.bas
 examples/manual/defines/fbfpu.bas
 examples/manual/defines/fbfreebsd.bas
+examples/manual/defines/fbgui.bas
 examples/manual/defines/fblang.bas
 examples/manual/defines/fblinux.bas
 examples/manual/defines/fbmain.bas
@@ -608,6 +629,7 @@ examples/manual/gfx/bsave.bas
 examples/manual/gfx/circle.bas
 examples/manual/gfx/cls-memset.bas
 examples/manual/gfx/color.bas
+examples/manual/gfx/color2.bas
 examples/manual/gfx/custom.bas
 examples/manual/gfx/draw.bas
 examples/manual/gfx/draw2.bas
@@ -717,6 +739,7 @@ examples/manual/libraries/lzo.bas
 examples/manual/libraries/spidermonkey1.bas
 examples/manual/libraries/spidermonkey2.bas
 examples/manual/libraries/zip.bas
+examples/manual/libraries/zip2.bas
 examples/manual/libraries/zlib.bas
 examples/manual/math/abs.bas
 examples/manual/math/acos.bas
@@ -902,6 +925,7 @@ examples/manual/procs/stdcall.bas
 examples/manual/procs/sub-1.bas
 examples/manual/procs/sub-2.bas
 examples/manual/procs/vararg1.bas
+examples/manual/procs/vararg2.bas
 examples/manual/proguide/arrays/array1.bas
 examples/manual/proguide/arrays/array2.bas
 examples/manual/proguide/arrays/array3.bas
@@ -938,6 +962,7 @@ examples/manual/proguide/libs/libs4.bas
 examples/manual/proguide/libs/libs5.bas
 examples/manual/proguide/linecontinuation1.bas
 examples/manual/proguide/linecontinuation2.bas
+examples/manual/proguide/linecontinuation3.bas
 examples/manual/proguide/literals/bin.bas
 examples/manual/proguide/literals/boolean.bas
 examples/manual/proguide/literals/dblsuff.bas
@@ -983,6 +1008,7 @@ examples/manual/proguide/procptrs/method-ptr.bas
 examples/manual/proguide/procptrs/passing.bas
 examples/manual/proguide/procptrs/pfunc.bi
 examples/manual/proguide/procptrs/procptrs.bas
+examples/manual/proguide/procptrs/typing-rule.bas
 examples/manual/proguide/procs/byrefparam-explicit-byval.bas
 examples/manual/proguide/procs/byrefresult-explicit-byval.bas
 examples/manual/proguide/procs/functions.bas
@@ -992,6 +1018,7 @@ examples/manual/proguide/procs/passbyval.bas
 examples/manual/proguide/procs/return-methods.bas
 examples/manual/proguide/procs/returnval.bas
 examples/manual/proguide/procs/subs.bas
+examples/manual/proguide/shared-lib/load.bas
 examples/manual/proguide/shared-lib/mydll.bas
 examples/manual/proguide/shared-lib/mylib.bas
 examples/manual/proguide/shared-lib/mylib.bi
@@ -1132,6 +1159,7 @@ examples/manual/threads/condsignal.bas
 examples/manual/threads/condwait.bas
 examples/manual/threads/mutexcreate.bas
 examples/manual/threads/mutexlock.bas
+examples/manual/threads/mutexlock2.bas
 examples/manual/threads/threadcall.bas
 examples/manual/threads/threads1.bas
 examples/manual/threads/threads2.bas
@@ -1152,6 +1180,9 @@ examples/manual/udt/extends1.bas
 examples/manual/udt/extends2.bas
 examples/manual/udt/field.bas
 examples/manual/udt/function.bas
+examples/manual/udt/newoverload0.bas
+examples/manual/udt/newoverload1.bas
+examples/manual/udt/newoverload2.bas
 examples/manual/udt/operator1.bas
 examples/manual/udt/operator2.bas
 examples/manual/udt/operator3.bas
@@ -1160,6 +1191,7 @@ examples/manual/udt/private.bas
 examples/manual/udt/property.bas
 examples/manual/udt/property2.bas
 examples/manual/udt/protected.bas
+examples/manual/udt/protected2.bas
 examples/manual/udt/ptr-access.bas
 examples/manual/udt/public.bas
 examples/manual/udt/static.bas
@@ -1173,14 +1205,24 @@ examples/manual/udt/temp-type.bas
 examples/manual/udt/temp-type2.bas
 examples/manual/udt/temp-type3.bas
 examples/manual/udt/this.bas
+examples/manual/udt/type-fctptr.bas
 examples/manual/udt/type-fwd.bas
 examples/manual/udt/type1.bas
 examples/manual/udt/type2.bas
+examples/manual/udt/type3.bas
 examples/manual/udt/union.bas
+examples/manual/udt/union1.bas
+examples/manual/udt/union2.bas
+examples/manual/udt/union3.bas
 examples/manual/udt/virtual1.bas
+examples/manual/udt/virtual2.bas
 examples/manual/udt/with-1.bas
 examples/manual/udt/with-2.bas
 examples/manual/udt/with-3.bas
+examples/manual/variable/byref1.bas
+examples/manual/variable/byref2.bas
+examples/manual/variable/byref3.bas
+examples/manual/variable/byref4.bas
 examples/manual/variable/const.bas
 examples/manual/variable/dim.bas
 examples/manual/variable/scope.bas

@@ -476,3 +476,5 @@ lib/freebas/dos/i386go32.x
 lib/freebas/dos/libc.a
 lib/freebas/dos/libfb.a
 lib/freebas/dos/libfbgfx.a
+lib/freebas/dos/libfbgfxmt.a
+lib/freebas/dos/libfbmt.a
