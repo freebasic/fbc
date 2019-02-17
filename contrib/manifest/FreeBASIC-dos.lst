@@ -109,7 +109,6 @@ examples/manual/bits/hiword.bas
 examples/manual/bits/lobyte.bas
 examples/manual/bits/loword.bas
 examples/manual/casting/boolean.bas
-examples/manual/casting/cast.bas
 examples/manual/casting/cast1.bas
 examples/manual/casting/cast2.bas
 examples/manual/casting/cbyte.bas
