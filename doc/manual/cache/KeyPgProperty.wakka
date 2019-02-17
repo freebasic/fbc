@@ -40,12 +40,14 @@ Declares or defines a property in a type or class
 	
 	##//typename//## is the name of the type for which the ##**Property**## method is declared and defined.  Name resolution for ##//typename//## follows the same rules as procedures when used in a ##[[KeyPgNamespace|Namespace]]##.
 	
-	A **Property** may optionally have one index parameter.  When indexed, properties are accessed as ##//fieldname//##(Index) = Value.
+	A **Property** may optionally have one ##//index//## parameter.  When indexed, properties are accessed as ##//fieldname//##(Index) = Value.
 	A get-**Property** can also return a reference by specifying ##[[KeyPgByrefFunction|byref]] [[KeyPgAs|as]] //return_type//##.
 	
 	A hidden ##[[KeyPgThis|this]]## parameter having the same type as ##//typename//## is passed to the property procedure.  ##[[KeyPgThis|this]]## is used to access the fields of the ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##.
 	
 	**Note:** A standard **Property** (get & set) does not work with combination operators (as "+="). But a result byref get-**Property** (as more generally any result byref function) works with combination operators.
+	
+	**Note:** When a get-**Property** is defined with one ##//index//## parameter, the ##//fieldname//=## syntax can not be used to return a value. For such a get-**Property**, the ##property=## syntax (in addition to the ##[[KeyPgReturn|return]]## syntax) is only the one allowed.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/property.bas"}}%%(freebasic)

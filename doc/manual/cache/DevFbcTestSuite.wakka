@@ -24,7 +24,7 @@ Invoking with make will present the following help text:
 $ make
 usage: make target [options]
 
-Targets: (using unit):
+Targets:
    unit-tests
    log-tests
    failed-tests
@@ -37,9 +37,15 @@ Options:
    FB_LANG=fb | fblite | qb | deprecated
    DEBUG=1
    EXTRAERR=1
+   TARGET=target
    ARCH=arch (default is 486)
    OS=DOS
    FPU=fpu | sse
+   FPMODE=fast | precise
+   GEN=gas | gcc
+   UNITTEST_RUN_ARGS=args
+   ENABLE_CHECK_BUGS=1
+   ENABLE_CONSOLE_OUTPUT=1
 
 Targets: Configuration and Checks
    check
@@ -48,7 +54,7 @@ Example: make all available tests
    make unit-tests
    make log-tests
 
-Example: make obj -lang qb tests
+Example: make the -lang qb tests
    make log-tests FB_LANG=qb
 %%
 

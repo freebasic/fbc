@@ -8,7 +8,7 @@ Welcome to our world!  This page is an overview of our online warehouse of knowl
 	""FreeBASIC"" is a beta release compiler and development is ongoing.  With each full update, many features are added, and bugs from previous releases are fixed.  To see the latest version available, visit [[https://www.freebasic.net/forum/viewforum.php?f=1|the News section on the forum]].
 
 {{fbdoc item="section" value="Requirements and Installation"}}
-	Minimum hardware is listed on the //[[CompilerRequirements|Requirements]]// page.  Visit our //[[CompilerRequirements|Installation]]// page for setting up ""FreeBASIC"" on your computer.
+	Minimum hardware is listed on the //[[CompilerRequirements|Requirements]]// page.  Visit our //[[CompilerInstalling|Installation]]// page for setting up ""FreeBASIC"" on your computer.
 
 {{fbdoc item="section" value="Running"}}
 	""FreeBASIC"" is a compiler and as such is not packaged with an IDE (Integrated Development Editor), although there are a few IDE's available. For information on using ""FreeBASIC"" without an IDE, see //[[CompilerRunning|Running]]//.

@@ -14,6 +14,7 @@ Declares a user-defined type.
 		
 		[[KeyPgDeclare|Declare]] [[KeyPgMemberSub|Sub]]|[[KeyPgMemberFunction|Function]]|[[KeyPgConstructor|Constructor]]|[[KeyPgDestructor|Destructor]]|[[KeyPgProperty|Property]]|[[KeyPgOperator|Operator]] ...
 		[[KeyPgStatic|Static]] //variablename// [[KeyPgAs|As]] //[[DataType|DataType]]//
+		[[KeyPgRedim|Redim]] //arrayname(array dimensions)// [[KeyPgAs|As]] //[[DataType|DataType]]//
 		
 		//fieldname// [[KeyPgAs|As]] //[[DataType|DataType]]// [= //initializer//]
 		//fieldname//(//array dimensions//) [[KeyPgAs|As]] //[[DataType|DataType]]// [= //initializer//]

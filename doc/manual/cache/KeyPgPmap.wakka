@@ -23,7 +23,7 @@ Maps coordinates between view and physical mapping.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/pmap.bas"}}%%(freebasic)
-screen 12
+screenres 640, 480
 window screen (0, 0)-(100, 100)
 print "Logical x=50, Physical x="; pmap(50, 0)   '' 320
 print "Logical y=50, Physical y="; pmap(50, 1)   '' 240

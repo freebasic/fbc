@@ -21,7 +21,7 @@
 	- Close the include file
 	- lexPop() (Restore the lexer state to the parent file)
 
-''##parser-toplevel.bas:cProgram()##'' is the root of the [[FbGrammar|FB grammar]], and parses a file. Here's a short & quick run down of what is done:
+''##parser-toplevel.bas:cProgram()##'' is the root of the FB grammar, and parses a file. Here's a short & quick run down of what is done:
 	- cLine() repeatedly until EOF
 		- cLabel()
 		- cStatement()

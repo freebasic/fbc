@@ -52,7 +52,7 @@ $ make%%
 		%%$ ./configure --build=x86_64-w64-mingw32 --host=x86_64-w64-mingw32
 $ make%%
 
-This should produce the libffi headers in an ##include/## subdirectory and the compiled library in a ##.libs/## subdirectory. You can then copy them into the corresponding directories of the ""MinGW-w64"" toolchain such that gcc will find them.
+This should produce the libffi headers in a ##./<platform-name>/include/## subdirectory and the compiled library in a ##./<platform-name>/.libs/## subdirectory. You can then copy them into the corresponding directories of the ""MinGW-w64"" toolchain (e.g. ##C:\MinGW-w64\<platform-name>\include|lib\## such that gcc will find them.
 
 {{fbdoc item="section" value="Standalone build (self-contained FB)"}}
 

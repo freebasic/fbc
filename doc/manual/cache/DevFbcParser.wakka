@@ -5,7 +5,7 @@
 ''##symb*.bas##'': Symbol tables and lookup, namespace/scope handling.
 ''##rtl*.bas##'': Helpers to build AST calls to rtlib/gfxlib functions.
 	
-	The structure of the parser has a very close relation to the [[FbGrammar|FreeBASIC grammar]]. Basically there is a parsing function for every element of the grammar.
+	The structure of the parser has a very close relation to the FreeBASIC grammar. Basically there is a parsing function for every element of the grammar.
 	
 	The parser retrieves tokens from the lexer and validates the input source code. Most error messages (besides command line and file access errors) come from here. Additionally the parser functions build up the corresponding AST. This is the heart of the compilation process.
 	

@@ -26,6 +26,8 @@ Defines or resizes a variable-length array
 	
 	When defining a new variable-length array, its elements are default constructed. For simple data types like ##[[KeyPgInteger|Integer]]## or ##[[KeyPgDouble|Double]]##, the elements are initialized to zero (##0##). For user-defined types with a default constructor, that will be called.
 	
+	When used with in a user-defined type, ##**Redim**## creates variable-length arrays while being able to pre-size them with constant subscripts.
+	
 	**NOTES**: 
 		- ##**Redim** [[KeyPgPreserve|Preserve]]## may not work as expected in all cases:
 			- ##[[KeyPgPreserve|Preserve]]##'s current behavior is to keep the original data contiguous in memory, and only expand or truncate the size of the memory (if resizing is not possible, the whole original data block is first shifted to another memory location).
