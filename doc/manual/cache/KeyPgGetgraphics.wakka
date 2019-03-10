@@ -23,14 +23,14 @@ Gets a copy of a portion of the current work page or an image buffer
 	
 	##//source//## can be an address, an [[ProPgArrays|array]] (name not followed by empty parentheses), or a reference to the first element in an [[ProPgArrays|array]] that holds an image buffer to retrieve a portion of. ##//x1//##,  ##//y1//##, ##//x2//##,  ##//y2//##, ##**Step**## and ##//dest//## have the same meaning in this case.
 	
-	The co-ordinates of the rectangle are affected by the most recent ##[[KeyPgWindow|Window]]## and ##[[KeyPgViewgraphics|View (Graphics)]]## statements, and must both be within the current clipping region set by ##[[KeyPgViewgraphics|View (Graphics)]]##, otherwise an illegal function call runtime error will be triggered, and the function will have no effect.
+	The co-ordinates of the rectangle are affected by the most recent ##[[KeyPgWindow|Window]]## and ##[[KeyPgViewgraphics|View (Graphics)]]## statements, and must both be within the current clipping region set by ##[[KeyPgViewgraphics|View (Graphics)]]## (or within the default viewport), otherwise an illegal function call runtime error will be triggered, and the function will have no effect.
 
 **Runtime errors:**
 	##**Get**## throws one of the following [[ProPgErrorHandling|runtime errors]]:
 	
 	//(##1##) Illegal function call//
 		- ##//dest//## is an array, but is not big enough to hold the image buffer.
-		- The upper-left or lower-right co-ordinates of the rectangle are outside the current clipping region. See ##[[KeyPgViewgraphics|View (Graphics)]]##.
+		- The upper-left or lower-right co-ordinates of the rectangle are outside the current clipping region (set or default). See ##[[KeyPgViewgraphics|View (Graphics)]]##.
 
 {{fbdoc item="lang"}}
 	There are 2 types of buffers (details see [[GfxInternalFormats]]) depending from FB dialect used:

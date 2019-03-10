@@ -105,7 +105,7 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item8"}}==Does ""FreeBASIC"" support Object Oriented Programming?==
-	""FreeBASIC"" (since version 0.90) supports classes (user-defined types) with member functions (methods), static methods, static member variables, constructors, destructors, properties, operator overloading, single inheritance, virtual and abstract methods (polymorphism) and Run-Time Type Information (RTTI). Future plans regarding OOP functionality include adding support for multiple inheritance and/or interfaces. For more information see: [[TutBeginnersGuideToTypesAsObjects|A Beginners Guide to Types as Objects]].
+	""FreeBASIC"" supports classes (user-defined types) with member functions (methods), static methods, static member variables, constructors, destructors, properties, operator overloading, single inheritance, virtual and abstract methods (polymorphism) and Run-Time Type Information (RTTI). Future plans regarding OOP functionality include adding support for multiple inheritance and/or interfaces. For more information see: [[TutBeginnersGuideToTypesAsObjects|A Beginners Guide to Types as Objects]].
 
 {{anchor name="item0|Back to top"}}
 
@@ -247,7 +247,7 @@ Depends. If your OS at least egalizes the functionality of DOS with DPMI32 (cons
 
 {{anchor name="item37"}}==Does ""FreeBASIC"" support returning references from Functions, like in ""C++""?==
 
-Yes, this functionality exists since version 0.90.0. Procedures can now return references using ##[[KeyPgByrefFunction|byref]] as //datatype//## for the return type.
+Yes, this functionality exists. Procedures can now return references using ##[[KeyPgByrefFunction|byref]] as //datatype//## for the return type.
 
 {{anchor name="item0|Back to top"}}
 

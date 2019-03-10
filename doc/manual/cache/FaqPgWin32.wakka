@@ -21,10 +21,11 @@
 
 {{anchor name="item01"}}==Which IDEs are available for Windows?==
 
-	At the moment three full featured IDEs have been developed specifically for FB: [[http://fbide.freebasic.net/|FBIde]] (not being updated, avoid using of old versions of FBC bundled with it), [[http://fbedit.freebasic.net/|FbEdit]] and [[http://www.planetsquires.com/jellyfishpro_freebasic.htm|JellyFishPro]]. These IDEs require a minimum configuration -as path to the compiler- to work. 
+	At the moment three full featured IDEs have been developed specifically for FB: [[http://fbide.freebasic.net/|FBIde]] (not being updated, avoid using of old versions of FBC bundled with it), [[http://fbedit.freebasic.net/|FbEdit]] and [[https://www.freebasic.net/forum/viewtopic.php?f=8&t=25215|WinFBE Editor]]. These IDEs require a minimum configuration -as path to the compiler- to work. 
 	You can also download  [[http://fbide.freebasic.net/|FBIde]] and [[http://fbedit.freebasic.net/|FbEdit]] as bundles  (Editor + Compiler) that install in a single operation. But the bundled version of the compiler may be out of date.
+	[[http://www.freebasic.net/forum/viewtopic.php?f=8&t=25215|WinFBE]] Editor (WinFBE_Suite) comes packaged with the latest FB Compiler. It is an all-in-one solution. 
 	Commercial "general use" IDEs can be used with ""FreeBASIC"" but may require an extensive setup. They are handy for multi language programming, as they provide a unified user interface.
-	Instructions for installing FB JFish Pro, FBIde, and ""FbEdit"" can be found here:
+	Instructions for installing ""WinFBE"", FBIde, and ""FbEdit"" can be found here:
 	   - [[http://www.freebasic.net/forum/viewtopic.php?t=10350|IDE Installation guide for Windows]]
 
 {{anchor name="item0|Back to top"}}	
@@ -33,7 +34,7 @@
 	Yes. You have to give ""FreeBASIC"" the right command for it when you compile your program.
 	- If you compile from a command prompt, simply add ##"-s gui"## to the end, like ##"fbc myprg.bas -s gui"##
 	- If you compile in a specific IDE, you have to edit the "Compiler Defaults". 
-		- In Jelly-Fish Pro, its "Compiler->Set Compiler Defaults->Compiler Options". Add "-s gui" (NO QUOTES) in that box.
+		- In ""WinFBE"", its "Options->Build Configurations". Add "-s gui" (NO QUOTES) for the build of your choice.
 		- In ""FbEdit"" select Windows GUI in the targets dropdown list in the right of the tool bar.
 
 {{anchor name="item0|Back to top"}}
@@ -82,6 +83,7 @@
 
 {{anchor name="item09"}}==Are there Windows GUI code builders for FB?==	
 	Yes there are some 3rd party developments generating Windows API code from a windows designer &agrave; la Visual Basic:
+	[[https://www.freebasic.net/forum/viewtopic.php?f=8&t=25215|WinFBE Editor]] (open source) full visual designer similar to Visual Basic.
 	[[http://www.freewebs.com/fielden/|Jerry Fielden' Ezeegui]] (freeware) uses a "graphical" textmode interface to let you build your code.
 	[[http://codege.org/projects/visg/|mrhx Software's VISG]] (GPL) has a more classical user interface.
 	Less helpful may be the graphical resource editors generating scripts for the resource compiler. Any editor generating scripts compatible with ""GoRC"" can be used, as the  one included with [[http://fbedit.freebasic.net/index.php|FbEdit]]. Graphical resource editors are a great help in designing dialogs and menus, but they leave to you the task of writing the window procedures required to make them active.

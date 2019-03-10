@@ -19,8 +19,6 @@ Specifies protected member access control in a ##[[KeyPgType|Type]]## or ##[[Key
 	##//member declarations//## following ##**Protected:**## are protected until a different access control specifier is given, like ##[[KeyPgVisPrivate|Private:]]## or ##[[KeyPgVisPublic|Public:]]##.
 	
 	Members in a ##[[KeyPgType|Type]]## declaration are ##**Public:**## by default if no member access control specifier is given.
-	
-	NOTE: This keyword is useful only since fbc version 0.24 because inheritance is then supported.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/udt/protected.bas"}}%%(freebasic)

@@ -94,7 +94,6 @@ The DOS target is fairly well working and supported by ""FreeBASIC"", and up-to-
 {{anchor name="item11"}}==11. How can I use graphics in DOS?==
 	GUI or graphics in DOS is definitely possible, there are several approaches:
 		-Use the FB graphics library. It uses VESA (preferably linear, but also supports banked) to access the video card and supports any resolution reported by the card's VESA VBE driver, in addition to standard VGA modes.
-		Note: use preferably FB version **0.20** or newer, the FB DOS graphics works not as good on **0.17**, and does **not work at all** in previous releases.
 		-VGA mode 320x200x8bpp: very simple, maximum reliability and compatibility, but low resolution and 256 colours only, see example.
 		-VGA """ModeX""" 320x240x8bpp: similar to above, less easy, good reliability and compatibility, but low resolution and 256 colours only, see example.
 		-VGA "planed" mode 640x480x4bpp: difficult to set pixels, maximum reliability and compatibility, but low resolution and 16 colours only, no public example yet (?).

@@ -29,8 +29,6 @@ Conditional function that returns one of two values.
 	When IIf treats expressions of mixed numeric types (conditional expression evaluated at run-time):
 		- if at least one expression is of floating-point type, the result type is the floating-point type (the bigger in case of two floating-point types),
 		- if the two expressions are of integer types, the result type is the bigger type of both (see [[ProPgDataConversion|Coercion and Conversion]] for the precise ranking of integer types).
-		
-	**Warning:** The ability to accept mixed numeric types, strings and UDTs is only supported from the fbc version 0.90.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/control/iif.bas"}}%%(freebasic)

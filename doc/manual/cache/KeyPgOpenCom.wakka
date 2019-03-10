@@ -69,7 +69,7 @@ OPEN COM "COM1:115200" as 1
 		COM2 - &h2f8 - IRQ3 
 		COM3 - &h3e8 - IRQ4 
 		COM4 - &h2e8 - IRQ3 
-		Since fbc-0.18.4, an alternate IRQ can be specified using the the ##"IR//n//"## protocol option where ##//n//## is ##3## through ##7##.
+		An alternate IRQ can be specified using the the ##"IR//n//"## protocol option where ##//n//## is ##3## through ##7##.
 		Currently not supported: IRQ's on the slave PIC, alternate base I/O addresses, Timeouts and most errors as detected in QB, hardware flow control, FIFO's.
 		##"COM:"## maps to ##"COM1:"##
 {{fbdoc item="lang"}}
