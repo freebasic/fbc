@@ -7,7 +7,7 @@ Returns a pointer to the first argument in a variable argument list
 {{fbdoc item="desc"}}
 	The ##**va_first**## function provides an untyped [[ProPgPointers|pointer]] value that points to the first variable argument passed to a function.
 	
-	//Note:// Not supported when using gcc.
+	Not supported when using ##[[CompilerOptgen|-gen gcc]]##.  Use ##[[KeyPgCvaList|cva_list]]## variadic argument list type for cross platform compatibility.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/procs/vararg1.bas"}}%%(freebasic)

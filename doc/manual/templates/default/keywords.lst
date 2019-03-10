@@ -102,6 +102,11 @@ CUnsg
 CurDir
 CUShort
 Custom
+Cva_Arg
+Cva_Copy
+Cva_End
+Cva_List
+Cva_Start
 CVD
 CVI
 CVL

@@ -183,6 +183,11 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgCurdir|CURDIR"}}
 	- {{fbdoc item="keyword" value="KeyPgCushort|CUSHORT"}}
 	- {{fbdoc item="keyword" value="KeyPgCustomgfx|CUSTOM (Graphics PUT)"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaArg|CVA_ARG"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaCopy|CVA_COPY"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaEnd|CVA_END"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaList|CVA_LIST"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaStart|CVA_START"}}
 	- {{fbdoc item="keyword" value="KeyPgCvd|CVD"}}
 	- {{fbdoc item="keyword" value="KeyPgCvi|CVI"}}
 	- {{fbdoc item="keyword" value="KeyPgCvl|CVL"}}

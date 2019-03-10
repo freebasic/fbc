@@ -65,6 +65,16 @@ Keywords that work with procedures.
 {{anchor name="VARIADIC"}}{{fbdoc item="section" value="Variadic Procedures"}}
 	=={{fbdoc item="keyword" value="KeyPgDots|... (Ellipsis)"}}==
 		Indicates a variadic procedure in a declaration.
+	== {{fbdoc item="keyword" value="KeyPgCvaArg|CVA_ARG"}}==
+		Macro to obtain the next argument from a variadic argument list object
+	== {{fbdoc item="keyword" value="KeyPgCvaCopy|CVA_COPY"}}==
+		Macro to copy a variadic argument list object variable
+	== {{fbdoc item="keyword" value="KeyPgCvaEnd|CVA_END"}}==
+		Macro to end using a variadic argument list object variable
+	== {{fbdoc item="keyword" value="KeyPgCvaList|CVA_LIST"}}==
+		Variadic argument list object type 
+	== {{fbdoc item="keyword" value="KeyPgCvaStart|CVA_START"}}==
+		Macro to initialize variadic argument list object variable
 	=={{fbdoc item="keyword" value="KeyPgVaFirst|VA_FIRST"}}==
 		Macro to obtain the argument list in a variadic procedure.
 	=={{fbdoc item="keyword" value="KeyPgVaArg|VA_ARG"}}==
