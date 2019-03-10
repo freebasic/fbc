@@ -49,7 +49,7 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 
 	'' same order as FB_DATATYPE
 	dim shared dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE => _
-	{ _
+	{ _ '' rnametb mname
 		( 0, "void ptr"  ), _ '' void
 		( 0, "byte ptr"  ), _ '' boolean
 		( 0, "byte ptr"  ), _ '' byte
@@ -69,6 +69,7 @@ declare function _getTypeString( byval dtype as integer ) as const zstring ptr
 		( 3, "qword ptr" ), _ '' double
 		( 0, ""          ), _ '' string
 		( 0, "byte ptr"  ), _ '' fix-len string
+		( 0, "dword ptr" ), _ '' va_list
 		( 2, "dword ptr" ), _ '' struct
 		( 0, ""          ), _ '' namespace
 		( 2, "dword ptr" ), _ '' function

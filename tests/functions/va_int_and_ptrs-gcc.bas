@@ -1,41 +1,31 @@
 # include "fbcunit.bi"
 
-#if defined( __FB_64BIT__ ) 
-	#if defined( __FB_WIN32__ )
-		#define DOTEST
-	#endif	
-#elseif (__FB_BACKEND__ = "gas")
-	#define DOTEST
-#endif
-
-'' for other targets, see va_int_and_ptrs-gcc.bas
-
-#ifdef DOTEST
-
-SUITE( fbc_tests.functions.va_int_and_ptrs )
+SUITE( fbc_tests.functions.va_int_and_ptrs_gcc )
 
 	sub varints cdecl ( byval n as integer, ... )
-		dim va as any ptr
+		dim va as cva_list = any
 		dim i as integer
 
-		va = va_first( )
+		cva_start( va, n )
 
 		for i = 1 to n
-			CU_ASSERT( va_arg( va, integer ) = i )
-			va = va_next( va, integer )
+			CU_ASSERT( cva_arg( va, integer ) = i )
 		next
+
+		cva_end( va )
 	end sub
 
 	sub varintptrs cdecl ( byval n as integer, ... )
-		dim va as any ptr
+		dim va as cva_list = any
 		dim i as integer
 
-		va = va_first( )
+		cva_start( va, n )
 
 		for i = 1 to n
-			CU_ASSERT( *va_arg( va, integer ptr ) )
-			va = va_next( va, integer ptr )
+			CU_ASSERT( *cva_arg( va, integer ptr ) )
 		next
+
+		cva_end( va )
 	end sub
 
 	sub vaints_test( d as integer )
@@ -60,5 +50,3 @@ SUITE( fbc_tests.functions.va_int_and_ptrs )
 	END_TEST
 
 END_SUITE
-
-#endif

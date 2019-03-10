@@ -714,7 +714,8 @@ dim shared dbg_astNodeClassNames( 0 to AST_CLASSES-1 ) as NameInfo = _
 	( /' @"AST_NODECLASS_TYPEINI_CTORLIST" , '/ @"TYPEINI_CTORLIST" /' , 0 '/ ), _
 	( /' @"AST_NODECLASS_TYPEINI_SCOPEINI" , '/ @"TYPEINI_SCOPEINI" /' , 0 '/ ), _
 	( /' @"AST_NODECLASS_TYPEINI_SCOPEEND" , '/ @"TYPEINI_SCOPEEND" /' , 0 '/ ), _
-	( /' @"AST_NODECLASS_PROC"             , '/ @"PROC"             /' , 0 '/ ) _
+	( /' @"AST_NODECLASS_PROC"             , '/ @"PROC"             /' , 0 '/ ), _
+	( /' @"AST_NODECLASS_MACRO"            , '/ @"MACRO"            /' , 0 '/ )  _
 }
 
 ''
@@ -829,6 +830,10 @@ dim shared dbg_astNodeOpNames( 0 to AST_OPCODES - 1 ) as NameInfo = _
 	( /' @"AST_OP_MEMSWAP"         , '/ @"MEMSWAP"      /' , 0 '/ ), _
 	( /' @"AST_OP_MEMCLEAR"        , '/ @"MEMCLEAR"     /' , 0 '/ ), _
 	( /' @"AST_OP_STKCLEAR"        , '/ @"STKCLEAR"     /' , 0 '/ ), _
+	( /' @"AST_OP_VA_START"        , '/ @"VA_START"     /' , 0 '/ ), _
+	( /' @"AST_OP_VA_END"          , '/ @"VA_END"       /' , 0 '/ ), _
+	( /' @"AST_OP_VA_COPY"         , '/ @"VA_COPY"      /' , 0 '/ ), _
+	( /' @"AST_OP_VA_ARG"          , '/ @"VA_ARG"       /' , 0 '/ ), _
 	( /' @"AST_OP_DBG_LINEINI"     , '/ @"DBG_LINEINI"  /' , 0 '/ ), _
 	( /' @"AST_OP_DBG_LINEEND"     , '/ @"DBG_LINEEND"  /' , 0 '/ ), _
 	( /' @"AST_OP_DBG_SCOPEINI"    , '/ @"DBG_SCOPEINI" /' , 0 '/ ), _
@@ -876,10 +881,24 @@ private function hSymbToStr _
 end function
 
 '':::::
+private function hAstNodeTypeToStr _
+	( _
+		byval n as ASTNODE ptr _
+	) as string
+
+	if( n = NULL ) then return ""
+
+	return symbTypeToStr( n->dtype, n->subtype )
+
+end function
+
+'':::::
 private function hAstNodeToStr _
 	( _
 		byval n as ASTNODE ptr _
 	) as string
+
+	#define NODE_TYPE ( " (" & hAstNodeTypeToStr( n ) & ")" )
 
 	select case as const n->class
 	case AST_NODECLASS_BOP
@@ -890,21 +909,21 @@ private function hAstNodeToStr _
 
 	case AST_NODECLASS_CONST
 		if( typeGetClass( n->dtype ) = FB_DATACLASS_FPOINT ) then
-			return str( astConstGetFloat( n ) )
+			return str( astConstGetFloat( n ) ) & NODE_TYPE
 		end if
-		return str( astConstGetInt( n ) )
+		return str( astConstGetInt( n ) ) & NODE_TYPE
 
 	case AST_NODECLASS_VAR
-		return "VAR( " & *iif( n->sym, symbGetName( n->sym ), @"<NULL>" ) & " )"
+		return "VAR( " & *iif( n->sym, symbGetName( n->sym ), @"<NULL>" ) & " )" & NODE_TYPE
 
 	case AST_NODECLASS_FIELD
-		return "FIELD( " & *symbGetName( n->sym ) & " )"
+		return "FIELD( " & *symbGetName( n->sym ) & " )" & NODE_TYPE
 
 	case AST_NODECLASS_DECL
 		if( n->sym ) then
 			return "DECL( " & *symbGetName( n->sym ) & " )"
 		end if
-		return "DECL"
+		return "DECL" & NODE_TYPE
 
 	case AST_NODECLASS_CALL
 		return "CALL( " & *symbGetName( n->sym ) & " )"
@@ -921,8 +940,11 @@ private function hAstNodeToStr _
 	case AST_NODECLASS_TYPEINI_ASSIGN
 		return "TYPEINI_ASSIGN( offset=" & n->typeini.ofs & " )"
 
+	case AST_NODECLASS_MACRO
+		return "MACRO: " & astDumpOpToStr( n->op.op ) & " " & NODE_TYPE
+
 	case else
-		return hAstNodeClassToStr( n->class )
+		return hAstNodeClassToStr( n->class ) & NODE_TYPE
 	end select
 
 end function
@@ -1012,7 +1034,7 @@ function astDumpInline( byval n as ASTNODE ptr ) as string
 		s = "<NULL>"
 	else
 		s += hAstNodeClassToStr( n->class )
-		's += typeDumpToStr( n->dtype, n->subtype )
+		's += typeDump( n->dtype, n->subtype )
 
 		var have_data = (n->sym <> NULL) or (n->l <> NULL) or (n->r <> NULL)
 		select case as const( n->class )

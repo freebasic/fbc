@@ -144,6 +144,7 @@ enum
 	EXPRCLASS_CAST
 	EXPRCLASS_UOP
 	EXPRCLASS_BOP
+	EXPRCLASS_MACRO
 end enum
 
 type EXPRNODE
@@ -257,6 +258,7 @@ dim shared as const zstring ptr dtypeName(0 to FB_DATATYPES-1) = _
 	@"double"   , _ '' double
 	@"FBSTRING" , _ '' string
 	NULL        , _ '' fix-len string
+	@"__builtin_va_list"  , _ '' va_list
 	NULL        , _ '' struct
 	NULL        , _ '' namespace
 	NULL        , _ '' function
@@ -537,7 +539,7 @@ private function hEmitProcHeader _
 	end if
 
 	'' Function result type (is 'void' for subs)
-	ln += hEmitType( typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ), _
+	ln += hEmitType( symbGetProcRealType( proc ), _
 					symbGetProcRealSubtype( proc ) )
 
 	'' Calling convention if needed (for function pointers it's usually not
@@ -647,6 +649,14 @@ private function hGetUdtTag( byval sym as FBSYMBOL ptr ) as string
 end function
 
 private function hGetUdtId( byval sym as FBSYMBOL ptr ) as string
+
+	'' gcc's __builtin_va_list needs an exact name
+	select case symbGetValistType( symbGetFullType( sym ), symbGetSubtype( sym ) )
+	case FB_CVA_LIST_BUILTIN_C_STD, FB_CVA_LIST_BUILTIN_AARCH64
+			function = *sym->id.alias
+			exit function
+	end select
+
 	'' Prefixing the mangled name with a $ because it may start with a
 	'' number which isn't allowed in C.
 	function = "$" + *symbGetMangledName( sym )
@@ -1522,6 +1532,16 @@ private function hEmitType _
 	dim as string s
 	dim as integer ptrcount = any
 
+	'' replace type with __builtin_va_list if
+	'' the mangle modifier was given
+	if( symbIsBuiltinVaListType( dtype, subtype ) ) then
+		select case symbGetValistType( dtype, subtype )
+		case FB_CVA_LIST_BUILTIN_POINTER
+			dtype = typeJoinDtOnly( typeDeref(dtype), FB_DATATYPE_VA_LIST )
+		case else
+			dtype = typeJoinDtOnly( dtype, FB_DATATYPE_VA_LIST )
+		end select
+	end if
 	ptrcount = typeGetPtrCnt( dtype )
 	dtype = typeGetDtOnly( dtype )
 
@@ -1709,6 +1729,22 @@ private function exprNewCAST _
 
 	var n = exprNew( EXPRCLASS_CAST, dtype, subtype )
 	n->l = l
+	function = n
+end function
+
+private function exprNewMACRO _
+	( _
+		byval op as AST_OP, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval l as EXPRNODE ptr, _
+		byval r as EXPRNODE ptr _
+	) as EXPRNODE ptr
+
+	var n = exprNew( EXPRCLASS_MACRO, dtype, subtype )
+	n->op = op
+	n->l = l
+	n->r = r
 	function = n
 end function
 
@@ -2292,6 +2328,43 @@ private sub hExprFlush( byval n as EXPRNODE ptr, byval need_parens as integer )
 		ctx.exprtext += "(" + hEmitType( n->dtype, n->subtype ) + ")"
 		hExprFlush( n->l, TRUE )
 
+	case EXPRCLASS_MACRO
+		select case( n->op )
+		case AST_OP_VA_ARG
+			'' cva_arg(l, type) := __builtin_va_arg(l, type)
+			ctx.exprtext += "__builtin_va_arg( "
+			hExprFlush( n->l, TRUE )
+			ctx.exprtext += ", "
+			ctx.exprtext += hEmitType( n->dtype, n->subtype )
+			ctx.exprtext += ")"
+
+		case AST_OP_VA_START
+			'' cva_start(l, r) := __builtin_va_start(l, r)
+			ctx.exprtext += "__builtin_va_start( "
+			hExprFlush( n->l, TRUE )
+			ctx.exprtext += ", "
+			hExprFlush( n->r, TRUE )
+			ctx.exprtext += ")"
+			
+		case AST_OP_VA_END
+			'' cva_end(l) := __builtin_va_end(l)
+			ctx.exprtext += "__builtin_va_end( "
+			hExprFlush( n->l, TRUE )
+			ctx.exprtext += ")"
+
+		case AST_OP_VA_COPY
+			'' cva_copy(l, r) := __builtin_va_copy(l, r)
+			ctx.exprtext += "__builtin_va_copy( "
+			hExprFlush( n->l, TRUE )
+			ctx.exprtext += ", "
+			hExprFlush( n->r, TRUE )
+			ctx.exprtext += ")"
+
+		case else
+			assert( FALSE )
+		end select
+
+
 	case EXPRCLASS_UOP
 		ctx.exprtext += *hUopToStr( n->op, n->dtype, is_builtin )
 
@@ -2374,7 +2447,8 @@ private sub exprDump( byval n as EXPRNODE ptr )
 		@"SYM" , _ '' EXPRCLASS_SYM
 		@"CAST", _ '' EXPRCLASS_CAST
 		@"UOP" , _ '' EXPRCLASS_UOP
-		@"BOP"   _ '' EXPRCLASS_BOP
+		@"BOP" , _ '' EXPRCLASS_BOP
+		@"MACRO" _ '' EXPRCLASS_MACRO
 	}
 
 	s += *names(n->class)
@@ -2392,6 +2466,9 @@ private sub exprDump( byval n as EXPRNODE ptr )
 		hSym2Text( s, n->sym )
 
 	case EXPRCLASS_CAST
+		s += hEmitType( n->dtype, n->subtype )
+
+	case EXPRCLASS_MACRO
 		s += hEmitType( n->dtype, n->subtype )
 
 	case EXPRCLASS_UOP
@@ -2417,6 +2494,9 @@ private sub exprDump( byval n as EXPRNODE ptr )
 	case EXPRCLASS_CAST, EXPRCLASS_UOP
 		exprDump( n->l )
 	case EXPRCLASS_BOP
+		exprDump( n->l )
+		exprDump( n->r )
+	case EXPRCLASS_MACRO
 		exprDump( n->l )
 		exprDump( n->r )
 	end select
@@ -2544,12 +2624,18 @@ private function exprNewVREG _
 
 			'' any structs involved? (note: FBSTRINGs are structs in the C code too!)
 			select case( typeGet( vreg->dtype ) )
-			case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
+			case FB_DATATYPE_STRING
 				do_deref = TRUE
+			case FB_DATATYPE_STRUCT
+				'' don't deref if it is a va_list[1] type, unless we going to anyway
+				do_deref or= not symbIsValistStructArray( symbGetFullType( vreg->sym ), symbGetSubType( vreg->sym ) )
 			case else
 				select case( typeGet( symdtype ) )
-				case FB_DATATYPE_STRING, FB_DATATYPE_STRUCT
+				case FB_DATATYPE_STRING
 					do_deref = TRUE
+				case FB_DATATYPE_STRUCT
+					'' don't deref if it is a va_list[1] type, unless we going to anyway
+					do_deref or= not symbIsValistStructArray( symbGetFullType( vreg->sym ), symbGetSubType( vreg->sym ) )
 				end select
 			end select
 		end if
@@ -3145,6 +3231,40 @@ private sub _emitMem _
 		hWriteLine("__builtin_memcpy( " + exprFlush( exprNewVREG( v1 ) ) + ", " + exprFlush( exprNewVREG( v2 ) ) + ", " + str( cunsg( bytes ) ) + " );" )
 	end select
 
+end sub
+
+private sub _emitMacro _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	)
+
+	dim as EXPRNODE ptr l = any, r = any
+
+	select case op
+	case AST_OP_VA_START
+		l = exprNewVREG( v1 )
+		r = exprNewVREG( v2 )
+		hWriteLine( exprFlush( exprNewMACRO( op, FB_DATATYPE_INVALID, NULL, l, r ) ) + ";" )
+
+	case AST_OP_VA_END
+		l = exprNewVREG( v1 )
+		hWriteLine( exprFlush( exprNewMACRO( op, FB_DATATYPE_INVALID, NULL, l, NULL ) ) + ";" )
+
+	case AST_OP_VA_ARG
+		l = exprNewVREG( v1 )
+		l = exprNewMACRO( op, vr->dtype, vr->sym, l, NULL )
+		exprSTORE( vr, l )
+
+	case AST_OP_VA_COPY
+		l = exprNewVREG( v1 )
+		r = exprNewVREG( v2 )
+		hWriteLine( exprFlush( exprNewMACRO( op, FB_DATATYPE_INVALID, NULL, l, r ) ) + ";" )
+
+	end select
+	
 end sub
 
 private sub _emitDECL( byval sym as FBSYMBOL ptr )
@@ -3805,6 +3925,7 @@ dim shared as IR_VTBL irhlc_vtbl = _
 	@_emitBranch, _
 	@_emitJmpTb, _
 	@_emitMem, _
+	@_emitMacro, _
 	@_emitScopeBegin, _
 	@_emitScopeEnd, _
 	@_emitDECL, _

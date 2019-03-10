@@ -699,15 +699,19 @@ SUITE( fbc_tests.functions.return_byref )
 			i = 1 : CU_ASSERT( f1( ) = "y" )
 			i = 2 : CU_ASSERT( f1( ) = "z" )
 
-#if ENABLE_CHECK_BUGS
-			CU_ASSERT( f2( 0 ) = "a" ) '' <<-- fail
-			CU_ASSERT( f2( 1 ) = "b" ) '' <<-- fail
-			CU_ASSERT( f2( 2 ) = "c" ) '' <<-- fail
+			'' reset test data
+			dat(0) = "a"
+			dat(1) = "b"
+			dat(2) = "c"
+
+			CU_ASSERT( f2( 0 ) = "a" )
+			CU_ASSERT( f2( 1 ) = "b" )
+			CU_ASSERT( f2( 2 ) = "c" )
 			(f2( 1 )) = "y"
-			CU_ASSERT( f2( 0 ) = "a" ) '' <<-- fail
+			CU_ASSERT( f2( 0 ) = "a" )
 			CU_ASSERT( f2( 1 ) = "y" )
-			CU_ASSERT( f2( 2 ) = "c" ) '' <<-- fail
-#endif
+			CU_ASSERT( f2( 2 ) = "c" )
+
 			(f2( 0 )) = "x"
 			(f2( 2 )) = "z"
 			CU_ASSERT( f2( 0 ) = "x" )

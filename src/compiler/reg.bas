@@ -84,12 +84,12 @@ sub regDump2( byval this_ as REGCLASS ptr )
 		end if
 
 		if( this_->vregTB(i) ) then
-			print ", vreg=" & vregDump( this_->vregTB(i) );
+			print ", vreg=" & vregDumpToStr( this_->vregTB(i) );
 		else
 			print ", no vreg";
 		end if
 		if( this_->vauxparent(i) ) then
-			print ", vauxparent=" & vregDump( this_->vauxparent(i) );
+			print ", vauxparent=" & vregDumpToStr( this_->vauxparent(i) );
 		end if
 		print
 	next

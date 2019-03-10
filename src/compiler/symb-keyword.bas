@@ -267,6 +267,10 @@ dim shared kwdTb( 0 to FB_TOKENS-1 ) as SYMBKWD => _
 	( @"DRAW"       , FB_TK_DRAW        , FB_TKCLASS_QUIRKWD ), _
 	( @"IMAGECREATE", FB_TK_IMAGECREATE , FB_TKCLASS_QUIRKWD , KWD_OPTION_NO_QB ), _
 	( @"THREADCALL" , FB_TK_THREADCALL  , FB_TKCLASS_QUIRKWD , KWD_OPTION_NO_QB ), _
+	( @"CVA_START"  , FB_TK_CVA_START   , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+	( @"CVA_END"    , FB_TK_CVA_END     , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+	( @"CVA_ARG"    , FB_TK_CVA_ARG     , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
+	( @"CVA_COPY"   , FB_TK_CVA_COPY    , FB_TKCLASS_KEYWORD , KWD_OPTION_NO_QB ), _
 	( NULL ) _
 }
 
@@ -394,5 +398,143 @@ sub symbKeywordConstsInit( )
 	if( sym ) then
 		symbSetCanRedef( sym )
 	end if
+
+end sub
+
+'':::::
+sub symbKeywordTypeInit( )
+
+	dim as FBSYMBOL ptr s = any
+	dim pid as zstring ptr = any 
+	dim dtype as integer = any
+
+
+	'' add the default cva_list type
+	''
+	''	#if (__FB_BACKEND__ = "gcc")
+	''		#if defined( __FB_64BIT__ ) 
+	''			#if defined( __FB_ARM__ )
+	''				type __va_list alias "__va_list"
+	''					as any ptr __stack
+	''					as any ptr __gr_top
+	''					as any ptr __vr_top
+	''					as long __gr_offs
+	''					as long __vr_offs
+	''				end type
+	''				type cva_list as __va_list alias "__builtin_va_list"
+	''			#elseif defined( __FB_WIN32__ )
+	''				type cva_list as any alias "__builtin_va_list" ptr
+	''			#else
+	''				type __va_list_tag alias "__va_list_tag"
+	''					as ulong gp_offset
+	''					as ulong fp_offset
+	''					as any ptr overflow_arg_area
+	''					as any ptr reg_save_area
+	''				end type  
+	''				type cva_list as __va_list_tag alias "__builtin_va_list[]"
+	''			#endif	
+	''		#else
+	''			type cva_list as any alias "__builtin_va_list" ptr
+	''		#endif
+	''	#else
+	''		type cva_list as any alias "char" ptr
+	''	#endif
+
+	static as FBARRAYDIM dTB(0)
+	
+	if( fbLangIsSet( FB_LANG_QB ) ) then
+		pid = @"__cva_list"
+	else
+		pid = @"cva_list"
+	end if
+
+	'' add the default cva_list type based on target options
+
+	select case fbGetBackendValistType()
+	case FB_CVA_LIST_BUILTIN_POINTER
+		'' cva_list as any alias "__builtin_va_list" ptr (built-in pointer expression)
+		dtype = typeSetMangleDt( typeAddrOf( FB_DATATYPE_VOID ), FB_DATATYPE_VA_LIST )
+		symbAddTypedef( pid, dtype, NULL, typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) ) )
+
+	case FB_CVA_LIST_BUILTIN_C_STD
+		'' cva_list is __builtin_va_list from C definition:
+		''	typedef struct __va_list_tag {
+		''		unsigned int gp_offset;
+		''		unsigned int fp_offset;
+		''		void *overflow_arg_area;
+		''		void *reg_save_area;
+		''	} va_list[1];
+
+		s = symbStructBegin( NULL, NULL, NULL, "__va_list_tag", "__va_list_tag", FALSE, 0, FALSE, 0, 0 )
+
+		'' gp_offset as ulong
+		symbAddField( s, "gp_offset", 0, dTB(), FB_DATATYPE_ULONG, NULL, 0, 0, 0 )
+
+		'' fp_offset as ulong
+		symbAddField( s, "fp_offset", 0, dTB(), FB_DATATYPE_ULONG, NULL, 0, 0, 0 )
+
+		'' overflow_arg_area as any ptr
+		symbAddField( s, "overflow_arg_area", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+		'' reg_save_area as any ptr
+		symbAddField( s, "reg_save_area", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+		'' end type
+		symbStructEnd( s )
+
+		'' subtype mangle modifier
+		'' don't clone struct, back patch the original only, see note in cMangleModifier()
+		'' TODO: s = symbCloneSymbol( s )
+		symbSetUdtIsValistStruct( s )
+		symbSetUdtIsValistStructArray( s )
+
+		'' type cva_list as __va_list_tag alias "__builtin_va_list[]"
+		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
+
+	case FB_CVA_LIST_BUILTIN_AARCH64
+		'' cva_list is from ARM64 definition:
+		''	typdef struct __va_list {
+		''		void *__stack; 
+		''		void *__gr_top; 
+		''		void *__vr_top; 
+		''		int   __gr_offs; 
+		''		int   __vr_offs; 
+		''	} va_list;
+
+		s = symbStructBegin( NULL, NULL, NULL, "__va_list", "__va_list", FALSE, 0, FALSE, 0, 0 )
+
+		'' __stack as any ptr
+		symbAddField( s, "__stack", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+		'' __gr_top as any ptr
+		symbAddField( s, "__gr_top", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+		'' __vr_top as any ptr
+		symbAddField( s, "__vr_top", 0, dTB(), typeAddrOf( FB_DATATYPE_VOID ), NULL, 0, 0, 0 )
+
+		'' __gr_offs as long
+		symbAddField( s, "__gr_offs", 0, dTB(), FB_DATATYPE_LONG, NULL, 0, 0, 0 )
+
+		'' __vr_offs as long
+		symbAddField( s, "__vr_offs", 0, dTB(), FB_DATATYPE_LONG, NULL, 0, 0, 0 )
+
+		'' end type
+		symbStructEnd( s )
+
+		'' subtype mangle modifier
+		'' don't clone struct, back patch the original only, see note in cMangleModifier()
+		'' TODO: s = symbCloneSymbol( s )
+		symbSetUdtIsValistStruct( s )
+
+		'' type cva_list as __va_list alias "__builtin_va_list"
+		symbAddTypedef( pid, typeSetMangleDt( symbGetType( s ), FB_DATATYPE_VA_LIST ), s, symbGetLen( s ) )
+
+	case else
+		'' FB_CVA_LIST_POINTER
+		'' cva_list as any alias "char" ptr (pointer expression)
+		dtype = typeSetMangleDt( typeAddrOf( FB_DATATYPE_VOID ), FB_DATATYPE_CHAR )
+		symbAddTypedef( pid, dtype, NULL, typeGetSize( typeAddrOf( FB_DATATYPE_VOID ) ) )
+
+	end select
 
 end sub

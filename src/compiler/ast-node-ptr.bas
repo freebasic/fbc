@@ -103,7 +103,7 @@ function astLoadDEREF( byval n as ASTNODE ptr ) as IRVREG ptr
 	'' no index? can happen with absolute addresses + ptr typecasting
 	if( l = NULL ) then
 		if( ast.doemit ) then
-			vr = irAllocVRPTR( astGetDataType( n ), n->subtype, n->ptr.ofs, NULL )
+			vr = irAllocVRPTR( astGetFullType( n ), n->subtype, n->ptr.ofs, NULL )
 			vr->vector = n->vector
 		end if
 		return vr
@@ -118,13 +118,13 @@ function astLoadDEREF( byval n as ASTNODE ptr ) as IRVREG ptr
 			(typeGetClass(v1->dtype) <> FB_DATACLASS_INTEGER) or _
 			(typeGetSize(v1->dtype) <> env.pointersize) ) then
 
-			vp = irAllocVREG( typeAddrOf( astGetDataType( n ) ), n->subtype )
+			vp = irAllocVREG( typeAddrOf( astGetFullType( n ) ), n->subtype )
 			irEmitADDR( AST_OP_DEREF, v1, vp )
 		else
 			vp = v1
 		end if
 
-		vr = irAllocVRPTR( astGetDataType( n ), n->subtype, n->ptr.ofs, vp )
+		vr = irAllocVRPTR( astGetFullType( n ), n->subtype, n->ptr.ofs, vp )
 		vr->vector = n->vector
 	end if
 

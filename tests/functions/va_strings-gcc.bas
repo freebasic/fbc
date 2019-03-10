@@ -1,31 +1,20 @@
 # include "fbcunit.bi"
 
-#if defined( __FB_64BIT__ ) 
-	#if defined( __FB_WIN32__ )
-		#define DOTEST
-	#endif	
-#elseif (__FB_BACKEND__ = "gas")
-	#define DOTEST
-#endif
-
-'' for other targets, see var_strings-gcc.bas
-
-#ifdef DOTEST
-
-SUITE( fbc_tests.functions.va_strings )
+SUITE( fbc_tests.functions.va_strings_gcc )
 
 	dim shared strtb(1 to 8) as zstring * 4 => { "abc", "cde", "efg", "ghi", "ijk", "klm", "mno", "opq" }
 
 	sub varstrings cdecl ( byval n as integer, ... )
-		dim va as any ptr
+		dim va as cva_list = any
 		dim i as integer
 
-		va = va_first( )
+		cva_start( va, n )
 
 		for i = 1 to n
-			CU_ASSERT( *va_arg( va, zstring ptr ) = strtb(i) )
-			va = va_next( va, zstring ptr )
+			CU_ASSERT( *cva_arg( va, zstring ptr ) = strtb(i) )
 		next
+
+		cva_end( va )
 	end sub
 
 	sub vastrings_test( byval a as string )
@@ -47,5 +36,3 @@ SUITE( fbc_tests.functions.va_strings )
 	END_TEST
 
 END_SUITE
-
-#endif

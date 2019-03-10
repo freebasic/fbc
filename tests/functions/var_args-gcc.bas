@@ -1,18 +1,6 @@
 # include "fbcunit.bi"
 
-#if defined( __FB_64BIT__ ) 
-	#if defined( __FB_WIN32__ )
-		#define DOTEST
-	#endif	
-#elseif (__FB_BACKEND__ = "gas")
-	#define DOTEST
-#endif
-
-'' for other targets, see var_args-gcc.bas
-
-#ifdef DOTEST
-
-SUITE( fbc_tests.functions.var_args )
+SUITE( fbc_tests.functions.var_args_gcc )
 
 	const TEST_B as byte = -128
 	const TEST_UB as ubyte = 255
@@ -27,11 +15,11 @@ SUITE( fbc_tests.functions.var_args )
 	const TEST_Z as string = "FoO BaR!"
 
 	sub test_proc cdecl (fmtstr as string, ...)
-		dim as any ptr arg
+		dim as cva_list arg = any
 		dim as zstring ptr p
 		dim as integer i, char
 
-		arg = va_first()
+		cva_start( arg, fmtstr )
 		p = strptr( fmtstr )
 		i = len( fmtstr )
 		do while( i > 0 ) 
@@ -46,51 +34,42 @@ SUITE( fbc_tests.functions.var_args )
 
 				select case as const char
 				case asc( "b" )
-					CU_ASSERT( va_arg( arg, byte ) = TEST_B )
-					arg = va_next( arg, integer )
+					CU_ASSERT( cva_arg( arg, byte ) = TEST_B )
 
 				case asc( "c" )
-					CU_ASSERT( va_arg( arg, ubyte ) = TEST_UB )
-					arg = va_next( arg, uinteger )
+					CU_ASSERT( cva_arg( arg, ubyte ) = TEST_UB )
 
 				case asc( "s" )
-					CU_ASSERT( va_arg( arg, short ) = TEST_S )
-					arg = va_next( arg, integer )
+					CU_ASSERT( cva_arg( arg, short ) = TEST_S )
 
 				case asc( "r" )
-					CU_ASSERT( va_arg( arg, ushort ) = TEST_US )
-					arg = va_next( arg, uinteger )
+					CU_ASSERT( cva_arg( arg, ushort ) = TEST_US )
 
 				case asc( "i" )
-					CU_ASSERT( va_arg( arg, integer ) = TEST_I )
-					arg = va_next( arg, integer )
+					CU_ASSERT( cva_arg( arg, integer ) = TEST_I )
 
 				case asc( "j" )
-					CU_ASSERT( va_arg( arg, uinteger ) = TEST_UI )
-					arg = va_next( arg, uinteger )
+					CU_ASSERT( cva_arg( arg, uinteger ) = TEST_UI )
 
 				case asc( "l" )
-					CU_ASSERT( va_arg( arg, longint ) = TEST_L )
-					arg = va_next( arg, longint )
+					CU_ASSERT( cva_arg( arg, longint ) = TEST_L )
 
 				case asc( "m" )
-					CU_ASSERT( va_arg( arg, ulongint ) = TEST_UL )
-					arg = va_next( arg, ulongint )
+					CU_ASSERT( cva_arg( arg, ulongint ) = TEST_UL )
 				
 				case asc( "f" )
-					CU_ASSERT( va_arg( arg, double ) = TEST_F )
-					arg = va_next( arg, double )
+					CU_ASSERT( cva_arg( arg, double ) = TEST_F )
 
 				case asc( "d" )
-					CU_ASSERT( va_arg( arg, double ) = TEST_D )
-					arg = va_next( arg, double )
+					CU_ASSERT( cva_arg( arg, double ) = TEST_D )
 
 				case asc( "z" )
-					CU_ASSERT( *va_arg( arg, zstring ptr ) = TEST_Z )
-					arg = va_next( arg, zstring ptr )
+					CU_ASSERT( *cva_arg( arg, zstring ptr ) = TEST_Z )
+
 				end select
 			end if
 		loop
+		cva_end( arg )
 	end sub
 
 	TEST( allTypes )
@@ -112,16 +91,17 @@ SUITE( fbc_tests.functions.var_args )
 	END_TEST
 
 	sub hVaFirstBehindByte cdecl( byval n as byte, ... )
-		'' va_first() was returning @n + 1, but it should do @n + 4 in this case,
-		'' because 4 bytes are pushed for 'n'.
-		dim as integer ptr p = va_first()
-		CU_ASSERT( *p = &hAABBCCDD )
+		dim as cva_list p = any
+		cva_start( p, n )
+		CU_ASSERT( cva_arg( p, integer ) = &hAABBCCDD )
+		cva_end( p )
 	end sub
 
 	sub hVaFirstBehindShort cdecl( byval n as short, ... )
-		'' sizeof(n) = 2, but 4 bytes pushed...
-		dim as integer ptr p = va_first()
-		CU_ASSERT( *p = &h44332211 )
+		dim as cva_list p = any
+		cva_start( p, n )
+		CU_ASSERT( cva_arg( p, integer ) = &h44332211 )
+		cva_end( p )
 	end sub
 
 	type T field = 1
@@ -130,9 +110,10 @@ SUITE( fbc_tests.functions.var_args )
 	end type
 
 	sub hVaFirstBehindUdt cdecl( byval n as T, ... )
-		'' sizeof(n) = 5, but 8 bytes pushed...
-		dim as integer ptr p = va_first()
-		CU_ASSERT( *p = &hFF006622 )
+		dim as cva_list p = any
+		cva_start( p, n )
+		CU_ASSERT( cva_arg( p, integer ) = &hFF006622 )
+		cva_end( p )
 	end sub
 
 	type NonTrivialUDT
@@ -161,22 +142,22 @@ SUITE( fbc_tests.functions.var_args )
 			... _
 		) as integer
 
-		dim arg as any ptr = any
+		dim arg as cva_list = any
 
-		arg = va_first( )
-		CU_ASSERT( va_arg( arg, integer ) = 123 )
+		cva_start( arg, x )
 
-		arg = va_next( arg, integer )
-		CU_ASSERT( va_arg( arg, integer ) = 456 )
+		CU_ASSERT( cva_arg( arg, integer ) = 123 )
 
-		arg = va_next( arg, integer )
-		CU_ASSERT( va_arg( arg, integer ) = 789 )
+		CU_ASSERT( cva_arg( arg, integer ) = 456 )
+
+		CU_ASSERT( cva_arg( arg, integer ) = 789 )
+
+		cva_end( arg )
 
 		function = 321
 	end function
 
-	'' va_first()
-	TEST( va_first_ )
+	TEST( first_args )
 		hVaFirstBehindByte( -1, &hAABBCCDD )
 		hVaFirstBehindShort( -1, &h44332211 )
 		hVaFirstBehindUdt( type<T>( -1, -1 ), &hFF006622 )
@@ -188,15 +169,14 @@ SUITE( fbc_tests.functions.var_args )
 	sub hVaNext cdecl( byval n as integer, ... )
 		#macro case_T(T) _
 		case sizeof(T)
-			CU_ASSERT_EQUAL(*cptr(T ptr, p), i)
-			p = va_next(p, T)
+			CU_ASSERT_EQUAL( cva_arg( p, T ), i )
 		#endmacro
 
-		dim as integer ptr p = va_first()
+		dim as cva_list p = any
+		cva_start( p, n )
 
 		for i as integer = 1 to n
-			dim as integer siz = *p
-			p = va_next(p, integer)
+			dim as integer siz = cva_arg( p, integer )
 			select case siz
 			case_T(byte)
 			case_T(short)
@@ -206,10 +186,10 @@ SUITE( fbc_tests.functions.var_args )
 				CU_FAIL( "Unexpected argument size" )
 			end select
 		next
+		cva_end( p )
 	end sub
 
-	'' va_next()
-	TEST( va_next_ )
+	TEST( next_args )
 		hVaNext( 4, _
 			sizeof(byte), cbyte(1), _
 			sizeof(short), cshort(2), _
@@ -224,5 +204,3 @@ SUITE( fbc_tests.functions.var_args )
 	END_TEST
 
 END_SUITE
-
-#endif

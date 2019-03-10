@@ -715,7 +715,7 @@ end function
 
 sub symbGetRealType( byval sym as FBSYMBOL ptr, byref dtype as integer, byref subtype as FBSYMBOL ptr )
 	assert( symbIsVar( sym ) or symbIsField( sym ) )
-	dtype = symbGetType( sym )
+	dtype = symbGetFullType( sym )
 	subtype = sym->subtype
 	if( symbIsParam( sym ) ) then
 		dim parammode as integer

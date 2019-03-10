@@ -133,6 +133,10 @@ function cQuirkStmt _
 			res = cComment( )
 		end if
 
+	case FB_TK_CVA_START, FB_TK_CVA_END, FB_TK_CVA_COPY
+		CHECK_CODEMASK( )
+		res = cVALISTStmt( tk )
+
 	end select
 
 	if( res = FALSE ) then
@@ -207,6 +211,9 @@ function cQuirkFunction(byval sym as FBSYMBOL ptr) as ASTNODE ptr
 
 	case FB_TK_VA_FIRST
 		funcexpr = cVAFunct()
+
+	case FB_TK_CVA_ARG
+		funcexpr = cVALISTFunct( tk )
 
 	case FB_TK_CBYTE, FB_TK_CSHORT, FB_TK_CINT, FB_TK_CLNG, FB_TK_CLNGINT, _
 	     FB_TK_CUBYTE, FB_TK_CUSHORT, FB_TK_CUINT, FB_TK_CULNG, FB_TK_CULNGINT, _

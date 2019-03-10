@@ -1,18 +1,6 @@
 # include "fbcunit.bi"
 
-#if defined( __FB_64BIT__ ) 
-	#if defined( __FB_WIN32__ )
-		#define DOTEST
-	#endif	
-#elseif (__FB_BACKEND__ = "gas")
-	#define DOTEST
-#endif
-
-'' for other targets, see va_tmpstring-gcc.bas
-
-#ifdef DOTEST
-
-SUITE( fbc_tests.functions.va_tmpstring )
+SUITE( fbc_tests.functions.va_tmpstring_gcc )
 
 	dim shared strtb(1 to 2) as zstring * 6+1 => { "ABCdef", "defABC" }
 
@@ -29,15 +17,16 @@ SUITE( fbc_tests.functions.va_tmpstring )
 	end function
 
 	sub printstrings cdecl ( byval cnt as integer, ... )
-		dim va as any ptr
+		dim va as cva_list = any
 		dim i as integer
 
-		va = va_first( )
+		cva_start( va, cnt )
 
 		for i = 1 to cnt
-			CU_ASSERT( *va_arg( va, zstring ptr ) = strtb(i) )
-			va = va_next( va, zstring ptr )
+			CU_ASSERT( *cva_arg( va, zstring ptr ) = strtb(i) )
 		next
+
+		cva_end( va )
 	end sub
 
 	TEST( tempStringArg )
@@ -51,5 +40,3 @@ SUITE( fbc_tests.functions.va_tmpstring )
 	END_TEST
 
 END_SUITE
-
-#endif

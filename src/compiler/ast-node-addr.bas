@@ -58,7 +58,7 @@ function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	if( ast.doemit ) then
-		vr = irAllocVROFS( astGetDataType( n ), n->subtype, sym, n->ofs.ofs )
+		vr = irAllocVROFS( astGetFullType( n ), n->subtype, sym, n->ofs.ofs )
 	end if
 
 	l = n->l
@@ -246,7 +246,7 @@ function astLoadADDROF( byval n as ASTNODE ptr ) as IRVREG ptr
 			(typeGetClass(v1->dtype) <> FB_DATACLASS_INTEGER) or _
 			(typeGetSize(v1->dtype) <> env.pointersize) ) then
 
-			vr = irAllocVREG( astGetDataType( n ), n->subtype )
+			vr = irAllocVREG( astGetFullType( n ), n->subtype )
 			irEmitADDR( AST_OP_ADDROF, v1, vr )
 
 		else

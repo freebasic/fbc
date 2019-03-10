@@ -46,6 +46,8 @@ declare sub 		symbCompRTTIEnd		( )
 
 declare sub 		symbKeywordConstsInit ( )
 
+declare sub			symbKeywordTypeInit	( )    
+
 declare function hGetNamespacePrefix( byval sym as FBSYMBOL ptr ) as string
 
 ''globals
@@ -163,6 +165,9 @@ sub symbInit _
 
 	''
 	symbKeywordConstsInit( )
+
+	''
+	symbKeywordTypeInit( )
 
     ''
     symb.inited = TRUE
@@ -1460,12 +1465,18 @@ function symbCloneSymbol( byval s as FBSYMBOL ptr ) as FBSYMBOL ptr
     	function = symbCloneLabel( s )
 
 	case FB_SYMBCLASS_STRUCT
-		'' Assuming only array descriptor types will ever be cloned
-		'' (most other structs would be too complex, especially classes)
-		assert( symbIsDescriptor( s ) )
 
-		symbGetDescTypeArrayDtype( s, arraydtype, arraysubtype )
-		function = symbAddArrayDescriptorType( symbGetDescTypeDimensions( s ), arraydtype, arraysubtype )
+		'' Assuming only simple UDTS (like array descriptor types) will ever be cloned
+		'' (most other structs would be too complex, especially classes)
+
+		assert( (s->udt.ext = NULL) )
+		
+		if( symbIsDescriptor( s ) ) then
+			symbGetDescTypeArrayDtype( s, arraydtype, arraysubtype )
+			function = symbAddArrayDescriptorType( symbGetDescTypeDimensions( s ), arraydtype, arraysubtype )
+		else
+			function = symbCloneSimpleStruct( s )
+		end if
 
     case else
 		assert( FALSE )
@@ -1575,6 +1586,90 @@ function symbIsString _
 	case else
 		function = FALSE
 	end select
+
+end function
+
+'':::::
+function symbGetValistType _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as FB_CVA_LIST_TYPEDEF
+
+	'' use dtype/subtype to determine what kind
+	'' of __builtin_va_list we have, or maybe none
+	''
+	'' if gcc's builtin va_list is a pointer type, then it must
+	'' have the mangle modifer on the dtype to get recognized.
+	''
+	'' if it's just an ANY PTR with out any mangle modifer
+	'' then it might be used for va_list on the target, 
+	'' but we don't know, and it doesn't matter anyway
+	'' so just return FB_CVA_LIST_NONE
+	''
+	'' for va_list structure type, we might be looking at a dtype
+	'' with a UDT subtype, or we might be looking at the UDT
+	'' itself.  Either way, we must look at the UDT itself to
+	'' determine if it is a struct or struct array type using
+	''   - symbGetUdtIsValistStruct()
+	''   - symbGetUdtIsValistStructArray()
+
+	'' Determine the following:
+	''   1) va_list type?  (any target/va_list type)
+	''   2) is a __builtin_va_list type? (gcc)
+	''   3) is a struct type, or an array struct type? (gcc)
+	
+	function = FB_CVA_LIST_NONE
+
+	'' mangle modifier?
+	if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
+		select case typeGetDtOnly( dtype )
+		case FB_DATATYPE_VOID
+			if( typeIsPtr( dtype ) ) then
+				function = FB_CVA_LIST_BUILTIN_POINTER
+			end if
+
+		case FB_DATATYPE_STRUCT
+			if( subtype ) then
+				if( symbGetUdtIsValistStruct( subtype ) ) then
+					if( symbGetUdtIsValistStructArray( subtype ) ) then
+						function = FB_CVA_LIST_BUILTIN_C_STD
+					else
+						function = FB_CVA_LIST_BUILTIN_AARCH64
+					end if
+				end if
+			end if
+
+		case else
+			if( typeGetClass( dtype ) = FB_DATACLASS_INTEGER ) then
+				if( typeIsPtr( dtype ) ) then
+					function = FB_CVA_LIST_POINTER
+				end if
+			end if
+
+		end select
+
+	'' maybe subtype has the information
+	elseif( subtype ) then
+
+		select case typeGetDtOnly( symbGetFullType( subtype ) )
+		case FB_DATATYPE_VOID
+			if( typeGetMangleDt( symbGetFullType( subtype ) ) = FB_DATATYPE_VA_LIST ) then
+				function = FB_CVA_LIST_BUILTIN_POINTER
+			end if
+
+		case FB_DATATYPE_STRUCT
+			if( symbGetUdtIsValistStruct( subtype ) ) then
+				if( symbGetUdtIsValistStructArray( subtype ) ) then
+					function = FB_CVA_LIST_BUILTIN_C_STD
+				else
+					function = FB_CVA_LIST_BUILTIN_AARCH64
+				end if
+			end if
+
+		end select
+
+	end if
 
 end function
 
@@ -2222,6 +2317,23 @@ function typeDumpToStr _
 				dump += "<invalid dtype " & dtypeonly & ">"
 			end if
 		end select
+
+		if( typeHasMangleDt( dtype ) ) then
+			dump += " alias """
+
+			select case typeGetMangleDt( dtype )
+			case FB_DATATYPE_CHAR
+				dump += "char"
+			case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
+				dump += "long"
+			case FB_DATATYPE_VA_LIST
+				dump += "va_list"
+			case else
+				dump += "<" & typeGetMangleDt( dtype ) & ">"
+			end select
+
+			dump += """"
+		end if
 
 		'' UDT name
 		select case( typeGetDtOnly( dtype ) )

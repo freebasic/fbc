@@ -84,6 +84,7 @@ enum FB_COMPOPT
 
 	'' the rest
 	FB_COMPOPT_GOSUBSETJMP          '' boolean: implement GOSUB using setjmp/longjump?
+	FB_COMPOPT_VALISTASPTR          '' boolean: implement CVA_* using pointer expressions only?
 	FB_COMPOPT_EXPORT               '' boolean: export all symbols declared as EXPORT?
 	FB_COMPOPT_MSBITFIELDS          '' boolean: use M$'s bitfields packing?
 	FB_COMPOPT_MULTITHREADED        '' boolean: -mt
@@ -265,6 +266,7 @@ type FBCMMLINEOPT
 
 	'' the rest
 	gosubsetjmp     as integer              '' implement GOSUB using setjmp/longjump? (default = false)
+	valistasptr     as integer              '' implement CVA_* using pointer expressions only?
 	export          as integer              '' export all symbols declared as EXPORT (default = true)
 	msbitfields     as integer              '' use M$'s bitfields packing
 	multithreaded   as integer              '' link against thread-safe runtime library (default = false)
@@ -464,6 +466,15 @@ declare function fbGetLangId _
 		byval txt as zstring ptr _
 	) as FB_LANG
 
+enum FB_CVA_LIST_TYPEDEF
+	FB_CVA_LIST_NONE = 0
+	FB_CVA_LIST_POINTER
+	FB_CVA_LIST_BUILTIN_POINTER
+	FB_CVA_LIST_BUILTIN_C_STD
+	FB_CVA_LIST_BUILTIN_AARCH64
+end enum
+
+declare function fbGetBackendValistType () as FB_CVA_LIST_TYPEDEF
 
 ''
 '' macros
