@@ -33,6 +33,7 @@ Sets or gets internal graphics library settings
 		
 		Note:
 			(*) denotes operations that are allowed while a graphics mode has not yet been set via [[KeyPgScreengraphics|Screen (Graphics)]] or [[KeyPgScreenres|ScreenRes]],
+			(""**"") denotes the operations that must be performed before the graphics mode is set via [[KeyPgScreengraphics|Screen (Graphics)]] or [[KeyPgScreenres|ScreenRes]],
 			for all other operations, return values are zero (##0##) or the empty string (##"####"##) and the operation has no effect if a graphics mode is not available at call time.
 			
 		**Get operations**
@@ -119,12 +120,12 @@ Sets or gets internal graphics library settings
 		[IN] ##//param1//## bits
 	- (*) ##SET_GL_NUM_SAMPLES## Sets the number of samples to be used for ""OpenGL"" multisampling
 		[IN] ##//param1//## samples
-	- ##SET_GL_2D_MODE## Sets OpenGL 2D render
+	- (""**"") ##SET_GL_2D_MODE## Sets OpenGL 2D render
 		[IN] ##//param1//##:
 			##OGL_2D_NONE## No rendering
 			##OGL_2D_MANUAL_SYNC## Manual rendering (when ##[[KeyPgFlip|Flip]]##/##[[KeyPgScreencopy|ScreenCopy]]## is called)
 			##OGL_2D_AUTO_SYNC## Automatic rendering
-	- ##SET_GL_SCALE## Apply a zoom factor on OpenGL 2D render (only allowed if OpenGL 2D render mode has yet been activated via ##SET_GL_2D_MODE##)
+	- (""**"") ##SET_GL_SCALE## Apply a zoom factor on OpenGL 2D render (only allowed if OpenGL 2D render mode has yet been activated via ##SET_GL_2D_MODE##)
 		[IN] ##//param1//## Zoom factor (0: no rendering)
 		
 		**Other operations**

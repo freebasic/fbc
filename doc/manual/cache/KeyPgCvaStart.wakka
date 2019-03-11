@@ -4,6 +4,12 @@ Macro to initialize variadic argument list object variable
 {{fbdoc item="syntax"}}##
 	**cva_start**( argument_list, last_param )
 ##
+{{fbdoc item="param"}}
+	##//argument_list//##
+		##[[KeyPgCvaList|cva_list]]## data type variable to initialize
+	##//last_param//##
+		The last parameter in the procedures parameter list before the [[KeyPgDots|ellipsis]] ##[[KeyPgDots|...]]##
+
 {{fbdoc item="desc"}}
 	In a variadic procedure definition, ##//argument_list//## is a variable having the ##[[KeyPgCvaList|cva_list]]## type and must be initialized with ##**cva_start**## to work with the variable length argument list passed to the procedure.
 	

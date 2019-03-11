@@ -8,8 +8,6 @@ Anyway, this isn't a rant against OO languages but rather a rant against the unq
 
 In order to demonstrate that it is not necessary to have an OO language this example presents a technique that is usually presented as an example of class based programming; and so it is but you won't find the word class in this example.
 
-The code was tested using FB 0.16 for win32.
-
 If you have to concatenate a lot of strings in most Basics you usually find that it is a time consuming process.  Actually ""FreeBASIC"" string operations are remarkably quick but you can still do better using a string builder.
 
 A string builder is simply a class that maintains a string buffer in such a way as to avoid repeated calls to the memory allocation function because this is a relatively expensive operation.  The methods of the class provide ways of manipulating the buffer and converting between it and the native string type.

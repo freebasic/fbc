@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="ALIAS"}}----
+{{fbdoc item="title" value="ALIAS (Name)"}}----
 Clause of the ##[[KeyPgSub|Sub]]## and ##[[KeyPgFunction|Function]]## statements that provides an alternate internal name.
 
 {{fbdoc item="syntax"}}##
@@ -16,6 +16,10 @@ Clause of the ##[[KeyPgSub|Sub]]## and ##[[KeyPgFunction|Function]]## statements
 	function //usablename// Alias "//alternatename//" ( ... )
 		...
 	end function
+		##//or//##
+	type //typename// Alias "//alternatename//" ( ... )
+		...
+	end type
 ##
 {{fbdoc item="desc"}}
 	##Alias## gives an alternate name to a procedure.  This alternate name cannot be used within the program to call the procedure, but it is visible (if the function is not private) to the linker when linking with code written in other languages.
@@ -24,7 +28,9 @@ Clause of the ##[[KeyPgSub|Sub]]## and ##[[KeyPgFunction|Function]]## statements
 	
 	Differently from normal procedure names, ##Alias## does not change the case of the alternate name, so it is useful when external code requires an exported function with a particular name or with a particular case.
 	
-	##Alias## can also be used as modifier that specifies an alternate mangling for procedure parameters.  For example ##extern ""c+""""+"" : declare sub proc( byval as long **alias "long"** ) : end extern##.  This form of ##Alias## can only be used as in //##[unsigned] [u]long alias "long"##//.  The specific purpose is to allow FreeBASIC to call external ""c+""""+"" procedures (on win-64) requiring a 32-bit ##'long int'## type.  Usage of ##Alias## in this way affects win-64 targets only, and is ignored on all other targets.
+	##Alias## can be used to specify an alternate name for ##[[KeyPgType|type]]## definitions.
+	
+	##Alias## can be used as a modifier that specifies an alternate name mangling for procedure parameters.  See ##[[KeyPgAliasModifier|Alias (Modifier)]]##
 
 {{fbdoc item="ex"}}
 
@@ -47,5 +53,6 @@ END FUNCTION
 	- ##[[KeyPgDeclare|Declare]]##
 	- ##[[KeyPgExport|Export]]##
 	- ##[[KeyPgTypeAlias|Type (Alias)]]##
+	- ##[[KeyPgAliasModifier|Alias (Modifier)]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}

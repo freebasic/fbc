@@ -4,6 +4,12 @@ Macro to obtain the next argument from a variadic argument list object.
 {{fbdoc item="syntax"}}##
 	//variable// = **cva_arg** ( //argument_list//, [[DataType|datatype]] )
 ##
+{{fbdoc item="param"}}
+	##//argument_list//##
+		##[[KeyPgCvaList|cva_list]]## data type variable to access for next value
+	##//datatype//##
+		The [[DataType|datatype]] of the next value in the variable argument list ##//argument_list//##
+
 {{fbdoc item="desc"}}
 	The ##**cva_arg**## macro allows the use of a variable number of arguments within a function:
 		- 	##**cva_arg**## returns the current argument in the list, ##//argument_list//##, with an expected data type of ##//datatype//##.

@@ -89,7 +89,8 @@ Print an_instance.my_data
 	- ##[[KeyPgModuleDestructor|Destructor (module)]]##
 	- ##[[KeyPgType|Type]]##
 	- ##[[KeyPgDim|Dim]]##
-	- ##[[KeyPgAlias|Alias]]##
+	- ##[[KeyPgAlias|Alias (Name)]]##
+	- ##[[KeyPgAliasModifier|Alias (Modifier)]]##
 
 {{fbdoc item="back" value="CatPgProcedures|Procedures"}}
    

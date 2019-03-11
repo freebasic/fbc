@@ -100,7 +100,8 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgAccess|ACCESS"}}
 	- {{fbdoc item="keyword" value="KeyPgAcos|ACOS"}}
 	- {{fbdoc item="keyword" value="KeyPgAddGfx|ADD (Graphics PUT)"}}
-	- {{fbdoc item="keyword" value="KeyPgAlias|ALIAS"}}
+	- {{fbdoc item="keyword" value="KeyPgAlias|ALIAS (Name)"}}
+	- {{fbdoc item="keyword" value="KeyPgAliasModifier|ALIAS (Modifier)"}}
 	- {{fbdoc item="keyword" value="KeyPgAllocate|ALLOCATE"}}
 	- {{fbdoc item="keyword" value="KeyPgAlphaGfx|ALPHA (Graphics PUT)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpAnd|AND"}}

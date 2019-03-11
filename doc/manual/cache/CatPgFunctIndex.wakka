@@ -64,6 +64,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgWrite|WRITE"}}
 
 {{fbdoc item="section" value="Data types and declarations"}}
+	- {{fbdoc item="keyword" value="KeyPgAliasModifier|ALIAS (Modifier)"}}
 	- {{fbdoc item="keyword" value="KeyPgAs|AS"}}
 	- {{fbdoc item="keyword" value="KeyPgBoolean|BOOLEAN"}}
 	- {{fbdoc item="keyword" value="KeyPgByrefVariables|BYREF (variables)"}}

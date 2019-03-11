@@ -4,6 +4,10 @@ Macro to clean-up a variadic argument list object variable
 {{fbdoc item="syntax"}}##
 	**cva_end**( //argument_list// )
 ##
+{{fbdoc item="param"}}
+	##//argument_list//##
+		##[[KeyPgCvaList|cva_list]]## variable to clean up
+
 {{fbdoc item="desc"}}
 	Cleans-up a ##[[KeyPgCvaList|cva_list]]## type variable that was previously initialized with ##[[KeyPgCvaStart|cva_start]]## or ##[[KeyPgCvaCopy|cva_copy]]##, like a destructor.
 	
