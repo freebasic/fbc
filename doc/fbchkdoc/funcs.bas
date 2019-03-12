@@ -40,7 +40,7 @@ function ParsePageName( byref x as string, byref comment as string ) as string
 				tmp = trim( mid( r, i + 1) , any " " + chr(9) )
 				r = trim( mid( r, i + 1, j - i - 1) , any " " + chr(9) )
 
-				i = instr( i + 1, tmp, "[" )
+				i = instr( tmp, "[" )
 				if( i > 0 ) then
 					cmt = mid( tmp, i + 1 )
 					if( right( cmt, 1 ) = "]" ) then
