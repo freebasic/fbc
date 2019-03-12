@@ -266,6 +266,7 @@ void fb_hGL_SetupProjection(void)
 
 	__fb_gl.Ortho(-1, 1, -1, 1, -1, 1);
 	__fb_gl.MatrixMode(GL_MODELVIEW);
+	__fb_gl.PushMatrix();
 	__fb_gl.LoadIdentity();
 	__fb_gl.ShadeModel(GL_FLAT);
 	__fb_gl.Disable(GL_DEPTH_TEST);
@@ -307,6 +308,8 @@ void fb_hGL_SetupProjection(void)
 	__fb_gl.Enable(GL_TEXTURE_2D);
 	__fb_gl.DrawArrays(GL_TRIANGLE_FAN,0,4);
 
+	__fb_gl.PopMatrix(); /* GL_MODELVIEW */
+	__fb_gl.MatrixMode(GL_PROJECTION);
 	__fb_gl.PopMatrix();
 	__fb_gl.PopAttrib();
 	__fb_gl.PopClientAttrib();
