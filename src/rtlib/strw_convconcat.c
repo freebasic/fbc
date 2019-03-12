@@ -61,7 +61,7 @@ FBCALL FB_WCHAR *fb_WstrConcatAW( const void *str1, ssize_t str1_size, const FB_
     	dst = fb_wstr_AllocTemp( str1_len + str2_len );
 
 		/* do the concatenation */
-    	fb_wstr_ConvFromA( dst, str1_len, str1_ptr );
+    	str1_len = fb_wstr_ConvFromA( dst, str1_len, str1_ptr );
     	if( str2_len > 0 )
     		fb_wstr_Move( &dst[str1_len], str2, str2_len + 1 );
     }
