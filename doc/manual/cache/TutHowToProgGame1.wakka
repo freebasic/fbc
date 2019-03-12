@@ -80,7 +80,7 @@ The last code draws a small circle on coordinates 150, 90 with a radius of 10 an
 
 This makes no change in the result of our program, but it's a step to what we want to accomplish. You can change the amounts to which circlex and circley equal to change the circle's initial position, but that's not what we really want. In order to move the circle we need to connect circlex and circley variables with keyboard statements.
 
-We declared first two variables in our program. Since FreeBASIC ver.0.17 all variables in FreeBASIC programs MUST be declared, although if you use -lang qb command line during compiling you can compile using old QBasic compatibility dialect (I don't recommend it as it will keep you deprived of possible advances and extensions which default FB compatibility already provides and will provide). For more info on this check the appropriate page of the FreeBASIC wiki - Using the command line. Variables are declared (dimensioned) on this way:
+We declared first two variables in our program. All variables in FreeBASIC programs MUST be declared, although if you use -lang qb command line during compiling you can compile using old QBasic compatibility dialect (I don't recommend it as it will keep you deprived of possible advances and extensions which default FB compatibility already provides and will provide). For more info on this check the appropriate page of the FreeBASIC wiki - Using the command line. Variables are declared (dimensioned) on this way:
 
 %%(freebasic)
 	DIM variable_name [AS type_of_variable] 

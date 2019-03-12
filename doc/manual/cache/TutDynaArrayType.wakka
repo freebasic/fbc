@@ -3,7 +3,7 @@
 
 === Introduction ===
 
-A dynamic array in a type definition is a very useful feature, but ""FreeBASIC"" doesn't support it before version 1.00.0. Or rather, it doesn't support it directly before that version. However, you can create dynamic arrays by using pointers and the associated memory functions.
+A dynamic array in a type definition is a very useful feature, but ""FreeBASIC"" did not support it before. Or rather, it did not support it directly before. However, you could create dynamic arrays by using pointers and the associated memory functions.
 
 An array is simply a contiguous block of memory that holds a certain data type. Arrays in ""FreeBASIC"" use an array descriptor to describe the data contained within the array, and you can use this same technique to build a dynamic array within a type. The two elements you need within your type-def are a pointer to a particular data type, and a size indicator. 
 
@@ -168,11 +168,11 @@ The first print out shows the original array. The second print out shows the new
 
 ----
 
-=== From fbc version 1.00.0, dynamic arrays fields as non-static members are supported inside UDT ===
+=== Dynamic arrays fields as non-static members are now supported inside UDT ===
 
-Previous example transposed for fbc version 1.00.0 or greater, by using a dynamic array field as non-static member inside the UDT (feature now supported):
+Previous example but transposed, by using a dynamic array field as non-static member inside the UDT (feature now supported):
 %%(freebasic)
-'Define type (for fbc version >= 1.00.0):
+'Define type:
 'darray will contain array data
 Type DType
 	darray(Any) As Integer

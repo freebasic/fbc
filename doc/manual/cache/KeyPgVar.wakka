@@ -57,7 +57,7 @@ sleep
 %%
 
 {{fbdoc item="diff"}}
-	- New to ""FreeBASIC"" 0.17
+	- New to ""FreeBASIC""
 
 {{fbdoc item="lang"}}
 	- Only valid in the //[[CompilerOptlang|-lang fb]]// dialect.

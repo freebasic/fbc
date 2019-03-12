@@ -1,0 +1,77 @@
+{{fbdoc item="title" value="CVA_START"}}----
+Macro to initialize variadic argument list object variable
+
+{{fbdoc item="syntax"}}##
+	**cva_start**( argument_list, last_param )
+##
+{{fbdoc item="param"}}
+	##//argument_list//##
+		##[[KeyPgCvaList|cva_list]]## data type variable to initialize
+	##//last_param//##
+		The last parameter in the procedures parameter list before the [[KeyPgDots|ellipsis]] ##[[KeyPgDots|...]]##
+
+{{fbdoc item="desc"}}
+	In a variadic procedure definition, ##//argument_list//## is a variable having the ##[[KeyPgCvaList|cva_list]]## type and must be initialized with ##**cva_start**## to work with the variable length argument list passed to the procedure.
+	
+	##//last_param//## is the last parameter before the [[KeyPgDots|ellipsis]] ##[[KeyPgDots|...]]## in the variadic procedure definition.
+	
+	##**cva_start**## can only be used in variadic procedures.  A variadic procedure is declared or defined by specifying the [[KeyPgDots|ellipsis]] ##[[KeyPgDots|...]]## as the last parameter, and will accept a variable number of arguments when calling the procedure.
+	
+	##**cva_start**## is like a constructor for the variadic ##//argument_list//## object and must eventually have a matching call to ##[[KeyPgCvaEnd|cva_end]]##, which is like a destructor.  After ##[[KeyPgCvaEnd|cva_end]]## for ##//argument_list//## has been called, ##//argument_list//## can be reused and reinitialized with another call to ##**cva_start**##.  The ##**cva_start**## and ##[[KeyPgCvaEnd|cva_end]]## calls must both be called in pairs in the same procedure (for cross platform compatibility).
+	
+	##[[KeyPgCvaCopy|cva_copy]]## is similar to ##**cva_start**## except it initializes a variadic ##//argument_list//## object from an already initialized variadic ##//argument_list//## object, like a copy constructor.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/procs/cva_start1.bas"}}%%(freebasic)
+'' typical usage of iterating through all arguments
+
+Sub proc CDecl(count As Integer, ... )
+	Dim args As cva_list
+	cva_start( args, count )
+	For i As Integer = 1 To count
+		Print cva_arg( args, Integer )
+	Next
+	cva_end( args )
+End Sub
+
+proc( 4, 4000, 300, 20, 1 )
+%%
+
+{{fbdoc item="filename" value="examples/manual/procs/cva_start2.bas"}}%%(freebasic)
+'' example of using cva_start to get the first argument
+'' then restarting to get all the arguments
+
+Sub proc CDecl(count As Integer, ... )
+	Dim args As cva_list
+
+	'' get the first argument only
+	cva_start( args, count )
+	Print cva_arg( args, Integer )
+	cva_end( args )
+
+	'' restart and get all the arguments
+	cva_start( args, count )
+	For i As Integer = 1 To count
+		Print cva_arg( args, Integer )
+	Next
+	cva_end( args )
+
+End Sub
+
+proc( 4, 4000, 300, 20, 1 )
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__cva_start""**##.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[KeyPgDots|... (Ellipsis)]]
+	- ##[[KeyPgCvaArg|cva_arg]]##
+	- ##[[KeyPgCvaCopy|cva_copy]]##
+	- ##[[KeyPgCvaEnd|cva_end]]##
+	- ##[[KeyPgCvaList|cva_list]]##
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}

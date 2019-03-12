@@ -27,6 +27,11 @@ declare sub ppLibPath( )
 declare sub ppLine()
 declare sub ppLang()
 
+declare sub ppDumpTree _
+	( _
+		byval optimize as integer = FALSE _
+	)
+
 '' globals
 	dim shared as PP_CTX pp
 
@@ -53,6 +58,8 @@ const SYMB_MAXKEYWORDS = 24
         (@"LINE"	, FB_TK_PP_LINE		), _
         (@"LANG"	, FB_TK_PP_LANG		), _
         (@"ASSERT"	, FB_TK_PP_ASSERT	), _
+        (@"DUMP"    , FB_TK_PP_DUMP     ), _
+        (@"ODUMP"   , FB_TK_PP_ODUMP    ), _
         (NULL) _
 	}
 
@@ -240,6 +247,16 @@ sub ppParse( )
 		lexSkipToken( )
 		ppAssert( )
 
+	'' DUMP Expression
+	case FB_TK_PP_DUMP
+		lexSkipToken( )
+		ppDumpTree( FALSE )
+
+	'' ODUMP Expression
+	case FB_TK_PP_ODUMP
+		lexSkipToken( LEXCHECK_NODEFINE )
+		ppDumpTree( TRUE )
+
 	'' PRINT LITERAL*
 	case FB_TK_PP_PRINT
 		lexSkipToken( )
@@ -410,6 +427,33 @@ private sub ppLang( )
 
 	fbChangeOption( FB_COMPOPT_LANG, id )
 	lexSkipToken( )
+end sub
+
+'':::::
+'' ppDump      =   '#'DUMP|ODUMP Expression
+''
+private sub ppDumpTree _
+	( _
+		byval optimize as integer _
+	)
+
+	dim as ASTNODE ptr expr = any
+
+	expr = cExpression( )
+
+	if( expr <> NULL ) then
+
+		if( optimize ) then
+			expr = astOptimizeTree( expr )
+		end if
+
+		astDumpTree( expr )
+
+		astDelTree( expr )
+	else
+		errReport( FB_ERRMSG_SYNTAXERROR )
+	end if
+
 end sub
 
 '':::::

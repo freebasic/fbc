@@ -57,5 +57,7 @@ Output:
 	- ##[[KeyPgCommon|Common]]##
 	- ##[[KeyPgDim|Dim]]##
 	- ##[[KeyPgShared|Shared]]##
+	- ##[[KeyPgAlias|Alias (Name)]]##
+	- ##[[KeyPgAliasModifier|Alias (Modifier)]]##
 
 {{fbdoc item="back" value="CatPgModularizing|Modularizing"}}

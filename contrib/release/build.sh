@@ -581,19 +581,16 @@ windowsbuild() {
 		;;
 	esac
 
-	# get GoRC.exe from previous fb release
-	# cp $bootfb_title/bin/$fbtarget/GoRC.exe		fbc/bin/$fbtarget
-
-	# get GoRC.exe from author site
-	download "Gorc.zip" "http://www.godevtool.com/Gorc.zip"
-	unzip ../input/Gorc.zip GoRC.exe -d fbc/bin/$fbtarget
-
 	cp ../input/$libffi_title/$target/libffi.a	fbc/lib/$fbtarget
 
 	# Reduce .exe sizes by dropping debug info
 	# (this was at least needed for MinGW.org's gdb, and probably nothing else,
 	# but it shouldn't hurt either)
 	strip -g fbc/bin/$fbtarget/*
+
+	# get GoRC.exe from author site
+	download "Gorc.zip" "http://www.godevtool.com/Gorc.zip"
+	unzip ../input/Gorc.zip GoRC.exe -d fbc/bin/$fbtarget
 
 	cd fbc
 	case "$target" in

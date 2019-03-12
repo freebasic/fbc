@@ -50,6 +50,8 @@ Built-in data types
 		Modifies types to be pointer types.
 	=={{fbdoc item="keyword" value="KeyPgUnsigned|UNSIGNED"}}==
 		Specifies an unsigned integer type.
+	=={{fbdoc item="keyword" value="KeyPgAliasModifier|ALIAS (Modifier)"}}==
+		Modifies how a datatype is linked with other languages (Name mangling).
 
 {{anchor name="STRING"}}{{fbdoc item="section" value="String types"}}
 	=={{fbdoc item="keyword" value="KeyPgString|STRING"}}==

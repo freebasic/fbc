@@ -3,7 +3,7 @@ Note:  As with all things regarding scope, Const qualifiers may be a bit difficu
 
 Also note my cliche title, which I chose because of it's clicheness.
 
-What the heck are Const qualifiers?  Const qualifiers are a feature recently added to the language (fbc 0.18.3);  they're a standard part of C""++"" and now they exist in ""FreeBASIC"" too.  Const qualifiers are yet another form of protection - they allow some "variables" to act like constants to certain parts of your program, in other words some parts of the program are allowed to access (read) them but not modify them.  Just another kind of type safety, really, but an extremely useful one.  In particular, they are very useful in OO situations, but you can probably benefit from them to some degree even if you aren't interested in OOP.
+What the heck are Const qualifiers?  they're a standard part of C""++"" and they exist in ""FreeBASIC"" too.  Const qualifiers are yet another form of protection - they allow some "variables" to act like constants to certain parts of your program, in other words some parts of the program are allowed to access (read) them but not modify them.  Just another kind of type safety, really, but an extremely useful one.  In particular, they are very useful in OO situations, but you can probably benefit from them to some degree even if you aren't interested in OOP.
 
 The Const qualifier in ""FreeBASIC"" is essentially an extension to data type declarations, and they may be used with Dim, UDT members, and procedure parameters.  Generally you put it right after the "As" part of the variables's data type declaration:
 

@@ -3,8 +3,6 @@
 
 Shows how to create a static library with ""FreeBASIC"" and then call it from a C program using GCC as the compiler.
 
-	& //Minimum fbc version tested is v0.18.2b//
-
 This article shows Windows usage throughout, but application to ""FreeBASIC"" on other platforms is similar.
 
 {{fbdoc item="section" value="In this tutorial:"}}

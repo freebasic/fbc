@@ -71,7 +71,8 @@ declare function hGetDataType _
 		11, _                                   '' single
 		12, _                                   '' double
 		13, _                                   '' string
-		14 _                                    '' fix-len string
+		14, _                                   '' fix-len string
+		17  _                                   '' va_list
 	}
 
 	dim shared stabsTb(0 to ...) as const zstring ptr = _
@@ -91,7 +92,8 @@ declare function hGetDataType _
 		@"string:t13=s12data:15,0,32;len:1,32,32;size:1,64,32;;", _
 		@"fixstr:t14=-2", _
 		@"pchar:t15=*4;", _  '' used for the data ptr in the string:t13 declaration only
-		@"boolean:t16=@s8;-16" _
+		@"boolean:t16=@s8;-16", _
+		@"va_list:t17=-11" _
 	}
 
 sub edbgInit( )

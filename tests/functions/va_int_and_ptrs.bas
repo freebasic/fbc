@@ -1,6 +1,16 @@
 # include "fbcunit.bi"
 
-#if __FB_BACKEND__ = "gas"
+#if defined( __FB_64BIT__ ) 
+	#if defined( __FB_WIN32__ )
+		#define DOTEST
+	#endif	
+#elseif (__FB_BACKEND__ = "gas")
+	#define DOTEST
+#endif
+
+'' for other targets, see va_int_and_ptrs-gcc.bas
+
+#ifdef DOTEST
 
 SUITE( fbc_tests.functions.va_int_and_ptrs )
 
@@ -50,15 +60,5 @@ SUITE( fbc_tests.functions.va_int_and_ptrs )
 	END_TEST
 
 END_SUITE
-
-#else
-
-#if ENABLE_CHECK_BUGS
-SUITE( fbc_tests.functions.va_int_and_ptrs )
-	TEST( varIntegerArgs )
-		CU_FAIL()
-	END_TEST
-END_SUITE
-#endif
 
 #endif

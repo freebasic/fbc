@@ -43,6 +43,7 @@ enum FB_DATATYPE
 	FB_DATATYPE_DOUBLE
 	FB_DATATYPE_STRING
 	FB_DATATYPE_FIXSTR
+	FB_DATATYPE_VA_LIST
 	FB_DATATYPE_STRUCT
 	FB_DATATYPE_NAMESPC
 	FB_DATATYPE_FUNCTION
@@ -251,8 +252,10 @@ end enum
 
 ''
 enum FB_MANGLEOPT
-	FB_MANGLEOPT_NONE = 0          '' no special options
+	FB_MANGLEOPT_NONE         = 0  '' no special options
 	FB_MANGLEOPT_KEEPTOPCONST = 1  '' keep the top-level const when mangling
+	FB_MANGLEOPT_HASPTR       = 2  '' mangled type has is a pointer type
+	FB_MANGLEOPT_HASREF       = 4  '' mangled type has is reference type
 end enum
 
 type FBSYMBOL_ as FBSYMBOL
@@ -427,6 +430,9 @@ enum FB_UDTOPT
 	FB_UDTOPT_HASANONUNION          = &h2000
 	FB_UDTOPT_HASSTATICVAR          = &h4000
 	FB_UDTOPT_HASBITFIELD           = &h8000
+	FB_UDTOPT_ISVALISTSTRUCT        = &h10000
+	FB_UDTOPT_ISVALISTSTRUCTARRAY   = &h20000
+
 end enum
 
 type FB_STRUCT_DBG
@@ -456,7 +462,7 @@ type FBS_STRUCT
 	anonparent		as FBSYMBOL_ ptr
 	natalign		as integer					'' UDT's natural alignment based on largest natural field alignment
 	unpadlgt		as longint					'' unpadded len
-	options			as short					'' FB_UDTOPT
+	options			as long						'' FB_UDTOPT
 	bitpos			as ubyte
 	align			as ubyte
 
@@ -1601,6 +1607,10 @@ declare function symbIsString _
 		byval dtype as integer _
 	) as integer
 
+declare function symbGetValistType( byval dtype as integer, byval subtype as FBSYMBOL ptr ) as FB_CVA_LIST_TYPEDEF
+#define symbIsValistStructArray( dtype, subtype ) (symbGetValistType( dtype, subtype ) = FB_CVA_LIST_BUILTIN_C_STD)
+#define symbIsBuiltinVaListType( dtype, subtype ) (symbGetValistType( dtype, subtype ) > FB_CVA_LIST_POINTER)
+
 declare function symbGetVarHasCtor _
 	( _
 		byval s as FBSYMBOL ptr _
@@ -1923,6 +1933,7 @@ declare function symbGetUDTBaseLevel _
 		byval baseSym as FBSYMBOL ptr _
 	) as integer
 
+declare function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 ''
 '' macros
@@ -2234,6 +2245,12 @@ declare function symbGetUDTBaseLevel _
 #define symbSetUdtHasBitfield( s )   (s)->udt.options or= FB_UDTOPT_HASBITFIELD
 #define symbGetUdtHasBitfield( s ) (((s)->udt.options and FB_UDTOPT_HASBITFIELD) <> 0)
 
+#define symbSetUdtIsValistStruct( s )   (s)->udt.options or= FB_UDTOPT_ISVALISTSTRUCT
+#define symbGetUdtIsValistStruct( s ) (((s)->udt.options and FB_UDTOPT_ISVALISTSTRUCT) <> 0)
+
+#define symbSetUdtIsValistStructArray( s )   (s)->udt.options or= FB_UDTOPT_ISVALISTSTRUCTARRAY
+#define symbGetUdtIsValistStructArray( s ) (((s)->udt.options and FB_UDTOPT_ISVALISTSTRUCTARRAY) <> 0)
+
 #define symbGetUDTIsUnionOrAnon(s) (((s)->udt.options and (FB_UDTOPT_ISUNION or FB_UDTOPT_ISANON)) <> 0)
 
 #define symbGetUDTAlign(s) s->udt.align
@@ -2464,28 +2481,33 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 #define typeGet( dt ) iif( dt and FB_DT_PTRMASK, FB_DATATYPE_POINTER, dt and FB_DT_TYPEMASK )
 #define typeGetDtOnly( dt ) (dt and FB_DT_TYPEMASK)
 #define typeGetDtAndPtrOnly( dt ) (dt and (FB_DT_TYPEMASK or FB_DT_PTRMASK))
+#define typeGetDtPtrAndMangleDtOnly( dt ) (dt and (FB_DT_TYPEMASK or FB_DT_PTRMASK or FB_DT_MANGLEMASK))
 #define typeJoin( dt, ndt ) ((dt and (not (FB_DT_TYPEMASK or FB_DT_PTRMASK))) or (ndt and (FB_DT_TYPEMASK or FB_DT_PTRMASK)))
 #define typeJoinDtOnly( dt, ndt ) ((dt and (not FB_DT_TYPEMASK)) or (ndt and FB_DT_TYPEMASK))
 
 #define typeAddrOf( dt ) _
 	((dt and FB_DT_TYPEMASK) or _
 	 ((dt and FB_DT_PTRMASK) + (1 shl FB_DT_PTRPOS)) or _
-	 ((dt and FB_DT_CONSTMASK) shl 1))
+	 ((dt and FB_DT_CONSTMASK) shl 1) or _
+	 (dt and FB_DT_MANGLEMASK))
 
 #define typeMultAddrOf( dt, cnt ) _
 	((dt and FB_DT_TYPEMASK) or _
 	 ((dt and FB_DT_PTRMASK) + (cnt shl FB_DT_PTRPOS)) or _
-	 ((dt and FB_DT_CONSTMASK) shl cnt))
+	 ((dt and FB_DT_CONSTMASK) shl cnt) or _
+	 (dt and FB_DT_MANGLEMASK))
 
 #define typeDeref( dt ) _
 	((dt and FB_DT_TYPEMASK) or _
 	 ((dt and FB_DT_PTRMASK) - (1 shl FB_DT_PTRPOS)) or _
-	 (((dt and FB_DT_CONSTMASK) shr 1) and FB_DT_CONSTMASK))
+	 (((dt and FB_DT_CONSTMASK) shr 1) and FB_DT_CONSTMASK) or _
+	 (dt and FB_DT_MANGLEMASK))
 
 #define typeMultDeref( dt, cnt ) _
 	((dt and FB_DT_TYPEMASK) or _
 	 ((dt and FB_DT_PTRMASK) - (cnt shl FB_DT_PTRPOS)) or _
-	 (((dt and FB_DT_CONSTMASK) shr cnt) and FB_DT_CONSTMASK))
+	 (((dt and FB_DT_CONSTMASK) shr cnt) and FB_DT_CONSTMASK) or _
+	 (dt and FB_DT_MANGLEMASK))
 
 #define	typeIsPtr( dt ) (((dt and FB_DT_PTRMASK) <> 0))
 #define typeGetPtrCnt( dt ) ((dt and FB_DT_PTRMASK) shr FB_DT_PTRPOS)

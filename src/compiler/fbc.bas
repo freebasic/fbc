@@ -1884,6 +1884,8 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		select case( lcase( arg ) )
 		case "gosub-setjmp"
 			fbSetOption( FB_COMPOPT_GOSUBSETJMP, TRUE )
+		case "valist-as-ptr"
+			fbSetOption( FB_COMPOPT_VALISTASPTR, TRUE )
 		case else
 			hFatalInvalidOption( arg )
 		end select

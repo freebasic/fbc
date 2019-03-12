@@ -980,3 +980,30 @@ function symbGetUDTBaseLevel _
 	return 0
 	
 End Function
+
+function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL ptr
+
+	static as FBARRAYDIM dTB(0)
+	dim as FBSYMBOL ptr s = any
+	dim as FBSYMBOL ptr fld = any
+
+	'' only will work with very simple structs, no ctor/dtor's
+	'' no unions, bitfields, etc...
+
+	'' used for __builtin_va_list mangle modifier, we only ever refer to this struct
+	'' through the typedef, so it doesn't need a visible name
+	
+	s = symbStructBegin( NULL, NULL, NULL, symbUniqueLabel( ), sym->id.alias, FALSE, 0, FALSE, 0, 0 )
+
+	fld = symbUdtGetFirstField( sym )
+	while( fld )
+		symbAddField( s, fld->id.name, 0, dTB(), symbGetFullType( fld ), symbGetSubtype( fld ), 0, 0, 0 )
+		fld = symbUdtGetNextField( fld )
+	wend
+
+	'' end type
+	symbStructEnd( s )
+
+	function = s
+
+end function

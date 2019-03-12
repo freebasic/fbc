@@ -64,6 +64,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgWrite|WRITE"}}
 
 {{fbdoc item="section" value="Data types and declarations"}}
+	- {{fbdoc item="keyword" value="KeyPgAliasModifier|ALIAS (Modifier)"}}
 	- {{fbdoc item="keyword" value="KeyPgAs|AS"}}
 	- {{fbdoc item="keyword" value="KeyPgBoolean|BOOLEAN"}}
 	- {{fbdoc item="keyword" value="KeyPgByrefVariables|BYREF (variables)"}}
@@ -474,7 +475,6 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgInclude|ONCE"}}
 
 {{fbdoc item="section" value="Procedures"}}
-	- {{fbdoc item="keyword" value="KeyPgDots|..."}}
 	- {{fbdoc item="keyword" value="KeyPgAbstract|ABSTRACT (member)"}}
 	- {{fbdoc item="keyword" value="KeyPgAlias|ALIAS"}}
 	- {{fbdoc item="keyword" value="KeyPgAny|ANY"}}
@@ -508,10 +508,18 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgMemberSub|SUB (Member)"}}
 	- {{fbdoc item="keyword" value="KeyPgStdcall|STDCALL"}}
 	- {{fbdoc item="keyword" value="KeyPgThis|THIS"}}
+	- {{fbdoc item="keyword" value="KeyPgVirtual|VIRTUAL (member)"}}
+
+{{fbdoc item="section" value="Variadic Procedures"}}
+	- {{fbdoc item="keyword" value="KeyPgDots|..."}}
+	- {{fbdoc item="keyword" value="KeyPgCvaArg|CVA_ARG"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaCopy|CVA_COPY"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaEnd|CVA_END"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaList|CVA_LIST"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaStart|CVA_START"}}
 	- {{fbdoc item="keyword" value="KeyPgVaArg|VA_ARG"}}
 	- {{fbdoc item="keyword" value="KeyPgVaFirst|VA_FIRST"}}
 	- {{fbdoc item="keyword" value="KeyPgVaNext|VA_NEXT"}}
-	- {{fbdoc item="keyword" value="KeyPgVirtual|VIRTUAL (member)"}}
 
 {{fbdoc item="section" value="Program flow"}}
 	- {{fbdoc item="keyword" value="KeyPgContinue|CONTINUE"}}

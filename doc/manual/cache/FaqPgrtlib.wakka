@@ -33,7 +33,7 @@
 {{anchor name="item0|Back to top"}}
 
 {{anchor name="item3"}}==How do I print?==
-	Since version 0.15 FB supports character output to printer.
+	FB supports character output to printer.
 	To print graphics two approaches are possible:
 	- Preprocess the graphics data, program the printer, and send the data to it (see [[http://en.wikipedia.org/wiki/ESC/P|wikipedia.org/wiki/ESC/P]]). This is OS-portable but depends on the printer model. The only way for DOS, see also [[FaqDOS|DOS FAQ section]].
 	- In Windows and Linux there are specific API calls. This is not OS-portable but the OS's printer driver makes it printer-independent.
@@ -42,7 +42,7 @@
 
 {{anchor name="item4"}}==How do I access the hardware ports?==
 
-	INP, OUT and WAIT known from QB are implemented since version 0.15 of FB.
+	INP, OUT and WAIT known from QB are implemented in FB.
 	The GfxLib intercepts the calls to some VGA ports to emulate the widely used QB's palette manipulation and vsync methods. So ports &H3DA, &H3C7, &H3C8 and &H3C9 can't be accessed it GfxLib is used. All other ports are accessible.
 	No further tricks are required to use INP and OUT in Linux or DOS. For the Windows version the required device driver is installed each first time the program is run in a windows session; this requires Administrator rights for this first run or the program will end with an error. Note that accessing hardware ports by applications is not common practice in Windows and Linux.
 

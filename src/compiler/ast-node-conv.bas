@@ -622,7 +622,7 @@ function astLoadCONV _
 	if( ast.doemit ) then
 		vs->vector = n->vector
 		if( n->cast.doconv ) then
-			vr = irAllocVreg( astGetDataType( n ), n->subtype )
+			vr = irAllocVreg( astGetFullType( n ), n->subtype )
 			vr->vector = n->vector
 			irEmitConvert( vr, vs )
 
@@ -639,7 +639,7 @@ function astLoadCONV _
 			end if
 		else
 			vr = vs
-			irSetVregDataType( vr, astGetDataType( n ), n->subtype )
+			irSetVregDataType( vr, astGetFullType( n ), n->subtype )
 		end if
 	end if
 

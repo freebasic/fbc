@@ -65,7 +65,8 @@ dim shared as AST_LOADCALLBACK ast_loadcallbacks( 0 to AST_CLASSES-1 ) => _
 	NULL                  , _    '' AST_NODECLASS_TYPEINI_CTORLIST
 	NULL                  , _    '' AST_NODECLASS_TYPEINI_SCOPEINI
 	NULL                  , _    '' AST_NODECLASS_TYPEINI_SCOPEEND
-	NULL                    _    '' AST_NODECLASS_PROC
+	NULL                  , _    '' AST_NODECLASS_PROC
+	@astLoadMACRO           _    '' AST_NODECLASS_MACRO
 }
 
 '' same order as AST_OP
@@ -180,6 +181,10 @@ dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
 	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"mswp"    ), _ '' AST_OP_MEMSWAP
 	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"mclr"    ), _ '' AST_OP_MEMCLEAR
 	(AST_NODECLASS_MEM   , AST_OPFLAGS_NONE, @"stkc"    ), _ '' AST_OP_STKCLEAR
+	(AST_NODECLASS_MACRO , AST_OPFLAGS_NONE, @"va_start"), _ '' AST_OP_VA_START
+	(AST_NODECLASS_MACRO , AST_OPFLAGS_NONE, @"va_end"  ), _ '' AST_OP_VA_END
+	(AST_NODECLASS_MACRO , AST_OPFLAGS_NONE, @"va_copy" ), _ '' AST_OP_VA_COPY
+	(AST_NODECLASS_MACRO , AST_OPFLAGS_NONE, @"va_arg"  ), _ '' AST_OP_VA_ARG
 	(AST_NODECLASS_DBG   , AST_OPFLAGS_NONE, @"lini"    ), _ '' AST_OP_DBG_LINEINI
 	(AST_NODECLASS_DBG   , AST_OPFLAGS_NONE, @"lend"    ), _ '' AST_OP_DBG_LINEEND
 	(AST_NODECLASS_DBG   , AST_OPFLAGS_NONE, @"sini"    ), _ '' AST_OP_DBG_SCOPEINI
@@ -439,6 +444,7 @@ function astMakeRef( byref expr as ASTNODE ptr ) as ASTNODE ptr
 
 	assert( astCanTakeAddrOf( expr ) )
 
+	'' dim temp as DATATYPE ptr
 	temp = symbAddTempVar( typeAddrOf( expr->dtype ), expr->subtype )
 
 	'' temp = @expr
@@ -467,6 +473,7 @@ function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr
 
 	'' simple type..
 	case else
+		'' dim temp as DATATYPE
 		tmp = symbAddTempVar( n->dtype, n->subtype )
 
 		'' tmp = n

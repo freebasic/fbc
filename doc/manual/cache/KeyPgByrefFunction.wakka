@@ -11,7 +11,7 @@ Specifies that a function result is returned by reference
 	
 	Functions with ##**Byref**## result should not return local variables from the function, because they will be destroyed upon returning from the function, invalidating any pointer or reference to them. To help with writing safe code, the compiler will show an error message when a local variable is used with ##Function = //x//## (or ##//name// = //x//##) assignments and ##Return //x//## statements.
 	
-	**Note:** On the left-hand side of an assignment expression using the '##=##' symbol, the result of the function (returned by reference) must be enclosed in parentheses when the function calls one single argument, in order to solve the parsing ambiguity. From fbc version 0.90, '##=>##' can be used for assignments, in place of '##=##', same as for initializers, allowing to avoid parsing ambiguity (without parentheses). As for the arguments list, it should always be surrounded with parentheses even if empty.
+	**Note:** On the left-hand side of an assignment expression using the '##=##' symbol, the result of the function (returned by reference) must be enclosed in parentheses when the function calls one single argument, in order to solve the parsing ambiguity. '##=>##' can be used for assignments, in place of '##=##', same as for initializers, allowing to avoid parsing ambiguity (without parentheses). As for the arguments list, it should always be surrounded with parentheses even if empty.
 	
 	Operators (member or global), when used as functions, have also the capability to return results by reference, by using the same syntax.
 

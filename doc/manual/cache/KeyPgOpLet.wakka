@@ -11,7 +11,7 @@ Indicates the assignment operator when overloading [[KeyPgOpAssignment|Operator 
 {{fbdoc item="usage"}}##
 	//lhs// **=** //rhs//
 		##//or//##
-	//lhs// **=>** //rhs//     (from fbc version 0.90)
+	//lhs// **=>** //rhs//
 ##
 {{fbdoc item="param"}}
 	##//typename//## 

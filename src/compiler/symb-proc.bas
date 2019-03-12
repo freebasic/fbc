@@ -1296,7 +1296,7 @@ sub symbGetRealParamDtype overload _
 
 	assert( param->class = FB_SYMBCLASS_PARAM )
 
-	dtype = symbGetType( param )
+	dtype = symbGetFullType( param )
 	subtype = param->subtype
 
 	symbGetRealParamDtype( param->param.mode, param->param.bydescrealsubtype, dtype, subtype )

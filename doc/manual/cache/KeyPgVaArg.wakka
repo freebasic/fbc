@@ -10,7 +10,7 @@ Returns the current argument from a variable argument list.
 		- 	Before first ##**va_arg**## use, ##//argument_list//## must be initialized with the command ##[[KeyPgVaFirst|va_first]]##.
 		- 	Unlike the C macro with the same name, ##**va_arg**## does not automatically increment ##//argument_list//## to the next argument within the list. Instead ##[[KeyPgVaNext|va_next]]## must be used to find the next argument in adjusting ##//argument_list//##.
 	
-	//Note:// Not supported when using gcc.
+	Not supported when using ##[[CompilerOptgen|-gen gcc]]##.  Use ##[[KeyPgCvaList|cva_list]]## variadic argument list type for cross platform compatibility.
 
 {{fbdoc item="ex"}}
 	See the ##[[KeyPgVaFirst|va_first()]]## examples.

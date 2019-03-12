@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="Differences from QB"}}----
-Since version 0.17, ""FreeBASIC"" introduced a -lang command-line option, that is used to change the language compatibility mode. Use the -lang qb option when compiling to select the most QB compatible parser. All differences listed below assume that -lang qb was used.
+""FreeBASIC"" introduced a -lang command-line option, that is used to change the language compatibility mode. Use the -lang qb option when compiling to select the most QB compatible parser. All differences listed below assume that -lang qb was used.
 
 ==Architecture/Platform incompatibilities==
 	- ""FreeBASIC"" is written for 32-bit operating systems and a 32 bit DOS extender, and cannot utilize code which depends on 16-bit DOS, 16 bit assembly or memory model (segment & offset, XMS/EMS, ...). 	

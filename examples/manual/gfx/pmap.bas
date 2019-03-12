@@ -6,7 +6,7 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPmap
 '' --------
 
-Screen 12
+ScreenRes 640, 480
 Window Screen (0, 0)-(100, 100)
 Print "Logical x=50, Physical x="; PMap(50, 0)   '' 320
 Print "Logical y=50, Physical y="; PMap(50, 1)   '' 240

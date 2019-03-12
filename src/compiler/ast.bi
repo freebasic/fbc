@@ -70,6 +70,7 @@ enum AST_NODECLASS
 	AST_NODECLASS_TYPEINI_SCOPEEND
 
 	AST_NODECLASS_PROC
+	AST_NODECLASS_MACRO
 
 	AST_CLASSES
 end enum
@@ -807,6 +808,15 @@ declare function astNewMEM _
 		byval bytes as longint = 0 _
 	) as ASTNODE ptr
 
+declare function astNewMACRO _
+	( _
+		byval op as AST_OP, _
+		byval arg1 as ASTNODE ptr, _
+		byval arg2 as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
 declare function astBuildNewOp _
 	( _
 		byval op as AST_OP, _
@@ -1388,6 +1398,7 @@ declare function astLoadSCOPEBEGIN( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadSCOPEEND( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadDECL( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function astLoadNIDXARRAY( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function astLoadMACRO( byval n as ASTNODE ptr ) as IRVREG ptr
 
 ''
 '' macros

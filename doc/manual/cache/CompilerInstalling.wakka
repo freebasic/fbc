@@ -12,6 +12,7 @@ Installing ""FreeBASIC"", any additionally needed packages, and perhaps a text e
 	1) Unless you already have a source code editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":
 		- [[http://fbide.freebasic.net/|FBIDE]]
 		- [[http://radasm.cherrytree.at/fbedit/|FBEdit]]
+		- [[https://www.freebasic.net/forum/viewtopic.php?f=8&t=25215|WinFBE Editor and Visual Designer]]
 		
 	To uninstall ""FreeBASIC"":
 			- If previously installed using zip package: simply deleted the directory where you extracted it.

@@ -794,6 +794,8 @@ declare function cFileFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 declare function cErrorFunct() as ASTNODE ptr
 declare function cIIFFunct() as ASTNODE ptr
 declare function cVAFunct() as ASTNODE ptr
+declare function cVALISTFunct( byval tk as FB_TOKEN ) as ASTNODE ptr
+declare function cVALISTStmt( byval tk as FB_TOKEN ) as integer
 declare function cScreenFunct() as ASTNODE ptr
 declare function cAnonType( ) as ASTNODE ptr
 declare function cConstIntExpr _

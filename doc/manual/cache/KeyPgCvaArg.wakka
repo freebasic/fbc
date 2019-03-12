@@ -1,0 +1,101 @@
+{{fbdoc item="title" value="CVA_ARG"}}----
+Macro to obtain the next argument from a variadic argument list object.
+
+{{fbdoc item="syntax"}}##
+	//variable// = **cva_arg** ( //argument_list//, [[DataType|datatype]] )
+##
+{{fbdoc item="param"}}
+	##//argument_list//##
+		##[[KeyPgCvaList|cva_list]]## data type variable to access for next value
+	##//datatype//##
+		The [[DataType|datatype]] of the next value in the variable argument list ##//argument_list//##
+
+{{fbdoc item="desc"}}
+	The ##**cva_arg**## macro allows the use of a variable number of arguments within a function:
+		- 	##**cva_arg**## returns the current argument in the list, ##//argument_list//##, with an expected data type of ##//datatype//##.
+		- 	Before first ##**cva_arg**## use, ##//argument_list//## must be initialized with the command ##[[KeyPgCvaStart|cva_start]]## or ##[[KeyPgCvaCopy|cva_copy]]##.
+		- 	##**cva_arg**## automatically increments ##//argument_list//## to the next argument within the list after obtaining the value of the current argument.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/procs/cva_arg1.bas"}}%%(freebasic)
+'' Example of a simple custom printf
+sub myprintf cdecl(byref formatstring as string, ...)
+	dim as cva_list args
+
+	'' Initialize the cva_list object to first var-arg
+	cva_start( args, formatstring )
+
+	'' For each char in format string...
+	dim as ubyte ptr p = strptr(formatstring)
+	dim as integer todo = len(formatstring)
+	while (todo > 0)
+		dim as integer char = *p
+		p += 1
+		todo -= 1
+
+		'' Is it a format char?
+		if (char = asc("%")) then
+			if (todo = 0) then
+				'' % at the end
+				print "%";
+				exit while
+			end if
+
+			'' The next char should tell the type
+			char = *p
+			p += 1
+			todo -= 1
+
+			'' Print var-arg, depending on the type
+			select case char
+			'' integer?
+			case asc("i")
+				print str(cva_arg(args, integer));
+
+			'' long integer? (64-bit)
+			case asc("l")
+				print str(cva_arg(args, longint));
+
+			'' single or double?
+			'' Note: because the C ABI, all singles passed on
+			'' var-args are converted to doubles.
+			case asc( "f" ), asc( "d" )
+				print str(cva_arg(args, double));
+
+			'' string?
+			case asc("s")
+				'' Strings are passed byval, so the length is unknown
+				print *cva_arg(args, zstring ptr);
+
+			end select
+
+		'' Ordinary char, just print as-is
+		else
+			print chr( char );
+		end if
+	wend
+
+	cva_end( args )
+
+end sub
+
+dim as string s = "bar"
+
+myprintf(!"integer=%i, longint=%l single=%f, double=%d, string=%s, string=%s\n", _
+		 1, 1ll shl 32, 2.2, 3.3, "foo", s)
+%%
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__cva_arg""**##.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDots|... (Ellipsis)]]##
+	- ##[[KeyPgCvaCopy|cva_copy]]##
+	- ##[[KeyPgCvaEnd|cva_end]]##
+	- ##[[KeyPgCvaList|cva_list]]##
+	- ##[[KeyPgCvaStart|cva_start]]##
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}

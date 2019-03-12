@@ -1,0 +1,45 @@
+{{fbdoc item="title" value="CVA_END"}}----
+Macro to clean-up a variadic argument list object variable
+
+{{fbdoc item="syntax"}}##
+	**cva_end**( //argument_list// )
+##
+{{fbdoc item="param"}}
+	##//argument_list//##
+		##[[KeyPgCvaList|cva_list]]## variable to clean up
+
+{{fbdoc item="desc"}}
+	Cleans-up a ##[[KeyPgCvaList|cva_list]]## type variable that was previously initialized with ##[[KeyPgCvaStart|cva_start]]## or ##[[KeyPgCvaCopy|cva_copy]]##, like a destructor.
+	
+	##//argument_list//## must already have been initialized with a previous ##[[KeyPgCvaStart|cva_start]]## or ##[[KeyPgCvaCopy|cva_copy]]## statement in the same procedure as ##**cva_end**## (for cross platform compatibility).
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/procs/cva_end1.bas"}}%%(freebasic)
+Sub proc CDecl(count As Integer, ... )
+	Dim args As cva_list
+
+	cva_start( args, count )
+
+	For i As Integer = 1 To count
+		Print cva_arg( args, Integer )
+	Next
+   
+	cva_end( args )
+End Sub
+
+proc( 4, 4000, 300, 20, 1 )
+%%
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__cva_end""**##.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[KeyPgDots|... (Ellipsis)]]
+	- ##[[KeyPgCvaArg|cva_arg]]##
+	- ##[[KeyPgCvaCopy|cva_copy]]##
+	- ##[[KeyPgCvaList|cva_list]]##
+	- ##[[KeyPgCvaStart|cva_start]]##
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}

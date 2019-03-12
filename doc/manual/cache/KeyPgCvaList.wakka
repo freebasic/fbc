@@ -1,0 +1,118 @@
+{{fbdoc item="title" value="CVA_LIST"}}----
+Variadic argument list object type
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDim|dim]] //variable// [[KeyPgAs|as]] **cva_list**
+##
+{{fbdoc item="desc"}}
+	##**cva_list**## is a built in data type for working with the variable length argument list in a variadic procedure.
+	
+	Use ##[[KeyPgCvaStart|cva_start]]## to initialize the ##**cva_list**## variable (constructor).
+	Use ##[[KeyPgCvaCopy|cva_copy]]## to copy a ##**cva_list**## variable (copy constructor).
+	Use ##[[KeyPgCvaArg|cva_arg]]## to obtain the value of the next argument.
+	Use ##[[KeyPgCvaEnd|cva_end]]## when finished with a ##**cva_list**## variable (destructor).
+	
+	The exact type and size of ##**cva_list**## varies depending on the target platform.  This builtin type provides a layer of abstraction over the underlying mechanism for obtaining the values passed to a variadic procedure.
+	
+	fbc will select a default ##**cva_list**## type depending on [[CompilerOpttarget|-target]], [[CompilerOptarch|-arch]], and [[CompilerOptgen|-gen]] command line options, as described in the following code.
+	%%(freebasic)
+#if (__FB_BACKEND__ = "gcc")
+	#if defined( __FB_64BIT__ ) 
+		#if defined( __FB_ARM__ )
+			type __va_list alias "__va_list"
+				as any ptr __stack
+				as any ptr __gr_top
+				as any ptr __vr_top
+				as long __gr_offs
+				as long __vr_offs
+			end type
+			type cva_list as __va_list alias "__builtin_va_list"
+		#elseif defined( __FB_WIN32__ )
+			type cva_list as any alias "__builtin_va_list" ptr
+		#else
+			type __va_list_tag alias "__va_list_tag"
+				as ulong gp_offset
+				as ulong fp_offset
+				as any ptr overflow_arg_area
+				as any ptr reg_save_area
+			end type  
+			type cva_list as __va_list_tag alias "__builtin_va_list[]"
+		#endif	
+	#else
+		type cva_list as any alias "__builtin_va_list" ptr
+	#endif
+#else
+	type cva_list as any alias "char" ptr
+#endif
+%%
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/procs/cva_list1.bas"}}%%(freebasic)
+function average cdecl(count as Integer, ... ) As Double
+
+	Dim sum As double = 0
+	Dim i As integer
+
+	Dim args As cva_list '' argument list object
+	cva_start( args, count ) '' constructor
+	for i = 1 To count
+		sum += cva_arg(args, double)
+	next
+	cva_end( args ) '' destructor
+	
+	return sum / count
+end function
+
+print average(4, 3.4 ,5.0, 3.2, 4.1) '' all passed variable arguments must be of type double
+print average(2, 65.2, 454.65481)    '' all passed variable arguments must be of type double
+%%
+
+The output would look like:
+%%
+ 3.925
+ 259.927405
+%%
+
+{{fbdoc item="filename" value="examples/manual/procs/cva_list2.bas"}}%%(freebasic)
+'' pass the args list to a function taking an cva_list type argument
+#include "crt/stdio.bi"
+
+sub myprintf cdecl( fmt as zstring ptr, ... )
+	dim args as cva_list
+	cva_start( args, fmt )
+	vprintf( fmt, args )
+	cva_end( args )
+end sub
+
+dim as string s = "bar"
+
+myprintf( !"integer=%i, longint=%lli float=%f\n", _
+	1, 1ll shl 32, 3.3 )
+
+myprintf( !"string=%s, string=%s\n", "foo", s )
+%%
+
+{{fbdoc item="target"}}
+	- The exact type and size of ##**cva_list**## depends on [[CompilerOpttarget|-target]], [[CompilerOptarch|-arch]], [[CompilerOptgen|-gen]] command line options.
+	- In ##[[CompilerOptgen|-gen gas]]##, ##**cva_list**## is a pointer
+	- In ##[[CompilerOptgen|-gen gcc]]##, ##**cva_list**## is a pointer, a struct, or a struct array.  The ##**cva_list**## type is replaced by ##"""__builtin_va_list"""## in gcc.
+	- On 32-bit targets, gas backend: ##type **cva_list** as any alias "char" ptr##.
+	- On 32-bit targets, gcc backend: ##type **cva_list** as any alias """__builtin_va_list""" ptr##
+	- On Windows 64-bit, gcc backend: ##type **cva_list** as any alias """__builtin_va_list""" ptr##
+	- On Linux x86_64, gcc backend: ##type **cva_list** as """__va_list_tag""" alias """__builtin_va_list[]"""##
+	- On arm64, gcc backend: ##type **cva_list** as ""__va_list alias"" """__builtin_va_list"""##
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__cva_list""**##.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- [[KeyPgDots|... (Ellipsis)]]
+	- ##[[KeyPgCvaArg|cva_arg]]##
+	- ##[[KeyPgCvaStart|cva_start]]##
+	- ##[[KeyPgCvaCopy|cva_copy]]##
+	- ##[[KeyPgCvaEnd|cva_end]]##
+
+{{fbdoc item="back" value="CatPgProcedures|Procedures"}}{{fbdoc item="back" value="CatPgVarArg|Variable Argument list"}}

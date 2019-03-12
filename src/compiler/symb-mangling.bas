@@ -357,7 +357,7 @@ function hMangleBuiltInType _
 	''    64bit fbc it was reversed, allowing the same FB and C++ code to work
 	''    together on both 32bit and 64bit.
 	''
-	''  - as special expection for windows 64bit, to get a 32bit type that will
+	''  - as special exception for windows 64bit, to get a 32bit type that will
 	''    mangle to C++ long, allow 'as [u]long alias "[u]long"' declarations.
 	''    The size of LONG/ULONG does not change, it's 32bit, only the mangling,
 	''    so fbc programs can call C++ code requiring 'long int' arguments.
@@ -390,6 +390,11 @@ function hMangleBuiltInType _
 		end select
 	end if
 
+	'' Still have a mangle data type? remap.
+	if( typeHasMangleDt( dtype ) ) then
+		dtype = typeGetMangleDt( dtype )
+	end if
+
 	'' dtype should be a FB_DATATYPE by now
 	assert( dtype = typeGetDtOnly( dtype ) )
 
@@ -414,6 +419,7 @@ function hMangleBuiltInType _
 		@"d", _ '' double
 		NULL, _ '' var-len string
 		NULL, _ '' fix-len string
+		@"c", _ '' va_list
 		NULL, _ '' struct
 		NULL, _ '' namespace
 		NULL, _ '' function
@@ -456,7 +462,8 @@ sub symbMangleType _
 	if( typeIsRef( dtype ) ) then
 		mangled += "R"
 
-		symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype, FB_MANGLEOPT_KEEPTOPCONST )
+		symbMangleType( mangled, typeUnsetIsRef( dtype ), subtype, _
+			options or FB_MANGLEOPT_HASREF or FB_MANGLEOPT_KEEPTOPCONST)
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
@@ -478,7 +485,8 @@ sub symbMangleType _
 			mangled += "K"
 		end if
 
-		symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype )
+		symbMangleType( mangled, typeUnsetIsConst( dtype ), subtype, _
+			options and not FB_MANGLEOPT_KEEPTOPCONST )
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
@@ -488,10 +496,35 @@ sub symbMangleType _
 	if( typeIsPtr( dtype ) ) then
 		mangled += "P"
 
-		symbMangleType( mangled, typeDeref( dtype ), subtype, FB_MANGLEOPT_KEEPTOPCONST )
+		symbMangleType( mangled, typeDeref( dtype ), subtype, _
+			options or FB_MANGLEOPT_HASPTR or FB_MANGLEOPT_KEEPTOPCONST )
 
 		hAbbrevAdd( dtype, subtype )
 		exit sub
+	end if
+
+	'' struct with __builtin_va_list mangle modifier?
+	'' use the stuct name instead
+	if( typeHasMangleDt( dtype ) ) then
+		if( typeGetDtOnly( dtype ) = FB_DATATYPE_STRUCT ) then
+			if( typeGetMangleDt( dtype ) = FB_DATATYPE_VA_LIST ) then
+
+				'' if the type was passed as byval ptr or byref
+				'' need to mangle in "A1_" to indicate the array type, but
+				'' not on aarch64, __va_list is a plain struct, it doesn't
+				'' need the array type specifier.
+
+				if( symbIsValistStructArray( dtype, subtype ) ) then
+					if( (options and (FB_MANGLEOPT_HASREF or FB_MANGLEOPT_HASPTR)) <> 0 ) then
+						mangled += "A1_"
+					else
+						mangled += "P"
+					end if
+				end if
+
+				dtype = typeSetMangleDt( dtype, 0 )
+			end if
+		end if
 	end if
 
 	''

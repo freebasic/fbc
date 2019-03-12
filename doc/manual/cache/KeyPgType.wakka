@@ -9,7 +9,7 @@ Declares a user-defined type.
 		...
 	**End Type**
 	
-	**Type** //typename// [[[KeyPgExtends|Extends]] //base_typename//] [[[KeyPgField|Field]] = //alignment//]
+	**Type** //typename// [[[KeyPgAlias|Alias]] "alternatename"] [[[KeyPgExtends|Extends]] //base_typename//] [[[KeyPgField|Field]] = //alignment//]
 		[[[KeyPgVisPrivate|Private:]]|[[KeyPgVisPublic|Public:]]|[[KeyPgVisProtected|Protected:]]]
 		
 		[[KeyPgDeclare|Declare]] [[KeyPgMemberSub|Sub]]|[[KeyPgMemberFunction|Function]]|[[KeyPgConstructor|Constructor]]|[[KeyPgDestructor|Destructor]]|[[KeyPgProperty|Property]]|[[KeyPgOperator|Operator]] ...
@@ -49,6 +49,8 @@ Declares a user-defined type.
 		- Member visibility specifiers: ##[[KeyPgVisPublic|Public:]]##, ##[[KeyPgVisPrivate|Private:]]##, ##[[KeyPgVisProtected|Protected:]]##
 	
 	Types may also contain nested types or unions, allowing data members to be grouped as desired. Nested types/unions are not allowed to contain member procedures or static member variables (same restriction for local types/unions).
+	
+	##[[KeyPgAlias|Alias]] "alternatename"## specifies that if ##//typename//## must be encoded (mangled) in to a public symbol (as in an object module or library), then specifically use ##//alternate//## name instead of the usual encoding (mangling) of ##//typename//##.
 	
 	//Memory layout//
 	Types lay out their fields consecutively in memory, following the native alignment and padding rules (described on the ##[[KeyPgField|Field]]## page). Special care must be taken when using Types for file I/O or interacting with other programs or programming languages, in case the alignment and padding rules are different. The optional ##[[KeyPgField|Field]] = //number//## specifier can be used to change the behavior on the ""FreeBASIC"" side.
@@ -179,6 +181,7 @@ Sleep
 	- ##[[KeyPgEnum|Enum]]##
 	- ##[[KeyPgTypeof|Typeof]]##
 	- ##[[KeyPgOffsetof|OffsetOf]]##
+	- ##[[KeyPgAlias|Alias (Name)]]##
 	- ##[[KeyPgField|Field]]##
 	- ##[[KeyPgExtends|Extends]]##
 	- ##[[KeyPgWith|With]]##
