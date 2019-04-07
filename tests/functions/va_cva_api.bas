@@ -94,8 +94,8 @@ SUITE( fbc_tests.functions.va_cva_api )
 
 		next
 
-		cva_end( x1 )
-		cva_end( x2 )
+		cva_end( y1 )
+		cva_end( y2 )
 
 	end sub
 
