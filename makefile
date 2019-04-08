@@ -1063,7 +1063,7 @@ bootstrap-dist:
 #
 BOOTSTRAP_FBC := bootstrap/fbc$(EXEEXT)
 .PHONY: bootstrap
-bootstrap: rtlib gfxlib2 $(BOOTSTRAP_FBC)
+bootstrap: gfxlib2 $(BOOTSTRAP_FBC)
 	mkdir -p bin
 	cp $(BOOTSTRAP_FBC) $(FBC_EXE)
 
@@ -1089,7 +1089,7 @@ endif
 ifneq ($(filter darwin freebsd linux netbsd openbsd solaris,$(TARGET_OS)),)
   BOOTSTRAP_LIBS := -lncurses -lm -pthread
 endif
-$(BOOTSTRAP_FBC): $(BOOTSTRAP_OBJ)
+$(BOOTSTRAP_FBC): rtlib $(BOOTSTRAP_OBJ)
 	$(QUIET_LINK)$(CC) -o $@ $(libdir)/fbrt0.o bootstrap/$(FBTARGET)/*.o $(libdir)/libfb.a $(BOOTSTRAP_LIBS)
 
 .PHONY: clean-bootstrap
