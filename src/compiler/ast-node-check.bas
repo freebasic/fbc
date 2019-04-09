@@ -177,8 +177,10 @@ function astLoadPTRCHK _
 	end if
 
 	'' assign to a temp, can't reuse the same vreg or registers could
-	'' be spilled as IR can't handle inter-blocks
-	t = astNewASSIGN( astNewVAR( n->sym ), l, AST_OPOPT_ISINI )
+	'' be spilled as IR can't handle inter-blocks.
+	'' And don't generate pointer warnings for this internal assignment; as
+	'' in the case where datatypes differ by mangle modifier only.
+	t = astNewASSIGN( astNewVAR( n->sym ), l, AST_OPOPT_ISINI or AST_OPOPT_DONTCHKPTR )
 	astLoad( t )
 	astDelNode( t )
 
