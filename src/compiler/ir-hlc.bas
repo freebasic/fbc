@@ -1957,6 +1957,22 @@ private function exprNewBOP _
 	'' and on pointers only after casting to ubyte* first,
 	'' so no subtype needs to be preserved here.
 
+	'' if both are pointers, and either has a mangle modifier, then
+	'' cast both sides to ubyte*, otherwise, gcc may warn about comparing
+	'' distinct pointer types without a cast.  For example with pointers
+	'' to __builtin_va_list types.  AST should have already rejected
+	'' invalid comparisons or warned on suspicious comparisons.
+	select case as const( op )
+	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
+		if( typeIsPtr( l->dtype ) and typeIsPtr( r->dtype ) ) then
+			if( (typeGetMangleDt( l->dtype ) = FB_DATATYPE_VA_LIST) or _
+				(typeGetMangleDt( r->dtype ) = FB_DATATYPE_VA_LIST) ) then
+				l = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, l )
+				r = exprNewCAST( typeAddrOf( FB_DATATYPE_UBYTE ), NULL, r )
+			end if
+		end if
+	end select
+
 	n = exprNew( EXPRCLASS_BOP, dtype, NULL )
 	n->l = l
 	n->r = r
