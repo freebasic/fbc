@@ -1183,7 +1183,7 @@ function astNewBOP _
 
 	if( (ldtype <> rdtype) or (l->subtype <> r->subtype) ) then
 		'' Pointer arithmetic (but not handled above by hDoPointerArith())?
-		'' (assuming hCheckPointers() checks were already done)
+		'' (assuming hCheckPtr() checks were already done)
 		if( (typeIsPtr( ldtype ) or typeIsPtr( rdtype )) and _
 		    ((op = AST_OP_ADD) or (op = AST_OP_SUB)) ) then
 			'' The result is supposed to be the pointer type
