@@ -65,6 +65,15 @@ sub hSymbolType _
 		lgt = typeGetSize( dtype )
 	end if
 
+	'' ANY alias "modifier" but no pointer level?
+	if( typeHasMangleDt( dtype ) and (typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_VOID) ) then
+		errReport( FB_ERRMSG_INVALIDDATATYPES )
+		'' error recovery: fake a type
+		dtype = typeAddrOf( dtype )
+		subtype = NULL
+		lgt = typeGetSize( dtype )
+	end if
+
 end sub
 
 function hCheckScope() as integer
