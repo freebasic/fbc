@@ -64,8 +64,9 @@
 #   warning-tests
 #   clean-tests
 #
-#   bootstrap-dist  Create source package with precompiled fbc sources
-#   bootstrap       Build fbc from the precompiled sources (only if precompiled sources exist)
+#   bootstrap-dist      Create source package with precompiled fbc sources
+#   bootstrap           Build fbc from the precompiled sources (only if precompiled sources exist)
+#   bootstrap-minimal   Build fbc from the precompiled sources (only if precompiled sources exist) with only the minimal features needed to compile another fbc
 #
 # makefile configuration:
 #   FB[C|L]FLAGS     to set -g -exx etc. for the compiler build and/or link
@@ -367,6 +368,11 @@ endif
 ALLFBCFLAGS += -e -m fbc -w pedantic
 ALLFBLFLAGS += -e -m fbc -w pedantic
 ALLCFLAGS += -Wall -Wextra -Wno-unused-parameter -Werror-implicit-function-declaration
+
+ifneq ($(filter bootstrap-minimal, $(MAKECMDGOALS)),)
+  # Disable features not needed to compile a minimal bootstrap fbc
+  ALLCFLAGS += -DDISABLE_GPM -DDISABLE_FFI -DDISABLE_X11
+endif
 
 ifeq ($(TARGET_OS),xbox)
   ifeq ($(OPENXDK),)
@@ -1061,9 +1067,11 @@ bootstrap-dist:
 # Build the fbc[.exe] binary from the precompiled sources in the bootstrap/
 # directory.
 #
+.PHONY: bootstrap bootstrap-minimal
+bootstrap: gfxlib2 bootstrap-minimal
+
 BOOTSTRAP_FBC := bootstrap/fbc$(EXEEXT)
-.PHONY: bootstrap
-bootstrap: gfxlib2 $(BOOTSTRAP_FBC)
+bootstrap-minimal: $(BOOTSTRAP_FBC)
 	mkdir -p bin
 	cp $(BOOTSTRAP_FBC) $(FBC_EXE)
 
