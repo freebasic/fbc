@@ -812,11 +812,15 @@ function hEscape _
 			dst += 1
 
 			if( c < 8 ) then
+				dst[0] = CHAR_0
+				dst[1] = CHAR_0
+				dst += 2
 				c += CHAR_0
 
 			elseif( c < 64 ) then
-				*dst = CHAR_0 + (c shr 3)
-				dst += 1
+				dst[0] = CHAR_0
+				dst[1] = CHAR_0 + (c shr 3)
+				dst += 2
 				c = CHAR_0 + (c and 7)
 
 			else

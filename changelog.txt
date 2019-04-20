@@ -6,9 +6,11 @@ Version 1.07.0
 - CVA_LIST type, CVA_START(), CVA_COPY() CVA_END(), CVA_ARG() macros will map to gcc's __builtin_va_list and __builtin_va_* macros in gcc backend
 
 [fixed]
-- #881: C backend: support for varadic function parameters in gcc using __builtin_va_list type and related macros
+- sf.net #881: C backend: support for varadic function parameters in gcc using __builtin_va_list type and related macros
 - push/pop correct GL_PROJECTION matrix and GL_MODELVIEW matrix when setting up graphics screen (gothon)
 - fix char & wchar concatentation.  For char double byte characters (such as Chinese characters), the "wstr = char & wchar" would become "wstr = char & chrw(0) & wchar" (SkyFish)
+- sf.net #794: literal tabs in string literals miscompiled if followed by 0-9 numeric chars
+- sf.net #897: length of literal wstring is miscalculated at compile time.  Compile time evaluation of len(!"\u1234") was using the internal escaped string length instead of the actual codepoint length
 
 
 Version 1.06.0
