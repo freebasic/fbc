@@ -1869,13 +1869,13 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		end if
 
 	case OPT_WA
-		fbc.extopt.gas = " " + hReplace( arg, ",", " " ) + " "
+		fbc.extopt.gas += " " + hReplace( arg, ",", " " ) + " "
 
 	case OPT_WC
-		fbc.extopt.gcc = " " + hReplace( arg, ",", " " ) + " "
+		fbc.extopt.gcc += " " + hReplace( arg, ",", " " ) + " "
 
 	case OPT_WL
-		fbc.extopt.ld = " " + hReplace( arg, ",", " " ) + " "
+		fbc.extopt.ld += " " + hReplace( arg, ",", " " ) + " "
 
 	case OPT_X
 		fbc.outname = arg
