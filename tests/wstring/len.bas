@@ -48,19 +48,9 @@ SUITE( fbc_tests.wstring_.len_ )
 		do_test( !"bcd\u0065\u0066\u0067" )
 		do_test( !"\u0063\u0064\u0065\u0065\u0067\u0068" )
 
-		do_test( LIT_A1 )
-		do_test( LIT_W1 )
-		do_test( LIT_W2 )
-		do_test( LIT_W3 )
-
 	END_TEST
 
 	TEST( literal_const )
-
-		do_test( "abcdef" )
-		do_test( wstr( "abcdef" ) )
-		do_test( !"bcd\u0065\u0066\u0067" )
-		do_test( !"\u0063\u0064\u0065\u0065\u0067\u0068" )
 
 		do_test( LIT_A1 )
 		do_test( LIT_W1 )
