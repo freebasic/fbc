@@ -3,9 +3,9 @@
 
 SUITE( fbc_tests.wstring_.trim_ )
 
-	#macro check( a, length, expected )
+	#macro check( text, length, expected )
 		scope
-			dim wr as wstring * 50 = trim( wstr(a) )
+			dim wr as wstring * 50 = trim( wstr(text) )
 			dim we as wstring * 50 = wstr( expected )
 
 			CU_ASSERT( len(wr) = length )
@@ -13,38 +13,18 @@ SUITE( fbc_tests.wstring_.trim_ )
 		end scope
 
 		scope
-			dim wa as wstring * 50 = wstr(a)
+			dim wt as wstring * 50 = wstr( text )
 			dim we as wstring * 50 = wstr( expected )
-			dim wr as wstring * 50 = trim( wa )
-
-			CU_ASSERT( len(wr) = length )
-			CU_ASSERT_WSTRING_EQUAL( wr, we )
-		end scope
-	#endmacro
-
-	#macro check_filter( a, filter, length, expected )
-		scope
-			dim wr as wstring * 50 = trim( wstr(a), wstr(filter) )
-			dim we as wstring * 50 = wstr( expected )
-
-			CU_ASSERT( len(wr) = length )
-			CU_ASSERT_WSTRING_EQUAL( wr, we )
-		end scope
-
-		scope
-			dim wa as wstring * 50 = wstr(a)
-			dim wf as wstring * 50 = wstr(filter)
-			dim wr as wstring * 50 = trim( wa, wf )
-			dim we as wstring * 50 = wstr( expected )
+			dim wr as wstring * 50 = trim( wt )
 
 			CU_ASSERT( len(wr) = length )
 			CU_ASSERT_WSTRING_EQUAL( wr, we )
 		end scope
 	#endmacro
 
-	#macro check_filter_any( a, filter, length, expected )
+	#macro check_filter( text, pattern, length, expected )
 		scope
-			dim wr as wstring * 50 = trim( wstr(a), any wstr(filter) )
+			dim wr as wstring * 50 = trim( wstr(text), wstr(pattern) )
 			dim we as wstring * 50 = wstr( expected )
 
 			CU_ASSERT( len(wr) = length )
@@ -52,9 +32,29 @@ SUITE( fbc_tests.wstring_.trim_ )
 		end scope
 
 		scope
-			dim wa as wstring * 50 = wstr(a)
-			dim wf as wstring * 50 = wstr(filter)
-			dim wr as wstring * 50 = trim( wa, any wf )
+			dim wt as wstring * 50 = wstr( text )
+			dim wf as wstring * 50 = wstr( pattern )
+			dim wr as wstring * 50 = trim( wt, wf )
+			dim we as wstring * 50 = wstr( expected )
+
+			CU_ASSERT( len(wr) = length )
+			CU_ASSERT_WSTRING_EQUAL( wr, we )
+		end scope
+	#endmacro
+
+	#macro check_filter_any( text, pattern, length, expected )
+		scope
+			dim wr as wstring * 50 = trim( wstr(text), any wstr(pattern) )
+			dim we as wstring * 50 = wstr( expected )
+
+			CU_ASSERT( len(wr) = length )
+			CU_ASSERT_WSTRING_EQUAL( wr, we )
+		end scope
+
+		scope
+			dim wt as wstring * 50 = wstr( text )
+			dim wf as wstring * 50 = wstr( pattern )
+			dim wr as wstring * 50 = trim( wt, any wf )
 			dim we as wstring * 50 = wstr( expected )
 
 			CU_ASSERT( len(wr) = length )

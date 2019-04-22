@@ -3526,6 +3526,11 @@ function rtlStrTrim _
 
     function = NULL
 
+	astTryConvertUdtToWstring( nd_text )
+	if( nd_pattern ) then
+		astTryConvertUdtToWstring( nd_pattern )
+	end if
+
 	dtype = astGetDataType( nd_text )
 
 	''
@@ -3579,6 +3584,11 @@ function rtlStrRTrim _
 
     function = NULL
 
+	astTryConvertUdtToWstring( nd_text )
+	if( nd_pattern ) then
+		astTryConvertUdtToWstring( nd_pattern )
+	end if
+
 	dtype = astGetDataType( nd_text )
 
 	''
@@ -3631,6 +3641,11 @@ function rtlStrLTrim _
     dim as integer dtype = any
 
     function = NULL
+
+	astTryConvertUdtToWstring( nd_text )
+	if( nd_pattern ) then
+		astTryConvertUdtToWstring( nd_pattern )
+	end if
 
 	dtype = astGetDataType( nd_text )
 
