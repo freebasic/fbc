@@ -8,6 +8,7 @@ Version 1.07.0
 - github #141: introduced '-strip'/'-nostrip' options to control symbol stripping of output files (William Breathitt Gray)
 - github #141: fbc will default to stripping symbols if '-d ENABLE_STRIPALL' is passed in FBCFLAGS (William Breathitt Gray)
 - github #141: makefile option 'ENABLE_STRIPALL=1' introduced to pass '-d ENABLE_STRIPALL' via FBCFLAGS by default for dos/win32 targets (William Breathitt Gray)
+- 'TYPE udt EXTENDS Z|WSTRING' allowed to specify that UDT is a kind of Z|WSTRING
 
 [fixed]
 - sf.net #881: C backend: support for varadic function parameters in gcc using __builtin_va_list type and related macros

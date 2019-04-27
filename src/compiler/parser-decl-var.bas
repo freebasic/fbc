@@ -38,13 +38,17 @@ sub hSymbolType _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint, _
-		byval is_byref as integer _
+		byval is_byref as integer, _
+		byval is_extends as integer _
 	)
 
 	dim as integer options = FB_SYMBTYPEOPT_DEFAULT
 	if( is_byref ) then
 		options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
 		options or= FB_SYMBTYPEOPT_ISBYREF
+	end if
+	if( is_extends ) then
+		options and= not FB_SYMBTYPEOPT_CHECKSTRPTR
 	end if
 
 	'' parse the symbol type (INTEGER, STRING, etc...)

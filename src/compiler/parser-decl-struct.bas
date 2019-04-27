@@ -626,6 +626,7 @@ private function hTypeAdd _
 		byval id_alias as zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer, _
+		byval baseDType as integer = 0, _
 		byval baseSubtype as FBSYMBOL ptr = NULL _
 	) as FBSYMBOL ptr
 
@@ -637,6 +638,15 @@ private function hTypeAdd _
 		'' error recovery: create a fake symbol
 		s = symbStructBegin( NULL, NULL, parent, symbUniqueLabel( ), NULL, isunion, align, (baseSubtype <> NULL), 0, 0 )
 	end if
+
+	select case baseDType
+	case FB_DATATYPE_CHAR
+		assert( baseSubtype = NULL )
+		symbSetUdtIsZstring( s )
+	case FB_DATATYPE_WCHAR
+		assert( baseSubtype = NULL )
+		symbSetUdtIsWstring( s )
+	end select
 
 	if( baseSubtype ) then
 		symbStructAddBase( s, baseSubtype )
@@ -998,18 +1008,28 @@ sub cTypeDecl( byval attrib as integer )
 
 	'' (EXTENDS SymbolType)?
 	dim as FBSYMBOL ptr baseSubtype = NULL
+	dim as integer baseDType = 0
+
 	if( lexGetToken( ) = FB_TK_EXTENDS ) then
 		lexSkipToken( )
 
 		'' SymbolType
-		dim as integer baseDtype
-		hSymbolType( baseDtype, baseSubtype, 0 )
+		hSymbolType( baseDType, baseSubtype, 0, FALSE, TRUE )
 
 		'' is the base type a struct?
 		if( baseDType <> FB_DATATYPE_STRUCT ) then
-			errReport( FB_ERRMSG_EXPECTEDCLASSTYPE )
-			'' error recovery: skip
-			baseSubtype = NULL
+			
+			'' allow extending WSTRING and ZSTRING, the UDT
+			'' will use different rules for conversions,
+			if (baseDType = FB_DATATYPE_WCHAR) or (baseDType = FB_DATATYPE_CHAR) then
+				assert( baseSubtype = NULL )
+			
+			'' anything else? don't allow
+			else
+				errReport( FB_ERRMSG_EXPECTEDCLASSTYPE )
+				'' error recovery: skip
+				baseSubtype = NULL
+			end if
 		end if
 	end if
 
@@ -1029,7 +1049,7 @@ sub cTypeDecl( byval attrib as integer )
 	dim as FBSYMBOL ptr currprocsym = parser.currproc, currblocksym = parser.currblock
 	dim as integer scope_depth = parser.scope
 
-	sym = hTypeAdd( NULL, id, palias, isunion, align, baseSubtype )
+	sym = hTypeAdd( NULL, id, palias, isunion, align, baseDType, baseSubtype )
 
 	'' restore the context
 	ast.proc.curr = currproc

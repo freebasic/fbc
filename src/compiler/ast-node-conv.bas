@@ -295,6 +295,43 @@ end function
 #endmacro
 
 '':::::
+function astTryConvertUdtToWstring( byref expr as ASTNODE ptr ) as integer
+
+	dim as FBSYMBOL ptr proc = any, sym = any
+	dim as FB_ERRMSG err_num = any
+	dim as integer dtype = any
+
+	assert( expr )
+
+	if( astGetDataType( expr ) = FB_DATATYPE_STRUCT ) then
+		sym = astGetSubType( expr )
+
+		if( symbGetUdtIsZstring( sym ) ) then
+			dtype = FB_DATATYPE_CHAR
+		elseif( symbGetUdtIsWstring( sym ) ) then
+			dtype = FB_DATATYPE_WCHAR
+		else
+			dtype = FB_DATATYPE_VOID
+		end if
+
+		if( dtype <> FB_DATATYPE_VOID ) then
+			'' can cast to z|wstring?
+			proc = symbFindCastOvlProc( dtype, NULL, expr, @err_num )
+			if( proc ) then
+				'' full match?
+				if( symbGetFullType( proc ) = dtype ) then
+					expr = astBuildCall( proc, expr )
+					return TRUE
+				end if
+			end if
+		end if
+	end if
+
+	return FALSE
+
+end function
+
+'':::::
 function astNewCONV _
 	( _
 		byval to_dtype as integer, _

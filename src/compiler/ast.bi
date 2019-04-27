@@ -536,6 +536,8 @@ enum AST_CONVOPT
 	AST_CONVOPT_DONTWARNFUNCPTR = &h20
 end enum
 
+declare function astTryConvertUdtToWstring( byref expr as ASTNODE ptr ) as integer
+
 declare function astNewCONV _
 	( _
 		byval to_dtype as integer, _
