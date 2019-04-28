@@ -3425,6 +3425,11 @@ function rtlStrInstr _
 
     function = NULL
 
+	astTryOvlStringCONV( nd_text )
+	if( nd_pattern ) then
+		astTryOvlStringCONV( nd_pattern )
+	end if
+
 	dtype = astGetDataType( nd_text )
 
 	''
@@ -3475,6 +3480,11 @@ function rtlStrInstrRev _
 	dim as integer dtype = any
 
 	function = NULL
+
+	astTryOvlStringCONV( nd_text )
+	if( nd_pattern ) then
+		astTryOvlStringCONV( nd_pattern )
+	end if
 
 	dtype = astGetDataType( nd_text )
 

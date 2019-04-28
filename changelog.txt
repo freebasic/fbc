@@ -12,6 +12,7 @@ Version 1.07.0
 - LTRIM/RTRIM/TRIM will accept UDT as Z|WSTRING
 - LCASE/UCASE will accept UDT as Z|WSTRING
 - Cxxx() conversion functions will accept UDT as Z|WSTRING
+- INSTR/INSTRREV will accept UDT as Z|WSTRING
 
 [fixed]
 - sf.net #881: C backend: support for varadic function parameters in gcc using __builtin_va_list type and related macros
