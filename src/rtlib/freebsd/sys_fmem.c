@@ -7,7 +7,7 @@
 
 FBCALL size_t fb_GetMemAvail( int mode )
 {
-	int mib[2] = { CTL_VM, VM_METER };
+	int mib[2] = { CTL_VM, VM_TOTAL };
 	struct vmtotal vmt;
 	size_t size = sizeof(struct vmtotal);
 
