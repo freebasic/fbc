@@ -126,7 +126,7 @@ typedef uint8_t  UTF_8;
 /* Calculate the number of characters between two pointers. */
 static __inline__ ssize_t fb_wstr_CalcDiff( const FB_WCHAR *ini, const FB_WCHAR *end )
 {
-	return ((intptr_t)end - (intptr_t)ini) / sizeof( FB_WCHAR );
+	return end - ini;
 }
 
 static __inline__ FB_WCHAR *fb_wstr_AllocTemp( ssize_t chars )
