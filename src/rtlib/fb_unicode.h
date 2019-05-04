@@ -220,12 +220,12 @@ static __inline__ const FB_WCHAR *fb_wstr_SkipCharRev( const FB_WCHAR *s, ssize_
 		return s;
 
 	/* fixed-len's are filled with null's as in PB, strip them too */
-	const FB_WCHAR *p = &s[chars-1];
+	const FB_WCHAR *p = &s[chars];
 	while( chars > 0 )
 	{
-		if( *p != c )
-			return p;
 		--p;
+		if( *p != c )
+			return ++p;
 		--chars;
 	}
 

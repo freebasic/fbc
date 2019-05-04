@@ -20,7 +20,7 @@ FBCALL FB_WCHAR *fb_WstrTrimEx ( const FB_WCHAR *src, const FB_WCHAR *pattern )
                 p = fb_wstr_SkipChar( src,
                                       len,
                                       *pattern );
-                len = len - (ssize_t)(p - src);
+                len -= fb_wstr_CalcDiff( src, p );
 
             } else if( len_pattern != 0 ) {
                 p = src;
@@ -38,7 +38,7 @@ FBCALL FB_WCHAR *fb_WstrTrimEx ( const FB_WCHAR *src, const FB_WCHAR *pattern )
                     fb_wstr_SkipCharRev( p,
                                          len,
                                          *pattern );
-                len = (ssize_t)(p_tmp - p) + 1;
+                len = fb_wstr_CalcDiff( p, p_tmp );
 
             } else if( len_pattern != 0 ) {
                 ssize_t test_index = len - len_pattern;

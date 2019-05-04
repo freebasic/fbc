@@ -21,7 +21,7 @@ FBCALL FB_WCHAR *fb_WstrRTrimEx ( const FB_WCHAR *src, const FB_WCHAR *pattern )
                 p = fb_wstr_SkipCharRev( src,
                                          len,
                                          *pattern );
-                len = (ssize_t)(p - src) + 1;
+                len = fb_wstr_CalcDiff( src, p );
 
             } else if( len_pattern != 0 ) {
                 ssize_t test_index = len - len_pattern;

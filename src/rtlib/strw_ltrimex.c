@@ -20,7 +20,7 @@ FBCALL FB_WCHAR *fb_WstrLTrimEx ( const FB_WCHAR *src, const FB_WCHAR *pattern )
                 p = fb_wstr_SkipChar( src,
                                       len,
                                       *pattern );
-                len = len - (ssize_t)(p - src);
+                len -= fb_wstr_CalcDiff( src, p );
 
             } else if( len_pattern != 0 ) {
                 p = src;
