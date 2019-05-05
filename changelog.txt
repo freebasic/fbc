@@ -15,6 +15,8 @@ Version 1.07.0
 - sf.net #897: length of literal wstring is miscalculated at compile time.  Compile time evaluation of len(!"\u1234") was using the internal escaped string length instead of the actual codepoint length
 - github #137: Final -Wl flag takes precedence over previous.  fbc now passes down all options from all -Wa, -Wc, and -Wl flags (William Breathitt Gray)
 - github #138: rtlib: freebsd: Fix deprecated use of VM_METER to use VM_TOTAL (William Breathitt Gray)
+- sf.net #899: TRIM( wstring ) causes crash if string is single space
+- sf.net #900: LTRIM( wstring, filter ) and TRIM( wstring, filter ) truncate result if filter is zero length string
 
 
 Version 1.06.0

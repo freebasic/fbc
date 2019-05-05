@@ -19,7 +19,7 @@ FBCALL FB_WCHAR *fb_WstrLTrim ( const FB_WCHAR *src )
 		return NULL;
 
 	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( len );
+	dst = fb_wstr_AllocTemp( len );
 	if( dst != NULL )
 		fb_wstr_Copy( dst, p, len );
 

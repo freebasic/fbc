@@ -126,7 +126,7 @@ typedef uint8_t  UTF_8;
 /* Calculate the number of characters between two pointers. */
 static __inline__ ssize_t fb_wstr_CalcDiff( const FB_WCHAR *ini, const FB_WCHAR *end )
 {
-	return ((intptr_t)end - (intptr_t)ini) / sizeof( FB_WCHAR );
+	return end - ini;
 }
 
 static __inline__ FB_WCHAR *fb_wstr_AllocTemp( ssize_t chars )
@@ -220,12 +220,12 @@ static __inline__ const FB_WCHAR *fb_wstr_SkipCharRev( const FB_WCHAR *s, ssize_
 		return s;
 
 	/* fixed-len's are filled with null's as in PB, strip them too */
-	const FB_WCHAR *p = &s[chars-1];
+	const FB_WCHAR *p = &s[chars];
 	while( chars > 0 )
 	{
-		if( *p != c )
-			return p;
 		--p;
+		if( *p != c )
+			return ++p;
 		--chars;
 	}
 
