@@ -100,6 +100,7 @@ type FBCCTX
 	xbe_title 			as zstring * FB_MAXNAMELEN+1  '' For the '-title <title>' xbox option
 	nodeflibs			as integer
 	staticlink			as integer
+	stripsymbols			as integer
 
 	'' Compiler paths
 	prefix				as zstring * FB_MAXPATHLEN+1  '' Path from -prefix or empty
@@ -162,6 +163,10 @@ private sub fbcInit( )
 	strsetInit(@fbc.finallibpaths, FBC_INITFILES\2)
 
 	fbGlobalInit()
+
+#ifdef ENABLE_STRIPALL
+	fbc.stripsymbols = TRUE
+#endif
 
 	fbc.objinf.lang = fbGetOption( FB_COMPOPT_LANG )
 
@@ -762,7 +767,7 @@ private function hLinkFiles( ) as integer
 
 	if( fbGetOption( FB_COMPOPT_DEBUGINFO ) = FALSE ) then
 		if( fbGetOption( FB_COMPOPT_PROFILE ) = FALSE ) then
-			if( fbGetOption( FB_COMPOPT_TARGET ) <> FB_COMPTARGET_DARWIN ) then
+			if( fbc.stripsymbols ) then
 				ldcline += " -s"
 			end if
 		end if
@@ -1417,6 +1422,7 @@ enum
 	OPT_NODEFLIBS
 	OPT_NOERRLINE
 	OPT_NOOBJINFO
+	OPT_NOSTRIP
 	OPT_O
 	OPT_OPTIMIZE
 	OPT_P
@@ -1432,6 +1438,7 @@ enum
 	OPT_S
 	OPT_SHOWINCLUDES
 	OPT_STATIC
+	OPT_STRIP
 	OPT_T
 	OPT_TARGET
 	OPT_TITLE
@@ -1480,6 +1487,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	FALSE, _ '' OPT_NODEFLIBS
 	FALSE, _ '' OPT_NOERRLINE
 	FALSE, _ '' OPT_NOOBJINFO
+	FALSE, _ '' OPT_NOSTRIP
 	TRUE , _ '' OPT_O
 	TRUE , _ '' OPT_OPTIMIZE
 	TRUE , _ '' OPT_P
@@ -1495,6 +1503,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	TRUE , _ '' OPT_S
 	FALSE, _ '' OPT_SHOWINCLUDES
 	FALSE, _ '' OPT_STATIC
+	FALSE, _ '' OPT_STRIP
 	TRUE , _ '' OPT_T
 	TRUE , _ '' OPT_TARGET
 	TRUE , _ '' OPT_TITLE
@@ -1676,6 +1685,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_NOOBJINFO
 		fbSetOption( FB_COMPOPT_OBJINFO, FALSE )
 
+	case OPT_NOSTRIP
+		fbc.stripsymbols = FALSE
+
 	case OPT_O
 		'' Error if there already is an -o waiting to be assigned
 		hCheckWaitingObjfile( )
@@ -1764,6 +1776,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 
 	case OPT_STATIC
 		fbc.staticlink = TRUE
+
+	case OPT_STRIP
+		fbc.stripsymbols = TRUE
 
 	case OPT_T
 		fbSetOption( FB_COMPOPT_STACKSIZE, clng( arg ) * 1024 )
@@ -1963,6 +1978,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		CHECK("noerrline", OPT_NOERRLINE)
 		CHECK("nodeflibs", OPT_NODEFLIBS)
 		CHECK("noobjinfo", OPT_NOOBJINFO)
+		CHECK("nostrip", OPT_NOSTRIP)
 
 	case asc("o")
 		ONECHAR(OPT_O)
@@ -1990,6 +2006,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		ONECHAR(OPT_S)
 		CHECK("showincludes", OPT_SHOWINCLUDES)
 		CHECK("static", OPT_STATIC)
+		CHECK("strip", OPT_STRIP)
 
 	case asc("t")
 		ONECHAR(OPT_T)
@@ -3384,6 +3401,7 @@ private sub hPrintOptions( )
 	print "  -nodeflibs       Do not include the default libraries"
 	print "  -noerrline       Do not show source context in error messages"
 	print "  -noobjinfo       Do not read/write compile-time info from/to .o and .a files"
+	print "  -nostrip         Do not strip symbol information from the output file"
 	print "  -o <file>        Set .o (or -pp .bas) file name for prev/next input file"
 	print "  -O <value>       Optimization level (default: 0)"
 	print "  -p <path>        Add a library search path"
@@ -3401,6 +3419,7 @@ private sub hPrintOptions( )
 	print "  -s console|gui   Select win32 subsystem"
 	print "  -showincludes    Display a tree of file names of #included files"
 	print "  -static          Prefer static libraries over dynamic ones when linking"
+	print "  -strip           Omit all symbol information from the output file"
 	print "  -t <value>       Set .exe stack size in kbytes, default: 1024 (win32/dos)"
 	print "  -target <name>   Set cross-compilation target"
 	print "  -title <name>    Set XBE display title (xbox)"

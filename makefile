@@ -81,6 +81,7 @@
 #   ENABLE_SUFFIX=-0.24    append a string like "-0.24" to fbc/FB dir names,
 #                          and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)" (non-standalone only)
 #   ENABLE_LIB64=1         use prefix/lib64/ instead of prefix/lib/ for 64bit libs (non-standalone only)
+#   ENABLE_STRIPALL=1      use "-d ENABLE_STRIPALL" with select targets
 #   FBPACKAGE     bindist: The package/archive file name without path or extension
 #   FBPACKSUFFIX  bindist: Allows adding a custom suffix to the normal package name (and the toplevel dir in the archive)
 #   FBMANIFEST    bindist: The manifest file name without path or extension
@@ -92,6 +93,7 @@
 #   -d ENABLE_SUFFIX=-0.24   assume FB's lib dir uses the given suffix (non-standalone only)
 #   -d ENABLE_PREFIX=/some/path   hard-code specific $(prefix) into fbc
 #   -d ENABLE_LIB64          use prefix/lib64/ instead of prefix/lib/ for 64bit libs (non-standalone only)
+#   -d ENABLE_STRIPALL       configure fbc to pass down '--strip-all' to linker by default
 #
 # rtlib/gfxlib2 source code configuration (CFLAGS):
 #   -DDISABLE_X11    build without X11 headers (disables X11 gfx driver)
@@ -429,6 +431,12 @@ endif
 ifdef ENABLE_LIB64
   ALLFBCFLAGS += -d ENABLE_LIB64
 endif
+ifdef ENABLE_STRIPALL
+  ifneq ($(filter dos win32,$(TARGET_OS)),)
+    ALLFBCFLAGS += -d ENABLE_STRIPALL
+  endif
+endif
+
 
 ALLFBCFLAGS += $(FBCFLAGS) $(FBFLAGS)
 ALLFBLFLAGS += $(FBLFLAGS) $(FBFLAGS)
