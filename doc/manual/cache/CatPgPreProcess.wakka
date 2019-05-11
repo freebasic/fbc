@@ -78,5 +78,7 @@ Commands that control the preprocessor.
 	=={{fbdoc item="keyword" value="KeyPgMetaLang|'$LANG"}}==
 		Alternate form of the [[KeyPgPplang|#lang]] directive.
 >>::c::
+{{fbdoc item="see"}}
+	- [[CatPgDddefines|Intrinsic Defines]]
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

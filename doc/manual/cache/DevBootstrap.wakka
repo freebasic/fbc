@@ -4,13 +4,15 @@ fbc is written in FB itself, so you need a working fbc to build a new fbc. How t
 
 {{fbdoc item="section" value="Bootstrapping using the FreeBASIC-x.xx.x-source-bootstrap package (if available)"}}
 	
-	The ""FreeBASIC-x.xx.x-source-bootstrap"" package contains the FB sources plus precompiled compiler sources, for multiple targets. After extracting, this can be built without requiring an existing fbc:
+	The ""FreeBASIC-x.xx.x-source-bootstrap"" package contains the FB sources plus precompiled compiler sources, for multiple targets. After extracting, this can be built without requiring an existing fbc (as long as the package contains the precompiled sources for the target system):
 	%%make bootstrap%%
-	(as long as the package contains the precompiled sources for the target system)
+	
+	To create a minimal build of fbc compiler, only building the components needed to recompile the fbc compiler itself:
+	%%make bootstrap-minimal%%
 	
 	This package can be created by running:
 	%%make bootstrap-dist%%
-	
+
 {{fbdoc item="section" value="Bootstrapping by creating and using a bootstrap package"}}
 
 	1) On a system with a working fbc compiler, create the bootstrap package:

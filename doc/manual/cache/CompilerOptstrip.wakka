@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="Compiler Option: -strip"}}----
+Omit all symbol information from the output file
+
+{{fbdoc item="syntax"}}##
+	**-strip**
+##
+{{fbdoc item="desc"}}
+	The ##-strip## compiler option passes an option to the linker to strip (remove) all symbols.
+
+{{fbdoc item="target"}}
+	- fbc strips all symbols by default on Dos and Windows platforms only
+
+{{fbdoc item="see"}}
+	- [[CompilerOptnostrip|-nostrip]]
+	- [[CompilerCmdLine|Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

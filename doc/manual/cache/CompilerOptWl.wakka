@@ -9,10 +9,11 @@ Pass options to linker
 		Additional options to pass to the linker.
 
 {{fbdoc item="desc"}}
-	The ##-Wl## compiler option passes additional options to LD, the linker.  Options must be separated by commas only.
+	The ##-Wl## compiler option passes additional options to LD, the linker.  Options must be separated by commas only.   The -Wl compiler option may be specified multiple times on the command line.
 
 {{fbdoc item="see"}}
 	- [[CompilerOptWa|Compiler Option: -Wa]]
+	- [[CompilerOptWc|Compiler Option: -Wc]]
 	- [[CompilerCmdLine|Using the Command Line]]
 
 {{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

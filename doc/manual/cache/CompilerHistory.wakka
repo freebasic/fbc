@@ -3,18 +3,22 @@ Chronology of the ""FreeBASIC"" project.
 
 {{fbdoc item="section" value="Chronology"}}
 	
+	**2019 February 18**
+		- ""FreeBASIC"" 1.06.0 release
+		- Bugfixes
+	
 	**2016 January 31**
 		- ""FreeBASIC"" 1.05.0 release
 		- Bugfixes
 	
 	**2015 October 1**
 		- ""FreeBASIC"" 1.04.0 release
-		- new data type "boolean"
+		- New data type "boolean"
 		- Bugfixes
 	
 	**2014 December 28**
 		- ""FreeBASIC"" 1.01.0 release
-		- started additionally providing "win32-mingworg" packages
+		- Started additionally providing "win32-mingworg" packages
 		- Bugfixes
 	
 	**2014 September 24**

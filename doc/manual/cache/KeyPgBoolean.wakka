@@ -33,6 +33,7 @@ Print "boolvar = ", boolvar
 	- New to ""FreeBASIC""
 
 {{fbdoc item="see"}}
+	- ##[[KeyPgCbool|Cbool]]##
 	- ##[[KeyPgTrue|True]]##
 	- ##[[KeyPgFalse|False]]##
 

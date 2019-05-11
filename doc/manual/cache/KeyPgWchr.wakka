@@ -27,11 +27,9 @@ print "The character represented by the UNICODE code of 934 is: "; WCHR(934)
 print "Multiple UNICODE characters: "; WCHR(933, 934, 935)
 %%
 	will produce the output:
-
-<<The character represented by the UNICODE code of 934 is: &#934;
-Multiple UNICODE characters: &#933;&#934;&#935;
+	<<The character represented by the UNICODE code of 934 is: Φ
+	Multiple UNICODE characters: ΥΦΧ
 <<::c::
-
 {{fbdoc item="target"}}
 	- DOS does not support ##**Wchr**##.
 

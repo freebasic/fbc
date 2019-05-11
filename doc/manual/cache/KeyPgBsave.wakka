@@ -54,8 +54,34 @@ CLS
 
 LOCATE 13, 15: PRINT "Hello world!"
 
-' Save as BMP
+' Save screen as BMP
 BSAVE "hello.bmp", 0
+%%
+Save image buffer to bitmap file:
+{{fbdoc item="filename" value="examples/manual/gfx/bsave2.bas"}}%%(freebasic)
+'set graphics screen 640 x 480 pixels, 32 bit colors
+Const W = 640, H = 480 'width & hight
+Screenres W, H, 32
+'draw a smiley at screen center
+Circle (W \ 2, H \ 2), 180, &h00ffff00, , , , f 'yellow circle
+Circle (W \ 2 - 55, H \ 2 - 70), 35, &h00000000, , , 1.5, f 'left eye
+Circle (W \ 2 + 55, H \ 2 - 60), 35, &h00000000, , , 1.5, f 'right eye
+Circle (W \ 2, H \ 2 + 80), 70, &h00000000, , , 0.4, f 'mouth
+'allocate memory for image buffer
+Dim As Any Ptr pImageBuffer = Imagecreate(250, 250)
+'copy screen section to buffer
+Get (W \ 2 - 125, H \ 2 - 125)-step(250 - 1, 250 - 1), pImageBuffer
+'save image buffer to file
+Dim As String fileName = "Smiley.bmp"
+If Bsave(fileName, pImageBuffer) = 0 Then
+	Print "Saved succesful: " + fileName
+Else
+	Print "Error saving: " + fileName
+End If
+'free memory for image buffer
+Imagedestroy(pImageBuffer)
+'keep graphics screen open until key press
+Sleep
 %%
 
 {{fbdoc item="diff"}}

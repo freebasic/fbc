@@ -63,6 +63,8 @@ Command line compiler options for the fbc compiler:
 		- Do not show source line where error occurred
 	{{fbdoc item="keyword" value="CompilerOptnoobjinfo|-noobjinfo"}}
 		- Do not read/write compile-time info from/to .o and .a files
+	{{fbdoc item="keyword" value="CompilerOptnostrip|-nostrip"}}
+		- Do not strip symbol information from the output file
 	{{fbdoc item="keyword" value="CompilerOpto|-o < name >"}}
 		- Set object file path/name (must be passed after the .bas file)
 	{{fbdoc item="keyword" value="CompilerOptoptimization|-O < level >"}}
@@ -93,6 +95,8 @@ Command line compiler options for the fbc compiler:
 		- Display a tree of file names of ""#included"" files
 	{{fbdoc item="keyword" value="CompilerOptstatic|-static"}}
 		- Prefer static libraries over dynamic ones when linking
+	{{fbdoc item="keyword" value="CompilerOptstrip|-strip"}}
+		- Omit all symbol information from the output file
 	{{fbdoc item="keyword" value="CompilerOptt|-t < value >"}}
 		- Set stack size in kbytes (default: 1M)
 	{{fbdoc item="keyword" value="CompilerOpttarget|-target < platform >"}}
