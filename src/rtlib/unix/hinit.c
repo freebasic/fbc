@@ -8,9 +8,21 @@
 #include "../fb_private_thread.h"
 #include <signal.h>
 #include <termcap.h>
-#ifdef HOST_LINUX
-#include <sys/io.h>
+
+#if defined HOST_LINUX && (defined HOST_X86 || defined HOST_X86_64)
+	/*
+	The sys/ headers are architecture and OS dependent. They 
+	do not exist across all targets and io.h in particular 
+	is intended for very low-level non-portable uses often 
+	in coordination with the kernel. The only targets that 
+	provide sys/io.h are x86*, Alpha, IA64, and 32-bit ARM.
+	No other systems provide it.
+	From https://bugzilla.redhat.com/show_bug.cgi?id=1116162
+	or http://www.hep.by/gnu/gnulib/ioperm.html#ioperm
+	*/
+	#include <sys/io.h>
 #endif
+
 #include <sys/ioctl.h>
 #include <fcntl.h>
 
