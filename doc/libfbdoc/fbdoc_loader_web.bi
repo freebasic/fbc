@@ -20,12 +20,12 @@
 
 
 #include once "fbdoc_defs.bi"
-#include once "CWikiCon.bi"
+#include once "CWikiConUrl.bi"
 
 namespace fb.fbdoc
 
 	declare sub Connection_SetUrl( byval url as zstring ptr, byval certificate as zstring ptr )
-	declare function Connection_Create( ) as CWikiCon ptr
+	declare function Connection_Create( ) as CWikiConUrl ptr
 	declare sub Connection_Destroy( )
 
 end namespace

@@ -78,7 +78,7 @@ namespace fb.fbdoc
 		end if
 
 		if( bLoadPage ) then
-			dim as CWikiCon ptr wikicon = Connection_Create( )
+			dim as CWikiConUrl ptr wikicon = Connection_Create( )
 			printlog "Loading '" + *sPage + "'"
 			if( wikicon->LoadPage( sPage, TRUE, TRUE, sBody ) <> FALSE ) then
 				if( wikicon->GetPageID() > 0 ) then

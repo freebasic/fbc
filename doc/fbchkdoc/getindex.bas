@@ -20,7 +20,7 @@
 '' chng: written [jeffm]
 
 '' fbdoc headers
-#include once "CWikiCon.bi"
+#include once "CWikiConUrl.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
@@ -309,9 +309,9 @@ else
 
 	'' connect to the wiki and get PageIndex as HTML
 	scope
-		dim as CWikiCon ptr wikicon = NULL
+		dim as CWikiConUrl ptr wikicon = NULL
 
-		wikicon = new CWikiCon( app_opt.wiki_url, app_opt.ca_file )
+		wikicon = new CWikiConUrl( app_opt.wiki_url, app_opt.ca_file )
 		if wikicon = NULL then
 			print "Unable to create connection " + app_opt.wiki_url
 			end 1

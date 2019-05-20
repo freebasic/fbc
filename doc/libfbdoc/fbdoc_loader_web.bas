@@ -23,11 +23,11 @@
 ''
 
 #include once "fbdoc_defs.bi"
-#include once "CWikiCon.bi"
+#include once "CWikiConUrl.bi"
 
 namespace fb.fbdoc
 
-	dim shared as CWikiCon ptr wikicon
+	dim shared as CWikiConUrl ptr wikicon
 	dim shared as string wiki_url
 	dim shared as string ca_file
 
@@ -42,12 +42,12 @@ namespace fb.fbdoc
 	end sub
 
 	'':::::
-	function Connection_Create( ) as CWikiCon Ptr
+	function Connection_Create( ) as CWikiConUrl Ptr
 		if( wikicon <> NULL ) then
 			return wikicon
 		end if
 		
-		wikicon = new CWikiCon( wiki_url, ca_file )
+		wikicon = new CWikiConUrl( wiki_url, ca_file )
 
 		return wikicon
 		

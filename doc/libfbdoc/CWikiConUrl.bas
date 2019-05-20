@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301 USA.
 
 
-'' CWikiCon
+'' CWikiConUrl
 ''
 '' chng: apr/2006 written [v1ctor]
 '' chng: sep/2006 updated [coderJeff]
@@ -26,11 +26,11 @@
 #include once "CHttp.bi"
 #include once "CHttpForm.bi"
 #include once "CHttpStream.bi"
-#include once "CWikiCon.bi"
+#include once "CWikiConUrl.bi"
 
 namespace fb.fbdoc
 
-	type CWikiConCtx_
+	type CWikiConUrlCtx_
 		as CHttp ptr		http
 		as zstring ptr		url
 		as zstring ptr		ca_file
@@ -53,7 +53,7 @@ namespace fb.fbdoc
 	'':::::
 	private function build_url _
 		( _
-			byval ctx as CWikiConCtx ptr, _
+			byval ctx as CWikiConUrlCtx ptr, _
 			byval page as zstring ptr = NULL, _
 			byval method as zstring ptr = NULL _
 		) as string
@@ -110,7 +110,7 @@ namespace fb.fbdoc
 		return token
 	end function
 
-	function CWikiConCtx.queryCsrfToken( ) as string
+	function CWikiConUrlCtx.queryCsrfToken( ) as string
 		dim stream as CHttpStream = CHttpStream( http )
 		if( stream.Receive( build_url( @this, wakka_loginpage ), TRUE, ca_file ) = FALSE ) then
 			return ""
@@ -118,7 +118,7 @@ namespace fb.fbdoc
 		return extractCsrfToken( stream.Read() )
 	end function
 
-	function CWikiConCtx.queryCsrfTokenIfNeeded( ) as boolean
+	function CWikiConUrlCtx.queryCsrfTokenIfNeeded( ) as boolean
 		if( len( csrftoken ) = 0 ) then
 			csrftoken = queryCsrfToken( )
 			if( len( csrftoken ) = 0 ) then
@@ -128,25 +128,25 @@ namespace fb.fbdoc
 		return TRUE
 	end function
 
-	sub CWikiConCtx.maybeAddCsrfTokenToForm( byval form as CHttpForm ptr )
+	sub CWikiConUrlCtx.maybeAddCsrfTokenToForm( byval form as CHttpForm ptr )
 		if( len( csrftoken ) > 0 ) then
 			form->Add( "CSRFToken", csrftoken )
 		end if
 	end sub
 
 	'':::::
-	static sub CWikiCon.GlobalInit()
+	static sub CWikiConUrl.GlobalInit()
 		CHttp.GlobalInit()
 	end sub
 
 	'':::::
-	constructor CWikiCon _
+	constructor CWikiConUrl _
 		( _
 			byval url as zstring ptr, _
 			byval ca_file as zstring ptr = NULL _
 		)
 
-		ctx = new CWikiConCtx	
+		ctx = new CWikiConUrlCtx	
   
   		ctx->http = new CHttp
   		ctx->url = allocate( len( *url ) + 1 )
@@ -165,7 +165,7 @@ namespace fb.fbdoc
 	end constructor
 
 	'':::::
-	destructor CWikiCon _
+	destructor CWikiConUrl _
 		( _
 		)
 		
@@ -212,11 +212,11 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
-	function CWikiCon.Login _
+	function CWikiConUrl.Login _
 		( _
 			byval username as zstring ptr, _
 			byval password as zstring ptr _
-		) as integer
+		) as boolean
 		
 		if( ctx = NULL ) then
 			return FALSE
@@ -342,7 +342,7 @@ namespace fb.fbdoc
 	'':::::
 	private function get_pageid _
 		( _
-			byval ctx as CWikiConCtx ptr _
+			byval ctx as CWikiConUrlCtx ptr _
 		) as integer
 		
 		dim as CHttpStream ptr stream
@@ -371,13 +371,13 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
-	function CWikiCon.LoadPage _
+	function CWikiConUrl.LoadPage _
 		( _
 			byval page as zstring ptr, _
 			byval israw as integer, _
 			byval getid as integer, _
 			byref body as string _
-		) as integer
+		) as boolean
 
 		function = FALSE
 		body = ""
@@ -427,11 +427,11 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
-	function CWikiCon.StorePage _
+	function CWikiConUrl.StorePage _
 		( _
 			byval body_in as zstring ptr, _
 			byval note as zstring ptr _
-		) as integer
+		) as boolean
 		
 		dim body as string
 
@@ -481,11 +481,11 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
-	function CWikiCon.StoreNewPage _
+	function CWikiConUrl.StoreNewPage _
 		( _
 			byval body as zstring ptr, _
 			byval pagename as zstring ptr _
-		) as integer
+		) as boolean
 
 		if( ctx = NULL ) then
 			return FALSE
@@ -523,7 +523,7 @@ namespace fb.fbdoc
 	end function
 
 	'':::::
-	function CWikiCon.GetPageID _
+	function CWikiConUrl.GetPageID _
 		( _
 		) as integer
 
@@ -536,3 +536,4 @@ namespace fb.fbdoc
 	end function
 
 end namespace
+ 

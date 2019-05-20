@@ -97,7 +97,7 @@ sNote = "Auto-update"
 sNoteDef = ""
 
 dim as CWikiCache ptr wikicache = NULL
-dim as CWikiCon ptr wikicon = NULL
+dim as CWikiConUrl ptr wikicon = NULL
 
 if( app_opt.pageCount = 0 ) then
 	print "No pages specified"
@@ -110,7 +110,7 @@ if wikicache = NULL then
 	end 1
 end if
 
-wikicon = new CWikiCon( app_opt.wiki_url, app_opt.ca_file )
+wikicon = new CWikiConUrl( app_opt.wiki_url, app_opt.ca_file )
 if wikicon = NULL then
 	print "Unable to create connection " + app_opt.wiki_url
 	delete wikicache

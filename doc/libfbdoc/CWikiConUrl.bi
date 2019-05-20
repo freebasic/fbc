@@ -1,5 +1,5 @@
-#ifndef __CWIKICON_BI__
-#define __CWIKICON_BI__
+#ifndef __CWIKICONURL_BI__
+#define __CWIKICONURL_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
 ''	Copyright (C) 2006-2019 The FreeBASIC development team.
@@ -23,9 +23,9 @@
 
 namespace fb.fbdoc
 
-	type CWikiConCtx as CWikiConCtx_
+	type CWikiConUrlCtx as CWikiConUrlCtx_
 		
-	type CWikiCon
+	type CWikiConUrl
 
 		declare static sub GlobalInit()
 
@@ -43,8 +43,7 @@ namespace fb.fbdoc
 			( _
 				byval username as zstring ptr, _
 				byval password as zstring ptr _
-			) as integer
-
+			) as boolean
 
 		declare function LoadPage _
 			( _
@@ -52,28 +51,29 @@ namespace fb.fbdoc
 				byval israw as integer, _
 				byval getid as integer = TRUE, _
 				byref body as string _
-			) as integer
+			) as boolean
 
 		declare function StorePage _
 			( _
 				byval body as zstring ptr, _
 				byval note as zstring ptr _
-			) as integer
+			) as boolean
 
 		declare function StoreNewPage _
 			( _
 				byval body as zstring ptr, _
 				byval pagename as zstring ptr _
-			) as integer
+			) as boolean
 
 		declare function GetPageID _
 			( _
 			) as integer
 
-		ctx as CWikiConCtx ptr
+		ctx as CWikiConUrlCtx ptr
 
 	end type
 
 end namespace
 
 #endif
+ 
