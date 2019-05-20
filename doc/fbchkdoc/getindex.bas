@@ -21,6 +21,7 @@
 
 '' fbdoc headers
 #include once "CWikiConUrl.bi"
+#include once "CWikiConDir.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
@@ -34,60 +35,8 @@
 using fb
 using fbdoc
 
-#include "crt/stdlib.bi"
-#include "crt/string.bi"
 
 const def_index_file = hardcoded.default_index_file
-
-'' --------------------------------------------------------
-
-#ifdef __FB_LINUX__
-extern "c"
-    declare function strcasecmp(byval as const zstring ptr, byval as const zstring ptr) as long
-end extern
-#define _stricmp strcasecmp
-#endif
-
-''
-function cmpPageName cdecl ( byval x as any ptr, byval y as any ptr ) as long
-	function = _stricmp( *cast(zstring ptr ptr,x), *cast(zstring ptr ptr,y) )
-end function
-
-''
-sub ScanCacheDir _
-	( _
-		byref p as string _
-	)
-
-	dim as string d, pages(1 to 2000)
-	dim as integer i, h, n = 0
-	dim as zstring ptr zpage(1 to 2000)
-	
-	d = dir( p & "*.wakka" )
-	while( d > "" )
-		i = instrrev( d, "." )
-		if( i > 0 ) then
-			d = left( d, i-1 )
-			if( len(d) > 0 ) then
-				n += 1
-				pages(n) = d
-				zpage(n) = strptr(pages(n))
-			end if
-		end if
-		d = dir( )
-	wend
-
-	'' Sort
-	qsort( @zpage(1), n, sizeof(zstring ptr), procptr(cmpPageName) )
-
-	h = freefile
-	open def_index_file for output as #h
-	for i = 1 to n
-		print #h, *zpage(i)
-	next
-	close #h
-
-end sub
 
 '' --------------------------------------------------------
 '' MAIN
@@ -150,9 +99,19 @@ dim sBody as string
 
 sPage = "PageIndex"
 
+dim as CWikiCon ptr wikicon = NULL
+
+'' connect to the wiki and get PageIndex as HTML
+
 if( blocal ) then
 
-	ScanCacheDir( app_opt.cache_dir )
+	wikicon = new CWikiConDir( app_opt.cache_dir )
+	if wikicon = NULL then
+		print "Unable to create connection " + app_opt.cache_dir
+		end 1
+	end if
+
+	print "cache: "; app_opt.cache_dir
 
 else
 
@@ -161,41 +120,36 @@ else
 		end 1
 	end if
 
-	'' connect to the wiki and get PageIndex as HTML
-	scope
-		dim as CWikiConUrl ptr wikicon = NULL
+	print "URL: "; app_opt.wiki_url
 
-		wikicon = new CWikiConUrl( app_opt.wiki_url, app_opt.ca_file )
-		if wikicon = NULL then
-			print "Unable to create connection " + app_opt.wiki_url
-			end 1
-		end if
+	wikicon = new CWikiConUrl( app_opt.wiki_url, app_opt.ca_file )
+	if wikicon = NULL then
+		print "Unable to create connection " + app_opt.wiki_url
+		end 1
+	end if
 
-		print "URL: "; app_opt.wiki_url
-
-		if( app_opt.ca_file > "" ) then
-			print "Certificate: "; app_opt.ca_file
-		else
-			print "Certificate: none"
-		end if
-
-		print "Loading '" + sPage + "': ";
-		if( wikicon->LoadIndex( sPage, sBody ) = FALSE ) then
-			print "Error"
-		else
-			print "OK"
-			print "Writing '" & def_index_file & "'"
-
-			dim as integer h = freefile
-			open def_index_file for output as #h
-			print #h, sBody;
-			close #h
-
-		end if
-
-		delete wikicon
-	end scope
+	if( app_opt.ca_file > "" ) then
+		print "Certificate: "; app_opt.ca_file
+	else
+		print "Certificate: none"
+	end if
 
 end if
+
+print "Loading '" + sPage + "': ";
+if( wikicon->LoadIndex( sPage, sBody ) = FALSE ) then
+	print "Error"
+else
+	print "OK"
+	print "Writing '" & def_index_file & "'"
+
+	dim as integer h = freefile
+	open def_index_file for output as #h
+	print #h, sBody;
+	close #h
+
+end if
+
+delete wikicon
 
 print "Done."
