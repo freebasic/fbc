@@ -49,8 +49,12 @@ namespace fb.fbdoc
 		declare function LoadPage _
 			( _
 				byval page as zstring ptr, _
-				byval israw as integer, _
-				byval getid as integer = TRUE, _
+				byref body as string _
+			) as boolean
+
+		declare function LoadIndex _
+			( _
+				byval page as zstring ptr, _
 				byref body as string _
 			) as boolean
 

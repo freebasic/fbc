@@ -40,12 +40,23 @@ namespace fb.fbdoc
 	'':::::
 	function CWikiCon.LoadPage _
 		( _
-			byval page as zstring ptr, _
-			byval israw as integer, _
-			byval getid as integer, _
+			byval pagename as zstring ptr, _
 			byref body as string _
 		) as boolean
 
+		body = ""
+		function = false
+
+	end function
+
+	'':::::
+	function CWikiCon.LoadIndex _
+		( _
+			byval pagename as zstring ptr, _
+			byref body as string _
+		) as boolean
+
+		body = ""
 		function = false
 
 	end function
@@ -53,8 +64,8 @@ namespace fb.fbdoc
 	'':::::
 	function CWikiCon.StorePage _
 		( _
-			byval sPage as zstring ptr, _
-			byval sBody as zstring ptr _
+			byval body as zstring ptr, _
+			byval note as zstring ptr _
 		) as boolean
 		
 		function = false

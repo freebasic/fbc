@@ -326,7 +326,7 @@ else
 		end if
 
 		print "Loading '" + sPage + "': ";
-		if( wikicon->LoadPage( sPage, FALSE, FALSE, sBody ) = FALSE ) then
+		if( wikicon->LoadIndex( sPage, sBody ) = FALSE ) then
 			print "Error"
 		else
 			print "OK"

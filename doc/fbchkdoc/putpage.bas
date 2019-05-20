@@ -137,7 +137,7 @@ if( app_opt.pageCount > 0 ) then
 			print "Unable to load"
 		else
 			print "OK"
-			if( wikicon->LoadPage( sPage, TRUE, TRUE, sBodyOld ) <> FALSE ) then
+			if( wikicon->LoadPage( sPage, sBodyOld ) <> FALSE ) then
 				if( wikicon->GetPageID() > 0 ) then
 					if( wikicon->Login( app_opt.wiki_username, app_opt.wiki_password ) ) = FALSE then
 						print "Unable to login"

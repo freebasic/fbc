@@ -373,9 +373,48 @@ namespace fb.fbdoc
 	'':::::
 	function CWikiConUrl.LoadPage _
 		( _
+			byval pagename as zstring ptr, _
+			byref body as string _
+		) as boolean
+
+		function = FALSE
+		body = ""
+		
+		if( ctx = NULL ) then
+			exit function
+		end if
+
+		ctx->pageid = -1
+		ctx->pagename = reallocate( ctx->pagename, len( *pagename ) + 1 )
+		*ctx->pagename = *pagename
+		
+		dim as CHttpStream ptr stream
+		
+		stream = new CHttpStream( ctx->http )
+		if( stream = NULL ) then
+			exit function
+		end if
+			
+		dim URL as string
+		URL = build_url( ctx, NULL, @wakka_raw )
+
+		if( stream->Receive( URL, TRUE, ctx->ca_file ) ) then
+			body = stream->Read()
+			remove_http_headers( body )
+		end if
+		
+		delete stream
+		
+		ctx->pageid = get_pageid( ctx )
+		
+		function = TRUE
+		
+	end function
+
+	'':::::
+	function CWikiConUrl.LoadIndex _
+		( _
 			byval page as zstring ptr, _
-			byval israw as integer, _
-			byval getid as integer, _
 			byref body as string _
 		) as boolean
 
@@ -397,31 +436,18 @@ namespace fb.fbdoc
 			exit function
 		end if
 			
-		dim as zstring ptr rawmethod = iif( israw, @wakka_raw, NULL )
-		
 		dim URL as string
-		URL = build_url( ctx, NULL, rawmethod )
+		URL = build_url( ctx, NULL, NULL )
 
 		if( stream->Receive( URL, TRUE, ctx->ca_file ) ) then
 			body = stream->Read()
 			remove_http_headers( body )
-''			remove_trailing_whitespace( body )
 		end if
 		
 		delete stream
 		
-		if( getid ) then
-			'if( len( body ) > 0 ) then
-				ctx->pageid = get_pageid( ctx )
-			'else
-			'	ctx->pageid = -1
-			'end if
-		else
-				ctx->pageid = -1
-		end if	
+		ctx->pageid = -1
 
-		''body += chr( 13, 10 )
-		
 		function = TRUE
 		
 	end function
@@ -429,11 +455,11 @@ namespace fb.fbdoc
 	'':::::
 	function CWikiConUrl.StorePage _
 		( _
-			byval body_in as zstring ptr, _
+			byval body as zstring ptr, _
 			byval note as zstring ptr _
 		) as boolean
 		
-		dim body as string
+		dim body_out as string
 
 		if( ctx = NULL ) then
 			return FALSE
@@ -452,9 +478,9 @@ namespace fb.fbdoc
 
 		form->Add( "wakka", *ctx->pagename + wakka_edit )
 		form->Add( "previous",  ctx->pageid )
-		body = *body_in
-''		remove_trailing_whitespace( body )
-		form->Add( "body", body, "text/html" )
+		body_out = *body
+
+		form->Add( "body", body_out, "text/html" )
 		if( note ) then
 			form->Add( "note", *note )
 		else

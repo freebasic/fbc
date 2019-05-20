@@ -80,7 +80,7 @@ namespace fb.fbdoc
 		if( bLoadPage ) then
 			dim as CWikiConUrl ptr wikicon = Connection_Create( )
 			printlog "Loading '" + *sPage + "'"
-			if( wikicon->LoadPage( sPage, TRUE, TRUE, sBody ) <> FALSE ) then
+			if( wikicon->LoadPage( sPage, sBody ) <> FALSE ) then
 				if( wikicon->GetPageID() > 0 ) then
 					if( len(sBody) > 0 ) then
 						wikicache->SavePage( sPage, sBody )
