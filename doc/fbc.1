@@ -1,4 +1,4 @@
-.TH FBC 1 "2019-01-01" "FreeBASIC Compiler 1.07.0" "FreeBASIC Compiler"
+.TH FBC 1 "2019-05-20" "FreeBASIC Compiler 1.07.0" "FreeBASIC Compiler"
 .SH NAME
 fbc \- The FreeBASIC compiler
 .SH DESCRIPTION
@@ -102,6 +102,9 @@ Do not include the default libraries
 \fB\-noerrline\fR
 Do not show source context in error messages
 .TP
+\fB\-nostrip\fR
+Do not strip symbol information from the output file
+.TP
 \fB\-o\fR \fIfile\fR
 Set .o file name for corresponding input .bas
 .TP
@@ -146,6 +149,9 @@ Select win32 subsystem
 .TP
 \fB\-static\fR
 Prefer static libraries over dynamic ones when linking
+.TP
+\fB\-strip\fR
+Omit all symbol information from the output file
 .TP
 \fB\-t\fR \fIvalue\fR
 Set Win32/DOS .exe stack size in kbytes, default: 1024
