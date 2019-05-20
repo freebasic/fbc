@@ -14,4 +14,4 @@ Dim flarray(1 To totalSingles) As Single
 Dim vlarray() As Integer
 
 ' Resizes the array to 10 elements.
-ReDim vlarray(1 To 10) As Integer
+ReDim vlarray(1 To 10)

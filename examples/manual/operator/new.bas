@@ -14,6 +14,12 @@ Scope
 
 	' Create and initialize a "rational" and store its address.
 	Dim p As Rational Ptr = New Rational(3, 4)
+  
+	' test if null return pointer
+	If (p = 0) Then
+		Print "Error: unable to allocate memory, quitting."
+		End -1
+	End If
 
 	Print p->numerator & "/" & p->denominator
 
@@ -27,6 +33,12 @@ Scope
 	' Allocate memory for 100 integers and store the address of the first one.
 	Dim p As Integer Ptr = New Integer[100]
 
+	' test if null return pointer
+	If (p = 0) Then
+		Print "Error: unable to allocate memory, quitting."
+		End -1
+	End If
+
 	' Assign some values to the integers in the array.
 	For i As Integer = 0 To 99
 		p[i] = i
@@ -36,3 +48,5 @@ Scope
 	Delete[] p
 
 End Scope
+
+Sleep

@@ -16,4 +16,4 @@ Option Dynamic
 
 Dim bar(99) As Integer      ' declares a variable-length array
 ' ...
-ReDim bar(199) As Integer   ' resize the array
+ReDim bar(199)              ' resize the array
