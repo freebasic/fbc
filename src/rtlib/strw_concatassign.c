@@ -19,14 +19,15 @@ FBCALL FB_WCHAR *fb_WstrConcatAssign( FB_WCHAR *dst, ssize_t dst_chars, const FB
 	/* don't check ptr's */
 	if( dst_chars > 0 )
 	{
-		--dst_chars;							/* less the null-term */
+		/* less the null-term */
+		--dst_chars;
 
 		if( src_len > dst_chars - dst_len )
 			src_len = dst_chars - dst_len;
+
+		fb_wstr_Copy( &dst[dst_len], src, src_len );
 	}
 
-	/* copy the null-term too */
-	fb_wstr_Move( &dst[dst_len], src, src_len + 1 );
 
 	return dst;
 }

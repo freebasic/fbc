@@ -21,6 +21,7 @@ Version 1.07.0
 - sf.net #899: TRIM( wstring ) causes crash if string is single space
 - sf.net #900: LTRIM( wstring, filter ) and TRIM( wstring, filter ) truncate result if filter is zero length string
 - github #116: Fix optimizations in [L/R]TrimAny rtlib functions (SkyFish)
+- github #145: WSTRING concat and assign buffer (&=) overrun
 
 
 Version 1.06.0
