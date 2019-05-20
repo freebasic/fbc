@@ -156,9 +156,9 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 	app_opt.image_dir = ""       '' export: image directory
 	app_opt.manual_dir = ""      '' export: manual directory
 
-	app_opt.webPageCount = 0
-	redim app_opt.webPageList(1 to 1) as string
-	redim app_opt.webPageComments(1 to 1) as string
+	app_opt.pageCount = 0
+	redim app_opt.pageList(1 to 1) as string
+	redim app_opt.pageComments(1 to 1) as string
 
 	if( command(1) = "" ) then
 		app_opt.help = true
@@ -188,15 +188,15 @@ sub cmd_opts_unexpected_die( byval i as const integer )
 end sub
 
 ''
-sub cmd_opts_add_webpage( byref pagename as const string, byref cmt as const string )
+sub cmd_opts_add_page( byref pagename as const string, byref cmt as const string )
 	with app_opt
-		.webPageCount += 1
-		if( .webPageCount > ubound(.webPageList) ) then
-			redim preserve .webPageList(1 to Ubound(.webPageList) * 2)
-			redim preserve .webPageComments(1 to Ubound(.webPageComments) * 2)
+		.pageCount += 1
+		if( .pageCount > ubound(.pageList) ) then
+			redim preserve .pageList(1 to Ubound(.pageList) * 2)
+			redim preserve .pageComments(1 to Ubound(.pageComments) * 2)
 		end if
-		.webPageList(.webPageCount) = pagename
-		.webPageComments(.webPageCount) = cmt
+		.pageList(.pageCount) = pagename
+		.pageComments(.pageCount) = cmt
 	end with
 end sub
 
@@ -375,14 +375,14 @@ function cmd_opts_read( byref i as integer ) as boolean
 							line input #h, x
 							x = ParsePageName( x, cmt )
 							if( x > "" ) then 
-								cmd_opts_add_webpage( x, cmt )
+								cmd_opts_add_page( x, cmt )
 							end if
 						wend
 						close #h
 					end if
 				end scope
 			else
-				cmd_opts_add_webpage( command(i), "" )
+				cmd_opts_add_page( command(i), "" )
 			end if
 
 		else

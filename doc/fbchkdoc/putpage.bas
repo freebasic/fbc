@@ -99,7 +99,7 @@ sNoteDef = ""
 dim as CWikiCache ptr wikicache = NULL
 dim as CWikiCon ptr wikicon = NULL
 
-if( app_opt.webPageCount = 0 ) then
+if( app_opt.pageCount = 0 ) then
 	print "No pages specified"
 end if
 
@@ -118,7 +118,7 @@ if wikicon = NULL then
 end if
 
 '' we have web pages? go to work...
-if( app_opt.webPageCount > 0 ) then
+if( app_opt.pageCount > 0 ) then
 	dim as integer i
 	dim as string ret
 	print "URL: "; app_opt.wiki_url
@@ -128,9 +128,9 @@ if( app_opt.webPageCount > 0 ) then
 		print "Certificate: none"
 	end if
 	print "cache: "; app_opt.cache_dir
-	for i = 1 to app_opt.webPageCount
-		sPage = app_opt.webPageList(i)
-		sComment = app_opt.webPageComments(i)
+	for i = 1 to app_opt.pageCount
+		sPage = app_opt.pageList(i)
+		sComment = app_opt.pageComments(i)
 		sBody = ""
 		print "Loading '" + sPage + "': ";
 		if( wikicache->LoadPage( sPage, sBody ) ) = FALSE then

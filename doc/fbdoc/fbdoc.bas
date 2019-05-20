@@ -85,8 +85,8 @@ end sub
 
 	dim as string SinglePage = ""
 	dim as integer bSinglePage = FALSE
-	redim as string webPageList(1 to 10)
-	dim as integer webPageCount = 0, bWebPages = FALSE
+	redim as string pageList(1 to 10)
+	dim as integer pageCount = 0, bPages = FALSE
 
 	dim as string sTocPage = default_TocPage
 
@@ -145,9 +145,9 @@ end sub
 	i = 1
 	while( len( command(i) ) > 0 )
 
-		if( bWebPages ) then
+		if( bPages ) then
 			if left( command(i), 1) = "-" then
-				bWebPages = FALSE
+				bPages = FALSE
 			else
 				if left( command(i), 1) = "@" then
 					scope
@@ -160,22 +160,22 @@ end sub
 								line input #h, x
 								x = trim(x, any " " + chr(9))
 								if( x > "" ) then 
-									webPageCount += 1
-									if( webPageCount > ubound(webPageList) ) then
-										redim preserve webPageList(1 to Ubound(webPageList) * 2)
+									pageCount += 1
+									if( pageCount > ubound(pageList) ) then
+										redim preserve pageList(1 to Ubound(pageList) * 2)
 									end if
-									webPageList(webPageCount) = x
+									pageList(pageCount) = x
 								end if
 							wend
 							close #h
 						end if
 					end scope
 				else
-					webPageCount += 1
-					if( webPageCount > ubound(webPageList) ) then
-						redim preserve webPageList(1 to Ubound(webPageList) * 2)
+					pageCount += 1
+					if( pageCount > ubound(pageList) ) then
+						redim preserve pageList(1 to Ubound(pageList) * 2)
 					end if
-					webPageList(webPageCount) = command(i)
+					pageList(pageCount) = command(i)
 				end if
 			end if
 		end if
@@ -188,7 +188,7 @@ end sub
 			end if
 		end if
 
-		if(( bWebPages = FALSE ) and ( bSinglePage = FALSE )) then
+		if(( bPages = FALSE ) and ( bSinglePage = FALSE )) then
 
 			select case lcase(command(i))
 			case "-makeini"
@@ -214,7 +214,7 @@ end sub
 			case "-texinfo"
 				bEmitFormats or= OUT_TEXINFO
 			case "-getpage"
-				bWebPages = TRUE
+				bPages = TRUE
 			case "-makepage"
 				bSinglePage = TRUE
 			case "-noscan"
@@ -338,11 +338,11 @@ end sub
 	
 	dim as CPageList ptr paglist, toclist, lnklist
 
-	if( webPageCount > 0 ) then
+	if( pageCount > 0 ) then
 		dim as integer i
 		dim as string ret
-		for i = 1 to webPageCount
-			ret = LoadPage( webPageList(i), FALSE, TRUE )
+		for i = 1 to pageCount
+			ret = LoadPage( pageList(i), FALSE, TRUE )
 		next
 		end 0
 	end if

@@ -81,7 +81,7 @@ cmd_opts_resolve()
 cmd_opts_check()
 
 '' no pages? nothing to do...
-if( app_opt.webPageCount = 0 ) then
+if( app_opt.pageCount = 0 ) then
 	print "no pages specified."
 	end 1
 end if
@@ -113,24 +113,24 @@ do
 
 	nfailedpages = 0
 
-	if( app_opt.webPageCount > 0 ) then
+	if( app_opt.pageCount > 0 ) then
 		dim as integer i, j
 		dim as string ret
-		for i = 1 to app_opt.webPageCount
-			ret = LoadPage( app_opt.webPageList(i), FALSE, TRUE )
+		for i = 1 to app_opt.pageCount
+			ret = LoadPage( app_opt.pageList(i), FALSE, TRUE )
 			if( ret = "" ) then
-				print "Failed to load '" & app_opt.webPageList(i) & "'"
+				print "Failed to load '" & app_opt.pageList(i) & "'"
 				nfailedpages += 1
 				redim preserve failedpages( 1 to nfailedpages )
-				failedpages(nfailedpages) = app_opt.webPageList(i)
+				failedpages(nfailedpages) = app_opt.pageList(i)
 			end if
 
 			if( inkey = chr(27) ) then
 				
-				for j = i + 1 to app_opt.webPageCount
+				for j = i + 1 to app_opt.pageCount
 					nfailedpages += 1
 					redim preserve failedpages( 1 to nfailedpages )
-					failedpages(nfailedpages) = app_opt.webPageList(j)
+					failedpages(nfailedpages) = app_opt.pageList(j)
 				next
 
 				exit for
@@ -162,9 +162,9 @@ do
 			case "y"
 				
 				for i = 1 to nfailedpages
-					app_opt.webPageList(i) = failedpages(i)
+					app_opt.pageList(i) = failedpages(i)
 				next
-				app_opt.webPageCount = nfailedpages
+				app_opt.pageCount = nfailedpages
 
 				exit do
 

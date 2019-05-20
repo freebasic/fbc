@@ -57,9 +57,9 @@ type CMD_OPTS_GLOBAL
 	image_dir as string
 	manual_dir as string
 
-	webPageCount as integer
-	webPageList(any) as string
-	webPageComments(any) as string
+	pageCount as integer
+	pageList(any) as string
+	pageComments(any) as string
 
 end type
 

@@ -138,8 +138,8 @@ dim shared as string base_dir
 dim shared as string manual_dir
 dim shared as string wiki_cache_dir
 
-dim shared as integer webPageCount
-dim shared webPageList() as string
+dim shared as integer pageCount
+dim shared pageList() as string
 dim shared wikicache as CWikiCache ptr = NULL
 
 dim shared opt_force as boolean = false
@@ -205,9 +205,9 @@ function cmd_check_proc() as integer
 	dim as buffer b1, b2
 
 	dim as string ret
-	for i = 1 to webPageCount
+	for i = 1 to pageCount
 
-		sPage = webPageList(i)
+		sPage = pageList(i)
 
 		if( wikicache->LoadPage( sPage, sBody ) ) = FALSE then
 			logprint "Error while loading '" + sPage + "'"
@@ -373,9 +373,9 @@ function cmd_extract_proc() as integer
 	dim as string sPage, sBody, filename
 
 	dim as string ret
-	for i = 1 to webPageCount
+	for i = 1 to pageCount
 
-		sPage = webPageList(i)
+		sPage = pageList(i)
 
 		if( wikicache->LoadPage( sPage, sBody ) ) = FALSE then
 			logprint "Error loading '" + sPage + "'"
@@ -413,9 +413,9 @@ function cmd_update_proc() as integer
 	dim as integer nchanges = 0
 
 	dim as string ret
-	for i = 1 to webPageCount
+	for i = 1 to pageCount
 
-		sPage = webPageList(i)
+		sPage = pageList(i)
 
 		if( wikicache->LoadPage( sPage, sBody ) ) = FALSE then
 			logprint "Error while loading '" + sPage + "'"
@@ -464,9 +464,9 @@ function cmd_set_fb_proc() as integer
 	dim as string sPage, sBody
 	dim as string ret
 
-	for i = 1 to webPageCount
+	for i = 1 to pageCount
 
-		sPage = webPageList(i)
+		sPage = pageList(i)
 
 		if( wikicache->LoadPage( sPage, sBody ) ) = FALSE then
 			logprint "Error while loading '" + sPage + "'"
@@ -495,9 +495,9 @@ function cmd_getex_proc() as integer
 	dim as string sPage, sBody
 	dim as string ret
 
-	for i = 1 to webPageCount
+	for i = 1 to pageCount
 
-		sPage = webPageList(i)
+		sPage = pageList(i)
 
 '		if( lcase( left( spage, 3 )) <> "tut" ) then
 '		if( lcase( left( spage, 5 )) <> "propg" ) then
@@ -900,8 +900,8 @@ end if
 
 if( (opt and opt_get_pages) <> 0 ) then
 
-	webPageCount = 0
-	redim webPageList(1 to 1) as string
+	pageCount = 0
+	redim pageList(1 to 1) as string
 	dim as string cmt
 	i = 2
 	while command(i) > ""
@@ -916,11 +916,11 @@ if( (opt and opt_get_pages) <> 0 ) then
 						line input #h, x
 						x = ParsePageName( x, cmt )
 						if( x > "" ) then 
-							webPageCount += 1
-							if( webPageCount > ubound(webPageList) ) then
-								redim preserve webPageList(1 to Ubound(webPageList) * 2)
+							pageCount += 1
+							if( pageCount > ubound(pageList) ) then
+								redim preserve pageList(1 to Ubound(pageList) * 2)
 							end if
-							webPageList(webPageCount) = x
+							pageList(pageCount) = x
 						end if
 					wend
 					close #h
@@ -934,17 +934,17 @@ if( (opt and opt_get_pages) <> 0 ) then
 				logprint "Unrecognized option '" + command(i) + "'"
 			end select
 		else
-			webPageCount += 1
-			if( webPageCount > ubound(webPageList) ) then
-				redim preserve webPageList(1 to Ubound(webPageList) * 2)
+			pageCount += 1
+			if( pageCount > ubound(pageList) ) then
+				redim preserve pageList(1 to Ubound(pageList) * 2)
 			end if
-			webPageList(webPageCount) = command(i)		
+			pageList(pageCount) = command(i)		
 		end if
 
 		i += 1
 	wend
 
-	if( webPageCount = 0 ) then
+	if( pageCount = 0 ) then
 		logprint "warning: no pages specified."
 		bAbort = TRUE
 	end if
