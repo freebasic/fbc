@@ -27,6 +27,8 @@
 #include once "CHttpForm.bi"
 #include once "CHttpStream.bi"
 #include once "CWikiConUrl.bi"
+#include once "fbdoc_string.bi"
+#include once "printlog.bi"
 
 namespace fb.fbdoc
 
@@ -59,19 +61,19 @@ namespace fb.fbdoc
 		) as string
 
 		dim as string url
-		
+
 		url = *ctx->url + wakka_prefix
-		
+
 		if( page = NULL ) then
 			page = ctx->pagename 
 		end if
-		
+
 		url += *page
-		
+
 		if( method <> NULL ) then
 			url += *method
 		end if
-		
+
 		function = url
 
 	end function
@@ -97,13 +99,13 @@ namespace fb.fbdoc
 
 		var headbegin = instr( htmlpage, CSRFTokenHead )
 		if( headbegin <= 0 ) then
-			print "(error: CSRFToken not found)";
+			printlog "(error: CSRFToken not found)", TRUE
 			return ""
 		end if
 
 		var token = mid( htmlpage, headbegin + len( CSRFTokenHead ), CSRFTokenLength )
 		if( strIsAlphaNumOnly( token ) = FALSE ) then
-			print "(error: invalid CSRFToken: " + token + ")";
+			printlog "(error: invalid CSRFToken: " + token + ")", TRUE
 			return ""
 		end if
 
@@ -146,15 +148,12 @@ namespace fb.fbdoc
 			byval ca_file as zstring ptr = NULL _
 		)
 
-		ctx = new CWikiConUrlCtx	
+		ctx = new CWikiConUrlCtx
   
   		ctx->http = new CHttp
-  		ctx->url = allocate( len( *url ) + 1 )
-  		*ctx->url = *url
-
+		ZSet @ctx->url, url
 		if( ca_file ) then
-  			ctx->ca_file = allocate( len( *ca_file ) + 1 )
-  			*ctx->ca_file = *ca_file
+			ZSet @ctx->ca_file, ca_file
 		else
 			ctx->ca_file = NULL
 		end if
@@ -168,30 +167,18 @@ namespace fb.fbdoc
 	destructor CWikiConUrl _
 		( _
 		)
-		
+
 		if( ctx = NULL ) then
 			exit destructor
 		end if
-		
-		if( ctx->pagename <> NULL ) then
-    		deallocate( ctx->pagename )
-    		ctx->pagename = NULL
-		end if
-
-		if( ctx->ca_file <> NULL ) then
-    		deallocate( ctx->ca_file )
-    		ctx->ca_file = NULL
-		end if
-
-		if( ctx->url <> NULL ) then
-    		deallocate( ctx->url )
-    		ctx->url = NULL
-		end if
+		ZFree @ctx->pagename
+		ZFree @ctx->ca_file
+		ZFree @ctx->url
 
 		if( ctx->http <> NULL ) then
 			delete ctx->http
 			ctx->http = NULL
-		end if		
+		end if
 
 		delete ctx
 
@@ -202,7 +189,7 @@ namespace fb.fbdoc
 		( _
 			byval body as zstring ptr _
 		) as integer
-		
+
 		if( len( *body ) = 0 ) then
 			return TRUE
 		end if
@@ -217,33 +204,33 @@ namespace fb.fbdoc
 			byval username as zstring ptr, _
 			byval password as zstring ptr _
 		) as boolean
-		
+
 		if( ctx = NULL ) then
 			return FALSE
 		end if
-		
+
 		if( ctx->queryCsrfTokenIfNeeded( ) = FALSE ) then
 			return FALSE
 		end if
 
 		dim as CHttpForm ptr form
-		
+
 		form = new CHttpForm
 		if( form = NULL ) then
 			return FALSE
 		end if
-		
+
 		form->Add( "action", "login" )
 		form->Add( "wakka", "UserSettings" )
 		form->Add( "name", username )
 		form->Add( "password", password )
 		form->Add( "submit", "Login" )
 		ctx->maybeAddCsrfTokenToForm( form )
-		
+
 		dim as string response = ctx->http->Post( build_url( ctx, wakka_loginpage ), form, ctx->ca_file )
-		
+
 		function = ( check_iserror( response ) = FALSE )
-		
+
 		delete form
 
 	end function
@@ -500,25 +487,25 @@ namespace fb.fbdoc
 		( _
 			byval ctx as CWikiConUrlCtx ptr _
 		) as integer
-		
+
 		dim as CHttpStream ptr stream
-		
+
 		function = -1
-		
+
 		stream = new CHttpStream( ctx->http )
 		if( stream = NULL ) then
 			exit function
 		end if
-			
+
 		dim as string body, URL
 		URL = build_url( ctx, NULL, wakka_getid )
-		
+
 		if( stream->Receive( URL, TRUE, ctx->ca_file ) ) then
 			body = stream->Read()
 		end if
 
 		delete stream
-		
+
 		if( check_iserror( body ) = FALSE ) then
 			remove_http_headers( body )
 			function = valint( get_response( body ) )
@@ -535,22 +522,21 @@ namespace fb.fbdoc
 
 		function = FALSE
 		body = ""
-		
+
 		if( ctx = NULL ) then
 			exit function
 		end if
 
+		ZSet @ctx->pagename, pagename
 		ctx->pageid = -1
-		ctx->pagename = reallocate( ctx->pagename, len( *pagename ) + 1 )
-		*ctx->pagename = *pagename
-		
+
 		dim as CHttpStream ptr stream
-		
+
 		stream = new CHttpStream( ctx->http )
 		if( stream = NULL ) then
 			exit function
 		end if
-			
+
 		dim URL as string
 		URL = build_url( ctx, NULL, @wakka_raw )
 
@@ -558,13 +544,13 @@ namespace fb.fbdoc
 			body = stream->Read()
 			remove_http_headers( body )
 		end if
-		
+
 		delete stream
-		
+
 		ctx->pageid = get_pageid( ctx )
-		
+
 		function = TRUE
-		
+
 	end function
 
 	'':::::
@@ -581,9 +567,8 @@ namespace fb.fbdoc
 			exit function
 		end if
 
+		ZSet @ctx->pagename, page
 		ctx->pageid = -1
-		ctx->pagename = reallocate( ctx->pagename, len( *page ) + 1 )
-		*ctx->pagename = *page
 		
 		dim as CHttpStream ptr stream
 		
@@ -591,7 +576,7 @@ namespace fb.fbdoc
 		if( stream = NULL ) then
 			exit function
 		end if
-			
+
 		dim URL as string
 		URL = build_url( ctx, NULL, NULL )
 
@@ -601,13 +586,13 @@ namespace fb.fbdoc
 			remove_html_tags( body )
 			extract_page_names( body )
 		end if
-		
+
 		delete stream
-		
+
 		ctx->pageid = -1
 
 		function = TRUE
-		
+
 	end function
 
 	'':::::
@@ -626,9 +611,9 @@ namespace fb.fbdoc
 		if( ctx->pageid <= 0 ) then
 			return FALSE
 		end if
-		
+
 		dim as CHttpForm ptr form
-		
+
 		form = new CHttpForm
 		if( form = NULL ) then
 			return FALSE
@@ -657,11 +642,11 @@ namespace fb.fbdoc
 		if( res ) then 
 			ctx->pageid = get_pageid( ctx )
 		end if
-		
+
 		delete form
-		
+
 		function = res
-		
+
 	end function
 
 	'':::::
@@ -676,7 +661,7 @@ namespace fb.fbdoc
 		end if
 
 		dim as CHttpForm ptr form
-		
+
 		form = new CHttpForm
 		if( form = NULL ) then
 			return FALSE
@@ -688,22 +673,22 @@ namespace fb.fbdoc
 		form->Add( "note", "new page" )
 		form->Add( "submit", "Store" )
 		ctx->maybeAddCsrfTokenToForm( form )
-		
+
 		dim URL as string
 		URL = build_url( ctx, pagename, wakka_edit )
-		
+
 		dim as string response = ctx->http->Post( URL, form, ctx->ca_file )
-		
+
 		dim as integer res = ( check_iserror( response ) = FALSE )
 
 		if( res ) then 
 			ctx->pageid = get_pageid( ctx )
 		end if
-		
+
 		delete form
-		
+
 		function = res
-		
+
 	end function
 
 	'':::::

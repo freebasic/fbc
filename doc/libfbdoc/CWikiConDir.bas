@@ -22,6 +22,7 @@
 ''
 
 #include once "CWikiConDir.bi"
+#include once "fbdoc_string.bi"
 #include once "file.bi"
 #include "crt/stdlib.bi"
 #include "crt/string.bi"
@@ -36,7 +37,7 @@ end extern
 namespace fb.fbdoc
 
 	type CWikiConDirCtx_
-		as zstring ptr		path
+		as zstring ptr      path
 		as zstring ptr      pagename
 		as integer          pageid
 	end type
@@ -50,10 +51,7 @@ namespace fb.fbdoc
 		)
 
 		ctx = new CWikiConDirCtx
-
-  		ctx->path = allocate( len( *path ) + 1 )
-  		*ctx->path = *path
-
+		ZSet @ctx->path, path
 		ctx->pagename = NULL
 		ctx->pageid = -1
 
@@ -63,21 +61,12 @@ namespace fb.fbdoc
 	destructor CWikiConDir _
 		( _
 		)
-		
+
 		if( ctx = NULL ) then
 			exit destructor
 		end if
-
-		if( ctx->path <> NULL ) then
-    		deallocate( ctx->path )
-    		ctx->path = NULL
-		end if
-
-		if( ctx->pagename <> NULL ) then
-    		deallocate( ctx->pagename )
-    		ctx->pagename = NULL
-		end if
-
+		ZFree @ctx->path
+		ZFree @ctx->pagename
 		delete ctx
 
 	end destructor
@@ -94,14 +83,13 @@ namespace fb.fbdoc
 
 		function = FALSE
 		body = ""
-		
+
 		if( ctx = NULL ) then
 			exit function
 		end if
 
+		ZSet @ctx->pagename, pagename
 		ctx->pageid = -1
-		ctx->pagename = reallocate( ctx->pagename, len( *pagename ) + 1 )
-		*ctx->pagename = *pagename
 
 		sLocalFile = *ctx->path & *ctx->pagename & cache_ext
 
@@ -190,13 +178,12 @@ namespace fb.fbdoc
 		end if
 
 		ctx->pageid = -1
-		ctx->pagename = reallocate( ctx->pagename, len( *page ) + 1 )
-		*ctx->pagename = *page
+		ZSet @ctx->pagename, page
 
 		scan_cache_dir( *ctx->path, body )
-		
+
 		function = TRUE
-		
+
 	end function
 
 	'':::::
@@ -253,8 +240,7 @@ namespace fb.fbdoc
 			return FALSE
 		end if
 
-		ctx->pagename = reallocate( ctx->pagename, len( *pagename ) + 1 )
-		*ctx->pagename = *pagename
+		ZSet @ctx->pagename, pagename
 
 		return StorePage( body, NULL )
 		
@@ -274,4 +260,3 @@ namespace fb.fbdoc
 	end function
 
 end namespace
-

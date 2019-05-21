@@ -25,7 +25,7 @@
 namespace fb.fbdoc
 
 	type CWikiConUrlCtx as CWikiConUrlCtx_
-		
+
 	type CWikiConUrl extends CWikiCon
 
 		declare static sub GlobalInit()

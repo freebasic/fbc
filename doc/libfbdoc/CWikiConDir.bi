@@ -25,7 +25,7 @@
 namespace fb.fbdoc
 
 	type CWikiConDirCtx as CWikiConDirCtx_
-		
+
 	type CWikiConDir extends CWikiCon
 
 		declare constructor _
@@ -72,4 +72,3 @@ namespace fb.fbdoc
 end namespace
 
 #endif
- 
