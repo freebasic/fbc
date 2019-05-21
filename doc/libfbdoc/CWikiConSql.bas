@@ -61,7 +61,7 @@ namespace fb.fbdoc
 		( _
 		)
 
-		db = new MYSQL
+		db = NULL
 		connected = FALSE
 
 	end constructor
@@ -73,9 +73,7 @@ namespace fb.fbdoc
 		if( connected ) then
 			Disconnect()
 		end if
-		if( db <> NULL ) then
-			delete db
-		end if
+		db = NULL
 
 	end destructor
 
@@ -90,6 +88,10 @@ namespace fb.fbdoc
 		) as boolean
 
 		function = FALSE
+
+		if( connected = TRUE ) then
+			return TRUE
+		end if
 
 		if( db_host = NULL ) then
 			exit function
@@ -109,13 +111,15 @@ namespace fb.fbdoc
 
 		printlog "Connecting to database: " + *db_name + " on " + *db_host + ":" + str(db_port)
 
-		if( NULL = mysql_init( db )) then
+		'' we must let mysql_init() allocate; mysql/mysql.bi is
+		'' too out of date to trust the sizeof( MYSQL )
+		db = mysql_init( NULL )
+
+		if( NULL = db ) then
 			printlog "Error " + str(mysql_errno(db)) + ": " + *mysql_error(db)
 			printlog "Unable to initialize mysql"
 			return FALSE
 		end if
-
-		exit function
 
 		if( NULL = mysql_real_connect(db, db_host, db_user, db_pass, db_name, db_port, NULL, 0)) then
 			mysql_close( db )
@@ -341,7 +345,7 @@ namespace fb.fbdoc
 				return FALSE
 			end if
 
-			sql = "SELECT tag FROM wikka_pages WHERE ( latest = 'Y' )"
+			sql = "SELECT tag FROM wikka_pages WHERE ( latest = 'Y' ) ORDER BY tag"
 
 			if( 0 <> mysql_real_query( ctx->db_conn->db, sql, len(sql)) ) then
 				return FALSE
