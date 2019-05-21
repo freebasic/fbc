@@ -22,6 +22,7 @@
 '' fbdoc headers
 #include once "CWikiConUrl.bi"
 #include once "CWikiConDir.bi"
+#include once "CWikiConSql.bi"
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
@@ -43,7 +44,8 @@ const def_index_file = hardcoded.default_index_file
 '' --------------------------------------------------------
 
 '' private options
-dim as boolean blocal = false '' -local given on command line
+dim as boolean bLocal = false  '' -local given on command line
+dim as boolean bUseSql = false '' -usesql given on command line
 
 '' enable url and cache
 cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE )
@@ -55,7 +57,11 @@ while( command(i) > "" )
 	elseif( left( command(i), 1 ) = "-" ) then
 		select case lcase(command(i))
 		case "-local"
-			blocal = TRUE
+			bLocal = TRUE
+#if defined(HAVE_MYSQL)
+		case "-usesql"
+			bUseSql = TRUE
+#endif
 		case else
 			cmd_opts_unrecognized_die( i )
 		end select
@@ -77,6 +83,9 @@ if( app_opt.help ) then
 	print "options:"
 	print "   -local           use local cache only, don't query server, just"
 	print "                        read the cache dir to get the list of page names"
+#if defined(HAVE_MYSQL)
+	print "   -usesql          use MySQL connection to read index"
+#endif
 	print
 	print "if -local is specified, then just read the file names from the cache:"
 	print "   -web             get page names from cache_dir"
@@ -103,7 +112,7 @@ dim as CWikiCon ptr wikicon = NULL
 
 '' connect to the wiki and get PageIndex as HTML
 
-if( blocal ) then
+if( bLocal ) then
 
 	wikicon = new CWikiConDir( app_opt.cache_dir )
 	if wikicon = NULL then
@@ -113,6 +122,19 @@ if( blocal ) then
 
 	print "cache: "; app_opt.cache_dir
 
+#if defined(HAVE_MYSQL)
+elseif( bUseSql ) then
+
+	'' !!! TODO !!! - load options for host, user, pass, etc
+	wikicon = new CWikiConSql( "", "", "", "", 0 )
+	if wikicon = NULL then
+		print "Unable to create connection " + app_opt.cache_dir
+		end 1
+	end if
+
+	print "cache: "; app_opt.cache_dir
+
+#endif
 else
 
 	if( len( app_opt.wiki_url ) = 0 ) then
