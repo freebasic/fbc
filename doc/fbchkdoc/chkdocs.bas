@@ -2226,7 +2226,8 @@ if( app_opt.help ) then
 end if
 
 cmd_opts_resolve()
-cmd_opts_check()
+cmd_opts_check_cache()
+cmd_opts_check_url()
 
 if( (opt and OPT_ALL) = 0 ) then
 	print "No options specified"

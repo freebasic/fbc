@@ -48,7 +48,11 @@ dim as boolean bLocal = false  '' -local given on command line
 dim as boolean bUseSql = false '' -usesql given on command line
 
 '' enable url and cache
+#if defined(HAVE_MYSQL)
+cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_DATABASE )
+#else
 cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE )
+#endif
 
 dim i as integer = 1
 while( command(i) > "" )
@@ -99,7 +103,6 @@ if( app_opt.help ) then
 end if
 
 cmd_opts_resolve()
-cmd_opts_check()
 
 '' --------------------------------------------------------
 
@@ -114,6 +117,8 @@ dim as CWikiCon ptr wikicon = NULL
 
 if( bLocal ) then
 
+	cmd_opts_check_cache()
+
 	wikicon = new CWikiConDir( app_opt.cache_dir )
 	if wikicon = NULL then
 		print "Unable to create connection " + app_opt.cache_dir
@@ -125,17 +130,24 @@ if( bLocal ) then
 #if defined(HAVE_MYSQL)
 elseif( bUseSql ) then
 
-	'' !!! TODO !!! - load options for host, user, pass, etc
-	wikicon = new CWikiConSql( "", "", "", "", 0 )
+	cmd_opts_check_database()
+
+	wikicon = new CWikiConSql( app_opt.db_host, app_opt.db_user, app_opt.db_pass, app_opt.db_name, app_opt.db_port )
 	if wikicon = NULL then
 		print "Unable to create connection " + app_opt.cache_dir
 		end 1
 	end if
 
-	print "cache: "; app_opt.cache_dir
+	dim as CWikiConSql ptr o = cast( CWikiConSql ptr, wikicon )
+	if( o->Connect() = FALSE ) then
+		print "Error"
+		end 1
+	end if
 
 #endif
 else
+
+	cmd_opts_check_url()
 
 	if( len( app_opt.wiki_url ) = 0 ) then
 		print "wiki_url not set. use -url, -web, -web+, -dev, or -dev+"

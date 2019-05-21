@@ -55,6 +55,7 @@ type CMD_OPTS_PRIVATE
 	enable_autocache as boolean  '' automatically select a cache if none given on the command line
 	enable_pagelist as boolean   '' enable reading in a text file with a list of page names
 	enable_manual as boolean     '' enable the manual dir option
+	enable_database as boolean   '' enable db_* options
 
 	print as boolean             '' -printopts option on command line
 
@@ -89,6 +90,21 @@ type CMD_OPTS_PRIVATE
 	manual as boolean            '' -manual_dir given on command line
 	manual_dir as string         '' value of '-manual_dir DIR' given on command line
 
+	db_host_is_set as boolean    '' -db_host given on command line
+	db_host as string            '' value of '-db_host TEXT' given on command line
+
+	db_user_is_set as boolean    '' -db_user given on command line
+	db_user as string            '' value of '-db_user TEXT' given on command line
+
+	db_pass_is_set as boolean    '' -db_pass given on command line
+	db_pass as string            '' value of '-db_pass TEXT' given on command line
+
+	db_name_is_set as boolean    '' -db_name given on command line
+	db_name as string            '' value of '-db_name TEXT' given on command line
+
+	db_port_is_set as boolean    '' -db_port given on command line
+	db_port as integer           '' value of '-db_port NUMBER' given on command line
+
 end type
 
 dim shared cmd_opt as CMD_OPTS_PRIVATE
@@ -107,6 +123,7 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 	cmd_opt.enable_autocache = cbool( opts_flags and CMD_OPTS_ENABLE_AUTOCACHE )
 	cmd_opt.enable_pagelist = cbool( opts_flags and CMD_OPTS_ENABLE_PAGELIST )
 	cmd_opt.enable_manual = cbool( opts_flags and CMD_OPTS_ENABLE_MANUAL )
+	cmd_opt.enable_database = cbool( opts_flags and CMD_OPTS_ENABLE_DATABASE )
 
 	'' general options
 
@@ -132,6 +149,23 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 	cmd_opt.ca = false       '' -certificate given on command line
 	cmd_opt.ca_file = ""     '' value of '-certificate FILE' given on command line 
 
+	'' database options
+
+	cmd_opt.db_host_is_set = false   '' -db_host given on command line
+	cmd_opt.db_host = ""             '' value of '-db_host TEXT' given on command line
+
+	cmd_opt.db_user_is_set = false   '' -db_user given on command line
+	cmd_opt.db_user = ""             '' value of '-db_user TEXT' given on command line
+
+	cmd_opt.db_pass_is_set = false   '' -db_pass given on command line
+	cmd_opt.db_pass = ""             '' value of '-db_pass TEXT' given on command line
+
+	cmd_opt.db_name_is_set = false   '' -db_name given on command line
+	cmd_opt.db_name = ""             '' value of '-db_name TEXT' given on command line
+
+	cmd_opt.db_port_is_set = false   '' -db_port given on command line
+	cmd_opt.db_port = 0              '' value of '-db_port NUMBER' given on command line
+
 	'' login options
 
 	cmd_opt.user = false     '' -u given on command line
@@ -146,6 +180,8 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 	cmd_opt.manual = false   '' -manual_dir given on command line
 	cmd_opt.manual_dir = ""  '' value of '-manual_dir DIR' given on command line
 
+	cmd_opt.db_user_is_set = false
+
 	'' resolved options
 
 	app_opt.wiki_url = ""        '' export: resolved wiki url
@@ -155,6 +191,12 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 	app_opt.wiki_password = ""   '' export: resolved pass
 	app_opt.image_dir = ""       '' export: image directory
 	app_opt.manual_dir = ""      '' export: manual directory
+
+	app_opt.db_host = ""         '' export: database host name
+	app_opt.db_user = ""         '' export: database user name
+	app_opt.db_pass = ""         '' export: database user password
+	app_opt.db_name = ""         '' export: database name
+	app_opt.db_port = 0          '' export: database port number
 
 	app_opt.pageCount = 0
 	redim app_opt.pageList(1 to 1) as string
@@ -350,6 +392,81 @@ function cmd_opts_read( byref i as integer ) as boolean
 				return false
 			end if
 
+		case "-db_host"
+
+			if( cmd_opt.enable_database ) then
+
+				if( cmd_opt.db_host_is_set ) then
+					cmd_opts_duplicate_die( i )
+				end if
+				cmd_opt.db_host_is_set = true
+				i += 1
+				cmd_opt.db_host = command(i)
+
+			else
+				return false
+			end if
+
+		case "-db_user"
+
+			if( cmd_opt.enable_database ) then
+
+				if( cmd_opt.db_user_is_set ) then
+					cmd_opts_duplicate_die( i )
+				end if
+				cmd_opt.db_user_is_set = true
+				i += 1
+				cmd_opt.db_user = command(i)
+
+			else
+				return false
+			end if
+
+		case "-db_pass"
+
+			if( cmd_opt.enable_database ) then
+
+				if( cmd_opt.db_pass_is_set ) then
+					cmd_opts_duplicate_die( i )
+				end if
+				cmd_opt.db_pass_is_set = true
+				i += 1
+				cmd_opt.db_pass = command(i)
+
+			else
+				return false
+			end if
+
+		case "-db_name"
+
+			if( cmd_opt.enable_database ) then
+
+				if( cmd_opt.db_name_is_set ) then
+					cmd_opts_duplicate_die( i )
+				end if
+				cmd_opt.db_name_is_set = true
+				i += 1
+				cmd_opt.db_name = command(i)
+
+			else
+				return false
+			end if
+
+		case "-db_port"
+
+			if( cmd_opt.enable_database ) then
+
+				if( cmd_opt.db_port_is_set ) then
+					cmd_opts_duplicate_die( i )
+				end if
+				cmd_opt.db_port_is_set = true
+				i += 1
+				cmd_opt.db_port = cint( command(i) )
+
+			else
+				return false
+			end if
+
 		case "-ini"
 			if( cmd_opt.ini ) then
 				cmd_opts_duplicate_die( i )
@@ -421,6 +538,11 @@ function cmd_opts_resolve() as boolean
 	dim as string dev_pass = ""
 	dim as string def_image_dir = hardcoded.default_image_dir
 	dim as string def_manual_dir = hardcoded.default_manual_dir
+	dim as string db_host = ""
+	dim as string db_user = ""
+	dim as string db_pass = ""
+	dim as string db_name = ""
+	dim as integer db_port = 3306
 
 	'' -ini FILE on the command line overrides the hardcoded value
 	if( cmd_opt.ini ) then
@@ -445,6 +567,11 @@ function cmd_opts_resolve() as boolean
 			dev_pass = opts->Get( "dev_password" )
 			def_image_dir = opts->Get( "image_dir" )
 			def_manual_dir = opts->Get( "manual_dir" )
+			db_host = opts->Get( "db_host" )
+			db_user = opts->Get( "db_user" )
+			db_pass = opts->Get( "db_pass" )
+			db_name = opts->Get( "db_name" )
+			db_port = cint( opts->Get( "db_port" ) )
 			delete opts
 		elseif( cmd_opt.ini ) then
 			'' if we explicitly gave the -ini FILE option, report the error
@@ -513,6 +640,36 @@ function cmd_opts_resolve() as boolean
 		app_opt.manual_dir = def_manual_dir
 	end if
 
+	if( cmd_opt.db_host_is_set ) then
+		app_opt.db_host = cmd_opt.db_host
+	else
+		app_opt.db_host = db_host
+	end if
+
+	if( cmd_opt.db_user_is_set ) then
+		app_opt.db_user = cmd_opt.db_user
+	else
+		app_opt.db_user = db_user
+	end if
+
+	if( cmd_opt.db_pass_is_set ) then
+		app_opt.db_pass = cmd_opt.db_pass
+	else
+		app_opt.db_pass = db_pass
+	end if
+
+	if( cmd_opt.db_name_is_set ) then
+		app_opt.db_name = cmd_opt.db_name
+	else
+		app_opt.db_name = db_name
+	end if
+
+	if( cmd_opt.db_port_is_set ) then
+		app_opt.db_port = cmd_opt.db_port
+	else
+		app_opt.db_port = db_port
+	end if
+
 	if( cmd_opt.print ) then
 		
 		print "ini_file = " & ini_file
@@ -537,6 +694,11 @@ function cmd_opts_resolve() as boolean
 		print "wiki_password = " & "*****"
 		print "image_dir = " & app_opt.image_dir
 		print "manual_dir = " & app_opt.manual_dir
+		print "db_host = " & app_opt.db_host
+		print "db_user = " & app_opt.db_user
+		print "db_pass = " & app_opt.db_pass
+		print "db_name = " & app_opt.db_name
+		print "db_port = " & app_opt.db_port
 		print
 
 		end 1
@@ -548,7 +710,7 @@ function cmd_opts_resolve() as boolean
 end function
 
 ''
-function cmd_opts_check() as boolean
+function cmd_opts_check_cache() as boolean
 
 	if( cmd_opt.enable_cache ) then
 		'' check that we have the values we need
@@ -557,9 +719,38 @@ function cmd_opts_check() as boolean
 		end if
 	end if
 
+	function = true
+
+end function
+
+''
+function cmd_opts_check_url() as boolean
+
 	if( cmd_opt.enable_url ) then
 		if( app_opt.wiki_url = "" ) then
 			cmd_opts_die( "no url specified" )
+		end if
+	end if
+
+	function = true
+
+end function
+
+''
+function cmd_opts_check_database() as boolean
+
+	if( cmd_opt.enable_database ) then
+		'' check that we have the values we need
+		if( app_opt.db_host = "" ) then
+			cmd_opts_die( "no database host specified" )
+		elseif( app_opt.db_user = "" ) then
+			cmd_opts_die( "no database user login name specified" )
+		elseif( app_opt.db_pass = "" ) then
+			cmd_opts_die( "no database user login password specified" )
+		elseif( app_opt.db_name = "" ) then
+			cmd_opts_die( "no database name specified" )
+		elseif( app_opt.db_port = 0 ) then
+			cmd_opts_die( "no database port specified" )
 		end if
 	end if
 
@@ -655,5 +846,12 @@ sub cmd_opts_show_help( byref action as const string = "", locations as boolean 
 		print "   -manual_dir DIR  override the manual directory location"
 	end if
 
+	if( cmd_opt.enable_database ) then
+		print "   -db_host         database host name"
+		print "   -db_user         database user login name"
+		print "   -db_pass         database user login password"
+		print "   -db_name         database name"
+		print "   -db_port         database port number"
+	end if
 
 end sub
