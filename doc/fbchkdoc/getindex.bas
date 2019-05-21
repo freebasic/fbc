@@ -22,7 +22,10 @@
 '' fbdoc headers
 #include once "CWikiConUrl.bi"
 #include once "CWikiConDir.bi"
+
+#if defined(HAVE_MYSQL)
 #include once "CWikiConSql.bi"
+#endif
 
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
@@ -113,7 +116,7 @@ sPage = "PageIndex"
 
 dim as CWikiCon ptr wikicon = NULL
 
-'' connect to the wiki and get PageIndex as HTML
+'' connect to the wiki and get PageIndex (list of all pages)
 
 if( bLocal ) then
 
@@ -146,7 +149,6 @@ elseif( bUseSql ) then
 
 #endif
 else
-
 	cmd_opts_check_url()
 
 	if( len( app_opt.wiki_url ) = 0 ) then

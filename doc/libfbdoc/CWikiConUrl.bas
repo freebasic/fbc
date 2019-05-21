@@ -549,7 +549,7 @@ namespace fb.fbdoc
 
 		ctx->pageid = get_pageid( ctx )
 
-		function = TRUE
+		function = cbool( ctx->pageid > 0 )
 
 	end function
 
@@ -585,13 +585,12 @@ namespace fb.fbdoc
 			remove_http_headers( body )
 			remove_html_tags( body )
 			extract_page_names( body )
+			function = TRUE
 		end if
 
 		delete stream
 
 		ctx->pageid = -1
-
-		function = TRUE
 
 	end function
 

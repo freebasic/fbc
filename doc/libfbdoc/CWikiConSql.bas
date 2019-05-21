@@ -289,7 +289,7 @@ namespace fb.fbdoc
 				return FALSE
 			end if
 
-			sql = "SELECT tag, body FROM wikka_pages WHERE ( latest = 'Y' AND tag = '" & *pagename & "' )"
+			sql = "SELECT id, tag, CAST(CONVERT(body USING utf8) AS binary) FROM wikka_pages WHERE ( latest = 'Y' AND tag = '" & *pagename & "' )"
 
 			if( 0 <> mysql_real_query( ctx->db_conn->db, sql, len(sql)) ) then
 				return FALSE
@@ -305,7 +305,8 @@ namespace fb.fbdoc
 				return FALSE
 			end if
 
-			body = *row[1]
+			ctx->pageid = cint( *row[0] )
+			body = *row[2]
 
 			mysql_free_result( res )
 
