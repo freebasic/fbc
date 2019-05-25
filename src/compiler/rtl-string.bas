@@ -3791,6 +3791,8 @@ function rtlStrCase _
 		end if
 	end if
 
+	astTryConvertUdtToWstring( expr )
+
 	if( is_lcase ) then
 		if( astGetDataType( expr ) = FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( WSTRLCASE2 )
