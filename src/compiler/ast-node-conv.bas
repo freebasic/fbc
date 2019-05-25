@@ -285,7 +285,7 @@ end function
 		proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
-			return astBuildCall( proc, l )
+			return astBuildCall( proc, node )
 		else
 			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL
@@ -295,7 +295,7 @@ end function
 #endmacro
 
 '':::::
-function astTryConvertUdtToWstring( byref expr as ASTNODE ptr ) as integer
+function astTryOvlStringCONV( byref expr as ASTNODE ptr ) as integer
 
 	dim as FBSYMBOL ptr proc = any, sym = any
 	dim as FB_ERRMSG err_num = any
@@ -318,8 +318,8 @@ function astTryConvertUdtToWstring( byref expr as ASTNODE ptr ) as integer
 			'' can cast to z|wstring?
 			proc = symbFindCastOvlProc( dtype, NULL, expr, @err_num )
 			if( proc ) then
-				'' full match?
-				if( symbGetFullType( proc ) = dtype ) then
+				'' same type?
+				if( symbGetType( proc ) = dtype ) then
 					expr = astBuildCall( proc, expr )
 					return TRUE
 				end if
@@ -383,6 +383,44 @@ function astNewCONV _
 			end if
 
 			return n
+		end if
+	end if
+
+	'' UDT? check if it is z|wstring? 
+	'' !!! TODO !!! make this block in to a function
+	''              re-use in astNewOvlCONV()
+	''              rewrite hDoGlobOpOverload() as astTry* function
+	if( typeGet( ldtype ) = FB_DATATYPE_STRUCT ) then
+		dim as FBSYMBOL ptr subtype = astGetSubtype( l )
+
+		if( symbGetUdtIsZstring( subtype ) or symbGetUdtIsWstring( subtype ) ) then
+			dim as FBSYMBOL ptr proc = NULL
+			dim as FB_ERRMSG err_num = any
+
+			'' check exact casts
+			proc = symbFindCastOvlProc( to_dtype, to_subtype, l, @err_num, TRUE )
+			if( proc <> NULL ) then
+				'' build a proc call
+				return astBuildCall( proc, l )
+			end if
+
+			'' check exact string pointer casts
+			if( symbGetUdtIsZstring( subtype ) ) then
+				proc = symbFindCastOvlProc( typeAddrof( FB_DATATYPE_CHAR ), NULL, l, @err_num, TRUE )
+			elseif( symbGetUdtIsWstring( subtype ) ) then
+				proc = symbFindCastOvlProc( typeAddrof( FB_DATATYPE_WCHAR ), NULL, l, @err_num, TRUE )
+			end if
+			if( proc <> NULL ) then
+				'' build a proc call
+				return astBuildCall( proc, l )
+			end if
+
+			'' strings? convert.
+			if( options and AST_CONVOPT_CHECKSTR ) then
+				if( astTryOvlStringCONV( l ) ) then
+					ldtype = astGetFullType( l )
+				end if
+			end if
 		end if
 	end if
 

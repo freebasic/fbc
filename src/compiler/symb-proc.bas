@@ -2366,7 +2366,8 @@ private function hCheckCastOvl _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval to_dtype as integer, _
-		byval to_subtype as FBSYMBOL ptr _
+		byval to_subtype as FBSYMBOL ptr, _
+		byval is_explicit as integer = FALSE _
 	) as FB_OVLPROC_MATCH_SCORE
 
 	dim as integer proc_dtype = any
@@ -2395,6 +2396,9 @@ private function hCheckCastOvl _
 	end if
 
 	'' different types..
+	if( is_explicit ) then
+		return FB_OVLPROC_NO_MATCH
+	end if
 
 	select case typeGet( proc_dtype )
 	'' UDT or enum? can't be different (this is the last resource,
@@ -2427,7 +2431,8 @@ function symbFindCastOvlProc _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr, _
-		byval err_num as FB_ERRMSG ptr _
+		byval err_num as FB_ERRMSG ptr, _
+		byval is_explicit as integer = FALSE _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr proc_head = any
@@ -2470,7 +2475,7 @@ function symbFindCastOvlProc _
 		proc = proc_head
 		do while( proc <> NULL )
 
-			matchscore = hCheckCastOvl( proc, to_dtype, to_subtype )
+			matchscore = hCheckCastOvl( proc, to_dtype, to_subtype, is_explicit )
 			if( matchscore > max_matchscore ) then
 		   		closest_proc = proc
 		   		max_matchscore = matchscore

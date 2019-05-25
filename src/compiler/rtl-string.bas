@@ -3526,9 +3526,9 @@ function rtlStrTrim _
 
     function = NULL
 
-	astTryConvertUdtToWstring( nd_text )
+	astTryOvlStringCONV( nd_text )
 	if( nd_pattern ) then
-		astTryConvertUdtToWstring( nd_pattern )
+		astTryOvlStringCONV( nd_pattern )
 	end if
 
 	dtype = astGetDataType( nd_text )
@@ -3584,9 +3584,9 @@ function rtlStrRTrim _
 
     function = NULL
 
-	astTryConvertUdtToWstring( nd_text )
+	astTryOvlStringCONV( nd_text )
 	if( nd_pattern ) then
-		astTryConvertUdtToWstring( nd_pattern )
+		astTryOvlStringCONV( nd_pattern )
 	end if
 
 	dtype = astGetDataType( nd_text )
@@ -3642,9 +3642,9 @@ function rtlStrLTrim _
 
     function = NULL
 
-	astTryConvertUdtToWstring( nd_text )
+	astTryOvlStringCONV( nd_text )
 	if( nd_pattern ) then
-		astTryConvertUdtToWstring( nd_pattern )
+		astTryOvlStringCONV( nd_pattern )
 	end if
 
 	dtype = astGetDataType( nd_text )
@@ -3791,7 +3791,7 @@ function rtlStrCase _
 		end if
 	end if
 
-	astTryConvertUdtToWstring( expr )
+	astTryOvlStringCONV( expr )
 
 	if( is_lcase ) then
 		if( astGetDataType( expr ) = FB_DATATYPE_WCHAR ) then

@@ -11,7 +11,7 @@ type UWSTRING_FIXED extends wstring
 		declare constructor()
 		declare constructor( byval rhs as const wstring const ptr )
 		declare constructor( byval rhs as const zstring const ptr )
-		declare operator cast() byref as wstring
+		declare operator cast() byref as const wstring
 		declare const function length() as integer
 
 end type

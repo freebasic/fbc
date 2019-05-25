@@ -978,7 +978,8 @@ declare function symbFindCastOvlProc _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval expr as ASTNODE ptr, _
-		byval err_num as FB_ERRMSG ptr _
+		byval err_num as FB_ERRMSG ptr, _
+		byval is_explicit as integer = FALSE _
 	) as FBSYMBOL ptr
 
 declare function symbFindCtorOvlProc _

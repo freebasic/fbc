@@ -19,7 +19,7 @@ constructor UWSTRING_FIXED( byval s as const zstring const ptr )
 end constructor
 
 ''
-operator UWSTRING_FIXED.Cast() byref as wstring
+operator UWSTRING_FIXED.Cast() byref as const wstring
 	operator = *cast(wstring ptr, @_data)	
 end operator
 
