@@ -109,7 +109,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_STACKSIZE            '' integer
 	FB_COMPOPT_OBJINFO              '' boolean: write/read .fbctinf sections etc.?
 	FB_COMPOPT_SHOWINCLUDES         '' boolean: -showincludes
-	FB_COMPOPT_MODEVIEW             ''__FB_GUI__
+	FB_COMPOPT_MODEVIEW             '' enum: FB_MODEVIEW (__FB_GUI__)
 	FB_COMPOPT_NOCMDLINE            '' boolean: -z nocmdline, disable #cmdline directives
 	FB_COMPOPT_RETURNINFLTS         '' boolean: -z retinflts, enable returning some structs in floating point registers
 
