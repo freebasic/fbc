@@ -3131,6 +3131,8 @@ function rtlStrAssignMid _
 
     function = NULL
 
+	astTryOvlStringCONV( expr1 )
+
 	''
     if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRASSIGNMID ) )
