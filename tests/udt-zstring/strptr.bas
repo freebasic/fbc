@@ -1,21 +1,24 @@
 #include "fbcunit.bi"
+#include once "uzstring-fixed.bi"
+#include once "chk-zstring.bi"
 
-SUITE( fbc_tests.string_.strptr_ )
+#define ustring UZSTRING_FIXED
+
+SUITE( fbc_tests.udt_zstring_.strptr_ )
 
 	TEST( deref )
-		dim as string ptr foo
-		dim as string bar = "1234"
-		dim as zstring ptr p
+		dim s1 as zstring * 50 = "1234"
+		dim u1 as ustring = s1
 
-		foo = @bar
-		p = strptr( *foo )
-		CU_ASSERT_EQUAL( *p, "1234" )
+		dim as zstring ptr p1 = strptr( u1 )
+
+		CU_ASSERT_zstring_EQUAL( (*p1), s1 )
 	END_TEST
 
 	TEST( ptr_size )
 
-		dim s1 as zstring * 50 = "1234"
-		dim as zstring ptr p0 = @s1
+		dim s as zstring * 50 = "1234"
+		dim s1 as ustring = s
 
 		scope
 			dim as zstring ptr p1 = strptr(s1)
@@ -42,5 +45,5 @@ SUITE( fbc_tests.string_.strptr_ )
 		end scope
 
 	END_TEST
-
+		
 END_SUITE
