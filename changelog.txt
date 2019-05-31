@@ -18,6 +18,7 @@ Version 1.07.0
 - SADD/STRPTR will accept UDT as Z|WSTRING to return Z|WSTRING ptr
 - LSET/RSET statements will accept UDT as Z|WSTRING
 - MID statement will accept UDT as Z|WSTRING
+- ASC function will accept UDT as Z|WSTRING
 
 [fixed]
 - sf.net #881: C backend: support for varadic function parameters in gcc using __builtin_va_list type and related macros

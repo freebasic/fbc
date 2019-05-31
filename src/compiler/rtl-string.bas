@@ -3331,6 +3331,8 @@ function rtlStrAsc _
 
 	function = NULL
 
+	astTryOvlStringCONV( expr )
+
     ''
     if( astGetDataType( expr ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRASC ) )
