@@ -2846,6 +2846,10 @@ function rtlToStr _
     	end if
     end if
 
+	astTryOvlStringCONV( expr )
+
+	dtype = astGetDataType( expr )
+
     ''
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
@@ -2945,6 +2949,10 @@ function rtlToWstr _
 			end if
     	end if
     end if
+
+	astTryOvlStringCONV( expr )
+
+	dtype = astGetDataType( expr )
 
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
