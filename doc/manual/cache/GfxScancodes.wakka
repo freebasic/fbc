@@ -91,11 +91,10 @@ SC_INSERT       &h52
 SC_DELETE       &h53
 SC_F11          &h57
 SC_F12          &h58
-
 '' Extra scancodes not compatible with DOS scancodes
-SC_LWIN         &h7D
-SC_RWIN         &h7E
-SC_MENU         &h7F
+SC_LWIN         &h5B
+SC_RWIN         &h5C
+SC_MENU         &h5D
 %%
 
 {{fbdoc item="see"}}

@@ -16,7 +16,7 @@ Member operator to overload dynamic memory allocation process part provided by #
 	The member operator ##**New Overload**## overloads the dynamic memory allocation process part provided by the ##[[KeyPgOpNew|New Expression]]## operator when applying to a UDT (User Defined Type). So the user can define its own dynamic memory allocation process part.
 	But after that, the UDT instance construction process part provided by the ##[[KeyPgOpNew|New Expression]]## operator is not modified.
 	
-	##**New[] Overload**## operator is the array-version of the ##**New Overload**## operator and overloads the dynamic memory allocation process provided by the  ##**New[] Expression**## operator when applying to a UDT (User Defined Type).
+	##**New[] Overload**## operator is the (one-dimensional) array-version of the ##**New Overload**## operator and overloads the dynamic memory allocation process provided by the  ##**New[] Expression**## operator when applying to a UDT (User Defined Type).
 	
 	Memory allocated with ##**New Overload**## operator must be freed by also defining a ##[[KeyPgOpDeleteOverload|Delete Overload]]## operator. Memory allocated with ##**New[] Overload**## operator must be freed by also defining a ##**Delete[] Overload**## operator, the array-version of ##[[KeyPgOpDeleteOverload|Delete Overload]]## operator. You cannot mix and match the different versions of the operators.
 	

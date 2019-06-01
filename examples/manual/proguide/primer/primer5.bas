@@ -13,5 +13,5 @@ b = 7
 c = a + b
 
 Print "a = "; a
-Print "a = "; b
+Print "b = "; b
 Print "a + b = "; c

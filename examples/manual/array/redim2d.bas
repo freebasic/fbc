@@ -29,7 +29,7 @@ Print
 
 '' ReDim Preserve array to have 4*4 elements, preserving the contents
 '' (only the first upper bound should be changed)
-ReDim Preserve array(1 To 4, 1 To 4) As Integer
+ReDim Preserve array(1 To 4, 1 To 4)
 
 Print "4 * 4:"
 Print
@@ -44,7 +44,7 @@ Print
 
 '' ReDim Preserve array to have 2*4 elements, preserving but trancating the contents
 '' (only the first upper bound should be changed)
-ReDim Preserve array(1 To 2, 1 To 4) As Integer
+ReDim Preserve array(1 To 2, 1 To 4)
 
 Print "2 * 4:"
 Print

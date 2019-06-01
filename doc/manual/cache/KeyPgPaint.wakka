@@ -34,6 +34,8 @@ Fills an area delimited by a border of a specified color
 	##size = (8 * 8) * 4 = 256##
 	
 	If the passed string is smaller, missing pixels will be 0. If the ##//paint//## argument is omitted, normal filling is performed using the current foreground color set by ##[[KeyPgColor|Color]]##. Flood-filling continues until pixels of the specified border color are found; if ##//border_color//## is omitted, the current background color is assumed.
+	
+	**Warning:** If the border is drawn with a transparent color (in conjunction with the ##GFX_ALPHA_PRIMITIVES## option flag) and some pixels are overdrawn on it, the resultant (blended) color of these overdrawn pixels can cause a leak point through which the fill color escapes outside the border. So drawing a border with a transparent color is not recommended.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/paint.bas"}}%%(freebasic)

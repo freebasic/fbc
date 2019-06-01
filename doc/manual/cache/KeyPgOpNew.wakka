@@ -24,7 +24,7 @@ Operator to dynamically allocate memory and construct data of a specified type.
 	
 	For simple types, like integers, an initial value can be given. For types without constructors, initial values can be specified for each field (either with default initializer at data-field declaration, or with initializer list as in ##**New** //datatype// (**initializers, ..**)## if all type data-fields are numeric primitives only and without any default initializers). For types with at least one constructor, the initialize list (if any) must match an existing constructor. If no initializers are given, the default values for those types will be set.
 	
-	##**New[] Expression**## operator is the array-version of the ##**New Expression**## operator and allocates enough memory for the specified number of objects. The default constructor for the type will be used to set the initial values for each item.
+	##**New[] Expression**## operator is the (one-dimensional) array-version of the ##**New Expression**## operator and allocates enough memory for the specified number of objects. The default constructor for the type will be used to set the initial values for each item.
 	
 	Objects created with ##**New Expression**## operator must be freed with ##[[KeyPgOpDelete|Delete Statement]]## operator. Object array created with ##**New[] Expression**## operator must be freed with ##**Delete[] Statement**## operator, the array-version of ##[[KeyPgOpDelete|Delete Statement]]## operator. You cannot mix and match the different versions of the operators.
 	
@@ -50,6 +50,12 @@ scope
 
 	' Create and initialize a "rational" and store its address.
 	dim p as Rational ptr = new Rational(3, 4)
+  
+	' test if null return pointer
+	if (p = 0) then
+		print "Error: unable to allocate memory, quitting."
+		end -1
+	end if
 
 	print p->numerator & "/" & p->denominator
 
@@ -63,6 +69,12 @@ scope
 	' Allocate memory for 100 integers and store the address of the first one.
 	dim p as integer ptr = new integer[100]
 
+	' test if null return pointer
+	if (p = 0) then
+		print "Error: unable to allocate memory, quitting."
+		end -1
+	end if
+
 	' Assign some values to the integers in the array.
 	for i as integer = 0 to 99
 		p[i] = i
@@ -72,7 +84,78 @@ scope
 	delete[] p
 
 end scope
+
+sleep
 %%
+
+{{fbdoc item="filename" value="examples/manual/operator/nested_new.bas"}}%%(freebasic)
+'' Example of nested New [] to get a 2-dimentional object array (4*3)
+
+type UDT
+	dim as integer N
+	declare constructor ()
+	declare destructor ()
+end type
+
+constructor UDT ()
+	print "Constructor",
+end constructor
+
+destructor UDT ()
+	print "Destructor",
+end destructor
+
+dim as UDT ptr ptr p = new UDT ptr [4]  '' New [] allocation for the first dimension:
+										''   no internal allocation of extra uinteger because
+										''   allocation of array of pointers (to UDT objects with destructor)
+for I as integer = 0 to 3
+	p[I] = new UDT [5]                  '' New [] allocations for the last dimension:
+										''   internal allocation of an extra uinteger for each New [],
+										''   because allocation of an array of UDT objects with destructor
+	print
+next I
+
+for I as integer = 0 to 3
+	for J as integer = 0 to 4
+		p[I][J].N = I * 10 + J  '' assignment of each object array element
+	next J
+next I
+
+print
+for I as integer = 0 to 3
+	for J as integer = 0 to 4
+		print p[I][J].N,        '' display of each object array element
+	next J
+	print
+next I
+print
+
+for I as integer = 0 to 3
+	delete [] p[I]  '' Delete [] deallocations for the last dimension
+	print
+next I
+delete [] p         '' Delete [] deallocation for the first dimension)
+print
+
+sleep
+%%
+
+		Output example:
+		%%
+Constructor   Constructor   Constructor   Constructor   Constructor
+Constructor   Constructor   Constructor   Constructor   Constructor
+Constructor   Constructor   Constructor   Constructor   Constructor
+Constructor   Constructor   Constructor   Constructor   Constructor
+
+ 0             1             2             3             4
+ 10            11            12            13            14
+ 20            21            22            23            24
+ 30            31            32            33            34
+
+Destructor    Destructor    Destructor    Destructor    Destructor
+Destructor    Destructor    Destructor    Destructor    Destructor
+Destructor    Destructor    Destructor    Destructor    Destructor
+Destructor    Destructor    Destructor    Destructor    Destructor%%
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 

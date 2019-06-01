@@ -91,10 +91,11 @@ if( app_opt.help ) then
 end if
 
 cmd_opts_resolve()
-cmd_opts_check()
+cmd_opts_check_cache()
+cmd_opts_check_url()
 
 '' no pages? nothing to do...
-if( app_opt.webPageCount = 0 ) then
+if( app_opt.pageCount = 0 ) then
 	print "no pages specified."
 	end 1
 end if
@@ -106,11 +107,11 @@ dim as CWiki ptr wiki
 
 print "cache: "; app_opt.cache_dir
 
-for i = 1 to app_opt.webpagecount
+for i = 1 to app_opt.pageCount
 
 	wiki = new CWiki
 
-	sPage = app_opt.webpagelist(i)
+	sPage = app_opt.pageList(i)
 
 	f = app_opt.cache_dir + sPage + ".wakka"
 	sBody1 = ReadTextFile( f )

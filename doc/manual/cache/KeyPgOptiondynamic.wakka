@@ -19,7 +19,7 @@ Option Dynamic
 
 Dim bar(99) As Integer      ' declares a variable-length array
 ' ...
-ReDim bar(199) As Integer   ' resize the array
+ReDim bar(199)              ' resize the array
 %%
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang|-lang fblite]]// and //[[CompilerOptlang|-lang qb]]// dialects.

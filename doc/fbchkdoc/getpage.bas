@@ -24,6 +24,10 @@
 #include once "fbdoc_loader.bi"
 #include once "fbdoc_loader_web.bi"
 
+#if defined(HAVE_MYSQL)
+#include once "CWikiConSql.bi"
+#endif
+
 '' fbchkdoc headers
 #include once "fbchkdoc.bi"
 #include once "funcs.bi"
@@ -42,9 +46,14 @@ using fbdoc
 
 '' private options
 dim allow_retry as boolean = true
+dim as boolean bUseSql = false '' -usesql given on command line
 
 '' enable url and cache
+#if defined(HAVE_MYSQL)
+cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_PAGELIST or CMD_OPTS_ENABLE_DATABASE )
+#else
 cmd_opts_init( CMD_OPTS_ENABLE_URL or CMD_OPTS_ENABLE_CACHE or CMD_OPTS_ENABLE_PAGELIST )
+#endif
 
 dim i as integer = 1
 while( command(i) > "" )
@@ -54,6 +63,10 @@ while( command(i) > "" )
 		select case lcase(command(i))
 		case "-auto"
 			allow_retry = false
+#if defined(HAVE_MYSQL)
+		case "-usesql"
+			bUseSql = true
+#endif
 		case else
 			cmd_opts_unrecognized_die( i )
 		end select
@@ -73,15 +86,26 @@ if( app_opt.help ) then
 	print "   -dev+            get pages from the development server in to dev_cache_dir"
 	print
 	cmd_opts_show_help( "get page from", false )
+#if defined(HAVE_MYSQL)
+	print "   -usesql          use MySQL connection to read index"
+#endif
 	print
 	end 1
 end if
 
 cmd_opts_resolve()
-cmd_opts_check()
+cmd_opts_check_cache()
+cmd_opts_check_url()
+if( len( app_opt.wiki_url ) = 0 ) then
+	print "wiki_url not set. use -url, -web, -web+, -dev, or -dev+"
+	end 1
+end if
+if( bUseSql ) then
+	cmd_opts_check_database()
+end if
 
 '' no pages? nothing to do...
-if( app_opt.webPageCount = 0 ) then
+if( app_opt.pageCount = 0 ) then
 	print "no pages specified."
 	end 1
 end if
@@ -94,43 +118,76 @@ redim failedpages(1 to 1) as string
 '' main loop - has option to retry/list failed pages
 do
 
+	dim as CWikiCon ptr wikicon = NULL
+
 	'' Initialize the cache
 	if LocalCache_Create( app_opt.cache_dir, CWikiCache.CACHE_REFRESH_ALL ) = FALSE then
 		print "Unable to use local cache dir " + app_opt.cache_dir
 		end 1
 	end if
 
-	'' Initialize the wiki connection
-	Connection_SetUrl( app_opt.wiki_url, app_opt.ca_file )
+	if( bUseSql ) then
+#if defined(HAVE_MYSQL)
+		cmd_opts_check_database()
 
-	print "URL: "; app_opt.wiki_url
-	if( app_opt.ca_file > "" ) then
-		print "Certificate: "; app_opt.ca_file
+		wikicon = new CWikiConSql( app_opt.db_host, app_opt.db_user, app_opt.db_pass, app_opt.db_name, app_opt.db_port )
+		if wikicon = NULL then
+			print "Unable to create connection " + app_opt.cache_dir
+			end 1
+		end if
+
+		dim as CWikiConSql ptr o = cast( CWikiConSql ptr, wikicon )
+		if( o->Connect() = FALSE ) then
+			print "Error"
+			end 1
+		end if
+#endif
 	else
-		print "Certificate: none"
+		print "URL: "; app_opt.wiki_url
+
+		wikicon = new CWikiConUrl( app_opt.wiki_url, app_opt.ca_file )
+		if wikicon = NULL then
+			print "Unable to create connection " + app_opt.wiki_url
+			end 1
+		end if
+
+		if( app_opt.ca_file > "" ) then
+			print "Certificate: "; app_opt.ca_file
+		else
+			print "Certificate: none"
+		end if
+
+		print "cache: "; app_opt.cache_dir
 	end if
-	print "cache: "; app_opt.cache_dir
 
 	nfailedpages = 0
 
-	if( app_opt.webPageCount > 0 ) then
+	if( app_opt.pageCount > 0 ) then
 		dim as integer i, j
 		dim as string ret
-		for i = 1 to app_opt.webPageCount
-			ret = LoadPage( app_opt.webPageList(i), FALSE, TRUE )
-			if( ret = "" ) then
-				print "Failed to load '" & app_opt.webPageList(i) & "'"
+		for i = 1 to app_opt.pageCount
+			dim sBody as string = ""
+			print "Loading '" + app_opt.pageList(i) + "'"
+			if( wikicon->LoadPage( app_opt.pageList(i), sBody ) = FALSE ) then
+				print "Failed to load '" & app_opt.pageList(i) & "'"
 				nfailedpages += 1
 				redim preserve failedpages( 1 to nfailedpages )
-				failedpages(nfailedpages) = app_opt.webPageList(i)
+				failedpages(nfailedpages) = app_opt.pageList(i)
+			else
+				if( wikicon->GetPageID() > 0 ) then
+					if( len(sBody) > 0 ) then
+						dim as CWikiCache ptr wikicache = LocalCache_Get()
+						wikicache->SavePage( app_opt.pageList(i), sBody )
+					end if
+				end if
 			end if
 
 			if( inkey = chr(27) ) then
 				
-				for j = i + 1 to app_opt.webPageCount
+				for j = i + 1 to app_opt.pageCount
 					nfailedpages += 1
 					redim preserve failedpages( 1 to nfailedpages )
-					failedpages(nfailedpages) = app_opt.webPageList(j)
+					failedpages(nfailedpages) = app_opt.pageList(j)
 				next
 
 				exit for
@@ -140,7 +197,8 @@ do
 		next
 	end if
 
-	Connection_Destroy()
+	delete wikicon
+
 	LocalCache_Destroy()
 
 	'' Check for failed pages
@@ -162,9 +220,9 @@ do
 			case "y"
 				
 				for i = 1 to nfailedpages
-					app_opt.webPageList(i) = failedpages(i)
+					app_opt.pageList(i) = failedpages(i)
 				next
-				app_opt.webPageCount = nfailedpages
+				app_opt.pageCount = nfailedpages
 
 				exit do
 

@@ -143,7 +143,7 @@ the '-ini FILE' command line option to any of the tools.
         given.  Set or override this option from the command line using the
         '-cache DIR' command line option.
 
-    dev_cache_dir    
+    dev_cache_dir
         like web_cache_dir, excect a duplicate of the off-line server's wiki.
         This cache directory is selected when the '-dev+' command line option
         is given.  Set or override this option from the command line using
@@ -192,6 +192,12 @@ the '-ini FILE' command line option to any of the tools.
         option is given.  Set or override these options with 
         '-u USER -p PASS' command line options.
 
+    db_host, db_user, db_pass, db_name, db_port
+        db_host = database host name
+        db_user = database user login name
+        db_pass = database user login password
+        db_name = name of database to select for use
+        db_port = port on database host
 
     Why all the extra directories and extra wiki, you ask? I have all these 
 extra copies of the wiki because many people have worked very hard to create 

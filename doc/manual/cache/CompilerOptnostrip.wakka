@@ -1,0 +1,17 @@
+{{fbdoc item="title" value="Compiler Option: -nostrip"}}----
+Do not strip symbol information from the output file
+
+{{fbdoc item="syntax"}}##
+	**-nostrip**
+##
+{{fbdoc item="desc"}}
+	The ##-nostrip## compiler option explicitly prevents fbc from passing the option to strip (remove) all symbols to the linker.  Object modules and libraries will retain any symbols present after linking.
+
+{{fbdoc item="target"}}
+	- fbc strips all symbols by default on Dos and Windows platforms only
+
+{{fbdoc item="see"}}
+	- [[CompilerOptstrip|-strip]]
+	- [[CompilerCmdLine|Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

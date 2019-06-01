@@ -1,5 +1,5 @@
-#ifndef __CWIKICON_BI__
-#define __CWIKICON_BI__
+#ifndef __CWIKICONSQL_BI__
+#define __CWIKICONSQL_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
 ''	Copyright (C) 2006-2019 The FreeBASIC development team.
@@ -20,41 +20,67 @@
 
 
 #include once "fbdoc_defs.bi"
+#include once "CWikiCon.bi"
 
 namespace fb.fbdoc
 
-	type CWikiCon extends object
+	type CWikiConSqlCtx as CWikiConSqlCtx_
 
-		declare constructor()
-		declare virtual destructor()
+	type CWikiConSql extends CWikiCon
 
-		declare virtual function LoadPage _
+		declare static sub GlobalInit()
+		declare static sub GlobalExit()
+
+		declare constructor _
 			( _
-				byval pagename as zstring ptr, _
+				byval db_host as zstring ptr, _
+				byval db_user as zstring ptr, _
+				byval db_pass as zstring ptr, _
+				byval db_name as zstring ptr, _
+				byval db_port as integer _			)
+			)
+
+		declare destructor _
+			( _
+			)
+
+		declare function Connect _
+			( _
+			) as boolean
+
+		declare sub Disconnect _
+			( _
+			)
+
+		declare function LoadPage _
+			( _
+				byval page as zstring ptr, _
 				byref body as string _
 			) as boolean
 
-		declare virtual function LoadIndex _
+		declare function LoadIndex _
 			( _
-				byval pagename as zstring ptr, _
+				byval page as zstring ptr, _
 				byref body as string _
 			) as boolean
 
-		declare virtual function StorePage _
+		declare function StorePage _
 			( _
 				byval body as zstring ptr, _
 				byval note as zstring ptr _
 			) as boolean
 
-		declare virtual function StoreNewPage _
+		declare function StoreNewPage _
 			( _
 				byval body as zstring ptr, _
 				byval pagename as zstring ptr _
 			) as boolean
 
-		declare virtual function GetPageID _
+		declare function GetPageID _
 			( _
 			) as integer
+
+		ctx as CWikiConSqlCtx ptr
 
 	end type
 

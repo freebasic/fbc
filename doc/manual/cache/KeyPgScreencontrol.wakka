@@ -123,10 +123,10 @@ Sets or gets internal graphics library settings
 	- (""**"") ##SET_GL_2D_MODE## Sets OpenGL 2D render
 		[IN] ##//param1//##:
 			##OGL_2D_NONE## No rendering
-			##OGL_2D_MANUAL_SYNC## Manual rendering (when ##[[KeyPgFlip|Flip]]##/##[[KeyPgScreencopy|ScreenCopy]]## is called)
+			##OGL_2D_MANUAL_SYNC## Manual rendering (when ##[[KeyPgFlip|Flip]]## is called)
 			##OGL_2D_AUTO_SYNC## Automatic rendering
 	- (""**"") ##SET_GL_SCALE## Apply a zoom factor on OpenGL 2D render (only allowed if OpenGL 2D render mode has yet been activated via ##SET_GL_2D_MODE##)
-		[IN] ##//param1//## Zoom factor (0: no rendering)
+		[IN] ##//param1//## zoom factor (0: no rendering)
 		
 		**Other operations**
 	- ##POLL_EVENTS## Cause the library to poll all events, ie to check the system event queue, specifically used for retrieving keyboard and mouse events.  This is most useful for ""OpenGL"" code where ##[[KeyPgFlip|Flip]]## is not used, as normally ##[[KeyPgFlip|Flip]]## will cause these events to be polled.

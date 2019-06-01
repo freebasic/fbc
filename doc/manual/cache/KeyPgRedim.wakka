@@ -48,7 +48,7 @@ Next
 
 '' Resize a variable-length array with 10 elements 
 '' (the lower bound should be kept the same)
-ReDim Preserve array(0 to 9) As Integer
+ReDim Preserve array(0 to 9)
 
 Print "index", "value"
 For index As Integer = LBound(array) To UBound(array)
@@ -94,7 +94,7 @@ Print
 
 '' ReDim Preserve array to have 4*4 elements, preserving the contents
 '' (only the first upper bound should be changed)
-ReDim Preserve array(1 To 4, 1 To 4) As Integer
+ReDim Preserve array(1 To 4, 1 To 4)
 
 Print "4 * 4:"
 Print
@@ -109,7 +109,7 @@ Print
 
 '' ReDim Preserve array to have 2*4 elements, preserving but trancating the contents
 '' (only the first upper bound should be changed)
-ReDim Preserve array(1 To 2, 1 To 4) As Integer
+ReDim Preserve array(1 To 2, 1 To 4)
 
 Print "2 * 4:"
 Print

@@ -15,5 +15,5 @@ Cls
 
 Locate 13, 15: Print "Hello world!"
 
-' Save as BMP
+' Save screen as BMP
 BSave "hello.bmp", 0

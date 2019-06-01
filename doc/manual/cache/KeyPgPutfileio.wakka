@@ -77,7 +77,6 @@ Put #f, 1, buffer()
 Close #f
 %%
 
-{{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/fileio/put-buffer.bas"}}%%(freebasic)
 Dim As Byte Ptr lpBuffer
 Dim As Integer hFile, Counter, Size

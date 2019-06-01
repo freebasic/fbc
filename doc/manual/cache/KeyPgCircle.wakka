@@ -48,6 +48,8 @@ Graphics statement to draw an ellipse or a circle
 	##F## is the fill flag. If you specify this flag, the circle/ellipse will be filled with the selected color. This only takes effect if you are drawing a full circle/ellipse.
 	
 	Custom coordinates system set up by ##[[KeyPgWindow|Window]]## and/or ##[[KeyPgViewgraphics|View (Graphics)]]## affect the drawing operation; clipping set by ##[[KeyPgViewgraphics|View]]## also applies. When ##**Circle**## finishes drawing, the current graphics cursor position is set to the supplied center.
+	
+	**Note:** Curves drawn with ##**Circle**## can induce pixels overdrawn at some locations. Thus, the resultant (blended) color of these overdrawn pixels is affected if a transparent color (in conjunction with the ##GFX_ALPHA_PRIMITIVES## option flag) is used.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/gfx/circle.bas"}}%%(freebasic)

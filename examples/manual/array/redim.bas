@@ -15,7 +15,7 @@ Next
 
 '' Resize a variable-length array with 10 elements 
 '' (the lower bound should be kept the same)
-ReDim Preserve array(0 To 9) As Integer
+ReDim Preserve array(0 To 9)
 
 Print "index", "value"
 For index As Integer = LBound(array) To UBound(array)

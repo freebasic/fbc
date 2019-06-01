@@ -1,3 +1,6 @@
+#ifndef __CWIKICONDIR_BI__
+#define __CWIKICONDIR_BI__
+
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
 ''	Copyright (C) 2006-2019 The FreeBASIC development team.
 ''
@@ -16,52 +19,56 @@
 ''	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02111-1301 USA.
 
 
-'' fbdoc_loader_web
-''
-''
-'' chng: jun/2006 written [coderJeff]
-''
-
 #include once "fbdoc_defs.bi"
-#include once "CWikiConUrl.bi"
+#include once "CWikiCon.bi"
 
 namespace fb.fbdoc
 
-	dim shared as CWikiConUrl ptr wikicon
-	dim shared as string wiki_url
-	dim shared as string ca_file
+	type CWikiConDirCtx as CWikiConDirCtx_
 
-	'' --------------------------------------------------------------------------
-	'' Wiki Connection and Page Loader
-	'' --------------------------------------------------------------------------
+	type CWikiConDir extends CWikiCon
 
-	'':::::
-	sub Connection_SetUrl( byval url as zstring ptr, byval certificate as zstring ptr )
-		wiki_url = *url
-		ca_file = *certificate
-	end sub
+		declare constructor _
+			( _
+				byval path as zstring ptr = NULL _
+			)
 
-	'':::::
-	function Connection_Create( ) as CWikiConUrl Ptr
-		if( wikicon <> NULL ) then
-			return wikicon
-		end if
-		
-		wikicon = new CWikiConUrl( wiki_url, ca_file )
+		declare destructor _
+			( _
+			)
 
-		return wikicon
-		
-	end function
+		declare function LoadPage _
+			( _
+				byval page as zstring ptr, _
+				byref body as string _
+			) as boolean
 
-	'':::::
-	sub Connection_Destroy( )
-		if( wikicon = NULL ) then
-			exit sub
-		end if
-		
-		delete wikicon
-		wikicon = NULL
-		
-	end sub
+		declare function LoadIndex _
+			( _
+				byval page as zstring ptr, _
+				byref body as string _
+			) as boolean
+
+		declare function StorePage _
+			( _
+				byval body as zstring ptr, _
+				byval note as zstring ptr _
+			) as boolean
+
+		declare function StoreNewPage _
+			( _
+				byval body as zstring ptr, _
+				byval pagename as zstring ptr _
+			) as boolean
+
+		declare function GetPageID _
+			( _
+			) as integer
+
+		ctx as CWikiConDirCtx ptr
+
+	end type
 
 end namespace
+
+#endif

@@ -373,10 +373,11 @@ if( app_opt.help ) then
 end if
 
 cmd_opts_resolve()
-cmd_opts_check()
+cmd_opts_check_cache()
+cmd_opts_check_url()
 
 '' no pages? nothing to do...
-if( app_opt.webPageCount = 0 ) then
+if( app_opt.pageCount = 0 ) then
 	print "no pages specified."
 	end 1
 end if
@@ -393,7 +394,7 @@ if wikicache = NULL then
 	end 1
 end if
 
-if( app_opt.webPageCount > 0 ) then
+if( app_opt.pageCount > 0 ) then
 	dim as integer i, h, h2
 	dim as string ret
 
@@ -436,9 +437,9 @@ if( app_opt.webPageCount > 0 ) then
 ''	h = freefile
 ''	open "spellcheck.txt" for output as #h
 
-	for i = 1 to app_opt.webPageCount
+	for i = 1 to app_opt.pageCount
 
-		sPage = app_opt.webPageList(i)
+		sPage = app_opt.pageList(i)
 
 		CurrentPage = sPage
 		haveTitle = FALSE

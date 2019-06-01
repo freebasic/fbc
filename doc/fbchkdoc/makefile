@@ -59,6 +59,11 @@ DEPS = ../libfbdoc/libfbdoc.a $(HEADERS)
 FBCFLAGS += -exx -g -i ../libfbdoc
 FBLFLAGS += -exx -g -p ../libfbdoc -l fbdoc
 
+ifdef HAVE_MYSQL
+    FBCFLAGS += -d HAVE_MYSQL
+	FBLFLAGS += -l mysql
+endif
+
 ifeq ($(EXEEXT),.exe)
   FBLFLAGS += -l ws2_32
 endif

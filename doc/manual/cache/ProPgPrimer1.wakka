@@ -65,7 +65,7 @@ b = 7
 c = a + b
 
 Print "a = "; a
-Print "a = "; b
+Print "b = "; b
 Print "a + b = "; c
 %%
 	We are assigning values to the variables ##//a//##, ##//b//## and ##//c//##.  We are using ##[[KeyPgInteger|Integer]]## for the variables' data type.  An integer can be positive or negative, but not have any fractions.

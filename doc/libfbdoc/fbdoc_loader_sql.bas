@@ -72,7 +72,7 @@ namespace fb.fbdoc
 			return FALSE
 		end if
 
-		sql = "SELECT tag, body FROM wikka_pages WHERE ( latest = 'Y' )"
+		sql = "SELECT tag, CAST(CONVERT(body USING utf8) AS binary) FROM wikka_pages WHERE ( latest = 'Y' )"
 
 		if( 0 <> mysql_real_query( @db, sql, len(sql)) ) then
 			printlog "Unable to query wikka_pages"

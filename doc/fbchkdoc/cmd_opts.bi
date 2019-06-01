@@ -27,6 +27,7 @@ enum CMD_OPTS_ENABLE_FLAGS
 	CMD_OPTS_ENABLE_IMAGE = 8
 	CMD_OPTS_ENABLE_PAGELIST = 16
 	CMD_OPTS_ENABLE_MANUAL = 32
+	CMD_OPTS_ENABLE_DATABASE = 64
 
 	CMD_OPTS_ENABLE_AUTOCACHE = &h1000
 
@@ -38,7 +39,9 @@ declare sub cmd_opts_unrecognized_die( byval i as const integer )
 declare sub cmd_opts_unexpected_die( byval i as const integer )
 declare function cmd_opts_read( byref i as integer ) as boolean
 declare function cmd_opts_resolve() as boolean
-declare function cmd_opts_check() as boolean
+declare function cmd_opts_check_cache() as boolean
+declare function cmd_opts_check_url() as boolean
+declare function cmd_opts_check_database() as boolean
 declare sub cmd_opts_show_help( byref action as const string = "", byval locations as boolean = true )
 declare sub cmd_opts_show_help_item( byref opt_name as const string, byref opt_desc as const string )
 
@@ -56,10 +59,15 @@ type CMD_OPTS_GLOBAL
 	wiki_password as string
 	image_dir as string
 	manual_dir as string
+	db_host as string
+	db_user as string
+	db_pass as string
+	db_name as string
+	db_port as integer
 
-	webPageCount as integer
-	webPageList(any) as string
-	webPageComments(any) as string
+	pageCount as integer
+	pageList(any) as string
+	pageComments(any) as string
 
 end type
 
