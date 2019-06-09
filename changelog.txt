@@ -22,6 +22,7 @@ Version 1.07.0
 - sf.net #900: LTRIM( wstring, filter ) and TRIM( wstring, filter ) truncate result if filter is zero length string
 - github #116: Fix optimizations in [L/R]TrimAny rtlib functions (SkyFish)
 - github #145: WSTRING concat and assign buffer (&=) overrun
+- sf.net #893: 'Suffixes are only valid in -lang' error message showing incorrect -lang options allowed
 
 
 Version 1.06.0
