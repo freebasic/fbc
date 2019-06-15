@@ -92,6 +92,8 @@ sub cSelectStmtBegin( )
 		expr = astNewCONSTi( 0 )
 	end if
 
+	astTryOvlStringCONV( expr )
+
 	'' can't be an UDT
 	if( astGetDataType( expr ) = FB_DATATYPE_STRUCT ) then
 		errReport( FB_ERRMSG_INVALIDDATATYPES )

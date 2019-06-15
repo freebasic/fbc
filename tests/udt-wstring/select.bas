@@ -1,28 +1,17 @@
 #include "fbcunit.bi"
+#include once "uwstring-fixed.bi"
+#include once "chk-wstring.bi"
 
-SUITE( fbc_tests.wstring_.select_ )
+#define ustring UWSTRING_FIXED
+
+SUITE( fbc_tests.udt_wstring_.select_ )
 
 	#macro check( expr, literal, is_match )
 		scope
 			dim w as wstring * 50 = expr
+			dim u as ustring = w
 			
-			select case w
-			case literal
-				if( is_match ) then
-					CU_PASS()
-				else
-					CU_FAIL()
-				end if
-			case else
-				if( is_match ) then
-					CU_FAIL()
-				else
-					CU_PASS()
-				end if
-			end select
-
-			dim pw as wstring ptr = strptr( w )
-			select case *pw
+			select case u
 			case literal
 				if( is_match ) then
 					CU_PASS()
@@ -42,24 +31,9 @@ SUITE( fbc_tests.wstring_.select_ )
 	#macro check_range( expr, literal1, literal2, is_match )
 		scope
 			dim w as wstring * 50 = expr
+			dim u as ustring = w
 			
-			select case w
-			case literal1 to literal2
-				if( is_match ) then
-					CU_PASS()
-				else
-					CU_FAIL()
-				end if
-			case else
-				if( is_match ) then
-					CU_FAIL()
-				else
-					CU_PASS()
-				end if
-			end select
-
-			dim pw as wstring ptr = strptr( w )
-			select case *pw
+			select case u
 			case literal1 to literal2
 				if( is_match ) then
 					CU_PASS()
@@ -132,25 +106,5 @@ SUITE( fbc_tests.wstring_.select_ )
 		check_range( "xyz", "b", "c", false )
 	END_TEST
 
-	TEST( default )
-
-		dim w as wstring * 10 => "abc"
-			
-		select case w
-		case "1" to "10"
-			CU_ASSERT( 0 )
-		
-		case "def"		
-			CU_ASSERT( 0 )
-		
-		case "abc"
-			CU_ASSERT( -1 )
-			
-		case else
-			CU_ASSERT( 0 )	
-		
-		end select
-
-	END_TEST
-
 END_SUITE
+ 
