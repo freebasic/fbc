@@ -199,6 +199,35 @@ function astNewIIF _
 	dtype = FB_DATATYPE_INVALID
 	subtype = NULL
 
+	'' Maybe UDT extends Z|WSTRING? Check for string conversions...
+	if( truexpr->dtype <> falsexpr->dtype ) then
+		if( truexpr->dtype = FB_DATATYPE_STRUCT ) then
+			if( symbGetUdtIsZstring( truexpr->subtype ) ) then
+				if( falsexpr->dtype = FB_DATATYPE_CHAR ) then
+					astTryOvlStringCONV( truexpr )
+					truexpr->dtype = astGetDataType( truexpr )
+				end if
+			elseif( symbGetUdtIsWstring( truexpr->subtype ) ) then
+				if( falsexpr->dtype = FB_DATATYPE_WCHAR ) then
+					astTryOvlStringCONV( truexpr )
+					truexpr->dtype = astGetDataType( truexpr )
+				end if
+			end if
+		elseif( falsexpr->dtype = FB_DATATYPE_STRUCT ) then
+			if( symbGetUdtIsZstring( falsexpr->subtype ) ) then
+				if( truexpr->dtype = FB_DATATYPE_CHAR ) then
+					astTryOvlStringCONV( falsexpr )
+					falsexpr->dtype = astGetDataType( falsexpr )
+				end if
+			elseif( symbGetUdtIsWstring( falsexpr->subtype ) ) then
+				if( truexpr->dtype = FB_DATATYPE_WCHAR ) then
+					astTryOvlStringCONV( falsexpr )
+					falsexpr->dtype = astGetDataType( falsexpr )
+				end if
+			end if
+		end if
+	end if
+
 	'' check types & find the iif() result type
 	if( hCheckTypes( truexpr->dtype, truexpr->subtype, _
 	                 falsexpr->dtype, falsexpr->subtype, _
