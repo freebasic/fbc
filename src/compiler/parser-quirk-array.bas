@@ -84,6 +84,37 @@ private function hScopedSwap( ) as integer
 	dim as integer ldtype = astGetDataType( l )
 	dim as integer rdtype = astGetDataType( r )
 
+	'' Maybe UDT extends Z|WSTRING? Check for string conversions...
+	if( ldtype <> rdtype ) then
+		if( ldtype = FB_DATATYPE_STRUCT ) then
+			var sym = astGetSubType( l )
+			if( symbGetUdtIsZstring( sym ) ) then
+				if( rdtype = FB_DATATYPE_CHAR ) then
+					astTryOvlStringCONV( l )
+					ldtype = astGetDataType( l )
+				end if
+			elseif( symbGetUdtIsWstring( sym ) ) then
+				if( rdtype = FB_DATATYPE_WCHAR ) then
+					astTryOvlStringCONV( l )
+					ldtype = astGetDataType( l )
+				end if
+			end if
+		elseif( rdtype = FB_DATATYPE_STRUCT ) then
+			var sym = astGetSubType( r )
+			if( symbGetUdtIsZstring( sym ) ) then
+				if( ldtype = FB_DATATYPE_CHAR ) then
+					astTryOvlStringCONV( r )
+					rdtype = astGetDataType( r )
+				end if
+			elseif( symbGetUdtIsWstring( sym ) ) then
+				if( ldtype = FB_DATATYPE_WCHAR ) then
+					astTryOvlStringCONV( r )
+					rdtype = astGetDataType( r )
+				end if
+			end if
+		end if
+	end if
+
 	select case( ldtype )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		select case rdtype

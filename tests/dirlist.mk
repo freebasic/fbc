@@ -34,6 +34,8 @@ structs \
 swap \
 threads \
 typedef \
+udt-wstring \
+udt-zstring \
 virtual \
 visibility \
 wstring

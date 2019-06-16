@@ -80,6 +80,8 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 		dstexpr = CREATEFAKEID( )
 	end if
 
+	astTryOvlStringCONV( dstexpr )
+
 	dtype1 = astGetDataType( dstexpr )
 	select case as const dtype1
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
@@ -126,6 +128,8 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 	'' Expression
 	hMatchExpressionEx( srcexpr, dtype1 )
 
+	astTryOvlStringCONV( srcexpr )
+
 	dtype2 = astGetDataType( srcexpr )
 	select case as const dtype2
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
@@ -163,6 +167,9 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 		function = rtlMemCopyClear( dstexpr, symbGetLen( dst->subtype ), _
 		                            srcexpr, symbGetLen( src->subtype ) )
 	else
+		'' !!! TODO !!! - if udt extends z|wstring, check if operator len()
+		'' was overloaded and pass the length parameters to a separate
+		'' rtlib function
 		function = rtlStrLRSet( dstexpr, srcexpr, is_rset )
 	end if
 

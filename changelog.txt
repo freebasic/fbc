@@ -1,6 +1,7 @@
 Version 1.07.0
 
 [changed]
+- SADD/STRPTR(wstring) returns WSTRING PTR
 
 [added]
 - CVA_LIST type, CVA_START(), CVA_COPY() CVA_END(), CVA_ARG() macros will map to gcc's __builtin_va_list and __builtin_va_* macros in gcc backend
@@ -8,6 +9,20 @@ Version 1.07.0
 - github #141: introduced '-strip'/'-nostrip' options to control symbol stripping of output files (William Breathitt Gray)
 - github #141: fbc will default to stripping symbols if '-d ENABLE_STRIPALL' is passed in FBCFLAGS (William Breathitt Gray)
 - github #141: makefile option 'ENABLE_STRIPALL=1' introduced to pass '-d ENABLE_STRIPALL' via FBCFLAGS by default for dos/win32 targets (William Breathitt Gray)
+- 'TYPE udt EXTENDS Z|WSTRING' allowed to specify that UDT is a kind of Z|WSTRING
+- LTRIM/RTRIM/TRIM will accept UDT as Z|WSTRING
+- LCASE/UCASE will accept UDT as Z|WSTRING
+- Cxxx() conversion functions will accept UDT as Z|WSTRING
+- INSTR/INSTRREV will accept UDT as Z|WSTRING
+- MID function will accept UDT as Z|WSTRING
+- SADD/STRPTR will accept UDT as Z|WSTRING to return Z|WSTRING ptr
+- LSET/RSET statements will accept UDT as Z|WSTRING
+- MID statement will accept UDT as Z|WSTRING
+- ASC function will accept UDT as Z|WSTRING
+- STR/WSTR function will accept UDT as Z|WSTRING to return a Z|WSTRING
+- SELECT statement will accept UDT as Z|WSTRING to return a Z|WSTRING
+- SWAP statement will accept UDT as Z|WSTRING
+- IIF function will accept UDT as Z|WSTRING
 
 [fixed]
 - sf.net #881: C backend: support for varadic function parameters in gcc using __builtin_va_list type and related macros

@@ -2846,6 +2846,10 @@ function rtlToStr _
     	end if
     end if
 
+	astTryOvlStringCONV( expr )
+
+	dtype = astGetDataType( expr )
+
     ''
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
@@ -2945,6 +2949,10 @@ function rtlToWstr _
 			end if
     	end if
     end if
+
+	astTryOvlStringCONV( expr )
+
+	dtype = astGetDataType( expr )
 
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
@@ -3092,7 +3100,8 @@ function rtlStrMid _
 
     function = NULL
 
-	''
+	astTryOvlStringCONV( expr1 )
+
     if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRMID ) )
     else
@@ -3129,6 +3138,8 @@ function rtlStrAssignMid _
 	dim as longint dst_len = any
 
     function = NULL
+
+	astTryOvlStringCONV( expr1 )
 
 	''
     if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
@@ -3328,6 +3339,8 @@ function rtlStrAsc _
 
 	function = NULL
 
+	astTryOvlStringCONV( expr )
+
     ''
     if( astGetDataType( expr ) <> FB_DATATYPE_WCHAR ) then
     	proc = astNewCALL( PROCLOOKUP( STRASC ) )
@@ -3425,6 +3438,11 @@ function rtlStrInstr _
 
     function = NULL
 
+	astTryOvlStringCONV( nd_text )
+	if( nd_pattern ) then
+		astTryOvlStringCONV( nd_pattern )
+	end if
+
 	dtype = astGetDataType( nd_text )
 
 	''
@@ -3476,6 +3494,11 @@ function rtlStrInstrRev _
 
 	function = NULL
 
+	astTryOvlStringCONV( nd_text )
+	if( nd_pattern ) then
+		astTryOvlStringCONV( nd_pattern )
+	end if
+
 	dtype = astGetDataType( nd_text )
 
 	''
@@ -3525,6 +3548,11 @@ function rtlStrTrim _
     dim as integer dtype = any
 
     function = NULL
+
+	astTryOvlStringCONV( nd_text )
+	if( nd_pattern ) then
+		astTryOvlStringCONV( nd_pattern )
+	end if
 
 	dtype = astGetDataType( nd_text )
 
@@ -3579,6 +3607,11 @@ function rtlStrRTrim _
 
     function = NULL
 
+	astTryOvlStringCONV( nd_text )
+	if( nd_pattern ) then
+		astTryOvlStringCONV( nd_pattern )
+	end if
+
 	dtype = astGetDataType( nd_text )
 
 	''
@@ -3631,6 +3664,11 @@ function rtlStrLTrim _
     dim as integer dtype = any
 
     function = NULL
+
+	astTryOvlStringCONV( nd_text )
+	if( nd_pattern ) then
+		astTryOvlStringCONV( nd_pattern )
+	end if
 
 	dtype = astGetDataType( nd_text )
 
@@ -3775,6 +3813,8 @@ function rtlStrCase _
 			end if
 		end if
 	end if
+
+	astTryOvlStringCONV( expr )
 
 	if( is_lcase ) then
 		if( astGetDataType( expr ) = FB_DATATYPE_WCHAR ) then

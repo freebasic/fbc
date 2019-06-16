@@ -6,7 +6,10 @@ This is the directory for FreeBASIC compiler and runtime tests.
 Requirements - Windows / Linux / Dos
 ------------------------------------
    - FreeBASIC Compiler 1.06.0 or above
+   - a build environment with common *nix commands available
+     on the path
    - make, sh, find, xargs, grep, sed, cat, rm
+
 
 Summary
 -------
@@ -91,6 +94,7 @@ ENABLE_CONSOLE_OUTPUT=1
    Add '-d ENABLE_CONSOLE_OUTPUT' when compiling tests. This is used
    to turn on printing output to the console.
 
+
 How the tests are collected
 ---------------------------
 
@@ -98,7 +102,14 @@ All of the directories listed in 'dirlist.mk' in the makefile
 variable $(DIRLIST) are scanned for files with the extension
 '.bmk' or '.bas'.  When matching filenames are found, the contents
 of the file is then scanned to determine the method of testing
-needed for that specific file.
+needed for that specific file. For adding tests in new folders
+manually add the new folder names in dirlist.mk.
+
+This scan autogenerates "unit-tests.inc", which holds all files to be 
+included in unit-tests.
+
+For forcing a rescan you should run "make clean", which will remove all
+files resulting from previous runs and leave a cleaned tests environment.
 
 By default '-lang fb' tests are collected unless 'FB_LANG=?' option
 is given.
@@ -118,7 +129,7 @@ Sample FBCUNIT compatible test (using SUITE/TEST macros)
    #include "fbcunit.bi"
    SUITE( pretest )
       TEST( test_true )
-	      CU_ASSERT_TRUE( true ) 
+          CU_ASSERT_TRUE( true ) 
       END_TEST
    END_SUITE
    ' EOF
@@ -147,7 +158,7 @@ Sample FBCUNIT compatible test (using the 'old' way)
    ' EOF
 
 Consult the fbcunit documentation for a listing of available
-assertions and testing methods.
+assertions and testing methods (tests\fbcunit\inc\fbcunit.bi).
 
 
 non-unit compatible test (log-tests)
