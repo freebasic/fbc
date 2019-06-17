@@ -690,6 +690,8 @@ function rtlPrint _
 			f = PROCLOOKUP( PRINTVOID )
 		end if
 	else
+		astTryOvlStringCONV( expr )
+
 		'' UDT? try to convert to string with type casting op overloading
 		select case typeGet( astGetDataType( expr ) )
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
@@ -901,6 +903,8 @@ function rtlWrite _
 	if( expr = NULL ) then
 		f = PROCLOOKUP( WRITEVOID )
 	else
+		astTryOvlStringCONV( expr )
+
 		'' UDT? try to convert to string with type casting op overloading
 		select case astGetDataType( expr )
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
@@ -1070,6 +1074,8 @@ function rtlPrintUsing _
     if( expr = NULL ) then
     	exit function
     end if
+
+	astTryOvlStringCONV( expr )
 
 	'' UDT? try to convert to double with type casting op overloading
 	select case astGetDataType( expr )

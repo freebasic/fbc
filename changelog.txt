@@ -23,6 +23,7 @@ Version 1.07.0
 - SELECT statement will accept UDT as Z|WSTRING to return a Z|WSTRING
 - SWAP statement will accept UDT as Z|WSTRING
 - IIF function will accept UDT as Z|WSTRING
+- PRINT/LPRINT/WRITE will accept UDT as Z|WSTRING
 
 [fixed]
 - sf.net #881: C backend: support for varadic function parameters in gcc using __builtin_va_list type and related macros
