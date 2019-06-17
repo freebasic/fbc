@@ -22,12 +22,12 @@ FBCALL FB_WCHAR *fb_WstrConcat ( const FB_WCHAR *str1, const FB_WCHAR *str2 )
 		return NULL;
 
 	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( str1_len + str2_len );
+	dst = fb_wstr_AllocTemp( str1_len + str2_len );
 
 	/* do the concatenation */
-    d = fb_wstr_Move( dst, str1, str1_len );
-    d = fb_wstr_Move( d, str2, str2_len );
-    *d = L'\0';
+	d = fb_wstr_Move( dst, str1, str1_len );
+	d = fb_wstr_Move( d, str2, str2_len );
+	*d = L'\0';
 
 	return dst;
 }

@@ -20,7 +20,7 @@ FBCALL FB_WCHAR *fb_WstrRight( const FB_WCHAR *src, ssize_t chars )
 		len = chars;
 
 	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( len );
+	dst = fb_wstr_AllocTemp( len );
 	if( dst != NULL )
 	{
 		/* simple rev copy */

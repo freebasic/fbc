@@ -34,7 +34,7 @@ FBCALL void *fb_StrAssignEx
 	/* is dst var-len? */
 	if( dst_size == -1 )
 	{
-        dstr = (FBSTRING *)dst;
+		dstr = (FBSTRING *)dst;
 
 		/* src NULL? */
 		if( src_len == 0 )
@@ -73,16 +73,16 @@ FBCALL void *fb_StrAssignEx
 				return dst;
 			}
 
-        	/* else, realloc dst if needed and copy src */
-        	if( is_init == FB_FALSE )
-        	{
+			/* else, realloc dst if needed and copy src */
+			if( is_init == FB_FALSE )
+			{
 				if( FB_STRSIZE( dst ) != src_len )
 					fb_hStrRealloc( dstr, src_len, FB_FALSE );
-        	}
-        	else
-        	{
+			}
+			else
+			{
 				fb_hStrAlloc( dstr, src_len );
-        	}
+			}
 
 			fb_hStrCopy( dstr->data, src_ptr, src_len );
 		}

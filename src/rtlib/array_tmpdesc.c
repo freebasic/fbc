@@ -52,49 +52,49 @@ FBARRAY *fb_ArrayAllocTempDesc
 		...
 	)
 {
-    va_list ap;
+	va_list ap;
 	size_t i, elements;
 	ssize_t diff;
-    FBARRAY	*array;
-    FBARRAYDIM *dim;
+	FBARRAY	*array;
+	FBARRAYDIM *dim;
 	ssize_t lbTB[FB_MAXDIMENSIONS];
 	ssize_t ubTB[FB_MAXDIMENSIONS];
 
 	FB_LOCK();
-    array = fb_hArrayAllocTmpDesc( );
-    FB_UNLOCK();
+	array = fb_hArrayAllocTmpDesc( );
+	FB_UNLOCK();
 
-    *pdesc = array;
+	*pdesc = array;
 
-    if( array == NULL )
-        return NULL;
+	if( array == NULL )
+		return NULL;
 
-    if( dimensions == 0)
-    {
-        /* special case for GET temp arrays */
-        array->size = 0;
-        return array;
-    }
+	if( dimensions == 0)
+	{
+		/* special case for GET temp arrays */
+		array->size = 0;
+		return array;
+	}
 
-    va_start( ap, dimensions );
+	va_start( ap, dimensions );
 
 	dim = &array->dimTB[0];
 
-    for( i = 0; i < dimensions; i++ )
-    {
+	for( i = 0; i < dimensions; i++ )
+	{
 		lbTB[i] = va_arg( ap, ssize_t );
 		ubTB[i] = va_arg( ap, ssize_t );
 
-    	dim->elements = (ubTB[i] - lbTB[i]) + 1;
-    	dim->lbound = lbTB[i];
-    	dim->ubound = ubTB[i];
-    	++dim;
-    }
+		dim->elements = (ubTB[i] - lbTB[i]) + 1;
+		dim->lbound = lbTB[i];
+		dim->ubound = ubTB[i];
+		++dim;
+	}
 
-    va_end( ap );
+	va_end( ap );
 
-    elements = fb_hArrayCalcElements( dimensions, &lbTB[0], &ubTB[0] );
-    diff = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
+	elements = fb_hArrayCalcElements( dimensions, &lbTB[0], &ubTB[0] );
+	diff = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
 
 	array->data = ((unsigned char *)arraydata) + diff;
 	array->ptr = arraydata;
@@ -102,7 +102,7 @@ FBARRAY *fb_ArrayAllocTempDesc
 	array->element_len = element_len;
 	array->dimensions = dimensions;
 
-    return array;
+	return array;
 }
 
 FBCALL void fb_ArrayFreeTempDesc( FBARRAY *pdesc )

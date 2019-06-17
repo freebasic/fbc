@@ -33,8 +33,8 @@ FBCALL void *fb_StrConcatAssign
 		/* is dst var-len? */
 		if( dst_size == -1 )
 		{
-        	dstr = (FBSTRING *)dst;
-        	dst_len = FB_STRSIZE( dst );
+			dstr = (FBSTRING *)dst;
+			dst_len = FB_STRSIZE( dst );
 
 			fb_hStrRealloc( dstr, dst_len+src_len, FB_TRUE );
 

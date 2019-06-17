@@ -4,7 +4,7 @@
 
 FBCALL unsigned int fb_WstrToUInt( const FB_WCHAR *src, ssize_t len )
 {
-    const FB_WCHAR *p, *r;
+	const FB_WCHAR *p, *r;
 	int radix;
 
 	/* skip white spc */
@@ -48,7 +48,7 @@ FBCALL unsigned int fb_WstrToUInt( const FB_WCHAR *src, ssize_t len )
 
 FBCALL unsigned int fb_WstrValUInt ( const FB_WCHAR *str )
 {
-    unsigned int val;
+	unsigned int val;
 	ssize_t len;
 
 	if( str == NULL )

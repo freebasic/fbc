@@ -12,33 +12,33 @@ FBCALL FBSTRING *fb_LTrimEx
 	ssize_t len;
 	char *src_ptr = NULL;
 
-    if( src == NULL ) 
-    {
-        fb_hStrDelTemp( pattern );
-        return &__fb_ctx.null_desc;
-    }
+	if( src == NULL ) 
+	{
+		fb_hStrDelTemp( pattern );
+		return &__fb_ctx.null_desc;
+	}
 
 	FB_STRLOCK();
 
 	if( src->data != NULL )
-    {
-        ssize_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
-        len = FB_STRSIZE( src );
-        src_ptr = src->data;
-        if( len >= len_pattern ) 
-        {
-            if( len_pattern == 1 ) 
-            {
-                src_ptr = fb_hStrSkipChar( src_ptr,
-                                     	   len,
-                                     	   FB_CHAR_TO_INT(pattern->data[0]) );
-                len = len - (ssize_t)(src_ptr - src->data);
+	{
+		ssize_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
+		len = FB_STRSIZE( src );
+		src_ptr = src->data;
+		if( len >= len_pattern ) 
+		{
+			if( len_pattern == 1 ) 
+			{
+				src_ptr = fb_hStrSkipChar( src_ptr,
+									 	   len,
+									 	   FB_CHAR_TO_INT(pattern->data[0]) );
+				len = len - (ssize_t)(src_ptr - src->data);
 
-            } 
-            else
-            {                
-                if( len_pattern != 0 ) 
-                {
+			} 
+			else
+			{                
+				if( len_pattern != 0 ) 
+				{
 	                while (len >= len_pattern ) 
 	                {
 	                    if( FB_MEMCMP( src_ptr, pattern->data, len_pattern )!=0 )
@@ -48,8 +48,8 @@ FBCALL FBSTRING *fb_LTrimEx
 	                    len -= len_pattern;
 	                }
 				}
-            }
-        }
+			}
+		}
 	}
 	else
 		len = 0;
@@ -57,7 +57,7 @@ FBCALL FBSTRING *fb_LTrimEx
 	if( len > 0 )
 	{
 		/* alloc temp string */
-        dst = fb_hStrAllocTemp_NoLock( NULL, len );
+		dst = fb_hStrAllocTemp_NoLock( NULL, len );
 		if( dst != NULL )
 		{
 			/* simple copy */
@@ -65,13 +65,13 @@ FBCALL FBSTRING *fb_LTrimEx
 		}
 		else
 			dst = &__fb_ctx.null_desc;
-    }
+	}
 	else
 		dst = &__fb_ctx.null_desc;
 
 	/* del if temp */
 	fb_hStrDelTemp_NoLock( src );
-    fb_hStrDelTemp_NoLock( pattern );
+	fb_hStrDelTemp_NoLock( pattern );
 
 	FB_STRUNLOCK();
 

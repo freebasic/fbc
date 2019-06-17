@@ -4,7 +4,7 @@
 
 FBCALL unsigned long long fb_hStr2ULongint( char *src, ssize_t len )
 {
-    char 	*p;
+	char 	*p;
 	int radix, skip;
 
 	/* skip white spc */
@@ -54,7 +54,7 @@ FBCALL unsigned long long fb_hStr2ULongint( char *src, ssize_t len )
 /*:::::*/
 FBCALL unsigned long long fb_VALULNG ( FBSTRING *str )
 {
-    unsigned long long val;
+	unsigned long long val;
 
 	if( str == NULL )
 	    return 0;

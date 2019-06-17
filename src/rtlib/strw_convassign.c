@@ -83,7 +83,7 @@ FBCALL void *fb_WstrAssignToAEx
 		}
 		else
 		{
-        	/* realloc dst if needed and copy src */
+			/* realloc dst if needed and copy src */
 			dst_chars = getALenForWLen(src_chars);
 			if( is_init == FB_FALSE )
 			{

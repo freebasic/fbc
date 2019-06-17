@@ -17,7 +17,7 @@ FBCALL FB_WCHAR *fb_BoolToWstr ( char num )
 	FB_WCHAR *dst;
 
 	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( 5 );
+	dst = fb_wstr_AllocTemp( 5 );
 
 	if( dst != NULL )
 	{

@@ -49,16 +49,16 @@ typedef void        (*FB_PRINTBUFFPROC) ( const void *buffer, size_t len, int ma
 typedef void        (*FB_PRINTBUFFWPROC)( const FB_WCHAR *buffer, size_t len, int mask );
 
 typedef char        *(*FB_READSTRPROC)  ( char *buffer, ssize_t len );
-        char        *fb_ReadString      ( char *buffer, ssize_t len, FILE *f );
+		char        *fb_ReadString      ( char *buffer, ssize_t len, FILE *f );
 
 typedef int         (*FB_LINEINPUTPROC) ( FBSTRING *text, void *dst, ssize_t dst_len,
 										  int fillrem, int addquestion, int addnewline );
 typedef int         (*FB_LINEINPUTWPROC)( const FB_WCHAR *text, FB_WCHAR *dst,
-                                          ssize_t max_chars, int addquestion, int addnewline );
+										  ssize_t max_chars, int addquestion, int addnewline );
 FBCALL int          fb_LineInput        ( FBSTRING *text, void *dst, ssize_t dst_len,
 										  int fillrem, int addquestion, int addnewline );
 FBCALL int          fb_LineInputWstr    ( const FB_WCHAR *text, FB_WCHAR *dst,
-                                          ssize_t max_chars, int addquestion, int addnewline );
+										  ssize_t max_chars, int addquestion, int addnewline );
 
 FBCALL int          fb_Multikey         ( int scancode );
 FBCALL int          fb_GetMouse         ( int *x, int *y, int *z, int *buttons_, int *clip );
@@ -89,31 +89,31 @@ FBCALL int			fb_PageSet			( int active, int visible );
 typedef int         (*FB_PAGESETPROC)   ( int active, int visible );
 
 typedef struct FB_HOOKSTB {
-    FB_INKEYPROC    		inkeyproc;
-    FB_GETKEYPROC   		getkeyproc;
-    FB_KEYHITPROC   		keyhitproc;
-    FB_CLSPROC      		clsproc;
-    FB_COLORPROC    		colorproc;
-    FB_LOCATEPROC   		locateproc;
-    FB_WIDTHPROC    		widthproc;
-    FB_GETXPROC     		getxproc;
-    FB_GETYPROC     		getyproc;
-    FB_GETXYPROC    		getxyproc;
-    FB_GETSIZEPROC  		getsizeproc;
-    FB_PRINTBUFFPROC 		printbuffproc;
-    FB_PRINTBUFFWPROC 		printbuffwproc;
-    FB_READSTRPROC  		readstrproc;
-    FB_MULTIKEYPROC 		multikeyproc;
-    FB_GETMOUSEPROC 		getmouseproc;
-    FB_SETMOUSEPROC 		setmouseproc;
-    FB_INPROC       		inproc;
-    FB_OUTPROC      		outproc;
-    FB_VIEWUPDATEPROC 		viewupdateproc;
-    FB_LINEINPUTPROC 		lineinputproc;
-    FB_LINEINPUTWPROC 		lineinputwproc;
-    FB_READXYPROC   		readxyproc;
-    FB_SLEEPPROC    		sleepproc;
-    FB_ISREDIRPROC			isredirproc;
-    FB_PAGECOPYPROC			pagecopyproc;
-    FB_PAGESETPROC			pagesetproc;
+	FB_INKEYPROC    		inkeyproc;
+	FB_GETKEYPROC   		getkeyproc;
+	FB_KEYHITPROC   		keyhitproc;
+	FB_CLSPROC      		clsproc;
+	FB_COLORPROC    		colorproc;
+	FB_LOCATEPROC   		locateproc;
+	FB_WIDTHPROC    		widthproc;
+	FB_GETXPROC     		getxproc;
+	FB_GETYPROC     		getyproc;
+	FB_GETXYPROC    		getxyproc;
+	FB_GETSIZEPROC  		getsizeproc;
+	FB_PRINTBUFFPROC 		printbuffproc;
+	FB_PRINTBUFFWPROC 		printbuffwproc;
+	FB_READSTRPROC  		readstrproc;
+	FB_MULTIKEYPROC 		multikeyproc;
+	FB_GETMOUSEPROC 		getmouseproc;
+	FB_SETMOUSEPROC 		setmouseproc;
+	FB_INPROC       		inproc;
+	FB_OUTPROC      		outproc;
+	FB_VIEWUPDATEPROC 		viewupdateproc;
+	FB_LINEINPUTPROC 		lineinputproc;
+	FB_LINEINPUTWPROC 		lineinputwproc;
+	FB_READXYPROC   		readxyproc;
+	FB_SLEEPPROC    		sleepproc;
+	FB_ISREDIRPROC			isredirproc;
+	FB_PAGECOPYPROC			pagecopyproc;
+	FB_PAGESETPROC			pagesetproc;
 } FB_HOOKSTB;

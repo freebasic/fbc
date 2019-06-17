@@ -85,42 +85,42 @@ typedef uint8_t  UTF_8;
 
 #ifndef FB_WSTR_FROM_INT
 #define FB_WSTR_FROM_INT( buffer, num ) \
-    swprintf( buffer, sizeof( int ) * 3 + 1, _LC("%d"), (int) (num) )
+	swprintf( buffer, sizeof( int ) * 3 + 1, _LC("%d"), (int) (num) )
 #endif
 
 #ifndef FB_WSTR_FROM_UINT
 #define FB_WSTR_FROM_UINT( buffer, num ) \
-    swprintf( buffer, sizeof( unsigned int ) * 3 + 1, _LC("%u"), (unsigned) (num) )
+	swprintf( buffer, sizeof( unsigned int ) * 3 + 1, _LC("%u"), (unsigned) (num) )
 #endif
 
 #ifndef FB_WSTR_FROM_UINT_OCT
 #define FB_WSTR_FROM_UINT_OCT( buffer, num ) \
-    swprintf( buffer, sizeof( int ) * 4 + 1, _LC("%o"), (unsigned) (num) )
+	swprintf( buffer, sizeof( int ) * 4 + 1, _LC("%o"), (unsigned) (num) )
 #endif
 
 #ifndef FB_WSTR_FROM_INT64
 #define FB_WSTR_FROM_INT64( buffer, num ) \
-    swprintf( buffer, sizeof( long long ) * 3 + 1, _LC("%lld"), (long long) (num) )
+	swprintf( buffer, sizeof( long long ) * 3 + 1, _LC("%lld"), (long long) (num) )
 #endif
 
 #ifndef FB_WSTR_FROM_UINT64
 #define FB_WSTR_FROM_UINT64( buffer, num ) \
-    swprintf( buffer, sizeof( unsigned long long ) * 3 + 1, _LC("%llu"), (unsigned long long) (num) )
+	swprintf( buffer, sizeof( unsigned long long ) * 3 + 1, _LC("%llu"), (unsigned long long) (num) )
 #endif
 
 #ifndef FB_WSTR_FROM_UINT64_OCT
 #define FB_WSTR_FROM_UINT64_OCT( buffer, num ) \
-    swprintf( buffer, sizeof( long long ) * 4 + 1, _LC("%llo"), (unsigned long long) (num) )
+	swprintf( buffer, sizeof( long long ) * 4 + 1, _LC("%llo"), (unsigned long long) (num) )
 #endif
 
 #ifndef FB_WSTR_FROM_FLOAT
 #define FB_WSTR_FROM_FLOAT( buffer, num ) \
-    swprintf( buffer, 7+8 + 1, _LC("%.7g"), (double) (num) )
+	swprintf( buffer, 7+8 + 1, _LC("%.7g"), (double) (num) )
 #endif
 
 #ifndef FB_WSTR_FROM_DOUBLE
 #define FB_WSTR_FROM_DOUBLE( buffer, num ) \
-    swprintf( buffer, 16+8 + 1, _LC("%.16g"), (double) (num) )
+	swprintf( buffer, 16+8 + 1, _LC("%.16g"), (double) (num) )
 #endif
 
 /* Calculate the number of characters between two pointers. */

@@ -4,27 +4,27 @@
 
 int fb_FileGetStrEx( FB_FILE *handle, fb_off_t pos, void *str, ssize_t str_len, size_t *bytesread )
 {
-    int res;
-    size_t len;
+	int res;
+	size_t len;
 	char *data;
 
 	if( bytesread )
 		*bytesread = 0;
 
-    if( !FB_HANDLE_USED(handle) )
+	if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-    /* get string len */
+	/* get string len */
 	FB_STRSETUP_DYN( str, str_len, data, len );
 
 	/* perform call ... but only if there's data ... */
-    if( (data != NULL) && (len > 0) ) {
-        res = fb_FileGetDataEx( handle, pos, data, len, &len, TRUE, FALSE );
-        data[len] = 0;                                /* add the null-term */
-    } else {
+	if( (data != NULL) && (len > 0) ) {
+		res = fb_FileGetDataEx( handle, pos, data, len, &len, TRUE, FALSE );
+		data[len] = 0;                                /* add the null-term */
+	} else {
 		/* no/empty destination string */
 		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
+	}
 
 	if( bytesread )
 		*bytesread = len;

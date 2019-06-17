@@ -51,10 +51,10 @@ static void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
 
 FBCALL int fb_hStrDelTempDesc( FBSTRING *str )
 {
-    FB_STR_TMPDESC *item =
-        (FB_STR_TMPDESC*) ( (char*)str - offsetof( FB_STR_TMPDESC, desc ) );
+	FB_STR_TMPDESC *item =
+		(FB_STR_TMPDESC*) ( (char*)str - offsetof( FB_STR_TMPDESC, desc ) );
 
-    /* is this really a temp descriptor? */
+	/* is this really a temp descriptor? */
 	if( (item < fb_tmpdsTB+0) ||
 	    (item > fb_tmpdsTB+FB_STR_TMPDESCRIPTORS-1) )
 		return -1;
@@ -80,8 +80,8 @@ FBCALL FBSTRING *fb_hStrAlloc( FBSTRING *str, ssize_t size )
 	{
 		str->data = (char *)malloc( size + 1 );
 		if( str->data == NULL )
-    	{
-            str->len = str->size = 0;
+		{
+			str->len = str->size = 0;
 			return NULL;
 		}
 
@@ -91,7 +91,7 @@ FBCALL FBSTRING *fb_hStrAlloc( FBSTRING *str, ssize_t size )
 	str->size = newsize;
 	str->len = size;
 
-    return str;
+	return str;
 }
 
 FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, ssize_t size, int preserve )
@@ -118,25 +118,25 @@ FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, ssize_t size, int preserve )
 		}
 		else
 		{
-            char *pszOld = str->data;
+			char *pszOld = str->data;
 			str->data = (char *)realloc( pszOld, newsize + 1 );
 			/* failed? try the original request */
 			if( str->data == NULL )
 			{
 				str->data = (char *)realloc( pszOld, size + 1 );
 				newsize = size;
-                if( str->data == NULL )
-                {
-                    /* restore the old memory block */
-                    str->data = pszOld;
-                    return NULL;
-                }
-            }
+				if( str->data == NULL )
+				{
+					/* restore the old memory block */
+					str->data = pszOld;
+					return NULL;
+				}
+			}
 		}
 
 		if( str->data == NULL )
-        {
-            str->len = str->size = 0;
+		{
+			str->len = str->size = 0;
 			return NULL;
 		}
 
@@ -145,43 +145,43 @@ FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, ssize_t size, int preserve )
 
 	fb_hStrSetLength( str, size );
 
-    return str;
+	return str;
 }
 
 FBCALL FBSTRING *fb_hStrAllocTemp_NoLock( FBSTRING *str, ssize_t size )
 {
 	int try_alloc = str==NULL;
 
-    if( try_alloc )
-    {
-        str = fb_hStrAllocTmpDesc( );
-        if( str==NULL )
-            return NULL;
-    }
+	if( try_alloc )
+	{
+		str = fb_hStrAllocTmpDesc( );
+		if( str==NULL )
+			return NULL;
+	}
 
-    if( fb_hStrRealloc( str, size, FB_FALSE ) == NULL )
-    {
-        if( try_alloc )
-            fb_hStrDelTempDesc( str );
-        return NULL;
-    }
-    else
-        str->len |= FB_TEMPSTRBIT;
+	if( fb_hStrRealloc( str, size, FB_FALSE ) == NULL )
+	{
+		if( try_alloc )
+			fb_hStrDelTempDesc( str );
+		return NULL;
+	}
+	else
+		str->len |= FB_TEMPSTRBIT;
 
-    return str;
+	return str;
 }
 
 FBCALL FBSTRING *fb_hStrAllocTemp( FBSTRING *str, ssize_t size )
 {
-    FBSTRING *res;
+	FBSTRING *res;
 
-    FB_STRLOCK( );
+	FB_STRLOCK( );
 
-    res = fb_hStrAllocTemp_NoLock( str, size );
+	res = fb_hStrAllocTemp_NoLock( str, size );
 
-    FB_STRUNLOCK( );
+	FB_STRUNLOCK( );
 
-    return res;
+	return res;
 }
 
 FBCALL int fb_hStrDelTemp_NoLock( FBSTRING *str )
@@ -191,10 +191,10 @@ FBCALL int fb_hStrDelTemp_NoLock( FBSTRING *str )
 
 	/* is it really a temp? */
 	if( FB_ISTEMP( str ) )
-        fb_StrDelete( str );
+		fb_StrDelete( str );
 
-    /* del descriptor (must be done by last as it will be cleared) */
-    return fb_hStrDelTempDesc( str );
+	/* del descriptor (must be done by last as it will be cleared) */
+	return fb_hStrDelTempDesc( str );
 }
 
 FBCALL int fb_hStrDelTemp( FBSTRING *str )
@@ -212,11 +212,11 @@ FBCALL int fb_hStrDelTemp( FBSTRING *str )
 
 FBCALL void fb_hStrCopy( char *dst, const char *src, ssize_t bytes )
 {
-    if( (src != NULL) && (bytes > 0) )
-    {
-        dst = (char *) FB_MEMCPYX( dst, src, bytes );
-    }
+	if( (src != NULL) && (bytes > 0) )
+	{
+		dst = (char *) FB_MEMCPYX( dst, src, bytes );
+	}
 
-    /* add the null-term */
-    *dst = 0;
+	/* add the null-term */
+	*dst = 0;
 }

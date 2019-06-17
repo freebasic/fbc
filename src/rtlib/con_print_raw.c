@@ -6,6 +6,6 @@
 #define FB_TCHAR char
 #define FB_CON_HOOK_TWRITE Write
 #define FB_TCHAR_ADVANCE( iter, count ) \
-    iter += count
+	iter += count
 
 #include "con_print_raw_uni.h"

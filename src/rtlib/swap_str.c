@@ -3,7 +3,7 @@
 #include "fb.h"
 
 FBCALL void fb_StrSwap( void *str1, ssize_t size1, int fillrem1,
-                        void *str2, ssize_t size2, int fillrem2 )
+						void *str2, ssize_t size2, int fillrem2 )
 {
 	char *p1, *p2;
 	ssize_t len1, len2;

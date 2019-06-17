@@ -13,8 +13,8 @@ char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, ssize_t *chars )
 	ssize_t extbytes, charsleft;
 	char *buffer = dst;
 	
-    if( dst == NULL )
-    {
+	if( dst == NULL )
+	{
 		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 
@@ -120,8 +120,8 @@ char *fb_hUTF16ToChar( const UTF_16 *src, char *dst, ssize_t *chars )
 	ssize_t charsleft;
 	char *buffer = dst;
 
-    if( dst == NULL )
-    {
+	if( dst == NULL )
+	{
 		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 
@@ -185,8 +185,8 @@ char *fb_hUTF32ToChar( const UTF_32 *src, char *dst, ssize_t *chars )
 	ssize_t charsleft;
 	char *buffer = dst;
 
-    if( dst == NULL )
-    {
+	if( dst == NULL )
+	{
 		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 

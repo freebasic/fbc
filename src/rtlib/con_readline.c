@@ -9,23 +9,23 @@ static void DoAdjust
 		int cols, int rows
 	)
 {
-    DBG_ASSERT( x!=NULL && y!=NULL );
+	DBG_ASSERT( x!=NULL && y!=NULL );
 
-    *x -= 1;
-    *y -= 1;
+	*x -= 1;
+	*y -= 1;
 
-    *x += dx;
-    if( *x < 0 ) {
-        *x = -*x + cols;
-        *y -= *x / cols;
-        *x = cols - (*x % cols);
-    }
-    *y += *x / cols;
-    *x %= cols;
-    *y += dy;
+	*x += dx;
+	if( *x < 0 ) {
+		*x = -*x + cols;
+		*y -= *x / cols;
+		*x = cols - (*x % cols);
+	}
+	*y += *x / cols;
+	*x %= cols;
+	*y += dy;
 
-    *x += 1;
-    *y += 1;
+	*x += 1;
+	*y += 1;
 }
 
 static void DoMove
@@ -35,36 +35,36 @@ static void DoMove
 		int cols, int rows
 	)
 {
-    DoAdjust( x, y, dx, dy, cols, rows );
-    if( *y==(rows+1) && *x==1 ) {
-        fb_Locate( rows, cols, -1, 0, 0 );
-        fb_PrintBufferEx( FB_NEWLINE, sizeof(FB_NEWLINE)-1, 0 );
-    } else {
-        fb_Locate( *y, *x, -1, 0, 0 );
-    }
+	DoAdjust( x, y, dx, dy, cols, rows );
+	if( *y==(rows+1) && *x==1 ) {
+		fb_Locate( rows, cols, -1, 0, 0 );
+		fb_PrintBufferEx( FB_NEWLINE, sizeof(FB_NEWLINE)-1, 0 );
+	} else {
+		fb_Locate( *y, *x, -1, 0, 0 );
+	}
 }
 
 FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
 {
 	FBSTRING result = { 0, 0, 0 };
 
-    int current_x, current_y;
-    int cols, rows;
-    size_t pos, len, tmp_buffer_len = 0;
-    int cursor_visible;
-    int k;
-    char tmp_buffer[12];
+	int current_x, current_y;
+	int cols, rows;
+	size_t pos, len, tmp_buffer_len = 0;
+	int cursor_visible;
+	int k;
+	char tmp_buffer[12];
 
-    fb_GetSize(&cols, &rows);
+	fb_GetSize(&cols, &rows);
 
-    cursor_visible = (fb_Locate( 0, 0, -1, 0, 0 ) & 0x10000) != 0;
-    fb_Locate( 0, 0, FALSE, 0, 0 );
+	cursor_visible = (fb_Locate( 0, 0, -1, 0, 0 ) & 0x10000) != 0;
+	fb_Locate( 0, 0, FALSE, 0, 0 );
 
-    pos = len = 0;
-    fb_PrintBufferEx( NULL, 0, 0 );
+	pos = len = 0;
+	fb_PrintBufferEx( NULL, 0, 0 );
 
-    /* Ensure that the cursor is visible during INPUT */
-    fb_Locate( 0, 0, (soft_cursor == FALSE), 0, 0 );
+	/* Ensure that the cursor is visible during INPUT */
+	fb_Locate( 0, 0, (soft_cursor == FALSE), 0, 0 );
 
 	do {
 		size_t delete_char_count = 0, add_char = FALSE;
@@ -186,82 +186,82 @@ FBCALL FBSTRING *fb_ConReadLine( int soft_cursor )
 			fb_Locate( 0, 0, FALSE, 0, 0 );
 		}
 
-        if( delete_char_count ) {
-            FBSTRING *str_fill;
-            FBSTRING *str_left = fb_StrMid( &result, 1, pos );
-            FBSTRING *str_right = fb_StrMid( &result,
-                                             pos + 1 + delete_char_count,
-                                             len - pos - delete_char_count);
-            fb_StrAssign( &result, -1, str_left, -1, FALSE );
-            fb_StrConcatAssign( &result, -1, str_right, -1, FALSE );
-            len -= delete_char_count;
+		if( delete_char_count ) {
+			FBSTRING *str_fill;
+			FBSTRING *str_left = fb_StrMid( &result, 1, pos );
+			FBSTRING *str_right = fb_StrMid( &result,
+											 pos + 1 + delete_char_count,
+											 len - pos - delete_char_count);
+			fb_StrAssign( &result, -1, str_left, -1, FALSE );
+			fb_StrConcatAssign( &result, -1, str_right, -1, FALSE );
+			len -= delete_char_count;
 
-            FB_LOCK();
+			FB_LOCK();
 
-            fb_PrintBufferEx( result.data + pos, len - pos, 0 );
+			fb_PrintBufferEx( result.data + pos, len - pos, 0 );
 
-            /* Overwrite all deleted characters with SPC's */
-            str_fill = fb_StrFill1 ( delete_char_count, ' ' );
-            fb_PrintBufferEx( str_fill->data, delete_char_count, 0 );
-            fb_hStrDelTemp( str_fill );
+			/* Overwrite all deleted characters with SPC's */
+			str_fill = fb_StrFill1 ( delete_char_count, ' ' );
+			fb_PrintBufferEx( str_fill->data, delete_char_count, 0 );
+			fb_hStrDelTemp( str_fill );
 
-            fb_Locate( current_y, current_x, -1, 0, 0 );
+			fb_Locate( current_y, current_x, -1, 0, 0 );
 
-            FB_UNLOCK();
-        }
+			FB_UNLOCK();
+		}
 
-        if( add_char ) {
-            tmp_buffer[tmp_buffer_len] = 0;
-        }
+		if( add_char ) {
+			tmp_buffer[tmp_buffer_len] = 0;
+		}
 
-        if( add_char ) {
-            int old_x = current_x, old_y = current_y;
-            FBSTRING *str_add = fb_StrAllocTempDescF( tmp_buffer, tmp_buffer_len + 1 );
-            FBSTRING *str_left = fb_StrMid( &result, 1, pos );
-            FBSTRING *str_right = fb_StrMid( &result, pos + 1, len - pos);
-            fb_StrAssign( &result, -1, str_left, -1, FALSE );
-            fb_StrConcatAssign( &result, -1, str_add, -1, FALSE );
-            fb_StrConcatAssign( &result, -1, str_right, -1, FALSE );
-            len += tmp_buffer_len;
+		if( add_char ) {
+			int old_x = current_x, old_y = current_y;
+			FBSTRING *str_add = fb_StrAllocTempDescF( tmp_buffer, tmp_buffer_len + 1 );
+			FBSTRING *str_left = fb_StrMid( &result, 1, pos );
+			FBSTRING *str_right = fb_StrMid( &result, pos + 1, len - pos);
+			fb_StrAssign( &result, -1, str_left, -1, FALSE );
+			fb_StrConcatAssign( &result, -1, str_add, -1, FALSE );
+			fb_StrConcatAssign( &result, -1, str_right, -1, FALSE );
+			len += tmp_buffer_len;
 
-            FB_LOCK();
+			FB_LOCK();
 
-            fb_PrintBufferEx( result.data + pos, len - pos, 0 );
+			fb_PrintBufferEx( result.data + pos, len - pos, 0 );
 
-            fb_GetXY(&current_x, &current_y);
+			fb_GetXY(&current_x, &current_y);
 
-            if( pos==(len-tmp_buffer_len) ) {
-                current_x = old_x; current_y = old_y;
-                DoMove( &current_x, &current_y, tmp_buffer_len, 0, cols, rows );
-            } else {
-                int tmp_x_2 = old_x, tmp_y_2 = old_y;
-                DoAdjust( &tmp_x_2, &tmp_y_2, len - pos, 0, cols, rows );
-                if( tmp_y_2 > (rows+1) || (tmp_y_2==(rows+1) && tmp_x_2>1) ) {
-                    DoMove( &current_x, &current_y, -(len - pos - tmp_buffer_len), 0, cols, rows );
-                } else {
-                    current_x = old_x; current_y = old_y;
-                    DoMove( &current_x, &current_y, tmp_buffer_len, 0, cols, rows );
-                }
-            }
-            pos += tmp_buffer_len;
+			if( pos==(len-tmp_buffer_len) ) {
+				current_x = old_x; current_y = old_y;
+				DoMove( &current_x, &current_y, tmp_buffer_len, 0, cols, rows );
+			} else {
+				int tmp_x_2 = old_x, tmp_y_2 = old_y;
+				DoAdjust( &tmp_x_2, &tmp_y_2, len - pos, 0, cols, rows );
+				if( tmp_y_2 > (rows+1) || (tmp_y_2==(rows+1) && tmp_x_2>1) ) {
+					DoMove( &current_x, &current_y, -(len - pos - tmp_buffer_len), 0, cols, rows );
+				} else {
+					current_x = old_x; current_y = old_y;
+					DoMove( &current_x, &current_y, tmp_buffer_len, 0, cols, rows );
+				}
+			}
+			pos += tmp_buffer_len;
 
-            FB_UNLOCK();
-        }
+			FB_UNLOCK();
+		}
 
-        fb_Locate( 0, 0, (soft_cursor == FALSE), 0, 0 );
+		fb_Locate( 0, 0, (soft_cursor == FALSE), 0, 0 );
 
 	} while (k!='\r' && k!='\n');
 
-    FB_LOCK();
+	FB_LOCK();
 
-    /* set cursor to end of line */
-    fb_GetXY(&current_x, &current_y);
-    DoMove( &current_x, &current_y, len - pos, 0, cols, rows );
+	/* set cursor to end of line */
+	fb_GetXY(&current_x, &current_y);
+	DoMove( &current_x, &current_y, len - pos, 0, cols, rows );
 
-    /* Restore old cursor visibility */
-    fb_Locate( 0, 0, cursor_visible, 0, 0 );
+	/* Restore old cursor visibility */
+	fb_Locate( 0, 0, cursor_visible, 0, 0 );
 
-    FB_UNLOCK();
+	FB_UNLOCK();
 
 	return fb_StrAllocTempResult( &result );
 }

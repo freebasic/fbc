@@ -17,8 +17,8 @@ FBCALL FBSTRING *fb_ExePath ( void )
 	if( p != NULL )
 	{
 		/* alloc temp string */
-        len = strlen( tmp );
-        dst = fb_hStrAllocTemp( NULL, len );
+		len = strlen( tmp );
+		dst = fb_hStrAllocTemp( NULL, len );
 		if( dst != NULL )
 		{
 			fb_hStrCopy( dst->data, tmp, len );

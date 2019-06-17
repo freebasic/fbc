@@ -15,9 +15,9 @@ void fb_hListInit( FB_LIST *list, void *table, size_t elem_size, size_t size )
 {
 	size_t i;
 	FB_LISTELEM *next;
-    unsigned char *elem = (unsigned char *)table;
+	unsigned char *elem = (unsigned char *)table;
 
-    fb_hListDynInit( list );
+	fb_hListDynInit( list );
 	
 	list->fhead = (FB_LISTELEM *)elem;
 	
@@ -55,8 +55,8 @@ FB_LISTELEM *fb_hListAllocElem( FB_LIST *list )
 
 	list->fhead = elem->next;
 
-    /* add to entry used list */
-    fb_hListDynElemAdd( list, elem );
+	/* add to entry used list */
+	fb_hListDynElemAdd( list, elem );
 
 	return elem;
 }
@@ -73,8 +73,8 @@ FB_LISTELEM *fb_hListAllocElem( FB_LIST *list )
  */
 void fb_hListFreeElem( FB_LIST *list, FB_LISTELEM *elem )
 {
-    /* remove entry from the list of used elements */
-    fb_hListDynElemRemove( list, elem );
+	/* remove entry from the list of used elements */
+	fb_hListDynElemRemove( list, elem );
 
 	/* add to free list */
 	elem->next = list->fhead;

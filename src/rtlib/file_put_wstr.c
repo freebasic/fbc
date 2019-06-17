@@ -4,15 +4,15 @@
 
 int fb_FilePutWstrEx( FB_FILE *handle, fb_off_t pos, FB_WCHAR *str, ssize_t len )
 {
-    int res;
+	int res;
 
 	/* perform call ... but only if there's data ... */
-    if( (str != NULL) && (len > 0) )
-        res = fb_FilePutDataEx( handle, pos, (void *)str, len, TRUE, TRUE, TRUE );
-    else
-        res = fb_ErrorSetNum( FB_RTERROR_OK );
+	if( (str != NULL) && (len > 0) )
+		res = fb_FilePutDataEx( handle, pos, (void *)str, len, TRUE, TRUE, TRUE );
+	else
+		res = fb_ErrorSetNum( FB_RTERROR_OK );
 
-    return res;
+	return res;
 }
 
 FBCALL int fb_FilePutWstr( int fnum, int pos, FB_WCHAR *str, ssize_t str_len )

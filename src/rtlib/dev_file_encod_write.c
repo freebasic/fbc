@@ -4,13 +4,13 @@
 
 int fb_DevFileWriteEncod( FB_FILE *handle, const void* buffer, size_t chars )
 {
-    FILE *fp;
-    char *encod_buffer;
+	FILE *fp;
+	char *encod_buffer;
 	ssize_t bytes;
 
-    FB_LOCK();
+	FB_LOCK();
 
-    fp = (FILE*) handle->opaque;
+	fp = (FILE*) handle->opaque;
 	if( fp == NULL ) {
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );

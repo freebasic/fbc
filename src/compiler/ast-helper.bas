@@ -508,27 +508,27 @@ function astBuildCtorCall _
 		byval thisexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr ctor = any
-    dim as ASTNODE ptr proc = any
-    dim as integer params = any
+	dim as FBSYMBOL ptr ctor = any
+	dim as ASTNODE ptr proc = any
+	dim as integer params = any
 
-    ctor = symbGetCompDefCtor( sym )
-    if( ctor = NULL ) then
-    	return NULL
-    end if
+	ctor = symbGetCompDefCtor( sym )
+	if( ctor = NULL ) then
+		return NULL
+	end if
 
-    proc = astNewCALL( ctor )
+	proc = astNewCALL( ctor )
 
-    astNewARG( proc, thisexpr )
+	astNewARG( proc, thisexpr )
 
-    '' add the optional params, if any
-    params = symbGetProcParams( ctor ) - 1
-    do while( params > 0 )
-    	astNewARG( proc, NULL )
-    	params -= 1
-    loop
+	'' add the optional params, if any
+	params = symbGetProcParams( ctor ) - 1
+	do while( params > 0 )
+		astNewARG( proc, NULL )
+		params -= 1
+	loop
 
-    function = proc
+	function = proc
 
 end function
 
@@ -623,7 +623,7 @@ function astBuildImplicitCtorCall _
 	) as ASTNODE ptr
 
  	dim as integer err_num = any
-    dim as FBSYMBOL ptr proc = any
+	dim as FBSYMBOL ptr proc = any
 
 	proc = symbFindCtorOvlProc( subtype, expr, arg_mode, @err_num )
 	if( proc = NULL ) then
@@ -635,7 +635,7 @@ function astBuildImplicitCtorCall _
 		end if
 
 		'' could be a shallow copy..
-        return expr
+		return expr
 	end if
 
 	'' check visibility
@@ -643,24 +643,24 @@ function astBuildImplicitCtorCall _
 		errReport( FB_ERRMSG_NOACCESSTOCTOR )
 	end if
 
-    '' build a ctor call
-    dim as ASTNODE ptr procexpr = astNewCALL( proc )
+	'' build a ctor call
+	dim as ASTNODE ptr procexpr = astNewCALL( proc )
 
 	'' Use a fake THIS ptr for now,
 	'' a NULL ptr given BYVAL to the BYREF THIS param
 	astNewARG( procexpr, astFakeInstPtr( subtype ), , FB_PARAMMODE_BYVAL )
 
-    astNewARG( procexpr, expr, , arg_mode )
+	astNewARG( procexpr, expr, , arg_mode )
 
-    '' add the optional params, if any
-    dim as integer params = symbGetProcParams( proc ) - 2
-    do while( params > 0 )
-    	astNewARG( procexpr, NULL )
-    	params -= 1
-    loop
+	'' add the optional params, if any
+	dim as integer params = symbGetProcParams( proc ) - 2
+	do while( params > 0 )
+		astNewARG( procexpr, NULL )
+		params -= 1
+	loop
 
-    is_ctorcall = TRUE
-    function = procexpr
+	is_ctorcall = TRUE
+	function = procexpr
 
 end function
 
@@ -673,21 +673,21 @@ function astBuildImplicitCtorCallEx _
 		byref is_ctorcall as integer _
 	) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr subtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	subtype = symbGetSubType( sym )
 
-    '' check ctor call
-    if( astIsCALLCTOR( expr ) ) then
-    	if( symbGetSubtype( expr ) = subtype ) then
-    		is_ctorcall = TRUE
-    		'' remove the the anon/temp instance
-    		return astCALLCTORToCALL( expr )
-    	end if
-    end if
+	'' check ctor call
+	if( astIsCALLCTOR( expr ) ) then
+		if( symbGetSubtype( expr ) = subtype ) then
+			is_ctorcall = TRUE
+			'' remove the the anon/temp instance
+			return astCALLCTORToCALL( expr )
+		end if
+	end if
 
-    '' try calling any ctor with the expression
-    function = astBuildImplicitCtorCall( subtype, expr, arg_mode, is_ctorcall )
+	'' try calling any ctor with the expression
+	function = astBuildImplicitCtorCall( subtype, expr, arg_mode, is_ctorcall )
 
 end function
 
@@ -819,9 +819,9 @@ function astBuildArrayDescIniTree _
 		byval array_expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr tree = any
+	dim as ASTNODE ptr tree = any
 	dim as integer dtype = any, dimensions = any
-    dim as FBSYMBOL ptr elm = any, dimtb = any, subtype = any
+	dim as FBSYMBOL ptr elm = any, dimtb = any, subtype = any
 
 	'' COMMON or EXTERN? Cannot be initialized
 	if( symbIsCommon( array ) or symbIsExtern( array ) ) then
@@ -836,8 +836,8 @@ function astBuildArrayDescIniTree _
 
 	tree = astTypeIniBegin( symbGetFullType( desc ), symbGetSubtype( desc ), not symbIsField( desc ), symbGetOfs( desc ) )
 
-    dtype = symbGetFullType( array )
-    subtype = symbGetSubType( array )
+	dtype = symbGetFullType( array )
+	subtype = symbGetSubType( array )
 
 	elm = symbGetUDTSymbTbHead( symbGetSubtype( desc ) )
 	assert( symbIsField( elm ) )
@@ -863,7 +863,7 @@ function astBuildArrayDescIniTree _
 
 	astTypeIniScopeBegin( tree, desc, FALSE )
 
-    '' .data = @array(0) + diff
+	'' .data = @array(0) + diff
 	astTypeIniAddAssign( tree, _
 		astNewBOP( AST_OP_ADD, astCloneTree( array_expr ), _
 			astNewCONSTi( _
@@ -877,19 +877,19 @@ function astBuildArrayDescIniTree _
 	'' .ptr	= @array(0)
 	astTypeIniAddAssign( tree, array_expr, elm )
 
-    elm = symbGetNext( elm )
+	elm = symbGetNext( elm )
 
-    '' .size = len( array ) * elements( array )
+	'' .size = len( array ) * elements( array )
 	astTypeIniAddAssign( tree, _
 		astNewCONSTi( iif( symbIsDynamic( array ), 0ll, symbGetRealSize( array ) ) ), _
 		elm )
 
-    elm = symbGetNext( elm )
+	elm = symbGetNext( elm )
 
-    '' .element_len	= len( array )
+	'' .element_len	= len( array )
 	astTypeIniAddAssign( tree, astNewCONSTi( symbGetLen( array ) ), elm )
 
-    elm = symbGetNext( elm )
+	elm = symbGetNext( elm )
 
 	'' .dimensions = dims( array )
 	dimensions = symbGetArrayDimensions( array )
@@ -906,16 +906,16 @@ function astBuildArrayDescIniTree _
 	assert( dimensions >= 0 )
 	astTypeIniAddAssign( tree, astNewCONSTi( dimensions ), elm )
 
-    elm = symbGetNext( elm )
+	elm = symbGetNext( elm )
 
-    '' setup dimTB
+	'' setup dimTB
 	var dimtbfield = elm
-    dimtb = symbGetUDTSymbTbHead( symbGetSubtype( elm ) )
+	dimtb = symbGetUDTSymbTbHead( symbGetSubtype( elm ) )
 
 	astTypeIniScopeBegin( tree, dimtbfield, TRUE )
 
-    '' static array?
-    if( symbGetIsDynamic( array ) = FALSE ) then
+	'' static array?
+	if( symbGetIsDynamic( array ) = FALSE ) then
 		for i as integer = 0 to symbGetArrayDimensions( array ) - 1
 			elm = dimtb
 
@@ -949,11 +949,11 @@ function astBuildArrayDescIniTree _
 		astTypeIniAddPad( tree, dimensions * symbGetLen( symb.fbarraydim ) )
 	end if
 
-    astTypeIniScopeEnd( tree, dimtbfield )
-    astTypeIniScopeEnd( tree, desc )
-    astTypeIniEnd( tree, TRUE )
+	astTypeIniScopeEnd( tree, dimtbfield )
+	astTypeIniScopeEnd( tree, desc )
+	astTypeIniEnd( tree, TRUE )
 
-    function = tree
+	function = tree
 end function
 
 private function hConstBound _

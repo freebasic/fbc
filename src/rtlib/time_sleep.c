@@ -5,7 +5,7 @@
 void fb_ConsoleSleep( int msecs )
 {
 #if defined( HOST_XBOX )
-    /* NOTE: No need to test for input keys because sleep will be hooked
+	/* NOTE: No need to test for input keys because sleep will be hooked
      *       when the application is switched to graphics mode and the
      *       console implementations for keyboard handling are only dummy
      *       functions.

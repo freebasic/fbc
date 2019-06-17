@@ -13,10 +13,10 @@
    use the same public API like the normal PRINT functions. */
 static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
 {
-    if( mask & FB_PRINT_NEWLINE ) {
-        mask = (mask & ~FB_PRINT_NEWLINE) | FB_PRINT_BIN_NEWLINE;
-    }
-    return mask;
+	if( mask & FB_PRINT_NEWLINE ) {
+		mask = (mask & ~FB_PRINT_NEWLINE) | FB_PRINT_BIN_NEWLINE;
+	}
+	return mask;
 }
 
 /* masked bits for "high level" flags, i.e. flags that are set by the
@@ -24,79 +24,79 @@ static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
 #define FB_PRINT_HLMASK  0x00000003
 
 #define FB_PRINT_EX(handle, s, len, mask)                             \
-    fb_hFilePrintBufferEx( handle, s, len )
+	fb_hFilePrintBufferEx( handle, s, len )
 
 #define FB_PRINT(fnum, s, mask)                                       \
-    FB_PRINT_EX( FB_FILE_TO_HANDLE(fnum), s, strlen(s), 0 )
+	FB_PRINT_EX( FB_FILE_TO_HANDLE(fnum), s, strlen(s), 0 )
 
 #define FB_PRINTWSTR_EX(handle, s, len, mask)                         \
-    fb_hFilePrintBufferWstrEx( handle, s, len )
+	fb_hFilePrintBufferWstrEx( handle, s, len )
 
 #define FB_PRINTWSTR(fnum, s, mask)                                   \
-    FB_PRINTWSTR_EX( FB_FILE_TO_HANDLE(fnum), s, fb_wstr_len(s), 0 )
+	FB_PRINTWSTR_EX( FB_FILE_TO_HANDLE(fnum), s, fb_wstr_len(s), 0 )
 
 #define FB_PRINTNUM_EX(handle, val, mask, fmt, type)                          \
-    do {                                                                      \
-        char buffer[80];                                                      \
-        size_t len;                                                           \
-                                                                              \
-        if( mask & FB_PRINT_APPEND_SPACE ) {                                  \
-            if( mask & FB_PRINT_BIN_NEWLINE )                                 \
-                len = sprintf( buffer, fmt type " " FB_BINARY_NEWLINE, val ); \
-            else if( mask & FB_PRINT_NEWLINE )                                \
-                len = sprintf( buffer, fmt type " " FB_NEWLINE, val );        \
-            else                                                              \
-                len = sprintf( buffer, fmt type " ", val );                   \
-        } else {                                                              \
-            if( mask & FB_PRINT_BIN_NEWLINE )                                 \
-                len = sprintf( buffer, fmt type FB_BINARY_NEWLINE, val );     \
-            else if( mask & FB_PRINT_NEWLINE )                                \
-                len = sprintf( buffer, fmt type FB_NEWLINE, val );            \
-            else                                                              \
-                len = sprintf( buffer, fmt type, val );                       \
-        }                                                                     \
-                                                                              \
-        FB_PRINT_EX( handle, buffer, len, mask );                             \
-                                                                              \
-        if( mask & FB_PRINT_PAD )                                             \
-            fb_PrintPadEx ( handle, mask );                                   \
-                                                                              \
-    } while (0)
+	do {                                                                      \
+		char buffer[80];                                                      \
+		size_t len;                                                           \
+																			  \
+		if( mask & FB_PRINT_APPEND_SPACE ) {                                  \
+			if( mask & FB_PRINT_BIN_NEWLINE )                                 \
+				len = sprintf( buffer, fmt type " " FB_BINARY_NEWLINE, val ); \
+			else if( mask & FB_PRINT_NEWLINE )                                \
+				len = sprintf( buffer, fmt type " " FB_NEWLINE, val );        \
+			else                                                              \
+				len = sprintf( buffer, fmt type " ", val );                   \
+		} else {                                                              \
+			if( mask & FB_PRINT_BIN_NEWLINE )                                 \
+				len = sprintf( buffer, fmt type FB_BINARY_NEWLINE, val );     \
+			else if( mask & FB_PRINT_NEWLINE )                                \
+				len = sprintf( buffer, fmt type FB_NEWLINE, val );            \
+			else                                                              \
+				len = sprintf( buffer, fmt type, val );                       \
+		}                                                                     \
+																			  \
+		FB_PRINT_EX( handle, buffer, len, mask );                             \
+																			  \
+		if( mask & FB_PRINT_PAD )                                             \
+			fb_PrintPadEx ( handle, mask );                                   \
+																			  \
+	} while (0)
 
 #define FB_PRINTNUM(fnum, val, mask, fmt, type)                       \
-    FB_PRINTNUM_EX( FB_FILE_TO_HANDLE(fnum), val, mask, fmt, type )
+	FB_PRINTNUM_EX( FB_FILE_TO_HANDLE(fnum), val, mask, fmt, type )
 
 #define FB_WRITENUM_EX(handle, val, mask, type )                      \
-    do {                                                              \
-        char buffer[80];									          \
-        size_t len;                                                   \
-                                                                      \
-        if( mask & FB_PRINT_BIN_NEWLINE )           		          \
-            len = sprintf( buffer, type FB_BINARY_NEWLINE, val );     \
-        else if( mask & FB_PRINT_NEWLINE )           		          \
-            len = sprintf( buffer, type FB_NEWLINE, val );            \
-        else												          \
-            len = sprintf( buffer, type ",", val );                   \
-                                                                      \
-        fb_hFilePrintBufferEx( handle, buffer, len );	              \
-    } while (0)
+	do {                                                              \
+		char buffer[80];									          \
+		size_t len;                                                   \
+																	  \
+		if( mask & FB_PRINT_BIN_NEWLINE )           		          \
+			len = sprintf( buffer, type FB_BINARY_NEWLINE, val );     \
+		else if( mask & FB_PRINT_NEWLINE )           		          \
+			len = sprintf( buffer, type FB_NEWLINE, val );            \
+		else												          \
+			len = sprintf( buffer, type ",", val );                   \
+																	  \
+		fb_hFilePrintBufferEx( handle, buffer, len );	              \
+	} while (0)
 
 #define FB_WRITENUM(fnum, val, mask, type) 				    \
-    FB_WRITENUM_EX(FB_FILE_TO_HANDLE(fnum), val, mask, type)
+	FB_WRITENUM_EX(FB_FILE_TO_HANDLE(fnum), val, mask, type)
 
 FBCALL void         fb_PrintBuffer      ( const char *s, int mask );
 FBCALL void         fb_PrintBufferEx    ( const void *buffer, size_t len, int mask );
 FBCALL void         fb_PrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask );
 
 FBCALL void         fb_PrintPad         ( int fnum, int mask );
-       void         fb_PrintPadEx       ( FB_FILE *handle, int mask );
+	   void         fb_PrintPadEx       ( FB_FILE *handle, int mask );
 FBCALL void         fb_PrintPadWstr     ( int fnum, int mask );
-       void         fb_PrintPadWstrEx   ( FB_FILE *handle, int mask );
+	   void         fb_PrintPadWstrEx   ( FB_FILE *handle, int mask );
 
 FBCALL void         fb_PrintVoid        ( int fnum, int mask );
-       void         fb_PrintVoidEx      ( FB_FILE *handle, int mask );
+	   void         fb_PrintVoidEx      ( FB_FILE *handle, int mask );
 FBCALL void         fb_PrintVoidWstr    ( int fnum, int mask );
-       void         fb_PrintVoidWstrEx  ( FB_FILE *handle, int mask );
+	   void         fb_PrintVoidWstrEx  ( FB_FILE *handle, int mask );
 
 FBCALL void         fb_PrintBool        ( int fnum, char val, int mask );
 FBCALL void         fb_PrintByte        ( int fnum, char val, int mask );
@@ -110,14 +110,14 @@ FBCALL void         fb_PrintULongint    ( int fnum, unsigned long long val, int 
 FBCALL void         fb_PrintSingle      ( int fnum, float val, int mask );
 FBCALL void         fb_PrintDouble      ( int fnum, double val, int mask );
 FBCALL void         fb_PrintString      ( int fnum, FBSTRING *s, int mask );
-       void         fb_PrintStringEx    ( FB_FILE *handle, FBSTRING *s, int mask );
+	   void         fb_PrintStringEx    ( FB_FILE *handle, FBSTRING *s, int mask );
 FBCALL void         fb_PrintWstr        ( int fnum, const FB_WCHAR *s, int mask );
-       void         fb_PrintWstrEx      ( FB_FILE *handle, const FB_WCHAR *s, int mask );
+	   void         fb_PrintWstrEx      ( FB_FILE *handle, const FB_WCHAR *s, int mask );
 FBCALL void         fb_PrintFixString   ( int fnum, const char *s, int mask );
-       void         fb_PrintFixStringEx ( FB_FILE *handle, const char *s, int mask );
+	   void         fb_PrintFixStringEx ( FB_FILE *handle, const char *s, int mask );
 
 FBCALL int          fb_LPos             ( int printer_index );
-       int          fb_LPrintInit       ( void );
+	   int          fb_LPrintInit       ( void );
 FBCALL void         fb_LPrintVoid       ( int fnum, int mask );
 FBCALL void         fb_LPrintBool       ( int fnum, char val, int mask );
 FBCALL void         fb_LPrintByte       ( int fnum, char val, int mask );

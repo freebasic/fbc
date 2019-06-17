@@ -5,10 +5,10 @@
 /*:::::*/
 FBCALL void fb_StrDelete ( FBSTRING *str )
 {
-    if( (str == NULL) || (str->data == NULL) )
-    	return;
+	if( (str == NULL) || (str->data == NULL) )
+		return;
 
-    free( (void *)str->data );
+	free( (void *)str->data );
 
 	str->data = NULL;
 	str->len  = 0;

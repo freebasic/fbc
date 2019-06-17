@@ -4,7 +4,7 @@
 
 FBCALL long long fb_WstrToLongint( const FB_WCHAR *src, ssize_t len )
 {
-    const FB_WCHAR *p, *r;
+	const FB_WCHAR *p, *r;
 	int radix;
 
 	/* skip white spc */
@@ -56,7 +56,7 @@ FBCALL long long fb_WstrToLongint( const FB_WCHAR *src, ssize_t len )
 
 FBCALL long long fb_WstrValLng ( const FB_WCHAR *str )
 {
-    long long val;
+	long long val;
 	ssize_t len;
 
 	if( str == NULL )

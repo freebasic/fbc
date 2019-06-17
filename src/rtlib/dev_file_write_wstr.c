@@ -4,13 +4,13 @@
 
 int fb_DevFileWriteWstr( FB_FILE *handle, const FB_WCHAR* src, size_t chars )
 {
-    FILE *fp;
-    char *buffer;
-    int res;
+	FILE *fp;
+	char *buffer;
+	int res;
 
-    FB_LOCK();
+	FB_LOCK();
 
-    fp = (FILE*) handle->opaque;
+	fp = (FILE*) handle->opaque;
 
 	if( fp == NULL ) {
 		FB_UNLOCK();

@@ -18,14 +18,14 @@ FBCALL int fb_StrCompare
 	if( (str1 != NULL) && (str2 != NULL) )
 	{
 		FB_STRSETUP_FIX( str1, str1_size, str1_ptr, str1_len );
-        FB_STRSETUP_FIX( str2, str2_size, str2_ptr, str2_len );
+		FB_STRSETUP_FIX( str2, str2_size, str2_ptr, str2_len );
 
-        res = FB_MEMCMP( str1_ptr,
-                         str2_ptr,
-                         ((str1_len < str2_len) ? str1_len : str2_len) );
+		res = FB_MEMCMP( str1_ptr,
+						 str2_ptr,
+						 ((str1_len < str2_len) ? str1_len : str2_len) );
 
-        if( (res == 0) && (str1_len != str2_len) )
-            res = (( str1_len > str2_len ) ? 1 : -1 );
+		if( (res == 0) && (str1_len != str2_len) )
+			res = (( str1_len > str2_len ) ? 1 : -1 );
 	}
 	/* left null? */
 	else if( str1 == NULL )

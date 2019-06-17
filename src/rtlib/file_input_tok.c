@@ -4,20 +4,20 @@
 
 static int hReadChar( FB_INPUTCTX *ctx )
 {
-    /* device? */
-    if( FB_HANDLE_USED(ctx->handle) )
-    {
+	/* device? */
+	if( FB_HANDLE_USED(ctx->handle) )
+	{
 		int res, c;
 		size_t len;
-        res = fb_FileGetDataEx( ctx->handle, 0, &c, 1, &len, FALSE, FALSE );
-        if( (res != FB_RTERROR_OK) || (len == 0) )
-            return EOF;
+		res = fb_FileGetDataEx( ctx->handle, 0, &c, 1, &len, FALSE, FALSE );
+		if( (res != FB_RTERROR_OK) || (len == 0) )
+			return EOF;
 
-        return c & 0x000000FF;
-    }
-    /* console.. */
-    else
-    {
+		return c & 0x000000FF;
+	}
+	/* console.. */
+	else
+	{
 		if( ctx->index >= FB_STRSIZE( &ctx->str ) )
 			return EOF;
 		else
@@ -27,14 +27,14 @@ static int hReadChar( FB_INPUTCTX *ctx )
 
 static int hUnreadChar( FB_INPUTCTX *ctx, int c )
 {
-    /* device? */
-    if( FB_HANDLE_USED(ctx->handle) )
-    {
-        return fb_FilePutBackEx( ctx->handle, &c, 1 );
-    }
-    /* console .. */
-    else
-    {
+	/* device? */
+	if( FB_HANDLE_USED(ctx->handle) )
+	{
+		return fb_FilePutBackEx( ctx->handle, &c, 1 );
+	}
+	/* console .. */
+	else
+	{
 		if( ctx->index <= 0 )
 			return FALSE;
 		else
@@ -72,8 +72,8 @@ static void hSkipDelimiter( FB_INPUTCTX *ctx, int c )
 	case EOF:
 		break;
 
-    case '\n':
-        break;
+	case '\n':
+		break;
 
 	case '\r':
 		if( (c = hReadChar( ctx )) != '\n' )
@@ -81,8 +81,8 @@ static void hSkipDelimiter( FB_INPUTCTX *ctx, int c )
 		break;
 
 	default:
-    	hUnreadChar( ctx, c );
-        break;
+		hUnreadChar( ctx, c );
+		break;
 	}
 }
 
@@ -197,8 +197,8 @@ int fb_FileInputNextToken
 		default:
 savechar:
 			*buffer++ = c;
-            ++len;
-            break;
+			++len;
+			break;
 		}
 
 		c = hReadChar( ctx );

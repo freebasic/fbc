@@ -11,7 +11,7 @@
  */
 void fb_hListDynInit( FB_LIST *list )
 {
-    memset(list, 0, sizeof(FB_LIST));
+	memset(list, 0, sizeof(FB_LIST));
 }
 
 /** Adds an element to the list.
@@ -34,7 +34,7 @@ void fb_hListDynElemAdd( FB_LIST *list, FB_LISTELEM *elem )
 
 	list->tail = elem;
 
-    ++list->cnt;
+	++list->cnt;
 }
 
 /** Remove an element from the list.
@@ -59,8 +59,8 @@ void fb_hListDynElemRemove( FB_LIST *list, FB_LISTELEM *elem )
 		list->tail = elem->prev;
 
 	/* reset element pointers */
-    elem->prev = elem->next = NULL;
+	elem->prev = elem->next = NULL;
 
-    /* don't forget to change the number of elements in the list */
+	/* don't forget to change the number of elements in the list */
 	--list->cnt;
 }

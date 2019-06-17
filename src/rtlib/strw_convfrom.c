@@ -67,7 +67,7 @@ FBCALL double fb_WstrToDouble( const FB_WCHAR *src, ssize_t len )
 
 FBCALL double fb_WstrVal ( const FB_WCHAR *str )
 {
-    double val;
+	double val;
 	ssize_t len;
 
 	if( str == NULL )

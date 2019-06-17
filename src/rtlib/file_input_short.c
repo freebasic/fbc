@@ -5,7 +5,7 @@
 
 FBCALL int fb_InputShort( short *dst )
 {
-    char buffer[FB_INPUT_MAXNUMERICLEN+1];
+	char buffer[FB_INPUT_MAXNUMERICLEN+1];
 	ssize_t len;
 	int isfp;
 

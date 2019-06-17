@@ -115,7 +115,7 @@ static char *hToUTF8( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *by
 	switch( sizeof( FB_WCHAR ) )
 	{
 	case sizeof( UTF_8 ):
-        fb_hCharToUTF8( (const char *)src, chars, dst, bytes );
+		fb_hCharToUTF8( (const char *)src, chars, dst, bytes );
 		break;
 
 	case sizeof( UTF_16 ):
@@ -123,7 +123,7 @@ static char *hToUTF8( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *by
 		break;
 
 	case sizeof( UTF_32 ):
-        hUTF32ToUTF8( src, chars, (UTF_8 *)dst, bytes );
+		hUTF32ToUTF8( src, chars, (UTF_8 *)dst, bytes );
 		break;
 	}
 
@@ -200,7 +200,7 @@ static char *hToUTF16( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *b
 		break;
 
 	case sizeof( UTF_32 ):
-        dst = (char *)hUTF32ToUTF16( src, chars, (UTF_16 *)dst, bytes );
+		dst = (char *)hUTF32ToUTF16( src, chars, (UTF_16 *)dst, bytes );
 		break;
 	}
 
@@ -261,7 +261,7 @@ static char *hToUTF32( const FB_WCHAR *src, ssize_t chars, char *dst, ssize_t *b
 		break;
 
 	case sizeof( UTF_16 ):
-        hUTF16ToUTF32( src, chars, (UTF_32 *)dst, bytes );
+		hUTF16ToUTF32( src, chars, (UTF_32 *)dst, bytes );
 		break;
 
 	case sizeof( UTF_32 ):

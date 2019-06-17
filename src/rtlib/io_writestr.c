@@ -4,37 +4,37 @@
 
 static void hWriteStrEx( FB_FILE *handle, const char *s, size_t len, int mask )
 {
-    const char *buff;
+	const char *buff;
 	ssize_t bufflen;
 
-    /* close quote + new-line or comma */
-    if( mask & FB_PRINT_BIN_NEWLINE )
-    {
+	/* close quote + new-line or comma */
+	if( mask & FB_PRINT_BIN_NEWLINE )
+	{
 		buff = "\"" FB_BINARY_NEWLINE;
 		bufflen = strlen( "\"" FB_BINARY_NEWLINE );
 	}
-    else if( mask & FB_PRINT_NEWLINE )
-    {
+	else if( mask & FB_PRINT_NEWLINE )
+	{
 		buff = "\"" FB_NEWLINE;
 		bufflen = strlen( "\"" FB_NEWLINE );
 	}
-    else
-    {
+	else
+	{
 		buff = "\",";
 		bufflen = 2;
 	}
 
-    FB_LOCK( );
+	FB_LOCK( );
 
-    /* open quote */
-    fb_hFilePrintBufferEx( handle, "\"", 1 );
+	/* open quote */
+	fb_hFilePrintBufferEx( handle, "\"", 1 );
 
-    if( len != 0 )
-        FB_PRINT_EX( handle, s, len, 0 );
+	if( len != 0 )
+		FB_PRINT_EX( handle, s, len, 0 );
 
-    fb_hFilePrintBufferEx( handle, buff, bufflen );
+	fb_hFilePrintBufferEx( handle, buff, bufflen );
 
-    FB_UNLOCK( );
+	FB_UNLOCK( );
 }
 
 FBCALL void fb_WriteString ( int fnum, FBSTRING *s, int mask )

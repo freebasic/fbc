@@ -22,56 +22,56 @@
 /** Returns the string data.
  */
 #define FB_STRPTR(s,size)                     \
-    ( s == NULL? NULL : ( size == -1? ((FBSTRING *)s)->data : (char *)s ) )
+	( s == NULL? NULL : ( size == -1? ((FBSTRING *)s)->data : (char *)s ) )
 
 #define FB_STRSETUP_FIX(s,size,ptr,len)                     \
 do {                                                        \
-    if( s == NULL )                                         \
-    {                                                       \
-        ptr = NULL;                                         \
-        len = 0;                                            \
-    }                                                       \
-    else                                                    \
-    {                                                       \
-        if( size == -1 )                                    \
-        {                                                   \
-            ptr = ((FBSTRING *)s)->data;                    \
-            len = FB_STRSIZE( s );                          \
-        }                                                   \
-        else                                                \
-        {                                                   \
-            ptr = (char *)s;                                \
-            /* always get the real len, as fix-len string */ \
-            /* will have garbage at end (nulls or spaces) */ \
-            len = strlen( (char *)s );                      \
-        }                                                   \
-    }                                                       \
+	if( s == NULL )                                         \
+	{                                                       \
+		ptr = NULL;                                         \
+		len = 0;                                            \
+	}                                                       \
+	else                                                    \
+	{                                                       \
+		if( size == -1 )                                    \
+		{                                                   \
+			ptr = ((FBSTRING *)s)->data;                    \
+			len = FB_STRSIZE( s );                          \
+		}                                                   \
+		else                                                \
+		{                                                   \
+			ptr = (char *)s;                                \
+			/* always get the real len, as fix-len string */ \
+			/* will have garbage at end (nulls or spaces) */ \
+			len = strlen( (char *)s );                      \
+		}                                                   \
+	}                                                       \
 } while (0)
 
 #define FB_STRSETUP_DYN(s,size,ptr,len)                     \
 do {                                                        \
-    if( s == NULL )                                         \
-    {                                                       \
-        ptr = NULL;                                         \
-        len = 0;                                            \
-    }                                                       \
-    else                                                    \
-    {                                                       \
-        switch ( size ) {                                   \
-        case -1:                                            \
-            ptr = ((FBSTRING *)s)->data;                    \
-            len = FB_STRSIZE( s );                          \
-            break;                                          \
-        case 0:                                             \
-            ptr = (char *) s;                               \
-            len = strlen( ptr );                            \
-            break;                                          \
-        default:                                            \
-            ptr = (char *) s;                               \
-            len = size - 1; /* without terminating NUL */   \
-            break;                                          \
-        }                                                   \
-    }                                                       \
+	if( s == NULL )                                         \
+	{                                                       \
+		ptr = NULL;                                         \
+		len = 0;                                            \
+	}                                                       \
+	else                                                    \
+	{                                                       \
+		switch ( size ) {                                   \
+		case -1:                                            \
+			ptr = ((FBSTRING *)s)->data;                    \
+			len = FB_STRSIZE( s );                          \
+			break;                                          \
+		case 0:                                             \
+			ptr = (char *) s;                               \
+			len = strlen( ptr );                            \
+			break;                                          \
+		default:                                            \
+			ptr = (char *) s;                               \
+			len = size - 1; /* without terminating NUL */   \
+			break;                                          \
+		}                                                   \
+	}                                                       \
 } while (0)
 
 /** Structure containing information about a specific string.
@@ -80,15 +80,15 @@ do {                                                        \
  * required to allow BASIC-style strings that may contain NUL characters.
  */
 typedef struct _FBSTRING {
-    char           *data;    /**< pointer to the real string data */
-    ssize_t         len;     /**< String length. */
-    ssize_t         size;    /**< Size of allocated memory block. */
+	char           *data;    /**< pointer to the real string data */
+	ssize_t         len;     /**< String length. */
+	ssize_t         size;    /**< Size of allocated memory block. */
 } FBSTRING;
 
 
 typedef struct _FB_STR_TMPDESC {
-    FB_LISTELEM     elem;
-    FBSTRING        desc;
+	FB_LISTELEM     elem;
+	FBSTRING        desc;
 } FB_STR_TMPDESC;
 
 
@@ -99,7 +99,7 @@ typedef struct _FB_STR_TMPDESC {
  * This function preserves any flags set for this string descriptor.
  */
 static __inline__ void fb_hStrSetLength( FBSTRING *str, size_t size ) {
-    str->len = size | (str->len & FB_TEMPSTRBIT);
+	str->len = size | (str->len & FB_TEMPSTRBIT);
 }
 
 FBCALL FBSTRING    *fb_hStrAllocTmpDesc         ( void );
@@ -156,9 +156,9 @@ FBCALL long long    fb_hStr2Longint     ( char *src, ssize_t len );
 FBCALL unsigned long long fb_hStr2ULongint( char *src, ssize_t len );
 FBCALL int          fb_hStrRadix2Int    ( char *src, ssize_t len, int radix );
 FBCALL long long    fb_hStrRadix2Longint( char *s, ssize_t len, int radix );
-       char        *fb_hFloat2Str       ( double val, char *buffer, int digits, int mask );
+	   char        *fb_hFloat2Str       ( double val, char *buffer, int digits, int mask );
 
-       FBSTRING    *fb_CHR              ( int args, ... );
+	   FBSTRING    *fb_CHR              ( int args, ... );
 FBCALL unsigned int fb_ASC              ( FBSTRING *str, ssize_t pos );
 FBCALL double       fb_VAL              ( FBSTRING *str );
 FBCALL double       fb_CVD              ( FBSTRING *str );
@@ -294,7 +294,7 @@ FBCALL FB_WCHAR    *fb_UIntToWstr       ( unsigned int num );
 FBCALL FB_WCHAR    *fb_LongintToWstr    ( long long num );
 FBCALL FB_WCHAR    *fb_ULongintToWstr   ( unsigned long long num );
 FBCALL FB_WCHAR    *fb_FloatToWstr      ( float num );
-       FB_WCHAR    *fb_FloatExToWstr    ( double val, FB_WCHAR *buffer, int digits, int mask );
+	   FB_WCHAR    *fb_FloatExToWstr    ( double val, FB_WCHAR *buffer, int digits, int mask );
 FBCALL FB_WCHAR    *fb_DoubleToWstr     ( double num );
 FBCALL FB_WCHAR    *fb_StrToWstr        ( const char *src );
 

@@ -17,8 +17,8 @@ FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 
 	if( tmp != NULL )
 	{
-        len = strlen( tmp );
-        dst = fb_hStrAllocTemp_NoLock( NULL, len );
+		len = strlen( tmp );
+		dst = fb_hStrAllocTemp_NoLock( NULL, len );
 		if( dst != NULL )
 		{
 			fb_hStrCopy( dst->data, tmp, len );

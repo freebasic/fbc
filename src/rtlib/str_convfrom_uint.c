@@ -4,7 +4,7 @@
 
 FBCALL unsigned int fb_hStr2UInt( char *src, ssize_t len )
 {
-    char 	*p;
+	char 	*p;
 	int radix, skip;
 
 	/* skip white spc */
@@ -48,7 +48,7 @@ FBCALL unsigned int fb_hStr2UInt( char *src, ssize_t len )
 
 FBCALL unsigned int fb_VALUINT ( FBSTRING *str )
 {
-    unsigned int	val;
+	unsigned int	val;
 
 	if( str == NULL )
 	    return 0;

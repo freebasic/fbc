@@ -10,7 +10,7 @@ int fb_hFilePrintBufferWstrEx
 		size_t len
 	)
 {
-    fb_DevScrnInit_WriteWstr( );
+	fb_DevScrnInit_WriteWstr( );
 	return fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, TRUE );
 }
 
@@ -21,6 +21,6 @@ int fb_hFilePrintBufferWstr
 		const FB_WCHAR *buffer
 	)
 {
-    return fb_hFilePrintBufferWstrEx( FB_FILE_TO_HANDLE(fnum),
-                                  	  buffer, fb_wstr_Len( buffer ) );
+	return fb_hFilePrintBufferWstrEx( FB_FILE_TO_HANDLE(fnum),
+								  	  buffer, fb_wstr_Len( buffer ) );
 }

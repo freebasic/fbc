@@ -4,18 +4,18 @@
 
 int fb_DevFileFlush( FB_FILE *handle )
 {
-    FILE *fp;
+	FILE *fp;
 
-    FB_LOCK();
+	FB_LOCK();
 
-    fp = (FILE*) handle->opaque;
+	fp = (FILE*) handle->opaque;
 
 	if( fp == NULL ) {
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-    fflush( fp );
+	fflush( fp );
 
 	FB_UNLOCK();
 

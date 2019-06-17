@@ -16,7 +16,7 @@ void fb_hRtInit( void )
 
 	/* initialize context */
 	memset( &__fb_ctx, 0, sizeof( FB_RTLIB_CTX ) );
-    
+	
 	/* os-dep initialization */
 	fb_hInit( );
 

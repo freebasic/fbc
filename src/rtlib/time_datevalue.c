@@ -5,19 +5,19 @@
 /*:::::*/
 FBCALL int fb_DateValue ( FBSTRING *s )
 {
-    int year;
-    int month;
-    int day;
-    int succeeded = fb_DateParse( s, &day, &month, &year );
+	int year;
+	int month;
+	int day;
+	int succeeded = fb_DateParse( s, &day, &month, &year );
 
-    fb_hStrDelTemp( s );
+	fb_hStrDelTemp( s );
 
-    if( !succeeded ) {
-        fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        return 0;
-    }
+	if( !succeeded ) {
+		fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		return 0;
+	}
 
-    fb_ErrorSetNum( FB_RTERROR_OK );
+	fb_ErrorSetNum( FB_RTERROR_OK );
 
 	return fb_DateSerial( year, month, day );
 }

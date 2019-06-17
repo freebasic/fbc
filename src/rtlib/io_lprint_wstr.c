@@ -10,9 +10,9 @@ FBCALL void fb_LPrintWstr
 		int mask
 	)
 {
-    fb_LPrintInit();
+	fb_LPrintInit();
 
-    fb_PrintWstrEx( FB_FILE_TO_HANDLE(fnum),
-                    s,
-                    FB_PRINT_CONVERT_BIN_NEWLINE(mask) );
+	fb_PrintWstrEx( FB_FILE_TO_HANDLE(fnum),
+					s,
+					FB_PRINT_CONVERT_BIN_NEWLINE(mask) );
 }

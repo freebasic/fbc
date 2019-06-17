@@ -1,13 +1,3 @@
-#compile console exe 32 '/o "-gen gcc -g"
-'#compile console exe 32 /o '"-gen gcc"
-#main_module
-
-'#utility shell "copy.bat"
-
-#define ENABLE_STANDALONE
-'***********************************************************************************************
-' end jk-ide changes
-'***********************************************************************************************
 '' main module, front-end
 ''
 '' chng: sep/2004 written [v1ctor]
@@ -1778,8 +1768,8 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_S
 		fbc.subsystem = arg
 		select case( arg )
-      		case "gui" : fbSetOption( FB_COMPOPT_MODEVIEW, FB_MODEVIEW_GUI )
-      	end select
+	  		case "gui" : fbSetOption( FB_COMPOPT_MODEVIEW, FB_MODEVIEW_GUI )
+	  	end select
 
 	case OPT_SHOWINCLUDES
 		fbSetOption( FB_COMPOPT_SHOWINCLUDES, TRUE )

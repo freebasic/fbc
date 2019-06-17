@@ -9,7 +9,7 @@ FBCALL FBSTRING *fb_StrFill1( ssize_t cnt, int fchar )
 	if( cnt > 0 )
 	{
 		/* alloc temp string */
-        dst = fb_hStrAllocTemp( NULL, cnt );
+		dst = fb_hStrAllocTemp( NULL, cnt );
 		if( dst != NULL )
 		{
 			/* fill it */

@@ -72,7 +72,7 @@ FBCALL double fb_hStr2Double( char *src, ssize_t len )
 
 FBCALL double fb_VAL ( FBSTRING *str )
 {
-    double	val;
+	double	val;
 
 	if( str == NULL )
 	    return 0.0;

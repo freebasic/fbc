@@ -4,28 +4,28 @@
 
 int fb_DevFileReadWstr( FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
 {
-    FILE *fp;
-    size_t chars;
-    char *buffer;
+	FILE *fp;
+	size_t chars;
+	char *buffer;
 
-    FB_LOCK();
+	FB_LOCK();
 
-    if( handle == NULL )
-        fp = stdin;
-    else
-    {
-        fp = (FILE*) handle->opaque;
-        if( fp == stdout || fp == stderr )
-            fp = stdin;
+	if( handle == NULL )
+		fp = stdin;
+	else
+	{
+		fp = (FILE*) handle->opaque;
+		if( fp == stdout || fp == stderr )
+			fp = stdin;
 
-        if( fp == NULL )
-        {
-            FB_UNLOCK();
-            return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        }
-    }
+		if( fp == NULL )
+		{
+			FB_UNLOCK();
+			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		}
+	}
 
-    chars = *pchars;
+	chars = *pchars;
 
 	if( chars < FB_LOCALBUFF_MAXLEN )
 		buffer = alloca( chars + 1 );
@@ -45,9 +45,9 @@ int fb_DevFileReadWstr( FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
 
 	/* fill with nulls if at eof */
 	if( chars != *pchars )
-        memset( (void *)&dst[chars], 0, (*pchars - chars) * sizeof( FB_WCHAR ) );
+		memset( (void *)&dst[chars], 0, (*pchars - chars) * sizeof( FB_WCHAR ) );
 
-    *pchars = chars;
+	*pchars = chars;
 
 	FB_UNLOCK();
 

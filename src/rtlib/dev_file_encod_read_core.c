@@ -18,8 +18,8 @@ static ssize_t hReadUTF8ToChar( FILE *fp, char *dst, ssize_t max_chars )
 	ssize_t chars, extbytes;
 
 	chars = max_chars;
-    while( chars > 0 )
-    {
+	while( chars > 0 )
+	{
 		if( fread( &c[0], 1, 1, fp ) != 1 )
 			break;
 
@@ -71,28 +71,28 @@ static ssize_t hReadUTF8ToChar( FILE *fp, char *dst, ssize_t max_chars )
 
 static ssize_t hReadUTF16ToChar( FILE *fp, char *dst, ssize_t max_chars )
 {
-    ssize_t chars;
-    UTF_16 c;
+	ssize_t chars;
+	UTF_16 c;
 
-    chars = max_chars;
-    while( chars > 0 )
-    {
-        if( fread( &c, sizeof( UTF_16 ), 1, fp ) != 1 )
-            break;
+	chars = max_chars;
+	while( chars > 0 )
+	{
+		if( fread( &c, sizeof( UTF_16 ), 1, fp ) != 1 )
+			break;
 
-        if( c > 255 )
-        {
-            if( c >= UTF16_SUR_HIGH_START && c <= UTF16_SUR_HIGH_END )
-            {
-                if( fread( &c, sizeof( UTF_16 ), 1, fp ) != 1 )
-                    break;
-            }
-            c = '?';
-        }
+		if( c > 255 )
+		{
+			if( c >= UTF16_SUR_HIGH_START && c <= UTF16_SUR_HIGH_END )
+			{
+				if( fread( &c, sizeof( UTF_16 ), 1, fp ) != 1 )
+					break;
+			}
+			c = '?';
+		}
 
-        *dst++ = c;
-        --chars;
-    }
+		*dst++ = c;
+		--chars;
+	}
 
 	return max_chars - chars;
 }
@@ -103,19 +103,19 @@ static ssize_t hReadUTF32ToChar( FILE *fp, char *dst, ssize_t max_chars )
 	UTF_32 c;
 
 	chars = max_chars;
-    while( chars > 0 )
-    {
-        if( fread( &c, sizeof( UTF_32 ), 1, fp ) != 1 )
-            break;
+	while( chars > 0 )
+	{
+		if( fread( &c, sizeof( UTF_32 ), 1, fp ) != 1 )
+			break;
 
-        if( c > 255 )
-            c = '?';
+		if( c > 255 )
+			c = '?';
 
-        *dst++ = c;
-        --chars;
-    }
+		*dst++ = c;
+		--chars;
+	}
 
-    return max_chars - chars;
+	return max_chars - chars;
 }
 
 ssize_t fb_hFileRead_UTFToChar( FILE *fp, FB_FILE_ENCOD encod, char *dst, ssize_t max_chars )
@@ -148,8 +148,8 @@ static ssize_t hUTF8ToUTF16( FILE *fp, FB_WCHAR *dst, ssize_t max_chars )
 	ssize_t chars, extbytes;
 
 	chars = max_chars;
-    while( chars > 0 )
-    {
+	while( chars > 0 )
+	{
 		if( fread( &c[0], 1, 1, fp ) != 1 )
 			break;
 
@@ -217,8 +217,8 @@ static ssize_t hUTF8ToUTF32( FILE *fp, FB_WCHAR *dst, ssize_t max_chars )
 	ssize_t chars, extbytes;
 
 	chars = max_chars;
-    while( chars > 0 )
-    {
+	while( chars > 0 )
+	{
 		if( fread( &c[0], 1, 1, fp ) != 1 )
 			break;
 
@@ -290,30 +290,30 @@ static ssize_t hReadUTF8ToWchar( FILE *fp, FB_WCHAR *dst, ssize_t max_chars )
 
 static ssize_t hUTF16ToUTF32( FILE *fp, FB_WCHAR *dst, ssize_t max_chars )
 {
-    UTF_32 c, c2;
+	UTF_32 c, c2;
 	ssize_t chars;
 
-    chars = max_chars;
-    while( chars > 0 )
-    {
-        if( fread( &c, sizeof( UTF_16 ), 1, fp ) != 1 )
-            break;
+	chars = max_chars;
+	while( chars > 0 )
+	{
+		if( fread( &c, sizeof( UTF_16 ), 1, fp ) != 1 )
+			break;
 
-        c &= 0x0000FFFF;
-        if( c >= UTF16_SUR_HIGH_START && c <= UTF16_SUR_HIGH_END )
-        {
-            if( fread( &c2, sizeof( UTF_16 ), 1, fp ) != 1 )
-                break;
+		c &= 0x0000FFFF;
+		if( c >= UTF16_SUR_HIGH_START && c <= UTF16_SUR_HIGH_END )
+		{
+			if( fread( &c2, sizeof( UTF_16 ), 1, fp ) != 1 )
+				break;
 
-            c = ((c - UTF16_SUR_HIGH_START) << UTF16_HALFSHIFT) +
-                 (c2 - UTF16_SUR_LOW_START) + UTF16_HALFBASE;
-        }
+			c = ((c - UTF16_SUR_HIGH_START) << UTF16_HALFSHIFT) +
+				 (c2 - UTF16_SUR_LOW_START) + UTF16_HALFBASE;
+		}
 
-        *dst++ = c;
-        --chars;
-    }
+		*dst++ = c;
+		--chars;
+	}
 
-    return max_chars - chars;
+	return max_chars - chars;
 }
 
 static ssize_t hReadUTF16ToWchar( FILE *fp, FB_WCHAR *dst, ssize_t max_chars )
@@ -341,14 +341,14 @@ static ssize_t hReadUTF16ToWchar( FILE *fp, FB_WCHAR *dst, ssize_t max_chars )
 
 static ssize_t hUTF32ToUTF16( FILE *fp, FB_WCHAR *dst, ssize_t max_chars )
 {
-    UTF_32 c;
+	UTF_32 c;
 	ssize_t chars;
 
-    chars = max_chars;
-    while( chars > 0 )
-    {
-        if( fread( &c, sizeof( UTF_32 ), 1, fp ) != 1 )
-            break;
+	chars = max_chars;
+	while( chars > 0 )
+	{
+		if( fread( &c, sizeof( UTF_32 ), 1, fp ) != 1 )
+			break;
 
 		if( c > UTF16_MAX_BMP )
 		{
@@ -363,7 +363,7 @@ static ssize_t hUTF32ToUTF16( FILE *fp, FB_WCHAR *dst, ssize_t max_chars )
 
 		*dst++ = (UTF_16)c;
 		--chars;
-    }
+	}
 
 	return max_chars - chars;
 }

@@ -4,8 +4,8 @@ FBCALL int          fb_SetTime          ( FBSTRING *time );
 FBCALL FBSTRING    *fb_Date             ( void );
 FBCALL int          fb_SetDate          ( FBSTRING *date );
 
-       int          fb_hSetTime         ( int h, int m, int s );
-       int          fb_hSetDate         ( int y, int m, int d );
+	   int          fb_hSetTime         ( int h, int m, int s );
+	   int          fb_hSetDate         ( int y, int m, int d );
 
 
 /**************************************************************************************************
@@ -14,8 +14,8 @@ FBCALL int          fb_SetDate          ( FBSTRING *date );
 
 typedef enum _eFbIntlIndex {
 	eFIL_DateDivider,
-    eFIL_TimeDivider,
-    eFIL_NumDecimalPoint,
+	eFIL_TimeDivider,
+	eFIL_NumDecimalPoint,
 	eFIL_NumThousandsSeparator
 } eFbIntlIndex;
 
@@ -48,7 +48,7 @@ typedef enum _eFbIntlIndex {
 #define FB_TIME_INTERVAL_SECOND         10
 
 #define fb_hTimeDaysInYear( year ) \
-    (365 + fb_hTimeLeap( year ))
+	(365 + fb_hTimeLeap( year ))
 
 FBCALL int          fb_IsDate           ( FBSTRING *s );
 FBCALL int          fb_DateValue        ( FBSTRING *s );
@@ -68,61 +68,61 @@ FBCALL double       fb_Now              ( void );
 
 FBCALL FBSTRING *   fb_MonthName        ( int month, int abbreviation );
 FBCALL FBSTRING *   fb_WeekdayName      ( int weekday, int abbreviation,
-                                          int first_day_of_week );
+										  int first_day_of_week );
 
 FBCALL double       fb_DateAdd          ( FBSTRING *interval,
-                                          double interval_value_arg,
-                                          double serial );
+										  double interval_value_arg,
+										  double serial );
 FBCALL int          fb_DatePart         ( FBSTRING *interval, double serial,
-                                          int first_day_of_week,
-                                          int first_day_of_year );
+										  int first_day_of_week,
+										  int first_day_of_year );
 FBCALL long long    fb_DateDiff         ( FBSTRING *interval,
-                                          double serial1, double serial2,
-                                          int first_day_of_week,
-                                          int first_day_of_year );
+										  double serial1, double serial2,
+										  int first_day_of_week,
+										  int first_day_of_year );
 
-       int          fb_hDateParse       ( const char *text, size_t text_len,
-                                          int *pDay, int *pMonth, int *pYear,
-                                          size_t *pLength );
+	   int          fb_hDateParse       ( const char *text, size_t text_len,
+										  int *pDay, int *pMonth, int *pYear,
+										  size_t *pLength );
 FBCALL int          fb_DateParse        ( FBSTRING *s,
-                                          int *pDay, int *pMonth, int *pYear );
+										  int *pDay, int *pMonth, int *pYear );
 FBCALL void         fb_hDateDecodeSerial( double serial,
-                                          int *pYear, int *pMonth, int *pDay );
+										  int *pYear, int *pMonth, int *pDay );
 
-       int          fb_hTimeParse       ( const char *text, size_t text_len,
-                                          int *pHour, int *pMinute, int *pSecond,
-                                          size_t *pLength );
+	   int          fb_hTimeParse       ( const char *text, size_t text_len,
+										  int *pHour, int *pMinute, int *pSecond,
+										  size_t *pLength );
 FBCALL int          fb_TimeParse        ( FBSTRING *s,
-                                          int *pHour, int *pMinute, int *pSecond );
+										  int *pHour, int *pMinute, int *pSecond );
 FBCALL void         fb_hTimeDecodeSerial( double serial,
-                                          int *pHour, int *pMinute, int *pSecond,
-                                          int use_qb_hack );
+										  int *pHour, int *pMinute, int *pSecond,
+										  int use_qb_hack );
 
 FBCALL int          fb_DateTimeParse    ( FBSTRING *s,
-                                          int *pDay, int *pMonth, int *pYear,
-                                          int *pHour, int *pMinute, int *pSecond,
-                                          int want_date, int want_time );
+										  int *pDay, int *pMonth, int *pYear,
+										  int *pHour, int *pMinute, int *pSecond,
+										  int want_date, int want_time );
 
 FBCALL void         fb_I18nSet          ( int on_off );
 FBCALL int          fb_I18nGet          ( void );
 
-       int          fb_hTimeLeap        ( int year );
-       int          fb_hGetDayOfYear    ( double serial );
-       int          fb_hGetDayOfYearEx  ( int year, int month, int day );
-       int          fb_hGetWeekOfYear   ( int ref_year, double serial, int first_day_of_year, int first_day_of_week );
-       int          fb_hGetWeeksOfYear  ( int ref_year, int first_day_of_year, int first_day_of_week );
-       int          fb_hTimeDaysInMonth ( int month, int year );
-       void         fb_hNormalizeDate   ( int *pDay, int *pMonth, int *pYear );
-       int          fb_hTimeGetIntervalType ( FBSTRING *interval );
+	   int          fb_hTimeLeap        ( int year );
+	   int          fb_hGetDayOfYear    ( double serial );
+	   int          fb_hGetDayOfYearEx  ( int year, int month, int day );
+	   int          fb_hGetWeekOfYear   ( int ref_year, double serial, int first_day_of_year, int first_day_of_week );
+	   int          fb_hGetWeeksOfYear  ( int ref_year, int first_day_of_year, int first_day_of_week );
+	   int          fb_hTimeDaysInMonth ( int month, int year );
+	   void         fb_hNormalizeDate   ( int *pDay, int *pMonth, int *pYear );
+	   int          fb_hTimeGetIntervalType ( FBSTRING *interval );
 
-       const char * fb_IntlGet          ( eFbIntlIndex index, int disallow_localized );
-       int          fb_IntlGetDateFormat( char *buffer, size_t len, int disallow_localized );
-       int          fb_IntlGetTimeFormat( char *buffer, size_t len, int disallow_localized );
-       FBSTRING   * fb_IntlGetMonthName ( int month, int short_name, int disallow_localized );
-       FBSTRING   * fb_IntlGetWeekdayName( int weekday, int short_names, int disallow_localized );
+	   const char * fb_IntlGet          ( eFbIntlIndex index, int disallow_localized );
+	   int          fb_IntlGetDateFormat( char *buffer, size_t len, int disallow_localized );
+	   int          fb_IntlGetTimeFormat( char *buffer, size_t len, int disallow_localized );
+	   FBSTRING   * fb_IntlGetMonthName ( int month, int short_name, int disallow_localized );
+	   FBSTRING   * fb_IntlGetWeekdayName( int weekday, int short_names, int disallow_localized );
 
-       const char * fb_DrvIntlGet       ( eFbIntlIndex index );
-       int          fb_DrvIntlGetDateFormat ( char *buffer, size_t len );
-       int          fb_DrvIntlGetTimeFormat ( char *buffer, size_t len );
-       FBSTRING   * fb_DrvIntlGetMonthName  ( int month, int short_name );
-       FBSTRING   * fb_DrvIntlGetWeekdayName( int weekday, int short_names );
+	   const char * fb_DrvIntlGet       ( eFbIntlIndex index );
+	   int          fb_DrvIntlGetDateFormat ( char *buffer, size_t len );
+	   int          fb_DrvIntlGetTimeFormat ( char *buffer, size_t len );
+	   FBSTRING   * fb_DrvIntlGetMonthName  ( int month, int short_name );
+	   FBSTRING   * fb_DrvIntlGetWeekdayName( int weekday, int short_names );

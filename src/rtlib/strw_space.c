@@ -10,7 +10,7 @@ FBCALL FB_WCHAR *fb_WstrSpace( ssize_t chars )
 		return NULL;
 
 	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( chars );
+	dst = fb_wstr_AllocTemp( chars );
 	if( dst != NULL )
 	{
 		/* fill it */
