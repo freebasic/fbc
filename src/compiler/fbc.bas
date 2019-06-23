@@ -1403,6 +1403,8 @@ enum
 	OPT_E
 	OPT_EARRAY
 	OPT_EASSERT
+	OPT_EDEBUG
+	OPT_EDEBUGINFO
 	OPT_ENULLPTR
 	OPT_EX
 	OPT_EXX
@@ -1471,6 +1473,8 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	FALSE, _ '' OPT_E
 	FALSE, _ '' OPT_EARRAY
 	FALSE, _ '' OPT_EASSERT
+	FALSE, _ '' OPT_EDEBUG
+	FALSE, _ '' OPT_EDEBUGINFO
 	FALSE, _ '' OPT_ENULLPTR
 	FALSE, _ '' OPT_EX
 	FALSE, _ '' OPT_EXX
@@ -1573,6 +1577,12 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_EASSERT
 		fbSetOption( FB_COMPOPT_ASSERTIONS, TRUE )
 
+	case OPT_EDEBUG
+		fbSetOption( FB_COMPOPT_DEBUG, TRUE )
+
+	case OPT_EDEBUGINFO
+		fbSetOption( FB_COMPOPT_DEBUGINFO, TRUE )
+
 	case OPT_ENULLPTR
 		fbSetOption( FB_COMPOPT_NULLPTRCHECK, TRUE )
 
@@ -1629,6 +1639,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption( FB_COMPOPT_FPUTYPE, value )
 
 	case OPT_G
+		fbSetOption( FB_COMPOPT_DEBUG, TRUE )
 		fbSetOption( FB_COMPOPT_DEBUGINFO, TRUE )
 		fbSetOption( FB_COMPOPT_ASSERTIONS, TRUE )
 
@@ -1963,6 +1974,8 @@ private function parseOption(byval opt as zstring ptr) as integer
 		CHECK("ex", OPT_EX)
 		CHECK("earray", OPT_EARRAY)
 		CHECK("eassert", OPT_EASSERT)
+		CHECK("edebug", OPT_EDEBUG)
+		CHECK("edebuginfo", OPT_EDEBUGINFO)
 		CHECK("enullptr", OPT_ENULLPTR)
 		CHECK("exx", OPT_EXX)
 		CHECK("export", OPT_EXPORT)
@@ -3402,6 +3415,8 @@ private sub hPrintOptions( )
 	print "  -e               Enable runtime error checking"
 	print "  -earray          Enable array bounds checking"
 	print "  -eassert         Enable assert() and assertwarn() checking"
+	print "  -edebug          Enable __FB_DEBUG__"
+	print "  -edebuginfo      Add debug info"
 	print "  -enullptr        Enable null-pointer checking"
 	print "  -ex              -e plus RESUME support"
 	print "  -exx             -ex plus array bounds/null-pointer checking"
@@ -3409,7 +3424,7 @@ private sub hPrintOptions( )
 	print "  -forcelang <name>  Override #lang statements in source code"
 	print "  -fpmode fast|precise  Select floating-point math accuracy/speed"
 	print "  -fpu x87|sse     Set target FPU"
-	print "  -g               Add debug info"
+	print "  -g               Add debug info, define __FB_DEBUG__, and enable assert()"
 	print "  -gen gas|gcc|llvm  Select code generation backend"
 	print "  [-]-help         Show this help output"
 	print "  -i <path>        Add an include file search path"

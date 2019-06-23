@@ -107,7 +107,7 @@ private function hDefOutObj_cb ( ) as string
 end function
 
 private function hDefDebug_cb ( ) as string
-	function = str( env.clopt.assertions )
+	function = str( env.clopt.debug )
 end function
 
 private function hDefErr_cb ( ) as string
@@ -135,6 +135,14 @@ private function hDefErr_cb ( ) as string
 
 	if( env.clopt.assertions ) then
 		res or= &h0020
+	end if
+
+	if( env.clopt.debuginfo ) then
+		res or= &h0040
+	end if
+
+	if( env.clopt.debug ) then
+		res or= &h0080
 	end if
 
 	function = str( res )

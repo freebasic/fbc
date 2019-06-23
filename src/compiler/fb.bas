@@ -459,6 +459,7 @@ sub fbGlobalInit()
 	env.clopt.lang          = FB_DEFAULT_LANG
 	env.clopt.forcelang     = FALSE
 
+	env.clopt.debug         = FALSE
 	env.clopt.debuginfo     = FALSE
 	env.clopt.assertions    = FALSE
 	env.clopt.errorcheck    = FALSE
@@ -531,6 +532,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 	case FB_COMPOPT_FORCELANG
 		env.clopt.forcelang = value
 
+	case FB_COMPOPT_DEBUG
+		env.clopt.debug = value
 	case FB_COMPOPT_DEBUGINFO
 		env.clopt.debuginfo = value
 	case FB_COMPOPT_ASSERTIONS
@@ -614,6 +617,8 @@ function fbGetOption( byval opt as integer ) as integer
 	case FB_COMPOPT_FORCELANG
 		function = env.clopt.forcelang
 
+	case FB_COMPOPT_DEBUG
+		function = env.clopt.debug
 	case FB_COMPOPT_DEBUGINFO
 		function = env.clopt.debuginfo
 	case FB_COMPOPT_ASSERTIONS
