@@ -97,6 +97,7 @@ Version 1.08.0
 - rtlib: inc/file.bi;FileSetEof() function, to adjust size of open file
 - sf.net feature request #293: allow len/sizeof/typeof for UDT members without expression
 - gfxlib: added Direct2D driver, preferred driver on newer systems.  DirectX driver is still fallback for older systems (adeyblue)
+- sf.net #903: add STATIC OPERATOR to user defined types
 - fbc: add builtin function fb_MemMove() alias "memmove"
 - fbc: add builtin function fb_MemCopy() alias "memcpy" (was previously removed in an older version of fbc)
 - ./inc/fbc-int/memory.bi - fbc  API for low level memory operations allocate, callocate, reallocate, deallocate, clear, memcopy, memmove, copyclear

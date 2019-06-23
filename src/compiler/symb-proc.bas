@@ -2329,6 +2329,14 @@ function symbFindUopOvlProc _
 		if( *err_num <> FB_ERRMSG_OK ) then
 			errReport( *err_num, TRUE )
 		end if
+	else
+		'' check visibility
+		if( symbCheckAccess( proc ) = FALSE ) then
+			*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
+			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
+						 symbGetFullProcName( proc ) )
+			proc = NULL
+		end if
 	end if
 
 	function = proc
