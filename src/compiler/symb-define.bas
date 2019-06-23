@@ -133,6 +133,10 @@ private function hDefErr_cb ( ) as string
 		res or= &h0010
 	end if
 
+	if( env.clopt.assertions ) then
+		res or= &h0020
+	end if
+
 	function = str( res )
 end function
 

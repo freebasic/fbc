@@ -26,6 +26,7 @@ Version 1.07.0
 - PRINT/LPRINT/WRITE will accept UDT as Z|WSTRING
 - '-earray' command line option to enable array bounds checking
 - '-enullptr' command line option to enable null pointer checking 
+- '-eassert' command line option to enable assert() and assertwarn() checking, plus __FB_DEBUG__, but not debug symbols
 
 [fixed]
 - sf.net #881: C backend: support for varadic function parameters in gcc using __builtin_va_list type and related macros
