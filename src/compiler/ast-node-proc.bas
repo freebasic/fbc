@@ -535,20 +535,18 @@ private function hCheckErrHnd _
 
 	'' error check? add to head (must be done only when closing the proc body
 	'' or constructor's field would be initialized and break ctor chaining)
-	if( env.clopt.extraerrchk ) then
+	if( env.clopt.errlocation ) then
 		head_node = astAddAfter( rtlErrorSetModName( sym, _
-										 			 astNewCONSTstr( @env.inf.name ) ), _
-							head_node )
+			astNewCONSTstr( @env.inf.name ) ), head_node )
 
 		head_node = astAddAfter( rtlErrorSetFuncName( sym, _
-												 	  astNewCONSTstr( symbGetName( sym ) ) ), _
-						    head_node )
+			astNewCONSTstr( symbGetName( sym ) ) ), head_node )
 	end if
 
 	with sym->proc.ext->err
 		if( .lastfun <> NULL ) then
 			astAdd( rtlErrorSetFuncName( NULL, astNewVAR( .lastfun ) ) )
-           	.lastfun = NULL
+			.lastfun = NULL
 		end if
 
 		if( .lastmod <> NULL ) then

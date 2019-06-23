@@ -1405,6 +1405,7 @@ enum
 	OPT_EASSERT
 	OPT_EDEBUG
 	OPT_EDEBUGINFO
+	OPT_ELOCATION
 	OPT_ENULLPTR
 	OPT_EX
 	OPT_EXX
@@ -1475,6 +1476,7 @@ dim shared as integer option_takes_argument(0 to (OPT__COUNT - 1)) = _
 	FALSE, _ '' OPT_EASSERT
 	FALSE, _ '' OPT_EDEBUG
 	FALSE, _ '' OPT_EDEBUGINFO
+	FALSE, _ '' OPT_ELOCATION
 	FALSE, _ '' OPT_ENULLPTR
 	FALSE, _ '' OPT_EX
 	FALSE, _ '' OPT_EXX
@@ -1583,6 +1585,9 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 	case OPT_EDEBUGINFO
 		fbSetOption( FB_COMPOPT_DEBUGINFO, TRUE )
 
+	case OPT_ELOCATION
+		fbSetOption( FB_COMPOPT_ERRLOCATION, TRUE )
+
 	case OPT_ENULLPTR
 		fbSetOption( FB_COMPOPT_NULLPTRCHECK, TRUE )
 
@@ -1594,6 +1599,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
 		fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
 		fbSetOption( FB_COMPOPT_EXTRAERRCHECK, TRUE )
+		fbSetOption( FB_COMPOPT_ERRLOCATION, TRUE )
 		fbSetOption( FB_COMPOPT_ARRAYBOUNDCHECK, TRUE )
 		fbSetOption( FB_COMPOPT_NULLPTRCHECK, TRUE )
 
@@ -1976,6 +1982,7 @@ private function parseOption(byval opt as zstring ptr) as integer
 		CHECK("eassert", OPT_EASSERT)
 		CHECK("edebug", OPT_EDEBUG)
 		CHECK("edebuginfo", OPT_EDEBUGINFO)
+		CHECK("elocation", OPT_ELOCATION)
 		CHECK("enullptr", OPT_ENULLPTR)
 		CHECK("exx", OPT_EXX)
 		CHECK("export", OPT_EXPORT)
@@ -3417,6 +3424,7 @@ private sub hPrintOptions( )
 	print "  -eassert         Enable assert() and assertwarn() checking"
 	print "  -edebug          Enable __FB_DEBUG__"
 	print "  -edebuginfo      Add debug info"
+	print "  -elocation       Enable reporting error location"
 	print "  -enullptr        Enable null-pointer checking"
 	print "  -ex              -e plus RESUME support"
 	print "  -exx             -ex plus array bounds/null-pointer checking"

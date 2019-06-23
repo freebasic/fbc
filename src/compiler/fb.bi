@@ -75,6 +75,7 @@ enum FB_COMPOPT
 	FB_COMPOPT_ERRORCHECK           '' boolean: runtime error checks
 	FB_COMPOPT_RESUMEERROR          '' boolean: RESUME support
 	FB_COMPOPT_EXTRAERRCHECK        '' boolean: NULL pointer/array bounds checks
+	FB_COMPOPT_ERRLOCATION          '' boolean: enable reporting of error location
 	FB_COMPOPT_NULLPTRCHECK         '' boolean: NULL pointer
 	FB_COMPOPT_ARRAYBOUNDCHECK      '' boolean: array bounds checks
 	FB_COMPOPT_PROFILE              '' boolean: -profile
@@ -260,6 +261,7 @@ type FBCMMLINEOPT
 	errorcheck      as integer              '' enable runtime error checks?
 	resumeerr       as integer              '' enable RESUME support?
 	extraerrchk     as integer              '' enable NULL pointer/array bounds checks?
+	errlocation     as integer              '' enable reporting of error location (default = false)
 	arrayboundchk   as integer              '' enable array bounds checks?
 	nullptrchk      as integer              '' enable NULL pointer checks?
 	profile         as integer              '' build profiling code (default = false)

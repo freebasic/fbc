@@ -29,6 +29,7 @@ Version 1.07.0
 - '-eassert' command line option to enable assert() and assertwarn() checking
 - '-edebug' command line option to enable __FB_DEBUG__
 - '-edebuginfo' command line option to enable debug symbols
+- '-elocation' command line option to enable reporting error location
 
 [fixed]
 - sf.net #881: C backend: support for varadic function parameters in gcc using __builtin_va_list type and related macros

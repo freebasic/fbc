@@ -464,6 +464,7 @@ sub fbGlobalInit()
 	env.clopt.assertions    = FALSE
 	env.clopt.errorcheck    = FALSE
 	env.clopt.extraerrchk   = FALSE
+	env.clopt.errlocation   = FALSE
 	env.clopt.arrayboundchk = FALSE
 	env.clopt.nullptrchk    = FALSE
 	env.clopt.resumeerr     = FALSE
@@ -544,6 +545,8 @@ sub fbSetOption( byval opt as integer, byval value as integer )
 		env.clopt.resumeerr = value
 	case FB_COMPOPT_EXTRAERRCHECK
 		env.clopt.extraerrchk = value
+	case FB_COMPOPT_ERRLOCATION
+		env.clopt.errlocation = value
 	case FB_COMPOPT_ARRAYBOUNDCHECK
 		env.clopt.arrayboundchk = value
 	case FB_COMPOPT_NULLPTRCHECK
@@ -629,6 +632,8 @@ function fbGetOption( byval opt as integer ) as integer
 		function = env.clopt.resumeerr
 	case FB_COMPOPT_EXTRAERRCHECK
 		function = env.clopt.extraerrchk
+	case FB_COMPOPT_ERRLOCATION
+		function = env.clopt.errlocation
 	case FB_COMPOPT_ARRAYBOUNDCHECK
 		function = env.clopt.arrayboundchk
 	case FB_COMPOPT_NULLPTRCHECK

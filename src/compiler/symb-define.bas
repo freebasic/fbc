@@ -145,6 +145,10 @@ private function hDefErr_cb ( ) as string
 		res or= &h0080
 	end if
 
+	if( env.clopt.errlocation ) then
+		res or= &h0100
+	end if
+
 	function = str( res )
 end function
 
