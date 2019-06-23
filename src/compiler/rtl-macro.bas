@@ -97,7 +97,7 @@ end type
 	 	), _
 		/' #define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e) '/ _
 		( _
-			@"ASSERT", FB_RTL_OPT_DBGONLY, _
+			@"ASSERT", FB_RTL_OPT_ASSERTONLY, _
 	 		1, _
 	 		{ _
 	 			@"E" _
@@ -113,7 +113,7 @@ end type
 	 	), _
 		/' #define ASSERTWARN(e) if (e) = FALSE then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, #e) '/ _
 		( _
-			@"ASSERTWARN", FB_RTL_OPT_DBGONLY, _
+			@"ASSERTWARN", FB_RTL_OPT_ASSERTONLY, _
 	 		1, _
 	 		{ _
 	 			@"E" _
@@ -373,7 +373,7 @@ end type
 		), _
 		/' #define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e) '/ _
 		( _
-			@"__ASSERT", FB_RTL_OPT_DBGONLY, _
+			@"__ASSERT", FB_RTL_OPT_ASSERTONLY, _
 			1, _
 			{ _
 				@"E" _
@@ -389,7 +389,7 @@ end type
 		), _
 		/' #define ASSERTWARN(e) if (e) = FALSE then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, #e) '/ _
 		( _
-			@"__ASSERTWARN", FB_RTL_OPT_DBGONLY, _
+			@"__ASSERTWARN", FB_RTL_OPT_ASSERTONLY, _
 			1, _
 			{ _
 				@"E" _
@@ -591,7 +591,7 @@ private sub hAddMacro( byval macdef as FB_RTL_MACRODEF ptr )
 	next
 
 	'' Only add the assert[warn]() macros in debug builds
-	if( (macdef->options and FB_RTL_OPT_DBGONLY) <> 0 ) then
+	if( (macdef->options and FB_RTL_OPT_ASSERTONLY) <> 0 ) then
 		if( env.clopt.assertions = FALSE ) then
 			addbody = FALSE
 		end if
