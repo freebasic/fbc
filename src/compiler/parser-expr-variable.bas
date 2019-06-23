@@ -83,7 +83,7 @@ private function cFixedSizeArrayIndex( byval sym as FBSYMBOL ptr ) as ASTNODE pt
 		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
 
 		'' bounds checking
-		if( env.clopt.extraerrchk ) then
+		if( env.clopt.arrayboundchk ) then
 			dimexpr = astBuildBOUNDCHK( dimexpr, astNewCONSTi( lower ), astNewCONSTi( upper ) )
 			if( dimexpr = NULL ) then
 				errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
@@ -457,7 +457,7 @@ private function hStrIndexing _
 	end if
 
 	'' null pointer checking
-	if( env.clopt.extraerrchk ) then
+	if( env.clopt.arrayboundchk ) then
 		varexpr = astBuildPTRCHK( varexpr )
 	end if
 
@@ -530,7 +530,7 @@ function cMemberDeref _
 					subtype = NULL
 				end select
 
-				if( env.clopt.extraerrchk ) then
+				if( env.clopt.nullptrchk ) then
 					varexpr = astBuildPTRCHK( varexpr )
 				end if
 
@@ -685,7 +685,7 @@ function cMemberDeref _
 				idxexpr = hCheckIntegerIndex( idxexpr )
 
 				'' null pointer checking
-				if( env.clopt.extraerrchk ) then
+				if( env.clopt.nullptrchk ) then
 					varexpr = astBuildPTRCHK( varexpr )
 				end if
 
@@ -770,7 +770,7 @@ function cFuncPtrOrMemberDeref _
 	end if
 
 	'' null pointer checking
-	if( env.clopt.extraerrchk ) then
+	if( env.clopt.nullptrchk ) then
 		expr = astBuildPTRCHK( expr )
 	end if
 
@@ -819,7 +819,7 @@ private function cDynamicArrayIndex _
 		dimexpr = hCheckIntegerIndex( hIndexExpr( ) )
 
 		'' bounds checking
-		if( env.clopt.extraerrchk ) then
+		if( env.clopt.arrayboundchk ) then
 			dimexpr = astBuildBOUNDCHK( dimexpr, _
 					astBuildDerefAddrOf( astCloneTree( descexpr ), dimoffset + symb.fbarraydim_lbound, FB_DATATYPE_INTEGER, NULL ), _
 					astBuildDerefAddrOf( astCloneTree( descexpr ), dimoffset + symb.fbarraydim_ubound, FB_DATATYPE_INTEGER, NULL ) )

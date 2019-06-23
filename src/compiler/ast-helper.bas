@@ -440,7 +440,7 @@ function astBuildVtableLookup _
 
 		'' null pointer checking for ABSTRACTs
 		'' (in case it wasn't overridden)
-		if( env.clopt.extraerrchk ) then
+		if( env.clopt.nullptrchk ) then
 			if( symbIsAbstract( proc ) ) then
 				p = astBuildPTRCHK( p )
 			end if
@@ -793,7 +793,7 @@ function astBuildMultiDeref _
 			end select
 
 			'' null pointer checking
-			if( env.clopt.extraerrchk ) then
+			if( env.clopt.nullptrchk ) then
 				expr = astBuildPTRCHK( expr )
 			end if
 

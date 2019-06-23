@@ -111,7 +111,7 @@ private function hDefDebug_cb ( ) as string
 end function
 
 private function hDefErr_cb ( ) as string
-    dim as integer res = &h0000
+	dim as integer res = &h0000
 
 	if( env.clopt.errorcheck ) then
 		res = &h0001
@@ -123,6 +123,14 @@ private function hDefErr_cb ( ) as string
 
 	if( env.clopt.extraerrchk ) then
 		res or= &h0004
+	end if
+
+	if( env.clopt.arrayboundchk ) then
+		res or= &h0008
+	end if
+
+	if( env.clopt.nullptrchk ) then
+		res or= &h0010
 	end if
 
 	function = str( res )

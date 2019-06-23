@@ -131,7 +131,7 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 
 	select case( t->class )
 	case AST_NODECLASS_DEREF
-		if( env.clopt.extraerrchk ) then
+		if( env.clopt.nullptrchk ) then
 			hRemoveNullPtrCheck( t )
 		end if
 
@@ -152,7 +152,7 @@ function astNewADDROF( byval l as ASTNODE ptr ) as ASTNODE ptr
 	case AST_NODECLASS_FIELD
 		'' @0->field to const
 		if( t->l->class = AST_NODECLASS_DEREF ) then
-			if( env.clopt.extraerrchk ) then
+			if( env.clopt.nullptrchk ) then
 				hRemoveNullPtrCheck( t->l )
 			end if
 
