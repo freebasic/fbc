@@ -634,6 +634,36 @@ private sub hCheckAttrib _
 
 end sub
 
+private function hIsParamUDT _
+	( _
+		byval param as FBSYMBOL ptr _
+	) as integer
+
+	select case symbGetType( param )
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
+		function = TRUE
+	case else
+		function = FALSE
+	end select
+
+end function
+
+private function hIsParamParent _
+	( _
+		byval param as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr _
+	) as integer
+
+	select case symbGetType( param )
+	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
+		function = (symbGetType( param ) = symbGetType( parent )) and _
+			(symbGetSubtype( param ) = parent)
+	case else
+		function = FALSE
+	end select
+
+end function
+
 private function hCheckOpOvlParams _
 	( _
 		byval parent as FBSYMBOL ptr, _
@@ -654,6 +684,22 @@ private function hCheckOpOvlParams _
 	'' optional?
 	if( symbParamIsOptional( param ) ) then
 		hParamError( proc, num, FB_ERRMSG_PARAMCANTBEOPTIONAL )
+		exit function
+	end if
+#endmacro
+
+#macro hCheckParamIsUDT( proc, param, num )
+	'' param is a UDT?
+	if( hIsParamUDT( param ) = FALSE ) then
+		hParamError( proc, num, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
+		exit function
+	end if
+#endmacro
+
+#macro hCheckParamIsParent( proc, param, num, parent )
+	'' param is same type as parent?
+	if( hIsParamParent( param, parent ) = FALSE ) then
+		hParamError( proc, num, FB_ERRMSG_ATLEASTONEPARAMMUSTBEPARENTTYPE )
 		exit function
 	end if
 #endmacro
@@ -712,14 +758,11 @@ private function hCheckOpOvlParams _
 		select case as const astGetOpClass( op )
 		'' unary, cast or addressing?
 		case AST_NODECLASS_UOP, AST_NODECLASS_CONV, AST_NODECLASS_ADDROF
-			'' is the param an UDT?
-			select case symbGetType( param )
-			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-
-			case else
-				hParamError( proc, 1, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
-				exit function
-			end select
+			if( symbIsStatic( proc ) ) then
+				hCheckParamIsParent( proc, param, 1, parent )
+			else
+				hCheckParamIsUDT( proc, param, 1 )
+			end if
 
 		'' binary?
 		case AST_NODECLASS_BOP
@@ -728,20 +771,15 @@ private function hCheckOpOvlParams _
 
 				hCheckParam( proc, nxtparam, 2 )
 
-				'' is the 1st param an UDT?
-				select case symbGetType( param )
-				case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-
-				case else
-					'' try the 2nd one..
-					select case symbGetType( nxtparam )
-					case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-
-					case else
-						hParamError( proc, 2, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
-						exit function
-					end select
-				end select
+				if( symbIsStatic( proc ) ) then
+					if( hIsParamParent( param, parent ) = FALSE ) then
+						hCheckParamIsParent( proc, nxtparam, 2, parent )
+					end if
+				else
+					if( hIsParamUDT( param ) = FALSE ) then
+						hCheckParamIsUDT( proc, nxtparam, 2 )
+					end if
+				end if
 			end if
 
 		'' NEW or DELETE?
@@ -791,20 +829,15 @@ private function hCheckOpOvlParams _
 
 					hCheckParam( proc, nxtparam, 2 )
 
-					'' is the 1st param an UDT?
-					select case symbGetType( param )
-					case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-
-					case else
-						'' try the 2nd one..
-						select case symbGetType( nxtparam )
-						case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM ', FB_DATATYPE_CLASS
-
-						case else
-							hParamError( proc, 2, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
-							exit function
-						end select
-					end select
+					if( symbIsStatic( proc ) ) then
+						if( hIsParamParent( param, parent ) = FALSE ) then
+							hCheckParamIsParent( proc, nxtparam, 2, parent )
+						end if
+					else
+						if( hIsParamUDT( param ) = FALSE ) then
+							hCheckParamIsUDT( proc, nxtparam, 2 )
+						end if
+					end if
 				end if
 
 			'' FOR, STEP or NEXT?
@@ -823,13 +856,7 @@ private function hCheckOpOvlParams _
 						end if
 
 						hCheckParam( proc, param, 1 )
-
-						'' same type?
-						if( (symbGetType( param ) <> symbGetType( parent )) or _
-						    (symbGetSubtype( param ) <> parent) ) then
-							hParamError( proc, 1, FB_ERRMSG_PARAMTYPEINCOMPATIBLEWITHPARENT )
-							exit function
-						end if
+						hCheckParamIsParent( proc, param, 1, parent )
 					end if
 				end if
 			case else
@@ -1227,9 +1254,13 @@ function cProcHeader _
 				op = AST_OP_ADD
 			end if
 		else
-			'' non-self op in a type declaration... !!WRITEME!! static global operators should be allowed?
+			'' non-self op in a type declaration?
 			if( is_memberproc ) then
-				errReport( FB_ERRMSG_OPCANNOTBEAMETHOD, TRUE, " (TODO)" )
+				select case as const( op )
+				case else
+					'' !!! TODO !!!, confirm which operators can be allowed
+					'' errReport( FB_ERRMSG_OPCANNOTBEAMETHOD, TRUE, " (TODO)" )
+				end select
 			end if
 		end if
 
@@ -1255,9 +1286,24 @@ function cProcHeader _
 
 		case else
 			if( is_memberproc ) then
-				if( attrib and FB_SYMBATTRIB_STATIC ) then
-					errReport( FB_ERRMSG_OPERATORCANTBESTATIC, TRUE )
-					attrib and= not FB_SYMBATTRIB_STATIC
+				'' self-op? can't be static
+				if( astGetOpIsSelf( op ) ) then
+					if( attrib and FB_SYMBATTRIB_STATIC ) then
+						errReport( FB_ERRMSG_OPERATORCANTBESTATIC, TRUE )
+						attrib and= not FB_SYMBATTRIB_STATIC
+					end if
+					pattrib or= FB_PROCATTRIB_METHOD
+
+				'' must be static if a declaration
+				else
+					if( options and FB_PROCOPT_ISPROTO ) then
+						if(( attrib and FB_SYMBATTRIB_STATIC ) = 0 ) then
+							errReport( FB_ERRMSG_OPERATORMUSTBESTATIC, TRUE )
+						end if
+
+						attrib or= FB_SYMBATTRIB_STATIC
+						pattrib and= not FB_PROCATTRIB_METHOD
+					end if
 				end if
 				'' Then it must be a method
 				pattrib or= FB_PROCATTRIB_METHOD
