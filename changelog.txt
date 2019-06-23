@@ -2,6 +2,7 @@ Version 1.07.0
 
 [changed]
 - SADD/STRPTR(wstring) returns WSTRING PTR
+- '-v' be verbose command line option affects '-help' output
 
 [added]
 - CVA_LIST type, CVA_START(), CVA_COPY() CVA_END(), CVA_ARG() macros will map to gcc's __builtin_va_list and __builtin_va_* macros in gcc backend

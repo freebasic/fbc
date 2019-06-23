@@ -3398,7 +3398,7 @@ private sub hAddDefaultLibs( )
 
 end sub
 
-private sub hPrintOptions( )
+private sub hPrintOptions( byval verbose as integer )
 	'' Note: must print each line separately to let the rtlib print the
 	'' proper line endings even if redirected to file/pipe, hard-coding \n
 	'' here isn't enough for DOS/Windows.
@@ -3420,12 +3420,16 @@ private sub hPrintOptions( )
 	print "  -dll             Same as -dylib"
 	print "  -dylib           Create a DLL (win32) or shared library (*nix/*BSD)"
 	print "  -e               Enable runtime error checking"
+
+	if( verbose ) then
 	print "  -earray          Enable array bounds checking"
 	print "  -eassert         Enable assert() and assertwarn() checking"
 	print "  -edebug          Enable __FB_DEBUG__"
 	print "  -edebuginfo      Add debug info"
 	print "  -elocation       Enable reporting error location"
 	print "  -enullptr        Enable null-pointer checking"
+	end if
+
 	print "  -ex              -e plus RESUME support"
 	print "  -exx             -ex plus array bounds/null-pointer checking"
 	print "  -export          Export symbols for dynamic linkage"
@@ -3433,12 +3437,20 @@ private sub hPrintOptions( )
 	print "  -fpmode fast|precise  Select floating-point math accuracy/speed"
 	print "  -fpu x87|sse     Set target FPU"
 	print "  -g               Add debug info, define __FB_DEBUG__, and enable assert()"
+
+	if( verbose ) then
+	print "  -gen gas         Select GNU gas assembler backend"
+	print "  -gen gcc         Select GNU gcc C backend"
+	print "  -gen llvm        Select LLVM backend"
+	else
 	print "  -gen gas|gcc|llvm  Select code generation backend"
+	end if
+
 	print "  [-]-help         Show this help output"
 	print "  -i <path>        Add an include file search path"
 	print "  -include <file>  Pre-#include a file for each input .bas"
 	print "  -l <name>        Link in a library"
-	print "  -lang <name>     Select FB dialect: deprecated, fblite, qb"
+	print "  -lang <name>     Select FB dialect: fb, deprecated, fblite, qb"
 	print "  -lib             Create a static library"
 	print "  -m <name>        Specify main module (default if not -c: first input .bas)"
 	print "  -map <file>      Save linking map to file"
@@ -3467,7 +3479,11 @@ private sub hPrintOptions( )
 	print "  -static          Prefer static libraries over dynamic ones when linking"
 	print "  -strip           Omit all symbol information from the output file"
 	print "  -t <value>       Set .exe stack size in kbytes, default: 1024 (win32/dos)"
+	if( verbose ) then
 	print "  -target <name>   Set cross-compilation target"
+	else
+	print "  -target <name>   Set cross-compilation target"
+	end if
 	print "  -title <name>    Set XBE display title (xbox)"
 	print "  -v               Be verbose"
 	print "  -vec <n>         Automatic vectorization level (default: 0)"
@@ -3477,7 +3493,12 @@ private sub hPrintOptions( )
 	print "  -Wc <a,b,c>      Pass options to 'gcc' (-gen gcc) or 'llc' (-gen llvm)"
 	print "  -Wl <a,b,c>      Pass options to 'ld'"
 	print "  -x <file>        Set output executable/library file name"
+
+	if( verbose ) then
 	print "  -z gosub-setjmp  Use setjmp/longjmp to implement GOSUB"
+	print "  -z valist-as-ptr Use pointer expressions to implement CVA_*() macros"
+	end if
+
 end sub
 
 private sub hAppendConfigInfo( byref config as string, byval info as zstring ptr )
@@ -3487,7 +3508,7 @@ private sub hAppendConfigInfo( byref config as string, byval info as zstring ptr
 	config += *info
 end sub
 
-private sub hPrintVersion( )
+private sub hPrintVersion( byval verbose as integer )
 	dim as string config
 
 	print "FreeBASIC Compiler - Version " + FB_VERSION + _
@@ -3510,24 +3531,24 @@ end sub
 	fbcInit( )
 
 	if( __FB_ARGC__ = 1 ) then
-		hPrintOptions( )
+		hPrintOptions( FALSE )
 		fbcEnd( 1 )
 	end if
 
 	hParseArgs( __FB_ARGC__, __FB_ARGV__ )
 
 	if( fbc.showversion ) then
-		hPrintVersion( )
+		hPrintVersion( fbc.verbose )
 		fbcEnd( 0 )
 	end if
 
 	if( fbc.verbose ) then
-		hPrintVersion( )
+		hPrintVersion( FALSE )
 	end if
 
 	'' Show help if --help was given
 	if( fbc.showhelp ) then
-		hPrintOptions( )
+		hPrintOptions( fbc.verbose )
 		fbcEnd( 1 )
 	end if
 
@@ -3574,7 +3595,7 @@ end sub
 
 	'' Show help if there are no input files
 	if( have_input_files = FALSE ) then
-		hPrintOptions( )
+		hPrintOptions( fbc.verbose )
 		fbcEnd( 1 )
 	end if
 
