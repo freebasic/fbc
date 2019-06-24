@@ -657,7 +657,7 @@ private function hCheckOpOvlParams _
 #endmacro
 
 #macro hCheckParamIsUDT( proc, param, num )
-	'' param is same type as parent?
+	'' param is a UDT?
 	if( hIsParamUDT( param ) = FALSE ) then
 		hParamError( proc, num, FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT )
 		exit function
