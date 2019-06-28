@@ -51,8 +51,8 @@ end function
 ''                |   LANG ':' '\"' STR_LIT '\"'
 ''
 private sub cDirective( ) static
-    static as zstring * FB_MAXPATHLEN+1 incfile
-    dim as integer isonce
+	static as zstring * FB_MAXPATHLEN+1 incfile
+	dim as integer isonce
 
 	select case as const lexGetToken( )
 	case FB_TK_DYNAMIC

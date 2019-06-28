@@ -42,25 +42,25 @@ function astIsConst0OrMinus1( byval n as ASTNODE ptr ) as integer
 end function
 
 function astNewCONSTstr( byval v as zstring ptr ) as ASTNODE ptr
-    dim as FBSYMBOL ptr tc = any
+	dim as FBSYMBOL ptr tc = any
 
 	'' assuming no escape sequences are used
 	tc = symbAllocStrConst( v, -1 )
-    if( tc = NULL ) then
-    	exit function
-    end if
+	if( tc = NULL ) then
+		exit function
+	end if
 
 	function = astNewVAR( tc )
 end function
 
 function astNewCONSTwstr( byval v as wstring ptr ) as ASTNODE ptr
-    dim as FBSYMBOL ptr tc = any
+	dim as FBSYMBOL ptr tc = any
 
 	'' assuming no escape sequences are used
 	tc = symbAllocWstrConst( v, -1 )
-    if( tc = NULL ) then
-    	exit function
-    end if
+	if( tc = NULL ) then
+		exit function
+	end if
 
 	function = astNewVAR( tc )
 end function
@@ -72,7 +72,7 @@ function astNewCONSTi _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	n = astNewNode( AST_NODECLASS_CONST, FB_DATATYPE_LONGINT, NULL )
 	n->val.i = value
@@ -90,7 +90,7 @@ function astNewCONSTf _
 		byval dtype as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	n = astNewNode( AST_NODECLASS_CONST, FB_DATATYPE_DOUBLE )
 	n->val.f = value

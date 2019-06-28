@@ -73,7 +73,7 @@ function astLoadMACRO _
 	) as IRVREG ptr
 
 	dim op as AST_OP
-    dim as IRVREG ptr v1 = any, v2 = any, vr = any
+	dim as IRVREG ptr v1 = any, v2 = any, vr = any
 
 	op = n->op.op
 

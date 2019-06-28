@@ -24,11 +24,11 @@ end function
 ''
 function cStrLiteral( byval skiptoken as integer ) as ASTNODE ptr
 	dim as FBSYMBOL ptr sym = any
-    dim as integer lgt = any, isunicode = any
-    dim as zstring ptr zs = any
+	dim as integer lgt = any, isunicode = any
+	dim as zstring ptr zs = any
 	dim as wstring ptr ws = any
 
-    dim as ASTNODE ptr expr = NULL
+	dim as ASTNODE ptr expr = NULL
 
 	do
 		lgt = lexGetTextLen( )
@@ -57,7 +57,7 @@ function cStrLiteral( byval skiptoken as integer ) as ASTNODE ptr
 			end if
 
 			if( isunicode = FALSE ) then
-               	sym = symbAllocStrConst( zs, lgt )
+			   	sym = symbAllocStrConst( zs, lgt )
 			'' convert to unicode..
 			else
 				sym = symbAllocWstrConst( wstr( *zs ), lgt )

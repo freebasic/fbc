@@ -335,7 +335,7 @@ private function vregPretty( byval v as IRVREG ptr ) as string
 		s += "*" & v->mult
 	end if
 
-	's += " " + typeDumpToStr( v->dtype, v->subtype )
+	
 
 	function = s
 end function
@@ -943,7 +943,7 @@ private sub _emitEnd( )
 
 	ctx.section = SECTION_FOOT
 
-	' flush all sections to file
+	
 	if( put( #env.outf.num, , ctx.head_txt ) <> 0 ) then
 	end if
 	if( put( #env.outf.num, , ctx.body_txt ) <> 0 ) then

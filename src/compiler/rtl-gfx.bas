@@ -1337,7 +1337,7 @@ private function hPorts_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
-    static as integer libsAdded = FALSE
+	static as integer libsAdded = FALSE
 
 	if( libsadded = FALSE ) then
 		libsAdded = TRUE
@@ -1402,11 +1402,11 @@ function rtlGfxPset _
 		byval ispreset as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXPSET ) )
+	proc = astNewCALL( PROCLOOKUP( GFXPSET ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
@@ -1489,11 +1489,11 @@ function rtlGfxLine _
 		byval coordtype as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXLINE ) )
+	proc = astNewCALL( PROCLOOKUP( GFXLINE ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
@@ -1559,11 +1559,11 @@ function rtlGfxCircle _
 		byval coordtype as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXCIRCLE ) )
+	proc = astNewCALL( PROCLOOKUP( GFXCIRCLE ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
@@ -1638,10 +1638,10 @@ function rtlGfxPaint _
 		byval coord_type as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 	dim as integer pattern = any
 
-    function = FALSE
+	function = FALSE
 
 	proc = astNewCALL( PROCLOOKUP( GFXPAINT ) )
 
@@ -1709,11 +1709,11 @@ function rtlGfxDraw _
 		byval cexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXDRAW ) )
+	proc = astNewCALL( PROCLOOKUP( GFXDRAW ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
@@ -1744,9 +1744,9 @@ function rtlGfxDrawString _
 		byval paramexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any, putter = any
+	dim as ASTNODE ptr proc = any, putter = any
 
-    function = FALSE
+	function = FALSE
 
 	proc = astNewCALL( PROCLOOKUP( GFXDRAWSTRING ) )
 
@@ -1826,11 +1826,11 @@ function rtlGfxView _
 		byval screenflag as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXVIEW ) )
+	proc = astNewCALL( PROCLOOKUP( GFXVIEW ) )
 
  	'' byval x1 as integer
  	if( astNewARG( proc, x1expr ) = NULL ) then
@@ -1880,40 +1880,40 @@ function rtlGfxWindow _
 		byval screenflag as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXWINDOW ) )
+	proc = astNewCALL( PROCLOOKUP( GFXWINDOW ) )
 
  	'' byval x1 as single
  	if( x1expr = NULL ) then
-        x1expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
-    end if
+		x1expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
+	end if
  	if( astNewARG( proc, x1expr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval y1 as single
  	if( y1expr = NULL ) then
-        y1expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
-    end if
+		y1expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
+	end if
  	if( astNewARG( proc, y1expr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval x2 as single
  	if( x2expr = NULL ) then
-        x2expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
-    end if
+		x2expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
+	end if
  	if( astNewARG( proc, x2expr ) = NULL ) then
  		exit function
  	end if
 
  	'' byval y2 as single
  	if( y2expr = NULL ) then
-        y2expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
-    end if
+		y2expr = astNewCONSTf( 0.0, FB_DATATYPE_SINGLE )
+	end if
  	if( astNewARG( proc, y2expr ) = NULL ) then
  		exit function
  	end if
@@ -1936,8 +1936,8 @@ function rtlGfxPalette  _
 		byval isget as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 	dim as integer gbdefval = any, gbmode = any
 
 	function = FALSE
@@ -2019,8 +2019,8 @@ function rtlGfxPaletteUsing  _
 		byval is64bit as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 
 	function = FALSE
 
@@ -2065,11 +2065,11 @@ function rtlGfxPut _
 		byval coordtype as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
-    function = FALSE
+	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXPUT ) )
+	proc = astNewCALL( PROCLOOKUP( GFXPUT ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
@@ -2153,10 +2153,10 @@ function rtlGfxGet _
 
 	dim as ASTNODE ptr proc = any
 
-    function = FALSE
+	function = FALSE
 
 	'' use new header in -lang fb, otherwise old header
-    proc = astNewCALL( iif( fbLangIsSet( FB_LANG_FB ), PROCLOOKUP( GFXGET ), PROCLOOKUP( GFXGETQB ) ) )
+	proc = astNewCALL( iif( fbLangIsSet( FB_LANG_FB ), PROCLOOKUP( GFXGET ), PROCLOOKUP( GFXGETQB ) ) )
 
 	'' byval target as any ptr
 	if( astNewARG( proc, target ) = NULL ) then
@@ -2219,7 +2219,7 @@ function rtlGfxScreenSet _
 		byval rexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
@@ -2261,11 +2261,11 @@ function rtlGfxScreenSetQB _
 		byval visible as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( GFXSCREENSETQB ) )
+	proc = astNewCALL( PROCLOOKUP( GFXSCREENSETQB ) )
 
  	'' byval mode as integer
  	if( astNewARG( proc, mode ) = NULL ) then

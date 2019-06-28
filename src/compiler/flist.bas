@@ -39,7 +39,7 @@ function flistNewItem _
 		byval flist as TFLIST ptr _
 	) as any ptr static
 
-    dim as TFLISTITEM ptr item
+	dim as TFLISTITEM ptr item
 
 	'' alloc new item flist if there are no free items
 	if( flist->items <= 0 ) Then
@@ -98,7 +98,7 @@ function flistGetHead _
 		byval flist as TFLIST ptr _
 	) as any ptr static
 
-    dim as TFLISTITEM ptr item
+	dim as TFLISTITEM ptr item
 
 	item = flist->list.tbhead->nodetb
 	if( item = NULL ) then
@@ -115,7 +115,7 @@ function flistGetNext _
 		byval node as any ptr _
 	) as any ptr static
 
-    dim as TFLISTITEM ptr nxt
+	dim as TFLISTITEM ptr nxt
 
 #ifdef DEBUG
 	if( node = NULL ) then

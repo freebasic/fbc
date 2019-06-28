@@ -192,8 +192,8 @@ function cDataStmt  _
 
 		astDataStmtEnd( tree )
 
-    	'' node is unused, the tree will become an initialized static array
-    	astDelNode( tree )
+		'' node is unused, the tree will become an initialized static array
+		astDelNode( tree )
 
 		function = TRUE
 

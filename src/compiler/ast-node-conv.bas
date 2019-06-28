@@ -435,7 +435,7 @@ function astNewCONV _
 		exit function
 
 	'' to UDT?
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+	case FB_DATATYPE_STRUCT 
 		'' not from UDT? op overloading already failed, refuse.
 		if( typeGet( ldtype ) <> FB_DATATYPE_STRUCT ) then
 			exit function

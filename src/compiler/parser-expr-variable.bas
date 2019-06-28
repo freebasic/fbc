@@ -60,7 +60,7 @@ end function
 '' descriptor.
 ''
 private function cFixedSizeArrayIndex( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
-    dim as ASTNODE ptr expr = any, dimexpr = any
+	dim as ASTNODE ptr expr = any, dimexpr = any
 	dim as integer dimension = any
 	dim as longint lower = any, upper = any
 
@@ -253,16 +253,16 @@ private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
 		return res
 	end if
 
-    dim as FBSYMCHAIN ptr chain_ = symbLookupCompField( parent, lexGetText( ) )
-    if( chain_ = NULL ) then
+	dim as FBSYMCHAIN ptr chain_ = symbLookupCompField( parent, lexGetText( ) )
+	if( chain_ = NULL ) then
 		errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) )
 		'' no error recovery: caller will take care
 		lexSkipToken( )
 		return NULL
-    end if
+	end if
 
-    '' since methods don't start a new hash, params and local
-    '' symbol dups will also be found
+	'' since methods don't start a new hash, params and local
+	'' symbol dups will also be found
 	do
 		dim as FBSYMBOL ptr sym = chain_->sym
 		do
@@ -291,14 +291,14 @@ private function hMemberId( byval parent as FBSYMBOL ptr ) as FBSYMBOL ptr
 		loop while( sym <> NULL )
 
 		chain_ = chain_->next
-    loop while( chain_ <> NULL )
+	loop while( chain_ <> NULL )
 
-    '' nothing found..
-    errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) )
-    '' no error recovery: caller will take care
-    lexSkipToken( )
+	'' nothing found..
+	errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) )
+	'' no error recovery: caller will take care
+	lexSkipToken( )
 
-    function = NULL
+	function = NULL
 
 end function
 
@@ -376,7 +376,7 @@ function cUdtMember _
 			subtype	= symbGetSubType( fld )
 
 			select case	typeGet( dtype )
-			case FB_DATATYPE_STRUCT	', FB_DATATYPE_CLASS
+			case FB_DATATYPE_STRUCT	
 				if(	lexGetToken( ) <> CHAR_DOT ) then
 					return varexpr
 				end	if
@@ -522,7 +522,7 @@ function cMemberDeref _
 					dtype = FB_DATATYPE_INTEGER
 					subtype = NULL
 
-				case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+				case FB_DATATYPE_STRUCT 
 
 				case else
 					errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
@@ -940,7 +940,7 @@ private function hMakeArrayIdx( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 				symb.fbarray_data, FB_DATATYPE_INTEGER )
 	end if
 
-    '' static array, return lbound( array )
+	'' static array, return lbound( array )
 	assert( symbGetArrayDimensions( sym ) > 0 )
 	function = astNewCONSTi( symbArrayLbound( sym, 0 ) )
 end function
@@ -973,8 +973,8 @@ function cVariableEx overload _
 	is_array = symbIsArray( sym )
 	is_funcptr = FALSE
 
-    varexpr = NULL
-    idxexpr = NULL
+	varexpr = NULL
+	idxexpr = NULL
 
 	dim as integer check_fields = TRUE, is_nidxarray = FALSE
 
@@ -1102,8 +1102,8 @@ function cVariableEx overload _
    		end if
    	end if
 
-    if( check_fields ) then
-    	'' FuncPtrOrMemberDeref?
+	if( check_fields ) then
+		'' FuncPtrOrMemberDeref?
 		varexpr = cFuncPtrOrMemberDeref( varexpr->dtype, varexpr->subtype, varexpr, is_funcptr, check_array )
 	else
 		if( is_nidxarray ) then
@@ -1141,13 +1141,13 @@ function cVariableEx _
 	end if
 
 	if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-    	'' no suffix? lookup the default type (last DEF###) in the
-    	'' case symbol could not be found..
-    	if( suffix = FB_DATATYPE_INVALID ) then
-    		sym = symbFindVarByDefType( chain_, symbGetDefType( id ) )
-    	else
-    		sym = symbFindVarBySuffix( chain_, suffix )
-    	end if
+		'' no suffix? lookup the default type (last DEF###) in the
+		'' case symbol could not be found..
+		if( suffix = FB_DATATYPE_INVALID ) then
+			sym = symbFindVarByDefType( chain_, symbGetDefType( id ) )
+		else
+			sym = symbFindVarBySuffix( chain_, suffix )
+		end if
 
 	else
 		if( suffix <> FB_DATATYPE_INVALID ) then
@@ -1166,18 +1166,18 @@ function cVariableEx _
 		end if
 
 		'' don't allow explicit namespaces
-    	if( chain_ <> NULL ) then
-    		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-    			'' variable?
-    			sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
-    			if( sym <> NULL ) then
-    				'' from a different namespace?
-    				if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
+		if( chain_ <> NULL ) then
+			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+				'' variable?
+				sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+				if( sym <> NULL ) then
+					'' from a different namespace?
+					if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
 						errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
-    				end if
-    			end if
-    		end if
-    	end if
+					end if
+				end if
+			end if
+		end if
 
 		'' add undeclared variable
 		sym = hVarAddUndecl( id, suffix )
@@ -1238,7 +1238,7 @@ private function hImpField _
 		is_funcptr = (typeGetDtAndPtrOnly( dtype ) = typeAddrOf( FB_DATATYPE_FUNCTION ))
 	end	if
 
-    '' FuncPtrOrMemberDeref?
+	'' FuncPtrOrMemberDeref?
 	function = cFuncPtrOrMemberDeref( dtype, _
 								 	  subtype, _
 								 	  varexpr, _
@@ -1274,8 +1274,8 @@ function cVariable _
 	) as ASTNODE ptr
 
 	'' ID
-    select case lexGetClass( )
-    case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+	select case lexGetClass( )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 	    return cVariableEx( chain_, check_array )
 
 	case else

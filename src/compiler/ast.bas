@@ -194,18 +194,18 @@ dim shared ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPINFO => _
 }
 
 sub astInit( )
-    listInit( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
+	listInit( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
 
-    ast.doemit = TRUE
+	ast.doemit = TRUE
 	ast.typeinicount = 0
 	ast.bitfieldcount = 0
-    ast.currblock = NULL
+	ast.currblock = NULL
 	ast.hidewarningslevel = 0
 
-    astCallInit( )
-    astProcListInit( )
-    astDataStmtInit( )
-    astMiscInit( )
+	astCallInit( )
+	astProcListInit( )
+	astDataStmtInit( )
+	astMiscInit( )
 
 	listInit( @ast.asmtoklist, 16, sizeof( ASTASMTOK ), LIST_FLAGS_NOCLEAR )
 end sub
@@ -215,7 +215,7 @@ sub astEnd( )
 
 	astMiscEnd( )
 	astProcListEnd( )
-    astCallEnd( )
+	astCallEnd( )
 
 	listEnd( @ast.astTB )
 end sub
@@ -466,7 +466,7 @@ function astRemSideFx( byref n as ASTNODE ptr ) as ASTNODE ptr
 
 	select case as const( astGetDataType( n ) )
 	'' complex type? convert to pointer..
-	case FB_DATATYPE_STRUCT, _ ' FB_DATATYPE_CLASS
+	case FB_DATATYPE_STRUCT, _ 
 		 FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
 		function = astMakeRef( n )

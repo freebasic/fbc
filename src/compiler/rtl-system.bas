@@ -736,14 +736,14 @@ private function hThreadCall_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
-    static as integer libsAdded = FALSE
+	static as integer libsAdded = FALSE
 
 	if( libsadded = FALSE ) then
 		libsAdded = TRUE
 		fbAddLib( "ffi" )
 	end if
 
-        return hMultithread_cb( sym )
+		return hMultithread_cb( sym )
 end function
 
 '':::::
@@ -752,18 +752,18 @@ function rtlAtExit _
 		byval procexpr as ASTNODE ptr _
 	) as ASTNODE ptr static
 
-    dim as ASTNODE ptr proc
+	dim as ASTNODE ptr proc
 
 	function = NULL
 
 	'' atexit( proc )
-    proc = astNewCALL( PROCLOOKUP( ATEXIT ) )
+	proc = astNewCALL( PROCLOOKUP( ATEXIT ) )
 
-    if( astNewARG( proc, procexpr ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, procexpr ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 

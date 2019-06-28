@@ -51,12 +51,12 @@ end sub
 ''				  |   EndStatement
 ''
 function cCompoundStmt as integer
-    '' QB mode?
-    if( env.clopt.lang = FB_LANG_QB ) then
-    	if( lexGetType() <> FB_DATATYPE_INVALID ) then
-    		return FALSE
-    	end if
-    end if
+	'' QB mode?
+	if( env.clopt.lang = FB_LANG_QB ) then
+		if( lexGetType() <> FB_DATATYPE_INVALID ) then
+			return FALSE
+		end if
+	end if
 
 	select case as const lexGetToken( )
 	case FB_TK_IF
@@ -505,34 +505,34 @@ end sub
 
 '':::::
 function cCompStmtCheck( ) as integer
-    dim as integer errmsg
-    dim as FB_CMPSTMTSTK ptr stk
+	dim as integer errmsg
+	dim as FB_CMPSTMTSTK ptr stk
 
-    stk = stackGetTOS( @parser.stmt.stk )
-    if( stk = NULL ) then
-    	return TRUE
-    end if
+	stk = stackGetTOS( @parser.stmt.stk )
+	if( stk = NULL ) then
+		return TRUE
+	end if
 
-    select case as const stk->id
-    case FB_TK_IF
-    	errmsg = FB_ERRMSG_EXPECTEDENDIF
+	select case as const stk->id
+	case FB_TK_IF
+		errmsg = FB_ERRMSG_EXPECTEDENDIF
 
-    case FB_TK_SELECT
-    	errmsg = FB_ERRMSG_EXPECTEDENDSELECT
+	case FB_TK_SELECT
+		errmsg = FB_ERRMSG_EXPECTEDENDSELECT
 
-    case FB_TK_SCOPE
-    	errmsg = FB_ERRMSG_EXPECTEDENDSCOPE
+	case FB_TK_SCOPE
+		errmsg = FB_ERRMSG_EXPECTEDENDSCOPE
 
-    case FB_TK_WITH
-    	errmsg = FB_ERRMSG_EXPECTEDENDWITH
+	case FB_TK_WITH
+		errmsg = FB_ERRMSG_EXPECTEDENDWITH
 
-    case FB_TK_NAMESPACE
-    	errmsg = FB_ERRMSG_EXPECTEDENDNAMESPACE
+	case FB_TK_NAMESPACE
+		errmsg = FB_ERRMSG_EXPECTEDENDNAMESPACE
 
-    case FB_TK_EXTERN
-    	errmsg = FB_ERRMSG_EXPECTEDENDEXTERN
+	case FB_TK_EXTERN
+		errmsg = FB_ERRMSG_EXPECTEDENDEXTERN
 
-    case FB_TK_FUNCTION
+	case FB_TK_FUNCTION
 		select case as const stk->proc.tkn
 		case FB_TK_SUB
 			errmsg = FB_ERRMSG_EXPECTEDENDSUB
@@ -548,20 +548,20 @@ function cCompStmtCheck( ) as integer
 			errmsg = FB_ERRMSG_EXPECTEDENDPROPERTY
 		end select
 
-    case FB_TK_DO
-    	errmsg = FB_ERRMSG_EXPECTEDLOOP
+	case FB_TK_DO
+		errmsg = FB_ERRMSG_EXPECTEDLOOP
 
-    case FB_TK_WHILE
-    	errmsg = FB_ERRMSG_EXPECTEDWEND
+	case FB_TK_WHILE
+		errmsg = FB_ERRMSG_EXPECTEDWEND
 
-    case FB_TK_FOR
-    	errmsg = FB_ERRMSG_EXPECTEDNEXT
+	case FB_TK_FOR
+		errmsg = FB_ERRMSG_EXPECTEDNEXT
 
-    end select
+	end select
 
-    errReport( errmsg )
+	errReport( errmsg )
 
-    function = FALSE
+	function = FALSE
 
 end function
 
@@ -641,8 +641,8 @@ function cCompStmtGetTOS _
 				case FB_TK_DO
 					errmsg = FB_ERRMSG_LOOPWITHOUTDO
 
-        		case FB_TK_EXTERN
-        			errmsg = FB_ERRMSG_ENDEXTERNWITHOUTEXTERN
+				case FB_TK_EXTERN
+					errmsg = FB_ERRMSG_ENDEXTERNWITHOUTEXTERN
 
 				case FB_TK_FOR
 					errmsg = FB_ERRMSG_NEXTWITHOUTFOR
@@ -662,11 +662,11 @@ function cCompStmtGetTOS _
 				case FB_TK_WITH
 					errmsg = FB_ERRMSG_ENDWITHWITHOUTWITH
 
-            	case FB_TK_FUNCTION
-            		errmsg = FB_ERRMSG_ENDSUBWITHOUTSUB
+				case FB_TK_FUNCTION
+					errmsg = FB_ERRMSG_ENDSUBWITHOUTSUB
 
 				case FB_TK_NAMESPACE
-            		errmsg = FB_ERRMSG_ENDNAMESPACEWITHOUTNAMESPACE
+					errmsg = FB_ERRMSG_ENDNAMESPACEWITHOUTNAMESPACE
 				end select
 
 				errReport( errmsg )
@@ -744,7 +744,7 @@ function cCompStmtIsAllowed( byval allowmask as FB_CMPSTMT_MASK ) as integer
 		end if
 	end if
 
-    errReport( errmsg )
+	errReport( errmsg )
 
 	function = FALSE
 end function

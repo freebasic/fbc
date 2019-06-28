@@ -346,25 +346,25 @@ function rtlMathPow	_
 		byval yexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( POW ) )
+	proc = astNewCALL( PROCLOOKUP( POW ) )
 
-    '' byval x as double
-    if( astNewARG( proc, xexpr ) = NULL ) then
+	'' byval x as double
+	if( astNewARG( proc, xexpr ) = NULL ) then
  		exit function
  	end if
 
-    '' byval y as double
-    if( astNewARG( proc, yexpr ) = NULL ) then
+	'' byval y as double
+	if( astNewARG( proc, yexpr ) = NULL ) then
  		exit function
  	end if
 
-    ''
-    function = proc
+	''
+	function = proc
 
 end function
 
@@ -378,8 +378,8 @@ function rtlMathLongintDIV _
 		byval rdtype as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 
 	function = NULL
 
@@ -389,18 +389,18 @@ function rtlMathLongintDIV _
 		f = PROCLOOKUP( ULONGINTDIV )
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    ''
-    if( astNewARG( proc, lexpr, ldtype ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, lexpr, ldtype ) = NULL ) then
+		exit function
+	end if
 
-    if( astNewARG( proc, rexpr, rdtype ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, rexpr, rdtype ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -414,8 +414,8 @@ function rtlMathLongintMOD _
 		byval rdtype as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 
 	function = NULL
 
@@ -425,18 +425,18 @@ function rtlMathLongintMOD _
 		f = PROCLOOKUP( ULONGINTMOD )
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    ''
-    if( astNewARG( proc, lexpr, ldtype ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, lexpr, ldtype ) = NULL ) then
+		exit function
+	end if
 
-    if( astNewARG( proc, rexpr, rdtype ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, rexpr, rdtype ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -447,18 +447,18 @@ function rtlMathFp2ULongint _
 		byval dtype as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( DBL2ULONGINT)  )
+	proc = astNewCALL( PROCLOOKUP( DBL2ULONGINT)  )
 
-    ''
-    if( astNewARG( proc, expr, dtype ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, expr, dtype ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -477,16 +477,16 @@ function rtlMathUop _
 	case AST_OP_ABS  : sym = PROCLOOKUP( ABS  )  '' LLVM (abs/llabs integer versions only, not fabs)
 	case AST_OP_FIX  : sym = PROCLOOKUP( FIX  )  '' C/LLVM
 	case AST_OP_FRAC : sym = PROCLOOKUP( FRAC )  '' C/LLVM
-	'case AST_OP_SIN  : sym = PROCLOOKUP( SIN  )  '' unused
+	
 	case AST_OP_ASIN : sym = PROCLOOKUP( ASIN )  '' LLVM
-	'case AST_OP_COS  : sym = PROCLOOKUP( COS  )  '' unused
+	
 	case AST_OP_ACOS : sym = PROCLOOKUP( ACOS )  '' LLVM
 	case AST_OP_TAN  : sym = PROCLOOKUP( TAN  )  '' LLVM
 	case AST_OP_ATAN : sym = PROCLOOKUP( ATAN )  '' LLVM
-	'case AST_OP_SQRT : sym = PROCLOOKUP( SQRT )  '' unused
-	'case AST_OP_LOG  : sym = PROCLOOKUP( LOG  )  '' unused
-	'case AST_OP_EXP  : sym = PROCLOOKUP( EXP  )  '' unused
-	'case AST_OP_FLOOR : sym = PROCLOOKUP( FLOOR )  '' unused
+	
+	
+	
+	
 	case else
 		assert( FALSE )
 		exit function
@@ -528,5 +528,5 @@ private function hRndCallback( byval sym as FBSYMBOL ptr ) as integer
 		end select
 	end if
 
-        return TRUE
+		return TRUE
 end function

@@ -41,9 +41,9 @@ function hHexUInt _
 		byval value as uinteger _
 	) as zstring ptr static
 
-    static as zstring * 8 + 1 res
-    dim as zstring ptr p
-    dim as integer lgt, maxlen
+	static as zstring * 8 + 1 res
+	dim as zstring ptr p
+	dim as integer lgt, maxlen
 
 	static as integer hexTB(0 to 15) = _
 	{ _
@@ -150,26 +150,26 @@ function hFBrelop2IRrelop _
 
 	dim as integer op = any
 
-    select case as const tk
-    case FB_TK_EQ
-    	op = AST_OP_EQ
-    case FB_TK_GT
-    	op = AST_OP_GT
-    case FB_TK_LT
-    	op = AST_OP_LT
-    case FB_TK_NE
-    	op = AST_OP_NE
-    case FB_TK_LE
-    	op = AST_OP_LE
-    case FB_TK_GE
-    	op = AST_OP_GE
+	select case as const tk
+	case FB_TK_EQ
+		op = AST_OP_EQ
+	case FB_TK_GT
+		op = AST_OP_GT
+	case FB_TK_LT
+		op = AST_OP_LT
+	case FB_TK_NE
+		op = AST_OP_NE
+	case FB_TK_LE
+		op = AST_OP_LE
+	case FB_TK_GE
+		op = AST_OP_GE
 	case else
 		errReport( FB_ERRMSG_EXPECTEDRELOP )
 		'' error recovery: fake an op
 		op = AST_OP_EQ
-    end select
+	end select
 
-    function = op
+	function = op
 
 end function
 
@@ -178,9 +178,9 @@ function hFileExists _
 	( _
 		byval filename as zstring ptr _
 	) as integer static
-    dim f as integer
+	dim f as integer
 
-    f = freefile
+	f = freefile
 
 	if( open( *filename, for input, as #f ) = 0 ) then
 		function = TRUE
@@ -198,9 +198,9 @@ sub hUcase _
 		byval dst as zstring ptr _
 	) static
 
-    dim as integer c
-    dim as const zstring ptr s
-    dim as zstring ptr d
+	dim as integer c
+	dim as const zstring ptr s
+	dim as zstring ptr d
 
 	s = src
 	d = dst
@@ -232,7 +232,7 @@ sub hClearName _
 		byval src as zstring ptr _
 	) static
 
-    dim as zstring ptr p
+	dim as zstring ptr p
 
 	p = src
 
@@ -279,17 +279,17 @@ function hStripPath _
 		byval filename as zstring ptr _
 	) as string static
 
-    dim as integer lp, p_found, p(1 to 2)
+	dim as integer lp, p_found, p(1 to 2)
 
 	lp = 0
 	do
 		p(1) = instr( lp+1, *filename, RSLASH )
 		p(2) = instr( lp+1, *filename, "/" )
-        if p(1)=0 or (p(2)>0 and p(2)<p(1)) then
-            p_found = p(2)
-        else
-            p_found = p(1)
-        end if
+		if p(1)=0 or (p(2)>0 and p(2)<p(1)) then
+			p_found = p(2)
+		else
+			p_found = p(1)
+		end if
 	    if( p_found = 0 ) then
 	    	exit do
 	    end if
@@ -310,17 +310,17 @@ function hStripFilename _
 		byval filename as zstring ptr _
 	) as string static
 
-    dim as integer lp, p_found, p(1 to 2)
+	dim as integer lp, p_found, p(1 to 2)
 
 	lp = 0
 	do
 		p(1) = instr( lp+1, *filename, RSLASH )
 		p(2) = instr( lp+1, *filename, "/" )
-        if p(1)=0 or (p(2)>0 and p(2)<p(1)) then
-            p_found = p(2)
-        else
-            p_found = p(1)
-        end if
+		if p(1)=0 or (p(2)>0 and p(2)<p(1)) then
+			p_found = p(2)
+		else
+			p_found = p(1)
+		end if
 	    if( p_found = 0 ) then
 	    	exit do
 	    end if
@@ -341,8 +341,8 @@ function hGetFileExt _
 		byval fname as zstring ptr _
 	) as string static
 
-    dim as integer p, lp
-    dim as string res
+	dim as integer p, lp
+	dim as string res
 
 	lp = 0
 	do
@@ -353,22 +353,22 @@ function hGetFileExt _
 		lp = p
 	loop
 
-    if( lp = 0 ) then
-    	function = ""
-    else
-    	res = lcase( mid( *fname, lp+1 ) )
-        if instr( res, RSLASH ) > 0 or instr( res, "/" ) > 0 then
-            '' We had a folder with a "." inside ...
-            function = ""
-        elseif( len(res) > 0 ) then
+	if( lp = 0 ) then
+		function = ""
+	else
+		res = lcase( mid( *fname, lp+1 ) )
+		if instr( res, RSLASH ) > 0 or instr( res, "/" ) > 0 then
+			'' We had a folder with a "." inside ...
+			function = ""
+		elseif( len(res) > 0 ) then
 	    	'' . or .. dirs?
 	    	if( res[0] = asc( RSLASH ) or res[0] = asc( "/" ) ) then
 	    		function = ""
 	    	else
 	    		function = res
 	    	end if
-        end if
-    end if
+		end if
+	end if
 
 end function
 
@@ -418,7 +418,7 @@ end function
 
 function hCheckFileFormat( byval f as integer ) as integer
 	dim as long BOM
-    dim as FBFILE_FORMAT fmt
+	dim as FBFILE_FORMAT fmt
 
 	'' little-endian assumptions
 	fmt = FBFILE_FORMAT_ASCII

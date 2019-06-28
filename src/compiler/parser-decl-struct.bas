@@ -231,7 +231,7 @@ private sub hFieldInit _
 	'' constructor, if no constructor was specified.
 	symbSetUDTHasInitedField( parent )
 
-    '' ANY?
+	'' ANY?
 	if( lexGetToken( ) = FB_TK_ANY ) then
 		'' don't allow var-len strings
 		if( symbGetType( sym ) = FB_DATATYPE_STRING ) then
@@ -497,7 +497,7 @@ private sub hTypeMultElementDecl _
 		byval attrib as integer _
 	)
 
-    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
+	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
 	dim as zstring ptr id = any
 	dim as FBSYMBOL ptr subtype = any
 	dim as integer dtype = any, bits = any, dims = any, fieldattrib = any
@@ -537,7 +537,7 @@ private sub hTypeElementDecl _
 		byval attrib as integer _
 	)
 
-    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
+	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
 	dim as zstring ptr id = any
 	dim as FBSYMBOL ptr subtype = any
 	dim as integer dtype = any, bits = any, dims = any
@@ -747,7 +747,7 @@ private sub hTypeBody( byval s as FBSYMBOL ptr )
 
 	do
 		select case as const lexGetToken( )
-        '' visibility?
+		'' visibility?
 		case FB_TK_PRIVATE, FB_TK_PUBLIC, FB_TK_PROTECTED
 			if( symbGetUDTIsUnion( s ) ) then
 				errReport( FB_ERRMSG_SYNTAXERROR )
@@ -962,11 +962,11 @@ sub cTypeDecl( byval attrib as integer )
 
 	case FB_TKCLASS_QUIRKWD
 
-    case else
+	case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' error recovery: fake an ID
 		checkid = FALSE
-    end select
+	end select
 
 	if( checkid ) then
 		'' Namespace identifier if it matches the current namespace

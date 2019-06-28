@@ -47,19 +47,19 @@ function rtlOOPIsTypeOf _
 		byval rtti as ASTNODE ptr _
 	) as ASTNODE ptr
 	
-    
-    var proc = astNewCALL( PROCLOOKUP( ISTYPEOF ) )
+	
+	var proc = astNewCALL( PROCLOOKUP( ISTYPEOF ) )
 
-    '' byref obj as any ptr
-    if( astNewARG( proc, inst ) = NULL ) then
-    	exit function
-    end if
+	'' byref obj as any ptr
+	if( astNewARG( proc, inst ) = NULL ) then
+		exit function
+	end if
 
-    '' byref rtti as any ptr
-    if( astNewARG( proc, rtti ) = NULL ) then
-    	exit function
-    end if
+	'' byref rtti as any ptr
+	if( astNewARG( proc, rtti ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function

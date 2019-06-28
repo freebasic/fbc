@@ -378,9 +378,9 @@ private sub hAssignList _
 	subtype = symbGetSubtype( fld )
 
 	cnt = symbAddTempVar( FB_DATATYPE_INTEGER )
-    label = symbAddLabel( NULL )
-    dst = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
-    src = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
+	label = symbAddLabel( NULL )
+	dst = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
+	src = symbAddTempVar( typeAddrOf( symbGetType( fld ) ), subtype )
 
 	'' dst = @this.arrayfield(0)
 	astAdd( astBuildVarAssign( dst, astNewADDROF( astBuildVarField( this_, fld ) ), AST_OPOPT_ISINI ) )
@@ -390,13 +390,13 @@ private sub hAssignList _
 	'' for cnt = 0 to symbGetArrayElements( dst )-1
 	astAdd( astBuildForBegin( NULL, cnt, label, 0 ) )
 
-    '' *dst = *src
-    astAdd( astNewASSIGN( astBuildVarDeref( dst ), astBuildVarDeref( src ) ) )
+	'' *dst = *src
+	astAdd( astNewASSIGN( astBuildVarDeref( dst ), astBuildVarDeref( src ) ) )
 
 	'' dst += 1
-    astAdd( astBuildVarInc( dst, 1 ) )
+	astAdd( astBuildVarInc( dst, 1 ) )
 	'' src += 1
-    astAdd( astBuildVarInc( src, 1 ) )
+	astAdd( astBuildVarInc( src, 1 ) )
 
 	'' next
 	astAdd( astBuildForEnd( NULL, cnt, label, astNewCONSTi( symbGetArrayElements( fld ) ) ) )
@@ -429,7 +429,7 @@ private function hCopyUnionFields _
 		fld = fld->next
 	loop while( fld andalso symbIsField( fld ) andalso symbGetIsUnionField( fld ) )
 
-    '' copy all them at once
+	'' copy all them at once
 	astAdd( astNewMEM( AST_OP_MEMMOVE, _
 				astBuildVarField( this_, base_fld ), _
 				astBuildVarField( rhs, base_fld ), _
@@ -1057,8 +1057,8 @@ private sub hRemoveImported _
 	do while( imp_ <> NULL )
 		dim as FBSYMBOL ptr ns = symbGetImportNamespc( imp_ )
 
-        if( ns <> NULL ) then
-        	symbGetCompExt( ns )->cnt -= 1
+		if( ns <> NULL ) then
+			symbGetCompExt( ns )->cnt -= 1
 			if( symbGetCompExt( ns )->cnt = 0 ) then
 	    		'' remove from import hash tb list
 	    		symbHashListRemoveNamespace( ns )
@@ -1091,8 +1091,8 @@ sub symbNestBegin _
 		symbtb = @symbGetProcSymbTb( sym )
 		hashtb = NULL
 	else
-        symbtb = @symbGetCompSymbTb( sym )
-        hashtb = @symbGetCompHashTb( sym )
+		symbtb = @symbGetCompSymbTb( sym )
+		hashtb = @symbGetCompHashTb( sym )
 	end if
 
 	symbSetCurrentSymTb( symbtb )
@@ -1143,7 +1143,7 @@ sub symbNestEnd _
 	if( symbGetClass( sym ) = FB_SYMBCLASS_PROC ) then
 		hashtb = NULL
 	else
-        hashtb = @symbGetCompHashTb( sym )
+		hashtb = @symbGetCompHashTb( sym )
 	end if
 
 	symbSetCurrentSymTb( n->symtb )
@@ -1172,7 +1172,7 @@ sub symbNestEnd _
 		symbSetCurrentNamespc( n->ns )
 	end if
 
-    stackPop( @symb.neststk )
+	stackPop( @symb.neststk )
 
 end sub
 

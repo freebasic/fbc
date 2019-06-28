@@ -92,9 +92,9 @@ enum EMIT_NODEOP
 	'' branch
 	EMIT_OP_CALL
 	EMIT_OP_CALLPTR
-    EMIT_OP_BRANCH
-    EMIT_OP_JUMP
-    EMIT_OP_JUMPPTR
+	EMIT_OP_BRANCH
+	EMIT_OP_JUMP
+	EMIT_OP_JUMPPTR
 	EMIT_OP_RET
 
 	'' misc
@@ -262,8 +262,8 @@ type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
 
 type EMIT_DBGCB as sub( byval sym as FBSYMBOL ptr, _
 						byval lnum as integer, _
-                  byval pos as Integer, _
-                  ByVal filename As ZString Ptr =0 )
+				  byval pos as Integer, _
+				  ByVal filename As ZString Ptr =0 )
 
 '' if changed, update the _vtbl symbols at emit_*.bas::*_ctor
 type EMIT_VTBL
@@ -792,8 +792,8 @@ declare function emitSTKCLEAR _
 declare function emitDBGLineBegin _
 	( _
 		byval proc as FBSYMBOL ptr, _
-      byval ex as Integer, _
-      ByVal filename As ZString Ptr _
+	  byval ex as Integer, _
+	  ByVal filename As ZString Ptr _
 	) as EMIT_NODE ptr
 
 declare function emitDBGLineEnd _

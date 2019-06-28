@@ -75,7 +75,7 @@ private function hConstAccumADDSUB _
 		return n
 	end if
 
-    o = n->op.op
+	o = n->op.op
 
 	select case o
 	case AST_OP_ADD, AST_OP_SUB
@@ -628,7 +628,7 @@ private function hOptAssocADD _
 		return NULL
 	end if
 
-    '' convert a+(b+c) to a+b+c and a-(b-c) to a-b+c
+	'' convert a+(b+c) to a+b+c and a-(b-c) to a-b+c
 	if( n->class = AST_NODECLASS_BOP ) then
 		op = n->op.op
 		select case op
@@ -1312,65 +1312,65 @@ private function hOptStrMultConcat _
 		end if
 	end if
 
-    '' concat?
-    if( n->class = AST_NODECLASS_BOP ) then
-    	if( n->l <> NULL ) then
-    	    '' first concatenation? do an assignment..
-    	    if( lnk = NULL ) then
-    	    	if( is_wstr = FALSE ) then
-    	    		lnk = rtlStrAssign( astCloneTree( dst ), n->l )
-    	    	else
-    	    		lnk = rtlWstrAssign( astCloneTree( dst ), n->l )
-    	    	end if
-    	    else
-    	    	if( is_wstr = FALSE ) then
-    	    		lnk = astNewLINK( lnk, _
-    	    						  rtlStrConcatAssign( astCloneTree( dst ), _
-    	    						  					  n->l ) )
-    	    	else
-    	    		lnk = astNewLINK( lnk, _
-    	    						  rtlWstrConcatAssign( astCloneTree( dst ), _
-    	    						  					   n->l ) )
-    	    	end if
-    	    end if
-    	end if
-
-    	if( n->r <> NULL ) then
-    	    if( is_wstr = FALSE ) then
-    	    	lnk = astNewLINK( lnk, _
-    	    					  rtlStrConcatAssign( astCloneTree( dst ), _
-    	    					  					  n->r ) )
-    	    else
-    	    	lnk = astNewLINK( lnk, _
-    	    					  rtlWstrConcatAssign( astCloneTree( dst ), _
-    	    					  					   n->r ) )
-    	    end if
-    	end if
-
-    	astDelNode( n )
-
-    '' string..
-    else
-		if( lnk = NULL ) then
-    		if( is_wstr = FALSE ) then
-    			lnk = rtlStrAssign( astCloneTree( dst ), n )
-    		else
-    			lnk = rtlWstrAssign( astCloneTree( dst ), n )
-    		end if
-		else
-    		if( is_wstr = FALSE ) then
-    			lnk = astNewLINK( lnk, _
-    							  rtlStrConcatAssign( astCloneTree( dst ), _
-    							  					  n ) )
-    		else
-    			lnk = astNewLINK( lnk, _
-    							  rtlWstrConcatAssign( astCloneTree( dst ), _
-    							  					   n ) )
-    		end if
+	'' concat?
+	if( n->class = AST_NODECLASS_BOP ) then
+		if( n->l <> NULL ) then
+		    '' first concatenation? do an assignment..
+		    if( lnk = NULL ) then
+		    	if( is_wstr = FALSE ) then
+		    		lnk = rtlStrAssign( astCloneTree( dst ), n->l )
+		    	else
+		    		lnk = rtlWstrAssign( astCloneTree( dst ), n->l )
+		    	end if
+		    else
+		    	if( is_wstr = FALSE ) then
+		    		lnk = astNewLINK( lnk, _
+		    						  rtlStrConcatAssign( astCloneTree( dst ), _
+		    						  					  n->l ) )
+		    	else
+		    		lnk = astNewLINK( lnk, _
+		    						  rtlWstrConcatAssign( astCloneTree( dst ), _
+		    						  					   n->l ) )
+		    	end if
+		    end if
 		end if
-    end if
 
-    function = lnk
+		if( n->r <> NULL ) then
+		    if( is_wstr = FALSE ) then
+		    	lnk = astNewLINK( lnk, _
+		    					  rtlStrConcatAssign( astCloneTree( dst ), _
+		    					  					  n->r ) )
+		    else
+		    	lnk = astNewLINK( lnk, _
+		    					  rtlWstrConcatAssign( astCloneTree( dst ), _
+		    					  					   n->r ) )
+		    end if
+		end if
+
+		astDelNode( n )
+
+	'' string..
+	else
+		if( lnk = NULL ) then
+			if( is_wstr = FALSE ) then
+				lnk = rtlStrAssign( astCloneTree( dst ), n )
+			else
+				lnk = rtlWstrAssign( astCloneTree( dst ), n )
+			end if
+		else
+			if( is_wstr = FALSE ) then
+				lnk = astNewLINK( lnk, _
+								  rtlStrConcatAssign( astCloneTree( dst ), _
+								  					  n ) )
+			else
+				lnk = astNewLINK( lnk, _
+								  rtlWstrConcatAssign( astCloneTree( dst ), _
+								  					   n ) )
+			end if
+		end if
+	end if
+
+	function = lnk
 
 end function
 
@@ -1627,7 +1627,7 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 	''   / \
 	''  d   expr
 
-    astDelNode( n )
+	astDelNode( n )
 	astDelTree( l )
 	if( r <> rnocast ) then
 		'' If r had a noconv cast, delete that too, so the UOP/BOP ends up at toplevel
@@ -1635,7 +1635,7 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr
 		r = rnocast
 	end if
 
-    function = r
+	function = r
 
 end function
 

@@ -21,7 +21,7 @@ function astTypeIniBegin _
 		byval ofs as longint _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
+	dim as ASTNODE ptr n = any
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_TYPEINI, _
@@ -59,7 +59,7 @@ sub astTypeIniEnd _
 		byval is_initializer as integer _
 	)
 
-    dim as ASTNODE ptr n = any, p = any, l = any, r = any
+	dim as ASTNODE ptr n = any, p = any, l = any, r = any
 	dim as longint ofs = any
 	dim as FBSYMBOL ptr sym = any
 
@@ -77,38 +77,38 @@ sub astTypeIniEnd _
 	'' registered for astTypeIniUpdate() later.
 
 	'' merge nested type ini trees
-    p = NULL
-    n = tree->l
-    do while( n <> NULL )
-    	'' expression node?
-    	if( n->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
+	p = NULL
+	n = tree->l
+	do while( n <> NULL )
+		'' expression node?
+		if( n->class = AST_NODECLASS_TYPEINI_ASSIGN ) then
 			l = n->l
 			'' is it an ini tree too?
 			if( astIsTYPEINI( l ) ) then
 				ast.typeinicount -= 1
 
-    			ofs = n->typeini.ofs
+				ofs = n->typeini.ofs
 
-    			r = n->r
-    			astDelNode( n )
-    			n = l->l
-    			astDelNode( l )
+				r = n->r
+				astDelNode( n )
+				n = l->l
+				astDelNode( l )
 
-    			'' relink
-    			if( p <> NULL ) then
-    				p->r = n
-    			else
-    				tree->l = n
-    			end if
+				'' relink
+				if( p <> NULL ) then
+					p->r = n
+				else
+					tree->l = n
+				end if
 
-    			'' update the offset, using the parent's
-    			do while( n->r <> NULL )
-    				n->typeini.ofs += ofs
-    				n = n->r
-    			loop
-    			n->typeini.ofs += ofs
+				'' update the offset, using the parent's
+				do while( n->r <> NULL )
+					n->typeini.ofs += ofs
+					n = n->r
+				loop
+				n->typeini.ofs += ofs
 
-    			n->r = r
+				n->r = r
 			end if
 		end if
 
@@ -544,7 +544,7 @@ private sub hFlushExprStatic( byval n as ASTNODE ptr, byval basesym as FBSYMBOL 
 
 	'' not a literal string?
 	if( litsym = NULL ) then
-    	'' offset?
+		'' offset?
 		if( astIsOFFSET( expr ) ) then
 			irEmitVARINIOFS( sym, astGetSymbol( expr ), expr->ofs.ofs )
 		'' anything else
@@ -605,31 +605,31 @@ sub astLoadStaticInitializer _
 		byval basesym as FBSYMBOL ptr _
 	)
 
-    dim as ASTNODE ptr n = any, nxt = any
+	dim as ASTNODE ptr n = any, nxt = any
 
 	irEmitVARINIBEGIN( basesym )
 
-    n = tree->l
-    do while( n <> NULL )
-        nxt = n->r
+	n = tree->l
+	do while( n <> NULL )
+		nxt = n->r
 
-    	select case as const n->class
-    	case AST_NODECLASS_TYPEINI_PAD
-    		irEmitVARINIPAD( n->typeini.bytes )
+		select case as const n->class
+		case AST_NODECLASS_TYPEINI_PAD
+			irEmitVARINIPAD( n->typeini.bytes )
 
-    	case AST_NODECLASS_TYPEINI_SCOPEINI
+		case AST_NODECLASS_TYPEINI_SCOPEINI
 			irEmitVARINISCOPEBEGIN( n->sym, n->typeiniscope.is_array )
 
-    	case AST_NODECLASS_TYPEINI_SCOPEEND
+		case AST_NODECLASS_TYPEINI_SCOPEEND
 			irEmitVARINISCOPEEND( )
 
-    	case else
+		case else
 			hFlushExprStatic( n, basesym )
-    	end select
+		end select
 
-        astDelNode( n )
-    	n = nxt
-    loop
+		astDelNode( n )
+		n = nxt
+	loop
 
 	irEmitVARINIEND( basesym )
 

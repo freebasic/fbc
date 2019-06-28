@@ -247,7 +247,7 @@ function astNewIIF _
 		exit function
 	end if
 
-	' Special treatment for fixed-len/zstrings, promote to real FBSTRING
+	
 	select case( typeGetDtAndPtrOnly( dtype ) )
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		dtype  = FB_DATATYPE_STRING

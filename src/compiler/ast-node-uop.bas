@@ -145,7 +145,7 @@ function astNewUOP _
 		end if
 
 	'' UDT?
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+	case FB_DATATYPE_STRUCT 
 		'' try to convert to the most precise type
 		'' (astNewCONV() will try symbFindCastOvlProc() which gives
 		'' special treatment to the FB_DATATYPE_VOID)
@@ -320,9 +320,9 @@ function astLoadUOP _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr o = any
-    dim as integer op = any
-    dim as IRVREG ptr v1 = any, vr = any
+	dim as ASTNODE ptr o = any
+	dim as integer op = any
+	dim as IRVREG ptr v1 = any, vr = any
 
 	o = n->l
 	op = n->op.op

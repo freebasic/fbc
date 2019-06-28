@@ -38,7 +38,7 @@ function stackFree _
 		byval stk as TSTACK ptr _
 	) as integer
 
-    dim as TSTACKTB ptr tb, nxt
+	dim as TSTACKTB ptr tb, nxt
 
 	'' for each pool, free the mem block and the pool ctrl struct
 	tb = stk->tbhead
@@ -129,8 +129,8 @@ function stackPush _
 
 	'' move up
 	if( stk->tos = NULL ) then
-    	stk->tos = stk->tbhead->nodetb
-    else
+		stk->tos = stk->tbhead->nodetb
+	else
 		'' alloc new node if there are no free nodes
 		if( stk->tos->next = NULL ) Then
 			hAllocTB( stk, cunsg(stk->nodes) \ 4 )

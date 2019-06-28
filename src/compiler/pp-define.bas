@@ -66,13 +66,13 @@ private function hLoadMacro _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-    dim as FB_DEFPARAM ptr param = any, nextparam = any
-    dim as FB_DEFTOK ptr dt = any
-    dim as FBTOKEN t = any
-    dim as LEXPP_ARGTB ptr argtb = any
+	dim as FB_DEFPARAM ptr param = any, nextparam = any
+	dim as FB_DEFTOK ptr dt = any
+	dim as FBTOKEN t = any
+	dim as LEXPP_ARGTB ptr argtb = any
 	dim as integer prntcnt = any, num = any, reached_vararg = any, is_variadic = any
-    dim as zstring ptr argtext = any
-    static as string text
+	dim as zstring ptr argtext = any
+	static as string text
 
 	function = -1
 
@@ -97,10 +97,10 @@ private function hLoadMacro _
 	end if
 
 	prntcnt = 1
-    reached_vararg = FALSE
+	reached_vararg = FALSE
 
-    '' Variadic macro?
-    is_variadic = ((s->def.flags and FB_DEFINE_FLAGS_VARIADIC) <> 0)
+	'' Variadic macro?
+	is_variadic = ((s->def.flags and FB_DEFINE_FLAGS_VARIADIC) <> 0)
 
 	'' for each arg
 	num = 0   '' num represents the current last cleared/used entry in the argtb
@@ -110,12 +110,12 @@ private function hLoadMacro _
 			DZstrZero( argtb->tb(num).text )
 		end if
 
-        nextparam = symbGetDefParamNext( param )
+		nextparam = symbGetDefParamNext( param )
 
-        '' Last param?
-        if( nextparam = NULL ) then
-            reached_vararg = is_variadic
-        end if
+		'' Last param?
+		if( nextparam = NULL ) then
+			reached_vararg = is_variadic
+		end if
 
 		'' read text until a comma or right-parentheses is found
 		do
@@ -286,10 +286,10 @@ private function hLoadDefine _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-    static as string text
-    dim as integer lgt = any
+	static as string text
+	dim as integer lgt = any
 
-    function = FALSE
+	function = FALSE
 
 	'' define has args?
 	if( symbGetDefineParams( s ) > 0 ) then
@@ -317,7 +317,7 @@ private function hLoadDefine _
 				DZstrAssign( lex.ctx->deftext, text + *lex.ctx->defptr )
 			end if
 
-            lgt = len( text )
+			lgt = len( text )
 
 		'' just load text as-is
 		else
@@ -356,12 +356,12 @@ private function hLoadDefine _
 				end if
 			end if
 
-            lgt = symbGetLen( s )
+			lgt = symbGetLen( s )
 		end if
 
 	end if
 
-    ''
+	''
 	lex.ctx->defptr = lex.ctx->deftext.data
 	lex.ctx->deflen += lgt
 
@@ -377,13 +377,13 @@ private function hLoadMacroW _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-    dim as FB_DEFPARAM ptr param = any, nextparam = any
-    dim as FB_DEFTOK ptr dt = any
-    dim as FBTOKEN t = any
-    dim as LEXPP_ARGTB ptr argtb = any
+	dim as FB_DEFPARAM ptr param = any, nextparam = any
+	dim as FB_DEFTOK ptr dt = any
+	dim as FBTOKEN t = any
+	dim as LEXPP_ARGTB ptr argtb = any
 	dim as integer prntcnt = any, lgt = any, num = any, reached_vararg = any, is_variadic = any
-    dim as wstring ptr argtext = any
-    static as DWSTRING text
+	dim as wstring ptr argtext = any
+	static as DWSTRING text
 
 	function = -1
 
@@ -408,10 +408,10 @@ private function hLoadMacroW _
 	end if
 
 	prntcnt = 1
-    reached_vararg = FALSE
+	reached_vararg = FALSE
 
-    '' Variadic macro?
-    is_variadic = ((s->def.flags and FB_DEFINE_FLAGS_VARIADIC) <> 0)
+	'' Variadic macro?
+	is_variadic = ((s->def.flags and FB_DEFINE_FLAGS_VARIADIC) <> 0)
 
 	'' for each arg
 	num = 0    '' num represents the current last cleared/used entry in the argtb
@@ -421,12 +421,12 @@ private function hLoadMacroW _
 			DWstrZero( argtb->tb(num).textw )
 		end if
 
-        nextparam = symbGetDefParamNext( param )
+		nextparam = symbGetDefParamNext( param )
 
-        '' Last param?
-        if( nextparam = NULL ) then
-            reached_vararg = is_variadic
-        end if
+		'' Last param?
+		if( nextparam = NULL ) then
+			reached_vararg = is_variadic
+		end if
 
 		'' read text until a comma or right-parentheses is found
 		do
@@ -469,12 +469,12 @@ private function hLoadMacroW _
 			end select
 
 			if( argtb <> NULL ) then
-    			if( t.dtype <> FB_DATATYPE_WCHAR ) then
-    				DWstrConcatAssignA( argtb->tb(num).textw, t.text )
-    			else
-    				DWstrConcatAssign( argtb->tb(num).textw, t.textw )
-    			end if
-    		end if
+				if( t.dtype <> FB_DATATYPE_WCHAR ) then
+					DWstrConcatAssignA( argtb->tb(num).textw, t.text )
+				else
+					DWstrConcatAssign( argtb->tb(num).textw, t.textw )
+				end if
+			end if
 		loop
 
 		if( argtb ) then
@@ -596,10 +596,10 @@ private function hLoadDefineW _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-    static as DWSTRING text
-    dim as integer lgt = any
+	static as DWSTRING text
+	dim as integer lgt = any
 
-    function = FALSE
+	function = FALSE
 
 	'' define has args?
 	if( symbGetDefineParams( s ) > 0 ) then
@@ -627,7 +627,7 @@ private function hLoadDefineW _
 				DWstrAssign( lex.ctx->deftextw, *text.data + *lex.ctx->defptrw )
 			end if
 
-            lgt = len( *text.data )
+			lgt = len( *text.data )
 
 		'' just load text as-is
 		else
@@ -665,12 +665,12 @@ private function hLoadDefineW _
 				end if
 			end if
 
-            lgt = symbGetLen( s )
+			lgt = symbGetLen( s )
 		end if
 
 	end if
 
-    ''
+	''
 	lex.ctx->defptrw = lex.ctx->deftextw.data
 	lex.ctx->deflen += lgt
 
@@ -720,28 +720,28 @@ private function hRtrimMacroText _
 		byval toktail as FB_DEFTOK ptr _
 	) as FB_DEFTOK ptr
 
-    '' remove the white-spaces
+	'' remove the white-spaces
 	do while( toktail <> NULL )
 		'' not ascii text?
-    	if( symbGetDefTokType( toktail ) <> FB_DEFTOK_TYPE_TEX ) then
-    		exit do
-    	end if
+		if( symbGetDefTokType( toktail ) <> FB_DEFTOK_TYPE_TEX ) then
+			exit do
+		end if
 
-    	select case as const (*symbGetDefTokText( toktail ))[0]
-    	'' space or nl?
-    	case CHAR_SPACE, CHAR_TAB, CHAR_LF
-    		toktail = symbDelDefineTok( toktail )
+		select case as const (*symbGetDefTokText( toktail ))[0]
+		'' space or nl?
+		case CHAR_SPACE, CHAR_TAB, CHAR_LF
+			toktail = symbDelDefineTok( toktail )
 
 		case else
-        	exit do
-    	end select
-    loop
+			exit do
+		end select
+	loop
 
-    if( toktail = NULL ) then
-    	function = NULL
-    else
-    	function = tokhead
-    end if
+	if( toktail = NULL ) then
+		function = NULL
+	else
+		function = tokhead
+	end if
 
 end function
 
@@ -754,14 +754,14 @@ private function hReadMacroText _
 	) as FB_DEFTOK ptr
 
 	static as zstring * FB_MAXNAMELEN+1 arg
-    dim as FB_DEFPARAM ptr param = any
-    dim as FB_DEFTOK ptr toktail = NULL, tokhead = NULL
-    dim as integer addquotes = any, nestedcnt = 0
+	dim as FB_DEFPARAM ptr param = any
+	dim as FB_DEFTOK ptr toktail = NULL, tokhead = NULL
+	dim as integer addquotes = any, nestedcnt = 0
 
-    do
-    	addquotes = FALSE
+	do
+		addquotes = FALSE
 
-    	select case as const lexGetToken( LEX_FLAGS )
+		select case as const lexGetToken( LEX_FLAGS )
 		case FB_TK_EOF
 			if( ismultiline ) then
 				errReport( FB_ERRMSG_EXPECTEDMACRO )
@@ -774,16 +774,16 @@ private function hReadMacroText _
 				exit do
 			end if
 
-    		'' multi-line, only add if it's not at the beginning
-    		if( tokhead <> NULL ) then
+			'' multi-line, only add if it's not at the beginning
+			if( tokhead <> NULL ) then
 				toktail = symbAddDefineTok( toktail, FB_DEFTOK_TYPE_TEX )
-    			'' just lf
-    			ZstrAssign( @toktail->text, LFCHAR )
-    		end if
+				'' just lf
+				ZstrAssign( @toktail->text, LFCHAR )
+			end if
 
-    		lexSkipToken( LEX_FLAGS )
+			lexSkipToken( LEX_FLAGS )
 
-    		continue do
+			continue do
 
 		case FB_TK_COMMENT, FB_TK_REM
 			if( ismultiline = FALSE ) then
@@ -802,66 +802,66 @@ private function hReadMacroText _
 			continue do
 
 		case CHAR_SHARP
-    		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
-    								 		(not LEXCHECK_NOWHITESPC) )
-    		'' '##'?
-    		case CHAR_SHARP
-    			lexSkipToken( LEX_FLAGS )
-    			lexSkipToken( LEX_FLAGS )
-    			continue do
+			select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
+									 		(not LEXCHECK_NOWHITESPC) )
+			'' '##'?
+			case CHAR_SHARP
+				lexSkipToken( LEX_FLAGS )
+				lexSkipToken( LEX_FLAGS )
+				continue do
 
-    		'' '#' macro?
-    		case FB_TK_PP_MACRO
-    			if( ismultiline ) then
-    				nestedcnt += 1
-    			end if
+			'' '#' macro?
+			case FB_TK_PP_MACRO
+				if( ismultiline ) then
+					nestedcnt += 1
+				end if
 
-    		'' '#' endmacro?
-    		case FB_TK_PP_ENDMACRO
-    			if( ismultiline ) then
-    				'' not nested?
-    				if( nestedcnt = 0 ) then
-    					lexSkipToken( LEX_FLAGS )
-    					'' no LEX_FLAGS, white-spaces must be skipped
-    					lexSkipToken( )
+			'' '#' endmacro?
+			case FB_TK_PP_ENDMACRO
+				if( ismultiline ) then
+					'' not nested?
+					if( nestedcnt = 0 ) then
+						lexSkipToken( LEX_FLAGS )
+						'' no LEX_FLAGS, white-spaces must be skipped
+						lexSkipToken( )
 
 						tokhead = hRtrimMacroText( tokhead, toktail )
 
-    					exit do
-    				end if
+						exit do
+					end if
 
-    				nestedcnt -= 1
-    			end if
+					nestedcnt -= 1
+				end if
 
-    		'' '#' id?
-    		case FB_TK_ID
-    		    '' note: using the PP hashtb here, non-PP keyword will be ID's
-    		    lexSkipToken( LEX_FLAGS )
-    		    addquotes = TRUE
-    		end select
+			'' '#' id?
+			case FB_TK_ID
+			    '' note: using the PP hashtb here, non-PP keyword will be ID's
+			    lexSkipToken( LEX_FLAGS )
+			    addquotes = TRUE
+			end select
 
-    	'' white space?
-    	case CHAR_SPACE, CHAR_TAB
+		'' white space?
+		case CHAR_SPACE, CHAR_TAB
 
-    		'' only add if it's not at the beginning
-    		if( tokhead <> NULL ) then
+			'' only add if it's not at the beginning
+			if( tokhead <> NULL ) then
 				toktail = symbAddDefineTok( toktail, FB_DEFTOK_TYPE_TEX )
-    			'' condensed to a single white-space
-    			ZstrAssign( @toktail->text, " " )
-    		end if
+				'' condensed to a single white-space
+				ZstrAssign( @toktail->text, " " )
+			end if
 
-    		lexSkipToken( LEX_FLAGS )
+			lexSkipToken( LEX_FLAGS )
 
-    		continue do
+			continue do
 
 		end select
 
-    	select case as const lexGetClass( LEX_FLAGS )
-    	'' string literal? preserve quotes
-    	case FB_TKCLASS_STRLITERAL
+		select case as const lexGetClass( LEX_FLAGS )
+		'' string literal? preserve quotes
+		case FB_TKCLASS_STRLITERAL
 
-    		'' ascii?
-    		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+			'' ascii?
+			if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 				toktail = symbAddDefineTok( toktail, FB_DEFTOK_TYPE_TEX )
 				if( tokhead = NULL ) then
 					tokhead = toktail
@@ -869,32 +869,32 @@ private function hReadMacroText _
 
 	    		ZstrAssign( @toktail->text, lexGetText( ) )
 
-    		'' unicode..
-    		else
+			'' unicode..
+			else
 				toktail = symbAddDefineTok( toktail, FB_DEFTOK_TYPE_TEXW )
 				if( tokhead = NULL ) then
 					tokhead = toktail
 				end if
 
-    			WstrAssign( @toktail->textw, lexGetTextW( ) )
-    		end if
+				WstrAssign( @toktail->textw, lexGetTextW( ) )
+			end if
 
-    		lexSkipToken( LEX_FLAGS )
+			lexSkipToken( LEX_FLAGS )
 
-        '' identifier? check if it's a parameter (params can be keywords too)
-    	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+		'' identifier? check if it's a parameter (params can be keywords too)
+		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
 			toktail = symbAddDefineTok( toktail, FB_DEFTOK_TYPE_TEX )
 			if( tokhead = NULL ) then
 				tokhead = toktail
 			end if
 
-    		arg = ucase( *lexGetText( ) )
+			arg = ucase( *lexGetText( ) )
 
-    		'' look up..
-    		param = hashLookup( @symb.def.paramhash, arg )
+			'' look up..
+			param = hashLookup( @symb.def.paramhash, arg )
 
-    		'' found?
-    		if( param <> NULL ) then
+			'' found?
+			if( param <> NULL ) then
 				if( addquotes = FALSE ) then
 					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAM )
 				else
@@ -903,32 +903,32 @@ private function hReadMacroText _
 
 				symbSetDefTokParamNum( toktail, symbGetDefParamNum( param ) )
 
-    		'' none matched, read as-is
-    		else
-    			'' restore the '#'?
-    			if( addquotes ) then
-    			    ZstrAssign( @toktail->text, "#" )
-    			    ZstrConcatAssign( @toktail->text, lexGetText( ) )
-    			else
-    				ZstrAssign( @toktail->text, lexGetText( ) )
-    			end if
-    		end if
+			'' none matched, read as-is
+			else
+				'' restore the '#'?
+				if( addquotes ) then
+				    ZstrAssign( @toktail->text, "#" )
+				    ZstrConcatAssign( @toktail->text, lexGetText( ) )
+				else
+					ZstrAssign( @toktail->text, lexGetText( ) )
+				end if
+			end if
 
-    		lexSkipToken( LEX_FLAGS )
+			lexSkipToken( LEX_FLAGS )
 
-    	'' anything else, read as-is
-    	case else
+		'' anything else, read as-is
+		case else
 			toktail = symbAddDefineTok( toktail, FB_DEFTOK_TYPE_TEX )
 			if( tokhead = NULL ) then
 				tokhead = toktail
 			end if
 
-    		ZstrAssign( @toktail->text, lexGetText( ) )
-    		lexSkipToken( LEX_FLAGS )
+			ZstrAssign( @toktail->text, lexGetText( ) )
+			lexSkipToken( LEX_FLAGS )
 
-    	end select
+		end select
 
-    loop
+	loop
 
 	function = tokhead
 
@@ -946,60 +946,60 @@ private sub hReadDefineText _
 	dim as zstring ptr text = any
 	dim as wstring ptr textw = any
 
-    if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-    	'' LITERAL*
-    	text = ppReadLiteral( ismultiline )
+	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+		'' LITERAL*
+		text = ppReadLiteral( ismultiline )
 
-    	'' already defined? if there are no differences, do nothing..
-    	if( sym <> NULL ) then
-    		if( (symbGetDefineParams( sym ) > 0) or _
-    			(symbGetType( sym ) <> FB_DATATYPE_CHAR) ) then
+		'' already defined? if there are no differences, do nothing..
+		if( sym <> NULL ) then
+			if( (symbGetDefineParams( sym ) > 0) or _
+				(symbGetType( sym ) <> FB_DATATYPE_CHAR) ) then
 				errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
-    		elseif( (*symbGetDefineText( sym ) <> *text) ) then
+			elseif( (*symbGetDefineText( sym ) <> *text) ) then
 				errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
-    		end if
-    	else
-    		symbAddDefine( defname, text, len( *text ), isargless )
-    	end if
+			end if
+		else
+			symbAddDefine( defname, text, len( *text ), isargless )
+		end if
 
-    '' unicode..
-    else
-    	'' LITERAL*
-    	textw = ppReadLiteralW( ismultiline )
+	'' unicode..
+	else
+		'' LITERAL*
+		textw = ppReadLiteralW( ismultiline )
 
-    	'' already defined? if there are no differences, do nothing..
-    	if( sym <> NULL ) then
-    		if( (symbGetDefineParams( sym ) > 0) or _
-    			(symbGetType( sym ) <> FB_DATATYPE_WCHAR) ) then
+		'' already defined? if there are no differences, do nothing..
+		if( sym <> NULL ) then
+			if( (symbGetDefineParams( sym ) > 0) or _
+				(symbGetType( sym ) <> FB_DATATYPE_WCHAR) ) then
 				errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
-    		elseif( (*symbGetDefineTextW( sym ) <> *textw) ) then
+			elseif( (*symbGetDefineTextW( sym ) <> *textw) ) then
 				errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
-    		end if
-    	else
-    		symbAddDefineW( defname, textw, len( *textw ), isargless )
-    	end if
+			end if
+		else
+			symbAddDefineW( defname, textw, len( *textw ), isargless )
+		end if
 
-    end if
+	end if
 end sub
 
 private function hMatchParamEllipsis( ) as integer
 
-    const FLAGS = LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL
+	const FLAGS = LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL
 
-    function = FALSE
+	function = FALSE
 
-    '' '...' ?
-    if( lexGetToken( FLAGS ) = CHAR_DOT ) then
-        if( lexGetLookAhead( 1, FLAGS ) = CHAR_DOT ) then
-            if( lexGetLookAhead( 2, FLAGS ) = CHAR_DOT ) then
-                '' Skip the dots
-                lexSkipToken( FLAGS )
-                lexSkipToken( FLAGS )
-                lexSkipToken( FLAGS )
-                function = TRUE
-            end if
-        end if
-    end if
+	'' '...' ?
+	if( lexGetToken( FLAGS ) = CHAR_DOT ) then
+		if( lexGetLookAhead( 1, FLAGS ) = CHAR_DOT ) then
+			if( lexGetLookAhead( 2, FLAGS ) = CHAR_DOT ) then
+				'' Skip the dots
+				lexSkipToken( FLAGS )
+				lexSkipToken( FLAGS )
+				lexSkipToken( FLAGS )
+				function = TRUE
+			end if
+		end if
+	end if
 
 end function
 
@@ -1022,12 +1022,12 @@ sub ppDefine( byval ismultiline as integer )
 	'' don't allow explicit namespaces
 	chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 
-    flags = LEX_FLAGS
-    if( ismultiline ) then
-    	flags and= not LEXCHECK_NOWHITESPC
-    end if
+	flags = LEX_FLAGS
+	if( ismultiline ) then
+		flags and= not LEXCHECK_NOWHITESPC
+	end if
 
-    lexEatToken( @defname, flags )
+	lexEatToken( @defname, flags )
 
 	if( hIsValidSymbolName( defname ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
@@ -1059,13 +1059,13 @@ sub ppDefine( byval ismultiline as integer )
 		sym = NULL
 	end if
 
-    params = 0
-    paramhead = NULL
-    isargless = FALSE
-    is_variadic = FALSE
+	params = 0
+	paramhead = NULL
+	isargless = FALSE
+	is_variadic = FALSE
 
-    '' '('?
-    if( lexGetToken( flags ) = CHAR_LPRNT ) then
+	'' '('?
+	if( lexGetToken( flags ) = CHAR_LPRNT ) then
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
 
 		'' not arg-less?
@@ -1145,8 +1145,8 @@ sub ppDefine( byval ismultiline as integer )
 	else
    		tokhead = hReadMacroText( params, paramhead, ismultiline )
    		symbAddDefineMacro( @defname, tokhead, params, paramhead, _
-                            iif( is_variadic, _
-                                 FB_DEFINE_FLAGS_VARIADIC, _
-                                 FB_DEFINE_FLAGS_NONE ) )
+							iif( is_variadic, _
+								 FB_DEFINE_FLAGS_VARIADIC, _
+								 FB_DEFINE_FLAGS_NONE ) )
 	end if
 end sub

@@ -73,14 +73,14 @@ enum FBFILELOCK
 end enum
 
 enum FBOPENKIND
-    FB_FILE_TYPE_FILE
-    FB_FILE_TYPE_CONS
-    FB_FILE_TYPE_ERR
-    FB_FILE_TYPE_PIPE
-    FB_FILE_TYPE_SCRN
-    FB_FILE_TYPE_LPT
-    FB_FILE_TYPE_COM
-    FB_FILE_TYPE_QB
+	FB_FILE_TYPE_FILE
+	FB_FILE_TYPE_CONS
+	FB_FILE_TYPE_ERR
+	FB_FILE_TYPE_PIPE
+	FB_FILE_TYPE_SCRN
+	FB_FILE_TYPE_LPT
+	FB_FILE_TYPE_COM
+	FB_FILE_TYPE_QB
 end enum
 
 '' FB runtime errors (same as rtlib/fb_error.h)
@@ -120,82 +120,82 @@ const FB_INSTANCEPTR = "THIS"
 
 '' some chars
 const CHAR_NULL   	= 00, _
-      CHAR_BELL		= 07, _
-      CHAR_BKSPC	= 08, _
-      CHAR_TAB    	= 09, _
-      CHAR_LF  	  	= 10, _
-      CHAR_VTAB 	= 11, _
-      CHAR_FORMFEED = 12, _
-      CHAR_CR  	  	= 13, _
-      CHAR_SPACE  	= 32, _
-      CHAR_0       	= 48, _
-      CHAR_1       	= 49, _
-      CHAR_2       	= 50, _
-      CHAR_3       	= 51, _
-      CHAR_4       	= 52, _
-      CHAR_5       	= 53, _
-      CHAR_6       	= 54, _
-      CHAR_7       	= 55, _
-      CHAR_8       	= 56, _
-      CHAR_9       	= 57, _
-      CHAR_AUPP    	= 65, CHAR_ALOW    	=  97, _
-      CHAR_BUPP    	= 66, CHAR_BLOW    	=  98, _
-      CHAR_CUPP    	= 67, CHAR_CLOW    	=  99, _
-      CHAR_DUPP    	= 68, CHAR_DLOW    	= 100, _
-      CHAR_EUPP    	= 69, CHAR_ELOW    	= 101, _
-      CHAR_FUPP    	= 70, CHAR_FLOW    	= 102, _
-      CHAR_GUPP    	= 71, CHAR_GLOW    	= 103, _
-      CHAR_HUPP    	= 72, CHAR_HLOW    	= 104, _
-      CHAR_IUPP    	= 73, CHAR_ILOW    	= 105, _
-      CHAR_JUPP    	= 74, CHAR_JLOW    	= 106, _
-      CHAR_KUPP    	= 75, CHAR_KLOW    	= 107, _
-      CHAR_LUPP    	= 76, CHAR_LLOW    	= 108, _
-      CHAR_MUPP    	= 77, CHAR_MLOW    	= 109, _
-      CHAR_NUPP    	= 78, CHAR_NLOW    	= 110, _
-      CHAR_OUPP    	= 79, CHAR_OLOW    	= 111, _
-      CHAR_PUPP    	= 80, CHAR_PLOW    	= 112, _
-      CHAR_QUPP    	= 81, CHAR_QLOW    	= 113, _
-      CHAR_RUPP    	= 82, CHAR_RLOW    	= 114, _
-      CHAR_SUPP    	= 83, CHAR_SLOW    	= 115, _
-      CHAR_TUPP    	= 84, CHAR_TLOW    	= 116, _
-      CHAR_UUPP    	= 85, CHAR_ULOW    	= 117, _
-      CHAR_VUPP    	= 86, CHAR_VLOW    	= 118, _
-      CHAR_WUPP    	= 87, CHAR_WLOW    	= 119, _
-      CHAR_XUPP    	= 88, CHAR_XLOW    	= 120, _
-      CHAR_YUPP    	= 89, CHAR_YLOW    	= 121, _
-      CHAR_ZUPP    	= 90, CHAR_ZLOW    	= 122, _
-      CHAR_LPRNT  	= 40, _
-      CHAR_RPRNT  	= 41, _
-      CHAR_COMMA 	= 44, _
-      CHAR_DOT    	= 46, _
-      CHAR_PLUS   	= 43, _
-      CHAR_MINUS  	= 45, _
-      CHAR_RSLASH  	= 92, _
-      CHAR_SLASH   	= 47, _
-      CHAR_CART   	= 94, _
-      CHAR_EQ     	= 61, _
-      CHAR_LT     	= 60, _
-      CHAR_GT     	= 62, _
-      CHAR_AMP		= 38, _
-      CHAR_UNDER	= 95, _
-      CHAR_EXCL		= 33, _
-      CHAR_SHARP	= 35, _
-      CHAR_DOLAR	= 36, _
-      CHAR_PERC		= 37, _
-      CHAR_QUOTE	= 34, _
-      CHAR_APOST	= 39, _
-      CHAR_TIMES	= 42, _
-      CHAR_STAR		= CHAR_TIMES, _
-      CHAR_COLON	= 58, _
-      CHAR_SEMICOLON= 59, _
-      CHAR_AT		= 64, _
-      CHAR_QUESTION	= 63, _
-      CHAR_TILD		= 126, _
-      CHAR_ESC		= 27, _
-      CHAR_LBRACE	= 123, _
-      CHAR_RBRACE	= 125, _
-      CHAR_LBRACKET	= 91, _
-      CHAR_RBRACKET	= 93
+	  CHAR_BELL		= 07, _
+	  CHAR_BKSPC	= 08, _
+	  CHAR_TAB    	= 09, _
+	  CHAR_LF  	  	= 10, _
+	  CHAR_VTAB 	= 11, _
+	  CHAR_FORMFEED = 12, _
+	  CHAR_CR  	  	= 13, _
+	  CHAR_SPACE  	= 32, _
+	  CHAR_0       	= 48, _
+	  CHAR_1       	= 49, _
+	  CHAR_2       	= 50, _
+	  CHAR_3       	= 51, _
+	  CHAR_4       	= 52, _
+	  CHAR_5       	= 53, _
+	  CHAR_6       	= 54, _
+	  CHAR_7       	= 55, _
+	  CHAR_8       	= 56, _
+	  CHAR_9       	= 57, _
+	  CHAR_AUPP    	= 65, CHAR_ALOW    	=  97, _
+	  CHAR_BUPP    	= 66, CHAR_BLOW    	=  98, _
+	  CHAR_CUPP    	= 67, CHAR_CLOW    	=  99, _
+	  CHAR_DUPP    	= 68, CHAR_DLOW    	= 100, _
+	  CHAR_EUPP    	= 69, CHAR_ELOW    	= 101, _
+	  CHAR_FUPP    	= 70, CHAR_FLOW    	= 102, _
+	  CHAR_GUPP    	= 71, CHAR_GLOW    	= 103, _
+	  CHAR_HUPP    	= 72, CHAR_HLOW    	= 104, _
+	  CHAR_IUPP    	= 73, CHAR_ILOW    	= 105, _
+	  CHAR_JUPP    	= 74, CHAR_JLOW    	= 106, _
+	  CHAR_KUPP    	= 75, CHAR_KLOW    	= 107, _
+	  CHAR_LUPP    	= 76, CHAR_LLOW    	= 108, _
+	  CHAR_MUPP    	= 77, CHAR_MLOW    	= 109, _
+	  CHAR_NUPP    	= 78, CHAR_NLOW    	= 110, _
+	  CHAR_OUPP    	= 79, CHAR_OLOW    	= 111, _
+	  CHAR_PUPP    	= 80, CHAR_PLOW    	= 112, _
+	  CHAR_QUPP    	= 81, CHAR_QLOW    	= 113, _
+	  CHAR_RUPP    	= 82, CHAR_RLOW    	= 114, _
+	  CHAR_SUPP    	= 83, CHAR_SLOW    	= 115, _
+	  CHAR_TUPP    	= 84, CHAR_TLOW    	= 116, _
+	  CHAR_UUPP    	= 85, CHAR_ULOW    	= 117, _
+	  CHAR_VUPP    	= 86, CHAR_VLOW    	= 118, _
+	  CHAR_WUPP    	= 87, CHAR_WLOW    	= 119, _
+	  CHAR_XUPP    	= 88, CHAR_XLOW    	= 120, _
+	  CHAR_YUPP    	= 89, CHAR_YLOW    	= 121, _
+	  CHAR_ZUPP    	= 90, CHAR_ZLOW    	= 122, _
+	  CHAR_LPRNT  	= 40, _
+	  CHAR_RPRNT  	= 41, _
+	  CHAR_COMMA 	= 44, _
+	  CHAR_DOT    	= 46, _
+	  CHAR_PLUS   	= 43, _
+	  CHAR_MINUS  	= 45, _
+	  CHAR_RSLASH  	= 92, _
+	  CHAR_SLASH   	= 47, _
+	  CHAR_CART   	= 94, _
+	  CHAR_EQ     	= 61, _
+	  CHAR_LT     	= 60, _
+	  CHAR_GT     	= 62, _
+	  CHAR_AMP		= 38, _
+	  CHAR_UNDER	= 95, _
+	  CHAR_EXCL		= 33, _
+	  CHAR_SHARP	= 35, _
+	  CHAR_DOLAR	= 36, _
+	  CHAR_PERC		= 37, _
+	  CHAR_QUOTE	= 34, _
+	  CHAR_APOST	= 39, _
+	  CHAR_TIMES	= 42, _
+	  CHAR_STAR		= CHAR_TIMES, _
+	  CHAR_COLON	= 58, _
+	  CHAR_SEMICOLON= 59, _
+	  CHAR_AT		= 64, _
+	  CHAR_QUESTION	= 63, _
+	  CHAR_TILD		= 126, _
+	  CHAR_ESC		= 27, _
+	  CHAR_LBRACE	= 123, _
+	  CHAR_RBRACE	= 125, _
+	  CHAR_LBRACKET	= 91, _
+	  CHAR_RBRACKET	= 93
 
 
 '' assuming it won't ever be used inside lit strings
@@ -387,17 +387,17 @@ enum FB_TOKEN
 	FB_TK_CHR
 	FB_TK_WCHR
 	FB_TK_STR
-    FB_TK_CVD
-    FB_TK_CVS
-    FB_TK_CVI
-    FB_TK_CVL
-    FB_TK_CVSHORT
+	FB_TK_CVD
+	FB_TK_CVS
+	FB_TK_CVI
+	FB_TK_CVL
+	FB_TK_CVSHORT
 	FB_TK_CVLONGINT
-    FB_TK_MKD
-    FB_TK_MKS
-    FB_TK_MKI
-    FB_TK_MKL
-    FB_TK_MKSHORT
+	FB_TK_MKD
+	FB_TK_MKS
+	FB_TK_MKI
+	FB_TK_MKL
+	FB_TK_MKSHORT
 	FB_TK_MKLONGINT
 	FB_TK_WSTR
 	FB_TK_MID
@@ -427,7 +427,7 @@ enum FB_TOKEN
 	FB_TK_INT
 	FB_TK_ATAN2
 	FB_TK_PRINT
-    FB_TK_LPRINT
+	FB_TK_LPRINT
 	FB_TK_LEN
 	FB_TK_SIZEOF
 	FB_TK_PEEK
@@ -448,14 +448,14 @@ enum FB_TOKEN
 	FB_TK_RANDOM
 	FB_TK_APPEND
 	FB_TK_ENCODING
-    FB_TK_NAME
+	FB_TK_NAME
 	FB_TK_SPC
 	FB_TK_TAB
 	FB_TK_LINE
 	FB_TK_VIEW
 	FB_TK_UNLOCK
-    FB_TK_WIDTH
-    FB_TK_COLOR
+	FB_TK_WIDTH
+	FB_TK_COLOR
 	FB_TK_FIELD
 	FB_TK_ERASE
 	FB_TK_LBOUND
@@ -485,8 +485,8 @@ enum FB_TOKEN
 	FB_TK_CVA_ARG
 	FB_TK_CVA_END
 	FB_TK_CVA_COPY
-    
-    FB_TK_THREADCALL
+	
+	FB_TK_THREADCALL
 
 	FB_TOKENS = FB_TK_THREADCALL - FB_TK_EOF
 end enum

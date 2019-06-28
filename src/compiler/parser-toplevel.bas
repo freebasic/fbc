@@ -294,7 +294,7 @@ sub hSkipCompound _
 
 					if( cnt > 0 ) then
 						cnt -= 1
-                    end if
+					end if
 
 					if( cnt = 0 ) then
 						exit do

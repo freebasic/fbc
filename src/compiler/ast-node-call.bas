@@ -26,10 +26,10 @@ function astNewCALL _
 		byval ptrexpr as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
-    dim as FBRTLCALLBACK callback = any
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr subtype = any
+	dim as ASTNODE ptr n = any
+	dim as FBRTLCALLBACK callback = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
 	assert( symbIsProc( sym ) )
 
@@ -122,8 +122,8 @@ end function
 
 '' Copy-back any fixed-length strings that were passed to BYREF parameters
 private sub hCopyStringsBack( byval f as ASTNODE ptr )
-    dim as ASTNODE ptr t = any
-    dim as AST_TMPSTRLIST_ITEM ptr n = any, p = any
+	dim as ASTNODE ptr t = any
+	dim as AST_TMPSTRLIST_ITEM ptr n = any, p = any
 
 	n = f->call.strtail
 	do while( n <> NULL )
@@ -320,19 +320,19 @@ sub astCloneCALL _
 	)
 
 	'' copy-back list
-    scope
-    	dim as AST_TMPSTRLIST_ITEM ptr sn = any, sc = any
+	scope
+		dim as AST_TMPSTRLIST_ITEM ptr sn = any, sc = any
 
 		c->call.strtail = NULL
 		sn = n->call.strtail
 		do while( sn <> NULL )
-        	sc = listNewNode( @ast.call.tmpstrlist )
+			sc = listNewNode( @ast.call.tmpstrlist )
 
-        	sc->sym = sn->sym
-        	sc->srctree = astCloneTree( sn->srctree )
-        	sc->prev = c->call.strtail
+			sc->sym = sn->sym
+			sc->srctree = astCloneTree( sn->srctree )
+			sc->prev = c->call.strtail
 
-        	c->call.strtail = sc
+			c->call.strtail = sc
 
 			sn = sn->prev
 		loop
@@ -358,7 +358,7 @@ sub astDelCALL _
 	)
 
 	'' copy-back list
-    scope
+	scope
 	    dim as AST_TMPSTRLIST_ITEM ptr s = any, p = any
 		s = n->call.strtail
 		do while( s <> NULL )
@@ -368,8 +368,8 @@ sub astDelCALL _
 
 			listDelNode( @ast.call.tmpstrlist, s )
 			s = p
-    	loop
-    end scope
+		loop
+	end scope
 
 end sub
 

@@ -674,14 +674,14 @@ function rtlPrint _
 		byval iscomma as integer, _
 		byval issemicolon as integer, _
 		byval expr as ASTNODE ptr, _
-        byval islprint as integer = FALSE _
+		byval islprint as integer = FALSE _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer mask = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer mask = any
 
-    function = FALSE
+	function = FALSE
 
 	if( expr = NULL ) then
 		if( islprint ) then
@@ -811,20 +811,20 @@ function rtlPrint _
 		end select
 	end if
 
-    ''
+	''
 	proc = astNewCALL( f )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, fileexpr ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, fileexpr ) = NULL ) then
  		exit function
  	end if
 
-    if( expr <> NULL ) then
-    	'' byval? x as ???
-    	if( astNewARG( proc, expr ) = NULL ) then
+	if( expr <> NULL ) then
+		'' byval? x as ???
+		if( astNewARG( proc, expr ) = NULL ) then
  			exit function
  		end if
-    end if
+	end if
 
 	'' byval mask as integer
 	mask = 0
@@ -839,10 +839,10 @@ function rtlPrint _
 		exit function
 	end if
 
-    ''
-    astAdd( proc )
+	''
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -855,13 +855,13 @@ function rtlPrintSPCTab _
 		byval islprint as integer = FALSE _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    if islprint then
-    	rtlPrinter_cb( NULL )
-    end if
+	if islprint then
+		rtlPrinter_cb( NULL )
+	end if
 
 	''
 	if( istab ) then
@@ -870,19 +870,19 @@ function rtlPrintSPCTab _
 		proc = astNewCALL( PROCLOOKUP( PRINTSPC ) )
 	end if
 
-    '' byval filenum as integer
-    if( astNewARG( proc, fileexpr ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, fileexpr ) = NULL ) then
  		exit function
  	end if
 
-    '' byval n as integer
-    if( astNewARG( proc, expr ) = NULL ) then
+	'' byval n as integer
+	if( astNewARG( proc, expr ) = NULL ) then
  		exit function
  	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -894,9 +894,9 @@ function rtlWrite _
 		byval expr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer mask = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer mask = any
 
 	function = FALSE
 
@@ -957,22 +957,22 @@ function rtlWrite _
 		end select
 	end if
 
-    ''
+	''
 	proc = astNewCALL( f )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, fileexpr ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, fileexpr ) = NULL ) then
  		exit function
  	end if
 
-    if( expr <> NULL ) then
-    	'' byval? x as ???
-    	if( astNewARG( proc, expr ) = NULL ) then
+	if( expr <> NULL ) then
+		'' byval? x as ???
+		if( astNewARG( proc, expr ) = NULL ) then
  			exit function
  		end if
-    end if
+	end if
 
-    '' byval mask as integer
+	'' byval mask as integer
 	mask = 0
 	if( iscomma ) then
 		mask or= FB_PRINTMASK_PAD
@@ -984,10 +984,10 @@ function rtlWrite _
 		exit function
 	end if
 
-    ''
-    astAdd( proc )
+	''
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -995,11 +995,11 @@ end function
 function rtlPrintUsingInit _
 	( _
 		byval usingexpr as ASTNODE ptr, _
-        byval islprint as integer = FALSE _
+		byval islprint as integer = FALSE _
 	) as integer 
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 
 	function = FALSE
 
@@ -1009,16 +1009,16 @@ function rtlPrintUsingInit _
 	else
 		f = PROCLOOKUP( PRINTUSGINIT )
 	end if
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    '' fmtstr as string
-    if( astNewARG( proc, usingexpr ) = NULL ) then
+	'' fmtstr as string
+	if( astNewARG( proc, usingexpr ) = NULL ) then
  		exit function
  	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -1026,28 +1026,28 @@ end function
 function rtlPrintUsingEnd _
 	( _
 		byval fileexpr as ASTNODE ptr, _
-        byval islprint as integer = FALSE _
+		byval islprint as integer = FALSE _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
-    if islprint then
-    	rtlPrinter_cb( NULL )
-    end if
+	if islprint then
+		rtlPrinter_cb( NULL )
+	end if
 
 	''
-    proc = astNewCALL( PROCLOOKUP( PRINTUSGEND ) )
+	proc = astNewCALL( PROCLOOKUP( PRINTUSGEND ) )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, fileexpr ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, fileexpr ) = NULL ) then
  		exit function
  	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -1058,22 +1058,22 @@ function rtlPrintUsing _
 		byval expr as ASTNODE ptr, _
 		byval iscomma as integer, _
 		byval issemicolon as integer, _
-        byval islprint as integer = FALSE _
-    ) as integer
+		byval islprint as integer = FALSE _
+	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer mask = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer mask = any
 
 	function = FALSE
 
-    if( islprint ) then
-    	rtlPrinter_cb( NULL )
-    end if
+	if( islprint ) then
+		rtlPrinter_cb( NULL )
+	end if
 
-    if( expr = NULL ) then
-    	exit function
-    end if
+	if( expr = NULL ) then
+		exit function
+	end if
 
 	astTryOvlStringCONV( expr )
 
@@ -1122,17 +1122,17 @@ function rtlPrintUsing _
 
 	proc = astNewCALL( f )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, fileexpr ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, fileexpr ) = NULL ) then
  		exit function
  	end if
 
-    '' s as string or byval v as double
-    if( astNewARG( proc, expr ) = NULL ) then
+	'' s as string or byval v as double
+	if( astNewARG( proc, expr ) = NULL ) then
  		exit function
  	end if
 
-    '' byval mask as integer
+	'' byval mask as integer
 	if( iscomma or issemicolon ) then
 		mask = 0
 
@@ -1152,10 +1152,10 @@ function rtlPrintUsing _
 		exit function
 	end if
 
-    ''
-    astAdd( proc )
+	''
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -1164,28 +1164,28 @@ function rtlWidthDev _
 	( _
 		byval device as ASTNODE ptr, _
 		byval width_arg as ASTNODE ptr, _
-        byval isfunc as integer _
+		byval isfunc as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    '' printer libraries are always required for width on devices
+	'' printer libraries are always required for width on devices
 	rtlPrinter_cb( NULL )
 
 	''
-    proc = astNewCALL( PROCLOOKUP( WIDTHDEV ) )
+	proc = astNewCALL( PROCLOOKUP( WIDTHDEV ) )
 
-    '' device as string
-    if( astNewARG( proc, device ) = NULL ) then
-    	exit function
-    end if
+	'' device as string
+	if( astNewARG( proc, device ) = NULL ) then
+		exit function
+	end if
 
-    '' byval width_arg as integer
-    if( astNewARG( proc, width_arg ) = NULL ) then
-    	exit function
-    end if
+	'' byval width_arg as integer
+	if( astNewARG( proc, width_arg ) = NULL ) then
+		exit function
+	end if
 
 	if( isfunc = FALSE ) then
 		astAdd( rtlErrorCheck( proc ) )
@@ -1200,11 +1200,11 @@ function rtlPrinter_cb _
 		byval sym as FBSYMBOL ptr _
 	) as integer
 
-    static as integer libsAdded = FALSE
+	static as integer libsAdded = FALSE
 
 	if( libsadded = FALSE ) then
 
-        libsAdded = TRUE
+		libsAdded = TRUE
 
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
@@ -1214,6 +1214,6 @@ function rtlPrinter_cb _
 
 	end if
 
-    function = TRUE
+	function = TRUE
 
 end function

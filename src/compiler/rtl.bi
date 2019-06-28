@@ -817,7 +817,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FTOUL
 	FB_RTL_IDX_DTOUL
 
-    FB_RTL_IDX_THREADCALL
+	FB_RTL_IDX_THREADCALL
 
 	FB_RTL_INDEXES
 end enum
@@ -1742,7 +1742,7 @@ declare function rtlPrinter_cb _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as integer
-    
+	
 declare function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
 
 

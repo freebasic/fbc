@@ -43,11 +43,11 @@ private sub cConstAssign _
 		byval attrib as FB_SYMBATTRIB _
 	)
 
-    static as zstring * FB_MAXNAMELEN+1 id
+	static as zstring * FB_MAXNAMELEN+1 id
 	dim as integer doskip = any, suffix = any
-    dim as ASTNODE ptr expr = any
-    dim as FBSYMBOL ptr litsym = any
-    dim as FBVALUE value = any
+	dim as ASTNODE ptr expr = any
+	dim as FBSYMBOL ptr litsym = any
+	dim as FBVALUE value = any
 
 	'' Namespace identifier if it matches the current namespace
 	cCurrentParentId()
@@ -205,7 +205,7 @@ private sub cConstAssign _
 		if( symbReuseOrAddConst( @id, dtype, subtype, astConstGetVal( expr ), attrib ) = NULL ) then
 			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 		end if
-    end if
+	end if
 
 	astDelNode( expr )
 
@@ -217,11 +217,11 @@ end sub
 
 '' ConstDecl  =  CONST (AS SymbolType)? ConstAssign (DECL_SEPARATOR ConstAssign)* .
 sub cConstDecl( byval attrib as integer )
-    dim as integer dtype = any
-    dim as FBSYMBOL ptr subtype = any
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr subtype = any
 
-    '' CONST
-    lexSkipToken( )
+	'' CONST
+	lexSkipToken( )
 
 	'' (AS SymbolType)?
 	hGetType( dtype, subtype )

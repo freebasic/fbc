@@ -108,13 +108,13 @@ sub cIfStmtBegin( )
 	'' IF
 	lexSkipToken( )
 
-    '' Expression
-    expr = cExpression( )
-    if( expr = NULL ) then
+	'' Expression
+	expr = cExpression( )
+	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
 		expr = astNewCONSTi( 0 )
-    end if
+	end if
 
 	'' add end label (at ENDIF)
 	el = symbAddLabel( NULL, FB_SYMBOPT_NONE )
@@ -199,10 +199,10 @@ sub cIfStmtNext( )
 		exit sub
 	end if
 
-    '' ELSE already parsed?
-    if( stk->if.elsecnt <> 0 ) then
+	'' ELSE already parsed?
+	if( stk->if.elsecnt <> 0 ) then
 		errReport( FB_ERRMSG_EXPECTEDENDIF )
-    end if
+	end if
 
 	'' end scope
 	if( stk->scopenode <> NULL ) then
@@ -211,8 +211,8 @@ sub cIfStmtNext( )
 	end if
 
 	'' ELSEIF Expression THEN ?
-    if( lexGetToken( ) = FB_TK_ELSEIF ) then
-    	lexSkipToken( )
+	if( lexGetToken( ) = FB_TK_ELSEIF ) then
+		lexSkipToken( )
 
 		'' exit last if stmt
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->if.endlabel ) )
@@ -227,12 +227,12 @@ sub cIfStmtNext( )
 		stk->if.nxtlabel = symbAddLabel( NULL, FB_SYMBOPT_NONE )
 
 	    '' Expression
-    	expr = cExpression( )
-    	if( expr = NULL ) then
+		expr = cExpression( )
+		if( expr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			'' error recovery: fake an expr
 			expr = astNewCONSTi( 0 )
-    	end if
+		end if
 
 		'' THEN
 		if( hMatch( FB_TK_THEN ) = FALSE ) then
@@ -247,11 +247,11 @@ sub cIfStmtNext( )
 			astAdd( expr )
 		end if
 
-    '' ELSE..
-    else
-    	stk->if.elsecnt += 1
+	'' ELSE..
+	else
+		stk->if.elsecnt += 1
 
-    	lexSkipToken( )
+		lexSkipToken( )
 
 		'' warn about IF statements immediately following ELSE, due to confusion with 'ELSEIF'
 		if( lexGetToken( ) = FB_TK_IF ) then

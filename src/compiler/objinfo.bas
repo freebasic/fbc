@@ -90,7 +90,6 @@
 #include once "fb.bi"
 #include once "hlp.bi"
 
-'#define DEBUG_OBJINFO
 
 #ifdef DEBUG_OBJINFO
 	#define INFO( s ) print "objinfo: " + s

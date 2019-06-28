@@ -253,7 +253,7 @@ function listGetPrev _
 		byval node as any ptr _
 	) as any ptr
 
-    dim as TLISTNODE ptr prev = any
+	dim as TLISTNODE ptr prev = any
 
 	assert( node <> NULL )
 
@@ -274,7 +274,7 @@ function listGetNext _
 		byval node as any ptr _
 	) as any ptr
 
-    dim as TLISTNODE ptr nxt = any
+	dim as TLISTNODE ptr nxt = any
 
 	assert( node <> NULL )
 

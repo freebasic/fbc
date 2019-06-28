@@ -1196,12 +1196,12 @@ function rtlFileOpen _
 		byval flen as ASTNODE ptr, _
 		byval fencoding as ASTNODE ptr, _
 		byval isfunc as integer, _
-        byval openkind as FBOPENKIND _
+		byval openkind as FBOPENKIND _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer doencoding = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer doencoding = any
 
 	function = NULL
 
@@ -1217,25 +1217,25 @@ function rtlFileOpen _
 			f = PROCLOOKUP( FILEOPEN_ENCOD )
 		end if
 
-    case FB_FILE_TYPE_CONS
+	case FB_FILE_TYPE_CONS
 		f = PROCLOOKUP( FILEOPEN_CONS )
 
-    case FB_FILE_TYPE_ERR
+	case FB_FILE_TYPE_ERR
 		f = PROCLOOKUP( FILEOPEN_ERR )
 
-    case FB_FILE_TYPE_PIPE
+	case FB_FILE_TYPE_PIPE
 		f = PROCLOOKUP( FILEOPEN_PIPE )
 
-    case FB_FILE_TYPE_SCRN
+	case FB_FILE_TYPE_SCRN
 		f = PROCLOOKUP( FILEOPEN_SCRN )
 
-    case FB_FILE_TYPE_LPT
+	case FB_FILE_TYPE_LPT
 		f = PROCLOOKUP( FILEOPEN_LPT )
 
-    case FB_FILE_TYPE_COM
+	case FB_FILE_TYPE_COM
 		f = PROCLOOKUP( FILEOPEN_COM )
 
-    case else
+	case else
 		assert(openkind = FB_FILE_TYPE_QB)
 		f = PROCLOOKUP( FILEOPEN_QB )
 		doencoding = FALSE
@@ -1307,8 +1307,8 @@ function rtlFileOpenShort _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 
 	function = NULL
 
@@ -1359,7 +1359,7 @@ function rtlFileClose _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
@@ -1389,13 +1389,13 @@ function rtlFileSeek _
 		byval newpos as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer pos_dtype = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer pos_dtype = any
 
 	function = FALSE
 
-    pos_dtype = astGetDataType( newpos )
+	pos_dtype = astGetDataType( newpos )
 	assert( typeGetClass( pos_dtype ) = FB_DATACLASS_INTEGER )
 	if( typeGetSize( pos_dtype ) = 8 ) then
 		f = PROCLOOKUP( FILESEEKLARGE )
@@ -1405,13 +1405,13 @@ function rtlFileSeek _
 
 	proc = astNewCALL( f )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, filenum ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, filenum ) = NULL ) then
  		exit function
  	end if
 
-    '' byval newpos as integer
-    if( astNewARG( proc, newpos ) = NULL ) then
+	'' byval newpos as integer
+	if( astNewARG( proc, newpos ) = NULL ) then
  		exit function
  	end if
 
@@ -1425,20 +1425,20 @@ function rtlFileTell _
 		byval filenum as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
-    function = NULL
+	function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( FILETELL ) )
+	proc = astNewCALL( PROCLOOKUP( FILETELL ) )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, filenum ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, filenum ) = NULL ) then
  		exit function
  	end if
 
-    ''
-    function = proc
+	''
+	function = proc
 
 end function
 
@@ -1452,12 +1452,12 @@ function rtlFilePut _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any, bytes = any
+	dim as ASTNODE ptr proc = any, bytes = any
 	dim as integer dtype = any, o_dtype = any, isstring = any, islarge = any
 	dim as longint lgt = any
-    dim as FBSYMBOL ptr f = any
+	dim as FBSYMBOL ptr f = any
 
-    function = NULL
+	function = NULL
 
 	''
 	dtype    = astGetDataType( src )
@@ -1485,24 +1485,24 @@ function rtlFilePut _
 		end if
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, filenum ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, filenum ) = NULL ) then
  		exit function
  	end if
 
-    '' byval offset as integer
-    if( astNewARG( proc, offset ) = NULL ) then
+	'' byval offset as integer
+	if( astNewARG( proc, offset ) = NULL ) then
  		exit function
  	end if
 
-    '' always calc len before pushing the param
-    if( isstring ) then
-    	lgt = rtlCalcStrLen( src, dtype )
-    else
+	'' always calc len before pushing the param
+	if( isstring ) then
+		lgt = rtlCalcStrLen( src, dtype )
+	else
 		lgt = rtlCalcExprLen( src )
-    end if
+	end if
 
 	if( elements = NULL ) then
 		bytes = astNewCONSTi( lgt )
@@ -1510,22 +1510,22 @@ function rtlFilePut _
 		bytes = astNewBOP( AST_OP_MUL, elements, astNewCONSTi( lgt ) )
 	end if
 
-    '' any pointer fields?
-    if( astGetDataType( src ) = FB_DATATYPE_STRUCT ) then
-    	if( symbGetUDTHasPtrField( astGetSubType( src ) ) ) then
+	'' any pointer fields?
+	if( astGetDataType( src ) = FB_DATATYPE_STRUCT ) then
+		if( symbGetUDTHasPtrField( astGetSubType( src ) ) ) then
 			errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
-    	end if
+		end if
 	'' warn if data is pointer
 	elseif( typeIsPtr( astGetDataType( src ) ) ) then
 		errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_PASSINGPTR )
-    end if
+	end if
 
-    '' value as any | s as string
-    if( astNewARG( proc, src ) = NULL ) then
+	'' value as any | s as string
+	if( astNewARG( proc, src ) = NULL ) then
  		exit function
  	end if
 
-    '' byval bytes as integer
+	'' byval bytes as integer
    	if( astNewARG( proc, bytes ) = NULL ) then
 		exit function
 	end if
@@ -1546,16 +1546,16 @@ function rtlFilePutArray _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 	dim as integer o_dtype = any
 
-    function = NULL
+	function = NULL
 
 	if( offset = NULL ) then
 		offset = astNewCONSTi( 0 )
 	end if
-    o_dtype  = astGetDataType( offset )
+	o_dtype  = astGetDataType( offset )
 
 	assert( typeGetClass( o_dtype ) = FB_DATACLASS_INTEGER )
 	if( typeGetSize( o_dtype ) = 8 ) then
@@ -1566,30 +1566,30 @@ function rtlFilePutArray _
 
 	proc = astNewCALL( f )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, filenum ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, filenum ) = NULL ) then
  		exit function
  	end if
 
-    '' byval offset as integer
-    if( astNewARG( proc, offset ) = NULL ) then
+	'' byval offset as integer
+	if( astNewARG( proc, offset ) = NULL ) then
  		exit function
  	end if
 
-    '' any pointer fields?
-    if( astGetDataType( src ) = FB_DATATYPE_STRUCT ) then
-    	if( symbGetUDTHasPtrField( astGetSubType( src ) ) ) then
+	'' any pointer fields?
+	if( astGetDataType( src ) = FB_DATATYPE_STRUCT ) then
+		if( symbGetUDTHasPtrField( astGetSubType( src ) ) ) then
 			errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
-    	end if
+		end if
 	'' warn if data is pointer
 	elseif( typeIsPtr( astGetDataType( src ) ) ) then
 		errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_PASSINGPTR )
-    end if
+	end if
 
-    '' array() as any
-    if( astNewARG( proc, src ) = NULL ) then
-    	exit function
-    end if
+	'' array() as any
+	if( astNewARG( proc, src ) = NULL ) then
+		exit function
+	end if
 
 	if( isfunc = FALSE ) then
 		astAdd( rtlErrorCheck( proc ) )
@@ -1609,12 +1609,12 @@ function rtlFileGet _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any, bytes = any
+	dim as ASTNODE ptr proc = any, bytes = any
 	dim as integer dtype = any, o_dtype = any, isstring = any, islarge = any
 	dim as longint lgt = any
-    dim as FBSYMBOL ptr f = any
+	dim as FBSYMBOL ptr f = any
 
-    function = NULL
+	function = NULL
 
 	''
 	dtype = astGetDataType( dst )
@@ -1675,24 +1675,24 @@ function rtlFileGet _
 		end if
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, filenum ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, filenum ) = NULL ) then
  		exit function
  	end if
 
-    '' byval offset as integer
-    if( astNewARG( proc, offset ) = NULL ) then
+	'' byval offset as integer
+	if( astNewARG( proc, offset ) = NULL ) then
  		exit function
  	end if
 
-    '' always calc len before pushing the param
-    if( isstring ) then
-    	lgt = rtlCalcStrLen( dst, dtype )
-    else
+	'' always calc len before pushing the param
+	if( isstring ) then
+		lgt = rtlCalcStrLen( dst, dtype )
+	else
 		lgt = rtlCalcExprLen( dst )
-    end if
+	end if
 
 	if( elements = NULL ) then
 		bytes = astNewCONSTi( lgt )
@@ -1700,23 +1700,23 @@ function rtlFileGet _
 		bytes = astNewBOP( AST_OP_MUL, elements, astNewCONSTi( lgt ) )
 	end if
 
-    '' any pointer fields?
-    if( dtype = FB_DATATYPE_STRUCT ) then
-    	if( symbGetUDTHasPtrField( astGetSubType( dst ) ) ) then
+	'' any pointer fields?
+	if( dtype = FB_DATATYPE_STRUCT ) then
+		if( symbGetUDTHasPtrField( astGetSubType( dst ) ) ) then
 			errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
-    	end if
+		end if
 	'' warn if data is pointer
 	elseif( typeIsPtr( astGetDataType( dst ) ) ) then
 		errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_PASSINGPTR )
-    end if
+	end if
 	
-    '' value as any
-    if( astNewARG( proc, dst ) = NULL ) then
+	'' value as any
+	if( astNewARG( proc, dst ) = NULL ) then
  		exit function
  	end if
 
-    '' byval bytes as integer
-    if( astNewARG( proc, bytes ) = NULL ) then
+	'' byval bytes as integer
+	if( astNewARG( proc, bytes ) = NULL ) then
  		exit function
  	end if
 
@@ -1744,9 +1744,9 @@ function rtlFileGetArray _
 		byval isfunc as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer o_dtype = any, islarge = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer o_dtype = any, islarge = any
 
 	function = NULL
 
@@ -1774,30 +1774,30 @@ function rtlFileGetArray _
 
 	proc = astNewCALL( f )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, filenum ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, filenum ) = NULL ) then
  		exit function
  	end if
 
-    '' byval offset as integer
-    if( astNewARG( proc, offset ) = NULL ) then
+	'' byval offset as integer
+	if( astNewARG( proc, offset ) = NULL ) then
  		exit function
  	end if
 
-    '' any pointer fields?
-    if( astGetDataType( dst ) = FB_DATATYPE_STRUCT ) then
-    	if( symbGetUDTHasPtrField( astGetSubType( dst ) ) ) then
+	'' any pointer fields?
+	if( astGetDataType( dst ) = FB_DATATYPE_STRUCT ) then
+		if( symbGetUDTHasPtrField( astGetSubType( dst ) ) ) then
 			errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
-    	end if
+		end if
 	'' warn if data is pointer
 	elseif( typeIsPtr( astGetDataType( dst ) ) ) then
 		errReportParamWarn( proc->sym, 3, NULL, FB_WARNINGMSG_PASSINGPTR )
-    end if
+	end if
 
-    '' array() as any
-    if( astNewARG( proc, dst ) = NULL ) then
-    	exit function
-    end if
+	'' array() as any
+	if( astNewARG( proc, dst ) = NULL ) then
+		exit function
+	end if
 
 	if( iobytes ) then
 		'' byref iobytes as uinteger
@@ -1820,25 +1820,25 @@ function rtlFileStrInput _
 		byval tk as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
-    function = NULL
+	function = NULL
 
 	proc = astNewCALL( iif( tk = FB_TK_WINPUT, _
 				PROCLOOKUP( FILEWSTRINPUT ), _
 				PROCLOOKUP( FILESTRINPUT ) ) )
 
-    '' byval bytes as integer
-    if( astNewARG( proc, bytesexpr ) = NULL ) then
+	'' byval bytes as integer
+	if( astNewARG( proc, bytesexpr ) = NULL ) then
  		exit function
  	end if
 
-    '' byval filenum as integer
-    if( astNewARG( proc, filenum ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, filenum ) = NULL ) then
  		exit function
  	end if
 
-    function = proc
+	function = proc
 end function
 
 '':::::
@@ -1851,9 +1851,9 @@ function rtlFileLineInput _
 		byval addnewline as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer args = any, dtype = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer args = any, dtype = any
 	dim as longint lgt = any
 
 	function = FALSE
@@ -1867,23 +1867,23 @@ function rtlFileLineInput _
 		args = 6
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    '' "byval filenum as integer" or "text as string "
-    if( (isfile = FALSE) and (expr = NULL) ) then
+	'' "byval filenum as integer" or "text as string "
+	if( (isfile = FALSE) and (expr = NULL) ) then
 		expr = astNewVAR( symbAllocStrConst( "", 0 ) )
 	end if
 
-    if( astNewARG( proc, expr ) = NULL ) then
+	if( astNewARG( proc, expr ) = NULL ) then
  		exit function
  	end if
 
-    '' always calc len before pushing the param
+	'' always calc len before pushing the param
 	dtype = astGetDataType( dstexpr )
 	lgt = rtlCalcStrLen( dstexpr, dtype )
 
 	'' dst as any
-    if( astNewARG( proc, dstexpr ) = NULL ) then
+	if( astNewARG( proc, dstexpr ) = NULL ) then
  		exit function
  	end if
 
@@ -1909,9 +1909,9 @@ function rtlFileLineInput _
 		end if
 	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -1925,9 +1925,9 @@ function rtlFileLineInputWstr _
 		byval addnewline as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer args = any, dtype = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer args = any, dtype = any
 	dim as longint lgt = any
 
 	function = FALSE
@@ -1941,23 +1941,23 @@ function rtlFileLineInputWstr _
 		args = 5
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    '' "byval filenum as integer" or "byval text as wstring ptr"
-    if( (isfile = FALSE) and (expr = NULL) ) then
+	'' "byval filenum as integer" or "byval text as wstring ptr"
+	if( (isfile = FALSE) and (expr = NULL) ) then
 		expr = astNewVAR( symbAllocWStrConst( "", 0 ) )
 	end if
 
-    if( astNewARG( proc, expr ) = NULL ) then
+	if( astNewARG( proc, expr ) = NULL ) then
  		exit function
  	end if
 
-    '' always calc len before pushing the param
+	'' always calc len before pushing the param
 	dtype = astGetDataType( dstexpr )
 	lgt = rtlCalcStrLen( dstexpr, dtype )
 
 	'' byval dst as wstring ptr
-    if( astNewARG( proc, dstexpr ) = NULL ) then
+	if( astNewARG( proc, dstexpr ) = NULL ) then
  		exit function
  	end if
 
@@ -1978,9 +1978,9 @@ function rtlFileLineInputWstr _
 		end if
 	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -1993,9 +1993,9 @@ function rtlFileInput _
 		byval addnewline as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer args = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer args = any
 
 	function = FALSE
 
@@ -2008,10 +2008,10 @@ function rtlFileInput _
 		args = 3
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    '' "byval filenum as integer" or "text as string "
-    if( (isfile = FALSE) and (expr = NULL) ) then
+	'' "byval filenum as integer" or "text as string "
+	if( (isfile = FALSE) and (expr = NULL) ) then
 		expr = astNewVAR( symbAllocStrConst( "", 0 ) )
 	end if
 
@@ -2031,9 +2031,9 @@ function rtlFileInput _
 		end if
 	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -2043,9 +2043,9 @@ function rtlFileInputGet _
 		byval dstexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer args = any, dtype = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer args = any, dtype = any
 	dim as longint lgt = any
 
 	function = FALSE
@@ -2094,15 +2094,15 @@ function rtlFileInputGet _
 		exit function
 	end select
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    '' always calc len before pushing the param
-    if( args > 1 ) then
+	'' always calc len before pushing the param
+	if( args > 1 ) then
 		lgt = rtlCalcStrLen( dstexpr, dtype )
 	end if
 
-    '' byref dst as any | byval dst as wstring ptr
-    if( astNewARG( proc, dstexpr ) = NULL ) then
+	'' byref dst as any | byval dst as wstring ptr
+	if( astNewARG( proc, dstexpr ) = NULL ) then
  		exit function
  	end if
 
@@ -2120,9 +2120,9 @@ function rtlFileInputGet _
 		end if
 	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -2135,9 +2135,9 @@ function rtlFileLock _
 		byval endexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer islarge = any, i_dtype = any, e_dtype = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer islarge = any, i_dtype = any, e_dtype = any
 
 	function = FALSE
 
@@ -2162,26 +2162,26 @@ function rtlFileLock _
 		end if
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    '' byval filenum as integer
-    if( astNewARG( proc, filenum ) = NULL ) then
+	'' byval filenum as integer
+	if( astNewARG( proc, filenum ) = NULL ) then
  		exit function
  	end if
 
-    '' byval inipos as integer
-    if( astNewARG( proc, iniexpr ) = NULL ) then
+	'' byval inipos as integer
+	if( astNewARG( proc, iniexpr ) = NULL ) then
  		exit function
  	end if
 
-    '' byval endpos as integer
-    if( astNewARG( proc, endexpr ) = NULL ) then
+	'' byval endpos as integer
+	if( astNewARG( proc, endexpr ) = NULL ) then
  		exit function
  	end if
 
-    astAdd( proc )
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -2189,23 +2189,23 @@ end function
 function rtlFileRename _
 	( _
 		byval filename_new as ASTNODE ptr, _
-        byval filename_old as ASTNODE ptr, _
-        byval isfunc as integer _
+		byval filename_old as ASTNODE ptr, _
+		byval isfunc as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( FILERENAME ) )
+	proc = astNewCALL( PROCLOOKUP( FILERENAME ) )
 
 	'' byval filename_old as zstring ptr
-    if( astNewARG( proc, filename_old ) = NULL ) then
+	if( astNewARG( proc, filename_old ) = NULL ) then
  		exit function
  	end if
 
 	'' byval filename_new as zstring ptr
-    if( astNewARG( proc, filename_new ) = NULL ) then
+	if( astNewARG( proc, filename_new ) = NULL ) then
  		exit function
  	end if
 
@@ -2221,25 +2221,25 @@ function rtlWidthFile _
 	( _
 		byval fnum as ASTNODE ptr, _
 		byval width_arg as ASTNODE ptr, _
-        byval isfunc as integer _
-    ) as ASTNODE ptr
+		byval isfunc as integer _
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( WIDTHFILE ) )
+	proc = astNewCALL( PROCLOOKUP( WIDTHFILE ) )
 
-    '' byval fnum as integer
-    if( astNewARG( proc, fnum ) = NULL ) then
-    	exit function
-    end if
+	'' byval fnum as integer
+	if( astNewARG( proc, fnum ) = NULL ) then
+		exit function
+	end if
 
-    '' byval width_arg as integer
-    if( astNewARG( proc, width_arg ) = NULL ) then
-    	exit function
-    end if
+	'' byval width_arg as integer
+	if( astNewARG( proc, width_arg ) = NULL ) then
+		exit function
+	end if
 
 	if( isfunc = FALSE ) then
 		astAdd( rtlErrorCheck( proc ) )

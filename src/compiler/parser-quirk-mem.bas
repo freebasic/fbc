@@ -59,8 +59,8 @@ function cOperatorNew( ) as ASTNODE ptr
 	has_defctor = typeHasDefCtor( dtype, subtype )
 
 	'' '['?
-    if( lexGetToken( ) = CHAR_LBRACKET ) then
-        lexSkipToken( )
+	if( lexGetToken( ) = CHAR_LBRACKET ) then
+		lexSkipToken( )
 
 		elementsexpr = cExpression(  )
 		if( elementsexpr = NULL ) then
@@ -69,13 +69,13 @@ function cOperatorNew( ) as ASTNODE ptr
 			op = AST_OP_NEW_VEC
 		end if
 
-        '' ']'
-        if( lexGetToken( ) <> CHAR_RBRACKET ) then
+		'' ']'
+		if( lexGetToken( ) <> CHAR_RBRACKET ) then
 			errReport( FB_ERRMSG_EXPECTEDRBRACKET )
 			hSkipUntil( CHAR_RBRACKET )
-        else
-        	lexSkipToken( )
-        end if
+		else
+			lexSkipToken( )
+		end if
 
 		'' '{'?
 		if( lexGetToken( ) = CHAR_LBRACE ) then

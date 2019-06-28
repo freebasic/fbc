@@ -377,8 +377,8 @@ declare function hMakeParamDesc _
 		@"Expected relational operator ( =, >, <, <>, <=, >= )", _
 		@"Unsupported statement in -gen gcc mode", _
 		@"Too many labels", _
-        @"Unsupported function", _
-        @"Expected sub", _
+		@"Unsupported function", _
+		@"Expected sub", _
 		@"Expected '#ENDIF'", _
 		@"Resource file given for target system that does not support them", _
 		@"-o <file> option without corresponding input file", _
@@ -493,8 +493,8 @@ private sub hPrintErrMsg _
 		byval customText as const zstring ptr = 0 _
 	) static
 
-    dim as const zstring ptr msg
-    dim as string token_pos
+	dim as const zstring ptr msg
+	dim as string token_pos
 
 	if( (errnum < 1) or (errnum >= FB_ERRMSGS) ) then
 		msg = NULL
@@ -831,7 +831,7 @@ private function hMakeParamDesc _
 			end if
 		end if
 
-    	if( pid <> NULL ) then
+		if( pid <> NULL ) then
 			if( len(*pid) > 0 ) then
 				desc += " ("
 				desc += *pid

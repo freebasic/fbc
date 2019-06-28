@@ -536,33 +536,33 @@ function symbAddVar _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr s = any
-    dim as FBSYMBOLTB ptr symtb = any
-    dim as FBHASHTB ptr hashtb = any
-    dim as integer isglobal = any, stats = any
+	dim as FBSYMBOL ptr s = any
+	dim as FBSYMBOLTB ptr symtb = any
+	dim as FBHASHTB ptr hashtb = any
+	dim as integer isglobal = any, stats = any
 
-    function = NULL
+	function = NULL
 
-    ''
-    isglobal = (attrib and (FB_SYMBATTRIB_PUBLIC or _
+	''
+	isglobal = (attrib and (FB_SYMBATTRIB_PUBLIC or _
 			 				FB_SYMBATTRIB_EXTERN or _
 			 				FB_SYMBATTRIB_SHARED or _
 			 				FB_SYMBATTRIB_COMMON)) <> 0
 
-    ''
-    if( lgt <= 0 ) then
-    	lgt	= symbCalcLen( dtype, subtype )
-    end if
+	''
+	if( lgt <= 0 ) then
+		lgt	= symbCalcLen( dtype, subtype )
+	end if
 
-    '' no explict alias?
-    if( id_alias = NULL ) then
-    	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( parser.mangling <> FB_MANGLING_BASIC ) then
-    		id_alias = id
-    	end if
-    	stats = 0
+	'' no explict alias?
+	if( id_alias = NULL ) then
+		'' only preserve a case-sensitive version if in BASIC mangling
+		if( parser.mangling <> FB_MANGLING_BASIC ) then
+			id_alias = id
+		end if
+		stats = 0
 
-    else
+	else
 		stats = FB_SYMBSTATS_HASALIAS
 	end if
 

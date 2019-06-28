@@ -8,9 +8,9 @@
 
 '' ExternStmtBegin  =  EXTERN "mangling_spec" (LIB LITSTR)? .
 sub cExternStmtBegin( )
-    dim as FB_CMPSTMTSTK ptr stk = any
-    dim as integer mangling = any
-    dim as const zstring ptr litstr = any
+	dim as FB_CMPSTMTSTK ptr stk = any
+	dim as integer mangling = any
+	dim as const zstring ptr litstr = any
 
 	if( fbLangOptIsSet( FB_LANG_OPT_EXTERN ) = FALSE ) then
 		errReportNotAllowed( FB_LANG_OPT_EXTERN )

@@ -29,7 +29,7 @@ end sub
 ''SelConstStmtBegin =   SELECT CASE AS CONST Expression{int} .
 ''
 sub cSelConstStmtBegin()
-    dim as ASTNODE ptr expr
+	dim as ASTNODE ptr expr
 	dim as FBSYMBOL ptr sym, el, cl
 	dim as FB_CMPSTMTSTK ptr stk
 	dim as integer options = any
@@ -60,16 +60,16 @@ sub cSelConstStmtBegin()
 		astDelTree( expr )
 		expr = NULL
 
-    '' CHAR and WCHAR literals are also from the INTEGER class
-    else
-    	select case astGetDataType( expr )
-    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		'' don't allow, unless it's a deref pointer
-    		if( astIsDEREF( expr ) = FALSE ) then
+	'' CHAR and WCHAR literals are also from the INTEGER class
+	else
+		select case astGetDataType( expr )
+		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			'' don't allow, unless it's a deref pointer
+			if( astIsDEREF( expr ) = FALSE ) then
 				astDelTree( expr )
 				expr = NULL
-    		end if
-    	end select
+			end if
+		end select
 	end if
 
 	if( expr = NULL ) then
@@ -194,7 +194,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 	if( stk->select.casecnt > 0 ) then
 		'' break from block
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->select.endlabel ) )
-    end if
+	end if
 
 	'' ELSE?
 	if( lexGetToken( ) = FB_TK_ELSE ) then
@@ -294,10 +294,10 @@ sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
 	lexSkipToken( )
 	lexSkipToken( )
 
-    deflabel = stk->select.const_.deflabel
-    if( deflabel = NULL ) then
-    	deflabel = stk->select.endlabel
-    end if
+	deflabel = stk->select.const_.deflabel
+	if( deflabel = NULL ) then
+		deflabel = stk->select.endlabel
+	end if
 
 	'' end scope
 	if( stk->scopenode <> NULL ) then
@@ -307,8 +307,8 @@ sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
 	'' break from block
 	astAdd( astNewBRANCH( AST_OP_JMP, stk->select.endlabel ) )
 
-    '' emit comp label
-    astAdd( astNewLABEL( stk->select.cmplabel ) )
+	'' emit comp label
+	astAdd( astNewLABEL( stk->select.cmplabel ) )
 
 	'' re-bias case values and set max value
 	dim as ulongint span = 0
@@ -330,10 +330,10 @@ sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
 	                       deflabel, _
 	                       stk->select.const_.bias, span ) )
 
-    ctx.base = stk->select.const_.base
+	ctx.base = stk->select.const_.base
 
-    '' emit exit label
-    astAdd( astNewLABEL( stk->select.endlabel ) )
+	'' emit exit label
+	astAdd( astNewLABEL( stk->select.endlabel ) )
 
 	'' Close the outer scope block
 	if( stk->select.outerscopenode <> NULL ) then

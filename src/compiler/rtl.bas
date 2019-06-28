@@ -102,7 +102,7 @@ end sub
 
 sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 	dim as FBSYMBOL ptr param = any
-    dim as integer callconv = any
+	dim as integer callconv = any
 
 	'' for each proc..
 	do
@@ -110,12 +110,12 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 			exit do
 		end if
 
-        callconv = procdef->callconv
+		callconv = procdef->callconv
 
-        '' Use the default FBCALL?
-        if( callconv = FB_FUNCMODE_FBCALL ) then
-            callconv = env.target.fbcall
-        end if
+		'' Use the default FBCALL?
+		if( callconv = FB_FUNCMODE_FBCALL ) then
+			callconv = env.target.fbcall
+		end if
 
 		dim as integer doadd = TRUE
 		if( procdef->options and FB_RTL_OPT_MT ) then
@@ -282,20 +282,20 @@ function rtlProcLookup _
 		byval pidx as integer _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMCHAIN ptr chain_ = any
+	dim as FBSYMCHAIN ptr chain_ = any
 
-    '' not cached yet? -- this won't work if #undef is used
-    '' what is pretty unlikely with internal fb_* procs
+	'' not cached yet? -- this won't work if #undef is used
+	'' what is pretty unlikely with internal fb_* procs
 	if( rtlLookupTB( pidx ) = NULL ) then
 		chain_ = symbLookupAt( @symbGetGlobalNamespc( ), pname, FALSE, FALSE )
 		if( chain_ = NULL ) then
 			'' try to prefix it with a '__' if in -lang qb mode
 			if( fbLangIsSet( FB_LANG_QB ) ) then
-        		static as string tmp_name
-        		tmp_name = "__" + *pname
-        		pname = strptr( tmp_name )
-        		chain_ = symbLookupAt( @symbGetGlobalNamespc( ), pname, FALSE, FALSE )
-        		if( chain_ = NULL ) then
+				static as string tmp_name
+				tmp_name = "__" + *pname
+				pname = strptr( tmp_name )
+				chain_ = symbLookupAt( @symbGetGlobalNamespc( ), pname, FALSE, FALSE )
+				if( chain_ = NULL ) then
 					errReportEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
 					rtlLookupTB( pidx ) = NULL
 				else
@@ -323,9 +323,9 @@ function rtlOvlProcCall _
 		byval param2 as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as FB_ERRMSG err_num = any
-    dim as integer args = 0
-    dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
+	dim as FB_ERRMSG err_num = any
+	dim as integer args = 0
+	dim as FB_CALL_ARG_LIST arg_list = ( 0, NULL, NULL )
 
 	var arg = symbAllocOvlCallArg( @ctx.arglist, @arg_list, FALSE )
 	arg->expr = param1
@@ -348,10 +348,10 @@ function rtlOvlProcCall _
 
 	var procexpr = astNewCALL( proc, NULL )
 
-    '' add to tree
+	'' add to tree
 	arg = arg_list.head
 	do while( arg <> NULL )
-        var nxt = arg->next
+		var nxt = arg->next
 
 		if( astNewARG( procexpr, arg->expr, , arg->mode ) = NULL ) then
 			return NULL

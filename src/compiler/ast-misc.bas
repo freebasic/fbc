@@ -47,14 +47,14 @@ function astIsTreeEqual _
 		byval r as ASTNODE ptr _
 	) as integer
 
-    function = FALSE
+	function = FALSE
 
-    if( (l = NULL) or (r = NULL) ) then
-    	if( l = r ) then
-    		function = TRUE
-    	end if
-    	exit function
-    end if
+	if( (l = NULL) or (r = NULL) ) then
+		if( l = r ) then
+			function = TRUE
+		end if
+		exit function
+	end if
 
 	if( l->class <> r->class ) then
 		exit function
@@ -162,7 +162,7 @@ function astIsTreeEqual _
 
 	end select
 
-    '' check childs
+	'' check childs
 	if( astIsTreeEqual( l->l, r->l ) = FALSE ) then
 		exit function
 	end if
@@ -171,7 +171,7 @@ function astIsTreeEqual _
 		exit function
 	end if
 
-    ''
+	''
 	function = TRUE
 
 end function
@@ -516,7 +516,7 @@ function astGetStrLitSymbol _
 
 	dim as FBSYMBOL ptr s = any
 
-    function = NULL
+	function = NULL
 
    	if( astIsVAR( n ) ) then
 		s = astGetSymbol( n )
@@ -746,16 +746,16 @@ function astBuildBranch _
 		return NULL
 	end if
 
-    '' CHAR and WCHAR literals are also from the INTEGER class
-    select case as const dtype
-    case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+	'' CHAR and WCHAR literals are also from the INTEGER class
+	select case as const dtype
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		'' don't allow, unless it's a deref pointer
 		if( astIsDEREF( expr ) = FALSE ) then
 			return NULL
 		end if
 
 	'' UDT or CLASS?
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+	case FB_DATATYPE_STRUCT 
 		dim as FB_ERRMSG err_num = any
 		dim as FBSYMBOL ptr ovlProc = any
 
@@ -1061,7 +1061,7 @@ sub astDtorListRemoveRef( byval sym as FBSYMBOL ptr )
 end sub
 
 function astDtorListFlush( byval cookie as integer ) as ASTNODE ptr
-    dim as AST_DTORLIST_ITEM ptr n = any, p = any
+	dim as AST_DTORLIST_ITEM ptr n = any, p = any
 	dim as ASTNODE ptr t = any
 
 	'' call the dtors in the reverse order
@@ -1183,8 +1183,8 @@ sub astSetType _
 	end if
 #endif
 
-    astGetFullType( n ) = dtype
-    n->subtype = subtype
+	astGetFullType( n ) = dtype
+	n->subtype = subtype
 
 	select case n->class
 	case AST_NODECLASS_LINK

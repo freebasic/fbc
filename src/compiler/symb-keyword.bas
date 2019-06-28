@@ -10,7 +10,7 @@
 #include once "list.bi"
 
 enum KWD_OPTION
-    KWD_OPTION_DEFAULT 		= &h00000000
+	KWD_OPTION_DEFAULT 		= &h00000000
 	KWD_OPTION_NO_QB 		= &h00000001
 	KWD_OPTION_STRSUFFIX	= &h00000002
 	KWD_OPTION_QB_ONLY		= &h00000004
@@ -19,8 +19,8 @@ end enum
 type SYMBKWD
 	name			as const zstring ptr
 	id				as integer
-    class			as integer
-    opt             as KWD_OPTION
+	class			as integer
+	opt             as KWD_OPTION
 end type
 
 '' keywords: name, id (token), class, option
@@ -331,24 +331,24 @@ function symbAddKeyword _
 		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr k = any
+	dim as FBSYMBOL ptr k = any
 
-    k = symbNewSymbol( FB_SYMBOPT_DOHASH or FB_SYMBOPT_PRESERVECASE, _
-    				   NULL, _
-    				   @symbGetGlobalTb( ), hashtb, _
-    				   FB_SYMBCLASS_KEYWORD, _
-    				   symbol, NULL, _
-    				   dtype, NULL, _
-    				   attrib )
-    if( k = NULL ) then
-    	return NULL
-    end if
+	k = symbNewSymbol( FB_SYMBOPT_DOHASH or FB_SYMBOPT_PRESERVECASE, _
+					   NULL, _
+					   @symbGetGlobalTb( ), hashtb, _
+					   FB_SYMBCLASS_KEYWORD, _
+					   symbol, NULL, _
+					   dtype, NULL, _
+					   attrib )
+	if( k = NULL ) then
+		return NULL
+	end if
 
-    ''
-    k->key.id = id
-    k->key.tkclass = class_
+	''
+	k->key.id = id
+	k->key.tkclass = class_
 
-    function = k
+	function = k
 
 end function
 

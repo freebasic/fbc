@@ -57,13 +57,13 @@ dim shared env as FBENV
 			FB_LANG_OPT_LET or _
 			FB_LANG_OPT_PERIODS or _
 			FB_LANG_OPT_NUMLABEL or _
-            FB_LANG_OPT_IMPLICIT or _
-            FB_LANG_OPT_DEFTYPE or _
-            FB_LANG_OPT_SUFFIX or _
-            FB_LANG_OPT_METACMD or _
+			FB_LANG_OPT_IMPLICIT or _
+			FB_LANG_OPT_DEFTYPE or _
+			FB_LANG_OPT_SUFFIX or _
+			FB_LANG_OPT_METACMD or _
 			FB_LANG_OPT_OPTION or _
-    		FB_LANG_OPT_ONERROR or _
-    		FB_LANG_OPT_QUIRKFUNC _
+			FB_LANG_OPT_ONERROR or _
+			FB_LANG_OPT_QUIRKFUNC _
 		) _
 		, _
 		( _
@@ -94,13 +94,13 @@ dim shared env as FBENV
 			FB_LANG_OPT_LET or _
 			FB_LANG_OPT_PERIODS or _
 			FB_LANG_OPT_NUMLABEL or _
-            FB_LANG_OPT_IMPLICIT or _
-            FB_LANG_OPT_DEFTYPE or _
-            FB_LANG_OPT_SUFFIX or _
-            FB_LANG_OPT_METACMD or _
+			FB_LANG_OPT_IMPLICIT or _
+			FB_LANG_OPT_DEFTYPE or _
+			FB_LANG_OPT_SUFFIX or _
+			FB_LANG_OPT_METACMD or _
 			FB_LANG_OPT_OPTION or _
-    		FB_LANG_OPT_ONERROR or _
-    		FB_LANG_OPT_QUIRKFUNC _
+			FB_LANG_OPT_ONERROR or _
+			FB_LANG_OPT_QUIRKFUNC _
 		) _
 	}
 
@@ -268,8 +268,8 @@ private function hAddIncFile _
 		byval filename as zstring ptr _
 	) as zstring ptr static
 
-    dim as zstring ptr fname, res
-    dim as uinteger index
+	dim as zstring ptr fname, res
+	dim as uinteger index
 
 	fname = xallocate( len( *filename ) + 1 )
 #if defined( __FB_WIN32__ ) or defined( __FB_DOS__ )
@@ -898,7 +898,7 @@ end function
 
 '':::::
 function fbGetModuleEntry( ) as string static
-    dim as string sname
+	dim as string sname
 
    	sname = hStripPath( hStripExt( env.outf.name ) )
 
@@ -1303,8 +1303,8 @@ private function solve_path( byval path as zstring ptr ) as integer
 end function
 
 sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
-    static as zstring * FB_MAXPATHLEN incfile
-    dim as zstring ptr fileidx
+	static as zstring * FB_MAXPATHLEN incfile
+	dim as zstring ptr fileidx
 
 	if( env.includerec >= FB_MAXINCRECLEVEL ) then
 		errReport( FB_ERRMSG_RECLEVELTOODEEP )
@@ -1382,7 +1382,7 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 		exit sub
 	end if
 
-    '' we should respect the path here too
+	'' we should respect the path here too
 	fileidx = hAddIncFile( @env.incfilehash, @env.filenamehash, incfile )
 
 	'' push context

@@ -39,56 +39,56 @@ const SYMB_MAXKEYWORDS = 24
 
 	dim shared kwdTb( 0 to SYMB_MAXKEYWORDS-1 ) as SYMBKWD => _
 	{ _
-        (@"IF"		, FB_TK_PP_IF		), _
-        (@"IFDEF"	, FB_TK_PP_IFDEF	), _
-        (@"IFNDEF"	, FB_TK_PP_IFNDEF	), _
-        (@"ELSE"	, FB_TK_PP_ELSE		), _
-        (@"ELSEIF"	, FB_TK_PP_ELSEIF	), _
-        (@"ENDIF"	, FB_TK_PP_ENDIF	), _
-        (@"DEFINE"	, FB_TK_PP_DEFINE	), _
-        (@"UNDEF"	, FB_TK_PP_UNDEF	), _
-        (@"MACRO"	, FB_TK_PP_MACRO	), _
-        (@"ENDMACRO", FB_TK_PP_ENDMACRO	), _
-        (@"INCLUDE"	, FB_TK_PP_INCLUDE	), _
-        (@"LIBPATH"	, FB_TK_PP_LIBPATH	), _
-        (@"INCLIB"	, FB_TK_PP_INCLIB	), _
-        (@"PRAGMA"	, FB_TK_PP_PRAGMA	), _
-        (@"PRINT"	, FB_TK_PP_PRINT	), _
-        (@"ERROR"	, FB_TK_PP_ERROR	), _
-        (@"LINE"	, FB_TK_PP_LINE		), _
-        (@"LANG"	, FB_TK_PP_LANG		), _
-        (@"ASSERT"	, FB_TK_PP_ASSERT	), _
-        (@"DUMP"    , FB_TK_PP_DUMP     ), _
-        (@"ODUMP"   , FB_TK_PP_ODUMP    ), _
-        (NULL) _
+		(@"IF"		, FB_TK_PP_IF		), _
+		(@"IFDEF"	, FB_TK_PP_IFDEF	), _
+		(@"IFNDEF"	, FB_TK_PP_IFNDEF	), _
+		(@"ELSE"	, FB_TK_PP_ELSE		), _
+		(@"ELSEIF"	, FB_TK_PP_ELSEIF	), _
+		(@"ENDIF"	, FB_TK_PP_ENDIF	), _
+		(@"DEFINE"	, FB_TK_PP_DEFINE	), _
+		(@"UNDEF"	, FB_TK_PP_UNDEF	), _
+		(@"MACRO"	, FB_TK_PP_MACRO	), _
+		(@"ENDMACRO", FB_TK_PP_ENDMACRO	), _
+		(@"INCLUDE"	, FB_TK_PP_INCLUDE	), _
+		(@"LIBPATH"	, FB_TK_PP_LIBPATH	), _
+		(@"INCLIB"	, FB_TK_PP_INCLIB	), _
+		(@"PRAGMA"	, FB_TK_PP_PRAGMA	), _
+		(@"PRINT"	, FB_TK_PP_PRINT	), _
+		(@"ERROR"	, FB_TK_PP_ERROR	), _
+		(@"LINE"	, FB_TK_PP_LINE		), _
+		(@"LANG"	, FB_TK_PP_LANG		), _
+		(@"ASSERT"	, FB_TK_PP_ASSERT	), _
+		(@"DUMP"    , FB_TK_PP_DUMP     ), _
+		(@"ODUMP"   , FB_TK_PP_ODUMP    ), _
+		(NULL) _
 	}
 
 ''::::
 sub ppInit( )
-    dim as integer i
+	dim as integer i
 
 	'' create a fake namespace
-    pp.kwdns.class = FB_SYMBCLASS_NAMESPACE
-    pp.kwdns.scope = FB_MAINSCOPE
+	pp.kwdns.class = FB_SYMBCLASS_NAMESPACE
+	pp.kwdns.scope = FB_MAINSCOPE
 
 	symbSymbTbInit( pp.kwdns.nspc.ns.symtb, @pp.kwdns )
 	symbHashTbInit( pp.kwdns.nspc.ns.hashtb, @pp.kwdns, SYMB_MAXKEYWORDS )
-    pp.kwdns.nspc.ns.ext = symbCompAllocExt(  )
+	pp.kwdns.nspc.ns.ext = symbCompAllocExt(  )
 
 	''
 	for i = 0 to SYMB_MAXKEYWORDS-1
-    	if( kwdTb(i).name = NULL ) then
-    		exit for
-    	end if
+		if( kwdTb(i).name = NULL ) then
+			exit for
+		end if
 
-    	kwdTb(i).sym = symbAddKeyword( kwdTb(i).name, _
-    								   kwdTb(i).id, _
-    								   FB_TKCLASS_KEYWORD, _
-    								   @pp.kwdns.nspc.ns.hashtb )
-    	if( kwdTb(i).sym = NULL ) then
-    		exit sub
-    	end if
-    next
+		kwdTb(i).sym = symbAddKeyword( kwdTb(i).name, _
+									   kwdTb(i).id, _
+									   FB_TKCLASS_KEYWORD, _
+									   @pp.kwdns.nspc.ns.hashtb )
+		if( kwdTb(i).sym = NULL ) then
+			exit sub
+		end if
+	next
 
 	''
 	pp.skipping = FALSE
@@ -103,7 +103,7 @@ end sub
 
 ''::::
 sub ppEnd( )
-    dim as integer i
+	dim as integer i
 
 	ppPragmaEnd( )
 
@@ -113,13 +113,13 @@ sub ppEnd( )
 
 	''
 	for i = 0 to SYMB_MAXKEYWORDS-1
-    	if( kwdTb(i).sym = NULL ) then
-    		exit for
-    	end if
+		if( kwdTb(i).sym = NULL ) then
+			exit for
+		end if
 
 		symbFreeSymbol( kwdTb(i).sym )
-    	kwdTb(i).sym = NULL
-    next
+		kwdTb(i).sym = NULL
+	next
 
 	symbCompFreeExt( pp.kwdns.nspc.ns.ext )
 	hashEnd( @pp.kwdns.nspc.ns.hashtb.tb )
@@ -149,14 +149,14 @@ sub ppCheck( )
 
 	lex.ctx->reclevel += 1
 
-    '' !!!FIXME!!! if LEXCHECK_KWDNAMESPC is used in future, it
-    '' must be restored
-    lex.ctx->kwdns = @pp.kwdns
+	'' !!!FIXME!!! if LEXCHECK_KWDNAMESPC is used in future, it
+	'' must be restored
+	lex.ctx->kwdns = @pp.kwdns
 
-    lexSkipToken( LEXCHECK_KWDNAMESPC )
+	lexSkipToken( LEXCHECK_KWDNAMESPC )
 
-    '' let the parser do the rest..
-    ppParse( )
+	'' let the parser do the rest..
+	ppParse( )
 	lex.ctx->reclevel -= 1
 
 end sub
@@ -319,8 +319,8 @@ end sub
 '' ppInclude		=   '#'INCLUDE ONCE? LIT_STR
 ''
 private sub ppInclude()
-    static as zstring * FB_MAXPATHLEN+1 incfile
-    dim as integer isonce = any
+	static as zstring * FB_MAXPATHLEN+1 incfile
+	dim as integer isonce = any
 
 	'' ONCE?
 	isonce = hMatchIdOrKw( "ONCE" )
@@ -472,20 +472,20 @@ private sub hRtrimMacroText _
 	end if
 
 	p = text->data + (text->len - 1)
-    do while( p > text->data )
+	do while( p > text->data )
 
 		select case as const (*p)[0]
 		'' space or nl?
-    	case CHAR_SPACE, CHAR_TAB, CHAR_LF
-    		text->len -= 1
-    		*p = 0
+		case CHAR_SPACE, CHAR_TAB, CHAR_LF
+			text->len -= 1
+			*p = 0
 
 		case else
-        	exit do
+			exit do
 		end select
 
 		p -= 1
-    loop
+	loop
 
 end sub
 
@@ -498,10 +498,10 @@ function ppReadLiteral _
 	static as DZSTRING text
 	dim as integer nestedcnt = 0
 
-    DZstrReset( text )
+	DZstrReset( text )
 
-    do
-    	select case as const lexGetToken( LEX_FLAGS )
+	do
+		select case as const lexGetToken( LEX_FLAGS )
 		case FB_TK_EOF
 			if( ismultiline ) then
 				errReport( FB_ERRMSG_EXPECTEDMACRO )
@@ -515,15 +515,15 @@ function ppReadLiteral _
 				exit do
 			end if
 
-    		'' multi-line, only add if it's not at the beginning
-    		if( text.len > 0 ) then
-    			'' just lf
-    			DZstrConcatAssign( text, LFCHAR )
-    		end if
+			'' multi-line, only add if it's not at the beginning
+			if( text.len > 0 ) then
+				'' just lf
+				DZstrConcatAssign( text, LFCHAR )
+			end if
 
-    		lexSkipToken( LEX_FLAGS )
+			lexSkipToken( LEX_FLAGS )
 
-    		continue do
+			continue do
 
 		case FB_TK_COMMENT, FB_TK_REM
 			if( ismultiline = FALSE ) then
@@ -541,64 +541,64 @@ function ppReadLiteral _
 
 			continue do
 
-    	'' '#'?
-    	case CHAR_SHARP
-    		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
-    								 		(not LEXCHECK_NOWHITESPC) )
-    		'' '#' macro?
-    		case FB_TK_PP_MACRO
-    			if( ismultiline ) then
-    				nestedcnt += 1
-    			end if
+		'' '#'?
+		case CHAR_SHARP
+			select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
+									 		(not LEXCHECK_NOWHITESPC) )
+			'' '#' macro?
+			case FB_TK_PP_MACRO
+				if( ismultiline ) then
+					nestedcnt += 1
+				end if
 
-    		'' '#' endmacro?
-    		case FB_TK_PP_ENDMACRO
-    			if( ismultiline ) then
-    				'' not nested?
-    				if( nestedcnt = 0 ) then
-    					lexSkipToken( LEX_FLAGS )
-    					'' no LEX_FLAGS, white-spaces must be skipped
-    					lexSkipToken( )
+			'' '#' endmacro?
+			case FB_TK_PP_ENDMACRO
+				if( ismultiline ) then
+					'' not nested?
+					if( nestedcnt = 0 ) then
+						lexSkipToken( LEX_FLAGS )
+						'' no LEX_FLAGS, white-spaces must be skipped
+						lexSkipToken( )
 
 						hRtrimMacroText( @text )
 
-    					exit do
-    				end if
+						exit do
+					end if
 
-    				nestedcnt -= 1
-    			end if
+					nestedcnt -= 1
+				end if
 
    			end select
 
    		'' white space?
    		case CHAR_SPACE, CHAR_TAB
 
-    		'' only add if it's not at the beginning
-    		if( text.len > 0 ) then
-    			'' condensed to a single white-space
-    			DZstrConcatAssign( text, " " )
-    		end if
+			'' only add if it's not at the beginning
+			if( text.len > 0 ) then
+				'' condensed to a single white-space
+				DZstrConcatAssign( text, " " )
+			end if
 
-    		lexSkipToken( LEX_FLAGS )
+			lexSkipToken( LEX_FLAGS )
 
-    		continue do
+			continue do
 
 	  	case FB_TK_TYPEOF
 			DZstrConcatAssign( text, ppTypeOf( ) )
 			exit do
 
-    	end select
+		end select
 
-    	'' anything else..
-    	if( lexGetType() <> FB_DATATYPE_WCHAR ) then
-    		DZstrConcatAssign( text, lexGetText( ) )
-    	else
-    	    DZstrConcatAssignW( text, lexGetTextW( ) )
-    	end if
+		'' anything else..
+		if( lexGetType() <> FB_DATATYPE_WCHAR ) then
+			DZstrConcatAssign( text, lexGetText( ) )
+		else
+		    DZstrConcatAssignW( text, lexGetTextW( ) )
+		end if
 
-    	lexSkipToken( LEX_FLAGS )
+		lexSkipToken( LEX_FLAGS )
 
-    loop
+	loop
 
 	function = text.data
 
@@ -615,20 +615,20 @@ private sub hRtrimMacroTextW _
 	'' remove the white-spaces (including nl)
 
 	p = text->data + (text->len - 1)
-    do while( p > text->data )
+	do while( p > text->data )
 
 		select case as const (*p)[0]
 		'' space or nl?
-    	case CHAR_SPACE, CHAR_TAB, CHAR_LF
-    		text->len -= 1
-    		*p = 0
+		case CHAR_SPACE, CHAR_TAB, CHAR_LF
+			text->len -= 1
+			*p = 0
 
 		case else
-        	exit do
+			exit do
 		end select
 
 		p -= 1
-    loop
+	loop
 
 end sub
 
@@ -641,10 +641,10 @@ function ppReadLiteralW _
 	static as DWSTRING text
 	dim as integer nestedcnt = 0
 
-    DWstrAllocate( text, 0 )
+	DWstrAllocate( text, 0 )
 
-    do
-    	select case as const lexGetToken( LEX_FLAGS )
+	do
+		select case as const lexGetToken( LEX_FLAGS )
 		case FB_TK_EOF
 			if( ismultiline ) then
 				errReport( FB_ERRMSG_EXPECTEDMACRO )
@@ -658,15 +658,15 @@ function ppReadLiteralW _
 				exit do
 			end if
 
-    		'' multi-line, only add if it's not at the beginning
-    		if( text.len > 0 ) then
-    			'' just lf
-    			DWstrConcatAssign( text, wstr( LFCHAR ) )
-    		end if
+			'' multi-line, only add if it's not at the beginning
+			if( text.len > 0 ) then
+				'' just lf
+				DWstrConcatAssign( text, wstr( LFCHAR ) )
+			end if
 
-    		lexSkipToken( LEX_FLAGS )
+			lexSkipToken( LEX_FLAGS )
 
-    		continue do
+			continue do
 
 		case FB_TK_COMMENT, FB_TK_REM
 			if( ismultiline = FALSE ) then
@@ -684,64 +684,64 @@ function ppReadLiteralW _
 
 			continue do
 
-    	'' '#'?
-    	case CHAR_SHARP
-    		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
-    								 		(not LEXCHECK_NOWHITESPC) )
-    		'' '#' macro?
-    		case FB_TK_PP_MACRO
-    			if( ismultiline ) then
-    				nestedcnt += 1
-    			end if
+		'' '#'?
+		case CHAR_SHARP
+			select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
+									 		(not LEXCHECK_NOWHITESPC) )
+			'' '#' macro?
+			case FB_TK_PP_MACRO
+				if( ismultiline ) then
+					nestedcnt += 1
+				end if
 
-    		'' '#' endmacro?
-    		case FB_TK_PP_ENDMACRO
-    			if( ismultiline ) then
-    				'' not nested?
-    				if( nestedcnt = 0 ) then
-    					lexSkipToken( LEX_FLAGS )
-    					'' no LEX_FLAGS, white-spaces must be skipped
-    					lexSkipToken( )
+			'' '#' endmacro?
+			case FB_TK_PP_ENDMACRO
+				if( ismultiline ) then
+					'' not nested?
+					if( nestedcnt = 0 ) then
+						lexSkipToken( LEX_FLAGS )
+						'' no LEX_FLAGS, white-spaces must be skipped
+						lexSkipToken( )
 
 						hRtrimMacroTextW( @text )
 
-    					exit do
-    				end if
+						exit do
+					end if
 
-    				nestedcnt -= 1
-    			end if
+					nestedcnt -= 1
+				end if
 
    			end select
 
    		'' white space?
    		case CHAR_SPACE, CHAR_TAB
 
-    		'' only add if it's not at the beginning
-    		if( text.len > 0 ) then
-    			'' condensed to a single white-space
-    			DWstrConcatAssign( text, wstr( " " ) )
-    		end if
+			'' only add if it's not at the beginning
+			if( text.len > 0 ) then
+				'' condensed to a single white-space
+				DWstrConcatAssign( text, wstr( " " ) )
+			end if
 
-    		lexSkipToken( LEX_FLAGS )
+			lexSkipToken( LEX_FLAGS )
 
-    		continue do
+			continue do
 
 	  	case FB_TK_TYPEOF
 	        DWstrConcatAssignA( text, ppTypeOf( ) )
 			exit do
 
-    	end select
+		end select
 
-        '' anything else..
-    	if( lexGetType( ) = FB_DATATYPE_WCHAR ) then
-    		DWstrConcatAssign( text, lexGetTextW( ) )
-    	else
-    		DWstrConcatAssignA( text, lexGetText( ) )
-    	end if
+		'' anything else..
+		if( lexGetType( ) = FB_DATATYPE_WCHAR ) then
+			DWstrConcatAssign( text, lexGetTextW( ) )
+		else
+			DWstrConcatAssignA( text, lexGetText( ) )
+		end if
 
-    	lexSkipToken( LEX_FLAGS )
+		lexSkipToken( LEX_FLAGS )
 
-    loop
+	loop
 
 	function = text.data
 

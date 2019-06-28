@@ -61,12 +61,12 @@ end function
 '':::::
 '' LRsetStmt		=	LSET|RSET String|UDT (','|'=') Expression|UDT
 function cLRSetStmt(byval tk as FB_TOKEN) as integer
-    dim as ASTNODE ptr dstexpr = any, srcexpr = any
-    dim as integer dtype1 = any, dtype2 = any
-    dim as FBSYMBOL ptr dst = any, src = any
-    dim as integer is_rset = any
+	dim as ASTNODE ptr dstexpr = any, srcexpr = any
+	dim as integer dtype1 = any, dtype2 = any
+	dim as FBSYMBOL ptr dst = any, src = any
+	dim as integer is_rset = any
 
-    function = FALSE
+	function = FALSE
 
 	'' (LSET|RSET)
 	is_rset = (tk = FB_TK_RSET)
@@ -176,7 +176,7 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 end function
 
 private function cStrCHR(byval is_wstr as integer) as ASTNODE ptr
-        '' Max length of a single octal code is 11 digits for &hffffffffU
+		'' Max length of a single octal code is 11 digits for &hffffffffU
 	static as zstring * 11+1 o
 	static as zstring * 32*(2+11)+1 zs
 	static as wstring * 32*(2+11)+1 ws
@@ -551,26 +551,6 @@ function cMKXFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 		end select
 	#endmacro
 
-'	'' I don't know how to do this properly, the NULLs ruin it.
-'	'' constant? eval at compile-time
-'	if( astIsCONST( expr1 ) ) then
-'		select case as const tk
-'		case FB_TK_MKD
-'			doMKX( mkd )
-'		case FB_TK_MKS
-'			doMKX( mks )
-'		case FB_TK_MKI
-'			doMKX( mki )
-'		case FB_TK_MKL
-'			doMKX( mkl )
-'		case FB_TK_MKSHORT
-'			doMKX( mkshort )
-'		case FB_TK_MKLONGINT
-'			doMKX( mklongint )
-'		end select
-'		astDelNode( expr1 )
-'		expr1 = NULL
-'	end if
 
 	if( expr1 <> NULL ) then
 		select case as const tk

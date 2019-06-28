@@ -33,13 +33,13 @@ function symbStructBegin _
 
 	function = NULL
 
-    '' no explict alias given?
-    if( id_alias = NULL ) then
-    	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( parser.mangling <> FB_MANGLING_BASIC ) then
-    		id_alias = id
-    	end if
-    end if
+	'' no explict alias given?
+	if( id_alias = NULL ) then
+		'' only preserve a case-sensitive version if in BASIC mangling
+		if( parser.mangling <> FB_MANGLING_BASIC ) then
+			id_alias = id
+		end if
+	end if
 
 	s = symbNewSymbol( options or FB_SYMBOPT_DOHASH, NULL, symtb, hashtb, _
 	                   FB_SYMBCLASS_STRUCT, id, id_alias, _
@@ -64,8 +64,8 @@ function symbStructBegin _
 		symbSetUDTIsAnon( s )
 	end if
 
-    '' unused (while mixins aren't supported)
-    s->udt.ns.ext = NULL
+	'' unused (while mixins aren't supported)
+	s->udt.ns.ext = NULL
 
 	''
 	s->ofs = 0
@@ -281,7 +281,7 @@ function symbAddField _
 	function = NULL
 	desc = NULL
 
-    '' calc length if it wasn't given
+	'' calc length if it wasn't given
 	if( lgt <= 0 ) then
 		lgt	= symbCalcLen( dtype, subtype )
 	end if
@@ -376,7 +376,7 @@ function symbAddField _
 					'' follow the GCC ABI..
 					if( bits <= pad * 8 ) then
 						lgt = pad
-                        pad = 0
+						pad = 0
 
 						'' remap type
 						select case lgt
@@ -419,10 +419,10 @@ function symbAddField _
 		end if
 	end if
 
-    '' use the base parent hashtb if it's an anonymous type
-    base_parent = parent
-    do while( symbGetUDTIsAnon( base_parent ) )
-    	base_parent = symbGetUDTAnonParent( base_parent )
+	'' use the base parent hashtb if it's an anonymous type
+	base_parent = parent
+	do while( symbGetUDTIsAnon( base_parent ) )
+		base_parent = symbGetUDTAnonParent( base_parent )
 	loop
 
 	'' Preserve LOCAL
@@ -568,22 +568,22 @@ sub symbInsertInnerUDT _
 		end if
 	end if
 
-    '' move the nodes from inner to parent
-    fld = inner->udt.ns.symtb.head
+	'' move the nodes from inner to parent
+	fld = inner->udt.ns.symtb.head
 
-    '' unless it's a fake struct
-    if( fld = NULL ) then
-    	exit sub
-    end if
+	'' unless it's a fake struct
+	if( fld = NULL ) then
+		exit sub
+	end if
 
-    fld->prev = parent->udt.ns.symtb.tail
-    if( parent->udt.ns.symtb.tail = NULL ) then
-    	parent->udt.ns.symtb.head = fld
-    else
-    	parent->udt.ns.symtb.tail->next = fld
-    end if
+	fld->prev = parent->udt.ns.symtb.tail
+	if( parent->udt.ns.symtb.tail = NULL ) then
+		parent->udt.ns.symtb.head = fld
+	else
+		parent->udt.ns.symtb.tail->next = fld
+	end if
 
-    symtb = @parent->udt.ns.symtb
+	symtb = @parent->udt.ns.symtb
 
 	'' Link fields to the parent, so lookups will find them, but without
 	'' breaking their FBSYMBOL.parent pointers which are needed for
@@ -601,7 +601,7 @@ sub symbInsertInnerUDT _
 		fld = fld->next
 	wend
 
-    parent->udt.ns.symtb.tail = inner->udt.ns.symtb.tail
+	parent->udt.ns.symtb.tail = inner->udt.ns.symtb.tail
 
 	'' struct? update ofs + len
 	if( symbGetUDTIsUnion( parent ) = FALSE ) then
@@ -620,14 +620,14 @@ sub symbInsertInnerUDT _
 		parent->udt.natalign = inner->udt.natalign
 	end if
 
-    '' reset bitfield
-    parent->udt.bitpos = 0
+	'' reset bitfield
+	parent->udt.bitpos = 0
 
-    '' remove from inner udt list
-    inner->udt.ns.symtb.head = NULL
-    inner->udt.ns.symtb.tail = NULL
+	'' remove from inner udt list
+	inner->udt.ns.symtb.head = NULL
+	inner->udt.ns.symtb.tail = NULL
 
-    inner->parent = parent
+	inner->parent = parent
 
 	'' Propagate FB_UDTOPT_HASBITFIELD flag, for the C backend
 	if( symbGetUdtHasBitfield( inner ) ) then

@@ -943,8 +943,8 @@ end function
 '':::::
 private function hVarInit _
 	( _
-        byval sym as FBSYMBOL ptr, _
-        byval isdecl as integer _
+		byval sym as FBSYMBOL ptr, _
+		byval isdecl as integer _
 	) as ASTNODE ptr
 
 	dim as integer attrib = any
@@ -997,7 +997,7 @@ private function hVarInit _
 		return hCheckAndBuildByrefInitializer( sym, expr )
 	end if
 
-    '' ANY?
+	'' ANY?
 	if( lexGetToken( ) = FB_TK_ANY ) then
 
 		'' don't allow arrays with ellipsis denoting unknown size at this time
@@ -1193,19 +1193,19 @@ private function hFlushInitializer _
 	'' no initializer?
 	if( initree = NULL ) then
 		'' static or shared?
-        if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-        						   	   FB_SYMBATTRIB_SHARED or _
-        						   	   FB_SYMBATTRIB_COMMON)) <> 0 ) then
+		if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+								   	   FB_SYMBATTRIB_SHARED or _
+								   	   FB_SYMBATTRIB_COMMON)) <> 0 ) then
 			'' object?
-        	if( has_dtor ) then
-        		'' local?
-           		if( symbIsLocal( sym ) ) then
-           			var_decl = hCallStaticCtor( sym, var_decl, NULL, TRUE )
+			if( has_dtor ) then
+				'' local?
+		   		if( symbIsLocal( sym ) ) then
+		   			var_decl = hCallStaticCtor( sym, var_decl, NULL, TRUE )
 
-           		'' global..
-          		else
-        			var_decl = hCallGlobalCtor( sym, var_decl, NULL, TRUE )
-           		end if
+		   		'' global..
+		  		else
+					var_decl = hCallGlobalCtor( sym, var_decl, NULL, TRUE )
+		   		end if
 			end if
 		end if
 
@@ -1213,9 +1213,9 @@ private function hFlushInitializer _
 	end if
 
 	'' not static or shared?
-    if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-    							   FB_SYMBATTRIB_SHARED or _
-    							   FB_SYMBATTRIB_COMMON)) = 0 ) then
+	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+								   FB_SYMBATTRIB_SHARED or _
+								   FB_SYMBATTRIB_COMMON)) = 0 ) then
 
 		var_decl = hFlushDecl( var_decl )
 
@@ -1239,15 +1239,15 @@ private function hFlushInitializer _
 
 	'' Need to call constructor and/or destructor
 
-    '' local?
-    if( symbIsLocal( sym ) ) then
-       	'' the only possibility is static, SHARED can't be
-        '' used in -lang fb..
-        function = hCallStaticCtor( sym, var_decl, initree, has_dtor )
+	'' local?
+	if( symbIsLocal( sym ) ) then
+	   	'' the only possibility is static, SHARED can't be
+		'' used in -lang fb..
+		function = hCallStaticCtor( sym, var_decl, initree, has_dtor )
 
 	'' global.. add to the list, to be emitted later
-    else
-    	function = hCallGlobalCtor( sym, var_decl, initree, has_dtor )
+	else
+		function = hCallGlobalCtor( sym, var_decl, initree, has_dtor )
 	end if
 
 end function
@@ -1338,9 +1338,9 @@ function cVarDecl _
 		byval is_fordecl as integer _
 	) as FBSYMBOL ptr
 
-    static as zstring * FB_MAXNAMELEN+1 id
-    static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
-    static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
+	static as zstring * FB_MAXNAMELEN+1 id
+	static as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
+	static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr sym = any, subtype = any, parent = any
 	dim as ASTNODE ptr varexpr = any, initree = any, redimcall = any
@@ -1348,12 +1348,12 @@ function cVarDecl _
 	dim as integer is_typeless = any, is_declared = any, is_redim = any
 	dim as integer dtype = any, maybe_expr = any
 	dim as longint lgt = any
-    dim as integer dimensions = any, suffix = any
-    dim as zstring ptr palias = any
-    dim as ASTNODE ptr assign_initree = any
+	dim as integer dimensions = any, suffix = any
+	dim as zstring ptr palias = any
+	dim as ASTNODE ptr assign_initree = any
 	dim as FB_IDOPT options = any
 
-    function = NULL
+	function = NULL
 
 	'' inside a namespace but outside a proc?
 	if( symbIsGlobalNamespc( ) = FALSE ) then
@@ -1915,7 +1915,7 @@ private function hMatchEllipsis( ) as integer
 				select case lexGetLookAhead( 3 )
 					case CHAR_COMMA, CHAR_RPRNT, FB_TK_TO
 						function = TRUE
-						' Skip the dots
+						
 						lexSkipToken( )
 						lexSkipToken( )
 						lexSkipToken( )

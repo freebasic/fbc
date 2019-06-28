@@ -50,7 +50,7 @@ sub emitWriteStr _
 		byval addtab as integer _
 	)
 
-    static as string ostr
+	static as string ostr
 
 	if( addtab ) then
 		ostr = TABCHAR
@@ -114,7 +114,7 @@ end function
 
 '':::::
 private sub hPeepHoleOpt( )
-    dim as EMIT_NODE ptr n = any, p = any
+	dim as EMIT_NODE ptr n = any, p = any
 
 	p = NULL
 	n = flistGetHead( @emit.nodeTB )
@@ -144,9 +144,9 @@ end sub
 
 '':::::
 sub emitFlush( )
-    dim as EMIT_NODE ptr n = any
+	dim as EMIT_NODE ptr n = any
 
-    hPeepHoleOpt( )
+	hPeepHoleOpt( )
 
 	n = flistGetHead( @emit.nodeTB )
 	do while( n <> NULL )
@@ -234,8 +234,8 @@ private function hNewVR _
 		byval v as IRVREG ptr _
 	) as IRVREG ptr
 
-    dim as IRVREG ptr n = any
-    dim as integer dclass = any
+	dim as IRVREG ptr n = any
+	dim as integer dclass = any
 
 	if( v = NULL ) then
 		return NULL
@@ -1158,7 +1158,7 @@ function emitHADD _
 		function = hNewUOP( EMIT_OP_HADDF, dvreg )
 
 	case else
-		'function = hNewUOP( EMIT_OP_HADDI, dvreg )
+		
 	end select
 
 end function

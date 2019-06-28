@@ -18,7 +18,7 @@ end sub
 '':::::
 sub parserLetEnd
 
-    listEnd( @parser.stmt.let.list )
+	listEnd( @parser.stmt.let.list )
 
 end sub
 
@@ -217,12 +217,12 @@ sub cAssignment( byval l as ASTNODE ptr )
 end sub
 
 function cAssignmentOrPtrCallEx( byval expr as ASTNODE ptr ) as integer
-    function = FALSE
+	function = FALSE
 
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
 		hSkipStmt( )
-    	exit function
-    end if
+		exit function
+	end if
 
 	'' Not just calling a SUB?
 	if( expr ) then
@@ -233,7 +233,7 @@ function cAssignmentOrPtrCallEx( byval expr as ASTNODE ptr ) as integer
 		end if
 	end if
 
-    function = TRUE
+	function = TRUE
 end function
 
 '':::::
@@ -353,20 +353,20 @@ function cAssignmentOrPtrCall _
 		return cAssignmentOrPtrCallEx( expr )
 	end if
 
-    '' LET..
-    if( fbLangOptIsSet( FB_LANG_OPT_LET ) = FALSE ) then
-    	if( lexGetLookAhead( 1 ) <> CHAR_LPRNT ) then
+	'' LET..
+	if( fbLangOptIsSet( FB_LANG_OPT_LET ) = FALSE ) then
+		if( lexGetLookAhead( 1 ) <> CHAR_LPRNT ) then
 			errReportNotAllowed( FB_LANG_OPT_LET )
-    	else
-    		ismult = TRUE
-    		lexSkipToken( )
-    	end if
-    end if
+		else
+			ismult = TRUE
+			lexSkipToken( )
+		end if
+	end if
 
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
 		hSkipStmt( )
-    	exit function
-    end if
+		exit function
+	end if
 
 	lexSkipToken( )
 
@@ -384,28 +384,28 @@ function cAssignmentOrPtrCall _
 	end if
 
 	'' multiple..
-    dim as integer exprcnt = 0
+	dim as integer exprcnt = 0
 
    	do
-    	'' null expressions are allowed ('let(foo, , bar)')
-        dim as FB_LETSTMT_NODE ptr node = listNewNode( @parser.stmt.let.list )
+		'' null expressions are allowed ('let(foo, , bar)')
+		dim as FB_LETSTMT_NODE ptr node = listNewNode( @parser.stmt.let.list )
 
-        node->expr = cVarOrDeref( )
-        if( node->expr <> NULL ) then
+		node->expr = cVarOrDeref( )
+		if( node->expr <> NULL ) then
 			'' const?
 			if( astIsConstant( node->expr ) ) then
 				errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
 			end if
 
-        	exprcnt += 1
-        end if
+			exprcnt += 1
+		end if
 
-        '' ','?
-        if( lexGetToken( ) <> CHAR_COMMA ) then
-        	exit do
-        end if
+		'' ','?
+		if( lexGetToken( ) <> CHAR_COMMA ) then
+			exit do
+		end if
 
-        lexSkipToken( )
+		lexSkipToken( )
 	loop
 
 	if( exprcnt = 0 ) then
@@ -459,16 +459,16 @@ function cAssignmentOrPtrCall _
 	end if
 
 	if( expr = NULL ) then
-        do
-        	dim as FB_LETSTMT_NODE ptr node = listGetHead( @parser.stmt.let.list )
-        	if( node = NULL ) then
-        		exit do
-        	end if
+		do
+			dim as FB_LETSTMT_NODE ptr node = listGetHead( @parser.stmt.let.list )
+			if( node = NULL ) then
+				exit do
+			end if
 
-        	listDelNode( @parser.stmt.let.list, node )
-        loop
+			listDelNode( @parser.stmt.let.list, node )
+		loop
 
-        exit function
+		exit function
 	end if
 
 	'' proc call?
@@ -486,32 +486,32 @@ function cAssignmentOrPtrCall _
 	end if
 
 	fld = symbUdtGetFirstField( astGetSubtype( expr ) )
-    exprcnt = 0
-    do
-    	dim as FB_LETSTMT_NODE ptr node = listGetHead( @parser.stmt.let.list )
-    	if( node = NULL ) then
-        	exit do
-        end if
+	exprcnt = 0
+	do
+		dim as FB_LETSTMT_NODE ptr node = listGetHead( @parser.stmt.let.list )
+		if( node = NULL ) then
+			exit do
+		end if
 
-        '' EOL?
-        if( fld = NULL ) then
+		'' EOL?
+		if( fld = NULL ) then
 			errReport( FB_ERRMSG_TOOMANYELEMENTS )
-       	else
-    		exprcnt += 1
+	   	else
+			exprcnt += 1
 
-    		if( node->expr <> NULL ) then
-        		expr = hAssignFromField( fld, node->expr, tmp, exprcnt )
-        		if( expr = NULL ) then
-        			exit function
-        		end if
+			if( node->expr <> NULL ) then
+				expr = hAssignFromField( fld, node->expr, tmp, exprcnt )
+				if( expr = NULL ) then
+					exit function
+				end if
 
-        		tree = astNewLINK( tree, expr )
-        	end if
+				tree = astNewLINK( tree, expr )
+			end if
 
 			fld = symbUdtGetNextField( fld )
-        end if
+		end if
 
-        listDelNode( @parser.stmt.let.list, node )
+		listDelNode( @parser.stmt.let.list, node )
 	loop
 
 	'' must add the tree at once because the temporary results

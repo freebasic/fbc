@@ -125,16 +125,16 @@ function rtlGosubPush _
 		byval ctx as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( GOSUBPUSH ) )
+	proc = astNewCALL( PROCLOOKUP( GOSUBPUSH ) )
 
-    '' byval ctx as any ptr ptr
-    if( astNewARG( proc, ctx ) = NULL ) then
-    	exit function
-    end if
+	'' byval ctx as any ptr ptr
+	if( astNewARG( proc, ctx ) = NULL ) then
+		exit function
+	end if
 
 	function = proc
 
@@ -146,30 +146,30 @@ function rtlGosubPop _
 		byval ctx as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( GOSUBPOP ) )
+	proc = astNewCALL( PROCLOOKUP( GOSUBPOP ) )
 
-    '' byval ctx as any ptr ptr
-    if( astNewARG( proc, ctx ) = NULL ) then
-    	exit function
-    end if
+	'' byval ctx as any ptr ptr
+	if( astNewARG( proc, ctx ) = NULL ) then
+		exit function
+	end if
 
 	function = proc
 
 end function
 
 function rtlGosubReturn( byval ctx as ASTNODE ptr ) as integer
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
-    proc = astNewCALL( PROCLOOKUP( GOSUBRETURN ) )
+	proc = astNewCALL( PROCLOOKUP( GOSUBRETURN ) )
 
-    '' byval ctx as any ptr ptr
-    if( astNewARG( proc, ctx ) = NULL ) then
-    	exit function
-    end if
+	'' byval ctx as any ptr ptr
+	if( astNewARG( proc, ctx ) = NULL ) then
+		exit function
+	end if
 
 	astAdd( rtlErrorCheck( proc ) )
 	function = TRUE
@@ -181,16 +181,16 @@ function rtlGosubExit _
 		byval ctx as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( GOSUBEXIT ) )
+	proc = astNewCALL( PROCLOOKUP( GOSUBEXIT ) )
 
-    '' byval ctx as any ptr ptr
-    if( astNewARG( proc, ctx ) = NULL ) then
-    	exit function
-    end if
+	'' byval ctx as any ptr ptr
+	if( astNewARG( proc, ctx ) = NULL ) then
+		exit function
+	end if
 
 	function = proc
 
@@ -202,16 +202,16 @@ function rtlSetJmp _
 		byval ctx as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( SETJMP ) )
+	proc = astNewCALL( PROCLOOKUP( SETJMP ) )
 
-    '' byval ctx as any ptr ptr
-    if( astNewARG( proc, ctx ) = NULL ) then
-    	exit function
-    end if
+	'' byval ctx as any ptr ptr
+	if( astNewARG( proc, ctx ) = NULL ) then
+		exit function
+	end if
 
 	function = proc
 

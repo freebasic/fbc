@@ -35,32 +35,32 @@ function symbAddNamespace _
 		byval id_alias as zstring ptr _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr s = any
+	dim as FBSYMBOL ptr s = any
 
-    '' no explict alias given?
-    if( id_alias = NULL ) then
-    	'' only preserve a case-sensitive version if in BASIC mangling
-    	if( parser.mangling <> FB_MANGLING_BASIC ) then
-    		id_alias = id
-    	end if
-    end if
+	'' no explict alias given?
+	if( id_alias = NULL ) then
+		'' only preserve a case-sensitive version if in BASIC mangling
+		if( parser.mangling <> FB_MANGLING_BASIC ) then
+			id_alias = id
+		end if
+	end if
 
-    s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    				   NULL, _
-    				   NULL, NULL,  _
-    				   FB_SYMBCLASS_NAMESPACE, _
-    				   id, id_alias, _
-    				   FB_DATATYPE_NAMESPC, NULL )
-    if( s = NULL ) then
-    	return NULL
-    end if
+	s = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+					   NULL, _
+					   NULL, NULL,  _
+					   FB_SYMBCLASS_NAMESPACE, _
+					   id, id_alias, _
+					   FB_DATATYPE_NAMESPC, NULL )
+	if( s = NULL ) then
+		return NULL
+	end if
 
 	symbSymbTbInit( s->nspc.ns.symtb, s )
-    symbHashTbInit( s->nspc.ns.hashtb, s, FB_INITSYMBOLNODES \ 10 )
+	symbHashTbInit( s->nspc.ns.hashtb, s, FB_INITSYMBOLNODES \ 10 )
 
-    s->nspc.ns.ext = NULL
-    s->nspc.cnt = 0
-    s->nspc.last_tail = NULL
+	s->nspc.ns.ext = NULL
+	s->nspc.cnt = 0
+	s->nspc.last_tail = NULL
 
 	function = s
 
@@ -108,7 +108,7 @@ private function hAddImport _
 	dim as FBHASHTB ptr hashtb = any
 	dim as integer is_local = any
 
-    if( dst_ns = symbGetCurrentNamespc( ) ) then
+	if( dst_ns = symbGetCurrentNamespc( ) ) then
 		symbtb = NULL
 		hashtb = NULL
 		is_local = 0
@@ -118,15 +118,15 @@ private function hAddImport _
 		is_local = symbIsLocal( dst_ns )
 	end if
 
-    '' easier to be added as a symbol because it will be removed
-    '' respecting the scope blocks (or procs)
-    function = symbNewSymbol( FB_SYMBOPT_NONE, _
-    				   		  NULL, _
-    				   		  symbtb, hashtb, _
-    				   		  FB_SYMBCLASS_NSIMPORT, _
-    				   		  NULL, NULL, _
-    				   		  FB_DATATYPE_INVALID, NULL, _
-    				   		  is_local )
+	'' easier to be added as a symbol because it will be removed
+	'' respecting the scope blocks (or procs)
+	function = symbNewSymbol( FB_SYMBOPT_NONE, _
+					   		  NULL, _
+					   		  symbtb, hashtb, _
+					   		  FB_SYMBCLASS_NSIMPORT, _
+					   		  NULL, NULL, _
+					   		  FB_DATATYPE_INVALID, NULL, _
+					   		  is_local )
 end function
 
 '':::::
@@ -309,8 +309,8 @@ sub symbNamespaceReImport _
 	do while( exp_ <> NULL )
 		dim as FBSYMBOL ptr imp_ = symbGetCompImportHead( ns )
 		do while( imp_ <> NULL )
-        	symbNamespaceImportEx( symbGetImportNamespc( imp_ ), _
-        						   symbGetExportNamespc( exp_ ) )
+			symbNamespaceImportEx( symbGetImportNamespc( imp_ ), _
+								   symbGetExportNamespc( exp_ ) )
 			imp_ = symbGetImportNext( imp_ )
 		loop
 		exp_ = symbGetExportNext( exp_ )

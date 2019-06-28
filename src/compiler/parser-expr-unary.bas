@@ -66,11 +66,11 @@ function cNegNotExpression _
 			negexpr = astNewUOP( AST_OP_NEG, negexpr )
 		end if
 
-    	if( negexpr = NULL ) Then
+		if( negexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
 			negexpr = astNewCONSTi( 0 )
-    	end if
+		end if
 
 		return negexpr
 
@@ -88,13 +88,13 @@ function cNegNotExpression _
 			negexpr = astNewUOP( AST_OP_PLUS, negexpr )
 		end if
 
-    	if( negexpr = NULL ) Then
+		if( negexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
 			negexpr = astNewCONSTi( 0 )
-    	end if
+		end if
 
-    	return negexpr
+		return negexpr
 
 	'' NOT
 	case FB_TK_NOT
@@ -110,11 +110,11 @@ function cNegNotExpression _
 			negexpr = astNewUOP( AST_OP_NOT, negexpr )
 		end if
 
-    	if( negexpr = NULL ) Then
+		if( negexpr = NULL ) Then
 			errReport( FB_ERRMSG_TYPEMISMATCH )
 			'' error recovery: fake a new node
 			negexpr = astNewCONSTi( 0 )
-    	end if
+		end if
 
 		return negexpr
 	end select
@@ -148,10 +148,10 @@ function cStrIdxOrMemberDeref _
 		return expr
 
 	'' udt '.' ?
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+	case FB_DATATYPE_STRUCT 
 		select case( lexGetToken( ) )
 		case CHAR_DOT
-    		lexSkipToken( LEXCHECK_NOPERIOD )
+			lexSkipToken( LEXCHECK_NOPERIOD )
 
 			expr = cMemberAccess( dtype, subtype, expr )
 			if( expr = NULL ) then
@@ -400,8 +400,8 @@ end function
 ''DerefExpression	= 	DREF+ HighestPresExpr .
 ''
 function cDerefExpression( ) as ASTNODE ptr
-    dim as integer derefcnt = any
-    dim as ASTNODE ptr expr = any
+	dim as integer derefcnt = any
+	dim as ASTNODE ptr expr = any
 
 	'' DREF?
 	if( lexGetToken( ) <> FB_TK_DEREFCHAR ) then
@@ -409,7 +409,7 @@ function cDerefExpression( ) as ASTNODE ptr
 	end if
 
 	'' DREF+
-    derefcnt = 0
+	derefcnt = 0
 	do
 		lexSkipToken( )
 		derefcnt += 1
@@ -445,14 +445,14 @@ private function hProcPtrBody _
 
 	'' resolve overloaded procs
 	if( symbIsOverloaded( proc ) ) then
-        if( parser.ctxsym <> NULL ) then
-        	if( symbIsProc( parser.ctxsym ) ) then
-        		sym = symbFindOverloadProc( proc, parser.ctxsym )
-        		if( sym <> NULL ) then
-        			proc = sym
-        		end if
-        	end if
-        end if
+		if( parser.ctxsym <> NULL ) then
+			if( symbIsProc( parser.ctxsym ) ) then
+				sym = symbFindOverloadProc( proc, parser.ctxsym )
+				if( sym <> NULL ) then
+					proc = sym
+				end if
+			end if
+		end if
 	end if
 
 	'' taking the address of an method? pointer to methods not supported yet..

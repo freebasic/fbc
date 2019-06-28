@@ -97,20 +97,20 @@ function symbMakeProfileLabelName( ) as zstring ptr
 end function
 
 function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
-    '' GDB will demangle the symbols automatically
+	'' GDB will demangle the symbols automatically
 	if( hDoCppMangling( sym ) ) then
 		select case as const symbGetClass( sym )
 		'' but UDT's, they shouldn't include any mangling at all..
 		case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_STRUCT, _
 			 FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
 
-    		'' check if an alias wasn't given
-    		dim as zstring ptr res = sym->id.alias
-    		if( res = NULL ) then
-    			res = sym->id.name
-    		end if
+			'' check if an alias wasn't given
+			dim as zstring ptr res = sym->id.alias
+			if( res = NULL ) then
+				res = sym->id.name
+			end if
 
-    		return res
+			return res
 
 		case else
 			return symbGetMangledName( sym )
@@ -135,14 +135,14 @@ sub symbSetName( byval s as FBSYMBOL ptr, byval name_ as zstring ptr )
 	'' assuming only params will change names, no mangling reseted
 
 	if( s->id.name <> NULL ) then
-		poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
+		poolDelItem( @symb.namepool, s->id.name ) 
 	end if
 
 	slen = len( *name_ )
 	if( slen = 0 ) then
 		s->id.name = NULL
 	else
-		s->id.name = poolNewItem( @symb.namepool, slen + 1 ) 'ZStrAllocate( slen )
+		s->id.name = poolNewItem( @symb.namepool, slen + 1 ) 
 		*s->id.name = *name_
 	end if
 end sub
@@ -273,15 +273,15 @@ private function hAbbrevAdd _
 
 	dim as FB_MANGLEABBR ptr n = any
 
-    n = flistNewItem( @ctx.flist )
-    n->idx = ctx.cnt
+	n = flistNewItem( @ctx.flist )
+	n->idx = ctx.cnt
 
-    n->dtype = dtype
-    n->subtype = subtype
+	n->dtype = dtype
+	n->subtype = subtype
 
-    ctx.cnt += 1
+	ctx.cnt += 1
 
-    function = n
+	function = n
 end function
 
 private sub hAbbrevGet( byref mangled as string, byval idx as integer )
@@ -621,28 +621,28 @@ private function hAddUnderscore( ) as integer
 end function
 
 private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
-    '' C++?
-    if( symbGetMangling( sym ) = FB_MANGLING_CPP ) then
-    	return TRUE
-    end if
+	'' C++?
+	if( symbGetMangling( sym ) = FB_MANGLING_CPP ) then
+		return TRUE
+	end if
 
-    '' RTL or exclude parent?
-    if( (symbGetStats( sym ) and (FB_SYMBSTATS_RTL or _
-    							  FB_SYMBSTATS_EXCLPARENT)) <> 0 ) then
-    	return FALSE
-    end if
+	'' RTL or exclude parent?
+	if( (symbGetStats( sym ) and (FB_SYMBSTATS_RTL or _
+								  FB_SYMBSTATS_EXCLPARENT)) <> 0 ) then
+		return FALSE
+	end if
 
-    '' inside a namespace or class?
-    if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
-    	return TRUE
-    end if
+	'' inside a namespace or class?
+	if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
+		return TRUE
+	end if
 
-    if( sym->class = FB_SYMBCLASS_PROC ) then
-    	'' overloaded? (this will handle operators too)
-    	if( symbIsOverloaded( sym ) ) then
-    		return TRUE
-    	end if
-    end if
+	if( sym->class = FB_SYMBCLASS_PROC ) then
+		'' overloaded? (this will handle operators too)
+		if( symbIsOverloaded( sym ) ) then
+			return TRUE
+		end if
+	end if
 
 	function = FALSE
 end function

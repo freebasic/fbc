@@ -198,7 +198,7 @@ private sub hLABEL _
 		byval label as zstring ptr _
 	) static
 
-    dim ostr as string
+	dim ostr as string
 
 	ostr = *label
 	ostr += ":"
@@ -230,7 +230,7 @@ sub edbgEmitHeader( byval filename as zstring ptr )
 	end if
 
 	'' file name
-    hEmitSTABS( STAB_TYPE_SO, filename, 0, 0, lname )
+	hEmitSTABS( STAB_TYPE_SO, filename, 0, 0, lname )
 
 	''
 	emitSECTION( IR_SECTION_CODE, 0 )
@@ -274,26 +274,26 @@ sub edbgLineBegin _
 	)
 
 	if( env.clopt.debuginfo = FALSE ) then
-    	exit sub
+		exit sub
 	end if
 
-    if( ctx.lnum > 0 ) then
-    	ctx.pos = pos_ - ctx.pos
-    	if( ctx.pos > 0 ) then
-    		edbgEmitLine( proc, ctx.lnum, ctx.label )
-    		ctx.isnewline = TRUE
-    	end if
-    end if
+	if( ctx.lnum > 0 ) then
+		ctx.pos = pos_ - ctx.pos
+		if( ctx.pos > 0 ) then
+			edbgEmitLine( proc, ctx.lnum, ctx.label )
+			ctx.isnewline = TRUE
+		end if
+	end if
 
-    edbgInclude( filename )
+	edbgInclude( filename )
    
-    ctx.pos = pos_
-    ctx.lnum = lnum
-    if( ctx.isnewline ) then
-    	ctx.label = symbAddLabel( NULL )
-    	hLABEL( symbGetMangledName( ctx.label ) )
-    	ctx.isnewline = FALSE
-    end if
+	ctx.pos = pos_
+	ctx.lnum = lnum
+	if( ctx.isnewline ) then
+		ctx.label = symbAddLabel( NULL )
+		hLABEL( symbGetMangledName( ctx.label ) )
+		ctx.isnewline = FALSE
+	end if
 
 end sub
 
@@ -306,17 +306,17 @@ sub edbgLineEnd _
 	)
 
 	if( env.clopt.debuginfo = FALSE ) then
-    	exit sub
-    end if
+		exit sub
+	end if
 
-    if( ctx.lnum > 0 ) then
-    	ctx.pos = pos_ - ctx.pos
-    	if( ctx.pos > 0 ) then
+	if( ctx.lnum > 0 ) then
+		ctx.pos = pos_ - ctx.pos
+		if( ctx.pos > 0 ) then
    			edbgEmitLine( proc, ctx.lnum, ctx.label )
    			ctx.isnewline = TRUE
    		end if
-    	ctx.lnum = 0
-    end if
+		ctx.lnum = 0
+	end if
 
 end sub
 
@@ -328,7 +328,7 @@ sub edbgEmitLine _
 		byval label as FBSYMBOL ptr _
 	) static
 
-    dim as zstring ptr s
+	dim as zstring ptr s
 
 	if( env.clopt.debuginfo = FALSE ) then
 		exit sub
@@ -378,11 +378,11 @@ sub edbgScopeBegin _
 	'' called by ir->ast
 
 	if( env.clopt.debuginfo = FALSE ) then
-    	exit sub
-    end if
+		exit sub
+	end if
 
 	s->scp.dbg.iniline = lexLineNum( )
-    s->scp.dbg.inilabel = symbAddLabel( NULL )
+	s->scp.dbg.inilabel = symbAddLabel( NULL )
 
 end sub
 
@@ -395,11 +395,11 @@ sub edbgScopeEnd _
 	'' called by ir->ast
 
 	if( env.clopt.debuginfo = FALSE ) then
-    	exit sub
-    end if
+		exit sub
+	end if
 
 	s->scp.dbg.endline = lexLineNum( )
-    s->scp.dbg.endlabel = symbAddLabel( NULL )
+	s->scp.dbg.endlabel = symbAddLabel( NULL )
 
 end sub
 
@@ -410,10 +410,10 @@ sub edbgEmitScopeINI _
 	) static
 
 	if( env.clopt.debuginfo = FALSE ) then
-    	exit sub
-    end if
+		exit sub
+	end if
 
-    hLABEL( symbGetMangledName( s->scp.dbg.inilabel ) )
+	hLABEL( symbGetMangledName( s->scp.dbg.inilabel ) )
 
 end sub
 
@@ -424,10 +424,10 @@ sub edbgEmitScopeEND _
 	) static
 
 	if( env.clopt.debuginfo = FALSE ) then
-    	exit sub
-    end if
+		exit sub
+	end if
 
-    hLABEL( symbGetMangledName( s->scp.dbg.endlabel ) )
+	hLABEL( symbGetMangledName( s->scp.dbg.endlabel ) )
 
 end sub
 
@@ -487,7 +487,7 @@ sub edbgEmitProcHeader _
 		byval proc as FBSYMBOL ptr _
 	) static
 
-    dim as string desc, procname
+	dim as string desc, procname
 
 	if( env.clopt.debuginfo = FALSE ) then
 		exit sub
@@ -507,17 +507,17 @@ sub edbgEmitProcHeader _
 					1, _
 					*symbGetMangledName( proc ) )
 
-    	'' set the entry line
-    	hEmitSTABD( STAB_TYPE_SLINE, 0, 1 )
+		'' set the entry line
+		hEmitSTABD( STAB_TYPE_SLINE, 0, 1 )
 
-    	'' also correct the end and start lines
-    	proc->proc.ext->dbg.iniline = 1
-    	proc->proc.ext->dbg.endline = lexLineNum( )
+		'' also correct the end and start lines
+		proc->proc.ext->dbg.iniline = 1
+		proc->proc.ext->dbg.endline = lexLineNum( )
 
-    	desc = fbGetEntryPoint( )
-    else
-    	desc = *symbGetDBGName( proc )
-    end if
+		desc = fbGetEntryPoint( )
+	else
+		desc = *symbGetDBGName( proc )
+	end if
 
 	''
 	procname = *symbGetMangledName( proc )
@@ -568,9 +568,9 @@ private sub hDeclLocalVars _
 	s = shead
 	do while( s <> NULL )
 
-    	select case symbGetClass( s )
-    	'' variable?
-    	case FB_SYMBCLASS_VAR
+		select case symbGetClass( s )
+		'' variable?
+		case FB_SYMBCLASS_VAR
 
 			'' Don't emit debug info for parameter variables (the
 			'' parameters will be emitted instead), temporaries,
@@ -608,13 +608,13 @@ private sub hDeclLocalVars _
 		'' for each scope..
 		s = shead
 		do while( s <> NULL )
-    		if( symbIsScope( s ) ) then
-    			hDeclLocalVars( proc, s, s->scp.dbg.inilabel, s->scp.dbg.endlabel )
-    		end if
+			if( symbIsScope( s ) ) then
+				hDeclLocalVars( proc, s, s->scp.dbg.inilabel, s->scp.dbg.endlabel )
+			end if
 
 			s = s->next
-    	loop
-    end if
+		loop
+	end if
 
 	hEmitSTABN( STAB_TYPE_RBRAC, _
 				0, _
@@ -631,7 +631,7 @@ sub edbgEmitProcFooter _
 		byval exitlabel as FBSYMBOL ptr _
 	) static
 
-    dim as string procname, lname
+	dim as string procname, lname
 
 	if( env.clopt.debuginfo = FALSE ) then
 		exit sub
@@ -640,8 +640,8 @@ sub edbgEmitProcFooter _
 	''
 	procname = *symbGetMangledName( proc )
 
-    ''
-    hDeclLocalVars( proc, proc, initlabel, exitlabel )
+	''
+	hDeclLocalVars( proc, proc, initlabel, exitlabel )
 
 	lname = *symbUniqueLabel( )
 	hLABEL( lname )
@@ -663,16 +663,16 @@ private function hDeclPointer _
 		byref dtype as integer _
 	) as string static
 
-    dim as string desc
+	dim as string desc
 
-    desc = ""
-    do while( typeIsPtr( dtype ) )
-    	dtype = typeDeref( dtype )
-    	desc += str( ctx.typecnt ) + "=*"
-    	ctx.typecnt += 1
-    loop
+	desc = ""
+	do while( typeIsPtr( dtype ) )
+		dtype = typeDeref( dtype )
+		desc += str( ctx.typecnt ) + "=*"
+		ctx.typecnt += 1
+	loop
 
-    function = desc
+	function = desc
 
 end function
 
@@ -686,9 +686,9 @@ private function hGetDataType _
 	dim as FBSYMBOL ptr subtype = any
 	dim as string desc
 
-    if( sym = NULL ) then
-    	return str( remapTB(FB_DATATYPE_VOID) )
-    end if
+	if( sym = NULL ) then
+		return str( remapTB(FB_DATATYPE_VOID) )
+	end if
 
 	''
 	'' HACK: When emitting array descriptor types, we don't always emit the
@@ -767,48 +767,48 @@ private function hGetDataType _
 		dimtbelements = 1
 	end if
 
-    '' pointer?
-    if( typeIsPtr( dtype ) ) then
-    	desc += hDeclPointer( dtype )
-    end if
+	'' pointer?
+	if( typeIsPtr( dtype ) ) then
+		desc += hDeclPointer( dtype )
+	end if
 
-    '' the const qualifier isn't taken into account
-    dtype = typeUnsetIsConst( dtype )
+	'' the const qualifier isn't taken into account
+	dtype = typeUnsetIsConst( dtype )
 
-    select case as const dtype
-    '' UDT?
-    case FB_DATATYPE_STRUCT
+	select case as const dtype
+	'' UDT?
+	case FB_DATATYPE_STRUCT
 		if( subtype->udt.dbg.typenum = INVALID ) then
 			hDeclUDT( subtype, dimtbelements )
 		end if
 
 		desc += str( subtype->udt.dbg.typenum )
 
-    '' ENUM?
-    case FB_DATATYPE_ENUM
-    	if( subtype->enum_.dbg.typenum = INVALID ) then
-    		hDeclENUM( subtype )
-    	end if
+	'' ENUM?
+	case FB_DATATYPE_ENUM
+		if( subtype->enum_.dbg.typenum = INVALID ) then
+			hDeclENUM( subtype )
+		end if
 
-    	desc += str( subtype->enum_.dbg.typenum )
+		desc += str( subtype->enum_.dbg.typenum )
 
-    '' function pointer?
-    case FB_DATATYPE_FUNCTION
-    	desc += str( ctx.typecnt ) + "=f"
-    	ctx.typecnt += 1
-    	desc += hGetDataType( subtype )
+	'' function pointer?
+	case FB_DATATYPE_FUNCTION
+		desc += str( ctx.typecnt ) + "=f"
+		ctx.typecnt += 1
+		desc += hGetDataType( subtype )
 
-    '' forward reference?
-    case FB_DATATYPE_FWDREF
-    	desc += str( remapTB(FB_DATATYPE_VOID) )
+	'' forward reference?
+	case FB_DATATYPE_FWDREF
+		desc += str( remapTB(FB_DATATYPE_VOID) )
 
-    '' ordinary type..
-    case else
-    	desc += str( remapTB(dtype) )
+	'' ordinary type..
+	case else
+		desc += str( remapTB(dtype) )
 
-    end select
+	end select
 
-    function = desc
+	function = desc
 
 end function
 
@@ -862,8 +862,8 @@ private sub hDeclENUM _
 		byval sym as FBSYMBOL ptr _
 	)
 
-    dim as FBSYMBOL ptr e
-    dim as string desc
+	dim as FBSYMBOL ptr e
+	dim as string desc
 
 	sym->enum_.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
@@ -874,7 +874,7 @@ private sub hDeclENUM _
 
 	e = symbGetENUMFirstElm( sym )
 	do while( e <> NULL )
-        desc += *symbGetName( e ) + ":" + str( symbGetConstInt( e ) ) + ","
+		desc += *symbGetName( e ) + ":" + str( symbGetConstInt( e ) ) + ","
 
 		e = symbGetENUMNextElm( e )
 	loop
@@ -931,9 +931,9 @@ sub edbgEmitGlobalVar _
 		t = STAB_TYPE_STSYM
 	end select
 
-    desc = *symbGetDBGName( sym )
+	desc = *symbGetDBGName( sym )
 
-    '' allocation type (static, global, etc)
+	'' allocation type (static, global, etc)
 	if( symbIsPublic( sym ) or symbIsCommon( sym ) ) then
 		desc += ":G"
 	elseif( symbIsStatic( sym ) ) then
@@ -942,8 +942,8 @@ sub edbgEmitGlobalVar _
 		desc += ":"
 	end if
 
-    '' data type
-    desc += hGetDataType( sym )
+	'' data type
+	desc += hGetDataType( sym )
 
 	hEmitSTABS( t, desc, 0, 0, *symbGetMangledName( sym ) )
 
@@ -962,7 +962,7 @@ sub edbgEmitLocalVar _
 		exit sub
 	end if
 
-    desc = *symbGetName( sym )
+	desc = *symbGetName( sym )
 
 	'' (no fake dynamic array symbols - the descriptor is emitted instead)
 	assert( symbIsDynamic( sym ) = FALSE )
@@ -988,10 +988,10 @@ sub edbgEmitLocalVar _
 		value = str( symbGetOfs( sym ) )
 	end if
 
-    '' data type
-    desc += hGetDataType( sym )
+	'' data type
+	desc += hGetDataType( sym )
 
-    hEmitSTABS( t, desc, 0, 0, value )
+	hEmitSTABS( t, desc, 0, 0, value )
 end sub
 
 '' should rename to param?
@@ -1002,7 +1002,7 @@ sub edbgEmitProcArg( byval sym as FBSYMBOL ptr )
 		exit sub
 	end if
 
-    desc = *symbGetName( sym ) + ":"
+	desc = *symbGetName( sym ) + ":"
 
 	if( symbIsParamByVal( sym ) ) then
 		desc += "p"
@@ -1012,10 +1012,10 @@ sub edbgEmitProcArg( byval sym as FBSYMBOL ptr )
 		desc += "v"
 	end if
 
-    '' data type
-    desc += hGetDataType( sym )
+	'' data type
+	desc += hGetDataType( sym )
 
-    hEmitSTABS( STAB_TYPE_PSYM, desc, 0, 0, str( symbGetOfs( sym ) ) )
+	hEmitSTABS( STAB_TYPE_PSYM, desc, 0, 0, str( symbGetOfs( sym ) ) )
 end sub
 
 sub edbgInclude( byval incfile as zstring ptr )

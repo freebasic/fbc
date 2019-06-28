@@ -968,7 +968,7 @@ private sub astDumpTreeEx _
 	end if
 
 	dim as string s
-	's += "[" + hex( n, 8 ) + "] "
+	
 	s += hAstNodeToStr( n )
 #if __FB_DEBUG__
 	s += " " + typeDumpToStr( n->dtype, n->subtype )
@@ -1034,7 +1034,7 @@ function astDumpInline( byval n as ASTNODE ptr ) as string
 		s = "<NULL>"
 	else
 		s += hAstNodeClassToStr( n->class )
-		's += typeDump( n->dtype, n->subtype )
+		
 
 		var have_data = (n->sym <> NULL) or (n->l <> NULL) or (n->r <> NULL)
 		select case as const( n->class )
@@ -1093,7 +1093,7 @@ sub astDumpSmall( byval n as ASTNODE ptr, byref prefix as string )
 	if( n = NULL ) then
 		s += "<NULL>"
 	else
-		's += "[" + hex( n ) + "] "
+		
 		s += hAstNodeClassToStr( n->class )
 		s += typeDumpToStr( n->dtype, n->subtype )
 

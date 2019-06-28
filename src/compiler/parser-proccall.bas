@@ -165,35 +165,35 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 end function
 
 sub hMethodCallAddInstPtrOvlArg _
-    ( _
-        byval proc as FBSYMBOL ptr, _
-        byval thisexpr as ASTNODE ptr, _
-        byval arg_list as FB_CALL_ARG_LIST ptr, _
-        byval options as FB_PARSEROPT ptr _
-    )
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval thisexpr as ASTNODE ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr, _
+		byval options as FB_PARSEROPT ptr _
+	)
 
-    '' Only for method calls
-    if( thisexpr = NULL ) then
-        return
-    end if
+	'' Only for method calls
+	if( thisexpr = NULL ) then
+		return
+	end if
 
-    '' The proc given here can be a method with THIS pointer or a static
-    '' member proc, depending on which was declared/found first, but it's
-    '' not known yet whether the exact overload that's going to be called
-    '' will be static or not. So the thisexpr needs to be preserved here,
-    '' the rest is done after the args were parsed.
+	'' The proc given here can be a method with THIS pointer or a static
+	'' member proc, depending on which was declared/found first, but it's
+	'' not known yet whether the exact overload that's going to be called
+	'' will be static or not. So the thisexpr needs to be preserved here,
+	'' the rest is done after the args were parsed.
 
-    dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
-    
-    dim as FBSYMBOL ptr parent = symbGetParent( proc )
-    if( astGetSubtype( thisexpr ) <> parent ) then
-        thisexpr = astNewCONV( symbGetType( parent ), parent, thisexpr )
-    end if
-    
-    arg->expr = thisexpr
-    arg->mode = hGetInstPtrMode( thisexpr )
+	dim as FB_CALL_ARG ptr arg = symbAllocOvlCallArg( @parser.ovlarglist, arg_list, FALSE )
+	
+	dim as FBSYMBOL ptr parent = symbGetParent( proc )
+	if( astGetSubtype( thisexpr ) <> parent ) then
+		thisexpr = astNewCONV( symbGetType( parent ), parent, thisexpr )
+	end if
+	
+	arg->expr = thisexpr
+	arg->mode = hGetInstPtrMode( thisexpr )
 
-    *options or= FB_PARSEROPT_HASINSTPTR
+	*options or= FB_PARSEROPT_HASINSTPTR
 
 end sub
 
@@ -248,7 +248,7 @@ function cProcCall _
 
 	function = NULL
 
-    hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
+	hMethodCallAddInstPtrOvlArg( sym, thisexpr, @arg_list, @options )
 
 	'' property?
 	if( symbIsProperty( sym ) ) then
@@ -654,10 +654,10 @@ private function hAssignOrCall _
 
 	function = FALSE
 
-    do while( chain_ <> NULL )
+	do while( chain_ <> NULL )
 
-    	dim as FBSYMBOL ptr sym = chain_->sym
-    	do
+		dim as FBSYMBOL ptr sym = chain_->sym
+		do
 	    	select case as const symbGetClass( sym )
 	    	'' proc?
 	    	case FB_SYMBCLASS_PROC
@@ -699,7 +699,7 @@ private function hProcCallOrAssign_QB( ) as integer
 	function = FALSE
 
  	select case as const lexGetClass( )
-    case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_OPERATOR
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_OPERATOR
 
 		return hAssignOrCall_QB( lexGetSymChain( ), FALSE )
 
@@ -741,13 +741,13 @@ function cProcCallOrAssign _
 
 	function = FALSE
 
-    '' QB mode?
-    if( env.clopt.lang = FB_LANG_QB ) then
-    	return hProcCallOrAssign_QB( )
-    end if
+	'' QB mode?
+	if( env.clopt.lang = FB_LANG_QB ) then
+		return hProcCallOrAssign_QB( )
+	end if
 
   	select case as const lexGetClass( )
-    case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
 		chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
 
@@ -836,12 +836,12 @@ function cProcCallOrAssign _
 		'' CALL?
 		case FB_TK_CALL
 
-    		if( fbLangOptIsSet( FB_LANG_OPT_CALL ) = FALSE ) then
+			if( fbLangOptIsSet( FB_LANG_OPT_CALL ) = FALSE ) then
 				errReportNotAllowed( FB_LANG_OPT_CALL )
 				'' error recovery: skip stmt
 				hSkipStmt( )
 				return TRUE
-    		end if
+			end if
 
 			if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
 				hSkipStmt( )
@@ -1069,9 +1069,9 @@ function hForwardCall( ) as integer
 		errReport( FB_ERRMSG_SYNTAXERROR )
 	end if
 
-    lexSkipToken( )
+	lexSkipToken( )
 
-    dim as FBSYMBOL ptr proc = symbPreAddProc( id )
+	dim as FBSYMBOL ptr proc = symbPreAddProc( id )
 
 	'' '('?
 	dim as integer check_prnt = FALSE
@@ -1135,10 +1135,10 @@ function hForwardCall( ) as integer
 	end if
 
 	proc = symbAddProc( proc, id, NULL, FB_DATATYPE_VOID, NULL, 0, env.target.fbcall, FB_SYMBOPT_NONE )
-    if( proc = NULL ) then
+	if( proc = NULL ) then
 		errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 		exit function
-    end if
+	end if
 
 	astAdd( cProcArgList( NULL, proc, NULL, @arg_list, FB_PARSEROPT_OPTONLY ) )
 	function = TRUE

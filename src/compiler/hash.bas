@@ -58,15 +58,15 @@ end sub
 
 sub hashEnd(byval hash as THASH ptr)
 
-    dim as integer i = any
-    dim as HASHITEM ptr item = any, nxt = any
-    dim as HASHLIST ptr list = any
+	dim as integer i = any
+	dim as HASHITEM ptr item = any, nxt = any
+	dim as HASHLIST ptr list = any
 
-    '' for each item on each list, deallocate it and the name string
-    list = hash->list
+	'' for each item on each list, deallocate it and the name string
+	list = hash->list
 
 	if( hash->delstr ) then
-    	for i = 0 to hash->nodes-1
+		for i = 0 to hash->nodes-1
 			item = list->head
 			do while( item <> NULL )
 				nxt = item->next
@@ -82,7 +82,7 @@ sub hashEnd(byval hash as THASH ptr)
 		next
 
 	else
-    	for i = 0 to hash->nodes-1
+		for i = 0 to hash->nodes-1
 			item = list->head
 			do while( item <> NULL )
 				nxt = item->next
@@ -122,12 +122,12 @@ function hashLookupEx _
 		byval index as uinteger _
 	) as any ptr
 
-    dim as HASHITEM ptr item = any
-    dim as HASHLIST ptr list = any
+	dim as HASHITEM ptr item = any
+	dim as HASHLIST ptr list = any
 
-    function = NULL
+	function = NULL
 
-    index mod= hash->nodes
+	index mod= hash->nodes
 
 	'' get the start of list
 	list = @hash->list[index]
@@ -153,7 +153,7 @@ function hashLookup _
 		byval symbol as zstring ptr _
 	) as any ptr
 
-    function = hashLookupEx( hash, symbol, hashHash( symbol ) )
+	function = hashLookupEx( hash, symbol, hashHash( symbol ) )
 
 end function
 
@@ -227,26 +227,26 @@ function hashAdd _
 		byval index as uinteger _
 	) as HASHITEM ptr
 
-    dim as HASHITEM ptr item = any
+	dim as HASHITEM ptr item = any
 
 	'' calc hash?
 	if( index = cuint( INVALID ) ) then
 		index = hashHash( symbol )
 	end if
 
-    index mod= hash->nodes
+	index mod= hash->nodes
 
-    '' allocate a new node
-    item = hashNewItem( @hash->list[index] )
+	'' allocate a new node
+	item = hashNewItem( @hash->list[index] )
 
-    function = item
-    if( item = NULL ) then
-    	exit function
+	function = item
+	if( item = NULL ) then
+		exit function
 	end if
 
-    '' fill node
-    item->name = symbol
-    item->data = userdata
+	'' fill node
+	item->name = symbol
+	item->data = userdata
 
 end function
 
@@ -258,7 +258,7 @@ sub hashDel _
 		byval index as uinteger _
 	)
 
-    dim as HASHLIST ptr list = any
+	dim as HASHLIST ptr list = any
 
 	if( item = NULL ) then
 		exit sub

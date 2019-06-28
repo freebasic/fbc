@@ -193,8 +193,8 @@ type AST_NODE_TYPEINI
 		bytes		as longint
 		elements	as longint
 	end union
-    scp				as FBSYMBOL ptr
-    lastscp			as FBSYMBOL ptr
+	scp				as FBSYMBOL ptr
+	lastscp			as FBSYMBOL ptr
 end type
 
 type AST_NODE_TYPEINISCOPE

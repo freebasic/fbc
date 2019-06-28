@@ -111,7 +111,7 @@ private function hDefDebug_cb ( ) as string
 end function
 
 private function hDefErr_cb ( ) as string
-    dim as integer res = &h0000
+	dim as integer res = &h0000
 
 	if( env.clopt.errorcheck ) then
 		res = &h0001
@@ -304,23 +304,23 @@ function symbAddDefine _
 		byval lgt as integer, _
 		byval isargless as integer, _
 		byval proc as FBS_DEFINE_PROC, _
-        byval flags as FB_DEFINE_FLAGS _
+		byval flags as FB_DEFINE_FLAGS _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym = any
+	dim as FBSYMBOL ptr sym = any
 
-    function = NULL
+	function = NULL
 
-    '' allocate new node (always on global hash, ns' won't work in lexer)
-    sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    					 NULL, _
-    					 NULL, @symbGetGlobalHashTb( ), _
-    					 FB_SYMBCLASS_DEFINE, _
-    				   	 symbol, NULL, _
-    				   	 FB_DATATYPE_CHAR, NULL )
-    if( sym = NULL ) then
-    	exit function
-    end if
+	'' allocate new node (always on global hash, ns' won't work in lexer)
+	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+						 NULL, _
+						 NULL, @symbGetGlobalHashTb( ), _
+						 FB_SYMBCLASS_DEFINE, _
+					   	 symbol, NULL, _
+					   	 FB_DATATYPE_CHAR, NULL )
+	if( sym = NULL ) then
+		exit function
+	end if
 
 	sym->def.text	= ZstrAllocate( lgt )
 	*sym->def.text = *text
@@ -329,7 +329,7 @@ function symbAddDefine _
 	sym->def.paramhead = NULL
 	sym->def.isargless = isargless
 	sym->def.proc = proc
-    sym->def.flags = flags
+	sym->def.flags = flags
 
 	function = sym
 
@@ -343,23 +343,23 @@ function symbAddDefineW _
 		byval lgt as integer, _
 		byval isargless as integer, _
 		byval proc as FBS_DEFINE_PROC, _
-        byval flags as FB_DEFINE_FLAGS _
+		byval flags as FB_DEFINE_FLAGS _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym = any
+	dim as FBSYMBOL ptr sym = any
 
-    function = NULL
+	function = NULL
 
-    '' allocate new node (always on global hash, ns' won't work in lexer)
-    sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    					 NULL, _
-    					 NULL, @symbGetGlobalHashTb( ), _
-    					 FB_SYMBCLASS_DEFINE, _
-    				   	 symbol, NULL, _
-    				   	 FB_DATATYPE_WCHAR, NULL )
-    if( sym = NULL ) then
-    	exit function
-    end if
+	'' allocate new node (always on global hash, ns' won't work in lexer)
+	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+						 NULL, _
+						 NULL, @symbGetGlobalHashTb( ), _
+						 FB_SYMBCLASS_DEFINE, _
+					   	 symbol, NULL, _
+					   	 FB_DATATYPE_WCHAR, NULL )
+	if( sym = NULL ) then
+		exit function
+	end if
 
 	sym->def.textw = WstrAllocate( lgt )
 	*sym->def.textw = *text
@@ -368,7 +368,7 @@ function symbAddDefineW _
 	sym->def.paramhead = NULL
 	sym->def.isargless = isargless
 	sym->def.proc = proc
-    sym->def.flags = flags
+	sym->def.flags = flags
 
 	function = sym
 
@@ -384,27 +384,27 @@ function symbAddDefineMacro _
 		byval flags as FB_DEFINE_FLAGS _
 	) as FBSYMBOL ptr
 
-    dim as FBSYMBOL ptr sym = any
+	dim as FBSYMBOL ptr sym = any
 
-    function = NULL
+	function = NULL
 
-    '' allocate new node (always on global hash, ns' won't work in lexer)
-    sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
-    					 NULL, _
-    					 NULL, @symbGetGlobalHashTb( ), _
-    					 FB_SYMBCLASS_DEFINE, _
-    				   	 symbol, NULL, _
-    				   	 FB_DATATYPE_INVALID, NULL )
-    if( sym = NULL ) then
-    	exit function
-    end if
+	'' allocate new node (always on global hash, ns' won't work in lexer)
+	sym = symbNewSymbol( FB_SYMBOPT_DOHASH, _
+						 NULL, _
+						 NULL, @symbGetGlobalHashTb( ), _
+						 FB_SYMBCLASS_DEFINE, _
+					   	 symbol, NULL, _
+					   	 FB_DATATYPE_INVALID, NULL )
+	if( sym = NULL ) then
+		exit function
+	end if
 
 	sym->def.tokhead = tokhead
 	sym->def.params = params
 	sym->def.paramhead = paramhead
 	sym->def.isargless = FALSE
 	sym->def.proc = NULL
-    sym->def.flags = flags
+	sym->def.flags = flags
 
 	function = sym
 
@@ -412,7 +412,7 @@ end function
 
 '':::::
 private sub hResetDefHash( )
-    dim as integer i
+	dim as integer i
 
 	for i = 0 to symb.def.param-1
 		hashDel( @symb.def.paramhash, symb.def.hash(i).item, symb.def.hash(i).index )
@@ -429,12 +429,12 @@ function symbAddDefineParam _
 		byval id as const zstring ptr _
 	) as FB_DEFPARAM ptr static
 
-    dim as FB_DEFPARAM ptr param
-    dim as uinteger index
+	dim as FB_DEFPARAM ptr param
+	dim as uinteger index
 
-    function = NULL
+	function = NULL
 
-    param = listNewNode( @symb.def.paramlist )
+	param = listNewNode( @symb.def.paramlist )
 
 	if( lastparam <> NULL ) then
 		lastparam->next = param
@@ -448,33 +448,33 @@ function symbAddDefineParam _
 	end if
 
 	''
-    param->name	= ZstrAllocate( len( *id ) )
-    hUcase( *id, *param->name )
+	param->name	= ZstrAllocate( len( *id ) )
+	hUcase( *id, *param->name )
 
-    '' add to hash, for fast lookup
-    index = hashHash( param->name )
+	'' add to hash, for fast lookup
+	index = hashHash( param->name )
 
-    '' dup definition? !!!FIXME!!! don't do this check for system headers !!!FIXME!!!
-    if( hashLookupEx( @symb.def.paramhash, param->name, index ) <> NULL ) then
-    	ZstrFree( param->name )
-    	listDelNode( @symb.def.paramlist, param )
-    	return NULL
-    end if
+	'' dup definition? !!!FIXME!!! don't do this check for system headers !!!FIXME!!!
+	if( hashLookupEx( @symb.def.paramhash, param->name, index ) <> NULL ) then
+		ZstrFree( param->name )
+		listDelNode( @symb.def.paramlist, param )
+		return NULL
+	end if
 
-    symb.def.hash(symb.def.param).item = hashAdd( @symb.def.paramhash, _
-    										      param->name, _
-    										      param, _
-    										      index )
+	symb.def.hash(symb.def.param).item = hashAdd( @symb.def.paramhash, _
+											      param->name, _
+											      param, _
+											      index )
 
-    symb.def.hash(symb.def.param).index = index
+	symb.def.hash(symb.def.param).index = index
 
-    ''
-    param->num = symb.def.param
-    param->next	= NULL
+	''
+	param->num = symb.def.param
+	param->next	= NULL
 
-    symb.def.param += 1
+	symb.def.param += 1
 
-    function = param
+	function = param
 
 end function
 
@@ -485,11 +485,11 @@ function symbAddDefineTok _
 		byval dtype as FB_DEFTOK_TYPE _
 	) as FB_DEFTOK ptr static
 
-    dim t as FB_DEFTOK ptr
+	dim t as FB_DEFTOK ptr
 
-    function = NULL
+	function = NULL
 
-    t = listNewNode( @symb.def.toklist )
+	t = listNewNode( @symb.def.toklist )
 
 	if( lasttok <> NULL ) then
 		lasttok->next = t
@@ -507,7 +507,7 @@ function symbAddDefineTok _
 		t->textw = NULL
 	end select
 
-    function = t
+	function = t
 
 end function
 
@@ -518,21 +518,21 @@ function symbDelDefineTok _
 	) as FB_DEFTOK ptr static
 
 	'' warning: this should only be used to remove the tail tokens
-    if( tok->prev <> NULL ) then
-    	tok->prev->next = NULL
-    	function = tok->prev
-    else
-    	function = NULL
-    end if
+	if( tok->prev <> NULL ) then
+		tok->prev->next = NULL
+		function = tok->prev
+	else
+		function = NULL
+	end if
 
 	select case tok->type
-    case FB_DEFTOK_TYPE_TEX
-    	ZstrFree( tok->text )
-    case FB_DEFTOK_TYPE_TEXW
-    	WstrFree( tok->textw )
-    end select
+	case FB_DEFTOK_TYPE_TEX
+		ZstrFree( tok->text )
+	case FB_DEFTOK_TYPE_TEXW
+		WstrFree( tok->textw )
+	end select
 
-    listDelNode( @symb.def.toklist, tok )
+	listDelNode( @symb.def.toklist, tok )
 
 end function
 
@@ -540,15 +540,15 @@ end function
 private sub hDelDefineParams( byval s as FBSYMBOL ptr )
 	dim as FB_DEFPARAM ptr param, nxt
 
-    param = s->def.paramhead
-    do while( param <> NULL )
-    	nxt = param->next
-    	ZstrFree( param->name )
+	param = s->def.paramhead
+	do while( param <> NULL )
+		nxt = param->next
+		ZstrFree( param->name )
 
-    	listDelNode( @symb.def.paramlist, param )
+		listDelNode( @symb.def.paramlist, param )
 
-    	param = nxt
-    loop
+		param = nxt
+	loop
 
 end sub
 
@@ -556,14 +556,14 @@ end sub
 private sub hDelDefineTokens( byval s as FBSYMBOL ptr )
 	dim as FB_DEFTOK ptr tok, nxt
 
-    tok = s->def.tokhead
-    do while( tok <> NULL )
-    	nxt = tok->next
+	tok = s->def.tokhead
+	do while( tok <> NULL )
+		nxt = tok->next
 
-        symbDelDefineTok( tok )
+		symbDelDefineTok( tok )
 
-    	tok = nxt
-    loop
+		tok = nxt
+	loop
 
 end sub
 
@@ -573,11 +573,11 @@ function symbDelDefine _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-    function = FALSE
+	function = FALSE
 
-    if( s = NULL ) then
-    	exit function
-    end if
+	if( s = NULL ) then
+		exit function
+	end if
 
 	''
 	if( symbGetDefineParams( s ) = 0 ) then
@@ -593,8 +593,8 @@ function symbDelDefine _
 	''
 	hDelDefineParams( s )
 
-    '' del the define node
-    symbFreeSymbol( s )
+	'' del the define node
+	symbFreeSymbol( s )
 
 	''
 	function = TRUE

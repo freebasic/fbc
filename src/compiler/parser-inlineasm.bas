@@ -195,7 +195,7 @@ sub cAsmCode()
 
 					chain_ = symbChainGetNext( chain_ )
 				loop
-            end if
+			end if
 
 		'' lit number?
 		case FB_TKCLASS_NUMLITERAL
@@ -208,15 +208,15 @@ sub cAsmCode()
 		case FB_TKCLASS_STRLITERAL
 			 expr = cStrLiteral( FALSE )
 			 if( expr <> NULL ) then
-             	dim as FBSYMBOL ptr litsym = astGetStrLitSymbol( expr )
-             	if( litsym <> NULL ) then
-                    text = """"
-                    if( symbGetType( litsym ) <> FB_DATATYPE_WCHAR ) then
-             			text += *symbGetVarLitText( litsym )
-             		else
-             			text += *symbGetVarLitTextW( litsym )
-             		end if
-             		text += """"
+			 	dim as FBSYMBOL ptr litsym = astGetStrLitSymbol( expr )
+			 	if( litsym <> NULL ) then
+					text = """"
+					if( symbGetType( litsym ) <> FB_DATATYPE_WCHAR ) then
+			 			text += *symbGetVarLitText( litsym )
+			 		else
+			 			text += *symbGetVarLitTextW( litsym )
+			 		end if
+			 		text += """"
 			 	end if
 
 			 	astDelTree( expr )
@@ -227,13 +227,13 @@ sub cAsmCode()
 			select case thisTok
 			case FB_TK_FUNCTION
 			'' FUNCTION?
-    			sym = symbGetProcResult( parser.currproc )
-    			if( sym = NULL ) then
+				sym = symbGetProcResult( parser.currproc )
+				if( sym = NULL ) then
 					errReport( FB_ERRMSG_SYNTAXERROR )
 					doskip = TRUE
-    			else
-    				symbSetIsAccessed( sym )
-    			end if
+				else
+					symbSetIsAccessed( sym )
+				end if
 
 			case FB_TK_CINT
 				'' CINT( valid expression )?
@@ -282,7 +282,7 @@ end sub
 ''                        (AsmCode Comment? NewLine)+
 ''					  END ASM .
 function cAsmBlock as integer
-    dim as integer issingleline = any
+	dim as integer issingleline = any
 
 	function = FALSE
 
@@ -291,11 +291,11 @@ function cAsmBlock as integer
 		exit function
 	end if
 
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( FB_TK_ASM )
-    	exit function
-    end if
+	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+		'' error recovery: skip the whole compound stmt
+		hSkipCompound( FB_TK_ASM )
+		exit function
+	end if
 
 	lexSkipToken( )
 
@@ -313,13 +313,13 @@ function cAsmBlock as integer
 	else
 		if( cStmtSeparator( ) = FALSE ) then
 			issingleline = TRUE
-        end if
+		end if
 	end if
 
 	'' (AsmCode Comment? NewLine)+
 	do
 		if( issingleline = FALSE ) then
-         astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ))
+		 astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ), env.inf.incfile ))
 		end if
 
 		cAsmCode( )

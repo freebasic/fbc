@@ -537,10 +537,10 @@ function rtlArrayRedim _
 	
 	'' no const filtering needed... dynamic arrays can't be const
 	
-    dim as ASTNODE ptr proc = any, expr = any
+	dim as ASTNODE ptr proc = any, expr = any
 	dim as FBSYMBOL ptr f = any, sym = any, subtype = any
 	dim as FBSYMBOL ptr ctor = any, dtor = any
-    dim as integer dtype = any
+	dim as integer dtype = any
 	dim as longint elementlen = any
 
 	sym = astGetSymbol( arrayexpr )
@@ -549,7 +549,7 @@ function rtlArrayRedim _
 
 	hGetCtorDtorForRedim( dtype, symbGetSubtype( sym ), ctor, dtor )
 
-    if( (ctor = NULL) and (dtor = NULL) ) then
+	if( (ctor = NULL) and (dtor = NULL) ) then
 		if( dopreserve = FALSE ) then
 			f = PROCLOOKUP( ARRAYREDIM )
 		else
@@ -563,7 +563,7 @@ function rtlArrayRedim _
 		end if
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
 	'' array() as ANY
 	if( astNewARG( proc, arrayexpr ) = NULL ) then
@@ -610,10 +610,10 @@ function rtlArrayRedim _
 		'' lbound
 		expr = exprTB(i, 0)
 
-    	'' convert to int
-    	if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
-    		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
-    	end if
+		'' convert to int
+		if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
+			expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+		end if
 
 		if( astNewARG( proc, expr ) = NULL ) then
 			exit function
@@ -622,10 +622,10 @@ function rtlArrayRedim _
 		'' ubound
 		expr = exprTB(i, 1)
 
-    	'' convert to int
-    	if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
-    		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
-    	end if
+		'' convert to int
+		if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
+			expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+		end if
 
 		if( astNewARG( proc, expr ) = NULL ) then
 			exit function
@@ -720,8 +720,8 @@ function rtlArrayBoundsCheck _
 		byval module as zstring ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 
    	function = NULL
 
@@ -729,7 +729,7 @@ function rtlArrayBoundsCheck _
    	if( lb = NULL ) then
 		f = PROCLOOKUP( ARRAYSNGBOUNDCHK )
 	else
-    	f = PROCLOOKUP( ARRAYBOUNDCHK )
+		f = PROCLOOKUP( ARRAYBOUNDCHK )
 	end if
 
    	proc = astNewCALL( f )
@@ -756,11 +756,11 @@ function rtlArrayBoundsCheck _
 		exit function
 	end if
 
-    '' module
+	'' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function

@@ -141,8 +141,8 @@ private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
 	attrib = 0
 	subtype = NULL
 
-	' no need for naked check here, naked only effects the way a function
-	' is emitted, not the way it's called
+	
+	
 
 	'' mode
 	mode = cProcCallingConv( )

@@ -678,7 +678,7 @@ private function hCheckUDTParam _
 		return TRUE
 	end if
 
-    '' check for invalid UDT's (different subtypes)
+	'' check for invalid UDT's (different subtypes)
 	if( n->l->subtype <> symbGetSubtype( param ) ) then
 		'' param is not a base type of arg?
 		if( symbGetUDTBaseLevel( n->l->subtype, symbGetSubtype( param ) ) = 0 ) then
@@ -746,7 +746,7 @@ private function hCheckParam _
 
 	dim as integer param_dtype = any, arg_dtype = any
 
-    function = FALSE
+	function = FALSE
 
 	'' string concatenation is delayed for optimization reasons..
 	n->l = astUpdStrConcat( n->l )
@@ -765,8 +765,8 @@ private function hCheckParam _
 
 		return TRUE
 
-    '' vararg?
-    case FB_PARAMMODE_VARARG
+	'' vararg?
+	case FB_PARAMMODE_VARARG
 		return hCheckVarargParam( parent, param, n )
 
 	case FB_PARAMMODE_BYREF
@@ -797,7 +797,7 @@ private function hCheckParam _
 
 	'' UDT arg? convert to param type if possible (including strings)
 	select case arg_dtype
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+	case FB_DATATYPE_STRUCT 
 		'' try implicit casting op overloading
 		dim as integer err_num = any
 		dim as FBSYMBOL ptr proc = any
@@ -806,9 +806,9 @@ private function hCheckParam _
 						n->l, @err_num )
 
 		if( proc <> NULL ) then
-    		static as integer rec_cnt = 0
-    		'' recursion? (astBuildCall() will call newARG with the same expr)
-    		if( rec_cnt = 0 ) then
+			static as integer rec_cnt = 0
+			'' recursion? (astBuildCall() will call newARG with the same expr)
+			if( rec_cnt = 0 ) then
 				'' build a proc call
 				rec_cnt += 1
 				n->l = astBuildCall( proc, n->l )
@@ -881,7 +881,7 @@ private function hCheckParam _
 		arg_dtype = astGetDatatype( n->l )
 
 	'' UDT? implicit casting failed, can't convert..
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+	case FB_DATATYPE_STRUCT 
 		errReport( FB_ERRMSG_PARAMTYPEMISMATCHAT )
 		exit function
 	end select
@@ -950,10 +950,10 @@ private function hCheckParam _
 	'' byref arg? check if a temp param isn't needed
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
 		hCheckByrefParam( param, n )
-        '' it's an implicit pointer
+		'' it's an implicit pointer
 	end if
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -990,7 +990,7 @@ function astNewARG _
 	) as ASTNODE ptr
 
 	dim as ASTNODE ptr n = any
-    dim as FBSYMBOL ptr sym = any, param = any
+	dim as FBSYMBOL ptr sym = any, param = any
 
 	sym = parent->sym
 

@@ -42,7 +42,7 @@ end sub
 
 '' SelectStatement  =  SELECT CASE (AS CONST)? Expression .
 sub cSelectStmtBegin( )
-    dim as ASTNODE ptr expr = any
+	dim as ASTNODE ptr expr = any
 	dim as integer dtype = any, options = any
 	dim as FBSYMBOL ptr sym = any, el = any, subtype = any
 	dim as FB_CMPSTMTSTK ptr stk = any
@@ -320,14 +320,14 @@ sub cSelectStmtNext( )
 		errReport( FB_ERRMSG_EXPECTEDENDSELECT )
 	end if
 
-    '' default mask now allowed
-    cCompSetAllowmask( stk, FB_CMPSTMT_MASK_DEFAULT )
+	'' default mask now allowed
+	cCompSetAllowmask( stk, FB_CMPSTMT_MASK_DEFAULT )
 
-    '' AS CONST?
-    if( stk->select.isconst ) then
+	'' AS CONST?
+	if( stk->select.isconst ) then
 		cSelConstStmtNext( stk )
 		exit sub
-    end if
+	end if
 
 	'' CASE
 	lexSkipToken( )
@@ -420,16 +420,16 @@ sub cSelectStmtEnd( )
 		exit sub
 	end if
 
-    '' no CASE's?
-    if( stk->select.casecnt = 0 ) then
+	'' no CASE's?
+	if( stk->select.casecnt = 0 ) then
 		errReport( FB_ERRMSG_EXPECTEDCASE )
-    end if
+	end if
 
-    '' AS CONST?
-    if( stk->select.isconst ) then
+	'' AS CONST?
+	if( stk->select.isconst ) then
 		cSelConstStmtEnd( stk )
 		exit sub
-    end if
+	end if
 
 	'' END SELECT
 	lexSkipToken( )
@@ -440,9 +440,9 @@ sub cSelectStmtEnd( )
 		astScopeEnd( stk->scopenode )
 	end if
 
-    '' emit end label
-    astAdd( astNewLABEL( stk->select.cmplabel ) )
-    astAdd( astNewLABEL( stk->select.endlabel ) )
+	'' emit end label
+	astAdd( astNewLABEL( stk->select.cmplabel ) )
+	astAdd( astNewLABEL( stk->select.endlabel ) )
 
 	'' Close the outer scope block
 	if( stk->select.outerscopenode <> NULL ) then

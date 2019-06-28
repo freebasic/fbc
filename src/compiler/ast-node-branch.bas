@@ -20,14 +20,14 @@ function astNewBRANCH _
 		byval l as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n = any
-    dim as integer dtype = any
+	dim as ASTNODE ptr n = any
+	dim as integer dtype = any
 
-    if( l = NULL ) then
-    	dtype = FB_DATATYPE_INVALID
-    else
-    	dtype = astGetFullType( l )
-    end if
+	if( l = NULL ) then
+		dtype = FB_DATATYPE_INVALID
+	else
+		dtype = astGetFullType( l )
+	end if
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_BRANCH, dtype )
@@ -46,8 +46,8 @@ function astLoadBRANCH _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr l = any
-    dim as IRVREG ptr vr = any
+	dim as ASTNODE ptr l = any
+	dim as IRVREG ptr vr = any
 
 	l  = n->l
 

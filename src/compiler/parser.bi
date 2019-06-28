@@ -646,12 +646,12 @@ declare function cFunctionCall _
 	) as ASTNODE ptr
 
 declare sub hMethodCallAddInstPtrOvlArg _
-    ( _
-        byval proc as FBSYMBOL ptr, _
-        byval thisexpr as ASTNODE ptr, _
-        byval arg_list as FB_CALL_ARG_LIST ptr, _
-        byval options as FB_PARSEROPT ptr _
-    )
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval thisexpr as ASTNODE ptr, _
+		byval arg_list as FB_CALL_ARG_LIST ptr, _
+		byval options as FB_PARSEROPT ptr _
+	)
 
 declare function cMaybeIgnoreCallResult( byval expr as ASTNODE ptr ) as integer
 
