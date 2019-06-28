@@ -4,6 +4,6 @@
 
 int fb_DrvIntlGetTimeFormat( char *buffer, size_t len )
 {
-    /* No localized time format available! */
-    return FALSE;
+	/* No localized time format available! */
+	return FALSE;
 }

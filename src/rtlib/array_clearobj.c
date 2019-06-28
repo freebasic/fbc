@@ -11,11 +11,11 @@ void fb_hArrayCtorObj( FBARRAY *array, FB_DEFCTOR ctor, size_t base_idx )
 	if( array->ptr == NULL )
 		return;
 
-    dim = &array->dimTB[0];
-    elements = dim->elements - base_idx;
-    ++dim;
+	dim = &array->dimTB[0];
+	elements = dim->elements - base_idx;
+	++dim;
 
-    for( i = 1; i < array->dimensions; i++, dim++ )
+	for( i = 1; i < array->dimensions; i++, dim++ )
 	   	elements *= dim->elements;
 
 	/* call ctors */

@@ -17,8 +17,8 @@ static FB_WCHAR *hUTF8ToUTF16( const UTF_8 *src, FB_WCHAR *dst, ssize_t *chars )
 	ssize_t extbytes, charsleft;
 	FB_WCHAR *buffer = dst;
 	
-    if( dst == NULL )
-    {
+	if( dst == NULL )
+	{
 		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 
@@ -143,8 +143,8 @@ static FB_WCHAR *hUTF8ToUTF32( const UTF_8 *src, FB_WCHAR *dst, ssize_t *chars )
 	ssize_t extbytes, charsleft;
 	FB_WCHAR *buffer = dst;
 	
-    if( dst == NULL )
-    {
+	if( dst == NULL )
+	{
 		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 
@@ -288,8 +288,8 @@ static FB_WCHAR *hUTF16ToUTF32( const UTF_16 *src, FB_WCHAR *dst, ssize_t *chars
 	ssize_t charsleft;
 	FB_WCHAR *buffer = dst;
 	
-    if( dst == NULL )
-    {
+	if( dst == NULL )
+	{
 		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 
@@ -371,8 +371,8 @@ static FB_WCHAR *hUTF32ToUTF16( const UTF_32 *src, FB_WCHAR *dst, ssize_t *chars
 	ssize_t charsleft;
 	FB_WCHAR *buffer = dst;
 	
-    if( dst == NULL )
-    {
+	if( dst == NULL )
+	{
 		ssize_t dst_size = 0;
 	    charsleft = 0;
 	    do 

@@ -13,10 +13,10 @@ FBCALL FBSTRING *fb_StrAllocTempDescF( char *str, ssize_t str_size )
 
 	FB_STRUNLOCK();
 
-    if( dsc == NULL )
-        return &__fb_ctx.null_desc;
+	if( dsc == NULL )
+		return &__fb_ctx.null_desc;
 
-    dsc->data = str;
+	dsc->data = str;
 
 	/* can't use strlen() if the size is known */
 	if( str_size != 0 )

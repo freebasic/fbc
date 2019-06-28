@@ -24,7 +24,7 @@ FBCALL FBCOND *fb_CondCreate( void )
 #else
 	return NULL;
 #endif
-        
+		
 }
 
 FBCALL void fb_CondDestroy( FBCOND *cond )
@@ -36,7 +36,7 @@ FBCALL void fb_CondDestroy( FBCOND *cond )
 		free( (void *)cond );
 	}
 #endif
-        
+		
 }
 
 FBCALL void fb_CondSignal( FBCOND *cond )
@@ -47,7 +47,7 @@ FBCALL void fb_CondSignal( FBCOND *cond )
 		pthread_cond_signal( &cond->id );
 	}
 #endif
-        
+		
 }
 
 FBCALL void fb_CondBroadcast( FBCOND *cond )
@@ -58,7 +58,7 @@ FBCALL void fb_CondBroadcast( FBCOND *cond )
 		pthread_cond_broadcast( &cond->id );
 	}
 #endif
-        
+		
 }
 
 FBCALL void fb_CondWait( FBCOND *cond, FBMUTEX *mutex )

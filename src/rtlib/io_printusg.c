@@ -13,13 +13,13 @@ typedef struct {
 #define MIN_EXPDIGS 3
 #define MAX_EXPDIGS 5
 #define MAX_DIGS (BUFFERLEN                                 \
-                   - 2                 /* '%' char(s)   */  \
-                   - 1                 /* +/- sign      */  \
-                   - 1                 /* dollar sign   */  \
-                   - 1                 /* decimal point */  \
-                   - MAX_EXPDIGS       /* exp digits    */  \
-                   - (MIN_EXPDIGS - 1) /* stray carets  */  \
-                 )
+				   - 2                 /* '%' char(s)   */  \
+				   - 1                 /* +/- sign      */  \
+				   - 1                 /* dollar sign   */  \
+				   - 1                 /* decimal point */  \
+				   - MAX_EXPDIGS       /* exp digits    */  \
+				   - (MIN_EXPDIGS - 1) /* stray carets  */  \
+				 )
 
 
 #define CHAR_ZERO        '0'
@@ -50,13 +50,13 @@ typedef struct {
 #define CHARS_FALSE (((uint64_t)'f') << 32 | 'a' << 24 | 'l' << 16 | 's' << 8 | 'e')
 
 #define ADD_CHAR( c )              \
-    do {                           \
-        DBG_ASSERT( p >= buffer ); \
-        if( p >= buffer )          \
-            *(p--) = (char)(c);    \
-        else if( p == buffer )     \
-            *p = CHAR_WTF;         \
-    } while (0)
+	do {                           \
+		DBG_ASSERT( p >= buffer ); \
+		if( p >= buffer )          \
+			*(p--) = (char)(c);    \
+		else if( p == buffer )     \
+			*p = CHAR_WTF;         \
+	} while (0)
 
 
 /*-------------------------------------------------------------*/
@@ -121,11 +121,11 @@ static int fb_PrintUsingFmtStr( int fnum );
 
 FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr )
 {
-    FB_PRINTUSGCTX *ctx;
+	FB_PRINTUSGCTX *ctx;
 
-    FB_LOCK();
+	FB_LOCK();
 
-    ctx = FB_TLSGETCTX( PRINTUSG );
+	ctx = FB_TLSGETCTX( PRINTUSG );
 
 	fb_StrAssign( (void *)&ctx->fmtstr, -1, fmtstr, -1, 0 );
 	ctx->ptr = ctx->fmtstr.data;
@@ -315,7 +315,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
 
-    /* restart if needed */
+	/* restart if needed */
 	if( ctx->chars == 0 )
 	{
 		ctx->ptr = ctx->fmtstr.data;
@@ -331,9 +331,9 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 		ctx->chars = 0;
 
 	while( ctx->chars > 0 )
-    {
+	{
 		c = *ctx->ptr;
-        nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
+		nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
 
 		doexit = TRUE;
 		switch( c )

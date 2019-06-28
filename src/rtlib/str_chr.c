@@ -15,7 +15,7 @@ FBSTRING *fb_CHR ( int args, ... )
 	va_start( ap, args );
 
 	/* alloc temp string */
-    dst = fb_hStrAllocTemp( NULL, args );
+	dst = fb_hStrAllocTemp( NULL, args );
 	if( dst != NULL )
 	{
 		/* convert */

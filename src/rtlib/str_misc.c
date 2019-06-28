@@ -9,7 +9,7 @@ FBCALL FBSTRING *fb_SPACE( ssize_t len )
 	if( len > 0 )
 	{
 		/* alloc temp string */
-        dst = fb_hStrAllocTemp( NULL, len );
+		dst = fb_hStrAllocTemp( NULL, len );
 		if( dst != NULL )
 		{
 			/* fill it */
@@ -20,7 +20,7 @@ FBCALL FBSTRING *fb_SPACE( ssize_t len )
 		}
 		else
 			dst = &__fb_ctx.null_desc;
-    }
+	}
 	else
 		dst = &__fb_ctx.null_desc;
 

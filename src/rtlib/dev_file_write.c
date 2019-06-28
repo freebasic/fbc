@@ -4,11 +4,11 @@
 
 int fb_DevFileWrite( FB_FILE *handle, const void* value, size_t valuelen )
 {
-    FILE *fp;
+	FILE *fp;
 
-    FB_LOCK();
+	FB_LOCK();
 
-    fp = (FILE*) handle->opaque;
+	fp = (FILE*) handle->opaque;
 
 	if( fp == NULL ) {
 		FB_UNLOCK();

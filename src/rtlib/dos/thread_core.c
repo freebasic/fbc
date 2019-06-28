@@ -82,5 +82,5 @@ FBCALL void fb_ThreadWait( FBTHREAD *thread )
 
 	free( thread );
 #endif
-        
+		
 }

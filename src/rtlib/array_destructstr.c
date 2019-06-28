@@ -4,7 +4,7 @@
 
 void fb_hArrayDtorStr( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx )
 {
-    size_t i;
+	size_t i;
 	ssize_t elements;
 	FBARRAYDIM *dim;
 	FBSTRING *this_;
@@ -12,15 +12,15 @@ void fb_hArrayDtorStr( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx )
 	if( array->ptr == NULL )
 		return;
 
-    dim = &array->dimTB[0];
-    elements = dim->elements - base_idx;
-    ++dim;
+	dim = &array->dimTB[0];
+	elements = dim->elements - base_idx;
+	++dim;
 
-    for( i = 1; i < array->dimensions; i++, dim++ )
-        elements *= dim->elements;
+	for( i = 1; i < array->dimensions; i++, dim++ )
+		elements *= dim->elements;
 
-    /* call dtors in the inverse order */
-    this_ = (FBSTRING *)array->ptr + (base_idx + (elements-1));
+	/* call dtors in the inverse order */
+	this_ = (FBSTRING *)array->ptr + (base_idx + (elements-1));
 
 	while( elements > 0 ) {
 		if( this_->data != NULL )

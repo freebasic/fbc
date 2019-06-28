@@ -4,7 +4,7 @@
 
 FBCALL int fb_WstrToInt( const FB_WCHAR *src, ssize_t len )
 {
-    const FB_WCHAR *p, *r;
+	const FB_WCHAR *p, *r;
 	int radix;
 
 	/* skip white spc */

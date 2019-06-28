@@ -15,7 +15,7 @@ FB_WCHAR *fb_WstrChr ( int args, ... )
 	/* alloc temp string */
 	va_start( ap, args );
 
-    dst = fb_wstr_AllocTemp( args );
+	dst = fb_wstr_AllocTemp( args );
 	if( dst != NULL )
 	{
 		/* convert */

@@ -17,7 +17,7 @@ FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 		return fb_FileInput( 0 );
 	}
 
-    ctx = FB_TLSGETCTX( INPUT );
+	ctx = FB_TLSGETCTX( INPUT );
 
 	fb_StrDelete( &ctx->str );
 	ctx->handle = 0;

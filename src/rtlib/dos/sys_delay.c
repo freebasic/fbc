@@ -7,8 +7,8 @@
 FBCALL void fb_Delay( int msecs )
 {
 #if defined ENABLE_MT
-        __pthread_usleep(msecs * 1000);
+		__pthread_usleep(msecs * 1000);
 #else
-        usleep(msecs * 1000);
+		usleep(msecs * 1000);
 #endif
 }

@@ -17,7 +17,7 @@ FBCALL FBSTRING *fb_CurDir( void )
 
 	/* alloc temp string */
 	if( len > 0 ) {
-        dst = fb_hStrAllocTemp( NULL, len );
+		dst = fb_hStrAllocTemp( NULL, len );
 		if( dst != NULL ) {
 			memcpy( dst->data, tmp, len + 1 );
 		} else {

@@ -434,9 +434,9 @@ static void hInit( void )
 	const int sigs[] = { SIGABRT, SIGFPE, SIGILL, SIGSEGV, SIGTERM, SIGINT, SIGQUIT, -1 };
 	char buffer[2048], *p, *term;
 	struct termios tty;
-    int i;
+	int i;
 
-    pthread_mutexattr_t attr;
+	pthread_mutexattr_t attr;
 
 #if defined(__GNUC__) && defined(__i386__)
 	unsigned int control_word;

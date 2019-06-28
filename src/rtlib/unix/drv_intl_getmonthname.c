@@ -5,36 +5,36 @@
 
 FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
 {
-    const char *pszName;
-    FBSTRING *result;
-    size_t name_len;
-    nl_item index;
+	const char *pszName;
+	FBSTRING *result;
+	size_t name_len;
+	nl_item index;
 
-    if( month < 1 || month > 12 )
-        return NULL;
+	if( month < 1 || month > 12 )
+		return NULL;
 
-    if( short_names ) {
-        index = (nl_item) (ABMON_1 + month - 1);
-    } else {
-        index = (nl_item) (MON_1 + month - 1);
-    }
+	if( short_names ) {
+		index = (nl_item) (ABMON_1 + month - 1);
+	} else {
+		index = (nl_item) (MON_1 + month - 1);
+	}
 
-    FB_LOCK();
+	FB_LOCK();
 
-    pszName = nl_langinfo( index );
-    if( pszName==NULL ) {
-        FB_UNLOCK();
-        return NULL;
-    }
+	pszName = nl_langinfo( index );
+	if( pszName==NULL ) {
+		FB_UNLOCK();
+		return NULL;
+	}
 
-    name_len = strlen( pszName );
+	name_len = strlen( pszName );
 
-    result = fb_hStrAllocTemp( NULL, name_len );
-    if( result!=NULL ) {
-        FB_MEMCPY( result->data, pszName, name_len + 1 );
-    }
+	result = fb_hStrAllocTemp( NULL, name_len );
+	if( result!=NULL ) {
+		FB_MEMCPY( result->data, pszName, name_len + 1 );
+	}
 
-    FB_UNLOCK();
+	FB_UNLOCK();
 
-    return result;
+	return result;
 }

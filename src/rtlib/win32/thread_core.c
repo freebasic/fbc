@@ -68,9 +68,9 @@ FBCALL void fb_ThreadWait( FBTHREAD *thread )
 
 	WaitForSingleObject( thread->id, INFINITE );
 
-    /* Never forget to close the threads handle ... otherwise we'll
+	/* Never forget to close the threads handle ... otherwise we'll
      * have "zombie" threads in the system ... */
-    CloseHandle( thread->id );
+	CloseHandle( thread->id );
 
 	free( thread );
 }

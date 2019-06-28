@@ -18,7 +18,7 @@ FBCALL FBSTRING *fb_StrLcase2( FBSTRING *src, int mode )
 	if( src->data ) {
 		len = FB_STRSIZE( src );
 		/* alloc temp string */
-        dst = fb_hStrAllocTemp_NoLock( NULL, len );
+		dst = fb_hStrAllocTemp_NoLock( NULL, len );
 	} else {
 		dst = NULL;
 	}

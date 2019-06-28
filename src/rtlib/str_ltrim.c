@@ -24,7 +24,7 @@ FBCALL FBSTRING *fb_LTRIM( FBSTRING *src )
 	if( len > 0 )
 	{
 		/* alloc temp string */
-        dst = fb_hStrAllocTemp_NoLock( NULL, len );
+		dst = fb_hStrAllocTemp_NoLock( NULL, len );
 		if( dst != NULL )
 		{
 			/* simple copy */
@@ -32,7 +32,7 @@ FBCALL FBSTRING *fb_LTRIM( FBSTRING *src )
 		}
 		else
 			dst = &__fb_ctx.null_desc;
-    }
+	}
 	else
 		dst = &__fb_ctx.null_desc;
 

@@ -10,32 +10,32 @@ static unsigned short usCircBufferStatus = 0;
 
 int fb_hConsoleInputBufferChanged( void )
 {
-    int is_changed;
-    unsigned short usNewStatus;
+	int is_changed;
+	unsigned short usNewStatus;
 
-    FB_LOCK();
+	FB_LOCK();
 
-    /* This is required to ensure that SLEEP still works even when
+	/* This is required to ensure that SLEEP still works even when
      * the input buffer is full (QB quirk) */
-    fb_ConsoleMultikeyInit( );
+	fb_ConsoleMultikeyInit( );
 
-    if( !iCircBufferStatusInited ) {
-        iCircBufferStatusInited = TRUE;
-        usCircBufferStatus = _farpeekw( _dos_ds, 0x41C );
-    }
+	if( !iCircBufferStatusInited ) {
+		iCircBufferStatusInited = TRUE;
+		usCircBufferStatus = _farpeekw( _dos_ds, 0x41C );
+	}
 
-    usNewStatus = _farpeekw( _dos_ds, 0x41C );
-    is_changed = usNewStatus!=usCircBufferStatus;
-    if( is_changed )
-        usCircBufferStatus = usNewStatus;
+	usNewStatus = _farpeekw( _dos_ds, 0x41C );
+	is_changed = usNewStatus!=usCircBufferStatus;
+	if( is_changed )
+		usCircBufferStatus = usNewStatus;
 
-    /* Ensure that no IRQ disturbs us ... */
-    fb_dos_cli();
-    is_changed |= __fb_con.forceInpBufferChanged;
-    __fb_con.forceInpBufferChanged = FALSE;
-    fb_dos_sti();
+	/* Ensure that no IRQ disturbs us ... */
+	fb_dos_cli();
+	is_changed |= __fb_con.forceInpBufferChanged;
+	__fb_con.forceInpBufferChanged = FALSE;
+	fb_dos_sti();
 
-    FB_UNLOCK();
+	FB_UNLOCK();
 
-    return is_changed;
+	return is_changed;
 }

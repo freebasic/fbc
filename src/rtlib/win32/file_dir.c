@@ -22,9 +22,9 @@ static void close_dir ( void )
 {
 	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
 #ifdef HOST_MINGW
-    _findclose( ctx->handle );
+	_findclose( ctx->handle );
 #else
-    FindClose( ctx->handle );
+	FindClose( ctx->handle );
 #endif
 	ctx->in_use = FALSE;
 }
@@ -43,23 +43,23 @@ static char *find_next ( int *attrib )
 			name = NULL;
 			break;
 		}
-        name = ctx->data.name;
+		name = ctx->data.name;
 	}
 	while( ctx->data.attrib & ~ctx->attrib );
 
 	*attrib = ctx->data.attrib & ~0xFFFFFF00;
 
 #else
-    do {
-        if( !FindNextFile( ctx->handle, &ctx->data ) ) {
-            close_dir();
-            name = NULL;
-            break;
-        }
-        name = ctx->data.cFileName;
-    } while( ctx->data.dwFileAttributes & ~ctx->attrib );
+	do {
+		if( !FindNextFile( ctx->handle, &ctx->data ) ) {
+			close_dir();
+			name = NULL;
+			break;
+		}
+		name = ctx->data.cFileName;
+	} while( ctx->data.dwFileAttributes & ~ctx->attrib );
 
-    *attrib = ctx->data.dwFileAttributes & ~0xFFFFFF00;
+	*attrib = ctx->data.dwFileAttributes & ~0xFFFFFF00;
 #endif
 
 	return name;
@@ -71,8 +71,8 @@ FBCALL FBSTRING *fb_Dir( FBSTRING *filespec, int attrib, int *out_attrib )
 	FBSTRING *res;
 	ssize_t len;
 	int tmp_attrib;
-    char *name;
-    int handle_ok;
+	char *name;
+	int handle_ok;
 
 	if( out_attrib == NULL )
 		out_attrib = &tmp_attrib;
@@ -89,11 +89,11 @@ FBCALL FBSTRING *fb_Dir( FBSTRING *filespec, int attrib, int *out_attrib )
 			close_dir( );
 
 #ifdef HOST_MINGW
-        ctx->handle = _findfirst( filespec->data, &ctx->data );
-        handle_ok = ctx->handle != -1;
+		ctx->handle = _findfirst( filespec->data, &ctx->data );
+		handle_ok = ctx->handle != -1;
 #else
-        ctx->handle = FindFirstFile( filespec->data, &ctx->data );
-        handle_ok = ctx->handle != INVALID_HANDLE_VALUE;
+		ctx->handle = FindFirstFile( filespec->data, &ctx->data );
+		handle_ok = ctx->handle != INVALID_HANDLE_VALUE;
 #endif
 		if( handle_ok )
 		{
@@ -109,17 +109,17 @@ FBCALL FBSTRING *fb_Dir( FBSTRING *filespec, int attrib, int *out_attrib )
 				name = find_next( out_attrib );
 			else
 			{
-                name = ctx->data.name;
+				name = ctx->data.name;
 				*out_attrib = ctx->data.attrib & ~0xFFFFFF00;
-            }
+			}
 #else
 			if( ctx->data.dwFileAttributes & ~ctx->attrib )
 				name = find_next( out_attrib );
 			else
 			{
-                name = ctx->data.cFileName;
-                *out_attrib = ctx->data.dwFileAttributes & ~0xFFFFFF00;
-            }
+				name = ctx->data.cFileName;
+				*out_attrib = ctx->data.dwFileAttributes & ~0xFFFFFF00;
+			}
 #endif
 			if( name )
 				ctx->in_use = TRUE;

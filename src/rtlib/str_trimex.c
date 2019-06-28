@@ -8,67 +8,67 @@ FBCALL FBSTRING *fb_TrimEx( FBSTRING *src, FBSTRING *pattern )
 	ssize_t len;
 	char *src_ptr = NULL;
 
-    if( src == NULL ) 
-    {
-        fb_hStrDelTemp( pattern );
-        return &__fb_ctx.null_desc;
-    }
+	if( src == NULL ) 
+	{
+		fb_hStrDelTemp( pattern );
+		return &__fb_ctx.null_desc;
+	}
 
 	FB_STRLOCK();
 
 	if( src->data != NULL )
-    {
-        ssize_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
-        len = FB_STRSIZE( src );
-        src_ptr = src->data;
-        if( len >= len_pattern ) 
-        {
-            if( len_pattern==1 ) 
-            {
-                src_ptr = fb_hStrSkipChar( src_ptr,
-                                     	   len,
-                                     	   FB_CHAR_TO_INT(pattern->data[0]) );
-                len = len - (ssize_t)(src_ptr - src->data);
+	{
+		ssize_t len_pattern = ((pattern != NULL) && (pattern->data != NULL)? FB_STRSIZE( pattern ) : 0);
+		len = FB_STRSIZE( src );
+		src_ptr = src->data;
+		if( len >= len_pattern ) 
+		{
+			if( len_pattern==1 ) 
+			{
+				src_ptr = fb_hStrSkipChar( src_ptr,
+									 	   len,
+									 	   FB_CHAR_TO_INT(pattern->data[0]) );
+				len = len - (ssize_t)(src_ptr - src->data);
 
-            } 
-            else if( len_pattern != 0 ) 
-            {                
-                while (len >= len_pattern ) 
-                {
-                    if( FB_MEMCMP( src_ptr, pattern->data, len_pattern )!=0 )
-                        break;
-                    src_ptr += len_pattern;
-                    len -= len_pattern;
-                }
-            }
-        }
-        
-        if( len >= len_pattern ) 
-        {
-            if( len_pattern==1 ) 
-            {
-                char *p_tmp =
-                    fb_hStrSkipCharRev( src_ptr,
-                                        len,
-                                        FB_CHAR_TO_INT(pattern->data[0]) );
-                len = (ssize_t)(p_tmp - src_ptr) + 1;
+			} 
+			else if( len_pattern != 0 ) 
+			{                
+				while (len >= len_pattern ) 
+				{
+					if( FB_MEMCMP( src_ptr, pattern->data, len_pattern )!=0 )
+						break;
+					src_ptr += len_pattern;
+					len -= len_pattern;
+				}
+			}
+		}
+		
+		if( len >= len_pattern ) 
+		{
+			if( len_pattern==1 ) 
+			{
+				char *p_tmp =
+					fb_hStrSkipCharRev( src_ptr,
+										len,
+										FB_CHAR_TO_INT(pattern->data[0]) );
+				len = (ssize_t)(p_tmp - src_ptr) + 1;
 
-            } 
-            else if( len_pattern != 0 ) 
-            {
-                ssize_t test_index = len - len_pattern;
-                while (len >= len_pattern ) 
-                {
-                    if( FB_MEMCMP( src_ptr + test_index,
-                                   pattern->data,
-                                   len_pattern )!=0 )
-                        break;
-                    test_index -= len_pattern;
-                }
-                len = test_index + len_pattern;
+			} 
+			else if( len_pattern != 0 ) 
+			{
+				ssize_t test_index = len - len_pattern;
+				while (len >= len_pattern ) 
+				{
+					if( FB_MEMCMP( src_ptr + test_index,
+								   pattern->data,
+								   len_pattern )!=0 )
+						break;
+					test_index -= len_pattern;
+				}
+				len = test_index + len_pattern;
 
-            }
-        }
+			}
+		}
 	}
 	else
 		len = 0;
@@ -76,7 +76,7 @@ FBCALL FBSTRING *fb_TrimEx( FBSTRING *src, FBSTRING *pattern )
 	if( len > 0 )
 	{
 		/* alloc temp string */
-        dst = fb_hStrAllocTemp_NoLock( NULL, len );
+		dst = fb_hStrAllocTemp_NoLock( NULL, len );
 		if( dst != NULL )
 		{
 			/* simple copy */
@@ -84,13 +84,13 @@ FBCALL FBSTRING *fb_TrimEx( FBSTRING *src, FBSTRING *pattern )
 		}
 		else
 			dst = &__fb_ctx.null_desc;
-    }
+	}
 	else
 		dst = &__fb_ctx.null_desc;
 
 	/* del if temp */
 	fb_hStrDelTemp_NoLock( src );
-    fb_hStrDelTemp_NoLock( pattern );
+	fb_hStrDelTemp_NoLock( pattern );
 
 	FB_STRUNLOCK();
 

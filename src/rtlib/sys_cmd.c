@@ -29,12 +29,12 @@ FBCALL FBSTRING *fb_Command ( int arg )
 			strcat( dst->data, __fb_ctx.argv[i] );
 			if( i != __fb_ctx.argc-1 )
 				strcat( dst->data, " " );
-    	}
+		}
 
-    	return dst;
+		return dst;
 	}
 
-    /* return just one argument */
+	/* return just one argument */
 	if( arg >= __fb_ctx.argc )
 	    return &__fb_ctx.null_desc;
 

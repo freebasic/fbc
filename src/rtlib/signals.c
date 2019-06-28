@@ -39,8 +39,8 @@ typedef struct _FB_SIGHANDLER {
 static FB_SIGHANDLER sigTb[NSIG];
 
 #define FB_SETUPSIGNAL(n,h) 				\
-    sigTb[n].oldhnd = signal( n, h ); 		\
-    sigTb[n].errnum = FB_RTERROR_##n;
+	sigTb[n].oldhnd = signal( n, h ); 		\
+	sigTb[n].errnum = FB_RTERROR_##n;
 
 static void gen_handler( int sig )
 {

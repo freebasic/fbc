@@ -17,10 +17,10 @@ int fb_ConsolePageSet ( int active, int visible )
 	{
 		if( __fb_con.visible != visible )
 		{
-        	__dpmi_regs regs;
-        	regs.h.ah = 0x05;
-        	regs.h.al = visible;
-        	__dpmi_int(0x10, &regs);
+			__dpmi_regs regs;
+			regs.h.ah = 0x05;
+			regs.h.al = visible;
+			__dpmi_int(0x10, &regs);
 
 			__fb_con.visible = visible;
 		}

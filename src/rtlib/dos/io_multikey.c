@@ -30,7 +30,7 @@ int fb_hWriteControlCommand( unsigned char uchValue )
 static int fb_MultikeyHandler(unsigned irq_number)
 {
 #if 1
-    __dpmi_regs regs;
+	__dpmi_regs regs;
 #endif
 	unsigned char scancode_raw;
 

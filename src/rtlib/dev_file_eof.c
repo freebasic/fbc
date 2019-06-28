@@ -4,11 +4,11 @@
 
 int fb_DevFileEof( FB_FILE *handle )
 {
-    FILE *fp;
+	FILE *fp;
 
 	FB_LOCK();
 
-    fp = (FILE*) handle->opaque;
+	fp = (FILE*) handle->opaque;
 
 	if( fp == NULL ) {
 		FB_UNLOCK();

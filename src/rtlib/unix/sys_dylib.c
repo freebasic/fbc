@@ -17,11 +17,11 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 							  "./lib%s.so",
 							  NULL };
 
-	// Just in case the shared lib is an FB one, temporarily reset the
-	// terminal, to let the 2nd rtlib capture the original terminal state.
-	// That way both rtlibs can restore the terminal properly on exit.
-	// Note: The shared lib rtlib exits *after* the program rtlib, in case
-	// the user forgot to dylibfree().
+	
+	
+	
+	
+	
 	FB_LOCK( );
 	fb_hExitConsole();
 	FB_UNLOCK( );
@@ -71,8 +71,8 @@ FBCALL void *fb_DylibSymbolByOrd( void *library, short int symbol )
 
 FBCALL void fb_DylibFree( void *library )
 {
-	// See above; if it's an FB lib it will restore the terminal state
-	// on shutdown
+	
+	
 	FB_LOCK( );
 	fb_hExitConsole();
 	FB_UNLOCK( );

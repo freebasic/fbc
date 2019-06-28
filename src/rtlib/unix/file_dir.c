@@ -32,7 +32,7 @@ static int get_attrib ( char *name, struct stat *info )
 	else
 		mask = S_IWOTH;
 
-    if( (info->st_mode & mask) == 0 )
+	if( (info->st_mode & mask) == 0 )
 		attrib |= 0x1;
 
 	if( name[0] == '.' )

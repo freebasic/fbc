@@ -29,7 +29,7 @@ int fb_ArrayRedimPresvObj
 		res = fb_hArrayRealloc( array, element_len, TRUE, ctor, dtor_mult, dtor, dimensions, ap );
 	}
 
-    va_end( ap );
-    
-    return res;
+	va_end( ap );
+	
+	return res;
 }

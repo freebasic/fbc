@@ -4,7 +4,7 @@
 
 FBCALL unsigned int fb_ASC( FBSTRING *str, ssize_t pos )
 {
-    unsigned int a;
+	unsigned int a;
 	ssize_t len;
 
 	if( str == NULL )

@@ -43,5 +43,5 @@ int fb_ConsoleGetkey( void )
 /* Caller is expected to hold FB_LOCK() */
 int fb_ConsoleKeyHit( void )
 {
-    return fb_hConsolePeekKey( TRUE ) != -1;
+	return fb_hConsolePeekKey( TRUE ) != -1;
 }

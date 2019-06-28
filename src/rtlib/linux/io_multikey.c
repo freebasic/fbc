@@ -19,12 +19,12 @@ static void keyboard_exit(void);
 #include "../unix/fb_private_scancodes_x11.h"
 
 typedef struct {
-    XOPENDISPLAY OpenDisplay;
-    XCLOSEDISPLAY CloseDisplay;
-    XQUERYKEYMAP QueryKeymap;
-    XDISPLAYKEYCODES DisplayKeycodes;
-    XGETKEYBOARDMAPPING GetKeyboardMapping;
-    XFREE Free;
+	XOPENDISPLAY OpenDisplay;
+	XCLOSEDISPLAY CloseDisplay;
+	XQUERYKEYMAP QueryKeymap;
+	XDISPLAYKEYCODES DisplayKeycodes;
+	XGETKEYBOARDMAPPING GetKeyboardMapping;
+	XFREE Free;
 } X_FUNCS;
 
 static Display *display;

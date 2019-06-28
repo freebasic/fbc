@@ -4,6 +4,6 @@
 
 int fb_DrvIntlGetDateFormat( char *buffer, size_t len )
 {
-    /* No localized date format available! */
-    return FALSE;
+	/* No localized date format available! */
+	return FALSE;
 }

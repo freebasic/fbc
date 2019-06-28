@@ -4,6 +4,6 @@
 
 FBSTRING *fb_DrvIntlGetWeekdayName( int weekday, int short_names )
 {
-    /* No localized weekday name available */
-    return NULL;
+	/* No localized weekday name available */
+	return NULL;
 }

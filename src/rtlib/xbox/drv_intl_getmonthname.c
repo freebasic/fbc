@@ -4,6 +4,6 @@
 
 FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
 {
-    /* No localized month name available */
-    return NULL;
+	/* No localized month name available */
+	return NULL;
 }

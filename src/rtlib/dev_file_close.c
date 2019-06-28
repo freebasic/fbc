@@ -4,19 +4,19 @@
 
 int fb_DevFileClose( FB_FILE *handle )
 {
-    FILE *fp;
+	FILE *fp;
 
-    FB_LOCK();
+	FB_LOCK();
 
-    fp = (FILE*) handle->opaque;
+	fp = (FILE*) handle->opaque;
 
-    if( fp != NULL ) {
-        fclose( fp );
-    }
+	if( fp != NULL ) {
+		fclose( fp );
+	}
 
 	handle->opaque = NULL;
 
-    FB_UNLOCK();
+	FB_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

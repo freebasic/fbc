@@ -14,9 +14,9 @@ int fb_ConsolePageCopy( int src, int dst )
 	/* not allocated yet? */
 	if( __fb_con.pgHandleTb[src] == NULL )
 	{
-    	HANDLE hnd = fb_hConsoleCreateBuffer( );
-        if( hnd == NULL )
-           	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		HANDLE hnd = fb_hConsoleCreateBuffer( );
+		if( hnd == NULL )
+		   	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 		else
 			__fb_con.pgHandleTb[src] = hnd;
 	}
@@ -31,9 +31,9 @@ int fb_ConsolePageCopy( int src, int dst )
 	/* not allocated yet? */
 	if( __fb_con.pgHandleTb[dst] == NULL )
 	{
-    	HANDLE hnd = fb_hConsoleCreateBuffer( );
-        if( hnd == NULL )
-           	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		HANDLE hnd = fb_hConsoleCreateBuffer( );
+		if( hnd == NULL )
+		   	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 		else
 			__fb_con.pgHandleTb[dst] = hnd;
 	}

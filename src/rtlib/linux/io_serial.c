@@ -26,30 +26,30 @@ static void alrm()
 static speed_t get_speed( int speed )
 {
 	static unsigned int sp[][2] =
-    {
-    	{0,     B0},
-        {50,    B50},
-        {150,   B150},
-        {300,   B300},
-        {600,   B600},
-        {1200,  B1200},
-        {1800,  B1800},
-        {2400,  B2400},
-        {4800,  B4800},
-        {9600,  B9600},
-        {19200, B19200},
-        {38400, B38400},
+	{
+		{0,     B0},
+		{50,    B50},
+		{150,   B150},
+		{300,   B300},
+		{600,   B600},
+		{1200,  B1200},
+		{1800,  B1800},
+		{2400,  B2400},
+		{4800,  B4800},
+		{9600,  B9600},
+		{19200, B19200},
+		{38400, B38400},
 #ifdef B57600
-        {57600, B57600 },
+		{57600, B57600 },
 #endif
 #ifdef B115200
-        {115200, B115200 },
+		{115200, B115200 },
 #endif
 #ifdef B230400
-        {230400, B230400 },
+		{230400, B230400 },
 #endif
 #ifdef B460800
-        {460800, B460800 },
+		{460800, B460800 },
 #endif
 #ifdef B500000
 		{500000, B500000 },
@@ -67,19 +67,19 @@ static speed_t get_speed( int speed )
 		{1152000, B1152000 },
 #endif
 
-        {ENDSPD, 0},
-        {0, 0}
+		{ENDSPD, 0},
+		{0, 0}
 	};
 
-    int n;
-    speed_t Rspeed;
+	int n;
+	speed_t Rspeed;
 
-    for (n = 0; sp[n][0] != (unsigned int)speed; n++)
-    {
-    	if (sp[n][0] == ENDSPD)		/*invalid speed */
-        	return (BADSPEED);
+	for (n = 0; sp[n][0] != (unsigned int)speed; n++)
+	{
+		if (sp[n][0] == ENDSPD)		/*invalid speed */
+			return (BADSPEED);
 	}
-    Rspeed = sp[n][1];
+	Rspeed = sp[n][1];
 
 	return(Rspeed);
 }
@@ -93,42 +93,42 @@ int fb_SerialOpen
 		void **ppvHandle
 	)
 {
-    int res = FB_RTERROR_OK;
-    int DesiredAccess = O_RDWR|O_NOCTTY|O_NONBLOCK;
-    int SerialFD = (-1);
-    char DeviceName[512];
-    struct termios oldserp, nwserp;
-    speed_t TermSpeed;
+	int res = FB_RTERROR_OK;
+	int DesiredAccess = O_RDWR|O_NOCTTY|O_NONBLOCK;
+	int SerialFD = (-1);
+	char DeviceName[512];
+	struct termios oldserp, nwserp;
+	speed_t TermSpeed;
 #ifdef HAS_LOCKDEV
-    pid_t plckid;
+	pid_t plckid;
 #endif
 
-    /* The IRQ stuff is not supported on Linux ... */
-    if( options->IRQNumber != 0 )
-    {
-    	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
+	/* The IRQ stuff is not supported on Linux ... */
+	if( options->IRQNumber != 0 )
+	{
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
-    res = fb_ErrorSetNum( FB_RTERROR_OK );
+	res = fb_ErrorSetNum( FB_RTERROR_OK );
 
-    switch( handle->access )
-    {
-    case FB_FILE_ACCESS_READ:
-        DesiredAccess |= O_RDONLY;
-        break;
-    case FB_FILE_ACCESS_WRITE:
-        DesiredAccess |= O_WRONLY;
-        break;
-    case FB_FILE_ACCESS_READWRITE:
-    	/* fall through */
-    case FB_FILE_ACCESS_ANY:
-        DesiredAccess |= O_RDWR;
-        break;
-    }
+	switch( handle->access )
+	{
+	case FB_FILE_ACCESS_READ:
+		DesiredAccess |= O_RDONLY;
+		break;
+	case FB_FILE_ACCESS_WRITE:
+		DesiredAccess |= O_WRONLY;
+		break;
+	case FB_FILE_ACCESS_READWRITE:
+		/* fall through */
+	case FB_FILE_ACCESS_ANY:
+		DesiredAccess |= O_RDWR;
+		break;
+	}
 
 	DeviceName[0] = '\0';
 
-    if( iPort == 0 )
+	if( iPort == 0 )
 	{
 		if( strcasecmp(pszDevice, "COM") == 0 )
 		{
@@ -144,59 +144,59 @@ int fb_SerialOpen
 		sprintf(DeviceName, "/dev/ttyS%d", (iPort-1));
 	}
 
-    /* Setting speed baud line */
-    TermSpeed = get_speed(options->uiSpeed);
-    if( TermSpeed == BADSPEED )
-    {
-        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
+	/* Setting speed baud line */
+	TermSpeed = get_speed(options->uiSpeed);
+	if( TermSpeed == BADSPEED )
+	{
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
 #ifdef HAS_LOCKDEV
-    if( dev_testlock(DeviceName) )
-    {
-        return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
-    }
+	if( dev_testlock(DeviceName) )
+	{
+		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+	}
 
-    plckid = dev_lock(DeviceName);
-    if( plckid < 0 )
-    {
-        return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
-    }
+	plckid = dev_lock(DeviceName);
+	if( plckid < 0 )
+	{
+		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+	}
 #endif
 
-    alarm(SERIAL_TIMEOUT);
-    SerialFD =  open( DeviceName, DesiredAccess );
-    alarm(0);
-    if( SerialFD < 0)
-    {
+	alarm(SERIAL_TIMEOUT);
+	SerialFD =  open( DeviceName, DesiredAccess );
+	alarm(0);
+	if( SerialFD < 0)
+	{
 #ifdef HAS_LOCKDEV
 		dev_unlock(DeviceName, plckid);
 #endif
-        return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
-    }
+		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+	}
 
 	/* !!!FIXME!!! Lock file handle (handle->lock) pending, you can use fcnctl or flock functions */
 
-    /* Make the file descriptor asynchronous */
-    /* fcntl(SerialFD, F_SETFL, FASYNC); */
+	/* Make the file descriptor asynchronous */
+	/* fcntl(SerialFD, F_SETFL, FASYNC); */
 
-    /* Save old status of serial port discipline */
-    if( tcgetattr ( SerialFD, &oldserp ) )
-    {
-        res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
+	/* Save old status of serial port discipline */
+	if( tcgetattr ( SerialFD, &oldserp ) )
+	{
+		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
-    /* Discard data write/read in serial port not transmitted */
-    if( tcflush( SerialFD, TCIOFLUSH)  )
-    {
-        res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
+	/* Discard data write/read in serial port not transmitted */
+	if( tcflush( SerialFD, TCIOFLUSH)  )
+	{
+		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
-    /* Inittialize new struct termios with old values */
-    if( tcgetattr ( SerialFD, &nwserp ) )
-    {
-        res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
+	/* Inittialize new struct termios with old values */
+	if( tcgetattr ( SerialFD, &nwserp ) )
+	{
+		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
 	/* Set timeouts
 	 * Timeout not are defined in UNIX termio/s
@@ -206,12 +206,12 @@ int fb_SerialOpen
 	 */
 
 	/* setup generic serial port configuration */
-    if( res == FB_RTERROR_OK )
-    {
+	if( res == FB_RTERROR_OK )
+	{
 		/* Initialize */
-    	nwserp.c_cflag |= CREAD; /* Enable receiver */
+		nwserp.c_cflag |= CREAD; /* Enable receiver */
 		nwserp.c_iflag &= ~(IXON | IXOFF | IXANY); /* Disable Software Flow Control */
-    	nwserp.c_cflag |= CREAD; /* Enable receiver */
+		nwserp.c_cflag |= CREAD; /* Enable receiver */
 
 	    if( options->AddLF )
 	    {
@@ -342,17 +342,17 @@ int fb_SerialOpen
 	    }
 	}
 
-    /* error? */
-    if( res != FB_RTERROR_OK )
-    {
+	/* error? */
+	if( res != FB_RTERROR_OK )
+	{
 #ifdef HAS_LOCKDEV
 		dev_unlock(DeviceName, plckid);
 #endif
-        tcsetattr( SerialFD, TCSAFLUSH, &oldserp); /* Restore old parameter of serial line */
-    	close(SerialFD);
-    }
-    else
-    {
+		tcsetattr( SerialFD, TCSAFLUSH, &oldserp); /* Restore old parameter of serial line */
+		close(SerialFD);
+	}
+	else
+	{
 	    LINUX_SERIAL_INFO *pInfo = (LINUX_SERIAL_INFO *) calloc( 1, sizeof(LINUX_SERIAL_INFO) );
 	    DBG_ASSERT( ppvHandle!=NULL );
 	    *ppvHandle = pInfo;
@@ -364,25 +364,25 @@ int fb_SerialOpen
 #endif
 	    pInfo->iPort = iPort;
 	    pInfo->pOptions = options;
-    }
+	}
 
-    return res;
+	return res;
 }
 
 int fb_SerialGetRemaining( FB_FILE *handle, void *pvHandle, fb_off_t *pLength )
 {
-    int rBytes;
-    int SerialFD;
-    LINUX_SERIAL_INFO *pInfo = (LINUX_SERIAL_INFO *) pvHandle;
+	int rBytes;
+	int SerialFD;
+	LINUX_SERIAL_INFO *pInfo = (LINUX_SERIAL_INFO *) pvHandle;
 
-    SerialFD = pInfo->sfd;
-    if( ioctl(SerialFD, FIONREAD, &rBytes) )
+	SerialFD = pInfo->sfd;
+	if( ioctl(SerialFD, FIONREAD, &rBytes) )
 	    return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	if( pLength )
 		*pLength = rBytes;
 
-    return fb_ErrorSetNum( FB_RTERROR_OK );
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 int fb_SerialWrite
@@ -393,67 +393,67 @@ int fb_SerialWrite
 		size_t length
 	)
 {
-    ssize_t rlng=0;
-    LINUX_SERIAL_INFO *pInfo = (LINUX_SERIAL_INFO *) pvHandle;
-    int SerialFD = pInfo->sfd;
+	ssize_t rlng=0;
+	LINUX_SERIAL_INFO *pInfo = (LINUX_SERIAL_INFO *) pvHandle;
+	int SerialFD = pInfo->sfd;
 
-    (void) signal(SIGALRM,  alrm);
-    alarm( SERIAL_TIMEOUT );
-    rlng=write(SerialFD, data, length);
-    alarm(0);
+	(void) signal(SIGALRM,  alrm);
+	alarm( SERIAL_TIMEOUT );
+	rlng=write(SerialFD, data, length);
+	alarm(0);
 
-    if( rlng <= 0 )
-        return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+	if( rlng <= 0 )
+		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 
-    if( length != (size_t)rlng  )
-        return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+	if( length != (size_t)rlng  )
+		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 
-    return fb_ErrorSetNum( FB_RTERROR_OK );
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 int fb_SerialRead( FB_FILE *handle, void *pvHandle, void *data, size_t *pLength )
 {
-    LINUX_SERIAL_INFO *pInfo = (LINUX_SERIAL_INFO *) pvHandle;
-    int SerialFD;
-    ssize_t count = 0;
-    fd_set rfds;
-    struct timeval tmout;
+	LINUX_SERIAL_INFO *pInfo = (LINUX_SERIAL_INFO *) pvHandle;
+	int SerialFD;
+	ssize_t count = 0;
+	fd_set rfds;
+	struct timeval tmout;
 
-    SerialFD = pInfo->sfd;
+	SerialFD = pInfo->sfd;
 
-    FD_ZERO( &rfds );
-    FD_SET( SerialFD, &rfds );
+	FD_ZERO( &rfds );
+	FD_SET( SerialFD, &rfds );
 
-    tmout.tv_sec = 0;
-    tmout.tv_usec = (SREAD_TIMEOUT*1000L); /* convert to microsecs */
+	tmout.tv_sec = 0;
+	tmout.tv_usec = (SREAD_TIMEOUT*1000L); /* convert to microsecs */
 
-    select( SerialFD+1, &rfds, NULL, NULL, &tmout );
-    if ( FD_ISSET(SerialFD, &rfds) )
-    {
-    	if ( (count = read(SerialFD, data, *pLength)) < 0 )
-    	{
-    		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	select( SerialFD+1, &rfds, NULL, NULL, &tmout );
+	if ( FD_ISSET(SerialFD, &rfds) )
+	{
+		if ( (count = read(SerialFD, data, *pLength)) < 0 )
+		{
+			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 		}
-    }
+	}
 
-    *pLength = count;
+	*pLength = count;
 
-    return fb_ErrorSetNum( FB_RTERROR_OK );
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 int fb_SerialClose( FB_FILE *handle, void *pvHandle )
 {
-    int SerialFD;
-    struct termios oserp;
+	int SerialFD;
+	struct termios oserp;
 #ifdef HAS_LOCKDEV
-    pid_t plckid;
+	pid_t plckid;
 #endif
-    LINUX_SERIAL_INFO *pInfo = (LINUX_SERIAL_INFO *) pvHandle;
+	LINUX_SERIAL_INFO *pInfo = (LINUX_SERIAL_INFO *) pvHandle;
 
-    SerialFD = pInfo->sfd;
-    oserp = pInfo->oldtty;
+	SerialFD = pInfo->sfd;
+	oserp = pInfo->oldtty;
 #ifdef HAS_LOCKDEV
-    plckid = pInfo->pplckid;
+	plckid = pInfo->pplckid;
 #endif
 #ifdef HAS_LOCKDEV
 	dev_unlock(DeviceName, plckid);
@@ -462,8 +462,8 @@ int fb_SerialClose( FB_FILE *handle, void *pvHandle )
 	/* Restore old parameter of serial line */
 	tcsetattr( SerialFD, TCSAFLUSH, &oserp);
 
-    close(SerialFD);
+	close(SerialFD);
 	free(pInfo);
 
-    return fb_ErrorSetNum( FB_RTERROR_OK );
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

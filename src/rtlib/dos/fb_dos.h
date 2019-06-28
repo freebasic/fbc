@@ -38,14 +38,14 @@ typedef long fb_off_t;
 #define FB_COLOR_BWHITE    (15)
 
 typedef struct {
-    unsigned long edi;
-    unsigned long esi;
-    unsigned long ebp;
-    unsigned long res;
-    unsigned long ebx;
-    unsigned long edx;
-    unsigned long ecx;
-    unsigned long eax;
+	unsigned long edi;
+	unsigned long esi;
+	unsigned long ebp;
+	unsigned long res;
+	unsigned long ebx;
+	unsigned long edx;
+	unsigned long ecx;
+	unsigned long eax;
 } __dpmi_regs_d;
 
 extern char *__fb_startup_cwd;
@@ -54,9 +54,9 @@ typedef int (*FnIntHandler)(unsigned irq_number);
 
 unsigned long fb_hGetPageAddr( int pg, int cols, int rows );
 int fb_isr_set( unsigned irq_number,
-                FnIntHandler pfnIntHandler,
-                size_t fn_size,
-                size_t stack_size );
+				FnIntHandler pfnIntHandler,
+				size_t fn_size,
+				size_t stack_size );
 int fb_isr_reset( unsigned irq_number );
 FnIntHandler fb_isr_get( unsigned irq_number );
 /* To allow recursive CLI/STI */

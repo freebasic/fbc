@@ -4,8 +4,8 @@
 
 FBCALL void fb_WstrDelete ( FB_WCHAR *str )
 {
-    if( str == NULL )
-    	return;
+	if( str == NULL )
+		return;
 
-    fb_wstr_Del( str );
+	fb_wstr_Del( str );
 }

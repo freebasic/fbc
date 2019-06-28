@@ -43,9 +43,9 @@ int fb_ConsolePageSet ( int active, int visible )
 	{
 		if( __fb_con.pgHandleTb[active] == NULL )
 		{
-            HANDLE hnd = fb_hConsoleCreateBuffer( );
-            if( hnd == NULL )
-            	return -1;
+			HANDLE hnd = fb_hConsoleCreateBuffer( );
+			if( hnd == NULL )
+				return -1;
 			else
 				__fb_con.pgHandleTb[active] = hnd;
 		}
@@ -63,16 +63,16 @@ int fb_ConsolePageSet ( int active, int visible )
 	{
 		if( __fb_con.pgHandleTb[visible] == NULL )
 		{
-            HANDLE hnd = fb_hConsoleCreateBuffer( );
-            if( hnd == NULL )
-            	return -1;
+			HANDLE hnd = fb_hConsoleCreateBuffer( );
+			if( hnd == NULL )
+				return -1;
 			else
 				__fb_con.pgHandleTb[visible] = hnd;
 		}
 
 		if( __fb_con.visible != visible )
 		{
-            SetConsoleActiveScreenBuffer( __fb_con.pgHandleTb[visible] );
+			SetConsoleActiveScreenBuffer( __fb_con.pgHandleTb[visible] );
 
 			/* if pages aren't the same, hide the cursor */
 			if( visible != __fb_con.active )

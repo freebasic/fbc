@@ -1,5 +1,4 @@
 
-'$LANG: "fblite"
 
 DIM InputFiles$(1 TO 100)
 r% = 1: NextOutput% = 0: OutputFile$ = "": InputCount% = 0: OutHelp% = 0: OutBasic% = 0
@@ -12,9 +11,9 @@ DO
   CASE "-B": OutBasic% = 1
   CASE ELSE
    IF NextOutput% = 1 THEN
-    OutputFile$ = c$: NextOutput% = 0
+	OutputFile$ = c$: NextOutput% = 0
    ELSE
-    InputCount% = InputCount% + 1: InputFiles$(InputCount%) = c$
+	InputCount% = InputCount% + 1: InputFiles$(InputCount%) = c$
    END IF
  END SELECT
  r% = r% + 1
@@ -33,14 +32,14 @@ IF ERR <> 0 THEN
  PRINT "Error creating output file": END 253
 END IF
 ErrCode% = 0
-FOR r% = 1 TO InputCount% 'in this cycle we form lines of the extern_asm(name)
+FOR r% = 1 TO InputCount% 
  ERR = 0: OPEN InputFiles$(r%) FOR INPUT AS #2
  IF ERR <> 0 THEN
   PRINT "Error opening input file "; InputFiles$(r%); "in the first cycle"
   ErrCode% = 252: EXIT FOR
  END IF
  WHILE NOT EOF(2)
-  ERR = 0: LINE INPUT #2, InLin$ 'counted the name of the next file
+  ERR = 0: LINE INPUT #2, InLin$ 
   IF ERR <> 0 THEN
    PRINT "Error reading input file "; InputFiles$(r%) ; "in the first cycle": ErrCode% = 251: EXIT FOR
   END IF
@@ -58,14 +57,14 @@ PRINT #1 , "DXE_EXPORT_TABLE (libfb_symbol_table)"
 IF ERR <> 0 THEN
  PRINT "Error while writing to the output file": CLOSE: END 249
 END IF
-FOR r% = 1 TO InputCount% 'in this cycle we form lines of the form DXE_EXPORT_ASM (name)
+FOR r% = 1 TO InputCount% 
  ERR = 0: OPEN InputFiles$(r%) FOR INPUT AS #2
  IF ERR <> 0 THEN
   PRINT "Error opening input file "; InputFiles$(r%); "in the second cycle"
   ErrCode% = 248: EXIT FOR
  END IF
  WHILE NOT EOF(2)
-  ERR = 0: LINE INPUT #2, InLin$ 'counted the name of the next file
+  ERR = 0: LINE INPUT #2, InLin$ 
   IF ERR <> 0 THEN
    PRINT "Error reading input file "; InputFiles$(r%) ; "in the second cycle"
    ErrCode% = 247: EXIT FOR

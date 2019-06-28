@@ -4,8 +4,8 @@
 
 int fb_DevScrnClose( FB_FILE *handle )
 {
-    FB_LOCK();
+	FB_LOCK();
 	fb_DevScrnEnd( handle );
-    FB_UNLOCK();
+	FB_UNLOCK();
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

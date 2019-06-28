@@ -8,7 +8,7 @@ static char lp_buf[256];
 
 static int exec_lp_cmd( const char *cmd, int test_default )
 {
-	int have_default = TRUE; // Assume a default printer
+	int have_default = TRUE; 
 	int result = -1;
 
 	FILE *fp = popen( cmd, "r" );

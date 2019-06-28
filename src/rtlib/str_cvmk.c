@@ -68,7 +68,7 @@ static FBSTRING *hMK( ssize_t len, void *num )
 	FBSTRING *dst;
 
 	/* alloc temp string */
-    dst = fb_hStrAllocTemp( NULL, len );
+	dst = fb_hStrAllocTemp( NULL, len );
 	if( dst != NULL )
 	{
 		/* convert */

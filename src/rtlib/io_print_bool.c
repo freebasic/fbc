@@ -5,5 +5,5 @@
 /*:::::*/
 FBCALL void fb_PrintBool ( int fnum, char val, int mask )
 {
-    FB_PRINTNUM( fnum, fb_hBoolToStr( val ), mask, "%", "s" );
+	FB_PRINTNUM( fnum, fb_hBoolToStr( val ), mask, "%", "s" );
 }

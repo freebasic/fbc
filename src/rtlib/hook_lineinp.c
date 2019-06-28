@@ -12,14 +12,14 @@ FBCALL int fb_LineInput
 		int addnewline
 	)
 {
-    FB_LINEINPUTPROC lineinputproc;
+	FB_LINEINPUTPROC lineinputproc;
 
-    FB_LOCK();
-    lineinputproc = __fb_ctx.hooks.lineinputproc;
-    FB_UNLOCK();
+	FB_LOCK();
+	lineinputproc = __fb_ctx.hooks.lineinputproc;
+	FB_UNLOCK();
 
-    if( lineinputproc )
-        return lineinputproc( text, dst, dst_len, fillrem, addquestion, addnewline );
-    else
-        return fb_ConsoleLineInput( text, dst, dst_len, fillrem, addquestion, addnewline );
+	if( lineinputproc )
+		return lineinputproc( text, dst, dst_len, fillrem, addquestion, addnewline );
+	else
+		return fb_ConsoleLineInput( text, dst, dst_len, fillrem, addquestion, addnewline );
 }

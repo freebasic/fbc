@@ -12,32 +12,32 @@ void fb_ArraySetDesc
 		...
 	)
 {
-    va_list ap;
+	va_list ap;
 	size_t i, elements;
 	ssize_t diff;
-    FBARRAYDIM *dim;
+	FBARRAYDIM *dim;
 	ssize_t lbTB[FB_MAXDIMENSIONS];
 	ssize_t ubTB[FB_MAXDIMENSIONS];
 
-    va_start( ap, dimensions );
+	va_start( ap, dimensions );
 
-    dim = &array->dimTB[0];
+	dim = &array->dimTB[0];
 
-    for( i = 0; i < dimensions; i++ )
-    {
+	for( i = 0; i < dimensions; i++ )
+	{
 		lbTB[i] = va_arg( ap, ssize_t );
 		ubTB[i] = va_arg( ap, ssize_t );
 
-    	dim->elements = (ubTB[i] - lbTB[i]) + 1;
-    	dim->lbound = lbTB[i];
-    	dim->ubound = ubTB[i];
-    	++dim;
-    }
+		dim->elements = (ubTB[i] - lbTB[i]) + 1;
+		dim->lbound = lbTB[i];
+		dim->ubound = ubTB[i];
+		++dim;
+	}
 
-    va_end( ap );
+	va_end( ap );
 
-    elements = fb_hArrayCalcElements( dimensions, &lbTB[0], &ubTB[0] );
-    diff = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
+	elements = fb_hArrayCalcElements( dimensions, &lbTB[0], &ubTB[0] );
+	diff = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
 
 	array->data = ((unsigned char *)ptr) + diff;
 	array->ptr = ptr;

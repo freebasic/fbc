@@ -11,14 +11,14 @@ FBCALL int fb_LineInputWstr
 		int addnewline
 	)
 {
-    FB_LINEINPUTWPROC fn;
+	FB_LINEINPUTWPROC fn;
 
-    FB_LOCK();
-    fn = __fb_ctx.hooks.lineinputwproc;
-    FB_UNLOCK();
+	FB_LOCK();
+	fn = __fb_ctx.hooks.lineinputwproc;
+	FB_UNLOCK();
 
-    if( fn )
-        return fn( text, dst, max_chars, addquestion, addnewline );
-    else
-        return fb_ConsoleLineInputWstr( text, dst, max_chars, addquestion, addnewline );
+	if( fn )
+		return fn( text, dst, max_chars, addquestion, addnewline );
+	else
+		return fb_ConsoleLineInputWstr( text, dst, max_chars, addquestion, addnewline );
 }

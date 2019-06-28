@@ -5,13 +5,13 @@
 /*:::::*/
 FBCALL void fb_ViewUpdate( void )
 {
-    FB_LOCK();
+	FB_LOCK();
 
-    if( __fb_ctx.hooks.viewupdateproc ) {
-        __fb_ctx.hooks.viewupdateproc( );
-    } else {
-        fb_ConsoleViewUpdate( );
-    }
+	if( __fb_ctx.hooks.viewupdateproc ) {
+		__fb_ctx.hooks.viewupdateproc( );
+	} else {
+		fb_ConsoleViewUpdate( );
+	}
 
-    FB_UNLOCK();
+	FB_UNLOCK();
 }
