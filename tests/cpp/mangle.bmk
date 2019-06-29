@@ -1,10 +1,10 @@
 # TEST_MODE : MULTI_MODULE_OK
 
-MAIN := fbc-mangle.bas
+MAIN := mangle-fbc.bas
 SRCS := 
 
-EXTRA_OBJS := cpp-mangle.o
+EXTRA_OBJS := mangle-cpp.o
 
-$(SRCDIR)cpp-mangle.o : $(SRCDIR)cpp-mangle.cpp
+$(SRCDIR)mangle-cpp.o : $(SRCDIR)mangle-cpp.cpp
 	# Pass $(CFLAGS) to get -m32 or -m64 as required
 	$(CXX) -c $(CFLAGS) -o $@ $^
