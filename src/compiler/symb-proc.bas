@@ -2481,9 +2481,19 @@ function symbFindBopOvlProc _
 
 	proc = symbFindClosestOvlProc( symb.globOpOvlTb(op).head, 2, @arg1, err_num, FB_SYMBFINDOPT_BOP_OVL )
 
+	'' !!! TODO !!! refactor duplicate code.
 	if( proc = NULL ) then
 		if( *err_num <> FB_ERRMSG_OK ) then
 			errReport( *err_num, TRUE )
+		end if
+	else
+		'' check visibility
+		if( symbCheckAccess( proc ) = FALSE ) then
+			*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
+			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
+						 symbGetFullProcName( proc ) )
+
+			proc = NULL
 		end if
 	end if
 
@@ -2583,6 +2593,14 @@ function symbFindUopOvlProc _
 	if( proc = NULL ) then
 		if( *err_num <> FB_ERRMSG_OK ) then
 			errReport( *err_num, TRUE )
+		end if
+	else
+		'' check visibility
+		if( symbCheckAccess( proc ) = FALSE ) then
+			*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
+			errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
+						 symbGetFullProcName( proc ) )
+			proc = NULL
 		end if
 	end if
 
