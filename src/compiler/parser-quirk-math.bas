@@ -110,6 +110,8 @@ private function hLenSizeof( byval tk as integer, byval isasm as integer ) as AS
 	dim as integer dtype = any
 	dim as longint lgt = any
 	dim as FBSYMBOL ptr subtype = any
+	dim descexpr as astnode ptr                       
+	dim sizeexpr as astnode ptr
 
 	'' LEN | SIZEOF
 	lexSkipToken( )
@@ -150,7 +152,31 @@ private function hLenSizeof( byval tk as integer, byval isasm as integer ) as AS
 				expr = astNewCONSTi( lgt )
 			end if
 		else
-			'' sizeof()
+			'' sizeof() - special handling for passed z/wstring arrays
+			select case( typeGetDtAndPtrOnly( expr->dtype ) )             
+			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_FIXSTR
+				if( expr->sym ) then
+					if symbIsParamBydesc(expr->sym) then
+						'' Build a VAR access with the BYDESC param's real dtype
+						descexpr = astNewVAR( expr->sym )
+						assert( symbIsStruct( expr->sym->var_.array.desctype ) and symbIsDescriptor( expr->sym->var_.array.desctype ) )
+						astSetType( descexpr, typeAddrOf( FB_DATATYPE_STRUCT ), expr->sym->var_.array.desctype )
+
+						'' And DEREF to get to the descriptor
+						descexpr = astNewDEREF( descexpr )
+						sizeexpr = astBuildDerefAddrOf( astCloneTree( descexpr ), symb.fbarray_dimtb - symb.fbarray_size, FB_DATATYPE_INTEGER, NULL )
+
+						if sizeexpr <> null then
+							astDelTree( expr )
+							astDelTree( descexpr )
+							function = sizeexpr
+							exit function
+						end if
+					end if
+				end if
+			end select
+
+			'' sizeof() - regular processing
 			lgt = astSizeOf( expr )
 			astDelTree( expr )
 			expr = astNewCONSTi( lgt )
