@@ -526,7 +526,10 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case FB_TK_THISCALL
-		function = FB_FUNCMODE_THISCALL
+		'' ignore thiscall if '-z no-thiscall' was given
+		if( env.clopt.nothiscall = FALSE ) then
+			function = FB_FUNCMODE_THISCALL
+		end if
 		lexSkipToken( )
 
 	case else
