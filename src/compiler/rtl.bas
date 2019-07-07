@@ -414,17 +414,17 @@ end function
 '':::::
 '' note: this function must be called *before* astNewARG(e) because the
 ''       expression 'e' can be changed inside the former (address-of string's etc)
-function rtlCalcExprLen( byval expr as ASTNODE ptr ) as longint
+function rtlCalcExprLen( byval expr as ASTNODE ptr ) as ASTNODE ptr
 	dim as FBSYMBOL ptr s = any
 	dim as integer dtype = any
 
 	dtype = astGetDataType( expr )
 	select case as const dtype
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-		function = rtlCalcStrLen( expr, dtype )
+		function = rtlCalcStrLen2( expr, dtype )
 
 	case else
-		function = symbCalcLen( dtype, astGetSubtype( expr ))
+		function = astNewCONSTi( symbCalcLen( dtype, astGetSubtype( expr )))
 	end select
 end function
 

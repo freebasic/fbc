@@ -185,12 +185,12 @@ function rtlDataRead _
 		byval varexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 	dim as integer args = any, dtype = any
-	dim as longint lgt = any
+	dim as ASTNODE ptr lgt = any
 
-    function = FALSE
+	function = FALSE
 
 	f = NULL
 	args = 1
@@ -238,27 +238,27 @@ function rtlDataRead _
 		exit function
 	end select
 
-    if( f = NULL ) then
-    	exit function
-    end if
-
-    proc = astNewCALL( f )
-
-    if( args > 1 ) then
-    	'' always calc len before pushing the param
-		lgt = rtlCalcStrLen( varexpr, dtype )
-	else
-		lgt = 0
+	if( f = NULL ) then
+		exit function
 	end if
 
-    '' byref var as any
-    if( astNewARG( proc, varexpr ) = NULL ) then
+	proc = astNewCALL( f )
+
+	if( args > 1 ) then
+		'' always calc len before pushing the param
+		lgt = rtlCalcStrLen2( varexpr, dtype )
+	else
+		lgt = astNewCONSTi( 0 )
+	end if
+
+	'' byref var as any
+	if( astNewARG( proc, varexpr ) = NULL ) then
  		exit function
  	end if
 
 	if( args > 1 ) then
 		'' byval dst_size as integer
-		if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+		if( astNewARG( proc, lgt ) = NULL ) then
 			exit function
 		end if
 
@@ -270,10 +270,10 @@ function rtlDataRead _
 		end if
 	end if
 
-    ''
-    astAdd( proc )
+	''
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -283,12 +283,12 @@ function rtlDataRestore _
 		byval afternode as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr proc = any, expr = any
-    dim as FBSYMBOL ptr sym = any
+	dim as ASTNODE ptr proc = any, expr = any
+	dim as FBSYMBOL ptr sym = any
 
-    function = FALSE
+	function = FALSE
 
-    proc = astNewCALL( PROCLOOKUP( DATARESTORE ), NULL )
+	proc = astNewCALL( PROCLOOKUP( DATARESTORE ), NULL )
 
 	'' byval labeladdrs as void ptr
 	if( label = NULL ) then

@@ -903,7 +903,7 @@ declare function rtlOvlProcCall _
 		byval param2 as ASTNODE ptr = NULL _
 	) as ASTNODE ptr
 
-declare function rtlCalcExprLen( byval expr as ASTNODE ptr ) as longint
+declare function rtlCalcExprLen( byval expr as ASTNODE ptr ) as ASTNODE ptr 
 
 declare FUNCTION bydescStringSize( byval expr as ASTNODE ptr) as ASTNODE ptr
 

@@ -154,7 +154,7 @@ function rtlNullPtrCheck _
 		byval module as zstring ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
    	function = NULL
 
@@ -173,12 +173,12 @@ function rtlNullPtrCheck _
 		exit function
 	end if
 
-    '' module
+	'' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -194,7 +194,7 @@ function rtlMemSwap _
 	dim as ASTNODE ptr proc = astNewCALL( PROCLOOKUP( MEMSWAP ) )
 
 	'' always calc len before pushing the param
-	dim as longint bytes = rtlCalcExprLen( dst )
+	dim as ASTNODE ptr bytes = rtlCalcExprLen( dst )
 
 	'' dst as any
 	if( astNewARG( proc, dst ) = NULL ) then
@@ -207,7 +207,7 @@ function rtlMemSwap _
 	end if
 
 	'' byval bytes as integer
-	if( astNewARG( proc, astNewCONSTi( bytes ) ) = NULL ) then
+	if( astNewARG( proc, bytes ) = NULL ) then
 		exit function
 	end if
 
@@ -225,37 +225,37 @@ function rtlMemCopyClear _
 		byval srclen as longint _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = FALSE
 
 	''
-    proc = astNewCALL( PROCLOOKUP( MEMCOPYCLEAR ) )
+	proc = astNewCALL( PROCLOOKUP( MEMCOPYCLEAR ) )
 
-    '' dst as any
-    if( astNewARG( proc, dstexpr ) = NULL ) then
-    	exit function
-    end if
+	'' dst as any
+	if( astNewARG( proc, dstexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval dstlen as integer
 	if( astNewARG( proc, astNewCONSTi( dstlen ) ) = NULL ) then
 		exit function
 	end if
 
-    '' src as any
-    if( astNewARG( proc, srcexpr ) = NULL ) then
-    	exit function
-    end if
+	'' src as any
+	if( astNewARG( proc, srcexpr ) = NULL ) then
+		exit function
+	end if
 
 	'' byval srclen as integer
 	if( astNewARG( proc, astNewCONSTi( srclen ) ) = NULL ) then
 		exit function
 	end if
 
-    ''
-    astAdd( proc )
+	''
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
