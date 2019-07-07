@@ -1,0 +1,10 @@
+# TEST_MODE : MULTI_MODULE_OK
+
+MAIN := call-fbc.bas
+SRCS := 
+
+EXTRA_OBJS := call-cpp.o
+
+$(SRCDIR)call-cpp.o : $(SRCDIR)call-cpp.cpp
+	# Pass $(CFLAGS) to get -m32 or -m64 as required
+	$(CXX) -c $(CFLAGS) -o $@ $^
