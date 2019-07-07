@@ -2078,39 +2078,39 @@ function rtlStrCompare _
 		byval sdtype2 as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-	dim as longint str1len = any, str2len = any
+	dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr str1len = any, str2len = any
 
 	function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( STRCOMPARE ) )
+	proc = astNewCALL( PROCLOOKUP( STRCOMPARE ) )
 
    	'' always calc len before pushing the param
-   	str1len = rtlCalcStrLen( str1, sdtype1 )
-	str2len = rtlCalcStrLen( str2, sdtype2 )
+   	str1len = rtlCalcStrLen2( str1, sdtype1 )
+	str2len = rtlCalcStrLen2( str2, sdtype2 )
 
-    '' byref str1 as any
-    if( astNewARG( proc, str1, sdtype1 ) = NULL ) then
-    	exit function
-    end if
+	'' byref str1 as any
+	if( astNewARG( proc, str1, sdtype1 ) = NULL ) then
+		exit function
+	end if
 
 	'' byval str1_len as integer
-	if( astNewARG( proc, astNewCONSTi( str1len ) ) = NULL ) then
+	if( astNewARG( proc, str1len ) = NULL ) then
 		exit function
 	end if
 
-    '' byref str2 as any
-    if( astNewARG( proc, str2, sdtype2 ) = NULL ) then
-    	exit function
-    end if
+	'' byref str2 as any
+	if( astNewARG( proc, str2, sdtype2 ) = NULL ) then
+		exit function
+	end if
 
 	'' byval str2_len as integer
-	if( astNewARG( proc, astNewCONSTi( str2len ) ) = NULL ) then
+	if( astNewARG( proc, str2len ) = NULL ) then
 		exit function
 	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -2121,24 +2121,24 @@ function rtlWstrCompare _
 		byval str2 as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( WSTRCOMPARE ) )
+	proc = astNewCALL( PROCLOOKUP( WSTRCOMPARE ) )
 
-    '' byval str1 as wstring ptr
-    if( astNewARG( proc, str1 ) = NULL ) then
-    	exit function
-    end if
+	'' byval str1 as wstring ptr
+	if( astNewARG( proc, str1 ) = NULL ) then
+		exit function
+	end if
 
-    '' byval str2 as wstring ptr
-    if( astNewARG( proc, str2 ) = NULL ) then
-    	exit function
-    end if
+	'' byval str2 as wstring ptr
+	if( astNewARG( proc, str2 ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -2151,16 +2151,16 @@ function rtlStrConcat _
 		byval sdtype2 as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-	dim as longint str1len = any, str2len = any
-    dim as FBSYMBOL ptr tmp = any
+	dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr str1len = any, str2len = any
+	dim as FBSYMBOL ptr tmp = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( STRCONCAT ) )
+	proc = astNewCALL( PROCLOOKUP( STRCONCAT ) )
 
-    '' byref dst as string (must be cleaned up due the rtlib assumptions about destine)
-    tmp = symbAddTempVar( FB_DATATYPE_STRING )
+	'' byref dst as string (must be cleaned up due the rtlib assumptions about destine)
+	tmp = symbAddTempVar( FB_DATATYPE_STRING )
 
 	if( astNewARG( proc, _
 		astNewLINK( astBuildTempVarClear( tmp ), _
@@ -2170,30 +2170,30 @@ function rtlStrConcat _
 	end if
 
    	'' always calc len before pushing the param
-   	str1len = rtlCalcStrLen( str1, sdtype1 )
-	str2len = rtlCalcStrLen( str2, sdtype2 )
+   	str1len = rtlCalcStrLen2( str1, sdtype1 )
+	str2len = rtlCalcStrLen2( str2, sdtype2 )
 
-    '' byref str1 as any
-    if( astNewARG( proc, str1, sdtype1 ) = NULL ) then
-    	exit function
-    end if
+	'' byref str1 as any
+	if( astNewARG( proc, str1, sdtype1 ) = NULL ) then
+		exit function
+	end if
 
 	'' byval str1_len as integer
-	if( astNewARG( proc, astNewCONSTi( str1len ) ) = NULL ) then
+	if( astNewARG( proc, str1len ) = NULL ) then
 		exit function
 	end if
 
-    '' byref str2 as any
-    if( astNewARG( proc, str2, sdtype2 ) = NULL ) then
-    	exit function
-    end if
+	'' byref str2 as any
+	if( astNewARG( proc, str2, sdtype2 ) = NULL ) then
+		exit function
+	end if
 
 	'' byval str2_len as integer
-	if( astNewARG( proc, astNewCONSTi( str2len ) ) = NULL ) then
+	if( astNewARG( proc, str2len ) = NULL ) then
 		exit function
 	end if
 
-    function = proc
+	function = proc
 end function
 
 '':::::
@@ -2204,32 +2204,32 @@ function rtlWstrConcatWA _
 		byval sdtype2 as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-	dim as longint str2len = any
+	dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr str2len = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( WSTRCONCATWA ) )
+	proc = astNewCALL( PROCLOOKUP( WSTRCONCATWA ) )
 
-    '' byval str1 as wstring ptr
-    if( astNewARG( proc, str1 ) = NULL ) then
-    	exit function
-    end if
-
-   	'' always calc len before pushing the param
-   	str2len = rtlCalcStrLen( str2, sdtype2 )
-
-    '' byref str2 as any
-    if( astNewARG( proc, str2, sdtype2 ) = NULL ) then
-    	exit function
-    end if
-
-	'' byval str2_len as integer
-	if( astNewARG( proc, astNewCONSTi( str2len ) ) = NULL ) then
+	'' byval str1 as wstring ptr
+	if( astNewARG( proc, str1 ) = NULL ) then
 		exit function
 	end if
 
-    function = proc
+   	'' always calc len before pushing the param
+   	str2len = rtlCalcStrLen2( str2, sdtype2 )
+
+	'' byref str2 as any
+	if( astNewARG( proc, str2, sdtype2 ) = NULL ) then
+		exit function
+	end if
+
+	'' byval str2_len as integer
+	if( astNewARG( proc, str2len ) = NULL ) then
+		exit function
+	end if
+
+	function = proc
 
 end function
 
@@ -2241,32 +2241,32 @@ function rtlWstrConcatAW _
 		byval str2 as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-	dim as longint str1len = any
+	dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr str1len = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( WSTRCONCATAW ) )
+	proc = astNewCALL( PROCLOOKUP( WSTRCONCATAW ) )
 
    	'' always calc len before pushing the param
-   	str1len = rtlCalcStrLen( str1, sdtype1 )
+   	str1len = rtlCalcStrLen2( str1, sdtype1 )
 
-    '' byref str1 as any
-    if( astNewARG( proc, str1, sdtype1 ) = NULL ) then
-    	exit function
-    end if
-
-	'' byval str1_len as integer
-	if( astNewARG( proc, astNewCONSTi( str1len ) ) = NULL ) then
+	'' byref str1 as any
+	if( astNewARG( proc, str1, sdtype1 ) = NULL ) then
 		exit function
 	end if
 
-    '' byval str2 as wstring ptr
-    if( astNewARG( proc, str2 ) = NULL ) then
-    	exit function
-    end if
+	'' byval str1_len as integer
+	if( astNewARG( proc, str1len ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	'' byval str2 as wstring ptr
+	if( astNewARG( proc, str2 ) = NULL ) then
+		exit function
+	end if
+
+	function = proc
 
 end function
 
@@ -2279,36 +2279,36 @@ function rtlWstrConcat _
 		byval sdtype2 as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
 	'' both not wstrings?
-    if( typeGetDtAndPtrOnly( sdtype1 ) <> typeGetDtAndPtrOnly( sdtype2 ) ) then
-    	'' left ?
-    	if( typeGet( sdtype1 ) = FB_DATATYPE_WCHAR ) then
-    		return rtlWstrConcatWA( str1, str2, sdtype2 )
+	if( typeGetDtAndPtrOnly( sdtype1 ) <> typeGetDtAndPtrOnly( sdtype2 ) ) then
+		'' left ?
+		if( typeGet( sdtype1 ) = FB_DATATYPE_WCHAR ) then
+			return rtlWstrConcatWA( str1, str2, sdtype2 )
 
-    	'' right..
-    	else
-    		return rtlWstrConcatAW( str1, sdtype1, str2 )
-    	end if
-    end if
+		'' right..
+		else
+			return rtlWstrConcatAW( str1, sdtype1, str2 )
+		end if
+	end if
 
-    '' both wstrings..
-    proc = astNewCALL( PROCLOOKUP( WSTRCONCAT ) )
+	'' both wstrings..
+	proc = astNewCALL( PROCLOOKUP( WSTRCONCAT ) )
 
-    '' byval str1 as wstring ptr
-    if( astNewARG( proc, str1 ) = NULL ) then
-    	exit function
-    end if
+	'' byval str1 as wstring ptr
+	if( astNewARG( proc, str1 ) = NULL ) then
+		exit function
+	end if
 
-    '' byval str2 as wstring ptr
-    if( astNewARG( proc, str2 ) = NULL ) then
-    	exit function
-    end if
+	'' byval str2 as wstring ptr
+	if( astNewARG( proc, str2 ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -2319,9 +2319,10 @@ function rtlStrConcatAssign _
 		byval src as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 	dim as integer ddtype = any, sdtype = any
-	dim as longint lgt = any
+	dim as ASTNODE ptr lgt = any
+	dim as ASTNODE ptr lgt2 = any
 
 	function = NULL
 
@@ -2330,29 +2331,29 @@ function rtlStrConcatAssign _
    	ddtype = astGetDataType( dst )
 
 	'' always calc len before pushing the param
-	lgt = rtlCalcStrLen( dst, ddtype )
+	lgt = rtlCalcStrLen2( dst, ddtype )
 
 	'' dst as any
 	if( astNewARG( proc, dst, ddtype ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
 	'' byval dstlen as integer
-	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+	if( astNewARG( proc, lgt ) = NULL ) then
 		exit function
 	end if
 
    	'' always calc len before pushing the param
    	sdtype = astGetDataType( src )
-	lgt = rtlCalcStrLen( src, sdtype )
+	lgt2 = rtlCalcStrLen2( src, sdtype )
 
 	'' src as any
 	if( astNewARG( proc, src, sdtype ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
 	'' byval srclen as integer
-	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+	if( astNewARG( proc, lgt2 ) = NULL ) then
 		exit function
 	end if
 
@@ -2373,30 +2374,30 @@ function rtlWstrConcatAssign _
 		byval src as ASTNODE ptr _
 	) as ASTNODE ptr static
 
-    dim as ASTNODE ptr proc
-	dim as longint lgt = any
+	dim as ASTNODE ptr proc
+	dim as ASTNODE ptr lgt = any
 
 	function = NULL
 
 	proc = astNewCALL( PROCLOOKUP( WSTRCONCATASSIGN ) )
 
 	'' always calc len before pushing the param
-	lgt = rtlCalcStrLen( dst, FB_DATATYPE_WCHAR )
+	lgt = rtlCalcStrLen2( dst, FB_DATATYPE_WCHAR )
 
 	'' byval dst as wstring ptr
 	if( astNewARG( proc, dst ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
 	'' byval dstlen as integer
-	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+	if( astNewARG( proc, lgt ) = NULL ) then
 		exit function
 	end if
 
 	'' byval src as wstring ptr
 	if( astNewARG( proc, src ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
 	''
 	function = proc
@@ -2411,38 +2412,38 @@ function rtlWstrAssignWA _
 		byval sdtype as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-	dim as longint dstlen = any, srclen = any
+	dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr dstlen = any , srclen = any
 
 	function = NULL
 
 	proc = astNewCALL( PROCLOOKUP( WSTRASSIGNWA ) )
 
    	'' always calc len before pushing the param
-	dstlen = rtlCalcStrLen( dst, FB_DATATYPE_WCHAR )
-	srclen = rtlCalcStrLen( src, sdtype )
+	dstlen = rtlCalcStrLen2( dst, FB_DATATYPE_WCHAR )
+	srclen = rtlCalcStrLen2( src, sdtype )
 
-    '' byval dst as wstring ptr
-    if( astNewARG( proc, dst ) = NULL ) then
-    	exit function
-    end if
+	'' byval dst as wstring ptr
+	if( astNewARG( proc, dst ) = NULL ) then
+		exit function
+	end if
 
 	'' byval dstlen as integer
-	if( astNewARG( proc, astNewCONSTi( dstlen ) ) = NULL ) then
+	if( astNewARG( proc, dstlen ) = NULL ) then
 		exit function
 	end if
 
-    '' byref src as any
-    if( astNewARG( proc, src ) = NULL ) then
-    	exit function
-    end if
+	'' byref src as any
+	if( astNewARG( proc, src ) = NULL ) then
+		exit function
+	end if
 
 	'' byval srclen as integer
-	if( astNewARG( proc, astNewCONSTi( srclen ) ) = NULL ) then
+	if( astNewARG( proc, srclen ) = NULL ) then
 		exit function
 	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -2455,8 +2456,8 @@ function rtlWstrAssignAW _
 		byval is_ini as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-	dim as longint lgt = any
+	dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr lgt = any
 
 	function = NULL
 
@@ -2465,29 +2466,29 @@ function rtlWstrAssignAW _
 				PROCLOOKUP(  WSTRASSIGNAW ) ) )
 
    	'' always calc len before pushing the param
-	lgt = rtlCalcStrLen( dst, ddtype )
+	lgt = rtlCalcStrLen2( dst, ddtype )
 
-    '' byref dst as any
-    if( astNewARG( proc, dst ) = NULL ) then
-    	exit function
-    end if
-
-	'' byval dstlen as integer
-	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+	'' byref dst as any
+	if( astNewARG( proc, dst ) = NULL ) then
 		exit function
 	end if
 
-    '' byval src as wstring ptr
-    if( astNewARG( proc, src ) = NULL ) then
-    	exit function
-    end if
+	'' byval dstlen as integer
+	if( astNewARG( proc, lgt ) = NULL ) then
+		exit function
+	end if
+
+	'' byval src as wstring ptr
+	if( astNewARG( proc, src ) = NULL ) then
+		exit function
+	end if
 
 	'' byval fillrem as integer
 	if( astNewARG( proc, astNewCONSTi( ddtype = FB_DATATYPE_FIXSTR ) ) = NULL ) then
 		exit function
 	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -2499,23 +2500,24 @@ function rtlStrAssign _
 		byval is_ini as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 	dim as integer ddtype = any, sdtype = any
-	dim as longint lgt = any
+	dim as ASTNODE ptr lgt = any
+	dim as ASTNODE ptr lgt2 = any
 
 	function = NULL
 
-    ddtype = astGetDataType( dst )
-    sdtype = astGetDataType( src )
+	ddtype = astGetDataType( dst )
+	sdtype = astGetDataType( src )
 
 	'' wstring source?
-    if( sdtype = FB_DATATYPE_WCHAR ) then
-    	return rtlWstrAssignAW( dst, ddtype, src, is_ini )
+	if( sdtype = FB_DATATYPE_WCHAR ) then
+		return rtlWstrAssignAW( dst, ddtype, src, is_ini )
 
-    '' destine?
-    elseif( ddtype = FB_DATATYPE_WCHAR ) then
-    	return rtlWstrAssignWA( dst, src, sdtype )
-    end if
+	'' destine?
+	elseif( ddtype = FB_DATATYPE_WCHAR ) then
+		return rtlWstrAssignWA( dst, src, sdtype )
+	end if
 
 	'' both strings
 	proc = astNewCALL( iif( is_ini, _
@@ -2524,28 +2526,28 @@ function rtlStrAssign _
 
 	'' always calc len before pushing the param
 
-	lgt = rtlCalcStrLen( dst, ddtype )
+	lgt = rtlCalcStrLen2( dst, ddtype )
 
 	'' dst as any
 	if( astNewARG( proc, dst, astGetDataType( dst ) ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
 	'' byval dstlen as integer
-	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+	if( astNewARG( proc, lgt ) = NULL ) then
 		exit function
 	end if
 
    	'' always calc len before pushing the param
-	lgt = rtlCalcStrLen( src, sdtype )
+	lgt2 = rtlCalcStrLen2( src, sdtype )
 
 	'' src as any
 	if( astNewARG( proc, src, astGetDataType( src ) ) = NULL ) then
-    	exit function
-    end if
+		exit function
+	end if
 
 	'' byval srclen as integer
-	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+	if( astNewARG( proc, lgt2 ) = NULL ) then
 		exit function
 	end if
 
@@ -2567,9 +2569,9 @@ function rtlWstrAssign _
 		byval is_ini as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 	dim as integer ddtype = any, sdtype = any
-	dim as longint lgt = any
+	dim as ASTNODE ptr lgt = any
 
 	function = NULL
 
@@ -2591,24 +2593,24 @@ function rtlWstrAssign _
 	proc = astNewCALL( PROCLOOKUP( WSTRASSIGN ) )
 
    	'' always calc len before pushing the param
-	lgt = rtlCalcStrLen( dst, ddtype )
+	lgt = rtlCalcStrLen2( dst, ddtype )
 
-    '' byval dst as wstring ptr
-    if( astNewARG( proc, dst ) = NULL ) then
-    	exit function
-    end if
-
-	'' byval dstlen as integer
-	if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
+	'' byval dst as wstring ptr
+	if( astNewARG( proc, dst ) = NULL ) then
 		exit function
 	end if
 
-    '' byval src as wstring ptr
-    if( astNewARG( proc, src ) = NULL ) then
-    	exit function
-    end if
+	'' byval dstlen as integer
+	if( astNewARG( proc, lgt ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	'' byval src as wstring ptr
+	if( astNewARG( proc, src ) = NULL ) then
+		exit function
+	end if
+
+	function = proc
 
 end function
 
@@ -2654,17 +2656,17 @@ function rtlStrAllocTmpResult _
 		byval strg as ASTNODE ptr _
 	) as ASTNODE ptr static
 
-    dim as ASTNODE ptr proc
+	dim as ASTNODE ptr proc
 
 	function = NULL
 
 	''
-    proc = astNewCALL( PROCLOOKUP( STRALLOCTMPRES ), NULL )
+	proc = astNewCALL( PROCLOOKUP( STRALLOCTMPRES ), NULL )
 
-    '' src as string
-    if( astNewARG( proc, strg, FB_DATATYPE_STRING ) = NULL ) then
-    	exit function
-    end if
+	'' src as string
+	if( astNewARG( proc, strg, FB_DATATYPE_STRING ) = NULL ) then
+		exit function
+	end if
 
 	function = proc
 
@@ -2676,12 +2678,12 @@ function rtlStrAllocTmpDesc	_
 		byval strexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 	dim as integer dtype = any
 	dim as longint lgt = any
-    dim as FBSYMBOL ptr litsym = any
+	dim as FBSYMBOL ptr litsym = any
 
-    function = NULL
+	function = NULL
 
 	''
    	dtype = astGetDataType( strexpr )
@@ -2689,46 +2691,46 @@ function rtlStrAllocTmpDesc	_
 	select case as const dtype
 	case FB_DATATYPE_CHAR
 
-    	'' literal?
-    	litsym = astGetStrLitSymbol( strexpr )
-    	if( litsym = NULL ) then
-    		proc = astNewCALL( PROCLOOKUP( STRALLOCTMPDESCZ ) )
-    	else
-    		proc = astNewCALL( PROCLOOKUP( STRALLOCTMPDESCZEX ) )
-    	end if
+		'' literal?
+		litsym = astGetStrLitSymbol( strexpr )
+		if( litsym = NULL ) then
+			proc = astNewCALL( PROCLOOKUP( STRALLOCTMPDESCZ ) )
+		else
+			proc = astNewCALL( PROCLOOKUP( STRALLOCTMPDESCZEX ) )
+		end if
 
-    	'' byval str as zstring ptr
-    	if( astNewARG( proc, strexpr ) = NULL ) then
-    		exit function
-    	end if
+		'' byval str as zstring ptr
+		if( astNewARG( proc, strexpr ) = NULL ) then
+			exit function
+		end if
 
-    	'' length is known at compile-time
-    	if( litsym <> NULL ) then
-    		lgt = symbGetStrLen( litsym ) - 1	'' less the null-term
+		'' length is known at compile-time
+		if( litsym <> NULL ) then
+			lgt = symbGetStrLen( litsym ) - 1	'' less the null-term
 
 			'' byval len as integer
 			if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
 				exit function
 			end if
-    	end if
+		end if
 
 	case FB_DATATYPE_FIXSTR
-    	proc = astNewCALL( PROCLOOKUP( STRALLOCTMPDESCF ) )
+		proc = astNewCALL( PROCLOOKUP( STRALLOCTMPDESCF ) )
 
-    	'' always calc len before pushing the param
+		'' always calc len before pushing the param
 		lgt = rtlCalcStrLen( strexpr, dtype )
 
-    	'' str as any
-    	if( astNewARG( proc, strexpr ) = NULL ) then
-    		exit function
-    	end if
+		'' str as any
+		if( astNewARG( proc, strexpr ) = NULL ) then
+			exit function
+		end if
 
 		'' byval strlen as integer
 		if( astNewARG( proc, astNewCONSTi( lgt ) ) = NULL ) then
 			exit function
 		end if
 
-    end select
+	end select
 
 	''
 	function = proc
@@ -2741,18 +2743,18 @@ function rtlWstrAlloc _
 		byval lenexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( WSTRALLOC ) )
+	proc = astNewCALL( PROCLOOKUP( WSTRALLOC ) )
 
-    '' byval len as integer
-    if( astNewARG( proc, lenexpr ) = NULL ) then
-    	exit function
-    end if
+	'' byval len as integer
+	if( astNewARG( proc, lenexpr ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -2762,18 +2764,18 @@ function rtlWstrToA _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
-    function = NULL
+	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( WSTR2STR ) )
+	proc = astNewCALL( PROCLOOKUP( WSTR2STR ) )
 
-    '' byval str as wstring ptr
-    if( astNewARG( proc, expr ) = NULL ) then
-    	exit function
-    end if
+	'' byval str as wstring ptr
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -2783,18 +2785,18 @@ function rtlAToWstr _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
-    function = NULL
+	function = NULL
 
-    proc = astNewCALL( PROCLOOKUP( STR2WSTR ) )
+	proc = astNewCALL( PROCLOOKUP( STR2WSTR ) )
 
-    '' byval str as zstring ptr
-    if( astNewARG( proc, expr ) = NULL ) then
-    	exit function
-    end if
+	'' byval str as zstring ptr
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -2805,11 +2807,11 @@ function rtlToStr _
 		byval pad as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any, litsym = any
-    dim as integer dtype = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any, litsym = any
+	dim as integer dtype = any
 
-    function = NULL
+	function = NULL
 
 	dtype = astGetDatatype( expr )
 
@@ -2833,24 +2835,24 @@ function rtlToStr _
 		return astNewCONSTstr( s )
 	end if
 
-    '' wstring literal? convert from unicode at compile-time
-    if( dtype = FB_DATATYPE_WCHAR ) then
-    	litsym = astGetStrLitSymbol( expr )
-    	if( litsym <> NULL ) then
+	'' wstring literal? convert from unicode at compile-time
+	if( dtype = FB_DATATYPE_WCHAR ) then
+		litsym = astGetStrLitSymbol( expr )
+		if( litsym <> NULL ) then
 			if( env.wchar_doconv ) then
 				litsym = symbAllocStrConst( str( *symbGetVarLitTextW( litsym ) ), _
 							   	   	   		symbGetWstrLen( litsym ) - 1 )
 
 				return astNewVAR( litsym )
-    		end if
-    	end if
-    end if
+			end if
+		end if
+	end if
 
 	astTryOvlStringCONV( expr )
 
 	dtype = astGetDataType( expr )
 
-    ''
+	''
 	select case as const astGetDataClass( expr )
 	case FB_DATACLASS_INTEGER
 
@@ -2908,14 +2910,14 @@ function rtlToStr _
 	end select
 
 	''
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    ''
-    if( astNewARG( proc, expr ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -2925,30 +2927,30 @@ function rtlToWstr _
 		byval expr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any, litsym = any
-    dim as integer dtype
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any, litsym = any
+	dim as integer dtype
 
-    function = NULL
+	function = NULL
 
-    dtype = astGetDataType( expr )
+	dtype = astGetDataType( expr )
 
-    '' constant? evaluate
-    if( astIsCONST( expr ) ) then
+	'' constant? evaluate
+	if( astIsCONST( expr ) ) then
 		return astNewCONSTwstr( astConstFlushToWstr( expr ) )
-    end if
+	end if
 
-    '' string literal? convert to unicode at compile-time
-    if( dtype = FB_DATATYPE_CHAR ) then
-    	litsym = astGetStrLitSymbol( expr )
-    	if( litsym <> NULL ) then
+	'' string literal? convert to unicode at compile-time
+	if( dtype = FB_DATATYPE_CHAR ) then
+		litsym = astGetStrLitSymbol( expr )
+		if( litsym <> NULL ) then
 			if( env.wchar_doconv ) then
 				litsym = symbAllocWstrConst( wstr( *symbGetVarLitText( litsym ) ), _
 							 			     symbGetStrLen( litsym ) - 1 )
 				return astNewVAR( litsym )
 			end if
-    	end if
-    end if
+		end if
+	end if
 
 	astTryOvlStringCONV( expr )
 
@@ -3005,14 +3007,14 @@ function rtlToWstr _
 	end select
 
 	''
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    ''
-    if( astNewARG( proc, expr ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -3023,12 +3025,12 @@ function rtlStrToVal _
 		byval to_dtype as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any, s = any
-    dim as FB_CALL_ARG arg = any
-    dim as FB_ERRMSG err_num = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any, s = any
+	dim as FB_CALL_ARG arg = any
+	dim as FB_ERRMSG err_num = any
 
-    function = NULL
+	function = NULL
 
 	'' Convert pointer to uinteger
 	if( typeIsPtr( to_dtype ) ) then
@@ -3060,7 +3062,7 @@ function rtlStrToVal _
 		end select
 
 	'' UDT's, classes: try cast(to_dtype) op overloading
-	case FB_DATATYPE_STRUCT ', FB_DATATYPE_CLASS
+	case FB_DATATYPE_STRUCT 
 		return astNewCONV( to_dtype, NULL, expr )
 
 	case else
@@ -3073,18 +3075,18 @@ function rtlStrToVal _
 	arg.mode = INVALID
 	arg.next = NULL
 	f = symbFindClosestOvlProc( f, 1, @arg, @err_num )
-    if( f = NULL ) then
-    	exit function
-    end if
+	if( f = NULL ) then
+		exit function
+	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    ''
-    if( astNewARG( proc, expr ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
 
-    function = astNewCONV( to_dtype, NULL, proc )
+	function = astNewCONV( to_dtype, NULL, proc )
 
 end function
 
@@ -3096,32 +3098,32 @@ function rtlStrMid _
 		byval expr3 as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
-    function = NULL
+	function = NULL
 
 	astTryOvlStringCONV( expr1 )
 
-    if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
-    	proc = astNewCALL( PROCLOOKUP( STRMID ) )
-    else
-    	proc = astNewCALL( PROCLOOKUP( WSTRMID ) )
-    end if
+	if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
+		proc = astNewCALL( PROCLOOKUP( STRMID ) )
+	else
+		proc = astNewCALL( PROCLOOKUP( WSTRMID ) )
+	end if
 
-    ''
-    if( astNewARG( proc, expr1 ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, expr1 ) = NULL ) then
+		exit function
+	end if
 
-    if( astNewARG( proc, expr2 ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, expr2 ) = NULL ) then
+		exit function
+	end if
 
-    if( astNewARG( proc, expr3 ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, expr3 ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -3134,51 +3136,54 @@ function rtlStrAssignMid _
 		byval expr4 as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-	dim as longint dst_len = any
-
-    function = NULL
+	dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr dst_len = any
+	function = NULL
 
 	astTryOvlStringCONV( expr1 )
 
 	''
-    if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
-    	proc = astNewCALL( PROCLOOKUP( STRASSIGNMID ) )
-    	dst_len = -1
-    else
-    	proc = astNewCALL( PROCLOOKUP( WSTRASSIGNMID ) )
-		'' always calc len before pushing the param
-		dst_len = rtlCalcStrLen( expr1, FB_DATATYPE_WCHAR )
-    end if
+	if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
+		proc = astNewCALL( PROCLOOKUP( STRASSIGNMID ) )
 
-    ''
-    if( astNewARG( proc, expr1 ) = NULL ) then
-    	exit function
-    end if
-
-    ''
-    if( dst_len <> -1 ) then
-		if( astNewARG( proc, astNewCONSTi( dst_len ) ) = NULL ) then
+		if( astNewARG( proc, expr1 ) = NULL ) then
 			exit function
 		end if
-    end if
 
-    if( astNewARG( proc, expr2 ) = NULL ) then
-    	exit function
-    end if
 
-    if( astNewARG( proc, expr3 ) = NULL ) then
-    	exit function
-    end if
+	else
+		proc = astNewCALL( PROCLOOKUP( WSTRASSIGNMID ) )
+		'' always calc len before pushing the param
+		dst_len = rtlCalcStrLen2( expr1, FB_DATATYPE_WCHAR )
 
-    if( astNewARG( proc, expr4 ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, expr1 ) = NULL ) then
+		exit function
+	end if
 
-    ''
-    astAdd( proc )
+		if( astNewARG( proc, dst_len ) = NULL ) then
+			exit function
+		end if
+	end if
 
-    function = proc
+	''
+
+	if( astNewARG( proc, expr2 ) = NULL ) then
+		exit function
+	end if
+
+	if( astNewARG( proc, expr3 ) = NULL ) then
+		exit function
+	end if
+
+	if( astNewARG( proc, expr4 ) = NULL ) then
+		exit function
+	end if
+
+	''
+	astAdd( proc )
+
+	function = proc
 
 end function
 
@@ -3190,9 +3195,9 @@ function rtlStrLRSet _
 		byval is_rset as integer _
 	) as integer
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
-    function = FALSE
+	function = FALSE
 
 	''
 	if( astGetDataType( dstexpr ) <> FB_DATATYPE_WCHAR ) then
@@ -3205,20 +3210,20 @@ function rtlStrLRSet _
 		                        PROCLOOKUP( WSTRLSET ) ) )
 	end if
 
-    '' dst as string
-    if( astNewARG( proc, dstexpr ) = NULL ) then
-    	exit function
-    end if
+	'' dst as string
+	if( astNewARG( proc, dstexpr ) = NULL ) then
+		exit function
+	end if
 
-    '' src as string
-    if( astNewARG( proc, srcexpr ) = NULL ) then
-    	exit function
-    end if
+	'' src as string
+	if( astNewARG( proc, srcexpr ) = NULL ) then
+		exit function
+	end if
 
-    ''
-    astAdd( proc )
+	''
+	astAdd( proc )
 
-    function = TRUE
+	function = TRUE
 
 end function
 
@@ -3229,10 +3234,10 @@ function rtlStrFill _
 		byval expr2 as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 
-    function = NULL
+	function = NULL
 
 	select case astGetDataType( expr2 )
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
@@ -3241,18 +3246,18 @@ function rtlStrFill _
 		f = PROCLOOKUP( STRFILL1 )
 	end select
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    ''
-    if( astNewARG( proc, expr1 ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, expr1 ) = NULL ) then
+		exit function
+	end if
 
-    if( astNewARG( proc, expr2 ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, expr2 ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -3263,10 +3268,10 @@ function rtlWstrFill _
 		byval expr2 as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 
-    function = NULL
+	function = NULL
 
 	if( astGetDataType( expr2 ) = FB_DATATYPE_WCHAR ) then
 		f = PROCLOOKUP( WSTRFILL2 )
@@ -3274,18 +3279,18 @@ function rtlWstrFill _
 		f = PROCLOOKUP( WSTRFILL1 )
 	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    ''
-    if( astNewARG( proc, expr1 ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, expr1 ) = NULL ) then
+		exit function
+	end if
 
-    if( astNewARG( proc, expr2 ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, expr2 ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -3335,34 +3340,34 @@ function rtlStrAsc _
 		byval posexpr as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
+	dim as ASTNODE ptr proc = any
 
 	function = NULL
 
 	astTryOvlStringCONV( expr )
 
-    ''
-    if( astGetDataType( expr ) <> FB_DATATYPE_WCHAR ) then
-    	proc = astNewCALL( PROCLOOKUP( STRASC ) )
-    else
-    	proc = astNewCALL( PROCLOOKUP( WSTRASC ) )
-    end if
+	''
+	if( astGetDataType( expr ) <> FB_DATATYPE_WCHAR ) then
+		proc = astNewCALL( PROCLOOKUP( STRASC ) )
+	else
+		proc = astNewCALL( PROCLOOKUP( WSTRASC ) )
+	end if
 
-    '' src as string
-    if( astNewARG( proc, expr ) = NULL ) then
-    	exit function
-    end if
+	'' src as string
+	if( astNewARG( proc, expr ) = NULL ) then
+		exit function
+	end if
 
-    '' byval pos as integer
-    if( posexpr = NULL ) then
+	'' byval pos as integer
+	if( posexpr = NULL ) then
 		posexpr = astNewCONSTi( 1 )
-    end if
+	end if
 
-    if( astNewARG( proc, posexpr ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, posexpr ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -3379,47 +3384,47 @@ function rtlStrChr _
 
 	function = NULL
 
-    if( is_wstr = FALSE ) then
-    	proc = astNewCALL( PROCLOOKUP( STRCHR ) )
-    else
-    	proc = astNewCALL( PROCLOOKUP( WSTRCHR ) )
-    end if
+	if( is_wstr = FALSE ) then
+		proc = astNewCALL( PROCLOOKUP( STRCHR ) )
+	else
+		proc = astNewCALL( PROCLOOKUP( WSTRCHR ) )
+	end if
 
 	'' byval args as integer
 	if( astNewARG( proc, astNewCONSTi( args ) ) = NULL ) then
 		exit function
 	end if
 
-    '' ...
-    for i as integer = 0 to args-1
-    	expr = exprtb(i)
-    	dtype = astGetDatatype( expr )
+	'' ...
+	for i as integer = 0 to args-1
+		expr = exprtb(i)
+		dtype = astGetDatatype( expr )
 
-    	'' check if non-numeric
-    	if( astGetDataClass( expr ) >= FB_DATACLASS_STRING ) then
-    		errReportEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, "at parameter: " + str( i+1 ) )
-    		exit function
-    	end if
+		'' check if non-numeric
+		if( astGetDataClass( expr ) >= FB_DATACLASS_STRING ) then
+			errReportEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, "at parameter: " + str( i+1 ) )
+			exit function
+		end if
 
-    	'' don't allow w|zstring's either..
-    	select case as const dtype
-    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		errReportEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, "at parameter: " + str( i+1 ) )
-    		exit function
+		'' don't allow w|zstring's either..
+		select case as const dtype
+		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			errReportEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, "at parameter: " + str( i+1 ) )
+			exit function
 
-    	case FB_DATATYPE_INTEGER
+		case FB_DATATYPE_INTEGER
 
-    	'' convert to int as chr() is a varargs function
-    	case else
-    		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
-    	end select
+		'' convert to int as chr() is a varargs function
+		case else
+			expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+		end select
 
-    	if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
-    	end if
-    next
+		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+			exit function
+		end if
+	next
 
-    function = proc
+	function = proc
 
 end function
 
@@ -3429,14 +3434,14 @@ function rtlStrInstr _
 		byval nd_start as ASTNODE ptr, _
 		byval nd_text as ASTNODE ptr, _
 		byval nd_pattern as ASTNODE ptr, _
-        byval search_any as integer _
-    ) as ASTNODE ptr
+		byval search_any as integer _
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
 	dim as integer dtype = any
 
-    function = NULL
+	function = NULL
 
 	astTryOvlStringCONV( nd_text )
 	if( nd_pattern ) then
@@ -3446,36 +3451,36 @@ function rtlStrInstr _
 	dtype = astGetDataType( nd_text )
 
 	''
-    if( search_any ) then
+	if( search_any ) then
 		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRINSTRANY )
 		else
 			f = PROCLOOKUP( WSTRINSTRANY )
 		end if
-    else
+	else
 		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRINSTR )
 		else
 			f = PROCLOOKUP( WSTRINSTR )
 		end if
-    end if
+	end if
 
-    proc = astNewCALL( f )
+	proc = astNewCALL( f )
 
-    ''
-    if( astNewARG( proc, nd_start ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, nd_start ) = NULL ) then
+		exit function
+	end if
 
-    if( astNewARG( proc, nd_text ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, nd_text ) = NULL ) then
+		exit function
+	end if
 
-    if( astNewARG( proc, nd_pattern ) = NULL ) then
-    	exit function
-    end if
+	if( astNewARG( proc, nd_pattern ) = NULL ) then
+		exit function
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -3540,14 +3545,14 @@ function rtlStrTrim _
 	( _
 		byval nd_text as ASTNODE ptr, _
 		byval nd_pattern as ASTNODE ptr, _
-        byval is_any as integer _
-    ) as ASTNODE ptr
+		byval is_any as integer _
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer dtype = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer dtype = any
 
-    function = NULL
+	function = NULL
 
 	astTryOvlStringCONV( nd_text )
 	if( nd_pattern ) then
@@ -3557,39 +3562,39 @@ function rtlStrTrim _
 	dtype = astGetDataType( nd_text )
 
 	''
-    if( is_any ) then
+	if( is_any ) then
 		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRTRIMANY )
 		else
 			f = PROCLOOKUP( WSTRTRIMANY )
 		end if
-    elseif( nd_pattern <> NULL ) then
+	elseif( nd_pattern <> NULL ) then
 		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRTRIMEX )
 		else
 			f = PROCLOOKUP( WSTRTRIMEX )
 		end if
-    else
+	else
 		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRTRIM )
 		else
 			f = PROCLOOKUP( WSTRTRIM )
 		end if
-    end if
-    proc = astNewCALL( f )
+	end if
+	proc = astNewCALL( f )
 
-    ''
-    if( astNewARG( proc, nd_text ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, nd_text ) = NULL ) then
+		exit function
+	end if
 
-    if( nd_pattern<>NULL or is_any ) then
-        if( astNewARG( proc, nd_pattern ) = NULL ) then
-            exit function
-        end if
-    end if
+	if( nd_pattern<>NULL or is_any ) then
+		if( astNewARG( proc, nd_pattern ) = NULL ) then
+			exit function
+		end if
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -3598,14 +3603,14 @@ function rtlStrRTrim _
 	( _
 		byval nd_text as ASTNODE ptr, _
 		byval nd_pattern as ASTNODE ptr, _
-        byval is_any as integer _
-    ) as ASTNODE ptr
+		byval is_any as integer _
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer dtype = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer dtype = any
 
-    function = NULL
+	function = NULL
 
 	astTryOvlStringCONV( nd_text )
 	if( nd_pattern ) then
@@ -3615,39 +3620,39 @@ function rtlStrRTrim _
 	dtype = astGetDataType( nd_text )
 
 	''
-    if( is_any ) then
+	if( is_any ) then
 		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRRTRIMANY )
 		else
 			f = PROCLOOKUP( WSTRRTRIMANY )
 		end if
-    elseif( nd_pattern <> NULL ) then
+	elseif( nd_pattern <> NULL ) then
 		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRRTRIMEX )
 		else
 			f = PROCLOOKUP( WSTRRTRIMEX )
 		end if
-    else
+	else
 		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRRTRIM )
 		else
 			f = PROCLOOKUP( WSTRRTRIM )
 		end if
-    end if
-    proc = astNewCALL( f )
+	end if
+	proc = astNewCALL( f )
 
-    ''
-    if( astNewARG( proc, nd_text ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, nd_text ) = NULL ) then
+		exit function
+	end if
 
-    if( nd_pattern<>NULL or is_any ) then
-        if( astNewARG( proc, nd_pattern ) = NULL ) then
-            exit function
-        end if
-    end if
+	if( nd_pattern<>NULL or is_any ) then
+		if( astNewARG( proc, nd_pattern ) = NULL ) then
+			exit function
+		end if
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -3656,14 +3661,14 @@ function rtlStrLTrim _
 	( _
 		byval nd_text as ASTNODE ptr, _
 		byval nd_pattern as ASTNODE ptr, _
-        byval is_any as integer _
-    ) as ASTNODE ptr
+		byval is_any as integer _
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr proc = any
-    dim as FBSYMBOL ptr f = any
-    dim as integer dtype = any
+	dim as ASTNODE ptr proc = any
+	dim as FBSYMBOL ptr f = any
+	dim as integer dtype = any
 
-    function = NULL
+	function = NULL
 
 	astTryOvlStringCONV( nd_text )
 	if( nd_pattern ) then
@@ -3673,39 +3678,39 @@ function rtlStrLTrim _
 	dtype = astGetDataType( nd_text )
 
 	''
-    if( is_any ) then
+	if( is_any ) then
 		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRLTRIMANY )
 		else
 			f = PROCLOOKUP( WSTRLTRIMANY )
 		end if
-    elseif( nd_pattern <> NULL ) then
+	elseif( nd_pattern <> NULL ) then
 		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRLTRIMEX )
 		else
 			f = PROCLOOKUP( WSTRLTRIMEX )
 		end if
-    else
+	else
 		if( dtype <> FB_DATATYPE_WCHAR ) then
 			f = PROCLOOKUP( STRLTRIM )
 		else
 			f = PROCLOOKUP( WSTRLTRIM )
 		end if
-    end if
-    proc = astNewCALL( f )
+	end if
+	proc = astNewCALL( f )
 
-    ''
-    if( astNewARG( proc, nd_text ) = NULL ) then
-    	exit function
-    end if
+	''
+	if( astNewARG( proc, nd_text ) = NULL ) then
+		exit function
+	end if
 
-    if( nd_pattern<>NULL or is_any ) then
-        if( astNewARG( proc, nd_pattern ) = NULL ) then
-            exit function
-        end if
-    end if
+	if( nd_pattern<>NULL or is_any ) then
+		if( astNewARG( proc, nd_pattern ) = NULL ) then
+			exit function
+		end if
+	end if
 
-    function = proc
+	function = proc
 
 end function
 
@@ -3857,11 +3862,11 @@ function rtlStrSwap _
 
 	'' always calc len before pushing the param
 	var dtype1 = astGetDataType( str1 )
-	var length1 = rtlCalcStrLen( str1, dtype1 )
+	var length1 = rtlCalcStrLen2( str1, dtype1 )
 
 	'' always calc len before pushing the param
 	var dtype2 = astGetDataType( str2 )
-	var length2 = rtlCalcStrLen( str2, dtype2 )
+	var length2 = rtlCalcStrLen2( str2, dtype2 )
 
 	'' byref str1 as any
 	if( astNewARG( proc, str1, FB_DATATYPE_STRING ) = NULL ) then
@@ -3869,7 +3874,7 @@ function rtlStrSwap _
 	end if
 
 	'' byval len1 as integer
-	if( astNewARG( proc, astNewCONSTi( length1 ) ) = NULL ) then
+	if( astNewARG( proc, length1 ) = NULL ) then
 		exit function
 	end if
 
@@ -3884,7 +3889,7 @@ function rtlStrSwap _
 	end if
 
 	'' byval len2 as integer
-	if( astNewARG( proc, astNewCONSTi( length2 ) ) = NULL ) then
+	if( astNewARG( proc, length2 ) = NULL ) then
 		exit function
 	end if
 
@@ -3910,7 +3915,7 @@ function rtlWstrSwap _
 	var proc = astNewCALL( PROCLOOKUP( WSTRSWAP ) )
 
 	'' always calc len before pushing the param
-	var length = rtlCalcStrLen( str1, astGetDataType( str1 ) )
+	var length = rtlCalcStrLen2( str1, astGetDataType( str1 ) )
 
 	'' byval str1 as wstring ptr
 	if( astNewARG( proc, str1 ) = NULL ) then
@@ -3918,12 +3923,12 @@ function rtlWstrSwap _
 	end if
 
 	'' byval len1 as integer
-	if( astNewARG( proc, astNewCONSTi( length ) ) = NULL ) then
+	if( astNewARG( proc, length ) = NULL ) then
 		exit function
 	end if
 
 	'' always calc len before pushing the param
-	length = rtlCalcStrLen( str2, astGetDataType( str2 ) )
+	var length2 = rtlCalcStrLen2( str2, astGetDataType( str2 ) )
 
 	'' byval str2 as wstring ptr
 	if( astNewARG( proc, str2 ) = NULL ) then
@@ -3931,7 +3936,7 @@ function rtlWstrSwap _
 	end if
 
 	'' byval len2 as integer
-	if( astNewARG( proc, astNewCONSTi( length ) ) = NULL ) then
+	if( astNewARG( proc, length2 ) = NULL ) then
 		exit function
 	end if
 

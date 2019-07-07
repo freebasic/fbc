@@ -817,7 +817,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FTOUL
 	FB_RTL_IDX_DTOUL
 
-    FB_RTL_IDX_THREADCALL
+	FB_RTL_IDX_THREADCALL
 
 	FB_RTL_INDEXES
 end enum
@@ -905,11 +905,20 @@ declare function rtlOvlProcCall _
 
 declare function rtlCalcExprLen( byval expr as ASTNODE ptr ) as longint
 
+declare FUNCTION bydescStringSize( byval expr as ASTNODE ptr) as ASTNODE ptr
+
 declare function rtlCalcStrLen _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer _
 	) as longint
+
+declare function rtlCalcStrLen2 _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval dtype as integer _
+	) as ASTNODE ptr
+
 
 declare function rtlStrCompare _
 	( _
@@ -1742,7 +1751,7 @@ declare function rtlPrinter_cb _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as integer
-    
+	
 declare function rtlThreadCall(byval callexpr as ASTNODE ptr) as ASTNODE ptr
 
 
