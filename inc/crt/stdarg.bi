@@ -9,6 +9,6 @@
 #ifndef __crt_stdarg_bi__
 #define __crt_stdarg_bi__
 
-type va_list as any ptr
+type va_list as cva_list
 
 #endif
