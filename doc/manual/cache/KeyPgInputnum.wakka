@@ -36,8 +36,11 @@ do
 loop until choice >= "1" and choice <= "3"
 %%
 
+{{fbdoc item="lang"}}
+	- The string type suffix "$" is forbidden in the //[[CompilerOptlang|-lang fb]]// dialect.
+
 {{fbdoc item="diff"}}
-	- None
+	- None in the //[[CompilerOptlang|-lang qb]]// dialect.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgWinput|Winput()]]##

@@ -1,10 +1,10 @@
 {{fbdoc item="title" value="Alphabetical Keywords List"}}----
 Alphabetical listing of keywords, macros and procedures.
 
-[[CatPgOpIndex|Operators]] ##{{anchor name="dot|."}} {{anchor name="underscore|_"}} {{anchor name="hash|#"}} {{anchor name="dollar|$"}} {{anchor name="a|A"}} {{anchor name="b|B"}} {{anchor name="c|C"}} {{anchor name="d|D"}} {{anchor name="e|E"}} {{anchor name="f|F"}} {{anchor name="g|G"}} {{anchor name="h|H"}} {{anchor name="i|I"}} {{anchor name="k|K"}} {{anchor name="l|L"}} {{anchor name="m|M"}} {{anchor name="n|N"}} {{anchor name="o|O"}} {{anchor name="p|P"}} {{anchor name="r|R"}} {{anchor name="s|S"}} {{anchor name="t|T"}} {{anchor name="u|U"}} {{anchor name="v|V"}} {{anchor name="w|W"}} {{anchor name="x|X"}} {{anchor name="y|Y"}} {{anchor name="z|Z"}}##
+##{{anchor name="op|Operators"}} {{anchor name="dot|."}} {{anchor name="underscore|_"}} {{anchor name="hash|#"}} {{anchor name="dollar|$"}} {{anchor name="query|?"}} {{anchor name="a|A"}} {{anchor name="b|B"}} {{anchor name="c|C"}} {{anchor name="d|D"}} {{anchor name="e|E"}} {{anchor name="f|F"}} {{anchor name="g|G"}} {{anchor name="h|H"}} {{anchor name="i|I"}} {{anchor name="k|K"}} {{anchor name="l|L"}} {{anchor name="m|M"}} {{anchor name="n|N"}} {{anchor name="o|O"}} {{anchor name="p|P"}} {{anchor name="r|R"}} {{anchor name="s|S"}} {{anchor name="t|T"}} {{anchor name="u|U"}} {{anchor name="v|V"}} {{anchor name="w|W"}} {{anchor name="x|X"}} {{anchor name="y|Y"}} {{anchor name="z|Z"}}##
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}
-<<{{fbdoc item="section" value="Operators"}}
+<<{{fbdoc item="section" value="Operators"}}{{anchor name="op"}}
 	- [[CatPgOpIndex|See Operator List]]
 
 {{fbdoc item="section" value="."}}{{anchor name="dot"}}
@@ -93,6 +93,11 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgMetaInclude|$INCLUDE"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaLang|$LANG"}}
 	- {{fbdoc item="keyword" value="KeyPgMetaStatic|$STATIC"}}
+
+{{fbdoc item="section" value="?"}}{{anchor name="query"}}
+	- {{fbdoc item="keyword" value="KeyPgPrint|? (Shortcut for 'PRINT')"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintPp|? # (Shortcut for 'PRINT #')"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintusing|? USING (Shortcut for 'PRINT USING')"}}
 
 {{fbdoc item="section" value="A"}}{{anchor name="a"}}
 	- {{fbdoc item="keyword" value="KeyPgAbs|ABS"}}
@@ -259,6 +264,8 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgExp|EXP"}}
 	- {{fbdoc item="keyword" value="KeyPgExport|EXPORT"}}
 	- {{fbdoc item="keyword" value="KeyPgExtends|EXTENDS"}}
+	- {{fbdoc item="keyword" value="KeyPgExtendsWstring|EXTENDS WSTRING"}}
+	- {{fbdoc item="keyword" value="KeyPgExtendsZstring|EXTENDS ZSTRING"}}
 	- {{fbdoc item="keyword" value="KeyPgExtern|EXTERN"}}
 	- {{fbdoc item="keyword" value="KeyPgExternBlock|EXTERN...END EXTERN"}}
 
@@ -297,7 +304,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgHiword|HIWORD"}}
 	- {{fbdoc item="keyword" value="KeyPgHour|HOUR"}}
 
-{{fbdoc item="section" value="I"}}{{anchor name="i"}}
+<<>>{{fbdoc item="section" value="I"}}{{anchor name="i"}}
 	- {{fbdoc item="keyword" value="KeyPgIfthen|IF...THEN"}}
 	- {{fbdoc item="keyword" value="KeyPgIif|IIF"}}
 	- {{fbdoc item="keyword" value="KeyPgImageConvertRow|IMAGECONVERTROW"}}
@@ -322,7 +329,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgIsDate|ISDATE"}}
 	- {{fbdoc item="keyword" value="KeyPgIsredirected|ISREDIRECTED"}}
 
-<<>>{{fbdoc item="section" value="K"}}{{anchor name="k"}}
+{{fbdoc item="section" value="K"}}{{anchor name="k"}}
 	- {{fbdoc item="keyword" value="KeyPgKill|KILL"}}
 
 {{fbdoc item="section" value="L"}}{{anchor name="l"}}
@@ -426,17 +433,14 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgPmap|PMAP"}}
 	- {{fbdoc item="keyword" value="KeyPgPoint|POINT"}}
 	- {{fbdoc item="keyword" value="KeyPgPointCoord|POINTCOORD"}}
-	- {{fbdoc item="keyword" value="KeyPgPointer|POINTER"}}
+	- {{fbdoc item="keyword" value="KeyPgPtr|POINTER"}}
 	- {{fbdoc item="keyword" value="KeyPgPoke|POKE"}}
 	- {{fbdoc item="keyword" value="KeyPgPos|POS"}}
 	- {{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}
 	- {{fbdoc item="keyword" value="KeyPgPreset|PRESET"}}
 	- {{fbdoc item="keyword" value="KeyPgPrint|PRINT"}}
-	- {{fbdoc item="keyword" value="KeyPgPrint|?"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}
-	- {{fbdoc item="keyword" value="KeyPgPrintPp|? #"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintusing|PRINT USING"}}
-	- {{fbdoc item="keyword" value="KeyPgPrintusing|? USING"}}
 	- {{fbdoc item="keyword" value="KeyPgPrivate|PRIVATE"}}
 	- {{fbdoc item="keyword" value="KeyPgVisPrivate|PRIVATE: (Access Control)"}}
 	- {{fbdoc item="keyword" value="KeyPgOpProcptr|PROCPTR"}}
@@ -444,7 +448,7 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgVisProtected|PROTECTED: (Access Control)"}}
 	- {{fbdoc item="keyword" value="KeyPgPset|PSET (Statement)"}}
 	- {{fbdoc item="keyword" value="KeyPgPsetGfx|PSET (Graphics PUT)"}}
-	- {{fbdoc item="keyword" value="KeyPgPtr|PTR"}}
+	- {{fbdoc item="keyword" value="KeyPgPtr|PTR (Shortcut for 'POINTER')"}}
 	- {{fbdoc item="keyword" value="KeyPgPublic|PUBLIC"}}
 	- {{fbdoc item="keyword" value="KeyPgVisPublic|PUBLIC: (Access Control)"}}
 	- {{fbdoc item="keyword" value="KeyPgPutgraphics|PUT (Graphics)"}}

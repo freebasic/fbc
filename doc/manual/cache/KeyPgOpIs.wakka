@@ -90,6 +90,8 @@ identify(@o)
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgExtends|Extends]]##
+	- ##[[KeyPgExtendsZstring|Extends Zstring]]##
+	- ##[[KeyPgExtendsWstring|Extends Wstring]]##
 	- ##[[KeyPgObject|Object]]##
 	- ##[[KeyPgIs|Is (Select Case)]]##
 	- ##[[KeyPgTypeof|Typeof]]##

@@ -29,6 +29,8 @@ Built-in type providing run-time type information
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgExtends|Extends]]##
+	- ##[[KeyPgExtendsZstring|Extends Zstring]]##
+	- ##[[KeyPgExtendsWstring|Extends Wstring]]##
 	- ##[[KeyPgOpIs|Operator Is]]##
 	- ##[[KeyPgVirtual|Virtual]]##
 	- ##[[KeyPgAbstract|Abstract]]##

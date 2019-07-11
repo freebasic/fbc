@@ -434,6 +434,8 @@ Brief definitions and explanations for words and phrases used in the ""FreeBASIC
 
 **static variable/object/array**
 	A variable, object or array with **static storage**.
+	**Note:** Some times, we talk about 'static array/string' (as opposed to 'dynamic array/string'), but here, the 'static' term applies on the size of the array/string (fixed length as opposed to 'dynamic' term for a variable length) .
+	Thus this 'static/dynamic' term does not apply on the storage type for data.
 
 **sub**
 	A procedure defined using ##[[KeyPgSub|Sub]]##, optionally taking parameters and not returning a value.

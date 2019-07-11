@@ -20,6 +20,10 @@
 		User defined structure of overlapping data
 	=={{fbdoc item="keyword" value="KeyPgExtends|EXTENDS"}}==
 		Extends an user defined type to derive another
+	=={{fbdoc item="keyword" value="KeyPgExtendsWstring|EXTENDS WSTRING"}}==
+		Extends an user defined type to inherits Wstring behavior
+	=={{fbdoc item="keyword" value="KeyPgExtendsZstring|EXTENDS ZSTRING"}}==
+		Extends an user defined type to inherits Zstring behavior
 	=={{fbdoc item="keyword" value="KeyPgImplements|IMPLEMENTS"}}==
 		Not implemented.  Keyword reserved.
 	=={{fbdoc item="keyword" value="KeyPgField|FIELD"}}==

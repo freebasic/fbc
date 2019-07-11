@@ -163,7 +163,7 @@ Delete Cptr(B Ptr, pab)
 {{fbdoc item="see"}}
 	- ##[[KeyPgSub|Sub]]##
 	- ##[[KeyPgFunction|Function]]##
-	- ##[[KeyPgPointer|Pointer]]##
+	- ##[[KeyPgPtr|Pointer]]##
 	- ##[[KeyPgOpAt|Operator @ (Address of)]]##
 	- ##[[KeyPgOpProcptr|ProcPtr operator]]##
 

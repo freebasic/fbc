@@ -2,7 +2,7 @@
 Returns the address of a string literal, variable, object or procedure
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **@** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T// ) [[KeyPgAs|as]] //T// [[KeyPgPointer|pointer]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **@** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T// ) [[KeyPgAs|as]] //T// [[KeyPgPtr|pointer]]
 ##
 {{fbdoc item="usage"}}##
 	//result// = **@** //rhs//

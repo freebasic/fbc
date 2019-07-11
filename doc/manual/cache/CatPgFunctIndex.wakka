@@ -42,6 +42,8 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgOptionstatic|OPTION STATIC"}}
 
 {{fbdoc item="section" value="Console"}}
+	- {{fbdoc item="keyword" value="KeyPgPrint|? (Shortcut for 'PRINT')"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintusing|? USING (Shortcut for 'PRINT USING')"}}
 	- {{fbdoc item="keyword" value="KeyPgBeep|BEEP"}}
 	- {{fbdoc item="keyword" value="KeyPgCls|CLS"}}
 	- {{fbdoc item="keyword" value="KeyPgColor|COLOR"}}
@@ -53,9 +55,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgOpenScrn|OPEN SCRN"}}
 	- {{fbdoc item="keyword" value="KeyPgPos|POS"}}
 	- {{fbdoc item="keyword" value="KeyPgPrint|PRINT"}}
-	- {{fbdoc item="keyword" value="KeyPgPrint|?"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintusing|PRINT USING"}}
-	- {{fbdoc item="keyword" value="KeyPgPrintusing|? USING"}}
 	- {{fbdoc item="keyword" value="KeyPgScreenCons|SCREEN (Console)"}}
 	- {{fbdoc item="keyword" value="KeyPgSpc|SPC"}}
 	- {{fbdoc item="keyword" value="KeyPgTab|TAB"}}
@@ -75,6 +75,8 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDouble|DOUBLE"}}
 	- {{fbdoc item="keyword" value="KeyPgEnum|ENUM"}}
 	- {{fbdoc item="keyword" value="KeyPgExtends|EXTENDS"}}
+	- {{fbdoc item="keyword" value="KeyPgExtendsWstring|EXTENDS WSTRING"}}
+	- {{fbdoc item="keyword" value="KeyPgExtendsZstring|EXTENDS ZSTRING"}}
 	- {{fbdoc item="keyword" value="KeyPgFunctionPtr|FUNCTION (Pointer)"}}
 	- {{fbdoc item="keyword" value="KeyPgImplements|IMPLEMENTS"}}
 	- {{fbdoc item="keyword" value="KeyPgInteger|INTEGER"}}
@@ -145,6 +147,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgResumenext|RESUME NEXT"}}
 
 {{fbdoc item="section" value="Files"}}
+	- {{fbdoc item="keyword" value="KeyPgPrintPp|? # (Shortcut for 'Print #')"}}
 	- {{fbdoc item="keyword" value="KeyPgAccess|ACCESS"}}
 	- {{fbdoc item="keyword" value="KeyPgAppend|APPEND"}}
 	- {{fbdoc item="keyword" value="KeyPgBinary|BINARY"}}
@@ -164,7 +167,6 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgOpen|OPEN"}}
 	- {{fbdoc item="keyword" value="KeyPgOutput|OUTPUT"}}
 	- {{fbdoc item="keyword" value="KeyPgPrintPp|PRINT #"}}
-	- {{fbdoc item="keyword" value="KeyPgPrintPp|? #"}}
 	- {{fbdoc item="keyword" value="KeyPgPutfileio|PUT # (File I/O)"}}
 	- {{fbdoc item="keyword" value="KeyPgRandom|RANDOM"}}
 	- {{fbdoc item="keyword" value="KeyPgReadFile|READ (File Access)"}}	
@@ -385,9 +387,9 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgWindowtitle|WINDOWTITLE"}}
 
 {{fbdoc item="section" value="Pointers"}}
-	- {{fbdoc item="keyword" value="KeyPgPointer|POINTER"}}
+	- {{fbdoc item="keyword" value="KeyPgPtr|POINTER"}}
 	- {{fbdoc item="keyword" value="KeyPgOpProcptr|PROCPTR"}}
-	- {{fbdoc item="keyword" value="KeyPgPtr|PTR"}}
+	- {{fbdoc item="keyword" value="KeyPgPtr|PTR (Shortcut for 'POINTER')"}}
 	- {{fbdoc item="keyword" value="KeyPgSadd|SADD"}}
 	- {{fbdoc item="keyword" value="KeyPgOpStrptr|STRPTR"}}
 	- {{fbdoc item="keyword" value="KeyPgOpVarptr|VARPTR"}}

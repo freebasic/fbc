@@ -52,16 +52,15 @@ dim px as double ptr = @x
 
 '$lang: "qb"
 
-'' All variables beginning with A through N default to the INTEGER data type
-'' All other variables will default to the SINGLE data type
+'' All variables beginning with A through N will default to the INTEGER data type
+'' All other variables default to the SINGLE data type
 DefInt I-N
 
+Dim I, J, X, Y, T$, D As Double
 '' I and J are INTEGERs
 '' X and Y are SINGLEs
 '' T$ is STRING
 '' D is DOUBLE
-
-Dim I, J, X, Y, T$, D As Double
 %%
 
 {{fbdoc item="section" value="Arrays"}}
@@ -90,7 +89,7 @@ Dim array(1 To 2, 6, 3 To 5) As Single
 
 	For more information on arrays see [[ProPgArrays|Arrays Overview]].
 	
-	If the values used  with ##**Dim**## to declare the dimensions of an array are all constants, the array will be created ##[[KeyPgOptionstatic|Static]]## (unless ##[[KeyPgOptiondynamic|Option Dynamic]]## is specified), while using one or more variables to declare the dimensions of an array makes it variable length, even if ##[[KeyPgOptionstatic|Option Static]]## is in effect.
+	If the values used  with ##**Dim**## to declare the dimensions of an array are all constants, the array will be created fixed length (of ##[[KeyPgOptionstatic|Static]]## size, unless ##[[KeyPgOptiondynamic|Option Dynamic]]## is specified), while using one or more variables to declare the dimensions of an array makes it variable length, even if ##[[KeyPgOptionstatic|Option Static]]## is in effect.
 	
 	Arrays can be declared as variable length in several ways: Using ##**Dim**## with an empty set of indexes (##**Dim** x()##), using ##**Dim**## with indexes that are variables or using the keyword ##[[KeyPgRedim|Redim]]##, or using ##[[KeyPgAny|Any]]## in place of the array bounds, or declaring it past the metacommand ##[[KeyPgMetaDynamic|$Dynamic]]##. Variable length arrays can't use initializers.
 	

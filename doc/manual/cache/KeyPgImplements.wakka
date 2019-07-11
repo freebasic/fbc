@@ -20,5 +20,7 @@ Specifies an interface to be implemented by a user-defined type
 {{fbdoc item="see"}}
 	- ##[[KeyPgType|Type]]##
 	- ##[[KeyPgExtends|Extends]]##
+	- ##[[KeyPgExtendsZstring|Extends Zstring]]##
+	- ##[[KeyPgExtendsWstring|Extends Wstring]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

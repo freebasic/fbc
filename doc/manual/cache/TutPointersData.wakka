@@ -91,7 +91,7 @@ Deallocate aptr
 Sleep
 %%##
 
-In this program we dimension two variables, an [[KeyPgInteger|integer]] and an [[KeyPgInteger|integer]] [[KeyPgPointer|pointer]], aptr. Aptr will point to our memory buffer that will contain two integers. The [[KeyPgAllocate|allocate]] function requires the size of the buffer we need, so we multiply the size of an [[KeyPgInteger|integer]] by 2 to reserve 8/16 bytes of memory (on 32/64bit systems, each integer will take 4/8 bytes of space (on 32/64bit systems). 
+In this program we dimension two variables, an [[KeyPgInteger|integer]] and an [[KeyPgInteger|integer]] [[KeyPgPtr|pointer]], aptr. Aptr will point to our memory buffer that will contain two integers. The [[KeyPgAllocate|allocate]] function requires the size of the buffer we need, so we multiply the size of an [[KeyPgInteger|integer]] by 2 to reserve 8/16 bytes of memory (on 32/64bit systems, each integer will take 4/8 bytes of space (on 32/64bit systems). 
 
 After the allocation process, aptr contains the address of the first byte of our memory buffer. Storing the first integer is simply a matter of using the dereference operator and setting the value to 1. To print out the value, we again just use *aptr.
 

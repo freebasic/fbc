@@ -1,0 +1,35 @@
+{{fbdoc item="title" value="EXTENDS WSTRING"}}----
+Specifies a type which inherits a Wstring behavior
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType|Type]]|[[KeyPgUnion|Union]] //typename// **Extends Wstring** [, //base_typename//]
+		...
+	End [[KeyPgType|Type]]|[[KeyPgUnion|Union]]
+##
+{{fbdoc item="desc"}}
+	##**Extends Wstring**## declares ##//typename//## to inherit properties and behaviors of a ##[[KeyPgWstring|Wstring]]##. Purpose is to allow users to create custom string types (with i.e. dynamic memory management) that can integrate well in to existing fbc compiler built ins (good interoperability with fbc's ##[[KeyPgWstring|Wstring]]## type).
+	
+	This declaration of such a UDT with a suitable ##[[KeyPgOpCast|Cast]]## operator will instruct compiler to convert the UDT to a ##[[KeyPgWstring|Wstring]]## (in addition, other suitable operators as ##[[KeyPgOpLet|Let]]##, ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|[] (Pointer index)"}}##, ##[[KeyPgLen|Len]]##, ..., can be also declared).
+	
+	##[[KeyPgWstring|Wstring]]## behaviour can be inherited directly, or indirectly and singly from a base-type.
+	##[[KeyPgWstring|Wstring]]## behaviour can be inherited by a UDT also extending ##//base_typename//## (a kind of pseudo multiple-inheritance).
+	
+	**Note:** By declaring a type (directly or indirectly) as ##**Extends Wstring**## (in addition to defining a suitable ##[[KeyPgOpCast|Cast]]## operator only), this promotes it fully compatible even with ##[[KeyPgOpStrptr|Strptr]]##/##[[KeyPgSadd|Sadd]]##, ##[[KeyPgLset|Lset]]##/##[[KeyPgRset|Rset]]##, and ##[[KeyPgSelectcase|Select Case]]##, but currently not yet with the built in functions ##[[KeyPgVal|Val]]##/##[[KeyPgValint|Valint]]##/##[[KeyPgVallng|Vallng]]##/##[[KeyPgValuint|Valuint]]##/##[[KeyPgValulng|Valunlg]]## and ##[[KeyPgLeft|Left]]##/##[[KeyPgRight|Right]]##.
+
+{{fbdoc item="ex"}}
+	See ##[[KeyPgExtendsZstring|Extends Zstring]]## for similar examples.
+
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Extends __Wstring""**##, but unusable because no member procedure is allowed in this dialect.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgType|Type]]##
+	- ##[[KeyPgUnion|Union]]##
+	- ##[[KeyPgExtends|Extends]]##
+	- ##[[KeyPgWstring|Wstring]]##
+	- ##[[KeyPgExtendsZstring|Extends Zstring]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}
