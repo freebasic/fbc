@@ -53,6 +53,7 @@ Version 1.07.0
 - fbc uses '-march=armv8-a' instead of invalid option '-march=aarch64' when passing options to gcc/LLVM (czsgaba)
 - rtlib: sys/io.h incorrectly included on systems that do not provide it.  It is used only for x86, x86_64 and is unnecessary for all other linux targets (armhf ,arm64, mips ....)
 - SELECT CASE AS CONST checks for ranges that would produce unreasonably large jump tables (greater than 8192 entries)
+- sf.net #907: global overloaded operator procs need "_Z" mangling prefix
 
 
 Version 1.06.0

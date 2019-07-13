@@ -1195,7 +1195,8 @@ private sub hMangleProc( byval sym as FBSYMBOL ptr )
 	end if
 
 	'' C++ prefix
-	if( docpp ) then
+	'' global overloaded operators need the prefix
+	if( docpp or symbIsOperator( sym ) ) then
 		mangled += "_Z"
 	end if
 
