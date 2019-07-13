@@ -126,7 +126,7 @@ SUITE( fbc_tests.wstring_.print_ )
 		OPEN_FILE( "print_strings.txt" )
 
 		check( "" )
-		check( " " )
+		'' check( " " ) '' can't test whitespace with INPUT
 		check( "0123456789" )
 		check( "ABCDEFGHIJKLMNOP" )
 		check( !"\u3041\u3043\u3045\u3047\u3049" )
