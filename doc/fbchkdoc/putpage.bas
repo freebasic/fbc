@@ -138,53 +138,54 @@ if( app_opt.pageCount > 0 ) then
 			print "Unable to load"
 		else
 			print "OK"
-			if( wikicon->LoadPage( sPage, sBodyOld ) <> FALSE ) then
-				if( wikicon->GetPageID() > 0 ) then
-					if( wikicon->Login( app_opt.wiki_username, app_opt.wiki_password ) ) = FALSE then
-						print "Unable to login"
-					else
-						if( iComment > 0 ) then
-							if( iComment = 1 or sNoteDef = "" ) then
-								print "Enter note for '" + sPage + "' : ";
-								Line input sNote
-								if trim(sNote) = "" then sNote = "Auto-Update"
-								sNoteDef = sNote
-							else
-								sNote = sNoteDef
-							end if
+			
+			'' wikicon->LoadPage() may return FALSE if the page does not
+			'' yet exist.  Test the page ID instead to determine if it
+			'' is a new page
+			wikicon->LoadPage( sPage, sBodyOld )
+			if( wikicon->GetPageID() > 0 ) then
+				if( wikicon->Login( app_opt.wiki_username, app_opt.wiki_password ) ) = FALSE then
+					print "Unable to login"
+				else
+					if( iComment > 0 ) then
+						if( iComment = 1 or sNoteDef = "" ) then
+							print "Enter note for '" + sPage + "' : ";
+							Line input sNote
+							if trim(sNote) = "" then sNote = "Auto-Update"
+							sNoteDef = sNote
 						else
-							if( sComment > "" ) then
-								sNote = sComment
-							elseif( sNoteDef > "" ) then
-								sNote = sNoteDef
-							else
-								sNote = ""
-							end if
+							sNote = sNoteDef
 						end if
-
-						print "Storing '" + sPage + "' [" + sNote + "] : ";
-
-						if( wikicon->StorePage( sBody, sNote ) = FALSE ) then
-							print "FAILED"
+					else
+						if( sComment > "" ) then
+							sNote = sComment
+						elseif( sNoteDef > "" ) then
+							sNote = sNoteDef
 						else
-							print "OK"
+							sNote = ""
 						end if
 					end if
-				else
-					print "Unable to get existing page ID - will try to store as a new page .."
-					if( wikicon->Login( app_opt.wiki_username, app_opt.wiki_password ) ) = FALSE then
-						print "Unable to login"
+
+					print "Storing '" + sPage + "' [" + sNote + "] : ";
+
+					if( wikicon->StorePage( sBody, sNote ) = FALSE ) then
+						print "FAILED"
 					else
-						print "Storing '" + sPage + "': ";
-						if( wikicon->StoreNewPage( sBody, sPage ) = FALSE ) then
-							print "FAILED"
-						else
-							print "OK"
-						end if
+						print "OK"
 					end if
 				end if
 			else
-				print "Unable to existing page"
+				print "Unable to get existing page ID - will try to store as a new page .."
+				if( wikicon->Login( app_opt.wiki_username, app_opt.wiki_password ) ) = FALSE then
+					print "Unable to login"
+				else
+					print "Storing '" + sPage + "': ";
+					if( wikicon->StoreNewPage( sBody, sPage ) = FALSE ) then
+						print "FAILED"
+					else
+						print "OK"
+					end if
+				end if
 			end if
 		end if
 	next
