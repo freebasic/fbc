@@ -1,4 +1,4 @@
-.TH FBC 1 "2019-05-20" "FreeBASIC Compiler 1.07.0" "FreeBASIC Compiler"
+.TH FBC 1 "2019-07-23" "FreeBASIC Compiler 1.07.0" "FreeBASIC Compiler"
 .SH NAME
 fbc \- The FreeBASIC compiler
 .SH DESCRIPTION
@@ -45,6 +45,24 @@ Create a Win32 DLL or Linux/*BSD shared library
 \fB\-e\fR
 Enable runtime error checking
 .TP
+\fB\-earray\fR
+Enable array bounds checking
+.TP
+\fB\-eassert\fR
+Enable assert() and assertwarn() checking
+.TP
+\fB\-edebug\fR
+Enable __FB_DEBUG__
+.TP
+\fB\-edebuginfo\fR
+Add debug information
+.TP
+\fB\-elocation\fR
+Enable full error location reporting
+.TP
+\fB\-enullptr\fR
+Enable null-pointer checking
+.TP
 \fB\-ex\fR
 \fB-e\fR plus RESUME support
 .TP
@@ -64,7 +82,7 @@ Select floating-point math accuracy/speed
 Set target FPU
 .TP
 \fB\-g\fR
-Add debug info
+Add debug info, enable __FB_DEBUG__, and enable asserts
 .TP
 \fB\-gen\fR \fBgas\fR|\fBgcc\fR|\fBllvm\fR
 Select code generation backend

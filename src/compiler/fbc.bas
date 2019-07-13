@@ -3426,7 +3426,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -eassert         Enable assert() and assertwarn() checking"
 	print "  -edebug          Enable __FB_DEBUG__"
 	print "  -edebuginfo      Add debug info"
-	print "  -elocation       Enable reporting error location"
+	print "  -elocation       Enable error location reporting"
 	print "  -enullptr        Enable null-pointer checking"
 	end if
 
@@ -3436,7 +3436,7 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -forcelang <name>  Override #lang statements in source code"
 	print "  -fpmode fast|precise  Select floating-point math accuracy/speed"
 	print "  -fpu x87|sse     Set target FPU"
-	print "  -g               Add debug info, define __FB_DEBUG__, and enable assert()"
+	print "  -g               Add debug info, enable __FB_DEBUG__, and enable assert()"
 
 	if( verbose ) then
 	print "  -gen gas         Select GNU gas assembler backend"
