@@ -112,10 +112,6 @@ SUITE( fbc_tests.udt_zstring_.swap_ )
 		check( "a", "a" )
 		check( "a", "abcdefghi" )
 
-		check( "", !"\u3041\u3043\u3045\u3047\u3049" )
-		check( "abc", !"\u3041\u3043\u3045\u3047\u3049" )
-		check( !"\u3045", !"\u3041\u3043\u3047\u3049" )
-
 	END_TEST 
 
 END_SUITE

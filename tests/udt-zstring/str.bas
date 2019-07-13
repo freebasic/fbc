@@ -78,12 +78,12 @@ SUITE( fbc_tests.udt_zstring_.str_ )
 
 	TEST( default )
 		
-		dim s1 as zstring * 10 = chr(1234)
-		dim s2 as zstring * 10 = chr(1234)
+		dim s1 as zstring * 10 = chr(12)
+		dim s2 as zstring * 10 = chr(12)
 		dim s3 as zstring * 10 = str( s1 )
 
-		dim u1 as ustring = chr(1234)
-		dim u2 as ustring = chr(1234)
+		dim u1 as ustring = chr(12)
+		dim u2 as ustring = chr(12)
 		dim u3 as ustring = str( s1 )
 		dim u4 as ustring = wstr( u1 )
 
