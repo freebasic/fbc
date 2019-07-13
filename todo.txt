@@ -112,6 +112,11 @@ o ThreadCall
 o -exx should catch...
   - access to ERASEd or uninited (unREDIMed) dyn array
   - out-of-bounds dimension argument given to lbound()/ubound()
+  - add an -exx aka -eboolean check to detect illegal boolean values on read?
+  - expand on -elocation option to provide full location information or if not
+    given (or implied) optimize out calls to fb_ErrorSetFuncName() and 
+    fb_ErrorSetModName(), because we still get location from fb_ErrorThrowAt()
+	and fb_ErrorThrowEx().  Must test interaction with ON ERROR
 
 [ ] ctor/dtor
     - add 'function foo (...) as SomeObj = any', so #1682972 could be fixed AND when

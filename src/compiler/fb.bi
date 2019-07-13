@@ -69,11 +69,15 @@ enum FB_COMPOPT
 	FB_COMPOPT_FORCELANG            '' boolean: TRUE if -forcelang was specified
 
 	'' debugging/error checking
-	FB_COMPOPT_DEBUGINFO            '' boolean: debugging info (affects code generation)
-	FB_COMPOPT_ASSERTIONS           '' boolean: enable assert() and __FB_DEBUG__
+	FB_COMPOPT_DEBUG                '' boolean: enable __FB_DEBUG__ (affects code generation)
+	FB_COMPOPT_DEBUGINFO            '' boolean: enable debugging info (affects code generation)
+	FB_COMPOPT_ASSERTIONS           '' boolean: enable assert()
 	FB_COMPOPT_ERRORCHECK           '' boolean: runtime error checks
 	FB_COMPOPT_RESUMEERROR          '' boolean: RESUME support
 	FB_COMPOPT_EXTRAERRCHECK        '' boolean: NULL pointer/array bounds checks
+	FB_COMPOPT_ERRLOCATION          '' boolean: enable reporting of error location
+	FB_COMPOPT_NULLPTRCHECK         '' boolean: NULL pointer
+	FB_COMPOPT_ARRAYBOUNDCHECK      '' boolean: array bounds checks
 	FB_COMPOPT_PROFILE              '' boolean: -profile
 
 	'' error/warning reporting behaviour
@@ -251,11 +255,15 @@ type FBCMMLINEOPT
 	forcelang       as integer              '' TRUE if -forcelang was specified
 
 	'' debugging/error checking
+	debug           as integer              '' true = enable __FB_DEBUG__ (default = false)
 	debuginfo       as integer              '' true = add debug info (default = false)
-	assertions      as integer              '' true = enable assert() and __FB_DEBUG__ (default = false)
+	assertions      as integer              '' true = enable assert() (default = false)
 	errorcheck      as integer              '' enable runtime error checks?
 	resumeerr       as integer              '' enable RESUME support?
 	extraerrchk     as integer              '' enable NULL pointer/array bounds checks?
+	errlocation     as integer              '' enable reporting of error location (default = false)
+	arrayboundchk   as integer              '' enable array bounds checks?
+	nullptrchk      as integer              '' enable NULL pointer checks?
 	profile         as integer              '' build profiling code (default = false)
 
 	'' error/warning reporting behaviour

@@ -2,6 +2,7 @@ Version 1.07.0
 
 [changed]
 - SADD/STRPTR(wstring) returns WSTRING PTR
+- '-v' be verbose command line option affects '-help' output
 
 [added]
 - CVA_LIST type, CVA_START(), CVA_COPY() CVA_END(), CVA_ARG() macros will map to gcc's __builtin_va_list and __builtin_va_* macros in gcc backend
@@ -24,6 +25,12 @@ Version 1.07.0
 - SWAP statement will accept UDT as Z|WSTRING
 - IIF function will accept UDT as Z|WSTRING
 - PRINT/LPRINT/WRITE will accept UDT as Z|WSTRING
+- '-earray' command line option to enable array bounds checking
+- '-enullptr' command line option to enable null pointer checking 
+- '-eassert' command line option to enable assert() and assertwarn() checking
+- '-edebug' command line option to enable __FB_DEBUG__
+- '-edebuginfo' command line option to enable debug symbols
+- '-elocation' command line option to enable reporting error location
 
 [fixed]
 - sf.net #881: C backend: support for varadic function parameters in gcc using __builtin_va_list type and related macros
