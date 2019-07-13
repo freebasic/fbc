@@ -7,6 +7,7 @@
 #if ENABLE_CHECK_BUGS
 	#define DOTEST
 #else
+	'' thiscall is not supported in -gen gas
 	#if __FB_BACKEND__ <> "gas"
 		#define DOTEST
 	#endif
@@ -15,11 +16,13 @@
 #ifdef DOTEST
 
 extern "c++"
-
-declare sub resetChecks()
-declare function getPtr1() as any ptr
-declare function getPtr2() as any ptr
-declare function getPtr3() as any ptr
+	'' getters to retrieve call information
+	'' from the c++ side
+	declare sub resetChecks()
+	declare function getPtr1() as any ptr
+	declare function getPtr2() as any ptr
+	declare function getPtr3() as any ptr
+end extern
 
 '' default calling convention
 '' on the cpp side, we are not explicitly specifying calling
@@ -31,6 +34,8 @@ declare function getPtr3() as any ptr
 #else
 	#define thiscall
 #endif
+
+extern "c++"
 
 type UDT_DEFAULT
 	
@@ -212,8 +217,4 @@ end scope
 '' check results of destructor called
 checkResults( p1, 0, 0 )
 
-#else
-	#if ENABLE_CHECK_BUGS
-		assert( 0 )
-	#endif
-#endif
+#endif '' DOTEST

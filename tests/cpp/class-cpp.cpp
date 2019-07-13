@@ -1,3 +1,9 @@
+// implementation for class-fbc.bas
+
+// each operation records call information
+// in static variables, and we use getters
+// to retrieve it back to fbc side
+
 #define NULL 0
 static const void * ptr1 = NULL; // this/lhs address
 static const void * ptr2 = NULL; // rhs address
@@ -51,12 +57,14 @@ int getVal3() {
 	return val3;
 }
 
+// simple UDT class to test with and
+// we declare same on fbc side
+
 class UDT
 {
 	public:
 
 	int value;
-	void* self;
 
 	UDT();
 	UDT( UDT const& rhs );
@@ -80,7 +88,6 @@ UDT operator-( int const& lhs, UDT const& rhs );
 // constructor UDT()
 UDT::UDT()
 { 
-	self = this;
 	if( initial ) {
 		ptr1 = this;
 		ptr2 = NULL;
@@ -95,7 +102,6 @@ UDT::UDT()
 // constructor UDT( byref rhs as const UDT )
 UDT::UDT( UDT const& rhs )
 { 
-	self = this;
 	if( initial ) {
 		ptr1 = this;
 		ptr2 = &rhs;
@@ -110,7 +116,6 @@ UDT::UDT( UDT const& rhs )
 // constructor UDT( byref rhs as const long )
 UDT::UDT( int const& rhs )
 {
-	self = this;
 	if( initial ) {
 		ptr1 = this;
 		ptr2 = &rhs;
@@ -150,6 +155,7 @@ UDT& UDT::operator=( UDT const& rhs )
 	return *this;
 }
 
+/*
 // !!! TODO !!!: operator UDT.+( byref rhs as const long )
 UDT& UDT::operator+( int const& rhs )
 {
@@ -177,6 +183,7 @@ UDT& UDT::operator-( int const& rhs )
 	value -= rhs;
 	return *this;
 }
+*/
 
 // operator +( byref lhs as const UDT, byref rhs as const UDT ) as UDT
 UDT operator+( UDT const& lhs, UDT const& rhs )
@@ -229,4 +236,3 @@ UDT operator-( int const& lhs, UDT const& rhs )
 	
 	return UDT(lhs - rhs.value);
 }
-

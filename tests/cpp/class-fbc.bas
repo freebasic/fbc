@@ -2,27 +2,17 @@
 
 '' test mapping of mangling between c++ class and fbc type
 
+'' helper macro to track progress
 #define DLOG( msg ) '' print #msg
-
-/'
-#undef assert
-#macro assert( expr )
-	if( (expr) = 0 ) then
-		'' filename.ext(###): assertion failed at PROC: EXPR
-		print __FILE__; "("; __LINE__; "): assertion failed at "; __FUNCTION__; ": "; #expr
-	end if
-#endmacro
-'/
 
 #if ENABLE_CHECK_BUGS
 	#define DOTEST
 #else
+	'' thiscall is not supported in -gen gas
 	#if __FB_BACKEND__ <> "gas"
 		#define DOTEST
 	#endif
 #endif
-
-#ifdef DOTEST
 
 '' !!! TODO !!! this default should be handled in fbc
 #if defined(__FB_WIN32__) and not defined(__FB_64BIT__)
@@ -36,46 +26,53 @@
 #endif
 
 extern "c++"
+	'' getters to retrieve call information
+	'' from the c++ side
+	declare sub setInitial( byval flag as long )
+	declare sub resetChecks()
+	declare function getPtr1() as any ptr
+	declare function getPtr2() as any ptr
+	declare function getMsg1() as zstring ptr
+	declare function getVal1() as long
+	declare function getVal2() as long
+	declare function getVal3() as long
+end extern
 
-declare sub setInitial( byval flag as long )
-declare sub resetChecks()
-declare function getPtr1() as any ptr
-declare function getPtr2() as any ptr
-declare function getMsg1() as zstring ptr
-declare function getVal1() as long
-declare function getVal2() as long
-declare function getVal3() as long
+extern "c++"
+	'' simple UDT to test with and we
+	'' declare the same on c++ side
 
-type UDT
-	value as long
-	self as any ptr
+	type UDT
+		value as long
 
-	declare constructor thiscall ()
-	declare constructor thiscall ( byref rhs as const UDT )
-	declare constructor thiscall ( byref rhs as const long )
-	declare destructor thiscall ()
-	declare operator let thiscall ( byref rhs as const UDT )
-	/' declare operator thiscall +( byref rhs as const long ) as UDT '/
-	/' declare operator thiscall -( byref rhs as const long ) as UDT '/
+		declare constructor thiscall ()
+		declare constructor thiscall ( byref rhs as const UDT )
+		declare constructor thiscall ( byref rhs as const long )
+		declare destructor thiscall ()
+		declare operator let thiscall ( byref rhs as const UDT )
+		/' declare operator thiscall +( byref rhs as const long ) as UDT '/
+		/' declare operator thiscall -( byref rhs as const long ) as UDT '/
 
-end type
+	end type
 
-'' global operators
-declare operator +( byref lhs as const UDT, byref rhs as const UDT ) as UDT
-declare operator -( byref lhs as const UDT, byref rhs as const UDT ) as UDT
-declare operator +( byref lhs as const long, byref rhs as const UDT ) as UDT
-declare operator -( byref lhs as const long, byref rhs as const UDT ) as UDT
+	'' global operators
+	declare operator +( byref lhs as const UDT, byref rhs as const UDT ) as UDT
+	declare operator -( byref lhs as const UDT, byref rhs as const UDT ) as UDT
+	declare operator +( byref lhs as const long, byref rhs as const UDT ) as UDT
+	declare operator -( byref lhs as const long, byref rhs as const UDT ) as UDT
 
 end extern
 
 #macro checkResults( p1, p2, v1, v2, v3, m1 )
+	assert( m1 = *getMsg1() )
 	assert( p1 = getPtr1() )
 	assert( p2 = getPtr2() )
 	assert( v1 = getVal1() )
 	assert( v2 = getVal2() )
 	assert( v3 = getVal3() )
-	assert( m1 = *getMsg1() )
 #endmacro
+
+#ifdef DOTEST
 
 '' enable results for ctor/dtor/copy-ctor/let
 setInitial( 1 )
@@ -152,7 +149,7 @@ scope
 	dim as UDT b = 11
 	dim as UDT c
 	resetChecks()
-	c = a + b
+	c = (a + b)
 	checkResults( @a, @b, 3, 11, 14, "UDT operator+( UDT const& lhs, UDT const& rhs )" )
 end scope
 
@@ -186,5 +183,4 @@ scope
 	checkResults( @a, @b, 17, 5, 12, "UDT operator-( int const& lhs, UDT const& rhs )" )
 end scope
 
-#endif
-
+#endif '' DOTEST

@@ -1,11 +1,12 @@
+// implementation for this-fbc.bas
+
+// each operation records call information
+// in static variables, and we use getters
+// to retrieve it back to fbc side
+
 static void * ptr1 = 0;
 static void * ptr2 = 0;
 static void * ptr3 = 0;
-
-
-// global getters:
-// we can retrieve argument information passed
-// by calling the getters
 
 void resetChecks() {
 	ptr1 = ptr2 = ptr3 = 0;
@@ -69,6 +70,7 @@ void UDT_DEFAULT::loadpointer3( void* arg1, void* arg2 ) {
 // thiscall calling convention in c++
 // Normally, __attribute__((thiscall)) will generate warnings on
 // linux x86_64 so we should pass '-Wno-attributes' to gcc/g++
+// or later disable emitting the attribute in gcc backend.
 
 class UDT_THISCALL {
 	public:
