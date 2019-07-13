@@ -1,16 +1,28 @@
 {{fbdoc item="title" value="Compiler Option: -g"}}----
-Add debug information
+Add debug information, define ##""__FB_DEBUG__""##, and enable asserts
 
 {{fbdoc item="syntax"}}##
 	**-g**
 ##
 {{fbdoc item="desc"}}
-	The ##-g## compiler option inserts debugging symbols into output files, to use with GDB-compatible debuggers.
+	The ##**-g**## compiler option inserts debugging symbols into output files, to use with GDB-compatible debuggers.
 	
 	The intrinsic macro ##[[KeyPgDdfbdebug|__FB_DEBUG__]]## is set to non-zero (-1) if the option was specified, and set to zero (0) otherwise.
+	
+	##[[KeyPgAssert|Assert]]## and ##[[KeyPgAssertwarn|AssertWarn]]## macros are enabled.
+	
+	Use of ##**-g**## automatically implies ##[[CompilerOptedebug|-edebug]]##, ##[[CompilerOptedebuginfo|-edebuginfo]]##, and ##[[CompilerOpteassert|-eassert]]##, command line options.
+	
+	##[[KeyPgDdfberr|__FB_ERR__]]## can be used to determine in user source code if the ##**-g**## option was specified or implied on the command line.
 
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfbdebug|__FB_DEBUG__]]##
+	- ##[[KeyPgDdfberr|__FB_ERR__]]##
+	- ##[[KeyPgAssert|Assert]]##
+	- ##[[KeyPgAssertwarn|AssertWarn]]##
+	- [[CompilerOpteassert|Compiler Option: -eassert]]
+	- [[CompilerOptedebug|Compiler Option: -debug]]
+	- [[CompilerOptedebuginfo|Compiler Option: -debuginfo]]
 	- [[DebuggerRunning|Debugging]]
 	- [[CompilerCmdLine|Using the Command Line]]
 

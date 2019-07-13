@@ -180,8 +180,6 @@ sub cmd_opts_init( byval opts_flags as const CMD_OPTS_ENABLE_FLAGS )
 	cmd_opt.manual = false   '' -manual_dir given on command line
 	cmd_opt.manual_dir = ""  '' value of '-manual_dir DIR' given on command line
 
-	cmd_opt.db_user_is_set = false
-
 	'' resolved options
 
 	app_opt.wiki_url = ""        '' export: resolved wiki url

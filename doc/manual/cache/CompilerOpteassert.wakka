@@ -1,0 +1,22 @@
+{{fbdoc item="title" value="Compiler Option: -eassert"}}----
+Enable ##assert()## and ##assertwarn()## checking
+
+{{fbdoc item="syntax"}}##
+	**-eassert**
+##
+{{fbdoc item="desc"}}
+	The ##-eassert## compiler option enables ##[[KeyPgAssert|Assert]]## and ##[[KeyPgAssertwarn|AssertWarn]]## code generation.
+	
+	##**-eassert**## is automatically implied by the ##[[CompilerOptg|-g]]## option.
+	
+	##[[KeyPgDdfberr|__FB_ERR__]]## can be used to determine in user source code if the ##**-eassert**## option was specified or implied on the command line.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfberr|__FB_ERR__]]##
+	- ##[[KeyPgAssert|Assert]]##
+	- ##[[KeyPgAssertwarn|AssertWarn]]##
+	- [[CompilerOptg|Compiler Option: -g]]
+	- [[DebuggerRunning|Debugging]]
+	- [[CompilerCmdLine|Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

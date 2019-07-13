@@ -46,7 +46,7 @@ Built-in data types
 <<>>{{anchor name="MODIFIERS"}}{{fbdoc item="section" value="Data Type Modifiers"}}
 	=={{fbdoc item="keyword" value="KeyPgConstQualifier|CONST"}}==
 		Specifies a read only type.
-	=={{fbdoc item="keyword" value="KeyPgPointer|POINTER"}} and {{fbdoc item="keyword" value="KeyPgPtr|PTR"}}==
+	=={{fbdoc item="keyword" value="KeyPgPtr|POINTER"}} and {{fbdoc item="keyword" value="KeyPgPtr|PTR (Shortcut for 'POINTER')"}}==
 		Modifies types to be pointer types.
 	=={{fbdoc item="keyword" value="KeyPgUnsigned|UNSIGNED"}}==
 		Specifies an unsigned integer type.

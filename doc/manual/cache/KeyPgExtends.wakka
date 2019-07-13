@@ -227,5 +227,7 @@ Delete c
 	- ##[[KeyPgVirtual|Virtual]]##
 	- ##[[KeyPgAbstract|Abstract]]##
 	- ##[[KeyPgOverride|Override]]##
+	- ##[[KeyPgExtendsZstring|Extends Zstring]]##
+	- ##[[KeyPgExtendsWstring|Extends Wstring]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

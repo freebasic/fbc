@@ -80,6 +80,8 @@ end sub
 	- ##[[KeyPgVirtual|Virtual]]##
 	- ##[[KeyPgType|Type]]##
 	- ##[[KeyPgExtends|Extends]]##
+	- ##[[KeyPgExtendsZstring|Extends Zstring]]##
+	- ##[[KeyPgExtendsWstring|Extends Wstring]]##
 	- ##[[KeyPgObject|Object]]##
 	- ##[[KeyPgOverride|Override]]##
 

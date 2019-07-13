@@ -19,7 +19,9 @@ Standard data type: 8 bit character string
 	This type is provided for easy interfacing with C libraries and to also replace the fixed-length strings, that can't be managed through pointers.
 	Any string type argument may be directly passed to a procedure referring to a parameter declared as ##**Zstring** [[KeyPgPtr|ptr]]##. The compiler performs itself an automatic conversion (without warning message) between any string type argument and the ##**Zstring** [[KeyPgPtr|ptr]]## type parameter.
 	
-	**Note :** When any operand of a binary operator (as assignment, equal, +, *, ...) consists in dereferencing a '##Zstring Ptr##' pointer ('##pz##'), this can give a '##Zstring##' string or a '##Ubyte##' character, depending on the other operand. If the other operand is numeric, so the dereferenced '##Zstring Ptr##' pointer ('##*pz##') will be treated as a '##Ubyte##' reference to the one character pointed. If a '##Zstring##' pointer indexing '##[]##' operator is used as dereferencing syntax ('##pz[n]##'), it is basically a short-cut version of the '##String##' indexing '##[]##' operator ('##(*pz)[n]##').
+	When allocating dynamic memory for a ##**Zstring**##, the safest is to use ##[[KeyPgCallocate|Callocate]]## (or at worst, to use ##[[KeyPgAllocate|Allocate]]## followed by an immediate assignment of the string data, as in the second example), in order to avoid creating string data without any null character (the terminal character for a ##**Zstring**##).
+	
+	**Note :** When any operand of a binary operator (as assignment, equal, +, *, ...) consists in dereferencing a '##Zstring Ptr##' pointer ('##pz##'), this can give a '##Zstring##' string or a '##Ubyte##' variable, depending on the other operand. If the other operand is numeric, so the dereferenced '##Zstring Ptr##' pointer ('##*pz##') will be treated as a '##Ubyte##' reference to the one character pointed. If a '##Zstring##' pointer indexing '##[]##' operator is used as dereferencing syntax ('##pz[n]##'), it is basically a short-cut version of the '##String##' indexing '##[]##' operator ('##(*pz)[n]##').
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/zstring.bas"}}%%(freebasic)
@@ -47,5 +49,6 @@ print len(*str2)     'returns 12, the size of the string it contains
 	- ##[[KeyPgString|String]]##
 	- ##[[KeyPgWstring|Wstring]]##
 	- ##[[TblVarTypes|Standard Data Type Limits]]##
+	- ##[[KeyPgExtendsZstring|Extends Zstring]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

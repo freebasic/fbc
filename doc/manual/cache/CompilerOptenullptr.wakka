@@ -1,0 +1,20 @@
+{{fbdoc item="title" value="Compiler Option: -enullptr"}}----
+Enable null-pointer checking
+
+{{fbdoc item="syntax"}}##
+	**-enullptr**
+##
+{{fbdoc item="desc"}}
+	The ##-enullptr## compiler option enables null-pointer error checking in run-time code generation.  A run-time error is generated if an attempt is made to dereference a null-pointer to a value, or call a null function pointer.
+	
+	##**-enullptr**## is automatically implied by the ##[[CompilerOptexx|-exx]]## option.
+	
+	##[[KeyPgDdfberr|__FB_ERR__]]## can be used to determine in user source code if the ##**-enullptr**## option was specified or implied on the command line.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfberr|__FB_ERR__]]##
+	- [[CompilerOptexx|Compiler Option: -exx]]
+	- [[ProPgErrorHandling|Error Handling]]
+	- [[CompilerCmdLine|Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

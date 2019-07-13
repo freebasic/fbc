@@ -19,6 +19,10 @@ Standard data type: wide character string
 	The ""FreeBASIC"" text file functions can read and write Unicode files in different encodings, provided the ##[[KeyPgEncoding|encoding]]## is specified when the file is opened. The text is automatically converted to the internal encoding at read and converted back to the file encoding at write.
 	
 	##[[KeyPgSizeof|sizeof]]##( ##**Wstring**## ) returns the number of bytes used by a ##**Wstring**## character in the current platform.
+	
+	When allocating dynamic memory for a ##**Wstring**##, the safest is to use ##[[KeyPgCallocate|Callocate]]## (or at worst, to use ##[[KeyPgAllocate|Allocate]]## followed by an immediate assignment of the string data, as in the second example), in order to avoid creating string data without any null character (the terminal character for a ##**Wstring**##).
+	
+	**Note :** When any operand of a binary operator (as assignment, equal, +, *, ...) consists in dereferencing a '##Wstring Ptr##' pointer ('##pw##'), this can give a '##Wstring##' string or a '##Numeric##' variable, depending on the other operand. If the other operand is numeric, so the dereferenced '##Wstring Ptr##' pointer ('##*pw##') will be treated as a '##Numeric##' reference to the one character pointed. If a '##Wstring##' pointer indexing '##[]##' operator is used as dereferencing syntax ('##pw[n]##'), it is basically a short-cut version of the '##String##' indexing '##[]##' operator ('##(*pw)[n]##').
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/datatype/wstring.bas"}}%%(freebasic)
@@ -61,5 +65,6 @@ print len(*str2)      'returns 12, the length of the string it points to
 	- ##[[KeyPgWoct|Woct]]##
 	- ##[[KeyPgWinput|Winput()]]##
 	- ##[[TblVarTypes|Standard Data Type Limits]]##
+	- ##[[KeyPgExtendsWstring|Extends Wstring]]##
 
 {{fbdoc item="back" value="CatPgStdDataTypes|Standard Data Types"}}{{fbdoc item="back" value="CatPgString|String Functions"}}

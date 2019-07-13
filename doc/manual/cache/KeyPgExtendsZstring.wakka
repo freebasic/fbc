@@ -1,0 +1,134 @@
+{{fbdoc item="title" value="EXTENDS ZSTRING"}}----
+Specifies a type which inherits a Zstring behavior
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgType|Type]]|[[KeyPgUnion|Union]] //typename// **Extends Zstring** [, //base_typename//]
+		...
+	End [[KeyPgType|Type]]|[[KeyPgUnion|Union]]
+##
+{{fbdoc item="desc"}}
+	##**Extends Zstring**## declares ##//typename//## to inherit properties and behaviors of a ##[[KeyPgZstring|Zstring]]##. Purpose is to allow users to create custom string types (with i.e. dynamic memory management) that can integrate well in to existing fbc compiler built ins (good interoperability with fbc's ##[[KeyPgZstring|Zstring]]## type).
+	
+	This declaration of such a UDT with a suitable ##[[KeyPgOpCast|Cast]]## operator will instruct compiler to convert the UDT to a ##[[KeyPgZstring|Zstring]]## (in addition, other suitable operators as ##[[KeyPgOpLet|Let]]##, ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|[] (Pointer index)"}}##, ##[[KeyPgLen|Len]]##, ..., can be also declared).
+	
+	##[[KeyPgZstring|Zstring]]## behaviour can be inherited directly, or indirectly and singly from a base-type.
+	##[[KeyPgZstring|Zstring]]## behaviour can be inherited by a UDT also extending ##//base_typename//## (a kind of pseudo multiple-inheritance).
+	
+	**Note:** By declaring a type (directly or indirectly) as ##**Extends Zstring**## (in addition to defining a suitable ##[[KeyPgOpCast|Cast]]## operator only), this promotes it fully compatible even with ##[[KeyPgOpStrptr|Strptr]]##/##[[KeyPgSadd|Sadd]]##, ##[[KeyPgLset|Lset]]##/##[[KeyPgRset|Rset]]##, and ##[[KeyPgSelectcase|Select Case]]##, but currently not yet with the built in functions ##[[KeyPgVal|Val]]##/##[[KeyPgValint|Valint]]##/##[[KeyPgVallng|Vallng]]##/##[[KeyPgValuint|Valuint]]##/##[[KeyPgValulng|Valunlg]]## and ##[[KeyPgLeft|Left]]##/##[[KeyPgRight|Right]]##.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/udt/extendszstring1.bas"}}%%(freebasic)
+Type myZstring Extends Zstring
+  Public:
+	Declare Constructor (Byref z As Const Zstring = "")
+	Declare Operator Cast () Byref As Const Zstring
+	Declare Operator Let (Byref z As Const Zstring)
+  Private:
+	Dim As String s
+End Type
+
+Constructor myZstring (Byref z As Const Zstring = "")
+  This.s = z
+End Constructor
+
+Operator myZstring.Cast () Byref As Const Zstring
+  Return *Strptr(This.s)
+End Operator
+
+Operator myZstring.Let (Byref z As Const Zstring)
+  This.s = z
+End Operator
+
+Dim As myZstring z = "FreeBASIC"
+Print "'" & z & "'"
+
+z &= " compiler"
+Print "'" & z & "'"
+
+Sleep
+%%
+{{fbdoc item="filename" value="examples/manual/udt/extendszstring2.bas"}}%%(freebasic)
+Type vZstring Extends Zstring
+  Public:
+	Declare Constructor (Byval pz As Const Zstring Ptr = 0)
+	Declare Operator Cast () Byref As Zstring
+	Declare Operator Let (Byval pz As Const Zstring Ptr)
+	Declare Operator [] (Byval index As Integer) Byref As Ubyte
+	Declare Destructor ()
+  Private:
+	Dim As Zstring Ptr p
+	Dim As Uinteger l
+End Type
+
+Constructor vZstring (Byval pz As Const Zstring Ptr = 0)
+  This.l = Len(*pz)
+  This.p = Callocate(This.l + 1, Sizeof(Zstring))
+  *This.p = *pz
+End Constructor
+
+Operator vZstring.Cast () Byref As Zstring
+  Return *This.p
+End Operator
+
+Operator vZstring.Let (Byval pz As Const Zstring Ptr)
+  If This.l < Len(*pz) Then
+	Deallocate(This.p)
+	This.l = Len(*pz)
+	This.p = Callocate(This.l + 1, Sizeof(Zstring))
+  End If
+  *This.p = *pz
+End Operator
+
+Operator vZstring.[] (Byval index As Integer) Byref As Ubyte
+  Return This.p[index]
+End Operator
+
+Destructor vZstring ()
+  Deallocate(This.p)
+End Destructor
+
+Operator Len (Byref v As vZstring) As Integer
+  Return Len(Type<String>(v))        '' found nothing better than this ('vZstring.l' being private)
+End Operator
+
+Dim As vZstring v = "FreeBASIC"
+Print "'" & v & "'", Len(v)
+
+Dim As Zstring * 256 z
+z = *Strptr(v)                       '' 'error 24: Invalid data types' without 'Extends Zstring'
+Print "'" & z & "'", Len(z)
+
+v &= Space(2)
+Print "'" & v & "'", Len(v)
+Rset v, "FreeBASIC"                  '' 'error 24: Invalid data types' without 'Extends Zstring'
+Print "'" & v & "'", Len(v)          ''     ('Cast' must return a modifiable reference)
+
+Select Case v                        '' 'error 24: Invalid data types' without 'Extends Zstring'
+Case Type<vZstring>(Trim(v) & "  ")
+  Print "Left justified"
+Case Type<vZstring>("  " & Trim(v))
+  Print "Right justified"
+End Select
+
+v[0] = Asc("-")
+Print "'" & v & "'", Len(v)
+
+'Print "'" & Right(v, 5) & "'"      '' 'Right' does not yet support types with 'Extends Zstring'
+Print "'" & Right(Str(v), 5) & "'"  '' workaround
+
+Sleep
+%%
+{{fbdoc item="lang"}}
+	- Not available in the //[[CompilerOptlang|-lang qb]]// dialect unless referenced with the alias ##**""__Extends __Zstring""**##, but unusable because no member procedure is allowed in this dialect.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgType|Type]]##
+	- ##[[KeyPgUnion|Union]]##
+	- ##[[KeyPgExtends|Extends]]##
+	- ##[[KeyPgZstring|Zstring]]##
+	- ##[[KeyPgExtendsWstring|Extends Wstring]]##
+
+{{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

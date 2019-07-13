@@ -158,6 +158,8 @@ Sleep
 	- ##[[KeyPgType|Type]]##
 	- ##[[KeyPgObject|Object]]##
 	- ##[[KeyPgExtends|Extends]]##
+	- ##[[KeyPgExtendsZstring|Extends Zstring]]##
+	- ##[[KeyPgExtendsWstring|Extends Wstring]]##
 	- ##[[KeyPgAbstract|Abstract]]##
 	- ##[[KeyPgOverride|Override]]##
 

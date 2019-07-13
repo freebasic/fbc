@@ -39,7 +39,9 @@ Sub initme()
   foo(2) = foo(1)*2
 End Sub
 %%
-Output:
+After compiling the two files like:
+##fbc common1.bas common2.bas##
+running ##common1## produces the output:
 %%
  3.141592653589793           1.047197551196598           2.094395102393195
 %%

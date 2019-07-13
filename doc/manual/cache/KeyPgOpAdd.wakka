@@ -8,8 +8,8 @@ Sums two expressions
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **+** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgSingle|single]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgSingle|single]] ) [[KeyPgAs|as]] [[KeyPgSingle|single]]
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **+** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgDouble|double]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgDouble|double]] ) [[KeyPgAs|as]] [[KeyPgDouble|double]]
 	
-	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **+** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T// [[KeyPgPointer|Pointer]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] //T// [[KeyPgPointer|Pointer]]
-	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **+** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T// [[KeyPgPointer|Pointer]] ) [[KeyPgAs|as]] //T// [[KeyPgPointer|Pointer]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **+** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T// [[KeyPgPtr|Pointer]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] //T// [[KeyPgPtr|Pointer]]
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **+** ( [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T// [[KeyPgPtr|Pointer]] ) [[KeyPgAs|as]] //T// [[KeyPgPtr|Pointer]]
 	
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **+** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] ) [[KeyPgAs|as]] //T//
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **+** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T// ) [[KeyPgAs|as]] //T//
@@ -33,7 +33,7 @@ Sums two expressions
 	
 	When the left and right-hand side expressions are string values, **##Operator +## (Add)** concatenates the two strings and returns the result.
 	
-	If an integral value ##//n//## is added to a ##//T// [[KeyPgPointer|Pointer]]## type, the operator performs pointer arithmetic on the address, returning the memory position of a ##//T//## value, ##//n//## indices away (assuming ##//n//## is within bounds of a contiguous array of ##//T//## values).  This behaves differently from numeric addition, because the ##[[KeyPgInteger|Integer]]## value is scaled by ##[[KeyPgSizeof|Sizeof]]( //T// )##.
+	If an integral value ##//n//## is added to a ##//T// [[KeyPgPtr|Pointer]]## type, the operator performs pointer arithmetic on the address, returning the memory position of a ##//T//## value, ##//n//## indices away (assuming ##//n//## is within bounds of a contiguous array of ##//T//## values).  This behaves differently from numeric addition, because the ##[[KeyPgInteger|Integer]]## value is scaled by ##[[KeyPgSizeof|Sizeof]]( //T// )##.
 	
 	Neither operand is modified in any way.
 	

@@ -10,7 +10,7 @@ Parameter to the ##[[KeyPgPutgraphics|Put]]## graphics statement which selects a
 	##//custom_function_ptr//##
 		name of the custom user defined function.
 	##//parameter//##
-		optional ##[[KeyPgPointer|pointer]]## to be passed to the custom function; if omitted, the default value is zero (##0##).
+		optional ##[[KeyPgPtr|pointer]]## to be passed to the custom function; if omitted, the default value is zero (##0##).
 
 {{fbdoc item="desc"}}
 	##**Custom**## selects a custom user defined function as the method for blitting an image buffer.

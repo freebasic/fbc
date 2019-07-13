@@ -3,7 +3,7 @@ Subtracts and assigns a value to a variable
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **-=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T1//, [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] //T2// )
-	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **-=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T// [[KeyPgPointer|ptr]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] )
+	[[KeyPgDeclare|declare]] [[KeyPgOperator|operator]] **-=** ( [[KeyPgByref|byref]] //lhs// [[KeyPgAs|as]] //T// [[KeyPgPtr|ptr]], [[KeyPgByref|byref]] //rhs// [[KeyPgAs|as]] [[KeyPgInteger|integer]] )
 ##
 {{fbdoc item="usage"}}##
 	//lhs// **-=** //rhs//

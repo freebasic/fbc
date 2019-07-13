@@ -12,11 +12,11 @@ Debugging macro that halts program execution if an expression is evaluated to ##
 		Any valid conditional/numeric expression.  If ##//expression//## evaluates to ##0## (i.e. "false"), execution is halted.
 
 {{fbdoc item="desc"}}
-	The ##**ASSERT**## macro is intended for use in debugging and works only if the ##-g## option is selected in the FBC command line. In this case it prints an error message and stops the program execution if ##//expression//## evaluates to ##0##.
+	The ##**ASSERT**## macro is intended for use in debugging and works only if the ##[[CompilerOpteassert|-g]]## or [[CompilerOpteassert|-eassert]]## option is specified on the ##fbc## command line. In this case it prints an error message and stops the program execution if ##//expression//## evaluates to ##0##.
 	
-	Its normal use is to check the correct value of the variables during debugging.
+	Its normal use is to check the correct value of the variables or expressions during debugging.
 	
-	If ##-g## is not passed to fbc, the macro does not generate any code, and has no effect.
+	If ##[[CompilerOpteassert|-g]]## and [[CompilerOpteassert|-eassert]]## are not passed to fbc, the macro does not generate any code, and has no effect.
 	
 	Note: If an ##**ASSERT**## fails while the program is in a graphics ##[[KeyPgScreengraphics|Screen]]##, the error message will not be visible as it will be printed to the graphics screen, which will be closed immediately after.
 
@@ -30,7 +30,7 @@ end sub
 
 foo 
 
-'' If -g is used this code stops with: test.bas(3): assertion failed at FOO: a=1 
+'' If -g or -eassert is used, this code stops with: test.bas(3): assertion failed at FOO: a=1 
 %%
 
 {{fbdoc item="lang"}}
@@ -42,5 +42,7 @@ foo
 {{fbdoc item="see"}}
 	- ##[[KeyPgPpassert|#assert]]##
 	- ##[[KeyPgAssertwarn|ASSERTWARN]]##
+	- [[CompilerOpteassert|Compiler Option: -eassert]]
+	- [[CompilerOptg|Compiler Option: -g]]
 	
 {{fbdoc item="back" value="CatPgMisc|Miscellaneous"}}

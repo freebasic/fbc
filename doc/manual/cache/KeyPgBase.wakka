@@ -84,6 +84,8 @@ x.show()
 	- ##[[KeyPgThis|This]]##
 	- ##[[KeyPgType|Type]]##
 	- ##[[KeyPgExtends|Extends]]##
+	- ##[[KeyPgExtendsZstring|Extends Zstring]]##
+	- ##[[KeyPgExtendsWstring|Extends Wstring]]##
 	- ##[[KeyPgOptionbase|Option Base]]##
 
 {{fbdoc item="back" value="CatPgUserDefTypes|User Defined Types"}}

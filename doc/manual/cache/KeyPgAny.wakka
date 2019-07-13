@@ -2,7 +2,7 @@
 The ##**Any**## keyword is used as a placeholder for a type or value in various ways.
 
 {{fbdoc item="syntax"}}##
-	[[KeyPgDim|Dim]] //identifier// [[KeyPgAs|As]] **Any** [[KeyPgPointer|Pointer]]|[[KeyPgPtr|Ptr]]
+	[[KeyPgDim|Dim]] //identifier// [[KeyPgAs|As]] **Any** [[KeyPgPtr|Pointer]]|[[KeyPgPtr|Ptr]]
 ##//or//##
 	[[KeyPgDeclare|Declare]] [[KeyPgSub|Sub]]|[[KeyPgFunction|Function]] //identifier// ( [[KeyPgByref|Byref]] //identifier// [[KeyPgAs|As]] **Any** [ , ... ] )
 ##//or//##
@@ -20,7 +20,7 @@ The ##**Any**## keyword is used as a placeholder for a type or value in various 
 ##
 {{fbdoc item="desc"}}
 	- Pointers:
-		A special pointer type called the ##**Any** [[KeyPgPtr|Ptr]]## (or "##**Any** [[KeyPgPointer|Pointer]]##") allows pointing to any variable type.  If you cast it to a ##//[[DataType]]// [[KeyPgPtr|Ptr]]##, it can be indexed or dereferenced to access the memory as an instance of ##//[[DataType]]//##. Pointer arithmetic is allowed on an ##**Any** Ptr##, and treats it like a ##[[KeyPgByte|Byte]] Ptr##: The pointer is changed by increments of ##1##.
+		A special pointer type called the ##**Any** [[KeyPgPtr|Ptr]]## (or "##**Any** [[KeyPgPtr|Pointer]]##") allows pointing to any variable type.  If you cast it to a ##//[[DataType]]// [[KeyPgPtr|Ptr]]##, it can be indexed or dereferenced to access the memory as an instance of ##//[[DataType]]//##. Pointer arithmetic is allowed on an ##**Any** Ptr##, and treats it like a ##[[KeyPgByte|Byte]] Ptr##: The pointer is changed by increments of ##1##.
 		
 		A pure ##**Any** [[KeyPgPtr|Ptr]]## has no type checking by the compiler.  It can be implicitly converted to and from other pointer types through assignment or parameter passing.
 		
