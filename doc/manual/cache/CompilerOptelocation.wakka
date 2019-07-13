@@ -1,0 +1,22 @@
+{{fbdoc item="title" value="Compiler Option: -elocation"}}----
+Enable full error location reporting
+
+{{fbdoc item="syntax"}}##
+	**-elocation**
+##
+{{fbdoc item="desc"}}
+	The ##**-elocation**## compiler option enables full location reporting in run-time code generation.
+	
+	##**-elocation**## is automatically implied by the ##[[CompilerOptexx|-exx]]## option.
+	
+	##[[KeyPgDdfberr|__FB_ERR__]]## can be used to determine in user source code if the ##**-elocation**## option was specified or implied on the command line.
+	
+	//Note: the intent of this option is for a future fbc feature to optimize out some of the error tracking code associated with error location reporting.  When implemented, only ##-exx## or ##-elocation## will enable the full error location reporting and will be optimized away otherwise.//
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfberr|__FB_ERR__]]##
+	- [[CompilerOptexx|Compiler Option: -exx]]
+	- [[ProPgErrorHandling|Error Handling]]
+	- [[CompilerCmdLine|Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

@@ -72,7 +72,7 @@ Using the **fbc** command-line.
 	=={{fbdoc item="keyword" value="CompilerOptex|-ex"}}==
 		Add error checking with RESUME support
 	=={{fbdoc item="keyword" value="CompilerOptexx|-exx"}}==
-		Same as ##-ex##, plus array bounds and non-null-pointer checking
+		Same as ##-ex##, plus array bounds, null-pointer, and error location reporting
 	=={{fbdoc item="keyword" value="CompilerOptWa|-Wa < opt >"}}==
 		Pass options to GAS (separated by commas)
 	=={{fbdoc item="keyword" value="CompilerOptWc|-Wc < opt >"}}==

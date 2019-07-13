@@ -5,9 +5,11 @@ Intrinsic define (macro value) set by the compiler
 	""__FB_DEBUG__""
 ##
 {{fbdoc item="desc"}}
-	##""__FB_DEBUG__""## indicates if the the generate debug information option '-g' was specified on the command line at the time of compilation.
+	##""__FB_DEBUG__""## indicates if the the generate debug information option ##[[CompilerOptg|-g]]## or the enable intrinsic define ##""__FB_DEBUG__""## option ##[[CompilerOptedebug|Compiler Option: -edebug]]## was specified on the command line at the time of compilation.
 	
-	Returns non-zero (-1) if the option was specified.  Returns zero (0) otherwise.
+	Returns non-zero (-1) if either option was specified.  Returns zero (0) otherwise.
+	
+	##[[KeyPgDdfberr|__FB_ERR__]]## can be used to determine in user source code if the ##-g## or ##-edebug## option was specified or implied on the command line.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/defines/fbdebug.bas"}}%%(freebasic)
@@ -24,6 +26,7 @@ Intrinsic define (macro value) set by the compiler
 {{fbdoc item="see"}}
 	- ##[[KeyPgDdfberr|__FB_ERR__]]##
 	- ##[[KeyPgDdfbmt|__FB_MT__]]##
+	- [[CompilerOptedebug|Compiler Option: -edebug]]
 	- [[CompilerOptg|Compiler Option: -g]]
 
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

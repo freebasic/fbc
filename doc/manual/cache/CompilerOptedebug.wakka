@@ -1,0 +1,25 @@
+{{fbdoc item="title" value="Compiler Option: -edebug"}}----
+Enable ##""__FB_DEBUG__""##
+
+{{fbdoc item="syntax"}}##
+	**-edebug**
+##
+{{fbdoc item="desc"}}
+	The ##**-edebug**## compiler option defines the intrinsic macro ##[[KeyPgDdfbdebug|__FB_DEBUG__]]## to enable user debug code.
+	
+	The intrinsic macro ##[[KeyPgDdfbdebug|__FB_DEBUG__]]## is set to non-zero (-1) if the option was specified, and set to zero (0) otherwise.
+	
+	##**-edebug**## is automatically implied by the ##[[CompilerOptg|-g]]## option.
+	
+	##[[KeyPgDdfberr|__FB_ERR__]]## can be used to determine in user source code if the ##**-edebug**## option was specified or implied on the command line.
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfbdebug|__FB_DEBUG__]]##
+	- ##[[KeyPgDdfberr|__FB_ERR__]]##
+	- [[CompilerOpteassert|Compiler Option: -eassert]]
+	- [[CompilerOptedebuginfo|Compiler Option: -debuginfo]]
+	- [[CompilerOptg|Compiler Option: -g]]
+	- [[DebuggerRunning|Debugging]]
+	- [[CompilerCmdLine|Using the Command Line]]
+
+{{fbdoc item="back" value="CatPgCompOpt|Compiler Options"}}

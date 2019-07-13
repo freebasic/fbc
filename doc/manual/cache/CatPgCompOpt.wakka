@@ -23,10 +23,22 @@ Command line compiler options for the fbc compiler:
 		- Create a DLL, including the import library
 	{{fbdoc item="keyword" value="CompilerOpte|-e"}}
 		- Add error checking
+	{{fbdoc item="keyword" value="CompilerOptearray|-earray"}}
+		- Enable array bounds checking
+	{{fbdoc item="keyword" value="CompilerOpteassert|-eassert"}}
+		- Enable assert() and assertwarn() checking
+	{{fbdoc item="keyword" value="CompilerOptedebug|-edebug"}}
+		- Enable ##[[KeyPgDdfbdebug|__FB_DEBUG__]]##
+	{{fbdoc item="keyword" value="CompilerOptedebuginfo|-edebuginfo"}}
+		- Add debug information
+	{{fbdoc item="keyword" value="CompilerOptelocation|-elocation"}}
+		- Enable full error location reporting 
+	{{fbdoc item="keyword" value="CompilerOptenullptr|-enullptr"}}
+		- Enable null-pointer checking
 	{{fbdoc item="keyword" value="CompilerOptex|-ex"}}
 		- Add error checking with RESUME support
 	{{fbdoc item="keyword" value="CompilerOptexx|-exx"}}
-		- Same as -ex, plus array bounds and non-null-pointer checking
+		- Same as -ex, plus array bounds, null-pointer, and error location reporting
 	{{fbdoc item="keyword" value="CompilerOptexport|-export"}}
 		- Export symbols for dynamic linkage
 	{{fbdoc item="keyword" value="CompilerOptforcelang|-forcelang <name>"}}
@@ -36,7 +48,7 @@ Command line compiler options for the fbc compiler:
 	{{fbdoc item="keyword" value="CompilerOptfpu|-fpu < type >"}}
 		- Set the floating point arithmetics unit (default: FPU)
 	{{fbdoc item="keyword" value="CompilerOptg|-g"}}
-		- Add debug info
+		- Add debug info, enable""##__FB_DEBUG__##"", and enable asserts
 	{{fbdoc item="keyword" value="CompilerOptgen|-gen < backend >"}}
 		- Sets the compiler backend (default is 'gas')
 	{{fbdoc item="keyword" value="CompilerOpti|-i < name >"}}
