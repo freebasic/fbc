@@ -1,10 +1,6 @@
 # include "fbcunit.bi"
 
-#if defined( __FB_64BIT__ ) 
-	#if defined( __FB_WIN32__ )
-		#define DOTEST
-	#endif	
-#elseif (__FB_BACKEND__ = "gas")
+#if (__FB_BACKEND__ = "gas")
 	#define DOTEST
 #endif
 

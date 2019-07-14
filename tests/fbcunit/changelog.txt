@@ -1,3 +1,9 @@
+Version 0.8
+
+[changed]
+- run_tests() returns false (failed) if any one assert fails
+
+
 Version 0.7
 
 [added]
