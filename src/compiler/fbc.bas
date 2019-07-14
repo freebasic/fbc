@@ -2961,7 +2961,39 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		case FB_CPUFAMILY_ARM
 			ln += "-march=arm "
 		case FB_CPUFAMILY_AARCH64
-			ln += "-march=aarch64 "
+			'' From the GCC manual:
+			'' -march=name
+			'' Specify the name of the target architecture and, 
+			'' optionally, one or more feature modifiers. This option 
+			'' has the form ‘-march=arch{+[no]feature}*’.
+			'' 
+			'' The permissible values for arch are 
+			'' 'armv8-a'
+			'' 'armv8.1-a' = 'armv8-a' + ARMv8.1-A 
+			'' 'armv8.2-a' = 'armv8.1-a' + ARMv8.2-A
+			'' 'armv8.3-a' = 'armv8.2-a' + ARMv8.3-A
+			'' 'armv8.4-a' = 'armv8.3-a' + ARMv8.4-A
+			'' 'armv8.5-a' = 'armv8.4-a' + ARMv8.5-A
+			'' 'native' = architecture of the host system
+			'' 
+			'' It enables the '+crc', '+lse', and '+rdma' features.
+			'' 
+			'' The value 'native' is available on native AArch64 
+			'' GNU/Linux and causes the compiler to pick the 
+			'' architecture of the host system. This option has no 
+			'' effect if the compiler is unable to recognize the 
+			'' architecture of the host system, The permissible 
+			'' values for feature are listed in the sub-section on 
+			'' ['-march' and '-mcpu' Feature Modifiers]. Where 
+			'' conflicting feature modifiers are specified, the 
+			'' right-most feature is used. GCC uses name to determine 
+			'' what kind of instructions it can emit when generating 
+			'' assembly code. If '-march' is specified without either 
+			'' of '-mtune' or '-mcpu' also being specified, the code
+			'' is tuned to perform well across a range of target 
+			'' processors implementing the target architecture.
+
+			ln += "-march=armv8-a "
 		end select
 
 		if( fbGetOption( FB_COMPOPT_PIC ) ) then

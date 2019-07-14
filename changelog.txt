@@ -3,6 +3,7 @@ Version 1.07.0
 [changed]
 - SADD/STRPTR(wstring) returns WSTRING PTR
 - '-v' be verbose command line option affects '-help' output
+- fbc aarch64 target by default maps to '-march=armv8-a' when passing options to gcc/LLVM (czsgaba)
 
 [added]
 - CVA_LIST type, CVA_START(), CVA_COPY() CVA_END(), CVA_ARG() macros will map to gcc's __builtin_va_list and __builtin_va_* macros in gcc backend
@@ -46,6 +47,8 @@ Version 1.07.0
 - github #116: Fix optimizations in [L/R]TrimAny rtlib functions (SkyFish)
 - github #145: WSTRING concat and assign buffer (&=) overrun
 - sf.net #893: 'Suffixes are only valid in -lang' error message showing incorrect -lang options allowed
+- fbc uses '-march=armv8-a' instead of invalid option '-march=aarch64' when passing options to gcc/LLVM (czsgaba)
+- rtlib: sys/io.h incorrectly included on systems that do not provide it.  It is used only for x86, x86_64 and is unnecessary for all other linux targets (armhf ,arm64, mips ....)
 
 
 Version 1.06.0
