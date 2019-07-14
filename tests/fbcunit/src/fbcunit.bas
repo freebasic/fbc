@@ -607,6 +607,10 @@ namespace fbcu
 
 							fbcu_test_index = .test_index_next
 
+							if( .assert_pass_count <> .assert_count ) then
+								failed = true
+							end if
+
 						end with
 
 					wend
