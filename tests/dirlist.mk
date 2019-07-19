@@ -37,6 +37,7 @@ threads \
 typedef \
 udt-wstring \
 udt-zstring \
+ustring \
 virtual \
 visibility \
 wstring
