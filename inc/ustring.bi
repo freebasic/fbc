@@ -32,6 +32,7 @@
 ''***********************************************************************************************
 '' Replacement for José Roca´s CWstr. This is mostly a clone of his code without 
 '' Windows dependency and adapted to work wih Linux as well.
+'' This class doesn´t work in DOS, therefore "USTRING" is redefined as STRING in DOS
 ''***********************************************************************************************
 
 
@@ -58,9 +59,8 @@ TYPE DWSTR extends wstring
     u_size      as long = SizeOf(WSTRING)
 
     DECLARE CONSTRUCTOR
-    DECLARE CONSTRUCTOR (BYVAL nChars AS ulong, BYVAL nCodePage AS ulong)
     DECLARE CONSTRUCTOR (BYVAL pwszStr AS WSTRING PTR)
-    DECLARE CONSTRUCTOR (BYREF ansiStr AS STRING, BYVAL nCodePage AS ulong = 0)
+    DECLARE CONSTRUCTOR (BYREF ansiStr AS STRING)
     DECLARE CONSTRUCTOR (BYREF cws AS DWSTR)
     DECLARE CONSTRUCTOR (BYVAL n AS LONGINT)
     DECLARE CONSTRUCTOR (BYVAL n AS DOUBLE)
@@ -79,14 +79,12 @@ TYPE DWSTR extends wstring
     DECLARE PROPERTY Capacity (BYVAL nValue AS ulong)
     DECLARE PROPERTY SizeAlloc (BYVAL nChars AS ulong)
     DECLARE PROPERTY SizeOf () AS ulong
-    DECLARE PROPERTY CodePage () AS ulong
-    DECLARE PROPERTY CodePage (BYVAL nCodePage AS ulong)
 
     DECLARE SUB Clear
 
     DECLARE SUB Add (BYREF cws AS DWSTR)
     DECLARE SUB Add (BYVAL pwszStr AS WSTRING PTR)
-    DECLARE SUB Add (BYREF ansiStr AS STRING, BYVAL nCodePage AS ulong = 0)
+    DECLARE SUB Add (BYREF ansiStr AS STRING)
 
     DECLARE OPERATOR [] (BYVAL nIndex AS ulong) byref AS USHORT
 
@@ -122,9 +120,8 @@ TYPE DWSTR extends wstring
     u_size      as long = SizeOf(WSTRING)
 
     DECLARE CONSTRUCTOR
-    DECLARE CONSTRUCTOR (BYVAL nChars AS ulong, BYVAL nCodePage AS ulong)
     DECLARE CONSTRUCTOR (BYVAL pwszStr AS WSTRING PTR)
-    DECLARE CONSTRUCTOR (BYREF ansiStr AS STRING, BYVAL nCodePage AS ulong = 0)
+    DECLARE CONSTRUCTOR (BYREF ansiStr AS STRING)
     DECLARE CONSTRUCTOR (BYREF cws AS DWSTR)
     DECLARE CONSTRUCTOR (BYVAL n AS LONGINT)
     DECLARE CONSTRUCTOR (BYVAL n AS DOUBLE)
@@ -143,14 +140,12 @@ TYPE DWSTR extends wstring
     DECLARE PROPERTY Capacity (BYVAL nValue AS ulong)
     DECLARE PROPERTY SizeAlloc (BYVAL nChars AS ulong)
     DECLARE PROPERTY SizeOf () AS ulong
-    DECLARE PROPERTY CodePage () AS ulong
-    DECLARE PROPERTY CodePage (BYVAL nCodePage AS ulong)
 
     DECLARE SUB Clear
 
     DECLARE SUB Add (BYREF cws AS DWSTR)
     DECLARE SUB Add (BYVAL pwszStr AS WSTRING PTR)
-    DECLARE SUB Add (BYREF ansiStr AS STRING, BYVAL nCodePage AS ulong = 0)
+    DECLARE SUB Add (BYREF ansiStr AS STRING)
 
     DECLARE OPERATOR [] (BYVAL nIndex AS ulong) byref AS Ulong
 
@@ -184,10 +179,6 @@ PRIVATE CONSTRUCTOR DWSTR
   this.ResizeBuffer(m_GrowSize)                       ''Create the initial buffer
 END CONSTRUCTOR
 
-PRIVATE CONSTRUCTOR DWSTR (BYVAL nChars AS ulong, BYVAL nCodePage AS ulong)
-  IF nChars = 0 THEN nChars = m_GrowSize \ u_size
-  this.ResizeBuffer(nChars * u_size)                  ''Create the initial buffer
-END CONSTRUCTOR
 
 PRIVATE CONSTRUCTOR DWSTR (BYVAL pwszStr AS WSTRING PTR)
   IF pwszStr = 0 THEN
@@ -197,9 +188,10 @@ PRIVATE CONSTRUCTOR DWSTR (BYVAL pwszStr AS WSTRING PTR)
   END IF
 END CONSTRUCTOR
 
-PRIVATE CONSTRUCTOR DWSTR (BYREF ansiStr AS STRING, BYVAL nCodePage AS ulong = 0)
+
+PRIVATE CONSTRUCTOR DWSTR (BYREF ansiStr AS STRING)
   IF .LEN(ansiStr) THEN
-     this.Add(ansiStr, nCodePage)                     ''Add the passed ansi string
+     this.Add(ansiStr)                                ''Add the passed ansi string
   ELSE
      this.ResizeBuffer(m_GrowSize)                    ''Create the initial buffer
   END IF
@@ -278,7 +270,7 @@ static zero as ushort                                 ''fallback for nIndex outs
 
   IF nIndex > (m_BufferLen \ u_size) THEN
     zero = &HFFFF
-    OPERATOR = zero                                   ''return 0
+    OPERATOR = zero                                   ''return error
     exit operator
   end if
   
@@ -296,7 +288,7 @@ static zero as ulong                                  ''fallback for nIndex outs
 
   IF nIndex > (m_BufferLen \ u_size) THEN
     zero = &HFFFFFFFF
-    OPERATOR = zero                                   ''return 0
+    OPERATOR = zero                                   ''return error
     exit operator
   end if
   
@@ -445,7 +437,7 @@ END FUNCTION
 
 PRIVATE SUB DWSTR.Add (BYREF cws AS DWSTR)
   '' Incoming string is already in wide format, simply copy it to the buffer.
-  DIM nLenString AS ulong = cws.m_BufferLen   '' // Length in bytes
+  DIM nLenString AS ulong = cws.m_BufferLen           '' Length in bytes
   IF nLenString = 0 THEN RETURN
 
   this.AppendBuffer(cast(ANY PTR, cws), nLenString)   ''copy the string into the buffer and update the length
@@ -456,7 +448,7 @@ PRIVATE SUB DWSTR.Add (BYVAL pwszStr AS WSTRING PTR)
 
   IF pwszStr = 0 THEN RETURN
   '' Incoming string is already in wide format
-  DIM nLenString AS ulong = .LEN(*pwszStr)   '' // Length in characters
+  DIM nLenString AS ulong = .LEN(*pwszStr)            '' Length in characters
   IF nLenString = 0 THEN RETURN
 
   this.AppendBuffer(cast(ANY PTR, pwszStr), nLenString * u_size)              ''copy the string into the buffer and update the length
@@ -464,17 +456,17 @@ PRIVATE SUB DWSTR.Add (BYVAL pwszStr AS WSTRING PTR)
 END SUB
 
 
-PRIVATE SUB DWSTR.Add (BYREF ansiStr AS STRING, BYVAL nCodePage AS ulong = 0)
+PRIVATE SUB DWSTR.Add (BYREF ansiStr AS STRING)
 
   IF LEN(ansiStr) = 0 THEN RETURN
   '' Create the wide string from the incoming ansi string
 
   DIM dwLen AS ulong, pbuffer AS wstring PTR
 
-  dwlen = len(ansistr) * 5                           ''enough even, if each byte converts to a surrogate pair
+  dwlen = len(ansistr) * 5                            ''enough even, if each byte converts to a surrogate pair
   pbuffer = Allocate(dwLen)
 
-  *pbuffer = ansistr                                 ''let FB´s intrinsic conversion do the job
+  *pbuffer = ansistr                                  ''let FB´s intrinsic conversion do the job
   dwlen = len(*pbuffer) * u_size
 
   IF pbuffer THEN
