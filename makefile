@@ -81,7 +81,8 @@
 #   ENABLE_SUFFIX=-0.24    append a string like "-0.24" to fbc/FB dir names,
 #                          and use "-d ENABLE_SUFFIX=$(ENABLE_SUFFIX)" (non-standalone only)
 #   ENABLE_LIB64=1         use prefix/lib64/ instead of prefix/lib/ for 64bit libs (non-standalone only)
-#   ENABLE_STRIPALL=1      use "-d ENABLE_STRIPALL" with select targets
+#   ENABLE_STRIPALL=1      use "-d ENABLE_STRIPALL" with all targets
+#   ENABLE_STRIPALL=0      disable "-d ENABLE_STRIPALL" with all targets
 #   FBPACKAGE     bindist: The package/archive file name without path or extension
 #   FBPACKSUFFIX  bindist: Allows adding a custom suffix to the normal package name (and the toplevel dir in the archive)
 #   FBMANIFEST    bindist: The manifest file name without path or extension
@@ -432,6 +433,11 @@ ifdef ENABLE_LIB64
   ALLFBCFLAGS += -d ENABLE_LIB64
 endif
 ifdef ENABLE_STRIPALL
+  ifneq ($(ENABLE_STRIPALL),0)
+    ALLFBCFLAGS += -d ENABLE_STRIPALL
+  endif
+else
+  # by default dos and windows use --strip-all
   ifneq ($(filter dos win32,$(TARGET_OS)),)
     ALLFBCFLAGS += -d ENABLE_STRIPALL
   endif

@@ -10,7 +10,10 @@ Version 1.07.0
 - github #133: fbc makefile supports bootstrap-minimal target to build a bootstrap fbc with only the minimal features necessary to build another fbc. (William Breathitt Gray)
 - github #141: introduced '-strip'/'-nostrip' options to control symbol stripping of output files (William Breathitt Gray)
 - github #141: fbc will default to stripping symbols if '-d ENABLE_STRIPALL' is passed in FBCFLAGS (William Breathitt Gray)
-- github #141: makefile option 'ENABLE_STRIPALL=1' introduced to pass '-d ENABLE_STRIPALL' via FBCFLAGS by default for dos/win32 targets (William Breathitt Gray)
+- github #141: makefile option 'ENABLE_STRIPALL=1' introduced to pass '-d ENABLE_STRIPALL' via FBCFLAGS (William Breathitt Gray)
+- makefile: 'ENABLE_STRIPALL=1' passes '-d ENABLE_STRIPALL' via FBCFLAGS on all targets
+- makefile: 'ENABLE_STRIPALL=0' disables passing '-d ENABLE_STRIPALL' via FBCFLAGS on all targets
+- makefile: '-d ENABLE_STRIPALL' passed by default for dos/win32 targets when 'ENABLE_STRIPALL=0' not explicitly given
 - 'TYPE udt EXTENDS Z|WSTRING' allowed to specify that UDT is a kind of Z|WSTRING
 - LTRIM/RTRIM/TRIM will accept UDT as Z|WSTRING
 - LCASE/UCASE will accept UDT as Z|WSTRING
