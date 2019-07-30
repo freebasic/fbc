@@ -398,16 +398,15 @@ SUITE( fbc_tests.functions.va_cva_api )
 	END_TEST
 
 #if (defined(__FB_UNIX__) and defined(__FB_64BIT__)) or defined(__FB_ARM__)
-	'' Returning an array not allowed in some versions of gcc
-	'' depending on the implementation and of va_list. 
-	'' Some tests will fail to compile in gcc on linux x86_64.
+	'' Returning an array not allowed in gcc and some 
+	'' tests will fail to compile in gcc on linux or darwin x86_64.
 	'' To handle returning a byval cva_list, would need to 
 	'' pass it in a hidden argument and make the function 
 	'' void, or possibly wrap the va_list type in another 
 	'' structure.  Generally, the copy assignment/passing
 	'' of va_list[0] in gcc is different from what fbc can
 	'' currently handle and should be avoided anyway.
-	'' Some tests will fail to compile in gcc on on ARM targets.
+	'' Some tests will fail to compile in gcc on ARM targets.
 	#if ENABLE_CHECK_BUGS
 		#define VALIST_CAN_RETURN_BYVAL 1
 	#else
