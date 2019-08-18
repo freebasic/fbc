@@ -17,6 +17,7 @@ data \
 datetime \
 dim \
 expressions \
+fbc-int \
 file \
 functions \
 gfx \
