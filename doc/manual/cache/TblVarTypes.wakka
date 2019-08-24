@@ -17,7 +17,7 @@ Standard variable types and limits.
 
 {{fbdoc item="section" value="Arrays"}}
 
-~~{{table columns="5" cellpadding="2" cells="Platform ; Maximum Subscript Range ; Maximum Elements per Dimension ; Minimum/Maximum Dimensions ; Maximum Size (in bytes) ; 32bit ; [*][-2147483648, +2147483647] ; [*]+2147483647 ; 1/9 ; [*]+2147483647 ; 64bit ; [*][-9223372036854775808, +9223372036854775807] ; [*]+9223372036854775807 ; 1/9 ; [*]+9223372036854775807"}}
+~~{{table columns="5" cellpadding="2" cells="Platform ; Maximum Subscript Range ; Maximum Elements per Dimension ; Minimum/Maximum Dimensions ; Maximum Size (in bytes) ; 32bit ; [*][-2147483648, +2147483647] ; [*]+2147483647 ; 1/8 ; [*]+2147483647 ; 64bit ; [*][-9223372036854775808, +9223372036854775807] ; [*]+9223372036854775807 ; 1/8 ; [*]+9223372036854775807"}}
 
 ~&[*] //All runtime library array procedures take and produce ##[[KeyPgInteger|Integer]]## values for subscripts and indexes. The actual limits will vary (smaller) with the number of dimensions, element size, storage location and/or platform.//
 

@@ -1,0 +1,302 @@
+{{fbdoc item="title" value="Recursion"}}----
+Recursive procedures (subroutines or functions)
+
+Iteration and recursion are two very useful ways to program, especially to perform a certain number of times a certain script, and thus allow optimization of the code. If iteration is relatively easy to understand, recursion is a concept not necessarily obvious at the beginning.
+When speaking of a recursive procedure (subroutine or function), we refer to a syntactic characteristic: the procedure, in its own definition, refers to itself (it calls itself).
+But when talking about recursive process, linear or tree, we are interested in the process flow, not in the syntax of the procedure's writing.
+Thus, a procedure can have a recursive definition but correspond to an iterative process.
+
+Some treatments are naturally implemented as a recursive algorithm (although this is not always the most optimal solution).
+The main problem of the recursive approach is that it consumes potentially a lot of space on the execution stack: from a certain level of "depth" of recursion, the space allocated for the execution stack of the thread is exhausted, and causes an error of type "stack overflow".
+Repeatedly calling the same procedure can also make the execution slower, although this may make the code easier.
+To increase the speed of execution, simple recursive algorithms can be recreated in little more complicated iterative algorithms using loops that execute much faster.
+
+What is the use of recursion if it increases the execution time and memory space compared to an iterative solution?
+There are still cases where it is not possible to do otherwise, where iterative translation does not exist or, where it exists, is much heavier to implement (requiring for example a dynamic storage capacity to substitute for the execution stack).
+
+{{fbdoc item="section" value="Recursion beside iteration"}}
+	Iteration and recursion both repeatedly execute the instruction set:
+		- Iteration occurs when a loop executes repeatedly until the control condition becomes false.
+		- Recursion occurs when an instruction in a procedure calls the procedure itself repeatedly.
+	The main difference between iteration and recursion is that iteration is a process applied to a set of instructions to execute repeatedly, while recursion is a process always applied to a procedure.
+	
+	__Definition of iteration__
+		Iteration is a process of repeatedly executing a set of instructions until the iteration condition becomes false.
+		The iteration block includes the initialization, the comparison, the execution of the instructions to be iterated and finally the update of the control variable.
+		Once the control variable is updated, it is compared again and the process is repeated until the condition in the iteration is false.
+		Iteration blocks are ##[[KeyPgFor|For]]## loop, ##[[KeyPgWhile|While]]## loop, ...
+		
+		The iteration block does not use the execution stack to store the variables at each cycle. Therefore, the execution of the iteration block is faster than the recursion block. In addition, iteration does not have the overhead of repeated procedure calls that also make its execution faster than a recursion.
+		The iteration is complete when the control condition becomes false.
+		
+		Simple example with a iterative function which returns the factorial of the integer:
+		{{fbdoc item="filename" value="examples/manual/proguide/recursion/iterativefactorial.bas"}}%%(freebasic)
+'' The code body of the iterative function is defined by using the iterative definition of the factorial function:
+''    Case (n = 0) : factorial(0) = 1
+''    Case (n > 0) : factorial(n) = (1) * ..... * (n - 2) * (n - 1) * (n)
+''    The first line allows to determine the cumulative variable initialization: 'result = 1'
+''    The second line allows to determine the statement syntax which accumulates: 'result = result * I'
+
+Function iterativeFactorial (Byval n As Integer) As Integer
+	Dim As Integer result = 1  '' variable initialization
+	For I As Integer = 1 To n  '' iteration loop
+		result = result * I    '' iterative accumulation
+	Next I
+	Return result
+End Function
+
+Print iterativeFactorial(6)
+
+Sleep
+%%
+	__Definition of recursion__
+		FreeBASIC allows a procedure to call itself in its code. This means that the procedure definition has a procedure call to itself. The set of local variables and parameters used by the procedure are newly created each time the procedure is called and are stored at the top of the execution stack. But every time a procedure calls itself, it does not create a new copy of that procedure. The recursive procedure does not significantly reduce the size of the code and does not even improve the memory usage, but it does a little bit compared to iteration.
+		
+		To end recursion, a condition must be tested to force the return of the procedure without giving a recursive call to itself. The absence of a test of a condition in the definition of a recursive procedure would leave the procedure in infinite recursion once called.
+		
+		**Note:** When the parameters of a recursive procedure are passed by reference, take care to work with local variables when the code body needs to modify their values.
+		
+		Simple example with a recursive function which returns the factorial of the integer:
+		{{fbdoc item="filename" value="examples/manual/proguide/recursion/recursivefactorial.bas"}}%%(freebasic)
+'' The code body of the recursive function is defined by using the recursive definition of the factorial function:
+''    Case (n = 0) : factorial(0) = 1
+''    Case (n > 0) : factorial(n) = n * factorial(n-1)
+''    The first line allows to determine the end condition: 'If (n = 0) Then Return 1'
+''    The second line allows to determine the statement syntax which calls the function itself: 'Return n * factorial(n - 1)'
+
+Function recursiveFactorial (Byval n As Integer) As Integer
+	If (n = 0) Then                           '' end condition
+		Return 1
+	Else                                      '' recursion loop
+		Return n * recursiveFactorial(n - 1)  '' recursive call
+	End If
+End Function
+
+Print recursiveFactorial(6)
+
+Sleep
+%%
+{{fbdoc item="section" value="Recursion structure"}}
+	Different types of recursion structure can be found:
+		- Tail recursion.
+		- Non-tail but final recursion.
+		- Non-tail and non-final recursion.
+		- Mutual recursion.
+		- Nested recursion.
+
+		
+	__Tail recursion__
+		The recursive procedure is a tail recursive procedure if the only recursive call is at the end of the recursion and is therefore not followed by any other statement:
+			- for a recursive subroutine, the only recursive call is at the end of the recursion,
+			- for a recursive function, the only recursive call is at the end of the recursion and consists in taking into account the return of the function without any other additional operation on it.
+		A tail recursive procedure is easy to transform into an iterative procedure.
+		
+		Example with the simple "factorial" recursive function (already presented above):
+			- This function has a non-tail recursive form because even though the recursive call is at the end of function, this recursive call is not the last instruction of the function because one has to multiplied again by 'n' when 'recursiveFactorial(n - 1)' is got.
+			- This calculation is done when popping context from execution stack.
+
+			
+		It is quite easy to transform this function so that the recursion is a tail recursion.
+		To achieve this, it is necessary to add a new parameter to the function: the 'result' parameter which will serve as accumulator:
+		{{fbdoc item="filename" value="examples/manual/proguide/recursion/tailrecursivefactorial.bas"}}%%(freebasic)
+Function tailRecursiveFactorial (Byval n As Integer, Byval result As Integer = 1) As Integer
+	If (n = 0) Then                                       '' end condition
+		Return result
+	Else                                                  '' recursion loop
+		Return tailRecursiveFactorial(n - 1, result * n)  '' tail recursive call
+	End If
+End Function
+
+Print tailRecursiveFactorial(6)
+
+Sleep
+		%%This time, the calculation is done when pushing context on execution stack.
+		
+		Similar transformation steps for the simple "reverse string" recursive function following:
+		{{fbdoc item="filename" value="examples/manual/proguide/recursion/recursivereverse.bas"}}%%(freebasic)
+Function recursiveReverse (Byval s As String) As String
+	If (s = "") Then                                     '' end condition
+		Return s
+	Else                                                 '' recursion loop
+		Return recursiveReverse(Mid(s, 2)) & Left(s, 1)  '' recursive call
+	End If
+End Function
+
+Print recursiveReverse("9876543210")
+
+Sleep
+%%
+		{{fbdoc item="filename" value="examples/manual/proguide/recursion/tailrecursivereverse.bas"}}%%(freebasic)
+Function tailRecursiveReverse (Byval s As String, Byval cumul As String = "") As String
+	If (s = "") Then                                                '' end condition
+		Return cumul
+	Else                                                            '' recursion loop
+		Return tailRecursiveReverse(Mid(s, 2), Left(s, 1) & cumul)  '' tail recursive call
+	End If
+End Function
+
+Print tailRecursiveReverse("9876543210")
+
+Sleep
+		%%**Note:** As the "&" operator (string concatenation) is not a symmetric operator ('(a & b) <> (b & a)', while '(x * y) = (y * x)' like previously), the two operand order must to be reversed when pushing context on execution stack instead of before when popping context from execution stack.
+		
+	__Non-tail but final recursion__
+		A non-tail recursive procedure is final when the recursive call(s) is(are) placed at the end of executed code (no executable instruction line after and between for several recursive calls).
+		
+		First example, computation of the combination coefficients nCp (binomial coefficients calculation) and display of the Pascal's triangle:
+		{{fbdoc item="filename" value="examples/manual/proguide/recursion/recursivecombination.bas"}}%%(freebasic)
+Function recursiveCombination (Byval n As Uinteger, Byval p As Uinteger) As Longint
+	If p = 0 Or p = n then
+		Return 1
+	Else
+		Return recursiveCombination(n - 1, p) + recursiveCombination(n - 1, p - 1)
+	End If
+End Function
+
+Dim As Uinteger n = 10
+For I As Uinteger = 0 To n
+	For J As Uinteger = 0 To I
+		Locate , 6 * J + 3 * (n - I) + 3
+		Print recursiveCombination(I, J);
+	Next J
+	Print
+Next I
+
+Sleep
+%%
+		Second example, recursive drawing of circles:
+		{{fbdoc item="filename" value="examples/manual/proguide/recursion/recursivecircle.bas"}}%%(freebasic)
+Sub recursiveCircle (Byval x As Integer, Byval y As Integer, Byval r As Integer)
+	Circle (x, y), r
+	If r > 16 Then
+		recursiveCircle(x + r / 2, y, r / 2)
+		recursiveCircle(x - r / 2, y, r / 2)
+		recursiveCircle(x, y + r / 2, r / 2)
+		recursiveCircle(x, y - r / 2, r / 2)
+	End If
+End Sub
+
+Screen 12
+
+Locate 2, 2
+recursiveCircle(160, 160, 150)
+
+Sleep
+%%
+		Third example, quick sort algorithm:
+		{{fbdoc item="filename" value="examples/manual/proguide/recursion/recursivequicksort.bas"}}%%(freebasic)
+Dim shared As Ubyte t(99)
+
+Sub recursiveQuicksort (Byval L As Integer, Byval R As Integer)
+	Dim As Integer pivot = L, I = L, J = R
+	Do
+		If t(I) >= t(J) then
+			Swap t(I), t(J)
+			pivot = L + R - pivot
+		End If
+		If pivot = L then
+			J = J - 1
+		Else
+			I = I + 1
+		End If
+	Loop Until I = J
+	If L < I - 1 Then
+		recursiveQuicksort(L, I - 1)
+	End If
+	If R > J + 1 Then
+		recursiveQuicksort(J + 1, R)
+	End If
+End Sub
+
+Randomize
+For I As Integer = Lbound(t) To Ubound(t)
+	t(i) = Int(Rnd * 256)
+Next I
+
+Print "raw memory:"
+For K As Integer = Lbound(t) To Ubound(t)
+	Print Using "####"; t(K);
+Next K
+Print
+
+recursiveQuicksort(Lbound(t), Ubound(t))
+
+Print "sorted memory:"
+For K As Integer = Lbound(t) To Ubound(t)
+	Print Using "####"; t(K);
+Next K
+Print
+
+Sleep
+%%
+	__Non-tail and non-final recursion__
+		A non-tail recursive procedure is also not final when the recursive call(s) is(are) not all placed at the end of executed code (an executable instruction line at least after or between for several recursive calls).
+		
+		Example, tower of Hanoi algorithm:
+		{{fbdoc item="filename" value="examples/manual/proguide/recursion/recursivehanoi.bas"}}%%(freebasic)
+'' For this example, the two recursive calls are at the end of executed code block but separated by an instruction line and there is an order constraint.
+
+Sub recursiveHanoi (Byval n As Integer, Byval departure As String, Byval middle As String, Byval arrival As String)
+	If n > 0 Then
+		recursiveHanoi(n - 1, departure, arrival, middle)
+		Print "  move one disk from " & departure & " to " & arrival
+		recursiveHanoi(n -1 , middle, departure, arrival)
+	End If
+End Sub
+
+recursiveHanoi(3, "A", "B", "C")
+
+Sleep
+%%
+	__Mutual recursion__
+		Two functions are said to be mutually recursive if the first calls the second, and in turn the second calls the first.
+		
+		Example using mutual recursive, 'even()' and 'odd()' recursive functions:
+		{{fbdoc item="filename" value="examples/manual/proguide/recursion/recursiveisevenodd.bas"}}%%(freebasic)
+Declare Function recursiveIsEven(Byval n As Integer) As Boolean
+Declare Function recursiveIsOdd(Byval n As Integer) As Boolean
+
+Function recursiveIsEven(Byval n As Integer) As Boolean
+	If n = 0 Then
+		Return True
+	Else
+		Return recursiveIsOdd(n - 1)
+	End If
+End Function
+
+Function recursiveIsOdd(Byval n As Integer) As Boolean
+ 	If n = 0 Then
+		Return False
+	Else
+		Return recursiveIsEven(n - 1)
+	End If
+End Function
+
+Print recursiveIsEven(16), recursiveIsOdd(16)
+Print recursiveIsEven(17), recursiveIsOdd(17)
+
+Sleep
+%%
+	__Nested recursion__
+		A recursive function is said nested if an argument passed to the function refers to the function itself.
+		
+		Example using nested recursive function, 'Ackermann()' recursive function:
+		{{fbdoc item="filename" value="examples/manual/proguide/recursion/recursiveackermann.bas"}}%%(freebasic)
+Function recursiveAckermann (Byval m As Integer, Byval n As Integer) As Integer
+	If m = 0 Then
+		Return n + 1
+	Else
+		If n = 0 Then
+			Return recursiveAckermann(m - 1, 1)
+		Else
+			Return recursiveAckermann(m - 1, recursiveAckermann(m, n - 1))
+		End If
+	End If
+End Function
+
+Print recursiveAckermann(3, 0), recursiveAckermann(3, 1), recursiveAckermann(3, 2), recursiveAckermann(3, 3), recursiveAckermann(3, 4)
+
+Sleep
+%%
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

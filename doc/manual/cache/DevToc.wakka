@@ -40,6 +40,7 @@ This area of the Wiki is for documenting everything about the compiler and the r
 		{{fbdoc item="keyword" value="DevFbcParserSymbols|Symbols"}}
 		{{fbdoc item="keyword" value="DevFbcTypes|Representation of data types"}}
 	
+	{{fbdoc item="keyword" value="DevArrays|Arrays"}}
 	{{fbdoc item="keyword" value="DevSelectCase|SELECT CASE"}}
 	{{fbdoc item="keyword" value="ProPgProfiling|Profiling FB programs"}}
 	{{fbdoc item="keyword" value="DevStructLayout|Structure packing/field alignment"}}

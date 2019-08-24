@@ -67,6 +67,8 @@ Dim as integer multidim(1 to 2,1 to 5) = {{0,0,0,0,0},{0,0,0,0,0}}
 {{fbdoc item="see"}}
 	- [[ProPgFixLenArrays|Fixed-length Arrays]]
 	- [[ProPgVarLenArrays|Variable-length Arrays]]
+	- [[ProPgArrayIndex|Array Indexing]]
+	- [[ProPgPassingArrays|Passing Arrays to Procedures]]
 	- [[ProPgVariableScope|Variable Scope]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

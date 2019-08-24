@@ -773,6 +773,7 @@
 			[[ProPgFixLenArrays|Fixed-length Arrays]]
 			[[ProPgVarLenArrays|Variable-length Arrays]]
 			[[ProPgArrayIndex|Array Indexing]]
+			[[ProPgPassingArrays|Passing Arrays to Procedures]]
 
 		{{fbdoc item="subsect" value="Pointers"}}
 			[[ProPgPointers|Overview]]
@@ -783,6 +784,9 @@
 		[[ProPgInitialization|Initialization]]
 		[[ProPgStorageClasses|Storage Classes]]
 		[[ProPgVariableScope|Variable Scope]]
+		[[ProPgVariableLifetime|Simple Variable Lifetime vs Scope]]
+		[[ProPgObjectLifetime|Dynamic Object and Data Lifetime]]
+		[[ProPgNamespaces|Namespaces]]
 		[[ProPgVarProcLinkage|Variable and Procedure Linkage]]
 
 	{{fbdoc item="subsect" value="User Defined Types"}}
@@ -794,6 +798,8 @@
 		[[ProPgProperties|Properties]]
 		[[ProPgMemberAccessRights|Member Access Rights]]
 		[[ProPgOperatorOverloading|Operator Overloading]]
+		[[ProPgTypeIterators|Iterators]]
+		[[ProPgNewDelete|New and Delete]]
 		[[ProPgTypeObjects|Types as Objects]]
 
 	{{fbdoc item="subsect" value="Statements and Expressions"}}
@@ -805,6 +811,7 @@
 		[[ProPgPassingArguments|Passing Arguments to Procedures]]
 		[[ProPgReturnValue|Returning a Value]]
 		[[ProPgCallingConventions|Calling Conventions]]
+		[[ProPgRecursion|Recursion]]
 		[[ProPgProcedurePointers|Pointers to Procedures]]
 		[[CatPgVarArg|Variable Arguments]]
 

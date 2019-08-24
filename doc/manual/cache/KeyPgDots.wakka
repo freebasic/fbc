@@ -27,6 +27,8 @@ Used in place of procedure parameter to pass a variable number of arguments, or 
 	
 	Using an ellipsis behind the last parameter in a ##[[KeyPgPpdefine|#define]]## or ##[[KeyPgPpmacro|#macro]]## declaration allows creation of a variadic macro. This means it is possible to pass any number of arguments to the //variadic_parameter//, which can be used in the //body// as if it was a normal macro parameter. The //variadic_parameter// will expand to the full list of arguments passed to it, including commas, and can also be completely empty.
 	
+	**Note:** To distinguish between the different arguments passed by //variadic_parameter//, you can first convert //variadic_parameter// to a string using the ##[[KeyPgOpPpStringize|Operator # (Preprocessor Stringize)]]##, then differentiate in this string (//#variadic_parameter//) each passed argument by locating the separators (usually a comma).
+	
 	__Array Upper Bound__
 	
 	Using an ellipsis in place of the upper bound in an array declaration causes the upper bound to be set according to the data that appears in the ##//expression_list//##.  When the ellipsis is used in this manner, an initializer must appear, and cannot be ##[[KeyPgAny|Any]]##.
