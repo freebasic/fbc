@@ -79,6 +79,12 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 	- ##ENABLE_STANDALONE=1##
 		Build a standalone FB setup instead of the normal Unix-style setup, see also: [[DevNormalVsStandalone|the standalone vs. normal comparison]]. This causes the makefile to use the standalone directory layout and to use ##-d ENABLE_STANDALONE## when building the compiler.
 	
+	- ##ENABLE_STRIPALL=1##
+		Enable the ##[[CompilerOptstrip|-strip]]## compiler option by default.  If ##ENABLE_STRIPALL=1## is not given, this is the default for dos/win.
+	
+	- ##ENABLE_STRIPALL=0##
+		Enable the ##[[CompilerOptnostrip|-nostrip]]## compiler option by default.  If ##ENABLE_STRIPALL=1## is not given, this is the default for linux (basically, everything other target besides dos.win).
+	
 	- ##ENABLE_PREFIX=1##
 		This causes the makefile to use ##-d ENABLE_PREFIX=$(prefix)## when building the compiler.
 	
@@ -98,6 +104,9 @@ make install-rtlib install-gfxlib2 TARGET=i686-w64-mingw32
 
 	- ##-d ENABLE_STANDALONE##
 		This makes the compiler behave as a standalone tool that cannot rely on the system to have certain programs or libraries. See [[DevNormalVsStandalone|the normal vs. standalone comparison]] for more information.
+	
+	- ##-d ENABLE_STRIPALL##
+		Enable the ##[[CompilerOptstrip|-strip]]## by default, otherwise ##[[CompilerOptnostrip|-nostrip]]## is default.
 	
 	- ##-d ENABLE_SUFFIX=foo##
 		This makes the compiler append the given suffix to the ##lib/freebasic/## directory name when searching for its own ##lib/freebasic/## directory. For example, ##-d ENABLE_SUFFIX=-0.24## causes it to look for ##lib/freebasic-0.24/## instead of ##lib/freebasic/##. Corresponding the ENABLE_SUFFIX=foo makefile option, this adjust the compiler to work in the new directory layout.

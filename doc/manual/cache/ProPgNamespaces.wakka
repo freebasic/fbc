@@ -1,0 +1,151 @@
+{{fbdoc item="title" value="Namespaces"}}----
+**Namespace**, a container for identifiers so that they don't conflict with those in other **Namespaces** or the global scope.
+
+{{fbdoc item="section" value="Syntax"}}##
+	**Namespace** //identifier// [ [[KeyPgAlias|Alias]] "//aliasname//" ]
+		//statements//
+	**End Namespace**
+##
+{{fbdoc item="section" value="Parameters"}}
+	##//identifier//##
+		The name of the Namespace (including nested names specifier).
+	##//aliasname//##
+		An alternate external name for the Namespace.
+
+{{fbdoc item="section" value="Description"}}
+	Namespaces are declaration fields that allow to delimit the search for the names of identifiers by the compiler. Their purpose is essentially to group the identifiers logically and to avoid name conflicts between several parts of the same project.
+	This type of conflict stems from the fact that only one global scope is provided by default, in which there should be no name conflict. With Namespaces, this type of problem can be more easily avoided, because defining global objects in the global scope can be avoid.
+	
+	Namespaces are not allowed to contain code directly, only inside procedures declared in that Namespace. That is because a Namespace is not a scope, it is not something that is executed, it is just something that can be used to hold declarations.
+	
+	Any variable declared in Namespace is implicitly static and visible throughout the entire program (##[[KeyPgStatic|Static]]## and ##[[KeyPgShared|Shared]]## keywords are useless). Therefore only an initializer with a constant is authorized.
+
+{{fbdoc item="section" value="Usage"}}
+	Unlike another declarative region such as a ##[[KeyPgType|Type]]##, a Namespace can be split into several pieces. The first piece serves as declaration, and the following ones as extensions. The syntax for a Namespace extension is exactly the same as that for the declaration part.
+	Identifiers declared or defined within the same Namespace must not conflict. They may have the same names, but only as part of the overloading. A Namespace therefore behaves exactly like the declaration fields of Types and the global scope.
+	
+	Access to Namespace identifiers is through the resolution operator ("."), by prefixing the name of the identifier to use from the name of its Namespace. However, this prefixing is useless inside the Namespace itself, just like members inside their Type.
+	Namespace member procedures can be defined inside this space. They can also be set outside this space, if the resolution operator is used (prefixing from the name of its Namespace). The procedures thus defined must appear after their declarations in the Namespace.
+	
+	It is possible to define a Namespace within another Namespace. However, this declaration must occur at the outermost declarative level of the Namespace that will contain the Namespace. Namespace declarations can not be put inside a procedure body or inside a Type block.
+	
+	When a Namespace has a very complicated name, it may be advantageous to define an alias for that name. The alias will then have a simpler name.
+	Names given to Namespace aliases  must not conflict with the names of other identifiers in the same Namespace, whether this is the global scope or not.
+	
+	**Note:** The parser allows to define anonymous Namespaces (without ##//identifier//## term), but this is the only similarity with the actual ""C++"" capability: The FB compiler automatically generates multiple separate anonymous Namespaces instead of one only per module in such a case.
+	The FB anonymous Namespaces are almost unusable because all their declarations are inaccessible, even from the body of the module that contains them. Apart from encapsulating module constructors/destructors also inside, nothing else can be done with them.
+	
+	__'Using (Namespaces)' command__
+		##[[KeyPgUsing|Using (Namespaces)]]## allows to use a identifier from a Namespace in a simplified way, without having to specify its full name (that is, the Namespace name followed by the "." operator then the identifier name).
+		Each Using command allows to directly use all the identifiers of the referred Namespace.
+		
+		**""-""** Syntax:
+			##**Using** //identifier// [, //identifier// [, ...] ]##
+			
+		**""-""** Parameters:
+			##//identifier//##: The name of the Namespace to use.
+			
+		**""-""** Usage:
+			After a Using command, it is still possible to use the full names of the identifiers from a Namespace, but this is no longer necessary. The Using commands are valid from the line where they are declared until the end of the current scope block.
+			If a Namespace is extended after a Using directive, the identifiers defined in the Namespace extension can be then used exactly as the identifiers defined before the using directive (that is, without the full expression of their Namespace names).
+			
+			When entering Using command(s) for several Namespace names, name conflicts may occur. In this case, no error is reported from the Using command(s), but an error occurs if one of the identifiers for which there is a conflict is used (using full name of the expected identifier solves the conflict).
+
+{{fbdoc item="section" value="Example"}}
+	Namespace extension:
+		{{fbdoc item="filename" value="examples/manual/proguide/namespaces/extension1.bas"}}%%(freebasic)
+Namespace A  ' Declaration of Namespace A
+	Dim As Integer i
+End Namespace
+
+Namespace B  ' Declaration of Namespace B
+	Dim As Integer i
+End Namespace
+
+Namespace A  ' Extension of Namespace A
+	Dim As Integer j
+End Namespace
+%%
+	Access to Namespace members:
+		{{fbdoc item="filename" value="examples/manual/proguide/namespaces/access.bas"}}%%(freebasic)
+Dim As Integer i  ' Declare i in the global scope
+
+Namespace A
+	Dim As Integer i = 2  ' Declare i in Namespace A
+	Dim As Integer j = 3  ' Declare j in Namespace A
+End Namespace
+
+i = 1    ' Use i from global scope (.i)
+A.i = 4  ' Use i from Namespace A (A.i)
+%%
+	External definition of a function declared in a Namespace:
+		{{fbdoc item="filename" value="examples/manual/proguide/namespaces/externdef.bas"}}%%(freebasic)
+Namespace A
+	Declare Function f () As Integer  ' Declaration of f() in Namespace A (A.f())
+End Namespace
+
+Function A.f () As Integer  ' Definition of f() from Namespace A (A.f())
+	Return 0
+End Function
+%%
+	Definition of nested Namespace:
+		{{fbdoc item="filename" value="examples/manual/proguide/namespaces/nested.bas"}}%%(freebasic)
+Namespace A
+	Dim As Integer i  ' (A.i)
+	Namespace B
+		Dim As Integer j  ' (A.B.j)
+	End Namespace
+End Namespace
+%%
+	Access with 'Using (Namespaces)' command:
+		{{fbdoc item="filename" value="examples/manual/proguide/namespaces/using.bas"}}%%(freebasic)
+Namespace A
+	Dim As Integer i  ' Declaration of A.i
+	Dim As Integer j  ' Declaration of A.j
+End Namespace
+
+Using A  ' Namespace A identifiers are also used
+i = 1  ' Equivalent to A.i
+j = 1  ' Equivalent to A.j
+%%
+	Extension of Namespace after 'Using (Namespace)' command:
+		{{fbdoc item="filename" value="examples/manual/proguide/namespaces/extension2.bas"}}%%(freebasic)
+Namespace A
+	Dim As Integer i
+End Namespace
+
+Using A
+
+Namespace A
+	Dim As Integer j
+End Namespace
+
+i = 0  ' Initialize A.i
+j = 0  ' Initialize A.j
+%%
+	Conflict between local identifiers with 'Using (Namespaces)' command:
+		{{fbdoc item="filename" value="examples/manual/proguide/namespaces/conflict.bas"}}%%(freebasic)
+Namespace A
+	Dim As Integer i  ' Declare A.i
+	Dim As Integer j  ' Declare A.j
+End Namespace
+
+Namespace B
+	Dim As Integer i  ' Declare B.i
+	Dim As Integer j  ' Declare B.j
+	Using A           ' A.i/j and B.i/j are in conflict, but no error is given
+End Namespace
+
+Dim As Integer j  ' Declare also j the global scope
+
+Using B
+'i = 1   ' error: Ambiguous symbol access, explicit scope resolution required (between B.i and A.i)
+B.i = 1  ' ambiguity resolution solved by using full name
+j = 2    ' ambiguity (between .j, B.j, A.j) solved by compiler, by choosing override .j in the global scope
+%%
+{{fbdoc item="section" value="See also"}}
+	- [[KeyPgNamespace|Namespace]]
+	- [[KeyPgUsing|Using (Namespaces)]]
+	- [[KeyPgScope|Scope...End Scope]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

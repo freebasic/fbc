@@ -1,0 +1,301 @@
+{{fbdoc item="title" value="New and Delete"}}----
+The different operators **New** (//Implicit///Overload/Expression/Placement) and **Delete** (//Implicit///Overload/Statement), and all their array-versions **New[]** and **Delete[]**
+
+{{fbdoc item="section" value="Definition"}}
+	There may be confusion in the user mind between the different operators **New** and **Delete** (despite the documentation that distinguishes them from each other through some different pages):
+		- ##//'Operator New Implicit' (inaccessible by user)//##:
+				**""-""** It is a static function that only allocates memory (it is not very different from ##[[KeyPgAllocate|Allocate]]##).
+		- ##[[KeyPgOpNewOverload|Operator New Overload]]##:
+				**""-""** It is a member operator (static function) that can overload the ##//'Operator New Implicit'//## only for user-defined types.
+				**""-""** So the user can define its own dynamic memory allocation process part (the following process part for implicit data construction can not be modified).
+		- ##//'Operator Delete Implicit' (inaccessible by user)//##:
+				**""-""** It is a static sub that only frees the memory (it is not very different from ##[[KeyPgDeallocate|Deallocate]]##).
+		- ##[[KeyPgOpDeleteOverload|Operator Delete Overload]]##:
+				**""-""** It is a member operator (static sub) that can overload the ##//'Operator Delete Implicit'//## only for user-defined types.
+				**""-""** So the user can define its own memory deallocation process part (the previous process part for implicit data destruction can not be modified).
+		- ##[[KeyPgOpNew|Operator New Expression]]##:
+				**""-""** It starts by using the ##'Operator New //Implicit///Overload'## (the implicit, or the overload if exists) to allocate memory.
+				**""-""** Then it invokes the constructor for the right type of object. If that object contains any other objects (either embedded or as base types) those constructors as invoked as well.
+				**""-""** So the final result is memory allocated and object constructed.
+				**""-""** This operator applies to pre-defined types (except fixed-length strings) as well as user-defined types.
+		- ##[[KeyPgOpDelete|Operator Delete Statement]]##:
+				**""-""** It starts by invoking the destructor for the right type of object. If that object contains any other objects (either embedded or as base types) those destructors as invoked as well.
+				**""-""** Then it uses the ##'Operator Delete //Implicit///Overload'## (the implicit, or the overload if exists) to deallocate memory.
+				**""-""** So the final result is object destroyed and memory freed.
+				**""-""** This operator applies to pre-defined types (except fixed-length strings) as well as user-defined types.
+		- ##[[KeyPgOpPlacementNew|Operator Placement New]]##:
+				**""-""** It only constructs object at a specified memory address (already allocated). This operator applies to pre-defined types (except fixed-length strings) as well as user-defined types.
+
+			
+	Similar definition for ##'Operator New[] //Implicit///Overload/Expression'##, ##'Operator Delete[] //Implicit///Overload/Statement'## and ##'Operator Placement New[]'##, which are only the (one-dimensional) array-versions of the previous operators (there is construction/destruction loop on the array elements).
+	
+	Instances created with ##'Operator New Overload/Expression'## must be freed with ##'Operator Delete Overload/Statement'##.
+	Instance array created with ##'Operator New[] Overload/Expression'## must be freed with ##'Operator Delete[] Overload/Statement'##, the array-version of ##'Operator Delete Overload/Statement'##.
+	User can not mix and match the different versions of the operators.
+	
+{{fbdoc item="section" value="Algorithm (applied to user-defined types)"}}
+	Operator New/New[] Expression:
+		%%
+'       OPERATOR NEW/NEW[] EXPRESSION
+'                     V
+'                     |
+'              call if there is >----------------------------.
+'                   else                                     :
+'                     v                                      v
+'       (Operator New/New[] Implicit)          (Operator New/New[] Overload)
+'                     :                                      :
+'          BASIC MEMORY ALLOCATION                       USER BODY
+'                     :                                      :
+'                     :<-------------------------------------'
+'                     |
+'                     |<-------------------------------------.
+'                     |                                      :
+'        DATA FIELDS INITIALIZATION                          :
+'        OBJECT FIELDS CONSTRUCTION                          :
+'           (VPTR INITIALIZATION)                            :
+'                     |                                      :
+'              call if there is >-----------.                :
+'                   else                    :                :
+'                     v                     v                :
+'                     :            (User Constructor)        :
+'                     :                     :                :
+'                     :                 USER BODY            :
+'                     :                     :                :
+'                     :<--------------------'                :
+'                     |                                      :
+'        loop if array-version NEW[] >-----------------------'
+'                   else
+'                     v
+'                     |
+'                     V
+%%
+
+	Operator Delete/Delete[] Statement:
+		%%
+'     OPERATOR DELETE/DELETE[] STATEMENT
+'                     V
+'                     |
+'                     |<-------------------------------------.
+'                     |                                      :
+'          (VPTR REINITIALIZATION)                           :
+'                     |                                      :
+'              call if there is >-----------.                :
+'                   else                    :                :
+'                     v                     v                :
+'                     :             (User Destructor)        :
+'                     :                     :                :
+'                     :                 USER BODY            :
+'                     :                     :                :
+'                     :<--------------------'                :
+'                     |                                      :
+'         OBJECT FIELDS DESTRUCTION                          :
+'                     |                                      :
+'       loop if array-version DELETE[] >---------------------'
+'                   else
+'                     v
+'                     |
+'              call if there is >----------------------------.
+'                   else                                     :
+'                     v                                      v
+'    (Operator Delete/Delete[] Implicit)    (Operator Delete/Delete[] Overload)
+'                     :                                      :
+'         BASIC MEMORY DEALLOCATION                      USER BODY
+'                     :                                      :
+'                     :<-------------------------------------'
+'                     |
+'                     V
+%%
+
+	Operator Placement New/New[]:
+		%%
+'        OPERATOR PLACEMENT NEW/NEW[]
+'                     V
+'                     |
+'                     |<-------------------------------------.
+'                     |                                      :
+'        DATA FIELDS INITIALIZATION                          :
+'        OBJECT FIELDS CONSTRUCTION                          :
+'           (VPTR INITIALIZATION)                            :
+'                     |                                      :
+'              call if there is >-----------.                :
+'                   else                    :                :
+'                     v                     v                :
+'                     :             (User Constructor)       :
+'                     :                     :                :
+'                     :                 USER BODY            :
+'                     :                     :                :
+'                     :<--------------------'                :
+'                     |                                      :
+'        loop if array-version NEW[] >-----------------------'
+'                   else
+'                     v
+'                     |
+'                     V
+%%
+{{fbdoc item="section" value="Example"}}
+	Example that uses the operators New (Overload/Expression/Placement) and Delete (Overload/Statement), and all their array-versions New[] and Delete[]:
+	(all the 10 operators New and Delete accessible by the user):
+		{{fbdoc item="filename" value="examples/manual/proguide/newdelete/operators.bas"}}%%(freebasic)
+Declare Sub printArray (Byref label As String = "", array() As String)
+
+
+Type UDT
+	Declare Constructor ()
+	Declare Destructor ()
+	Declare Operator New (Byval size As Uinteger) As Any Ptr    ' Operator New Overload
+	Declare Operator New[] (Byval size As Uinteger) As Any Ptr  ' Operator New[] Overload
+	Declare Operator Delete (Byval buf As Any Ptr)              ' Operator Delete Overload
+	Declare Operator Delete[] (Byval buf As Any Ptr)            ' Operator Delete[] Overload
+	Dim As String array (1 To 4)
+End Type
+
+Constructor UDT ()
+	Static As Integer n
+	Print "    Constructor"
+	printArray("        init: @" & @This & " (descriptors) -> ", This.array())
+	For i As Integer = Lbound(This.array) To Ubound(This.array)
+		This.array(i) = Chr(Asc("a") + n + i - Lbound(This.array))
+	Next i
+	printArray(" => ", This.array())
+	Print
+	n += Ubound(This.array)- Lbound(This.array) + 1
+End Constructor
+
+Destructor UDT ()
+	Print "    Destructor"
+	printArray("        erase: @" & @This & " (descriptors) -> ", This.array())
+	Erase This.array
+	printArray(" => ", This.array())
+	Print
+End Destructor
+
+Operator UDT.New (Byval size As Uinteger) As Any Ptr
+	Print "    Operator New Overload"
+	Dim As Any Ptr p = Allocate(size)                   ' Memory allocation (with passed size)
+	Print "        memory allocation: ";
+	Print size & " Bytes from @" & p
+	Return p                                            ' Returning memory pointer
+End Operator
+
+Operator UDT.New[] (Byval size As Uinteger) As Any Ptr
+	Print "    Operator New[] Overload"
+	Dim As Any Ptr p = Allocate(size)                   ' Memory allocation (with passed size)
+	Print "        memory allocation: ";
+	Print size & " Bytes from @" & p
+	Return p                                            ' Returning memory pointer
+End Operator
+
+Operator UDT.Delete (Byval buf As Any Ptr)
+	Print "    Operator Delete Overload"
+	Deallocate(buf)                                     ' Memory deallocation (with passed pointer)
+	Print "        memory deallocation: ";
+	Print "for @" & buf
+End Operator
+
+Operator UDT.Delete[] (Byval buf As Any Ptr)
+	Print "    Operator Delete[] Overload"
+	Deallocate(buf)                                     ' Memory deallocation (with passed pointer)
+	Print "        memory deallocation: ";
+	Print "for @" & buf
+End Operator
+
+
+Print "Operator New Expression"
+Dim As UDT Ptr pu1 = New UDT         ' Operator New Expression
+Print "Operator Delete Statement"
+Delete pu1                           ' Operator Delete Statement
+Sleep
+
+Print
+Print "Operator New[] Expression"      
+Dim As UDT Ptr pu2 = New UDT[2]      ' Operator New[] Expression
+Print "Operator Delete[] Statement"
+Delete[] pu2                         ' Operator Delete[] Statement
+Sleep
+
+Dim As Byte buffer(1 To 256)
+Dim As Any Ptr p = @buffer(1)
+
+Print
+Print "Operator Placement New"
+Dim As UDT Ptr pu3 = New(p) UDT      ' Operator Placement New
+Print "User call of Destructor"
+pu3->Destructor()                    ' User Call of Destructor
+Sleep
+
+Print
+Print "Operator Placement New[]"
+Dim As UDT Ptr pu4 = New(p) UDT[2]   ' Operator Placement New[]
+For i As Integer = 0 To 1
+	Print "User Call of Destructor"
+	pu4[i].Destructor()              ' User Call of Destructor
+Next i
+Sleep
+
+
+Sub printArray (Byref label As String = "", array() As String)
+	Print label & "{";
+	For i As Integer = Lbound(array) To Ubound(array)
+		Print """" & array(i) & """";
+		If i < Ubound(array) Then
+			Print ",";
+		End If
+	Next I
+	Print "}";
+End Sub
+%%Output example:
+			%%
+Operator New Expression
+	Operator New Overload
+		memory allocation: 96 Bytes from @1728352
+	Constructor
+		init: @1728352 (descriptors) -> {"","","",""} => {"a","b","c","d"}
+Operator Delete Statement
+	Destructor
+		erase: @1728352 (descriptors) -> {"a","b","c","d"} => {"","","",""}
+	Operator Delete Overload
+		memory deallocation: for @1728352
+%%
+			%%
+Operator New[] Expression
+	Operator New[] Overload
+		memory allocation: 200 Bytes from @1728352
+	Constructor
+		init: @1728360 (descriptors) -> {"","","",""} => {"e","f","g","h"}
+	Constructor
+		init: @1728456 (descriptors) -> {"","","",""} => {"i","j","k","l"}
+Operator Delete[] Statement
+	Destructor
+		erase: @1728456 (descriptors) -> {"i","j","k","l"} => {"","","",""}
+	Destructor
+		erase: @1728360 (descriptors) -> {"e","f","g","h"} => {"","","",""}
+	Operator Delete[] Overload
+		memory deallocation: for @1728352
+%%
+			%%
+Operator Placement New
+	Constructor
+		init: @1375248 (descriptors) -> {"","","",""} => {"m","n","o","p"}
+User call of Destructor
+	Destructor
+		erase: @1375248 (descriptors) -> {"m","n","o","p"} => {"","","",""}
+%%
+			%%
+Operator Placement New[]
+	Constructor
+		init: @1375248 (descriptors) -> {"","","",""} => {"q","r","s","t"}
+	Constructor
+		init: @1375344 (descriptors) -> {"","","",""} => {"u","v","w","x"}
+User Call of Destructor
+	Destructor
+		erase: @1375248 (descriptors) -> {"q","r","s","t"} => {"","","",""}
+User Call of Destructor
+	Destructor
+		erase: @1375344 (descriptors) -> {"u","v","w","x"} => {"","","",""}
+%%
+{{fbdoc item="section" value="See also"}}
+	- [[KeyPgOperator|Operator]]
+	- [[KeyPgConstructor|Constructor]]
+	- [[KeyPgDestructor|Destructor]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

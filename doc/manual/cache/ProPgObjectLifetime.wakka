@@ -1,0 +1,9 @@
+{{fbdoc item="title" value="Dynamic Object and Data Lifetime (IN PROGRESS...)"}}----
+**Lifetime** of **Dynamic Object** and its **Data**, created from declaration keyword for dynamic memory allocation.
+
+**Preamble:**
+	- The Lifetime of an object (and of its data) is the time period in which its instance name exists (and refers to valid data). But in absolute terms, the instance name of the object and its associated data can have two independent lifetimes (the Scope referring to the program part where the instance name is visible).
+	- The dynamic objects considered are the predefined pseudo-objects such as the variable-length strings/arrays, and the instances of complex UDT (with dynamic data allocated). Simple variables but dynamically allocated are also considered.
+	- The declaration keywords for dynamic memory allocation are: 'Allocate'/'Callocate'/'Reallocate', 'New', 'Imagecreate' (for deallocation: 'Deallocate', 'Delete', 'Imagedestroy').
+	
+For such objects and data dynamically allocated as defined above, the lifetime of the instance name of the object generally matches the surrounding scope (otherwise it can be greater than this one), but the lifetime of associated data may mismatch this one because the allocation/deallocation of associated data is triggered by the user himself.

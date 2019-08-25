@@ -9,9 +9,11 @@ Preprocessor diagnostic directive
 		The display message
 
 {{fbdoc item="desc"}}
-	##**#error**## stops compiling and displays ##//error_text//## when compiler finds it. 
+	##**#error**## interrupts compiling to display ##//error_text//## when compiler finds it, and then parsing continues. 
 	
 	This keyword must be surrounded by an ##[[KeyPgPpif|#if]] //<condition>//## ...##[[KeyPgPpendif|#endif]]##, so the compiler can reach ##**#error**## only if ##//<condition>//## is met.
+	
+	In any case, the final status will be "Failed to compile".
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/prepro/error.bas"}}%%(freebasic)

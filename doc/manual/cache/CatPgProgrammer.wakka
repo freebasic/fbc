@@ -32,7 +32,7 @@
 		{{fbdoc item="keyword" value="ProPgFixLenArrays|Fixed-length Arrays"}}
 		{{fbdoc item="keyword" value="ProPgVarLenArrays|Variable-length Arrays"}}
 		{{fbdoc item="keyword" value="ProPgArrayIndex|Array Indexing"}}
-		Passing Arrays to Procedures
+		{{fbdoc item="keyword" value="ProPgPassingArrays|Passing Arrays to Procedures"}}
 		
 	{{fbdoc item="subsect" value="Pointers"}}
 		{{fbdoc item="keyword" value="ProPgPointers|Overview"}}
@@ -42,9 +42,10 @@
 	{{fbdoc item="keyword" value="ProPgImplicitdeclarations|Implicit Declarations"}}
 	{{fbdoc item="keyword" value="ProPgInitialization|Initialization"}}
 	{{fbdoc item="keyword" value="ProPgStorageClasses|Storage Classes"}}
-	Variable Lifetime
 	{{fbdoc item="keyword" value="ProPgVariableScope|Variable Scope"}}
-	Namespaces
+	{{fbdoc item="keyword" value="ProPgVariableLifetime|Simple Variable Lifetime vs Scope"}}
+	{{fbdoc item="keyword" value="ProPgObjectLifetime|Dynamic Object and Data Lifetime"}}
+	{{fbdoc item="keyword" value="ProPgNamespaces|Namespaces"}}
 	{{fbdoc item="keyword" value="ProPgVarProcLinkage|Variable and Procedure Linkage"}}
 
 {{fbdoc item="section" value="User Defined Types"}}
@@ -56,8 +57,8 @@
 	{{fbdoc item="keyword" value="ProPgProperties|Properties"}}
 	{{fbdoc item="keyword" value="ProPgMemberAccessRights|Member Access Rights"}}
 	{{fbdoc item="keyword" value="ProPgOperatorOverloading|Operator Overloading"}}
-	Iterators
-	New and Delete
+	{{fbdoc item="keyword" value="ProPgTypeIterators|Iterators"}}
+	{{fbdoc item="keyword" value="ProPgNewDelete|New and Delete"}}
 	{{fbdoc item="keyword" value="ProPgTypeObjects|Types as Objects"}}
 <<>>{{fbdoc item="section" value="Statements and Expressions"}}
 	Assignments
@@ -71,7 +72,7 @@
 	{{fbdoc item="keyword" value="ProPgReturnValue|Returning a Value"}}
 	Procedure Scopes
 	{{fbdoc item="keyword" value="ProPgCallingConventions|Calling Conventions"}}
-	Recursion
+	{{fbdoc item="keyword" value="ProPgRecursion|Recursion"}}
 	Constructors and Destructors
 	{{fbdoc item="keyword" value="ProPgProcedurePointers|Pointers to Procedures"}}
 	{{fbdoc item="keyword" value="CatPgVarArg|Variable Arguments"}}

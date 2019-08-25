@@ -1,0 +1,143 @@
+{{fbdoc item="title" value="Arrays"}}----
+An array in fbc is a collection of elements where each element has the same type and is accessed with an index in to the array.
+
+Example:
+%%(freebasic)
+	'' one dimensional array (1 index)
+	dim a(1 to 10) as integer
+	print a(1)  '' first element (integer)
+	print a(10) '' last element (integer)
+
+	'' two dimensional array (2 indexes)
+	dim b(1 to 2, 1 to 5) as integer
+	print b(1,1) '' first element (integer)
+	print b(2,5) '' last element (integer)
+%%
+
+{{fbdoc item="section" value="Array Dimensions and Bounds"}}
+
+The number of dimensions refers to the number of indexes that are required to be given to access an element of an array.  The number of dimensions may or may not be part of the declaration.  If the number of dimensions are known at compile time within the scope that the array is used, fbc can check and error if the wrong number of indexes are specified.
+
+The bounds of an array are the allowable minimum and maximum index values for each dimension.  Accessing an array element with an index or indexes that are outside the array bounds of a dimension is undefined behaviour.
+
+fbc can check and error if an index or indexes (access) are outside the bounds of the array when compiled with '-exx' or '-earray' compile options.  If the array bounds are compile-time constant, and the array access is compile-time constant, fbc can check if an array access is outside the bounds of the array at compile time.  Otherwise, the array bounds check must occur at run-time if either the bounds or the access is non-constant.
+
+{{fbdoc item="section" value="Fixed dimension versus unknown dimension"}}
+
+The number of dimensions may be fixed or unknown.  fbc will attempt to determine the number of dimensions an array is expected to have based on declarations for the array.  If fbc cannot determine the number of dimensions at compile time, the number of dimensions will become fixed on first redimension of the array at run time.
+
+Example: fixed 2 dimension, dynamic bounds
+%%(freebasic)
+dim a(any, any) as integer
+redim a(1 to 2, 1 to 5)
+%%
+
+Example: Dynamic dimension, dynamic bounds
+%%(freebasic)
+dim a() as integer
+
+'' then only one of on first time use ...
+redim a(1 to 10)
+redim a(1 to 2, 1 to 5)
+redim a(1 to 2, 1 to 5, 1 to 3)
+%%
+
+Once number of dimensions are known to fbc, within the scope of the array, fbc will error if any access to the error has wrong number of dimensions.  Or if still unknown at compile time, as in the case of an array passed as argument to a procedure and resized, the number of dimensions become fixed at run time.
+
+{{fbdoc item="section" value="Fixed bounds versus Dynamic bounds"}}
+
+Fixed length arrays have array bounds that are known at compile-time.  Dynamic (or variable length) arrays have array bounds that can be altered and resized at run-time, and may be considered unknown at compile time.
+
+Example: fixed (constant) bounds and constant access
+%%(freebasic)
+dim a(1 to 10) as integer
+print a(11) '' compile time array out-of-bounds
+%%
+
+Example: fixed bounds and non-constant access
+%%(freebasic)
+dim a(1 to 10) as integer
+dim i as integer
+print a(i) '' run time array out-of-bounds
+%%
+
+Example: dynamic bounds
+%%(freebasic)
+dim a(any) as integer '' 1 dimensional, empty
+redim a(1 to 10)      '' resized to 10 elements
+print a(11) '' run time array out-of-bounds
+print a(i)  '' run time array out-of-bounds
+%%
+
+{{fbdoc item="section" value="Static Array versus Dynamic Array"}}
+
+Arrays may have static or dynamic memory allocation.  The descriptor may be static or dynamic, and memory space for the data may be static or dynamic.  The terms static and dynamic may be overused and so may lose meaning when describing an array.  In this context static versus dynamic should not be confused with fixed-length or variable-length.  In this context we are referring to how and where the array descriptor and it's associated data are allocated in memory, and to some extent the life time of the variable.
+
+For an array descriptor to be valid, it must be initialized.  An uninitialized array descriptor will almost certainly lead to undefined behaviour at run time.
+
+The array descriptor itself may be allocated in .bss, .data, on stack or on heap, depending on the declaration of the array.  Though typically not in .bss section because an array descriptor usually must be initialized to some non-zero default values to be usable.
+
+The array's data may be located in .bss section, .data section, on stack or on heap, depending on the declaration of the array.  In fbc's current implementation, the array data for variable-length arrays is always allocated on the heap (i.e. malloc()).
+
+{{fbdoc item="section" value="Array Descriptor"}}
+
+At compile time, fbc allocates an array descriptor to store and track information about the array.
+
+From ##./inc/fbc-int/array.bi##):
+%%(freebasic)
+	const FB_MAXDIMENSIONS as integer = 8
+
+	type FBARRAYDIM
+		dim as uinteger elements     '' number of elements
+		dim as integer lbound        '' dimension lower bound
+		dim as integer ubound        '' dimension upper bound
+	end type
+
+	type FBARRAY
+		dim as any ptr index_ptr     '' @array(0, 0, 0, ... )
+		dim as any ptr base_ptr      '' start of memory at array lowest bounds
+		dim as uinteger size         '' byte size of allocated contents
+		dim as uinteger element_len  '' byte size of single element
+		dim as uinteger dimensions   '' number of dimensions
+		dim as FBARRAYDIM dimTb(0 to FB_MAXDIMENSIONS-1)
+	end type
+%%
+
+If the number of dimensions is unknown at compile time, then the full ##FB_MAXDIMENSIONS## is allocated in the ##dimTb()## field.  Otherwise, if the number dimensions is known at compile time, then only the number of dimensions needed are allocated.  Therefore the allocated ##FBARRAY## data may be smaller than the declared ##FBARRAY## structure.
+
+If an array is passed as argument to a procedure, an array descriptor is allocated.  However, if the array is static, fixed length, and never passed as an argument, then all information about the array is known at compile time, including memory locations, and the allocation of a descriptor is optimized out, since all expressions involving the array are compile time constant.
+
+The array descriptor may also be allocated at run time, as would be in the case of allocating a new UDT containing a variable-length array field member.
+
+{{fbdoc item="subsect" value="FBARRAY.index_ptr"}}
+Pointer to the array data ##@array(0, 0, ...)##.  This pointer may be outside of the actual array data as a kind of virtual pointer to use when calculating offsets using indexes in to the array.
+
+{{fbdoc item="subsect" value="FBARRAY.base_ptr"}}
+Pointer to the array's memory at the array's lowest bound.  For variable-length arrays allocated at run time, this points to the allocated memory region (i.e. malloc)
+
+{{fbdoc item="subsect" value="FBARRAY.size"}}
+Total size in bytes of the array data.  Size is equal to total number of elements in the array (all dimensions) multiplied by element length.  i.e. ##size = dimTb(0).elements * element_len + dimTb(1).elements * element_len + ...##
+
+{{fbdoc item="subsect" value="FBARRAY.element_len"}}
+Size in bytes of an individual element.  Must be set to non-zero value.
+
+{{fbdoc item="subsect" value="FBARRAY.dimensions"}}
+Number of valid dimensions in the dimTb() table.  A value of zero (0) indicates that dimTb() has ##FB_MAXDIMENSIONS## avaiable, but the array does not yet have number of dimensions defined.  On first REDIM, the number of dimensions will be set.
+
+{{fbdoc item="subsect" value="FBARRAY.dimTb()"}}
+dimTb() is an array of ##FBARRAYDIM## to indicate the bounds of each dimension.
+
+If the number of dimensions is unknown at compile time, then the full ##FB_MAXDIMENSIONS## is allocated in the ##dimTb()## field. Otherwise, if the number dimensions is known at compile time, then only the number of dimensions needed are allocated. Therefore the allocated ##FBARRAY## data may be smaller than the declared ##FBARRAY## structure.
+
+{{fbdoc item="subsect" value="FBARRAYDIM.elements"}}
+Number of elements in the dimension.  i.e. ##(ubound-lbound+1)##
+
+{{fbdoc item="subsect" value="FBARRAYDIM.lbound"}}
+Lower bound is the lowest valid index in this dimension.
+
+{{fbdoc item="subsect" value="FBARRAYDIM.ubound"}}
+Upper bound is the highest valid index in this dimension.
+
+
+{{fbdoc item="back" value="DevToc|FreeBASIC Developer Information"}}
+{{fbdoc item="back" value="DocToc|Table of Contents"}}

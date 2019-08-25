@@ -6,17 +6,17 @@ A variable's scope refers to its visibility in a program. A variable is not visi
 	In FreeBASIC, there are 4 categories of scope: **//local//**, **//shared//**, **//common//** and **//common shared//**. Each of these scopes has different visibility rules, which are detailed below.
 
 {{fbdoc item="section" value="Local Scope"}}
-	Variables declared in the local scope are visible only in the most local instance of the IF, FOR, SCOPE, function, or module block in which they are declared.
+	Variables declared in the local scope are visible only in the most local instance of the IF, SELECT, WITH, FOR, WHILE, DO, SCOPE, procedure, or module block in which they are declared.
 	
 	- ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##, the main body, and each compound statement implicitly define a new local scope block. 
-	- Explicitly declared variables using ##[[KeyPgDim|Dim]]## or ##[[KeyPgRedim|Redim]]## take the scope of the local most block in which they are declared. 
+	- Explicitly declared variables using ##[[KeyPgDim|Dim]]## or ##[[KeyPgRedim|Redim]]## or ##[[KeyPgStatic|Static]]## take the scope of the local most block in which they are declared. 
 	- Implicit variables take the scope of the the local most ##[[KeyPgScope|Scope...End Scope]]## block in which they are first used, otherwise take the scope of the ##[[KeyPgSub|Sub]]##, ##[[KeyPgFunction|Function]]##, or main body in which they are used. 
 	
-	In the local scope, there is no visibility between module-level code and function level code. Furthermore, variables dimensioned within a block decision or loop statement will only be visible within the block in which they are dimensioned. Variables declared in the local scope of a module are not visible in any of the functions within that module. Similarly, local variables declared inside functions are not visible in the module-level code, nor any other function within the module.
+	In the local scope, there is no visibility between module-level code and procedure level code. Furthermore, variables dimensioned within a block decision or loop statement will only be visible within the block in which they are dimensioned. Variables declared in the local scope of a module are not visible in any of the procedures within that module. Similarly, local variables declared inside procedures are not visible in the module-level code, nor any other procedure within the module.
 	
 	Variables declared inside ##[[KeyPgScope|Scope]]## blocks may only be declared of local scope, and are not visible outside the block. ##[[KeyPgScope|Scope]]## blocks, however, inherit the surrounding scope, so local variables declared outside the ##[[KeyPgScope|Scope]]## block will be visible inside (//see example program//).
 	
-	You can declare a variable to be of local scope explicitly by using the ##[[KeyPgDim|Dim]]## statement, or implicitly by simply introducing the variable (//see [[ProPgImplicitdeclarations|Implicit Declarations]]//). The example program ##**local.bas**## demonstrates visibility rules for the local scope.
+	You can declare a variable to be of local scope explicitly by using the ##[[KeyPgDim|Dim]]## statement, or implicitly (for only //[[CompilerOptlang|-lang qb]]// and //[[CompilerOptlang|-lang fblite]]// dialects) by simply introducing the variable (//see [[ProPgImplicitdeclarations|Implicit Declarations]]//). The example program ##**local.bas**## demonstrates visibility rules for the local scope.
 
 ##**local.bas**##
 {{fbdoc item="filename" value="examples/manual/proguide/varscope/local.bas"}}%%(freebasic)
@@ -62,13 +62,13 @@ End 0
 %%
 
 {{fbdoc item="section" value="Shared Scope"}}
-	Variables declared in the shared scope of a module are visible to both the module and all functions of that module.
+	Variables declared in the shared scope of a module are visible to both the module and all procedures of that module.
 	
-	Unlike the local scope, the shared scope makes module-level variables visible to functions of that module. In other words, the module //shares// its declarations with its functions.
+	Unlike the local scope, the shared scope makes module-level variables visible to procedures of that module. In other words, the module //shares// its declarations with its procedures.
 	
-	Variables can only be declared to be of shared scope at the module-level. Ie., only modules can share variables. Neither functions nor ##[[KeyPgScope|Scope]]## blocks can declare variables in the shared scope, thus variables declared there can only be local to that function or block.
+	Variables can only be declared to be of shared scope at the module-level. Ie., only modules can share variables. Neither procedures nor ##[[KeyPgScope|Scope]]## blocks can declare variables in the shared scope, thus variables declared there can only be local to that procedure or block.
 	
-	You can declare a variable to be of shared scope by using the DIM statement with the ##[[KeyPgShared|Shared]]## keyword. The example program ##**shared_scope.bas**## demonstrates visibility rules for the shared scope.
+	You can declare a variable to be of shared scope by using the DIM (or REDIM or STATIC) statement with the ##[[KeyPgShared|Shared]]## keyword. The example program ##**shared_scope.bas**## demonstrates visibility rules for the shared scope.
 
 ##**shared.bas**##
 {{fbdoc item="filename" value="examples/manual/proguide/varscope/shared.bas"}}%%(freebasic)
@@ -123,7 +123,6 @@ Print "m2 = "; m2     ' m2 = 2 as set in module2
 
 Print_Values
 %%
-
 ##**module2.bas**##
 {{fbdoc item="filename" value="examples/manual/proguide/varscope/module2.bas"}}%%(freebasic)
 Common m1 As Integer
@@ -137,11 +136,10 @@ print "m2 = "; m2     ' m2 = 2
 
 Sub Print_Values()
   print "Module2.Print_Values"
-  print "m1 = "; m1   ' Implicit variable = 0    
-  print "m2 = "; m2   ' Implicit variable = 0  
+  print "m1 = "; m1   ' Implicit variable = 0, because '-lang qb' use
+  print "m2 = "; m2   ' Implicit variable = 0, because '-lang qb' use
 End Sub
 %%
-
 //**##Output:##**//
 %%
   Module2
@@ -156,7 +154,7 @@ End Sub
 %%
 
 {{fbdoc item="section" value="Common Shared Scope"}}
-	Variables declared in the common shared scope are visible to all modules and all functions of those modules.
+	Variables declared in the common shared scope are visible to all modules and all procedures of those modules.
 	
 	Variables declared with ##[[KeyPgCommon|Common]]## are visible to other modules with a matching ##[[KeyPgCommon|Common]]## variable declaration.  The variable name declared must match from between modules.  Within a module the ##[[KeyPgShared|Shared]]## declaration modifier gives the variable module scope and makes the variable visible to all subs and functions.
 
@@ -178,7 +176,6 @@ print "m2 = "; m2     '' m2 = 2 as set in module2
 
 Print_Values
 %%
-
 ##**module4.bas**##
 {{fbdoc item="filename" value="examples/manual/proguide/varscope/module4.bas"}}%%(freebasic)
 Common Shared m1 As Integer
@@ -196,7 +193,6 @@ Sub Print_Values()
   print "m2 = "; m2   '' m2 = 2
 End Sub
 %%
-
 //**##Output:##**//
 %%
   Module4
@@ -222,4 +218,4 @@ End Sub
 	- [[ProPgImplicitdeclarations|Implicit Declarations]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-   
+  
