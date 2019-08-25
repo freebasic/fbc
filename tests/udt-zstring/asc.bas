@@ -26,6 +26,9 @@ SUITE( fbc_tests.udt_zstring_.asc_ )
 
 	END_TEST
 
+'' only test where sizeof(wstring) >= 2, because
+'' it won't be on DOS where sizeof(wstring) = 1.
+#if sizeof(WSTRING) >= 2
 	TEST( ucs2 )
 		dim s as zstring * 256
 		for i as uinteger = 1 to 255
@@ -45,5 +48,6 @@ SUITE( fbc_tests.udt_zstring_.asc_ )
 		next
 
 	END_TEST
+#endif
 
 END_SUITE

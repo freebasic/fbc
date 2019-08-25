@@ -11,6 +11,7 @@ dim opt_verbose as boolean = false
 dim opt_show_summary as boolean = true
 dim opt_xml_report as boolean = false
 dim opt_xml_filename as string = ""
+dim opt_no_error as boolean = false
 
 dim i as integer = 1
 
@@ -22,6 +23,9 @@ while command(i) > ""
 
 	case "-v", "--verbose"
 		opt_verbose = true
+
+	case "--no-error"
+		opt_no_error = true
 
 	case "--xml"
 		i += 1
@@ -54,6 +58,7 @@ if( opt_help ) then
 	print "   -v, --verbose        be verbose"
 	print "   --xml filename       write test results to xml format for filename"
 	print "   --no-summary         don't show the summary (default is to show it)"
+	print "   --no-error           don't exit with error code even if tests failed"
 	print
 
 	'' exit with an error code
@@ -88,7 +93,8 @@ end if
 
 
 '' only return exit code = 0 if all tests passed and no other errors
-if( passed ) then
+'' or if the '-no-error' option was given, suspress the error code
+if( passed or opt_no_error ) then
 	end 0
 end if
 
