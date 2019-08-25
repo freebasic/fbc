@@ -15,17 +15,23 @@ namespace FBC
 		dim as integer ubound        '' dimension upper bound
 	end type
 
+	const FBARRAY_FLAGS_DIMENSIONS = &h0000000f    '' number of entries allocated in dimTb()
+	const FBARRAY_FLAGS_FIXED_DIM  = &h00000010    '' array has fixed number of dimensions
+	const FBARRAY_FLAGS_FIXED_LEN  = &h00000020    '' array points to fixed-length memory
+	const FBARRAY_FLAGS_RESERVED   = &hffffffc0    '' reserved, do not use
+
 	type FBARRAY
 		dim as any ptr index_ptr     '' @array(0, 0, 0, ... )
 		dim as any ptr base_ptr      '' start of memory at array lowest bounds
 		dim as uinteger size         '' byte size of allocated contents
 		dim as uinteger element_len  '' byte size of single element
 		dim as uinteger dimensions   '' number of dimensions
+		dim as uinteger flags        '' FBARRAY_FLAGS_*
 		
 		'' take care with number of dimensions; fbc may allocate
 		'' a smaller descriptor with fewer than FB_MAXDIMENSIONS
 		'' in dimTb() if it is known at compile time that they
-		'' are never needed.  Always respsect number of 
+		'' are never needed.  Always respect number of 
 		'' dimensions when accessing dimTb()
 
 		dim as FBARRAYDIM dimTb(0 to FB_MAXDIMENSIONS-1)

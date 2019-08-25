@@ -17,6 +17,7 @@ SUITE( fbc_tests.structs.dynamic_array_fields )
 			size		as uinteger
 			element_len	as uinteger
 			dimensions	as uinteger
+			flags		as uinteger
 			dimTB(0 to (n)-1)	as FBARRAYDIM
 		end type
 	#endmacro
