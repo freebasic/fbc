@@ -14,4 +14,4 @@ End Sub
 
 foo 
 
-'' If -g is used this code stops with: test.bas(3): assertion failed at FOO: a=1 
+'' If -g or -eassert is used, this code stops with: test.bas(3): assertion failed at FOO: a=1 

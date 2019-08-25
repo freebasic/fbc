@@ -17,6 +17,6 @@ Print "m2 = "; m2     ' m2 = 2
 
 Sub Print_Values()
   Print "Module2.Print_Values"
-  Print "m1 = "; m1   ' Implicit variable = 0    
-  Print "m2 = "; m2   ' Implicit variable = 0  
+  Print "m1 = "; m1   ' Implicit variable = 0, because '-lang qb' use
+  Print "m2 = "; m2   ' Implicit variable = 0, because '-lang qb' use
 End Sub
