@@ -97,6 +97,7 @@ include/freebas/dos/sys/movedata.bi
 include/freebas/dos/sys/segments.bi
 include/freebas/dos/sys/version.bi
 include/freebas/expat.bi
+include/freebas/fbc-int/array.bi
 include/freebas/fbgfx.bi
 include/freebas/fbio.bi
 include/freebas/fbthread.bi

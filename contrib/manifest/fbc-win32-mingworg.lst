@@ -501,6 +501,7 @@ include/freebasic/expat.bi
 include/freebasic/fastcgi/fastcgi.bi
 include/freebasic/fastcgi/fcgi_stdio.bi
 include/freebasic/fastcgi/fcgiapp.bi
+include/freebasic/fbc-int/array.bi
 include/freebasic/fbgfx.bi
 include/freebasic/fbio.bi
 include/freebasic/fbthread.bi
