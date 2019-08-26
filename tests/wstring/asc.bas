@@ -37,6 +37,9 @@ SUITE( fbc_tests.wstring_.asc_ )
 		next
 	END_TEST
 
+'' only test where sizeof(wstring) >= 2, because
+'' it won't be on DOS where sizeof(wstring) = 1.
+#if sizeof(WSTRING) >= 2
 	TEST( ucs2 )
 		dim w as wstring * 256
 		for i as integer = 1 to 255
@@ -54,5 +57,6 @@ SUITE( fbc_tests.wstring_.asc_ )
 			end select
 		next
 	END_TEST
+#endif
 
 END_SUITE
