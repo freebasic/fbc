@@ -104,13 +104,13 @@ function symbGetDBGName( byval sym as FBSYMBOL ptr ) as zstring ptr
 		case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_STRUCT, _
 			 FB_SYMBCLASS_CLASS, FB_SYMBCLASS_NAMESPACE
 
-    		'' check if an alias wasn't given
-    		dim as zstring ptr res = sym->id.alias
-    		if( res = NULL ) then
-    			res = sym->id.name
-    		end if
+			'' check if an alias wasn't given
+			dim as zstring ptr res = sym->id.alias
+			if( res = NULL ) then
+				res = sym->id.name
+			end if
 
-    		return res
+			return res
 
 		case else
 			return symbGetMangledName( sym )
@@ -621,28 +621,28 @@ private function hAddUnderscore( ) as integer
 end function
 
 private function hDoCppMangling( byval sym as FBSYMBOL ptr ) as integer
-    '' C++?
-    if( symbGetMangling( sym ) = FB_MANGLING_CPP ) then
-    	return TRUE
-    end if
+	'' C++?
+	if( symbGetMangling( sym ) = FB_MANGLING_CPP ) then
+		return TRUE
+	end if
 
-    '' RTL or exclude parent?
-    if( (symbGetStats( sym ) and (FB_SYMBSTATS_RTL or _
-    							  FB_SYMBSTATS_EXCLPARENT)) <> 0 ) then
-    	return FALSE
-    end if
+	'' RTL or exclude parent?
+	if( ( (symbGetStats( sym ) and (FB_SYMBSTATS_RTL or FB_SYMBSTATS_EXCLPARENT)) <> 0 ) _
+		or ( symbGetMangling( sym ) = FB_MANGLING_RTLIB ) ) then
+		return FALSE
+	end if
 
-    '' inside a namespace or class?
-    if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
-    	return TRUE
-    end if
+	'' inside a namespace or class?
+	if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
+		return TRUE
+	end if
 
-    if( sym->class = FB_SYMBCLASS_PROC ) then
-    	'' overloaded? (this will handle operators too)
-    	if( symbIsOverloaded( sym ) ) then
+	if( sym->class = FB_SYMBCLASS_PROC ) then
+		'' overloaded? (this will handle operators too)
+		if( symbIsOverloaded( sym ) ) then
     		return TRUE
-    	end if
-    end if
+		end if
+	end if
 
 	function = FALSE
 end function

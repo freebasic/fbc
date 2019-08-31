@@ -54,6 +54,10 @@ sub cExternStmtBegin( )
 		mangling = FB_MANGLING_CPP
 		lexSkipToken( )
 
+	case "rtlib"
+		mangling = FB_MANGLING_RTLIB
+		lexSkipToken( )
+
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
 		'' error recovery: assume it's "C"

@@ -3,6 +3,7 @@ Version 1.08.0
 [changed]
 
 [added]
+- extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
 
 [fixed]
 
