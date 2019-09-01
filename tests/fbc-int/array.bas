@@ -1,8 +1,6 @@
 #include "fbcunit.bi"
 #include "fbc-int/array.bi"
 
-using FBC
-
 '' tests for array descriptor internals
 
 SUITE( fbc_tests.fbc_int.array )
@@ -20,9 +18,9 @@ SUITE( fbc_tests.fbc_int.array )
 
 	#macro check_flags( ap, max_d, fixed_dim, fixed_len )
 		if( ap ) then
-			CU_ASSERT( (ap->flags and FBARRAY_FLAGS_DIMENSIONS) = max_d )
-			CU_ASSERT( cbool(ap->flags and FBARRAY_FLAGS_FIXED_LEN) = fixed_len )
-			CU_ASSERT( cbool(ap->flags and FBARRAY_FLAGS_FIXED_DIM) = fixed_dim )
+			CU_ASSERT( (ap->flags and FBC.FBARRAY_FLAGS_DIMENSIONS) = max_d )
+			CU_ASSERT( cbool(ap->flags and FBC.FBARRAY_FLAGS_FIXED_LEN) = fixed_len )
+			CU_ASSERT( cbool(ap->flags and FBC.FBARRAY_FLAGS_FIXED_DIM) = fixed_dim )
 		else
 			CU_FAIL()
 		end if
@@ -40,12 +38,12 @@ SUITE( fbc_tests.fbc_int.array )
 	
 	TEST( static_fixed )
 		'' static array will have descriptor because it is passed
-		'' a procedure, in this case, fb_ArrayGetDesc() 
+		'' a procedure, in this case, FBC.ArrayDescriptorPtr() 
 
 		'' 1 - dimensional
 	
 		static a1(2 to 11) as integer
-		dim ap1 as FBARRAY ptr = fb_ArrayGetDesc( a1() )
+		dim ap1 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( a1() )
 		check_array( ap1, @a1(2), sizeof(integer) * 10, sizeof(integer), 1 )
 		check_flags( ap1, 1, true, true )
 		check_dim( ap1, 0, 10, 2, 11 )
@@ -53,7 +51,7 @@ SUITE( fbc_tests.fbc_int.array )
 		'' 2 - dimensional
 		
 		static a2(2 to 6, 3 to 12) as integer
-		dim ap2 as FBARRAY ptr = fb_ArrayGetDesc( a2() )
+		dim ap2 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( a2() )
 		check_array( ap2, @a2(2,3), sizeof(integer) * 5 * 10, sizeof(integer), 2 )
 		check_flags( ap2, 2, true, true )
 		check_dim( ap2, 0, 5, 2, 6 )
@@ -66,24 +64,24 @@ SUITE( fbc_tests.fbc_int.array )
 		'' unknown dimension
 
 		static a0() as integer
-		dim ap0 as FBARRAY ptr = fb_ArrayGetDesc( a0() )
+		dim ap0 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( a0() )
 		check_array( ap0, 0, 0, sizeof(integer), 0 )
-		check_flags( ap0, FB_MAXDIMENSIONS, false, false )
+		check_flags( ap0, FBC.FB_MAXDIMENSIONS, false, false )
 	
 		redim a0(2 to 11) as integer
 		check_array( ap0, @a0(2), sizeof(integer) * 10, sizeof(integer), 1 )
-		check_flags( ap0, FB_MAXDIMENSIONS, false, false )
+		check_flags( ap0, FBC.FB_MAXDIMENSIONS, false, false )
 		check_dim( ap0, 0, 10, 2, 11 )
 
 		'' number of dimensions retained after ERASE
 		erase a0
 		check_array( ap0, 0, 0, sizeof(integer), 1 )
-		check_flags( ap0, FB_MAXDIMENSIONS, false, false )
+		check_flags( ap0, FBC.FB_MAXDIMENSIONS, false, false )
 
 		'' 1 - dimensional
 
 		static a1(any) as integer
-		dim ap1 as FBARRAY ptr = fb_ArrayGetDesc( a1() )
+		dim ap1 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( a1() )
 		check_array( ap1, 0, 0, sizeof(integer), 1 )
 		check_flags( ap1, 1, true, false )
 		check_dim( ap1, 0, 0, 0, 0 )
@@ -100,7 +98,7 @@ SUITE( fbc_tests.fbc_int.array )
 		'' 2 - dimensional
 
 		static a2(any,any) as integer
-		dim ap2 as FBARRAY ptr = fb_ArrayGetDesc( a2() )
+		dim ap2 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( a2() )
 		check_array( ap2, 0, 0, sizeof(integer), 2 )
 		check_flags( ap2, 2, true, false )
 		check_dim( ap2, 0, 0, 0, 0 )
@@ -124,7 +122,7 @@ SUITE( fbc_tests.fbc_int.array )
 		'' 1 dimensional
 		
 		dim a1(2 to 11) as integer
-		dim ap1 as FBARRAY ptr = fb_ArrayGetDesc( a1() )
+		dim ap1 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( a1() )
 		check_array( ap1, @a1(2), sizeof(integer) * 10, sizeof(integer), 1 )
 		check_flags( ap1, 1, true, true )
 		check_dim( ap1, 0, 10, 2, 11 )
@@ -137,7 +135,7 @@ SUITE( fbc_tests.fbc_int.array )
 		'' 2 dimensional
 
 		dim a2(2 to 6, 3 to 12) as integer
-		dim ap2 as FBARRAY ptr = fb_ArrayGetDesc( a2() )
+		dim ap2 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( a2() )
 		check_array( ap2, @a2(2,3), sizeof(integer) * 5 * 10, sizeof(integer), 2 )
 		check_flags( ap2, 2, true, true )
 		check_dim( ap2, 0, 5, 2, 6 )
@@ -156,24 +154,24 @@ SUITE( fbc_tests.fbc_int.array )
 		'' unknown dimension
 		
 		dim a0() as integer
-		dim ap0 as FBARRAY ptr = fb_ArrayGetDesc( a0() )
+		dim ap0 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( a0() )
 		check_array( ap0, 0, 0, sizeof(integer), 0 )
-		check_flags( ap0, FB_MAXDIMENSIONS, false, false )
+		check_flags( ap0, FBC.FB_MAXDIMENSIONS, false, false )
 
 		redim a0(2 to 11) as integer
 		check_array( ap0, @a0(2), sizeof(integer) * 10, sizeof(integer), 1 )
-		check_flags( ap0, FB_MAXDIMENSIONS, false, false )
+		check_flags( ap0, FBC.FB_MAXDIMENSIONS, false, false )
 		check_dim( ap0, 0, 10, 2, 11 )
 
 		'' number of dimensions retained after ERASE
 		erase a0
 		check_array( ap0, 0, 0, sizeof(integer), 1 )
-		check_flags( ap0, FB_MAXDIMENSIONS, false, false )
+		check_flags( ap0, FBC.FB_MAXDIMENSIONS, false, false )
 	
 		' 1 dimensional
 
 		dim a1(any) as integer
-		dim ap1 as FBARRAY ptr = fb_ArrayGetDesc( a1() )
+		dim ap1 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( a1() )
 		check_array( ap1, 0, 0, sizeof(integer), 1 )
 		check_flags( ap1, 1, true, false )
 		check_dim( ap1, 0, 0, 0, 0 )
@@ -191,7 +189,7 @@ SUITE( fbc_tests.fbc_int.array )
 		' 2 dimensional
 
 		dim a2(any,any) as integer
-		dim ap2 as FBARRAY ptr = fb_ArrayGetDesc( a2() )
+		dim ap2 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( a2() )
 		check_array( ap2, 0, 0, sizeof(integer), 2 )
 		check_flags( ap2, 2, true, false )
 		check_dim( ap2, 0, 0, 0, 0 )
@@ -221,19 +219,19 @@ SUITE( fbc_tests.fbc_int.array )
 
 		dim x as T_static_a0
 
-		dim ap0 as FBARRAY ptr = fb_ArrayGetDesc( x.a0() )
+		dim ap0 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a0() )
 		check_array( ap0, 0, 0, sizeof(integer), 0 )
-		check_flags( ap0, FB_MAXDIMENSIONS, false, false )
+		check_flags( ap0, FBC.FB_MAXDIMENSIONS, false, false )
 	
 		redim x.a0(2 to 11) as integer
 		check_array( ap0, @x.a0(2), sizeof(integer) * 10, sizeof(integer), 1 )
-		check_flags( ap0, FB_MAXDIMENSIONS, false, false )
+		check_flags( ap0, FBC.FB_MAXDIMENSIONS, false, false )
 		check_dim( ap0, 0, 10, 2, 11 )
 
 		'' number of dimensions retained after ERASE
 		erase x.a0
 		check_array( ap0, 0, 0, sizeof(integer), 1 )
-		check_flags( ap0, FB_MAXDIMENSIONS, false, false )
+		check_flags( ap0, FBC.FB_MAXDIMENSIONS, false, false )
 		
 	END_TEST
 
@@ -247,7 +245,7 @@ SUITE( fbc_tests.fbc_int.array )
 
 		dim x as T_static_a1
 
-		dim ap1 as FBARRAY ptr = fb_ArrayGetDesc( x.a1() )
+		dim ap1 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a1() )
 		check_array( ap1, 0, 0, sizeof(integer), 1 )
 		check_flags( ap1, 1, true, false )
 		check_dim( ap1, 0, 0, 0, 0 )
@@ -272,7 +270,7 @@ SUITE( fbc_tests.fbc_int.array )
 	TEST( UDT_static_a1f )
 		dim x as T_static_a1f
 
-		dim ap1 as FBARRAY ptr = fb_ArrayGetDesc( x.a1() )
+		dim ap1 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a1() )
 		check_array( ap1, @x.a1(2), sizeof(integer) * 10, sizeof(integer), 1 )
 		check_flags( ap1, 1, true, true )
 		check_dim( ap1, 0, 10, 2, 11 )
@@ -294,7 +292,7 @@ SUITE( fbc_tests.fbc_int.array )
 
 		dim x as T_static_a2
 
-		dim ap2 as FBARRAY ptr = fb_ArrayGetDesc( x.a2() )
+		dim ap2 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a2() )
 		check_array( ap2, 0, 0, sizeof(integer), 2 )
 		check_flags( ap2, 2, true, false )
 		check_dim( ap2, 0, 0, 0, 0 )
@@ -323,7 +321,7 @@ SUITE( fbc_tests.fbc_int.array )
 
 		dim x as T_static_a2f
 
-		dim ap2 as FBARRAY ptr = fb_ArrayGetDesc( x.a2() )
+		dim ap2 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a2() )
 		check_array( ap2, @x.a2(2,3), sizeof(integer) * 5 * 10, sizeof(integer), 2 )
 		check_flags( ap2, 2, true, true )
 		check_dim( ap2, 0, 5, 2, 6 )
@@ -344,7 +342,7 @@ SUITE( fbc_tests.fbc_int.array )
 	TEST( UDT_dim_a1 )
 		dim x as T_dim_a1
 
-		dim ap1 as FBARRAY ptr = fb_ArrayGetDesc( x.a1() )
+		dim ap1 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a1() )
 		check_array( ap1, 0, 0, sizeof(integer), 1 )
 		check_flags( ap1, 1, true, false )
 		check_dim( ap1, 0, 0, 0, 0 )
@@ -367,7 +365,7 @@ SUITE( fbc_tests.fbc_int.array )
 	TEST( UDT_dim_a1f )
 		dim x as T_dim_a1f
 
-		dim ap1 as FBARRAY ptr = fb_ArrayGetDesc( x.a1() )
+		dim ap1 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a1() )
 		check_array( ap1, @x.a1(2), sizeof(integer) * 10, sizeof(integer), 1 )
 		check_flags( ap1, 1, true, true )
 		check_dim( ap1, 0, 10, 2, 11 )
@@ -386,7 +384,7 @@ SUITE( fbc_tests.fbc_int.array )
 	TEST( UDT_dim_a2 )
 		dim x as T_dim_a2
 
-		dim ap2 as FBARRAY ptr = fb_ArrayGetDesc( x.a2() )
+		dim ap2 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a2() )
 		check_array( ap2, 0, 0, sizeof(integer), 2 )
 		check_flags( ap2, 2, true, false )
 		check_dim( ap2, 0, 0, 0, 0 )
@@ -413,7 +411,7 @@ SUITE( fbc_tests.fbc_int.array )
 	TEST( UDT_dim_a2f )
 		dim x as T_dim_a2f
 
-		dim ap2 as FBARRAY ptr = fb_ArrayGetDesc( x.a2() )
+		dim ap2 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a2() )
 		check_array( ap2, @x.a2(2,3), sizeof(integer) * 5 * 10, sizeof(integer), 2 )
 		check_flags( ap2, 2, true, true )
 		check_dim( ap2, 0, 5, 2, 6 )
@@ -434,7 +432,7 @@ SUITE( fbc_tests.fbc_int.array )
 	TEST( UDT_redim_a1 )
 		dim x as T_redim_a1
 
-		dim ap1 as FBARRAY ptr = fb_ArrayGetDesc( x.a1() )
+		dim ap1 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a1() )
 		check_array( ap1, 0, 0, sizeof(integer), 1 )
 		check_flags( ap1, 1, true, false )
 		check_dim( ap1, 0, 0, 0, 0 )
@@ -457,7 +455,7 @@ SUITE( fbc_tests.fbc_int.array )
 	TEST( UDT_redim_a1f )
 		dim x as T_redim_a1f
 
-		dim ap1 as FBARRAY ptr = fb_ArrayGetDesc( x.a1() )
+		dim ap1 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a1() )
 		check_array( ap1, @x.a1(2), sizeof(integer) * 10, sizeof(integer), 1 )
 		check_flags( ap1, 1, true, false )
 		check_dim( ap1, 0, 10, 2, 11 )
@@ -480,7 +478,7 @@ SUITE( fbc_tests.fbc_int.array )
 	TEST( UDT_redim_a2 )
 		dim x as T_redim_a2
 
-		dim ap2 as FBARRAY ptr = fb_ArrayGetDesc( x.a2() )
+		dim ap2 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a2() )
 		check_array( ap2, 0, 0, sizeof(integer), 2 )
 		check_flags( ap2, 2, true, false )
 		check_dim( ap2, 0, 0, 0, 0 )
@@ -507,7 +505,7 @@ SUITE( fbc_tests.fbc_int.array )
 	TEST( UDT_redim_a2f )
 		dim x as T_redim_a2f
 
-		dim ap2 as FBARRAY ptr = fb_ArrayGetDesc( x.a2() )
+		dim ap2 as FBC.FBARRAY ptr = FBC.ArrayDescriptorPtr( x.a2() )
 		check_array( ap2, @x.a2(2,3), sizeof(integer) * 5 * 10, sizeof(integer), 2 )
 		check_flags( ap2, 2, true, false )
 		check_dim( ap2, 0, 5, 2, 6 )
