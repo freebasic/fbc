@@ -518,7 +518,7 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 
 	case else
 		select case as const parser.mangling
-		case FB_MANGLING_BASIC
+		case FB_MANGLING_BASIC, FB_MANGLING_RTLIB
 			function = default
 
 		case FB_MANGLING_CDECL, FB_MANGLING_CPP
