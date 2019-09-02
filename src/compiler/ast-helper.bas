@@ -820,7 +820,7 @@ function astBuildArrayDescIniTree _
 	) as ASTNODE ptr
 
     dim as ASTNODE ptr tree = any
-	dim as integer dtype = any, dimensions = any
+	dim as integer dtype = any, dimensions = any, max_dimensions = any, flags = 0
     dim as FBSYMBOL ptr elm = any, dimtb = any, subtype = any
 
 	'' COMMON or EXTERN? Cannot be initialized
@@ -859,6 +859,7 @@ function astBuildArrayDescIniTree _
 			array_expr = astNewVAR( array )
 		end if
 		array_expr = astNewADDROF( array_expr )
+		flags or= FBARRAY_FLAGS_FIXED_LEN
 	end if
 
 	astTypeIniScopeBegin( tree, desc, FALSE )
@@ -900,11 +901,20 @@ function astBuildArrayDescIniTree _
 	if( dimensions = -1 ) then
 		assert( symbDescriptorHasRoomFor( desc, FB_MAXARRAYDIMS ) )
 		dimensions = 0
+		max_dimensions = FB_MAXARRAYDIMS
 	else
 		assert( symbDescriptorHasRoomFor( desc, dimensions ) )
+		max_dimensions = dimensions
+		flags or= FBARRAY_FLAGS_FIXED_DIM
 	end if
 	assert( dimensions >= 0 )
 	astTypeIniAddAssign( tree, astNewCONSTi( dimensions ), elm )
+
+    elm = symbGetNext( elm )
+
+	'' .flags = flags
+	flags or= ( max_dimensions and FBARRAY_FLAGS_DIMENSIONS )
+	astTypeIniAddAssign( tree, astNewCONSTi( flags ), elm )
 
     elm = symbGetNext( elm )
 

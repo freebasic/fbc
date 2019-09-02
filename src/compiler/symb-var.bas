@@ -47,7 +47,7 @@ sub symbVarInit( )
 	symb.fbarray_data  = 0
 	symb.fbarray_ptr   = env.pointersize     '' behind: data
 	symb.fbarray_size  = env.pointersize * 2 '' behind: data, ptr
-	symb.fbarray_dimtb = env.pointersize * 5 '' behind: data, ptr, size, element_len, dimensions
+	symb.fbarray_dimtb = env.pointersize * 6 '' behind: data, ptr, size, element_len, dimensions, flags
 
 	'' FBARRAYDIM
 	symb.fbarraydim_lbound = env.pointersize      '' behind: elements
@@ -96,7 +96,7 @@ function symbGetDescTypeDimensions( byval desctype as FBSYMBOL ptr ) as integer
 	end if
 
 	'' dimensions = sizeof(dimTB) \ sizeof(FBARRAYDIM)
-	dimtbsize = symbGetLen( desctype ) - (env.pointersize * 5)
+	dimtbsize = symbGetLen( desctype ) - (env.pointersize * 6)
 	dimensions = dimtbsize \ (env.pointersize * 3)
 
 	assert( (dimensions > 0) and (dimensions <= FB_MAXARRAYDIMS) )
@@ -197,6 +197,7 @@ function symbAddArrayDescriptorType _
 	symbAddField( sym, "size", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 	symbAddField( sym, "element_len", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 	symbAddField( sym, "dimensions", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
+	symbAddField( sym, "flags", 0, dTB(), FB_DATATYPE_INTEGER, NULL, 0, 0, 0 )
 	'' If dimensions are unknown, the descriptor type must have room for
 	'' FB_MAXARRAYDIMS
 	if( dimensions = -1 ) then

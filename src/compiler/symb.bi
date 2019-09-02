@@ -628,6 +628,13 @@ type FBS_SCOPE
 	emit			as FB_SCOPEEMIT
 end type
 
+enum FBARRAY_FLAGS
+	FBARRAY_FLAGS_DIMENSIONS = &h0000000f      '' number of entries allocated in dimTb()
+	FBARRAY_FLAGS_FIXED_DIM  = &h00000010      '' array points to fixed-length memory
+	FBARRAY_FLAGS_FIXED_LEN  = &h00000020      '' array points to fixed-length memory
+	FBARRAY_FLAGS_RESERVED   = &hffffffc0      '' reserved, do not use
+end enum
+
 '' variable
 type FBS_ARRAY
 	'' 0 = none (not an array),
@@ -2558,8 +2565,8 @@ declare sub symbDump( byval s as FBSYMBOL ptr )
 declare sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
 declare sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
 
-'' FBARRAY: 5 pointer/integer fields + the dimTB with 3 integer fields per dimension
-#define symbDescriptorHasRoomFor( sym, dimensions ) (symbGetLen( sym ) = env.pointersize * (((dimensions) * 3) + 5))
+'' FBARRAY: 6 pointer/integer fields + the dimTB with 3 integer fields per dimension
+#define symbDescriptorHasRoomFor( sym, dimensions ) (symbGetLen( sym ) = env.pointersize * (((dimensions) * 3) + 6))
 #endif
 
 declare function symbDumpPrettyToStr( byval sym as FBSYMBOL ptr ) as string

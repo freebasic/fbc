@@ -4,12 +4,20 @@ typedef struct _FBARRAYDIM {
 	ssize_t ubound;
 } FBARRAYDIM;
 
+typedef enum _FBARRAY_FLAGS {
+	FBARRAY_FLAGS_DIMENSIONS = 0x0000000f,
+	FBARRAY_FLAGS_FIXED_DIM  = 0x00000010,
+	FBARRAY_FLAGS_FIXED_LEN  = 0x00000020,
+	FBARRAY_FLAGS_RESERVED   = 0xffffffc0
+} FBARRAY_FLAGS;
+
 typedef struct _FBARRAY {
 	void           *data;        /* ptr + diff, must be at ofs 0! */
 	void           *ptr;
 	size_t          size;
 	size_t          element_len;
 	size_t          dimensions;
+	size_t          flags;       /* FBARRAY_FLAGS */
 	FBARRAYDIM      dimTB[1];    /* dimtb[dimensions] */
 } FBARRAY;
 

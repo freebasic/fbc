@@ -1,9 +1,11 @@
 Version 1.08.0
 
 [changed]
+- array descriptor contains new 'flags' field.  Careful, breaks binary compatibility plus chicken-egg problem to build fbc.
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
+- array descriptor 'flags' field to track fixed length, fixed dimension, dimTb() size.
 
 [fixed]
 
