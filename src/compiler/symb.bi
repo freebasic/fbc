@@ -357,8 +357,8 @@ enum FB_DEFTOK_TYPE
 	FB_DEFTOK_TYPE_PARAMSTR
 	FB_DEFTOK_TYPE_TEX
 	FB_DEFTOK_TYPE_TEXW
-	FB_DEFTOK_TYPE_COUNT                              'jk-argcount
-	FB_DEFTOK_TYPE_PARAMSTR_UCASE                     'jk-stringize ucase
+	FB_DEFTOK_TYPE_COUNT
+	FB_DEFTOK_TYPE_PARAMSTR_UCASE
 end enum
 
 type FB_DEFTOK

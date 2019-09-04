@@ -268,6 +268,125 @@
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE, 0, TRUE ) _
 			} _
 		), _
+		/' function fb_ArrayDesc( array() as any, mode as long ) as any ptr'/ _
+		( _
+			@"fb_ArrayDesc", NULL, _                        'jk-array
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _         'return any ptr
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _       'pass array
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function fb_ArrayCalcPos( array() as any, p as any ) as integer'/ _
+		( _
+			@"fb_ArrayCalcPos", NULL, _                        'jk-array
+			FB_DATATYPE_UINT, FB_FUNCMODE_FBCALL, _         
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _       'pass array ptr
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
+		/' function fb_ArrayCalcIdxPos( array() as any, li as integer ) as any ptr (array_index)'/ _
+		( _
+			@"fb_ArrayCalcIdxPos", NULL, _            'jk-array
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _         
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _        'pass array ptr
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _        'linear index
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ) _         'array_index
+			} _
+		), _
+		/' function fb_ArrayCalcIdxPtr( array() as any, p as any ) as any ptr (array_index)'/ _
+		( _
+			@"fb_ArrayCalcIdxPtr", NULL, _            'jk-array
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _         
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _        'pass array ptr
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _        'data ptr
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ) _         'array_index
+			} _
+		), _
+		/' function fb_ArrayShift( array() as any, p as any, li as uinteger, count as uinteger, flag as long ) as any ptr'/ _
+		( _
+			@"fb_ArrayShift", NULL, _                        'jk-array
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _         'return any ptr
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _        'pass array ptr
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _        'data ptr
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _        'linear index
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _        'count
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _ 'flag
+			} _
+		), _
+		/' function fb_ArraySort( array() as any, array2() as any, callback as any, t as long, p as any, li as uinteger, count as uinteger, offset as uinteger ) as long'/ _
+		( _
+			@"fb_ArraySort", NULL, _                  'jk-array
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _         
+			NULL, FB_RTL_OPT_NONE, _
+			8, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _        'pass array ptr
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _        'sort along array ptr
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _ 'variable type
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _        'callback
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _        'data ptr
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _        'linear index
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ), _        'count
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _         'offset (for USTRING)
+			} _
+		), _
+		/' function fb_ArrayAttach( array() as any, ait as array_index_type, n as long, mp as any ptr ) as long'/ _
+		( _
+			@"fb_ArrayAttach", NULL, _                        'jk-array
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _         
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _        'pass array
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _        'array_index_type
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _ '# of valid indices
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ) _         'memory ptr
+			} _
+		), _
+		/' function fb_ArrayReset( array() as any ) as long'/ _
+		( _
+			@"fb_ArrayReset", NULL, _                        'jk-array
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _         
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ) _        'pass array
+			} _
+		), _
+		/' function fb_ArrayScan(type as long, array() as any, len as long, st as any ptr, offset as uinteger, caseflag as long, ai as array_index, count as uinteger)'/ _
+		( _
+			@"fb_ArrayScan", NULL, _                  'jk-array
+			FB_DATATYPE_UINT, FB_FUNCMODE_FBCALL, _         
+			NULL, FB_RTL_OPT_NONE, _
+			10, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _                   'pass array ptr
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _                   'pass callback ptr
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _ 'search term lenght
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _                   'search term pointer
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _ 'offset
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _ 'caseflag
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _                   'array index
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _ 'custom flag
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ), _ 'count
+				( FB_DATATYPE_UINT, FB_PARAMMODE_BYVAL, FALSE ) _                    'offset (for USTRING)
+			} _
+		), _
 		/' EOL '/ _
 		( _
 			NULL _
