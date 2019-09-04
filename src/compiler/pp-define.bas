@@ -276,6 +276,25 @@ private function hLoadMacro _
 					text += """"""
 				end if
 
+			'' stringize parameter ucase?
+			case FB_DEFTOK_TYPE_PARAMSTR_UCASE
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+					'' don't escape, preserve the sequencies as-is
+dim us as string 
+                    us = ucase(*argtext)
+                    argtext = strptr(us)
+
+					text += "$" + QUOTE
+					text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
+					text += QUOTE
+				else
+					'' If it's empty, produce an empty string ("")
+					text += """"""
+				end if
+
 			'' ordinary text..
 			case FB_DEFTOK_TYPE_TEX
 				text += *symbGetDefTokText( dt )
@@ -617,6 +636,26 @@ private function hLoadMacroW _
 					DWstrConcatAssign( text, """""" )
 				end if
 
+			'' stringize parameter ucase?
+			case FB_DEFTOK_TYPE_PARAMSTR_UCASE
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+					'' don't escape, preserve the sequencies as-is
+dim uw as wstring * 128                               'max token length ???
+                    uw = ucase(*argtext)
+                    argtext = strptr(uw)
+
+					DWstrConcatAssign( text, "$" + QUOTE )
+					DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
+					DWstrConcatAssign( text, QUOTE )
+				else
+					'' If it's empty, produce an empty string ("")
+					DWstrConcatAssign( text, """""" )
+				end if
+
 			'' ordinary text..
 			case FB_DEFTOK_TYPE_TEX
 				DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
@@ -886,7 +925,7 @@ private function hReadMacroText _
                     lexSkipToken( LEX_FLAGS )         'skip #
                     lexSkipToken( LEX_FLAGS )         'skip &
                     lexSkipToken( LEX_FLAGS )         'skip #
-                    uppercase = 1
+                    uppercase = true
 
                   case else                           '##
                     lexSkipToken( LEX_FLAGS )
@@ -980,6 +1019,8 @@ private function hReadMacroText _
     		if( param <> NULL ) then
 		  		if makecount = true then
 			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_COUNT )
+  				elseif( uppercase = true ) then
+		  			symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAMSTR_UCASE )
                 elseif( addquotes = FALSE ) then
   					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAM )
 	  			else
