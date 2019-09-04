@@ -565,6 +565,9 @@ private function hLoadMacroW _
 					DWstrConcatAssign( text, "$" + QUOTE )
 					DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
 					DWstrConcatAssign( text, QUOTE )
+				else
+					'' If it's empty, produce an empty string ("")
+					DWstrConcatAssign( text, """""" )
 				end if
 
 			'' ordinary text..
