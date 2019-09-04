@@ -192,7 +192,7 @@ private function hLoadMacro _
 				if(not is_variadic) then
   				'' Too few args specified. This is an error, unless a vararg param (...) was given.
 					hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
-				end if                                        'jk-argcount end
+				end if
 
 				'' Clear any missing args
 				assert( num < (symbGetDefineParams( s ) - 1) )
@@ -499,8 +499,7 @@ private function hLoadMacroW _
 			'' End of param list not yet reached?
 			if( nextparam ) then
                 '' Not the last param and is variadic?  -> to less paramters given (macro expects more)
-                ''	if( (symbGetDefParamNext( nextparam ) <> NULL) or (not is_variadic) ) then
-				if ((symbGetDefParamNext( nextparam ) <> NULL) and is_variadic) then 'jk-argcount
+				if ((symbGetDefParamNext( nextparam ) <> NULL) and is_variadic) then
                     '' warn, if to few arguments. Macro expects more, but vararg param (...) may have comma(s) inside
                     '' so argument count may match nevertheless
   				    errReportWarn( FB_WARNINGMSG_ARGCNTMISMATCH, "expanding: " + *symbGetName( s ))
@@ -952,7 +951,8 @@ private sub hReadDefineText _
 		byval sym as FBSYMBOL ptr, _
 		byval defname as zstring ptr, _
 		byval isargless as integer, _
-		byval ismultiline as integer _
+		byval ismultiline as integer, _
+		byval isredef as integer = 0_
 	)
 
 	dim as zstring ptr text = any
@@ -971,7 +971,7 @@ private sub hReadDefineText _
 				errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
     		end if
     	else
-    		symbAddDefine( defname, text, len( *text ), isargless )
+    		symbAddDefine( defname, text, len( *text ), isargless, , , isredef )
     	end if
 
     '' unicode..
@@ -988,7 +988,7 @@ private sub hReadDefineText _
 				errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
     		end if
     	else
-    		symbAddDefineW( defname, textw, len( *textw ), isargless )
+    		symbAddDefineW( defname, textw, len( *textw ), isargless, , , isredef )
     	end if
 
     end if
@@ -1020,7 +1020,7 @@ end function
 '' 					| 	MACRO ID '(' ID (',' ID)* ')' Comment? EOL
 '' 							MacroBody*
 '' 						ENDMACRO .
-sub ppDefine( byval ismultiline as integer )
+sub ppDefine( byval ismultiline as integer, byval isredef as integer = 0 )
 	static as zstring * FB_MAXNAMELEN+1 defname
 	dim as integer params = any, isargless = any, flags = any, is_variadic = any
 	dim as FB_DEFPARAM ptr paramhead = any, lastparam = any
@@ -1051,7 +1051,7 @@ sub ppDefine( byval ismultiline as integer )
 		errReport( FB_ERRMSG_CANTINCLUDEPERIODS )
 	end if
 
-	if( chain_ <> NULL ) then
+	if( chain_ <> NULL ) and (isredef = 0) then
 		sym = chain_->sym
 		if( symbIsDefine( sym ) = FALSE ) then
 			'' defines have no dups or respect namespaces
@@ -1146,7 +1146,7 @@ sub ppDefine( byval ismultiline as integer )
 
 	'' not a macro?
 	if( params = 0 ) then
-		hReadDefineText( sym, @defname, isargless, ismultiline )
+		hReadDefineText( sym, @defname, isargless, ismultiline, isredef )
 		exit sub
 	end if
 
@@ -1159,6 +1159,7 @@ sub ppDefine( byval ismultiline as integer )
    		symbAddDefineMacro( @defname, tokhead, params, paramhead, _
                             iif( is_variadic, _
                                  FB_DEFINE_FLAGS_VARIADIC, _
-                                 FB_DEFINE_FLAGS_NONE ) )
+                                 FB_DEFINE_FLAGS_NONE ), isredef )
+
 	end if
 end sub

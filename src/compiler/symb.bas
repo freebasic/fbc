@@ -462,7 +462,8 @@ function symbNewSymbol _
 		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as FB_SYMBATTRIB _
+		byval attrib as FB_SYMBATTRIB, _
+		byval isredef as integer = 0 _
 	) as FBSYMBOL ptr
 
     dim as integer slen = any, delok = any
@@ -570,17 +571,19 @@ function symbNewSymbol _
 
 		else
 			'' can it be duplicated?
-			if( (options and FB_SYMBOPT_NODUPCHECK) = 0 ) then
-				if( symbCanDuplicate( head_sym, s ) = FALSE ) then
-					poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
-					ZstrFree( s->id.alias )
-					ZstrFree( s->id.mangled )
-					if( delok ) then
-						listDelNode( @symb.symlist, s )
-					end if
-					exit function
-				end if
-			end if
+            if isredef = 0 then
+              if( (options and FB_SYMBOPT_NODUPCHECK) = 0 ) then
+                if( symbCanDuplicate( head_sym, s ) = FALSE ) then
+                  poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
+                  ZstrFree( s->id.alias )
+                  ZstrFree( s->id.mangled )
+                  if( delok ) then
+                    listDelNode( @symb.symlist, s )
+                  end if
+                  exit function
+                end if
+              end if
+            end if
 
 			s->hash.item = head_sym->hash.item
 

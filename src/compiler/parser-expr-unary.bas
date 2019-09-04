@@ -274,7 +274,8 @@ function cHighestPrecExpr _
 
 				end select
 
-            else                                      'jk-typeof
+            '' run time expression
+            else
 				select case( lexGetToken( ) )
 				'' TYPEOF '(' Expression ')'
 				case FB_TK_TYPEOF

@@ -25,6 +25,7 @@ enum FB_TOKEN_PP
 	FB_TK_PP_ASSERT
 	FB_TK_PP_DUMP
 	FB_TK_PP_ODUMP
+	FB_TK_PP_REDEF
 end enum
 
 type PP_CTX
@@ -56,7 +57,7 @@ declare sub ppDefineEnd _
 	( _
 	)
 
-declare sub ppDefine( byval ismultiline as integer )
+declare sub ppDefine( byval ismultiline as integer, byval isredef as integer = 0 )
 
 declare function ppDefineLoad _
 	( _
