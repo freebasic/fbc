@@ -8,6 +8,7 @@ typedef enum _FBARRAY_FLAGS {
 	FBARRAY_FLAGS_DIMENSIONS = 0x0000000f,
 	FBARRAY_FLAGS_FIXED_DIM  = 0x00000010,
 	FBARRAY_FLAGS_FIXED_LEN  = 0x00000020,
+	FBARRAY_FLAGS_ATTACHED   = 0x00000040,
 	FBARRAY_FLAGS_RESERVED   = 0xffffffc0
 } FBARRAY_FLAGS;
 
@@ -73,6 +74,92 @@ FBCALL ssize_t    fb_ArrayLBound       ( FBARRAY *array, ssize_t dimension );
 FBCALL ssize_t    fb_ArrayUBound       ( FBARRAY *array, ssize_t dimension );
        size_t     fb_hArrayCalcElements( size_t dimensions, const ssize_t *lboundTB, const ssize_t *uboundTB );
        ssize_t    fb_hArrayCalcDiff    ( size_t dimensions, const ssize_t *lboundTB, const ssize_t *uboundTB );
+
+typedef struct _array_index {
+    size_t   n;                                       
+    size_t   li;                                      
+    ssize_t  i1;                                      
+    ssize_t  i2;                                      
+    ssize_t  i3;                                      
+    ssize_t  i4;
+    ssize_t  i5;
+    ssize_t  i6;
+    ssize_t  i7;
+    ssize_t  i8;
+} array_index;
+
+typedef struct _array_dim_type {
+    ssize_t  i1s;                                     
+    ssize_t  i1e;
+    ssize_t  i2s;
+    ssize_t  i2e;
+    ssize_t  i3s;
+    ssize_t  i3e;
+    ssize_t  i4s;
+    ssize_t  i4e;
+    ssize_t  i5s;
+    ssize_t  i5e;
+    ssize_t  i6s;
+    ssize_t  i6e;
+    ssize_t  i7s;
+    ssize_t  i7e;
+    ssize_t  i8s;
+    ssize_t  i8e;
+} array_dim_type;
+
+FBCALL void       *fb_ArrayDesc        ( FBARRAY *array, int mode );     
+       size_t     fb_IsFixedLenArray   ( FBARRAY *array );               
+       size_t     fb_IsFixedDimArray   ( FBARRAY *array );               
+       size_t     fb_IsDynamicdArray   ( FBARRAY *array );               
+       size_t     fb_IsAttachedArray   ( FBARRAY *array );               
+                                                     
+FBCALL size_t     fb_ArrayCalcPos      ( FBARRAY *array, void *p );      
+FBCALL int        fb_ArrayCalcIdxPos   ( FBARRAY *array, size_t pos, array_index *ai ); 
+FBCALL int        fb_ArrayCalcIdxPtr   ( FBARRAY *array, void *p, array_index *ai ); 
+
+FBCALL void       *fb_ArrayShift       ( FBARRAY *array, void *p, size_t li, size_t c, int flag ); 
+FBCALL int        fb_ArraySort         ( FBARRAY *array, FBARRAY *array2, int t, void *cbp, void *p, size_t li, size_t c, size_t o ); 
+
+FBCALL int        fb_ArrayAttach       ( FBARRAY *array, array_dim_type *adt, int n, void *mp ); 
+FBCALL int        fb_ArrayReset        ( FBARRAY *array );          
+FBCALL size_t     fb_ArrayScan         ( FBARRAY *array, void *cbp, int len, void *ps, ssize_t offset, int caseflag, array_index *ai, int flag, size_t c, size_t o ); 
+
+enum array_enums_                                     
+{
+    adt_byte         =  1,                            
+    adt_ubyte            ,
+    adt_short            ,
+    adt_ushort           ,
+    adt_integer          ,
+    adt_uinteger         ,
+    adt_long             ,
+    adt_ulong            ,
+    adt_longint          ,
+    adt_ulongint         ,
+                     
+    adt_single       = 20,
+    adt_double           ,
+                     
+    adt_zstring      = 30,
+    adt_fixstring        ,
+    adt_string           ,
+    adt_wstring          ,
+    adt_ustring          ,
+                     
+    adt_struct       = 40,
+    adt_function     = 50,
+                     
+    array_desc       = 60,                            
+    array_data           ,                            
+    array_dimensions     ,                            
+    array_totalsize      ,                            
+    array_totalcount     ,                            
+    array_size           ,                            
+    array_is_fixed_len   ,                            
+    array_is_fixed_dim   ,                            
+    array_is_dynamic     ,                            
+    array_is_attached    ,                            
+};  
 
 int fb_hArrayAlloc
 	(
