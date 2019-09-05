@@ -270,7 +270,7 @@
 		), _
 		/' function fb_ArrayDesc( array() as any, mode as long ) as any ptr'/ _
 		( _
-			@"fb_ArrayDesc", NULL, _                        'jk-array
+			@"fb_ArrayDesc", NULL, _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _         'return any ptr
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
@@ -281,7 +281,7 @@
 		), _
 		/' function fb_ArrayCalcPos( array() as any, p as any ) as integer'/ _
 		( _
-			@"fb_ArrayCalcPos", NULL, _                        'jk-array
+			@"fb_ArrayCalcPos", NULL, _
 			FB_DATATYPE_UINT, FB_FUNCMODE_FBCALL, _         
 			NULL, FB_RTL_OPT_NONE, _
 			2, _
@@ -292,7 +292,7 @@
 		), _
 		/' function fb_ArrayCalcIdxPos( array() as any, li as integer ) as any ptr (array_index)'/ _
 		( _
-			@"fb_ArrayCalcIdxPos", NULL, _            'jk-array
+			@"fb_ArrayCalcIdxPos", NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _         
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
@@ -304,7 +304,7 @@
 		), _
 		/' function fb_ArrayCalcIdxPtr( array() as any, p as any ) as any ptr (array_index)'/ _
 		( _
-			@"fb_ArrayCalcIdxPtr", NULL, _            'jk-array
+			@"fb_ArrayCalcIdxPtr", NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _         
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
@@ -316,7 +316,7 @@
 		), _
 		/' function fb_ArrayShift( array() as any, p as any, li as uinteger, count as uinteger, flag as long ) as any ptr'/ _
 		( _
-			@"fb_ArrayShift", NULL, _                        'jk-array
+			@"fb_ArrayShift", NULL, _
 			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _         'return any ptr
 			NULL, FB_RTL_OPT_NONE, _
 			5, _
@@ -330,7 +330,7 @@
 		), _
 		/' function fb_ArraySort( array() as any, array2() as any, callback as any, t as long, p as any, li as uinteger, count as uinteger, offset as uinteger ) as long'/ _
 		( _
-			@"fb_ArraySort", NULL, _                  'jk-array
+			@"fb_ArraySort", NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _         
 			NULL, FB_RTL_OPT_NONE, _
 			8, _
@@ -347,7 +347,7 @@
 		), _
 		/' function fb_ArrayAttach( array() as any, ait as array_index_type, n as long, mp as any ptr ) as long'/ _
 		( _
-			@"fb_ArrayAttach", NULL, _                        'jk-array
+			@"fb_ArrayAttach", NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _         
 			NULL, FB_RTL_OPT_NONE, _
 			4, _
@@ -360,7 +360,7 @@
 		), _
 		/' function fb_ArrayReset( array() as any ) as long'/ _
 		( _
-			@"fb_ArrayReset", NULL, _                        'jk-array
+			@"fb_ArrayReset", NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _         
 			NULL, FB_RTL_OPT_NONE, _
 			1, _
@@ -370,7 +370,7 @@
 		), _
 		/' function fb_ArrayScan(type as long, array() as any, len as long, st as any ptr, offset as uinteger, caseflag as long, ai as array_index, count as uinteger)'/ _
 		( _
-			@"fb_ArrayScan", NULL, _                  'jk-array
+			@"fb_ArrayScan", NULL, _
 			FB_DATATYPE_UINT, FB_FUNCMODE_FBCALL, _         
 			NULL, FB_RTL_OPT_NONE, _
 			10, _
