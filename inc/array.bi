@@ -680,58 +680,58 @@ end type
 '
 '
 'end function
-'
-'
-'private function ax_info__(byval p as any ptr) as integer
-''***********************************************************************************************
-'' return array information (integer)
-''***********************************************************************************************
-'dim i as integer
-'
-'    
-'  i = cast(integer, p)
-'  return i
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_info__p(byval p as any ptr) as any ptr
-''***********************************************************************************************
-'' return array information (ptr)
-''***********************************************************************************************
-'
-'    
-'  return p
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_info__b(byval p as any ptr) as boolean
-''***********************************************************************************************
-'' return array information (boolean)
-''***********************************************************************************************
-'
-'  if p = 0 then
-'    return false
-'  else
-'    return true
-'  end if    
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'  
-'
+
+
+private function ax_info__(byval p as any ptr) as uinteger
+'***********************************************************************************************
+' return array information (integer)
+'***********************************************************************************************
+dim i as uinteger
+
+    
+  i = cast(uinteger, p)
+  return i
+
+
+end function
+
+
+'***********************************************************************************************
+
+
+private function ax_info__p(byval p as any ptr) as any ptr
+'***********************************************************************************************
+' return array information (ptr)
+'***********************************************************************************************
+
+    
+  return p
+
+
+end function
+
+
+'***********************************************************************************************
+
+
+private function ax_info__b(byval p as any ptr) as boolean
+'***********************************************************************************************
+' return array information (boolean)
+'***********************************************************************************************
+
+  if p = 0 then
+    return false
+  else
+    return true
+  end if    
+
+
+end function
+
+
+'***********************************************************************************************
+  
+
 'private function ax_reset__ (byval p as any ptr) as integer
 ''***********************************************************************************************
 '' array reset, detach attached array
@@ -1690,41 +1690,45 @@ end namespace
 '
 'end scope
 '#endmacro
-'
-'
-'#macro array_data__(array, p1...)                    
-'  array_.ax_info__p(fb_ArrayDesc(array(), array_.ae_.data))               'data_ptr
-'#endmacro
-'
-'#macro array_dimensions__(array, p1...)                 
-'  array_.ax_info__(fb_ArrayDesc(array(), array_.ae_.dimensions))          'dimensions
-'#endmacro
-'
-'#macro array_total_size__(array, p1...)                
-'  array_.ax_info__(fb_ArrayDesc(array(), array_.ae_.total_size))          'total_size
-'#endmacro
-'
-'#macro array_total_count__(array, p1...)                
-'  array_.ax_info__(fb_ArrayDesc(array(), array_.ae_.total_count))         'total_count
-'#endmacro
-'
-'#macro array_sizeof__(array, p1...)                   
-'  array_.ax_info__(fb_ArrayDesc(array(), array_.ae_.size))                'size
-'#endmacro
-'
-'#macro array_isfixed__(array, p1...)                   
-'  array_.ax_info__b(fb_ArrayDesc(array(), array_.ae_.is_fixed))           'fixed
-'#endmacro
-'
-'#macro array_isdimmed__(array, p1...)                  
-'  array_.ax_info__b(fb_ArrayDesc(array(), array_.ae_.is_dimmed))          'dimmed
-'#endmacro
-'
-'#macro array_isattached__(array, p1...)                
-'  array_.ax_info__b(fb_ArrayDesc(array(), array_.ae_.is_attached))        'attached
-'#endmacro
-'
-'
+
+
+#macro array_data__(array, p1...)                    
+  array_.ax_info__p(fb_ArrayDesc(array(), array_.ae_.data))               'data_ptr
+#endmacro
+
+#macro array_dimensions__(array, p1...)                 
+  array_.ax_info__(fb_ArrayDesc(array(), array_.ae_.dimensions))          'dimensions
+#endmacro
+
+#macro array_total_size__(array, p1...)                
+  array_.ax_info__(fb_ArrayDesc(array(), array_.ae_.total_size))          'total_size
+#endmacro
+
+#macro array_total_count__(array, p1...)                
+  array_.ax_info__(fb_ArrayDesc(array(), array_.ae_.total_count))         'total_count
+#endmacro
+
+#macro array_sizeof__(array, p1...)                   
+  array_.ax_info__(fb_ArrayDesc(array(), array_.ae_.size))                'size
+#endmacro
+
+#macro array_is_fixed_len__(array, p1...)                   
+  array_.ax_info__b(fb_ArrayDesc(array(), array_.ae_.is_fixed_len))       'fixed len
+#endmacro
+
+#macro array_is_fixed_dim__(array, p1...)                   
+  array_.ax_info__b(fb_ArrayDesc(array(), array_.ae_.is_fixed_dim))       'fixed dim
+#endmacro
+
+#macro array_is_dynamic__(array, p1...)                  
+  array_.ax_info__b(fb_ArrayDesc(array(), array_.ae_.is_dynamic))          'dynamic
+#endmacro
+
+#macro array_is_attached__(array, p1...)                
+  array_.ax_info__b(fb_ArrayDesc(array(), array_.ae_.is_attached))        'attached
+#endmacro
+
+
 '#macro array_attach__(array, p1, p2...)               'attach macro
 '  #if ((#&#p1 < "REDIM)") and (#&#p1 > "REDIM'"))         'starts with "Redim("
 '    #if (#p2 <> "")
@@ -1823,11 +1827,11 @@ end namespace
 '#macro array_scan__(array, p1, p2, p3...)             'scan macro
 '  array_.ax_scan__(array_.ax_typeof__(typeof((array))), fb_ArrayDesc(array(), array_.ae_.desc), array_##p1, array_.ax_index##p2, p3)
 '#endmacro
-'
-'
-'#macro array(verb, array, p1, p2...)                  'generic array processing macro
-'  array_##verb##__(array, p1, p2)
-'#endmacro
+
+
+#macro array(verb, array, p1, p2...)                  'generic array processing macro
+  array_##verb##__(array, p1, p2)
+#endmacro
 
 
 '***********************************************************************************************

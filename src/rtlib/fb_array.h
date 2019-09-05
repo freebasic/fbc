@@ -108,10 +108,6 @@ typedef struct _array_dim_type {
 } array_dim_type;
 
 FBCALL void       *fb_ArrayDesc        ( FBARRAY *array, int mode );     
-       size_t     fb_IsFixedLenArray   ( FBARRAY *array );               
-       size_t     fb_IsFixedDimArray   ( FBARRAY *array );               
-       size_t     fb_IsDynamicdArray   ( FBARRAY *array );               
-       size_t     fb_IsAttachedArray   ( FBARRAY *array );               
                                                      
 FBCALL size_t     fb_ArrayCalcPos      ( FBARRAY *array, void *p );      
 FBCALL int        fb_ArrayCalcIdxPos   ( FBARRAY *array, size_t pos, array_index *ai ); 
