@@ -174,64 +174,64 @@ end type
 '***********************************************************************************************
 
 
-'private function ax_data__(p as any ptr) as array_data_type
-''***********************************************************************************************
-'' return data ptr (memory pointer)
-''***********************************************************************************************
-'dim i as array_data_type
-'
-'
-'  i.p = p
-'  return i
-'   
-'   
-'end function   
-'
-'
-'private function ax_data() as array_data_type
-''***********************************************************************************************
-'' return empty data ptr (dummy for no pointer or position given)
-''***********************************************************************************************
-'dim i as array_data_type
-'
-'
-'  return i
-'   
-'   
-'end function   
-'
-'
-'private function ax_datapos(li as integer) as array_data_type
-''***********************************************************************************************
-'' return data ptr (linear index)
-''***********************************************************************************************
-'dim i as array_data_type
-'
-'
-'  i.li = li
-'  return i
-'   
-'   
-'end function   
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_indexpos(byval n as integer) as array_index
-''***********************************************************************************************
-'' linear index given
-''***********************************************************************************************
-'dim i as array_index
-'
-'
-'  i.n  = 0
-'  i.li = n
-'  return i
-'  
-'  
-'end function  
-'
+private function ax_data__(p as any ptr) as array_data_type
+'***********************************************************************************************
+' return data ptr (memory pointer)
+'***********************************************************************************************
+dim i as array_data_type
+
+
+  i.p = p
+  return i
+   
+   
+end function   
+
+
+private function ax_data() as array_data_type
+'***********************************************************************************************
+' return empty data ptr (dummy for no pointer or position given)
+'***********************************************************************************************
+dim i as array_data_type
+
+
+  return i
+   
+   
+end function   
+
+
+private function ax_datapos(li as integer) as array_data_type
+'***********************************************************************************************
+' return data ptr (linear index)
+'***********************************************************************************************
+dim i as array_data_type
+
+
+  i.li = li
+  return i
+   
+   
+end function   
+
+
+'***********************************************************************************************
+
+
+private function ax_indexpos(byval n as integer) as array_index
+'***********************************************************************************************
+' linear index given
+'***********************************************************************************************
+dim i as array_index
+
+
+  i.n  = 0
+  i.li = n
+  return i
+  
+  
+end function  
+
 'private function ax_index overload () as array_index
 ''***********************************************************************************************
 '' no index given
@@ -750,38 +750,36 @@ end function
 '***********************************************************************************************
 
 
-'function ax_insert__(byval p as any ptr, vname as string, ai as array_data_type, n as uinteger = 0) as any ptr
-''***********************************************************************************************
-'' array insert:  p = array desc ptr, ai = array_index, n = # of elements to shift
-''***********************************************************************************************
-'
-'
-'  err = 0                                             'reset error
-''  function = fb_ArrayShift(byval p, byval ai.p, byval ai.li, byval n, 1)
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'function ax_delete__(byval p as any ptr, ai as array_data_type, n as uinteger = 0) as any ptr
-''***********************************************************************************************
-'' array delete:  p = array desc ptr, ai = array_index, n = # of elements to shift
-''***********************************************************************************************
-'
-'
-'  err = 0                                             'reset error
-''  function = fb_ArrayShift(byval p, byval ai.p, byval ai.li, byval n, 0)
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
+function ax_insert__(byval p as any ptr, vname as string, ai as array_data_type, n as uinteger = 0) as any ptr
+'***********************************************************************************************
+' array insert:  p = array desc ptr, ai = array_index, n = # of elements to shift
+'***********************************************************************************************
+
+
+  function = fb_ArrayShift(byval p, byval ai.p, byval ai.li, byval n, 1)
+
+
+end function
+
+
+'***********************************************************************************************
+
+
+function ax_delete__(byval p as any ptr, ai as array_data_type, n as uinteger = 0) as any ptr
+'***********************************************************************************************
+' array delete:  p = array desc ptr, ai = array_index, n = # of elements to shift
+'***********************************************************************************************
+
+
+  function = fb_ArrayShift(byval p, byval ai.p, byval ai.li, byval n, 0)
+
+
+end function
+
+
+'***********************************************************************************************
+
+
 '#macro array_scan_set__                               'setup for array scan
 '  if n1 = -1 then 
 '    ast.c = 1
@@ -1744,51 +1742,45 @@ end scope
 #endmacro
 
 
-'#macro array_insert__(array, p1, p2, p3...)              'insert macro
-'  #if (#p1 = "")
-'    #line __prevline__
-'    #error "(macro expansion) array insert: missing parameter 3: value to assign"
-'  #else
-'    scope
-'    #if (#p2 < ")") and (#p2 > "'")
-'      dim p as any ptr = array_.ax_insert__(fb_ArrayDesc(array(), array_.ae_.desc), #p1, array_.ax_data__(@array##p2), p3)
-'    #else
-'      dim p as any ptr = array_.ax_insert__(fb_ArrayDesc(array(), array_.ae_.desc), #p1, array_.ax_data##p2, p3)
-'    #endif
-'
-'      if p = 0 then
-'        err = 6
-'      else
-'        err = 0
-'        *cast(typeof((array)) ptr, p) = p1
-'      end if
-'    end scope
-'  #endif
-'#endmacro
-'
-'
-'#macro array_delete__(array, p1, p2...)                  'delete macro
-'  #if (###p2 > 1)
-'    #line __prevline__
-'    #error "(macro expansion) array delete: too much parameters: "##p2
-'  #else
-'    scope
-'    #if (#p1 < ")") and (#p1 > "'")
-'      dim p as any ptr = array_.ax_delete__(fb_ArrayDesc(array(), array_.ae_.desc), array_.ax_data__(@array##p1), p2)
-'    #else
-'      dim p as any ptr = array_.ax_delete__(fb_ArrayDesc(array(), array_.ae_.desc), array_.ax_data##p1, p2)
-'    #endif
-'
-'      if p = 0 then
-'        err = 6
-'      else
-'        err = 0
-'        dim xyz as typeof((array))
-'        *cast(typeof((array)) ptr, p) = xyz
-'      end if
-'    end scope
-'  #endif
-'#endmacro
+#macro array_insert__(array, p1, p2, p3...)           'insert macro
+  #if (#p1 = "")
+    #line __prevline__
+    #error "(macro expansion) array insert: missing parameter 3: value to insert"
+  #else
+    scope
+    #if (#p2 < ")") and (#p2 > "'")                   'starts with "("
+      dim p as any ptr = array_.ax_insert__(fb_ArrayDesc(array(), array_.ae_.desc), #p1, array_.ax_data__(@array##p2), p3)
+    #else
+      dim p as any ptr = array_.ax_insert__(fb_ArrayDesc(array(), array_.ae_.desc), #p1, array_.ax_data##p2, p3)
+    #endif
+
+      if p > 0 then
+        *cast(typeof((array)) ptr, p) = p1            'assign new element, delete existing
+      end if
+    end scope
+  #endif
+#endmacro
+
+
+#macro array_delete__(array, p1, p2...)               'delete macro
+  #if (###p2 > 1)
+    #line __prevline__
+    #error "(macro expansion) array delete: too much parameters: "##p2
+  #else
+    scope
+    #if (#p1 < ")") and (#p1 > "'")
+      dim p as any ptr = array_.ax_delete__(fb_ArrayDesc(array(), array_.ae_.desc), array_.ax_data__(@array##p1), p2)
+    #else
+      dim p as any ptr = array_.ax_delete__(fb_ArrayDesc(array(), array_.ae_.desc), array_.ax_data##p1, p2)
+    #endif
+
+      if p > 0 then
+        dim xyz as typeof((array))
+        *cast(typeof((array)) ptr, p) = xyz           'default (constructor) for the "deleted" element
+      end if
+    end scope
+  #endif
+#endmacro
 
 
 #macro array_pos__(array, p2, p3...)                  'calculate linear position from index
