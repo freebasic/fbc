@@ -46,6 +46,10 @@ private function hDefLine_cb( ) as string static
 	function = str( lexLineNum( ) )
 end function
 
+private function hDefLinePrev_cb( ) as string static  'jk-array (#define)
+	function = str( lexLineNum( ) - 1)
+end function
+
 private function hDefDate_cb( ) as string static
 	function = date
 end function
@@ -216,6 +220,7 @@ dim shared defTb(0 to ...) as SYMBDEF => _
 	(@"__FUNCTION__"          , NULL          , FB_DEFINE_FLAGS_STR, @hDefFunction_cb   ), _
 	(@"__FUNCTION_NQ__"       , NULL          , 0                  , @hDefFunction_cb   ), _
 	(@"__LINE__"              , NULL          , 0                  , @hDefLine_cb       ), _
+	(@"__PREVLINE__"          , NULL          , 0                  , @hDefLinePrev_cb   ), _ 'jk_array (#define)
 	(@"__DATE__"              , NULL          , FB_DEFINE_FLAGS_STR, @hDefDate_cb       ), _
 	(@"__DATE_ISO__"          , NULL          , FB_DEFINE_FLAGS_STR, @hDefDateISO_cb    ), _
 	(@"__TIME__"              , NULL          , FB_DEFINE_FLAGS_STR, @hDefTime_cb       ), _
