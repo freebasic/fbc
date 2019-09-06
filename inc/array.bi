@@ -516,34 +516,8 @@ end type
 '
 '
 ''***********************************************************************************************
-'
-'
-'private sub ax_sub_redim overload(byval n as integer, u() as integer, byval i1 as integer, byval i2 as integer)
-''***********************************************************************************************
-'' save dimension parameters: "x to y" (start + end)
-''***********************************************************************************************
-'
-'  u(n*2-1) = i1
-'  u(n*2)   = i2
-'
-'
-'end sub
-'
-'
-'private sub ax_sub_redim(byval n as integer, u() as integer, byval i2 as integer)
-''***********************************************************************************************
-'' save dimension parameters: "y" (implicit start = 0, y)
-''***********************************************************************************************
-'
-'  u(n*2-1) = 0
-'  u(n*2)   = i2
-'
-'end sub
-'
-'
-''***********************************************************************************************
-'
-'
+
+
 'private function ax_typeof__(t as string) as long 'integer
 ''***********************************************************************************************
 '' return variable type as number
@@ -682,9 +656,12 @@ end type
 'end function
 
 
+'***********************************************************************************************
+
+
 private function ax_info__(byval p as any ptr) as uinteger
 '***********************************************************************************************
-' return array information (integer)
+' return array information (uinteger)
 '***********************************************************************************************
 dim i as uinteger
 
@@ -730,41 +707,65 @@ end function
 
 
 '***********************************************************************************************
-  
 
-'private function ax_reset__ (byval p as any ptr) as integer
-''***********************************************************************************************
-'' array reset, detach attached array
-''***********************************************************************************************
-'
-'
-'  err = 0                                             'reset error
-''  function = fb_ArrayReset(byval p)
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_attach__ (byval p as any ptr, u as array_.array_index_union, _
-'                                  n as integer, mp as any ptr) as integer
-''***********************************************************************************************
-'' array attach: p = array desc ptr, u = index data, n = # of dims, mp = memory location (ptr)
-''***********************************************************************************************
-'
-'
-'  err = 0                                             'reset error
-''  function = fb_ArrayAttach(byval p, u, n, byval mp)
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
+
+private sub ax_sub_redim overload(byval n as integer, u() as integer, byval i1 as integer, byval i2 as integer)
+'***********************************************************************************************
+' save dimension parameters: "x to y" (start + end)
+'***********************************************************************************************
+
+  u(n*2-1) = i1
+  u(n*2)   = i2
+
+
+end sub
+
+
+private sub ax_sub_redim(byval n as integer, u() as integer, byval i2 as integer)
+'***********************************************************************************************
+' save dimension parameters: "y" (implicit start = 0, y)
+'***********************************************************************************************
+
+  u(n*2-1) = 0
+  u(n*2)   = i2
+
+end sub
+
+
+'***********************************************************************************************
+
+
+private function ax_attach__ (byval p as any ptr, u as array_.array_index_union, _
+                              n as integer, mp as any ptr) as integer
+'***********************************************************************************************
+' array attach: p = array desc ptr, u = index data, n = # of dims, mp = memory location (ptr)
+'***********************************************************************************************
+
+
+  function = fb_ArrayAttach(byval p, u, n, byval mp)
+
+
+end function
+
+
+'***********************************************************************************************
+
+
+private function ax_reset__ (byval p as any ptr) as integer
+'***********************************************************************************************
+' array reset, detach attached array
+'***********************************************************************************************
+
+
+  function = fb_ArrayReset(byval p)
+
+
+end function
+
+
+'***********************************************************************************************
+
+
 'function ax_insert__(byval p as any ptr, vname as string, ai as array_data_type, n as uinteger = 0) as any ptr
 ''***********************************************************************************************
 '' array insert:  p = array desc ptr, ai = array_index, n = # of elements to shift
@@ -1394,139 +1395,139 @@ end function
 '
 '
 end namespace
-'
-'
-''***********************************************************************************************
-'' array macros (start with "array_")
-''***********************************************************************************************
-'
-'
-'#macro array_redim1__(p1...)
-'#redef to ,                                           'redefine "TO" (temporarily) to be replaced by a comma
-'
-'  array_.ax_sub_redim(1, ax_u.u(), p1)
-'
-'#undef to                                             'restore "TO" to it´s orginal state
-'#endmacro
-''***********************************************************************************************
-'#macro array_redim2__(p1, p2...)
-'#redef to ,
-'
-'  array_.ax_sub_redim(1, ax_u.u(), p1)
-'  array_.ax_sub_redim(2, ax_u.u(), p2)
-'
-'#undef to
-'#endmacro
-''***********************************************************************************************
-'#macro array_redim3__(p1, p2, p3...)
-'#redef to ,
-'
-'  array_.ax_sub_redim(1, ax_u.u(), p1)
-'  array_.ax_sub_redim(2, ax_u.u(), p2)
-'  array_.ax_sub_redim(3, ax_u.u(), p3)
-'
-'#undef to
-'#endmacro
-''***********************************************************************************************
-'#macro array_redim4__(p1, p2, p3, p4...)
-'#redef to ,
-'
-'  array_.ax_sub_redim(1, ax_u.u(), p1)
-'  array_.ax_sub_redim(2, ax_u.u(), p2)
-'  array_.ax_sub_redim(3, ax_u.u(), p3)
-'  array_.ax_sub_redim(4, ax_u.u(), p4)
-'
-'#undef to
-'#endmacro
-''***********************************************************************************************
-'#macro array_redim5__(p1, p2, p3, p4, p5...)
-'#redef to ,
-'
-'  array_.ax_sub_redim(1, ax_u.u(), p1)
-'  array_.ax_sub_redim(2, ax_u.u(), p2)
-'  array_.ax_sub_redim(3, ax_u.u(), p3)
-'  array_.ax_sub_redim(4, ax_u.u(), p4)
-'  array_.ax_sub_redim(5, ax_u.u(), p5)
-'
-'#undef to
-'#endmacro
-''***********************************************************************************************
-'#macro array_redim6__(p1, p2, p3, p4, p5, p6...)
-'#redef to ,
-'
-'  array_.ax_sub_redim(1, ax_u.u(), p1)
-'  array_.ax_sub_redim(2, ax_u.u(), p2)
-'  array_.ax_sub_redim(3, ax_u.u(), p3)
-'  array_.ax_sub_redim(4, ax_u.u(), p4)
-'  array_.ax_sub_redim(5, ax_u.u(), p5)
-'  array_.ax_sub_redim(6, ax_u.u(), p6)
-'
-'#undef to
-'#endmacro
-''***********************************************************************************************
-'#macro array_redim7__(p1, p2, p3, p4, p5, p6, p7...)
-'#redef to ,
-'
-'  array_.ax_sub_redim(1, ax_u.u(), p1)
-'  array_.ax_sub_redim(2, ax_u.u(), p2)
-'  array_.ax_sub_redim(3, ax_u.u(), p3)
-'  array_.ax_sub_redim(4, ax_u.u(), p4)
-'  array_.ax_sub_redim(5, ax_u.u(), p5)
-'  array_.ax_sub_redim(6, ax_u.u(), p6)
-'  array_.ax_sub_redim(7, ax_u.u(), p7)
-'
-'#undef to
-'#endmacro
-''***********************************************************************************************
-'#macro array_redim8__(p1, p2, p3, p4, p5, p6, p7, p8...)
-'#redef to ,
-'
-'  array_.ax_sub_redim(1, ax_u.u(), p1)
-'  array_.ax_sub_redim(2, ax_u.u(), p2)
-'  array_.ax_sub_redim(3, ax_u.u(), p3)
-'  array_.ax_sub_redim(4, ax_u.u(), p4)
-'  array_.ax_sub_redim(5, ax_u.u(), p5)
-'  array_.ax_sub_redim(6, ax_u.u(), p6)
-'  array_.ax_sub_redim(7, ax_u.u(), p7)
-'  array_.ax_sub_redim(8, ax_u.u(), p8)
-'
-'#undef to
-'#endmacro
-'
-'
-'#macro array_redim(i...)
-''***********************************************************************************************
-'' parse dimensions (array(attach, array, redim(...))
-''***********************************************************************************************
-'scope
-'
-'#if ((#i = "") or (###i > 8))
+
+
+'***********************************************************************************************
+' array macros (start with "array_")
+'***********************************************************************************************
+
+
+#macro array_redim1__(p1...)
+#redef to ,                                           'redefine "TO" (temporarily) to be replaced by a comma
+
+  array_.ax_sub_redim(1, ax_u.u(), p1)
+
+#undef to                                             'restore "TO" to it´s orginal state
+#endmacro
+'***********************************************************************************************
+#macro array_redim2__(p1, p2...)
+#redef to ,
+
+  array_.ax_sub_redim(1, ax_u.u(), p1)
+  array_.ax_sub_redim(2, ax_u.u(), p2)
+
+#undef to
+#endmacro
+'***********************************************************************************************
+#macro array_redim3__(p1, p2, p3...)
+#redef to ,
+
+  array_.ax_sub_redim(1, ax_u.u(), p1)
+  array_.ax_sub_redim(2, ax_u.u(), p2)
+  array_.ax_sub_redim(3, ax_u.u(), p3)
+
+#undef to
+#endmacro
+'***********************************************************************************************
+#macro array_redim4__(p1, p2, p3, p4...)
+#redef to ,
+
+  array_.ax_sub_redim(1, ax_u.u(), p1)
+  array_.ax_sub_redim(2, ax_u.u(), p2)
+  array_.ax_sub_redim(3, ax_u.u(), p3)
+  array_.ax_sub_redim(4, ax_u.u(), p4)
+
+#undef to
+#endmacro
+'***********************************************************************************************
+#macro array_redim5__(p1, p2, p3, p4, p5...)
+#redef to ,
+
+  array_.ax_sub_redim(1, ax_u.u(), p1)
+  array_.ax_sub_redim(2, ax_u.u(), p2)
+  array_.ax_sub_redim(3, ax_u.u(), p3)
+  array_.ax_sub_redim(4, ax_u.u(), p4)
+  array_.ax_sub_redim(5, ax_u.u(), p5)
+
+#undef to
+#endmacro
+'***********************************************************************************************
+#macro array_redim6__(p1, p2, p3, p4, p5, p6...)
+#redef to ,
+
+  array_.ax_sub_redim(1, ax_u.u(), p1)
+  array_.ax_sub_redim(2, ax_u.u(), p2)
+  array_.ax_sub_redim(3, ax_u.u(), p3)
+  array_.ax_sub_redim(4, ax_u.u(), p4)
+  array_.ax_sub_redim(5, ax_u.u(), p5)
+  array_.ax_sub_redim(6, ax_u.u(), p6)
+
+#undef to
+#endmacro
+'***********************************************************************************************
+#macro array_redim7__(p1, p2, p3, p4, p5, p6, p7...)
+#redef to ,
+
+  array_.ax_sub_redim(1, ax_u.u(), p1)
+  array_.ax_sub_redim(2, ax_u.u(), p2)
+  array_.ax_sub_redim(3, ax_u.u(), p3)
+  array_.ax_sub_redim(4, ax_u.u(), p4)
+  array_.ax_sub_redim(5, ax_u.u(), p5)
+  array_.ax_sub_redim(6, ax_u.u(), p6)
+  array_.ax_sub_redim(7, ax_u.u(), p7)
+
+#undef to
+#endmacro
+'***********************************************************************************************
+#macro array_redim8__(p1, p2, p3, p4, p5, p6, p7, p8...)
+#redef to ,
+
+  array_.ax_sub_redim(1, ax_u.u(), p1)
+  array_.ax_sub_redim(2, ax_u.u(), p2)
+  array_.ax_sub_redim(3, ax_u.u(), p3)
+  array_.ax_sub_redim(4, ax_u.u(), p4)
+  array_.ax_sub_redim(5, ax_u.u(), p5)
+  array_.ax_sub_redim(6, ax_u.u(), p6)
+  array_.ax_sub_redim(7, ax_u.u(), p7)
+  array_.ax_sub_redim(8, ax_u.u(), p8)
+
+#undef to
+#endmacro
+
+
+#macro array_redim(i...)
+'***********************************************************************************************
+' parse dimensions (array(attach, array, redim(...))
+'***********************************************************************************************
+scope
+
+#if ((#i = "") or (###i > 8))
 '  #line __prevline__
-'  #error "(macro expansion) array attach: wrong number of dimensions: "##i
-'#elseif (###i = 1)
-'  array_redim1__(i)
-'#elseif (###i = 2)
-'  array_redim2__(i)
-'#elseif (###i = 3)
-'  array_redim3__(i)
-'#elseif (###i = 4)
-'  array_redim4__(i)
-'#elseif (###i = 5)
-'  array_redim5__(i)
-'#elseif (###i = 6)
-'  array_redim6__(i)
-'#elseif (###i = 7)
-'  array_redim7__(i)
-'#elseif (###i = 8)
-'  array_redim8__(i)
-'#endif
-'
-'  ax_n = ###i
-'
-'end scope
-'#endmacro
-'
-'
+  #error "(macro expansion) array attach: wrong number of dimensions: "##i
+#elseif (###i = 1)
+  array_redim1__(i)
+#elseif (###i = 2)
+  array_redim2__(i)
+#elseif (###i = 3)
+  array_redim3__(i)
+#elseif (###i = 4)
+  array_redim4__(i)
+#elseif (###i = 5)
+  array_redim5__(i)
+#elseif (###i = 6)
+  array_redim6__(i)
+#elseif (###i = 7)
+  array_redim7__(i)
+#elseif (###i = 8)
+  array_redim8__(i)
+#endif
+
+  ax_n = ###i
+
+end scope
+#endmacro
+
+
 '#macro ax_get_typeof__ (array)
 '  #if TypeOf((array))     = BYTE
 '    #define ax_typedef__ array_.ae_.adt_byte          '1 (array´s data type)
@@ -1729,36 +1730,36 @@ end namespace
 #endmacro
 
 
-'#macro array_attach__(array, p1, p2...)               'attach macro
-'  #if ((#&#p1 < "REDIM)") and (#&#p1 > "REDIM'"))         'starts with "Redim("
-'    #if (#p2 <> "")
-'      scope
-'        dim ax_u as array_.array_index_union
-'        dim ax_n as integer
-'        array_##p1
-'        array_.ax_attach__(fb_ArrayDesc(array(), array_.ae_.desc), ax_u, ax_n, p2)
-'      end scope
-'    #else
-'      #line __prevline__
-'      #error "(macro expansion) array attach: missing parameter 3 (memory location)"
-'    #endif
-'  #else
-'    #line __prevline__
-'    #error "(macro expansion) array attach: invalid parameter 3: "##p1
-'  #endif
-'#endmacro
-'
-'
-'#macro array_reset__(array, p1, p2...)                'attach macro
-'  #if (#p1 <> "")
-'    #line __prevline__
-'    #error "(macro expansion) array reset: too much parameters: "##p2
-'  #else
-'    array_.ax_reset__(fb_ArrayDesc(array(), array_.ae_.desc))
-'  #endif
-'#endmacro
-'
-'
+#macro array_attach__(array, p1, p2...)               'attach macro
+  #if ((#&#p1 < "REDIM)") and (#&#p1 > "REDIM'"))     'starts with "Redim("
+    #if (#p2 <> "")
+      scope
+        dim ax_u as array_.array_index_union
+        dim ax_n as integer
+        array_##p1
+        array_.ax_attach__(fb_ArrayDesc(array(), array_.ae_.desc), ax_u, ax_n, p2)
+      end scope
+    #else
+      #line __prevline__
+      #error "(macro expansion) array attach: missing parameter 4 (memory location)"
+    #endif
+  #else
+    #line __prevline__
+    #error "(macro expansion) array attach: invalid parameter 3: "##p1
+  #endif
+#endmacro
+
+
+#macro array_reset__(array, p1, p2...)                'reset macro
+  #if (#p1 <> "")
+    #line __prevline__
+    #error "(macro expansion) array reset: too much parameters: "##p2
+  #else
+    array_.ax_reset__(fb_ArrayDesc(array(), array_.ae_.desc))
+  #endif
+#endmacro
+
+
 '#macro array_insert__(array, p1, p2, p3...)              'insert macro
 '  #if (#p1 = "")
 '    #line __prevline__
