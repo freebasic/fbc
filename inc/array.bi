@@ -68,7 +68,7 @@
 
 
 type array_index                                      'return type for array(calc, ...)
-  n as integer                                        '# of valid index entries, 0 -> i1 = linear index, if > 0
+  n as integer                                        '# of valid index entries, 0 -> no indices given
 
   li as integer                                       'linear index (one based), 0 = invalid
   i1 as integer                                       'index 1
@@ -430,92 +430,76 @@ end type
 '  
 '  
 'end function  
-'
-'
-'private function ax_calc_pos__(byval p as any ptr, pptr as any ptr) as uinteger
-''***********************************************************************************************
-'' calc linear (one based) position from index, do some out of bounds checking
-''***********************************************************************************************
-'dim i as uinteger
-'
-'
-''  i = fb_ArrayCalcPos(byval p, byval pptr)
-'  if i = 0 then
-'    err = 6
-'  else
-'    err = 0
-'  end if  
-'
-'
-'  function = i
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_calc_ptr__(byval p as any ptr, pptr as any ptr) as any ptr
-''***********************************************************************************************
-'' return memory ptr from index, do some out of bounds checking
-''***********************************************************************************************
-'dim i as uinteger
-'
-'
-'  err = 0                                             'reset error
-'  
-''  i = fb_ArrayCalcPos(byval p, byval pptr)
-'  if i = 0 then
-'    return 0
-'  else
-'    return pptr
-'  end if  
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_calc_index__ overload(byval p as any ptr, byval li as integer) as array_index
-''***********************************************************************************************
-'' calc indices from linear (one based) position
-''***********************************************************************************************
-'dim i as array_index
-'
-'
-'  err = 0                                             'reset error
-'
-''  fb_ArrayCalcIdxPos(byval p, byval li, i)
-'  function = i
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_calc_index__ overload(byval p as any ptr, byval ppos as any ptr = 0) as array_index
-''***********************************************************************************************
-'' calc indices from memory ptr
-''***********************************************************************************************
-'dim i as array_index
-'dim r as long
-'
-'
-'  err = 0                                             'reset error
-'
-''  r = fb_ArrayCalcIdxPtr(byval p, byval ppos, i)
-'  function = i
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
+
+
+private function ax_calc_pos__(byval p as any ptr, pptr as any ptr) as uinteger
+'***********************************************************************************************
+' calc linear (one based) position from index, do some out of bounds checking
+'***********************************************************************************************
+
+
+  function = fb_ArrayCalcPos(byval p, byval pptr)
+
+
+end function
+
+
+'***********************************************************************************************
+
+
+private function ax_calc_ptr__(byval p as any ptr, pptr as any ptr) as any ptr
+'***********************************************************************************************
+' return memory ptr from index, do some out of bounds checking
+'***********************************************************************************************
+dim i as uinteger
+
+
+  i = fb_ArrayCalcPos(byval p, byval pptr)            'only for out of bounds check
+  if i = 0 then
+    return 0
+  else
+    return pptr
+  end if  
+
+
+end function
+
+
+'***********************************************************************************************
+
+
+private function ax_calc_index__ overload(byval p as any ptr, byval li as integer) as array_index
+'***********************************************************************************************
+' calc indices from linear (one based) position
+'***********************************************************************************************
+dim i as array_index
+
+
+  fb_ArrayCalcIdxPos(byval p, byval li, i)
+  function = i
+
+
+end function
+
+
+'***********************************************************************************************
+
+
+private function ax_calc_index__ overload(byval p as any ptr, byval ppos as any ptr = 0) as array_index
+'***********************************************************************************************
+' calc indices from memory ptr
+'***********************************************************************************************
+dim i as array_index
+
+
+  fb_ArrayCalcIdxPtr(byval p, byval ppos, i)
+  function = i
+
+
+end function
+
+
+'***********************************************************************************************
 
 
 'private function ax_typeof__(t as string) as long 'integer
@@ -1805,25 +1789,24 @@ end scope
 '    end scope
 '  #endif
 '#endmacro
-'
-'
-'#macro array_pos__(array, p2, p3...)                  'calculate linear position from index
-'  array_.ax_calc_pos__(fb_ArrayDesc(array(), array_.ae_.desc), @##array##p2)
-'#endmacro                                             'errors never go through -> added no error checking
-'
-'#macro array_ptr__(array, p2, p3...)                       'calculate data ptr from index
-'  array_.ax_calc_ptr__(fb_ArrayDesc(array(), array_.ae_.desc), @array##p2)
-'#endmacro                                             'errors never go through -> added no error checking
-'
-'#macro array_index__(array, p2...)                    'calculate index from linear position
-'  array_.ax_calc_index__(fb_ArrayDesc(array(), array_.ae_.desc), p2)
-'#endmacro
-'
-'
+
+
+#macro array_pos__(array, p2, p3...)                  'calculate linear position from index
+  array_.ax_calc_pos__(fb_ArrayDesc(array(), array_.ae_.desc), @##array##p2)
+#endmacro                                             'errors never go through -> added no error checking
+
+#macro array_ptr__(array, p2, p3...)                       'calculate data ptr from index
+  array_.ax_calc_ptr__(fb_ArrayDesc(array(), array_.ae_.desc), @array##p2)
+#endmacro                                             'errors never go through -> added no error checking
+
+#macro array_index__(array, p2...)                    'calculate index from linear position
+  array_.ax_calc_index__(fb_ArrayDesc(array(), array_.ae_.desc), p2)
+#endmacro
+
+
 '#macro array_for(p1, p2, p3...)                       'for macro (scan)
 '  array_.ax_for__(p1, array_.ax_test_param1__(#?p2, #p2), array_.ax_test_param2__(#?p3, #p3))
 '#endmacro
-'
 '
 '#macro array_scan__(array, p1, p2, p3...)             'scan macro
 '  array_.ax_scan__(array_.ax_typeof__(typeof((array))), fb_ArrayDesc(array(), array_.ae_.desc), array_##p1, array_.ax_index##p2, p3)
