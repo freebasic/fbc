@@ -64,7 +64,7 @@
 '***********************************************************************************************
 
 #pragma once
-'#include once "ustring.bi"
+#include once "ustring.bi"
 
 
 type array_index                                      'return type for array(calc, ...)
@@ -502,76 +502,76 @@ end function
 '***********************************************************************************************
 
 
-'private function ax_typeof__(t as string) as long 'integer
-''***********************************************************************************************
-'' return variable type as number
-''***********************************************************************************************
-'
-'
-'  if instr(t, " * ") then                             '(w/z)string * ...
-'    select case left(t, 9)
-'      case "ZSTRING *"
-'        return array_.ae_.adt_zstring                 '30
-'      case "STRING * "
-'        return array_.ae_.adt_fixstring               '31 
-'      case "WSTRING *"
-'        return array_.ae_.adt_wstring                 '33
-'      case else                                       'everything else
-'        return array_.ae_.adt_struct                  '40
-'    end select
-'    
-'  else  
-'
-'    select case t
-'      case "BYTE"
-'        return array_.ae_.adt_byte                    '1
-'      case "UBYTE"
-'        return array_.ae_.adt_ubyte                   '2
-'      case "SHORT"
-'        return array_.ae_.adt_short                   '3
-'      case "USHORT"
-'        return array_.ae_.adt_ushort                  '4
-'      case "INTEGER"
-'        return array_.ae_.adt_integer                 '5
-'      case "UINTEGER"
-'        return array_.ae_.adt_uinteger                '6
-'      case "LONG"
-'        return array_.ae_.adt_long                    '7
-'      case "ULONG"
-'        return array_.ae_.adt_ulong                   '8
-'      case "LONGINT"
-'        return array_.ae_.adt_longint                 '9
-'      case "ULONGINT"
-'        return array_.ae_.adt_ulongint                '10
-'
-'      case "SINGLE"
-'        return array_.ae_.adt_single                  '20
-'      case "DOUBLE"
-'        return array_.ae_.adt_double                  '21
-'
-'      case "STRING"
-'        return array_.ae_.adt_string                  '32
-''      case typeof(USTRING) 
-''        return array_.ae_.adt_ustring                 '34
-'
-''      case "CBSTR"
-''        return 36
-'
-'      case "ANY PTR"
-'        return array_.ae_.adt_function                '50
-'
-'      case else                                    
-'        if left(t, 8) = "FUNCTION" then               '@proc
-'          return array_.ae_.adt_function              '50
-'        else
-'          return array_.ae_.adt_struct                '40 (everything else)
-'        end if
-'    end select
-'  end if  
-'
-'end function
-'
-'
+private function ax_typeof__(t as string) as long 'integer
+'***********************************************************************************************
+' return variable type as number
+'***********************************************************************************************
+
+
+  if instr(t, " * ") then                             '(w/z)string * ...
+    select case left(t, 9)
+      case "ZSTRING *"
+        return array_.ae_.adt_zstring                 '30
+      case "STRING * "
+        return array_.ae_.adt_fixstring               '31 
+      case "WSTRING *"
+        return array_.ae_.adt_wstring                 '33
+      case else                                       'everything else
+        return array_.ae_.adt_struct                  '40
+    end select
+    
+  else  
+
+    select case t
+      case "BYTE"
+        return array_.ae_.adt_byte                    '1
+      case "UBYTE"
+        return array_.ae_.adt_ubyte                   '2
+      case "SHORT"
+        return array_.ae_.adt_short                   '3
+      case "USHORT"
+        return array_.ae_.adt_ushort                  '4
+      case "INTEGER"
+        return array_.ae_.adt_integer                 '5
+      case "UINTEGER"
+        return array_.ae_.adt_uinteger                '6
+      case "LONG"
+        return array_.ae_.adt_long                    '7
+      case "ULONG"
+        return array_.ae_.adt_ulong                   '8
+      case "LONGINT"
+        return array_.ae_.adt_longint                 '9
+      case "ULONGINT"
+        return array_.ae_.adt_ulongint                '10
+
+      case "SINGLE"
+        return array_.ae_.adt_single                  '20
+      case "DOUBLE"
+        return array_.ae_.adt_double                  '21
+
+      case "STRING"
+        return array_.ae_.adt_string                  '32
+'      case typeof(USTRING) 
+'        return array_.ae_.adt_ustring                 '34
+
+'      case "CBSTR"
+'        return 36
+
+      case "ANY PTR"
+        return array_.ae_.adt_function                '50
+
+      case else                                    
+        if left(t, 8) = "FUNCTION" then               '@proc
+          return array_.ae_.adt_function              '50
+        else
+          return array_.ae_.adt_struct                '40 (everything else)
+        end if
+    end select
+  end if  
+
+end function
+
+
 ''***********************************************************************************************
 '' sort callback sample      CDECL ????
 ''***********************************************************************************************
@@ -599,45 +599,46 @@ end function
 '
 '
 ''***********************************************************************************************
-'
-'
-'private function ax_sort__ (byval t as long, byval ap as any ptr, byval sa as any ptr, byval cp as any ptr, _
-'                            ai as array_data_type, byval n as integer = 0) as long
-''***********************************************************************************************
-'' array sort function 
-''***********************************************************************************************
-''dim u as ustring = "abc"
-''dim b as byte ptr
-''dim i as integer ptr
-'dim o as integer
-''dim x as long
-''
-''
-''  err = 0                                             'reset error
-''
-''  if t = array_.ae_.adt_ustring then                  'ustring array -> find data offset
-''    b = cast(byte ptr, @u)
-''    o = cast(integer, strptr(u))
-''
-''    
-''    for x = 0 to sizeof(u) - sizeof(integer)          'scan udt for WSTRING address
-''      i = cast(integer ptr, b + x)
-''
-''      if *i = o then
-''        o = x
-''        goto found
-''      end if
-''    next x
-''
-''    err = 1                                           'set error
-''    exit function                                     'no offset found -> incompatible type
-''  end if
-'
-'found:
-''  function = fb_ArraySort( byval ap, byval sa, byval t, byval cp, byval ai.p, byval ai.li, byval n, byval o)
-'
-'
-'end function
+
+
+private function ax_sort__ (byval t as long, byval ap as any ptr, byval sa as any ptr, byval cp as any ptr, _
+                            ai as array_data_type, byval n as integer = 0) as long
+'***********************************************************************************************
+' array sort function: t = array data type, ap = array ptr, sa = sort along array ptr, 
+'                      cp = callback procedure (if any), ai = array index to start sorting, 
+'                      n = count of elements to sort
+'***********************************************************************************************
+dim u as ustring = "abc"
+dim b as byte ptr
+dim i as integer ptr
+dim o as integer
+dim x as long
+
+
+  if t = array_.ae_.adt_ustring then                  'ustring array -> find data offset
+    b = cast(byte ptr, @u)
+    o = cast(integer, strptr(u))
+
+    
+    for x = 0 to sizeof(u) - sizeof(integer)          'scan udt for WSTRING address
+      i = cast(integer ptr, b + x)
+
+      if *i = o then
+        o = x                                         'byte offset of wstring ptr from base ptr
+        goto found
+      end if
+    next x
+
+    err = 1                                           'set error
+    exit function                                     'no offset found -> incompatible type
+  end if
+
+
+found:
+  function = fb_ArraySort( byval ap, byval sa, byval t, byval cp, byval ai.p, byval ai.li, byval n, byval o)
+
+
+end function
 
 
 '***********************************************************************************************
@@ -1510,169 +1511,170 @@ end scope
 #endmacro
 
 
-'#macro ax_get_typeof__ (array)
-'  #if TypeOf((array))     = BYTE
-'    #define ax_typedef__ array_.ae_.adt_byte          '1 (array´s data type)
-'  #elseif TypeOf((array)) = UBYTE
-'    #define ax_typedef__ array_.ae_.adt_ubyte         '2
-'  #else
-'    #if TypeOf((array)) = SHORT
-'      #define ax_typedef__ array_.ae_.adt_short       '3
-'    #elseif TypeOf((array)) = USHORT
-'      #define ax_typedef__ array_.ae_.adt_ushort      '4
-'    #elseif TypeOf((array)) = INTEGER
-'      #define ax_typedef__ array_.ae_.adt_integer     '5
-'    #elseif TypeOf((array)) = UINTEGER
-'      #define ax_typedef__ array_.ae_.adt_uinteger    '6
-'    #elseif TypeOf((array)) = LONG
-'      #define ax_typedef__ array_.ae_.adt_long        '7
-'    #elseif TypeOf((array)) = ULONG
-'      #define ax_typedef__ array_.ae_.adt_ulong       '8
-'    #elseif TypeOf((array)) = LONGINT
-'      #define ax_typedef__ array_.ae_.adt_longint     '9
-'    #elseif TypeOf((array)) = ULONGINT
-'      #define ax_typedef__ array_.ae_.adt_ulongint    '10
-'
-'    #elseif TypeOf((array)) = SINGLE
-'      #define ax_typedef__ array_.ae_.adt_single      '20
-'    #elseif TypeOf((array)) = DOUBLE
-'      #define ax_typedef__ array_.ae_.adt_double      '21
-'
-'    #elseif typeof((array)) = typeof(zstring * sizeof(typeof((array))))
-'      #define ax_typedef__ array_.ae_.adt_zstring     '30
-'    #elseif TypeOf((array)) = typeof(string * (sizeof(typeof((array))) - 1))
-'      #define ax_typedef__ array_.ae_.adt_fixstring   '31
-'    #elseif TypeOf((array)) = STRING
-'      #define ax_typedef__ array_.ae_.adt_string      '32
-'    #elseif typeof((array)) = typeof(Wstring * (sizeof(typeof((array))) / 2))
-'      #define ax_typedef__ array_.ae_.adt_wstring     '33
-'    #elseif TypeOf((array)) = Typeof(USTRING)
-'      #define ax_typedef__ array_.ae_.adt_ustring     '34
-''    #elseif TypeOf((array)) = TypeOf(CBSTR)
-''      #define ax_typedef__ 36
-'    #else
-'      #define ax_typedef__ array_.ae_.adt_struct      '40
-'    #endif
-'  #endif
-'#endmacro
-'
-'
-'#macro ax_sort_along_with__(array1, array2, p3...)    'resolve two input arrays + case specifier
-'  ax_get_typeof__ (array1)
-'
-'  #if (#p3 = "")                                      'no paramter 3
-'    #if (#&#array2 = "NOCASE")                        'string array + nocase
-'      #if  (ax_typedef__ >= array_.ae_.adt_zstring) and (ax_typedef__ < array_.ae_.adt_struct)
-'        dim ax_ptr1 as any ptr = fb_ArrayDesc(array1(), array_.ae_.desc)
-'        dim ax_ptr2 as any ptr = 0
-'        dim ax_type as integer = array_.ax_typeof__(typeof((array1)))
-'        dim ax_case as long = 1
-'      #else
-'        #line __prevline__
-'        #error "(macro expansion) array sort: "##only arrays of strings may be sorted case-insensitive: ##array1##()
-'      #endif
-'      
-'    #else
-'      #if (#array1 = #array2)
-'        #line __prevline__
-'        #error "(macro expansion) array sort: "##arrays must be different: ##array1##() ##array2##()
-'      #endif
-'      dim ax_ptr1 as any ptr = fb_ArrayDesc(array1(), array_.ae_.desc)
-'      dim ax_ptr2 as any ptr = fb_ArrayDesc(array2(), array_.ae_.desc)
-'      dim ax_type as integer = array_.ax_typeof__(typeof((array1)))
-'      dim ax_case as long = 0
-'    #endif
-'
-'  #else                                               'there is a third parameter
-'    #if (#&#p3 = "NOCASE")                              'string array + nocase
-'      #if  (ax_typedef__ >= array_.ae_.adt_zstring) and (ax_typedef__ < array_.ae_.adt_struct)
-'        #if (#array1 = #array2)
-'          #line __prevline__
-'          #error "(macro expansion) array sort: "##arrays must be different: ##array1##() ##array2##()
-'        #endif
-'        dim ax_ptr1 as any ptr = fb_ArrayDesc(array1(), array_.ae_.desc)
-'        dim ax_ptr2 as any ptr = fb_ArrayDesc(array2(), array_.ae_.desc)
-'        dim ax_type as integer = array_.ax_typeof__(typeof((array1)))
-'        dim ax_case as long = 1
-'      #else
-'        #line __prevline__
-'        #error "(macro expansion) array sort: "##only arrays of strings may be sorted case-insensitive: ##array1##()
-'      #endif
-'
-'    #else                                             'improper third param
-'      #line __prevline__
-'      #error "(macro expansion) array sort: improper case specifier: "##p3
-'    #endif
-'  #endif
-'#endmacro
-'
-'
-'#macro array_first_param(p1, p2...)
-'  p1
-'#endmacro
-'
-'
-'#macro array_sort__(array, p1, p2, p3...)             'sort macro
-'scope
-'
-'  #if (#array < ")") and (#array > "'")               'starts with "(" -> sort along or nocase
-'    ax_sort_along_with__ array
-'  #else
-'    dim ax_ptr1 as any ptr = fb_ArrayDesc(array(), array_.ae_.desc)
-'    dim ax_ptr2 as any ptr = 0
-'    dim ax_type as integer = array_.ax_typeof__(typeof((array)))
-'    dim ax_case as long = 0
-'
-'    ax_get_typeof__ (array)
-'  #endif
-'
-'  #if ((#&#p1 = "UP") or (#&#p1 = "DOWN"))
-'    #if (ax_typedef__ = array_.ae_.adt_struct)
-'      #line __prevline__
-'      #error "(macro expansion) array sort: "##please use a custom sort function for non-standard types: ##array##()
-'
-'    #elseif (#&#p1 = "UP")
-'      #if (#p2 < ")") and (#p2 > "'")
-'        #if (#array < ")") and (#array > "'")         'starts with "(" -> sort along or nocase
-'          array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, 1 + ax_case), array_.ax_data__(@array_first_param##array##p2), p3)
-'        #else
-'          array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, 1 + ax_case), array_.ax_data__(@array##p2), p3)
-'        #endif
-'      #else
-'        array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, 1 + ax_case), array_.ax_data##p2, p3)
-'      #endif
-'
-'    #elseif (#&#p1 = "DOWN")
-'      #if (#p2 < ")") and (#p2 > "'")
-'        #if (#array < ")") and (#array > "'")         'starts with "(" -> sort along or nocase
-'          array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, -3 + ax_case), array_.ax_data__(@array_first_param##array##p2), p3)
-'        #else
-'          array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, -3 + ax_case), array_.ax_data__(@array##p2), p3)
-'        #endif
-'      #else
-'        array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, -3 + ax_case), array_.ax_data##p2, p3)
-'      #endif
-'    #endif 
-'
-'  #elseif (#p1 = "")                                  'no up/down/@customproc
-'    #if (ax_typedef__ = array_.ae_.adt_struct)
-'      #line __prevline__
-'      #error "(macro expansion) array sort: "##please use a custom sort function for non-standard types: ##array##()
-'    #else
-'      array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, 1 + ax_case), array_.ax_data##p2, p3)
-'    #endif 
-'
-'  #else                                               '@customsort
-'
-'    #if (#p2 < ")") and (#p2 > "'")
-'      array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, p1, array_.ax_data__(@array##p2), p3)
-'    #else
-'      array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, p1, array_.ax_data##p2, p3)
-'    #endif
-'  #endif
-'
-'end scope
-'#endmacro
+#macro ax_get_typeof__ (array)
+  #if TypeOf((array))     = BYTE
+    #define ax_typedef__ array_.ae_.adt_byte          '1 (array´s data type)
+  #elseif TypeOf((array)) = UBYTE
+    #define ax_typedef__ array_.ae_.adt_ubyte         '2
+  #else
+    #if TypeOf((array)) = SHORT
+      #define ax_typedef__ array_.ae_.adt_short       '3
+    #elseif TypeOf((array)) = USHORT
+      #define ax_typedef__ array_.ae_.adt_ushort      '4
+    #elseif TypeOf((array)) = INTEGER
+      #define ax_typedef__ array_.ae_.adt_integer     '5
+    #elseif TypeOf((array)) = UINTEGER
+      #define ax_typedef__ array_.ae_.adt_uinteger    '6
+    #elseif TypeOf((array)) = LONG
+      #define ax_typedef__ array_.ae_.adt_long        '7
+    #elseif TypeOf((array)) = ULONG
+      #define ax_typedef__ array_.ae_.adt_ulong       '8
+    #elseif TypeOf((array)) = LONGINT
+      #define ax_typedef__ array_.ae_.adt_longint     '9
+    #elseif TypeOf((array)) = ULONGINT
+      #define ax_typedef__ array_.ae_.adt_ulongint    '10
+
+    #elseif TypeOf((array)) = SINGLE
+      #define ax_typedef__ array_.ae_.adt_single      '20
+    #elseif TypeOf((array)) = DOUBLE
+      #define ax_typedef__ array_.ae_.adt_double      '21
+
+    #elseif typeof((array)) = typeof(zstring * sizeof(typeof((array))))
+      #define ax_typedef__ array_.ae_.adt_zstring     '30
+    #elseif TypeOf((array)) = typeof(string * (sizeof(typeof((array))) - 1))
+      #define ax_typedef__ array_.ae_.adt_fixstring   '31
+    #elseif TypeOf((array)) = STRING
+      #define ax_typedef__ array_.ae_.adt_string      '32
+    #elseif typeof((array)) = typeof(Wstring * (sizeof(typeof((array))) / 2))
+      #define ax_typedef__ array_.ae_.adt_wstring     '33
+    #elseif TypeOf((array)) = Typeof(USTRING)
+      #define ax_typedef__ array_.ae_.adt_ustring     '34
+
+'    #elseif TypeOf((array)) = TypeOf(CBSTR)
+'      #define ax_typedef__ 36
+    #else
+      #define ax_typedef__ array_.ae_.adt_struct      '40
+    #endif
+  #endif
+#endmacro
+
+
+#macro ax_sort_along_with__(array1, array2, p3...)    'resolve two input arrays + case specifier
+  ax_get_typeof__ (array1)
+
+  #if (#p3 = "")                                      'no paramter 3
+    #if (#&#array2 = "NOCASE")                        'string array + nocase
+      #if  (ax_typedef__ >= array_.ae_.adt_zstring) and (ax_typedef__ < array_.ae_.adt_struct)
+        dim ax_ptr1 as any ptr = fb_ArrayDesc(array1(), array_.ae_.desc)
+        dim ax_ptr2 as any ptr = 0
+        dim ax_type as integer = array_.ax_typeof__(typeof((array1)))
+        dim ax_case as long = 1
+      #else
+        #line __prevline__
+        #error "(macro expansion) array sort: "##only arrays of strings may be sorted case-insensitive: ##array1##()
+      #endif
+      
+    #else
+      #if (#array1 = #array2)
+        #line __prevline__
+        #error "(macro expansion) array sort: "##arrays must be different: ##array1##() ##array2##()
+      #endif
+      dim ax_ptr1 as any ptr = fb_ArrayDesc(array1(), array_.ae_.desc)
+      dim ax_ptr2 as any ptr = fb_ArrayDesc(array2(), array_.ae_.desc)
+      dim ax_type as integer = array_.ax_typeof__(typeof((array1)))
+      dim ax_case as long = 0
+    #endif
+
+  #else                                               'there is a third parameter
+    #if (#&#p3 = "NOCASE")                              'string array + nocase
+      #if  (ax_typedef__ >= array_.ae_.adt_zstring) and (ax_typedef__ < array_.ae_.adt_struct)
+        #if (#array1 = #array2)
+          #line __prevline__
+          #error "(macro expansion) array sort: "##arrays must be different: ##array1##() ##array2##()
+        #endif
+        dim ax_ptr1 as any ptr = fb_ArrayDesc(array1(), array_.ae_.desc)
+        dim ax_ptr2 as any ptr = fb_ArrayDesc(array2(), array_.ae_.desc)
+        dim ax_type as integer = array_.ax_typeof__(typeof((array1)))
+        dim ax_case as long = 1
+      #else
+        #line __prevline__
+        #error "(macro expansion) array sort: "##only arrays of strings may be sorted case-insensitive: ##array1##()
+      #endif
+
+    #else                                             'improper third param
+      #line __prevline__
+      #error "(macro expansion) array sort: improper case specifier: "##p3
+    #endif
+  #endif
+#endmacro
+
+
+#macro array_first_param(p1, p2...)
+  p1
+#endmacro
+
+
+#macro array_sort__(array, p1, p2, p3...)             'sort macro
+scope
+
+  #if (#array < ")") and (#array > "'")               'starts with "(" -> sort along or nocase
+    ax_sort_along_with__ array
+  #else
+    dim ax_ptr1 as any ptr = fb_ArrayDesc(array(), array_.ae_.desc)
+    dim ax_ptr2 as any ptr = 0
+    dim ax_type as integer = array_.ax_typeof__(typeof((array)))
+    dim ax_case as long = 0
+
+    ax_get_typeof__ (array)
+  #endif
+
+  #if ((#&#p1 = "UP") or (#&#p1 = "DOWN"))
+    #if (ax_typedef__ = array_.ae_.adt_struct)
+      #line __prevline__
+      #error "(macro expansion) array sort: "##please use a custom sort function for non-standard types: ##array##()
+
+    #elseif (#&#p1 = "UP")
+      #if (#p2 < ")") and (#p2 > "'")
+        #if (#array < ")") and (#array > "'")         'starts with "(" -> sort along or nocase
+          array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, 1 + ax_case), array_.ax_data__(@array_first_param##array##p2), p3)
+        #else
+          array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, 1 + ax_case), array_.ax_data__(@array##p2), p3)
+        #endif
+      #else
+        array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, 1 + ax_case), array_.ax_data##p2, p3)
+      #endif
+
+    #elseif (#&#p1 = "DOWN")
+      #if (#p2 < ")") and (#p2 > "'")
+        #if (#array < ")") and (#array > "'")         'starts with "(" -> sort along or nocase
+          array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, -3 + ax_case), array_.ax_data__(@array_first_param##array##p2), p3)
+        #else
+          array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, -3 + ax_case), array_.ax_data__(@array##p2), p3)
+        #endif
+      #else
+        array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, -3 + ax_case), array_.ax_data##p2, p3)
+      #endif
+    #endif 
+
+  #elseif (#p1 = "")                                  'no up/down/@customproc
+    #if (ax_typedef__ = array_.ae_.adt_struct)
+      #line __prevline__
+      #error "(macro expansion) array sort: "##please use a custom sort function for non-standard types: ##array##()
+    #else
+      array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, 1 + ax_case), array_.ax_data##p2, p3)
+    #endif 
+
+  #else                                               '@customsort
+
+    #if (#p2 < ")") and (#p2 > "'")
+      array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, p1, array_.ax_data__(@array##p2), p3)
+    #else
+      array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, p1, array_.ax_data##p2, p3)
+    #endif
+  #endif
+
+end scope
+#endmacro
 
 
 #macro array_data__(array, p1...)                    
