@@ -1,6 +1,7 @@
 Version 1.07.1
 
 [changed]
+- fbc '-version' reports build date in yyyy-mm-dd format (aka build date iso)
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
