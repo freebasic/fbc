@@ -4,6 +4,7 @@ Version 1.07.1
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
+- __FB_BUILD_DATE_ISO__ intrinsic define to return fbc build date in 'yyyy-mm-dd' format
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
