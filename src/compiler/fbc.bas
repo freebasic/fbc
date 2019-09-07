@@ -3559,6 +3559,10 @@ private sub hPrintVersion( byval verbose as integer )
 	if( len( config ) > 0 ) then
 		print config
 	end if
+
+	if( verbose ) then
+		fbcPrintTargetInfo( )
+	end if
 end sub
 
 	fbcInit( )

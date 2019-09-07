@@ -8,6 +8,7 @@ Version 1.08.0
 - array descriptor 'flags' field to track fixed length, fixed dimension, dimTb() size.
 
 [fixed]
+- makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
 
 
 Version 1.07.0
