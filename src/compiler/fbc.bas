@@ -3550,7 +3550,7 @@ private sub hPrintVersion( byval verbose as integer )
 	dim as string config
 
 	print "FreeBASIC Compiler - Version " + FB_VERSION + _
-		" (" + FB_BUILD_DATE + "), built for " + fbGetHostId( ) + " (" & fbGetHostBits( ) & "bit)"
+		" (" + FB_BUILD_DATE_ISO + "), built for " + fbGetHostId( ) + " (" & fbGetHostBits( ) & "bit)"
 	print "Copyright (C) 2004-2019 The FreeBASIC development team."
 
 	#ifdef ENABLE_STANDALONE
