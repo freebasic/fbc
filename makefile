@@ -83,6 +83,8 @@
 #   ENABLE_LIB64=1         use prefix/lib64/ instead of prefix/lib/ for 64bit libs (non-standalone only)
 #   ENABLE_STRIPALL=1      use "-d ENABLE_STRIPALL" with all targets
 #   ENABLE_STRIPALL=0      disable "-d ENABLE_STRIPALL" with all targets
+#   FBSHA1=1               determine the sha-1 of the current commit in repo and store it in the compiler
+#   FBSHA1=some-sha-1      explicitly indicate the sha-1 to store in the compiler
 #   FBPACKAGE     bindist: The package/archive file name without path or extension
 #   FBPACKSUFFIX  bindist: Allows adding a custom suffix to the normal package name (and the toplevel dir in the archive)
 #   FBMANIFEST    bindist: The manifest file name without path or extension
@@ -95,6 +97,7 @@
 #   -d ENABLE_PREFIX=/some/path   hard-code specific $(prefix) into fbc
 #   -d ENABLE_LIB64          use prefix/lib64/ instead of prefix/lib/ for 64bit libs (non-standalone only)
 #   -d ENABLE_STRIPALL       configure fbc to pass down '--strip-all' to linker by default
+#   -d FBSHA1=some-sha-1     store 'some-sha-1' in the compiler for version information
 #
 # rtlib/gfxlib2 source code configuration (CFLAGS):
 #   -DDISABLE_X11    build without X11 headers (disables X11 gfx driver)
@@ -441,6 +444,13 @@ endif
 # Pass the configuration defines on to the compiler source code
 ifdef ENABLE_STANDALONE
   ALLFBCFLAGS += -d ENABLE_STANDALONE
+endif
+ifdef FBSHA1
+  ifeq ($(FBSHA1),1)
+    ALLFBCFLAGS += -d 'FBSHA1="$(shell git rev-parse HEAD)"'
+  else
+    ALLFBCFLAGS += -d 'FBSHA1="$(FBSHA1)"'
+  endif
 endif
 ifdef ENABLE_SUFFIX
   ALLFBCFLAGS += -d 'ENABLE_SUFFIX="$(ENABLE_SUFFIX)"'
