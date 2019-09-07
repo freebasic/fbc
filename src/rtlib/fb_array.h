@@ -118,7 +118,7 @@ FBCALL int        fb_ArraySort         ( FBARRAY *array, FBARRAY *array2, int t,
 
 FBCALL int        fb_ArrayAttach       ( FBARRAY *array, array_dim_type *adt, int n, void *mp ); 
 FBCALL int        fb_ArrayReset        ( FBARRAY *array );          
-FBCALL size_t     fb_ArrayScan         ( FBARRAY *array, void *cbp, int len, void *ps, ssize_t offset, int caseflag, array_index *ai, int flag, size_t c, size_t o ); 
+FBCALL size_t     fb_ArrayScan         ( FBARRAY *array, void *cbp, void *ps, int caseflag, array_index *ai, int flag, size_t c, size_t o ); 
 
 enum array_enums_                                     
 {

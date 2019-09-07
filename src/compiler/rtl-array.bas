@@ -368,18 +368,16 @@
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ) _        'pass array
 			} _
 		), _
-		/' function fb_ArrayScan(type as long, array() as any, len as long, st as any ptr, offset as uinteger, caseflag as long, ai as array_index, count as uinteger)'/ _
+		/' function fb_ArrayScan(type as long, array() as any, st as any ptr, caseflag as long, ai as array_index, count as uinteger)'/ _
 		( _
 			@"fb_ArrayScan", NULL, _
 			FB_DATATYPE_UINT, FB_FUNCMODE_FBCALL, _         
 			NULL, FB_RTL_OPT_NONE, _
-			10, _
+			8, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _                   'pass array ptr
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _                   'pass callback ptr
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _ 'search term lenght
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _                   'search term pointer
-				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _ 'offset
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _ 'caseflag
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _                   'array index
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _ 'custom flag

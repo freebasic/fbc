@@ -39,7 +39,6 @@
 '***********************************************************************************************
 ' i = array(specifier, array), returns requested value as uinteger, any ptr or boolean
 '***********************************************************************************************
-' desc           = 60                       'get descriptor information (only for internal use)
 ' data                                      'pointer to the first array element in memory
 ' dimensions                                '# of dimensions (same as UBOUND(array, 0)
 ' total_size                                'in bytes
@@ -63,11 +62,12 @@
 ' array(reset, array)
 '***********************************************************************************************
 
+
 #pragma once
 #include once "ustring.bi"
 
 
-type array_index                                      'return type for array(calc, ...)
+type array_index                                      'return type for array(index, ...)
   n as integer                                        '# of valid index entries, 0 -> no indices given
 
   li as integer                                       'linear index (one based), 0 = invalid
@@ -120,6 +120,9 @@ enum ae_                                              'data types
   IS_DYNAMIC                                          'dynamic array
   IS_ATTACHED                                         'attached array
 
+  NOCASEFLAG       = 0                                '"nocase" check for array(scan, ...)
+  NOCASEFLAGNOCASE = 100
+
 end enum
 
 
@@ -160,8 +163,6 @@ type array_scan_type
   t as long                                           'data type
   p as any ptr                                        'data ptr
   c as long                                           'case flag
-  o as integer                                        'offset (for string search)
-  l as integer                                        'lenght
 end type
 
 
@@ -232,204 +233,217 @@ dim i as array_index
   
 end function  
 
-'private function ax_index overload () as array_index
-''***********************************************************************************************
-'' no index given
-''***********************************************************************************************
-'dim i as array_index
-'
-'
-'  i.n = 0
-'  return i                                            'return "no index"
-'  
-'  
-'end function  
-'
-'private function ax_index overload(ai as array_index) as array_index
-''***********************************************************************************************
-'' array_index given
-''***********************************************************************************************
-'
-'
-'  return ai
-'  
-'  
-'end function  
-'
-'private function ax_index overload(byval i1 as integer) as array_index
-''***********************************************************************************************
-'' one index given
-''***********************************************************************************************
-'dim i as array_index
-'
-'
-'  i.n  = 1
-'  i.i1 = i1
-'  return i
-'  
-'  
-'end function  
-'
-'private function ax_index overload(byval i1 as integer, _
-'                                          byval i2 as integer _
-'                                                              ) as array_index
-''***********************************************************************************************
-'' 2 indices given
-''***********************************************************************************************
-'dim i as array_index
-'
-'
-'  i.n  = 2
-'  i.i1 = i1
-'  i.i2 = i2
-'  return i
-'  
-'  
-'end function  
-'
-'private function ax_index overload(byval i1 as integer, _
-'                                          byval i2 as integer, _
-'                                          byval i3 as integer _
-'                                                              ) as array_index
-''***********************************************************************************************
-'' 3 indices given
-''***********************************************************************************************
-'dim i as array_index
-'
-'
-'  i.n  = 3
-'  i.i1 = i1
-'  i.i2 = i2
-'  i.i3 = i3
-'  return i
-'  
-'  
-'end function  
-'
-'private function ax_index overload(byval i1 as integer, _
-'                                          byval i2 as integer, _
-'                                          byval i3 as integer, _
-'                                          byval i4 as integer _
-'                                                              ) as array_index
-''***********************************************************************************************
-'' 4 indices given
-''***********************************************************************************************
-'dim i as array_index
-'
-'
-'  i.n  = 4
-'  i.i1 = i1
-'  i.i2 = i2
-'  i.i3 = i3
-'  i.i4 = i4
-'  return i
-'  
-'  
-'end function  
-'
-'private function ax_index overload(byval i1 as integer, _
-'                                          byval i2 as integer, _
-'                                          byval i3 as integer, _
-'                                          byval i4 as integer, _
-'                                          byval i5 as integer _
-'                                                              ) as array_index
-''***********************************************************************************************
-'' 5 indices given
-''***********************************************************************************************
-'dim i as array_index
-'
-'
-'  i.n  = 5
-'  i.i1 = i1
-'  i.i2 = i2
-'  i.i3 = i3
-'  i.i4 = i4
-'  i.i5 = i5
-'  return i
-'  
-'  
-'end function  
-'
-'private function ax_index overload(byval i1 as integer, _
-'                                          byval i2 as integer, _
-'                                          byval i3 as integer, _
-'                                          byval i4 as integer, _
-'                                          byval i5 as integer, _
-'                                          byval i6 as integer _
-'                                                              ) as array_index
-''***********************************************************************************************
-'' 6 indices given
-''***********************************************************************************************
-'dim i as array_index
-'
-'
-'  i.n  = 6
-'  i.i1 = i1
-'  i.i2 = i2
-'  i.i3 = i3
-'  i.i4 = i4
-'  i.i5 = i5
-'  i.i6 = i6
-'  return i
-'  
-'  
-'end function  
-'
-'private function ax_index overload(byval i1 as integer, _
-'                                          byval i2 as integer, _
-'                                          byval i3 as integer, _
-'                                          byval i4 as integer, _
-'                                          byval i5 as integer, _
-'                                          byval i6 as integer, _
-'                                          byval i7 as integer _
-'                                                              ) as array_index
-''***********************************************************************************************
-'' 7 indices given
-''***********************************************************************************************
-'dim i as array_index
-'
-'
-'  i.n  = 7
-'  i.i1 = i1
-'  i.i2 = i2
-'  i.i3 = i3
-'  i.i4 = i4
-'  i.i5 = i5
-'  i.i6 = i6
-'  i.i7 = i7
-'  return i
-'  
-'  
-'end function  
-'
-'private function ax_index overload(byval i1 as integer, _
-'                                          byval i2 as integer, _
-'                                          byval i3 as integer, _
-'                                          byval i4 as integer, _
-'                                          byval i5 as integer, _
-'                                          byval i6 as integer, _
-'                                          byval i7 as integer, _
-'                                          byval i8 as integer _
-'                                                              ) as array_index
-''***********************************************************************************************
-'' 8 indices given
-''***********************************************************************************************
-'dim i as array_index
-'
-'
-'  i.n  = 8
-'  i.i1 = i1
-'  i.i2 = i2
-'  i.i3 = i3
-'  i.i4 = i4
-'  i.i5 = i5
-'  i.i6 = i6
-'  i.i7 = i7
-'  i.i8 = i8
-'  return i
-'  
-'  
-'end function  
+
+private function ax_index overload () as array_index
+'***********************************************************************************************
+' no index given
+'***********************************************************************************************
+dim i as array_index
+
+
+  i.n = 0
+  return i                                            'return "no index"
+  
+  
+end function  
+
+
+private function ax_index overload(ai as array_index) as array_index
+'***********************************************************************************************
+' array_index given
+'***********************************************************************************************
+
+
+  return ai
+  
+  
+end function  
+
+
+private function ax_index overload(byval i1 as integer) as array_index
+'***********************************************************************************************
+' one index given
+'***********************************************************************************************
+dim i as array_index
+
+
+  i.n  = 1
+  i.i1 = i1
+  return i
+  
+  
+end function  
+
+
+private function ax_index overload(byval i1 as integer, _
+                                          byval i2 as integer _
+                                                              ) as array_index
+'***********************************************************************************************
+' 2 indices given
+'***********************************************************************************************
+dim i as array_index
+
+
+  i.n  = 2
+  i.i1 = i1
+  i.i2 = i2
+  return i
+  
+  
+end function  
+
+
+private function ax_index overload(byval i1 as integer, _
+                                          byval i2 as integer, _
+                                          byval i3 as integer _
+                                                              ) as array_index
+'***********************************************************************************************
+' 3 indices given
+'***********************************************************************************************
+dim i as array_index
+
+
+  i.n  = 3
+  i.i1 = i1
+  i.i2 = i2
+  i.i3 = i3
+  return i
+  
+  
+end function  
+
+
+private function ax_index overload(byval i1 as integer, _
+                                          byval i2 as integer, _
+                                          byval i3 as integer, _
+                                          byval i4 as integer _
+                                                              ) as array_index
+'***********************************************************************************************
+' 4 indices given
+'***********************************************************************************************
+dim i as array_index
+
+
+  i.n  = 4
+  i.i1 = i1
+  i.i2 = i2
+  i.i3 = i3
+  i.i4 = i4
+  return i
+  
+  
+end function  
+
+
+private function ax_index overload(byval i1 as integer, _
+                                          byval i2 as integer, _
+                                          byval i3 as integer, _
+                                          byval i4 as integer, _
+                                          byval i5 as integer _
+                                                              ) as array_index
+'***********************************************************************************************
+' 5 indices given
+'***********************************************************************************************
+dim i as array_index
+
+
+  i.n  = 5
+  i.i1 = i1
+  i.i2 = i2
+  i.i3 = i3
+  i.i4 = i4
+  i.i5 = i5
+  return i
+  
+  
+end function  
+
+
+private function ax_index overload(byval i1 as integer, _
+                                          byval i2 as integer, _
+                                          byval i3 as integer, _
+                                          byval i4 as integer, _
+                                          byval i5 as integer, _
+                                          byval i6 as integer _
+                                                              ) as array_index
+'***********************************************************************************************
+' 6 indices given
+'***********************************************************************************************
+dim i as array_index
+
+
+  i.n  = 6
+  i.i1 = i1
+  i.i2 = i2
+  i.i3 = i3
+  i.i4 = i4
+  i.i5 = i5
+  i.i6 = i6
+  return i
+  
+  
+end function  
+
+
+private function ax_index overload(byval i1 as integer, _
+                                          byval i2 as integer, _
+                                          byval i3 as integer, _
+                                          byval i4 as integer, _
+                                          byval i5 as integer, _
+                                          byval i6 as integer, _
+                                          byval i7 as integer _
+                                                              ) as array_index
+'***********************************************************************************************
+' 7 indices given
+'***********************************************************************************************
+dim i as array_index
+
+
+  i.n  = 7
+  i.i1 = i1
+  i.i2 = i2
+  i.i3 = i3
+  i.i4 = i4
+  i.i5 = i5
+  i.i6 = i6
+  i.i7 = i7
+  return i
+  
+  
+end function  
+
+
+private function ax_index overload(byval i1 as integer, _
+                                          byval i2 as integer, _
+                                          byval i3 as integer, _
+                                          byval i4 as integer, _
+                                          byval i5 as integer, _
+                                          byval i6 as integer, _
+                                          byval i7 as integer, _
+                                          byval i8 as integer _
+                                                              ) as array_index
+'***********************************************************************************************
+' 8 indices given
+'***********************************************************************************************
+dim i as array_index
+
+
+  i.n  = 8
+  i.i1 = i1
+  i.i2 = i2
+  i.i3 = i3
+  i.i4 = i4
+  i.i5 = i5
+  i.i6 = i6
+  i.i7 = i7
+  i.i8 = i8
+  return i
+  
+  
+end function  
+
+
+'***********************************************************************************************
 
 
 private function ax_calc_pos__(byval p as any ptr, pptr as any ptr) as uinteger
@@ -442,9 +456,6 @@ private function ax_calc_pos__(byval p as any ptr, pptr as any ptr) as uinteger
 
 
 end function
-
-
-'***********************************************************************************************
 
 
 private function ax_calc_ptr__(byval p as any ptr, pptr as any ptr) as any ptr
@@ -465,9 +476,6 @@ dim i as uinteger
 end function
 
 
-'***********************************************************************************************
-
-
 private function ax_calc_index__ overload(byval p as any ptr, byval li as integer) as array_index
 '***********************************************************************************************
 ' calc indices from linear (one based) position
@@ -480,9 +488,6 @@ dim i as array_index
 
 
 end function
-
-
-'***********************************************************************************************
 
 
 private function ax_calc_index__ overload(byval p as any ptr, byval ppos as any ptr = 0) as array_index
@@ -551,11 +556,8 @@ private function ax_typeof__(t as string) as long 'integer
 
       case "STRING"
         return array_.ae_.adt_string                  '32
-'      case typeof(USTRING) 
-'        return array_.ae_.adt_ustring                 '34
-
-'      case "CBSTR"
-'        return 36
+      case typeof(USTRING) 
+        return array_.ae_.adt_ustring                 '34
 
       case "ANY PTR"
         return array_.ae_.adt_function                '50
@@ -573,22 +575,22 @@ end function
 
 
 ''***********************************************************************************************
-'' sort callback sample      CDECL ????
+'' sort callback sample      
 ''***********************************************************************************************
 '
 '
-'private Function ax_wstring cdecl (byref a as wstring, byref x as wstring, byval flag as integer) as long
+'private Function sort_wstring (byref a as wstring, byref b as wstring, byval flag as integer) as long
 ''***********************************************************************************************
-'' sample custom WSTRING sort proc (must be CDECL !!!), flag > 0 -> sort up, flag <= 0 -> sort down
+'' sample custom WSTRING sort proc, flag > 0 -> sort up, flag <= 0 -> sort down
 ''***********************************************************************************************
 '
 '  if flag > 0 then
-'    if a > x then
+'    if a > b then
 '        return 1
 '    end if
 '
 '  else          
-'    if a < x then
+'    if a < b then
 '        return 1
 '    end if
 '  end if
@@ -658,9 +660,6 @@ dim i as uinteger
 end function
 
 
-'***********************************************************************************************
-
-
 private function ax_info__p(byval p as any ptr) as any ptr
 '***********************************************************************************************
 ' return array information (ptr)
@@ -671,9 +670,6 @@ private function ax_info__p(byval p as any ptr) as any ptr
 
 
 end function
-
-
-'***********************************************************************************************
 
 
 private function ax_info__b(byval p as any ptr) as boolean
@@ -781,602 +777,476 @@ end function
 '***********************************************************************************************
 
 
-'#macro array_scan_set__                               'setup for array scan
-'  if n1 = -1 then 
-'    ast.c = 1
-'  elseif n1 > 0 then
-'    ast.o = n1  
-'  end if
-'
-'  if n2 = -1 then 
-'    ast.c = 1
-'  elseif n2 > 0 then
-'    ast.o = n2  
-'  end if
-'#endmacro
-'
-'
+private function ax_for__ overload (byref b as byte, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for byte
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_byte
+  ast.p = @b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byref b as ubyte, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for ubyte
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_ubyte
+  ast.p = @b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byref b as short, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for short
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_short
+  ast.p = @b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byref b as ushort, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for ushort
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_ushort
+  ast.p = @b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byref b as integer, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for integer
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_integer
+  ast.p = @b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byref b as uinteger, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for uinteger
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_uinteger
+  ast.p = @b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byref b as long, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for long
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_long
+  ast.p = @b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byref b as ulong, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for ulong
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_ulong
+  ast.p = @b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byref b as longint, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for longint
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_longint
+  ast.p = @b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byref b as ulongint, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for ulongint
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_ulongint
+  ast.p = @b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byref b as single, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for single
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_single
+  ast.p = @b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byref b as double, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for double
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_double
+  ast.p = @b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byval b as zstring ptr, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for string * / zstring / string
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_zstring
+  ast.p = b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byval b as wstring ptr, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for wstring
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_wstring
+  ast.p = b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (byref b as ustring, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' scan for ustring
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_wstring
+  ast.p = strptr(b)
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+private function ax_for__ (b as any ptr, byval cflag as integer) as array_scan_type
+'***********************************************************************************************
+' nocase 
+'***********************************************************************************************
+dim ast as array_scan_type
+
+
+  ast.t = array_.ae_.adt_function
+  ast.p = b
+  ast.c = cflag
+
+  function = ast
+
+
+end function
+
+
+'***********************************************************************************************
+' sample custom scan function
+'***********************************************************************************************
+
+
+'private Function ustring_instr (byref u as ustring) as long
+''***********************************************************************************************
+'' sample compare user callback: parameter byref, return long
+'' return a match for the first array element, which has "asdf" as substring
 ''***********************************************************************************************
 '
 '
-'private function ax_for__ overload (byref b as byte, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for byte
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_byte                         '1
-'  ast.p = @b
-'  ast.l = 1
-'
-'  array_scan_set__
-'  function = ast
+'  if instr(u, "asdf") then return 1
+'  return 0
 '
 '
 'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byref b as ubyte, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for ubyte
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_ubyte                         '2
-'  ast.p = @b
-'  ast.l = 1
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byref b as short, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for short
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_short                        '3
-'  ast.p = @b
-'  ast.l = 2
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byref b as ushort, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for ushort
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_ushort                       '4
-'  ast.p = @b
-'  ast.l = 2
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byref b as integer, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for integer
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_integer                      '5
-'  ast.p = @b
-'  ast.l = sizeof(integer)
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byref b as uinteger, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for uinteger
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_uinteger                     '6
-'  ast.p = @b
-'  ast.l = sizeof(integer)
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byref b as long, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for long
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_long                         '7
-'  ast.p = @b
-'  ast.l = 4
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byref b as ulong, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for ulong
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_ulong                        '8
-'  ast.p = @b
-'  ast.l = 4
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byref b as longint, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for longint
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_longint                      '9
-'  ast.p = @b
-'  ast.l = 8
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byref b as ulongint, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for ulongint
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_ulongint                     '10
-'  ast.p = @b
-'  ast.l = 8
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byref b as single, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for single
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_single                       '20
-'  ast.p = @b
-'  ast.l = sizeof(single)
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byref b as double, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for double
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_double                       '21
-'  ast.p = @b
-'  ast.l = sizeof(double)
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byval b as zstring ptr, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for string * / zstring / string
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_zstring                      '30
-'  ast.p = b
-'  ast.l = len(*b)
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (byval b as wstring ptr, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' scan for wstring
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_wstring                      '33
-'  ast.p = b
-'  ast.l = len(*b)
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-''private function ax_for__ (byref b as ustring, byval n1 as integer, byval n2 as integer) as array_scan_type
-'''***********************************************************************************************
-''' scan for ustring
-'''***********************************************************************************************
-''dim ast as array_scan_type
-''
-''
-''  ast.t = array_.ae_.adt_wstring                      '33
-''  ast.p = strptr(b)
-''  ast.l = len(b)
-''
-''  array_scan_set__
-''  function = ast
-''
-''
-''end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_for__ (b as any ptr, byval n1 as integer, byval n2 as integer) as array_scan_type
-''***********************************************************************************************
-'' nocase 
-''***********************************************************************************************
-'dim ast as array_scan_type
-'
-'
-'  ast.t = array_.ae_.adt_function                     '50
-'  ast.p = b
-'  ast.l = sizeof(integer)                             'pointer size
-'
-'  array_scan_set__
-'  function = ast
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_test_param1__ (n as integer, s as string) as integer
-''***********************************************************************************************
-'' check paramater for "NOCASE" -> return -1, return 0 for empty param, return n otherwise
-''***********************************************************************************************
-'
-'
-'  if ucase(s) = "NOCASE" then
-'    return -1
-'    
-'  elseif s = "" then
-'    return 0
-'
-'  else
-'    return n
-'  end if
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_test_param2__ (n as integer, s as string) as integer
-''***********************************************************************************************
-'' check paramater for "NOCASE" -> return -1, retrun 0 for empty param
-''***********************************************************************************************
-'
-'
-'  if s = "" then
-'    return 0
-'    
-'  else
-'    return n
-'  end if
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'
-'
-''private Function ustring_instr (byref u as ustring) as long
-'''***********************************************************************************************
-''' sample compare user callback: parameter byref, return long
-''' return a match for the first array element, which has "asdf" as substring
-'''***********************************************************************************************
-''
-''
-''  if instr(u, "asdf") then return 1
-''  return 0
-''
-''
-''end function
-'
-'
-''***********************************************************************************************
-'
-'
-'private function ax_scan__(byval t as integer, byval p as any ptr, ast as array_.array_scan_type, _
-'                               ai as array_index, byval n as integer = 0) as integer
-''***********************************************************************************************
-'' array scan: t = data type of array, p = array descriptor, ast = scan for, ai = array_index, 
-''             n = # of elements to scan  ->  return linear index (one based integer)
-''
-'' we allow for "similar" data types to be compared. That is, all string types may be mixed
-'' just as all numeric types (byte to ulongint) and floating point types (single and double)
-'' Mixing string types with numeric of floating point types and numeric types with floating 
-'' point types doesn´t make sense and therefore is rejected (err = 1).
-''***********************************************************************************************
-'dim cbp  as any ptr                                   'user callback
-'dim flag as long = 0                                  'flag for deciding what to compare with what (RTL)
-'dim s    as string
-''dim u    as ustring
-'dim o    as integer
-''dim u2   as ustring = "abc"
-'dim b    as byte ptr
-'dim i    as integer ptr
-'dim x    as long
-'
-'
-'  err = 0                                             'reset error
-'
-'
-'  if ast.t = array_.ae_.adt_function then             '50 = callback function
-'    cbp = ast.p
-'    flag = 1
-''    function = fb_ArrayScan(byval p, byval cbp, ast.l, byval ast.p, ast.o, ast.c, ai, flag, n, o)
-'    exit function
-'  end if  
-'
-'
-'  select case t                                       '
-'    case array_.ae_.adt_byte to array_.ae_.adt_ulongint                   '1 to 10 = numbers
-'      if ast.t > array_.ae_.adt_ulongint then
-'        err = 1
-'        return 0
-'      end if
-'
-'      flag = 10 * t + ast.t - 1                       '10 to 110  -> combine different types
-'
-'      
-'    case array_.ae_.adt_single                        '20 = single
-'      if (ast.t < array_.ae_.adt_single) and (ast.t > array_.ae_.adt_double) then
-'        err = 1
-'        return 0
-'      end if
-'
-'      if ast.t = array_.ae_.adt_single then
-'        flag = 6                                      'single/single
-'      else
-'        flag = 7                                      'single/double
-'      end if    
-'
-'    case array_.ae_.adt_double                        '21 = double
-'      if (ast.t < array_.ae_.adt_single) and (ast.t > array_.ae_.adt_double) then
-'        err = 1
-'        return 0
-'      end if
-'
-'      if ast.t = array_.ae_.adt_single then
-'        flag = 8                                      'double/single
-'      else
-'        flag = 9                                      'double/double
-'      end if    
-'
-'      
-'    case is < array_.ae_.adt_struct                   'strings
-'      if (ast.t < array_.ae_.adt_struct) and ((ast.t > array_.ae_.adt_ustring)  or (ast.t < array_.ae_.adt_zstring)) then
-'        err = 1
-'        return 0
-'      end if
-'
-'      if (t = array_.ae_.adt_zstring) or (t = array_.ae_.adt_fixstring) then 'zstring or string *
-'        flag = 2                                      
-'        goto sstring
-'        
-'      elseif t = array_.ae_.adt_string then
-'        flag = 3                                      
-'
-'sstring:
-'        select case ast.t                             'convert search term to string
-'          case array_.ae_.adt_zstring, array_.ae_.adt_fixstring
-'            s = *cast(zstring ptr, ast.p)
-'
-'          case array_.ae_.adt_string
-'            s = *cast(string ptr, ast.p)
-'
-'          case array_.ae_.adt_wstring, array_.ae_.adt_ustring
-'            s = *cast(wstring ptr, ast.p)
-'        end select
-'
-'        if ast.c <> 0 then
-'          s = lcase(s)                                'convert to lcase, if "nocase" was given
-'        end if  
-'
-'        ast.p = strptr(s)                             'make it a zstring ptr
-'
-'
-'      elseif t = array_.ae_.adt_wstring then                              'wstring
-'        flag = 4                                      
-''        goto usstring
-'
-'
-'      elseif t = array_.ae_.adt_ustring then                              'ustring 
-'        err = 0                                             'reset error
-'
-''***********************************************************************************************
-'' ustring extension
-''***********************************************************************************************
-''        if t = array_.ae_.adt_ustring then                  'ustring array -> find data offset
-''          b = cast(byte ptr, @u2)
-''          o = cast(integer, strptr(u2))
-''
-''          
-''          for x = 0 to sizeof(u2) - sizeof(integer)          'scan udt for WSTRING address
-''            i = cast(integer ptr, b + x)
-''
-''            if *i = o then
-''              o = x
-''              goto found
-''            end if
-''          next x
-''
-''          err = 1                                           'set error
-''          exit function                                     'no offset found -> incompatible type
-''        end if
-''
-''found:
-''
-''        flag = 5
-''usstring:        
-''        select case ast.t                             'convert search term to string
-''          case array_.ae_.adt_zstring, array_.ae_.adt_fixstring
-''            u = *cast(zstring ptr, ast.p)
-''
-''          case array_.ae_.adt_string
-''            u = *cast(string ptr, ast.p)
-''
-''          case array_.ae_.adt_wstring, array_.ae_.adt_ustring
-''            u = *cast(wstring ptr, ast.p)
-''        end select
-''
-''        if ast.c <> 0 then
-''          u = lcase(u)                                'convert to lcase, if "nocase" was given
-''        end if  
-''
-''        ast.p = strptr(u)                             'make it a wstring ptr
-'      end if
-'
-'      
-'    case array_.ae_.adt_struct                        '40 = struct
-'      if ast.t = array_.ae_.adt_function then         '50 = callback function
-'        cbp = ast.p
-'        flag = 1
-'      else
-'        err = 1
-'        return 0
-'      end if  
-'
-'    case else
-'      err = 1
-'      return 0
-'    
-'  end select
-'
-'  if ast.o > 0 then
-'    ast.o = ast.o - 1                                 'given offset is one based, in the RTL we need it zerobased
-'  end if
-'    
-''  function = fb_ArrayScan(byval p, byval cbp, ast.l, byval ast.p, ast.o, ast.c, ai, flag, n, o)
-'
-'
-'end function
-'
-'
-''***********************************************************************************************
-'' future extension: more functions ...
-''***********************************************************************************************
-'
-'
+
+
+'***********************************************************************************************
+
+
+private function ax_scan__(byval t as integer, byval p as any ptr, ast as array_.array_scan_type, _
+                               ai as array_index, byval n as integer = 0) as integer
+'***********************************************************************************************
+' array scan: t = data type of array, p = array descriptor, ast = scan for, ai = array_index, 
+'             n = # of elements to scan  ->  return linear index (one based integer)
+'
+' we allow for "similar" data types to be compared. That is, all string types may be mixed
+' just as all numeric types (byte to ulongint) and floating point types (single and double)
+' Mixing string types with numeric of floating point types and numeric types with floating 
+' point types doesn´t make sense and therefore is rejected (err = 1).
+'***********************************************************************************************
+dim cbp  as any ptr                                   'user callback
+dim flag as long = 0                                  'flag for deciding what to compare with what (RTL)
+dim s    as string
+dim u    as ustring
+dim o    as integer
+dim u2   as ustring = "abc"
+dim b    as byte ptr
+dim i    as integer ptr
+dim x    as long
+
+
+  err = 0                                             'reset error
+
+
+  if ast.t = array_.ae_.adt_function then             '50 = callback function
+    cbp = ast.p
+    flag = 1                                          'callback function
+    function = fb_ArrayScan(byval p, byval cbp, byval ast.p, ast.c, ai, flag, n, o)
+    exit function
+  end if  
+
+
+  select case t                                       
+    case array_.ae_.adt_byte to array_.ae_.adt_ulongint                   '1 to 10 = numbers
+      if ast.t > array_.ae_.adt_ulongint then
+        err = 1
+        return 0
+      end if
+
+      flag = 10 * t + ast.t - 1                       '10 to 110  -> combine different types
+
+      
+    case array_.ae_.adt_single                        '20 = single
+      if (ast.t < array_.ae_.adt_single) and (ast.t > array_.ae_.adt_double) then
+        err = 1
+        return 0
+      end if
+
+      if ast.t = array_.ae_.adt_single then
+        flag = 6                                      'single/single
+      else
+        flag = 7                                      'single/double
+      end if    
+
+    case array_.ae_.adt_double                        '21 = double
+      if (ast.t < array_.ae_.adt_single) and (ast.t > array_.ae_.adt_double) then
+        err = 1
+        return 0
+      end if
+
+      if ast.t = array_.ae_.adt_single then
+        flag = 8                                      'double/single
+      else
+        flag = 9                                      'double/double
+      end if    
+
+      
+    case is < array_.ae_.adt_struct                   'strings
+      if (ast.t < array_.ae_.adt_struct) and ((ast.t > array_.ae_.adt_ustring)  or (ast.t < array_.ae_.adt_zstring)) then
+        err = 1
+        return 0
+      end if
+
+      if (t = array_.ae_.adt_zstring) or (t = array_.ae_.adt_fixstring) then 'zstring or string *
+        flag = 2                                      'zstring
+        goto sstring
+        
+      elseif t = array_.ae_.adt_string then
+        flag = 3                                      'string
+
+sstring:
+        select case ast.t                             'convert search term to string
+          case array_.ae_.adt_zstring, array_.ae_.adt_fixstring
+            s = *cast(zstring ptr, ast.p)
+
+          case array_.ae_.adt_string
+            s = *cast(string ptr, ast.p)
+
+          case array_.ae_.adt_wstring, array_.ae_.adt_ustring
+            s = *cast(wstring ptr, ast.p)
+        end select
+
+        if ast.c <> 0 then
+          s = lcase(s)                                'convert to lcase, if "nocase" was given
+        end if  
+
+        ast.p = strptr(s)                             'make it a zstring ptr
+
+
+      elseif t = array_.ae_.adt_wstring then          'wstring
+        flag = 4                                      'wstring
+        goto usstring
+
+
+      elseif t = array_.ae_.adt_ustring then          'ustring
+        err = 0                                       'reset error
+
+        if t = array_.ae_.adt_ustring then            'ustring array -> find data offset
+          b = cast(byte ptr, @u2)
+          o = cast(integer, strptr(u2))
+
+          
+          for x = 0 to sizeof(u2) - sizeof(integer)   'scan udt for WSTRING address
+            i = cast(integer ptr, b + x)
+
+            if *i = o then
+              o = x
+              goto found
+            end if
+          next x
+
+          err = 1                                     'set error
+          exit function                               'no offset found -> incompatible type
+        end if
+
+found:
+
+        flag = 5                                      'ustring
+usstring:        
+        select case ast.t                             'convert search term to string
+          case array_.ae_.adt_zstring, array_.ae_.adt_fixstring
+            u = *cast(zstring ptr, ast.p)
+
+          case array_.ae_.adt_string
+            u = *cast(string ptr, ast.p)
+
+          case array_.ae_.adt_wstring, array_.ae_.adt_ustring
+            u = *cast(wstring ptr, ast.p)
+        end select
+
+        if ast.c <> 0 then
+          u = lcase(u)                                'convert to lcase, if "nocase" was given
+        end if  
+
+        ast.p = strptr(u)                             'make it a wstring ptr
+      end if
+
+      
+    case array_.ae_.adt_struct                        '40 = struct
+      if ast.t = array_.ae_.adt_function then         '50 = callback function
+        cbp = ast.p
+        flag = 1                                      'callback function
+      else
+        err = 1
+        return 0
+      end if  
+
+    case else
+      err = 1
+      return 0
+    
+  end select
+
+
+  function = fb_ArrayScan(byval p, byval cbp, byval ast.p, ast.c, ai, flag, n, o)
+
+
+end function
+
+
+'***********************************************************************************************
+' future extension: more functions ...
+'***********************************************************************************************
+
+
 end namespace
 
 
@@ -1485,7 +1355,7 @@ end namespace
 scope
 
 #if ((#i = "") or (###i > 8))
-'  #line __prevline__
+  #line __prevline__
   #error "(macro expansion) array attach: wrong number of dimensions: "##i
 #elseif (###i = 1)
   array_redim1__(i)
@@ -1550,8 +1420,6 @@ end scope
     #elseif TypeOf((array)) = Typeof(USTRING)
       #define ax_typedef__ array_.ae_.adt_ustring     '34
 
-'    #elseif TypeOf((array)) = TypeOf(CBSTR)
-'      #define ax_typedef__ 36
     #else
       #define ax_typedef__ array_.ae_.adt_struct      '40
     #endif
@@ -1614,7 +1482,7 @@ end scope
 #endmacro
 
 
-#macro array_sort__(array, p1, p2, p3...)             'sort macro
+#macro array_sort__(array, p1, p2, p3...)             '"sort" macro
 scope
 
   #if (#array < ")") and (#array > "'")               'starts with "(" -> sort along or nocase
@@ -1714,7 +1582,7 @@ end scope
 #endmacro
 
 
-#macro array_attach__(array, p1, p2...)               'attach macro
+#macro array_attach__(array, p1, p2...)               '"attach" macro
   #if ((#&#p1 < "REDIM)") and (#&#p1 > "REDIM'"))     'starts with "Redim("
     #if (#p2 <> "")
       scope
@@ -1734,7 +1602,7 @@ end scope
 #endmacro
 
 
-#macro array_reset__(array, p1, p2...)                'reset macro
+#macro array_reset__(array, p1, p2...)                '"reset" macro
   #if (#p1 <> "")
     #line __prevline__
     #error "(macro expansion) array reset: too much parameters: "##p2
@@ -1744,7 +1612,7 @@ end scope
 #endmacro
 
 
-#macro array_insert__(array, p1, p2, p3...)           'insert macro
+#macro array_insert__(array, p1, p2, p3...)           '"insert" macro
   #if (#p1 = "")
     #line __prevline__
     #error "(macro expansion) array insert: missing parameter 3: value to insert"
@@ -1764,7 +1632,7 @@ end scope
 #endmacro
 
 
-#macro array_delete__(array, p1, p2...)               'delete macro
+#macro array_delete__(array, p1, p2...)               '"delete" macro
   #if (###p2 > 1)
     #line __prevline__
     #error "(macro expansion) array delete: too much parameters: "##p2
@@ -1798,16 +1666,16 @@ end scope
 #endmacro
 
 
-'#macro array_for(p1, p2, p3...)                       'for macro (scan)
-'  array_.ax_for__(p1, array_.ax_test_param1__(#?p2, #p2), array_.ax_test_param2__(#?p3, #p3))
-'#endmacro
-'
-'#macro array_scan__(array, p1, p2, p3...)             'scan macro
-'  array_.ax_scan__(array_.ax_typeof__(typeof((array))), fb_ArrayDesc(array(), array_.ae_.desc), array_##p1, array_.ax_index##p2, p3)
-'#endmacro
+#macro array_for(p1, p2, p3...)                       '"for" macro (scan)
+  array_.ax_for__(p1, array_.ae_.nocaseflag##p2)
+#endmacro
+
+#macro array_scan__(array, p1, p2, p3...)             '"scan" macro
+  array_.ax_scan__(array_.ax_typeof__(typeof((array))), fb_ArrayDesc(array(), array_.ae_.desc), array_##p1, array_.ax_index##p2, p3)
+#endmacro
 
 
-#macro array(verb, array, p1, p2...)                  'generic array processing macro
+#macro array(verb, array, p1, p2...)                  'generic "array" processing macro
   array_##verb##__(array, p1, p2)
 #endmacro
 
