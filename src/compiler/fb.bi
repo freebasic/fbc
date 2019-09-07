@@ -6,6 +6,7 @@ const FB_VER_MINOR  = "08"
 const FB_VER_PATCH  = "0"
 const FB_VERSION    = FB_VER_MAJOR + "." + FB_VER_MINOR + "." + FB_VER_PATCH
 const FB_BUILD_DATE = __DATE__
+const FB_BUILD_DATE_ISO = __DATE_ISO__
 const FB_SIGN       = "FreeBASIC " + FB_VERSION
 
 #define QUOTE !"\""
