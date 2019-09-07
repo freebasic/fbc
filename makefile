@@ -206,7 +206,7 @@ else
       TARGET_OS := linux
     else ifneq ($(findstring MINGW,$(uname)),)
       TARGET_OS := win32
-	else ifneq ($(findstring MSYS_NT,$(uname)),)
+    else ifneq ($(findstring MSYS_NT,$(uname)),)
       TARGET_OS := win32
     else ifeq ($(uname),MS-DOS)
       TARGET_OS := dos
@@ -223,6 +223,25 @@ else
     # For DJGPP, always use x86 (DJGPP's uname -m returns just "pc")
     ifeq ($(TARGET_OS),dos)
       TARGET_ARCH := x86
+
+    # For MSYS2, use default compilers (uname -m returns MSYS2's shell
+    #  architecture).  For example, from win 7:
+    #
+    # host    shell    uname -s -m              default gcc target
+    # ------  -------  --------------------     ------------------
+    # msys32  msys2    MSYS_NT-6.1-WOW i686     n/a          
+    # msys32  mingw32  MINGW32_NT-6.1-WOW i686  i686-w64-mingw32                 
+    # msys32  mingw64  MINGW64_NT-6.1-WOW i686  x86_64-w64-mingw32
+    # msys64  msys2    MSYS_NT-6.1 x86_64       n/a
+    # msys64  mingw32  MINGW32_NT-6.1 x86_64    i686-w64-mingw32    
+    # msys64  mingw64  MINGW64_NT-6.1 x86_64    x86_64-w64-mingw32
+    #
+    else ifneq ($(findstring MINGW32,$(uname)),)
+      TARGET_ARCH := x86
+    else ifneq ($(findstring MINGW64,$(uname)),)
+      TARGET_ARCH := x86_64
+
+    # anything, trust 'uname -m', we have no other choice
     else
       TARGET_ARCH = $(shell uname -m)
     endif

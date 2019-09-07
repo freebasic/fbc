@@ -6,6 +6,7 @@ Version 1.07.1
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
 
 [fixed]
+- makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
 
 
 Version 1.07.0
