@@ -204,12 +204,14 @@ end function
 dim shared defTb(0 to ...) as SYMBDEF => _
 { _
 	_ '' name                     constant value  flags                callback (if value isn't constant)
-	(@"__FB_VERSION__"        , @FB_VERSION   , FB_DEFINE_FLAGS_STR, NULL               ), _
-	(@"__FB_BUILD_DATE__"     , @FB_BUILD_DATE, FB_DEFINE_FLAGS_STR, NULL               ), _
-	(@"__FB_VER_MAJOR__"      , @FB_VER_MAJOR , 0                  , NULL               ), _
-	(@"__FB_VER_MINOR__"      , @FB_VER_MINOR , 0                  , NULL               ), _
-	(@"__FB_VER_PATCH__"      , @FB_VER_PATCH , 0                  , NULL               ), _
-	(@"__FB_SIGNATURE__"      , @FB_SIGN      , FB_DEFINE_FLAGS_STR, NULL               ), _
+	(@"__FB_VERSION__"        , @FB_VERSION       , FB_DEFINE_FLAGS_STR, NULL           ), _
+	(@"__FB_BUILD_DATE__"     , @FB_BUILD_DATE    , FB_DEFINE_FLAGS_STR, NULL           ), _
+	(@"__FB_BUILD_DATE_ISO__" , @FB_BUILD_DATE_ISO, FB_DEFINE_FLAGS_STR, NULL           ), _
+	(@"__FB_VER_MAJOR__"      , @FB_VER_MAJOR     , 0                  , NULL           ), _
+	(@"__FB_VER_MINOR__"      , @FB_VER_MINOR     , 0                  , NULL           ), _
+	(@"__FB_VER_PATCH__"      , @FB_VER_PATCH     , 0                  , NULL           ), _
+	(@"__FB_SIGNATURE__"      , @FB_SIGN          , FB_DEFINE_FLAGS_STR, NULL           ), _
+	(@"__FB_BUILD_SHA1__"     , @FB_BUILD_SHA1    , FB_DEFINE_FLAGS_STR, NULL           ), _
 	(@"__FB_MT__"             , NULL          , 0                  , @hDefMultithread_cb), _
 	(@"__FILE__"              , NULL          , FB_DEFINE_FLAGS_STR, @hDefFile_cb       ), _
 	(@"__FILE_NQ__"           , NULL          , 0                  , @hDefFile_cb       ), _
@@ -237,7 +239,7 @@ dim shared defTb(0 to ...) as SYMBDEF => _
 	(@"__FB_FPU__"            , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpu_cb        ), _
 	(@"__FB_FPMODE__"         , NULL          , FB_DEFINE_FLAGS_STR, @hDefFpmode_cb     ), _
 	(@"__FB_GCC__"            , NULL          , 0                  , @hDefGcc_cb        ), _
-	(@"__FB_GUI__"            , NULL          , 0                  , @hDefGui_cb    )  _
+	(@"__FB_GUI__"            , NULL          , 0                  , @hDefGui_cb        )  _
 }
 
 sub symbDefineInit _
