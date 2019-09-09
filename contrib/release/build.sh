@@ -461,7 +461,7 @@ echo rebuilding normal fbc:
 cd fbc
 make clean-compiler
 if ERRORLEVEL 1 exit /b
-make
+make FBSHA1=1
 if ERRORLEVEL 1 exit /b
 make install
 if ERRORLEVEL 1 exit /b
@@ -474,7 +474,7 @@ set DJGPP=$dospath/djgpp.env
 set PATH=$dospath/bin
 
 cd fbc
-make ENABLE_STANDALONE=1
+make ENABLE_STANDALONE=1 FBSHA1=1
 if ERRORLEVEL 1 exit /b
 cd ..
 EOF
@@ -496,8 +496,8 @@ EOF
 	cp lib/gcc/djgpp/$djgppgccversiondir/libgcc.a fbc/lib/dos/
 
 	cd fbc
-	make bindist TARGET_OS=dos DISABLE_DOCS=1
-	make bindist TARGET_OS=dos ENABLE_STANDALONE=1
+	make bindist TARGET_OS=dos DISABLE_DOCS=1 FBSHA1=1
+	make bindist TARGET_OS=dos ENABLE_STANDALONE=1 FBSHA1=1
 	cd ..
 
 	cp fbc/*.zip ../output
@@ -519,7 +519,7 @@ linuxbuild() {
 	make FBC=../tempinstall/bin/fbc
 	cd ..
 
-	cd fbc && make bindist && cd ..
+	cd fbc && make bindist FBSHA1=1 && cd ..
 	cp fbc/*.tar.* ../output
 	cp fbc/contrib/manifest/FreeBASIC-$fbtarget.lst ../output
 }
@@ -599,7 +599,7 @@ windowsbuild() {
 	echo "rebuilding normal fbc"
 	echo
 	make clean-compiler
-	make
+	make FBSHA1=1
 	cd ..
 
 	cd fbc
@@ -607,7 +607,7 @@ windowsbuild() {
 	echo "building standalone fbc"
 	echo
 	rm src/compiler/obj/$fbtarget/fbc.o
-	make ENABLE_STANDALONE=1
+	make ENABLE_STANDALONE=1 FBSHA1=1
 	cd ..
 
 	mkdir -p fbc/bin/$fbtarget
@@ -657,12 +657,12 @@ windowsbuild() {
 	cd fbc
 	case "$target" in
 	win32|win64)
-		make bindist DISABLE_DOCS=1 FBPACKSUFFIX=$recipe
-		make bindist ENABLE_STANDALONE=1 FBPACKSUFFIX=$recipe
+		make bindist DISABLE_DOCS=1 FBPACKSUFFIX=$recipe FBSHA1=1
+		make bindist ENABLE_STANDALONE=1 FBPACKSUFFIX=$recipe FBSHA1=1
 		;;
 	win32-mingworg)
-		make bindist DISABLE_DOCS=1 FBPACKSUFFIX=-mingworg
-		make bindist ENABLE_STANDALONE=1 FBPACKSUFFIX=-mingworg
+		make bindist DISABLE_DOCS=1 FBPACKSUFFIX=-mingworg FBSHA1=1
+		make bindist ENABLE_STANDALONE=1 FBPACKSUFFIX=-mingworg FBSHA1=1
 		;;
 	esac
 	cd ..
