@@ -57,6 +57,8 @@
 #   specify which build recipe to use.  Not all recipes are supported on all targets.
 #       -gcc-5.2.0
 #       -gcc-7.1.0
+#       -gcc-7.1.0r0
+#       -gcc-7.1.0r2
 #       -gcc-7.3.0
 #       -gcc-8.1.0
 #
@@ -254,9 +256,14 @@ get_mingww64_toolchain() {
 		mingwbuildsrev=rev0
 		mingwruntime=v5
 		;;
-	-gcc-7.1.0)
+	-gcc-7.1.0r2)
 		gccversion=7.1.0
 		mingwbuildsrev=rev2
+		mingwruntime=v5
+		;;
+	-gcc-7.1.0|-gcc-7.1.0r0)
+		gccversion=7.1.0
+		mingwbuildsrev=rev0
 		mingwruntime=v5
 		;;
 	-gcc-5.2.0)
@@ -544,7 +551,7 @@ libffibuild() {
 
 	# copy files from opt/lib/libffi-3.2.1
 	case "$recipe" in
-	-gcc-7.1.0|-gcc-7.3.0|-gcc-8.1.0)
+	-gcc-7.1.0|-gcc-7.1.0r0|-gcc-7.1.0r2|-gcc-7.3.0|-gcc-8.1.0)
 		mkdir -p ../input/$libffi_title/$target$recipe
 		cp opt/lib/libffi-3.2.1/include/ffi.h       ../input/$libffi_title/$target$recipe
 		cp opt/lib/libffi-3.2.1/include/ffitarget.h ../input/$libffi_title/$target$recipe
