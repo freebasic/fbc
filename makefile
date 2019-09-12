@@ -447,9 +447,10 @@ ifdef ENABLE_STANDALONE
 endif
 ifdef FBSHA1
   ifeq ($(FBSHA1),1)
-    FBSHA1="$(shell git rev-parse HEAD)"
+    ALLFBCFLAGS += -d 'FBSHA1="$(shell git rev-parse HEAD)"'
+  else
+    ALLFBCFLAGS += -d 'FBSHA1="$(FBSHA1)"'
   endif
-  ALLFBCFLAGS += -d 'FBSHA1="$(FBSHA1)"'
 endif
 ifdef ENABLE_SUFFIX
   ALLFBCFLAGS += -d 'ENABLE_SUFFIX="$(ENABLE_SUFFIX)"'
