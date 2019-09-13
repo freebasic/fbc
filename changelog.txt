@@ -14,6 +14,7 @@ Version 1.07.1
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
+- gcc backend: pass '-Wno-format' to prevent format string errors in gcc 9.x (enabled by default with -Wall)
 
 
 Version 1.07.0
