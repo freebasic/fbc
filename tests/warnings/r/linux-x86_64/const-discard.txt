@@ -420,3 +420,21 @@ none expected
 none expected
 none expected
 none expected
+---- Regression Checks
+warning expected
+	CONST qualifier discarded
+warning expected
+	CONST qualifier discarded
+none expected
+warning expected
+	CONST qualifier discarded
+none expected
+warning expected
+	CONST qualifier discarded
+none expected
+warning expected
+	CONST qualifier discarded
+none expected
+warning expected
+	CONST qualifier discarded
+none expected

@@ -2539,8 +2539,8 @@ function rtlStrAssign _
    	'' always calc len before pushing the param
 	lgt = rtlCalcStrLen( src, sdtype )
 
-	'' src as any
-	if( astNewARG( proc, src, astGetDataType( src ) ) = NULL ) then
+	'' src as const any
+	if( astNewARG( proc, src ) = NULL ) then
     	exit function
     end if
 
