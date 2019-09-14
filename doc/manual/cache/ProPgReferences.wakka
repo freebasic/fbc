@@ -1,0 +1,380 @@
+{{fbdoc item="title" value="Using References"}}----
+The syntax for declaring the **References** and **Using** them instead of pointers.
+
+**Preamble:**
+
+	The different syntaxes used to declare a reference all use the 'Byref' keyword.
+	Since a pointer is a variable, it is possible to modify its contents, and the same pointer can allow successive access to different variables. The association between a reference and the object that it designates is, however, fixed when it is declared.
+	
+	The 'Byref' keyword indicates a variable that is declared by reference. It is used in three different contexts:
+		**""-""** In a procedure signature, to pass an argument by reference (byref parameter).
+		**""-""** In a function signature, to return a variable to the caller by reference (byref return).
+		**""-""** In the body of the code, to define a reference variable (byref variable).
+
+{{fbdoc item="section" value="Passing parameter by reference to procedure (byref parameter)"}}
+	- Syntax of declaration:
+		##{[[KeyPgSub|Sub]]|[[KeyPgFunction|Function]]} //procedure_name// ([[KeyPgByrefVariables|Byref]] //parameter// [[KeyPgAs|As]] [[[KeyPgConstQualifier|Const]]] [[DataType|datatype]], ...##
+		
+		When used in the parameter list of a procedure, the //Byref// keyword indicates that an argument is passed by reference, not by value. The consequence is that any modification made to the argument in the called procedure is reflected in the body of the call.
+		If the procedure does not need or must not to modify the transmitted object, the //Const// qualifier can be used in the declaration (before the declaration of the //datatype//) so that the compiler checks in the body of the procedure that the passed object is not modified in any place (otherwise, a compiler error message is issued).
+	
+	- Full syntax example for passing a parameter by reference:
+		{{fbdoc item="filename" value="examples/manual/proguide/references/byref-param.bas"}}%%(freebasic)
+Declare Sub passbyref (Byref ref As Double, Byval value As Double)  '' declaration for passing by reference
+
+Dim As Double X = 0
+Print X
+passbyref(X, 1.23)
+Print X
+
+Sleep
+
+Sub passbyref (Byref ref As Double, Byval value As Double)  '' declaration for passing by reference
+	ref = value
+End Sub
+		%%Output:
+			%%
+ 0
+ 1.23
+%%
+{{fbdoc item="section" value="Returning variable by reference from function (byref return)"}}
+	- Syntax of declaration:
+		##[[KeyPgFunction|Function]] //function_name// (...) [[KeyPgByrefVariables|Byref]] [[KeyPgAs|As]] [[[KeyPgConstQualifier|Const]]] [[DataType|datatype]]##
+			
+		When used in the return type of a function, the //Byref// keyword indicates that the variable is returned by reference, not by value. The consequence is that the caller can modify the variable returned by the function and the modification is reflected in the state of the variable that the function processes.
+		If the caller does not need or must not to modify the transmitted object, the //Const// qualifier can be used in the declaration (before the declaration of the //datatype//) so that the compiler checks in the body of the caller that the returned object is not modified in any place (otherwise, a compiler error message is issued).
+		
+		Operators (member or global), when used as functions, have also the capability to return results by reference, by using the similar syntax.
+		
+	- Full syntax example for returning a variable by reference:
+		{{fbdoc item="filename" value="examples/manual/proguide/references/byref-return1.bas"}}%%(freebasic)
+Declare Function returnbyref () Byref As Double  '' declaration for returning by reference
+
+Print returnbyref()
+returnbyref() = 4.56
+Print returnbyref()
+
+Sleep
+
+Function returnbyref () Byref As Double  '' declaration for returning by reference
+	Static As Double X = 0
+	Return X
+End Function
+		%%Output:
+			%%
+ 0
+ 4.56
+		%%As for the arguments list, it should always be surrounded with parentheses even if empty.
+	
+		**Note:**
+			On the left-hand side of an assignment expression using the '=' symbol, the result of the function (returned by reference) must be enclosed in parentheses when the function calls one single argument, in order to solve the parsing ambiguity.
+			From fbc version 0.90, '=>' can be used for assignments, in place of '=', same as for initializers, allowing to avoid parsing ambiguity (without parentheses):
+				{{fbdoc item="filename" value="examples/manual/proguide/references/byref-return2.bas"}}%%(freebasic)
+Declare Function transitbyref( ByRef _s As String ) ByRef As String
+
+Dim As String s
+
+s = "abcd"
+Print s
+
+'' the enclosing parentheses are required here.
+( transitbyref( s ) ) = transitbyref( s ) & "efgh"
+Print s
+
+'' the enclosing parentheses are not required here.
+transitbyref( s ) => transitbyref( s ) & "ijkl"
+Print s
+
+Sleep
+
+Function transitbyref( ByRef _s As String ) ByRef As String
+	'' This var-len string will transit by reference (input and output), no copy will be created.
+	Return _s
+End Function
+				%%Output:
+					%%
+abcd
+abcdefgh
+abcdefghijkl
+%%
+{{fbdoc item="section" value="Defining reference variable in code (byref variable)"}}
+	- Syntax of declaration:
+			##{[[KeyPgDim|Dim]]|[[KeyPgStatic|Static]]} [[[KeyPgShared|Shared]]] [[KeyPgByrefVariables|Byref]] [[KeyPgAs|As]] [[[KeyPgConstQualifier|Const]]] [[DataType|datatype]] //ref// = //variable//##
+		or
+			##[[KeyPgVar|Var]] [[[KeyPgShared|Shared]]] [[KeyPgByrefVariables|Byref]] //ref// = //variable//##
+					
+		Unlike pointers, the reference variable must be assigned as soon as the declaration using an initializer.
+		//datatype// must be the same type as that of the variable, or a compatible type (for example one from the types of its Bases in case of inheritance):
+			**""-""** Only when the two types are identical (or using the second syntax with //Var//), a reference variable can be considered as an alias of the variable. One can do the same operations through such a reference variable as one can do with the original variable.
+			**""-""** Otherwise (types compatible but not identical), one can not do all same operations than with the original variable:
+				For example, a base type reference variable referring to a derived type object allows to activate polymorphism when a virtual method is called on it, similarly to a base type pointer referring to a derived type object. One can do the same operations through such a reference variable as one can do with a dereferenced pointer of same type (but for both not the same operations as using directly the derived type instance).
+				
+		If the code does not need or must not to modify the referred object, the //Const// qualifier can be used in the declaration (before the declaration of the //data_type// in the first syntax) so that the compiler checks in the code that the object is not modified, through the reference variable, in any place (otherwise, a compiler error message is issued).
+		
+		There is no interaction between the life of a reference and the life of the object who is referred (similarly to a pointer: destroy an object does not destroy its pointer(s)).
+		Once created, each one lives his life independently.
+		
+	- Full syntax example for defining a reference variable in code:
+		{{fbdoc item="filename" value="examples/manual/proguide/references/byref-variable.bas"}}%%(freebasic)
+Dim As Double X = 0
+
+Dim Byref As Double refX = X  '' declaration for defining a reference
+Print X
+refX = 7.89
+Print X
+
+Sleep
+		%%Output:
+			%%
+ 0
+ 7.89
+%%
+{{fbdoc item="section" value="References versus pointers by comparative examples"}}
+	- Function returning the greater variable between two integer variables:
+		**""-""** Using pointers (by passing/returning pointer variables):
+			{{fbdoc item="filename" value="examples/manual/proguide/references/with-pointer1.bas"}}%%(freebasic)
+Function maxPtr (Byval p1 As Integer Ptr, Byval p2 As Integer Ptr) As Integer Ptr
+	If *p1 > *p2 Then
+		Return p1
+	Else
+		Return p2
+	End If
+End Function
+
+Dim As Integer i1 = 1, i2 = 2
+Print i1, i2
+*maxPtr(@i1, @i2) = 3
+Print i1, i2
+
+Sleep
+			%%Output:
+				%%
+ 1             2
+ 1             3
+%%
+		**""-""** Using references (by passing/returning reference variables):
+			{{fbdoc item="filename" value="examples/manual/proguide/references/with-reference1.bas"}}%%(freebasic)
+Function maxRef (Byref r1 As Integer, Byref r2 As Integer) Byref As Integer
+	If r1 > r2 Then
+		Return r1
+	Else
+		Return r2
+  End If
+End Function
+
+Dim As Integer i1 = 1, i2 = 2
+Print i1, i2
+maxRef(i1, i2) = 3
+Print i1, i2
+
+Sleep
+			%%Output:
+				%%
+ 1             2
+ 1             3
+%%
+
+	- Inheritance structure with overriding subroutine and overriding function with covariant return:
+		**""-""** Using pointers to objects:
+			{{fbdoc item="filename" value="examples/manual/proguide/references/with-pointer2.bas"}}%%(freebasic)
+Type myBase Extends Object
+	Declare Virtual Function clone () As myBase Ptr
+	Declare Virtual Sub Destroy ()
+End Type
+
+Function myBase.clone () As myBase Ptr
+	Dim As myBase Ptr pp = New myBase(This)
+	Print "myBase.clone() As myBase Ptr", pp
+	Function = pp
+End Function
+
+Sub myBase.Destroy ()
+	Print "myBase.Destroy()", , @This
+	Delete @This
+End Sub
+
+
+Type myDerived Extends myBase
+	Declare Function clone () As myDerived Ptr override  '' overriding member function with covariant return
+	Declare Sub Destroy () override                      '' overriding member subroutine
+End Type
+
+Function myDerived.clone () As myDerived Ptr      '' overriding member function with covariant return
+	Dim As myDerived Ptr pc = New myDerived(This)
+	Print "myDerived.clone() As myDerived Ptr", pc
+	Function = pc
+End Function
+
+Sub myDerived.Destroy ()                '' overriding member subroutine
+	Print "myDerived.Destroy()", , @This
+	Delete @This
+End Sub
+
+
+Dim As myDerived c
+
+Dim As myBase Ptr ppc = @c                '' base type pointer to derived object c
+Dim As myDerived Ptr pcc = @c             '' derived type pointer to derived object c
+
+Dim As myBase Ptr ppc1 = ppc->clone()     '' base type pointer to clone of object c
+'                                              (through its base type pointer and polymorphism)
+Dim As myDerived Ptr pcc1 = pcc->clone()  '' derived type pointer to derived object c
+'                                              (through its derived type pointer and covariance of return value)
+Print
+ppc1->Destroy()                           '' using base type pointer and polymorphism
+pcc1->Destroy()                           '' using derived type pointer
+
+Sleep
+			%%Output example:
+				%%
+myDerived.clone() As myDerived Ptr        4663904
+myDerived.clone() As myDerived Ptr        4663952
+
+myDerived.Destroy()                       4663904
+myDerived.Destroy()                       4663952
+%%
+		**""-""** Using references to objects:
+			{{fbdoc item="filename" value="examples/manual/proguide/references/with-reference2.bas"}}%%(freebasic)
+Type myBase Extends Object
+	Declare Virtual Function clone () Byref As myBase
+	Declare Virtual Sub Destroy ()
+End Type
+
+Function myBase.clone () Byref As myBase
+	Dim As myBase Ptr pp = New myBase(This)
+	Print "myBase.clone() Byref As myBase", pp
+	Function = *pp
+End Function
+
+Sub myBase.Destroy ()
+	Print "myBase.Destroy()", , @This
+	Delete @This
+End Sub
+
+
+Type myDerived Extends myBase
+	Declare Function clone () Byref As myDerived override  '' overriding member function with covariant return
+	Declare Sub Destroy () override                        '' overriding member subroutine
+End Type
+
+Function myDerived.clone () Byref As myDerived      '' overriding member function with covariant return
+	Dim As myDerived Ptr pc = New myDerived(This)
+	Print "myDerived.clone() Byref As myDerived", pc
+	Function = *pc
+End Function
+
+Sub myDerived.Destroy ()                '' overriding member subroutine
+	Print "myDerived.Destroy()", , @This
+	Delete @This
+End Sub
+
+
+Dim As myDerived c
+
+Dim Byref As myBase rpc = c                '' base type reference to derived object c
+Dim Byref As myDerived rcc = c             '' derived type reference to derived object c
+
+Dim Byref As myBase rpc1 = rpc.clone()     '' base type reference to clone of object c
+'                                               (through its base type reference and polymorphism)
+Dim Byref As myDerived rcc1 = rcc.clone()  '' derived type reference to derived object c
+'                                               (through its derived type reference and covariance of return value)
+Print
+rpc1.Destroy()                             '' using base typpe reference and polymorphism
+rcc1.Destroy()                             '' using derived type reference
+
+Sleep
+			%%Output example:
+				%%
+myDerived.clone() Byref As myDerived      9775712
+myDerived.clone() Byref As myDerived      9775760
+
+myDerived.Destroy()                       9775712
+myDerived.Destroy()                       9775760
+%%
+{{fbdoc item="section" value="Hacking on usage of references with the additional syntaxes allowed by FreeBASIC"}}
+	In FB, a reference is implemented under the hood through an internal pointer which holds the address of the variable.
+	
+	The access to this internal pointer is presently allowed for user, both in read and write (unlike many other languages):
+		**""-""** Therefore, the address of the referred variable (the value of the internal pointer) can be get by using the '@' operator applied on the reference variable symbol name:
+			##//variable_address// = [[KeyPgOpAt|@]]//ref//##
+		**""-""** And even, a reference can be reassigned (by modifying the value of the internal pointer) to refer to another variable (of compatible type) by doing:
+			##[[KeyPgOpAt|@]]//ref// = [[KeyPgOpAt|@]]//other_variable//##
+		**""-""** The address of the internal pointer can even be obtained:
+			##internal_pointer_address = [[KeyPgOpAt|@]][[KeyPgOpAt|@]]ref##
+		**Note:**
+			**""-""** A reference can also be re-initialized to a "null" reference:
+				##[[KeyPgOpAt|@]]//ref// = 0##
+			**""-""** A reference can even be directly declared as a "null" reference:
+				##[[KeyPgDim|Dim]] [[KeyPgByrefVariables|Byref]] [[KeyPgAs|As]] [[DataType|datatype]] //ref// = [[KeyPgOpValueOf|*]][[KeyPgCptr|Cptr]]([[DataType|datatype]] [[KeyPgPtr|Ptr]], 0)##
+				
+	Thus, by always using the same reference symbol name, one can mix the pure syntax on the reference with the syntax on its internal pointer.
+	
+	- Example of hacking on reference symbol name:
+		{{fbdoc item="filename" value="examples/manual/proguide/references/hacking.bas"}}%%(freebasic)
+Declare Function resizeZstring (Byref refZstring As Zstring, Byval length As Integer) Byref As Zstring
+Declare Sub prntZstring (Byref refZstring As Zstring)
+
+Dim Byref As Zstring refZ = *Cptr(Zstring Ptr, 0)  '' "null" reference declaration
+
+Const cz1 = "FB"
+@refZ = @(resizeZstring(refZ, Len(cz1)))           '' reference (re-)inititialization
+refZ = cz1
+prntZstring(refZ)
+
+Const cz2 = "FreeBASIC"
+@refZ = @(resizeZstring(refZ, Len(cz2)))           '' reference re-inititialization
+refZ = cz2
+prntZstring(refZ)
+
+Const cz3 = "FreeBASIC 1.06.0"
+@refZ = @(resizeZstring(refZ, Len(cz3)))           '' reference re-inititialization
+refZ = cz3
+prntZstring(refZ)
+
+Const cz4 = ""
+@refZ = @(resizeZstring(refZ, Len(cz4)))           '' reference re-inititialization to "null" reference
+refZ = cz4
+prntZstring(refZ)
+
+Sleep
+
+Function resizeZstring (Byref refZstring As Zstring, Byval length As Integer) Byref As Zstring
+	If length > 0 Then
+		If @refZstring = 0 Then
+			Print "Zstring memory buffer allocation"
+		Else
+			Print "Zstring memory buffer re-allocation"
+		End If
+		length += 1
+	Else
+		Print "Zstring memory buffer de-allocation"
+	End If
+'	Return *Cptr(Zstring Ptr, Reallocate(@refZstring, length * Sizeof(Zstring)))
+'	'' Using the "Return Byval ..." syntax allows to avoid casting + dereferencing as above
+	Return Byval Reallocate(@refZstring, length * Sizeof(Zstring))
+End Function
+
+Sub prntZstring (Byref refZstring As Zstring)
+	Print "  " & @refZstring, "'" & refZstring & "'"
+	Print
+End Sub
+		%%Output example:
+			%%
+Zstring memory buffer allocation
+  9513600     'FB'
+
+Zstring memory buffer re-allocation
+  9513600     'FreeBASIC'
+
+Zstring memory buffer re-allocation
+  9513600     'FreeBASIC 1.06.0'
+
+Zstring memory buffer de-allocation
+  0           ''
+%%
+{{fbdoc item="section" value="See also"}}
+	- ##[[KeyPgByref|Byref (parameters)]]##, ##[[KeyPgByrefFunction|Byref (function results)]]##, ##[[KeyPgByrefVariables|Byref (variables)]]##
+	- ##[[KeyPgOpAt|Operator @ (Address of)]]##, ##[[KeyPgOpValueOf|Operator * (Value of)]]##
+	- [[ProPgFromPtrToRef|From Pointers to References]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

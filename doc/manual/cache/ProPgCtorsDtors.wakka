@@ -1,4 +1,4 @@
-{{fbdoc item="title" value="Constructors and Destructors"}}----
+{{fbdoc item="title" value="Constructors and Destructors (basics)"}}----
 In charge of the creation and destruction of objects.
 
 **{{anchor name="OVERVIEW|Overview"}}**
@@ -6,6 +6,7 @@ In charge of the creation and destruction of objects.
 **{{anchor name="DEFCTOR|Default constructors"}}**
 **{{anchor name="COPYCTOR|Copy constructors"}}**
 **{{anchor name="CALLCTOR|Calling constructors"}}**
+**{{anchor name="COMPCTORDTOR|Compiler-provided constructors and destructors"}}**
 
 {{anchor name="OVERVIEW"}}{{fbdoc item="section" value="Overview"}}
 	Constructors and destructors are responsible for creating and destroying objects, respectively. In general, constructors give objects their initial state, that is, they give meaningful values to their objects' member data. Destructors perform the opposite function; they make sure any resources owned by their objects are properly freed.
@@ -86,7 +87,6 @@ scope
 	delete z
 end scope '' <- a, b and c are destroyed here as well
 %%
-
 {{anchor name="COMPCTORDTOR"}}{{fbdoc item="section" value="Compiler-provided constructors and destructors"}}
 	If no copy constructor is declared for a ##[[KeyPgType|Type]]## or ##[[KeyPgClass|Class]]##, the compiler provides one. If no constructor has been declared, the compiler also provides a default constructor.
 	
@@ -95,5 +95,10 @@ end scope '' <- a, b and c are destroyed here as well
 	If a destructor is not declared, the compiler generates one. This destructor calls object members' destructors and does nothing for numeric and pointer types. Again, if an object owns a dynamic resource, then the compiler-generated destructor will not be sufficient, as the resource will not be freed when the object is destroyed.
 	
 	This is commonly referred to as the "Rule of 3": If an object needs a custom copy constructor, assignment operator or destructor, chances are it needs all three.
+
+{{fbdoc item="section" value="See also"}}
+	- ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##
+	- [[ProPgCtorsAssignDtors|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #1)]]
+	- [[ProPgCtorsAssignDtors2|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

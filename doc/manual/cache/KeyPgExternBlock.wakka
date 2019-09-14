@@ -2,7 +2,7 @@
 Statement block to allow calling of functions compiled for specific languages or platforms.
 
 {{fbdoc item="syntax"}}##
-	**Extern { """C""" | """C++""" | """Windows""" | """Windows-MS""" }** [ **[[KeyPgLib|Lib]]** "//libname//" ]
+	**Extern { """C""" | """C++""" | """Windows""" | """Windows-MS""" | """rtlib""" }** [ **[[KeyPgLib|Lib]]** "//libname//" ]
 		//declarative statements//
 	**End Extern**
 ##
@@ -16,6 +16,8 @@ Statement block to allow calling of functions compiled for specific languages or
 	##**Extern """Windows"""**## blocks provide a default ##[[KeyPgStdcall|Stdcall]]## calling convention to procedures, preserve the case of all names declared within them, and on the Windows platform, append an ##"@//N//"## suffix to procedure names, where ##//N//## is the total size in bytes of any procedure parameters. Similar to the ##**Extern """C"""**## block, the same effect can be achieved by using ##[[KeyPgStdcall|stdcall]]## and ##[[KeyPgAlias|alias]]##.
 	
 	##**Extern """Windows-MS"""**## blocks are exactly like ##**Extern """Windows"""**## blocks but do not append the ##"@//N//"## suffix to procedure names on Windows.
+	
+	##**Extern """rtlib"""**## blocks combine the name decoration of ##**Extern """c"""**## and the default calling convention of fbc.  When used in a namespace, the symbol respects the scope of the namespace, however, the name decoration (name mangling) links the symbol to a regular C library.  This behaviour may be desired when declaring procedures that exist in the fb run-time library; where calling convention is based on the target, but we would like to have the compile time name respect the namespace.
 	
 	##[[KeyPgLib|Lib]] "//libname//"## can be used to specify a library which will be linked in as if ##[[KeyPgInclib|#inclib "libname"]]## or ##[[CompilerOptl|-l libname]]## had been used. Additionally, all procedure declarations inside the **Extern** block will use the specified ##[[KeyPgLib|Lib]] "//libname//"## as if it was specified as part of their declarations (but it can still be overridden with an explicit ##[[KeyPgLib|Lib]] "//libname//"##).
 
