@@ -38,7 +38,7 @@ The built-in procedures that create, wait-for/signal, and destroy **Conditional 
 	The condition variable mechanism allows threads to suspend execution and relinquish the processor until some condition is true.
 	
 	##[[KeyPgCondWait|CondWait]]## stops execution of the current thread until some condition becomes true.
-	##[[KeyPgCondSignal|CondSignal]]## allows to restart one thread waiting on the conditional,  while ##[[KeyPgCondBroadCast|CondBroadCast]]## allows to restart all threads waiting on the conditional.
+	##[[KeyPgCondSignal|CondSignal]]## allows to restart one thread waiting on the conditional,  while ##[[KeyPgCondBroadcast|CondBroadCast]]## allows to restart all threads waiting on the conditional.
 	
 	__Wait-for__
 		**""-""** Syntax:
@@ -55,11 +55,11 @@ The built-in procedures that create, wait-for/signal, and destroy **Conditional 
 		**""-""** Syntax:
 				##[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] [[KeyPgCondSignal|CondSignal]] ( [[KeyPgByval|byval]] //conditionalid// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )##
 			or
-				##[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] [[KeyPgCondBroadCast|CondBroadCast]] ( [[KeyPgByval|byval]] //conditionalid// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )##
+				##[[KeyPgDeclare|declare]] [[KeyPgSub|sub]] [[KeyPgCondBroadcast|CondBroadCast]] ( [[KeyPgByval|byval]] //conditionalid// [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]] )##
 		**""-""** Usage:
 				##[[KeyPgCondSignal|CondSignal]] ( //conditionalid// )##
 			or
-				##[[KeyPgCondBroadCast|CondBroadCast]] ( //conditionalid// )##
+				##[[KeyPgCondBroadcast|CondBroadCast]] ( //conditionalid// )##
 		**""-""** Parameter:
 			##//conditionalid//##
 				The ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]## handle of the conditional variable to be signaled.
@@ -67,11 +67,11 @@ The built-in procedures that create, wait-for/signal, and destroy **Conditional 
 	__Description__
 		Once the conditional variable is created with ##[[KeyPgCondCreate|CondCreate]]## and the threads are started, one of more of them (including the main thread executing main program) can be set in waiting for the conditional state by ##[[KeyPgCondWait|CondWait]]##.
 		They will be stopped until another thread signals by ##[[KeyPgCondSignal|CondSignal]]## that one among the waiting threads can restart.
-		##[[KeyPgCondBroadCast|CondBroadCast]]## can be used to restart all threads waiting for the conditional.
+		##[[KeyPgCondBroadcast|CondBroadCast]]## can be used to restart all threads waiting for the conditional.
 		
 		A condition variable must always be associated with a mutex to avoid a race condition created by one thread preparing to wait and another thread which may signal the condition before the first thread actually waits on it resulting in a deadlock. The thread will be perpetually waiting for a signal that is never sent. Any mutex can be used, there is no explicit link between the mutex and the condition variable.
 		
-		When calling ##[[KeyPgCondWait|CondWait]]##, mutex should already be locked (using the same mutex as one used with ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadCast|CondBroadCast]]##).
+		When calling ##[[KeyPgCondWait|CondWait]]##, mutex should already be locked (using the same mutex as one used with ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadcast|CondBroadCast]]##).
 		The detailed sequence is the following:
 			**""-""** An atomic unlock of the mutex is applied before entering in waiting on the conditional variable in order to release other eventual threads using this mutex (this is why ##[[KeyPgCondWait|CondWait]]## takes as arguments both the mutex and condition variable).
 			**""-""** The thread execution is suspended and does not consume any CPU time until the condition variable is signaled.
@@ -87,19 +87,19 @@ The built-in procedures that create, wait-for/signal, and destroy **Conditional 
 				**.** It might be that the awakened thread quickly comes back to waiting on the condition variables, and gets awakened again when the variable is signaled again, and so on (no wake-up priority based on history is assured).
 				**.** It is up to the programmer to make sure this situation does not occur if it implies bad behavior.
 				
-		When using ##[[KeyPgCondBroadCast|CondBroadCast]]##, this does not mean all threads are running together:
+		When using ##[[KeyPgCondBroadcast|CondBroadCast]]##, this does not mean all threads are running together:
 			**""-""** Each of them tries to lock the mutex again before returning from their wait function.
 			**""-""** And thus they will start running one by one, each one locking the mutex, doing their work, and freeing the mutex before the next thread gets its chance to run.
 			
 		**Note:**
 			**""-""** It is a good habit to use ##[[KeyPgCondWait|CondWait]]## in a protected way against eventual spurious wake-ups.
-			**""-""** For that, ##[[KeyPgCondWait|CondWait]]## is put within a loop for checking that a Boolean predicate is indeed true (predicate set true by another thread just before executing ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadCast|CondBroadCast]]##) when the thread has finished waiting:
+			**""-""** For that, ##[[KeyPgCondWait|CondWait]]## is put within a loop for checking that a Boolean predicate is indeed true (predicate set true by another thread just before executing ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadcast|CondBroadCast]]##) when the thread has finished waiting:
 				**##While predicate <> True
 					Condwait(conditionalid, mutexid)
 				Wend
 				predicate = False##**
 			**""-""** The loop can terminate only when the predicate is true.
-			**""-""** On the other hand, if the predicate is already true before the thread reaches the loop, ##[[KeyPgCondWait|CondWait]]## is downright skipped (allowing to take into account a case of ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadCast|CondBroadCast]]## that would have been lost otherwise, because prematurely executed in a second thread before the first thread is really waiting for this).
+			**""-""** On the other hand, if the predicate is already true before the thread reaches the loop, ##[[KeyPgCondWait|CondWait]]## is downright skipped (allowing to take into account a case of ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadcast|CondBroadCast]]## that would have been lost otherwise, because prematurely executed in a second thread before the first thread is really waiting for this).
 			
 		**See the pseudo-codes below for detailed coding by applying all proper above rules**.
 		
@@ -294,7 +294,7 @@ End Sub
 			%%
 {{fbdoc item="section" value="See also"}}
 	- ##[[KeyPgCondCreate|CondCreate]]##, ##[[KeyPgCondDestroy|CondDestroy]]##,
-	- ##[[KeyPgCondWait|CondWait]]##, ##[[KeyPgCondSignal|CondSignal]]##, ##[[KeyPgCondBroadCast|CondBroadCast]]##
+	- ##[[KeyPgCondWait|CondWait]]##, ##[[KeyPgCondSignal|CondSignal]]##, ##[[KeyPgCondBroadcast|CondBroadCast]]##
 	- [[ProPgMultiThreading|Multi-Threading]]
 	- [[ProPgMtThreads|Threads]]
 	- [[ProPgMtMutualExclusion|Mutual Exclusion]]

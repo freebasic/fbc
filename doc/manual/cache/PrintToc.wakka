@@ -18,6 +18,8 @@
 		[[KeyPgDdFBBackend|__FB_BACKEND__]]
 		[[KeyPgDdFBBigEndian|__FB_BIGENDIAN__]]
 		[[KeyPgDdFBBuildDate|__FB_BUILD_DATE__]]
+		[[KeyPgDdfbbuilddateiso|__FB_BUILD_DATE_ISO__]]
+		[[KeyPgDdfbbuildsha1|__FB_BUILD_SHA1__]]
 		[[KeyPgDdfbcygwin|__FB_CYGWIN__]]
 		[[KeyPgDdfbdarwin|__FB_DARWIN__]]
 		[[KeyPgDdfbdebug|__FB_DEBUG__]]

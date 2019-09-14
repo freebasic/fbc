@@ -51,6 +51,11 @@ The **Inheritance Polymorphism** is the ability of calling from the base-type th
 			The built-in 'Object' type also provides the RTTI (Run-Time Type Information) capacity for all types derived from it using the 'Extends' declaration. The RTTI capacity allows to determine the real type of an object at run-time, which can be different of its at compile-time.
 			The 'operator Is (rtti)' uses it to check if an object is compatible to a type derived from its compile-time type, because RTTI provides not only the real runtime type-name of the object but also all type-names of its base types, up to the 'Object' built-in type.
 			Nevertheless these type-names stored by RTTI (referenced by a specific pointer in the vtbl) are mangled names inaccessible directly from a FreeBASIC keyword.
+	**__Note:__**
+		Polymorphism is not directly compatible with:
+			**""-""** any operators 'New[]' or 'Delete[]' (the array versions for  statement/expression/overload operators) because the use of a sub-type pointer (instead of the real type) fails for accessing the other elements (except the first),
+			**""-""** even the overload operator 'Delete' is not directly compatible because it can not be declared virtual (being static).
+		Instead of having to call such an operator 'Delete([])' statement on derived-type pointer, the safest way is to simply call (on base-type pointer) an overridden user virtual member procedure that will automatically launch the operator 'Delete([]') statement at derived-type level.
 
 {{fbdoc item="section" value="Inheritance polymorphism learning, through example (1): 'Animal type collection'"}}
 	In the below proposed example, the polymorphic part is broken down to better bring out all the elements necessary for the mechanics of polymorphism.

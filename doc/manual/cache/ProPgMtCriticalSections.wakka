@@ -308,6 +308,7 @@ Sleep
 '
 '49 increments per second
 			%%Same result values because synchronous counting (despite of increasing tempo values).
+
 {{fbdoc item="section" value="See also"}}
 	- [[ProPgMultiThreading|Multi-Threading]]
 	- [[ProPgMtThreads|Threads]]
