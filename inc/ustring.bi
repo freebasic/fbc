@@ -1,4 +1,3 @@
-
 #pragma once
 
 '' ****************************************************************************************
@@ -13,30 +12,14 @@
 '' MERCHANTABILITY AND/OR FITNESS FOR A PARTICULAR PURPOSE.
 '' ########################################################################################
 
-
-#IFDEF __FB_DOS__
-  TYPE DWSTR AS STRING
-  #define ustring STRING
-
-  #Print ======>
-  #Print ======> Warning, Compiled under DOS : DWSTR type is only an Alias for String!
-  #Print ======>
-
-#ELSE
-  #ifndef ustring
-    #define ustring FB_USTRING.DWSTR                  ''use replacement
-  #endif
+#ifndef ustring
+  #define ustring FB_USTRING.DWSTR                  ''use replacement
 #endif
-
-
 ''***********************************************************************************************
 '' Replacement for José Roca´s CWstr. This is mostly a clone of his code without 
 '' Windows dependency and adapted to work wih Linux as well.
 '' This class doesn´t work in DOS, therefore "USTRING" is redefined as STRING in DOS
 ''***********************************************************************************************
-
-
-#IFNDEF __FB_DOS__
 
 
 NAMESPACE FB_USTRING                              
@@ -628,8 +611,3 @@ PRIVATE FUNCTION ValULNG OVERLOAD (BYREF cws AS FB_USTRING.DWSTR) AS ulongint
    RETURN .VALULNG(*cast(WSTRING PTR, cws.m_pBuffer))
 END FUNCTION
 
-
-''***********************************************************************************************
-''***********************************************************************************************
-''***********************************************************************************************
-#ENDIF   ''IFNDEF __FB_DOS__
