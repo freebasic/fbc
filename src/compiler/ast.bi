@@ -561,6 +561,7 @@ declare sub astUpdateCONVFD2FS _
 		byval is_expr as integer _
 	)
 
+declare function astSkipConstCASTs( byval n as ASTNODE ptr ) as ASTNODE ptr
 declare function astSkipNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
 declare function astRemoveNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
 declare function astSkipCASTs( byval n as ASTNODE ptr ) as ASTNODE ptr

@@ -724,6 +724,15 @@ function astLoadCONV _
 
 end function
 
+function astSkipConstCASTs( byval n as ASTNODE ptr ) as ASTNODE ptr
+	function = n
+	if( n->class = AST_NODECLASS_CONV ) then
+		if( n->cast.doconv = FALSE ) then
+			function = n->l
+		end if
+	end if
+end function
+
 function astSkipNoConvCAST( byval n as ASTNODE ptr ) as ASTNODE ptr
 	function = n
 	if( n->class = AST_NODECLASS_CONV ) then
