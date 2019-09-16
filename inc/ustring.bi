@@ -23,8 +23,6 @@
 
 
 NAMESPACE FB_USTRING                              
-TYPE DWSTR_ AS DWSTR                                  ''Forward reference
-
 	const UCHAR_SIZE = sizeof(wstring)
 
 ''***********************************************************************************************
