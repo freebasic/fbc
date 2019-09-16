@@ -25,11 +25,20 @@
 NAMESPACE FB_USTRING                              
 	const UCHAR_SIZE = sizeof(wstring)
 
+	#if UCHAR_SIZE = 4
+		type UCHAR as ulong
+	#elseif UCHAR_SIZE = 2
+		type UCHAR as ushort
+	#elseif UCHAR_SIZE = 1
+		type UCHAR as ubyte
+	#else
+		#error unsupported wstring size
+	#endif
+
 ''***********************************************************************************************
 '' DWSTR CLASS
 ''***********************************************************************************************
 
-#if sizeof(wstring) = 2
 TYPE DWSTR extends wstring
   Private:
     m_Capacity AS Ulong                               ''the total size of the buffer
@@ -65,7 +74,7 @@ TYPE DWSTR extends wstring
     DECLARE SUB Add (BYVAL pwszStr AS WSTRING PTR)
     DECLARE SUB Add (BYREF ansiStr AS STRING)
 
-    DECLARE OPERATOR [] (BYVAL nIndex AS ulong) byref AS USHORT
+    DECLARE OPERATOR [] (BYVAL nIndex AS ulong) byref AS UCHAR
 
     DECLARE OPERATOR CAST () BYREF AS WSTRING
     DECLARE OPERATOR CAST () AS ANY PTR
@@ -85,66 +94,6 @@ TYPE DWSTR extends wstring
     DECLARE OPERATOR &= (BYVAL n AS LONGINT)
     DECLARE OPERATOR &= (BYVAL n AS DOUBLE)
 END TYPE
-
-#else
-
-TYPE DWSTR extends wstring
-  Private:
-    m_Capacity AS Ulong                               ''the total size of the buffer
-    m_GrowSize AS LONG = 260 * UCHAR_SIZE        ''how much to grow the buffer by when required
-
-  Public:
-    m_pBuffer AS UBYTE PTR                            ''pointer to the buffer 
-    m_BufferLen AS ulong                              ''length in bytes of the current string in the buffer
-
-    DECLARE CONSTRUCTOR
-    DECLARE CONSTRUCTOR (BYVAL pwszStr AS WSTRING PTR)
-    DECLARE CONSTRUCTOR (BYREF ansiStr AS STRING)
-    DECLARE CONSTRUCTOR (BYREF cws AS DWSTR)
-    DECLARE CONSTRUCTOR (BYVAL n AS LONGINT)
-    DECLARE CONSTRUCTOR (BYVAL n AS DOUBLE)
-
-    DECLARE DESTRUCTOR
-
-    DECLARE SUB ResizeBuffer (BYVAL nValue AS ulong)
-    DECLARE FUNCTION AppendBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nNumBytes AS ulong) AS BOOLEAN
-    DECLARE FUNCTION InsertBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nIndex AS ulong, BYVAL nNumBytes AS ulong) AS BOOLEAN
-
-    DECLARE PROPERTY GrowSize () AS LONG
-    DECLARE PROPERTY GrowSize (BYVAL nValue AS LONG)
-    DECLARE PROPERTY Capacity () AS ulong
-    DECLARE PROPERTY Capacity (BYVAL nValue AS ulong)
-    DECLARE PROPERTY SizeAlloc (BYVAL nChars AS ulong)
-    DECLARE PROPERTY SizeOf () AS ulong
-
-    DECLARE SUB Clear
-
-    DECLARE SUB Add (BYREF cws AS DWSTR)
-    DECLARE SUB Add (BYVAL pwszStr AS WSTRING PTR)
-    DECLARE SUB Add (BYREF ansiStr AS STRING)
-
-    DECLARE OPERATOR [] (BYVAL nIndex AS ulong) byref AS Ulong
-
-    DECLARE OPERATOR CAST () BYREF AS WSTRING
-    DECLARE OPERATOR CAST () AS ANY PTR
-
-    DECLARE OPERATOR LET (BYREF ansiStr AS STRING)
-    DECLARE OPERATOR LET (BYREF wszStr AS CONST WSTRING)
-    DECLARE OPERATOR LET (BYREF pwszStr AS WSTRING PTR)
-    DECLARE OPERATOR LET (BYREF cws AS DWSTR)
-
-    DECLARE OPERATOR += (BYREF wszStr AS WSTRING)
-    DECLARE OPERATOR += (BYREF cws AS DWSTR)
-    DECLARE OPERATOR += (BYREF ansiStr AS STRING)
-
-    DECLARE OPERATOR &= (BYREF wszStr AS WSTRING)
-    DECLARE OPERATOR &= (BYREF cws AS DWSTR)
-    DECLARE OPERATOR &= (BYREF ansiStr AS STRING)
-    DECLARE OPERATOR &= (BYVAL n AS LONGINT)
-    DECLARE OPERATOR &= (BYVAL n AS DOUBLE)
-END TYPE
-#endif
-
 
 ''***********************************************************************************************
 '' DWSTR constructors
@@ -235,48 +184,25 @@ PRIVATE OPERATOR DWSTR.CAST () BYREF AS WSTRING       ''returns the string data 
   OPERATOR = *cast(WSTRING PTR, m_pBuffer)
 END OPERATOR
 
-
-#if sizeof(wstring) = 2
-PRIVATE OPERATOR DWSTR.[] (BYVAL nIndex AS ulong) byref AS USHORT
+PRIVATE OPERATOR DWSTR.[] (BYVAL nIndex AS ulong) byref AS UCHAR
 ''***********************************************************************************************
 '' Returns the corresponding ASCII or Unicode integer representation of the character at the
 '' zerobased position specified by the nIndex parameter. Can be used to change a value too.
 ''***********************************************************************************************
-static zero as ushort                                 ''fallback for nIndex outside valid data
+static zero as UCHAR                                 ''fallback for nIndex outside valid data
 
   IF nIndex > (m_BufferLen \ UCHAR_SIZE) THEN
-    zero = &HFFFF
+    zero = not 0
     OPERATOR = zero                                   ''return error
     exit operator
   end if
   
-  OPERATOR = *cast(USHORT ptr, m_pBuffer + (nIndex * UCHAR_SIZE ))
+  OPERATOR = *cast(UCHAR ptr, m_pBuffer + (nIndex * UCHAR_SIZE ))
 END OPERATOR
-
-
-#else
-PRIVATE OPERATOR DWSTR.[] (BYVAL nIndex AS ulong) byref AS Ulong
-''***********************************************************************************************
-'' Returns the corresponding ASCII or Unicode integer representation of the character at the
-'' zerobased position specified by the nIndex parameter. Can be used to change a value too.
-''***********************************************************************************************
-static zero as ulong                                  ''fallback for nIndex outside valid data
-
-  IF nIndex > (m_BufferLen \ UCHAR_SIZE) THEN
-    zero = &HFFFFFFFF
-    OPERATOR = zero                                   ''return error
-    exit operator
-  end if
-  
-  OPERATOR = *cast(Ulong ptr, m_pBuffer + (nIndex * UCHAR_SIZE))
-END OPERATOR
-#endif
-
 
 ''***********************************************************************************************
 '' Assigns new text to the DWSTR.
 ''***********************************************************************************************
-
 
 PRIVATE OPERATOR DWSTR.Let (BYREF wszStr AS CONST WSTRING)
   this.Clear
@@ -318,8 +244,6 @@ END OPERATOR
 PRIVATE OPERATOR DWSTR.+= (BYREF cws AS DWSTR)        ''appends a DWSTR to the DWSTR
   this.Add(cws)
 END OPERATOR
-
-
 
 PRIVATE OPERATOR DWSTR.&= (BYREF wszStr AS WSTRING)   ''appends a wstring to the DWSTR
   this.Add(wszStr)
