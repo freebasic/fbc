@@ -38,4 +38,6 @@ declare function FileDateTime alias "fb_FileDateTime" ( byval filename as zstrin
 
 #endif
 
+declare function flush alias "fb_Flush" ( byval filenumber as long) as long
+
 #endif
