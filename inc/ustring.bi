@@ -54,8 +54,6 @@ TYPE DWSTR extends wstring
     DECLARE FUNCTION AppendBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nNumBytes AS ulong) AS BOOLEAN
     DECLARE FUNCTION InsertBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nIndex AS ulong, BYVAL nNumBytes AS ulong) AS BOOLEAN
 
-    DECLARE PROPERTY Size () AS LONG
-    DECLARE PROPERTY Size (BYVAL nValue AS LONG)
     DECLARE PROPERTY GrowSize () AS LONG
     DECLARE PROPERTY GrowSize (BYVAL nValue AS LONG)
     DECLARE PROPERTY Capacity () AS ulong
@@ -115,8 +113,6 @@ TYPE DWSTR extends wstring
     DECLARE FUNCTION AppendBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nNumBytes AS ulong) AS BOOLEAN
     DECLARE FUNCTION InsertBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nIndex AS ulong, BYVAL nNumBytes AS ulong) AS BOOLEAN
 
-    DECLARE PROPERTY Size () AS LONG
-    DECLARE PROPERTY Size (BYVAL nValue AS LONG)
     DECLARE PROPERTY GrowSize () AS LONG
     DECLARE PROPERTY GrowSize (BYVAL nValue AS LONG)
     DECLARE PROPERTY Capacity () AS ulong
@@ -485,16 +481,6 @@ END SUB
 ''***********************************************************************************************
 '' Properties
 ''***********************************************************************************************
-
-
-PRIVATE PROPERTY DWSTR.Size() AS LONG
-  PROPERTY = u_size
-END PROPERTY
-
-PRIVATE PROPERTY DWSTR.Size (BYVAL nChars AS LONG)
-  IF nChars > -1 THEN u_size = nChars ELSE u_size = -1
-END PROPERTY
-
 
 ''***********************************************************************************************
 '' Number of characters to preallocate to minimize multiple allocations when doing multiple
