@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-FBCALL int fb_Flush( int fnum )
+FBCALL int fb_FileFlush( int fnum )
 /* flush file buffers to disk */
 {
 FB_FILE *handle;
