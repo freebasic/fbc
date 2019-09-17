@@ -7,16 +7,12 @@ FBCALL int fb_FileFlush( int fnum )
 {
 FB_FILE *handle;
 
+    int res;
+
     FB_LOCK();
     handle = FB_FILE_TO_HANDLE(fnum);
 
     if (!handle)
-    {
-        FB_UNLOCK();
-        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
-
-    if (handle->type != FB_FILE_TYPE_NORMAL)
     {
         FB_UNLOCK();
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -30,12 +26,15 @@ FB_FILE *handle;
 
     if( handle->hooks && handle->hooks->pfnFlush )
     {
-        FB_UNLOCK();
-        return handle->hooks->pfnFlush( handle );
+        res = handle->hooks->pfnFlush( handle );
     }
     else
     {
-        FB_UNLOCK();
-        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }  
+
+    FB_UNLOCK();
+
+    return res;
+
 }
