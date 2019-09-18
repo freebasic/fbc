@@ -16,6 +16,7 @@ static FB_FILE_HOOKS hooks_dev_scrn = {
     fb_DevScrnReadLine,
     fb_DevScrnReadLineWstr,
     NULL,
+    NULL,
     NULL
 };
 

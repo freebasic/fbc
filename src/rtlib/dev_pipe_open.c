@@ -25,7 +25,8 @@ static FB_FILE_HOOKS hooks_dev_pipe = {
     fb_DevFileReadLine,
     fb_DevFileReadLineWstr,
     NULL,
-    fb_DevFileFlush
+    fb_DevFileFlush,
+    NULL
 };
 
 int fb_DevPipeOpen( FB_FILE *handle, const char *filename, size_t filename_len )

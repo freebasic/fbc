@@ -75,6 +75,7 @@ typedef int (*FnFileUnlock)         ( struct _FB_FILE *handle, fb_off_t position
 typedef int (*FnFileReadLine)       ( struct _FB_FILE *handle, FBSTRING *dst );
 typedef int (*FnFileReadLineWstr)   ( struct _FB_FILE *handle, FB_WCHAR *dst, ssize_t dst_chars );
 typedef int (*FnFileFlush)          ( struct _FB_FILE *handle );
+typedef int (*FnFileSetEof)         ( struct _FB_FILE *handle );
 
 typedef struct _FB_FILE_HOOKS {
     FnFileEof           pfnEof;
@@ -91,6 +92,7 @@ typedef struct _FB_FILE_HOOKS {
     FnFileReadLineWstr  pfnReadLineWstr;
     FnFileSetWidth      pfnSetWidth;
     FnFileFlush         pfnFlush;
+    FnFileSetEof        pfnSetEof;
 } FB_FILE_HOOKS;
 
 typedef struct _FB_FILE {

@@ -16,7 +16,8 @@ static FB_FILE_HOOKS hooks_dev_file = {
     fb_DevFileReadLineEncod,
 	fb_DevFileReadLineEncodWstr,
     NULL,
-    fb_DevFileFlush
+    fb_DevFileFlush,
+    NULL
 };
 
 static int hCheckBOM( FB_FILE *handle )

@@ -16,7 +16,8 @@ static FB_FILE_HOOKS hooks_dev_file = {
     fb_DevFileReadLine,
     fb_DevFileReadLineWstr,
     NULL,
-    fb_DevFileFlush
+    fb_DevFileFlush,
+    fb_DevFileSetEof
 };
 
 void fb_hSetFileBufSize( FILE *fp )

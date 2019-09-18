@@ -115,6 +115,7 @@ static FB_FILE_HOOKS hooks_dev_com = {
     NULL,
     NULL,
     NULL,
+    NULL,
     NULL
 };
 
