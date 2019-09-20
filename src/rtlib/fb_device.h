@@ -7,6 +7,7 @@
        /* FILE */
        void         fb_hSetFileBufSize      ( FILE *fp );
        int          fb_DevFileOpen          ( FB_FILE *handle, const char *filename, size_t filename_len );
+       int          fb_DevFileOpen_W        ( FB_FILE *handle, const FB_WCHAR *filename, size_t filename_len );
        int          fb_DevFileClose         ( FB_FILE *handle );
        int          fb_DevFileEof           ( FB_FILE *handle );
 
@@ -29,6 +30,9 @@
 
        /* ENCOD */
        int          fb_DevFileOpenEncod     ( FB_FILE *handle, const char *filename, size_t fname_len );
+#if defined HOST_WIN32                                //jk-file
+       int          fb_DevFileOpenEncod_W   ( FB_FILE *handle, const FB_WCHAR *filename, size_t fname_len );
+#endif
        int          fb_DevFileOpenUTF       ( FB_FILE *handle, const char *filename, size_t filename_len );
        int          fb_DevFileReadEncod     ( FB_FILE *handle, void *dst, size_t *max_chars );
        int          fb_DevFileReadEncodWstr ( FB_FILE *handle, FB_WCHAR *dst, size_t *max_chars );

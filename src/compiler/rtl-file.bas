@@ -8,8 +8,22 @@
 #include once "lex.bi"
 #include once "rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 71 ) = _
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 74 ) = _                    'jk-file  71 + 3 -> (71 + 6)
 	{ _
+		( _
+			@FB_RTL_FILEOPEN_W, NULL, _                     'jk-file
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			6, _
+	 		{ _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+	 		} _
+		), _
 		/' function fb_FileOpen _
 			( _
 				byref str as const string, _
@@ -58,6 +72,21 @@
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 		), _
+		( _
+			@FB_RTL_FILEOPEN_ENCOD_W, NULL, _               'jk-file
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			7, _
+	 		{ _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
+	 		} _  
+		), _
 		/' function fb_FileOpenShort _
 			( _
 				byref str_file_mode as const string, _
@@ -74,6 +103,20 @@
 			6, _
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
+	 		} _
+		), _
+		( _
+			@FB_RTL_FILEOPEN_SHORT_W, NULL, _               'jk-file
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			6, _
+	 		{ _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
@@ -1210,11 +1253,34 @@ function rtlFileOpen _
 
 	select case openkind
 	case FB_FILE_TYPE_FILE
+        astTryOvlStringCONV( filename )
+
 		if( fencoding = NULL ) then
-			f = PROCLOOKUP( FILEOPEN )
-			doencoding = FALSE
-		else
-			f = PROCLOOKUP( FILEOPEN_ENCOD )
+ 	        if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+                if( astGetDataType( filename ) <> FB_DATATYPE_WCHAR ) then
+                    f = PROCLOOKUP( FILEOPEN )
+                    doencoding = FALSE
+                else
+                    f = PROCLOOKUP( FILEOPEN_W )
+                    doencoding = FALSE
+                end if
+                
+            else
+                f = PROCLOOKUP( FILEOPEN )
+                doencoding = FALSE
+            end if
+
+        else
+ 	        if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+                if( astGetDataType( filename ) <> FB_DATATYPE_WCHAR ) then
+                    f = PROCLOOKUP( FILEOPEN_ENCOD )
+                else
+                    f = PROCLOOKUP( FILEOPEN_ENCOD_W )
+                end if
+                
+            else
+                f = PROCLOOKUP( FILEOPEN_ENCOD )
+            end if
 		end if
 
     case FB_FILE_TYPE_CONS
@@ -1313,8 +1379,17 @@ function rtlFileOpenShort _
 	function = NULL
 
 	'' this is the short form of the OPEN command
-	proc = astNewCALL( PROCLOOKUP( FILEOPEN_SHORT ) )
-
+    if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+        if( astGetDataType( filename ) <> FB_DATATYPE_WCHAR ) then
+            f = PROCLOOKUP( FILEOPEN_SHORT )
+        else
+            f = PROCLOOKUP( FILEOPEN_SHORT_W )
+        end if
+        
+    else
+        f = PROCLOOKUP( FILEOPEN_SHORT )
+    end if
+    
 	'' mode as string
 	if( astNewARG( proc, fmode ) = NULL ) then
 		exit function
