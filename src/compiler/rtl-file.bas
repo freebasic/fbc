@@ -1257,13 +1257,13 @@ function rtlFileOpen _
 
 		if( fencoding = NULL ) then
  	        if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
-                if( astGetDataType( filename ) <> FB_DATATYPE_WCHAR ) then
-                    f = PROCLOOKUP( FILEOPEN )
-                    doencoding = FALSE
-                else
+'                if( astGetDataType( filename ) <> FB_DATATYPE_WCHAR ) then
+'                    f = PROCLOOKUP( FILEOPEN )
+'                    doencoding = FALSE
+'                else
                     f = PROCLOOKUP( FILEOPEN_W )
                     doencoding = FALSE
-                end if
+'                end if
                 
             else
                 f = PROCLOOKUP( FILEOPEN )
@@ -1272,11 +1272,11 @@ function rtlFileOpen _
 
         else
  	        if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
-                if( astGetDataType( filename ) <> FB_DATATYPE_WCHAR ) then
-                    f = PROCLOOKUP( FILEOPEN_ENCOD )
-                else
+'                if( astGetDataType( filename ) <> FB_DATATYPE_WCHAR ) then
+'                    f = PROCLOOKUP( FILEOPEN_ENCOD )
+'                else
                     f = PROCLOOKUP( FILEOPEN_ENCOD_W )
-                end if
+'                end if
                 
             else
                 f = PROCLOOKUP( FILEOPEN_ENCOD )
@@ -1380,11 +1380,11 @@ function rtlFileOpenShort _
 
 	'' this is the short form of the OPEN command
     if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
-        if( astGetDataType( filename ) <> FB_DATATYPE_WCHAR ) then
-            f = PROCLOOKUP( FILEOPEN_SHORT )
-        else
+'        if( astGetDataType( filename ) <> FB_DATATYPE_WCHAR ) then
+'            f = PROCLOOKUP( FILEOPEN_SHORT )
+'        else
             f = PROCLOOKUP( FILEOPEN_SHORT_W )
-        end if
+'        end if
         
     else
         f = PROCLOOKUP( FILEOPEN_SHORT )

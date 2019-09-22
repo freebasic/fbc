@@ -56,7 +56,7 @@ typedef int (*FnFileTest)           ( struct _FB_FILE *handle, const char *filen
                                       size_t filename_len );
 typedef int (*FnFileOpen)           ( struct _FB_FILE *handle, const char *filename,
                                       size_t filename_len );
-typedef int (*FnFileOpen_W)           ( struct _FB_FILE *handle, const FB_WCHAR *filename,
+typedef int (*FnFileOpen_W)         ( struct _FB_FILE *handle, const FB_WCHAR *filename,
                                       size_t filename_len );
 typedef int (*FnFileEof)            ( struct _FB_FILE *handle );
 typedef int (*FnFileClose)          ( struct _FB_FILE *handle );
