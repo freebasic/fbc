@@ -14,10 +14,17 @@ int fb_FileFlushEx( FB_FILE *handle )
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
-    if (handle->access == FB_FILE_ACCESS_READ)
+    switch( handle->mode )
     {
+    case FB_FILE_MODE_BINARY:
+    case FB_FILE_MODE_RANDOM:
+    case FB_FILE_MODE_OUTPUT:
+    case FB_FILE_MODE_APPEND:
+        break;
+    default:
         FB_UNLOCK();
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        break;
     }
 
     if( handle->hooks && handle->hooks->pfnFlush )
@@ -39,4 +46,3 @@ FBCALL int fb_FileFlush( int fnum )
 {
     return fb_FileFlushEx(FB_FILE_TO_HANDLE(fnum));
 }
-
