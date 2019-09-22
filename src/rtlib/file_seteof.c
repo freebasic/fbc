@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-FBCALL int fb_SetEof( int fnum )
+FBCALL int fb_FileSetEof( int fnum )
 {
 /***********************************************************************************************
  Truncate a file opened for BINARY or RANDOM at the current position. Everything before the 
