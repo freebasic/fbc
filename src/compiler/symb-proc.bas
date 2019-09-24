@@ -1623,19 +1623,50 @@ end function
 
 	if( rec_cnt = 0 ) then
 		dim as integer err_num = any
-		dim as FBSYMBOL ptr proc = any
+'		dim as FBSYMBOL ptr proc = any
+		dim as FB_OVLPROC_MATCH_SCORE score = 0
 
 		rec_cnt += 1
-		proc = symbFindCastOvlProc( param_dtype, _
+
+'***********************************************************************************************
+' jk-file (try)
+'***********************************************************************************************
+		score = symbFindCastOvlProc2( param_dtype, _
 									param_subtype, _
 									arg_expr, _
 									@err_num )
 		rec_cnt -= 1
 
-		if( proc <> NULL ) then
+'***********************************************************************************************
+'jk: this shouldn´t be a yes or no, but a better score for a better match !!!
+'***********************************************************************************************
+    if score = FB_OVLPROC_FULLMATCH then              '75
+'ods("score1: fullmatch")
+			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT + 2
+
+		elseif score >= FB_OVLPROC_TYPEMATCH then         '50
+'ods("score1: 0> typematch")
+			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT + 1
+
+    elseif score > 0 then
+'ods("score1: halfmatch")
 			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT
 		end if
 	end if
+
+
+
+'		proc = symbFindCastOvlProc( param_dtype, _
+'									param_subtype, _
+'									arg_expr, _
+'									@err_num )
+'		rec_cnt -= 1
+'
+'		if( proc <> NULL ) then                           'jk: this shouldn´t be a yes or no, but a better score for
+'                                                      'an exact match !!!
+'			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT
+'		end if
+'	end if
 #endmacro
 
 '':::::
@@ -2533,6 +2564,121 @@ function symbFindCastOvlProc _
 	end if
 
 	function = closest_proc
+
+end function
+
+
+'***********************************************************************************************
+' jk-file (try)
+'***********************************************************************************************
+function symbFindCastOvlProc2 _
+	( _
+		byval to_dtype as integer, _                      'parameter type (to cast to)
+		byval to_subtype as FBSYMBOL ptr, _               'parameter subtype
+		byval l as ASTNODE ptr, _                         'argument (in code to compile)
+		byval err_num as FB_ERRMSG ptr _
+	) as FB_OVLPROC_MATCH_SCORE
+
+	dim as FBSYMBOL ptr proc_head = any
+
+   	*err_num = FB_ERRMSG_OK
+
+	'' arg must be an UDT
+   	select case astGetDataType( l )
+   	case FB_DATATYPE_STRUCT
+   		dim as FBSYMBOL ptr subtype = astGetSubType( l )
+   		if( subtype = NULL ) then
+   			return NULL
+   		end if
+
+   		if( subtype->udt.ext = NULL ) then
+			return NULL
+		end if
+
+   		proc_head = symbGetUDTOpOvlTb( subtype )(AST_OP_CAST - AST_OP_SELFBASE)
+
+   	case else
+   		return NULL
+   	end select
+
+   	if( proc_head = NULL ) then
+   		return NULL
+   	end if
+
+	dim as FBSYMBOL ptr p = any, proc = any, closest_proc = any
+	dim as FB_OVLPROC_MATCH_SCORE matchscore = any, max_matchscore = any
+	dim as integer matchcount = any
+
+	'' must check the return type, not the parameter..
+	closest_proc = NULL
+	max_matchscore = FB_OVLPROC_NO_MATCH
+	matchcount = FB_OVLPROC_NO_MATCH
+
+	if( typeGet( to_dtype ) <> FB_DATATYPE_VOID ) then  'everything but void
+		'' for each overloaded proc..
+		proc = proc_head
+		do while( proc <> NULL )
+
+			matchscore = hCheckCastOvl( proc, to_dtype, to_subtype )
+			if( matchscore > max_matchscore ) then
+		   		closest_proc = proc
+		   		max_matchscore = matchscore
+				matchcount = 1
+
+			'' same? ambiguity..
+			elseif( matchscore = max_matchscore ) then
+				if( max_matchscore > 0 ) then
+					matchcount += 1
+				end if
+			end if
+
+			'' next
+			proc = symbGetProcOvlNext( proc )
+		loop
+
+	'' find the most precise possible..
+	else                                                'return void
+		'' for each overloaded proc..
+		proc = proc_head
+		do while( proc <> NULL )
+
+			'' simple type?
+			if( symbGetSubType( proc ) = NULL ) then
+				if( symbGetType( proc ) <= FB_DATATYPE_DOUBLE ) then
+					'' more precise than the last?
+					if( symbGetType( proc ) > to_dtype ) then
+		   				closest_proc = proc
+		   				to_dtype = symbGetType( proc )
+					end if
+				end if
+			end if
+
+			'' next
+			proc = symbGetProcOvlNext( proc )
+		loop
+
+	end if
+
+	'' more than one possibility?
+	if( matchcount > 1 ) then
+'ods("ambiguos 2")
+		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
+		errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
+		max_matchscore = NULL
+	else
+		if( closest_proc <> NULL ) then
+			'' check visibility
+			if( symbCheckAccess( closest_proc ) = FALSE ) then
+				*err_num = FB_ERRMSG_ILLEGALMEMBERACCESS
+				errReportEx( FB_ERRMSG_ILLEGALMEMBERACCESS, _
+							 symbGetFullProcName( closest_proc ) )
+				closest_proc = NULL
+    		max_matchscore = NULL
+			end if
+		end if
+	end if
+
+	function = max_matchscore
 
 end function
 
