@@ -8,7 +8,7 @@
 #include once "lex.bi"
 #include once "rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 74 ) = _                    'jk-file  71 + 3 -> (71 + 6)
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 75 ) = _                    'jk-file  71 + 4 -> (71 + 6)
 	{ _
 		( _
 			@FB_RTL_FILEOPEN_W, NULL, _                     'jk-file
@@ -1155,10 +1155,20 @@
 		( _
 			@"kill", @"fb_FileKill", _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_NONE, _
+			NULL, FB_RTL_OPT_OVER,_   FB_RTL_OPT_NONE, _
 			1, _
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
+	 		} _
+		), _
+		/' function kill overload( byref str as const string ) as long '/ _
+		( _
+			@"kill", @"fb_FileKill_W", _                    'jk-file
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER,_   FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
 		), _
 		/' sub reset overload( ) '/ _
