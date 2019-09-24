@@ -324,6 +324,7 @@
 #define FB_RTL_FILEUNLOCK 				"fb_FileUnlock"
 #define FB_RTL_FILEUNLOCKLARGE 			"fb_FileUnlockLarge"
 #define FB_RTL_FILERENAME 				"fb_rename"
+#define FB_RTL_FILERENAME_W				"fb_Rename_W"
 
 #define FB_RTL_WIDTH 					"fb_Width"
 #define FB_RTL_WIDTHDEV 				"fb_WidthDev"
@@ -738,7 +739,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FILEUNLOCK
 	FB_RTL_IDX_FILEUNLOCKLARGE
 	FB_RTL_IDX_FILERENAME
-
+	FB_RTL_IDX_FILERENAME_W
+	
 	FB_RTL_IDX_WIDTH
 	FB_RTL_IDX_WIDTHDEV
 	FB_RTL_IDX_WIDTHFILE
@@ -1359,6 +1361,14 @@ declare function rtlFileRename _
 		byval filename_old as ASTNODE ptr, _
 		byval isfunc as integer _
 	) as ASTNODE ptr
+
+declare function rtlFileRename_W _                    'jk-file
+	( _
+		byval filename_new as ASTNODE ptr, _
+		byval filename_old as ASTNODE ptr, _
+		byval isfunc as integer _
+	) as ASTNODE ptr
+
 
 declare function rtlWidthScreen _
 	( _

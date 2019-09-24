@@ -8,7 +8,7 @@
 #include once "lex.bi"
 #include once "rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 75 ) = _                    'jk-file  71 + 4 -> (71 + 6)
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 76 ) = _                    'jk-file  71 + 4 -> (71 + 6)
 	{ _
 		( _
 			@FB_RTL_FILEOPEN_W, NULL, _                     'jk-file
@@ -1117,6 +1117,16 @@
 	 		{ _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
+	 		} _
+		), _
+		( _
+			@FB_RTL_FILERENAME_W, NULL, _                   'jk-file -> new rtl function (windows/linux split)
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _   
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+	 		{ _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _ 
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _  
 	 		} _
 		), _
 		/' function fb_FileWstrInput _
@@ -2290,6 +2300,39 @@ function rtlFileRename _
  	end if
 
 	'' byval filename_new as zstring ptr
+    if( astNewARG( proc, filename_new ) = NULL ) then
+ 		exit function
+ 	end if
+
+	if( isfunc = FALSE ) then
+		astAdd( rtlErrorCheck( proc ) )
+	end if
+
+	function = proc
+end function
+
+'':::::
+function rtlFileRename_W _
+	( _
+		byval filename_new as ASTNODE ptr, _
+        byval filename_old as ASTNODE ptr, _
+        byval isfunc as integer _
+	) as ASTNODE ptr
+
+    dim as ASTNODE ptr proc = any
+
+	function = NULL
+    proc = astNewCALL( PROCLOOKUP( FILERENAME_W ) )
+
+    astTryOvlStringCONV( filename_new )
+    astTryOvlStringCONV( filename_old )
+
+	'' byval filename_old as wstring ptr
+    if( astNewARG( proc, filename_old ) = NULL ) then
+ 		exit function
+ 	end if
+
+	'' byval filename_new as wstring ptr
     if( astNewARG( proc, filename_new ) = NULL ) then
  		exit function
  	end if

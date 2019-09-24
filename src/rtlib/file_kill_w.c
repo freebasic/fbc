@@ -17,23 +17,23 @@ FBCALL int fb_FileKill_W( FB_WCHAR *wstr )
 		err = errno;
 
 #else
-    char *filename;
-    ssize_t bytes;
-    size_t filename_length;
+        char *filename;
+        ssize_t bytes;
+        size_t filename_length;
 
-    filename_length = fb_wstr_Len( wstr );
-    filename = fb_WCharToUTF( FB_FILE_ENCOD_UTF8,
-                              wstr,
-                              filename_length,
-                              NULL,
-                              &bytes );
+        filename_length = fb_wstr_Len( wstr );
+        filename = fb_WCharToUTF( FB_FILE_ENCOD_UTF8,
+                                  wstr,
+                                  filename_length,
+                                  NULL,
+                                  &bytes );
 
-    if ( filename != NULL )
-    {
-  		res = remove( filename );
-	  	err = errno;
-      free( filename );
-    }
+        if ( filename != NULL )
+        {
+            res = remove( filename );
+            err = errno;
+          free( filename );
+        }
 #endif
 	}
 

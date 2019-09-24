@@ -1093,7 +1093,12 @@ private function hFileRename _
        	matchprnt = hMatch( CHAR_LPRNT )
     end if
 
-	hMatchExpressionEx( filename_old, FB_DATATYPE_STRING )
+    filename_old = cExpression( )                   
+    if( filename_old = NULL ) then
+      errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+
+      filename_old = astNewCONSTz( FB_DATATYPE_STRING )
+    end if
 
 	if( isfunc ) then
 		'' ','?
@@ -1106,15 +1111,35 @@ private function hFileRename _
 		end if
 	end if
 
-	hMatchExpressionEx( filename_new, FB_DATATYPE_STRING )
+    filename_new = cExpression( )                 
+	if( filename_new = NULL ) then
+		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
+
+		filename_new = astNewCONSTz( FB_DATATYPE_STRING )
+	end if
 
 	if( isfunc or matchprnt ) then
 		'' ')'
 		hMatchRPRNT( )
 	end if
 
-	''
-	function = rtlFileRename( filename_new, filename_old, isfunc )
+    '' switch string/wstring (ustring)
+    astTryOvlStringCONV( filename_new )
+    astTryOvlStringCONV( filename_old )
+
+    select case astGetDataType(filename_new)      
+      case FB_DATATYPE_WCHAR 
+          function = rtlFileRename_W( filename_new, filename_old, isfunc )
+
+      case else
+        select case astGetDataType(filename_old) 
+          case FB_DATATYPE_WCHAR 
+              function = rtlFileRename_W( filename_new, filename_old, isfunc )
+
+          case else
+              function = rtlFileRename( filename_new, filename_old, isfunc )
+        end select
+    end select
 
 end function
 

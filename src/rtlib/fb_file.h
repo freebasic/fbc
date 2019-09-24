@@ -280,7 +280,7 @@ FBCALL long long    fb_FileLocation     ( int fnum );
        fb_off_t     fb_FileLocationEx   ( FB_FILE *handle );
 FBCALL int          fb_FileKill         ( FBSTRING *str );
 FBCALL int          fb_FileKill_W       ( FB_WCHAR *wstr );
-// FBCALL int          fb_Rename_W         ( FB_WCHAR *old_name, FB_WCHAR *new_name );
+FBCALL int          fb_Rename_W         ( FB_WCHAR *old_name, FB_WCHAR *new_name );
 FBCALL void         fb_FileReset        ( void );
 FBCALL void         fb_FileResetEx      ( int streamno );
        int          fb_hFileResetEx     ( int streamno );
