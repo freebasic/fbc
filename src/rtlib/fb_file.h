@@ -338,6 +338,11 @@ FBCALL FBSTRING    *fb_Dir64            ( FBSTRING *filespec, int attrib, long l
 FBCALL FBSTRING    *fb_DirNext          ( int *outattrib );
 FBCALL FBSTRING    *fb_DirNext64        ( long long *outattrib );
 
+FBCALL FB_WCHAR    *fb_Dir_W            ( FB_WCHAR *filespec, int attrib, int *out_attrib );
+FBCALL FB_WCHAR    *fb_Dir64_W          ( FB_WCHAR *filespec, int attrib, long long *outattrib );
+FBCALL FB_WCHAR    *fb_DirNext_W        ( int *outattrib );
+FBCALL FB_WCHAR    *fb_DirNext64_W      ( long long *outattrib );
+
  /* Maximum length that can safely be parsed as INTEGER */
 #define FB_INPUT_MAXINTLEN 9
 
