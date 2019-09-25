@@ -1,6 +1,7 @@
 /* flush system buffers */
 
 #include "../fb.h"
+#include <unistd.h>
 
 int fb_hFileFlushEx( FILE *f )
 {
