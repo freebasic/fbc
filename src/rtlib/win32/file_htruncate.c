@@ -1,12 +1,13 @@
-/* set end of file */
+/* truncate file / set end of file */
 
 #include "../fb.h"
 #include <unistd.h>
 
-int fb_DevFileSetEof( FB_FILE *handle )
+int fb_hFileTruncateEx( FB_FILE *handle )
 {
-ssize_t len;
-FILE *fp;
+    fb_off_t pos;
+
+    FILE *fp;
 
     FB_LOCK();
 
@@ -17,11 +18,11 @@ FILE *fp;
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
-    len = ftello( fp );
-    if (ftruncate( fileno(fp), len ))
+    pos = ftello( fp );
+    if( ftruncate( fileno(fp), pos ) )
     {
         FB_UNLOCK();
-        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        return fb_ErrorSetNum( FB_RTERROR_FILEIO );
     }
 
     FB_UNLOCK();

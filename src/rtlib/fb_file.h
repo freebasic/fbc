@@ -92,7 +92,6 @@ typedef struct _FB_FILE_HOOKS {
     FnFileReadLineWstr  pfnReadLineWstr;
     FnFileSetWidth      pfnSetWidth;
     FnFileFlush         pfnFlush;
-    FnFileSetEof        pfnSetEof;
 } FB_FILE_HOOKS;
 
 typedef struct _FB_FILE {
@@ -248,6 +247,9 @@ FBCALL int          fb_FileGetArrayLargeIOB( int fnum, long long pos, FBARRAY *d
 
 FBCALL int          fb_FileEof          ( int fnum );
        int          fb_FileEofEx        ( FB_FILE *handle );
+FBCALL int          fb_FileTruncate     ( int fnum );
+       int          fb_FileTruncateEx   ( FB_FILE *handle );
+       int          fb_hFileTruncateEx  ( FB_FILE *handle );
 FBCALL int          fb_FileFlush        ( int fnum );
        int          fb_FileFlushEx      ( FB_FILE *handle );
 FBCALL long long    fb_FileTell         ( int fnum );
