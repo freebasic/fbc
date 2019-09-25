@@ -1,30 +1,17 @@
-/* truncate file / set end of file */
+/* low-level truncate file */
 
 #include "../fb.h"
 #include <unistd.h>
 
-int fb_hFileTruncateEx( FB_FILE *handle )
+int fb_hFileTruncateEx( FILE *f )
 {
-    fb_off_t pos;
+	fb_off_t pos;
 
-    FILE *fp;
+	pos = ftello( f );
+	if( ftruncate( fileno(f), pos ) != 0 ) {
+		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+	}
 
-    FB_LOCK();
-
-    fp = (FILE*) handle->opaque;
-
-    if( fp == NULL ) {
-        FB_UNLOCK();
-        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
-
-    pos = ftello( fp );
-    if( ftruncate( fileno(fp), pos ) )
-    {
-        FB_UNLOCK();
-        return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-    }
-
-    FB_UNLOCK();
-    return fb_ErrorSetNum( FB_RTERROR_OK );
+	return fb_ErrorSetNum( FB_RTERROR_OK );
+	
 }

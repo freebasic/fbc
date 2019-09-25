@@ -38,7 +38,7 @@ declare function FileDateTime alias "fb_FileDateTime" ( byval filename as zstrin
 
 #endif
 
-declare function FileFlush alias "fb_FileFlush" ( byval filenumber as long ) as long
-declare function FileTruncate alias "fb_FileTruncate" ( byval filenumber as long) as long
+declare function FileFlush alias "fb_FileFlush" ( byval filenumber as long, byval systembuffer as long = 0 ) as long
+declare function FileTruncate alias "fb_FileTruncate" ( byval filenumber as long ) as long
 
 #endif

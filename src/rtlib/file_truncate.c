@@ -43,7 +43,7 @@ int fb_FileTruncateEx( FB_FILE *handle )
     }
 
     /* call the platform specifc implementation */
-    res = fb_hFileTruncateEx( handle );
+    res = fb_hFileTruncateEx( (FILE*)handle->opaque );
 
     FB_UNLOCK();
 

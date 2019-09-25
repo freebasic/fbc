@@ -22,6 +22,22 @@ SUITE( fbc_tests.file_.file_flush )
 		end if
 	END_TEST
 
+	TEST( flushbinary2 )
+		if open( filename for binary as #1 ) = 0 then
+			dim as string text = "hello"
+			put #1,,text
+			if( FileFlush( 1, true ) = 0 ) then
+				CU_PASS( )
+			else
+				CU_FAIL( "flushbinary2: failed" )
+			end if
+			close #1
+			kill filename
+		else
+			CU_FAIL( "flushbinary2: open file error" )
+		end if
+	END_TEST
+
 	TEST( flushrandom )
 		type T
 			b(0 to 9) as ubyte

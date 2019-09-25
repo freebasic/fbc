@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-int fb_FileFlushEx( FB_FILE *handle )
+int fb_FileFlushEx( FB_FILE *handle, int systembuffers )
 {
     int res;
 
@@ -30,6 +30,10 @@ int fb_FileFlushEx( FB_FILE *handle )
     if( handle->hooks && handle->hooks->pfnFlush )
     {
         res = handle->hooks->pfnFlush( handle );
+        if( res == FB_RTERROR_OK && systembuffers != 0 )
+        {
+            res = fb_hFileFlushEx( (FILE *)handle->opaque );
+        }
     }
     else
     {
@@ -42,7 +46,7 @@ int fb_FileFlushEx( FB_FILE *handle )
 }
 
 /*:::::*/
-FBCALL int fb_FileFlush( int fnum )
+FBCALL int fb_FileFlush( int fnum, int systembuffers )
 {
-    return fb_FileFlushEx(FB_FILE_TO_HANDLE(fnum));
+    return fb_FileFlushEx(FB_FILE_TO_HANDLE(fnum), systembuffers );
 }
