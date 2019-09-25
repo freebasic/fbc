@@ -31,6 +31,8 @@ SUITE( fbc_tests.file_.file_truncate )
 				next
 
 				close #1
+
+				kill filename
 			else
 				CU_FAIL( "truncatebinary: failed" )
 			end if
