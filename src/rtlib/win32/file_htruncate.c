@@ -1,6 +1,6 @@
 /* set end of file */
 
-#include "fb.h"
+#include "../fb.h"
 #include <unistd.h>
 
 int fb_DevFileSetEof( FB_FILE *handle )
