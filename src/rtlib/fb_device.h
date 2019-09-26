@@ -23,7 +23,6 @@
        int          fb_DevFileWrite         ( FB_FILE *handle, const void *value, size_t valuelen );
        int          fb_DevFileWriteWstr     ( FB_FILE *handle, const FB_WCHAR *value, size_t valuelen );
        int          fb_DevFileFlush         ( FB_FILE *handle );
-       int          fb_DevFileSetEof        ( FB_FILE *handle );
 
        typedef char* (*fb_FnDevReadString)  ( char *buffer, size_t count, FILE *fp );
        int          fb_DevFileReadLineDumb  ( FILE *fp, FBSTRING *dst, fb_FnDevReadString pfnReadString );
