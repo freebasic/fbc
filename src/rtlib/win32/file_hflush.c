@@ -6,7 +6,7 @@
 
 int fb_hFileFlushEx( FILE *f )
 {
-	if( FlushFileBuffers( (HANDLE)_get_osfhandle( fileno( f ) ) ) == 0 ) {
+	if( FlushFileBuffers( (HANDLE)get_osfhandle( fileno( f ) ) ) == 0 ) {
 		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 	}
 

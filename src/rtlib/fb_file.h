@@ -252,6 +252,7 @@ FBCALL int          fb_FileTruncate     ( int fnum );
        int          fb_hFileTruncateEx  ( FILE *f );
 FBCALL int          fb_FileFlush        ( int fnum, int systembuffers );
        int          fb_FileFlushEx      ( FB_FILE *handle, int systembuffers );
+FBCALL void         fb_FileFlushAll     ( int systembuffers );
        int          fb_hFileFlushEx     ( FILE *f );
 FBCALL long long    fb_FileTell         ( int fnum );
        fb_off_t     fb_FileTellEx       ( FB_FILE *handle );

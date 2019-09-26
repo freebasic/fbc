@@ -46,7 +46,36 @@ int fb_FileFlushEx( FB_FILE *handle, int systembuffers )
 }
 
 /*:::::*/
+FBCALL void fb_FileFlushAll ( int systembuffers )
+{
+    int i;
+
+    FB_LOCK();
+
+    for( i = 1; i <= (FB_MAX_FILES - FB_RESERVED_FILES); i++ ) 
+    {
+        FB_FILE *handle = FB_FILE_TO_HANDLE_VALID( i );
+        if( handle->hooks && handle->hooks->pfnFlush )
+        {
+            int res = handle->hooks->pfnFlush( handle );
+            if( res == FB_RTERROR_OK && systembuffers != 0 )
+            {
+                fb_hFileFlushEx( (FILE *)handle->opaque );
+            }
+        }
+    }
+
+    FB_UNLOCK();
+}
+
+/*:::::*/
 FBCALL int fb_FileFlush( int fnum, int systembuffers )
 {
+    if( fnum == -1 )
+    {
+        fb_FileFlushAll( systembuffers );
+        return fb_ErrorSetNum( FB_RTERROR_OK );
+    }
+
     return fb_FileFlushEx(FB_FILE_TO_HANDLE(fnum), systembuffers );
 }
