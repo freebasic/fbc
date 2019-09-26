@@ -42,8 +42,12 @@ int fb_FileTruncateEx( FB_FILE *handle )
         break;
     }
 
+    /* flush stream buffers before truncating */
+    res = fb_FileFlushEx( handle, FALSE );
+
     /* call the platform specifc implementation */
-    res = fb_hFileTruncateEx( (FILE*)handle->opaque );
+    if( res == FB_RTERROR_OK )
+        res = fb_hFileTruncateEx( (FILE*)handle->opaque );
 
     FB_UNLOCK();
 
