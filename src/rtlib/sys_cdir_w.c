@@ -33,9 +33,6 @@ FBCALL FB_WCHAR *fb_CurDir_W( void )
   else
     return NULL;
 
-//OutputDebugString("1");
-//OutputDebugStringW(tmp);
-
 	FB_UNLOCK();
 
   return dst;
