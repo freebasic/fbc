@@ -1401,13 +1401,13 @@ function rtlFileOpenShort _
 	'' this is the short form of the OPEN command
     if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
 '        if( astGetDataType( filename ) <> FB_DATATYPE_WCHAR ) then
-'            f = PROCLOOKUP( FILEOPEN_SHORT )
+'            proc = PROCLOOKUP( FILEOPEN_SHORT )
 '        else
-            f = PROCLOOKUP( FILEOPEN_SHORT_W )
+            proc = PROCLOOKUP( FILEOPEN_SHORT_W )
 '        end if
         
     else
-        f = PROCLOOKUP( FILEOPEN_SHORT )
+        proc = PROCLOOKUP( FILEOPEN_SHORT )
     end if
     
 	'' mode as string

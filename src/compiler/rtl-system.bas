@@ -89,19 +89,19 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		} _
 	 	), '/ _
 		/' function curdir( ) as string '/ _
-		( _
+/'		( _
 			@"curdir", @"fb_CurDir", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NOQB, _
-	 		0 _
-	 	), _
-		/' function curdir( ) as wstring '/ _
-/'		( _
-			@"curdir", @"fb_CurDir_W", _
-	 		FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_NOQB, _
+	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 	 		0 _
 	 	), '/ _
+		/' function curdir( ) as wstring '/ _
+		( _
+			@"curdir", @"fb_CurDir_W", _
+	 		FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+	 		NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+	 		0 _
+	 	), _
 		/' function exepath( ) as string '/ _
 		( _
 			@"exepath", @"fb_ExePath", _
