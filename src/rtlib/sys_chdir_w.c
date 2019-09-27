@@ -1,4 +1,4 @@
-/* rmdir function (wide string) */
+/* chdir function (wide string) */
 
 #include "fb.h"
 #ifdef HOST_MINGW
@@ -7,13 +7,13 @@
 #include <unistd.h>
 #endif
 
-/*:::::*/
-FBCALL int fb_RmDir_W( FB_WCHAR *path )
+FBCALL int fb_ChDir_W( FB_WCHAR *path )
 {
 	int res = -1;
 
 #ifdef HOST_MINGW
-	res = _wrmdir( path );
+	res = _wchdir( path );
+
 #else
     char *pathname;
     ssize_t bytes;
@@ -28,7 +28,7 @@ FBCALL int fb_RmDir_W( FB_WCHAR *path )
 
     if ( pathname != NULL )
     {
-        res = rmdir( pathname );
+        res = chdir( pathname );
         free( pathname );
     }
 #endif

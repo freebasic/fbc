@@ -758,7 +758,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 			} _
 		), _
 		/' function chdir( byref path as const string ) as long '/ _
-		( _
+/'		( _
 			@"chdir", @"fb_ChDir", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
@@ -766,17 +766,17 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ),FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
-	 	), _
-		/' function chdir( byref path as const wstring ) as long '/ _
-/'		( _
-'			@"chdir", @"fb_ChDir_W", _
-'	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
-'	 		NULL, FB_RTL_OPT_NONE, _
-'	 		1, _
-'	 		{ _
-'				( typeSetIsConst( FB_DATATYPE_WCHAR ),FB_PARAMMODE_BYREF, FALSE ) _
-'	 		} _
 	 	), '/ _
+		/' function chdir( byref path as const wstring ) as long '/ _
+		( _
+			@"chdir", @"fb_ChDir_W", _
+	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+	 		1, _
+	 		{ _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ),FB_PARAMMODE_BYREF, FALSE ) _
+	 		} _
+	 	), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _
