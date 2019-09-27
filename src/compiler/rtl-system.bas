@@ -718,7 +718,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		0 _
 	 	), _
 		/' function mkdir( byref path as const string ) as long '/ _
-		( _
+/'		( _
 			@"mkdir", @"fb_MkDir", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
@@ -726,9 +726,9 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
-	 	), _
+	 	), '/ _
 		/' function mkdir( byref path as const wstring ) as long '/ _
-/'		( _
+		( _
 			@"mkdir", @"fb_MkDir_W", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
@@ -736,7 +736,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
-	 	), '/ _
+	 	), _
 		/' function rmdir( byref path as const string ) as long '/ _
 		( _
 			@"rmdir", @"fb_RmDir", _
