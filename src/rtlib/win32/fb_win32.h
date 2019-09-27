@@ -18,6 +18,8 @@
 #define strcasecmp(a, b) _stricmp(a, b)
 #define strncasecmp(a, b, n) _strnicmp(a, b, n)
 #define alloca(x) _alloca(x)
+#define fileno _fileno
+#define get_osfhandle _get_osfhandle
 #endif
 
 #ifdef HOST_X86

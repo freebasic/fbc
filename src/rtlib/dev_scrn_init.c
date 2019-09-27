@@ -2,7 +2,22 @@
 
 #include "fb.h"
 
-static FB_FILE_HOOKS hooks_dev_scrn_null = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+static FB_FILE_HOOKS hooks_dev_scrn_null = {
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+};
 
 /* Update width/line_length after the screen was resized (can happen with
    console/terminal windows but also with graphics window) */
