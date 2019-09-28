@@ -247,7 +247,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		} _
 	 	), _
 		/' function environ( byref varname as const string ) as string '/ _
-		( _
+/'		( _
 			@"environ", @"fb_GetEnviron", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_STRSUFFIX, _
@@ -255,17 +255,17 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
-	 	), _
+	 	), '/ _
 		/' function environ( byref varname as const wstring ) as string '/ _
-/'		( _
-			@"environw", @"fb_GetEnviron_W", _
+		( _
+			@"environ", @"fb_GetEnviron_W", _
 	 		FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-	 		NULL, FB_RTL_OPT_STRSUFFIX, _
+	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
-	 	), '/ _
+	 	), _
 		/' function setenviron( byref varname as const string ) as long '/ _
 /'		( _
 			@"setenviron", @"fb_SetEnviron", _

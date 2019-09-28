@@ -4,34 +4,35 @@
 
 FBCALL FB_WCHAR *fb_GetEnviron_W ( FB_WCHAR *varname )
 {
-#if defined( HOST_WIN32 )                             //restrict to Windows
-	FB_WCHAR	*dst;
-	FB_WCHAR	*tmp;
+#if defined HOST_WIN32                                //restrict to Windows
+	FB_WCHAR	*dst = 0;
+	FB_WCHAR	*tmp = 0;
 	ssize_t len;
 
 	if ( fb_wstr_Len(varname) != 0)
     {
 		tmp = _wgetenv( varname );
     } 
-	else
-    {
-	    return NULL;
-    }
     
-    len = fb_wstr_Len( tmp ) + 1;
-    dst = fb_wstr_AllocTemp( len );                   
+    if( tmp != NULL )
+    {
+        len = fb_wstr_Len( tmp ) + 1;
+        dst = fb_wstr_AllocTemp( len );                   
+        dst[0] = 0;
 
-    if( dst != NULL )
-    {
-        memcpy(dst, tmp, len*sizeof(FB_WCHAR));
-        dst[len] = 0;
-    }
-    else
-    {  
-        return NULL;
+        if( dst != NULL )
+        {
+            memcpy(dst, tmp, len*sizeof(FB_WCHAR));
+            dst[len] = 0;
+            return dst;
+        }
+        else
+        {  
+            return NULL;
+        }
     }
     
-    return dst;
+    return NULL;
 #else
     return NULL;
 #endif
@@ -43,7 +44,7 @@ FBCALL int fb_SetEnviron_W ( FB_WCHAR *wstr )
 
 	if ( fb_wstr_Len(wstr) != 0 )
 	{
-#if defined( HOST_WIN32 )                             //restrict to Windows
+#if defined HOST_WIN32                                //restrict to Windows
 		res = _wputenv( wstr );
 #else
         char *envname;
