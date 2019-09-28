@@ -143,7 +143,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		0 _
 	 	), _
 		/' function shell( byref program as const string = "" ) as long '/ _
-		( _
+/'		( _
 			@"shell", @"fb_Shell", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
@@ -151,17 +151,17 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, TRUE, NULL ) _
 	 		} _
-	 	), _
+	 	), '/ _
 		/' function shell( byref program as const wstring = "" ) as long '/ _
-/'		( _
-			@"shellw", @"fb_Shell_W", _
+		( _
+			@"shell", @"fb_Shell_W", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
-				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, TRUE, NULL ) _
+				( typeAddrOf( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYVAL, TRUE, NULL ) _
 	 		} _
-	 	), '/ _
+	 	), _
 		/' sub system( byval errlevel as const long = 0 ) '/ _
 		( _
 			@"system", @"fb_End", _
