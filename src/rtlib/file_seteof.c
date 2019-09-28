@@ -1,4 +1,4 @@
-/* truncate file */
+/* truncate / set end of file */
 
 #include "fb.h"
 
@@ -15,9 +15,13 @@
     For BINARY, OUTPUT, and APPEND files the current position is the byte.
 
     For RANDOM files, the current position is the record.
+
+	If the position less than current length of file, then the file is
+	shortened.  If the position is after the current length of file, then
+	the file is lengthened.
 */
 
-int fb_FileTruncateEx( FB_FILE *handle )
+int fb_FileSetEofEx( FB_FILE *handle )
 {
     int res;
 
@@ -47,7 +51,7 @@ int fb_FileTruncateEx( FB_FILE *handle )
 
     /* call the platform specifc implementation */
     if( res == FB_RTERROR_OK )
-        res = fb_hFileTruncateEx( (FILE*)handle->opaque );
+        res = fb_hFileSetEofEx( (FILE*)handle->opaque );
 
     FB_UNLOCK();
 
@@ -55,7 +59,7 @@ int fb_FileTruncateEx( FB_FILE *handle )
 }
 
 /*:::::*/
-FBCALL int fb_FileTruncate( int fnum )
+FBCALL int fb_FileSetEof( int fnum )
 {
-    return fb_FileTruncateEx(FB_FILE_TO_HANDLE(fnum));
+    return fb_FileSetEofEx(FB_FILE_TO_HANDLE(fnum));
 }

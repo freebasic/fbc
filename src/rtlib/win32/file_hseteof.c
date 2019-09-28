@@ -1,4 +1,4 @@
-/* low-level truncate file */
+/* low-level truncate / set end of file */
 
 #include "../fb.h"
 #include <unistd.h>
@@ -17,7 +17,7 @@
     our current setup
 */
 
-int fb_hFileTruncateEx( FILE *f )
+int fb_hFileSetEofEx( FILE *f )
 {
 
 #if defined( FTRUNCATE_DEFINED )

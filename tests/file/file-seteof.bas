@@ -2,16 +2,16 @@
 
 #include "file.bi"
 
-SUITE( fbc_tests.file_.file_truncate )
+SUITE( fbc_tests.file_.file_seteof )
 
-	const filename = "./file/truncate.tmp"
+	const filename = "./file/seteof.tmp"
 
-	TEST( truncatebinary )
+	TEST( seteofbinary )
 
-		#macro chkTruncate( i )
+		#macro chkSetEof( i )
 			seek #1, i+1
 			CU_ASSERT( seek(1) = (i+1) )
-			FileTruncate( 1 )
+			FileSetEof( 1 )
 			CU_ASSERT( lof(1) = i )
 			CU_ASSERT( seek(1) = (i+1) )
 		#endmacro
@@ -20,24 +20,24 @@ SUITE( fbc_tests.file_.file_truncate )
 			close #1
 			if( open( filename for binary as #1 ) = 0 ) then
 
-				'' truncate can be used to increase file size
+				'' FileSetEof can be used to increase file size
 				for i as integer = 0 to 10000 step 1000
-					chkTruncate( 1 )
+					chkSetEof( 1 )
 				next
 
 				'' or decrease file size
 				for i as integer = 10000 to 0 step -1000
-					chkTruncate( 1 )
+					chkSetEof( 1 )
 				next
 
 				close #1
 
 				kill filename
 			else
-				CU_FAIL( "truncatebinary: failed" )
+				CU_FAIL( "seteofbinary: failed" )
 			end if
 		else
-			CU_FAIL( "truncatebinary: failed" )
+			CU_FAIL( "seteofbinary: failed" )
 		end if
 	END_TEST
 

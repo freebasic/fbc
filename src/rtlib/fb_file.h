@@ -247,9 +247,9 @@ FBCALL int          fb_FileGetArrayLargeIOB( int fnum, long long pos, FBARRAY *d
 
 FBCALL int          fb_FileEof          ( int fnum );
        int          fb_FileEofEx        ( FB_FILE *handle );
-FBCALL int          fb_FileTruncate     ( int fnum );
-       int          fb_FileTruncateEx   ( FB_FILE *handle );
-       int          fb_hFileTruncateEx  ( FILE *f );
+FBCALL int          fb_FileSetEof       ( int fnum );
+       int          fb_FileSetEofEx     ( FB_FILE *handle );
+       int          fb_hFileSetEofEx    ( FILE *f );
 FBCALL int          fb_FileFlush        ( int fnum, int systembuffers );
        int          fb_FileFlushEx      ( FB_FILE *handle, int systembuffers );
 FBCALL void         fb_FileFlushAll     ( int systembuffers );
