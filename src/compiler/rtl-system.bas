@@ -69,7 +69,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		} _
 	 	), _
 		/' function command( byval argc as const long = -1 ) as string '/ _
-		( _
+/'		( _
 			@"command", @"fb_Command", _
 	 		FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_STRSUFFIX, _
@@ -77,9 +77,9 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
-	 	), _
+	 	), '/ _
 		/' function commandw( byval argc as const long = -1 ) as string '/ _
-/'		( _
+		( _
 			@"command", @"fb_Command_W", _
 	 		FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_STRSUFFIX, _
@@ -87,7 +87,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, TRUE, -1 ) _
 	 		} _
-	 	), '/ _
+	 	), _
 		/' function curdir( ) as string '/ _
 /'		( _
 			@"curdir", @"fb_CurDir", _
