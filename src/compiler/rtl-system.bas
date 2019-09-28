@@ -225,7 +225,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		} _
 	 	), '/ _
 		/' function exec( byref program as const string, byref args as const string ) as long '/ _
-		( _
+/'		( _
 			@"exec", @"fb_Exec", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NOQB, _
@@ -234,9 +234,9 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
-	 	), _
+	 	), '/ _
 		/' function exec( byref program as const wstring, byref args as const string ) as long '/ _
-/'		( _
+		( _
 			@"exec", @"fb_Exec_W", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NOQB, _
@@ -245,7 +245,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
-	 	), '/ _
+	 	), _
 		/' function environ( byref varname as const string ) as string '/ _
 		( _
 			@"environ", @"fb_GetEnviron", _
