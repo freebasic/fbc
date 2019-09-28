@@ -659,7 +659,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		} _
 	 	), _
 		/' function dylibload( byref filename as const string ) as any ptr '/ _
-		( _
+/'		( _
 			@"dylibload", @"fb_DylibLoad", _
 	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NOQB, _
@@ -667,17 +667,17 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
-	 	), _
+	 	), '/ _
 		/' function dylibloadw( byref filename as const string ) as any ptr '/ _
-/'		( _
-			@"dylibloadw", @"fb_DylibLoad_W", _
+		( _
+			@"dylibload", @"fb_DylibLoad_W", _
 	 		typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NOQB, _
 	 		1, _
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
-	 	), '/ _
+	 	), _
 		/' function dylibsymbol overload( byval library as any ptr, byref symbol as const string ) as any ptr '/ _
 		( _
 			@"dylibsymbol", @"fb_DylibSymbol", _
