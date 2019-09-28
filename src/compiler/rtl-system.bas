@@ -205,7 +205,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		} _
 	 	), _
 		/' function chain( byref program as const string ) as long '/ _
-		( _
+/'		( _
 			@"chain", @"fb_Chain", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
@@ -213,9 +213,9 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
-	 	), _
+	 	), '/ _
 		/' function chain( byref program as const wstring ) as long '/ _
-/'		( _
+		( _
 			@"chain", @"fb_Chain_W", _
 	 		FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
@@ -223,7 +223,7 @@ declare function 	hThreadCall_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
 	 		} _
-	 	), '/ _
+	 	), _
 		/' function exec( byref program as const string, byref args as const string ) as long '/ _
 /'		( _
 			@"exec", @"fb_Exec", _
