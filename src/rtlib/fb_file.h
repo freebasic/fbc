@@ -192,6 +192,9 @@ FBCALL int          fb_FileOpenErr      ( FBSTRING *str_filename, unsigned int m
 FBCALL int          fb_FileOpenPipe     ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
                                           int fnum, int len, const char *encoding );
+FBCALL int          fb_FileOpenPipe_W   ( FB_WCHAR *str_filename, unsigned int mode,
+                                          unsigned int access, unsigned int lock,
+                                          int fnum, int len, const char *encoding );
 FBCALL int          fb_FileOpenScrn     ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
                                           int fnum, int len, const char *encoding );

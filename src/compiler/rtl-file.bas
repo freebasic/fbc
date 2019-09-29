@@ -8,10 +8,10 @@
 #include once "lex.bi"
 #include once "rtl.bi"
 
-	dim shared as FB_RTL_PROCDEF funcdata( 0 to 76 ) = _                    'jk-file  71 + 4 -> (71 + 6)
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 77 ) = _
 	{ _
 		( _
-			@FB_RTL_FILEOPEN_W, NULL, _                     'jk-file
+			@FB_RTL_FILEOPEN_W, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
@@ -73,7 +73,7 @@
 	 		} _
 		), _
 		( _
-			@FB_RTL_FILEOPEN_ENCOD_W, NULL, _               'jk-file
+			@FB_RTL_FILEOPEN_ENCOD_W, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			7, _
@@ -111,7 +111,7 @@
 	 		} _
 		), _
 		( _
-			@FB_RTL_FILEOPEN_SHORT_W, NULL, _               'jk-file
+			@FB_RTL_FILEOPEN_SHORT_W, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			6, _
@@ -191,6 +191,21 @@
 			7, _
 	 		{ _
 				( typeSetIsConst( FB_DATATYPE_STRING ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeAddrOf( typeSetIsConst( FB_DATATYPE_CHAR ) ), FB_PARAMMODE_BYVAL, FALSE ) _
+	 		} _
+		), _
+		( _
+			@FB_RTL_FILEOPEN_PIPE_W, NULL, _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			7, _
+	 		{ _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_ULONG ), FB_PARAMMODE_BYVAL, FALSE ), _
@@ -1310,8 +1325,12 @@ function rtlFileOpen _
 		f = PROCLOOKUP( FILEOPEN_ERR )
 
     case FB_FILE_TYPE_PIPE
-		f = PROCLOOKUP( FILEOPEN_PIPE )
-
+        if( env.clopt.target = FB_COMPTARGET_WIN32 ) then
+		    f = PROCLOOKUP( FILEOPEN_PIPE_W )
+        else
+		    f = PROCLOOKUP( FILEOPEN_PIPE )
+        end if
+        
     case FB_FILE_TYPE_SCRN
 		f = PROCLOOKUP( FILEOPEN_SCRN )
 

@@ -43,6 +43,7 @@
 
        /* PIPE */
        int          fb_DevPipeOpen          ( FB_FILE *handle, const char *filename, size_t filename_len );
+       int          fb_DevPipeOpen_W        ( FB_FILE *handle, const FB_WCHAR *filename, size_t filename_len );
        int          fb_DevPipeClose         ( FB_FILE *handle );
 
        /* SCRN */
