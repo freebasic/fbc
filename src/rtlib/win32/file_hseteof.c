@@ -4,6 +4,23 @@
 #include <io.h>
 
 /*
+    including unistd.h will fail with TDM toolchain
+	when NO_OLDNAMES is defined.  If we ever did
+	want to use ftruncate() instead of SetEndOfFile()
+	we would need to include unistd.h.  In the
+	meantime, just include windows.h and use
+	SetEndOfFile().  Since ftruncate(), in theory
+	should just resolve to a system call anyway, we
+	should be OK with this on all windows toolchains
+	for now.
+*/
+#if 0
+#include <unistd.h>
+#else
+#include <windows.h>
+#endif
+
+/*
     rely on mingw-w64 having FTRUNCATE_DEFINED defined
     to let us know that ftruncate64 is defined.
 
@@ -15,12 +32,6 @@
     supports _FILE_OFFSET_BITS in a later version than
     our current setup
 */
-
-#if defined( FTRUNCATE_DEFINED )
-#include <unistd.h>
-#else
-#include <windows.h>
-#endif
 
 int fb_hFileSetEofEx( FILE *f )
 {
