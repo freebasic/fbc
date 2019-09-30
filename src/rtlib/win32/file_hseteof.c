@@ -1,8 +1,7 @@
 /* low-level truncate / set end of file */
 
 #include "../fb.h"
-#include <unistd.h>
-#include <windows.h>
+#include <io.h>
 
 /*
     rely on mingw-w64 having FTRUNCATE_DEFINED defined
@@ -11,11 +10,17 @@
     Otherwise, just call the windows API SetEndOfFile
 
     Perhaps in an updated version of mingw(org) we can
-    remove the conditional compilcation here and use
+    remove the conditional compilation here and use
     only ftruncate/ftruncate64.  Would be nice if mingw
     supports _FILE_OFFSET_BITS in a later version than
     our current setup
 */
+
+#if defined( FTRUNCATE_DEFINED )
+#include <unistd.h>
+#else
+#include <windows.h>
+#endif
 
 int fb_hFileSetEofEx( FILE *f )
 {
