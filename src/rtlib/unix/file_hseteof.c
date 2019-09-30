@@ -1,9 +1,9 @@
-/* low-level truncate file */
+/* low-level truncate / set end of file */
 
 #include "../fb.h"
 #include <unistd.h>
 
-int fb_hFileTruncateEx( FILE *f )
+int fb_hFileSetEofEx( FILE *f )
 {
 	fb_off_t pos;
 
