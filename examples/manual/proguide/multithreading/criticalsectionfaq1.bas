@@ -74,4 +74,4 @@ Loop Until Inkey <> ""
 quit = 1
 ThreadWait(handle)
 MutexDestroy(mutex)
-				
+			

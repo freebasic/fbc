@@ -41,4 +41,4 @@ Sub thread (ByVal userdata As Any Ptr)  '' sub executed by the child thread
 	Next I
 	threadEnd = True                    '' set the thrend-End flag to 'True'
 End Sub
-		
+			

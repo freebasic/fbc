@@ -35,4 +35,4 @@ Sub thread (ByVal userdata As Any Ptr)  '' sub executed by the child thread
 		Sleep 350, 1
 	Next I
 End Sub
-		
+			

@@ -25,21 +25,21 @@ Sub Counter (ByVal pt As UDT Ptr)
 		Sleep 5, 1
 		.count += 1
 		Print .count;
-		Locate .number, 30+.number, 0
+		Locate .number, 30 + .number, 0
 	End With
 End Sub
 
 Sub Thread (ByVal p As Any Ptr)
-	Dim As Integer quit
+	Dim As Integer myquit
 	Dim As UDT Ptr pUDT = p
 	With *pUDT
 		Do
 			MutexLock(.pMutex)
 			Counter(pUDT)
-			quit = .quit
+			myquit = .quit
 			MutexUnlock(.pMutex)
 			Sleep .tempo, 1
-		Loop Until quit = 1
+		Loop Until myquit = 1
 	End With
 End Sub
 

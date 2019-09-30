@@ -6,7 +6,9 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgMtCriticalSectionsFAQ
 '' --------
 
-Function threadInput (ByVal row As Integer, ByVal column As Integer, ByRef prompt As String = "", ByVal sleeptime As Integer = 15, ByVal blank As Integer = 0, ByVal mutex As Any Ptr = 0) As String
+Function threadInput (ByVal row As Integer, ByVal column As Integer, ByRef prompt As String = "", _
+					  ByVal sleeptime As Integer = 15, ByVal blank As Integer = 0, ByVal mutex As Any Ptr = 0 _
+					  ) As String
 	Dim As Integer r
 	Dim As Integer c
 	Dim As String inputchr
@@ -56,6 +58,7 @@ Function threadInput (ByVal row As Integer, ByVal column As Integer, ByRef promp
 	Return inputline
 End Function
 
+'------------------------------------------------------------------------------
 
 Type UDT
 	Dim As Integer number
@@ -80,16 +83,16 @@ Sub Counter (ByVal pt As UDT Ptr)
 End Sub
 
 Sub Thread (ByVal p As Any Ptr)
-	Dim As Integer quit
+	Dim As Integer myquit
 	Dim As UDT Ptr pUDT = p
 	With *pUDT
 		Do
 			MutexLock(.pMutex)
 			Counter(pUDT)
-			quit = .quit
+			myquit = .quit
 			MutexUnlock(.pMutex)
 			Sleep .tempo, 1
-		Loop Until quit = 1
+		Loop Until myquit = 1
 	End With
 End Sub
 

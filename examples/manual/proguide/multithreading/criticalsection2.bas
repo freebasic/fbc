@@ -29,12 +29,12 @@ Sub Counter (ByVal pt As UDT Ptr)
 		Sleep 5, 1
 		.count += 1
 		Print .count;
-		Locate .number, 30+.number, 0
+		Locate .number, 30 + .number, 0
 	End With
 End Sub
 
 Sub Thread (ByVal p As Any Ptr)
-	Dim As Integer quit
+	Dim As Integer myquit
 	Dim As UDT Ptr pUDT = p
 	With *pUDT
 		Do
@@ -43,12 +43,12 @@ Sub Thread (ByVal p As Any Ptr)
 				CondWait(.pCond, .pMutex)
 			Wend
 			Counter(pUDT)
-			quit = .quit
-			.threadPriorityNumber = (.threadPriorityNumber + 1) Mod (.numberMax+1)
+			myquit = .quit
+			.threadPriorityNumber = (.threadPriorityNumber + 1) Mod (.numberMax + 1)
 			CondBroadcast(.pCond)
 			MutexUnlock(.pMutex)
 			Sleep .tempo, 1
-		Loop Until quit = 1
+		Loop Until myquit = 1
 	End With
 End Sub
 
@@ -77,7 +77,7 @@ Do
 	If s <> "" Then
 		UDT.quit = 1
 	End If
-	UDT.threadPriorityNumber = (UDT.threadPriorityNumber + 1) Mod (UDT.numberMax+1)
+	UDT.threadPriorityNumber = (UDT.threadPriorityNumber + 1) Mod (UDT.numberMax + 1)
 	CondBroadcast(UDT.pCond)
 	MutexUnlock(UDT.pMutex)
 	Sleep u(0).tempo, 1
