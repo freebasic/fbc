@@ -374,6 +374,8 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}
 	- {{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}
 	- {{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}
+	- {{fbdoc item="keyword" value="KeyPgFileflush|FILEFLUSH"}}
+	- {{fbdoc item="keyword" value="KeyPgFileseteof|FILESETEOF"}}
 	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
 	- {{fbdoc item="keyword" value="KeyPgIsredirected|ISREDIRECTED"}}
 	- {{fbdoc item="keyword" value="KeyPgKill|KILL"}}

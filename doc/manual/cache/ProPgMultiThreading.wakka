@@ -68,7 +68,8 @@ The **Multi-threading** programming by using the built-in support provided by Fr
 				
 		- Synchronization objects:
 				Synchronization objects allow threads to communicate with each other by signalling events of any kind. For example, indicating that a resource is being accessed and that other threads wanting to use the resource should wait to avoid a problems.
-				The most commonly used synchronization objects are "mutual exclusion" and "conditional variables" used in critical sections of a multi-threaded program, the code blocks that must not be concurrently executed by more than one of the program threads.
+				The most commonly used synchronization objects are "mutual exclusion" and "conditional variables" used in critical sections of a multi-threaded program, the code blocks that has to be executed as atomic actions (no concurrence with other threads executing similar actions).
+
 				
 	Multi-threading is quite dangerous, the mistakes here are very costly. When a problem is found, it’s either hard or impossible to debug, but it’s not the worst.
 	
@@ -95,7 +96,7 @@ The **Multi-threading** programming by using the built-in support provided by Fr
 		- On the "Critical Sections" page:
 				the use of these built-in procedures in code blocks for handling the concurrency with other threads.
 		- On the "Critical Sections FAQ" page:
-				the "Critical Sections" related questions".
+				the "Critical Sections" related questions in multi-threading".
 
 {{fbdoc item="section" value="See also"}}
 	- [[ProPgMtThreads|Threads]]

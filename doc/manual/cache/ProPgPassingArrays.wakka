@@ -60,6 +60,7 @@ Declaring/defining array parameters and passing array arguments to procedures
 			**""-""** ubound
 			
 			**##(*)##**: Additional member field (an 'Uinteger') from fbc versions > 1.07
+			(see the include file ##./inc/fbc-int/array.bi## for fbc versions >= 1.07)
 			
 {{fbdoc item="section" value="Example"}}
 	

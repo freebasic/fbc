@@ -236,7 +236,8 @@ Sleep
 		
 		Example, tower of Hanoi algorithm:
 		{{fbdoc item="filename" value="examples/manual/proguide/recursion/recursivehanoi.bas"}}%%(freebasic)
-'' For this example, the two recursive calls are at the end of executed code block but separated by an instruction line and there is an order constraint.
+'' For this example, the two recursive calls are at the end of executed code block,
+''   but separated by an instruction line and there is an order constraint.
 
 Sub recursiveHanoi (Byval n As Integer, Byval departure As String, Byval middle As String, Byval arrival As String)
 	If n > 0 Then

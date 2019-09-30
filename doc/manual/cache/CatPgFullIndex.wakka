@@ -278,7 +278,9 @@ Alphabetical listing of keywords, macros and procedures.
 	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}
 	- {{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}
 	- {{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}
+	- {{fbdoc item="keyword" value="KeyPgFileflush|FILEFLUSH"}}
 	- {{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}
+	- {{fbdoc item="keyword" value="KeyPgFileseteof|FILESETEOF"}}
 	- {{fbdoc item="keyword" value="KeyPgFix|FIX"}}
 	- {{fbdoc item="keyword" value="KeyPgFlip|FLIP"}}
 	- {{fbdoc item="keyword" value="KeyPgFor|FOR"}}

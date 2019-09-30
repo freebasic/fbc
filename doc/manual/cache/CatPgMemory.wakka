@@ -28,7 +28,7 @@ Procedures that work with static and dynamic memory.
 	=={{fbdoc item="keyword" value="KeyPgSwap|SWAP"}}==
 		Exchange the contents of two variables.
 	=={{fbdoc item="keyword" value="KeyPgSadd|SADD"}}==
-		Returns the address for the data in a zstring variable.
+		Returns the address for the data in a zstring/wstring variable.
 >>::c::
 {{fbdoc item="see"}}
 	- [[CatPgOpMemory|Memory Operators]]

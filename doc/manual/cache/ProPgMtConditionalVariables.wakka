@@ -8,6 +8,8 @@ The built-in procedures that create, wait-for/signal, and destroy **Conditional 
 	At this time, one of the threads waiting on this condition variable wakes up, and can act on the event. It is possible to also wake up all threads waiting on this condition variable by using a broadcast method on this variable.
 	
 	A condition variable does not provide locking. Thus, a mutex must be used along with the condition variable, to provide the necessary locking when accessing this condition variable.
+	
+	Conditional variable capability (and also mutex capability) can be fully used even with a detached thread (only its handler is no longer accessible by its identifier).
 
 {{fbdoc item="section" value="Creating / Destructing a conditional variable"}}
 	##[[KeyPgCondCreate|CondCreate]]## creates a condition variable, returning a handle identifier which is to be referred to when destroying the condition variable.
@@ -94,105 +96,105 @@ The built-in procedures that create, wait-for/signal, and destroy **Conditional 
 		**Note:**
 			**""-""** It is a good habit to use ##[[KeyPgCondWait|CondWait]]## in a protected way against eventual spurious wake-ups.
 			**""-""** For that, ##[[KeyPgCondWait|CondWait]]## is put within a loop for checking that a Boolean predicate is indeed true (predicate set true by another thread just before executing ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadcast|CondBroadCast]]##) when the thread has finished waiting:
-				**##While predicate <> True
-					Condwait(conditionalid, mutexid)
-				Wend
-				predicate = False##**
+					**##While predicate <> True
+						Condwait(conditionalid, mutexid)
+					Wend
+					predicate = False##**
 			**""-""** The loop can terminate only when the predicate is true.
 			**""-""** On the other hand, if the predicate is already true before the thread reaches the loop, ##[[KeyPgCondWait|CondWait]]## is downright skipped (allowing to take into account a case of ##[[KeyPgCondSignal|CondSignal]]## or ##[[KeyPgCondBroadcast|CondBroadCast]]## that would have been lost otherwise, because prematurely executed in a second thread before the first thread is really waiting for this).
 			
-		**See the pseudo-codes below for detailed coding by applying all proper above rules**.
-		
-		- Pseudo-code sub-section for a thread:
-				**""-""** Pseudo-code for the "waiting-for" critical sub-section (with the links to/from critical section items of other thread):
-					%%
+		**Pseudo-codes for detailed coding by applying all proper above rules:**
+			- Pseudo-code sub-section for a thread:
+					**""-""** Pseudo-code for the "waiting-for" critical sub-section (with the links to/from critical section items of other thread):
+						%%
 '  Principle of mutual exclusion + waiting-for, for a thread sub-section
 '  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
 '
 '          Thread                                         Other Thread
-'      MUTEXLOCK(mutexID) <-------------------------- from (atomic_mutex_unlock(mutexID)) or MUTEXUNLOCK(mutexID)
+'      MUTEXLOCK(mutexID) <-------------------------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
 '      .......
 '      While booleanT <> True <---------------------- from booleanT = True
-'          (atomic_mutex_unlock(mutexID)) ----------> to MUTEXLOCK(mutexID) or (atomic_mutex_re-lock(mutexID))
+'          ( atomic_mutex_unlock(mutexID) ) --------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
 '          CONDWAIT(conditionalID, mutexID) <-------- from CONDSIGNAL(conditionalID)
-'          (atomic_mutex_re-lock(mutexID)) <--------- from (atomic_mutex_unlock(mutexID)) or MUTEXUNLOCK(mutexID)
+'          ( atomic_mutex_re-lock(mutexID) ) <------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
 '      Wend
 '      booleanT = False
 '      .......
-'      MUTEXUNLOCK(mutexID) ------------------------> to MUTEXLOCK(mutexID) or (atomic_mutex_re-lock(mutexID))
-					%%
-				**""-""** Pseudo-code for the "signaling" critical sub-section (with the links to/from the critical section items of other thread):
-					%%
+'      MUTEXUNLOCK(mutexID) ------------------------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+						%%
+					**""-""** Pseudo-code for the "signaling" critical sub-section (with the links to/from the critical section items of other thread):
+						%%
 '  Principle of mutual exclusion + signaling, for a thread sub-section
 '  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
 '
 '          Thread                              Other Thread
-'      MUTEXLOCK(mutexID) <--------------- from (atomic_mutex_unlock(mutexID)) or MUTEXUNLOCK(mutexID)
+'      MUTEXLOCK(mutexID) <--------------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
 '      .......
 '      booleanOT = True -----------------> to While booleanOT <> True
 '      CONDSIGNAL(conditionalID) --------> to CONDWAIT(conditionalID, mutexID)
 '      .......
-'      MUTEXUNLOCK(mutexID) -------------> to MUTEXLOCK(mutexID) or (atomic_mutex_re-lock(mutexID))
-					%%
-		- Pseudo-code section for a thread:
-				**""-""** Pseudo-code for the "signaling, then waiting-for" critical section (with the links to/from the critical section items of other thread):
-					%%
+'      MUTEXUNLOCK(mutexID) -------------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+						%%
+			- Pseudo-code section for a thread:
+					**""-""** Pseudo-code for the "signaling, then waiting-for" critical section (with the links to/from the critical section items of other thread):
+						%%
 '  Principle (1) of mutual exclusion + mutual synchronization, for a thread section
 '  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
 '
 '          Thread                                        Other Thread
-'      MUTEXLOCK(mutexID) <------------------------- from (atomic_mutex_unlock(mutexID)) or MUTEXUNLOCK(mutexID)
-'      Do_something1_with_exclusion
+'      MUTEXLOCK(mutexID) <------------------------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
+'      Do_something_1_with_exclusion
 '      booleanOT = True ---------------------------> to While booleanOT <> True
 '      CONDSIGNAL(conditionalID) ------------------> to CONDWAIT(conditionalID, mutexID)
 '      While booleanT <> True <--------------------- from booleanT = True
-'          (atomic_mutex_unlock(mutexID)) ---------> to MUTEXLOCK(mutexID) or (atomic_mutex_re-lock(mutexID))
+'          ( atomic_mutex_unlock(mutexID) ) -------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
 '          CONDWAIT(conditionalID, mutexID) <------- from CONDSIGNAL(conditionalID)
-'          (atomic_mutex_re-lock(mutexID)) <-------- from (atomic_mutex_unlock(mutexID)) or MUTEXUNLOCK(mutexID)
+'          ( atomic_mutex_re-lock(mutexID) ) <------ from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
 '      Wend
 '      booleanT = False
-'      Do_something2_with_exclusion
-'      MUTEXUNLOCK(mutexID) -----------------------> to MUTEXLOCK(mutexID) or (atomic_mutex_re-lock(mutexID))
-					%%
-				**""-""** Pseudo-code for the "waiting-for, then signaling" critical section (with the links to/from  critical section items of other thread):
-					%%
+'      Do_something_2_with_exclusion
+'      MUTEXUNLOCK(mutexID) -----------------------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+						%%
+					**""-""** Pseudo-code for the "waiting-for, then signaling" critical section (with the links to/from  critical section items of other thread):
+						%%
 '  Principle (2) of mutual exclusion + mutual synchronization, for a thread section
 '  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
 '
 '          Thread                                         Other Thread
-'      MUTEXLOCK(mutexID) <-------------------------- from (atomic_mutex_unlock(mutexID)) or MUTEXUNLOCK(mutexID)
-'      Do_something1_with_exclusion
+'      MUTEXLOCK(mutexID) <-------------------------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
+'      Do_something_1_with_exclusion
 '      While booleanT <> True <---------------------- from booleanT = True
-'          (atomic_mutex_unlock(mutexID)) ----------> to MUTEXLOCK(mutexID) or (atomic_mutex_re-lock(mutexID))
+'          ( atomic_mutex_unlock(mutexID) ) --------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
 '          CONDWAIT(conditionalID, mutexID) <-------- from CONDSIGNAL(conditionalID)
-'          (atomic_mutex_re-lock(mutexID)) <--------- from (atomic_mutex_unlock(mutexID)) or MUTEXUNLOCK(mutexID)
+'          ( atomic_mutex_re-lock(mutexID) ) <------- from ( atomic_mutex_unlock(mutexID) ) or MUTEXUNLOCK(mutexID)
 '      Wend
 '      booleanT = False
-'      Do_something2_with_exclusion
+'      Do_something_2_with_exclusion
 '      booleanOT = True ----------------------------> to While booleanOT <> True
 '      CONDSIGNAL(conditionalID) -------------------> to CONDWAIT(conditionalID, mutexID)
-'      MUTEXUNLOCK(mutexID) ------------------------> to MUTEXLOCK(mutexID) or (atomic_mutex_re-lock(mutexID))
-					%%
-		- Pseudo-code section example for each of 2 threads:
-				**""-""** Pseudo-code for the "signaling, then waiting-for" critical section of a main thread and for "waiting-for, then signaling" critical section of a child thread (with the links to/from critical section items of both threads):
-					%%
+'      MUTEXUNLOCK(mutexID) ------------------------> to MUTEXLOCK(mutexID) or ( atomic_mutex_re-lock(mutexID) )
+						%%
+			- Pseudo-code section example for each of 2 threads:
+					**""-""** Pseudo-code for the "signaling, then waiting-for" critical section of a main thread and for "waiting-for, then signaling" critical section of a child thread (with the links to/from critical section items of both threads):
+						%%
 '  Principle (example) of mutual exclusion + mutual synchronization sections, between 2 threads,
 '  using the principle (1) for the main thread, and the principle (2) for the child thread
 '  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
 '
-'          Main Thread                                                                   Child Thread
-'      MUTEXLOCK(mutexID) <----------------------------.     .----------------.----> MUTEXLOCK(mutexID)
-'      Do_something_with_exclusion               .---- | --- | -------------- | ---> While boolC <> True
-'      boolC = True -----------------------------'     |     |     .--------- | -------- (atomic_mutex_unlock(mutexID))
-'      CONDSIGNAL(conditionalID) --------------------- | --- | --- | -------- | -------> CONDWAIT(conditionalID, mutexID)
-'      While boolM <> True <-------------------------- | --- | --- | ------.  '--------> (atomic_mutex_re-lock(mutexID)
-'          (atomic_mutex_unlock(mutexID)) -------.     |     |     |       |         Wend
-'          CONDWAIT(conditionalID, mutesID) <--- | --- | --- | --- | ---.  |         boolC = False
-'          (atomic_mutex_re-lock(mutexID)) <---- | ----'---- | ----|    |  |         Do_something_with_exclusion
-'      Wend                                      |           |     |    |  '-------- boolM = True
-'      boolM = False                             |           |     |    '----------- CONDSIGNAL(conditionalID)
-'      MUTEXUNLOCK(mutexID) ---------------------'-----------'     '---------------- MUTEXUNLOCK(mutexID)
-					%%
+'          Main Thread                                                                          Child Thread
+'      MUTEXLOCK(mutexID) <-----------------------------.     .-------------.-------------> MUTEXLOCK(mutexID
+'      Do_something_1_with_exclusion                    |     |             |               Do_something_1_with_exclusion
+'      boolC = True ----------------------------------- | --- | ----------- | ------------> While boolC <> True
+'      CONDSIGNAL(conditionalID) ---------------------- | --- | ----------- | ---.    .-------- ( atomic_mutex_unlock(mutexID) )
+'      While boolM <> True <--------------------------- | --- | ---------.  |    '--- | ------> CONDWAIT(conditionalID, mutexID)
+'          ( atomic_mutex_unlock(mutexID) ) ------.     |     |          |  '-------- | ------> ( atomic_mutex_re-lock(mutexID) )
+'          CONDWAIT(conditionalID, mutexID) <---- | --- | --- | ------.  |            |     Wend
+'          ( atomic_mutex_re-lock(mutexID) ) <--- | ----'---- | ---.  |  |            |     boolC = False
+'      Wend                                       |           |    |  |  |            |     Do_something_2_with_exclusion
+'      boolM = False                              |           |    |  |  '----------- | --- boolM = True
+'      Do_something_2_with_exclusion              |           |    |  '-------------- | --- CONDSIGNAL(conditionalID)
+'      MUTEXUNLOCK(mutexID) ----------------------'-----------'    '------------------'---- MUTEXUNLOCK(mutexID)
+						%%
 {{fbdoc item="section" value="Example"}}
 	The second example on the previous page (##[[ProPgMtMutualExclusion|Mutual Exclusion]]##) is modified by using a conditional variable to exhibit a synchronization example.
 	So, the two sections of code, previously protected by an exclusion block ##[Mutexlock ... Mutexunlock]##, are now synchronized in order that each thread displays one after the other its character sequence ("[M]" or "(C)").
@@ -205,20 +207,20 @@ The built-in procedures that create, wait-for/signal, and destroy **Conditional 
 '  Principle of mutual exclusion + mutual synchronization between 2 threads with loop
 '  (connecting lines join the sender(s) and receiver(s) impacted by each action occurring during the sequence)
 '
-'          Main Thread                                                                    Child Thread
+'          Main Thread                                                                  Child Thread
 '  .....                                                                          .....
 '  Loop                                                                           Loop
-'      MUTEXLOCK(mutID) <---------------------------.     .----------------.----> MUTEXLOCK(mutID)
-'      Do_something_with_exclusion            .---- | --- | -------------- | ---> While boolC <> True
-'      boolC = True --------------------------'     |     |     .--------- | -------- (atomic_mutex_unlock(mutID))
-'      CONDSIGNAL(condID) ------------------------- | --- | --- | -------- | -------> CONDWAIT(condID, mutID)
-'      While boolM <> True <----------------------- | --- | --- | ------.  '--------> (atomic_mutex_re-lock(mutID)
-'          (atomic_mutex_unlock(mutID)) ------.     |     |     |       |         Wend
-'          CONDWAIT(condID, mutID) <--------- | --- | --- | --- | ---.  |         boolC = False
-'          (atomic_mutex_re-lock(mutID)) <--- | ----'---- | ----|    |  |         Do_something_with_exclusion
-'      Wend                                   |           |     |    |  '-------- boolM = True
-'      boolM = False                          |           |     |    '----------- CONDSIGNAL(condID)
-'      MUTEXUNLOCK(mutID) --------------------'-----------'     '---------------- MUTEXUNLOCK(mutID)
+'      MUTEXLOCK(mutID) <-----------------------------.     .-------------.---------> MUTEXLOCK(mutID)
+'      Do_something_with_exclusion              .---- | --- | ----------- | --------> While boolC <> True
+'      boolC = True ----------------------------'     |     |             |     .-------- ( atomic_mutex_unlock(mutID) )
+'      CONDSIGNAL(condID) --------------------------- | --- | ----------- | --- | ------> CONDWAIT(condID, mutID)
+'      While boolM <> True <------------------------- | --- | ---------.  '---- | ------> ( atomic_mutex_re-lock(mutID) )
+'          ( atomic_mutex_unlock(mutID) ) ------.     |     |          |        |     Wend
+'          CONDWAIT(condID, mutID) <----------- | --- | --- | ------.  |        |     boolC = False
+'          ( atomic_mutex_re-lock(mutID) ) <--- | ----'---- | ---.  |  |        |     Do_something_with_exclusion
+'      Wend                                     |           |    |  |  '------- | --- boolM = True
+'      boolM = False                            |           |    |  '---------- | --- CONDSIGNAL(condID)
+'      MUTEXUNLOCK(mutID) ----------------------'-----------'    '--------------'---- MUTEXUNLOCK(mutID)
 '  End Loop                                                                       End Loop
 '  .....                                                                          .....
 		%%

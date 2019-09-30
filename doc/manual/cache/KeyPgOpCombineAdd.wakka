@@ -34,6 +34,8 @@ Adds and assigns a value to a variable
 	For string types, this operator is functionally equivalent to ##[[KeyPgOpCombineConcat|Operator &= (Concatenate and assign)]]##.
 	
 	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
+	
+	//Note: Similarly to the operator '=[>]' (assign), the alternative symbol '+=>' can be also used.//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/add-assign.bas"}}%%(freebasic)

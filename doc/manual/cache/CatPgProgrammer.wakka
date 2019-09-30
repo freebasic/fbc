@@ -20,8 +20,8 @@
 	{{fbdoc item="keyword" value="ProPgLineContinuation|Line continuation"}}
 
 {{fbdoc item="section" value="Variables and Datatypes"}}
-	Constants and Enumerations
-	Numeric Types
+	{{fbdoc item="keyword" value="ProPgEnumerations|Constants and Enumerations"}}
+	{{fbdoc item="keyword" value="ProPgNumericTypes|Numeric Types"}}
 	Strings (string, zstring, and wstring)
 	{{fbdoc item="keyword" value="ProPgDataConversion|Coercion and Conversion"}}
 	{{fbdoc item="keyword" value="ProPgConstants|Constants"}}
@@ -69,7 +69,7 @@
 	{{fbdoc item="keyword" value="ProPgCtorsAssignDtors|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #1)"}}
 	{{fbdoc item="keyword" value="ProPgCtorsAssignDtors2|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)"}}
 <<>>{{fbdoc item="section" value="Statements and Expressions"}}
-	Assignments
+	{{fbdoc item="keyword" value="ProPgAssignments|Assignments"}}
 	{{fbdoc item="keyword" value="CatPgOperators|Operator List"}}
 	{{fbdoc item="keyword" value="OpPrecedence|Operator Precedence"}}
 	{{fbdoc item="keyword" value="ProPgControlFlow|Control Flow Statements"}}
@@ -78,10 +78,10 @@
 	{{fbdoc item="keyword" value="ProPgProcedures|Procedures Overview"}}
 	{{fbdoc item="keyword" value="ProPgPassingArguments|Passing Arguments to Procedures"}}
 	{{fbdoc item="keyword" value="ProPgReturnValue|Returning a Value"}}
-	Procedure Scopes
+	{{fbdoc item="keyword" value="ProPgProcedureScopes|Procedure Scopes"}}
 	{{fbdoc item="keyword" value="ProPgCallingConventions|Calling Conventions"}}
 	{{fbdoc item="keyword" value="ProPgRecursion|Recursion"}}
-	Constructors and Destructors
+	{{fbdoc item="keyword" value="ProPgProcCtorsDtors|Constructors and Destructors"}}
 	{{fbdoc item="keyword" value="ProPgProcedurePointers|Pointers to Procedures"}}
 	{{fbdoc item="keyword" value="CatPgVarArg|Variable Arguments"}}
 

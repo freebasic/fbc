@@ -1,0 +1,90 @@
+{{fbdoc item="title" value="Assignments"}}----
+**Assignments** typically allow a variable to hold different values at different times during its life-span and scope.
+
+{{fbdoc item="section" value="Single assignment statement"}}
+	An assignment statement consists of a variable (simple or with indices, or even a byref function result) and an expression (constructed from variables, constants, operators, and parentheses):
+		**##variable = expression##**
+	Executing an assignment statement evaluates the expression on the right-hand side and assigns it to the variable on the left-hand side.
+	
+	For an assignment operation, it is necessary that the value of the expression is well-defined (it is a valid 'rvalue') and that the variable represents a modifiable entity (it is a valid modifiable (non-const) 'lvalue').
+	For an assignment to be well formed, the type of the expression on the right-hand side should be compatible with the type of the variable on the left-hand side (in other words, it must be possible to cast the expression to the type of the variable).
+	
+	An example of a simple assignment is as follows:
+		**##x = 0##**
+	For the above example, the variable **##'x'##** must be declared as being of numeric type.
+	After the assignment statement executes, the variable **##'x'##** will have the value zero (either as an integer or a floating-point value, depending on its type).
+	
+	In an assignment statement:
+		**""-""** The expression is evaluated in the current state of the program.
+		**""-""** The variable is assigned the computed value, replacing the prior value of that variable.
+	Because the right-hand side is evaluated first, it is possible to increment a variable by writing:
+		**##x = x + 1##**
+
+{{fbdoc item="section" value="Compound assignment statement"}}
+	Arithmetic operators may be used in compound arithmetic and assignment operations.
+	
+	For example, consider the following example of compound addition and assignment:
+		**##x += 7##**
+	The compound arithmetic and assignment statement above is equivalent to the following long form:
+		**##x = x + 7##**
+		
+	More generally, the compound form (with operator op):
+		**##x op= y##**
+	is equivalent to:
+		**##x = x op y##**
+		
+	The compound statement is legal whenever the long form is legal. This requires that the operation **##'x op y'##** must itself be well formed and that the result of the operation be assignable to **##'x'##**.
+
+{{fbdoc item="section" value="Assignment versus equality"}}
+	The use of the equals sign **##'='##** as an assignment operator has been frequently criticized, due to the conflict with equal as comparison for equality. This results both in confusion by novices in writing code, and confusion even by experienced programmers in reading code.
+	Beginning programmers sometimes confuse assignment with the relational operator for equality, as **##'='##** means equality in mathematics, and is used for assignment in many languages. But assignment alters the value of a variable, while equality testing tests whether two expressions have the same value.
+	
+	In FreeBASIC, a single equals sign **##'='##** is generally used for both the assignment operator and the equality relational operator, with context determining which is meant.
+	For this purpose (and for solving some cases of ambiguity of the parser), the alternative symbol **##'=>'##** can be used for assignments in place of **##'='##** (same as already used commonly for the initializers inside declarations).
+	**Note:** the **##'=>'##** symbol has been chosen against **##'<='##** (already the operator 'Less Than Or Equal') and **##':='##** (**##':'##** used as statement separator).
+	
+	Statements can even mix assignment and equality operators.
+	For example:
+		**##x = a = b##**
+	is parsed as:
+		**##x = ( a = b )##**
+	The equality expression **##'a = b'##** above returns **##'-1'##** ##or## **##'0'##**, or **##'true'##** ##or## **##'false'##**, depending on the types of the variables **##'a'##** and **##'b'##**, but the values of these variables are not modified. Only the equality expression result is assigned to **##'x'##**.
+	In the above assignment statement, using parentheses around the equality expression allows to highlight the global behavior.
+	The alternative symbol **##'=>'##** can also be used:
+		**##x => a = b##**
+		(**##'=>'##** can not be also used as symbol for equality operator)
+
+{{fbdoc item="section" value="Example"}}
+	Example illustrating the different cases:
+		{{fbdoc item="filename" value="examples/manual/proguide/assignments.bas"}}%%(freebasic)
+Dim As Integer x, y, z
+
+x = 5          ''        (or 'x => 5')
+Print x        ''  5     (assignment expression is a constant)
+
+y = x + 4      ''        (or 'y => x + 4')
+Print y        ''  9     (assignment expression is the sum of a variable and a constant)
+
+y = y + 3      ''        (or 'y => y + 3')
+Print y        ''  12    (value of x is incremented by 3)
+
+z = 3          ''        (or 'z => 3')
+z *= x         ''        (or 'z *=> x')
+Print z        ''  15    (value of z is multiplied by value of x)
+
+If x = y Then  ''        (value of x is not modified)
+  Print x
+Else
+  Print x, y   ''  5     12
+End If
+
+x = y = z      ''        (or 'x => y = z')    (value of y is not modified)
+Print x, y, z  ''  0     12    15
+		%%
+{{fbdoc item="section" value="See also"}}
+	- ##{{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}##
+	- ##[[KeyPgOpEqual|Operator = (Equal)]]##
+	- [[CatPgOperators|Operator List]]
+	- [[OpPrecedence|Operator Precedence]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

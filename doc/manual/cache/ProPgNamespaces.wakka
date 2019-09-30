@@ -144,8 +144,8 @@ B.i = 1  ' ambiguity resolution solved by using full name
 j = 2    ' ambiguity (between .j, B.j, A.j) solved by compiler, by choosing override .j in the global scope
 %%
 {{fbdoc item="section" value="See also"}}
-	- [[KeyPgNamespace|Namespace]]
-	- [[KeyPgUsing|Using (Namespaces)]]
-	- [[KeyPgScope|Scope...End Scope]]
+	- ##[[KeyPgNamespace|Namespace]]##
+	- ##[[KeyPgUsing|Using (Namespaces)]]##
+	- ##[[KeyPgScope|Scope...End Scope]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

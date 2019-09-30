@@ -275,7 +275,9 @@
 		[[KeyPgFilecopy|FILECOPY]]
 		[[KeyPgFiledatetime|FILEDATETIME]]
 		[[KeyPgFileexists|FILEEXISTS]]
+		[[KeyPgFileflush|FILEFLUSH]]
 		[[KeyPgFilelen|FILELEN]]
+		[[KeyPgFileseteof|FILESETEOF]]
 		[[KeyPgFix|FIX]]
 		[[KeyPgFlip|FLIP]]
 		[[KeyPgFor|FOR]]
@@ -774,6 +776,8 @@
 		[[ProPgLineContinuation|Line continuation]]
 
 	{{fbdoc item="subsect" value="Variables and Datatypes"}}
+		[[ProPgEnumerations|Constants and Enumerations]]
+		[[ProPgNumericTypes|Numeric Types]]
 		[[ProPgDataConversion|Coercion and Conversion]]
 		[[ProPgConstants|Constants]]
 		[[ProPgVariables|Variables]]
@@ -821,6 +825,7 @@
 		[[ProPgCtorsAssignDtors2|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)]]
 
 	{{fbdoc item="subsect" value="Statements and Expressions"}}
+		[[ProPgAssignments|Assignments]]
 		[[OpPrecedence|Operator Precedence]]
 		[[ProPgControlFlow|Control Flow Statements]]
 
@@ -828,8 +833,10 @@
 		[[ProPgProcedures|Procedures Overview]]
 		[[ProPgPassingArguments|Passing Arguments to Procedures]]
 		[[ProPgReturnValue|Returning a Value]]
+		[[ProPgProcedureScopes|Procedure Scopes]]
 		[[ProPgCallingConventions|Calling Conventions]]
 		[[ProPgRecursion|Recursion]]
+		[[ProPgProcCtorsDtors|Constructors and Destructors]]
 		[[ProPgProcedurePointers|Pointers to Procedures]]
 		[[CatPgVarArg|Variable Arguments]]
 
