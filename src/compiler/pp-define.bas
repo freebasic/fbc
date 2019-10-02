@@ -226,10 +226,49 @@ private function hLoadMacro _
 			case FB_DEFTOK_TYPE_PARAM
 				assert( symbGetDefTokParamNum( dt ) <= num )
 				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
-
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
 					text += *argtext
+				end if
+
+            '' parameter check suffix
+			case FB_DEFTOK_TYPE_CHECKSUFFIX
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim n as ulong
+                    dim i as ulong
+                    dim s as string
+                    
+                    n = instr(*argtext, " ")
+                    i = instr(*argtext, QUOTE)
+
+                    if i > 0 then
+                      if n > i then
+                        n = 0
+                      end if  
+                    end if
+
+                    if n > 0 then
+                        s = left(*argtext, n-1)
+
+                        text += "$" + QUOTE
+                        text += hReplace( strptr(s), QUOTE, QUOTE + QUOTE )
+                        text += QUOTE
+
+                        text += ","
+                        argtext = argtext + n
+  					    text += *argtext
+                      
+                    else
+                        text += "$" + QUOTE
+                        text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
+                        text += QUOTE
+
+                        text += ","
+  					    text += *argtext
+                    end if    
 				end if
 
 			'' stringize parameter?
@@ -545,6 +584,46 @@ private function hLoadMacroW _
 					DWstrConcatAssign( text, argtext )
 				end if
 
+            '' parameter check
+			case FB_DEFTOK_TYPE_CHECKSUFFIX
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim n as ulong
+                    dim i as ulong
+                    dim w as WSTRING * 300
+                    
+                    n = instr(*argtext, " ")
+                    i = instr(*argtext, QUOTE)
+
+                    if i > 0 then
+                      if n > i then
+                        n = 0
+                      end if  
+                    end if
+
+                    if n > 0 then
+                        w = left(*argtext, n-1)
+
+                        DWstrConcatAssign( text, "$" + QUOTE )
+                        DWstrConcatAssign( text, *hReplaceW( strptr(w), QUOTE, QUOTE + QUOTE ) )
+                        DWstrConcatAssign( text, QUOTE )
+
+                        DWstrConcatAssign( text, "," )
+                        argtext = argtext + n
+					    DWstrConcatAssign( text, argtext )
+
+                    else
+                        DWstrConcatAssign( text, "$" + QUOTE )
+                        DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
+                        DWstrConcatAssign( text, QUOTE )
+
+                        DWstrConcatAssign( text, "," )
+					    DWstrConcatAssign( text, argtext )
+                    end if    
+				end if
+
 			'' stringize parameter?
 			case FB_DEFTOK_TYPE_PARAMSTR
 				assert( symbGetDefTokParamNum( dt ) <= num )
@@ -556,6 +635,9 @@ private function hLoadMacroW _
 					DWstrConcatAssign( text, "$" + QUOTE )
 					DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
 					DWstrConcatAssign( text, QUOTE )
+				else
+					'' If it's empty, produce an empty string ("")
+					DWstrConcatAssign( text, """""" )
 				end if
 
 			'' ordinary text..
@@ -756,11 +838,12 @@ private function hReadMacroText _
 	static as zstring * FB_MAXNAMELEN+1 arg
     dim as FB_DEFPARAM ptr param = any
     dim as FB_DEFTOK ptr toktail = NULL, tokhead = NULL
-    dim as integer addquotes = any, nestedcnt = 0
-
+    dim as integer addquotes = any, nestedcnt = 0, checksuffix = any
+    
     do
     	addquotes = FALSE
-
+    	checksuffix = 0
+    	
     	select case as const lexGetToken( LEX_FLAGS )
 		case FB_TK_EOF
 			if( ismultiline ) then
@@ -809,6 +892,12 @@ private function hReadMacroText _
     			lexSkipToken( LEX_FLAGS )
     			lexSkipToken( LEX_FLAGS )
     			continue do
+                
+            '' check suffix
+            case CHAR_QUESTION
+    			lexSkipToken( LEX_FLAGS )
+    			lexSkipToken( LEX_FLAGS )
+                checksuffix = 1
 
     		'' '#' macro?
     		case FB_TK_PP_MACRO
@@ -895,7 +984,9 @@ private function hReadMacroText _
 
     		'' found?
     		if( param <> NULL ) then
-				if( addquotes = FALSE ) then
+		  		if checksuffix = 1 then            'jk-argcount
+			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_CHECKSUFFIX )
+                elseif( addquotes = FALSE ) then
 					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAM )
 				else
 					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAMSTR )
