@@ -353,3 +353,12 @@ FBCALL int          fb_VALINT           ( FBSTRING *str );
 FBCALL long long    fb_VALLNG           ( FBSTRING *str );
 FBCALL unsigned int fb_VALUINT          ( FBSTRING *str );
 FBCALL unsigned long long fb_VALULNG    ( FBSTRING *str );
+
+/**************************************************************************************************
+ * new functions
+ **************************************************************************************************/
+
+FBCALL FBSTRING    *fb_StrFromWchar     ( FB_WCHAR *src );
+//FBCALL FB_WCHAR    *fb_WcharFromStr     ( FBSTRING *src );
+FBCALL FB_WCHAR    *fb_WcharFromStr     ( char *src );
+

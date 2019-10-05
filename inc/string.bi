@@ -33,29 +33,7 @@ declare function format    alias "fb_StrFormat" _
 '***********************************************************************************************
 
 
-PRIVATE FUNCTION Ucode (BYREF ansiStr AS CONST STRING) AS ustring
-'***********************************************************************************************
-' copy string to ustring, pass data without conversion
-'***********************************************************************************************
-DIM u     AS ustring
-DIM slen  AS long
-DIM ulen  AS long
-
-
-    if len(ansiStr) = 0 then return ""                  'nothing to do
-
-    slen = LEN(ansiStr)
-    ulen = int((slen + sizeof(wstring) - 1) / sizeof(wstring))
-
-    u = space(ulen)
-    u[ulen] = 0
-    fb_hStrCopy(strptr(u), cast(any ptr, strptr(ansiStr)), sLen)       
-
-    IF sLen THEN RETURN u
-    RETURN ""
-
-
-END FUNCTION
+declare function Ucode alias "fb_WcharFromStr" (z as Zstring) as wstring
 
 
 '***********************************************************************************************
@@ -64,29 +42,7 @@ END FUNCTION
 '***********************************************************************************************
 
 
-PRIVATE FUNCTION Acode (BYref w AS USTRING) AS STRING
-'***********************************************************************************************
-' copy ustring to string, pass data without conversion
-'***********************************************************************************************
-DIM ansiStr AS STRING 
-DIM dwLen   AS long
-DIM slen  AS long
-DIM ulen  AS long
-
-
-    if len(w) = 0 then return ""                        'nothing to do
-
-    ulen = len(w)
-    slen = ulen * sizeof(wstring)
-
-    ansiStr = SPACE(slen)
-    fb_hStrCopy(cast(any ptr, strptr(ansiStr)), cast(any ptr, strptr(w)), slen)
-
-    IF slen THEN RETURN ansiStr
-    RETURN ""
-
-
-END FUNCTION
+declare function acode alias "fb_StrFromWchar" (w as wstring) as string
 
 
 '***********************************************************************************************
