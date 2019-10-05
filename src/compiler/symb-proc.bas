@@ -1623,51 +1623,23 @@ end function
 
 	if( rec_cnt = 0 ) then
 		dim as integer err_num = any
-'		dim as FBSYMBOL ptr proc = any
 		dim as FB_OVLPROC_MATCH_SCORE score = 0
 
 		rec_cnt += 1
-
-'***********************************************************************************************
-' jk-file (try)
-'***********************************************************************************************
-		score = symbFindCastOvlProc2( param_dtype, _
-									param_subtype, _
-									arg_expr, _
-									@err_num )
-
+		score = symbFindCastOvlProc2( param_dtype, param_subtype, arg_expr, @err_num )
 		rec_cnt -= 1
 
-'***********************************************************************************************
-'jk: this shouldn´t be a yes or no, but a better score for a better match !!!
-'***********************************************************************************************
-    if score = FB_OVLPROC_FULLMATCH then              '75
-'ods("score1: fullmatch")
-			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT + 2
+        ''jk: this shouldn´t be a yes or no, but a better score for a better match !!!
+        if score = FB_OVLPROC_FULLMATCH then              '75
+            return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT + 2
 
-		elseif score >= FB_OVLPROC_TYPEMATCH then         '50
-'ods("score1: 0> typematch")
-			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT + 1
+        elseif score >= FB_OVLPROC_TYPEMATCH then         '50
+            return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT + 1
 
-    elseif score > 0 then
-'ods("score1: halfmatch")
-			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT
-		end if
-	end if
-
-
-
-'		proc = symbFindCastOvlProc( param_dtype, _
-'									param_subtype, _
-'									arg_expr, _
-'									@err_num )
-'		rec_cnt -= 1
-'
-'		if( proc <> NULL ) then                           'jk: this shouldn´t be a yes or no, but a better score for
-'                                                      'an exact match !!!
-'			return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT
-'		end if
-'	end if
+        elseif score > 0 then
+            return FB_OVLPROC_HALFMATCH - FB_DATATYPE_STRUCT
+        end if
+    end if
 #endmacro
 
 '':::::
@@ -2569,9 +2541,6 @@ function symbFindCastOvlProc _
 end function
 
 
-'***********************************************************************************************
-' jk-file (try)
-'***********************************************************************************************
 function symbFindCastOvlProc2 _
 	( _
 		byval to_dtype as integer, _                      'parameter type (to cast to)
@@ -2662,7 +2631,6 @@ function symbFindCastOvlProc2 _
 
 	'' more than one possibility?
 	if( matchcount > 1 ) then
-'ods("ambiguos 2")
 		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
 		errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
 		max_matchscore = NULL

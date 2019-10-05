@@ -232,7 +232,7 @@ private function hLoadMacro _
 				end if
 
             '' parameter check suffix
-			case FB_DEFTOK_TYPE_CHECKSUFFIX
+			case FB_DEFTOK_TYPE_CHECKPREFIX
 				assert( symbGetDefTokParamNum( dt ) <= num )
 				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 				'' Only if not empty ("..." param can be empty)
@@ -585,7 +585,7 @@ private function hLoadMacroW _
 				end if
 
             '' parameter check
-			case FB_DEFTOK_TYPE_CHECKSUFFIX
+			case FB_DEFTOK_TYPE_CHECKPREFIX
 				assert( symbGetDefTokParamNum( dt ) <= num )
 				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
 				'' Only if not empty ("..." param can be empty)
@@ -838,11 +838,11 @@ private function hReadMacroText _
 	static as zstring * FB_MAXNAMELEN+1 arg
     dim as FB_DEFPARAM ptr param = any
     dim as FB_DEFTOK ptr toktail = NULL, tokhead = NULL
-    dim as integer addquotes = any, nestedcnt = 0, checksuffix = any
+    dim as integer addquotes = any, nestedcnt = 0, checkprefix = any
     
     do
     	addquotes = FALSE
-    	checksuffix = 0
+    	checkprefix = 0
     	
     	select case as const lexGetToken( LEX_FLAGS )
 		case FB_TK_EOF
@@ -897,7 +897,7 @@ private function hReadMacroText _
             case CHAR_QUESTION
     			lexSkipToken( LEX_FLAGS )
     			lexSkipToken( LEX_FLAGS )
-                checksuffix = 1
+                checkprefix = 1
 
     		'' '#' macro?
     		case FB_TK_PP_MACRO
@@ -984,8 +984,8 @@ private function hReadMacroText _
 
     		'' found?
     		if( param <> NULL ) then
-		  		if checksuffix = 1 then            'jk-argcount
-			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_CHECKSUFFIX )
+		  		if checkprefix = 1 then      
+			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_CHECKPREFIX )
                 elseif( addquotes = FALSE ) then
 					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAM )
 				else
