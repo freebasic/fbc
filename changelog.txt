@@ -4,6 +4,7 @@ Version 1.08.0
 - array descriptor contains new 'flags' field.  Careful, breaks binary compatibility plus chicken-egg problem to build fbc.
 - fbc '-version' reports build date in yyyy-mm-dd format (aka build date iso)
 - updated SQLite headers for binding to SQLite 3.30.0 (2019-10-04)
+- updated BASS headers for binding to BASS 2.4.14
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
