@@ -14,10 +14,10 @@ declare sub showusage( )
 declare function callback cdecl _
 	( _
 		byval NotUsed as any ptr, _
-		byval argc as integer, _
+		byval argc as long, _
 		byval argv as zstring ptr ptr, _
 		byval colName as zstring ptr ptr _
-	) as integer
+	) as long
 
 	dim as sqlite3 ptr db
 	dim as zstring ptr errMsg 
@@ -59,10 +59,10 @@ declare function callback cdecl _
 function callback cdecl _
 	( _
 		byval NotUsed as any ptr, _
-		byval argc as integer, _
+		byval argc as long, _
 		byval argv as zstring ptr ptr, _
 		byval colName as zstring ptr ptr _
-	) as integer
+	) as long
   
 	dim as integer i 
 	dim as string text
