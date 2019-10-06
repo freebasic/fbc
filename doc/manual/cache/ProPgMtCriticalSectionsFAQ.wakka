@@ -1656,7 +1656,7 @@ Sleep
 ----
 
 {{fbdoc item="section" value="See also"}}
-	- [[ProPgMultiThreading|Multi-Threading]]
+	- [[ProPgMultiThreading|Multi-Threading Overview]]
 	- [[ProPgMtThreads|Threads]]
 	- [[ProPgMtMutualExclusion|Mutual Exclusion]]
 	- [[ProPgMtConditionalVariables|Conditional Variables]]

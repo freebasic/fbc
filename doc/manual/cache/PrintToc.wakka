@@ -778,6 +778,7 @@
 	{{fbdoc item="subsect" value="Variables and Datatypes"}}
 		[[ProPgEnumerations|Constants and Enumerations]]
 		[[ProPgNumericTypes|Numeric Types]]
+		[[ProPgStringsTypes|Strings (string, zstring, and wstring)]]
 		[[ProPgDataConversion|Coercion and Conversion]]
 		[[ProPgConstants|Constants]]
 		[[ProPgVariables|Variables]]
@@ -859,6 +860,9 @@
 		[[ProPgProfiling|Profiling]]
 
 	{{fbdoc item="subsect" value="Preprocessor"}}
+		[[ProPgPreprocessor|Overview]]
+		[[ProPgConditionalCompilation|Conditional Compilation]]
+		[[ProPgMacros|Macros]]
 
 	{{fbdoc item="subsect" value="Other Topics"}}
 		[[CptAscii|ASCII]]

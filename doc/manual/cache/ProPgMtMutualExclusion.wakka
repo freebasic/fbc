@@ -204,7 +204,7 @@ End Sub
 {{fbdoc item="section" value="See also"}}
 	- ##[[KeyPgMutexCreate|MutexCreate]]##, ##[[KeyPgMutexDestroy|MutexDestroy]]##
 	- ##[[KeyPgMutexLock|MutexLock]]##, ##[[KeyPgMutexUnlock|MutexUnlock]]##
-	- [[ProPgMultiThreading|Multi-Threading]]
+	- [[ProPgMultiThreading|Multi-Threading Overview]]
 	- [[ProPgMtThreads|Threads]]
 	- [[ProPgMtConditionalVariables|Conditional Variables]]
 	- [[ProPgMtCriticalSections|Critical Sections]]

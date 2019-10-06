@@ -22,7 +22,7 @@
 {{fbdoc item="section" value="Variables and Datatypes"}}
 	{{fbdoc item="keyword" value="ProPgEnumerations|Constants and Enumerations"}}
 	{{fbdoc item="keyword" value="ProPgNumericTypes|Numeric Types"}}
-	Strings (string, zstring, and wstring)
+	{{fbdoc item="keyword" value="ProPgStringsTypes|Strings (string, zstring, and wstring)"}}
 	{{fbdoc item="keyword" value="ProPgDataConversion|Coercion and Conversion"}}
 	{{fbdoc item="keyword" value="ProPgConstants|Constants"}}
 	{{fbdoc item="keyword" value="ProPgVariables|Variables"}}
@@ -106,9 +106,9 @@
 	{{fbdoc item="keyword" value="ProPgProfiling|Profiling"}}
 
 {{fbdoc item="section" value="Preprocessor"}}
-	Overview
-	Conditional Compilation
-	Macros
+	{{fbdoc item="keyword" value="ProPgPreprocessor|Overview"}}
+	{{fbdoc item="keyword" value="ProPgConditionalCompilation|Conditional Compilation"}}
+	{{fbdoc item="keyword" value="ProPgMacros|Macros"}}
 
 {{fbdoc item="section" value="Other Topics"}}
 (And topics that need to get placed elsewhere)

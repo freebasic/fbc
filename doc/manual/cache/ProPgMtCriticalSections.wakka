@@ -436,7 +436,7 @@ Sleep
 			%%Same result values because synchronous counting (despite of increasing tempo values), but the execution time performance is degraded compared to the synchronous method above (using conditional variable).
 			
 {{fbdoc item="section" value="See also"}}
-	- [[ProPgMultiThreading|Multi-Threading]]
+	- [[ProPgMultiThreading|Multi-Threading Overview]]
 	- [[ProPgMtThreads|Threads]]
 	- [[ProPgMtMutualExclusion|Mutual Exclusion]]
 	- [[ProPgMtConditionalVariables|Conditional Variables]]

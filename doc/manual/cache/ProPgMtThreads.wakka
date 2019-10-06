@@ -361,7 +361,7 @@ End of test
 {{fbdoc item="section" value="See also"}}
 	- ##[[KeyPgThreadCreate|ThreadCreate]]##, ##[[KeyPgThreadCall|ThreadCall]]##
 	- ##[[KeyPgThreadWait|ThreadWait]]##, ##[[KeyPgThreadDetach|ThreadDetach]]##
-	- [[ProPgMultiThreading|Multi-Threading]]
+	- [[ProPgMultiThreading|Multi-Threading Overview]]
 	- [[ProPgMtMutualExclusion|Mutual Exclusion]]
 	- [[ProPgMtConditionalVariables|Conditional Variables]]
 	- [[ProPgMtCriticalSections|Critical Sections]]

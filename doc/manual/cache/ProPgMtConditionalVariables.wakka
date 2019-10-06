@@ -297,7 +297,7 @@ End Sub
 {{fbdoc item="section" value="See also"}}
 	- ##[[KeyPgCondCreate|CondCreate]]##, ##[[KeyPgCondDestroy|CondDestroy]]##,
 	- ##[[KeyPgCondWait|CondWait]]##, ##[[KeyPgCondSignal|CondSignal]]##, ##[[KeyPgCondBroadcast|CondBroadCast]]##
-	- [[ProPgMultiThreading|Multi-Threading]]
+	- [[ProPgMultiThreading|Multi-Threading Overview]]
 	- [[ProPgMtThreads|Threads]]
 	- [[ProPgMtMutualExclusion|Mutual Exclusion]]
 	- [[ProPgMtCriticalSections|Critical Sections]]
