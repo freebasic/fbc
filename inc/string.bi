@@ -79,47 +79,8 @@ declare function format    alias "fb_StrFormat" _
 '***********************************************************************************************
 
 
-PRIVATE FUNCTION Repeat overload (BYVAL n AS LONG, BYREF w AS WSTRING) AS ustring
-'***********************************************************************************************
-' return w concatenated n times
-'***********************************************************************************************
-DIM u    AS ustring
-DIM nLen AS LONG = LEN(w)
-
-
-  IF n <= 0 THEN RETURN ""                            'nothing to do
-  u = SPACE(n * nLen)                                 'create a buffer and insert the strings into it
-
-  FOR i AS LONG = 0 TO n - 1
-    MID(u, (i * nLen) + 1, nLen) = w                  'this avoids pysical concatenation
-  NEXT
-
-
-  RETURN u
-
-
-END FUNCTION
-
-PRIVATE FUNCTION Repeat overload (BYVAL n AS LONG, BYREF z AS ZSTRING) AS string
-'***********************************************************************************************
-' return w concatenated n times
-'***********************************************************************************************
-DIM s    AS string
-DIM nLen AS LONG = LEN(s)
-
-
-  IF n <= 0 THEN RETURN ""                            'nothing to do
-  s = SPACE(n * nLen)                                 'create a buffer and insert the strings into it
-
-  FOR i AS LONG = 0 TO n - 1
-    MID(s, (i * nLen) + 1, nLen) = z                  'this avoids pysical concatenation
-  NEXT
-
-
-  RETURN s
-
-
-END FUNCTION
+'declare function repeat overload( byval n as integer, byref z as zstring ) as string
+'declare function repeat overload( byval n as integer, byref w as wstring ) as wstring
 
 
 #endif

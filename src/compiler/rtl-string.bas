@@ -2161,6 +2161,28 @@
 				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
+		/' function repeat overload( byval n as integer, byref z as zstring ) as string '/ _
+		( _
+			@"repeat", @"fb_StrRepeat", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
+		/' function repeat overload( byval n as integer, byref w as wstring ) as wstring '/ _
+		( _
+			@"repeat", @"fb_WstrRepeat", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
         /' EOL '/ _
 	 	( _
 	 		NULL _
