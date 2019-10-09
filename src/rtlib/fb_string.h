@@ -359,6 +359,13 @@ FBCALL unsigned long long fb_VALULNG    ( FBSTRING *str );
  **************************************************************************************************/
 
 FBCALL FBSTRING    *fb_StrFromWchar     ( FB_WCHAR *src );
-//FBCALL FB_WCHAR    *fb_WcharFromStr     ( FBSTRING *src );
 FBCALL FB_WCHAR    *fb_WcharFromStr     ( char *src );
 
+FBCALL FBSTRING    *fb_StrPath_path     ( char *src );
+FBCALL FBSTRING    *fb_StrPath_name     ( char *src );
+FBCALL FBSTRING    *fb_StrPath_namex    ( char *src );
+FBCALL FBSTRING    *fb_StrPath_extn     ( char *src );
+FBCALL FB_WCHAR    *fb_WstrPath_path    ( FB_WCHAR *src );
+FBCALL FB_WCHAR    *fb_WstrPath_name    ( FB_WCHAR *src );
+FBCALL FB_WCHAR    *fb_WstrPath_namex   ( FB_WCHAR *src );
+FBCALL FB_WCHAR    *fb_WstrPath_extn    ( FB_WCHAR *src );

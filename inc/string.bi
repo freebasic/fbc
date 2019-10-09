@@ -29,20 +29,12 @@ declare function format    alias "fb_StrFormat" _
 
 '***********************************************************************************************
 ' no conversion takes place, the data is just copied. This is necessary to avoid automatic 
-' conversion when passing wide data in a STRING to a wide string.
+' conversion when passing wide data in a STRING to a wide string and vice versa.
 '***********************************************************************************************
 
 
-declare function Ucode alias "fb_WcharFromStr" (z as Zstring) as wstring
-
-
-'***********************************************************************************************
-' no conversion takes place, the data is just copied. This is necessary to avoid automatic 
-' conversion when passing wide data in a wide string to a STRING data type.
-'***********************************************************************************************
-
-
-declare function acode alias "fb_StrFromWchar" (w as wstring) as string
+'declare function acode alias "fb_WcharFromStr" (z as Zstring) as wstring
+'declare function acode alias "fb_StrFromWchar" (w as wstring) as string
 
 
 '***********************************************************************************************
@@ -63,166 +55,18 @@ declare function acode alias "fb_StrFromWchar" (w as wstring) as string
 '***********************************************************************************************
 
 
-PRIVATE FUNCTION PathNamePath overload (BYREF w AS WSTRING) AS ustring
-'***********************************************************************************************
-' return path portion of a filespec
-'***********************************************************************************************
-DIM u  AS ustring = ""
-DIM nPos AS LONG
-
-
-    IF LEN(w) = 0 THEN RETURN u                         'nothing to do
-
-    nPos = InstrRev(w, ANY ":/\")
-    IF nPos THEN u = MID(w, 1, nPos)
-
-    RETURN u
-
-
-END FUNCTION
-
-PRIVATE FUNCTION PathNamePath overload (BYREF z AS ZSTRING) AS string
-'***********************************************************************************************
-' return path portion of a filespec
-'***********************************************************************************************
-DIM s  AS string = ""
-DIM nPos AS LONG
-
-
-    IF LEN(z) = 0 THEN RETURN s                         'nothing to do
-
-    nPos = InstrRev(z, ANY ":/\")
-    IF nPos THEN s = MID(z, 1, nPos)
-
-    RETURN s
-
-
-END FUNCTION
-
-
-PRIVATE FUNCTION PathNameName overload (BYREF w AS WSTRING) AS ustring
-'***********************************************************************************************
-' return name portion of a filespec
-'***********************************************************************************************
-DIM u  AS ustring = ""
-DIM nPos AS LONG
-
-
-    IF LEN(w) = 0 THEN RETURN u                       'nothing to do
-
-    nPos = InstrRev(w, ANY ":/\")
-    u = w
-    IF nPos THEN u = MID(w, nPos + 1)                 'get the filename
-    nPos = InstrRev(u, ".")
-    IF nPos THEN u = MID(u, 1, nPos - 1)
-
-    RETURN u
-
-
-END FUNCTION
-
-PRIVATE FUNCTION PathNameName overload (BYREF z AS ZSTRING) AS string
-'***********************************************************************************************
-' return name portion of a filespec
-'***********************************************************************************************
-DIM s  AS ustring = ""
-DIM nPos AS LONG
-
-
-    IF LEN(z) = 0 THEN RETURN s                       'nothing to do
-
-    nPos = InstrRev(z, ANY ":/\")
-    s = z
-    IF nPos THEN s = MID(z, nPos + 1)                 'get the filename
-    nPos = InstrRev(s, ".")
-    IF nPos THEN s = MID(s, 1, nPos - 1)
-
-    RETURN s
-
-
-END FUNCTION
-
-
-PRIVATE FUNCTION PathNameNamex overload (BYREF w AS WSTRING) AS ustring
-'***********************************************************************************************
-' return name + extension portion of a filespec
-'***********************************************************************************************
-DIM u  AS ustring = ""
-DIM nPos AS LONG
-
-
-    IF LEN(w) = 0 THEN RETURN u                       'nothing to do
-
-    nPos = InstrRev(w, ANY ":/\")
-    IF nPos THEN u = MID(w, nPos + 1) ELSE u = w
-
-    RETURN u
-
-
-END FUNCTION
-
-PRIVATE FUNCTION PathNameNamex overload (BYREF z AS ZSTRING) AS string
-'***********************************************************************************************
-' return name + extension portion of a filespec
-'***********************************************************************************************
-DIM s  AS ustring = ""
-DIM nPos AS LONG
-
-
-    IF LEN(z) = 0 THEN RETURN s                       'nothing to do
-
-    nPos = InstrRev(z, ANY ":/\")
-    IF nPos THEN s = MID(z, nPos + 1) ELSE s = z
-
-    RETURN s
-
-
-END FUNCTION
-
-
-PRIVATE FUNCTION PathNameExtn overload (BYREF w AS WSTRING) AS ustring
-'***********************************************************************************************
-' return extension portion of a filespec
-'***********************************************************************************************
-DIM u  AS ustring = ""
-DIM nPos AS LONG
-
-
-    IF LEN(w) = 0 THEN RETURN u                         'nothing to do
-
-    nPos = InstrRev(w, ANY ":/\")
-    IF nPos THEN u = MID(w, nPos + 1) ELSE u = w   
-    nPos = InStrRev(u, ".")
-    IF nPos THEN u = MID(u, nPos) ELSE u = ""      'get the extension
-
-     RETURN u
-
-
-END FUNCTION
-
-PRIVATE FUNCTION PathNameExtn overload (BYREF z AS ZSTRING) AS string
-'***********************************************************************************************
-' return extension portion of a filespec
-'***********************************************************************************************
-DIM s  AS ustring = ""
-DIM nPos AS LONG
-
-
-    IF LEN(z) = 0 THEN RETURN s                       'nothing to do
-
-    nPos = InstrRev(z, ANY ":/\")
-    IF nPos THEN s = MID(z, nPos + 1) ELSE s = z   
-    nPos = InStrRev(s, ".")
-    IF nPos THEN s = MID(s, nPos) ELSE s = ""         'get the extension
-
-     RETURN s
-
-
-END FUNCTION
+'declare function pathname_path  overload alias "fb_StrPath_path" (byref z as zstring) as string
+'declare function pathname_path  overload alias "fb_WstrPath_path" (byref w as wstring) as wstring
+'declare function pathname_name  overload alias "fb_StrPath_name" (byref z as zstring) as string
+'declare function pathname_name  overload alias "fb_WstrPath_name" (byref w as wstring) as wstring
+'declare function pathname_namex overload alias "fb_StrPath_namex" (byref z as zstring) as string
+'declare function pathname_namex overload alias "fb_WstrPath_namex" (byref w as wstring) as wstring
+'declare function pathname_extn  overload alias "fb_StrPath_extn" (byref z as zstring) as string
+'declare function pathname_extn  overload alias "fb_WstrPath_extn" (byref w as wstring) as wstring
 
 
 #macro pathname(what, p)
-    pathname##what(p)
+    pathname_##what(p)
 #endmacro    
 
 

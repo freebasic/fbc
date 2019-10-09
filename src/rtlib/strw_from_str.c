@@ -15,14 +15,12 @@ FBCALL FB_WCHAR *fb_WcharFromStr( char *src )
 
     ulen = (slen + sizeof(FB_WCHAR) - 1) / sizeof(FB_WCHAR);
 
-
 //char buffer [50];
 //sprintf (buffer, "%X", slen);                        //hex  %i = integer
 //OutputDebugString(buffer);
 //
 //sprintf (buffer, "%X", ulen);                        //hex  %i = integer
 //OutputDebugString(buffer);
-
 
     w = fb_wstr_AllocTemp( ulen );
     if( w == NULL )
