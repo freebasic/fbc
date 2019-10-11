@@ -43,49 +43,49 @@ declare function hMakeParamDesc _
 
 	dim shared warningMsgs( 1 to FB_WARNINGMSGS-1 ) as FBWARNING = _
 	{ _
-		( 1, @"Passing scalar as pointer" ), _
-		( 1, @"Passing pointer to scalar" ), _
-		( 1, @"Passing different pointer types" ), _
-		( 1, @"Suspicious pointer assignment" ), _
-		( 0, @"Implicit conversion" ), _
-		( 1, @"Cannot export symbol without -export option" ), _
-		( 1, @"Identifier's name too big, truncated" ), _
-		( 1, @"Literal number too big, truncated" ), _
-		( 1, @"Literal string too big, truncated" ), _
-		( 0, @"UDT with pointer, var-len string, or var-len array fields" ), _
-		( 0, @"Implicit variable allocation" ), _
-		( 0, @"Missing closing quote in literal string" ), _
-		( 0, @"Function result was not explicitly set" ), _
-		( 1, @"Branch crossing local variable definition" ), _
-		( 0, @"No explicit BYREF or BYVAL" ), _
-		( 0, @"Possible escape sequence found in" ), _
-		( 0, @"The type length is too large, consider passing BYREF" ), _
-		( 1, @"The length of the parameters list is too large, consider passing UDT's BYREF" ), _
-		( 1, @"The ANY initializer has no effect on UDT's with default constructors" ), _
-		( 2, @"Object files or libraries with mixed multithreading (-mt) options" ), _
-		( 2, @"Object files or libraries with mixed language (-lang) options" ), _
-		( 0, @"Deleting ANY pointers is undefined" ), _
-		( 2, @"Array too large for stack, consider making it var-len or SHARED" ), _
-		( 2, @"Variable too large for stack, consider making it SHARED" ), _
-		( 0, @"Overflow in constant conversion" ), _
-		( 0, @"Variable following NEXT is meaningless" ), _
-		( 0, @"Cast to non-pointer" ), _
-		( 0, @"Return method mismatch" ), _
-		( 0, @"Passing Pointer" ), _
-		( 0, @"Command line option overrides directive" ), _
-		( 0, @"Directive ignored after first pass" ), _
-		( 0, @"'IF' statement found directly after multi-line 'ELSE'" ), _
-		( 0, @"Shift value greater than or equal to number of bits in data type" ), _
-		( 0, @"'=' parsed as equality operator in function argument, not assignment to BYREF function result" ), _
-		( 0, @"Mixing signed/unsigned operands" ), _
-		( 0, @"Mismatching parameter initializer" ), _
-		( 1, @"" ), _  '' FB_WARNINGMSG_AMBIGIOUSLENSIZEOF
-		( 0, @"Suspicious logic operation, mixed boolean and non-boolean operands" ), _
-		( 0, @"Redefinition of intrinsic" ), _
-		(-1, @"CONST qualifier discarded" ), _
-		(-1, @"Return type mismatch" ), _
-		(-1, @"Calling convention mismatch" ), _
-		(-1, @"Argument count mismatch" ) _
+		( 2, @"Passing scalar as pointer" ), _
+		( 2, @"Passing pointer to scalar" ), _
+		( 2, @"Passing different pointer types" ), _
+		( 2, @"Suspicious pointer assignment" ), _
+		( 1, @"Implicit conversion" ), _
+		( 2, @"Cannot export symbol without -export option" ), _
+		( 2, @"Identifier's name too big, truncated" ), _
+		( 2, @"Literal number too big, truncated" ), _
+		( 2, @"Literal string too big, truncated" ), _
+		( 1, @"UDT with pointer, var-len string, or var-len array fields" ), _
+		( 1, @"Implicit variable allocation" ), _
+		( 1, @"Missing closing quote in literal string" ), _
+		( 1, @"Function result was not explicitly set" ), _
+		( 2, @"Branch crossing local variable definition" ), _
+		( 1, @"No explicit BYREF or BYVAL" ), _
+		( 1, @"Possible escape sequence found in" ), _
+		( 1, @"The type length is too large, consider passing BYREF" ), _
+		( 2, @"The length of the parameters list is too large, consider passing UDT's BYREF" ), _
+		( 2, @"The ANY initializer has no effect on UDT's with default constructors" ), _
+		( 3, @"Object files or libraries with mixed multithreading (-mt) options" ), _
+		( 3, @"Object files or libraries with mixed language (-lang) options" ), _
+		( 1, @"Deleting ANY pointers is undefined" ), _
+		( 3, @"Array too large for stack, consider making it var-len or SHARED" ), _
+		( 3, @"Variable too large for stack, consider making it SHARED" ), _
+		( 1, @"Overflow in constant conversion" ), _
+		( 1, @"Variable following NEXT is meaningless" ), _
+		( 1, @"Cast to non-pointer" ), _
+		( 1, @"Return method mismatch" ), _
+		( 1, @"Passing Pointer" ), _
+		( 1, @"Command line option overrides directive" ), _
+		( 1, @"Directive ignored after first pass" ), _
+		( 1, @"'IF' statement found directly after multi-line 'ELSE'" ), _
+		( 1, @"Shift value greater than or equal to number of bits in data type" ), _
+		( 1, @"'=' parsed as equality operator in function argument, not assignment to BYREF function result" ), _
+		( 1, @"Mixing signed/unsigned operands" ), _
+		( 1, @"Mismatching parameter initializer" ), _
+		( 2, @"" ), _  '' FB_WARNINGMSG_AMBIGIOUSLENSIZEOF
+		( 1, @"Suspicious logic operation, mixed boolean and non-boolean operands" ), _
+		( 1, @"Redefinition of intrinsic" ), _
+		( 0, @"CONST qualifier discarded" ), _
+		( 0, @"Return type mismatch" ), _
+		( 0, @"Calling convention mismatch" ), _
+		( 0, @"Argument count mismatch" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _
