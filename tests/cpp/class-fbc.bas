@@ -116,6 +116,17 @@ scope
 	assert( b.value = 2 )
 end scope
 
+DLOG( operator UDT.let( byref rhs as const UDT ) )
+scope
+	dim a as UDT = 2
+	dim b as UDT
+	resetChecks()
+	b = a
+	checkResults( @b, @a, 0, 2, 2, "UDT& UDT::operator=( UDT const& rhs )" )
+	assert( b.value = 2 )
+end scope
+
+
 '' disable results for ctor/dtor/copy-ctor/let
 setInitial( 0 )
 
