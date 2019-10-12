@@ -239,6 +239,7 @@ private function hLoadMacro _
 				if( argtext <> NULL ) then
                     dim n as ulong
                     dim i as ulong
+                    dim x as long
                     dim s as string
                     
                     n = instr(*argtext, " ")
@@ -251,22 +252,21 @@ private function hLoadMacro _
                     end if
 
                     if n > 0 then
-                        s = left(*argtext, n-1)
+                        s = left(*argtext, n-1)       'get first word
 
-                        text += "$" + QUOTE
-                        text += hReplace( strptr(s), QUOTE, QUOTE + QUOTE )
-                        text += QUOTE
+                        i = 0
+                        for x = 1 to iif(len(s) > 4, 4, len(s))
+                          i = i shl 8
+                          i = i + asc(s, x)
+                        next x
 
+                        text += str(i)                'first four characters (if any) as number (ULONG)
                         text += ","
                         argtext = argtext + n
   					    text += *argtext
                       
                     else
-                        text += "$" + QUOTE
-                        text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
-                        text += QUOTE
-
-                        text += ","
+                        text += "0,"
   					    text += *argtext
                     end if    
 				end if
@@ -592,6 +592,7 @@ private function hLoadMacroW _
 				if( argtext <> NULL ) then
                     dim n as ulong
                     dim i as ulong
+                    dim x as long
                     dim w as WSTRING * 300
                     
                     n = instr(*argtext, " ")
@@ -604,22 +605,21 @@ private function hLoadMacroW _
                     end if
 
                     if n > 0 then
-                        w = left(*argtext, n-1)
+                        w = left(*argtext, n-1)       'get first word
 
-                        DWstrConcatAssign( text, "$" + QUOTE )
-                        DWstrConcatAssign( text, *hReplaceW( strptr(w), QUOTE, QUOTE + QUOTE ) )
-                        DWstrConcatAssign( text, QUOTE )
+                        i = 0
+                        for x = 1 to iif(len(w) > 4, 4, len(w))
+                          i = i shl 8
+                          i = i + asc(w, x)
+                        next x
 
+                        DWstrConcatAssign( text, str(i) )                 'first four characters (if any) as number (ULONG)
                         DWstrConcatAssign( text, "," )
                         argtext = argtext + n
 					    DWstrConcatAssign( text, argtext )
 
                     else
-                        DWstrConcatAssign( text, "$" + QUOTE )
-                        DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
-                        DWstrConcatAssign( text, QUOTE )
-
-                        DWstrConcatAssign( text, "," )
+                        DWstrConcatAssign( text, "0," )
 					    DWstrConcatAssign( text, argtext )
                     end if    
 				end if

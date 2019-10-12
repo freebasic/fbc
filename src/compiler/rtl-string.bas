@@ -2183,11 +2183,63 @@
 				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
+		/' function tally overload( byref z as zstring, byval i as long, byref t as zstring ) as zstring '/ _
+		( _
+			@"fb_tally", @"fb_StrTally", _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			3, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, false ), _
+				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
+		/' function tally overload( byref w as wstring, byval i as long, byref t as wstring ) as wstring '/ _
+		( _
+			@"fb_tally", @"fb_WstrTally", _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			3, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, false ), _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
         /' EOL '/ _
 	 	( _
 	 		NULL _
 	 	) _
 	 }
+
+
+'***********************************************************************************************
+'		/' function tally overload( byref z as zstring, byref a as zstring, byref t as zstring ) as zstring '/ _
+'		( _
+'			@"fb_tally", @"fb_StrTally", _
+'			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
+'			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+'			3, _
+'			{ _
+'				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+'				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+'				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
+'			} _
+'		), _
+'		/' function tally overload( byref w as wstring, byref a as wstring, byref t as wstring ) as wstring '/ _
+'		( _
+'			@"fb_tally", @"fb_WstrTally", _
+'			FB_DATATYPE_INTEGER, FB_FUNCMODE_FBCALL, _
+'			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+'			3, _
+'			{ _
+'				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+'				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+'				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
+'			} _
+'		), _
+'***********************************************************************************************
 
 '':::::
 sub rtlStringModInit( )

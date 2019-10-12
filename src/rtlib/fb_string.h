@@ -372,3 +372,6 @@ FBCALL FB_WCHAR    *fb_WstrPath_extn    ( FB_WCHAR *src );
 
 FBCALL FBSTRING    *fb_StrRepeat        ( ssize_t n, char *src );
 FBCALL FB_WCHAR    *fb_WstrRepeat       ( ssize_t n, FB_WCHAR *src );
+
+FBCALL ssize_t     fb_StrTally          ( char *src, int any, char *t );
+FBCALL ssize_t     fb_WstrTally         ( FB_WCHAR *src, int any, FB_WCHAR *t );

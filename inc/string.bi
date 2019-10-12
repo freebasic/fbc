@@ -83,4 +83,22 @@ declare function format    alias "fb_StrFormat" _
 'declare function repeat overload( byval n as integer, byref w as wstring ) as wstring
 
 
+'***********************************************************************************************
+' Count the number of occurrences of specified characters strings within a string.
+' W is the string expression in which to count characters. M is a list of single characters 
+' to be searched for individually or in total. A match on any one of which  or a match in total
+' will cause the count to be incremented for each occurrence. Note that repeated characters in m 
+' will not increase the count, if characters a searched individually. If m is not present in w, 
+' zero is returned.
+
+' Syntax: n = tally(string to count in, [any$,] string to find [, case in/sensitive]
+' default: anyflag = 0 -> count entire string, iflag = 0 -> count case sensitive
+'***********************************************************************************************
+
+
+#macro tally(s, t)
+    fb_tally(s, #?t)
+#endmacro    
+
+
 #endif
