@@ -160,7 +160,7 @@ end function
 '' Calculate the number of bytes the procedure needs to pop from stack when returning
 function symbProcCalcBytesToPop( byval proc as FBSYMBOL ptr ) as longint
 	dim as longint bytestopop = 0
-	var notcdecl = (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL)
+	var notcdecl = (symbGetProcMode( proc ) <> FB_FUNCMODE_CDECL) and (symbGetProcMode( proc ) <> FB_FUNCMODE_THISCALL)
 
 	'' Need to pop parameters in case of stdcall/pascal, but not for cdecl
 	if( notcdecl ) then
