@@ -30,10 +30,13 @@ declare function format    alias "fb_StrFormat" _
 '***********************************************************************************************
 ' no conversion takes place, the data is just copied. This is necessary to avoid automatic 
 ' conversion when passing wide data in a STRING to a wide string and vice versa.
+
+' Syntax: [z]string = Acode(wstring)
+'         w/ustring = Ucode([z]string)
 '***********************************************************************************************
 
 
-'declare function acode alias "fb_WcharFromStr" (z as Zstring) as wstring
+'declare function ucode alias "fb_WcharFromStr" (z as Zstring) as wstring
 'declare function acode alias "fb_StrFromWchar" (w as wstring) as string
 
 
@@ -51,7 +54,7 @@ declare function format    alias "fb_StrFormat" _
 '
 ' NAMEX   Returns the name and the EXTN parts combined.
 
-' Syntax: Pathname(PATH|NAME|NAMEX|EXTN, filespec)
+' Syntax: resultstring = Pathname(PATH|NAME|NAMEX|EXTN, filespec)
 '***********************************************************************************************
 
 
@@ -75,7 +78,7 @@ declare function format    alias "fb_StrFormat" _
 ' This function is a similar to STRING/WSTRING functions, but allows for
 ' strings of arbitrary length to be conatenated.
 
-' Syntax: Repeat(5, "xyz")
+' Syntax: resultstring = Repeat(5, "xyz")
 '***********************************************************************************************
 
 
@@ -91,13 +94,38 @@ declare function format    alias "fb_StrFormat" _
 ' will not increase the count, if characters a searched individually. If m is not present in w, 
 ' zero is returned.
 
-' Syntax: n = tally(string to count in, [any$,] string to find [, case in/sensitive]
-' default: anyflag = 0 -> count entire string, iflag = 0 -> count case sensitive
+' Syntax: n = tally(w <string to count in>, [any] m <string to find>)
+' default: count entire string, any -> count each character separately
 '***********************************************************************************************
+
+
+'declare function tally overload( byref z as zstring, byval i as long, byref t as zstring ) as zstring
+'declare function tally overload( byref w as wstring, byval i as long, byref t as wstring ) as wstring
 
 
 #macro tally(s, t)
     fb_tally(s, #?t)
+#endmacro    
+
+
+'***********************************************************************************************
+' Returns the count of delimited fields from a string expression.
+' If w is empty (a null string) or contains no delimiter character(s), the string
+' is considered to contain exactly one sub-field. In this case, ParseCount returns the value 1.
+' m contains a string (one or more characters) that are seached individually or must be fully 
+' matched.
+
+' Syntax: n = parsecount(w <string to count in>, [any] m <separating string>)
+' default: entire separating string, any -> count each character separately
+'***********************************************************************************************
+
+
+'declare function parsecount overload( byref z as zstring, byval i as long, byref t as zstring ) as zstring
+'declare function parsecount overload( byref w as wstring, byval i as long, byref t as wstring ) as wstring
+
+
+#macro parsecount(s, t)
+    fb_parsecount(s, #?t)
 #endmacro    
 
 
