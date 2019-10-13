@@ -378,3 +378,6 @@ FBCALL ssize_t     fb_WstrTally         ( FB_WCHAR *src, int any, FB_WCHAR *t );
 
 FBCALL ssize_t     fb_StrParsecount     ( char *src, int any, char *t );
 FBCALL ssize_t     fb_WstrParsecount    ( FB_WCHAR *src, int any, FB_WCHAR *t );
+
+FBCALL FBSTRING    *fb_StrReverse       ( char *src );
+FBCALL FB_WCHAR    *fb_WstrReverse      ( FB_WCHAR *src );

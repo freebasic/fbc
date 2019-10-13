@@ -21,6 +21,7 @@ declare function format    alias "fb_StrFormat" _
 #define acode_ acode
 #define pathname_ pathname
 #define repeat_ repeat
+#define strreverse_ strreverse
 
 
 '***********************************************************************************************
@@ -127,6 +128,17 @@ declare function format    alias "fb_StrFormat" _
 #macro parsecount(s, t)
     fb_parsecount(s, #?t)
 #endmacro    
+
+
+'***********************************************************************************************
+' Reverses the contents of a string.
+
+' Syntax: strreverse("xyz")
+'***********************************************************************************************
+
+
+'declare function strreverse overload( byref z as zstring ) as string
+'declare function strreverse overload( byref w as wstring ) as wstring
 
 
 #endif
