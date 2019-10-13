@@ -1,4 +1,4 @@
-/* pathname */
+/* repeat, return a string concatenated n times */
 
 #include "fb.h"
 

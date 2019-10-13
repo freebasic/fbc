@@ -22,6 +22,7 @@ declare function format    alias "fb_StrFormat" _
 #define pathname_ pathname
 #define repeat_ repeat
 #define strreverse_ strreverse
+#define insert_ insert
 
 
 '***********************************************************************************************
@@ -133,12 +134,47 @@ declare function format    alias "fb_StrFormat" _
 '***********************************************************************************************
 ' Reverses the contents of a string.
 
-' Syntax: strreverse("xyz")
+' Syntax: resultstring = strreverse("xyz")
 '***********************************************************************************************
 
 
 'declare function strreverse overload( byref z as zstring ) as string
 'declare function strreverse overload( byref w as wstring ) as wstring
 
+
+'***********************************************************************************************
+' Inserts a string at a specified position within another string expression.
+' Returns a string consisting of w with the string i inserted at position n. 
+' If n is greater than the length of w or <= zero then i is appended to w. 
+' The first character in the string is position 1
+
+' Syntax: resultstring = Insert(w <string to insert in>, i <string to insert>, n)
+'***********************************************************************************************
+
+
+PRIVATE FUNCTION Insert_ (BYREF w AS WSTRING, BYREF i AS WSTRING, BYVAL n AS LONG) AS ustring
+'***********************************************************************************************
+' return w with i inserted at position n
+'***********************************************************************************************
+DIM u AS ustring = w
+
+
+  IF n <= 0 THEN RETURN u                             'nothing to do
+
+  IF n > LEN(w) THEN                                  'just append
+    u += i
+
+  ELSEIF n = 1 THEN                                   'prepend
+    u = i + MID(w, 1)
+
+  ELSE                                                'insert
+    u = MID(w, 1, n - 1) + i + MID(w, n)
+  END IF
+
+
+  RETURN u
+
+
+END FUNCTION
 
 #endif
