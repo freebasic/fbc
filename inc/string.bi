@@ -23,6 +23,7 @@ declare function format    alias "fb_StrFormat" _
 #define repeat_ repeat
 #define strreverse_ strreverse
 #define insert_ insert
+#define extract_ extract
 
 
 '***********************************************************************************************
@@ -152,29 +153,34 @@ declare function format    alias "fb_StrFormat" _
 '***********************************************************************************************
 
 
-PRIVATE FUNCTION Insert_ (BYREF w AS WSTRING, BYREF i AS WSTRING, BYVAL n AS LONG) AS ustring
+'declare function insert overload( byref z as zstring, byref z as zstring, byval n as integer ) as string
+'declare function insert overload( byref w as wstring, byref w as wstring, byval n as integer ) as wstring
+
+
 '***********************************************************************************************
-' return w with i inserted at position n
+' Complement to the Remain function. Extracts characters from a string up to a character
+' or group of characters. Returns a substring of w starting with its first character 
+' (or the character specified by nStart) and up to (but not including) the first occurrence
+' of m. If m is not present in w (or is null) then all of w is returned from the nStart position.
+' nStart is an optional starting position to begin searching and extracting. If nStart is not 
+' specified, position 1 will be used. If nStart is zero, a nul string is returned. If nStart is 
+' negative, the starting position is counted from right to left: if -1, the search begins at the
+' last character; if -2, the second to last, and so forth. If "ANY" is not specified, m is
+' m is handled "as string"
+
+' Syntax: Extract([nStart,] w <string to be searched>, [any] m <char(s) to be searched for>)
 '***********************************************************************************************
-DIM u AS ustring = w
 
 
-  IF n <= 0 THEN RETURN u                             'nothing to do
-
-  IF n > LEN(w) THEN                                  'just append
-    u += i
-
-  ELSEIF n = 1 THEN                                   'prepend
-    u = i + MID(w, 1)
-
-  ELSE                                                'insert
-    u = MID(w, 1, n - 1) + i + MID(w, n)
-  END IF
+'declare function extract overload( byref z as zstring, byval any as long, byref z as zstring ) as string
+'declare function extract overload( byref w as wstring, byval any as long, byref w as wstring ) as wstring
+'declare function extract overload( byval n as integer, byval any as long, byref z as zstring, byval any as long, byref z as zstring ) as string
+'declare function extract overload( byval n as integer, byval any as long, byref w as wstring, byval any as long, byref w as wstring ) as wstring
 
 
-  RETURN u
+#macro extract(a, b, c...)
+    fb_extract(a, #?b, #?c)
+#endmacro    
 
-
-END FUNCTION
 
 #endif

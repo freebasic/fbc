@@ -384,3 +384,10 @@ FBCALL FB_WCHAR    *fb_WstrReverse      ( FB_WCHAR *src );
 
 FBCALL FBSTRING    *fb_StrInsert        ( char *src, char *i, ssize_t n );
 FBCALL FB_WCHAR    *fb_WstrInsert       ( FB_WCHAR *src, FB_WCHAR *i, ssize_t n );
+
+FBCALL FBSTRING    *fb_StrExtract       ( char *src, int any, char *i );
+FBCALL FB_WCHAR    *fb_WstrExtract      ( FB_WCHAR *src, int any, FB_WCHAR *i );
+
+FBCALL FBSTRING    *fb_StrExtractStart  ( ssize_t n, int dummy, char *src, int any, char *i );
+FBCALL FB_WCHAR    *fb_WstrExtractStart ( ssize_t n, int dummy, FB_WCHAR *src, int any, FB_WCHAR *i );
+
