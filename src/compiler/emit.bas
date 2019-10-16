@@ -11,6 +11,16 @@
 #include once "emit.bi"
 #include once "symb.bi"
 
+/'
+	From the point of view of emit.bas and EMIT_NODEOP,
+	only x86 32 bit emitter is available.
+	The one letter codes in the EMIT_OP_* enum names have
+	the meaning:
+
+		I = 32 bit or smaller
+		L = 64 bit
+'/
+
 declare function emitGasX86_ctor	_
 	( _
 	) as integer
