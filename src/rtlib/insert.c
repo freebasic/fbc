@@ -20,9 +20,10 @@ FBCALL FBSTRING *fb_StrInsert ( char *src, char *i, ssize_t n )
         return &__fb_ctx.null_desc;
 
 
+    if (n < 0) n = slen + n;
     if (n < 1) n = 0;
     else if (n > slen) n = slen;
-    else n = n -1;                                    //n is one based, need it zero based here
+    else n = n - 1;                                   //n is one based, need it zero based here
 
     FB_MEMCPYX( s->data, src, n );
     FB_MEMCPYX( s->data + n, i, ilen );
@@ -49,13 +50,14 @@ FBCALL FB_WCHAR *fb_WstrInsert ( FB_WCHAR *src, FB_WCHAR *i, ssize_t n )
     if( w == NULL )
         return NULL;
 
+    if (n < 0) n = slen + n;
     if (n < 1) n = 0;
     else if (n > slen) n = slen;
     else n = n -1;                                    //n is one based, need it zero based here
 
     fb_wstr_Move( w, src, n );
     fb_wstr_Move( w + n, i, ilen );
-    fb_wstr_Move( w + n + ilen, src, slen - n );
+    fb_wstr_Move( w + n + ilen, src + n, slen - n );
 
     w[slen + ilen] = _LC('\0');
     return w;

@@ -1,12 +1,14 @@
-/* extract, extract a string from another string */
+/* remain, return remainder of a string */
 
 #include "fb.h"
+//#include <windows.h>
 
-FBCALL FBSTRING *fb_StrExtractStart ( ssize_t n, int dummy, char *src, int any, char *i )
+FBCALL FBSTRING *fb_StrRemainStart ( ssize_t n, int dummy, char *src, int any, char *i )
 {
     FBSTRING *s;
     ssize_t x, y, slen, ilen;
     char *a, *c, *d;
+//char buffer [50];
 
     if( src != NULL )
         slen = strlen( src );
@@ -16,10 +18,7 @@ FBCALL FBSTRING *fb_StrExtractStart ( ssize_t n, int dummy, char *src, int any, 
     if( i != NULL )
         ilen = strlen( i );
     else
-    {
-        x = slen;                                     //return all of src
-        goto exit3;
-    }
+        return &__fb_ctx.null_desc;
 
     if (n == 0) return &__fb_ctx.null_desc;
     if (n < 0) n = slen + n + 1;
@@ -36,12 +35,14 @@ FBCALL FBSTRING *fb_StrExtractStart ( ssize_t n, int dummy, char *src, int any, 
             {
                 if (*a == *d)
                 {
-                    goto exit3;
+                    x = x + 1;
+                    goto exit3;                       //copy the rest from x + 1 to the end
                 }    
                 d++;
             }  
             a++;
         } 
+        return &__fb_ctx.null_desc;
     }
     else
     {  
@@ -58,26 +59,33 @@ FBCALL FBSTRING *fb_StrExtractStart ( ssize_t n, int dummy, char *src, int any, 
                     c++;
                     d++;
                 } 
-                goto exit3; 
+                x = x + ilen;
+                goto exit3;                           //copy the rest from x + ilen to the end
             }
 exit2:
             a++;
         } 
-        x = slen;
+        return &__fb_ctx.null_desc;
     }
 
 exit3:
-    s = fb_hStrAllocTemp( NULL, x );
+
+//sprintf (buffer, "%i", slen);  
+//OutputDebugString(buffer);
+//sprintf (buffer, "%i", x);     
+//OutputDebugString(buffer);
+
+    s = fb_hStrAllocTemp( NULL, slen - x - n + 1);
     if( s == NULL )
         return &__fb_ctx.null_desc;
 
 
-    FB_MEMCPYX( s->data, src + n - 1, x );
-    s->data[x] = '\0';
+    FB_MEMCPYX( s->data, src + n - 1 + x, slen - x - n + 1 );
+    s->data[slen - x - n + 1] = '\0';
     return s;
 }
 
-FBCALL FB_WCHAR *fb_WstrExtractStart ( ssize_t n, int dummy, FB_WCHAR *src, int any, FB_WCHAR *i )
+FBCALL FB_WCHAR *fb_WstrRemainStart ( ssize_t n, int dummy, FB_WCHAR *src, int any, FB_WCHAR *i )
 {
     FB_WCHAR *w;
     ssize_t x, y, slen, ilen;
@@ -86,17 +94,15 @@ FBCALL FB_WCHAR *fb_WstrExtractStart ( ssize_t n, int dummy, FB_WCHAR *src, int 
     if( src != NULL )
         slen = fb_wstr_Len( src );
     else
-        return 0;
+        return NULL;
 
     if( i != NULL )
         ilen = fb_wstr_Len( i );
     else
-    {
-        x = slen;                                     //return all of src
-        goto exit3;
-    }
+        return NULL;
 
-    if (n == 0) return NULL;
+
+    if (n == 0) return 0;
     if (n < 0) n = slen + n + 1;
     if (n < 1) n = 1;
     a = src + n - 1;
@@ -111,12 +117,14 @@ FBCALL FB_WCHAR *fb_WstrExtractStart ( ssize_t n, int dummy, FB_WCHAR *src, int 
             {
                 if (*a == *d)
                 {
-                    goto exit3;
+                    x = x + 1;
+                    goto exit3;                       //copy the rest from x + 1 to the end
                 }    
                 d++;
             }  
             a++;
         } 
+        return NULL;
     }
     else
     {  
@@ -133,30 +141,31 @@ FBCALL FB_WCHAR *fb_WstrExtractStart ( ssize_t n, int dummy, FB_WCHAR *src, int 
                     c++;
                     d++;
                 } 
-                goto exit3; 
+                x = x + ilen;
+                goto exit3;                           //copy the rest from x + ilen to the end
             }
 exit2:
             a++;
         } 
-        x = slen;
+        return NULL;
     }
 
 exit3:
-    w = fb_wstr_AllocTemp( x );
+    w = fb_wstr_AllocTemp( slen - x - n + 1 );
     if( w == NULL )
         return NULL;
 
-    fb_wstr_Move( w, src + n - 1, x );
-    w[x] = _LC('\0');
+    fb_wstr_Move( w, src + n - 1 + x, slen - x - n + 1 );
+    w[slen - x - n + 1] = _LC('\0');
     return w;
 }
 
-FBCALL FBSTRING *fb_StrExtract ( char *src, int any, char *i )
+FBCALL FBSTRING *fb_StrRemain ( char *src, int any, char *i )
 {
-    return fb_StrExtractStart ( 1, 0, src, any, i );
+    return fb_StrRemainStart ( 1, 0, src, any, i );
 }
 
-FBCALL FB_WCHAR *fb_WstrExtract ( FB_WCHAR *src, int any, FB_WCHAR *i )
+FBCALL FB_WCHAR *fb_WstrRemain ( FB_WCHAR *src, int any, FB_WCHAR *i )
 {
-    return fb_WstrExtractStart ( 1, 0, src, any, i );
+    return fb_WstrRemainStart ( 1, 0, src, any, i );
 }

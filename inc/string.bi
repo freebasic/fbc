@@ -24,6 +24,7 @@ declare function format    alias "fb_StrFormat" _
 #define strreverse_ strreverse
 #define insert_ insert
 #define extract_ extract
+#define remain_ remain
 
 
 '***********************************************************************************************
@@ -146,8 +147,10 @@ declare function format    alias "fb_StrFormat" _
 '***********************************************************************************************
 ' Inserts a string at a specified position within another string expression.
 ' Returns a string consisting of w with the string i inserted at position n. 
-' If n is greater than the length of w or <= zero then i is appended to w. 
 ' The first character in the string is position 1
+' If n is greater than the length of w then i is appended to w. If n is negative
+' counting starts from right to left, -1 means the last character , -2 the last 
+' but one, and so on
 
 ' Syntax: resultstring = Insert(w <string to insert in>, i <string to insert>, n)
 '***********************************************************************************************
@@ -163,7 +166,7 @@ declare function format    alias "fb_StrFormat" _
 ' (or the character specified by nStart) and up to (but not including) the first occurrence
 ' of m. If m is not present in w (or is null) then all of w is returned from the nStart position.
 ' nStart is an optional starting position to begin searching and extracting. If nStart is not 
-' specified, position 1 will be used. If nStart is zero, a nul string is returned. If nStart is 
+' specified, position 1 will be used. If nStart is zero, a null string is returned. If nStart is 
 ' negative, the starting position is counted from right to left: if -1, the search begins at the
 ' last character; if -2, the second to last, and so forth. If "ANY" is not specified, m is
 ' m is handled "as string"
@@ -178,9 +181,37 @@ declare function format    alias "fb_StrFormat" _
 'declare function extract overload( byval n as integer, byval any as long, byref w as wstring, byval any as long, byref w as wstring ) as wstring
 
 
-#macro extract(a, b, c...)
+#macro extract(a, b, c...)                            'iif(#c = "", 0, len(c))
     fb_extract(a, #?b, #?c)
 #endmacro    
+
+
+'***********************************************************************************************
+' Complement to the Extract function. Returns the portion of a string following the
+' first occurrence of a character or group of characters.
+' w is searched for the string specified in m, if found, all characters
+' after m are returned. If m is not present in w (or is null) then
+' a zero-length empty string is returned.
+' nStart is an optional starting position to begin searching. If nStart is not specified,
+' position 1 will be used. If nStart is zero, a null string is returned. If nStart is negative,
+' the starting position is counted from right to left: if -1, the search begins at the last
+' character; if -2, the second to last, and so forth. If "ANY" is not specified, m is
+' handled "as string"
+
+' Syntax: Remain([nStart,] w <string to be searched>, [any] m <char(s) to be searched for>)
+'***********************************************************************************************
+
+
+'declare function remain overload( byref z as zstring, byval any as long, byref z as zstring ) as string
+'declare function remain overload( byref w as wstring, byval any as long, byref w as wstring ) as wstring
+'declare function remain overload( byval n as integer, byval any as long, byref z as zstring, byval any as long, byref z as zstring ) as string
+'declare function remain overload( byval n as integer, byval any as long, byref w as wstring, byval any as long, byref w as wstring ) as wstring
+
+
+#macro remain(a, b, c...)
+    fb_remain(a, #?b, #?c)
+#endmacro    
+
 
 
 #endif
