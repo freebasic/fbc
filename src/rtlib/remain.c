@@ -1,7 +1,6 @@
 /* remain, return remainder of a string */
 
 #include "fb.h"
-//#include <windows.h>
 
 FBCALL FBSTRING *fb_StrRemainStart ( ssize_t n, int dummy, char *src, int any, char *i )
 {
@@ -69,12 +68,6 @@ exit2:
     }
 
 exit3:
-
-//sprintf (buffer, "%i", slen);  
-//OutputDebugString(buffer);
-//sprintf (buffer, "%i", x);     
-//OutputDebugString(buffer);
-
     s = fb_hStrAllocTemp( NULL, slen - x - n + 1);
     if( s == NULL )
         return &__fb_ctx.null_desc;

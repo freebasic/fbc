@@ -25,6 +25,7 @@ declare function format    alias "fb_StrFormat" _
 #define insert_ insert
 #define extract_ extract
 #define remain_ remain
+#define parse_ parse
 
 
 '***********************************************************************************************
@@ -171,14 +172,14 @@ declare function format    alias "fb_StrFormat" _
 ' last character; if -2, the second to last, and so forth. If "ANY" is not specified, m is
 ' m is handled "as string"
 
-' Syntax: Extract([nStart,] w <string to be searched>, [any] m <char(s) to be searched for>)
+' Syntax: resultstring = Extract([nStart,] w <string to be searched>, [any] m <char(s) to be searched for>)
 '***********************************************************************************************
 
 
 'declare function extract overload( byref z as zstring, byval any as long, byref z as zstring ) as string
 'declare function extract overload( byref w as wstring, byval any as long, byref w as wstring ) as wstring
-'declare function extract overload( byval n as integer, byval any as long, byref z as zstring, byval any as long, byref z as zstring ) as string
-'declare function extract overload( byval n as integer, byval any as long, byref w as wstring, byval any as long, byref w as wstring ) as wstring
+'declare function extract overload( byval n as integer, byval dummy as long, byref z as zstring, byval any as long, byref z as zstring ) as string
+'declare function extract overload( byval n as integer, byval dummy as long, byref w as wstring, byval any as long, byref w as wstring ) as wstring
 
 
 #macro extract(a, b, c...)                            'iif(#c = "", 0, len(c))
@@ -198,20 +199,41 @@ declare function format    alias "fb_StrFormat" _
 ' character; if -2, the second to last, and so forth. If "ANY" is not specified, m is
 ' handled "as string"
 
-' Syntax: Remain([nStart,] w <string to be searched>, [any] m <char(s) to be searched for>)
+' Syntax: resultstring = Remain([nStart,] w <string to be searched>, [any] m <char(s) to be searched for>)
 '***********************************************************************************************
 
 
 'declare function remain overload( byref z as zstring, byval any as long, byref z as zstring ) as string
 'declare function remain overload( byref w as wstring, byval any as long, byref w as wstring ) as wstring
-'declare function remain overload( byval n as integer, byval any as long, byref z as zstring, byval any as long, byref z as zstring ) as string
-'declare function remain overload( byval n as integer, byval any as long, byref w as wstring, byval any as long, byref w as wstring ) as wstring
+'declare function remain overload( byval n as integer, byval dummy as long, byref z as zstring, byval any as long, byref z as zstring ) as string
+'declare function remain overload( byval n as integer, byval dummy as long, byref w as wstring, byval any as long, byref w as wstring ) as wstring
 
 
 #macro remain(a, b, c...)
     fb_remain(a, #?b, #?c)
 #endmacro    
 
+
+'***********************************************************************************************
+' Returns a delimited field from a string expression.
+' m contains a string of one or more characters that must be individually or fully matched to 
+' be successful dependig on "Any". If n evaluates to zero or is outside of the actual field 
+' count, an empty string is returned. If n is negative then fields are searched from the right 
+' to left in w. M is case-sensitive.
+
+' Syntax: resultstring = parse(w <string to parse>, [[any] m <delimiter string>,] n <position>)
+'***********************************************************************************************
+
+
+'declare function parse overload( byref z as zstring, byval dummy as long, byval n as integer ) as string
+'declare function parse overload( byref w as wstring, byval dummy as long, byval n as integer ) as wstring
+'declare function parse overload( byref z as zstring, byval any as long, byref z as zstring, byval dummy as long, byval n as integer ) as string
+'declare function parse overload( byref w as wstring, byval any as long, byref w as wstring, byval dummy as long, byval n as integer ) as wstring
+
+
+#macro parse(a, b, c...)
+    fb_parse(a, #?b, #?c)
+#endmacro  
 
 
 #endif
