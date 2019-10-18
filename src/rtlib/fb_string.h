@@ -400,3 +400,8 @@ FBCALL FBSTRING    *fb_StrParse         ( char *src, int dummy, ssize_t n );
 FBCALL FB_WCHAR    *fb_WstrParse        ( FB_WCHAR *src, int dummy, ssize_t n );
 FBCALL FBSTRING    *fb_StrParseDelim    ( char *src, int any, char *t, int dummy, ssize_t n );
 FBCALL FB_WCHAR    *fb_WstrParseDelim   ( FB_WCHAR *src, int any, FB_WCHAR *t, int dummy, ssize_t n );
+
+FBCALL FBSTRING    *fb_StrShrink         ( char *src );
+FBCALL FB_WCHAR    *fb_WstrShrink        ( FB_WCHAR *src );
+FBCALL FBSTRING    *fb_StrShrinkDelim    ( char *src, char *t );
+FBCALL FB_WCHAR    *fb_WstrShrinkDelim   ( FB_WCHAR *src, FB_WCHAR *t );

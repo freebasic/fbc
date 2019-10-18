@@ -1,4 +1,4 @@
-/* remain, return remainder of a string */
+/* parse, return a delimited field of a string */
 
 #include "fb.h"
 //#include <windows.h>

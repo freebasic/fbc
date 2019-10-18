@@ -2381,7 +2381,7 @@
 		), _
 		/' function parse overload( byref z as zstring, byval dummy as long, byval n as integer ) as string '/ _
 		( _
-			@"fb_parse", @"fb_StrParse", _
+			@"fb_parsestring", @"fb_StrParse", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			3, _
@@ -2393,7 +2393,7 @@
 		), _
 		/' function parse overload( byref w as wstring, byval dummy as long, byval n as integer ) as wstring '/ _
 		( _
-			@"fb_parse", @"fb_WstrParse", _
+			@"fb_parsestring", @"fb_WstrParse", _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			3, _
@@ -2405,7 +2405,7 @@
 		), _
 		/' function parse overload( byref z as zstring, byval any as long, byref z as zstring, byval dummy as long, byval n as integer ) as string '/ _
 		( _
-			@"fb_parse", @"fb_StrParseDelim", _
+			@"fb_parsestring", @"fb_StrParseDelim", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
@@ -2419,7 +2419,7 @@
 		), _
 		/' function parse overload( byref w as wstring, byval any as long, byref w as wstring, byval dummy as long, byval n as integer ) as wstring '/ _
 		( _
-			@"fb_parse", @"fb_WstrParseDelim", _
+			@"fb_parsestring", @"fb_WstrParseDelim", _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
@@ -2429,6 +2429,48 @@
 				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, false ), _
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
+		/' function shrink overload( byref z as zstring ) as string '/ _
+		( _
+			@"shrink", @"fb_StrShrink", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
+		/' function shrink overload( byref w as wstring ) as wstring '/ _
+		( _
+			@"shrink", @"fb_WstrShrink", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			1, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
+		/' function shrink overload( byref z as zstring, byref z as zstring ) as string '/ _
+		( _
+			@"shrink", @"fb_StrShrinkDelim", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
+		/' function shrink overload( byref w as wstring, byref w as wstring ) as wstring '/ _
+		( _
+			@"shrink", @"fb_WstrShrinkDelim", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			2, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
         /' EOL '/ _

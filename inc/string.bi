@@ -26,6 +26,7 @@ declare function format    alias "fb_StrFormat" _
 #define extract_ extract
 #define remain_ remain
 #define parse_ parse
+#define shrink_ shrink
 
 
 '***********************************************************************************************
@@ -232,8 +233,33 @@ declare function format    alias "fb_StrFormat" _
 
 
 #macro parse(a, b, c...)
-    fb_parse(a, #?b, #?c)
+    fb_parsestring(a, #?b, #?c)
 #endmacro  
+
+
+'***********************************************************************************************
+' Shrinks a string to be able to use a consistent single character delimiter.
+' The purpose of this function is to create a string with consecutive data items (words)
+' separated by a consistent single character. This makes it very straightforward to parse
+' the results as needed.
+' If m is not defined then all leading spaces and trailing spaces are removed entirely.
+' All occurrences of two or more spaces are changed to a single space. Therefore, the new
+' string returned consists of zero or more words, each separated by a single space character.
+' If m is specified, it defines one or more delimiter characters to shrink. All leading
+' and trailing mask characters are removed entirely. All occurrences of one or more mask
+' characters are replaced with the first character of wszMask The new string returned consists
+' of zero or more words, each separated by the character found in the first position of m.
+' WhiteSpace is generally defined as the four common non-printing characters:
+' Space, Tab, Carriage-Return, and Line-Feed. m = (W)Chr(32,9,13,10)
+
+' Syntax: resultstring = Shrink(w <string to shrink>, m <char to stay + chars to remove>)
+'***********************************************************************************************
+
+
+'declare function shrink overload( byref z as zstring ) as string
+'declare function shrink overload( byref w as wstring ) as wstring
+'declare function shrink overload( byref z as zstring, byref z as zstring ) as string
+'declare function shrink overload( byref w as wstring, byref w as wstring ) as wstring
 
 
 #endif
