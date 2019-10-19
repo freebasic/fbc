@@ -49,6 +49,7 @@ Version 1.07.1
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
 - sf.net #904; gcc backend: pass '-Wno-format' to prevent format string errors in gcc 9.x (enabled by default with -Wall)
 - sf.net #910: cast(string, variable) can cause fbc to segfault (infinite recursion), due to misplaced const & non-const casting
+- sf.net #898: fbc win gfxlib DirectX driver failed to initialize on 64-bit, due to incorrect construction of DIDATAFORMAT for keyboard device (macko17)
 
 
 Version 1.07.0

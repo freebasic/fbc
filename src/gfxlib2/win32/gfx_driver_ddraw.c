@@ -75,7 +75,9 @@ typedef HRESULT (WINAPI *DIRECTDRAWENUMERATEEX)(LPDDENUMCALLBACKEX lpCallback,LP
 #endif
  
 static DIOBJECTDATAFORMAT __c_rgodfDIKeyboard[256];
-static const DIDATAFORMAT __c_dfDIKeyboard = { 24, 16, 0x2, 256, 256, __c_rgodfDIKeyboard };
+static const DIDATAFORMAT __c_dfDIKeyboard = { sizeof(__c_dfDIKeyboard), sizeof(*__c_rgodfDIKeyboard),
+                                               DIDF_RELAXIS, 256,
+                                               ARRAYSIZE(__c_rgodfDIKeyboard), __c_rgodfDIKeyboard };
 static HMODULE dd_library;
 static HMODULE di_library;
 static LPDIRECTDRAW2 lpDD = NULL;
