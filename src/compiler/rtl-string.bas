@@ -2381,7 +2381,7 @@
 		), _
 		/' function parse overload( byref z as zstring, byval dummy as long, byval n as integer ) as string '/ _
 		( _
-			@"fb_parsestring", @"fb_StrParse", _
+			@"fb_parse", @"fb_StrParse", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			3, _
@@ -2393,7 +2393,7 @@
 		), _
 		/' function parse overload( byref w as wstring, byval dummy as long, byval n as integer ) as wstring '/ _
 		( _
-			@"fb_parsestring", @"fb_WstrParse", _
+			@"fb_parse", @"fb_WstrParse", _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			3, _
@@ -2405,7 +2405,7 @@
 		), _
 		/' function parse overload( byref z as zstring, byval any as long, byref z as zstring, byval dummy as long, byval n as integer ) as string '/ _
 		( _
-			@"fb_parsestring", @"fb_StrParseDelim", _
+			@"fb_parse", @"fb_StrParseDelim", _
 			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _
@@ -2419,7 +2419,7 @@
 		), _
 		/' function parse overload( byref w as wstring, byval any as long, byref w as wstring, byval dummy as long, byval n as integer ) as wstring '/ _
 		( _
-			@"fb_parsestring", @"fb_WstrParseDelim", _
+			@"fb_parse", @"fb_WstrParseDelim", _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
 			5, _

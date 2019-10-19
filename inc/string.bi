@@ -25,7 +25,7 @@ declare function format    alias "fb_StrFormat" _
 #define insert_ insert
 #define extract_ extract
 #define remain_ remain
-#define parse_ parse
+#define outparse_ outparse
 #define shrink_ shrink
 
 
@@ -232,8 +232,8 @@ declare function format    alias "fb_StrFormat" _
 'declare function parse overload( byref w as wstring, byval any as long, byref w as wstring, byval dummy as long, byval n as integer ) as wstring
 
 
-#macro parse(a, b, c...)
-    fb_parsestring(a, #?b, #?c)
+#macro outparse(a, b, c...)
+    fb_parse(a, #?b, #?c)
 #endmacro  
 
 
