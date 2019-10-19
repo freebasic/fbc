@@ -27,6 +27,8 @@ declare function format    alias "fb_StrFormat" _
 #define remain_ remain
 #define outparse_ outparse
 #define shrink_ shrink
+#define removeme_ removeme
+#define replace_ replace
 
 
 '***********************************************************************************************
@@ -260,6 +262,36 @@ declare function format    alias "fb_StrFormat" _
 'declare function shrink overload( byref w as wstring ) as wstring
 'declare function shrink overload( byref z as zstring, byref z as zstring ) as string
 'declare function shrink overload( byref w as wstring, byref w as wstring ) as wstring
+
+
+'***********************************************************************************************
+' Returns a copy of string w with substrings m removed individually or in total.
+' If m is not present in w, all of w is returned. If "ANY" is not specified, m is
+' handled "as string"
+
+' Syntax: resultstring = Remove(me)(w <string to remove from>, [any] m <string to remove>)
+'***********************************************************************************************
+
+
+'declare function remove overload( byref z as zstring, byval any as long, byref z as zstring ) as string
+'declare function remove overload( byref w as wstring, byval any as long, byref w as wstring ) as wstring
+
+
+#macro removeme(a, b)
+    fb_remove(a, #?b)
+#endmacro  
+
+
+'***********************************************************************************************
+' Within w replace all occurrences of one string with another string or all occurrences of 
+' any of the individual characters specified in the m string with r
+' The replacement can cause w to grow or condense in size. When a match is found, the 
+' scan for the next match begins at the position immediately following the prior match.
+' r can be a single character or a word. If "ANY" is not specified, m is
+' handled "as string"
+
+' Syntax: resultstring = Replace(w <string to replace in>, [any] m <char(s) to be replaced>, r <replacement string>)
+'***********************************************************************************************
 
 
 #endif

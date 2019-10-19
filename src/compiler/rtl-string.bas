@@ -2473,6 +2473,30 @@
 				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
 			} _
 		), _
+		/' function remove overload( byref z as zstring, byval any as long, byref z as zstring ) as string '/ _
+		( _
+			@"fb_remove", @"fb_StrRemove", _
+			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			3, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, false ), _
+				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
+		/' function remove overload( byref w as wstring, byval any as long, byref w as wstring ) as wstring '/ _
+		( _
+			@"fb_remove", @"fb_WstrRemove", _
+			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
+			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
+			3, _
+			{ _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, false ), _
+				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
+			} _
+		), _
         /' EOL '/ _
 	 	( _
 	 		NULL _
