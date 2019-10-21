@@ -294,4 +294,13 @@ declare function format    alias "fb_StrFormat" _
 '***********************************************************************************************
 
 
+'declare function replace overload( byref z as zstring, byval any as long, byref z as zstring, byref z as zstring ) as string
+'declare function replace overload( byref w as wstring, byval any as long, byref w as wstring, byref z as wstring ) as wstring
+
+
+#macro replace(a, b, c)
+    fb_replace(a, #?b, c)
+#endmacro  
+
+
 #endif

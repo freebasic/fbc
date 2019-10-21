@@ -408,3 +408,6 @@ FBCALL FB_WCHAR    *fb_WstrShrinkDelim   ( FB_WCHAR *src, FB_WCHAR *t );
 
 FBCALL FBSTRING    *fb_StrRemove         ( char *src, int any, char *t );
 FBCALL FB_WCHAR    *fb_WstrRemove        ( FB_WCHAR *src, int any, FB_WCHAR *t );
+
+FBCALL FBSTRING    *fb_StrReplace        ( char *src, int any, char *t, char *r );
+FBCALL FB_WCHAR    *fb_WstrReplace       ( FB_WCHAR *src, int any, FB_WCHAR *t, FB_WCHAR *r );
