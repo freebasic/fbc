@@ -63,8 +63,6 @@ TYPE DWSTR extends wstring
     DECLARE FUNCTION AppendBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nNumBytes AS ulong) AS BOOLEAN
     DECLARE FUNCTION InsertBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nIndex AS ulong, BYVAL nNumBytes AS ulong) AS BOOLEAN
 
-    DECLARE SUB Clear
-
     DECLARE SUB Add (BYREF cws AS DWSTR)
     DECLARE SUB Add (BYVAL pwszStr AS WSTRING PTR)
     DECLARE SUB Add (BYREF ansiStr AS STRING)
@@ -141,6 +139,7 @@ END CONSTRUCTOR
 PRIVATE CONSTRUCTOR DWSTR (s as init_size)
   if s.n >= 0 then
      this.ResizeBuffer(s.n * UCHAR_SIZE)              ''Create the initial buffer, n chars
+
   else                                                ''n < 0, don´t construct, need this for RTL functions
   end if  
 END CONSTRUCTOR
@@ -159,21 +158,6 @@ END DESTRUCTOR
 
 ''***********************************************************************************************
 '' operators
-''***********************************************************************************************
-
-
-''***********************************************************************************************
-'' One * returns the address of the DWSTR buffer.
-'' Two ** deferences the string data.
-'' We may use **cws (notice the double indirection) with these functions.
-''***********************************************************************************************
-
-
-PRIVATE OPERATOR * (BYREF cws AS DWSTR) AS WSTRING PTR
-  OPERATOR = cast(WSTRING PTR, cws.u_data)
-END OPERATOR
-
-
 ''***********************************************************************************************
 
 
@@ -210,25 +194,30 @@ END OPERATOR
 ''***********************************************************************************************
 
 PRIVATE OPERATOR DWSTR.Let (BYREF wszStr AS CONST WSTRING)
-  this.Clear
+  u_len = 0
+  poke UCHAR, u_data, 0
   this.Add(wszStr)
 END OPERATOR
 
 PRIVATE OPERATOR DWSTR.Let (BYREF ansiStr AS STRING)
-  this.Clear
+  u_len = 0
+  poke UCHAR, u_data, 0
   this.Add(ansiStr)
 END OPERATOR
 
 PRIVATE OPERATOR DWSTR.Let (BYREF pwszStr AS WSTRING PTR)
   IF u_data = cast(ubyte ptr, pwszStr) THEN EXIT OPERATOR                 ''ignore self assign
-  this.Clear
+
+  u_len = 0
+  poke UCHAR, u_data, 0
   IF pwszStr = 0 THEN EXIT OPERATOR
   this.Add(*pwszStr)
 END OPERATOR
 
 PRIVATE OPERATOR DWSTR.Let (BYREF cws AS DWSTR)
   IF u_data = cws.u_data THEN EXIT OPERATOR           '' Ignore cws = cws
-  this.Clear
+  u_len = 0
+  poke UCHAR, u_data, 0
   this.Add(cws)
 END OPERATOR
 
@@ -293,15 +282,7 @@ PRIVATE SUB DWSTR.ResizeBuffer (BYVAL nValue AS ulong)
   u_data = pNewBuffer
   u_size = nValue
 
-  u_data[u_len] = 0                          ''mark the end of the string with a (double) null
-  if UCHAR_SIZE > 1 then
-    u_data[u_len + 1] = 0
-  end if
-  
-  if UCHAR_SIZE > 2 then
-    u_data[u_len + 2] = 0
-    u_data[u_len + 3] = 0
-  end if
+  poke UCHAR, u_data + u_len, 0                       'mark the end of a string with null
 
 END SUB
 
@@ -314,8 +295,11 @@ END SUB
 PRIVATE FUNCTION DWSTR.AppendBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nNumBytes AS ulong) AS BOOLEAN
 
   IF (u_len + nNumBytes) > u_size THEN 
-'    this.ResizeBuffer(u_len + nNumBytes + 43 * UCHAR_SIZE)   '42 and lower fails
-    this.ResizeBuffer(u_len + nNumBytes + iif (u_size * 0.125 < 50 * UCHAR_SIZE, 50 * UCHAR_SIZE, u_size * 0.125))
+    if u_size > 260 then
+      this.ResizeBuffer(u_len + nNumBytes + u_size * 0.125)               'add new + 12.5%
+    else
+      this.ResizeBuffer(u_len + nNumBytes + 64 * UCHAR_SIZE)              '42 and lower fails - why ?
+    end if
   end if
 
   IF u_data = 0 THEN RETURN FALSE
@@ -323,16 +307,7 @@ PRIVATE FUNCTION DWSTR.AppendBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nNumByte
   fb_hStrCopy(byval (u_data + u_len), byval addrMemory, nNumBytes)
   u_len += nNumBytes
 
-  u_data[u_len] = 0                          ''mark the end of the string with a (double) null
-  if UCHAR_SIZE > 1 then
-    u_data[u_len + 1] = 0
-  end if
-  
-  if UCHAR_SIZE > 2 then
-    u_data[u_len + 2] = 0
-    u_data[u_len + 3] = 0
-  end if
-
+  poke UCHAR, u_data + u_len, 0                       'mark the end of a string with null
   RETURN TRUE
 
 END FUNCTION
@@ -389,29 +364,6 @@ PRIVATE SUB DWSTR.Add (BYREF ansiStr AS STRING)
 END SUB
 
 
-''***********************************************************************************************
-'' All data in the class object is erased. Actually, we only set the buffer length to zero,
-'' indicating no string in the buffer. The allocated memory for the buffer is deallocated
-'' when the class is destroyed.
-''***********************************************************************************************
-
-
-PRIVATE SUB DWSTR.Clear
-  u_len = 0
-
-  u_data[u_len] = 0                          ''mark the end of the string with a (double) null
-  if UCHAR_SIZE > 1 then
-    u_data[u_len + 1] = 0
-  end if
-  
-  if UCHAR_SIZE > 2 then
-    u_data[u_len + 2] = 0
-    u_data[u_len + 3] = 0
-  end if
-
-END SUB
-
-
 END NAMESPACE
 
 
@@ -427,17 +379,84 @@ DIM cwsRes AS FB_USTRING.DWSTR = cws1
 END OPERATOR
 
 
+'***********************************************************************************************
+' this doesn´t work, because only the last operator defined takes effect !!!
+'***********************************************************************************************
+
+'PRIVATE OPERATOR & overload (BYREF cws1 AS FB_USTRING.DWSTR, BYVAL n AS LONGINT) AS FB_USTRING.DWSTR
+'DIM cwsRes AS FB_USTRING.DWSTR = cws1
+'DIM wsz AS WSTRING * 260 = .WSTR(n)
+'  cwsRes.Add(wsz)
+'  OPERATOR = cwsRes
+'END OPERATOR
+'
+'PRIVATE OPERATOR & overload (BYREF cws1 AS FB_USTRING.DWSTR, BYVAL n AS double) AS FB_USTRING.DWSTR
+'DIM cwsRes AS FB_USTRING.DWSTR = cws1
+'DIM wsz AS WSTRING * 260 = .WSTR(n)
+'  cwsRes.Add(wsz)
+'  OPERATOR = cwsRes
+'END OPERATOR
+
+
 ''***********************************************************************************************
 '' overloaded LEFT, RIGHT
 ''***********************************************************************************************
 
 
 PRIVATE FUNCTION Left OVERLOAD (BYREF cws AS FB_USTRING.DWSTR, BYVAL nChars AS INTEGER) AS FB_USTRING.DWSTR
-  RETURN LEFT(*cast(WSTRING PTR, cws.u_data), nChars)
+dim s   as FB_USTRING.init_size
+  s.n = -1
+dim ret as FB_USTRING.DWSTR = s
+dim n   as integer
+
+  n = nChars * sizeof(wstring)
+
+  if n > cws.u_len then
+    n = cws.u_len
+  end if
+
+  ret.u_data = Allocate(n + 4)                        '' + 4 = make room for the null terminator.
+
+  IF ret.u_data THEN
+    fb_hStrCopy(byval ret.u_data, byval cws.u_data, n)
+  else
+    err = 4
+    return ret
+  END IF
+
+  ret.u_len = n
+
+  poke long, ret.u_data + n, 0                        'add 4 nulls (covers all possible WSTRING sizes
+  return ret
+
 END FUNCTION
 
 PRIVATE FUNCTION Right OVERLOAD (BYREF cws AS FB_USTRING.DWSTR, BYVAL nChars AS INTEGER) AS FB_USTRING.DWSTR
-  RETURN RIGHT(*cast(WSTRING PTR, cws.u_data), nChars)
+dim s   as FB_USTRING.init_size
+  s.n = -1
+dim ret as FB_USTRING.DWSTR = s
+dim n   as integer
+
+  n = nChars * sizeof(wstring)
+
+  if n > cws.u_len then
+    n = cws.u_len
+  end if
+
+  ret.u_data = Allocate(n + 4)                        '' + 4 = make room for the null terminator.
+
+  IF ret.u_data THEN
+    fb_hStrCopy(byval ret.u_data, byval cws.u_data + cws.u_len - n, n)
+  else
+    err = 4
+    return ret
+  END IF
+
+  ret.u_len = n
+
+  poke long, ret.u_data + n, 0                        'add 4 nulls (covers all possible WSTRING sizes
+  return ret
+
 END FUNCTION
 
 
