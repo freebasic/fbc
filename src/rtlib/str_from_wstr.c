@@ -2,15 +2,12 @@
 
 #include "fb.h"
 
-FBCALL FBSTRING *fb_StrFromWchar( FB_WCHAR *src )
+FBCALL FBSTRING *fb_StrFromWchar( FB_WCHAR *src, ssize_t ulen )
 {
     FBSTRING *s;
-    ssize_t ulen, slen;
+    ssize_t slen;
 
-    if( src != NULL )
-        ulen = fb_wstr_Len( src );
-    else
-        return &__fb_ctx.null_desc;
+    if (ulen == 0) return &__fb_ctx.null_desc;
 
     slen = ulen * sizeof(FB_WCHAR);
     s = fb_hStrAllocTemp( NULL, slen );

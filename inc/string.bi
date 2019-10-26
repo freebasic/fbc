@@ -17,8 +17,7 @@ declare function format    alias "fb_StrFormat" _
 #define left_ left
 #define right_ right
 #define mid_ mid
-#define ucode_ ucode
-#define acode_ acode
+#define copy_ copy
 #define pathname_ pathname
 #define repeat_ repeat
 #define strreverse_ strreverse
@@ -39,13 +38,56 @@ declare function format    alias "fb_StrFormat" _
 ' no conversion takes place, the data is just copied. This is necessary to avoid automatic 
 ' conversion when passing wide data in a STRING to a wide string and vice versa.
 
-' Syntax: [z]string = Acode(wstring)
-'         w/ustring = Ucode([z]string)
+' Syntax: [z]string = Copy(wstring)
+'         w/ustring = Copy([z]string)
 '***********************************************************************************************
 
 
-'declare function ucode alias "fb_WcharFromStr" (z as Zstring) as wstring
-'declare function acode alias "fb_StrFromWchar" (w as wstring) as string
+namespace string_
+
+
+extern "rtlib"                                                                     
+declare function fb_wcharfromstr alias "fb_WcharFromStr" ( byref z as zstring, byref n as integer ) as wstring ptr
+declare function fb_strfromwchar alias "fb_StrFromWchar" ( byref w as wstring, byval n as integer ) as string
+end extern
+
+
+private function copydatabytes overload( byref s as string ) as ustring
+dim n as uinteger
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    n = len(s)
+    u.u_data = cast(ubyte ptr, fb_wcharfromstr(s, n))
+    u.u_len = n * sizeof(wstring)
+    return u
+end function
+
+private function copydatabytes overload( byref w as wstring ) as string
+    return fb_strfromwchar(w, len(w))
+end function
+  
+private function copydatabytes overload( byref u as ustring ) as string
+    return fb_strfromwchar(u, len(u))
+end function
+
+
+#macro copy(a)
+    string_.##copydatabytes(a)
+#endmacro
+
+
+end namespace
+
+
+'***********************************************************************************************
+' three overloaded functions: string,          -> a-function
+'                             wstring, ustring -> w-function
+
+
+
+'***********************************************************************************************
 
 
 '***********************************************************************************************

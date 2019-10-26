@@ -243,7 +243,7 @@ private function hLoadMacro _
                     dim s as string
                     
                     n = instr(*argtext, " ")
-                    i = instr(*argtext, QUOTE)
+                    i = instr(*argtext, any QUOTE + "(")
 
                     if i > 0 then
                       if n > i then
@@ -596,7 +596,7 @@ private function hLoadMacroW _
                     dim w as WSTRING * 300
                     
                     n = instr(*argtext, " ")
-                    i = instr(*argtext, QUOTE)
+                    i = instr(*argtext, any QUOTE + "(")
 
                     if i > 0 then
                       if n > i then

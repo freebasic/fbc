@@ -2061,7 +2061,7 @@
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _	 	
-		/' function ucode alias "fb_WcharFromStr" (z as zstring) as wstring '/ _
+/'		/' function ucode alias "fb_WcharFromStr" (z as zstring) as wstring '/ _
 		( _
 			@"ucode", @"fb_WcharFromStr", _
 			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
@@ -2080,7 +2080,7 @@
 			{ _
 				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
 			} _
-		), _
+		), _   '/ _
 		/' function pathname_path overload( byref w as wstring ) as wstring '/ _
 		( _
 			@"pathname_path", @"fb_WstrPath_path", _
