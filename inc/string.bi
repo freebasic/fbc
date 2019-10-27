@@ -58,9 +58,9 @@ dim init as FB_USTRING.init_size
   init.n = -1
 dim u as ustring = init
 
-    n = len(s)
+    n = len(s)                                        'pass length
     u.u_data = cast(ubyte ptr, fb_wcharfromstr(s, n))
-    u.u_len = n * sizeof(wstring)
+    u.u_len = n * sizeof(wstring)                     'set returned length
     return u
 end function
 
@@ -76,18 +76,6 @@ end function
 #macro copy(a)
     string_.##copydatabytes(a)
 #endmacro
-
-
-end namespace
-
-
-'***********************************************************************************************
-' three overloaded functions: string,          -> a-function
-'                             wstring, ustring -> w-function
-
-
-
-'***********************************************************************************************
 
 
 '***********************************************************************************************
@@ -108,18 +96,20 @@ end namespace
 '***********************************************************************************************
 
 
-'declare function pathname_path  overload alias "fb_StrPath_path" (byref z as zstring) as string
-'declare function pathname_path  overload alias "fb_WstrPath_path" (byref w as wstring) as wstring
-'declare function pathname_name  overload alias "fb_StrPath_name" (byref z as zstring) as string
-'declare function pathname_name  overload alias "fb_WstrPath_name" (byref w as wstring) as wstring
-'declare function pathname_namex overload alias "fb_StrPath_namex" (byref z as zstring) as string
-'declare function pathname_namex overload alias "fb_WstrPath_namex" (byref w as wstring) as wstring
-'declare function pathname_extn  overload alias "fb_StrPath_extn" (byref z as zstring) as string
-'declare function pathname_extn  overload alias "fb_WstrPath_extn" (byref w as wstring) as wstring
+extern "rtlib"                                                                     
+declare function pathname_path  overload alias "fb_StrPath_path" (byref z as zstring) as string
+declare function pathname_path  overload alias "fb_WstrPath_path" (byref w as wstring) as wstring
+declare function pathname_name  overload alias "fb_StrPath_name" (byref z as zstring) as string
+declare function pathname_name  overload alias "fb_WstrPath_name" (byref w as wstring) as wstring
+declare function pathname_namex overload alias "fb_StrPath_namex" (byref z as zstring) as string
+declare function pathname_namex overload alias "fb_WstrPath_namex" (byref w as wstring) as wstring
+declare function pathname_extn  overload alias "fb_StrPath_extn" (byref z as zstring) as string
+declare function pathname_extn  overload alias "fb_WstrPath_extn" (byref w as wstring) as wstring
+end extern
 
 
 #macro pathname(what, p)
-    pathname_##what(p)
+    string_.pathname_##what(p)
 #endmacro    
 
 
@@ -343,6 +333,9 @@ end namespace
 #macro replace(a, b, c)
     fb_replace(a, #?b, c)
 #endmacro  
+
+
+end namespace
 
 
 #endif
