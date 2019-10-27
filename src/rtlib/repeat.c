@@ -2,15 +2,16 @@
 
 #include "fb.h"
 
-FBCALL FBSTRING *fb_StrRepeat ( ssize_t n, char *src )
+FBCALL FBSTRING *fb_StrRepeat ( ssize_t n, char *src, ssize_t slen )
 {
     FBSTRING *s;
-    ssize_t x, ulen, slen;
+    ssize_t x, ulen;
 
-    if( src != NULL )
-        slen = strlen( src );
-    else
-        return &__fb_ctx.null_desc;
+//    if( src != NULL )
+//        slen = strlen( src );
+//    else
+//        return &__fb_ctx.null_desc;
+    if (slen == 0) return &__fb_ctx.null_desc;
 
     ulen = slen * n;
     s = fb_hStrAllocTemp( NULL, ulen );
@@ -25,15 +26,17 @@ FBCALL FBSTRING *fb_StrRepeat ( ssize_t n, char *src )
     return s;
 }
 
-FBCALL FB_WCHAR *fb_WstrRepeat ( ssize_t n, FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_WstrRepeat ( ssize_t n, FB_WCHAR *src, ssize_t *len )
 {
     FB_WCHAR *w;
-    ssize_t x, ulen, slen;
+    ssize_t x, ulen, slen = *len;
 
-    if( src != NULL )
-        slen = fb_wstr_Len( src );
-    else
-        return NULL;
+    if (slen == 0) return NULL;
+
+//    if( src != NULL )
+//        slen = fb_wstr_Len( src );
+//    else
+//        return NULL;
 
     ulen = slen * n;
     w = fb_wstr_AllocTemp( ulen );
@@ -45,5 +48,6 @@ FBCALL FB_WCHAR *fb_WstrRepeat ( ssize_t n, FB_WCHAR *src )
         fb_wstr_Move( w + x*slen, src, slen );
     }
     w[ulen] = _LC('\0');
+    *len = ulen;                                      //return length (for ustring)
     return w;
 }

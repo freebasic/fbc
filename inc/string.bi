@@ -47,8 +47,8 @@ namespace string_
 
 
 extern "rtlib"                                                                     
-declare function fb_wcharfromstr alias "fb_WcharFromStr" ( byref z as zstring, byref n as integer ) as wstring ptr
-declare function fb_strfromwchar alias "fb_StrFromWchar" ( byref w as wstring, byval n as integer ) as string
+declare function fb_wcharfromstr alias "fb_WcharFromStr" ( byref z as zstring, byref n as uinteger ) as wstring ptr
+declare function fb_strfromwchar alias "fb_StrFromWchar" ( byref w as wstring, byval n as uinteger ) as string
 end extern
 
 
@@ -116,14 +116,56 @@ end extern
 '***********************************************************************************************
 ' Returns a string consisting of multiple copies of the specified string.
 ' This function is a similar to STRING/WSTRING functions, but allows for
-' strings of arbitrary length to be conatenated.
+' strings of arbitrary length to be concatenated.
 
 ' Syntax: resultstring = Repeat(5, "xyz")
 '***********************************************************************************************
 
 
-'declare function repeat overload( byval n as integer, byref z as zstring ) as string
-'declare function repeat overload( byval n as integer, byref w as wstring ) as wstring
+extern "rtlib"                                                                     
+declare function fb_repeat_str alias "fb_StrRepeat" ( byval n as integer, byref z as zstring, byval l as uinteger ) as string
+declare function fb_repeat_wstr alias "fb_WstrRepeat" ( byval n as integer, byref w as wstring, byref l as uinteger ) as wstring ptr
+end extern
+
+
+private function repeat_str overload( byval n as integer, byref o as ustring ) as ustring
+dim x as uinteger
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    x = len(o)                                        'pass length
+    u.u_data = cast(ubyte ptr, fb_repeat_wstr(n, o, x))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function repeat_str overload( byval n as integer, byref w as wstring ) as ustring
+dim x as uinteger = len(w)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_repeat_wstr(n, w, x))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+
+end function
+  
+private function repeat_str overload( byval n as integer, byref s as string ) as string
+    return fb_repeat_str(n, s, len(s))
+end function
+
+
+#macro repeat(a, b)
+    string_.##repeat_str(a, b)
+#endmacro
+
+
+
+
+
+
 
 
 '***********************************************************************************************
