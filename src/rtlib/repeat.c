@@ -7,10 +7,6 @@ FBCALL FBSTRING *fb_StrRepeat ( ssize_t n, char *src, ssize_t slen )
     FBSTRING *s;
     ssize_t x, ulen;
 
-//    if( src != NULL )
-//        slen = strlen( src );
-//    else
-//        return &__fb_ctx.null_desc;
     if (slen == 0) return &__fb_ctx.null_desc;
 
     ulen = slen * n;
@@ -32,11 +28,6 @@ FBCALL FB_WCHAR *fb_WstrRepeat ( ssize_t n, FB_WCHAR *src, ssize_t *len )
     ssize_t x, ulen, slen = *len;
 
     if (slen == 0) return NULL;
-
-//    if( src != NULL )
-//        slen = fb_wstr_Len( src );
-//    else
-//        return NULL;
 
     ulen = slen * n;
     w = fb_wstr_AllocTemp( ulen );

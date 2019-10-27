@@ -2,20 +2,13 @@
 
 #include "fb.h"
 
-FBCALL ssize_t fb_StrTally ( char *src, int any, char *t )
+FBCALL ssize_t fb_StrTally ( char *src, ssize_t slen, int any, char *t, ssize_t tlen )
 {
-    ssize_t n, x, y, slen, tlen;
+    ssize_t n, x, y;
     char *a, *c, *d;
 
-    if( src != NULL )
-        slen = strlen( src );
-    else
-        return 0;
-
-    if( t != NULL )
-        tlen = strlen( t );
-    else
-        return 0;
+    if (slen == 0) return 0;
+    if (tlen == 0) return 0;
 
     a = src;
     n = 0;
@@ -65,20 +58,13 @@ exit2:
     return n;
 }
 
-FBCALL ssize_t fb_WstrTally ( FB_WCHAR *src, int any, FB_WCHAR *t )
+FBCALL ssize_t fb_WstrTally ( FB_WCHAR *src, ssize_t slen, int any, FB_WCHAR *t, ssize_t tlen )
 {
-    ssize_t n, x, y, slen, tlen;
+    ssize_t n, x, y;
     FB_WCHAR *a, *c, *d;
 
-    if( src != NULL )
-        slen = fb_wstr_Len( src );
-    else
-        return 0;
-
-    if( t != NULL )
-        tlen = fb_wstr_Len( t );
-    else
-        return 0;
+    if (slen == 0) return 0;
+    if (tlen == 0) return 0;
 
     a = src;
     n = 0;

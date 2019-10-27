@@ -52,7 +52,7 @@ declare function fb_strfromwchar alias "fb_StrFromWchar" ( byref w as wstring, b
 end extern
 
 
-private function copydatabytes overload( byref s as string ) as ustring
+private function copy_str overload( byref s as string ) as ustring
 dim n as uinteger
 dim init as FB_USTRING.init_size
   init.n = -1
@@ -64,17 +64,17 @@ dim u as ustring = init
     return u
 end function
 
-private function copydatabytes overload( byref w as wstring ) as string
+private function copy_str overload( byref w as wstring ) as string
     return fb_strfromwchar(w, len(w))
 end function
   
-private function copydatabytes overload( byref u as ustring ) as string
+private function copy_str overload( byref u as ustring ) as string
     return fb_strfromwchar(u, len(u))
 end function
 
 
 #macro copy(a)
-    string_.##copydatabytes(a)
+    string_.##copy_str(a)
 #endmacro
 
 
@@ -129,12 +129,11 @@ end extern
 
 
 private function repeat_str overload( byval n as integer, byref o as ustring ) as ustring
-dim x as uinteger
+dim x as uinteger = len(o)
 dim init as FB_USTRING.init_size
   init.n = -1
 dim u as ustring = init
 
-    x = len(o)                                        'pass length
     u.u_data = cast(ubyte ptr, fb_repeat_wstr(n, o, x))
     u.u_len = x * sizeof(wstring)                     'set returned length
     return u
@@ -162,12 +161,6 @@ end function
 #endmacro
 
 
-
-
-
-
-
-
 '***********************************************************************************************
 ' Count the number of occurrences of specified characters strings within a string.
 ' W is the string expression in which to count characters. M is a list of single characters 
@@ -181,12 +174,31 @@ end function
 '***********************************************************************************************
 
 
-'declare function tally overload( byref z as zstring, byval i as long, byref t as zstring ) as zstring
-'declare function tally overload( byref w as wstring, byval i as long, byref t as wstring ) as wstring
+extern "rtlib"                                                                     
+declare function fb_strtally alias "fb_StrTally" ( byref z as zstring, byval lz as uinteger, byval i as long, byref t as zstring, byval lt as uinteger ) as uinteger
+declare function fb_wstrtally alias "fb_WstrTally" ( byref w as wstring, byval lw as uinteger, byval i as long, byref t as wstring, byval lt as uinteger ) as uinteger
+end extern
+
+
+private function tally_str overload( byref o as ustring, byval n as long, byref t as ustring ) as uinteger
+    return fb_wstrtally(o, len(o), n, t, len(t))
+end function
+
+private function tally_str overload( byref o as ustring, byval n as long, byref t as zstring ) as uinteger
+    return fb_wstrtally(o, len(o), n, t, len(t))
+end function
+
+private function tally_str overload( byref w as wstring, byval n as long, byref t as wstring ) as uinteger
+    return fb_wstrtally(w, len(w), n, t, len(t))
+end function
+  
+private function tally_str overload( byref s as string, byval n as long, byref t as string ) as uinteger
+    return fb_strtally(s, len(s), n, t, len(t))
+end function
 
 
 #macro tally(s, t)
-    fb_tally(s, #?t)
+    string_.##tally_str(s, #?t)
 #endmacro    
 
 
