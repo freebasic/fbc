@@ -167,10 +167,9 @@ end function
 ' to be searched for individually or in total. A match on any one of which  or a match in total
 ' will cause the count to be incremented for each occurrence. Note that repeated characters in m 
 ' will not increase the count, if characters a searched individually. If m is not present in w, 
-' zero is returned.
+' zero is returned. If "ANY" is not specified, m is handled "as string"
 
 ' Syntax: n = tally(w <string to count in>, [any] m <string to find>)
-' default: count entire string, any -> count each character separately
 '***********************************************************************************************
 
 
@@ -207,19 +206,38 @@ end function
 ' If w is empty (a null string) or contains no delimiter character(s), the string
 ' is considered to contain exactly one sub-field. In this case, ParseCount returns the value 1.
 ' m contains a string (one or more characters) that are seached individually or must be fully 
-' matched.
+' matched. If "ANY" is not specified, m is handled "as string". If m is not specified, it
+' defaults to ",".
 
 ' Syntax: n = parsecount(w <string to count in>, [any] m <separating string>)
-' default: entire separating string, any -> count each character separately
 '***********************************************************************************************
 
 
-'declare function parsecount overload( byref z as zstring, byval i as long, byref t as zstring ) as zstring
-'declare function parsecount overload( byref w as wstring, byval i as long, byref t as wstring ) as wstring
+extern "rtlib"                                                                     
+declare function fb_strparsecount alias "fb_StrParsecount" ( byref z as zstring, byval lz as uinteger, byval i as long, byref t as zstring, byval lt as uinteger ) as uinteger
+declare function fb_wstrparsecount alias "fb_WstrParsecount" ( byref w as wstring, byval lw as uinteger, byval i as long, byref t as wstring, byval lt as uinteger ) as uinteger
+end extern
 
 
-#macro parsecount(s, t)
-    fb_parsecount(s, #?t)
+private function parsecount_str overload( byref o as ustring, byval n as long = 0, byref t as ustring = "," ) as uinteger
+    return fb_wstrparsecount(o, len(o), n, t, len(t))
+end function
+
+private function parsecount_str overload( byref o as ustring, byval n as long = 0, byref t as zstring = "," ) as uinteger
+    return fb_wstrparsecount(o, len(o), n, t, len(t))
+end function
+
+private function parsecount_str overload( byref w as wstring, byval n as long = 0, byref t as wstring = "," ) as uinteger
+    return fb_wstrparsecount(w, len(w), n, t, len(t))
+end function
+  
+private function parsecount_str overload( byref s as string, byval n as long = 0, byref t as string = "," ) as uinteger
+    return fb_strparsecount(s, len(s), n, t, len(t))
+end function
+
+
+#macro parsecount(s, t...)
+    string_.##parsecount_str(s, #?t)
 #endmacro    
 
 
@@ -308,7 +326,7 @@ end function
 ' m contains a string of one or more characters that must be individually or fully matched to 
 ' be successful dependig on "Any". If n evaluates to zero or is outside of the actual field 
 ' count, an empty string is returned. If n is negative then fields are searched from the right 
-' to left in w. M is case-sensitive.
+' to left in w. M is case-sensitive. If m is not specified, it defaults to ","
 
 ' Syntax: resultstring = parse(w <string to parse>, [[any] m <delimiter string>,] n <position>)
 '***********************************************************************************************
