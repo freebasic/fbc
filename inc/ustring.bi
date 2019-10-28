@@ -1,4 +1,7 @@
-#pragma once
+#ifndef __USTRING_BI__
+#define __USTRING_BI__
+
+#include once "utf_conv.bi"
 
 '' ****************************************************************************************
 '' This code is copied and adapted from WinFBX with explicit permission of José Roca 
@@ -347,16 +350,21 @@ PRIVATE SUB DWSTR.Add (BYREF ansiStr AS STRING)
   IF LEN(ansiStr) = 0 THEN RETURN
   '' Create the wide string from the incoming ansi string
 
-  DIM dwLen AS ulong, pbuffer AS wstring PTR
+  DIM dwLen AS ulong, pbuffer AS wstring PTR, n as integer
 
-  dwlen = len(ansistr) * 5                            ''enough even, if each byte converts to a surrogate pair
-  pbuffer = Allocate(dwLen)
-
-  *pbuffer = ansistr                                  ''let FB´s intrinsic conversion do the job
-  dwlen = len(*pbuffer) * UCHAR_SIZE
+  '' implicit conversion stops at embedded nulls, therefore use explicit conversion
+  #if UCHAR_SIZE = 4
+    pbuffer = CharToUtf(UTF_ENCOD_UTF32, strptr(ansistr), len(ansistr), 0, @n)
+  #elseif UCHAR_SIZE = 2
+    pbuffer = CharToUtf(UTF_ENCOD_UTF16, strptr(ansistr), len(ansistr), 0, @n)
+  #elseif UCHAR_SIZE = 1
+    *pbuffer = ansistr
+    n = len(ansistr)
+  #endif
 
   IF pbuffer THEN
     ''copy the string into the buffer and update the length
+    dwLen = n
     this.AppendBuffer(pbuffer, dwLen)          
     Deallocate(pbuffer)
   END IF
@@ -485,3 +493,5 @@ PRIVATE FUNCTION ValULNG OVERLOAD (BYREF cws AS FB_USTRING.DWSTR) AS ulongint
    RETURN .VALULNG(*cast(WSTRING PTR, cws.u_data))
 END FUNCTION
 
+
+#endif
