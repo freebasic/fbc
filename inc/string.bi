@@ -20,7 +20,7 @@ declare function format    alias "fb_StrFormat" _
 #define copy_ copy
 #define pathname_ pathname
 #define repeat_ repeat
-#define strreverse_ strreverse
+#define invert_ invert
 #define insert_ insert
 #define extract_ extract
 #define remain_ remain
@@ -148,7 +148,6 @@ dim u as ustring = init
     u.u_data = cast(ubyte ptr, fb_repeat_wstr(n, w, x))
     u.u_len = x * sizeof(wstring)                     'set returned length
     return u
-
 end function
   
 private function repeat_str overload( byval n as integer, byref s as string ) as string
@@ -242,14 +241,48 @@ end function
 
 
 '***********************************************************************************************
-' Reverses the contents of a string.
+' Inverts the contents of a string.
 
-' Syntax: resultstring = strreverse("xyz")
+' Syntax: resultstring = invert("xyz")
 '***********************************************************************************************
 
 
-'declare function strreverse overload( byref z as zstring ) as string
-'declare function strreverse overload( byref w as wstring ) as wstring
+extern "rtlib"                                                                     
+declare function fb_strinvert alias "fb_StrInvert" ( byref z as zstring, byval lz as uinteger ) as string
+declare function fb_wstrinvert alias "fb_WstrInvert" ( byref w as wstring, byval lw as uinteger ) as wstring ptr
+end extern
+
+
+private function invert_str overload( byref o as ustring) as ustring
+dim x as uinteger = len(o)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrinvert(o, x))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function invert_str overload( byref w as wstring) as ustring
+dim x as uinteger = len(w)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrinvert(w, x))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+  
+private function invert_str overload( byref s as string) as string
+    return fb_strinvert(s, len(s))
+end function
+
+
+#macro invert(a)
+    string_.##invert_str(a)
+#endmacro    
 
 
 '***********************************************************************************************

@@ -2,15 +2,16 @@
 
 #include "fb.h"
 
-FBCALL FBSTRING *fb_StrReverse ( char *src )
+FBCALL FBSTRING *fb_StrInvert ( char *src, ssize_t slen )
 {
     FBSTRING *s;
-    ssize_t x, slen;
+    ssize_t x;
 
-    if( src != NULL )
-        slen = strlen( src );
-    else
-        return &__fb_ctx.null_desc;
+    if (slen == 0) return &__fb_ctx.null_desc;
+//    if( src != NULL )
+//        slen = strlen( src );
+//    else
+//        return &__fb_ctx.null_desc;
 
     s = fb_hStrAllocTemp( NULL, slen );
     if( s == NULL )
@@ -28,15 +29,16 @@ FBCALL FBSTRING *fb_StrReverse ( char *src )
     return s;
 }
 
-FBCALL FB_WCHAR *fb_WstrReverse ( FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_WstrInvert ( FB_WCHAR *src, ssize_t slen )
 {
     FB_WCHAR *w;
-    ssize_t x, slen;
+    ssize_t x;
 
-    if( src != NULL )
-        slen = fb_wstr_Len( src );
-    else
-        return NULL;
+    if (slen == 0) return NULL;
+//    if( src != NULL )
+//        slen = fb_wstr_Len( src );
+//    else
+//        return NULL;
 
     w = fb_wstr_AllocTemp( slen );
     if( w == NULL )

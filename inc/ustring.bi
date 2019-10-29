@@ -1,6 +1,8 @@
 #ifndef __USTRING_BI__
 #define __USTRING_BI__
 
+'#include "utf_conv.bi"
+
 '' ****************************************************************************************
 '' This code is copied and adapted from WinFBX with explicit permission of José Roca 
 '' Copyright (C) 2016-2019 José Roca, Paul Squires, Marc Pons & Juergen Kuehlwein.
@@ -72,6 +74,7 @@ TYPE DWSTR extends wstring
 
     DECLARE OPERATOR CAST () BYREF AS WSTRING
     DECLARE OPERATOR CAST () AS ANY PTR
+'    DECLARE OPERATOR CAST () AS string
 
     DECLARE OPERATOR LET (BYREF ansiStr AS STRING)
     DECLARE OPERATOR LET (BYREF wszStr AS CONST WSTRING)
@@ -173,6 +176,41 @@ END OPERATOR
 PRIVATE OPERATOR DWSTR.CAST () BYREF AS WSTRING       ''returns the string data (same as **).
   OPERATOR = *cast(WSTRING PTR, u_data)
 END OPERATOR
+
+'PRIVATE OPERATOR DWSTR.CAST () AS STRING              ''returns the converted string data
+'dim s as string
+'dim n as integer
+'dim i as integer
+'
+'type mystring
+'  d as zstring ptr
+'  l as integer
+'  s as integer
+'end type
+'
+'dim p as mystring ptr = cast(mystring ptr, varptr(s))
+'dim z as zstring ptr
+'dim w as wstring ptr
+'
+'  n = u_len \ UCHAR_SIZE
+'  
+'  p->d = callocate(n+1)
+'  z = p->d
+'  w = cast(wstring ptr, u_data)
+'  
+'  for i = 0 to n - 1                                  'cannot use UTFtoChar here, because doesn´t handle embedded nulls, stops a first null
+'    z[i] = w[i]
+'  next i
+'  
+'  z[n] = 0
+'
+'  p->l = n
+'  p->s = n
+'
+'  OPERATOR = s
+'
+'END OPERATOR
+
 
 PRIVATE OPERATOR DWSTR.[] (BYVAL nIndex AS ulong) byref AS UCHAR
 ''***********************************************************************************************
@@ -363,6 +401,66 @@ PRIVATE SUB DWSTR.Add (BYREF ansiStr AS STRING)
   END IF
 
 END SUB
+
+'***********************************************************************************************
+'***********************************************************************************************
+
+'PRIVATE SUB DWSTR.Add (BYREF ansiStr AS STRING)       'as expected, this is faster
+'
+'  IF LEN(ansiStr) = 0 THEN RETURN
+'  '' Create the wide string from the incoming ansi string
+'
+'  DIM dwLen AS ulong, pbuffer AS wstring PTR, n as integer
+'
+'  '' implicit conversion stops at embedded nulls, therefore use explicit conversion
+'  #if UCHAR_SIZE = 4
+'    pbuffer = CharToUtf(UTF_ENCOD_UTF32, strptr(ansistr), len(ansistr), 0, @n)
+'  #elseif UCHAR_SIZE = 2
+'    pbuffer = CharToUtf(UTF_ENCOD_UTF16, strptr(ansistr), len(ansistr), 0, @n)
+'  #elseif UCHAR_SIZE = 1
+'    *pbuffer = ansistr
+'    n = len(ansistr)
+'  #endif
+'
+'  IF pbuffer THEN
+'    ''copy the string into the buffer and update the length
+'    dwLen = n
+'    this.AppendBuffer(pbuffer, dwLen)          
+'    Deallocate(pbuffer)
+'  END IF
+'
+'end sub
+
+'***********************************************************************************************
+'***********************************************************************************************
+
+'PRIVATE SUB DWSTR.Add (BYREF ansiStr AS STRING)       'makes utf_conv.bi obsolete, but slower
+'
+'  IF LEN(ansiStr) = 0 THEN RETURN
+'  '' Create the wide string from the incoming ansi string
+'
+'  DIM dwLen AS ulong, pbuffer AS wstring PTR, n as integer
+'
+'dim i as integer
+'
+'dim z as zstring ptr
+'
+'  dwLen = len(ansistr) *  UCHAR_SIZE
+'  pbuffer = Allocate(dwLen)
+'  
+'  z = strptr(ansistr)
+'
+'  for i = 0 to len(ansistr) - 1
+'    pbuffer[i] = z[i]
+'  next i
+'  
+'  IF pbuffer THEN
+'    ''copy the string into the buffer and update the length
+'    this.AppendBuffer(pbuffer, dwLen)          
+'    Deallocate(pbuffer)
+'  END IF
+'
+'END SUB
 
 
 END NAMESPACE
