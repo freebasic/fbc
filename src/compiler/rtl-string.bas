@@ -2061,30 +2061,6 @@
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _	 	
-		/' function insert overload( byref z as zstring, byref z as zstring, byval n as integer ) as string '/ _
-		( _
-			@"insert", @"fb_StrInsert", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			3, _
-			{ _
-				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
-		), _
-		/' function insert overload( byref w as wstring, byref w as wstring, byval n as integer ) as wstring '/ _
-		( _
-			@"insert", @"fb_WstrInsert", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			3, _
-			{ _
-				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
-			} _
-		), _
 		/' function extract overload( byref z as zstring, byval any as long, byref z as zstring ) as string '/ _
 		( _
 			@"fb_extract", @"fb_StrExtract", _

@@ -382,8 +382,8 @@ FBCALL ssize_t     fb_WstrParsecount    ( FB_WCHAR *src, ssize_t slen, int any, 
 FBCALL FBSTRING    *fb_StrInvert        ( char *src, ssize_t slen );
 FBCALL FB_WCHAR    *fb_WstrInvert       ( FB_WCHAR *src, ssize_t slen );
 
-FBCALL FBSTRING    *fb_StrInsert        ( char *src, char *i, ssize_t n );
-FBCALL FB_WCHAR    *fb_WstrInsert       ( FB_WCHAR *src, FB_WCHAR *i, ssize_t n );
+FBCALL FBSTRING    *fb_StrInsert        ( char *src, ssize_t slen, char *i, ssize_t ilen, ssize_t n );
+FBCALL FB_WCHAR    *fb_WstrInsert       ( FB_WCHAR *src, ssize_t *slen, FB_WCHAR *i, ssize_t ilen, ssize_t n );
 
 FBCALL FBSTRING    *fb_StrExtract       ( char *src, int any, char *i );
 FBCALL FB_WCHAR    *fb_WstrExtract      ( FB_WCHAR *src, int any, FB_WCHAR *i );

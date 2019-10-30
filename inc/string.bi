@@ -297,8 +297,48 @@ end function
 '***********************************************************************************************
 
 
-'declare function insert overload( byref z as zstring, byref z as zstring, byval n as integer ) as string
-'declare function insert overload( byref w as wstring, byref w as wstring, byval n as integer ) as wstring
+extern "rtlib"                                                                     
+declare function fb_strinsert alias "fb_StrInsert"( byref z as zstring, byval lz as integer, byref z as zstring, byval lz1 as integer, byval n as integer ) as string
+declare function fb_wstrinsert alias "fb_WstrInsert" ( byref w as wstring, byref lw as integer, byref w1 as wstring, byval lw1 as integer, byval n as integer ) as wstring ptr
+end extern
+
+
+private function insert_str overload(byref o as ustring, byref o1 as string, byval n as integer) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrinsert(o, x, o1, y, n))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function insert_str overload(byref w as wstring, byref w1 as wstring, byval n as integer) as ustring
+dim x as uinteger = len(w)
+dim y as uinteger = len(w1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrinsert(w, x, w1, y, n))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+  
+private function insert_str overload(byref s as string, byref s1 as string, byval n as integer) as string
+print "in string"
+print s, len(s)
+print s1, len(s1)
+
+    return fb_strinsert(s, len(s), s1, len(s1), n)
+end function
+
+
+#macro insert(a, b, n)
+    string_.##insert_str(a, b, n)
+#endmacro    
 
 
 '***********************************************************************************************
