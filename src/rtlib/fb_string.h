@@ -385,10 +385,10 @@ FBCALL FB_WCHAR    *fb_WstrInvert       ( FB_WCHAR *src, ssize_t slen );
 FBCALL FBSTRING    *fb_StrInsert        ( char *src, ssize_t slen, char *i, ssize_t ilen, ssize_t n );
 FBCALL FB_WCHAR    *fb_WstrInsert       ( FB_WCHAR *src, ssize_t *slen, FB_WCHAR *i, ssize_t ilen, ssize_t n );
 
-FBCALL FBSTRING    *fb_StrExtract       ( char *src, int any, char *i );
-FBCALL FB_WCHAR    *fb_WstrExtract      ( FB_WCHAR *src, int any, FB_WCHAR *i );
-FBCALL FBSTRING    *fb_StrExtractStart  ( ssize_t n, int dummy, char *src, int any, char *i );
-FBCALL FB_WCHAR    *fb_WstrExtractStart ( ssize_t n, int dummy, FB_WCHAR *src, int any, FB_WCHAR *i );
+FBCALL FBSTRING    *fb_StrExtract       ( char *src, ssize_t slen, int any, char *i, ssize_t ilen );
+FBCALL FB_WCHAR    *fb_WstrExtract      ( FB_WCHAR *src, ssize_t *slen, int any, FB_WCHAR *i, ssize_t ilen );
+FBCALL FBSTRING    *fb_StrExtractStart  ( ssize_t n, int dummy, char *src, ssize_t slen, int any, char *i, ssize_t ilen );
+FBCALL FB_WCHAR    *fb_WstrExtractStart ( ssize_t n, int dummy, FB_WCHAR *src, ssize_t *slen, int any, FB_WCHAR *i, ssize_t ilen );
 
 
 FBCALL FBSTRING    *fb_StrRemain        ( char *src, int any, char *i );

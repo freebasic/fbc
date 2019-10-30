@@ -2,20 +2,14 @@
 
 #include "fb.h"
 
-FBCALL FBSTRING *fb_StrExtractStart ( ssize_t n, int dummy, char *src, int any, char *i )
+FBCALL FBSTRING *fb_StrExtractStart ( ssize_t n, int dummy, char *src, ssize_t slen, int any, char *i, ssize_t ilen )
 {
     FBSTRING *s;
-    ssize_t x, y, slen, ilen;
+    ssize_t x, y;
     char *a, *c, *d;
 
-    if( src != NULL )
-        slen = strlen( src );
-    else
-        return &__fb_ctx.null_desc;
-
-    if( i != NULL )
-        ilen = strlen( i );
-    else
+    if (slen == 0) return &__fb_ctx.null_desc;
+    if (ilen == 0)
     {
         x = slen;                                     //return all of src
         goto exit3;
@@ -77,20 +71,14 @@ exit3:
     return s;
 }
 
-FBCALL FB_WCHAR *fb_WstrExtractStart ( ssize_t n, int dummy, FB_WCHAR *src, int any, FB_WCHAR *i )
+FBCALL FB_WCHAR *fb_WstrExtractStart ( ssize_t n, int dummy, FB_WCHAR *src, ssize_t *len, int any, FB_WCHAR *i, ssize_t ilen )
 {
     FB_WCHAR *w;
-    ssize_t x, y, slen, ilen;
+    ssize_t x, y, slen = *len;
     FB_WCHAR *a, *c, *d;
 
-    if( src != NULL )
-        slen = fb_wstr_Len( src );
-    else
-        return 0;
-
-    if( i != NULL )
-        ilen = fb_wstr_Len( i );
-    else
+    if (slen == 0) return NULL;
+    if (ilen == 0)
     {
         x = slen;                                     //return all of src
         goto exit3;
@@ -148,15 +136,16 @@ exit3:
 
     fb_wstr_Move( w, src + n - 1, x );
     w[x] = _LC('\0');
+    *len = x;
     return w;
 }
 
-FBCALL FBSTRING *fb_StrExtract ( char *src, int any, char *i )
+FBCALL FBSTRING *fb_StrExtract ( char *src, ssize_t slen, int any, char *i, ssize_t ilen )
 {
-    return fb_StrExtractStart ( 1, 0, src, any, i );
+    return fb_StrExtractStart ( 1, 0, src, slen, any, i, ilen );
 }
 
-FBCALL FB_WCHAR *fb_WstrExtract ( FB_WCHAR *src, int any, FB_WCHAR *i )
+FBCALL FB_WCHAR *fb_WstrExtract ( FB_WCHAR *src, ssize_t *slen, int any, FB_WCHAR *i, ssize_t ilen )
 {
-    return fb_WstrExtractStart ( 1, 0, src, any, i );
+    return fb_WstrExtractStart ( 1, 0, src, slen, any, i, ilen );
 }

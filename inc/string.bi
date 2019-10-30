@@ -328,10 +328,6 @@ dim u as ustring = init
 end function
   
 private function insert_str overload(byref s as string, byref s1 as string, byval n as integer) as string
-print "in string"
-print s, len(s)
-print s1, len(s1)
-
     return fb_strinsert(s, len(s), s1, len(s1), n)
 end function
 
@@ -354,16 +350,76 @@ end function
 
 ' Syntax: resultstring = Extract([nStart,] w <string to be searched>, [any] m <char(s) to be searched for>)
 '***********************************************************************************************
+                                                                                   
+
+extern "rtlib"                                                                     
+declare function fb_strextract alias "fb_StrExtract"( byref z as zstring, byval lz as integer, byval a as long, byref z1 as zstring, byval lz1 as integer ) as string
+declare function fb_wstrextract alias "fb_WstrExtract"( byref w as wstring, byref lw as integer, byval a as long, byref w1 as wstring, byval lw1 as integer ) as wstring ptr
+declare function fb_strextractstart alias "fb_StrExtractStart"( byval n as integer, byval dummy as long, byref z as zstring, byval lz as integer, byval a as long, byref z1 as zstring, byval lz1 as integer ) as string
+declare function fb_wstrextractstart alias "fb_WstrExtractStart"( byval n as integer, byval dummy as long, byref w as wstring, byref lw as integer, byval a as long, byref w1 as wstring, byval lw1 as integer ) as wstring ptr
+end extern
 
 
-'declare function extract overload( byref z as zstring, byval any as long, byref z as zstring ) as string
-'declare function extract overload( byref w as wstring, byval any as long, byref w as wstring ) as wstring
-'declare function extract overload( byval n as integer, byval dummy as long, byref z as zstring, byval any as long, byref z as zstring ) as string
-'declare function extract overload( byval n as integer, byval dummy as long, byref w as wstring, byval any as long, byref w as wstring ) as wstring
+private function extract_str overload(byref o as ustring, byval a as long, byref o1 as string) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrextract(o, x, a, o1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function extract_str overload(byref w as wstring, byval a as long, byref w1 as wstring) as ustring
+dim x as uinteger = len(w)
+dim y as uinteger = len(w1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrextract(w, x, a, w1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+  
+private function extract_str overload(byref s as string, byval a as long, byref s1 as string) as string
+    return fb_strextract(s, len(s), a, s1, len(s1))
+end function
 
 
-#macro extract(a, b, c...)                            'iif(#c = "", 0, len(c))
-    fb_extract(a, #?b, #?c)
+private function extract_str overload(byval n as integer, byval dummy as long, byref o as ustring, byval a as long, byref o1 as string) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrextractstart(n, dummy, o, x, a, o1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function extract_str overload(byval n as integer, byval dummy as long, byref w as wstring, byval a as long, byref w1 as wstring) as ustring
+dim x as uinteger = len(w)
+dim y as uinteger = len(w1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrextractstart(n, dummy, w, x, a, w1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+  
+private function extract_str overload(byval n as integer, byval dummy as long, byref s as string, byval a as long, byref s1 as string) as string
+    return fb_strextractstart(n, dummy, s, len(s), a, s1, len(s1))
+end function
+
+
+#macro extract(a, b, c...)                      
+    string_.extract_str(a, #?b, #?c)
 #endmacro    
 
 

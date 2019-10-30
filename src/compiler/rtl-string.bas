@@ -2061,58 +2061,6 @@
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _	 	
-		/' function extract overload( byref z as zstring, byval any as long, byref z as zstring ) as string '/ _
-		( _
-			@"fb_extract", @"fb_StrExtract", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			3, _
-			{ _
-				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, false ), _
-				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ) _
-			} _
-		), _
-		/' function extract overload( byref w as wstring, byval any as long, byref w as wstring ) as wstring '/ _
-		( _
-			@"fb_extract", @"fb_WstrExtract", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			3, _
-			{ _
-				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, false ), _
-				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
-			} _
-		), _
-		/' function extract overload( byval n as integer, byval any as long, byref z as zstring, byval any as long, byref z as zstring ) as string '/ _
-		( _
-			@"fb_extract", @"fb_StrExtractStart", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			5, _
-			{ _
-				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, false ), _
-				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, false ), _
-				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ) _
-			} _
-		), _
-		/' function extract overload( byval n as integer, byval any as long, byref w as wstring, byval any as long, byref w as wstring ) as wstring '/ _
-		( _
-			@"fb_extract", @"fb_WstrExtractStart", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			5, _
-			{ _
-				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, false ), _
-				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, false ), _
-				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
-			} _
-		), _
 		/' function remain overload( byref z as zstring, byval any as long, byref z as zstring ) as string '/ _
 		( _
 			@"fb_remain", @"fb_StrRemain", _
