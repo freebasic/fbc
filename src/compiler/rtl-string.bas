@@ -2061,48 +2061,6 @@
 				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _	 	
-		/' function shrink overload( byref z as zstring ) as string '/ _
-		( _
-			@"shrink", @"fb_StrShrink", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
-			{ _
-				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ) _
-			} _
-		), _
-		/' function shrink overload( byref w as wstring ) as wstring '/ _
-		( _
-			@"shrink", @"fb_WstrShrink", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			1, _
-			{ _
-				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
-			} _
-		), _
-		/' function shrink overload( byref z as zstring, byref z as zstring ) as string '/ _
-		( _
-			@"shrink", @"fb_StrShrinkDelim", _
-			FB_DATATYPE_STRING, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			2, _
-			{ _
-				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_CHAR ), FB_PARAMMODE_BYREF, FALSE ) _
-			} _
-		), _
-		/' function shrink overload( byref w as wstring, byref w as wstring ) as wstring '/ _
-		( _
-			@"shrink", @"fb_WstrShrinkDelim", _
-			FB_DATATYPE_WCHAR, FB_FUNCMODE_FBCALL, _
-			NULL, FB_RTL_OPT_OVER or FB_RTL_OPT_NOQB, _
-			2, _
-			{ _
-				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_WCHAR ), FB_PARAMMODE_BYREF, FALSE ) _
-			} _
-		), _
 		/' function remove overload( byref z as zstring, byval any as long, byref z as zstring ) as string '/ _
 		( _
 			@"fb_remove", @"fb_StrRemove", _

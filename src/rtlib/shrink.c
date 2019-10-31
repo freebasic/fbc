@@ -2,28 +2,14 @@
                              
 #include "fb.h"
 
-FBCALL FBSTRING *fb_StrShrinkDelim ( char *src, char *t )
+FBCALL FBSTRING *fb_StrShrinkDelim ( char *src, ssize_t slen, char *t, ssize_t tlen )
 {
     FBSTRING *s;
-    ssize_t x, y, z, slen, tlen;
+    ssize_t x, y, z;
     char *a, *b, *c, *d;
     char space [] = " ";
 
-    if( src != NULL )
-        slen = strlen( src );
-    else
-        return &__fb_ctx.null_desc;
-    
-    if( t != NULL )
-        tlen = strlen( t );
-    else
-    {
-        b = space;
-        d = b;                                        //delimiter = first char
-        tlen = 1;
-        goto skip1;
-    }  
-
+    if (slen == 0) return &__fb_ctx.null_desc;
     if (tlen == 0)
     {
         b = space;
@@ -36,7 +22,6 @@ FBCALL FBSTRING *fb_StrShrinkDelim ( char *src, char *t )
         d = b;
     }
 
-skip1:
     s = fb_hStrAllocTemp( NULL, slen);
     if( s == NULL )
         return &__fb_ctx.null_desc;
@@ -142,28 +127,14 @@ skip4:
     return s;  
 }
 
-FBCALL FB_WCHAR *fb_WstrShrinkDelim ( FB_WCHAR *src, FB_WCHAR *t )
+FBCALL FB_WCHAR *fb_WstrShrinkDelim ( FB_WCHAR *src, ssize_t *len, FB_WCHAR *t, ssize_t tlen )
 {
     FB_WCHAR *w;
-    ssize_t x, y, z, slen, tlen;
+    ssize_t x, y, z, slen = *len;
     FB_WCHAR *a, *b, *c, *d;
     FB_WCHAR space [] = _LC(" ");
 
-    if( src != NULL )
-        slen = fb_wstr_Len( src );
-    else
-        return NULL;
-    
-    if( t != NULL )
-        tlen = fb_wstr_Len( t );
-    else
-    {
-        b = space;
-        d = b;                                        //delimiter = first char
-        tlen = 1;
-        goto skip1;
-    }  
-
+    if (slen == 0) return NULL;
     if (tlen == 0)
     {
         b = space;
@@ -176,7 +147,6 @@ FBCALL FB_WCHAR *fb_WstrShrinkDelim ( FB_WCHAR *src, FB_WCHAR *t )
         d = b;
     }
 
-skip1:
     w = fb_wstr_AllocTemp( slen );
     if( w == NULL )
         return NULL;
@@ -278,17 +248,18 @@ skip3:;
 
 skip4:
     *c = _LC('\0');
+    *len = c - w;
     return w;
 }
 
-FBCALL FBSTRING *fb_StrShrink ( char *src )
+FBCALL FBSTRING *fb_StrShrink ( char *src, ssize_t slen )
 {
     char space [] = " ";
-    return fb_StrShrinkDelim ( src, space );
+    return fb_StrShrinkDelim ( src, slen, space, 1 );
 }
 
-FBCALL FB_WCHAR *fb_WstrShrink ( FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_WstrShrink ( FB_WCHAR *src, ssize_t *slen )
 {
     FB_WCHAR space [] = _LC(" ");
-    return fb_WstrShrinkDelim ( src, space );
+    return fb_WstrShrinkDelim ( src, slen, space, 1 );
 }

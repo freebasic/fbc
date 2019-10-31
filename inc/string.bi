@@ -24,9 +24,9 @@ declare function format    alias "fb_StrFormat" _
 #define insert_ insert
 #define extract_ extract
 #define remain_ remain
-
 #define parse_ outparse
 #define shrink_ shrink
+
 #define removeme_ removeme
 #define replace_ replace
 
@@ -34,6 +34,7 @@ declare function format    alias "fb_StrFormat" _
 '***********************************************************************************************
 ' new functions for string manipulation
 '***********************************************************************************************
+
 
 '***********************************************************************************************
 ' no conversion takes place, the data is just copied. This is necessary to avoid automatic 
@@ -714,12 +715,91 @@ end function
 '***********************************************************************************************
 
 
-'declare function shrink overload( byref z as zstring ) as string
-'declare function shrink overload( byref w as wstring ) as wstring
-'declare function shrink overload( byref z as zstring, byref z as zstring ) as string
-'declare function shrink overload( byref w as wstring, byref w as wstring ) as wstring
+extern "rtlib"                                                                     
+declare function fb_strshrink alias "fb_StrShrink"( byref z as zstring, byval lz as integer ) as string
+declare function fb_wstrshrink alias "fb_WstrShrink"( byref w as wstring, byref lw as integer ) as wstring ptr
+declare function fb_strshrinkdelim alias "fb_StrShrinkDelim"( byref z as zstring, byval lz as integer, byref z1 as zstring, byval lz1 as integer ) as string
+declare function fb_wstrshrinkdelim alias "fb_WstrShrinkDelim"( byref w as wstring, byref lw as integer, byref w1 as wstring, byval lw1 as integer ) as wstring ptr
+end extern
 
 
+private function shrink_str overload(byref o as ustring) as ustring
+dim x as uinteger = len(o)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrshrink(o, x))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function shrink_str overload(byref w as wstring) as ustring
+dim x as uinteger = len(w)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrshrink(w, x))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+  
+private function shrink_str overload(byref s as string) as string
+    return fb_strshrink(s, len(s))
+end function
+
+
+private function shrink_str overload(byref o as ustring, byref o1 as ustring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrshrinkdelim(o, x, o1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function shrink_str overload(byref o as ustring, byref o1 as zstring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrshrinkdelim(o, x, o1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function shrink_str overload(byref w as wstring, byref w1 as wstring) as ustring
+dim x as uinteger = len(w)
+dim y as uinteger = len(w1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrshrinkdelim(w, x, w1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+  
+private function shrink_str overload(byref s as string, byref s1 as string) as string
+    return fb_strshrinkdelim(s, len(s), s1, len(s1))
+end function
+
+private function shrink_str overload(byref s as string, byref s1 as ustring) as string
+    return fb_strshrinkdelim(s, len(s), s1, len(s1))
+end function
+
+
+#macro shrink(a, b...)
+    string_.shrink_str(a, b)
+#endmacro
+
+    
 '***********************************************************************************************
 ' Returns a copy of string w with substrings m removed individually or in total.
 ' If m is not present in w, all of w is returned. If "ANY" is not specified, m is

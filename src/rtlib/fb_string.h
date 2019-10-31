@@ -401,10 +401,10 @@ FBCALL FB_WCHAR    *fb_WstrParse        ( FB_WCHAR *src, ssize_t *slen, int dumm
 FBCALL FBSTRING    *fb_StrParseDelim    ( char *src, ssize_t slen, int any, char *t, ssize_t tlen, int dummy, ssize_t n );
 FBCALL FB_WCHAR    *fb_WstrParseDelim   ( FB_WCHAR *src, ssize_t *slen, int any, FB_WCHAR *t, ssize_t tlen, int dummy, ssize_t n );
 
-FBCALL FBSTRING    *fb_StrShrink         ( char *src );
-FBCALL FB_WCHAR    *fb_WstrShrink        ( FB_WCHAR *src );
-FBCALL FBSTRING    *fb_StrShrinkDelim    ( char *src, char *t );
-FBCALL FB_WCHAR    *fb_WstrShrinkDelim   ( FB_WCHAR *src, FB_WCHAR *t );
+FBCALL FBSTRING    *fb_StrShrink         ( char *src, ssize_t slen );
+FBCALL FB_WCHAR    *fb_WstrShrink        ( FB_WCHAR *src, ssize_t *slen );
+FBCALL FBSTRING    *fb_StrShrinkDelim    ( char *src, ssize_t slen, char *t, ssize_t tlen );
+FBCALL FB_WCHAR    *fb_WstrShrinkDelim   ( FB_WCHAR *src, ssize_t *slen, FB_WCHAR *t, ssize_t tlen );
 
 FBCALL FBSTRING    *fb_StrRemove         ( char *src, int any, char *t );
 FBCALL FB_WCHAR    *fb_WstrRemove        ( FB_WCHAR *src, int any, FB_WCHAR *t );
