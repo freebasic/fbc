@@ -2,22 +2,29 @@
 
 #include "fb.h"
 
-FBCALL FBSTRING *fb_StrRemainStart ( ssize_t n, int dummy, char *src, int any, char *i )
+FBCALL FBSTRING *fb_StrRemainStart ( ssize_t n, int dummy, char *src, ssize_t slen, int any, char *i, ssize_t ilen )
 {
+//    FBSTRING *s;
+//    ssize_t x, y, slen, ilen;
+//    char *a, *c, *d;
+////char buffer [50];
+//
+//    if( src != NULL )
+//        slen = strlen( src );
+//    else
+//        return &__fb_ctx.null_desc;
+//
+//    if( i != NULL )
+//        ilen = strlen( i );
+//    else
+//        return &__fb_ctx.null_desc;
+
     FBSTRING *s;
-    ssize_t x, y, slen, ilen;
+    ssize_t x, y;
     char *a, *c, *d;
-//char buffer [50];
 
-    if( src != NULL )
-        slen = strlen( src );
-    else
-        return &__fb_ctx.null_desc;
-
-    if( i != NULL )
-        ilen = strlen( i );
-    else
-        return &__fb_ctx.null_desc;
+    if (slen == 0) return &__fb_ctx.null_desc;
+    if (ilen == 0) return &__fb_ctx.null_desc;
 
     if (n == 0) return &__fb_ctx.null_desc;
     if (n < 0) n = slen + n + 1;
@@ -78,21 +85,28 @@ exit3:
     return s;
 }
 
-FBCALL FB_WCHAR *fb_WstrRemainStart ( ssize_t n, int dummy, FB_WCHAR *src, int any, FB_WCHAR *i )
+FBCALL FB_WCHAR *fb_WstrRemainStart ( ssize_t n, int dummy, FB_WCHAR *src, ssize_t *len, int any, FB_WCHAR *i, ssize_t ilen )
 {
+//    FB_WCHAR *w;
+//    ssize_t x, y, slen, ilen;
+//    FB_WCHAR *a, *c, *d;
+//
+//    if( src != NULL )
+//        slen = fb_wstr_Len( src );
+//    else
+//        return NULL;
+//
+//    if( i != NULL )
+//        ilen = fb_wstr_Len( i );
+//    else
+//        return NULL;
+
     FB_WCHAR *w;
-    ssize_t x, y, slen, ilen;
+    ssize_t x, y, slen = *len;
     FB_WCHAR *a, *c, *d;
 
-    if( src != NULL )
-        slen = fb_wstr_Len( src );
-    else
-        return NULL;
-
-    if( i != NULL )
-        ilen = fb_wstr_Len( i );
-    else
-        return NULL;
+    if (slen == 0) return NULL;
+    if (ilen == 0) return NULL;
 
 
     if (n == 0) return 0;
@@ -150,15 +164,16 @@ exit3:
 
     fb_wstr_Move( w, src + n - 1 + x, slen - x - n + 1 );
     w[slen - x - n + 1] = _LC('\0');
+    *len = slen - x - n + 1;
     return w;
 }
 
-FBCALL FBSTRING *fb_StrRemain ( char *src, int any, char *i )
+FBCALL FBSTRING *fb_StrRemain ( char *src, ssize_t slen, int any, char *i, ssize_t ilen )
 {
-    return fb_StrRemainStart ( 1, 0, src, any, i );
+    return fb_StrRemainStart ( 1, 0, src, slen, any, i, ilen );
 }
 
-FBCALL FB_WCHAR *fb_WstrRemain ( FB_WCHAR *src, int any, FB_WCHAR *i )
+FBCALL FB_WCHAR *fb_WstrRemain ( FB_WCHAR *src, ssize_t *slen, int any, FB_WCHAR *i, ssize_t ilen )
 {
-    return fb_WstrRemainStart ( 1, 0, src, any, i );
+    return fb_WstrRemainStart ( 1, 0, src, slen, any, i, ilen );
 }

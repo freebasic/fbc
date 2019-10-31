@@ -23,6 +23,7 @@ declare function format    alias "fb_StrFormat" _
 #define invert_ invert
 #define insert_ insert
 #define extract_ extract
+
 #define remain_ remain
 #define outparse_ outparse
 #define shrink_ shrink
@@ -194,6 +195,10 @@ private function tally_str overload( byref s as string, byval n as long, byref t
     return fb_strtally(s, len(s), n, t, len(t))
 end function
 
+private function tally_str overload( byref s as string, byval n as long, byref t as ustring ) as uinteger
+    return fb_strtally(s, len(s), n, t, len(t))
+end function
+
 
 #macro tally(s, t)
     string_.##tally_str(s, #?t)
@@ -231,6 +236,10 @@ private function parsecount_str overload( byref w as wstring, byval n as long = 
 end function
   
 private function parsecount_str overload( byref s as string, byval n as long = 0, byref t as string = "," ) as uinteger
+    return fb_strparsecount(s, len(s), n, t, len(t))
+end function
+
+private function parsecount_str overload( byref s as string, byval n as long = 0, byref t as ustring = "," ) as uinteger
     return fb_strparsecount(s, len(s), n, t, len(t))
 end function
 
@@ -303,7 +312,19 @@ declare function fb_wstrinsert alias "fb_WstrInsert" ( byref w as wstring, byref
 end extern
 
 
-private function insert_str overload(byref o as ustring, byref o1 as string, byval n as integer) as ustring
+private function insert_str overload(byref o as ustring, byref o1 as ustring, byval n as integer) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrinsert(o, x, o1, y, n))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function insert_str overload(byref o as ustring, byref o1 as zstring, byval n as integer) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
 dim init as FB_USTRING.init_size
@@ -328,6 +349,10 @@ dim u as ustring = init
 end function
   
 private function insert_str overload(byref s as string, byref s1 as string, byval n as integer) as string
+    return fb_strinsert(s, len(s), s1, len(s1), n)
+end function
+
+private function insert_str overload(byref s as string, byref s1 as ustring, byval n as integer) as string
     return fb_strinsert(s, len(s), s1, len(s1), n)
 end function
 
@@ -360,7 +385,19 @@ declare function fb_wstrextractstart alias "fb_WstrExtractStart"( byval n as int
 end extern
 
 
-private function extract_str overload(byref o as ustring, byval a as long, byref o1 as string) as ustring
+private function extract_str overload(byref o as ustring, byval a as long, byref o1 as ustring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrextract(o, x, a, o1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function extract_str overload(byref o as ustring, byval a as long, byref o1 as zstring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
 dim init as FB_USTRING.init_size
@@ -388,8 +425,24 @@ private function extract_str overload(byref s as string, byval a as long, byref 
     return fb_strextract(s, len(s), a, s1, len(s1))
 end function
 
+private function extract_str overload(byref s as string, byval a as long, byref s1 as ustring) as string
+    return fb_strextract(s, len(s), a, s1, len(s1))
+end function
 
-private function extract_str overload(byval n as integer, byval dummy as long, byref o as ustring, byval a as long, byref o1 as string) as ustring
+
+private function extract_str overload(byval n as integer, byval dummy as long, byref o as ustring, byval a as long, byref o1 as ustring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrextractstart(n, dummy, o, x, a, o1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function extract_str overload(byval n as integer, byval dummy as long, byref o as ustring, byval a as long, byref o1 as zstring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
 dim init as FB_USTRING.init_size
@@ -417,6 +470,10 @@ private function extract_str overload(byval n as integer, byval dummy as long, b
     return fb_strextractstart(n, dummy, s, len(s), a, s1, len(s1))
 end function
 
+private function extract_str overload(byval n as integer, byval dummy as long, byref s as string, byval a as long, byref s1 as ustring) as string
+    return fb_strextractstart(n, dummy, s, len(s), a, s1, len(s1))
+end function
+
 
 #macro extract(a, b, c...)                      
     string_.extract_str(a, #?b, #?c)
@@ -439,14 +496,106 @@ end function
 '***********************************************************************************************
 
 
-'declare function remain overload( byref z as zstring, byval any as long, byref z as zstring ) as string
-'declare function remain overload( byref w as wstring, byval any as long, byref w as wstring ) as wstring
-'declare function remain overload( byval n as integer, byval dummy as long, byref z as zstring, byval any as long, byref z as zstring ) as string
-'declare function remain overload( byval n as integer, byval dummy as long, byref w as wstring, byval any as long, byref w as wstring ) as wstring
+extern "rtlib"                                                                     
+declare function fb_strremain alias "fb_StrRemain"( byref z as zstring, byval lz as integer, byval a as long, byref z1 as zstring, byval lz1 as integer ) as string
+declare function fb_wstrremain alias "fb_WstrRemain"( byref w as wstring, byref lw as integer, byval a as long, byref w1 as wstring, byval lw1 as integer ) as wstring ptr
+declare function fb_strremainstart alias "fb_StrRemainStart"( byval n as integer, byval dummy as long, byref z as zstring, byval lz as integer, byval a as long, byref z1 as zstring, byval lz1 as integer ) as string
+declare function fb_wstrremainstart alias "fb_WstrRemainStart"( byval n as integer, byval dummy as long, byref w as wstring, byref lw as integer, byval a as long, byref w1 as wstring, byval lw1 as integer ) as wstring ptr
+end extern
 
 
-#macro remain(a, b, c...)
-    fb_remain(a, #?b, #?c)
+private function remain_str overload(byref o as ustring, byval a as long, byref o1 as ustring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrremain(o, x, a, o1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function remain_str overload(byref o as ustring, byval a as long, byref o1 as zstring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrremain(o, x, a, o1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function remain_str overload(byref w as wstring, byval a as long, byref w1 as wstring) as ustring
+dim x as uinteger = len(w)
+dim y as uinteger = len(w1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrremain(w, x, a, w1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+  
+private function remain_str overload(byref s as string, byval a as long, byref s1 as string) as string
+    return fb_strremain(s, len(s), a, s1, len(s1))
+end function
+
+private function remain_str overload(byref s as string, byval a as long, byref s1 as ustring) as string
+    return fb_strremain(s, len(s), a, s1, len(s1))
+end function
+
+
+private function remain_str overload(byval n as integer, byval dummy as long, byref o as ustring, byval a as long, byref o1 as ustring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrremainstart(n, dummy, o, x, a, o1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function remain_str overload(byval n as integer, byval dummy as long, byref o as ustring, byval a as long, byref o1 as zstring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrremainstart(n, dummy, o, x, a, o1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function remain_str overload(byval n as integer, byval dummy as long, byref w as wstring, byval a as long, byref w1 as wstring) as ustring
+dim x as uinteger = len(w)
+dim y as uinteger = len(w1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrremainstart(n, dummy, w, x, a, w1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+  
+private function remain_str overload(byval n as integer, byval dummy as long, byref s as string, byval a as long, byref s1 as string) as string
+    return fb_strremainstart(n, dummy, s, len(s), a, s1, len(s1))
+end function
+
+private function remain_str overload(byval n as integer, byval dummy as long, byref s as string, byval a as long, byref s1 as ustring) as string
+    return fb_strremainstart(n, dummy, s, len(s), a, s1, len(s1))
+end function
+
+
+#macro remain(a, b, c...)                      
+    string_.remain_str(a, #?b, #?c)
 #endmacro    
 
 
