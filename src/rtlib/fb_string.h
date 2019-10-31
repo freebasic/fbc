@@ -396,10 +396,10 @@ FBCALL FBSTRING    *fb_StrRemainStart   ( ssize_t n, int dummy, char *src, ssize
 FBCALL FB_WCHAR    *fb_WstrRemainStart  ( ssize_t n, int dummy, FB_WCHAR *src, ssize_t *slen, int any, FB_WCHAR *i, ssize_t ilen );
 
 
-FBCALL FBSTRING    *fb_StrParse         ( char *src, int dummy, ssize_t n );
-FBCALL FB_WCHAR    *fb_WstrParse        ( FB_WCHAR *src, int dummy, ssize_t n );
-FBCALL FBSTRING    *fb_StrParseDelim    ( char *src, int any, char *t, int dummy, ssize_t n );
-FBCALL FB_WCHAR    *fb_WstrParseDelim   ( FB_WCHAR *src, int any, FB_WCHAR *t, int dummy, ssize_t n );
+FBCALL FBSTRING    *fb_StrParse         ( char *src, ssize_t slen, int dummy, ssize_t n );
+FBCALL FB_WCHAR    *fb_WstrParse        ( FB_WCHAR *src, ssize_t *slen, int dummy, ssize_t n );
+FBCALL FBSTRING    *fb_StrParseDelim    ( char *src, ssize_t slen, int any, char *t, ssize_t tlen, int dummy, ssize_t n );
+FBCALL FB_WCHAR    *fb_WstrParseDelim   ( FB_WCHAR *src, ssize_t *slen, int any, FB_WCHAR *t, ssize_t tlen, int dummy, ssize_t n );
 
 FBCALL FBSTRING    *fb_StrShrink         ( char *src );
 FBCALL FB_WCHAR    *fb_WstrShrink        ( FB_WCHAR *src );

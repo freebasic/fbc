@@ -23,9 +23,9 @@ declare function format    alias "fb_StrFormat" _
 #define invert_ invert
 #define insert_ insert
 #define extract_ extract
-
 #define remain_ remain
-#define outparse_ outparse
+
+#define parse_ outparse
 #define shrink_ shrink
 #define removeme_ removeme
 #define replace_ replace
@@ -610,14 +610,88 @@ end function
 '***********************************************************************************************
 
 
-'declare function parse overload( byref z as zstring, byval dummy as long, byval n as integer ) as string
-'declare function parse overload( byref w as wstring, byval dummy as long, byval n as integer ) as wstring
-'declare function parse overload( byref z as zstring, byval any as long, byref z as zstring, byval dummy as long, byval n as integer ) as string
-'declare function parse overload( byref w as wstring, byval any as long, byref w as wstring, byval dummy as long, byval n as integer ) as wstring
+extern "rtlib"                                                                     
+declare function fb_strparse alias "fb_StrParse" ( byref z as zstring, byval lz as integer, byval dummy as long, byval n as integer ) as string
+declare function fb_wstrparse alias "fb_WstrParse" ( byref w as wstring, byref lw as integer, byval dummy as long, byval n as integer ) as wstring ptr
+declare function fb_strparseDelim alias "fb_StrParseDelim" ( byref z as zstring, byval lz as integer, byval any as long, byref z1 as zstring, byval lz1 as integer, byval dummy as long, byval n as integer ) as string
+declare function fb_wstrparseDelim alias "fb_WstrParseDelim" ( byref w as wstring, byref lw as integer, byval any as long, byref w as wstring, byval lw1 as integer, byval dummy as long, byval n as integer ) as wstring ptr
+end extern
+
+
+private function parse_str overload(byref o as ustring, byval dummy as long, byval n as integer) as ustring
+dim x as uinteger = len(o)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrparse(o, x, dummy, n))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function parse_str overload(byref w as wstring, byval dummy as long, byval n as integer) as ustring
+dim x as uinteger = len(w)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrparse(w, x, dummy, n))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+  
+private function parse_str overload(byref s as string, byval dummy as long, byval n as integer) as string
+    return fb_strparse(s, len(s), dummy, n)
+end function
+
+
+private function parse_str overload(byref o as ustring, byval a as long, byref o1 as ustring, byval dummy as long, byval n as integer) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrparsedelim(o, x, a, o1, y, dummy, n))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function parse_str overload(byref o as ustring, byval a as long, byref o1 as zstring, byval dummy as long, byval n as integer) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrparsedelim(o, x, a, o1, y, dummy, n))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function parse_str overload(byref w as wstring, byval a as long, byref w1 as wstring, byval dummy as long, byval n as integer) as ustring
+dim x as uinteger = len(w)
+dim y as uinteger = len(w1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrparsedelim(w, x, a, w1, y, dummy, n))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+  
+private function parse_str overload(byref s as string, byval a as long, byref s1 as string, byval dummy as long, byval n as integer) as string
+    return fb_strparsedelim(s, len(s), a, s1, len(s1), dummy, n)
+end function
+
+private function parse_str overload(byref s as string, byval a as long, byref s1 as ustring, byval dummy as long, byval n as integer) as string
+    return fb_strparsedelim(s, len(s), a, s1, len(s1), dummy, n)
+end function
 
 
 #macro outparse(a, b, c...)
-    fb_parse(a, #?b, #?c)
+    string_.parse_str(a, #?b, #?c)
 #endmacro  
 
 

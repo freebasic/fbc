@@ -3,10 +3,10 @@
 #include "fb.h"
 //#include <windows.h>
 
-FBCALL FBSTRING *fb_StrParseDelim ( char *src, int any, char *t, int dummy, ssize_t n )
+FBCALL FBSTRING *fb_StrParseDelim ( char *src, ssize_t slen, int any, char *t, ssize_t tlen, int dummy, ssize_t n )
 {
     FBSTRING *s;
-    ssize_t i, x, y, z, slen, tlen;
+    ssize_t i, x, y, z;
     char *a, *b, *c, *d;
 //char buffer [50];
 //sprintf (buffer, "in str n: %i", n);                        //hex  %i = integer
@@ -17,28 +17,30 @@ FBCALL FBSTRING *fb_StrParseDelim ( char *src, int any, char *t, int dummy, ssiz
 //sprintf (buffer, "t: %s", t);                        //hex  %i = integer
 //OutputDebugString(buffer);
 
+    if (slen == 0) return &__fb_ctx.null_desc;
 
-    if( src != NULL )
-        slen = strlen( src );
-    else
-    {
-//sprintf (buffer, "exit");                        //hex  %i = integer
-//OutputDebugString(buffer);
 
-        return &__fb_ctx.null_desc;
-    }
-    
-    if( t != NULL )
-        tlen = strlen( t );
-    else
-    {
-        b = src;
-        i = 1;
-        x = slen;
-//sprintf (buffer, "%i", x);                        //hex  %i = integer
-//OutputDebugString(buffer);
-        goto exit5;
-    }  
+//    if( src != NULL )
+//        slen = strlen( src );
+//    else
+//    {
+////sprintf (buffer, "exit");                        //hex  %i = integer
+////OutputDebugString(buffer);
+//
+//        return &__fb_ctx.null_desc;
+//    }
+//    
+//    if( t != NULL )
+//        tlen = strlen( t );
+//    else
+//    {
+//        b = src;
+//        i = 1;
+//        x = slen;
+////sprintf (buffer, "%i", x);                        //hex  %i = integer
+////OutputDebugString(buffer);
+//        goto exit5;
+//    }  
 
     if (tlen == 0)
     {
@@ -342,10 +344,10 @@ exit5:
     return s;  
 }
 
-FBCALL FB_WCHAR *fb_WstrParseDelim ( FB_WCHAR *src, int any, FB_WCHAR *t, int dummy, ssize_t n )
+FBCALL FB_WCHAR *fb_WstrParseDelim ( FB_WCHAR *src, ssize_t *len, int any, FB_WCHAR *t, ssize_t tlen, int dummy, ssize_t n )
 {
     FB_WCHAR *w;
-    ssize_t i, x, y, z, slen, tlen;
+    ssize_t i, x, y, z, slen = *len;
     FB_WCHAR *a, *b, *c, *d;
 //char buffer [50];
 //sprintf (buffer, "in wstr n: %i", n);                        //hex  %i = integer
@@ -356,28 +358,29 @@ FBCALL FB_WCHAR *fb_WstrParseDelim ( FB_WCHAR *src, int any, FB_WCHAR *t, int du
 //sprintf (buffer, "t: %s", t);                        //hex  %i = integer
 //OutputDebugString(buffer);
 
+    if (slen == 0) return NULL;
 
-    if( src != NULL )
-        slen = fb_wstr_Len( src );
-    else
-    {
-//sprintf (buffer, "exit");                        //hex  %i = integer
-//OutputDebugString(buffer);
-
-        return NULL;
-    }
-    
-    if( t != NULL )
-        tlen = fb_wstr_Len( t );
-    else
-    {
-        b = src;
-        i = 1;
-        x = slen;
-//sprintf (buffer, "%i", x);                        //hex  %i = integer
-//OutputDebugString(buffer);
-        goto exit5;
-    }  
+//    if( src != NULL )
+//        slen = fb_wstr_Len( src );
+//    else
+//    {
+////sprintf (buffer, "exit");                        //hex  %i = integer
+////OutputDebugString(buffer);
+//
+//        return NULL;
+//    }
+//    
+//    if( t != NULL )
+//        tlen = fb_wstr_Len( t );
+//    else
+//    {
+//        b = src;
+//        i = 1;
+//        x = slen;
+////sprintf (buffer, "%i", x);                        //hex  %i = integer
+////OutputDebugString(buffer);
+//        goto exit5;
+//    }  
 
     if (tlen == 0)
     {
@@ -679,21 +682,22 @@ exit5:
 
     fb_wstr_Move( w, b, x - i + 1);
     w[x - i + 1] = _LC('\0');
+    *len = x - i + 1;
     return w;
 }
 
-FBCALL FBSTRING *fb_StrParse ( char *src, int dummy, ssize_t n )
+FBCALL FBSTRING *fb_StrParse ( char *src, ssize_t slen, int dummy, ssize_t n )
 {
     char comma [2];
     comma[0] = ',';
     comma[1] = '\0';
-    return fb_StrParseDelim ( src, 0, comma, 0, n );
+    return fb_StrParseDelim ( src, slen, 0, comma, 1, 0, n );
 }
 
-FBCALL FB_WCHAR *fb_WstrParse ( FB_WCHAR *src, int dummy, ssize_t n )
+FBCALL FB_WCHAR *fb_WstrParse ( FB_WCHAR *src, ssize_t *slen, int dummy, ssize_t n )
 {
     FB_WCHAR comma [2];
     comma[0] = _LC(',');
     comma[1] = _LC('\0');
-    return fb_WstrParseDelim ( src, 0, comma, 0, n);
+    return fb_WstrParseDelim ( src, slen, 0, comma, 1, 0, n);
 }
