@@ -41,7 +41,7 @@ static void PrintDebugText(const char* pFmt, ...)
 	va_start(args, pFmt);
 	vsnprintf(text, ARRAYSIZE(text) - 1, pFmt, args);
 	OutputDebugStringA(text);
-	/* DebugView will put each message on its own line, WinDbg needs a newline */
+	/* DebugView will put each message on its own line, WinDbg needs help */
 	OutputDebugStringA("\n");
 	va_end(args);
 }
@@ -389,6 +389,7 @@ static int GdiInteropSetup(D2DGlobalState* pGlobalState, HWND hwnd)
 		D2D1_RENDER_TARGET_PROPERTIES renderProps = {};
 		D2D1_BITMAP_PROPERTIES bitmapProps = {};
 		D2D1_SIZE_U bitmapSize = {};
+		UINT stride;
 		D3D10_TEXTURE2D_DESC texDesc = {};
 		HMODULE hUser32 = GetModuleHandle("user32.dll");
 		struct LayeredWindowRenderParams* pLayeredParams = &pGlobalState->RenderParams.Layered;
@@ -414,6 +415,7 @@ static int GdiInteropSetup(D2DGlobalState* pGlobalState, HWND hwnd)
 		texDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 		bitmapSize.width = texDesc.Width = fb_win32.w;
 		bitmapSize.height = texDesc.Height = fb_win32.h;
+		stride = bitmapSize.width * 4;
 		if(NOTIFY_FAILED_HR(ID3D10Device1_CreateTexture2D(pD3DDevice, &texDesc, NULL, &pD3DTexture))) {
 			goto errorReturn;
 		}
@@ -430,11 +432,18 @@ static int GdiInteropSetup(D2DGlobalState* pGlobalState, HWND hwnd)
 		}
 		bitmapProps.pixelFormat.format = texDesc.Format;
 		bitmapProps.pixelFormat.alphaMode = renderProps.pixelFormat.alphaMode;
-		if(NOTIFY_FAILED_HR(ID2D1RenderTarget_CreateBitmap(pRenderTarget, bitmapSize, NULL, bitmapSize.width * 4, &bitmapProps, &pBitmap))) {
+		if(NOTIFY_FAILED_HR(ID2D1RenderTarget_CreateBitmap(pRenderTarget, bitmapSize, NULL, stride, &bitmapProps, &pBitmap))) {
 			goto errorReturn;
 		}
 		if(NOTIFY_FAILED_HR(ID2D1RenderTarget_QueryInterface(pRenderTarget, &__fb_IID_ID2D1GdiInteropRenderTarget, (void**)&pGdiTarget))) {
 			goto errorReturn;
+		}
+		/* if depth conversion is necessary, we need a blitter and a temp buffer */
+		if(__fb_gfx->depth < 24) {
+			pGlobalState->pBlitter = fb_hGetBlitter(32, FALSE);
+			if(!(pGlobalState->pTempBuffer = calloc(1, bitmapSize.height * stride))) {
+				goto errorReturn;
+			}
 		}
 		if(!(pLayeredParams->updateLayeredWindow = (pfnUpdateLayeredWindow)GetProcAddress(hUser32, "UpdateLayeredWindow")))
 		{
@@ -449,8 +458,6 @@ static int GdiInteropSetup(D2DGlobalState* pGlobalState, HWND hwnd)
 		pGlobalState->Paint = &GdiInteropPaint;
 		pGlobalState->Setup = &GdiInteropSetup;
 		pGlobalState->Shutdown = &GdiInteropShutdown;
-		/* We don't need to set a blitter because if we're not BRGA, we don't get this far */
-		pGlobalState->pBlitter = NULL;
 		ret = 0;
 	}
 	return ret;
@@ -522,13 +529,13 @@ static int D2DDirectSetup(D2DGlobalState* pGlobalState, HWND hwnd)
 	}
 	ID2D1Bitmap_GetPixelSize(pBackBufferBitmap, &actualSize);
 	DBG_TEXT("%s created bitmap of size %lux%lu, stride = %lu", actualSize.width, actualSize.height, stride);
-	/* if no colour conversion is necessary, then we can directly
+	/* if no colour or depth conversion is necessary, then we can directly
 	// use the framebuffer, no blitter is required.
 	//
 	// Otherwise we need a blitter and a temp buffer, since you can't map or lock D2D bitmaps
 	*/
-	if(renderProps.pixelFormat.format < DXGI_FORMAT_B8G8R8A8_UNORM) {
-		pGlobalState->pBlitter = fb_hGetBlitter(32, TRUE);
+	if((renderProps.pixelFormat.format < DXGI_FORMAT_B8G8R8A8_UNORM) || (__fb_gfx->depth < 24)) {
+		pGlobalState->pBlitter = fb_hGetBlitter(32, renderProps.pixelFormat.format < DXGI_FORMAT_B8G8R8A8_UNORM);
 		if(!(pGlobalState->pTempBuffer = calloc(1, hwndRenderProps.pixelSize.height * stride))) {
 			goto errorReturn;
 		}
@@ -613,7 +620,7 @@ fillInDirtyRect:
 
 	DBG_TEXT("%s - dirty rect L-%lu, T-%lu, R-%lu, B-%lu", dirtyRect.left, dirtyRect.top, dirtyRect.right, dirtyRect.bottom);
 
-	/* if we need to convert from RGB to BGR, then do that
+	/* if we need to convert from BGRA to RGBA, then do that
 	// otherwise we can just direcly use the framebuffer 
 	*/
 	if(pGlobalState->pBlitter) {
@@ -764,7 +771,7 @@ WINAPI D2DRenderThread(void* p)
 static int D2DDriverInit(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	DBG_TEXT("%s called with title=%s, res=%dx%d, depth=%d, refresh_rate=%d, flags=%#x", title, w, h, depth, refresh_rate, flags);
-	if ((flags & DRIVER_OPENGL) || (depth < 24) || ((GetVersion() & 0xff) < 6))
+	if ((flags & DRIVER_OPENGL) || ((GetVersion() & 0xff) < 6))
 		return -1;
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
 	fb_win32.init = &D2DCommonInit;
@@ -841,31 +848,30 @@ static int* D2DFetchModes(int depth, int *size)
 	//
 	// Direct2D only supports 32bpp formats for RenderTargets
 	*/
-	if(depth >= 24) {
-		hDxgi = LoadLibrary("dxgi.dll");
-		if (hDxgi != NULL) {
-			CreateDXGIFactory = (pfnCreateDXGIFactory)GetProcAddress(hDxgi, "CreateDXGIFactory");
-			if ((CreateDXGIFactory) && (!NOTIFY_FAILED_HR(CreateDXGIFactory(&__fb_IID_IDXGIFactory, (void**)&pFactory)))) {
-				while((hardwareModes.elems == 0) && SUCCEEDED(IDXGIFactory_EnumAdapters(pFactory, adapterIter++, &pAdapter))) {
-					IDXGIOutput* pOutput = NULL;
-					DXGI_ADAPTER_DESC adapterDesc = {};
-					if(SUCCEEDED(IDXGIAdapter_GetDesc(pAdapter, &adapterDesc))) {
-						/* The 'random' ids are defined here for the software/warp adapter 
-						// https://docs.microsoft.com/en-us/windows/win32/direct3ddxgi/d3d10-graphics-programming-guide-dxgi#new-info-about-enumerating-adapters-for-windows-8
-						*/
-						UINT outputIter = 0;
-						MiniVector* pWhichModes = ((adapterDesc.VendorId == 0x1414) && (adapterDesc.DeviceId == 0x8c)) ? &softwareModes : &hardwareModes;
-						while((hardwareModes.elems == 0) && SUCCEEDED(IDXGIAdapter_EnumOutputs(pAdapter, outputIter++, &pOutput))) {
-							DBG_TEXT("%s - Enumerated %ws output %lu", adapterDesc.Description, outputIter);
-							D2DEnumOutputModes(pOutput, pWhichModes);
-							IDXGIOutput_Release(pOutput);
-						}
+	hDxgi = LoadLibrary("dxgi.dll");
+	if (hDxgi != NULL) {
+		CreateDXGIFactory = (pfnCreateDXGIFactory)GetProcAddress(hDxgi, "CreateDXGIFactory");
+		if ((CreateDXGIFactory) && (!NOTIFY_FAILED_HR(CreateDXGIFactory(&__fb_IID_IDXGIFactory, (void**)&pFactory)))) {
+			while((hardwareModes.elems == 0) && SUCCEEDED(IDXGIFactory_EnumAdapters(pFactory, adapterIter++, &pAdapter))) {
+				IDXGIOutput* pOutput = NULL;
+				DXGI_ADAPTER_DESC adapterDesc = {};
+				if(SUCCEEDED(IDXGIAdapter_GetDesc(pAdapter, &adapterDesc))) {
+					/* The 'random' ids are defined here for the software/warp adapter 
+					// https://docs.microsoft.com/en-us/windows/win32/direct3ddxgi/d3d10-graphics-programming-guide-dxgi#new-info-about-enumerating-adapters-for-windows-8
+					*/
+					UINT outputIter = 0;
+					MiniVector* pWhichModes = ((adapterDesc.VendorId == 0x1414) && (adapterDesc.DeviceId == 0x8c)) ? &softwareModes : &hardwareModes;
+					while((hardwareModes.elems == 0) && SUCCEEDED(IDXGIAdapter_EnumOutputs(pAdapter, outputIter++, &pOutput))) {
+						DBG_TEXT("%s - Enumerated %ws output %lu", adapterDesc.Description, outputIter);
+						D2DEnumOutputModes(pOutput, pWhichModes);
+						IDXGIOutput_Release(pOutput);
 					}
-					IDXGIAdapter_Release(pAdapter);
 				}
+				IDXGIAdapter_Release(pAdapter);
 			}
-			FreeLibrary(hDxgi);
+			IDXGIFactory_Release(pFactory);
 		}
+		FreeLibrary(hDxgi);
 	}
 	if(hardwareModes.pData) {
 		*size = hardwareModes.elems;
