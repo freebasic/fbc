@@ -406,8 +406,8 @@ FBCALL FB_WCHAR    *fb_WstrShrink        ( FB_WCHAR *src, ssize_t *slen );
 FBCALL FBSTRING    *fb_StrShrinkDelim    ( char *src, ssize_t slen, char *t, ssize_t tlen );
 FBCALL FB_WCHAR    *fb_WstrShrinkDelim   ( FB_WCHAR *src, ssize_t *slen, FB_WCHAR *t, ssize_t tlen );
 
-FBCALL FBSTRING    *fb_StrRemove         ( char *src, int any, char *t );
-FBCALL FB_WCHAR    *fb_WstrRemove        ( FB_WCHAR *src, int any, FB_WCHAR *t );
+FBCALL FBSTRING    *fb_StrRemove         ( char *src, ssize_t slen, int any, char *t, ssize_t tlen );
+FBCALL FB_WCHAR    *fb_WstrRemove        ( FB_WCHAR *src, ssize_t *slen, int any, FB_WCHAR *t, ssize_t tlen );
 
 FBCALL FBSTRING    *fb_StrReplace        ( char *src, int any, char *t, char *r );
 FBCALL FB_WCHAR    *fb_WstrReplace       ( FB_WCHAR *src, int any, FB_WCHAR *t, FB_WCHAR *r );

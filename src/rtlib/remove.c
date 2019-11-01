@@ -1,17 +1,15 @@
 /* remove, remove substring from string */
                              
 #include "fb.h"
+//#include <windows.h>
 
-FBCALL FBSTRING *fb_StrRemove( char *src, int any, char *t )
+FBCALL FBSTRING *fb_StrRemove( char *src, ssize_t slen, int any, char *t, ssize_t tlen )
 {
     FBSTRING *s;
-    ssize_t x, y, slen, tlen;
+    ssize_t x, y;
     char *a, *b, *c, *d;
 
-    if( src != NULL )
-        slen = strlen( src );
-    else
-        return &__fb_ctx.null_desc;
+    if (slen == 0) return &__fb_ctx.null_desc;
 
     s = fb_hStrAllocTemp( NULL, slen);
     if( s == NULL )
@@ -20,9 +18,7 @@ FBCALL FBSTRING *fb_StrRemove( char *src, int any, char *t )
     a = src;
     c = s->data;
 
-    if( t != NULL )
-        tlen = strlen( t );
-    else
+    if (tlen == 0)
     {
         for (x = 0; x < slen; x++)                   
         {
@@ -32,6 +28,18 @@ FBCALL FBSTRING *fb_StrRemove( char *src, int any, char *t )
         } 
         goto skip4;
     }
+
+
+//char buffer [50];
+//sprintf (buffer, "slen %i", slen); 
+//OutputDebugString(buffer);
+//sprintf (buffer, "tlen %i", tlen); 
+//OutputDebugString(buffer);
+//sprintf (buffer, "c %X", c); 
+//OutputDebugString(buffer);
+//sprintf (buffer, "s->data %X", s->data); 
+//OutputDebugString(buffer);
+
 
     if (any == 0x414E59)                              //"any" prefixed
     {
@@ -92,19 +100,27 @@ skip3:;
 skip4:
     *c = '\0';
     s->len = c - s->data;   
+
+
+//sprintf (buffer, "********** s->len %i", s->len); 
+//OutputDebugString(buffer);
+//sprintf (buffer, "c %X", c); 
+//OutputDebugString(buffer);
+//sprintf (buffer, "s->data %X", s->data); 
+//OutputDebugString(buffer);
+
+
+
     return s;  
 }
 
-FBCALL FB_WCHAR *fb_WstrRemove( FB_WCHAR *src, int any, FB_WCHAR *t )
+FBCALL FB_WCHAR *fb_WstrRemove( FB_WCHAR *src, ssize_t *len, int any, FB_WCHAR *t, ssize_t tlen )
 {
     FB_WCHAR *w;
-    ssize_t x, y, slen, tlen;
+    ssize_t x, y, slen = *len;
     FB_WCHAR *a, *b, *c, *d;
 
-    if( src != NULL )
-        slen = fb_wstr_Len( src );
-    else
-        return NULL;
+    if (slen == 0) return NULL;
     
     w = fb_wstr_AllocTemp( slen );
     if( w == NULL )
@@ -113,9 +129,7 @@ FBCALL FB_WCHAR *fb_WstrRemove( FB_WCHAR *src, int any, FB_WCHAR *t )
     a = src;
     c = w;
 
-    if( t != NULL )
-        tlen = fb_wstr_Len( t );
-    else
+    if (tlen == 0)
     {
         for (x = 0; x < slen; x++)                   
         {
@@ -184,5 +198,6 @@ skip3:;
 
 skip4:
     *c = _LC('\0');
+    *len = c - w;
     return w;
 }

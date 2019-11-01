@@ -64,7 +64,6 @@ TYPE DWSTR extends wstring
 
     DECLARE SUB ResizeBuffer (BYVAL nValue AS ulong)
     DECLARE FUNCTION AppendBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nNumBytes AS ulong) AS BOOLEAN
-'    DECLARE FUNCTION InsertBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nIndex AS ulong, BYVAL nNumBytes AS ulong) AS BOOLEAN
 
     DECLARE SUB Add (BYREF cws AS DWSTR)
     DECLARE SUB Add (BYVAL pwszStr AS WSTRING PTR)

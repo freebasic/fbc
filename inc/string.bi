@@ -26,8 +26,8 @@ declare function format    alias "fb_StrFormat" _
 #define remain_ remain
 #define parse_ outparse
 #define shrink_ shrink
+#define remove_ removeme
 
-#define removeme_ removeme
 #define replace_ replace
 
 
@@ -158,7 +158,7 @@ end function
 
 
 #macro repeat(a, b)
-    string_.##repeat_str(a, b)
+    string_.repeat_str(a, b)
 #endmacro
 
 
@@ -202,7 +202,7 @@ end function
 
 
 #macro tally(s, t)
-    string_.##tally_str(s, #?t)
+    string_.tally_str(s, #?t)
 #endmacro    
 
 
@@ -246,7 +246,7 @@ end function
 
 
 #macro parsecount(s, t...)
-    string_.##parsecount_str(s, #?t)
+    string_.parsecount_str(s, #?t)
 #endmacro    
 
 
@@ -291,7 +291,7 @@ end function
 
 
 #macro invert(a)
-    string_.##invert_str(a)
+    string_.invert_str(a)
 #endmacro    
 
 
@@ -359,7 +359,7 @@ end function
 
 
 #macro insert(a, b, n)
-    string_.##insert_str(a, b, n)
+    string_.insert_str(a, b, n)
 #endmacro    
 
 
@@ -799,7 +799,7 @@ end function
     string_.shrink_str(a, b)
 #endmacro
 
-    
+
 '***********************************************************************************************
 ' Returns a copy of string w with substrings m removed individually or in total.
 ' If m is not present in w, all of w is returned. If "ANY" is not specified, m is
@@ -809,12 +809,59 @@ end function
 '***********************************************************************************************
 
 
-'declare function remove overload( byref z as zstring, byval any as long, byref z as zstring ) as string
-'declare function remove overload( byref w as wstring, byval any as long, byref w as wstring ) as wstring
+extern "rtlib"                                                                     
+declare function fb_strremove alias "fb_StrRemove"( byref z as zstring, byval lz as integer, byval any as long, byref z1 as zstring, byval lz1 as integer ) as string
+declare function fb_wstrremove alias "fb_WstrRemove"( byref w as wstring, byref lw as integer, byval any as long, byref w as wstring, byval lw1 as integer ) as wstring ptr
+end extern
+
+
+private function remove_str overload(byref o as ustring, byval a as long, byref o1 as ustring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrremove(o, x, a, o1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function remove_str overload(byref o as ustring, byval a as long, byref o1 as zstring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrremove(o, x, a, o1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function remove_str overload(byref w as wstring, byval a as long, byref w1 as wstring) as ustring
+dim x as uinteger = len(w)
+dim y as uinteger = len(w1)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrremove(w, x, a, w1, y))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+  
+private function remove_str overload(byref s as string, byval a as long, byref s1 as string) as string
+    return fb_strremove(s, len(s), a, s1, len(s1))
+end function
+
+private function remove_str overload(byref s as string, byval a as long, byref s1 as ustring) as string
+    return fb_strremove(s, len(s), a, s1, len(s1))
+end function
 
 
 #macro removeme(a, b)
-    fb_remove(a, #?b)
+    string_.remove_str(a, #?b)
 #endmacro  
 
 
