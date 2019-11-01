@@ -574,14 +574,11 @@ static void D2DCommonPaintInternal(D2DGlobalState* pGlobalState)
 	const ULONG ptrSize = sizeof(ULONG_PTR);
 	ULONG_PTR dirtyRows;
 	ULONG bitPos;
-
-	/* this seems to be the only case for us with 24/32bpp on Windows
-	// but document it, since it has the ability to not be 1
-	*/
-	DBG_ASSERT(__fb_gfx->scanline_size == 1);
+	int scanlineSize;
 
 	fb_gfxDriverD2D.lock();
 
+	scanlineSize = __fb_gfx->scanline_size;
 	pDirtyStart = __fb_gfx->dirty;
 	pDirtyEnd = pDirtyStart + winHeight;
 	pFirstDirtyRow = memchr(pDirtyStart, TRUE, winHeight);
@@ -611,8 +608,8 @@ static void D2DCommonPaintInternal(D2DGlobalState* pGlobalState)
 fillInDirtyRect:
 	dirtyRect.left = 0;
 	dirtyRect.right = winWidth - 1;
-	dirtyRect.top = (pFirstDirtyRow - pDirtyStart);
-	dirtyRect.bottom = (pLastDirtyRow - pDirtyStart);
+	dirtyRect.top = (pFirstDirtyRow - pDirtyStart) * scanlineSize;
+	dirtyRect.bottom = (pLastDirtyRow - pDirtyStart) * scanlineSize;
 	drawRect.left = dirtyRect.left;
 	drawRect.right = dirtyRect.right;
 	drawRect.top = dirtyRect.top;
