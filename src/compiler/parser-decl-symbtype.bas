@@ -248,7 +248,7 @@ sub AmbigiousSizeofInfo.maybeWarn( byval tk as integer, byval refers_to_type as 
 	errReportWarn( FB_WARNINGMSG_AMBIGIOUSLENSIZEOF, , , msg )
 end sub
 
-function cTypeOrExpression _
+function cTypeOrExpression _                          'called only by typeof/sizeof/len + peek/poke
 	( _
 		byval tk as integer, _
 		byref dtype as integer, _
@@ -316,17 +316,26 @@ function cTypeOrExpression _
 
 	if( maybe_type ) then
 		'' Parse as type
-		if( cSymbolType( dtype, subtype, lgt, is_fixlenstr, FB_SYMBTYPEOPT_NONE ) ) then
+
+        dim as LEX_CTX lex_save
+        lex_save = lex                                '' save lexer status
+
+        '' this might "eat" namespace prefixes, which leads to a "Varaible not declared" error with explicit 
+        '' namespace prefix syntax (namespace.identifier)       
+		if( cSymbolType( dtype, subtype, lgt, is_fixlenstr, FB_SYMBTYPEOPT_NONE ) ) then 
 			'' Successful -- it's a type, not an expression
 			ambigioussizeof.maybeWarn( tk, TRUE )
+
 			return NULL
 		end if
-	end if
+
+        lex = lex_save
+	end if                                            '' restore lexer status, if it wasn´t a symbol
 
 	ambigioussizeof.maybeWarn( tk, FALSE )
 
 	'' Parse as expression, allowing NIDXARRAYs
-	expr = cExpressionWithNIDXARRAY( TRUE )
+	expr = cExpressionWithNIDXARRAY( TRUE )           '-> cExpression() + arrays
 	if( expr = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
@@ -765,7 +774,7 @@ function cSymbolType _
 				dtype = typeSetIsConst( FB_DATATYPE_VOID )
 			end if
 
-			return FALSE
+			return FALSE                              'exit here for expressions (call from cTypeorExpression)
 		end if
 
 		'' unsigned?
