@@ -316,12 +316,21 @@ function cTypeOrExpression _
 
 	if( maybe_type ) then
 		'' Parse as type
-		if( cSymbolType( dtype, subtype, lgt, is_fixlenstr, FB_SYMBTYPEOPT_NONE ) ) then
+
+        dim as LEX_CTX lex_save
+        lex_save = lex                                '' save lexer status
+
+        '' this might "eat" namespace prefixes, which leads to a "Varaible not declared" error with explicit 
+        '' namespace prefix syntax (namespace.identifier)       
+		if( cSymbolType( dtype, subtype, lgt, is_fixlenstr, FB_SYMBTYPEOPT_NONE ) ) then 
 			'' Successful -- it's a type, not an expression
 			ambigioussizeof.maybeWarn( tk, TRUE )
+
 			return NULL
 		end if
-	end if
+
+        lex = lex_save
+	end if                                            '' restore lexer status, if it wasn´t a symbol
 
 	ambigioussizeof.maybeWarn( tk, FALSE )
 
