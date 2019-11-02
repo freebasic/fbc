@@ -79,17 +79,41 @@ skip1:
                         goto skip2;
                     }
                     *c = *a;
+//sprintf (buffer, "check x %i", x); 
+//OutputDebugString(buffer);
+//sprintf (buffer, "char written check: a %c", *c); 
+//OutputDebugString(buffer);
+
+
+
                     a++;
                     b++;
                     c++;
                     x++;
+
+                    if (x >= slen)
+                    {
+                        if (y == tlen - 1) c = d;
+                        goto skip4; 
+                    }
                 }  
                 c = d;
+//sprintf (buffer, "found: x %i", x); 
+//OutputDebugString(buffer);
+//sprintf (buffer, "char: a %c", *a); 
+//OutputDebugString(buffer);
+
+
+
                 x--;
                 goto skip3;
             }
 skip2:
             *c = *a;
+//sprintf (buffer, "regular x %i", x); 
+//OutputDebugString(buffer);
+//sprintf (buffer, "char written regular: a %c", *c); 
+//OutputDebugString(buffer);
             c++;
             a++;
 
@@ -99,9 +123,9 @@ skip3:;
 
 skip4:
     *c = '\0';
-    fb_hStrSetLength( s, c - s->data );
+    fb_hStrSetLength( s, c - s->data);
 
-//sprintf (buffer, "********** s->len %i", s->len); 
+//sprintf (buffer, "********** s->len %x", s->len); 
 //OutputDebugString(buffer);
 //sprintf (buffer, "c %X", c); 
 //OutputDebugString(buffer);
@@ -179,6 +203,12 @@ skip1:
                     b++;
                     c++;
                     x++;
+
+                    if (x >= slen)
+                    {
+                        if (y == tlen - 1) c = d;
+                        goto skip4; 
+                    }
                 }  
                 c = d;
                 x--;

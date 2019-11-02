@@ -17,18 +17,17 @@ declare function format    alias "fb_StrFormat" _
 #define left_ left
 #define right_ right
 #define mid_ mid
-  #define copy_ copy
-  #define pathname_ pathname
-  #define repeat_ repeat
-  #define invert_ invert
-  #define insert_ insert
-  #define extract_ extract
-  #define remain_ remain
-  #define parse_ outparse
-  #define shrink_ shrink
-  #define remove_ removeme
-
-  #define replace_ replace
+#define copy_ copy
+#define pathname_ pathname
+#define repeat_ repeat
+#define invert_ invert
+#define insert_ insert
+#define extract_ extract
+#define remain_ remain
+#define parse_ outparse
+#define shrink_ shrink
+#define remove_ removeme
+#define replace_ replace
 
 
 '***********************************************************************************************
