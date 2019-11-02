@@ -16,5 +16,6 @@ FBCALL FBSTRING *fb_StrFromWchar( FB_WCHAR *src, ssize_t ulen )
 
     FB_MEMCPYX( s->data, src, slen );
     s->data[slen] = '\0';
+    fb_hStrSetLength( s, slen );
     return s;
 }

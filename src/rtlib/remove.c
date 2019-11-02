@@ -99,8 +99,7 @@ skip3:;
 
 skip4:
     *c = '\0';
-    s->len = c - s->data;   
-
+    fb_hStrSetLength( s, c - s->data );
 
 //sprintf (buffer, "********** s->len %i", s->len); 
 //OutputDebugString(buffer);
@@ -108,8 +107,6 @@ skip4:
 //OutputDebugString(buffer);
 //sprintf (buffer, "s->data %X", s->data); 
 //OutputDebugString(buffer);
-
-
 
     return s;  
 }

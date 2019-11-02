@@ -4,21 +4,6 @@
 
 FBCALL FBSTRING *fb_StrRemainStart ( ssize_t n, int dummy, char *src, ssize_t slen, int any, char *i, ssize_t ilen )
 {
-//    FBSTRING *s;
-//    ssize_t x, y, slen, ilen;
-//    char *a, *c, *d;
-////char buffer [50];
-//
-//    if( src != NULL )
-//        slen = strlen( src );
-//    else
-//        return &__fb_ctx.null_desc;
-//
-//    if( i != NULL )
-//        ilen = strlen( i );
-//    else
-//        return &__fb_ctx.null_desc;
-
     FBSTRING *s;
     ssize_t x, y;
     char *a, *c, *d;
@@ -82,25 +67,12 @@ exit3:
 
     FB_MEMCPYX( s->data, src + n - 1 + x, slen - x - n + 1 );
     s->data[slen - x - n + 1] = '\0';
+    fb_hStrSetLength( s, slen - x - n + 1 );
     return s;
 }
 
 FBCALL FB_WCHAR *fb_WstrRemainStart ( ssize_t n, int dummy, FB_WCHAR *src, ssize_t *len, int any, FB_WCHAR *i, ssize_t ilen )
 {
-//    FB_WCHAR *w;
-//    ssize_t x, y, slen, ilen;
-//    FB_WCHAR *a, *c, *d;
-//
-//    if( src != NULL )
-//        slen = fb_wstr_Len( src );
-//    else
-//        return NULL;
-//
-//    if( i != NULL )
-//        ilen = fb_wstr_Len( i );
-//    else
-//        return NULL;
-
     FB_WCHAR *w;
     ssize_t x, y, slen = *len;
     FB_WCHAR *a, *c, *d;

@@ -8,16 +8,13 @@ FBCALL FBSTRING *fb_StrInvert ( char *src, ssize_t slen )
     ssize_t x;
 
     if (slen == 0) return &__fb_ctx.null_desc;
-//    if( src != NULL )
-//        slen = strlen( src );
-//    else
-//        return &__fb_ctx.null_desc;
 
     s = fb_hStrAllocTemp( NULL, slen );
     if( s == NULL )
         return &__fb_ctx.null_desc;
 
     s->data[slen] = '\0';
+    fb_hStrSetLength( s, slen );
     x = 0;
 
     for (slen = slen - 1; slen >= 0; slen--)
@@ -35,10 +32,6 @@ FBCALL FB_WCHAR *fb_WstrInvert ( FB_WCHAR *src, ssize_t slen )
     ssize_t x;
 
     if (slen == 0) return NULL;
-//    if( src != NULL )
-//        slen = fb_wstr_Len( src );
-//    else
-//        return NULL;
 
     w = fb_wstr_AllocTemp( slen );
     if( w == NULL )

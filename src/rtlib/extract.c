@@ -68,6 +68,7 @@ exit3:
 
     FB_MEMCPYX( s->data, src + n - 1, x );
     s->data[x] = '\0';
+    fb_hStrSetLength( s, x );
     return s;
 }
 

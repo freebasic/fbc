@@ -17,18 +17,18 @@ declare function format    alias "fb_StrFormat" _
 #define left_ left
 #define right_ right
 #define mid_ mid
-#define copy_ copy
-#define pathname_ pathname
-#define repeat_ repeat
-#define invert_ invert
-#define insert_ insert
-#define extract_ extract
-#define remain_ remain
-#define parse_ outparse
-#define shrink_ shrink
-#define remove_ removeme
+  #define copy_ copy
+  #define pathname_ pathname
+  #define repeat_ repeat
+  #define invert_ invert
+  #define insert_ insert
+  #define extract_ extract
+  #define remain_ remain
+  #define parse_ outparse
+  #define shrink_ shrink
+  #define remove_ removeme
 
-#define replace_ replace
+  #define replace_ replace
 
 
 '***********************************************************************************************
@@ -868,7 +868,7 @@ end function
 '***********************************************************************************************
 ' Within w replace all occurrences of one string with another string or all occurrences of 
 ' any of the individual characters specified in the m string with r
-' The replacement can cause w to grow or condense in size. When a match is found, the 
+' The replacement can cause w to grow or shrink in size. When a match is found, the 
 ' scan for the next match begins at the position immediately following the prior match.
 ' r can be a single character or a word. If "ANY" is not specified, m is
 ' handled "as string"
@@ -877,12 +877,88 @@ end function
 '***********************************************************************************************
 
 
-'declare function replace overload( byref z as zstring, byval any as long, byref z as zstring, byref z as zstring ) as string
-'declare function replace overload( byref w as wstring, byval any as long, byref w as wstring, byref z as wstring ) as wstring
+extern "rtlib"                                                                     
+declare function fb_strreplace alias "fb_StrReplace" ( byref z as zstring, byval lz as integer, byval any as long, byref z1 as zstring, byval lz1 as integer, byref z2 as zstring, byval lz2 as integer ) as string
+declare function fb_wstrreplace alias "fb_WstrReplace" ( byref w as wstring, byref lw as integer, byval any as long, byref w1 as wstring, byval lw1 as integer, byref w2 as wstring, byval lw2 as integer ) as wstring ptr
+end extern
+
+
+private function replace_str overload(byref o as ustring, byval a as long, byref o1 as ustring, byref o2 as ustring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim z as uinteger = len(o2)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrreplace(o, x, a, o1, y, o2, z))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function replace_str overload(byref o as ustring, byval a as long, byref o1 as zstring, byref o2 as ustring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim z as uinteger = len(o2)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrreplace(o, x, a, o1, y, o2, z))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function replace_str overload(byref o as ustring, byval a as long, byref o1 as ustring, byref o2 as zstring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim z as uinteger = len(o2)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrreplace(o, x, a, o1, y, o2, z))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function replace_str overload(byref o as ustring, byval a as long, byref o1 as zstring, byref o2 as zstring) as ustring
+dim x as uinteger = len(o)
+dim y as uinteger = len(o1)
+dim z as uinteger = len(o2)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrreplace(o, x, a, o1, y, o2, z))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+
+private function replace_str overload(byref w as wstring, byval a as long, byref w1 as wstring, byref w2 as wstring) as ustring
+dim x as uinteger = len(w)
+dim y as uinteger = len(w1)
+dim z as uinteger = len(w2)
+dim init as FB_USTRING.init_size
+  init.n = -1
+dim u as ustring = init
+
+    u.u_data = cast(ubyte ptr, fb_wstrreplace(w, x, a, w1, y, w2, z))
+    u.u_len = x * sizeof(wstring)                     'set returned length
+    return u
+end function
+  
+private function replace_str overload(byref s as string, byval a as long, byref s1 as string, byref s2 as string) as string
+    return fb_strreplace(s, len(s), a, s1, len(s1), s2, len(s2))
+end function
+
+private function replace_str overload(byref s as string, byval a as long, byref s1 as ustring, byref s2 as string) as string
+    return fb_strreplace(s, len(s), a, s1, len(s1), s2, len(s2))
+end function
 
 
 #macro replace(a, b, c)
-    fb_replace(a, #?b, c)
+    string_.replace_str(a, #?b, c)
 #endmacro  
 
 

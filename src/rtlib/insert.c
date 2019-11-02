@@ -25,6 +25,7 @@ FBCALL FBSTRING *fb_StrInsert ( char *src, ssize_t slen, char *i, ssize_t ilen, 
     FB_MEMCPYX( s->data + n + ilen, src + n, slen - n );
 
     s->data[slen + ilen] = '\0';
+    fb_hStrSetLength( s, slen + ilen);
     return s;
 }
 

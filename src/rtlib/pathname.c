@@ -27,6 +27,7 @@ FBCALL FBSTRING *fb_StrPath_path ( char *src )
 
     FB_MEMCPYX( s->data, src, ulen );
     s->data[ulen] = '\0';
+    fb_hStrSetLength( s, ulen );
     return s;
 }
 
@@ -68,13 +69,11 @@ FBCALL FBSTRING *fb_StrPath_name ( char *src )
     else
         return &__fb_ctx.null_desc;
 
-    x = slen;
-    for (x = slen; x > 0; x--)
+    for (x = slen; x >= 0; x--)
     {
         if (( src[x] == ':') || ( src[x] == '\\') || ( src[x] == '/')) break;
     }  
 
-    y = slen;
     for (y = slen; y > x; y--)
     {
         if ( src[y] == _LC('.')) break;
@@ -86,7 +85,7 @@ FBCALL FBSTRING *fb_StrPath_name ( char *src )
     }
     else
     {
-        ulen = slen - x;
+        ulen = slen - x - 1;
     }  
 
     s = fb_hStrAllocTemp( NULL, ulen );
@@ -95,6 +94,7 @@ FBCALL FBSTRING *fb_StrPath_name ( char *src )
 
     FB_MEMCPYX( s->data, src + x + 1, ulen );
     s->data[ulen] = '\0';
+    fb_hStrSetLength( s, ulen );
     return s;
 }
 
@@ -108,13 +108,11 @@ FBCALL FB_WCHAR *fb_WstrPath_name ( FB_WCHAR *src )
     else
         return NULL;
 
-    x = slen;
     for (x = slen; x >= 0; x--)
     {
-        if (( src[x] == _LC(':')) || ( src[x] == _LC('\\')) || ( src[x] == _LC('/'))) break;
+        if (( src[x] == ':') || ( src[x] == '\\') || ( src[x] == '/')) break;
     }  
 
-    y = slen;
     for (y = slen; y > x; y--)
     {
         if ( src[y] == _LC('.')) break;
@@ -126,7 +124,7 @@ FBCALL FB_WCHAR *fb_WstrPath_name ( FB_WCHAR *src )
     }
     else
     {
-        ulen = slen - x;
+        ulen = slen - x - 1;
     }  
 
     w = fb_wstr_AllocTemp( ulen );
@@ -148,21 +146,19 @@ FBCALL FBSTRING *fb_StrPath_namex ( char *src )
     else
         return &__fb_ctx.null_desc;
 
-    x = slen;
     for (x = slen; x >= 0; x--)
     {
         if (( src[x] == _LC(':')) || ( src[x] == _LC('\\')) || ( src[x] == _LC('/'))) break;
     }  
 
-//    if ( x <= 0 ) return &__fb_ctx.null_desc;
-
-    ulen = slen - x;
+    ulen = slen - x - 1;
     s = fb_hStrAllocTemp( NULL, ulen );
     if( s == NULL )
         return &__fb_ctx.null_desc;
 
     FB_MEMCPYX( s->data, src + x + 1, ulen );
     s->data[ulen] = '\0';
+    fb_hStrSetLength( s, ulen );
     return s;
 }
 
@@ -176,15 +172,12 @@ FBCALL FB_WCHAR *fb_WstrPath_namex ( FB_WCHAR *src )
     else
         return NULL;
 
-    x = slen;
     for (x = slen; x >= 0; x--)
     {
         if (( src[x] == _LC(':')) || ( src[x] == _LC('\\')) || ( src[x] == _LC('/'))) break;
     }  
 
-//    if ( x <= 0 ) return NULL;
-
-    ulen = slen - x;
+    ulen = slen - x - 1;
     w = fb_wstr_AllocTemp( ulen );
     if( w == NULL )
         return NULL;
@@ -204,7 +197,7 @@ FBCALL FBSTRING *fb_StrPath_extn ( char *src )
     else
         return &__fb_ctx.null_desc;
 
-    x = slen;
+//    x = slen;
     for (x = slen; x >= 0; x--)
     {
         if ( src[x] == _LC('.')) break;
@@ -213,13 +206,14 @@ FBCALL FBSTRING *fb_StrPath_extn ( char *src )
 
     if ( x < 0 ) return &__fb_ctx.null_desc;
 
-    ulen = slen - x + 1;
+    ulen = slen - x;
     s = fb_hStrAllocTemp( NULL, ulen );
     if( s == NULL )
         return &__fb_ctx.null_desc;
 
     FB_MEMCPYX( s->data, src + x, ulen );
     s->data[ulen] = '\0';
+    fb_hStrSetLength( s, ulen );
     return s;
 }
 
@@ -233,7 +227,6 @@ FBCALL FB_WCHAR *fb_WstrPath_extn ( FB_WCHAR *src )
     else
         return NULL;
 
-    x = slen;
     for (x = slen; x >= 0; x--)
     {
         if ( src[x] == _LC('.')) break;
@@ -242,7 +235,7 @@ FBCALL FB_WCHAR *fb_WstrPath_extn ( FB_WCHAR *src )
 
     if ( x < 0 ) return NULL;
 
-    ulen = slen - x + 1;
+    ulen = slen - x;
     w = fb_wstr_AllocTemp( ulen );
     if( w == NULL )
         return NULL;

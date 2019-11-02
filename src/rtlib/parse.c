@@ -244,6 +244,7 @@ exit5:
 
     FB_MEMCPYX( s->data, b, x - i + 1 );
     s->data[x - i + 1] = '\0';
+    fb_hStrSetLength( s, x - i + 1 );
     return s;  
 }
 

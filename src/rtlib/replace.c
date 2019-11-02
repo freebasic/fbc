@@ -1,43 +1,32 @@
 /* replace, replace one string with another one in a string */
                              
 #include "fb.h"
+//#include <windows.h>
 
-FBCALL FBSTRING *fb_StrReplace( char *src, int any, char *t, char *r )
-{
+FBCALL FBSTRING *fb_StrReplace ( char *src, ssize_t slen, int any, char *t, ssize_t tlen, char *r, ssize_t rlen )
+{                            
     FBSTRING *s;
-    ssize_t n, x, y, slen, tlen, rlen;
+    ssize_t n, x, y;
     ssize_t *p;
     char *a, *c, *d;
 
-    if( src != NULL )
-        slen = strlen( src );
-    else
-        return &__fb_ctx.null_desc;
+//char buffer [50];
+//sprintf (buffer, "in strreplace");
+//OutputDebugString(buffer);
 
-    if( t != NULL )
-        tlen = strlen( t );
-    else
+    if (slen == 0) return &__fb_ctx.null_desc;
+    if (tlen == 0)
     {
-exit0:
+exit0:;
         s = fb_hStrAllocTemp( NULL, slen);
         if( s == NULL )
             return &__fb_ctx.null_desc;
 
         FB_MEMCPYX( s->data, src, slen);
         s->data[slen] = '\0';
+        fb_hStrSetLength( s, slen );
         return s;
     }
-
-    if (tlen == 0)
-    {
-        goto exit0;
-    }
-
-    if( r != NULL )
-        rlen = strlen( r );
-    else
-        rlen = 0;
-
 
     // 1. pass: spot characters (either single char or "as string") to replace and store position
     p = malloc((slen + 1) * sizeof(ssize_t));
@@ -82,6 +71,7 @@ exit1:
                 }  
                 n = n + 1;
                 p[n] = x;
+                x = x + tlen - 1;
                 a = a + tlen - 1;
             }
 exit2:
@@ -91,7 +81,6 @@ exit2:
 
     if (n == 0) goto exit0;                           //not found return original string
     p[n+1] = slen;
-
 
     // 2. pass: copy original + replacement in position, 
 
@@ -118,7 +107,7 @@ exit2:
     }
     else
     {
-        s = fb_hStrAllocTemp( NULL, slen + n*rlen - n*tlen);
+        s = fb_hStrAllocTemp( NULL, slen + n*rlen - n*tlen + 10000);
         if( s == NULL )
             return &__fb_ctx.null_desc;
 
@@ -131,7 +120,7 @@ exit2:
 
         for (x = 1; x < n; x++)
         {
-            c = FB_MEMCPYX( c, src + p[x] + tlen, p[x+1] - p[x] - tlen );
+            c = FB_MEMCPYX( c, src + p[x] + tlen, p[x+1] - p[x] - tlen);
             c = FB_MEMCPYX( c, r, rlen);
         }
         c = FB_MEMCPYX( c, src + p[x] + tlen, p[x+1] - p[x] - tlen );
@@ -140,46 +129,35 @@ exit2:
     *c = '\0';
     free(p);
 
+    fb_hStrSetLength( s, c - s->data );
     return s;  
 }
 
-FBCALL FB_WCHAR *fb_WstrReplace( FB_WCHAR *src, int any, FB_WCHAR *t, FB_WCHAR *r )
-{
+FBCALL FB_WCHAR *fb_WstrReplace( FB_WCHAR *src, ssize_t *len, int any, FB_WCHAR *t, ssize_t tlen, FB_WCHAR *r, ssize_t rlen )
+{                              
     FB_WCHAR *w;
-    ssize_t n, x, y, slen, tlen, rlen;
+    ssize_t n, x, y, slen = *len;
     ssize_t *p;
     FB_WCHAR *a, *c, *d;
 
-    if( src != NULL )
-        slen = fb_wstr_Len( src );
-    else
-        return NULL;
-    
-    if( t != NULL )
-        tlen = fb_wstr_Len( t );
-    else
+//char buffer [50];
+//sprintf (buffer, "in wstrreplace");
+//OutputDebugString(buffer);
+
+    if (slen == 0) return NULL;
+    if (tlen == 0)
     {
-exit0:
+exit0:   
         w = fb_wstr_AllocTemp( slen );
         if( w == NULL )
             return NULL;
 
         fb_wstr_Move( w, src, slen );
         w[slen] = _LC('\0');
+        *len = slen;
         return w;
     }
 
-    if (tlen == 0)
-    {
-        goto exit0;
-    }
-
-    if( r != NULL )
-        rlen = fb_wstr_Len( r );
-    else
-        rlen = 0;
-
-//***********************************************************************************************
     // 1. pass: spot characters (either single char or "as string") to replace and store position
     p = malloc((slen + 1) * sizeof(ssize_t));
     a = src;
@@ -223,6 +201,7 @@ exit1:
                 }  
                 n = n + 1;
                 p[n] = x;
+                x = x + tlen - 1;
                 a = a + tlen - 1;
             }
 exit2:
@@ -232,7 +211,6 @@ exit2:
 
     if (n == 0) goto exit0;                           //not found return original string
     p[n+1] = slen;
-
 
     // 2. pass: copy original + replacement in position, 
 
@@ -281,5 +259,6 @@ exit2:
     *c = _LC('\0');
     free(p);
 
+    *len = c - w;
     return w;
 }
