@@ -316,9 +316,11 @@ function cTypeOrExpression _
 
 	if( maybe_type ) then
 		'' Parse as type
-		if( cSymbolType( dtype, subtype, lgt, is_fixlenstr, FB_SYMBTYPEOPT_NONE ) ) then
+		assert( parser.nsprefix = NULL )
+		if( cSymbolType( dtype, subtype, lgt, is_fixlenstr, FB_SYMBTYPEOPT_SAVENSPREFIX ) ) then
 			'' Successful -- it's a type, not an expression
 			ambigioussizeof.maybeWarn( tk, TRUE )
+			parser.nsprefix = NULL
 			return NULL
 		end if
 	end if
@@ -328,6 +330,8 @@ function cTypeOrExpression _
 	'' Parse as expression, allowing NIDXARRAYs
 	expr = cExpressionWithNIDXARRAY( TRUE )
 	if( expr = NULL ) then
+		'' was an error, so make sure to discard the namespace prefix
+		parser.nsprefix = NULL
 		errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 		'' error recovery: fake an expr
 		expr = astNewCONSTi( 0 )
@@ -718,6 +722,17 @@ function cSymbolType _
 			end if
 
 			if( chain_ ) then
+				'' cTypeOrExpression() will expect that the namespace prefix
+				'' will be preserved if we abort and retry as an expression.
+				'' Eventually namespace prefix it gets used in cIdentifier()
+				if( options and FB_SYMBTYPEOPT_SAVENSPREFIX ) then
+					assert( parser.nsprefix = NULL )
+					select case symbGetClass( chain_->sym )
+					case FB_SYMBCLASS_CONST, FB_SYMBCLASS_VAR
+						parser.nsprefix = chain_
+					end select
+				end if
+
 				do
 					dim as FBSYMBOL ptr sym = chain_->sym
 					do
@@ -752,6 +767,13 @@ function cSymbolType _
 
 					chain_ = symbChainGetNext( chain_ )
 				loop while( chain_ <> NULL )
+
+				'' discard the namespace prefix if it won't be needed later
+				if( options and FB_SYMBTYPEOPT_SAVENSPREFIX ) then
+					if( dtype <> FB_DATATYPE_INVALID ) then
+						parser.nsprefix = NULL
+					end if
+				end if
 			end if
 		end if
 
