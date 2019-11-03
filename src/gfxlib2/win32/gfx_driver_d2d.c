@@ -221,16 +221,19 @@ static D2DGlobalState* CreateGlobalState(HWND hwnd, HMODULE hD2D, ID2D1Factory* 
 
 	if(pState) {
 		int i = 0;
+		unsigned char scanCode = 0;
 #ifdef DO_DEBUG
 		pState->cookie = ~PtrToUlong(&GetGlobalState);
 #endif
 		pState->hD2D = hD2D;
 		pState->wndProcCookie = wndprocCookie;
 		pState->pD2DFactory = pFactory;
-		for(; i < 256; ++i) {
-			if(__fb_keytable[i][1]) {
-				pState->vkToFBKeyTranslation[__fb_keytable[i][1]] = (BYTE)i;
+		while((scanCode = __fb_keytable[i][0])) {
+			pState->vkToFBKeyTranslation[__fb_keytable[i][1]] = scanCode;
+			if(__fb_keytable[i][2]) {
+				pState->vkToFBKeyTranslation[__fb_keytable[i][2]] = scanCode;
 			}
+			++i;
 		}
 		if(!SetProp(hwnd, MAKEINTRESOURCE(D2D_PROP_ID), (HANDLE)pState)) {
 			free(pState);
@@ -256,29 +259,32 @@ static LRESULT CALLBACK D2DWndProcSubclass(HWND hwnd, UINT msg, WPARAM wParam, L
 		// gfx_win32.c and b) contains a lot of important stuff
 		*/
 		case WM_KEYDOWN:
-		case WM_SYSKEYDOWN: {
-			BYTE fbKeyIndex = pGlobalState->vkToFBKeyTranslation[wParam];
-			BYTE alternateKey = __fb_keytable[fbKeyIndex][2];
-			DBG_ASSERT(wParam < 256);
-			if(alternateKey) {
-				__fb_gfx->key[fbKeyIndex] = (0x80 | ((GetKeyState(alternateKey) & 0x8000) ? TRUE : FALSE));
-			}
-			else {
-				__fb_gfx->key[fbKeyIndex] = TRUE;
-			}
-		}
-		break;
+		case WM_SYSKEYDOWN:
 		case WM_KEYUP:
 		case WM_SYSKEYUP: {
-			BYTE fbKeyIndex = pGlobalState->vkToFBKeyTranslation[wParam];
-			BYTE alternateKey = __fb_keytable[fbKeyIndex][2];
+			const BYTE* pTranslationTable = pGlobalState->vkToFBKeyTranslation;
+			BOOL isDown = (msg == WM_KEYDOWN) || (msg == WM_SYSKEYDOWN);
+			BYTE value = isDown ? TRUE : FALSE;
+
 			DBG_ASSERT(wParam < 256);
-			if(alternateKey) {
-				__fb_gfx->key[fbKeyIndex] = (GetKeyState(alternateKey) & 0x8000) ? TRUE : FALSE;
+			DBG_TEXT("%s - Got key msg %#x for wParam %#x (fb scan=%#x, winScan=%#x)", msg, wParam, pTranslationTable[wParam], LOBYTE(lParam >> 16));
+			fb_gfxDriverD2D.lock();
+			if(wParam != VK_SHIFT) {
+				BYTE fbKeyIndex = pTranslationTable[wParam];
+				const BYTE* pKeyTableKey = __fb_keytable[fbKeyIndex];
+				BYTE alternateKey = (pKeyTableKey[1] == wParam) ? pKeyTableKey[2] : pKeyTableKey[1];
+				if(alternateKey) {
+					__fb_gfx->key[fbKeyIndex] = (value << 7) | ((GetKeyState(alternateKey) & 0x8000) ? TRUE : FALSE);
+				}
+				else {
+					__fb_gfx->key[fbKeyIndex] = value;
+				}
 			}
 			else {
-				__fb_gfx->key[fbKeyIndex] = FALSE;
+				/* Shift needs to update both the LSHIFT and RSHIFT scancodes */
+				__fb_gfx->key[SC_RSHIFT] = __fb_gfx->key[SC_LSHIFT] = value;
 			}
+			fb_gfxDriverD2D.unlock();
 		}
 		break;
 	}
