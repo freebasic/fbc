@@ -278,7 +278,14 @@ static LRESULT CALLBACK D2DWndProcSubclass(HWND hwnd, UINT msg, WPARAM wParam, L
 				else {
 					__fb_gfx->key[fbScan] = value;
 				}
-				DBG_TEXT("%s - Got key%s for wParam %#x, fbScan=%#x, winScan=%#x, gfxKeyState=%#x", msg, wParam, fbScan, LOBYTE(lParam >> 16), __fb_gfx->key[fbScan]);
+				DBG_TEXT(
+					"%s - Got key%s for vKey %#x, fbScan=%#x, winScan=%#x, gfxKeyState=%#x",
+					isDown ? "down" : "up",
+					wParam,
+					fbScan,
+					LOBYTE(lParam >> 16),
+					 __fb_gfx->key[fbScan]
+				);
 			}
 			else {
 				/* Shift needs to update both the LSHIFT and RSHIFT scancodes */
