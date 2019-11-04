@@ -854,8 +854,8 @@ add_proc:
 	'' last compound was an EXTERN?
 	if( fbGetCompStmtId( ) = FB_TK_EXTERN ) then
 		'' don't add parent when mangling, even if inside an UDT, unless
-		'' it's in "c++" mode
-		if( parser.mangling <> FB_MANGLING_CPP ) then
+		'' it's in "c++" mode or "rtlib" mode
+		if(( parser.mangling <> FB_MANGLING_CPP ) and ( parser.mangling <> FB_MANGLING_RTLIB )) then
 			stats or= FB_SYMBSTATS_EXCLPARENT
 		end if
 	end if

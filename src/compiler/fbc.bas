@@ -21,6 +21,7 @@ enum
 	PRINT_TARGET
 	PRINT_X
 	PRINT_FBLIBDIR
+	PRINT_SHA1
 end enum
 
 type FBC_EXTOPT
@@ -1773,6 +1774,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 		case "target" : fbc.print = PRINT_TARGET
 		case "x"      : fbc.print = PRINT_X
 		case "fblibdir" : fbc.print = PRINT_FBLIBDIR
+		case "sha-1"  : fbc.print = PRINT_SHA1
 		case else
 			hFatalInvalidOption( arg )
 		end select
@@ -2937,6 +2939,13 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		'' Avoid gcc exception handling bloat
 		ln += "-fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables "
 
+		'' Prevent format string errors on gcc 9.x. (enabled by default with '-Wall')
+		'' TODO: fbc currently emits the ZSTRING type as 'uint8' when it
+		'' should probably preserve the 'char' type.  In C, there are 3 
+		'' distinct types, 'char', 'unsigned char', 'signed char'.
+		'' See ir-hlc.bas:hEmitType()
+		ln += "-Wno-format "
+
 		if( fbGetOption( FB_COMPOPT_DEBUGINFO ) ) then
 			ln += "-g "
 		end if
@@ -3501,6 +3510,9 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -print host|target  Display host/target system name"
 	print "  -print fblibdir  Display the compiler's lib/ path"
 	print "  -print x         Display output binary/library file name (if known)"
+	if( verbose ) then
+	print "  -print sha-1     Display compiler's source code commit sha-1 (if known)"
+	end if
 	print "  -profile         Enable function profiling"
 	print "  -r               Write out .asm/.c/.ll (-gen gas/gcc/llvm) only"
 	print "  -rr              Write out the final .asm only"
@@ -3545,7 +3557,7 @@ private sub hPrintVersion( byval verbose as integer )
 	dim as string config
 
 	print "FreeBASIC Compiler - Version " + FB_VERSION + _
-		" (" + FB_BUILD_DATE + "), built for " + fbGetHostId( ) + " (" & fbGetHostBits( ) & "bit)"
+		" (" + FB_BUILD_DATE_ISO + "), built for " + fbGetHostId( ) + " (" & fbGetHostBits( ) & "bit)"
 	print "Copyright (C) 2004-2019 The FreeBASIC development team."
 
 	#ifdef ENABLE_STANDALONE
@@ -3558,6 +3570,13 @@ private sub hPrintVersion( byval verbose as integer )
 
 	if( len( config ) > 0 ) then
 		print config
+	end if
+
+	if( verbose ) then
+		fbcPrintTargetInfo( )
+		if( FB_BUILD_SHA1 > "" ) then
+			print "source sha-1: " & FB_BUILD_SHA1
+		end if
 	end if
 end sub
 
@@ -3620,6 +3639,8 @@ end sub
 			print fbc.outname
 		case PRINT_FBLIBDIR
 			print fbc.libpath
+		case PRINT_SHA1
+			print FB_BUILD_SHA1
 		end select
 		fbcEnd( 0 )
 	end if

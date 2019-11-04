@@ -1,3 +1,23 @@
+Version 1.07.1
+
+[changed]
+- fbc '-version' reports build date in yyyy-mm-dd format (aka build date iso)
+
+[added]
+- extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
+- __FB_BUILD_DATE_ISO__ intrinsic define to return fbc build date in 'yyyy-mm-dd' format
+- __FB_BUILD_SHA1__ intrinsic define to return the compiler's source code commit sha-1, (if known)
+- '-print sha-1' to print the compiler's source code commit sha-1, (if known)
+- makefile: 'FBSHA1=1' makefile configuration option to determine the current repo commit sha-1 from git
+- makefile: 'FBSHA1=some-sha-1' makefile configuration option to explicit set the repo commit sha-1
+- makefile: '-d FBSHA1="some-sha-1"' compiler option to set the value of '__FB_BUILD_SHA1__' when building fbc
+
+[fixed]
+- makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
+- sf.net #904; gcc backend: pass '-Wno-format' to prevent format string errors in gcc 9.x (enabled by default with -Wall)
+- sf.net #910: cast(string, variable) can cause fbc to segfault (infinite recursion), due to misplaced const & non-const casting
+
+
 Version 1.07.0
 
 [changed]

@@ -488,7 +488,13 @@ private function hVarPtrBody _
 	end if
 
 	'' skip any casting if they won't do any conversion
-	dim as ASTNODE ptr t = astSkipNoConvCAST( expr )
+	'' TODO: replace astSkipNoConvCast() with astSkipConstCASTs()
+	'' where applicable.  Need to verify.  On one hand, we
+	'' probably don't care about CONST anymore, on the other
+	'' hand, we need to make sure we don't prematurely optimize
+	'' the CONST specifier away in the event that it is needed
+	'' to be known with AST type checking later.
+	dim as ASTNODE ptr t = astSkipConstCASTs( expr )
 
 	select case as const astGetClass( t )
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_DEREF, _

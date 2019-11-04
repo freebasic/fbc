@@ -747,6 +747,7 @@ extern_asm(_fb_ConsolePrintBufferWstr);
 extern_asm(_fb_WstrSpace);
 extern_asm(_fb_ConsolePageSet);
 extern_asm(_fb_ConsoleLineInputWstr);
+extern_asm(_fb_ArrayGetDesc);
 extern_asm(_fb_BINEx_p);
 extern_asm(_fb_hNormalizeDate);
 extern_asm(_fb_GosubReturn);
@@ -1578,6 +1579,7 @@ DXE_EXPORT_TABLE (libfb_symbol_table)
     DXE_EXPORT_ASM (_fb_WstrSpace)
     DXE_EXPORT_ASM (_fb_ConsolePageSet)
     DXE_EXPORT_ASM (_fb_ConsoleLineInputWstr)
+    DXE_EXPORT_ASM (_fb_ArrayGetDesc)
     DXE_EXPORT_ASM (_fb_BINEx_p)
     DXE_EXPORT_ASM (_fb_hNormalizeDate)
     DXE_EXPORT_ASM (_fb_GosubReturn)
