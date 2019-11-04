@@ -220,18 +220,17 @@ static D2DGlobalState* CreateGlobalState(HWND hwnd, HMODULE hD2D, ID2D1Factory* 
 	D2DGlobalState* pState = calloc(1, sizeof(*pState));
 
 	if(pState) {
-		int i = 0;
-		unsigned char scanCode = 0;
+		BYTE i = 0;
 #ifdef DO_DEBUG
 		pState->cookie = ~PtrToUlong(&GetGlobalState);
 #endif
 		pState->hD2D = hD2D;
 		pState->wndProcCookie = wndprocCookie;
 		pState->pD2DFactory = pFactory;
-		while((scanCode = __fb_keytable[i][0])) {
-			pState->vkToFBKeyTranslation[__fb_keytable[i][1]] = scanCode;
+		while(__fb_keytable[i][0]) {
+			pState->vkToFBKeyTranslation[__fb_keytable[i][1]] = i;
 			if(__fb_keytable[i][2]) {
-				pState->vkToFBKeyTranslation[__fb_keytable[i][2]] = scanCode;
+				pState->vkToFBKeyTranslation[__fb_keytable[i][2]] = i;
 			}
 			++i;
 		}
@@ -267,18 +266,19 @@ static LRESULT CALLBACK D2DWndProcSubclass(HWND hwnd, UINT msg, WPARAM wParam, L
 			BYTE value = isDown ? TRUE : FALSE;
 
 			DBG_ASSERT(wParam < 256);
-			DBG_TEXT("%s - Got key msg %#x for wParam %#x (fb scan=%#x, winScan=%#x)", msg, wParam, pTranslationTable[wParam], LOBYTE(lParam >> 16));
 			fb_gfxDriverD2D.lock();
 			if(wParam != VK_SHIFT) {
 				BYTE fbKeyIndex = pTranslationTable[wParam];
 				const BYTE* pKeyTableKey = __fb_keytable[fbKeyIndex];
+				BYTE fbScan = pKeyTableKey[0];
 				BYTE alternateKey = (pKeyTableKey[1] == wParam) ? pKeyTableKey[2] : pKeyTableKey[1];
 				if(alternateKey) {
-					__fb_gfx->key[fbKeyIndex] = (value << 7) | ((GetKeyState(alternateKey) & 0x8000) ? TRUE : FALSE);
+					__fb_gfx->key[fbScan] = (value << 7) | ((GetKeyState(alternateKey) & 0x8000) ? TRUE : FALSE);
 				}
 				else {
-					__fb_gfx->key[fbKeyIndex] = value;
+					__fb_gfx->key[fbScan] = value;
 				}
+				DBG_TEXT("%s - Got key%s for wParam %#x, fbScan=%#x, winScan=%#x, gfxKeyState=%#x", msg, wParam, fbScan, LOBYTE(lParam >> 16), __fb_gfx->key[fbScan]);
 			}
 			else {
 				/* Shift needs to update both the LSHIFT and RSHIFT scancodes */
