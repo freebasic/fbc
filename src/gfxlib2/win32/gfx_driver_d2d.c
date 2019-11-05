@@ -12,7 +12,6 @@
 #include <d2d1.h>
 #include <dxgi.h>
 #include <stdlib.h>
-#include "gfx_driver_d2d_fixed.h"
 
 /* Defining DEBUG or D2D_DEBUG will turn on debugging for Direct2D & Direct3D
 // (if it's used). To see any output from them you'll need to install 
@@ -504,7 +503,6 @@ static int D2DDirectSetup(D2DGlobalState* pGlobalState, HWND hwnd)
 	D2D1_HWND_RENDER_TARGET_PROPERTIES hwndRenderProps = {0};
 	D2D1_BITMAP_PROPERTIES bitmapProps = {};
 	UINT stride = 0;
-	D2D1_SIZE_U actualSize = {0};
 	
 	hwndRenderProps.hwnd = hwnd;
 	hwndRenderProps.presentOptions = D2D1_PRESENT_OPTIONS_IMMEDIATELY;
@@ -540,8 +538,6 @@ static int D2DDirectSetup(D2DGlobalState* pGlobalState, HWND hwnd)
 	{
 		goto errorReturn;
 	}
-	ID2D1Bitmap_GetPixelSize(pBackBufferBitmap, &actualSize);
-	DBG_TEXT("%s created bitmap of size %lux%lu, stride = %lu", actualSize.width, actualSize.height, stride);
 	/* if no colour or depth conversion is necessary, then we can directly
 	// use the framebuffer, no blitter is required.
 	//
@@ -581,7 +577,7 @@ static void D2DCommonPaintInternal(D2DGlobalState* pGlobalState)
 	D2D1_RECT_U dirtyRect;
 	D2D1_RECT_F drawRect;
 	char* pDirtyStart, *pDirtyEnd;
-	char* pFirstDirtyRow = NULL, *pLastDirtyRow = NULL;
+	const char* pFirstDirtyRow = NULL, *pLastDirtyRow = NULL;
 	unsigned char* pBitmapDataSrc = NULL;
 	const UINT stride = winWidth * 4;
 	const ULONG ptrSize = sizeof(ULONG_PTR);
@@ -594,7 +590,7 @@ static void D2DCommonPaintInternal(D2DGlobalState* pGlobalState)
 	scanlineSize = __fb_gfx->scanline_size;
 	pDirtyStart = __fb_gfx->dirty;
 	pDirtyEnd = pDirtyStart + winHeight;
-	pFirstDirtyRow = memchr(pDirtyStart, TRUE, winHeight);
+	pFirstDirtyRow = FB_MEMCHR(pDirtyStart, TRUE, winHeight);
 	/* nothing's dirty, don't do anything */
 	if(!pFirstDirtyRow) {
 		fb_gfxDriverD2D.unlock();
@@ -855,8 +851,6 @@ static int* D2DFetchModes(int depth, int *size)
 	// until we have a set of hardware modes
 	// We record the software driver modes, but those are
 	// only returned if we don't get any hardware ones
-	//
-	// Direct2D only supports 32bpp formats for RenderTargets
 	*/
 	hDxgi = LoadLibrary("dxgi.dll");
 	if (hDxgi != NULL) {
