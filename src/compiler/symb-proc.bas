@@ -1693,6 +1693,14 @@ private function hCalcTypesDiff _
 
 	arg_dclass = typeGetClass( arg_dtype )
 
+    '' jk: in order to avoid "ambigous ..." for z/wstring decisions, wstrings should be
+    '' rated over zstrings. In case of ambiguity it´s safer to take the wide string string
+    '' version of an overloaded function, even if this means to accept unnecessary conversions.
+    '' Converting an ANSI string to wide string, processing it as wide string and converting it
+    '' back is more time consuming, but doesn´t produce wrong results. Converting a wide string
+    '' to ANSI, processing it as ANSI and converting back to wide string is bound to produce
+    '' wrong results!
+
 	'' check classes
 	select case as const typeGetClass( param_dtype )
 	'' integer?
@@ -1713,7 +1721,8 @@ private function hCalcTypesDiff _
 				case FB_DATATYPE_CHAR
 					return FB_OVLPROC_FULLMATCH
 				case FB_DATATYPE_WCHAR
-					return FB_OVLPROC_HALFMATCH
+					return FB_OVLPROC_LOWEST_MATCH + 1                    'jk_overload
+'					return FB_OVLPROC_HALFMATCH - 1
 				end select
 				return FB_OVLPROC_NO_MATCH
 			case FB_DATATYPE_WCHAR
@@ -1734,7 +1743,8 @@ private function hCalcTypesDiff _
 				case FB_DATATYPE_CHAR
 					return FB_OVLPROC_FULLMATCH
 				case FB_DATATYPE_WCHAR
-					return FB_OVLPROC_HALFMATCH
+					return FB_OVLPROC_LOWEST_MATCH + 1                    'jk_overload
+'					return FB_OVLPROC_HALFMATCH   
 				end select
 			case typeAddrOf( FB_DATATYPE_WCHAR )
 				select case( arg_dtype )
@@ -1824,7 +1834,8 @@ private function hCalcTypesDiff _
 			case FB_DATATYPE_CHAR, typeAddrOf( FB_DATATYPE_CHAR )
 				return FB_OVLPROC_FULLMATCH
 			case FB_DATATYPE_WCHAR, typeAddrOf( FB_DATATYPE_WCHAR )
-				return FB_OVLPROC_HALFMATCH
+				return FB_OVLPROC_LOWEST_MATCH + 1    'jk_overload
+'				return FB_OVLPROC_HALFMATCH + 1
 			end select
 
 		end select
@@ -1867,7 +1878,8 @@ private function hCalcTypesDiff _
 			case FB_DATATYPE_CHAR
 				function = FB_OVLPROC_FULLMATCH
 			case FB_DATATYPE_WCHAR
-				function = FB_OVLPROC_HALFMATCH
+				function = FB_OVLPROC_LOWEST_MATCH + 1                    'jk_overload
+'				function = FB_OVLPROC_HALFMATCH + 1
 			end select
 
 		end select
@@ -2114,7 +2126,8 @@ function symbFindClosestOvlProc _
 			'' for each arg..
 			arg = arg_head
 			for i as integer = 0 to args-1
-				arg_matchscore = hCheckOvlParam( ovl, param, arg->expr, arg->mode )
+				arg_matchscore = hCheckOvlParam( ovl, param, arg->expr, arg->mode ) '-> hCheckCastOvlEx -> symbFindCastOvlProc2
+
 				if( arg_matchscore = FB_OVLPROC_NO_MATCH ) then
 					matchscore = FB_OVLPROC_NO_MATCH
 					exit for
@@ -2568,9 +2581,6 @@ function symbFindCastOvlProc _
 end function
 
 
-'***********************************************************************************************
-' jk-file (try)
-'***********************************************************************************************
 function symbFindCastOvlProc2 _
 	( _
 		byval to_dtype as integer, _                      'parameter type (to cast to)

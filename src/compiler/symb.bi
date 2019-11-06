@@ -990,7 +990,7 @@ declare function symbFindCastOvlProc _
 		byval is_explicit as integer = FALSE _
 	) as FBSYMBOL ptr
 
-declare function symbFindCastOvlProc2 _               ' jk-file (try)
+declare function symbFindCastOvlProc2 _
 	( _
 		byval to_dtype as integer, _                      'parameter type (to cast to)
 		byval to_subtype as FBSYMBOL ptr, _               'parameter subtype
