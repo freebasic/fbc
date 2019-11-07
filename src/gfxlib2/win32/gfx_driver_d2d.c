@@ -589,8 +589,8 @@ static void D2DCommonPaintInternal(D2DGlobalState* pGlobalState)
 
 	scanlineSize = __fb_gfx->scanline_size;
 	pDirtyStart = __fb_gfx->dirty;
-	pDirtyEnd = pDirtyStart + winHeight;
-	pFirstDirtyRow = FB_MEMCHR(pDirtyStart, TRUE, winHeight);
+	pDirtyEnd = pDirtyStart + __fb_gfx->h;
+	pFirstDirtyRow = FB_MEMCHR(pDirtyStart, TRUE, __fb_gfx->h);
 	/* nothing's dirty, don't do anything */
 	if(!pFirstDirtyRow) {
 		fb_gfxDriverD2D.unlock();
