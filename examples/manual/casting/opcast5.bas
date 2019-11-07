@@ -35,3 +35,4 @@ u1.I1 = 123
 Print Cast(UDT2, u1).I2
 
 Sleep
+	

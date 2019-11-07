@@ -1,0 +1,184 @@
+{{fbdoc item="title" value="Macros"}}----
+**Macros** are named code segments that are substituted to their names each time they are encountered in a program.
+
+Macros offer a powerful way to extend the language and create reusable code.
+One reason macros are used is performance.
+They are a way of eliminating procedure call overhead because they are always expanded in-line.
+There is no alternative for this in FreeBASIC because it does not support inline procedures.
+
+{{fbdoc item="section" value="Macros definition"}}
+	The preprocessor can, during the text replacement mechanism, use parameters supplied to the identifier to be replaced.
+	These parameters are then replaced without modification in the replacement text.
+	The replacement text is then called macro.
+	
+	The syntax to define a macro is as follows (see '[[CatPgPreProcess|Preprocessor commands]]'):
+		**""-""** one-line macro:
+				##[[KeyPgPpdefine|#define]] //identifier//([//parameters//]) //body//##
+					##//parameters//## turn a define into a function-like macro, allowing text arguments to be passed to the macro.
+					##//identifier//## should be followed by the opening parentheses (**##(##**) immediately without any white-space in between, otherwise the compiler will treat it as part of the ##//body//##.
+		**""-""** multi-line macro:
+				##[[KeyPgPpmacro|#macro]] //identifier//([//parameters//])##
+					##//body//##
+				##[[KeyPgPpmacro|#endmacro]]##
+					##**#macro**## is the multi-line version of ##[[KeyPgPpdefine|#define]]##.
+					
+	The ##[[KeyPgOpPpStringize|# stringize]]## operator can be used on macro parameters to turn them into string literals, and the ##[[KeyPgOpPpConcat|## concatenate]]## operator can be used to merge tokens together.
+	(see '[[CatPgOpPrepro|Preprocessor Operators]]')
+	
+	Defines and macros are //scoped// (they are only visible in the scope they were defined in).
+	Namespaces on the other hand do not have any effect on the visibility of the defines and macros.
+	
+	The mechanism of macros allows to do the equivalent of general procedures, which work for all types.
+	However, care must be taken that parameters passed to a macro are evaluated by it each time they are used in the macro definition. This can cause performance issues or, worse, cause unwanted edge effects.
+	
+	Parentheses should always be placed around the parameters of the macro:
+		**""-""** Indeed, these parameters can be compound expressions, which must be computed completely before being used in the macro.
+		**""-""** Parentheses force this calculation.
+		**""-""** If they are not set, priority rules can generate a logic error in the macro itself.
+	Similarly, macros that return a value should be surrounded by parentheses, in order to force their complete evaluation before using them in another expression.
+	
+	Example of incorrect and correct macros:
+		%%(freebasic)
+#define MUL1(x, y) x * y              '' incorect macro  (parameters must be enclosed in parentheses)
+#define MUL2(x, y) ( x ) * ( y )      '' incorrect macro (and returned result must also be in parentheses)
+#define MUL3(x, y) ( ( x ) * ( y ) )  '' correct macro
+
+Print MUL1(5-3, 1+2)^2  '' 6  (incorrect result)
+Print MUL2(5-3, 1+2)^2  '' 18 (incorrect result)
+Print MUL3(5-3, 1+2)^2  '' 36 (correct result)
+
+Sleep
+		%%Thus, the parentheses ensure a consistent behavior of the macro (parentheses can add to macro definitions, but they are absolutely necessary).
+
+{{fbdoc item="section" value="Macros debug"}}
+	Using macros can be extremely unsafe and they hide a lot of pitfalls which are very hard to find.
+	Procedures give type checking and scoping, but macros just substitute the passed argument.
+	Another disadvantage of the macro is the size of the program. The reason is, the pre-processor will replace all the macros in the program by its real definition prior to the compilation process of the program.
+	
+	Looking only at the source code file, the only way to find out what the problem is to look at the definition of the macro and try to understand what happened.
+	The most common error when using macros is the unbalanced open parentheses (inducing error at compile-time).
+	Another is to forget putting parentheses around arguments (or returned result if exists) in macro definitions. That can cause some pretty nasty side effects because of operator precedence (inducing error at compile-time or bug at run-time).
+	
+	When the compiler detects an error inside a macro (after expanding), it provides a rustic error message containing only:
+		**""-""** the line number where is the call of the macro,
+		**""-""** the error type,
+		**""-""** the text of the call (of the macro).
+		
+	When the error is not obvious (type of error reported blurred), the only solution (with only the call line number) is presently to iteratively execute the following 5 steps until correction successful:
+		**##Do##**
+			**##1.##** call fbc on the source file, but with the '-pp' compile option (fbc command emitting only the pre-processed input file, without compiling),
+			**##2.##** recover the pre-processed file,
+			**##3.##** edit and compile directly from this pre-processed file,
+			**##4.##** analyze the error, understand it, correct it, and compile again the pre-processed file thus modified,
+			**##5.##** postpone the equivalent correction in the concerned macro body of the original source file.
+		**##Loop##**
+		
+	Example of error on a short code:
+		- Source file (*.bas):
+				%%(freebasic)
+#macro FIRST(array, operator)
+  For index as Integer = LBound(array) to UBound(array) - 1
+	Print " " operator array(index) operator ",";
+  Next index
+  Print array(Ubound(array))
+#endmacro
+
+#macro SECOND(array)
+  Print #array + ":"
+  FIRST(array, +)
+#endmacro
+
+Dim as String test1(0 to ... ) => {"First", "Second", "Third"}
+Dim as Integer test2(0 to ...) => {1, 2 ,3}
+
+SECOND(test1)
+Print
+SECOND(test2)
+
+Sleep
+				%%**Compiler output:**
+					...\FBIDETEMP.bas(18) error 20: Type mismatch, found '+' in 'SECOND(test2)'
+					
+		- Pre-processed file (*.pp.bas):
+				%%(freebasic)
+
+
+Dim as String test1(0 to ... ) => {"First", "Second", "Third"}
+Dim as Integer test2(0 to ...) => {1, 2 ,3}
+
+ Print $"test1" + ":"
+ For index as Integer =LBound(test1) to UBound(test1) -1
+ Print " " + test1(index) + ",";
+ Next index
+ Print test1(Ubound(test1))
+Print
+ Print $"test2" + ":"
+ For index as Integer =LBound(test2) to UBound(test2) -1
+ Print " " + test2(index) + ",";
+ Next index
+ Print test2(Ubound(test2))
+
+Sleep
+				%%**Compiler output:**
+					...\FBIDETEMP.bas(14) error 20: Type mismatch, found '+' in 'Print " " + test2(index) + ",";'
+					
+		- Example macro correction in source code (*.bas):
+				%%(freebasic)
+#macro FIRST(array, operator)
+  For index as Integer = LBound(array) to UBound(array) - 1
+	Print " " operator array(index) operator ",";
+  Next index
+  Print array(Ubound(array))
+#endmacro
+
+#macro SECOND(array)
+  Print #array + ":"
+  FIRST(array, &)     ''corrected line ("&" instead of "+")
+#endmacro
+
+Dim as String test1(0 to ... ) => {"First", "Second", "Third"}
+Dim as Integer test2(0 to ...) => {1, 2 ,3}
+
+SECOND(test1)
+Print
+SECOND(test2)
+
+Sleep
+				%%Output:
+					%%
+test1:
+ First, Second,Third
+
+test2:
+ 1, 2, 3
+					%%
+		**Note:** Another solution could be a more detailed error message from compiler, relating to the call of the macro (proposal of improved error message already filled in in a feature request).
+
+{{fbdoc item="section" value="Example"}}
+	Example with one-line and multi-line macros:
+		{{fbdoc item="filename" value="examples/manual/proguide/macro.bas"}}%%(freebasic)
+#define MIN(x, y) Iif( ( x ) < ( y ), x, y )      '' maximum function-like macro
+#define MAX(x, y) Iif( ( x ) > ( y ), x, y )      '' minimum function-like macro
+#define MUL(x, y) ( ( x ) * ( y ) )               '' multiply function-like macro
+
+#macro REV_STR(str_dest, str_src)                 '' reverse-string sub-like macro
+	For i As Integer = Len(str_src) To 1 Step -1
+		str_dest &= Mid(str_src, i, 1)
+	Next I
+#endmacro
+
+Print MIN(5 - 3, 1 + 2)    '' 2
+Print MAX(5 - 3, 1 + 2)    '' 3
+Print MUL(5 - 3, 1 + 2)^2  '' 36
+
+Dim As String s
+REV_STR(s, "CISABeerF")  '' FreeBASIC
+Print s
+
+Sleep
+		%%
+{{fbdoc item="section" value="See also"}}
+	- [[ProPgPreprocessor|Preprocessor Overview]]
+	- [[ProPgConditionalCompilation|Conditional Compilation]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

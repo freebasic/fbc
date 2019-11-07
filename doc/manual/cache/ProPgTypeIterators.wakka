@@ -302,7 +302,7 @@ iteration from 7/10 to -8/5 by step of -8/15:
 	7/10    1/6    -11/30    -9/10    -43/30
 %%
 {{fbdoc item="section" value="See also"}}
-	- [[KeyPgFornext|For...Next]]
-	- [[KeyPgOperator|Operator]]
+	- ##[[KeyPgFornext|For...Next]]##
+	- ##[[KeyPgOperator|Operator]]##
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

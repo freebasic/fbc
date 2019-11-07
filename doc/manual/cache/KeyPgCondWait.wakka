@@ -9,7 +9,7 @@ Stops execution of current thread until some condition becomes true
 ##
 {{fbdoc item="param"}}
 	##//handle//##
-		The handle of a conditional variable, or the null pointer (0) on failure.
+		The handle of a conditional variable.
 	##//mutex//##
 		The mutex associated with this conditional variable, which must be locked when testing the condition and calling ##**Condwait**##.
 

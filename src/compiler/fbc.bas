@@ -2939,6 +2939,13 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 		'' Avoid gcc exception handling bloat
 		ln += "-fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables "
 
+		'' Prevent format string errors on gcc 9.x. (enabled by default with '-Wall')
+		'' TODO: fbc currently emits the ZSTRING type as 'uint8' when it
+		'' should probably preserve the 'char' type.  In C, there are 3 
+		'' distinct types, 'char', 'unsigned char', 'signed char'.
+		'' See ir-hlc.bas:hEmitType()
+		ln += "-Wno-format "
+
 		if( fbGetOption( FB_COMPOPT_DEBUGINFO ) ) then
 			ln += "-g "
 		end if

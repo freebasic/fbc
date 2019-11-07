@@ -94,7 +94,7 @@ END SUB
 %%
 
 {{fbdoc item="see"}}
-	- [[ProPgArrays|Arrays]]
+	- [[ProPgArrays|Arrays Overview]]
 	- ##[[KeyPgDim|Dim]]##
 	- ##[[KeyPgFunction|Function]]##
 	- ##[[KeyPgSub|Sub]]##

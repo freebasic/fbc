@@ -3,7 +3,7 @@ Returns a pointer to a string variable's data
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Sadd** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgString|string]] ) [[KeyPgAs|as]] [[KeyPgZstring|Zstring]] [[KeyPgPtr|ptr]]
-	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Sadd** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgWstring|Wstring]] ) [[KeyPgAs|as]] [[KeyPgZstring|Zstring]] [[KeyPgPtr|ptr]]
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Sadd** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgWstring|Wstring]] ) [[KeyPgAs|as]] [[KeyPgWstring|Wstring]] [[KeyPgPtr|ptr]]
 	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **Sadd** ( [[KeyPgByref|byref]] //str// [[KeyPgAs|as]] [[KeyPgZstring|Zstring]] ) [[KeyPgAs|as]] [[KeyPgZstring|Zstring]] [[KeyPgPtr|ptr]]
 ##
 {{fbdoc item="usage"}}##

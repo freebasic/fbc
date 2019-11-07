@@ -1,0 +1,255 @@
+{{fbdoc item="title" value="Graphics Mode Refresh and Anti-Flickering"}}----
+The **Anti-Flikering** coding methods for **Graphics Mode Refresh** (after clearing screen or viewport).
+
+**Preamble:**
+
+	Refreshing (redrawing without precaution) a window in graphics mode can result in annoying flickering (this is due to the display of unwanted intermediate images picked up during the user refreshing phase).
+	The phenomenon is obviously intensified if the entire window is first erased before being completely updated, and this repeatedly.
+	
+	This page presents the basic FreeBASIC coding techniques to fight against this phenomenon.
+
+{{fbdoc item="section" value="Main principles for anti-flickering"}}
+	If one takes into account the only graphical user task (regardless of CPU resources needed for the OS), there are two main methods to avoid flickering:
+		**""-""** In first priority, use of a block //'[Screenlock...Screenunlock]'// to encapsulate the graphical instructions for refreshing.
+			But the documentation enlightens a warning to its use:
+				##//It is strongly recommended that the lock on a page be held for as short a time as possible. Only screen drawing should occur while the screen is locked, input/output and waiting must be avoided. In Win32 and Linux the screen is locked by stopping the thread that processes also the OS' events. If the screen is kept locked for a long time the event queue could overflow and make the system unstable.//##
+		**""-""** In a second priority, if the lock time is too long, use the principle of double video paging.
+		
+	The instruction //'Screensync'// is a reminiscence of the old QuickBASIC where there was only this type of instruction (//'wait &h3DA, 8'//) to improve flickering.
+	It is empirical because it only allows to synchronize the drawing relating to the fixed dead time between two frames.
+	To be used occasionally with very little time drawing.
+	
+	There is usually no interest to mix together these 2 (or 3) methods.
+	
+	Then, in the display loop (if exists), user must provide enough CPU resources to OS (smoothed with //'Sleep'// instruction at the end of the loop). Otherwise, it will take itself out of user control, resulting in a jerky display.
+	
+	**Note:** Using //'Screensync'// provides CPU resources to OS (dead time between end of graphic drawing and end of frame tracing), but by a non controllable way (because linked to the frame period).
+
+{{fbdoc item="section" value="Anti-flickering methods learning, through small example"}}
+	A small program to enlighten (and compare the different efficiencies) the 4 following different methods from 2 to 5 (after the no method 1) to animate a drawing/printing to a graphic screen by a loop with clearing screen:
+			**Method 1:** __Draw/Print loop to screen with raw coding (no method)__
+				Algorithm:
+					%%
+'    SCREEN 19, , 2 'to enable double-paging
+'    SCREENSET 0, 0 'to cancel double-paging
+'
+'  ┌─► CLS          'to clear the page
+'  │   Drawing      'to draw on the page
+'  │   Printing     'to print on the page
+'  └── Temporizing  'to avoid hogging the CPU
+					%%
+			**Method 2:** __Draw/Print loop to screen with synchronizing__
+				Algorithm:
+					%%
+'    SCREEN 19, , 2 'to enable double-paging
+'    SCREENSET 0, 0 'to cancel double-paging
+'
+'  ┌─► SCREENSYNC   'to synchronize between two frames
+'  │   CLS          'to clear the page
+'  │   Drawing      'to draw on the page
+'  │   Printing     'to print on the page
+'  └── Temporizing  'to avoid hogging the CPU
+					%%
+			**Method 3:** __Draw/Print loop to screen with locking__
+				Algorithm:
+					%%
+'    SCREEN 19, , 2 'to enable double-paging
+'    SCREENSET 0, 0 'to cancel double-paging
+'
+'  ┌─► SCREENLOCK   'to lock the page's frame buffer
+'  │   CLS          'to clear the page
+'  │   Drawing      'to draw on the page
+'  │   Printing     'to print on the page
+'  │   SCREENUNLOCK 'to unlock the page's frame buffer
+'  └── Temporizing  'to avoid hogging the CPU
+					%%
+			**Method 4:** __Draw/Print loop to screen with double buffering__
+				Algorithm:
+					%%
+'    SCREEN 19, , 2 'to enable double-paging
+'    SCREENSET 1, 0 'to activate double-paging
+'
+'  ┌─► CLS          'to clear the work page
+'  │   Drawing      'to draw on the work page
+'  │   Printing     'to print on the work page
+'  │   SCREENCOPY   'to copy the work page into the visible page
+'  └── Temporizing  'to avoid hogging the CPU
+					%%Note:
+						Double buffering and page flipping (below) are functionally equivalent (but not under the hood) if the work page is entirely refreshed at each iteration as here.
+						
+			**Method 5:** __Draw/Print loop to screen with page flipping__
+				Algorithm:
+					%%
+'    SCREEN 19, , 2     'to enable double-paging
+'    SCREENSET 1, 0     'to activate double-paging
+'    p0=0 : p1=1        'to initialize flipping
+'
+'  ┌─► CLS              'to clear the work page
+'  │   Drawing          'to draw on the work page
+'  │   Printing         'to print on the work page
+'  │   SCREENSET p0, p1 'to set the work page to the p0 value, and the visible page to the p1 value
+'  │   SWAP p0, p1      'to exchange the values of p0 and p1
+'  └── Temporizing      'to avoid hogging the CPU
+					%%Note:
+						Page flipping and double buffering (above) are functionally equivalent (but not under the hood) if the work page is entirely refreshed at each iteration as here.
+						
+			__Complete program listing__
+				Code:
+					{{fbdoc item="filename" value="examples/manual/proguide/graphics/anti-flickering.bas"}}%%(freebasic)
+Declare Sub Draw_circle_recursion (Byval x As Integer, Byval y As Integer, Byval r As Integer, Byval rmin As integer)
+
+Dim I As Integer = 0
+Dim Inc As Integer
+Dim Key As String
+Dim Code As Integer = 1
+Dim Tempo As Integer = 3
+Dim T As Single = Tempo
+Dim p0 As Integer = 0
+Dim p1 As Integer = 1
+
+
+Screen 19, , 2
+
+Do
+	If Code = 4 Or Code = 5 Then
+		Screenset 1, 0
+	Else
+		Screenset 0, 0
+	End If
+	Do
+		Select Case Code
+		Case 2
+			Screensync
+		Case 3
+			Screenlock
+		End Select
+		Cls
+		Draw_circle_recursion(10 + I, 300, 9 + I * I / 29 / 29, 10)
+		Locate 1, 1
+		Select Case Code
+		Case 1
+			Print "1. Draw/Print loop to screen with raw coding:"
+			Print
+			Print "   SCREEN 19, , 2 'to enable double-paging"
+			Print "   SCREENSET 0, 0 'to cancel double-paging"
+			Print
+			Print " " & Chr(218) & Chr(196) & Chr(16) & " CLS"
+			Print " " & Chr(179) & " " & " " & " Drawing"
+			Print " " & Chr(179) & " " & " " & " Printing"
+			Print " " & Chr(192) & Chr(196) & Chr(196) & " Temporizing"; T; " ms";
+		Case 2
+			Print "2. Draw/Print loop to screen with synchronizing:"
+			Print
+			Print "   SCREEN 19, , 2 'to enable double-paging"
+			Print "   SCREENSET 0, 0 'to cancel double-paging"
+			Print
+			Print " " & Chr(218) & Chr(196) & Chr(16) & " SCREENSYNC"
+			Print " " & Chr(179) & " " & " " & " CLS"
+			Print " " & Chr(179) & " " & " " & " Drawing"
+			Print " " & Chr(179) & " " & " " & " Printing"
+			Print " " & Chr(192) & Chr(196) & Chr(196) & " Temporizing"; T; " ms";
+		Case 3
+			Print "3. Draw/Print loop to screen with locking:"
+			Print
+			Print "   SCREEN 19, , 2 'to enable double-paging"
+			Print "   SCREENSET 0, 0 'to cancel double-paging"
+			Print
+			Print " " & Chr(218) & Chr(196) & Chr(16) & " SCREENLOCK"
+			Print " " & Chr(179) & " " & " " & " CLS"
+			Print " " & Chr(179) & " " & " " & " Drawing"
+			Print " " & Chr(179) & " " & " " & " Printing"
+			Print " " & Chr(179) & " " & " " & " SCREENUNLOCK"
+			Print " " & Chr(192) & Chr(196) & Chr(196) & " Temporizing"; T; " ms";
+		Case 4
+			Print "4. Draw/Print loop to screen with double buffering:"
+			Print
+			Print "   SCREEN 19, , 2 'to enable double-paging"
+			Print "   SCREENSET 1, 0 'to activate double-paging"
+			Print
+			Print " " & Chr(218) & Chr(196) & Chr(16) & " CLS"
+			Print " " & Chr(179) & " " & " " & " Drawing"
+			Print " " & Chr(179) & " " & " " & " Printing"
+			Print " " & Chr(179) & " " & " " & " SCREENCOPY"
+			Print " " & Chr(192) & Chr(196) & Chr(196) & " Temporizing"; T; " ms";
+		Case 5
+			Print "5. Draw/Print loop to screen with page flipping:"
+			Print
+			Print "   SCREEN 19, , 2 'to enable double-paging"
+			Print "   SCREENSET 1, 0 'to activate double-paging"
+			Print "   p0=0 : p1=1    'to initialize flipping"
+			Print
+			Print " " & Chr(218) & Chr(196) & Chr(16) & " CLS"
+			Print " " & Chr(179) & " " & " " & " Drawing"
+			Print " " & Chr(179) & " " & " " & " Printing"
+			Print " " & Chr(179) & " " & " " & " SCREENSET p0, p1"
+			Print " " & Chr(179) & " " & " " & " SWAP p0, p1"
+			Print " " & Chr(192) & Chr(196) & Chr(196) & " Temporizing"; T; " ms";
+		End Select
+		Locate 30, 1
+		Print "<1>: Draw/Print with raw coding"
+		Print "<2>: Draw/Print with synchronizing"
+		Print "<3>: Draw/Print with locking"
+		Print "<4>: Draw/Print with double buffering"
+		Print "<5>: Draw/Print with page flipping"
+		Print "<+/->: Tempo setting (+/-)"
+		Print
+		Print "<Escape> or click [X]: Quit";
+		Select Case Code
+		Case 3
+			Screenunlock
+		Case 4
+			Screencopy
+		Case 5
+			Screenset p0, p1
+			Swap p0, p1
+		End Select
+		If I = 0 Then
+			Inc = +1
+		Elseif I = 480 Then
+			Inc = -1
+		End If
+		I = I + Inc
+		Key = Inkey
+		If Key = "+" And Tempo < 10 Then
+			Tempo = Tempo + 1
+		Elseif Key = "-" And Tempo > 0 Then
+			Tempo = Tempo - 1
+		End If
+		If Tempo > 0 Then
+			T = Tempo
+		Else
+			T = 0.5
+		End If
+		Static As Integer K
+		K += 1
+		If K >= 25 / T Then
+			Sleep 25
+			K = 0
+		End If
+	Loop While Key <> "1" And Key <> "2" And Key <> "3" And Key <> "4" And Key <> "5" And Key <> Chr(27) And Key <> Chr(255) & "k"
+	Code = Val(Key)
+Loop Until Key = Chr(27) Or Key = Chr(255) & "k"
+
+
+Sub Draw_circle_recursion ( ByVal x As Integer, Byval y As Integer, ByVal r As Integer, Byval rmin As integer )
+	Circle (x, y), r, r Shr 1
+	If r > rmin Then
+		Draw_circle_recursion(x + r shr 1, y, r Shr 1, rmin)
+		Draw_circle_recursion(x - r Shr 1, y, r Shr 1, rmin)
+		Draw_circle_recursion(x, y + r Shr 1, r Shr 1, rmin)
+		Draw_circle_recursion(x, y - r Shr 1, r Shr 1, rmin)
+		Draw_circle_recursion(x + r Shr 1, y + r Shr 1, r Shr 2, rmin)
+		Draw_circle_recursion(x - r Shr 1, y + r Shr 1, r Shr 2, rmin)
+		Draw_circle_recursion(x + r Shr 1, y - r Shr 1, r Shr 2, rmin)
+		Draw_circle_recursion(x - r Shr 1, y - r Shr 1, r Shr 2, rmin)
+	End If
+End Sub
+					%%Note on temporizing in the loop (for compatibility with any PC):
+						The true temporizing value applied is always 25 ms (//'Sleep 25'//), but only for one loop on N (with //'N = 25 / tempo'//, and //'tempo'// the wanted value in ms between 0.5 and 10).
+
+{{fbdoc item="section" value="See also"}}
+	- ##[[KeyPgScreensync|Screensync]]##
+	- ##[[KeyPgScreenlock|Screenlock]]##, ##[[KeyPgScreenunlock|Screenunlock]]##
+	- ##[[KeyPgScreenset|Screenset]]##, ##[[KeyPgScreencopy|Screencopy]]##
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

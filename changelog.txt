@@ -3,6 +3,10 @@ Version 1.08.0
 [changed]
 - array descriptor contains new 'flags' field.  Careful, breaks binary compatibility plus chicken-egg problem to build fbc.
 - fbc '-version' reports build date in yyyy-mm-dd format (aka build date iso)
+- updated SQLite headers for binding to SQLite 3.30.0 (2019-10-04)
+- updated BASS headers for binding to BASS 2.4.14
+- updated PostgreSQL headers for binding to PostgreSQL 12.0
+- updated curl headers for binding to curl 7.66.0
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
@@ -13,9 +17,14 @@ Version 1.08.0
 - makefile: 'FBSHA1=1' makefile configuration option to determine the current repo commit sha-1 from git
 - makefile: 'FBSHA1=some-sha-1' makefile configuration option to explicit set the repo commit sha-1
 - makefile: '-d FBSHA1="some-sha-1"' compiler option to set the value of '__FB_BUILD_SHA1__' when building fbc
+- rtlib: inc/file.bi:FileFlush() function, usable for file, PIPE, CONS, and ERR streams opened for BINARY, RANDOM, OUTPUT, APPEND.
+- rtlib: inc/file.bi;FileSetEof() function, to adjust size of open file
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
+- sf.net #904; gcc backend: pass '-Wno-format' to prevent format string errors in gcc 9.x (enabled by default with -Wall)
+- sf.net #910: cast(string, variable) can cause fbc to segfault (infinite recursion), due to misplaced const & non-const casting
+- sf.net #898: fbc win gfxlib DirectX driver failed to initialize on 64-bit, due to incorrect construction of DIDATAFORMAT for keyboard device (macko17)
 
 
 Version 1.07.0

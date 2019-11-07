@@ -1,10 +1,10 @@
-'' FreeBASIC binding for postgresql-9.4.4
+'' FreeBASIC binding for postgresql-12.0
 ''
 '' based on the C header files:
 ''   PostgreSQL Database Management System
 ''   (formerly known as Postgres, then as Postgres95)
 ''
-''   Portions Copyright (c) 1996-2015, PostgreSQL Global Development Group
+''   Portions Copyright (c) 1996-2019, PostgreSQL Global Development Group
 ''
 ''   Portions Copyright (c) 1994, The Regents of the University of California
 ''
@@ -26,7 +26,7 @@
 ''   PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 ''
 '' translated to FreeBASIC by:
-''   Copyright © 2015 FreeBASIC development team
+''   Copyright © 2019 FreeBASIC development team
 
 #pragma once
 
@@ -54,6 +54,9 @@ enum
 	CONNECTION_SETENV
 	CONNECTION_SSL_STARTUP
 	CONNECTION_NEEDED
+	CONNECTION_CHECK_WRITABLE
+	CONNECTION_CONSUME
+	CONNECTION_GSS_STARTUP
 end enum
 
 type PostgresPollingStatusType as long
@@ -93,6 +96,14 @@ enum
 	PQERRORS_TERSE
 	PQERRORS_DEFAULT
 	PQERRORS_VERBOSE
+	PQERRORS_SQLSTATE
+end enum
+
+type PGContextVisibility as long
+enum
+	PQSHOW_CONTEXT_NEVER
+	PQSHOW_CONTEXT_ERRORS
+	PQSHOW_CONTEXT_ALWAYS
 end enum
 
 type PGPing as long
@@ -189,6 +200,7 @@ declare function PQdb(byval conn as const PGconn ptr) as zstring ptr
 declare function PQuser(byval conn as const PGconn ptr) as zstring ptr
 declare function PQpass(byval conn as const PGconn ptr) as zstring ptr
 declare function PQhost(byval conn as const PGconn ptr) as zstring ptr
+declare function PQhostaddr(byval conn as const PGconn ptr) as zstring ptr
 declare function PQport(byval conn as const PGconn ptr) as zstring ptr
 declare function PQtty(byval conn as const PGconn ptr) as zstring ptr
 declare function PQoptions(byval conn as const PGconn ptr) as zstring ptr
@@ -204,10 +216,17 @@ declare function PQconnectionNeedsPassword(byval conn as const PGconn ptr) as lo
 declare function PQconnectionUsedPassword(byval conn as const PGconn ptr) as long
 declare function PQclientEncoding(byval conn as const PGconn ptr) as long
 declare function PQsetClientEncoding(byval conn as PGconn ptr, byval encoding as const zstring ptr) as long
+declare function PQsslInUse(byval conn as PGconn ptr) as long
+declare function PQsslStruct(byval conn as PGconn ptr, byval struct_name as const zstring ptr) as any ptr
+declare function PQsslAttribute(byval conn as PGconn ptr, byval attribute_name as const zstring ptr) as const zstring ptr
+declare function PQsslAttributeNames(byval conn as PGconn ptr) as const zstring const ptr ptr
 declare function PQgetssl(byval conn as PGconn ptr) as any ptr
 declare sub PQinitSSL(byval do_init as long)
 declare sub PQinitOpenSSL(byval do_ssl as long, byval do_crypto as long)
+declare function PQgssEncInUse(byval conn as PGconn ptr) as long
+declare function PQgetgssctx(byval conn as PGconn ptr) as any ptr
 declare function PQsetErrorVerbosity(byval conn as PGconn ptr, byval verbosity as PGVerbosity) as PGVerbosity
+declare function PQsetErrorContextVisibility(byval conn as PGconn ptr, byval show_context as PGContextVisibility) as PGContextVisibility
 declare sub PQtrace(byval conn as PGconn ptr, byval debug_port as FILE ptr)
 declare sub PQuntrace(byval conn as PGconn ptr)
 declare function PQsetNoticeReceiver(byval conn as PGconn ptr, byval proc as PQnoticeReceiver, byval arg as any ptr) as PQnoticeReceiver
@@ -245,6 +264,7 @@ declare function PQfn(byval conn as PGconn ptr, byval fnid as long, byval result
 declare function PQresultStatus(byval res as const PGresult ptr) as ExecStatusType
 declare function PQresStatus(byval status as ExecStatusType) as zstring ptr
 declare function PQresultErrorMessage(byval res as const PGresult ptr) as zstring ptr
+declare function PQresultVerboseErrorMessage(byval res as const PGresult ptr, byval verbosity as PGVerbosity, byval show_context as PGContextVisibility) as zstring ptr
 declare function PQresultErrorField(byval res as const PGresult ptr, byval fieldcode as long) as zstring ptr
 declare function PQntuples(byval res as const PGresult ptr) as long
 declare function PQnfields(byval res as const PGresult ptr) as long
@@ -278,6 +298,7 @@ declare function PQmakeEmptyPGresult(byval conn as PGconn ptr, byval status as E
 declare function PQcopyResult(byval src as const PGresult ptr, byval flags as long) as PGresult ptr
 declare function PQsetResultAttrs(byval res as PGresult ptr, byval numAttributes as long, byval attDescs as PGresAttDesc ptr) as long
 declare function PQresultAlloc(byval res as PGresult ptr, byval nBytes as uinteger) as any ptr
+declare function PQresultMemorySize(byval res as const PGresult ptr) as uinteger
 declare function PQsetvalue(byval res as PGresult ptr, byval tup_num as long, byval field_num as long, byval value as zstring ptr, byval len as long) as long
 declare function PQescapeStringConn(byval conn as PGconn ptr, byval to as zstring ptr, byval from as const zstring ptr, byval length as uinteger, byval error as long ptr) as uinteger
 declare function PQescapeLiteral(byval conn as PGconn ptr, byval str as const zstring ptr, byval len as uinteger) as zstring ptr
@@ -310,6 +331,7 @@ declare function PQmblen(byval s as const zstring ptr, byval encoding as long) a
 declare function PQdsplen(byval s as const zstring ptr, byval encoding as long) as long
 declare function PQenv2encoding() as long
 declare function PQencryptPassword(byval passwd as const zstring ptr, byval user as const zstring ptr) as zstring ptr
+declare function PQencryptPasswordConn(byval conn as PGconn ptr, byval passwd as const zstring ptr, byval user as const zstring ptr, byval algorithm as const zstring ptr) as zstring ptr
 declare function pg_char_to_encoding(byval name as const zstring ptr) as long
 declare function pg_encoding_to_char(byval encoding as long) as const zstring ptr
 declare function pg_valid_server_encoding_id(byval encoding as long) as long

@@ -1,0 +1,74 @@
+{{fbdoc item="title" value="Preprocessor"}}----
+The **Preprocessor** performs some processing on source code before the next step of compilation.
+
+The preprocessor is a program that parses a text file and makes it submit to certain transformations.
+These transformations can be the inclusion of a file, the deletion of a text block or the replacement of a text block.
+
+The preprocessor performs these operations through specific commands that it reads in the file being scanned.
+
+It is automatically called by the compiler, before compilation, to process the files to compile.
+
+{{fbdoc item="section" value="Preprocessor commands"}}
+	All preprocessor commands begin at the beginning of the line with the pound sign ("#").
+	See '[[CatPgPreProcess|Preprocessor commands]]' to get all commands that control the preprocessor.
+	
+	The main types of commands are the followings:
+		- File inclusion:
+				Text file inclusion allows you to factorize text that is common to many other files (for example, type, constant, function, etc.).
+				The common text is usually put in a file with the extension ".bi".
+				Syntax:
+					##[[KeyPgInclude|#include]] [once] //"file"//##
+						##//file//## is the name of the file to include.
+				The included file is also processed by the preprocessor.
+				
+				File inclusion also allows to include a library in the linking process.
+				Syntax:
+					##[[KeyPgInclib|#inclib]] //"libname"//##
+						##//libname//## is the name of the library file to include in the linking process.
+						
+		- Text replacement:
+				The preprocessor makes it possible to define identifiers which, used in the program, will be replaced textually by their value.
+				Syntax:
+					##[[KeyPgPpdefine|#define]] //identifier// //body//##
+						where ##//identifier//## is the identifier that will be used in the rest of the program, and ##//body//## will be the replacement text that the preprocessor will use.
+				Whenever the identifier ##//identifier//## is encountered by the preprocessor, it will be replaced by the text ##//body//## throughout the rest of the program (##[[KeyPgPpundef|#undef]] //identifier//## to undefine an ##//identifier//## previously defined).
+				
+				Defines are //scoped// (they are only visible in the scope they were defined in).
+				Namespaces on the other hand do not have any effect on the visibility of the defines.
+				
+		- Compilation constants and conditional compilation:
+				See the next '[[ProPgConditionalCompilation|Conditional Compilation]]' page of this section.
+				
+		- Macros:
+				See the last page '[[ProPgMacros|Macros]]' of this section.
+				
+		- Other commands:
+				The preprocessor is able to perform other actions than those mentioned above.
+				The directives for performing these actions are listed below:
+					**""-""** ##[[KeyPgPpassert|#assert]] //condition// (conditional directive for debugging)##
+					**""-""** ##[[KeyPgPperror|#error]] //error_text// (directive for displaying error message)##
+					**""-""** ##[[KeyPgPplang|#lang]] //"lang"// (directive to set compiler dialect)##
+					**""-""** ##[[KeyPgPplibpath|#libpath]] //"path"// (directive to add search path for libraries)##
+					**""-""** ##[[KeyPgPpline|#line]] //number// [//"name"//](directive to set current line number [and file name])##
+					**""-""** ##[[KeyPgPragma|#pragma]] ... (directive to set compiler options)##
+					**""-""** ##[[KeyPgPpprint|#print]] //text// (directive to print text)##
+
+{{fbdoc item="section" value="Example"}}
+	Example with ##[[KeyPgInclude|#include]]## and ##[[KeyPgPpdefine|#define]]##:
+		{{fbdoc item="filename" value="examples/manual/proguide/preprocessor.bas"}}%%(freebasic)
+#include "vbcompat.bi"
+#define TEMPLATE "hh:mm:ss yyyy/mm/dd"
+
+Dim As String * LEN(TEMPLATE) hour_date
+
+hour_date = Format(Now, TEMPLATE)
+
+Print hour_date, "(" & TEMPLATE & ")"
+
+Sleep
+		%%
+{{fbdoc item="section" value="See also"}}
+	- [[ProPgConditionalCompilation|Conditional Compilation]]
+	- [[ProPgMacros|Macros]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

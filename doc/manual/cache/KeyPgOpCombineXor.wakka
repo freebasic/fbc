@@ -24,6 +24,8 @@ Performs a bitwise-xor (exclusive disjunction) and assigns the result to a varia
 	##**Xor=**## compares each bit of its operands, ##//lhs//## and ##//rhs//##, and if both bits are the same (both 1 or both 0), then the corresponding bit in the first operand, ##//lhs//##, is set to 0, otherwise it is set to 1.
 	
 	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
+	
+	//Note: Similarly to the operator '=[>]' (assign), the alternative symbol 'Xor=>' can be also used.//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/xor-assign.bas"}}%%(freebasic)

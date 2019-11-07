@@ -47,6 +47,7 @@ $ sudo ./install.sh -i%%
 			- libc development files (installing gcc will typically install these too)
 			- gcc
 			- libncurses development files
+			- libtinfo development files (if not already installed by libncurses)
 			- X11 development files (for FB graphics programs)
 			- libffi development files (for the [[KeyPgThreadCall|ThreadCall]] keyword)
 			- gpm (general purpose mouse) daemon and libgpm (only needed for [[KeyPgGetmouse|GetMouse]] support in the Linux console)
@@ -57,6 +58,7 @@ $ sudo ./install.sh -i%%
 			- Debian/Ubuntu:
 				- gcc
 				- libncurses5-dev
+				- libtinfo5 (if not already installed by libncurses5)
 				- libffi-dev
 				- libgl1-mesa-dev
 				- libx11-dev libxext-dev libxrender-dev libxrandr-dev libxpm-dev
@@ -69,7 +71,8 @@ $ sudo ./install.sh -i%%
 			- ""OpenSUSE"":
 				- gcc
 				- ncurses-devel
-				- libffi46-devel
+				- libncurses5
+				- libffi-devel
 				- xorg-x11-devel
 
 				
@@ -87,7 +90,7 @@ $ sudo ./install.sh -i%%
 				- xorg-x11-libXext-devel-32bit
 				- xorg-x11-libXrender-devel-32bit
 				- xorg-x11-libXpm-devel-32bit
-				- libffi46-devel-32bit
+				- libffi-devel-32bit
 
 				
 	1) Unless you already have a text editor or IDE, you should install one too, as ""FreeBASIC"" itself does not include one. An IDE can be used to write and save .bas files and to launch the ""FreeBASIC"" Compiler to compile them. The following IDEs are known to explicitly support ""FreeBASIC"":

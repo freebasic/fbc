@@ -43,6 +43,7 @@ const fbFileEncodUTF32   = 3
         declare function FileExists alias "fb_FileExists" ( byval filename as zstring ptr ) as long
         declare function FileDateTime alias "fb_FileDateTime" ( byval filename as zstring ptr ) as double
     #endif
+
 #endif
 
 declare function FileFlush alias "fb_FileFlush" ( byval filenumber as long = -1, byval systembuffer as long = 0 ) as long

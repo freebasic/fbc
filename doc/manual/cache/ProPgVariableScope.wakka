@@ -216,6 +216,7 @@ End Sub
 	- ##[[KeyPgShared|Shared]]##
 	- [[ProPgVariables|Variables]]
 	- [[ProPgImplicitdeclarations|Implicit Declarations]]
+	- [[ProPgVariableLifetime|Simple Variable Lifetime vs Scope]]
+	- [[ProPgObjectLifetime|Dynamic Object and Data Lifetime]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
-  

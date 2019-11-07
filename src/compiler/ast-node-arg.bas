@@ -290,7 +290,14 @@ private sub hCheckByrefParam _
 	dim as ASTNODE ptr t = any
 
 	'' skip any casting if they won't do any conversion
-	t = astSkipNoConvCAST( n->l )
+	'' TODO: astSkipConstCASTs() will skip over any CONST conversions
+	'' This is OK when generating the final AST, as we probably no longer care
+	'' about CONST.  However, if we ever get here and we expect PARSER/AST to
+	'' return an error, or preserve the CONST conversion as part of the
+	'' translation, this may introduce undesired behaviour.  Need to verify.
+	'' Specifically, using astSkipConstCASTs() instead of astSkipNoConvCAST()
+	'' allows us to fix the fbc crash as reported in sf.net bug #910
+	t = astSkipConstCASTs( n->l )
 
 	'' If it's a CALL returning a STRING, it actually returns a pointer,
 	'' which can be passed to the BYREF param as-is

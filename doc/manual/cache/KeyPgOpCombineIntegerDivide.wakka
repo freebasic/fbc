@@ -22,6 +22,8 @@ Integer divides and assigns a value to a variable
 		##//lhs// = //lhs// [[KeyPgOpIntegerDivide|\]] //rhs//##
 		
 	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
+	
+	//Note: Similarly to the operator '=[>]' (assign), the alternative symbol '\=>' can be also used.//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/integer-divide-assign.bas"}}%%(freebasic)
