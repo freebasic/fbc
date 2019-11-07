@@ -32,7 +32,7 @@ FBCALL int fb_FileKill_W( FB_WCHAR *wstr )
         {
             res = remove( filename );
             err = errno;
-          free( filename );
+            free( filename );
         }
 #endif
 	}
