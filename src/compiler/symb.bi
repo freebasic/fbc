@@ -358,6 +358,8 @@ enum FB_DEFTOK_TYPE
 	FB_DEFTOK_TYPE_TEX
 	FB_DEFTOK_TYPE_TEXW
 	FB_DEFTOK_TYPE_CHECKPREFIX
+	FB_DEFTOK_TYPE_COUNT
+	FB_DEFTOK_TYPE_PARAMSTR_UCASE
 end enum
 
 type FB_DEFTOK
@@ -1048,7 +1050,8 @@ declare function symbAddDefine _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
 		byval proc as FBS_DEFINE_PROC = NULL, _
-		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
+		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE, _
+    byval isredef as integer = 0 _
 	) as FBSYMBOL ptr
 
 declare function symbAddDefineW _
@@ -1058,7 +1061,8 @@ declare function symbAddDefineW _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
 		byval proc as FBS_DEFINE_PROC = NULL, _
-		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
+		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE, _
+    byval isredef as integer = 0 _
 	) as FBSYMBOL ptr
 
 declare function symbAddDefineMacro _
@@ -1067,7 +1071,8 @@ declare function symbAddDefineMacro _
 		byval tokhead as FB_DEFTOK ptr, _
 		byval params as integer, _
 		byval paramhead as FB_DEFPARAM ptr, _
-		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
+		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE, _
+    byval isredef as integer = 0 _
 	) as FBSYMBOL ptr
 
 declare function symbAddDefineParam _
@@ -1477,7 +1482,8 @@ declare function symbNewSymbol _
 		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE, _
+		byval isredef as integer = 0 _
 	) as FBSYMBOL ptr
 
 declare sub symbFreeSymbol _

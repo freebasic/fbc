@@ -330,7 +330,8 @@ function symbAddDefine _
 		byval lgt as integer, _
 		byval isargless as integer, _
 		byval proc as FBS_DEFINE_PROC, _
-        byval flags as FB_DEFINE_FLAGS _
+        byval flags as FB_DEFINE_FLAGS, _
+        byval isredef as integer = 0 _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr sym = any
@@ -343,7 +344,7 @@ function symbAddDefine _
     					 NULL, @symbGetGlobalHashTb( ), _
     					 FB_SYMBCLASS_DEFINE, _
     				   	 symbol, NULL, _
-    				   	 FB_DATATYPE_CHAR, NULL )
+    				   	 FB_DATATYPE_CHAR, NULL, , isredef )
     if( sym = NULL ) then
     	exit function
     end if
@@ -369,7 +370,8 @@ function symbAddDefineW _
 		byval lgt as integer, _
 		byval isargless as integer, _
 		byval proc as FBS_DEFINE_PROC, _
-        byval flags as FB_DEFINE_FLAGS _
+        byval flags as FB_DEFINE_FLAGS, _
+        byval isredef as integer = 0 _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr sym = any
@@ -382,7 +384,7 @@ function symbAddDefineW _
     					 NULL, @symbGetGlobalHashTb( ), _
     					 FB_SYMBCLASS_DEFINE, _
     				   	 symbol, NULL, _
-    				   	 FB_DATATYPE_WCHAR, NULL )
+    				   	 FB_DATATYPE_WCHAR, NULL, , isredef )
     if( sym = NULL ) then
     	exit function
     end if
@@ -407,7 +409,8 @@ function symbAddDefineMacro _
 		byval tokhead as FB_DEFTOK ptr, _
 		byval params as integer, _
 		byval paramhead as FB_DEFPARAM ptr, _
-		byval flags as FB_DEFINE_FLAGS _
+		byval flags as FB_DEFINE_FLAGS, _
+		byval isredef as integer = 0 _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr sym = any
@@ -420,7 +423,7 @@ function symbAddDefineMacro _
     					 NULL, @symbGetGlobalHashTb( ), _
     					 FB_SYMBCLASS_DEFINE, _
     				   	 symbol, NULL, _
-    				   	 FB_DATATYPE_INVALID, NULL )
+    				   	 FB_DATATYPE_INVALID, NULL, , isredef )
     if( sym = NULL ) then
     	exit function
     end if

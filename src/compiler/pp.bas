@@ -35,7 +35,7 @@ declare sub ppDumpTree _
 '' globals
 	dim shared as PP_CTX pp
 
-const SYMB_MAXKEYWORDS = 24
+const SYMB_MAXKEYWORDS = 25
 
 	dim shared kwdTb( 0 to SYMB_MAXKEYWORDS-1 ) as SYMBKWD => _
 	{ _
@@ -47,6 +47,7 @@ const SYMB_MAXKEYWORDS = 24
         (@"ENDIF"	, FB_TK_PP_ENDIF	), _
         (@"DEFINE"	, FB_TK_PP_DEFINE	), _
         (@"UNDEF"	, FB_TK_PP_UNDEF	), _
+        (@"REDEF"	, FB_TK_PP_REDEF	), _
         (@"MACRO"	, FB_TK_PP_MACRO	), _
         (@"ENDMACRO", FB_TK_PP_ENDMACRO	), _
         (@"INCLUDE"	, FB_TK_PP_INCLUDE	), _
@@ -192,6 +193,11 @@ sub ppParse( )
 	case FB_TK_PP_MACRO
 		lexSkipToken( LEXCHECK_NODEFINE )
 		ppDefine( TRUE )
+
+    ''REDEF ID
+    case FB_TK_PP_REDEF
+        lexSkipToken( LEXCHECK_NODEFINE )
+        ppDefine( FALSE, true )
 
 	'' UNDEF ID
 	case FB_TK_PP_UNDEF
@@ -764,6 +770,11 @@ function ppTypeOf( ) as string
 	cTypeOf( dtype, subtype, lgt, is_fixlenstr )
 
 	function = ucase( symbTypeToStr( dtype, subtype, lgt, is_fixlenstr ) )
+
+    '' skip () -> allow "TYPEOF(a())" in case of array
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		hSkipUntil( CHAR_RPRNT )
+	end if
 
 	'' ')'
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
