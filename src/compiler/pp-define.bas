@@ -293,6 +293,30 @@ private function hLoadMacro _
                     end if    
 				end if
 
+            '' argument count
+			case FB_DEFTOK_TYPE_COUNT
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim i as ulong = 1
+                    dim n as ulong = 0
+
+                    do
+                      n = instr(n+1, *argtext, ",")
+                      if n > 0 then
+                        i = i + 1
+                      else
+                        exit do
+                      end if
+                    loop
+
+					text += str(i)                    '# of arguments = count of "," + 1
+
+				else
+					text += "1"                       'empty -> 1 argument
+				end if
+
 			'' stringize parameter?
 			case FB_DEFTOK_TYPE_PARAMSTR
 				assert( symbGetDefTokParamNum( dt ) <= num )
@@ -301,6 +325,25 @@ private function hLoadMacro _
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
 					'' don't escape, preserve the sequencies as-is
+					text += "$" + QUOTE
+					text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
+					text += QUOTE
+				else
+					'' If it's empty, produce an empty string ("")
+					text += """"""
+				end if
+
+			'' stringize parameter ucase?
+			case FB_DEFTOK_TYPE_PARAMSTR_UCASE
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+					'' don't escape, preserve the sequencies as-is
+dim us as string 
+                    us = ucase(*argtext)
+                    argtext = strptr(us)
+
 					text += "$" + QUOTE
 					text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
 					text += QUOTE
@@ -668,6 +711,30 @@ private function hLoadMacroW _
                     end if    
 				end if
 
+            '' argument count
+			case FB_DEFTOK_TYPE_COUNT
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim i as ulong = 1
+                    dim n as ulong = 0
+
+                    do
+                      n = instr(n+1, *argtext, ",")
+                      if n > 0 then
+                        i = i + 1
+                      else
+                        exit do
+                      end if
+                    loop
+
+					DWstrConcatAssign( text, wstr(i)) '# of arguments = count of "," + 1
+
+				else
+					DWstrConcatAssign( text, "1")     'empty -> 1 argument
+				end if
+
 			'' stringize parameter?
 			case FB_DEFTOK_TYPE_PARAMSTR
 				assert( symbGetDefTokParamNum( dt ) <= num )
@@ -676,6 +743,26 @@ private function hLoadMacroW _
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
 					'' don't escape, preserve the sequencies as-is
+					DWstrConcatAssign( text, "$" + QUOTE )
+					DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
+					DWstrConcatAssign( text, QUOTE )
+				else
+					'' If it's empty, produce an empty string ("")
+					DWstrConcatAssign( text, """""" )
+				end if
+
+			'' stringize parameter ucase?
+			case FB_DEFTOK_TYPE_PARAMSTR_UCASE
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+					'' don't escape, preserve the sequencies as-is
+dim uw as wstring * 128                               'max token length ???
+                    uw = ucase(*argtext)
+                    argtext = strptr(uw)
+
 					DWstrConcatAssign( text, "$" + QUOTE )
 					DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
 					DWstrConcatAssign( text, QUOTE )
@@ -884,11 +971,13 @@ private function hReadMacroText _
 	static as zstring * FB_MAXNAMELEN+1 arg
     dim as FB_DEFPARAM ptr param = any
     dim as FB_DEFTOK ptr toktail = NULL, tokhead = NULL
-    dim as integer addquotes = any, nestedcnt = 0, checkprefix = any
+    dim as integer addquotes = any, nestedcnt = 0, makecount = any, uppercase = any, checkprefix = any
 
     do
     	addquotes = FALSE
     	checkprefix = 0
+    	makecount = FALSE
+    	uppercase = FALSE
 
     	select case as const lexGetToken( LEX_FLAGS )
 		case FB_TK_EOF
@@ -936,14 +1025,38 @@ private function hReadMacroText _
     		'' '##'?
     		case CHAR_SHARP
     			lexSkipToken( LEX_FLAGS )
+                                                  
+                select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
+                                                (not LEXCHECK_NOWHITESPC) )
+                  case CHAR_SHARP                     '### ?
+                    lexSkipToken( LEX_FLAGS )         'skip second #
+                    lexSkipToken( LEX_FLAGS )         'skip third #
+                    makecount = true
+
+                  case else                           '##
     			lexSkipToken( LEX_FLAGS )
     			continue do
+                end select                        
 
             '' check suffix
             case CHAR_QUESTION
     			lexSkipToken( LEX_FLAGS )
     			lexSkipToken( LEX_FLAGS )
                 checkprefix = 1
+
+            case CHAR_AMP                             'stringize uppercase ?
+                select case lexGetLookAhead( 2, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
+                                                (not LEXCHECK_NOWHITESPC) )
+                case CHAR_SHARP                       '### ?
+                    lexSkipToken( LEX_FLAGS )         'skip #
+                    lexSkipToken( LEX_FLAGS )         'skip &
+                    lexSkipToken( LEX_FLAGS )         'skip #
+                    uppercase = true
+
+                  case else                           '##
+                    lexSkipToken( LEX_FLAGS )
+                    continue do
+                end select                        
 
     		'' '#' macro?
     		case FB_TK_PP_MACRO
@@ -1032,6 +1145,10 @@ private function hReadMacroText _
     		if( param <> NULL ) then
 		  		if checkprefix = 1 then      
 			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_CHECKPREFIX )
+		  		elseif makecount = true then
+			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_COUNT )
+  				elseif( uppercase = true ) then
+		  			symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAMSTR_UCASE )
                 elseif( addquotes = FALSE ) then
 					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAM )
 				else
