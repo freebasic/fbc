@@ -410,14 +410,21 @@ private function hLoadMacroW _
 	'' '('?
 	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
 		'' not an error, macro can be passed as param to other macros
-		exit function
+        if lastid = 0 then                            '' special handling, if lastid = 1 (e.g end of line before)
+            exit function
+        end if
+
+    else
+        lastid = 0                                    '' regular handling, there was an opening bracket
 	end if
 
 	if (isMacroAllowed(s) = FALSE) then
 		exit function
 	end if
 
-	lexEatChar( )
+    if lastid = 0 then                                '' in case of special handiling, there is no opening bracket to eat!
+    	lexEatChar( )
+    end if
 
 	'' allocate a new arg list (because the recursivity)
 	param = symbGetDefineHeadParam( s )
@@ -449,7 +456,16 @@ private function hLoadMacroW _
         end if
 
 		'' read text until a comma or right-parentheses is found
+        '' look for line end or statement separator in case of special handling
 		do
+            if lastid = 1 then                        '' no opening bracket, special handling
+                select case lex.ctx->currchar
+                    case 10, 13, 58
+                        prntcnt = 0
+                        exit do
+                end select
+            end if
+
 			lexNextToken( @t, LEXCHECK_NOWHITESPC or _
 							  LEXCHECK_NOSUFFIX or _
 							  LEXCHECK_NOQUOTES or _
