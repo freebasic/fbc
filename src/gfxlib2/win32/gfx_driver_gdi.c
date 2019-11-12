@@ -32,6 +32,7 @@ GFXDRIVER fb_gfxDriverGDI =
 static BITMAPINFO *bitmap_info;
 static HPALETTE palette;
 static unsigned char *buffer;
+static int switched_to_fullscreen;
 
 static void alpha_remover_blitter(unsigned char *dest, int pitch)
 {
@@ -112,7 +113,7 @@ static int gdi_init(void)
 		} else if (ChangeDisplaySettings(&mode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
 			return -1;
 		}
-		
+		switched_to_fullscreen = 1;
 		style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
 	} else {
 		style = WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME;
@@ -168,8 +169,7 @@ static int gdi_init(void)
 	bitmap_info->bmiHeader.biCompression = BI_RGB;
 
 	if ((fb_win32.depth >= 16) || (fb_win32.w & 0x3) || (__fb_gfx->scanline_size > 1)) {
-		if (fb_win32.flags & DRIVER_SHAPED_WINDOW)
-		{
+		if (fb_win32.flags & DRIVER_SHAPED_WINDOW) {
 			if( fb_win32.depth == 32 )
 				fb_win32.blitter = alpha_remover_blitter;
 		}
@@ -212,9 +212,11 @@ static void gdi_exit(void)
 	if (bitmap_info)
 		free(bitmap_info);
 	if (fb_win32.wnd) {
-		if (fb_win32.flags & DRIVER_FULLSCREEN)
-			ChangeDisplaySettings(NULL, 0);
 		DestroyWindow(fb_win32.wnd);
+	}
+	if(switched_to_fullscreen) {
+		switched_to_fullscreen = 0;
+		ChangeDisplaySettings(NULL, 0);
 	}
 	if (palette)
 		DeleteObject(palette);
