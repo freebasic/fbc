@@ -86,6 +86,8 @@ static pthread_t thread;
 static pthread_mutex_t mutex;
 static pthread_cond_t cond;
 
+#if defined HOST_X86 || defined HOST_X86_64
+
 static void vga16_blitter(unsigned char *dest, int pitch)
 {
 	unsigned int color;
@@ -139,6 +141,7 @@ static void vga16_blitter(unsigned char *dest, int pitch)
 		source += __fb_gfx->pitch;
 	}
 }
+#endif
 
 static void *driver_thread(void *arg)
 {
@@ -448,9 +451,13 @@ got_mode:
 	fb_hMemSet(framebuffer, 0, device_info.smem_len);
 
 	if (mode.bits_per_pixel == 4) {
+#if defined HOST_X86 || defined HOST_X86_64
 		palette_len = 16;
 		framebuffer_offset = (((mode.yres - h) >> 1) * (mode.xres >> 3)) + ((mode.xres - w) >> 4);
 		blitter = vga16_blitter;
+#else
+		return -1;
+#endif
 	} else {
 		palette_len = 256;
 		framebuffer_offset = (((mode.yres - h) >> 1) * device_info.line_length) +
