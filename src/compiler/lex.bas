@@ -1515,6 +1515,9 @@ private function readId( byref t as FBTOKEN, byval flags as LEXCHECK ) as intege
             lastid = 0    
     end select
 
+    if currmacro <> NULL then
+        lastid = 0    
+    end if
 
 	t.len = 0
 	t.prdpos = 0
@@ -1558,6 +1561,10 @@ private function readId( byref t as FBTOKEN, byval flags as LEXCHECK ) as intege
 				t.after_space = TRUE
 				'' Ignore the ID and read expanded text
 				return FALSE
+'***********************************************************************************************
+' else
+'     don´t expand just read text (found a macro without brackets)
+'***********************************************************************************************
 			end if
 		end if
 	end if

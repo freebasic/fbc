@@ -78,12 +78,11 @@ private function hLoadMacro _
 	function = -1
 
 	'' '('?
-
     if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
         '' not an error, macro can be passed as param to other macros
-'        if lastid = 0 then                            '' special handling, if lastid = 1 (e.g end of line before)
+        if (lastid = 0) or ( lexCurrentChar( TRUE ) = CHAR_COMMA ) or ( lexCurrentChar( TRUE ) = CHAR_RPRNT ) then '' special handling, if lastid = 1 (e.g end of line before)
             exit function
-'        end if
+        end if
 
     else
         lastid = 0                                    '' regular handling, there was an opening bracket
@@ -93,9 +92,9 @@ private function hLoadMacro _
 		exit function
 	end if
 
-'    if lastid = 0 then                                '' in case of special handiling, there is no opening bracket to eat!
+    if lastid = 0 then                                '' in case of special handiling, there is no opening bracket to eat!
     	lexEatChar( )
-'    end if
+    end if
     
 	'' allocate a new arg list (support recursion)
 	param = symbGetDefineHeadParam( s )
@@ -129,13 +128,13 @@ private function hLoadMacro _
 		'' read text until a comma or right-parentheses is found
         '' look for line end or statement separator in case of special handling
 		do
-'            if lastid = 1 then                        '' no opening bracket, special handling
-'                select case lex.ctx->currchar
-'                    case 10, 13, 58
-'                        prntcnt = 0
-'                        exit do
-'                end select
-'            end if
+            if lastid = 1 then                        '' no opening bracket, special handling
+                select case lex.ctx->currchar
+                    case 10, 13, 58
+                        prntcnt = 0
+                        exit do
+                end select
+            end if
             
 			lexNextToken( @t, LEXCHECK_NOWHITESPC or _
 							  LEXCHECK_NOSUFFIX or _
@@ -377,6 +376,7 @@ dim us as string
 			'' ordinary text..
 			case FB_DEFTOK_TYPE_TEX
 				text += *symbGetDefTokText( dt )
+'ods("regular text: " + text)
 
 			'' unicode text?
 			case FB_DEFTOK_TYPE_TEXW
@@ -518,7 +518,7 @@ private function hLoadMacroW _
 	'' '('?
 	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
 		'' not an error, macro can be passed as param to other macros
-        if lastid = 0 then                            '' special handling, if lastid = 1 (e.g end of line before)
+        if (lastid = 0) or ( lexCurrentChar( TRUE ) = CHAR_COMMA ) or ( lexCurrentChar( TRUE ) = CHAR_RPRNT ) then '' special handling, if lastid = 1 (e.g end of line before)
             exit function
         end if
 
@@ -760,7 +760,7 @@ private function hLoadMacroW _
             '' concatenate argument
 			case FB_DEFTOK_TYPE_CONCAT
 				assert( symbGetDefTokParamNum( dt ) <= num )
-				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
                     dim i as ulong = 1
