@@ -1019,7 +1019,7 @@ private function hReadMacroText _
 
     do
     	addquotes = FALSE
-    	checkprefix = 0
+    	checkprefix = false
     	makecount = FALSE
     	uppercase = FALSE
     	concatenate = FALSE
@@ -1076,7 +1076,8 @@ private function hReadMacroText _
                   case CHAR_SHARP                     '### ?
                     lexSkipToken( LEX_FLAGS )         'skip second #
                     lexSkipToken( LEX_FLAGS )         'skip third #
-                    makecount = true
+                    uppercase = true
+'                    makecount = true
 
                   case else                           '##
     			lexSkipToken( LEX_FLAGS )
@@ -1087,12 +1088,13 @@ private function hReadMacroText _
             case CHAR_PERC
     			lexSkipToken( LEX_FLAGS )
     			lexSkipToken( LEX_FLAGS )
-                concatenate = true
+                makecount = true
+'                concatenate = true
 
             case CHAR_QUESTION
     			lexSkipToken( LEX_FLAGS )
     			lexSkipToken( LEX_FLAGS )
-                checkprefix = 1
+                checkprefix = true
 
             case CHAR_AMP                             'stringize uppercase ?
                 select case lexGetLookAhead( 2, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
@@ -1101,7 +1103,8 @@ private function hReadMacroText _
                     lexSkipToken( LEX_FLAGS )         'skip #
                     lexSkipToken( LEX_FLAGS )         'skip &
                     lexSkipToken( LEX_FLAGS )         'skip #
-                    uppercase = true
+                    concatenate = true
+'                    uppercase = true
 
                   case else                           '##
                     lexSkipToken( LEX_FLAGS )
@@ -1193,7 +1196,7 @@ private function hReadMacroText _
 
     		'' found?
     		if( param <> NULL ) then
-		  		if checkprefix = 1 then      
+		  		if checkprefix = true then      
 			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_CHECKPREFIX )
 		  		elseif concatenate = true then
 			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_CONCAT )
