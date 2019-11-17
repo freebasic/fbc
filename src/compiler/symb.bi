@@ -990,6 +990,14 @@ declare function symbFindCastOvlProc _
 		byval is_explicit as integer = FALSE _
 	) as FBSYMBOL ptr
 
+declare function symbFindCastOvlProc2 _
+	( _
+		byval to_dtype as integer, _                      'parameter type (to cast to)
+		byval to_subtype as FBSYMBOL ptr, _               'parameter subtype
+		byval l as ASTNODE ptr, _                         'argument (in code to compile)
+		byval err_num as FB_ERRMSG ptr _
+	) as FB_OVLPROC_MATCH_SCORE
+
 declare function symbFindCtorOvlProc _
 	( _
 		byval sym as FBSYMBOL ptr, _
