@@ -7,7 +7,7 @@
 
   CU_ASSERT_EQUAL(u, w)
 
-	scope
+    scope
 
     if(len(u) <> len(w)) then
       r = 1                                           'signal error
@@ -259,9 +259,9 @@ dim z as long
     TEST( as_LONGINT )
 
       dim w as wstring * 50 = Wstr(123)
-      dim u as ustring = 123
+      dim u as ustring = Wstr(123)
       w += wstr(123)
-      u += 123
+      u += wstr(123)
       hCheckString(u, w)
 
       if r = 1 then
@@ -275,7 +275,7 @@ dim z as long
     TEST( as_DOUBLE )
 
       dim w as wstring * 50 = Wstr(3.14)
-      dim u as ustring = 3.14
+      dim u as ustring = Wstr(3.14)
       w += wstr(3.14)
       u += wstr(3.14)
       hCheckString(u, w)
