@@ -41,9 +41,9 @@ NAMESPACE FB_USTRING
 ''***********************************************************************************************
 '' DWSTR CLASS
 ''***********************************************************************************************
-type init_size
-  n as long                                           ''<0, don´t construct, >= 0, init u_size = n
-end type
+'type init_size
+'  n as long                                           ''<0, don´t construct, >= 0, init u_size = n
+'end type
 
 
 TYPE DWSTR extends wstring
@@ -56,9 +56,10 @@ TYPE DWSTR extends wstring
     DECLARE CONSTRUCTOR (BYVAL pwszStr AS WSTRING PTR)
     DECLARE CONSTRUCTOR (BYREF ansiStr AS STRING)
     DECLARE CONSTRUCTOR (BYREF cws AS DWSTR)
-    DECLARE CONSTRUCTOR (BYVAL n AS LONGINT)
-    DECLARE CONSTRUCTOR (BYVAL n AS DOUBLE)
-    DECLARE CONSTRUCTOR (BYREF n AS init_size)
+'    DECLARE CONSTRUCTOR (BYVAL n AS LONGINT)
+'    DECLARE CONSTRUCTOR (BYVAL n AS DOUBLE)
+'    DECLARE CONSTRUCTOR (BYREF n AS init_size)
+    DECLARE CONSTRUCTOR (BYVAL n AS ULONGINT)
 
     DECLARE DESTRUCTOR
 
@@ -127,21 +128,30 @@ PRIVATE CONSTRUCTOR DWSTR (BYREF cws AS DWSTR)
 END CONSTRUCTOR
 
 
-PRIVATE CONSTRUCTOR DWSTR (BYVAL n AS LONGINT)
-  DIM wsz AS WSTRING * 260 = .WSTR(n)
-  this.Add(wsz)
-END CONSTRUCTOR
+'PRIVATE CONSTRUCTOR DWSTR (BYVAL n AS LONGINT)
+'  DIM wsz AS WSTRING * 260 = .WSTR(n)
+'  this.Add(wsz)
+'END CONSTRUCTOR
+'
+'
+'PRIVATE CONSTRUCTOR DWSTR (BYVAL n AS DOUBLE)
+'  DIM wsz AS WSTRING * 260 = .WSTR(n)
+'  this.Add(wsz)
+'END CONSTRUCTOR
+'
+'
+'PRIVATE CONSTRUCTOR DWSTR (s as init_size)
+'  if s.n >= 0 then
+'     this.ResizeBuffer(s.n * UCHAR_SIZE)              ''Create the initial buffer, n chars
+'
+'  else                                                ''n < 0, don´t construct, need this for RTL functions
+'  end if  
+'END CONSTRUCTOR
 
 
-PRIVATE CONSTRUCTOR DWSTR (BYVAL n AS DOUBLE)
-  DIM wsz AS WSTRING * 260 = .WSTR(n)
-  this.Add(wsz)
-END CONSTRUCTOR
-
-
-PRIVATE CONSTRUCTOR DWSTR (s as init_size)
-  if s.n >= 0 then
-     this.ResizeBuffer(s.n * UCHAR_SIZE)              ''Create the initial buffer, n chars
+PRIVATE CONSTRUCTOR DWSTR (BYVAL n AS ULONGINT)
+  if n > 0 then
+     this.ResizeBuffer(n * UCHAR_SIZE)                ''Create the initial buffer, n chars
 
   else                                                ''n < 0, don´t construct, need this for RTL functions
   end if  
@@ -163,6 +173,29 @@ END DESTRUCTOR
 '' operators
 ''***********************************************************************************************
 
+'***********************************************************************************************
+' experimental !!!!!
+'***********************************************************************************************
+'PRIVATE OPERATOR MID overload (BYREF cws AS DWSTR, i as integer = 1, n as integer = -1) AS DWSTR
+''PRIVATE OPERATOR MID overload (BYREF cws AS DWSTR) AS DWSTR
+'dim u as dwstr
+'
+'  u = "asdf" + wstr(i) + "n: " + wstr(n)
+'
+'
+'  OPERATOR = u
+'END OPERATOR
+'
+'PRIVATE OPERATOR MID overload (BYREF u AS DWSTR, i as integer, n as integer, BYREF cws AS DWSTR) as long
+''PRIVATE OPERATOR MID overload (BYREF cws AS DWSTR) AS DWSTR
+''dim u as dwstr
+'
+'  u = "xyz" + wstr(i) + "n: " + wstr(n)
+'
+'
+'  OPERATOR = 1'u
+'END OPERATOR
+'***********************************************************************************************
 
 PRIVATE OPERATOR LEN (BYREF cws AS DWSTR) AS ulong    ''returns the length, in characters, of the DWSTR.
   OPERATOR = cws.u_len \ UCHAR_SIZE
@@ -481,19 +514,25 @@ END OPERATOR
 ' this doesn´t work, because only the last operator defined takes effect !!!
 '***********************************************************************************************
 
-'PRIVATE OPERATOR & overload (BYREF cws1 AS FB_USTRING.DWSTR, BYVAL n AS LONGINT) AS FB_USTRING.DWSTR
-'DIM cwsRes AS FB_USTRING.DWSTR = cws1
-'DIM wsz AS WSTRING * 260 = .WSTR(n)
-'  cwsRes.Add(wsz)
-'  OPERATOR = cwsRes
-'END OPERATOR
-'
-'PRIVATE OPERATOR & overload (BYREF cws1 AS FB_USTRING.DWSTR, BYVAL n AS double) AS FB_USTRING.DWSTR
-'DIM cwsRes AS FB_USTRING.DWSTR = cws1
-'DIM wsz AS WSTRING * 260 = .WSTR(n)
-'  cwsRes.Add(wsz)
-'  OPERATOR = cwsRes
-'END OPERATOR
+PRIVATE OPERATOR & overload (BYREF cws1 AS FB_USTRING.DWSTR, BYVAL n AS LONGINT) AS FB_USTRING.DWSTR
+DIM cwsRes AS FB_USTRING.DWSTR = cws1
+DIM wsz AS WSTRING * 260 = .WSTR(n)
+  cwsRes.Add(wsz)
+  OPERATOR = cwsRes
+END OPERATOR
+
+PRIVATE OPERATOR & overload (BYREF cws1 AS FB_USTRING.DWSTR, BYVAL n AS double) AS FB_USTRING.DWSTR
+DIM cwsRes AS FB_USTRING.DWSTR = cws1
+DIM wsz AS WSTRING * 260 = .WSTR(n)
+  cwsRes.Add(wsz)
+  OPERATOR = cwsRes
+END OPERATOR
+
+PRIVATE OPERATOR & overload (BYREF cws1 AS FB_USTRING.DWSTR, byref w as wstring) AS FB_USTRING.DWSTR
+DIM cwsRes AS FB_USTRING.DWSTR = cws1
+  cwsRes.Add(w)
+  OPERATOR = cwsRes
+END OPERATOR
 
 
 ''***********************************************************************************************
@@ -502,9 +541,10 @@ END OPERATOR
 
 
 PRIVATE FUNCTION Left OVERLOAD (BYREF cws AS FB_USTRING.DWSTR, BYVAL nChars AS INTEGER) AS FB_USTRING.DWSTR
-dim s   as FB_USTRING.init_size
-  s.n = -1
-dim ret as FB_USTRING.DWSTR = s
+'dim s   as FB_USTRING.init_size
+'  s.n = -1
+'dim ret as FB_USTRING.DWSTR = s
+dim ret as FB_USTRING.DWSTR = 0
 dim n   as integer
 
   n = nChars * sizeof(wstring)
@@ -530,9 +570,10 @@ dim n   as integer
 END FUNCTION
 
 PRIVATE FUNCTION Right OVERLOAD (BYREF cws AS FB_USTRING.DWSTR, BYVAL nChars AS INTEGER) AS FB_USTRING.DWSTR
-dim s   as FB_USTRING.init_size
-  s.n = -1
-dim ret as FB_USTRING.DWSTR = s
+'dim s   as FB_USTRING.init_size
+'  s.n = -1
+'dim ret as FB_USTRING.DWSTR = s
+dim ret as FB_USTRING.DWSTR = 0
 dim n   as integer
 
   n = nChars * sizeof(wstring)

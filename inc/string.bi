@@ -55,9 +55,7 @@ end extern
 
 private function copy_str overload( byref s as string ) as ustring
 dim n as uinteger
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     n = len(s)                                        'pass length
     u.u_data = cast(ubyte ptr, fb_wcharfromstr(s, n))
@@ -131,9 +129,7 @@ end extern
 
 private function repeat_str overload( byval n as integer, byref o as ustring ) as ustring
 dim x as uinteger = len(o)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_repeat_wstr(n, o, x))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -142,9 +138,7 @@ end function
 
 private function repeat_str overload( byval n as integer, byref w as wstring ) as ustring
 dim x as uinteger = len(w)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_repeat_wstr(n, w, x))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -264,9 +258,7 @@ end extern
 
 private function invert_str overload( byref o as ustring) as ustring
 dim x as uinteger = len(o)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrinvert(o, x))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -275,9 +267,7 @@ end function
 
 private function invert_str overload( byref w as wstring) as ustring
 dim x as uinteger = len(w)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrinvert(w, x))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -315,9 +305,7 @@ end extern
 private function insert_str overload(byref o as ustring, byref o1 as ustring, byval n as integer) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrinsert(o, x, o1, y, n))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -327,9 +315,7 @@ end function
 private function insert_str overload(byref o as ustring, byref o1 as zstring, byval n as integer) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrinsert(o, x, o1, y, n))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -339,9 +325,7 @@ end function
 private function insert_str overload(byref w as wstring, byref w1 as wstring, byval n as integer) as ustring
 dim x as uinteger = len(w)
 dim y as uinteger = len(w1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrinsert(w, x, w1, y, n))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -388,9 +372,7 @@ end extern
 private function extract_str overload(byref o as ustring, byval a as long, byref o1 as ustring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrextract(o, x, a, o1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -400,9 +382,7 @@ end function
 private function extract_str overload(byref o as ustring, byval a as long, byref o1 as zstring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrextract(o, x, a, o1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -412,9 +392,7 @@ end function
 private function extract_str overload(byref w as wstring, byval a as long, byref w1 as wstring) as ustring
 dim x as uinteger = len(w)
 dim y as uinteger = len(w1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrextract(w, x, a, w1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -433,9 +411,7 @@ end function
 private function extract_str overload(byval n as integer, byval dummy as long, byref o as ustring, byval a as long, byref o1 as ustring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrextractstart(n, dummy, o, x, a, o1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -445,9 +421,7 @@ end function
 private function extract_str overload(byval n as integer, byval dummy as long, byref o as ustring, byval a as long, byref o1 as zstring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrextractstart(n, dummy, o, x, a, o1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -457,9 +431,7 @@ end function
 private function extract_str overload(byval n as integer, byval dummy as long, byref w as wstring, byval a as long, byref w1 as wstring) as ustring
 dim x as uinteger = len(w)
 dim y as uinteger = len(w1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrextractstart(n, dummy, w, x, a, w1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -507,9 +479,7 @@ end extern
 private function remain_str overload(byref o as ustring, byval a as long, byref o1 as ustring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrremain(o, x, a, o1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -519,9 +489,7 @@ end function
 private function remain_str overload(byref o as ustring, byval a as long, byref o1 as zstring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrremain(o, x, a, o1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -531,9 +499,7 @@ end function
 private function remain_str overload(byref w as wstring, byval a as long, byref w1 as wstring) as ustring
 dim x as uinteger = len(w)
 dim y as uinteger = len(w1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrremain(w, x, a, w1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -552,9 +518,7 @@ end function
 private function remain_str overload(byval n as integer, byval dummy as long, byref o as ustring, byval a as long, byref o1 as ustring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrremainstart(n, dummy, o, x, a, o1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -564,9 +528,7 @@ end function
 private function remain_str overload(byval n as integer, byval dummy as long, byref o as ustring, byval a as long, byref o1 as zstring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrremainstart(n, dummy, o, x, a, o1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -576,9 +538,7 @@ end function
 private function remain_str overload(byval n as integer, byval dummy as long, byref w as wstring, byval a as long, byref w1 as wstring) as ustring
 dim x as uinteger = len(w)
 dim y as uinteger = len(w1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrremainstart(n, dummy, w, x, a, w1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -620,9 +580,7 @@ end extern
 
 private function parse_str overload(byref o as ustring, byval dummy as long, byval n as integer) as ustring
 dim x as uinteger = len(o)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrparse(o, x, dummy, n))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -631,9 +589,7 @@ end function
 
 private function parse_str overload(byref w as wstring, byval dummy as long, byval n as integer) as ustring
 dim x as uinteger = len(w)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrparse(w, x, dummy, n))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -648,9 +604,7 @@ end function
 private function parse_str overload(byref o as ustring, byval a as long, byref o1 as ustring, byval dummy as long, byval n as integer) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrparsedelim(o, x, a, o1, y, dummy, n))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -660,9 +614,7 @@ end function
 private function parse_str overload(byref o as ustring, byval a as long, byref o1 as zstring, byval dummy as long, byval n as integer) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrparsedelim(o, x, a, o1, y, dummy, n))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -672,9 +624,7 @@ end function
 private function parse_str overload(byref w as wstring, byval a as long, byref w1 as wstring, byval dummy as long, byval n as integer) as ustring
 dim x as uinteger = len(w)
 dim y as uinteger = len(w1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrparsedelim(w, x, a, w1, y, dummy, n))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -724,9 +674,7 @@ end extern
 
 private function shrink_str overload(byref o as ustring) as ustring
 dim x as uinteger = len(o)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrshrink(o, x))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -735,9 +683,7 @@ end function
 
 private function shrink_str overload(byref w as wstring) as ustring
 dim x as uinteger = len(w)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrshrink(w, x))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -752,9 +698,7 @@ end function
 private function shrink_str overload(byref o as ustring, byref o1 as ustring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrshrinkdelim(o, x, o1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -764,9 +708,7 @@ end function
 private function shrink_str overload(byref o as ustring, byref o1 as zstring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrshrinkdelim(o, x, o1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -776,9 +718,7 @@ end function
 private function shrink_str overload(byref w as wstring, byref w1 as wstring) as ustring
 dim x as uinteger = len(w)
 dim y as uinteger = len(w1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrshrinkdelim(w, x, w1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -817,9 +757,7 @@ end extern
 private function remove_str overload(byref o as ustring, byval a as long, byref o1 as ustring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrremove(o, x, a, o1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -829,9 +767,7 @@ end function
 private function remove_str overload(byref o as ustring, byval a as long, byref o1 as zstring) as ustring
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrremove(o, x, a, o1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -841,9 +777,7 @@ end function
 private function remove_str overload(byref w as wstring, byval a as long, byref w1 as wstring) as ustring
 dim x as uinteger = len(w)
 dim y as uinteger = len(w1)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrremove(w, x, a, w1, y))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -886,9 +820,7 @@ private function replace_str overload(byref o as ustring, byval a as long, byref
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
 dim z as uinteger = len(o2)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrreplace(o, x, a, o1, y, o2, z))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -899,9 +831,7 @@ private function replace_str overload(byref o as ustring, byval a as long, byref
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
 dim z as uinteger = len(o2)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrreplace(o, x, a, o1, y, o2, z))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -912,9 +842,7 @@ private function replace_str overload(byref o as ustring, byval a as long, byref
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
 dim z as uinteger = len(o2)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrreplace(o, x, a, o1, y, o2, z))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -925,9 +853,7 @@ private function replace_str overload(byref o as ustring, byval a as long, byref
 dim x as uinteger = len(o)
 dim y as uinteger = len(o1)
 dim z as uinteger = len(o2)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrreplace(o, x, a, o1, y, o2, z))
     u.u_len = x * sizeof(wstring)                     'set returned length
@@ -938,9 +864,7 @@ private function replace_str overload(byref w as wstring, byval a as long, byref
 dim x as uinteger = len(w)
 dim y as uinteger = len(w1)
 dim z as uinteger = len(w2)
-dim init as FB_USTRING.init_size
-  init.n = -1
-dim u as ustring = init
+dim u as ustring = 0
 
     u.u_data = cast(ubyte ptr, fb_wstrreplace(w, x, a, w1, y, w2, z))
     u.u_len = x * sizeof(wstring)                     'set returned length
