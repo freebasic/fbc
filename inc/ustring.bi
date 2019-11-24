@@ -509,11 +509,6 @@ DIM cwsRes AS FB_USTRING.DWSTR = cws1
   OPERATOR = cwsRes
 END OPERATOR
 
-
-'***********************************************************************************************
-' this doesn´t work, because only the last operator defined takes effect !!!
-'***********************************************************************************************
-
 PRIVATE OPERATOR & overload (BYREF cws1 AS FB_USTRING.DWSTR, BYVAL n AS LONGINT) AS FB_USTRING.DWSTR
 DIM cwsRes AS FB_USTRING.DWSTR = cws1
 DIM wsz AS WSTRING * 260 = .WSTR(n)
