@@ -17,7 +17,11 @@
 #define FB_AUX_VGA_PLANES_VGA4	0
 #endif
 
+/* Disable fbdev driver on ARM, because it currently uses x86 inline asm */
+#if defined HOST_X86 || defined HOST_X86_64
 #define OUTB(port,value)	{ __asm__ __volatile__ ("outb %b0, %w1" : : "a"(value), "Nd"(port)); }
+#endif
+
 
 
 typedef struct FBDEVDRIVER
@@ -88,6 +92,7 @@ static pthread_cond_t cond;
 
 static void vga16_blitter(unsigned char *dest, int pitch)
 {
+#if defined HOST_X86 || defined HOST_X86_64
 	unsigned int color;
 	unsigned char buffer[fb_fbdev.w], pattern;
 	unsigned char *s, *source = __fb_gfx->framebuffer;
@@ -138,6 +143,7 @@ static void vga16_blitter(unsigned char *dest, int pitch)
 		dest += pitch;
 		source += __fb_gfx->pitch;
 	}
+#endif
 }
 
 static void *driver_thread(void *arg)
