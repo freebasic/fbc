@@ -80,7 +80,7 @@ private function hLoadMacro _
 	'' '('?
     if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
         '' not an error, macro can be passed as param to other macros
-        if (lastid = 0) or ( lexCurrentChar( TRUE ) = CHAR_COMMA ) or ( lexCurrentChar( TRUE ) = CHAR_RPRNT ) then '' special handling, if lastid = 1 (e.g end of line before)
+        if (lastid = 0) or ( lexCurrentChar( TRUE ) = CHAR_COMMA ) or ( lexCurrentChar( TRUE ) = CHAR_RPRNT ) or ucase(left(*lex.ctx->buffptr, 3)) = "AS " then '' special handling, if lastid = 1 (e.g end of line before)
             exit function
         end if
 
@@ -130,7 +130,7 @@ private function hLoadMacro _
 		do
             if lastid = 1 then                        '' no opening bracket, special handling
                 select case lex.ctx->currchar
-                    case 10, 13, 58
+                    case 10, 13, 58                   '' eol or ":"
                         prntcnt = 0
                         exit do
                 end select
@@ -518,7 +518,7 @@ private function hLoadMacroW _
 	'' '('?
 	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
 		'' not an error, macro can be passed as param to other macros
-        if (lastid = 0) or ( lexCurrentChar( TRUE ) = CHAR_COMMA ) or ( lexCurrentChar( TRUE ) = CHAR_RPRNT ) then '' special handling, if lastid = 1 (e.g end of line before)
+        if (lastid = 0) or ( lexCurrentChar( TRUE ) = CHAR_COMMA ) or ( lexCurrentChar( TRUE ) = CHAR_RPRNT ) or ucase(left(*lex.ctx->buffptrw, 3)) = "AS " then '' special handling, if lastid = 1 (e.g end of line before)
             exit function
         end if
 
