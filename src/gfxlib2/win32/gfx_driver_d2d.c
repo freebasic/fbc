@@ -618,7 +618,7 @@ fillInDirtyRect:
 	dirtyRect.left = 0;
 	dirtyRect.right = winWidth - 1;
 	dirtyRect.top = (pFirstDirtyRow - pDirtyStart) * scanlineSize;
-	dirtyRect.bottom = (pLastDirtyRow - pDirtyStart) * scanlineSize;
+	dirtyRect.bottom = ((pLastDirtyRow - pDirtyStart) + 1) * scanlineSize;
 	drawRect.left = dirtyRect.left;
 	drawRect.right = dirtyRect.right;
 	drawRect.top = dirtyRect.top;
