@@ -111,7 +111,8 @@ static char *find_next ( int *attrib )
 			return NULL;
 		}
 		name = entry->d_name;
-		strcpy( buffer, ctx->dirname );
+		strncpy( buffer, ctx->dirname, MAX_PATH );
+		buffer[MAX_PATH-1] = '\0';
 		strncat( buffer, name, MAX_PATH - strlen( buffer ) - 1 );
 		buffer[MAX_PATH-1] = '\0';
 
