@@ -62,7 +62,8 @@ declare sub ppDefine( byval ismultiline as integer, byval isredef as integer = 0
 declare function ppDefineLoad _
 	( _
 		byval s as FBSYMBOL ptr, _
-		byval currmacro as FBSYMBOL ptr _
+		byval currmacro as FBSYMBOL ptr, _
+		byval lastid as integer _
 	) as integer
 
 declare sub ppPragmaInit( )
