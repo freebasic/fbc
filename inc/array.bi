@@ -1354,28 +1354,28 @@ end namespace
 '***********************************************************************************************
 scope
 
-#if ((#i = "") or (###i > 8))
+#if ((#i = "") or (#%i > 8))
   #line __prevline__
   #error "(macro expansion) array attach: wrong number of dimensions: "##i
-#elseif (###i = 1)
+#elseif (#%i = 1)
   array_redim1__(i)
-#elseif (###i = 2)
+#elseif (#%i = 2)
   array_redim2__(i)
-#elseif (###i = 3)
+#elseif (#%i = 3)
   array_redim3__(i)
-#elseif (###i = 4)
+#elseif (#%i = 4)
   array_redim4__(i)
-#elseif (###i = 5)
+#elseif (#%i = 5)
   array_redim5__(i)
-#elseif (###i = 6)
+#elseif (#%i = 6)
   array_redim6__(i)
-#elseif (###i = 7)
+#elseif (#%i = 7)
   array_redim7__(i)
-#elseif (###i = 8)
+#elseif (#%i = 8)
   array_redim8__(i)
 #endif
 
-  ax_n = ###i
+  ax_n = #%i
 
 end scope
 #endmacro
@@ -1431,7 +1431,7 @@ end scope
   ax_get_typeof__ (array1)
 
   #if (#p3 = "")                                      'no paramter 3
-    #if (#&#array2 = "NOCASE")                        'string array + nocase
+    #if (###array2 = "NOCASE")                        'string array + nocase
       #if  (ax_typedef__ >= array_.ae_.adt_zstring) and (ax_typedef__ < array_.ae_.adt_struct)
         dim ax_ptr1 as any ptr = fb_ArrayDesc(array1(), array_.ae_.desc)
         dim ax_ptr2 as any ptr = 0
@@ -1454,7 +1454,7 @@ end scope
     #endif
 
   #else                                               'there is a third parameter
-    #if (#&#p3 = "NOCASE")                              'string array + nocase
+    #if (###p3 = "NOCASE")                              'string array + nocase
       #if  (ax_typedef__ >= array_.ae_.adt_zstring) and (ax_typedef__ < array_.ae_.adt_struct)
         #if (#array1 = #array2)
           #line __prevline__
@@ -1496,12 +1496,12 @@ scope
     ax_get_typeof__ (array)
   #endif
 
-  #if ((#&#p1 = "UP") or (#&#p1 = "DOWN"))
+  #if ((###p1 = "UP") or (###p1 = "DOWN"))
     #if (ax_typedef__ = array_.ae_.adt_struct)
       #line __prevline__
       #error "(macro expansion) array sort: "##please use a custom sort function for non-standard types: ##array##()
 
-    #elseif (#&#p1 = "UP")
+    #elseif (###p1 = "UP")
       #if (#p2 < ")") and (#p2 > "'")
         #if (#array < ")") and (#array > "'")         'starts with "(" -> sort along or nocase
           array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, 1 + ax_case), array_.ax_data__(@array_first_param##array##p2), p3)
@@ -1512,7 +1512,7 @@ scope
         array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, 1 + ax_case), array_.ax_data##p2, p3)
       #endif
 
-    #elseif (#&#p1 = "DOWN")
+    #elseif (###p1 = "DOWN")
       #if (#p2 < ")") and (#p2 > "'")
         #if (#array < ")") and (#array > "'")         'starts with "(" -> sort along or nocase
           array_.ax_sort__(ax_type, ax_ptr1, ax_ptr2, cast(any ptr, -3 + ax_case), array_.ax_data__(@array_first_param##array##p2), p3)
@@ -1583,7 +1583,7 @@ end scope
 
 
 #macro array_attach__(array, p1, p2...)               '"attach" macro
-  #if ((#&#p1 < "REDIM)") and (#&#p1 > "REDIM'"))     'starts with "Redim("
+  #if ((###p1 < "REDIM)") and (###p1 > "REDIM'"))     'starts with "Redim("
     #if (#p2 <> "")
       scope
         dim ax_u as array_.array_index_union
@@ -1633,7 +1633,7 @@ end scope
 
 
 #macro array_delete__(array, p1, p2...)               '"delete" macro
-  #if (###p2 > 1)
+  #if (#%p2 > 1)
     #line __prevline__
     #error "(macro expansion) array delete: too much parameters: "##p2
   #else

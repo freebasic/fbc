@@ -247,10 +247,49 @@ private function hLoadMacro _
 			case FB_DEFTOK_TYPE_PARAM
 				assert( symbGetDefTokParamNum( dt ) <= num )
 				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
-
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
 					text += *argtext
+				end if
+
+            '' parameter check suffix
+			case FB_DEFTOK_TYPE_CHECKPREFIX
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim n as ulong
+                    dim i as ulong
+                    dim x as long
+                    dim s as string
+                    
+                    n = instr(*argtext, " ")
+                    i = instr(*argtext, any QUOTE + "(")
+
+                    if i > 0 then
+                      if n > i then
+                        n = 0
+                      end if  
+                    end if
+
+                    if n > 0 then
+                        s = left(*argtext, n-1)       'get first word
+
+                        i = 0
+                        for x = 1 to iif(len(s) > 4, 4, len(s))
+                          i = i shl 8
+                          i = i + asc(s, x)
+                        next x
+
+                        text += str(i)                'first four characters (if any) as number (ULONG)
+                        text += ","
+                        argtext = argtext + n
+					text += *argtext
+                      
+                    else
+                        text += "0,"
+  					    text += *argtext
+                    end if    
 				end if
 
             '' argument count
@@ -275,6 +314,28 @@ private function hLoadMacro _
 
 				else
 					text += "1"                       'empty -> 1 argument
+				end if
+
+            '' concatenate argument
+			case FB_DEFTOK_TYPE_CONCAT
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim i as ulong = 1
+                    dim n as ulong = 0
+
+                    do
+                      n = instr(n+1, *argtext, " ")
+                      if n > 0 then
+					    text += mid(*argtext, i, n-i)
+                        i = n + 1
+
+                      else
+					    text += mid(*argtext, i)
+                        exit do
+                      end if
+                    loop
 				end if
 
 			'' stringize parameter?
@@ -631,6 +692,46 @@ private function hLoadMacroW _
 					DWstrConcatAssign( text, argtext )
 				end if
 
+            '' parameter check
+			case FB_DEFTOK_TYPE_CHECKPREFIX
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim n as ulong
+                    dim i as ulong
+                    dim x as long
+                    dim w as WSTRING * 300
+                    
+                    n = instr(*argtext, " ")
+                    i = instr(*argtext, any QUOTE + "(")
+
+                    if i > 0 then
+                      if n > i then
+                        n = 0
+                      end if  
+                    end if
+
+                    if n > 0 then
+                        w = left(*argtext, n-1)       'get first word
+
+                        i = 0
+                        for x = 1 to iif(len(w) > 4, 4, len(w))
+                          i = i shl 8
+                          i = i + asc(w, x)
+                        next x
+
+                        DWstrConcatAssign( text, str(i) )                 'first four characters (if any) as number (ULONG)
+                        DWstrConcatAssign( text, "," )
+                        argtext = argtext + n
+					    DWstrConcatAssign( text, argtext )
+
+                    else
+                        DWstrConcatAssign( text, "0," )
+					    DWstrConcatAssign( text, argtext )
+                    end if    
+				end if
+
             '' argument count
 			case FB_DEFTOK_TYPE_COUNT
 				assert( symbGetDefTokParamNum( dt ) <= num )
@@ -654,7 +755,29 @@ private function hLoadMacroW _
 				else
 					DWstrConcatAssign( text, "1")     'empty -> 1 argument
 				end if
-                
+
+            '' concatenate argument
+			case FB_DEFTOK_TYPE_CONCAT
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim i as ulong = 1
+                    dim n as ulong = 0
+
+                    do
+                      n = instr(n+1, *argtext, " ")
+                      if n > 0 then
+					    DWstrConcatAssign(text, mid(*argtext, i, n-i))
+                        i = n + 1
+
+                      else
+					    DWstrConcatAssign(text, mid(*argtext, i))
+                        exit do
+                      end if
+                    loop
+				end if
+
 			'' stringize parameter?
 			case FB_DEFTOK_TYPE_PARAMSTR
 				assert( symbGetDefTokParamNum( dt ) <= num )
@@ -891,12 +1014,14 @@ private function hReadMacroText _
 	static as zstring * FB_MAXNAMELEN+1 arg
     dim as FB_DEFPARAM ptr param = any
     dim as FB_DEFTOK ptr toktail = NULL, tokhead = NULL
-    dim as integer addquotes = any, nestedcnt = 0, makecount = any, uppercase = any
+    dim as integer addquotes = any, nestedcnt = 0, makecount = any, uppercase = any, checkprefix = any, concatenate = any
 
     do
     	addquotes = FALSE
+    	checkprefix = false
     	makecount = FALSE
     	uppercase = FALSE
+    	concatenate = FALSE
 
     	select case as const lexGetToken( LEX_FLAGS )
 		case FB_TK_EOF
@@ -935,25 +1060,40 @@ private function hReadMacroText _
 					exit do
 				end select
 			loop
-            continue do
-        case CHAR_SHARP
-            select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
-                                            (not LEXCHECK_NOWHITESPC) )
-            '' '##'?
-            case CHAR_SHARP
-                lexSkipToken( LEX_FLAGS )
+
+			continue do
+
+		case CHAR_SHARP
+    		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
+    								 		(not LEXCHECK_NOWHITESPC) )
+    		'' '##'?
+    		case CHAR_SHARP
+    			lexSkipToken( LEX_FLAGS )
                                                   
                 select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
                                                 (not LEXCHECK_NOWHITESPC) )
                   case CHAR_SHARP                     '### ?
                     lexSkipToken( LEX_FLAGS )         'skip second #
                     lexSkipToken( LEX_FLAGS )         'skip third #
-                    makecount = true
+                    uppercase = true
+'                    makecount = true
 
                   case else                           '##
-                    lexSkipToken( LEX_FLAGS )
-                    continue do
+    			lexSkipToken( LEX_FLAGS )
+    			continue do
                 end select                        
+
+            '' check suffix
+            case CHAR_PERC
+    			lexSkipToken( LEX_FLAGS )
+    			lexSkipToken( LEX_FLAGS )
+                makecount = true
+'                concatenate = true
+
+            case CHAR_QUESTION
+    			lexSkipToken( LEX_FLAGS )
+    			lexSkipToken( LEX_FLAGS )
+                checkprefix = true
 
             case CHAR_AMP                             'stringize uppercase ?
                 select case lexGetLookAhead( 2, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
@@ -962,7 +1102,8 @@ private function hReadMacroText _
                     lexSkipToken( LEX_FLAGS )         'skip #
                     lexSkipToken( LEX_FLAGS )         'skip &
                     lexSkipToken( LEX_FLAGS )         'skip #
-                    uppercase = true
+                    concatenate = true
+'                    uppercase = true
 
                   case else                           '##
                     lexSkipToken( LEX_FLAGS )
@@ -1054,15 +1195,19 @@ private function hReadMacroText _
 
     		'' found?
     		if( param <> NULL ) then
-		  		if makecount = true then
+		  		if checkprefix = true then      
+			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_CHECKPREFIX )
+		  		elseif concatenate = true then
+			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_CONCAT )
+		  		elseif makecount = true then
 			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_COUNT )
   				elseif( uppercase = true ) then
 		  			symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAMSTR_UCASE )
                 elseif( addquotes = FALSE ) then
-  					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAM )
-	  			else
-		  			symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAMSTR )
-			  	end if
+					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAM )
+				else
+					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAMSTR )
+				end if
 
 				symbSetDefTokParamNum( toktail, symbGetDefParamNum( param ) )
 
