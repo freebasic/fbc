@@ -355,6 +355,8 @@ sub cTypeOf _
 
 	'' Was it a type?
 	if( expr = NULL ) then
+		'' check for member field
+		cUdtTypeMember( dtype, subtype, lgt, is_fixlenstr )
 		exit sub
 	end if
 
@@ -718,7 +720,9 @@ function cSymbolType _
 			end if
 
 			if( check_id ) then
-				chain_ = cIdentifier( base_parent, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
+				chain_ = cIdentifier( base_parent, _
+					iif( options and FB_SYMBTYPEOPT_SAVENSPREFIX, FB_IDOPT_NONE, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT ) _
+					)
 			end if
 
 			if( chain_ ) then
@@ -728,7 +732,7 @@ function cSymbolType _
 				if( options and FB_SYMBTYPEOPT_SAVENSPREFIX ) then
 					assert( parser.nsprefix = NULL )
 					select case symbGetClass( chain_->sym )
-					case FB_SYMBCLASS_CONST, FB_SYMBCLASS_VAR
+					case FB_SYMBCLASS_CONST, FB_SYMBCLASS_VAR, FB_SYMBCLASS_FIELD
 						parser.nsprefix = chain_
 					end select
 				end if

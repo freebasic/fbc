@@ -127,6 +127,27 @@ private function hLenSizeof( byval tk as integer, byval isasm as integer ) as AS
 			tk = FB_TK_SIZEOF
 			expr = astRemoveNIDXARRAY( expr )
 		end if
+
+	'' then must be a type
+	elseif( tk = FB_TK_SIZEOF ) then
+		dim is_fixlenstr as integer
+		cUdtTypeMember( dtype, subtype, lgt, is_fixlenstr )
+
+	elseif( tk = FB_TK_LEN ) then
+		dim is_fixlenstr as integer
+		cUdtTypeMember( dtype, subtype, lgt, is_fixlenstr )
+
+		if( is_fixlenstr ) then
+			'' assume that constant string has no embedded nulls
+			select case typeGetDtAndPtrOnly( dtype )
+			case FB_DATATYPE_CHAR, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
+				lgt -= typeGetSize( FB_DATATYPE_CHAR )
+				lgt /= typeGetSize( FB_DATATYPE_CHAR )
+			case FB_DATATYPE_WCHAR
+				lgt -= typeGetSize( FB_DATATYPE_WCHAR )
+				lgt /= typeGetSize( FB_DATATYPE_WCHAR )
+			end select
+		end if
 	end if
 
 	'' ')'

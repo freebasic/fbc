@@ -688,6 +688,14 @@ declare function cUdtMember _
 		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
 
+declare sub cUdtTypeMember _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint, _
+		byref is_fixlenstr as integer _
+	)
+
 declare function cMemberAccess _
 	( _
 		byval dtype as integer, _

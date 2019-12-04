@@ -493,6 +493,9 @@ SUITE( fbc_tests.quirk.len_sizeof )
 		dim shared as integer a
 		const b as integer = 0
 		const s as string = "12345"
+		enum e1
+			e11, e12, e13
+		end enum
 
 		namespace ns2
 			type T
@@ -501,6 +504,9 @@ SUITE( fbc_tests.quirk.len_sizeof )
 			dim shared as integer a
 			const b as integer = 0
 			const s as string = "12345"
+			enum e2
+				e21, e22, e23
+			end enum
 		end namespace
 	end namespace
 
@@ -523,6 +529,9 @@ SUITE( fbc_tests.quirk.len_sizeof )
 		CU_ASSERT(   len(ns1.s) =  len("hello"))
 		CU_ASSERT(sizeof(ns1.s) = (len("hello")+1))
 
+		CU_ASSERT(   len(ns1.e1.e11) = sizeof(integer))
+		CU_ASSERT(sizeof(ns1.e1.e11) = sizeof(integer))
+
 		'' direct use of nested namespace
 
 		CU_ASSERT(   len(ns1.ns2.T) = sizeof(ns1.ns2.T))
@@ -536,6 +545,9 @@ SUITE( fbc_tests.quirk.len_sizeof )
 
 		CU_ASSERT(   len(ns1.ns2.s) =  len("hello"))
 		CU_ASSERT(sizeof(ns1.ns2.s) = (len("hello")+1))
+
+		CU_ASSERT(   len(ns1.ns2.e2.e21) = sizeof(integer))
+		CU_ASSERT(sizeof(ns1.ns2.e2.e21) = sizeof(integer))
 
 		'' import top-level namespace
 
@@ -553,6 +565,12 @@ SUITE( fbc_tests.quirk.len_sizeof )
 		CU_ASSERT(   len(s) =  len("hello"))
 		CU_ASSERT(sizeof(s) = (len("hello")+1))
 
+		CU_ASSERT(   len(e1.e11) = sizeof(integer))
+		CU_ASSERT(sizeof(e1.e11) = sizeof(integer))
+
+		CU_ASSERT(   len(e11) = sizeof(integer))
+		CU_ASSERT(sizeof(e11) = sizeof(integer))
+
 		'' nested namespace
 
 		CU_ASSERT(   len(ns2.T) = sizeof(ns2.T))
@@ -566,6 +584,9 @@ SUITE( fbc_tests.quirk.len_sizeof )
 
 		CU_ASSERT(   len(ns2.s) =  len("hello"))
 		CU_ASSERT(sizeof(ns2.s) = (len("hello")+1))
+
+		CU_ASSERT(   len(ns2.e2.e21) = sizeof(integer))
+		CU_ASSERT(sizeof(ns2.e2.e21) = sizeof(integer))
 
 	END_TEST
 
