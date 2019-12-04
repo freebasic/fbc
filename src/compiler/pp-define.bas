@@ -284,7 +284,7 @@ private function hLoadMacro _
                         text += str(i)                'first four characters (if any) as number (ULONG)
                         text += ","
                         argtext = argtext + n
-					text += *argtext
+    					text += *argtext
                       
                     else
                         text += "0,"
@@ -314,6 +314,37 @@ private function hLoadMacro _
 
 				else
 					text += "1"                       'empty -> 1 argument
+				end if
+
+            '' slpit argument
+			case FB_DEFTOK_TYPE_SPLIT
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim n as ulong
+                    dim i as ulong
+                    
+                    n = instr(*argtext, "(")
+                    i = instr(*argtext, QUOTE)
+
+                    if i > 0 then
+                      if n > i then
+                        n = 0
+                      end if  
+                    end if
+
+                    if n = 1 then n = 0
+
+                    if n > 0 then
+                        text += left(*argtext, n-1)   'get all before (
+                        text += ","
+                        text += mid(*argtext, n)      'get the rest
+                      
+                    else
+  					    text += *argtext
+                        text += ","
+                    end if    
 				end if
 
             '' concatenate argument
@@ -756,6 +787,37 @@ private function hLoadMacroW _
 					DWstrConcatAssign( text, "1")     'empty -> 1 argument
 				end if
 
+            '' slpit argument
+			case FB_DEFTOK_TYPE_SPLIT
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim n as ulong
+                    dim i as ulong
+                    
+                    n = instr(*argtext, "(")
+                    i = instr(*argtext, QUOTE)
+
+                    if i > 0 then
+                      if n > i then
+                        n = 0
+                      end if  
+                    end if
+
+                    if n = 1 then n = 0
+
+                    if n > 0 then
+                        DWstrConcatAssign( text, left(*argtext, n-1) )    'get all before (
+                        DWstrConcatAssign( text, "," )
+					    DWstrConcatAssign( text, mid(*argtext, n) )       'get the rest
+
+                    else
+					    DWstrConcatAssign( text, argtext )
+                        DWstrConcatAssign( text, "," )
+                    end if    
+				end if
+
             '' concatenate argument
 			case FB_DEFTOK_TYPE_CONCAT
 				assert( symbGetDefTokParamNum( dt ) <= num )
@@ -1014,7 +1076,7 @@ private function hReadMacroText _
 	static as zstring * FB_MAXNAMELEN+1 arg
     dim as FB_DEFPARAM ptr param = any
     dim as FB_DEFTOK ptr toktail = NULL, tokhead = NULL
-    dim as integer addquotes = any, nestedcnt = 0, makecount = any, uppercase = any, checkprefix = any, concatenate = any
+    dim as integer addquotes = any, nestedcnt = 0, makecount = any, uppercase = any, checkprefix = any, concatenate = any, splitparam = any
 
     do
     	addquotes = FALSE
@@ -1022,6 +1084,7 @@ private function hReadMacroText _
     	makecount = FALSE
     	uppercase = FALSE
     	concatenate = FALSE
+    	splitparam = FALSE
 
     	select case as const lexGetToken( LEX_FLAGS )
 		case FB_TK_EOF
@@ -1076,7 +1139,6 @@ private function hReadMacroText _
                     lexSkipToken( LEX_FLAGS )         'skip second #
                     lexSkipToken( LEX_FLAGS )         'skip third #
                     uppercase = true
-'                    makecount = true
 
                   case else                           '##
     			lexSkipToken( LEX_FLAGS )
@@ -1088,14 +1150,27 @@ private function hReadMacroText _
     			lexSkipToken( LEX_FLAGS )
     			lexSkipToken( LEX_FLAGS )
                 makecount = true
-'                concatenate = true
 
             case CHAR_QUESTION
     			lexSkipToken( LEX_FLAGS )
     			lexSkipToken( LEX_FLAGS )
                 checkprefix = true
 
-            case CHAR_AMP                             'stringize uppercase ?
+            case CHAR_RSLASH                          'slpit
+                select case lexGetLookAhead( 2, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
+                                                (not LEXCHECK_NOWHITESPC) )
+                case CHAR_SHARP                       '### ?
+                    lexSkipToken( LEX_FLAGS )         'skip #
+                    lexSkipToken( LEX_FLAGS )         'skip &
+                    lexSkipToken( LEX_FLAGS )         'skip #
+                    splitparam = true
+
+                  case else                           '##
+                    lexSkipToken( LEX_FLAGS )
+                    continue do
+                end select                        
+
+            case CHAR_AMP                             'concatenate ?
                 select case lexGetLookAhead( 2, (LEX_FLAGS or LEXCHECK_KWDNAMESPC) and _
                                                 (not LEXCHECK_NOWHITESPC) )
                 case CHAR_SHARP                       '### ?
@@ -1197,6 +1272,8 @@ private function hReadMacroText _
     		if( param <> NULL ) then
 		  		if checkprefix = true then      
 			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_CHECKPREFIX )
+		  		elseif splitparam = true then
+			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_SPLIT )
 		  		elseif concatenate = true then
 			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_CONCAT )
 		  		elseif makecount = true then

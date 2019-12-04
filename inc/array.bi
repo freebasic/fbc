@@ -1482,7 +1482,7 @@ end scope
 #endmacro
 
 
-#macro array_sort__(array, p1, p2, p3...)             '"sort" macro
+#macro array_sort__(array, p0, p1, p2, p3...)         '"sort" macro
 scope
 
   #if (#array < ")") and (#array > "'")               'starts with "(" -> sort along or nocase
@@ -1545,44 +1545,44 @@ end scope
 #endmacro
 
 
-#macro array_data__(array, p1...)                    
+#macro array_data__(array, p0, p1...)                    
   array_.ax_info__p(fb_ArrayDesc(array(), array_.ae_.data))               'data_ptr
 #endmacro
 
-#macro array_dimensions__(array, p1...)                 
+#macro array_dimensions__(array, p0, p1...)                 
   array_.ax_info__(fb_ArrayDesc(array(), array_.ae_.dimensions))          'dimensions
 #endmacro
 
-#macro array_total_size__(array, p1...)                
+#macro array_total_size__(array, p0, p1...)                
   array_.ax_info__(fb_ArrayDesc(array(), array_.ae_.total_size))          'total_size
 #endmacro
 
-#macro array_total_count__(array, p1...)                
+#macro array_total_count__(array, p0, p1...)                
   array_.ax_info__(fb_ArrayDesc(array(), array_.ae_.total_count))         'total_count
 #endmacro
 
-#macro array_sizeof__(array, p1...)                   
+#macro array_sizeof__(array, p0, p1...)                   
   array_.ax_info__(fb_ArrayDesc(array(), array_.ae_.size))                'size
 #endmacro
 
-#macro array_is_fixed_len__(array, p1...)                   
+#macro array_is_fixed_len__(array, p0, p1...)                   
   array_.ax_info__b(fb_ArrayDesc(array(), array_.ae_.is_fixed_len))       'fixed len
 #endmacro
 
-#macro array_is_fixed_dim__(array, p1...)                   
+#macro array_is_fixed_dim__(array, p0, p1...)                   
   array_.ax_info__b(fb_ArrayDesc(array(), array_.ae_.is_fixed_dim))       'fixed dim
 #endmacro
 
-#macro array_is_dynamic__(array, p1...)                  
+#macro array_is_dynamic__(array, p0, p1...)                  
   array_.ax_info__b(fb_ArrayDesc(array(), array_.ae_.is_dynamic))          'dynamic
 #endmacro
 
-#macro array_is_attached__(array, p1...)                
+#macro array_is_attached__(array, p0, p1...)                
   array_.ax_info__b(fb_ArrayDesc(array(), array_.ae_.is_attached))        'attached
 #endmacro
 
 
-#macro array_attach__(array, p1, p2...)               '"attach" macro
+#macro array_attach__(array, p0, p1, p2...)           '"attach" macro
   #if ((###p1 < "REDIM)") and (###p1 > "REDIM'"))     'starts with "Redim("
     #if (#p2 <> "")
       scope
@@ -1602,7 +1602,7 @@ end scope
 #endmacro
 
 
-#macro array_reset__(array, p1, p2...)                '"reset" macro
+#macro array_reset__(array, p0, p1, p2...)            '"reset" macro
   #if (#p1 <> "")
     #line __prevline__
     #error "(macro expansion) array reset: too much parameters: "##p2
@@ -1612,7 +1612,7 @@ end scope
 #endmacro
 
 
-#macro array_insert__(array, p1, p2, p3...)           '"insert" macro
+#macro array_insert__(array, p0, p1, p2, p3...)       '"insert" macro
   #if (#p1 = "")
     #line __prevline__
     #error "(macro expansion) array insert: missing parameter 3: value to insert"
@@ -1632,7 +1632,7 @@ end scope
 #endmacro
 
 
-#macro array_delete__(array, p1, p2...)               '"delete" macro
+#macro array_delete__(array, p0, p1, p2...)           '"delete" macro
   #if (#%p2 > 1)
     #line __prevline__
     #error "(macro expansion) array delete: too much parameters: "##p2
@@ -1653,15 +1653,15 @@ end scope
 #endmacro
 
 
-#macro array_pos__(array, p2, p3...)                  'calculate linear position from index
+#macro array_pos__(array, p0, p2, p3...)                  'calculate linear position from index
   array_.ax_calc_pos__(fb_ArrayDesc(array(), array_.ae_.desc), @##array##p2)
 #endmacro                                             'errors never go through -> added no error checking
 
-#macro array_ptr__(array, p2, p3...)                       'calculate data ptr from index
+#macro array_ptr__(array, p0, p2, p3...)                       'calculate data ptr from index
   array_.ax_calc_ptr__(fb_ArrayDesc(array(), array_.ae_.desc), @array##p2)
 #endmacro                                             'errors never go through -> added no error checking
 
-#macro array_index__(array, p2...)                    'calculate index from linear position
+#macro array_index__(array, p0, p2...)                    'calculate index from linear position
   array_.ax_calc_index__(fb_ArrayDesc(array(), array_.ae_.desc), p2)
 #endmacro
 
@@ -1670,13 +1670,13 @@ end scope
   array_.ax_for__(p1, array_.ae_.nocaseflag##p2)
 #endmacro
 
-#macro array_scan__(array, p1, p2, p3...)             '"scan" macro
+#macro array_scan__(array, p0, p1, p2, p3...)         '"scan" macro
   array_.ax_scan__(array_.ax_typeof__(typeof((array))), fb_ArrayDesc(array(), array_.ae_.desc), array_##p1, array_.ax_index##p2, p3)
 #endmacro
 
 
 #macro array(verb, array, p1, p2...)                  'generic "array" processing macro
-  array_##verb##__(array, p1, p2)
+  array_##verb##__(#\#array, p1, p2)
 #endmacro
 
 
