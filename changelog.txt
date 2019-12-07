@@ -7,6 +7,7 @@ Version 1.08.0
 - updated BASS headers for binding to BASS 2.4.14
 - updated PostgreSQL headers for binding to PostgreSQL 12.0
 - updated curl headers for binding to curl 7.66.0
+- warning level for all warnings is increased by 1.  Default warning level is 1.  Previously, default warning level was 0 and some warnings had level of -1.
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
