@@ -171,6 +171,7 @@ type PARSERCTX
 	'' stmt recursion
 	stmt			as FBPARSER_STMT
 	nspcrec			as integer					'' namespace recursion
+	nsprefix		as FBSYMCHAIN ptr			'' used by cTypeOrExpression() & cIdentifier()
 
 	'' globals
 	scope			as uinteger					'' current scope (0=main module)
@@ -197,6 +198,7 @@ enum FB_SYMBTYPEOPT
 	FB_SYMBTYPEOPT_CHECKSTRPTR	= &h00000001
 	FB_SYMBTYPEOPT_ALLOWFORWARD	= &h00000002
 	FB_SYMBTYPEOPT_ISBYREF		= &h00000004
+	FB_SYMBTYPEOPT_SAVENSPREFIX = &h00000008    '' used by cTypeOrExpression() & cIdentifier()
 
 	FB_SYMBTYPEOPT_DEFAULT		= FB_SYMBTYPEOPT_CHECKSTRPTR
 end enum
@@ -685,6 +687,14 @@ declare function cUdtMember _
 		byval check_array as integer, _
 		byval options as FB_PARSEROPT = 0 _
 	) as ASTNODE ptr
+
+declare sub cUdtTypeMember _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint, _
+		byref is_fixlenstr as integer _
+	)
 
 declare function cMemberAccess _
 	( _

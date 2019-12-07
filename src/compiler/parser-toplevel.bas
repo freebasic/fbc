@@ -37,6 +37,7 @@ sub parserSetCtx( )
 	parser.currblock = NULL
 
 	parser.nspcrec = 0
+	parser.nsprefix = NULL
 
 	parser.mangling = FB_MANGLING_BASIC
 

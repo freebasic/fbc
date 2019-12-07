@@ -20,6 +20,7 @@ Version 1.08.0
 - makefile: '-d FBSHA1="some-sha-1"' compiler option to set the value of '__FB_BUILD_SHA1__' when building fbc
 - rtlib: inc/file.bi:FileFlush() function, usable for file, PIPE, CONS, and ERR streams opened for BINARY, RANDOM, OUTPUT, APPEND.
 - rtlib: inc/file.bi;FileSetEof() function, to adjust size of open file
+- sf.net feature request #293: allow len/sizeof/typeof for UDT members without expression
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
@@ -27,6 +28,8 @@ Version 1.08.0
 - sf.net #910: cast(string, variable) can cause fbc to segfault (infinite recursion), due to misplaced const & non-const casting
 - sf.net #898: fbc win gfxlib DirectX driver failed to initialize on 64-bit, due to incorrect construction of DIDATAFORMAT for keyboard device (macko17)
 - rtlib: potential buffer overflow in sys_getshortpath.c (macko17)
+- sf.net #404: len/sizeof type parsing eats namespace prefix (namespace prefix is now preserved)
+- sf.net #718: len/sizeof type parsing disambiguates between type and variable having same name
 
 
 Version 1.07.0

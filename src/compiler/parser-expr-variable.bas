@@ -407,6 +407,51 @@ function cUdtMember _
 end function
 
 '':::::
+'' UdtTypeMember       =   ('.' MemberId)*
+''
+sub cUdtTypeMember _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as longint, _
+		byref is_fixlenstr as integer _
+	)
+
+	'' UDT type followed by '.'?
+	while( lexGetToken( ) = CHAR_DOT )
+		if( typeGetDtOnly( dtype ) <> FB_DATATYPE_STRUCT ) then
+			exit while
+		end if
+
+		lexSkipToken( LEXCHECK_NOPERIOD )
+
+		'' check member field, See also hLenSizeof()
+		dim sym as FBSYMBOL ptr = hMemberId( subtype )
+
+		if( sym ) then
+			lexSkipToken( )
+			dtype = symbGetFullType( sym )
+			subtype = symbGetSubType( sym )
+			lgt = symbGetLen( sym )
+			is_fixlenstr = symbGetIsFixLenStr( sym )
+
+			'' const string? get the size from the constant string value
+			if( symbGetClass( sym ) = FB_SYMBCLASS_CONST ) then
+				select case( typeGetDtAndPtrOnly( dtype ) )
+				case FB_DATATYPE_WCHAR, FB_DATATYPE_CHAR, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
+					is_fixlenstr = TRUE
+					lgt = symbGetLen( symbGetConstStr( sym ) )
+					exit while
+				end select
+			end if
+		else
+			exit while
+
+		end if
+	wend
+end sub
+
+'':::::
 function cMemberAccess _
 	( _
 		byval dtype as integer, _
