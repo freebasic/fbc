@@ -68,5 +68,31 @@ SUITE( fbc_tests.quirk.len_sizeof_udt_member )
 
 	END_TEST
 
+	type T2
+		s as string
+	end type
+
+	TEST( strings )
+
+		CU_ASSERT( len( T2.s ) = sizeof( string ) )
+		CU_ASSERT( sizeof( T2.s ) = sizeof( string ) )
+
+		dim x as T2
+		x.s = STRCONST
+
+		CU_ASSERT( len( x.s ) = len( STRCONST ) )
+		CU_ASSERT( sizeof( x.s ) = sizeof( string ) )
+		CU_ASSERT( len( (x).s ) = len( STRCONST ) )
+		CU_ASSERT( sizeof( (x).s ) = sizeof( string ) )
+
+		dim t2 as T2
+		t2.s = "hello"
+
+		CU_ASSERT( len( t2.s ) = sizeof( string ) )
+		CU_ASSERT( sizeof( t2.s ) = sizeof( string ) )
+		CU_ASSERT( len( (t2).s ) = len( STRCONST ) )
+		CU_ASSERT( sizeof( (t2).s ) = sizeof( string ) )
+
+	END_TEST
+
 END_SUITE
- 

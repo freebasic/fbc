@@ -28,7 +28,8 @@ Version 1.08.0
 - sf.net #910: cast(string, variable) can cause fbc to segfault (infinite recursion), due to misplaced const & non-const casting
 - sf.net #898: fbc win gfxlib DirectX driver failed to initialize on 64-bit, due to incorrect construction of DIDATAFORMAT for keyboard device (macko17)
 - rtlib: potential buffer overflow in sys_getshortpath.c (macko17)
-- sf.net #404: len/sizeof type parsing eats namespace prefix
+- sf.net #404: len/sizeof type parsing eats namespace prefix (namespace prefix is now preserved)
+- sf.net #718: len/sizeof type parsing disambiguates between type and variable having same name
 
 
 Version 1.07.0
