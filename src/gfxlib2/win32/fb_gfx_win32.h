@@ -65,6 +65,7 @@ typedef struct {
 
 extern WIN32DRIVER fb_win32;
 #ifndef HOST_CYGWIN
+extern GFXDRIVER fb_gfxDriverD2D;
 extern GFXDRIVER fb_gfxDriverDirectDraw;
 #endif
 extern GFXDRIVER fb_gfxDriverGDI;
