@@ -21,6 +21,7 @@ Version 1.08.0
 - rtlib: inc/file.bi:FileFlush() function, usable for file, PIPE, CONS, and ERR streams opened for BINARY, RANDOM, OUTPUT, APPEND.
 - rtlib: inc/file.bi;FileSetEof() function, to adjust size of open file
 - sf.net feature request #293: allow len/sizeof/typeof for UDT members without expression
+- gfxlib: added Direct2D driver, preferred driver on newer systems.  DirectX driver is still fallback for older systems (adeyblue)
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
