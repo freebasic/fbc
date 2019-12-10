@@ -45,7 +45,7 @@ Sleep
 {{fbdoc item="see"}}
 	- [[ProPgTypeAliases|Type Aliases]]
 	- [[KeyPgTypeTemp|Temporary Types]]
-	- [[ProPgCtorsDtors|Constructors and Destructors]]
+	- [[ProPgCtorsDtors|Constructors and Destructors (basics)]]
 	- [[ProPgMemberProcedures|Member Procedures]]
 	- [[ProPgMemberAccessRights|Member Access Rights]]
 	- [[ProPgOperatorOverloading|Operator Overloading]]

@@ -18,6 +18,8 @@
 		[[KeyPgDdFBBackend|__FB_BACKEND__]]
 		[[KeyPgDdFBBigEndian|__FB_BIGENDIAN__]]
 		[[KeyPgDdFBBuildDate|__FB_BUILD_DATE__]]
+		[[KeyPgDdfbbuilddateiso|__FB_BUILD_DATE_ISO__]]
+		[[KeyPgDdfbbuildsha1|__FB_BUILD_SHA1__]]
 		[[KeyPgDdfbcygwin|__FB_CYGWIN__]]
 		[[KeyPgDdfbdarwin|__FB_DARWIN__]]
 		[[KeyPgDdfbdebug|__FB_DEBUG__]]
@@ -273,7 +275,9 @@
 		[[KeyPgFilecopy|FILECOPY]]
 		[[KeyPgFiledatetime|FILEDATETIME]]
 		[[KeyPgFileexists|FILEEXISTS]]
+		[[KeyPgFileflush|FILEFLUSH]]
 		[[KeyPgFilelen|FILELEN]]
+		[[KeyPgFileseteof|FILESETEOF]]
 		[[KeyPgFix|FIX]]
 		[[KeyPgFlip|FLIP]]
 		[[KeyPgFor|FOR]]
@@ -772,6 +776,9 @@
 		[[ProPgLineContinuation|Line continuation]]
 
 	{{fbdoc item="subsect" value="Variables and Datatypes"}}
+		[[ProPgEnumerations|Constants and Enumerations]]
+		[[ProPgNumericTypes|Numeric Types]]
+		[[ProPgStringsTypes|Strings (string, zstring, and wstring)]]
 		[[ProPgDataConversion|Coercion and Conversion]]
 		[[ProPgConstants|Constants]]
 		[[ProPgVariables|Variables]]
@@ -787,6 +794,10 @@
 			[[ProPgPointers|Overview]]
 			[[ProPgPtrArithmetic|Pointer Arithmetic]]
 
+		{{fbdoc item="subsect" value="References"}}
+			[[ProPgFromPtrToRef|From Pointers to References]]
+			[[ProPgReferences|Using References]]
+
 	{{fbdoc item="subsect" value="Declarations"}}
 		[[ProPgImplicitdeclarations|Implicit Declarations]]
 		[[ProPgInitialization|Initialization]]
@@ -801,7 +812,7 @@
 		[[ProPgUDTs|Overview]]
 		[[ProPgTypeAliases|Type Aliases]]
 		[[KeyPgTypeTemp|Temporary Types]]
-		[[ProPgCtorsDtors|Constructors and Destructors]]
+		[[ProPgCtorsDtors|Constructors and Destructors (basics)]]
 		[[ProPgMemberProcedures|Member Procedures]]
 		[[ProPgProperties|Properties]]
 		[[ProPgMemberAccessRights|Member Access Rights]]
@@ -809,8 +820,13 @@
 		[[ProPgTypeIterators|Iterators]]
 		[[ProPgNewDelete|New and Delete]]
 		[[ProPgTypeObjects|Types as Objects]]
+		[[ProPgCompoAggregInherit|Composition, Aggregation, Inheritance]]
+		[[ProPgPolymorphism|Inheritance Polymorphism]]
+		[[ProPgCtorsAssignDtors|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #1)]]
+		[[ProPgCtorsAssignDtors2|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)]]
 
 	{{fbdoc item="subsect" value="Statements and Expressions"}}
+		[[ProPgAssignments|Assignments]]
 		[[OpPrecedence|Operator Precedence]]
 		[[ProPgControlFlow|Control Flow Statements]]
 
@@ -818,10 +834,25 @@
 		[[ProPgProcedures|Procedures Overview]]
 		[[ProPgPassingArguments|Passing Arguments to Procedures]]
 		[[ProPgReturnValue|Returning a Value]]
+		[[ProPgProcedureScopes|Procedure Scopes]]
 		[[ProPgCallingConventions|Calling Conventions]]
 		[[ProPgRecursion|Recursion]]
+		[[ProPgProcCtorsDtors|Constructors and Destructors]]
 		[[ProPgProcedurePointers|Pointers to Procedures]]
 		[[CatPgVarArg|Variable Arguments]]
+
+	{{fbdoc item="subsect" value="Graphics"}}
+		[[GfxLib|FreeBASIC GfxLib overview]]
+		[[ProPgAntiFlickering|Graphics Mode Refresh and Anti-Flickering]]
+		[[GfxInternalFormats|Internal Graphics Formats]]
+
+	{{fbdoc item="subsect" value="Multi-Threading"}}
+		[[ProPgMultiThreading|Overview]]
+		[[ProPgMtThreads|Threads]]
+		[[ProPgMtMutualExclusion|Mutual Exclusion]]
+		[[ProPgMtConditionalVariables|Conditional Variables]]
+		[[ProPgMtCriticalSections|Critical Sections]]
+		[[ProPgMtCriticalSectionsFAQ|Critical Sections FAQ]]
 
 	{{fbdoc item="subsect" value="Making Binaries"}}
 		[[ProPgStaticLibraries|Static Libraries]]
@@ -829,13 +860,14 @@
 		[[ProPgProfiling|Profiling]]
 
 	{{fbdoc item="subsect" value="Preprocessor"}}
+		[[ProPgPreprocessor|Overview]]
+		[[ProPgConditionalCompilation|Conditional Compilation]]
+		[[ProPgMacros|Macros]]
 
 	{{fbdoc item="subsect" value="Other Topics"}}
 		[[CptAscii|ASCII]]
 		[[ProPgDates|Date Serials]]
 		[[ProPgRadians|Radians]]
-		[[GfxLib|FreeBASIC GfxLib overview]]
-		[[GfxInternalFormats|Internal Graphics Formats]]
 		[[KeyPgAsm|Inline ASM]]
 		[[ProPgErrorHandling|Error Handling]]
 		[[CatPgDddefines|Intrinsic Defines]]

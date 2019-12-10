@@ -162,7 +162,13 @@ function cIdentifier _
 
     base_parent = NULL
 
-    chain_ = lexGetSymChain( )
+	'' use the saved namespace prefix if cTypeOrExpression() saved it.
+	if( parser.nsprefix ) then
+		chain_ = parser.nsprefix
+		parser.nsprefix = NULL
+	else
+		chain_ = lexGetSymChain( )
+	end if
 
 	if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
 	    return chain_

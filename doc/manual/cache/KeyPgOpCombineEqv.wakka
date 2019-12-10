@@ -24,6 +24,8 @@ Performs a bitwise-eqv (equivalence) and assigns the result to a variable
 	##**Eqv=**## compares each bit of its operands, ##//lhs//## and ##//rhs//##, and if both bits are the same (either both 0 or both 1), then the corresponding bit in the first operand, ##//lhs//##, is set to 1, otherwise it is set to 0.
 	
 	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
+	
+	//Note: Similarly to the operator '=[>]' (assign), the alternative symbol 'Eqv=>' can be also used.//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/eqv-assign.bas"}}%%(freebasic)

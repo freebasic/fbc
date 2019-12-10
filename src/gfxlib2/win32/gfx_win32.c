@@ -30,6 +30,7 @@ WIN32DRIVER fb_win32;
 
 const GFXDRIVER *__fb_gfx_drivers_list[] = {
 #ifndef HOST_CYGWIN
+	&fb_gfxDriverD2D,
 	&fb_gfxDriverDirectDraw,
 #endif
 	&fb_gfxDriverGDI,

@@ -20,9 +20,9 @@
 	{{fbdoc item="keyword" value="ProPgLineContinuation|Line continuation"}}
 
 {{fbdoc item="section" value="Variables and Datatypes"}}
-	Constants and Enumerations
-	Numeric Types
-	Strings (string, zstring, and wstring)
+	{{fbdoc item="keyword" value="ProPgEnumerations|Constants and Enumerations"}}
+	{{fbdoc item="keyword" value="ProPgNumericTypes|Numeric Types"}}
+	{{fbdoc item="keyword" value="ProPgStringsTypes|Strings (string, zstring, and wstring)"}}
 	{{fbdoc item="keyword" value="ProPgDataConversion|Coercion and Conversion"}}
 	{{fbdoc item="keyword" value="ProPgConstants|Constants"}}
 	{{fbdoc item="keyword" value="ProPgVariables|Variables"}}
@@ -37,6 +37,10 @@
 	{{fbdoc item="subsect" value="Pointers"}}
 		{{fbdoc item="keyword" value="ProPgPointers|Overview"}}
 		{{fbdoc item="keyword" value="ProPgPtrArithmetic|Pointer Arithmetic"}}
+		
+	{{fbdoc item="subsect" value="References"}}
+		{{fbdoc item="keyword" value="ProPgFromPtrToRef|From Pointers to References"}}
+		{{fbdoc item="keyword" value="ProPgReferences|Using References"}}
 
 {{fbdoc item="section" value="Declarations"}}
 	{{fbdoc item="keyword" value="ProPgImplicitdeclarations|Implicit Declarations"}}
@@ -52,7 +56,7 @@
 	{{fbdoc item="keyword" value="ProPgUDTs|Overview"}}
 	{{fbdoc item="keyword" value="ProPgTypeAliases|Type Aliases"}}
 	{{fbdoc item="keyword" value="KeyPgTypeTemp|Temporary Types"}}
-	{{fbdoc item="keyword" value="ProPgCtorsDtors|Constructors and Destructors"}}
+	{{fbdoc item="keyword" value="ProPgCtorsDtors|Constructors and Destructors (basics)"}}
 	{{fbdoc item="keyword" value="ProPgMemberProcedures|Member Procedures"}}
 	{{fbdoc item="keyword" value="ProPgProperties|Properties"}}
 	{{fbdoc item="keyword" value="ProPgMemberAccessRights|Member Access Rights"}}
@@ -60,8 +64,12 @@
 	{{fbdoc item="keyword" value="ProPgTypeIterators|Iterators"}}
 	{{fbdoc item="keyword" value="ProPgNewDelete|New and Delete"}}
 	{{fbdoc item="keyword" value="ProPgTypeObjects|Types as Objects"}}
+	{{fbdoc item="keyword" value="ProPgCompoAggregInherit|Composition, Aggregation, Inheritance"}}
+	{{fbdoc item="keyword" value="ProPgPolymorphism|Inheritance Polymorphism"}}
+	{{fbdoc item="keyword" value="ProPgCtorsAssignDtors|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #1)"}}
+	{{fbdoc item="keyword" value="ProPgCtorsAssignDtors2|Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)"}}
 <<>>{{fbdoc item="section" value="Statements and Expressions"}}
-	Assignments
+	{{fbdoc item="keyword" value="ProPgAssignments|Assignments"}}
 	{{fbdoc item="keyword" value="CatPgOperators|Operator List"}}
 	{{fbdoc item="keyword" value="OpPrecedence|Operator Precedence"}}
 	{{fbdoc item="keyword" value="ProPgControlFlow|Control Flow Statements"}}
@@ -70,12 +78,26 @@
 	{{fbdoc item="keyword" value="ProPgProcedures|Procedures Overview"}}
 	{{fbdoc item="keyword" value="ProPgPassingArguments|Passing Arguments to Procedures"}}
 	{{fbdoc item="keyword" value="ProPgReturnValue|Returning a Value"}}
-	Procedure Scopes
+	{{fbdoc item="keyword" value="ProPgProcedureScopes|Procedure Scopes"}}
 	{{fbdoc item="keyword" value="ProPgCallingConventions|Calling Conventions"}}
 	{{fbdoc item="keyword" value="ProPgRecursion|Recursion"}}
-	Constructors and Destructors
+	{{fbdoc item="keyword" value="ProPgProcCtorsDtors|Constructors and Destructors"}}
 	{{fbdoc item="keyword" value="ProPgProcedurePointers|Pointers to Procedures"}}
 	{{fbdoc item="keyword" value="CatPgVarArg|Variable Arguments"}}
+
+{{fbdoc item="section" value="Graphics"}}
+	{{fbdoc item="keyword" value="GfxLib|FreeBASIC GfxLib overview"}}
+	{{fbdoc item="keyword" value="ProPgAntiFlickering|Graphics Mode Refresh and Anti-Flickering"}}
+	{{fbdoc item="keyword" value="GfxInternalFormats|Internal Graphics Formats"}}
+	External Graphics File Formats
+
+{{fbdoc item="section" value="Multi-Threading"}}
+	{{fbdoc item="keyword" value="ProPgMultiThreading|Overview"}}
+	{{fbdoc item="keyword" value="ProPgMtThreads|Threads"}}
+	{{fbdoc item="keyword" value="ProPgMtMutualExclusion|Mutual Exclusion"}}
+	{{fbdoc item="keyword" value="ProPgMtConditionalVariables|Conditional Variables"}}
+	{{fbdoc item="keyword" value="ProPgMtCriticalSections|Critical Sections"}}
+	{{fbdoc item="keyword" value="ProPgMtCriticalSectionsFAQ|Critical Sections FAQ"}}
 
 {{fbdoc item="section" value="Making Binaries"}}
 	Executables
@@ -84,18 +106,15 @@
 	{{fbdoc item="keyword" value="ProPgProfiling|Profiling"}}
 
 {{fbdoc item="section" value="Preprocessor"}}
-	Overview
-	Conditional Compilation
-	Macros
+	{{fbdoc item="keyword" value="ProPgPreprocessor|Overview"}}
+	{{fbdoc item="keyword" value="ProPgConditionalCompilation|Conditional Compilation"}}
+	{{fbdoc item="keyword" value="ProPgMacros|Macros"}}
 
 {{fbdoc item="section" value="Other Topics"}}
 (And topics that need to get placed elsewhere)
 	{{fbdoc item="keyword" value="CptAscii|ASCII"}}
 	{{fbdoc item="keyword" value="ProPgDates|Date Serials"}}
 	{{fbdoc item="keyword" value="ProPgRadians|Radians"}}
-	{{fbdoc item="keyword" value="GfxLib|FreeBASIC GfxLib overview"}}
-	{{fbdoc item="keyword" value="GfxInternalFormats|Internal Graphics Formats"}}
-	External Graphics File Formats
 	{{fbdoc item="keyword" value="KeyPgAsm|Inline ASM"}}
 	{{fbdoc item="keyword" value="ProPgErrorHandling|Error Handling"}}
 	{{fbdoc item="keyword" value="CatPgDddefines|Intrinsic Defines"}}

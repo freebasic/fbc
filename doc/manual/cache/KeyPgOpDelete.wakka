@@ -23,7 +23,7 @@ Operator to destroy data and free memory allocated with the ##[[KeyPgOpNew|Opera
 	
 	The memory deallocation process part provided by the ##**Delete Statement**## operator can be overloaded for user-defined types as a member operator ##[[KeyPgOpDeleteOverload|Delete Overload]]##. The previous process part for data destruction can never be modified.
 	
-	**Note:** Any operator ##**Delete[] Statement**## (or the only overload operator ##**Delete Statement**##) is not compatible with sub-type polymorphism, even using ##[[KeyPgOverride|Override]]## ##[[KeyPgVirtual|Virtual]]## ##[[KeyPgDestructor|Destructor]]## that may in addition induce crashing.
+	**Note:** Any operator ##**Delete[]**## (Statement or Overload) and the only Overload operator ##**Delete**## are not compatible with sub-type polymorphism, even using ##[[KeyPgOverride|Override]]## ##[[KeyPgVirtual|Virtual]]## ##[[KeyPgDestructor|Destructor]]## that may in addition induce crashing.
 	Instead of having to call such an operator ##**Delete([]) Statement**## on derived-type pointer, the safest way is to simply call (on base-type pointer) an overridden user ##[[KeyPgVirtual|Virtual]]## member procedure that will automatically launch the operator ##**Delete([]) Statement**## at derived-type level.
 
 {{fbdoc item="ex"}}

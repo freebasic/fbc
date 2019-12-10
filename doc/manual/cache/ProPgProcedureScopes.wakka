@@ -1,0 +1,40 @@
+{{fbdoc item="title" value="Procedure Scopes"}}----
+The **Scope** (visibility) of a **Procedure** through the different modules of a program.
+
+**Preamble:**
+
+	A procedure is a "subroutine" (sub) or a "function" that can be called by code outside the procedure (or internal code in the case of a recursion).
+	A procedure consists of a sequence of instructions that form the body of the procedure.
+	It is possible to pass values or variables to a procedure, and a function may return a value or a reference.
+
+{{fbdoc item="section" value="Description"}}
+	Scopes of procedures in modules follows simple rules:
+		- **Private** scope:
+				procedure visible only in its own module (where it is defined).
+		- **Public** scope:
+				procedure visible from all modules constituting a compiled program (including static libraries).
+		- **Export** scope:
+				when defined in a DLL (dynamically linked library), procedure visible from an external program that has loaded it (statically or dynamically).
+
+{{fbdoc item="section" value="Syntax"}}
+		##[ [[KeyPgPublic|Public]] | [[KeyPgPrivate|Private]] ] { [[KeyPgSub|Sub]] | [[KeyPgFunction|Function]] } //proc_name// ( //argumentlist// ) [ [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|As]] [[DataType|datatype]] ] ++Export++##
+	or
+		##[ [[KeyPgPublic|Public]] ] { [[KeyPgSub|Sub]] | [[KeyPgFunction|Function]] } //proc_name// ( //argumentlist// ) [ [ [[KeyPgByrefFunction|Byref]] ] [[KeyPgAs|As]] [[DataType|datatype]] ] [[KeyPgExport|Export]]##
+
+{{fbdoc item="section" value="Usage"}}
+	Private, Public and Export access controls are used in procedure definitions only (forbidden at declaration line level).
+	
+	By default, a procedure is Public except if the ##[[KeyPgOptionprivate|Option Private]]## statement (in the module) modifies the default state.
+	That is why both Private and Public access controls are useful, depending on the default state.
+	Export access control is incompatible with Private procedures (implicitly or explicitly defined like this).
+	
+	Among the compiled modules, two procedures with the same identifier, but defined inside different modules, may exist if both are Private.
+	
+	The compiler removes the Private procedures that are not called, but this does not currently work for Private procedures that are only called by other Private procedures that are not called themselves, because the first one appears as being called.
+
+{{fbdoc item="section" value="See also"}}
+	- [[CatPgModularizing|Modularizing]]
+	- [[CatPgProcedures|Procedures]]
+	- [[ProPgVarProcLinkage|Variable and Procedure Linkage]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

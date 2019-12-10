@@ -15,4 +15,9 @@ Intrinsic define (macro string) set by the compiler
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 
+{{fbdoc item="see"}}
+	- ##[[KeyPgDdfbbuilddateiso|__FB_BUILD_DATE_ISO__]]##
+	- ##[[KeyPgDddate|__DATE__]]##
+	- ##[[KeyPgDddateiso|__DATE_ISO__]]##
+
 {{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

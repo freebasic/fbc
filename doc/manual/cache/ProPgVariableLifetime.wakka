@@ -1,35 +1,39 @@
-{{fbdoc item="title" value="Simple Variable Lifetime vs Scope (IN PROGRESS...)"}}----
+{{fbdoc item="title" value="Simple Variable Lifetime vs Scope"}}----
 **Lifetime** of **Simple Variable**, created from declaration keyword for static memory allocation, relative to its **Scopes**.
 
 **Preamble:**
+
 	- The Lifetime of a variable is the time period in which the variable has valid memory (the Scope referring to the program part where its name is visible). The value of a variable may change during its lifetime, but it retains some consistent value.
 	- The simple variables considered are the predefined variables including the raw pointers, and the fixed-length strings/arrays, but excluding the variable-length strings/arrays. Instances of simple UDT (without any dynamic data allocated) are also considered.
 	- The declaration keywords for static memory allocation are: 'Dim', 'Static', 'Var'.
+
 	
-For such variables allocated in static way as defined above, the lifetime generally matches the surrounding scope, otherwise it can be greater than this one.
+	For such variables allocated in static way as defined above, the lifetime generally matches the surrounding scope, otherwise it can be greater than this one.
 
 {{fbdoc item="section" value="Declaration syntax for a lifetime matching the surrounding scope"}}
 	For such variables declared anywhere, as follows (or similar syntax):
-			##(1)	[[KeyPgDim|Dim]] [[[KeyPgByrefVariables|Byref]]] ++Shared++ [[KeyPgAs|As]] [[DataType|datatype]] [[[KeyPgPtr|Ptr]]] //variablename// ...##
-				##or##
-			##(2)	[[KeyPgVar|Var]] [[[KeyPgByrefVariables|Byref]]] ++Shared++ //variablename// = //expression//##
-					##(equivalent to: '[[KeyPgDim|Dim]] [[[KeyPgByrefVariables|Byref]]] ++Shared++ [[KeyPgAs|As]] [[KeyPgTypeof|Typeof]]((//expression//)) = //expression//')##
+				##(1)	[[KeyPgDim|Dim]] ++Shared++ [[KeyPgAs|As]] [[DataType|datatype]] [[[KeyPgPtr|Ptr]]] //variablename// ...##
+			##or##
+				##(2)	[[KeyPgVar|Var]] ++Shared++ //variablename// = //expression//##
+						##(equivalent to: '[[KeyPgDim|Dim]] ++Shared++ [[KeyPgAs|As]] [[KeyPgTypeof|Typeof]]((//expression//)) = //expression//')##
 		or
-			##(3)	{[[KeyPgDim|Dim]]|[[KeyPgStatic|Static]]} [[[KeyPgByrefVariables|Byref]]] [[KeyPgShared|Shared]] [[KeyPgAs|As]] [[DataType|datatype]] [[[KeyPgPtr|Ptr]]] //variablename// ...##
-				##or##
-			##(4)	[[KeyPgVar|Var]] [[[KeyPgByrefVariables|Byref]]] [[KeyPgShared|Shared]] //variablename// = //expression//##
-					##(equivalent to: '[[KeyPgDim|Dim]] [[[KeyPgByrefVariables|Byref]]] [[KeyPgShared|Shared]] [[KeyPgAs|As]] [[KeyPgTypeof|Typeof]]((//expression//)) = //expression//')##
+				##(3)	{[[KeyPgDim|Dim]]|[[KeyPgStatic|Static]]} [[KeyPgShared|Shared]] [[KeyPgAs|As]] [[DataType|datatype]] [[[KeyPgPtr|Ptr]]] //variablename// ...##
+			##or##
+				##(4)	[[KeyPgVar|Var]] [[KeyPgShared|Shared]] //variablename// = //expression//##
+						##(equivalent to: '[[KeyPgDim|Dim]] [[KeyPgShared|Shared]] [[KeyPgAs|As]] [[KeyPgTypeof|Typeof]]((//expression//)) = //expression//')##
+			##or##
+				##(5)	[[KeyPgCommon|Common]] [[[KeyPgShared|Shared]]] [[KeyPgAs|As]] [[DataType|datatype]] [[[KeyPgPtr|Ptr]]] //variablename//##
 	they always have a lifetime matching their surrounding scope (global scope, or scope block, or compound statement block, or procedure scope).
 	
-	With (1) or (2) syntax ('Shared' not used), these local variables are always allocated on the program stack at the time of their declarations, and are automatically deallocated when going out their scopes.
-	With (3) or (4) syntax ('Shared' used), these global variables are always allocated in the .BSS or .DATA section of the executable (their scopes and lifetimes begin at program creation and end with program termination).
+	With ##(1)## or ##(2)## syntax, the local variable is always allocated on the program stack at the time of its declarations, and is automatically deallocated when going out its scope.
+	With ##(3)## or ##(4)## or ##(5)## syntax, the global variable is always allocated in the .BSS or .DATA section of the executable (its scopes and lifetimes begins at program creation and ends with program termination).
 
-{{fbdoc item="section" value="Declaration syntax for a lifetime greater than (otherwise equal to) the surrounding scope"}}
+{{fbdoc item="section" value="Declaration syntax for a lifetime that may be greater than the surrounding scope"}}
 	For such variables declared anywhere, as follows (or similar syntax):
-			##[[KeyPgStatic|Static]] [[[KeyPgByrefVariables|Byref]]] ++Shared++ [[KeyPgAs|As]] [[DataType|datatype]] [[[KeyPgPtr|Ptr]]] //variablename// ...##
+			##[[KeyPgStatic|Static]] ++Shared++ [[KeyPgAs|As]] [[DataType|datatype]] [[[KeyPgPtr|Ptr]]] //variablename// ...##
 	they always have a lifetime equal to the program duration, so greater than their surrounding scope if there are declared in any local scope block (matching their surrounding scope if there are declared in the global scope).
 	
-	These static variables are always allocated in the .BSS or .DATA section of the executable (their lifetimes begin at program creation and end with program termination).
+	The static variable is always allocated in the .BSS or .DATA section of the executable (its lifetimes begins at program creation and ends with program termination).
 	
 	Interest of declaring such static variables in a compound instruction block or in a procedure scope:
 		**""-""** As for 'Dim', the 'Static' keyword is used in a compound statement block or in a procedure scope to declare variables whose scope stops at the end of the compound statement block or the procedure.
@@ -38,9 +42,63 @@ For such variables allocated in static way as defined above, the lifetime genera
 		**""-""** So, static variables with the same name can be declared in several different compound statement blocks and in different procedure scopes. Each of these variables therefore remains independent and retains its own value in its own local scope.
 
 {{fbdoc item="section" value="Example"}}
-	
+	Lifetime's comparison between different variables declared in a local scope:
+	local variable vs static variable, both declared in a procedure scope
+		{{fbdoc item="filename" value="examples/manual/proguide/variablelifetime/local-static.bas"}}%%(freebasic)
+Dim Shared As ZString Ptr pzl ' global variable to memorize the local Zstring address
+Dim Shared As ZString Ptr pzs ' global variable to memorize the static Zstring address
 
+Declare Sub prntSubString (ByVal p As ZString Ptr, ByVal size As Integer)
+
+
+Sub s ()                                          ' beginning of procedure scope
+	Dim As ZString * 15 zl = "local variable"     ' declare/initialize a local Zstring
+	pzl = @zl                                     ' memorize the local Zstring address
+	 
+	Static As ZString * 16 zs = "static variable" ' declare/initialize a static Zstring
+	pzs = @zs                                     ' memorize the static Zstring address
+	 
+	Print "     From inside the procedure scope:"
+	prntSubString(pzl, 14)                        ' display address/content of the local zstring
+	prntSubString(pzs, 15)                        ' display address/content of the static zstring
+End Sub                                           ' end of procedure scope
+
+Print "Lifetimes comparison between local/static variables declared in a local scope:"
+s() ' call the procedure
+
+Print "     From outside the procedure scope:"
+prntSubString(pzl, 14) ' display address/content of the local zstring after going out its scope
+prntSubString(pzs, 15) ' display address/content of the static zstring after going out its scope
+
+Sleep
+
+
+Sub prntSubString (ByVal p As ZString Ptr, ByVal size As Integer)
+	Print , "&h" & Hex(p, Sizeof(Any Ptr) * 2),
+	Print """";
+	For I As Integer = 0 To size - 1
+		Dim As UByte u = (*p)[I]
+		If u < Asc(" ") Then
+			Print " ";
+		Else
+			Print Chr(u);
+		End If
+	Next I
+	Print """"
+End Sub
+			%%Output example:
+				%%
+Lifetimes comparison between local/static variables declared in a local scope:
+	 From inside the procedure scope:
+			  &h0019FE74    "local variable"
+			  &h00407004    "static variable"
+	 From outside the procedure scope:
+			  &h0019FE74    " p@ Çp@ ¿■  Y "
+			  &h00407004    "static variable"
+%% 
 {{fbdoc item="section" value="See also"}}
+	- ##[[KeyPgDim|Dim]]##, ##[[KeyPgStatic|Static]]##, ##[[KeyPgVar|Var]]##
+	- [[ProPgStorageClasses|Storage Classes]]
 	- [[ProPgVariableScope|Variable Scope]]
 	- [[ProPgObjectLifetime|Dynamic Object and Data Lifetime]]
 

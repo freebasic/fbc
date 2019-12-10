@@ -20,9 +20,9 @@ const fbFileEncodUTF32   = 3
 
 declare function FileCopy alias "fb_FileCopy" ( byval source as __zstring __ptr, byval destination as __zstring __ptr ) as long
 #ifdef __FB_64BIT__
-	declare function FileAttr alias "fb_FileAttr" ( byval handle as long, byval returntype as long = 1 ) as __longint
+	declare function FileAttr alias "fb_FileAttr" ( byval filenumber as long, byval returntype as long = 1 ) as __longint
 #else
-	declare function FileAttr alias "fb_FileAttr" ( byval handle as long, byval returntype as long = 1 ) as long
+	declare function FileAttr alias "fb_FileAttr" ( byval filenumber as long, byval returntype as long = 1 ) as long
 #endif
 declare function FileLen alias "fb_FileLen" ( byval filename as __zstring __ptr ) as __longint
 declare function FileExists alias "fb_FileExists" ( byval filename as __zstring __ptr ) as long
@@ -31,11 +31,14 @@ declare function FileDateTime alias "fb_FileDateTime" ( byval filename as __zstr
 #else
 
 declare function FileCopy alias "fb_FileCopy" ( byval source as zstring ptr, byval destination as zstring ptr ) as long
-declare function FileAttr alias "fb_FileAttr" ( byval handle as long, byval returntype as long = 1 ) as integer
+declare function FileAttr alias "fb_FileAttr" ( byval filenumber as long, byval returntype as long = 1 ) as integer
 declare function FileLen alias "fb_FileLen" ( byval filename as zstring ptr ) as longint
 declare function FileExists alias "fb_FileExists" ( byval filename as zstring ptr ) as long
 declare function FileDateTime alias "fb_FileDateTime" ( byval filename as zstring ptr ) as double
 
 #endif
+
+declare function FileFlush alias "fb_FileFlush" ( byval filenumber as long = -1, byval systembuffer as long = 0 ) as long
+declare function FileSetEof alias "fb_FileSetEof" ( byval filenumber as long ) as long
 
 #endif

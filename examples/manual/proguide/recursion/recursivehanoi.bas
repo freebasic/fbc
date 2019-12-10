@@ -6,7 +6,8 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgRecursion
 '' --------
 
-'' For this example, the two recursive calls are at the end of executed code block but separated by an instruction line and there is an order constraint.
+'' For this example, the two recursive calls are at the end of executed code block,
+''   but separated by an instruction line and there is an order constraint.
 
 Sub recursiveHanoi (ByVal n As Integer, ByVal departure As String, ByVal middle As String, ByVal arrival As String)
 	If n > 0 Then

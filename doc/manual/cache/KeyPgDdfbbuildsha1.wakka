@@ -1,0 +1,18 @@
+{{fbdoc item="title" value="__FB_BUILD_SHA1__"}}----
+Intrinsic define (macro string) set by the compiler
+
+{{fbdoc item="syntax"}}##
+	""__FB_BUILD_SHA1__""
+##
+{{fbdoc item="desc"}}
+	Substituted by a string of the compiler's source SHA-1 revision.  The value is set using the SHA-1 commit id of the source code revision used to build the compiler binary, if available.  If the SHA-1 was not available at the time of building the compiler, the value will be an empty string.
+
+{{fbdoc item="ex"}}
+{{fbdoc item="filename" value="examples/manual/defines/fbbuildsha1.bas"}}%%(freebasic)
+PRINT __FB_BUILD_SHA1__
+%%
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC""
+
+{{fbdoc item="back" value="CatPgDddefines|Intrinsic Defines"}}

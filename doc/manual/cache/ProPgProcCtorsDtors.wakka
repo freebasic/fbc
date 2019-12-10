@@ -1,0 +1,44 @@
+{{fbdoc item="title" value="Constructors and Destructors"}}----
+The module **Constructors** / **Destructors** executed before / after module-level code.
+
+**Preamble:**
+
+	Do not confuse the module constructor (destructor) with the UDT constructor (destructor) that runs at the creation (destruction) of a UDT instance.
+	
+	The module constructors (destructors) allow to specify the execution of procedures at the beginning (at the end) of a program.
+
+{{fbdoc item="section" value="Description"}}
+	The constructor (destructor) keyword is used to force execution of the procedure prior (posterior) to that of module-level code.
+	Procedures defined as module constructors or destructors may be used the same way as ordinary procedures (they may be also called from within module-level code).
+	A module may define multiple constructor and destructors procedures.
+	
+	In a single module, depending on the build and run-time environment of the target system:
+		**""-""** module constructors (destructors) may execute in the order in which they are defined, or reverse order,
+		**""-""** module constructors (destructors) may execute before or after global static variables having constructors (destructors),
+		**""-""** module constructors (destructors) may execute before or after other module constructors (destructors) having priority attribute,
+		**""-""** module constructors (destructors) with priority attribute may execute before or after global static variables having constructors (destructors).
+		
+	The constructors and destructors of a module are always executed (like its main code), even if it is compiled as secondary module or static library, or even loaded as dynamic library (dll).
+
+{{fbdoc item="section" value="Syntax"}}
+	##[[[KeyPgPublic|Public]] | [[KeyPgPrivate|Private]]] [[KeyPgSub|Sub]] //procedure_name// [[[KeyPgAlias|Alias]] "//external_identifier//"] [()] {[[KeyPgModuleConstructor|Constructor]] | [[KeyPgModuleDestructor|Destructor]]} [//priority//] [[[KeyPgStatic|Static]]]
+		{ //procedure body// }
+	[[KeyPgEndblock|End]] [[KeyPgSub|Sub]]##
+
+{{fbdoc item="section" value="Usage"}}
+	The constructor (destructor) keyword is used in Sub definitions only (forbidden at declaration line level).
+	Subs defined as constructors (destructors) may be used in the same way as ordinary Subs (they may be called from within module-level code).
+	The Sub must have an empty parameter list. 
+	
+	The priority attribute, an integer between 101 and 65535, can be used to force constructors (destructors) to be executed in a certain order, relative to other constructors (destructors) also having priority attribute.
+	The value of priority has no specific meaning, only the relationship of the number with other constructor (destructor) priorities.
+	101 is the highest (lowest) priority and is executed first (last), relative to other constructors (destructors) also having priority attribute.
+	
+	Public static member Subs (having an empty parameter list) of UDT can be defined as a module constructors (destructors), by adding the constructor (destructor) keyword in the Sub definitions.
+	
+	Accessing global static objects having constructors (destructors) from module constructors (destructors) should be avoided due to variations in execution order on different build systems.
+
+{{fbdoc item="section" value="See also"}}
+	- [[ProPgCtorsDtors|UDT Constructors and Destructors]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
