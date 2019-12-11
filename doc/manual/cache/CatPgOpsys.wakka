@@ -23,7 +23,22 @@ Statements and procedures for working with files, directories and the system.
 	=={{fbdoc item="keyword" value="KeyPgName|NAME"}}==
 		Renames an existing file.
 
-{{anchor name="DIRS"}}{{fbdoc item="section" value="Working with Directories"}}
+{{anchor name="FILEPROPS"}}{{fbdoc item="section" value="File Properties"}}
+	=={{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}==
+		Gets information about a file bound to a file number.
+	=={{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}==
+		Copies a file.
+	=={{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}==
+		Gets the last modified date and time of a file.
+	=={{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}==
+		Tests for the existence of a file.
+	=={{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}==
+		Gets the length (in bytes) of a file.
+	=={{fbdoc item="keyword" value="KeyPgFileseteof|FILESETEOF"}}==
+		Sets the length of an open file bound to a file number.
+	=={{fbdoc item="keyword" value="KeyPgFileflush|FILEFLUSH"}}==
+		Flushes application or system buffers for an open file bound to a file number.
+<<>>{{anchor name="DIRS"}}{{fbdoc item="section" value="Working with Directories"}}
 	=={{fbdoc item="keyword" value="KeyPgCurdir|CURDIR"}}==
 		Gets the current working directory.
 	=={{fbdoc item="keyword" value="KeyPgChdir|CHDIR"}}==
@@ -36,17 +51,6 @@ Statements and procedures for working with files, directories and the system.
 		Creates a new directory.
 	=={{fbdoc item="keyword" value="KeyPgRmdir|RMDIR"}}==
 		Deletes an existing directory.
-<<>>{{anchor name="FILEPROPS"}}{{fbdoc item="section" value="File Properties"}}
-	=={{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}==
-		Gets information about a file bound to a file number.
-	=={{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}==
-		Copies a file.
-	=={{fbdoc item="keyword" value="KeyPgFiledatetime|FILEDATETIME"}}==
-		Gets the last modified date and time of a file.
-	=={{fbdoc item="keyword" value="KeyPgFileexists|FILEEXISTS"}}==
-		Tests for the existence of a file.
-	=={{fbdoc item="keyword" value="KeyPgFilelen|FILELEN"}}==
-		Gets the length (in bytes) of a file.
 
 {{anchor name="SYSPROCS"}}{{fbdoc item="section" value="System Procedures"}}
 	=={{fbdoc item="keyword" value="KeyPgFre|FRE"}}==

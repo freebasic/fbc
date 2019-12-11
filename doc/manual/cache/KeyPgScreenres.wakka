@@ -14,7 +14,7 @@ Initializes a graphics mode by specifying horizontal and vertical resolution
 	##//depth//##
 		The color depth in bits per pixel. Valid color depths are: ##1##, ##2##, ##4##, ##8##, ##16## and ##32##.  Values of ##15## and ##24## are also allowed as aliases for ##16## and ##32##, respectively.  If omitted, the default is 8 bits per pixel.  8 bits and below will give a palette image.  The default palette will be the first ##2 [[KeyPgOpExponentiate|^]] //depth//## colors of the 256-color palette used in ##[[KeyPgScreengraphics|Screen]] 13##.
 	##//num_pages//##
-		The number of video pages to create, defaults to ##1##. (see below)
+		The number of video pages to create, defaults to ##1##. (see ##[[KeyPgScreengraphics|Screen]]##)
 	##//flags//##
 		Used to set various properties of the screen, including fullscreen mode and graphics driver priority. (see below or the standard header "fbgfx.bi" for available flags)
 	##//refresh_rate//##

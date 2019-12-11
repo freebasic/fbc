@@ -1,10 +1,10 @@
 {{fbdoc item="title" value="SQLite"}}----
 Small C library that implements a self-contained, embeddable, zero-configuration SQL database engine.
 
-Website: http://sqlite.org
+Website: https://sqlite.org
 Platforms supported: ""Win32"", Linux, DOS
 Headers to include: sqlite2.bi or sqlite3.bi
-Header versions: 2.8.17, 3.7.8
+Header versions: 2.8.17, 3.30.0
 Examples: in examples/database/
 
 {{fbdoc item="back" value="ExtLibTOC|External Library Table of Contents"}}

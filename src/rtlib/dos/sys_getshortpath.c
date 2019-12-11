@@ -3,7 +3,8 @@
 char *fb_hGetShortPath( char *src, char *dst, ssize_t maxlen )
 {
 	if( strchr( src, 32 ) == NULL ) {
-		strcpy( dst, src );
+		strncpy( dst, src, maxlen );
+		dst[maxlen-1] = '\0';
     } else {
         /* FIXME: SPC is only allowed when using LFNs provided by a Windows
          * environment. So I guess that we have to use the following INT
@@ -24,7 +25,7 @@ char *fb_hGetShortPath( char *src, char *dst, ssize_t maxlen )
          *      AX = error code
          *
          */
-        strncpy( dst, src, maxlen-1 );
+        strncpy( dst, src, maxlen );
         dst[maxlen-1] = 0;
 	}
 

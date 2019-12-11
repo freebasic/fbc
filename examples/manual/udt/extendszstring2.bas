@@ -75,3 +75,4 @@ Print "'" & v & "'", Len(v)
 Print "'" & Right(Str(v), 5) & "'"  '' workaround (or: 'Right(Type<String>(v), 5)')
 
 Sleep
+	

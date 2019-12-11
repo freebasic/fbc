@@ -75,6 +75,7 @@ typedef int (*FnFileUnlock)         ( struct _FB_FILE *handle, fb_off_t position
 typedef int (*FnFileReadLine)       ( struct _FB_FILE *handle, FBSTRING *dst );
 typedef int (*FnFileReadLineWstr)   ( struct _FB_FILE *handle, FB_WCHAR *dst, ssize_t dst_chars );
 typedef int (*FnFileFlush)          ( struct _FB_FILE *handle );
+typedef int (*FnFileSetEof)         ( struct _FB_FILE *handle );
 
 typedef struct _FB_FILE_HOOKS {
     FnFileEof           pfnEof;
@@ -246,6 +247,13 @@ FBCALL int          fb_FileGetArrayLargeIOB( int fnum, long long pos, FBARRAY *d
 
 FBCALL int          fb_FileEof          ( int fnum );
        int          fb_FileEofEx        ( FB_FILE *handle );
+FBCALL int          fb_FileSetEof       ( int fnum );
+       int          fb_FileSetEofEx     ( FB_FILE *handle );
+       int          fb_hFileSetEofEx    ( FILE *f );
+FBCALL int          fb_FileFlush        ( int fnum, int systembuffers );
+       int          fb_FileFlushEx      ( FB_FILE *handle, int systembuffers );
+FBCALL void         fb_FileFlushAll     ( int systembuffers );
+       int          fb_hFileFlushEx     ( FILE *f );
 FBCALL long long    fb_FileTell         ( int fnum );
        fb_off_t     fb_FileTellEx       ( FB_FILE *handle );
 FBCALL int          fb_FileSeek         ( int fnum, int newpos );

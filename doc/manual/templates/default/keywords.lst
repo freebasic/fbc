@@ -196,7 +196,9 @@ FileAttr
 FileCopy
 FileDateTime
 FileExists
+FileFlush
 FileLen
+FileSetEof
 Fix
 Flip
 For
@@ -487,6 +489,8 @@ __FB_ASM__
 __FB_BACKEND__
 __FB_BIGENDIAN__
 __FB_BUILD_DATE__
+__FB_BUILD_DATE_ISO__
+__FB_BUILD_SHA1__
 __FB_CYGWIN__
 __FB_DARWIN__
 __FB_DEBUG__

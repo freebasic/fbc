@@ -1,0 +1,97 @@
+{{fbdoc item="title" value="Numeric Types"}}----
+Of all built-in data-types, **Numeric Types** are those dedicated to the representation of all kinds of numbers.
+
+FreeBASIC supplies several numeric data types for handling numbers in various representations.
+Of these, integer types represent only integer numbers (positive, negative, and zero), and floating-point types represent real numbers.
+
+{{fbdoc item="section" value="Integer types"}}
+	Integer types are those that represent only integer numbers:
+		- Signed integer types:
+				**""-""** ##[[KeyPgByte|BYTE]] 8-bit##
+				**""-""** ##[[KeyPgShort|SHORT]] 16-bit##
+				**""-""** ##[[KeyPgLong|LONG]] 32-bit##
+				**""-""** ##[[KeyPgInteger|INTEGER]] 32-bit or 64-bit (*)##
+				**""-""** ##[[KeyPgLongint|LONGINT]] 64-bit##
+		- Unsigned integer types:
+				**""-""** ##[[KeyPgUbyte|UBYTE]] 8-bit##
+				**""-""** ##[[KeyPgUshort|USHORT]] 16-bit##
+				**""-""** ##[[KeyPgUlong|ULONG]] 32-bit##
+				**""-""** ##[[KeyPgUinteger|UINTEGER]] 32-bit or 64-bit (*)##
+				**""-""** ##[[KeyPgUlongint|ULONGINT]] 64-bit##
+
+{{fbdoc item="section" value="Floating-point types"}}
+	Floating-point types are those that represent real numbers:
+		- Single precision:
+				**""-""** ##[[KeyPgSingle|SINGLE]] 32-bit##
+		- Double precision:
+				**""-""** ##[[KeyPgDouble|DOUBLE]] 64-bits##
+
+{{fbdoc item="section" value="Pseudo-integer types"}}
+	Other types that also represent but indirectly integer numbers:
+		- Enumerated type:
+				**""-""** ##[[KeyPgEnum|ENUM]] (32-bit or 64-bit) (*)##
+		- Boolean type:
+				**""-""** ##[[KeyPgBoolean|BOOLEAN]] (1-bit useful in 8-bit)##
+
+{{fbdoc item="section" value="Pointer types"}}
+	Pointers are types whose values ##(uinteger)## are addresses in memory (they are said to 'point' to this memory).
+	The type of data that is pointed to depends on the type of pointer (an Integer Pointer points to Integer data).
+	Pointers are declared like any other variable, with the suffix ##pointer## or ##ptr## following the type name:
+		- Pointer type:
+				**""-""** ##{[[DataType|DataType]]|[[KeyPgAny|ANY]]} {[[KeyPgPtr|POINTER]]|[[KeyPgPtr|PTR]]} (32-bit or 64-bit) (*)##
+
+##(*)## ##INTEGER##, ##UINTEGER##, and ##ENUM## data types vary with platform, matching the size of ##POINTER##.
+
+{{fbdoc item="section" value="Example"}}
+	Size (in bits) of all types above:
+		{{fbdoc item="filename" value="examples/manual/proguide/numeric_types.bas"}}%%(freebasic)
+Print Using "A  BYTE     is ##"; Sizeof(BYTE)     * 8; : Print "-bit"
+Print Using "A  SHORT    is ##"; Sizeof(SHORT)    * 8; : Print "-bit"
+Print Using "A  LONG     is ##"; Sizeof(LONG)     * 8; : Print "-bit"
+Print Using "An INTEGER  is ##"; Sizeof(INTEGER)  * 8; : Print "-bit"
+Print Using "A  LONGINT  is ##"; Sizeof(LONGINT)  * 8; : Print "-bit"
+Print Using "An UBYTE    is ##"; Sizeof(UBYTE)    * 8; : Print "-bit"
+Print Using "An USHORT   is ##"; Sizeof(USHORT)   * 8; : Print "-bit"
+Print Using "An ULONG    is ##"; Sizeof(ULONG)    * 8; : Print "-bit"
+Print Using "An UINTEGER is ##"; Sizeof(UINTEGER) * 8; : Print "-bit"
+Print Using "An ULONGINT is ##"; Sizeof(ULONGINT) * 8; : Print "-bit"
+Print
+Print Using "A  SINGLE   is ##"; Sizeof(SINGLE)   * 8; : Print "-bit"
+Print Using "A  DOUBLE   is ##"; Sizeof(DOUBLE)   * 8; : Print "-bit"
+Print
+Enum myENUM : option1 = 1 : option2 : End ENUM
+Print Using "An ENUM     is ##"; Sizeof(myENUM)   * 8; : Print "-bit"
+Print
+Print Using "A  BOOLEAN  is ##"; Sizeof(BOOLEAN)  * 8; : Print "-bit"
+Print
+Print Using "A  POINTER  is ##"; Sizeof(ANY PTR)  * 8; : Print "-bit"
+
+Sleep
+		%%Output example for win64:
+			%%
+A  BYTE     is  8-bit
+A  SHORT    is 16-bit
+A  LONG     is 32-bit
+An INTEGER  is 64-bit
+A  LONGINT  is 64-bit
+An UBYTE    is  8-bit
+An USHORT   is 16-bit
+An ULONG    is 32-bit
+An UINTEGER is 64-bit
+An ULONGINT is 64-bit
+
+A  SINGLE   is 32-bit
+A  DOUBLE   is 64-bit
+
+An ENUM     is 64-bit
+
+A  BOOLEAN  is  8-bit
+
+A  POINTER  is 64-bit
+		%%
+{{fbdoc item="section" value="See also"}}
+	- ##[[CatPgStdDataTypes|Standard Data Types]]##
+	- ##[[TblVarTypes|Standard Data Type Limits]]##
+	- [[ProPgDataConversion|Coercion and Conversion]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -1,18 +1,20 @@
 {{fbdoc item="title" value="Recursion"}}----
 Recursive procedures (subroutines or functions)
 
-Iteration and recursion are two very useful ways to program, especially to perform a certain number of times a certain script, and thus allow optimization of the code. If iteration is relatively easy to understand, recursion is a concept not necessarily obvious at the beginning.
-When speaking of a recursive procedure (subroutine or function), we refer to a syntactic characteristic: the procedure, in its own definition, refers to itself (it calls itself).
-But when talking about recursive process, linear or tree, we are interested in the process flow, not in the syntax of the procedure's writing.
-Thus, a procedure can have a recursive definition but correspond to an iterative process.
+**Preamble:**
 
-Some treatments are naturally implemented as a recursive algorithm (although this is not always the most optimal solution).
-The main problem of the recursive approach is that it consumes potentially a lot of space on the execution stack: from a certain level of "depth" of recursion, the space allocated for the execution stack of the thread is exhausted, and causes an error of type "stack overflow".
-Repeatedly calling the same procedure can also make the execution slower, although this may make the code easier.
-To increase the speed of execution, simple recursive algorithms can be recreated in little more complicated iterative algorithms using loops that execute much faster.
-
-What is the use of recursion if it increases the execution time and memory space compared to an iterative solution?
-There are still cases where it is not possible to do otherwise, where iterative translation does not exist or, where it exists, is much heavier to implement (requiring for example a dynamic storage capacity to substitute for the execution stack).
+	Iteration and recursion are two very useful ways to program, especially to perform a certain number of times a certain script, and thus allow optimization of the code. If iteration is relatively easy to understand, recursion is a concept not necessarily obvious at the beginning.
+	When speaking of a recursive procedure (subroutine or function), we refer to a syntactic characteristic: the procedure, in its own definition, refers to itself (it calls itself).
+	But when talking about recursive process, linear or tree, we are interested in the process flow, not in the syntax of the procedure's writing.
+	Thus, a procedure can have a recursive definition but correspond to an iterative process.
+	
+	Some treatments are naturally implemented as a recursive algorithm (although this is not always the most optimal solution).
+	The main problem of the recursive approach is that it consumes potentially a lot of space on the execution stack: from a certain level of "depth" of recursion, the space allocated for the execution stack of the thread is exhausted, and causes an error of type "stack overflow".
+	Repeatedly calling the same procedure can also make the execution slower, although this may make the code easier.
+	To increase the speed of execution, simple recursive algorithms can be recreated in little more complicated iterative algorithms using loops that execute much faster.
+	
+	What is the use of recursion if it increases the execution time and memory space compared to an iterative solution?
+	There are still cases where it is not possible to do otherwise, where iterative translation does not exist or, where it exists, is much heavier to implement (requiring for example a dynamic storage capacity to substitute for the execution stack).
 
 {{fbdoc item="section" value="Recursion beside iteration"}}
 	Iteration and recursion both repeatedly execute the instruction set:
@@ -234,7 +236,8 @@ Sleep
 		
 		Example, tower of Hanoi algorithm:
 		{{fbdoc item="filename" value="examples/manual/proguide/recursion/recursivehanoi.bas"}}%%(freebasic)
-'' For this example, the two recursive calls are at the end of executed code block but separated by an instruction line and there is an order constraint.
+'' For this example, the two recursive calls are at the end of executed code block,
+''   but separated by an instruction line and there is an order constraint.
 
 Sub recursiveHanoi (Byval n As Integer, Byval departure As String, Byval middle As String, Byval arrival As String)
 	If n > 0 Then

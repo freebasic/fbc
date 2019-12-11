@@ -27,6 +27,8 @@ Subtracts and assigns a value to a variable
 	For numeric types, the right-hand side expression (##//rhs//##) will be converted to the left-hand side type (##//T1//##).
 	
 	This operator can be overloaded for user-defined types as a member ##[[KeyPgOperator|Operator]]## using the appropriate syntax.
+	
+	//Note: Similarly to the operator '=[>]' (assign), the alternative symbol '-=>' can be also used.//
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/operator/subtract-assign.bas"}}%%(freebasic)

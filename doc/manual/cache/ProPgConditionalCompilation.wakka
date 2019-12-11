@@ -1,0 +1,82 @@
+{{fbdoc item="title" value="Conditional Compilation"}}----
+**Conditional Compilation** allows to change the way code is generated using '[[CatPgPreProcess|Preprocessor commands]]'.
+
+The '##[[KeyPgPpdefine|#define]]##' command allows to define compilation constants, that is constants that describe the parameters of the platform for which the program is compiled.
+These constants make it possible to carry out conditional compilations, that is to say to modify the behavior of the program according to parameters defined during its compilation.
+
+The '##[[KeyPgPpdefine|#define]]##' command is also used to replace identifiers of the program with other identifiers, for example to test several versions of the same function without modifying the entire program.
+
+{{fbdoc item="section" value="Compilation constants"}}
+	A clear distinction will be made between compilation constants defined with the '##[[KeyPgPpdefine|#define]]##' directive of the preprocessor and the constants defined with the '##[[KeyPgConst|const]]##' keyword.
+	Indeed, the literal constants do not reserve memory. These are immediate values, defined by the compiler.
+	On the other hand, the '##[[KeyPgConst|const]]##' can still have a reserved memory space. This is for example the case when manipulating string literals.
+	
+	A literal constant declared with the '##[[KeyPgPpdefine|#define]]##' directive of the preprocessor will always retain its value (provided that it is not redefined). These literal constants have no type, which can be very annoying and error-prone in code.
+	Their use will be reserved for compilation constants only, and the '##[[KeyPgConst|const]]##' keyword will be preferred for all other constants of the program.
+	
+	The preprocessor sets a number of built-in constants automatically.
+	These are the '[[CatPgDddefines|Intrinsic Defines]]' (see their list).
+
+{{fbdoc item="section" value="Conditional compilation"}}
+	The definition of identifiers and compilation constants is widely used to perform so-called conditional compilation.
+	Conditional compilation consists of replacing certain portions of source code with others, depending on the presence or value of compilation constants.
+	This is achievable using conditional compilation directives.
+	
+	The most common of which are probably:
+		##[[KeyPgPpifdef|#ifdef]] //symbol//##
+			##' Conditionally included statements##
+		##[[KeyPgPpendif|#endif]]##
+			the text between the ##[[KeyPgPpifdef|#ifdef]]## (ie, "if defined") and the ##[[KeyPgPpendif|#endif]]## is left as it is if the identifier ##//symbol//## is known to the preprocessor. Otherwise, it is deleted (the identifier can be declared using just the ##[[KeyPgPpdefine|#define]]## command seen previously).
+			
+	There are other conditional compilation directives like:
+		**""-""** ##[[KeyPgPpifndef|#ifndef]] (if not defined ...)##
+		**""-""** ##[[KeyPgPpelse|#else]]## / ##[[KeyPgPpelseif|#elseif]] (otherwise ... / otherwise, if ...)##
+		**""-""** ##[[KeyPgPpif|#if]] (if ...)##
+			the ##[[KeyPgPpif|#if]]## directive expects a constant expression as parameter (the text that follows is included in the file if and only if this expression is true).
+			
+	Another common application of compilation directives is the protection of header files against multiple inclusions:
+		##[[KeyPgPpifndef|#ifndef]] //""AlreadyThere""//##
+			##[[KeyPgPpdefine|#define]] //""AlreadyThere""//##
+			##' Text to include only once at most.##
+		##[[KeyPgPpendif|#endif]]##
+	This prevents the text from being included multiple times, as a result of multiple ##[[KeyPgInclude|#include]]## calls.
+	Indeed, at the first call, ##//""AlreadyThere""//## is not known to the preprocessor. It is therefore declared and the text is included.
+	On any subsequent call, ##//""AlreadyThere""//## exists, and the text is not included.
+	This kind of writing is found in header files, for which in general we do not want a multiple inclusion to take place.
+
+{{fbdoc item="section" value="Example"}}
+	Example of conditional compilation using the Intrinsic define ##[[KeyPgDdfbdebug|__FB_DEBUG__]]## to debug a recursive function:
+		{{fbdoc item="filename" value="examples/manual/proguide/conditional_compilation.bas"}}%%(freebasic)
+Function recursiveFactorial (Byval n As Integer) As Integer
+	If (n = 0) Then                         '' end condition
+		#if __FB_DEBUG__ <> 0
+			Print "end of recursion and result:";
+		#endif
+		Return 1
+	Else                                    '' recursion loop
+		#if __FB_DEBUG__ <> 0
+			Print "multiply by: " & n
+		#endif
+	  Return n * recursiveFactorial(n - 1)  '' recursive call
+	End If
+End Function
+
+Print recursiveFactorial(5)
+
+Sleep
+		%%Output after compiling without ##[[CompilerOptg|-g]]## option:
+		%%
+ 120		%%Output after compiling with ##[[CompilerOptg|-g]]## option:
+		%%
+multiply by: 5
+multiply by: 4
+multiply by: 3
+multiply by: 2
+multiply by: 1
+end of recursion and result: 120
+		%%
+{{fbdoc item="section" value="See also"}}
+	- [[ProPgPreprocessor|Preprocessor Overview]]
+	- [[ProPgMacros|Macros]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

@@ -42,8 +42,8 @@ Operator to convert a UDT (User Defined Type) variable into a specified data typ
 	Such a ##**Cast**## operator code will induce an infinite loop when called, unless an implicit conversion from ##//typename//## to ##//datatype//## already exists through a matched constructor (or a let operator) for ##//datatype//##, so with a higher priority (see example 5 below).
 
 {{fbdoc item="ex"}}
-Very simple syntaxic example highlighting the conversion capabilities (explicit and implicit) by using Cast operators:
-{{fbdoc item="filename" value="examples/manual/casting/opcast1.bas"}}%%(freebasic)
+	Very simple syntaxic example highlighting the conversion capabilities (explicit and implicit) by using Cast operators:
+	{{fbdoc item="filename" value="examples/manual/casting/opcast1.bas"}}%%(freebasic)
 Type UDT
   Dim As Integer I
   Declare Operator Cast () As Integer
@@ -98,10 +98,10 @@ Print G
 Print
 
 Sleep
-%%
-Workarounds for the not working syntax: ##//UDT_instance// = Cast( //UDT//, //built_in_type_variable// )##:
-(using constructor, Let operator, and a Cast operator which returns by reference)
-{{fbdoc item="filename" value="examples/manual/casting/opcast2.bas"}}%%(freebasic)
+	%%
+	Workarounds for the not working syntax: ##//UDT_instance// = Cast( //UDT//, //built_in_type_variable// )##:
+	(using constructor, Let operator, and a Cast operator which returns by reference)
+	{{fbdoc item="filename" value="examples/manual/casting/opcast2.bas"}}%%(freebasic)
 Type UDT
   As Integer I
   Declare Constructor ()
@@ -145,9 +145,9 @@ Print u.I
 Print
 
 Sleep
-%%
-Conversion from UDT1 into UDT2, by using a constructor and a Let operator in UDT2:
-{{fbdoc item="filename" value="examples/manual/casting/opcast3.bas"}}%%(freebasic)
+	%%
+	Conversion from UDT1 into UDT2, by using a constructor and a Let operator in UDT2:
+	{{fbdoc item="filename" value="examples/manual/casting/opcast3.bas"}}%%(freebasic)
 Type _UDT1 As UDT1
 
 Type UDT2
@@ -188,9 +188,9 @@ Print u2.I2
 Print
 
 Sleep
-%%
-Conversion from UDT1 into UDT2, by using a Cast operator in UDT1:
-{{fbdoc item="filename" value="examples/manual/casting/opcast4.bas"}}%%(freebasic)
+	%%
+	Conversion from UDT1 into UDT2, by using a Cast operator in UDT1:
+	{{fbdoc item="filename" value="examples/manual/casting/opcast4.bas"}}%%(freebasic)
 Type UDT2
   Dim As Integer I2
 End Type
@@ -221,9 +221,9 @@ Print u2.I2
 Print
 
 Sleep
-%%
-Conversion from UDT1 into UDT2, by using in UDT1 a Cast operator exiting by ##//Return This//##, but without infinite loop thanks to a matched Let operator in UDT2:
-{{fbdoc item="filename" value="examples/manual/casting/opcast5.bas"}}%%(freebasic)
+	%%
+	Conversion from UDT1 into UDT2, by using in UDT1 a Cast operator exiting by ##//Return This//##, but without infinite loop thanks to a matched Let operator in UDT2:
+	{{fbdoc item="filename" value="examples/manual/casting/opcast5.bas"}}%%(freebasic)
 Type _UDT1 As UDT1
 
 Type UDT2
@@ -253,7 +253,7 @@ u1.I1 = 123
 Print Cast(UDT2, u1).I2
 
 Sleep
-%%
+	%%
 {{fbdoc item="lang"}}
 	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
 

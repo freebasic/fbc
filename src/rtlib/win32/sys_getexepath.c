@@ -3,6 +3,9 @@
 #include "../fb.h"
 #include <windows.h>
 
+/* maxlen is the size of the buffer including the null terminator 
+   and must be >= 1 */
+
 char *fb_hGetExePath( char *dst, ssize_t maxlen )
 {
 	GetModuleFileName( GetModuleHandle( NULL ), dst, maxlen );

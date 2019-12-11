@@ -1,0 +1,370 @@
+{{fbdoc item="title" value="Threads"}}----
+The built-in procedures that create, and detach/wait-for the **Threads**.
+
+**Preamble:**
+
+	When a program starts executing, it has one implicit thread running (this is already a full-fledged thread, with its own thread ID).
+	This "main" thread executes the main function of the program.
+	This same program can explicitly launch additional threads that will run in a competitive manner (both between them and with the main thread).
+	
+	All threads (including the main thread) share the same memory, and thus can access the same global variables, same heap memory, same set of file descriptors, etc.
+	All these threads execute in parallel (i.e. using time slices, or if the system has several processors/cores, then really in parallel).
+
+{{fbdoc item="section" value="Creating a thread"}}
+	There are two methods to create a thread:
+		**""-""** a "classic" method ##[[KeyPgThreadCreate|Threadcreate]]## that starts a specific user-defined subroutine type (which has obligatorily one single parameter, an //'Any Ptr'// type pointer) in a separate execution thread, this first method being 100% safe,
+		**""-""** a "specific" method ##[[KeyPgThreadCall|Threadcall]]## that should have start any user-defined subroutine type (which may have almost any number and any type of parameters) in a separate execution thread, but for the moment this second method is bugged.
+		
+	__Classic method (100% safe) - ##[[KeyPgThreadCreate|Threadcreate]]##__
+		**""-""** Syntax:
+			##[[KeyPgDeclare|Declare]] [[KeyPgFunction|Function]] [[KeyPgThreadCreate|Threadcreate]] ( [[KeyPgByval|ByVal]] //procptr// [[KeyPgAs|As]] [[KeyPgSub|Sub]] ( [[KeyPgByval|ByVal]] //userdata// [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]] ), [[KeyPgByval|ByVal]] //param// [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]] = 0, 		[[KeyPgByval|ByVal]] //stack_size// [[KeyPgAs|As]] [[KeyPgInteger|Integer]] = 0 ) [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]]##
+		**""-""** Usage:
+			##//threadid// = [[KeyPgThreadCreate|Threadcreate]] ( //procptr// [, [ //param// ] [, //stack_size// ] ] )##
+		**""-""** Parameters:
+			##//procptr//##
+				A pointer to the ##[[KeyPgSub|Sub]]## intended to work as a thread. The sub must have the following signature (same parameters, same calling convention) to be compatible to ##//procptr//##:
+					##[[KeyPgDeclare|Declare]] [[KeyPgSub|Sub]] myThread ( [[KeyPgByval|ByVal]] //userdata// [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]] )##
+			##//userdata//##
+				The ##Any Ptr## parameter of the ##[[KeyPgSub|Sub]]## intended to work as a thread. ""FreeBASIC"" expects this parameter to be present, it must not be omitted! 
+			##//param//##
+				##Any Ptr## argument that will be passed to the thread ##[[KeyPgSub|Sub]]## pointed to by ##//procptr//## through its ##//userdata//## parameter. For example, this can be a pointer to a structure or an array containing various information for the thread sub to work with. If ##//param//## is not given, ##0## (zero) will be passed to the thread sub's ##//userdata//## parameter instead.
+			##//stack_size//##
+				Optional number of bytes to reserve for this thread's stack.
+		**""-""** Return value:
+			The ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]## handle ##//(threadid)//## to the thread created, or the null pointer (##0##) on failure.
+			
+	__Specific method (bugged) - ##[[KeyPgThreadCall|Threadcall]]##__
+		**""-""** Syntax:
+			##[[KeyPgDeclare|Declare]] [[KeyPgFunction|function]] [[KeyPgThreadCall|Threadcall]] //subname// ( [//paramlist//] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]##
+		**""-""** Usage:
+			##//threadid// = [[KeyPgThreadCall|Threadcall]] //subname// ( [//paramlist//] )##
+		**""-""** Parameters:
+			##//subname//##
+				The name of a subroutine
+			##//paramlist//##
+				A list of parameters to pass to the subroutine, as with a normal sub call.	
+		**""-""** Return value:
+			The ##[[KeyPgAny|any]] [[KeyPgPtr|ptr]]## handle ##//(threadid)//## to the thread created, or the null pointer (##0##) on failure.
+		**""-"" Warning:**
+			Presently when ##[[KeyPgThreadCall|Threadcall]]## involves to pass parameters to the thread, there is no guarantee that the corresponding data are still maintained after the end of the [[KeyPgThreadCall|Threadcall]] statement and this until the thread is really launched. That can cause bad behavior.
+			Therefore it is more advisable for the moment to use ##[[KeyPgThreadCreate|Threadcreate]]## (100% safe) instead.
+			
+	__Description__
+		Several different threads can be created from the same ##[[KeyPgSub|Sub]]##, with different passed arguments allowing to define the behavior of each.
+		
+		There may be a longer or shorter time between the end of the ##[[KeyPgThreadCreate|Threadcreate]]##/##[[KeyPgThreadCall|Threadcall]]## statement execution and the effective launch of the thread.
+		So some statements following the ##[[KeyPgThreadCreate|Threadcreate]]##/##[[KeyPgThreadCall|Threadcall]]## statement can be executed before the actual launch of the thread.
+		
+		There is no guarantee about the order in which different threads execute, and no assumptions can be made about the order in which multiple create threads actually start executing.
+		
+		By default, a thread is always created in the "joinable" state, ie its handle is accessible by its ##//'threadid'//## identifier.
+		If a thread ends in this state (joinable), the resources that were assigned to it will not be released automatically (but only at the main thread termination).
+		
+		So a good habit is to always use one and only one of the following two methods for a thread to finish properly (see the paragraph below):
+			**""-""** either  waiting for the thread end.
+			**""-""** otherwise detaching the thread (the thread becomes no longer joinable),
+
+{{fbdoc item="section" value="Waiting for a thread end, otherwise detaching a thread"}}
+	There are two methods to induce a proper thread termination:
+		**""-""** either a first method ##[[KeyPgThreadWait|ThreadWait]]## where another thread waits for this thread to finish,
+		**""-""** otherwise a second method ##[[KeyPgThreadDetach|ThreadDetach]]## where another thread detaches this thread and continues.
+		
+	__First method - ##[[KeyPgThreadWait|ThreadWait]]##__
+		**""-""** Syntax:
+			##[[KeyPgDeclare|Declare]] [[KeyPgSub|Sub]] [[KeyPgThreadWait|ThreadWait]] ( [[KeyPgByval|Byval]] //threadid// [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]] )##
+		**""-""** Usage:
+			##[[KeyPgThreadWait|ThreadWait]] ( //threadid// )##
+		**""-""** Parameters:
+			##//threadid//##
+				##[[KeyPgAny|Any]] [[KeyPgPtr|Ptr]]## handle of a thread created by ##[[KeyPgThreadCreate|ThreadCreate]]## or ##[[KeyPgThreadCall|ThreadCall]]##
+		**""-""** Note:
+			In other language (as ""C++""), the //'wait()'// suffix is called //'join()'//.
+			
+	__Second method - ##[[KeyPgThreadDetach|ThreadDetach]]##__
+		**""-""** Syntax:
+			##[[KeyPgDeclare|Declare]] [[KeyPgSub|Sub]] [[KeyPgThreadDetach|ThreadDetach]] ( [[KeyPgByval|Byval]] //threadid// [[KeyPgAs|As]] [[KeyPgAny|Any]] [[KeyPgPtr|Ptr]] )##
+		**""-""** Usage:
+			###include "fbthread.bi"##
+			##[[KeyPgThreadDetach|ThreadDetach]] ( //threadid// )##
+		**""-""** Parameters:
+			##//threadid//##
+				##[[KeyPgAny|Any]] [[KeyPgPtr|Ptr]]## handle of a thread created by ##[[KeyPgThreadCreate|ThreadCreate]]## or ##[[KeyPgThreadCall|ThreadCall]]##
+				
+	__Description__
+		After creating it, the programmer must make sure that the thread is either waited for (joined) otherwise detached, and this from another thread (including the main thread).
+		
+		##[[KeyPgThreadWait|ThreadWait]]## waits for a thread to complete its execution, and then release the resources associated with the thread handle. ##[[KeyPgThreadWait|ThreadWait]]## does not return until the thread (designated by the identifier) ends.
+		During the wait, the caller does not consume CPU time.
+		##[[KeyPgThreadWait|ThreadWait]]## does not force the thread to end. If a thread requires a signal to force an end, a mechanism such as a shared flag must be used.
+		
+		##[[KeyPgThreadDetach|ThreadDetach]]## releases resources associated with the thread handle. The thread handle will be destroyed by ##[[KeyPgThreadDetach|ThreadDetach]]## and can no longer be used.
+		Unlike ##[[KeyPgThreadWait|ThreadWait]]##, ##[[KeyPgThreadDetach|ThreadDetach]]## does not wait for the end of the thread, and its execution continues independently. All allocated resources will be freed once the thread is complete.
+		
+		After ##[[KeyPgThreadWait|ThreadWait]]## or ##[[KeyPgThreadDetach|ThreadDetach]]## is applied, the thread can no longer be joined, so the handle identifier value must not be used again in any of these commands.
+		
+		Generally, before finishing, a 'parent' thread is waiting for the 'child' thread to finish.
+		But if the programmer chooses not to wait until the end of the thread (and necessarily detaches it only), then he must make sure that the data accessed by that thread is valid until the thread has finished with it. Otherwise, one may encounter a situation where the 'parent' thread holds pointers/references to local variables and the 'child' thread hasn't finished when the 'parent' thread finishes (the variables being destroyed because becoming out of scope).
+
+{{fbdoc item="section" value="Example"}}
+	The 'Main' thread displays ten "M" characters while the 'Child' thread simultaneously displays ten "C" characters.
+	A //'Sleep'// tempo is put in the //'For'// loop of each thread (main thread and child thread) to release time-slice allowing the other thread to execute as well.
+	The tempos are set so that the execution time of the child thread //'For'// loop is greater than the one of the main thread //'For'// loop.
+	
+		**""-""** Using ##[[KeyPgThreadCreate|Threadcreate]]## ..... ##[[KeyPgThreadWait|ThreadWait]]##:
+			{{fbdoc item="filename" value="examples/manual/proguide/multithreading/thread1.bas"}}%%(freebasic)
+Declare Sub thread (ByVal userdata As Any Ptr)
+
+Dim As Any Ptr threadID  '' declaration of an 'Any Ptr' thread-ID of the child thread
+
+
+Print """M"": from 'Main' thread"
+Print """C"": from 'Child' thread"
+Print
+
+threadID = Threadcreate(@thread)  '' creation of the child thread from the main thread
+
+For I As Integer = 1 To 10  '' 'For' loop of the main thread
+	Print "M";
+	Sleep 150, 1
+Next I
+
+Threadwait(threadID)  '' waiting for the child thread termination
+Print
+Print "'Child' thread finished"
+
+Sleep
+
+
+Sub thread (ByVal userdata As Any Ptr)  '' sub executed by the child thread
+	For I As Integer = 1 To 10          '' 'For' loop of the child thread
+		Print "C";
+		Sleep 350, 1
+	Next I
+End Sub
+			%%Output example:
+				%%
+"M": from 'Main' thread
+"C": from 'Child' thread
+
+MCMMCMMCMMCMMMCCCCCC
+'Child' thread finished
+				%%
+		**""-""** Using ##[[KeyPgThreadCreate|Threadcreate]]## + ##[[KeyPgThreadDetach|ThreadDetach]]## ..... (a global end-flag is added at the end of the child thread):
+			{{fbdoc item="filename" value="examples/manual/proguide/multithreading/thread2.bas"}}%%(freebasic)
+#include "fbthread.bi"
+
+Declare Sub thread (ByVal userdata As Any Ptr)
+
+Dim As Any Ptr threadID          '' declaration of an 'Any Ptr' thread-ID of the child thread
+Dim Shared As Boolean threadEnd  '' declaration of a global 'Boolean' thread-End flag for the child thread
+
+
+Print """M"": from 'Main' thread"
+Print """C"": from 'Child' thread"
+Print
+
+threadID = Threadcreate(@thread)  '' creation of the child thread from the main thread
+Threaddetach(threadID)            '' detaching the child thread
+
+For I As Integer = 1 To 10  '' 'For' loop of the main thread
+	Print "M";
+	Sleep 150, 1
+Next I
+
+While threadEnd = False  '' waiting for the thread-End flag = 'True' from the child thread
+Wend
+Print
+Print "'Child' thread finishing or finished"
+
+Sleep
+
+
+Sub thread (ByVal userdata As Any Ptr)  '' sub executed by the child thread
+	For I As Integer = 1 To 10          '' 'For' loop of the child thread
+		Print "C";
+		Sleep 350, 1
+	Next I
+	threadEnd = True                    '' set the thrend-End flag to 'True'
+End Sub
+			%%Output example:
+				%%
+"M": from 'Main' thread
+"C": from 'Child' thread
+
+MCMMCMMCMMCMMMCCCCCC
+'Child' thread finishing or finished
+				%%
+	A UDT for a multi-timer feature:
+		**""-""** using internally a joinable thread (##[[KeyPgThreadCreate|Threadcreate]]## ..... ##[[KeyPgThreadWait|ThreadWait]]##) to sequence each timer,
+		**""-""** and call-backing externally a detached thread (##[[KeyPgThreadCreate|Threadcreate]]## + ##[[KeyPgThreadDetach|ThreadDetach]]## .....) as event for user.
+	The user event being triggered by a detached-thread callback from the timer loop, the requested time-out is only biased by the execution time of ##[[KeyPgThreadCreate|Threadcreate]]## + ##[[KeyPgThreadDetach|ThreadDetach]]## (small time about constant) and not by a ##[[KeyPgThreadWait|ThreadWait]]## waiting-for:
+		{{fbdoc item="filename" value="examples/manual/proguide/multithreading/thread3.bas"}}%%(freebasic)
+'    Only 4 member procedures in public access (the first 3 returning 'true' if success, 'false' else):
+'        - Function 'Set' to parametrize the considered timer (time-out in ms, pointer to user thread)
+'        - Function 'Start' to start the considered timer
+'        - Function 'Stop' to stop the considered timer (then, the considered timer may be re-Set and re-Start)
+'        - Property 'Counter' to get the occurrence number of the timer
+'    Plus an 'Any Ptr' in public access:
+'        - Pointer field 'userdata' to point to any user data structure (optional usage)
+'
+'    Remark:
+'        - Pointer to the considered timer instance is provided to the user thread procedure
+'          in order to be able to factorize the treatment per timers group,
+'          and to address the right user data structure if used (see example for usage).
+'
+'    In private access:
+'        - 4 internal variables (time-out value, pointer to user thread, handle to timer thread, counter of occurence)
+'        - Static timer thread
+
+
+#include "fbthread.bi"
+Type UDT_timer_thread
+	Public:
+		Declare Function Set (Byval time_out As Uinteger, _
+							  Byval timer_procedure As Sub(Byval param As Any Ptr)) _
+							  As Boolean
+		Declare Function Start () As Boolean
+		Declare Function Stop () As Boolean
+		Declare Property Counter () As Uinteger
+		Dim As Any Ptr userdata
+	Private:
+		Dim As Uinteger tempo
+		Dim As Sub(Byval param As Any Ptr) routine
+		Dim As Any Ptr handle
+		Dim As Uinteger count
+		Declare Static Sub thread (Byval param As Any Ptr)
+End Type
+
+Function UDT_timer_thread.Set (Byval time_out As Uinteger, _
+							  Byval timer_procedure As Sub(Byval param As Any Ptr)) _
+							  As Boolean
+	If timer_procedure > 0 And This.handle = 0 Then
+		This.tempo = time_out
+		This.routine = timer_procedure
+		This.count = 0
+		Function = True
+	Else
+		Function = False
+	End If
+End Function
+
+Function UDT_timer_thread.Start () As Boolean
+	If This.handle = 0 And This.routine > 0 Then
+		This.handle = Threadcreate(@UDT_timer_thread.thread, @This)
+		Function = True
+	Else
+		Function = False
+	End If
+End function
+
+Function UDT_timer_thread.Stop () As Boolean
+	If This.handle > 0 Then
+		Dim p As Any Ptr = 0
+		Swap p, This.handle
+		Threadwait(p)
+		Function = True
+	Else
+		Function = False
+	End If
+End function
+
+Property UDT_timer_thread.Counter () As Uinteger
+	Return This.count
+End Property
+
+Static Sub UDT_timer_thread.thread (Byval param As Any Ptr)
+	Dim As UDT_timer_thread Ptr pu = param
+	While pu->handle > 0
+		Sleep pu->tempo, 1
+		pu->count += 1
+		If pu->routine > 0 Then
+			Dim As Any Ptr p = Threadcreate(Cast(Any Ptr, pu->routine), param)
+			Threaddetach(p)
+		End If
+	Wend
+End Sub
+
+'---------------------------------------------------------------------------------------------------
+
+Dim As Uinteger tempo1 = 950
+Dim As Uinteger tempo2 = 380
+Dim As UDT_timer_thread timer1
+	timer1.userdata = New String("        callback from timer #1 (" & tempo1 & "ms)")
+Dim As UDT_timer_thread timer2
+	timer2.userdata = New String("        callback from timer #2 (" & tempo2 & "ms)")
+
+Sub User_thread (Byval param As Any Ptr)
+	Dim As UDT_timer_thread Ptr pu = param
+	Dim As String Ptr ps = pu->userdata
+	Print *ps & ", occurrence: " & pu->Counter
+End Sub
+
+Print "Beginning of test"
+If timer1.Set(tempo1, @User_thread) Then
+	Print "    timer #1 set OK"
+	If timer1.Start Then
+		Print "        timer #1 start OK"
+	End If
+End If
+If timer2.Set(tempo2, @User_thread) Then
+	Print "    timer #2 set OK"
+	If timer2.Start Then
+		Print "        timer #2 start OK"
+	End If
+End If
+Print "    Then, any key to stop the timers"
+
+Sleep
+
+If timer1.stop Then
+	Print "    timer #1 stop OK"
+End If
+If timer2.stop Then
+	Print "    timer #2 stop OK"
+End If
+Sleep 500, 1
+Print "End of test"
+Delete Cast(String Ptr, timer1.userdata)
+Delete Cast(String Ptr, timer2.userdata)
+
+Sleep
+		%%Output example:
+			%%
+Beginning of test
+	timer #1 set OK
+		timer #1 start OK
+	timer #2 set OK
+		timer #2 start OK
+	Then, any key to stop the timers
+		callback from timer #2 (380ms), occurrence: 1
+		callback from timer #2 (380ms), occurrence: 2
+		callback from timer #1 (950ms), occurrence: 1
+		callback from timer #2 (380ms), occurrence: 3
+		callback from timer #2 (380ms), occurrence: 4
+		callback from timer #1 (950ms), occurrence: 2
+		callback from timer #2 (380ms), occurrence: 5
+		callback from timer #2 (380ms), occurrence: 6
+		callback from timer #2 (380ms), occurrence: 7
+		callback from timer #1 (950ms), occurrence: 3
+		callback from timer #2 (380ms), occurrence: 8
+		callback from timer #2 (380ms), occurrence: 9
+		callback from timer #1 (950ms), occurrence: 4
+		callback from timer #2 (380ms), occurrence: 10
+		callback from timer #2 (380ms), occurrence: 11
+		callback from timer #2 (380ms), occurrence: 12
+	timer #1 stop OK
+		callback from timer #1 (950ms), occurrence: 5
+	timer #2 stop OK
+		callback from timer #2 (380ms), occurrence: 13
+End of test
+			%%
+{{fbdoc item="section" value="See also"}}
+	- ##[[KeyPgThreadCreate|ThreadCreate]]##, ##[[KeyPgThreadCall|ThreadCall]]##
+	- ##[[KeyPgThreadWait|ThreadWait]]##, ##[[KeyPgThreadDetach|ThreadDetach]]##
+	- [[ProPgMultiThreading|Multi-Threading Overview]]
+	- [[ProPgMtMutualExclusion|Mutual Exclusion]]
+	- [[ProPgMtConditionalVariables|Conditional Variables]]
+	- [[ProPgMtCriticalSections|Critical Sections]]
+	- [[ProPgMtCriticalSectionsFAQ|Critical Sections FAQ]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

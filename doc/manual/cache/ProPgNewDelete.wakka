@@ -33,6 +33,8 @@ The different operators **New** (//Implicit///Overload/Expression/Placement) and
 	Instance array created with ##'Operator New[] Overload/Expression'## must be freed with ##'Operator Delete[] Overload/Statement'##, the array-version of ##'Operator Delete Overload/Statement'##.
 	User can not mix and match the different versions of the operators.
 	
+	**Note:** Any operators //'New[]'// or //'Delete[]'// (the array versions for  statement/expression/overload operators) and even the overload operator //'Delete'// are not directly compatible with inheritance polymorphism, because the use of a sub-type pointer (instead of the real type) mainly fails for accessing the other elements (except the first).
+
 {{fbdoc item="section" value="Algorithm (applied to user-defined types)"}}
 	Operator New/New[] Expression:
 		%%
