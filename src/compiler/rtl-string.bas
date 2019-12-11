@@ -2049,10 +2049,10 @@
 				( typeSetIsConst( FB_DATATYPE_DOUBLE ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
-		/' function fb_hStrCopy( byref dst as any, byref src as any, byval len as const integer) as any '/ _
+		/' function fb_MemMove( byref dst as any, byref src as any, byval len as const integer) as any '/ _
 		( _
-			@"fb_hStrCopy", NULL, _
-			FB_DATATYPE_VOID, FB_FUNCMODE_FBCALL, _
+			@"shift", @"fb_MemMove", _
+			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _

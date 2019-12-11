@@ -293,7 +293,7 @@ PRIVATE SUB DWSTR.ResizeBuffer (BYVAL nValue AS ulong)
 
   IF u_data THEN
      IF nValue < u_len THEN u_len = nValue
-     fb_hStrCopy(byval pNewBuffer, byval u_data, u_len)
+     shift(byval pNewBuffer, byval u_data, u_len)
      Deallocate u_data
   END IF
   u_data = pNewBuffer
@@ -321,7 +321,7 @@ PRIVATE FUNCTION DWSTR.AppendBuffer (BYVAL addrMemory AS ANY PTR, BYVAL nNumByte
 
   IF u_data = 0 THEN RETURN FALSE
 
-  fb_hStrCopy(byval (u_data + u_len), byval addrMemory, nNumBytes)
+  shift(byval (u_data + u_len), byval addrMemory, nNumBytes)
   u_len += nNumBytes
 
   poke UCHAR, u_data + u_len, 0                       'mark the end of a string with null
@@ -494,7 +494,7 @@ dim n   as integer
   ret.u_data = Allocate(n + 4)                        '' + 4 = make room for the null terminator.
 
   IF ret.u_data THEN
-    fb_hStrCopy(byval ret.u_data, byval cws.u_data, n)
+    shift(byval ret.u_data, byval cws.u_data, n)
   else
     err = 4
     return ret
@@ -520,7 +520,7 @@ dim n   as integer
   ret.u_data = Allocate(n + 4)                        '' + 4 = make room for the null terminator.
 
   IF ret.u_data THEN
-    fb_hStrCopy(byval ret.u_data, byval cws.u_data + cws.u_len - n, n)
+    shift(byval ret.u_data, byval cws.u_data + cws.u_len - n, n)
   else
     err = 4
     return ret
