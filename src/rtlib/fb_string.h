@@ -6,9 +6,9 @@
  * to use FB_STRSIZE(s) to query a strings length.
  */
 #ifdef HOST_64BIT
-	#define FB_TEMPSTRBIT ((long long)0x8000000000000000ll)
+    #define FB_TEMPSTRBIT ((long long)0x8000000000000000ll)
 #else
-	#define FB_TEMPSTRBIT ((int)0x80000000)
+    #define FB_TEMPSTRBIT ((int)0x80000000)
 #endif
 
 /** Returns if the string is a temporary string.
@@ -113,6 +113,7 @@ FBCALL int          fb_hStrDelTemp_NoLock       ( FBSTRING *str );
 FBCALL void         fb_hStrCopy                 ( char *dst, const char *src, ssize_t bytes );
 FBCALL char        *fb_hStrSkipChar             ( char *s, ssize_t len, int c );
 FBCALL char        *fb_hStrSkipCharRev          ( char *s, ssize_t len, int c );
+FBCALL int          fb_MemMove                  ( char *dst, char *src, ssize_t bytes );
 
 
 /* public */
@@ -279,7 +280,7 @@ FBCALL FB_WCHAR    *fb_WstrAssign       ( FB_WCHAR *dst, ssize_t dst_chars, FB_W
 FBCALL FB_WCHAR    *fb_WstrAssignFromA  ( FB_WCHAR *dst, ssize_t dst_chars, void *src, ssize_t src_chars );
 FBCALL void        *fb_WstrAssignToA    ( void *dst, ssize_t dst_chars, FB_WCHAR *src, int fill_rem );
 FBCALL void        *fb_WstrAssignToAEx  ( void *dst, ssize_t dst_chars, FB_WCHAR *src, int fill_rem, int is_init );
-FBCALL FB_WCHAR    *fb_WstrConcat 		( const FB_WCHAR *str1, const FB_WCHAR *str2 );
+FBCALL FB_WCHAR    *fb_WstrConcat         ( const FB_WCHAR *str1, const FB_WCHAR *str2 );
 FBCALL FB_WCHAR    *fb_WstrConcatWA     ( const FB_WCHAR *str1, const void *str2, ssize_t str2_size );
 FBCALL FB_WCHAR    *fb_WstrConcatAW     ( const void *str1, ssize_t str1_size, const FB_WCHAR *str2 );
 FBCALL FB_WCHAR    *fb_WstrConcatAssign ( FB_WCHAR *dst, ssize_t dst_chars, const FB_WCHAR *src );
