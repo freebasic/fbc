@@ -90,9 +90,12 @@ char *fb_hGetLocaleInfo( LCID Locale, LCTYPE LCType, char *pszBuffer, size_t uiS
         uiSize = 64;
         pszBuffer = NULL;
         for(;;) {
-            pszBuffer = (char*) realloc( pszBuffer, uiSize <<= 1 );
-            if( pszBuffer==NULL )
+            char* pszNewBuffer = (char*) realloc( pszBuffer, uiSize <<= 1 );
+            if( pszNewBuffer==NULL ) {
+                free(pszBuffer);
                 break;
+            }
+            pszBuffer = pszNewBuffer;
             if( GetLocaleInfo( Locale, LCType, pszBuffer, uiSize - 1 )!=0 ) {
                 return pszBuffer;
             }
