@@ -113,6 +113,7 @@ FBCALL int          fb_hStrDelTemp_NoLock       ( FBSTRING *str );
 FBCALL void         fb_hStrCopy                 ( char *dst, const char *src, ssize_t bytes );
 FBCALL char        *fb_hStrSkipChar             ( char *s, ssize_t len, int c );
 FBCALL char        *fb_hStrSkipCharRev          ( char *s, ssize_t len, int c );
+FBCALL int          fb_MemMove                  ( char *dst, char *src, ssize_t bytes );
 
 
 /* public */
