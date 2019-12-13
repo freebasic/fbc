@@ -7,6 +7,7 @@
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "ast.bi"
+#include once "rtl.bi"
 
 ''
 '' (SymbolType ',')? Expression
@@ -50,6 +51,45 @@ private function hOptionalTypeAndFirstExpr _
 end function
 
 ''
+'' PokeStmt  =  POKE ANY ',' Expression ',' Expression ',' Expression .
+''
+private function cPokeAny( ) as integer
+	dim as ASTNODE ptr expr1 = any, expr2 = any, expr3 = any
+
+    function = FALSE
+
+    var proc = astNewCALL( PROCLOOKUP( POKEANY ) )
+
+    hMatchCOMMA( )
+    hMatchExpressionEx( expr1, FB_DATATYPE_POINTER )
+
+    '' byval dst as any ptr
+    if( astNewARG( proc, astNewDeref(expr1), FB_DATATYPE_POINTER ) = NULL ) then
+        exit function
+    end if
+
+    hMatchCOMMA( )
+    hMatchExpressionEx( expr2, FB_DATATYPE_POINTER )
+
+    '' byval src as any ptr
+    if( astNewARG( proc, astNewDeref(expr2), FB_DATATYPE_POINTER ) = NULL ) then
+        exit function
+    end if
+
+    hMatchCOMMA( )
+    hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
+
+    '' byval len as integer
+    if( astNewARG( proc, expr3, FB_DATATYPE_INTEGER ) = NULL ) then
+        exit function
+    end if
+
+    astAdd( proc )
+    function = TRUE
+
+end function
+
+''
 '' PokeStmt  =  POKE (SymbolType ',')? Expression ',' Expression .
 ''
 function cPokeStmt( ) as integer
@@ -61,6 +101,14 @@ function cPokeStmt( ) as integer
 
 	'' POKE
 	lexSkipToken( )
+
+    '' ANY ?
+    if lexgettoken(0) = FB_TK_ANY then 
+    	lexSkipToken( )
+
+        function = cPokeAny
+        exit function
+    end if    
 
 	'' (SymbolType ',')? Expression
 	expr1 = hOptionalTypeAndFirstExpr( poketype, subtype )

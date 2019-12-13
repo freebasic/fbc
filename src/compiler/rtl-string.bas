@@ -2049,6 +2049,18 @@
 				( typeSetIsConst( FB_DATATYPE_DOUBLE ), FB_PARAMMODE_BYVAL, FALSE ) _
 	 		} _
 	 	), _
+        /' function fb_MemMove( byval dst as any ptr, byval src as any ptr, byval len as const integer) as long '/ _
+        ( _
+            @FB_RTL_POKEANY, @"fb_MemMove", _
+            FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+            NULL, FB_RTL_OPT_NONE, _
+            3, _
+            { _
+                ( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+                ( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
+                ( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
+            } _
+        ), _
 	 	/' EOL '/ _
 	 	( _
 	 		NULL _

@@ -408,6 +408,7 @@
 #define FB_RTL_DTOUL                    "fb_dtoul"
 
 #define FB_RTL_THREADCALL               "fb_ThreadCall"
+#define FB_RTL_POKEANY                  "fb_MemMove"
 
 
 '' the order doesn't matter but it makes more sense to follow the same
@@ -818,6 +819,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_DTOUL
 
     FB_RTL_IDX_THREADCALL
+    FB_RTL_IDX_POKEANY
 
 	FB_RTL_INDEXES
 end enum
