@@ -1,8 +1,8 @@
 #include "fbcunit.bi"
 
-'' !!! TODO !!!, needed? was this for testing only?
+'' show the compared numbers, but only if fbcu.getHideCases() is false
 #undef CU_ASSERT_EQUAL
-#define CU_ASSERT_EQUAL(a, b) if (a) <> (b) then print (a), (b) end if: CU_ASSERT( (a) = (b) )
+#define CU_ASSERT_EQUAL(a, b) if ((a) <> (b)) and (fbcu.getHideCases() = false) then print (a), (b) end if: CU_ASSERT( (a) = (b) )
 
 SUITE( fbc_tests.numbers.cast_f2ll )
 
