@@ -2,7 +2,7 @@
 #define __FBCUNIT_BI_INCLUDE__ 1
 
 ''  fbcunit - FreeBASIC Compiler Unit Testing Component
-''	Copyright (C) 2017-2019 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2017-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''  License: GNU Lesser General Public License 
 ''           version 2.1 (or any later version) plus
@@ -13,7 +13,7 @@
 ---------------------------------------------------------'/
 
 #define FBCU_VER_MAJOR 0
-#define FBCU_VER_MINOR 8
+#define FBCU_VER_MINOR 9
 
 #inclib "fbcunit"
 
@@ -534,6 +534,20 @@
 		( _
 			byval filename as const __zstring __ptr _
 		) as __boolean
+
+	declare sub fbcu.setBriefSummary alias "fbcu_setBriefSummary_qb" _
+		( _
+			byval briefSummary as __boolean _
+		)
+
+	declare sub fbcu.setHideCases alias "fbcu_setHideCases_qb" _
+		( _
+			byval hideCases as __boolean _
+		)
+
+	declare function fbcu.getHideCases alias "fbcu_getHideCases_qb" _
+		( _
+		) as __boolean
 	
 	declare function fbcu.run_tests alias "fbcu_run_tests_qb" _
 		( _
@@ -661,6 +675,20 @@ namespace fbcu
 	declare function write_report_xml _
 		( _
 			byval filename as const zstring ptr _
+		) as boolean
+
+	declare sub setBriefSummary _
+		( _
+			byval briefSummary as boolean _
+		)
+
+	declare sub setHideCases _
+		( _
+			byval hideCases as boolean _
+		)
+
+	declare function getHideCases _
+		( _
 		) as boolean
 
 	declare function run_tests _
