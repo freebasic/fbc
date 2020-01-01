@@ -7,6 +7,66 @@
 extern const char __fb_utf8_trailingTb[256];
 extern const UTF_32 __fb_utf8_offsetsTb[6];
 
+/*
+char * fb_hUTF8ToChar( const UTF_8 *src, char *dst, ssize_t *chars )
+char * fb_hUTF16ToChar( const UTF_8 *src, char *dst, ssize_t *chars )
+char * fb_hUTF32ToChar( const UTF_8 *src, char *dst, ssize_t *chars )
+
+if 'dst' is null
+
+	src 
+		- 'src' is the address of the source utf-8 encoded string
+		- must not be null
+		- must have a null terminating character
+
+	dst
+		- ignored
+
+	chars
+		- 'chars' must not be null
+		- 'chars' value is ignored on entry
+		- on return, 'chars' is set to the number of characters 
+		  converted not including the null terminator
+
+	return value
+		- the pointer to the newly allocated (realloc) memory
+		  containing the converted string which includes a
+		  terminating null character, or NULL pointer if
+		  unable to allocate memory
+		- 'chars' contains the number of characters 
+		  converted not including the null terminator
+
+	NOTE: caller is responsible to free the memory
+
+
+if 'dst' is not null
+
+	src
+		- 'src' is the address of the source utf-8 encoded string
+		- must not be null
+		- may have null terminating character
+
+	dst
+		- 'dst' is the destination buffer for the ascii string
+
+	chars
+		- 'chars' must not be null
+		- caller must set 'chars' to the maximum number of
+		  characters to convert which may include the 
+		  terminating null character
+		- on return, 'chars' is set to the number characters
+		  converted not including the terminating null
+		  character
+	
+	NOTE: the caller will not know if a terminating null
+	character was written based on the value of 'chars'.  The 
+	value of 'chars' will be the same if the conversion ended
+	on a terminating null character or the character
+	immediately before it.  In either case, the terminating
+	null character is not written.
+
+*/
+
 char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, ssize_t *chars )
 {
 	UTF_32 c;
@@ -52,7 +112,13 @@ char *fb_hUTF8ToChar( const UTF_8 *src, char *dst, ssize_t *chars )
 			{
 				charsleft = 8;
 				dst_size += charsleft;
-				buffer = realloc( buffer, dst_size );
+				char *newbuffer = realloc( buffer, dst_size );
+				if( newbuffer == NULL )
+				{
+					free( buffer );
+					return NULL;
+				}
+				buffer = newbuffer;
 				dst = buffer + dst_size - charsleft;
 			}
 			
@@ -138,7 +204,13 @@ char *fb_hUTF16ToChar( const UTF_16 *src, char *dst, ssize_t *chars )
 			{
 				charsleft = 8;
 				dst_size += charsleft;
-				buffer = realloc( buffer, dst_size );
+				char *newbuffer = realloc( buffer, dst_size );
+				if( newbuffer == NULL )
+				{
+					free( buffer );
+					return NULL;
+				}
+				buffer = newbuffer;
 				dst = buffer + dst_size - charsleft;
 			}
 			
@@ -199,7 +271,13 @@ char *fb_hUTF32ToChar( const UTF_32 *src, char *dst, ssize_t *chars )
 			{
 				charsleft = 8;
 				dst_size += charsleft;
-				buffer = realloc( buffer, dst_size );
+				char *newbuffer = realloc( buffer, dst_size );
+				if( newbuffer == NULL )
+				{
+					free( buffer );
+					return NULL;
+				}
+				buffer = newbuffer;
 				dst = buffer + dst_size - charsleft;
 			}
 			
