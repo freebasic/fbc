@@ -18,9 +18,19 @@ int fb_DevFileWriteWstr( FB_FILE *handle, const FB_WCHAR* src, size_t chars )
 	}
 
 	if( chars < FB_LOCALBUFF_MAXLEN )
+	{
 		buffer = alloca( chars + 1 );
+		/* note: if out of memory on alloca, it's a stack exception */
+	}
 	else
+	{
 		buffer = malloc( chars + 1 );
+		if( buffer == NULL )
+		{
+			FB_UNLOCK();
+			return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+		}
+	}
 
 	/* convert to ascii, file should be opened with the ENCODING option
 	   to allow UTF characters to be written */
