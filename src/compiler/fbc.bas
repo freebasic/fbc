@@ -1658,6 +1658,8 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			fbc.backend = FB_BACKEND_GCC
 		case "llvm"
 			fbc.backend = FB_BACKEND_LLVM
+		Case "gas64" ''sarg
+			fbc.backend = FB_BACKEND_GAS64
 		case else
 			hFatalInvalidOption( arg )
 		end select
@@ -2349,8 +2351,10 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 
 	'' 7. Check whether backend supports the target/arch.
 	'' -gen gas with non-x86 arch isn't possible.
-	if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
-	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86) ) then
+	if( ((fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
+	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86)) _
+	    or ((fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS64) and _
+	    (fbGetCpuFamily( ) <> FB_CPUFAMILY_X86_64)) ) then
 		errReportEx( FB_ERRMSG_GENGASWITHNONX86, fbGetFbcArch( ), -1 )
 		fbcEnd( 1 )
 	end if
@@ -2389,7 +2393,7 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 		end select
 
 		'' -gen gas only supports -asm intel
-		if( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) and _
+		if( ( (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS) or (fbGetOption( FB_COMPOPT_BACKEND ) = FB_BACKEND_GAS64) ) and _
 		    (fbc.asmsyntax <> FB_ASMSYNTAX_INTEL) ) then
 			errReportEx( FB_ERRMSG_GENGASWITHOUTINTEL, "", -1 )
 		end if
@@ -2570,7 +2574,9 @@ private function hGetAsmName _
 	asmfile = hStripExt( *module->objfile )
 
 	ext = @".asm"
-
+	if( fbGetOption( FB_COMPOPT_BACKEND )= FB_BACKEND_GAS64 ) then
+		ext = @".a64" ''sarg
+	end if
 	if( stage = 1 ) then
 		select case( fbGetOption( FB_COMPOPT_BACKEND ) )
 		case FB_BACKEND_GCC
@@ -3680,7 +3686,8 @@ end sub
 		fbcEnd( 0 )
 	end if
 
-	if( fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS ) then
+	if( (fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS)  and _
+		fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS64 ) then ''sarg
 		''
 		'' Compile intermediate .c modules produced by -gen gcc
 		''
