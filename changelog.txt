@@ -31,6 +31,9 @@ Version 1.08.0
 - rtlib: potential buffer overflow in sys_getshortpath.c (macko17)
 - sf.net #404: len/sizeof type parsing eats namespace prefix (namespace prefix is now preserved)
 - sf.net #718: len/sizeof type parsing disambiguates between type and variable having same name
+- github #205: fix rtlib realloc memory leaks in 'redim preserve' and 'fb_hGetLocaleInfo' (adeyblue)
+- gitbub #205: fix rtlib realloc memory leaks and malloc null ptrs in utf_conv.bi CharToUTF, 'WCharToUTF, UTFToChar, UTFToWChar, and related functions
+- gitbub #205: fix rtlib potential malloc null ptr access in dev file read/write methods
 
 
 Version 1.07.0

@@ -154,7 +154,13 @@ static UTF_16 *hUTF32ToUTF16( const FB_WCHAR *src, ssize_t chars, UTF_16 *dst, s
 			if( *bytes == dst_size )
 			{
 				dst_size += sizeof( UTF_16 ) * 8;
-				buffer = realloc( buffer, dst_size );
+				UTF_16 *newbuffer = realloc( buffer, dst_size );
+				if( newbuffer == NULL )
+				{
+					free( buffer );
+					return NULL;
+				}
+				buffer = newbuffer;
 				dst = (UTF_16 *)buffer;
 			}
 

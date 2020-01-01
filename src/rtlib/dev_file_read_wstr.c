@@ -28,9 +28,19 @@ int fb_DevFileReadWstr( FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
     chars = *pchars;
 
 	if( chars < FB_LOCALBUFF_MAXLEN )
+	{
 		buffer = alloca( chars + 1 );
+		/* note: if out of memory on alloca, it's a stack exception */
+	}
 	else
+	{
 		buffer = malloc( chars + 1 );
+		if( buffer == NULL )
+		{
+			FB_UNLOCK();
+			return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+		}
+	}
 
 	/* do read */
 	chars = fread( buffer, 1, chars, fp );
