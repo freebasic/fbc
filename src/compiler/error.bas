@@ -173,7 +173,7 @@ declare function hMakeParamDesc _
 		 /'FB_ERRMSG_MACROTEXTTOOLONG                   '/ @"Macro text too long", _
 		 /'FB_ERRMSG_INVALIDCMDOPTION                   '/ @"Invalid command-line option", _
 		 /'FB_ERRMSG_DOSWITHNONX86                      '/ @"Selected non-x86 CPU when compiling for DOS", _
-		 /'FB_ERRMSG_GENGASWITHNONX86                   '/ @"Selected -gen gas ASM backend for non-x86 CPU", _
+		 /'FB_ERRMSG_GENGASWITHNONX86                   '/ @"Selected -gen gas|gas64 ASM backend is incompatible with CPU", _
 		 /'FB_ERRMSG_GENGASWITHOUTINTEL                 '/ @"-asm att used for -gen gas, but -gen gas only supports -asm intel", _
 		 /'FB_ERRMSG_PICNOTSUPPORTEDFOREXE              '/ @"-pic used when making executable (only works when making a shared library)", _
 		 /'FB_ERRMSG_PICNOTSUPPORTEDFORTARGET           '/ @"-pic used, but not supported by target system (only works for non-x86 Unixes)", _
