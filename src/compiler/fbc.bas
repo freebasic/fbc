@@ -2340,6 +2340,8 @@ private sub hParseArgs( byval argc as integer, byval argv as zstring ptr ptr )
 	'' cross-compiling to 32bit x86.
 	if( fbGetCpuFamily( ) = FB_CPUFAMILY_X86 ) then
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GAS )
+	elseif( fbGetCpuFamily( ) = FB_CPUFAMILY_X86_64 ) then
+		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GAS64 )
 	else
 		fbSetOption( FB_COMPOPT_BACKEND, FB_BACKEND_GCC )
 	end if

@@ -376,7 +376,11 @@ const FB_DEFAULT_CPUTYPE_AARCH64 = FB_CPUTYPE_AARCH64
 #endif
 
 #if defined( __FB_64BIT__ ) or defined( __FB_ARM__ )
-	const FB_DEFAULT_BACKEND = FB_BACKEND_GCC
+	#ifdef __FB_WIN32__
+		const FB_DEFAULT_BACKEND = FB_BACKEND_GAS64
+	#else
+		const FB_DEFAULT_BACKEND = FB_BACKEND_GCC
+	#endif
 #else
 	const FB_DEFAULT_BACKEND = FB_BACKEND_GAS
 #endif
