@@ -319,7 +319,14 @@ function rtlMemNewOp _
 
 	'' If no new overload was declared, just call allocate()
 	if( sym = NULL ) then
+
 		sym = rtlProcLookup( @"allocate", FB_RTL_IDX_ALLOCATE )
+		
+		'' maybe had '#undef allocate'? 
+		if( sym = NULL ) then
+			'' rtlProcLookup() already reported the error
+			return NULL
+		end if
 	end if
 
 	proc = astNewCALL( sym )
@@ -359,6 +366,12 @@ function rtlMemDeleteOp _
 	'' If no delete overload was declared, just call deallocate()
 	if( sym = NULL ) then
 		sym = rtlProcLookup( @"deallocate", FB_RTL_IDX_DEALLOCATE )
+
+		'' maybe had '#undef deallocate'? 
+		if( sym = NULL ) then
+			'' rtlProcLookup() already reported the error
+			return NULL
+		end if
 	end if
 
 	proc = astNewCALL( sym )

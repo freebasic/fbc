@@ -31,6 +31,13 @@ function astNewCALL _
     dim as integer dtype = any
     dim as FBSYMBOL ptr subtype = any
 
+	'' sym might be null if user undefined a builtin rtl proc
+	'' and it was undefined.  rtlLookUpProc() a.k.a. PROCLOOKUP()
+	'' calls often do not check the return value for failure.
+	assert( sym <> NULL )
+
+	'' sym might not be a proc if builtin rtl proc was redefined to
+	'' something else
 	assert( symbIsProc( sym ) )
 
 	''

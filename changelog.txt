@@ -25,6 +25,7 @@ Version 1.08.0
 - fbc: add builtin function fb_MemMove() alias "memmove"
 - fbc: add builtin function fb_MemCopy() alias "memcpy" (was previously removed in an older version of fbc)
 - fbc: 'POKE ANY, dst, src, count' statement
+- ./inc/fbc-int/memory.bi - fbc  API for low level memory operations allocate, callocate, reallocate, deallocate, clear, memcopy, memmove
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
@@ -37,6 +38,8 @@ Version 1.08.0
 - github #205: fix rtlib realloc memory leaks in 'redim preserve' and 'fb_hGetLocaleInfo' (adeyblue)
 - github #205: fix rtlib realloc memory leaks and malloc null ptrs in utf_conv.bi CharToUTF, 'WCharToUTF, UTFToChar, UTFToWChar, and related functions
 - github #205: fix rtlib potential malloc null ptr access in dev file read/write methods
+- default new, new[] operator (allocate) after #undef allocate caused compiler crash
+- default delete, delete[] operator (deallocate) after #undef deallocate caused compiler crash
 
 
 Version 1.07.0
