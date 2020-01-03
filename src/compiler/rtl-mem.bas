@@ -143,6 +143,23 @@
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
+		/' function fb_MemCopy cdecl _
+			( _
+				byref dst as any, _
+				byref src as const any, _
+				byval bytes as const uinteger_
+			) as any ptr '/ _
+		( _
+			@FB_RTL_MEMCOPY, @"memcpy", _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
+			} _
+		), _
 		/' EOL '/ _
 		( _
 			NULL _

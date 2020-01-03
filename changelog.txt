@@ -23,6 +23,7 @@ Version 1.08.0
 - sf.net feature request #293: allow len/sizeof/typeof for UDT members without expression
 - gfxlib: added Direct2D driver, preferred driver on newer systems.  DirectX driver is still fallback for older systems (adeyblue)
 - fbc: add builtin function fb_MemMove() alias "memmove"
+- fbc: add builtin function fb_MemCopy() alias "memcpy" (was previously removed in an older version of fbc)
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
