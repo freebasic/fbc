@@ -868,7 +868,7 @@ type FB_RTL_PARAMDEF
 	mode		as FB_PARAMMODE
 	isopt		as integer
 	optval		as integer
-	check_const as integer
+	check_const as integer   '' !!! TODO !!! remove, this is never used
 end type
 
 type FB_RTL_PROCDEF

@@ -128,19 +128,19 @@
 		), _
 		/' function fb_MemMove _
 			( _
-				byval dst as any ptr, _
-				byval src as any ptr, _
-				byval len as const integer _
+				byref dst as any, _
+				byref src as const any, _
+				byval bytes as const uinteger_
 			) as long '/ _
 		( _
-			@FB_RTL_MEMMOVE, @"fb_MemMove", _
+			@FB_RTL_MEMMOVE, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' EOL '/ _
