@@ -2,7 +2,7 @@
 #define __FBCUNIT_TYPES_BI_INCLUDE__ 1
 
 ''  fbcunit - FreeBASIC Compiler Unit Testing Component
-''	Copyright (C) 2017-2018 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2017-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''  License: GNU Lesser General Public License 
 ''           version 2.1 (or any later version) plus

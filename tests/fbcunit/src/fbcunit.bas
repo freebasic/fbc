@@ -1,5 +1,5 @@
 ''  fbcunit - FreeBASIC Compiler Unit Testing Component
-''	Copyright (C) 2017-2019 Jeffery R. Marshall (coder[at]execulink[dot]com)
+''	Copyright (C) 2017-2020 Jeffery R. Marshall (coder[at]execulink[dot]com)
 ''
 ''  License: GNU Lesser General Public License 
 ''           version 2.1 (or any later version) plus
@@ -63,6 +63,9 @@ dim shared fbcu_cases_count as integer = 0
 dim shared fbcu_suite_default_index as integer = INVALID_INDEX
 dim shared fbcu_suite_index as integer = INVALID_INDEX
 dim shared fbcu_test_index as integer = INVALID_INDEX
+
+dim shared fbcu_hide_cases as boolean = false
+dim shared fbcu_brief_summary as boolean = false
 
 '' --------------------
 '' console output
@@ -528,6 +531,29 @@ namespace fbcu
 	end function
 
 	''
+	sub setBriefSummary _
+		( _
+			byval briefSummary as boolean _
+		)
+		fbcu_brief_summary = briefSummary
+	end sub
+
+	''
+	sub setHideCases _
+		( _
+			byval hideCases as boolean _
+		)
+		fbcu_hide_cases = hideCases
+	end sub
+
+	''
+	function getHideCases _
+		( _
+		) as boolean
+		function = fbcu_hide_cases
+	end function
+
+	''
 	function run_tests _
 		( _
 			byval show_summary as boolean = true, _
@@ -654,7 +680,11 @@ namespace fbcu
 		dim x as string = ""
 
 		print_output( )
-		print_output( "SUMMARY" )
+		if( fbcu_brief_summary ) then
+			print_output( "SUMMARY (brief: failures only)" )
+		else
+			print_output( "SUMMARY" )
+		end if
 		print_output( )
 		print_output( " Asserts    Passed    Failed  Suite                                      Tests" )
 		print_output( "--------  --------  --------  --------------------------------------  --------" )
@@ -668,6 +698,13 @@ namespace fbcu
 				t_assert_pass_count += .assert_pass_count
 				t_assert_fail_count += .assert_fail_count
 				t_test_fail_count += .test_fail_count
+
+				'' brief summary? only show non-zero results
+				if( fbcu_brief_summary ) then
+					if( ( .assert_fail_count = 0) and (.test_fail_count = 0) ) then
+						continue for
+					end if
+				end if
 
 				x = ""
 				x &= rjust( "" & .assert_count, 8 )
@@ -905,7 +942,9 @@ namespace fbcu
 		)
 
 		if( value = false ) then
-			print_output( "      " & *fil & "(" & lin & ") : error : " & *fun & " " & *msg )
+			if( not fbcu_hide_cases ) then
+				print_output( "      " & *fil & "(" & lin & ") : error : " & *fun & " " & *msg )
+			end if
 		end if
 
 		add_case( value, fil, lin, fun, msg )
