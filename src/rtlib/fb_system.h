@@ -11,6 +11,7 @@ FBCALL void         fb_StrSwap          ( void *str1, ssize_t size1, int fillrem
 FBCALL void         fb_WstrSwap         ( FB_WCHAR *str1, ssize_t size1, FB_WCHAR *str2, ssize_t size2 );
 FBCALL void         fb_MemCopyClear     ( unsigned char *dst, ssize_t dstlen,
                                           unsigned char *src, ssize_t srclen );
+FBCALL int          fb_MemMove          ( char *dst, char *src, ssize_t bytes );
 
        void         fb_hInit            ( void );
        void         fb_hEnd             ( int errlevel );
