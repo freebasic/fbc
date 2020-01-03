@@ -22,6 +22,7 @@ Version 1.08.0
 - rtlib: inc/file.bi;FileSetEof() function, to adjust size of open file
 - sf.net feature request #293: allow len/sizeof/typeof for UDT members without expression
 - gfxlib: added Direct2D driver, preferred driver on newer systems.  DirectX driver is still fallback for older systems (adeyblue)
+- fbc: add builtin function fb_MemMove() alias "memmove"
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
@@ -32,8 +33,8 @@ Version 1.08.0
 - sf.net #404: len/sizeof type parsing eats namespace prefix (namespace prefix is now preserved)
 - sf.net #718: len/sizeof type parsing disambiguates between type and variable having same name
 - github #205: fix rtlib realloc memory leaks in 'redim preserve' and 'fb_hGetLocaleInfo' (adeyblue)
-- gitbub #205: fix rtlib realloc memory leaks and malloc null ptrs in utf_conv.bi CharToUTF, 'WCharToUTF, UTFToChar, UTFToWChar, and related functions
-- gitbub #205: fix rtlib potential malloc null ptr access in dev file read/write methods
+- github #205: fix rtlib realloc memory leaks and malloc null ptrs in utf_conv.bi CharToUTF, 'WCharToUTF, UTFToChar, UTFToWChar, and related functions
+- github #205: fix rtlib potential malloc null ptr access in dev file read/write methods
 
 
 Version 1.07.0

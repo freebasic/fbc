@@ -126,15 +126,15 @@
 				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' function fb_MemMove _
+		/' function fb_MemMove cdecl _
 			( _
 				byref dst as any, _
 				byref src as const any, _
 				byval bytes as const uinteger_
-			) as long '/ _
+			) as any ptr '/ _
 		( _
-			@FB_RTL_MEMMOVE, NULL, _
-			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
+			@FB_RTL_MEMMOVE, @"memmove", _
+			typeAddrOf( FB_DATATYPE_VOID ), FB_FUNCMODE_CDECL, _
 			NULL, FB_RTL_OPT_NONE, _
 			3, _
 			{ _
