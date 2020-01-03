@@ -58,7 +58,7 @@ private function cPokeAny( ) as integer
 
     function = FALSE
 
-    var proc = astNewCALL( PROCLOOKUP( POKEANY ) )
+    var proc = astNewCALL( PROCLOOKUP( MEMMOVE ) )
 
     hMatchCOMMA( )
     hMatchExpressionEx( expr1, FB_DATATYPE_POINTER )

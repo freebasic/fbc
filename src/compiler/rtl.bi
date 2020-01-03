@@ -248,6 +248,7 @@
 #define FB_RTL_MEMCOPY 					"fb_MemCopy"
 #define FB_RTL_MEMSWAP 					"fb_MemSwap"
 #define FB_RTL_MEMCOPYCLEAR 			"fb_MemCopyClear"
+#define FB_RTL_MEMMOVE					"fb_MemMove"
 
 #define FB_RTL_FILEOPEN 				"fb_FileOpen"
 #define FB_RTL_FILEOPEN_ENCOD			"fb_FileOpenEncod"
@@ -408,7 +409,6 @@
 #define FB_RTL_DTOUL                    "fb_dtoul"
 
 #define FB_RTL_THREADCALL               "fb_ThreadCall"
-#define FB_RTL_POKEANY                  "fb_MemMove"
 
 
 '' the order doesn't matter but it makes more sense to follow the same
@@ -658,6 +658,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_MEMCOPY
 	FB_RTL_IDX_MEMSWAP
 	FB_RTL_IDX_MEMCOPYCLEAR
+	FB_RTL_IDX_MEMMOVE
 	FB_RTL_IDX_ALLOCATE
 	FB_RTL_IDX_DEALLOCATE
 
@@ -818,8 +819,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FTOUL
 	FB_RTL_IDX_DTOUL
 
-    FB_RTL_IDX_THREADCALL
-    FB_RTL_IDX_POKEANY
+	FB_RTL_IDX_THREADCALL
 
 	FB_RTL_INDEXES
 end enum
