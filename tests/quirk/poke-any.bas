@@ -44,8 +44,10 @@ SUITE( fbc_tests.fbc_int.poke_any )
 		check_type( ulongint, &h123456789abcdef )
 		check_type( double  , 123.456 )
 		check_type( single  , 123.456 )
-	END_TEST
 
+		check_type( ubyte ptr  , cast( any ptr, &h12345678) )
+		check_type( any ptr    , cast( any ptr, &h12345678) )
+	END_TEST
 
 	TEST( memmove_ )
 
@@ -91,6 +93,51 @@ SUITE( fbc_tests.fbc_int.poke_any )
 
 		deallocate( p1 )
 		deallocate( p2 )
+
+	END_TEST
+
+	#macro chk_string( s1, s2, s_init_value )
+
+		s1 = s_init_value
+		poke any, s2, s1, sizeof(s1)
+		CU_ASSERT( s1 = s_init_value )
+		CU_ASSERT( s1 = s2 )
+
+		s1 = s_init_value
+		poke any, s1[0], s1[5], 10
+		CU_ASSERT( s1 = "123456789067890VWXYZ" )
+
+		s1 = s_init_value
+		poke any, s1[5], s1[0], 10
+		CU_ASSERT( s1 = "ABCDEABCDE12345VWXYZ" )
+		
+		s1 = s_init_value
+		CU_ASSERT( s1 = s_init_value )
+		poke any, s1[2], s1[5], 10
+		CU_ASSERT( s1 = "AB1234567890890VWXYZ" )
+
+		s1 = s_init_value
+		CU_ASSERT( s1 = s_init_value )
+		poke any, s1[5], s2[2], 10
+		CU_ASSERT( s1 = "ABCDECDE1234567VWXYZ" )
+
+	#endmacro
+
+	TEST( zstrings )
+
+		dim a as zstring * 25
+		dim b as zstring * 25
+
+		chk_string( a, b, "ABCDE1234567890VWXYZ" )
+
+	END_TEST
+
+	TEST( strings )
+
+		dim a as zstring * 25
+		dim b as zstring * 25
+
+		chk_string( a, b, "ABCDE1234567890VWXYZ" )
 
 	END_TEST
 
