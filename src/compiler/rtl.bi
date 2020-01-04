@@ -248,6 +248,7 @@
 #define FB_RTL_MEMCOPY 					"fb_MemCopy"
 #define FB_RTL_MEMSWAP 					"fb_MemSwap"
 #define FB_RTL_MEMCOPYCLEAR 			"fb_MemCopyClear"
+#define FB_RTL_MEMMOVE					"fb_MemMove"
 
 #define FB_RTL_FILEOPEN 				"fb_FileOpen"
 #define FB_RTL_FILEOPEN_ENCOD			"fb_FileOpenEncod"
@@ -657,6 +658,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_MEMCOPY
 	FB_RTL_IDX_MEMSWAP
 	FB_RTL_IDX_MEMCOPYCLEAR
+	FB_RTL_IDX_MEMMOVE
 	FB_RTL_IDX_ALLOCATE
 	FB_RTL_IDX_DEALLOCATE
 
@@ -817,7 +819,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FTOUL
 	FB_RTL_IDX_DTOUL
 
-    FB_RTL_IDX_THREADCALL
+	FB_RTL_IDX_THREADCALL
 
 	FB_RTL_INDEXES
 end enum
@@ -866,7 +868,7 @@ type FB_RTL_PARAMDEF
 	mode		as FB_PARAMMODE
 	isopt		as integer
 	optval		as integer
-	check_const as integer
+	check_const as integer   '' !!! TODO !!! remove, this is never used
 end type
 
 type FB_RTL_PROCDEF

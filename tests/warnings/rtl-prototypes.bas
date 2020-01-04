@@ -1511,6 +1511,18 @@
 		chk = procptr( clear )
 	end scope
 
+	ID( function fb_MemMove alias "memmove" )
+	scope
+		dim chk as function cdecl ( byref as any, byref as const any, byval as const uinteger ) as any ptr
+		chk = procptr( fb_MemMove )
+	end scope
+
+	ID( function fb_MemCopy alias "memcpy" )
+	scope
+		dim chk as function cdecl ( byref as any, byref as const any, byval as const uinteger ) as any ptr
+		chk = procptr( fb_MemCopy )
+	end scope
+
 #print "---- rtlPrint"
 
 	ID( sub fb_PrintVoid )
