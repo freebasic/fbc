@@ -134,10 +134,68 @@ SUITE( fbc_tests.fbc_int.poke_any )
 
 	TEST( strings )
 
-		dim a as zstring * 25
-		dim b as zstring * 25
+		dim a as string
+		dim b as string = space( 20 )
 
 		chk_string( a, b, "ABCDE1234567890VWXYZ" )
+
+	END_TEST
+
+	TEST( array )
+
+		#macro init_array( a, s, e )
+			for i as integer = s to e
+				a(i) = i
+			next
+		#endmacro
+
+		#macro move_array( a, d, s, n )
+			if( d < s ) then
+				for i as integer = 0 to n-1
+					a( d+i ) = a( s+i )
+				next
+			else
+				for i as integer = n-1 to 0 step -1
+					a( d+i ) = a( s+i )
+				next 
+			end if
+		#endmacro
+
+		#macro check_array( a, b, s, e )
+			scope
+				var same = 0
+				for i as integer = s to e
+					if( a(i) = b(i) ) then
+						same += 1
+					end if
+				next
+				if( same = (e-s+1) ) then
+					CU_PASS( )
+				else
+					CU_FAIL( )
+				end if
+			end scope
+
+		#endmacro
+
+		dim a( 1 to 100 ) as integer
+		dim b( 1 to 100 ) as integer
+
+		init_array( a, 1, 100 )
+		init_array( b, 1, 100 )
+
+		'' move to higher overlapping location
+		poke any, a(20), a(30), 40*sizeof(integer)
+		move_array( b, 20, 30, 40 )
+		check_array( a, b, 1, 100 )
+
+		init_array( a, 1, 100 )
+		init_array( b, 1, 100 )
+
+		'' move to higher overlapping location
+		poke any, a(30), a(20), 40*sizeof(integer)
+		move_array( b, 30, 20, 40 )
+		check_array( a, b, 1, 100 )
 
 	END_TEST
 
