@@ -134,8 +134,9 @@ SUITE( fbc_tests.fbc_int.poke_any )
 
 	TEST( strings )
 
+		'' take care, strings are var-len
 		dim a as string
-		dim b as string = space( 20 )
+		dim b as string = space( 25 )
 
 		chk_string( a, b, "ABCDE1234567890VWXYZ" )
 
