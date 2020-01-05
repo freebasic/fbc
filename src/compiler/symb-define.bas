@@ -157,14 +157,7 @@ private function hDefLang_cb ( ) as string
 end function
 
 private function hDefBackend_cb ( ) as string
-	select case env.clopt.backend
-	case FB_BACKEND_GAS
-		function = "gas"
-	case FB_BACKEND_GCC
-		function = "gcc"
-	case FB_BACKEND_LLVM
-		function = "llvm"
-	end select
+	function = fbGetBackendName( env.clopt.backend )
 end function
 
 private function hDefFpu_cb ( ) as string

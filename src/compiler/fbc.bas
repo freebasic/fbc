@@ -2522,6 +2522,7 @@ private sub fbcPrintTargetInfo( )
 		end if
 	#endif
 	print "target:", s
+	print "backend:", fbGetBackendName( fbGetOption( FB_COMPOPT_BACKEND ) )
 end sub
 
 private sub fbcDetermineMainName( )

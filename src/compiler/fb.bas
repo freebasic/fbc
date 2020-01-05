@@ -318,6 +318,23 @@ function fbGetLangName _
 
 end function
 
+'':::::
+function fbGetBackendName _
+	( _
+		byval lang as FB_BACKEND _
+	) as string
+
+	select case env.clopt.backend
+	case FB_BACKEND_GAS
+		function = "gas"
+	case FB_BACKEND_GCC
+		function = "gcc"
+	case FB_BACKEND_LLVM
+		function = "llvm"
+	end select
+
+end function
+
 sub fbInit( byval ismain as integer, byval restarts as integer )
 	strsetInit( @env.libs, FB_INITLIBNODES \ 4 )
 	strsetInit( @env.libpaths, FB_INITLIBNODES \ 4 )

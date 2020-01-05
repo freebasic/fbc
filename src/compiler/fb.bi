@@ -476,6 +476,11 @@ declare function fbGetLangName _
 		byval lang as FB_LANG _
 	) as string
 
+declare function fbGetBackendName _
+	( _
+		byval backend as FB_BACKEND _
+	) as string
+
 declare function fbGetLangId _
 	( _
 		byval txt as zstring ptr _
