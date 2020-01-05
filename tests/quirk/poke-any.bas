@@ -2,7 +2,7 @@
 
 '' tests for low level memory function
 
-SUITE( fbc_tests.fbc_int.poke_any )
+SUITE( fbc_tests.quirk.poke_any )
 
 	const BUFF_SIZE = 20
 
@@ -96,50 +96,62 @@ SUITE( fbc_tests.fbc_int.poke_any )
 
 	END_TEST
 
-	#macro chk_string( s1, s2, s_init_value )
+	#macro chk_string( s, n, didx, sidx, count, v1, v2 )
 
-		s1 = s_init_value
-		poke any, s2, s1, sizeof(s1)
-		CU_ASSERT( s1 = s_init_value )
-		CU_ASSERT( s1 = s2 )
-
-		s1 = s_init_value
-		poke any, s1[0], s1[5], 10
-		CU_ASSERT( s1 = "123456789067890VWXYZ" )
-
-		s1 = s_init_value
-		poke any, s1[5], s1[0], 10
-		CU_ASSERT( s1 = "ABCDEABCDE12345VWXYZ" )
-		
-		s1 = s_init_value
-		CU_ASSERT( s1 = s_init_value )
-		poke any, s1[2], s1[5], 10
-		CU_ASSERT( s1 = "AB1234567890890VWXYZ" )
-
-		s1 = s_init_value
-		CU_ASSERT( s1 = s_init_value )
-		poke any, s1[5], s2[2], 10
-		CU_ASSERT( s1 = "ABCDECDE1234567VWXYZ" )
+		s = v1
+		poke any, s[didx], s[sidx], 10
+		CU_ASSERT( s = v2 )
 
 	#endmacro
 
 	TEST( zstrings )
-
 		dim a as zstring * 25
-		dim b as zstring * 25
 
-		chk_string( a, b, "ABCDE1234567890VWXYZ" )
+		chk_string( a, 20, 0, 0, 10, "ABCDE1234567890VWXYZ", _
+		                             "ABCDE1234567890VWXYZ" )
+
+		chk_string( a, 20, 0, 5, 10, "ABCDE1234567890VWXYZ", _
+		                             "123456789067890VWXYZ" )
+
+		chk_string( a, 20, 5, 0, 10, "ABCDE1234567890VWXYZ", _
+		                             "ABCDEABCDE12345VWXYZ" )
+
+		chk_string( a, 20, 2, 7, 10, "ABCDE1234567890VWXYZ", _
+		                             "AB34567890VW890VWXYZ" )
+
+		chk_string( a, 20, 7, 2, 10, "ABCDE1234567890VWXYZ", _
+		                             "ABCDE12CDE1234567XYZ" )
 
 	END_TEST
 
 	TEST( strings )
-
-		'' take care, strings are var-len
 		dim a as string
-		dim b as string = space( 25 )
 
-		chk_string( a, b, "ABCDE1234567890VWXYZ" )
+		chk_string( a, 20, 0, 0, 10, "ABCDE1234567890VWXYZ", _
+		                             "ABCDE1234567890VWXYZ" )
 
+		chk_string( a, 20, 0, 5, 10, "ABCDE1234567890VWXYZ", _
+		                             "123456789067890VWXYZ" )
+
+		chk_string( a, 20, 5, 0, 10, "ABCDE1234567890VWXYZ", _
+		                             "ABCDEABCDE12345VWXYZ" )
+
+		chk_string( a, 20, 2, 7, 10, "ABCDE1234567890VWXYZ", _
+		                             "AB34567890VW890VWXYZ" )
+
+		chk_string( a, 20, 7, 2, 10, "ABCDE1234567890VWXYZ", _
+		                             "ABCDE12CDE1234567XYZ" )
+
+	END_TEST
+
+	TEST( string_copy )
+
+		dim a as string = "0123456789ABCDEF"
+		dim b as string = space( len(a) )
+
+		poke any, b[0], a[0], len(a)
+		CU_ASSERT( a = b )
+		
 	END_TEST
 
 	TEST( array )
