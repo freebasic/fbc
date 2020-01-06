@@ -40,6 +40,7 @@ Version 1.08.0
 - github #205: fix rtlib potential malloc null ptr access in dev file read/write methods
 - default new, new[] operator (allocate) after #undef allocate caused compiler crash
 - default delete, delete[] operator (deallocate) after #undef deallocate caused compiler crash
+- windows GDI gfxlib driver now displays double scanline screen modes correctly (screen 2 & 8), rather than half screen (adeyblue)
 
 
 Version 1.07.0
