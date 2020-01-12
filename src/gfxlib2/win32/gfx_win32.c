@@ -120,7 +120,16 @@ static void ToggleFullScreen( EVENT *e )
 	has_focus = FALSE;
 }
 
-static VOID CALLBACK fb_hTrackMouseTimerProc(HWND hWnd, UINT uMsg, UINT idEvent, DWORD dwTime)
+static VOID CALLBACK fb_hTrackMouseTimerProc(
+	HWND hWnd, 
+	UINT uMsg,
+#if _WIN64 
+	UINT_PTR idEvent, 
+#else
+	UINT idEvent,
+#endif
+	DWORD dwTime
+)
 {
 	POINT pt, rect_pt[2];
 	RECT *rect = (RECT *)rect_pt;
@@ -137,7 +146,7 @@ static VOID CALLBACK fb_hTrackMouseTimerProc(HWND hWnd, UINT uMsg, UINT idEvent,
 static BOOL WINAPI fb_hTrackMouseEvent(TRACKMOUSEEVENT *e)
 {
 	if (e->dwFlags == TME_LEAVE)
-		return SetTimer(e->hwndTrack, e->dwFlags, 100, (TIMERPROC)fb_hTrackMouseTimerProc);
+		return SetTimer(e->hwndTrack, e->dwFlags, 100, fb_hTrackMouseTimerProc);
 	return FALSE;
 }
 
@@ -441,9 +450,26 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			return FALSE;
 
 		case WM_PAINT:
-			BeginPaint(fb_win32.wnd, &ps);
-			fb_win32.paint();
-			EndPaint(fb_win32.wnd, &ps);
+			{
+				/* set the rows in __fb_gfx->dirty corresponding to the 
+				// window update rect as dirty
+				 */
+				LONG dirtyStartLine, numLines;
+				int scanlineShift = __fb_gfx->scanline_size - 1;
+
+				BeginPaint(fb_win32.wnd, &ps);
+				dirtyStartLine = ps.rcPaint.top;
+				numLines = ps.rcPaint.bottom - dirtyStartLine;
+
+				DBG_ASSERT(scanlineShift == 0 || scanlineShift == 1);
+				dirtyStartLine >>= scanlineShift;
+				numLines = max(numLines >> scanlineShift, 1);
+
+				fb_hMemSet(__fb_gfx->dirty + dirtyStartLine, TRUE, numLines);
+
+				fb_win32.paint();
+				EndPaint(fb_win32.wnd, &ps);
+			}
 			break;
 		
 		case WM_DISPLAYCHANGE:
