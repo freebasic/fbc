@@ -1505,6 +1505,19 @@ private function readId( byref t as FBTOKEN, byval flags as LEXCHECK ) as intege
 	'' before we skip the identifier's chars, because that could reset the currmacro
 	'' if we leave the current expansion text in the process.
 	var currmacro = lex.ctx->currmacro
+	var lasttk = lex.ctx->lasttk_id                   '' get preceding token
+
+    select case lasttk
+        case FB_TK_EOL, FB_TK_STMTSEP, FB_TK_THEN, FB_TK_ELSE, FB_TK_EQ
+            lasttk = 1                                '' enable special handling for macros (omit brackets) only
+                                                      '' after line start, statement separator, IF and ELSE
+        case else
+            lasttk = 0    
+    end select
+
+    if currmacro <> NULL then
+        lasttk = 0    
+    end if
 
 	t.len = 0
 	t.prdpos = 0
@@ -1544,7 +1557,7 @@ private function readId( byref t as FBTOKEN, byval flags as LEXCHECK ) as intege
 		'' define? (defines can't have dups nor be part of namespaces)
 		if( symbGetClass( t.sym_chain->sym ) = FB_SYMBCLASS_DEFINE ) then
 			'' restart..
-			if( ppDefineLoad( t.sym_chain->sym, currmacro ) ) then
+			if( ppDefineLoad( t.sym_chain->sym, currmacro, lasttk ) ) then
 				t.after_space = TRUE
 				'' Ignore the ID and read expanded text
 				return FALSE

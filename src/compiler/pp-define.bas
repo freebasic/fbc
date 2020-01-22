@@ -63,7 +63,8 @@ end function
 '':::::
 private function hLoadMacro _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval lasttk as integer _
 	) as integer
 
     dim as FB_DEFPARAM ptr param = any, nextparam = any
@@ -79,14 +80,21 @@ private function hLoadMacro _
 	'' '('?
 	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
 		'' not an error, macro can be passed as param to other macros
+        if (lasttk = 0) or ( lexCurrentChar( TRUE ) = CHAR_COMMA ) or ( lexCurrentChar( TRUE ) = CHAR_RPRNT ) or ucase(left(*lex.ctx->buffptr, 3)) = "AS " then '' special handling, if lastid = 1 (e.g end of line before)
 		exit function
 	end if
+
+    else
+        lasttk = 0                                    '' regular handling, there was an opening bracket
+    end if
 
 	if (isMacroAllowed(s) = FALSE) then
 		exit function
 	end if
 
-	lexEatChar( )
+    if lasttk = 0 then                                '' in case of special handiling, there is no opening bracket to eat!
+	    lexEatChar( )
+    end if
 
 	'' allocate a new arg list (support recursion)
 	param = symbGetDefineHeadParam( s )
@@ -118,7 +126,16 @@ private function hLoadMacro _
         end if
 
 		'' read text until a comma or right-parentheses is found
+        '' look for line end or statement separator in case of special handling
 		do
+            if lasttk = 1 then                        '' no opening bracket, special handling
+                select case lex.ctx->currchar
+                    case 10, 13, 58                   '' eol or ":"
+                        prntcnt = 0
+                        exit do
+                end select
+            end if
+            
 			lexNextToken( @t, LEXCHECK_NOWHITESPC or _
 							  LEXCHECK_NOSUFFIX or _
 							  LEXCHECK_NOQUOTES or _
@@ -287,7 +304,8 @@ end function
 ''::::
 private function hLoadDefine _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval lasttk as integer _
 	) as integer
 
     static as string text
@@ -298,7 +316,7 @@ private function hLoadDefine _
 	'' define has args?
 	if( symbGetDefineParams( s ) > 0 ) then
 
-		lgt = hLoadMacro( s )
+		lgt = hLoadMacro( s, lasttk )
 		if( lgt = -1 ) then
 			exit function
 		end if
@@ -378,7 +396,8 @@ end function
 
 private function hLoadMacroW _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval lasttk as integer _
 	) as integer
 
     dim as FB_DEFPARAM ptr param = any, nextparam = any
@@ -394,14 +413,21 @@ private function hLoadMacroW _
 	'' '('?
 	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
 		'' not an error, macro can be passed as param to other macros
-		exit function
+        if (lasttk = 0) or ( lexCurrentChar( TRUE ) = CHAR_COMMA ) or ( lexCurrentChar( TRUE ) = CHAR_RPRNT ) or ucase(left(*lex.ctx->buffptrw, 3)) = "AS " then '' special handling, if lastid = 1 (e.g end of line before)
+		    exit function
+	    end if
+
+    else
+        lasttk = 0                                    '' regular handling, there was an opening bracket
 	end if
 
 	if (isMacroAllowed(s) = FALSE) then
 		exit function
 	end if
 
-	lexEatChar( )
+    if lasttk = 0 then                                '' in case of special handiling, there is no opening bracket to eat!
+	    lexEatChar( )
+    end if
 
 	'' allocate a new arg list (because the recursivity)
 	param = symbGetDefineHeadParam( s )
@@ -433,7 +459,16 @@ private function hLoadMacroW _
         end if
 
 		'' read text until a comma or right-parentheses is found
+        '' look for line end or statement separator in case of special handling
 		do
+            if lasttk = 1 then                        '' no opening bracket, special handling
+                select case lex.ctx->currchar
+                    case 10, 13, 58
+                        prntcnt = 0
+                        exit do
+                end select
+            end if
+
 			lexNextToken( @t, LEXCHECK_NOWHITESPC or _
 							  LEXCHECK_NOSUFFIX or _
 							  LEXCHECK_NOQUOTES or _
@@ -498,11 +533,15 @@ private function hLoadMacroW _
 		if( prntcnt = 0 ) then
 			'' End of param list not yet reached?
 			if( nextparam ) then
-				'' Too few args specified. This is an error, unless it's
-				'' only the "..." vararg param that wasn't given any arg.
+                '' Not the last param and is variadic?  -> to less paramters given (macro expects more)
+				if ((symbGetDefParamNext( nextparam ) <> NULL) and is_variadic) then
+                    '' warn, if to few arguments. Macro expects more, but vararg param (...) may have comma(s) inside
+                    '' so argument count may match nevertheless
+  				    errReportWarn( FB_WARNINGMSG_ARGCNTMISMATCH, "expanding: " + *symbGetName( s ))
+                end if
 
-				'' Not the last param, or not variadic?
-				if( (symbGetDefParamNext( nextparam ) <> NULL) or (not is_variadic) ) then
+				if(not is_variadic) then
+  				'' Too few args specified. This is an error, unless a vararg param (...) was given.
 					hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
 				end if
 
@@ -597,7 +636,8 @@ end function
 ''::::
 private function hLoadDefineW _
 	( _
-		byval s as FBSYMBOL ptr _
+		byval s as FBSYMBOL ptr, _
+		byval lasttk as integer _
 	) as integer
 
     static as DWSTRING text
@@ -608,7 +648,7 @@ private function hLoadDefineW _
 	'' define has args?
 	if( symbGetDefineParams( s ) > 0 ) then
 
-		lgt = hLoadMacroW( s )
+		lgt = hLoadMacroW( s, lasttk )
 		if( lgt = -1 ) then
 			exit function
 		end if
@@ -686,7 +726,8 @@ end function
 function ppDefineLoad _
 	( _
 		byval s as FBSYMBOL ptr, _
-		byval currmacro as FBSYMBOL ptr _
+		byval currmacro as FBSYMBOL ptr, _
+		byval lasttk as integer _
 	) as integer
 
 	'' recursion?
@@ -698,9 +739,9 @@ function ppDefineLoad _
 	end if
 
 	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-		function = hLoadDefine( s )
+		function = hLoadDefine( s, lasttk )
 	else
-		function = hLoadDefineW( s )
+		function = hLoadDefineW( s, lasttk )
 	end if
 
 	'' Not empty?
