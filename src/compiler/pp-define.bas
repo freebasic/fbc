@@ -182,11 +182,15 @@ private function hLoadMacro _
 		if( prntcnt = 0 ) then
 			'' End of param list not yet reached?
 			if( nextparam ) then
-				'' Too few args specified. This is an error, unless it's
-				'' only the "..." vararg param that wasn't given any arg.
+               '' Not the last param and is variadic?  -> to less paramters given (macro expects more)
+				if ((symbGetDefParamNext( nextparam ) <> NULL) and is_variadic) then
+				    '' warn, if to few arguments. Macro expects more, but vararg param (...) may have comma(s) inside
+                    '' so argument count may match nevertheless
+  		    		errReportWarn( FB_WARNINGMSG_ARGCNTMISMATCH, "expanding: " + *symbGetName( s ))
+                end if
 
-				'' Not the last param, or not variadic?
-				if( (symbGetDefParamNext( nextparam ) <> NULL) or (not is_variadic) ) then
+				if(not is_variadic) then
+  				'' Too few args specified. This is an error, unless a vararg param (...) was given.
 					hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
 				end if
 
