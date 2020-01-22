@@ -765,6 +765,11 @@ function ppTypeOf( ) as string
 
 	function = ucase( symbTypeToStr( dtype, subtype, lgt, is_fixlenstr ) )
 
+    '' skip () -> allow "TYPEOF(a())" in case of array
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		hSkipUntil( CHAR_RPRNT )
+	end if
+
 	'' ')'
 	if( lexGetToken( ) <> CHAR_RPRNT ) then
 		errReport( FB_ERRMSG_EXPECTEDRPRNT )

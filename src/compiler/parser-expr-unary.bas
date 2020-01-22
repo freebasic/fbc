@@ -273,6 +273,14 @@ function cHighestPrecExpr _
 					return hPPDefinedExpr( )
 
 				end select
+
+            '' run time expression
+            else
+				select case( lexGetToken( ) )
+				'' TYPEOF '(' Expression ')'
+				case FB_TK_TYPEOF
+					return astNewCONSTstr( ppTypeOf( ) )
+                end select
 			end if
 
 			return cAtom( base_parent, chain_ )
