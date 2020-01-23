@@ -413,7 +413,7 @@ private function hLoadMacroW _
 	'' '('?
 	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
 		'' not an error, macro can be passed as param to other macros
-        if (lasttk = 0) or ( lexCurrentChar( TRUE ) = CHAR_COMMA ) or ( lexCurrentChar( TRUE ) = CHAR_RPRNT ) or ucase(left(*lex.ctx->buffptrw, 3)) = "AS " then '' special handling, if lastid = 1 (e.g end of line before)
+        if (lasttk = 0) or ( lexCurrentChar( TRUE ) = CHAR_COMMA ) or ( lexCurrentChar( TRUE ) = CHAR_RPRNT ) or ucase(left(*lex.ctx->buffptrw, 3)) = "AS " then '' special handling, if lasttk = 1 (e.g end of line before)
 		    exit function
 	    end if
 
@@ -599,6 +599,9 @@ private function hLoadMacroW _
 					DWstrConcatAssign( text, "$" + QUOTE )
 					DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
 					DWstrConcatAssign( text, QUOTE )
+				else
+					'' If it's empty, produce an empty string ("")
+					DWstrConcatAssign( text, """""" )
 				end if
 
 			'' ordinary text..
