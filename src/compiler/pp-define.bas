@@ -269,6 +269,27 @@ private function hLoadMacro _
 					text += """"""
 				end if
 
+			'' stringize parameter ucase?
+			case FB_DEFTOK_TYPE_PARAMSTR_UCASE
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+
+'ods("xtra: " + *dt->xtext)
+					'' don't escape, preserve the sequencies as-is
+dim us as string 
+                    us = ucase(*argtext)
+                    argtext = strptr(us)
+
+					text += "$" + QUOTE
+					text += hReplace( argtext, QUOTE, QUOTE + QUOTE )
+					text += QUOTE
+				else
+					'' If it's empty, produce an empty string ("")
+					text += """"""
+				end if
+
 			'' ordinary text..
 			case FB_DEFTOK_TYPE_TEX
 				text += *symbGetDefTokText( dt )
@@ -604,6 +625,26 @@ private function hLoadMacroW _
 					DWstrConcatAssign( text, """""" )
 				end if
 
+			'' stringize parameter ucase?
+			case FB_DEFTOK_TYPE_PARAMSTR_UCASE
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+					'' don't escape, preserve the sequencies as-is
+dim uw as wstring * FB_MAXLITLEN+1                    'max token length ???
+                    uw = ucase(*argtext)
+                    argtext = strptr(uw)
+
+					DWstrConcatAssign( text, "$" + QUOTE )
+					DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
+					DWstrConcatAssign( text, QUOTE )
+				else
+					'' If it's empty, produce an empty string ("")
+					DWstrConcatAssign( text, """""" )
+				end if
+
 			'' ordinary text..
 			case FB_DEFTOK_TYPE_TEX
 				DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
@@ -804,10 +845,37 @@ private function hReadMacroText _
 	static as zstring * FB_MAXNAMELEN+1 arg
     dim as FB_DEFPARAM ptr param = any
     dim as FB_DEFTOK ptr toktail = NULL, tokhead = NULL
-    dim as integer addquotes = any, nestedcnt = 0
+    dim as integer addquotes = any, nestedcnt = 0, makecount = any, uppercase = any, joinparam = any, splitparam = any
+    dim as integer leftparam = any, rightparam = any, isparam = any
+    dim x as zwstring                                 'union z/wstring * FB_MAXLITLEN+1
+
 
     do
-    	addquotes = FALSE
+    	addquotes  = FALSE
+
+    	uppercase  = FALSE                            'flags for new operators
+    	makecount  = FALSE
+    	joinparam  = FALSE
+    	splitparam = FALSE
+    	leftparam  = FALSE
+    	rightparam = FALSE
+    	isparam    = FALSE
+
+
+'***********************************************************************************************
+' list of parameter operators
+'***********************************************************************************************
+' #
+' ##
+' #ucase#
+' #count#
+' #join#
+' #split# #split_at()#
+' #left_of()#
+' #right_of()#
+' #is()#
+'***********************************************************************************************
+
 
     	select case as const lexGetToken( LEX_FLAGS )
 		case FB_TK_EOF
@@ -857,6 +925,38 @@ private function hReadMacroText _
     			lexSkipToken( LEX_FLAGS )
     			lexSkipToken( LEX_FLAGS )
     			continue do
+
+'***********************************************************************************************
+'***********************************************************************************************
+    		case FB_TK_PP_UCASE
+                lexSkipToken( LEX_FLAGS )
+                lexSkipToken( LEX_FLAGS )
+
+'                if( hMatch( CHAR_LPRNT ) = FALSE ) then
+'                    errReport( FB_ERRMSG_EXPECTEDLPRNT )
+'                end if
+'
+'        		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+'                    x.text = ucase(*lexGetText( ))
+'                else
+'                    x.textw = ucase(*lexGetTextW( ))
+'                end if
+'
+'                lexSkipToken( LEX_FLAGS )
+'
+'                if( hMatch( CHAR_RPRNT ) = FALSE ) then
+'                    errReport( FB_ERRMSG_EXPECTEDRPRNT )
+'                end if
+
+                if( hMatch( CHAR_SHARP ) = FALSE ) then
+                    errReportEx( FB_ERRMSG_SYNTAXERROR, "expected '#' after '#UCASE'" )
+                end if
+
+
+    		    uppercase = TRUE
+
+'***********************************************************************************************
+'***********************************************************************************************
 
     		'' '#' macro?
     		case FB_TK_PP_MACRO
@@ -943,7 +1043,34 @@ private function hReadMacroText _
 
     		'' found?
     		if( param <> NULL ) then
-				if( addquotes = FALSE ) then
+  				if( uppercase = true ) then
+		  			symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAMSTR_UCASE ) 
+
+                elseif makecount  = true then
+			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_COUNT )
+
+                elseif joinparam  = true then
+			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_JOIN )
+
+                elseif splitparam = true then
+			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_SPLIT )
+
+                elseif leftparam  = true then
+			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_LEFT_OF )
+
+                elseif rightparam = true then
+			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_RIGHT_OF )
+
+                elseif isparam    = true then
+			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_IS )
+
+'                    if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+'                        ZstrAssign( @toktail->xtext, @x.text )
+'                    else
+'                        WstrAssign( @toktail->xtextw, @x.textw )
+'                    end if
+
+                elseif( addquotes = FALSE ) then
 					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAM )
 				else
 					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAMSTR )

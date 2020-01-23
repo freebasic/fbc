@@ -357,10 +357,27 @@ enum FB_DEFTOK_TYPE
 	FB_DEFTOK_TYPE_PARAMSTR
 	FB_DEFTOK_TYPE_TEX
 	FB_DEFTOK_TYPE_TEXW
+	FB_DEFTOK_TYPE_PARAMSTR_UCASE
+	FB_DEFTOK_TYPE_COUNT
+	FB_DEFTOK_TYPE_JOIN
+	FB_DEFTOK_TYPE_SPLIT
+	FB_DEFTOK_TYPE_LEFT_OF
+	FB_DEFTOK_TYPE_RIGHT_OF
+	FB_DEFTOK_TYPE_IS
 end enum
+
+type zwstring
+    text    as zstring * FB_MAXLITLEN+1
+    textw   as Wstring * FB_MAXLITLEN+1
+end type
 
 type FB_DEFTOK
 	type			as FB_DEFTOK_TYPE
+
+	union
+		xtext		as zstring ptr
+		xtextw		as wstring ptr
+	end union
 
 	union
 		text		as zstring ptr

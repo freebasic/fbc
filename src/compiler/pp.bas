@@ -35,7 +35,7 @@ declare sub ppDumpTree _
 '' globals
 	dim shared as PP_CTX pp
 
-const SYMB_MAXKEYWORDS = 24
+const SYMB_MAXKEYWORDS = 24 + 7
 
 	dim shared kwdTb( 0 to SYMB_MAXKEYWORDS-1 ) as SYMBKWD => _
 	{ _
@@ -60,6 +60,13 @@ const SYMB_MAXKEYWORDS = 24
         (@"ASSERT"	, FB_TK_PP_ASSERT	), _
         (@"DUMP"    , FB_TK_PP_DUMP     ), _
         (@"ODUMP"   , FB_TK_PP_ODUMP    ), _
+        (@"UCASE"   , FB_TK_PP_UCASE    ), _
+        (@"COUNT"   , FB_TK_PP_COUNT    ), _
+        (@"JOIN"    , FB_TK_PP_JOIN     ), _
+        (@"SPLIT"   , FB_TK_PP_SPLIT    ), _
+        (@"LEFT_OF" , FB_TK_PP_LEFT_OF  ), _
+        (@"RIGHT_OF", FB_TK_PP_RIGHT_OF ), _
+        (@"IS"      , FB_TK_PP_IS       ), _
         (NULL) _
 	}
 
