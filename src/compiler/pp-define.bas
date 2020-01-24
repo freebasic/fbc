@@ -290,6 +290,29 @@ dim us as string
 					text += """"""
 				end if
 
+            '' argument count
+			case FB_DEFTOK_TYPE_COUNT
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim i as ulong = 1
+                    dim n as ulong = 0
+
+                    do
+                      n = instr(n+1, *argtext, ",")
+                      if n > 0 then
+                        i = i + 1
+                      else
+                        exit do
+                      end if
+                    loop
+
+					text += str(i)                    '# of arguments = count of "," + 1
+				else
+					text += "1"                       'empty -> 1 argument
+				end if
+
 			'' ordinary text..
 			case FB_DEFTOK_TYPE_TEX
 				text += *symbGetDefTokText( dt )
@@ -645,6 +668,29 @@ dim uw as wstring * FB_MAXLITLEN+1                    'max token length ???
 					DWstrConcatAssign( text, """""" )
 				end if
 
+            '' argument count
+			case FB_DEFTOK_TYPE_COUNT
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim i as ulong = 1
+                    dim n as ulong = 0
+
+                    do
+                      n = instr(n+1, *argtext, ",")
+                      if n > 0 then
+                        i = i + 1
+                      else
+                        exit do
+                      end if
+                    loop
+
+					DWstrConcatAssign( text, wstr(i)) '# of arguments = count of "," + 1
+				else
+					DWstrConcatAssign( text, "1")     'empty -> 1 argument
+				end if
+
 			'' ordinary text..
 			case FB_DEFTOK_TYPE_TEX
 				DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
@@ -928,6 +974,7 @@ private function hReadMacroText _
 
 '***********************************************************************************************
 '***********************************************************************************************
+    		'' '#' ucase?
     		case FB_TK_PP_UCASE
                 lexSkipToken( LEX_FLAGS )
                 lexSkipToken( LEX_FLAGS )
@@ -952,8 +999,18 @@ private function hReadMacroText _
                     errReportEx( FB_ERRMSG_SYNTAXERROR, "expected '#' after '#UCASE'" )
                 end if
 
-
     		    uppercase = TRUE
+
+    		'' '#' count?
+    		case FB_TK_PP_COUNT
+                lexSkipToken( LEX_FLAGS )
+                lexSkipToken( LEX_FLAGS )
+
+                if( hMatch( CHAR_SHARP ) = FALSE ) then
+                    errReportEx( FB_ERRMSG_SYNTAXERROR, "expected '#' after '#COUNT'" )
+                end if
+
+    		    makecount = TRUE
 
 '***********************************************************************************************
 '***********************************************************************************************
