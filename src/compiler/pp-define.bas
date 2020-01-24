@@ -275,11 +275,8 @@ private function hLoadMacro _
 				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
-
-'ods("xtra: " + *dt->xtext)
 					'' don't escape, preserve the sequencies as-is
-dim us as string 
-                    us = ucase(*argtext)
+                    dim us as string = ucase(*argtext)
                     argtext = strptr(us)
 
 					text += "$" + QUOTE
@@ -333,6 +330,19 @@ dim us as string
                         exit do
                       end if
                     loop
+				end if
+
+            '' is token?
+			case FB_DEFTOK_TYPE_IS
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    if *argtext <> *dt->xtext then
+                        text += *argtext
+                    else  
+                        text += "1"
+                    end if
 				end if
 
 			'' ordinary text..
@@ -735,6 +745,19 @@ dim uw as wstring * FB_MAXLITLEN+1                    'max token length ???
                     loop
 				end if
 
+            '' is token?
+			case FB_DEFTOK_TYPE_IS
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    if *argtext <> *dt->xtextw then
+					    DWstrConcatAssign( text, argtext )
+                    else  
+                        DWstrConcatAssign( text, "1" )
+                    end if
+				end if
+
 			'' ordinary text..
 			case FB_DEFTOK_TYPE_TEX
 				DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
@@ -924,6 +947,33 @@ private function hRtrimMacroText _
 
 end function
 
+
+#macro get_xtext
+    if( hMatch( CHAR_LPRNT ) = FALSE ) then
+        errReport( FB_ERRMSG_EXPECTEDLPRNT )
+    end if
+
+    if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+        x.text = ucase(*lexGetText( ))
+    else
+        x.textw = ucase(*lexGetText( ))
+    end if
+
+    lexSkipToken( LEX_FLAGS )
+
+    if( hMatch( CHAR_RPRNT ) = FALSE ) then
+        errReport( FB_ERRMSG_EXPECTEDRPRNT )
+    end if
+#endmacro
+
+#macro assign_xtext
+    if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+        ZstrAssign( @toktail->xtext, @x.text )
+    else
+        WstrAssign( @toktail->xtextw, @x.textw )
+    end if
+#endmacro  
+  
 '':::::
 private function hReadMacroText _
 	( _
@@ -942,8 +992,7 @@ private function hReadMacroText _
 
     do
     	addquotes  = FALSE
-
-    	uppercase  = FALSE                            'flags for new operators
+    	uppercase  = FALSE                           
     	makecount  = FALSE
     	joinparam  = FALSE
     	splitparam = FALSE
@@ -953,14 +1002,14 @@ private function hReadMacroText _
 
 
 '***********************************************************************************************
-' list of parameter operators
+' list of pp parameter operators
 '***********************************************************************************************
 ' #
 ' ##
 ' #ucase#
 ' #count#
 ' #join#
-' #split# #split_at()#
+' #split# 
 ' #left_of()#
 ' #right_of()#
 ' #is()#
@@ -1017,21 +1066,6 @@ private function hReadMacroText _
     			continue do
 
 '***********************************************************************************************
-'                if( hMatch( CHAR_LPRNT ) = FALSE ) then
-'                    errReport( FB_ERRMSG_EXPECTEDLPRNT )
-'                end if
-'
-'        		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-'                    x.text = ucase(*lexGetText( ))
-'                else
-'                    x.textw = ucase(*lexGetTextW( ))
-'                end if
-'
-'                lexSkipToken( LEX_FLAGS )
-'
-'                if( hMatch( CHAR_RPRNT ) = FALSE ) then
-'                    errReport( FB_ERRMSG_EXPECTEDRPRNT )
-'                end if
 '***********************************************************************************************
 
     		'' '#' ucase?
@@ -1066,6 +1100,19 @@ private function hReadMacroText _
                 end if
 
     		    joinparam = TRUE
+
+    		'' '#' is?
+    		case FB_TK_PP_IS
+                lexSkipToken( LEX_FLAGS )
+                lexSkipToken( LEX_FLAGS )
+
+                get_xtext
+
+                if( hMatch( CHAR_SHARP ) = FALSE ) then
+                    errReportEx( FB_ERRMSG_SYNTAXERROR, "expected '#' after '#IS'" )
+                end if
+
+    		    isparam = TRUE
 
 '***********************************************************************************************
 '***********************************************************************************************
@@ -1175,12 +1222,7 @@ private function hReadMacroText _
 
                 elseif isparam    = true then
 			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_IS )
-
-'                    if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-'                        ZstrAssign( @toktail->xtext, @x.text )
-'                    else
-'                        WstrAssign( @toktail->xtextw, @x.textw )
-'                    end if
+                    assign_xtext
 
                 elseif( addquotes = FALSE ) then
 					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAM )
