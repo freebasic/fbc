@@ -332,6 +332,59 @@ private function hLoadMacro _
                     loop
 				end if
 
+            '' split argument (replace spaces with comma)
+			case FB_DEFTOK_TYPE_SPLIT
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim i as ulong = len(*argtext)
+                    dim n as ulong = 0
+                    dim p as ubyte ptr = cast(ubyte ptr, argtext)
+                    
+                    dim qflag as long = 0
+                    dim bflag as long = 0
+                    dim sflag as long = 0
+
+                    for n = 1 to i
+                      select case *p
+                        case 34                       'quote
+                          sflag = 0
+                          if qflag = 0 then
+                            qflag += 1
+                          else
+                            qflag -= 1
+                          end if
+
+                        case 40                       'open bracket
+                          sflag = 0
+                          bflag += 1
+
+                        case 41                       'close bracket
+                          sflag = 0
+                          bflag -= 1
+                        
+                        case 32                       'space
+                          if qflag = 0 then
+                            if bflag = 0 then
+                              if sflag = 0 then
+                                sflag += 1
+
+                                mid(*argtext, n) = ","
+                              end if
+                            end if
+                          end if
+    
+                        case else                     'anything else
+                          sflag = 0
+                      end select
+                      
+                      p = p + 1
+                    next n
+
+				    text += *argtext
+				end if
+
             '' is token?
 			case FB_DEFTOK_TYPE_IS
 				assert( symbGetDefTokParamNum( dt ) <= num )
@@ -718,8 +771,7 @@ private function hLoadMacroW _
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
 					'' don't escape, preserve the sequencies as-is
-dim uw as wstring * FB_MAXLITLEN+1                    'max token length ???
-                    uw = ucase(*argtext)
+                    dim uw as wstring * FB_MAXLITLEN+1 = ucase(*argtext)  'max token length ???
                     argtext = strptr(uw)
 
 					DWstrConcatAssign( text, "$" + QUOTE )
@@ -773,6 +825,59 @@ dim uw as wstring * FB_MAXLITLEN+1                    'max token length ???
                         exit do
                       end if
                     loop
+				end if
+
+            '' split argument (replace spaces with comma)
+			case FB_DEFTOK_TYPE_SPLIT
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim i as ulong = len(*argtext)
+                    dim n as ulong = 0
+                    dim p as ushort ptr = cast(ushort ptr, argtext)
+                    
+                    dim qflag as long = 0
+                    dim bflag as long = 0
+                    dim sflag as long = 0
+
+                    for n = 1 to i
+                      select case *p
+                        case 34                       'quote
+                          sflag = 0
+                          if qflag = 0 then
+                            qflag += 1
+                          else
+                            qflag -= 1
+                          end if
+
+                        case 40                       'open bracket
+                          sflag = 0
+                          bflag += 1
+
+                        case 41                       'close bracket
+                          sflag = 0
+                          bflag -= 1
+                        
+                        case 32                       'space
+                          if qflag = 0 then
+                            if bflag = 0 then
+                              if sflag = 0 then
+                                sflag += 1
+
+                                mid(*argtext, n) = ","
+                              end if
+                            end if
+                          end if
+    
+                        case else                     'anything else
+                          sflag = 0
+                      end select
+                      
+                      p = p + 1
+                    next n
+
+				    DWstrConcatAssign(text, *argtext)
 				end if
 
             '' is token?
@@ -1125,9 +1230,6 @@ private function hReadMacroText _
     			lexSkipToken( LEX_FLAGS )
     			continue do
 
-'***********************************************************************************************
-'***********************************************************************************************
-
     		'' '#' ucase?
     		case FB_TK_PP_UCASE
                 lexSkipToken( LEX_FLAGS )
@@ -1160,6 +1262,17 @@ private function hReadMacroText _
                 end if
 
     		    joinparam = TRUE
+
+    		'' '#' split?
+    		case FB_TK_PP_SPLIT
+                lexSkipToken( LEX_FLAGS )
+                lexSkipToken( LEX_FLAGS )
+
+                if( hMatch( CHAR_SHARP ) = FALSE ) then
+                    errReportEx( FB_ERRMSG_SYNTAXERROR, "expected '#' after '#SPLIT'" )
+                end if
+
+    		    splitparam = TRUE
 
     		'' '#' is?
     		case FB_TK_PP_IS
@@ -1199,9 +1312,6 @@ private function hReadMacroText _
                 end if
 
     		    rightparam = TRUE
-
-'***********************************************************************************************
-'***********************************************************************************************
 
     		'' '#' macro?
     		case FB_TK_PP_MACRO
