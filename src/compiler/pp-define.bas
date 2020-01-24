@@ -345,6 +345,36 @@ private function hLoadMacro _
                     end if
 				end if
 
+            '' left_of(token)?
+			case FB_DEFTOK_TYPE_LEFT_OF
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim n as ulong = instr(*argtext, *dt->xtext)
+
+                    if n > 0 then
+                        text += left(*argtext, n-1)
+                    else  
+                        text += *argtext
+                    end if
+				end if
+
+            '' left_of(token)?
+			case FB_DEFTOK_TYPE_RIGHT_OF
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim n as ulong = instrrev(*argtext, *dt->xtext)
+                    
+                    if n > 0 then
+                        text += mid(*argtext, n + len(*dt->xtext))
+                    else  
+                        text += *argtext
+                    end if
+				end if
+
 			'' ordinary text..
 			case FB_DEFTOK_TYPE_TEX
 				text += *symbGetDefTokText( dt )
@@ -758,6 +788,36 @@ dim uw as wstring * FB_MAXLITLEN+1                    'max token length ???
                     end if
 				end if
 
+            '' left_of(token)?
+			case FB_DEFTOK_TYPE_LEFT_OF
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim n as ulong = instr(*argtext, *dt->xtextw)
+
+                    if n > 0 then
+                        DWstrConcatAssign(text, left(*argtext, n-1))
+                    else  
+                        DWstrConcatAssign(text, *argtext)
+                    end if
+				end if
+
+            '' left_of(token)?
+			case FB_DEFTOK_TYPE_RIGHT_OF
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim n as ulong = instrrev(*argtext, *dt->xtextw)
+                    
+                    if n > 0 then
+                        DWstrConcatAssign(text, mid(*argtext, n + len(*dt->xtextw)))
+                    else  
+                        DWstrConcatAssign(text, *argtext)
+                    end if
+				end if
+
 			'' ordinary text..
 			case FB_DEFTOK_TYPE_TEX
 				DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
@@ -1114,6 +1174,32 @@ private function hReadMacroText _
 
     		    isparam = TRUE
 
+    		'' '#' left_of(token)?
+    		case FB_TK_PP_LEFT_OF
+                lexSkipToken( LEX_FLAGS )
+                lexSkipToken( LEX_FLAGS )
+
+                get_xtext
+
+                if( hMatch( CHAR_SHARP ) = FALSE ) then
+                    errReportEx( FB_ERRMSG_SYNTAXERROR, "expected '#' after '#LEFT_OF(<token>)'" )
+                end if
+
+    		    leftparam = TRUE
+
+    		'' '#' right_of(token)?
+    		case FB_TK_PP_RIGHT_OF
+                lexSkipToken( LEX_FLAGS )
+                lexSkipToken( LEX_FLAGS )
+
+                get_xtext
+
+                if( hMatch( CHAR_SHARP ) = FALSE ) then
+                    errReportEx( FB_ERRMSG_SYNTAXERROR, "expected '#' after '#RIGHT_OF(<token>)'" )
+                end if
+
+    		    rightparam = TRUE
+
 '***********************************************************************************************
 '***********************************************************************************************
 
@@ -1216,9 +1302,11 @@ private function hReadMacroText _
 
                 elseif leftparam  = true then
 			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_LEFT_OF )
+                    assign_xtext
 
                 elseif rightparam = true then
 			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_RIGHT_OF )
+                    assign_xtext
 
                 elseif isparam    = true then
 			  		symbSetDefTokType( toktail, FB_DEFTOK_TYPE_IS )
