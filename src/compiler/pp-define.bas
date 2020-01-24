@@ -313,6 +313,28 @@ dim us as string
 					text += "1"                       'empty -> 1 argument
 				end if
 
+            '' join argument (remove spaces)
+			case FB_DEFTOK_TYPE_JOIN
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim i as ulong = 1
+                    dim n as ulong = 0
+
+                    do
+                      n = instr(n+1, *argtext, " ")
+                      if n > 0 then
+					    text += mid(*argtext, i, n-i)
+                        i = n + 1
+
+                      else
+					    text += mid(*argtext, i)
+                        exit do
+                      end if
+                    loop
+				end if
+
 			'' ordinary text..
 			case FB_DEFTOK_TYPE_TEX
 				text += *symbGetDefTokText( dt )
@@ -691,6 +713,28 @@ dim uw as wstring * FB_MAXLITLEN+1                    'max token length ???
 					DWstrConcatAssign( text, "1")     'empty -> 1 argument
 				end if
 
+            '' join argument (remove spaces)
+			case FB_DEFTOK_TYPE_JOIN
+				assert( symbGetDefTokParamNum( dt ) <= num )
+				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
+				'' Only if not empty ("..." param can be empty)
+				if( argtext <> NULL ) then
+                    dim i as ulong = 1
+                    dim n as ulong = 0
+
+                    do
+                      n = instr(n+1, *argtext, " ")
+                      if n > 0 then
+					    DWstrConcatAssign(text, mid(*argtext, i, n-i))
+                        i = n + 1
+
+                      else
+					    DWstrConcatAssign(text, mid(*argtext, i))
+                        exit do
+                      end if
+                    loop
+				end if
+
 			'' ordinary text..
 			case FB_DEFTOK_TYPE_TEX
 				DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
@@ -973,12 +1017,6 @@ private function hReadMacroText _
     			continue do
 
 '***********************************************************************************************
-'***********************************************************************************************
-    		'' '#' ucase?
-    		case FB_TK_PP_UCASE
-                lexSkipToken( LEX_FLAGS )
-                lexSkipToken( LEX_FLAGS )
-
 '                if( hMatch( CHAR_LPRNT ) = FALSE ) then
 '                    errReport( FB_ERRMSG_EXPECTEDLPRNT )
 '                end if
@@ -994,6 +1032,12 @@ private function hReadMacroText _
 '                if( hMatch( CHAR_RPRNT ) = FALSE ) then
 '                    errReport( FB_ERRMSG_EXPECTEDRPRNT )
 '                end if
+'***********************************************************************************************
+
+    		'' '#' ucase?
+    		case FB_TK_PP_UCASE
+                lexSkipToken( LEX_FLAGS )
+                lexSkipToken( LEX_FLAGS )
 
                 if( hMatch( CHAR_SHARP ) = FALSE ) then
                     errReportEx( FB_ERRMSG_SYNTAXERROR, "expected '#' after '#UCASE'" )
@@ -1011,6 +1055,17 @@ private function hReadMacroText _
                 end if
 
     		    makecount = TRUE
+
+    		'' '#' join?
+    		case FB_TK_PP_JOIN
+                lexSkipToken( LEX_FLAGS )
+                lexSkipToken( LEX_FLAGS )
+
+                if( hMatch( CHAR_SHARP ) = FALSE ) then
+                    errReportEx( FB_ERRMSG_SYNTAXERROR, "expected '#' after '#JOIN'" )
+                end if
+
+    		    joinparam = TRUE
 
 '***********************************************************************************************
 '***********************************************************************************************
