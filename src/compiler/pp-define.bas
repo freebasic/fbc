@@ -391,7 +391,7 @@ private function hLoadMacro _
 				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
-                    if *argtext <> *dt->xtext then
+                    if ucase(*argtext) <> *dt->xtext then
                         text += *argtext
                     else  
                         text += "1"
@@ -404,7 +404,7 @@ private function hLoadMacro _
 				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
-                    dim n as ulong = instr(*argtext, *dt->xtext)
+                    dim n as ulong = instr(ucase(*argtext), *dt->xtext)
 
                     if n > 0 then
                         text += left(*argtext, n-1)
@@ -419,7 +419,7 @@ private function hLoadMacro _
 				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
-                    dim n as ulong = instrrev(*argtext, *dt->xtext)
+                    dim n as ulong = instrrev(ucase(*argtext), *dt->xtext)
                     
                     if n > 0 then
                         text += mid(*argtext, n + len(*dt->xtext))
@@ -886,7 +886,7 @@ private function hLoadMacroW _
 				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
-                    if *argtext <> *dt->xtextw then
+                    if ucase(*argtext) <> *dt->xtextw then
 					    DWstrConcatAssign( text, argtext )
                     else  
                         DWstrConcatAssign( text, "1" )
@@ -899,7 +899,7 @@ private function hLoadMacroW _
 				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
-                    dim n as ulong = instr(*argtext, *dt->xtextw)
+                    dim n as ulong = instr(ucase(*argtext), *dt->xtextw)
 
                     if n > 0 then
                         DWstrConcatAssign(text, left(*argtext, n-1))
@@ -914,7 +914,7 @@ private function hLoadMacroW _
 				argtext = argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data
 				'' Only if not empty ("..." param can be empty)
 				if( argtext <> NULL ) then
-                    dim n as ulong = instrrev(*argtext, *dt->xtextw)
+                    dim n as ulong = instrrev(ucase(*argtext), *dt->xtextw)
                     
                     if n > 0 then
                         DWstrConcatAssign(text, mid(*argtext, n + len(*dt->xtextw)))
