@@ -3636,6 +3636,10 @@ private function hCompileStage2Module( byval module as FBCIOFILE ptr ) as intege
 			ln += "-g "
 		end if
 
+		if( fbGetOption( FB_COMPOPT_PROFILE ) ) then
+			ln += "-pg "
+		end if
+
 		if( fbGetOption( FB_COMPOPT_FPUTYPE ) = FB_FPUTYPE_SSE ) then
 			if( fbGetOption( FB_COMPOPT_TARGET ) = FB_COMPTARGET_ANDROID ) then
 				'' Guaranteed to be present
