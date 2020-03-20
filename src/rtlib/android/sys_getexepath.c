@@ -10,7 +10,7 @@ char *fb_hGetExePath( char *dst, ssize_t maxlen )
 	ssize_t len;
 
 	if ((stat("/proc/self/exe", &finfo) == 0) && ((len = readlink("/proc/self/exe", dst, maxlen - 1)) > -1)) {
-		/* Linux-like proc fs is available */
+		/* Linux-like proc fs is available. But if running from an app this uselessly points at /system/bin. */
 		dst[len] = '\0';
 		p = strrchr(dst, '/');
 		if (p == dst) /* keep the "/" rather than returning "" */
