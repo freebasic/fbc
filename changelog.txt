@@ -5,6 +5,7 @@ Version 1.07.2
 [added]
 
 [fixed]
+- sf.net #921: gfxlib: horizontal line drawing on 8-bit image was using wrong bpp
 
 
 Version 1.07.1

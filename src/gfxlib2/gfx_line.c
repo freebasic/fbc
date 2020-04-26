@@ -85,7 +85,7 @@ void fb_GfxDrawLine(FB_GFXCTX *context, int x1, int y1, int x2, int y2, unsigned
 		bit = 0x8000 >> (rot & 0xF );
 
 		if (style == 0xFFFF)
-			context->pixel_set(context->line[y1] + (x1 * __fb_gfx->bpp), color, x2 - x1 + 1);
+			context->pixel_set(context->line[y1] + (x1 * context->target_bpp), color, x2 - x1 + 1);
 		else {
 			for (x = x1; x <= x2; x++) {
 				if (style & bit)
