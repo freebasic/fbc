@@ -387,8 +387,10 @@ private sub hReadIdentifier _
 	)
 
 	#macro hCheckIdentifierSuffix()
-		if( (fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE) and ((flags and LEXCHECK_ALLOWSUFFIX) = 0) ) then
-			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+		if( fbPdCheckIsSet( FB_PDCHECK_SUFFIX ) ) then
+			if( (fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE) and ((flags and LEXCHECK_ALLOWSUFFIX) = 0) ) then
+				errReportWarnNotAllowed( FB_LANG_OPT_SUFFIX, FB_WARNINGMSG_SUFFIXONLYVALIDINLANG )
+			end if
 		end if
 	#endmacro
 
