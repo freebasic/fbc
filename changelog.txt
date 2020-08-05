@@ -2,6 +2,7 @@ Version 1.07.2
 
 [changed]
 - warning level for all warnings is increased by 1.  Default warning level is 1.  Previously, default warning level was 0 and some warnings had level of -1.
+- sf.net #909: reverted changes due sf.net #893: invalid suffixes due to '-lang fb' are now pedantic warning only specified with '-w pedantic' or '-w suffix'
 
 [added]
 

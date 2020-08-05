@@ -85,7 +85,9 @@ declare function hMakeParamDesc _
 		( /'FB_WARNINGMSG_CONSTQUALIFIERDISCARDED   '/ 0, @"CONST qualifier discarded" ), _
 		( /'FB_WARNINGMSG_RETURNTYPEMISMATCH        '/ 0, @"Return type mismatch" ), _
 		( /'FB_WARNINGMSG_CALLINGCONVMISMATCH       '/ 0, @"Calling convention mismatch" ), _
-		( /'FB_WARNINGMSG_ARGCNTMISMATCH            '/ 0, @"Argument count mismatch" ) _
+		( /'FB_WARNINGMSG_ARGCNTMISMATCH            '/ 0, @"Argument count mismatch" ), _
+		( /'FB_WARNINGMSG_ONLYVALIDINLANG           '/ 1, @"Only valid in -lang" ), _
+		( /'FB_WARNINGMSG_SUFFIXONLYVALIDINLANG     '/ 1, @"Suffixes are only valid in -lang" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _
@@ -493,8 +495,8 @@ private sub hPrintErrMsg _
 		byval customText as const zstring ptr = 0 _
 	) static
 
-    dim as const zstring ptr msg
-    dim as string token_pos
+	dim as const zstring ptr msg
+	dim as string token_pos
 
 	if( (errnum < 1) or (errnum >= FB_ERRMSGS) ) then
 		msg = NULL
@@ -758,13 +760,11 @@ sub errReportWarn _
 
 end sub
 
-'':::::
-sub errReportNotAllowed _
+private function getNotAllowedMsg _
 	( _
 		byval opt as FB_LANG_OPT, _
-		byval errnum as integer, _
-		byval msgex as zstring ptr _
-	)
+		byval msgex as zstring ptr = NULL _
+	) as string
 
 	dim as string msg = ""
 	dim as integer i, langs
@@ -781,6 +781,34 @@ sub errReportNotAllowed _
 	next
 
 	msg += *hAddToken( FALSE, langs > 0, msgex )
+
+	return msg
+
+end function
+
+'':::::
+sub errReportWarnNotAllowed _
+	( _
+		byval opt as FB_LANG_OPT, _
+		byval msgnum as integer = FB_WARNINGMSG_ONLYVALIDINLANG, _
+		byval msgex as zstring ptr = NULL _
+	)
+
+	dim msg as string = getNotAllowedMsg( opt, msgex )
+
+	errReportWarnEx( msgnum, msg, lexLineNum( ) )
+
+end sub
+
+'':::::
+sub errReportNotAllowed _
+	( _
+		byval opt as FB_LANG_OPT, _
+		byval errnum as integer, _
+		byval msgex as zstring ptr _
+	)
+
+	dim msg as string = getNotAllowedMsg( opt, msgex )
 
 	errReportEx( errnum, msg, , FB_ERRMSGOPT_NONE )
 
@@ -831,7 +859,7 @@ private function hMakeParamDesc _
 			end if
 		end if
 
-    	if( pid <> NULL ) then
+		if( pid <> NULL ) then
 			if( len(*pid) > 0 ) then
 				desc += " ("
 				desc += *pid
