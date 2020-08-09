@@ -3,6 +3,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 
 <<{{fbdoc item="section" value="Arrays"}}
 	- {{fbdoc item="keyword" value="KeyPgErase|ERASE"}}
+	- {{fbdoc item="keyword" value="KeyPgFBArray|FBARRAY (array descriptor structure and access)"}}
 	- {{fbdoc item="keyword" value="KeyPgLbound|LBOUND"}}
 	- {{fbdoc item="keyword" value="KeyPgRedim|REDIM"}}
 	- {{fbdoc item="keyword" value="KeyPgPreserve|PRESERVE"}}
@@ -69,6 +70,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgBoolean|BOOLEAN"}}
 	- {{fbdoc item="keyword" value="KeyPgByrefVariables|BYREF (variables)"}}
 	- {{fbdoc item="keyword" value="KeyPgByte|BYTE"}}
+	- {{fbdoc item="keyword" value="KeyPgClass|CLASS"}}
 	- {{fbdoc item="keyword" value="KeyPgConst|CONST"}}
 	- {{fbdoc item="keyword" value="KeyPgConstQualifier|CONST (Qualifier)"}}
 	- {{fbdoc item="keyword" value="KeyPgDim|DIM"}}
@@ -170,7 +172,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgPutfileio|PUT # (File I/O)"}}
 	- {{fbdoc item="keyword" value="KeyPgRandom|RANDOM"}}
 	- {{fbdoc item="keyword" value="KeyPgReadFile|READ (File Access)"}}	
-	- {{fbdoc item="keyword" value="KeyPgReadWriteFile|READ WRITE (File Access)"}}	
+	- {{fbdoc item="keyword" value="KeyPgReadWriteFile|READ WRITE (File Access)"}}
 	- {{fbdoc item="keyword" value="KeyPgReset|RESET"}}	
 	- {{fbdoc item="keyword" value="KeyPgSeekset|SEEK (Statement)"}}
 	- {{fbdoc item="keyword" value="KeyPgSeekreturn|SEEK (Function)"}}
@@ -304,8 +306,12 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgCallocate|CALLOCATE"}}
 	- {{fbdoc item="keyword" value="KeyPgClear|CLEAR"}}
 	- {{fbdoc item="keyword" value="KeyPgDeallocate|DEALLOCATE"}}
+	- {{fbdoc item="keyword" value="KeyPgOpDelete|DELETE"}}
+	- {{fbdoc item="keyword" value="KeyPgFBMemcopy|FB_MEMCOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgFBMEMMOVE|FB_MEMMOVE"}}
 	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
 	- {{fbdoc item="keyword" value="KeyPgFre|FRE"}}
+	- {{fbdoc item="keyword" value="KeyPgOpNew|NEW"}}
 	- {{fbdoc item="keyword" value="KeyPgPeek|PEEK"}}
 	- {{fbdoc item="keyword" value="KeyPgPoke|POKE"}}
 	- {{fbdoc item="keyword" value="KeyPgReallocate|REALLOCATE"}}
@@ -408,7 +414,7 @@ List of ""FreeBASIC"" keywords sorted by the function they perform.
 	- {{fbdoc item="keyword" value="KeyPgDdFBBigEndian|__FB_BIGENDIAN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdFBBuildDate|__FB_BUILD_DATE__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbbuilddateiso|__FB_BUILD_DATE_ISO__"}}
- 	- {{fbdoc item="keyword" value="KeyPgDdfbbuildsha1|__FB_BUILD_SHA1__"}}
+	- {{fbdoc item="keyword" value="KeyPgDdfbbuildsha1|__FB_BUILD_SHA1__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbcygwin|__FB_CYGWIN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdarwin|__FB_DARWIN__"}}
 	- {{fbdoc item="keyword" value="KeyPgDdfbdebug|__FB_DEBUG__"}}

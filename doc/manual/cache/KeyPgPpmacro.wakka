@@ -14,33 +14,112 @@ Preprocessor directive to define a multiline macro
 	##**#macro**## is the multi-line version of ##[[KeyPgPpdefine|#define]]##.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/prepro/macro.bas"}}%%(freebasic)
-'' macro as an expression value
+	{{fbdoc item="filename" value="examples/manual/prepro/macro.bas"}}%%(freebasic)
+' macro as an expression value
+
 #macro Print1( a, b )
-  a + b
+	a + b
 #endmacro
 
-print Print1( "Hello", "World" )
+Print Print1( "Hello ", "World!" )
 
-'' Output :
-'' Hello World!
-%%
+/' Output :
+Hello World!
+'/
+	%%
+	{{fbdoc item="filename" value="examples/manual/prepro/macro2.bas"}}%%(freebasic)
+' macro as multiple statements
 
-{{fbdoc item="filename" value="examples/manual/prepro/macro2.bas"}}%%(freebasic)
-'' macro as multiple statements
 #macro Print2( a, b )
-	print a;
-	print " ";
-	print b;
-	print "!"
+	Print a;
+	Print " ";
+	Print b;
+	Print "!"
 #endmacro
 
 Print2( "Hello", "World" )
 
-'' Output :
-'' Hello World!
-%%
+/' Output :
+Hello World!
+'/
+	%%
+	{{fbdoc item="filename" value="examples/manual/prepro/macro3.bas"}}%%(freebasic)
+' macro with a variadic parameter
 
+#macro test1( arg1, arg2... )
+	Print arg1
+	#if #arg2 = ""
+		Print "2nd argument not passed"
+	#else
+		Print arg2
+	#endif
+#endmacro
+
+test1( "1", "2" )
+Print "-----------------------"
+test1( "3" )
+Print "-----------------------"
+test1( 5, 6 )
+Print "-----------------------"
+test1( 7 )
+
+/' Output :
+1
+2
+-----------------------
+3
+2nd argument not passed
+-----------------------
+ 5
+ 6
+-----------------------
+ 7
+2nd argument not passed
+'/
+	%%
+	{{fbdoc item="filename" value="examples/manual/prepro/macro4.bas"}}%%(freebasic)
+' macro with a variadic parameter which can contain several sub-parameters:
+'   To distinguish between the different arguments passed by variadic_parameter,
+'   you can first convert variadic_parameter to a string using the Operator # (Preprocessor Stringize),
+'   then differentiate in this string (#variadic_parameter) each passed argument by locating the separators (usually a comma).
+
+#macro test2( arg1, arg2... )
+	Print "'" & Trim(#arg1) & "'"
+	Scope
+		Dim As String s = Trim(#arg2)
+		If s <> "" Then
+			Do
+				Dim As Integer k = Instr(1, s, ",")
+				If k = 0 Then
+					Print "'" & s & "'"
+					Exit Do
+				End If
+				Print "'" & Left(s, k - 1) & "'"
+				s = Trim(Mid(s, k+1))
+			Loop
+		End If
+	End Scope
+#endmacro
+
+test2( 5 )
+Print "----"
+test2( 5,6, 7, , 9, 10, ,,13, 14 )
+
+/' Output :
+'5'
+----
+'5'
+'6'
+'7'
+''
+'9'
+'10'
+''
+''
+'13'
+'14'
+'/
+	%%
 {{fbdoc item="diff"}}
 	- New to ""FreeBASIC""
 

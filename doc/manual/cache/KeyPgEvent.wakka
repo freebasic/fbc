@@ -52,6 +52,9 @@ End Type
 	
 	The ##fbgfx.bi## header file contains a definition of the ##EVENT## user data type, so it is not necessary to declare it manually.
 
+{{fbdoc item="ex"}}
+	See example at ##[[KeyPgScreenevent|ScreenEvent]]##.
+
 {{fbdoc item="lang"}}
 	- In //[[CompilerDialects|lang fb]]//, the structure and constants are stored in the ##FB## ##[[KeyPgNamespace|Namespace]]##. This is not the case in other dialects.
 

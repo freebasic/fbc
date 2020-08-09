@@ -20,7 +20,7 @@ Set object file path/name
 		##fbc 1.bas -o 1.o -o 2.o 2.bas##
 	However, this is an error:
 		##fbc 1.bas 2.bas -o 1.o -o 2.o##
-	
+		
 	The ##[[CompilerOptv|-v]]## option makes the compiler show the actual file names that it uses.
 
 {{fbdoc item="see"}}

@@ -9,13 +9,16 @@ Makes a folder/directory on the local file system
 ##
 {{fbdoc item="param"}}
 	##//folder//##
-		The folder/directory to be created.
+		The new default folder/directory to be created, or a path to the sub-folder/sub-directory to be created.
 
 {{fbdoc item="ret"}}
 	Returns zero (0) on success, and negative one (-1) on failure.
 
 {{fbdoc item="desc"}}
-	Creates a folder on the local file system.
+	Creates a folder/directoy on the local file system.
+	
+	If ##//folder//## is not a simple folder/directory name, but a path to a sub-folder/sub-directory, the parent folder(s)/directory(s) specified in the path must already exist.
+	(only one folder/directory can be created for each request)
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/system/mkdir.bas"}}%%(freebasic)

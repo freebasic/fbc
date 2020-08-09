@@ -1,7 +1,14 @@
 {{fbdoc item="title" value="Constructors, '=' Assignment-Operators, and Destructors (advanced, part #2)"}}----
 Proper use of **Constructors**, '=' **Assignment-Operators**, and **Destructors**, which are the special member procedures for constructing/initializing, assigning, and destroying objects (part #2).
+	{{anchor name="ProPgCtorsAssignDtors2Top"}}
+	__Table of Contents__
+		**{{anchor name="ProPgCtorsAssignDtors21|1. Compiler interaction (with default-constructor, copy-constructor, and copy-assignment operator)"}}**
+		**{{anchor name="ProPgCtorsAssignDtors22|2. Rules of good manners (for constructors, copy-constructors, copy-assignment operators, and destructors)"}}**
+		**{{anchor name="ProPgCtorsAssignDtors23|3. Member access rights impact (on declaration of constructors, copy-constructors, copy-assignment operators, and destructors)"}}**
 
-{{fbdoc item="section" value="Compiler interaction (with default-constructor, copy-constructor, and copy-assignment operator)"}}
+----
+{{anchor name="ProPgCtorsAssignDtors21"}}
+{{fbdoc item="section" value="1. Compiler interaction (with default-constructor, copy-constructor, and copy-assignment operator)"}}
 	During assignments or copy-constructions, the compiler interacts with the different calls of copy-assignment operators, default-constructors and copy-constructors, in order to optimize the copy for resulting objects, making the best use of the member procedures provided by the user (maybe non-exhaustively).
 	
 	- For an assignment (//'object2 = object1'//)
@@ -207,8 +214,11 @@ Going out scope: 'End Scope'
    => UDTderived.destructor               1703576
    => UDTbase.destructor                  1703576
 				%%
-{{fbdoc item="section" value="Rules of good manners (for constructors, copy-constructors, copy-assignment operators, and destructors)"}}
-	- Reminder of behaviors impacting constructors, copy-constructors, copy-assignment operators, and destructors:
+@@{{anchor name="ProPgCtorsAssignDtors2Top|Back to top"}}@@
+----
+{{anchor name="ProPgCtorsAssignDtors22"}}
+{{fbdoc item="section" value="2. Rules of good manners (for constructors, copy-constructors, copy-assignment operators, and destructors)"}}
+	Reminder of behaviors impacting constructors, copy-constructors, copy-assignment operators, and destructors:
 		**""-""** Defining an explicit default-constructor replaces the implicit default-constructor built by the compiler.
 		**""-""** Defining an explicit constructor other than the one default suppresses the implicit default-constructor built by the compiler. In this precise case, there is no default-constructor at all!
 		**""-""** The implicit copy-constructor (or copy-assignment operator, or destructor) built by the compiler can be replaced by an explicit copy-constructor (or copy-assignment operator, or destructor) defined by the user.
@@ -218,17 +228,90 @@ Going out scope: 'End Scope'
 		
 	From all the above, one can deduce 'golden rules' that avoid most of compilation errors and run-time bugs.
 	
-	- Golden rules, for a code safer (at compile-time and run-time):
-		**""-""** If the user explicitly defines any constructor, he is very strongly advised to also define explicitly the default-constructor as well.
-		**""-""** If the user needs to explicitly define (with a non empty body) a copy-constructor or a copy-assignment operator or a destructor, it is better to define the 3 simultaneously (the known 'rule of three'), plus the default-constructor (rule above also applied).
-		
+		**Golden rules** for a code safer (at compile-time and run-time):
+			**""-""** If the user explicitly defines any constructor, he is very strongly advised to also define explicitly the default-constructor as well.
+			**""-""** If the user needs to explicitly define (with a non empty body) a copy-constructor or a copy-assignment operator or a destructor, it is better to define the 3 simultaneously (the known 'rule of three'), plus the default-constructor (rule above also applied).
+			
 	From all the above and more specific cases (with inheritance), one can propose one 'maximizing rule' that allows a very safer operating.
 	
-	- Maximizing rule, for a very safer code (at compile-time and run-time) but sometimes maximizing the real constraints:
-		**""-""** If the user needs to explicitly defines any form of constructor procedure (including any form of copy-constructor) or any form of let-operator procedure or a destructor procedure, it is strongly recommended to define together the default-constructor and the standard copy-constructor and the standard let-operator and the destructor.
-		(these 4 explicit procedures are explicitly defined to always overload correctly the corresponding implicit operations from compiler)
+		**Maximizing rule** for a very safer code (at compile-time and run-time), but sometimes maximizing the real constraints:
+			**""-""** If the user needs to explicitly defines any form of constructor procedure (including any form of copy-constructor) or any form of let-operator procedure or a destructor procedure, it is strongly recommended to define together the default-constructor and the standard copy-constructor and the standard let-operator and the destructor.
+			(these 4 explicit procedures are explicitly defined to always overload correctly the corresponding implicit operations from compiler)
+			
+	- Example of applying rules of good manners
+		UDT with a string member, to compare to UDT with a string pointer member where the 4 explicit procedures above must be defined (otherwise program hangs):
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-goldenrules.bas"}}%%(freebasic)
+'=== UDT with a string member =====================
 
-{{fbdoc item="section" value="Member access rights impact (on declaration of constructors, copy-constructors, copy-assignment operators, and destructors)"}}
+Type UDTstr
+   Dim As String s
+End Type
+
+'--------------------------------------------------
+
+Dim As UDTstr us1
+us1.s = "UDTstr"
+Dim As UDTstr us2
+us2 = us1
+Dim As UDTstr us3 = us2
+Print us1.s,
+us1.s = ""
+Print us2.s,
+us2.s = ""
+Print us3.s
+
+'=== UDT with a string ptr member =================
+
+Type UDTptr2str
+   Dim As String Ptr ps
+   Declare Constructor ()
+   Declare Destructor ()
+   Declare Operator Let (Byref ups As UDTptr2str)
+   Declare Constructor (Byref ups As UDTptr2str)
+End Type
+
+Constructor UDTptr2str ()
+   This.ps = New String
+End Constructor
+
+Destructor UDTptr2str ()
+   Delete This.ps
+End Destructor
+
+Operator UDTptr2str.Let (Byref ups As UDTptr2str)
+   *This.ps = *ups.ps
+End Operator
+
+Constructor UDTptr2str (Byref ups As UDTptr2str)
+   Constructor()  '' calling the default constructor
+   This = ups     '' calling the assignment operator
+End Constructor
+
+'--------------------------------------------------
+
+Dim As UDTptr2str up1
+*up1.ps = "UDTptr2str"
+Dim As UDTptr2str up2
+up2 = up1
+Dim As UDTptr2str up3 = up2
+Print *up1.ps,
+*up1.ps = ""
+Print *up2.ps,
+*up2.ps = ""
+Print *up3.ps
+
+'==================================================
+
+Sleep
+			%%Output example:
+				%%
+UDTstr        UDTstr        UDTstr
+UDTptr2str    UDTptr2str    UDTptr2str
+				%%
+@@{{anchor name="ProPgCtorsAssignDtors2Top|Back to top"}}@@
+----
+{{anchor name="ProPgCtorsAssignDtors23"}}
+{{fbdoc item="section" value="3. Member access rights impact (on declaration of constructors, copy-constructors, copy-assignment operators, and destructors)"}}
 	Access rights can be applied when declaring such member procedures, to prohibit the user from performing certain specific commands (from the outside of Type).
 	
 	The default constructor, copy-constructor, copy-assignment operator, and destructor are the only member procedures which can have an implicit version built by the compiler.
@@ -337,6 +420,9 @@ Sleep
 0
 5122656        0
 				%%
+@@{{anchor name="ProPgCtorsAssignDtors2Top|Back to top"}}@@
+----
+
 {{fbdoc item="section" value="See also"}}
 	- ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##
 	- ##{{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}##, ##[[KeyPgOpLet|Operator Let (Assignment)]]##

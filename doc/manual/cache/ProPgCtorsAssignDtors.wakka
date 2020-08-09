@@ -1,6 +1,6 @@
 {{fbdoc item="title" value="Constructors, '=' Assignment-Operators, and Destructors (advanced, part #1)"}}----
 Proper use of **Constructors**, '=' **Assignment-Operators**, and **Destructors**, which are the special member procedures for constructing/initializing, assigning, and destroying objects (part #1).
-
+{{anchor name="ProPgCtorsAssignDtorsTop"}}
 **Preamble:**
 
 	Some member procedures, which have a predefined name in the Type, have a specific role that is constructing, assigning, and destroying objects. These are the constructors, the '=' assignment-operators, and the destructor.
@@ -17,8 +17,15 @@ Proper use of **Constructors**, '=' **Assignment-Operators**, and **Destructors*
 	Type inheritance and virtuality must also be taken into account for defining these special member procedures.
 	
 	As any member, these special member procedures may have any accessibility, public, protected or private (but a private access does not have much interest, and even can totally prevent any direct or derived object construction).
+	
+	__Table of Contents__
+		**{{anchor name="ProPgCtorsAssignDtors1|1. Constructors and destructors"}}**
+		**{{anchor name="ProPgCtorsAssignDtors2|2. '=' Assignment-operators"}}**
+		**{{anchor name="ProPgCtorsAssignDtors3|3. Processing variable-length arrays as members of Type"}}**
 
-{{fbdoc item="section" value="Constructors and destructors"}}
+----
+{{anchor name="ProPgCtorsAssignDtors1"}}
+{{fbdoc item="section" value="1. Constructors and destructors"}}
 	A constructor is called automatically when instantiating the object. The destructor is called automatically when it is destroyed.
 	This destruction occurs when outputting the current scope block for auto storage kind objects.
 	
@@ -375,8 +382,11 @@ Parent.Destructor()
 		It is usually safe to call any member procedure from within a constructor or destructor because the object is completely set up (virtual tables are initialized and so on) prior to the execution of the first line of user code. However, it is potentially unsafe for a member procedure to call a virtual member procedure for an abstract base Type during construction or destruction.
 		
 		Be careful when calling virtual procedures in constructors or destructor, because the procedures that are called in the base constructors or destructor is the base Type versions, not the derived Type versions. When such a virtual procedure is called, the procedure invoked is the procedure defined for the constructor's or destructor's own Type (or inherited from its Bases).
-		
-{{fbdoc item="section" value="'=' Assignment-operators"}}
+
+@@{{anchor name="ProPgCtorsAssignDtorsTop|Back to top"}}@@
+----
+{{anchor name="ProPgCtorsAssignDtors2"}}
+{{fbdoc item="section" value="2. '=' Assignment-operators"}}
 	Among all '=' assignment-operators, there is a specific one that takes as input a reference to an object of the same type, and makes a copy of it (without creating a new object).
 	It is the copy-assignment operator.
 	
@@ -486,6 +496,205 @@ zc3 chain (changed):
 zc2 chain:
 'FreeBASIC'
 				%%
+@@{{anchor name="ProPgCtorsAssignDtorsTop|Back to top"}}@@
+----
+{{anchor name="ProPgCtorsAssignDtors3"}}
+{{fbdoc item="section" value="3. Processing variable-length arrays as members of Type"}}
+	A variable-length array is not a pseudo-object like a variable-length string, because there is no default copy-constructor and copy-assignment operators as for a variable-length string.
+	
+	But when a variable-length array is declared in a Type, the compiler build a default copy-constructor and a default copy-assignment operator for the Type. It includes all code for sizing the destination array and copying the data from the source array, if needed:
+		Example for automatic array sizing and copying by the compiler:
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-dynamicarray1.bas"}}%%(freebasic)
+Type UDT
+	Dim As Integer array(Any)
+End Type
+
+Dim As UDT u1, u2
+
+Redim u1.array(1 To 9)
+For I As Integer = Lbound(u1.array) To Ubound(u1.array)
+	u1.array(I) = I
+Next I
+ 
+u2 = u1
+For I As Integer = Lbound(u2.array) To Ubound(u2.array)
+	Print u2.array(I);
+Next I
+Print
+
+Dim As UDT u3 = u1
+For I As Integer = Lbound(u3.array) To Ubound(u3.array)
+	Print u3.array(I);
+Next I
+Print
+
+Sleep
+			%%Output:
+				%%
+ 1 2 3 4 5 6 7 8 9
+ 1 2 3 4 5 6 7 8 9
+				%%
+	If the user want to specify his own copy-constructor and copy-assignment operator (to process additional complex field members for example), the above automatic array sizing and copying by the compiler is broken:
+		Example for automatic array sizing and copying by the compiler broken by an explicit copy-constructor and copy-assignment operator:
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-dynamicarray2.bas"}}%%(freebasic)
+Type UDT
+  Dim As Integer array(Any)
+  'user fields
+  Declare Constructor ()
+  Declare Constructor (Byref u As UDT)
+  Declare Operator Let (Byref u As UDT)
+End Type
+
+Constructor UDT ()
+  'code for user fields in constructor
+End Constructor
+
+Constructor UDT (Byref u As UDT)
+  'code for user fields in copy-constructor
+End Constructor
+
+Operator UDT.Let (Byref u As UDT)
+  'code for user fields in copy-assignement operator
+End Operator
+
+Dim As UDT u1, u2
+
+Redim u1.array(1 To 9)
+For I As Integer = Lbound(u1.array) To Ubound(u1.array)
+  u1.array(I) = I
+Next I
+ 
+u2 = u1
+For I As Integer = Lbound(u2.array) To Ubound(u2.array)
+  Print u2.array(I);
+Next I
+Print
+
+Dim As UDT u3 = u1
+For I As Integer = Lbound(u3.array) To Ubound(u3.array)
+  Print u3.array(I);
+Next I
+Print
+
+Sleep
+			%%Output (none):
+				%%
+				%%
+	The elementary variable-length array member cannot be copied as a pseudo-object like a variable-length string member, because there is not implicit assignment (referring to the above example, 'This.array = u.array' is disallowed).
+	The user must code explicitly the sizing and the copying of the array member:
+		Example for array sizing and copying explicitly set in the user copy-constructor and copy-assignment operator:
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-dynamicarray3.bas"}}%%(freebasic)
+#include "crt/string.bi"
+
+Type UDT
+	Dim As Integer array(Any)
+	'user fields
+	Declare Constructor ()
+	Declare Constructor (Byref u As UDT)
+	Declare Operator Let (Byref u As UDT)
+End Type
+
+Constructor UDT ()
+	'code for user fields in constructor
+End Constructor
+
+Constructor UDT (Byref u As UDT)
+	'code for user fields in copy-constructor
+	If Ubound(u.array) >= Lbound(u.array) Then  '' explicit array sizing and copying
+		Redim This.array(Lbound(u.array) To Ubound(u.array))
+		memcpy(@This.array(Lbound(This.array)), @u.array(Lbound(u.array)), (Ubound(u.array) - Lbound(u.array) + 1) * Sizeof(@u.array(Lbound(u.array))))
+	End If
+End Constructor
+
+Operator UDT.Let (Byref u As UDT)
+	'code for user fields in copy-assignement operator
+	If @This <> @u And Ubound(u.array) >= Lbound(u.array) Then  '' explicit array sizing and copying
+		Redim This.array(Lbound(u.array) To Ubound(u.array))
+		memcpy(@This.array(Lbound(This.array)), @u.array(Lbound(u.array)), (Ubound(u.array) - Lbound(u.array) + 1) * Sizeof(@u.array(Lbound(u.array))))
+	End If
+End Operator
+
+Dim As UDT u1, u2
+
+Redim u1.array(1 To 9)
+For I As Integer = Lbound(u1.array) To Ubound(u1.array)
+	u1.array(I) = I
+Next I
+ 
+u2 = u1
+For I As Integer = Lbound(u2.array) To Ubound(u2.array)
+	Print u2.array(I);
+Next I
+Print
+
+Dim As UDT u3 = u1
+For I As Integer = Lbound(u3.array) To Ubound(u3.array)
+	Print u3.array(I);
+Next I
+Print
+
+Sleep
+			%%Output:
+				%%
+ 1 2 3 4 5 6 7 8 9
+ 1 2 3 4 5 6 7 8 9
+				%%
+	Another elegant possibility is to keep this sizing/copying automatically coded by the compiler, but by simply calling it explicitly. For this, an obvious solution for the member array is to no longer put it at the level of the Type itself, but rather in another specific Type, but inherited (seen from the outside, it is exactly the same):
+		Example for using a base Type including the dynamic array member:
+			{{fbdoc item="filename" value="examples/manual/proguide/udt/ctordtor-dynamicarray4.bas"}}%%(freebasic)
+Type UDT0
+	Dim As Integer array(Any)
+End Type
+
+Type UDT Extends UDT0
+	'user fields
+	Declare Constructor ()
+	Declare Constructor (Byref u As UDT)
+	Declare Operator Let (Byref u As UDT)
+End Type
+
+Constructor UDT ()
+	'code for user fields in constructor
+End Constructor
+
+Constructor UDT (Byref u As UDT)
+	'code for user fields in copy-constructor
+	Base(u)  '' inherited array sizing and copying from Base copy-constructor
+End Constructor
+
+Operator UDT.Let (Byref u As UDT)
+	'code for user fields in copy-assignement operator
+	Cast(UDT0, This) = u  '' inherited array sizing and copying from Base copy-assignement operator
+End Operator
+
+Dim As UDT u1, u2
+
+Redim u1.array(1 To 9)
+For I As Integer = Lbound(u1.array) To Ubound(u1.array)
+	u1.array(I) = I
+Next I
+ 
+u2 = u1
+For I As Integer = Lbound(u2.array) To Ubound(u2.array)
+	Print u2.array(I);
+Next I
+Print
+
+Dim As UDT u3 = u1
+For I As Integer = Lbound(u3.array) To Ubound(u3.array)
+	Print u3.array(I);
+Next I
+Print
+
+Sleep
+			%%Output:
+				%%
+ 1 2 3 4 5 6 7 8 9
+ 1 2 3 4 5 6 7 8 9
+				%%
+@@{{anchor name="ProPgCtorsAssignDtorsTop|Back to top"}}@@
+----
+
 {{fbdoc item="section" value="See also"}}
 	- ##[[KeyPgConstructor|Constructor]]##, ##[[KeyPgDestructor|Destructor]]##
 	- ##{{fbdoc item="keyword" value="KeyPgOpAssignment|Operator =[>] (Assignment)"}}##, ##[[KeyPgOpLet|Operator Let (Assignment)]]##

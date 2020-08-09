@@ -17,6 +17,9 @@ Control flow statement for conditional branching.
 	
 	Remark: ##**""EndIf""**## (without blank) is also supported like in QB for backward compatibility.
 
+{{fbdoc item="ex"}}
+	See example at ##[[KeyPgIfthen|If...Then]]##.
+
 {{fbdoc item="diff"}}
 	- None
 

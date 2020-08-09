@@ -154,7 +154,21 @@ test2:
 					%%
 		**Note:** Another solution could be a more detailed error message from compiler, relating to the call of the macro (proposal of improved error message already filled in in a feature request).
 
-{{fbdoc item="section" value="Example"}}
+{{fbdoc item="section" value="Variadic macros"}}
+	Using an ellipsis ##"..."## (3 dots) behind the last parameter in a ###macro## or ###define## declaration allows creation of a variadic macro:
+			##[[KeyPgPpmacro|#macro]] //identifier//([//parameters//,] //variadic_parameter...//)##
+				##//body//##
+			##[[KeyPgPpmacro|#endmacro]]##
+		or:
+			##[[KeyPgPpdefine|#define]] //identifier//([//parameters//,] //variadic_parameter...//) //body//##
+			
+	So, it is possible to pass any number of arguments through the ##//variadic_parameter//##, which can be used in the body as if it was a normal macro parameter.
+	During macro expansion each occurrence of the ##//variadic_parameter//## in the macro replacement list is replaced by the passed arguments. The ##//variadic_parameter//## will expand to the full list of arguments passed to it, including commas, and can also be completely empty.
+	
+	No direct means is provided to access individual arguments in the variable argument list, nor to find out how many were passed.
+	To distinguish between the different arguments passed by the ##//variadic_parameter//##, one can first convert the ##//variadic_parameter//## to a string literal using the ##[[KeyPgOpPpStringize|# stringize]]## operator, then differentiate in this string literal (##//#variadic_parameter//##) each passed argument by locating the separators (usually a comma).
+
+{{fbdoc item="section" value="Examples"}}
 	Example with one-line and multi-line macros:
 		{{fbdoc item="filename" value="examples/manual/proguide/macro.bas"}}%%(freebasic)
 #define MIN(x, y) Iif( ( x ) < ( y ), x, y )      '' maximum function-like macro
@@ -176,6 +190,40 @@ REV_STR(s, "CISABeerF")  '' FreeBASIC
 Print s
 
 Sleep
+		%%
+	Example with variadic macro:
+		{{fbdoc item="filename" value="examples/manual/proguide/variadic_macro.bas"}}%%(freebasic)
+' macro with a variadic parameter which can contain several sub-parameters:
+'   To distinguish between the different arguments passed by variadic_parameter,
+'   you can first convert variadic_parameter to a string using the Operator # (Preprocessor Stringize),
+'   then differentiate in this string (#variadic_parameter) each passed argument by locating the separators (usually a comma).
+
+#macro average(result, arg...)
+	Scope
+		Dim As String s = #arg
+		If s <> "" Then
+			result = 0
+			Dim As Integer n
+			Do
+				Dim As Integer k = InStr(1, s, ",")
+				If k = 0 Then
+					result += Val(s)
+					result = result / (n + 1)
+					Exit Do
+				End If
+				result += Val(Left(s, k - 1))
+				n += 1
+				s = Mid(s, k + 1)
+			Loop
+		End If
+	End Scope
+#endmacro
+
+Dim As Double result
+average(result, 1, 2, 3, 4, 5, 6)
+Print result
+
+' Output : 3.5
 		%%
 {{fbdoc item="section" value="See also"}}
 	- [[ProPgPreprocessor|Preprocessor Overview]]

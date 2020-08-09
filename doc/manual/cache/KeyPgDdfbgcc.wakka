@@ -7,6 +7,14 @@ Intrinsic define set by the compiler
 {{fbdoc item="desc"}}
 	Defined to true (##-1##) if [[CompilerOptgen|-gen gcc]] is used, or false (##0##) otherwise.
 
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/defines/fbgcc.bas"}}%%(freebasic)
+#if __FB_GCC__ <> 0
+		#print Backend Code Emitter and Assembler: gcc
+#else 
+		#print Backend Code Emitter and Assembler: not gcc
+#endif
+	%%
 {{fbdoc item="diff"}}
 	- Did not exist in QB
 

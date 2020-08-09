@@ -17,6 +17,18 @@ Control flow statement.
 {{fbdoc item="desc"}}
 	##**While**## specifies that a loop block will continue if the ##//condition//## following it evaluates as true. This ##//condition//## is checked during each loop iteration.
 
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/control/while.bas"}}%%(freebasic)
+Dim a As Integer
+
+a = 0
+Do While a < 10
+	Print "hello"
+a = a + 1
+Loop
+
+'This will continue to print "hello" on the screen while the condition (a < 10) is met.
+	%%
 {{fbdoc item="diff"}}
 	- None
 

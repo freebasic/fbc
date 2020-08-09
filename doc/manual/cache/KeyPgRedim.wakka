@@ -33,9 +33,14 @@ Defines or resizes a variable-length array
 			- ##[[KeyPgPreserve|Preserve]]##'s current behavior is to keep the original data contiguous in memory, and only expand or truncate the size of the memory (if resizing is not possible, the whole original data block is first shifted to another memory location).
 			- Its behavior (with a single dimension) is well-defined only when the upper bound is changed.  If the lower bound is changed, the current result is that the data is in effect shifted to start at the new lower bound.
 			- With multiple dimensions, only the upper bound of only the first dimension may be safely increased.  If the first dimension is reduced, the existing mappable data may be lost. If lower-order dimensions are resized at all, the effects can be hard to predict (because multidimensional arrays are stored in row-major order : values differing only in the last index are contiguous).
-		- ##**Redim**## cannot be used on fixed-size arrays - i.e. arrays with constant bounds made with ##[[KeyPgDim|Dim]]##.  This includes the fixed-size arrays contained in UDTs (user-defined ##[[KeyPgType|Type]]##s).  This also includes fixed-length arrays passed as parameters in a function.  ""FreeBASIC"" cannot prevent you trying this at compile-time, but the results at run-time will be undefined.
-		- Using ##**Redim**## within a member procedure with an array that contains the instance of the object class is undefined, and will [hopefully] result in horrible crashes (if array data are shifted in memory, the ##[[KeyPgThis|This]]## reference becomes incoherent, similarly to a dangling pointer).
-		- For use of ##**Redim**## with a complex array expression (especially if the array expression itself contains parentheses), the array expression must be enclosed in parentheses in order to solve the parsing ambiguity.
+		- ##**Redim**## cannot be used on fixed-size arrays - i.e. arrays with constant bounds made with ##[[KeyPgDim|Dim]]##:
+			- This includes the fixed-size arrays contained in UDTs (user-defined ##[[KeyPgType|Type]]##s).
+			- This also includes fixed-length arrays passed as parameters in a function.  ""FreeBASIC"" cannot prevent you trying this at compile-time, but the results at run-time will be undefined.
+		- ##**Redim**## cannot be used inside a member procedure if the array contains as element the instance itself of the object, because that could cause horrible crashes:
+			- If the array data are moved into memory by ##**Redim**##, the passed ##[[KeyPgThis|This]]## reference becomes inconsistent, in the same way as a dangling pointer.
+			- In that case, all subsequent accesses to any non-static member data from this member procedure will be erroneous, except if the passed ##[[KeyPgThis|This]]## reference would be readjusted (by means of ##@This = @array(...)##) immediately after executing ##**Redim**## in the body of this member procedure.
+		- ##**Redim**## can be used with a complex array expression (especially if the array expression itself contains parentheses):
+			- But then the array expression must be enclosed in parentheses in order to solve the parsing ambiguity.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/array/redim.bas"}}%%(freebasic)

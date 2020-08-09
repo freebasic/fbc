@@ -1,16 +1,19 @@
 {{fbdoc item="title" value="Variable Arguments"}}----
 The ellipsis symbol for the declaration and keywords to handle the variable arguments of a variadic procedure.
+
 <<
 	- {{fbdoc item="keyword" value="KeyPgDots|... (Ellipsis)"}}
-	- {{fbdoc item="keyword" value="KeyPgCvaList|CVA_LIST"}}
-	- {{fbdoc item="keyword" value="KeyPgCvaStart|CVA_START"}}
-	- {{fbdoc item="keyword" value="KeyPgCvaCopy|CVA_COPY"}}
-	- {{fbdoc item="keyword" value="KeyPgCvaEnd|CVA_END"}}
-	- {{fbdoc item="keyword" value="KeyPgCvaArg|CVA_ARG"}}
-<<>>
+
+	
 	- {{fbdoc item="keyword" value="KeyPgVaFirst|VA_FIRST"}}
 	- {{fbdoc item="keyword" value="KeyPgVaArg|VA_ARG"}}
 	- {{fbdoc item="keyword" value="KeyPgVaNext|VA_NEXT"}}
+<<>>
+	- {{fbdoc item="keyword" value="KeyPgCvaList|CVA_LIST"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaStart|CVA_START"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaCopy|CVA_COPY"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaArg|CVA_ARG"}}
+	- {{fbdoc item="keyword" value="KeyPgCvaEnd|CVA_END"}}
 >>
 
 ::c::

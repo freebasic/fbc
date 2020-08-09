@@ -15,7 +15,7 @@ Used in place of procedure parameter to pass a variable number of arguments, or 
 	
 	A first argument (at least) must always be specified and the procedure must be called with the C calling convention ##[[KeyPgCdecl|cdecl]]##.
 	
-	In the procedure body, ##[[KeyPgCvaList|cva_list]]## data type, and ##[[KeyPgCvaArg|cva_arg]]## marco can be used to expand the ellipsis parameter (##**...**##) to obtain the values of the arguments passed to the variadic procedure.  The argument list, once initialized with ##[[KeyPgCvaStart|cva_start]]## or copied with ##[[KeyPgCvaCopy|cva_copy]]##, can be passed to another procedure taking a ##[[KeyPgCvaList|cva_list]]## parameter.
+	In the procedure body, ##[[KeyPgCvaList|cva_list]]## data type, and ##[[KeyPgCvaArg|cva_arg]]## macro can be used to expand the ellipsis parameter (##**...**##) to obtain the values of the arguments passed to the variadic procedure.  The argument list, once initialized with ##[[KeyPgCvaStart|cva_start]]## or copied with ##[[KeyPgCvaCopy|cva_copy]]##, can be passed to another procedure taking a ##[[KeyPgCvaList|cva_list]]## parameter.
 	
 	On some targets, for backwards compatibility, ##[[KeyPgVaFirst|va_first]]##, ##[[KeyPgVaArg|va_arg]]## and ##[[KeyPgVaNext|va_next]]## can still be used to handle the variable arguments.
 	

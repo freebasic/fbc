@@ -10,6 +10,9 @@ Control flow statement for looping.
 		[ //statement block// ]
 	**Loop** [ { **Until** | **While** } //condition// ]
 ##
+{{fbdoc item="ex"}}
+	See example at ##[[KeyPgDoloop|Do...Loop]]##.
+
 {{fbdoc item="diff"}}
 	- None
 

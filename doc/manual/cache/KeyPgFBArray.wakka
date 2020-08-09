@@ -1,0 +1,271 @@
+{{fbdoc item="title" value="FBARRAY (array descriptor structure and access)"}}----
+Pre-defined structure (UDT) and procedure declarations from the ##fbc-int/array.bi## include file, usable to access the array descriptor data fields.
+
+{{fbdoc item="syntax"}}
+	From ##./inc/fbc-int/array.bi (for fbc versions >= 1.08)##:
+		%%(freebasic)
+# if __FB_LANG__ = "fb"
+namespace FBC
+# endif
+
+const FB_MAXDIMENSIONS as integer = 8
+
+type FBARRAYDIM
+	dim as uinteger elements     '' number of elements
+	dim as integer lbound        '' dimension lower bound
+	dim as integer ubound        '' dimension upper bound
+end type
+
+const FBARRAY_FLAGS_DIMENSIONS = &h0000000f    '' number of entries allocated in dimTb()
+const FBARRAY_FLAGS_FIXED_DIM  = &h00000010    '' array has fixed number of dimensions
+const FBARRAY_FLAGS_FIXED_LEN  = &h00000020    '' array points to fixed-length memory
+const FBARRAY_FLAGS_RESERVED   = &hffffffc0    '' reserved, do not use
+
+type FBARRAY
+	dim as any ptr index_ptr     '' @array(0, 0, 0, ... )
+	dim as any ptr base_ptr      '' start of memory at array lowest bounds
+	dim as uinteger size         '' byte size of allocated contents
+	dim as uinteger element_len  '' byte size of single element
+	dim as uinteger dimensions   '' number of dimensions
+	dim as uinteger flags        '' FBARRAY_FLAGS_*
+
+	'' take care with number of dimensions; fbc may allocate
+	'' a smaller descriptor with fewer than FB_MAXDIMENSIONS
+	'' in dimTb() if it is known at compile time that they
+	'' are never needed.  Always respect number of 
+	'' dimensions when accessing dimTb()
+
+	dim as FBARRAYDIM dimTb(0 to FB_MAXDIMENSIONS-1)
+end type
+
+extern "rtlib"
+	declare function ArrayDescriptorPtr alias "fb_ArrayGetDesc" _
+		( array() as any ) as FBC.FBARRAY ptr
+	declare function ArrayConstDescriptorPtr alias "fb_ArrayGetDesc" _
+		( array() as const any ) as const FBC.FBARRAY ptr
+end extern
+
+# if __FB_LANG__ = "fb"
+end namespace
+# endif
+		%%
+{{fbdoc item="usage"}}##
+	#include once "fbc-int/array.bi"
+	using **FBC**
+	
+	' then:
+		[[KeyPgDim|Dim]] //pd// [[KeyPgAs|As]] **FBARRAY** [[KeyPgPtr|Ptr]]
+		...
+		//pd// = **""ArrayDescriptorPtr""** ( //array()// )
+		
+	' or safer:
+		[[KeyPgDim|Dim]] //pd// [[KeyPgAs|As]] [[KeyPgConstQualifier|Const]] **FBARRAY** [[KeyPgPtr|Ptr]]
+		...
+		//pd// = **""ArrayConstDescriptorPtr""** ( //array()// )
+##
+{{fbdoc item="param"}}
+	##//pd//## 
+		The name of a pointer to the array descriptor
+	##//array//## 
+		The name of the array for which one want to access its descriptor
+
+{{fbdoc item="desc"}}
+	At compile time, fbc allocates an array descriptor to store and track information about the array.
+	
+	If the number of dimensions is unknown at compile time, then the full ##FB_MAXDIMENSIONS## is allocated in the ##dimTb()## field.  Otherwise, if the number dimensions is known at compile time, then only the number of dimensions needed are allocated.  Therefore the allocated ##FBARRAY## data may be smaller than the declared ##FBARRAY## structure.
+	
+	If an array is passed as argument to a procedure, an array descriptor is allocated.  However, if the array is static, fixed length, and never passed as an argument, then all information about the array is known at compile time, including memory locations, and the allocation of a descriptor is optimized out, since all expressions involving the array are compile time constant.
+	
+	The array descriptor may also be allocated at run time, as would be in the case of allocating a new UDT containing a variable-length array field member.
+	
+	**__WARNING:__** It is inadvisable (especially for a non advanced user) to change the data values ​​of the array descriptor (internal structure of the compiler).
+	For that, it is safer to use rather the function ##""ArrayConstDescriptorPtr()""## initializing a pointer declared ##As Const FBARRAY Ptr## (or implicitly declared in this way by ##Var##).
+	
+	{{fbdoc item="subsect" value="FBARRAY.index_ptr"}}
+		Pointer to the array data ##@array(0, 0, ...)##.  This pointer may be outside of the actual array data as a kind of virtual pointer to use when calculating offsets using indexes in to the array.
+		
+	{{fbdoc item="subsect" value="FBARRAY.base_ptr"}}
+		Pointer to the array's memory at the array's lowest bound.  For variable-length arrays allocated at run time, this points to the allocated memory region (i.e. ##malloc##)
+		
+	{{fbdoc item="subsect" value="FBARRAY.size"}}
+		Total size in bytes of the array data.  Size is equal to total number of elements in the array (all dimensions) multiplied by element length.  i.e. ##size = dimTb(0).elements * element_len + dimTb(1).elements * element_len + ...##
+		
+	{{fbdoc item="subsect" value="FBARRAY.element_len"}}
+		Size in bytes of an individual element.  Must be set to non-zero value.
+		
+	{{fbdoc item="subsect" value="FBARRAY.dimensions"}}
+		Number of valid dimensions in the ##dimTb()## table.  A value of zero (0) indicates that ##dimTb()## has ##FB_MAXDIMENSIONS## avaiable, but the array does not yet have number of dimensions defined.  On first REDIM, the number of dimensions will be set.
+		
+	{{fbdoc item="subsect" value="FBARRAY.flags"}}
+		The flags field contains information about the array descriptor that needs to be known at run time.
+		
+			##FBARRAY_FLAGS_DIMENSIONS## : a 4 bit field to indicate the number of elements allocated in ##dimTb()##.  If fbc can determine at compile time that less than ##FB_MAXDIMENSIONS## are needed to represent the array, then only the number of dimensions needed are allocated in ##dimTb()##.
+			
+			##FBARRAY_FLAGS_FIXED_DIM## : if this bit is set, indicates that the number of dimensions are are set and are given in ##dimTb()## and must not be changed.
+			
+			##FBARRAY_FLAGS_FIXED_LEN## : if this bit is set, indicates that the array data is fixed length and must not be resized or reallocated
+			
+			##FBARRAY_FLAGS_RESERVED## : all other bits are reserved for future use
+			
+	{{fbdoc item="subsect" value="FBARRAY.dimTb()"}}
+		##dimTb()## is an array of ##FBARRAYDIM## to indicate the bounds of each dimension.
+		
+		If the number of dimensions is unknown at compile time, then the full ##FB_MAXDIMENSIONS## is allocated in the ##dimTb()## field. Otherwise, if the number dimensions is known at compile time, then only the number of dimensions needed are allocated. Therefore the allocated ##FBARRAY## data may be smaller than the declared ##FBARRAY## structure.
+		
+	{{fbdoc item="subsect" value="FBARRAYDIM.elements"}}
+		Number of elements in the dimension.  i.e. ##(ubound-lbound+1)##
+		
+	{{fbdoc item="subsect" value="FBARRAYDIM.lbound"}}
+		Lower bound is the lowest valid index in this dimension.
+		
+	{{fbdoc item="subsect" value="FBARRAYDIM.ubound"}}
+		Upper bound is the highest valid index in this dimension.
+		
+	{{fbdoc item="subsect" value="ArrayDescriptorPtr( array() as any ) as FBC.FBARRAY ptr"}}
+		Retrieves a pointer to the array descriptor, returning a pointer to ##FBC.ARRAY## that can be modified.
+		
+	{{fbdoc item="subsect" value="ArrayConstDescriptorPtr( array() as const any ) as const FBC.FBARRAY ptr"}}
+		Retrieves a pointer to the array descriptor, returning a pointer to ##FBC.ARRAY## that is read only.
+
+{{fbdoc item="ex"}}
+	Very simple syntaxic example highlighting the access capabilities to the data fields of an array descriptor (for fbc versions >= 1.08):
+		{{fbdoc item="filename" value="examples/manual/check/FBArray.bas"}}%%(freebasic)
+#include "fbc-int/array.bi"
+
+Sub printArrayDescriptor (Byval p As Any Ptr, Byval tabulation As Integer = 0, Byref title As String = "")
+	Dim As FBC.FBARRAY Ptr pd = p
+	Dim As Integer t = 0
+	If title <> "" Then
+		Print title
+		t = 1
+	End If
+	Print Space((t    ) * tabulation) & "[@array descriptor: @&h"; Hex(pd, 2 * Sizeof(Any Ptr)) & " / "; _
+																   Sizeof(FBC.FBARRAY) - (8 - pd->dimensions) * 3 * Sizeof(Integer) & " bytes]"'
+	Print Space((t + 1) * tabulation) & "@array(all_null_indexes)      =&h"; Hex(pd->index_ptr, 2 * Sizeof(Any Ptr))
+	Print Space((t + 1) * tabulation) & "@array(all_min_indexes)       =&h"; Hex(pd->base_ptr, 2 * Sizeof(Any Ptr))
+	Print Space((t + 1) * tabulation) & "array_total_size_in_bytes     ="; pd->size
+	Print Space((t + 1) * tabulation) & "array_element_size_in_bytes   ="; pd->element_len
+	Print Space((t + 1) * tabulation) & "number_of_array_dimensions    ="; pd->dimensions
+	Print Space((t + 1) * tabulation) & "fixed_len/fixed_dim/dimensions="; (pd->flags And FBC.FBARRAY_FLAGS_FIXED_LEN) Shr 5 & "/"; _
+																		   (pd->flags And FBC.FBARRAY_FLAGS_FIXED_DIM) Shr 4 & "/"; _
+																		   (pd->flags And FBC.FBARRAY_FLAGS_DIMENSIONS)
+	For i As Integer = 0 to pd->dimensions - 1
+		Print Space((t + 1) * tabulation) & "[dimension number:"; i + 1; "]"
+		Print Space((t + 2) * tabulation) & "number_of_elements="; pd->dimTb(i).elements
+		Print Space((t + 2) * tabulation) & "min_index         ="; pd->dimTb(i).lbound
+		Print Space((t + 2) * tabulation) & "max_index         ="; pd->dimTb(i).ubound
+	Next i
+End Sub
+
+Screen 0
+Width , 35
+
+Dim As Longint test1(0 to 9, 1 to 100)
+printArrayDescriptor(FBC.ArrayDescriptorPtr(test1()), 4, "'Dim As Longint test1(0 to 9, 1 to 100)':")
+Sleep
+Cls
+Dim As Longint test2()
+printArrayDescriptor(FBC.ArrayDescriptorPtr(test2()), 4, "'Dim As Longint test2()':")
+Print
+Redim test2(0 to 9, 1 to 100)
+printArrayDescriptor(FBC.ArrayDescriptorPtr(test2()), 4, "'Redim test2(0 to 9, 1 to 100)':")
+Sleep
+Cls
+Dim As Longint test3(Any, Any)
+printArrayDescriptor(FBC.ArrayDescriptorPtr(test3()), 4, "'Dim As Longint test3(Any, Any)':")
+Print
+Redim test3(0 to 9, 1 to 100)
+printArrayDescriptor(FBC.ArrayDescriptorPtr(test3()), 4, "'Redim test3(0 to 9, 1 to 100)':")
+
+Sleep
+		%%Output example (32-bit):
+			%%
+'Dim As Longint test1(0 to 9, 1 to 100)':
+	[@array descriptor: @&h0019DE70 / 48 bytes]
+		@array(all_null_indexes)      =&h0019DE98
+		@array(all_min_indexes)       =&h0019DEA0
+		array_total_size_in_bytes     =8000
+		array_element_size_in_bytes   =8
+		number_of_array_dimensions    =2
+		fixed_len/fixed_dim/dimensions=1/1/2
+		[dimension number: 1]
+			number_of_elements=10
+			min_index         = 0
+			max_index         = 9
+		[dimension number: 2]
+			number_of_elements=100
+			min_index         = 1
+			max_index         = 100
+			%%
+			%%
+'Dim As Longint test2()':
+	[@array descriptor: @&h0019DDF8 / 24 bytes]
+		@array(all_null_indexes)      =&h00000000
+		@array(all_min_indexes)       =&h00000000
+		array_total_size_in_bytes     =0
+		array_element_size_in_bytes   =8
+		number_of_array_dimensions    =0
+		fixed_len/fixed_dim/dimensions=0/0/8
+
+'Redim test2(0 to 9, 1 to 100)':
+	[@array descriptor: @&h0019DDF8 / 48 bytes]
+		@array(all_null_indexes)      =&h01FD2AB8
+		@array(all_min_indexes)       =&h01FD2AC0
+		array_total_size_in_bytes     =8000
+		array_element_size_in_bytes   =8
+		number_of_array_dimensions    =2
+		fixed_len/fixed_dim/dimensions=0/0/8
+		[dimension number: 1]
+			number_of_elements=10
+			min_index         = 0
+			max_index         = 9
+		[dimension number: 2]
+			number_of_elements=100
+			min_index         = 1
+			max_index         = 100
+			%%
+			%%
+'Dim As Longint test3(Any, Any)':
+	[@array descriptor: @&h0019DDC8 / 48 bytes]
+		@array(all_null_indexes)      =&h00000000
+		@array(all_min_indexes)       =&h00000000
+		array_total_size_in_bytes     =0
+		array_element_size_in_bytes   =8
+		number_of_array_dimensions    =2
+		fixed_len/fixed_dim/dimensions=0/1/2
+		[dimension number: 1]
+			number_of_elements=0
+			min_index         = 0
+			max_index         = 0
+		[dimension number: 2]
+			number_of_elements=0
+			min_index         = 0
+			max_index         = 0
+
+'Redim test3(0 to 9, 1 to 100)':
+	[@array descriptor: @&h0019DDC8 / 48 bytes]
+		@array(all_null_indexes)      =&h01FD4C20
+		@array(all_min_indexes)       =&h01FD4C28
+		array_total_size_in_bytes     =8000
+		array_element_size_in_bytes   =8
+		number_of_array_dimensions    =2
+		fixed_len/fixed_dim/dimensions=0/1/2
+		[dimension number: 1]
+			number_of_elements=10
+			min_index         = 0
+			max_index         = 9
+		[dimension number: 2]
+			number_of_elements=100
+			min_index         = 1
+			max_index         = 100
+			%%
+{{fbdoc item="lang"}}
+	- Only available in the //[[CompilerOptlang|-lang fb]]// dialect.
+
+{{fbdoc item="diff"}}
+	- New to ""FreeBASIC"".
+
+{{fbdoc item="see"}}
+	- [[ProPgArrays|Arrays]]
+	 
+{{fbdoc item="back" value="CatPgArray|Array Functions"}}

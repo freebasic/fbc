@@ -12,7 +12,7 @@ These libraries are particularly useful because they tend to provide functions f
 
 SDL is a library with graphics and input support built in, and a bunch of sub-libraries for [[https://www.libsdl.org/projects/SDL_net/|network]], [[https://www.libsdl.org/projects/SDL_ttf/|TrueType font support]], and [[https://www.libsdl.org/projects/SDL_mixer/|audio]]. It can be used with [[OpenGL]], but I won't be covering that today.
 
-TinyPTC is primarily a graphics library, the simplest one available. It does little more than give you a pointer to the graphics reigon to draw to.
+TinyPTC is primarily a graphics library, the simplest one available. It does little more than give you a pointer to the graphics region to draw to.
 
 [[FMod]] is a 3d sound and music library. Though its license is strange, it works acceptably for playing sounds, and it nicely encapsulates 3D sound.
 

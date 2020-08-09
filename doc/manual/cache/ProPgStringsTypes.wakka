@@ -83,6 +83,52 @@ Sleep
 'STRING': 24 bytes in descriptor, memory allocated for 32 characters right now
 	containing 16 user characters of 1 byte(s) each
 				%%
+{{fbdoc item="section" value="Implicit conversion from Zstring to Ubyte"}}
+	When any operand of a binary operator (as assignment, equal, +, *, ...) consists in dereferencing a '##Zstring Ptr##' pointer ('##pz##'), this can give a '##Zstring##' string or a '##Ubyte##' variable, depending on the other operand:
+		**""-""** If the other operand is numeric, so the dereferenced '##Zstring Ptr##' pointer ('##*pz##') will be treated as a '##Ubyte##' reference to the one character pointed.
+		**""-""** If in this case a '##Zstring##' pointer indexing '##[]##' operator is used as dereferencing syntax ('##pz[n]##'), it is basically a short-cut version of the '##String##' indexing '##[]##' operator ('##(*pz)[n]##').
+		
+	Since '##(*pz)[i]##' and '##pz[i][k]##' are always numeric (each an '##Ubyte##'), such equalities are true:
+		##pz[i] = (*pz)[i]##
+		##(*pz)[i] = pz[i]##
+		and even:
+		##pz[i+k] = pz[i][k]##
+		##pz[i][k] = pz[i+k]##
+		
+	Simple code example with a dereferenced '##Zstring Ptr##' converted to an '##Ubyte##' reference (as operand of an 'assignment' operator and a '+' operator):
+		{{fbdoc item="filename" value="examples/manual/proguide/strings_types2.bas"}}%%(freebasic)
+Dim As Zstring * (14+1) z = "FreeBASIC     "
+Dim As Zstring Ptr pz = @z
+
+Print z
+z[10] = Asc("2")
+*(pz + 11) = Asc("0")                '' *(pz + 11) is converted to an Ubyte reference
+(*pz)[12] = Asc("1")
+pz[13] = Asc("8")                    '' pz[13] is converted to an Ubyte reference
+Print z
+
+For I As Integer = 10 To 13
+	Print Str(z[I] - Asc("0"));
+Next I
+Print
+For I As Integer = 10 To 13
+	Print Str((*pz)[I] - Asc("0"));
+Next I
+Print
+For I As Integer = 10 To 13
+	Print Str(pz[I] - Asc("0"));     '' pz[I] is converted to an Ubyte reference
+Next I
+Print
+
+Sleep
+		%%Output:
+			%%
+FreeBASIC
+FreeBASIC 2018
+2018
+2018
+2018
+			%%
 {{fbdoc item="section" value="See also"}}
 	- ##[[CatPgString|String Functions]]##
 	- ##[[TblVarTypes|Standard Data Type Limits]]##

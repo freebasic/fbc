@@ -1,5 +1,5 @@
 {{fbdoc item="title" value="BITRESET"}}----
-Gets the value of an integer with a specified bit cleared.
+Gets the value with a specified bit cleared, from a copied integer.
 
 {{fbdoc item="syntax"}}##
 	[[KeyPgPpdefine|#define]] **Bitreset**( //value//, //bit_number// ) ((//value//) [[KeyPgOpAnd|and]] [[KeyPgOpNot|not]] ([[KeyPgCast|Cast]]([[KeyPgTypeof|TypeOf]](//Value//), 1) [[KeyPgOpShiftLeft|shl]] (//bit_number//)))
@@ -18,17 +18,21 @@ Gets the value of an integer with a specified bit cleared.
 
 {{fbdoc item="desc"}}
 	This macro expands to a copy of the integer ##//value//## with the specified ##//bit_number//## cleared (to //off//, or `##0##`). Behaves as `##//value// [[KeyPgOpAnd|And]] [[KeyPgOpNot|Not]] (1 [[KeyPgOpShiftLeft|Shl]] //bit_number//)##`.
+	To clear a specified bit in a variable, the following assignment can be used: ##//variable// = **Bitreset**( //variable//, //bit_number// )##
 	
 	The valid range of values for ##//bit_number//## depends on the size, in bits, of `##[[KeyPgTypeof|Typeof]](//value//)##`, which is `##0##` (from the lowest bit) through `##[[KeyPgSizeof|Sizeof]](//value//) * 8 - 1##` (up to the highest bit). See [[TblVarTypes|Standard Datatype Limits]] for a table of the standard datatypes and their sizes.
+	For the ##//bit_number//## values outside the valid range, the results of this macro are undefined.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/bitreset.bas"}}%%(freebasic)
+print bin(bitreset(&b10101, 2))
 print bitreset(5,0)
 print hex(bitreset(&h8000000000000001,63))
 %%
 	will produce the output:
 
-%% 4
+%%10001
+ 4
 1
 %%
 

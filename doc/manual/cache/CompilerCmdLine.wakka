@@ -157,26 +157,28 @@ Using the **fbc** command-line.
 {{fbdoc item="ex"}}
 	##fbc myfile.bas##
 		//(With DOS version of FBC, compile and link a DOS executable ##MYFILE.EXE##.)//
-
+		
 	##fbc -s gui myfile.bas##
 		//(With Windows version of FBC, compile and link a Windows executable ##myfile.exe##. Running the program will not show the console window ("MS-DOS Prompt"))//
-
+		
 	##fbc -lib module1.bas module2.bas module3.bas -x libmylib.a##
 		//(Compile and link a static library ##libmylib.a## from the three source files)//
-
+		
 	##fbc -m main_module -c main_module.bas##
 		//(Compile an object file ##main_module.o## and mark it as an entry point)//
+		
 	##fbc -c sub_module.bas##
 		//(Compile an object file ##sub_module.o##)//
+		
 	##fbc -x application.exe main_module.o sub_module.o##
 		//(Link an executable ##application.exe##)//
-	
+		
 	**Note:** How to include an icon in a FB executable program
-	There is a simple command line option to compile a FB program into an executable with an Icon:
-		- Create a *.rc file, for example appicon.rc, with this info:
-			FB_PROGRAM_ICON ICON "appicon.ico"
-				(where appicon.ico is the name of icon)
-		- Then when compiling program, add appicon.rc in the list of files to compile.
+		There is a simple command line option to compile a FB program into an executable with an Icon:
+			**""-""** Create a *.rc file, for example appicon.rc, with this info:
+					FB_PROGRAM_ICON ICON "appicon.ico"
+						(where appicon.ico is the name of icon)
+			**""-""** Then when compiling program, add appicon.rc in the list of files to compile.
 
 {{fbdoc item="see"}}
 	- [[CatPgCompOpt|Compiler Options]]

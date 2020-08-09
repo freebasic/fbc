@@ -12,7 +12,7 @@ Intrinsic define (macro value) set by the compiler
 	##""__FB_ERR__""## indicates if //[[CompilerOptedebug|-edebug]]//, //[[CompilerOptedebuginfo|-edebuginfo]]//, or //[[CompilerOpteassert|-eassert]]// was specified on the compiler command line, or implied by use of //[[CompilerOptg|-g]]//, at the time of compilation of a module.
 	
 	Returns bit-wise ##OR## of the following values:
-		{{table columns="2" cellpadding="1" cells="value;description;0;'-e', '-ex', '-exx' and other error options not specified;1;'-e' was specified;3;'-ex' was specified (implies '-e');7;'-exx' was specified (implies '-e, -exx');8;'-earray' was specified (or implied by '-exx');16;'-enullptr' was specified (or implied by '-exx');32;'-eassert' was specified (or implied by '-g');64;'-edebuginfo' was specified (or implied by '-g');128;'-edebug' was specified (or implied by '-g');256;'-elocation' was specified (or implied by '-exx')"}}
+		{{table columns="2" cellpadding="1" cells="value;description;0;'-e', '-ex', '-exx' and other error options not specified;1;'-e' was specified;3;'-ex' was specified (implies '-e');7;'-exx' was specified (implies '-e, -ex');8;'-earray' was specified (or implied by '-exx');16;'-enullptr' was specified (or implied by '-exx');32;'-eassert' was specified (or implied by '-g');64;'-edebuginfo' was specified (or implied by '-g');128;'-edebug' was specified (or implied by '-g');256;'-elocation' was specified (or implied by '-exx')"}}
 	
 	##""__FB_ERR__""## is always defined.
 

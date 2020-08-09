@@ -1,0 +1,39 @@
+{{fbdoc item="title" value="Executables (page to complete)"}}----
+Making a binary **executable** file from ""FreeBASIC"" source files.
+
+**Preamble:**
+
+	A binary file is simply one in a binary (i.e. non-text) format.
+	The binary format means that the file's contents should not be transformed for platform-specific reasons (e.g. replacing newlines from \n to \r\n).
+	
+	Binary files are not necessarily executable, for example a library compiled to **##'*.dll'##** or **##'*.a'##** form is a binary but not an executable.
+	
+	Executable files are not necessarily binary, for example a script in text form can be made executable on Operating Systems.
+	
+	An executable file is one which can be executed (it can be run on the command-line by writing the name of the file itself as the command).
+	On Windows, the file's extension must be one of a fixed set of executable file extensions, including **##'*.exe'##**.
+	On Unix systems, the file's "executable" flag must also be set.
+
+{{fbdoc item="section" value="Using 'fbc' command"}}
+	""FreeBASIC"" consists of fbc (the command line compiler/linker), the runtime libraries, and ""FreeBASIC"" header files for third-party libraries.
+	In order to produce executables, fbc uses the GNU binutils (assembler, linker). When compiling for architectures other than 32bit x86, fbc depends on gcc to generate assembly.
+	
+	""FreeBASIC"" provides the ""FreeBASIC"" compiler/linker program (fbc or fbc.exe), as well as the tools and libraries it uses.
+	fbc is a command line program that takes ""FreeBASIC"" source/include files (**##'*.bas'##**""/""**##'*.bi'##**) and object/library files (**##'*.o'##**""/""**##'*.a'##**), then compiles them into executables.
+	
+	fbc is typically invoked by Integrated Development Environments (IDEs) or text editors, from a terminal or command prompt, or through build-systems such as makefiles.
+	fbc itself is not a graphical code editor or IDE!
+	
+	By default, ""FreeBASIC"" programs are linked against various system and/or support libraries, depending on the platform.
+	Those include the DJGPP libraries used by ""FreeBASIC"" for DOS and the ""MinGW""/GCC libraries used by ""FreeBASIC"" for Windows.
+
+.....
+.....
+
+{{fbdoc item="see"}}
+	- [[CompilerCmdLine|fbc command-line]]
+	- [[ProPgStaticLibraries|Static Libraries]]
+	- [[ProPgSharedLibraries|Shared Libraries (DLLs)]]
+	- [[ProPgProfiling|Profiling]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

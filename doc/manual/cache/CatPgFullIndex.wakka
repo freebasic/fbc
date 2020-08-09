@@ -273,6 +273,9 @@ Alphabetical listing of keywords, macros and procedures.
 
 {{fbdoc item="section" value="F"}}{{anchor name="f"}}
 	- {{fbdoc item="keyword" value="KeyPgFalse|FALSE"}}
+	- {{fbdoc item="keyword" value="KeyPgFBMemcopy|FB_MEMCOPY"}}
+	- {{fbdoc item="keyword" value="KeyPgFBMEMMOVE|FB_MEMMOVE"}}
+	- {{fbdoc item="keyword" value="KeyPgFBArray|FBARRAY (array descriptor structure and access)"}}
 	- {{fbdoc item="keyword" value="KeyPgField|FIELD"}}
 	- {{fbdoc item="keyword" value="KeyPgFileattr|FILEATTR"}}
 	- {{fbdoc item="keyword" value="KeyPgFilecopy|FILECOPY"}}

@@ -27,7 +27,7 @@
 	Enumerations lend themselves to more maintainable code because they are symbolic, allowing you to work with integer values ​​while using an explicit name.
 	Enumerations are value Types, which means they contain their own value, can not inherit or be inherited from.
 	
-	##Enum## can not contain any member procedure (only symbols), but it can be included (named or unnamed) in a ##Type## by having.
+	##Enum## can not contain any member procedure or member data (only symbols), but it can be included (named or unnamed) in a ##Type## by having.
 
 {{fbdoc item="section" value="Usage"}}
 	Every symbol in an enumeration is implicitly assigned an integer value (positive or negative) that corresponds to its place in the order of the values in the enumeration.
@@ -42,7 +42,7 @@
 	Prefixing can also be used to solve ambiguity with other entities.
 	
 	An ##Enum## instance can be passed, as any User-Defined Type instance, to a procedure (including for the definition of overloaded operators).
-	Under the hood, ##Enum## contains an hidden ##Integer## field, so that the size of an ##Enum## will be always that of an ##Integer## (no matter how many defined symbols are just declarations for the compiler).
+	The size of an ##Enum## instance will be always that of an ##Integer## (no matter how many defined symbols are just declarations for the compiler assignment).
 	
 	An ##Enum## instance (or ##Enum## symbol) can be implicitly converted to an integer.
 	**Note:**
