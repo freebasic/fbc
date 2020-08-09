@@ -5,7 +5,20 @@
 # error not supported in -lang qb dialect
 # endif
 
-'' redefine the builtin low level memory operations in a namespace
+'' WARNING!!! EXPERIMENTAL
+''
+''   1) redefine the builtin low level memory operations in a namespace
+''      - currently not possible for allocate / deallocate, see below
+''
+''   2) alternate definition of fb.clear, fb.memmove, fb.memcopy
+''      - built-in as defined by the compiler prefers BYREF parameters for source and destination
+''        to be more aligned with already long existing CLEAR statemnt
+''      - this header file uses BYVAL AS ANY PTR parameters to be more aligned with actual rtlib
+''        definitions and use of pointers
+'' 
+
+
+'' undefine the memory operations so we can attempt a source only definition (no tricky fbc built-in magic)
 
 #undef clear
 #undef allocate
@@ -17,7 +30,7 @@
 
 # if __FB_LANG__ = "fb"
 '' must have declaration of "..allocate()" and "..deallocate()"
-'' new, new[], delete, delete[] can't work without them
+'' new, new[], delete, delete[] can't work without these exact names
 extern "C"
 	declare function allocate cdecl alias "malloc" ( byval size as const uinteger ) as any ptr
 	declare sub deallocate cdecl alias "free" ( byval p as const any ptr )

@@ -24,7 +24,6 @@ Version 1.08.0
 - gfxlib: added Direct2D driver, preferred driver on newer systems.  DirectX driver is still fallback for older systems (adeyblue)
 - fbc: add builtin function fb_MemMove() alias "memmove"
 - fbc: add builtin function fb_MemCopy() alias "memcpy" (was previously removed in an older version of fbc)
-- fbc: 'POKE ANY, dst, src, count' statement
 - ./inc/fbc-int/memory.bi - fbc  API for low level memory operations allocate, callocate, reallocate, deallocate, clear, memcopy, memmove
 
 [fixed]
