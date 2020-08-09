@@ -11,3 +11,4 @@ Dim arrayOfIntegers(69) As Integer
 
 '' Defines a one-dimensional fixed-length array of type SHORT having static storage.
 Static arrayOfShorts(420) As Short
+		

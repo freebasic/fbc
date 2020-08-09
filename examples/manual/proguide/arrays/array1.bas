@@ -16,3 +16,4 @@ array(1) = 1.2
 For position As Integer = 1 To 3
 	Print array(position)
 Next
+	

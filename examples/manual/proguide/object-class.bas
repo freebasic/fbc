@@ -543,3 +543,4 @@ Dim Xlist As T Ptr = New T[10]
 
 '' Deallocate object vector
 Delete[] Xlist
+		

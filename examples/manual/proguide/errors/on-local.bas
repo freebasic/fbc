@@ -31,3 +31,4 @@ Sub foo
   Print errmsg
 	
 End Sub
+	
