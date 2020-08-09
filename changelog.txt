@@ -41,6 +41,7 @@ Version 1.08.0
 - default new, new[] operator (allocate) after #undef allocate caused compiler crash
 - default delete, delete[] operator (deallocate) after #undef deallocate caused compiler crash
 - windows GDI gfxlib driver now displays double scanline screen modes correctly (screen 2 & 8), rather than half screen (adeyblue)
+- sf.net #921: gfxlib: horizontal line drawing on 8-bit image was using wrong bpp
 
 
 Version 1.07.0
