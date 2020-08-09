@@ -151,6 +151,11 @@ namespace fb
 		''curl_easy_setopt( curl, CURLOPT_VERBOSE, TRUE )
 
 		curl_easy_setopt( curl, CURLOPT_URL, url )
+
+		'' Follow at most one redirection to allow for url rewrite on server side
+		curl_easy_setopt( curl, CURLOPT_FOLLOWLOCATION, 1 )
+		curl_easy_setopt( curl, CURLOPT_MAXREDIRS, 1 )
+
 		curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, @recv_cb )
 		curl_easy_setopt( curl, CURLOPT_WRITEDATA, @ctx->stream )
 
