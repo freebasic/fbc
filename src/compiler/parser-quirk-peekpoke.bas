@@ -7,7 +7,6 @@
 #include once "fbint.bi"
 #include once "parser.bi"
 #include once "ast.bi"
-#include once "rtl.bi"
 
 ''
 '' (SymbolType ',')? Expression
@@ -24,12 +23,7 @@ private function hOptionalTypeAndFirstExpr _
 
 		'' check for types invalid for PEEK/POKE
 		select case( dtype )
-		case FB_DATATYPE_VOID
-			'' if ANY type, caller has to handle args for fb_MemMove
-			subtype = NULL
-			exit function
-
-		case FB_DATATYPE_FIXSTR
+		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
 			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			'' error recovery: fake a type
 			dtype = FB_DATATYPE_UBYTE
@@ -56,37 +50,6 @@ private function hOptionalTypeAndFirstExpr _
 end function
 
 ''
-'' PokeAnyStmt  =  POKE ANY ',' Expression ',' Expression ',' Expression .
-''
-private function cPokeAny( ) as integer
-
-	function = FALSE
-
-	'' POKE ANY tokens already parsed by caller
-
-	'' ','
-	hMatchCOMMA( )
-	'' let PROCLOOKUP() and cProcCall() do the work of
-	'' parsing the rest of the statement and reporting
-	'' any errors
-	var sym = PROCLOOKUP( MEMMOVE )
-	if( sym = NULL ) then
-		exit function
-	end if
-
-	var proc = cProcCall( NULL, sym, NULL, NULL, FALSE, FB_PARSEROPT_NONE )
-
-	if( proc = NULL ) then
-		exit function
-	end if
-
-	astAdd( proc )
-
-	function = TRUE
-
-end function
-
-''
 '' PokeStmt  =  POKE (SymbolType ',')? Expression ',' Expression .
 ''
 function cPokeStmt( ) as integer
@@ -101,11 +64,6 @@ function cPokeStmt( ) as integer
 
 	'' (SymbolType ',')? Expression
 	expr1 = hOptionalTypeAndFirstExpr( poketype, subtype )
-
-	'' was ANY type?
-	if( poketype = FB_DATATYPE_VOID ) then
-		return cPokeAny()
-	end if
 
 	'' ','
 	hMatchCOMMA( )
