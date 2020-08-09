@@ -6,12 +6,15 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPpmacro
 '' --------
 
-'' macro as an expression value
+' macro as an expression value
+
 #macro Print1( a, b )
-  a + b
+	a + b
 #endmacro
 
-Print Print1( "Hello", "World" )
+Print Print1( "Hello ", "World!" )
 
-'' Output :
-'' Hello World!
+/' Output :
+Hello World!
+'/
+	

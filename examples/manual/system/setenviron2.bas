@@ -7,7 +7,7 @@
 '' --------
 
   '' WINDOWS ONLY EXAMPLE! - We just set the graphics method to use
-  '' GDI rather than DirectX.
+  '' GDI rather than DirectX (or Direct2D added on new systems).
   '' You may note a difference in FPS.
 SetEnviron("fbgfx=GDI")
 
@@ -15,10 +15,10 @@ SetEnviron("fbgfx=GDI")
 Dim As Integer ScrW, ScrH, BPP
 ScreenInfo ScrW, ScrH, BPP
 
-  '' Create a screen at the width/height of your monitor.
+  '' Create a screen at the half width/height of your monitor.
   '' Normally this would be slow, but GDI is fairly fast for this kind
   '' of thing.
-ScreenRes ScrW, ScrH, BPP
+ScreenRes ScrW/2, ScrH/2, BPP
 
   '' Start our timer/
 Dim As Double T = Timer

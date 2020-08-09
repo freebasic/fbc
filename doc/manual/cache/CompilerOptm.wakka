@@ -9,7 +9,16 @@ Main file without extension to indicate the main module
 		The name without extension of the main module source file
 
 {{fbdoc item="desc"}}
-	The ##-m## compiler option specifies a main entry point for a source file; the argument is the name of a source file minus its extension. If "-m" is not specified, the first source file listed is given a main entry point. When using the "-c" or "-r" switch, "-m" must be specified when compiling a main source file.
+	The ##-m## compiler option specifies a main entry point for a source file; the argument is the name of a source file minus its extension.
+	So the main module file must be called twice in the command line:
+		**""-""** after compile option "-m", but without specified extension,
+		**""-""** and also like any module to compile, but there with its specified extension.
+		
+	WARNING: the spelling of < //source file// > is case-sensitive! (unexpected ERRORS may otherwise occure)
+		
+	If "-m" is not specified, the first source file listed is given a main entry point.
+	
+	When using the "-c" or "-r" switch, "-m" must be specified when compiling a main source file.
 	
 	The intrinsic macro ##[[KeyPgDdFBMain|__FB_MAIN__]]## is defined in the main module and not defined in other modules.
 

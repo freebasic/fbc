@@ -68,7 +68,7 @@ The proper use of the built-in procedures in **Critical Sections** for handling 
 		**""-""** Print its counter for each of 6 user threads (and read the flag ##//'quit'//##).
 		**""-""** Catching a key-press (any one) for the main thread (and if yes, set the flag ##//'quit'//## to ##'true'##).
 		
-	The outputting procedure (##//'Sub Counter()'//##) has voluntarily a tempo between cursor positioning and printing, and also a repositioning of text cursor at middle of line before ending, in order to thoroughly check that there is no overlap between the critical sections executions (at opposite, one can see the result by removing some code dedicated to exclusion processing).
+	The outputting procedure (##//'Sub Counter()'//##) has voluntarily a tempo between cursor positioning and printing, and also a repositioning of text cursor at middle of line before ending, in order to thoroughly check that there is no overlap between the critical sections executions (at opposite, one can see the result by removing some code dedicated to mutual exclusion processing).
 	A different tempo value is set at the end of each thread loop (from smaller to bigger).
 	A structure (UDT) groups all variables necessary to the threads. A pointer to each UDT instance is passed to each thread at its creation phase (with threadcreate).
 	
@@ -84,7 +84,7 @@ The proper use of the built-in procedures in **Critical Sections** for handling 
 '   |   |
 '   |   Mutexunlock
 '   |   |
-'   |   Sleep my_tempo
+'   |   Sleep my_tempo, 1
 '   |
 '   Loop Until quit = true
 '
@@ -198,7 +198,7 @@ Sleep
 '   |   |
 '   |   Mutexunlock
 '   |   |
-'   |   Sleep my_tempo
+'   |   Sleep my_tempo, 1
 '   |
 '   Loop Until quit = true
 '
@@ -323,7 +323,7 @@ Sleep
 '   |   |
 '   |   Mutexlock(own thread mutex (#0))
 '   |   |
-'   |   Sleep my_tempo
+'   |   Sleep my_tempo, 1
 '   |
 '   Loop Until key <> ""
 		%%
@@ -338,7 +338,7 @@ Sleep
 '   |   |
 '   |   Mutexunlock(next thread mutex (#N+1))
 '   |   |
-'   |   Sleep tempo
+'   |   Sleep tempo, 1
 '   |
 '   Loop Until quit = 1
 		%%
@@ -359,7 +359,7 @@ Dim As Integer UDT.quit
 Sub Counter (Byval pt As UDT Ptr)
   With *pt
 	Locate .number, .number, 0
-	Sleep 5
+	Sleep 5, 1
 	.count += 1
 	Print .count;
 	Locate .number, 30 + .number, 0
@@ -375,7 +375,7 @@ Sub Thread (Byval p As Any Ptr)
 	  Counter(pUDT)
 	  quit = .quit
 	  Mutexunlock(.pMutex((.number + 1) Mod (UDT.numberMax + 1)))
-	  Sleep .tempo
+	  Sleep .tempo, 1
 	Loop Until quit = 1
   End With
 End Sub
@@ -404,7 +404,7 @@ Do
 	End If
   Mutexunlock(UDT.pMutex((u(0).number + 1) Mod (UDT.numberMax + 1)))
   Mutexlock(UDT.pMutex(u(0).number))
-  Sleep u(0).tempo
+  Sleep u(0).tempo, 1
 Loop Until s <> ""
 
 For I As Integer = 1 To UDT.numberMax

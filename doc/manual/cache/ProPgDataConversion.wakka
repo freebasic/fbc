@@ -1,6 +1,7 @@
 {{fbdoc item="title" value="Coercion and Conversion"}}----
 Transfer the data of a given type variable to a variable of another type requires conversion.
 
+
 ==Coercion of Numeric Data Types in Expressions and Arguments==
 
 For the integer types, the rule depends on the following ranking:
@@ -17,6 +18,7 @@ Finally, the (U)Integer types replace:
 			the (U)Longint types
 			
 On the other hand, if one of the arguments is a Single or a Double, both arguments are converted and/or promoted to Double.
+
 
 ==Conversion of Numeric Data Types==
 
@@ -37,6 +39,7 @@ __Double or Single to Integer__
 	- Possible loss of precision
 	- If the value of the floating point number exceeds the range of the target type are results are undefined.  A run-time error is not raised.
 
+
 ==Conversions using User Data Type constructors and operators==
 
 For conversion between built-in types (among standard types like between numeric types as above or between string types), the compiler knows what to do without the need for instructions from user.
@@ -50,20 +53,20 @@ In the world of UDTs, conversions can be controlled by means of three member pro
 	- Assignment operator: allow conversion from a particular type on assignment.
 	- Type-cast operator: allow conversion to a particular type.
 
-For a construction with implicit initialization, the compiler searches:
-	- Firstly a matched constructor.
-	- Then otherwise a matched cast operator.
-	(a matched let operator is not searched by compiler on a construction with implicit initialization)
+For a construction with implicit initialization ('Dim As UDT u = v'), the compiler searches:
+	- Firstly a matched constructor (for u type).
+	- Then otherwise a matched cast operator (for v type).
+	(a matched let operator (for u type) is not searched by compiler on a construction with implicit initialization)
 
-For an implicit assignment, including an implicit return from function by assigning (keyword 'Function ='), the compiler searches:
-	- Firstly a matched let operator.
-	- Then otherwise a matched cast operator.
-	(a matched constructor is not searched by compiler on an implicit assignment)
+For an implicit assignment ('u = v'), or an implicit return from function by assigning ('Function = v'), the compiler searches:
+	- Firstly a matched let operator (for u type, or for return type).
+	- Then otherwise a matched cast operator (for v type).
+	(a matched constructor (for u type, or for return type) is not searched by compiler on an implicit assignment)
 
-For an implicit return from function by exiting immediately (keyword 'Return'), the compiler searches:
-	- Firstly a matched constructor.
-	- Secondly a matched let operator.
-	- Then otherwise a matched cast operator.
+For an implicit return from function by exiting immediately ('Return v'), the compiler searches:
+	- Firstly a matched constructor (for return type).
+	- Secondly a matched let operator (for return type).
+	- Then otherwise a matched cast operator (for v type).
 
 {{fbdoc item="ex"}}
 Very simple syntaxic example highlighting the conversion capabilities by using Cast operator (explicit and implicit), Constructor (explicit and implicit) and Let operator (implicit):

@@ -121,5 +121,6 @@ Vehicle registration  : ABCDEFGHI
 	- ##[[KeyPgType|Type (UDT)]]##
 	- ##[[KeyPgExtends|Extends]]##
 	- [[ProPgPolymorphism|Inheritance Polymorphism]]
+	- [[ProPgObjectRtti|OBJECT built-in and RTTI info]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

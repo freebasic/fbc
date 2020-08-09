@@ -14,6 +14,8 @@ Frees previously allocated memory
 {{fbdoc item="desc"}}
 	This procedure frees memory that was previously allocated with ##[[KeyPgAllocate|Allocate]]##. ##//pointer//## must be a valid pointer. After the procedure returns, ##//pointer//## will be rendered invalid (pointing to an invalid memory address), and its use (dereferencing or calling **##Deallocate##** again) will result in undefined behavior.
 	
+	When memory was allocated to hold a string descriptor, the string must always be destroyed (setting to ##"####"##) before deallocate the string descriptor (allowing to deallocate the memory taken up by the string data), otherwise, it is not possible to deallocate it later, and it may induce memory leak in the program continuation.
+	
 	Calling **##Deallocate##** on a null pointer induces no action.
 	
 ~&**##Deallocate##** is an alias for the C runtime library's **##free##**, so it's not guaranteed to be thread safe in all platforms.

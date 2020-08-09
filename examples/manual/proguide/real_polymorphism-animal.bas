@@ -1,9 +1,9 @@
-'' examples/manual/proguide/udt/polymorphism-animal.bas
+'' examples/manual/proguide/real_polymorphism-animal.bas
 ''
 '' NOTICE: This file is part of the FreeBASIC Compiler package and can't
 ''         be included in other distributions without authorization.
 ''
-'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgPolymorphism
+'' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=ProPgObjectRtti
 '' --------
 
 'Base-type animal:
@@ -98,4 +98,4 @@ Sleep
 Delete p_my_dog
 Delete p_my_cat
 Delete p_my_bird
-			
+				

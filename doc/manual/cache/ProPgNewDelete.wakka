@@ -33,6 +33,10 @@ The different operators **New** (//Implicit///Overload/Expression/Placement) and
 	Instance array created with ##'Operator New[] Overload/Expression'## must be freed with ##'Operator Delete[] Overload/Statement'##, the array-version of ##'Operator Delete Overload/Statement'##.
 	User can not mix and match the different versions of the operators.
 	
+	Instances constructed at a specified memory address with ##'Operator Placement New'## must never induce a symmetric freeing with any ##'Operator Delete'## on the address (because the memory has been allocated in another way than by the ##'Operator Placement New'##).
+	Instance array constructed at a specified memory address with ##'Operator Placement New[]'## must never induce a symmetric freeing with any ##'Operator Delete[]'## on the address (because the memory has been allocated in another way than by the ##'Operator Placement New[]'##).
+	For such UDT instances, the proper way to just destroy each instance if necessary, is to call only the destructor if one exists (implicitly or explicitly), with syntax as for a member method by using member access operator.
+	
 	**Note:** Any operators //'New[]'// or //'Delete[]'// (the array versions for  statement/expression/overload operators) and even the overload operator //'Delete'// are not directly compatible with inheritance polymorphism, because the use of a sub-type pointer (instead of the real type) mainly fails for accessing the other elements (except the first).
 
 {{fbdoc item="section" value="Algorithm (applied to user-defined types)"}}
@@ -46,7 +50,7 @@ The different operators **New** (//Implicit///Overload/Expression/Placement) and
 '                     v                                      v
 '       (Operator New/New[] Implicit)          (Operator New/New[] Overload)
 '                     :                                      :
-'          BASIC MEMORY ALLOCATION                       USER BODY
+'          BASIC MEMORY ALLOCATION            USER BODY for memory allocation
 '                     :                                      :
 '                     :<-------------------------------------'
 '                     |
@@ -101,7 +105,7 @@ The different operators **New** (//Implicit///Overload/Expression/Placement) and
 '                     v                                      v
 '    (Operator Delete/Delete[] Implicit)    (Operator Delete/Delete[] Overload)
 '                     :                                      :
-'         BASIC MEMORY DEALLOCATION                      USER BODY
+'         BASIC MEMORY DEALLOCATION          USER BODY for memory deallocation
 '                     :                                      :
 '                     :<-------------------------------------'
 '                     |
@@ -245,7 +249,7 @@ Sub printArray (Byref label As String = "", array() As String)
 	Next I
 	Print "}";
 End Sub
-%%Output example:
+%%Output example (for a 64-bit system):
 			%%
 Operator New Expression
 	Operator New Overload

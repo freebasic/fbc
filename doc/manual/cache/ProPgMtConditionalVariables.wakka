@@ -79,7 +79,7 @@ The built-in procedures that create, wait-for/signal, and destroy **Conditional 
 			**""-""** The thread execution is suspended and does not consume any CPU time until the condition variable is signaled.
 			**""-""** When the condition variable becomes signaled, mutex is atomically re-locked.
 			**""-""** The thread execution can resume after the ##[[KeyPgCondWait|CondWait]]## statement, but is suspended because of the locked mutex owned by the signal-caller.
-			**""-""** So, the signal-caller is then responsible for unlocking mutex in order that the called-thread completes the ##[[KeyPgCondWait|CondWait]]## routine and that execution after the ##[[KeyPgCondWait|CondWait]]## call can then really resume.
+			**""-""** So, the signal-caller is then responsible for unlocking mutex in order that the called-thread completes the ##[[KeyPgCondWait|CondWait]]## subroutine and that execution after the ##[[KeyPgCondWait|CondWait]]## call can then really resume.
 			
 		##[[KeyPgCondSignal|CondSignal]]## restarts one thread waiting. It should be called after mutex is locked (using the same mutex as one used with ##[[KeyPgCondWait|CondWait]]##):
 			**""-""** If no threads are waiting on the conditional, nothing happens (the signal is lost forever).
@@ -197,7 +197,7 @@ The built-in procedures that create, wait-for/signal, and destroy **Conditional 
 						%%
 {{fbdoc item="section" value="Example"}}
 	The second example on the previous page (##[[ProPgMtMutualExclusion|Mutual Exclusion]]##) is modified by using a conditional variable to exhibit a synchronization example.
-	So, the two sections of code, previously protected by an exclusion block ##[Mutexlock ... Mutexunlock]##, are now synchronized in order that each thread displays one after the other its character sequence ("[M]" or "(C)").
+	So, the two sections of code, previously protected by a mutual exclusion block ##[Mutexlock ... Mutexunlock]##, are now synchronized in order that each thread displays one after the other its character sequence ("[M]" or "(C)").
 	
 	In this example, the two threads critical sections have their sub-sections in an reverse order:
 		**""-""** main thread critical section: at first signaling, then waiting for,

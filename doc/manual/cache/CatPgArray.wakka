@@ -7,6 +7,8 @@ Statements and procedures for working with arrays.
 	Procedures that work with array memory.
 **{{anchor name="SIZE|Retrieving Array Size"}}**
 	Procedures that return bounds of an array's dimension.
+**{{anchor name="DESCRIPTOR|Retrieving Array Descriptor"}}**
+	Procedures that return a pointers to an array's descriptor.
 
 <<{{anchor name="DEFINE"}}{{fbdoc item="section" value="Defining Arrays"}}
 	=={{fbdoc item="keyword" value="KeyPgOptiondynamic|OPTION DYNAMIC"}}==
@@ -30,6 +32,10 @@ Statements and procedures for working with arrays.
 		Returns the lower bound of an array's dimension.
 	=={{fbdoc item="keyword" value="KeyPgUbound|UBOUND"}}==
 		Returns the upper bound of an array's dimension.
- >>::c::
+
+{{anchor name="DESCRIPTOR"}}{{fbdoc item="section" value="Retrieving Array Descriptor"}}
+	=={{fbdoc item="keyword" value="KeyPgFBArray|Array[Const]DescriptorPtr"}}==
+		Returns a [constant] pointer to array's descriptor (FBARRAY).
+>>::c::
 
 {{fbdoc item="back" value="DocToc|Table of Contents"}}

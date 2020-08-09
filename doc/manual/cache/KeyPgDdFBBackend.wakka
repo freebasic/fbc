@@ -7,6 +7,10 @@ Intrinsic define set by the compiler
 {{fbdoc item="desc"}}
 	Defined to either ##"gas"## or ##"gcc"##, depending on which backend was specified via [[CompilerOptgen|-gen]].
 
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/defines/fbbackend.bas"}}%%(freebasic)
+Print "Back end is: " & __FB_BACKEND__
+	%%
 {{fbdoc item="diff"}}
 	- Did not exist in QB
 

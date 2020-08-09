@@ -13,3 +13,4 @@ Dim array(3) As Integer = { 10, 20, 30, 40 }
 For position As Integer = LBound(array) To UBound(array)
 	Print array(position) ;
 Next
+	

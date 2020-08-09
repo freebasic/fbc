@@ -7,14 +7,15 @@ The library is referred to as static, because when the object files which it con
 
 Once the library is made, we can then use the code that it contains just as if we were compiling the source directly with our program.
 
-Following is a simple example of creating a static library using these three files:
-	- ##mylib.bas## - the source for the library
-	- ##mylib.bi## - the header for the library
-	- ##mytest.bas## - a test program
+{{fbdoc item="section" value="Simple example of static library"}}
+	Following is a simple example of creating a static library using these three files:
+		- ##mylib.bas## - the source for the library
+		- ##mylib.bi## - the header for the library
+		- ##mytest.bas## - a test program
 
-Our library will be a single module providing a single function:
-
-{{fbdoc item="filename" value="examples/manual/proguide/static-lib/mylib.bas"}}%%(freebasic)
+		
+	Our library will be a single module providing a single function:
+		{{fbdoc item="filename" value="examples/manual/proguide/static-lib/mylib.bas"}}%%(freebasic)
 '' mylib.bas
 '' compile with: fbc -lib mylib.bas
 
@@ -22,37 +23,150 @@ Our library will be a single module providing a single function:
 Public Function Add2( ByVal x As Integer, ByVal y As Integer ) As Integer
   Return( x + y )
 End Function
-%%
-Compile the library with:
-	##fbc -lib mylib.bas##
-
-The //[[CompilerOptlib|-lib]]// option tells the compiler to take the source code, ##mylib.bas##, and turn it in to an object file ##mylib.o##, then store the object file in to a library file, also called an archive, ##libmylib.a##.  A library might contain many modules (source files) each with many functions, but for this simple example, it is just one each.
-
-To make use of the library in some other source code, we need some way of telling the compiler what exactly is in the library.  A good way to do this is to put the declarations ( also called an interface, or API ) for the library in to a header file.
-
-{{fbdoc item="filename" value="examples/manual/proguide/static-lib/mylib.bi"}}%%(freebasic)
+		%%
+		Compile the library with:
+			##fbc -lib mylib.bas##
+			
+		The //[[CompilerOptlib|-lib]]// option tells the compiler to take the source code, ##mylib.bas##, and turn it in to an object file ##mylib.o##, then store the object file in to a library file, also called an archive, ##libmylib.a##.  A library might contain many modules (source files) each with many functions, but for this simple example, it is just one each.
+		
+	To make use of the library in some other source code, we need some way of telling the compiler what exactly is in the library. A good way to do this is to put the declarations ( also called an interface, or API ) for the library in to a header file:
+		{{fbdoc item="filename" value="examples/manual/proguide/static-lib/mylib.bi"}}%%(freebasic)
 '' mylib.bi
 #inclib "mylib"
 Declare Function Add2( ByVal x As Integer, ByVal y As Integer ) As Integer
-%%
-There is no need to compile the header.  We want this in its source form so it can be included with other source files.  The ##[[KeyPgInclib|#inclib]]## statement will tell the compiler the name of a static library that we need to link with when eventually making an executable.
-
-With our library (.a file) and a header (.bi file) we can try them out in a test program:
-
-{{fbdoc item="filename" value="examples/manual/proguide/static-lib/mytest.bas"}}%%(freebasic)
+		%%
+		There is no need to compile the header.  We want this in its source form so it can be included with other source files.  The ##[[KeyPgInclib|#inclib]]## statement will tell the compiler the name of a static library that we need to link with when eventually making an executable.
+		
+	With our library (.a file) and a header (.bi file) we can try them out in a test program:
+		{{fbdoc item="filename" value="examples/manual/proguide/static-lib/mytest.bas"}}%%(freebasic)
 '' mytest.bas
 '' compile with: fbc mytest.bas
 #include once "mylib.bi"
 Print Add2(1,2)
-%%
-The ##[[KeyPgInclude|#include]]## statement tells the compiler to include the source code from ##mylib.bi## just as if we had typed it in to the original source.  With the way we have written our include file, it tells the compiler everything it needs to know about the library.
+		%%
+		The ##[[KeyPgInclude|#include]]## statement tells the compiler to include the source code from ##mylib.bi## just as if we had typed it in to the original source.  With the way we have written our include file, it tells the compiler everything it needs to know about the library.
+		
+		We compile this with:
+			##fbc mytest.bas##
+			
+		Then when we run the ##mytest## executable, we should get the result of:
+			%%
+ 3
+			%%
+{{fbdoc item="section" value="Advanced example of OOP static library"}}
+	Following is an advanced example of creating an OOP static library using these three files:
+		- ##varZstring.bi## - the header for the library
+		- ##varZstring.bas## - the source for the library
+		- ##varZstringTest.bas## - a test program
 
-We compile this with:
-	##fbc mytest.bas##
+		
+	Similar method than above to compile the library, then compile and execute the test program.
+	
+	Header file for the library:
+		{{fbdoc item="filename" value="examples/manual/proguide/static-lib/varZstring.bi"}}%%(freebasic)
+'' header file: 'varZstring.bi'
 
-Then when we run the ##mytest## executable, we should get the result of:
-	##3##
+Type varZstring Extends Zstring
+	Public:
+		Declare Constructor (Byref z As Const Zstring)
+		Declare Operator Cast () Byref As Zstring
+		Declare Operator Let (Byref z As Const Zstring)
+		Declare Property allocated () As Integer
+		Declare Destructor ()
+	Private:
+		Dim As Zstring Ptr _p
+		Dim As Uinteger _allocated
+End Type
 
+Declare Operator Len (Byref v As varZstring) As Integer  '' mandatory for the user code to call
+														 ''    the overload Len operator and
+														 ''    not the prebuilt-in Len operator
+		%%**Note:** Take care to declare also each overload procedure, because the absence of declaration will not necessarily lead to a compilation error if its usage in the user code is syntactically compatible with the pre-built in procedure, but the result will obviously not be as expected.
+		
+	Source file for the library:
+		{{fbdoc item="filename" value="examples/manual/proguide/static-lib/varZstring.bas"}}%%(freebasic)
+'' library module: 'varZstring.bas'
+
+#include "varZstring.bi"
+
+Constructor varZstring (Byref z As Const Zstring)
+	If This._p <> 0 Then
+		Deallocate(This._p)
+	End If
+	This._allocated = Len(z) + 1
+	This._p = Callocate(This._allocated, Sizeof(Zstring))
+	*This._p = z
+End Constructor
+
+Operator varZstring.Cast () Byref As Zstring
+	Return *This._p
+End Operator
+
+Operator varZstring.Let (Byref z As Const Zstring)
+	If This._allocated < Len(z) + 1 Then
+	Deallocate(This._p)
+	This._allocated = Len(z) + 1
+	This._p = Callocate(This._allocated, Sizeof(Zstring))
+  End If
+  *This._p = z
+End Operator
+
+Property varZstring.allocated () As Integer
+	Return This._allocated
+End Property
+
+Destructor varZstring ()
+	Deallocate(This._p)
+	This._p = 0
+End Destructor
+
+Operator Len (Byref v As varZstring) As Integer
+	Return Len(Type<String>(v))  '' found nothing better than this
+End Operator                     ''     (or: 'Return Len(Str(v))')
+		%%
+	Test program file:
+		{{fbdoc item="filename" value="examples/manual/proguide/static-lib/varZstringTest.bas"}}%%(freebasic)
+'' test program: 'varZstringTest.bas'
+
+#include "varZstring.bi"  '' must contain also the overload Len operator declaration,
+						  ''    otherwise the prebuilt-in Len operator is called and applied
+						  ''    on the object variable (providing the length of its member data)
+						
+#inclib "varZstring"      '' one can also put this line in the 'varZstring.bi' file
+						  ''   (and not in this file), but it seems a bit crooked
+
+Print "VARIABLE",,, "|     LEN|  SIZEOF|"
+Print "------------------------------------------|--------|--------|"
+
+Dim As varZstring v = "FreeBASIC"  '' adjusts memory allocation to minimum
+Print "varZstring v:", "'" & v & "'",, "|"; Using "########|"; Len(v); v.allocated
+
+Dim As Zstring * 256 z
+z = v
+Print "Zstring    z:", "'" & z & "'",, "|"; Using "########|"; Len(z); Sizeof(z)
+
+v = z & " & SourceForge"  '' only increases memory allocation if necessazy
+Print "varZstring v:", "'" & v & "'", "|"; Using "########|"; Len(v); v.allocated
+
+v = z & " & Wiki" '' only increases memory allocation if necessazy
+Print "varZstring v:", "'" & v & "'", "|"; Using "########|"; Len(v); v.allocated
+
+v.Constructor(v)  '' readjusts memory allocation to minimum
+Print "varZstring v:", "'" & v & "'", "|"; Using "########|"; Len(v); v.allocated
+
+Sleep
+		%%
+		Output:
+			%%
+VARIABLE                                  |     LEN|  SIZEOF|
+------------------------------------------|--------|--------|
+varZstring v: 'FreeBASIC'                 |       9|      10|
+Zstring    z: 'FreeBASIC'                 |       9|     256|
+varZstring v: 'FreeBASIC & SourceForge'   |      23|      24|
+varZstring v: 'FreeBASIC & Wiki'          |      16|      24|
+varZstring v: 'FreeBASIC & Wiki'          |      16|      17|
+			%%
+	
 More than one source module can be used when making a library.  And basic programs can use more than one library by including each needed header.  Some libraries are so large that they might use several headers.  On very large projects, making libraries out of some code modules that seldom change can improve compile times dramatically.
 
 Libraries can optionally contain debugging information specified with the //[[CompilerOptg|-g]]// command line option.

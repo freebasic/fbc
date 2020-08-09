@@ -39,7 +39,7 @@ Debian-based systems (including Ubuntu, Mint etc.):
 	- ##gcc##
 	- ##make##
 	- ##libncurses5-dev##
-	- ##libtinfo5-dev## (if not already installed as dependency of ncurses)
+	- ##libtinfo5## (if not already installed as dependency of ncurses)
 	- ##libgpm-dev##
 	- ##libx11-dev##
 	- ##libxext-dev##
@@ -68,6 +68,7 @@ Fedora:
 	- ##gcc##
 	- ##make##
 	- ##ncurses-devel##
+	- ##ncurses-compat-libs.x86_64## (may be needed for libtinfo.so.5 if it is not already installed as dependency of ncurses) 
 	- ##gpm-devel##
 	- ##libX11-devel##
 	- ##libXext-devel##

@@ -5,12 +5,14 @@
 	[[http://www.freebasic.net/forum/viewtopic.php?t=13932|FBEdit, an IDE for FB by KetilO (Win32)]]
 	[[https://www.freebasic.net/forum/viewtopic.php?f=8&t=25215|WinFBE Editor and Visual Designer, an IDE for FB by Paul Squires (Win32,Win64)]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=9035|VISG GUI Builder (WIN) by mrhx]]
+	List of [[https://freebasic.net/forum/viewtopic.php?f=17&t=28347|FreeBASIC IDEs/Editors]] on the forum
 
 {{anchor name="GRAPHIC"}}{{fbdoc item="section" value="Graphics Code"}}
 	==Demos==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=6938|Animated Clouds by Zamaster]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7936|Island Generation by rdc]]
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8758|Plasma Generation by Zamaster]]
+	[[http://www.freebasic.net/forum/viewtopic.php?t=8724|Tree Generation by Zamaster]]
 	
 	==Graphics Functions and Primitives==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7111|AntiAliased Bezier Curves by Acetoline]]
@@ -27,10 +29,6 @@
 	
 	==Formats==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=8024|fbpng library by yetifoot]]
-	
-	==3D==
-	[[http://www.freebasic.net/forum/viewtopic.php?t=8724|Tree Generation by Zamaster]]
-	[[http://www.freebasic.net/forum/viewtopic.php?t=7931|Quadtree-Based Renderer by relsoft]]
 	
 	==Animation==
 	[[http://www.freebasic.net/forum/viewtopic.php?t=7340|ASCII Animation Example by Pritchard]]

@@ -22,7 +22,7 @@ Dim As Integer UDT.quit
 Sub Counter (ByVal pt As UDT Ptr)
   With *pt
 	Locate .number, .number, 0
-	Sleep 5
+	Sleep 5, 1
 	.count += 1
 	Print .count;
 	Locate .number, 30 + .number, 0
@@ -38,7 +38,7 @@ Sub Thread (ByVal p As Any Ptr)
 	  Counter(pUDT)
 	  quit = .quit
 	  MutexUnlock(.pMutex((.number + 1) Mod (UDT.numberMax + 1)))
-	  Sleep .tempo
+	  Sleep .tempo, 1
 	Loop Until quit = 1
   End With
 End Sub
@@ -67,7 +67,7 @@ Do
 	End If
   MutexUnlock(UDT.pMutex((u(0).number + 1) Mod (UDT.numberMax + 1)))
   MutexLock(UDT.pMutex(u(0).number))
-  Sleep u(0).tempo
+  Sleep u(0).tempo, 1
 Loop Until s <> ""
 
 For I As Integer = 1 To UDT.numberMax

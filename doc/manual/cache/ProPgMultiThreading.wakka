@@ -79,23 +79,23 @@ The **Multi-threading** programming by using the built-in support provided by Fr
 	How many concurrent threads can there be?
 	How is the CPU time distributed among the threads?
 	
-	It is advised to always set a //'Sleep'// tempo in each //'For'// loop of each thread (including the main thread), in order to release time-slice allowing the other threads to execute as well.
+	It is advised to always set a //'Sleep x, 1'// tempo in each //'For'// loop of each thread (including the main thread), in order to release time-slice allowing the other threads to execute as well.
 	
 	All these factors affect the overall execution. Writing multi-threaded code is about being prepared to anything, and that’s making it both dangerous and exciting.
 
 {{fbdoc item="section" value="Multi-threaded built-in support"}}
 	The thread-safe runtime library is automatically used if the FreeBASIC built-in threading functions are used (so the '-mt' compiler option for the linker, is only needed if programmer wants to use his own threading routines).
 	
-	The following pages of this "Multi-Threading" section explain:
-		- On the "Threads" page:
+	The following pages of this section ("Multi-Threading") explain:
+		- On the '[[ProPgMtThreads|Threads]]' page:
 				the built-in procedures that create, and detach/wait-for the threads.
-		- On the "Mutual Exclusion" page:
+		- On the '[[ProPgMtMutualExclusion|Mutual Exclusion]]' page:
 				the built-in procedures that create, lock/unlock, and destroy the mutexes.
-		- On the "Conditional Variables" page:
+		- On the '[[ProPgMtConditionalVariables|Conditional Variables]]' page:
 				the built-in procedures that create, wait-for/signal, and destroy conditional variables.
-		- On the "Critical Sections" page:
+		- On the '[[ProPgMtCriticalSections|Critical Sections]]' page:
 				the use of these built-in procedures in code blocks for handling the concurrency with other threads.
-		- On the "Critical Sections FAQ" page:
+		- On the '[[ProPgMtCriticalSectionsFAQ|Critical Sections FAQ]]' page:
 				the "Critical Sections" related questions in multi-threading".
 
 {{fbdoc item="section" value="See also"}}

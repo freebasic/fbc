@@ -80,7 +80,24 @@ Searches for and returns information about an item in the filesystem; performs a
 	In general it is not possible to use ##//attrib_mask//## to include a file/folder with one set of attributes while excluding a file/folder with a different set.  For example, it is not possible to scan for read-only directories while excluding read-only files (unless the files also have other attributes).  Finer control can be gained by checking the ##//out_attrib//## value for the desired set of attributes.
 
 {{fbdoc item="ex"}}
-{{fbdoc item="filename" value="examples/manual/system/dir.bas"}}%%(freebasic)
+	{{fbdoc item="filename" value="examples/manual/system/dirnbfiles.bas"}}%%(freebasic)
+' Number of files in the current directory.
+
+Dim As Integer FileCount
+
+If Dir("*") <> "" then  ' Start a file search with no specified filespec/attrib *AND* get the first filename.
+	Filecount = 1
+	While Dir() <> ""  ' If dir() is "", exit the loop: no more filenames are left to be read.
+		FileCount += 1  ' Increment the counter of number of files
+	Wend
+End If
+
+Print FileCount & " files in the current directory."
+
+Sleep
+	%%
+	
+	{{fbdoc item="filename" value="examples/manual/system/dir.bas"}}%%(freebasic)
 #include "dir.bi" 'provides constants to use for the attrib_mask parameter
 
 sub list_files (byref filespec as string, byval attrib as integer)
@@ -97,9 +114,9 @@ list_files "*", fbDirectory
 print
 print "archive files:"
 list_files "*", fbArchive
-%%
-
-{{fbdoc item="filename" value="examples/manual/system/dirretat.bas"}}%%(freebasic)
+	%%
+	
+	{{fbdoc item="filename" value="examples/manual/system/dirretat.bas"}}%%(freebasic)
 '' Example of using DIR function and retrieving attributes
 
 #include "dir.bi" '' provides constants to match the attributes against
@@ -143,7 +160,7 @@ Loop
 
 Print
 Print "Found " & filecount & " files and " & dircount & " subdirs"
-%%
+	%%
 
 {{fbdoc item="target"}}
 	- Linux requires the ##//filename//## case to match the real name of the file. Windows and DOS are case insensitive.

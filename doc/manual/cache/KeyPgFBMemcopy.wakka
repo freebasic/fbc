@@ -1,0 +1,63 @@
+{{fbdoc item="title" value="FB_MEMCOPY"}}----
+Copies a block of memory from a location to another
+
+{{fbdoc item="syntax"}}##
+	[[KeyPgDeclare|declare]] [[KeyPgFunction|function]] **fb_memcopy** [[KeyPgCdecl|cdecl]] ( [[KeyPgByref|byref]] //dst// [[KeyPgAs|as]] [[KeyPgAny|any]], [[KeyPgByref|byref]] //src// [[KeyPgAs|as]] [[KeyPgAny|any]], [[KeyPgByval|byval]] //bytes// [[KeyPgAs|as]] [[KeyPgUinteger|uinteger]] ) [[KeyPgAs|as]] [[KeyPgAny|any]] [[KeyPgPtr|ptr]]
+##
+{{fbdoc item="usage"}}##
+	[//result// =] **fb_memcopy**( //dst//, //src//, //bytes// )
+##
+{{fbdoc item="param"}}
+	##//dst//##
+		starting address of destination memory
+	##//src//##
+		starting address of source memory
+	##//bytes//##
+		number of bytes to copy
+
+{{fbdoc item="ret"}}
+	The starting address of destination memory is returned.
+
+{{fbdoc item="desc"}}
+	##**fb_memcopy**## copies a given number of bytes from the memory location ##//src//## to the memory location ##//dst//##. Each starting address is taken from a reference to a variable or array element.
+	The memory areas must not overlap (otherwise, the copying is not guaranteed to work properly, especially depending on the platform). Use ##[[KeyPgFBMemmove|fb_memmove]]## preferably when the memory areas do overlap (safer approach).
+	To avoid overflows, the valid memory areas pointed to by both ##//src//## and ##//dst//## must be at least equal in size to the number of bytes to be copied.
+	
+	The underlying type of the objects pointed to by both the source and destination pointers are irrelevant for this function.
+	The function does not check for any terminating null character in the source area. It always copies exactly the given number of bytes.
+	The result is a binary copy of the data.
+	
+	**Note:** In order to copy from/to memory referenced by a ##[[KeyPgPtr|Pointer]]##, it must be dereferenced first (or else specify in argument term the ##[[KeyPgByval|Byval]]## keyword in front of the pointer name). Otherwise, ##**fb_memcopy**## will try to copy the bytes from/to the **pointer variable**'s memory location.
+
+{{fbdoc item="ex"}}
+	{{fbdoc item="filename" value="examples/manual/array/memcopy.bas"}}%%(freebasic)
+Type Person
+	Dim As Zstring * 40 name
+	Dim As Integer age
+End Type
+
+Dim As Zstring Ptr mynameptr = @"Pierre de Fermat"
+
+Dim As Person person1, person2
+
+' using fb_memcopy to copy string
+fb_memcopy(person1.name, *mynameptr, Len(*mynameptr) + 1)
+person1.age = 46
+
+' using fb_memcopy to copy structure
+fb_memcopy(person2, person1, Sizeof(Person))
+
+Print person2.name, person2.age
+
+Sleep
+	%%Output:
+		%%
+Pierre de Fermat             46
+		%%
+{{fbdoc item="diff"}}
+	- The behavior and usage is new to ""FreeBASIC"".
+
+{{fbdoc item="see"}}
+	- ##[[KeyPgFBMemmove|fb_memmove]]##
+
+{{fbdoc item="back" value="CatPgMemory|Memory Functions"}}

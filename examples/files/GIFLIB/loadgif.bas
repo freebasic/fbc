@@ -72,7 +72,11 @@ function imageread_gif( byval filename as zstring ptr, byval bpp as integer ) as
 		next
 	end if
 
-	DGifCloseFile( ft )
+	#if __GIFLIB_VER__ <= 4
+		DGifCloseFile( ft )
+	#else
+		DGifCloseFile( ft, NULL )
+	#endif
 
 	function = img
 end function

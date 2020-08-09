@@ -33,195 +33,14 @@ The **Inheritance Polymorphism** is the ability of calling from the base-type th
 			**""-""** Normally a base-type reference/pointer can access only a procedure in the same type or in a type upper in hierarchy (static binding at compile-time), even if this reference/pointer refers to an object of instantiate type derived from the base-type.
 			**""-""** But when the base-type procedure is abstract/virtual, this tells the running program to resolve the override procedure the most derived relating to the real object type (dynamic binding at run-time).
 			
-	__Mechanism under the hood for inheritance polymorphism__
-		The abstract/virtual member procedures are implemented using virtual procedure tables (vtbl). vtbl is, simply explained, a table of static procedures pointers.
-		The compiler fills a vtbl for each polymorphic type, i.e. a type defining at least an abstract/virtual procedure or a type derived from the former.
-		vtbl contains entries for all abstract/virtual procedures available in the type, including the abstract/virtual procedures defined in upper level of inheritance hierarchy (for abstract procedure not still implemented, a null pointer is set in the vtbl).
-		
-		Each vtbl contains the correct addresses of procedures for each abstract/virtual procedure in corresponding type. Here correct means the address of the corresponding procedure of the most derived-type that defines/overrides that procedure.
-		When the type is instantiated, the instance will contain a pointer (vptr) to the virtual procedure table (vtbl) of the instantiated type.
-		When an object of a derived-type is referenced within a pointer/reference of base-type, then abstract/virtual procedure feature really performs. The call of an abstract/virtual procedure is somehow translated at run-time and the corresponding procedure from the virtual procedure table of the type of underlying object (not of the pointer/reference type) is chosen.
-		Thus, what procedure is called depends on what the real type of object the pointer/reference points to, which can't be known at compile-time, that is why the abstract/virtual procedure call is decided at run-time.
-		
-		Therefore, the abstract/virtual procedure call (by means of a pointer or a reference) is not an ordinary call and has a little performance overhead, which may turn into a huge if we have numerous calls. The abstract/virtual procedure call is converted by compiler to something else by using the proper vtbl addressed by the vptr value (located at offset 0 in the instance data).
-		
-		For the vptr value, the compiler generates some extra code in the constructor of the type, which it usually adds before the user code. Even if the user does not define a constructor, the compiler generates a default one, and the initialization of vptr is there. So each time an object of a polymorphic type is created, vptr is correctly initialized and points to the vtbl of that type.
-		
-		__Note:__
-			The built-in 'Object' type also provides the RTTI (Run-Time Type Information) capacity for all types derived from it using the 'Extends' declaration. The RTTI capacity allows to determine the real type of an object at run-time, which can be different of its at compile-time.
-			The 'operator Is (rtti)' uses it to check if an object is compatible to a type derived from its compile-time type, because RTTI provides not only the real runtime type-name of the object but also all type-names of its base types, up to the 'Object' built-in type.
-			Nevertheless these type-names stored by RTTI (referenced by a specific pointer in the vtbl) are mangled names inaccessible directly from a FreeBASIC keyword.
-			
-	**__Restriction:__**
-		Polymorphism is not directly compatible with:
-			**""-""** any operators 'New[]' or 'Delete[]' (the array versions for  statement/expression/overload operators) because the use of a sub-type pointer (instead of the real type) fails for accessing the other elements (except the first),
-			**""-""** even the overload operator 'Delete' is not directly compatible because it can not be declared virtual (being static).
-		Instead of having to call such an operator 'Delete([])' statement on derived-type pointer, the safest way is to simply call (on base-type pointer) an overridden user virtual member procedure that will automatically launch the operator 'Delete([]') statement at derived-type level.
+		**Restriction:**
+			Polymorphism is not directly compatible with:
+				**""-""** any operators 'New[]' or 'Delete[]' (the array versions for  statement/expression/overload operators) because the use of a sub-type pointer (instead of the real type) fails for accessing the other elements (except the first),
+				**""-""** even the overload operator 'Delete' is not directly compatible because it can not be declared virtual (being static).
+				
+			Instead of having to call such an operator 'Delete([])' statement on derived-type pointer, the safest way is to simply call (on base-type pointer) an overridden user virtual member procedure that will automatically launch the operator 'Delete([])' statement at derived-type level.
 
-{{fbdoc item="section" value="Inheritance polymorphism learning, through example (1): 'Animal type collection'"}}
-	In the below proposed example, the polymorphic part is broken down to better bring out all the elements necessary for the mechanics of polymorphism.
-	
-	The generic base-type chosen is any //'animal'// (abstraction).
-	The specialized derived-types are a //'dog'//, a //'cat'//, and a //'bird'// (each defining a non-static string member containing its type-name).
-	The abstract procedures declared in the generic base-type, and which must be defined in each specialized derived-type, are:
-		**""-""** //'addr_override_fct()'//: returns the instance address,
-		**""-""** //'speak_override_fct()'//: returns the way of speaking,
-		**""-""** //'type_override_sub()'//: prints the type-name (from a string member with initialyzer).
-		
-	- //'animal'// type declaration (generic base-type):
-			**""-""** Three public abstract procedures (//'addr_override_fct()'//, //'speak_override_fct()'//, //'type_override_sub()'//) are declared (but without any body defining them).
-			**""-""** This base-type is non-instantiable, because containing an abstract procedure at least.
-			%%
-'Base-type animal:
-	Type animal Extends Object
-		Public:
-			Declare Abstract Function addr_override_fct () As animal Ptr
-			Declare Abstract Function speak_override_fct () As String
-			Declare Abstract Sub type_override_sub ()
-	End Type
-%%
-	- //'dog'//, //'cat'//, //'bird'// types declarations (specialized derived-types):
-			**""-""** For each derived-type, the three same public procedures (//'addr_override_fct()'//, //'speak_override_fct()'//, //'type_override_sub()'//) are declared virtual, and their bodies are specialized for each derived-type.
-			**""-""** For each derived-type, a non-static string member initialized with its type-name.
-			**""-""** Each derived-type is instantiable, because implementing all abstract procedures declared in its base.
-			%%
-'Derived-type dog:
-	Type dog Extends animal
-		Public:
-			Declare Virtual Function addr_override_fct () As animal Ptr Override
-			Declare Virtual Function speak_override_fct () As String Override
-			Declare Virtual Sub type_override_sub () Override
-		Private:
-			Dim As String animal_type = "dog"
-	End Type
-%%
-			%%
-'Derived-type cat:
-	Type cat Extends animal
-		Public:
-			Declare Virtual Function addr_override_fct () As animal Ptr Override
-			Declare Virtual Function speak_override_fct () As String Override
-			Declare Virtual Sub type_override_sub () Override
-		Private:
-			Dim As String animal_type = "cat"
-	End Type
-%%
-			%%
-'Derived-type bird:
-	Type bird Extends animal
-		Public:
-			Declare Virtual Function addr_override_fct () As animal Ptr Override
-			Declare Virtual Function speak_override_fct () As String Override
-			Declare Virtual Sub type_override_sub () Override
-		Private:
-			Dim As String animal_type = "bird"
-	End Type
-%%
-	- Full code of example:
-			**""-""** To be able to trigger polymorphism, a base-type pointer array (//'animal_list'//) is declared then initialized with instances of different derived-types (a dog, a cat, a bird), in order to constitute a collection of objects from different types (but all having a common base-type).
-			**""-""** So, the same compiled code line, put in a loop (iterator //'I'//), processes all instances from different types (//'animal_list(I)->addr_override_fct()'//, //'animal_list(I)->speak_override_fct()'//, //'animal_list(I)->type_override_sub()'//), because the polymorphism mechanic allows to call each specialized procedure at run-time. 
-			{{fbdoc item="filename" value="examples/manual/proguide/udt/polymorphism-animal.bas"}}%%(freebasic)
-'Base-type animal:
-	Type animal Extends Object
-		Public:
-			Declare Abstract Function addr_override_fct () As animal Ptr
-			Declare Abstract Function speak_override_fct () As String
-			Declare Abstract Sub type_override_sub ()
-	End Type
-
-'Derived-type dog:
-	Type dog Extends animal
-		Public:
-			Declare Virtual Function addr_override_fct () As animal Ptr Override
-			Declare Virtual Function speak_override_fct () As String Override
-			Declare Virtual Sub type_override_sub () Override
-		Private:
-			Dim As String animal_type = "dog"
-	End Type
-	
-	'override_sub procedures for dog object:
-		Virtual Function dog.addr_override_fct () As animal Ptr
-			Return @This
-		End Function
-		Virtual Function dog.speak_override_fct () As String
-			Return "Woof!"
-		End Function
-		Virtual Sub dog.type_override_sub ()
-			Print This.animal_type
-		End Sub
-
-'Derived-type cat:
-	Type cat Extends animal
-		Public:
-			Declare Virtual Function addr_override_fct () As animal Ptr Override
-			Declare Virtual Function speak_override_fct () As String Override
-			Declare Virtual Sub type_override_sub () Override
-		Private:
-			Dim As String animal_type = "cat"
-	End Type
-   
-	'override_sub mehods for cat object:
-		Virtual Function cat.addr_override_fct () As animal Ptr
-			Return @This
-		End Function
-		Virtual Function cat.speak_override_fct () As String
-			Return "Meow!"
-		End Function
-		Virtual Sub cat.type_override_sub ()
-			Print This.animal_type
-		End Sub
-
-'Derived-type bird:
-	Type bird Extends animal
-		Public:
-			Declare Virtual Function addr_override_fct () As animal Ptr Override
-			Declare Virtual Function speak_override_fct () As String Override
-			Declare Virtual Sub type_override_sub () Override
-		Private:
-			Dim As String animal_type = "bird"
-	End Type
-   
-	'override_sub mehods for bird object:
-		Virtual Function bird.addr_override_fct () As animal Ptr
-			Return @This
-		End Function
-		Virtual Function bird.speak_override_fct () As String
-			Return "Cheep!"
-		End Function
-		Virtual Sub bird.type_override_sub ()
-			Print This.animal_type
-		End Sub
-
-'Create a dog and cat and bird dynamic instances referred through an animal pointer list:
-	Dim As dog Ptr p_my_dog = New dog
-	Dim As cat Ptr p_my_cat = New cat
-	Dim As bird Ptr p_my_bird = New bird
-	Dim As animal Ptr animal_list (1 To ...) = {p_my_dog, p_my_cat, p_my_bird}
-
-'Have the animals speak and eat:
-	Print "INHERITANCE POLYMORPHISM", "@object", "speak", "type"
-	Print "   true operating"
-	For I As Integer = lBound(animal_list) To Ubound(animal_list)
-		Print "      animal #" & I & ":",
-		Print animal_list(I)->addr_override_fct(),   'real polymorphism
-		Print animal_list(I)->speak_override_fct(),  'real polymorphism
-		animal_list(I)->type_override_sub()          'real polymorphism
-	Next I
-
-Sleep
-
-Delete p_my_dog
-Delete p_my_cat
-Delete p_my_bird
-			%%Ouput:
-				%%
-INHERITANCE POLYMORPHISM    	@object       speak         type
-   true operating
-	  animal #1:            11086512      Woof!         dog
-	  animal #2:            11086584      Meow!         cat
-	  animal #3:            11086656      Cheep!        bird
-%%
-{{fbdoc item="section" value="Inheritance polymorphism learning, through example (2): 'Graph type collection'"}}
+{{fbdoc item="section" value="Inheritance polymorphism learning, through example: 'Graph type collection'"}}
 	In the below proposed example, the polymorphic part is broken down to better bring out all the elements necessary for the mechanics of polymorphism.
 	
 	The generic base-type chosen is any 'Graphic Form' defined by two graphic points and a color (abstraction).
@@ -278,7 +97,7 @@ End Type
 %%
 	- //""'GraphicLine2P'""//, //""'GraphicBox2P'""//, //""'GraphicCircle2P'""// type declarations (specialized derived-types):
 			**""-""** For each derived type, the same public procedure (//""'drawGraphicForm2P()'""//) is declared, but its body is specialized for each derived type.
-			**""-""** For each derived type, a public constructor is declared and defined to initialize the base data fields (by calling the base constructor).
+			**""-""** For each derived type, a public constructor is declared and defined to initialize the base data fields (by calling the base constructor). No destructor because nothing specific to destroy from this derived type.
 			%%
 Type GraphicLine2P Extends GraphicForm2P  '' graphic line from point 1 to point 2
 	Public:  '' user interface
@@ -460,5 +279,6 @@ Sleep
 	- ##[[KeyPgVirtual|Virtual]]##, ##[[KeyPgAbstract|Abstract]]##, ##[[KeyPgOverride|Override]]##
 	- ##[[KeyPgPtr|Pointer]]##, ##[[KeyPgByrefVariables|Reference]]##
 	- [[ProPgCompoAggregInherit|Composition, Aggregation, Inheritance]]
+	- [[ProPgObjectRtti|OBJECT built-in and RTTI info]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

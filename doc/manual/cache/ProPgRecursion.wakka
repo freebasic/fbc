@@ -301,5 +301,7 @@ Print recursiveAckermann(3, 0), recursiveAckermann(3, 1), recursiveAckermann(3, 
 
 Sleep
 %%
+{{fbdoc item="see"}}
+	- [[ProPgRecursionIteration|Replace Recursion with Iteration]]
 
 {{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}

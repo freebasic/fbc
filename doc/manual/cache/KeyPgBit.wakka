@@ -20,9 +20,11 @@ Gets the state of an individual bit in an integer value.
 	This macro expands to an integer value indicating whether or not the bit specified by ##//bit_number//## is set in the integer ##//value//##. Behaves as `##(//value// [[KeyPgOpAnd|And]] 1 [[KeyPgOpShiftLeft|Shl]] //bit_number//) <> 0##`.
 	
 	The valid range of values for ##//bit_number//## depends on the size, in bits, of `##[[KeyPgTypeof|Typeof]](//value//)##`, which is `##0##` (from the lowest bit) through `##[[KeyPgSizeof|Sizeof]](//value//) * 8 - 1##` (up to the highest bit). See [[TblVarTypes|Standard Datatype Limits]] for a table of the standard datatypes and their sizes.
+	For the ##//bit_number//## values outside the valid range, the results of this macro are undefined.
 
 {{fbdoc item="ex"}}
 {{fbdoc item="filename" value="examples/manual/bits/bit.bas"}}%%(freebasic)
+PRINT BIT(&B1000, 3)
 PRINT BIT(4,2)
 PRINT BIT(5,1)
 PRINT BIT(&H8000000000000000ULL,63)
@@ -31,7 +33,8 @@ PRINT BIT(&H8000000000000000ULL,63)
 
 %%
 -1
-0
+-1
+ 0
 -1
 %%
 

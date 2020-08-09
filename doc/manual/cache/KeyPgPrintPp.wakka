@@ -42,7 +42,7 @@ open "bleh.dat"  for output as #1
 	- ##[[KeyPgPrintusing|? Using]]##
 	- ##[[KeyPgPrint|Print]]##
 	- ##[[KeyPgPrint|?]]##
-	- ##[[KeyPgWrite|Write #]]##
+	- ##[[KeyPgWritePp|Write #]]##
 	- ##[[KeyPgOpen|Open]]##
 
 {{fbdoc item="back" value="CatPgFile|File I/O Functions"}}

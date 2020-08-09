@@ -59,9 +59,11 @@ Declaring/defining array parameters and passing array arguments to procedures
 			**""-""** lbound
 			**""-""** ubound
 			
-			**##(*)##**: Additional member field (an 'Uinteger') from fbc versions > 1.07
+			**##(*)##**: Additional member field (an 'Uinteger') for fbc versions >= 1.08
 			(see the include file ##./inc/fbc-int/array.bi## for fbc versions >= 1.07)
 			
+		For more information, see [[KeyPgFBArray|FBARRAY (array descriptor structure and access)]].
+
 {{fbdoc item="section" value="Example"}}
 	
 	{{fbdoc item="filename" value="examples/manual/proguide/arrays/passing.bas"}}%%(freebasic)

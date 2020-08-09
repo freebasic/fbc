@@ -11,3 +11,4 @@ Open "xzxwz.zwz" For Input As #1
 e = Err
 Print e
 Sleep
+	

@@ -6,7 +6,8 @@
 '' See Also: https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPpmacro
 '' --------
 
-'' macro as multiple statements
+' macro as multiple statements
+
 #macro Print2( a, b )
 	Print a;
 	Print " ";
@@ -16,5 +17,7 @@
 
 Print2( "Hello", "World" )
 
-'' Output :
-'' Hello World!
+/' Output :
+Hello World!
+'/
+	

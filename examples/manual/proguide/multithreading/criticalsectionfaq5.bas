@@ -9,16 +9,20 @@
 Function threadInput (ByVal row As Integer, ByVal column As Integer, ByRef prompt As String = "", _
 					  ByVal sleeptime As Integer = 15, ByVal blank As Integer = 0, ByVal mutex As Any Ptr = 0 _
 					  ) As String
-	Dim As Integer r
-	Dim As Integer c
 	Dim As String inputchr
 	Dim As String inputline
+	Dim As Integer cursor
+	Dim As Integer cursor0
+	Dim As Integer r
+	Dim As Integer c
+
  
 	MutexLock(mutex)
 	r = CsrLin()
 	c = Pos()
 	Locate row, column
-	Print prompt & "? _";
+	Print prompt & " _";
+	cursor0 = Pos() - 1
 	Locate r, c
 	MutexUnlock(mutex)
 
@@ -26,19 +30,29 @@ Function threadInput (ByVal row As Integer, ByVal column As Integer, ByRef promp
 		MutexLock(mutex)
 		r = CsrLin()
 		c = Pos()
-		Locate row, column + Len(inputline) + Len(prompt) + 2
 		inputchr = Inkey
-		If Len(inputchr) = 1 Then
-			If Asc(inputchr) >= 32 Then
-				Print inputchr & Chr(95);
-				Locate , Pos - 1
-				inputline &= inputchr
-			ElseIf Asc(inputchr) = 08 And Len(inputline) > 0 Then
-				Locate , Pos - 1
-				Print Chr(95) & " ";
-				Locate , Pos() - 2
-				inputline = Left(inputline, Len(inputline) - 1)
+		If inputchr <> "" Then
+			If inputchr >= Chr(32) And inputchr < Chr(255) Then
+				inputline = Left(inputline, cursor) & inputchr & Mid(inputline, cursor + 1)
+				cursor += 1
+			ElseIf inputchr = Chr(08) And Cursor > 0 Then                         'BkSp
+				cursor -= 1
+				inputline = Left(inputline, cursor) & Mid(inputline, cursor + 2)
+			ElseIf inputchr = Chr(255) & "S" And Cursor < Len(inputline) Then     'Del
+				inputline = Left(inputline, cursor) & Mid(inputline, cursor + 2)
+			ElseIf inputchr = Chr(255) + "M" And Cursor < Len(inputline) Then     'Right
+				Cursor += 1
+			ElseIf inputchr = Chr(255) + "K" And Cursor > 0 Then                  'Left
+				Cursor -= 1
 			End If
+			If inputchr = Chr(27) Then                                            'Esc
+				Locate row, cursor0
+				Print Space(Len(inputline) + 1);
+				inputline = ""
+				cursor = 0
+			End If
+			Locate row, cursor0
+			Print Left(inputline, cursor) & Chr(95) & Mid(inputline, cursor + 1) & " ";
 		End If
 		Locate r, c
 		MutexUnlock(mutex)
@@ -49,7 +63,7 @@ Function threadInput (ByVal row As Integer, ByVal column As Integer, ByRef promp
 		MutexLock(mutex)
 		r = CsrLin()
 		c = Pos()
-		Locate row, column + Len(prompt) + 2
+		Locate row, cursor0
 		Print Space(Len(inputline) + 1);
 		Locate r, c
 		MutexUnlock(mutex)
@@ -113,7 +127,7 @@ For I As Integer = 1 To UDT.numberMax
 Next I
 
 Do
-Loop Until LCase(threadInput(8, 1, """quit"" for exit", 10, 1, UDT.pMutex)) = "quit"
+Loop Until LCase(threadInput(8, 1, """quit"" for exit?", 10, 1, UDT.pMutex)) = "quit"
 
 UDT.quit = 1
 

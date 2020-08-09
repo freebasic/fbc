@@ -270,6 +270,9 @@
 
 	{{fbdoc item="subsect" value="F"}}
 		[[KeyPgFalse|FALSE]]
+		[[KeyPgFBMemcopy|FB_MEMCOPY]]
+		[[KeyPgFBMEMMOVE|FB_MEMMOVE]]
+		[[KeyPgFBArray|FBARRAY (array descriptor structure and access)]]
 		[[KeyPgField|FIELD]]
 		[[KeyPgFileattr|FILEATTR]]
 		[[KeyPgFilecopy|FILECOPY]]
@@ -767,6 +770,7 @@
 		[[ProPgSourceFiles|Source Files (.bas)]]
 		[[ProPgHeaderFiles|Header Files (.bi)]]
 		[[ProPgPrebuiltLibraries|Using Prebuilt Libraries]]
+		[[ProPgSourceCompiledModule|Manage Reusable Procedures by Including Source vs Compiled Modules]]
 
 	{{fbdoc item="subsect" value="Lexical Conventions"}}
 		[[ProPgComments|Comments]]
@@ -815,7 +819,7 @@
 		[[ProPgCtorsDtors|Constructors and Destructors (basics)]]
 		[[ProPgMemberProcedures|Member Procedures]]
 		[[ProPgProperties|Properties]]
-		[[ProPgMemberAccessRights|Member Access Rights]]
+		[[ProPgMemberAccessRights|Member Access Rights and Encapsulation]]
 		[[ProPgOperatorOverloading|Operator Overloading]]
 		[[ProPgTypeIterators|Iterators]]
 		[[ProPgNewDelete|New and Delete]]
@@ -839,7 +843,7 @@
 		[[ProPgRecursion|Recursion]]
 		[[ProPgProcCtorsDtors|Constructors and Destructors]]
 		[[ProPgProcedurePointers|Pointers to Procedures]]
-		[[CatPgVarArg|Variable Arguments]]
+		[[ProPgVariadicArguments|Variadic Arguments]]
 
 	{{fbdoc item="subsect" value="Graphics"}}
 		[[GfxLib|FreeBASIC GfxLib overview]]
@@ -864,15 +868,20 @@
 		[[ProPgConditionalCompilation|Conditional Compilation]]
 		[[ProPgMacros|Macros]]
 
+	{{fbdoc item="subsect" value="Technical Articles"}}
+		[[KeyPgAsm|Inline ASM]]
+		[[ProPgCruntime|C Standard Library Functions]]
+		[[ProPgFileIO|File I/O in FreeBASIC]]
+		[[ProPgDynamicMemory|Dynamic memory management in FreeBASIC]]
+		[[ProPgRecursionIteration|Replace Recursion with Iteration]]
+		[[ProPgObjectRtti|OBJECT built-in and RTTI info]]
+
 	{{fbdoc item="subsect" value="Other Topics"}}
 		[[CptAscii|ASCII]]
 		[[ProPgDates|Date Serials]]
 		[[ProPgRadians|Radians]]
-		[[KeyPgAsm|Inline ASM]]
 		[[ProPgErrorHandling|Error Handling]]
 		[[CatPgDddefines|Intrinsic Defines]]
-		[[ProPgCruntime|C Standard Library Functions]]
-		[[ProPgFileIO|File I/O in FreeBASIC]]
 	[[CommunityTutorials|Community Tutorials]]
 	[[CodeLibrary|Community Code Library]]
 

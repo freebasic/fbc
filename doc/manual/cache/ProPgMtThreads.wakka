@@ -107,7 +107,7 @@ The built-in procedures that create, and detach/wait-for the **Threads**.
 
 {{fbdoc item="section" value="Example"}}
 	The 'Main' thread displays ten "M" characters while the 'Child' thread simultaneously displays ten "C" characters.
-	A //'Sleep'// tempo is put in the //'For'// loop of each thread (main thread and child thread) to release time-slice allowing the other thread to execute as well.
+	A //'Sleep x, 1'// tempo is put in the //'For'// loop of each thread (main thread and child thread) to release time-slice allowing the other thread to execute as well.
 	The tempos are set so that the execution time of the child thread //'For'// loop is greater than the one of the main thread //'For'// loop.
 	
 		**""-""** Using ##[[KeyPgThreadCreate|Threadcreate]]## ..... ##[[KeyPgThreadWait|ThreadWait]]##:

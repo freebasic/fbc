@@ -28,7 +28,7 @@ Modifies the data type name mangling (decoration) of a public symbol
 		##[[KeyPgLong|long]] alias "long"##
 		##[[KeyPgUlong|ulong]] alias "long"##
 			On Win 64-bit targets, used to map FB's 32-bit ##[[KeyPgLong|long]]## and ##[[KeyPgUlong|ulong]]## types to ""c/c++""'s 32-bit ##long [int]## type, instead of the 32-bit ##int## type.
-		
+			
 		##[[KeyPgAny|any]] alias "char" [[KeyPgPtr|ptr]]##
 			Maps ##any ptr## to ""c/c++""'s ##char *##.  In ""c/c++"", ##char##, ##signed char##, and ##unsigned char##, are three distinct types.
 			- ##[[KeyPgByte|byte]] [[KeyPgPtr|ptr]]## maps to ##signed char *##
@@ -71,14 +71,14 @@ Modifies the data type name mangling (decoration) of a public symbol
 	##[[KeyPgInteger|integer]]## on 32-bit targets is 32-bits wide
 		- 32-bit ##[[KeyPgInteger|integer]]## maps to ##long [int]##
 		- 32-bit ##[[KeyPgUinteger|uinteger]]## maps to ##unsigned long [int]##
-		
+	
 	//On Linux 64-bit targets, FB to ""c/c++""://
 	##[[KeyPgInteger|integer]]## on 64-bit targets is 64-bits wide
 		- 64-bit ##[[KeyPgInteger|integer]]## maps to ##long [int]##
 		- 64-bit ##[[KeyPgUinteger|uinteger]]## maps to ##unsigned long [int]##
 	
 	//On Win 64-bit targets, FB to ""c/c++""://
-	##[[KeyPgInteger|integer]]## on 64-bit targets is 64-bits wide.  However, on Win target, ""c/c++""'s ##long int## type is 32-bit, not 64-bit, and we can't use the ##long long int## mangling because it's already used by FB's ##[[KeyPgLongint|longint]]## type.  Reusing the same mangling (decoration) for two different data types would cause function overloading to fail or have duplicate definitions.  To preserve FB's behaviour that ##Integer## on 64-bit targets is always 64-bits, we mangle (decorate) the symbol with a custom datatype and keep the size at 64-bit.  
+	##[[KeyPgInteger|integer]]## on 64-bit targets is 64-bits wide.  However, on Win target, ""c/c++""'s ##long int## type is 32-bit, not 64-bit, and we can't use the ##long long int## mangling because it's already used by FB's ##[[KeyPgLongint|longint]]## type.  Reusing the same mangling (decoration) for two different data types would cause function overloading to fail or have duplicate definitions.  To preserve FB's behaviour that ##Integer## on 64-bit targets is always 64-bits, we mangle (decorate) the symbol with a custom datatype and keep the size at 64-bit.
 		- 64-bit ##[[KeyPgInteger|integer]]## maps to custom ##INTEGER##
 		- 64-bit ##[[KeyPgUinteger|uinteger]]## maps to custom ##UINTEGER##
 		To create a data type in FB that will map to ""c/c++""'s ##long [int]## 32-bit on win, we must use ##alias## modifier.
@@ -86,6 +86,9 @@ Modifies the data type name mangling (decoration) of a public symbol
 		- 32-bit ##[[KeyPgUlong|ulong]] alias "long"##  maps to ##unsigned long [int]##
 	
 		For example ##extern ""c+""""+"" : declare sub proc( byval as long **alias "long"** ) : end extern##.  This allows FreeBASIC to call external ""c++"" procedures (on win-64) requiring a 32-bit ##long int## type.  Usage of ##Alias## in this way affects win-64 targets only, and is ignored on all other targets.
+
+{{fbdoc item="ex"}}
+	See example at ##[[KeyPgAlias|Alias (Name)]]##.
 
 {{fbdoc item="diff"}}
 	- In QB, ##Alias## only worked with ##[[KeyPgDeclare|Declare]]##.

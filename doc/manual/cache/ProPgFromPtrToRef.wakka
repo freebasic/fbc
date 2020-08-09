@@ -55,6 +55,10 @@
 		**""-""** The non-static reference fields for UDT are not supported yet in FB.
 		**""-""** The references to procedures are not supported in FB (only references to pointers to procedures).
 
+{{fbdoc item="section" value="Using references"}}
+	See the next page of this "References" section:
+		**""-""** the '[[ProPgReferences|Using References]]' page.
+
 {{fbdoc item="section" value="See also"}}
 	- ##[[KeyPgAllocate|Allocate]]##, ##[[KeyPgCallocate|Callocate]]##, ##[[KeyPgOpNew|New (Expression)]]##
 	- ##[[KeyPgOpAt|Operator @ (Address of)]]##, ##[[KeyPgOpValueOf|Operator * (Value of)]]##, ##{{fbdoc item="keyword" value="KeyPgOpPtrIndex|Operator [] (Pointer index)"}}##

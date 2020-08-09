@@ -1,0 +1,1248 @@
+{{fbdoc item="title" value="OBJECT built-in and RTTI info"}}----
+How the **OBJECT built-in** implements the capacity of inheritance polymorphism and the **Run-Time Type Information** for identification.
+{{anchor name="ProPgObjectRttiTop"}}
+**Preamble:**
+
+	The ##[[KeyPgObject|Object]]## built-in type provides to all types derived (using the ##[[KeyPgExtends|Extends]]## declaration):
+		**""-""** The ability to redefine a method (using the ##[[KeyPgAbstract|Abstract]]## / ##[[KeyPgVirtual|Virtual]]## keywords) in a derived-type (sub-type) inheriting from a base-type (super-type). It is then possible to call the method of an object without worrying about its intrinsic type: it is the inheritance polymorphism (sub-type polymorphism).
+		**""-""** The capacity of determining the real type of an object at run-time, which can be different of its at compile-time. The operator ##[[KeyPgOpIs|Is (Run-Time Type Information)]]## uses it to check if an object is compatible to a type derived from its compile-time type, because RTTI provides not only the run-time typename of the object but also all names of its different base-types, up to the ##[[KeyPgObject|Object]]## built-in type.
+	
+	__Table of Contents__
+		**{{anchor name="ProPgObjectRtti1|1. Mechanism under the hood for inheritance polymorphism and RTTI info"}}**
+		**{{anchor name="ProPgObjectRtti2|2. Inheritance polymorphism mechanism demonstrated by both true operating and faithful emulation"}}**
+		**{{anchor name="ProPgObjectRtti3|3. Demangle typenames from RTTI info"}}**
+
+----
+{{anchor name="ProPgObjectRtti1"}}
+{{fbdoc item="section" value="1. Mechanism under the hood for inheritance polymorphism and RTTI info"}}
+	The abstract/virtual member procedures are implemented using virtual procedure tables (vtbl). vtbl is, simply explained, a table of static procedures pointers.
+	The compiler fills a vtbl for each polymorphic type, i.e. a type defining at least an abstract/virtual procedure or a type derived from the former.
+	vtbl contains entries for all abstract/virtual procedures available in the type, including the abstract/virtual procedures defined in upper level of inheritance hierarchy (for abstract procedure not still implemented, a null pointer is set in the vtbl).
+	
+	Each vtbl contains the correct addresses of procedures for each abstract/virtual procedure in corresponding type. Here correct means the address of the corresponding procedure of the most derived-type that defines/overrides that procedure:
+		**""-""** When the type is instantiated, the instance will contain a pointer (vptr) to the virtual procedure table (vtbl) of the instantiated type.
+		**""-""** When an object of a derived-type is referenced within a pointer/reference of base-type, then abstract/virtual procedure feature really performs. The call of an abstract/virtual procedure is somehow translated at run-time and the corresponding procedure from the virtual procedure table of the type of underlying object (not of the pointer/reference type) is chosen.
+		**""-""** Thus, what procedure is called depends on what the real type of object the pointer/reference points to, which can't be known at compile-time, that is why the abstract/virtual procedure call is decided at run-time.
+		
+	Therefore, the abstract/virtual procedure call (by means of a pointer or a reference) is not an ordinary call and has a little performance overhead, which may turn into a huge if we have numerous calls.
+	The abstract/virtual procedure call is converted by compiler to something else by using the proper vtbl addressed by the vptr value (located at offset 0 in the instance data):
+		Let be //'method1()'//, //'method2()'//, //'method3()'// the first three abstract or virtual member procedures declared in an inheritance type structure, and //'pt'// a based pointer to a derived object:
+			##pt->method1()##
+			##pt->method2()##
+			##pt->method3()##
+		are about translated by the compiler into respectively:
+			##Cptr(Sub (Byref As typename), Cptr(Any Ptr Ptr Ptr, pt)[0][0])(*pt)##
+			##Cptr(Sub (Byref As typename), Cptr(Any Ptr Ptr Ptr, pt)[0][1])(*pt)##
+			##Cptr(Sub (Byref As typename), Cptr(Any Ptr Ptr Ptr, pt)[0][2])(*pt)##
+				""-"" The first indirection ##[0]## allows to access to the value of the vptr from the address of the instance. This value correspond to the address of the vtbl.
+				""-"" The second indirection ##[0]## or ##[1]## or ##[2]## allows to access in the vtbl to the static address of the virtual procedures //'method1()'// or //'method2()'// or //'method3()'// respectively (in the declaration order of the abstract or virtual procedures of the Type structure).
+				
+	For the vptr value setting:
+		**""-""** The compiler generates some extra code in the constructor of each type (from the base-type up to the instantiated type), which it adds before the user code. Even if the user does not define a constructor, the compiler generates a default one, and the initialization of vptr is there (from the vtbl address of the base-type up to the one of the instantiated type). So each time an object of a polymorphic type is created, vptr is correctly initialized and finally points to the vtbl of that instantiated type.
+		**""-""** At the end, when the object is destructed, the destructors are called in the reverse order (from the instantiated type up to the base-type). The compiler also generates some extra code in the destructor of each type, which it adds before the user code. Even if the user does not define a destructor, the compiler generates a default one, and the de-initialization of vptr is there (from the vtbl address of the instantiated type up to the one of the base-type).
+		**""-""**This initialization/de-initialization of the vptr value by step is mandatory so that the user code in each constructor/destructor can call the polymorphic procedures at the correct type level during the successive steps of construction/destruction.
+		
+	The built-in Object type also provides the RTTI (Run-Time Type Information) capacity for all types derived from it using the Extends declaration:
+		**""-""** The RTTI capacity allows to determine the real type of an object at run-time, which can be different of its at compile-time.
+		**""-""** The operator Is (rtti) uses it to check if an object is compatible to a type derived from its compile-time type, because RTTI provides not only the real runtime type-name of the object but also all type-names of its base types, up to the Object built-in type.
+		**""-""** Nevertheless these type-names stored by RTTI (referenced by a specific pointer in the vtbl) are mangled names inaccessible directly from a ""FreeBASIC"" keyword.
+		
+	How are chained the entities: object instance, vptr, vtbl (vtable), and RTTI info:
+		**""-""** Instance -> Vptr -> Vtbl -> RTTI info chaining:
+			""-"" For any type derived (directly or indirectly) from the Object built-in type, a hidden pointer vptr is added at beginning (located at offset 0) of its data fields (own or inherited). This vptr points to the virtual table vtbl of the considered type.
+			""-"" The vtbl contains the list of the addresses of all abstract/virtual procedures (from the offset 0). The vtbl also contains (located at offset -1) a pointer to the Run Time Type Information (RTTI) info block of the considered type.
+			""-"" The RTTI info block contains (located at offset +1) a pointer to the mangled-typename of the considered type (ascii characters). The RTTI info block also contains (located at offset +2) a pointer to the RTTI info block of its Base. All RTTI info blocks for up-hierarchy are so chained.
+			
+		**""-""** Instance -> Vptr -> Vtbl -> RTTI info diagram:
+			%%
+'                                      vtbl (vtable)
+'                                  .-------------------.
+'                              [-2]|   reserved (0)    |               RTTI info                Mangled Typename
+'                                  |-------------------|       .-----------------------.       .---------------.
+'         Instance of UDT      [-1]| Ptr to RTTI info  |--->[0]|     reserved (0)      |       |Typename string|
+'      .-------------------.       |-------------------|       |-----------------------|       |     with      |
+'   [0]| vptr: Ptr to vtbl |--->[0]|Ptr to virt proc #1|   [+1]|Ptr to Mangled Typename|--->[0]| length (ASCII)|
+'      |-------------------|       |-------------------|       |-----------------------|       |       &       |
+'      |UDT member field #a|   [+1]|Ptr to virt proc #2|   [+2]| Ptr to Base RTTI info |---.   |  name (ASCII) |
+'      |-------------------|       |-------------------|       |_______________________|   |   |      for      |
+'      |UDT member field #b|   [+2]|Ptr to virt proc #3|   ________________________________|   |each component |
+'      |-------------------|       :- - - - - - - - - -:  |                                    |_______________|
+'      |UDT member field #c|       :                   :  |             Base RTTI info
+'      :- - - - - - - - - -:       :                   :  |       .----------------------------.
+'      :                   :       |___________________|  '--->[0]|        reserved (0)        |
+'      :                   :                                      |----------------------------|
+'      |___________________|                                  [+1]|Ptr to Mangled Base Typename|--->
+'                                                                 |----------------------------|
+'                                                             [+2]| Ptr to Base.Base RTTI info |---.
+'                                                                 |____________________________|   |
+'                                                                                                  |
+'                                                                                                  V
+			%%
+@@{{anchor name="ProPgObjectRttiTop|Back to top"}}@@
+----
+{{anchor name="ProPgObjectRtti2"}}
+{{fbdoc item="section" value="2. Inheritance polymorphism mechanism demonstrated by both true operating and faithful emulation"}}
+	In the below proposed example, the polymorphic part is broken down to better bring out all the elements necessary for the mechanics of polymorphism.
+	
+	__Example of inheritance polymorphism, true operating: 'Animal type collection'__
+		The generic base-type chosen is any //'animal'// (abstraction).
+		The specialized derived-types are a //'dog'//, a //'cat'//, and a //'bird'// (each defining a non-static string member containing its type-name).
+		The abstract procedures declared in the generic base-type, and which must be defined in each specialized derived-type, are:
+			**""-""** //'addr_override_fct()'//: returns the instance address,
+			**""-""** //'speak_override_fct()'//: returns the way of speaking,
+			**""-""** //'type_override_sub()'//: prints the type-name (from a string member with initialyzer).
+			
+		- //'animal'// type declaration (generic base-type):
+				**""-""** Three public abstract procedures (//'addr_override_fct()'//, //'speak_override_fct()'//, //'type_override_sub()'//) are declared (but without any body defining them).
+				**""-""** This base-type is non-instantiable, because containing an abstract procedure at least.
+				%%
+'Base-type animal:
+	Type animal Extends Object
+		Public:
+			Declare Abstract Function addr_override_fct () As animal Ptr
+			Declare Abstract Function speak_override_fct () As String
+			Declare Abstract Sub type_override_sub ()
+	End Type
+				%%
+		- //'dog'//, //'cat'//, //'bird'// types declarations (specialized derived-types):
+				**""-""** For each derived-type, the three same public procedures (//'addr_override_fct()'//, //'speak_override_fct()'//, //'type_override_sub()'//) are declared virtual, and their bodies are specialized for each derived-type.
+				**""-""** For each derived-type, a non-static string member initialized with its type-name.
+				**""-""** Each derived-type is instantiable, because implementing all abstract procedures declared in its base.
+				%%
+'Derived-type dog:
+	Type dog Extends animal
+		Public:
+			Declare Virtual Function addr_override_fct () As animal Ptr Override
+			Declare Virtual Function speak_override_fct () As String Override
+			Declare Virtual Sub type_override_sub () Override
+		Private:
+			Dim As String animal_type = "dog"
+	End Type
+				%%
+				%%
+'Derived-type cat:
+	Type cat Extends animal
+		Public:
+			Declare Virtual Function addr_override_fct () As animal Ptr Override
+			Declare Virtual Function speak_override_fct () As String Override
+			Declare Virtual Sub type_override_sub () Override
+		Private:
+			Dim As String animal_type = "cat"
+	End Type
+				%%
+				%%
+'Derived-type bird:
+	Type bird Extends animal
+		Public:
+			Declare Virtual Function addr_override_fct () As animal Ptr Override
+			Declare Virtual Function speak_override_fct () As String Override
+			Declare Virtual Sub type_override_sub () Override
+		Private:
+			Dim As String animal_type = "bird"
+	End Type
+				%%
+		- Full code of example:
+				**""-""** To be able to trigger polymorphism, a base-type pointer array (//'animal_list'//) is declared then initialized with instances of different derived-types (a dog, a cat, a bird), in order to constitute a collection of objects from different types (but all having a common base-type).
+				**""-""** So, the same compiled code line, put in a loop (iterator //'I'//), processes all instances from different types (//'animal_list(I)->addr_override_fct()'//, //'animal_list(I)->speak_override_fct()'//, //'animal_list(I)->type_override_sub()'//), because the polymorphism mechanic allows to call each specialized procedure at run-time. 
+				{{fbdoc item="filename" value="examples/manual/proguide/real_polymorphism-animal.bas"}}%%(freebasic)
+'Base-type animal:
+	Type animal Extends Object
+		Public:
+			Declare Abstract Function addr_override_fct () As animal Ptr
+			Declare Abstract Function speak_override_fct () As String
+			Declare Abstract Sub type_override_sub ()
+	End Type
+
+'Derived-type dog:
+	Type dog Extends animal
+		Public:
+			Declare Virtual Function addr_override_fct () As animal Ptr Override
+			Declare Virtual Function speak_override_fct () As String Override
+			Declare Virtual Sub type_override_sub () Override
+		Private:
+			Dim As String animal_type = "dog"
+	End Type
+	
+	'override_sub procedures for dog object:
+		Virtual Function dog.addr_override_fct () As animal Ptr
+			Return @This
+		End Function
+		Virtual Function dog.speak_override_fct () As String
+			Return "Woof!"
+		End Function
+		Virtual Sub dog.type_override_sub ()
+			Print This.animal_type
+		End Sub
+
+'Derived-type cat:
+	Type cat Extends animal
+		Public:
+			Declare Virtual Function addr_override_fct () As animal Ptr Override
+			Declare Virtual Function speak_override_fct () As String Override
+			Declare Virtual Sub type_override_sub () Override
+		Private:
+			Dim As String animal_type = "cat"
+	End Type
+   
+	'override_sub mehods for cat object:
+		Virtual Function cat.addr_override_fct () As animal Ptr
+			Return @This
+		End Function
+		Virtual Function cat.speak_override_fct () As String
+			Return "Meow!"
+		End Function
+		Virtual Sub cat.type_override_sub ()
+			Print This.animal_type
+		End Sub
+
+'Derived-type bird:
+	Type bird Extends animal
+		Public:
+			Declare Virtual Function addr_override_fct () As animal Ptr Override
+			Declare Virtual Function speak_override_fct () As String Override
+			Declare Virtual Sub type_override_sub () Override
+		Private:
+			Dim As String animal_type = "bird"
+	End Type
+   
+	'override_sub mehods for bird object:
+		Virtual Function bird.addr_override_fct () As animal Ptr
+			Return @This
+		End Function
+		Virtual Function bird.speak_override_fct () As String
+			Return "Cheep!"
+		End Function
+		Virtual Sub bird.type_override_sub ()
+			Print This.animal_type
+		End Sub
+
+'Create a dog and cat and bird dynamic instances referred through an animal pointer list:
+	Dim As dog Ptr p_my_dog = New dog
+	Dim As cat Ptr p_my_cat = New cat
+	Dim As bird Ptr p_my_bird = New bird
+	Dim As animal Ptr animal_list (1 To ...) = {p_my_dog, p_my_cat, p_my_bird}
+
+'Have the animals speak and eat:
+	Print "INHERITANCE POLYMORPHISM", "@object", "speak", "type"
+	Print "   true operating"
+	For I As Integer = lBound(animal_list) To Ubound(animal_list)
+		Print "      animal #" & I & ":",
+		Print animal_list(I)->addr_override_fct(),   'real polymorphism
+		Print animal_list(I)->speak_override_fct(),  'real polymorphism
+		animal_list(I)->type_override_sub()          'real polymorphism
+	Next I
+
+Sleep
+
+Delete p_my_dog
+Delete p_my_cat
+Delete p_my_bird
+				%%Ouput:
+					%%
+INHERITANCE POLYMORPHISM    @object       speak         type
+   true operating
+	  animal #1:            11479616      Woof!         dog
+	  animal #2:            11479688      Meow!         cat
+	  animal #3:            11479760      Cheep!        bird
+					%%
+	__Example of polymorphism emulation very close to real operating of 'Animal type collection'__
+		This following emulation of sub-type polymorphism is very close to the real operating:
+			**""-""** A static procedure pointer table //'callback_table()'// is defined for each derived-type to emulate the vtbl (an instance reference will be passed as first parameter to each static procedure to emulate the hidden 'This' reference passed to any non-static member procedure).
+			%%
+'Derived-type dog:
+	Type dog Extends animal
+		Private:
+			Static As Any Ptr callback_table(0 To 2)
+		Public:
+			Declare Static Function addr_callback_fct (Byref As dog) As animal Ptr
+			Declare Static Function speak_callback_fct (Byref As dog) As String
+			Declare Static Sub type_callback_sub (Byref As dog)
+			Declare Constructor ()
+		Private:
+			Dim As String animal_type = "dog"
+	End Type
+	Static As Any Ptr dog.callback_table(0 To 2) = {@dog.addr_callback_fct, @dog.speak_callback_fct, @dog.type_callback_sub}
+			%%
+			%%
+'Derived-type cat:
+	Type cat Extends animal
+		Private:
+			Static As Any Ptr callback_table(0 To 2)
+		Public:
+			Declare Static Function addr_callback_fct (Byref As cat) As animal Ptr
+			Declare Static Function speak_callback_fct (Byref As cat) As String
+			Declare Static Sub type_callback_sub (Byref As cat)
+			Declare Constructor ()
+		Private:
+			Dim As String animal_type = "cat"
+	End Type
+	Static As Any Ptr cat.callback_table(0 To 2) = {@cat.addr_callback_fct, @cat.speak_callback_fct, @cat.type_callback_sub}
+			%%
+			%%
+'Derived-type bird:
+	Type bird Extends animal
+		Private:
+			Static As Any Ptr callback_table(0 To 2)
+		Public:
+			Declare Static Function addr_callback_fct (Byref As bird) As animal Ptr
+			Declare Static Function speak_callback_fct (Byref As bird) As String
+			Declare Static Sub type_callback_sub (Byref As bird)
+			Declare Constructor ()
+		Private:
+			Dim As String animal_type = "bird"
+	End Type
+	Static As Any Ptr bird.callback_table(0 To 2) = {@bird.addr_callback_fct, @bird.speak_callback_fct, @bird.type_callback_sub}
+			%%
+			**""-""** At the base-type level, a non static pointer //'callback_ptr'// is allocated for any derived-type instance to emulate the vptr (its value, initialized by the constructor, will depend on what derived-type is constructed: address of the following described table).
+			**""-""** At the base-type level, each abstract procedure is replaced by a member procedure calling the proper derived procedure through the //'callback_ptr'// / //'callback_table(I)'// (//'I'// being the index inside the table corresponding to this procedure).
+			%%
+'Base-type animal:
+	Type animal
+		Protected:
+			Dim As Any Ptr Ptr callback_ptr
+		Public:
+			Declare Function addr_callback_fct () As animal Ptr
+			Declare Function speak_callback_fct () As String
+			Declare Sub type_callback_sub ()
+	End Type
+
+	Function animal.addr_callback_fct () As animal Ptr
+		Return Cptr(Function (Byref As animal) As animal Ptr, This.callback_ptr[0])(This)
+	End Function
+	Function animal.speak_callback_fct () As String
+		Return Cptr(Function (Byref As animal) As String, This.callback_ptr[1])(This)
+	End Function
+	Sub animal.type_callback_sub ()
+		Cptr(Sub (Byref As animal), This.callback_ptr[2])(This)
+	End Sub
+			%%
+		- Full code of emulation:
+				{{fbdoc item="filename" value="examples/manual/proguide/emulation_polymorphism-animal.bas"}}%%(freebasic)
+' Emulation of polymorphism is very close to the real operating:
+' - a non static pointer is allocated for any derived-type instance to emulate the vptr
+'   (its value will depend on what derived-type is constructed: address of the following table)
+' - a static procedure pointer table is defined for each derived type to emulate the vtable
+'   (an instance reference is passed as first parameter to each static procedure to emulate the hidden 'This' reference passed to any non-static member procedure)
+
+
+'Base-type animal:
+	Type animal
+		Protected:
+			Dim As Any Ptr Ptr callback_ptr
+		Public:
+			Declare Function addr_callback_fct () As animal Ptr
+			Declare Function speak_callback_fct () As String
+			Declare Sub type_callback_sub ()
+	End Type
+
+	Function animal.addr_callback_fct () As animal Ptr
+		Return Cptr(Function (Byref As animal) As animal Ptr, This.callback_ptr[0])(This)
+	End Function
+	Function animal.speak_callback_fct () As String
+		Return Cptr(Function (Byref As animal) As String, This.callback_ptr[1])(This)
+	End Function
+	Sub animal.type_callback_sub ()
+		Cptr(Sub (Byref As animal), This.callback_ptr[2])(This)
+	End Sub
+
+'Derived-type dog:
+	Type dog Extends animal
+		Private:
+			Static As Any Ptr callback_table(0 To 2)
+		Public:
+			Declare Static Function addr_callback_fct (Byref As dog) As animal Ptr
+			Declare Static Function speak_callback_fct (Byref As dog) As String
+			Declare Static Sub type_callback_sub (Byref As dog)
+			Declare Constructor ()
+		Private:
+			Dim As String animal_type = "dog"
+	End Type
+	Static As Any Ptr dog.callback_table(0 To 2) = {@dog.addr_callback_fct, @dog.speak_callback_fct, @dog.type_callback_sub}
+
+'callback_sub methods + constructor for dog object:
+	Static Function dog.addr_callback_fct (Byref d As dog) As animal Ptr
+		Return @d
+	End Function
+	Static Function dog.speak_callback_fct (Byref d As dog) As String
+		Return "Woof!"
+	End Function
+	Static Sub dog.type_callback_sub (Byref d As dog)
+		Print d.animal_type
+	End Sub
+	Constructor dog ()
+		This.callback_ptr = @callback_table(0)
+	End Constructor
+
+'Derived-type cat:
+	Type cat Extends animal
+		Private:
+			Static As Any Ptr callback_table(0 To 2)
+		Public:
+			Declare Static Function addr_callback_fct (Byref As cat) As animal Ptr
+			Declare Static Function speak_callback_fct (Byref As cat) As String
+			Declare Static Sub type_callback_sub (Byref As cat)
+			Declare Constructor ()
+		Private:
+			Dim As String animal_type = "cat"
+	End Type
+	Static As Any Ptr cat.callback_table(0 To 2) = {@cat.addr_callback_fct, @cat.speak_callback_fct, @cat.type_callback_sub}
+
+'callback_sub mehods + constructor for cat object:
+	Static Function cat.addr_callback_fct (Byref c As cat) As animal Ptr
+		Return @c
+	End Function
+	Static Function cat.speak_callback_fct (Byref c As cat) As String
+		Return "Meow!"
+	End Function
+	Static Sub cat.type_callback_sub (Byref c As cat)
+		Print c.animal_type
+	End Sub
+	Constructor cat ()
+		This.callback_ptr = @callback_table(0)
+	End Constructor
+
+'Derived-type bird:
+	Type bird Extends animal
+		Private:
+			Static As Any Ptr callback_table(0 To 2)
+		Public:
+			Declare Static Function addr_callback_fct (Byref As bird) As animal Ptr
+			Declare Static Function speak_callback_fct (Byref As bird) As String
+			Declare Static Sub type_callback_sub (Byref As bird)
+			Declare Constructor ()
+		Private:
+			Dim As String animal_type = "bird"
+	End Type
+	Static As Any Ptr bird.callback_table(0 To 2) = {@bird.addr_callback_fct, @bird.speak_callback_fct, @bird.type_callback_sub}
+
+'callback_sub mehods + constructor for bird object:
+	Static Function bird.addr_callback_fct (Byref b As bird) As animal Ptr
+		Return @b
+	End Function
+	Static Function bird.speak_callback_fct (Byref b As bird) As String
+		Return "Cheep!"
+	End Function
+	Static Sub bird.type_callback_sub (Byref b As bird)
+		Print b.animal_type
+	End Sub
+	Constructor bird ()
+		This.callback_ptr = @callback_table(0)
+	End Constructor
+
+'Create a dog and cat and bird dynamic instances referred through an animal pointer list:
+	Dim As dog Ptr p_my_dog = New dog
+	Dim As cat Ptr p_my_cat = New cat
+	Dim As bird Ptr p_my_bird = New bird
+	Dim As animal Ptr animal_list (1 To ...) = {p_my_dog, p_my_cat, p_my_bird}
+
+'Have the animals speak and eat:
+	Print "SUB-TYPE POLYMORPHISM", "@object", "speak", "type"
+	Print "   by emulation"
+	For I As Integer = lBound(animal_list) To Ubound(animal_list)
+		Print "      animal #" & I & ":",
+		Print animal_list(I)->addr_callback_fct(),   'emulated polymorphism
+		Print animal_list(I)->speak_callback_fct(),  'emulated polymorphism
+		animal_list(I)->type_callback_sub()          'emulated polymorphism
+	Next I
+
+Sleep
+
+Delete p_my_dog
+Delete p_my_cat
+Delete p_my_bird
+				%%Output:
+					%%
+SUB-TYPE POLYMORPHISM       @object       speak         type
+   by emulation
+	  animal #1:            12462656      Woof!         dog
+	  animal #2:            12462728      Meow!         cat
+	  animal #3:            12462800      Cheep!        bird
+					%%
+	__Same example, with both real code and emulation code of 'Animal type collection'__
+		The real code and emulation code are nested in a single code for easier comparison:
+			{{fbdoc item="filename" value="examples/manual/proguide/real_emulation_polymorphism-animal.bas"}}%%(freebasic)
+' Emulated polymorphism (with explicit callback member procedures)
+' and
+' True polymorphism (with abstract/virtual member procedures),
+' both in an inheritance structure.
+
+
+'Base-type animal:
+	Type animal Extends Object  'Extends Object' useful for true polymorphism only
+	' for true polymorphism:
+		Public:
+			Declare Abstract Function addr_override_fct () As animal Ptr
+			Declare Abstract Function speak_override_fct () As String
+			Declare Abstract Sub type_override_sub ()
+	' for polymorphism emulation:
+		Protected:
+			Dim As Any Ptr Ptr callback_ptr
+		Public:
+			Declare Function addr_callback_fct () As animal Ptr
+			Declare Function speak_callback_fct () As String
+			Declare Sub type_callback_sub ()
+	End Type
+
+	' for polymorphism emulation:
+		Function animal.addr_callback_fct () As animal Ptr
+			Return Cptr(Function (Byref As animal) As animal Ptr, This.callback_ptr[0])(This)
+		End Function
+		Function animal.speak_callback_fct () As String
+			Return Cptr(Function (Byref As animal) As String, This.callback_ptr[1])(This)
+		End Function
+		Sub animal.type_callback_sub ()
+			Cptr(Sub (Byref As animal), This.callback_ptr[2])(This)
+		End Sub
+
+'Derived-type dog:
+	Type dog Extends animal
+	' for true polymorphism:
+		Public:
+			Declare Virtual Function addr_override_fct () As animal Ptr Override
+			Declare Virtual Function speak_override_fct () As String Override
+			Declare Virtual Sub type_override_sub () Override
+	' for polymorphism emulation:
+		Private:
+			Static As Any Ptr callback_table(0 To 2)
+		Public:
+			Declare Static Function addr_callback_fct (Byref As dog) As animal Ptr
+			Declare Static Function speak_callback_fct (Byref As dog) As String
+			Declare Static Sub type_callback_sub (Byref As dog)
+			Declare Constructor ()
+	' for all:
+		Private:
+			Dim As String animal_type = "dog"
+	End Type
+
+	' for true polymorphism:
+		' override_sub methods for dog object:
+			Virtual Function dog.addr_override_fct () As animal Ptr
+				Return @This
+			End Function
+			Virtual Function dog.speak_override_fct () As String
+				Return "Woof!"
+			End Function
+			Virtual Sub dog.type_override_sub ()
+				Print This.animal_type
+			End Sub
+
+	' for polymorphism emulation:
+		Static As Any Ptr dog.callback_table(0 To 2) = {@dog.addr_callback_fct, @dog.speak_callback_fct, @dog.type_callback_sub}
+		'callback_sub methods + constructor for dog object:
+			Static Function dog.addr_callback_fct (Byref d As dog) As animal Ptr
+				Return @d
+			End Function
+			Static Function dog.speak_callback_fct (Byref d As dog) As String
+				Return "Woof!"
+			End Function
+			Static Sub dog.type_callback_sub (Byref d As dog)
+				Print d.animal_type
+			End Sub
+			Constructor dog ()
+				This.callback_ptr = @callback_table(0)
+			End Constructor
+
+'Derived-type cat:
+	Type cat Extends animal
+	' for true polymorphism:
+		Public:
+			Declare Virtual Function addr_override_fct () As animal Ptr Override
+			Declare Virtual Function speak_override_fct () As String Override
+			Declare Virtual Sub type_override_sub () Override
+	' for polymorphism emulation:
+		Private:
+			Static As Any Ptr callback_table(0 To 2)
+		Public:
+			Declare Static Function addr_callback_fct (Byref As cat) As animal Ptr
+			Declare Static Function speak_callback_fct (Byref As cat) As String
+			Declare Static Sub type_callback_sub (Byref As cat)
+			Declare Constructor ()
+	' for all:
+		Private:
+			Dim As String animal_type = "cat"
+	End Type
+
+	' for true polymorphism:
+		' override_sub mehods for cat object:
+			Virtual Function cat.addr_override_fct () As animal Ptr
+				Return @This
+			End Function
+			Virtual Function cat.speak_override_fct () As String
+				Return "Meow!"
+			End Function
+			Virtual Sub cat.type_override_sub ()
+				Print This.animal_type
+			End Sub
+
+	' for polymorphism emulation:
+		Static As Any Ptr cat.callback_table(0 To 2) = {@cat.addr_callback_fct, @cat.speak_callback_fct, @cat.type_callback_sub}
+		' callback_sub mehods + constructor for cat object:
+			Static Function cat.addr_callback_fct (Byref c As cat) As animal Ptr
+				Return @c
+			End Function
+			Static Function cat.speak_callback_fct (Byref c As cat) As String
+				Return "Meow!"
+			End Function
+			Static Sub cat.type_callback_sub (Byref c As cat)
+				Print c.animal_type
+			End Sub
+			Constructor cat ()
+				This.callback_ptr = @callback_table(0)
+			End Constructor
+
+'Derived-type bird:
+	Type bird Extends animal
+	' for true polymorphism:
+		Public:
+			Declare Virtual Function addr_override_fct () As animal Ptr Override
+			Declare Virtual Function speak_override_fct () As String Override
+			Declare Virtual Sub type_override_sub () Override
+	' for polymorphism emulation:
+		Private:
+			Static As Any Ptr callback_table(0 To 2)
+		Public:
+			Declare Static Function addr_callback_fct (Byref As bird) As animal Ptr
+			Declare Static Function speak_callback_fct (Byref As bird) As String
+			Declare Static Sub type_callback_sub (Byref As bird)
+			Declare Constructor ()
+	' for all:
+		Private:
+			Dim As String animal_type = "bird"
+	End Type
+
+	' for true polymorphism:
+		' override_sub mehods for bird object:
+			Virtual Function bird.addr_override_fct () As animal Ptr
+				Return @This
+			End Function
+			Virtual Function bird.speak_override_fct () As String
+				Return "Cheep!"
+			End Function
+			Virtual Sub bird.type_override_sub ()
+				Print This.animal_type
+			End Sub
+
+	' for polymorphism emulation:
+		Static As Any Ptr bird.callback_table(0 To 2) = {@bird.addr_callback_fct, @bird.speak_callback_fct, @bird.type_callback_sub}
+		' callback_sub mehods + constructor for bird object:
+			Static Function bird.addr_callback_fct (Byref b As bird) As animal Ptr
+				Return @b
+			End Function
+			Static Function bird.speak_callback_fct (Byref b As bird) As String
+				Return "Cheep!"
+			End Function
+			Static Sub bird.type_callback_sub (Byref b As bird)
+				Print b.animal_type
+			End Sub
+			Constructor bird ()
+				This.callback_ptr = @callback_table(0)
+			End Constructor
+
+'Create a dog and cat and bird dynamic instances referred through an animal pointer list:
+	Dim As dog Ptr p_my_dog = New dog
+	Dim As cat Ptr p_my_cat = New cat
+	Dim As bird Ptr p_my_bird = New bird
+	Dim As animal Ptr animal_list (1 To ...) = {p_my_dog, p_my_cat, p_my_bird}
+
+'Have the animals speak and eat:
+	Print "SUB-TYPE POLYMORPHISM", "@object", "speak", "type"
+	For I As Integer = lBound(animal_list) To Ubound(animal_list)
+		Print "   animal #" & I & ":"
+		' for override_sub:
+			Print "      true operating:",
+			Print animal_list(I)->addr_override_fct(),   'real polymorphism
+			Print animal_list(I)->speak_override_fct(),  'real polymorphism
+			animal_list(I)->type_override_sub()          'real polymorphism
+		' for polymorphism emulation:
+			Print "      by emulation:",
+			Print animal_list(I)->addr_callback_fct(),   'emulated polymorphism
+			Print animal_list(I)->speak_callback_fct(),  'emulated polymorphism
+			animal_list(I)->type_callback_sub()          'emulated polymorphism
+	Next I
+
+Sleep
+
+Delete p_my_dog
+Delete p_my_cat
+Delete p_my_bird
+			%%Output:
+				%%
+SUB-TYPE POLYMORPHISM       @object       speak         type
+   animal #1:
+	  true operating:       11217472      Woof!         dog
+	  by emulation:         11217472      Woof!         dog
+   animal #2:
+	  true operating:       11217552      Meow!         cat
+	  by emulation:         11217552      Meow!         cat
+   animal #3:
+	  true operating:       11217632      Cheep!        bird
+	  by emulation:         11217632      Cheep!        bird
+				%%
+@@{{anchor name="ProPgObjectRttiTop|Back to top"}}@@
+----
+{{anchor name="ProPgObjectRtti3"}}
+{{fbdoc item="section" value="3. Demangle typenames from RTTI info"}}
+	Extraction of the mangled typename from the RTTI info:
+		**""-""** From the instance address, the RTTI info pointer of the type of the instance is accessed through a double indirection (with offsets: [0][-1]).
+		**""-""** The RTTI info pointer chaining described above allows to access RTTI info of the selected type in the inheritance hierarchy (up to the Object built-in type). This is done by means of an iteration on the pointer indirection (with offset: [+2]).
+		**""-""** Then the selected mangled typename is accessed (final indirection with offset: [+1])
+		
+	Function 'mangledTypeNameFromRTTI()' to extract the mangled typenames:
+		%%
+Function mangledTypeNameFromRTTI (Byval po As Object Ptr, Byval baseIndex As Integer = 0) As String
+	' Function to get any mangled-typename in the inheritance up hierarchy
+	' of the type of an instance (address: 'po') compatible with the built-in 'Object'
+	'
+	' ('baseIndex =  0' to get the mangled-typename of the instance)
+	' ('baseIndex = -1' to get the base mangled-typename of the instance, or "" if not existing)
+	' ('baseIndex = -2' to get the base.base mangled-typename of the instance, or "" if not existing)
+	' (.....)
+	'
+		Dim As String s
+		Dim As Zstring Ptr pz
+		Dim As Any Ptr p = Cptr(Any Ptr Ptr Ptr, po)[0][-1]  ' Ptr to RTTI info
+		For I As Integer = baseIndex To -1
+			p = Cptr(Any Ptr Ptr, p)[2]                  ' Ptr to Base RTTI info of previous RTTI info
+			If p = 0 Then Return s
+		Next I
+		pz = Cptr(Any Ptr Ptr, p)[1]                         ' Ptr to mangled-typename
+		s = *pz
+		Return s
+End Function
+		%%
+	Example of mangled typenames extraction from RTTI info, for an inheritance structure (three derived level) declared inside a namespace block:
+		{{fbdoc item="filename" value="examples/manual/proguide/mangled_rtti_info.bas"}}%%(freebasic)
+Namespace oop
+	Type parent Extends Object
+	End Type
+
+	Type child Extends parent
+	End Type
+
+	Type grandchild Extends child
+	End Type
+End namespace
+
+Function mangledTypeNameFromRTTI (Byval po As Object Ptr, Byval baseIndex As Integer = 0) As String
+	' Function to get any mangled-typename in the inheritance up hierarchy
+	' of the type of an instance (address: 'po') compatible with the built-in 'Object'
+	'
+	' ('baseIndex =  0' to get the mangled-typename of the instance)
+	' ('baseIndex = -1' to get the base mangled-typename of the instance, or "" if not existing)
+	' ('baseIndex = -2' to get the base.base mangled-typename of the instance, or "" if not existing)
+	' (.....)
+	'
+		Dim As String s
+		Dim As Zstring Ptr pz
+		Dim As Any Ptr p = Cptr(Any Ptr Ptr Ptr, po)[0][-1]  ' Ptr to RTTI info
+		For I As Integer = baseIndex To -1
+			p = Cptr(Any Ptr Ptr, p)[2]                      ' Ptr to Base RTTI info of previous RTTI info
+			If p = 0 Then Return s
+		Next I
+		pz = Cptr(Any Ptr Ptr, p)[1]                         ' Ptr to mangled-typename
+		s = *pz
+		Return s
+End Function
+
+Dim As Object Ptr p = New oop.grandchild
+
+Print "Mangled typenames list, from RTTI info:"
+Print "  " & mangledTypeNameFromRTTI(p, 0)
+Print "  " & mangledTypeNameFromRTTI(p, -1)
+Print "  " & mangledTypeNameFromRTTI(p, -2)
+Print "  " & mangledTypeNameFromRTTI(p, -3)
+Delete p
+
+Sleep
+		%%Output:
+			%%
+Mangled typenames list, from RTTI info:
+  N3OOP10GRANDCHILDE
+  N3OOP5CHILDE
+  N3OOP6PARENTE
+  6OBJECT
+			%%
+	__Implementation of the mangled typenames__
+		From the above output, the mangling process on typenames can be highlighted with the following formatting:
+			**##N3__OOP__10__GRANDCHILD__E##**
+			(for //'oop.grandchild'//)
+			
+			**##N3__OOP__5__CHILD__E##**
+			(for //'oop.child'//)
+			
+			**##N3__OOP__6__PARENT__E##**
+			(for //'oop.parent'//)
+			
+			**##6__OBJECT__##**
+			(for //'Object'//)
+			
+		Details on the the mangling process on typenames in the RTTI info:
+			**""-""** The mangled typename is a Zstring (ended by the null character).
+			**""-""** Each component (one dot as separator) of the full typename (converted to uppercase) is preceded by its number of characters encoded in ASCII itself (based on length-prefixed strings).
+			**""-""** When the type is inside at least one namespace, the mangled typename string begins with an additional "N" and ends with an additional "E".
+				(prefix "N" and suffix "E" from Nested-name ... Ending)
+				
+	__Extract the typenames (demangled) from RTTI info__
+		The previous function (//'mangledTypeNameFromRTTI()'//) can be now completed with a demangling process.
+		
+		Function //'typeNameFromRTTI()'// to extract the demangled typenames:
+			%%
+Function typeNameFromRTTI (Byval po As Object Ptr, Byval baseIndex As Integer = 0) As String
+	' Function to get any typename in the inheritance up hierarchy
+	' of the type of an instance (address: 'po') compatible with the built-in 'Object'
+	'
+	' ('baseIndex =  0' to get the typename of the instance)
+	' ('baseIndex = -1' to get the base.typename of the instance, or "" if not existing)
+	' ('baseIndex = -2' to get the base.base.typename of the instance, or "" if not existing)
+	' (.....)
+	'
+		Dim As String s
+		Dim As Zstring Ptr pz
+		Dim As Any Ptr p = Cptr(Any Ptr Ptr Ptr, po)[0][-1]     ' Ptr to RTTI info
+		For I As Integer = baseIndex To -1
+			p = Cptr(Any Ptr Ptr, p)[2]                     ' Ptr to Base RTTI info of previous RTTI info
+			If p = 0 Then Return s
+		Next I
+		pz = Cptr(Any Ptr Ptr, p)[1]                            ' Ptr to mangled-typename
+		Do
+			Do While (*pz)[0] > Asc("9") Orelse (*pz)[0] < Asc("0")
+				If (*pz)[0] = 0 Then Return s
+				pz += 1
+			Loop
+			Dim As Integer N = Val(*pz)
+			Do
+				pz += 1
+			Loop Until (*pz)[0] > Asc("9") Orelse (*pz)[0] < Asc("0")
+			If s <> "" Then s &= "."
+			s &= Left(*pz, N)
+			pz += N
+		Loop
+End Function
+			%%
+		Previous example completed with the above function:
+			{{fbdoc item="filename" value="examples/manual/proguide/rtti_info.bas"}}%%(freebasic)
+Namespace oop
+	Type parent Extends Object
+	End Type
+
+	Type child Extends parent
+	End Type
+
+	Type grandchild Extends child
+	End Type
+End namespace
+
+Function mangledTypeNameFromRTTI (Byval po As Object Ptr, Byval baseIndex As Integer = 0) As String
+	' Function to get any mangled-typename in the inheritance up hierarchy
+	' of the type of an instance (address: 'po') compatible with the built-in 'Object'
+	'
+	' ('baseIndex =  0' to get the mangled-typename of the instance)
+	' ('baseIndex = -1' to get the base mangled-typename of the instance, or "" if not existing)
+	' ('baseIndex = -2' to get the base.base mangled-typename of the instance, or "" if not existing)
+	' (.....)
+	'
+		Dim As String s
+		Dim As Zstring Ptr pz
+		Dim As Any Ptr p = Cptr(Any Ptr Ptr Ptr, po)[0][-1]  ' Ptr to RTTI info
+		For I As Integer = baseIndex To -1
+			p = Cptr(Any Ptr Ptr, p)[2]                      ' Ptr to Base RTTI info of previous RTTI info
+			If p = 0 Then Return s
+		Next I
+		pz = Cptr(Any Ptr Ptr, p)[1]                         ' Ptr to mangled-typename
+		s = *pz
+		Return s
+End Function
+
+Function typeNameFromRTTI (Byval po As Object Ptr, Byval baseIndex As Integer = 0) As String
+	' Function to get any typename in the inheritance up hierarchy
+	' of the type of an instance (address: 'po') compatible with the built-in 'Object'
+	'
+	' ('baseIndex =  0' to get the typename of the instance)
+	' ('baseIndex = -1' to get the base.typename of the instance, or "" if not existing)
+	' ('baseIndex = -2' to get the base.base.typename of the instance, or "" if not existing)
+	' (.....)
+	'
+		Dim As String s
+		Dim As Zstring Ptr pz
+		Dim As Any Ptr p = Cptr(Any Ptr Ptr Ptr, po)[0][-1]          ' Ptr to RTTI info
+		For I As Integer = baseIndex To -1
+			p = Cptr(Any Ptr Ptr, p)[2]                              ' Ptr to Base RTTI info of previous RTTI info
+			If p = 0 Then Return s
+		Next I
+		pz = Cptr(Any Ptr Ptr, p)[1]                                 ' Ptr to mangled-typename
+		Do
+			Do While (*pz)[0] > Asc("9") Orelse (*pz)[0] < Asc("0")
+				If (*pz)[0] = 0 Then Return s
+				pz += 1
+			Loop
+			Dim As Integer N = Val(*pz)
+			Do
+				pz += 1
+			Loop Until (*pz)[0] > Asc("9") Orelse (*pz)[0] < Asc("0")
+			If s <> "" Then s &= "."
+			s &= Left(*pz, N)
+			pz += N
+		Loop
+End Function
+
+Dim As Object Ptr p = New oop.grandchild
+
+Print "Mangled typenames list, from RTTI info:"
+Print "  " & mangledTypeNameFromRTTI(p, 0)
+Print "  " & mangledTypeNameFromRTTI(p, -1)
+Print "  " & mangledTypeNameFromRTTI(p, -2)
+Print "  " & mangledTypeNameFromRTTI(p, -3)
+Print
+Print "Typenames (demangled) list, from RTTI info:"
+Print "  " & typeNameFromRTTI(p, 0)
+Print "  " & typeNameFromRTTI(p, -1)
+Print "  " & typeNameFromRTTI(p, -2)
+Print "  " & typeNameFromRTTI(p, -3)
+Delete p
+
+Sleep
+			%%Output:
+				%%
+Mangled typenames list, from RTTI info:
+  N3OOP10GRANDCHILDE
+  N3OOP5CHILDE
+  N3OOP6PARENTE
+  6OBJECT
+
+Typenames (demangled) list, from RTTI info:
+  OOP.GRANDCHILD
+  OOP.CHILD
+  OOP.PARENT
+  OBJECT
+				%%
+	__Extract at once the Typename (demangled) and all those of its base-types hierarchy, from RTTI info__
+		Simply by calling the previous function in a loop with a decreasing parameter //'baseIndex'// (from the value 0) and to stop it as soon as an empty string is returned. Finaly by returning a string containing the different typenames with a hierarchic separator between each.
+		
+		Function //'typeNameHierarchyFromRTTI()'// to extract the Typename (demangled) and all those of its base-types hierarchy:
+			%%
+Function typeNameHierarchyFromRTTI (Byval po As Object Ptr) As String
+	' Function to get the typename inheritance up hierarchy
+	' of the type of an instance (address: po) compatible with the built-in 'Object'
+	'
+		Dim As String s = TypeNameFromRTTI(po)
+		Dim As Integer i = -1
+		Do
+			Dim As String s0 = typeNameFromRTTI(po, i)
+			If s0 = "" Then Exit Do
+			s &= "->" & s0
+			i -= 1
+		Loop
+		Return s
+End Function
+			%%
+		Previous example again completed with the above function:
+			{{fbdoc item="filename" value="examples/manual/proguide/all_rtti_info.bas"}}%%(freebasic)
+Namespace oop
+	Type parent Extends Object
+	End Type
+
+	Type child Extends parent
+	End Type
+
+	Type grandchild Extends child
+	End Type
+End namespace
+
+Function mangledTypeNameFromRTTI (Byval po As Object Ptr, Byval baseIndex As Integer = 0) As String
+	' Function to get any mangled-typename in the inheritance up hierarchy
+	' of the type of an instance (address: 'po') compatible with the built-in 'Object'
+	'
+	' ('baseIndex =  0' to get the mangled-typename of the instance)
+	' ('baseIndex = -1' to get the base mangled-typename of the instance, or "" if not existing)
+	' ('baseIndex = -2' to get the base.base mangled-typename of the instance, or "" if not existing)
+	' (.....)
+	'
+		Dim As String s
+		Dim As Zstring Ptr pz
+		Dim As Any Ptr p = Cptr(Any Ptr Ptr Ptr, po)[0][-1]  ' Ptr to RTTI info
+		For I As Integer = baseIndex To -1
+			p = Cptr(Any Ptr Ptr, p)[2]                      ' Ptr to Base RTTI info of previous RTTI info
+			If p = 0 Then Return s
+		Next I
+		pz = Cptr(Any Ptr Ptr, p)[1]                         ' Ptr to mangled-typename
+		s = *pz
+		Return s
+End Function
+
+Function typeNameFromRTTI (Byval po As Object Ptr, Byval baseIndex As Integer = 0) As String
+	' Function to get any typename in the inheritance up hierarchy
+	' of the type of an instance (address: 'po') compatible with the built-in 'Object'
+	'
+	' ('baseIndex =  0' to get the typename of the instance)
+	' ('baseIndex = -1' to get the base.typename of the instance, or "" if not existing)
+	' ('baseIndex = -2' to get the base.base.typename of the instance, or "" if not existing)
+	' (.....)
+	'
+		Dim As String s
+		Dim As Zstring Ptr pz
+		Dim As Any Ptr p = Cptr(Any Ptr Ptr Ptr, po)[0][-1]          ' Ptr to RTTI info
+		For I As Integer = baseIndex To -1
+			p = Cptr(Any Ptr Ptr, p)[2]                              ' Ptr to Base RTTI info of previous RTTI info
+			If p = 0 Then Return s
+		Next I
+		pz = Cptr(Any Ptr Ptr, p)[1]                                 ' Ptr to mangled-typename
+		Do
+			Do While (*pz)[0] > Asc("9") Orelse (*pz)[0] < Asc("0")
+				If (*pz)[0] = 0 Then Return s
+				pz += 1
+			Loop
+			Dim As Integer N = Val(*pz)
+			Do
+				pz += 1
+			Loop Until (*pz)[0] > Asc("9") Orelse (*pz)[0] < Asc("0")
+			If s <> "" Then s &= "."
+			s &= Left(*pz, N)
+			pz += N
+		Loop
+End Function
+
+Function typeNameHierarchyFromRTTI (Byval po As Object Ptr) As String
+	' Function to get the typename inheritance up hierarchy
+	' of the type of an instance (address: po) compatible with the built-in 'Object'
+	'
+		Dim As String s = TypeNameFromRTTI(po)
+		Dim As Integer i = -1
+		Do
+			Dim As String s0 = typeNameFromRTTI(po, i)
+			If s0 = "" Then Exit Do
+			s &= "->" & s0
+			i -= 1
+		Loop
+		Return s
+End Function
+
+Dim As Object Ptr p = New oop.grandchild
+
+Print "Mangled typenames list, from RTTI info:"
+Print "  " & mangledTypeNameFromRTTI(p, 0)
+Print "  " & mangledTypeNameFromRTTI(p, -1)
+Print "  " & mangledTypeNameFromRTTI(p, -2)
+Print "  " & mangledTypeNameFromRTTI(p, -3)
+Print
+Print "Typenames (demangled) list, from RTTI info:"
+Print "  " & typeNameFromRTTI(p, 0)
+Print "  " & typeNameFromRTTI(p, -1)
+Print "  " & typeNameFromRTTI(p, -2)
+Print "  " & typeNameFromRTTI(p, -3)
+Print
+Print "Typename (demangled) and all those of its base-types hierarchy, from RTTI info:"
+Print "  " & typeNameHierarchyFromRTTI(p)
+Delete p
+
+Sleep
+			%%Output:
+				%%
+Mangled typenames list, from RTTI info:
+  N3OOP10GRANDCHILDE
+  N3OOP5CHILDE
+  N3OOP6PARENTE
+  6OBJECT
+
+Typenames (demangled) list, from RTTI info:
+  OOP.GRANDCHILD
+  OOP.CHILD
+  OOP.PARENT
+  OBJECT
+
+Typename (demangled) and all those of its base-types hierarchy, from RTTI info:
+  OOP.GRANDCHILD->OOP.CHILD->OOP.PARENT->OBJECT
+				%%
+	__Compare the typename (demangled) extracted from RTTI info to a string variable__
+		As the various steps of demangling, the successive elements of the typname extracted from the RTTI info are compared with those of the chain provided (as soon as an element is different, "false" is returned immediately).
+		
+		Function //'typeNameEqualFromRTTI()'// to compared the typename (demangled) extracted from RTTI info to a string variable:
+			%%
+Function typeNameEqualFromRTTI (Byval po As Object Ptr, Byref typeName As String) As Boolean
+	' Function to get true if the instance typename (address: po) is the same than the passed string
+	'
+		Dim As String t = Ucase(typeName)
+		Dim As ZString Ptr pz = Cptr(Any Ptr Ptr Ptr Ptr, po)[0][-1][1] ' Ptr to Mangled Typename
+		Dim As Integer i = 1
+		Do
+			Do While (*pz)[0] > Asc("9") Orelse (*pz)[0] < Asc("0")
+				If (*pz)[0] = 0 Then Return True
+				pz += 1
+			Loop
+			Dim As Integer N = Val(*pz)
+			Do
+				pz += 1
+			Loop Until (*pz)[0] > Asc("9") Orelse (*pz)[0] < Asc("0")
+			If i > 1 Then
+				If Mid(t, i, 1) <> "." Then Return False Else i += 1
+			End If
+			If Mid(t, i, N) <> Left(*pz, N) Then Return False Else pz += N : i += N
+		Loop
+End Function
+			%%
+		Previous example finally completed with the above function:
+			{{fbdoc item="filename" value="examples/manual/proguide/compare_all_rtti_info.bas"}}%%(freebasic)
+Namespace oop
+	Type parent Extends Object
+	End Type
+
+	Type child Extends parent
+	End Type
+
+	Type grandchild Extends child
+	End Type
+End namespace
+
+Function mangledTypeNameFromRTTI (Byval po As Object Ptr, Byval baseIndex As Integer = 0) As String
+	' Function to get any mangled-typename in the inheritance up hierarchy
+	' of the type of an instance (address: 'po') compatible with the built-in 'Object'
+	'
+	' ('baseIndex =  0' to get the mangled-typename of the instance)
+	' ('baseIndex = -1' to get the base mangled-typename of the instance, or "" if not existing)
+	' ('baseIndex = -2' to get the base.base mangled-typename of the instance, or "" if not existing)
+	' (.....)
+	'
+		Dim As String s
+		Dim As Zstring Ptr pz
+		Dim As Any Ptr p = Cptr(Any Ptr Ptr Ptr, po)[0][-1]  ' Ptr to RTTI info
+		For I As Integer = baseIndex To -1
+			p = Cptr(Any Ptr Ptr, p)[2]                      ' Ptr to Base RTTI info of previous RTTI info
+			If p = 0 Then Return s
+		Next I
+		pz = Cptr(Any Ptr Ptr, p)[1]                         ' Ptr to mangled-typename
+		s = *pz
+		Return s
+End Function
+
+Function typeNameFromRTTI (Byval po As Object Ptr, Byval baseIndex As Integer = 0) As String
+	' Function to get any typename in the inheritance up hierarchy
+	' of the type of an instance (address: 'po') compatible with the built-in 'Object'
+	'
+	' ('baseIndex =  0' to get the typename of the instance)
+	' ('baseIndex = -1' to get the base.typename of the instance, or "" if not existing)
+	' ('baseIndex = -2' to get the base.base.typename of the instance, or "" if not existing)
+	' (.....)
+	'
+		Dim As String s
+		Dim As Zstring Ptr pz
+		Dim As Any Ptr p = Cptr(Any Ptr Ptr Ptr, po)[0][-1]          ' Ptr to RTTI info
+		For I As Integer = baseIndex To -1
+			p = Cptr(Any Ptr Ptr, p)[2]                              ' Ptr to Base RTTI info of previous RTTI info
+			If p = 0 Then Return s
+		Next I
+		pz = Cptr(Any Ptr Ptr, p)[1]                                 ' Ptr to mangled-typename
+		Do
+			Do While (*pz)[0] > Asc("9") Orelse (*pz)[0] < Asc("0")
+				If (*pz)[0] = 0 Then Return s
+				pz += 1
+			Loop
+			Dim As Integer N = Val(*pz)
+			Do
+				pz += 1
+			Loop Until (*pz)[0] > Asc("9") Orelse (*pz)[0] < Asc("0")
+			If s <> "" Then s &= "."
+			s &= Left(*pz, N)
+			pz += N
+		Loop
+End Function
+
+Function typeNameHierarchyFromRTTI (Byval po As Object Ptr) As String
+	' Function to get the typename inheritance up hierarchy
+	' of the type of an instance (address: po) compatible with the built-in 'Object'
+	'
+		Dim As String s = TypeNameFromRTTI(po)
+		Dim As Integer i = -1
+		Do
+			Dim As String s0 = typeNameFromRTTI(po, i)
+			If s0 = "" Then Exit Do
+			s &= "->" & s0
+			i -= 1
+		Loop
+		Return s
+End Function
+
+Function typeNameEqualFromRTTI (Byval po As Object Ptr, Byref typeName As String) As Boolean
+	' Function to get true if the instance typename (address: po) is the same than the passed string
+	'
+		Dim As String t = Ucase(typeName)
+		Dim As ZString Ptr pz = Cptr(Any Ptr Ptr Ptr Ptr, po)[0][-1][1] ' Ptr to Mangled Typename
+		Dim As Integer i = 1
+		Do
+			Do While (*pz)[0] > Asc("9") Orelse (*pz)[0] < Asc("0")
+				If (*pz)[0] = 0 Then Return True
+				pz += 1
+			Loop
+			Dim As Integer N = Val(*pz)
+			Do
+				pz += 1
+			Loop Until (*pz)[0] > Asc("9") Orelse (*pz)[0] < Asc("0")
+			If i > 1 Then
+				If Mid(t, i, 1) <> "." Then Return False Else i += 1
+			End If
+			If Mid(t, i, N) <> Left(*pz, N) Then Return False Else pz += N : i += N
+		Loop
+End Function
+
+Dim As Object Ptr p = New oop.grandchild
+
+Print "Mangled typenames list, from RTTI info:"
+Print "  " & mangledTypeNameFromRTTI(p, 0)
+Print "  " & mangledTypeNameFromRTTI(p, -1)
+Print "  " & mangledTypeNameFromRTTI(p, -2)
+Print "  " & mangledTypeNameFromRTTI(p, -3)
+Print
+Print "Typenames (demangled) list, from RTTI info:"
+Print "  " & typeNameFromRTTI(p, 0)
+Print "  " & typeNameFromRTTI(p, -1)
+Print "  " & typeNameFromRTTI(p, -2)
+Print "  " & typeNameFromRTTI(p, -3)
+Print
+Print "Typename (demangled) and all those of its base-types hierarchy, from RTTI info:"
+Print "  " & typeNameHierarchyFromRTTI(p)
+Delete p
+Print
+p = New oop.child
+Print "Is the typename of an oop.child instance the same as ""child""?"
+Print "  " & typeNameEqualFromRTTI(p, "child")
+Print "Is the typename of an oop.child instance the same as ""oop.child""?"
+Print "  " & typeNameEqualFromRTTI(p, "oop.child")
+Print "Is the typename of an oop.child instance the same as ""oop.grandchild""?"
+Print "  " & typeNameEqualFromRTTI(p, "oop.grandchild")
+Print "Is the typename of an oop.child instance the same as ""oop.parent""?"
+Print "  " & typeNameEqualFromRTTI(p, "oop.parent")
+Delete p
+
+Sleep
+			%%Output:
+				%%
+Mangled typenames list, from RTTI info:
+  N3OOP10GRANDCHILDE
+  N3OOP5CHILDE
+  N3OOP6PARENTE
+  6OBJECT
+
+Typenames (demangled) list, from RTTI info:
+  OOP.GRANDCHILD
+  OOP.CHILD
+  OOP.PARENT
+  OBJECT
+
+Typename (demangled) and all those of its base-types hierarchy, from RTTI info:
+  OOP.GRANDCHILD->OOP.CHILD->OOP.PARENT->OBJECT
+
+Is the typename of an oop.child instance the same as "child"?
+  false
+Is the typename of an oop.child instance the same as "oop.child"?
+  true
+Is the typename of an oop.child instance the same as "oop.grandchild"?
+  false
+Is the typename of an oop.child instance the same as "oop.parent"?
+  false
+				%%
+@@{{anchor name="ProPgObjectRttiTop|Back to top"}}@@
+----
+
+{{fbdoc item="see"}}
+	- [[ProPgCompoAggregInherit|Composition, Aggregation, Inheritance]]
+	- [[ProPgPolymorphism|Inheritance Polymorphism]]
+
+{{fbdoc item="back" value="CatPgProgrammer|Programmer's Guide"}}
