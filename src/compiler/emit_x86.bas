@@ -2204,7 +2204,7 @@ private sub _emitLOADI2I _
 	end if
 
 	'' dst size = src size
-	if( ddsize = sdsize ) then
+	if( (svreg->typ = IR_VREGTYPE_IMM) or (ddsize = sdsize) ) then
 		ostr = "mov " + dst + COMMA + src
 		outp ostr
 	else

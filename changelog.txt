@@ -81,6 +81,7 @@ Version 1.08.0
 - github #122: gfxlib2: linux GFX_NO_FRAME + GFX_OPENGL freezing at exit due to a dead lock between exit routines
 - sf.net #914: threadsafe RND() and RANDOMIZE() by adding a mutex
 - use the multi-byte & wide character functions wctombs() & mbtowcs() when converting between string and wstring (Skyfish)
+- sf.net #568: asm error assigning 16-bit constant to 32-bit var, invalid use of movsx instruction on immediate (short => long)
 
 
 Version 1.07.0
