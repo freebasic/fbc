@@ -163,6 +163,55 @@ static int GL_init(PIXELFORMATDESCRIPTOR *pfd)
 	return res;
 }
 
+static int *GL_setup_pixel_format(PIXELFORMATDESCRIPTOR *pfd, int *attrib, int **samples_attrib)
+{
+	*attrib++ = WGL_COLOR_BITS_ARB;
+	pfd->cColorBits = *attrib++ = __fb_gl_params.color_bits;
+	*attrib++ = WGL_RED_BITS_ARB;
+	pfd->cRedBits = *attrib++ = __fb_gl_params.color_red_bits;
+	*attrib++ = WGL_GREEN_BITS_ARB;
+	pfd->cGreenBits = *attrib++ = __fb_gl_params.color_green_bits;
+	*attrib++ = WGL_BLUE_BITS_ARB;
+	pfd->cBlueBits = *attrib++ = __fb_gl_params.color_blue_bits;
+	*attrib++ = WGL_ALPHA_BITS_ARB;
+	pfd->cAlphaBits = *attrib++ = __fb_gl_params.color_alpha_bits;
+	*attrib++ = WGL_DEPTH_BITS_ARB;
+	pfd->cDepthBits = *attrib++ = __fb_gl_params.depth_bits;
+	if (__fb_gl_params.accum_bits) {
+		*attrib++ = WGL_ACCUM_BITS_ARB;
+		pfd->cAccumBits = *attrib++ = __fb_gl_params.accum_bits;
+	}
+	if (__fb_gl_params.accum_red_bits) {
+		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
+		pfd->cAccumRedBits = *attrib++ = __fb_gl_params.accum_red_bits;
+	}
+	if (__fb_gl_params.accum_green_bits) {
+		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
+		pfd->cAccumGreenBits = *attrib++ = __fb_gl_params.accum_green_bits;
+	}
+	if (__fb_gl_params.accum_blue_bits) {
+		*attrib++ = WGL_ACCUM_BLUE_BITS_ARB;
+		pfd->cAccumBlueBits = *attrib++ = __fb_gl_params.accum_blue_bits;
+	}
+	if (__fb_gl_params.accum_alpha_bits) {
+		*attrib++ = WGL_ACCUM_ALPHA_BITS_ARB;
+		pfd->cAccumAlphaBits = *attrib++ = __fb_gl_params.accum_alpha_bits;
+	}
+	if (__fb_gl_params.stencil_bits) {
+		*attrib++ = WGL_STENCIL_BITS_ARB;
+		pfd->cStencilBits = *attrib++ = __fb_gl_params.stencil_bits;
+	}
+	if (__fb_gl_params.num_samples) {
+		*attrib++ = WGL_SAMPLE_BUFFERS_ARB;
+		*attrib++ = GL_TRUE;
+		*attrib++ = WGL_SAMPLES_ARB;
+		*samples_attrib = attrib;
+		*attrib++ = __fb_gl_params.num_samples;
+	}
+	*attrib = 0;
+	return attrib;
+}
+
 static void opengl_paint(void)
 {
 }
@@ -283,50 +332,8 @@ static DWORD WINAPI opengl_thread( LPVOID param )
 	}
 	/* setup pixel format */
 	//fb_hGL_NormalizeParameters(flags);
-	*attrib++ = WGL_COLOR_BITS_ARB;
-	pfd.cColorBits = *attrib++ = __fb_gl_params.color_bits;
-	*attrib++ = WGL_RED_BITS_ARB;
-	pfd.cRedBits = *attrib++ = __fb_gl_params.color_red_bits;
-	*attrib++ = WGL_GREEN_BITS_ARB;
-	pfd.cGreenBits = *attrib++ = __fb_gl_params.color_green_bits;
-	*attrib++ = WGL_BLUE_BITS_ARB;
-	pfd.cBlueBits = *attrib++ = __fb_gl_params.color_blue_bits;
-	*attrib++ = WGL_ALPHA_BITS_ARB;
-	pfd.cAlphaBits = *attrib++ = __fb_gl_params.color_alpha_bits;
-	*attrib++ = WGL_DEPTH_BITS_ARB;
-	pfd.cDepthBits = *attrib++ = __fb_gl_params.depth_bits;
-	if (__fb_gl_params.accum_bits) {
-		*attrib++ = WGL_ACCUM_BITS_ARB;
-		pfd.cAccumBits = *attrib++ = __fb_gl_params.accum_bits;
-	}
-	if (__fb_gl_params.accum_red_bits) {
-		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
-		pfd.cAccumRedBits = *attrib++ = __fb_gl_params.accum_red_bits;
-	}
-	if (__fb_gl_params.accum_green_bits) {
-		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
-		pfd.cAccumGreenBits = *attrib++ = __fb_gl_params.accum_green_bits;
-	}
-	if (__fb_gl_params.accum_blue_bits) {
-		*attrib++ = WGL_ACCUM_BLUE_BITS_ARB;
-		pfd.cAccumBlueBits = *attrib++ = __fb_gl_params.accum_blue_bits;
-	}
-	if (__fb_gl_params.accum_alpha_bits) {
-		*attrib++ = WGL_ACCUM_ALPHA_BITS_ARB;
-		pfd.cAccumAlphaBits = *attrib++ = __fb_gl_params.accum_alpha_bits;
-	}
-	if (__fb_gl_params.stencil_bits) {
-		*attrib++ = WGL_STENCIL_BITS_ARB;
-		pfd.cStencilBits = *attrib++ = __fb_gl_params.stencil_bits;
-	}
-	if (__fb_gl_params.num_samples) {
-		*attrib++ = WGL_SAMPLE_BUFFERS_ARB;
-		*attrib++ = GL_TRUE;
-		*attrib++ = WGL_SAMPLES_ARB;
-		samples_attrib = attrib;
-		*attrib++ = __fb_gl_params.num_samples;
-	}
-	*attrib = 0;
+
+	attrib = GL_setup_pixel_format( &pfd, attrib, &samples_attrib );
 	
 	int pf = 0, num_formats, format;
 
@@ -447,52 +454,11 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (opengl_init()){
 		return -1;
 	}
+
 	/* setup pixel format */
 	fb_hGL_NormalizeParameters(flags);
-	*attrib++ = WGL_COLOR_BITS_ARB;
-	pfd.cColorBits = *attrib++ = __fb_gl_params.color_bits;
-	*attrib++ = WGL_RED_BITS_ARB;
-	pfd.cRedBits = *attrib++ = __fb_gl_params.color_red_bits;
-	*attrib++ = WGL_GREEN_BITS_ARB;
-	pfd.cGreenBits = *attrib++ = __fb_gl_params.color_green_bits;
-	*attrib++ = WGL_BLUE_BITS_ARB;
-	pfd.cBlueBits = *attrib++ = __fb_gl_params.color_blue_bits;
-	*attrib++ = WGL_ALPHA_BITS_ARB;
-	pfd.cAlphaBits = *attrib++ = __fb_gl_params.color_alpha_bits;
-	*attrib++ = WGL_DEPTH_BITS_ARB;
-	pfd.cDepthBits = *attrib++ = __fb_gl_params.depth_bits;
-	if (__fb_gl_params.accum_bits) {
-		*attrib++ = WGL_ACCUM_BITS_ARB;
-		pfd.cAccumBits = *attrib++ = __fb_gl_params.accum_bits;
-	}
-	if (__fb_gl_params.accum_red_bits) {
-		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
-		pfd.cAccumRedBits = *attrib++ = __fb_gl_params.accum_red_bits;
-	}
-	if (__fb_gl_params.accum_green_bits) {
-		*attrib++ = WGL_ACCUM_RED_BITS_ARB;
-		pfd.cAccumGreenBits = *attrib++ = __fb_gl_params.accum_green_bits;
-	}
-	if (__fb_gl_params.accum_blue_bits) {
-		*attrib++ = WGL_ACCUM_BLUE_BITS_ARB;
-		pfd.cAccumBlueBits = *attrib++ = __fb_gl_params.accum_blue_bits;
-	}
-	if (__fb_gl_params.accum_alpha_bits) {
-		*attrib++ = WGL_ACCUM_ALPHA_BITS_ARB;
-		pfd.cAccumAlphaBits = *attrib++ = __fb_gl_params.accum_alpha_bits;
-	}
-	if (__fb_gl_params.stencil_bits) {
-		*attrib++ = WGL_STENCIL_BITS_ARB;
-		pfd.cStencilBits = *attrib++ = __fb_gl_params.stencil_bits;
-	}
-	if (__fb_gl_params.num_samples) {
-		*attrib++ = WGL_SAMPLE_BUFFERS_ARB;
-		*attrib++ = GL_TRUE;
-		*attrib++ = WGL_SAMPLES_ARB;
-		samples_attrib = attrib;
-		*attrib++ = __fb_gl_params.num_samples;
-	}
-	*attrib = 0;
+
+	attrib = GL_setup_pixel_format( &pfd, attrib, &samples_attrib );
 	
 	hdc = GetDC(fb_win32.wnd);
 	if (fb_wgl.ChoosePixelFormatARB) {
