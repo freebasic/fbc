@@ -222,7 +222,6 @@ static int opengl_init(void)
 	rect.right = fb_win32.w;
 	rect.bottom = fb_win32.h;
 	if (!(fb_win32.flags & DRIVER_FULLSCREEN)) {
-		
 		AdjustWindowRect(&rect, style, FALSE);
 		if (monitor_info.szDevice[0]) {
 			x = monitor_info.rcMonitor.left + ((monitor_info.rcMonitor.right - monitor_info.rcMonitor.left - rect.right) >> 1);
