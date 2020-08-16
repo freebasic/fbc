@@ -21,7 +21,7 @@ SED := sed
 ECHO := echo
 CAT := cat
 PRINTF := printf
-TAIL := TAIL
+TAIL := tail
 
 ifndef FBC
 FBC := fbc$(EXEEXT)
