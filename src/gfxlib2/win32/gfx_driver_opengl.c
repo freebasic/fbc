@@ -241,7 +241,9 @@ static int GL_common_init()
 	/* setup pixel format */
 
 	if (__fb_gl_params.mode_2d != DRIVER_OGL_2D_AUTO_SYNC){
-		// flags??!!!
+		/* flags?  This logic of not calling fb_hGL_NormalizeParameters()
+		   when mode_2d is DRIVER_OGL_2D_AUTO_SYNC is kept from a
+		   previous version. */
 		fb_hGL_NormalizeParameters( fb_win32.flags);
 	}
 
@@ -258,7 +260,9 @@ static int GL_common_init()
 	}
 	if (!pf) {
 		if (__fb_gl_params.mode_2d != DRIVER_OGL_2D_AUTO_SYNC){
-			// flags??!!!
+			/* flags?  This logic of not excluding HAS_MULTISAMPLE
+			   when mode_2d is DRIVER_OGL_2D_AUTO_SYNC is kept from a
+			   previous version. */
 			fb_win32.flags &= ~HAS_MULTISAMPLE;
 		}
 		pf = ChoosePixelFormat(hdc, &pfd);
@@ -384,6 +388,7 @@ static DWORD WINAPI opengl_thread( LPVOID param )
 		return 1;
 	}
 
+	/* thread initialization complete, so release the thread creation lock */
 	SetEvent((HANDLE)param);
 
 	while (fb_win32.is_running)
@@ -435,6 +440,10 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		w *= __fb_gl_params.scale;
 		h *= __fb_gl_params.scale;
 	}
+
+	/*  Initialize the graphics window only.  Creation of the window
+	    is handled in next fb_hWin32Init() or GL_common_init()
+	 */
 
 	if( fb_hWin32Init(title, w, h, depth, refresh_rate, flags) ) {
 		return -1;
