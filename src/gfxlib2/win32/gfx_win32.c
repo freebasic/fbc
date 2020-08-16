@@ -613,7 +613,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	keyconv_clear( &keyconv1 );
 	keyconv_clear( &keyconv2 );
 
-	if (!(flags & DRIVER_OPENGL)) {
+	if (fb_win32.thread != NULL) {
 		InitializeCriticalSection(&update_lock);
 
 		events[0] = CreateEvent( NULL, FALSE, FALSE, NULL );

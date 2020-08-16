@@ -48,8 +48,8 @@ namespace FB
 	'Constants for OpenGL 2D render
 	const as integer OGL_2D_NONE        		= 0, _
 					 OGL_2D_MANUAL_SYNC			= 1, _
-                     OGL_2D_AUTO_SYNC			= 2
-					 
+					 OGL_2D_AUTO_SYNC			= 2
+
 	'' Constants accepted by ScreenControl
 	''
 	'' Getters:

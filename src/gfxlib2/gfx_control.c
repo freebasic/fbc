@@ -237,11 +237,17 @@ FBCALL void fb_GfxControl_i( int what, ssize_t *param1, ssize_t *param2, ssize_t
 		break;
 
 	case SET_GL_2D_MODE:
-		__fb_gl_params.mode_2d = *param1;
+		/* set the initial 2d mode only; we don't want to
+		   change the active mode in use.  The activie mode
+		   only gets set in driver_init() */
+		__fb_gl_params.init_mode_2d = *param1;
 		break;
 
 	case SET_GL_SCALE:
-		__fb_gl_params.scale = *param1;
+		/* set the initial scale only; we don't want to
+		   change the active scale in use.  The activie scale
+		   only gets set in driver_init() */
+		__fb_gl_params.init_scale = *param1;
 		break;
 #endif
 
