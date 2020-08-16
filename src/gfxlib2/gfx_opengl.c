@@ -25,7 +25,7 @@ FBCALL void *fb_GfxGetGLProcAddress(const char *proc)
 #endif
 
 FB_GL __fb_gl;
-FB_GL_PARAMS __fb_gl_params = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, NULL };
+FB_GL_PARAMS __fb_gl_params = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, NULL };
 static GLfloat texcoords[8];
 static GLuint ScreenTex;
 static GLfloat map_r[256], map_g[256], map_b[256];

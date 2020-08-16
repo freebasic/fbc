@@ -101,7 +101,9 @@ typedef struct FB_GL_PARAMS {
 	int accum_blue_bits;
 	int accum_alpha_bits;
 	int num_samples;
+	int init_mode_2d;
 	int mode_2d;
+	int init_scale;
 	int scale;
 	void (*callback)(void);
 } FB_GL_PARAMS;
