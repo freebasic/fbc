@@ -3538,6 +3538,16 @@ private sub hPrintOptions( byval verbose as integer )
 	print "  -vec <n>         Automatic vectorization level (default: 0)"
 	print "  [-]-version      Show compiler version"
 	print "  -w all|pedantic|<n>  Set min warning level: all, pedantic or a value"
+	if( verbose ) then
+	print "  -w all           Enable all warnings"
+	print "  -w none          Disable all warnings"
+	print "  -w param         Enable parameter warnings"
+	print "  -w escape        Enable string escape sequence warnings"
+	print "  -w next          Enable next statement warnings"
+	print "  -w signedness    Enable type signedness warnings"
+	print "  -w constness     Enable const type warnings"
+	print "  -w suffix        Enable invalid suffix warnings"
+	end if
 	print "  -Wa <a,b,c>      Pass options to 'as'"
 	print "  -Wc <a,b,c>      Pass options to 'gcc' (-gen gcc) or 'llc' (-gen llvm)"
 	print "  -Wl <a,b,c>      Pass options to 'ld'"
