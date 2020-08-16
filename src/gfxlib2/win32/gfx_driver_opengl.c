@@ -388,13 +388,15 @@ static DWORD WINAPI opengl_thread( LPVOID param )
 
 	while (fb_win32.is_running)
 	{
-
-		FB_GRAPHICS_LOCK( );
+		fb_hWin32Lock();
+		/* FB_GRAPHICS_LOCK( ); */
+		fb_wgl.MakeCurrent(hdc, hglrc);
 		fb_hGL_SetupProjection();
 		SwapBuffers(hdc);
+		fb_wgl.MakeCurrent(NULL, NULL);
 		driver_poll_events();
-		FB_GRAPHICS_UNLOCK( );
-
+		/* FB_GRAPHICS_UNLOCK( ); */
+		fb_hWin32Unlock();
 		Sleep(10);
 	}
 
@@ -465,10 +467,20 @@ static void driver_exit(void)
 
 static void driver_lock(void)
 {
+	if (__fb_gl_params.mode_2d == DRIVER_OGL_2D_AUTO_SYNC){
+		fb_hWin32Lock();
+		fb_wgl.MakeCurrent(hdc, hglrc);
+		fb_hGL_SetupProjection();
+	}
 }
 
 static void driver_unlock(void)
 {
+	if (__fb_gl_params.mode_2d == DRIVER_OGL_2D_AUTO_SYNC){
+		SwapBuffers(hdc);
+		fb_wgl.MakeCurrent(NULL, NULL);
+		fb_hWin32Unlock();
+	}
 }
 
 static void driver_flip(void)
