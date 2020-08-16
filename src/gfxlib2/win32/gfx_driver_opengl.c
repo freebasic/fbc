@@ -378,20 +378,23 @@ static unsigned int WINAPI opengl_thread( void *param )
 static DWORD WINAPI opengl_thread( LPVOID param )
 #endif
 {
+	/* opengl_thread should be only used when mode_2d == DRIVER_OGL_2D_AUTO_SYNC */
 
 	if( GL_common_init() ) {
-		return -1;
+		return 1;
 	}
+
+	SetEvent((HANDLE)param);
 
 	while (fb_win32.is_running)
 	{
-//fb_hWin32Lock();
+
 		FB_GRAPHICS_LOCK( );
 		fb_hGL_SetupProjection();
 		SwapBuffers(hdc);
 		driver_poll_events();
 		FB_GRAPHICS_UNLOCK( );
-//fb_hWin32Unlock();
+
 		Sleep(10);
 	}
 
@@ -419,6 +422,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	fb_win32.init = opengl_init;
 	fb_win32.exit = opengl_exit;
 	fb_win32.paint = opengl_paint;
+	fb_win32.thread = NULL;
 
 	if (__fb_gl_params.scale>1){
 		free(__fb_gfx->dirty);
@@ -427,28 +431,17 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		h *= __fb_gl_params.scale;
 	}
 
-	if (fb_hWin32Init(title, w, h, depth, refresh_rate, flags)){
+	if( fb_hWin32Init(title, w, h, depth, refresh_rate, flags) ) {
 		return -1;
 	}
+
 	if (__fb_gl_params.mode_2d == DRIVER_OGL_2D_AUTO_SYNC){
+		fb_win32.thread = opengl_thread;
 		fb_wgl.MakeCurrent(NULL, NULL);
-#ifdef HOST_MINGW
-		/* Note: _beginthreadex()'s last parameter cannot be NULL,
-		   or else the function fails on Windows 9x */
-		unsigned int thrdaddr;
-		_beginthreadex( NULL, 0, opengl_thread, NULL, 0, &thrdaddr );
-#else
-		DWORD dwThreadId;
-		CreateThread( NULL, 0, opengl_thread, NULL, 0, &dwThreadId );
-#endif
-		return 0;
+		return fb_hWin32Init(title, w, h, depth, refresh_rate, flags);
 	}
 
-	if( GL_common_init() ) {
-		return -1;
-	}
-
-	return 0;
+	return GL_common_init();
 }
 
 static void driver_exit(void)

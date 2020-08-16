@@ -42,6 +42,7 @@ Version 1.08.0
 - default delete, delete[] operator (deallocate) after #undef deallocate caused compiler crash
 - windows GDI gfxlib driver now displays double scanline screen modes correctly (screen 2 & 8), rather than half screen (adeyblue)
 - sf.net #921: gfxlib: horizontal line drawing on 8-bit image was using wrong bpp
+- opengl driver was leaking thread handle under 'screencontrol fb.SET_GL_2D_MODE, fb.OGL_2D_AUTO_SYNC'
 
 
 Version 1.07.0
