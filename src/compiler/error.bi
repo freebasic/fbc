@@ -376,8 +376,6 @@ enum FB_WARNINGMSG
 	FB_WARNINGMSG_RETURNTYPEMISMATCH
 	FB_WARNINGMSG_CALLINGCONVMISMATCH
 	FB_WARNINGMSG_ARGCNTMISMATCH
-	FB_WARNINGMSG_ONLYVALIDINLANG
-	FB_WARNINGMSG_SUFFIXONLYVALIDINLANG
 
 	FB_WARNINGMSGS
 end enum
@@ -439,13 +437,6 @@ declare sub errReportWarnEx _
 		byval linenum as integer = 0, _
 		byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT, _
 		byval customText as const zstring ptr = NULL _
-	)
-
-declare sub errReportWarnNotAllowed _
-	( _
-		byval opt as FB_LANG_OPT, _
-		byval msgnum as integer = FB_WARNINGMSG_ONLYVALIDINLANG, _
-		byval msgex as zstring ptr = NULL _
 	)
 
 declare sub errReportParam _
