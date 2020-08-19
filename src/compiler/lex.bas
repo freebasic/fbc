@@ -386,14 +386,6 @@ private sub hReadIdentifier _
 		byval flags as LEXCHECK _
 	)
 
-	#macro hCheckIdentifierSuffix()
-		if( fbPdCheckIsSet( FB_PDCHECK_SUFFIX ) ) then
-			if( (fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE) and ((flags and LEXCHECK_ALLOWSUFFIX) = 0) ) then
-				errReportWarnNotAllowed( FB_LANG_OPT_SUFFIX, FB_WARNINGMSG_SUFFIXONLYVALIDINLANG )
-			end if
-		end if
-	#endmacro
-
 	dim as integer skipchar = any
 
 	'' (ALPHA | '_' )
@@ -454,19 +446,16 @@ private sub hReadIdentifier _
 		select case as const lexCurrentChar( )
 		'' '%'?
 		case FB_TK_INTTYPECHAR
-			hCheckIdentifierSuffix()
 			dtype = env.lang.integerkeyworddtype
 			lexEatChar( )
 
 		'' '&'?
 		case FB_TK_LNGTYPECHAR
-			hCheckIdentifierSuffix()
 			dtype = FB_DATATYPE_LONG
 			lexEatChar( )
 
 		'' '!'?
 		case FB_TK_SGNTYPECHAR
-			hCheckIdentifierSuffix()
 			dtype = FB_DATATYPE_SINGLE
 			lexEatChar( )
 
@@ -474,14 +463,12 @@ private sub hReadIdentifier _
 		case FB_TK_DBLTYPECHAR
 			'' isn't it a '##'?
 			if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
-				hCheckIdentifierSuffix()
 				dtype = FB_DATATYPE_DOUBLE
 				lexEatChar( )
 			end if
 
 		'' '$'?
 		case FB_TK_STRTYPECHAR
-			hCheckIdentifierSuffix()
 			dtype = FB_DATATYPE_STRING
 			lexEatChar( )
 		end select

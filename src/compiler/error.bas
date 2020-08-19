@@ -85,9 +85,7 @@ declare function hMakeParamDesc _
 		( /'FB_WARNINGMSG_CONSTQUALIFIERDISCARDED   '/ 0, @"CONST qualifier discarded" ), _
 		( /'FB_WARNINGMSG_RETURNTYPEMISMATCH        '/ 0, @"Return type mismatch" ), _
 		( /'FB_WARNINGMSG_CALLINGCONVMISMATCH       '/ 0, @"Calling convention mismatch" ), _
-		( /'FB_WARNINGMSG_ARGCNTMISMATCH            '/ 0, @"Argument count mismatch" ), _
-		( /'FB_WARNINGMSG_ONLYVALIDINLANG           '/ 1, @"Only valid in -lang" ), _
-		( /'FB_WARNINGMSG_SUFFIXONLYVALIDINLANG     '/ 1, @"Suffixes are only valid in -lang" ) _
+		( /'FB_WARNINGMSG_ARGCNTMISMATCH            '/ 0, @"Argument count mismatch" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _
@@ -785,20 +783,6 @@ private function getNotAllowedMsg _
 	return msg
 
 end function
-
-'':::::
-sub errReportWarnNotAllowed _
-	( _
-		byval opt as FB_LANG_OPT, _
-		byval msgnum as integer = FB_WARNINGMSG_ONLYVALIDINLANG, _
-		byval msgex as zstring ptr = NULL _
-	)
-
-	dim msg as string = getNotAllowedMsg( opt, msgex )
-
-	errReportWarnEx( msgnum, msg, lexLineNum( ) )
-
-end sub
 
 '':::::
 sub errReportNotAllowed _
