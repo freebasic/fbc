@@ -156,44 +156,50 @@ end enum
 
 '' symbol attributes mask
 enum FB_SYMBATTRIB
-	FB_SYMBATTRIB_NONE			= &h00000000
+	FB_SYMBATTRIB_NONE			   = &h00000000
 
-	FB_SYMBATTRIB_SHARED		= &h00000001
-	FB_SYMBATTRIB_STATIC		= &h00000002
-	FB_SYMBATTRIB_DYNAMIC		= &h00000004
-	FB_SYMBATTRIB_COMMON		= &h00000008
-	FB_SYMBATTRIB_EXTERN		= &h00000010	'' extern's become public when DIM'ed
-	FB_SYMBATTRIB_PUBLIC 		= &h00000020
-	FB_SYMBATTRIB_PRIVATE 		= &h00000040
-    FB_SYMBATTRIB_LOCAL			= &h00000080
-	FB_SYMBATTRIB_EXPORT		= &h00000100
-	FB_SYMBATTRIB_IMPORT		= &h00000200
-	FB_SYMBATTRIB_OVERLOADED	= &h00000400
-	FB_SYMBATTRIB_METHOD		= &h00000800  '' Non-STATIC UDT member procs, i.e. procs with implicit THIS ptr
-    FB_SYMBATTRIB_CONSTRUCTOR   = &h00001000	'' methods only
-    FB_SYMBATTRIB_DESTRUCTOR    = &h00002000	'' /
-    FB_SYMBATTRIB_OPERATOR    	= &h00004000
-    FB_SYMBATTRIB_PROPERTY    	= &h00008000    '' /
-	FB_SYMBATTRIB_PARAMBYDESC	= &h00010000 '' VARs, TODO: Rename these and symbIsParam*() to clarify that they're about param vars (not params)
-	FB_SYMBATTRIB_PARAMBYVAL	= &h00020000 '' VARs
-	FB_SYMBATTRIB_PARAMBYREF 	= &h00040000 '' VARs
-	FB_SYMBATTRIB_LITERAL		= &h00080000
-	FB_SYMBATTRIB_CONST			= &h00100000
-	FB_SYMBATTRIB_STATICLOCALS      = &h00200000  '' procedures only
-	FB_SYMBATTRIB_TEMP			= &h00400000
-    FB_SYMBATTRIB_DESCRIPTOR	= &h00800000
-	FB_SYMBATTRIB_FUNCRESULT	= &h01000000
-	FB_SYMBATTRIB_REF               = &h02000000    '' VARs/FIELDs (if declared with BYREF), PROCs (functions/function pointers returning BYREF)
-	FB_SYMBATTRIB_VIS_PRIVATE	= &h04000000    '' UDT members only
-	FB_SYMBATTRIB_VIS_PROTECTED	= &h08000000    '' ditto
-	FB_SYMBATTRIB_NAKED         = &h10000000  '' procedures only
-	FB_SYMBATTRIB_VIRTUAL       = &h20000000  '' methods only: all virtuals (normal and pure)
-	FB_SYMBATTRIB_ABSTRACT      = &h40000000  '' methods only: pure virtuals (only)
-	FB_SYMBATTRIB_NOTHISCONSTNESS = &h80000000 '' PROCs only
+	FB_SYMBATTRIB_SHARED           = &h00000001  '' all symbols
+	FB_SYMBATTRIB_STATIC           = &h00000002  '' all symbols
+	FB_SYMBATTRIB_DYNAMIC          = &h00000004  '' all symbols
+	FB_SYMBATTRIB_COMMON           = &h00000008  '' all symbols
+	FB_SYMBATTRIB_EXTERN           = &h00000010  '' all symbols: extern's become public when DIM'ed
+	FB_SYMBATTRIB_PUBLIC           = &h00000020  '' all symbols
+	FB_SYMBATTRIB_PRIVATE          = &h00000040  '' all symbols
+	FB_SYMBATTRIB_LOCAL            = &h00000080  '' all symbols
+	FB_SYMBATTRIB_EXPORT           = &h00000100  '' all symbols
+	FB_SYMBATTRIB_IMPORT           = &h00000200  '' all symbols
+	FB_SYMBATTRIB_LITERAL          = &h00000400  '' literal value - typically implies CONST
+	FB_SYMBATTRIB_CONST            = &h00000800  '' CONST value, expression, or method
+	FB_SYMBATTRIB_TEMP             = &h00001000
+    FB_SYMBATTRIB_DESCRIPTOR       = &h00002000
+	FB_SYMBATTRIB_PARAMBYDESC      = &h00004000  '' VARs, TODO: Rename these and symbIsParam*() to clarify that they're about param vars (not params)
+	FB_SYMBATTRIB_PARAMBYVAL       = &h00008000  '' VARs
+	FB_SYMBATTRIB_PARAMBYREF       = &h00010000  '' VARs
+	FB_SYMBATTRIB_FUNCRESULT       = &h00020000
+	FB_SYMBATTRIB_REF              = &h00040000  '' VARs/FIELDs (if declared with BYREF), PROCs (functions/function pointers returning BYREF)
+end enum
+
+'' proc symbol attributes mask
+enum FB_PROCATTRIB
+	FB_PROCATTRIB_NONE             = &h00000000
+
+	FB_SYMBATTRIB_OVERLOADED       = &h00080000  '' PROCs / METHODs only
+	FB_SYMBATTRIB_METHOD           = &h00100000  '' Non-STATIC UDT member procs, i.e. procs with implicit THIS ptr
+	FB_SYMBATTRIB_CONSTRUCTOR      = &h00200000  '' methods only
+	FB_SYMBATTRIB_DESTRUCTOR       = &h00400000  '' methods only
+	FB_SYMBATTRIB_OPERATOR         = &h00800000  '' methods only
+	FB_SYMBATTRIB_PROPERTY         = &h01000000  '' methods only
+	FB_SYMBATTRIB_STATICLOCALS     = &h02000000  '' PROCs only
+	FB_SYMBATTRIB_VIS_PRIVATE      = &h04000000  '' UDT members only
+	FB_SYMBATTRIB_VIS_PROTECTED    = &h08000000  '' UDT members only
+	FB_SYMBATTRIB_NAKED            = &h10000000  '' procedures only
+	FB_SYMBATTRIB_VIRTUAL          = &h20000000  '' methods only: all virtuals (normal and pure)
+	FB_SYMBATTRIB_ABSTRACT         = &h40000000  '' methods only: pure virtuals (only)
+	FB_SYMBATTRIB_NOTHISCONSTNESS  = &h80000000  '' PROCs only
 
 	'' reuse - take care
-	FB_SYMBATTRIB_INSTANCEPARAM	= FB_SYMBATTRIB_METHOD '' PARAMs
-	FB_SYMBATTRIB_SUFFIXED		= FB_SYMBATTRIB_NAKED
+	FB_SYMBATTRIB_INSTANCEPARAM    = FB_SYMBATTRIB_METHOD '' PARAMs
+	FB_SYMBATTRIB_SUFFIXED         = FB_SYMBATTRIB_NAKED
 end enum
 
 '' parameter modes
