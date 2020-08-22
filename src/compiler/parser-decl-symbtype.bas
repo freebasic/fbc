@@ -154,7 +154,7 @@ private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
 	cParameters( NULL, proc, mode, TRUE )
 
 	'' BYREF?
-	cByrefAttribute( attrib, is_func )
+	cByrefAttribute( pattrib, is_func )
 
 	'' (AS SymbolType)?
 	if( lexGetToken( ) = FB_TK_AS ) then

@@ -573,7 +573,7 @@ private function hMaybeCallResultCtor _
 	dim as FBSYMBOL ptr res = any, defctor = any
 
 	'' Not returning BYVAL, or BYVAL but not an UDT?
-	if( symbIsRef( sym ) or (symbGetType( sym ) <> FB_DATATYPE_STRUCT) ) then
+	if( symbIsReturnByRef( sym ) or (symbGetType( sym ) <> FB_DATATYPE_STRUCT) ) then
 		return head_node
 	end if
 
@@ -825,7 +825,7 @@ private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 	'' will be trashed when the function returns (also, the string returned will be
 	'' set as temp, so any assignment or when passed as parameter to another proc
 	'' will deallocate this string)
-	if( (symbGetType( proc ) = FB_DATATYPE_STRING) and (not symbIsRef( proc )) ) then
+	if( (symbGetType( proc ) = FB_DATATYPE_STRING) and (not symbIsReturnByRef( proc )) ) then
 		n = rtlStrAllocTmpResult( astNewVAR( s ) )
 
 		if( env.clopt.backend = FB_BACKEND_GCC ) then
@@ -1340,7 +1340,7 @@ private sub hCallStaticCtor _
 end sub
 
 private sub hCallStaticDtor( byval sym as FBSYMBOL ptr )
-	assert( symbIsRef( sym ) = FALSE )
+	assert( symbIsReturnByRef( sym ) = FALSE )
 
 	'' dynamic?
 	if( symbIsDynamic( sym ) ) then
@@ -1402,7 +1402,7 @@ function astProcAddStaticInstance _
 	dim as FB_DTORWRAPPER ptr wrap = any
 	dim as FBSYMBOL ptr proc = any
 
-	assert( symbIsRef( sym ) = FALSE )
+	assert( symbIsReturnByRef( sym ) = FALSE )
 
 	dtorlist = parser.currproc->proc.ext->statdtor
 

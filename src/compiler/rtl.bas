@@ -183,7 +183,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 										inner_param_optval = NULL
 									end if
 
-									param = symbAddProcParam( inner_proc, NULL, .dtype, NULL, iif( .mode = FB_PARAMMODE_BYDESC, -1, 0 ), .mode, 0 )
+									param = symbAddProcParam( inner_proc, NULL, .dtype, NULL, iif( .mode = FB_PARAMMODE_BYDESC, -1, 0 ), .mode, 0, 0 )
 									symbMakeParamOptional( inner_proc, param, inner_param_optval )
 								end with
 							next
@@ -215,7 +215,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 						dtype = typeAddrOf( FB_DATATYPE_VOID )
 					end if
 
-					param = symbAddProcParam( proc, NULL, dtype, subtype, iif( .mode = FB_PARAMMODE_BYDESC, -1, 0 ), .mode, 0 )
+					param = symbAddProcParam( proc, NULL, dtype, subtype, iif( .mode = FB_PARAMMODE_BYDESC, -1, 0 ), .mode, 0, 0 )
 
 					symbMakeParamOptional( proc, param, param_optval )
 				end with
@@ -226,7 +226,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 			dim as FB_PROCATTRIB pattrib = FB_PROCATTRIB_NONE
 
 			if( (procdef->options and FB_RTL_OPT_OVER) <> 0 ) then
-				attrib = FB_SYMBATTRIB_OVERLOADED
+				pattrib = FB_PROCATTRIB_OVERLOADED
 			end if
 
 			if( (procdef->options and FB_RTL_OPT_STRSUFFIX) <> 0 ) then

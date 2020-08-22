@@ -138,7 +138,7 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_HASRTTI      = &h00400000
 	FB_SYMBSTATS_CANTUNDEF    = &h00800000
 	FB_SYMBSTATS_UNIONFIELD   = &h01000000  '' fields only
-	                          = &h02000000  '' params only
+	                        ''= &h02000000  '' params only
 	FB_SYMBSTATS_EMITTED      = &h04000000  '' needed by high-level IRs, to avoid emitting structs etc twice
 	FB_SYMBSTATS_BEINGEMITTED = &h08000000  '' ditto, for circular dependencies with structs
 
@@ -170,36 +170,35 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_IMPORT           = &h00000200  '' all symbols
 	FB_SYMBATTRIB_LITERAL          = &h00000400  '' literal value - typically implies CONST
 	FB_SYMBATTRIB_CONST            = &h00000800  '' CONST value, expression, or method
-	FB_SYMBATTRIB_TEMP             = &h00001000
-    FB_SYMBATTRIB_DESCRIPTOR       = &h00002000
+	FB_SYMBATTRIB_TEMP             = &h00001000  '' VARs
+	FB_SYMBATTRIB_DESCRIPTOR       = &h00002000  '' VARs (arrays)
 	FB_SYMBATTRIB_PARAMBYDESC      = &h00004000  '' VARs, TODO: Rename these and symbIsParam*() to clarify that they're about param vars (not params)
 	FB_SYMBATTRIB_PARAMBYVAL       = &h00008000  '' VARs
 	FB_SYMBATTRIB_PARAMBYREF       = &h00010000  '' VARs
 	FB_SYMBATTRIB_FUNCRESULT       = &h00020000
-	FB_SYMBATTRIB_REF              = &h00040000  '' VARs/FIELDs (if declared with BYREF), PROCs (functions/function pointers returning BYREF)
+	FB_SYMBATTRIB_REF              = &h00040000  '' VARs/FIELDs (if declared with BYREF)
+	FB_SYMBATTRIB_INSTANCEPARAM    = &h00080000
+	FB_SYMBATTRIB_SUFFIXED         = &h00100000
+	FB_SYMBATTRIB_VIS_PRIVATE      = &h00200000  '' UDT members only
+	FB_SYMBATTRIB_VIS_PROTECTED    = &h00400000  '' UDT members only
 end enum
 
 '' proc symbol attributes mask
 enum FB_PROCATTRIB
 	FB_PROCATTRIB_NONE             = &h00000000
 
-	FB_SYMBATTRIB_OVERLOADED       = &h00080000  '' PROCs / METHODs only
-	FB_SYMBATTRIB_METHOD           = &h00100000  '' Non-STATIC UDT member procs, i.e. procs with implicit THIS ptr
-	FB_SYMBATTRIB_CONSTRUCTOR      = &h00200000  '' methods only
-	FB_SYMBATTRIB_DESTRUCTOR       = &h00400000  '' methods only
-	FB_SYMBATTRIB_OPERATOR         = &h00800000  '' methods only
-	FB_SYMBATTRIB_PROPERTY         = &h01000000  '' methods only
-	FB_SYMBATTRIB_STATICLOCALS     = &h02000000  '' PROCs only
-	FB_SYMBATTRIB_VIS_PRIVATE      = &h04000000  '' UDT members only
-	FB_SYMBATTRIB_VIS_PROTECTED    = &h08000000  '' UDT members only
-	FB_SYMBATTRIB_NAKED            = &h10000000  '' procedures only
-	FB_SYMBATTRIB_VIRTUAL          = &h20000000  '' methods only: all virtuals (normal and pure)
-	FB_SYMBATTRIB_ABSTRACT         = &h40000000  '' methods only: pure virtuals (only)
-	FB_SYMBATTRIB_NOTHISCONSTNESS  = &h80000000  '' PROCs only
-
-	'' reuse - take care
-	FB_SYMBATTRIB_INSTANCEPARAM    = FB_SYMBATTRIB_METHOD '' PARAMs
-	FB_SYMBATTRIB_SUFFIXED         = FB_SYMBATTRIB_NAKED
+	FB_PROCATTRIB_OVERLOADED       = &h00000001  '' PROCs / METHODs only
+	FB_PROCATTRIB_METHOD           = &h00000002  '' Non-STATIC UDT member procs, i.e. procs with implicit THIS ptr
+	FB_PROCATTRIB_CONSTRUCTOR      = &h00000004  '' methods only
+	FB_PROCATTRIB_DESTRUCTOR       = &h00000008  '' methods only
+	FB_PROCATTRIB_OPERATOR         = &h00000010  '' methods only
+	FB_PROCATTRIB_PROPERTY         = &h00000020  '' methods only
+	FB_PROCATTRIB_STATICLOCALS     = &h00000040  '' PROCs only
+	FB_PROCATTRIB_NAKED            = &h00000080  '' procedures only
+	FB_PROCATTRIB_VIRTUAL          = &h00000100  '' methods only: all virtuals (normal and pure)
+	FB_PROCATTRIB_ABSTRACT         = &h00000200  '' methods only: pure virtuals (only)
+	FB_PROCATTRIB_NOTHISCONSTNESS  = &h00000400  '' PROCs only
+	FB_PROCATTRIB_RETURNBYREF      = &h00000800  '' PROCs (functions/function pointers returning BYREF)
 end enum
 
 '' parameter modes
@@ -716,6 +715,7 @@ end type
 type FBSYMBOL
 	class			as FB_SYMBCLASS
 	attrib			as FB_SYMBATTRIB
+	pattrib			as FB_PROCATTRIB
 	stats			as FB_SYMBSTATS
 
 	id				as FB_SYMBID
@@ -1268,7 +1268,8 @@ declare function symbAddProcParam _
 		byval subtype as FBSYMBOL ptr, _
 		byval dimensions as integer, _
 		byval mode as integer, _
-		byval attrib as FB_SYMBATTRIB _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB _
 	) as FBSYMBOL ptr
 
 declare sub symbMakeParamOptional _
@@ -2115,7 +2116,6 @@ declare function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL 
 #define symbGetOfs(s) s->ofs
 
 #define symbGetAttrib(s) s->attrib
-#define symbSetAttrib(s,t) s->attrib = t
 
 #define symbGetPrev(s) s->prev
 
@@ -2339,7 +2339,7 @@ declare function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL 
 #define symbGetProcCallback(f) f->proc.rtl.callback
 #define symbSetProcCallback(f,cb) f->proc.rtl.callback = cb
 
-#define symbGetProcIsOverloaded(f) ((f->attrib and FB_SYMBATTRIB_OVERLOADED) > 0)
+#define symbGetProcIsOverloaded(f) ((f->pattrib and FB_PROCATTRIB_OVERLOADED) > 0)
 
 #define symGetProcOvlMinParams(f) f->proc.ovl.minparams
 
@@ -2442,17 +2442,17 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbIsImport(s) ((s->attrib and FB_SYMBATTRIB_IMPORT) <> 0)
 
-#define symbIsOverloaded(s) ((s->attrib and FB_SYMBATTRIB_OVERLOADED) <> 0)
+#define symbIsOverloaded(s) ((s->pattrib and FB_PROCATTRIB_OVERLOADED) <> 0)
 
-#define symbIsConstructor(s) ((s->attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0)
+#define symbIsConstructor(s) ((s->pattrib and FB_PROCATTRIB_CONSTRUCTOR) <> 0)
 
-#define symbIsDestructor(s) ((s->attrib and FB_SYMBATTRIB_DESTRUCTOR) <> 0)
+#define symbIsDestructor(s) ((s->pattrib and FB_PROCATTRIB_DESTRUCTOR) <> 0)
 
-#define symbIsOperator(s) ((s->attrib and FB_SYMBATTRIB_OPERATOR) <> 0)
+#define symbIsOperator(s) ((s->pattrib and FB_PROCATTRIB_OPERATOR) <> 0)
 
-#define symbIsProperty(s) ((s->attrib and FB_SYMBATTRIB_PROPERTY) <> 0)
+#define symbIsProperty(s) ((s->pattrib and FB_PROCATTRIB_PROPERTY) <> 0)
 
-#define symbIsMethod(s) ((s->attrib and FB_SYMBATTRIB_METHOD) <> 0)
+#define symbIsMethod(s) ((s->pattrib and FB_PROCATTRIB_METHOD) <> 0)
 
 #define symbIsDescriptor(s) ((s->attrib and FB_SYMBATTRIB_DESCRIPTOR) <> 0)
 
@@ -2462,13 +2462,15 @@ declare sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 
 #define symbIsRef(s) ((s->attrib and FB_SYMBATTRIB_REF) <> 0)
 
-#define symbIsNaked( s ) (((s)->attrib and FB_SYMBATTRIB_NAKED) <> 0)
+#define symbIsReturnByref(s) ((s->pattrib and FB_PROCATTRIB_RETURNBYREF) <> 0)
 
-#define symbIsAbstract(s) ((s->attrib and FB_SYMBATTRIB_ABSTRACT) <> 0)
+#define symbIsNaked( s ) (((s)->pattrib and FB_PROCATTRIB_NAKED) <> 0)
 
-#define symbIsVirtual(s) ((s->attrib and FB_SYMBATTRIB_VIRTUAL) <> 0)
+#define symbIsAbstract(s) ((s->pattrib and FB_PROCATTRIB_ABSTRACT) <> 0)
 
-#define symbGetProcStaticLocals(s) ((s->attrib and FB_SYMBATTRIB_STATICLOCALS) <> 0)
+#define symbIsVirtual(s) ((s->pattrib and FB_PROCATTRIB_VIRTUAL) <> 0)
+
+#define symbGetProcStaticLocals(s) ((s->pattrib and FB_PROCATTRIB_STATICLOCALS) <> 0)
 
 #define symbIsSuffixed(s) ((s->attrib and FB_SYMBATTRIB_SUFFIXED) <> 0)
 
