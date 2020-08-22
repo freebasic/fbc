@@ -1150,7 +1150,7 @@ declare function symbAddVar _
 		byval lgt as longint, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
 		byval options as FB_SYMBOPT = FB_SYMBOPT_NONE _
 	) as FBSYMBOL ptr
 
@@ -1176,7 +1176,7 @@ declare function symbAddConst _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval value as FBVALUE ptr, _
-		byval attrib as integer = FB_SYMBATTRIB_NONE _
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
 	) as FBSYMBOL ptr
 
 declare function symbReuseOrAddConst _
@@ -1185,7 +1185,7 @@ declare function symbReuseOrAddConst _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval value as FBVALUE ptr, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
 declare function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
@@ -1200,7 +1200,7 @@ declare function symbStructBegin _
 		byval isunion as integer, _
 		byval align as integer, _
 		byval is_derived as integer, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
 		byval options as integer _
 	) as FBSYMBOL ptr
 
@@ -1222,7 +1222,7 @@ declare function symbAddField _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
 		byval bits as integer, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
 declare sub symbInsertInnerUDT _
@@ -1241,7 +1241,7 @@ declare function symbAddEnum _
 	( _
 		byval id as zstring ptr, _
 		byval id_alias as zstring ptr, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
 		byval use_hashtb as integer _
 	) as FBSYMBOL ptr
 
@@ -1250,7 +1250,7 @@ declare function symbAddEnumElement _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval value as longint, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
 declare function symbAddProcParam _
@@ -1278,7 +1278,8 @@ declare function symbAddProc _
 		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr
@@ -1290,7 +1291,8 @@ declare function symbAddOperator _
 		byval id_alias as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT = FB_SYMBOPT_NONE _
 	) as FBSYMBOL ptr
@@ -1299,7 +1301,8 @@ declare function symbAddCtor _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval id_alias as zstring ptr, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byval mode as integer, _
 		byval options as FB_SYMBOPT = FB_SYMBOPT_NONE _
 	) as FBSYMBOL ptr
@@ -1307,7 +1310,8 @@ declare function symbAddCtor _
 declare function symbLookupInternallyMangledSubtype _
 	( _
 		byval id as zstring ptr, _
-		byref attrib as integer, _
+		byref attrib as FB_SYMBATTRIB, _
+		byref pattrib as FB_PROCATTRIB, _
 		byref parent as FBSYMBOL ptr, _
 		byref symtb as FBSYMBOLTB ptr, _
 		byref hashtb as FBHASHTB ptr _
@@ -1318,7 +1322,8 @@ declare function symbAddProcPtr _
 		byval proc as FBSYMBOL ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byval mode as integer _
 	) as FBSYMBOL ptr
 
@@ -1475,7 +1480,8 @@ declare function symbNewSymbol _
 		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE _
+		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE, _
+		byval pattrib as FB_PROCATTRIB = FB_PROCATTRIB_NONE _
 	) as FBSYMBOL ptr
 
 declare sub symbFreeSymbol _

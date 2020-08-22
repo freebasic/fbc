@@ -25,7 +25,7 @@ function symbStructBegin _
 		byval isunion as integer, _
 		byval align as integer, _
 		byval is_derived as integer, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
 		byval options as integer _
 	) as FBSYMBOL ptr
 
@@ -270,7 +270,7 @@ function symbAddField _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
 		byval bits as integer, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, _

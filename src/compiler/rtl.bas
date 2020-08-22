@@ -197,7 +197,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 								'' Must match the function's declaration in the
 								'' rtlib. Currently only fb_ThreadCreate() is
 								'' affected.
-								subtype = symbAddProcPtr( inner_proc, .dtype, NULL, 0, env.target.fbcall )
+								subtype = symbAddProcPtr( inner_proc, .dtype, NULL, 0, 0, env.target.fbcall )
 							end with
 
 							param_optval = NULL
@@ -222,7 +222,9 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 			next
 
 			''
-			dim as FB_SYMBATTRIB attrib = 0
+			dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
+			dim as FB_PROCATTRIB pattrib = FB_PROCATTRIB_NONE
+
 			if( (procdef->options and FB_RTL_OPT_OVER) <> 0 ) then
 				attrib = FB_SYMBATTRIB_OVERLOADED
 			end if
@@ -254,7 +256,7 @@ sub rtlAddIntrinsicProcs( byval procdef as const FB_RTL_PROCDEF ptr )
 			end if
 
 			proc = symbAddProc( proc, pname, palias, _
-			                    procdef->dtype, NULL, attrib, callconv, _
+			                    procdef->dtype, NULL, attrib, pattrib, callconv, _
 			                    FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
 			if( proc <> NULL ) then

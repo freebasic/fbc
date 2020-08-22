@@ -269,7 +269,7 @@ private function hCheckExternVar _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
 	) as integer
@@ -342,7 +342,7 @@ private sub hCheckExternVarAndRecover _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint, _
-		byref attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
 		byref dimensions as integer, _
 		byref have_bounds as integer, _
 		dTB() as FBARRAYDIM _
@@ -379,7 +379,7 @@ private function hAddVar _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as longint, _
 		byval addsuffix as integer, _
-		byref attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
 		byref dimensions as integer, _
 		byref have_bounds as integer, _
 		dTB() as FBARRAYDIM, _
@@ -706,7 +706,7 @@ end sub
 
 sub hMaybeConvertExprTb2DimTb _
 	( _
-		byref attrib as integer, _
+		byref attrib as FB_SYMBATTRIB, _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
 		dTB() as FBARRAYDIM _
@@ -1332,7 +1332,7 @@ end function
 ''
 function cVarDecl _
 	( _
-		byval baseattrib as integer, _
+		byval baseattrib as FB_SYMBATTRIB, _
 		byval dopreserve as integer, _
 		byval token as integer, _
 		byval is_fordecl as integer _

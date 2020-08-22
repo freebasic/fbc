@@ -45,7 +45,7 @@ private sub hBuildDllMainWin32( )
 	'' function DllMain stdcall( byval instance as any ptr, byval reason as uinteger, _
 	''                           byval reserved as any ptr ) as integer
 	proc = symbAddProc( proc, NULL, "DllMain", FB_DATATYPE_INTEGER, NULL, _
-	                    FB_SYMBATTRIB_PUBLIC, env.target.stdcall, FB_SYMBOPT_DECLARING )
+	                    FB_SYMBATTRIB_PUBLIC, FB_PROCATTRIB_NONE, env.target.stdcall, FB_SYMBOPT_DECLARING )
 
 	astProcBegin( proc, FALSE )
 
@@ -76,7 +76,7 @@ private sub hBuildDllMainCtor( )
 
 	'' sub ctor cdecl( ) constructor
 	proc = symbAddProc( symbPreAddProc( NULL ), NULL, "__fb_DllMain_ctor", FB_DATATYPE_VOID, NULL, _
-	                    FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
+	                    FB_SYMBATTRIB_PRIVATE, FB_PROCATTRIB_NONE, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 	symbAddGlobalCtor( proc )
 	astProcBegin( proc, FALSE )
 
@@ -118,7 +118,7 @@ private sub hMainBegin( )
 
 	'' function main cdecl( byval argc as long, byval argv as zstring ptr ptr ) as long
 	env.main.proc = symbAddProc( proc, NULL, id, FB_DATATYPE_LONG, NULL, _
-	                             attrib, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
+	                             attrib, FB_PROCATTRIB_NONE, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 
 	'' Must be done before astProcBegin(), so it will add the fb_Init() call, etc.
 	symbSetIsMainProc( env.main.proc )
@@ -129,7 +129,7 @@ end sub
 private sub hModLevelBegin( )
 	'' sub modlevel cdecl( ) constructor
 	env.main.proc = symbAddProc( symbPreAddProc( NULL ), "{modlevel}", fbGetModuleEntry( ), FB_DATATYPE_VOID, NULL, _
-	                             FB_SYMBATTRIB_PRIVATE, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
+	                             FB_SYMBATTRIB_PRIVATE, FB_PROCATTRIB_NONE, FB_FUNCMODE_CDECL, FB_SYMBOPT_DECLARING )
 	symbAddGlobalCtor( env.main.proc )
 	symbSetIsAccessed( env.main.proc )
 	symbSetIsModLevelProc( env.main.proc )

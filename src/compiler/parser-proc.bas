@@ -57,7 +57,8 @@ end sub
 sub cMethodAttributes _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byref attrib as integer _
+		byref attrib as FB_SYMBATTRIB, _
+		byref pattrib as FB_PROCATTRIB _
 	)
 
 	'' STATIC?
@@ -373,7 +374,8 @@ end function
 
 sub cProcRetType _
 	( _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byval proc as FBSYMBOL ptr, _
 		byval is_proto as integer, _
 		byref dtype as integer, _
@@ -561,14 +563,14 @@ private sub cOverrideAttribute( byval proc as FBSYMBOL ptr )
 	end if
 end sub
 
-sub cByrefAttribute( byref attrib as integer, byval is_func as integer )
+sub cByrefAttribute( byref pattrib as FB_PROCATTRIB, byval is_func as integer )
 	'' BYREF?
 	if( lexGetToken( ) = FB_TK_BYREF ) then
 		if( is_func = FALSE ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
 		lexSkipToken( )
-		attrib or= FB_SYMBATTRIB_REF
+		pattrib or= FB_SYMBATTRIB_REF
 	end if
 end sub
 
@@ -1009,6 +1011,7 @@ end sub
 function cProcHeader _
 	( _
 		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byref is_nested as integer, _
 		byval options as FB_PROCOPT, _
 		byval tk as integer _
@@ -1016,7 +1019,7 @@ function cProcHeader _
 
 	#define CREATEFAKE( ) _
 		symbAddProc( proc, symbUniqueLabel( ), NULL, dtype, subtype, _
-				attrib, mode, FB_SYMBOPT_DECLARING )
+				attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
 
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as zstring ptr palias = any
@@ -1335,7 +1338,7 @@ function cProcHeader _
 
 			'' AS SymbolType
 			if( lexGetToken( ) = FB_TK_AS ) then
-				cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
+				cProcRetType( attrib, pattrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
 				              dtype, subtype )
 			else
 				errReport( FB_ERRMSG_EXPECTEDRESTYPE )
@@ -1368,7 +1371,7 @@ function cProcHeader _
 
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then
-			cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
+			cProcRetType( attrib, pattrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
 			              dtype, subtype )
 			is_indexed = (symbGetProcParams( proc ) = 1+1)
 			is_get = TRUE
@@ -1404,7 +1407,7 @@ function cProcHeader _
 			if( (dtype <> FB_DATATYPE_INVALID) or (tk = FB_TK_SUB) ) then
 				errReport( FB_ERRMSG_SYNTAXERROR )
 			end if
-			cProcRetType( attrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
+			cProcRetType( attrib, pattrib, proc, ((options and FB_PROCOPT_ISPROTO) <> 0), _
 			              dtype, subtype )
 		else
 			if( tk = FB_TK_FUNCTION ) then
@@ -1431,11 +1434,11 @@ function cProcHeader _
 	if( options and FB_PROCOPT_ISPROTO ) then
 		select case( tk )
 		case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
-			proc = symbAddCtor( proc, palias, attrib, mode )
+			proc = symbAddCtor( proc, palias, attrib, pattrib, mode )
 		case FB_TK_OPERATOR
-			proc = symbAddOperator( proc, op, palias, dtype, subtype, attrib, mode )
+			proc = symbAddOperator( proc, op, palias, dtype, subtype, attrib, pattrib, mode )
 		case else
-			proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, mode, FB_SYMBOPT_NONE )
+			proc = symbAddProc( proc, @id, palias, dtype, subtype, attrib, pattrib, mode, FB_SYMBOPT_NONE )
 		end select
 
 		if( proc = NULL ) then
@@ -1559,13 +1562,13 @@ function cProcHeader _
 		'' Add new proc based on the body
 		select case( tk )
 		case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
-			head_proc = symbAddCtor( proc, palias, attrib, mode, FB_SYMBOPT_DECLARING )
+			head_proc = symbAddCtor( proc, palias, attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
 		case FB_TK_OPERATOR
 			head_proc = symbAddOperator( proc, op, palias, dtype, subtype, _
-			                             attrib, mode, FB_SYMBOPT_DECLARING )
+			                             attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
 		case else
 			head_proc = symbAddProc( proc, @id, palias, dtype, subtype, _
-			                         attrib, mode, FB_SYMBOPT_DECLARING )
+			                         attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
 		end select
 
 		if( head_proc = NULL ) then
@@ -1608,13 +1611,13 @@ function cProcHeader _
 			'' Then try to add the new overload
 			select case( tk )
 			case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
-				head_proc = symbAddCtor( proc, palias, attrib, mode, FB_SYMBOPT_DECLARING )
+				head_proc = symbAddCtor( proc, palias, attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
 			case FB_TK_OPERATOR
 				head_proc = symbAddOperator( proc, op, palias, dtype, subtype, _
-				                             attrib, mode, FB_SYMBOPT_DECLARING )
+				                             attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
 			case else
 				head_proc = symbAddProc( proc, @id, palias, dtype, subtype, _
-				                         attrib, mode, FB_SYMBOPT_DECLARING )
+				                         attrib, pattrib, mode, FB_SYMBOPT_DECLARING )
 			end select
 
 			'' dup def?
@@ -1672,14 +1675,14 @@ function cProcHeader _
 	function = proc
 end function
 
-sub hDisallowStaticAttrib( byref attrib as integer )
+sub hDisallowStaticAttrib( byref attrib as FB_SYMBATTRIB, byref pattrib as FB_PROCATTRIB )
 	if( (attrib and FB_SYMBATTRIB_STATIC) <> 0 ) then
 		errReport( FB_ERRMSG_MEMBERCANTBESTATIC )
 		attrib and= not FB_SYMBATTRIB_STATIC
 	end if
 end sub
 
-sub hDisallowVirtualCtor( byref attrib as integer )
+sub hDisallowVirtualCtor( byref attrib as FB_SYMBATTRIB, byref pattrib as FB_PROCATTRIB )
 	'' Constructors cannot be virtual (they initialize the vptr
 	'' needed for virtual calls, chicken-egg problem)
 	if( attrib and (FB_SYMBATTRIB_ABSTRACT or FB_SYMBATTRIB_VIRTUAL) ) then
@@ -1692,7 +1695,7 @@ sub hDisallowVirtualCtor( byref attrib as integer )
 	end if
 end sub
 
-sub hDisallowAbstractDtor( byref attrib as integer )
+sub hDisallowAbstractDtor( byref attrib as FB_SYMBATTRIB, byref pattrib as FB_PROCATTRIB )
 	'' Destructors cannot be abstract; they need to have a body to ensure
 	'' that base and field destructors are called.
 	if( attrib and FB_SYMBATTRIB_ABSTRACT ) then
@@ -1701,7 +1704,7 @@ sub hDisallowAbstractDtor( byref attrib as integer )
 	end if
 end sub
 
-sub hDisallowConstCtorDtor( byval tk as integer, byref attrib as integer )
+sub hDisallowConstCtorDtor( byval tk as integer, byref attrib as FB_SYMBATTRIB, byref pattrib as FB_PROCATTRIB )
 	'' It doesn't make sense for ctors/dtors to be CONST. It's a ctor's
 	'' purpose to initialize an object and it couldn't do that if it used
 	'' a CONST This. And as for dtors, they need to be able to destroy all
@@ -1716,7 +1719,7 @@ end sub
 
 '' ProcStmtBegin  =  (PRIVATE|PUBLIC)? (STATIC? | CONST? VIRTUAL?)
 ''                   (SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR) ProcHeader .
-sub cProcStmtBegin( byval attrib as integer )
+sub cProcStmtBegin( byval attrib as FB_SYMBATTRIB, byval pattrib as FB_PROCATTRIB )
 	dim as integer tkn = any, is_nested = any
     dim as FBSYMBOL ptr proc = any
     dim as FB_CMPSTMTSTK ptr stk = any
@@ -1729,7 +1732,7 @@ sub cProcStmtBegin( byval attrib as integer )
 		end if
 	end if
 
-	cMethodAttributes( NULL, attrib )
+	cMethodAttributes( NULL, attrib, pattrib )
 
 	'' SUB|FUNCTION|CONSTRUCTOR|DESTRUCTOR|OPERATOR
 	tkn = lexGetToken( )
@@ -1743,9 +1746,9 @@ sub cProcStmtBegin( byval attrib as integer )
 			attrib or= FB_SYMBATTRIB_CONSTRUCTOR
 		end if
 
-		hDisallowStaticAttrib( attrib )
-		hDisallowVirtualCtor( attrib )
-		hDisallowConstCtorDtor( tkn, attrib )
+		hDisallowStaticAttrib( attrib, pattrib )
+		hDisallowVirtualCtor( attrib, pattrib )
+		hDisallowConstCtorDtor( tkn, attrib, pattrib )
 
 	case FB_TK_DESTRUCTOR
 		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
@@ -1754,9 +1757,9 @@ sub cProcStmtBegin( byval attrib as integer )
 			attrib or= FB_SYMBATTRIB_DESTRUCTOR
 		end if
 
-		hDisallowStaticAttrib( attrib )
-		hDisallowAbstractDtor( attrib )
-		hDisallowConstCtorDtor( tkn, attrib )
+		hDisallowStaticAttrib( attrib, pattrib )
+		hDisallowAbstractDtor( attrib, pattrib )
+		hDisallowConstCtorDtor( tkn, attrib, pattrib )
 
 	case FB_TK_OPERATOR
 		if( fbLangOptIsSet( FB_LANG_OPT_OPEROVL ) = FALSE ) then
@@ -1768,7 +1771,7 @@ sub cProcStmtBegin( byval attrib as integer )
 			errReportNotAllowed( FB_LANG_OPT_CLASS )
 		end if
 
-		hDisallowStaticAttrib( attrib )
+		hDisallowStaticAttrib( attrib, pattrib )
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -1785,7 +1788,7 @@ sub cProcStmtBegin( byval attrib as integer )
 	lexSkipToken( )
 
 	'' ProcHeader
-	proc = cProcHeader( attrib, is_nested, FB_PROCOPT_NONE, tkn )
+	proc = cProcHeader( attrib, pattrib, is_nested, FB_PROCOPT_NONE, tkn )
 	if( proc = NULL ) then
 		'' Close namespace again if cProcHeader() opened it, for better
 		'' error recovery.
