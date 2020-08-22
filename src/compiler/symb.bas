@@ -507,6 +507,7 @@ function symbNewSymbol _
     ''
     s->class = class_
 	s->attrib = attrib
+	s->pattrib = pattrib
 	s->stats = 0
 	s->mangling = parser.mangling
 
@@ -2109,7 +2110,7 @@ private function hSymbCheckConstAssignFuncPtr _
 
 	'' check for identical return type
 	var match = typeCalcMatch( lsubtype->typ, lsubtype->subtype, _
-			iif( symbIsRef( lsubtype ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
+			iif( symbIsReturnByRef( lsubtype ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
 			rsubtype->typ, rsubtype->subtype )
 	if( match = FB_OVLPROC_NO_MATCH ) then
 		wrnmsg = FB_WARNINGMSG_RETURNTYPEMISMATCH
@@ -2117,7 +2118,7 @@ private function hSymbCheckConstAssignFuncPtr _
 	end if
 
 	'' Does one have a BYREF result, but not the other?
-	if( symbIsRef( lsubtype ) <> symbIsRef( rsubtype ) ) then
+	if( symbIsReturnByRef( lsubtype ) <> symbIsReturnByRef( rsubtype ) ) then
 		wrnmsg = FB_WARNINGMSG_RETURNMETHODMISMATCH
 		exit function
 	end if
@@ -2478,36 +2479,37 @@ function symbDumpToStr( byval sym as FBSYMBOL ptr ) as string
 	checkAttrib( LOCAL )
 	checkAttrib( EXPORT )
 	checkAttrib( IMPORT )
-	checkAttrib( OVERLOADED )
-	if( symbIsProc( sym ) ) then
-		checkAttrib( METHOD )
-	else
-		checkAttrib( INSTANCEPARAM )
-	end if
-	checkAttrib( CONSTRUCTOR )
-	checkAttrib( DESTRUCTOR )
-	checkAttrib( OPERATOR )
-	checkAttrib( PROPERTY )
+	checkAttrib( INSTANCEPARAM )
 	checkAttrib( PARAMBYDESC )
 	checkAttrib( PARAMBYVAL )
 	checkAttrib( PARAMBYREF )
 	checkAttrib( LITERAL )
 	checkAttrib( CONST )
-	checkAttrib( STATICLOCALS )
 	checkAttrib( TEMP )
 	checkAttrib( DESCRIPTOR )
 	checkAttrib( FUNCRESULT )
 	checkAttrib( REF )
 	checkAttrib( VIS_PRIVATE )
 	checkAttrib( VIS_PROTECTED )
-	if( symbIsProc( sym ) ) then
-		checkAttrib( NAKED )
-	else
-		checkAttrib( SUFFIXED )
-	end if
-	checkAttrib( ABSTRACT )
-	checkAttrib( VIRTUAL )
-	checkAttrib( NOTHISCONSTNESS )
+	checkAttrib( SUFFIXED )
+
+	#macro checkPattrib( ID )
+		if( sym->pattrib and FB_PROCATTRIB_##ID ) then
+			s += lcase( #ID ) + " "
+		end if
+	#endmacro
+
+	checkPAttrib( OVERLOADED )
+	checkPAttrib( METHOD )
+	checkPAttrib( CONSTRUCTOR )
+	checkPAttrib( DESTRUCTOR )
+	checkPAttrib( OPERATOR )
+	checkPAttrib( PROPERTY )
+	checkPAttrib( RETURNBYREF )
+	checkPAttrib( STATICLOCALS )
+	checkPAttrib( ABSTRACT )
+	checkPAttrib( VIRTUAL )
+	checkPAttrib( NOTHISCONSTNESS )
 #endif
 
 #if 1
@@ -2553,7 +2555,7 @@ function symbDumpToStr( byval sym as FBSYMBOL ptr ) as string
 	else
 		checkStat( WSTRING )
 	end if
-	checkStat( RTL_CONST )
+
 	checkStat( EMITTED )
 	checkStat( BEINGEMITTED )
 #endif

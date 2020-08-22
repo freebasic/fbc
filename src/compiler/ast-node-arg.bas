@@ -578,7 +578,7 @@ private sub hUDTPassByval _
 				n->l = astBuildCallResultVar( n->l )
 				hByteByByte( param, n )
 			else
-				assert( symbIsRef( n->l->sym ) = FALSE )
+				assert( symbIsReturnByRef( n->l->sym ) = FALSE )
 				'' CALL with result in registers, patch the type
 				astSetType( n->l, symbGetProcRealType( n->l->sym ), _
 						symbGetProcRealSubtype( n->l->sym ) )
@@ -1023,7 +1023,7 @@ function astNewARG _
 	'' dtors run the object is dead anyways, so modifications made by the
 	'' dtor don't matter)
 	if( ((not symbIsInstanceParam( param )) or _
-	     ((sym->attrib and FB_SYMBATTRIB_NOTHISCONSTNESS) = 0)) ) then
+	     ((sym->pattrib and FB_PROCATTRIB_NOTHISCONSTNESS) = 0)) ) then
 		if( symbCheckConstAssignTopLevel( symbGetFullType( param ), dtype, param->subtype, arg->subtype, symbGetParamMode( param ) ) = FALSE ) then
 			if( symbIsInstanceParam( param ) ) then
 				errReportParam( parent->sym, 0, NULL, FB_ERRMSG_CONSTUDTTONONCONSTMETHOD )

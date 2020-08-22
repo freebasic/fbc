@@ -76,27 +76,27 @@ sub cMethodAttributes _
 	'' (ABSTRACT|VIRTUAL)?
 	select case( lexGetToken( ) )
 	case FB_TK_ABSTRACT
-		attrib or= FB_SYMBATTRIB_VIRTUAL or FB_SYMBATTRIB_ABSTRACT
+		pattrib or= FB_PROCATTRIB_VIRTUAL or FB_PROCATTRIB_ABSTRACT
 
 		'' Abstracts can only be allowed in UDTs that extend OBJECT,
 		'' because that is what provides the needed vtable ptr.
 		if( parent ) then
 			if( symbGetHasRTTI( parent ) = FALSE ) then
 				errReport( FB_ERRMSG_ABSTRACTWITHOUTRTTI )
-				attrib and= not (FB_SYMBATTRIB_VIRTUAL or FB_SYMBATTRIB_ABSTRACT)
+				pattrib and= not (FB_PROCATTRIB_VIRTUAL or FB_PROCATTRIB_ABSTRACT)
 			end if
 		end if
 
 		lexSkipToken( )
 
 	case FB_TK_VIRTUAL
-		attrib or= FB_SYMBATTRIB_VIRTUAL
+		pattrib or= FB_PROCATTRIB_VIRTUAL
 
 		'' ditto for virtuals
 		if( parent ) then
 			if( symbGetHasRTTI( parent ) = FALSE ) then
 				errReport( FB_ERRMSG_VIRTUALWITHOUTRTTI )
-				attrib and= not FB_SYMBATTRIB_VIRTUAL
+				pattrib and= not FB_PROCATTRIB_VIRTUAL
 			end if
 		end if
 
@@ -240,18 +240,19 @@ end sub
 private sub hCheckAttribs _
 	( _
 		byval proto as FBSYMBOL ptr, _
-		byval attrib as FB_SYMBATTRIB _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB _
 	)
 
 	'' if one returns BYREF, the other must too
-	if( ((attrib and FB_SYMBATTRIB_REF) <> 0) <> symbIsRef( proto ) ) then
+	if( ((pattrib and FB_PROCATTRIB_RETURNBYREF) <> 0) <> symbIsReturnByRef( proto ) ) then
 		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
 		'' Error recovery: if the proto had BYREF, add it for the body
 		'' too, otherwise remove it from the body
-		if( symbIsRef( proto ) ) then
-			attrib or= FB_SYMBATTRIB_REF
+		if( symbIsReturnByRef( proto ) ) then
+			pattrib or= FB_PROCATTRIB_RETURNBYREF
 		else
-			attrib and= not FB_SYMBATTRIB_REF
+			pattrib and= not FB_PROCATTRIB_RETURNBYREF
 		end if
 	end if
 
@@ -266,14 +267,15 @@ private sub hCheckAttribs _
 	end if
 
 	'' and ABSTRACT (abstracts are VIRTUAL too, so checking them first)
-	if( (attrib and FB_SYMBATTRIB_ABSTRACT) and (not symbIsAbstract( proto )) ) then
+	if( (pattrib and FB_PROCATTRIB_ABSTRACT) and (not symbIsAbstract( proto )) ) then
 		errReport( FB_ERRMSG_PROCPROTOTYPENOTABSTRACT )
 	'' and VIRTUAL
-	elseif( (attrib and FB_SYMBATTRIB_VIRTUAL) and (not symbIsVirtual( proto )) ) then
+	elseif( (pattrib and FB_PROCATTRIB_VIRTUAL) and (not symbIsVirtual( proto )) ) then
 		errReport( FB_ERRMSG_PROCPROTOTYPENOTVIRTUAL )
 	end if
 
-	symbGetAttrib( proto ) or= attrib
+	proto->attrib or= attrib
+	proto->pattrib or= pattrib
 
 end sub
 
@@ -390,7 +392,7 @@ sub cProcRetType _
 	options = FB_SYMBTYPEOPT_DEFAULT
 
 	'' Returns BYREF?
-	if( attrib and FB_SYMBATTRIB_REF ) then
+	if( pattrib and FB_PROCATTRIB_RETURNBYREF ) then
 		'' In prototypes, allow BYREF AS FWDREF
 		if( is_proto ) then
 			options or= FB_SYMBTYPEOPT_ALLOWFORWARD
@@ -416,7 +418,7 @@ sub cProcRetType _
 		select case( typeGetDtAndPtrOnly( dtype ) )
 		case FB_DATATYPE_WCHAR
 			'' WSTRING allowed only if BYREF, or is prototype
-			if( ((attrib and FB_SYMBATTRIB_REF) = 0) and (is_proto = FALSE) ) then
+			if( ((pattrib and FB_PROCATTRIB_RETURNBYREF) = 0) and (is_proto = FALSE) ) then
 				errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
 				'' error recovery: fake a type
 				dtype = FB_DATATYPE_STRING
@@ -425,7 +427,7 @@ sub cProcRetType _
 
 		case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 			'' FIXSTR is never allowed; ZSTRING only if BYREF
-			if( ((attrib and FB_SYMBATTRIB_REF) = 0) or _
+			if( ((pattrib and FB_PROCATTRIB_RETURNBYREF) = 0) or _
 				(typeGetDtAndPtrOnly( dtype ) = FB_DATATYPE_FIXSTR) ) then
 				errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
 				'' error recovery: fake a type
@@ -446,7 +448,7 @@ sub cProcRetType _
 			'' __builtin_va_list[] not allowed as a byval return type
 			if( subtype ) then
 				if( symbGetUdtIsValistStructArray( subtype ) ) then
-					if( ((attrib and FB_SYMBATTRIB_REF) = 0) and _
+					if( ((pattrib and FB_PROCATTRIB_RETURNBYREF) = 0) and _
 						typeIsPtr( dtype ) = FALSE ) then
 						errReport( FB_ERRMSG_INVALIDDATATYPES )
 						'' error recovery: fake a type
@@ -458,7 +460,7 @@ sub cProcRetType _
 
 		end select
 
-		if( (attrib and FB_SYMBATTRIB_REF) = 0 ) then
+		if( (pattrib and FB_PROCATTRIB_RETURNBYREF) = 0 ) then
 			'' Disallow BYVAL return of objects of abstract classes
 			hComplainIfAbstractClass( dtype, subtype )
 		end if
@@ -537,10 +539,10 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 	end select
 end function
 
-private sub cNakedAttribute( byref attrib as integer )
+private sub cNakedAttribute( byref pattrib as FB_PROCATTRIB )
 	if( ucase( *lexGetText( ) ) = "NAKED" ) then
 		lexSkipToken( )
-		attrib or= FB_SYMBATTRIB_NAKED
+		pattrib or= FB_PROCATTRIB_NAKED
 	end if
 end sub
 
@@ -570,7 +572,7 @@ sub cByrefAttribute( byref pattrib as FB_PROCATTRIB, byval is_func as integer )
 			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
 		lexSkipToken( )
-		pattrib or= FB_SYMBATTRIB_REF
+		pattrib or= FB_PROCATTRIB_RETURNBYREF
 	end if
 end sub
 
@@ -1042,24 +1044,24 @@ function cProcHeader _
 	select case( tk )
 	case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
 		'' Ctors/dtors always are methods
-		attrib or= FB_SYMBATTRIB_METHOD
+		pattrib or= FB_PROCATTRIB_METHOD
 
 		'' Ctors always are overloaded by default,
 		'' dtors are not (they cannot have params anyways)
 		if( tk = FB_TK_CONSTRUCTOR ) then
-			attrib or= FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_OVERLOADED
+			pattrib or= FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_OVERLOADED
 		else
-			attrib or= FB_SYMBATTRIB_DESTRUCTOR
+			pattrib or= FB_PROCATTRIB_DESTRUCTOR
 		end if
 
 	case FB_TK_OPERATOR
 		'' Operators are always overloaded
-		attrib or= FB_SYMBATTRIB_OPERATOR or FB_SYMBATTRIB_OVERLOADED
+		pattrib or= FB_PROCATTRIB_OPERATOR or FB_PROCATTRIB_OVERLOADED
 
 	case FB_TK_PROPERTY
 		'' Properties are always methods and overloaded
-		attrib or= FB_SYMBATTRIB_PROPERTY or FB_SYMBATTRIB_METHOD or _
-		           FB_SYMBATTRIB_OVERLOADED
+		pattrib or= FB_PROCATTRIB_PROPERTY or FB_PROCATTRIB_METHOD or _
+		           FB_PROCATTRIB_OVERLOADED
 
 	end select
 
@@ -1092,7 +1094,7 @@ function cProcHeader _
 			errReport( FB_ERRMSG_DECLOUTSIDECLASS )
 			'' Error recovery: Forget the namespace prefix
 			parent = NULL
-			assert( (attrib and FB_SYMBATTRIB_METHOD) = 0 )  '' method flag shouldn't be set yet anyways
+			assert( (pattrib and FB_PROCATTRIB_METHOD) = 0 )  '' method flag shouldn't be set yet anyways
 		else
 			'' Proc body with explicitly specified parent:
 			'' outside of the original namespace
@@ -1118,7 +1120,7 @@ function cProcHeader _
 		'' from the corresponding prototype)
 		if( ((options and FB_PROCOPT_ISPROTO) <> 0) and _
 		    ((attrib and FB_SYMBATTRIB_STATIC) = 0)       ) then
-			attrib or= FB_SYMBATTRIB_METHOD
+			pattrib or= FB_PROCATTRIB_METHOD
 		end if
 	else
 		'' Ctors/dtors/properties must always have an UDT parent
@@ -1140,10 +1142,10 @@ function cProcHeader _
 		end select
 
 		'' Check whether STATIC, CONST, ABSTRACT and VIRTUAL were used correctly
-		hCheckAttrib( attrib, FB_SYMBATTRIB_STATIC  , FB_ERRMSG_STATICNONMEMBERPROC   )
-		hCheckAttrib( attrib, FB_SYMBATTRIB_CONST   , FB_ERRMSG_CONSTNONMEMBERPROC    )
-		hCheckAttrib( attrib, FB_SYMBATTRIB_ABSTRACT, FB_ERRMSG_ABSTRACTNONMEMBERPROC )
-		hCheckAttrib( attrib, FB_SYMBATTRIB_VIRTUAL , FB_ERRMSG_VIRTUALNONMEMBERPROC  )
+		hCheckAttrib(  attrib, FB_SYMBATTRIB_STATIC  , FB_ERRMSG_STATICNONMEMBERPROC   )
+		hCheckAttrib(  attrib, FB_SYMBATTRIB_CONST   , FB_ERRMSG_CONSTNONMEMBERPROC    )
+		hCheckAttrib( pattrib, FB_PROCATTRIB_ABSTRACT, FB_ERRMSG_ABSTRACTNONMEMBERPROC )
+		hCheckAttrib( pattrib, FB_PROCATTRIB_VIRTUAL , FB_ERRMSG_VIRTUALNONMEMBERPROC  )
 	end if
 
 	select case( tk )
@@ -1185,9 +1187,9 @@ function cProcHeader _
 			'' These ops are made STATIC implicitly, and they can't
 			'' be CONST/VIRTUAL/ABSTRACT
 
-			if( attrib and (FB_SYMBATTRIB_VIRTUAL or FB_SYMBATTRIB_ABSTRACT) ) then
+			if( pattrib and (FB_PROCATTRIB_VIRTUAL or FB_PROCATTRIB_ABSTRACT) ) then
 				errReport( FB_ERRMSG_OPERATORCANTBEVIRTUAL, TRUE )
-				attrib and= not (FB_SYMBATTRIB_VIRTUAL or FB_SYMBATTRIB_ABSTRACT)
+				pattrib and= not (FB_PROCATTRIB_VIRTUAL or FB_PROCATTRIB_ABSTRACT)
 			end if
 
 			if( attrib and FB_SYMBATTRIB_CONST ) then
@@ -1196,7 +1198,7 @@ function cProcHeader _
 			end if
 
 			attrib or= FB_SYMBATTRIB_STATIC
-			attrib and= not FB_SYMBATTRIB_METHOD
+			pattrib and= not FB_PROCATTRIB_METHOD
 
 		case else
 			if( is_memberproc ) then
@@ -1205,7 +1207,7 @@ function cProcHeader _
 					attrib and= not FB_SYMBATTRIB_STATIC
 				end if
 				'' Then it must be a method
-				attrib or= FB_SYMBATTRIB_METHOD
+				pattrib or= FB_PROCATTRIB_METHOD
 			end if
 		end select
 
@@ -1220,7 +1222,7 @@ function cProcHeader _
 	end select
 
 	'' [NAKED]
-	cNakedAttribute( attrib )
+	cNakedAttribute( pattrib )
 
 	'' CallConvention?
 	select case( tk )
@@ -1238,7 +1240,7 @@ function cProcHeader _
 		if( fbLangOptIsSet( FB_LANG_OPT_FUNCOVL ) = FALSE ) then
 			errReportNotAllowed( FB_LANG_OPT_FUNCOVL )
 		else
-			attrib or= FB_SYMBATTRIB_OVERLOADED
+			pattrib or= FB_PROCATTRIB_OVERLOADED
 		end if
 		lexSkipToken( )
 	end if
@@ -1271,7 +1273,8 @@ function cProcHeader _
 		end if
 	end if
 
-	symbGetAttrib( proc ) = attrib
+	proc->attrib = attrib
+	proc->pattrib = pattrib
 
 	'' Parameters?
 	cParameters( parent, proc, mode, ((options and FB_PROCOPT_ISPROTO) <> 0) )
@@ -1334,7 +1337,7 @@ function cProcHeader _
 			dtype = FB_DATATYPE_VOID
 		else
 			'' BYREF?
-			cByrefAttribute( attrib, TRUE )
+			cByrefAttribute( pattrib, TRUE )
 
 			'' AS SymbolType
 			if( lexGetToken( ) = FB_TK_AS ) then
@@ -1367,7 +1370,7 @@ function cProcHeader _
 
 	case FB_TK_PROPERTY
 		'' BYREF?
-		cByrefAttribute( attrib, TRUE )
+		cByrefAttribute( pattrib, TRUE )
 
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then
@@ -1377,10 +1380,10 @@ function cProcHeader _
 			is_get = TRUE
 		else
 			'' found BYREF before?
-			if( attrib and FB_SYMBATTRIB_REF ) then
+			if( pattrib and FB_PROCATTRIB_RETURNBYREF ) then
 				errReport( FB_ERRMSG_EXPECTEDRESTYPE )
 				'' error recovery: remove BYREF attribute and treat as setter
-				attrib and= not FB_SYMBATTRIB_REF
+				pattrib and= not FB_PROCATTRIB_RETURNBYREF
 			end if
 			dtype = FB_DATATYPE_VOID
 			is_indexed = (symbGetProcParams( proc ) = 1+2)
@@ -1395,12 +1398,12 @@ function cProcHeader _
 		if( is_memberproc ) then
 			if( (symbGetProcParams( proc ) <= 0) orelse _
 			    (symbGetProcTailParam( proc )->param.mode <> FB_PARAMMODE_VARARG) ) then
-				attrib or= FB_SYMBATTRIB_OVERLOADED
+				pattrib or= FB_PROCATTRIB_OVERLOADED
 			end if
 		end if
 
 		'' BYREF?
-		cByrefAttribute( attrib, (tk = FB_TK_FUNCTION) )
+		cByrefAttribute( pattrib, (tk = FB_TK_FUNCTION) )
 
 		'' (AS SymbolType)?
 		if( lexGetToken( ) = FB_TK_AS ) then
@@ -1478,7 +1481,7 @@ function cProcHeader _
 		'' a static member yet, as it depends on the corresponding
 		'' prototype which we only check below. I.e. this check must be
 		'' repeated later.
-		if( ((attrib and FB_SYMBATTRIB_METHOD) <> 0) or _
+		if( ((pattrib and FB_PROCATTRIB_METHOD) <> 0) or _
 		    (tk = FB_TK_FUNCTION) ) then
 			errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
 		elseif( symbGetProcParams( proc ) <> 0 ) then
@@ -1517,7 +1520,7 @@ function cProcHeader _
 
 	'' STATIC?
 	if( hMatch( FB_TK_STATIC ) ) then
-		attrib or= FB_SYMBATTRIB_STATICLOCALS
+		pattrib or= FB_PROCATTRIB_STATICLOCALS
 	end if
 
 	'' EXPORT?
@@ -1599,7 +1602,7 @@ function cProcHeader _
 				head_proc = symbFindOverloadProc( head_proc, proc, _
 						iif( is_get, FB_SYMBLOOKUPOPT_PROPGET, FB_SYMBLOOKUPOPT_NONE ) )
 			end select
-			attrib or= FB_SYMBATTRIB_OVERLOADED
+			pattrib or= FB_PROCATTRIB_OVERLOADED
 		end if
 
 		'' No prototype with the same signature found?
@@ -1641,7 +1644,7 @@ function cProcHeader _
 			'' use the prototype
 			proc = head_proc
 
-			hCheckAttribs( proc, attrib )
+			hCheckAttribs( proc, attrib, pattrib )
 
 			if( stats and (FB_SYMBSTATS_GLOBALCTOR or FB_SYMBSTATS_GLOBALDTOR) ) then
 				if( symbIsMethod( proc ) ) then
@@ -1685,22 +1688,22 @@ end sub
 sub hDisallowVirtualCtor( byref attrib as FB_SYMBATTRIB, byref pattrib as FB_PROCATTRIB )
 	'' Constructors cannot be virtual (they initialize the vptr
 	'' needed for virtual calls, chicken-egg problem)
-	if( attrib and (FB_SYMBATTRIB_ABSTRACT or FB_SYMBATTRIB_VIRTUAL) ) then
-		if( attrib and FB_SYMBATTRIB_ABSTRACT ) then
+	if( pattrib and (FB_PROCATTRIB_ABSTRACT or FB_PROCATTRIB_VIRTUAL) ) then
+		if( pattrib and FB_PROCATTRIB_ABSTRACT ) then
 			errReport( FB_ERRMSG_ABSTRACTCTOR )
 		else
 			errReport( FB_ERRMSG_VIRTUALCTOR )
 		end if
-		attrib and= not (FB_SYMBATTRIB_ABSTRACT or FB_ERRMSG_VIRTUALCTOR)
+		pattrib and= not (FB_PROCATTRIB_ABSTRACT or FB_ERRMSG_VIRTUALCTOR)
 	end if
 end sub
 
 sub hDisallowAbstractDtor( byref attrib as FB_SYMBATTRIB, byref pattrib as FB_PROCATTRIB )
 	'' Destructors cannot be abstract; they need to have a body to ensure
 	'' that base and field destructors are called.
-	if( attrib and FB_SYMBATTRIB_ABSTRACT ) then
+	if( pattrib and FB_PROCATTRIB_ABSTRACT ) then
 		errReport( FB_ERRMSG_ABSTRACTDTOR )
-		attrib and= not FB_SYMBATTRIB_ABSTRACT
+		pattrib and= not FB_PROCATTRIB_ABSTRACT
 	end if
 end sub
 
@@ -1743,7 +1746,7 @@ sub cProcStmtBegin( byval attrib as FB_SYMBATTRIB, byval pattrib as FB_PROCATTRI
 		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
 			errReportNotAllowed( FB_LANG_OPT_CLASS )
 		else
-			attrib or= FB_SYMBATTRIB_CONSTRUCTOR
+			pattrib or= FB_PROCATTRIB_CONSTRUCTOR
 		end if
 
 		hDisallowStaticAttrib( attrib, pattrib )
@@ -1754,7 +1757,7 @@ sub cProcStmtBegin( byval attrib as FB_SYMBATTRIB, byval pattrib as FB_PROCATTRI
 		if( fbLangOptIsSet( FB_LANG_OPT_CLASS ) = FALSE ) then
 			errReportNotAllowed( FB_LANG_OPT_CLASS )
 		else
-			attrib or= FB_SYMBATTRIB_DESTRUCTOR
+			pattrib or= FB_PROCATTRIB_DESTRUCTOR
 		end if
 
 		hDisallowStaticAttrib( attrib, pattrib )

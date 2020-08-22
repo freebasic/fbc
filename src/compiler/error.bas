@@ -875,9 +875,9 @@ private function hMakeParamDesc _
 				s = symbProcPtrToStr( proc )
 				pname = strptr( s )
 			'' method?
-			elseif( (symbGetAttrib( proc ) and (FB_SYMBATTRIB_CONSTRUCTOR or _
-											    FB_SYMBATTRIB_DESTRUCTOR or _
-											    FB_SYMBATTRIB_OPERATOR)) <> 0 ) then
+			elseif( (proc->pattrib and (FB_PROCATTRIB_CONSTRUCTOR or _
+							FB_PROCATTRIB_DESTRUCTOR or _
+							FB_PROCATTRIB_OPERATOR)) <> 0 ) then
 				s = symbMethodToStr( proc )
 				pname = strptr( s )
 			end if

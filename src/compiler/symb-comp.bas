@@ -63,12 +63,11 @@ private function hDeclareProc _
 		'' (must be CONST to allow const objects to be passed)
 		assert( symbIsStruct( udt ) )
 		symbAddProcParam( proc, "__FB_RHS__", rhsdtype, udt, _
-		                  0, FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE )
+		                  0, FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 	end if
 
-	attrib = pattrib '' !!! FIX ME !!!
-	attrib or= FB_SYMBATTRIB_METHOD
 	attrib or= FB_SYMBATTRIB_PRIVATE
+	pattrib or= FB_PROCATTRIB_METHOD
 
 	'' cons|destructor?
 	if( op = INVALID ) then
@@ -573,7 +572,7 @@ sub symbUdtDeclareDefaultMembers _
 			errReport( FB_ERRMSG_NEEDEXPLICITDEFCTOR )
 		else
 			'' Add default ctor
-			default.defctor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
+			default.defctor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR )
 		end if
 	end if
 
@@ -585,7 +584,7 @@ sub symbUdtDeclareDefaultMembers _
 
 		if( udt->udt.ext->copyletopconst = NULL ) then
 			'' declare operator let( byref rhs as const UDT )
-			default.copyletopconst = hDeclareProc( udt, AST_OP_ASSIGN, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_OPERATOR )
+			default.copyletopconst = hDeclareProc( udt, AST_OP_ASSIGN, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_NONE, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_OPERATOR )
 			symbProcCheckOverridden( default.copyletopconst, TRUE )
 		end if
 
@@ -596,7 +595,7 @@ sub symbUdtDeclareDefaultMembers _
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTORCONST )
 			else
-				default.copyctorconst = hDeclareProc( udt, INVALID, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
+				default.copyctorconst = hDeclareProc( udt, INVALID, typeSetIsConst( FB_DATATYPE_STRUCT ), FB_SYMBATTRIB_NONE, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR )
 			end if
 		end if
 
@@ -609,7 +608,7 @@ sub symbUdtDeclareDefaultMembers _
 				'' same as with default ctor above.
 				errReport( FB_ERRMSG_NEEDEXPLICITCOPYCTOR )
 			else
-				default.copyctor = hDeclareProc( udt, INVALID, FB_DATATYPE_STRUCT, FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_OVERLOADED or FB_SYMBATTRIB_CONSTRUCTOR )
+				default.copyctor = hDeclareProc( udt, INVALID, FB_DATATYPE_STRUCT, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_OVERLOADED or FB_PROCATTRIB_CONSTRUCTOR )
 			end if
 		end if
 	end if
@@ -621,7 +620,7 @@ sub symbUdtDeclareDefaultMembers _
 		'' no default dtor explicitly defined?
 		if( udt->udt.ext->dtor = NULL ) then
 			'' Dtor
-			default.dtor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_DESTRUCTOR )
+			default.dtor = hDeclareProc( udt, INVALID, FB_DATATYPE_INVALID, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_DESTRUCTOR )
 
 			'' Don't allow the implicit dtor to override a FINAL dtor from the base
 			symbProcCheckOverridden( default.dtor, TRUE )
@@ -1353,19 +1352,19 @@ sub symbCompRTTIInit( )
 	'' declare constructor( )
 	ctor = symbPreAddProc( NULL )
 	symbAddProcInstanceParam( objtype, ctor )
-	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR _
-	                         or FB_SYMBATTRIB_OVERLOADED, FB_PROCATTRIB_NONE, _
-							 FB_FUNCMODE_CDECL )
+	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_NONE, _
+	                         FB_PROCATTRIB_METHOD or FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_OVERLOADED, _
+	                         FB_FUNCMODE_CDECL )
 
 	'' declare constructor( byref __FB_RHS__ as const object )
 	'' (must have a BYREF AS CONST parameter so it can copy from CONST objects too)
 	ctor = symbPreAddProc( NULL )
 	symbAddProcInstanceParam( objtype, ctor )
 	symbAddProcParam( ctor, "__FB_RHS__", typeSetIsConst( FB_DATATYPE_STRUCT ), objtype, _
-			0, FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE )
-	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_METHOD or FB_SYMBATTRIB_CONSTRUCTOR _
-	                         or FB_SYMBATTRIB_OVERLOADED, FB_PROCATTRIB_NONE, _
-							 FB_FUNCMODE_CDECL )
+			0, FB_PARAMMODE_BYREF, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
+	symbAddCtor( ctor, NULL, FB_SYMBATTRIB_NONE, _
+	                         FB_PROCATTRIB_METHOD or FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_OVERLOADED, _
+	                         FB_FUNCMODE_CDECL )
 
 	'' end type
 	symbStructEnd( objtype, TRUE )

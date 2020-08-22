@@ -192,7 +192,7 @@ private function hMockParam _
 		dtype = FB_DATATYPE_INTEGER
 	end if
 
-	function = symbAddProcParam( proc, NULL, dtype, NULL, iif( pmode = FB_PARAMMODE_BYDESC, -1, 0 ), pmode, 0 )
+	function = symbAddProcParam( proc, NULL, dtype, NULL, iif( pmode = FB_PARAMMODE_BYDESC, -1, 0 ), pmode, 0, 0 )
 end function
 
 '':::::
@@ -248,7 +248,7 @@ private function hParamDecl _
 			end if
 
 			return symbAddProcParam( proc, NULL, FB_DATATYPE_INVALID, NULL, _
-			                         0, FB_PARAMMODE_VARARG, 0 )
+			                         0, FB_PARAMMODE_VARARG, 0, 0 )
 
 		'' syntax error..
 		else
@@ -479,7 +479,7 @@ private function hParamDecl _
 
 	'' Add new param
 	param = symbAddProcParam( proc, iif( isproto, cptr( zstring ptr, NULL ), id ), _
-	                          dtype, subtype, dimensions, mode, attrib )
+	                          dtype, subtype, dimensions, mode, attrib, FB_PROCATTRIB_NONE )
 	if( param = NULL ) then
 		exit function
 	end if
