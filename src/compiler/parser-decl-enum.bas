@@ -44,7 +44,7 @@ end sub
 '':::::
 ''EnumBody      =   (EnumDecl (',' EnumDecl)? Comment? SttSeparator)+ .
 ''
-sub cEnumBody(byval s as FBSYMBOL ptr, byval attrib as integer)
+sub cEnumBody( byval s as FBSYMBOL ptr, byval attrib as FB_SYMBATTRIB )
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as longint value = any
 
@@ -140,7 +140,7 @@ end sub
 ''  ENUM ID? (ALIAS LITSTR)? EXPLICIT?
 ''      EnumLine+
 ''  END ENUM .
-sub cEnumDecl( byval attrib as integer )
+sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as FBSYMBOL ptr e = any
 

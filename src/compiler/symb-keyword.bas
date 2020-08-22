@@ -339,7 +339,7 @@ function symbAddKeyword _
     				   FB_SYMBCLASS_KEYWORD, _
     				   symbol, NULL, _
     				   dtype, NULL, _
-    				   attrib )
+    				   attrib, FB_PROCATTRIB_NONE )
     if( k = NULL ) then
     	return NULL
     end if

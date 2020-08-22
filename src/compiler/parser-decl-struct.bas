@@ -48,6 +48,7 @@ private sub hTypeProtoDecl _
 	)
 
 	dim as integer is_nested = any, tk = any
+	dim as FB_PROCATTRIB pattrib = FB_PROCATTRIB_NONE
 
 	'' anon?
 	if( symbGetUDTIsAnon( parent ) ) then
@@ -67,20 +68,20 @@ private sub hTypeProtoDecl _
 	'' DECLARE
 	lexSkipToken( )
 
-	cMethodAttributes( parent, attrib )
+	cMethodAttributes( parent, attrib, pattrib )
 
 	tk = lexGetToken( )
 	select case( tk )
 	case FB_TK_CONSTRUCTOR
-		hDisallowStaticAttrib( attrib )
-		hDisallowVirtualCtor( attrib )
-		hDisallowConstCtorDtor( tk, attrib )
+		hDisallowStaticAttrib( attrib, pattrib )
+		hDisallowVirtualCtor( attrib, pattrib )
+		hDisallowConstCtorDtor( tk, attrib, pattrib )
 	case FB_TK_DESTRUCTOR
-		hDisallowStaticAttrib( attrib )
-		hDisallowAbstractDtor( attrib )
-		hDisallowConstCtorDtor( tk, attrib )
+		hDisallowStaticAttrib( attrib, pattrib )
+		hDisallowAbstractDtor( attrib, pattrib )
+		hDisallowConstCtorDtor( tk, attrib, pattrib )
 	case FB_TK_PROPERTY
-		hDisallowStaticAttrib( attrib )
+		hDisallowStaticAttrib( attrib, pattrib )
 	end select
 
 	select case( tk )
@@ -89,7 +90,7 @@ private sub hTypeProtoDecl _
 	     FB_TK_OPERATOR, FB_TK_PROPERTY
 		lexSkipToken( )
 
-		cProcHeader( attrib, is_nested, _
+		cProcHeader( attrib, pattrib, is_nested, _
 				FB_PROCOPT_ISPROTO or FB_PROCOPT_HASPARENT, tk )
 
 	case else
@@ -392,7 +393,7 @@ private function hAddAndInitField _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
 		byval bits as integer, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as integer
 
 	dim as FBSYMBOL ptr sym = any
@@ -494,7 +495,7 @@ private sub hTypeMultElementDecl _
 	( _
 		byval token as integer, _
 		byval parent as FBSYMBOL ptr, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	)
 
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
@@ -534,7 +535,7 @@ private sub hTypeElementDecl _
 	( _
 		byval token as integer, _
 		byval parent as FBSYMBOL ptr, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	)
 
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
@@ -930,7 +931,8 @@ end sub
 ''  TYPE|UNION ID (ALIAS LITSTR)? (EXTENDS SymbolType)? (FIELD '=' Expression)?
 ''      TypeLine+
 ''  END (TYPE|UNION) .
-sub cTypeDecl( byval attrib as integer )
+sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
+
 	static as zstring * FB_MAXNAMELEN+1 id
 	dim as integer isunion = any, checkid = any
 	dim as FBSYMBOL ptr sym = any

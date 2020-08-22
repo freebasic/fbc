@@ -462,7 +462,8 @@ function symbNewSymbol _
 		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as FB_SYMBATTRIB _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB _
 	) as FBSYMBOL ptr
 
     dim as integer slen = any, delok = any
