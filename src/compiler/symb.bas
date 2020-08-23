@@ -2281,7 +2281,8 @@ static shared as zstring ptr classnames(FB_SYMBCLASS_VAR to FB_SYMBCLASS_NSIMPOR
 function typeDumpToStr _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval verbose as boolean _
 	) as string
 
 	dim as string dump
@@ -2411,6 +2412,13 @@ function typeDumpToStr _
 
 	dump += "]"
 
+	if( verbose ) then
+		'' function pointer?
+		if( typeGetDtOnly( dtype ) = FB_DATATYPE_FUNCTION ) then
+			dump += "{" & symbDumpToStr( subtype, verbose ) & "}"
+		end if
+	end if
+
 	function = dump
 end function
 
@@ -2443,7 +2451,12 @@ private sub hDumpName( byref s as string, byval sym as FBSYMBOL ptr )
 #endif
 end sub
 
-function symbDumpToStr( byval sym as FBSYMBOL ptr ) as string
+function symbDumpToStr _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval verbose as boolean _
+	) as string
+
 	dim as string s
 
 	if( sym = NULL ) then
@@ -2562,7 +2575,7 @@ function symbDumpToStr( byval sym as FBSYMBOL ptr ) as string
 
 	if( sym->class = FB_SYMBCLASS_NSIMPORT ) then
 		s += "from: "
-		s += symbDumpToStr( sym->nsimp.imp_ns )
+		s += symbDumpToStr( sym->nsimp.imp_ns, verbose )
 		return s
 	end if
 
@@ -2577,19 +2590,19 @@ function symbDumpToStr( byval sym as FBSYMBOL ptr ) as string
 		case FB_FUNCMODE_CDECL      : s += " cdecl"
 		end select
 
-#if 0
-		'' Dump parameters recursively (if any)
-		s += "("
-		var param = symbGetProcHeadParam( sym )
-		while( param )
-			s += symbDumpToStr( param )
-			param = param->next
-			if( param ) then
-				s += ", "
-			end if
-		wend
-		s += ")"
-#endif
+		if( verbose ) then
+			'' Dump parameters recursively (if any)
+			s += "("
+			var param = symbGetProcHeadParam( sym )
+			while( param )
+				s += symbDumpToStr( param, verbose )
+				param = param->next
+				if( param ) then
+					s += ", "
+				end if
+			wend
+			s += ")"
+		end if
 
 	case FB_SYMBCLASS_PARAM
 		select case( symbGetParamMode( sym ) )
@@ -2663,7 +2676,7 @@ function symbDumpToStr( byval sym as FBSYMBOL ptr ) as string
 				s += typeDumpToStr( sym->typ, NULL )
 			end select
 		else
-			s += typeDumpToStr( sym->typ, sym->subtype )
+			s += typeDumpToStr( sym->typ, sym->subtype, verbose )
 		end if
 	end if
 

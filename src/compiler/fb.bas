@@ -408,9 +408,15 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 	lexInit( FALSE )
 	parserInit( )
 	rtlInit( )
+
+	'' env.inited indicates that lexer/parser/compiler/rtl is initialized
+	'' intent is to help debug internal functions where we general want to
+	'' ignore function calls (breakpoints) while fbc itself is starting up
+	env.inited = TRUE
 end sub
 
 sub fbEnd()
+	env.inited = FALSE
 	rtlEnd( )
 	parserEnd( )
 	lexEnd( )
