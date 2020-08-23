@@ -2568,13 +2568,20 @@ declare sub symbForEachGlobal _
 declare function typeDumpToStr _
 	( _
 		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr _
+		byval subtype as FBSYMBOL ptr, _
+		byval verbose as boolean = false _
 	) as string
 '' For debugging, e.g. use like this:
 ''  symbTrace(a), "(replacing this)"
 ''  symbTrace(b), "(with this)"
 #define symbTrace( s ) print __FUNCTION__ + "(" & __LINE__ & "): "; symbDumpToStr( s )
-declare function symbDumpToStr( byval s as FBSYMBOL ptr ) as string
+
+declare function symbDumpToStr _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval verbose as boolean = false _
+	) as string
+
 declare sub symbDump( byval s as FBSYMBOL ptr )
 declare sub symbDumpNamespace( byval ns as FBSYMBOL ptr )
 declare sub symbDumpChain( byval chain_ as FBSYMCHAIN ptr )
