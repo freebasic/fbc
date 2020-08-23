@@ -1488,8 +1488,8 @@ declare function symbNewSymbol _
 		byval id_alias as const zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval attrib as FB_SYMBATTRIB = FB_SYMBATTRIB_NONE, _
-		byval pattrib as FB_PROCATTRIB = FB_PROCATTRIB_NONE _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB _
 	) as FBSYMBOL ptr
 
 declare sub symbFreeSymbol _

@@ -328,7 +328,7 @@ function symbAddArrayDesc( byval array as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	desc = symbNewSymbol( FB_SYMBOPT_PRESERVECASE, NULL, symtb, NULL, _
 	                      FB_SYMBCLASS_VAR, id, id_alias, _
-	                      FB_DATATYPE_STRUCT, desctype, attrib )
+	                      FB_DATATYPE_STRUCT, desctype, attrib, FB_PROCATTRIB_NONE )
 	if( desc = NULL ) then
 		exit function
 	end if
@@ -601,7 +601,7 @@ function symbAddVar _
 	end if
 
 	s = symbNewSymbol( options or FB_SYMBOPT_DOHASH, NULL, symtb, hashtb, _
-	                   FB_SYMBCLASS_VAR, id, id_alias, dtype, subtype, attrib )
+	                   FB_SYMBCLASS_VAR, id, id_alias, dtype, subtype, attrib, FB_PROCATTRIB_NONE )
 	if( s = NULL ) then
 		exit function
 	end if

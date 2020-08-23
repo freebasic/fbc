@@ -101,7 +101,7 @@ function symbAddLabel _
     				   FB_SYMBCLASS_LABEL, _
     				   id, id_alias, _
     				   FB_DATATYPE_INVALID, NULL, _
-    				   iif( isglobal, FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_LOCAL ) )
+    				   iif( isglobal, FB_SYMBATTRIB_NONE, FB_SYMBATTRIB_LOCAL ), FB_PROCATTRIB_NONE )
     if( l = NULL ) then
     	exit function
     end if

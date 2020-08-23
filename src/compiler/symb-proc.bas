@@ -576,7 +576,7 @@ private function hAddOvlProc _
 
     '' add the new proc symbol, w/o adding it to the hash table
 	proc = symbNewSymbol( iif( preservecase, FB_SYMBOPT_PRESERVECASE, FB_SYMBOPT_NONE ), _
-	                      proc, symtb, hashtb, FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib )
+	                      proc, symtb, hashtb, FB_SYMBCLASS_PROC, id, id_alias, dtype, subtype, attrib, pattrib )
 	if( proc = NULL ) then
 		exit function
 	end if
@@ -646,7 +646,7 @@ private function hAddOpOvlProc _
 
     '' add it
 	proc = symbNewSymbol( FB_SYMBOPT_NONE, proc, symtb, hashtb, _
-	                      FB_SYMBCLASS_PROC, NULL, id_alias, dtype, subtype, attrib )
+	                      FB_SYMBCLASS_PROC, NULL, id_alias, dtype, subtype, attrib, pattrib )
 
 	'' there's no id so it can't be added to the chain list
 
@@ -778,7 +778,7 @@ private function hSetupProc _
         if( head_proc = NULL ) then
 			proc = symbNewSymbol( FB_SYMBOPT_NONE, sym, symtb, hashtb, _
 			                      FB_SYMBCLASS_PROC, NULL, id_alias, _
-			                      dtype, subtype, attrib )
+			                      dtype, subtype, attrib, pattrib )
 
         	symbSetCompOpOvlHead( parent, proc )
 
@@ -1141,6 +1141,8 @@ function symbAddProcPtr _
 	'' C++ mangling functions directly (instead of having to encode
 	'' parameters & function result manually).
 	proc->attrib or= attrib
+	proc->pattrib or= pattrib
+
 	assert( proc->typ = FB_DATATYPE_INVALID )
 	proc->typ = dtype
 	proc->subtype = subtype
@@ -1232,7 +1234,8 @@ function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr
 	proc = listNewNode( @symb.symlist )
 
 	proc->class = FB_SYMBCLASS_PROC
-	proc->attrib = 0
+	proc->attrib = FB_SYMBATTRIB_NONE
+	proc->pattrib = FB_PROCATTRIB_NONE
 	proc->stats = 0
 	proc->id.name = symbol
 	proc->id.alias = NULL
