@@ -2735,7 +2735,7 @@ function symbCalcProcMatch _
 	''   which doesn't take result type into account.
 	'' - SUBs have VOID result type and will be handled here too
 	var match = typeCalcMatch( l->typ, l->subtype, _
-			iif( symbIsRef( l ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
+			iif( symbIsReturnByRef( l ), FB_PARAMMODE_BYREF, FB_PARAMMODE_BYVAL ), _
 			r->typ, r->subtype )
 	if( match = FB_OVLPROC_NO_MATCH ) then
 		errmsg = FB_ERRMSG_OVERRIDERETTYPEDIFFERS

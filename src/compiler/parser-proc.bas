@@ -1854,7 +1854,7 @@ sub cProcStmtEnd( )
 	if( proc_res <> NULL ) then
 		if( symbGetIsAccessed( proc_res ) = FALSE ) then
 			if( symbIsNaked( parser.currproc ) = FALSE ) then
-				if( symbIsRef( parser.currproc ) ) then
+				if( symbIsReturnByRef( parser.currproc ) ) then
 					errReport( FB_ERRMSG_NOBYREFFUNCTIONRESULT )
 				else
 					errReportWarn( FB_WARNINGMSG_NOFUNCTIONRESULT )
