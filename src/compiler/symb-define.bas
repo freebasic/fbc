@@ -343,7 +343,7 @@ function symbAddDefine _
     					 NULL, @symbGetGlobalHashTb( ), _
     					 FB_SYMBCLASS_DEFINE, _
     				   	 symbol, NULL, _
-    				   	 FB_DATATYPE_CHAR, NULL )
+    				   	 FB_DATATYPE_CHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
     if( sym = NULL ) then
     	exit function
     end if
@@ -382,7 +382,7 @@ function symbAddDefineW _
     					 NULL, @symbGetGlobalHashTb( ), _
     					 FB_SYMBCLASS_DEFINE, _
     				   	 symbol, NULL, _
-    				   	 FB_DATATYPE_WCHAR, NULL )
+    				   	 FB_DATATYPE_WCHAR, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
     if( sym = NULL ) then
     	exit function
     end if
@@ -420,7 +420,7 @@ function symbAddDefineMacro _
     					 NULL, @symbGetGlobalHashTb( ), _
     					 FB_SYMBCLASS_DEFINE, _
     				   	 symbol, NULL, _
-    				   	 FB_DATATYPE_INVALID, NULL )
+    				   	 FB_DATATYPE_INVALID, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
     if( sym = NULL ) then
     	exit function
     end if

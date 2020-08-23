@@ -30,7 +30,7 @@ function symbAddConst _
     					 FB_SYMBCLASS_CONST, _
     				   	 symbol, NULL, _
     				   	 dtype, subtype, _
-    				   	 attrib )
+    				   	 attrib, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
