@@ -20,12 +20,12 @@ function cDeclaration _
 
 	function = FALSE
 
-    '' QB mode?
-    if( env.clopt.lang = FB_LANG_QB ) then
-    	if( lexGetType() <> FB_DATATYPE_INVALID ) then
-    		return FALSE
-    	end if
-    end if
+	'' QB mode?
+	if( env.clopt.lang = FB_LANG_QB ) then
+		if( lexGetType() <> FB_DATATYPE_INVALID ) then
+			return FALSE
+		end if
+	end if
 
 	select case as const lexGetToken( )
 	case FB_TK_PUBLIC
@@ -33,14 +33,14 @@ function cDeclaration _
 		 	attrib = FB_SYMBATTRIB_PUBLIC
 		 end if
 
-		 lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case FB_TK_PRIVATE
 		if( hCheckScope( ) ) then
 			attrib = FB_SYMBATTRIB_PRIVATE
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case FB_TK_DECLARE
 		cProcDecl( )

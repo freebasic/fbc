@@ -108,7 +108,8 @@ sub ppPragma( )
 	end if
 
 	if( ispop or ispush ) then
-		lexSkipToken( )
+		'' PUSH | POP
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' '('
 		if( lexGetToken() <> CHAR_LPRNT ) then
@@ -151,7 +152,8 @@ sub ppPragma( )
 		end if
 	end if
 
-	lexSkipToken( )
+	'' symbol
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	if( ispop ) then
 		pragmaPop( p, value )

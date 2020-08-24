@@ -208,7 +208,7 @@ function cVAFunct() as ASTNODE ptr
 	end if
 
 	'' VA_FIRST
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' ('(' ')')?
 	if( hMatch( CHAR_LPRNT ) ) then
@@ -250,7 +250,7 @@ function cVALISTFunct _
 	assert( tk = FB_TK_CVA_ARG )
 
 	'' CVA_ARG
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' '('
 	if( hMatch( CHAR_LPRNT ) = FALSE ) then
@@ -398,7 +398,7 @@ function cVALISTStmt _
 		end if
 
 		'' CVA_START
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then
@@ -459,7 +459,7 @@ function cVALISTStmt _
 	case FB_TK_CVA_END
 		
 		'' CVA_END
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then
@@ -498,7 +498,7 @@ function cVALISTStmt _
 	case FB_TK_CVA_COPY
 
 		'' CVA_COPY
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then

@@ -48,7 +48,7 @@ sub cWithStmtBegin( )
 	dim as FB_CMPSTMTSTK ptr stk = any
 
 	'' WITH
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	''
 	'' Open an implicit scope.
@@ -160,8 +160,8 @@ sub cWithStmtEnd( )
 	end if
 
 	'' END WITH
-	lexSkipToken( )
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' Close implicit scope
 	if( stk->scopenode <> NULL ) then

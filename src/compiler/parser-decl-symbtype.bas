@@ -429,7 +429,7 @@ private function cMangleModifier _
 
 	'' ALIAS?
 	if( lexGetToken( ) = FB_TK_ALIAS ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 
@@ -501,6 +501,7 @@ private function cMangleModifier _
 				errReport( FB_ERRMSG_SYNTAXERROR )	
 			end select
 
+			'' "literal"
 			lexSkipToken( )
 		else
 			errReport( FB_ERRMSG_SYNTAXERROR )
@@ -547,7 +548,7 @@ function cSymbolType _
 
 	'' TYPEOF?
 	if( lexGetToken( ) = FB_TK_TYPEOF ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then
@@ -568,42 +569,42 @@ function cSymbolType _
 	else
 		'' CONST?
 		if( lexGetToken( ) = FB_TK_CONST ) then
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			is_const = TRUE
 		end if
 
 		'' UNSIGNED?
-		isunsigned = hMatch( FB_TK_UNSIGNED )
+		isunsigned = hMatch( FB_TK_UNSIGNED, LEXCHECK_POST_SUFFIX )
 
 		''
 		select case as const lexGetToken( )
 		case FB_TK_ANY
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_VOID
 			cMangleModifier( dtype, subtype )
 
 		case FB_TK_BOOLEAN
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_BOOLEAN
 
 		case FB_TK_BYTE
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_BYTE
 
 		case FB_TK_UBYTE
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_UBYTE
 
 		case FB_TK_SHORT
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_SHORT
 
 		case FB_TK_USHORT
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_USHORT
 
 		case FB_TK_INTEGER
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			'' ['<' lgt '>']
 			if( hMatch( FB_TK_LT ) ) then
@@ -623,7 +624,7 @@ function cSymbolType _
 			end if
 
 		case FB_TK_UINT
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			'' ['<' lgt '>']
 			if( hMatch( FB_TK_LT ) ) then
@@ -644,50 +645,52 @@ function cSymbolType _
 			end if
 
 		case FB_TK_LONG
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_LONG
 			cMangleModifier( dtype, subtype )
 
 		case FB_TK_ULONG
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_ULONG
 			cMangleModifier( dtype, subtype )
 
 		case FB_TK_LONGINT
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_LONGINT
 
 		case FB_TK_ULONGINT
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_ULONGINT
 
 		case FB_TK_SINGLE
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_SINGLE
 
 		case FB_TK_DOUBLE
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = FB_DATATYPE_DOUBLE
 
 		case FB_TK_STRING
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			'' assume it's a var-len string, see below for fixed-len
 			dtype = FB_DATATYPE_STRING
 
 		case FB_TK_ZSTRING
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			dtype = FB_DATATYPE_CHAR
 
 		case FB_TK_WSTRING
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			dtype = FB_DATATYPE_WCHAR
 
 		case FB_TK_FUNCTION, FB_TK_SUB
 			isfunction = (lexGetToken( ) = FB_TK_FUNCTION)
-			lexSkipToken( )
+
+			'' FUNCTION | SUB
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			dtype = typeAddrOf( FB_DATATYPE_FUNCTION )
 			ptr_cnt += 1
@@ -743,7 +746,7 @@ function cSymbolType _
 					do
 						select case symbGetClass( sym )
 						case FB_SYMBCLASS_STRUCT
-							lexSkipToken( )
+							lexSkipToken( LEXCHECK_POST_SUFFIX )
 							dtype = FB_DATATYPE_STRUCT
 							subtype = sym
 							lgt = symbGetLen( sym )
@@ -751,14 +754,14 @@ function cSymbolType _
 							exit do, do
 
 						case FB_SYMBCLASS_ENUM
-							lexSkipToken( )
+							lexSkipToken( LEXCHECK_POST_SUFFIX )
 							dtype = FB_DATATYPE_ENUM
 							subtype = sym
 							lgt = typeGetSize( FB_DATATYPE_ENUM )
 							exit do, do
 
 						case FB_SYMBCLASS_TYPEDEF
-							lexSkipToken( )
+							lexSkipToken( LEXCHECK_POST_SUFFIX )
 							dtype = symbGetFullType( sym )
 							subtype = symbGetSubtype( sym )
 							lgt = symbGetLen( sym )
@@ -889,7 +892,7 @@ function cSymbolType _
 			select case as const lexGetToken( )
 			'' CONST PTR?
 			case FB_TK_CONST
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 				select case lexGetToken( )
 				case FB_TK_PTR, FB_TK_POINTER
@@ -900,7 +903,7 @@ function cSymbolType _
 						ptr_cnt += 1
 					end if
 
-					lexSkipToken( )
+					lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 				case else
 					errReport( FB_ERRMSG_EXPECTEDPTRORPOINTER )
@@ -916,7 +919,7 @@ function cSymbolType _
 					ptr_cnt += 1
 				end if
 
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			case else
 				exit do

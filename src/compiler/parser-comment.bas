@@ -59,6 +59,7 @@ private sub cDirective( ) static
 		if( fbLangOptIsSet( FB_LANG_OPT_METACMD ) = FALSE ) then
 		    errReportNotAllowed( FB_LANG_OPT_METACMD )
 		else
+			'' DYNAMIC
 			lexSkipToken( )
 			env.opt.dynamic = TRUE
 
@@ -73,6 +74,7 @@ private sub cDirective( ) static
 		if( fbLangOptIsSet( FB_LANG_OPT_METACMD ) = FALSE ) then
 		    errReportNotAllowed( FB_LANG_OPT_METACMD )
 		else
+			'' STATIC
 			lexSkipToken( )
 			env.opt.dynamic = FALSE
 
@@ -89,7 +91,7 @@ private sub cDirective( ) static
 			lexSkipToken( )
 
 			'' ONCE?
-			isonce = hMatchIdOrKw( "ONCE" )
+			isonce = hMatchIdOrKw( "ONCE", LEXCHECK_POST_STRING_SUFFIX )
 
 			'' ':'
 			if( hMatch( FB_TK_STMTSEP ) = FALSE ) then

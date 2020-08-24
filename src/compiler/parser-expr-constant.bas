@@ -14,7 +14,7 @@ function cConstant( byval sym as FBSYMBOL ptr ) as ASTNODE ptr
 	end if
 
   	'' ID
-  	lexSkipToken( )
+  	lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 
 	function = astBuildConst( sym )
 end function

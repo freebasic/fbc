@@ -11,7 +11,7 @@
 private sub hSkipSymbol( )
 
 	do
-		lexSkipToken( LEXCHECK_NOPERIOD )
+		lexSkipToken( LEXCHECK_NOPERIOD )  '' should this have LEXCHECK_POST_SUFFIX?
 
     	'' '.'?
     	if( lexGetToken( ) <> CHAR_DOT ) then
@@ -250,7 +250,7 @@ function cIdentifier _
     		if( symbGetClass( sym ) = FB_SYMBCLASS_NAMESPACE ) then
     			if( (options and FB_IDOPT_SHOWERROR) <> 0 ) then
 					'' skip id
-					lexSkipToken( LEXCHECK_NOPERIOD )
+					lexSkipToken( LEXCHECK_NOPERIOD or LEXCHECK_POST_SUFFIX )
 					errReport( FB_ERRMSG_EXPECTEDPERIOD )
     			end if
     		end if
@@ -268,7 +268,7 @@ function cIdentifier _
 		end if
 
     	'' skip id
-    	lexSkipToken( LEXCHECK_NOPERIOD )
+    	lexSkipToken( LEXCHECK_NOPERIOD or LEXCHECK_POST_SUFFIX )
 
     	'' skip '.'
     	lexSkipToken( LEXCHECK_NOPERIOD )
@@ -445,7 +445,7 @@ function cParentId _
 		end if
 
     	'' skip id
-    	lexSkipToken( LEXCHECK_NOPERIOD )
+    	lexSkipToken( LEXCHECK_NOPERIOD or LEXCHECK_POST_SUFFIX )
 
     	'' skip '.'
     	lexSkipToken( LEXCHECK_NOPERIOD )

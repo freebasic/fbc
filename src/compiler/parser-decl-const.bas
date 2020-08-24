@@ -10,7 +10,7 @@
 private sub hGetType( byref dtype as integer, byref subtype as FBSYMBOL ptr )
 	'' (AS SymbolType)?
 	if( lexGetToken( ) = FB_TK_AS ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		if( cSymbolType( dtype, subtype ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
@@ -221,7 +221,7 @@ sub cConstDecl( byval attrib as FB_SYMBATTRIB )
     dim as FBSYMBOL ptr subtype = any
 
     '' CONST
-    lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' (AS SymbolType)?
 	hGetType( dtype, subtype )

@@ -12,6 +12,9 @@ Version 1.08.0
 - reverted changes due sf.net #832: Fix bug allowing QB style suffixes on all keywords, regardless of -lang
 - suffixes in '-lang fb' reverted to fbc-1.05.0 behaviours
 - sf.net #908: check visibility for overloaded operators FOR, NEXT, and STEP
+- sf.net #909, #832, #866 reverted error on suffix in lang fb dialect
+- sf.net #832: warn on suffixes for all built-in keywords.
+- 'Suffix ignored' warning in -lang fb instead of errors
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
@@ -29,6 +32,7 @@ Version 1.08.0
 - fbc: add builtin function fb_MemMove() alias "memmove"
 - fbc: add builtin function fb_MemCopy() alias "memcpy" (was previously removed in an older version of fbc)
 - ./inc/fbc-int/memory.bi - fbc  API for low level memory operations allocate, callocate, reallocate, deallocate, clear, memcopy, memmove
+- '-w suffix' or '-w pedantic' command line option enabled 'Suffix ignored' warning for built-in in string functions
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture

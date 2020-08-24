@@ -263,10 +263,10 @@ private function hParamDecl _
 	select case lexGetToken( )
 	case FB_TK_BYVAL
 		mode = FB_PARAMMODE_BYVAL
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	case FB_TK_BYREF
 		mode = FB_PARAMMODE_BYREF
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	case else
 		mode = INVALID
 	end select
@@ -377,7 +377,7 @@ private function hParamDecl _
 	'' (AS SymbolType)?
 	doskip = FALSE
 	if( lexGetToken( ) = FB_TK_AS ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		if( dtype <> FB_DATATYPE_INVALID ) then
 			hParamError( proc, id )
 			exit function
@@ -497,7 +497,7 @@ private function hParamDecl _
 		if( mode = FB_PARAMMODE_BYDESC ) then
 			'' ANY?
 			if( lexGetToken( ) = FB_TK_ANY ) then
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 				symbSetDontInit( param )
 			else
 				hParamError( proc, id, , 0 )

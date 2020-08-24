@@ -141,7 +141,7 @@ sub cEndStatement( )
 	dim as ASTNODE ptr errlevel = any
 
 	'' END
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
   	'' Expression?
   	select case as const lexGetToken( )
@@ -185,7 +185,7 @@ sub cExitStatement( )
 	dim as FBSYMBOL ptr label = NULL
 
 	'' EXIT
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' (FOR | DO | WHILE | SELECT | SUB | FUNCTION) (',')*
 	var tk = lexGetToken( )
@@ -195,7 +195,7 @@ sub cExitStatement( )
 			hExitError( FB_ERRMSG_ILLEGALOUTSIDEFORSTMT )
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.for
 		do while( lexGetToken( ) = CHAR_COMMA )
@@ -210,7 +210,7 @@ sub cExitStatement( )
 				hExitError( FB_ERRMSG_NOENCLOSEDFORSTMT )
 			end if
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		loop
 
 		label = stk->for.endlabel
@@ -220,7 +220,7 @@ sub cExitStatement( )
 			hExitError( FB_ERRMSG_ILLEGALOUTSIDEDOSTMT )
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.do
 		do while( lexGetToken( ) = CHAR_COMMA )
@@ -235,7 +235,7 @@ sub cExitStatement( )
 				hExitError( FB_ERRMSG_NOENCLOSEDDOSTMT )
 			end if
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		loop
 
 		label = stk->do.endlabel
@@ -245,7 +245,7 @@ sub cExitStatement( )
 			hExitError( FB_ERRMSG_ILLEGALOUTSIDEWHILESTMT )
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.while
 		do while( lexGetToken( ) = CHAR_COMMA )
@@ -260,7 +260,7 @@ sub cExitStatement( )
 				hExitError( FB_ERRMSG_NOENCLOSEDWHILESTMT )
 			end if
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		loop
 
 		label = stk->while.endlabel
@@ -270,7 +270,7 @@ sub cExitStatement( )
 			hExitError( FB_ERRMSG_ILLEGALOUTSIDESELSTMT )
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.select
 		do while( lexGetToken( ) = CHAR_COMMA )
@@ -285,7 +285,7 @@ sub cExitStatement( )
 				hExitError( FB_ERRMSG_NOENCLOSEDSELSTMT )
 			end if
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		loop
 
 		label = stk->select.endlabel
@@ -367,7 +367,7 @@ sub cExitStatement( )
 			hExitError( errnum )
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case else
 		hExitError( FB_ERRMSG_INVALIDEXITSTMT )
@@ -381,7 +381,7 @@ sub cContinueStatement( )
 	dim as FBSYMBOL ptr label = NULL
 
 	'' CONTINUE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' (FOR | DO | WHILE) (',')*
 	select case as const lexGetToken( )
@@ -390,7 +390,7 @@ sub cContinueStatement( )
 			hExitError( FB_ERRMSG_ILLEGALOUTSIDEFORSTMT )
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.for
 		do while( lexGetToken( ) = CHAR_COMMA )
@@ -405,7 +405,7 @@ sub cContinueStatement( )
 				hExitError( FB_ERRMSG_NOENCLOSEDFORSTMT )
 			end if
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		loop
 
 		label = stk->for.cmplabel
@@ -415,7 +415,7 @@ sub cContinueStatement( )
 			hExitError( FB_ERRMSG_ILLEGALOUTSIDEDOSTMT )
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.do
 		do while( lexGetToken( ) = CHAR_COMMA )
@@ -430,7 +430,7 @@ sub cContinueStatement( )
 				hExitError( FB_ERRMSG_NOENCLOSEDDOSTMT )
 			end if
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		loop
 
 		label = stk->do.cmplabel
@@ -440,7 +440,7 @@ sub cContinueStatement( )
 			hExitError( FB_ERRMSG_ILLEGALOUTSIDEWHILESTMT )
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		dim as FB_CMPSTMTSTK ptr stk = parser.stmt.while
 		do while( lexGetToken( ) = CHAR_COMMA )
@@ -455,7 +455,7 @@ sub cContinueStatement( )
 				hExitError( FB_ERRMSG_NOENCLOSEDWHILESTMT )
 			end if
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		loop
 
 		label = stk->while.cmplabel

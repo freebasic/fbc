@@ -22,7 +22,7 @@ function cThreadCallFunc() as ASTNODE ptr
     function = NULL
     
     '' THREADCALL
-    lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
     
     '' proc 
     chain_ = cIdentifier( NULL, FB_IDOPT_DEFAULT or FB_IDOPT_ALLOWSTRUCT )
@@ -46,7 +46,7 @@ function cThreadCallFunc() as ASTNODE ptr
         end if
     end if
 
-    lexSkipToken( )
+    lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
     
     '' '('?
     if( hMatch( CHAR_LPRNT ) = FALSE ) then

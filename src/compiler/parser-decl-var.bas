@@ -127,11 +127,11 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 
 		hCheckPrivPubAttrib( attrib )
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		attrib or= FB_SYMBATTRIB_DYNAMIC
 
 		'' PRESERVE?
-		dopreserve = hMatch( FB_TK_PRESERVE )
+		dopreserve = hMatch( FB_TK_PRESERVE, LEXCHECK_POST_SUFFIX )
 
 	'' COMMON
 	case FB_TK_COMMON
@@ -148,7 +148,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 
 		hCheckPrivPubAttrib( attrib )
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' EXTERN
 	case FB_TK_EXTERN
@@ -170,7 +170,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 
 		hCheckPrivPubAttrib( attrib )
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' STATIC
 	case FB_TK_STATIC
@@ -179,7 +179,7 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 			return TRUE
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		attrib or= FB_SYMBATTRIB_STATIC
 
@@ -200,7 +200,8 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 			return TRUE
 		end if
 
-		lexSkipToken( )
+		'' DIM
+		lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 
 	end select
 
@@ -220,12 +221,12 @@ function cVariableDecl( byval attrib as FB_SYMBATTRIB ) as integer
 				attrib or= FB_SYMBATTRIB_SHARED or _
 						   FB_SYMBATTRIB_STATIC
 			end if
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		end if
 	else
 		'' IMPORT?
 		if( lexGetToken( ) = FB_TK_IMPORT ) then
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			'' only if target is Windows
 			select case env.clopt.target
@@ -1019,7 +1020,7 @@ private function hVarInit _
 			return NULL
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		exit function
 	end if
 
@@ -1364,12 +1365,12 @@ function cVarDecl _
 	end if
 
 	'' BYREF?
-	var has_byref_at_start = hMatch( FB_TK_BYREF )
+	var has_byref_at_start = hMatch( FB_TK_BYREF, LEXCHECK_POST_SUFFIX )
 
 	'' (AS SymbolType)?
 	is_multdecl = FALSE
 	if( lexGetToken( ) = FB_TK_AS ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' parse the symbol type (INTEGER, STRING, etc...)
 		hSymbolType( dtype, subtype, lgt, has_byref_at_start )
@@ -1396,7 +1397,7 @@ function cVarDecl _
 				has_byref_at_start = FALSE
 				attrib or= FB_SYMBATTRIB_REF
 			'' additional SingleVarDecl has BYREF?
-			elseif( hMatch( FB_TK_BYREF ) ) then
+			elseif( hMatch( FB_TK_BYREF, LEXCHECK_POST_SUFFIX ) ) then
 				attrib or= FB_SYMBATTRIB_REF
 			end if
 		end if
@@ -1565,7 +1566,7 @@ function cVarDecl _
 					dtype = FB_DATATYPE_INVALID
 				end if
 
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 				var is_ref = ((attrib and FB_SYMBATTRIB_REF) <> 0)
 
@@ -1975,7 +1976,7 @@ private sub cArrayDimension( byref dimensions as integer, exprTB() as ASTNODE pt
 
 	'' TO
 	if( lexGetToken( ) = FB_TK_TO ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' lbound can't be unknown
 		if( exprTB(dimensions,0) = NULL ) then
@@ -2035,7 +2036,7 @@ sub cArrayDecl _
 		if( (lexGetToken( ) = FB_TK_ANY) and _
 		    ((dimensions = 0) or (have_bounds = FALSE)) ) then
 			have_bounds = FALSE
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		elseif( have_bounds = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDANY )
 		else
@@ -2106,7 +2107,7 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 	end if
 
 	'' VAR
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' SHARED?
 	if( lexGetToken( ) = FB_TK_SHARED ) then
@@ -2117,7 +2118,7 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 		else
 			baseattrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
 		end if
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	end if
 
 	'' this proc static?
@@ -2137,7 +2138,7 @@ private sub cAutoVarDecl( byval baseattrib as FB_SYMBATTRIB )
 		var attrib = baseattrib
 
 		'' BYREF?
-		if( hMatch( FB_TK_BYREF ) ) then
+		if( hMatch( FB_TK_BYREF, LEXCHECK_POST_SUFFIX ) ) then
 			attrib or= FB_SYMBATTRIB_REF
 		end if
 

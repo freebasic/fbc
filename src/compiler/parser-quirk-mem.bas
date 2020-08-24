@@ -27,7 +27,7 @@ function cOperatorNew( ) as ASTNODE ptr
 	placementexpr = NULL
 
 	'' NEW
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' '('?
 	if( hMatch( CHAR_LPRNT ) ) then
@@ -94,7 +94,7 @@ function cOperatorNew( ) as ASTNODE ptr
 					do_clear = FALSE
 				end if
 
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 			else
 				errReport( FB_ERRMSG_VECTORCANTBEINITIALIZED )
 			end if
@@ -168,6 +168,7 @@ function cOperatorNew( ) as ASTNODE ptr
 
 			'' ANY?
 			if( lexGetLookAhead( 1 ) = FB_TK_ANY ) then
+				'' '('
 				lexSkipToken( )
 
 				'' Disallow ANY for STRING, like cVarDecl()
@@ -177,7 +178,8 @@ function cOperatorNew( ) as ASTNODE ptr
 					do_clear = FALSE
 				end if
 
-				lexSkipToken( )
+				'' ANY
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 				'' ')'
 				if( lexGetToken( ) <> CHAR_RPRNT ) then
@@ -214,7 +216,7 @@ sub cOperatorDelete( )
 	dim as FBSYMBOL ptr subtype = any
 
 	'' DELETE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	op = AST_OP_DEL
 

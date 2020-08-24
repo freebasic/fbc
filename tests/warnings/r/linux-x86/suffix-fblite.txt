@@ -1,0 +1,4 @@
+parser-assignment.bas
+suffix-fblite.bas(6) error 146: Only valid in -lang deprecated or fblite or qb, found 'let' in 'let% i = 1'
+	Suffix ignored in 'let%'
+parser-comment.bas

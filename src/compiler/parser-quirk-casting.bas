@@ -77,7 +77,7 @@ function cTypeConvExpr _
 		end if
 	end if
 
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	if( (tk = FB_TK_CINT) or (tk = FB_TK_CUINT) ) then
 
@@ -146,7 +146,7 @@ function cAnonType( ) as ASTNODE ptr
 	dim as integer dtype = any, is_explicit = any
 
 	'' TYPE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' '<'?
 	is_explicit = hMatch( FB_TK_LT )

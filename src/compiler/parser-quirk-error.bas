@@ -13,7 +13,8 @@
 function cErrorStmt() as integer
 	function = FALSE
 
-	lexSkipToken( )
+	'' ERROR
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' Expression
 	dim as ASTNODE ptr expr
@@ -28,7 +29,8 @@ end function
 function cErrSetStmt() as integer
 	function = FALSE
 
-	lexSkipToken( )
+	'' ERR
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' '='
 	if( cAssignToken( ) = FALSE ) then
@@ -47,7 +49,7 @@ end function
 '' ERR()
 function cErrorFunct() as ASTNODE ptr
 	'' ERR
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' ('(' ')')?
 	if( hMatch( CHAR_LPRNT ) ) then

@@ -11,7 +11,9 @@
 
 '' EraseStmt = ERASE ID (',' ID)*
 function cEraseStmt() as integer
-	lexSkipToken( )
+	
+	'' ERASE
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	do
 		var expr = cVarOrDeref( FB_VAREXPROPT_NOARRAYCHECK )
@@ -54,7 +56,9 @@ function cEraseStmt() as integer
 end function
 
 private function hScopedSwap( ) as integer
-	lexSkipToken( )
+
+	'' SWAP
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	var l = cVarOrDeref( FB_VAREXPROPT_ISASSIGN )
 	if( l = NULL ) then
@@ -239,7 +243,7 @@ function cArrayFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	select case tk
 	'' (LBOUND|UBOUND) '(' ID (',' Expression)? ')'
 	case FB_TK_LBOUND, FB_TK_UBOUND
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' '('
 		hMatchLPRNT( )

@@ -22,19 +22,19 @@ sub cOptDecl( )
 	end if
 
 	'' OPTION
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	select case as const lexGetToken( )
 	case FB_TK_BYVAL
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		env.opt.parammode = FB_PARAMMODE_BYVAL
 
 	case FB_TK_DYNAMIC
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		env.opt.dynamic = TRUE
 
 	case FB_TK_STATIC
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		env.opt.dynamic = FALSE
 
 	case FB_TK_GOSUB
@@ -44,7 +44,7 @@ sub cOptDecl( )
 			env.opt.gosub = TRUE
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case else
 
@@ -55,19 +55,19 @@ sub cOptDecl( )
 		'' EXPLICIT: Not a keyword in lang qb
 		case "EXPLICIT"
 			env.opt.explicit = TRUE
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' PRIVATE: Ditto
 		case "PRIVATE"
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			env.opt.procpublic = FALSE
 
 		case "ESCAPE"
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			env.opt.escapestr = TRUE
 
 		case "BASE"
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			if( lexGetClass( ) <> FB_TKCLASS_NUMLITERAL ) then
 				errReport( FB_ERRMSG_SYNTAXERROR )
@@ -79,7 +79,7 @@ sub cOptDecl( )
 			end if
 
 		case "NOKEYWORD"
-			lexSkipToken( LEXCHECK_NODEFINE )
+			lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 
 			do
 				hUndefSymbol()
@@ -99,7 +99,7 @@ sub cOptDecl( )
 				env.opt.gosub = FALSE
 			end if
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		case else
 			errReport( FB_ERRMSG_SYNTAXERROR )

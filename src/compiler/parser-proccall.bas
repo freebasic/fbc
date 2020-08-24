@@ -409,7 +409,7 @@ private function hProcSymbol _
 		return TRUE
 	end if
 
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 
 	'' '='?
 	do_call = not hIsAssignToken( lexGetToken( ) )
@@ -714,7 +714,7 @@ private function hProcCallOrAssign_QB( ) as integer
 			exit function
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
   		if( lexGetSymChain( ) = NULL ) then
 			return hForwardCall( )
@@ -775,7 +775,10 @@ function cProcCallOrAssign _
 				errReport( FB_ERRMSG_EXPECTEDPROPERTY )
 			end if
 
-			lexSkipToken( )
+			'' FUNCTION
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
+
+			'' =
 			lexSkipToken( )
 
 			return cAssignFunctResult( FALSE )
@@ -791,7 +794,10 @@ function cProcCallOrAssign _
 				return TRUE
 			end if
 
-			lexSkipToken( )
+			'' OPERATOR
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
+
+			'' =
 			lexSkipToken( )
 
 			return cAssignFunctResult( FALSE )
@@ -812,7 +818,10 @@ function cProcCallOrAssign _
 				end if
 			end if
 
-			lexSkipToken( )
+			'' PROPERTY
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
+
+			'' =
 			lexSkipToken( )
 
 			return cAssignFunctResult( FALSE )
@@ -841,14 +850,15 @@ function cProcCallOrAssign _
 				'' error recovery: skip stmt
 				hSkipStmt( )
 				return TRUE
-    		end if
+			end if
 
 			if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
 				hSkipStmt( )
 				return TRUE
 			end if
 
-			lexSkipToken( )
+			'' CALL
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
  			chain_ = cIdentifier( base_parent )
   			if( chain_ <> NULL ) then
@@ -922,7 +932,7 @@ private sub hCtorChain( )
 	symbSetIsCtorInited( parser.currproc )
 
 	'' CONSTRUCTOR
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	cProcCall( NULL, symbGetCompCtorHead( parent ), NULL, _
 	           astBuildVarField( symbGetParamVar( symbGetProcHeadParam( parser.currproc ) ) ) )
@@ -967,7 +977,7 @@ private sub hBaseInit( )
 	end if
 
 	'' BASE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	subtype = symbGetSubtype( base_ )
 
@@ -1017,10 +1027,10 @@ private function hBaseMemberAccess( ) as integer
 		end if
 
 		'' skip BASE
-		lexSkipToken( LEXCHECK_NOPERIOD )
+		lexSkipToken( LEXCHECK_NOPERIOD or LEXCHECK_POST_SUFFIX )
 
 		'' skip '.'
-		lexSkipToken()
+		lexSkipToken( )
 	
 		'' (BASE '.')?
 		if( lexGetToken() <> FB_TK_BASE ) then
@@ -1069,6 +1079,7 @@ function hForwardCall( ) as integer
 		errReport( FB_ERRMSG_SYNTAXERROR )
 	end if
 
+	'' don't report on suffix, was already checked above
     lexSkipToken( )
 
     dim as FBSYMBOL ptr proc = symbPreAddProc( id )

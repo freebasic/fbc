@@ -71,7 +71,7 @@ sub cDefDecl( )
 	end select
 
 	assert( dtype <> FB_DATATYPE_INVALID )
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' (CHAR '-' CHAR ','?)*
 	do
@@ -81,7 +81,7 @@ sub cDefDecl( )
 			errReport( FB_ERRMSG_EXPECTEDCOMMA )
 		end if
 		ichar = asc( char )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' '-'
 		if( lexGetToken( ) = CHAR_MINUS ) then
@@ -93,7 +93,7 @@ sub cDefDecl( )
 				errReport( FB_ERRMSG_EXPECTEDCOMMA )
 			end if
 			echar = asc( char )
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		else
 			echar = ichar

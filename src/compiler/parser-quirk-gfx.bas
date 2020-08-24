@@ -284,17 +284,17 @@ private function hGetMode _
 
 	select case( lexGetToken( ) )
 	case FB_TK_AND
-		lexSkipToken
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		mode = FBGFX_PUTMODE_AND
 		return TRUE
 
 	case FB_TK_OR
-		lexSkipToken
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		mode = FBGFX_PUTMODE_OR
 		return TRUE
 
 	case FB_TK_XOR
-		lexSkipToken
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		mode = FBGFX_PUTMODE_XOR
 		return TRUE
 	end select
@@ -303,22 +303,22 @@ private function hGetMode _
 	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_KEYWORD
 		select case ucase( *lexGetText( ) )
 		case "PSET"
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			mode = FBGFX_PUTMODE_PSET
 			return TRUE
 
 		case "PRESET"
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			mode = FBGFX_PUTMODE_PRESET
 			return TRUE
 
 		case "TRANS"
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			mode = FBGFX_PUTMODE_TRANS
 			return TRUE
 
 		case "ADD"
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			mode = FBGFX_PUTMODE_ADD
 			if( hMatch( CHAR_COMMA ) ) then
 				hMatchExpression( alphaexpr )
@@ -328,7 +328,7 @@ private function hGetMode _
 			return TRUE
 
 		case "ALPHA"
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			mode = FBGFX_PUTMODE_ALPHA
 			if( hMatch( CHAR_COMMA ) ) then
 				hMatchExpression( alphaexpr )
@@ -337,7 +337,7 @@ private function hGetMode _
 			return TRUE
 
 		case "CUSTOM"
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			mode = FBGFX_PUTMODE_CUSTOM
 
@@ -406,7 +406,7 @@ function cGfxPset( byval ispreset as integer ) as integer
 	texpr = hFbImageExprInFrontOfCoord( FALSE )
 
 	'' STEP?
-	if( hMatch( FB_TK_STEP ) ) then
+	if( hMatch( FB_TK_STEP, LEXCHECK_POST_SUFFIX ) ) then
 		flags = FBGFX_COORDTYPE_R
 	else
 		flags = FBGFX_COORDTYPE_A
@@ -453,7 +453,7 @@ function cGfxLine as integer
 		texpr = hFbImageExprInFrontOfCoord( FALSE )
 
 		'' STEP?
-		if( hMatch( FB_TK_STEP ) ) then
+		if( hMatch( FB_TK_STEP, LEXCHECK_POST_SUFFIX ) ) then
 			flags = FBGFX_COORDTYPE_R
 		else
 			flags = FBGFX_COORDTYPE_A
@@ -479,7 +479,7 @@ function cGfxLine as integer
 	end if
 
 	'' STEP?
-	if( hMatch( FB_TK_STEP ) ) then
+	if( hMatch( FB_TK_STEP, LEXCHECK_POST_SUFFIX ) ) then
 		if( flags = FBGFX_COORDTYPE_R ) then
 			flags = FBGFX_COORDTYPE_RR
 		else
@@ -515,10 +515,10 @@ function cGfxLine as integer
 		if( hMatch( CHAR_COMMA ) ) then
 			select case ucase( *lexGetText( ) )
 			case "B"
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 				linetype = FBGFX_LINETYPE_B
 			case "BF"
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 		    	linetype = FBGFX_LINETYPE_BF
 		    end select
 
@@ -549,7 +549,7 @@ function cGfxCircle as integer
 	texpr = hFbImageExprInFrontOfCoord( FALSE )
 
 	'' STEP?
-	if( hMatch( FB_TK_STEP ) ) then
+	if( hMatch( FB_TK_STEP, LEXCHECK_POST_SUFFIX ) ) then
 		flags = FBGFX_COORDTYPE_R
 	else
 		flags = FBGFX_COORDTYPE_A
@@ -597,7 +597,7 @@ function cGfxCircle as integer
 							errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 							exit function
 						end if
-						lexSkipToken( )
+						lexSkipToken( LEXCHECK_POST_SUFFIX )
 						fillflag = TRUE
             		end if
             	end if
@@ -627,7 +627,7 @@ function cGfxPaint as integer
 	texpr = hFbImageExprInFrontOfCoord( FALSE )
 
 	'' STEP?
-	if( hMatch( FB_TK_STEP ) ) then
+	if( hMatch( FB_TK_STEP, LEXCHECK_POST_SUFFIX ) ) then
 		flags = FBGFX_COORDTYPE_R
 	else
 		flags = FBGFX_COORDTYPE_A
@@ -683,7 +683,7 @@ function cGfxDrawString as integer
 	texpr = hFbImageExprInFrontOfCoord( FALSE )
 
 	'' STEP?
-	if( hMatch( FB_TK_STEP ) ) then
+	if( hMatch( FB_TK_STEP, LEXCHECK_POST_SUFFIX ) ) then
 		flags = FBGFX_COORDTYPE_R
 	else
 		flags = FBGFX_COORDTYPE_A
@@ -762,7 +762,7 @@ function cGfxDraw as integer
 	function = FALSE
 
 	'' DRAW STRING?
-	if( hMatch( FB_TK_STRING ) ) then
+	if( hMatch( FB_TK_STRING, LEXCHECK_POST_SUFFIX ) ) then
 		return cGfxDrawString( )
 	end if
 
@@ -805,7 +805,7 @@ function cGfxView( byval isview as integer ) as integer
 	'' SCREEN?
 	select case lexGetToken() 
 	case FB_TK_SCREEN, FB_TK_SCREENQB
-		lexSkipToken
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		flags = FBGFX_VIEW_SCREEN_FLAG
 	case else
     	flags = 0
@@ -878,15 +878,15 @@ end function
 '' GfxPalette   =   PALETTE GET? ((USING Variable) | (Expr ',' Expr (',' Expr ',' Expr)?)?)
 ''
 function cGfxPalette as integer
-    dim as ASTNODE ptr arrayexpr, attexpr, rexpr, gexpr, bexpr
+	dim as ASTNODE ptr arrayexpr, attexpr, rexpr, gexpr, bexpr
 	dim as integer isget, dptrsize
 
 	function = FALSE
 
-	isget = hMatchIdOrKw( "GET" )
+	isget = hMatchIdOrKw( "GET", LEXCHECK_POST_SUFFIX )
 
-    '' this could fail if using was #undef'ed and made a method...
-	if( hMatch( FB_TK_USING ) ) then
+	'' this could fail if using was #undef'ed and made a method...
+	if( hMatch( FB_TK_USING, LEXCHECK_POST_SUFFIX ) ) then
 		arrayexpr = hFbImageExpr( not isget )
 		if( arrayexpr = NULL ) then
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
@@ -990,7 +990,7 @@ function cGfxPut as integer
 	texpr = hFbImageExprInFrontOfCoord( FALSE )
 
 	'' STEP?
-	if( hMatch( FB_TK_STEP ) ) then
+	if( hMatch( FB_TK_STEP, LEXCHECK_POST_SUFFIX ) ) then
 		coordtype = FBGFX_COORDTYPE_RA
 	else
 		coordtype = FBGFX_COORDTYPE_AA
@@ -1029,7 +1029,7 @@ function cGfxPut as integer
 			end if
 
 			'' STEP?
-			if( hMatch( FB_TK_STEP ) ) then
+			if( hMatch( FB_TK_STEP, LEXCHECK_POST_SUFFIX ) ) then
 				if( coordtype = FBGFX_COORDTYPE_RA ) then
 					coordtype = FBGFX_COORDTYPE_RR
 				else
@@ -1073,7 +1073,7 @@ function cGfxGet as integer
 	texpr = hFbImageExprInFrontOfCoord( TRUE )
 
 	'' STEP?
-	if( hMatch( FB_TK_STEP ) ) then
+	if( hMatch( FB_TK_STEP, LEXCHECK_POST_SUFFIX ) ) then
 		coordtype = FBGFX_COORDTYPE_R
 	else
 		coordtype = FBGFX_COORDTYPE_A
@@ -1093,7 +1093,7 @@ function cGfxGet as integer
 	end if
 
 	'' STEP?
-	if( hMatch( FB_TK_STEP ) ) then
+	if( hMatch( FB_TK_STEP, LEXCHECK_POST_SUFFIX ) ) then
 		if( coordtype = FBGFX_COORDTYPE_R ) then
 			coordtype = FBGFX_COORDTYPE_RR
 		else
@@ -1296,67 +1296,67 @@ function cGfxStmt _
 	select case as const tk
 	case FB_TK_PSET
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxPSet( FALSE )
 
 	case FB_TK_PRESET
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxPSet( TRUE )
 
 	case FB_TK_LINE
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxLine( )
 
 	case FB_TK_CIRCLE
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxCircle( )
 
 	case FB_TK_PAINT
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxPaint( )
 
 	case FB_TK_DRAW
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxDraw( )
 
 	case FB_TK_VIEW
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxView( TRUE )
 
 	case FB_TK_WINDOW
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxView( FALSE )
 
 	case FB_TK_PALETTE
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxPalette( )
 
 	case FB_TK_PUT
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxPut( )
 
 	case FB_TK_GET
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxGet( )
 
 	case FB_TK_SCREEN
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxScreen( FALSE )
 
 	case FB_TK_SCREENQB
 		CHECK_CODEMASK( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		function = cGfxScreen( TRUE )
 
 	end select
@@ -1373,11 +1373,11 @@ function cGfxFunct _
 
 	select case tk
 	case FB_TK_POINT
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		cGfxPoint( expr )
 
 	case FB_TK_IMAGECREATE
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		cGfxImageCreate( expr )
 
 	end select

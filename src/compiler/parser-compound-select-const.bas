@@ -184,7 +184,7 @@ end function
 '' cSelConstStmtNext  =  CASE (ELSE | (ConstExpression{int} (',' ConstExpression{int})*)) .
 sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 	'' CASE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' end scope
 	if( stk->scopenode <> NULL ) then
@@ -198,7 +198,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 
 	'' ELSE?
 	if( lexGetToken( ) = FB_TK_ELSE ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		stk->select.const_.deflabel = symbAddLabel( NULL )
 		astAdd( astNewLABEL( stk->select.const_.deflabel ) )
@@ -243,7 +243,7 @@ sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 		'' TO?
 		dim as ulongint tovalue
 		if( lexGetToken( ) = FB_TK_TO ) then
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			'' ConstExpression{int}
 			tovalue = cConstIntExprRanged( cExpression( ), stk->select.const_.dtype )
@@ -309,8 +309,8 @@ sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
 	dim as FBSYMBOL ptr deflabel = any
 
 	'' END SELECT
-	lexSkipToken( )
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
     deflabel = stk->select.const_.deflabel
     if( deflabel = NULL ) then

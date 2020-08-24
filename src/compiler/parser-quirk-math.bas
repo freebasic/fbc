@@ -11,7 +11,9 @@
 
 private function hMathOp(byval op as AST_OP) as ASTNODE ptr
 	dim as ASTNODE ptr expr = any
-	lexSkipToken( )
+
+	'' ABS|SGN|FIX|FRAC|INT|SIN|ASIN|COS|ACOS|TAN|ATN|SQR|LOG|EXP
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 	hMatchLPRNT( )
 	hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 	hMatchRPRNT( )
@@ -29,7 +31,7 @@ private function hAtan2() as ASTNODE ptr
 	dim as ASTNODE ptr expr = any, expr2 = any
 
 	'' ATAN2( Expression ',' Expression )
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 	hMatchLPRNT( )
 	hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 	hMatchCOMMA( )
@@ -112,7 +114,7 @@ private function hLenSizeof( byval tk as integer, byval isasm as integer ) as AS
 	dim as FBSYMBOL ptr subtype = any
 
 	'' LEN | SIZEOF
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' '('
 	hMatchLPRNT( )

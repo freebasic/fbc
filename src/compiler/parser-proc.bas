@@ -14,7 +14,7 @@ function cAliasAttribute( ) as zstring ptr
 	static as zstring * FB_MAXNAMELEN+1 aliasid
 
 	if( lexGetToken( ) = FB_TK_ALIAS ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 			aliasid = *lexGetText( )
@@ -36,7 +36,7 @@ sub cLibAttribute( )
 	dim as zstring ptr libname = any
 
 	if( lexGetToken( ) = FB_TK_LIB ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 			libname = lexGetText( )
@@ -62,14 +62,14 @@ sub cMethodAttributes _
 	)
 
 	'' STATIC?
-	if( hMatch( FB_TK_STATIC ) ) then
+	if( hMatch( FB_TK_STATIC, LEXCHECK_POST_SUFFIX ) ) then
 		attrib or= FB_SYMBATTRIB_STATIC
 		'' STATIC methods can't be any of the below
 		exit sub
 	end if
 
 	'' CONST?
-	if( hMatch( FB_TK_CONST ) ) then
+	if( hMatch( FB_TK_CONST, LEXCHECK_POST_SUFFIX ) ) then
 		attrib or= FB_SYMBATTRIB_CONST
 	end if
 
@@ -87,7 +87,7 @@ sub cMethodAttributes _
 			end if
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case FB_TK_VIRTUAL
 		pattrib or= FB_PROCATTRIB_VIRTUAL
@@ -100,7 +100,7 @@ sub cMethodAttributes _
 			end if
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	end select
 
@@ -387,7 +387,7 @@ sub cProcRetType _
 	dim as integer options = any
 
 	'' AS
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	options = FB_SYMBTYPEOPT_DEFAULT
 
@@ -481,7 +481,7 @@ function cProcReturnMethod( byval dtype as FB_DATATYPE ) as FB_PROC_RETURN_METHO
 	if( typeGetClass( dtype ) <> FB_DATACLASS_FPOINT ) then exit function
 
 	if( lexGetToken( ) = FB_TK_OPTION ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		hMatchLPRNT( )
 		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
@@ -492,7 +492,7 @@ function cProcReturnMethod( byval dtype as FB_DATATYPE ) as FB_PROC_RETURN_METHO
 			elseif( returnMethod = "FPU" ) then
 				function = FB_RETURN_FPU
 			end if
-			lexSkipToken
+			lexSkipToken( )
 		end if
 		hMatchRPRNT( )
 	end if
@@ -508,17 +508,17 @@ function cProcCallingConv( byval default as FB_FUNCMODE ) as FB_FUNCMODE
 	select case as const lexGetToken( )
 	case FB_TK_CDECL
 		function = FB_FUNCMODE_CDECL
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case FB_TK_STDCALL
 		'' FB_FUNCMODE_STDCALL may be remapped to FB_FUNCMODE_STDCALL_MS
 		'' for targets that do not support the @N suffix
 		function = env.target.stdcall
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case FB_TK_PASCAL
 		function = FB_FUNCMODE_PASCAL
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	case else
 		select case as const parser.mangling
@@ -541,7 +541,7 @@ end function
 
 private sub cNakedAttribute( byref pattrib as FB_PROCATTRIB )
 	if( ucase( *lexGetText( ) ) = "NAKED" ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		pattrib or= FB_PROCATTRIB_NAKED
 	end if
 end sub
@@ -561,7 +561,7 @@ private sub cOverrideAttribute( byval proc as FBSYMBOL ptr )
 		if( symbProcGetOverridden( proc ) = NULL ) then
 			errReport( FB_ERRMSG_OVERRIDINGNOTHING )
 		end if
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	end if
 end sub
 
@@ -571,7 +571,7 @@ sub cByrefAttribute( byref pattrib as FB_PROCATTRIB, byval is_func as integer )
 		if( is_func = FALSE ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		pattrib or= FB_PROCATTRIB_RETURNBYREF
 	end if
 end sub
@@ -1242,7 +1242,7 @@ function cProcHeader _
 		else
 			pattrib or= FB_PROCATTRIB_OVERLOADED
 		end if
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	end if
 
 	if( options and FB_PROCOPT_ISPROTO ) then
@@ -1494,7 +1494,7 @@ function cProcHeader _
 			end if
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' Priority?
 		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
@@ -1519,7 +1519,7 @@ function cProcHeader _
 	end select
 
 	'' STATIC?
-	if( hMatch( FB_TK_STATIC ) ) then
+	if( hMatch( FB_TK_STATIC, LEXCHECK_POST_SUFFIX ) ) then
 		pattrib or= FB_PROCATTRIB_STATICLOCALS
 	end if
 
@@ -1536,7 +1536,7 @@ function cProcHeader _
 			attrib and= not FB_SYMBATTRIB_PRIVATE
 		end if
 
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		fbSetOption( FB_COMPOPT_EXPORT, TRUE )
 		'''''if( fbGetOption( FB_COMPOPT_EXPORT ) = FALSE ) then
@@ -1788,7 +1788,7 @@ sub cProcStmtBegin( byval attrib as FB_SYMBATTRIB, byval pattrib as FB_PROCATTRI
 		exit sub
 	end if
 
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' ProcHeader
 	proc = cProcHeader( attrib, pattrib, is_nested, FB_PROCOPT_NONE, tkn )
@@ -1829,10 +1829,10 @@ sub cProcStmtEnd( )
 	end if
 
 	'' END
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' SUB | FUNCTION | ...
-	if( hMatch( stk->proc.tkn ) = FALSE ) then
+	if( hMatch( stk->proc.tkn, LEXCHECK_POST_SUFFIX ) = FALSE ) then
 		select case stk->proc.tkn
 		case FB_TK_SUB
 			errReport( FB_ERRMSG_EXPECTEDENDSUB )
