@@ -383,6 +383,7 @@ private sub hReadIdentifier _
 		byval pid as zstring ptr, _
 		byref tlen as integer, _
 		byref dtype as integer, _
+		byref suffixchar as integer, _
 		byval flags as LEXCHECK _
 	)
 
@@ -392,6 +393,7 @@ private sub hReadIdentifier _
 	*pid = lexCurrentChar( )
 	pid += 1
 	tlen += 1
+	suffixchar = CHAR_NULL
 	lexEatChar( )
 
 	skipchar = FALSE
@@ -442,21 +444,36 @@ private sub hReadIdentifier _
 
 	'' [SUFFIX]
 	dtype = FB_DATATYPE_INVALID
+
+#if 0
+	'' Possible method to disallow suffixes on identifiers in -lang fb 
+	'' completely would be to not read them.  No nead to report error 
+	'' or warning. The parser should report an error when it gets an 
+	'' invalid token on it's own.
+	''
+	if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then
+		exit sub
+	end if
+#endif
+
 	if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 		select case as const lexCurrentChar( )
 		'' '%'?
 		case FB_TK_INTTYPECHAR
 			dtype = env.lang.integerkeyworddtype
+			suffixchar = FB_TK_INTTYPECHAR
 			lexEatChar( )
 
 		'' '&'?
 		case FB_TK_LNGTYPECHAR
 			dtype = FB_DATATYPE_LONG
+			suffixchar = FB_TK_LNGTYPECHAR
 			lexEatChar( )
 
 		'' '!'?
-		case FB_TK_SGNTYPECHAR
+		case FB_TK_SNGTYPECHAR
 			dtype = FB_DATATYPE_SINGLE
+			suffixchar = FB_TK_SNGTYPECHAR
 			lexEatChar( )
 
 		'' '#'?
@@ -464,12 +481,14 @@ private sub hReadIdentifier _
 			'' isn't it a '##'?
 			if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
 				dtype = FB_DATATYPE_DOUBLE
+				suffixchar = FB_TK_DBLTYPECHAR
 				lexEatChar( )
 			end if
 
 		'' '$'?
 		case FB_TK_STRTYPECHAR
 			dtype = FB_DATATYPE_STRING
+			suffixchar = FB_TK_STRTYPECHAR
 			lexEatChar( )
 		end select
     end if
@@ -858,7 +877,7 @@ private sub hReadFloatNumber _
 		end if
 		
 	'' '!'
-	case FB_TK_SGNTYPECHAR
+	case FB_TK_SNGTYPECHAR
 		t.dtype = FB_DATATYPE_SINGLE
 
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
@@ -1163,7 +1182,7 @@ private sub hReadNumber( byref t as FBTOKEN, byval flags as LEXCHECK )
 				lexEatChar( )
 
 			'' '!'
-			case FB_TK_SGNTYPECHAR
+			case FB_TK_SNGTYPECHAR
 				if( have_u_suffix = FALSE ) then
 					t.dtype = FB_DATATYPE_SINGLE
 					lexEatChar( )
@@ -1482,6 +1501,7 @@ private sub hCheckPeriods _
 		hReadIdentifier( @t->text[t->len], _
 					 	 t->len, _
 					 	 t->dtype, _
+						 t->suffixchar, _
 					 	 flags or LEXCHECK_EATPERIOD )
 
 		t->sym_chain = symbLookup( @t->text, t->id, t->class )
@@ -1497,7 +1517,7 @@ private function readId( byref t as FBTOKEN, byval flags as LEXCHECK ) as intege
 
 	t.len = 0
 	t.prdpos = 0
-	hReadIdentifier( @t.text, t.len, t.dtype, flags )
+	hReadIdentifier( @t.text, t.len, t.dtype, t.suffixchar, flags )
 
 	'' use the special hash tb?
 	if( flags and LEXCHECK_KWDNAMESPC ) then
@@ -1579,6 +1599,7 @@ re_read:
 			t->id = FB_TK_EOF
 			t->class = FB_TKCLASS_DELIMITER
 			t->dtype = FB_DATATYPE_INVALID
+			t->suffixchar = CHAR_NULL
 			exit sub
 
 		'' line continuation?
@@ -1626,6 +1647,7 @@ re_read:
 				t->id = FB_TK_EOL
 				t->class = FB_TKCLASS_DELIMITER
 				t->dtype = FB_DATATYPE_INVALID
+				t->suffixchar = CHAR_NULL
 				t->len = 1
 				t->text[0] = CHAR_LF					'' t.text = chr( 10 )
 				t->text[1] = 0                          '' /
@@ -1759,6 +1781,7 @@ read_char:
 
 		t->id = char
 		t->dtype = t->id
+		t->suffixchar = CHAR_NULL
 		t->len = 1
 		t->text[0] = char                            '' t.text = chr( char )
 		t->text[1] = 0                               '' /
@@ -2147,6 +2170,12 @@ sub lexPPOnlyEmitText( byref s as string )
 end sub
 
 sub lexSkipToken( byval flags as LEXCHECK )
+
+	lexCheckToken( flags )
+
+	'' don't preserve any flags that were for warn / error checks only
+	flags and= not LEXCHECK_POST_MASK
+
 	'' Emit current token, if -pp was given, except if called from the PP,
 	'' so only the tokens seen by the parser are written.
 	'' (some cases like #inclib are given special treatment in the PP)
@@ -2406,5 +2435,101 @@ function lexPeekCurrentLine _
 	token_pos += "^"
 
 	function = res
+
+end function
+
+'':::::
+sub lexCheckToken _
+	( _
+		byval flags as LEXCHECK _
+	)
+
+	#define hStrSuffixChar(c) iif( c, chr(c), "" )
+	#define hTokenDesc() "in '" & *lexGetText() & hStrSuffixChar( lexGetSuffixChar() ) & "'"
+	#define hWarnSuffix() errReportWarn( FB_WARNINGMSG_SUFFIXIGNORED, hTokenDesc(), FB_ERRMSGOPT_NONE )
+	#define hErrSuffix()  errReportNotAllowed( LEXCHECK_POST_LANG_SUFFIX )
+	#define hDropSuffix() lexGetType() = FB_DATATYPE_INVALID : lexGetSuffixChar() = 0
+
+	'' suffix?
+	if( lexGetSuffixChar() <> CHAR_NULL ) then
+
+		'' any suffix check flags?
+		if( flags and LEXCHECK_POST_MASK ) then
+
+			'' For these checks, type does not matter, just use the actual suffix char
+			''   FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR, FB_TK_SNGTYPECHAR, FB_TK_DBLTYPECHAR, FB_TK_STRTYPECHAR
+			''
+			'' If more than one flag is given, check only one
+			''
+			''   LEXCHECK_POST_SUFFIX         - no suffix is allowed, any dialect
+			''   LEXCHECK_POST_LANG_SUFFIX    - suffix allowed but only if the dialect allows
+			''   LEXCHECK_POST_STRING_SUFFIX  - string suffix $ allowed depending on dialect, and other suffixes not allowed
+
+			'' no suffix is allowed in any dialect? 
+			if( (flags and LEXCHECK_POST_SUFFIX) <> 0 ) then
+				hWarnSuffix()
+				hDropSuffix()
+
+			'' warn on suffix only if the dialect doesn't allow suffix?
+			elseif( (flags and LEXCHECK_POST_LANG_SUFFIX) <> 0 ) then
+				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then
+					'' errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+					hWarnSuffix()
+					hDropSuffix()
+				end if
+
+			'' warn on '$' suffix depending if dialect allows suffix.
+			elseif( (flags and LEXCHECK_POST_STRING_SUFFIX) <> 0 ) then
+
+				'' string suffix?
+				if( lexGetSuffixChar() = FB_TK_STRTYPECHAR ) then
+
+					'' warn only '-w suffix' or '-w pedantic' was given
+					if( fbPdCheckIsSet( FB_PDCHECK_SUFFIX ) ) then
+						hWarnSuffix()
+					end if
+					hDropSuffix()
+
+				'' otherwise warn for any other suffix
+				else
+					hWarnSuffix()
+					hDropSuffix()
+				end if
+
+			end if
+		end if
+	end if
+
+end sub
+
+function hMatchIdOrKw _
+	( _
+		byval txt as const zstring ptr, _
+		byval flags as LEXCHECK _
+	) as integer
+
+	select case( lexGetClass( ) )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_KEYWORD
+		if( ucase( *lexGetText( ) ) = *txt ) then
+			lexSkipToken( flags )
+			return TRUE
+		end if
+	end select
+	return FALSE
+end function
+
+'':::::
+function hMatch _
+	( _
+		byval token as integer, _
+		byval flags as LEXCHECK _
+	) as integer
+
+	if( lexGetToken( ) = token ) then
+		lexSkipToken( flags )
+		function = TRUE
+	else
+		function = FALSE
+	end if
 
 end function

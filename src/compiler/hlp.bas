@@ -9,32 +9,6 @@
 #include once "lex.bi"
 #include once "dstr.bi"
 
-function hMatchIdOrKw( byval txt as const zstring ptr ) as integer
-	select case( lexGetClass( ) )
-	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_KEYWORD
-		if( ucase( *lexGetText( ) ) = *txt ) then
-			lexSkipToken( )
-			return TRUE
-		end if
-	end select
-	return FALSE
-end function
-
-'':::::
-function hMatch _
-	( _
-		byval token as integer _
-	) as integer
-
-	if( lexGetToken( ) = token ) then
-		lexSkipToken( )
-		function = TRUE
-	else
-		function = FALSE
-	end if
-
-end function
-
 '':::::
 function hHexUInt _
 	( _

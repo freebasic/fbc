@@ -9,13 +9,6 @@ const INVALID = -1
 '' helper module protos
 ''
 
-declare function hMatchIdOrKw( byval txt as const zstring ptr ) as integer
-
-declare function hMatch _
-	( _
-		byval token as integer _
-	) as integer
-
 declare function hMakeProfileLabelName _
 	( _
 	) as zstring ptr
