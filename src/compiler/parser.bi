@@ -267,11 +267,11 @@ declare function cDeclaration _
 		_
 	) as integer
 
-declare sub cConstDecl( byval attrib as integer )
-declare sub cTypeDecl( byval attrib as integer )
+declare sub cConstDecl( byval attrib as FB_SYMBATTRIB )
+declare sub cTypeDecl( byval attrib as FB_SYMBATTRIB )
 declare sub cTypedefMultDecl( )
 declare sub cTypedefSingleDecl( byval pid as zstring ptr )
-declare sub cEnumDecl( byval attrib as integer )
+declare sub cEnumDecl( byval attrib as FB_SYMBATTRIB )
 declare function hCheckScope() as integer
 
 declare function cVariableDecl _
@@ -337,6 +337,7 @@ declare sub cProcDecl( )
 declare function cProcHeader _
 	( _
 		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byref is_nested as integer, _
 		byval options as FB_PROCOPT, _
 		byval tk as integer _
@@ -407,11 +408,11 @@ declare sub cSelectStmtEnd( )
 declare sub cSelConstStmtBegin( )
 declare sub cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr )
 declare sub cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr )
-declare sub hDisallowStaticAttrib( byref attrib as integer )
-declare sub hDisallowVirtualCtor( byref attrib as integer )
-declare sub hDisallowAbstractDtor( byref attrib as integer )
-declare sub hDisallowConstCtorDtor( byval tk as integer, byref attrib as integer )
-declare sub cProcStmtBegin( byval attrib as integer = 0 )
+declare sub hDisallowStaticAttrib( byref attrib as FB_SYMBATTRIB, byref pattrib as FB_PROCATTRIB )
+declare sub hDisallowVirtualCtor( byref attrib as FB_SYMBATTRIB, byref pattrib as FB_PROCATTRIB )
+declare sub hDisallowAbstractDtor( byref attrib as FB_SYMBATTRIB, byref pattrib as FB_PROCATTRIB )
+declare sub hDisallowConstCtorDtor( byval tk as integer, byref attrib as FB_SYMBATTRIB, byref pattrib as FB_PROCATTRIB )
+declare sub cProcStmtBegin( byval attrib as FB_SYMBATTRIB = 0, byval pattrib as FB_PROCATTRIB = 0 )
 declare sub cProcStmtEnd( )
 declare sub cExitStatement( )
 declare sub cEndStatement( )
@@ -614,12 +615,14 @@ declare sub cLibAttribute( )
 declare sub cMethodAttributes _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byref attrib as integer _
+		byref attrib as FB_SYMBATTRIB, _
+		byref pattrib as FB_PROCATTRIB _
 	)
 
 declare sub cProcRetType _
 	( _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
+		byval pattrib as FB_PROCATTRIB, _
 		byval proc as FBSYMBOL ptr, _
 		byval is_proto as integer, _
 		byref dtype as integer, _
@@ -636,7 +639,7 @@ declare function cProcCallingConv _
 		byval default as FB_FUNCMODE = FB_FUNCMODE_FBCALL _
 	) as FB_FUNCMODE
 
-declare sub cByrefAttribute( byref attrib as integer, byval is_func as integer )
+declare sub cByrefAttribute( byref pattrib as FB_PROCATTRIB, byval is_func as integer )
 
 declare function cFunctionCall _
 	( _
@@ -849,7 +852,7 @@ declare function hMatchExpr _
 
 declare sub hMaybeConvertExprTb2DimTb _
 	( _
-		byref attrib as integer, _
+		byref attrib as FB_SYMBATTRIB, _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
 		dTB() as FBARRAYDIM _
@@ -864,7 +867,7 @@ declare sub hComplainAboutEllipsis _
 
 declare function cVarDecl _
 	( _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
 		byval dopreserve as integer, _
 		byval token as integer, _
 		byval is_fordecl as integer _

@@ -445,7 +445,7 @@ private function hEmitProcHeader _
 		'' there will be exceptions, this must be removed...
 		ln += " nounwind"
 
-		if( proc->attrib and FB_SYMBATTRIB_NAKED ) then
+		if( proc->pattrib and FB_PROCATTRIB_NAKED ) then
 			ln += " naked"
 		end if
 	end if

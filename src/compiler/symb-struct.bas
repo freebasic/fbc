@@ -25,7 +25,7 @@ function symbStructBegin _
 		byval isunion as integer, _
 		byval align as integer, _
 		byval is_derived as integer, _
-		byval attrib as integer, _
+		byval attrib as FB_SYMBATTRIB, _
 		byval options as integer _
 	) as FBSYMBOL ptr
 
@@ -43,7 +43,7 @@ function symbStructBegin _
 
 	s = symbNewSymbol( options or FB_SYMBOPT_DOHASH, NULL, symtb, hashtb, _
 	                   FB_SYMBCLASS_STRUCT, id, id_alias, _
-	                   FB_DATATYPE_STRUCT, NULL, attrib )
+	                   FB_DATATYPE_STRUCT, NULL, attrib, FB_PROCATTRIB_NONE )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -270,7 +270,7 @@ function symbAddField _
 		byval subtype as FBSYMBOL ptr, _
 		byval lgt as longint, _
 		byval bits as integer, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr sym = any, tail = any, base_parent = any, _
@@ -440,7 +440,7 @@ function symbAddField _
 	sym = symbNewSymbol( options, NULL, _
 			@symbGetUDTSymbTb( parent ), @symbGetUDTHashTb( base_parent ), _
 			FB_SYMBCLASS_FIELD, id, NULL, dtype, subtype, _
-			attrib )
+			attrib, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if

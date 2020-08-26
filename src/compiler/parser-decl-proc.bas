@@ -26,7 +26,7 @@ sub cProcDecl( )
 		lexSkipToken( )
 
 		'' ProcHeader
-		cProcHeader( 0, FALSE, FB_PROCOPT_ISPROTO, tk )
+		cProcHeader( 0, 0, FALSE, FB_PROCOPT_ISPROTO, tk )
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )

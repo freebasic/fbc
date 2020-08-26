@@ -216,7 +216,7 @@ private sub cConstAssign _
 end sub
 
 '' ConstDecl  =  CONST (AS SymbolType)? ConstAssign (DECL_SEPARATOR ConstAssign)* .
-sub cConstDecl( byval attrib as integer )
+sub cConstDecl( byval attrib as FB_SYMBATTRIB )
     dim as integer dtype = any
     dim as FBSYMBOL ptr subtype = any
 

@@ -134,11 +134,12 @@ function cConstIntExprRanged _
 end function
 
 private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
-	dim as integer dtype = any, mode = any, attrib = any
+	dim as integer dtype = any, mode = any, attrib = any, pattrib = any
 	dim as FBSYMBOL ptr proc = any, subtype = any
 
 	function = NULL
-	attrib = 0
+	attrib = FB_SYMBATTRIB_NONE
+	pattrib = FB_PROCATTRIB_NONE
 	subtype = NULL
 
 	' no need for naked check here, naked only effects the way a function
@@ -153,7 +154,7 @@ private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
 	cParameters( NULL, proc, mode, TRUE )
 
 	'' BYREF?
-	cByrefAttribute( attrib, is_func )
+	cByrefAttribute( pattrib, is_func )
 
 	'' (AS SymbolType)?
 	if( lexGetToken( ) = FB_TK_AS ) then
@@ -162,7 +163,7 @@ private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
 			errReport( FB_ERRMSG_SYNTAXERROR )
 			dtype = FB_DATATYPE_VOID
 		else
-			cProcRetType( attrib, proc, TRUE, dtype, subtype )
+			cProcRetType( attrib, pattrib, proc, TRUE, dtype, subtype )
 		end if
 	else
 		'' if it's a function and type was not given, it can't be guessed
@@ -175,7 +176,7 @@ private function cSymbolTypeFuncPtr( byval is_func as integer ) as FBSYMBOL ptr
 		end if
 	end if
 
-	function = symbAddProcPtr( proc, dtype, subtype, attrib, mode )
+	function = symbAddProcPtr( proc, dtype, subtype, attrib, pattrib, mode )
 end function
 
 private function hGetTokenDescription( byval tk as integer ) as string

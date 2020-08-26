@@ -632,6 +632,7 @@ type FBENV
 
 	opt				as FBOPTION					'' context-sensitive options
 
+	inited			as integer					'' set to TRUE if parser ready
 	restarts		as integer					'' number of parser restarts
 	dorestart		as integer					'' request parser restart
 

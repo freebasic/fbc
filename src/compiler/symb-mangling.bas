@@ -564,7 +564,7 @@ sub symbMangleType _
 		mangled += "F"
 
 		'' return BYREF?
-		if( symbIsRef( subtype ) ) then
+		if( symbIsReturnByRef( subtype ) ) then
 			mangled += "R"
 		end if
 

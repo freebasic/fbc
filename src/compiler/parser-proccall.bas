@@ -46,7 +46,7 @@ function cAssignFunctResult( byval is_return as integer ) as integer
 
 	has_ctor = symbHasCtor( parser.currproc )
 	has_defctor = symbHasDefCtor( parser.currproc )
-	var returns_byref = symbIsRef( parser.currproc )
+	var returns_byref = symbIsReturnByRef( parser.currproc )
 
 	'' RETURN?
 	if( is_return ) then
@@ -1107,7 +1107,7 @@ function hForwardCall( ) as integer
 			 dtype = FB_DATATYPE_STRING
 		end select
 
-		if( symbAddProcParam( proc, NULL, dtype, NULL, iif( mode = FB_PARAMMODE_BYDESC, -1, 0 ), mode, 0 ) = NULL ) then
+		if( symbAddProcParam( proc, NULL, dtype, NULL, iif( mode = FB_PARAMMODE_BYDESC, -1, 0 ), mode, 0, 0 ) = NULL ) then
 			exit do
 		end if
 
@@ -1134,7 +1134,7 @@ function hForwardCall( ) as integer
 		end if
 	end if
 
-	proc = symbAddProc( proc, id, NULL, FB_DATATYPE_VOID, NULL, 0, env.target.fbcall, FB_SYMBOPT_NONE )
+	proc = symbAddProc( proc, id, NULL, FB_DATATYPE_VOID, NULL, 0, 0, env.target.fbcall, FB_SYMBOPT_NONE )
     if( proc = NULL ) then
 		errReport( FB_ERRMSG_DUPDEFINITION, TRUE )
 		exit function
