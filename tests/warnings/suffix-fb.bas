@@ -1268,10 +1268,14 @@ WARN( 1 )
 #lang% "fb"
 WARN( 1 )
 #line% 1000
-WARN( 1 )
-#dump%( 0 )
-WARN( 1 )
-#odump%( 0 )
+
+/'
+	DON'T INCLUDE DEBUG PP STUFF
+	WARN( 1 )
+	#dump%( 0 )
+	WARN( 1 )
+	#odump%( 0 )
+'/
 
 
 #print ---- Intrinsics ----

@@ -942,14 +942,6 @@ warning expected
 	Suffix ignored in 'lang%'
 warning expected
 	Suffix ignored in 'line%'
-warning expected
-	Suffix ignored in 'dump%'
-0                 0 (integer) [integer]
-
-warning expected
-	Suffix ignored in 'odump%'
-0                 0 (integer) [integer]
-
 ----Intrinsics ----
 warning expected
 	Suffix ignored in 'false%'
