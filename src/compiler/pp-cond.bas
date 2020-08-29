@@ -63,7 +63,7 @@ sub ppCondIf( )
 	select case as const lexGetToken( LEXCHECK_KWDNAMESPC )
 	'' IFDEF ID
 	case FB_TK_PP_IFDEF
-        lexSkipToken( LEXCHECK_NODEFINE )
+        lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 
 		if( cIdentifier( base_parent, FB_IDOPT_NONE ) <> NULL ) then
 			'' any symbol is okay or type's wouldn't be found
@@ -73,7 +73,7 @@ sub ppCondIf( )
 
 	'' IFNDEF ID
 	case FB_TK_PP_IFNDEF
-        lexSkipToken( LEXCHECK_NODEFINE )
+        lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_POST_SUFFIX )
 
 		if( cIdentifier( base_parent, FB_IDOPT_NONE ) = NULL ) then
 			'' ditto
@@ -83,7 +83,7 @@ sub ppCondIf( )
 
 	'' IF Expression
 	case FB_TK_PP_IF
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		istrue = ppExpression( )
 
@@ -125,7 +125,7 @@ sub ppCondElse( )
 
 	'' ELSEIF?
 	if( lexGetToken( LEXCHECK_KWDNAMESPC ) = FB_TK_PP_ELSEIF ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		istrue = ppExpression( )
 
@@ -137,7 +137,7 @@ sub ppCondElse( )
 		pptb(pp.level).istrue = istrue
 	'' ELSE
 	else
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
         pptb(pp.level).elsecnt += 1
         pptb(pp.level).istrue = not pptb(pp.level).istrue
@@ -150,7 +150,7 @@ end sub
 
 sub ppCondEndIf( )
 	'' ENDIF
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	if( pp.level > 0 ) then
 		pp.level -= 1

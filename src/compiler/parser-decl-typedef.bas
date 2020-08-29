@@ -15,7 +15,7 @@ private sub hPtrDecl(byref dtype as integer)
 		select case as const lexGetToken( )
 		'' CONST PTR?
 		case FB_TK_CONST
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			select case lexGetToken( )
 			case FB_TK_PTR, FB_TK_POINTER
@@ -26,7 +26,7 @@ private sub hPtrDecl(byref dtype as integer)
 					ptr_cnt += 1
 				end if
 
-				lexSkipToken( )
+				lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			case else
 				errReport( FB_ERRMSG_EXPECTEDPTRORPOINTER )
@@ -42,7 +42,7 @@ private sub hPtrDecl(byref dtype as integer)
 				ptr_cnt += 1
 			end if
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		case else
 			exit do
@@ -76,7 +76,7 @@ private function hReadType _
 	select case( lexGetClass( ) )
 	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 		tname = *lexGetText( )
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	case else
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		tname = *symbUniqueId( )
@@ -228,8 +228,8 @@ private function hReadId( ) as zstring ptr
             end if
         end if
 
-        id = *lexGetText( )
-        lexSkipToken( )
+		id = *lexGetText( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
     case else
         errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
@@ -249,7 +249,7 @@ sub cTypedefMultDecl( )
 	end if
 
 	'' AS
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' SymtolType
 	dim as integer dtype, is_fixlenstr
@@ -278,7 +278,7 @@ sub cTypedefSingleDecl( byval pid as zstring ptr )
 
 	do
 		'' AS?
-		if( hMatch( FB_TK_AS ) = FALSE ) then
+		if( hMatch( FB_TK_AS, LEXCHECK_POST_SUFFIX ) = FALSE ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
 

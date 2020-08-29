@@ -17,7 +17,7 @@ sub cWhileStmtBegin( )
     dim as FB_CMPSTMTSTK ptr stk = any
 
 	'' WHILE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' add ini and end labels
 	il = symbAddLabel( NULL )
@@ -60,7 +60,7 @@ sub cWhileStmtEnd( )
 	end if
 
 	'' WEND
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	if( stk->scopenode <> NULL ) then
 		astScopeEnd( stk->scopenode )

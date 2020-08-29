@@ -48,19 +48,19 @@ sub cSelectStmtBegin( )
 	dim as FB_CMPSTMTSTK ptr stk = any
 
 	'' SELECT
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' CASE
-	if( hMatch( FB_TK_CASE ) = FALSE ) then
+	if( hMatch( FB_TK_CASE, LEXCHECK_POST_SUFFIX ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDCASE )
 	end if
 
 	'' AS?
 	if( lexGetToken( ) = FB_TK_AS ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' CONST?
-		if( hMatch( FB_TK_CONST ) ) then
+		if( hMatch( FB_TK_CONST, LEXCHECK_POST_SUFFIX ) ) then
 			cSelConstStmtBegin()
 			return
 		end if
@@ -209,7 +209,7 @@ private sub hCaseExpression _
 
 	'' IS REL_OP Expression
 	if( lexGetToken( ) = FB_TK_IS ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		casectx.op = hFBrelop2IRrelop( lexGetToken( ) )
 		lexSkipToken( )
 		casectx.typ = FB_CASETYPE_IS
@@ -229,7 +229,7 @@ private sub hCaseExpression _
 
 	'' TO Expression
 	if( lexGetToken( ) = FB_TK_TO ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		if( casectx.typ <> FB_CASETYPE_SINGLE ) then
 			errReport( FB_ERRMSG_SYNTAXERROR )
@@ -330,7 +330,7 @@ sub cSelectStmtNext( )
     end if
 
 	'' CASE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' end scope
 	if( stk->scopenode <> NULL ) then
@@ -348,7 +348,7 @@ sub cSelectStmtNext( )
 
 	'' ELSE?
 	if( lexGetToken( ) = FB_TK_ELSE ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' begin scope
 		stk->scopenode = astScopeBegin( )
@@ -432,8 +432,8 @@ sub cSelectStmtEnd( )
     end if
 
 	'' END SELECT
-	lexSkipToken( )
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' end scope
 	if( stk->scopenode <> NULL ) then

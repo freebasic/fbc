@@ -21,19 +21,22 @@ function cViewStmt(byval is_func as integer) as ASTNODE ptr
 	default_view = is_func
 	default_view_value = iif(is_func,-1,0)
 
-	'' PRINT
+	'' PRINT?
 	if( lexGetLookAhead( 1 ) <> FB_TK_PRINT ) then
 		exit function
 	end if
 
-	lexSkipToken( )
-	lexSkipToken( )
+	'' VIEW
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
+
+	'' PRINT
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' (Expression TO Expression)?
 	if( is_func = FALSE ) then
 		expr1 = cExpression( )
 		if( expr1 <> NULL ) then
-			if( hMatch( FB_TK_TO ) = FALSE ) then
+			if( hMatch( FB_TK_TO, LEXCHECK_POST_SUFFIX ) = FALSE ) then
 				errReport( FB_ERRMSG_SYNTAXERROR )
 				expr1 = astNewCONSTi( 0 )
 			end if
@@ -62,12 +65,12 @@ end function
 
 function cWidthStmt(byval isfunc as integer) as ASTNODE ptr
 	dim as ASTNODE ptr fnum, width_arg, height_arg, dev_name
-    dim as integer checkrprnt
+	dim as integer checkrprnt
 
 	function = NULL
 
 	'' WIDTH
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	if( isfunc ) then
 		'' '('?
@@ -76,64 +79,64 @@ function cWidthStmt(byval isfunc as integer) as ASTNODE ptr
 		checkrprnt = FALSE
 	end if
 
-    if( isfunc ) then
-    	'' used as function?
-    	if( checkrprnt = FALSE ) then
-    		return rtlWidthScreen( NULL, NULL, isfunc )
-    	'' ()?
-    	elseif( hMatch( CHAR_RPRNT ) ) then
-    		return rtlWidthScreen( NULL, NULL, isfunc )
-    	end if
+	if( isfunc ) then
+		'' used as function?
+		if( checkrprnt = FALSE ) then
+			return rtlWidthScreen( NULL, NULL, isfunc )
+		'' ()?
+		elseif( hMatch( CHAR_RPRNT ) ) then
+			return rtlWidthScreen( NULL, NULL, isfunc )
+		end if
 	end if
 
-    if( hMatch( FB_TK_LPRINT ) ) then
-       ' fb_WidthDev
-       dev_name = astNewCONSTstr( "LPT1:" )
-       hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
+	if( hMatch( FB_TK_LPRINT ) ) then
+		' fb_WidthDev
+		dev_name = astNewCONSTstr( "LPT1:" )
+		hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
 
-       function = rtlWidthDev( dev_name, width_arg, isfunc )
+		function = rtlWidthDev( dev_name, width_arg, isfunc )
 
 	elseif( hMatch( CHAR_SHARP ) ) then
-    	' fb_WidthFile
+		' fb_WidthFile
 
-        hMatchExpressionEx( fnum, FB_DATATYPE_INTEGER )
+		hMatchExpressionEx( fnum, FB_DATATYPE_INTEGER )
 
-        if( hMatch( CHAR_COMMA ) ) then
-        	hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
+		if( hMatch( CHAR_COMMA ) ) then
+			hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
 		else
 			width_arg = astNewCONSTi( -1 )
 		end if
 
-        function = rtlWidthFile( fnum, width_arg, isfunc )
+		function = rtlWidthFile( fnum, width_arg, isfunc )
 
 	elseif( hMatch( CHAR_COMMA ) ) then
-    	' fb_WidthScreen
+		' fb_WidthScreen
 		width_arg = astNewCONSTi( -1 )
-        hMatchExpressionEx( height_arg, FB_DATATYPE_INTEGER )
-        function = rtlWidthScreen( width_arg, height_arg, isfunc )
+		hMatchExpressionEx( height_arg, FB_DATATYPE_INTEGER )
+		function = rtlWidthScreen( width_arg, height_arg, isfunc )
 
 	else
 		hMatchExpressionEx( dev_name, FB_DATATYPE_STRING )
-        ' fb_WidthDev
-        if( symbIsString( astGetDataType( dev_name ) ) ) then
-        	if( hMatch( CHAR_COMMA ) ) then
-            	hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
+		' fb_WidthDev
+		if( symbIsString( astGetDataType( dev_name ) ) ) then
+			if( hMatch( CHAR_COMMA ) ) then
+				hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
 			else
 				width_arg = astNewCONSTi( -1 )
 			end if
-            function = rtlWidthDev( dev_name, width_arg, isfunc )
+			function = rtlWidthDev( dev_name, width_arg, isfunc )
 
 		else
-        	' fb_WidthScreen
-            width_arg = dev_name
-            dev_name = NULL
+			' fb_WidthScreen
+			width_arg = dev_name
+			dev_name = NULL
 
-            if( hMatch( CHAR_COMMA ) ) then
-            	hMatchExpressionEx( height_arg, FB_DATATYPE_INTEGER )
+			if( hMatch( CHAR_COMMA ) ) then
+				hMatchExpressionEx( height_arg, FB_DATATYPE_INTEGER )
 			else
 				height_arg = astNewCONSTi( -1 )
 			end if
-            function = rtlWidthScreen( width_arg, height_arg, isfunc )
+			function = rtlWidthScreen( width_arg, height_arg, isfunc )
 
 		end if
 	end if
@@ -151,7 +154,7 @@ function cColorStmt(byval isfunc as integer) as ASTNODE ptr
 	function = NULL
 
 	'' COLOR
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	if( isfunc ) then
 		'' '('?
@@ -198,7 +201,7 @@ function cScreenFunct() as ASTNODE ptr
 	function = NULL
 
 	'' SCREEN
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	dim as integer match_paren = FALSE
 	dim as ASTNODE ptr yexpr = NULL

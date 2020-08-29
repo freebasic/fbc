@@ -60,7 +60,7 @@ function cPokeStmt( ) as integer
 	function = FALSE
 
 	'' POKE
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' (SymbolType ',')? Expression
 	expr1 = hOptionalTypeAndFirstExpr( poketype, subtype )
@@ -118,7 +118,7 @@ function cPeekFunct( ) as ASTNODE ptr
 	function = NULL
 
 	'' PEEK
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' '('
 	hMatchLPRNT( )
@@ -163,6 +163,7 @@ function cPeekFunct( ) as ASTNODE ptr
 			exit function
 		end select
 
+		'' '.'
 		lexSkipToken( LEXCHECK_NOPERIOD )
 		function = cUdtMember( dtype, subtype, expr, TRUE )
 	else

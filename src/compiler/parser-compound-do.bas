@@ -15,7 +15,7 @@ sub cDoStmtBegin( )
     dim as FB_CMPSTMTSTK ptr stk = any
 
 	'' DO
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' add ini and end labels (will be used by any EXIT DO)
 	il = symbAddLabel( NULL )
@@ -36,7 +36,7 @@ sub cDoStmtBegin( )
 	end select
 
 	if( iswhile or isuntil ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' Expression
 		expr = cExpression( )
@@ -84,7 +84,7 @@ sub cDoStmtEnd( )
 	end if
 
 	'' LOOP
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' ((WHILE | UNTIL | SttSeparator) Expression)?
 	iswhile = FALSE
@@ -113,7 +113,7 @@ sub cDoStmtEnd( )
 
 	'' bottom check?
 	if( iswhile or isuntil ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' Expression
 		expr = cExpression( )

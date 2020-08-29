@@ -58,7 +58,7 @@ function cLabel as integer
 				errReport( FB_ERRMSG_DUPDEFINITION )
 			end if
 
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			'' skip ':'
 			lexSkipToken( )

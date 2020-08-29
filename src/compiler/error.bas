@@ -85,7 +85,8 @@ declare function hMakeParamDesc _
 		( /'FB_WARNINGMSG_CONSTQUALIFIERDISCARDED   '/ 0, @"CONST qualifier discarded" ), _
 		( /'FB_WARNINGMSG_RETURNTYPEMISMATCH        '/ 0, @"Return type mismatch" ), _
 		( /'FB_WARNINGMSG_CALLINGCONVMISMATCH       '/ 0, @"Calling convention mismatch" ), _
-		( /'FB_WARNINGMSG_ARGCNTMISMATCH            '/ 0, @"Argument count mismatch" ) _
+		( /'FB_WARNINGMSG_ARGCNTMISMATCH            '/ 0, @"Argument count mismatch" ), _
+		( /'FB_WARNINGMSG_SUFFIXIGNORED             '/ 1, @"Suffix ignored" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as const zstring ptr => _

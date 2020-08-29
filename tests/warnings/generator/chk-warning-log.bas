@@ -91,8 +91,8 @@ retry:
 	if( mode = 0 ) then
 		if left( x, 8 ) = "warning " then
 			mode = 1
-		elseif left( x, 11 ) = "2 warnings " then
-			mode = 2
+		elseif mid( x, 2, 10 ) = " warnings " then
+			mode = cuint(left(x,1))
 		else
 			if instr( 2, x, "warning" ) > 0 then
 				print "line " & lineno & " - unexpected warning"

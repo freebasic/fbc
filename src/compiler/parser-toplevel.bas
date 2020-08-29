@@ -164,7 +164,7 @@ sub cProgram()
 		errReport( FB_ERRMSG_EXPECTEDPPENDIF )
 	end if
 
-	lexSkipToken()
+	lexSkipToken( )
 
 	'' only check compound stmts if not parsing an include file
 	if (env.includerec = 0) then

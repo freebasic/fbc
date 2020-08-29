@@ -41,9 +41,10 @@ enum LEXCHECK
 	'' don't interpret f, u, l as type-specifier suffixes on numeric literals (used in asm blocks)
 	LEXCHECK_NOLETTERSUFFIX	= &h0400
 
-	'' allow suffix, like when reading potential directives from comments, even though the dialect prohibits suffixes
-	LEXCHECK_ALLOWSUFFIX = &h0800
-	
+	LEXCHECK_POST_SUFFIX        = &h0800  '' no suffix in any lang dialect
+	LEXCHECK_POST_LANG_SUFFIX   = &h1000  '' suffix allowed only if lang dialect allows it
+	LEXCHECK_POST_STRING_SUFFIX = &h2000  '' '$' suffix OK in any dialect
+	LEXCHECK_POST_MASK          = &h3800  '' mask out context specfic bits
 end enum
 
 type FBTOKEN
@@ -64,6 +65,7 @@ type FBTOKEN
 		prdpos		as integer					'' period '.' pos in symbol names
 		hasesc		as integer					'' any '\' in literals
 	end union
+	suffixchar		as integer
 
 	after_space		as integer
 
@@ -225,6 +227,22 @@ declare function lexPeekCurrentLine _
 		byval do_trim as integer _
 	) as string
 
+declare sub lexCheckToken _
+	( _
+		byval flags as LEXCHECK _
+	)
+
+declare function hMatchIdOrKw _
+	( _
+		byval txt as const zstring ptr, _
+		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
+	) as integer
+
+declare function hMatch _
+	( _
+		byval token as integer, _
+		byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
+	) as integer
 
 ''
 '' macros
@@ -246,6 +264,8 @@ declare function lexPeekCurrentLine _
 
 #define lexGetHasSlash( ) lex.ctx->head->hasesc
 
+#define lexGetSuffixChar( ) lex.ctx->head->suffixchar
+
 #define lexGetHead( ) lex.ctx->head
 
 #define lexCurrLineGet( ) lex.ctx->currline.data
@@ -256,6 +276,3 @@ declare function lexPeekCurrentLine _
 '' inter-module globals
 ''
 extern lex as LEX_CTX
-
-
-

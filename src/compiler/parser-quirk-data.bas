@@ -24,7 +24,7 @@ function cDataStmt  _
 	select case tk
 	'' RESTORE LABEL?
 	case FB_TK_RESTORE
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' LABEL?
 		dim as FBSYMBOL ptr sym = NULL
@@ -45,14 +45,14 @@ function cDataStmt  _
 					return TRUE
 				end if
 			end if
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		end select
 
 		function = rtlDataRestore( sym )
 
 	'' READ Variable{int|flt|str} (',' Variable{int|flt|str})*
 	case FB_TK_READ
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		dim as ASTNODE ptr expr = NULL
 		do
@@ -104,7 +104,8 @@ function cDataStmt  _
 		dim as ASTNODE ptr expr = NULL
 
 		if( env.clopt.lang <> FB_LANG_QB ) then
-			lexSkipToken( )
+			'' DATA
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			do
 				hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
@@ -141,6 +142,7 @@ function cDataStmt  _
 				   		  	  LEXCHECK_NOQUOTES or _
 				   		   	  LEXCHECK_NOSYMBOL
 
+			'' DATA
 			lexSkipToken( LEX_FLAGS )
 
 			dim as integer do_exit = FALSE

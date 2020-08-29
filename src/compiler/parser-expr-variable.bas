@@ -326,14 +326,14 @@ function cUdtMember _
 		select case	as const symbGetClass( fld )
 		'' const? (enum elmts too), exit
 		case FB_SYMBCLASS_CONST
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			astDeltree(	varexpr	)
 			return astBuildConst( fld )
 
 		'' enum?
 		case FB_SYMBCLASS_ENUM
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			astDeltree(	varexpr	)
 			varexpr = NULL
@@ -345,7 +345,7 @@ function cUdtMember _
 
 		'' field?
 		case FB_SYMBCLASS_FIELD
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 			'' make sure the field inherits the parent's constant mask
 			dtype =	symbGetFullType( fld ) or mask
@@ -400,7 +400,7 @@ function cUdtMember _
 			return NULL
 		end	select
 
-		lexSkipToken( LEXCHECK_NOPERIOD	)
+		lexSkipToken( LEXCHECK_NOPERIOD	or LEXCHECK_POST_SUFFIX )
 	loop
 
 	function = varexpr
@@ -423,13 +423,15 @@ sub cUdtTypeMember _
 			exit while
 		end if
 
+		'' '.'
 		lexSkipToken( LEXCHECK_NOPERIOD )
 
 		'' check member field, See also hLenSizeof()
 		dim sym as FBSYMBOL ptr = hMemberId( subtype )
 
 		if( sym ) then
-			lexSkipToken( )
+			'' ID
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = symbGetFullType( sym )
 			subtype = symbGetSubType( sym )
 			lgt = symbGetLen( sym )
@@ -1012,7 +1014,7 @@ function cVariableEx overload _
 	end if
 
 	'' ID
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 
 	is_byref = symbIsParamByRef( sym ) or symbIsImport( sym ) or symbIsRef( sym )
 	is_array = symbIsArray( sym )

@@ -33,7 +33,7 @@ private sub hIfSingleLine(byval stk as FB_CMPSTMTSTK ptr)
 
 	'' (ELSE Statement*)?
 	if( lexGetToken( ) = FB_TK_ELSE ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' end scope
 		if( stk->scopenode <> NULL ) then
@@ -81,12 +81,12 @@ private sub hIfSingleLine(byval stk as FB_CMPSTMTSTK ptr)
 	select case lexGetToken( )
 	case FB_TK_END
 		if( lexGetLookAhead( 1 ) = FB_TK_IF ) then
-			lexSkipToken( )
-			lexSkipToken( )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		end if
 
 	case FB_TK_ENDIF
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	end select
 
 	'' end scope
@@ -106,7 +106,7 @@ sub cIfStmtBegin( )
 	dim as integer ismultiline = any
 
 	'' IF
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
     '' Expression
     expr = cExpression( )
@@ -145,7 +145,7 @@ sub cIfStmtBegin( )
 	if( lexGetToken( ) <> FB_TK_THEN ) then
 		errReport( FB_ERRMSG_EXPECTEDTHEN )
 	else
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	end if
 
 	select case as const lexGetToken( )
@@ -212,7 +212,7 @@ sub cIfStmtNext( )
 
 	'' ELSEIF Expression THEN ?
     if( lexGetToken( ) = FB_TK_ELSEIF ) then
-    	lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' exit last if stmt
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->if.endlabel ) )
@@ -235,7 +235,7 @@ sub cIfStmtNext( )
     	end if
 
 		'' THEN
-		if( hMatch( FB_TK_THEN ) = FALSE ) then
+		if( hMatch( FB_TK_THEN, LEXCHECK_POST_SUFFIX ) = FALSE ) then
 			errReport( FB_ERRMSG_EXPECTEDTHEN )
 		end if
 
@@ -251,7 +251,7 @@ sub cIfStmtNext( )
     else
     	stk->if.elsecnt += 1
 
-    	lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 		'' warn about IF statements immediately following ELSE, due to confusion with 'ELSEIF'
 		if( lexGetToken( ) = FB_TK_IF ) then
@@ -292,9 +292,9 @@ sub cIfStmtEnd( )
 
 	'' ENDIF or END IF
 	if( lexGetToken() = FB_TK_END ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	end if
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' end scope
 	if( stk->scopenode <> NULL ) then

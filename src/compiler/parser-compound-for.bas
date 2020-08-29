@@ -498,7 +498,7 @@ private sub hForTo _
 	if( lexGetToken( ) <> FB_TK_TO ) then
 		errReport( FB_ERRMSG_EXPECTEDTO )
 	else
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 	end if
 
 	'' EndCondition
@@ -567,7 +567,7 @@ private sub hForStep _
 	'' STEP
 	stk->for.explicit_step = FALSE
 	if( lexGetToken( ) = FB_TK_STEP ) then
-		lexSkipToken( )
+		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		stk->for.explicit_step = TRUE
 	end if
 
@@ -702,7 +702,7 @@ sub cForStmtBegin( )
 	dim as FBSYMBOL ptr sym = any
 
 	'' FOR
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' ID
 	dim as FBSYMCHAIN ptr chain_ = any
@@ -992,7 +992,7 @@ sub cForStmtEnd( )
 	dim as FB_CMPSTMTSTK ptr stk = any
 
 	'' NEXT
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	do
 		'' TOS = top of stack
