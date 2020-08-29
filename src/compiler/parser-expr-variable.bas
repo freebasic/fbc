@@ -423,12 +423,14 @@ sub cUdtTypeMember _
 			exit while
 		end if
 
-		lexSkipToken( LEXCHECK_NOPERIOD or LEXCHECK_POST_SUFFIX )
+		'' '.'
+		lexSkipToken( LEXCHECK_NOPERIOD )
 
 		'' check member field, See also hLenSizeof()
 		dim sym as FBSYMBOL ptr = hMemberId( subtype )
 
 		if( sym ) then
+			'' ID
 			lexSkipToken( LEXCHECK_POST_SUFFIX )
 			dtype = symbGetFullType( sym )
 			subtype = symbGetSubType( sym )

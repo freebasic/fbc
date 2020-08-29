@@ -150,7 +150,8 @@ sub cNamespaceStmtBegin( )
 			exit do
 		end if
 
-		lexSkipToken( LEXCHECK_NOPERIOD or LEXCHECK_POST_SUFFIX )
+		'' '.'
+		lexSkipToken( LEXCHECK_NOPERIOD )
 	loop
 
 	'' The new top namespace entry on the stack is used to hold the number

@@ -418,7 +418,7 @@ private function hCheckId _
 	'' turned into string literals, allowing them to be compared
 	if( fbGetIsPP( ) ) then
 		expr = astNewCONSTstr( ucase( *lexGetText( ) ) )
-		lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
+		lexSkipToken( )
 		return expr
 	end if
 

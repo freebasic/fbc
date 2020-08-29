@@ -94,7 +94,7 @@ private function hGetLabelId _
 		end if
 	end if
 
-	lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
+	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	function = sym
 

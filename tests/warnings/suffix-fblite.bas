@@ -1,74 +1,129 @@
-'' parser-assignment.bas
-#print parser-assignment.bas
+'' SUFFIX warnings
 
-sub parser_assignment()
-	dim i as integer
-	let% i = 1
-end sub
+#lang "fblite"
 
+#macro WARN( W )
+	#if (W=0)
+		#print none expected
+	#elseif (W=1)
+		#print warning expected
+	#elseif (W>1) and (W<10)
+		#print W warnings expected
+	#else
+		#print argument must be 0 to 9
+		#error
+	#endif
+#endmacro
 
-'' parser-comment.bas
-#print parser-comment.bas
+'' parser-assignment.bas ----
+#print parser-assignment.bas ----
 
-'$lang: "fblite"
-'$include once%: "suffix-inc.bi"
-
-'$dynamic%
-'$static%
-
-
-'' parser-decl-option.bas
-#print parser-decl-option.bas
-
-defbyte% A%-Z%
-defubyte% A-Z
-defshort% A-Z
-defushort% A-Z
-defint% A-Z
-defuint% A-Z
-deflng% A-Z
-defulng% A-Z
-deflongint% A-Z
-defulongint% A-Z
-defsng% A-Z
-defdbl% A-Z
-defstr% A-Z
-
-option% byval%
-option  dynamic%
-option  static%
-option  gosub%
-option  explicit%
-option  private%
-option  escape%
-option  base% 1
-#define scrap
-option  nokeyword% scrap
-option  nogosub%
-option  gosub
+	sub parser_assignment()
+		dim i as integer
+		WARN( 1 )
+		let% i = 1
+	end sub
 
 
-'' parser-quirk-goto-return.bas
-#print parser-quirk-goto-return.bas
+'' parser-comment.bas ----
+#print parser-comment.bas ----
 
+	'$lang: "fblite"
+	WARN( 1 )
+	'$include once%: "suffix-inc.bi"
+
+	WARN( 1 )
+	'$dynamic%
+	WARN( 1 )
+	'$static%
+
+
+'' parser-decl-option.bas ----
+#print parser-decl-option.bas ----
+
+	WARN( 3 )
+	defbyte% A%-Z%
+	WARN( 1 )
+	defubyte% A-Z
+	WARN( 1 )
+	defshort% A-Z
+	WARN( 1 )
+	defushort% A-Z
+	WARN( 1 )
+	defint% A-Z
+	WARN( 1 )
+	defuint% A-Z
+	WARN( 1 )
+	deflng% A-Z
+	WARN( 1 )
+	defulng% A-Z
+	WARN( 1 )
+	deflongint% A-Z
+	WARN( 1 )
+	defulongint% A-Z
+	WARN( 1 )
+	defsng% A-Z
+	WARN( 1 )
+	defdbl% A-Z
+	WARN( 1 )
+	defstr% A-Z
+
+	WARN( 2 )
+	option% byval%
+	WARN( 1 )
+	option  dynamic%
+	WARN( 1 )
+	option  static%
+	WARN( 1 )
+	option  gosub%
+	WARN( 1 )
+	option  explicit%
+	WARN( 1 )
+	option  private%
+	WARN( 1 )
+	option  escape%
+	WARN( 1 )
+	option  base% 1
+	#define scrap
+	WARN( 1 )
+	option  nokeyword% scrap
+	WARN( 1 )
+	option  nogosub%
+	WARN( 1 )
+	option  gosub%
+
+
+'' parser-quirk-goto-return.bas ----
+#print parser-quirk-goto-return.bas ----
+
+	WARN( 2 )
 	goto% label%
+	WARN( 2 )
 	gosub% label%
+	WARN( 2 )
 	return% label%
+	WARN( 2 )
 	resume% next%
+
+WARN( 1 )
 label%:
+	WARN( 1 )
 	goto label%
 
 
-'' parser-quirk-on.bas
-#print parser-quirk-on.bas
+'' parser-quirk-on.bas ----
+#print parser-quirk-on.bas ----
 
 	sub proc()
 		goto label1%
 		label1%:
 		dim a as integer
+		WARN( 4 )
 		on% local% a goto% label1%
+		WARN( 4 )
 		on% local% a gosub% label1%
+		WARN( 4 )
 		on% error% goto% label1%
+		WARN( 1 )
 		goto label1%
 	end sub
-

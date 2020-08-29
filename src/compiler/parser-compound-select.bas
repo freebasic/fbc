@@ -211,7 +211,7 @@ private sub hCaseExpression _
 	if( lexGetToken( ) = FB_TK_IS ) then
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		casectx.op = hFBrelop2IRrelop( lexGetToken( ) )
-		lexSkipToken( LEXCHECK_POST_SUFFIX )
+		lexSkipToken( )
 		casectx.typ = FB_CASETYPE_IS
 	else
 		casectx.typ = FB_CASETYPE_SINGLE

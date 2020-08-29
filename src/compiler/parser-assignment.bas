@@ -359,7 +359,8 @@ function cAssignmentOrPtrCall _
 			errReportNotAllowed( FB_LANG_OPT_LET )
     	else
     		ismult = TRUE
-    		lexSkipToken( )
+			'' 'LET'
+    		lexSkipToken( LEXCHECK_POST_SUFFIX )
     	end if
     end if
 
@@ -368,7 +369,7 @@ function cAssignmentOrPtrCall _
     	exit function
     end if
 
-	'' LET
+	'' LET | '('
 	lexSkipToken( LEXCHECK_POST_SUFFIX )
 
 	'' single?

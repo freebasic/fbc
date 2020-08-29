@@ -45,7 +45,7 @@ function cDataStmt  _
 					return TRUE
 				end if
 			end if
-			lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
+			lexSkipToken( LEXCHECK_POST_SUFFIX )
 		end select
 
 		function = rtlDataRestore( sym )

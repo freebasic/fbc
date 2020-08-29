@@ -46,7 +46,8 @@ function cThreadCallFunc() as ASTNODE ptr
         end if
     end if
 
-    lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
+	'' ID
+    lexSkipToken( LEXCHECK_POST_SUFFIX )
     
     '' '('?
     if( hMatch( CHAR_LPRNT ) = FALSE ) then
