@@ -266,6 +266,7 @@ sub ppParse( )
 	case FB_TK_PP_ERROR
 		lexSkipToken( LEXCHECK_POST_SUFFIX )
 		errReportEx( -1, *ppReadLiteral( ) )
+		parser.stmt.cnt += 1
 
 	'' INCLUDE ONCE? LIT_STR
 	case FB_TK_PP_INCLUDE

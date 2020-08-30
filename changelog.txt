@@ -55,6 +55,7 @@ Version 1.08.0
 - oGLfbGFX: opengl driver was leaking thread handle under 'screencontrol fb.SET_GL_2D_MODE, fb.OGL_2D_AUTO_SYNC'
 - oGLfbGFX: prevent opengl mode and scale from changing until next mode is set
 - sf.net #908: visibility / access rights of overload For/Next/Step operators not taken into account by for...next statement 
+- sf.net #906: #error on line 2 not reported if immediately following #error on line 1
 
 
 Version 1.07.0
