@@ -15,6 +15,7 @@ Version 1.08.0
 - sf.net #909, #832, #866 reverted error on suffix in lang fb dialect
 - sf.net #832: warn on suffixes for all built-in keywords.
 - 'Suffix ignored' warning in -lang fb instead of errors
+- macros and defines with parameters can now be invoked without using parentheses around the arguments
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
@@ -33,6 +34,7 @@ Version 1.08.0
 - fbc: add builtin function fb_MemCopy() alias "memcpy" (was previously removed in an older version of fbc)
 - ./inc/fbc-int/memory.bi - fbc  API for low level memory operations allocate, callocate, reallocate, deallocate, clear, memcopy, memmove
 - '-w suffix' or '-w pedantic' command line option enabled 'Suffix ignored' warning for built-in in string functions
+- the __FB_UNIQUEID_PUSH__(), __FB_UNIQUEID__(), __FB_UNIQUEID_POP__(), __FB_ARG_LEFTOF__(), __FB_ARG_RIGHTOF__(), __FB_JOIN__() builtin macros
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
@@ -119,7 +121,6 @@ Version 1.06.0
 - Name mangling of Integer/Long parameters was reversed on 32bit to match 64bit, so the same FB and C++ code will be compatible on both 32bit and 64bit. Integer is mangled as C++ long (except on Win64), Long is mangled as C++ int.
 - Adjusted warning text for "mixed bool/nonbool operands" warning
 - test-suite uses libfbcunit for unit testing framework
-- macros and defines with parameters can now be invoked without using parentheses around the arguments
 - SELECT CASE AS CONST respects data type and will show overflow warnings on out-of-range constants
 - boolean: don't allow NEG unary op '-' on boolean data types
 - All fb RTL functions are checked for CONSTness, CONST qualifiers added to fb rtlib built-in prototypes (sf.net #727)
@@ -134,7 +135,6 @@ Version 1.06.0
 - Windows API binding updated to additionally support _WIN32_WINNT &h0501, &h0600, &h0601
 - Under X11, ScreenControl GET_WINDOW_HANDLE places the Display ptr in param2
 - Updated bindings: SDL2 2.0.6, SDL2_image 2.0.1, SDL2_mixer 2.0.1, SDL2_net 2.0.1, SDL2_ttf 2.0.14
-- the __FB_UNIQUEID_PUSH__(), __FB_UNIQUEID__(), __FB_UNIQUEID_POP__(), __FB_ARG_LEFTOF__(), __FB_ARG_RIGHTOF__(), __FB_JOIN__() builtin macros
 - allow overload operator SQR()
 - allow [static] shared byref variables to be initialized with byref variable
 - warning '-w constness' to enable 'CONST qualifier discarded' warning on command line
