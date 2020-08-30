@@ -275,102 +275,104 @@ private function hDefUniqueIdPop_cb( byval argtb as LEXPP_ARGTB ptr, byval errnu
 end function
 
 private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+
+	var res = ""
 	var arg = hMacro_getArg( argtb, 0 )
 	var sep = hMacro_getArg( argtb, 1 )
-	if( arg = null or sep = null ) then
+
+	if( (arg <> NULL) and (sep <> NULL) ) then
+		dim tokens() as string
+		var numtoks = hStr2Tok(arg, tokens())
+		
+		if( numtoks > 0 ) then
+			hUcase(sep, sep)
+			
+			for i as integer = 0 to numtoks-1
+				if( ucase(tokens(i)) = *sep ) then
+					for j as integer = 0 to i - 1
+						if( j > 0 ) then
+							res += " "
+						end if
+						res += tokens(j)
+					next
+					exit for
+				end if
+			next
+
+			if( len(res) = 0 ) then
+				*errnum = FB_ERRMSG_SYNTAXERROR
+			end if
+		else
+			*errnum = FB_ERRMSG_SYNTAXERROR
+		end if
+	else
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
-		return ""
 	end if
 
-	dim tokens() as string
-	var numtoks = hStr2Tok(arg, tokens())
-	
-	if( numtoks = 0 ) then
-		*errnum = FB_ERRMSG_SYNTAXERROR
-		return ""
-	end if
-	
-	hUcase(sep, sep)
-	
-	var res = ""
-	for i as integer = 0 to numtoks-1
-		if( ucase(tokens(i)) = *sep ) then
-			for j as integer = 0 to i - 1
-				if( j > 0 ) then
-					res += " "
-				end if
-				res += tokens(j)
-			next
-			exit for
-		end if
-	next
-	
 	ZstrFree(sep)
 	ZstrFree(arg)
 	
-	if( len(res) = 0 ) then
-		*errnum = FB_ERRMSG_SYNTAXERROR
-	end if
 	return res
 	
 end function
 
 private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+
+	var res = ""
 	var arg = hMacro_getArg( argtb, 0 )
 	var sep = hMacro_getArg( argtb, 1 )
-	if( arg = null or sep = null ) then
+
+	if( (arg <> NULL) and (sep <> NULL) ) then
+		dim tokens() as string
+		var numtoks = hStr2Tok(arg, tokens())
+		
+		if( numtoks > 0 ) then
+			hUcase(sep, sep)
+
+			for i as integer = 0 to numtoks-1
+				if( ucase(tokens(i)) = *sep ) then
+					for j as integer = i + 1 to numtoks-1
+						if( len(res) > 0 ) then
+							res += " "
+						end if
+						res += tokens(j)
+					next
+					exit for
+				end if
+			next
+			if( len(res) = 0 ) then
+				*errnum = FB_ERRMSG_SYNTAXERROR
+			end if
+		else
+			*errnum = FB_ERRMSG_SYNTAXERROR
+		end if
+	else
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
-		return ""
 	end if
 
-	dim tokens() as string
-	var numtoks = hStr2Tok(arg, tokens())
-	
-	if( numtoks = 0 ) then
-		*errnum = FB_ERRMSG_SYNTAXERROR
-		return ""
-	end if
-	
-	hUcase(sep, sep)
-	
-	var res = ""
-	for i as integer = 0 to numtoks-1
-		if( ucase(tokens(i)) = *sep ) then
-			for j as integer = i + 1 to numtoks-1
-				if( len(res) > 0 ) then
-					res += " "
-				end if
-				res += tokens(j)
-			next
-			exit for
-		end if
-	next
-	
 	ZstrFree(sep)
 	ZstrFree(arg)
-	
-	if( len(res) = 0 ) then
-		*errnum = FB_ERRMSG_SYNTAXERROR
-	end if
 	
 	function =  res
 	
 end function
 
 private function hDefJoin_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+
+	var res = ""
 	var l = hMacro_getArg( argtb, 0 )
 	var r = hMacro_getArg( argtb, 1 )
-	if( l = null or r = null ) then
+
+	if( (l <> NULL) and (r = NULL) ) then
+		res = *l + *r
+	else
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
-		return ""
 	end if
-	
-	var res = *l + *r
 
 	ZstrFree(l)
 	ZstrFree(r)
 	
-	function = res
+	function = res	
 	
 end function
 
