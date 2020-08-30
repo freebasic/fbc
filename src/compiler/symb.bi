@@ -5,6 +5,7 @@
 #include once "list.bi"
 #include once "pool.bi"
 #include once "ast-op.bi"
+#include once "stack.bi"
 
 ''
 enum FB_DATACLASS
@@ -378,13 +379,16 @@ type FB_DEFTOK
 end type
 
 enum FB_DEFINE_FLAGS
-	FB_DEFINE_FLAGS_NONE		= &h00000000
-	FB_DEFINE_FLAGS_STR		= &h00000001
-	FB_DEFINE_FLAGS_NOGCC		= &h00000002
-	FB_DEFINE_FLAGS_VARIADIC	= &h00000004
+	FB_DEFINE_FLAGS_NONE        = &h00000000
+	FB_DEFINE_FLAGS_STR         = &h00000001
+	FB_DEFINE_FLAGS_NOGCC       = &h00000002
+	FB_DEFINE_FLAGS_VARIADIC    = &h00000004
 end enum
 
+type LEXPP_ARGTB_ as LEXPP_ARGTB ptr
+
 type FBS_DEFINE_PROC as function( ) as string
+type FBS_MACRO_PROC as function( byval argtb as LEXPP_ARGTB_, byval errnum as integer ptr ) as string
 
 type FBS_DEFINE
 	params			as integer
@@ -398,7 +402,10 @@ type FBS_DEFINE
 
 	isargless		as integer
     flags           as FB_DEFINE_FLAGS			'' bit 0: 1=numeric, 0=string
-	proc			as FBS_DEFINE_PROC
+	union
+		dproc			as FBS_DEFINE_PROC
+		mproc			as FBS_MACRO_PROC
+	end union
 end type
 
 '' forward definition
@@ -765,9 +772,23 @@ type SYMB_DEF_PARAM
 	index			as uinteger
 end type
 
+type SYMB_DEF_UniqueId_Elm
+	name			as zstring ptr
+	prev			as SYMB_DEF_UniqueId_Elm ptr
+end type
+
+type SYMB_DEF_UniqueId_Stack
+	top				as SYMB_DEF_UniqueId_Elm ptr
+end type
+
+type SYMB_DEF_UniqueId
+	dict			as THASH					'' of SYMB_DEF_UniqueId_Stack
+end type
+
 type SYMB_DEF_CTX
 	paramlist		as TLIST					'' define parameters
 	toklist			as TLIST					'' define tokens
+	uniqueid		as SYMB_DEF_UniqueId
 
 	'' macros only..
 	param			as integer					'' param count
@@ -1770,7 +1791,7 @@ declare function symbCanDuplicate _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-declare function symbUniqueId( ) as zstring ptr
+declare function symbUniqueId( byval validfbname as boolean = false ) as zstring ptr
 declare function symbUniqueLabel( ) as zstring ptr
 declare function symbMakeProfileLabelName( ) as zstring ptr
 declare function symbGetMangledName( byval sym as FBSYMBOL ptr ) as zstring ptr
@@ -2184,7 +2205,9 @@ declare function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL 
 
 #define symbGetDefParamNum(a) a->num
 
-#define symbGetDefineCallback(d) d->def.proc
+#define symbGetDefineCallback(d) d->def.dproc
+
+#define symbGetMacroCallback(d) d->def.mproc
 
 #define symbGetDefineIsArgless(d) d->def.isargless
 
