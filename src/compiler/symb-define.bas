@@ -255,7 +255,7 @@ private function hDefUniqueId_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 	function = iif(stk <> NULL, *stk->top->name, "")
 end function
 
-private function hDefUniqueIdPop_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string	
+private function hDefUniqueIdPop_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 	var id = hMacro_getArg( argtb )
 	if( id = null ) then
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
@@ -272,6 +272,13 @@ private function hDefUniqueIdPop_cb( byval argtb as LEXPP_ARGTB ptr, byval errnu
 	end if
 	
 	function = ""
+end function
+
+private function hDefArgCount_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+	if( argtb ) then
+		return str( argtb->count )
+	end if
+	function = str(0)
 end function
 
 private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
@@ -419,6 +426,7 @@ dim shared defTb(0 to ...) as SYMBDEF => _
 
 type SYMBMACRO
 	name			as const zstring ptr
+	flags			as FB_DEFINE_FLAGS
 	proc			as FBS_MACRO_PROC
 	nparams			as integer
 	params(0 to 4)	as const zstring ptr
@@ -427,12 +435,13 @@ end type
 '' Intrinsic #macros which are always defined
 dim shared macroTb(0 to ...) as SYMBMACRO => _
 { _
-	(@"__FB_UNIQUEID_PUSH__"  , @hDefUniqueIdPush_cb	, 1, { (@"ID") } ),  _
-	(@"__FB_UNIQUEID__"       , @hDefUniqueId_cb 		, 1, { (@"ID") } ), _
-	(@"__FB_UNIQUEID_POP__"   , @hDefUniqueIdPop_cb		, 1, { (@"ID") } ), _
-	(@"__FB_ARG_LEFTOF__"     , @hDefArgLeft_cb			, 2, { (@"ARG"), (@"SEP") } ), _
-	(@"__FB_ARG_RIGHTOF__"    , @hDefArgRight_cb		, 2, { (@"ARG"), (@"SEP") } ), _
-	(@"__FB_JOIN__"    		  , @hDefJoin_cb			, 2, { (@"L"), (@"R") } ) _
+	(@"__FB_UNIQUEID_PUSH__"  , 0                       , @hDefUniqueIdPush_cb    , 1, { (@"ID") } ),  _
+	(@"__FB_UNIQUEID__"       , 0                       , @hDefUniqueId_cb        , 1, { (@"ID") } ), _
+	(@"__FB_UNIQUEID_POP__"   , 0                       , @hDefUniqueIdPop_cb     , 1, { (@"ID") } ), _
+	(@"__FB_ARG_COUNT__"      , FB_DEFINE_FLAGS_VARIADIC, @hDefArgCount_cb        , 1, { (@"ARGS") } ), _
+	(@"__FB_ARG_LEFTOF__"     , 0                       , @hDefArgLeft_cb         , 2, { (@"ARG"), (@"SEP") } ), _
+	(@"__FB_ARG_RIGHTOF__"    , 0                       , @hDefArgRight_cb        , 2, { (@"ARG"), (@"SEP") } ), _
+	(@"__FB_JOIN__"           , 0                       , @hDefJoin_cb            , 2, { (@"L"), (@"R") } ) _
 }
 
 sub symbDefineInit _
@@ -511,7 +520,7 @@ sub symbDefineInit _
 			lastparam = symbAddDefineParam( lastparam, macroTb(i).params(j) )
 		next	
 			
-		var sym = symbAddDefineMacro( macroTb(i).name, NULL, macroTb(i).nparams, firstparam, 0 )
+		var sym = symbAddDefineMacro( macroTb(i).name, NULL, macroTb(i).nparams, firstparam, macroTb(i).flags )
 		sym->def.mproc = macroTb(i).proc
 	next
 	

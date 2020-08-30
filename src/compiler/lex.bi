@@ -149,6 +149,7 @@ end type
 
 type LEXPP_ARGTB
 	tb(0 to FB_MAXDEFINEARGS-1) as LEXPP_ARG
+	count as integer
 end type
 
 

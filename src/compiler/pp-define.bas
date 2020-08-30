@@ -105,13 +105,16 @@ private function hLoadMacro _
 
 	'' for each arg
 	num = 0   '' num represents the current last cleared/used entry in the argtb
+	if( argtb ) then
+		argtb->count = 0
+	end if
 	do
 		if( argtb ) then
 			'' argtb entries must be cleared! (it's a NOCLEAR list)
 			DZstrZero( argtb->tb(num).text )
 		end if
 
-        nextparam = symbGetDefParamNext( param )
+		nextparam = symbGetDefParamNext( param )
 
         '' Last param?
         if( nextparam = NULL ) then
@@ -147,6 +150,12 @@ private function hLoadMacro _
 				'' "..." vararg, which just "absorbs" everything
 				'' until the closing ')'.
 				if( prntcnt = 1 ) then
+					if( argtb ) then
+						if( argtb->count = 0 ) then
+							argtb->count = 1
+						end if
+						argtb->count += 1
+					endif
 					if( reached_vararg = FALSE ) then
 						exit do
 					end if
@@ -167,6 +176,15 @@ private function hLoadMacro _
 				end if
 				prntcnt = 0
 				exit do
+
+			case CHAR_SPACE, CHAR_TAB
+
+			case else
+				if( argtb ) then
+					if( argtb->count = 0 ) then
+						argtb->count = 1
+					end if
+				endif
 			
 			end select
 			
@@ -470,6 +488,9 @@ private function hLoadMacroW _
 	
 	'' for each arg
 	num = 0    '' num represents the current last cleared/used entry in the argtb
+	if( argtb ) then
+		argtb->count = 0
+	end if
 	do
 		if( argtb ) then
 			'' argtb entries must be cleared! (it's a NOCLEAR list)
@@ -512,6 +533,12 @@ private function hLoadMacroW _
 				'' "..." vararg, which just "absorbs" everything
 				'' until the closing ')'.
 				if( prntcnt = 1 ) then
+					if( argtb ) then
+						if( argtb->count = 0 ) then
+							argtb->count = 1
+						end if
+						argtb->count += 1
+					endif
 					if( reached_vararg = FALSE ) then
 						exit do
 					end if
@@ -532,6 +559,16 @@ private function hLoadMacroW _
 				end if
 				prntcnt = 0
 				exit do
+
+			case CHAR_SPACE, CHAR_TAB
+
+			case else
+				if( argtb ) then
+					if( argtb->count = 0 ) then
+						argtb->count = 1
+					end if
+				endif
+
 			end select
 
 			if( argtb <> NULL ) then

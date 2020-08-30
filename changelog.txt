@@ -34,7 +34,8 @@ Version 1.08.0
 - fbc: add builtin function fb_MemCopy() alias "memcpy" (was previously removed in an older version of fbc)
 - ./inc/fbc-int/memory.bi - fbc  API for low level memory operations allocate, callocate, reallocate, deallocate, clear, memcopy, memmove
 - '-w suffix' or '-w pedantic' command line option enabled 'Suffix ignored' warning for built-in in string functions
-- the __FB_UNIQUEID_PUSH__(), __FB_UNIQUEID__(), __FB_UNIQUEID_POP__(), __FB_ARG_LEFTOF__(), __FB_ARG_RIGHTOF__(), __FB_JOIN__() builtin macros
+- __FB_UNIQUEID_PUSH__(), __FB_UNIQUEID__(), __FB_UNIQUEID_POP__(), __FB_ARG_LEFTOF__(), __FB_ARG_RIGHTOF__(), __FB_JOIN__() builtin macros
+- __FB_ARG_COUNT__() builtin macro
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
