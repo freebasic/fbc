@@ -211,7 +211,7 @@ private function hMacro_getArg( byval argtb as LEXPP_ARGTB ptr, byval num as int
 	function = res
 	
 end function
-	
+
 private function hDefUniqueIdPush_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 	
 	var id = hMacro_getArg( argtb )

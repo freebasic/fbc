@@ -65,11 +65,12 @@ private function hLoadMacro _
 
 	function = -1
 
-	var isParentLess = false
+	var hasParens = false
 	
 	'' '('?
-	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
-		isParentLess = true
+	if( lexCurrentChar( TRUE ) = CHAR_LPRNT ) then
+		hasParens = true
+	else
 		if( pp.invoking > 0 ) then
 			'' not an error, macro can be passed as param to other macros
 			exit function
@@ -82,7 +83,7 @@ private function hLoadMacro _
 	
 	pp.invoking += 1
 
-	if( not isParentLess ) then
+	if( hasParens ) then
 		lexEatChar( )
 	end if
 
@@ -152,14 +153,14 @@ private function hLoadMacro _
 				end if
 
 			case FB_TK_STMTSEP
-				if( isParentLess ) then
+				if( not hasParens ) then
 					readdchar = CHAR_COLON
 					prntcnt = 0
 					exit do
 				end if
 			
 			case FB_TK_EOL, FB_TK_EOF
-				if( not isParentLess ) then
+				if( hasParens ) then
 					hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
 				else
 					readdchar = iif(t.id = FB_TK_EOF, 0, CHAR_LF)
@@ -358,17 +359,18 @@ private function hLoadDefine _
 
 			'' arg-less macro?
 			if( symbGetDefineIsArgless( s ) ) then
-				var isParentLess = false
+				var hasParens = false
 				'' '('?
-				if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
-					isParentLess = true
+				if( lexCurrentChar( TRUE ) = CHAR_LPRNT ) then
+					hasParens = true
+				else
 					'' not an error, macro can be passed as param to other macros
 					if( pp.invoking > 0 ) then
 						exit function
 					end if
 				end if
 				
-				if( not isParentLess ) then
+				if( hasParens ) then
 					lexEatChar( )
 
 					'' ')'
@@ -428,11 +430,12 @@ private function hLoadMacroW _
 
 	function = -1
 
-	var isParentLess = false
+	var hasParens = false
 	
 	'' '('?
-	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
-		isParentLess = true
+	if( lexCurrentChar( TRUE ) = CHAR_LPRNT ) then
+		hasParens = true
+	else
 		if( pp.invoking > 0 ) then
 			'' not an error, macro can be passed as param to other macros
 			exit function
@@ -445,7 +448,7 @@ private function hLoadMacroW _
 
 	pp.invoking += 1
 
-	if( not isParentLess ) then
+	if( hasParens ) then
 		lexEatChar( )
 	end if
 
@@ -515,14 +518,14 @@ private function hLoadMacroW _
 				end if
 
 			case FB_TK_STMTSEP
-				if( isParentLess ) then
+				if( not hasParens ) then
 					readdchar = CHAR_COLON
 					prntcnt = 0
 					exit do
 				end if
 			
 			case FB_TK_EOL, FB_TK_EOF
-				if( not isParentLess ) then
+				if( hasParens ) then
 					hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
 				else
 					readdchar = iif(t.id = FB_TK_EOF, 0, CHAR_LF)
@@ -716,17 +719,18 @@ private function hLoadDefineW _
 		else
 			'' arg-less macro?
 			if( symbGetDefineIsArgless( s ) ) then
-				var isParentLess = false
+				var hasParens = false
 				'' '('?
-				if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
-					isParentLess = true
+				if( lexCurrentChar( TRUE ) = CHAR_LPRNT ) then
+					hasParens = true
+				else
 					'' not an error, macro can be passed as param to other macros
 					if( pp.invoking > 0 ) then
 						exit function
 					end if
 				end if
 				
-				if( not isParentLess ) then
+				if( hasParens ) then
 					lexEatChar( )
 
 					'' ')'
