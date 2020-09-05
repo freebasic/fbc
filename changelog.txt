@@ -12,6 +12,7 @@ Version 1.09.0
 [added]
 - fbc: add '-z fbrt' command line option to link against libfbrt*.a instead of libfb*.a
 - makefile: add target for fbrt, fb runtime library written in fbc. Bulid libfbrt*.a and merge any missing object modules from libfb*.a
+- sf.net #903: add STATIC OPERATOR to user defined types
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)
@@ -97,7 +98,6 @@ Version 1.08.0
 - rtlib: inc/file.bi;FileSetEof() function, to adjust size of open file
 - sf.net feature request #293: allow len/sizeof/typeof for UDT members without expression
 - gfxlib: added Direct2D driver, preferred driver on newer systems.  DirectX driver is still fallback for older systems (adeyblue)
-- sf.net #903: add STATIC OPERATOR to user defined types
 - fbc: add builtin function fb_MemMove() alias "memmove"
 - fbc: add builtin function fb_MemCopy() alias "memcpy" (was previously removed in an older version of fbc)
 - ./inc/fbc-int/memory.bi - fbc  API for low level memory operations allocate, callocate, reallocate, deallocate, clear, memcopy, memmove, copyclear

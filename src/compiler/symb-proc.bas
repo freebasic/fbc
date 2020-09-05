@@ -2225,7 +2225,7 @@ function symbFindBopOvlProc _
 	arg2.next = NULL
 
 	proc = symbFindClosestOvlProc( symb.globOpOvlTb(op).head, 2, @arg1, err_num, FB_SYMBLOOKUPOPT_BOP_OVL )
-	
+
 	'' !!! TODO !!! refactor duplicate code.
 	if( proc = NULL ) then
 		if( *err_num <> FB_ERRMSG_OK ) then

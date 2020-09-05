@@ -1253,7 +1253,7 @@ function cProcHeader _
 						errReport( FB_ERRMSG_OPERATORCANTBESTATIC, TRUE )
 						attrib and= not FB_SYMBATTRIB_STATIC
 					end if
-					attrib or= FB_SYMBATTRIB_METHOD
+					pattrib or= FB_PROCATTRIB_METHOD
 
 				'' must be static if a declaration
 				else
@@ -1263,7 +1263,7 @@ function cProcHeader _
 						end if
 
 						attrib or= FB_SYMBATTRIB_STATIC
-						attrib and= not FB_SYMBATTRIB_METHOD
+						pattrib and= not FB_PROCATTRIB_METHOD
 					end if
 				end if
 				'' Then it must be a method
