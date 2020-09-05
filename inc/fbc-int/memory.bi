@@ -10,7 +10,7 @@
 ''   1) redefine the builtin low level memory operations in a namespace
 ''      - currently not possible for allocate / deallocate, see below
 ''
-''   2) alternate definition of fb.clear, fb.memmove, fb.memcopy
+''   2) alternate definition of fb.clear, fb.memmove, fb.memcopy, fb.copyclear
 ''      - built-in as defined by the compiler prefers BYREF parameters for source and destination
 ''        to be more aligned with already long existing CLEAR statemnt
 ''      - this header file uses BYVAL AS ANY PTR parameters to be more aligned with actual rtlib
@@ -27,6 +27,7 @@
 #undef deallocate
 #undef fb_MemCopy
 #undef fb_MemMove
+#undef fb_MemCopyClear
 
 # if __FB_LANG__ = "fb"
 '' must have declaration of "..allocate()" and "..deallocate()"
@@ -48,7 +49,7 @@ extern "rtlib"
 	declare sub deallocate cdecl alias "free" ( byval p as const any ptr )
 
 	'' Note differences in the declarations fbc versus implementation:
-	'' fbc's 'clear', 'fb_MemMove', 'fb_MemCopy', are declared to take
+	'' fbc's 'clear', 'fb_MemMove', 'fb_MemCopy', "fb_MemCopyClear", are declared to take
 	'' 'byref as any' parameters for dst/src.
 	'' - fbc declares the functions to the user as 'byref as any'
 	'' - the underlying implementation is a 'byval as any ptr' (char* to be exact)
@@ -57,11 +58,13 @@ extern "rtlib"
 	'' declare function clear cdecl alias "memset" ( byref dst as any, byval value as const long = 0, byval size as const uinteger ) as any ptr
 	'' declare function fb_MemMove cdecl alias "memmove" ( byref dst as any, byref src as const any, byval size as const uinteger ) as any ptr
 	'' declare function fb_MemCopy cdecl alias "memcpy" ( byref dst as any, byref src as const any, byval size as const uinteger ) as any ptr
-	''
+	'' declare sub fb_MemCopyClear alias "fb_MemCopyClear" ( byref dst as any, byval dstlen as const uinteger, byref src as const any, byval srclen as const uinteger )
 
 	declare function clear cdecl alias "memset" ( byval dst as any ptr, byval value as const long = 0, byval size as const uinteger ) as any ptr
 	declare function memmove cdecl alias "memmove" ( byval dst as any ptr, byval src as const any ptr, byval size as const uinteger ) as any ptr
 	declare function memcopy cdecl alias "memcpy" ( byval dst as any ptr, byval src as const any ptr, byval size as const uinteger ) as any ptr
+	declare sub copyclear alias "fb_MemCopyClear" ( byval dst as any ptr, byval dstlen as const uinteger, byval src as const any ptr, byval srclen as const uinteger )
+
 end extern
 
 # if __FB_LANG__ = "fb"

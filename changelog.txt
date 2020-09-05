@@ -16,6 +16,7 @@ Version 1.08.0
 - sf.net #832: warn on suffixes for all built-in keywords.
 - 'Suffix ignored' warning in -lang fb instead of errors
 - macros and defines with parameters can now be invoked without using parentheses around the arguments
+- rtlib: internal fb_MemCopyClear() argument types changed to expect unsigned lengths (UINTEGER => size_t)
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
@@ -32,7 +33,7 @@ Version 1.08.0
 - gfxlib: added Direct2D driver, preferred driver on newer systems.  DirectX driver is still fallback for older systems (adeyblue)
 - fbc: add builtin function fb_MemMove() alias "memmove"
 - fbc: add builtin function fb_MemCopy() alias "memcpy" (was previously removed in an older version of fbc)
-- ./inc/fbc-int/memory.bi - fbc  API for low level memory operations allocate, callocate, reallocate, deallocate, clear, memcopy, memmove
+- ./inc/fbc-int/memory.bi - fbc  API for low level memory operations allocate, callocate, reallocate, deallocate, clear, memcopy, memmove, copyclear
 - '-w suffix' or '-w pedantic' command line option enabled 'Suffix ignored' warning for built-in in string functions
 - __FB_UNIQUEID_PUSH__(), __FB_UNIQUEID__(), __FB_UNIQUEID_POP__(), __FB_ARG_LEFTOF__(), __FB_ARG_RIGHTOF__(), __FB_JOIN__() builtin macros
 - __FB_ARG_COUNT__() builtin macro
