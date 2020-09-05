@@ -41,9 +41,9 @@
 		/' sub fb_MemCopyClear _
 			( _
 				byref dst as any, _
-				byval dstlen as const integer, _
+				byval dstlen as const uinteger, _
 				byref src as const any, _
-				byval srclen as const integer _
+				byval srclen as const uinteger _
 			) '/ _
 		( _
 			@FB_RTL_MEMCOPYCLEAR, NULL, _
@@ -52,9 +52,9 @@
 			4, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( typeSetIsConst( FB_DATATYPE_INTEGER ),FB_PARAMMODE_BYVAL, FALSE ), _
+				( typeSetIsConst( FB_DATATYPE_UINT ),FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeSetIsConst( FB_DATATYPE_VOID ), FB_PARAMMODE_BYREF, FALSE, 0, TRUE ), _
-				( typeSetIsConst( FB_DATATYPE_INTEGER ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeSetIsConst( FB_DATATYPE_UINT ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' function fre( byval mode as const long = 0 ) as uinteger '/ _

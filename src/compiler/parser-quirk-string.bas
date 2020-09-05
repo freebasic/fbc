@@ -164,6 +164,9 @@ function cLRSetStmt(byval tk as FB_TOKEN) as integer
 			return TRUE
 		end if
 
+		assert( symbGetLen( dst->subtype ) > 0 )
+		assert( symbGetLen( src->subtype ) > 0 )
+
 		function = rtlMemCopyClear( dstexpr, symbGetLen( dst->subtype ), _
 		                            srcexpr, symbGetLen( src->subtype ) )
 	else
