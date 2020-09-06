@@ -393,7 +393,7 @@ private function hDefJoinZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as i
 	var l = hMacro_getArgZ( argtb, 0 )
 	var r = hMacro_getArgZ( argtb, 1 )
 
-	if( (l <> NULL) and (r = NULL) ) then
+	if( (l <> NULL) and (r <> NULL) ) then
 		res = *l + *r
 	else
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
@@ -414,7 +414,7 @@ private function hDefJoinW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as i
 
 	DWstrAssign( res, NULL )
 
-	if( (l <> NULL) and (r = NULL) ) then
+	if( (l <> NULL) and (r <> NULL) ) then
 		DWstrConcatAssign( res, l )
 		DWstrConcatAssign( res, r )
 	else
