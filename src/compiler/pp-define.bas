@@ -66,7 +66,10 @@ private function hLoadMacro _
 	function = -1
 
 	var hasParens = false
-	
+
+	'' we don't know if this paren is the start of the argument list
+	'' or is part of the expression for the first argument.
+
 	'' '('?
 	if( lexCurrentChar( TRUE ) = CHAR_LPRNT ) then
 		hasParens = true
@@ -290,7 +293,7 @@ private function hLoadMacro _
 						text += QUOTE
 					else
 						'' If it's empty, produce an empty string ("")
-						text += """"""
+						text += QUOTE + QUOTE
 					end if
 
 				'' ordinary text..
@@ -672,6 +675,9 @@ private function hLoadMacroW _
 						DWstrConcatAssign( text, "$" + QUOTE )
 						DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
 						DWstrConcatAssign( text, QUOTE )
+					else
+						'' If it's empty, produce an empty string ("")
+						DWstrConcatAssign( text, QUOTE + QUOTE )
 					end if
 
 				'' ordinary text..
@@ -750,7 +756,7 @@ private function hLoadDefineW _
 				DWstrAssign( lex.ctx->deftextw, *text.data + *lex.ctx->defptrw )
 			end if
 
-            lgt = len( *text.data )
+			lgt = len( *text.data )
 
 		'' just load text as-is
 		else

@@ -1298,14 +1298,12 @@ sub hSplitStr(byref txt as string, byref del as string, res() as string)
 		p += 1
 	loop
 	res(cnt) = mid(txt, dpos(cnt - 1) + dellen)
-   
+
 end sub
 
 '':::::
 function hStr2Tok(byval txt as const zstring ptr, res() as string) as integer
 
-	var items = 10
-	
 	var t = 0
 	var lc = 32UL
 	var s = cast(const ubyte ptr, txt)	

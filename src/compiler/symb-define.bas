@@ -379,7 +379,7 @@ private function hDefJoin_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 	ZstrFree(l)
 	ZstrFree(r)
 	
-	function = res	
+	function = res
 	
 end function
 
