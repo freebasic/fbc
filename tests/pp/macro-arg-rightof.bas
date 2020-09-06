@@ -1,6 +1,6 @@
 #include "fbcunit.bi"
 
-SUITE( fbc_tests.pp.macro_rightof )
+SUITE( fbc_tests.pp.macro_arg_rightof )
 
 	TEST( direct )
 
