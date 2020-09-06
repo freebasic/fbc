@@ -387,8 +387,9 @@ end enum
 
 type LEXPP_ARGTB_ as LEXPP_ARGTB ptr
 
-type FBS_DEFINE_PROC as function( ) as string
-type FBS_MACRO_PROC as function( byval argtb as LEXPP_ARGTB_, byval errnum as integer ptr ) as string
+type FBS_DEFINE_PROCZ as function( ) as string
+type FBS_MACRO_PROCZ as function( byval argtb as LEXPP_ARGTB_, byval errnum as integer ptr ) as string
+type FBS_MACRO_PROCW as function( byval argtb as LEXPP_ARGTB_, byval errnum as integer ptr ) as wstring ptr
 
 type FBS_DEFINE
 	params			as integer
@@ -403,8 +404,11 @@ type FBS_DEFINE
 	isargless		as integer
     flags           as FB_DEFINE_FLAGS			'' bit 0: 1=numeric, 0=string
 	union
-		dproc			as FBS_DEFINE_PROC
-		mproc			as FBS_MACRO_PROC
+		dprocz			as FBS_DEFINE_PROCZ
+		mprocz			as FBS_MACRO_PROCZ
+	end union
+	union
+		mprocw			as FBS_MACRO_PROCW
 	end union
 end type
 
@@ -1073,7 +1077,7 @@ declare function symbAddDefine _
 		byval text as zstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
-		byval proc as FBS_DEFINE_PROC = NULL, _
+		byval proc as FBS_DEFINE_PROCZ = NULL, _
 		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
 	) as FBSYMBOL ptr
 
@@ -1083,7 +1087,7 @@ declare function symbAddDefineW _
 		byval text as wstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer = FALSE, _
-		byval proc as FBS_DEFINE_PROC = NULL, _
+		byval proc as FBS_DEFINE_PROCZ = NULL, _
 		byval flags as FB_DEFINE_FLAGS = FB_DEFINE_FLAGS_NONE _
 	) as FBSYMBOL ptr
 
@@ -2205,9 +2209,10 @@ declare function symbCloneSimpleStruct( byval sym as FBSYMBOL ptr ) as FBSYMBOL 
 
 #define symbGetDefParamNum(a) a->num
 
-#define symbGetDefineCallback(d) d->def.dproc
+#define symbGetDefineCallback(d) d->def.dprocz
 
-#define symbGetMacroCallback(d) d->def.mproc
+#define symbGetMacroCallbackZ(d) d->def.mprocz
+#define symbGetMacroCallbackW(d) d->def.mprocw
 
 #define symbGetDefineIsArgless(d) d->def.isargless
 

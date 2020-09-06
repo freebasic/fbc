@@ -66,7 +66,10 @@ private function hLoadMacro _
 	function = -1
 
 	var hasParens = false
-	
+
+	'' we don't know if this paren is the start of the argument list
+	'' or is part of the expression for the first argument.
+
 	'' '('?
 	if( lexCurrentChar( TRUE ) = CHAR_LPRNT ) then
 		hasParens = true
@@ -251,10 +254,10 @@ private function hLoadMacro _
 	text = ""
 
 	'' should we call a function to get definition text?
-	if( symbGetMacroCallback( s ) <> NULL ) then
+	if( symbGetMacroCallbackZ( s ) <> NULL ) then
 		'' call function
 		var errnum = FB_ERRMSG_OK
-		var res = symbGetMacroCallback( s )( argtb, @errnum )
+		var res = symbGetMacroCallbackZ( s )( argtb, @errnum )
 		if( errnum = FB_ERRMSG_OK ) then
 			text = res
 		else
@@ -290,7 +293,7 @@ private function hLoadMacro _
 						text += QUOTE
 					else
 						'' If it's empty, produce an empty string ("")
-						text += """"""
+						text += QUOTE + QUOTE
 					end if
 
 				'' ordinary text..
@@ -635,14 +638,24 @@ private function hLoadMacroW _
 	DWstrAssign( text, NULL )
 
 	'' should we call a function to get definition text?
-	if( symbGetMacroCallback( s ) <> NULL ) then
+	if( symbGetMacroCallbackZ( s ) <> NULL ) then
 		'' call function
 		var errnum = FB_ERRMSG_OK
-		var res = symbGetMacroCallback( s )( argtb, @errnum )
-		if( errnum = FB_ERRMSG_OK ) then
-			DWstrAssignA( text, res )
+		'' hander for wstring?
+		if( symbGetMacroCallbackW( s ) ) then
+			var res = symbGetMacroCallbackW( s )( argtb, @errnum )
+			if( errnum = FB_ERRMSG_OK ) then
+				DWstrAssign( text, res )
+			else
+				hReportMacroError( s, errnum )
+			end if
 		else
-			hReportMacroError( s, errnum )
+			var res = symbGetMacroCallbackZ( s )( argtb, @errnum )
+			if( errnum = FB_ERRMSG_OK ) then
+				DWstrAssignA( text, res )
+			else
+				hReportMacroError( s, errnum )
+			end if
 		end if
 
 	'' just load text as-is
@@ -672,6 +685,9 @@ private function hLoadMacroW _
 						DWstrConcatAssign( text, "$" + QUOTE )
 						DWstrConcatAssign( text, *hReplaceW( argtext, QUOTE, QUOTE + QUOTE ) )
 						DWstrConcatAssign( text, QUOTE )
+					else
+						'' If it's empty, produce an empty string ("")
+						DWstrConcatAssign( text, QUOTE + QUOTE )
 					end if
 
 				'' ordinary text..
@@ -750,7 +766,7 @@ private function hLoadDefineW _
 				DWstrAssign( lex.ctx->deftextw, *text.data + *lex.ctx->defptrw )
 			end if
 
-            lgt = len( *text.data )
+			lgt = len( *text.data )
 
 		'' just load text as-is
 		else
