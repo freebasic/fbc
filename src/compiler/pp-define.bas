@@ -254,10 +254,10 @@ private function hLoadMacro _
 	text = ""
 
 	'' should we call a function to get definition text?
-	if( symbGetMacroCallback( s ) <> NULL ) then
+	if( symbGetMacroCallbackZ( s ) <> NULL ) then
 		'' call function
 		var errnum = FB_ERRMSG_OK
-		var res = symbGetMacroCallback( s )( argtb, @errnum )
+		var res = symbGetMacroCallbackZ( s )( argtb, @errnum )
 		if( errnum = FB_ERRMSG_OK ) then
 			text = res
 		else
@@ -638,14 +638,24 @@ private function hLoadMacroW _
 	DWstrAssign( text, NULL )
 
 	'' should we call a function to get definition text?
-	if( symbGetMacroCallback( s ) <> NULL ) then
+	if( symbGetMacroCallbackZ( s ) <> NULL ) then
 		'' call function
 		var errnum = FB_ERRMSG_OK
-		var res = symbGetMacroCallback( s )( argtb, @errnum )
-		if( errnum = FB_ERRMSG_OK ) then
-			DWstrAssignA( text, res )
+		'' hander for wstring?
+		if( symbGetMacroCallbackW( s ) ) then
+			var res = symbGetMacroCallbackW( s )( argtb, @errnum )
+			if( errnum = FB_ERRMSG_OK ) then
+				DWstrAssign( text, res )
+			else
+				hReportMacroError( s, errnum )
+			end if
 		else
-			hReportMacroError( s, errnum )
+			var res = symbGetMacroCallbackZ( s )( argtb, @errnum )
+			if( errnum = FB_ERRMSG_OK ) then
+				DWstrAssignA( text, res )
+			else
+				hReportMacroError( s, errnum )
+			end if
 		end if
 
 	'' just load text as-is

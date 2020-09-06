@@ -19,7 +19,7 @@ type SYMBDEF
 	name			as const zstring ptr
 	value			as zstring ptr
 	flags			as integer  '' FB_DEFINE_FLAGS_*
-	proc			as FBS_DEFINE_PROC
+	proc			as FBS_DEFINE_PROCZ
 end type
 
 private function hDefFile_cb() as string static
@@ -191,9 +191,9 @@ private function hDefAsm_cb() as string
 	end select
 end function
 
-private function hMacro_getArg( byval argtb as LEXPP_ARGTB ptr, byval num as integer = 0 ) as zstring ptr
+private function hMacro_getArgZ( byval argtb as LEXPP_ARGTB ptr, byval num as integer = 0 ) as zstring ptr
 	dim as zstring ptr res = NULL
-	
+
 	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 		var dt = argtb->tb(num).text.data
 		if( dt = NULL ) then
@@ -212,9 +212,32 @@ private function hMacro_getArg( byval argtb as LEXPP_ARGTB ptr, byval num as int
 	
 end function
 
+private function hMacro_getArgW( byval argtb as LEXPP_ARGTB ptr, byval num as integer = 0 ) as wstring ptr
+
+	static as DWSTRING res
+	DWstrAssign( res, NULL )
+
+	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+		var dt = argtb->tb(num).text.data
+		if( dt = NULL ) then
+			return null
+		end if
+		DWstrConcatAssignA(res, dt)
+	else
+		var dt = argtb->tb(num).textw.data
+		if( dt = NULL ) then
+			return null
+		end if
+		DWstrConcatAssign(res, dt)
+	end if
+	
+	function = res.data
+	
+end function
+
 private function hDefUniqueIdPush_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 	
-	var id = hMacro_getArg( argtb )
+	var id = hMacro_getArgZ( argtb )
 	if( id = null ) then
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
 		return ""
@@ -242,7 +265,7 @@ private function hDefUniqueIdPush_cb( byval argtb as LEXPP_ARGTB ptr, byval errn
 end function
 
 private function hDefUniqueId_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
-	var id = hMacro_getArg( argtb )
+	var id = hMacro_getArgZ( argtb )
 	if( id = null ) then
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
 		return ""
@@ -256,7 +279,7 @@ private function hDefUniqueId_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 end function
 
 private function hDefUniqueIdPop_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
-	var id = hMacro_getArg( argtb )
+	var id = hMacro_getArgZ( argtb )
 	if( id = null ) then
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
 		return ""
@@ -284,8 +307,8 @@ end function
 private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
 	var res = ""
-	var arg = hMacro_getArg( argtb, 0 )
-	var sep = hMacro_getArg( argtb, 1 )
+	var arg = hMacro_getArgZ( argtb, 0 )
+	var sep = hMacro_getArgZ( argtb, 1 )
 
 	if( (arg <> NULL) and (sep <> NULL) ) then
 		dim tokens() as string
@@ -326,8 +349,8 @@ end function
 private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
 	var res = ""
-	var arg = hMacro_getArg( argtb, 0 )
-	var sep = hMacro_getArg( argtb, 1 )
+	var arg = hMacro_getArgZ( argtb, 0 )
+	var sep = hMacro_getArgZ( argtb, 1 )
 
 	if( (arg <> NULL) and (sep <> NULL) ) then
 		dim tokens() as string
@@ -364,11 +387,11 @@ private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 	
 end function
 
-private function hDefJoin_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+private function hDefJoinZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
 	var res = ""
-	var l = hMacro_getArg( argtb, 0 )
-	var r = hMacro_getArg( argtb, 1 )
+	var l = hMacro_getArgZ( argtb, 0 )
+	var r = hMacro_getArgZ( argtb, 1 )
 
 	if( (l <> NULL) and (r = NULL) ) then
 		res = *l + *r
@@ -380,6 +403,25 @@ private function hDefJoin_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 	ZstrFree(r)
 	
 	function = res
+	
+end function
+
+private function hDefJoinW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
+
+	var l = hMacro_getArgW( argtb, 0 )
+	var r = hMacro_getArgW( argtb, 1 )
+	static as DWSTRING res
+
+	DWstrAssign( res, NULL )
+
+	if( (l <> NULL) and (r = NULL) ) then
+		DWstrConcatAssign( res, l )
+		DWstrConcatAssign( res, r )
+	else
+		*errnum = FB_ERRMSG_ARGCNTMISMATCH
+	end if
+
+	function = res.data
 	
 end function
 
@@ -425,23 +467,24 @@ dim shared defTb(0 to ...) as SYMBDEF => _
 }
 
 type SYMBMACRO
-	name			as const zstring ptr
-	flags			as FB_DEFINE_FLAGS
-	proc			as FBS_MACRO_PROC
-	nparams			as integer
-	params(0 to 4)	as const zstring ptr
+	name            as const zstring ptr
+	flags           as FB_DEFINE_FLAGS
+	procz           as FBS_MACRO_PROCZ
+	procw           as FBS_MACRO_PROCW
+	nparams         as integer
+	params(0 to 4)  as const zstring ptr
 end type
 
 '' Intrinsic #macros which are always defined
 dim shared macroTb(0 to ...) as SYMBMACRO => _
 { _
-	(@"__FB_UNIQUEID_PUSH__"  , 0                       , @hDefUniqueIdPush_cb    , 1, { (@"ID") } ),  _
-	(@"__FB_UNIQUEID__"       , 0                       , @hDefUniqueId_cb        , 1, { (@"ID") } ), _
-	(@"__FB_UNIQUEID_POP__"   , 0                       , @hDefUniqueIdPop_cb     , 1, { (@"ID") } ), _
-	(@"__FB_ARG_COUNT__"      , FB_DEFINE_FLAGS_VARIADIC, @hDefArgCount_cb        , 1, { (@"ARGS") } ), _
-	(@"__FB_ARG_LEFTOF__"     , 0                       , @hDefArgLeft_cb         , 2, { (@"ARG"), (@"SEP") } ), _
-	(@"__FB_ARG_RIGHTOF__"    , 0                       , @hDefArgRight_cb        , 2, { (@"ARG"), (@"SEP") } ), _
-	(@"__FB_JOIN__"           , 0                       , @hDefJoin_cb            , 2, { (@"L"), (@"R") } ) _
+	(@"__FB_UNIQUEID_PUSH__"  , 0                       , @hDefUniqueIdPush_cb, NULL                 , 1, { (@"ID") } ),  _
+	(@"__FB_UNIQUEID__"       , 0                       , @hDefUniqueId_cb    , NULL                 , 1, { (@"ID") } ), _
+	(@"__FB_UNIQUEID_POP__"   , 0                       , @hDefUniqueIdPop_cb , NULL                 , 1, { (@"ID") } ), _
+	(@"__FB_ARG_COUNT__"      , FB_DEFINE_FLAGS_VARIADIC, @hDefArgCount_cb    , NULL                 , 1, { (@"ARGS") } ), _
+	(@"__FB_ARG_LEFTOF__"     , 0                       , @hDefArgLeft_cb     , NULL                 , 2, { (@"ARG"), (@"SEP") } ), _
+	(@"__FB_ARG_RIGHTOF__"    , 0                       , @hDefArgRight_cb    , NULL                 , 2, { (@"ARG"), (@"SEP") } ), _
+	(@"__FB_JOIN__"           , 0                       , @hDefJoinZ_cb       , @hDefJoinW_cb        , 2, { (@"L"), (@"R") } ) _
 }
 
 sub symbDefineInit _
@@ -521,7 +564,8 @@ sub symbDefineInit _
 		next	
 			
 		var sym = symbAddDefineMacro( macroTb(i).name, NULL, macroTb(i).nparams, firstparam, macroTb(i).flags )
-		sym->def.mproc = macroTb(i).proc
+		sym->def.mprocz = macroTb(i).procz
+		sym->def.mprocw = macroTb(i).procw
 	next
 	
 end sub
@@ -547,7 +591,7 @@ function symbAddDefine _
 		byval text as zstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer, _
-		byval proc as FBS_DEFINE_PROC, _
+		byval proc as FBS_DEFINE_PROCZ, _
         byval flags as FB_DEFINE_FLAGS _
 	) as FBSYMBOL ptr
 
@@ -572,7 +616,7 @@ function symbAddDefine _
 	sym->def.params	= 0
 	sym->def.paramhead = NULL
 	sym->def.isargless = isargless
-	sym->def.dproc = proc
+	sym->def.dprocz = proc
     sym->def.flags = flags
 
 	function = sym
@@ -586,7 +630,7 @@ function symbAddDefineW _
 		byval text as wstring ptr, _
 		byval lgt as integer, _
 		byval isargless as integer, _
-		byval proc as FBS_DEFINE_PROC, _
+		byval proc as FBS_DEFINE_PROCZ, _
         byval flags as FB_DEFINE_FLAGS _
 	) as FBSYMBOL ptr
 
@@ -611,7 +655,7 @@ function symbAddDefineW _
 	sym->def.params = 0
 	sym->def.paramhead = NULL
 	sym->def.isargless = isargless
-	sym->def.dproc = proc
+	sym->def.dprocz = proc
     sym->def.flags = flags
 
 	function = sym
@@ -647,7 +691,8 @@ function symbAddDefineMacro _
 	sym->def.params = params
 	sym->def.paramhead = paramhead
 	sym->def.isargless = FALSE
-	sym->def.mproc = NULL
+	sym->def.mprocz = NULL
+	sym->def.mprocw = NULL
     sym->def.flags = flags
 
 	function = sym
