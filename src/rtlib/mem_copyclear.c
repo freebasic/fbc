@@ -5,20 +5,21 @@
 FBCALL void fb_MemCopyClear
 	(
 		unsigned char *dst,
-		ssize_t dstlen,
+		size_t dstlen,
 		unsigned char *src,
-		ssize_t srclen
+		size_t srclen
 	)
 {
-	ssize_t bytes;
+	size_t bytes;
 
-	if( (dst == NULL) || (src == NULL) || (dstlen <= 0) || (srclen <= 0) )
+	if( (dst == NULL) || (src == NULL) || (dstlen == 0) )
 		return;
 
 	bytes = (dstlen <= srclen? dstlen: srclen);
 	
 	/* move */
-	memcpy( dst, src, bytes );
+	if( bytes > 0 )
+		memcpy( dst, src, bytes );
 
 	/* clear remainder */
 	dstlen -= bytes;

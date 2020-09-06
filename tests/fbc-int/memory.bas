@@ -126,6 +126,82 @@ SUITE( fbc_tests.fbc_int.memory )
 
 	END_TEST
 
+	TEST( copyclear_ )
+
+		#macro init_buffer( p, b )
+			for i as integer = 0 to BUFF_SIZE-1
+				p[i] = b + i
+			next
+		#endmacro
+
+		#macro chk_cc( dstlen, srclen, srcbytes, zerobytes, dstbytes )
+
+			scope
+				dim src as ubyte ptr = fbc.callocate( BUFF_SIZE )
+				dim dst as ubyte ptr = fbc.callocate( BUFF_SIZE )
+
+				CU_ASSERT_EQUAL( BUFF_SIZE, srcbytes+zerobytes+dstbytes )
+
+				init_buffer( src, &h20 )
+				init_buffer( dst, &h40 )
+
+				fbc.copyclear( dst, dstlen, src, srclen )
+
+				var same_src = 0
+				var same_zero = 0
+				var same_dst = 0
+
+				'' check bytes copied from source to dest
+				for i as integer = 0 to srcbytes-1
+					if( dst[i] = src[i] ) then
+						same_src += 1
+					end if
+				next
+				CU_ASSERT_EQUAL( same_src, srcbytes )
+
+				'' check zero bytes set
+				for i as integer = 0 to zerobytes-1
+					if( dst[i+srcbytes] = 0 ) then
+						same_zero += 1
+					end if
+				next
+				CU_ASSERT_EQUAL( same_zero, zerobytes )
+
+				'' check dest bytes not touched due dstlen given smaller than actual buffer
+				for i as integer = 0 to dstbytes-1
+					if( dst[i+srcbytes+zerobytes] = (&h40+srcbytes+zerobytes+i) ) then
+						same_dst += 1
+					end if
+				next
+				CU_ASSERT_EQUAL( same_dst, dstbytes )
+
+				fbc.deallocate( src )
+				fbc.deallocate( dst )
+
+			end scope
+
+		#endmacro
+
+		const bytes = BUFF_SIZE \ 2
+
+		'' copy various lengths from source to destination
+		'' check that the resulting destination buffer
+		'' has expected contents
+		''
+		''      dst-len    src-len    srcbytes   zerobytes  dstbytes 
+		''
+		chk_cc( BUFF_SIZE, BUFF_SIZE, BUFF_SIZE, 0        , 0         )
+		chk_cc( BUFF_SIZE, bytes    , bytes    , bytes    , 0         )
+		chk_cc( BUFF_SIZE, 0        , 0        , BUFF_SIZE, 0         )
+		chk_cc( bytes    , BUFF_SIZE, bytes    , 0        , bytes     )
+		chk_cc( bytes    , bytes    , bytes    , 0        , bytes     )
+		chk_cc( bytes    , 0        , 0        , bytes    , bytes     )
+		chk_cc( 0        , BUFF_SIZE, 0        , 0        , BUFF_SIZE )
+		chk_cc( 0        , bytes    , 0        , 0        , BUFF_SIZE )
+		chk_cc( 0        , 0        , 0        , 0        , BUFF_SIZE )
+
+	END_TEST
+
 	TEST( using_fbc )
 	
 		'' essentially, a compile test only
@@ -262,7 +338,7 @@ SUITE( fbc_tests.fbc_int.memory )
 		'' the global one, however, this
 		'' this appears to be a bug since
 		'' the global definition seems
-		'' to overshadow the one 
+		'' to overshadow the one we declare
 
 		scope
 			var p = allocate( 10 )
