@@ -425,6 +425,119 @@ private function hDefJoinW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as i
 	
 end function
 
+private function hDefQuoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+
+	var arg = hMacro_getArgZ( argtb, 0 )
+	var res = ""
+	
+	if( arg <> NULL ) then
+		'' don't escape, preserve the sequencies as-is
+		res += "$" + QUOTE
+		res += hReplace( arg, QUOTE, QUOTE + QUOTE )
+		res += QUOTE
+	else
+		'' If it's empty, produce an empty string ("")
+		res += QUOTE + QUOTE
+	end if
+
+	ZstrFree(arg)
+
+	function = res
+
+end function
+
+private function hDefQuoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
+
+	var arg = hMacro_getArgW( argtb, 0 )
+	static as DWSTRING res
+
+	DWstrAssign( res, NULL )
+
+	'' Only if not empty ("..." param can be empty)
+	if( arg <> NULL ) then
+		'' don't escape, preserve the sequencies as-is
+		DWstrConcatAssign( res, "$" + QUOTE )
+		DWstrConcatAssign( res, *hReplaceW( arg, QUOTE, QUOTE + QUOTE ) )
+		DWstrConcatAssign( res, QUOTE )
+	else
+		'' If it's empty, produce an empty string ("")
+		DWstrConcatAssign( res, QUOTE + QUOTE )
+	end if
+
+	function = res.data
+
+end function
+
+private function hDefUnquoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+
+	var arg = hMacro_getArgZ( argtb, 0 )
+	var res = ""
+
+	'' arg must be of the form [$]"[text]"
+	if( arg <> NULL ) then
+		var length = len(*arg)
+
+		'' $"[text]"?
+		if( (length >= 3) andalso ((arg[0] = asc( "$" )) and (arg[1] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
+			res = hReplace( mid( *arg, 3, length-3 ), QUOTE + QUOTE, QUOTE )
+
+/' TODO: needed?
+		elseif( (length >= 3) andalso ((arg[0] = asc( "!" )) and (arg[1] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
+			res = *hUnescape( mid( *arg, 3, length-3 ) )
+'/
+
+		'' "[text]"?
+		elseif( (length >= 2) andalso ((arg[0] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
+			res = hReplace( mid( *arg, 2, length-2 ), QUOTE + QUOTE, QUOTE )
+
+		'' anything else, return as-is
+		else
+			res = *arg
+		end if
+	end if
+
+	ZstrFree(arg)
+
+	function = res
+
+end function
+
+private function hDefUnquoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
+
+	var arg = hMacro_getArgW( argtb, 0 )
+	static as DWSTRING res
+
+	DWstrAssign( res, NULL )
+
+	'' arg must be of the form [$]"[text]"
+	if( arg <> NULL ) then
+		var length = len(*arg)
+
+		'' $"[text]"?
+		if( (length >= 3) andalso ((arg[0] = asc( "$" )) and (arg[1] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
+			DWstrAssign( res, hReplaceW( mid( *arg, 3, length-3 ), QUOTE + QUOTE, QUOTE ) )
+
+/' TODO: needed?
+		elseif( (length >= 3) andalso ((arg[0] = asc( "!" )) and (arg[1] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
+			DWstrAssign( res, hUnescapeW( mid( *arg, 3, length-3 ) ) )
+'/
+
+		'' "[text]"?
+		elseif( (length >= 2) andalso ((arg[0] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
+			DWstrAssign( res, hReplaceW( mid( *arg, 2, length-2 ), QUOTE + QUOTE, QUOTE ) )
+
+		'' anything else, return as-is
+		else
+			DWstrAssign( res, arg )
+
+		end if
+	end if
+
+	function = res.data
+
+end function
+
+
 '' Intrinsic #defines which are always defined
 dim shared defTb(0 to ...) as SYMBDEF => _
 { _
@@ -484,7 +597,9 @@ dim shared macroTb(0 to ...) as SYMBMACRO => _
 	(@"__FB_ARG_COUNT__"      , FB_DEFINE_FLAGS_VARIADIC, @hDefArgCount_cb    , NULL                 , 1, { (@"ARGS") } ), _
 	(@"__FB_ARG_LEFTOF__"     , 0                       , @hDefArgLeft_cb     , NULL                 , 2, { (@"ARG"), (@"SEP") } ), _
 	(@"__FB_ARG_RIGHTOF__"    , 0                       , @hDefArgRight_cb    , NULL                 , 2, { (@"ARG"), (@"SEP") } ), _
-	(@"__FB_JOIN__"           , 0                       , @hDefJoinZ_cb       , @hDefJoinW_cb        , 2, { (@"L"), (@"R") } ) _
+	(@"__FB_JOIN__"           , 0                       , @hDefJoinZ_cb       , @hDefJoinW_cb        , 2, { (@"L"), (@"R") } ), _
+	(@"__FB_QUOTE__"          , 0                       , @hDefQuoteZ_cb      , @hDefQuoteW_cb       , 1, { (@"ARG") } ), _
+	(@"__FB_UNQUOTE__"        , 0                       , @hDefUnquoteZ_cb    , @hDefUnquoteW_cb     , 1, { (@"ARG") } ) _
 }
 
 sub symbDefineInit _
@@ -563,7 +678,7 @@ sub symbDefineInit _
 			lastparam = symbAddDefineParam( lastparam, macroTb(i).params(j) )
 		next	
 			
-		var sym = symbAddDefineMacro( macroTb(i).name, NULL, macroTb(i).nparams, firstparam, macroTb(i).flags )
+		var sym = symbAddDefineMacro( macroTb(i).name, NULL, macroTb(i).nparams, firstparam, macroTb(i).flags or FB_DEFINE_FLAGS_NEEDPARENS )
 		sym->def.mprocz = macroTb(i).procz
 		sym->def.mprocw = macroTb(i).procw
 	next

@@ -67,14 +67,14 @@ private function hLoadMacro _
 
 	var hasParens = false
 
-	'' we don't know if this paren is the start of the argument list
+	'' TODO: we don't know if this paren is the start of the argument list
 	'' or is part of the expression for the first argument.
 
 	'' '('?
 	if( lexCurrentChar( TRUE ) = CHAR_LPRNT ) then
 		hasParens = true
 	else
-		if( pp.invoking > 0 ) then
+		if( (pp.invoking > 0) or ((symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) ) then
 			'' not an error, macro can be passed as param to other macros
 			exit function
 		end if
@@ -452,12 +452,15 @@ private function hLoadMacroW _
 	function = -1
 
 	var hasParens = false
-	
+
+	'' TODO: we don't know if this paren is the start of the argument list
+	'' or is part of the expression for the first argument.
+
 	'' '('?
 	if( lexCurrentChar( TRUE ) = CHAR_LPRNT ) then
 		hasParens = true
 	else
-		if( pp.invoking > 0 ) then
+		if( (pp.invoking > 0) or ((symbGetDefineFlags( s ) and FB_DEFINE_FLAGS_NEEDPARENS) <> 0 ) ) then
 			'' not an error, macro can be passed as param to other macros
 			exit function
 		end if
