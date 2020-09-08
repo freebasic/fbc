@@ -1,12 +1,12 @@
-#macro list(T)
+#macro list ? (T)
 	__fb_join__(list_,__fb_arg_rightof__(T,OF))
 #endmacro
 
-#macro list_of(T)
+#macro list_of ? (T)
 	list_##T
 #endmacro
 
-#macro imp_list_of(T)
+#macro imp_list_of ? (T)
 #if not defined(list_##T)	
 	type list_item_##T
 		value as T
@@ -62,5 +62,3 @@
 	end operator
 #endif
 #endmacro
-
-

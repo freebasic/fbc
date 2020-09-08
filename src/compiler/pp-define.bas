@@ -1154,30 +1154,31 @@ private function hMatchParamEllipsis( ) as integer
 end function
 
 '':::::
-'' Define			= 	DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
-'' 					| 	MACRO ID '(' ID (',' ID)* ')' Comment? EOL
-'' 							MacroBody*
-'' 						ENDMACRO .
+'' Define           =   DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
+''                  |   MACRO ID '?'? '(' ID (',' ID)* ')' Comment? EOL
+''                          MacroBody*
+''                      ENDMACRO .
 sub ppDefine( byval ismultiline as integer )
 	static as zstring * FB_MAXNAMELEN+1 defname
-	dim as integer params = any, isargless = any, flags = any, is_variadic = any
+	dim as integer params = any, isargless = any, flags = any
 	dim as FB_DEFPARAM ptr paramhead = any, lastparam = any
 	dim as FBSYMBOL ptr sym = any
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FBSYMBOL ptr base_parent = any
 	dim as FB_DEFTOK ptr tokhead = any
+	dim as FB_DEFINE_FLAGS define_flags = any
 
 	'' note: using the PP hashtb here, so any non-PP keyword won't be found
 
 	'' don't allow explicit namespaces
 	chain_ = cIdentifier( base_parent, FB_IDOPT_ISDECL or FB_IDOPT_DEFAULT )
 
-    flags = LEX_FLAGS
-    if( ismultiline ) then
-    	flags and= not LEXCHECK_NOWHITESPC
-    end if
+	flags = LEX_FLAGS
+	if( ismultiline ) then
+		flags and= not LEXCHECK_NOWHITESPC
+	end if
 
-    lexEatToken( @defname, flags )
+	lexEatToken( @defname, flags )
 
 	if( hIsValidSymbolName( defname ) = FALSE ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
@@ -1209,13 +1210,24 @@ sub ppDefine( byval ismultiline as integer )
 		sym = NULL
 	end if
 
-    params = 0
-    paramhead = NULL
-    isargless = FALSE
-    is_variadic = FALSE
+	params = 0
+	paramhead = NULL
+	isargless = FALSE
+	define_flags = FB_DEFINE_FLAGS_NEEDPARENS
 
-    '' '('?
-    if( lexGetToken( flags ) = CHAR_LPRNT ) then
+
+	'' #macro?
+	if( ismultiline ) then
+		'' '?'?
+		if( lexGetToken( flags ) = CHAR_QUESTION ) then
+			lexSkipToken( LEXCHECK_NODEFINE )
+			define_flags and= NOT FB_DEFINE_FLAGS_NEEDPARENS
+		end if
+	end if
+
+
+	'' '('?
+	if( lexGetToken( flags ) = CHAR_LPRNT ) then
 		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
 
 		'' not arg-less?
@@ -1260,7 +1272,9 @@ sub ppDefine( byval ismultiline as integer )
 
 			'' Check for ellipsis after the last parameter's name, before the ')'.
 			'' (variadic macros)
-			is_variadic = hMatchParamEllipsis( )
+			if( hMatchParamEllipsis( ) ) then
+				define_flags or= FB_DEFINE_FLAGS_VARIADIC
+			end if 
 		else
 			isargless = TRUE
 		end if
@@ -1293,10 +1307,7 @@ sub ppDefine( byval ismultiline as integer )
 	if( sym <> NULL ) then
 		errReportEx( FB_ERRMSG_DUPDEFINITION, defname )
 	else
-   		tokhead = hReadMacroText( params, paramhead, ismultiline )
-   		symbAddDefineMacro( @defname, tokhead, params, paramhead, _
-                            iif( is_variadic, _
-                                 FB_DEFINE_FLAGS_VARIADIC, _
-                                 FB_DEFINE_FLAGS_NONE ) )
+		tokhead = hReadMacroText( params, paramhead, ismultiline )
+		symbAddDefineMacro( @defname, tokhead, params, paramhead, define_flags )
 	end if
 end sub

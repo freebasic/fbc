@@ -11,12 +11,12 @@ end namespace
 		if crt.setjmp(@__FB_UNIQUEID__(__tc__).buf) = 0 then
 #endmacro
 
-#macro CATCH(x) 
+#macro CATCH ? (x) 
 		elseif *cast(object ptr, __FB_UNIQUEID__(__tc__).ex) is __FB_ARG_RIGHTOF__(x, AS) then
 			var __FB_ARG_LEFTOF__(x, AS) = cast(__FB_ARG_RIGHTOF__(x, AS) ptr, __FB_UNIQUEID__(__tc__).ex)
 #endmacro
 
-#macro THROW(x) 
+#macro THROW ? (x) 
 		__FB_UNIQUEID__(__tc__).throw_(x, __FILE__, __FUNCTION__, __LINE__)
 #endmacro
 
