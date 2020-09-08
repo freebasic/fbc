@@ -15,7 +15,7 @@ Version 1.08.0
 - sf.net #909, #832, #866 reverted error on suffix in lang fb dialect
 - sf.net #832: warn on suffixes for all built-in keywords.
 - 'Suffix ignored' warning in -lang fb instead of errors
-- macros and defines with parameters can now be invoked without using parentheses around the arguments
+- macros with parameters can now be invoked without using parentheses around the arguments using '#macro name ? (arg)' definition syntax
 - rtlib: internal fb_MemCopyClear() argument types changed to expect unsigned lengths (UINTEGER => size_t)
 
 [added]

@@ -13,7 +13,11 @@
 	print (*li)[2]
 	delete li
 
-	'dim li2 as list of integer = list of integer(10) -- this won't work because macros called w/o parentheses will read all chars until the newline
+	'' NOTE: we'd like to use 
+	'' dim li2 as list of integer = list of integer(10)
+	'' -- but this won't work because macros called w/o parentheses will read all chars until the newline 
+	'' 
+
 	dim li2 as list_of(integer) = list of integer(10)
 	li2.add(123): li2.add(456): li2.add(789)
 	print li2[1]
@@ -25,5 +29,3 @@
 	dim ls as list of string		 '' ok
 	ls.add("aaa"): ls.add("bbb"): ls.add("ccc")
 	print ls[1]
-	
-	

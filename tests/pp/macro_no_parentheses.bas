@@ -2,7 +2,7 @@
 
 SUITE( fbc_tests.pp.macro_no_parentheses )
 
-	# macro m1( foo, bar )
+	# macro m1 ? ( foo, bar )
 		foo + bar
 	# endmacro
 
