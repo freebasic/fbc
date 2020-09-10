@@ -326,10 +326,10 @@ private function hParamDecl _
 		*id = *lexGetText( )
 		dotpos = lexGetPeriodPos( )
 
+		lexCheckToken( LEXCHECK_POST_LANG_SUFFIX )
 		dtype = lexGetType( )
-		hCheckSuffix( dtype )
-
 		lexSkipToken( )
+
 	else
 		'' no id
 		dtype  = FB_DATATYPE_INVALID

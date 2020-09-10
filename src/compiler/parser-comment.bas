@@ -91,7 +91,7 @@ private sub cDirective( ) static
 			lexSkipToken( )
 
 			'' ONCE?
-			isonce = hMatchIdOrKw( "ONCE", LEXCHECK_POST_STRING_SUFFIX )
+			isonce = hMatchIdOrKw( "ONCE", LEXCHECK_POST_SUFFIX )
 
 			'' ':'
 			if( hMatch( FB_TK_STMTSEP ) = FALSE ) then

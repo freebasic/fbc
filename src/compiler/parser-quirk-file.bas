@@ -91,12 +91,12 @@ function cPrintStmt  _
 		'' (Expression?|SPC(Expression)|TAB(Expression)
 		isspc = FALSE
 		istab = FALSE
-		if( hMatch( FB_TK_SPC, LEXCHECK_POST_STRING_SUFFIX ) ) then
+		if( hMatch( FB_TK_SPC, LEXCHECK_POST_LANG_SUFFIX ) ) then
 			isspc = TRUE
 			hMatchLPRNT( )
 			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 			hMatchRPRNT( )
-		elseif( hMatch( FB_TK_TAB, LEXCHECK_POST_STRING_SUFFIX ) ) then
+		elseif( hMatch( FB_TK_TAB, LEXCHECK_POST_LANG_SUFFIX ) ) then
 			istab = TRUE
 			hMatchLPRNT( )
 			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )

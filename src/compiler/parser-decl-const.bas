@@ -90,12 +90,11 @@ private sub cConstAssign _
 		exit sub
 	end select
 
-	suffix = lexGetType( )
 	id = *lexGetText( )
 
-	hCheckSuffix( suffix )
-
 	'' ID
+	lexCheckToken( LEXCHECK_POST_LANG_SUFFIX )
+	suffix = lexGetType( )
 	lexSkipToken( )
 
 	'' not multiple?

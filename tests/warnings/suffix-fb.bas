@@ -1270,7 +1270,7 @@ WARN( 1 )
 #line% 1000
 
 /'
-	DON'T INCLUDE DEBUG PP STUFF
+	DON'T INCLUDE DEBUG PP STUFF - IT CAN CHANGE OFTEN
 	WARN( 1 )
 	#dump%( 0 )
 	WARN( 1 )
@@ -1287,3 +1287,37 @@ scope
 	WARN( 1 )
 	b = false%
 end scope
+
+WARN( 0 )
+print chr$(0)
+print inkey$
+print str$(0)
+print space$(0)
+print string$(0,0)
+print oct$(0)
+print hex$(0)
+print mks$(0)
+print mkd$(0)
+print mkl$(0)
+print mki$(0)
+print mkshort$(0)
+print mklongint$(0)
+print ltrim$("")
+print rtrim$("")
+print mid$("",0,0)
+print left$("",0)
+print right$("",0)
+print lcase$("")
+print ucase$("")
+print time$
+print date$
+print environ$("")
+print trim$("")
+print input$(0)
+print command$(0)
+
+WARN( 4 )
+print wchr$(0)
+print wstr$(0)
+print wstring$(0,0)
+print bin$(0)

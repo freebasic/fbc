@@ -360,16 +360,20 @@ private function hGetId _
 	'' Disallow type suffix on SUBs
 	if( is_sub ) then
 		if( *dtype <> FB_DATATYPE_INVALID ) then
+			'' TODO: error message is weird because it reports proc name
+			'' as the invalid character, when it should probably:
+			''    a) a different error message
+			''    b) point to the invalid suffix character
 			errReport( FB_ERRMSG_INVALIDCHARACTER )
+			'' error recovery: invalidate the data type and suffix
 			*dtype = FB_DATATYPE_INVALID
+			lexGetType() = FB_DATATYPE_INVALID
+			lexGetSuffixChar() = CHAR_NULL
 		end if
 	end if
 
-	'' Check whether type suffix is allowed by the -lang mode
-	hCheckSuffix( *dtype )
-
 	'' ID
-	lexSkipToken( )
+	lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
 
 	function = sym
 end function

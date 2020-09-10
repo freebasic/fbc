@@ -116,8 +116,12 @@ function cFunctionEx _
 	) as ASTNODE ptr
 
 	'' ID
-	lexSkipToken( LEXCHECK_POST_LANG_SUFFIX )
-
+	lexSkipToken( _
+		iif( symbIsSuffixed(sym), _
+			iif( symbGetIsRTL(sym), LEXCHECK_POST_STRING_SUFFIX, LEXCHECK_POST_LANG_SUFFIX ), _
+			LEXCHECK_POST_SUFFIX _
+		) )
+	
 	function = cFunctionCall( base_parent, sym, NULL, NULL, options )
 
 end function

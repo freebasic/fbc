@@ -643,7 +643,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' W|STR '(' Expression{bool|int|float|double|wstring} ')'
 	case FB_TK_STR, FB_TK_WSTR
 		is_wstr = (tk = FB_TK_WSTR)
-		lexSkipToken( LEXCHECK_POST_STRING_SUFFIX )
+		lexSkipToken( iif( is_wstr, LEXCHECK_POST_SUFFIX, LEXCHECK_POST_STRING_SUFFIX ) )
 
 		hMatchLPRNT( )
 		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
@@ -687,7 +687,8 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' W|STRING '(' Expression ',' Expression{int|str} ')'
 	case FB_TK_STRING, FB_TK_WSTRING
 		is_wstr = (tk = FB_TK_WSTRING)
-		lexSkipToken( LEXCHECK_POST_STRING_SUFFIX )
+		lexSkipToken( iif( is_wstr, LEXCHECK_POST_SUFFIX, LEXCHECK_POST_STRING_SUFFIX ) )
+
 
 		hMatchLPRNT( )
 		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
@@ -710,7 +711,7 @@ function cStringFunct(byval tk as FB_TOKEN) as ASTNODE ptr
 	'' W|CHR '(' Expression (',' Expression )* ')'
 	case FB_TK_CHR, FB_TK_WCHR
 		is_wstr = (tk = FB_TK_WCHR)
-		lexSkipToken( LEXCHECK_POST_STRING_SUFFIX )
+		lexSkipToken( iif( is_wstr, LEXCHECK_POST_SUFFIX, LEXCHECK_POST_STRING_SUFFIX ) )
 
 		function = cStrCHR(is_wstr)
 

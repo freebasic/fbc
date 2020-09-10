@@ -949,3 +949,9 @@ warning expected
 	Suffix ignored in 'true%'
 warning expected
 	Suffix ignored in 'false%'
+none expected
+4 warnings expected
+	Suffix ignored in 'wchr$'
+	Suffix ignored in 'wstr$'
+	Suffix ignored in 'wstring$'
+	Suffix ignored in 'bin$'

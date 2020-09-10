@@ -1198,7 +1198,8 @@ function cVariableEx _
 
 	else
 		if( suffix <> FB_DATATYPE_INVALID ) then
-			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+			lexCheckToken( LEXCHECK_POST_LANG_SUFFIX )
+			suffix = lexGetType()
 		end if
 
 		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
