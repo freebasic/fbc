@@ -2480,7 +2480,13 @@ sub lexCheckToken _
 			'' warn on '$' suffix depending if dialect allows suffix.
 			elseif( (flags and LEXCHECK_POST_STRING_SUFFIX) <> 0 ) then
 
-				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then
+				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+					'' not string suffix?
+					if( lexGetSuffixChar() <> FB_TK_STRTYPECHAR ) then
+						hWarnSuffix()
+						hDropSuffix()
+					end if
+				else
 					'' string suffix?
 					if( lexGetSuffixChar() = FB_TK_STRTYPECHAR ) then
 						'' warn only '-w suffix' or '-w pedantic' was given
