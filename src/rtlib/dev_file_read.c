@@ -28,7 +28,7 @@ int fb_DevFileRead( FB_FILE *handle, void *dst, size_t *pLength )
     }
 
     /* do read */
-    rlen = fread( dst, 1, length, fp );
+    rlen = FB_FREAD_LARGE( dst, length, fp );
     /* fill with nulls if at eof */
     if( rlen != length )
         memset( ((char *)dst) + rlen, 0, length - rlen );
