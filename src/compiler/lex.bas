@@ -2447,8 +2447,8 @@ sub lexCheckToken _
 	#define hStrSuffixChar(c) iif( c, chr(c), "" )
 	#define hTokenDesc() "in '" & *lexGetText() & hStrSuffixChar( lexGetSuffixChar() ) & "'"
 	#define hWarnSuffix() errReportWarn( FB_WARNINGMSG_SUFFIXIGNORED, hTokenDesc(), FB_ERRMSGOPT_NONE )
-	#define hErrSuffix()  errReportNotAllowed( LEXCHECK_POST_LANG_SUFFIX )
-	#define hDropSuffix() lexGetType() = FB_DATATYPE_INVALID : lexGetSuffixChar() = 0
+	#define hErrSuffix()  errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+	#define hDropSuffix() lexGetType() = FB_DATATYPE_INVALID : lexGetSuffixChar() = CHAR_NULL
 
 	'' suffix?
 	if( lexGetSuffixChar() <> CHAR_NULL ) then
@@ -2473,7 +2473,6 @@ sub lexCheckToken _
 			'' warn on suffix only if the dialect doesn't allow suffix?
 			elseif( (flags and LEXCHECK_POST_LANG_SUFFIX) <> 0 ) then
 				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then
-					'' errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
 					hWarnSuffix()
 					hDropSuffix()
 				end if
@@ -2481,18 +2480,24 @@ sub lexCheckToken _
 			'' warn on '$' suffix depending if dialect allows suffix.
 			elseif( (flags and LEXCHECK_POST_STRING_SUFFIX) <> 0 ) then
 
-				'' string suffix?
-				if( lexGetSuffixChar() = FB_TK_STRTYPECHAR ) then
-
-					'' warn only '-w suffix' or '-w pedantic' was given
-					if( fbPdCheckIsSet( FB_PDCHECK_SUFFIX ) ) then
+				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+					'' not string suffix?
+					if( lexGetSuffixChar() <> FB_TK_STRTYPECHAR ) then
+						hWarnSuffix()
+						hDropSuffix()
+					end if
+				else
+					'' string suffix?
+					if( lexGetSuffixChar() = FB_TK_STRTYPECHAR ) then
+						'' warn only '-w suffix' or '-w pedantic' was given
+						if( fbPdCheckIsSet( FB_PDCHECK_SUFFIX ) ) then
+							hWarnSuffix()
+						end if
+					else
 						hWarnSuffix()
 					end if
-					hDropSuffix()
-
-				'' otherwise warn for any other suffix
-				else
-					hWarnSuffix()
+					'' error recovery: always drop the suffix
+					''     the lang dialect doesn't support it
 					hDropSuffix()
 				end if
 

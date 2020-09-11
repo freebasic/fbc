@@ -961,15 +961,6 @@ declare function hIntegerTypeFromBitSize _
 #endmacro
 
 '':::::
-#macro hCheckSuffix(suffix)
-	if( suffix <> FB_DATATYPE_INVALID ) then
-		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then
-			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
-		end if
-	end if
-#endmacro
-
-'':::::
 #macro hEmitCurrLine( )
 	if( env.clopt.debuginfo ) then
 		if( env.includerec = 0 ) then

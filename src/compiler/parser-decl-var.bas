@@ -565,8 +565,8 @@ private function hGetId _
 	errmsg = hCheckForIdToken( parent )
 	if( errmsg = FB_ERRMSG_OK ) then
 		*id = *lexGetText( )
+		lexCheckToken( LEXCHECK_POST_LANG_SUFFIX )
 		suffix = lexGetType( )
-		hCheckSuffix( suffix )
 
 		'' no parent? read as-is
 		if( parent = NULL ) then
@@ -574,15 +574,18 @@ private function hGetId _
 		else
 			function = symbLookupAt( parent, lexGetText( ), FALSE, is_redim )
 		end if
+
+		lexSkipToken( )
+
 	else
 		errReport( errmsg )
 		'' error recovery: fake an id
 		*id = *symbUniqueLabel( )
 		suffix = FB_DATATYPE_INVALID
 		function = NULL
+		'' don't report on suffix, already have an error
+		lexSkipToken( )
 	end if
-
-	lexSkipToken( )
 
 end function
 
