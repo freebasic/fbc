@@ -7,6 +7,7 @@ Version 1.07.2
 - rtlib: internal fb_MemCopyClear() argument types changed to expect unsigned lengths (UINTEGER => size_t)
 
 [added]
+- gas64 emitter for x86_64 (SARG), added '-gen gas64' command line option to select
 
 [fixed]
 - sf.net #921: gfxlib: horizontal line drawing on 8-bit image was using wrong bpp
