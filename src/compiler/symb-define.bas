@@ -236,7 +236,9 @@ private function hMacro_getArgW( byval argtb as LEXPP_ARGTB ptr, byval num as in
 end function
 
 private function hDefUniqueIdPush_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
-	
+
+	'' __FB_UNIQUEID_PUSH__( STACKID )	
+
 	var id = hMacro_getArgZ( argtb )
 	if( id = null ) then
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
@@ -265,6 +267,9 @@ private function hDefUniqueIdPush_cb( byval argtb as LEXPP_ARGTB ptr, byval errn
 end function
 
 private function hDefUniqueId_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+
+	'' __FB_UNIQUEID__( STACKID )
+
 	var id = hMacro_getArgZ( argtb )
 	if( id = null ) then
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
@@ -274,11 +279,23 @@ private function hDefUniqueId_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 	var stk = cast(SYMB_DEF_UniqueId_Stack ptr, hashLookup(@symb.def.uniqueid.dict, id))
 	
 	ZstrFree(id)
-	
-	function = iif(stk <> NULL, *stk->top->name, "")
+
+	if( stk <> NULL ) then
+		if( stk->top <> NULL ) then
+			function = *stk->top->name
+			exit function
+		else
+			*errnum = FB_ERRMSG_SYNTAXERROR
+		end if
+	end if
+
+	function = ""
 end function
 
 private function hDefUniqueIdPop_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+
+	'' __FB_UNIQUEID_POP__( STACKID )
+
 	var id = hMacro_getArgZ( argtb )
 	if( id = null ) then
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
@@ -290,14 +307,21 @@ private function hDefUniqueIdPop_cb( byval argtb as LEXPP_ARGTB ptr, byval errnu
 	ZstrFree(id)
 	
 	if( stk <> NULL ) then
-		deallocate(stk->top->name)
-		stk->top = stk->top->prev
+		if( stk->top <> NULL ) then
+			deallocate(stk->top->name)
+			stk->top = stk->top->prev
+		else
+			*errnum = FB_ERRMSG_SYNTAXERROR
+		end if
 	end if
 	
 	function = ""
 end function
 
 private function hDefArgCount_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
+
+	'' __FB_ARG_COUNT__( ARGS... )
+
 	if( argtb ) then
 		return str( argtb->count )
 	end if
@@ -305,6 +329,8 @@ private function hDefArgCount_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 end function
 
 private function hDefArgLeft_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
+
+	'' __FB_ARG_LEFTTOF__( ARG, SEP )
 
 	var res = ""
 	var arg = hMacro_getArgZ( argtb, 0 )
@@ -348,6 +374,8 @@ end function
 
 private function hDefArgRight_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
+	'' __FB_ARG_RIGHTOF__( ARG, SEP )
+
 	var res = ""
 	var arg = hMacro_getArgZ( argtb, 0 )
 	var sep = hMacro_getArgZ( argtb, 1 )
@@ -389,6 +417,8 @@ end function
 
 private function hDefJoinZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
+	'' __FB_JOIN__( L, R )
+
 	var res = ""
 	var l = hMacro_getArgZ( argtb, 0 )
 	var r = hMacro_getArgZ( argtb, 1 )
@@ -407,6 +437,8 @@ private function hDefJoinZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as i
 end function
 
 private function hDefJoinW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
+
+	'' __FB_JOIN__( L, R )
 
 	var l = hMacro_getArgW( argtb, 0 )
 	var r = hMacro_getArgW( argtb, 1 )
@@ -427,11 +459,13 @@ end function
 
 private function hDefQuoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
+	'' __FB_QUOTE__( arg )
+
 	var arg = hMacro_getArgZ( argtb, 0 )
 	var res = ""
 	
 	if( arg <> NULL ) then
-		'' don't escape, preserve the sequencies as-is
+		'' don't escape, preserve the sequences as-is
 		res += "$" + QUOTE
 		res += hReplace( arg, QUOTE, QUOTE + QUOTE )
 		res += QUOTE
@@ -448,6 +482,8 @@ end function
 
 private function hDefQuoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
 
+	'' __FB_QUOTE__( arg )
+
 	var arg = hMacro_getArgW( argtb, 0 )
 	static as DWSTRING res
 
@@ -455,7 +491,7 @@ private function hDefQuoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as 
 
 	'' Only if not empty ("..." param can be empty)
 	if( arg <> NULL ) then
-		'' don't escape, preserve the sequencies as-is
+		'' don't escape, preserve the sequences as-is
 		DWstrConcatAssign( res, "$" + QUOTE )
 		DWstrConcatAssign( res, *hReplaceW( arg, QUOTE, QUOTE + QUOTE ) )
 		DWstrConcatAssign( res, QUOTE )
@@ -470,6 +506,8 @@ end function
 
 private function hDefUnquoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
+	'' __FB_UNQUOTE__( arg )
+
 	var arg = hMacro_getArgZ( argtb, 0 )
 	var res = ""
 
@@ -480,11 +518,6 @@ private function hDefUnquoteZ_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 		'' $"[text]"?
 		if( (length >= 3) andalso ((arg[0] = asc( "$" )) and (arg[1] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
 			res = hReplace( mid( *arg, 3, length-3 ), QUOTE + QUOTE, QUOTE )
-
-/' TODO: needed?
-		elseif( (length >= 3) andalso ((arg[0] = asc( "!" )) and (arg[1] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
-			res = *hUnescape( mid( *arg, 3, length-3 ) )
-'/
 
 		'' "[text]"?
 		elseif( (length >= 2) andalso ((arg[0] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
@@ -504,6 +537,8 @@ end function
 
 private function hDefUnquoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as wstring ptr
 
+	'' __FB_UNQUOTE__( arg )
+
 	var arg = hMacro_getArgW( argtb, 0 )
 	static as DWSTRING res
 
@@ -516,11 +551,6 @@ private function hDefUnquoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 		'' $"[text]"?
 		if( (length >= 3) andalso ((arg[0] = asc( "$" )) and (arg[1] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
 			DWstrAssign( res, hReplaceW( mid( *arg, 3, length-3 ), QUOTE + QUOTE, QUOTE ) )
-
-/' TODO: needed?
-		elseif( (length >= 3) andalso ((arg[0] = asc( "!" )) and (arg[1] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
-			DWstrAssign( res, hUnescapeW( mid( *arg, 3, length-3 ) ) )
-'/
 
 		'' "[text]"?
 		elseif( (length >= 2) andalso ((arg[0] = asc(QUOTE)) and (arg[length-1] = asc(QUOTE))) ) then
