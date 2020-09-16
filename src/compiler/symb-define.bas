@@ -11,6 +11,7 @@
 #include once "list.bi"
 #include once "lex.bi"
 #include once "hlp.bi"
+#include once "pp.bi"
 
 #include once "datetime.bi"
 #include once "string.bi"
@@ -237,7 +238,12 @@ end function
 
 private function hDefUniqueIdPush_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 
-	'' __FB_UNIQUEID_PUSH__( STACKID )	
+	'' __FB_UNIQUEID_PUSH__( STACKID )
+
+	''  if skipping over code, don't cause side effects
+	if( pp.skipping ) then
+		return ""
+	end if
 
 	var id = hMacro_getArgZ( argtb )
 	if( id = null ) then
@@ -270,6 +276,11 @@ private function hDefUniqueId_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 
 	'' __FB_UNIQUEID__( STACKID )
 
+	''  if skipping over code, don't cause side effects
+	if( pp.skipping ) then
+		return ""
+	end if
+
 	var id = hMacro_getArgZ( argtb )
 	if( id = null ) then
 		*errnum = FB_ERRMSG_ARGCNTMISMATCH
@@ -295,6 +306,11 @@ end function
 private function hDefUniqueIdPop_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr ) as string
 
 	'' __FB_UNIQUEID_POP__( STACKID )
+
+	''  if skipping over code, don't cause side effects
+	if( pp.skipping ) then
+		return ""
+	end if
 
 	var id = hMacro_getArgZ( argtb )
 	if( id = null ) then
