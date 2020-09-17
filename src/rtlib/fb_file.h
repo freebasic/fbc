@@ -371,14 +371,14 @@ FBCALL int          fb_CrtFileCopy      ( const char *source, const char *destin
 #define FREAD_CHUNK_SIZE 1048576
 #define FWRITE_CHUNK_SIZE 1048576
 
-static __inline__ size_t FB_FREAD_LARGE( void *ptr, size_t nmemb, FILE *stream )
+static __inline__ size_t FB_FREAD_LARGE( void *ptr, size_t nbytes, FILE *stream )
 {
    size_t total = 0, nread;
 
-   /* if nmemb <1MB, use fread() directly */
-   if (nmemb < FREAD_CHUNK_SIZE) return fread( ptr, 1, nmemb, stream );
+   /* if nbytes <1MB, use fread() directly */
+   if (nbytes < FREAD_CHUNK_SIZE) return fread( ptr, 1, nbytes, stream );
 
-   while (nmemb > FREAD_CHUNK_SIZE) {
+   while (nbytes > FREAD_CHUNK_SIZE) {
       /* read chunk */
       nread = fread( ptr, 1, FREAD_CHUNK_SIZE, stream );
       total += nread;
@@ -389,26 +389,26 @@ static __inline__ size_t FB_FREAD_LARGE( void *ptr, size_t nmemb, FILE *stream )
       }
 
       ptr += FREAD_CHUNK_SIZE;
-      nmemb -= FREAD_CHUNK_SIZE;
+      nbytes -= FREAD_CHUNK_SIZE;
    }
 
-   if (nmemb > 0) {
+   if (nbytes > 0) {
       /* read last chunk */
-      nread = fread( ptr, 1, nmemb, stream );
+      nread = fread( ptr, 1, nbytes, stream );
       total += nread;
    }
 
    return total;
 }
 
-static __inline__ size_t FB_FWRITE_LARGE( const void *ptr, size_t nmemb, FILE *stream )
+static __inline__ size_t FB_FWRITE_LARGE( const void *ptr, size_t nbytes, FILE *stream )
 {
    size_t total = 0, nwritten;
 
-   /* if nmemb <1MB, use fwrite() directly */
-   if (nmemb < FWRITE_CHUNK_SIZE) return fwrite( ptr, 1, nmemb, stream );
+   /* if nbytes <1MB, use fwrite() directly */
+   if (nbytes < FWRITE_CHUNK_SIZE) return fwrite( ptr, 1, nbytes, stream );
 
-   while (nmemb > FWRITE_CHUNK_SIZE) {
+   while (nbytes > FWRITE_CHUNK_SIZE) {
       /* write chunk */
       nwritten = fwrite( ptr, 1, FWRITE_CHUNK_SIZE, stream );
       total += nwritten;
@@ -419,12 +419,12 @@ static __inline__ size_t FB_FWRITE_LARGE( const void *ptr, size_t nmemb, FILE *s
       }
 
       ptr += FWRITE_CHUNK_SIZE;
-      nmemb -= FWRITE_CHUNK_SIZE;
+      nbytes -= FWRITE_CHUNK_SIZE;
    }
 
-   if (nmemb > 0) {
+   if (nbytes > 0) {
       /* write last chunk */
-      nwritten = fwrite( ptr, 1, nmemb, stream );
+      nwritten = fwrite( ptr, 1, nbytes, stream );
       total += nwritten;
    }
 
