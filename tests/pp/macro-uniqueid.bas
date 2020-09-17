@@ -12,6 +12,17 @@ SUITE( fbc_tests.pp.macro_uniqueid )
 
 	END_TEST
 
+	TEST( empty )
+
+		'' __FB_UNIQUEID__() should return an empty string if stack is empty
+
+		__FB_UNIQUEID_PUSH__( __empty__ )
+		__FB_UNIQUEID_POP__( __empty__ )
+
+		CU_ASSERT_EQUAL( __FB_QUOTE__( __FB_UNIQUEID__( __empty__ ) ), "" )
+
+	END_TEST
+
 	TEST( not_global )
 
 		CU_ASSERT_EQUAL( __FB_QUOTE__( __FB_UNIQUEID__( __ns__ ) ), "" )
