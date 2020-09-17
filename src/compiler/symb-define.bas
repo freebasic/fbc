@@ -329,6 +329,8 @@ private function hDefUniqueIdPop_cb( byval argtb as LEXPP_ARGTB ptr, byval errnu
 		else
 			*errnum = FB_ERRMSG_SYNTAXERROR
 		end if
+	else
+		*errnum = FB_ERRMSG_SYNTAXERROR
 	end if
 	
 	function = ""
