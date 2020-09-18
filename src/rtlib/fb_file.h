@@ -375,9 +375,6 @@ static __inline__ size_t FB_FREAD_LARGE( void *ptr, size_t nbytes, FILE *stream 
 {
    size_t total = 0, nread;
 
-   /* if nbytes <1MB, use fread() directly */
-   if (nbytes < FREAD_CHUNK_SIZE) return fread( ptr, 1, nbytes, stream );
-
    while (nbytes > FREAD_CHUNK_SIZE) {
       /* read chunk */
       nread = fread( ptr, 1, FREAD_CHUNK_SIZE, stream );
@@ -404,9 +401,6 @@ static __inline__ size_t FB_FREAD_LARGE( void *ptr, size_t nbytes, FILE *stream 
 static __inline__ size_t FB_FWRITE_LARGE( const void *ptr, size_t nbytes, FILE *stream )
 {
    size_t total = 0, nwritten;
-
-   /* if nbytes <1MB, use fwrite() directly */
-   if (nbytes < FWRITE_CHUNK_SIZE) return fwrite( ptr, 1, nbytes, stream );
 
    while (nbytes > FWRITE_CHUNK_SIZE) {
       /* write chunk */
