@@ -4,5 +4,5 @@
 
 FBCALL void fb_ArrayStrErase( FBARRAY *array )
 {
-	fb_ArrayErase( array, -1 );
+	fb_ArrayErase( array, TRUE );
 }

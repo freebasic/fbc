@@ -50,7 +50,7 @@ FBCALL int fb_ArrayClearObj
 			fb_hArrayCtorObj( array, ctor, 0 );
 		else
 			/* otherwise, just clear */
-			fb_ArrayClear( array, 0 );
+			fb_ArrayClear( array, FALSE );
 	}
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );

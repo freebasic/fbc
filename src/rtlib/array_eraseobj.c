@@ -5,6 +5,6 @@
 FBCALL int fb_ArrayEraseObj( FBARRAY *array, FB_DEFCTOR dtor )
 {
 	fb_ArrayDestructObj( array, dtor );
-	fb_ArrayErase( array, 0 );
+	fb_ArrayErase( array, FALSE );
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
