@@ -21,15 +21,6 @@ typedef struct _FBARRAY {
 	FBARRAYDIM      dimTB[1];    /* dimtb[dimensions] */
 } FBARRAY;
 
-/*!!!REMOVEME!!!*/
-typedef struct _FB_ARRAY_TMPDESC {
-    FB_LISTELEM     elem;
-
-    FBARRAY         array;
-    FBARRAYDIM      dimTB[FB_MAXDIMENSIONS-1];
-} FB_ARRAY_TMPDESC;
-/*!!!REMOVEME!!!*/
-
 typedef void (*FB_DEFCTOR)( void *this_ );
 typedef void (*FB_DTORMULT) ( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx );
 
