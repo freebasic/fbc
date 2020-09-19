@@ -2,7 +2,7 @@
 #define __FBC_INT_MEMORY_BI__
 
 # if __FB_LANG__ = "qb"
-# error not supported in -lang qb dialect
+# error not supported in qb dialect
 # endif
 
 '' WARNING!!! EXPERIMENTAL
@@ -29,18 +29,14 @@
 #undef fb_MemMove
 #undef fb_MemCopyClear
 
-# if __FB_LANG__ = "fb"
 '' must have declaration of "..allocate()" and "..deallocate()"
 '' new, new[], delete, delete[] can't work without these exact names
 extern "C"
 	declare function allocate cdecl alias "malloc" ( byval size as const uinteger ) as any ptr
 	declare sub deallocate cdecl alias "free" ( byval p as const any ptr )
 end extern
-# endif
 
-# if __FB_LANG__ = "fb"
 namespace FBC
-# endif
 
 extern "rtlib"
 	declare function allocate cdecl alias "malloc" ( byval size as const uinteger ) as any ptr
@@ -67,8 +63,6 @@ extern "rtlib"
 
 end extern
 
-# if __FB_LANG__ = "fb"
 end namespace
-# endif
 
 #endif
