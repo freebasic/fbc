@@ -59,7 +59,7 @@ Version 1.08.0
 - oGLfbGFX: prevent opengl mode and scale from changing until next mode is set
 - sf.net #908: visibility / access rights of overload For/Next/Step operators not taken into account by for...next statement 
 - sf.net #906: #error on line 2 not reported if immediately following #error on line 1
-- rtlib: ERASE - check for static (fixed length) plain and string arrays passed to ERASE; clear only if array is static
+- rtlib: ERASE - check for static (fixed length) plain, string, and object arrays passed to ERASE; clear only if array is static, and free memory if dynamic
 
 
 Version 1.07.0

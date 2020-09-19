@@ -181,14 +181,20 @@
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
-		/' function fb_ArrayEraseObj( array() as any, byval dtor as sub cdecl( ) ) as long '/ _
+		/' function fb_ArrayEraseObj _
+			( _
+				array() as any, _
+				byval ctor as sub cdecl( ), _
+				byval dtor as sub cdecl( ) _
+			) as long '/ _
 		( _
 			@FB_RTL_ARRAYERASEOBJ, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			2, _
+			3, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
@@ -438,19 +444,28 @@ function rtlArrayErase _
 
 	dim as ASTNODE ptr proc = any
 	dim as integer dtype = any
-	dim as FBSYMBOL ptr dtor = any
+	dim as FBSYMBOL ptr ctor = any, dtor = any, subtype = any
 
 	function = NULL
 
 	dtype = astGetDataType( arrayexpr )
 
 	if( dtype = FB_DATATYPE_STRUCT ) then
-		dtor = symbGetCompDtor( astGetSubtype( arrayexpr ) )
+		subtype = astGetSubtype( arrayexpr )
+		ctor = symbGetCompDefCtor( subtype )
+		dtor = symbGetCompDtor( subtype )
+
+		'' No default ctor, but others? Then the rtlib cannot just clear
+		'' that array of objects.
+		if( (ctor = NULL) and (symbGetCompCtorHead( subtype ) <> NULL) ) then
+			errReport( FB_ERRMSG_NODEFAULTCTORDEFINED )
+		end if
 	else
+		ctor = NULL
 		dtor = NULL
 	end if
 
-	if( dtor ) then
+	if( (ctor <> NULL) or (dtor <> NULL) ) then
 		hCheckDtor( dtor, check_access, TRUE )
 
 		if( is_dynamic ) then
@@ -464,6 +479,13 @@ function rtlArrayErase _
 		'' array() as any
 		if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
 			exit function
+		end if
+
+		if( is_dynamic ) then
+			'' byval ctor as sub cdecl( )
+			if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
+				exit function
+			end if
 		end if
 
 		'' byval dtor as sub cdecl( )
