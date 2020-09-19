@@ -158,19 +158,17 @@
 			( _
 				array() as any, _
 				byval ctor as sub cdecl( ), _
-				byval dtor as sub cdecl( ), _
-				byval dofill as const long _
+				byval dtor as sub cdecl( ) _
 			) as long '/ _
 		( _
 			@FB_RTL_ARRAYCLEAROBJ, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			4, _
+			3, _
 			{ _
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
 				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( typeAddrOf( FB_DATATYPE_VOID ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
 		/' function fb_ArrayErase( array() as any ) as long '/ _
@@ -400,10 +398,6 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 			exit function
 		end if
 
-		'' byval dofill as integer
-		if( astNewARG( proc, astNewCONSTi( -1 ) ) = NULL ) then
-			exit function
-		end if
 	elseif( dtype = FB_DATATYPE_STRING ) then
 		'' fb_ArrayDestructStr() to clear the string array 
 		'' - there is no fb_ArrayClearStr() in rtlib
