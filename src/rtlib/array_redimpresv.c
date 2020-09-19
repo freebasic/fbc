@@ -140,22 +140,3 @@ int fb_ArrayRedimPresvEx
 
     return res;
 }
-
-int fb_ArrayRedimPresv
-	(
-		FBARRAY *array,
-		size_t element_len,
-		int isvarlen,
-		size_t dimensions,
-		...
-	)
-{
-	va_list ap;
-	int res;
-
-	va_start( ap, dimensions );
-    res = hRedim( array, element_len, TRUE, isvarlen, dimensions, ap );
-    va_end( ap );
-
-    return res;
-}

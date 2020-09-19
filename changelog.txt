@@ -18,6 +18,7 @@ Version 1.08.0
 - macros with parameters can now be invoked without using parentheses around the arguments using '#macro name ? (arg)' definition syntax
 - rtlib: internal fb_MemCopyClear() argument types changed to expect unsigned lengths (UINTEGER => size_t)
 - rtlib: internal changes to API: fb_ArrayErase(), fb_ArrayClear(), fb_ArrayClearObj()
+- rtlib: internal removal of unused / legacy functions: fb_ArrayRedim(), fb_ArrayRedimPresv()
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
