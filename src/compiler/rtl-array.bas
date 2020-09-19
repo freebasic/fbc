@@ -144,15 +144,14 @@
 				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
-		/' function fb_ArrayClear( array() as any, byval isvarlen as const long ) as long '/ _
+		/' function fb_ArrayClear( array() as any ) as long '/ _
 		( _
 			@FB_RTL_ARRAYCLEAR, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			2, _
+			1, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
 		/' function fb_ArrayClearObj _
@@ -174,15 +173,14 @@
 				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
 			} _
 		), _
-		/' function fb_ArrayErase( array() as any, byval isvarlen as const long ) as long '/ _
+		/' function fb_ArrayErase( array() as any ) as long '/ _
 		( _
 			@FB_RTL_ARRAYERASE, NULL, _
 			FB_DATATYPE_LONG, FB_FUNCMODE_FBCALL, _
 			NULL, FB_RTL_OPT_NONE, _
-			2, _
+			1, _
 			{ _
-				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ), _
-				( typeSetIsConst( FB_DATATYPE_LONG ), FB_PARAMMODE_BYVAL, FALSE ) _
+				( FB_DATATYPE_VOID, FB_PARAMMODE_BYDESC, FALSE ) _
 			} _
 		), _
 		/' function fb_ArrayEraseObj( array() as any, byval dtor as sub cdecl( ) ) as long '/ _
@@ -424,10 +422,6 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 			exit function
 		end if
 
-		'' byval isvarlen as integer
-		if( astNewARG( proc, astNewCONSTi( 0 ) ) = NULL ) then
-			exit function
-		end if
 	end if
 
 	function = proc
@@ -509,10 +503,6 @@ function rtlArrayErase _
 			exit function
 		end if
 
-		 '' byval isvarlen as integer
-		if( astNewARG( proc, astNewCONSTi( 0 ) ) = NULL ) then
-			exit function
-		end if
 	end if
 
 	function = proc

@@ -16,14 +16,10 @@
 
 #include "fb.h"
 
-FBCALL int fb_ArrayClear( FBARRAY *array, int isvarlen /* legacy */ )
+FBCALL int fb_ArrayClear( FBARRAY *array )
 {
-	if( array->ptr ) {
-		if( isvarlen )
-			fb_ArrayDestructStr( array );
-		else
-			memset( array->ptr, 0, array->size );
-	}
+	if( array->ptr )
+		memset( array->ptr, 0, array->size );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

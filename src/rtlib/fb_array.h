@@ -55,9 +55,9 @@ FBCALL void *fb_ArraySngBoundChk
        void       fb_hArrayDtorStr     ( FBARRAY *array, FB_DEFCTOR dtor, size_t base_idx );
 FBCALL void       fb_ArrayDestructObj  ( FBARRAY *array, FB_DEFCTOR dtor );
 FBCALL void       fb_ArrayDestructStr  ( FBARRAY *array );
-FBCALL int        fb_ArrayClear        ( FBARRAY *array, int isvarlen );
+FBCALL int        fb_ArrayClear        ( FBARRAY *array );
 FBCALL int        fb_ArrayClearObj     ( FBARRAY *array, FB_DEFCTOR ctor, FB_DEFCTOR dtor, int dofill );
-FBCALL int        fb_ArrayErase        ( FBARRAY *array, int isvarlen );
+FBCALL int        fb_ArrayErase        ( FBARRAY *array );
 FBCALL int        fb_ArrayEraseObj     ( FBARRAY *array, FB_DEFCTOR dtor );
 FBCALL FBARRAY   *fb_ArrayGetDesc      ( FBARRAY *array );
 FBCALL void       fb_ArrayStrErase     ( FBARRAY *array );

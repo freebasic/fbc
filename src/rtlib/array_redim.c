@@ -113,7 +113,11 @@ static int hRedim
 	)
 {
 	/* free old */
-	fb_ArrayErase( array, isvarlen );
+	if( isvarlen ) {
+		fb_ArrayStrErase( array );
+	} else {
+		fb_ArrayErase( array );
+	}
 
     return fb_hArrayAlloc( array, element_len, doclear, NULL, dimensions, ap );
 }

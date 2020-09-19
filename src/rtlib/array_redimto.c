@@ -35,7 +35,12 @@ FBCALL int fb_ArrayRedimTo
 	/* free old */
 	if( dtor )
 		fb_ArrayDestructObj( dest, dtor );
-	fb_ArrayErase( dest, isvarlen );
+
+	if( isvarlen ) {
+		fb_ArrayStrErase( dest );
+	} else {
+		fb_ArrayErase( dest );
+	}
 
 	DBG_ASSERT( dest->element_len == source->element_len || dest->element_len == 0 );
 	DBG_ASSERT( dest->dimensions == source->dimensions || dest->dimensions == 0 );

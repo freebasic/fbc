@@ -20,22 +20,16 @@
 
 #include "fb.h"
 
-FBCALL int fb_ArrayErase( FBARRAY *array, int isvarlen /* legacy */ )
+FBCALL int fb_ArrayErase( FBARRAY *array )
 {
 	/* ptr can be NULL, for global dynamic arrays that were never allocated,
 	   but will still be destroyed on program exit */
 	if( array->ptr ) {
 
-		/* fixed or dynamic, always clear the strings first */
-		if( isvarlen )
-			fb_ArrayDestructStr( array );
-
 		/* fixed length?  then it can't be resized.
 		   just clear the elements and leave the descriptor as-is. */
 		if( array->flags & FBARRAY_FLAGS_FIXED_LEN ) {
-			if( !isvarlen ) {
-				fb_ArrayClear( array, FALSE );
-			}
+			fb_ArrayClear( array );
 
 		/* otherwise it's dynamic: free memory */
 		} else {
