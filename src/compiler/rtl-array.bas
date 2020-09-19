@@ -347,7 +347,15 @@ private sub hCheckDtor _
 
 end sub
 
-'' fb_ArrayClear* - destruct elements if needed and then re-initialize
+'' fb_ArrayClear* 
+'' destruct elements if needed and then re-initialize
+''
+'' fb_ArrayClear* rtlib functions are called when it is known at
+'' compile time that array is static (fixed length).  It it is unknown
+'' at compile time, then rtlArrayErase() should be used instead and
+'' the runtime library will do a run time check on the array's
+'' descriptor flags to determine if it is static or dynamic.
+''
 function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr proc = any
 	dim as integer dtype = any
@@ -399,7 +407,8 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 			exit function
 		end if
 	elseif( dtype = FB_DATATYPE_STRING ) then
-		'' fb_ArrayDestructStr() works as fb_ArrayClearStr() just fine
+		'' fb_ArrayDestructStr() to clear the string array 
+		'' - there is no fb_ArrayClearStr() in rtlib
 		proc = astNewCALL( PROCLOOKUP( ARRAYDESTRUCTSTR ) )
 
 		'' array() as any
@@ -425,7 +434,13 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 '' fb_ArrayErase* or fb_ArrayDestruct*
-'' - destruct elements, and free array if it's dynamic
+'' destruct elements, and free array if it's dynamic
+''
+'' if it is unknown at compile time if the array is
+'' dynamic or static, the rtlib will do a run time
+'' check on the array descriptor flags to determine
+'' if the array is to be freed, or cleared only
+''
 function rtlArrayErase _
 	( _
 		byval arrayexpr as ASTNODE ptr, _
