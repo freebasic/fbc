@@ -26,6 +26,10 @@ int fb_hArrayRealloc
 	if( (dimensions != array->dimensions) && (array->dimensions != 0) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
+	/* fixed length? */
+	if( array->flags & FBARRAY_FLAGS_FIXED_LEN )
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+
     /* load bounds */
     for( i = 0; i < dimensions; i++ )
     {

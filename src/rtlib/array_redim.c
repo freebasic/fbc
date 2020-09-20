@@ -14,9 +14,14 @@ int fb_hArrayAlloc
 {
 	size_t i, elements, size;
 	ssize_t diff;
-    FBARRAYDIM *dim;
+	FBARRAYDIM *dim;
 	ssize_t lbTB[FB_MAXDIMENSIONS];
 	ssize_t ubTB[FB_MAXDIMENSIONS];
+
+	/* fixed length? */
+
+	if( array->flags & FBARRAY_FLAGS_FIXED_LEN )
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
 	/* Must take care with the descriptor's maximum dimensions, because fbc
 	   may allocate a smaller descriptor (with room only for some
