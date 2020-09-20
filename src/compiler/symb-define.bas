@@ -603,6 +603,9 @@ private function hDefEval_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 		lexPushCtx()
 		lexInit( FALSE, TRUE )
 
+		'' prevent cExpression from writing to .pp.bas file
+		lex.ctx->reclevel += 1
+
 		DZstrAssign( lex.ctx->deftext, *arg )
 		lex.ctx->defptr = lex.ctx->deftext.data
 		lex.ctx->deflen += len( *arg )
@@ -628,6 +631,8 @@ private function hDefEval_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 			'' error recovery: skip until next line
 			hSkipUntil( FB_TK_EOL, TRUE )
 		end if
+
+		lex.ctx->reclevel -= 1
 
 		lexPopCtx()
 
