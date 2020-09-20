@@ -68,13 +68,14 @@ end sub
 '':::::
 sub lexInit _
 	( _
-		byval isinclude as integer _
+		byval isinclude as integer, _
+		byval is_fb_eval as integer _
 	)
 
     dim as integer i
     dim as FBTOKEN ptr n
 
-	if( env.includerec = 0 ) then
+	if( (env.includerec = 0) and (is_fb_eval = FALSE) ) then
 		lex.ctx = @lex.ctxTB(0)
 	end if
 
@@ -99,39 +100,50 @@ sub lexInit _
 	lex.ctx->currchar = UINVALID
 	lex.ctx->lahdchar = UINVALID
 
-	lex.ctx->linenum = 1
-	lex.ctx->lasttk_id = INVALID
+	if( is_fb_eval ) then
+		lex.ctx->linenum = (lex.ctx-1)->linenum
+		lex.ctx->reclevel = (lex.ctx-1)->reclevel
+		lex.ctx->currmacro = (lex.ctx-1)->currmacro
+	else
+		lex.ctx->linenum = 1
+		lex.ctx->reclevel = 0
+		lex.ctx->currmacro = NULL
+	end if
 
-	lex.ctx->reclevel = 0
-	lex.ctx->currmacro = NULL
+	lex.ctx->lasttk_id = INVALID
 
 	''
 	lex.ctx->bufflen = 0
 	lex.ctx->deflen	= 0
 
 	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-		lex.ctx->buffptr = NULL
+		lex.ctx->buffptr = iif( is_fb_eval, @lex.ctx->buff, NULL )
 		lex.ctx->defptr = NULL
 		DZstrAllocate( lex.ctx->deftext, 0 )
 	else
-		lex.ctx->buffptrw = NULL
+		lex.ctx->buffptrw = @lex.ctx->buffw
 		lex.ctx->defptrw = NULL
 		DWstrAllocate( lex.ctx->deftextw, 0 )
 	end if
 
 	''
-	lex.ctx->filepos = 0
-	lex.ctx->lastfilepos = 0
+	if( is_fb_eval ) then
+		lex.ctx->filepos = (lex.ctx-1)->filepos
+		lex.ctx->lastfilepos = (lex.ctx-1)->lastfilepos
+	else
+		lex.ctx->filepos = 0
+		lex.ctx->lastfilepos = 0
+	end if
 
 	'' only if it's not on an inc file
-	if( env.includerec = 0 ) then
+	if( (env.includerec = 0) or (is_fb_eval = TRUE) ) then
 		DZstrAllocate( lex.ctx->currline, 0 )
 		lex.insidemacro = FALSE
 	end if
 
 	lex.ctx->after_space = FALSE
 
-	if( isinclude = FALSE ) then
+	if( (isinclude = FALSE) and (is_fb_eval = FALSE ) ) then
 		ppInit( )
 	end if
 

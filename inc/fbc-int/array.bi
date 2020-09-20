@@ -1,9 +1,11 @@
 #ifndef __FBC_INT_ARRAY_BI__ 
 #define __FBC_INT_ARRAY_BI__
 
-# if __FB_LANG__ = "fb"
-namespace FBC
+# if __FB_LANG__ = "qb"
+#     error "include not supported in qb dialect"
 # endif
+
+namespace FBC
 
 '' declarations must follow ./src/rtlib/fb_array.h
 
@@ -44,8 +46,6 @@ extern "rtlib"
 		( array() as const any ) as const FBC.FBARRAY ptr
 end extern
 
-# if __FB_LANG__ = "fb"
 end namespace
-# endif
 
 #endif

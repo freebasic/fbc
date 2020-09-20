@@ -3,14 +3,16 @@
 
 '' definition for FBCALL
 ''
-'' FBCALL is not a built-in word in fbc as calling convention is only implied as "fbcall"
-'' in the absence of other calling convention specifiers stdcall / cdecl / pascal
-'' or other structures the imply some other default calling convention e.g. EXTERN "C"
+'' FBCALL is not a built-in word.  In fbc, calling convention is only implied as "fbcall"
+'' in the absence of any other calling convention specifiers e.g. stdcall / cdecl / pascal
+'' or some other structure that imply another default calling convention e.g. EXTERN "C"
 '' 
 
-# if __FB_LANG__ = "fb"
-namespace FBC
+# if __FB_LANG__ = "qb"
+#     error "include not supported in qb dialect"
 # endif
+
+namespace FBC
 
 '' declarations must follow:
 ''  ./src/rtlib/fb_config.h
@@ -30,8 +32,6 @@ namespace FBC
 	#define FBCALL cdecl
 #endif
 
-# if __FB_LANG__ = "fb"
 end namespace
-# endif
 
 #endif

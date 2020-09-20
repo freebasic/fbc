@@ -583,129 +583,6 @@ private function hDefUnquoteW_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum a
 
 end function
 
-private function ppEval( ) as string
-
-	dim expr as ASTNODE ptr = cExpression( )
-
-	if( expr <> NULL ) then
-		expr = astOptimizeTree( expr )
-
-		if( astIsCONST( expr ) ) then
-			function = astConstFlushToStr( expr )
-		elseif( astIsConstant( expr ) ) then
-			dim res as string
-			res = """" + hReplace( expr->sym->var_.littext, QUOTE, QUOTE + QUOTE ) + """"
-			function = res
-		else
-			astDelTree( expr )
-			errReport( FB_ERRMSG_EXPECTEDCONST )
-			'' error recovery: skip until next line
-			hSkipUntil( FB_TK_EOL, TRUE )
-			function = str(0)
-		end if
-	else
-		errReport( FB_ERRMSG_SYNTAXERROR )
-		'' error recovery: skip until next line
-		hSkipUntil( FB_TK_EOL, TRUE )
-		function = ""
-	end if
-
-end function
-
-private sub lexPushDefCtx()
-
-	'' create a lightweight context push for the lexer
-	'' like an include file, but no include file
-	'' text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
-	'' use the parser to build an AST for the literal result
-
-
-	'' from lexPushCtx()
-
-	lex.ctx += 1
-
-	'' TODO: meld code with lexPushCtx()
-
-	dim as integer i
-	dim as FBTOKEN ptr n
-
-	'' create a circular list
-	lex.ctx->k = 0
-
-	lex.ctx->head = @lex.ctx->tokenTB(0)
-	lex.ctx->tail = lex.ctx->head
-
-	n = lex.ctx->head
-	for i = 0 to FB_LEX_MAXK-1
-		n->next = @lex.ctx->tokenTB(i+1)
-		n = n->next
-	next
-	n->next = lex.ctx->head
-
-	''
-	for i = 0 to FB_LEX_MAXK
-		lex.ctx->tokenTB(i).id = INVALID
-	next
-
-	lex.ctx->currchar = cuint( INVALID )
-	lex.ctx->lahdchar = cuint( INVALID )
-
-
-	'' copy linenumber from parent context for error message reporting
-
-	lex.ctx->linenum = (lex.ctx-1)->linenum
-	lex.ctx->lasttk_id = cuint( INVALID )
-
-	lex.ctx->reclevel = (lex.ctx-1)->reclevel
-	lex.ctx->currmacro = (lex.ctx-1)->currmacro
-
-	''
-	lex.ctx->bufflen = 0
-	lex.ctx->deflen	= 0
-
-	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-		lex.ctx->buffptr = NULL
-		lex.ctx->defptr = NULL
-		DZstrAllocate( lex.ctx->deftext, 0 )
-	else
-		lex.ctx->buffptrw = NULL
-		lex.ctx->defptrw = NULL
-		DWstrAllocate( lex.ctx->deftextw, 0 )
-	end if
-
-	''
-	lex.ctx->filepos = (lex.ctx-1)->filepos
-	lex.ctx->lastfilepos = (lex.ctx-1)->lastfilepos
-
-
-	'' just empty the current line, deftext[w] will expand on to currline
-
-	DZstrAllocate( lex.ctx->currline, 0 )
-	DZstrConcatAssign( lex.ctx->currline, "" )
-
-	'' lex.insidemacro = FALSE
-
-	lex.ctx->after_space = FALSE
-
-end sub
-
-private sub lexPopDefCtx()
-
-	'' from lexPopCtx()
-
-	DZstrAllocate( lex.ctx->currline, 0 )
-
-	'' free dynamic strings used in macro expansions
-	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-		DZstrAllocate( lex.ctx->deftext, 0 )
-	else
-		DWstrAllocate( lex.ctx->deftextw, 0 )
-	end if
-
-	lex.ctx -= 1
-
-end sub
-
 private function hDefEval_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as integer ptr) as string
 
 	'' __FB_EVAL__( arg )
@@ -718,17 +595,41 @@ private function hDefEval_cb( byval argtb as LEXPP_ARGTB ptr, byval errnum as in
 
 	if( arg ) then
 
-		lexPushDefCtx()
+		'' create a lightweight context push for the lexer
+		'' like an include file, but no include file
+		'' text to expand is to be loaded in LEX.CTX->DEFTEXT[W]
+		'' use the parser to build an AST for the literal result
 
-		if( arg ) then
-			DZstrAssign( lex.ctx->deftext, *arg )
-			lex.ctx->defptr = lex.ctx->deftext.data
-			lex.ctx->deflen += len( *arg )
+		lexPushCtx()
+		lexInit( FALSE, TRUE )
+
+		DZstrAssign( lex.ctx->deftext, *arg )
+		lex.ctx->defptr = lex.ctx->deftext.data
+		lex.ctx->deflen += len( *arg )
+
+		dim expr as ASTNODE ptr = cExpression( )
+
+		if( expr <> NULL ) then
+			expr = astOptimizeTree( expr )
+
+			if( astIsCONST( expr ) ) then
+				res = astConstFlushToStr( expr )
+			elseif( astIsConstant( expr ) ) then
+				res = """" + hReplace( expr->sym->var_.littext, QUOTE, QUOTE + QUOTE ) + """"
+			else
+				astDelTree( expr )
+				errReport( FB_ERRMSG_EXPECTEDCONST )
+				'' error recovery: skip until next line
+				hSkipUntil( FB_TK_EOL, TRUE )
+				res = str(0)
+			end if
+		else
+			errReport( FB_ERRMSG_SYNTAXERROR )
+			'' error recovery: skip until next line
+			hSkipUntil( FB_TK_EOL, TRUE )
 		end if
 
-		res = ppEval()
-
-		lexPopDefCtx()
+		lexPopCtx()
 
 	end if
 

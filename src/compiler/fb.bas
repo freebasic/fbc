@@ -422,7 +422,7 @@ sub fbInit( byval ismain as integer, byval restarts as integer )
 	hashInit( @env.inconcehash, FB_INITINCFILES, FALSE )
 
 	stackNew( @parser.stmt.stk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
-	lexInit( FALSE )
+	lexInit( FALSE, FALSE )
 	parserInit( )
 	rtlInit( )
 
@@ -1452,7 +1452,7 @@ sub fbIncludeFile(byval filename as zstring ptr, byval isonce as integer)
 	'' parse
 	lexPushCtx( )
 
-	lexInit( TRUE )
+	lexInit( TRUE, FALSE )
 
 	cProgram()
 
