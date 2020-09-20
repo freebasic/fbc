@@ -155,7 +155,8 @@ end type
 
 declare sub lexInit _
 	( _
-		byval isinclude as integer _
+		byval isinclude as integer, _
+		byval is_fb_eval as integer _
 	)
 
 declare sub lexEnd _
