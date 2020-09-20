@@ -64,6 +64,7 @@ Version 1.08.0
 - sf.net #906: #error on line 2 not reported if immediately following #error on line 1
 - rtlib: ERASE - check for static (fixed length) plain, string, and object arrays passed to ERASE; clear only if array is static, and free memory if dynamic
 - rtlib: allow reading/writing data larger than 2GB with GET # / PUT # [WIP]
+- sf.net #882: error on REDIM udt.field(expr) if default constructor has no access
 
 
 Version 1.07.0
