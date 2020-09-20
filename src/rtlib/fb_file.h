@@ -365,3 +365,62 @@ extern const UTF_8 __fb_utf8_bmarkTb[7];
 
 FBCALL int          fb_FileCopy         ( const char *source, const char *destination );
 FBCALL int          fb_CrtFileCopy      ( const char *source, const char *destination );
+
+
+
+#define FREAD_CHUNK_SIZE 1048576
+#define FWRITE_CHUNK_SIZE 1048576
+
+static __inline__ size_t FB_FREAD_LARGE( void *ptr, size_t nbytes, FILE *stream )
+{
+   size_t total = 0, nread;
+
+   while (nbytes > FREAD_CHUNK_SIZE) {
+      /* read chunk */
+      nread = fread( ptr, 1, FREAD_CHUNK_SIZE, stream );
+      total += nread;
+
+      /* stop early if too few items read */
+      if (nread < FREAD_CHUNK_SIZE) {
+         return total;
+      }
+
+      ptr += FREAD_CHUNK_SIZE;
+      nbytes -= FREAD_CHUNK_SIZE;
+   }
+
+   if (nbytes > 0) {
+      /* read last chunk */
+      nread = fread( ptr, 1, nbytes, stream );
+      total += nread;
+   }
+
+   return total;
+}
+
+static __inline__ size_t FB_FWRITE_LARGE( const void *ptr, size_t nbytes, FILE *stream )
+{
+   size_t total = 0, nwritten;
+
+   while (nbytes > FWRITE_CHUNK_SIZE) {
+      /* write chunk */
+      nwritten = fwrite( ptr, 1, FWRITE_CHUNK_SIZE, stream );
+      total += nwritten;
+
+      /* stop early if too few items written */
+      if (nwritten < FWRITE_CHUNK_SIZE) {
+         return total;
+      }
+
+      ptr += FWRITE_CHUNK_SIZE;
+      nbytes -= FWRITE_CHUNK_SIZE;
+   }
+
+   if (nbytes > 0) {
+      /* write last chunk */
+      nwritten = fwrite( ptr, 1, nbytes, stream );
+      total += nwritten;
+   }
+
+   return total;
+}
