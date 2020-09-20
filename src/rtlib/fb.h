@@ -35,9 +35,6 @@
 /* Maximum number of array dimensions. */
 #define FB_MAXDIMENSIONS      8
 
-/* Maximum number of temporary array descriptors. */
-#define FB_ARRAY_TMPDESCRIPTORS (FB_STR_TMPDESCRIPTORS / 4)
-
 /* The padding width (for PRINT ,). */
 #define FB_TAB_WIDTH          14
 

@@ -26,6 +26,10 @@ int fb_hArrayRealloc
 	if( (dimensions != array->dimensions) && (array->dimensions != 0) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
+	/* fixed length? */
+	if( array->flags & FBARRAY_FLAGS_FIXED_LEN )
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+
     /* load bounds */
     for( i = 0; i < dimensions; i++ )
     {
@@ -136,25 +140,6 @@ int fb_ArrayRedimPresvEx
 
 	va_start( ap, dimensions );
     res = hRedim( array, element_len, doclear, isvarlen, dimensions, ap );
-    va_end( ap );
-
-    return res;
-}
-
-int fb_ArrayRedimPresv
-	(
-		FBARRAY *array,
-		size_t element_len,
-		int isvarlen,
-		size_t dimensions,
-		...
-	)
-{
-	va_list ap;
-	int res;
-
-	va_start( ap, dimensions );
-    res = hRedim( array, element_len, TRUE, isvarlen, dimensions, ap );
     va_end( ap );
 
     return res;

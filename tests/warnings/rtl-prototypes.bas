@@ -53,25 +53,25 @@
 
 	ID( function fb_ArrayClear )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as const long ) as long
+		dim chk as function fbcall ( bydesc as any ) as long
 		chk = procptr( fb_ArrayClear )
 	end scope
 
 	ID( function fb_ArrayClearObj )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as any ptr, byval as any ptr, byval as const long ) as long
+		dim chk as function fbcall ( bydesc as any, byval as any ptr, byval as any ptr ) as long
 		chk = procptr( fb_ArrayClearObj )
 	end scope
 
 	ID( function fb_ArrayErase )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as const long ) as long
+		dim chk as function fbcall ( bydesc as any ) as long
 		chk = procptr( fb_ArrayErase )
 	end scope
 
 	ID( function fb_ArrayEraseObj )
 	scope
-		dim chk as function fbcall ( bydesc as any, byval as any ptr ) as long
+		dim chk as function fbcall ( bydesc as any, byval as any ptr, byval as any ptr ) as long
 		chk = procptr( fb_ArrayEraseObj )
 	end scope
 
