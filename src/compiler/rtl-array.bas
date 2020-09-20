@@ -607,8 +607,8 @@ function rtlArrayRedim _
 			exit function
 		end if
 	else
-		hCheckDefCtor( ctor, FALSE, FALSE )
-		hCheckDtor( dtor, FALSE, FALSE )
+		hCheckDefCtor( ctor, TRUE, FALSE )
+		hCheckDtor( dtor, TRUE, FALSE )
 
 		'' byval ctor as sub cdecl( )
 		if( astNewARG( proc, hBuildProcPtr( ctor ) ) = NULL ) then
