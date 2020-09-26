@@ -828,7 +828,6 @@ private sub hLoadProcResult( byval proc as FBSYMBOL ptr )
 	if( (symbGetType( proc ) = FB_DATATYPE_STRING) and (not symbIsReturnByRef( proc )) ) then
 		n = rtlStrAllocTmpResult( astNewVAR( s ) )
 
-		''sarg add llvm and gas64
 		if( ( env.clopt.backend = FB_BACKEND_GCC ) or ( env.clopt.backend = FB_BACKEND_LLVM ) or ( env.clopt.backend = FB_BACKEND_GAS64 ) ) then
 			n = astNewLOAD( n, symbGetFullType( proc ), TRUE )
 		end if

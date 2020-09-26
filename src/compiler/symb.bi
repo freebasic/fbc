@@ -428,8 +428,7 @@ type FBS_LABEL
 	parent			as FBSYMBOL_ ptr			'' parent block, not always a proc
 	declared		as integer
 	stmtnum			as integer					'' can't use colnum as it's unreliable
-	''sarg
-	gosub           as boolean                  '' if label is used for gosub																		 
+	gosub           as boolean                  '' if label is used for gosub with gas64																	 
 end type
 
 '' structure

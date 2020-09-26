@@ -636,9 +636,11 @@ sub symbInsertInnerUDT _
 
 end sub
 
+declare sub struc_analyse(byval fld as FBSYMBOL ptr,byref class1 as integer,byref class2 as integer,byref limit as integer)
+
 private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	dim as FBSYMBOL ptr fld = any
-	dim as integer res = any, unpadlen = any
+	dim as integer res = any, unpadlen = any,part1=any,part2=any,limit=any
 	dim as longint unpadlen64 = any
 
 	'' UDT has a dtor, copy-ctor or virtual methods?
@@ -659,12 +661,16 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	end if
 
 	'' On Linux & co structures are never returned in registers
-	if( (env.target.options and FB_TARGETOPT_RETURNINREGS) = 0 ) then
-		return typeAddrOf( FB_DATATYPE_STRUCT )
+	'' Linux 64bit allows structure returned in registers, dkl suggests  fbIs64Bit())
+	if( env.clopt.backend <> FB_BACKEND_GAS64 ) then
+		if( (env.target.options and FB_TARGETOPT_RETURNINREGS) = 0 ) then
+			return typeAddrOf( FB_DATATYPE_STRUCT )
+		end if
 	end if
 
 	res = FB_DATATYPE_VOID
 
+    if fbgetoption(FB_COMPOPT_TARGET) <> FB_COMPTARGET_LINUX then
 	'' Check whether the structure is small enough to be returned in
 	'' registers, and if so, select the proper dtype. For this, the
 	'' un-padded UDT length should be checked so we can handle the cases
@@ -755,7 +761,6 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		if( res = FB_DATATYPE_VOID ) then
 			res = FB_DATATYPE_LONGINT
 		end if
-
 	end select
 
 	'' Nothing matched?
@@ -763,7 +768,34 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		'' Then it's returned through a hidden param on stack
 		res = typeAddrOf( FB_DATATYPE_STRUCT )
 	end if
-
+    else
+        ''Linux gas64 could use 2 registers
+        if sym->lgt<=sizeof(integer)*2 then
+            ''by default floating point for first register
+            part1=2
+            part2=0
+            limit=7
+            struc_analyse(sym,part1,part2,limit)
+            ''in case of 2 registers the second will be handled in the emitter
+            select case as const part1+part2
+                case 1 ''only integers in RAX
+                    res=FB_DATATYPE_LONGINT
+                case 2 ''only floats in XMM0
+                    res=FB_DATATYPE_DOUBLE
+                case 5 ''only integers in RAX/RDX
+                    res=FB_DATATYPE_LONGINT
+                case 9 ''first part in RAX then in XMMO
+                     res=FB_DATATYPE_LONGINT
+                case 6 ''first part in XMMO then in RAX
+                    res=FB_DATATYPE_DOUBLE
+                case 10 ''only floats in XMM0/XMM1
+                    res=FB_DATATYPE_DOUBLE
+            end select
+        else
+            ''size>16 --> FB_DATATYPE_STRUCT
+            return typeAddrOf( FB_DATATYPE_STRUCT )
+        end if
+    end if
 	function = res
 end function
 
