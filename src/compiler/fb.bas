@@ -1536,7 +1536,7 @@ function fbGetBackendValistType _
 		'' ???
 		typedef = FB_CVA_LIST_POINTER
 
-	case FB_BACKEND_GAS64 ''sarg
+	case FB_BACKEND_GAS64
 		'typedef = FB_CVA_LIST_BUILTIN_POINTER
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32

@@ -1658,7 +1658,7 @@ private sub handleOpt(byval optid as integer, byref arg as string)
 			fbc.backend = FB_BACKEND_GCC
 		case "llvm"
 			fbc.backend = FB_BACKEND_LLVM
-		Case "gas64" ''sarg
+		Case "gas64"
 			fbc.backend = FB_BACKEND_GAS64
 		case else
 			hFatalInvalidOption( arg )
@@ -2575,7 +2575,7 @@ private function hGetAsmName _
 
 	ext = @".asm"
 	if( fbGetOption( FB_COMPOPT_BACKEND )= FB_BACKEND_GAS64 ) then
-		ext = @".a64" ''sarg
+		ext = @".a64"
 	end if
 	if( stage = 1 ) then
 		select case( fbGetOption( FB_COMPOPT_BACKEND ) )
@@ -3687,7 +3687,7 @@ end sub
 	end if
 
 	if( (fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS)  and _
-		fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS64 ) then ''sarg
+		fbGetOption( FB_COMPOPT_BACKEND ) <> FB_BACKEND_GAS64 ) then
 		''
 		'' Compile intermediate .c modules produced by -gen gcc
 		''
