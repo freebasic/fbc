@@ -11,6 +11,8 @@ typedef struct {
 	struct ffblk f;
 } FB_DIRCTX;
 
+#define fb_DIRCTX_Destructor NULL
+
 static char *find_next ( int *out_attrib )
 {
 	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
