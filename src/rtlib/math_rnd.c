@@ -95,13 +95,12 @@ static uint32_t hRnd_FAST32 ( void )
 
 static double hRnd_FAST ( float n )
 {
-	/* Constants from 'Numerical recipes in C' chapter 7.1 */
-	/* return between 0 and 1 (but never 1) */
-	iseed = ( ( 1664525 * iseed ) + 1013904223 );
-	if( n != 0.0 )
-		hRnd_FAST32();
+	/* return last value if argument is 0.0 */
+	if( n == 0.0 )
+		return (double)iseed / (double)4294967296ULL;
 
-	return (double)iseed / (double)4294967296ULL;
+	/* return between 0 and 1 (but never 1) */
+	return (double)hRnd_FAST32() / (double)4294967296ULL;
 }
 
 static uint32_t hRnd_MTWIST32 ( void )
@@ -145,7 +144,7 @@ static double hRnd_MTWIST ( float n )
 	return (double)hRnd_MTWIST32() / (double)4294967296ULL;
 }
 
-static inline uint32_t hRnd_QB32 ( void )
+static uint32_t hRnd_QB32 ( void )
 {
 	iseed = ( ( iseed * 0xFD43FD ) + 0xC39EC3 ) & 0xFFFFFF;
 	return iseed;
@@ -158,15 +157,16 @@ static double hRnd_QB ( float n )
 		uint32_t i;
 	} ftoi;
 
-	if( n != 0.0 ) {
-		if( n < 0.0 ) {
-			ftoi.f = n;
-			uint32_t s = ftoi.i;
-			iseed = s + ( s >> 24 );
-		}
-		iseed = ( ( iseed * 0xFD43FD ) + 0xC39EC3 ) & 0xFFFFFF;
+	if( n == 0.0 )
+		return (float)iseed / (float)0x1000000;
+
+	if( n < 0.0 ) {
+		ftoi.f = n;
+		uint32_t s = ftoi.i;
+		iseed = s + ( s >> 24 );
 	}
-	return (float)iseed / (float)0x1000000;
+
+	return (float)hRnd_QB32() / (float)0x1000000;
 }
 
 #if defined HOST_WIN32 || defined HOST_LINUX
