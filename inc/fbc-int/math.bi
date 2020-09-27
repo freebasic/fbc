@@ -34,20 +34,20 @@ end enum
 
 type FB_RNDINTERNALS
 	dim algorithm as ulong           '' algorithm number see FB_RND_ALGORITHMS
-	dim length as ulong              '' length Mersennse Twister states in (number of ulongs)
+	dim length as ulong              '' length of Mersennse Twister states in (number of ulongs)
 	dim stateblock as ulong ptr      '' Mersenne Twister state (pointer array)
 	dim stateindex as ulong ptr ptr  '' Mersenne Twister current index
 	dim iseed as ulong ptr           '' Current state for FB_RND_FAST & FB_RND_QB
 
 	'' function pointer for internal proc called by fb_Rnd()
-	dim rndproc as function( byval n as single ) as double
+	dim rndproc as function cdecl ( byval n as single = 1.0 ) as double
 
 	'' function pointer for internal proc called by fb_Rnd32()
-	dim rndproc32 as function( ) as ulong
+	dim rndproc32 as function cdecl ( ) as ulong
 end type
 
 extern "rtlib"
-	
+
 	declare sub randomize alias "fb_Randomize" ( byval seed as double = -1.0, byval algorithm as long = FB_RND_AUTO )
 	declare function rnd alias "fb_Rnd" ( byval n as single = 1.0 ) as double
 	declare function rnd32 alias "fb_Rnd32" ( ) as ulong

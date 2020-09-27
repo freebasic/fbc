@@ -83,7 +83,7 @@ static double hRnd_CRT ( float n )
 		return last_num;
 
 	/* return between 0 and 1 (but never 1) */
-	return (double)rand( ) * ( 1.0 / ( (double)RAND_MAX + 1.0 ) );
+	return (double)hRnd_CRT32( ) * ( 1.0 / ( (double)RAND_MAX + 1.0 ) );
 }
 
 static uint32_t hRnd_FAST32 ( void )
@@ -273,6 +273,8 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 		}
 	}
 
+	FB_MATH_LOCK();
+
 	if( seed == -1.0 )
 	{
 		/* Take value of Timer to ensure a non-constant seed.  The seeding
@@ -282,8 +284,6 @@ FBCALL void fb_Randomize ( double seed, int algorithm )
 		dtoi.d = fb_Timer( );
 		seed = (double)(dtoi.i[0] ^ dtoi.i[1]);
 	}
-
-	FB_MATH_LOCK();
 
 	generator = algorithm;
 
