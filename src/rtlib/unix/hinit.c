@@ -54,7 +54,7 @@ FBCALL void fb_StrUnlock( void ) { pthread_mutex_unlock( &__fb_string_mutex ); }
 FBCALL void fb_GraphicsLock  ( void ) { pthread_mutex_lock  ( &__fb_graphics_mutex ); }
 FBCALL void fb_GraphicsUnlock( void ) { pthread_mutex_unlock( &__fb_graphics_mutex ); }
 FBCALL void fb_MathLock  ( void ) { pthread_mutex_lock  ( &__fb_math_mutex ); }
-FBCALL void fb_mathUnlock( void ) { pthread_mutex_unlock( &__fb_math_mutex ); }
+FBCALL void fb_MathUnlock( void ) { pthread_mutex_unlock( &__fb_math_mutex ); }
 #endif
 
 static void *bg_thread(void *arg)
