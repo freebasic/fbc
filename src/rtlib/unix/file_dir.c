@@ -22,7 +22,7 @@ void fb_DIRCTX_Destructor ( void* data )
 {
 	FB_DIRCTX *ctx = (FB_DIRCTX *)data;
 	if( ctx->in_use )
-		close_dir_internal( ctx->dir );
+		close_dir_internal( ctx );
 }
 
 static void close_dir ( void )
