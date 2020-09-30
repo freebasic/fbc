@@ -123,6 +123,8 @@ typedef struct {
     int     		index;
 } FB_INPUTCTX;
 
+void	fb_INPUTCTX_Destructor( void* );
+
 
 #define FB_FILE_TO_HANDLE_VALID( index ) \
 	((FB_FILE *)(__fb_ctx.fileTB + (index) - 1 + FB_RESERVED_FILES))

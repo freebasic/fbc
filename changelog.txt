@@ -65,6 +65,7 @@ Version 1.08.0
 - rtlib: ERASE - check for static (fixed length) plain, string, and object arrays passed to ERASE; clear only if array is static, and free memory if dynamic
 - rtlib: allow reading/writing data larger than 2GB with GET # / PUT # [WIP]
 - sf.net #882: error on REDIM udt.field(expr) if default constructor has no access
+- github #246: rtlib leaks thread local data, fixed by adding TLS destructors (adeyblue)
 
 
 Version 1.07.0
