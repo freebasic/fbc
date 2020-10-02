@@ -643,6 +643,7 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	dim as integer res = any, unpadlen = any,part1=any,part2=any,limit=any
 	dim as longint unpadlen64 = any
 
+    sym->udt.retinreg=FB_STRUCT_NONE ''for gas64
 	'' UDT has a dtor, copy-ctor or virtual methods?
 	if( symbCompIsTrivial( sym ) = FALSE ) then
 		'' It's always returned through a hidden param on stack,
@@ -776,26 +777,32 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
             part2=0
             limit=7
             struc_analyse(sym,part1,part2,limit)
-            ''in case of 2 registers the second will be handled in the emitter
+
             select case as const part1+part2
                 case 1 ''only integers in RAX
                     res=FB_DATATYPE_LONGINT
                 case 2 ''only floats in XMM0
                     res=FB_DATATYPE_DOUBLE
+
                 case 5 ''only integers in RAX/RDX
-                    res=FB_DATATYPE_LONGINT
+                    sym->udt.retinreg=FB_STRUCT_RR
+                    res= typeAddrOf( FB_DATATYPE_STRUCT )
                 case 9 ''first part in RAX then in XMMO
-                     res=FB_DATATYPE_LONGINT
+                     sym->udt.retinreg=FB_STRUCT_RX
+                     res=typeAddrOf( FB_DATATYPE_STRUCT )
                 case 6 ''first part in XMMO then in RAX
-                    res=FB_DATATYPE_DOUBLE
+                    sym->udt.retinreg=FB_STRUCT_XR
+                    res=typeAddrOf( FB_DATATYPE_STRUCT )
                 case 10 ''only floats in XMM0/XMM1
-                    res=FB_DATATYPE_DOUBLE
+                    sym->udt.retinreg=FB_STRUCT_XX
+                    res=typeAddrOf( FB_DATATYPE_STRUCT )
             end select
         else
             ''size>16 --> FB_DATATYPE_STRUCT
-            return typeAddrOf( FB_DATATYPE_STRUCT )
+            res=typeAddrOf( FB_DATATYPE_STRUCT )
         end if
     end if
+
 	function = res
 end function
 
