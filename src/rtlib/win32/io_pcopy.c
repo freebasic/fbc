@@ -39,16 +39,18 @@ int fb_ConsolePageCopy( int src, int dst )
 	}
 
 	/* do the copy */
-	static COORD pos = { 0, 0 };
 
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	GetConsoleScreenBufferInfo( __fb_con.pgHandleTb[src], &csbi );
-	PCHAR_INFO buff = alloca( csbi.dwSize.X * csbi.dwSize.Y * sizeof( CHAR_INFO ) );
+	PCHAR_INFO buff = malloc( csbi.dwSize.X * csbi.dwSize.Y * sizeof( CHAR_INFO ) );
+	if(buff)
+	{
+		COORD pos = { 0, 0 };
+		ReadConsoleOutput( __fb_con.pgHandleTb[src], buff, csbi.dwSize, pos, &csbi.srWindow );
 
-	ReadConsoleOutput( __fb_con.pgHandleTb[src], buff, csbi.dwSize, pos, &csbi.srWindow );
-
-	GetConsoleScreenBufferInfo( __fb_con.pgHandleTb[dst], &csbi );
-	WriteConsoleOutput( __fb_con.pgHandleTb[dst], buff, csbi.dwSize, pos, &csbi.srWindow );
-
-	return fb_ErrorSetNum( FB_RTERROR_OK );
+		GetConsoleScreenBufferInfo( __fb_con.pgHandleTb[dst], &csbi );
+		WriteConsoleOutput( __fb_con.pgHandleTb[dst], buff, csbi.dwSize, pos, &csbi.srWindow );
+		free( buff );
+	}
+	return fb_ErrorSetNum( buff ? FB_RTERROR_OK : FB_RTERROR_OUTOFMEM );
 }
