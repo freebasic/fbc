@@ -264,6 +264,16 @@ enum FB_MANGLEOPT
 	FB_MANGLEOPT_HASREF       = 4  '' mangled type has is reference type
 end enum
 
+enum FB_STRUCT_INREG
+	FB_STRUCT_NONE ''(default, not used)
+	FB_STRUCT_R    ''RAX
+	FB_STRUCT_RR   ''RAX/RDX
+	FB_STRUCT_RX   ''RAX/XMM0
+	FB_STRUCT_X    ''XMM0
+	FB_STRUCT_XR   ''XMM0/RAX
+	FB_STRUCT_XX   ''XMM0/XMM1
+end enum
+
 type FBSYMBOL_ as FBSYMBOL
 
 #ifndef ASTNODE_
@@ -416,7 +426,8 @@ type FBS_LABEL
 	parent			as FBSYMBOL_ ptr			'' parent block, not always a proc
 	declared		as integer
 	stmtnum			as integer					'' can't use colnum as it's unreliable
-	gosub           as boolean                  '' if label is used for gosub with gas64																	 
+
+	gosub           as boolean                  '' if label is used for gosub with gas64
 end type
 
 '' structure
@@ -476,7 +487,7 @@ type FBS_STRUCT
 
 	'' real type used to return this UDT from functions
 	retdtype		as FB_DATATYPE
-
+	retinreg        as FB_STRUCT_INREG ''for gas64
 	dbg				as FB_STRUCT_DBG
 	ext				as FB_STRUCTEXT ptr
 end type
