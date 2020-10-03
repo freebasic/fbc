@@ -19,22 +19,12 @@ static void ProcessMouseEvent(const MOUSE_EVENT_RECORD *pEvent)
 
 int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
 {
-#if 0
-	INPUT_RECORD ir;
-	DWORD dwRead;
-#endif
-
 	DWORD dwMode;
 
 	if( inited == -1 ) {
 		inited = GetSystemMetrics( SM_CMOUSEBUTTONS );
 		if( inited ) {
-			GetConsoleMode( __fb_in_handle, &dwMode );
-			dwMode |= ENABLE_MOUSE_INPUT;
-			SetConsoleMode( __fb_in_handle, dwMode );
-#if 1
 			__fb_con.mouseEventHook = ProcessMouseEvent;
-#endif
 			last_x = last_y = 1;
 			fb_hConvertToConsole( &last_x, &last_y, NULL, NULL );
 		}
@@ -47,25 +37,17 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons, int *clip )
 
 	if( inited > 0) {
 		GetConsoleMode( __fb_in_handle, &dwMode );
-		if( !(dwMode & ENABLE_MOUSE_INPUT) )
+		/* Test for Mouse_Input on and Quick_Edit off */
+		if( (dwMode & (ENABLE_MOUSE_INPUT | ENABLE_QUICK_EDIT_MODE) ) != ENABLE_MOUSE_INPUT )
 		{
-			dwMode |= ENABLE_MOUSE_INPUT;
+			/* Turning off QuickEdit requires the extended flag value */
+			dwMode |= (ENABLE_MOUSE_INPUT | ENABLE_EXTENDED_FLAGS);
+			dwMode &= (~ENABLE_QUICK_EDIT_MODE);
 			SetConsoleMode( __fb_in_handle, dwMode );
 		}
 	}
 
-#if 0
-	if( PeekConsoleInput( __fb_in_handle, &ir, 1, &dwRead ) ) {
-		if( dwRead > 0 ) {
-			ReadConsoleInput( __fb_in_handle, &ir, 1, &dwRead );
-			if( ir.EventType == MOUSE_EVENT ) {
-				ProcessMouseEvent( &ir.Event.MouseEvent );
-			}
-		}
-	}
-#else
 	fb_ConsoleProcessEvents( );
-#endif
 
 	*x = last_x - 1;
 	*y = last_y - 1;
