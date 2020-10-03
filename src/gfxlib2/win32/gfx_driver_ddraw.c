@@ -556,4 +556,4 @@ static int *driver_fetch_modes(int depth, int *size)
 	return modes.data;
 }
 
-#endif
+#endif /* HOST_CYGWIN */

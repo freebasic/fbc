@@ -4,6 +4,7 @@
 /* This file requires a Windows SDK capable of targeting Windows 7 */
 #define _WIN32_WINNT 0x0601
 
+#ifndef DISABLE_D3D10
 #ifndef HOST_CYGWIN
 
 #include "../fb_gfx.h"
@@ -889,3 +890,4 @@ static int* D2DFetchModes(int depth, int *size)
 }
 
 #endif /* HOST_CYGWIN */
+#endif /* DISABLE_D3D10 */
