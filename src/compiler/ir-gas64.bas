@@ -321,10 +321,7 @@ declare sub _emitscopebegin( byval s as FBSYMBOL ptr )
 declare sub _emitscopeend( byval s as FBSYMBOL ptr )
 declare sub _emitMacro( byval op as integer,byval v1 as IRVREG ptr, byval v2 as IRVREG ptr, byval vr as IRVREG ptr )
 declare sub save_call_restore(byref func as string)
-
-'declare function typeDumpToStr ( byval dtype as integer, byval subtype as FBSYMBOL ptr ) as string
-'declare function symbDumpToStr( byval s as FBSYMBOL ptr ) as string
-
+declare sub struct_analyze(byval fld as FBSYMBOL ptr,byref class1 as integer,byref class2 as integer,byref limit as integer)
 ''===================== globals ===========================================
 dim shared as EDBGCTX       ctx_asm64 
 dim shared as long          reghandle(KREGUPPER+2)
@@ -1904,7 +1901,7 @@ end sub
         dim as FBSYMBOL ptr hidden = NULL
         if( symbProcreturnsOnStack( proc ) ) then
             hidden = proc->proc.ext->res
-            asm_info("hidden="+str(hidden))
+            asm_info("hidden")
             if hidden<>0 then
                 ln += hEmitType( typeAddrOf( symbGetType( hidden ) ), symbGetSubtype( hidden ) )
                 ln+=" / "+typedumpToStr( typeAddrOf( symbGetType( hidden ) ), symbGetSubtype( hidden ))
@@ -2029,7 +2026,7 @@ private sub hemitvariable( byval sym as FBSYMBOL ptr )
     else
         if symbGetAttrib( sym ) and FB_SYMBATTRIB_REF then
             ''byref local
-            lgt=sizeof(integer)
+            lgt=typeGetSize( FB_DATATYPE_LONGINT )
         else
             lgt=sym->lgt
         end if
@@ -2367,32 +2364,8 @@ end sub
 private sub _procend( byval proc as FBSYMBOL ptr )
     proc->proc.ext->dbg.endline = lexLineNum( )
 end sub
-''================================================
-'' for Linux structure parameters size<=16
-''================================================
-sub struc_analyse(byval fld as FBSYMBOL ptr,byref class1 as integer,byref class2 as integer,byref limit as integer)
-    fld = symbUdtGetFirstField(fld)
-    while fld
-        if limit=7 and fld->ofs>7 then
-            limit+=8
-            class2=8
-        end if
 
-        if typegetclass(fld->typ)=FB_DATACLASS_UDT then
-            struc_analyse(fld->subtype,class1,class2,limit)
-        elseif typegetclass(fld->typ)=FB_DATACLASS_INTEGER then
-            if limit=7 then
-                class1=1
-            else
-                class2=4
-            end if
-        end if
-        fld=symbUdtGetNextField(fld)
-    wend
-
-end sub
-
-private function param_analyse(byval dtype as FB_DATATYPE,byval struc as FBSYMBOL ptr _
+private function param_analyze(byval dtype as FB_DATATYPE,byval struc as FBSYMBOL ptr _
     ,byref cptarg as integer=0,byref cptint as integer=0,byref cptfloat as integer=0) as integer
     ''used in hdocall and also in procallocarg but here do not update cptarg/cptint/cptfloat.....
     dim as FBSYMBOL ptr fld = any
@@ -2422,12 +2395,12 @@ private function param_analyse(byval dtype as FB_DATATYPE,byval struc as FBSYMBO
             ''handling structure
             lgt=struc->lgt
             asm_info("subtype/lgt="+*symbGetMangledName(struc)+" "+str(lgt))
-            if lgt<=sizeof(integer)*2 then
+            if lgt<=typeGetSize( FB_DATATYPE_LONGINT )*2 then
                 ''by default floating point for first register
                 class1=2
                 class2=0
                 limit=7
-                struc_analyse(struc,class1,class2,limit)
+                struct_analyze(struc,class1,class2,limit)
                 asm_info("typeregister="+str(class1+class2))
                 select case as const class1+class2
                     case 1
@@ -2484,7 +2457,7 @@ private function param_analyse(byval dtype as FB_DATATYPE,byval struc as FBSYMBO
         else
             lgt=struc->lgt
             asm_info("subtype/lgt="+*symbGetMangledName(struc)+" "+str(lgt))
-            if lgt>sizeof(integer) or lgt=3 or lgt= 5 or lgt=6 or lgt=7 then
+            if lgt>typeGetSize( FB_DATATYPE_LONGINT ) or lgt=3 or lgt= 5 or lgt=6 or lgt=7 then
                 if cptarg>4 then 
                     return KPARAMSK3 ''copy structure on stack and pointer on stack
                 else
@@ -2662,7 +2635,7 @@ private sub _procallocarg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
         'asm_info("dtdtand ptr="+str(typeGetDtAndPtrOnly(dtype)))
             if typeGetDtAndPtrOnly(dtype)= FB_DATATYPE_STRUCT then
                 ''byval structure
-                paramtype=param_analyse(FB_DATATYPE_STRUCT,sym->subtype,,ctx.arginteg,ctx.argfloat )
+                paramtype=param_analyze(FB_DATATYPE_STRUCT,sym->subtype,,ctx.arginteg,ctx.argfloat )
                 asm_info("KPARAM="+str(paramtype))
                 if paramtype=KPARAMSK0 then    
                     ''byval structure passed by copy
@@ -2805,7 +2778,7 @@ private sub _procallocarg( byval proc as FBSYMBOL ptr, byval sym as FBSYMBOL ptr
             ''byval
             if typeGetDtAndPtrOnly(dtype)= FB_DATATYPE_STRUCT then   
                 ''byval structure
-                paramtype=param_analyse(FB_DATATYPE_STRUCT,sym->subtype,ctx.arginteg)
+                paramtype=param_analyze(FB_DATATYPE_STRUCT,sym->subtype,ctx.arginteg)
                 asm_info("KPARAM="+str(paramtype))
                 select case as const paramtype
                     case KPARAMSK2,KPARAMSK3
@@ -4676,6 +4649,71 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
     end if
     
 end sub
+
+private sub emitStoreStruct(byval lgtv1 as integer,byval ofsv2 as integer,byref op1 as string,byref op3 as string)
+    dim as string dest
+
+    if op3<>"" then asm_code(op3)
+
+    ''moving 8 first bytes
+    asm_code("mov rax, "+str(ofsv2)+"[rbp]")
+    asm_code("mov "+op1+", rax")
+
+    ''moving the rest (1 to 8 bytes), assuming rdx not already used
+    if op1[0]=asc("-") and (lgtv1=9 or lgtv1= 10 or lgtv1=12 or lgtv1=16) then
+        ''shortcut for move at address -xxx[rbp] + 8
+        op1=str(valint(left(op1,instr(op1,"[rbp]")-1))+8)+"[rbp]"
+
+        select case as const lgtv1
+            case 9
+                dest="dl"
+            case 10
+                dest="dx"
+            case 12
+                dest="edx"
+            case 16
+                dest="rdx"
+        end select
+        asm_code("mov "+dest+", "+str(ofsv2+8)+"[rbp]")
+        asm_code("mov "+op1+", "+dest)
+        exit sub
+    end if
+
+    asm_code("lea rax, "+op1)
+    asm_code("add rax, 8")
+
+    asm_code("mov rdx, "+str(ofsv2+8)+"[rbp]")
+
+    select case as const lgtv1
+        case 9
+            asm_code("mov [rax], dl")
+        case 10
+            asm_code("mov [rax], dx")
+        case 11
+            asm_code("mov [rax], dx")
+            asm_code("shr rdx, 2")
+            asm_code("mov [rax+2], dl")
+        case 12
+            asm_code("mov [rax], edx")
+        case 13
+            asm_code("mov [rax], edx")
+            asm_code("shr rdx, 4")
+            asm_code("mov [rax+4], dl")
+        case 14
+            asm_code("mov [rax], edx")
+            asm_code("shr rdx, 4")
+            asm_code("mov [rax+4], dx")
+        case 15
+            asm_code("mov [rax], edx")
+            asm_code("shr rdx, 4")
+            asm_code("mov [rax+4], dx")
+            asm_code("shr rdx, 2")
+            asm_code("mov [rax+6], dl")
+        case 16
+            asm_code("mov [rax], rdx")
+    end select
+end sub
+
 private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
     dim as string op1,op2,op3,op4,prefix,code1,code2,regtempo
@@ -4754,6 +4792,12 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
         case else
             asm_error("store 01")
     end select
+
+    if v2->subtype<>0 andalso typeIsPtr( v2->dtype )=false andalso v2->subtype->udt.retinreg<>FB_STRUCT_NONE then
+        '' for Linux structures can be returned in 2 registers so needs a special handling
+        emitStoreStruct(v1->sym->lgt,v2->ofs,op1,op3)
+        exit sub
+    end if
 
     ''SOURCE
     select case v2->typ ''source
@@ -4992,8 +5036,6 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
     asm_info("v1="+vregdumpfull(v1))
     asm_info("vr="+vregdumpfull(vr)) ''always not be used replaced by rax/eax/xmm0/etc
 
-
-'============
     select case v1->typ ''source
 
         case IR_VREGTYPE_IDX
@@ -5019,14 +5061,16 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
         case else
             asm_error("in loadres typ not handled")
     end select
-'============
-    if v1->sym<>0 andalso v1->sym->udt.retinreg<>FB_STRUCT_NONE then
+
+    if v1->sym<>0 andalso typeIsPtr( v1->dtype )=false andalso v1->sym->subtype<>0 andalso v1->sym->subtype->udt.retinreg<>FB_STRUCT_NONE then
         ''Structure returned in 2 registers, linux only
-        ''assuming fb$result is always defined like xxx[rbp]
-        'op1=Str(v1->ofs)+"[rbp]"
+        ''assuming in this case fb$result is always defined like xxx[rbp]
+        if v1->typ<>IR_VREGTYPE_VAR orelse ( symbIsStatic(v1->sym) Or symbisshared(v1->sym) )then
+            asm_error("IR_VREGTYPE not handled in emitloadres (linux)")
+        end if
         lgt=v1->sym->lgt
         op2=Str(v1->ofs+8)+"[rbp]"
-        select case as const v1->sym->udt.retinreg
+        select case as const v1->sym->subtype->udt.retinreg
             case FB_STRUCT_RR ''only integers in RAX and RDX
                 asm_code("mov rax, "+op1)
                 asm_code("mov rdx, "+op2)
@@ -5038,10 +5082,10 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
                     asm_code("movsd xmm0, "+op2)
                 end if
             case FB_STRUCT_XR ''first part in XMMO then in RAX
-                asm_code("movq xmm0, "+op1)
+                asm_code("movsd xmm0, "+op1)
                 asm_code("mov "+*regstrq(KREG_RAX)+", "+op2)
             case FB_STRUCT_XX ''only floats in XMM0 and XMM1
-                asm_code("movq xmm0, "+op1)
+                asm_code("movsd xmm0, "+op1)
                 if lgt=12 then
                     asm_code("movss xmm1, "+op2)
                 else
@@ -5050,6 +5094,7 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
         end select
     else
         if typeget(dtype)=FB_DATATYPE_POINTER then dtype=FB_DATATYPE_INTEGER
+        if op3<>"" then asm_code(op3)
         select case dtype
             case FB_DATATYPE_DOUBLE
                 asm_code("movq xmm0, "+op1)
@@ -5289,7 +5334,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 
 
             case IR_VREGTYPE_VAR ''format varname ofs1   local/static  ofs1 could be zero
-                if v2->sym<>0 andalso (symbIsStatic(v2->sym) Or symbisshared(v2->sym) ) then ''sarg LINUX retinreg
+                if v2->sym<>0 andalso (symbIsStatic(v2->sym) Or symbisshared(v2->sym) ) then ''for gas64
                     op1=*symbGetMangledName(v2->sym)+"[rip+"+Str(v2->ofs)+"]"
                 else
                     op1=Str(v2->ofs)+"[rbp]"
@@ -5323,7 +5368,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
         ''============
        
         if typeget(dtype)=FB_DATATYPE_POINTER then dtype=FB_DATATYPE_INTEGER
-        paramtype=param_analyse(dtype,v2->subtype,cptarg,cptint,cptfloat)
+        paramtype=param_analyze(dtype,v2->subtype,cptarg,cptint,cptfloat)
         asm_info("KPARAM="+str(paramtype))
 
         if paramtype>=KPARAMSK0 then
@@ -5779,17 +5824,13 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
     ctx.proccalling=false
 
     if( vr ) then ''return value
-
-        ''Structure returned in 2 registers ?
-
-        if proc->subtype<>0 then retinreg=proc->udt.retinreg
-        if ctx.target=FB_COMPTARGET_LINUX and retinreg<>FB_STRUCT_NONE then
-            vr->typ=IR_VREGTYPE_VAR
-            vr->dtype=proc->typ
-            ctx.stk+=sizeof(integer)*2 ''16 bytes
+        if vr->subtype<>0 andalso typeIsPtr( vr->dtype )=false andalso vr->subtype->udt.retinreg<>FB_STRUCT_NONE then
+            ''Structure returned in 2 registers
+            vr->typ=IR_VREGTYPE_VAR ''for use when argument
+            ctx.stk+=typeGetSize( FB_DATATYPE_LONGINT )*2 ''reserving 16 bytes
             vr->ofs=-ctx.stk
             asm_info("new vr="+vregdumpfull(vr))
-            select case as const retinreg
+            select case as const vr->subtype->udt.retinreg
                 case FB_STRUCT_RR
                     asm_code("mov "+str(vr->ofs)+  "[rbp], rax")
                     asm_code("mov "+str(vr->ofs+8)+"[rbp], rdx")
@@ -5803,7 +5844,6 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
                     asm_code("movq "+str(vr->ofs)+  "[rbp], xmm0")
                     asm_code("movq "+str(vr->ofs+8)+"[rbp], xmm1")
             end select
-
         else
             dtype=typeGetDtAndPtrOnly(vr->dtype)
             if typeget(dtype)=FB_DATATYPE_POINTER then dtype=FB_DATATYPE_INTEGER
@@ -6265,7 +6305,7 @@ private sub _emitvarinibegin( byval sym as FBSYMBOL ptr )
     else
         if symbIsRef(sym) then
             ''byref variable, as getsize is wrong
-            align=sizeof(integer)
+            align=typeGetSize( FB_DATATYPE_LONGINT )
         else
             align=typeGetSize(symbGetType( sym ))
         end if
