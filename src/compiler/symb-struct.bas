@@ -635,9 +635,40 @@ sub symbInsertInnerUDT _
 	end if
 
 end sub
+''================================================
+'' for Linux structure parameters size<=16
+''================================================
+sub struct_analyze(byval fld as FBSYMBOL ptr,byref class1 as integer,byref class2 as integer,byref limit as integer)
+    dim as integer lgt=fld->lgt
+    fld = symbUdtGetFirstField(fld)
+    while fld
+        if limit=7 and fld->ofs>7 then
+            limit+=8
+            class2=8
+        end if
 
-declare sub struc_analyse(byval fld as FBSYMBOL ptr,byref class1 as integer,byref class2 as integer,byref limit as integer)
+        if typegetclass(fld->typ)=FB_DATACLASS_UDT then
+            struct_analyze(fld->subtype,class1,class2,limit)
+        elseif typegetclass(fld->typ)=FB_DATACLASS_INTEGER then
+            if limit=7 then
+                class1=1
+            else
+                class2=4
+            end if
+        end if
+        fld=symbUdtGetNextField(fld)
+    wend
 
+    if lgt>8 then
+        ''case array in type eg type udt / array(0 to 1) as integer /end type
+        if class1+class2=1 then
+            class1=5
+        elseif class1+class2=2 then
+            class1=10
+        end if
+    end if
+
+end sub
 private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	dim as FBSYMBOL ptr fld = any
 	dim as integer res = any, unpadlen = any,part1=any,part2=any,limit=any
@@ -771,12 +802,12 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	end if
     else
         ''Linux gas64 could use 2 registers
-        if sym->lgt<=sizeof(integer)*2 then
+        if sym->lgt<=typeGetSize( FB_DATATYPE_LONGINT )*2 then
             ''by default floating point for first register
             part1=2
             part2=0
             limit=7
-            struc_analyse(sym,part1,part2,limit)
+            struct_analyze(sym,part1,part2,limit)
 
             select case as const part1+part2
                 case 1 ''only integers in RAX
@@ -786,16 +817,18 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 
                 case 5 ''only integers in RAX/RDX
                     sym->udt.retinreg=FB_STRUCT_RR
-                    res= typeAddrOf( FB_DATATYPE_STRUCT )
+                    res=FB_DATATYPE_STRUCT
                 case 9 ''first part in RAX then in XMMO
                      sym->udt.retinreg=FB_STRUCT_RX
-                     res=typeAddrOf( FB_DATATYPE_STRUCT )
+                     res=FB_DATATYPE_STRUCT
                 case 6 ''first part in XMMO then in RAX
                     sym->udt.retinreg=FB_STRUCT_XR
                     res=typeAddrOf( FB_DATATYPE_STRUCT )
                 case 10 ''only floats in XMM0/XMM1
                     sym->udt.retinreg=FB_STRUCT_XX
-                    res=typeAddrOf( FB_DATATYPE_STRUCT )
+                    res=FB_DATATYPE_STRUCT
+                case else
+                    res=FB_DATATYPE_STRUCT
             end select
         else
             ''size>16 --> FB_DATATYPE_STRUCT

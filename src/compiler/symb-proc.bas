@@ -68,7 +68,7 @@ function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 		'' Real type is an UDT pointer (instead of INTEGER/LONGINT)?
 		'' Then it's returned on stack (instead of in registers)
 
-		if proc->udt.retinreg<>FB_STRUCT_NONE then ''for gas64
+		if proc->subtype<>0 andalso proc->subtype->udt.retinreg<>FB_STRUCT_NONE then ''for gas64
 			exit function
 		else
 			function = (typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ))
@@ -322,7 +322,7 @@ sub symbProcRecalcRealType( byval proc as FBSYMBOL ptr )
 			symbSetUdtHasRecByvalRes( subtype )
 		else
 			dtype = symbGetUDTRetType( subtype )
-            proc->udt.retinreg=subtype->udt.retinreg ''sarg linux structure
+
 			'' symbStructEnd() should have set it by now, but there
 			'' could be problems if symbUdtDeclareDefaultMembers()
 			'' calls this before that.
@@ -1419,8 +1419,6 @@ function symbAddProcResultVar( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 	res = symbAddVar( @"fb$result", NULL, dtype, proc->subtype, 0, _
 	                  0, dTB(), FB_SYMBATTRIB_FUNCRESULT, FB_SYMBOPT_PRESERVECASE )
-
-    res->udt.retinreg=proc->udt.retinreg ''for gas64
 
 	symbProcAllocExt( proc )
 
