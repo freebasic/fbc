@@ -42,8 +42,8 @@ function symbStructBegin _
 	end if
 
 	s = symbNewSymbol( options or FB_SYMBOPT_DOHASH, NULL, symtb, hashtb, _
-	                   FB_SYMBCLASS_STRUCT, id, id_alias, _
-	                   FB_DATATYPE_STRUCT, NULL, attrib, FB_PROCATTRIB_NONE )
+					   FB_SYMBCLASS_STRUCT, id, id_alias, _
+					   FB_DATATYPE_STRUCT, NULL, attrib, FB_PROCATTRIB_NONE )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -143,7 +143,7 @@ function typeCalcNaturalAlign _
 	'' but 8-byte aligned on other systems (Win32/Win64, 64bit Linux/BSD,
 	'' ARM Linux)
 	if( (fbGetCpuFamily( ) = FB_CPUFAMILY_X86) and _
-	    (env.clopt.target <> FB_COMPTARGET_WIN32) ) then
+		(env.clopt.target <> FB_COMPTARGET_WIN32) ) then
 		'' As a result, on 32bit x86 Linux/DOS/BSD, everything that is
 		'' otherwise 8-byte aligned, is actually 4-byte aligned.
 		if( align = 8 ) then
@@ -225,8 +225,8 @@ function symbCheckBitField _
 	'' not an integer type?
 	select case as const typeGet( dtype )
 	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_SHORT, FB_DATATYPE_USHORT, _
-	     FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
-	     FB_DATATYPE_BOOLEAN
+		 FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_LONG, FB_DATATYPE_ULONG, _
+		 FB_DATATYPE_BOOLEAN
 		return TRUE
 
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -639,42 +639,88 @@ end sub
 '' for Linux structure parameters size<=16
 ''================================================
 sub struct_analyze(byval fld as FBSYMBOL ptr,byref class1 as integer,byref class2 as integer,byref limit as integer)
-    dim as integer lgt=fld->lgt
-    fld = symbUdtGetFirstField(fld)
-    while fld
-        if limit=7 and fld->ofs>7 then
-            limit+=8
-            class2=8
-        end if
+	dim as integer lgt=fld->lgt
+	fld = symbUdtGetFirstField(fld)
+	while fld
+		if limit=7 and fld->ofs>7 then
+			limit+=8
+			class2=8
+		end if
 
-        if typegetclass(fld->typ)=FB_DATACLASS_UDT then
-            struct_analyze(fld->subtype,class1,class2,limit)
-        elseif typegetclass(fld->typ)=FB_DATACLASS_INTEGER then
-            if limit=7 then
-                class1=1
-            else
-                class2=4
-            end if
-        end if
-        fld=symbUdtGetNextField(fld)
-    wend
+		if typegetclass(fld->typ)=FB_DATACLASS_UDT then
+			struct_analyze(fld->subtype,class1,class2,limit)
+		elseif typegetclass(fld->typ)=FB_DATACLASS_INTEGER then
+			if limit=7 then
+				class1=1
+			else
+				class2=4
+			end if
+		end if
+		fld=symbUdtGetNextField(fld)
+	wend
 
-    if lgt>8 then
-        ''case array in type eg type udt / array(0 to 1) as integer /end type
-        if class1+class2=1 then
-            class1=5
-        elseif class1+class2=2 then
-            class1=10
-        end if
-    end if
+	if lgt>8 then
+		''case array in type eg type udt / array(0 to 1) as integer /end type
+		if class1+class2=1 then
+			class1=5
+		elseif class1+class2=2 then
+			class1=10
+		end if
+	end if
 
 end sub
+
+private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as FB_STRUCT_INREG
+
+	assert( env.clopt.backend = FB_BACKEND_GAS64 )
+	assert( env.clopt.target = FB_COMPTARGET_LINUX )
+
+	''Linux gas64 could use 2 registers	
+
+	if( sym->lgt <= typeGetSize( FB_DATATYPE_LONGINT ) * 2 ) then
+
+		''by default floating point for first register
+		dim as integer part1 = 2
+		dim as integer part2 = 0
+		dim as integer limit = 7
+
+		struct_analyze( sym, part1, part2, limit )
+
+		''in case of 2 registers the second will be handled in the emitter
+		select case as const part1+part2
+			case 1 ''only integers in RAX
+				'' return FB_STRUCT_R
+				return FB_DATATYPE_LONGINT
+			case 2 ''only floats in XMM0
+				'' return FB_STRUCT_X
+				return FB_DATATYPE_DOUBLE
+			case 5 ''only integers in RAX/RDX
+				sym->udt.retinreg = FB_STRUCT_RR
+				return FB_DATATYPE_STRUCT
+			case 9 ''first part in RAX then in XMMO
+				 sym->udt.retinreg = FB_STRUCT_RX
+				 return FB_DATATYPE_STRUCT
+			case 6 ''first part in XMMO then in RAX
+				sym->udt.retinreg = FB_STRUCT_XR
+				return typeAddrOf( FB_DATATYPE_STRUCT )
+			case 10 ''only floats in XMM0/XMM1
+				sym->udt.retinreg = FB_STRUCT_XX
+				return FB_DATATYPE_STRUCT
+			case else
+				return FB_DATATYPE_STRUCT
+		end select
+	end if
+
+	''size>16 --> FB_DATATYPE_STRUCT
+	return typeAddrOf( FB_DATATYPE_STRUCT )
+
+end function
+
 private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 	dim as FBSYMBOL ptr fld = any
-	dim as integer res = any, unpadlen = any,part1=any,part2=any,limit=any
+	dim as integer res = any, unpadlen = any
 	dim as longint unpadlen64 = any
 
-	sym->udt.retinreg=FB_STRUCT_NONE ''for gas64
 	'' UDT has a dtor, copy-ctor or virtual methods?
 	if( symbCompIsTrivial( sym ) = FALSE ) then
 		'' It's always returned through a hidden param on stack,
@@ -692,17 +738,26 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		return FB_DATATYPE_STRUCT
 	end if
 
-	'' On Linux & co structures are never returned in registers
-	'' Linux 64bit allows structure returned in registers, dkl suggests  fbIs64Bit())
-	if( env.clopt.backend <> FB_BACKEND_GAS64 ) then
-		if( (env.target.options and FB_TARGETOPT_RETURNINREGS) = 0 ) then
-			return typeAddrOf( FB_DATATYPE_STRUCT )
+	'' 64-bit + gas64 + linux?
+	if( fbIs64Bit() ) then
+		if( env.clopt.backend = FB_BACKEND_GAS64 ) then
+			'' linux 64bit allows structure returned in registers
+			if( env.clopt.target = FB_COMPTARGET_LINUX ) then
+				return hGetReturnTypeGas64Linux( sym )
+			end if
 		end if
 	end if
 
+	'' Otherwise, on Linux & co structures are never returned in registers
+	if( (env.target.options and FB_TARGETOPT_RETURNINREGS) = 0 ) then
+		return typeAddrOf( FB_DATATYPE_STRUCT )
+	end if
+
+	'' Otherwise, 32-bit gas (linux / dos) &  64-bit (gas64 windows)
+	'' compute a usable return type
+
 	res = FB_DATATYPE_VOID
 
-    if fbgetoption(FB_COMPOPT_TARGET) <> FB_COMPTARGET_LINUX then
 	'' Check whether the structure is small enough to be returned in
 	'' registers, and if so, select the proper dtype. For this, the
 	'' un-padded UDT length should be checked so we can handle the cases
@@ -793,6 +848,7 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		if( res = FB_DATATYPE_VOID ) then
 			res = FB_DATATYPE_LONGINT
 		end if
+
 	end select
 
 	'' Nothing matched?
@@ -800,41 +856,6 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		'' Then it's returned through a hidden param on stack
 		res = typeAddrOf( FB_DATATYPE_STRUCT )
 	end if
-    else
-        ''Linux gas64 could use 2 registers
-        if sym->lgt<=typeGetSize( FB_DATATYPE_LONGINT )*2 then
-            ''by default floating point for first register
-            part1=2
-            part2=0
-            limit=7
-            struct_analyze(sym,part1,part2,limit)
-
-            select case as const part1+part2
-                case 1 ''only integers in RAX
-                    res=FB_DATATYPE_LONGINT
-                case 2 ''only floats in XMM0
-                    res=FB_DATATYPE_DOUBLE
-
-                case 5 ''only integers in RAX/RDX
-                    sym->udt.retinreg=FB_STRUCT_RR
-                    res=FB_DATATYPE_STRUCT
-                case 9 ''first part in RAX then in XMMO
-                     sym->udt.retinreg=FB_STRUCT_RX
-                     res=FB_DATATYPE_STRUCT
-                case 6 ''first part in XMMO then in RAX
-                    sym->udt.retinreg=FB_STRUCT_XR
-                    res=typeAddrOf( FB_DATATYPE_STRUCT )
-                case 10 ''only floats in XMM0/XMM1
-                    sym->udt.retinreg=FB_STRUCT_XX
-                    res=FB_DATATYPE_STRUCT
-                case else
-                    res=FB_DATATYPE_STRUCT
-            end select
-        else
-            ''size>16 --> FB_DATATYPE_STRUCT
-            res=typeAddrOf( FB_DATATYPE_STRUCT )
-        end if
-    end if
 
 	function = res
 end function
@@ -869,6 +890,12 @@ sub symbStructEnd _
 	'' Determine how to return this structure from procedures
 	'' (must be done after declaring default members because it depends on
 	'' symbCompIsTrivial() which depends on knowing all ctors/dtors)
+
+	'' set default for 'udt.retinreg' first
+	'' side effect of calling hGetReturnType() will be setting 'sym->udt.retinreg'
+	sym->udt.retinreg = FB_STRUCT_NONE ''for gas64
+
+	'' compute the return type
 	sym->udt.retdtype = hGetReturnType( sym )
 
 	''
