@@ -63,7 +63,7 @@ sub symbMangleEnd( )
 end sub
 
 function symbUniqueId( byval validfbname as boolean ) as zstring ptr
-	if( env.clopt.backend = FB_BACKEND_GCC and not validfbname ) then
+	if( (env.clopt.backend = FB_BACKEND_GCC) and (validfbname = false) ) then
 		ctx.tempstr = "tmp$"
 		ctx.tempstr += str( ctx.uniqueidcount )
 	else
