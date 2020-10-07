@@ -328,24 +328,24 @@ end type
 
 ''
 type FBSYMBOLTB
-    owner			as FBSYMBOL_ ptr			'' back link
-    head			as FBSYMBOL_ ptr			'' first node
-    tail			as FBSYMBOL_ ptr			'' last node
+	owner			as FBSYMBOL_ ptr			'' back link
+	head			as FBSYMBOL_ ptr			'' first node
+	tail			as FBSYMBOL_ ptr			'' last node
 end type
 
 ''
 type FBNAMESPC_EXT
-    implist			as FBSYMLIST  				'' all namespaces imported by this ns
-    explist			as FBSYMLIST  				'' all namespaces importing this ns
-    cnt				as integer					'' times this ns was imported/nested
-    impsym_head		as FBSYMCHAIN ptr			'' imported symbols by the last USING
-    impsym_tail		as FBSYMCHAIN ptr			'' /
+	implist			as FBSYMLIST  				'' all namespaces imported by this ns
+	explist			as FBSYMLIST  				'' all namespaces importing this ns
+	cnt				as integer					'' times this ns was imported/nested
+	impsym_head		as FBSYMCHAIN ptr			'' imported symbols by the last USING
+	impsym_tail		as FBSYMCHAIN ptr			'' /
 end type
 
 type FBNAMESPC
-    symtb			as FBSYMBOLTB
-    hashtb			as FBHASHTB
-    ext				as FBNAMESPC_EXT ptr
+	symtb			as FBSYMBOLTB
+	hashtb			as FBHASHTB
+	ext				as FBNAMESPC_EXT ptr
 end type
 
 union FBVALUE
@@ -407,7 +407,7 @@ type FBS_DEFINE
 	end union
 
 	isargless		as integer
-    flags           as FB_DEFINE_FLAGS			'' bit 0: 1=numeric, 0=string
+	flags           as FB_DEFINE_FLAGS			'' bit 0: 1=numeric, 0=string
 	proc			as FBS_DEFINE_PROC
 end type
 
@@ -694,7 +694,7 @@ type FBS_NAMESPACE
 	ns				as FBNAMESPC
 
 	cnt				as integer					'' times this ns was re-opened
-    last_tail		as FBSYMBOL_ ptr			'' point to last tail
+	last_tail		as FBSYMBOL_ ptr			'' point to last tail
 end type
 
 '' namespace import (USING)
@@ -776,8 +776,8 @@ type SYMB_DEF_CTX
 
 	'' macros only..
 	param			as integer					'' param count
-    paramhash		as THASH
-    hash(0 to FB_MAXDEFINEARGS-1) as SYMB_DEF_PARAM
+	paramhash		as THASH
+	hash(0 to FB_MAXDEFINEARGS-1) as SYMB_DEF_PARAM
 end type
 
 type SYMB_OVLOP
@@ -1416,10 +1416,10 @@ declare sub symbAddToFwdRef _
 	)
 
 declare sub symbRemoveFromFwdRef _
-    ( _
-        byval f as FBSYMBOL ptr, _
-        byval ref as FBSYMBOL ptr _
-    )
+	( _
+		byval f as FBSYMBOL ptr, _
+		byval ref as FBSYMBOL ptr _
+	)
 
 declare function symbArrayHasUnknownBounds( byval sym as FBSYMBOL ptr ) as integer
 
