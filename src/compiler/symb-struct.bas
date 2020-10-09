@@ -638,22 +638,22 @@ end sub
 ''================================================
 '' for Linux structure parameters size<=16
 ''================================================
-sub struct_analyze(byval fld as FBSYMBOL ptr,byref class1 as integer,byref class2 as integer,byref limit as integer)
+sub struct_analyze(byval fld as FBSYMBOL ptr,byref part1 as integer,byref part2 as integer,byref limit as integer)
 	dim as integer lgt=fld->lgt
 	fld = symbUdtGetFirstField(fld)
 	while fld
 		if limit=7 and fld->ofs>7 then
 			limit+=8
-			class2=8
+			part2=8
 		end if
 
 		if typegetclass(fld->typ)=FB_DATACLASS_UDT then
-			struct_analyze(fld->subtype,class1,class2,limit)
+			struct_analyze(fld->subtype,part1,part2,limit)
 		elseif typegetclass(fld->typ)=FB_DATACLASS_INTEGER then
 			if limit=7 then
-				class1=1
+				part1=1
 			else
-				class2=4
+				part2=4
 			end if
 		end if
 		fld=symbUdtGetNextField(fld)
@@ -661,10 +661,10 @@ sub struct_analyze(byval fld as FBSYMBOL ptr,byref class1 as integer,byref class
 
 	if lgt>8 then
 		''case array in type eg type udt / array(0 to 1) as integer /end type
-		if class1+class2=1 then
-			class1=5
-		elseif class1+class2=2 then
-			class1=10
+		if part1+part2=1 then
+			part1=5
+		elseif part1+part2=2 then
+			part1=10
 		end if
 	end if
 
@@ -686,7 +686,6 @@ private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as FB_STR
 
 		struct_analyze( sym, part1, part2, limit )
 
-		''in case of 2 registers the second will be handled in the emitter
 		select case as const part1+part2
 			case 1 ''only integers in RAX
 				'' return FB_STRUCT_R
@@ -848,7 +847,6 @@ private function hGetReturnType( byval sym as FBSYMBOL ptr ) as integer
 		if( res = FB_DATATYPE_VOID ) then
 			res = FB_DATATYPE_LONGINT
 		end if
-
 	end select
 
 	'' Nothing matched?
