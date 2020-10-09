@@ -4650,14 +4650,21 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
     
 end sub
 
-private sub emitStoreStruct(byval lgtv1 as integer,byval ofsv2 as integer,byref op1 as string,byref op3 as string)
+private sub emitStoreStruct(byval v1 as IRVREG ptr, byval v2 as IRVREG ptr,byref op1 as string,byref op3 as string)
     dim as string dest
+    dim as integer lgtv1=v1->sym->lgt ,ofsv2=v2->ofs
+    dim as FB_STRUCT_INREG retinreg=v2->subtype->udt.retinreg
 
     if op3<>"" then asm_code(op3)
 
+    ''the data is already in either rax/rdx or xmm0/xmm1 or the 2 other combinations
     ''moving 8 first bytes
-    asm_code("mov rax, "+str(ofsv2)+"[rbp]")
-    asm_code("mov "+op1+", rax")
+    if retinreg=FB_STRUCT_RR or retinreg=FB_STRUCT_RX then
+        asm_code("mov "+op1+", rax")
+    else
+        asm_code("movq "+op1+", xmm0")
+        asm_code("movq rdx, xmm1")
+    end if
 
     ''moving the rest (1 to 8 bytes), assuming rdx not already used
     if op1[0]=asc("-") and (lgtv1=9 or lgtv1= 10 or lgtv1=12 or lgtv1=16) then
@@ -4674,15 +4681,13 @@ private sub emitStoreStruct(byval lgtv1 as integer,byval ofsv2 as integer,byref 
             case 16
                 dest="rdx"
         end select
-        asm_code("mov "+dest+", "+str(ofsv2+8)+"[rbp]")
+
         asm_code("mov "+op1+", "+dest)
         exit sub
     end if
 
     asm_code("lea rax, "+op1)
     asm_code("add rax, 8")
-
-    asm_code("mov rdx, "+str(ofsv2+8)+"[rbp]")
 
     select case as const lgtv1
         case 9
@@ -4713,7 +4718,6 @@ private sub emitStoreStruct(byval lgtv1 as integer,byval ofsv2 as integer,byref 
             asm_code("mov [rax], rdx")
     end select
 end sub
-
 private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
     dim as string op1,op2,op3,op4,prefix,code1,code2,regtempo
@@ -4795,7 +4799,7 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
     if v2->subtype<>0 andalso typeIsPtr( v2->dtype )=false andalso v2->subtype->udt.retinreg<>FB_STRUCT_NONE then
         '' for Linux structures can be returned in 2 registers so needs a special handling
-        emitStoreStruct(v1->sym->lgt,v2->ofs,op1,op3)
+        emitStoreStruct(v1,v2,op1,op3)
         exit sub
     end if
 
