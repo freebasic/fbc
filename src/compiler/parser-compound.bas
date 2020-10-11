@@ -158,7 +158,7 @@ end sub
 private function hCheckForCtorResult( ) as integer
 	if( symbGetProcStatReturnUsed( parser.currproc ) ) then
 		if( symbHasCtor( parser.currproc ) and _
-		    (not symbIsRef( parser.currproc )) ) then
+		    (not symbIsReturnByRef( parser.currproc )) ) then
 			'' EXIT FUNCTION cannot be allowed in combination
 			'' with RETURN and a ctor result for byval functions,
 			'' because it would not call the result constructor.
@@ -315,9 +315,9 @@ sub cExitStatement( )
 		select case as const lexGetToken( )
 		case FB_TK_SUB
 			if( symbGetType( parser.currproc ) = FB_DATATYPE_VOID ) then
-				if( (symbGetAttrib( parser.currproc ) and _
-					 (FB_SYMBATTRIB_PROPERTY or FB_SYMBATTRIB_OPERATOR or _
-					  FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
+				if( (parser.currproc->pattrib and _
+					 (FB_PROCATTRIB_PROPERTY or FB_PROCATTRIB_OPERATOR or _
+					  FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_DESTRUCTOR)) <> 0 ) then
 					errnum = FB_ERRMSG_ILLEGALOUTSIDEASUB
 				end if
 			else
@@ -326,9 +326,9 @@ sub cExitStatement( )
 
 		case FB_TK_FUNCTION
 			if( symbGetType( parser.currproc ) <> FB_DATATYPE_VOID ) then
-				if( (symbGetAttrib( parser.currproc ) and _
-					 (FB_SYMBATTRIB_PROPERTY or FB_SYMBATTRIB_OPERATOR or _
-					  FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
+				if( (parser.currproc->pattrib and _
+					 (FB_PROCATTRIB_PROPERTY or FB_PROCATTRIB_OPERATOR or _
+					  FB_PROCATTRIB_CONSTRUCTOR or FB_PROCATTRIB_DESTRUCTOR)) <> 0 ) then
 					errnum = FB_ERRMSG_ILLEGALOUTSIDEAFUNCTION
 				else
 					errnum = hCheckForCtorResult( )

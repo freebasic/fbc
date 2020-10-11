@@ -17,7 +17,7 @@ function symbAddConst _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval value as FBVALUE ptr, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr sym = any
@@ -30,7 +30,7 @@ function symbAddConst _
     					 FB_SYMBCLASS_CONST, _
     				   	 symbol, NULL, _
     				   	 dtype, subtype, _
-    				   	 attrib )
+    				   	 attrib, FB_PROCATTRIB_NONE )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -47,7 +47,7 @@ function symbReuseOrAddConst _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval value as FBVALUE ptr, _
-		byval attrib as integer _
+		byval attrib as FB_SYMBATTRIB _
 	) as FBSYMBOL ptr
 
 	function = NULL

@@ -50,7 +50,7 @@ function symbAddNamespace _
     				   NULL, NULL,  _
     				   FB_SYMBCLASS_NAMESPACE, _
     				   id, id_alias, _
-    				   FB_DATATYPE_NAMESPC, NULL )
+    				   FB_DATATYPE_NAMESPC, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
     if( s = NULL ) then
     	return NULL
     end if
@@ -126,7 +126,8 @@ private function hAddImport _
     				   		  FB_SYMBCLASS_NSIMPORT, _
     				   		  NULL, NULL, _
     				   		  FB_DATATYPE_INVALID, NULL, _
-    				   		  is_local )
+    				   		  iif( is_local, FB_SYMBATTRIB_LOCAL, FB_SYMBATTRIB_NONE ), _
+							  FB_PROCATTRIB_NONE )
 end function
 
 '':::::

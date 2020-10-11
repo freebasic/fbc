@@ -16,6 +16,8 @@ sub irInit( )
 		ir.vtbl = irhlc_vtbl
 	case FB_BACKEND_LLVM
 		ir.vtbl = irllvm_vtbl
+	case FB_BACKEND_GAS64
+		ir.vtbl = irgas64_vtbl
 	case else
 		assert( env.clopt.backend = FB_BACKEND_GAS )
 		ir.vtbl = irtac_vtbl

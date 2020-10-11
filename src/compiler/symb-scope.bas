@@ -23,7 +23,7 @@ function symbAddScope _
     				   symb.symtb, NULL, _
     				   FB_SYMBCLASS_SCOPE, _
     				   NULL, NULL, _
-    				   FB_DATATYPE_INVALID, NULL )
+    				   FB_DATATYPE_INVALID, NULL, FB_SYMBATTRIB_NONE, FB_PROCATTRIB_NONE )
 
 	symbSymbTbInit( s->scp.symtb, s )
     s->scp.backnode = backnode

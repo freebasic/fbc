@@ -15,6 +15,7 @@ function cDeclaration _
 	) as integer
 
 	dim as FB_SYMBATTRIB attrib = FB_SYMBATTRIB_NONE
+	dim as FB_PROCATTRIB pattrib = FB_PROCATTRIB_NONE
 	dim as integer tk = any
 
 	function = FALSE
@@ -70,7 +71,7 @@ function cDeclaration _
 		case FB_TK_FUNCTION, FB_TK_SUB, FB_TK_OPERATOR, _
 		     FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, FB_TK_PROPERTY, _
 		     FB_TK_VIRTUAL, FB_TK_ABSTRACT
-			cProcStmtBegin( attrib )
+			cProcStmtBegin( attrib, pattrib )
 			function = TRUE
 		case else
 			select case( tk )
@@ -86,7 +87,7 @@ function cDeclaration _
 
 	case FB_TK_FUNCTION, FB_TK_SUB, FB_TK_DESTRUCTOR, FB_TK_PROPERTY
 		if( attrib <> FB_SYMBATTRIB_NONE ) then
-			cProcStmtBegin( attrib )
+			cProcStmtBegin( attrib, pattrib )
 			function = TRUE
 		else
 			'' not a FUNCTION|PROPERTY '=' ?
@@ -101,7 +102,7 @@ function cDeclaration _
 
 	case FB_TK_CONSTRUCTOR
 		if( attrib <> FB_SYMBATTRIB_NONE ) then
-			cProcStmtBegin( attrib )
+			cProcStmtBegin( attrib, pattrib )
 			function = TRUE
 		else
 			'' ambiguity: it could be a constructor chain
@@ -113,7 +114,7 @@ function cDeclaration _
 
 	case FB_TK_OPERATOR
 		if( attrib <> FB_SYMBATTRIB_NONE ) then
-			cProcStmtBegin( attrib )
+			cProcStmtBegin( attrib, pattrib )
 			function = TRUE
 		else
 			'' ambiguity: it could be the operator '=' body
