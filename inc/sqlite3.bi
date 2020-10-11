@@ -45,9 +45,9 @@
 extern "C"
 
 #define SQLITE3_H
-#define SQLITE_VERSION "3.30.0"
-const SQLITE_VERSION_NUMBER = 3030000
-#define SQLITE_SOURCE_ID "2019-10-04 15:03:17 c20a35336432025445f9f7e289d0cc3e4003fb17f45a4ce74c6269c407c6e09f"
+#define SQLITE_VERSION "3.33.0"
+const SQLITE_VERSION_NUMBER = 3033000
+#define SQLITE_SOURCE_ID "2020-08-14 13:23:32 fca8dc8b578f215a969cd899336378966156154710873e68b3d9ac5881b0ff3f"
 extern __sqlite3_version alias "sqlite3_version" as const byte
 #define sqlite3_version (*cptr(const zstring ptr, @__sqlite3_version))
 
@@ -133,17 +133,21 @@ const SQLITE_IOERR_AUTH = SQLITE_IOERR or (28 shl 8)
 const SQLITE_IOERR_BEGIN_ATOMIC = SQLITE_IOERR or (29 shl 8)
 const SQLITE_IOERR_COMMIT_ATOMIC = SQLITE_IOERR or (30 shl 8)
 const SQLITE_IOERR_ROLLBACK_ATOMIC = SQLITE_IOERR or (31 shl 8)
+const SQLITE_IOERR_DATA = SQLITE_IOERR or (32 shl 8)
 const SQLITE_LOCKED_SHAREDCACHE = SQLITE_LOCKED or (1 shl 8)
 const SQLITE_LOCKED_VTAB = SQLITE_LOCKED or (2 shl 8)
 const SQLITE_BUSY_RECOVERY = SQLITE_BUSY or (1 shl 8)
 const SQLITE_BUSY_SNAPSHOT = SQLITE_BUSY or (2 shl 8)
+const SQLITE_BUSY_TIMEOUT = SQLITE_BUSY or (3 shl 8)
 const SQLITE_CANTOPEN_NOTEMPDIR = SQLITE_CANTOPEN or (1 shl 8)
 const SQLITE_CANTOPEN_ISDIR = SQLITE_CANTOPEN or (2 shl 8)
 const SQLITE_CANTOPEN_FULLPATH = SQLITE_CANTOPEN or (3 shl 8)
 const SQLITE_CANTOPEN_CONVPATH = SQLITE_CANTOPEN or (4 shl 8)
 const SQLITE_CANTOPEN_DIRTYWAL = SQLITE_CANTOPEN or (5 shl 8)
+const SQLITE_CANTOPEN_SYMLINK = SQLITE_CANTOPEN or (6 shl 8)
 const SQLITE_CORRUPT_VTAB = SQLITE_CORRUPT or (1 shl 8)
 const SQLITE_CORRUPT_SEQUENCE = SQLITE_CORRUPT or (2 shl 8)
+const SQLITE_CORRUPT_INDEX = SQLITE_CORRUPT or (3 shl 8)
 const SQLITE_READONLY_RECOVERY = SQLITE_READONLY or (1 shl 8)
 const SQLITE_READONLY_CANTLOCK = SQLITE_READONLY or (2 shl 8)
 const SQLITE_READONLY_ROLLBACK = SQLITE_READONLY or (3 shl 8)
@@ -161,11 +165,13 @@ const SQLITE_CONSTRAINT_TRIGGER = SQLITE_CONSTRAINT or (7 shl 8)
 const SQLITE_CONSTRAINT_UNIQUE = SQLITE_CONSTRAINT or (8 shl 8)
 const SQLITE_CONSTRAINT_VTAB = SQLITE_CONSTRAINT or (9 shl 8)
 const SQLITE_CONSTRAINT_ROWID = SQLITE_CONSTRAINT or (10 shl 8)
+const SQLITE_CONSTRAINT_PINNED = SQLITE_CONSTRAINT or (11 shl 8)
 const SQLITE_NOTICE_RECOVER_WAL = SQLITE_NOTICE or (1 shl 8)
 const SQLITE_NOTICE_RECOVER_ROLLBACK = SQLITE_NOTICE or (2 shl 8)
 const SQLITE_WARNING_AUTOINDEX = SQLITE_WARNING or (1 shl 8)
 const SQLITE_AUTH_USER = SQLITE_AUTH or (1 shl 8)
 const SQLITE_OK_LOAD_PERMANENTLY = SQLITE_OK or (1 shl 8)
+const SQLITE_OK_SYMLINK = SQLITE_OK or (2 shl 8)
 const SQLITE_OPEN_READONLY = &h00000001
 const SQLITE_OPEN_READWRITE = &h00000002
 const SQLITE_OPEN_CREATE = &h00000004
@@ -180,12 +186,14 @@ const SQLITE_OPEN_TRANSIENT_DB = &h00000400
 const SQLITE_OPEN_MAIN_JOURNAL = &h00000800
 const SQLITE_OPEN_TEMP_JOURNAL = &h00001000
 const SQLITE_OPEN_SUBJOURNAL = &h00002000
-const SQLITE_OPEN_MASTER_JOURNAL = &h00004000
+const SQLITE_OPEN_SUPER_JOURNAL = &h00004000
 const SQLITE_OPEN_NOMUTEX = &h00008000
 const SQLITE_OPEN_FULLMUTEX = &h00010000
 const SQLITE_OPEN_SHAREDCACHE = &h00020000
 const SQLITE_OPEN_PRIVATECACHE = &h00040000
 const SQLITE_OPEN_WAL = &h00080000
+const SQLITE_OPEN_NOFOLLOW = &h01000000
+const SQLITE_OPEN_MASTER_JOURNAL = &h00004000
 const SQLITE_IOCAP_ATOMIC = &h00000001
 const SQLITE_IOCAP_ATOMIC512 = &h00000002
 const SQLITE_IOCAP_ATOMIC1K = &h00000004
@@ -272,6 +280,9 @@ const SQLITE_FCNTL_ROLLBACK_ATOMIC_WRITE = 33
 const SQLITE_FCNTL_LOCK_TIMEOUT = 34
 const SQLITE_FCNTL_DATA_VERSION = 35
 const SQLITE_FCNTL_SIZE_LIMIT = 36
+const SQLITE_FCNTL_CKPT_DONE = 37
+const SQLITE_FCNTL_RESERVE_BYTES = 38
+const SQLITE_FCNTL_CKPT_START = 39
 const SQLITE_GET_LOCKPROXYFILE = SQLITE_FCNTL_GET_LOCKPROXYFILE
 const SQLITE_SET_LOCKPROXYFILE = SQLITE_FCNTL_SET_LOCKPROXYFILE
 const SQLITE_LAST_ERRNO = SQLITE_FCNTL_LAST_ERRNO
@@ -373,7 +384,9 @@ const SQLITE_DBCONFIG_LEGACY_ALTER_TABLE = 1012
 const SQLITE_DBCONFIG_DQS_DML = 1013
 const SQLITE_DBCONFIG_DQS_DDL = 1014
 const SQLITE_DBCONFIG_ENABLE_VIEW = 1015
-const SQLITE_DBCONFIG_MAX = 1015
+const SQLITE_DBCONFIG_LEGACY_FILE_FORMAT = 1016
+const SQLITE_DBCONFIG_TRUSTED_SCHEMA = 1017
+const SQLITE_DBCONFIG_MAX = 1017
 
 declare function sqlite3_extended_result_codes(byval as sqlite3 ptr, byval onoff as long) as long
 declare function sqlite3_last_insert_rowid(byval as sqlite3 ptr) as sqlite3_int64
@@ -453,6 +466,13 @@ declare function sqlite3_open_v2(byval filename as const zstring ptr, byval ppDb
 declare function sqlite3_uri_parameter(byval zFilename as const zstring ptr, byval zParam as const zstring ptr) as const zstring ptr
 declare function sqlite3_uri_boolean(byval zFile as const zstring ptr, byval zParam as const zstring ptr, byval bDefault as long) as long
 declare function sqlite3_uri_int64(byval as const zstring ptr, byval as const zstring ptr, byval as sqlite3_int64) as sqlite3_int64
+declare function sqlite3_uri_key(byval zFilename as const zstring ptr, byval N as long) as const zstring ptr
+declare function sqlite3_filename_database(byval as const zstring ptr) as const zstring ptr
+declare function sqlite3_filename_journal(byval as const zstring ptr) as const zstring ptr
+declare function sqlite3_filename_wal(byval as const zstring ptr) as const zstring ptr
+declare function sqlite3_database_file_object(byval as const zstring ptr) as sqlite3_file ptr
+declare function sqlite3_create_filename(byval zDatabase as const zstring ptr, byval zJournal as const zstring ptr, byval zWal as const zstring ptr, byval nParam as long, byval azParam as const zstring ptr ptr) as zstring ptr
+declare sub sqlite3_free_filename(byval as zstring ptr)
 declare function sqlite3_errcode(byval db as sqlite3 ptr) as long
 declare function sqlite3_extended_errcode(byval db as sqlite3 ptr) as long
 declare function sqlite3_errmsg(byval as sqlite3 ptr) as const zstring ptr
@@ -555,6 +575,7 @@ const SQLITE_UTF16_ALIGNED = 8
 const SQLITE_DETERMINISTIC = &h000000800
 const SQLITE_DIRECTONLY = &h000080000
 const SQLITE_SUBTYPE = &h000100000
+const SQLITE_INNOCUOUS = &h000200000
 
 declare function sqlite3_aggregate_count(byval as sqlite3_context ptr) as long
 declare function sqlite3_expired(byval as sqlite3_stmt ptr) as long
@@ -634,6 +655,7 @@ declare function sqlite3_enable_shared_cache(byval as long) as long
 declare function sqlite3_release_memory(byval as long) as long
 declare function sqlite3_db_release_memory(byval as sqlite3 ptr) as long
 declare function sqlite3_soft_heap_limit64(byval N as sqlite3_int64) as sqlite3_int64
+declare function sqlite3_hard_heap_limit64(byval N as sqlite3_int64) as sqlite3_int64
 declare sub sqlite3_soft_heap_limit(byval N as long)
 declare function sqlite3_table_column_metadata(byval db as sqlite3 ptr, byval zDbName as const zstring ptr, byval zTableName as const zstring ptr, byval zColumnName as const zstring ptr, byval pzDataType as const zstring ptr ptr, byval pzCollSeq as const zstring ptr ptr, byval pNotNull as long ptr, byval pPrimaryKey as long ptr, byval pAutoinc as long ptr) as long
 declare function sqlite3_load_extension(byval db as sqlite3 ptr, byval zFile as const zstring ptr, byval zProc as const zstring ptr, byval pzErrMsg as zstring ptr ptr) as long
@@ -772,7 +794,7 @@ declare function sqlite3_mutex_held(byval as sqlite3_mutex ptr) as long
 declare function sqlite3_mutex_notheld(byval as sqlite3_mutex ptr) as long
 const SQLITE_MUTEX_FAST = 0
 const SQLITE_MUTEX_RECURSIVE = 1
-const SQLITE_MUTEX_STATIC_MASTER = 2
+const SQLITE_MUTEX_STATIC_MAIN = 2
 const SQLITE_MUTEX_STATIC_MEM = 3
 const SQLITE_MUTEX_STATIC_MEM2 = 4
 const SQLITE_MUTEX_STATIC_OPEN = 4
@@ -786,6 +808,7 @@ const SQLITE_MUTEX_STATIC_APP3 = 10
 const SQLITE_MUTEX_STATIC_VFS1 = 11
 const SQLITE_MUTEX_STATIC_VFS2 = 12
 const SQLITE_MUTEX_STATIC_VFS3 = 13
+const SQLITE_MUTEX_STATIC_MASTER = 2
 
 declare function sqlite3_db_mutex(byval as sqlite3 ptr) as sqlite3_mutex ptr
 declare function sqlite3_file_control(byval as sqlite3 ptr, byval zDbName as const zstring ptr, byval op as long, byval as any ptr) as long
@@ -933,6 +956,8 @@ const SQLITE_CHECKPOINT_RESTART = 2
 const SQLITE_CHECKPOINT_TRUNCATE = 3
 declare function sqlite3_vtab_config(byval as sqlite3 ptr, byval op as long, ...) as long
 const SQLITE_VTAB_CONSTRAINT_SUPPORT = 1
+const SQLITE_VTAB_INNOCUOUS = 2
+const SQLITE_VTAB_DIRECTONLY = 3
 
 declare function sqlite3_vtab_on_conflict(byval as sqlite3 ptr) as long
 declare function sqlite3_vtab_nochange(byval as sqlite3_context ptr) as long
