@@ -331,6 +331,8 @@ function fbGetBackendName _
 		function = "gcc"
 	case FB_BACKEND_LLVM
 		function = "llvm"
+	case FB_BACKEND_GAS64
+		function = "gas64"
 	end select
 
 end function
@@ -1533,6 +1535,15 @@ function fbGetBackendValistType _
 	case FB_BACKEND_LLVM
 		'' ???
 		typedef = FB_CVA_LIST_POINTER
+
+	case FB_BACKEND_GAS64
+		'typedef = FB_CVA_LIST_BUILTIN_POINTER
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32
+			typedef = FB_CVA_LIST_BUILTIN_POINTER
+		case else
+			typedef = FB_CVA_LIST_BUILTIN_C_STD
+		end select
 
 	case else
 		typedef = FB_CVA_LIST_POINTER

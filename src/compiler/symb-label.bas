@@ -116,6 +116,8 @@ function symbAddLabel _
 	else
 		l->lbl.declared = FALSE
 	end if
+	''for gas64
+	l->lbl.gosub = false
 
 	function = l
 

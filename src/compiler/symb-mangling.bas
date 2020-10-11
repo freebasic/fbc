@@ -63,7 +63,7 @@ sub symbMangleEnd( )
 end sub
 
 function symbUniqueId( byval validfbname as boolean ) as zstring ptr
-	if( env.clopt.backend = FB_BACKEND_GCC and not validfbname ) then
+	if( (env.clopt.backend = FB_BACKEND_GCC) and (validfbname = false) ) then
 		ctx.tempstr = "tmp$"
 		ctx.tempstr += str( ctx.uniqueidcount )
 	else
@@ -775,7 +775,7 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 			'' BASIC? use the upper-cased name
 			if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
 				id = *sym->id.name
-				if( env.clopt.backend = FB_BACKEND_GCC ) then
+				if( ( env.clopt.backend = FB_BACKEND_GCC ) or (env.clopt.backend = FB_BACKEND_GAS64) ) then
 					id += "$"
 				end if
 			'' else, the case-sensitive name saved in the alias..
@@ -843,6 +843,27 @@ private sub hMangleVariable( byval sym as FBSYMBOL ptr )
 					'' conflicts between sibling scopes)
 					id += "." + str( varcounter )
 					varcounter += 1
+				else
+					'' Use the case-sensitive name saved in the alias
+					id = *sym->id.alias
+				end if
+			case FB_BACKEND_GAS64
+				if( symbGetMangling( sym ) = FB_MANGLING_BASIC ) then
+					'' BASIC mangling, use the upper-cased name
+					id = *sym->id.name
+
+					'' Type suffix?
+					if( symbIsSuffixed( sym ) ) then
+						id += *hMangleBuiltInType( symbGetType( sym ) )
+					end if
+
+					'' Make the symbol unique - gas doesn't have scopes.
+					'' (appending the scope level wouldn't be enough due to
+					'' conflicts between sibling scopes)
+					id += "." + str( varcounter )
+					varcounter += 1
+				elseif( symbIsStatic( sym ) ) then
+					id = *symbUniqueId( )
 				else
 					'' Use the case-sensitive name saved in the alias
 					id = *sym->id.alias
