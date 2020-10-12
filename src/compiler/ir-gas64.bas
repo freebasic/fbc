@@ -4662,13 +4662,13 @@ end sub
 private sub emitStoreStruct(byval v1 as IRVREG ptr, byval v2 as IRVREG ptr,byref op1 as string,byref op3 as string)
     dim as string dest
     dim as integer lgtv1=v1->sym->lgt ,ofsv2=v2->ofs
-    dim as FB_STRUCT_INREG retinreg=v2->subtype->udt.retinreg
+    dim as FB_STRUCT_INREG retin2regs=v2->subtype->udt.retin2regs
 
     if op3<>"" then asm_code(op3)
 
     ''the data is already in either rax/rdx or xmm0/xmm1 or the 2 other combinations
     ''moving 8 first bytes
-    if retinreg=FB_STRUCT_RR or retinreg=FB_STRUCT_RX then
+    if retin2regs=FB_STRUCT_RR or retin2regs=FB_STRUCT_RX then
         asm_code("mov "+op1+", rax")
     else
         asm_code("movq "+op1+", xmm0")
@@ -4806,7 +4806,7 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
             asm_error("store 01")
     end select
 
-    if v2->subtype<>0 andalso typeIsPtr( v2->dtype )=false andalso v2->subtype->udt.retinreg<>FB_STRUCT_NONE then
+    if v2->subtype<>0 andalso typeIsPtr( v2->dtype )=false andalso v2->subtype->udt.retin2regs<>FB_STRUCT_NONE then
         '' for Linux structures can be returned in 2 registers so needs a special handling
         emitStoreStruct(v1,v2,op1,op3)
         exit sub
@@ -5075,7 +5075,7 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
             asm_error("in loadres typ not handled")
     end select
 
-    if v1->sym<>0 andalso typeIsPtr( v1->dtype )=false andalso v1->sym->subtype<>0 andalso v1->sym->subtype->udt.retinreg<>FB_STRUCT_NONE then
+    if v1->sym<>0 andalso typeIsPtr( v1->dtype )=false andalso v1->sym->subtype<>0 andalso v1->sym->subtype->udt.retin2regs<>FB_STRUCT_NONE then
         ''Structure returned in 2 registers, linux only
         ''assuming in this case fb$result is always defined like xxx[rbp]
         if v1->typ<>IR_VREGTYPE_VAR orelse ( symbIsStatic(v1->sym) Or symbisshared(v1->sym) )then
@@ -5083,7 +5083,7 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
         end if
         lgt=v1->sym->lgt
         op2=Str(v1->ofs+8)+"[rbp]"
-        select case as const v1->sym->subtype->udt.retinreg
+        select case as const v1->sym->subtype->udt.retin2regs
             case FB_STRUCT_RR ''only integers in RAX and RDX
                 asm_code("mov rax, "+op1)
                 asm_code("mov rdx, "+op2)
@@ -5248,7 +5248,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
     dim as string pushstr(300)
     dim as integer pushnbstr,pushsize
     dim as IRVREG ptr tempo1
-    dim as FB_STRUCT_INREG retinreg
+    dim as FB_STRUCT_INREG retin2regs
     
     asm_info("variadic="+str(variadic)+" level="+Str(level))
 
@@ -5837,13 +5837,13 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
     ctx.proccalling=false
 
     if( vr ) then ''return value
-        if vr->subtype<>0 andalso typeIsPtr( vr->dtype )=false andalso vr->subtype->udt.retinreg<>FB_STRUCT_NONE then
+        if vr->subtype<>0 andalso typeIsPtr( vr->dtype )=false andalso vr->subtype->udt.retin2regs<>FB_STRUCT_NONE then
             ''Structure returned in 2 registers
             vr->typ=IR_VREGTYPE_VAR ''for use when argument
             ctx.stk+=typeGetSize( FB_DATATYPE_LONGINT )*2 ''reserving 16 bytes
             vr->ofs=-ctx.stk
             asm_info("new vr="+vregdumpfull(vr))
-            select case as const vr->subtype->udt.retinreg
+            select case as const vr->subtype->udt.retin2regs
                 case FB_STRUCT_RR
                     asm_code("mov "+str(vr->ofs)+  "[rbp], rax")
                     asm_code("mov "+str(vr->ofs+8)+"[rbp], rdx")
