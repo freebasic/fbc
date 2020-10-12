@@ -487,7 +487,7 @@ type FBS_STRUCT
 
 	'' real type used to return this UDT from functions
 	retdtype		as FB_DATATYPE
-	retinreg        as FB_STRUCT_INREG ''for gas64
+	retin2regs      as FB_STRUCT_INREG ''for gas64
 	dbg				as FB_STRUCT_DBG
 	ext				as FB_STRUCTEXT ptr
 end type

@@ -694,16 +694,16 @@ private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as FB_STR
 				'' return FB_STRUCT_X
 				return FB_DATATYPE_DOUBLE
 			case 5 ''only integers in RAX/RDX
-				sym->udt.retinreg = FB_STRUCT_RR
+				sym->udt.retin2regs = FB_STRUCT_RR
 				return FB_DATATYPE_STRUCT
 			case 9 ''first part in RAX then in XMMO
-				 sym->udt.retinreg = FB_STRUCT_RX
+				 sym->udt.retin2regs = FB_STRUCT_RX
 				 return FB_DATATYPE_STRUCT
 			case 6 ''first part in XMMO then in RAX
-				sym->udt.retinreg = FB_STRUCT_XR
+				sym->udt.retin2regs = FB_STRUCT_XR
 				return typeAddrOf( FB_DATATYPE_STRUCT )
 			case 10 ''only floats in XMM0/XMM1
-				sym->udt.retinreg = FB_STRUCT_XX
+				sym->udt.retin2regs = FB_STRUCT_XX
 				return FB_DATATYPE_STRUCT
 			case else
 				return FB_DATATYPE_STRUCT
@@ -889,9 +889,9 @@ sub symbStructEnd _
 	'' (must be done after declaring default members because it depends on
 	'' symbCompIsTrivial() which depends on knowing all ctors/dtors)
 
-	'' set default for 'udt.retinreg' first
-	'' side effect of calling hGetReturnType() will be setting 'sym->udt.retinreg'
-	sym->udt.retinreg = FB_STRUCT_NONE ''for gas64
+	'' set default for 'udt.retin2regs' first
+	'' side effect of calling hGetReturnType() will be setting 'sym->udt.retin2regs'
+	sym->udt.retin2regs = FB_STRUCT_NONE ''for gas64
 
 	'' compute the return type
 	sym->udt.retdtype = hGetReturnType( sym )
