@@ -273,6 +273,14 @@ type sqlite3_api_routines
 	stmt_isexplain as function(byval as sqlite3_stmt ptr) as long
 	value_frombind as function(byval as sqlite3_value ptr) as long
 	drop_modules as function(byval as sqlite3 ptr, byval as const zstring ptr ptr) as long
+	hard_heap_limit64 as function(byval as sqlite3_int64) as sqlite3_int64
+	uri_key as function(byval as const zstring ptr, byval as long) as const zstring ptr
+	filename_database as function(byval as const zstring ptr) as const zstring ptr
+	filename_journal as function(byval as const zstring ptr) as const zstring ptr
+	filename_wal as function(byval as const zstring ptr) as const zstring ptr
+	create_filename as function(byval as const zstring ptr, byval as const zstring ptr, byval as const zstring ptr, byval as long, byval as const zstring ptr ptr) as zstring ptr
+	free_filename as sub(byval as zstring ptr)
+	database_file_object as function(byval as const zstring ptr) as sqlite3_file ptr
 end type
 
 type sqlite3_loadext_entry as function(byval db as sqlite3 ptr, byval pzErrMsg as zstring ptr ptr, byval pThunk as const sqlite3_api_routines ptr) as long
@@ -765,11 +773,19 @@ type sqlite3_loadext_entry as function(byval db as sqlite3 ptr, byval pzErrMsg a
 #undef sqlite3_normalized_sql
 #define sqlite3_normalized_sql sqlite3_api->normalized_sql
 #undef sqlite3_stmt_isexplain
-#define sqlite3_stmt_isexplain sqlite3_api->isexplain
+#define sqlite3_stmt_isexplain sqlite3_api->stmt_isexplain
 #undef sqlite3_value_frombind
-#define sqlite3_value_frombind sqlite3_api->frombind
+#define sqlite3_value_frombind sqlite3_api->value_frombind
 #undef sqlite3_drop_modules
 #define sqlite3_drop_modules sqlite3_api->drop_modules
+#define sqlite3_hard_heap_limit64 sqlite3_api->hard_heap_limit64
+#define sqlite3_uri_key sqlite3_api->uri_key
+#define sqlite3_filename_database sqlite3_api->filename_database
+#define sqlite3_filename_journal sqlite3_api->filename_journal
+#define sqlite3_filename_wal sqlite3_api->filename_wal
+#define sqlite3_create_filename sqlite3_api->create_filename
+#define sqlite3_free_filename sqlite3_api->free_filename
+#define sqlite3_database_file_object sqlite3_api->database_file_object
 #define SQLITE_EXTENSION_INIT1 dim shared as const sqlite3_api_routines ptr sqlite3_api = 0
 #define SQLITE_EXTENSION_INIT2(v) sqlite3_api = v
 #define SQLITE_EXTENSION_INIT3 extern as const sqlite3_api_routines ptr sqlite3_api

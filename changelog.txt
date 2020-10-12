@@ -3,8 +3,8 @@ Version 1.08.0
 [changed]
 - array descriptor contains new 'flags' field.  Careful, breaks binary compatibility plus chicken-egg problem to build fbc.
 - fbc '-version' reports build date in yyyy-mm-dd format (aka build date iso)
-- updated SQLite headers for binding to SQLite 3.30.0 (2019-10-04)
-- updated BASS headers for binding to BASS 2.4.14
+- updated SQLite headers for binding to SQLite 3.33.0
+- updated BASS headers for binding to BASS 2.4.15
 - updated PostgreSQL headers for binding to PostgreSQL 12.0
 - updated curl headers for binding to curl 7.66.0
 - warning level for all warnings is increased by 1.  Default warning level is 1.  Previously, default warning level was 0 and some warnings had level of -1.
