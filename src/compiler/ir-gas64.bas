@@ -2200,6 +2200,12 @@ sub no_roundsd(byval size as zstring ptr)
     asm_code("ldmxcsr $mxcsr[rip]")
 end sub
 sub test_sse41()
+
+/' !!!FIXME!!!: sse test needs to be a run-time test on the
+                target, or a command line switch on the host
+                can't make any assumptions that the target
+                has same CPU options as host.
+
     dim as long lecx
     asm
         mov  eax,1
@@ -2213,6 +2219,9 @@ sub test_sse41()
         ''roundsd/ss not supported
         ctx.sse41=false
     end if
+'/
+
+    ctx.sse41=false
 end sub
 private function _emitbegin( ) as integer
 
