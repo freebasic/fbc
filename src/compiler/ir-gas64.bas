@@ -265,7 +265,7 @@ type ASM64_CONTEXT
 	'dtors        as string
     ctorcount    as integer
 	dtorcount    as integer
-	sse41        as boolean
+	roundfloat   as boolean ''rounding float can use different ways
 	''preparing arguments (hdocall)
 	proccalling  as Boolean
 	''for spilling registers
@@ -2182,15 +2182,8 @@ private sub hemitstruct( byval sym as FBSYMBOL ptr )
     asm_info( ln )
     symbResetIsBeingEmitted( sym )
 end sub
-sub no_roundsd(byval size as zstring ptr)
-    '''asm_code("stmxcsr $mxcsr1[rip]") 
-    '''asm_code("stmxcsr $mxcsr2[rip]") 
-    '''asm_code("and dword ptr $mxcsr2, 0xFFFF9FFF")
-    ''''' in case of int statement
-    ''''if fint then asm_code("or dword ptr $mxcsr2, 0x2000")
-    '''asm_code("ldmxcsr $mxcsr2[rip]")
-    '''asm_code("cvts"+*size+"2si rax, xmm0")
-    '''asm_code("ldmxcsr $mxcsr1[rip]")
+private sub no_roundsd(byval size as zstring ptr)
+	''when the CPU doesn't provide roundsd/roundss (needs see41)
     asm_code("stmxcsr $mxcsr[rip]") 
     asm_code("push $mxcsr[rip]")
     asm_code("and dword ptr $mxcsr[rip], 0xFFFF9FFF")
@@ -2198,30 +2191,6 @@ sub no_roundsd(byval size as zstring ptr)
     asm_code("cvts"+*size+"2si rax, xmm0")
     asm_code("pop $mxcsr[rip]")
     asm_code("ldmxcsr $mxcsr[rip]")
-end sub
-sub test_sse41()
-
-/' !!!FIXME!!!: sse test needs to be a run-time test on the
-                target, or a command line switch on the host
-                can't make any assumptions that the target
-                has same CPU options as host.
-
-    dim as long lecx
-    asm
-        mov  eax,1
-        cpuid
-        mov [lecx],ecx
-    end asm
-    if bit(lecx,19) then
-        ''roundsd/ss supported
-        ctx.sse41=true
-    else    
-        ''roundsd/ss not supported
-        ctx.sse41=false
-    end if
-'/
-
-    ctx.sse41=false
 end sub
 private function _emitbegin( ) as integer
 
@@ -2245,6 +2214,7 @@ private function _emitbegin( ) as integer
 	'ctx.dtors = ""
 	ctx.ctorcount = 0
 	ctx.dtorcount = 0
+	ctx.roundfloat=false
     ctx.target=fbgetoption(FB_COMPOPT_TARGET) ''linux or windows
     if ctx.target=FB_COMPTARGET_LINUX then
         redim listreg(1 to 8)
@@ -2256,22 +2226,7 @@ private function _emitbegin( ) as integer
     asm_code( ".intel_syntax noprefix")
     asm_info("env.clopt.debuginfo ="+str(env.clopt.debuginfo))
     edbgEmitHeader_asm64( env.inf.name )
-    
-    '' sse_41 handled by the processor ?
-    test_sse41
-    if ctx.sse41=false then
-        asm_info("SSE41 not supported")
-        Asm_section(".bss")
-        if ctx.target=FB_COMPTARGET_LINUX then
-            asm_code(".local $mxcsr")
-            asm_code(".comm $mxcsr,8,8")
-        else
-            asm_code(".lcomm $mxcsr,8,8")
-        end if
-    else
-        asm_info("SSE41 supported")
-    end if
-    
+
     asm_section(".text")
 
     reg_freeall ''no registers used
@@ -2315,6 +2270,7 @@ end sub
 private sub _emitend( )
     ctx.indent +=1
     ctx.section = SECTION_FOOT
+
     '' the variables
     ctx.indent -=1 ''+1/-1 also done in hMaybeEmitGlobalVar
     symbForEachGlobal( FB_SYMBCLASS_VAR, @hMaybeEmitGlobalVar )
@@ -2325,6 +2281,45 @@ private sub _emitend( )
     '' Global arrays for global ctors/dtors
 	symbForEachGlobal( FB_SYMBCLASS_PROC, @hAddGlobalCtorDtor )
 
+    ''if float rounding is used check sse4_1 for using roundsd/roundss
+	if ctx.roundfloat=true then
+		'ctx.section = SECTION_HEAD
+		asm_section(".bss")
+		''as float rounding is used needs global variables
+		if ctx.target=FB_COMPTARGET_LINUX then
+			asm_code(".local $mxcsr")
+			asm_code(".comm $mxcsr,8,8")
+			asm_code(".local $sse41")
+			asm_code(".comm $sse41,4,8")
+		else
+			asm_code(".lcomm $mxcsr,8,8")
+			asm_code(".lcomm $sse41,4,8")
+		end if
+
+        ''must be executed before the constructors and main
+		if ctx.target=FB_COMPTARGET_LINUX andalso fbGetOption( FB_COMPOPT_OUTTYPE ) = FB_OUTTYPE_DYNAMICLIB then
+			asm_section(".init_array")
+		else
+			asm_section(".ctors")
+		end if
+		asm_code(".align 8")
+		asm_code(".quad $sse41_test")
+
+        asm_section(".text")
+		''is the processor having SSE4_1 feature ?
+		asm_code("$sse41_test:")
+		asm_code("push rbx")
+		asm_code("push rcx")
+		asm_code("push rdx")
+        asm_code("mov  eax, 1")
+        asm_code("cpuid")
+        asm_code("and ecx, 0b10000000000000000000")
+        asm_code("mov $sse41[rip], ecx")
+		asm_code("pop rdx")
+		asm_code("pop rcx")
+		asm_code("pop rbx")
+		asm_code("ret")
+	end if
     ' flush all sections to file
     if( put( #env.outf.num, , ctx.head_txt ) <> 0 ) then
     end if
@@ -4415,18 +4410,21 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
         if v2dtype=FB_DATATYPE_DOUBLE then
 
             if v1dtype=FB_DATATYPE_UINT Or v1dtype=FB_DATATYPE_ULONGINT then
-                asm_code("mov rax, 4890909195324358656")'1138753536")
+                asm_code("mov rax, 4890909195324358656")
                 asm_code("movq xmm2, rax")
                 asm_code("mov rax, "+op2)
                 asm_code("movq xmm0, rax")
 
-                if ctx.sse41 then
-                    asm_code("roundsd xmm0,xmm0,4") ''nearbyintf double
-                else
-                    'no_roundsd(@"d") ''put rounded value in rax
-                    'asm_code("movq xmm0, rax")
-                    asm_code("call nearbyint")
-                end if
+				ctx.roundfloat=true
+				asm_code("test DWORD PTR $sse41[rip], 0")
+				lname1 = *symbUniqueLabel( )
+				asm_code("jne "+lname1)
+				asm_code("roundsd xmm0,xmm0,4") ''nearbyintf double
+				lname2 = *symbUniqueLabel( )
+				asm_code("jmp "+lname2)
+				asm_code(lname1+":")
+				asm_code("call nearbyint")
+				asm_code(lname2+":")
 
                 asm_code("ucomisd xmm0, xmm2")
                 lname1 = *symbUniqueLabel( )
@@ -4460,13 +4458,18 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
                     asm_code("movsd xmm0, "+op2)
                 end if
 
-                if ctx.sse41 then
-                    asm_code("roundsd xmm0,xmm0,4") ''nearbyintf double
-                    asm_code("cvttsd2si rax, xmm0")
-                else
-                    no_roundsd(@"d")
-                end if
-                
+				ctx.roundfloat=true
+				asm_code("test DWORD PTR $sse41[rip], 0")
+				lname1 = *symbUniqueLabel( )
+				asm_code("jne "+lname1)
+				asm_code("roundsd xmm0,xmm0,4") ''nearbyintf double
+				asm_code("cvttsd2si rax, xmm0")
+				lname2 = *symbUniqueLabel( )
+				asm_code("jmp "+lname2)
+				asm_code(lname1+":")
+				no_roundsd(@"d")
+				asm_code(lname2+":")
+
                 if v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT  or v1dtype=FB_DATATYPE_ENUM then
                     asm_code("mov "+op1+", rax")
                 elseif v1dtype=FB_DATATYPE_LONG Or v1dtype=FB_DATATYPE_ULONG then
@@ -4492,13 +4495,18 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
                 asm_code("movq xmm2, rax")
                 asm_code("mov eax, "+op2)
                 asm_code("movd xmm0, eax")
-                if ctx.sse41 then
-                    asm_code("roundss xmm0,xmm0,4") ''nearbyintf single
-                else
-                    'no_roundsd(@"s")
-                    'asm_code("movd xmm0, rax")
-                    asm_code("call nearbyintf")
-                end if
+
+				ctx.roundfloat=true
+				asm_code("test DWORD PTR $sse41[rip], 0")
+				lname1 = *symbUniqueLabel( )
+				asm_code("jne "+lname1)
+				asm_code("roundss xmm0,xmm0,4")
+				lname2 = *symbUniqueLabel( )
+				asm_code("jmp "+lname2)
+				asm_code(lname1+":")
+				asm_code("call nearbyintf")
+				asm_code(lname2+":")
+
                 asm_code("ucomiss xmm0, xmm2")
                 lname1 = *symbUniqueLabel( )
                 asm_code("jnb "+lname1)
@@ -4530,12 +4538,19 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
                 else
                     asm_code("movss xmm0, "+op2)
                 end if
-                if ctx.sse41 then
-                    asm_code("roundss xmm0,xmm0,4") ''nearbyintf single
-                    asm_code("cvttss2si rax, xmm0")
-                else
-                    no_roundsd(@"s")
-                end if
+
+				ctx.roundfloat=true
+				asm_code("test DWORD PTR $sse41[rip], 0")
+				lname1 = *symbUniqueLabel( )
+				asm_code("jne "+lname1)
+				asm_code("roundss xmm0,xmm0,4") ''nearbyintf single
+				asm_code("cvttss2si rax, xmm0")
+				lname2 = *symbUniqueLabel( )
+				asm_code("jmp "+lname2)
+				asm_code(lname1+":")
+				no_roundsd(@"s")
+				asm_code(lname2+":")
+
                 if v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT or v1dtype=FB_DATATYPE_ENUM then
                     asm_code("mov "+op1+", rax")
                 elseif v1dtype=FB_DATATYPE_LONG Or v1dtype=FB_DATATYPE_ULONG then
@@ -4807,9 +4822,9 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
     end select
 
     if v2->subtype<>0 andalso typeIsPtr( v2->dtype )=false andalso v2->subtype->udt.retin2regs<>FB_STRUCT_NONE then
-        '' for Linux structures can be returned in 2 registers so needs a special handling
+		'' for Linux structures can be returned in 2 registers so needs a special handling
         emitStoreStruct(v1,v2,op1,op3)
-        exit sub
+		exit sub
     end if
 
     ''SOURCE
