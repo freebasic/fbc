@@ -26,6 +26,7 @@ declare sub ppIncLib( )
 declare sub ppLibPath( )
 declare sub ppLine()
 declare sub ppLang()
+declare sub ppCmdline()
 
 declare sub ppDumpTree _
 	( _
@@ -60,6 +61,7 @@ const SYMB_MAXKEYWORDS = 24
         (@"ASSERT"	, FB_TK_PP_ASSERT	), _
         (@"DUMP"    , FB_TK_PP_DUMP     ), _
         (@"ODUMP"   , FB_TK_PP_ODUMP    ), _
+		(@"CMDLINE" , FB_TK_PP_CMDLINE  ), _
         (NULL) _
 	}
 
@@ -295,6 +297,10 @@ sub ppParse( )
 	case FB_TK_PP_LANG
 		lexSkipToken( LEXCHECK_POST_SUFFIX)
 		ppLang( )
+
+	case FB_TK_PP_CMDLINE
+		lexSkipToken( LEXCHECK_POST_SUFFIX)
+		ppCmdline( )
 
 	case else
 		errReport( FB_ERRMSG_SYNTAXERROR )
@@ -799,3 +805,31 @@ function ppTypeOf( ) as string
 		lexSkipToken( )
 	end if
 end function
+
+
+declare sub parseArgsFromString( byval args as zstring ptr )
+
+'':::::
+'' ppCmdLine	    =   '#'CMDLINE LIT_STR
+''
+private sub ppCmdline( )
+	dim as zstring ptr args = any
+
+	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+		errReport( FB_ERRMSG_SYNTAXERROR )
+		'' error recovery: skip
+		lexSkipToken( )
+		exit sub
+	end if
+
+	args = lexGetText( )
+
+	ParseArgsFromString( args )
+
+	'' Preserve under -pp
+	if( env.ppfile_num > 0 ) then
+		lexPPOnlyEmitText( "#cmdline """ + *args + """" )
+	end if
+
+	lexSkipToken( )
+end sub

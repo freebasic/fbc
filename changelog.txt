@@ -39,6 +39,7 @@ Version 1.09.0
 - objinfo: check ELF files for little endian or big endian signature
 - fbc: __thiscall declaration support for gcc/gas 32-bit x86 calling g++ classes from fbc passing first argument in ECX register, caller cleans up stack except on win32 x86
 - fbc: add __FB_OPTIMIZE__ intrinisic define - always defined and will have a value from 0 to 3 to indicate the optimization level passed to the backend compiler
+- fbc: #cmdline "args..." directive to specify command line arguments within source files
 
 [fixed]
 - github #315: set parameters when calling SCREENCONTROL (was broken in fbc 1.08.0 due to new LONG/LONGINT SCREENCONTROL API's)

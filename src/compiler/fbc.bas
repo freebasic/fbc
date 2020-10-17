@@ -2415,6 +2415,61 @@ private sub handleArg(byref arg as string)
 	end select
 end sub
 
+sub parseArgsFromString( byval args_in as zstring ptr )
+
+	dim as string args = *args_in
+	dim as string arg
+
+	'' Parse the line containing command line arguments,
+	'' separated by spaces. Double- and single-quoted strings
+	'' are handled too, but nothing else.
+	do
+		dim as integer length = len(args)
+		if (length = 0) then
+			exit do
+		end if
+
+		dim as integer i = 0
+		dim as integer quotech = 0
+
+		while (i < length)
+			dim as integer ch = args[i]
+
+			select case as const (ch)
+			case asc(" ")
+				if (quotech = 0) then
+					exit while
+				end if
+
+			case asc(""""), asc("'")
+				if (quotech = ch) then
+					'' String closed
+					quotech = 0
+				elseif (quotech = 0) then
+					'' String opened
+					quotech = ch
+				end if
+
+			end select
+
+			i += 1
+		wend
+
+		if (i = 0) then
+			'' Just space, skip it
+			i = 1
+		else
+			arg = left(args, i)
+			arg = trim(arg)
+			arg = strUnquote(arg)
+			handleArg(arg)
+		end if
+
+		args = right(args, length - i)
+	loop
+	
+end sub
+
 private sub parseArgsFromFile(byref filename as string)
 	dim as integer f = freefile()
 	if (open(filename, for input, as #f)) then
@@ -2423,59 +2478,11 @@ private sub parseArgsFromFile(byref filename as string)
 	end if
 
 	dim as string args
-	dim as string arg
 
 	while (eof(f) = FALSE)
 		line input #f, args
 		args = trim(args)
-
-		'' Parse the line containing command line arguments,
-		'' separated by spaces. Double- and single-quoted strings
-		'' are handled too, but nothing else.
-		do
-			dim as integer length = len(args)
-			if (length = 0) then
-				exit do
-			end if
-
-			dim as integer i = 0
-			dim as integer quotech = 0
-
-			while (i < length)
-				dim as integer ch = args[i]
-
-				select case as const (ch)
-				case asc(" ")
-					if (quotech = 0) then
-						exit while
-					end if
-
-				case asc(""""), asc("'")
-					if (quotech = ch) then
-						'' String closed
-						quotech = 0
-					elseif (quotech = 0) then
-						'' String opened
-						quotech = ch
-					end if
-
-				end select
-
-				i += 1
-			wend
-
-			if (i = 0) then
-				'' Just space, skip it
-				i = 1
-			else
-				arg = left(args, i)
-				arg = trim(arg)
-				arg = strUnquote(arg)
-				handleArg(arg)
-			end if
-
-			args = right(args, length - i)
-		loop
+		parseArgsFromString( strptr( args ) )
 	wend
 
 	close #f
