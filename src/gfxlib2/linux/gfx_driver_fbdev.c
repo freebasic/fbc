@@ -89,6 +89,8 @@ static pthread_t thread;
 static pthread_mutex_t mutex;
 static pthread_cond_t cond;
 
+#if defined HOST_X86 || defined HOST_X86_64
+
 static void vga16_blitter(unsigned char *dest, int pitch)
 {
 	unsigned int color;
@@ -142,6 +144,46 @@ static void vga16_blitter(unsigned char *dest, int pitch)
 		source += __fb_gfx->pitch;
 	}
 }
+
+#else /* !( defined HOST_X86 || defined HOST_X86_64 ) */
+
+static void vga16_blitter(unsigned char *dest, int pitch)
+{
+	unsigned int c, color[2];
+	unsigned char buffer[fb_fbdev.w];
+	unsigned char *s, *source = __fb_gfx->framebuffer;
+	int x, y, offset, i;
+
+	for (y = 0; y < fb_fbdev.h; y++) {
+		if (__fb_gfx->dirty[y]) {
+			offset = 0;
+			s = source;
+			for (x = 0; x < fb_fbdev.w; x += 2) {
+				if (__fb_gfx->depth == 8) {
+					for( i = 0; i < 2; i++ )
+					{
+						c = __fb_gfx->device_palette[s[i]];
+						color[i] = color_conv[((c & 0xF0) >> 4) | ((c & 0xF000) >> 8) | ((c & 0xF00000) >> 12)];
+					}
+					buffer[offset] = (color[0] << 4) | color[1];
+				}
+				else
+				{
+					buffer[offset] = ((s[0] << 4) & 0xF0) | (s[1] & 0xF);
+				}
+
+				offset++;
+				s += 2;
+			}
+
+			fb_hMemCpy(dest, buffer, (fb_fbdev.w >> 1));
+		}
+		dest += pitch;
+		source += __fb_gfx->pitch;
+	}
+}
+
+#endif /* defined HOST_X86 || defined HOST_X86_64 */
 
 static void *driver_thread(void *arg)
 {
