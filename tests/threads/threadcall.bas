@@ -4,6 +4,15 @@
 
 #ifndef __FB_DOS__
 
+
+'' fbcunit is not thread-safe - wrap the CU_ASSERT_TRUE in a mutex
+#undef CU_ASSERT_TRUE
+#macro CU_ASSERT_TRUE( expr )
+	mutexlock mutex
+	CU_ASSERT( (expr) <> 0 )
+	mutexunlock mutex
+#endmacro
+
 SUITE( fbc_tests.threads.threadcall_ )
 
     declare sub Overloaded overload ( byval i as integer )
@@ -15,6 +24,18 @@ SUITE( fbc_tests.threads.threadcall_ )
     dim shared OverloadedStr_Executed as integer = 0
     dim shared Namespace_Executed as integer = 0
     dim shared OtherNamespace_Executed as integer = 0
+
+	dim shared mutex as any ptr
+
+	SUITE_INIT
+		mutex = mutexcreate()
+		return 0
+	END_SUITE_INIT
+
+	SUITE_CLEANUP
+		mutexdestroy( mutex )
+		return 0
+	END_SUITE_CLEANUP
     
     type SimpleSubUDT 
         dim aa as byte
@@ -61,7 +82,7 @@ SUITE( fbc_tests.threads.threadcall_ )
 
     sub FloatStr ( byval s as single, byref d as double, byref s1 as string )
         CU_ASSERT_TRUE( s > 14.999 and s < 15.01)
-        CU_ASSERT( s1 = "fourteen" )
+        CU_ASSERT_TRUE( s1 = "fourteen" )
 
         ' Output by reference
         s1 = "five"

@@ -548,4 +548,5 @@ static int *driver_fetch_modes(int depth, int *size)
 	return modes;
 }
 
-#endif
+#endif /* DISABLE_OPENGL */
+

@@ -105,6 +105,7 @@
 #   -DDISABLE_FFI    build without ffi.h (disables ThreadCall)
 #   -DDISABLE_OPENGL build without OpenGL headers (disables OpenGL gfx drivers)
 #   -DDISABLE_FBDEV  build without Linux framebuffer device headers (disables Linux fbdev gfx driver)
+#   -DDISABLE_D3D10  build without DirectX 10 driver(disable D2D driver in windows)
 #
 # makefile variables may either be set on the make command line,
 # or (in a more permanent way) inside a 'config.mk' file.
@@ -239,7 +240,16 @@ else
     # msys64  mingw32  MINGW32_NT-6.1 x86_64    i686-w64-mingw32
     # msys64  mingw64  MINGW64_NT-6.1 x86_64    x86_64-w64-mingw32
     #
+    # on WinXP...
+    # host    shell    uname -s -m              default gcc target
+    # ------  -------  --------------------     ------------------
+    # mingw   cmd.exe  MINGW32_NT-5.1 i686      mingw32
+    #
     else ifneq ($(findstring MINGW32,$(uname)),)
+      # host is WinXP, then don't include DirectX 10 driver
+      ifneq ($(findstring NT-5,$(uname)),)
+        DISABLE_D3D10 := 1
+      endif
       TARGET_ARCH := x86
     else ifneq ($(findstring MINGW64,$(uname)),)
       TARGET_ARCH := x86_64
