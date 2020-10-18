@@ -67,7 +67,13 @@ typedef HRESULT (WINAPI *DIRECTDRAWENUMERATEEX)(LPDDENUMCALLBACKEX lpCallback,LP
 /* Unfortunately c_dfDIKeyboard is a required global variable
  * defined in import library LIBDINPUT.A, and as we're not
  * linking with it, we need to define it here...
+ * 
+ * ARRAYSIZE won't be defined for really old gcc  
  */
+#ifndef ARRAYSIZE
+#define ARRAYSIZE(__a) (sizeof(__a)/sizeof(__a[0]))
+#endif
+ 
 static DIOBJECTDATAFORMAT __c_rgodfDIKeyboard[256];
 static const DIDATAFORMAT __c_dfDIKeyboard = { 24, 16, 0x2, 256, 256, __c_rgodfDIKeyboard };
 static HMODULE dd_library;
