@@ -68,7 +68,7 @@ function symbProcReturnsOnStack( byval proc as FBSYMBOL ptr ) as integer
 		'' Real type is an UDT pointer (instead of INTEGER/LONGINT)?
 		'' Then it's returned on stack (instead of in registers)
 
-		if( (proc->subtype <> NULL) andalso (proc->subtype->udt.retinreg <> FB_STRUCT_NONE) ) then ''for gas64
+		if( (proc->subtype <> NULL) andalso (proc->subtype->udt.retin2regs <> FB_STRUCT_NONE) ) then ''for gas64
 			exit function
 		else
 			function = (typeGetDtAndPtrOnly( symbGetProcRealType( proc ) ) = typeAddrOf( FB_DATATYPE_STRUCT ))
