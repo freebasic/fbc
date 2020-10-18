@@ -20,6 +20,7 @@ Version 1.08.0
 - rtlib: internal changes to API: fb_ArrayErase(), fb_ArrayClear(), fb_ArrayClearObj()
 - rtlib: internal removal of unused / legacy functions: fb_ArrayRedim(), fb_ArrayRedimPresv()
 - rtlib: internal removal of unused / legacy functions: fb_ArraySetDesc(), temporay descriptor functions and structs
+- gfxlib2: enable frame buffer on linux-arm targets, but disable vga16_blitter
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
