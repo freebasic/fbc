@@ -5,6 +5,7 @@ Version 1.07.2
 - reverted changes due sf.net #832: Fix bug allowing QB style suffixes on all keywords, regardless of -lang
 - suffixes in '-lang fb' reverted to fbc-1.05.0 behaviours
 - rtlib: internal fb_MemCopyClear() argument types changed to expect unsigned lengths (UINTEGER => size_t)
+- gfxlib2: enable frame buffer on linux-arm targets, but disable vga16_blitter
 
 [added]
 - gas64 emitter for x86_64 (SARG), added '-gen gas64' command line option to select
