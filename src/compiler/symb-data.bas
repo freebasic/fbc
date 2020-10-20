@@ -224,8 +224,15 @@ function typeToSigned _
 	case FB_DATATYPE_WCHAR
 		return typeToSigned( env.target.wchar )
 
-	case FB_DATATYPE_ULONG, FB_DATATYPE_POINTER
+	case FB_DATATYPE_ULONG
 		nd = FB_DATATYPE_LONG
+
+	case FB_DATATYPE_POINTER
+		if( env.pointersize = 8 ) then
+			nd = FB_DATATYPE_LONGINT	
+		else
+			nd = FB_DATATYPE_LONG
+		end if
 
 	case FB_DATATYPE_ULONGINT
 		nd = FB_DATATYPE_LONGINT
@@ -260,8 +267,15 @@ function typeToUnsigned _
 	case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
 		nd = FB_DATATYPE_UINT
 
-	case FB_DATATYPE_LONG, FB_DATATYPE_POINTER
+	case FB_DATATYPE_LONG
 		nd = FB_DATATYPE_ULONG
+
+	case FB_DATATYPE_POINTER
+		if( env.pointersize = 8 ) then
+			nd = FB_DATATYPE_ULONGINT	
+		else
+			nd = FB_DATATYPE_ULONG
+		end if
 
 	case FB_DATATYPE_LONGINT
 		nd = FB_DATATYPE_ULONGINT
