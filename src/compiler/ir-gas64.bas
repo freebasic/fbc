@@ -4821,8 +4821,7 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
             asm_error("store 01")
     end select
 
-    if v2->subtype<>0 andalso typeIsPtr( v2->dtype )=false andalso v2->subtype->udt.retin2regs<>FB_STRUCT_NONE then
-		'' for Linux structures can be returned in 2 registers so needs a special handling
+    if( typeGetDtAndPtrOnly( v1->dtype ) = FB_DATATYPE_STRUCT ) then 
         emitStoreStruct(v1,v2,op1,op3)
 		exit sub
     end if
