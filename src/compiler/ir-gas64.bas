@@ -3,7 +3,6 @@
 ''-------------
 
 '' asm 64bit backend
-'' by SARG V. 1.08
 
 /' ================== information ===============================
 
@@ -15,7 +14,7 @@ Space for these registers also reserved on the stack to store them at the beginn
 However if the first arg is an integer number (not a float) it is put in rcx and if the second one is a float it is put in xmm0. But if the third
  one is an integer, r8 (not rdx) is used. And so on. So only four registers (rNN or xmmN) are used. Other parameters are put on the stack.
 
-ex : integer, float,integer, float  ->  rcx,xmm0,r8,xmm2
+ex : integer, float,integer, float  ->  rcx,xmm1,r8,xmm3
 
 rbp,rbx,rdi,rsi,r12,r13,r14,r15 belong to calling proc, if used by called need to be saved by called
 rcx,rdx,r8,r9,rax,r10,r11       belong to called  proc, if used by calling need to be saved (before call)
@@ -469,7 +468,6 @@ private sub check_optim(byref code as string)
                 'newcode="lea "+Mid(part1,1,instr(part1,"[")-1)+prevpart2+", "+part2
                 'asm_info("proposed="+newcode)
 
-                asm_info("END OF OPTIMIZATION4")
                 writepos=len(ctx.proc_txt)+len(code)+9
                 code="#O4"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 4"
             end if
@@ -485,7 +483,6 @@ private sub check_optim(byref code as string)
                 newcode="lea "+part1+", "+prevpart2
                 'asm_info("proposed="+newcode)
 
-                asm_info("END OF OPTIMIZATION5")
                 writepos=len(ctx.proc_txt)+len(code)+9
                 code="#O5"+code+newline+string( ctx.indent*3, 32 )+newcode+" #Optim 5"
             else
@@ -510,7 +507,6 @@ private sub check_optim(byref code as string)
         if part1=prevpart2 then
             asm_info("OPTIMIZATION 1")
             code="#O1 "+code
-            asm_info("END OF OPTIMIZATION1")
         else
             if prevpart2="" then ''todo remove me after fixed
                 asm_error("prevpart empty ????????")
@@ -531,7 +527,6 @@ private sub check_optim(byref code as string)
                 writepos=len(ctx.proc_txt)+len(code)+9
                 code="#O2"+code+newline+string( ctx.indent*3, 32 )+prevmov+" "+part1+", "+prevpart2+" #Optim 2"
                 part2=prevpart2
-                asm_info("END OF OPTIMIZATION2")
                 
             ''xmm register ?
             elseif prevpart2[0]=asc("x") then
@@ -551,13 +546,12 @@ private sub check_optim(byref code as string)
                         mov="movss"
                     end if
                 else
-                    asm_error("in check_optim mov unkonwn="+mov)
+                    asm_error("in check_optim mov unknown="+mov)
                 end if
 
                 writepos=len(ctx.proc_txt)+len(code)+9
                 code="#O3"+code+newline+string( ctx.indent*3, 32 )+mov+" "+part1+", "+prevpart2+" #Optim 3"
                 part2=prevpart2
-                asm_info("END OF OPTIMIZATION3")
             elseif ( part1[0]=asc("r") or part1[0]=asc("e") ) and prevpart1=part2 and instr(prevpart1,"[")=0 then
                 asm_info("OPTIMIZATION 6")
                 mid(ctx.proc_txt,prevwpos)="#O6"
@@ -565,7 +559,6 @@ private sub check_optim(byref code as string)
                 writepos=len(ctx.proc_txt)+len(code)+9
                 code="#O6"+code+newline+string( ctx.indent*3, 32 )+prevmov+" "+part1+", "+prevpart2+" #Optim 6"
                 part2=prevpart2
-                asm_info("END OF OPTIMIZATION6")
             end if
         end if
     end if
