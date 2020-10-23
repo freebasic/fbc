@@ -149,7 +149,7 @@ static int gdi_init(void)
 		y = monitor_info.rcMonitor.top;
 	}
 
-	if (fb_hInitWindow(style | WS_VISIBLE, ex_style, x, y, rect.right, rect.bottom))
+	if (fb_hInitWindow(style, ex_style, x, y, rect.right, rect.bottom))
 		return -1;
 	if (fb_win32.flags & DRIVER_SHAPED_WINDOW) {
 		if (!fb_win32.SetLayeredWindowAttributes)
@@ -200,6 +200,8 @@ static int gdi_init(void)
 	free(lp);
 
 	ReleaseDC(fb_win32.wnd, hdc);
+
+	ShowWindow(fb_win32.wnd, SW_SHOWNORMAL);
 
 	return 0;
 }
