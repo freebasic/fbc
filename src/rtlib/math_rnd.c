@@ -170,61 +170,40 @@ static double hRnd_QB ( float n )
 }
 
 #if defined HOST_WIN32 || defined HOST_LINUX
-static unsigned int hGetRealRndNumber( )
+static int hRefillRealRndNumber( )
 {
-	union {
-		unsigned int i;
-		unsigned char b[sizeof(unsigned int)];
-	} number = { 0 };
-
+	int success = 0;
 #if defined HOST_WIN32
 	HCRYPTPROV provider = 0;
 	if( CryptAcquireContext( &provider, NULL, 0, PROV_RSA_FULL, 0 ) == TRUE ) {
-		if( CryptGenRandom( provider, sizeof(number), &number.b[0] ) == FALSE ) {
-			number.i = 0;
-		}
+		success = CryptGenRandom( provider, sizeof(state), (BYTE*)state );
 		CryptReleaseContext( provider, 0 );
 	}
 
 #elif defined HOST_LINUX
 	int urandom = open( "/dev/urandom", O_RDONLY );
 	if( urandom != -1 ) {
-		if( read( urandom, &number.b[0], sizeof(number) ) != sizeof(number) ) {
-			number.i = 0;
-		}
+		success = ( read( urandom, state, sizeof(state) ) == sizeof(state) );
 		close( urandom );
 	}
 #endif
-
-	return number.i;
+	if( success ) {
+		p = state;
+	}
+	return success; 
 }
 
 static uint32_t hRnd_REAL32( void )
 {
-	static unsigned int count = 0;
-	static unsigned int v;
-	double mtwist;
-
-	mtwist = hRnd_MTWIST32();
-	if( (count % 256) == 0 ) {
-		count = 1;
-
-		/* get new random number */
-		v = hGetRealRndNumber( );
-	} else {
-		count++;
+	uint32_t v;
+	if( p == ( state + MAX_STATE ) ) {
+		/* get new random numbers, if not available, redirect to MTwist as per docs */
+		if( hRefillRealRndNumber( ) == 0 ) {
+			fb_Randomize( -1.0, RND_MTWIST );
+			return fb_Rnd32( );
+		}
 	}
-
-	if( v == 0 ) {
-		return mtwist;
-	}
-	v *= mtwist;
-
-	v ^= (v >> 11);
-	v ^= ((v << 7) & 0x9D2C5680);
-	v ^= ((v << 15) & 0xEFC60000);
-	v ^= (v >> 18);
-
+	v = *(p++);
 	return v;
 }
 
