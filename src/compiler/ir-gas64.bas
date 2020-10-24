@@ -529,7 +529,7 @@ private sub check_optim(byref code as string)
                 part2=prevpart2
                 
             ''xmm register ?
-            elseif prevpart2[0]=asc("x") then
+            elseif prevpart2[0]=asc("x") and instr(prevpart1,"[")=0 then
                 asm_info("OPTIMIZATION 3")
                 mid(ctx.proc_txt,prevwpos)="#O3"
 
