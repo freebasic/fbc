@@ -4821,8 +4821,7 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
             asm_error("store 01")
     end select
 
-    if v2->subtype<>0 andalso typeIsPtr( v2->dtype )=false andalso v2->subtype->udt.retin2regs<>FB_STRUCT_NONE then
-		'' for Linux structures can be returned in 2 registers so needs a special handling
+    if( typeGetDtAndPtrOnly( v1->dtype ) = FB_DATATYPE_STRUCT ) then 
         emitStoreStruct(v1,v2,op1,op3)
 		exit sub
     end if
@@ -5090,7 +5089,7 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
             asm_error("in loadres typ not handled")
     end select
 
-    if v1->sym<>0 andalso typeIsPtr( v1->dtype )=false andalso v1->sym->subtype<>0 andalso v1->sym->subtype->udt.retin2regs<>FB_STRUCT_NONE then
+    if( typeGetDtAndPtrOnly( v1->dtype ) = FB_DATATYPE_STRUCT ) then 
         ''Structure returned in 2 registers, linux only
         ''assuming in this case fb$result is always defined like xxx[rbp]
         if v1->typ<>IR_VREGTYPE_VAR orelse ( symbIsStatic(v1->sym) Or symbisshared(v1->sym) )then
@@ -5852,7 +5851,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
     ctx.proccalling=false
 
     if( vr ) then ''return value
-        if vr->subtype<>0 andalso typeIsPtr( vr->dtype )=false andalso vr->subtype->udt.retin2regs<>FB_STRUCT_NONE then
+	    if( typeGetDtAndPtrOnly( vr->dtype ) = FB_DATATYPE_STRUCT ) then 
             ''Structure returned in 2 registers
             vr->typ=IR_VREGTYPE_VAR ''for use when argument
             ctx.stk+=typeGetSize( FB_DATATYPE_LONGINT )*2 ''reserving 16 bytes
