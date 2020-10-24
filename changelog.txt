@@ -13,6 +13,7 @@ Version 1.07.2
 
 [fixed]
 - sf.net #921: gfxlib: horizontal line drawing on 8-bit image was using wrong bpp
+- github #258: on windows directx and gdi drivers, only show window after intialization is complete (adeyblue)
 
 
 Version 1.07.1
