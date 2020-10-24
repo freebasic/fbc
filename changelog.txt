@@ -71,6 +71,7 @@ Version 1.08.0
 - github #246: rtlib leaks thread local data, fixed by adding TLS destructors (adeyblue)
 - sf.net #918: pcopy (console) bug when copying large console buffers, windows only (adeyblue)
 - github #216: function getMouse() seems broken on Win10 when using the Console Mode (screen 0), fixed by turn off the QuickEdit console mode during GetMouse (adeyblue)
+- github #258: on windows directx and gdi drivers, only show window after intialization is complete (adeyblue)
 
 
 Version 1.07.0
