@@ -521,6 +521,13 @@ private sub check_optim(byref code as string)
 				if instr(prevpart1,"[")<>0 then
 					asm_info("OPTIMIZATION 2-1")
 					''skip comment
+					if part1[0]=asc("x") then
+						if mov="movss" then
+							prevmov="movd"
+						else
+							prevmov="movq"
+						end if
+					end if
 				else
 					asm_info("OPTIMIZATION 2-2")
 					mid(ctx.proc_txt,prevwpos)="#O2"
