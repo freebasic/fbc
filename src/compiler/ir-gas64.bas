@@ -4418,7 +4418,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				ctx.roundfloat=true
 				asm_code("test DWORD PTR $sse41[rip], 0")
 				lname1 = *symbUniqueLabel( )
-				asm_code("jne "+lname1)
+				asm_code("je "+lname1)
 				asm_code("roundsd xmm0,xmm0,4") ''nearbyintf double
 				lname2 = *symbUniqueLabel( )
 				asm_code("jmp "+lname2)
@@ -4461,7 +4461,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				ctx.roundfloat=true
 				asm_code("test DWORD PTR $sse41[rip], 0")
 				lname1 = *symbUniqueLabel( )
-				asm_code("jne "+lname1)
+				asm_code("je "+lname1)
 				asm_code("roundsd xmm0,xmm0,4") ''nearbyintf double
 				asm_code("cvttsd2si rax, xmm0")
 				lname2 = *symbUniqueLabel( )
@@ -4499,7 +4499,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				ctx.roundfloat=true
 				asm_code("test DWORD PTR $sse41[rip], 0")
 				lname1 = *symbUniqueLabel( )
-				asm_code("jne "+lname1)
+				asm_code("je "+lname1)
 				asm_code("roundss xmm0,xmm0,4")
 				lname2 = *symbUniqueLabel( )
 				asm_code("jmp "+lname2)
@@ -4542,7 +4542,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				ctx.roundfloat=true
 				asm_code("test DWORD PTR $sse41[rip], 0")
 				lname1 = *symbUniqueLabel( )
-				asm_code("jne "+lname1)
+				asm_code("je "+lname1)
 				asm_code("roundss xmm0,xmm0,4") ''nearbyintf single
 				asm_code("cvttss2si rax, xmm0")
 				lname2 = *symbUniqueLabel( )
@@ -4742,6 +4742,21 @@ private sub emitStoreStruct(byval v1 as IRVREG ptr, byval v2 as IRVREG ptr,byref
             asm_code("mov [rax], rdx")
     end select
 end sub
+
+private function hIsStructIn2Regs( byval v1 as IRVREG ptr ) as integer
+	'' test if the VREG is for a struct that would be returned in 2 registers
+	'' sym->udt.retin2regs is set by symbStructEnd() and the udt should become
+	'' the subtype of the vreg.
+
+	'' only if the type is a UDT
+	if( typeGetDtAndPtrOnly( v1->dtype ) = FB_DATATYPE_STRUCT ) then
+		
+		'' only if the UDT was analyzed to return in 2 registers
+		return ( v1->subtype->udt.retin2regs <> FB_STRUCT_NONE )
+	end if
+	return FALSE
+end function
+
 private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
     dim as string op1,op2,op3,op4,prefix,code1,code2,regtempo
@@ -4821,9 +4836,10 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
             asm_error("store 01")
     end select
 
-    if( typeGetDtAndPtrOnly( v1->dtype ) = FB_DATATYPE_STRUCT ) then 
+    if( hIsStructIn2Regs( v2 ) ) then
+        '' for Linux structures can be returned in 2 registers so needs a special handling
         emitStoreStruct(v1,v2,op1,op3)
-		exit sub
+        exit sub
     end if
 
     ''SOURCE
@@ -5089,7 +5105,7 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
             asm_error("in loadres typ not handled")
     end select
 
-    if( typeGetDtAndPtrOnly( v1->dtype ) = FB_DATATYPE_STRUCT ) then 
+    if( hIsStructIn2Regs( v1 ) ) then
         ''Structure returned in 2 registers, linux only
         ''assuming in this case fb$result is always defined like xxx[rbp]
         if v1->typ<>IR_VREGTYPE_VAR orelse ( symbIsStatic(v1->sym) Or symbisshared(v1->sym) )then
@@ -5851,7 +5867,8 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
     ctx.proccalling=false
 
     if( vr ) then ''return value
-	    if( typeGetDtAndPtrOnly( vr->dtype ) = FB_DATATYPE_STRUCT ) then 
+
+        if( hIsStructIn2Regs( vr ) ) then 
             ''Structure returned in 2 registers
             vr->typ=IR_VREGTYPE_VAR ''for use when argument
             ctx.stk+=typeGetSize( FB_DATATYPE_LONGINT )*2 ''reserving 16 bytes

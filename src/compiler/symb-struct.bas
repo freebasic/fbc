@@ -670,7 +670,7 @@ sub struct_analyze(byval fld as FBSYMBOL ptr,byref part1 as integer,byref part2 
 
 end sub
 
-private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as FB_STRUCT_INREG
+private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as integer
 
 	assert( env.clopt.backend = FB_BACKEND_GAS64 )
 	assert( env.clopt.target = FB_COMPTARGET_LINUX )
@@ -688,10 +688,12 @@ private function hGetReturnTypeGas64Linux( byval sym as FBSYMBOL ptr ) as FB_STR
 
 		select case as const part1+part2
 			case 1 ''only integers in RAX
-				'' return FB_STRUCT_R
+				'' don't set retin2regs, it's handled by datatype only 
+				'' sym->udt.retin2regs = FB_STRUCT_R
 				return FB_DATATYPE_LONGINT
 			case 2 ''only floats in XMM0
-				'' return FB_STRUCT_X
+				'' don't set retin2regs, it's handled by datatype only
+				'' sym->udt.retin2regs = FB_STRUCT_X
 				return FB_DATATYPE_DOUBLE
 			case 5 ''only integers in RAX/RDX
 				sym->udt.retin2regs = FB_STRUCT_RR
