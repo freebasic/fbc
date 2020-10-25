@@ -4418,7 +4418,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				ctx.roundfloat=true
 				asm_code("test DWORD PTR $sse41[rip], 0")
 				lname1 = *symbUniqueLabel( )
-				asm_code("jne "+lname1)
+				asm_code("je "+lname1)
 				asm_code("roundsd xmm0,xmm0,4") ''nearbyintf double
 				lname2 = *symbUniqueLabel( )
 				asm_code("jmp "+lname2)
@@ -4461,7 +4461,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				ctx.roundfloat=true
 				asm_code("test DWORD PTR $sse41[rip], 0")
 				lname1 = *symbUniqueLabel( )
-				asm_code("jne "+lname1)
+				asm_code("je "+lname1)
 				asm_code("roundsd xmm0,xmm0,4") ''nearbyintf double
 				asm_code("cvttsd2si rax, xmm0")
 				lname2 = *symbUniqueLabel( )
@@ -4499,7 +4499,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				ctx.roundfloat=true
 				asm_code("test DWORD PTR $sse41[rip], 0")
 				lname1 = *symbUniqueLabel( )
-				asm_code("jne "+lname1)
+				asm_code("je "+lname1)
 				asm_code("roundss xmm0,xmm0,4")
 				lname2 = *symbUniqueLabel( )
 				asm_code("jmp "+lname2)
@@ -4542,7 +4542,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				ctx.roundfloat=true
 				asm_code("test DWORD PTR $sse41[rip], 0")
 				lname1 = *symbUniqueLabel( )
-				asm_code("jne "+lname1)
+				asm_code("je "+lname1)
 				asm_code("roundss xmm0,xmm0,4") ''nearbyintf single
 				asm_code("cvttss2si rax, xmm0")
 				lname2 = *symbUniqueLabel( )
