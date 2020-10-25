@@ -6,6 +6,7 @@ Version 1.07.2
 - suffixes in '-lang fb' reverted to fbc-1.05.0 behaviours
 - rtlib: internal fb_MemCopyClear() argument types changed to expect unsigned lengths (UINTEGER => size_t)
 - github #256: gfxlib2: enable frame buffer on linux-arm targets
+- gfxlib2: X11 driver - set the window title for both the frame window and the client window
 
 [added]
 - gas64 emitter for x86_64 (SARG), added '-gen gas64' command line option to select
