@@ -516,39 +516,53 @@ private sub check_optim(byref code as string)
             end if
 
             ''direct simple register ?
-            if prevpart2[0]=asc("r") and instr(prevpart1,"[")=0 then
-                asm_info("OPTIMIZATION 2")
-                mid(ctx.proc_txt,prevwpos)="#O2"
-                if mov="movq" or mov="movd" then
-                    prevmov=mov
-                elseif mov="movsx" then
-                    prevmov="movsx"
-                end if
+            if prevpart2[0]=asc("r") then
+				if instr(prevpart1,"[")<>0 then
+					asm_info("OPTIMIZATION 2-1")
+					''skip comment
+				else
+	                asm_info("OPTIMIZATION 2-2")
+	                mid(ctx.proc_txt,prevwpos)="#O2"
+	                if mov="movq" or mov="movd" then
+	                    prevmov=mov
+	                elseif mov="movsx" then
+	                    prevmov=mov
+	                end if
+				end if
                 writepos=len(ctx.proc_txt)+len(code)+9
                 code="#O2"+code+newline+string( ctx.indent*3, 32 )+prevmov+" "+part1+", "+prevpart2+" #Optim 2"
                 part2=prevpart2
-                
             ''xmm register ?
-            elseif prevpart2[0]=asc("x") and instr(prevpart1,"[")=0 then
-                asm_info("OPTIMIZATION 3")
-                mid(ctx.proc_txt,prevwpos)="#O3"
-
-                if prevmov="movq" then
-                    if instr(part2,"[") then
-                        mov="movsd"
-                    else
-                        mov="movq"
-                    end if
-                elseif prevmov="movd" then
-                    if part1[0]=asc("r") or part1[0]=asc("e") then
-                       mov="movd"
-                    else
-                        mov="movss"
+            elseif prevpart2[0]=asc("x") then
+                if instr(prevpart1,"[")<>0 then
+					asm_info("OPTIMIZATION 3-1")
+					if part1[0]=asc("r") then
+						mov="movsd"
+                    elseif part1[0]=asc("e") then
+						mov="movss"
+					else
+						asm_error("in check_optim optim 3-1")
                     end if
                 else
-                    asm_error("in check_optim mov unknown="+mov)
-                end if
+					asm_info("OPTIMIZATION 3-2")
+	                mid(ctx.proc_txt,prevwpos)="#O3"
 
+	                if prevmov="movq" then
+	                    if instr(part2,"[") then
+	                        mov="movsd"
+	                    else
+	                        mov="movq"
+	                    end if
+	                elseif prevmov="movd" then
+	                    if part1[0]=asc("r") or part1[0]=asc("e") then
+	                       mov="movd"
+	                    else
+	                       mov="movss"
+	                    end if
+	                else
+	                    asm_error("in check_optim 3-2 mov unknown="+mov)
+	                end if
+                end if
                 writepos=len(ctx.proc_txt)+len(code)+9
                 code="#O3"+code+newline+string( ctx.indent*3, 32 )+mov+" "+part1+", "+prevpart2+" #Optim 3"
                 part2=prevpart2
