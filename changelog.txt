@@ -21,6 +21,7 @@ Version 1.08.0
 - rtlib: internal removal of unused / legacy functions: fb_ArrayRedim(), fb_ArrayRedimPresv()
 - rtlib: internal removal of unused / legacy functions: fb_ArraySetDesc(), temporay descriptor functions and structs
 - github #256: gfxlib2: enable frame buffer on linux-arm targets
+- gfxlib2: X11 driver - set the window title for both the frame window and the client window
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
