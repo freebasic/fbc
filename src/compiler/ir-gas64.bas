@@ -536,13 +536,7 @@ private sub check_optim(byref code as string)
             elseif prevpart2[0]=asc("x") then
                 if instr(prevpart1,"[")<>0 then
 					asm_info("OPTIMIZATION 3-1")
-					if part1[0]=asc("r") then
-						mov="movsd"
-                    elseif part1[0]=asc("e") then
-						mov="movss"
-					else
-						asm_error("in check_optim optim 3-1")
-                    end if
+					''skip comment
                 else
 					asm_info("OPTIMIZATION 3-2")
 	                mid(ctx.proc_txt,prevwpos)="#O3"
@@ -4749,7 +4743,6 @@ private sub emitStoreStruct(byval v1 as IRVREG ptr, byval v2 as IRVREG ptr,byref
             asm_code("mov [rax], rdx")
     end select
 end sub
-
 private function hIsStructIn2Regs( byval v1 as IRVREG ptr ) as integer
 	'' test if the VREG is for a struct that would be returned in 2 registers
 	'' sym->udt.retin2regs is set by symbStructEnd() and the udt should become
@@ -4763,7 +4756,6 @@ private function hIsStructIn2Regs( byval v1 as IRVREG ptr ) as integer
 	end if
 	return FALSE
 end function
-
 private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
     dim as string op1,op2,op3,op4,prefix,code1,code2,regtempo
@@ -4844,9 +4836,9 @@ private sub _emitstore( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
     end select
 
     if( hIsStructIn2Regs( v2 ) ) then
-        '' for Linux structures can be returned in 2 registers so needs a special handling
+		'' for Linux structures can be returned in 2 registers so needs a special handling
         emitStoreStruct(v1,v2,op1,op3)
-        exit sub
+		exit sub
     end if
 
     ''SOURCE
@@ -5113,7 +5105,7 @@ private sub _emitloadres(byval v1 as IRVREG ptr,byval vr as IRVREG Ptr)
     end select
 
     if( hIsStructIn2Regs( v1 ) ) then
-        ''Structure returned in 2 registers, linux only
+		''Structure returned in 2 registers, linux only
         ''assuming in this case fb$result is always defined like xxx[rbp]
         if v1->typ<>IR_VREGTYPE_VAR orelse ( symbIsStatic(v1->sym) Or symbisshared(v1->sym) )then
             asm_error("IR_VREGTYPE not handled in emitloadres (linux)")
@@ -5875,7 +5867,7 @@ private sub hdocall(byval proc as FBSYMBOL ptr,byref pname as string,byref first
 
     if( vr ) then ''return value
 
-        if( hIsStructIn2Regs( vr ) ) then 
+        if( hIsStructIn2Regs( vr ) ) then
             ''Structure returned in 2 registers
             vr->typ=IR_VREGTYPE_VAR ''for use when argument
             ctx.stk+=typeGetSize( FB_DATATYPE_LONGINT )*2 ''reserving 16 bytes
