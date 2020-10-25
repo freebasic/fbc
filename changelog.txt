@@ -16,6 +16,7 @@ Version 1.07.2
 - sf.net #921: gfxlib: horizontal line drawing on 8-bit image was using wrong bpp
 - github #258: on windows directx and gdi drivers, only show window after intialization is complete (adeyblue)
 - sf.net #925: CSIGN/CUNSG preserve size when converting pointers on 64-bit and implict conversion of STEP value in FOR...NEXT statement
+- github #122: gfxlib2: linux GFX_NO_FRAME + GFX_OPENGL freezing at exit due to a dead lock between exit routines
 
 
 Version 1.07.1
