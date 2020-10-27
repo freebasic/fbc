@@ -4133,6 +4133,48 @@ private sub _emituop(byval op as integer,byval v1 as IRVREG ptr,byval vr as IRVR
 		asm_info("Bop float reghandle reset so forced again to="+Str(vr->reg))
 	end if
 end sub
+private sub hEmitRoundFloat(byval dtype1 as FB_DATATYPE,byval dtype2 as FB_DATATYPE = FB_DATATYPE_INVALID)
+	dim as string lname1,lname2
+	'' Puts ctx.roundfloat to true for later adding of the code filling $sse41[rip]
+	ctx.roundfloat=true
+	asm_code("test DWORD PTR $sse41[rip], 0b10000000000000000000")
+	lname1 = *symbUniqueLabel( )
+	asm_code("je "+lname1)
+
+	if dtype1=FB_DATATYPE_DOUBLE then
+		asm_code("roundsd xmm0,xmm0,4")
+		if dtype2<>FB_DATATYPE_ULONGINT then
+			asm_code("cvttsd2si rax, xmm0")
+		end if
+	else
+	''single
+		asm_code("roundss xmm0,xmm0,4")
+		if dtype2<>FB_DATATYPE_ULONGINT then
+			asm_code("cvttss2si rax, xmm0")
+		end if
+	endif
+
+	lname2 = *symbUniqueLabel( )
+	asm_code("jmp "+lname2)
+	asm_code(lname1+":")
+
+	if dtype1=FB_DATATYPE_DOUBLE then
+		if dtype2<>FB_DATATYPE_ULONGINT then
+			no_roundsd(@"d")
+		else
+			asm_code("call nearbyint")
+		end if
+	else
+	''single
+		if dtype2<>FB_DATATYPE_ULONGINT then
+			no_roundsd(@"s")
+		else
+			asm_code("call nearbyintf")
+		end if
+	endif
+
+	asm_code(lname2+":")
+end sub
 private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 
 	dim as FB_DATATYPE v1dtype,v2dtype,v1old
@@ -4424,16 +4466,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				asm_code("mov rax, "+op2)
 				asm_code("movq xmm0, rax")
 
-				ctx.roundfloat=true
-				asm_code("test DWORD PTR $sse41[rip], 0b10000000000000000000")
-				lname1 = *symbUniqueLabel( )
-				asm_code("je "+lname1)
-				asm_code("roundsd xmm0,xmm0,4") ''nearbyintf double
-				lname2 = *symbUniqueLabel( )
-				asm_code("jmp "+lname2)
-				asm_code(lname1+":")
-				asm_code("call nearbyint")
-				asm_code(lname2+":")
+				hEmitRoundFloat(FB_DATATYPE_DOUBLE,FB_DATATYPE_ULONGINT)
 
 				asm_code("ucomisd xmm0, xmm2")
 				lname1 = *symbUniqueLabel( )
@@ -4467,17 +4500,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 					asm_code("movsd xmm0, "+op2)
 				end if
 
-				ctx.roundfloat=true
-				asm_code("test DWORD PTR $sse41[rip], 0b10000000000000000000")
-				lname1 = *symbUniqueLabel( )
-				asm_code("je "+lname1)
-				asm_code("roundsd xmm0,xmm0,4") ''nearbyintf double
-				asm_code("cvttsd2si rax, xmm0")
-				lname2 = *symbUniqueLabel( )
-				asm_code("jmp "+lname2)
-				asm_code(lname1+":")
-				no_roundsd(@"d")
-				asm_code(lname2+":")
+				hEmitRoundFloat(FB_DATATYPE_DOUBLE)
 
 				if v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT  or v1dtype=FB_DATATYPE_ENUM then
 					asm_code("mov "+op1+", rax")
@@ -4505,16 +4528,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 				asm_code("mov eax, "+op2)
 				asm_code("movd xmm0, eax")
 
-				ctx.roundfloat=true
-				asm_code("test DWORD PTR $sse41[rip], 0b10000000000000000000")
-				lname1 = *symbUniqueLabel( )
-				asm_code("je "+lname1)
-				asm_code("roundss xmm0,xmm0,4")
-				lname2 = *symbUniqueLabel( )
-				asm_code("jmp "+lname2)
-				asm_code(lname1+":")
-				asm_code("call nearbyintf")
-				asm_code(lname2+":")
+				hEmitRoundFloat(FB_DATATYPE_SINGLE,FB_DATATYPE_ULONGINT)
 
 				asm_code("ucomiss xmm0, xmm2")
 				lname1 = *symbUniqueLabel( )
@@ -4548,17 +4562,7 @@ private sub _emitconvert( byval v1 as IRVREG ptr, byval v2 as IRVREG ptr )
 					asm_code("movss xmm0, "+op2)
 				end if
 
-				ctx.roundfloat=true
-				asm_code("test DWORD PTR $sse41[rip], 0b10000000000000000000")
-				lname1 = *symbUniqueLabel( )
-				asm_code("je "+lname1)
-				asm_code("roundss xmm0,xmm0,4") ''nearbyintf single
-				asm_code("cvttss2si rax, xmm0")
-				lname2 = *symbUniqueLabel( )
-				asm_code("jmp "+lname2)
-				asm_code(lname1+":")
-				no_roundsd(@"s")
-				asm_code(lname2+":")
+				hEmitRoundFloat(FB_DATATYPE_SINGLE)
 
 				if v1dtype=FB_DATATYPE_INTEGER Or v1dtype=FB_DATATYPE_LONGINT or v1dtype=FB_DATATYPE_ENUM then
 					asm_code("mov "+op1+", rax")
