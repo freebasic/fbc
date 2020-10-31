@@ -22,6 +22,7 @@ Version 1.08.0
 - rtlib: internal removal of unused / legacy functions: fb_ArraySetDesc(), temporay descriptor functions and structs
 - github #256: gfxlib2: enable frame buffer on linux-arm targets
 - gfxlib2: X11 driver - set the window title for both the frame window and the client window
+- rtlib: RANDOMIZE RND_REAL for real random number generator now fills a buffer (624 ulongs) and RND iterates the buffer
 
 [added]
 - extern "rtlib": respects the parent namespace, uses default fb calling convention and C style name mangling
@@ -46,6 +47,7 @@ Version 1.08.0
 - rtlib: REDIM [PRESERVE] will generate run time error if attempting to resize static (fixed length) arrays.
 - gas64 emitter for x86_64 (SARG), added '-gen gas64' command line option to select
 - github #256: gfxlib2: add vga16_blitter for linux-arm targets to pack 2 pixels per byte and write to linear frame buffer
+- ./inc/fbc-int/math.bi - fbc API for rnd, rnd32, randomize, expose some random number generator internals
 
 [fixed]
 - makefile: under MSYS2 (and friends), TARGET_ARCH is now identified from shell's default target architecture instead of shell's host architecture
@@ -75,6 +77,7 @@ Version 1.08.0
 - github #258: on windows directx and gdi drivers, only show window after intialization is complete (adeyblue)
 - sf.net #925: CSIGN/CUNSG preserve size when converting pointers on 64-bit and implict conversion of STEP value in FOR...NEXT statement
 - github #122: gfxlib2: linux GFX_NO_FRAME + GFX_OPENGL freezing at exit due to a dead lock between exit routines
+- sf.net #914: threadsafe RND() and RANDOMIZE() by adding a mutex
 
 
 Version 1.07.0

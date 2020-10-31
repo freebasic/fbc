@@ -1,4 +1,17 @@
+typedef struct _FB_RNDINTERNALS {
+	uint32_t algorithm;
+	uint32_t length;
+	uint32_t *stateblock;
+	uint32_t **stateindex;
+	uint32_t *iseed;
+	double   ( *rndproc )( float n );
+	uint32_t ( *rndproc32 )( void );
+} FB_RNDINTERNALS;
+
 FBCALL double       fb_Rnd              ( float n );
+FBCALL uint32_t     fb_Rnd32            ( void );
+FBCALL void         fb_GetRndInternals  ( FB_RNDINTERNALS *info );
+
 FBCALL void         fb_Randomize        ( double seed, int algorithm );
 FBCALL int          fb_SGNSingle        ( float x );
 FBCALL int          fb_SGNDouble        ( double x );
