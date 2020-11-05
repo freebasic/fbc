@@ -61,7 +61,7 @@ FBCALL FB_WCHAR *fb_StrToWstr( const char *src )
     if( src == NULL )
         return NULL;
 
-    chars = strlen( src );
+    chars = mbstowcs( NULL, src, 0 );
     if( chars == 0 )
         return NULL;
 
